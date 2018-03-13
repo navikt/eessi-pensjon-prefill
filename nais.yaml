@@ -1,0 +1,30 @@
+name: eessi-fagmodul
+image: repo.adeo.no:5443/eessi-fagmodul
+replicas:
+    min: 1
+    max: 2
+    cpuThresholdPercentage: 50
+prometheus:
+    enabled: true
+    path: /internal/prometheus
+port: 8080
+healthcheck:
+    liveness:
+      initialDelay: 60
+      path: /internal/isalive
+    readiness:
+      initialDelay: 60
+      path: /internal/isready
+resources:
+    limits:
+      cpu: 500m
+      memory: 1024Mi
+    requests:
+      cpu: 100m
+      memory: 256Mi
+fasitResources:
+  used:
+  exposed:
+  - alias: eessifagmodulservice
+    resourceType: restservice
+    path: /
