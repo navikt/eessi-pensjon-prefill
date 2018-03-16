@@ -9,7 +9,7 @@ pipeline {
                 sh 'mvn build -DskipTests'
             }
         }
-        stage('Test'){
+        stage('Test') {
             steps {
                 sh 'mvn verify'
             }
