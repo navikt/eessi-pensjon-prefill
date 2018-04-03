@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-REPO="repo.adeo.no:5443"
+REPO="docker.adeo.no:5000"
 APP_NAME="eessi-fagmodul"
-NUM=$(cat ./version)
+NUM=$(cat ./serial.num)
 ARTIFACT_VERSION="0.1-SNAPSHOT"
 VERSION="${ARTIFACT_VERSION}-${NUM}"
 
@@ -12,7 +12,7 @@ NS=${2:-t1}
 mvn clean install -DskipTests
 
 # Bump snapshot-version
-echo $((NUM + 1)) > ./version
+echo $((NUM + 1)) > ./serial.num
 
 # build & push
 docker build . -t ${REPO}/${APP_NAME}:${VERSION}

@@ -9,7 +9,7 @@
 	<packaging>jar</packaging>
 
 	<name>eessi-fagmodul</name>
-	<description>Demo project for Spring Boot</description>
+	<description>EESSI Fagmodul backend application</description>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -55,11 +55,6 @@
 			<groupId>io.prometheus</groupId>
 			<artifactId>simpleclient_pushgateway</artifactId>
 			<version>0.2.0</version>
-		</dependency>
-		<dependency>
-			<groupId>org.jetbrains</groupId>
-			<artifactId>annotations</artifactId>
-			<version>RELEASE</version>
 		</dependency>
 	</dependencies>
 
