@@ -1,0 +1,79 @@
+buildscript {
+    ext {
+        kotlinVersion = '1.2.30'
+        springBootVersion = '2.0.0.RELEASE'
+        prometheusVersion = '0.2.0'
+        springfoxVersion = '2.8.0'
+    }
+    repositories {
+        maven {
+            url = "${System.env.ADEO_MAVEN_URL}"
+            credentials {
+                username = "${System.env.ADEO_MAVEN_USERNAME}"
+                password = "${System.env.ADEO_MAVEN_PASSWORD}"
+            }
+        }
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlinVersion}")
+        classpath("org.jetbrains.kotlin:kotlin-allopen:${kotlinVersion}")
+    }
+}
+
+apply plugin: 'kotlin'
+apply plugin: 'kotlin-spring'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+
+group = 'no.nav.eessi'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = 1.8
+
+compileKotlin {
+    kotlinOptions {
+        freeCompilerArgs = ["-Xjsr305=strict"]
+        jvmTarget = "1.8"
+    }
+}
+compileTestKotlin {
+    kotlinOptions {
+        freeCompilerArgs = ["-Xjsr305=strict"]
+        jvmTarget = "1.8"
+    }
+}
+jar {
+    baseName = 'eessi-fagmodul'
+}
+
+dependencies {
+
+    // Prometheus
+    compile("io.prometheus:simpleclient:${prometheusVersion}")
+    compile("io.prometheus:simpleclient_hotspot:${prometheusVersion}")
+    compile("io.prometheus:simpleclient_httpserver:${prometheusVersion}")
+    compile("io.prometheus:simpleclient_pushgateway:${prometheusVersion}")
+
+    // Spring-boot
+    compile('org.springframework.boot:spring-boot-starter-web')
+    testCompile('org.springframework.boot:spring-boot-starter-test')
+
+    // Kotlin
+    compile('com.fasterxml.jackson.module:jackson-module-kotlin')
+    compile("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+    compile("org.jetbrains.kotlin:kotlin-reflect")
+
+    // Swagger
+    compile("io.springfox:springfox-swagger2:${springfoxVersion}")
+    compile("io.springfox:springfox-swagger-ui:${springfoxVersion}")
+}
+
+repositories {
+    maven {
+        url = "${System.env.ADEO_MAVEN_URL}"
+        credentials {
+            username = "${System.env.ADEO_MAVEN_USERNAME}"
+            password = "${System.env.ADEO_MAVEN_PASSWORD}"
+        }
+    }
+}

@@ -1,4 +1,3 @@
-
 pipeline {
     agent any
     tools {
@@ -16,31 +15,40 @@ pipeline {
         stage('Initialize') {
             steps {
                 script {
-                    pom = readMavenPom(file: 'pom.xml')
-                    app_name = pom.artifactId
-                    version = pom.version
+                    app_name = sh(script: "gradle properties | grep ^name: | sed 's/name: //'", returnStdout: true).trim()
+                    version = sh(script: "gradle properties | grep ^version: | sed 's/version: //'", returnStdout: true).trim()
                     if (version.endsWith("-SNAPSHOT")) {
                         commitHashShort = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
-                        version = "${pom.version}.${env.BUILD_ID}-${commitHashShort}"
+                        version = "${version}.${env.BUILD_ID}-${commitHashShort}"
                     }
                     applicationFullName = "${app_name}:${version}"
+                    branchName = "${env.BRANCH_NAME}"
                 }
             }
         }
 
         stage('Build') {
             steps {
-                sh('mvn -DskipTests clean install')
+                sh('gradle clean assemble')
             }
         }
 
         stage('Test') {
             steps {
-                sh('mvn -Dmaven.test.failure.ignore=true verify')
+                sh('gradle test')
             }
             post {
-                success {
-                    junit('target/surefire-reports/**/*.xml')
+                always {
+                    junit('build/test-results/test/**/*.xml')
+                    publishHTML([
+                            allowMissing         : false,
+                            alwaysLinkToLastBuild: false,
+                            keepAll              : true,
+                            reportDir            : 'build/reports/tests/test',
+                            reportFiles          : 'index.html',
+                            reportName           : 'HTML Report',
+                            reportTitles         : ''
+                    ])
                 }
             }
         }
@@ -60,7 +68,16 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    deploy.naisDeploy(app_name, version, 'u89', 'u89', 'fss')
+                    echo "Deploy '${branchName}'?"
+                    if (branchName.startsWith('feature')) {
+                        echo "\tdeploying to u89"
+                        deploy.naisDeploy(app_name, version, 'u89', 'u89', 'fss')
+                    } else if(branchName == 'master') {
+                        echo "\tdeploying to t1"
+                        deploy.naisDeploy(app_name, version, 't1', 't1', 'fss')
+                    } else {
+                        echo "Skipping deploy"
+                    }
                 }
             }
         }
