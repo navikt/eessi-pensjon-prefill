@@ -1,0 +1,19 @@
+package no.nav.eessi.eessifagmodul.controllers
+
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
+import org.springframework.web.bind.annotation.*
+
+@CrossOrigin
+@RestController
+@RequestMapping("/SED")
+class SEDController {
+
+    private val logger: Logger by lazy { LoggerFactory.getLogger(InternalController::class.java) }
+
+    @GetMapping("/create")
+    fun opprettSED(@RequestParam fnr: String,
+                   @RequestParam saksnr: String) {
+
+    }
+}

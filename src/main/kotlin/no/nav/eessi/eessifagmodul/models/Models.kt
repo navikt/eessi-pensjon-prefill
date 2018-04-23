@@ -1,18 +1,5 @@
 package no.nav.eessi.eessifagmodul.models
 
-import java.util.*
-
-data class OpprettEUFlytRequest(
-        val KorrelasjonsID: UUID,
-        val BUC: BUC,
-        val SED: SED?,
-        val Vedlegg: List<Any>? = null
-)
-
-data class OpprettEUFlytResponse(
-        val KorrelasjonsID: UUID
-)
-
 data class BUC(
         val flytType: String,
         val saksbehandler: String,

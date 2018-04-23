@@ -3,6 +3,7 @@ package no.nav.eessi.eessifagmodul.controllers
 import io.prometheus.client.CollectorRegistry
 import io.prometheus.client.exporter.common.TextFormat
 import io.prometheus.client.hotspot.DefaultExports
+import no.nav.eessi.eessifagmodul.services.EESSIKomponentenService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpHeaders
@@ -17,7 +18,7 @@ import kotlin.collections.HashSet
 @CrossOrigin
 @RestController
 @RequestMapping("/internal")
-class InternalController {
+class InternalController(val eessiKomponentenService: EESSIKomponentenService) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(InternalController::class.java) }
     private val registry: CollectorRegistry by lazy { CollectorRegistry.defaultRegistry }
@@ -39,6 +40,16 @@ class InternalController {
 
     init {
         DefaultExports.initialize()
+    }
+
+    @RequestMapping("/testmethod")
+    fun testMethod() {
+        eessiKomponentenService.opprettEUFlyt("1234", "Testeren", "12345612345")
+    }
+
+    @PostMapping("/testmethod")
+    fun eessiMock(@RequestBody body: EESSIKomponentenService.OpprettEUFlytRequest) {
+        println(body)
     }
 
     @GetMapping("/selftest")
