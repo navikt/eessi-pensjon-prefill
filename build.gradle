@@ -7,10 +7,10 @@ buildscript {
     }
     repositories {
         maven {
-            url = "${adeoMavenUrl}"
+            url = "${System.env.ADEO_MAVEN_URL}"
             credentials {
-                username = "${adeoMavenUser}"
-                password = "${adeoMavenPassword}"
+                username = "${System.env.ADEO_MAVEN_USERNAME}"
+                password = "${System.env.ADEO_MAVEN_PASSWORD}"
             }
         }
     }
@@ -70,10 +70,10 @@ dependencies {
 
 repositories {
     maven {
-        url = "${adeoMavenUrl}"
+        url = "${System.env.ADEO_MAVEN_URL}"
         credentials {
-            username = "${adeoMavenUser}"
-            password = "${adeoMavenPassword}"
+            username = "${System.env.ADEO_MAVEN_USERNAME}"
+            password = "${System.env.ADEO_MAVEN_PASSWORD}"
         }
     }
 }
