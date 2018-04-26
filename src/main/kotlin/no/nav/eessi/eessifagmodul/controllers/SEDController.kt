@@ -14,6 +14,12 @@ class SEDController {
     @GetMapping("/create")
     fun opprettSED(@RequestParam fnr: String,
                    @RequestParam saksnr: String) {
+        println("Hello from /create")
+    }
+
+    // Rute for hent gyldige SED-typer for en gitt BUC
+    @GetMapping("/{bucId}")
+    fun getSedsForBuc(@RequestParam bucId: String) {
 
     }
 }

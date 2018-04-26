@@ -41,16 +41,28 @@ class InternalController(val eessiKomponentenService: EESSIKomponentenService) {
     init {
         DefaultExports.initialize()
     }
-
+/*
     @RequestMapping("/testmethod")
     fun testMethod() {
-        eessiKomponentenService.opprettEUFlyt("1234", "Testeren", "12345612345")
+        eessiKomponentenService.opprettEUFlyt("K1234", "Testeren", "12345612345")
     }
 
     @PostMapping("/testmethod")
     fun eessiMock(@RequestBody body: EESSIKomponentenService.OpprettEUFlytRequest) {
         println(body)
     }
+*/
+
+    @RequestMapping("/testmethod2")
+    fun testMethodBucogSED() {
+        eessiKomponentenService.opprettBuCogSED ("1234", "Testeren", "12345612345")
+    }
+
+    @PostMapping("/testmethod")
+    fun opprettBuCogSEDRequest(@RequestBody body: EESSIKomponentenService.OpprettBuCogSEDRequest) {
+        println(body)
+    }
+
 
     @GetMapping("/selftest")
     fun selftest(): SelftestResult {
