@@ -1,10 +1,10 @@
 buildscript {
     ext {
-        //kotlinVersion = '1.2.30'
         kotlinVersion = '1.2.40'
         springBootVersion = '2.0.0.RELEASE'
         prometheusVersion = '0.2.0'
         springfoxVersion = '2.8.0'
+        jacksonModuleKotlinVersion = '2.9.4'
     }
     repositories {
         maven {
@@ -56,14 +56,15 @@ dependencies {
     compile("io.prometheus:simpleclient_pushgateway:${prometheusVersion}")
 
     // Spring-boot
-    compile('org.springframework.boot:spring-boot-starter-web')
-    testCompile('org.springframework.boot:spring-boot-starter-test')
-    compile("org.springframework.boot:spring-boot-devtools")
+    compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
+    compile("org.springframework.boot:spring-boot-devtools:${springBootVersion}")
+    testCompile("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
+
 
     // Kotlin
-    compile('com.fasterxml.jackson.module:jackson-module-kotlin')
-    compile("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    compile("org.jetbrains.kotlin:kotlin-reflect")
+    compile("com.fasterxml.jackson.module:jackson-module-kotlin:${jacksonModuleKotlinVersion}")
+    compile("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${kotlinVersion}")
+    compile("org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}")
 
     // Swagger
     compile("io.springfox:springfox-swagger2:${springfoxVersion}")
