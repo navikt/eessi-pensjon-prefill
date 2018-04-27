@@ -51,9 +51,45 @@ class EESSIKomponentenService(templateBuilder: RestTemplateBuilder, @Value("\${e
         return response
     }
 
+    fun opprettBucogSEDrequest(data : PENBrukerData) : OpprettBuCogSEDRequest {
+        val request = OpprettBuCogSEDRequest(
+                KorrelasjonsID = UUID.randomUUID(),
+                BUC = BUC(
+                        flytType = "P_BUC_01",
+                        saksnummerPensjon = data.saksnummer,
+                        saksbehandler = data.saksbehandler,
+                        Parter = SenderReceiver(
+                                sender = Institusjon(landkode = "NO", navn = "NAV"),
+                                receiver = listOf(Institusjon(landkode = "DK", navn = "ATP"))
+                        ),
+                        NAVSaksnummer =  "nav_saksnummer",
+                        SEDType = "SED_type",
+                        notat_tmp = "Temp fil for å se hva som skjer"
+                ),
+                SED = SED(
+                        SEDType = "P2000",
+                        NAVSaksnummer = data.saksnummer,
+                        ForsikretPerson = NavPerson(data.forsikretPerson),
+                        Barn = listOf(NavPerson("123"), NavPerson("234")),
+                        Samboer = NavPerson("345")
+                )
+        )
+        logger.debug("/===========================================/")
+        logger.debug("Request obj opprettt")
+        logger.debug("Request obj: " + request.toString())
+        logger.debug("/===========================================/")
+        return request;
+    }
+
+    fun opprettBuCogSEDresponse(request : OpprettBuCogSEDRequest) : OpprettBuCogSEDResponse? {
+        val response = restTemplate.postForObject("/", request, OpprettBuCogSEDResponse::class.java)
+        logger.debug("Reponse obj:" + response.toString())
+        return response
+    }
+
     data class OpprettBuCogSEDRequest(
             val KorrelasjonsID: UUID,
-            val BUC: BUC,
+            val BUC: BUC?,
             val SED: SED?,
             val Vedlegg: List<Any>? = null
     )

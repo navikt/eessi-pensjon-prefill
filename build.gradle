@@ -1,6 +1,7 @@
 buildscript {
     ext {
-        kotlinVersion = '1.2.30'
+        //kotlinVersion = '1.2.30'
+        kotlinVersion = '1.2.40'
         springBootVersion = '2.0.0.RELEASE'
         prometheusVersion = '0.2.0'
         springfoxVersion = '2.8.0'
@@ -57,6 +58,7 @@ dependencies {
     // Spring-boot
     compile('org.springframework.boot:spring-boot-starter-web')
     testCompile('org.springframework.boot:spring-boot-starter-test')
+    compile("org.springframework.boot:spring-boot-devtools")
 
     // Kotlin
     compile('com.fasterxml.jackson.module:jackson-module-kotlin')
@@ -66,6 +68,10 @@ dependencies {
     // Swagger
     compile("io.springfox:springfox-swagger2:${springfoxVersion}")
     compile("io.springfox:springfox-swagger-ui:${springfoxVersion}")
+
+    //mock
+    testCompile( "org.mockito:mockito-core:2.8.+" )
+
 }
 
 repositories {

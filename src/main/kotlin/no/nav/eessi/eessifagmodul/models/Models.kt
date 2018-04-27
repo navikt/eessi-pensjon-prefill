@@ -1,5 +1,6 @@
 package no.nav.eessi.eessifagmodul.models
 
+import java.time.Instant
 import java.util.*
 
 //https://confluence.adeo.no/pages/viewpage.action?pageId=262412867
@@ -42,4 +43,11 @@ data class OpprettBuCogSEDResponse(
         val rinasaksnummer: String?,
         val status: String?
         //val nyere_parameter_versjon2: String?
+)
+
+data class PENBrukerData(
+        val saksnummer: String,
+        val saksbehandler: String,
+        val forsikretPerson: String,
+        val dato : Instant = Instant.now()
 )
