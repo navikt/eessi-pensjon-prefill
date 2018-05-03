@@ -5,6 +5,9 @@ buildscript {
         prometheusVersion = '0.2.0'
         springfoxVersion = '2.8.0'
         jacksonModuleKotlinVersion = '2.9.4'
+        cxfVersion = '3.2.1'
+        aktoerIdVersion = '2.0.1'
+        mockitoVersion = '2.8.+'
     }
     repositories {
         maven {
@@ -58,6 +61,8 @@ dependencies {
     // Spring-boot
     compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
     compile("org.springframework.boot:spring-boot-devtools:${springBootVersion}")
+    compile("org.apache.cxf:cxf-spring-boot-starter-jaxws:3.2.1")
+    compile("org.apache.cxf:cxf-rt-ws-security:${cxfVersion}")
     testCompile("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
 
 
@@ -71,8 +76,10 @@ dependencies {
     compile("io.springfox:springfox-swagger-ui:${springfoxVersion}")
 
     //mock
-    testCompile( "org.mockito:mockito-core:2.8.+" )
+    testCompile( "org.mockito:mockito-core:${mockitoVersion}" )
 
+    // Tjenestespesifikasjoner
+    compile("no.nav.tjenester.fim:nav-fim-aktoer-v2-tjenestespesifikasjon:${aktoerIdVersion}:jaxws")
 }
 
 repositories {

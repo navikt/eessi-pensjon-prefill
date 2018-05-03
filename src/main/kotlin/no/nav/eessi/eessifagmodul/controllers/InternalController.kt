@@ -3,9 +3,11 @@ package no.nav.eessi.eessifagmodul.controllers
 import io.prometheus.client.CollectorRegistry
 import io.prometheus.client.exporter.common.TextFormat
 import io.prometheus.client.hotspot.DefaultExports
+import no.nav.eessi.eessifagmodul.services.AktoerIdClient
 import no.nav.eessi.eessifagmodul.services.EESSIKomponentenService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -19,6 +21,9 @@ import kotlin.collections.HashSet
 @RestController
 @RequestMapping("/internal")
 class InternalController(val eessiKomponentenService: EESSIKomponentenService) {
+
+    @Autowired
+    lateinit var aktoerIdClient: AktoerIdClient
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(InternalController::class.java) }
     private val registry: CollectorRegistry by lazy { CollectorRegistry.defaultRegistry }
@@ -66,6 +71,7 @@ class InternalController(val eessiKomponentenService: EESSIKomponentenService) {
 
     @GetMapping("/selftest")
     fun selftest(): SelftestResult {
+        aktoerIdClient.ping()
         logger.debug("selftest passed")
         return SelftestResult(aggregateResult = 0, checks = null)
     }

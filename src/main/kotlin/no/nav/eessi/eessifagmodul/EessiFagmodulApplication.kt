@@ -7,7 +7,7 @@ import org.springframework.boot.runApplication
 class EessiFagmodulApplication
 
 /**
- * under development (Intellij) må hva med under Vm option -D
+ * under development (Intellij) mÃ¥ hva med under Vm option -D
  *
  *
  */

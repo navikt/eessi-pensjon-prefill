@@ -24,6 +24,13 @@ resources:
       memory: 256Mi
 fasitResources:
   used:
+  - alias: Aktoer_v2
+    resourceType: WebserviceEndpoint
+  - alias: srvPensjon
+    resourceType: Credential
+    propertyMap:
+      username: credentials.srvpensjon.username
+      password: credentials.srvpensjon.password
   exposed:
   - alias: eessifagmodulservice
     resourceType: restservice

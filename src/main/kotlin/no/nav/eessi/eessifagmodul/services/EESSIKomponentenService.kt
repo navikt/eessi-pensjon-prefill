@@ -35,7 +35,7 @@ class EESSIKomponentenService(templateBuilder: RestTemplateBuilder, @Value("\${e
                         ),
                         NAVSaksnummer =  "nav_saksnummer",
                         SEDType = "SED_type",
-                        notat_tmp = "Temp fil for å se hva som skjer"
+                        notat_tmp = "Temp fil for Ã¥ se hva som skjer"
                   ),
                 SED = SED(
                         SEDType = "P2000",
@@ -64,7 +64,7 @@ class EESSIKomponentenService(templateBuilder: RestTemplateBuilder, @Value("\${e
                         ),
                         NAVSaksnummer =  "nav_saksnummer",
                         SEDType = "SED_type",
-                        notat_tmp = "Temp fil for å se hva som skjer"
+                        notat_tmp = "Temp fil for Ã¥ se hva som skjer"
                 ),
                 SED = SED(
                         SEDType = "P2000",
@@ -114,7 +114,7 @@ class EESSIKomponentenService(templateBuilder: RestTemplateBuilder, @Value("\${e
                         ),
                         NAVSaksnummer =  "nav_saksnummer",
                         SEDType = "SED_type",
-                        notat_tmp = "Temp fil for å se hva som skjer"
+                        notat_tmp = "Temp fil for Ã¥ se hva som skjer"
                 ),
                 SED = SED(
                         SEDType = "P2000",
