@@ -9,11 +9,10 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/SED")
 class SEDController {
 
-    private val logger: Logger by lazy { LoggerFactory.getLogger(InternalController::class.java) }
+    private val logger: Logger by lazy { LoggerFactory.getLogger(SEDController::class.java) }
 
     @GetMapping("/create")
-    fun opprettSED(@RequestParam fnr: String,
-                   @RequestParam saksnr: String) {
+    fun opprettSED(@RequestParam fnr: String, @RequestParam saksnr: String) {
         println("Hello from /create")
     }
 

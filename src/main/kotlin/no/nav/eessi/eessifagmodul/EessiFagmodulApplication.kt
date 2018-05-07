@@ -7,8 +7,8 @@ import org.springframework.boot.runApplication
 class EessiFagmodulApplication
 
 /**
- * under development (Intellij) må hva med under Vm option -D
- *
+ * under development (Intellij) må hva med under Vm option:
+ * -Dspring.profiles.active=develop
  *
  */
 fun main(args: Array<String>) {

@@ -30,8 +30,6 @@ class BUCTest {
         assertEquals(buc.SEDType, "SED_type")
         assertEquals(buc.NAVSaksnummer, "nav_saksnummer")
         assertEquals(buc.notat_tmp, "Temp")
-
     }
-
 
 }

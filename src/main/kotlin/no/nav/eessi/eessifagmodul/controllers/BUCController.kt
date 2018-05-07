@@ -1,10 +1,18 @@
 package no.nav.eessi.eessifagmodul.controllers
 
-import org.springframework.web.bind.annotation.CrossOrigin
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import no.nav.eessi.eessifagmodul.services.BuCKomponentService
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.web.bind.annotation.*
 
 @CrossOrigin
-@RestController
+@RestController("BuCcontroller")
 @RequestMapping("/BUC")
-class BUCController
+class BUCController {
+
+    @Autowired
+    lateinit var service : BuCKomponentService
+
+    @GetMapping("/id")
+    fun hentBuC() = service.hentEnkelBuc("3")
+
+}

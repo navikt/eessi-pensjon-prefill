@@ -1,8 +1,6 @@
 package no.nav.eessi.eessifagmodul.controllers
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import jdk.nashorn.internal.objects.NativeArray.forEach
-import jdk.nashorn.internal.parser.JSONParser
+import no.nav.eessi.eessifagmodul.models.OpprettBuCogSEDRequest
 import no.nav.eessi.eessifagmodul.models.OpprettBuCogSEDResponse
 import no.nav.eessi.eessifagmodul.models.PENBrukerData
 import no.nav.eessi.eessifagmodul.services.EESSIKomponentenService
@@ -11,21 +9,15 @@ import org.springframework.web.bind.annotation.*
 import java.time.Instant
 import java.util.*
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.SpringApplication
-import org.springframework.boot.SpringBootConfiguration
-import org.springframework.core.SpringProperties
 
 
 @CrossOrigin
 @RestController
 @RequestMapping("/komponent")
-class KomponentController(val eessiKomponentenService: EESSIKomponentenService) {
+class KomponentController {
 
-    @RequestMapping("/req")
-    fun testMethodBucogSED() {
-        eessiKomponentenService.opprettBuCogSED ("1234", "Testeren", "12345612345")
-    }
-
+    @Autowired
+    lateinit var eessiKomponentenService: EESSIKomponentenService
 
     @Value("\${no.nav.eessi.eessifagmodul.hello:}")
     lateinit var test:String
@@ -33,13 +25,20 @@ class KomponentController(val eessiKomponentenService: EESSIKomponentenService) 
     @Autowired
     lateinit var props: Properties
 
+    @RequestMapping("/req")
+    fun testMethodBucogSED() {
+        val brukerData = PENBrukerData("123456", "DummyTester1", "12123123123")
+        eessiKomponentenService.opprettBuCogSED (brukerData)
+    }
+
     @GetMapping("/test")
-    fun testReqogRes() : EESSIKomponentenService.OpprettBuCogSEDRequest {
+    fun testReqogRes() : OpprettBuCogSEDRequest {
         printSystemProperties()
-        //eessiKomponentenService.opprettBuCogSED ("1234", "Testeren", "12345612345")
+
         val data = PENBrukerData( "123456", "Dummybruker", "Ole Olsen", Instant.now())
-        val req = eessiKomponentenService.opprettBucogSEDrequest(data)
-        return req
+        val request = eessiKomponentenService.opprettBucogSEDrequest(data)
+        val response= eessiKomponentenService.opprettBuCogSED (data)
+        return request
     }
 
     fun printSystemProperties() {
@@ -49,15 +48,15 @@ class KomponentController(val eessiKomponentenService: EESSIKomponentenService) 
         val iterator = keynames.iterator()
 
         iterator.forEach {
-            var strValue = props.getProperty(it)
-            println("= :  $it, Value : " + strValue)
+            val strValue = props.getProperty(it)
+            println("= :  $it, Value : $strValue")
         }
         println("\n---------------------------------------------")
     }
 
 
     @GetMapping("/opprettEESSIreq")
-    fun getOpprettEESSIreq(): EESSIKomponentenService.OpprettBuCogSEDRequest {
+    fun getOpprettEESSIreq(): OpprettBuCogSEDRequest {
         val data = PENBrukerData( "123456", "Dummybruker", "Ole Olsen", Instant.now())
         val req = eessiKomponentenService.opprettBucogSEDrequest(data)
         return req
@@ -65,7 +64,8 @@ class KomponentController(val eessiKomponentenService: EESSIKomponentenService) 
 
     @PostMapping("/opprett")
     fun opprettBuCogSED(): OpprettBuCogSEDResponse? {
-        val response = eessiKomponentenService.opprettBuCogSED ("1234", "Testeren", "12345612345")
+        val data = PENBrukerData( "123456", "Dummybruker", "Ole Olsen", Instant.now())
+        val response = eessiKomponentenService.opprettBuCogSED (data)
         return response
     }
 
@@ -75,7 +75,7 @@ class KomponentController(val eessiKomponentenService: EESSIKomponentenService) 
     }
 
     @PostMapping("/postreq")
-    fun opprettBuCogSEDRequest(@RequestBody body: EESSIKomponentenService.OpprettBuCogSEDRequest) {
+    fun opprettBuCogSEDRequest(@RequestBody body: OpprettBuCogSEDRequest) {
        println(body)
     }
 

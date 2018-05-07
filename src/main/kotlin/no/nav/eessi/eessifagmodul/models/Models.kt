@@ -1,7 +1,6 @@
 package no.nav.eessi.eessifagmodul.models
 
 import java.time.Instant
-import java.util.*
 
 //https://confluence.adeo.no/pages/viewpage.action?pageId=262412867
 
@@ -34,15 +33,8 @@ data class SenderReceiver(
 )
 
 data class Institusjon(
-        val landkode: String,
-        val navn: String
-)
-
-data class OpprettBuCogSEDResponse(
-        val korrelasjonsID: UUID,
-        val rinasaksnummer: String?,
-        val status: String?
-        //val nyere_parameter_versjon2: String?
+        val landkode: String?,
+        val navn: String?
 )
 
 data class PENBrukerData(

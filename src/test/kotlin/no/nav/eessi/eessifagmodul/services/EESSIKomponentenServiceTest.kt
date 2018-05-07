@@ -1,45 +1,55 @@
 package no.nav.eessi.eessifagmodul.services
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import no.nav.eessi.eessifagmodul.models.OpprettBuCogSEDResponse
 import no.nav.eessi.eessifagmodul.models.PENBrukerData
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.web.client.TestRestTemplate
-import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.junit4.SpringRunner
-import org.springframework.web.bind.annotation.CrossOrigin
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
-import java.time.Instant
+import org.mockito.InjectMocks
+import org.mockito.Mock
+import org.mockito.Mockito.*
+import org.mockito.junit.MockitoJUnitRunner
+import org.springframework.boot.web.client.RestTemplateBuilder
+import org.springframework.context.annotation.Bean
+import org.springframework.web.client.RestTemplate
+import java.util.*
+import org.mockito.ArgumentMatchers.anyString
 
-@RunWith(SpringRunner::class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles(value = ["develop"])
+
+@RunWith(MockitoJUnitRunner::class)
 class EESSIKomponentenServiceTest {
 
-    @Autowired
-    lateinit var testRestTemplate: TestRestTemplate
+    @Bean
+    fun restTemplageMock(templateBuilder: RestTemplateBuilder): RestTemplate {
+        println("Mock template")
+        println("Mock template")
+        println("Mock template")
+        return templateBuilder.rootUri("http://localhost:8080/").build()
+    }
+
+    @InjectMocks
+    lateinit var kompService : EESSIKomponentenService
+
+    @Mock
+    lateinit var mockrestTemp : RestTemplate
 
     @Test
-    fun testRequest() {
+    fun testRequestAndResponse() {
 
-        val result = testRestTemplate.getForEntity("/komponent/opprettEESSIreq", String::class.java).body
-        Assert.assertNotNull(result)
-        println(result)
+        val data = PENBrukerData("12345678", "DummyTester", "12345678")
+        val uuid = UUID.randomUUID()
+        val response = OpprettBuCogSEDResponse(uuid, "RINA-12345678", "Statusen er nå")
 
-        //var req : EESSIKomponentenService.OpprettBuCogSEDRequest = mapper.readValue(result, EESSIKomponentenService.OpprettBuCogSEDRequest::class.java)
-        try {
-            val mapper = jacksonObjectMapper()
-            val request: EESSIKomponentenService.OpprettBuCogSEDRequest = mapper.readValue(result,EESSIKomponentenService.OpprettBuCogSEDRequest::class.java)
-            Assert.assertNotNull(request)
-            println(request)
-        } catch(e: Exception) {
-            //.printStackTrace()
-        }
+        `when`(mockrestTemp.postForObject(anyString(), any(), eq(response::class.java))).thenReturn(response)
+        kompService.restTemplate = mockrestTemp
+
+        val res = kompService.opprettBuCogSED(data)
+
+        Assert.assertNotNull(res)
+
+        val resp : OpprettBuCogSEDResponse = res!!
+        Assert.assertEquals(response.korrelasjonsID, resp.korrelasjonsID)
+
     }
 
 }

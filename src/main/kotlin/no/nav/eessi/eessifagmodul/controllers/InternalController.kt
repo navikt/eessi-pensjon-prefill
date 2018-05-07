@@ -20,13 +20,13 @@ import kotlin.collections.HashSet
 @CrossOrigin
 @RestController
 @RequestMapping("/internal")
-class InternalController(val eessiKomponentenService: EESSIKomponentenService) {
-
-    @Autowired
-    lateinit var aktoerIdClient: AktoerIdClient
+class InternalController {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(InternalController::class.java) }
     private val registry: CollectorRegistry by lazy { CollectorRegistry.defaultRegistry }
+
+    @Autowired
+    lateinit var aktoerIdClient: AktoerIdClient
 
     data class SelftestResult(
             val name: String = "eessi-fagmodul",
@@ -46,28 +46,6 @@ class InternalController(val eessiKomponentenService: EESSIKomponentenService) {
     init {
         DefaultExports.initialize()
     }
-/*
-    @RequestMapping("/testmethod")
-    fun testMethod() {
-        eessiKomponentenService.opprettEUFlyt("K1234", "Testeren", "12345612345")
-    }
-
-    @PostMapping("/testmethod")
-    fun eessiMock(@RequestBody body: EESSIKomponentenService.OpprettEUFlytRequest) {
-        println(body)
-    }
-*/
-
-    @RequestMapping("/testmethod2")
-    fun testMethodBucogSED() {
-        eessiKomponentenService.opprettBuCogSED ("1234", "Testeren", "12345612345")
-    }
-
-    @PostMapping("/testmethod")
-    fun opprettBuCogSEDRequest(@RequestBody body: EESSIKomponentenService.OpprettBuCogSEDRequest) {
-        println(body)
-    }
-
 
     @GetMapping("/selftest")
     fun selftest(): SelftestResult {
@@ -87,7 +65,7 @@ class InternalController(val eessiKomponentenService: EESSIKomponentenService) {
     }
 
     @GetMapping("/metrics")
-    fun metrics(@RequestParam(name = "name[]", required = false) nameParams: Array<String>?): ResponseEntity<String> {
+    fun metrics(@PathVariable(name = "name[]", required = false) nameParams: Array<String>?): ResponseEntity<String> {
 
         fun arrayToSet(nameParams: Array<String>?): Set<String> = if (nameParams == null) emptySet() else HashSet(Arrays.asList(*nameParams))
 
