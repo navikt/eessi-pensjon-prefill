@@ -12,5 +12,4 @@
 | (__| (__  __) )__) )| |  Kotlin
 \ ___)\___)|___/|___/ | |  Rest
 ======================|_|===========
-EESSI-APP : ${no.nav.eessi.app}
-EESSIBASIS-URL : ${eessibasis.url}
+EESSI-APP : ${app.name}:${app.version}
