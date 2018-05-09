@@ -6,8 +6,8 @@ pipeline {
 
     environment {
         repo = "docker.adeo.no:5000"
-        FASIT_ENV = 't1'
-        APPLICATION_NAMESPACE = 't1'
+        FASIT_ENV = 't8'
+        APPLICATION_NAMESPACE = 't8'
         ZONE = 'fss'
     }
 
@@ -17,12 +17,12 @@ pipeline {
                 script {
                     app_name = sh(script: "gradle properties | grep ^name: | sed 's/name: //'", returnStdout: true).trim()
                     version = sh(script: "gradle properties | grep ^version: | sed 's/version: //'", returnStdout: true).trim()
+                    branchName = "${env.BRANCH_NAME}"
                     if (version.endsWith("-SNAPSHOT")) {
                         commitHashShort = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
-                        version = "${version}.${env.BUILD_ID}-${commitHashShort}"
+                        version = "${version}.${branchName.replaceAll('/', '-')}.${env.BUILD_ID}-${commitHashShort}"
                     }
                     applicationFullName = "${app_name}:${version}"
-                    branchName = "${env.BRANCH_NAME}"
                 }
             }
         }
@@ -71,10 +71,10 @@ pipeline {
                     echo "Deploy '${branchName}'?"
                     if (branchName.startsWith('feature')) {
                         echo "\tdeploying to u2"
-                        deploy.naisDeploy(app_name, version, 'u2', 'u2', 'fss')
+                        deploy.naisDeploy(app_name, version, FASIT_ENV, APPLICATION_NAMESPACE, ZONE)
                     } else if(branchName == 'master') {
                         echo "\tdeploying to t8"
-                        deploy.naisDeploy(app_name, version, 't8', 't8', 'fss')
+                        deploy.naisDeploy(app_name, version, FASIT_ENV, APPLICATION_NAMESPACE, ZONE)
                     } else {
                         echo "Skipping deploy"
                     }
