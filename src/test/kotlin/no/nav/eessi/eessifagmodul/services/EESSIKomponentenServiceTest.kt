@@ -15,7 +15,6 @@ import org.springframework.web.client.RestTemplate
 import java.util.*
 import org.mockito.ArgumentMatchers.anyString
 
-
 @RunWith(MockitoJUnitRunner::class)
 class EESSIKomponentenServiceTest {
 
@@ -49,7 +48,6 @@ class EESSIKomponentenServiceTest {
 
         val resp : OpprettBuCogSEDResponse = res!!
         Assert.assertEquals(response.korrelasjonsID, resp.korrelasjonsID)
-
     }
 
 }

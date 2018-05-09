@@ -24,7 +24,7 @@ data class SED(
 )
 
 data class NavPerson(
-        val fnr: String
+        val fnr: String?
 )
 
 data class SenderReceiver(

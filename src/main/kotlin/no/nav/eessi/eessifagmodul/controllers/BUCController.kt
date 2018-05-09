@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.*
 
 @CrossOrigin
 @RestController("BuCcontroller")
-@RequestMapping("/BUC")
+@RequestMapping("/buc")
 class BUCController {
 
     @Autowired

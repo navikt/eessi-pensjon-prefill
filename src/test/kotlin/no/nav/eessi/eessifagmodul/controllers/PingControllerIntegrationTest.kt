@@ -18,7 +18,7 @@ class PingControllerIntegrationTest {
 
     @Test
     fun testLocalPing() {
-        val result = testRestTemplate.getForEntity("/ping/", String::class.java)
+        val result = testRestTemplate.getForEntity("/internal/ping/", String::class.java)
         Assert.assertNotNull(result)
         Assert.assertEquals(ResponseEntity::class.java, result.javaClass)
         Assert.assertNull(result.body)

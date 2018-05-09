@@ -1,21 +1,21 @@
 package no.nav.eessi.eessifagmodul.controllers
 
 import com.google.common.collect.Lists
+import com.nhaarman.mockito_kotlin.whenever
 import no.nav.eessi.eessifagmodul.models.Institusjon
 import no.nav.eessi.eessifagmodul.services.InstitutionService
 import org.junit.Assert
 import org.junit.Assert.*
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mockito.`when`
-import org.mockito.Mockito.mock
+import org.mockito.Mock
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit4.SpringRunner
-
 
 @RunWith(SpringRunner::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -30,15 +30,20 @@ class InstitutionControllerIntegrationTest {
     @Autowired
     lateinit var institutionController : InstitutionController
 
+    @Mock
+    lateinit var mockService : InstitutionService
+
     @Test
     fun getInstitutionsById() {
+        //val mockService : InstitutionService =  mock(InstitutionService::class.java)
+        //`when`(mockService.getInstitutionByID("2")).thenReturn(response)
 
         val expected = Institusjon("SE", "Sverige")
-        val mockService : InstitutionService =  mock(InstitutionService::class.java)
-        `when`(mockService.getInstitutionByID("2")).thenReturn(expected)
+        val response : ResponseEntity<Institusjon> = ResponseEntity<Institusjon>(expected, HttpStatus.OK)
+        whenever(mockService.getInstitutionByID("2")).thenReturn(response)
         institutionController.service = mockService
 
-        val result = testRestTemplate.getForEntity("$path/byid/2", Institusjon::class.java)
+        val result = testRestTemplate.getForEntity("$path/2", Institusjon::class.java)
         println(result)
 
         Assert.assertNotNull(result)
@@ -71,13 +76,18 @@ class InstitutionControllerIntegrationTest {
 
     @Test
     fun getAllInstitutions() {
+        //`when`(mockService.getAllInstitutions()).thenReturn(response)
+//        `when`(mockService.getAllInstitutions()).thenReturn(vars)
+//        institutionController.service = mockService
+        //val mockService : InstitutionService =  mock(InstitutionService::class.java)
 
         val vars = Lists.newArrayList(Institusjon("SE", "Sverige"), Institusjon("DK", "Danmark"), Institusjon("FI", "Finland"))
-        val mockService : InstitutionService =  mock(InstitutionService::class.java)
-        `when`(mockService.getAllInstitutions()).thenReturn(vars)
+        val response : ResponseEntity<List<Institusjon>> = ResponseEntity<List<Institusjon>>(vars, HttpStatus.OK)
+
+        whenever(mockService.getAllInstitutions()).thenReturn(response)
         institutionController.service = mockService
 
-        val result = testRestTemplate.getForEntity("$path/all", vars::class.java, vars)
+        val result = testRestTemplate.getForEntity("$path/", vars::class.java, vars)
         println(result)
 
         Assert.assertNotNull(result)

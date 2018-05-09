@@ -4,16 +4,18 @@ import no.nav.eessi.eessifagmodul.models.OpprettBuCogSEDRequest
 import no.nav.eessi.eessifagmodul.models.OpprettBuCogSEDResponse
 import no.nav.eessi.eessifagmodul.models.PENBrukerData
 import no.nav.eessi.eessifagmodul.services.EESSIKomponentenService
+import org.jetbrains.annotations.TestOnly
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.web.bind.annotation.*
 import java.time.Instant
 import java.util.*
 import org.springframework.beans.factory.annotation.Autowired
 
-
 @CrossOrigin
 @RestController
 @RequestMapping("/komponent")
+
+//klasse for prototyping, test o.l
 class KomponentController {
 
     @Autowired

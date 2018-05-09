@@ -32,7 +32,7 @@ class EESSIKomponentenService : KomponentService {
                         notat_tmp = "Temp fil for å se hva som skjer"
                 ),
                 SED = SED(
-                        SEDType = "P2000",
+                        SEDType = "P6000",
                         NAVSaksnummer = data.saksnummer,
                         ForsikretPerson = NavPerson(data.forsikretPerson),
                         Barn = listOf(NavPerson("123"), NavPerson("234")),

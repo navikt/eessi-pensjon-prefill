@@ -24,22 +24,38 @@ class BasisRestTemplateConfig {
     lateinit var passWord: String
 
     @Bean
+    @Deprecated("utgår flyttet til EESSIRest")
     fun byggTemplate(templateBuilder: RestTemplateBuilder): RestTemplate {
-        logger.debug("========================================\n")
-        logger.debug("BasisRestTemplateConfig - byggTemplate URL : $url  ")
-        logger.debug("")
-        logger.debug("========================================\n")
+//        logger.debug("========================================\n")
+//        logger.debug("BasisRestTemplateConfig - byggTemplate URL : $url  ")
+//        logger.debug("")
+//        logger.debug("========================================\n")
         val restTemplate : RestTemplate = templateBuilder.rootUri(url).build()
 
         if (!("" == userName || "" == passWord)) {
-            logger.debug("========================================")
-            logger.debug("BasicAuth add")
+//            logger.debug("========================================")
+//            logger.debug("BasicAuth add")
+//            logger.debug("Add BasicAith userName: $userName  passWord:*********")
+//            logger.debug("========================================")
             restTemplate.interceptors.add(BasicAuthorizationInterceptor(userName, passWord))
-            logger.debug("Add BasicAith userName: $userName  passWord:*********")
-            logger.debug("========================================")
         }
         return restTemplate
     }
 
+    @Bean
+    fun byggEESSI(templateBuilder: RestTemplateBuilder): EESSIRest {
+        logger.debug("========================================\n")
+        logger.debug("BasisRestTemplateConfig - byggEESSI (EESSIRest) URL : $url  ")
+        logger.debug("")
+        logger.debug("========================================\n")
+        val rest : EESSIRest = EESSIRest()
+        //templateBuilder, url, BasicAuthorizationInterceptor(userName, passWord)
+        rest.url = url
+        rest.build = templateBuilder
+        rest.resttmp = templateBuilder.rootUri(url).build()
+        rest.auth = BasicAuthorizationInterceptor(userName, passWord)
+        logger.debug("toString " + rest.toString())
+        return rest
+    }
 
 }

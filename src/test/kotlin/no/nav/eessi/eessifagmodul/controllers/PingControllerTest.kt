@@ -12,7 +12,8 @@ import org.springframework.http.ResponseEntity
 class PingControllerTest {
 
     @InjectMocks
-    lateinit var pingController: PingController
+    //lateinit var pingController: PingController
+    lateinit var pingController: InternalController
 
     @Test
     fun checkForPingIsOK() {
