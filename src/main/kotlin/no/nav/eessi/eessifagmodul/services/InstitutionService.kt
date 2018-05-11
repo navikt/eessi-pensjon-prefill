@@ -33,15 +33,32 @@ class InstitutionService {
     }
 
     fun getInstitutionByID(id : String) : ResponseEntity<Institusjon> {
-        val response = rest.getRest().exchange(rest.createGet("$path/getInstitution/$id"), rest.typeRef<Institusjon>())
+        val response = rest.restTemplate.exchange(rest.createGet("$path/getInstitution/$id"), rest.typeRef<Institusjon>())
         logger.debug("ResponseEntity : $response")
         return response
     }
 
     fun getAllInstitutions() : ResponseEntity<List<Institusjon>>  {
-        val responseEntity =  rest.getRest().exchange(rest.createGet("$path/getInstitutions"), rest.typeRef<List<Institusjon>>())
+        val responseEntity =  rest.restTemplate.exchange(rest.createGet("$path/getInstitutions"), rest.typeRef<List<Institusjon>>())
         logger.debug("ResponseEntity : $responseEntity")
         return responseEntity
+    }
+
+    fun getInstitutionsByTopic(topic : String?) : ResponseEntity<Institusjon> {
+        logger.debug("Topic : $topic")
+        if (topic.isNullOrBlank()) {
+            logger.error("Topic is null or blank")
+            throw IllegalArgumentException()
+        }
+        logger.error("Topic : $topic")
+        var response : ResponseEntity<Institusjon>? = null
+        try {
+            response = rest.restTemplate.exchange(rest.createGet("$path/getInstitution/bytopic/$topic"), rest.typeRef<Institusjon>())
+        } catch (ex : Exception) {
+           throw IllegalArgumentException("Error : ${ex.message}")
+        }
+        logger.debug("ResponseEntity : $response")
+        return response
     }
 
     @TestOnly

@@ -9,15 +9,17 @@ import org.junit.runner.RunWith
 import org.mockito.InjectMocks
 import org.junit.Assert.*
 import org.mockito.Mock
-import org.mockito.Mockito.*
 import org.mockito.junit.MockitoJUnitRunner
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import kotlin.math.exp
 
 
 @RunWith(MockitoJUnitRunner::class)
 class InstitutionControllerTest {
+
+    private val logger: Logger by lazy { LoggerFactory.getLogger(InstitutionControllerTest::class.java)}
 
     @InjectMocks
     lateinit var institutionController : InstitutionController
@@ -44,8 +46,14 @@ class InstitutionControllerTest {
 
     @Test
     fun testInstitutionsByTopic() {
-        val topic = "TodyTopicIsGreen"
+        val topic = "TopicIsGreen"
+        val expected = Institusjon("SE", topic)
+        val response : ResponseEntity<Institusjon> = ResponseEntity(expected, HttpStatus.OK)
+
+        whenever(mockService.getInstitutionsByTopic(topic)).thenReturn(response)
+
         val result = institutionController.getInstitutionsByTopic(topic)
+
         assertNotNull(result)
         val inst : Institusjon = if (result != null) result else throw NullPointerException("Expression 'result' must not be null")
         assertEquals(topic, inst.navn)
@@ -56,14 +64,14 @@ class InstitutionControllerTest {
     fun testInstitutionsByTopicNullTopic() {
         val topic : String? = null
         val result = institutionController.getInstitutionsByTopic(topic)
-        assertNull(result)
+        assertNotNull(result)
+        val institusjon : Institusjon = result!!
+        assertEquals("ERROR", institusjon.landkode)
+        assertEquals("ERROR: Topic Null or Blank", institusjon.navn)
     }
 
     @Test
     fun testInstitutionsByCountry() {
-        //`when`(mockrestTemp.getForObject (anyString(),eq(type::class.java))).thenReturn(expected)
-        //service.restTemplate = mockrestTemp
-
         val countryID = "FI"
         val result = institutionController.getInstitutionsByCountry(countryID)
         assertNotNull(result)
@@ -73,7 +81,6 @@ class InstitutionControllerTest {
     
     @Test
     fun testAllInstitutions() {
-
         val expected = Lists.newArrayList(Institusjon("SE","Sverige"), Institusjon("DK","Danmark"),Institusjon("FI","Finland"))
 
         val response : ResponseEntity<List<Institusjon>> = ResponseEntity(expected, HttpStatus.OK)
@@ -85,6 +92,6 @@ class InstitutionControllerTest {
         assertEquals(3, res.size)
         assertEquals(Institusjon::class.java, res.get(1)::class.java)
         assertEquals("DK", res.get(1).landkode)
-        res.forEach { println(it ) }
+        res.forEach { logger.debug( it.toString() ) }
     }
 }

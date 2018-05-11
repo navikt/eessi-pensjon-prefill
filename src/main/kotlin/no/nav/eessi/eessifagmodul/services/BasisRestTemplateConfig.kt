@@ -52,8 +52,8 @@ class BasisRestTemplateConfig {
         //templateBuilder, url, BasicAuthorizationInterceptor(userName, passWord)
         rest.url = url
         rest.build = templateBuilder
-        rest.resttmp = templateBuilder.rootUri(url).build()
-        rest.auth = BasicAuthorizationInterceptor(userName, passWord)
+        rest.restTemplate = templateBuilder.rootUri(url).build()
+        rest.authorization = BasicAuthorizationInterceptor(userName, passWord)
         logger.debug("toString " + rest.toString())
         return rest
     }

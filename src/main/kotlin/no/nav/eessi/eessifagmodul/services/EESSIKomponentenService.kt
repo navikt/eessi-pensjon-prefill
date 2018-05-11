@@ -1,11 +1,14 @@
 package no.nav.eessi.eessifagmodul.services
 
+import com.fasterxml.jackson.annotation.JsonView
 import no.nav.eessi.eessifagmodul.models.*
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
+import org.springframework.web.servlet.ModelAndView
 import java.util.*
 
 @Service
@@ -14,7 +17,7 @@ class EESSIKomponentenService : KomponentService {
     private val logger: Logger by lazy { LoggerFactory.getLogger(EESSIKomponentenService::class.java)}
 
     @Autowired
-    lateinit var restTemplate: RestTemplate
+    lateinit var eessiRest : EESSIRest
 
     override fun opprettBucogSEDrequest(data : PENBrukerData) : OpprettBuCogSEDRequest {
         val request = OpprettBuCogSEDRequest(
@@ -41,20 +44,30 @@ class EESSIKomponentenService : KomponentService {
         )
         logger.debug("/===========================================/")
         logger.debug("Request obj opprettt")
-        logger.debug("Request obj: " + request.toString())
+        logger.debug("Request obj: $request ")
         logger.debug("/===========================================/")
-        return request;
+        return request
     }
 
 
     override fun opprettBuCogSEDresponse(request : OpprettBuCogSEDRequest) : OpprettBuCogSEDResponse? {
-        val response = restTemplate.postForObject("/", request, OpprettBuCogSEDResponse::class.java)
+        //val response = restTemplate.postForObject("/", request, OpprettBuCogSEDResponse::class.java)
+        //var requestEntity = rest.createPost("/")
+        //requestEntity.body = request
+        //rest.getRest().
+        //val response = rest.getRest().exchange(rest.createPost("/"), rest.typeRef<OpprettBuCogSEDResponse>())
+
+        val response = eessiRest.getRest().postForEntity("/", request, OpprettBuCogSEDResponse::class.java)
 
         logger.debug("/===========================================/")
         logger.debug("Reponse obj opprettt")
         logger.debug("Reponse obj: $response")
         logger.debug("/===========================================/")
-        return response
+
+        if (response.statusCode != HttpStatus.OK) {
+            return OpprettBuCogSEDResponse(UUID.randomUUID(), "-1", "ERROR")
+        }
+        return response.body
     }
 
     override fun opprettBuCogSED(requestData: PENBrukerData): OpprettBuCogSEDResponse? {
