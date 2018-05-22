@@ -55,7 +55,7 @@ class InstitutionController {
         return Institusjon("ERROR", errMsg)
     }
 
-    @GetMapping("/")
+    @GetMapping("")
     fun getAllInstitutions() : List<Institusjon>  {
         logger.debug("ALL  service : $service")
         val data : ResponseEntity<List<Institusjon>> = service.getAllInstitutions()
@@ -75,6 +75,12 @@ class InstitutionController {
     fun getInstitutionsByCountry(@PathVariable("countryCode") countryCode: String) : Institusjon {
         return Institusjon(countryCode, "Sverige")
     }
+
+    @GetMapping("/noen")
+    fun getInstitutionsNoen(@PathVariable("id") id: Int, @PathVariable("noe") noe: String) : Institusjon {
+        return service.getInstitutionsNoen(id, noe)
+    }
+
 
     @TestOnly
     @GetMapping("/test/")

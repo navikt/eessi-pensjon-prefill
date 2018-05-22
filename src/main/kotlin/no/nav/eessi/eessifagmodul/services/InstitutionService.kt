@@ -2,6 +2,7 @@ package no.nav.eessi.eessifagmodul.services
 
 import com.google.common.collect.Lists
 import io.swagger.models.auth.In
+import no.nav.eessi.eessifagmodul.domian.RequestException
 import no.nav.eessi.eessifagmodul.models.Institusjon
 import org.jetbrains.annotations.TestOnly
 import org.slf4j.Logger
@@ -9,10 +10,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.core.ParameterizedTypeReference
-import org.springframework.http.HttpMethod
-import org.springframework.http.HttpStatus
-import org.springframework.http.RequestEntity
-import org.springframework.http.ResponseEntity
+import org.springframework.http.*
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
 import java.net.URI
@@ -60,6 +58,25 @@ class InstitutionService {
         logger.debug("ResponseEntity : $response")
         return response
     }
+
+    fun getInstitutionsNoen(id : Int, noe : String) : Institusjon {
+        if (id < 0 && noe.isNullOrEmpty()) {
+            throw IllegalArgumentException("Feil med Response argumenter")
+        }
+        try {
+            val response = rest.restTemplate.exchange(rest.createGet("$path/getnoe/$id|$noe"), rest.typeRef<Institusjon>())
+
+            if (HttpStatus.OK == response.statusCode) {
+                return response.body!!
+            } else {
+                throw RequestException("Error $this::class.java Noe feil i response")
+            }
+
+        } catch(ex : Exception) {
+            throw RequestException("Error $this::class.java Noe feil")
+        }
+    }
+
 
     @TestOnly
     fun getTestAllInstitutions() : ResponseEntity<List<Institusjon>>  {
