@@ -3,8 +3,7 @@ package no.nav.eessi.eessifagmodul.controllers
 import io.prometheus.client.CollectorRegistry
 import io.prometheus.client.exporter.common.TextFormat
 import io.prometheus.client.hotspot.DefaultExports
-import no.nav.eessi.eessifagmodul.services.AktoerIdClient
-import no.nav.eessi.eessifagmodul.services.EESSIKomponentenService
+import no.nav.eessi.eessifagmodul.jaxws.client.AktoerIdClient
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired

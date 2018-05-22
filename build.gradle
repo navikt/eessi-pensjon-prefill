@@ -2,12 +2,14 @@ buildscript {
     ext {
         kotlinVersion = '1.2.40'
         springBootVersion = '2.0.0.RELEASE'
+        springSecurityVersion = '5.0.5.RELEASE'
         prometheusVersion = '0.2.0'
         springfoxVersion = '2.8.0'
         jacksonModuleKotlinVersion = '2.9.4'
         cxfVersion = '3.2.1'
         aktoerIdVersion = '2.0.1'
         mockitoVersion = '2.8.+'
+        fregSecurityVersion = '2.1.0'
     }
     repositories {
         maven {
@@ -60,11 +62,13 @@ dependencies {
 
     // Spring-boot
     compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
+    compile("org.springframework.boot:spring-boot-starter-security:${springBootVersion}")
     compile("org.springframework.boot:spring-boot-devtools:${springBootVersion}")
-    compile("org.apache.cxf:cxf-spring-boot-starter-jaxws:3.2.1")
-    compile("org.apache.cxf:cxf-rt-ws-security:${cxfVersion}")
     testCompile("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
 
+    // Apache CXF
+    compile("org.apache.cxf:cxf-spring-boot-starter-jaxws:3.2.1")
+    compile("org.apache.cxf:cxf-rt-ws-security:${cxfVersion}")
 
     // Kotlin
     compile("com.fasterxml.jackson.module:jackson-module-kotlin:${jacksonModuleKotlinVersion}")
@@ -80,6 +84,11 @@ dependencies {
 
     // Tjenestespesifikasjoner
     compile("no.nav.tjenester.fim:nav-fim-aktoer-v2-tjenestespesifikasjon:${aktoerIdVersion}:jaxws")
+
+    // OIDC-support
+    compile("no.nav.freg:freg-security-oidc:${fregSecurityVersion}")
+    testCompile("io.jsonwebtoken:jjwt:0.9.0")
+    testCompile "com.github.tomakehurst:wiremock-standalone:2.17.0"
 }
 
 repositories {

@@ -1,5 +1,7 @@
-package no.nav.eessi.eessifagmodul.services
+package no.nav.eessi.eessifagmodul.jaxws.client
 
+import no.nav.eessi.eessifagmodul.jaxws.sts.configureRequestSamlToken
+import no.nav.eessi.eessifagmodul.jaxws.sts.configureRequestSamlTokenOnBehalfOfOidc
 import no.nav.tjeneste.virksomhet.aktoer.v2.binding.AktoerV2
 import no.nav.tjeneste.virksomhet.aktoer.v2.meldinger.*
 import org.springframework.beans.factory.annotation.Autowired
@@ -12,10 +14,15 @@ class AktoerIdClient {
     lateinit var service: AktoerV2
 
     fun ping() {
+        // UNT->SAML: Bruker servicebruker i kall til STS for å hente SAML
+        configureRequestSamlToken(service)
         service.ping()
     }
 
-    fun hentAktoerIdForIdent(ident: String): HentAktoerIdForIdentResponse? {
+    fun hentAktoerIdForIdent(ident: String, oidcToken: String): HentAktoerIdForIdentResponse? {
+        // OIDC->SAML: Bruker oidctoken fra konsument sin request i kall til STS for å hente SAML
+        configureRequestSamlTokenOnBehalfOfOidc(service, oidcToken)
+
         val request = HentAktoerIdForIdentRequest()
         request.ident = ident
         return service.hentAktoerIdForIdent(request)
