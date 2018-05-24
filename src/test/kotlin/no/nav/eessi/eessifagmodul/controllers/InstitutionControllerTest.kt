@@ -29,8 +29,6 @@ class InstitutionControllerTest {
 
     @Test
     fun testInstitutionsById() {
-        //`when`(mockService.getInstitutionByID("DK")).thenReturn(response)
-        //institutionController.service = mockService
 
         val expected = Institusjon("SE", "Sverige")
         val response : ResponseEntity<Institusjon> = ResponseEntity(expected, HttpStatus.OK)

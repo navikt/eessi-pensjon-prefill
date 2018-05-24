@@ -105,15 +105,4 @@ class KomponentController {
         return bucs
     }
 
-
-//    @PostMapping("/postres")
-//    fun opprettBuCogSEDResponse(@RequestBody body: OpprettBuCogSEDResponse) {
-//        print(body)
-//    }
-//
-//    @PostMapping("/postreq")
-//    fun opprettBuCogSEDRequest(@RequestBody body: OpprettBuCogSEDRequest) {
-//       println(body)
-//    }
-
 }

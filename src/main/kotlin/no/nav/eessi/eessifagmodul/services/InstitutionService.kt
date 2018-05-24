@@ -49,14 +49,15 @@ class InstitutionService {
             throw IllegalArgumentException()
         }
         logger.error("Topic : $topic")
-        var response : ResponseEntity<Institusjon>? = null
+
+        //var response : ResponseEntity<Institusjon>? = null
         try {
-            response = rest.restTemplate.exchange(rest.createGet("$path/getInstitution/bytopic/$topic"), rest.typeRef<Institusjon>())
+            val response = rest.restTemplate.exchange(rest.createGet("$path/getInstitution/bytopic/$topic"), rest.typeRef<Institusjon>())
+            logger.debug("ResponseEntity : $response")
+            return response
         } catch (ex : Exception) {
            throw IllegalArgumentException("Error : ${ex.message}")
         }
-        logger.debug("ResponseEntity : $response")
-        return response
     }
 
     fun getInstitutionsNoen(id : Int, noe : String) : Institusjon {

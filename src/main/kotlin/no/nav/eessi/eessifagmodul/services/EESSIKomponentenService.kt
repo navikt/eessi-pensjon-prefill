@@ -19,6 +19,7 @@ class EESSIKomponentenService : KomponentService {
     @Autowired
     lateinit var eessiRest : EESSIRest
 
+
     override fun opprettBucogSEDrequest(data : PENBrukerData) : OpprettBuCogSEDRequest {
         val request = OpprettBuCogSEDRequest(
                 KorrelasjonsID = UUID.randomUUID(),

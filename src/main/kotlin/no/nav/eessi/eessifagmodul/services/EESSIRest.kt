@@ -1,5 +1,6 @@
 package no.nav.eessi.eessifagmodul.services
 
+import org.apache.cxf.endpoint.Client
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.boot.web.client.RestTemplateBuilder
@@ -9,10 +10,15 @@ import org.springframework.http.RequestEntity
 import org.springframework.web.client.RestTemplate
 import org.springframework.http.client.support.BasicAuthorizationInterceptor
 import org.springframework.web.util.UriTemplate
+import org.springframework.http.client.ClientHttpRequestFactory
+import org.springframework.http.client.SimpleClientHttpRequestFactory
+
 
 class EESSIRest {
 
     val logger: Logger by lazy { LoggerFactory.getLogger(EESSIRest::class.java)}
+
+    val timeout : Int = 100000
 
     lateinit var build : RestTemplateBuilder
     lateinit var url : String
@@ -59,11 +65,26 @@ class EESSIRest {
 //    fun <T: Any> get(path : String, tref : Any) : ResponseEntity<Any> {
 //        return getRest().exchange(createGet(path), typeRef<tref>())
 //    }
-
-
 //    fun <T : RequestEntity<T>> prefixer(data : OpprettBuCogSEDRequest) : (OpprettBuCogSEDRequest, RequestEntity<T>) -> T {
 //    }
 
+     fun getTimedRest(rest: RestTemplate) : RestTemplate?  {
+         val simpleFactory : ClientHttpRequestFactory = rest.requestFactory
+
+         if (simpleFactory is SimpleClientHttpRequestFactory) {
+             simpleFactory.setReadTimeout(timeout)
+             simpleFactory.setConnectTimeout(timeout)
+         }
+
+        return rest
+    }
+
+    fun getSimpleFactory(fac : ClientHttpRequestFactory) :SimpleClientHttpRequestFactory? {
+        if (fac is SimpleClientHttpRequestFactory) {
+            return fac
+        }
+        return null
+    }
 
 //    override fun toString(): String {
 //        println("URL :  $url")

@@ -23,6 +23,7 @@ class BUCController {
     @GetMapping("/byid/{bucid}")
     fun hentBuC(@PathVariable("bucid") bucid : String) : BUC {
         return service.hentEnkelBuc(bucid)
+
     }
 
     @RequestMapping("/bydata/{penbrukerData}")
@@ -32,7 +33,7 @@ class BUCController {
 
     @TestOnly
     @GetMapping("/test/byid/{id}")
-    fun hentTestBuCById(@PathVariable("bucid") bucid : String) : BUC {
+    fun hentTestBuCById(@PathVariable("id") bucid : String) : BUC {
         return service.hentTestEnkelBuc(bucid)
     }
 
