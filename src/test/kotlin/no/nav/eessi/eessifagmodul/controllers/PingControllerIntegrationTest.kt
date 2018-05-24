@@ -9,12 +9,14 @@ import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.junit4.SpringRunner
 import kotlin.test.assertEquals
 
 @RunWith(SpringRunner::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("test")
+@ActiveProfiles("develop")
+@TestPropertySource(properties = ["freg.security.oidc.enabled=false"])
 class PingControllerIntegrationTest {
 
     @Autowired
@@ -22,11 +24,10 @@ class PingControllerIntegrationTest {
 
     @Test
     fun testLocalPing() {
-        val result = testRestTemplate.getForEntity("/internal/ping/", String::class.java)
+        val result = testRestTemplate.getForEntity("/ping/", String::class.java)
         Assert.assertNotNull(result)
         Assert.assertEquals(ResponseEntity::class.java, result.javaClass)
         Assert.assertNull(result.body)
         assertEquals(HttpStatus.OK, result.statusCode)
     }
-
 }

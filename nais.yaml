@@ -1,5 +1,6 @@
 name: eessi-fagmodul
 image: docker.adeo.no:5000/eessi-fagmodul
+team: eessi-pensjon
 replicas:
     min: 1
     max: 2
@@ -11,17 +12,19 @@ port: 8080
 healthcheck:
     liveness:
       initialDelay: 60
+      failureThreshold: 10
       path: /internal/isalive
     readiness:
       initialDelay: 60
+      failureThreshold: 10
       path: /internal/isready
 resources:
     limits:
-      cpu: 500m
-      memory: 1024Mi
+      cpu: 1
+      memory: 2048Mi
     requests:
       cpu: 100m
-      memory: 256Mi
+      memory: 512Mi
 fasitResources:
   used:
   - alias: Aktoer_v2
@@ -31,6 +34,12 @@ fasitResources:
     propertyMap:
       username: credentials.srvpensjon.username
       password: credentials.srvpensjon.password
+  - alias: OpenIdConnect
+    resourceType: baseurl
+    propertyMap:
+      url: freg.security.oidc.openam.url
+  - alias: securityTokenService
+    resourceType: baseurl
   exposed:
   - alias: eessifagmodulservice
     resourceType: restservice
