@@ -47,8 +47,8 @@ class InstitutionControllerIntegrationTest {
         headers.add(HttpHeaders.AUTHORIZATION, "Bearer: eyAidHlwIjogIkpXVCIsICJraWQiOiAiU0gxSWVSU2sxT1VGSDNzd1orRXVVcTE5VHZRPSIsICJhbGciOiAiUlMyNTYiIH0.eyAiYXRfaGFzaCI6ICJodTRHNDc2QTVYUHZwelhHaTFtT0dRIiwgInN1YiI6ICJzcnZQZW5zam9uIiwgImF1ZGl0VHJhY2tpbmdJZCI6ICJjNGZmZGFkNC1iZThiLTQzY2MtOWE0OS03MmE0MmY2ZTk0ZjgtNjgwMTgiLCAiaXNzIjogImh0dHBzOi8vaXNzby10LmFkZW8ubm86NDQzL2lzc28vb2F1dGgyIiwgInRva2VuTmFtZSI6ICJpZF90b2tlbiIsICJhdWQiOiAiZnJlZy10b2tlbi1wcm92aWRlci10MCIsICJjX2hhc2giOiAiNG1aQ0ZHQmRjcnNHT2pDTkZGanBjUSIsICJvcmcuZm9yZ2Vyb2NrLm9wZW5pZGNvbm5lY3Qub3BzIjogImQxYTNjOWZjLTEyNWYtNDk3MC1hNzNhLTdlYzA1YjVhNzJmZCIsICJhenAiOiAiZnJlZy10b2tlbi1wcm92aWRlci10MCIsICJhdXRoX3RpbWUiOiAxNTI2OTc5OTcyLCAicmVhbG0iOiAiLyIsICJleHAiOiAxNTI2OTgzNTcyLCAidG9rZW5UeXBlIjogIkpXVFRva2VuIiwgImlhdCI6IDE1MjY5Nzk5NzIgfQ.NAnTrTGoC1ZpS_oQQ05x_hJofS9b35RSOPMDUdf5SK2NNlyDqVViAkYVq9OddhwpJmZpx-S1WyhTc-LOJnX7kxAkzjvWlvSbTsZkhbypHW2g101VPuxkmUBw3ggC_jmAGS8F_TmhU0q2JxK_aQIlpGSaEhhQwOD9eZIMGyKkmM5UgadwNbYUQx_4wsFgJjDHYJ4vYvMgRRu1qb0-m-ey-rx2PiZJ9slyA5a-lEZCcDiBxscozuOBNnVRFln1KG7xKxKVxmcsVtvSKqNri7GOcSYfxqGFCRgey0spaWLOkub8MN35nKXfNAiDs0B0hcfVMvjnJGDrGUOuEolkbyGfIg")
 
         val expected = Institusjon("SE", "Sverige")
-        val mockService: InstitutionService = mock(InstitutionService::class.java)
-        `when`(mockService.getInstitutionByID("2")).thenReturn(expected)
+        val response : ResponseEntity<Institusjon> = ResponseEntity<Institusjon>(expected, HttpStatus.OK)
+        whenever(mockService.getInstitutionByID("2")).thenReturn(response)
         institutionController.service = mockService
 
         val result = testRestTemplate.exchange("$path/byid/2", HttpMethod.GET, HttpEntity<Any>(headers), Institusjon::class.java)
