@@ -24,7 +24,7 @@ import kotlin.test.assertNotNull
 
 @SpringBootTest
 @RunWith(SpringJUnit4ClassRunner::class)
-@ActiveProfiles("test")
+@ActiveProfiles("develop")
 class InstitutionServiceTest {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(InstitutionServiceTest::class.java)}

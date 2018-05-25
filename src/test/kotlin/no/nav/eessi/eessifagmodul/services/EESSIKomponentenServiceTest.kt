@@ -25,9 +25,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner
 import kotlin.test.assertEquals
 
 @SpringBootTest
-//@RunWith(MockitoJUnitRunner::class)
 @RunWith(SpringJUnit4ClassRunner::class)
-@ActiveProfiles("test")
+@ActiveProfiles("develop")
 class EESSIKomponentenServiceTest {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(EESSIKomponentenServiceTest::class.java)}
