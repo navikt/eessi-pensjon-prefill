@@ -41,5 +41,5 @@ data class PENBrukerData(
         val saksnummer: String,
         val saksbehandler: String,
         val forsikretPerson: String,
-        val dato : Instant = Instant.now()
+        val dato: Instant = Instant.now()
 )

@@ -8,7 +8,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.InjectMocks
 import org.mockito.Mock
-import org.mockito.Mockito.*
+import org.mockito.Mockito.eq
 import org.mockito.MockitoAnnotations
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -17,26 +17,26 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner
+import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.web.client.RestTemplate
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
 @SpringBootTest
-@RunWith(SpringJUnit4ClassRunner::class)
+@RunWith(SpringRunner::class)
 @ActiveProfiles("develop")
 class InstitutionServiceTest {
 
-    private val logger: Logger by lazy { LoggerFactory.getLogger(InstitutionServiceTest::class.java)}
+    private val logger: Logger by lazy { LoggerFactory.getLogger(InstitutionServiceTest::class.java) }
 
     @InjectMocks
-    lateinit var service : InstitutionService
+    lateinit var service: InstitutionService
 
     @Autowired
-    lateinit var eessiRest : EESSIRest
+    lateinit var eessiRest: EESSIRest
 
     @Mock
-    lateinit var mockrestTemp : RestTemplate
+    lateinit var mockrestTemp: RestTemplate
 
     @Before
     fun setup() {
@@ -45,7 +45,7 @@ class InstitutionServiceTest {
     }
 
     @Test
-    fun testOnGettingInstitutionByID()  {
+    fun testOnGettingInstitutionByID() {
         //fake data
         val expected = Institusjon("SE", "Sverige")
         //url path (rooturl + path)
@@ -54,10 +54,10 @@ class InstitutionServiceTest {
         //fake request
         val requestEntity = eessiRest.createGet(testpath)
         //fake response
-        val responeEntity : ResponseEntity<Institusjon> = ResponseEntity(expected, HttpStatus.OK)
+        val responeEntity: ResponseEntity<Institusjon> = ResponseEntity(expected, HttpStatus.OK)
 
         //mock (restTemplate)
-       `when`(mockrestTemp.exchange(eq(requestEntity),eq(eessiRest.typeRef<Institusjon>()))).thenReturn(responeEntity)
+        whenever(mockrestTemp.exchange(eq(requestEntity), eq(eessiRest.typeRef<Institusjon>()))).thenReturn(responeEntity)
 
         //mock tilbake til helperbean
         eessiRest.restTemplate = mockrestTemp
@@ -75,7 +75,7 @@ class InstitutionServiceTest {
         assertEquals(HttpStatus.OK, res.statusCode)
 
         //hente ut object Institusjon
-        val result : Institusjon = res.body!!
+        val result: Institusjon = res.body!!
 
         //testvalidate - assert
         assertEquals(expected, result)
@@ -88,11 +88,11 @@ class InstitutionServiceTest {
     @Test
     fun testAllInstitutionByList() {
         val testpath = "/cpi/getInstitutions"
-        val expected = Lists.newArrayList(Institusjon("SE","Sverige"), Institusjon("DK","Danmark"),Institusjon("FI","Finland"))
-        val responseEntity : ResponseEntity<List<Institusjon>> = ResponseEntity(expected, HttpStatus.OK)
+        val expected = Lists.newArrayList(Institusjon("SE", "Sverige"), Institusjon("DK", "Danmark"), Institusjon("FI", "Finland"))
+        val responseEntity: ResponseEntity<List<Institusjon>> = ResponseEntity(expected, HttpStatus.OK)
         val requestEntity = eessiRest.createGet("/cpi/getInstitutions")
 
-        whenever(mockrestTemp.exchange(eq(requestEntity),eq(eessiRest.typeRef<List<Institusjon>>()))).thenReturn(responseEntity)
+        whenever(mockrestTemp.exchange(eq(requestEntity), eq(eessiRest.typeRef<List<Institusjon>>()))).thenReturn(responseEntity)
 
         //mockrestTemplate settes til aktive i eessiRest
         eessiRest.restTemplate = mockrestTemp
@@ -110,7 +110,7 @@ class InstitutionServiceTest {
         assertNotNull(response)
         assertEquals(HttpStatus.OK, response.statusCode)
 
-        val result : List<Institusjon> = response.body!!
+        val result: List<Institusjon> = response.body!!
 
         //testvalidate
         assertEquals(expected, result)
@@ -130,10 +130,10 @@ class InstitutionServiceTest {
         //fake request
         val requestEntity = eessiRest.createGet(testpath)
         //fake response
-        val responeEntity : ResponseEntity<Institusjon> = ResponseEntity(expected, HttpStatus.OK)
+        val responeEntity: ResponseEntity<Institusjon> = ResponseEntity(expected, HttpStatus.OK)
 
         //mock (restTemplate)
-        whenever(mockrestTemp.exchange(eq(requestEntity),eq(eessiRest.typeRef<Institusjon>()))).thenReturn(responeEntity)
+        whenever(mockrestTemp.exchange(eq(requestEntity), eq(eessiRest.typeRef<Institusjon>()))).thenReturn(responeEntity)
 
         //mock tilbake til helperbean
         eessiRest.restTemplate = mockrestTemp
@@ -151,7 +151,7 @@ class InstitutionServiceTest {
         assertEquals(HttpStatus.OK, res.statusCode)
 
         //hente ut object Institusjon
-        val result : Institusjon = res.body!!
+        val result: Institusjon = res.body!!
         //testvalidate - assert
         assertEquals(expected, result)
         assertEquals(expected::class.java, result::class.java)
@@ -160,17 +160,16 @@ class InstitutionServiceTest {
         assertEquals("Finland", result.navn)
     }
 
-    @Test(expected = IllegalArgumentException::class )
+    @Test(expected = IllegalArgumentException::class)
     fun testInstitusjonByTopicBlank() {
         //prøver å kjøre selve funksjonen (hente fra 'basis')
-         service.getInstitutionsByTopic("")
+        service.getInstitutionsByTopic("")
     }
 
-    @Test(expected = IllegalArgumentException::class )
+    @Test(expected = IllegalArgumentException::class)
     fun testInstitusjonByTopicNull() {
         //prøver å kjøre selve funksjonen (hente fra 'basis')
-        val none : String? = null
-        service.getInstitutionsByTopic(none)
+        service.getInstitutionsByTopic(null)
     }
 
 }

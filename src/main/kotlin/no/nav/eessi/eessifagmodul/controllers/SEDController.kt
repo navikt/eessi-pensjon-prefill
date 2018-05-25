@@ -23,7 +23,7 @@ class SEDController {
     @GetMapping("/createmsak/{fnr}/{saksnr}")
     fun opprettSEDmedSak(@PathVariable fnr: String, @PathVariable saksnr: String) : SED {
         println("FNR = $fnr     SAKSNR = $saksnr")
-        if (fnr.isNullOrEmpty() || saksnr.isNullOrEmpty()) {
+        if (fnr.isEmpty() || saksnr.isEmpty()) {
             throw RequestException("Feil ved parametere")
         }
         val sed = sedService.opprettSEDmedSak(fnr, saksnr)
@@ -34,7 +34,7 @@ class SEDController {
     @GetMapping("/create/{fnr}")
     fun opprettSED(@PathVariable fnr: String) : SED {
         println("FNR = $fnr")
-        if (fnr.isNullOrEmpty()) {
+        if (fnr.isEmpty()) {
             throw RequestException("Feil ved parametere")
         }
         val sed = sedService.opprettSED(fnr)

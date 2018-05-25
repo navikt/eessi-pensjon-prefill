@@ -46,12 +46,6 @@ class InternalController {
         DefaultExports.initialize()
     }
 
-//    @GetMapping("/ping")
-//    fun getPing(): ResponseEntity<String> {
-//        return ResponseEntity.ok("")
-//    }
-
-
     @GetMapping("/selftest")
     fun selftest(): SelftestResult {
         aktoerIdClient.ping()

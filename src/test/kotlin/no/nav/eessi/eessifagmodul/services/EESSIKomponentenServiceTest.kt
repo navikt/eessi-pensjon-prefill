@@ -6,13 +6,11 @@ import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.ArgumentMatchers.anyString
 import org.mockito.InjectMocks
 import org.mockito.Mock
-import org.mockito.Mockito.*
-import org.mockito.junit.MockitoJUnitRunner
-import org.springframework.web.client.RestTemplate
-import java.util.*
-import org.mockito.ArgumentMatchers.anyString
+import org.mockito.Mockito.any
+import org.mockito.Mockito.eq
 import org.mockito.MockitoAnnotations
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -22,6 +20,8 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner
+import org.springframework.web.client.RestTemplate
+import java.util.*
 import kotlin.test.assertEquals
 
 @SpringBootTest
@@ -31,13 +31,6 @@ class EESSIKomponentenServiceTest {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(EESSIKomponentenServiceTest::class.java)}
 
-//    @Bean
-//    fun restTemplageMock(templateBuilder: RestTemplateBuilder): RestTemplate {
-//        println("Mock template")
-//        println("Mock template")
-//        println("Mock template")
-//        return templateBuilder.rootUri("http://localhost:8080/").build()
-//    }
     @Autowired
     lateinit var eessiRest : EESSIRest
 
@@ -55,8 +48,6 @@ class EESSIKomponentenServiceTest {
 
     @Test
     fun testRequestAndResponse() {
-        //val resentity = ResponseEntity<OpprettBuCogSEDResponse>(response, HttpStatus.OK)
-        //val request = rest.createPost("/")
 
         //requestData
         val data = PENBrukerData("12345678", "DummyTester", "12345678")
@@ -64,7 +55,7 @@ class EESSIKomponentenServiceTest {
 
         //mock response
         val response = OpprettBuCogSEDResponse(uuid, "RINA-12345678", "Statusen er nå")
-        val responseEntity = ResponseEntity<OpprettBuCogSEDResponse>(response, HttpStatus.OK)
+        val responseEntity = ResponseEntity(response, HttpStatus.OK)
 
         //mock requestTemplate
         whenever(mockrestTemp.postForEntity(anyString(), any() , eq(response::class.java))).thenReturn(responseEntity)

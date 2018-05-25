@@ -10,16 +10,14 @@ import javax.servlet.http.HttpServletResponse
 class ControllerExceptionHandler {
 
     @ExceptionHandler(RuntimeException::class)
-    fun handleBadRequest(ex : Throwable, response: HttpServletResponse) {
+    fun handleBadRequest(ex: Throwable, response: HttpServletResponse) {
         print("ControllerExceptionHandler handleBadRequest : $ex")
         response.sendError(HttpStatus.BAD_REQUEST.value(), ex.message)
     }
 
     @ExceptionHandler(RequestException::class)
-    fun serverBadRequest(ex : Throwable, response: HttpServletResponse) {
+    fun serverBadRequest(ex: Throwable, response: HttpServletResponse) {
         print("ControllerExceptionHandler serverBadRequest : $ex")
         response.sendError(HttpStatus.UNAUTHORIZED.value(), ex.message)
     }
-
-
 }

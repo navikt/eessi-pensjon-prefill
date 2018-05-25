@@ -1,8 +1,6 @@
 package no.nav.eessi.eessifagmodul.controllers
 
-import com.google.common.collect.Lists
 import no.nav.eessi.eessifagmodul.models.Institusjon
-import no.nav.eessi.eessifagmodul.services.EESSIKomponentenService
 import no.nav.eessi.eessifagmodul.services.InstitutionService
 import org.jetbrains.annotations.TestOnly
 import org.slf4j.Logger
@@ -37,7 +35,7 @@ class InstitutionController {
             logger.error("ERROR: Topic Null or Blank")
             return getErrorInstitusjon("ERROR: Topic Null or Blank")
         }
-        var response: ResponseEntity<Institusjon>?
+        val response: ResponseEntity<Institusjon>?
         try {
             response = service.getInstitutionsByTopic(topic)
             logger.debug("Response : $response")
@@ -45,7 +43,7 @@ class InstitutionController {
             logger.error("Error : ${ext.message}")
             return getErrorInstitusjon("ERROR : ${ext.message}")
         }
-        if (response.statusCode != HttpStatus.OK) {
+        if (response.statusCode.isError) {
             return getErrorInstitusjon("ERROR : ${response.statusCode}")
         }
         return response.body

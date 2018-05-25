@@ -13,33 +13,32 @@ import org.springframework.web.bind.annotation.*
 class BUCController {
 
     @Autowired
-    lateinit var service : BuCKomponentService
+    lateinit var service: BuCKomponentService
 
     @GetMapping("/")
-    fun hentAlleBuC() : List<BUC> {
+    fun hentAlleBuC(): List<BUC> {
         return service.hentAlleBuc()
     }
 
     @GetMapping("/byid/{bucid}")
-    fun hentBuC(@PathVariable("bucid") bucid : String) : BUC {
+    fun hentBuC(@PathVariable("bucid") bucid: String): BUC {
         return service.hentEnkelBuc(bucid)
-
     }
 
     @RequestMapping("/bydata/{penbrukerData}")
-    fun opprettBuCogSED(@PathVariable("penbrukerData") penbrukerData : PENBrukerData) : BUC {
+    fun opprettBuCogSED(@PathVariable("penbrukerData") penbrukerData: PENBrukerData): BUC {
         return service.hentEnkelBuc(penbrukerData)
     }
 
     @TestOnly
     @GetMapping("/test/byid/{id}")
-    fun hentTestBuCById(@PathVariable("id") bucid : String) : BUC {
+    fun hentTestBuCById(@PathVariable("id") bucid: String): BUC {
         return service.hentTestEnkelBuc(bucid)
     }
 
     @TestOnly
     @GetMapping("/test/all")
-    fun hentTestAlleBuc() : List<BUC> {
+    fun hentTestAlleBuc(): List<BUC> {
         return service.hentTestAlleBuc()
     }
 

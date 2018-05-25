@@ -24,13 +24,12 @@ class BasisRestTemplateConfig {
     lateinit var passWord: String
 
     @Bean
-   fun byggTemplate(templateBuilder: RestTemplateBuilder): RestTemplate {
+    fun byggTemplate(templateBuilder: RestTemplateBuilder): RestTemplate {
         logger.debug("========================================\n")
         logger.debug("BasisRestTemplateConfig - byggTemplate URL : $url  ")
         logger.debug("")
         logger.debug("========================================\n")
-        val restTemplate : RestTemplate = templateBuilder.rootUri(url).build()
-        return restTemplate
+        return templateBuilder.rootUri(url).build()
     }
 
     @Bean
@@ -39,7 +38,7 @@ class BasisRestTemplateConfig {
         logger.debug("BasisRestTemplateConfig - byggEESSI (EESSIRest) URL : $url  ")
         logger.debug("")
         logger.debug("========================================\n")
-        val rest : EESSIRest = EESSIRest()
+        val rest = EESSIRest()
         rest.url = url
         rest.build = templateBuilder
         rest.restTemplate = templateBuilder.rootUri(url).build()

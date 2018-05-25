@@ -1,17 +1,16 @@
 package no.nav.eessi.eessifagmodul.services
 
-import org.apache.cxf.endpoint.Client
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.boot.web.client.RestTemplateBuilder
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpMethod
 import org.springframework.http.RequestEntity
-import org.springframework.web.client.RestTemplate
-import org.springframework.http.client.support.BasicAuthorizationInterceptor
-import org.springframework.web.util.UriTemplate
 import org.springframework.http.client.ClientHttpRequestFactory
 import org.springframework.http.client.SimpleClientHttpRequestFactory
+import org.springframework.http.client.support.BasicAuthorizationInterceptor
+import org.springframework.web.client.RestTemplate
+import org.springframework.web.util.UriTemplate
 
 
 class EESSIRest {
