@@ -15,7 +15,7 @@ class OpprettBuCogSEDResponseTest {
         val response = OpprettBuCogSEDResponse(uuid, "RINA-SAK-12345", "Status")
         Assert.assertNotNull(response)
         Assert.assertEquals(uuid, response.korrelasjonsID)
-        Assert.assertEquals("RINA-SAK-12345", response.rinaSaksnummer)
+        Assert.assertEquals("RINA-SAK-12345", response.rinasaksnummer)
         Assert.assertEquals("Status", response.status)
     }
 

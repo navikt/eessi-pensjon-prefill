@@ -29,17 +29,22 @@ class BasisRestTemplateConfig {
         logger.debug("BasisRestTemplateConfig - byggTemplate URL : $url  ")
         logger.debug("")
         logger.debug("========================================\n")
-        val restTemplate : RestTemplate = templateBuilder.rootUri(url).build()
-
-        if (!("" == userName || "" == passWord)) {
-            logger.debug("========================================")
-            logger.debug("BasicAuth add")
-            restTemplate.interceptors.add(BasicAuthorizationInterceptor(userName, passWord))
-            logger.debug("Add BasicAith userName: $userName  passWord:*********")
-            logger.debug("========================================")
-        }
-        return restTemplate
+        return templateBuilder.rootUri(url).build()
     }
 
+    @Bean
+    fun byggEESSI(templateBuilder: RestTemplateBuilder): EESSIRest {
+        logger.debug("========================================\n")
+        logger.debug("BasisRestTemplateConfig - byggEESSI (EESSIRest) URL : $url  ")
+        logger.debug("")
+        logger.debug("========================================\n")
+        val rest = EESSIRest()
+        rest.url = url
+        rest.build = templateBuilder
+        rest.restTemplate = templateBuilder.rootUri(url).build()
+        rest.authorization = BasicAuthorizationInterceptor(userName, passWord)
+        logger.debug("toString " + rest.toString())
+        return rest
+    }
 
 }
