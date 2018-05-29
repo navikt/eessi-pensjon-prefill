@@ -1,0 +1,28 @@
+eessibasis:
+  url: http://localhost:8089
+  username: srvPensjon
+  password: Ash5SoxP
+
+aktoer.v2:
+  endpointurl: https://app-t8.adeo.no/aktoerid/AktoerService/v2
+
+credentials:
+  srvpensjon:
+    username: srvPensjon
+    password: Ash5SoxP
+
+app:
+  name: DEVELOP
+  version: 0.1
+
+freg:
+  security:
+    oidc:
+      enabled: true
+      openam.url: https://isso-t.adeo.no:443/isso
+      ignored-paths: /internal/**,/actuator/**
+      secured-path: /api
+
+
+securitytokenservice:
+  url: https://sts-t8.test.local/SecurityTokenServiceProvider/
