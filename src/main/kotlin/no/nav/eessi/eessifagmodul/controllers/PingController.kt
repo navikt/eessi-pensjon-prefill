@@ -23,4 +23,3 @@ class PingController {
         return aktoerIdClient.hentAktoerIdForIdent(ident, authorizationHeader.replace("Bearer ", ""))?.aktoerId
     }
 }
-
