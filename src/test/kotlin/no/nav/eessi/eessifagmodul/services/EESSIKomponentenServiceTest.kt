@@ -18,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner
 import org.springframework.web.client.RestTemplate
 import java.util.*
@@ -26,7 +25,6 @@ import kotlin.test.assertEquals
 
 @SpringBootTest
 @RunWith(SpringJUnit4ClassRunner::class)
-@ActiveProfiles("develop")
 class EESSIKomponentenServiceTest {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(EESSIKomponentenServiceTest::class.java)}
