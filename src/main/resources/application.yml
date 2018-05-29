@@ -2,3 +2,8 @@ spring:
   http:
     encoding:
       charset: utf-8
+
+eessibasis:
+  url: https://eux-app.nais.preprod.local
+  username: todo
+  password: todo
