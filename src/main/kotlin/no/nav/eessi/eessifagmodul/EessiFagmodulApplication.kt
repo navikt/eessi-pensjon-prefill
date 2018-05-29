@@ -1,6 +1,5 @@
 package no.nav.eessi.eessifagmodul
 
-import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 
@@ -9,7 +8,7 @@ class EessiFagmodulApplication
 
 /**
  * under development (Intellij) må hva med under Vm option:
- * -Dspring.profiles.active=develop
+ * -Dspring.profiles.active=local
  *
  */
 fun main(args: Array<String>) {
