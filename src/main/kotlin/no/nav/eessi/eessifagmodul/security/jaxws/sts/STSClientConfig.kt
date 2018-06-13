@@ -1,13 +1,13 @@
-package no.nav.eessi.eessifagmodul.jaxws.sts
+package no.nav.eessi.eessifagmodul.security.jaxws.sts
 
 /**
  * Documentation at https://confluence.adeo.no/display/KES/STS+-+Brukerdokumentasjon
  * Example implementation at http://stash.devillo.no/projects/KES/repos/eksempelapp-token/browse
  */
 
-import no.nav.eessi.eessifagmodul.jaxws.client.OnBehalfOfOutInteceptor
-import no.nav.eessi.eessifagmodul.jaxws.client.REQUEST_CONTEXT_ONBEHALFOF_TOKEN
-import no.nav.eessi.eessifagmodul.jaxws.client.REQUEST_CONTEXT_ONBEHALFOF_TOKEN_TYPE
+import no.nav.eessi.eessifagmodul.security.jaxws.client.OnBehalfOfOutInteceptor
+import no.nav.eessi.eessifagmodul.security.jaxws.client.REQUEST_CONTEXT_ONBEHALFOF_TOKEN
+import no.nav.eessi.eessifagmodul.security.jaxws.client.REQUEST_CONTEXT_ONBEHALFOF_TOKEN_TYPE
 import org.apache.cxf.Bus
 import org.apache.cxf.binding.soap.Soap12
 import org.apache.cxf.binding.soap.SoapMessage

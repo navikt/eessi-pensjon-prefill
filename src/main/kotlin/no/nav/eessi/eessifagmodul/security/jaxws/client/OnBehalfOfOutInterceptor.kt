@@ -1,4 +1,4 @@
-package no.nav.eessi.eessifagmodul.jaxws.client
+package no.nav.eessi.eessifagmodul.security.jaxws.client
 
 /**
  * Documentation at https://confluence.adeo.no/display/KES/STS+-+Brukerdokumentasjon

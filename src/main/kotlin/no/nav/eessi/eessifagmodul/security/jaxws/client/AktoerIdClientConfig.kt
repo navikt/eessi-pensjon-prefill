@@ -1,4 +1,4 @@
-package no.nav.eessi.eessifagmodul.jaxws.client
+package no.nav.eessi.eessifagmodul.security.jaxws.client
 
 import no.nav.tjeneste.virksomhet.aktoer.v2.binding.AktoerV2
 import org.apache.cxf.jaxws.JaxWsProxyFactoryBean

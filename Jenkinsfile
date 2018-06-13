@@ -9,6 +9,7 @@ pipeline {
         FASIT_ENV = 't8'
         APPLICATION_NAMESPACE = 't8'
         ZONE = 'fss'
+        openAmContextRoot = '/login/oauth2/code/openam'
     }
 
     stages {
@@ -71,10 +72,10 @@ pipeline {
                     echo "Deploy '${branchName}'?"
                     if (branchName.startsWith('feature')) {
                         echo "\tdeploying to u2"
-                        deploy.naisDeploy(app_name, version, FASIT_ENV, APPLICATION_NAMESPACE, ZONE)
+                        deploy.naisDeploy(app_name, version, FASIT_ENV, APPLICATION_NAMESPACE, ZONE, openAmContextRoot)
                     } else if(branchName == 'master') {
                         echo "\tdeploying to t8"
-                        deploy.naisDeploy(app_name, version, FASIT_ENV, APPLICATION_NAMESPACE, ZONE)
+                        deploy.naisDeploy(app_name, version, FASIT_ENV, APPLICATION_NAMESPACE, ZONE, openAmContextRoot)
                     } else {
                         echo "Skipping deploy"
                     }

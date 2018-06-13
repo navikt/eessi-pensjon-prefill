@@ -1,7 +1,7 @@
-package no.nav.eessi.eessifagmodul.jaxws.client
+package no.nav.eessi.eessifagmodul.security.jaxws.client
 
-import no.nav.eessi.eessifagmodul.jaxws.sts.configureRequestSamlToken
-import no.nav.eessi.eessifagmodul.jaxws.sts.configureRequestSamlTokenOnBehalfOfOidc
+import no.nav.eessi.eessifagmodul.security.jaxws.sts.configureRequestSamlToken
+import no.nav.eessi.eessifagmodul.security.jaxws.sts.configureRequestSamlTokenOnBehalfOfOidc
 import no.nav.tjeneste.virksomhet.aktoer.v2.binding.AktoerV2
 import no.nav.tjeneste.virksomhet.aktoer.v2.meldinger.*
 import org.springframework.beans.factory.annotation.Autowired
