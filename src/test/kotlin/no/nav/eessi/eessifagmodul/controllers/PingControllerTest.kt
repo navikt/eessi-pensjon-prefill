@@ -15,7 +15,7 @@ class PingControllerTest {
 
     @Test
     fun checkForPingIsOK() {
-        val result = pingController.getPing()
+        val result = pingController.ping()
         Assert.assertNotNull(result)
         Assert.assertEquals(200, result.statusCode.value())
     }

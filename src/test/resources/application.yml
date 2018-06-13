@@ -1,10 +1,10 @@
 eessibasis:
-  url: http://localhost:8089
+  url: http://example.com:8089
   username: srvPensjon
   password: Ash5SoxP
 
 aktoer.v2:
-  endpointurl: https://app-t8.adeo.no/aktoerid/AktoerService/v2
+  endpointurl: https://example.com/aktoerid/AktoerService/v2
 
 credentials:
   srvpensjon:
@@ -15,14 +15,24 @@ app:
   name: DEVELOP
   version: 0.1
 
-freg:
-  security:
-    oidc:
-      enabled: true
-      openam.url: https://isso-t.adeo.no:443/isso
-      ignored-paths: /internal/**,/actuator/**
-      secured-path: /api
-
-
 securitytokenservice:
-  url: https://sts-t8.test.local/SecurityTokenServiceProvider/
+  url: https://example.com/SecurityTokenServiceProvider/
+
+security:
+  basic:
+    enabled: false
+
+management:
+  security:
+    enabled: false
+
+oidc:
+   clientId: eessi-fagmodul-test
+   clientSecret: secret
+   redirectUri: /openid_connect_login
+   scope: openid
+   issuerHost: https://example.com/isso/oauth2
+   authorizationUri: ${oidc.issuerHost}/authorize
+   tokenUri: ${oidc.issuerHost}/access_token
+   userInfoUri: ${oidc.issuerHost}/userinfo
+   jwkSetUri: ${oidc.issuerHost}/connect/jwk_uri

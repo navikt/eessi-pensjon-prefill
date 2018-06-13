@@ -1,5 +1,25 @@
+spring:
+  security:
+     oauth2:
+       client:
+         registration:
+           openam:
+             client-id: eessi-fagmodul-localhost
+             client-secret: Test1234
+             authorization-grant-type: authorization_code
+             redirect-uri-template: '{baseUrl}/login/oauth2/code/openam'
+             scope: openid
+             client-name: OpenAM
+             client-alias: openam
+         provider:
+           openam:
+             authorization-uri: https://isso-t.adeo.no:443/isso/oauth2/authorize
+             token-uri: https://isso-t.adeo.no:443/isso/oauth2/access_token
+             user-info-uri: https://isso-t.adeo.no:443/isso/oauth2/userinfo
+             jwk-set-uri: https://isso-t.adeo.no:443/isso/oauth2/connect/jwk_uri
+
 eessibasis:
-  url: http://localhost:8089
+  url: https://eux-app.nais.preprod.local
   username: srvPensjon
   password: Ash5SoxP
 
@@ -14,15 +34,6 @@ credentials:
 app:
   name: DEVELOP
   version: 0.1
-
-freg:
-  security:
-    oidc:
-      enabled: true
-      openam.url: https://isso-t.adeo.no:443/isso
-      ignored-paths: /internal/**,/actuator/**
-      secured-path: /api
-
 
 securitytokenservice:
   url: https://sts-t8.test.local/SecurityTokenServiceProvider/
