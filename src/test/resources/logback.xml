@@ -8,6 +8,9 @@
     </appender>
 
     <logger name="no.nav" level="DEBUG"/>
+    <!-- Request og Response logging fra restTemplate, kan bli litt mye så kan skrues av eller på -->
+    <logger name="no.nav.eessi.eessifagmodul.config.RequestResponseLoggerInterceptor" level="DEBUG"/>
+
 
     <root level="INFO">
         <appender-ref ref="CONSOLE"/>

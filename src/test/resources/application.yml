@@ -12,7 +12,7 @@ credentials:
     password: Ash5SoxP
 
 app:
-  name: DEVELOP
+  name: TEST
   version: 0.1
 
 securitytokenservice:
@@ -25,14 +25,3 @@ security:
 management:
   security:
     enabled: false
-
-oidc:
-   clientId: eessi-fagmodul-test
-   clientSecret: secret
-   redirectUri: /openid_connect_login
-   scope: openid
-   issuerHost: https://example.com/isso/oauth2
-   authorizationUri: ${oidc.issuerHost}/authorize
-   tokenUri: ${oidc.issuerHost}/access_token
-   userInfoUri: ${oidc.issuerHost}/userinfo
-   jwkSetUri: ${oidc.issuerHost}/connect/jwk_uri

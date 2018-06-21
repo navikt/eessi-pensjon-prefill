@@ -22,6 +22,7 @@ spring:
              user-info-uri: ${OPENIDCONNECT_URL}/oauth2/userinfo
              jwk-set-uri: ${OPENIDCONNECT_URL}/oauth2/connect/jwk_uri
 
+
 #oidc:
 #   clientId: ${APP_NAME}-${FASIT_ENVIRONMENT_NAME}
 #   clientSecret: ${OPENIDCONNECTAGENT_PASSWORD}
