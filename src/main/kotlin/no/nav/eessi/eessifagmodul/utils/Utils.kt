@@ -1,7 +1,11 @@
 package no.nav.eessi.eessifagmodul.utils
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.core.type.TypeReference
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import no.nav.eessi.eessifagmodul.models.P6000
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.core.ParameterizedTypeReference
@@ -31,3 +35,28 @@ fun createErrorMessage(responseBody: String?): RestClientException {
     logger.error("ErrorMessage (responseBody) : $responseBody")
     return objectMapper.readValue(responseBody, RestClientException::class.java)
 }
+
+fun mapAnyToJson(data: Any, validate: Boolean = false): String {
+    val json = jacksonObjectMapper()
+            //.setDefaultPropertyInclusion(JsonInclude.Include.NON_EMPTY)
+            .writerWithDefaultPrettyPrinter()
+            .writeValueAsString(data)
+    if (validate)
+        validateJson(json)
+    return json
+}
+
+
+fun validateJson(json: String) : Boolean {
+    try {
+        val objectMapper = ObjectMapper()
+        objectMapper.enable(DeserializationFeature.FAIL_ON_READING_DUP_TREE_KEY)
+        objectMapper.readTree(json)
+        return true
+    } catch (ex: Exception) {
+        println(ex.message)
+    }
+    return false
+}
+
+

@@ -6,7 +6,6 @@ import no.nav.eessi.eessifagmodul.models.*
 import no.nav.eessi.eessifagmodul.services.EuxService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.core.io.ByteArrayResource
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
 import org.springframework.http.RequestEntity
@@ -16,7 +15,6 @@ import org.springframework.security.oauth2.core.oidc.user.OidcUser
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.client.RestTemplate
 import java.net.URI
-import java.time.LocalDate
 import java.util.*
 
 @CrossOrigin
@@ -84,59 +82,60 @@ class ExperimentController {
 }
 
 fun genererMockData(): Pensjon {
-    return Pensjon(
-            kjoeringsdato = LocalDate.now().toString(),
-            sak = Sak(
-                    type = "AP",
-                    artikkel44 = "Artikkel44",
-                    kravtyper = listOf(
-                            Kravtype(datoFirst = LocalDate.now().toString()),
-                            Kravtype(datoFirst = LocalDate.now().toString())
-                    )
-            ),
-            vedtak = Vedtak(
-                    basertPaa = "A",
-                    avslag = Avslag(begrunnelse = "Ikke godkjent opphold", begrunnelseAnnen = "Ingen kake"),
-                    beregninger = listOf(
-                            Beregning(
-                                    artikkel = "Beregning artikkel abcdØåæ",
-                                    virkningsdato = LocalDate.now().toString(),
-                                    periode = Periode(LocalDate.now().toString(), LocalDate.now().toString()),
-                                    beloepNetto = BeloepNetto(beloep = "5432.50"),
-                                    beloepBrutto = BeloepBrutto(beloep = "9542.50", ytelseskomponentGrunnpensjon = "1240.50", ytelseskomponentTilleggspensjon = "3292.20", ytelseskomponentAnnen = "194.50"),
-                                    valuta = "SE",
-                                    utbetalingshyppighet = "1",
-                                    utbetalingshyppighetAnnen = "Annet")
-                            ,
-                            Beregning(
-                                    artikkel = "Beregning artikkel efghÆåø",
-                                    virkningsdato = LocalDate.now().toString(),
-                                    periode = Periode(LocalDate.now().toString(), LocalDate.now().toString()),
-                                    beloepNetto = BeloepNetto(beloep = "3432.50"),
-                                    beloepBrutto = BeloepBrutto(beloep = "9542.50", ytelseskomponentGrunnpensjon = "1240.50", ytelseskomponentTilleggspensjon = "3292.20", ytelseskomponentAnnen = "194.50"),
-                                    valuta = "EU",
-                                    utbetalingshyppighet = "3",
-                                    utbetalingshyppighetAnnen = "Skuddår")
-                    ),
-                    grunnlag = Grunnlag(meldlemskap = "Norge", opptjening = Opptjening(forsikredeAnnen = "Anders And"), framtidigtrygdetid = "Nåtid"),
-                    opphor = Opphor(
-                            verdi = "1000.50",
-                            begrunnelse = "Begrunnelse",
-                            annulleringdato = LocalDate.now().toString(),
-                            dato = LocalDate.now().toString(),
-                            utbetaling = Utbetaling(
-                                    beloepBrutto = "10000",
-                                    valuta = "NOK"
-                            )
-                    ),
-                    reduksjoner = listOf(
-                            Reduksjon(
-                                    type = "1",
-                                    arsak = Arsak(inntekt = "212323.50", inntektAnnen = "23223.50"),
-                                    artikkeltype = "2")
-                    ),
-                    dato = LocalDate.now().toString(),
-                    artikkel48 = "Vedtakk artikkel48"
-            )
-    )
+    return PensjonMock().genererMockData()
+//    return Pensjon(
+//            kjoeringsdato = LocalDate.now().toString(),
+//            sak = Sak(
+//                    type = "AP",
+//                    artikkel44 = "Artikkel44",
+//                    kravtyper = listOf(
+//                            Kravtype(datoFirst = LocalDate.now().toString()),
+//                            Kravtype(datoFirst = LocalDate.now().toString())
+//                    )
+//            ),
+//            vedtak = Vedtak(
+//                    basertPaa = "A",
+//                    avslag = Avslag(begrunnelse = "Ikke godkjent opphold", begrunnelseAnnen = "Ingen kake"),
+//                    beregninger = listOf(
+//                            Beregning(
+//                                    artikkel = "Beregning artikkel abcdØåæ",
+//                                    virkningsdato = LocalDate.now().toString(),
+//                                    periode = Periode(LocalDate.now().toString(), LocalDate.now().toString()),
+//                                    beloepNetto = BeloepNetto(beloep = "5432.50"),
+//                                    beloepBrutto = BeloepBrutto(beloep = "9542.50", ytelseskomponentGrunnpensjon = "1240.50", ytelseskomponentTilleggspensjon = "3292.20", ytelseskomponentAnnen = "194.50"),
+//                                    valuta = "SE",
+//                                    utbetalingshyppighet = "1",
+//                                    utbetalingshyppighetAnnen = "Annet")
+//                            ,
+//                            Beregning(
+//                                    artikkel = "Beregning artikkel efghÆåø",
+//                                    virkningsdato = LocalDate.now().toString(),
+//                                    periode = Periode(LocalDate.now().toString(), LocalDate.now().toString()),
+//                                    beloepNetto = BeloepNetto(beloep = "3432.50"),
+//                                    beloepBrutto = BeloepBrutto(beloep = "9542.50", ytelseskomponentGrunnpensjon = "1240.50", ytelseskomponentTilleggspensjon = "3292.20", ytelseskomponentAnnen = "194.50"),
+//                                    valuta = "EU",
+//                                    utbetalingshyppighet = "3",
+//                                    utbetalingshyppighetAnnen = "Skuddår")
+//                    ),
+//                    grunnlag = Grunnlag(meldlemskap = "Norge", opptjening = Opptjening(forsikredeAnnen = "Anders And"), framtidigtrygdetid = "Nåtid"),
+//                    opphor = Opphor(
+//                            verdi = "1000.50",
+//                            begrunnelse = "Begrunnelse",
+//                            annulleringdato = LocalDate.now().toString(),
+//                            dato = LocalDate.now().toString(),
+//                            utbetaling = Utbetaling(
+//                                    beloepBrutto = "10000",
+//                                    valuta = "NOK"
+//                            )
+//                    ),
+//                    reduksjoner = listOf(
+//                            Reduksjon(
+//                                    type = "1",
+//                                    arsak = Arsak(inntekt = "212323.50", inntektAnnen = "23223.50"),
+//                                    artikkeltype = "2")
+//                    ),
+//                    dato = LocalDate.now().toString(),
+//                    artikkel48 = "Vedtakk artikkel48"
+//            )
+//    )
 }
