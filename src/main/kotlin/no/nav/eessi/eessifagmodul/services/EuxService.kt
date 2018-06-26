@@ -17,6 +17,7 @@ import org.springframework.util.LinkedMultiValueMap
 import org.springframework.util.MultiValueMap
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.client.getForEntity
+import org.springframework.web.util.UriComponentsBuilder
 import java.io.IOException
 
 
@@ -146,10 +147,15 @@ class EuxService(val oidcRestTemplate: RestTemplate) {
      * @param korrelasjonID CorrelationId
      * @return The ID of the created case
      */
-    fun createCaseAndDocument(jsonPayload: String, bucType: String, fagSaknr: String, mottaker: String, vedleggType: String, korrelasjonID: String): String? {
-
+    fun createCaseAndDocument(jsonPayload: String, bucType: String, fagSaknr: String, mottaker: String, vedleggType: String = "", korrelasjonID: String): String? {
         val urlPath = "/OpprettBuCogSED"
-        val data = "?BuCType=$bucType&FagSakNummer=$fagSaknr&MottagerID=$mottaker&Filtype=$vedleggType&KorrelasjonsID=$korrelasjonID"
+
+        val builder = UriComponentsBuilder.fromPath("$EUX_PATH$urlPath")
+                .queryParam("BuCType", bucType)
+                .queryParam("FagSakNummer", fagSaknr)
+                .queryParam("MottagerID", mottaker)
+                .queryParam("Filtype", vedleggType)
+                .queryParam("KorrelasjonsID", korrelasjonID)
 
         val map: MultiValueMap<String, Any> = LinkedMultiValueMap()
         val document = object : ByteArrayResource(jsonPayload.toByteArray()) {
@@ -161,11 +167,14 @@ class EuxService(val oidcRestTemplate: RestTemplate) {
         map.add("attachment", null)
 
         val headers = HttpHeaders()
-        headers.contentType = MediaType.MULTIPART_FORM_DATA
+        headers.set("Cookie", "JSESSIONID=51A1D0F7796572408C819B07D20C7928.E34APVW008")
+        headers.set("X-XSRF-TOKEN", "49ef2474-263e-4476-8bf1-9dccc9496210")
 
+        headers.contentType = MediaType.MULTIPART_FORM_DATA
         val httpEntity = HttpEntity(map, headers)
 
-        val response = oidcRestTemplate.exchange("$EUX_PATH$urlPath$data", HttpMethod.POST, httpEntity, String::class.java)
+        //val response = oidcRestTemplate.exchange("$EUX_PATH$urlPath$data", HttpMethod.POST, httpEntity, String::class.java)
+        val response = oidcRestTemplate.exchange(builder.toUriString(), HttpMethod.POST, httpEntity, String::class.java)
         return response.body
     }
 }

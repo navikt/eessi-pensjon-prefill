@@ -1,11 +1,13 @@
 package no.nav.eessi.eessifagmodul.services
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.eq
 import com.nhaarman.mockito_kotlin.whenever
 import no.nav.eessi.eessifagmodul.models.*
+import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
 import no.nav.eessi.eessifagmodul.utils.typeRef
 import no.nav.eessi.eessifagmodul.utils.typeRefs
 import org.junit.Assert.*
@@ -25,7 +27,6 @@ import org.springframework.web.client.RestClientException
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.client.exchange
 import org.springframework.web.client.getForEntity
-import java.time.LocalDate
 import java.util.*
 
 
@@ -40,6 +41,7 @@ class EuxServiceTest {
 
     @Mock
     private lateinit var mockrestTemplate: RestTemplate
+
 
     @Before
     fun setup() {
@@ -158,86 +160,37 @@ class EuxServiceTest {
 
         val fagSaknr = "EESSI-PEN-123"
         val mottaker = "DUMMY"
-        val pensjon = genererMockData()
-        val pensjonAsJson = objMapper.writeValueAsString(pensjon)
-        val bucType = "P_BUC_01"
+
+        val sed = P6000Mock().genererP6000Mock()
+        val sedAsJson = mapAnyToJson(sed)
+
+        val bucType = "P_BUC_06" //p6000
+        //val bucType = "P_BUC_01" //p2000
+
         val korrid = UUID.randomUUID()
         val vedleggType = ""
 
         //mock response and mock restTemplate
-        val response: ResponseEntity<String> = ResponseEntity("Rina:12345", HttpStatus.OK)
+        val response: ResponseEntity<String> = ResponseEntity("12345", HttpStatus.OK)
         whenever(mockrestTemplate.exchange(anyString(), eq(HttpMethod.POST), any(), eq(String::class.java))).thenReturn(response)
 
         try {
-            val data = service.createCaseAndDocument(pensjonAsJson, bucType, fagSaknr, mottaker, vedleggType, korrid.toString())
+            val data = service.createCaseAndDocument(sedAsJson, bucType, fagSaknr, mottaker, vedleggType, korrid.toString())
             assertTrue("Skal komme hit!", true)
             logger.info("Response: $data")
+            assertEquals("12345", data)
             assertNotNull(data)
             println("RINA NR?       : $data")
             println("KorrelasjonsID : $korrid")
             println("BuCType        : $bucType")
         } catch (ex: Exception) {
-            fail("Skal ikke komme hit")
             logger.error(ex.message)
+            fail("Skal ikke komme hit")
         }
     }
 
     private fun genererMockData(): Pensjon {
-        return Pensjon(
-                kjoeringsdato = LocalDate.now().toString(),
-                sak = Sak(
-                        type = "AP",
-                        artikkel44 = "Artikkel44",
-                        kravtyper = listOf(
-                                Kravtype(datoFirst = LocalDate.now().toString()),
-                                Kravtype(datoFirst = LocalDate.now().toString())
-                        )
-                ),
-                vedtak = Vedtak(
-                        basertPaa = "A",
-                        avslag = Avslag(begrunnelse = "Ikke godkjent opphold", begrunnelseAnnen = "Ingen kake"),
-                        beregninger = listOf(
-                                Beregning(
-                                        artikkel = "Beregning artikkel abcdØåæ",
-                                        virkningsdato = LocalDate.now().toString(),
-                                        periode = Periode(LocalDate.now().toString(), LocalDate.now().toString()),
-                                        beloepNetto = BeloepNetto(beloep = "5432.50"),
-                                        beloepBrutto = BeloepBrutto(beloep = "9542.50", ytelseskomponentGrunnpensjon = "1240.50", ytelseskomponentTilleggspensjon = "3292.20", ytelseskomponentAnnen = "194.50"),
-                                        valuta = "SE",
-                                        utbetalingshyppighet = "1",
-                                        utbetalingshyppighetAnnen = "Annet")
-                                ,
-                                Beregning(
-                                        artikkel = "Beregning artikkel efghÆåø",
-                                        virkningsdato = LocalDate.now().toString(),
-                                        periode = Periode(LocalDate.now().toString(), LocalDate.now().toString()),
-                                        beloepNetto = BeloepNetto(beloep = "3432.50"),
-                                        beloepBrutto = BeloepBrutto(beloep = "9542.50", ytelseskomponentGrunnpensjon = "1240.50", ytelseskomponentTilleggspensjon = "3292.20", ytelseskomponentAnnen = "194.50"),
-                                        valuta = "EU",
-                                        utbetalingshyppighet = "3",
-                                        utbetalingshyppighetAnnen = "Skuddår")
-                        ),
-                        grunnlag = Grunnlag(meldlemskap = "Norge", opptjening = Opptjening(forsikredeAnnen = "Anders And"), framtidigtrygdetid = "Nåtid"),
-                        opphor = Opphor(
-                                verdi = "1000.50",
-                                begrunnelse = "Begrunnelse",
-                                annulleringdato = LocalDate.now().toString(),
-                                dato = LocalDate.now().toString(),
-                                utbetaling = Utbetaling(
-                                        beloepBrutto = "10000",
-                                        valuta = "NOK"
-                                )
-                        ),
-                        reduksjoner = listOf(
-                                Reduksjon(
-                                        type = "1",
-                                        arsak = Arsak(inntekt = "212323.50", inntektAnnen = "23223.50"),
-                                        artikkeltype = "2")
-                        ),
-                        dato = LocalDate.now().toString(),
-                        artikkel48 = "Vedtakk artikkel48"
-                )
-        )
+        return PensjonMock().genererMockData()
     }
 }
 

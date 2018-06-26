@@ -1,5 +1,6 @@
 eessibasis:
   url: http://example.com:8089
+  #url: http://localhost:9090
   username: srvPensjon
   password: Ash5SoxP
 
