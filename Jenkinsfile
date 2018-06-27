@@ -58,7 +58,10 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry("https://${repo}") {
-                        image = docker.build("${applicationFullName}", "--build-arg GIT_COMMIT_ID=${commitHashShort} .")
+                        buildArg = "."
+                        if (binding.hasVariable("commitHashShort"))
+                            buildArg = "--build-arg GIT_COMMIT_ID=${commitHashShort} ."
+                        image = docker.build(applicationFullName, buildArg)
                         image.push()
                         image.push('latest')
                     }
