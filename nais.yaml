@@ -37,11 +37,14 @@ fasitResources:
   - alias: OpenIdConnect
     resourceType: baseurl
     propertyMap:
-      url: freg.security.oidc.openam.url
+      url: security.oidc.host
   - alias: OpenIdConnect
     resourceType: baseurl
   - alias: OpenIdConnectAgent
     resourceType: credential
+    propertyMap:
+      username: security.oidc.agentName
+      password: security.oidc.clientSecret
   - alias: securityTokenService
     resourceType: baseurl
   exposed:

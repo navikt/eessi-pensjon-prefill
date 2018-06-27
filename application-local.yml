@@ -1,22 +1,16 @@
-spring:
+freg:
   security:
-     oauth2:
-       client:
-         registration:
-           openam:
-             client-id: eessi-fagmodul-localhost
-             client-secret: Test1234
-             authorization-grant-type: authorization_code
-             redirect-uri-template: '{baseUrl}/login/oauth2/code/openam'
-             scope: openid
-             client-name: OpenAM
-             client-alias: openam
-         provider:
-           openam:
-             authorization-uri: https://isso-t.adeo.no:443/isso/oauth2/authorize
-             token-uri: https://isso-t.adeo.no:443/isso/oauth2/access_token
-             user-info-uri: https://isso-t.adeo.no:443/isso/oauth2/userinfo
-             jwk-set-uri: https://isso-t.adeo.no:443/isso/oauth2/connect/jwk_uri
+    oidc:
+      auth:
+        header-filter-enabled: 'false'
+        cookie-filter-enabled: 'true'
+      login:
+        enabled: 'true'
+        path: '/login/oauth2/code/openam'
+      openam:
+        url: 'https://isso-t.adeo.no:443/isso'
+      client-id: 'eessi-fagmodul-localhost'
+      client-secret: 'Test1234'
 
 eessibasis:
   url: https://eux-app.nais.preprod.local

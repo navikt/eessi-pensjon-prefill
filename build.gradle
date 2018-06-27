@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        kotlinVersion = '1.2.41'
+        kotlinVersion = '1.2.50'
         springBootVersion = '2.0.2.RELEASE'
         springSecOauthVersion = '2.0.1.RELEASE'
         prometheusVersion = '0.2.0'
@@ -33,7 +33,7 @@ apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 
 group = 'no.nav.eessi'
-version = '0.0.1-SNAPSHOT'
+version = '0.0.1'
 sourceCompatibility = 1.8
 
 compileKotlin {
@@ -67,10 +67,7 @@ dependencies {
     testCompile("org.springframework.boot:spring-boot-starter-test")
     testCompile("org.springframework.security:spring-security-test")
     // OIDC-support
-    compile("org.springframework.security:spring-security-config")
-    compile("org.springframework.security:spring-security-oauth2-client")
-    compile("org.springframework.security:spring-security-oauth2-jose")
-    compile("org.springframework.security.oauth.boot:spring-security-oauth2-autoconfigure:${springSecOauthVersion}")
+    compile("no.nav.freg:freg-security-oidc:2.1.1")
 
     // Apache CXF
     compile("org.apache.cxf:cxf-spring-boot-starter-jaxws:3.2.1")
