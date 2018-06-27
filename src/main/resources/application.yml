@@ -1,48 +1,15 @@
-spring:
-  http:
-    encoding:
-      charset: utf-8
-
-  security:
-     oauth2:
-       client:
-         registration:
-           openam:
-             client-id: ${app.name}-${FASIT_ENVIRONMENT_NAME}
-             client-secret: ${OPENIDCONNECTAGENT_PASSWORD}
-             authorization-grant-type: authorization_code
-             redirect-uri-template: '{baseUrl}/login/oauth2/code/openam'
-             scope: openid
-             client-name: OpenAM
-             client-alias: openam
-         provider:
-           openam:
-             authorization-uri: ${OPENIDCONNECT_URL}/oauth2/authorize
-             token-uri: ${OPENIDCONNECT_URL}/oauth2/access_token
-             user-info-uri: ${OPENIDCONNECT_URL}/oauth2/userinfo
-             jwk-set-uri: ${OPENIDCONNECT_URL}/oauth2/connect/jwk_uri
-
-
-#oidc:
-#   clientId: ${APP_NAME}-${FASIT_ENVIRONMENT_NAME}
-#   clientSecret: ${OPENIDCONNECTAGENT_PASSWORD}
-#   redirectUri: https://eessi-fagmodul-t8.nais.preprod.local/openid_connect_login
-#   scope: openid
-#   issuerHost: ${OPENIDCONNECT_URL}/oauth2
-#   authorizationUri: ${oidc.issuerHost}/authorize
-#   tokenUri: ${oidc.issuerHost}/access_token
-#   userInfoUri: ${oidc.issuerHost}/userinfo
-#   jwkSetUri: ${oidc.issuerHost}/connect/jwk_uri
-
 eessibasis:
   url: https://eux-app.nais.preprod.local
   username: todo
   password: todo
 
-server:
-  use-forward-headers: true
-
-#server:
-#  tomcat:
-#    remote-ip-header: x-forwarded-for
-#    protocol-header: x-forwarded-proto
+freg:
+  security:
+    oidc:
+      ignored-paths: '/internal/**,/actuator/**,/error**'
+      login:
+        enabled: 'true'
+        path: '/login/oauth2/code/openam'
+      auth:
+        header-filter-enabled: 'false'
+        cookie-filter-enabled: 'true'

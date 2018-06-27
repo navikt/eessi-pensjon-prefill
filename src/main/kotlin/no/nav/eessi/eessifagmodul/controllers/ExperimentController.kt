@@ -4,14 +4,14 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import no.nav.eessi.eessifagmodul.config.jaxws.client.AktoerIdClient
 import no.nav.eessi.eessifagmodul.models.*
 import no.nav.eessi.eessifagmodul.services.EuxService
+import no.nav.freg.security.oidc.common.OidcTokenAuthentication
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
 import org.springframework.http.RequestEntity
 import org.springframework.http.ResponseEntity
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken
-import org.springframework.security.oauth2.core.oidc.user.OidcUser
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.client.RestTemplate
 import java.net.URI
@@ -37,10 +37,9 @@ class ExperimentController {
     lateinit var euxService: EuxService
 
     @GetMapping("/testEuxOidc")
-    fun testEuxOidc(authentication: OAuth2AuthenticationToken): ResponseEntity<String> {
-        val oidcUser = authentication.principal as OidcUser
+    fun testEuxOidc(): ResponseEntity<String> {
         val httpHeaders = HttpHeaders()
-        httpHeaders.add(HttpHeaders.AUTHORIZATION, "Bearer ${oidcUser.idToken.tokenValue}")
+        httpHeaders.add(HttpHeaders.AUTHORIZATION, "Bearer ")
         val requestEntity = RequestEntity<String>(httpHeaders, HttpMethod.GET, URI("$eessiBasisUrl/sample"))
 
         try {
@@ -52,10 +51,11 @@ class ExperimentController {
         }
     }
 
-    @GetMapping("/testAktoer/{ident}")
-    fun testAktoer(@PathVariable("ident") ident: String, authentication: OAuth2AuthenticationToken): String? {
-        val oidcUser = authentication.principal as OidcUser
-        return aktoerIdClient.hentAktoerIdForIdent(ident, oidcUser.idToken.tokenValue)?.aktoerId
+    @GetMapping("/testAktoer/{ident}") //, authentication: OAuth2AuthenticationToken
+    fun testAktoer(@PathVariable("ident") ident: String): String? {
+        val auth = SecurityContextHolder.getContext().authentication as OidcTokenAuthentication
+//        val oidcUser = authentication.principal as OidcUser
+        return aktoerIdClient.hentAktoerIdForIdent(ident, auth.idToken)?.aktoerId
     }
 
 

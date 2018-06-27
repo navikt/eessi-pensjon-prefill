@@ -26,3 +26,8 @@ security:
 management:
   security:
     enabled: false
+
+freg:
+  security:
+    oidc:
+      enabled: false

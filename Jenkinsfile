@@ -1,27 +1,27 @@
 pipeline {
     agent any
-    tools {
-        maven('Maven 3.3.9')
-    }
 
     environment {
         repo = "docker.adeo.no:5000"
-        FASIT_ENV = 't8'
-        APPLICATION_NAMESPACE = 't8'
+        FASIT_ENV= 't1'
+        APPLICATION_NAMESPACE = 't1'
+        FASIT_ENV_TEST = 't8'
+        APPLICATION_NAMESPACE_TEST = 't8'
         ZONE = 'fss'
-        openAmContextRoot = '/login/oauth2/code/openam'
     }
 
     stages {
         stage('Initialize') {
             steps {
                 script {
-                    app_name = sh(script: "gradle properties | grep ^name: | sed 's/name: //'", returnStdout: true).trim()
-                    version = sh(script: "gradle properties | grep ^version: | sed 's/version: //'", returnStdout: true).trim()
+                    app_name = sh(script: " sh gradlew properties | grep ^name: | sed 's/name: //'", returnStdout: true).trim()
+                    version = sh(script: "sh gradlew properties | grep ^version: | sed 's/version: //'", returnStdout: true).trim()
                     branchName = "${env.BRANCH_NAME}"
-                    if (version.endsWith("-SNAPSHOT")) {
+                    if (branchName != "master") {
                         commitHashShort = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
                         version = "${version}.${branchName.replaceAll('/', '-')}.${env.BUILD_ID}-${commitHashShort}"
+                    } else {
+                        version = "${version}-${env.BUILD_ID}"
                     }
                     applicationFullName = "${app_name}:${version}"
                 }
@@ -30,13 +30,13 @@ pipeline {
 
         stage('Build') {
             steps {
-                sh('gradle clean assemble')
+                sh('sh gradlew clean assemble')
             }
         }
 
         stage('Test') {
             steps {
-                sh('gradle test')
+                sh('sh gradlew test')
             }
             post {
                 always {
@@ -71,11 +71,11 @@ pipeline {
                 script {
                     echo "Deploy '${branchName}'?"
                     if (branchName.startsWith('feature')) {
-                        echo "\tdeploying to u2"
-                        deploy.naisDeploy(app_name, version, FASIT_ENV, APPLICATION_NAMESPACE, ZONE, openAmContextRoot)
-                    } else if(branchName == 'master') {
-                        echo "\tdeploying to t8"
-                        deploy.naisDeploy(app_name, version, FASIT_ENV, APPLICATION_NAMESPACE, ZONE, openAmContextRoot)
+                        echo "\tdeploying to t8 (test)"
+                        deploy.naisDeploy(app_name, version, FASIT_ENV_TEST, APPLICATION_NAMESPACE_TEST, ZONE)
+                    } else if (branchName == 'master') {
+                        echo "\tdeploying to t1 (master)"
+                        deploy.naisDeploy(app_name, version, FASIT_ENV, APPLICATION_NAMESPACE, ZONE)
                     } else {
                         echo "Skipping deploy"
                     }
