@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         repo = "docker.adeo.no:5000"
-        FASIT_ENV= 't1'
+        FASIT_ENV = 't1'
         APPLICATION_NAMESPACE = 't1'
         FASIT_ENV_TEST = 't8'
         APPLICATION_NAMESPACE_TEST = 't8'

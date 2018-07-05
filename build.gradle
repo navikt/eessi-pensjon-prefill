@@ -66,6 +66,7 @@ dependencies {
     compile("org.springframework.boot:spring-boot-devtools")
     testCompile("org.springframework.boot:spring-boot-starter-test")
     testCompile("org.springframework.security:spring-security-test")
+
     // OIDC-support
     compile("no.nav.freg:freg-security-oidc:2.1.1")
 

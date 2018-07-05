@@ -5,7 +5,9 @@ import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import no.nav.eessi.eessifagmodul.models.P6000
+import no.nav.eessi.eessifagmodul.models.BUC
+import no.nav.eessi.eessifagmodul.models.SED
+import no.nav.eessi.eessifagmodul.models.createPensjonBucList
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.core.ParameterizedTypeReference
@@ -36,14 +38,24 @@ fun createErrorMessage(responseBody: String?): RestClientException {
     return objectMapper.readValue(responseBody, RestClientException::class.java)
 }
 
-fun mapAnyToJson(data: Any, validate: Boolean = false): String {
+fun mapAnyToJson(data: Any): String {
     val json = jacksonObjectMapper()
             //.setDefaultPropertyInclusion(JsonInclude.Include.NON_EMPTY)
             .writerWithDefaultPrettyPrinter()
             .writeValueAsString(data)
-    if (validate)
-        validateJson(json)
     return json
+}
+
+fun mapAnyToJson(data: Any, nonempty: Boolean = false): String {
+    if (nonempty) {
+        val json = jacksonObjectMapper()
+                .setDefaultPropertyInclusion(JsonInclude.Include.NON_EMPTY)
+                .writerWithDefaultPrettyPrinter()
+                .writeValueAsString(data)
+        return json
+    } else {
+        return mapAnyToJson(data)
+    }
 }
 
 
@@ -59,4 +71,26 @@ fun validateJson(json: String) : Boolean {
     return false
 }
 
+fun createListOfSEDOnBUC(buc: BUC): List<SED> {
+    val buclist = createPensjonBucList()
+    val sedlist : MutableList<SED> = mutableListOf()
+    buclist.forEach {
+        if (buc.bucType == it.bucType) {
+            it.sed!!.forEach {
+                sedlist.add(it)
+            }
+        }
+    }
+    return sedlist.toList()
+}
 
+fun createListOfSED(): List<SED> {
+    val buclist = createPensjonBucList()
+    val sedlist : MutableList<SED> = mutableListOf()
+    buclist.forEach { it: BUC ->
+        it.sed!!.forEach {
+            sedlist.add(it)
+        }
+    }
+    return sedlist.toList()
+}

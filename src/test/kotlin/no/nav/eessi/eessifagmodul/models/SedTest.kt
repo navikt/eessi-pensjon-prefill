@@ -17,9 +17,9 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
 @RunWith(MockitoJUnitRunner::class)
-class P6000sedTest{
+class SedTest{
 
-    val logger: Logger by lazy { LoggerFactory.getLogger(P6000sedTest::class.java) }
+    val logger: Logger by lazy { LoggerFactory.getLogger(SedTest::class.java) }
 
     @Before
     fun setup() {
@@ -30,14 +30,14 @@ class P6000sedTest{
 
     @Test
     fun createP6000sed() {
-        val sed6000 = P6000Mock().genererP6000Mock()
+        val sed6000 = SedMock().genererP6000Mock()
         assertNotNull(sed6000)
 
         val json = mapAnyToJson(sed6000)
 
         //map json back to P6000 obj
         val map = jacksonObjectMapper()
-        val pensjondata = map.readValue(json, P6000::class.java)
+        val pensjondata = map.readValue(json, SED::class.java)
         assertNotNull(pensjondata)
         assertEquals(sed6000, pensjondata)
 
@@ -50,7 +50,7 @@ class P6000sedTest{
         //map P6000-NAV back to P6000 object.
         val pensjondataFile= jacksonObjectMapper()
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-            .readValue(p6000file, P6000::class.java)
+            .readValue(p6000file, SED::class.java)
         assertNotNull(pensjondataFile)
 
         //map P6000-NAV obj back to json
