@@ -1,33 +1,43 @@
 freg:
   security:
     oidc:
+      ignored-paths: '/internal/**,/actuator/**,/error**,/login**'
+      refresh:
+        enabled: 'false'
       auth:
-        header-filter-enabled: 'false'
-        cookie-filter-enabled: 'true'
+        header-filter-enabled: 'true'
+        cookie-filter-enabled: 'false'
       login:
-        enabled: 'true'
-        path: '/login/oauth2/code/openam'
+        enabled: 'false'
       openam:
         url: 'https://isso-t.adeo.no:443/isso'
       client-id: 'eessi-fagmodul-localhost'
       client-secret: 'Test1234'
 
+security:
+  oidc:
+    host: ${freg.security.oidc.openam.url}
+  openam:
+    username: 'eessi-fagmodul-localhost'
+    password: 'Test1234'
+    redirectUri: 'http://localhost:8080/login/oauth2/code/openam'
+
 eessibasis:
-  url: https://eux-app.nais.preprod.local
-  username: srvPensjon
-  password: Ash5SoxP
+  url: 'https://eux-app.nais.preprod.local'
 
 aktoer.v2:
-  endpointurl: https://app-t8.adeo.no/aktoerid/AktoerService/v2
+  endpointurl: 'https://app-t8.adeo.no/aktoerid/AktoerService/v2'
 
-credentials:
-  srvpensjon:
-    username: srvPensjon
-    password: Ash5SoxP
+credential:
+  username: 'srvPensjon'
+  password: 'Ash5SoxP'
 
 app:
-  name: DEVELOP
-  version: 0.1
+  name: 'DEVELOP'
+  version: '0.1'
 
 securitytokenservice:
-  url: https://sts-t8.test.local/SecurityTokenServiceProvider/
+  url: 'https://sts-t8.test.local/SecurityTokenServiceProvider/'
+
+server:
+  port: 8081

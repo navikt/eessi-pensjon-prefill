@@ -1,15 +1,22 @@
+credential:
+  username: '${SRVPENSJON_USERNAME}'
+  password: '${SRVPENSJON_PASSWORD}'
+
 eessibasis:
-  url: https://eux-app.nais.preprod.local
-  username: todo
-  password: todo
+  url: 'https://eux-app.nais.preprod.local'
 
 freg:
   security:
     oidc:
-      ignored-paths: '/internal/**,/actuator/**,/error**'
-      login:
-        enabled: 'true'
-        path: '/login/oauth2/code/openam'
+      ignored-paths: '/internal/**,/actuator/**,/error**,/login**'
+      refresh:
+        enabled: 'false'
       auth:
-        header-filter-enabled: 'false'
-        cookie-filter-enabled: 'true'
+        header-filter-enabled: 'true'
+        cookie-filter-enabled: 'false'
+      login:
+        enabled: 'false'
+      openam:
+        url: '${OPENIDCONNECT_URL}'
+      client-id: '${APP_NAME}-${FASIT_ENVIRONMENT_NAME}'
+      client-secret: '${OPENIDCONNECTAGENT_PASSWORD}'

@@ -1,6 +1,5 @@
 package no.nav.eessi.eessifagmodul.services
 
-import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.nhaarman.mockito_kotlin.any
@@ -20,6 +19,7 @@ import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -48,6 +48,8 @@ class EuxServiceTest {
         logger.debug("Starting tests.... ...")
         objMapper.enable(SerializationFeature.WRAP_ROOT_VALUE)
         service = EuxService(mockrestTemplate)
+        service.overrideheaders = true
+
     }
 
     @Ignore("Not yet implemented")
@@ -99,7 +101,7 @@ class EuxServiceTest {
 
     @Ignore("Not yet implemented")
     @Test
-    fun getBuCtypePerSektor() {
+    fun `get a list of Buc pr sector`() {
         val mockData = listOf(
                 "P_BUC_01",
                 "P_BUC_07",
@@ -116,7 +118,7 @@ class EuxServiceTest {
 
     @Ignore("Not yet implemented")
     @Test
-    fun getInstitusjoner() {
+    fun `check for list of institusions`() {
         val expected = listOf("NO:NAV02", "NO:DUMMY")
         val mockResponse = ResponseEntity(expected, HttpStatus.OK)
         whenever(mockrestTemplate.exchange(anyString(), eq(HttpMethod.GET), any(), eq(typeRef<List<String>>()))).thenReturn(mockResponse)
@@ -126,19 +128,24 @@ class EuxServiceTest {
         assertTrue(expected.containsAll(data))
     }
 
-    @Ignore("Not yet implemented")
+    //@Ignore("Not yet implemented")
     @Test
-    fun getMuligeAksjoner() {
+    fun `check for mulige aksjoner on rinacaseid`() {
         val bucType = "FB_BUC_01"
 
-        val data = "[\"FB_BUC_01\",\"FB_BUC_01\"]"
+        val data = "[" +
+                "{\"navn\":\"Create\"," +
+                "\"id\":\"312430_f54d4c4ea29840a3bd8404ec08ffd29f\",\n" +
+                "\"kategori\":\"Documents\",\n" +
+                "\"dokumentType\":\"P2000\"," +
+                "\"dokumentId\":\"602982a0a84d4fe6aaf46a61b30a3a2e\"}]"
         val response: ResponseEntity<String> = ResponseEntity(data, HttpStatus.OK)
-        whenever(mockrestTemplate.getForEntity<String>(anyString(), eq(typeRef<String>()))).thenReturn(response)
+        whenever(mockrestTemplate.exchange(anyString(),eq(HttpMethod.GET), any(), eq(typeRef<String>()))).thenReturn(response)
 
         val resultat = service.getMuligeAksjoner(bucType)
 
-        assertEquals(2, resultat.size)
-        assertEquals("FB_BUC_01", resultat.get(0))
+        assertNotNull(resultat)
+        assertTrue(resultat.contains("P2000"))
         assertTrue("Skal komme hit", true)
     }
 
@@ -161,7 +168,7 @@ class EuxServiceTest {
         val fagSaknr = "EESSI-PEN-123"
         val mottaker = "DUMMY"
 
-        val sed = P6000Mock().genererP6000Mock()
+        val sed = SedMock().genererP6000Mock()
         val sedAsJson = mapAnyToJson(sed)
 
         val bucType = "P_BUC_06" //p6000
