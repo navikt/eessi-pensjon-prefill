@@ -52,80 +52,12 @@ class EuxServiceTest {
 
     }
 
-    @Ignore("Not yet implemented")
-    @Test(expected = Exception::class)
-    fun getBuCNoEUSaknr() {
-        service.getBuC("")
-    }
-
-    @Ignore("Not yet implemented")
-    @Test
-    fun getBuC() {
-    }
-
-    @Ignore("Not yet implemented")
-    @Test(expected = RestClientException::class)
-    fun sendSedForbidden403() {
-        val data = "{\"timestamp\":\"2018-06-05T11:29:31.394+0000\",\"status\":403,\"error\":\"Forbidden\",\"message\":\"Forbidden\",\"path\":\"/cpi/SendSED\"}"
-        createSendSEDmedFeilResponse(data, HttpStatus.FORBIDDEN)
-    }
-
-    @Ignore("Not yet implemented")
-    @Test(expected = RestClientException::class)
-    fun sendSedNoRINAFound() {
-        val data = "{\"timestamp\":\"2018-06-05T11:29:31.394+0000\",\"status\":404,\"error\":\"Not Found\",\"message\":\"Not Found\",\"path\":\"/cpi/SendSED\"}"
-        createSendSEDmedFeilResponse(data, HttpStatus.NOT_FOUND)
-    }
-
     private fun createSendSEDmedFeilResponse(data: String, status: HttpStatus) {
         val response: ResponseEntity<String> = ResponseEntity(data, status)
         whenever(mockrestTemplate.getForEntity<String>(anyString(), any())).thenReturn(response)
 
         val rinaSaksnr = "12132123"
         service.getMuligeAksjoner(rinaSaksnr)
-    }
-
-    @Ignore("Not yet implemented")
-    @Test
-    fun sendSed() {
-        val response: ResponseEntity<String> = ResponseEntity("", HttpStatus.OK)
-        whenever(mockrestTemplate.exchange(anyString(), eq(HttpMethod.POST), any(), eq(typeRef<String>()))).thenReturn(response)
-
-        val rinaSaksnr = "12132123"
-        val korrelasjonID = "123123123-12312312-12312312"
-
-        val status = service.sendSED(rinaSaksnr, korrelasjonID, "documentId")
-        assertEquals(true, status)
-        assertTrue("Skal komme hit", true)
-    }
-
-    @Ignore("Not yet implemented")
-    @Test
-    fun `get a list of Buc pr sector`() {
-        val mockData = listOf(
-                "P_BUC_01",
-                "P_BUC_07",
-                "P_BUC_02",
-                "P_BUC_05",
-                "P_BUC_06",
-                "P_BUC_09")
-        val respData = ResponseEntity(mockData, HttpStatus.OK)
-        whenever(mockrestTemplate.exchange<List<String>>(anyString(), eq(HttpMethod.GET), any(), eq(typeRefs<List<String>>()))).thenReturn(respData)
-
-        val data: List<String> = service.getBuCtypePerSektor()
-        assertTrue(data.containsAll(mockData))
-    }
-
-    @Ignore("Not yet implemented")
-    @Test
-    fun `check for list of institusions`() {
-        val expected = listOf("NO:NAV02", "NO:DUMMY")
-        val mockResponse = ResponseEntity(expected, HttpStatus.OK)
-        whenever(mockrestTemplate.exchange(anyString(), eq(HttpMethod.GET), any(), eq(typeRef<List<String>>()))).thenReturn(mockResponse)
-
-        val data = service.getInstitusjoner("P_BUC_01", "NO")
-        assertEquals(expected.size, data.size)
-        assertTrue(expected.containsAll(data))
     }
 
     //@Ignore("Not yet implemented")
@@ -147,19 +79,6 @@ class EuxServiceTest {
         assertNotNull(resultat)
         assertTrue(resultat.contains("P2000"))
         assertTrue("Skal komme hit", true)
-    }
-
-    @Ignore("Not yet implemented")
-    @Test
-    fun getAvailableSEDTypes() {
-        val bucType = "P_BUC_01"
-        val mockData = listOf("P2000", "P6000")
-        val mockResponse = ResponseEntity(mockData, HttpStatus.OK)
-        whenever(mockrestTemplate.exchange(anyString(), eq(HttpMethod.GET), any(), eq(typeRef<List<String>>()))).thenReturn(mockResponse)
-
-        val resultat = service.getAvailableSEDTypes(bucType)
-
-        assertTrue(resultat.containsAll(mockData))
     }
 
     @Test

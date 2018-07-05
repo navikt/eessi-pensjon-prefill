@@ -12,7 +12,7 @@ class EuxServiceStartUpInit(val service: EuxService) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(EuxServiceStartUpInit::class.java) }
 
-    @PostConstruct
+  /*  @PostConstruct
     fun init() {
         logger.debug("Initilize Cache for Bucs and Institusjoner")
         //service.getCachedBuCTypePerSekor()
@@ -21,6 +21,6 @@ class EuxServiceStartUpInit(val service: EuxService) {
         } catch (ex: Exception) {
             logger.debug("Initilize Cache for Bucs and Institusjoner Exception")
         }
-    }
+    }*/
 
 }
