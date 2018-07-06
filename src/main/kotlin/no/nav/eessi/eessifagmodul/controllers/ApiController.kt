@@ -19,7 +19,8 @@ class ApiController(private val euxService: EuxService) {
     fun createDocument(@RequestBody request: FrontendRequest): String {
 
         val fagSaknr = request.caseId!! // = "EESSI-PEN-123"
-        val mottaker = request.institution!! // = "DUMMY"
+        //hack only one is selected and used
+        val mottaker = request.institution!![0].institution!! // = "DUMMY"
         val bucType = request.buc!! // = "P_BUC_06" //P6000
         val korrid = UUID.randomUUID()
 
