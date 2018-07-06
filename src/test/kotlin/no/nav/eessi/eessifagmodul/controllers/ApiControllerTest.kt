@@ -3,6 +3,7 @@ package no.nav.eessi.eessifagmodul.controllers
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.nhaarman.mockito_kotlin.whenever
 import no.nav.eessi.eessifagmodul.models.FrontendRequest
+import no.nav.eessi.eessifagmodul.models.Institusjon
 import no.nav.eessi.eessifagmodul.services.EuxService
 import org.junit.Assert
 import org.junit.Before
@@ -30,21 +31,21 @@ class ApiControllerTest {
 
     @Test
     fun `create frontend request`() {
-        val json = "{\"institution\":\"DUMMY\",\"buc\":\"P_BUC_06\",\"sed\":\"P6000\",\"caseId\":\"caseId\"}"
-
+        val json = "{\"institution\":[{\"country\":\"NO\",\"institution\":\"DUMMY\"}],\"buc\":\"P_BUC_06\",\"sed\":\"P6000\",\"caseId\":\"caseId\"}"
         //map json request back to FrontendRequest obj
         val map = jacksonObjectMapper()
         val req = map.readValue(json, FrontendRequest::class.java)
         assertNotNull(req)
         assertEquals("P_BUC_06",req.buc)
-        assertEquals("DUMMY", req.institution)
+        assertEquals("DUMMY", req.institution!![0].institution)
     }
 
     @Test
     fun `create document`() {
         val mockData = FrontendRequest(
+            subjectAera = "Pensjon",
             caseId = "EESSI-PEN-123",
-            institution = "DUMMY",
+            institution = listOf(Institusjon("NO","DUMMY")),
             sed = "P6000",
             buc = "P_BUC_06"
         )
