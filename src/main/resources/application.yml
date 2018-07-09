@@ -1,7 +1,3 @@
-credential:
-  username: '${SRVPENSJON_USERNAME}'
-  password: '${SRVPENSJON_PASSWORD}'
-
 eessibasis:
   url: 'https://eux-app.nais.preprod.local'
 

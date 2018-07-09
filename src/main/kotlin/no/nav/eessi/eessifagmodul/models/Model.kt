@@ -1,5 +1,12 @@
 package no.nav.eessi.eessifagmodul.models
 
+data class Sector(
+        val name: String? = null,
+        val description: String? = null,
+        val activate: Boolean? = null,
+        val buc: List<BUC>? = null
+)
+
 // buc class man data between fagmodul and frontend.
 data class BUC(
     val bucType: String? = null,
@@ -35,6 +42,15 @@ fun createP2000(): SED {
     return createSED("P2000")
 }
 
+fun createSectorPensjon() {
+    val sector = Sector(
+            name = "Pensjon",
+            description = "Pensjon",
+            activate = true,
+            buc = createPensjonBucList()
+    )
+}
+
 // genereate list of buc with seds only for penstion use
 fun createPensjonBucList(): List<BUC> {
 
@@ -47,7 +63,7 @@ fun createPensjonBucList(): List<BUC> {
                 )
         ),
         BUC(
-                bucType = "P_BUC_01",
+                bucType = "P_BUC_02",
                 description = "Krav om etterlattepensjon",
                 sed = listOf(
                     createSED("P2100")
