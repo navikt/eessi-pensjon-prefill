@@ -14,10 +14,56 @@ import org.springframework.web.bind.annotation.RequestMapping
 @RequestMapping("/api")
 class ApiController(private val euxService: EuxService) {
 
+    @ApiOperation("confirm SED-prutfylling før innending til eux-bais(rina)")
+    @PostMapping("/confirm")
+    fun confirmDocument(@RequestBody request: FrontendRequest): SED {
+
+        val fagSaknr = request.caseId!! // = "EESSI-PEN-123"
+        //hack only one is selected and used
+        val mottaker = request.institutions!![0].institution!! // = "DUMMY"
+        val bucType = request.buc!! // = "P_BUC_06" //P6000
+        val korrid = UUID.randomUUID()
+
+        //still mock P6000?
+        //val sed : SED?
+        val sed: SED
+        if (request.sed != null) {
+            sed = createSED(request.sed)
+            if (sed.sed == "P6000") {
+                sed.nav = Nav(
+                        bruker = Bruker(
+                                person = Person(
+                                        fornavn = "Fornavn",
+                                        kjoenn = "f",
+                                        foedselsdato = "1967-12-01",
+                                        etternavn = "Etternavn"
+                                )
+                        )
+                )
+                sed.pensjon = Pensjon(
+                        gjenlevende = Gjenlevende(
+                                person = Person(
+                                        fornavn = "Fornavn",
+                                        kjoenn = "f",
+                                        foedselsdato = "1967-12-01",
+                                        etternavn = "Etternavn"
+                                )
+                        )
+                )
+            } else if (sed.sed == "P2000") {
+                sed.nav = Nav()
+                sed.pensjon = Pensjon()
+            }
+        } else {
+            throw IllegalArgumentException("Mangler SED, eller ugyldig SED")
+        }
+        //val sedAsJson = mapAnyToJson(sed, true)
+        return sed
+    }
+
     @ApiOperation("kjører prosess OpprettBuCogSED på EUX for å få dokuemt opprett i Rina")
     @PostMapping("/create")
     fun createDocument(@RequestBody request: FrontendRequest): String {
-
         val fagSaknr = request.caseId!! // = "EESSI-PEN-123"
         //hack only one is selected and used
         val mottaker = request.institutions!![0].institution!! // = "DUMMY"
@@ -69,5 +115,6 @@ class ApiController(private val euxService: EuxService) {
         logger.debug("(rina) caseid:  $euSaksnr")
         return "{\"euxcaseid\":\"$euSaksnr\"}"
     }
+
 
 }
