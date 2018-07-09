@@ -5,7 +5,8 @@ eessibasis:
 freg:
   security:
     oidc:
-      ignored-paths: '/internal/**,/actuator/**,/error**,/login**,/ping**'
+      ignored-paths: '/**'
+      secured-path: '/api/**'
       refresh:
         enabled: 'false'
       auth:
