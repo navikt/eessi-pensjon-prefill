@@ -31,21 +31,21 @@ class ApiControllerTest {
 
     @Test
     fun `create frontend request`() {
-        val json = "{\"institution\":[{\"country\":\"NO\",\"institution\":\"DUMMY\"}],\"buc\":\"P_BUC_06\",\"sed\":\"P6000\",\"caseId\":\"caseId\"}"
+        val json = "{\"institutions\":[{\"country\":\"NO\",\"institution\":\"DUMMY\"}],\"buc\":\"P_BUC_06\",\"sed\":\"P6000\",\"caseId\":\"caseId\"}"
         //map json request back to FrontendRequest obj
         val map = jacksonObjectMapper()
         val req = map.readValue(json, FrontendRequest::class.java)
         assertNotNull(req)
         assertEquals("P_BUC_06",req.buc)
-        assertEquals("DUMMY", req.institution!![0].institution)
+        assertEquals("DUMMY", req.institutions!![0].institution)
     }
 
     @Test
     fun `create document`() {
         val mockData = FrontendRequest(
-            subjectAera = "Pensjon",
+            subjectArea = "Pensjon",
             caseId = "EESSI-PEN-123",
-            institution = listOf(Institusjon("NO","DUMMY")),
+            institutions = listOf(Institusjon("NO","DUMMY")),
             sed = "P6000",
             buc = "P_BUC_06"
         )

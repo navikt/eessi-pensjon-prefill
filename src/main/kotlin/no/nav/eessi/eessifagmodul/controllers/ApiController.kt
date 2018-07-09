@@ -20,7 +20,7 @@ class ApiController(private val euxService: EuxService) {
 
         val fagSaknr = request.caseId!! // = "EESSI-PEN-123"
         //hack only one is selected and used
-        val mottaker = request.institution!![0].institution!! // = "DUMMY"
+        val mottaker = request.institutions!![0].institution!! // = "DUMMY"
         val bucType = request.buc!! // = "P_BUC_06" //P6000
         val korrid = UUID.randomUUID()
 
@@ -50,33 +50,10 @@ class ApiController(private val euxService: EuxService) {
                         )
                     )
                 )
-                //sed.pensjon = PensjonMock().genererMockData()
-                //sed.nav = NavMock().genererNavMock()
            } else if (sed.sed == "P2000") {
                 sed.nav = Nav()
                 sed.pensjon = Pensjon()
             }
-//                sed.nav = Nav(
-//                        bruker = Bruker(
-//                                person = Person(
-//                                        fornavn = "Gul",
-//                                        kjoenn = "f",
-//                                        foedselsdato = "1967-12-01",
-//                                        etternavn = "Konsoll"
-//                                )
-//                        )
-//                )
-//                sed.pensjon = Pensjon(
-//                    gjenlevende = Gjenlevende(
-//                            person = Person(
-//                                    fornavn = "Gul",
-//                                    kjoenn = "f",
-//                                    foedselsdato = "1967-12-01",
-//                                    etternavn = "Konsoll"
-//                            )
-//                    )
-//                )
-//            }
         } else {
             throw IllegalArgumentException("Mangler SED, eller ugyldig SED")
         }
