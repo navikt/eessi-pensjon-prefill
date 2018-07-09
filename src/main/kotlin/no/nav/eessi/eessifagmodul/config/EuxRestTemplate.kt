@@ -21,7 +21,6 @@ class EuxRestTemplate {
         val resttemplate: RestTemplate = templateBuilder
                 .rootUri(url)
                 .errorHandler(DefaultResponseErrorHandler())
-                //.errorHandler(EESSIResponeErrorHandler())
                 .additionalInterceptors(RequestResponseLoggerInterceptor())
                 .build()
         val factory = BufferingClientHttpRequestFactory(SimpleClientHttpRequestFactory())
