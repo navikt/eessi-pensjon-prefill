@@ -18,11 +18,11 @@ class ApiController(private val euxService: EuxService) {
     @PostMapping("/confirm")
     fun confirmDocument(@RequestBody request: FrontendRequest): SED {
 
-        val fagSaknr = request.caseId!! // = "EESSI-PEN-123"
-        //hack only one is selected and used
-        val mottaker = request.institutions!![0].institution!! // = "DUMMY"
-        val bucType = request.buc!! // = "P_BUC_06" //P6000
-        val korrid = UUID.randomUUID()
+//        val fagSaknr = request.caseId!! // = "EESSI-PEN-123"
+//        //hack only one is selected and used
+//        val mottaker = request.institutions!![0].institution!! // = "DUMMY"
+//        val bucType = request.buc!! // = "P_BUC_06" //P6000
+//        val korrid = UUID.randomUUID()
 
         //still mock P6000?
         //val sed : SED?

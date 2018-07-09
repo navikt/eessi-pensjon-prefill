@@ -1,9 +1,12 @@
 package no.nav.eessi.eessifagmodul.controllers
 
+import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.nhaarman.mockito_kotlin.whenever
 import no.nav.eessi.eessifagmodul.models.FrontendRequest
 import no.nav.eessi.eessifagmodul.models.Institusjon
+import no.nav.eessi.eessifagmodul.models.SED
 import no.nav.eessi.eessifagmodul.services.EuxService
 import org.junit.Assert
 import org.junit.Before
@@ -57,4 +60,21 @@ class ApiControllerTest {
 
         Assert.assertEquals("{\"euxcaseid\":\"$mockResponse\"}" , response)
     }
+
+    @Test
+    fun `confirm document`() {
+        val mockData = FrontendRequest(
+                subjectArea = "Pensjon",
+                caseId = "EESSI-PEN-123",
+                institutions = listOf(Institusjon("NO","DUMMY")),
+                sed = "P6000",
+                buc = "P_BUC_06"
+        )
+        val response = apiController.confirmDocument(mockData)
+        assertNotNull(response)
+        assertEquals("P6000", response.sed)
+
+    }
+
+
 }
