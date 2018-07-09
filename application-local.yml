@@ -23,14 +23,16 @@ security:
     redirectUri: 'http://localhost:8080/login/oauth2/code/openam'
 
 eessibasis:
-  url: 'https://eux-app.nais.preprod.local'
+#  url: 'https://eux-app.nais.preprod.local'
+  url: 'http://localhost:9090'
 
 aktoer.v2:
   endpointurl: 'https://app-t8.adeo.no/aktoerid/AktoerService/v2'
 
-credential:
-  username: 'srvPensjon'
-  password: 'Ash5SoxP'
+credentials:
+  srvpensjon:
+    username: 'srvPensjon'
+    password: 'Ash5SoxP'
 
 app:
   name: 'DEVELOP'
