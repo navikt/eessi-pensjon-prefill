@@ -1,6 +1,6 @@
 eessibasis:
-#  url: 'https://eux-app.nais.preprod.local'
-  url: 'https://eux-app-t8.nais.preprod.local'
+  url: 'https://eux-app.nais.preprod.local'
+#  url: 'https://eux-app-t8.nais.preprod.local'
 
 freg:
   security:
