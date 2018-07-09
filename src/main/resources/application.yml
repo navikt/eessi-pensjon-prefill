@@ -1,10 +1,11 @@
 eessibasis:
-  url: 'https://eux-app.nais.preprod.local'
+#  url: 'https://eux-app.nais.preprod.local'
+  url: 'https://eux-app-t8.nais.preprod.local'
 
 freg:
   security:
     oidc:
-      ignored-paths: '/internal/**,/actuator/**,/error**,/login**'
+      ignored-paths: '/internal/**,/actuator/**,/error**,/login**',/ping**
       refresh:
         enabled: 'false'
       auth:
