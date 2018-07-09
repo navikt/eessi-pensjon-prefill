@@ -14,3 +14,4 @@ data class Institusjon(
         val country: String? = null,
         val institution: String? =null
 )
+
