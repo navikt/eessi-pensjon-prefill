@@ -1,5 +1,6 @@
 package no.nav.eessi.eessifagmodul.models
 
+
 data class Sector(
         val name: String? = null,
         val description: String? = null,
@@ -7,14 +8,15 @@ data class Sector(
         val buc: List<BUC>? = null
 )
 
-// buc class man data between fagmodul and frontend.
+// BUC class man data between fagmodul and frontend.
+// Business Use Case (buc)
 data class BUC(
     val bucType: String? = null,
     val sed: List<SED>? = null,
     val description: String? = null
 )
 
-// sed class main request class to basis
+// SED class main request class to basis
 data class SED (
         var nav: Nav? = null,
         val sed: String? = null,
@@ -34,14 +36,8 @@ fun createSED(sedName: String): SED {
     )
 }
 
-fun createP6000(): SED {
-    return createSED("P6000")
-}
-
-fun createP2000(): SED {
-    return createSED("P2000")
-}
-
+//mulig utfylling bruk av sector/buc/sed
+//ingen henting fra EUX Basis...
 fun createSectorPensjon() {
     val sector = Sector(
             name = "Pensjon",

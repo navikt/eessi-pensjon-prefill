@@ -8,10 +8,8 @@ import com.nhaarman.mockito_kotlin.whenever
 import no.nav.eessi.eessifagmodul.models.*
 import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
 import no.nav.eessi.eessifagmodul.utils.typeRef
-import no.nav.eessi.eessifagmodul.utils.typeRefs
 import org.junit.Assert.*
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers.anyString
@@ -19,14 +17,10 @@ import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.web.client.RestClientException
 import org.springframework.web.client.RestTemplate
-import org.springframework.web.client.exchange
-import org.springframework.web.client.getForEntity
 import java.util.*
 
 
@@ -115,8 +109,5 @@ class EuxServiceTest {
         }
     }
 
-    private fun genererMockData(): Pensjon {
-        return PensjonMock().genererMockData()
-    }
 }
 

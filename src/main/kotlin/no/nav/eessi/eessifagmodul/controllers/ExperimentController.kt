@@ -58,28 +58,6 @@ class ExperimentController {
         return aktoerIdClient.hentAktoerIdForIdent(ident, auth.idToken)?.aktoerId
     }
 
-
-    @GetMapping("/opprett")
-    fun createCaseAndDocument(): String? {
-        val fagSaknr = "SAK-123456"
-        val mottaker = "NO"
-        val pensjon = genererMockData()
-        val pensjonAsJson = objectMapper.writeValueAsString(pensjon)
-        val bucType = "P6000"
-        val korrid = UUID.randomUUID()
-        val vedleggType = ""
-
-        try {
-            val data = euxService.createCaseAndDocument(pensjonAsJson, bucType, fagSaknr, mottaker, vedleggType, korrid.toString())
-            println("Response: $data")
-            println("Skal komme hit!!")
-            return data
-        } catch (ex: Exception) {
-            println("Skal _IKKE_ komme hit!!")
-            throw RuntimeException(ex.message)
-        }
-    }
-
     @ApiOperation("henter liste av alle BuC og tilhørende SED med forklaring")
     @GetMapping("/detailbucs", produces = [MediaType.APPLICATION_JSON_VALUE])
     fun getDetailBucs(): List<BUC> {
@@ -111,6 +89,3 @@ class ExperimentController {
     }
 }
 
-fun genererMockData(): Pensjon {
-    return PensjonMock().genererMockData()
-}
