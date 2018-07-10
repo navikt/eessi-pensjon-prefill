@@ -1,5 +1,8 @@
 package no.nav.eessi.eessifagmodul.models
 
+/**
+ * data class model from EUX Basis
+ */
 data class RINASaker(
     val id: String? = null,
     val applicationRoleId: String? = null,
