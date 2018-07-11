@@ -35,13 +35,10 @@ class PreutfyllingTest {
     fun `create mock on preutfyll P6000`() {
 
         val sed = createSED("P6000")
-
         val resultat = Preutfylling().preutfylling(sed)
-
         assertNotNull(resultat)
 
         assertEquals(2, resultat.grad!!.size)
-
         val list = resultat.grad!!
 
         assertEquals(100, list[0].grad)

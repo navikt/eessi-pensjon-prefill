@@ -8,6 +8,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import no.nav.eessi.eessifagmodul.models.BUC
 import no.nav.eessi.eessifagmodul.models.SED
 import no.nav.eessi.eessifagmodul.models.createPensjonBucList
+import org.hibernate.validator.internal.util.Contracts.assertNotNull
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.core.ParameterizedTypeReference
@@ -57,7 +58,6 @@ fun mapAnyToJson(data: Any, nonempty: Boolean = false): String {
         return mapAnyToJson(data)
     }
 }
-
 
 fun validateJson(json: String) : Boolean {
     try {
