@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration
 @Configuration
 class PersonV3Config {
 
-    @Value("\${person.v3.endpointurl}")
+    @Value("\${virksomhet.person.v3.endpointurl}")
     lateinit var endpointUrl: String
 
     @Bean
