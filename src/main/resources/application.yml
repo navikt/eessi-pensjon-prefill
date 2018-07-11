@@ -5,7 +5,6 @@ eessibasis:
 freg:
   security:
     oidc:
-      ignored-paths: '/**'
       secured-path: '/api/**'
       refresh:
         enabled: 'false'
