@@ -1,17 +1,13 @@
-package no.nav.eessi.eessifagmodul.config.jaxws.client
+package no.nav.eessi.eessifagmodul.clients.aktoerid
 
-import no.nav.eessi.eessifagmodul.config.jaxws.sts.configureRequestSamlToken
-import no.nav.eessi.eessifagmodul.config.jaxws.sts.configureRequestSamlTokenOnBehalfOfOidc
+import no.nav.eessi.eessifagmodul.config.sts.configureRequestSamlToken
+import no.nav.eessi.eessifagmodul.config.sts.configureRequestSamlTokenOnBehalfOfOidc
 import no.nav.tjeneste.virksomhet.aktoer.v2.binding.AktoerV2
 import no.nav.tjeneste.virksomhet.aktoer.v2.meldinger.*
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 @Component
-class AktoerIdClient {
-
-    @Autowired
-    lateinit var service: AktoerV2
+class AktoerIdClient(val service: AktoerV2) {
 
     fun ping() {
         // UNT->SAML: Bruker servicebruker i kall til STS for å hente SAML
