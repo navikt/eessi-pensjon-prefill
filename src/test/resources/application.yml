@@ -1,33 +1,33 @@
 eessibasis:
-  url: http://example.com:8089
-  #url: http://localhost:9090
-  username: srvPensjon
-  password: Ash5SoxP
+  url: 'http://example.com:8089'
 
 aktoer.v2:
-  endpointurl: https://example.com/aktoerid/AktoerService/v2
+  endpointurl: 'https://example.com/aktoerid/AktoerService/v2'
+person.v3:
+  endpointurl: 'https://example.com/tpsws/ws/Person/v3'
+
 
 credentials:
   srvpensjon:
-    username: srvPensjon
-    password: Ash5SoxP
+    username: 'username'
+    password: 'password'
 
 app:
-  name: TEST
-  version: 0.1
+  name: 'TEST'
+  version: '0.1'
 
 securitytokenservice:
-  url: https://example.com/SecurityTokenServiceProvider/
+  url: 'https://example.com/SecurityTokenServiceProvider/'
 
 security:
   basic:
-    enabled: false
+    enabled: 'false'
 
 management:
   security:
-    enabled: false
+    enabled: 'false'
 
 freg:
   security:
     oidc:
-      enabled: false
+      enabled: 'false'
