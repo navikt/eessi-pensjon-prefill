@@ -29,11 +29,15 @@ fasitResources:
   used:
   - alias: Aktoer_v2
     resourceType: WebserviceEndpoint
+  - alias: virksomhet:Person_v3
+    resourceType: WebserviceEndpoint
+
   - alias: srvPensjon
     resourceType: Credential
     propertyMap:
       username: credentials.srvpensjon.username
       password: credentials.srvpensjon.password
+
   - alias: OpenIdConnect
     resourceType: baseurl
     propertyMap:
@@ -47,6 +51,7 @@ fasitResources:
       password: security.oidc.clientSecret
   - alias: securityTokenService
     resourceType: baseurl
+
   exposed:
   - alias: eessifagmodulservice
     resourceType: restservice
