@@ -1,10 +1,11 @@
 freg:
   security:
     oidc:
-      ignored-paths: '/internal/**,/actuator/**,/error**,/login**'
+#      ignored-paths: '/internal/**,/actuator/**,/error**,/login**'
       refresh:
         enabled: 'false'
       auth:
+#        enabled: 'true'
         header-filter-enabled: 'true'
         cookie-filter-enabled: 'false'
       login:
@@ -28,6 +29,9 @@ eessibasis:
 
 aktoer.v2:
   endpointurl: 'https://app-t8.adeo.no/aktoerid/AktoerService/v2'
+
+person.v3:
+  endpointurl: 'https://wasapp-t8.adeo.no/tpsws/ws/Person/v3'
 
 credentials:
   srvpensjon:
