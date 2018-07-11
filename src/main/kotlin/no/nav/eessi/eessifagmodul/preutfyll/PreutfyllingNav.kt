@@ -1,6 +1,9 @@
 package no.nav.eessi.eessifagmodul.preutfyll
 
-import no.nav.eessi.eessifagmodul.models.*
+import no.nav.eessi.eessifagmodul.models.Bruker
+import no.nav.eessi.eessifagmodul.models.Nav
+import no.nav.eessi.eessifagmodul.models.Person
+import no.nav.eessi.eessifagmodul.models.PinItem
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -8,6 +11,7 @@ class PreutfyllingNav(val utfylling: Utfylling) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PreutfyllingNav::class.java) }
 
+    val seds : List<String> = listOf("P2000", "P6000")
 
     fun utfyllNav(): Nav {
 
@@ -20,14 +24,19 @@ class PreutfyllingNav(val utfylling: Utfylling) {
 
         //min krav for P6000
         //sed.nav = Nav(
-        val sed = utfylling.sed
 
+        val sed = utfylling.sed
         logger.debug("SED.sed : ${sed.sed}")
 
-        if (validSED("P6000", sed)) {
-            logger.debug("Sjekk om SED er P6000")
+        if (seds.contains(sed.sed)) {
+            logger.debug("Sjekk om SED er P2000/P6000")
             val bruker = Bruker(
                     person = Person(
+                            pin = listOf(PinItem(
+                                    sektor = "alle",
+                                    land = "NO",
+                                    identifikator = "01126712345")
+                            ),
                             fornavn = "Fornavn",
                             kjoenn = "f",
                             foedselsdato = "1957-12-01",
@@ -38,7 +47,7 @@ class PreutfyllingNav(val utfylling: Utfylling) {
             //preutfylling
             val grad = Grad(grad = 100, felt = "Bruker", beskrivelse = "Bruker/Person")
             utfylling.leggtilGrad(grad)
-            utfylling.leggtilTjeneste("Preutfylling/P6000")
+            utfylling.leggtilTjeneste("Preutfylling/${sed.sed}")
 
             return bruker
 

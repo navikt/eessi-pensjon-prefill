@@ -64,4 +64,10 @@ class SedTest{
 
     }
 
+    fun mapJsonToAny(json: String, clazz : Any) : Any {
+        val map = jacksonObjectMapper()
+        return map.readValue(json, Any::class.java)
+    }
+
+
 }

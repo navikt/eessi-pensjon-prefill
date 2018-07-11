@@ -6,10 +6,11 @@ import no.nav.eessi.eessifagmodul.preutfyll.Preutfylling
 import no.nav.eessi.eessifagmodul.services.EuxService
 import no.nav.eessi.eessifagmodul.utils.logger
 import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.web.bind.annotation.*
-import java.util.*
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
+import java.util.*
 
 
 @RestController
@@ -23,7 +24,7 @@ class ApiController(private val euxService: EuxService) {
         val sed: SED
         if (request.sed != null) {
             sed = createSED(request.sed)
-            if (sed.sed == "P6000") {
+            if ("P6000" == sed.sed ) {
                 val preutfyll = Preutfylling()
                 val utfyll = preutfyll.preutfylling(sed)
                 sed.nav = utfyll.sed.nav
@@ -52,7 +53,7 @@ class ApiController(private val euxService: EuxService) {
         val sed: SED
         if (request.sed != null) {
             sed = createSED(request.sed)
-            if (sed.sed == "P6000") {
+            if ("P6000" == sed.sed) {
                 val preutfyll = Preutfylling()
                 val utfyll = preutfyll.preutfylling(sed)
                 sed.nav = utfyll.sed.nav
