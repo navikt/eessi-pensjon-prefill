@@ -59,9 +59,9 @@ fun mapAnyToJson(data: Any, nonempty: Boolean = false): String {
     }
 }
 
-inline fun <reified T : Any> mapJsonToAny(json: String, objec : TypeReference<T>, unknownerror: Boolean = false): T {
+inline fun <reified T : Any> mapJsonToAny(json: String, objec : TypeReference<T>, failonunknown: Boolean = false): T {
     return jacksonObjectMapper()
-            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, unknownerror)
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, failonunknown)
             .readValue<T>(json, objec)
 }
 
