@@ -15,26 +15,26 @@ class SedMock {
         )
     }
 
-    fun genererEmptyP6000Mock(): SED {
-        return SED(
-                nav = Nav(),
-                pensjon = Pensjon(),
-                sed = "P6000",
-                sedVer = "0",
-                sedGVer = "4"
-                //sector = "Sector Components/Pensions/P6000"
-        )
-    }
-    fun genererEmptyP2000Mock(): SED {
-        return SED(
-                nav = Nav(),
-                pensjon = Pensjon(),
-                sed = "P2000",
-                sedVer = "0",
-                sedGVer = "4"
-                //sector = "Sector Components/Pensions/P2000"
-        )
-    }
+//    fun genererEmptyP6000Mock(): SED {
+//        return SED(
+//                nav = Nav(),
+//                pensjon = Pensjon(),
+//                sed = "P6000",
+//                sedVer = "0",
+//                sedGVer = "4"
+//                //sector = "Sector Components/Pensions/P6000"
+//        )
+//    }
+//    fun genererEmptyP2000Mock(): SED {
+//        return SED(
+//                nav = Nav(),
+//                pensjon = Pensjon(),
+//                sed = "P2000",
+//                sedVer = "0",
+//                sedGVer = "4"
+//                //sector = "Sector Components/Pensions/P2000"
+//        )
+//    }
 
 }
 
@@ -50,10 +50,19 @@ class NavMock {
     fun genererNavMock(): Nav {
         return Nav(
                 bruker = Bruker(
-                        mor = Mor(
+                        //mor = Mor(
+                        mor = Foreldre(
                                 Person(
                                         etternavnvedfoedsel = "asdfsdf",
-                                        fornavn = "asfsdf")),
+                                        fornavn = "asfsdf")
+                        ),
+                        //far = Far(
+                        far = Foreldre(
+                                Person(
+                                        etternavnvedfoedsel = "safasfsd",
+                                        fornavn = "farfornavn"
+                                )
+                        ),
                         person = Person(
                                 pin = listOf(
                                         PinItem(
@@ -87,12 +96,6 @@ class NavMock {
                                 forrnavnvedfoedsel = "werwerwe",
                                 tidligerefornavn = "asdfdsffsd",
                                 etternavnvedfoedsel = "werwreq"
-                        ),
-                        far = Far(
-                                Person(
-                                        etternavnvedfoedsel = "safasfsd",
-                                        fornavn = "farfornavn"
-                                )
                         )
                 ),
                 eessisak = listOf(
@@ -115,7 +118,8 @@ class PensjonMock {
 
     fun genererMockData(): Pensjon {
         return Pensjon(
-                gjenlevende = Gjenlevende(
+                //gjenlevende = Gjenlevende(
+                gjenlevende = Bruker(
                         adresse = Adresse(
                                 postnummer = "sdfsdf",
                                 by = "sfsdf",
@@ -124,11 +128,14 @@ class PensjonMock {
                                 bygning = "sdfsdfs",
                                 region = "dfsdf"
                         ),
-                        far = Far(
+                        //far = Far(
+                        far = Foreldre(
                                 person = Person(
                                         fornavn = "sdfsdf",
-                                        etternavnvedfoedsel = "sdfsd")),
-                        mor = Mor(
+                                        etternavnvedfoedsel = "sdfsd")
+                        ),
+                        //mor = Mor(
+                        mor = Foreldre(
                                 person = Person(
                                         etternavnvedfoedsel = "asdfsdf",
                                         fornavn = "asdfsdafsdf"
@@ -166,7 +173,7 @@ class PensjonMock {
                                 foedselsdato = "1964-12-01"
                         )
                 )
-                //end Gjendlevende
+                //end Gjendlevende//Bruker
                 ,
                 vedtak = listOf(
                         VedtakItem(
@@ -304,7 +311,9 @@ class PensjonMock {
                                 virkningsdato = "2030-10-01",
                                 basertPaa = "01"
                         )
-                ),
+                )
+                //end of vedtak Vedtakitem
+                ,
                 sak = Sak(
                         artikkel54 = "0",
                         kravtype = listOf(

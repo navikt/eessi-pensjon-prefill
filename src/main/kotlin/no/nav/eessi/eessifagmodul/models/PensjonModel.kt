@@ -14,8 +14,10 @@ data class Pensjon(
         @JsonProperty("vedtak")
         var vedtak: List<VedtakItem?>? = null,
         var sak: Sak? = null,
-        var gjenlevende: Gjenlevende? = null,
-        @field:JsonProperty("tilleggsinformasjon")
+        @JsonProperty("gjenlevende")
+        var gjenlevende: Bruker? = null,
+        //var gjenlevende: Gjenlevende? = null,
+        @JsonProperty("tilleggsinformasjon")
         var tilleggsinformasjon: Tilleggsinformasjon? = null
 )
 

@@ -7,7 +7,8 @@ data class FrontendRequest(
         val caseId: String? = null,
         val buc: String? = null,
         val sed : String? = null,
-        val institutions: List<Institusjon>? = null
+        val institutions: List<Institusjon>? = null,
+        var pinid: String? = null
 )
 
 data class Institusjon(

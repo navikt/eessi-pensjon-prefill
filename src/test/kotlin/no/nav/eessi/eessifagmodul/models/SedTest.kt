@@ -1,12 +1,16 @@
 package no.nav.eessi.eessifagmodul.models
 
+import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
+import no.nav.eessi.eessifagmodul.utils.mapJsonToAny
+import no.nav.eessi.eessifagmodul.utils.typeRefs
 import no.nav.eessi.eessifagmodul.utils.validateJson
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import org.mockito.junit.MockitoJUnitRunner
 import org.slf4j.Logger
@@ -34,10 +38,8 @@ class SedTest{
         assertNotNull(sed6000)
 
         val json = mapAnyToJson(sed6000)
-
         //map json back to P6000 obj
-        val map = jacksonObjectMapper()
-        val pensjondata = map.readValue(json, SED::class.java)
+        val pensjondata = mapJsonToAny(json, typeRefs<SED>())
         assertNotNull(pensjondata)
         assertEquals(sed6000, pensjondata)
 
@@ -48,26 +50,46 @@ class SedTest{
         validateJson(p6000file)
 
         //map P6000-NAV back to P6000 object.
-        val pensjondataFile= jacksonObjectMapper()
-            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-            .readValue(p6000file, SED::class.java)
+        val pensjondataFile = mapJsonToAny(p6000file, typeRefs<SED>())
         assertNotNull(pensjondataFile)
 
         //map P6000-NAV obj back to json
         val jsonnav = mapAnyToJson(sed6000)
 
+//        println("------------------generated----------------------")
+//        println("\n\n $json \n\n")
+//        println("------------------p6000-nav----------------------")
+//        println("\n\n $jsonnav \n\n")
+//        println("-------------------------------------------------")
+//
+        //hente ut bruker
+//        val bruker = pensjondataFile.nav!!.bruker!!
+//        //map bruker til json så tilbake til brukerback
+//        val brukerback = mapJsonToAny(mapAnyToJson(bruker), typeRefs<Bruker>())
+//        //alt ok?
+//        assertNotNull(brukerback)
+//        assertEquals(bruker, brukerback)
+
+        val sed = createSED("P6000")
+
+        val navmock = NavMock().genererNavMock()
+        sed.nav = Nav(
+                bruker = navmock.bruker
+            )
+
+        val penmock = PensjonMock().genererMockData()
+        sed.pensjon = Pensjon(
+                gjenlevende = penmock.gjenlevende
+        )
+
+        val testPersjson = mapAnyToJson(sed, true)
+
         println("------------------generated----------------------")
-        println("\n\n $json \n\n")
+        println("\n\n $testPersjson \n\n")
         println("------------------p6000-nav----------------------")
-        println("\n\n $jsonnav \n\n")
-        println("-------------------------------------------------")
+
+
 
     }
-
-    fun mapJsonToAny(json: String, clazz : Any) : Any {
-        val map = jacksonObjectMapper()
-        return map.readValue(json, Any::class.java)
-    }
-
 
 }

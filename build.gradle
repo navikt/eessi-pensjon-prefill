@@ -68,6 +68,9 @@ dependencies {
     testCompile("org.springframework.boot:spring-boot-starter-test")
     testCompile("org.springframework.security:spring-security-test")
 
+    //XML
+    //compile('com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.9.5')
+
     // OIDC-support
     compile("no.nav.freg:freg-security-oidc:2.1.1")
 
@@ -93,6 +96,7 @@ dependencies {
     // Tjenestespesifikasjoner
     compile("no.nav.tjenester.fim:nav-fim-aktoer-v2-tjenestespesifikasjon:${aktoerIdVersion}:jaxws")
     compile("no.nav.tjenester:nav-person-v3-tjenestespesifikasjon:${personV3Version}")
+
 }
 
 repositories {

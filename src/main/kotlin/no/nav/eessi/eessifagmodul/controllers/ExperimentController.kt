@@ -4,11 +4,17 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.swagger.annotations.ApiOperation
 import no.nav.eessi.eessifagmodul.clients.aktoerid.AktoerIdClient
 import no.nav.eessi.eessifagmodul.clients.personv3.PersonV3Client
-import no.nav.eessi.eessifagmodul.models.*
+import no.nav.eessi.eessifagmodul.models.BUC
+import no.nav.eessi.eessifagmodul.models.RINASaker
+import no.nav.eessi.eessifagmodul.models.SED
+import no.nav.eessi.eessifagmodul.models.createPensjonBucList
 import no.nav.eessi.eessifagmodul.services.EuxService
 import no.nav.eessi.eessifagmodul.utils.createListOfSED
 import no.nav.eessi.eessifagmodul.utils.createListOfSEDOnBUC
+import no.nav.eessi.eessifagmodul.utils.logger
 import no.nav.freg.security.oidc.common.OidcTokenAuthentication
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.*
+import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentGeografiskTilknytningResponse
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonResponse
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -17,11 +23,10 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.client.RestTemplate
 import java.net.URI
-import java.util.*
 
 @CrossOrigin
 @RestController
-@RequestMapping("/experiments")
+@RequestMapping("/api/experiments")
 class ExperimentController {
 
     val objectMapper = jacksonObjectMapper()
@@ -58,35 +63,28 @@ class ExperimentController {
 
     @GetMapping("/testAktoer/{ident}")
     fun testAktoer(@PathVariable("ident") ident: String): String? {
-        val auth = SecurityContextHolder.getContext().authentication as OidcTokenAuthentication
-        return aktoerIdClient.hentAktoerIdForIdent(ident, auth.idToken)?.aktoerId
+//        val auth = SecurityContextHolder.getContext().authentication as OidcTokenAuthentication
+        return aktoerIdClient.hentAktoerIdForIdent(ident)?.aktoerId
+    }
+
+    @GetMapping("/testAktoerTilIdent/{ident}")
+    fun testAktoerTilIdent(@PathVariable("ident") ident: String): String? {
+//        val auth = SecurityContextHolder.getContext().authentication as OidcTokenAuthentication
+        return aktoerIdClient.hentIdentForAktoerId(ident)?.ident
     }
 
     @GetMapping("/testPerson/{ident}")
     fun testPerson(@PathVariable("ident") ident: String): HentPersonResponse {
-        return personV3Client.hentPerson(ident)
+        val personV3 = personV3Client.hentPerson(ident)
+        return personV3
     }
 
-    @GetMapping("/opprett")
-    fun createCaseAndDocument(): String? {
-        val fagSaknr = "SAK-123456"
-        val mottaker = "NO"
-        val pensjon = genererMockData()
-        val pensjonAsJson = objectMapper.writeValueAsString(pensjon)
-        val bucType = "P6000"
-        val korrid = UUID.randomUUID()
-        val vedleggType = ""
-
-        try {
-            val data = euxService.createCaseAndDocument(pensjonAsJson, bucType, fagSaknr, mottaker, vedleggType, korrid.toString())
-            println("Response: $data")
-            println("Skal komme hit!!")
-            return data
-        } catch (ex: Exception) {
-            println("Skal _IKKE_ komme hit!!")
-            throw RuntimeException(ex.message)
-        }
+    @GetMapping("/testGeografi/{ident}")
+    fun testGeografi(@PathVariable("ident") ident: String): HentGeografiskTilknytningResponse {
+        val geografi = personV3Client.hentGeografi(ident)
+        return geografi
     }
+
 
     @ApiOperation("henter liste av alle BuC og tilhørende SED med forklaring")
     @GetMapping("/detailbucs", produces = [MediaType.APPLICATION_JSON_VALUE])
@@ -120,6 +118,3 @@ class ExperimentController {
     }
 }
 
-fun genererMockData(): Pensjon {
-    return PensjonMock().genererMockData()
-}
