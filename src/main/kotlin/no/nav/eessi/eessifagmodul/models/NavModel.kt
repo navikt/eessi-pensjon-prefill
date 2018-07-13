@@ -13,19 +13,26 @@ data class Nav(
 )
 
 data class Bruker(
-        var mor: Mor? = null,
+        @JsonProperty("mor")
+        var mor: Foreldre? = null,
+        @JsonProperty("far")
+        var far: Foreldre? = null,
         var person: Person? = null,
-        var far: Far? = null,
         var adresse: Adresse? = null
 )
 
-data class Far(
+//MOR - FAR
+data class Foreldre(
         var person: Person? = null
 )
 
-data class Mor(
-        var person: Person? = null
-)
+//data class Far(
+//        var person: Person? = null
+//)
+//
+//data class Mor(
+//        var person: Person? = null
+//)
 
 data class Person(
         @JsonProperty("pin")
@@ -85,10 +92,14 @@ data class Ignore(
         val otherInformation: String? = null
 )
 
-data class Gjenlevende(
-        val mor: Mor? = null,
-        val far: Far? = null,
-        val person: Person? = null,
-        val adresse: Adresse? = null
-)
-
+//data class Gjenlevende(
+//        @JsonProperty("mor")
+//        var mor: Foreldre? = null,
+//        @JsonProperty("far")
+//        var far: Foreldre? = null,
+////        val mor: Mor? = null,
+////        val far: Far? = null,
+//        val person: Person? = null,
+//        val adresse: Adresse? = null
+//)
+//

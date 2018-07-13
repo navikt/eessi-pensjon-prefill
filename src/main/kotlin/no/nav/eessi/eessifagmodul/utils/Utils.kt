@@ -59,6 +59,13 @@ fun mapAnyToJson(data: Any, nonempty: Boolean = false): String {
     }
 }
 
+inline fun <reified T : Any> mapJsonToAny(json: String, objec : TypeReference<T>, unknownerror: Boolean = false): T {
+    return jacksonObjectMapper()
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, unknownerror)
+            .readValue<T>(json, objec)
+}
+
+
 fun validateJson(json: String) : Boolean {
     try {
         val objectMapper = ObjectMapper()

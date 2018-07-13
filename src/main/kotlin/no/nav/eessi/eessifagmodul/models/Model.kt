@@ -28,7 +28,7 @@ data class SED (
         //val sector: String? = null,
 )
 
-fun createSED(sedName: String): SED {
+fun createSED(sedName: String?): SED {
     return SED (
         sed = sedName,
         sedVer = "0",

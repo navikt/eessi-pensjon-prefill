@@ -3,61 +3,51 @@ package no.nav.eessi.eessifagmodul.preutfyll
 import no.nav.eessi.eessifagmodul.models.Bruker
 import no.nav.eessi.eessifagmodul.models.Nav
 import no.nav.eessi.eessifagmodul.models.Person
-import no.nav.eessi.eessifagmodul.models.PinItem
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.stereotype.Service
 
-class PreutfyllingNav(val utfylling: Utfylling) {
+@Service
+class PreutfyllingNav(private val preutfyllingPersonFraTPS: PreutfyllingPersonFraTPS) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PreutfyllingNav::class.java) }
+    val validseds : List<String> = listOf("P2000", "P6000")
 
-    val seds : List<String> = listOf("P2000", "P6000")
+    fun utfyllNav(utfylling: UtfyllingData): Nav {
 
-    fun utfyllNav(): Nav {
-
-        val nav = Nav()
-        nav.bruker = bruker()
+        val brukertps = bruker(utfylling)
+        val nav = Nav(
+                bruker = Bruker(
+                        person = brukertps.person
+                )
+        )
         return nav
     }
 
-    private fun bruker(): Bruker {
-
-        //min krav for P6000
-        //sed.nav = Nav(
+    private fun bruker(utfylling: UtfyllingData): Bruker {
 
         val sed = utfylling.sed
         logger.debug("SED.sed : ${sed.sed}")
 
-        if (seds.contains(sed.sed)) {
-            logger.debug("Sjekk om SED er P2000/P6000")
-            val bruker = Bruker(
-                    person = Person(
-                            pin = listOf(PinItem(
-                                    sektor = "alle",
-                                    land = "NO",
-                                    identifikator = "01126712345")
-                            ),
-                            fornavn = "Fornavn",
-                            kjoenn = "f",
-                            foedselsdato = "1957-12-01",
-                            etternavn = "Etternavn"
-                    )
-            )
+        //kan denn utfylling benyttes på vilke SED?
+        if (validseds.contains(sed.sed)) {
+            //preutfylling av sed her!
 
-            //preutfylling
-            val grad = Grad(grad = 100, felt = "Bruker", beskrivelse = "Bruker/Person")
-            utfylling.leggtilGrad(grad)
-            utfylling.leggtilTjeneste("Preutfylling/${sed.sed}")
+            val pinid = utfylling.hentPinid()
+            val bruker = preutfyllingPersonFraTPS.preutfyllBruker(pinid)
 
             return bruker
-
         }
-        logger.debug("SED er ikke P6000")
-
-        //Ingen preutfylling
-        utfylling.leggtilGrad(Grad(grad = 0, felt = "Bruker", beskrivelse = "Bruker"))
-        utfylling.leggtilTjeneste("Preutfylling/N/A")
-        return Bruker()
+        logger.debug("SED er ikke P6000/P2000 -")
+        val brukerfake = Bruker(
+                person = Person(
+                    fornavn = "Fornavn",
+                    kjoenn = "f",
+                    foedselsdato = "1967-12-01",
+                    etternavn = "Etternavn"
+                )
+            )
+        return brukerfake
     }
 
 }
