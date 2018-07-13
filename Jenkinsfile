@@ -3,11 +3,11 @@ pipeline {
 
     environment {
         repo = "docker.adeo.no:5000"
-        FASIT_ENV = 't1'
-        APPLICATION_NAMESPACE = 't1'
-        FASIT_ENV_TEST = 't8'
-        APPLICATION_NAMESPACE_TEST = 't8'
-        ZONE = 'fss'
+        fasit_env = 't1'
+        application_namespace = 't1'
+        fasit_env_test = 't8'
+        application_namespace_test = 't8'
+        zone = 'fss'
     }
 
     stages {
@@ -18,8 +18,7 @@ pipeline {
                     version = sh(script: "sh gradlew properties | grep ^version: | sed 's/version: //'", returnStdout: true).trim()
                     branchName = "${env.BRANCH_NAME}"
                     if (branchName != "master") {
-                        commitHashShort = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
-                        version = "${version}.${branchName.replaceAll('/', '-')}.${env.BUILD_ID}-${commitHashShort}"
+                        version = "${version}.${branchName.replaceAll('/', '-')}.${env.BUILD_ID}"
                     } else {
                         version = "${version}-${env.BUILD_ID}"
                     }
@@ -57,14 +56,7 @@ pipeline {
         stage('Docker') {
             steps {
                 script {
-                    docker.withRegistry("https://${repo}") {
-                        buildArg = "."
-                        if (binding.hasVariable("commitHashShort"))
-                            buildArg = "--build-arg GIT_COMMIT_ID=${commitHashShort} ."
-                        image = docker.build(applicationFullName, buildArg)
-                        image.push()
-                        image.push('latest')
-                    }
+                    deployUtils.buildAndPushDockerImage(repo, applicationFullName)
                 }
             }
         }
@@ -75,10 +67,10 @@ pipeline {
                     echo "Deploy '${branchName}'?"
                     if (branchName.startsWith('feature')) {
                         echo "\tdeploying to t8 (test)"
-                        deploy.naisDeploy(app_name, version, FASIT_ENV_TEST, APPLICATION_NAMESPACE_TEST, ZONE)
+                        deployUtils.naisDeploy(app_name, version, fasit_env_test, application_namespace_test, zone)
                     } else if (branchName == 'master') {
-                        echo "\tdeploying to t1 (master)"
-                        deploy.naisDeploy(app_name, version, FASIT_ENV, APPLICATION_NAMESPACE, ZONE)
+                        echo "\tdeploying to t8 (master)"
+                        deployUtils.naisDeploy(app_name, version, fasit_env, application_namespace, zone)
                     } else {
                         echo "Skipping deploy"
                     }
