@@ -61,7 +61,9 @@ class ApiController(private val euxService: EuxService, private val preutfylling
     private fun createPreutfyltSED(request: FrontendRequest):SED {
         if (request.sed != null) {
             if (request.pinid == null || request.pinid?.length != 13) {
-                throw IllegalArgumentException("Mangler AktoerID for person")
+                request.pinid = ""
+                logger.debug("Satt request pinid til \"\" da den var null")
+                //throw IllegalArgumentException("Mangler AktoerID for person")
             }
             if ("P6000" == request.sed) {
                 val utfyll = preutfylling.preutfylling(request)

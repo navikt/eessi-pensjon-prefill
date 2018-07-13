@@ -56,39 +56,41 @@ class SedTest{
         //map P6000-NAV obj back to json
         val jsonnav = mapAnyToJson(sed6000)
 
-//        println("------------------generated----------------------")
-//        println("\n\n $json \n\n")
-//        println("------------------p6000-nav----------------------")
-//        println("\n\n $jsonnav \n\n")
-//        println("-------------------------------------------------")
-//
+        println("------------------generated----------------------")
+        println("\n\n $json \n\n")
+        println("------------------p6000-nav----------------------")
+        println("\n\n $jsonnav \n\n")
+        println("-------------------------------------------------")
+
+    }
+
+    @Test
+    fun `create part json to object`() {
+        val sed6000 = SedMock().genererP6000Mock()
+        assertNotNull(sed6000)
+
         //hente ut bruker
-//        val bruker = pensjondataFile.nav!!.bruker!!
-//        //map bruker til json så tilbake til brukerback
-//        val brukerback = mapJsonToAny(mapAnyToJson(bruker), typeRefs<Bruker>())
-//        //alt ok?
-//        assertNotNull(brukerback)
-//        assertEquals(bruker, brukerback)
+        val bruker = sed6000.nav!!.bruker!!
+        //map bruker til json så tilbake til brukerback
+        val brukerback = mapJsonToAny(mapAnyToJson(bruker), typeRefs<Bruker>())
+        //alt ok?
+        assertNotNull(brukerback)
+        assertEquals(bruker, brukerback)
 
         val sed = createSED("P6000")
-
         val navmock = NavMock().genererNavMock()
         sed.nav = Nav(
                 bruker = navmock.bruker
-            )
-
+        )
         val penmock = PensjonMock().genererMockData()
         sed.pensjon = Pensjon(
                 gjenlevende = penmock.gjenlevende
         )
-
         val testPersjson = mapAnyToJson(sed, true)
 
         println("------------------generated----------------------")
         println("\n\n $testPersjson \n\n")
         println("------------------p6000-nav----------------------")
-
-
 
     }
 
