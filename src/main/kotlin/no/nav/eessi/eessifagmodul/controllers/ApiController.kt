@@ -1,13 +1,14 @@
 package no.nav.eessi.eessifagmodul.controllers
 
 import io.swagger.annotations.ApiOperation
-import no.nav.eessi.eessifagmodul.models.*
+import no.nav.eessi.eessifagmodul.models.FrontendRequest
+import no.nav.eessi.eessifagmodul.models.SED
+import no.nav.eessi.eessifagmodul.models.createSED
 import no.nav.eessi.eessifagmodul.preutfyll.Preutfylling
-import no.nav.eessi.eessifagmodul.preutfyll.PreutfyllingPersonFraTPS
 import no.nav.eessi.eessifagmodul.services.EuxService
-import no.nav.eessi.eessifagmodul.utils.logger
 import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
-import org.springframework.beans.factory.annotation.Autowired
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -18,13 +19,20 @@ import java.util.*
 @RequestMapping("/api")
 class ApiController(private val euxService: EuxService, private val preutfylling: Preutfylling) {
 
+    private val logger: Logger by lazy { LoggerFactory.getLogger(ApiController::class.java) }
+
+
     @ApiOperation("bekrefter SED preutfylling før innending til eux-bais(rina)")
     @PostMapping("/confirm")
     fun confirmDocument(@RequestBody request: FrontendRequest): SED {
 
-        return createPreutfyltSED(request)
+        val sed = createPreutfyltSED(request)
 
-     }
+        val sedjson = mapAnyToJson(sed, true)
+        logger.debug("SED : $sedjson")
+
+        return sed
+    }
 
     @ApiOperation("kjører prosess OpprettBuCogSED på EUX for å få dokuemt opprett i Rina")
     @PostMapping("/create")
@@ -40,7 +48,6 @@ class ApiController(private val euxService: EuxService, private val preutfylling
         val korrid = UUID.randomUUID()
 
         val sed = createPreutfyltSED(request)
-
         val sedAsJson = mapAnyToJson(sed, true)
 
         logger.debug("Følgende jsonSED blir sendt : $sedAsJson")
@@ -57,19 +64,22 @@ class ApiController(private val euxService: EuxService, private val preutfylling
         return "{\"euxcaseid\":\"$euSaksnr\"}"
     }
 
-    //1000042667232
     private fun createPreutfyltSED(request: FrontendRequest):SED {
         if (request.sed != null) {
-            if (request.pinid == null || request.pinid?.length != 13) {
-                request.pinid = ""
-                logger.debug("Satt request pinid til \"\" da den var null")
-                //throw IllegalArgumentException("Mangler AktoerID for person")
-            }
+//            if (request.pinid == null || request.pinid?.length != 13 || request.caseId == null) {
+//                logger.debug("Må vel avlutte preutfylling dersom vi ikke har aktoerid eller caseid (saksnr)? det vil vel aldri skje?")
+//                throw IllegalArgumentException("Mangler AktoerID eller Saksnr")
+//            }
             if ("P6000" == request.sed) {
                 val utfyll = preutfylling.preutfylling(request)
                 return utfyll.sed
             } else if ("P2000" == request.sed) {
                 return createSED(sedName = request.sed)
+            } else {
+                val utfyll = preutfylling.preutfylling(request)
+                val sed: SED = utfyll.sed
+                sed.sed = "P6000"
+                return sed
             }
         }
         throw IllegalArgumentException("Mangler SED, eller ugyldig SED")

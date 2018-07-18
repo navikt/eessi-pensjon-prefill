@@ -26,14 +26,6 @@ data class Foreldre(
         var person: Person? = null
 )
 
-//data class Far(
-//        var person: Person? = null
-//)
-//
-//data class Mor(
-//        var person: Person? = null
-//)
-
 data class Person(
         @JsonProperty("pin")
         var pin: List<PinItem>? = null,

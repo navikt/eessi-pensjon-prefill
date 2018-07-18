@@ -3,6 +3,8 @@ package no.nav.eessi.eessifagmodul.services
 import com.nhaarman.mockito_kotlin.whenever
 import no.nav.eessi.eessifagmodul.clients.personv3.PersonV3Client
 import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
+import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonPersonIkkeFunnet
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Person
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Personnavn
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonResponse
@@ -39,7 +41,7 @@ class TpsServiceTest{
     fun `hente ned tpsPerson`() {
         val personnavn = Personnavn()
             personnavn.fornavn = "Dummy"
-        val person = Person()
+        val person = Bruker()
             person.personnavn = personnavn
         val response = HentPersonResponse()
             response.person = person
@@ -50,7 +52,7 @@ class TpsServiceTest{
         assertNotNull(data)
         val json = mapAnyToJson(data)
         assertNotNull(json)
-        assertEquals("Dummy", data.person.personnavn.fornavn)
+        assertEquals("Dummy", data.personnavn.fornavn)
 
         println("Hva HentPersonRespone består av : $json")
 

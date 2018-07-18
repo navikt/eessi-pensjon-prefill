@@ -1,85 +1,153 @@
 package no.nav.eessi.eessifagmodul.preutfyll
 
 import no.nav.eessi.eessifagmodul.clients.personv3.PersonV3Client
+import no.nav.eessi.eessifagmodul.component.LandkodeService
+import no.nav.eessi.eessifagmodul.component.PostnummerService
 import no.nav.eessi.eessifagmodul.models.*
 import no.nav.eessi.eessifagmodul.models.Bruker
 import no.nav.eessi.eessifagmodul.models.Person
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.*
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.text.SimpleDateFormat
 
 @Service
-class PreutfyllingPersonFraTPS(private val personV3Client: PersonV3Client) {
+class PreutfyllingPersonFraTPS(private val personV3Client: PersonV3Client, private val postnummerService: PostnummerService, private val landkoder: LandkodeService) {
 
+    private val logger: Logger by lazy { LoggerFactory.getLogger(PreutfyllingPersonFraTPS::class.java) }
     private val dateformat = "YYYY-MM-dd"
+
+    private enum class ForeldreEnum(val foreldre: String) {
+        FAR("FARA"),
+        MOR("MORA");
+        fun erSamme(foreldreTPS: String): Boolean {
+            return foreldre.equals(foreldreTPS)
+        }
+    }
 
     fun preutfyllBruker(ident: String): Bruker {
 
-        val response =  personV3Client.hentPerson(ident)
-        val personTps : no.nav.tjeneste.virksomhet.person.v3.informasjon.Person = response.person
+        val brukerTPS = hentBrukerTPS(ident)
 
-        val tpsBruker = Bruker(
-            person = personData(personTps),
-            adresse = personAdresse(personTps)
+        val bruker = Bruker(
+            far = hentForeldre(ForeldreEnum.FAR, brukerTPS),
+            mor = hentForeldre(ForeldreEnum.MOR, brukerTPS),
+            person = personData(brukerTPS),
+            adresse = personAdresse(brukerTPS)
         )
-        return tpsBruker
+        logger.debug("Preutfylling Bruker")
+        return bruker
     }
 
-    private fun personData(personTps: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): Person {
-        val navn = personTps.personnavn
-        val persident = personTps.aktoer as PersonIdent
-        val pinid = persident.ident
-        val statsborgerskap = personTps.statsborgerskap
-        val fdato = personTps.foedselsdato
-        val kjonn = personTps.kjoenn
+    //bruker fra TPS
+    private fun hentBrukerTPS(ident: String): no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker {
+        val response =  personV3Client.hentPerson(ident)
+        return response.person as no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker
+    }
+
+    //personnr
+    private fun hentNorIdent(person: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): String {
+        val persident = person.aktoer as PersonIdent
+        val pinid: NorskIdent = persident.ident
+        return pinid.ident
+    }
+
+    //fdato i rinaformat
+    private fun datoFormat(person: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): String {
+        val fdato = person.foedselsdato
         val fodCalendar = fdato.foedselsdato.toGregorianCalendar()
         val fodseldatoformatert = SimpleDateFormat(dateformat).format(fodCalendar.time)
+        return fodseldatoformatert
+    }
+
+    //mor / far
+    private fun hentForeldre(relasjon: ForeldreEnum, person: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): Foreldre? {
+        person.harFraRolleI.forEach {
+            val tpsvalue = it.tilRolle.value
+            if (relasjon.erSamme(tpsvalue)) {
+                val persontps = it.tilPerson as no.nav.tjeneste.virksomhet.person.v3.informasjon.Person
+                val navntps = persontps.personnavn as Personnavn
+                val foreldreperson = Person(
+                    fornavn = navntps.fornavn,
+                    etternavnvedfoedsel = navntps.etternavn
+                )
+                if (ForeldreEnum.MOR.erSamme(tpsvalue)) {
+                    foreldreperson.etternavnvedfoedsel = ""
+                }
+                logger.debug("Preutfylling Foreldre")
+                return Foreldre(foreldreperson)
+            }
+        }
+        return null
+    }
+
+    //persondata - rina format
+    private fun personData(personTps: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): Person {
+        val navn = personTps.personnavn as Personnavn
+        val statsborgerskap = personTps.statsborgerskap as Statsborgerskap
+        val kjonn = personTps.kjoenn
 
         val person = Person(
-                pin = listOf(PinItem( sektor = "alle", identifikator = pinid.ident, land = formatNORland(statsborgerskap.land.value))),
-                //etternavnvedfoedsel = navn.etternavn,
+                pin = listOf(
+                        PinItem(
+                        sektor = "alle",
+                        identifikator = hentNorIdent(personTps),
+                        land = hentLandkode(statsborgerskap.land)
+                        )
+                    ),
                 forrnavnvedfoedsel = navn.fornavn,
                 fornavn = navn.fornavn,
                 etternavn = navn.etternavn,
-                foedselsdato = fodseldatoformatert,
+                foedselsdato = datoFormat(personTps),
                 statsborgerskap = listOf(statsBorgerskap(personTps)),
                 kjoenn = mapKjonn(kjonn.kjoenn.value)
         )
-
+        logger.debug("Preutfylling Person")
         return person
     }
 
     private fun personAdresse(person: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): Adresse{
         val gateAdresse = person.bostedsadresse.strukturertAdresse as Gateadresse
-
+        val postnr = gateAdresse.poststed.value
         val adr = Adresse(
-            postnummer = gateAdresse.poststed.value,
+            postnummer = postnr,
             region = gateAdresse.kommunenummer,
             gate = gateAdresse.gatenavn,
             bygning = gateAdresse.husnummer.toString(),
-            land = formatNORland(gateAdresse.landkode.value)
+            land = hentLandkode(gateAdresse.landkode),
+            by = postnummerService.finnPoststed(postnr)
         )
+        logger.debug("Preutfylling by(sted) benytter finnPoststed")
+        logger.debug("Preutfylling Gateadresse")
         return adr
     }
 
     private fun statsBorgerskap(person: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): StatsborgerskapItem {
-        val statsborgerskap = person.statsborgerskap
+        val statsborgerskap = person.statsborgerskap as Statsborgerskap
+        val land = statsborgerskap.land as no.nav.tjeneste.virksomhet.person.v3.informasjon.Landkoder
         val statitem = StatsborgerskapItem(
-            land = formatNORland(statsborgerskap.land.value)
+            //land = formatNORland(statsborgerskap.land.value)
+            land = hentLandkode(land)
         )
+        logger.debug("Preutfylling Statsborgerskap")
         return statitem
     }
 
-    //Midlertidig funksjon for map TPS til EUX/Rina
-    private fun formatNORland(land: String): String {
-        val map: Map<String, String> = hashMapOf("NOR" to "NO")
-        return map.get(land)!!
+    //Denne blir vel flyttet til Basis når mapping blir rettet opp fra NO=NO til NOR=NO (TPS/EU-RINA)??
+    private fun hentLandkode(landkodertps: no.nav.tjeneste.virksomhet.person.v3.informasjon.Landkoder): String? {
+        val result = landkoder.finnLandkode2(landkodertps.value)
+        logger.debug("Preutfylling mapping Landkode (alpha3-alpha2)  ${landkodertps.value} til $result")
+        return result
     }
 
+
+
+    //Midlertidige - mapping i Basis vil bli rettet slik at det sammkjører mot tps mapping.
     //Midlertidig funksjon for map TPS til EUX/Rina
     private fun mapKjonn(kjonn: String): String {
         val map: Map<String, String> = hashMapOf("M" to "m", "K" to "f")
-        val value = map.get(kjonn)
+        val value = map[kjonn]
         return  value ?: "u"
     }
 

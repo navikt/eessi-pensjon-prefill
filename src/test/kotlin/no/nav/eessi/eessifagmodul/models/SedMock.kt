@@ -118,7 +118,6 @@ class PensjonMock {
 
     fun genererMockData(): Pensjon {
         return Pensjon(
-                //gjenlevende = Gjenlevende(
                 gjenlevende = Bruker(
                         adresse = Adresse(
                                 postnummer = "sdfsdf",
@@ -128,13 +127,11 @@ class PensjonMock {
                                 bygning = "sdfsdfs",
                                 region = "dfsdf"
                         ),
-                        //far = Far(
                         far = Foreldre(
                                 person = Person(
                                         fornavn = "sdfsdf",
                                         etternavnvedfoedsel = "sdfsd")
                         ),
-                        //mor = Mor(
                         mor = Foreldre(
                                 person = Person(
                                         etternavnvedfoedsel = "asdfsdf",
