@@ -34,7 +34,7 @@ class ApiControllerTest {
 
     @Test
     fun `create frontend request`() {
-        val json = "{\"institutions\":[{\"country\":\"NO\",\"institution\":\"DUMMY\"}],\"buc\":\"P_BUC_06\",\"sed\":\"P6000\",\"caseId\":\"caseId\",\"pinid\":\"0105094340092\"}"
+        val json = "{\"institutions\":[{\"country\":\"NO\",\"institution\":\"DUMMY\"}],\"buc\":\"P_BUC_06\",\"sed\":\"P6000\",\"caseId\":\"caseId\",\"actorId\":\"0105094340092\"}"
         //map json request back to FrontendRequest obj
         val map = jacksonObjectMapper()
         val req = map.readValue(json, FrontendRequest::class.java)

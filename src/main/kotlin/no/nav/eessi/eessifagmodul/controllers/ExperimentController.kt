@@ -9,17 +9,14 @@ import no.nav.eessi.eessifagmodul.models.RINASaker
 import no.nav.eessi.eessifagmodul.models.SED
 import no.nav.eessi.eessifagmodul.models.createPensjonBucList
 import no.nav.eessi.eessifagmodul.services.EuxService
+import no.nav.eessi.eessifagmodul.component.PostnummerService
 import no.nav.eessi.eessifagmodul.utils.createListOfSED
 import no.nav.eessi.eessifagmodul.utils.createListOfSEDOnBUC
-import no.nav.eessi.eessifagmodul.utils.logger
-import no.nav.freg.security.oidc.common.OidcTokenAuthentication
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.*
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentGeografiskTilknytningResponse
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonResponse
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.*
-import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.client.RestTemplate
 import java.net.URI
@@ -29,24 +26,27 @@ import java.net.URI
 @RequestMapping("/api/experiments")
 class ExperimentController {
 
-    val objectMapper = jacksonObjectMapper()
+    private val objectMapper = jacksonObjectMapper()
 
     @Autowired
-    lateinit var personV3Client: PersonV3Client
+    private lateinit var personV3Client: PersonV3Client
 
     @Autowired
-    lateinit var aktoerIdClient: AktoerIdClient
+    private lateinit var aktoerIdClient: AktoerIdClient
 
     @Autowired
-    lateinit var restTemplate: RestTemplate
+    private lateinit var restTemplate: RestTemplate
 
     @Value("\${eessibasis.url}")
-    lateinit var eessiBasisUrl: String
+    private lateinit var eessiBasisUrl: String
 
     @Autowired
-    lateinit var euxService: EuxService
+    private lateinit var euxService: EuxService
 
-    @GetMapping("/testEuxOidc")
+    @Autowired
+    private lateinit var postnummerService: PostnummerService
+
+            @GetMapping("/testEuxOidc")
     fun testEuxOidc(): ResponseEntity<String> {
         val httpHeaders = HttpHeaders()
         httpHeaders.add(HttpHeaders.AUTHORIZATION, "Bearer ")
@@ -63,13 +63,11 @@ class ExperimentController {
 
     @GetMapping("/testAktoer/{ident}")
     fun testAktoer(@PathVariable("ident") ident: String): String? {
-//        val auth = SecurityContextHolder.getContext().authentication as OidcTokenAuthentication
         return aktoerIdClient.hentAktoerIdForIdent(ident)?.aktoerId
     }
 
     @GetMapping("/testAktoerTilIdent/{ident}")
     fun testAktoerTilIdent(@PathVariable("ident") ident: String): String? {
-//        val auth = SecurityContextHolder.getContext().authentication as OidcTokenAuthentication
         return aktoerIdClient.hentIdentForAktoerId(ident)?.ident
     }
 
@@ -116,5 +114,12 @@ class ExperimentController {
     fun getRinaSakerCaseID(@PathVariable(value = "rinanr", required = false) rinaNr: String = ""): List<RINASaker> {
         return euxService.getRinaSaker("",rinaNr)
     }
+
+    @ApiOperation("Søk Poststed med bruk av postnr")
+    @GetMapping("/postnr/{postnr}")
+    fun getPoststed(@PathVariable(value = "postnr", required = true) postnr: String = ""): String? {
+        return postnummerService.finnPoststed(postnr)
+    }
+
 }
 

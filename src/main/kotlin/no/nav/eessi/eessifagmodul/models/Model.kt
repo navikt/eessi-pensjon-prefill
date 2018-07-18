@@ -17,15 +17,15 @@ data class BUC(
 )
 
 // SED class main request class to basis
+// Strukturerte Elektroniske Dokumenter
 data class SED (
         var nav: Nav? = null,
-        val sed: String? = null,
+        var sed: String? = null,
         val sedGVer: String? = null,
         val sedVer: String? = null,
         var pensjon: Pensjon? = null,
+    	//val medlemskap: Medlemskap? = null, A01?.
         val ignore: Ignore? = null
-        //@JsonProperty("Sector Components/Pensions/P6000 ")
-        //val sector: String? = null,
 )
 
 fun createSED(sedName: String?): SED {

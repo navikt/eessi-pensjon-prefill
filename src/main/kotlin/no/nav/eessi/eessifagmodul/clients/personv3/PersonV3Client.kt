@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component
 @Component
 class PersonV3Client(val service: PersonV3) {
 
+
     fun hentPerson(fnr: String): HentPersonResponse {
 
         val auth = SecurityContextHolder.getContext().authentication as OidcTokenAuthentication
@@ -34,6 +35,7 @@ class PersonV3Client(val service: PersonV3) {
         return service.hentPerson(request)
     }
 
+    //Experimental only
     fun hentGeografi(fnr: String): HentGeografiskTilknytningResponse {
 
         val auth = SecurityContextHolder.getContext().authentication as OidcTokenAuthentication

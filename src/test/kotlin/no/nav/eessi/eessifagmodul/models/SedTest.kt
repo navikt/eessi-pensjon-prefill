@@ -3,10 +3,8 @@ package no.nav.eessi.eessifagmodul.models
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
-import no.nav.eessi.eessifagmodul.utils.mapJsonToAny
-import no.nav.eessi.eessifagmodul.utils.typeRefs
-import no.nav.eessi.eessifagmodul.utils.validateJson
+import no.nav.eessi.eessifagmodul.utils.*
+import org.bouncycastle.asn1.x500.style.RFC4519Style.l
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -93,5 +91,17 @@ class SedTest{
         println("------------------p6000-nav----------------------")
 
     }
+
+    @Test
+    fun `check for valid json to object`() {
+       // val test = "{\"postnummer\":\"1400\",\"by\":\"SKI\",\"bygning\":\"32\",\"land\":\"NO\",\"gate\":\"Storgata\",\"region\":\"SKI\"}"
+        //val test = "{\"postnummer\":\"sdafsdaf\",\"by\":\"asfdsdaf\",\"land\":\"BG\",\"gate\": \"sdfasd\",\"bygning\":\"sdfsdf\",\"region\":\"sdafsdf\"}"
+       val test = "{\"postnummer\":\"sdafsdaf\",\"by\":\"asfdsdaf\",\"land\":\"BG\",\"gate\":\"sdfasd\",\"bygning\":\"sdfsdf\","
+
+        val result = validateJson(test)
+        assertNotNull(result)
+        assertEquals(false, result)
+    }
+
 
 }

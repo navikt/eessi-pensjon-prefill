@@ -12,9 +12,7 @@ import org.springframework.stereotype.Service
 class PreutfyllingPensjon(private val preutfyllingPersonFraTPS: PreutfyllingPersonFraTPS) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PreutfyllingPensjon::class.java) }
-
-    private val validseds : List<String> = listOf("P2000", "P6000")
-
+    private val validseds : List<String> = listOf("P6000")
 
     fun pensjon(utfylling: UtfyllingData): Pensjon {
 
@@ -24,26 +22,22 @@ class PreutfyllingPensjon(private val preutfyllingPersonFraTPS: PreutfyllingPers
 
         //validere om vi kan preutfylle for angitt SED
         if (validseds.contains(sed.sed)) {
-
+            //norskident pnr.
             val pinid = utfylling.hentPinid()
-
-
-
-            val brukertps = preutfyllingPersonFraTPS.preutfyllBruker(pinid)
-            val pensjon = Pensjon(
-                      gjenlevende = brukertps
+            val pensjon = Pensjon(gjenlevende = preutfyllingPersonFraTPS.preutfyllBruker(pinid!!)
             )
+            logger.debug("Preutfylling Utfylling Pensjon END")
             return pensjon
         }
 
-        logger.debug("SED er ikke P6000/P2000 -")
+        logger.debug("SED er ikke P6000")
         val pensjonfake = Pensjon(
             gjenlevende = Bruker(
                 person = Person(
-                    fornavn = "Fornavn",
-                    kjoenn = "f",
-                    foedselsdato = "1967-12-01",
-                    etternavn = "Etternavn"
+                    fornavn = "F",
+                    kjoenn = "k",
+                    foedselsdato = "1901-12-01",
+                    etternavn = "E"
                 )
             )
         )
