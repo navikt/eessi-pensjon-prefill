@@ -22,7 +22,7 @@ class ApiController(private val euxService: EuxService, private val preutfylling
     private val logger: Logger by lazy { LoggerFactory.getLogger(ApiController::class.java) }
 
 
-    @ApiOperation("bekrefter SED preutfylling før innending til eux-bais(rina)")
+    @ApiOperation("viser en oppsumering av SED preutfylling. Før innsending til EUX Basis")
     @PostMapping("/confirm")
     fun confirmDocument(@RequestBody request: FrontendRequest): SED {
 
@@ -34,7 +34,7 @@ class ApiController(private val euxService: EuxService, private val preutfylling
         return sed
     }
 
-    @ApiOperation("kjører prosess OpprettBuCogSED på EUX for å få dokuemt opprett i Rina")
+    @ApiOperation("Kjører prosess OpprettBuCogSED på EUX for å få opprette dokument")
     @PostMapping("/create")
     fun createDocument(@RequestBody request: FrontendRequest): String {
 
