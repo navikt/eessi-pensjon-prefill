@@ -83,15 +83,3 @@ data class Ignore(
         val region: String? = null,
         val otherInformation: String? = null
 )
-
-//data class Gjenlevende(
-//        @JsonProperty("mor")
-//        var mor: Foreldre? = null,
-//        @JsonProperty("far")
-//        var far: Foreldre? = null,
-////        val mor: Mor? = null,
-////        val far: Far? = null,
-//        val person: Person? = null,
-//        val adresse: Adresse? = null
-//)
-//

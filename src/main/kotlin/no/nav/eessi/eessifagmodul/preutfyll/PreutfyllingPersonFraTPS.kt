@@ -61,6 +61,16 @@ class PreutfyllingPersonFraTPS(private val personV3Client: PersonV3Client, priva
         return fodseldatoformatert
     }
 
+    fun hentFodested(bruker: no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker): Foedested {
+        val fstedTPS = bruker.foedested
+        val fsted = Foedested(
+                land = fstedTPS ?: "Unknown",
+                by = "Unkown",
+                region = "Unknown"
+        )
+        return fsted
+    }
+
     //mor / far
     private fun hentForeldre(relasjon: ForeldreEnum, person: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): Foreldre? {
         person.harFraRolleI.forEach {
@@ -83,31 +93,32 @@ class PreutfyllingPersonFraTPS(private val personV3Client: PersonV3Client, priva
     }
 
     //persondata - rina format
-    private fun personData(personTps: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): Person {
-        val navn = personTps.personnavn as Personnavn
-        val statsborgerskap = personTps.statsborgerskap as Statsborgerskap
-        val kjonn = personTps.kjoenn
+    private fun personData(brukerTps: no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker): Person {
+        val navn = brukerTps.personnavn as Personnavn
+        val statsborgerskap = brukerTps.statsborgerskap as Statsborgerskap
+        val kjonn = brukerTps.kjoenn
 
         val person = Person(
                 pin = listOf(
                         PinItem(
                         sektor = "alle",
-                        identifikator = hentNorIdent(personTps),
+                        identifikator = hentNorIdent(brukerTps),
                         land = hentLandkode(statsborgerskap.land)
                         )
                     ),
                 forrnavnvedfoedsel = navn.fornavn,
                 fornavn = navn.fornavn,
                 etternavn = navn.etternavn,
-                foedselsdato = datoFormat(personTps),
-                statsborgerskap = listOf(statsBorgerskap(personTps)),
-                kjoenn = mapKjonn(kjonn.kjoenn.value)
+                foedselsdato = datoFormat(brukerTps),
+                statsborgerskap = listOf(statsBorgerskap(brukerTps)),
+                kjoenn = mapKjonn(kjonn),
+                foedested = hentFodested(brukerTps)
         )
         logger.debug("Preutfylling Person")
         return person
     }
 
-    private fun personAdresse(person: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): Adresse{
+    fun personAdresse(person: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): Adresse{
         val gateAdresse = person.bostedsadresse.strukturertAdresse as Gateadresse
         val postnr = gateAdresse.poststed.value
         val adr = Adresse(
@@ -127,7 +138,6 @@ class PreutfyllingPersonFraTPS(private val personV3Client: PersonV3Client, priva
         val statsborgerskap = person.statsborgerskap as Statsborgerskap
         val land = statsborgerskap.land as no.nav.tjeneste.virksomhet.person.v3.informasjon.Landkoder
         val statitem = StatsborgerskapItem(
-            //land = formatNORland(statsborgerskap.land.value)
             land = hentLandkode(land)
         )
         logger.debug("Preutfylling Statsborgerskap")
@@ -141,13 +151,12 @@ class PreutfyllingPersonFraTPS(private val personV3Client: PersonV3Client, priva
         return result
     }
 
-
-
     //Midlertidige - mapping i Basis vil bli rettet slik at det sammkjører mot tps mapping.
     //Midlertidig funksjon for map TPS til EUX/Rina
-    private fun mapKjonn(kjonn: String): String {
+    private fun mapKjonn(kjonn: Kjoenn): String {
+        val ktyper = kjonn.kjoenn
         val map: Map<String, String> = hashMapOf("M" to "m", "K" to "f")
-        val value = map[kjonn]
+        val value = map[ktyper.value]
         return  value ?: "u"
     }
 
