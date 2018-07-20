@@ -1,10 +1,12 @@
 package no.nav.eessi.eessifagmodul.controllers
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import io.swagger.annotations.ApiOperation
-import no.nav.eessi.eessifagmodul.models.FrontendRequest
 import no.nav.eessi.eessifagmodul.models.SED
 import no.nav.eessi.eessifagmodul.models.createSED
-import no.nav.eessi.eessifagmodul.preutfyll.Preutfylling
+import no.nav.eessi.eessifagmodul.preutfyll.InstitusjonItem
+import no.nav.eessi.eessifagmodul.preutfyll.PreutfyllingPerson
+import no.nav.eessi.eessifagmodul.preutfyll.UtfyllingData
 import no.nav.eessi.eessifagmodul.services.EuxService
 import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
 import org.slf4j.Logger
@@ -14,17 +16,18 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import java.util.*
+import kotlin.math.log
 
 @RestController
 @RequestMapping("/api")
-class ApiController(private val euxService: EuxService, private val preutfylling: Preutfylling) {
+class ApiController(private val euxService: EuxService, private val preutfyllingPerson: PreutfyllingPerson) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(ApiController::class.java) }
 
 
-    @ApiOperation("viser en oppsumering av SED preutfylling. Før innsending til EUX Basis")
+    @ApiOperation("viser en oppsumering av SED preutfyll. Før innsending til EUX Basis")
     @PostMapping("/confirm")
-    fun confirmDocument(@RequestBody request: FrontendRequest): SED {
+    fun confirmDocument(@RequestBody request: RequestApi): SED {
 
         val sed = createPreutfyltSED(request)
 
@@ -36,7 +39,7 @@ class ApiController(private val euxService: EuxService, private val preutfylling
 
     @ApiOperation("Kjører prosess OpprettBuCogSED på EUX for å få opprette dokument")
     @PostMapping("/create")
-    fun createDocument(@RequestBody request: FrontendRequest): String {
+    fun createDocument(@RequestBody request: RequestApi): String {
 
         val fagSaknr = request.caseId!! // = "EESSI-PEN-123"
         //hack only one is selected and used
@@ -64,25 +67,56 @@ class ApiController(private val euxService: EuxService, private val preutfylling
         return "{\"euxcaseid\":\"$euSaksnr\"}"
     }
 
-    private fun createPreutfyltSED(request: FrontendRequest):SED {
-        if (request.sed != null) {
-//            if (request.pinid == null || request.pinid?.length != 13 || request.caseId == null) {
-//                logger.debug("Må vel avlutte preutfylling dersom vi ikke har aktoerid eller caseid (saksnr)? det vil vel aldri skje?")
-//                throw IllegalArgumentException("Mangler AktoerID eller Saksnr")
-//            }
-            if ("P6000" == request.sed) {
-                val utfyll = preutfylling.preutfylling(request)
-                return utfyll.sed
-            } else if ("P2000" == request.sed) {
-                return createSED(sedName = request.sed)
-            } else {
-                val utfyll = preutfylling.preutfylling(request)
-                val sed: SED = utfyll.sed
-                sed.sed = "P6000"
-                return sed
-            }
+    private fun createPreutfyltSED(request: RequestApi):SED {
+        when {
+            request.caseId == null -> throw IllegalArgumentException("Mangler Saksnummer")
+            request.pinid == null -> throw IllegalArgumentException("Mangler AktoerID")
         }
-        throw IllegalArgumentException("Mangler SED, eller ugyldig SED")
+        return when (request.sed) {
+            "P2000" -> createSED(sedName = request.sed)
+            "P6000" -> preutfyllingPerson.preutfyll(mapRequestToUtfyllData(request))
+            else -> throw IllegalArgumentException("Mangler SED, eller ugyldig type SED")
+        }
     }
+
+    //map requestApi fra frontend to preutfylling
+    fun mapRequestToUtfyllData(request: RequestApi): UtfyllingData {
+         val utfylling = UtfyllingData()
+                 .mapFromRequest(
+                     caseId = request.caseId ?: "",
+                     buc = request.buc ?: "",
+                     subject = request.subjectArea ?: "",
+                     sedID = request.sed ?: "",
+                     aktoerID = request.pinid ?: ""
+                 )
+                 request.institutions!!.forEach {
+                     utfylling.addInstitutions(
+                             InstitusjonItem(country = it.country, institution = it.institution)
+                     )
+                 }
+        logger.debug("UtfyllingData: $utfylling,  ${utfylling.hentSED()} ")
+        return utfylling
+    }
+
+    //{"institutions":[{"NO:"DUMMY"}],"buc":"P_BUC_06","sed":"P6000","caseId":"caseId","subjectArea":"pensjon","actorId":"2323123"}
+    data class RequestApi(
+            //sector
+            val subjectArea: String? = null,
+            //PEN-saksnummer
+            val caseId: String? = null,
+            val buc: String? = null,
+            val sed : String? = null,
+            //mottakere
+            val institutions: List<Institusjon>? = null,
+            @JsonProperty("actorId")
+            //aktoerid
+            var pinid: String? = null
+    )
+
+    data class Institusjon(
+            val country: String? = null,
+            val institution: String? = null
+    )
+
 
 }
