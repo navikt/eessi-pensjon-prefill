@@ -3,7 +3,7 @@ package no.nav.eessi.eessifagmodul.preutfyll
 import no.nav.eessi.eessifagmodul.models.SED
 import no.nav.eessi.eessifagmodul.models.createSED
 
-class UtfyllingData() {
+class UtfyllingData {
 
     private lateinit var sed: SED
     private var pin: String? = ""
@@ -29,9 +29,6 @@ class UtfyllingData() {
         return this
     }
 
-    fun getSEDid(): String? {
-        return sed.sed
-    }
     //Pinid (FNR) aktorID
     fun hentPinid(): String? { return pin }
 
