@@ -14,9 +14,9 @@ class PreutfyllingNav(private val preutfyllingPersonFraTPS: PreutfyllingPersonFr
     private val logger: Logger by lazy { LoggerFactory.getLogger(PreutfyllingNav::class.java) }
     val validseds : List<String> = listOf("P6000")
 
-    fun utfyllNav(utfylling: UtfyllingData): Nav {
+    fun utfyllNav(utfyllingData: UtfyllingData): Nav {
 
-        val brukertps = bruker(utfylling)
+        val brukertps = bruker(utfyllingData)
         val nav = Nav(
                 bruker = Bruker(
                         person = brukertps.person
@@ -25,7 +25,7 @@ class PreutfyllingNav(private val preutfyllingPersonFraTPS: PreutfyllingPersonFr
                 //eller peker denne til en ekisterende rina-casenr?
                 eessisak = listOf(
                         EessisakItem(
-                                saksnummer = "PEN-SAK:" + utfylling.request.caseId,
+                                saksnummer = "PEN-SAK:" + utfyllingData.hentSaksnr(),
                                 land = "NO"
                         )
                 )
@@ -33,16 +33,16 @@ class PreutfyllingNav(private val preutfyllingPersonFraTPS: PreutfyllingPersonFr
         return nav
     }
 
-    private fun bruker(utfylling: UtfyllingData): Bruker {
+    private fun bruker(utfyllingData: UtfyllingData): Bruker {
 
-        val sed = utfylling.sed
+        val sed = utfyllingData.hentSED()
         logger.debug("SED.sed : ${sed.sed}")
 
         //kan denne utfylling benyttes på alle SED?
         if (validseds.contains(sed.sed)) {
 
-            //preutfylling av sed her!
-            val pinid = utfylling.hentPinid()
+            //preutfyll av sed her!
+            val pinid = utfyllingData.hentPinid()
             val bruker = preutfyllingPersonFraTPS.preutfyllBruker(pinid!!)
 
             logger.debug("Preutfylling Utfylling Nav END")

@@ -14,16 +14,16 @@ class PreutfyllingPensjon(private val preutfyllingPersonFraTPS: PreutfyllingPers
     private val logger: Logger by lazy { LoggerFactory.getLogger(PreutfyllingPensjon::class.java) }
     private val validseds : List<String> = listOf("P6000")
 
-    fun pensjon(utfylling: UtfyllingData): Pensjon {
+    fun pensjon(utfyllingData: UtfyllingData): Pensjon {
 
         //min krav for P6000
-        val sed = utfylling.sed
+        val sed = utfyllingData.hentSED()
        logger.debug("SED.sed : ${sed.sed}")
 
         //validere om vi kan preutfylle for angitt SED
         if (validseds.contains(sed.sed)) {
             //norskident pnr.
-            val pinid = utfylling.hentPinid()
+            val pinid = utfyllingData.hentPinid()
             val pensjon = Pensjon(gjenlevende = preutfyllingPersonFraTPS.preutfyllBruker(pinid!!)
             )
             logger.debug("Preutfylling Utfylling Pensjon END")
