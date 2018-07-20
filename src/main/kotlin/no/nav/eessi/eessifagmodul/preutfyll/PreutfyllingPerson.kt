@@ -27,24 +27,17 @@ class PreutfyllingPerson(private val aktoerIdClient: AktoerIdClient, private val
     //Validering hva gjør vi med manglende data inn?
     fun preutfyll(utfyllingData: UtfyllingData): SED {
 
-        logger.debug("utfyllingData: $utfyllingData")
-
         logger.debug("----------------- Preutfylling START ----------------- ")
 
         logger.debug("Preutfylling NAV     : ${preutfyllingNav::class.java} ")
         logger.debug("Preutfylling Pensjon : ${preutfyllingPensjon::class.java} ")
 
         val sed = utfyllingData.hentSED()
-        //val sed = createSED(request.sed)
-        //logger.debug("Preutfylling SED : $sed")
+        logger.debug("Preutfylling Utfylling Data")
 
         //har vi hentet ned fnr fra aktor?
         utfyllingData.putPinID(hentPinIdentFraAktorid(utfyllingData.hentAktoerid()))
         logger.debug("Preutfylling hentet pinid fra aktoerIdClient.")
-
-        //val utfylling = UtfyllingData(sed, request, pinid)
-
-        logger.debug("Preutfylling Utfylling Data")
 
         sed.nav = preutfyllingNav.utfyllNav(utfyllingData)
         logger.debug("Preutfylling Utfylling NAV")
