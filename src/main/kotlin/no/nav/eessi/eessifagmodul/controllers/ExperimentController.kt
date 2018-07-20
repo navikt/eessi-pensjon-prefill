@@ -4,12 +4,9 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.swagger.annotations.ApiOperation
 import no.nav.eessi.eessifagmodul.clients.aktoerid.AktoerIdClient
 import no.nav.eessi.eessifagmodul.clients.personv3.PersonV3Client
-import no.nav.eessi.eessifagmodul.models.BUC
-import no.nav.eessi.eessifagmodul.models.RINASaker
-import no.nav.eessi.eessifagmodul.models.SED
-import no.nav.eessi.eessifagmodul.models.createPensjonBucList
 import no.nav.eessi.eessifagmodul.services.EuxService
 import no.nav.eessi.eessifagmodul.component.PostnummerService
+import no.nav.eessi.eessifagmodul.models.*
 import no.nav.eessi.eessifagmodul.utils.createListOfSED
 import no.nav.eessi.eessifagmodul.utils.createListOfSEDOnBUC
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentGeografiskTilknytningResponse
@@ -119,6 +116,12 @@ class ExperimentController {
     @GetMapping("/postnr/{postnr}")
     fun getPoststed(@PathVariable(value = "postnr", required = true) postnr: String = ""): String? {
         return postnummerService.finnPoststed(postnr)
+    }
+
+    @ApiOperation("Trygdehistorikk")
+    @GetMapping("/trygdehistorikk")
+    fun getTrygdehistorikk(): Trygdehistorikk? {
+        return createTrygdehistorikkMock()
     }
 
 }
