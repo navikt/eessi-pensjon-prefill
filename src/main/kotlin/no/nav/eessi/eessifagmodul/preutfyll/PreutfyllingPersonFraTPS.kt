@@ -1,8 +1,8 @@
 package no.nav.eessi.eessifagmodul.preutfyll
 
 import no.nav.eessi.eessifagmodul.clients.personv3.PersonV3Client
-import no.nav.eessi.eessifagmodul.component.LandkodeService
-import no.nav.eessi.eessifagmodul.component.PostnummerService
+import no.nav.eessi.eessifagmodul.services.LandkodeService
+import no.nav.eessi.eessifagmodul.services.PostnummerService
 import no.nav.eessi.eessifagmodul.models.*
 import no.nav.eessi.eessifagmodul.models.Bruker
 import no.nav.eessi.eessifagmodul.models.Person

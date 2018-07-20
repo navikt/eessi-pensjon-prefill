@@ -5,7 +5,7 @@ import io.swagger.annotations.ApiOperation
 import no.nav.eessi.eessifagmodul.clients.aktoerid.AktoerIdClient
 import no.nav.eessi.eessifagmodul.clients.personv3.PersonV3Client
 import no.nav.eessi.eessifagmodul.services.EuxService
-import no.nav.eessi.eessifagmodul.component.PostnummerService
+import no.nav.eessi.eessifagmodul.services.PostnummerService
 import no.nav.eessi.eessifagmodul.models.*
 import no.nav.eessi.eessifagmodul.utils.createListOfSED
 import no.nav.eessi.eessifagmodul.utils.createListOfSEDOnBUC

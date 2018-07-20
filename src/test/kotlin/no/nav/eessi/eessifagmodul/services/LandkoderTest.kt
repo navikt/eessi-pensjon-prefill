@@ -1,4 +1,4 @@
-package no.nav.eessi.eessifagmodul.component
+package no.nav.eessi.eessifagmodul.services
 
 import org.junit.Before
 import org.junit.Test
