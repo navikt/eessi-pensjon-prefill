@@ -68,37 +68,25 @@ class ApiController(private val euxService: EuxService, private val preutfylling
 
     //validaring og preutfylling
     private fun createPreutfyltSED(request: RequestApi):SED {
-        if (request.caseId == null) {
-            throw IllegalArgumentException("Mangler Saksnummer")
-        }
-        if (request.sed == null) {
-            throw IllegalArgumentException("Mangler SED")
-        }
-        if (request.buc == null) {
-            throw IllegalArgumentException("Mangler BUC")
-        }
-        if (request.subjectArea == null) {
-            throw IllegalArgumentException("Mangler Subjekt/Sektor")
-        }
-        if (request.pinid == null) {
-            throw IllegalArgumentException("Mangler AktoerID")
-        }
-        if (request.institutions == null) {
-            throw IllegalArgumentException("Mangler Institusjoner")
-        }
-        return when (request.sed) {
-            "P2000" -> createSED(sedName = request.sed)
-            "P6000" -> preutfyllingPerson.preutfyll(
+        return when  {
+            request.caseId == null -> throw IllegalArgumentException("Mangler Saksnummer")
+            request.sed == null -> throw IllegalArgumentException("Mangler SED")
+            request.buc == null -> throw IllegalArgumentException("Mangler BUC")
+            request.subjectArea == null -> throw IllegalArgumentException("Mangler Subjekt/Sektor")
+            request.pinid == null -> throw IllegalArgumentException("Mangler AktoerID")
+            request.institutions == null -> throw IllegalArgumentException("Mangler Institusjoner")
+            request.sed == "P2000" -> createSED(sedName = request.sed)
+            request.sed == "P6000" -> preutfyllingPerson.preutfyll(
                     utfyllingData = UtfyllingData()
                             .build(
-                                caseId = request.caseId,
-                                buc = request.buc,
-                                subject = request.subjectArea,
-                                sedID = request.sed,
-                                aktoerID = request.pinid,
-                                data = request.institutions
+                                    caseId = request.caseId,
+                                    buc = request.buc,
+                                    subject = request.subjectArea,
+                                    sedID = request.sed,
+                                    aktoerID = request.pinid,
+                                    data = request.institutions
                             )
-                    )
+            )
             else -> throw IllegalArgumentException("Mangler SED, eller ugyldig type SED")
         }
     }
