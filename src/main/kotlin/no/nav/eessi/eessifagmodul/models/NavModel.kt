@@ -2,42 +2,45 @@ package no.nav.eessi.eessifagmodul.models
 
 import com.fasterxml.jackson.annotation.JsonProperty
 
+
+/**
+ * NAV objekt
+ */
 data class Nav(
-        val bruker: Bruker? = null,
+        var bruker: Bruker? = null,
         @JsonProperty("eessisak")
-        val eessisak: List<EessisakItem>? = null
+        var eessisak: List<EessisakItem>? = null
 )
 
 data class Bruker(
-        val mor: Mor? = null,
-        val person: Person? = null,
-        val far: Far? = null,
-        val adresse: Adresse? = null
+        @JsonProperty("mor")
+        var mor: Foreldre? = null,
+        @JsonProperty("far")
+        var far: Foreldre? = null,
+        var person: Person? = null,
+        var adresse: Adresse? = null
 )
 
-data class Far(
-        val person: Person? = null
-)
-
-data class Mor(
-        val person: Person? = null
+//MOR - FAR
+data class Foreldre(
+        var person: Person? = null
 )
 
 data class Person(
         @JsonProperty("pin")
-        val pin: List<PinItem>? = null,
-        val pinannen: PinItem? = null,
-        val etternavnvedfoedsel: String? = null,
+        var pin: List<PinItem>? = null,
+        var pinannen: PinItem? = null,
+        var etternavnvedfoedsel: String? = null,
         @JsonProperty("statsborgerskap")
-        val statsborgerskap: List<StatsborgerskapItem>? = null,
-        val etternavn: String? = null,
-        val kjoenn: String? = null,
-        val tidligereetternavn: String? = null,
-        val foedested: Foedested? = null,
-        val foedselsdato: String? = null,
-        val fornavn: String? = null,
-        val tidligerefornavn: String? = null,
-        val forrnavnvedfoedsel: String? = null
+        var statsborgerskap: List<StatsborgerskapItem>? = null,
+        var etternavn: String? = null,
+        var kjoenn: String? = null,
+        var tidligereetternavn: String? = null,
+        var foedested: Foedested? = null,
+        var foedselsdato: String? = null,
+        var fornavn: String? = null,
+        var tidligerefornavn: String? = null,
+        var forrnavnvedfoedsel: String? = null
 )
 data class StatsborgerskapItem(
         val land: String? = null
@@ -69,10 +72,6 @@ data class EessisakItem(
         val land: String? = null
 )
 
-//data class Tillegsinformasjon(
-//        val saksnummer: String? = null
-//)
-
 data class Institusjonsadresse(
         val poststed: String? = null,
         val postnummer: String? = null,
@@ -84,82 +83,3 @@ data class Ignore(
         val region: String? = null,
         val otherInformation: String? = null
 )
-
-data class Gjenlevende(
-        val mor: Mor? = null,
-        val far: Far? = null,
-        val person: Person? = null,
-        val adresse: Adresse? = null
-)
-
-/**
- * Mock class genererer mock/fake Nav objekt
- */
-class NavMock {
-
-    /**
-     * genererer mock av Nav
-     * @return Nav
-     */
-    fun genererNavMock(): Nav {
-        return Nav(
-                bruker = Bruker(
-                        mor = Mor(
-                                Person(
-                                        etternavnvedfoedsel = "asdfsdf",
-                                        fornavn = "asfsdf")),
-                        person = Person(
-                                pin = listOf(
-                                        PinItem(
-                                                sektor = "pensjoner",
-                                                land = "BG",
-                                                identifikator = "weqrwerwqe"
-                                        ),
-                                        PinItem(
-                                                sektor = "alle",
-                                                land = "NO",
-                                                identifikator = "01126712345"
-                                        )
-                                )
-                                ,
-                                fornavn = "Gul",
-                                kjoenn = "f",
-                                foedselsdato = "1967-12-01",
-                                etternavn = "Konsoll",
-                                tidligereetternavn = "sdfsfasdf",
-                                statsborgerskap = listOf(
-                                        StatsborgerskapItem("BE"),
-                                        StatsborgerskapItem("BG"),
-                                        StatsborgerskapItem("GR"),
-                                        StatsborgerskapItem("GB")
-                                ),
-                                foedested = Foedested(
-                                        region = "sfgdfdgs",
-                                        land = "DK",
-                                        by = "gafdgsf"
-                                ),
-                                forrnavnvedfoedsel = "werwerwe",
-                                tidligerefornavn = "asdfdsffsd",
-                                etternavnvedfoedsel = "werwreq"
-                        ),
-                        far = Far(
-                                Person(
-                                        etternavnvedfoedsel = "safasfsd",
-                                        fornavn = "farfornavn"
-                                )
-                        )
-                ),
-                eessisak = listOf(
-                        EessisakItem(
-                                saksnummer = "24234sdsd-4",
-                                land = "NO"
-                        ),
-                        EessisakItem(
-                                saksnummer = "retretretert",
-                                land = "HR"
-                        )
-                )
-        )
-    }
-
-}

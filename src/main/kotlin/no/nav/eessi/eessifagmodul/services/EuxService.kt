@@ -22,7 +22,7 @@ import java.io.IOException
 
 @Service
 @Description("Service class for EuxBasis - EuxCpiServiceController.java")
-class EuxService(val oidcRestTemplate: RestTemplate) {
+class EuxService(private val oidcRestTemplate: RestTemplate) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(EuxService::class.java) }
 

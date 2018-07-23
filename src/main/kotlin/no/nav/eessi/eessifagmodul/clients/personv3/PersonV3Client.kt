@@ -2,10 +2,13 @@ package no.nav.eessi.eessifagmodul.clients.personv3
 
 import no.nav.eessi.eessifagmodul.config.sts.configureRequestSamlTokenOnBehalfOfOidc
 import no.nav.freg.security.oidc.common.OidcTokenAuthentication
+import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonPersonIkkeFunnet
 import no.nav.tjeneste.virksomhet.person.v3.binding.PersonV3
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Informasjonsbehov
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.NorskIdent
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.PersonIdent
+import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentGeografiskTilknytningRequest
+import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentGeografiskTilknytningResponse
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonRequest
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonResponse
 import org.springframework.security.core.context.SecurityContextHolder
@@ -13,6 +16,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class PersonV3Client(val service: PersonV3) {
+
 
     fun hentPerson(fnr: String): HentPersonResponse {
 
@@ -30,4 +34,20 @@ class PersonV3Client(val service: PersonV3) {
         }
         return service.hentPerson(request)
     }
+
+    //Experimental only
+    fun hentGeografi(fnr: String): HentGeografiskTilknytningResponse {
+
+        val auth = SecurityContextHolder.getContext().authentication as OidcTokenAuthentication
+        configureRequestSamlTokenOnBehalfOfOidc(service, auth.idToken)
+
+        val request = HentGeografiskTilknytningRequest().apply {
+            withAktoer(PersonIdent().withIdent(
+                    NorskIdent().withIdent(fnr))
+            )
+        }
+
+        return service.hentGeografiskTilknytning(request)
+    }
+
 }
