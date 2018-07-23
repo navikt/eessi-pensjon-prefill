@@ -41,7 +41,7 @@ class ApiControllerTest {
         val json = "{\"institutions\":[{\"country\":\"NO\",\"institution\":\"DUMMY\"}],\"buc\":\"P_BUC_06\",\"sed\":\"P6000\",\"caseId\":\"caseId\",\"actorId\":\"0105094340092\"}"
         //map json request back to FrontendRequest obj
         val map = jacksonObjectMapper()
-        val req = map.readValue(json, ApiController.RequestApi::class.java)
+        val req = map.readValue(json, ApiController.ApiRequest::class.java)
         assertNotNull(req)
         assertEquals("P_BUC_06",req.buc)
         assertEquals("DUMMY", req.institutions!![0].institution)
@@ -49,7 +49,7 @@ class ApiControllerTest {
 
     @Test
     fun `create document`() {
-        val requestMock = ApiController.RequestApi(
+        val requestMock = ApiController.ApiRequest(
             subjectArea = "Pensjon",
             caseId = "EESSI-PEN-123",
             institutions = listOf(InstitusjonItem("NO","DUMMY")),
@@ -71,7 +71,7 @@ class ApiControllerTest {
 
     @Test
     fun `confirm document`() {
-        val mockData = ApiController.RequestApi(
+        val mockData = ApiController.ApiRequest(
                 subjectArea = "Pensjon",
                 caseId = "EESSI-PEN-123",
                 institutions = listOf(InstitusjonItem("NO","DUMMY")),
@@ -94,7 +94,7 @@ class ApiControllerTest {
 
     @Test(expected = IllegalArgumentException::class)
     fun `confirm document when sed is not valid`() {
-        val mockData = ApiController.RequestApi(
+        val mockData = ApiController.ApiRequest(
                 subjectArea = "Pensjon",
                 caseId = "EESSI-PEN-123",
                 institutions = listOf(InstitusjonItem("NO","DUMMY")),
@@ -107,7 +107,7 @@ class ApiControllerTest {
 
     @Test(expected = IllegalArgumentException::class)
     fun `confirm document sed is null`() {
-        val mockData = ApiController.RequestApi(
+        val mockData = ApiController.ApiRequest(
                 subjectArea = "Pensjon",
                 caseId = "EESSI-PEN-123",
                 institutions = listOf(InstitusjonItem("NO","DUMMY")),
@@ -120,7 +120,7 @@ class ApiControllerTest {
 
     @Test(expected = IllegalArgumentException::class)
     fun `check on caseID is null`() {
-        val mockData = ApiController.RequestApi(
+        val mockData = ApiController.ApiRequest(
                 caseId = null,
                 sed = "P6000",
                 pinid = "0105094340092"
@@ -129,7 +129,7 @@ class ApiControllerTest {
     }
     @Test(expected = IllegalArgumentException::class)
     fun `check on pinID is null`() {
-        val mockData = ApiController.RequestApi(
+        val mockData = ApiController.ApiRequest(
                 caseId = "1213123123",
                 sed = "P6000",
                 pinid = null
