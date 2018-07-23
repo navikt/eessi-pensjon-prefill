@@ -26,7 +26,7 @@ class ApiController(private val euxService: EuxService, private val preutfylling
 
     @ApiOperation("viser en oppsumering av SED preutfyll. Før innsending til EUX Basis")
     @PostMapping("/confirm")
-    fun confirmDocument(@RequestBody request: RequestApi): SED {
+    fun confirmDocument(@RequestBody request: ApiRequest): SED {
 
         val sed = createPreutfyltSED(request)
 
@@ -38,7 +38,7 @@ class ApiController(private val euxService: EuxService, private val preutfylling
 
     @ApiOperation("Kjører prosess OpprettBuCogSED på EUX for å få opprette dokument")
     @PostMapping("/create")
-    fun createDocument(@RequestBody request: RequestApi): String {
+    fun createDocument(@RequestBody request: ApiRequest): String {
 
         val fagSaknr = request.caseId!! // = "EESSI-PEN-123"
         //hack only one is selected and used
@@ -67,7 +67,7 @@ class ApiController(private val euxService: EuxService, private val preutfylling
     }
 
     //validaring og preutfylling
-    private fun createPreutfyltSED(request: RequestApi):SED {
+    private fun createPreutfyltSED(request: ApiRequest):SED {
         return when  {
             request.caseId == null -> throw IllegalArgumentException("Mangler Saksnummer")
             request.sed == null -> throw IllegalArgumentException("Mangler SED")
@@ -93,7 +93,7 @@ class ApiController(private val euxService: EuxService, private val preutfylling
 
     //kommer fra frontend
     //{"institutions":[{"NO:"DUMMY"}],"buc":"P_BUC_06","sed":"P6000","caseId":"caseId","subjectArea":"pensjon","actorId":"2323123"}
-    data class RequestApi(
+    data class ApiRequest(
             //sector
             val subjectArea: String? = null,
             //PEN-saksnummer
