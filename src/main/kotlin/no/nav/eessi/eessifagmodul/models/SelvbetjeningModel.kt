@@ -96,28 +96,6 @@ data class VedleggItem(
 
 fun createTrygdehistorikkMock(): Trygdehistorikk {
 
-    val historikkValgList = listOf(
-                TrygdehistorikkValg(
-                    valgID = 1,
-                    valg = "Perioder som ansatt eller selvstendig næringsdrivende",
-                    beskriv = "Har du hatt Perioder som ansatt eller selvstendig næringsdrivende i land innen EU?",
-                    aktiv = true
-                ),
-                TrygdehistorikkValg(
-                        valgID = 2,
-                        valg = "Perioder med omsorg for barn ",
-                        beskriv = "Har du hatt Perioder med omsorg for barn i land innen EU?",
-                        aktiv = true
-                ),
-                TrygdehistorikkValg(
-                        valgID = 3,
-                        valg = "Perioder Opplæringsperioder",
-                        beskriv = "Har du hatt Opplæringsperioder i land innen EU?",
-                        aktiv = true
-                )
-    )
-
-
     val historikk = Trygdehistorikk(
         trygdehistorikkID = 10000,
 

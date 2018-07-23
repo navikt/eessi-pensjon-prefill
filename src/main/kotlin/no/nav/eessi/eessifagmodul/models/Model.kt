@@ -28,6 +28,14 @@ data class SED (
         val ignore: Ignore? = null
 )
 
+//data struktir for bruk av apireqiuest(frontend) og utfyllingdata)
+data class InstitusjonItem(
+        val country: String? = null,
+        val institution: String? = null
+)
+
+
+
 fun createSED(sedName: String?): SED {
     return SED (
         sed = sedName,

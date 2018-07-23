@@ -1,5 +1,6 @@
 package no.nav.eessi.eessifagmodul.preutfyll
 
+import no.nav.eessi.eessifagmodul.models.InstitusjonItem
 import no.nav.eessi.eessifagmodul.models.SED
 import no.nav.eessi.eessifagmodul.models.createSED
 
@@ -9,23 +10,24 @@ class UtfyllingData {
     private var pin: String? = ""
 
     //sector
-    private var subjectArea: String? = null
+    private lateinit var subject: String
     //PEN-saksnummer
-    private var caseId: String? = null
-    private var buc: String? = null
+    private lateinit var  caseId: String
+    private lateinit var  buc: String
     //private var sedID : String? = null
     //mottakere
-    private var institutions: MutableList<InstitusjonItem> = mutableListOf()
+    private lateinit var institutions: List<InstitusjonItem>
     //aktoerid
-    private var aktoerID: String? = null
+    private lateinit var aktoerID: String
 
-    fun mapFromRequest(subject: String, caseId: String, buc: String, sedID: String, aktoerID: String): UtfyllingData {
+    fun build(subject: String, caseId: String, buc: String, sedID: String, aktoerID: String, data: List<InstitusjonItem>): UtfyllingData {
         println("mapRequest: $subject, $caseId, $buc, $sedID, $aktoerID")
-        this.subjectArea =  subject
+        this.subject =  subject
         this.caseId = caseId
         this.buc = buc
         this.aktoerID = aktoerID
         this.sed = createSED(sedID)
+        this.institutions = data
         return this
     }
 
@@ -48,22 +50,8 @@ class UtfyllingData {
         return caseId
     }
 
-    fun addInstitutions(item: InstitusjonItem) {
-        institutions.add(item)
-    }
-
-    fun setInstitutions(list: List<InstitusjonItem>) {
-        institutions = list as MutableList<InstitusjonItem>
-    }
-
-    fun hentInstitutionsList():List<InstitusjonItem> {
-        return institutions.toList()
+    fun hentInstitutionsList(): List<InstitusjonItem> {
+        return institutions
     }
 
 }
-
-data class InstitusjonItem(
-        val country: String? = null,
-        val institution: String? = null
-)
-

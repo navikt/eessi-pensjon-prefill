@@ -45,33 +45,28 @@ class PreutfyllingTest {
 
     @Test
     fun `create mock on preutfyll P6000`() {
-//        val request = FrontendRequest(
-//                sed = "P6000",
-//                caseId = "12345",
-//                pinid = "1234",
-//                subjectArea = "Pensjon"
-//
-//        )
-
         val response = HentIdentForAktoerIdResponse()
         response.ident = "1234"
 
         whenever(mockAktoerIdClient.hentIdentForAktoerId(ArgumentMatchers.anyString())).thenReturn(response)
 
-        val navresponse = Nav(bruker = Bruker(person = Person(fornavn = "Dummy", etternavn = "Dummy")))
+        val navresponse = Nav(bruker = Bruker(person = Person(fornavn = "Dummy", etternavn = "Dummy", pin = listOf(PinItem(sektor = "alle", identifikator = response.ident, land = "NO")))))
         whenever(mockPreutfyllingNav.utfyllNav(any())).thenReturn(navresponse)
 
         val pensjonresponse = Pensjon(gjenlevende = Bruker(person = Person(fornavn = "Dummy", etternavn = "Dummy")))
         whenever(mockPreutfyllingPensjon.pensjon(any())).thenReturn(pensjonresponse)
 
-        val utfyllingMock = UtfyllingData().mapFromRequest(
+        val items = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
+        val utfyllingMock = UtfyllingData().build(
                 subject = "Pensjon",
                 sedID = "P6000",
                 caseId = "12345",
                 buc = "P_BUC_06",
-                aktoerID = "1234"
+                aktoerID = "1234",
+                data = items
         )
         val responseSED = preutfylling.preutfyll(utfyllingMock)
+        println(mapAnyToJson(responseSED, true))
 
         assertNotNull(responseSED)
 
@@ -81,16 +76,10 @@ class PreutfyllingTest {
 
         assertEquals("Dummy", responseSED.nav?.bruker?.person?.etternavn)
         assertEquals("Dummy", responseSED.nav?.bruker?.person?.fornavn)
-
-        println(mapAnyToJson(responseSED, true))
+        val pin = responseSED.nav?.bruker?.person?.pin
+        assertEquals("1234", pin!![0].identifikator)
 
     }
-
-
-
-
-
-
 
 
 }
