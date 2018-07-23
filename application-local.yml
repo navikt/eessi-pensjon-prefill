@@ -30,7 +30,7 @@ eessibasis:
 aktoer.v2:
   endpointurl: 'https://app-t8.adeo.no/aktoerid/AktoerService/v2'
 
-person.v3:
+virksomhet.person.v3:
   endpointurl: 'https://wasapp-t8.adeo.no/tpsws/ws/Person/v3'
 
 credentials:

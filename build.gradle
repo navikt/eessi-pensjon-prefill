@@ -93,6 +93,7 @@ dependencies {
     // Tjenestespesifikasjoner
     compile("no.nav.tjenester.fim:nav-fim-aktoer-v2-tjenestespesifikasjon:${aktoerIdVersion}:jaxws")
     compile("no.nav.tjenester:nav-person-v3-tjenestespesifikasjon:${personV3Version}")
+
 }
 
 repositories {

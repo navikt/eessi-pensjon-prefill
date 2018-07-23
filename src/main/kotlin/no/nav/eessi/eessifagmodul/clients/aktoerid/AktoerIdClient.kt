@@ -2,8 +2,13 @@ package no.nav.eessi.eessifagmodul.clients.aktoerid
 
 import no.nav.eessi.eessifagmodul.config.sts.configureRequestSamlToken
 import no.nav.eessi.eessifagmodul.config.sts.configureRequestSamlTokenOnBehalfOfOidc
+import no.nav.freg.security.oidc.common.OidcTokenAuthentication
 import no.nav.tjeneste.virksomhet.aktoer.v2.binding.AktoerV2
 import no.nav.tjeneste.virksomhet.aktoer.v2.meldinger.*
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.NorskIdent
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.PersonIdent
+import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentGeografiskTilknytningRequest
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Component
 
 @Component
@@ -15,9 +20,9 @@ class AktoerIdClient(val service: AktoerV2) {
         service.ping()
     }
 
-    fun hentAktoerIdForIdent(ident: String, oidcToken: String): HentAktoerIdForIdentResponse? {
-        // OIDC->SAML: Bruker oidctoken fra konsument sin request i kall til STS for å hente SAML
-        configureRequestSamlTokenOnBehalfOfOidc(service, oidcToken)
+    fun hentAktoerIdForIdent(ident: String): HentAktoerIdForIdentResponse? {
+        val auth = SecurityContextHolder.getContext().authentication as OidcTokenAuthentication
+        configureRequestSamlTokenOnBehalfOfOidc(service, auth.idToken)
 
         val request = HentAktoerIdForIdentRequest()
         request.ident = ident
@@ -25,8 +30,13 @@ class AktoerIdClient(val service: AktoerV2) {
     }
 
     fun hentIdentForAktoerId(aktoerId: String): HentIdentForAktoerIdResponse? {
-        val request = HentIdentForAktoerIdRequest()
-        request.aktoerId = aktoerId
+        val auth = SecurityContextHolder.getContext().authentication as OidcTokenAuthentication
+        configureRequestSamlTokenOnBehalfOfOidc(service, auth.idToken)
+
+        val request = HentIdentForAktoerIdRequest().apply {
+            setAktoerId(aktoerId)
+        }
+
         return service.hentIdentForAktoerId(request)
     }
 
