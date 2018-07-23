@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import io.swagger.annotations.ApiOperation
 import no.nav.eessi.eessifagmodul.models.SED
 import no.nav.eessi.eessifagmodul.models.createSED
-import no.nav.eessi.eessifagmodul.preutfyll.InstitusjonItem
 import no.nav.eessi.eessifagmodul.preutfyll.PreutfyllingPerson
 import no.nav.eessi.eessifagmodul.preutfyll.UtfyllingData
 import no.nav.eessi.eessifagmodul.services.EuxService
@@ -16,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import java.util.*
-import kotlin.math.log
+
 
 @RestController
 @RequestMapping("/api")
@@ -67,37 +66,44 @@ class ApiController(private val euxService: EuxService, private val preutfylling
         return "{\"euxcaseid\":\"$euSaksnr\"}"
     }
 
+    //validaring og preutfylling
     private fun createPreutfyltSED(request: RequestApi):SED {
-        when {
-            request.caseId == null -> throw IllegalArgumentException("Mangler Saksnummer")
-            request.pinid == null -> throw IllegalArgumentException("Mangler AktoerID")
+        if (request.caseId == null) {
+            throw IllegalArgumentException("Mangler Saksnummer")
+        }
+        if (request.sed == null) {
+            throw IllegalArgumentException("Mangler SED")
+        }
+        if (request.buc == null) {
+            throw IllegalArgumentException("Mangler BUC")
+        }
+        if (request.subjectArea == null) {
+            throw IllegalArgumentException("Mangler Subjekt/Sektor")
+        }
+        if (request.pinid == null) {
+            throw IllegalArgumentException("Mangler AktoerID")
+        }
+        if (request.institutions == null) {
+            throw IllegalArgumentException("Mangler Institusjoner")
         }
         return when (request.sed) {
             "P2000" -> createSED(sedName = request.sed)
-            "P6000" -> preutfyllingPerson.preutfyll(mapRequestToUtfyllData(request))
+            "P6000" -> preutfyllingPerson.preutfyll(
+                    utfyllingData = UtfyllingData()
+                            .build(
+                                caseId = request.caseId,
+                                buc = request.buc,
+                                subject = request.subjectArea,
+                                sedID = request.sed,
+                                aktoerID = request.pinid,
+                                data = request.institutions
+                            )
+                    )
             else -> throw IllegalArgumentException("Mangler SED, eller ugyldig type SED")
         }
     }
 
-    //map requestApi fra frontend to preutfylling
-    fun mapRequestToUtfyllData(request: RequestApi): UtfyllingData {
-         val utfylling = UtfyllingData()
-                 .mapFromRequest(
-                     caseId = request.caseId ?: "",
-                     buc = request.buc ?: "",
-                     subject = request.subjectArea ?: "",
-                     sedID = request.sed ?: "",
-                     aktoerID = request.pinid ?: ""
-                 )
-                 request.institutions!!.forEach {
-                     utfylling.addInstitutions(
-                             InstitusjonItem(country = it.country, institution = it.institution)
-                     )
-                 }
-        logger.debug("UtfyllingData: $utfylling,  ${utfylling.hentSED()} ")
-        return utfylling
-    }
-
+    //kommer fra frontend
     //{"institutions":[{"NO:"DUMMY"}],"buc":"P_BUC_06","sed":"P6000","caseId":"caseId","subjectArea":"pensjon","actorId":"2323123"}
     data class RequestApi(
             //sector
@@ -107,15 +113,10 @@ class ApiController(private val euxService: EuxService, private val preutfylling
             val buc: String? = null,
             val sed : String? = null,
             //mottakere
-            val institutions: List<Institusjon>? = null,
+            val institutions: List<no.nav.eessi.eessifagmodul.models.InstitusjonItem>? = null,
             @JsonProperty("actorId")
             //aktoerid
-            var pinid: String? = null
-    )
-
-    data class Institusjon(
-            val country: String? = null,
-            val institution: String? = null
+            val pinid: String? = null
     )
 
 

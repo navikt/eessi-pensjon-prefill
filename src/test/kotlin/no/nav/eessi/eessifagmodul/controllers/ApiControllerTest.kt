@@ -3,8 +3,10 @@ package no.nav.eessi.eessifagmodul.controllers
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.whenever
-import no.nav.eessi.eessifagmodul.models.*
-import no.nav.eessi.eessifagmodul.preutfyll.InstitusjonItem
+import no.nav.eessi.eessifagmodul.models.Bruker
+import no.nav.eessi.eessifagmodul.models.InstitusjonItem
+import no.nav.eessi.eessifagmodul.models.Nav
+import no.nav.eessi.eessifagmodul.models.Person
 import no.nav.eessi.eessifagmodul.preutfyll.PreutfyllingPerson
 import no.nav.eessi.eessifagmodul.preutfyll.UtfyllingData
 import no.nav.eessi.eessifagmodul.services.EuxService
@@ -50,14 +52,15 @@ class ApiControllerTest {
         val requestMock = ApiController.RequestApi(
             subjectArea = "Pensjon",
             caseId = "EESSI-PEN-123",
-            institutions = listOf(ApiController.Institusjon("NO","DUMMY")),
+            institutions = listOf(InstitusjonItem("NO","DUMMY")),
             sed = "P6000",
             buc = "P_BUC_06",
             pinid = "0105094340092"
         )
         val mockResponse = "1234567890"
 
-        val utfyllMock = UtfyllingData().mapFromRequest("Pensjon","EESSI-PEN-123","P_BUC_06","P6000","0105094340092")
+        val items = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
+        val utfyllMock = UtfyllingData().build(subject = "Pensjon",caseId = "EESSI-PEN-123", sedID = "P6000", aktoerID = "0105094340092", buc = "P_BUC_06", data = items)
 
         whenever(mockPreutfyll.preutfyll(any())).thenReturn(utfyllMock.hentSED())
         whenever(mockEuxService.createCaseAndDocument(anyString(), anyString(), anyString(), anyString(), anyString(), anyString() )).thenReturn(mockResponse)
@@ -71,15 +74,14 @@ class ApiControllerTest {
         val mockData = ApiController.RequestApi(
                 subjectArea = "Pensjon",
                 caseId = "EESSI-PEN-123",
-                institutions = listOf(ApiController.Institusjon("NO","DUMMY")),
+                institutions = listOf(InstitusjonItem("NO","DUMMY")),
                 sed = "P6000",
                 buc = "P_BUC_06",
                 pinid = "0105094340092"
         )
-        val utfyllMock = UtfyllingData().mapFromRequest(subject = "Pensjon",caseId = "EESSI-PEN-123", sedID = "P6000", aktoerID = "0105094340092", buc = "P_BUC_06")
+        val items = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
+        val utfyllMock = UtfyllingData().build(subject = "Pensjon",caseId = "EESSI-PEN-123", sedID = "P6000", aktoerID = "0105094340092", buc = "P_BUC_06", data = items)
         utfyllMock.hentSED().nav = Nav(bruker = Bruker(person = Person(fornavn = "Dummy", etternavn = "Dummy")))
-
-        utfyllMock.addInstitutions(InstitusjonItem(country = "NO", institution = "DUMMY"))
 
         whenever(mockPreutfyll.preutfyll(any())).thenReturn(utfyllMock.hentSED())
 
@@ -95,7 +97,7 @@ class ApiControllerTest {
         val mockData = ApiController.RequestApi(
                 subjectArea = "Pensjon",
                 caseId = "EESSI-PEN-123",
-                institutions = listOf(ApiController.Institusjon("NO","DUMMY")),
+                institutions = listOf(InstitusjonItem("NO","DUMMY")),
                 sed = "P3300",
                 buc = "P_BUC_06",
                 pinid = "0105094340092"
@@ -108,7 +110,7 @@ class ApiControllerTest {
         val mockData = ApiController.RequestApi(
                 subjectArea = "Pensjon",
                 caseId = "EESSI-PEN-123",
-                institutions = listOf(ApiController.Institusjon("NO","DUMMY")),
+                institutions = listOf(InstitusjonItem("NO","DUMMY")),
                 sed = null,
                 buc = "P_BUC_06",
                 pinid = "0105094340092"

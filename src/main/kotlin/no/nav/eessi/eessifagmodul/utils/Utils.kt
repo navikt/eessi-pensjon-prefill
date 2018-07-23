@@ -17,16 +17,6 @@ import org.springframework.web.client.RestClientException
 inline fun <reified T : Any> typeRef(): ParameterizedTypeReference<T> = object : ParameterizedTypeReference<T>() {}
 inline fun <reified T : Any> typeRefs(): TypeReference<T> = object : TypeReference<T>() {}
 
-/**
- * Sende httpheader til BASSIS token/cookie?
- */
-fun createHeaderData(token: String): HttpHeaders {
-    val headers = HttpHeaders()
-    headers.add(HttpHeaders.COOKIE, "JSESSIONID=$token")
-    headers.add(HttpHeaders.CONTENT_TYPE, "application/json;charset=utf-8")
-    return headers
-}
-
 fun createErrorMessage(responseBody: String?): RestClientException {
     val objectMapper = jacksonObjectMapper()
     return objectMapper.readValue(responseBody, RestClientException::class.java)
