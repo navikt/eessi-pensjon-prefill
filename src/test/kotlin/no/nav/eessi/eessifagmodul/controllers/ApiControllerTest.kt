@@ -10,6 +10,7 @@ import no.nav.eessi.eessifagmodul.models.Person
 import no.nav.eessi.eessifagmodul.preutfyll.PreutfyllingPerson
 import no.nav.eessi.eessifagmodul.preutfyll.UtfyllingData
 import no.nav.eessi.eessifagmodul.services.EuxService
+import no.nav.eessi.eessifagmodul.services.LandkodeService
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -17,6 +18,7 @@ import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
+import org.springframework.beans.factory.annotation.Autowired
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
@@ -34,6 +36,14 @@ class ApiControllerTest {
     @Before
     fun setUp() {
         apiController = ApiController(mockEuxService, mockPreutfyll)
+        apiController.landkodeService = LandkodeService()
+    }
+
+    @Test
+    fun `create list landkoder`() {
+        val response = apiController.getLandKoder()
+        assertNotNull(response)
+        assertEquals(31, response.size)
     }
 
     @Test

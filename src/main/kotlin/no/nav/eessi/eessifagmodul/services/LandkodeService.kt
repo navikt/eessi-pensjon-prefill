@@ -25,10 +25,10 @@ class LandkodeService {
             line = br.readLine()
             if (line != null) {
                 val landArray = line.split(csvSplitBy.toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-                if (landArray[0].length != 2 || landArray[1].length != 3) {
+                if (landArray[0].length != 2 || landArray[1].length != 3 || landArray[2].length < 2) {
                     continue
                 }
-                val data = Landkode(landArray[0], landArray[1])
+                val data = Landkode(landArray[0], landArray[1], landArray[2], landArray[3])
                 landKodeTable.put(data.alpha3, data)
                 landKodeTable.put(data.alpha2, data)
             }
@@ -43,6 +43,24 @@ class LandkodeService {
         } else {
             landKodeTable[alpha2]?.alpha3
         }
+    }
+
+    fun hentLandkoer2(): List<String> {
+        val landlist: MutableList<Landkode> = mutableListOf()
+        println("Map landKodeTable : $landKodeTable")
+        landKodeTable.keys.forEach {
+            if (it?.length == 2) {
+                landlist.add( landKodeTable[it]!! )
+            }
+        }
+        val listsort: List<Landkode> = landlist.sortedBy { (_,_,_, sorting) -> sorting}.toList()
+        println("Sortertlist : $listsort")
+        val list : MutableList<String> = mutableListOf()
+        listsort.forEach {
+            list.add(it?.alpha2!!)
+        }
+        println("Filtrert Sortedlist : $list")
+        return list
     }
 
     fun finnLandkode2(alpha3: String): String? {
@@ -60,7 +78,9 @@ class LandkodeService {
 
     private data class Landkode(
         val alpha2: String? = null,
-        val alpha3: String? = null
+        val alpha3: String? = null,
+        val land: String? = null,
+        val sorting: String? = null
        )
 
 

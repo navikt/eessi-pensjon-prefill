@@ -7,9 +7,11 @@ import no.nav.eessi.eessifagmodul.models.createSED
 import no.nav.eessi.eessifagmodul.preutfyll.PreutfyllingPerson
 import no.nav.eessi.eessifagmodul.preutfyll.UtfyllingData
 import no.nav.eessi.eessifagmodul.services.EuxService
+import no.nav.eessi.eessifagmodul.services.LandkodeService
 import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -23,6 +25,14 @@ class ApiController(private val euxService: EuxService, private val preutfylling
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(ApiController::class.java) }
 
+    @Autowired
+    lateinit var landkodeService: LandkodeService
+
+    @ApiOperation("Henter liste over landkoder av ISO Alpha2 standard")
+    @PostMapping("/landkoder")
+    fun getLandKoder(): List<String> {
+        return landkodeService.hentLandkoer2()
+    }
 
     @ApiOperation("viser en oppsumering av SED preutfyll. Før innsending til EUX Basis")
     @PostMapping("/confirm")
