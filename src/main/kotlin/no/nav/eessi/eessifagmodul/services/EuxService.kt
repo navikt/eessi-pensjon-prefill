@@ -18,7 +18,10 @@ import org.springframework.util.LinkedMultiValueMap
 import org.springframework.util.MultiValueMap
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.util.UriComponentsBuilder
+import java.io.ByteArrayOutputStream
 import java.io.IOException
+import java.io.ObjectOutputStream
+
 
 @Service
 @Description("Service class for EuxBasis - EuxCpiServiceController.java")
@@ -79,6 +82,47 @@ class EuxService(private val oidcRestTemplate: RestTemplate) {
             throw RuntimeException(ex.message)
         }
     }
+
+
+    /**
+     * call to make new sed on existing rina document.
+     *
+     * @parem euxCaseID (rina id)
+     * @param korrelasjonID CorrelationId
+     * @param jsonPayLoad (actual sed as json)
+     */
+    //void no confirmaton?
+    fun createSEDonExistingDocument(jsonPayload: String, euxCaseId: String, korrelasjonID: String) {
+        val urlPath = "/SED"
+
+        val builder = UriComponentsBuilder.fromPath("$EUX_PATH$urlPath")
+                .queryParam("RINASaksnummer", euxCaseId)
+                .queryParam("KorrelasjonsID", korrelasjonID)
+
+        //val map: MultiValueMap<String, Any> = LinkedMultiValueMap()
+        val byteArrayOutputStream = ByteArrayOutputStream()
+        val objectOutputStream = ObjectOutputStream(byteArrayOutputStream)
+        objectOutputStream.writeObject(jsonPayload)
+        objectOutputStream.flush()
+        objectOutputStream.close()
+        val document = byteArrayOutputStream.toByteArray()
+//        val document = object : ByteArrayResource(jsonPayload.toByteArray()) {
+//            override fun getFilename(): String? {
+//                return "document"
+//            }
+//        }
+        //map.add("document", document)
+
+        val headers = logonBasis()
+        headers.contentType = MediaType.APPLICATION_STREAM_JSON
+
+        val httpEntity = HttpEntity(document, headers)
+        val response = oidcRestTemplate.exchange(builder.toUriString(), HttpMethod.POST, httpEntity, String::class.java)
+
+        logger.debug("SED Response: $response")
+
+    }
+
 
     /**
      * Call the orchestrator endpoint with necessary information to create a case in RINA, set

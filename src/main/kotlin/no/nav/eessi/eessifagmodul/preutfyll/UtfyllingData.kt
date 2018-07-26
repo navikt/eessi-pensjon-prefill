@@ -20,8 +20,21 @@ class UtfyllingData {
     //aktoerid
     private lateinit var aktoerID: String
 
+    //partlysed
+    private var partSedasJson: MutableMap<String, String> = mutableMapOf()
+
+    fun build(subject: String, caseId: String, buc: String, sedID: String, aktoerID: String, data: List<InstitusjonItem>, payload: String): UtfyllingData {
+        this.subject =  subject
+        this.caseId = caseId
+        this.buc = buc
+        this.aktoerID = aktoerID
+        this.sed = createSED(sedID)
+        this.institutions = data
+        this.partSedasJson.put(sedID, payload)
+        return this
+    }
+
     fun build(subject: String, caseId: String, buc: String, sedID: String, aktoerID: String, data: List<InstitusjonItem>): UtfyllingData {
-        println("mapRequest: $subject, $caseId, $buc, $sedID, $aktoerID")
         this.subject =  subject
         this.caseId = caseId
         this.buc = buc
@@ -48,6 +61,10 @@ class UtfyllingData {
 
     fun hentSaksnr(): String? {
         return caseId
+    }
+
+    fun hentPartSedasJson(key: String): String? {
+        return partSedasJson[key]
     }
 
     fun hentInstitutionsList(): List<InstitusjonItem> {

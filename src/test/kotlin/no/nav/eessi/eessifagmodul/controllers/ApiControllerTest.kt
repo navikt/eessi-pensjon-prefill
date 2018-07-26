@@ -7,6 +7,7 @@ import no.nav.eessi.eessifagmodul.models.Bruker
 import no.nav.eessi.eessifagmodul.models.InstitusjonItem
 import no.nav.eessi.eessifagmodul.models.Nav
 import no.nav.eessi.eessifagmodul.models.Person
+import no.nav.eessi.eessifagmodul.preutfyll.Preutfylling
 import no.nav.eessi.eessifagmodul.preutfyll.PreutfyllingPerson
 import no.nav.eessi.eessifagmodul.preutfyll.UtfyllingData
 import no.nav.eessi.eessifagmodul.services.EuxService
@@ -18,7 +19,6 @@ import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
-import org.springframework.beans.factory.annotation.Autowired
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
@@ -29,15 +29,16 @@ class ApiControllerTest {
     lateinit var mockEuxService: EuxService
 
     @Mock
-    lateinit var mockPreutfyll: PreutfyllingPerson
+    lateinit var mockPersonPreutfyll: PreutfyllingPerson
 
     lateinit var apiController: ApiController
 
     @Before
     fun setUp() {
-        apiController = ApiController(mockEuxService, mockPreutfyll)
+        apiController = ApiController(mockEuxService, Preutfylling(mockPersonPreutfyll))
         apiController.landkodeService = LandkodeService()
-    }
+
+   }
 
     @Test
     fun `create list landkoder`() {
@@ -72,7 +73,7 @@ class ApiControllerTest {
         val items = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
         val utfyllMock = UtfyllingData().build(subject = "Pensjon",caseId = "EESSI-PEN-123", sedID = "P6000", aktoerID = "0105094340092", buc = "P_BUC_06", data = items)
 
-        whenever(mockPreutfyll.preutfyll(any())).thenReturn(utfyllMock.hentSED())
+        whenever(mockPersonPreutfyll.preutfyll(any())).thenReturn(utfyllMock.hentSED())
         whenever(mockEuxService.createCaseAndDocument(anyString(), anyString(), anyString(), anyString(), anyString(), anyString() )).thenReturn(mockResponse)
 
         val response = apiController.createDocument(requestMock)
@@ -93,7 +94,7 @@ class ApiControllerTest {
         val utfyllMock = UtfyllingData().build(subject = "Pensjon",caseId = "EESSI-PEN-123", sedID = "P6000", aktoerID = "0105094340092", buc = "P_BUC_06", data = items)
         utfyllMock.hentSED().nav = Nav(bruker = Bruker(person = Person(fornavn = "Dummy", etternavn = "Dummy")))
 
-        whenever(mockPreutfyll.preutfyll(any())).thenReturn(utfyllMock.hentSED())
+        whenever(mockPersonPreutfyll.preutfyll(any())).thenReturn(utfyllMock.hentSED())
 
         val response = apiController.confirmDocument(mockData)
 

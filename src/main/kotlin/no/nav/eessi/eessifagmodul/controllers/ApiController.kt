@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import io.swagger.annotations.ApiOperation
 import no.nav.eessi.eessifagmodul.models.SED
 import no.nav.eessi.eessifagmodul.models.createSED
-import no.nav.eessi.eessifagmodul.preutfyll.PreutfyllingPerson
+import no.nav.eessi.eessifagmodul.preutfyll.Preutfylling
 import no.nav.eessi.eessifagmodul.preutfyll.UtfyllingData
 import no.nav.eessi.eessifagmodul.services.EuxService
 import no.nav.eessi.eessifagmodul.services.LandkodeService
@@ -21,7 +21,7 @@ import java.util.*
 
 @RestController
 @RequestMapping("/api")
-class ApiController(private val euxService: EuxService, private val preutfyllingPerson: PreutfyllingPerson) {
+class ApiController(private val euxService: EuxService, private val preutfylling: Preutfylling) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(ApiController::class.java) }
 
@@ -44,6 +44,26 @@ class ApiController(private val euxService: EuxService, private val preutfylling
         logger.debug("SED : $sedjson")
 
         return sed
+    }
+
+    @ApiOperation("legge til SED på et eksisterende Rina document. kjører preutfylling")
+    @PostMapping("/addsed")
+    fun addDocument(@RequestBody request: ApiRequest): String {
+        //vi må ha mer fra frontend // backend..
+
+        // Trenger RinaNr fra tidligere (opprettBucOgSed) gir oss orginale rinanr.
+        // payload fra f.eks P4000 dene er vel da bare delevis.
+        // dette legges vel til i ApiRequest model Objectet?
+
+        val rinanr: String = "12312312"
+        val korrid = UUID.randomUUID()
+
+        val sed = createPreutfyltSED(request)
+        val sedAsJson = mapAnyToJson(sed, true)
+
+        val euSaksnr = euxService.createSEDonExistingDocument(sedAsJson, rinanr, korrid.toString())
+
+        return rinanr
     }
 
     @ApiOperation("Kjører prosess OpprettBuCogSED på EUX for å få opprette dokument")
@@ -86,7 +106,7 @@ class ApiController(private val euxService: EuxService, private val preutfylling
             request.pinid == null -> throw IllegalArgumentException("Mangler AktoerID")
             request.institutions == null -> throw IllegalArgumentException("Mangler Institusjoner")
             request.sed == "P2000" -> createSED(sedName = request.sed)
-            request.sed == "P6000" -> preutfyllingPerson.preutfyll(
+            request.sed == "P6000" -> preutfylling.preutfyll(
                     utfyllingData = UtfyllingData()
                             .build(
                                     caseId = request.caseId,
@@ -97,6 +117,22 @@ class ApiController(private val euxService: EuxService, private val preutfylling
                                     data = request.institutions
                             )
             )
+            request.sed == "P4000" -> {
+                if (request.payload == null) { throw IllegalArgumentException("Mangler Institusjoner") }
+                val sed = preutfylling.preutfyll(
+                        utfyllingData = UtfyllingData()
+                                .build(
+                                        caseId = request.caseId,
+                                        buc = request.buc,
+                                        subject = request.subjectArea,
+                                        sedID = request.sed,
+                                        aktoerID = request.pinid,
+                                        data = request.institutions,
+                                        payload = request.payload
+                                )
+                )
+                sed
+            }
             else -> throw IllegalArgumentException("Mangler SED, eller ugyldig type SED")
         }
     }
@@ -114,7 +150,11 @@ class ApiController(private val euxService: EuxService, private val preutfylling
             val institutions: List<no.nav.eessi.eessifagmodul.models.InstitusjonItem>? = null,
             @JsonProperty("actorId")
             //aktoerid
-            val pinid: String? = null
+            val pinid: String? = null,
+            //mere maa legges til..
+            val euxCaseId: String? = null,
+            //partpayload json/sed
+            val payload: String? = null
     )
 
 

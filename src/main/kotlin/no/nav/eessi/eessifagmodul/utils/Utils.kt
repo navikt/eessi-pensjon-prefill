@@ -11,11 +11,17 @@ import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpHeaders
 import org.springframework.web.client.RestClientException
 
-
-//class Utils
-
 inline fun <reified T : Any> typeRef(): ParameterizedTypeReference<T> = object : ParameterizedTypeReference<T>() {}
 inline fun <reified T : Any> typeRefs(): TypeReference<T> = object : TypeReference<T>() {}
+inline fun <reified T : Any> mapJsonToAny(json: String, objec : TypeReference<T>, failonunknown: Boolean = false): T {
+    if (validateJson(json)) {
+        return jacksonObjectMapper()
+                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, failonunknown)
+                .readValue<T>(json, objec)
+    } else {
+        throw IllegalArgumentException("Not valid json format")
+    }
+}
 
 fun createErrorMessage(responseBody: String?): RestClientException {
     val objectMapper = jacksonObjectMapper()
@@ -41,17 +47,6 @@ fun mapAnyToJson(data: Any, nonempty: Boolean = false): String {
     }
 }
 
-inline fun <reified T : Any> mapJsonToAny(json: String, objec : TypeReference<T>, failonunknown: Boolean = false): T {
-    if (validateJson(json)) {
-        return jacksonObjectMapper()
-                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, failonunknown)
-                .readValue<T>(json, objec)
-    } else {
-        throw IllegalArgumentException("Not valid json format")
-    }
-}
-
-
 fun validateJson(json: String) : Boolean {
     return try {
         jacksonObjectMapper()
@@ -62,6 +57,7 @@ fun validateJson(json: String) : Boolean {
         false
     }
 }
+
 fun createListOfSEDOnBUC(buc: BUC): List<SED> {
     val buclist = createPensjonBucList()
     val sedlist : MutableList<SED> = mutableListOf()

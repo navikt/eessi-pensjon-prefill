@@ -63,14 +63,14 @@ fun createPensjonBucList(): List<BUC> {
                 bucType = "P_BUC_01",
                 description = "Krav om alderspensjon",
                 sed = listOf(
-                        createSED("P1000"),
                         createSED("P2000"),
                         createSED("P3000_NO"),
                         createSED("P4000"),
                         createSED("P5000"),
                         createSED("P6000"),
                         createSED("P7000"),
-                        createSED("P8000")
+                        createSED("P8000"),
+                        createSED("P10000")
                 )
         ),
         BUC(
