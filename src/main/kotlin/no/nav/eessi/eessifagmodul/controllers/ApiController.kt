@@ -61,7 +61,7 @@ class ApiController(private val euxService: EuxService, private val preutfylling
         val sed = createPreutfyltSED(request)
         val sedAsJson = mapAnyToJson(sed, true)
 
-        val euSaksnr = euxService.createSEDonExistingDocument(sedAsJson, rinanr, korrid.toString())
+        euxService.createSEDonExistingDocument(sedAsJson, rinanr, korrid.toString())
 
         return rinanr
     }
