@@ -118,11 +118,18 @@ class ExperimentController {
         return postnummerService.finnPoststed(postnr)
     }
 
-    @ApiOperation("Trygdehistorikk")
-    @GetMapping("/trygdehistorikk")
-    fun getTrygdehistorikk(): Trygdehistorikk? {
-        return createTrygdehistorikkMock()
+//    @ApiOperation("Trygdehistorikk")
+//    @GetMapping("/trygdehistorikk")
+//    fun getTrygdehistorikk(): Trygdehistorikk? {
+//        return createTrygdehistorikkMock()
+//    }
+
+    @ApiOperation("PersonTrygdeTid")
+    @GetMapping("/trygdetid")
+    fun getPersonTrygdeTid(): PersonTrygdeTid? {
+        return createPersonTrygdeTidMock()
     }
+
 
 }
 

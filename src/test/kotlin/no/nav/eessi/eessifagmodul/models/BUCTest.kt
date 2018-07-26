@@ -35,7 +35,7 @@ class BUCTest {
     fun `liste over seds fra alle bucs`() {
         val seds = createListOfSED()
         assertNotNull(seds)
-        assertEquals(13, seds.size)
+        assertEquals(20, seds.size)
     }
 
     @Test

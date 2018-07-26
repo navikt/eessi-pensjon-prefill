@@ -54,7 +54,9 @@ inline fun <reified T : Any> mapJsonToAny(json: String, objec : TypeReference<T>
 
 fun validateJson(json: String) : Boolean {
     return try {
-        jacksonObjectMapper().readTree(json)
+        jacksonObjectMapper()
+                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true)
+                .readTree(json)
         true
     } catch (ex: Exception) {
         false

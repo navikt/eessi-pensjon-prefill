@@ -1,0 +1,320 @@
+{
+  "P4000" : {
+    "sedPackage" : "Sector Components/Pensions/P4000",
+    "LocalCaseNumbers" : {
+      "LocalCaseNumber" :
+      [
+        {
+          "country":"NO",
+          "caseNumber":"12345678912",
+          "Institution":{
+            "institutionID":"NO:noinst002",
+            "institutionName":"NOINST002, NO INST002, NO"
+          }
+        }
+      ]
+    },
+    "ClaimantSurvivorPension" : {
+      "AdditionalInformationPerson" : {
+        "Address" : {
+          "buildingName":"101",
+          "country":"NO",
+          "town":"OSLO",
+          "street":"Storekaningata",
+          "postalCode":"0123",
+          "region":"OSLO"
+        },
+        "AdditionalInformationPerson" : {
+          "previousFamilyName":"prev-family-name",
+          "nationality":"NO",
+          "previousForename":"prev-forname"
+        }
+      },
+      "PersonIdentification" : {
+        "forename":"kanin",
+        "familyNameAtBirth":"familie-birth",
+        "forenameAtBirth":"fornavn-birth",
+        "familyName":"Kaniner",
+        "sex":"unknown",
+        "PINPersonInEachInstitution" : {
+          "PersonalIdentificationNumber":
+          [
+            {
+              "country":"NO",
+              "personalIdentificationNumber":"11111122321111",
+              "Institution" : {
+                "institutionID":"NO:noinst002",
+                "institutionName":"NOINST002, NO INST002, NO"
+              },
+              "sector":"all"
+            }
+          ]
+        },
+        "IfPINNotProvidedForEveryInstitutionPleaseProvide" : {
+          "PlaceBirth" : {
+            "country":"EE",
+            "town":"town",
+            "region":"regeion"
+          },
+          "motherFamilyNameAtBirth":"mothername",
+          "forenameMother":"motherforname",
+          "forenameFather":"forname",
+          "fatherFamilyNameAtBirth":"famnavn"
+        },
+        "dateBirth":"1980-01-01"
+      }
+    },
+    "sedGVer":"4",
+    "InsuredPerson" : {
+      "AdditionalInformationPerson" : {
+        "Address" : {
+          "buildingName":"101",
+          "country":"NO",
+          "town":"OSLO",
+          "street":"afkwx gt",
+          "postalCode":"0123",
+          "region":"OSLO"
+        },
+        "AdditionalInformationPerson" : {
+          "previousFamilyName":"tidligere-familienavn",
+          "nationality":"NO",
+          "previousForename":"tidligere-fornavn"
+        }
+      },
+      "PersonIdentification" : {
+        "forename":"kanin",
+        "familyNameAtBirth":"familinavn-birth",
+        "forenameAtBirth":"fornavn-birth",
+        "familyName":"kaniner",
+        "sex":"unknown",
+        "PINPersonInEachInstitution" : {
+          "PersonalIdentificationNumber" :
+          [
+            {
+              "country":"NO",
+              "personalIdentificationNumber":"1111111111111",
+              "Institution" : {
+                "institutionID":"NO:noinst002",
+                "institutionName":"NOINST002, NO INST002, NO"
+              },
+              "sector":"all"
+            }
+          ]
+        },
+        "IfPINNotProvidedForEveryInstitutionPleaseProvide" : {
+          "PlaceBirth" : {
+            "country":"NO",
+            "town":"Oslo",
+            "region":"Oslo"
+          },
+          "forenameMother":"KARI",
+          "forenameFather":"OLE",
+          "fatherFamilyNameAtBirth":"KANIN"
+        },
+        "dateBirth":"1980-01-01"
+      }
+    },
+    "sedVer":"0",
+    "InformationInsuredPersonInsuranceHistory" : {
+      "OtherTypesInsurancePeriods" : {
+        "OtherTypeInsurancePeriods":
+        [
+          {
+            "country":"NL",
+            "additionalInformationConcerningPeriod":"Don't recall anything happend here.",
+            "Period" : {
+              "OpenPeriod" : {
+                "typeOpenPeriod":"endDatePeriodUnknown",
+                "startDate":"2002-01-01"
+              }
+            },
+            "typePeriod":"live free. and get rich .",
+            "uncertainDatesIndicator":"yes"
+          }
+        ]
+      },
+      "UnemploymentBenefitsPeriods" : {
+        "UnemploymentBenefits" :
+        [
+          {
+            "country":"ES",
+            "additionalInformationConcerningPeriod" : "No work for me in spain had to use benefit",
+            "namePayingInstitution" : "Spain Service for Unemployment Benefit for Lazy People.",
+            "Period" : {
+              "FixedPeriod" : {
+                "endDate" : "2007-01-01",
+                "startDate" : "1889-01-01"
+              }
+            },
+            "uncertainDatesIndicator":"yes"
+          }
+        ]
+      },
+      "ResidencePeriods" : {
+        "Residence":
+        [
+          {
+            "country":"DK",
+            "additionalInformationConcerningPeriod":"Bo i danmark er deilig det. men mye billig øl.",
+            "Period" : {
+              "FixedPeriod" : {
+                "endDate" : "2006-01-01",
+                "startDate" : "2000-01-01"
+              }
+            },
+            "uncertainDatesIndicator" : "no"
+          }
+        ]
+      },
+      "TrainingPeriods" : {
+        "Training" :
+        [
+          {
+            "country" : "SE",
+            "additionalInformationConcerningPeriod" : "Stocholm",
+            "Period" : {
+              "FixedPeriod" : {
+                "endDate" : "1992-01-01",
+                "startDate" : "1988-01-01"
+              }
+            },
+            "nameTrainingInstitution":"Det store Nobel Institut for høgare Akademisk lære",
+            "uncertainDatesIndicator":"no"
+          }
+        ]
+      },
+      "SicknessBenefitsPeriods" : {"SicknessBenefit" :
+      [
+        {
+          "country" : "FI",
+          "additionalInformationConcerningPeriod" : "syk",
+          "namePayingInstitution" : "Finske peihekapka instuisjona sykedom",
+          "Period" : {
+            "FixedPeriod" : {
+              "endDate" : "2005-01-01",
+              "startDate" : "2004-01-01"
+            }
+          },
+          "uncertainDatesIndicator" : "no"
+        }
+      ]
+      },
+      "ChildRaisingPeriods" : {
+        "ChildRaising" :
+        [
+          {
+            "additionalInformationConcerningPeriod" : "mye hygge",
+            "InformationChild" : {
+              "forename" : "Kanin",
+              "country" : "SE",
+              "familyName" : "Kalle",
+              "dateBirth" : "2017-01-01"
+            },
+            "Period" : {
+              "OpenPeriod" : {
+                "typeOpenPeriod" : "endDatePeriodUnknown",
+                "startDate" : "2018-01-01"
+              }
+            },
+            "uncertainDatesIndicator":"yes"
+          }
+        ]
+      },
+      "EmploymentSelfEmploymentPeriods" : {
+        "EmploymentSelfEmployment" :
+        [
+          {
+            "occupationDuringEmploymentOrSelfEmployment" : "kanin fabrikk",
+            "additionalInformationConcerningPeriod" : "mere info om dette vil vi ikke ha i dag.",
+            "AddressEmployerCompany" : {
+              "buildingName":"kaninstase 11",
+              "country":"DE",
+              "town":"Kaninby",
+              "street":"kanin gata 101",
+              "postalCode":"123456",
+              "region":"Hamburg"
+            },
+            "Period" : {
+              "FixedPeriod" : {
+                "endDate":"1995-12-20",
+                "startDate":"1990-01-01"
+              }
+            },
+            "typePeriod":"employment",
+            "insuranceOrRegistrationNumber":"1234567890",
+            "nameEmployerCompany":"kaniner as",
+            "uncertainDatesIndicator":"yes"
+          },
+          {
+            "occupationDuringEmploymentOrSelfEmployment":"employment",
+            "additionalInformationConcerningPeriod":"veldig store kaniner ble laget her",
+            "AddressEmployerCompany" : {
+              "buildingName":"10121",
+              "country":"DE",
+              "town":"Munchen",
+              "street":"Kaninstrase",
+              "postalCode":"1232312",
+              "region":"Bavaria"
+            },
+            "Period" : {
+              "FixedPeriod" : {
+                "endDate":"1998-12-20",
+                "startDate":"1996-01-01"
+              }
+            },
+            "insuranceOrRegistrationNumber":"213234324234",
+            "nameEmployerCompany":"Mega kaninfabrikk AG\nMunchen"
+          }
+        ]
+      },
+      "MilitaryServicePeriods" : {
+        "MilitaryService" :
+        [
+          {
+            "country":"CY",
+            "additionalInformationConcerningPeriod":"forsvaret med støtte av FN for forsvar i Cypros.",
+            "Period" : {
+              "FixedPeriod" : {
+                "endDate":"1991-01-01",
+                "startDate":"1990-01-01"
+              }
+            },
+            "uncertainDatesIndicator":"no"
+          }
+        ]
+      },
+      "MaternityPeriods" : {
+        "Maternity" :
+        [
+          {
+            "country":"FR",
+            "additionalInformationConcerningPeriod":"mamma perm i Frankrike.",
+            "Period" : {
+              "FixedPeriod" : {
+                "endDate":"1994-01-01",
+                "startDate":"1993-01-01"
+              }
+            },
+            "uncertainDatesIndicator":"no"
+          }
+        ]
+      },
+      "VoluntaryInsurancePeriods" : {
+        "VoluntaryInsurance" :
+        [
+          {
+            "country":"IT",
+            "additionalInformationConcerningPeriod":"fireworker worked with fire",
+            "Period" : {
+              "FixedPeriod" : {
+                "endDate":"2006-01-01",
+                "startDate":"2005-01-01"
+              }
+            },
+            "uncertainDatesIndicator":"no"
+          }
+        ]
+      }
+    }
+  }
+}

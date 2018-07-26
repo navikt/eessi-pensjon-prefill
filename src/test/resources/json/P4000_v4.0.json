@@ -1,0 +1,430 @@
+{
+  "P4000" : {
+    "sedPackage" : "Sector Components/Pensions/P4000",
+    "sedGVer": "$sedGVer",
+    "sedVer": "$sedVer",
+    "LocalCaseNumbers": {
+      "LocalCaseNumber": [
+        {
+          "country": {
+            "value": [
+              "$nav.eessisak[x].land"
+            ]
+          },
+          "caseNumber": "$nav.eessisak[x].saksnummer",
+          "Institution": {
+            "institutionID": "$nav.eessisak[x].institusjonsid",
+            "institutionName": "$nav.eessisak[x].institusjonsnavn"
+          }
+        }
+      ]
+    },
+    "InsuredPerson": {
+      "PersonIdentification": {
+        "familyName": "$nav.bruker.person.etternavn",
+        "forename": "$nav.bruker.person.fornavn",
+        "dateBirth": "$nav.bruker.person.foedselsdato",
+        "sex": {
+          "value": [
+            "$nav.bruker.person.kjoenn"
+          ]
+        },
+        "familyNameAtBirth": "$nav.bruker.person.etternavnvedfoedsel",
+        "forenameAtBirth": "$nav.bruker.person.fornavnvedfoedsel",
+        "PINPersonInEachInstitution": {
+          "PersonalIdentificationNumber": [
+            {
+              "country": {
+                "value": [
+                  "$nav.bruker.person.pin[x].land"
+                ]
+              },
+              "personalIdentificationNumber": "$nav.bruker.person.pin[x].identifikator",
+              "sector": {
+                "value": [
+                  "$nav.bruker.person.pin[x].sektor"
+                ]
+              },
+              "Institution": {
+                "institutionID": "$nav.bruker.person.pin[x].institusjonsid",
+                "institutionName": "$nav.bruker.person.pin[x].institusjonsnavn"
+              }
+            }
+          ]
+        },
+        "IfPINNotProvidedForEveryInstitutionPleaseProvide": {
+          "PlaceBirth": {
+            "town": "$nav.bruker.person.foedested.by",
+            "region": "$nav.bruker.person.foedested.region",
+            "country": {
+              "value": [
+                "$nav.bruker.person.foedested.land"
+              ]
+            }
+          },
+          "fatherFamilyNameAtBirth": "$nav.bruker.far.person.etternavnvedfoedsel",
+          "forenameFather": "$nav.bruker.far.person.fornavn",
+          "motherFamilyNameAtBirth": "$nav.bruker.mor.person.etternavnvedfoedsel",
+          "forenameMother": "$nav.bruker.mor.person.fornavn"
+        }
+      },
+      "AdditionalInformationPerson": {
+        "AdditionalInformationPerson": {
+          "nationality": {
+            "value": [
+              "$nav.bruker.person.statsborgerskap[x].land"
+            ]
+          },
+          "previousFamilyName": "$nav.bruker.person.tidligereetternavn",
+          "previousForename": "$nav.bruker.person.tidligerefornavn"
+        },
+        "Address": {
+          "street": "$nav.bruker.adresse.gate",
+          "buildingName": "$nav.bruker.adresse.bygning",
+          "town": "$nav.bruker.adresse.by",
+          "postalCode": "$nav.bruker.adresse.postnummer",
+          "region": "$nav.bruker.adresse.region",
+          "country": {
+            "value": [
+              "$nav.bruker.adresse.land"
+            ]
+          }
+        }
+      }
+    },
+    "ClaimantSurvivorPension": {
+      "PersonIdentification": {
+        "familyName": "$pensjon.gjenlevende.person.etternavn",
+        "forename": "$pensjon.gjenlevende.person.fornavn",
+        "dateBirth": "$pensjon.gjenlevende.person.foedselsdato",
+        "sex": {
+          "value": [
+            "$pensjon.gjenlevende.person.kjoenn"
+          ]
+        },
+        "familyNameAtBirth": "$pensjon.gjenlevende.person.etternavnvedfoedsel",
+        "forenameAtBirth": "$pensjon.gjenlevende.person.forrnavnvedfoedsel",
+        "PINPersonInEachInstitution": {
+          "PersonalIdentificationNumber": [
+            {
+              "country": {
+                "value": [
+                  "$pensjon.gjenlevende.person.pin[x].land"
+                ]
+              },
+              "personalIdentificationNumber": "$pensjon.gjenlevende.person.pin[x].identifikator",
+              "sector": {
+                "value": [
+                  "$pensjon.gjenlevende.person.pin[x].sektor"
+                ]
+              },
+              "Institution": {
+                "institutionID": "$pensjon.gjenlevende.person.pin[x].institusjonsid",
+                "institutionName": "$pensjon.gjenlevende.person.pin[x].institusjonsnavn"
+              }
+            }
+          ]
+        },
+        "IfPINNotProvidedForEveryInstitutionPleaseProvide": {
+          "PlaceBirth": {
+            "town": "$pensjon.gjenlevende.person.foedested.by",
+            "region": "$pensjon.gjenlevende.person.foedested.region",
+            "country": {
+              "value": [
+                "$pensjon.gjenlevende.person.foedested.land"
+              ]
+            }
+          },
+          "fatherFamilyNameAtBirth": "$pensjon.gjenlevende.far.person.etternavnvedfoedsel",
+          "forenameFather": "$pensjon.gjenlevende.far.person.fornavn",
+          "motherFamilyNameAtBirth": "$pensjon.gjenlevende.mor.person.etternavnvedfoedsel",
+          "forenameMother": "$pensjon.gjenlevende.mor.person.fornavn"
+        }
+      },
+      "AdditionalInformationPerson": {
+        "AdditionalInformationPerson": {
+          "nationality": {
+            "value": [
+              "$pensjon.gjenlevende.person.statsborgerskap[x].land"
+            ]
+          },
+          "previousFamilyName": "$pensjon.gjenlevende.person.tidligereetternavn",
+          "previousForename": "$pensjon.gjenlevende.person.tidligerefornavn"
+        },
+        "Address": {
+          "street": "$pensjon.gjenlevende.adresse.gate",
+          "buildingName": "$pensjon.gjenlevende.adresse.bygning",
+          "town": "$pensjon.gjenlevende.adresse.by",
+          "postalCode": "$pensjon.gjenlevende.adresse.postnummer",
+          "region": "$pensjon.gjenlevende.adresse.region",
+          "country": {
+            "value": [
+              "$pensjon.gjenlevende.adresse.land"
+            ]
+          }
+        }
+      }
+    },
+    "InformationInsuredPersonInsuranceHistory" : {
+      "OtherTypesInsurancePeriods" : {
+        "OtherTypeInsurancePeriods":
+        [
+          {
+            "country": {
+              "value": [
+                "$trygdetid.andrePerioder[x].land"
+              ]
+            },
+            "additionalInformationConcerningPeriod":"$trygdetid.andrePerioder[x].annenInformasjon",
+            "Period" : {
+              "OpenPeriod" : {
+                "typeOpenPeriod":"$trygdetid.andrePerioder[x].periode.openPeriode.extra",
+                "startDate": "$trygdetid.andrePerioder[x].periode.openPeriode.fom"
+              },
+              "FixedPeriod" : {
+                "endDate" : "$trygdetid.andrePerioder[x].periode.lukketPeriode.tom",
+                "startDate" : "$trygdetid.andrePerioder[x].periode.lukketPeriode.fom"
+              }
+            },
+            "typePeriod": "$trygdetid.andrePerioder[x].typePeriode",
+            "uncertainDatesIndicator": "$trygdetid.andrePerioder[x].usikkerDatoIndikator"
+          }
+        ]
+      },
+      "UnemploymentBenefitsPeriods" : {
+        "UnemploymentBenefits" :
+        [
+          {
+            "country": {
+              "value": [
+                "$trygdetid.arbeidsledigPerioder[x].land"
+              ]
+            },
+            "additionalInformationConcerningPeriod" : "$trygdetid.arbeidsledigPerioder[x].annenInformasjon",
+            "namePayingInstitution" : "$trygdetid.arbeidsledigPerioder[x].navnPaaInstitusjon",
+            "Period" : {
+              "OpenPeriod" : {
+                "typeOpenPeriod":"$trygdetid.arbeidsledigPerioder[x].periode.openPeriode.extra",
+                "startDate": "$trygdetid.arbeidsledigPerioder[x].periode.openPeriode.fom"
+              },
+              "FixedPeriod" : {
+                "endDate" : "$trygdetid.arbeidsledigPerioder[x].periode.lukketPeriode.tom",
+                "startDate" : "$trygdetid.arbeidsledigPerioder[x].periode.lukketPeriode.fom"
+              }
+            },
+            "uncertainDatesIndicator":"$trygdetid.arbeidsledigPerioder[x].usikkerDatoIndikator"
+          }
+        ]
+      },
+      "ResidencePeriods" : {
+        "Residence":
+        [
+          {
+            "country": {
+              "value": [
+                "$trygdetid.boPerioder[x].land"
+              ]
+            },
+            "additionalInformationConcerningPeriod": "$trygdetid.boPerioder[x].annenInformasjon",
+            "Period" : {
+              "OpenPeriod" : {
+                "typeOpenPeriod": "$trygdetid.boPerioder[x].periode.openPeriode.extra",
+                "startDate": "$trygdetid.boPerioder[x].periode.openPeriode.fom"
+              },
+              "FixedPeriod" : {
+                "endDate" : "$trygdetid.boPerioder[x].periode.lukketPeriode.tom",
+                "startDate" : "$trygdetid.boPerioder[x].periode.lukketPeriode.fom"
+              }
+            },
+            "uncertainDatesIndicator" : "$trygdetid.boPerioder[x].usikkerDatoIndikator"
+          }
+        ]
+      },
+      "TrainingPeriods" : {
+        "Training" :
+        [
+          {
+            "country": {
+              "value": [
+                "$trygdetid.opplearingPerioder[x].land"
+              ]
+            },
+            "additionalInformationConcerningPeriod": "$trygdetid.opplearingPerioder[x].annenInformasjon",
+            "Period" : {
+              "OpenPeriod" : {
+                "typeOpenPeriod":"$trygdetid.opplearingPerioder[x].periode.openPeriode.extra",
+                "startDate": "$trygdetid.opplearingPerioder[x].periode.openPeriode.fom"
+              },
+              "FixedPeriod" : {
+                "endDate" : "$trygdetid.opplearingPerioder[x].periode.lukketPeriode.tom",
+                "startDate" : "$trygdetid.opplearingPerioder[x].periode.lukketPeriode.fom"
+              }
+            },
+            "uncertainDatesIndicator" : "$trygdetid.opplearingPerioder[x].usikkerDatoIndikator",
+            "nameTrainingInstitution": "$trygdetid.opplearingPerioder[x].navnPaaInstitusjon"
+          }
+        ]
+      },
+      "SicknessBenefitsPeriods" : {"SicknessBenefit" :
+      [
+        {
+          "country": {
+            "value": [
+              "$trygdetid.sykePerioder[x].land"
+            ]
+          },
+          "Period" : {
+            "OpenPeriod" : {
+              "typeOpenPeriod":"$trygdetid.sykePerioder[x].periode.openPeriode.extra",
+              "startDate": "$trygdetid.sykePerioder[x].periode.openPeriode.fom"
+            },
+            "FixedPeriod" : {
+              "endDate" : "$trygdetid.sykePerioder[x].periode.lukketPeriode.tom",
+              "startDate" : "$trygdetid.sykePerioder[x].periode.lukketPeriode.fom"
+            }
+          },
+          "additionalInformationConcerningPeriod": "$trygdetid.sykePerioder[x].annenInformasjon",
+          "uncertainDatesIndicator" : "$trygdetid.sykePerioder[x].usikkerDatoIndikator",
+          "namePayingInstitution": "$trygdetid.sykePerioder[x].navnPaaInstitusjon"
+        }
+      ]
+      },
+      "ChildRaisingPeriods" : {
+        "ChildRaising" :
+        [
+          {
+            "additionalInformationConcerningPeriod" : "$trygdetid.barnepassPerioder[x].annenInformasjon",
+            "InformationChild" : {
+              "forename" : "$trygdetid.barnepassPerioder[x].fornavn",
+              "country" : {
+                "value": [
+                  "$trygdetid.barnepassPerioder[x].land"
+                ]
+              },
+              "familyName" : "$trygdetid.barnepassPerioder[x].etternavn",
+              "dateBirth" : "$trygdetid.barnepassPerioder[x].foedseldato"
+            },
+            "Period" : {
+              "OpenPeriod" : {
+                "typeOpenPeriod":"$trygdetid.barnepassPerioder[x].periode.openPeriode.extra",
+                "startDate": "$trygdetid.barnepassPerioder[x].periode.openPeriode.fom"
+              },
+              "FixedPeriod" : {
+                "endDate" : "$trygdetid.barnepassPerioder[x].periode.lukketPeriode.tom",
+                "startDate" : "$trygdetid.barnepassPerioder[x].periode.lukketPeriode.fom"
+              }
+            },
+            "uncertainDatesIndicator":"$trygdetid.barnepassPerioder[x].usikkerDatoIndikator"
+          }
+        ]
+      },
+      "EmploymentSelfEmploymentPeriods" : {
+        "EmploymentSelfEmployment" :
+        [
+          {
+            "occupationDuringEmploymentOrSelfEmployment" : "$trygdetid.ansattSelvstendigPerioder[x].jobbUnderAnsattEllerSelvstendig",
+            "additionalInformationConcerningPeriod" : "$trygdetid.ansattSelvstendigPerioder[x].annenInformasjon",
+            "AddressEmployerCompany" : {
+              "buildingName":"$trygdetid.ansattSelvstendigPerioder[x].adresseFirma.bygning",
+              "country": {
+                "value": [
+                  "$trygdetid.ansattSelvstendigPerioder[x].adresseFirma.land"
+                ]
+              },
+              "town":"$trygdetid.ansattSelvstendigPerioder[x].adresseFirma.by",
+              "street":"$trygdetid.ansattSelvstendigPerioder[x].adresseFirma.gate",
+              "postalCode":"$trygdetid.ansattSelvstendigPerioder[x].adresseFirma.postnummer",
+              "region":"$trygdetid.ansattSelvstendigPerioder[x].adresseFirma.region"
+            },
+            "Period" : {
+              "OpenPeriod" : {
+                "typeOpenPeriod": "$trygdetid.ansattSelvstendigPerioder[x].periode.openPeriode.extra",
+                "startDate": "$trygdetid.ansattSelvstendigPerioder[x].periode.openPeriode.fom"
+              },
+              "FixedPeriod" : {
+                "endDate":"$trygdetid.ansattSelvstendigPerioder[x].periode.tom",
+                "startDate":"$trygdetid.ansattSelvstendigPerioder[x].periode.fom"
+              }
+            },
+            "typePeriod":"$trygdetid.ansattSelvstendigPerioder[x].typePeriode",
+            "insuranceOrRegistrationNumber":"$trygdetid.ansattSelvstendigPerioder[x].forsikkringEllerRegistreringNr",
+            "nameEmployerCompany":"$trygdetid.ansattSelvstendigPerioder[x].navnFirma",
+            "uncertainDatesIndicator": "$trygdetid.ansattSelvstendigPerioder[x].usikkerDatoIndikator"
+          }
+        ]
+      },
+      "MilitaryServicePeriods" : {
+        "MilitaryService" :
+        [
+          {
+            "country": {
+              "value": [
+                "$trygdetid.forsvartjenestePerioder[x].land"
+              ]
+            },
+            "additionalInformationConcerningPeriod":"$trygdetid.forsvartjenestePerioder[x].annenInformasjon",
+            "Period" : {
+              "OpenPeriod" : {
+                "typeOpenPeriod": "$trygdetid.forsvartjenestePerioder[x].periode.openPeriode.extra",
+                "startDate": "$trygdetid.forsvartjenestePerioder[x].periode.openPeriode.fom"
+              },
+              "FixedPeriod" : {
+                "endDate" : "$trygdetid.forsvartjenestePerioder[x].periode.lukketPeriode.tom",
+                "startDate" : "$trygdetid.forsvartjenestePerioder[x].periode.lukketPeriode.fom"
+              }
+            },
+            "uncertainDatesIndicator":"$trygdetid.forsvartjenestePerioder[x].usikkerDatoIndikator"
+          }
+        ]
+      },
+      "MaternityPeriods" : {
+        "Maternity" :
+        [
+          {
+            "country": {
+              "value": [
+                "$trygdetid.foedselspermisjonPerioder[x].land"
+              ]
+            },
+            "additionalInformationConcerningPeriod":"$trygdetid.foedselspermisjonPerioder[x].annenInformasjon",
+            "Period" : {
+              "OpenPeriod" : {
+                "typeOpenPeriod":"$trygdetid.foedselspermisjonPerioder[x].periode.openPeriode.extra",
+                "startDate": "$trygdetid.foedselspermisjonPerioder[x].periode.openPeriode.fom"
+              },
+              "FixedPeriod" : {
+                "endDate" : "$trygdetid.foedselspermisjonPerioder[x].periode.lukketPeriode.tom",
+                "startDate" : "$trygdetid.foedselspermisjonPerioder[x].periode.lukketPeriode.fom"
+              }
+            },
+            "uncertainDatesIndicator":"$trygdetid.foedselspermisjonPerioder[x].usikkerDatoIndikator"
+          }
+        ]
+      },
+      "VoluntaryInsurancePeriods" : {
+        "VoluntaryInsurance" :
+        [
+          {
+            "country": {
+              "value": [
+                "$trygdetid.frivilligPerioder[x].land"
+              ]
+            },
+            "additionalInformationConcerningPeriod":"$trygdetid.frivilligPerioder[x].annenInformasjon",
+            "Period" : {
+              "OpenPeriod" : {
+                "typeOpenPeriod":"$trygdetid.frivilligPerioder[x].periode.openPeriode.extra",
+                "startDate": "$trygdetid.frivilligPerioder[x].periode.openPeriode.fom"
+              },
+              "FixedPeriod" : {
+                "endDate" : "$trygdetid.frivilligPerioder[x].periode.lukketPeriode.tom",
+                "startDate" : "$trygdetid.frivilligPerioder[x].periode.lukketPeriode.fom"
+              }
+            },
+            "uncertainDatesIndicator":"$trygdetid.frivilligPerioder[x].usikkerDatoIndikator"
+          }
+        ]
+      }
+    }
+  }
+}

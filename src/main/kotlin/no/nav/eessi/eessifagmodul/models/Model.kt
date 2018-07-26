@@ -24,6 +24,7 @@ data class SED (
         val sedGVer: String? = null,
         val sedVer: String? = null,
         var pensjon: Pensjon? = null,
+        var trygdetid: PersonTrygdeTid? = null,
     	//val medlemskap: Medlemskap? = null, A01?.
         val ignore: Ignore? = null
 )
@@ -33,9 +34,7 @@ data class InstitusjonItem(
         val country: String? = null,
         val institution: String? = null
 )
-
-
-
+//Oppretter ny sed ut ifra navn (P2000-P4000-P5000)
 fun createSED(sedName: String?): SED {
     return SED (
         sed = sedName,
@@ -46,13 +45,14 @@ fun createSED(sedName: String?): SED {
 
 //mulig utfylling bruk av sector/buc/sed
 //ingen henting fra EUX Basis...
-fun createSectorPensjon() {
+fun createSectorPensjon(): Sector {
     val sector = Sector(
             name = "Pensjon",
             description = "Pensjon",
             activate = true,
             buc = createPensjonBucList()
     )
+    return sector
 }
 
 // genereate list of buc with seds only for penstion use
@@ -63,7 +63,14 @@ fun createPensjonBucList(): List<BUC> {
                 bucType = "P_BUC_01",
                 description = "Krav om alderspensjon",
                 sed = listOf(
-                    createSED("P2000")
+                        createSED("P1000"),
+                        createSED("P2000"),
+                        createSED("P3000_NO"),
+                        createSED("P4000"),
+                        createSED("P5000"),
+                        createSED("P6000"),
+                        createSED("P7000"),
+                        createSED("P8000")
                 )
         ),
         BUC(
