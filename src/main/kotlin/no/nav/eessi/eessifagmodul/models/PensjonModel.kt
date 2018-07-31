@@ -2,8 +2,6 @@ package no.nav.eessi.eessifagmodul.models
 
 import com.fasterxml.jackson.annotation.JsonProperty
 
-
-
 /**
  *  Pensjon objekt er her!
  *
@@ -18,7 +16,47 @@ data class Pensjon(
         var gjenlevende: Bruker? = null,
         //var gjenlevende: Gjenlevende? = null,
         @JsonProperty("tilleggsinformasjon")
-        var tilleggsinformasjon: Tilleggsinformasjon? = null
+        var tilleggsinformasjon: Tilleggsinformasjon? = null,
+
+        val ytterligeinformasjon: String? = null,
+        val ytelse: List<InstitusjonYtelseItem>? = null,
+        val ytelser: List<YtelserItem>? = null,
+        val forespurtstartdato: String? = null
+
+)
+
+data class InstitusjonYtelseItem(
+        val institusjon: Institusjon? = null
+)
+
+data class Institusjon(
+        val land: String? = null,
+        val sektor: String? = null,
+        val saksnummer: String? = null
+)
+
+data class YtelserItem(
+
+        val annenytelse: String? = null,
+        val totalbruttobeloeparbeidsbasert: String? = null,
+        val institusjon: Institusjon? = null,
+        val startdatoutbetaling: String? = null,
+        val mottasbasertpaa: String? = null,
+        val ytelse: String? = null,
+        val totalbruttobeloepbostedsbasert: String? = null,
+        val startdatoretttilytelse: String? = null,
+        val beloep: List<BeloepItem>? = null,
+        val sluttdatoretttilytelse: String? = null,
+        val sluttdatoutbetaling: String? = null,
+        val status: String? = null
+)
+
+data class BeloepItem(
+       val annenbetalingshyppighetytelse: String? = null,
+        val betalingshyppighetytelse: String? = null,
+        val valuta: String? = null,
+        val beloep: String? = null,
+        val gjeldendesiden: String? = null
 )
 
 data class Sak(

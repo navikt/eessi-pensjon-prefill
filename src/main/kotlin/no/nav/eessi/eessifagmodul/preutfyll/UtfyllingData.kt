@@ -4,6 +4,14 @@ import no.nav.eessi.eessifagmodul.models.InstitusjonItem
 import no.nav.eessi.eessifagmodul.models.SED
 import no.nav.eessi.eessifagmodul.models.createSED
 
+/**
+ * Data class to store different required data to build any given sed, auto or semiauto.
+ *
+ * sed, aktoerid,  psak-saknr, rinanr, institutions (mottaker eg. nav),
+ *
+ * servives :  aktoerid, tps, pen, maybe joark, eux-basis.
+ *
+ */
 class UtfyllingData {
 
     private lateinit var sed: SED
@@ -45,7 +53,7 @@ class UtfyllingData {
     }
 
     //Pinid (FNR) aktorID
-    fun hentPinid(): String? { return pin }
+    fun hentPinid(): String? { return pin}
 
     fun hentAktoerid(): String? {
         return aktoerID
@@ -53,6 +61,10 @@ class UtfyllingData {
 
     fun hentSED(): SED {
         return sed
+    }
+
+    fun hentSEDid(): String {
+        return sed.sed!!
     }
 
     fun putPinID(pinid: String?) {

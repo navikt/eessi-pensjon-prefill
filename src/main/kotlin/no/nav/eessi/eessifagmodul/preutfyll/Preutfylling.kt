@@ -8,16 +8,16 @@ class Preutfylling(private val preutfyllingPerson: PreutfyllingPerson) {
 
     fun preutfyll(utfyllingData: UtfyllingData): SED {
 
-        return when (utfyllingData.hentSED().sed)  {
+        return when (utfyllingData.hentSEDid())  {
             "P6000" -> {
-                val personsed = preutfyllingPerson.preutfyll(utfyllingData)
-                personsed
+                val sed = preutfyllingPerson.preutfyll(utfyllingData)
+                sed
             }
             "P4000" -> {
-                val personsed = preutfyllingPerson.preutfyll(utfyllingData)
-                val p4000 = PreutfyllingP4000().utfyllTrygdeTid(utfyllingData)
-                personsed.trygdetid = p4000
-                personsed
+                //skal person data komme fra P4000? eller kun fra TPS?
+                val sed = preutfyllingPerson.preutfyll(utfyllingData)
+                sed.trygdetid = PreutfyllingP4000().utfyllTrygdeTid(utfyllingData)
+                sed
             }
             else -> throw IllegalArgumentException("Mangler SED, eller ugyldig type SED")
         }

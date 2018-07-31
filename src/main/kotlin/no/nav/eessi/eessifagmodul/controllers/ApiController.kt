@@ -55,13 +55,15 @@ class ApiController(private val euxService: EuxService, private val preutfylling
         // payload fra f.eks P4000 dene er vel da bare delevis.
         // dette legges vel til i ApiRequest model Objectet?
 
-        val rinanr: String = "12312312"
+        val rinanr: String = request.euxCaseId!!
         val korrid = UUID.randomUUID()
 
         val sed = createPreutfyltSED(request)
         val sedAsJson = mapAnyToJson(sed, true)
 
         euxService.createSEDonExistingDocument(sedAsJson, rinanr, korrid.toString())
+        //ingen ting tilbake.. sjekke om alt er ok?
+        //val aksjon = euxService.getMuligeAksjoner(rinanr)
 
         return rinanr
     }

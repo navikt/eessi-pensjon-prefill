@@ -18,7 +18,7 @@ class PreutfyllingPerson(private val aktoerIdClient: AktoerIdClient, private val
             aktoerIdClient.hentIdentForAktoerId(aktoerId = pin ?: "" )?.ident
         } catch (ex: Exception) {
             logger.error(ex.message)
-            null
+            throw IllegalArgumentException("Fant ikke aktoer")
         }
     }
 
@@ -36,7 +36,10 @@ class PreutfyllingPerson(private val aktoerIdClient: AktoerIdClient, private val
         logger.debug("Preutfylling Utfylling Data")
 
         //har vi hentet ned fnr fra aktor?
-        utfyllingData.putPinID(hentPinIdentFraAktorid(utfyllingData.hentAktoerid()))
+
+        hentPinIdentFraAktorid(utfyllingData.hentAktoerid())?.let { utfyllingData.putPinID(it) }
+
+        logger.debug("Sjekker PinID : ${utfyllingData.hentPinid()}")
         logger.debug("Preutfylling hentet pinid fra aktoerIdClient.")
 
         sed.nav = preutfyllingNav.utfyllNav(utfyllingData)

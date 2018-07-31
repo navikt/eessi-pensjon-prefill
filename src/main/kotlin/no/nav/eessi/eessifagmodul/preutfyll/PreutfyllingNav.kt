@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service
 class PreutfyllingNav(private val preutfyllingPersonFraTPS: PreutfyllingPersonFraTPS) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PreutfyllingNav::class.java) }
-    val validseds : List<String> = listOf("P6000")
+    val validseds : List<String> = listOf("P6000","P4000")
 
     fun utfyllNav(utfyllingData: UtfyllingData): Nav {
 
@@ -23,13 +23,15 @@ class PreutfyllingNav(private val preutfyllingPersonFraTPS: PreutfyllingPersonFr
                 ),
                 //korrekt bruk av eessisak? skal pen-saknr legges ved?
                 //eller peker denne til en ekisterende rina-casenr?
-                eessisak = listOf(
-                        EessisakItem(
-                                saksnummer = "PEN-SAK:" + utfyllingData.hentSaksnr(),
-                                land = "NO"
-                        )
-                )
+//                eessisak = listOf(
+//                        EessisakItem(
+//                                saksnummer = "PEN-SAK:" + utfyllingData.hentSaksnr(),
+//                                land = "NO"
+//                        )
+//                ),
+                eessisak = utfyllingData.hentSaksnr()?.let { opprettLokalSaknr(it) }
         )
+        logger.debug("Utfylling av NAV data med lokalsaksnr: ${nav.eessisak}")
         return nav
     }
 
@@ -60,6 +62,17 @@ class PreutfyllingNav(private val preutfyllingPersonFraTPS: PreutfyllingPersonFr
             )
         return brukerfake
     }
+
+    private fun opprettLokalSaknr(pensaknr: String = ""): List<EessisakItem> {
+        val lokalsak = EessisakItem(
+                institusjonsid = "NO:noinst002",
+                institusjonsnavn = "NOINST002, NO INST002, NO",
+                saksnummer = "PEN-SAK: $pensaknr",
+                land = "NO"
+        )
+        return listOf<EessisakItem>(lokalsak)
+    }
+
 
 }
 

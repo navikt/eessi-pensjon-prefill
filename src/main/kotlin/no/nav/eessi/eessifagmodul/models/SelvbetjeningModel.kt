@@ -1,13 +1,11 @@
 package no.nav.eessi.eessifagmodul.models
 
-import java.time.LocalDateTime
-
 
 data class PersonTrygdeTid(
         val andrePerioder: List<StandardItem>? = null,
         val arbeidsledigPerioder: List<StandardItem>? = null,
         val boPerioder: List<StandardItem>? = null,
-        val opplearingPerioder: List<StandardItem>? = null,
+        val opplaeringPerioder: List<StandardItem>? = null,
         val sykePerioder: List<StandardItem>? = null,
         val barnepassPerioder: List<BarnepassItem>? = null,
         val ansattSelvstendigPerioder: List<AnsattSelvstendigItem>? = null,
@@ -205,7 +203,7 @@ fun createPersonTrygdeTidMock(): PersonTrygdeTid {
 
                     )
             ),
-            opplearingPerioder = listOf(
+            opplaeringPerioder = listOf(
                     StandardItem(
                             land = "SE",
                             usikkerDatoIndikator = "NO",

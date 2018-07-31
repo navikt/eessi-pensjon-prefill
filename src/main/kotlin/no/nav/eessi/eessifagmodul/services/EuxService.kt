@@ -114,9 +114,9 @@ class EuxService(private val oidcRestTemplate: RestTemplate) {
         //map.add("document", document)
 
         val headers = logonBasis()
-        headers.contentType = MediaType.APPLICATION_STREAM_JSON
+        headers.contentType = MediaType.APPLICATION_JSON
 
-        val httpEntity = HttpEntity(document, headers)
+        val httpEntity = HttpEntity(jsonPayload, headers)
         val response = oidcRestTemplate.exchange(builder.toUriString(), HttpMethod.POST, httpEntity, String::class.java)
 
         logger.debug("SED Response: $response")

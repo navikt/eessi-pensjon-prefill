@@ -1,5 +1,6 @@
 package no.nav.eessi.eessifagmodul.models
 
+import no.nav.eessi.eessifagmodul.controllers.ApiController
 import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
 import no.nav.eessi.eessifagmodul.utils.mapJsonToAny
 import no.nav.eessi.eessifagmodul.utils.typeRefs
@@ -74,6 +75,76 @@ class SedP4000Test {
         val json = mapAnyToJson(sed, true)
         println("\n\n\n-------------[ Fra fil -> SED -> Json ]--------------------------------------------------------------------------\n\n\n")
         println(json)
+    }
+
+
+    @Test
+    fun `create dummy or mock apiRequest with p4000 json as payload`() {
+
+        val trygdetid  = createPersonTrygdeTidMock()
+        val payload = mapAnyToJson(trygdetid)
+        println(payload)
+
+        val req = ApiController.ApiRequest(
+                sed = "P4000",
+                caseId = "12231231",
+                euxCaseId = "99191999911",
+                pinid = "00000",
+                buc = "P_BUC_01",
+                subjectArea = "Pensjon",
+                payload = payload
+        )
+
+        val json = mapAnyToJson(req)
+        assertNotNull(json)
+        println("-------------------------------------------------------------------------------------------------------")
+        println(json)
+        println("-------------------------------------------------------------------------------------------------------")
+
+        val apireq = mapJsonToAny(json, typeRefs<ApiController.ApiRequest>())
+
+        val payjson = apireq.payload
+        assertNotNull(payjson)
+
+        println(payjson)
+        assertEquals(payload, payjson)
+
+        val p4k = mapJsonToAny(payjson!!, typeRefs<PersonTrygdeTid>())
+        assertNotNull(p4k)
+
+        assertEquals("DK", p4k?.boPerioder!![0]?.land)
+
+    }
+
+    @Test
+    fun `create trygdetid P4000 from file`() {
+
+        val path = Paths.get("src/test/resources/json/Trygdetid_part.json")
+        val jsonfile = String(Files.readAllBytes(path))
+        assertNotNull(jsonfile)
+        validateJson(jsonfile)
+
+        val obj = mapJsonToAny(jsonfile, typeRefs<PersonTrygdeTid>())
+        assertNotNull(obj)
+
+        val payload = mapAnyToJson(obj)
+
+        val req = ApiController.ApiRequest(
+                sed = "P4000",
+                caseId = "12231231",
+                euxCaseId = "99191999911",
+                pinid = "00000",
+                buc = "P_BUC_01",
+                subjectArea = "Pensjon",
+                payload = payload
+        )
+
+        val jsonreq = mapAnyToJson(req)
+
+        println("-------------------------------------------------------------------------------------------------------")
+        println(jsonreq        )
+        println("-------------------------------------------------------------------------------------------------------")
+
     }
 
 }

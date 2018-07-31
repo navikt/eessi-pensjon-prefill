@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service
 class PreutfyllingPensjon(private val preutfyllingPersonFraTPS: PreutfyllingPersonFraTPS) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PreutfyllingPensjon::class.java) }
-    private val validseds : List<String> = listOf("P6000")
+    private val validseds : List<String> = listOf("P6000","P4000")
 
     fun pensjon(utfyllingData: UtfyllingData): Pensjon {
 
