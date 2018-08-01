@@ -103,16 +103,16 @@ class SedP4000Test {
 
         val apireq = mapJsonToAny(json, typeRefs<ApiController.ApiRequest>())
 
-        val payjson = apireq.payload
+        val payjson = apireq.payload ?: ""
         assertNotNull(payjson)
 
         println(payjson)
         assertEquals(payload, payjson)
 
-        val p4k = mapJsonToAny(payjson!!, typeRefs<PersonTrygdeTid>())
+        val p4k = mapJsonToAny(payjson, typeRefs<PersonTrygdeTid>())
         assertNotNull(p4k)
 
-        assertEquals("DK", p4k?.boPerioder!![0]?.land)
+        assertEquals("DK", p4k.boPerioder!![0].land)
 
     }
 
@@ -124,8 +124,19 @@ class SedP4000Test {
         assertNotNull(jsonfile)
         validateJson(jsonfile)
 
-        val obj = mapJsonToAny(jsonfile, typeRefs<PersonTrygdeTid>())
+        val obj = mapJsonToAny(jsonfile, typeRefs<PersonTrygdeTid>(), true)
         assertNotNull(obj)
+
+        val backtojson = mapAnyToJson(obj, true)
+        assertNotNull(backtojson)
+        validateJson(backtojson)
+        println("jsonfile size : ${jsonfile.length}")
+        println("backtojs size : ${backtojson.length}")
+
+        println("-------------------------------------------------------------------------------------------------------")
+        println(jsonfile)
+        println("-------------------------------------------------------------------------------------------------------")
+        println(backtojson)
 
         val payload = mapAnyToJson(obj)
 
@@ -142,7 +153,7 @@ class SedP4000Test {
         val jsonreq = mapAnyToJson(req)
 
         println("-------------------------------------------------------------------------------------------------------")
-        println(jsonreq        )
+        println(  jsonreq        )
         println("-------------------------------------------------------------------------------------------------------")
 
     }

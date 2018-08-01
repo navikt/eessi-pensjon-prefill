@@ -68,6 +68,10 @@ class PreutfyllingPersonFraTPS(private val personV3Client: PersonV3Client, priva
                 by = "Unkown",
                 region = "Unknown"
         )
+        if (fsted.land == "Unknown") {
+            return Foedested()
+        }
+
         return fsted
     }
 

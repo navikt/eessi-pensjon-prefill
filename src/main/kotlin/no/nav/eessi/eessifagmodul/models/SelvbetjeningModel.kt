@@ -1,7 +1,7 @@
 package no.nav.eessi.eessifagmodul.models
 
 
-data class PersonTrygdeTid(
+data class PersonTrygdeTid (
         val andrePerioder: List<StandardItem>? = null,
         val arbeidsledigPerioder: List<StandardItem>? = null,
         val boPerioder: List<StandardItem>? = null,
@@ -48,8 +48,7 @@ data class StandardItem (
         val usikkerDatoIndikator: String? = null,
         //arbeidsledig -- //opplæring -- //sykedom
         val navnPaaInstitusjon: String? = null,
-        //hva er denne til igjen?
-        //hva var perioden i andreTyper? hva gjore du?
+        //for 'andreperioder' ektra info.
         val typePeriode: String? = null
 )
 
@@ -59,7 +58,7 @@ fun createPersonTrygdeTidMock(): PersonTrygdeTid {
             foedselspermisjonPerioder = listOf(
                     StandardItem(
                             land = "NO",
-                            usikkerDatoIndikator = "NO",
+                            usikkerDatoIndikator = "1",
                             annenInformasjon= "førdeslperm i Norge",
                             periode = TrygdeTidPeriode(
                                         lukketPeriode = Periode(
@@ -70,12 +69,12 @@ fun createPersonTrygdeTidMock(): PersonTrygdeTid {
                     ),
                     StandardItem(
                             land = "FR",
-                            usikkerDatoIndikator = "YES",
+                            usikkerDatoIndikator = "0",
                             annenInformasjon= "fødselperm i frankrike",
                             periode = TrygdeTidPeriode(
                                     openPeriode = Periode (
                                             fom = "2002-01-01",
-                                            extra = "endDatePeriodUnknown"
+                                            extra = "98"
                                     )
                             )
 
@@ -83,7 +82,7 @@ fun createPersonTrygdeTidMock(): PersonTrygdeTid {
             ),
             ansattSelvstendigPerioder = listOf(
                     AnsattSelvstendigItem(
-                            typePeriode = "Employee",
+                            typePeriode = "01",
                             jobbUnderAnsattEllerSelvstendig = "Kanin fabrikk ansatt",
                             annenInformasjon = "Noting else",
                             adresseFirma = Adresse(
@@ -102,13 +101,13 @@ fun createPersonTrygdeTidMock(): PersonTrygdeTid {
                             ),
                             navnFirma = "Store Kaniner AS",
                             forsikkringEllerRegistreringNr = "12123123123123123",
-                            usikkerDatoIndikator = "NO"
+                            usikkerDatoIndikator = "1"
                     )
             ),
             andrePerioder = listOf(
                     StandardItem(
                             land = "SE",
-                            usikkerDatoIndikator = "NO",
+                            usikkerDatoIndikator = "1",
                             annenInformasjon= "ikkenoe",
                             typePeriode = "Ingen spesielt",
                             periode = TrygdeTidPeriode (
@@ -120,13 +119,13 @@ fun createPersonTrygdeTidMock(): PersonTrygdeTid {
                     ),
                     StandardItem(
                             land = "SE",
-                            usikkerDatoIndikator = "NO",
+                            usikkerDatoIndikator = "1",
                             annenInformasjon= "ikkenoemere",
                             typePeriode = "Leve og ha det gøy",
                             periode = TrygdeTidPeriode(
                                     openPeriode = Periode (
                                             fom = "2000-01-01",
-                                            extra = "endDatePeriodUnknown"
+                                            extra = "01"
                                     )
                             )
                     )
@@ -134,12 +133,12 @@ fun createPersonTrygdeTidMock(): PersonTrygdeTid {
             boPerioder = listOf(
                     StandardItem(
                             land = "DK",
-                            usikkerDatoIndikator = "NO",
+                            usikkerDatoIndikator = "1",
                             annenInformasjon = "Deilig i Danmark",
                             periode = TrygdeTidPeriode(
                                     lukketPeriode = Periode(
-                                            fom = "01-01-2003",
-                                            tom = "01-01-2004"
+                                            fom = "2003-01-01",
+                                            tom = "2004-01-01"
                                     )
                             )
                     )
@@ -147,13 +146,13 @@ fun createPersonTrygdeTidMock(): PersonTrygdeTid {
             arbeidsledigPerioder = listOf(
                     StandardItem(
                             land = "IT",
-                            usikkerDatoIndikator = "NO",
+                            usikkerDatoIndikator = "1",
                             annenInformasjon = "Arbeidsledig i Itelia for en kort periode.",
                             navnPaaInstitusjon = "NAV stønad for arbeidsledigetstrygd",
                             periode = TrygdeTidPeriode(
                                     lukketPeriode = Periode(
-                                            fom = "01-01-2002",
-                                            tom = "01-01-2004"
+                                            fom = "2002-01-01",
+                                            tom = "2004-01-01"
                                     )
                             )
 
@@ -162,12 +161,12 @@ fun createPersonTrygdeTidMock(): PersonTrygdeTid {
             forsvartjenestePerioder = listOf(
                     StandardItem(
                             land = "SE",
-                            usikkerDatoIndikator = "NO",
+                            usikkerDatoIndikator = "1",
                             annenInformasjon = "Forsvar og mlitærtjeneste fullført i Svergige",
                             periode = TrygdeTidPeriode(
                                     lukketPeriode = Periode(
-                                            fom = "01-01-2002",
-                                            tom = "01-01-2004"
+                                            fom = "2001-01-01",
+                                            tom = "2004-01-01"
                                     )
                             )
 
@@ -176,13 +175,13 @@ fun createPersonTrygdeTidMock(): PersonTrygdeTid {
             sykePerioder = listOf(
                     StandardItem(
                             land = "ES",
-                            usikkerDatoIndikator = "NO",
+                            usikkerDatoIndikator = "1",
                             annenInformasjon = "Sykdom og forkjølelse i Spania",
                             navnPaaInstitusjon = "Støtte for sykeophold NAV",
                             periode = TrygdeTidPeriode(
                                     lukketPeriode = Periode(
-                                            fom = "01-01-2005",
-                                            tom = "01-01-2007"
+                                            fom = "2005-01-01",
+                                            tom = "2007-01-01"
                                     )
                             )
 
@@ -192,12 +191,12 @@ fun createPersonTrygdeTidMock(): PersonTrygdeTid {
             frivilligPerioder = listOf(
                     StandardItem(
                             land = "GR",
-                            usikkerDatoIndikator = "NO",
+                            usikkerDatoIndikator = "1",
                             annenInformasjon = "Frivilig hjelpemedarbeider i Helles",
                             periode = TrygdeTidPeriode(
                                     lukketPeriode = Periode(
-                                            fom = "01-01-2006",
-                                            tom = "01-01-2007"
+                                            fom = "2006-01-01",
+                                            tom = "2007-01-01"
                                     )
                             )
 
@@ -206,13 +205,13 @@ fun createPersonTrygdeTidMock(): PersonTrygdeTid {
             opplaeringPerioder = listOf(
                     StandardItem(
                             land = "SE",
-                            usikkerDatoIndikator = "NO",
+                            usikkerDatoIndikator = "1",
                             annenInformasjon = "Opplæring høyere utdanning i Sverige",
                             navnPaaInstitusjon = "Det Akademiske instutt for høgere lære, Stockholm",
                             periode = TrygdeTidPeriode(
                                     lukketPeriode = Periode(
-                                            fom = "01-01-2000",
-                                            tom = "01-01-2007"
+                                            fom = "2000-01-01",
+                                            tom = "2007-01-01"
                                     )
                             )
 
@@ -220,34 +219,34 @@ fun createPersonTrygdeTidMock(): PersonTrygdeTid {
             ),
             barnepassPerioder = listOf(
                     BarnepassItem(
-                            usikkerDatoIndikator = "NO",
+                            usikkerDatoIndikator = "1",
                             annenInformasjon = "Pass av barn under opphold i Danmark",
                             periode = TrygdeTidPeriode(
                                     lukketPeriode = Periode(
-                                            tom = "01-01-2008",
-                                            fom = "01-01-2004"
+                                            tom = "2008-01-01",
+                                            fom = "2004-01-01"
                                     )
                             ),
                             informasjonBarn = InformasjonBarn(
                                     fornavn = "Ole",
                                     etternavn = "Olsen",
-                                    foedseldato = "01-01-2002",
+                                    foedseldato = "2002-01-01",
                                     land = "DK"
                             )
                     ),
                     BarnepassItem(
-                            usikkerDatoIndikator = "NO",
+                            usikkerDatoIndikator = "1",
                             annenInformasjon = "Pass av barn under opphold i Danmark",
                             periode = TrygdeTidPeriode(
                                     lukketPeriode = Periode(
-                                            tom = "01-01-2008",
-                                            fom = "01-01-2004"
+                                            tom = "2008-01-01",
+                                            fom = "2004-01-01"
                                     )
                             ),
                             informasjonBarn = InformasjonBarn(
                                     fornavn = "Teddy",
                                     etternavn = "Olsen",
-                                    foedseldato = "01-01-2003",
+                                    foedseldato = "2003-01-01",
                                     land = "DK"
                             )
                     )

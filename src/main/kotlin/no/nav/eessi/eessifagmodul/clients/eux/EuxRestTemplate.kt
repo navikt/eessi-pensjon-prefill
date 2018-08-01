@@ -24,6 +24,7 @@ class EuxRestTemplate {
                 .errorHandler(DefaultResponseErrorHandler())
                 .additionalInterceptors(RequestResponseLoggerInterceptor())
                 .build()
+        //need to be added for use of RequestResponseLoggerInterceptor() or else it consume all request streams...
         val factory = BufferingClientHttpRequestFactory(SimpleClientHttpRequestFactory())
         resttemplate.requestFactory = factory
         return resttemplate

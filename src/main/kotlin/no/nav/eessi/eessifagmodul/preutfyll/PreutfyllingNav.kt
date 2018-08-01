@@ -70,7 +70,7 @@ class PreutfyllingNav(private val preutfyllingPersonFraTPS: PreutfyllingPersonFr
                 saksnummer = "PEN-SAK: $pensaknr",
                 land = "NO"
         )
-        return listOf<EessisakItem>(lokalsak)
+        return listOf(lokalsak)
     }
 
 

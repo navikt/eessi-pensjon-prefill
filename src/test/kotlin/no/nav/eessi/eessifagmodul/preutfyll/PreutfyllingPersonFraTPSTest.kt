@@ -35,7 +35,8 @@ class PreutfyllingPersonFraTPSTest{
         val result = preutfyllingTPS.hentFodested(bruker)
 
         assertNotNull(result)
-        assertEquals("Unknown", result.land)
+        println(result)
+        assertEquals(null, result.land)
 
     }
     @Test
