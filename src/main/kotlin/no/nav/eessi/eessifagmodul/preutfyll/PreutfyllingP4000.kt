@@ -23,21 +23,22 @@ class PreutfyllingP4000 {
 //9                val foedselspermisjonPerioder: List<StandardItem>? = null,
 //10               val frivilligPerioder: List<StandardItem>? = null
 
-                val allePerioder = createPersonTrygdeTidMock()
-                return when (json) {
-                    "1" ->  PersonTrygdeTid(andrePerioder = allePerioder.andrePerioder )
-                    "2" ->  PersonTrygdeTid(arbeidsledigPerioder = allePerioder.arbeidsledigPerioder)
-                    "3" ->  PersonTrygdeTid(boPerioder = allePerioder.boPerioder )
-                    "4" ->  PersonTrygdeTid(opplaeringPerioder = allePerioder.opplaeringPerioder )
-                    "5" ->  PersonTrygdeTid(sykePerioder = allePerioder.sykePerioder)
-                    "6" ->  PersonTrygdeTid(barnepassPerioder = allePerioder.barnepassPerioder)
-                    "7" ->  PersonTrygdeTid(ansattSelvstendigPerioder = allePerioder.ansattSelvstendigPerioder)
-                    "8" ->  PersonTrygdeTid(forsvartjenestePerioder = allePerioder.forsvartjenestePerioder)
-                    "9" ->  PersonTrygdeTid(foedselspermisjonPerioder = allePerioder.foedselspermisjonPerioder)
-                   "10" ->  PersonTrygdeTid(frivilligPerioder = allePerioder.frivilligPerioder)
-                    "all" -> allePerioder
-                    else -> mapJsonToAny(json!!, typeRefs<PersonTrygdeTid>())
-                }
+//                val allePerioder = createPersonTrygdeTidMock()
+//                return when (json) {
+//                    "1" ->  PersonTrygdeTid(andrePerioder = allePerioder.andrePerioder )
+//                    "2" ->  PersonTrygdeTid(arbeidsledigPerioder = allePerioder.arbeidsledigPerioder)
+//                    "3" ->  PersonTrygdeTid(boPerioder = allePerioder.boPerioder )
+//                    "4" ->  PersonTrygdeTid(opplaeringPerioder = allePerioder.opplaeringPerioder )
+//                    "5" ->  PersonTrygdeTid(sykePerioder = allePerioder.sykePerioder)
+//                    "6" ->  PersonTrygdeTid(barnepassPerioder = allePerioder.barnepassPerioder)
+//                    "7" ->  PersonTrygdeTid(ansattSelvstendigPerioder = allePerioder.ansattSelvstendigPerioder)
+//                    "8" ->  PersonTrygdeTid(forsvartjenestePerioder = allePerioder.forsvartjenestePerioder)
+//                    "9" ->  PersonTrygdeTid(foedselspermisjonPerioder = allePerioder.foedselspermisjonPerioder)
+//                   "10" ->  PersonTrygdeTid(frivilligPerioder = allePerioder.frivilligPerioder)
+//                    "all" -> allePerioder
+//                    else -> mapJsonToAny(json!!, typeRefs<PersonTrygdeTid>())
+//                }
+                mapJsonToAny(json!!, typeRefs<PersonTrygdeTid>())
             }
             else -> {
                 //val trygdeTid = PersonTrygdeTid()
