@@ -17,7 +17,7 @@ freg:
 
 security:
   oidc:
-    host: ${freg.security.oidc.openam.url}
+    host: '${freg.security.oidc.openam.url}'
   openam:
     username: 'eessi-fagmodul-localhost'
     password: 'Test1234'
@@ -46,4 +46,4 @@ securitytokenservice:
   url: 'https://sts-t8.test.local/SecurityTokenServiceProvider/'
 
 server:
-  port: 8081
+  port: '8081'

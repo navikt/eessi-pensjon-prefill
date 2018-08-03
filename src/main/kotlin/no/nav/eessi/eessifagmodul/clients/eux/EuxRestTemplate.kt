@@ -19,14 +19,12 @@ class EuxRestTemplate {
 
     @Bean
     fun createEuxRestTemplate(templateBuilder: RestTemplateBuilder): RestTemplate {
-        val resttemplate: RestTemplate = templateBuilder
+        return templateBuilder
                 .rootUri(url)
                 .errorHandler(DefaultResponseErrorHandler())
                 .additionalInterceptors(RequestResponseLoggerInterceptor())
-                .build()
-        //need to be added for use of RequestResponseLoggerInterceptor() or else it consume all request streams...
-        val factory = BufferingClientHttpRequestFactory(SimpleClientHttpRequestFactory())
-        resttemplate.requestFactory = factory
-        return resttemplate
+                .build().apply {
+                    requestFactory = BufferingClientHttpRequestFactory(SimpleClientHttpRequestFactory())
+                }
     }
 }

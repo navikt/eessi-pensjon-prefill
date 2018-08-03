@@ -54,12 +54,12 @@ class LandkodeService {
             }
         }
         val listsort: List<Landkode> = landlist.sortedBy { (_,_,_, sorting) -> sorting}.toList()
-        println("Sortertlist : $listsort")
+        //println("Sortertlist : $listsort")
         val list : MutableList<String> = mutableListOf()
         listsort.forEach {
             list.add(it?.alpha2!!)
         }
-        println("Filtrert Sortedlist : $list")
+        //println("Filtrert Sortedlist : $list")
         return list
     }
 

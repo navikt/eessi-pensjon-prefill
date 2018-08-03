@@ -7,9 +7,9 @@ import no.nav.eessi.eessifagmodul.models.Bruker
 import no.nav.eessi.eessifagmodul.models.InstitusjonItem
 import no.nav.eessi.eessifagmodul.models.Nav
 import no.nav.eessi.eessifagmodul.models.Person
-import no.nav.eessi.eessifagmodul.preutfyll.Preutfylling
-import no.nav.eessi.eessifagmodul.preutfyll.PreutfyllingPerson
-import no.nav.eessi.eessifagmodul.preutfyll.UtfyllingData
+import no.nav.eessi.eessifagmodul.prefill.PrefillSED
+import no.nav.eessi.eessifagmodul.prefill.PrefillPerson
+import no.nav.eessi.eessifagmodul.prefill.PrefillDataModel
 import no.nav.eessi.eessifagmodul.services.EuxService
 import no.nav.eessi.eessifagmodul.services.LandkodeService
 import org.junit.Assert
@@ -29,13 +29,13 @@ class ApiControllerTest {
     lateinit var mockEuxService: EuxService
 
     @Mock
-    lateinit var mockPersonPreutfyll: PreutfyllingPerson
+    lateinit var mockPersonPreutfyll: PrefillPerson
 
     lateinit var apiController: ApiController
 
     @Before
     fun setUp() {
-        apiController = ApiController(mockEuxService, Preutfylling(mockPersonPreutfyll))
+        apiController = ApiController(mockEuxService, PrefillSED(mockPersonPreutfyll))
         apiController.landkodeService = LandkodeService()
 
    }
@@ -71,7 +71,7 @@ class ApiControllerTest {
         val mockResponse = "1234567890"
 
         val items = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
-        val utfyllMock = UtfyllingData().build(subject = "Pensjon",caseId = "EESSI-PEN-123", sedID = "P6000", aktoerID = "0105094340092", buc = "P_BUC_06", data = items)
+        val utfyllMock = PrefillDataModel().build(subject = "Pensjon",caseId = "EESSI-PEN-123", sedID = "P6000", aktoerID = "0105094340092", buc = "P_BUC_06", institutions = items)
 
         whenever(mockPersonPreutfyll.preutfyll(any())).thenReturn(utfyllMock.hentSED())
         whenever(mockEuxService.createCaseAndDocument(anyString(), anyString(), anyString(), anyString(), anyString(), anyString() )).thenReturn(mockResponse)
@@ -91,7 +91,7 @@ class ApiControllerTest {
                 pinid = "0105094340092"
         )
         val items = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
-        val utfyllMock = UtfyllingData().build(subject = "Pensjon",caseId = "EESSI-PEN-123", sedID = "P6000", aktoerID = "0105094340092", buc = "P_BUC_06", data = items)
+        val utfyllMock = PrefillDataModel().build(subject = "Pensjon",caseId = "EESSI-PEN-123", sedID = "P6000", aktoerID = "0105094340092", buc = "P_BUC_06", institutions = items)
         utfyllMock.hentSED().nav = Nav(bruker = Bruker(person = Person(fornavn = "Dummy", etternavn = "Dummy")))
 
         whenever(mockPersonPreutfyll.preutfyll(any())).thenReturn(utfyllMock.hentSED())

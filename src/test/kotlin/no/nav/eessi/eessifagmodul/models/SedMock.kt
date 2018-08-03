@@ -113,7 +113,7 @@ class NavMock {
 
 }
 
-//Mock preutfyll av en P6000
+//Mock prefill av en P6000
 class PensjonMock {
 
     fun genererMockData(): Pensjon {

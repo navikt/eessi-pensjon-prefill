@@ -1,0 +1,345 @@
+{
+  "P5000": {
+    "sedGVer": "4",
+    "sedVer": "0",
+    "sedPackage": "Sector Components/Pensions/P5000",
+    "LocalCaseNumbers": {
+      "LocalCaseNumber": [
+        {
+          "country": {
+            "value": [
+              "NO"
+            ]
+          },
+          "caseNumber": "PSAK:34242342342342432",
+          "Institution": {
+            "institutionID": "NO:NAVT001",
+            "institutionName": "12346, NAV Test1, NO"
+          }
+        },
+        {
+          "country": {
+            "value": [
+              "NO"
+            ]
+          },
+          "caseNumber": "VEDTAK:234234234234234234423423413451345",
+          "Institution": {
+            "institutionID": "NO:NAVT001",
+            "institutionName": "12346, NAV Test1, NO"
+          }
+        }
+      ]
+    },
+    "InsuredPerson": {
+      "AdditionalInformationPerson": {
+        "Address": {
+          "buildingName": "asdfsfd",
+          "country": {
+            "value": [
+              "BG"
+            ]
+          },
+          "town": "sfdsdaf",
+          "street": "dsfasdf",
+          "postalCode": "safdsdf",
+          "region": "sadfsd"
+        },
+        "AdditionalInformationPerson": {
+          "previousFamilyName": "sdfsfasdf",
+          "nationality": {
+            "value": [
+              "BE",
+              "BG",
+              "EL",
+              "UK"
+            ]
+          },
+          "previousForename": "asdfdsffsd"
+        }
+      },
+      "PersonIdentification": {
+        "forename": "Gul",
+        "familyNameAtBirth": "werwreq",
+        "forenameAtBirth": "werwerwe",
+        "familyName": "Konsoll",
+        "sex": {
+          "value": [
+            "02"
+          ]
+        },
+        "PINPersonInEachInstitution": {
+          "PersonalIdentificationNumber": [
+            {
+              "country": {
+                "value": [
+                  "BG"
+                ]
+              },
+              "personalIdentificationNumber": "weqrwerwqe",
+              "sector": {
+                "value": [
+                  "04"
+                ]
+              }
+            },
+            {
+              "country": {
+                "value": [
+                  "NO"
+                ]
+              },
+              "personalIdentificationNumber": "01126712345",
+              "sector": {
+                "value": [
+                  "03"
+                ]
+              }
+            }
+          ]
+        },
+        "IfPINNotProvidedForEveryInstitutionPleaseProvide": {
+          "PlaceBirth": {
+            "country": {
+              "value": [
+                "DK"
+              ]
+            },
+            "town": "gafdgsf",
+            "region": "sfgdfdgs"
+          },
+          "motherFamilyNameAtBirth": "asdfsdf",
+          "forenameMother": "asfsdf",
+          "forenameFather": "safasfsd",
+          "fatherFamilyNameAtBirth": "sadfsfd"
+        },
+        "dateBirth": "1967-12-01"
+      }
+    },
+    "ClaimantSurvivorPension": {
+      "AdditionalInformationPerson": {
+        "Address": {
+          "buildingName": "sdfsdf",
+          "country": {
+            "value": [
+              "BG"
+            ]
+          },
+          "town": "asfdsdaf",
+          "street": "sdfasd",
+          "postalCode": "sdafsdaf",
+          "region": "sdafsdf"
+        },
+        "AdditionalInformationPerson": {
+          "previousFamilyName": "asdfasdf",
+          "nationality": {
+            "value": [
+              "AT",
+              "BE",
+              "EL"
+            ]
+          },
+          "previousForename": "sadfsdf"
+        }
+      },
+      "PersonIdentification": {
+        "forename": "sdafsdf",
+        "familyNameAtBirth": "sdfsd",
+        "forenameAtBirth": "safsdaf",
+        "familyName": "asdffsdaf",
+        "sex": {
+          "value": [
+            "01"
+          ]
+        },
+        "PINPersonInEachInstitution": {
+          "PersonalIdentificationNumber": [
+            {
+              "country": {
+                "value": [
+                  "BE"
+                ]
+              },
+              "personalIdentificationNumber": "sdafsdf",
+              "sector": {
+                "value": [
+                  "07"
+                ]
+              }
+            },
+            {
+              "country": {
+                "value": [
+                  "HR"
+                ]
+              },
+              "personalIdentificationNumber": "dfasdf",
+              "sector": {
+                "value": [
+                  "03"
+                ]
+              }
+            }
+          ]
+        },
+        "IfPINNotProvidedForEveryInstitutionPleaseProvide": {
+          "PlaceBirth": {
+            "country": {
+              "value": [
+                "BE"
+              ]
+            },
+            "town": "Testarbeidsgiverby2",
+            "region": "sfsadfsda"
+          },
+          "motherFamilyNameAtBirth": "asdfsdf",
+          "forenameMother": "asdfsdafsdf",
+          "forenameFather": "asdfsdf",
+          "fatherFamilyNameAtBirth": "asfdsdf"
+        },
+        "dateBirth": "1964-12-01"
+      }
+    },
+    "CertificationInsuranceResidencePeriodsInsured": {
+      "InsuranceResidencePeriods": {
+        "Periods": {
+          "PeriodWithStartEndDate": [
+            {
+              "country": {
+                "value": [
+                  "DK"
+                ]
+              },
+              "occupation": {
+                "value": [
+                  "2250"
+                ]
+              },
+              "scheme": {
+                "value": [
+                  "01"
+                ]
+              },
+              "contingencyRelevance": {
+                "value": [
+                  "100"
+                ]
+              },
+              "informationCalculation": {
+                "value": [
+                  "100"
+                ]
+              },
+              "TotalNumber": {
+                "months": "24",
+                "quarters": "2",
+                "Days": {
+                  "no": "231",
+                  "unit": {
+                    "value": [
+                      "5"
+                    ]
+                  }
+                },
+                "years": "10"
+              },
+              "Period": {
+                "endDate": "2009-12-31",
+                "startDate": "1999-04-01"
+              },
+              "type": {
+                "value": [
+                  "11"
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "contextTransmission": {
+        "value": [
+          "10"
+        ]
+      },
+      "insuranceResidencePeriodsIndicator": {
+        "value": [
+          "1"
+        ]
+      }
+    },
+    "AnInsuredPersonShowingProofHeSheHasCompletedAn": {
+      "insuredLessThan1YearReceivePensionUnderNationalLawIndicator": {
+        "value": [
+          "1"
+        ]
+      }
+    },
+    "InformationFurtherP5000": {
+      "p5000WillSendByOtherInstitutionFurtherInsuranceIndicator": {
+        "value": [
+          "0"
+        ]
+      }
+    },
+    "TotalLengthPeriodsInsuranceResidence": {
+      "ContingencyRelevance": {
+        "ContingencyRelevance": [
+          {
+            "contingencyRelevance": {
+              "value": [
+                "100"
+              ]
+            },
+            "TotalNumber": {
+              "months": "2",
+              "weeks": "23",
+              "quarters": "1",
+              "Days": {
+                "unit": {
+                  "value": [
+                    "5"
+                  ]
+                }
+              },
+              "years": "10"
+            },
+            "type": {
+              "value": [
+                "11"
+              ]
+            }
+          }
+        ]
+      },
+      "InformationCalculation": {
+        "InformationCalculation": [
+          {
+            "informationCalculation": {
+              "value": [
+                "100"
+              ]
+            },
+            "TotalNumber": {
+              "months": "1",
+              "weeks": "2",
+              "quarters": "2",
+              "Days": {
+                "unit": {
+                  "value": [
+                    "5"
+                  ]
+                }
+              },
+              "years": "10"
+            },
+            "type": {
+              "value": [
+                "11"
+              ]
+            }
+          }
+        ]
+      }
+    }
+  }
+}

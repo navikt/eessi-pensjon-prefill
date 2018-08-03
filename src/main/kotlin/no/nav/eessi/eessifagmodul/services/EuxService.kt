@@ -18,9 +18,7 @@ import org.springframework.util.LinkedMultiValueMap
 import org.springframework.util.MultiValueMap
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.util.UriComponentsBuilder
-import java.io.ByteArrayOutputStream
 import java.io.IOException
-import java.io.ObjectOutputStream
 
 
 @Service
@@ -37,11 +35,12 @@ class EuxService(private val oidcRestTemplate: RestTemplate) {
     var overrideheaders: Boolean? = null
 
     //henter ut status på rina.
-    fun getRinaSaker(bucType: String = "",rinaNummer: String? = ""): List<RINASaker> {
+    fun getRinaSaker(bucType: String = "",rinaNummer: String? = "", pinID: String? = ""): List<RINASaker> {
         val urlPath = "/RINASaker"
 
         val builder = UriComponentsBuilder.fromPath("$EUX_PATH$urlPath")
                 .queryParam("BuCType", bucType)
+                .queryParam("Fødselsnummer", pinID)
                 .queryParam("RINASaksnummer", rinaNummer)
 
         val headers = logonBasis()
@@ -96,22 +95,8 @@ class EuxService(private val oidcRestTemplate: RestTemplate) {
         val urlPath = "/SED"
 
         val builder = UriComponentsBuilder.fromPath("$EUX_PATH$urlPath")
-                .queryParam("RINASaksnummer", euxCaseId)
-                .queryParam("KorrelasjonsID", korrelasjonID)
-
-        //val map: MultiValueMap<String, Any> = LinkedMultiValueMap()
-        val byteArrayOutputStream = ByteArrayOutputStream()
-        val objectOutputStream = ObjectOutputStream(byteArrayOutputStream)
-        objectOutputStream.writeObject(jsonPayload)
-        objectOutputStream.flush()
-        objectOutputStream.close()
-        val document = byteArrayOutputStream.toByteArray()
-//        val document = object : ByteArrayResource(jsonPayload.toByteArray()) {
-//            override fun getFilename(): String? {
-//                return "document"
-//            }
-//        }
-        //map.add("document", document)
+            .queryParam("RINASaksnummer", euxCaseId)
+            .queryParam("KorrelasjonsID", korrelasjonID)
 
         val headers = logonBasis()
         headers.contentType = MediaType.APPLICATION_JSON
@@ -120,7 +105,6 @@ class EuxService(private val oidcRestTemplate: RestTemplate) {
         val response = oidcRestTemplate.exchange(builder.toUriString(), HttpMethod.POST, httpEntity, String::class.java)
 
         logger.debug("SED Response: $response")
-
     }
 
 

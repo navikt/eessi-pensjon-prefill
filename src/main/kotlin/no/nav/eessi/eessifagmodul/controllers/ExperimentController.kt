@@ -4,11 +4,11 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.swagger.annotations.ApiOperation
 import no.nav.eessi.eessifagmodul.clients.aktoerid.AktoerIdClient
 import no.nav.eessi.eessifagmodul.clients.personv3.PersonV3Client
+import no.nav.eessi.eessifagmodul.models.PersonTrygdeTid
+import no.nav.eessi.eessifagmodul.models.RINASaker
+import no.nav.eessi.eessifagmodul.models.createPersonTrygdeTidMock
 import no.nav.eessi.eessifagmodul.services.EuxService
 import no.nav.eessi.eessifagmodul.services.PostnummerService
-import no.nav.eessi.eessifagmodul.models.*
-import no.nav.eessi.eessifagmodul.utils.createListOfSED
-import no.nav.eessi.eessifagmodul.utils.createListOfSEDOnBUC
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentGeografiskTilknytningResponse
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonResponse
 import org.springframework.beans.factory.annotation.Autowired
@@ -80,21 +80,6 @@ class ExperimentController {
         return geografi
     }
 
-
-    @ApiOperation("henter liste av alle BuC og tilhørende SED med forklaring")
-    @GetMapping("/detailbucs", produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun getDetailBucs(): List<BUC> {
-        return createPensjonBucList()
-    }
-
-    @GetMapping("/detailseds", "/detailseds/{buc}")
-    fun getDetailSeds(@PathVariable(value = "buc", required = false) buc: String?): List<SED> {
-        if (buc == null) {
-            return createListOfSED()
-        }
-        return createListOfSEDOnBUC(BUC(bucType = buc))
-    }
-
     @GetMapping("/possibleactions/{rinanr}", produces = [MediaType.APPLICATION_JSON_VALUE])
     fun getMuligeAksjoner(@PathVariable(value = "rinanr",  required = true)rinanr: String): String {
         return euxService.getMuligeAksjoner(rinanr)
@@ -110,6 +95,10 @@ class ExperimentController {
     @GetMapping("/rinacase/rina/{rinanr}")
     fun getRinaSakerCaseID(@PathVariable(value = "rinanr", required = false) rinaNr: String = ""): List<RINASaker> {
         return euxService.getRinaSaker("",rinaNr)
+    }
+    @GetMapping("/rinacase/pinid/{pinid}")
+    fun getRinaSakerPindID(@PathVariable(value = "pinid", required = true) pinID: String = ""): List<RINASaker> {
+        return euxService.getRinaSaker("", "",pinID)
     }
 
     @ApiOperation("Søk Poststed med bruk av postnr")

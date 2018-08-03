@@ -4,6 +4,7 @@ import no.nav.eessi.eessifagmodul.config.sts.configureRequestSamlToken
 import no.nav.eessi.eessifagmodul.config.sts.configureRequestSamlTokenOnBehalfOfOidc
 import no.nav.freg.security.oidc.common.OidcTokenAuthentication
 import no.nav.tjeneste.virksomhet.aktoer.v2.binding.AktoerV2
+import no.nav.tjeneste.virksomhet.aktoer.v2.binding.HentIdentForAktoerIdPersonIkkeFunnet
 import no.nav.tjeneste.virksomhet.aktoer.v2.meldinger.*
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.NorskIdent
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.PersonIdent
@@ -20,6 +21,7 @@ class AktoerIdClient(val service: AktoerV2) {
         service.ping()
     }
 
+    @Throws(HentIdentForAktoerIdPersonIkkeFunnet::class)
     fun hentAktoerIdForIdent(ident: String): HentAktoerIdForIdentResponse? {
         val auth = SecurityContextHolder.getContext().authentication as OidcTokenAuthentication
         configureRequestSamlTokenOnBehalfOfOidc(service, auth.idToken)
@@ -29,6 +31,7 @@ class AktoerIdClient(val service: AktoerV2) {
         return service.hentAktoerIdForIdent(request)
     }
 
+    @Throws(HentIdentForAktoerIdPersonIkkeFunnet::class)
     fun hentIdentForAktoerId(aktoerId: String): HentIdentForAktoerIdResponse? {
         val auth = SecurityContextHolder.getContext().authentication as OidcTokenAuthentication
         configureRequestSamlTokenOnBehalfOfOidc(service, auth.idToken)
@@ -36,7 +39,6 @@ class AktoerIdClient(val service: AktoerV2) {
         val request = HentIdentForAktoerIdRequest().apply {
             setAktoerId(aktoerId)
         }
-
         return service.hentIdentForAktoerId(request)
     }
 
