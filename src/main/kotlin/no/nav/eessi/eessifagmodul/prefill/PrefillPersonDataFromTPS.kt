@@ -11,6 +11,8 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.text.SimpleDateFormat
+import javax.xml.datatype.XMLGregorianCalendar
+import kotlin.math.log
 
 @Service
 class PrefillPersonDataFromTPS(private val personV3Client: PersonV3Client, private val postnummerService: PostnummerService, private val landkoder: LandkodeService) {
@@ -18,12 +20,30 @@ class PrefillPersonDataFromTPS(private val personV3Client: PersonV3Client, priva
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillPersonDataFromTPS::class.java) }
     private val dateformat = "YYYY-MM-dd"
 
-    private enum class ForeldreEnum(val foreldre: String) {
+    private enum class RelasjonEnum(val relasjon: String) {
         FAR("FARA"),
-        MOR("MORA");
-        fun erSamme(foreldreTPS: String): Boolean {
-            return foreldre.equals(foreldreTPS)
+        MOR("MORA"),
+        BARN("BARN");
+        fun erSamme(relasjonTPS: String): Boolean {
+            return relasjon.equals(relasjonTPS)
         }
+    }
+
+    fun hentBarnaPinIdFraBruker(ident: String): List<String> {
+        val brukerTPS = hentBrukerTPS(ident)
+        val person = brukerTPS
+        val resultat = mutableListOf<String>()
+        person.harFraRolleI.forEach {
+            val tpsvalue = it.tilRolle.value
+            if (RelasjonEnum.BARN.erSamme(tpsvalue)) {
+                val persontps = it.tilPerson as no.nav.tjeneste.virksomhet.person.v3.informasjon.Person
+                //val statsborgerskap = persontps.statsborgerskap as Statsborgerskap
+                //val navntps = persontps.personnavn as Personnavn
+                resultat.add(hentNorIdent(persontps))
+                logger.debug("Preutfylling barn")
+            }
+        }
+        return resultat.toList()
     }
 
     fun prefillBruker(ident: String): Bruker {
@@ -31,10 +51,11 @@ class PrefillPersonDataFromTPS(private val personV3Client: PersonV3Client, priva
         val brukerTPS = hentBrukerTPS(ident)
 
         val bruker = Bruker(
-            far = hentForeldre(ForeldreEnum.FAR, brukerTPS),
-            mor = hentForeldre(ForeldreEnum.MOR, brukerTPS),
+            far = Foreldre( person =  hentRelasjon(RelasjonEnum.FAR, brukerTPS)),
+            mor = Foreldre( person =  hentRelasjon(RelasjonEnum.MOR, brukerTPS)),
             person = personData(brukerTPS),
             adresse = personAdresse(brukerTPS)
+
         )
         logger.debug("Preutfylling Bruker")
         return bruker
@@ -43,6 +64,7 @@ class PrefillPersonDataFromTPS(private val personV3Client: PersonV3Client, priva
     //bruker fra TPS
     private fun hentBrukerTPS(ident: String): no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker {
         val response =  personV3Client.hentPerson(ident)
+        logger.debug("henter persondata fra TPS")
         return response.person as no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker
     }
 
@@ -54,20 +76,23 @@ class PrefillPersonDataFromTPS(private val personV3Client: PersonV3Client, priva
     }
 
     //fdato i rinaformat
+    private fun standardDatoformat(xmldato: XMLGregorianCalendar): String {
+        val fodCalendar = xmldato.toGregorianCalendar()
+        val datoformatert = SimpleDateFormat(dateformat).format(fodCalendar.time)
+        return datoformatert
+    }
+    //fdato i rinaformat
     private fun datoFormat(person: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): String {
         val fdato = person.foedselsdato
-        val fodCalendar = fdato.foedselsdato.toGregorianCalendar()
-        val fodseldatoformatert = SimpleDateFormat(dateformat).format(fodCalendar.time)
-        return fodseldatoformatert
+        return standardDatoformat(fdato.foedselsdato)
     }
+    //doddato i rina
     private fun dodDatoFormat(person: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): String? {
         val doddato = person.doedsdato
         if (doddato == null) {
             return null
         }
-        val fodCalendar = doddato.doedsdato.toGregorianCalendar()
-        val doddatoformatert = SimpleDateFormat(dateformat).format(fodCalendar.time)
-        return doddatoformatert
+        return standardDatoformat(doddato.doedsdato)
     }
 
     fun hentFodested(bruker: no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker): Foedested {
@@ -85,30 +110,42 @@ class PrefillPersonDataFromTPS(private val personV3Client: PersonV3Client, priva
     }
 
     //mor / far
-    private fun hentForeldre(relasjon: ForeldreEnum, person: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): Foreldre? {
+    private fun hentRelasjon(relasjon: RelasjonEnum, person: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): Person? {
         person.harFraRolleI.forEach {
             val tpsvalue = it.tilRolle.value
             if (relasjon.erSamme(tpsvalue)) {
+                logger.debug("Finner relasjon til : $tpsvalue")
                 val persontps = it.tilPerson as no.nav.tjeneste.virksomhet.person.v3.informasjon.Person
-                val statsborgerskap = persontps.statsborgerskap as Statsborgerskap
+                val land : String? = try {
+                    if ( persontps.statsborgerskap != null ) {
+                        val statsborgerskap = persontps.statsborgerskap as Statsborgerskap
+                        hentLandkode(statsborgerskap.land)
+                    } else {
+                        null
+                    }
+                } catch (ex: NullPointerException) {
+                    logger.debug(ex.message)
+                    null
+                }
+                logger.debug("har vi hentet ut land rett: $land")
                 val navntps = persontps.personnavn as Personnavn
-                val foreldreperson = Person(
+                val relasjonperson = Person(
                     pin = listOf(
                         PinItem(
                             sektor = "alle",
                             identifikator = hentNorIdent(persontps),
-                            land = hentLandkode(statsborgerskap.land)
+                            land = land
                             )
                     ),
                     fornavn = navntps.fornavn,
                     etternavnvedfoedsel = navntps.etternavn,
                     doedsdato = dodDatoFormat(persontps)
                 )
-                if (ForeldreEnum.MOR.erSamme(tpsvalue)) {
-                    foreldreperson.etternavnvedfoedsel = ""
+                if (RelasjonEnum.MOR.erSamme(tpsvalue)) {
+                    relasjonperson.etternavnvedfoedsel = null
                 }
                 logger.debug("Preutfylling Foreldre")
-                return Foreldre(foreldreperson)
+                return relasjonperson
             }
         }
         return null
@@ -125,6 +162,7 @@ class PrefillPersonDataFromTPS(private val personV3Client: PersonV3Client, priva
                         PinItem(
                         sektor = "alle",
                         identifikator = hentNorIdent(brukerTps),
+                        //er det rikitg å sette uk her dersomn person er uk stats.. men pinid er norsk 11personnr?
                         land = hentLandkode(statsborgerskap.land)
                         )
                     ),
@@ -134,11 +172,22 @@ class PrefillPersonDataFromTPS(private val personV3Client: PersonV3Client, priva
                 foedselsdato = datoFormat(brukerTps),
                 statsborgerskap = listOf(statsBorgerskap(brukerTps)),
                 kjoenn = mapKjonn(kjonn),
-                foedested = hentFodested(brukerTps)
+                foedested = hentFodested(brukerTps),
+                sivilstand = hentSivilstand(brukerTps)
         )
         logger.debug("Preutfylling Person")
         return person
     }
+
+    private fun hentSivilstand(brukerTps: no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker): List<SivilstandItem> {
+        val sivilstand = brukerTps.sivilstand as Sivilstand
+       val sivil = SivilstandItem(
+                fradato = standardDatoformat( sivilstand.fomGyldighetsperiode ),
+                status = sivilstand.sivilstand.value
+        )
+        return listOf(sivil)
+    }
+
 
     fun personAdresse(person: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): Adresse{
         val gateAdresse = person.bostedsadresse.strukturertAdresse as Gateadresse

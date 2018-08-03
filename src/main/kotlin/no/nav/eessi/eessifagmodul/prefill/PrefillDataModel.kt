@@ -15,7 +15,7 @@ import no.nav.eessi.eessifagmodul.models.createSED
 class PrefillDataModel {
 
     private lateinit var sed: SED
-    private var pin: String? = ""
+    private var pin: String = ""
 
     //sector
     private lateinit var subject: String
@@ -58,7 +58,7 @@ class PrefillDataModel {
     }
 
     //Pinid (FNR) aktorID
-    fun hentPinid(): String? { return pin}
+    fun hentPinid(): String { return pin}
 
     fun hentAktoerid(): String {
         return aktoerID
@@ -72,7 +72,7 @@ class PrefillDataModel {
         return sed.sed!!
     }
 
-    fun putPinID(pinid: String?) {
+    fun putPinID(pinid: String) {
         this.pin = pinid
     }
 

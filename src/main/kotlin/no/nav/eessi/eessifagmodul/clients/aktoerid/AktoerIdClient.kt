@@ -32,7 +32,7 @@ class AktoerIdClient(val service: AktoerV2) {
     }
 
     @Throws(HentIdentForAktoerIdPersonIkkeFunnet::class)
-    fun hentIdentForAktoerId(aktoerId: String): HentIdentForAktoerIdResponse? {
+    fun hentIdentForAktoerId(aktoerId: String): HentIdentForAktoerIdResponse {
         val auth = SecurityContextHolder.getContext().authentication as OidcTokenAuthentication
         configureRequestSamlTokenOnBehalfOfOidc(service, auth.idToken)
 

@@ -9,16 +9,16 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 
 @Service
-class PrefillPerson(private val aktoerIdClient: AktoerIdClient, private val preutfyllingNav: PrefillNav, private val preutfyllingPensjon: PrefillPensjon) {
+class PrefillPerson(private val aktoerIdClient: AktoerIdClient, private val prefillNav: PrefillNav, private val prefilliPensjon: PrefillPensjon) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillPerson::class.java) }
 
 
     @Throws(RuntimeException::class)
-    private fun hentPinIdentFraAktorid(pin: String? = ""): String? {
+    private fun hentPinIdentFraAktorid(pin: String = ""): String {
         logger.debug("henter pinid fra aktoerid $pin")
         return try {
-            aktoerIdClient.hentIdentForAktoerId(aktoerId = pin ?: "")?.ident
+            aktoerIdClient.hentIdentForAktoerId(aktoerId = pin).ident
         } catch(ikkefunnet: HentIdentForAktoerIdPersonIkkeFunnet) {
             throw PersonIkkeFunnetException("Fant ikke aktoer", ikkefunnet)
         } catch (ex: Exception) {
@@ -67,8 +67,8 @@ class PrefillPerson(private val aktoerIdClient: AktoerIdClient, private val preu
 
         logger.debug("----------------- Preutfylling START ----------------- ")
 
-        logger.debug("Preutfylling NAV     : ${preutfyllingNav::class.java} ")
-        logger.debug("Preutfylling Pensjon : ${preutfyllingPensjon::class.java} ")
+        logger.debug("Preutfylling NAV     : ${prefillNav::class.java} ")
+        logger.debug("Preutfylling Pensjon : ${prefilliPensjon::class.java} ")
 
         val sed = utfyllingData.hentSED()
         logger.debug("Preutfylling Utfylling Data")
@@ -79,10 +79,11 @@ class PrefillPerson(private val aktoerIdClient: AktoerIdClient, private val preu
         logger.debug("Sjekker PinID : ${utfyllingData.hentPinid()}")
         logger.debug("Preutfylling hentet pinid fra aktoerIdClient.")
 
-        sed.nav = preutfyllingNav.utfyllNav(utfyllingData)
+        sed.nav = prefillNav.utfyllNav(utfyllingData)
+
         logger.debug("Preutfylling Utfylling NAV")
 
-        sed.pensjon = preutfyllingPensjon.pensjon(utfyllingData)
+        sed.pensjon = prefilliPensjon.pensjon(utfyllingData)
         logger.debug("Preutfylling Utfylling Pensjon")
 
         logger.debug("----------------- Preutfylling END ----------------- ")

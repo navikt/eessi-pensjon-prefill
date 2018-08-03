@@ -1,9 +1,6 @@
 package no.nav.eessi.eessifagmodul.prefill
 
-import no.nav.eessi.eessifagmodul.models.Bruker
-import no.nav.eessi.eessifagmodul.models.EessisakItem
-import no.nav.eessi.eessifagmodul.models.Nav
-import no.nav.eessi.eessifagmodul.models.Person
+import no.nav.eessi.eessifagmodul.models.*
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
@@ -17,14 +14,19 @@ class PrefillNav(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS)
     fun utfyllNav(utfyllingData: PrefillDataModel): Nav {
 
         val brukertps = bruker(utfyllingData)
+        val barnatps = hentBarnaFraTPS(utfyllingData)
+
         val nav = Nav(
-                bruker = Bruker(
-                        person = brukertps.person
-                ),
+                barn = barnatps,
+//                bruker = Bruker(
+//                        person = brukertps.person
+//                ),
+                bruker = brukertps,
                 //korrekt bruk av eessisak? skal pen-saknr legges ved?
                 //eller peker denne til en ekisterende rina-casenr?
                 eessisak = opprettLokalSaknr( utfyllingData.hentSaksnr() )
         )
+
         logger.debug("Utfylling av NAV data med lokalsaksnr: ${nav.eessisak}")
         return nav
     }
@@ -39,7 +41,7 @@ class PrefillNav(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS)
 
             //prefill av sed her!
             val pinid = utfyllingData.hentPinid()
-            val bruker = preutfyllingPersonFraTPS.prefillBruker(pinid!!)
+            val bruker = preutfyllingPersonFraTPS.prefillBruker(pinid)
 
             logger.debug("Preutfylling Utfylling Nav END")
             return bruker
@@ -55,6 +57,26 @@ class PrefillNav(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS)
                 )
             )
         return brukerfake
+    }
+
+    private fun hentBarnaFraTPS(utfyllingData: PrefillDataModel) :List<BarnItem> {
+        val pinid = utfyllingData.hentPinid()
+
+        val barnaspin = preutfyllingPersonFraTPS.hentBarnaPinIdFraBruker(pinid)
+
+        val barna = mutableListOf<BarnItem>()
+        barnaspin.forEach {
+            val barnBruker = preutfyllingPersonFraTPS.prefillBruker(it)
+            val barn = BarnItem(
+                    person = barnBruker.person,
+                    far = barnBruker.far,
+                    mor = barnBruker.mor,
+                    relasjontilbruker = "BARN"
+            )
+            barna.add(barn)
+        }
+
+        return barna.toList()
     }
 
     private fun opprettLokalSaknr(pensaknr: String = ""): List<EessisakItem> {

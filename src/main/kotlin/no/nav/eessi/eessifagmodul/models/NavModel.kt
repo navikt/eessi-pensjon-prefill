@@ -110,7 +110,7 @@ data class Person(
         val doedsdato: String? = null,
 
         val kontakt: Kontakt? = null,
-        val sivilstand: List<SivilstandItem?>? = null
+        val sivilstand: List<SivilstandItem>? = null
 
 )
 
