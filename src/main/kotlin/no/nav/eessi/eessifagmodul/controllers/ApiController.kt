@@ -20,7 +20,7 @@ import java.util.*
 
 @RestController
 @RequestMapping("/api")
-class ApiController(private val euxService: EuxService, private val preutfylling: PrefillSED) {
+class ApiController(private val euxService: EuxService, private val prefill: PrefillSED) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(ApiController::class.java) }
 
@@ -108,30 +108,30 @@ class ApiController(private val euxService: EuxService, private val preutfylling
             request.pinid == null -> throw IllegalArgumentException("Mangler AktoerID")
             request.institutions == null -> throw IllegalArgumentException("Mangler Institusjoner")
 
-            validsed(request.sed , "P2000,P6000") -> preutfylling.prefill(
+            validsed(request.sed , "P2000,P6000") -> prefill.prefill(
                     utfyllingData = PrefillDataModel()
-                            .build(
-                                    caseId = request.caseId,
-                                    buc = request.buc,
-                                    subject = request.subjectArea,
-                                    sedID = request.sed,
-                                    aktoerID = request.pinid,
-                                    institutions = request.institutions
-                            )
+                        .build(
+                                caseId = request.caseId,
+                                buc = request.buc,
+                                subject = request.subjectArea,
+                                sedID = request.sed,
+                                aktoerID = request.pinid,
+                                institutions = request.institutions
+                        )
             )
             validsed(request.sed, "P4000") -> {
                 if (request.payload == null) { throw IllegalArgumentException("Mangler Institusjoner") }
-                preutfylling.prefill(
-                        utfyllingData = PrefillDataModel()
-                                .build(
-                                        caseId = request.caseId,
-                                        buc = request.buc,
-                                        subject = request.subjectArea,
-                                        sedID = request.sed,
-                                        aktoerID = request.pinid,
-                                        institutions = request.institutions,
-                                        payload = request.payload
-                                )
+                prefill.prefill(
+                    utfyllingData = PrefillDataModel()
+                        .build(
+                                caseId = request.caseId,
+                                buc = request.buc,
+                                subject = request.subjectArea,
+                                sedID = request.sed,
+                                aktoerID = request.pinid,
+                                institutions = request.institutions,
+                                payload = request.payload
+                        )
                 )
             }
             else -> throw IllegalArgumentException("Mangler SED, eller ugyldig type SED")
