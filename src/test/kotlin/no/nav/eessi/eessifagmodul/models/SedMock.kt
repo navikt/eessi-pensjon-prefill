@@ -15,6 +15,16 @@ class SedMock {
         )
     }
 
+    fun genererP5000Mock(): SED {
+        return SED(
+                nav = NavMock().genererNavMock(),
+                pensjon = PensjonMock().genererMockDataMedMeldemskap(),
+                sed = "P5000",
+                sedVer = "0",
+                sedGVer = "4"
+        )
+    }
+
 //    fun genererEmptyP6000Mock(): SED {
 //        return SED(
 //                nav = Nav(),
@@ -115,6 +125,17 @@ class NavMock {
 
 //Mock prefill av en P6000
 class PensjonMock {
+
+    fun genererMockDataMedMeldemskap(): Pensjon {
+        var pensjon = genererMockData()
+        var pensjonMeldemskap = createMedlemskapMock()
+        pensjon.medlemskap = pensjonMeldemskap.medlemskap
+        pensjon.medlemskapAnnen = pensjonMeldemskap.medlemskapAnnen
+        pensjon.medlemskapTotal = pensjonMeldemskap.medlemskapTotal
+        pensjon.trygdetid = pensjonMeldemskap.trygdetid
+        return pensjon
+    }
+
 
     fun genererMockData(): Pensjon {
         return Pensjon(

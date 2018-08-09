@@ -4,9 +4,8 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.swagger.annotations.ApiOperation
 import no.nav.eessi.eessifagmodul.clients.aktoerid.AktoerIdClient
 import no.nav.eessi.eessifagmodul.clients.personv3.PersonV3Client
-import no.nav.eessi.eessifagmodul.models.PersonTrygdeTid
-import no.nav.eessi.eessifagmodul.models.RINASaker
-import no.nav.eessi.eessifagmodul.models.createPersonTrygdeTidMock
+import no.nav.eessi.eessifagmodul.models.*
+import no.nav.eessi.eessifagmodul.services.EuxMuligeAksjoner
 import no.nav.eessi.eessifagmodul.services.EuxService
 import no.nav.eessi.eessifagmodul.services.PostnummerService
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentGeografiskTilknytningResponse
@@ -41,9 +40,12 @@ class ExperimentController {
     private lateinit var euxService: EuxService
 
     @Autowired
+    private lateinit var muligeAksjoner: EuxMuligeAksjoner
+
+    @Autowired
     private lateinit var postnummerService: PostnummerService
 
-            @GetMapping("/testEuxOidc")
+    @GetMapping("/testEuxOidc")
     fun testEuxOidc(): ResponseEntity<String> {
         val httpHeaders = HttpHeaders()
         httpHeaders.add(HttpHeaders.AUTHORIZATION, "Bearer ")
@@ -64,8 +66,9 @@ class ExperimentController {
     }
 
     @GetMapping("/testAktoerTilIdent/{ident}")
-    fun testAktoerTilIdent(@PathVariable("ident") ident: String): String? {
-        return aktoerIdClient.hentIdentForAktoerId(ident)?.ident
+    fun testAktoerTilIdent(@PathVariable("ident") ident: String): String {
+        //return aktoerIdClient.hentIdentForAktoerId(ident)?.ident
+        return aktoerIdClient.hentPinIdentFraAktorid(ident)
     }
 
     @GetMapping("/testPerson/{ident}")
@@ -74,14 +77,8 @@ class ExperimentController {
         return personV3
     }
 
-    @GetMapping("/testGeografi/{ident}")
-    fun testGeografi(@PathVariable("ident") ident: String): HentGeografiskTilknytningResponse {
-        val geografi = personV3Client.hentGeografi(ident)
-        return geografi
-    }
-
     @GetMapping("/possibleactions/{rinanr}", produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun getMuligeAksjoner(@PathVariable(value = "rinanr",  required = true)rinanr: String): String {
+    fun getMuligeAksjoner(@PathVariable(value = "rinanr",  required = true)rinanr: String): List<RINAaksjoner> {
         return euxService.getMuligeAksjoner(rinanr)
     }
 
@@ -101,18 +98,29 @@ class ExperimentController {
         return euxService.getRinaSaker("", "",pinID)
     }
 
-    @ApiOperation("Søk Poststed med bruk av postnr")
-    @GetMapping("/postnr/{postnr}")
-    fun getPoststed(@PathVariable(value = "postnr", required = true) postnr: String = ""): String? {
-        return postnummerService.finnPoststed(postnr)
-    }
-
     @ApiOperation("PersonTrygdeTid")
     @GetMapping("/trygdetid")
-    fun getPersonTrygdeTid(): PersonTrygdeTid? {
+    fun getPersonTrygdeTid(): PersonTrygdeTid {
         return createPersonTrygdeTidMock()
     }
+    @ApiOperation("PensjonMedlemsjap")
+    @GetMapping("/pensjonmedlemskap")
+    fun getPensjonMedlemskap(): Pensjon {
+        return createMedlemskapMock()
+    }
 
+    @ApiOperation("Sjekke Aksjoner er mulig")
+    @GetMapping("/aksjoner/{rina}/{sed}/{navn}")
+    fun getAksjoner(@PathVariable("rina", required = true) rinanr: String = "",
+            @PathVariable("sed", required = true) sed: String = "",
+        @PathVariable("navn", required = true) navn: String = "Update"): Boolean {
+
+        if (navn == "Update") {
+            return muligeAksjoner.confirmUpdate(sed, rinanr)
+        }
+        return muligeAksjoner.confirmCreate(sed, rinanr)
+
+    }
 
 }
 

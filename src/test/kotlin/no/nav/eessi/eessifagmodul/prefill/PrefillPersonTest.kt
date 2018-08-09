@@ -11,18 +11,21 @@ import no.nav.tjeneste.virksomhet.aktoer.v2.meldinger.HentIdentForAktoerIdRespon
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.junit.runners.Parameterized
+import org.junit.runners.Parameterized.Parameters
 import org.mockito.ArgumentMatchers
 import org.mockito.Mock
-import org.mockito.junit.MockitoJUnitRunner
+import org.mockito.MockitoAnnotations
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
-@RunWith(MockitoJUnitRunner::class)
-class PreutfyllingPersonTest {
+//@RunWith(MockitoJUnitRunner::class)
+@RunWith(Parameterized::class)
+class PrefillPersonTest(val index: Int, val sedid: String) {
 
-    private val logger: Logger by lazy { LoggerFactory.getLogger(PreutfyllingPersonTest::class.java) }
+    private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillPersonTest::class.java) }
 
     @Mock
     private lateinit var mockAktoerIdClient: AktoerIdClient
@@ -38,40 +41,57 @@ class PreutfyllingPersonTest {
 
     lateinit var preutfylling: PrefillPerson
 
+    lateinit var prefillDataMock: PrefillDataModel
+
     @Before
     fun setup() {
         logger.debug("Starting tests.... ...")
-        preutfylling = PrefillPerson(aktoerIdClient = mockAktoerIdClient, prefillNav = mockPreutfyllingNav, prefilliPensjon = mockPreutfyllingPensjon)
+        MockitoAnnotations.initMocks(this)
+        prefillDataMock = PrefillDataModel(mockAktoerIdClient)
+        preutfylling = PrefillPerson(prefillNav = mockPreutfyllingNav, prefilliPensjon = mockPreutfyllingPensjon)
     }
 
+    companion object {
+        @Parameters
+        @JvmStatic
+        fun data(): Collection<Array<Any>> {
+            return listOf(
+                    arrayOf(1, "P2000"),
+                    arrayOf(2, "P4000"),
+                    arrayOf(3, "P5000"),
+                    arrayOf(4, "P6000")
+            )
+        }
+    }
 
     @Test
-    fun `create mock on preutfyll P6000`() {
-        val response = HentIdentForAktoerIdResponse()
-        response.ident = "1234"
+    fun `create mock on preutfyll SED`() {
+        logger.debug("jobber med test på følgende sed: $sedid")
+        val response = "1234"
 
-        whenever(mockAktoerIdClient.hentIdentForAktoerId(ArgumentMatchers.anyString())).thenReturn(response)
+        //whenever(mockAktoerIdClient.hentIdentForAktoerId(ArgumentMatchers.anyString())).thenReturn(response)
+        whenever(mockAktoerIdClient.hentPinIdentFraAktorid(ArgumentMatchers.anyString())).thenReturn(response)
 
-        val navresponse = Nav(bruker = Bruker(person = Person(fornavn = "Dummy", etternavn = "Dummy", pin = listOf(PinItem(sektor = "alle", identifikator = response.ident, land = "NO")))))
+        val navresponse = Nav(bruker = Bruker(person = Person(fornavn = "Dummy", etternavn = "Dummy", pin = listOf(PinItem(sektor = "alle", identifikator = response, land = "NO")))))
         whenever(mockPreutfyllingNav.utfyllNav(any())).thenReturn(navresponse)
 
         val pensjonresponse = Pensjon(gjenlevende = Bruker(person = Person(fornavn = "Dummy", etternavn = "Dummy")))
         whenever(mockPreutfyllingPensjon.pensjon(any())).thenReturn(pensjonresponse)
 
         val items = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
-        val utfyllingMock = PrefillDataModel().build(
+        prefillDataMock.build(
                 subject = "Pensjon",
-                sedID = "P6000",
+                sedID = sedid,
                 caseId = "12345",
                 buc = "P_BUC_06",
                 aktoerID = "1234",
                 institutions = items
         )
-        val responseSED = preutfylling.preutfyll(utfyllingMock)
+
+        val responseSED = preutfylling.prefill(prefillDataMock)
         println(mapAnyToJson(responseSED, true))
 
         assertNotNull(responseSED)
-
         assertNotNull(responseSED.nav)
         assertNotNull(responseSED.nav?.bruker)
         assertNotNull(responseSED.nav?.bruker?.person)
@@ -80,26 +100,12 @@ class PreutfyllingPersonTest {
         assertEquals("Dummy", responseSED.nav?.bruker?.person?.fornavn)
         val pin = responseSED.nav?.bruker?.person?.pin
         assertEquals("1234", pin!![0].identifikator)
+        assertEquals(sedid, responseSED.sed)
+        assertNotNull(prefillDataMock)
+        assertEquals("1234", prefillDataMock.getPinid())
 
     }
 
-    @Test(expected = PersonIkkeFunnetException::class)
-    fun `create and test valid pinid for aktoerid`() {
-        val faultInfo = PersonIkkeFunnet()
-        val exp = HentIdentForAktoerIdPersonIkkeFunnet("Ident For AktoerId Ikke funnet", faultInfo)
-        whenever(mockAktoerIdClient.hentIdentForAktoerId("-2")).thenThrow(exp)
-
-        val items = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
-        val utfyllingMock = PrefillDataModel().build(
-                subject = "Pensjon",
-                sedID = "P6000",
-                caseId = "12345",
-                buc = "P_BUC_06",
-                aktoerID = "-2",
-                institutions = items
-        )
-        preutfylling.preutfyll(utfyllingMock)
-    }
 
 
 }

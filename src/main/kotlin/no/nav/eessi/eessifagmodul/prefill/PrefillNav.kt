@@ -9,38 +9,36 @@ import org.springframework.stereotype.Service
 class PrefillNav(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillNav::class.java) }
-    val validseds : List<String> = listOf("P6000","P4000","P2000")
+
+    val validseds : List<String> = listOf("P6000","P4000","P2000", "P5000")
 
     fun utfyllNav(utfyllingData: PrefillDataModel): Nav {
 
         val brukertps = bruker(utfyllingData)
+        //skal denne kjøres hver gang? eller kun under P2000?
         val barnatps = hentBarnaFraTPS(utfyllingData)
+        val pensaknr = utfyllingData.getSaksnr()
 
         val nav = Nav(
                 barn = barnatps,
-//                bruker = Bruker(
-//                        person = brukertps.person
-//                ),
                 bruker = brukertps,
                 //korrekt bruk av eessisak? skal pen-saknr legges ved?
                 //eller peker denne til en ekisterende rina-casenr?
-                eessisak = opprettLokalSaknr( utfyllingData.hentSaksnr() )
+                eessisak = opprettLokalSaknr( utfyllingData.getSaksnr() )
         )
+        logger.debug(utfyllingData.print("Sjekker PinID : ${utfyllingData.getPinid()}"))
 
-        logger.debug("Utfylling av NAV data med lokalsaksnr: ${nav.eessisak}")
+        //${nav.eessisak}"
+        logger.debug(utfyllingData.print("Utfylling av NAV data med lokalsaksnr: $pensaknr"))
         return nav
     }
 
     private fun bruker(utfyllingData: PrefillDataModel): Bruker {
-
-        val sed = utfyllingData.hentSED()
-        logger.debug("SED.sed : ${sed.sed}")
-
         //kan denne utfylling benyttes på alle SED?
-        if (validseds.contains(sed.sed)) {
+        if (validseds.contains(utfyllingData.getSEDid())) {
 
             //prefill av sed her!
-            val pinid = utfyllingData.hentPinid()
+            val pinid = utfyllingData.getPinid()
             val bruker = preutfyllingPersonFraTPS.prefillBruker(pinid)
 
             logger.debug("Preutfylling Utfylling Nav END")
@@ -60,13 +58,17 @@ class PrefillNav(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS)
     }
 
     private fun hentBarnaFraTPS(utfyllingData: PrefillDataModel) :List<BarnItem> {
-        val pinid = utfyllingData.hentPinid()
-
+        if (utfyllingData.getSEDid() != "P2000") {
+            logger.debug("Preutfylling barn SKIP not valid SED?")
+            return listOf()
+        }
+        logger.debug("Preutfylling barn START")
+        val pinid = utfyllingData.getPinid()
         val barnaspin = preutfyllingPersonFraTPS.hentBarnaPinIdFraBruker(pinid)
-
         val barna = mutableListOf<BarnItem>()
         barnaspin.forEach {
             val barnBruker = preutfyllingPersonFraTPS.prefillBruker(it)
+            logger.debug("Preutfylling barn x..")
             val barn = BarnItem(
                     person = barnBruker.person,
                     far = barnBruker.far,
@@ -75,15 +77,19 @@ class PrefillNav(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS)
             )
             barna.add(barn)
         }
-
+        logger.debug("Preutfylling barn END")
         return barna.toList()
     }
 
+    /**
+     *
+     */
     private fun opprettLokalSaknr(pensaknr: String = ""): List<EessisakItem> {
+        //Må få hentet ut NAV institusjon avsender fra fasit?
         val lokalsak = EessisakItem(
                 institusjonsid = "NO:noinst002",
                 institusjonsnavn = "NOINST002, NO INST002, NO",
-                saksnummer = "PEN-SAK: $pensaknr, VEDTAK: 01234567",
+                saksnummer = "PEN-SAK: $pensaknr",
                 land = "NO"
         )
         return listOf(lokalsak)

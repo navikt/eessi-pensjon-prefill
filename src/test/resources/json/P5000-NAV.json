@@ -1,0 +1,192 @@
+{
+  "nav" : {
+    "bruker" : {
+      "mor" : {
+        "person" : {
+          "etternavnvedfoedsel" : "asdfsdf",
+          "fornavn" : "asfsdf"
+        }
+      },
+      "person" : {
+        "fornavn" : "Gul",
+        "pin" : [ {
+          "sektor" : "pensjoner",
+          "identifikator" : "weqrwerwqe",
+          "land" : "BG"
+        }, {
+          "sektor" : "alle",
+          "land" : "NO",
+          "identifikator" : "01126712345"
+        } ],
+        "kjoenn" : "f",
+        "etternavn" : "Konsoll",
+        "foedselsdato" : "1967-12-01",
+        "tidligereetternavn" : "sdfsfasdf",
+        "statsborgerskap" : [ {
+          "land" : "BE"
+        }, {
+          "land" : "BG"
+        }, {
+          "land" : "GR"
+        }, {
+          "land" : "GB"
+        } ],
+        "foedested" : {
+          "region" : "sfgdfdgs",
+          "land" : "DK",
+          "by" : "gafdgsf"
+        },
+        "fornavnvedfoedsel" : "werwerwe",
+        "tidligerefornavn" : "asdfdsffsd",
+        "etternavnvedfoedsel" : "werwreq"
+      },
+      "adresse" : {
+        "region" : "sadfsd",
+        "land" : "BG",
+        "gate" : "dsfasdf",
+        "bygning" : "asdfsfd",
+        "postnummer" : "safdsdf",
+        "by" : "sfdsdaf"
+      },
+      "far" : {
+        "person" : {
+          "fornavn" : "safasfsd",
+          "etternavnvedfoedsel" : "sadfsfd"
+        }
+      }
+    },
+    "eessisak" : [ {
+      "saksnummer" : "24234sdsd-4",
+      "land" : "NO"
+    }, {
+      "saksnummer" : "retretretert",
+      "land" : "HR"
+    } ]
+  },
+  "pensjon" : {
+    "gjenlevende" : {
+      "adresse" : {
+        "postnummer" : "sdafsdaf",
+        "by" : "asfdsdaf",
+        "land" : "BG",
+        "gate" : "sdfasd",
+        "bygning" : "sdfsdf",
+        "region" : "sdafsdf"
+      },
+      "far" : {
+        "person" : {
+          "fornavn" : "asdfsdf",
+          "etternavnvedfoedsel" : "asfdsdf"
+        }
+      },
+      "person" : {
+        "fornavn" : "sdafsdf",
+        "forrnavnvedfoedsel" : "safsdaf",
+        "kjoenn" : "m",
+        "statsborgerskap" : [ {
+          "land" : "AT"
+        }, {
+          "land" : "BE"
+        }, {
+          "land" : "GR"
+        } ],
+        "foedested" : {
+          "land" : "BE",
+          "region" : "sfsadfsda",
+          "by" : "Testarbeidsgiverby2"
+        },
+        "tidligerefornavn" : "sadfsdf",
+        "etternavn" : "asdffsdaf",
+        "etternavnvedfoedsel" : "sdfsd",
+        "pin" : [ {
+          "sektor" : "dagpenger",
+          "land" : "BE",
+          "identifikator" : "sdafsdf"
+        }, {
+          "identifikator" : "dfasdf",
+          "sektor" : "alle",
+          "land" : "HR"
+        } ],
+        "tidligereetternavn" : "asdfasdf",
+        "foedselsdato" : "1964-12-01"
+      },
+      "mor" : {
+        "person" : {
+          "etternavnvedfoedsel" : "asdfsdf",
+          "fornavn" : "asdfsdafsdf"
+        }
+      }
+    },
+    "medlemskapTotal" : [ {
+      "sum" : {
+        "aar" : "11",
+        "kvartal" : "0",
+        "dager" : {
+          "nr" : "6",
+          "type" : "5"
+        },
+        "maaneder" : "0",
+        "uker" : "0"
+      },
+      "type" : "10",
+      "relevans" : "100"
+    } ],
+    "medlemskap" : [ {
+      "periode" : {
+        "tom" : "1999-01-01",
+        "fom" : "2009-01-01"
+      },
+      "sum" : {
+        "dager" : {
+          "type" : "5",
+          "nr" : "8"
+        },
+        "maaneder" : "6",
+        "kvartal" : "7",
+        "aar" : "10"
+      },
+      "relevans" : "100",
+      "land" : "DK",
+      "gyldigperiode" : "3",
+      "ordning" : "01",
+      "beregning" : "100",
+      "type" : "11",
+      "yrke" : "2250"
+    } ],
+    "trygdetid" : [ {
+      "sum" : {
+        "uker" : "0",
+        "maaneder" : "0",
+        "dager" : {
+          "type" : "5",
+          "nr" : "0"
+        },
+        "aar" : "10",
+        "kvartal" : "0"
+      },
+      "type" : "11"
+    } ],
+    "medlemskapAnnen" : [ {
+      "land" : "DE",
+      "type" : "21",
+      "ordning" : "01",
+      "yrke" : "2250",
+      "sum" : {
+        "dager" : {
+          "nr" : "7",
+          "type" : "5"
+        },
+        "uker" : "5",
+        "aar" : "4",
+        "kvartal" : "3",
+        "maaneder" : "11"
+      },
+      "relevans" : "100",
+      "beregning" : "100"
+    } ]
+  },
+  "sedVer" : "0",
+  "Sector Components/Pensions/P5000" : "Sector Components/Pensions/P5000",
+  "sedGVer" : "4",
+  "sed" : "P5000"
+}

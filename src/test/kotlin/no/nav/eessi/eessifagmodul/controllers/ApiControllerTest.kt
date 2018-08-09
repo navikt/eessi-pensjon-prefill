@@ -3,6 +3,7 @@ package no.nav.eessi.eessifagmodul.controllers
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.whenever
+import no.nav.eessi.eessifagmodul.clients.aktoerid.AktoerIdClient
 import no.nav.eessi.eessifagmodul.models.Bruker
 import no.nav.eessi.eessifagmodul.models.InstitusjonItem
 import no.nav.eessi.eessifagmodul.models.Nav
@@ -16,6 +17,7 @@ import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
@@ -31,13 +33,18 @@ class ApiControllerTest {
     @Mock
     lateinit var mockPersonPreutfyll: PrefillPerson
 
+    @Mock
+    private lateinit var mockAktoerIdClient: AktoerIdClient
+
+    private lateinit var prefillDataMock: PrefillDataModel
+
     lateinit var apiController: ApiController
 
     @Before
     fun setUp() {
-        apiController = ApiController(mockEuxService, PrefillSED(mockPersonPreutfyll))
+        prefillDataMock = PrefillDataModel(mockAktoerIdClient)
+        apiController = ApiController(mockEuxService, PrefillSED(mockPersonPreutfyll), prefillDataMock)
         apiController.landkodeService = LandkodeService()
-
    }
 
     @Test
@@ -60,20 +67,33 @@ class ApiControllerTest {
 
     @Test
     fun `create document`() {
+        val items = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
+
         val requestMock = ApiController.ApiRequest(
             subjectArea = "Pensjon",
             caseId = "EESSI-PEN-123",
-            institutions = listOf(InstitusjonItem("NO","DUMMY")),
+            institutions = items,
             sed = "P6000",
             buc = "P_BUC_06",
             pinid = "0105094340092"
         )
         val mockResponse = "1234567890"
 
-        val items = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
-        val utfyllMock = PrefillDataModel().build(subject = "Pensjon",caseId = "EESSI-PEN-123", sedID = "P6000", aktoerID = "0105094340092", buc = "P_BUC_06", institutions = items)
+        whenever(mockAktoerIdClient.hentPinIdentFraAktorid(ArgumentMatchers.anyString())).thenReturn("12345")
 
-        whenever(mockPersonPreutfyll.preutfyll(any())).thenReturn(utfyllMock.hentSED())
+        val utfyllMock =  prefillDataMock.build(
+                subject = requestMock.subjectArea!!,
+                caseId = requestMock.caseId!!,
+                sedID = requestMock.sed!!,
+                aktoerID = requestMock.pinid!!,
+                buc = requestMock.buc!!,
+                institutions = requestMock.institutions!!
+        )
+
+        assertNotNull(utfyllMock.getPinid())
+        assertEquals("12345", utfyllMock.getPinid())
+
+        whenever(mockPersonPreutfyll.prefill(any())).thenReturn(utfyllMock.getSED())
         whenever(mockEuxService.createCaseAndDocument(anyString(), anyString(), anyString(), anyString(), anyString(), anyString() )).thenReturn(mockResponse)
 
         val response = apiController.createDocument(requestMock)
@@ -91,10 +111,10 @@ class ApiControllerTest {
                 pinid = "0105094340092"
         )
         val items = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
-        val utfyllMock = PrefillDataModel().build(subject = "Pensjon",caseId = "EESSI-PEN-123", sedID = "P6000", aktoerID = "0105094340092", buc = "P_BUC_06", institutions = items)
-        utfyllMock.hentSED().nav = Nav(bruker = Bruker(person = Person(fornavn = "Dummy", etternavn = "Dummy")))
+        val utfyllMock = prefillDataMock.build(subject = "Pensjon",caseId = "EESSI-PEN-123", sedID = "P6000", aktoerID = "0105094340092", buc = "P_BUC_06", institutions = items)
+        utfyllMock.getSED().nav = Nav(bruker = Bruker(person = Person(fornavn = "Dummy", etternavn = "Dummy")))
 
-        whenever(mockPersonPreutfyll.preutfyll(any())).thenReturn(utfyllMock.hentSED())
+        whenever(mockPersonPreutfyll.prefill(any())).thenReturn(utfyllMock.getSED())
 
         val response = apiController.confirmDocument(mockData)
 

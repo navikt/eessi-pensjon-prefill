@@ -34,13 +34,13 @@ class PrefillPersonDataFromTPS(private val personV3Client: PersonV3Client, priva
         val person = brukerTPS
         val resultat = mutableListOf<String>()
         person.harFraRolleI.forEach {
-            val tpsvalue = it.tilRolle.value
+            val tpsvalue = it.tilRolle.value   //mulig nullpoint? kan tilRolle være null?
+
             if (RelasjonEnum.BARN.erSamme(tpsvalue)) {
                 val persontps = it.tilPerson as no.nav.tjeneste.virksomhet.person.v3.informasjon.Person
-                //val statsborgerskap = persontps.statsborgerskap as Statsborgerskap
-                //val navntps = persontps.personnavn as Personnavn
+                //henter kun ut norskident ut
                 resultat.add(hentNorIdent(persontps))
-                logger.debug("Preutfylling barn")
+                logger.debug("Preutfylling barn norident")
             }
         }
         return resultat.toList()
@@ -64,7 +64,7 @@ class PrefillPersonDataFromTPS(private val personV3Client: PersonV3Client, priva
     //bruker fra TPS
     private fun hentBrukerTPS(ident: String): no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker {
         val response =  personV3Client.hentPerson(ident)
-        logger.debug("henter persondata fra TPS")
+        logger.debug("Preutfylling henter v3.Bruker fra TPS")
         return response.person as no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker
     }
 
@@ -200,8 +200,7 @@ class PrefillPersonDataFromTPS(private val personV3Client: PersonV3Client, priva
             land = hentLandkode(gateAdresse.landkode),
             by = postnummerService.finnPoststed(postnr)
         )
-        logger.debug("Preutfylling by(sted) benytter finnPoststed")
-        logger.debug("Preutfylling Gateadresse")
+        logger.debug("Preutfylling Adresse")
         return adr
     }
 
@@ -218,7 +217,7 @@ class PrefillPersonDataFromTPS(private val personV3Client: PersonV3Client, priva
     //Denne blir vel flyttet til Basis når mapping blir rettet opp fra NO=NO til NOR=NO (TPS/EU-RINA)??
     private fun hentLandkode(landkodertps: no.nav.tjeneste.virksomhet.person.v3.informasjon.Landkoder): String? {
         val result = landkoder.finnLandkode2(landkodertps.value)
-        logger.debug("Preutfylling mapping Landkode (alpha3-alpha2)  ${landkodertps.value} til $result")
+        logger.debug("Preutfylling Landkode (alpha3-alpha2)  ${landkodertps.value} til $result")
         return result
     }
 

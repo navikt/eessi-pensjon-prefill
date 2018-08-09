@@ -180,3 +180,5 @@ data class Ignore(
         val region: String? = null,
         val otherInformation: String? = null
 )
+
+//End Nav class

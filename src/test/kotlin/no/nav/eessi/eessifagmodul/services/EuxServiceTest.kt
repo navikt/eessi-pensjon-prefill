@@ -71,8 +71,13 @@ class EuxServiceTest {
         val resultat = service.getMuligeAksjoner(bucType)
 
         assertNotNull(resultat)
-        assertTrue(resultat.contains("P2000"))
-        assertTrue("Skal komme hit", true)
+
+        val aksjon = resultat[0]
+
+        assertNotNull(aksjon)
+        assertEquals("P2000", aksjon.dokumentType)
+        assertEquals("Create", aksjon.navn)
+
     }
 
     @Test

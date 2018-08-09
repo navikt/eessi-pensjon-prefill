@@ -1,5 +1,7 @@
 package no.nav.eessi.eessifagmodul.models
 
+import com.fasterxml.jackson.annotation.JsonProperty
+
 /**
  * data class model from EUX Basis
  */
@@ -25,4 +27,11 @@ data class RINATraits(
 data class RINAProperties(
     val importance: String? = null,
     val criticality: String? = null
+)
+data class RINAaksjoner(
+        val dokumentType: String? = null,
+        val navn: String? = null,
+        val dokumentId: String? = null,
+        val kategori: String? = null,
+        val id: String? = null
 )

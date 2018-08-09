@@ -19,9 +19,9 @@ inline fun <reified T : Any> mapJsonToAny(json: String, objec : TypeReference<T>
     }
 }
 
-fun createErrorMessage(responseBody: String?): RestClientException {
-    val objectMapper = jacksonObjectMapper()
-    return objectMapper.readValue(responseBody, RestClientException::class.java)
+fun createErrorMessage(responseBody: String): RestClientException {
+    val error = mapJsonToAny(responseBody, typeRefs<RestClientException>())
+    return error
 }
 
 fun mapAnyToJson(data: Any): String {

@@ -2,17 +2,17 @@ package no.nav.eessi.eessifagmodul.services
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import no.nav.eessi.eessifagmodul.models.RINASaker
+import no.nav.eessi.eessifagmodul.models.RINAaksjoner
+import no.nav.eessi.eessifagmodul.models.RinaCasenrIkkeMottattException
 import no.nav.eessi.eessifagmodul.utils.createErrorMessage
+import no.nav.eessi.eessifagmodul.utils.mapJsonToAny
 import no.nav.eessi.eessifagmodul.utils.typeRef
 import no.nav.eessi.eessifagmodul.utils.typeRefs
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Description
 import org.springframework.core.io.ByteArrayResource
-import org.springframework.http.HttpEntity
-import org.springframework.http.HttpHeaders
-import org.springframework.http.HttpMethod
-import org.springframework.http.MediaType
+import org.springframework.http.*
 import org.springframework.stereotype.Service
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.util.MultiValueMap
@@ -28,8 +28,6 @@ class EuxService(private val oidcRestTemplate: RestTemplate) {
     private val logger: Logger by lazy { LoggerFactory.getLogger(EuxService::class.java) }
 
     private val EUX_PATH: String = "/cpi"
-
-    private val objectMapper = jacksonObjectMapper()
 
     //test mock only
     var overrideheaders: Boolean? = null
@@ -52,7 +50,8 @@ class EuxService(private val oidcRestTemplate: RestTemplate) {
             if (response.statusCode.isError) {
                 throw createErrorMessage(responseBody)
             } else {
-                return objectMapper.readValue(responseBody, typeRefs<List<RINASaker>>())
+                val response = mapJsonToAny(responseBody, typeRefs<List<RINASaker>>())
+                return response
             }
         } catch (ex: IOException) {
             throw RuntimeException(ex.message)
@@ -60,7 +59,7 @@ class EuxService(private val oidcRestTemplate: RestTemplate) {
     }
 
     //Henter en liste over tilgjengelige aksjoner for den aktuelle RINA saken PK-51365"
-    fun getMuligeAksjoner(euSaksnr: String): String {
+    fun getMuligeAksjoner(euSaksnr: String): List<RINAaksjoner> {
         val urlPath = "/MuligeAksjoner"
 
         val builder = UriComponentsBuilder.fromPath("$EUX_PATH$urlPath")
@@ -75,7 +74,8 @@ class EuxService(private val oidcRestTemplate: RestTemplate) {
             if (response.statusCode.isError) {
                 throw createErrorMessage(responseBody)
             } else {
-                return responseBody // objectMapper.readValue(responseBody, typeRefs<String>())
+                val list = mapJsonToAny(responseBody, typeRefs<List<RINAaksjoner>>()  )
+                return list
             }
         } catch (ex: IOException) {
             throw RuntimeException(ex.message)
@@ -91,7 +91,7 @@ class EuxService(private val oidcRestTemplate: RestTemplate) {
      * @param jsonPayLoad (actual sed as json)
      */
     //void no confirmaton?
-    fun createSEDonExistingDocument(jsonPayload: String, euxCaseId: String, korrelasjonID: String) {
+    fun createSEDonExistingDocument(jsonPayload: String, euxCaseId: String, korrelasjonID: String): HttpStatus {
         val urlPath = "/SED"
 
         val builder = UriComponentsBuilder.fromPath("$EUX_PATH$urlPath")
@@ -103,8 +103,8 @@ class EuxService(private val oidcRestTemplate: RestTemplate) {
 
         val httpEntity = HttpEntity(jsonPayload, headers)
         val response = oidcRestTemplate.exchange(builder.toUriString(), HttpMethod.POST, httpEntity, String::class.java)
-
-        logger.debug("SED Response: $response")
+        logger.debug("Response opprett SED på Rina: $euxCaseId, response:  $response")
+        return response.statusCode
     }
 
 
@@ -125,7 +125,7 @@ class EuxService(private val oidcRestTemplate: RestTemplate) {
      * @param korrelasjonID CorrelationId
      * @return The ID of the created case
      */
-    fun createCaseAndDocument(jsonPayload: String, bucType: String, fagSaknr: String, mottaker: String, vedleggType: String = "", korrelasjonID: String): String? {
+    fun createCaseAndDocument(jsonPayload: String, bucType: String, fagSaknr: String, mottaker: String, vedleggType: String = "", korrelasjonID: String): String {
         val urlPath = "/OpprettBuCogSED"
 
         val builder = UriComponentsBuilder.fromPath("$EUX_PATH$urlPath")
@@ -149,7 +149,7 @@ class EuxService(private val oidcRestTemplate: RestTemplate) {
 
         val httpEntity = HttpEntity(map, headers)
         val response = oidcRestTemplate.exchange(builder.toUriString(), HttpMethod.POST, httpEntity, String::class.java)
-        return response.body
+        return response.body ?: throw RinaCasenrIkkeMottattException("Ikke mottatt RINA casenr, feiler ved opprettelse av BUC og SED")
     }
 
     //temp fuction to log system onto eux basis

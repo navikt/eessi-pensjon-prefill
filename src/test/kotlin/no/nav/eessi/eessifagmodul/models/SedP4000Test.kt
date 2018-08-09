@@ -44,10 +44,10 @@ class SedP4000Test {
         sed.pensjon = pen
         sed.trygdetid = result
 
-        println("\n\n\n------------------------------------------------------------------------------------------------\n\n\n")
+        logger.debug("\n\n\n------------------------------------------------------------------------------------------------\n\n\n")
 
         val json2 = mapAnyToJson(sed, true)
-        println(json2)
+        logger.debug(json2)
 
         val mapSED = mapJsonToAny(json2, typeRefs<SED>())
 
@@ -73,8 +73,8 @@ class SedP4000Test {
         println(sed)
 
         val json = mapAnyToJson(sed, true)
-        println("\n\n\n-------------[ Fra fil -> SED -> Json ]--------------------------------------------------------------------------\n\n\n")
-        println(json)
+        logger.debug("\n\n\n-------------[ Fra fil -> SED -> Json ]--------------------------------------------------------------------------\n\n\n")
+        logger.debug(json)
     }
 
 
@@ -83,7 +83,7 @@ class SedP4000Test {
 
         val trygdetid  = createPersonTrygdeTidMock()
         val payload = mapAnyToJson(trygdetid)
-        println(payload)
+        logger.debug(payload)
 
         val req = ApiController.ApiRequest(
                 sed = "P4000",
@@ -97,16 +97,16 @@ class SedP4000Test {
 
         val json = mapAnyToJson(req)
         assertNotNull(json)
-        println("-------------------------------------------------------------------------------------------------------")
-        println(json)
-        println("-------------------------------------------------------------------------------------------------------")
+        logger.debug("-------------------------------------------------------------------------------------------------------")
+        logger.debug(json)
+        logger.debug("-------------------------------------------------------------------------------------------------------")
 
         val apireq = mapJsonToAny(json, typeRefs<ApiController.ApiRequest>())
 
         val payjson = apireq.payload ?: ""
         assertNotNull(payjson)
 
-        println(payjson)
+        logger.debug(payjson)
         assertEquals(payload, payjson)
 
         val p4k = mapJsonToAny(payjson, typeRefs<PersonTrygdeTid>())

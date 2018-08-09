@@ -13,7 +13,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
 @RunWith(MockitoJUnitRunner::class)
-class PreutfyllingPersonFraTPSTest{
+class PrefillPersonDataFromTPSTest{
 
     @Mock
     lateinit var mockPersonClient: PersonV3Client

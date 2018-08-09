@@ -11,6 +11,7 @@ data class SED (
         var pensjon: Pensjon? = null,
         var trygdetid: PersonTrygdeTid? = null,
     	//val medlemskap: Medlemskap? = null, A01?.
+        //var bekreftforsikred: BekreftelseBosettingsperiode? = null,
         val ignore: Ignore? = null
 )
 
@@ -20,6 +21,7 @@ data class InstitusjonItem(
         val institution: String? = null
 )
 //Oppretter ny sed ut ifra navn (P2000-P4000-P5000)
+//Hører denne til her eller i Utils?
 fun createSED(sedName: String?): SED {
     return SED (
         sed = sedName,

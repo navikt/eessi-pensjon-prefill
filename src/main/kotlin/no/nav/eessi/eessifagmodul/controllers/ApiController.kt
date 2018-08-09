@@ -2,15 +2,17 @@ package no.nav.eessi.eessifagmodul.controllers
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.swagger.annotations.ApiOperation
-import no.nav.eessi.eessifagmodul.models.SED
+import no.nav.eessi.eessifagmodul.models.*
 import no.nav.eessi.eessifagmodul.prefill.PrefillSED
 import no.nav.eessi.eessifagmodul.prefill.PrefillDataModel
+import no.nav.eessi.eessifagmodul.services.EuxMuligeAksjoner
 import no.nav.eessi.eessifagmodul.services.EuxService
 import no.nav.eessi.eessifagmodul.services.LandkodeService
 import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -20,12 +22,15 @@ import java.util.*
 
 @RestController
 @RequestMapping("/api")
-class ApiController(private val euxService: EuxService, private val prefill: PrefillSED) {
+class ApiController(private val euxService: EuxService, private val prefillSED: PrefillSED, private val prefillData: PrefillDataModel) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(ApiController::class.java) }
 
     @Autowired
     lateinit var landkodeService: LandkodeService
+
+    @Autowired
+    lateinit var muligeAksjoner: EuxMuligeAksjoner
 
     @ApiOperation("Henter liste over landkoder av ISO Alpha2 standard")
     @PostMapping("/landkoder")
@@ -37,7 +42,8 @@ class ApiController(private val euxService: EuxService, private val prefill: Pre
     @PostMapping("/confirm")
     fun confirmDocument(@RequestBody request: ApiRequest): SED {
 
-        val sed = createPreutfyltSED(request)
+        val data = createPreutfyltSED(request)
+        val sed = data.getSED()
 
         val sedjson = mapAnyToJson(sed, true)
         logger.debug("SED : $sedjson")
@@ -54,34 +60,39 @@ class ApiController(private val euxService: EuxService, private val prefill: Pre
         // payload fra f.eks P4000 dene er vel da bare delevis.
         // dette legges vel til i ApiRequest model Objectet?
 
-        val rinanr = request.euxCaseId ?: throw IllegalArgumentException("Mangler EUXcaseID (Rinanr)")
+        val rinanr = request.euxCaseId ?: throw IllegalArgumentException("Mangler euxCaseID (Rinanr)")
         val korrid = UUID.randomUUID()
 
-        val sed = createPreutfyltSED(request)
+        val data = createPreutfyltSED(request)
+        val sed = data.getSED()
         val sedAsJson = mapAnyToJson(sed, true)
+
+        if (muligeAksjoner.confirmCreate(data.getSEDid(), rinanr) == false) {
+            throw SedDokumentIkkeGyldigException("Kan ikke Opprette følgende  SED: ${sed.sed} på RINANR: $rinanr")
+        }
 
         euxService.createSEDonExistingDocument(sedAsJson, rinanr, korrid.toString())
         //ingen ting tilbake.. sjekke om alt er ok?
         //val aksjon = euxService.getMuligeAksjoner(rinanr)
 
-        return rinanr
+        if (muligeAksjoner.confirmUpdate(data.getSEDid() , rinanr)) {
+            return rinanr
+        }
+        throw SedDokumentIkkeOpprettetException("SED dokument feilet ved opprettelse ved rinanr: $rinanr")
     }
 
     @ApiOperation("Kjører prosess OpprettBuCogSED på EUX for å få opprette dokument")
     @PostMapping("/create")
     fun createDocument(@RequestBody request: ApiRequest): String {
 
-        val fagSaknr = request.caseId!! // = "EESSI-PEN-123"
-        val bucType = request.buc!! // = "P_BUC_06" //P6000
         val korrid = UUID.randomUUID()
-        val sed = createPreutfyltSED(request)
+        val data = createPreutfyltSED(request)
+        val sed = data.getSED()
 
-        if (request.institutions == null || request.institutions.isEmpty()  ) {
-            throw IllegalArgumentException("Mangler Institusjoner eller Mottaker")
-        }
-        //har vi flere mottakere ved create må vi velge førsste.
-        val mottaker = request.institutions[0].institution!! // = "DUMMY"
+        val fagSaknr = data.getSaksnr() // = "EESSI-PEN-123"
+        val bucType = data.getBUC() // = "P_BUC_06" //P6000
 
+        val mottaker = getFirstinstitutions(data.getInstitutionsList())
         val sedAsJson = mapAnyToJson(sed, true)
 
         logger.debug("Følgende jsonSED blir sendt : $sedAsJson")
@@ -92,25 +103,31 @@ class ApiController(private val euxService: EuxService, private val prefill: Pre
                 mottaker = mottaker,
                 bucType = bucType,
                 korrelasjonID = korrid.toString()
-        )!!
-
+        )
         logger.debug("(rina) caseid:  $euSaksnr")
         return "{\"euxcaseid\":\"$euSaksnr\"}"
     }
 
-    //validaring og preutfylling
-    private fun createPreutfyltSED(request: ApiRequest):SED {
-        return when  {
-            request.caseId == null -> throw IllegalArgumentException("Mangler Saksnummer")
-            request.sed == null -> throw IllegalArgumentException("Mangler SED")
-            request.buc == null -> throw IllegalArgumentException("Mangler BUC")
-            request.subjectArea == null -> throw IllegalArgumentException("Mangler Subjekt/Sektor")
-            request.pinid == null -> throw IllegalArgumentException("Mangler AktoerID")
-            request.institutions == null -> throw IllegalArgumentException("Mangler Institusjoner")
+    private fun getFirstinstitutions(institutions: List<InstitusjonItem>): String {
+        institutions.forEach {
+            return it.institution ?: ""
+        }
+        throw IkkeGyldigKallException("Mangler mottaker register (InstitusjonItem)")
+    }
 
-            validsed(request.sed , "P2000,P6000") -> prefill.prefill(
-                    utfyllingData = PrefillDataModel()
-                        .build(
+    //validaring og preutfylling
+    private fun createPreutfyltSED(request: ApiRequest): PrefillDataModel {
+        return when  {
+            request.caseId == null -> throw IkkeGyldigKallException("Mangler Saksnummer")
+            request.sed == null -> throw IkkeGyldigKallException("Mangler SED")
+            request.buc == null -> throw IkkeGyldigKallException("Mangler BUC")
+            request.subjectArea == null -> throw IkkeGyldigKallException("Mangler Subjekt/Sektor")
+            request.pinid == null -> throw IkkeGyldigKallException("Mangler AktoerID")
+            request.institutions == null -> throw IkkeGyldigKallException("Mangler Institusjoner")
+
+            //Denne validering og utfylling kan benyttes på SED P2000 og P6000
+            validsed(request.sed , "P2000,P6000,P5000") -> prefillSED.prefill(
+                    prefillData.build(
                                 caseId = request.caseId,
                                 buc = request.buc,
                                 subject = request.subjectArea,
@@ -119,22 +136,24 @@ class ApiController(private val euxService: EuxService, private val prefill: Pre
                                 institutions = request.institutions
                         )
             )
+            //denne validering og utfylling kan kun benyttes på SED P4000
             validsed(request.sed, "P4000") -> {
-                if (request.payload == null) { throw IllegalArgumentException("Mangler Institusjoner") }
-                prefill.prefill(
-                    utfyllingData = PrefillDataModel()
-                        .build(
+                if (request.payload == null) { throw IkkeGyldigKallException("Mangler metadata, payload") }
+                if (request.euxCaseId == null) { throw IkkeGyldigKallException("Mangler euxCaseId (Rinanr)") }
+                prefillSED.prefill(
+                        prefillData.build(
                                 caseId = request.caseId,
                                 buc = request.buc,
                                 subject = request.subjectArea,
                                 sedID = request.sed,
                                 aktoerID = request.pinid,
                                 institutions = request.institutions,
-                                payload = request.payload
+                                payload = request.payload,
+                                euxcaseId = request.euxCaseId
                         )
                 )
             }
-            else -> throw IllegalArgumentException("Mangler SED, eller ugyldig type SED")
+            else -> throw IkkeGyldigKallException("Mangler SED, eller ugyldig type SED")
         }
     }
 
@@ -153,7 +172,7 @@ class ApiController(private val euxService: EuxService, private val prefill: Pre
             val buc: String? = null,
             val sed : String? = null,
             //mottakere
-            val institutions: List<no.nav.eessi.eessifagmodul.models.InstitusjonItem>? = null,
+            val institutions: List<InstitusjonItem>? = null,
             @JsonProperty("actorId")
             //aktoerid
             val pinid: String? = null,
