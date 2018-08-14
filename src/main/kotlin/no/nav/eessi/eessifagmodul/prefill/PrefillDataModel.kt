@@ -39,8 +39,8 @@ class PrefillDataModel(private val aktoerIdClient: AktoerIdClient) {
     private lateinit var aktoerID: String
 
     //aktorid-etterlatt - når gjenlevende fylles ut?
-    private lateinit var etterlattAktoerID: String
-    private lateinit var etterlattPin: String
+    private var etterlattAktoerID: String? = null
+    private var etterlattPin: String? = null
 
     //partlysed
     private var partSedasJson: MutableMap<String, String> = mutableMapOf()
@@ -57,6 +57,7 @@ class PrefillDataModel(private val aktoerIdClient: AktoerIdClient) {
         this.partSedasJson.put(sedID, payload)
         this.euxCaseID = euxcaseId
         this.pin = hentAktoerIdPin(aktoerID)
+        println(debug())
         return this
     }
 
@@ -68,11 +69,31 @@ class PrefillDataModel(private val aktoerIdClient: AktoerIdClient) {
         this.sed = createSED(sedID)
         this.institution = institutions
         this.pin = hentAktoerIdPin(aktoerID)
+        println(debug())
         return this
+    }
+
+    fun build(subject: String, caseId: String, buc: String, sedID: String, aktoerID: String, institutions: List<InstitusjonItem>, dodaktorid: String): PrefillDataModel {
+        this.subject =  subject
+        this.caseId = caseId
+        this.buc = buc
+        this.aktoerID = aktoerID
+        this.sed = createSED(sedID)
+        this.institution = institutions
+        this.pin = hentAktoerIdPin(aktoerID)
+        this.etterlattAktoerID = dodaktorid
+        this.etterlattPin = hentAktoerIdPin(dodaktorid)
+        println(debug())
+        return this
+    }
+
+    fun debug():String {
+        return "Sektor: $subject, pen-saknr: $caseId, buc: $buc, sedid: ${sed.sed}, instirusjoner: $institution, aktorid: $aktoerID, norpin: $pin, dodaktorID: $etterlattAktoerID, dodpin: $etterlattPin haretterlatt: ${isValidEtterlatt()}"
     }
 
     @Throws(RuntimeException::class)
     fun hentAktoerIdPin(aktorid: String): String {
+        if (aktorid.isBlank()) return ""
         return aktoerIdClient.hentPinIdentFraAktorid(aktorid)
     }
 
@@ -99,11 +120,11 @@ class PrefillDataModel(private val aktoerIdClient: AktoerIdClient) {
         this.pin = pinid
     }
 
-    fun getEtterlattPinid(): String { return etterlattPin }
+    fun getEtterlattPinid(): String { return etterlattPin ?: "" }
     fun setEtterlattPinID(etterlattPinid: String) {
         this.etterlattPin = etterlattPinid
     }
-    fun getEtterlattAktoerID(): String { return etterlattAktoerID }
+    fun getEtterlattAktoerID(): String { return etterlattAktoerID ?: "" }
 
     fun setEtterlattAktoerID(etterlattAktoerid: String) {
         this.etterlattAktoerID = etterlattAktoerid
@@ -122,11 +143,15 @@ class PrefillDataModel(private val aktoerIdClient: AktoerIdClient) {
     }
 
     fun isValidEtterlatt(): Boolean {
-        try {
-            return etterlattAktoerID.isNotBlank() && etterlattPin.isNotBlank()
-        } catch (ex: UninitializedPropertyAccessException) {
-            return false
+        return try {
+            etterlattAktoerID?.isNotBlank() ?: false && etterlattPin?.isNotBlank() ?: false
+        } catch (ex: Exception) {
+            false
         }
+    }
+
+    fun validSED(sedid: String): Boolean {
+        return getSEDid() == sedid
     }
 
     fun print(post: String): String {

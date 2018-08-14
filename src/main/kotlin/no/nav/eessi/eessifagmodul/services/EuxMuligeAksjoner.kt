@@ -11,7 +11,7 @@ class EuxMuligeAksjoner(private val euxService: EuxService) {
     private val logger: Logger by lazy { LoggerFactory.getLogger(EuxMuligeAksjoner::class.java) }
 
     private val timeTries = 5               // times to try
-    private val waittime : Long = 2500      // waittime (basis venter 6000 på flere tjenester?)
+    private val waittime : Long = 1200      // waittime (basis venter 6000 på flere tjenester?)
 
     private val create = "Create"
     private val update = "Update"
@@ -26,17 +26,17 @@ class EuxMuligeAksjoner(private val euxService: EuxService) {
     private fun kanOppdatere(sed: String, rinanr: String, navn: String, deep: Int = 1) : Boolean {
         logger.debug("henter RINAaksjoner på sed: $sed, mot rinanr: $rinanr, letter etter: $navn og deep er: $deep")
 
-
-        val result = getMuligeAksjoner(rinanr)
         var validCheck : Boolean = false
+        val result = getMuligeAksjoner(rinanr)
 
-        result.forEach {
-            logger.debug("iterating igjennon aksjoner for å finne $sed. har: ${it.dokumentType} og ${it.navn} ")
-            if (it.dokumentType == sed && navn.equals(it.navn)) {
-                //validCheck = navn.equals(it.navn)
-                validCheck = true
-                logger.debug("Funnet sed og sjekker om 'Update' finnes. validCheck: $validCheck")
-                return@forEach //exit foreatch
+        run breaker@ {
+            result.forEach {
+                logger.debug("iterating igjennon aksjoner for å finne $sed. har: ${it.dokumentType} og ${it.navn} ")
+                if (it.dokumentType == sed && navn.equals(it.navn)) {
+                    validCheck = true
+                    logger.debug("Funnet sed og sjekker om 'Update' finnes. validCheck: $validCheck")
+                    return@breaker //exit foreatch
+                }
             }
         }
         logger.debug("Slutt paa resultatlist validCheck: $validCheck")

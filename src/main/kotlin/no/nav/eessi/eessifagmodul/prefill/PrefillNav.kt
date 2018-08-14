@@ -10,21 +10,23 @@ class PrefillNav(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS)
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillNav::class.java) }
 
-    val validseds : List<String> = listOf("P6000","P4000","P2000", "P5000")
+    private val validseds : List<String> = listOf("P6000","P4000","P2000", "P5000")
 
     fun utfyllNav(utfyllingData: PrefillDataModel): Nav {
 
         val brukertps = bruker(utfyllingData)
+        val brukerdodetterlatt = bruker(utfyllingData)
         //skal denne kjøres hver gang? eller kun under P2000?
         val barnatps = hentBarnaFraTPS(utfyllingData)
         val pensaknr = utfyllingData.getSaksnr()
+        val lokalSaksnr = opprettLokalSaknr( pensaknr )
 
         val nav = Nav(
                 barn = barnatps,
                 bruker = brukertps,
                 //korrekt bruk av eessisak? skal pen-saknr legges ved?
                 //eller peker denne til en ekisterende rina-casenr?
-                eessisak = opprettLokalSaknr( utfyllingData.getSaksnr() )
+                eessisak = lokalSaksnr
         )
         logger.debug(utfyllingData.print("Sjekker PinID : ${utfyllingData.getPinid()}"))
 
@@ -37,15 +39,21 @@ class PrefillNav(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS)
         //kan denne utfylling benyttes på alle SED?
         if (validseds.contains(utfyllingData.getSEDid())) {
 
-            //prefill av sed her!
+            //etterlatt pensjon da er dette den avdøde.(ikke levende)
+            //etterlatt pensjon da er den levende i pk.3 sed (gjenlevende) (pensjon.gjenlevende)
+            if (utfyllingData.isValidEtterlatt()) {
+                val pinid = utfyllingData.getEtterlattPinid()
+                val bruker = preutfyllingPersonFraTPS.prefillBruker(pinid)
+                logger.debug("Preutfylling Utfylling (avdød) Nav END")
+                return bruker
+            }
             val pinid = utfyllingData.getPinid()
             val bruker = preutfyllingPersonFraTPS.prefillBruker(pinid)
-
             logger.debug("Preutfylling Utfylling Nav END")
             return bruker
         }
 
-        logger.debug("SED er ikke P6000 - (fyller ut med mock)")
+        logger.debug("SED er ikke P6000,P2000,P4000,P5000.. - (fyller ut med mock)")
         val brukerfake = Bruker(
                 person = Person(
                     fornavn = "F",
@@ -89,7 +97,7 @@ class PrefillNav(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS)
         val lokalsak = EessisakItem(
                 institusjonsid = "NO:noinst002",
                 institusjonsnavn = "NOINST002, NO INST002, NO",
-                saksnummer = "PEN-SAK: $pensaknr",
+                saksnummer = "$pensaknr",
                 land = "NO"
         )
         return listOf(lokalsak)

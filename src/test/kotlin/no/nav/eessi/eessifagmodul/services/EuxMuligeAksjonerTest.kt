@@ -42,16 +42,38 @@ class EuxMuligeAksjonerTest {
                     navn = "Send",
                     id = "123123123123",
                     kategori = "Documents",
-                    dokumentType = "P2000",
+                    dokumentType = "P3000",
                     dokumentId = "23123123"
                 ),
                 RINAaksjoner(
                     navn = "Delete",
                     id = "123123123123",
                     kategori = "Documents",
-                    dokumentType = "P2000",
+                    dokumentType = "P3000",
                     dokumentId = "23123123"
+                ),
+                RINAaksjoner(
+                        navn = "Read",
+                        id = "123123123123",
+                        kategori = "Documents",
+                        dokumentType = "P4000",
+                        dokumentId = "23123123"
+                ),
+                RINAaksjoner(
+                        navn = "Send",
+                        id = "123123123123",
+                        kategori = "Documents",
+                        dokumentType = "P4000",
+                        dokumentId = "23123123"
+                ),
+                RINAaksjoner(
+                        navn = "Delete",
+                        id = "123123123123",
+                        kategori = "Documents",
+                        dokumentType = "P4000",
+                        dokumentId = "23123123"
                 )
+
         )
         return aksjonlist
     }
@@ -68,6 +90,7 @@ class EuxMuligeAksjonerTest {
                         dokumentId = "23123123"
                 )
         )
+        aksjonlist.addAll(mockNotValidData())
         return aksjonlist
     }
 

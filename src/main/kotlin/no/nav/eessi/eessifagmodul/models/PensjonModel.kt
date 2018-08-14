@@ -30,6 +30,7 @@ data class Pensjon(
         var trygdetid: List<MedlemskapItem>? = null
 )
 
+//P5000
 data class MedlemskapItem(
         val relevans: String? = null,
         val ordning: String? = null,
@@ -41,11 +42,13 @@ data class MedlemskapItem(
         val beregning: String? = null,
         val periode: Periode? = null
 )
+//P5000
 data class Dager(
         val nr: String? = null,
         val type: String? = null
 )
 
+//P5000
 data class TotalSum(
         val kvartal: String? = null,
         val aar: String? = null,
@@ -64,6 +67,7 @@ data class Institusjon(
         val saksnummer: String? = null
 )
 
+//P2000
 data class YtelserItem(
         val annenytelse: String? = null,
         val totalbruttobeloeparbeidsbasert: String? = null,

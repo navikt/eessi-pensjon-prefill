@@ -31,7 +31,8 @@ aktoer.v2:
   endpointurl: 'https://app-t8.adeo.no/aktoerid/AktoerService/v2'
 
 virksomhet.person.v3:
-  endpointurl: 'https://wasapp-t8.adeo.no/tpsws/ws/Person/v3'
+  endpointurl: 'https://wasapp-t7.adeo.no/tpsws/ws/Person/v3' # med rett mask i navn og person
+#  endpointurl: 'https://wasapp-t8.adeo.no/tpsws/ws/Person/v3' # relle data ekte person
 
 credentials:
   srvpensjon:

@@ -58,11 +58,6 @@ class PrefillPerson(private val prefillNav: PrefillNav, private val prefilliPens
 
         logger.debug(prefillData.print("Preutfylling Utfylling Data"))
 
-        //har vi hentet ned fnr fra aktor?
-        //prefillData.setPinID( hentPinIdentFraAktorid(prefillData.getAktoerid() ))
-        //logger.debug(prefillData.print("Sjekker PinID : ${prefillData.getPinid()}"))
-        //logger.debug(prefillData.print("Preutfylling hentet pinid fra aktoerIdClient."))
-
         val sed = prefillData.getSED()
 
         sed.nav = prefillNav.utfyllNav(prefillData)

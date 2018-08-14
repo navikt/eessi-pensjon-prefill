@@ -73,9 +73,12 @@ class PrefillPersonDataFromTPSTest{
         person.bostedsadresse = bostedadr
 
         val result = preutfyllingTPS.personAdresse(person)
+        println(result)
+
         assertNotNull(result)
+
         assertEquals("NO", result.land)
-        assertEquals("12", result.bygning)
+        assertEquals( "Kirkeveien 12", result.gate)
         assertEquals("OSLO", result.by)
     }
 

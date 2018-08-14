@@ -1,24 +1,26 @@
 package no.nav.eessi.eessifagmodul.prefill
 
 import no.nav.eessi.eessifagmodul.clients.personv3.PersonV3Client
-import no.nav.eessi.eessifagmodul.services.LandkodeService
-import no.nav.eessi.eessifagmodul.services.PostnummerService
 import no.nav.eessi.eessifagmodul.models.*
 import no.nav.eessi.eessifagmodul.models.Bruker
 import no.nav.eessi.eessifagmodul.models.Person
+import no.nav.eessi.eessifagmodul.services.LandkodeService
+import no.nav.eessi.eessifagmodul.services.PostnummerService
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.*
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.text.SimpleDateFormat
 import javax.xml.datatype.XMLGregorianCalendar
-import kotlin.math.log
 
 @Service
 class PrefillPersonDataFromTPS(private val personV3Client: PersonV3Client, private val postnummerService: PostnummerService, private val landkoder: LandkodeService) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillPersonDataFromTPS::class.java) }
     private val dateformat = "YYYY-MM-dd"
+    private val dod = "DØD"
+
+    private var personstatus = ""
 
     private enum class RelasjonEnum(val relasjon: String) {
         FAR("FARA"),
@@ -47,9 +49,8 @@ class PrefillPersonDataFromTPS(private val personV3Client: PersonV3Client, priva
     }
 
     fun prefillBruker(ident: String): Bruker {
-
         val brukerTPS = hentBrukerTPS(ident)
-
+        setPersonStatus(hentPersonStatus(brukerTPS))
         val bruker = Bruker(
             far = Foreldre( person =  hentRelasjon(RelasjonEnum.FAR, brukerTPS)),
             mor = Foreldre( person =  hentRelasjon(RelasjonEnum.MOR, brukerTPS)),
@@ -60,6 +61,10 @@ class PrefillPersonDataFromTPS(private val personV3Client: PersonV3Client, priva
         logger.debug("Preutfylling Bruker")
         return bruker
     }
+
+    private fun setPersonStatus(status: String = "") { this.personstatus = status }
+    private fun getPersonStatus(): String { return this.personstatus }
+    private fun validatePersonStatus(value: String): Boolean { return getPersonStatus() == value}
 
     //bruker fra TPS
     private fun hentBrukerTPS(ident: String): no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker {
@@ -77,13 +82,15 @@ class PrefillPersonDataFromTPS(private val personV3Client: PersonV3Client, priva
 
     //fdato i rinaformat
     private fun standardDatoformat(xmldato: XMLGregorianCalendar): String {
-        val fodCalendar = xmldato.toGregorianCalendar()
-        val datoformatert = SimpleDateFormat(dateformat).format(fodCalendar.time)
-        return datoformatert
+        val calendar = xmldato.toGregorianCalendar()
+        return  SimpleDateFormat(dateformat).format(calendar.time)
     }
     //fdato i rinaformat
-    private fun datoFormat(person: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): String {
+    private fun datoFormat(person: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): String? {
         val fdato = person.foedselsdato
+        if (fdato == null) {
+            return null
+        }
         return standardDatoformat(fdato.foedselsdato)
     }
     //doddato i rina
@@ -154,7 +161,7 @@ class PrefillPersonDataFromTPS(private val personV3Client: PersonV3Client, priva
     //persondata - rina format
     private fun personData(brukerTps: no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker): Person {
         val navn = brukerTps.personnavn as Personnavn
-        val statsborgerskap = brukerTps.statsborgerskap as Statsborgerskap
+        //val statsborgerskap = brukerTps.statsborgerskap as Statsborgerskap
         val kjonn = brukerTps.kjoenn
 
         val person = Person(
@@ -162,8 +169,8 @@ class PrefillPersonDataFromTPS(private val personV3Client: PersonV3Client, priva
                         PinItem(
                         sektor = "alle",
                         identifikator = hentNorIdent(brukerTps),
-                        //er det rikitg å sette uk her dersomn person er uk stats.. men pinid er norsk 11personnr?
-                        land = hentLandkode(statsborgerskap.land)
+                        // norsk personnr er for NO
+                        land = "NO"
                         )
                     ),
                 forrnavnvedfoedsel = navn.fornavn,
@@ -179,6 +186,12 @@ class PrefillPersonDataFromTPS(private val personV3Client: PersonV3Client, priva
         return person
     }
 
+    private fun hentPersonStatus(brukerTps: no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker): String {
+        val personstatus = brukerTps.personstatus as Personstatus
+        val personstatisverdi = personstatus.personstatus.value
+        return personstatisverdi
+    }
+
     private fun hentSivilstand(brukerTps: no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker): List<SivilstandItem> {
         val sivilstand = brukerTps.sivilstand as Sivilstand
        val sivil = SivilstandItem(
@@ -190,16 +203,24 @@ class PrefillPersonDataFromTPS(private val personV3Client: PersonV3Client, priva
 
 
     fun personAdresse(person: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): Adresse{
+        //ikke adresse for død
+        if (validatePersonStatus(dod)) { return Adresse() }
+
         val gateAdresse = person.bostedsadresse.strukturertAdresse as Gateadresse
         val postnr = gateAdresse.poststed.value
+
+        val gate = gateAdresse.gatenavn
+        val husnr = gateAdresse.husnummer
+
         val adr = Adresse(
             postnummer = postnr,
-            region = gateAdresse.kommunenummer,
-            gate = gateAdresse.gatenavn,
-            bygning = gateAdresse.husnummer.toString(),
+            gate = "$gate $husnr" ,
             land = hentLandkode(gateAdresse.landkode),
             by = postnummerService.finnPoststed(postnr)
         )
+        //bygning =          Ikke i bruk
+        // region = gateAdresse.kommunenummer, Ikke i bruk
+
         logger.debug("Preutfylling Adresse")
         return adr
     }

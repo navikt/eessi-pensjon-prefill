@@ -29,7 +29,7 @@ class PrefillDataModelTest {
 
     @Before
     fun setup() {
-        logger.debug("Starting tests.... ...")
+        logger.debug("Starting tests..")
         prefill = PrefillDataModel(mockAktoerIdClient)
     }
 
@@ -52,6 +52,13 @@ class PrefillDataModelTest {
         prefill.setEtterlattPinID("23123")
         assertFalse(prefill.isValidEtterlatt())
     }
+    @Test
+    fun `check for none valid etterlatt begge er blank`() {
+        prefill.setEtterlattPinID("")
+        prefill.setEtterlattAktoerID("")
+        assertFalse(prefill.isValidEtterlatt())
+    }
+
     @Test
     fun `check for valid etterlatt`() {
         //val prefill = PrefillDataModel()

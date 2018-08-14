@@ -1,5 +1,6 @@
 package no.nav.eessi.eessifagmodul.clients.personv3
 
+import io.swagger.models.auth.In
 import no.nav.eessi.eessifagmodul.config.sts.configureRequestSamlTokenOnBehalfOfOidc
 import no.nav.freg.security.oidc.common.OidcTokenAuthentication
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonPersonIkkeFunnet
@@ -30,6 +31,8 @@ class PersonV3Client(val service: PersonV3) {
             withInformasjonsbehov(listOf(
                     Informasjonsbehov.ADRESSE,
                     Informasjonsbehov.FAMILIERELASJONER
+//                    Informasjonsbehov.KOMMUNIKASJON,
+//                    Informasjonsbehov.BANKKONTO
             ))
         }
         return service.hentPerson(request)

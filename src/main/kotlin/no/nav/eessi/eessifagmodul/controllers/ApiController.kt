@@ -60,25 +60,24 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
         // payload fra f.eks P4000 dene er vel da bare delevis.
         // dette legges vel til i ApiRequest model Objectet?
 
-        val rinanr = request.euxCaseId ?: throw IllegalArgumentException("Mangler euxCaseID (Rinanr)")
+        val rinanr = request.euxCaseId ?: throw IkkeGyldigKallException("Mangler euxCaseID (Rinanr)")
         val korrid = UUID.randomUUID()
 
         val data = createPreutfyltSED(request)
         val sed = data.getSED()
         val sedAsJson = mapAnyToJson(sed, true)
 
-        if (muligeAksjoner.confirmCreate(data.getSEDid(), rinanr) == false) {
-            throw SedDokumentIkkeGyldigException("Kan ikke Opprette følgende  SED: ${sed.sed} på RINANR: $rinanr")
+        if (muligeAksjoner.confirmCreate(data.getSEDid(), rinanr)) {
+            euxService.createSEDonExistingDocument(sedAsJson, rinanr, korrid.toString())
+            //ingen ting tilbake.. sjekke om alt er ok?
+            //val aksjon = euxService.getMuligeAksjoner(rinanr)
+            if (muligeAksjoner.confirmUpdate(data.getSEDid() , rinanr)) {
+                return rinanr
+            }
+            throw SedDokumentIkkeOpprettetException("SED dokument feilet ved opprettelse ved rinanr: $rinanr")
         }
+        throw SedDokumentIkkeGyldigException("Kan ikke Opprette følgende  SED: ${sed.sed} på RINANR: $rinanr")
 
-        euxService.createSEDonExistingDocument(sedAsJson, rinanr, korrid.toString())
-        //ingen ting tilbake.. sjekke om alt er ok?
-        //val aksjon = euxService.getMuligeAksjoner(rinanr)
-
-        if (muligeAksjoner.confirmUpdate(data.getSEDid() , rinanr)) {
-            return rinanr
-        }
-        throw SedDokumentIkkeOpprettetException("SED dokument feilet ved opprettelse ved rinanr: $rinanr")
     }
 
     @ApiOperation("Kjører prosess OpprettBuCogSED på EUX for å få opprette dokument")
@@ -125,6 +124,7 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
             request.pinid == null -> throw IkkeGyldigKallException("Mangler AktoerID")
             request.institutions == null -> throw IkkeGyldigKallException("Mangler Institusjoner")
 
+
             //Denne validering og utfylling kan benyttes på SED P2000 og P6000
             validsed(request.sed , "P2000,P6000,P5000") -> prefillSED.prefill(
                     prefillData.build(
@@ -133,7 +133,8 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
                                 subject = request.subjectArea,
                                 sedID = request.sed,
                                 aktoerID = request.pinid,
-                                institutions = request.institutions
+                                institutions = request.institutions,
+                                dodaktorid = request.dodpinid ?: "" // vil kanskje komme som en del av pen-utveklsing ikke fra forntend.
                         )
             )
             //denne validering og utfylling kan kun benyttes på SED P4000
@@ -176,6 +177,8 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
             @JsonProperty("actorId")
             //aktoerid
             val pinid: String? = null,
+            @JsonProperty("dodactorId")
+            val dodpinid: String? = null,
             //mere maa legges til..
             val euxCaseId: String? = null,
             //partpayload json/sed

@@ -98,28 +98,26 @@ class ExperimentController {
         return euxService.getRinaSaker("", "",pinID)
     }
 
-    @ApiOperation("PersonTrygdeTid")
-    @GetMapping("/trygdetid")
-    fun getPersonTrygdeTid(): PersonTrygdeTid {
-        return createPersonTrygdeTidMock()
-    }
-    @ApiOperation("PensjonMedlemsjap")
-    @GetMapping("/pensjonmedlemskap")
-    fun getPensjonMedlemskap(): Pensjon {
-        return createMedlemskapMock()
-    }
+//    @ApiOperation("PersonTrygdeTid")
+//    @GetMapping("/trygdetid")
+//    fun getPersonTrygdeTid(): PersonTrygdeTid {
+//        return createPersonTrygdeTidMock()
+//    }
+//    @ApiOperation("PensjonMedlemsjap")
+//    @GetMapping("/pensjonmedlemskap")
+//    fun getPensjonMedlemskap(): Pensjon {
+//        return createMedlemskapMock()
+//    }
 
     @ApiOperation("Sjekke Aksjoner er mulig")
     @GetMapping("/aksjoner/{rina}/{sed}/{navn}")
     fun getAksjoner(@PathVariable("rina", required = true) rinanr: String = "",
             @PathVariable("sed", required = true) sed: String = "",
         @PathVariable("navn", required = true) navn: String = "Update"): Boolean {
-
         if (navn == "Update") {
             return muligeAksjoner.confirmUpdate(sed, rinanr)
         }
         return muligeAksjoner.confirmCreate(sed, rinanr)
-
     }
 
 }

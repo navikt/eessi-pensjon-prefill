@@ -2,7 +2,6 @@ package no.nav.eessi.eessifagmodul.prefill
 
 import no.nav.eessi.eessifagmodul.models.Bruker
 import no.nav.eessi.eessifagmodul.models.Pensjon
-import no.nav.eessi.eessifagmodul.models.createMedlemskapMock
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
@@ -34,20 +33,23 @@ class PrefillPensjon(private val preutfyllingPersonFraTPS: PrefillPersonDataFrom
 
             //kun ved bruk av P5000
             var p5000pensjon: Pensjon? = null
-            if (utfyllingData.getSEDid() == "P5000") {
+            if (utfyllingData.validSED("P5000")) {
                 logger.debug("Preutfylling Utfylling Pensjon Medlemskap")
-                p5000pensjon = createMedlemskapMock()
+                //p5000pensjon = createMedlemskapMock()
             }
 
             val pensjon = Pensjon (
+
                     //etterlattpensjon
-                    gjenlevende = gjenlevende,
+                    gjenlevende = gjenlevende
                     //P5000
+                    /*
                     sak = p5000pensjon?.sak,
                     medlemskap = p5000pensjon?.medlemskap,
                     medlemskapTotal = p5000pensjon?.medlemskapTotal,
                     medlemskapAnnen = p5000pensjon?.medlemskapAnnen,
                     trygdetid = p5000pensjon?.trygdetid
+                    */
             )
             logger.debug("Preutfylling Utfylling Pensjon END")
 
