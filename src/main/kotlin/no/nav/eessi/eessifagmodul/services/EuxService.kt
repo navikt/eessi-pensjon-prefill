@@ -32,7 +32,7 @@ class EuxService(private val oidcRestTemplate: RestTemplate) {
     //test mock only
     var overrideheaders: Boolean? = null
 
-    //henter ut status på rina.
+    //henter ut status på rina. -- flyttet til frontend..
     fun getRinaSaker(bucType: String = "",rinaNummer: String? = "", pinID: String? = ""): List<RINASaker> {
         val urlPath = "/RINASaker"
 
@@ -50,8 +50,8 @@ class EuxService(private val oidcRestTemplate: RestTemplate) {
             if (response.statusCode.isError) {
                 throw createErrorMessage(responseBody)
             } else {
-                val response = mapJsonToAny(responseBody, typeRefs<List<RINASaker>>())
-                return response
+                val listRina = mapJsonToAny(responseBody, typeRefs<List<RINASaker>>())
+                return listRina
             }
         } catch (ex: IOException) {
             throw RuntimeException(ex.message)
@@ -88,7 +88,7 @@ class EuxService(private val oidcRestTemplate: RestTemplate) {
      *
      * @parem euxCaseID (rina id)
      * @param korrelasjonID CorrelationId
-     * @param jsonPayLoad (actual sed as json)
+     * @param jsonPayload (actual sed as json)
      */
     //void no confirmaton?
     fun createSEDonExistingDocument(jsonPayload: String, euxCaseId: String, korrelasjonID: String): HttpStatus {

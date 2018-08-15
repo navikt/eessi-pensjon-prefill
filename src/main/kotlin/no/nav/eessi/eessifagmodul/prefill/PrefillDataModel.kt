@@ -47,6 +47,7 @@ class PrefillDataModel(private val aktoerIdClient: AktoerIdClient) {
     //euxCaseId
     private lateinit var euxCaseID: String
 
+    @Throws(RuntimeException::class)
     fun build(subject: String, caseId: String, buc: String, sedID: String, aktoerID: String, institutions: List<InstitusjonItem>, payload: String, euxcaseId: String): PrefillDataModel {
         this.subject =  subject
         this.caseId = caseId
@@ -61,6 +62,7 @@ class PrefillDataModel(private val aktoerIdClient: AktoerIdClient) {
         return this
     }
 
+    @Throws(RuntimeException::class)
     fun build(subject: String, caseId: String, buc: String, sedID: String, aktoerID: String, institutions: List<InstitusjonItem>): PrefillDataModel {
         this.subject =  subject
         this.caseId = caseId
@@ -73,6 +75,7 @@ class PrefillDataModel(private val aktoerIdClient: AktoerIdClient) {
         return this
     }
 
+    @Throws(RuntimeException::class)
     fun build(subject: String, caseId: String, buc: String, sedID: String, aktoerID: String, institutions: List<InstitusjonItem>, dodaktorid: String): PrefillDataModel {
         this.subject =  subject
         this.caseId = caseId

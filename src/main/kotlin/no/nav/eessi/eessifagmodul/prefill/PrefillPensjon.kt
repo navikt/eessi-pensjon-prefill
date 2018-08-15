@@ -32,7 +32,7 @@ class PrefillPensjon(private val preutfyllingPersonFraTPS: PrefillPersonDataFrom
             }
 
             //kun ved bruk av P5000
-            var p5000pensjon: Pensjon? = null
+            //var p5000pensjon: Pensjon? = null
             if (utfyllingData.validSED("P5000")) {
                 logger.debug("Preutfylling Utfylling Pensjon Medlemskap")
                 //p5000pensjon = createMedlemskapMock()
@@ -57,15 +57,6 @@ class PrefillPensjon(private val preutfyllingPersonFraTPS: PrefillPersonDataFrom
         }
         logger.debug("SED er ikke gyldig?")
         val pensjonfake = Pensjon()
-//            gjenlevende = Bruker(
-//                person = Person(
-//                    fornavn = "F",
-//                    kjoenn = "k",
-//                    foedselsdato = "1901-12-01",
-//                    etternavn = "E"
-//                )
-//            )
-//        )
         return pensjonfake
     }
 

@@ -12,10 +12,14 @@ class PrefillNav(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS)
 
     private val validseds : List<String> = listOf("P6000","P4000","P2000", "P5000")
 
+    private val institutionid = "NO:noinst002"
+    private val institutionnavn = "NOINST002, NO INST002, NO"
+
     fun utfyllNav(utfyllingData: PrefillDataModel): Nav {
 
+        //bruker død hvis etterlatt (etterlatt aktoerid fylt ut)
         val brukertps = bruker(utfyllingData)
-        val brukerdodetterlatt = bruker(utfyllingData)
+
         //skal denne kjøres hver gang? eller kun under P2000?
         val barnatps = hentBarnaFraTPS(utfyllingData)
         val pensaknr = utfyllingData.getSaksnr()
@@ -51,8 +55,8 @@ class PrefillNav(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS)
             val bruker = preutfyllingPersonFraTPS.prefillBruker(pinid)
             logger.debug("Preutfylling Utfylling Nav END")
             return bruker
-        }
 
+        }
         logger.debug("SED er ikke P6000,P2000,P4000,P5000.. - (fyller ut med mock)")
         val brukerfake = Bruker(
                 person = Person(
@@ -95,9 +99,9 @@ class PrefillNav(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS)
     private fun opprettLokalSaknr(pensaknr: String = ""): List<EessisakItem> {
         //Må få hentet ut NAV institusjon avsender fra fasit?
         val lokalsak = EessisakItem(
-                institusjonsid = "NO:noinst002",
-                institusjonsnavn = "NOINST002, NO INST002, NO",
-                saksnummer = "$pensaknr",
+                institusjonsid = institutionid,
+                institusjonsnavn = institutionnavn,
+                saksnummer = pensaknr,
                 land = "NO"
         )
         return listOf(lokalsak)

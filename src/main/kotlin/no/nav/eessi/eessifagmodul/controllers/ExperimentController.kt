@@ -81,32 +81,21 @@ class ExperimentController {
     fun getMuligeAksjoner(@PathVariable(value = "rinanr",  required = true)rinanr: String): List<RINAaksjoner> {
         return euxService.getMuligeAksjoner(rinanr)
     }
-
-    @ApiOperation("Søk med BuCType etter eksisterende RINA saker fra EUX")
-    @GetMapping("/rinacase/buc/{bucType}")
-    fun getRinaSakerBucType(@PathVariable(value = "bucType",  required = false) bucType: String = ""): List<RINASaker> {
-        return euxService.getRinaSaker(bucType)
-    }
-
-    @ApiOperation("Søk med RinaSaknr etter eksisterende RINA saker fra EUX")
-    @GetMapping("/rinacase/rina/{rinanr}")
-    fun getRinaSakerCaseID(@PathVariable(value = "rinanr", required = false) rinaNr: String = ""): List<RINASaker> {
-        return euxService.getRinaSaker("",rinaNr)
-    }
-    @GetMapping("/rinacase/pinid/{pinid}")
-    fun getRinaSakerPindID(@PathVariable(value = "pinid", required = true) pinID: String = ""): List<RINASaker> {
-        return euxService.getRinaSaker("", "",pinID)
-    }
-
-//    @ApiOperation("PersonTrygdeTid")
-//    @GetMapping("/trygdetid")
-//    fun getPersonTrygdeTid(): PersonTrygdeTid {
-//        return createPersonTrygdeTidMock()
+//
+//    @ApiOperation("Søk med BuCType etter eksisterende RINA saker fra EUX")
+//    @GetMapping("/rinacase/buc/{bucType}")
+//    fun getRinaSakerBucType(@PathVariable(value = "bucType",  required = false) bucType: String = ""): List<RINASaker> {
+//        return euxService.getRinaSaker(bucType)
 //    }
-//    @ApiOperation("PensjonMedlemsjap")
-//    @GetMapping("/pensjonmedlemskap")
-//    fun getPensjonMedlemskap(): Pensjon {
-//        return createMedlemskapMock()
+//
+//    @ApiOperation("Søk med RinaSaknr etter eksisterende RINA saker fra EUX")
+//    @GetMapping("/rinacase/rina/{rinanr}")
+//    fun getRinaSakerCaseID(@PathVariable(value = "rinanr", required = false) rinaNr: String = ""): List<RINASaker> {
+//        return euxService.getRinaSaker("",rinaNr)
+//    }
+//    @GetMapping("/rinacase/pinid/{pinid}")
+//    fun getRinaSakerPindID(@PathVariable(value = "pinid", required = true) pinID: String = ""): List<RINASaker> {
+//        return euxService.getRinaSaker("", "",pinID)
 //    }
 
     @ApiOperation("Sjekke Aksjoner er mulig")
