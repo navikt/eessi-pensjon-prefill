@@ -32,9 +32,9 @@ class EuxMuligeAksjoner(private val euxService: EuxService) {
         run breaker@ {
             result.forEach {
                 logger.debug("iterating igjennon aksjoner for å finne $sed. har: ${it.dokumentType} og ${it.navn} ")
-                if (it.dokumentType == sed && navn.equals(it.navn)) {
+                if (sed == it.dokumentType && navn == it.navn) {
                     validCheck = true
-                    logger.debug("Funnet sed og sjekker om 'Update' finnes. validCheck: $validCheck")
+                    logger.debug("Funnet sed og sjekker om '$navn' finnes. validCheck: $validCheck")
                     return@breaker //exit foreatch
                 }
             }

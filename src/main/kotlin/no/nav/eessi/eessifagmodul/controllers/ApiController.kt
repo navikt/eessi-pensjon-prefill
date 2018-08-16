@@ -13,10 +13,8 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.http.MediaType
+import org.springframework.web.bind.annotation.*
 import java.util.*
 
 
@@ -49,6 +47,42 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
         logger.debug("SED : $sedjson")
 
         return sed
+    }
+
+    @ApiOperation("henter opp mulige aksjoner som kan utføres på valgt rinacase, filtert på sed starter med 'P'")
+    @GetMapping("/getMuligeAksjoner/{rinanr}", "/getMuligeAksjoner/{rinanr}/{filter}")
+    fun getMuligeAksjoner(@PathVariable(value = "rinanr",  required = true)rinanr: String, @PathVariable(value = "filter",  required = false)filter: String?= null): List<RINAaksjoner> {
+        val list = euxService.getMuligeAksjoner(rinanr)
+        if (filter == null) {
+            return getMuligeAksjonerFilter(rinanr, list)
+        }
+        return getMuligeAksjonerFilter(rinanr, list, filter)
+    }
+
+    private fun getMuligeAksjonerFilter(euxCaseId: String, list: List<RINAaksjoner>, filter: String = "P"): List<RINAaksjoner> {
+        val filterlist = mutableListOf<RINAaksjoner>()
+        println("list: $list")
+        list.forEach {
+            println("it: $it")
+            if (it.dokumentType != null && it.dokumentType.startsWith(filter)) {
+                println("add only filtered result (filter: $filter) and result: $it")
+                filterlist.add(it)
+            }
+        }
+        return filterlist.toList()
+    }
+
+
+
+    @ApiOperation("sendSed send current sed")
+    @PostMapping("/sendsed")
+    fun sendSed(@RequestBody request: ApiRequest): Boolean {
+
+        val rinanr = request.euxCaseId ?: throw IkkeGyldigKallException("Mangler euxCaseID (Rinanr)")
+        val sed =  request.sed ?: throw IkkeGyldigKallException("Mangler SED")
+        val korrid = UUID.randomUUID()
+
+        return euxService.sendSED(rinanr, sed, korrid.toString())
     }
 
     @ApiOperation("legge til SED på et eksisterende Rina document. kjører preutfylling")
@@ -104,7 +138,10 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
                 korrelasjonID = korrid.toString()
         )
         logger.debug("(rina) caseid:  $euSaksnr")
-        return "{\"euxcaseid\":\"$euSaksnr\"}"
+        if (muligeAksjoner.confirmUpdate(data.getSEDid(), euSaksnr)) {
+            return "{\"euxcaseid\":\"$euSaksnr\"}"
+        }
+        throw SedDokumentIkkeOpprettetException("SED dokument feilet ved opprettelse ved rinanr: $euSaksnr")
     }
 
     private fun getFirstinstitutions(institutions: List<InstitusjonItem>): String {
@@ -124,9 +161,9 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
             request.pinid == null -> throw IkkeGyldigKallException("Mangler AktoerID")
             request.institutions == null -> throw IkkeGyldigKallException("Mangler Institusjoner")
 
-
             //Denne validering og utfylling kan benyttes på SED P2000 og P6000
-            validsed(request.sed , "P2000,P6000,P5000") -> prefillSED.prefill(
+            validsed(request.sed , "P2000,P6000,P5000") -> {
+                prefillSED.prefill(
                     prefillData.build(
                                 caseId = request.caseId,
                                 buc = request.buc,
@@ -136,7 +173,8 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
                                 institutions = request.institutions,
                                 dodaktorid = request.dodpinid ?: "" // vil kanskje komme som en del av pen-utveklsing ikke fra forntend.
                         )
-            )
+                )
+            }
             //denne validering og utfylling kan kun benyttes på SED P4000
             validsed(request.sed, "P4000") -> {
                 if (request.payload == null) { throw IkkeGyldigKallException("Mangler metadata, payload") }

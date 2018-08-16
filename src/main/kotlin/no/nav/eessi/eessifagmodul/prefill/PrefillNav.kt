@@ -30,8 +30,9 @@ class PrefillNav(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS)
                 bruker = brukertps,
                 //korrekt bruk av eessisak? skal pen-saknr legges ved?
                 //eller peker denne til en ekisterende rina-casenr?
-                eessisak = lokalSaksnr
-        )
+                eessisak = lokalSaksnr,
+                krav = Krav("2016-01-01")
+            )
         logger.debug(utfyllingData.print("Sjekker PinID : ${utfyllingData.getPinid()}"))
 
         //${nav.eessisak}"

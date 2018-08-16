@@ -11,9 +11,14 @@ data class Nav(
    var bruker: Bruker? = null,
    @JsonProperty("eessisak")
    var eessisak: List<EessisakItem>? = null,
-   val verge: Verge? = null
-
+   val verge: Verge? = null,
+   var krav: Krav? = null
 )
+
+data class Krav(
+        val dato: String?= null
+)
+
 data class Bruker(
         @JsonProperty("arbeidsforhold")
         val arbeidsforhold: List<ArbeidsforholdItem>? = null,

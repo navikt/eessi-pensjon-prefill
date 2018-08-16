@@ -4,13 +4,11 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.whenever
 import no.nav.eessi.eessifagmodul.clients.aktoerid.AktoerIdClient
-import no.nav.eessi.eessifagmodul.models.Bruker
-import no.nav.eessi.eessifagmodul.models.InstitusjonItem
-import no.nav.eessi.eessifagmodul.models.Nav
-import no.nav.eessi.eessifagmodul.models.Person
-import no.nav.eessi.eessifagmodul.prefill.PrefillSED
-import no.nav.eessi.eessifagmodul.prefill.PrefillPerson
+import no.nav.eessi.eessifagmodul.models.*
 import no.nav.eessi.eessifagmodul.prefill.PrefillDataModel
+import no.nav.eessi.eessifagmodul.prefill.PrefillPerson
+import no.nav.eessi.eessifagmodul.prefill.PrefillSED
+import no.nav.eessi.eessifagmodul.services.EuxMuligeAksjoner
 import no.nav.eessi.eessifagmodul.services.EuxService
 import no.nav.eessi.eessifagmodul.services.LandkodeService
 import org.junit.Assert
@@ -36,6 +34,9 @@ class ApiControllerTest {
     @Mock
     private lateinit var mockAktoerIdClient: AktoerIdClient
 
+    @Mock
+    private lateinit var euxMuligeAksjoner: EuxMuligeAksjoner
+
     private lateinit var prefillDataMock: PrefillDataModel
 
     lateinit var apiController: ApiController
@@ -43,9 +44,11 @@ class ApiControllerTest {
     @Before
     fun setUp() {
         prefillDataMock = PrefillDataModel(mockAktoerIdClient)
+        euxMuligeAksjoner = EuxMuligeAksjoner(mockEuxService)
         apiController = ApiController(mockEuxService, PrefillSED(mockPersonPreutfyll), prefillDataMock)
         apiController.landkodeService = LandkodeService()
-   }
+        apiController.muligeAksjoner = euxMuligeAksjoner
+    }
 
     @Test
     fun `create list landkoder`() {
@@ -93,12 +96,74 @@ class ApiControllerTest {
         assertNotNull(utfyllMock.getPinid())
         assertEquals("12345", utfyllMock.getPinid())
 
-        whenever(mockPersonPreutfyll.prefill(any())).thenReturn(utfyllMock.getSED())
+        val mockAksjonlist = listOf(
+            RINAaksjoner(
+                navn = "Update",
+                id = "123123123123",
+                kategori = "Documents",
+                dokumentType = "P6000",
+                dokumentId = "23123123"
+            ),
+            RINAaksjoner(
+                navn = "Delete",
+                id = "123123343123",
+                kategori = "Documents",
+                dokumentType = "P6000",
+                dokumentId = "213123123"
+            )
+        )
+
+        whenever(mockPersonPreutfyll.prefill(any() )).thenReturn(utfyllMock.getSED())
         whenever(mockEuxService.createCaseAndDocument(anyString(), anyString(), anyString(), anyString(), anyString(), anyString() )).thenReturn(mockResponse)
+
+        whenever(mockEuxService.getMuligeAksjoner(ArgumentMatchers.anyString())).thenReturn(mockAksjonlist)
 
         val response = apiController.createDocument(requestMock)
         Assert.assertEquals("{\"euxcaseid\":\"$mockResponse\"}" , response)
     }
+
+    @Test(expected = SedDokumentIkkeOpprettetException::class)
+    fun `create document fail on confirmUpdate`() {
+        val items = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
+
+        val requestMock = ApiController.ApiRequest(
+                subjectArea = "Pensjon",
+                caseId = "EESSI-PEN-123",
+                institutions = items,
+                sed = "P6000",
+                buc = "P_BUC_06",
+                pinid = "0105094340092"
+        )
+        val mockResponse = "1234567890"
+
+        whenever(mockAktoerIdClient.hentPinIdentFraAktorid(ArgumentMatchers.anyString())).thenReturn("12345")
+        val utfyllMock =  prefillDataMock.build(
+                subject = requestMock.subjectArea!!,
+                caseId = requestMock.caseId!!,
+                sedID = requestMock.sed!!,
+                aktoerID = requestMock.pinid!!,
+                buc = requestMock.buc!!,
+                institutions = requestMock.institutions!!
+        )
+        assertNotNull(utfyllMock.getPinid())
+        assertEquals("12345", utfyllMock.getPinid())
+
+        val mockAksjonlist = listOf(
+                RINAaksjoner(
+                        navn = "Create",
+                        id = "123123343123",
+                        kategori = "Documents",
+                        dokumentType = "P6000",
+                        dokumentId = "213123123"
+                )
+        )
+        whenever(mockPersonPreutfyll.prefill(any())).thenReturn(utfyllMock.getSED())
+        whenever(mockEuxService.createCaseAndDocument(anyString(), anyString(), anyString(), anyString(), anyString(), anyString() )).thenReturn(mockResponse)
+        whenever(mockEuxService.getMuligeAksjoner(anyString())).thenReturn(mockAksjonlist)
+
+        apiController.createDocument(requestMock)
+    }
+
 
     @Test
     fun `confirm document`() {
@@ -114,7 +179,7 @@ class ApiControllerTest {
         val utfyllMock = prefillDataMock.build(subject = "Pensjon",caseId = "EESSI-PEN-123", sedID = "P6000", aktoerID = "0105094340092", buc = "P_BUC_06", institutions = items)
         utfyllMock.getSED().nav = Nav(bruker = Bruker(person = Person(fornavn = "Dummy", etternavn = "Dummy")))
 
-        whenever(mockPersonPreutfyll.prefill(any())).thenReturn(utfyllMock.getSED())
+        whenever(mockPersonPreutfyll.prefill(any() )).thenReturn(utfyllMock.getSED())
 
         val response = apiController.confirmDocument(mockData)
 
@@ -168,5 +233,72 @@ class ApiControllerTest {
         apiController.confirmDocument(mockData)
     }
 
+    @Test
+    fun `check for aksjoner filter P`() {
+        whenever(mockEuxService.getMuligeAksjoner(anyString())).thenReturn(getAksjonlist())
+
+        val result = apiController.getMuligeAksjoner("123123123", "P")
+        assertNotNull(result)
+
+        println(result)
+
+        assertEquals(1, result.size)
+        assertEquals("P6000", result[0].dokumentType)
+
+    }
+
+    @Test
+    fun `check for aksjoner filter X`() {
+        whenever(mockEuxService.getMuligeAksjoner(anyString())).thenReturn(getAksjonlist())
+
+        val result = apiController.getMuligeAksjoner("123123123", "X")
+        assertNotNull(result)
+
+        println(result)
+
+        assertEquals(2, result.size)
+        assertEquals("X6000", result[0].dokumentType)
+        assertEquals("X200", result[1].dokumentType)
+
+    }
+
+    @Test
+    fun `check for mulige aksjoner no filter`() {
+        whenever(mockEuxService.getMuligeAksjoner(anyString())).thenReturn(getAksjonlist())
+        val result = apiController.getMuligeAksjoner("123123123", "")
+        assertNotNull(result)
+        println(result)
+
+        assertEquals(3, result.size)
+        assertEquals("P6000", result[0].dokumentType)
+        assertEquals("X6000", result[1].dokumentType)
+        assertEquals("X200", result[2].dokumentType)
+    }
+
+    private fun getAksjonlist(): List<RINAaksjoner> {
+        return listOf(
+                RINAaksjoner(
+                        navn = "Create",
+                        id = "123123343123",
+                        kategori = "Documents",
+                        dokumentType = "P6000",
+                        dokumentId = "213123123"
+                ),
+                RINAaksjoner(
+                        navn = "Create",
+                        id = "123123343123",
+                        kategori = "Documents",
+                        dokumentType = "X6000",
+                        dokumentId = "213123123"
+                ),
+                RINAaksjoner(
+                        navn = "Update",
+                        id = "123123343123",
+                        kategori = "Documents",
+                        dokumentType = "X200",
+                        dokumentId = "213123123"
+                )
+        )
+    }
 
 }
