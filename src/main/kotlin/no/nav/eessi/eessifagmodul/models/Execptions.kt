@@ -9,6 +9,9 @@ class PersonIkkeFunnetException(message: String, exception: Exception): Exceptio
 @ResponseStatus(value = HttpStatus.NOT_FOUND)
 class SedDokumentIkkeOpprettetException(message: String): Exception(message)
 
+@ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
+class SedDokumentIkkeSendtException(message: String): Exception(message)
+
 @ResponseStatus(value = HttpStatus.BAD_REQUEST)
 class SedDokumentIkkeGyldigException(message: String): Exception(message)
 

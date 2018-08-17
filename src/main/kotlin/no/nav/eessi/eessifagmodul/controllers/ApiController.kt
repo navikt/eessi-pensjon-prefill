@@ -49,36 +49,11 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
         return sed
     }
 
-    @ApiOperation("henter opp mulige aksjoner som kan utføres på valgt rinacase, filtert på sed starter med 'P'")
-    @GetMapping("/getMuligeAksjoner/{rinanr}", "/getMuligeAksjoner/{rinanr}/{filter}")
-    fun getMuligeAksjoner(@PathVariable(value = "rinanr",  required = true)rinanr: String, @PathVariable(value = "filter",  required = false)filter: String?= null): List<RINAaksjoner> {
-        val list = euxService.getMuligeAksjoner(rinanr)
-        if (filter == null) {
-            return getMuligeAksjonerFilter(rinanr, list)
-        }
-        return getMuligeAksjonerFilter(rinanr, list, filter)
-    }
-
-    private fun getMuligeAksjonerFilter(euxCaseId: String, list: List<RINAaksjoner>, filter: String = "P"): List<RINAaksjoner> {
-        val filterlist = mutableListOf<RINAaksjoner>()
-        println("list: $list")
-        list.forEach {
-            println("it: $it")
-            if (it.dokumentType != null && it.dokumentType.startsWith(filter)) {
-                println("add only filtered result (filter: $filter) and result: $it")
-                filterlist.add(it)
-            }
-        }
-        return filterlist.toList()
-    }
-
-
-
     @ApiOperation("sendSed send current sed")
     @PostMapping("/sendsed")
     fun sendSed(@RequestBody request: ApiRequest): Boolean {
 
-        val rinanr = request.euxCaseId ?: throw IkkeGyldigKallException("Mangler euxCaseID (Rinanr)")
+        val rinanr = request.euxCaseId ?: throw IkkeGyldigKallException("Mangler euxCaseID (RINANR)")
         val sed =  request.sed ?: throw IkkeGyldigKallException("Mangler SED")
         val korrid = UUID.randomUUID()
 
@@ -91,10 +66,10 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
         //vi må ha mer fra frontend // backend..
 
         // Trenger RinaNr fra tidligere (opprettBucOgSed) gir oss orginale rinanr.
-        // payload fra f.eks P4000 dene er vel da bare delevis.
-        // dette legges vel til i ApiRequest model Objectet?
+        // payload fra f.eks P4000,P2000,xx dene er vel da bare delevis.
+        // dette legges vel til i ApiRequest model som payload.
 
-        val rinanr = request.euxCaseId ?: throw IkkeGyldigKallException("Mangler euxCaseID (Rinanr)")
+        val rinanr = request.euxCaseId ?: throw IkkeGyldigKallException("Mangler euxCaseId (RINANR)")
         val korrid = UUID.randomUUID()
 
         val data = createPreutfyltSED(request)
@@ -108,9 +83,9 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
             if (muligeAksjoner.confirmUpdate(data.getSEDid() , rinanr)) {
                 return rinanr
             }
-            throw SedDokumentIkkeOpprettetException("SED dokument feilet ved opprettelse ved rinanr: $rinanr")
+            throw SedDokumentIkkeOpprettetException("SED dokument feilet ved opprettelse ved RINANR: $rinanr")
         }
-        throw SedDokumentIkkeGyldigException("Kan ikke Opprette følgende  SED: ${sed.sed} på RINANR: $rinanr")
+        throw SedDokumentIkkeGyldigException("Kan ikke opprette følgende  SED: ${sed.sed} på RINANR: $rinanr")
 
     }
 
@@ -139,9 +114,15 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
         )
         logger.debug("(rina) caseid:  $euSaksnr")
         if (muligeAksjoner.confirmUpdate(data.getSEDid(), euSaksnr)) {
+            if (request.sendsed != null && request.sendsed == true) {
+                val result = euxService.sendSED(euSaksnr, data.getSEDid(), korrid.toString())
+                if (result == false) {
+                    throw SedDokumentIkkeSendtException("SED ikke sendt. muligens opprettet på RINANR: $euSaksnr")
+                }
+            }
             return "{\"euxcaseid\":\"$euSaksnr\"}"
         }
-        throw SedDokumentIkkeOpprettetException("SED dokument feilet ved opprettelse ved rinanr: $euSaksnr")
+        throw SedDokumentIkkeOpprettetException("SED dokument feilet ved opprettelse ved RINANR: $euSaksnr")
     }
 
     private fun getFirstinstitutions(institutions: List<InstitusjonItem>): String {
@@ -178,7 +159,7 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
             //denne validering og utfylling kan kun benyttes på SED P4000
             validsed(request.sed, "P4000") -> {
                 if (request.payload == null) { throw IkkeGyldigKallException("Mangler metadata, payload") }
-                if (request.euxCaseId == null) { throw IkkeGyldigKallException("Mangler euxCaseId (Rinanr)") }
+                if (request.euxCaseId == null) { throw IkkeGyldigKallException("Mangler euxCaseId (RINANR)") }
                 prefillSED.prefill(
                         prefillData.build(
                                 caseId = request.caseId,
@@ -220,7 +201,8 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
             //mere maa legges til..
             val euxCaseId: String? = null,
             //partpayload json/sed
-            val payload: String? = null
+            val payload: String? = null,
+            val sendsed: Boolean? = null
     )
 
 
