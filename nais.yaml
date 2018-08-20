@@ -1,5 +1,5 @@
 name: eessi-fagmodul
-image: docker.adeo.no:5000/eessi-fagmodul
+image: repo.adeo.no:5443/eessi-fagmodul
 team: eessi-pensjon
 replicas:
     min: 1

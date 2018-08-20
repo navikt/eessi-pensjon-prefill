@@ -1,81 +1,81 @@
-pipeline {
-    agent any
+#!/usr/bin/env groovy
+@Library('jenkins-pipeline-lib') _
 
-    environment {
-        repo = "docker.adeo.no:5000"
-        fasit_env = 't1'
-        application_namespace = 't1'
-        fasit_env_test = 't8'
-        application_namespace_test = 't8'
-        zone = 'fss'
-    }
+node {
+    def commitHash
+    try {
+        cleanWs()
 
-    stages {
-        stage('Initialize') {
-            steps {
-                script {
-                    app_name = sh(script: " sh gradlew properties | grep ^name: | sed 's/name: //'", returnStdout: true).trim()
-                    version = sh(script: "sh gradlew properties | grep ^version: | sed 's/version: //'", returnStdout: true).trim()
-                    branchName = "${env.BRANCH_NAME}"
-                    if (branchName != "master") {
-                        version = "${version}.${branchName.replaceAll('/', '-')}.${env.BUILD_ID}"
-                    } else {
-                        version = "${version}-${env.BUILD_ID}"
-                    }
-                    applicationFullName = "${app_name}:${version}"
-                }
+        def version
+        stage("checkout") {
+            withCredentials([string(credentialsId: 'navikt-ci-oauthtoken', variable: 'GITHUB_OAUTH_TOKEN')]) {
+                sh "git init"
+                sh "git pull https://${GITHUB_OAUTH_TOKEN}:x-oauth-basic@github.com/navikt/eessi-pensjon-fagmodul.git"
+            }
+
+            sh "make bump-version"
+
+            version = sh(script: 'cat VERSION', returnStdout: true).trim()
+
+            commitHash = sh(script: 'git rev-parse HEAD', returnStdout: true).trim()
+            github.commitStatus("navikt-ci-oauthtoken", "navikt/eessi-pensjon-fagmodul", 'continuous-integration/jenkins', commitHash, 'pending', "Build #${env.BUILD_NUMBER} has started")
+        }
+
+        stage("build") {
+            try {
+                sh "make VERSION=${version}"
+            } catch (e) {
+                junit('build/test-results/test/**/*.xml')
+                publishHTML([
+                        allowMissing         : false,
+                        alwaysLinkToLastBuild: false,
+                        keepAll              : true,
+                        reportDir            : 'build/reports/tests/test',
+                        reportFiles          : 'index.html',
+                        reportName           : 'HTML Report',
+                        reportTitles         : ''
+                ])
+
+                throw e
             }
         }
 
-        stage('Build') {
-            steps {
-                sh('sh gradlew clean assemble')
+        stage("release") {
+            withCredentials([usernamePassword(credentialsId: 'nexusUploader', usernameVariable: 'NEXUS_USERNAME', passwordVariable: 'NEXUS_PASSWORD')]) {
+                sh "docker login -u ${env.NEXUS_USERNAME} -p ${env.NEXUS_PASSWORD} repo.adeo.no:5443"
+            }
+
+            sh "make release"
+
+            withCredentials([string(credentialsId: 'navikt-ci-oauthtoken', variable: 'GITHUB_OAUTH_TOKEN')]) {
+                sh "git push --tags https://${GITHUB_OAUTH_TOKEN}@github.com/navikt/eessi-pensjon-fagmodul HEAD:master"
             }
         }
 
-        stage('Test') {
-            steps {
-                sh('sh gradlew test')
-            }
-            post {
-                always {
-                    junit('build/test-results/test/**/*.xml')
-                    publishHTML([
-                            allowMissing         : false,
-                            alwaysLinkToLastBuild: false,
-                            keepAll              : true,
-                            reportDir            : 'build/reports/tests/test',
-                            reportFiles          : 'index.html',
-                            reportName           : 'HTML Report',
-                            reportTitles         : ''
-                    ])
-                }
+        stage("upload manifest") {
+            withCredentials([usernamePassword(credentialsId: 'nexusUploader', usernameVariable: 'NEXUS_USERNAME', passwordVariable: 'NEXUS_PASSWORD')]) {
+                sh "make manifest VERSION=${version}"
             }
         }
 
-        stage('Docker') {
-            steps {
-                script {
-                    deployUtils.buildAndPushDockerImage(repo, applicationFullName)
-                }
-            }
+        stage("deploy") {
+            build([
+                    job       : 'nais-deploy-pipeline',
+                    wait      : false,
+                    parameters: [
+                            string(name: 'APP', value: "eessi-fagmodul"),
+                            string(name: 'REPO', value: "navikt/eessi-pensjon-fagmodul"),
+                            string(name: 'VERSION', value: version),
+                            string(name: 'COMMIT_HASH', value: commitHash),
+                            string(name: 'DEPLOY_ENV', value: 't1')
+                    ]
+            ])
         }
 
-        stage('Deploy') {
-            steps {
-                script {
-                    echo "Deploy '${branchName}'?"
-                    if (branchName.startsWith('feature')) {
-                        echo "\tdeploying to t8 (test)"
-                        deployUtils.naisDeploy(app_name, version, fasit_env_test, application_namespace_test, zone)
-                    } else if (branchName == 'master') {
-                        echo "\tdeploying to t8 (master)"
-                        deployUtils.naisDeploy(app_name, version, fasit_env, application_namespace, zone)
-                    } else {
-                        echo "Skipping deploy"
-                    }
-                }
-            }
-        }
+        github.commitStatus("navikt-ci-oauthtoken", "navikt/eessi-pensjon-fagmodul", 'continuous-integration/jenkins', commitHash, 'success', "Build #${env.BUILD_NUMBER} has finished")
+    } catch (err) {
+        github.commitStatus("navikt-ci-oauthtoken", "navikt/eessi-pensjon-fagmodul", 'continuous-integration/jenkins', commitHash, 'failure', "Build #${env.BUILD_NUMBER} has failed")
+
+        throw err
     }
 }
