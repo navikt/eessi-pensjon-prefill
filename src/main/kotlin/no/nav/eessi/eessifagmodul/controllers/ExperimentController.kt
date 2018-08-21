@@ -1,15 +1,11 @@
 package no.nav.eessi.eessifagmodul.controllers
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import io.swagger.annotations.ApiOperation
 import no.nav.eessi.eessifagmodul.clients.aktoerid.AktoerIdClient
 import no.nav.eessi.eessifagmodul.clients.personv3.PersonV3Client
+import no.nav.eessi.eessifagmodul.models.*
+import no.nav.eessi.eessifagmodul.services.RinaActions
 import no.nav.eessi.eessifagmodul.services.EuxService
 import no.nav.eessi.eessifagmodul.services.PostnummerService
-import no.nav.eessi.eessifagmodul.models.*
-import no.nav.eessi.eessifagmodul.utils.createListOfSED
-import no.nav.eessi.eessifagmodul.utils.createListOfSEDOnBUC
-import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentGeografiskTilknytningResponse
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonResponse
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -22,8 +18,6 @@ import java.net.URI
 @RestController
 @RequestMapping("/api/experiments")
 class ExperimentController {
-
-    private val objectMapper = jacksonObjectMapper()
 
     @Autowired
     private lateinit var personV3Client: PersonV3Client
@@ -41,9 +35,12 @@ class ExperimentController {
     private lateinit var euxService: EuxService
 
     @Autowired
+    private lateinit var muligeAksjoner: RinaActions
+
+    @Autowired
     private lateinit var postnummerService: PostnummerService
 
-            @GetMapping("/testEuxOidc")
+    @GetMapping("/testEuxOidc")
     fun testEuxOidc(): ResponseEntity<String> {
         val httpHeaders = HttpHeaders()
         httpHeaders.add(HttpHeaders.AUTHORIZATION, "Bearer ")
@@ -64,8 +61,9 @@ class ExperimentController {
     }
 
     @GetMapping("/testAktoerTilIdent/{ident}")
-    fun testAktoerTilIdent(@PathVariable("ident") ident: String): String? {
-        return aktoerIdClient.hentIdentForAktoerId(ident)?.ident
+    fun testAktoerTilIdent(@PathVariable("ident") ident: String): String {
+        //return aktoerIdClient.hentIdentForAktoerId(ident)?.ident
+        return aktoerIdClient.hentPinIdentFraAktorid(ident)
     }
 
     @GetMapping("/testPerson/{ident}")
@@ -74,55 +72,20 @@ class ExperimentController {
         return personV3
     }
 
-    @GetMapping("/testGeografi/{ident}")
-    fun testGeografi(@PathVariable("ident") ident: String): HentGeografiskTilknytningResponse {
-        val geografi = personV3Client.hentGeografi(ident)
-        return geografi
-    }
-
-
-    @ApiOperation("henter liste av alle BuC og tilhørende SED med forklaring")
-    @GetMapping("/detailbucs", produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun getDetailBucs(): List<BUC> {
-        return createPensjonBucList()
-    }
-
-    @GetMapping("/detailseds", "/detailseds/{buc}")
-    fun getDetailSeds(@PathVariable(value = "buc", required = false) buc: String?): List<SED> {
-        if (buc == null) {
-            return createListOfSED()
-        }
-        return createListOfSEDOnBUC(BUC(bucType = buc))
-    }
-
     @GetMapping("/possibleactions/{rinanr}", produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun getMuligeAksjoner(@PathVariable(value = "rinanr",  required = true)rinanr: String): String {
-        return euxService.getMuligeAksjoner(rinanr)
+    fun getMuligeAksjoner(@PathVariable(value = "rinanr",  required = true)rinanr: String): List<RINAaksjoner> {
+        return euxService.getPossibleActions(rinanr)
     }
 
-    @ApiOperation("Søk med BuCType etter eksisterende RINA saker fra EUX")
-    @GetMapping("/rinacase/buc/{bucType}")
-    fun getRinaSakerBucType(@PathVariable(value = "bucType",  required = false) bucType: String = ""): List<RINASaker> {
-        return euxService.getRinaSaker(bucType)
-    }
-
-    @ApiOperation("Søk med RinaSaknr etter eksisterende RINA saker fra EUX")
-    @GetMapping("/rinacase/rina/{rinanr}")
-    fun getRinaSakerCaseID(@PathVariable(value = "rinanr", required = false) rinaNr: String = ""): List<RINASaker> {
-        return euxService.getRinaSaker("",rinaNr)
-    }
-
-    @ApiOperation("Søk Poststed med bruk av postnr")
-    @GetMapping("/postnr/{postnr}")
-    fun getPoststed(@PathVariable(value = "postnr", required = true) postnr: String = ""): String? {
-        return postnummerService.finnPoststed(postnr)
-    }
-
-    @ApiOperation("Trygdehistorikk")
-    @GetMapping("/trygdehistorikk")
-    fun getTrygdehistorikk(): Trygdehistorikk? {
-        return createTrygdehistorikkMock()
-    }
+//    @GetMapping("/aksjoner/{rina}/{sed}/{navn}")
+//    fun getAksjoner(@PathVariable("rina", required = true) rinanr: String = "",
+//            @PathVariable("sed", required = true) sed: String = "",
+//        @PathVariable("navn", required = true) navn: String = "Update"): Boolean {
+//        if (navn == "Update") {
+//            return rinaActions.canUpdate(sed, rinanr)
+//        }
+//        return rinaActions.canCreate(sed, rinanr)
+//    }
 
 }
 

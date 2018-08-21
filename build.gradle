@@ -1,8 +1,8 @@
 buildscript {
     ext {
-        kotlinVersion = '1.2.50'
-        springBootVersion = '2.0.2.RELEASE'
-        springSecOauthVersion = '2.0.1.RELEASE'
+        kotlinVersion = '1.2.40'
+        springBootVersion = '2.0.0.RELEASE'
+        springSecurityVersion = '5.0.5.RELEASE'
         prometheusVersion = '0.2.0'
         springfoxVersion = '2.8.0'
         jacksonModuleKotlinVersion = '2.9.4'
@@ -57,12 +57,11 @@ dependencies {
     compile("io.prometheus:simpleclient_httpserver:${prometheusVersion}")
     compile("io.prometheus:simpleclient_pushgateway:${prometheusVersion}")
 
-    // Spring
-    compile("org.springframework.boot:spring-boot-starter-web")
-    compile("org.springframework.boot:spring-boot-starter-security")
-    compile("org.springframework.boot:spring-boot-devtools")
-    testCompile("org.springframework.boot:spring-boot-starter-test")
-    testCompile("org.springframework.security:spring-security-test")
+    // Spring-boot
+    compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
+    compile("org.springframework.boot:spring-boot-starter-security:${springBootVersion}")
+    compile("org.springframework.boot:spring-boot-devtools:${springBootVersion}")
+    testCompile("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
 
     // OIDC-support
     compile("no.nav.freg:freg-security-oidc:2.1.1")
@@ -90,7 +89,6 @@ dependencies {
     // Tjenestespesifikasjoner
     compile("no.nav.tjenester.fim:nav-fim-aktoer-v2-tjenestespesifikasjon:${aktoerIdVersion}:jaxws")
     compile("no.nav.tjenester:nav-person-v3-tjenestespesifikasjon:${personV3Version}")
-
 }
 
 repositories {

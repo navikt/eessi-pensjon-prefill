@@ -51,7 +51,7 @@ class EuxServiceTest {
         whenever(mockrestTemplate.getForEntity<String>(anyString(), any())).thenReturn(response)
 
         val rinaSaksnr = "12132123"
-        service.getMuligeAksjoner(rinaSaksnr)
+        service.getPossibleActions(rinaSaksnr)
     }
 
     //@Ignore("Not yet implemented")
@@ -68,11 +68,16 @@ class EuxServiceTest {
         val response: ResponseEntity<String> = ResponseEntity(data, HttpStatus.OK)
         whenever(mockrestTemplate.exchange(anyString(),eq(HttpMethod.GET), any(), eq(typeRef<String>()))).thenReturn(response)
 
-        val resultat = service.getMuligeAksjoner(bucType)
+        val resultat = service.getPossibleActions(bucType)
 
         assertNotNull(resultat)
-        assertTrue(resultat.contains("P2000"))
-        assertTrue("Skal komme hit", true)
+
+        val aksjon = resultat[0]
+
+        assertNotNull(aksjon)
+        assertEquals("P2000", aksjon.dokumentType)
+        assertEquals("Create", aksjon.navn)
+
     }
 
     @Test

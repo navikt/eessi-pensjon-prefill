@@ -3,7 +3,6 @@ package no.nav.eessi.eessifagmodul.models
 import com.fasterxml.jackson.annotation.JsonProperty
 
 
-
 /**
  *  Pensjon objekt er her!
  *
@@ -18,7 +17,78 @@ data class Pensjon(
         var gjenlevende: Bruker? = null,
         //var gjenlevende: Gjenlevende? = null,
         @JsonProperty("tilleggsinformasjon")
-        var tilleggsinformasjon: Tilleggsinformasjon? = null
+        var tilleggsinformasjon: Tilleggsinformasjon? = null,
+        //p2000
+        val ytterligeinformasjon: String? = null,
+        val ytelse: List<InstitusjonYtelseItem>? = null,
+        val ytelser: List<YtelserItem>? = null,
+        val forespurtstartdato: String? = null,
+        //P5000
+        var medlemskapAnnen: List<MedlemskapItem>? = null,
+        var medlemskapTotal: List<MedlemskapItem>? = null,
+        var medlemskap: List<MedlemskapItem>? = null,
+        var trygdetid: List<MedlemskapItem>? = null
+)
+
+//P5000
+data class MedlemskapItem(
+        val relevans: String? = null,
+        val ordning: String? = null,
+        val land: String? = null,
+        val sum: TotalSum? = null,
+        val yrke: String? = null,
+        val gyldigperiode: String? = null,
+        val type: String? = null,
+        val beregning: String? = null,
+        val periode: Periode? = null
+)
+//P5000
+data class Dager(
+        val nr: String? = null,
+        val type: String? = null
+)
+
+//P5000
+data class TotalSum(
+        val kvartal: String? = null,
+        val aar: String? = null,
+        val uker: String? = null,
+        val dager: Dager? = null,
+        val maaneder: String? = null
+)
+
+data class InstitusjonYtelseItem(
+        val institusjon: Institusjon? = null
+)
+
+data class Institusjon(
+        val land: String? = null,
+        val sektor: String? = null,
+        val saksnummer: String? = null
+)
+
+//P2000
+data class YtelserItem(
+        val annenytelse: String? = null,
+        val totalbruttobeloeparbeidsbasert: String? = null,
+        val institusjon: Institusjon? = null,
+        val startdatoutbetaling: String? = null,
+        val mottasbasertpaa: String? = null,
+        val ytelse: String? = null,
+        val totalbruttobeloepbostedsbasert: String? = null,
+        val startdatoretttilytelse: String? = null,
+        val beloep: List<BeloepItem>? = null,
+        val sluttdatoretttilytelse: String? = null,
+        val sluttdatoutbetaling: String? = null,
+        val status: String? = null
+)
+
+data class BeloepItem(
+       val annenbetalingshyppighetytelse: String? = null,
+        val betalingshyppighetytelse: String? = null,
+        val valuta: String? = null,
+        val beloep: String? = null,
+        val gjeldendesiden: String? = null
 )
 
 data class Sak(
@@ -26,12 +96,15 @@ data class Sak(
         @JsonProperty("reduksjon")
         val reduksjon: List<ReduksjonItem>? = null,
         @JsonProperty("kravtype")
-        val kravtype: List<KravtypeItem>? = null
+        val kravtype: List<KravtypeItem>? = null,
+        val enkeltkrav: KravtypeItem? = null
+
 )
 
 data class KravtypeItem(
         @JsonProperty("datoFrist")
-        val datoFrist: String? = null
+        val datoFrist: String? = null,
+        val krav: String? = null
 )
 
 data class VedtakItem(
@@ -153,12 +226,13 @@ data class BeloepBrutto(
 
 data class Periode(
         val fom: String? = null,
-        val tom: String? = null
+        val tom: String? = null,
+        val extra: String? = null
 )
 
 /***
  *
- * end of data class. Pensjon/P6000
+ * end of data class. Pensjon/P6000,P2000,P4000,P5000
  *
  */
 

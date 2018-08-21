@@ -37,6 +37,11 @@ class LandkoderTest {
         assertEquals("NOR", sted)
     }
 
-
+    @Test
+    fun `hente liste over land`() {
+        val list = service.hentLandkoer2()
+        assertNotNull(list)
+        assertEquals(31, list.size)
+    }
 
 }

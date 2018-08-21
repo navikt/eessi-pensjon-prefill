@@ -1,24 +1,25 @@
 package no.nav.eessi.eessifagmodul.services
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import no.nav.eessi.eessifagmodul.models.IkkeGyldigKallException
 import no.nav.eessi.eessifagmodul.models.RINASaker
+import no.nav.eessi.eessifagmodul.models.RINAaksjoner
+import no.nav.eessi.eessifagmodul.models.RinaCasenrIkkeMottattException
 import no.nav.eessi.eessifagmodul.utils.createErrorMessage
+import no.nav.eessi.eessifagmodul.utils.mapJsonToAny
 import no.nav.eessi.eessifagmodul.utils.typeRef
 import no.nav.eessi.eessifagmodul.utils.typeRefs
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Description
 import org.springframework.core.io.ByteArrayResource
-import org.springframework.http.HttpEntity
-import org.springframework.http.HttpHeaders
-import org.springframework.http.HttpMethod
-import org.springframework.http.MediaType
+import org.springframework.http.*
 import org.springframework.stereotype.Service
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.util.MultiValueMap
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.util.UriComponentsBuilder
 import java.io.IOException
+
 
 @Service
 @Description("Service class for EuxBasis - EuxCpiServiceController.java")
@@ -28,37 +29,11 @@ class EuxService(private val oidcRestTemplate: RestTemplate) {
 
     private val EUX_PATH: String = "/cpi"
 
-    private val objectMapper = jacksonObjectMapper()
-
     //test mock only
     var overrideheaders: Boolean? = null
 
-    //henter ut status på rina.
-    fun getRinaSaker(bucType: String = "",rinaNummer: String? = ""): List<RINASaker> {
-        val urlPath = "/RINASaker"
-
-        val builder = UriComponentsBuilder.fromPath("$EUX_PATH$urlPath")
-                .queryParam("BuCType", bucType)
-                .queryParam("RINASaksnummer", rinaNummer)
-
-        val headers = logonBasis()
-
-        val httpEntity = HttpEntity("", headers)
-        val response = oidcRestTemplate.exchange(builder.toUriString(), HttpMethod.GET, httpEntity, String::class.java)
-        val responseBody = response.body!!
-        try {
-            if (response.statusCode.isError) {
-                throw createErrorMessage(responseBody)
-            } else {
-                return objectMapper.readValue(responseBody, typeRefs<List<RINASaker>>())
-            }
-        } catch (ex: IOException) {
-            throw RuntimeException(ex.message)
-        }
-    }
-
     //Henter en liste over tilgjengelige aksjoner for den aktuelle RINA saken PK-51365"
-    fun getMuligeAksjoner(euSaksnr: String): String {
+    fun getPossibleActions(euSaksnr: String): List<RINAaksjoner> {
         val urlPath = "/MuligeAksjoner"
 
         val builder = UriComponentsBuilder.fromPath("$EUX_PATH$urlPath")
@@ -73,12 +48,84 @@ class EuxService(private val oidcRestTemplate: RestTemplate) {
             if (response.statusCode.isError) {
                 throw createErrorMessage(responseBody)
             } else {
-                return responseBody // objectMapper.readValue(responseBody, typeRefs<String>())
+                val list = mapJsonToAny(responseBody, typeRefs<List<RINAaksjoner>>()  )
+                return list
             }
         } catch (ex: IOException) {
             throw RuntimeException(ex.message)
         }
     }
+
+    /*
+        hjelpe funksjon for sendSED må hente ut dokumentID for valgt sed f.eks P2000
+     */
+    fun hentDocuemntID(euxCaseId: String, sed: String): String {
+        val aksjon = "Send"
+        val aksjoner = getPossibleActions(euxCaseId)
+        aksjoner.forEach {
+            if (sed == it.dokumentType && aksjon == it.navn) {
+                return it.dokumentId ?: ""
+            }
+        }
+        return ""
+    }
+
+    /**
+     * call to send sed on rina document.
+     *
+     * @parem euxCaseID (rinaid)
+     * @param korrelasjonID CorrelationId
+     * @param sed (sed type P6000, P2000)
+     */
+    fun sendSED(euxCaseId: String, sed: String, korrelasjonID: String): Boolean {
+        val urlPath = "/SendSED"
+
+        val documentID = hentDocuemntID(euxCaseId, sed)
+        if (documentID.isBlank()) { throw IkkeGyldigKallException("Kan ikke Sende valgt sed") }
+
+        val builder = UriComponentsBuilder.fromPath("$EUX_PATH$urlPath")
+                .queryParam("RINASaksnummer", euxCaseId)
+                .queryParam("DokumentID", documentID)
+                .queryParam("KorrelasjonsID", korrelasjonID)
+
+        val headers = logonBasis()
+        val httpEntity = HttpEntity("", headers)
+        headers.contentType = MediaType.APPLICATION_JSON
+
+        val response = oidcRestTemplate.exchange(builder.toUriString(), HttpMethod.POST, httpEntity, String::class.java)
+        logger.debug("Response SendSED på Rina: $euxCaseId, response:  $response")
+
+        if (response.statusCodeValue == 200) {
+            return true
+        }
+        return false
+    }
+
+
+    /**
+     * call to make new sed on existing rina document.
+     *
+     * @parem euxCaseID (rina id)
+     * @param korrelasjonID CorrelationId
+     * @param jsonPayload (actual sed as json)
+     */
+    //void no confirmaton?
+    fun createSEDonExistingRinaCase(jsonPayload: String, euxCaseId: String, korrelasjonID: String): HttpStatus {
+        val urlPath = "/SED"
+
+        val builder = UriComponentsBuilder.fromPath("$EUX_PATH$urlPath")
+            .queryParam("RINASaksnummer", euxCaseId)
+            .queryParam("KorrelasjonsID", korrelasjonID)
+
+        val headers = logonBasis()
+        headers.contentType = MediaType.APPLICATION_JSON
+
+        val httpEntity = HttpEntity(jsonPayload, headers)
+        val response = oidcRestTemplate.exchange(builder.toUriString(), HttpMethod.POST, httpEntity, String::class.java)
+        logger.debug("Response opprett SED på Rina: $euxCaseId, response:  $response")
+        return response.statusCode
+    }
+
 
     /**
      * Call the orchestrator endpoint with necessary information to create a case in RINA, set
@@ -97,7 +144,7 @@ class EuxService(private val oidcRestTemplate: RestTemplate) {
      * @param korrelasjonID CorrelationId
      * @return The ID of the created case
      */
-    fun createCaseAndDocument(jsonPayload: String, bucType: String, fagSaknr: String, mottaker: String, vedleggType: String = "", korrelasjonID: String): String? {
+    fun createCaseAndDocument(jsonPayload: String, bucType: String, fagSaknr: String, mottaker: String, vedleggType: String = "", korrelasjonID: String): String {
         val urlPath = "/OpprettBuCogSED"
 
         val builder = UriComponentsBuilder.fromPath("$EUX_PATH$urlPath")
@@ -121,10 +168,11 @@ class EuxService(private val oidcRestTemplate: RestTemplate) {
 
         val httpEntity = HttpEntity(map, headers)
         val response = oidcRestTemplate.exchange(builder.toUriString(), HttpMethod.POST, httpEntity, String::class.java)
-        return response.body
+        return response.body ?: throw RinaCasenrIkkeMottattException("Ikke mottatt RINA casenr, feiler ved opprettelse av BUC og SED")
     }
 
     //temp fuction to log system onto eux basis
+    //will be replaced with SSO. token.
     fun logonBasis(): HttpHeaders {
         logger.debug("overrideheaders : $overrideheaders")
         if (overrideheaders !== null && overrideheaders!! == true) {
@@ -134,8 +182,6 @@ class EuxService(private val oidcRestTemplate: RestTemplate) {
         val builder = UriComponentsBuilder.fromPath("$EUX_PATH$urlPath")
                 .queryParam("username", "T102")
                 .queryParam("password", "rina@nav")
-//                .queryParam("username", "srvPensjon")
-//                .queryParam("password", "Ash5SoxP")
 
         val httpEntity = HttpEntity("", HttpHeaders())
         val response = oidcRestTemplate.exchange(builder.toUriString(), HttpMethod.POST, httpEntity, String::class.java)
