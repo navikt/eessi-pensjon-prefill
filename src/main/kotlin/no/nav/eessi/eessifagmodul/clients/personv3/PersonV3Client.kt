@@ -31,8 +31,6 @@ class PersonV3Client(val service: PersonV3) {
             withInformasjonsbehov(listOf(
                     Informasjonsbehov.ADRESSE,
                     Informasjonsbehov.FAMILIERELASJONER
-//                    Informasjonsbehov.KOMMUNIKASJON,
-//                    Informasjonsbehov.BANKKONTO
             ))
         }
         return service.hentPerson(request)

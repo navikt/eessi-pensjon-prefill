@@ -8,7 +8,7 @@ import no.nav.eessi.eessifagmodul.models.*
 import no.nav.eessi.eessifagmodul.prefill.PrefillDataModel
 import no.nav.eessi.eessifagmodul.prefill.PrefillPerson
 import no.nav.eessi.eessifagmodul.prefill.PrefillSED
-import no.nav.eessi.eessifagmodul.services.EuxMuligeAksjoner
+import no.nav.eessi.eessifagmodul.services.RinaActions
 import no.nav.eessi.eessifagmodul.services.EuxService
 import no.nav.eessi.eessifagmodul.services.LandkodeService
 import org.junit.Assert
@@ -35,7 +35,7 @@ class ApiControllerTest {
     private lateinit var mockAktoerIdClient: AktoerIdClient
 
     @Mock
-    private lateinit var euxMuligeAksjoner: EuxMuligeAksjoner
+    private lateinit var mockRinaActions: RinaActions
 
     private lateinit var prefillDataMock: PrefillDataModel
 
@@ -44,10 +44,10 @@ class ApiControllerTest {
     @Before
     fun setUp() {
         prefillDataMock = PrefillDataModel(mockAktoerIdClient)
-        euxMuligeAksjoner = EuxMuligeAksjoner(mockEuxService)
+        mockRinaActions = RinaActions(mockEuxService)
         apiController = ApiController(mockEuxService, PrefillSED(mockPersonPreutfyll), prefillDataMock)
         apiController.landkodeService = LandkodeService()
-        apiController.muligeAksjoner = euxMuligeAksjoner
+        apiController.rinaActions = mockRinaActions
     }
 
     @Test
@@ -116,7 +116,7 @@ class ApiControllerTest {
         whenever(mockPersonPreutfyll.prefill(any() )).thenReturn(utfyllMock.getSED())
         whenever(mockEuxService.createCaseAndDocument(anyString(), anyString(), anyString(), anyString(), anyString(), anyString() )).thenReturn(mockResponse)
 
-        whenever(mockEuxService.getMuligeAksjoner(ArgumentMatchers.anyString())).thenReturn(mockAksjonlist)
+        whenever(mockEuxService.getPossibleActions(ArgumentMatchers.anyString())).thenReturn(mockAksjonlist)
 
         val response = apiController.createDocument(requestMock)
         Assert.assertEquals("{\"euxcaseid\":\"$mockResponse\"}" , response)
@@ -159,7 +159,7 @@ class ApiControllerTest {
         )
         whenever(mockPersonPreutfyll.prefill(any())).thenReturn(utfyllMock.getSED())
         whenever(mockEuxService.createCaseAndDocument(anyString(), anyString(), anyString(), anyString(), anyString(), anyString() )).thenReturn(mockResponse)
-        whenever(mockEuxService.getMuligeAksjoner(anyString())).thenReturn(mockAksjonlist)
+        whenever(mockEuxService.getPossibleActions(anyString())).thenReturn(mockAksjonlist)
 
         apiController.createDocument(requestMock)
     }

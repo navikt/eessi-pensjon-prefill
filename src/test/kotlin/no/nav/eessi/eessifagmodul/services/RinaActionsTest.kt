@@ -13,20 +13,20 @@ import org.slf4j.LoggerFactory
 import kotlin.test.assertEquals
 
 @RunWith(MockitoJUnitRunner::class)
-class EuxMuligeAksjonerTest {
+class RinaActionsTest {
 
-    private val logger: Logger by lazy { LoggerFactory.getLogger(EuxMuligeAksjonerTest::class.java) }
+    private val logger: Logger by lazy { LoggerFactory.getLogger(RinaActionsTest::class.java) }
 
 
     @Mock
     private lateinit var mockEuxService: EuxService
 
-    private lateinit var muligeAksjoner: EuxMuligeAksjoner
+    private lateinit var rinaActions: RinaActions
 
     @Before
     fun setup() {
         logger.debug("Starting tests.... ...")
-        muligeAksjoner = EuxMuligeAksjoner(mockEuxService)
+        rinaActions = RinaActions(mockEuxService)
     }
 
     private fun mockNotValidData(): List<RINAaksjoner> {
@@ -100,23 +100,23 @@ class EuxMuligeAksjonerTest {
         val response = mockNotValidData()
         val finalResponse = mockValidData("Update")
 
-        whenever(mockEuxService.getMuligeAksjoner (ArgumentMatchers.anyString()))
+        whenever(mockEuxService.getPossibleActions (ArgumentMatchers.anyString()))
                 .thenReturn(response)
                 .thenReturn(response)
                 .thenReturn(response)
                 .thenReturn(finalResponse)
 
-        val result = muligeAksjoner.confirmUpdate("P2000", "92223424234")
+        val result = rinaActions.confirmUpdate("P2000", "92223424234")
         assertEquals(true, result)
     }
 
     @Test
     fun `check confirmUpdate muligeaksjoner ikke funnet`() {
         val response = mockNotValidData()
-        whenever(mockEuxService.getMuligeAksjoner (ArgumentMatchers.anyString()))
+        whenever(mockEuxService.getPossibleActions (ArgumentMatchers.anyString()))
                 .thenReturn(response)
 
-        val result = muligeAksjoner.confirmUpdate("P2000", "92223424234")
+        val result = rinaActions.confirmUpdate("P2000", "92223424234")
         assertEquals(false, result)
     }
 
@@ -124,10 +124,10 @@ class EuxMuligeAksjonerTest {
     fun `check confirmUpdate muligeaksjoner valid med en gang`() {
         val finalResponse = mockValidData("Update")
 
-        whenever(mockEuxService.getMuligeAksjoner (ArgumentMatchers.anyString()))
+        whenever(mockEuxService.getPossibleActions (ArgumentMatchers.anyString()))
                 .thenReturn(finalResponse)
 
-        val result = muligeAksjoner.confirmUpdate("P2000", "92223424234")
+        val result = rinaActions.confirmUpdate("P2000", "92223424234")
         assertEquals(true, result)
     }
 
@@ -135,9 +135,9 @@ class EuxMuligeAksjonerTest {
     fun `check confirmCreate muligeaksjoner kan ikke create`() {
         val response = mockNotValidData()
 
-        whenever(mockEuxService.getMuligeAksjoner (ArgumentMatchers.anyString()))
+        whenever(mockEuxService.getPossibleActions (ArgumentMatchers.anyString()))
                 .thenReturn(response)
-        val result = muligeAksjoner.confirmCreate("P2000", "92223424234")
+        val result = rinaActions.confirmCreate("P2000", "92223424234")
         assertEquals(false, result)
     }
 
@@ -145,9 +145,9 @@ class EuxMuligeAksjonerTest {
     fun `check confirmCreate muligeaksjoner kan create`() {
         val response = mockValidData("Create")
 
-        whenever(mockEuxService.getMuligeAksjoner (ArgumentMatchers.anyString()))
+        whenever(mockEuxService.getPossibleActions (ArgumentMatchers.anyString()))
                 .thenReturn(response)
-        val result = muligeAksjoner.confirmCreate("P2000", "92223424234")
+        val result = rinaActions.confirmCreate("P2000", "92223424234")
         assertEquals(true, result)
     }
 

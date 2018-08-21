@@ -16,7 +16,7 @@ class PostnummerService {
     init {
         postalCodeTable = HashMap()
         val resource = this.javaClass.getResourceAsStream(FILENAME)
-        val br = BufferedReader(InputStreamReader(resource))
+        val br = BufferedReader(InputStreamReader(resource, "UTF-8"))
         var line: String? = ""
         val csvSplitBy = "\t"
 

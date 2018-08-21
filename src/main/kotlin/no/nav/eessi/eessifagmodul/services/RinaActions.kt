@@ -3,13 +3,12 @@ package no.nav.eessi.eessifagmodul.services
 import no.nav.eessi.eessifagmodul.models.RINAaksjoner
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 
 @Component
-class EuxMuligeAksjoner(private val euxService: EuxService) {
+class RinaActions(private val euxService: EuxService) {
 
-    private val logger: Logger by lazy { LoggerFactory.getLogger(EuxMuligeAksjoner::class.java) }
+    private val logger: Logger by lazy { LoggerFactory.getLogger(RinaActions::class.java) }
 
     private val timeTries = 5               // times to try
     private val waittime : Long = 3000      // waittime (basis venter 6000 på flere tjenester?)
@@ -18,13 +17,13 @@ class EuxMuligeAksjoner(private val euxService: EuxService) {
     private val update = "Update"
 
     fun confirmUpdate(sed: String, rinanr: String) : Boolean {
-        return findAkjson(sed, rinanr, update, 1)
+        return isActionPossible(sed, rinanr, update, 1)
     }
     fun confirmCreate(sed: String, rinanr: String) : Boolean {
-        return findAkjson(sed, rinanr, create,  5)
+        return isActionPossible(sed, rinanr, create,  5)
     }
 
-    private fun findAkjson(sed: String, rinanr: String, navn: String, deep: Int = 1) : Boolean {
+    private fun isActionPossible(sed: String, rinanr: String, navn: String, deep: Int = 1) : Boolean {
         logger.debug("henter RINAaksjoner på sed: $sed, mot rinanr: $rinanr, letter etter: $navn og deep er: $deep")
 
         var validCheck = false
@@ -50,11 +49,11 @@ class EuxMuligeAksjoner(private val euxService: EuxService) {
         }
         logger.debug("prøver igjen etter $waittime ms på å hente opp aksjoner...")
         Thread.sleep(waittime)
-        return findAkjson(sed, rinanr, navn, deep+1)
+        return isActionPossible(sed, rinanr, navn, deep+1)
     }
 
     private fun getMuligeAksjoner(rinanr: String): List<RINAaksjoner> {
-        return euxService.getMuligeAksjoner(rinanr)
+        return euxService.getPossibleActions(rinanr)
     }
 
 

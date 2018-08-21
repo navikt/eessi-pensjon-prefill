@@ -10,6 +10,7 @@ buildscript {
         aktoerIdVersion = '2.0.1'
         mockitoVersion = '2.8.+'
         fregSecurityVersion = '2.1.0'
+        personV3Version = '3.4.1'
     }
     repositories {
         maven {
@@ -29,7 +30,7 @@ apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 
 group = 'no.nav.eessi'
-version = '0.0.1-SNAPSHOT'
+version = '0.0.1'
 sourceCompatibility = 1.8
 
 compileKotlin {
@@ -62,6 +63,9 @@ dependencies {
     compile("org.springframework.boot:spring-boot-devtools:${springBootVersion}")
     testCompile("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
 
+    // OIDC-support
+    compile("no.nav.freg:freg-security-oidc:2.1.1")
+
     // Apache CXF
     compile("org.apache.cxf:cxf-spring-boot-starter-jaxws:3.2.1")
     compile("org.apache.cxf:cxf-rt-ws-security:${cxfVersion}")
@@ -76,14 +80,14 @@ dependencies {
     compile("io.springfox:springfox-swagger-ui:${springfoxVersion}")
 
     //mock
-    testCompile( "org.mockito:mockito-core:${mockitoVersion}" )
-    testCompile( "org.jetbrains.kotlin:kotlin-test" )
-    testCompile( "org.jetbrains.kotlin:kotlin-test-junit" )
-    testCompile( "com.nhaarman:mockito-kotlin-kt1.1:1.5.0")
+    testCompile("org.mockito:mockito-core:${mockitoVersion}")
+    testCompile("org.jetbrains.kotlin:kotlin-test")
+    testCompile("org.jetbrains.kotlin:kotlin-test-junit")
+    testCompile("com.nhaarman:mockito-kotlin-kt1.1:1.5.0")
 
     // Tjenestespesifikasjoner
     compile("no.nav.tjenester.fim:nav-fim-aktoer-v2-tjenestespesifikasjon:${aktoerIdVersion}:jaxws")
-
+    compile("no.nav.tjenester:nav-person-v3-tjenestespesifikasjon:${personV3Version}")
 }
 
 repositories {

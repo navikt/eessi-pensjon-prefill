@@ -2,21 +2,22 @@ package no.nav.eessi.eessifagmodul.prefill
 
 import no.nav.eessi.eessifagmodul.models.Krav
 import no.nav.eessi.eessifagmodul.models.SED
+import org.springframework.stereotype.Component
 import org.springframework.stereotype.Service
 
-@Service
+@Component
 class PrefillSED(private val prefillPerson: PrefillPerson): Prefill<PrefillDataModel> {
 
     override fun prefill(prefillData: PrefillDataModel): PrefillDataModel {
 
         return when (prefillData.getSEDid())  {
             "P2000" -> {
-                val sed = prefillPerson.prefill (prefillData)
+                prefillPerson.prefill (prefillData)
                 //sed.pensjon = null
                 prefillData
             }
             "P6000" -> {
-                val sed = prefillPerson.prefill(prefillData)
+                prefillPerson.prefill(prefillData)
                 //sed
                 prefillData
             }
@@ -28,7 +29,7 @@ class PrefillSED(private val prefillPerson: PrefillPerson): Prefill<PrefillDataM
                 prefillData
             }
             "P5000" -> {
-                val sed = prefillPerson.prefill(prefillData)
+                prefillPerson.prefill(prefillData)
                 //sed
                 prefillData
             }

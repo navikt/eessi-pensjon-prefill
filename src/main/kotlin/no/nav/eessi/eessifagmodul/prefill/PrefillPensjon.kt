@@ -4,9 +4,10 @@ import no.nav.eessi.eessifagmodul.models.Bruker
 import no.nav.eessi.eessifagmodul.models.Pensjon
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.stereotype.Component
 import org.springframework.stereotype.Service
 
-@Service
+@Component
 class PrefillPensjon(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillPensjon::class.java) }

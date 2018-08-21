@@ -160,9 +160,6 @@ class SedP4000Test {
 
 }
 
-/**
- * flyttes snart til test.
- */
 fun createPersonTrygdeTidMock(): PersonTrygdeTid {
 
     val personTrygdeTid = PersonTrygdeTid(

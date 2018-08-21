@@ -1,6 +1,5 @@
 package no.nav.eessi.eessifagmodul.services
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import no.nav.eessi.eessifagmodul.models.IkkeGyldigKallException
 import no.nav.eessi.eessifagmodul.models.RINASaker
 import no.nav.eessi.eessifagmodul.models.RINAaksjoner
@@ -33,35 +32,8 @@ class EuxService(private val oidcRestTemplate: RestTemplate) {
     //test mock only
     var overrideheaders: Boolean? = null
 
-    //henter ut status på rina. -- flyttet til frontend..
-    @Deprecated("Flyttet til frontend")
-    fun getRinaSaker(bucType: String = "",rinaNummer: String? = "", pinID: String? = ""): List<RINASaker> {
-        val urlPath = "/RINASaker"
-
-        val builder = UriComponentsBuilder.fromPath("$EUX_PATH$urlPath")
-                .queryParam("BuCType", bucType)
-                .queryParam("Fødselsnummer", pinID)
-                .queryParam("RINASaksnummer", rinaNummer)
-
-        val headers = logonBasis()
-
-        val httpEntity = HttpEntity("", headers)
-        val response = oidcRestTemplate.exchange(builder.toUriString(), HttpMethod.GET, httpEntity, String::class.java)
-        val responseBody = response.body!!
-        try {
-            if (response.statusCode.isError) {
-                throw createErrorMessage(responseBody)
-            } else {
-                val listRina = mapJsonToAny(responseBody, typeRefs<List<RINASaker>>())
-                return listRina
-            }
-        } catch (ex: IOException) {
-            throw RuntimeException(ex.message)
-        }
-    }
-
     //Henter en liste over tilgjengelige aksjoner for den aktuelle RINA saken PK-51365"
-    fun getMuligeAksjoner(euSaksnr: String): List<RINAaksjoner> {
+    fun getPossibleActions(euSaksnr: String): List<RINAaksjoner> {
         val urlPath = "/MuligeAksjoner"
 
         val builder = UriComponentsBuilder.fromPath("$EUX_PATH$urlPath")
@@ -89,7 +61,7 @@ class EuxService(private val oidcRestTemplate: RestTemplate) {
      */
     fun hentDocuemntID(euxCaseId: String, sed: String): String {
         val aksjon = "Send"
-        val aksjoner = getMuligeAksjoner(euxCaseId)
+        val aksjoner = getPossibleActions(euxCaseId)
         aksjoner.forEach {
             if (sed == it.dokumentType && aksjon == it.navn) {
                 return it.dokumentId ?: ""
@@ -138,7 +110,7 @@ class EuxService(private val oidcRestTemplate: RestTemplate) {
      * @param jsonPayload (actual sed as json)
      */
     //void no confirmaton?
-    fun createSEDonExistingDocument(jsonPayload: String, euxCaseId: String, korrelasjonID: String): HttpStatus {
+    fun createSEDonExistingRinaCase(jsonPayload: String, euxCaseId: String, korrelasjonID: String): HttpStatus {
         val urlPath = "/SED"
 
         val builder = UriComponentsBuilder.fromPath("$EUX_PATH$urlPath")

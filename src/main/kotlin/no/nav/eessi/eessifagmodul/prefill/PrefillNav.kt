@@ -3,9 +3,10 @@ package no.nav.eessi.eessifagmodul.prefill
 import no.nav.eessi.eessifagmodul.models.*
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.stereotype.Component
 import org.springframework.stereotype.Service
 
-@Service
+@Component
 class PrefillNav(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillNav::class.java) }

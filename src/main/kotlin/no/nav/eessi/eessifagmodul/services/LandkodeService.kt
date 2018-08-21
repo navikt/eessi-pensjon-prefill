@@ -17,7 +17,7 @@ class LandkodeService {
     init {
         landKodeTable = HashMap()
         val `in` = this.javaClass.getResourceAsStream(FILENAME)
-        val br = BufferedReader(InputStreamReader(`in`))
+        val br = BufferedReader(InputStreamReader(`in`, "UTF-8"))
         var line: String? = ""
         val csvSplitBy = ";"
 

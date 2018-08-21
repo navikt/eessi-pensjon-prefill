@@ -5,15 +5,13 @@ import io.swagger.annotations.ApiOperation
 import no.nav.eessi.eessifagmodul.models.*
 import no.nav.eessi.eessifagmodul.prefill.PrefillSED
 import no.nav.eessi.eessifagmodul.prefill.PrefillDataModel
-import no.nav.eessi.eessifagmodul.services.EuxMuligeAksjoner
+import no.nav.eessi.eessifagmodul.services.RinaActions
 import no.nav.eessi.eessifagmodul.services.EuxService
 import no.nav.eessi.eessifagmodul.services.LandkodeService
 import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.http.HttpStatus
-import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.*
 import java.util.*
 
@@ -28,7 +26,7 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
     lateinit var landkodeService: LandkodeService
 
     @Autowired
-    lateinit var muligeAksjoner: EuxMuligeAksjoner
+    lateinit var rinaActions: RinaActions
 
     @ApiOperation("Henter liste over landkoder av ISO Alpha2 standard")
     @PostMapping("/landkoder")
@@ -76,11 +74,11 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
         val sed = data.getSED()
         val sedAsJson = mapAnyToJson(sed, true)
 
-        if (muligeAksjoner.confirmCreate(data.getSEDid(), rinanr)) {
-            euxService.createSEDonExistingDocument(sedAsJson, rinanr, korrid.toString())
+        if (rinaActions.confirmCreate(data.getSEDid(), rinanr)) {
+            euxService.createSEDonExistingRinaCase(sedAsJson, rinanr, korrid.toString())
             //ingen ting tilbake.. sjekke om alt er ok?
-            //val aksjon = euxService.getMuligeAksjoner(rinanr)
-            if (muligeAksjoner.confirmUpdate(data.getSEDid() , rinanr)) {
+            //val aksjon = euxService.getPossibleActions(rinanr)
+            if (rinaActions.confirmUpdate(data.getSEDid() , rinanr)) {
                 return rinanr
             }
             throw SedDokumentIkkeOpprettetException("SED dokument feilet ved opprettelse ved RINANR: $rinanr")
@@ -100,7 +98,7 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
         val fagSaknr = data.getSaksnr() // = "EESSI-PEN-123"
         val bucType = data.getBUC() // = "P_BUC_06" //P6000
 
-        val mottaker = getFirstinstitutions(data.getInstitutionsList())
+        val mottaker = getFirstinstitution(data.getInstitutionsList())
         val sedAsJson = mapAnyToJson(sed, true)
 
         logger.debug("Følgende jsonSED blir sendt : $sedAsJson")
@@ -113,7 +111,7 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
                 korrelasjonID = korrid.toString()
         )
         logger.debug("(rina) caseid:  $euSaksnr")
-        if (muligeAksjoner.confirmUpdate(data.getSEDid(), euSaksnr)) {
+        if (rinaActions.confirmUpdate(data.getSEDid(), euSaksnr)) {
             if (request.sendsed != null && request.sendsed == true) {
                 val result = euxService.sendSED(euSaksnr, data.getSEDid(), korrid.toString())
                 if (result == false) {
@@ -125,9 +123,9 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
         throw SedDokumentIkkeOpprettetException("SED dokument feilet ved opprettelse ved RINANR: $euSaksnr")
     }
 
-    private fun getFirstinstitutions(institutions: List<InstitusjonItem>): String {
+    private fun getFirstinstitution(institutions: List<InstitusjonItem>): String {
         institutions.forEach {
-            return it.institution ?: ""
+            return it.institution ?: throw IkkeGyldigKallException("institujson kan ikke være tom")
         }
         throw IkkeGyldigKallException("Mangler mottaker register (InstitusjonItem)")
     }

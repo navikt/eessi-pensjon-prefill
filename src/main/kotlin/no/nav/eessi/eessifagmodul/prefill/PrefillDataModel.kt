@@ -16,35 +16,29 @@ import org.springframework.stereotype.Repository
  *
  */
 @Component
-@Repository
 class PrefillDataModel(private val aktoerIdClient: AktoerIdClient) {
 
     private lateinit var sed: SED
     private var pin: String = ""
 
-    //sector
+    //Rina Sector
     private lateinit var subject: String
     //PEN-saksnummer
     private lateinit var  caseId: String
-    //Vedtak?
     private lateinit var vedtakId: String
-    //Krav?
     private lateinit var karavId: String
 
     private lateinit var  buc: String
-    //private var sedID : String? = null
-    //mottakere
     private lateinit var institution: List<InstitusjonItem>
-    //aktoerid
     private lateinit var aktoerID: String
 
     //aktorid-etterlatt - når gjenlevende fylles ut?
     private var etterlattAktoerID: String? = null
     private var etterlattPin: String? = null
 
-    //partlysed
     private var partSedasJson: MutableMap<String, String> = mutableMapOf()
-    //euxCaseId
+
+    //euxCaseId (RINAcaseID)
     private lateinit var euxCaseID: String
 
     @Throws(RuntimeException::class)
