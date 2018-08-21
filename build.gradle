@@ -99,7 +99,4 @@ repositories {
     maven {
         url "https://repo.adeo.no/repository/maven-releases/"
     }
-    maven {
-        url "http://maven.adeo.no/nexus/content/groups/public"
-    }
 }
