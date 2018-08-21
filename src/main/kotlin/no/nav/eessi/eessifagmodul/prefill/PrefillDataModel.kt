@@ -5,7 +5,6 @@ import no.nav.eessi.eessifagmodul.models.InstitusjonItem
 import no.nav.eessi.eessifagmodul.models.SED
 import no.nav.eessi.eessifagmodul.models.createSED
 import org.springframework.stereotype.Component
-import org.springframework.stereotype.Repository
 
 /**
  * Data class to store different required data to build any given sed, auto or semiauto.
@@ -21,10 +20,8 @@ class PrefillDataModel(private val aktoerIdClient: AktoerIdClient) {
     private lateinit var sed: SED
     private var pin: String = ""
 
-    //Rina Sector
-    private lateinit var subject: String
-    //PEN-saksnummer
-    private lateinit var  caseId: String
+    private lateinit var rinaSubject: String
+    private lateinit var penSaksnummer: String
     private lateinit var vedtakId: String
     private lateinit var karavId: String
 
@@ -38,13 +35,13 @@ class PrefillDataModel(private val aktoerIdClient: AktoerIdClient) {
 
     private var partSedasJson: MutableMap<String, String> = mutableMapOf()
 
-    //euxCaseId (RINAcaseID)
+    //euxCaseId (RINA caseID)
     private lateinit var euxCaseID: String
 
     @Throws(RuntimeException::class)
     fun build(subject: String, caseId: String, buc: String, sedID: String, aktoerID: String, institutions: List<InstitusjonItem>, payload: String, euxcaseId: String): PrefillDataModel {
-        this.subject =  subject
-        this.caseId = caseId
+        this.rinaSubject =  subject
+        this.penSaksnummer = caseId
         this.buc = buc
         this.aktoerID = aktoerID
         this.sed = createSED(sedID)
@@ -58,8 +55,8 @@ class PrefillDataModel(private val aktoerIdClient: AktoerIdClient) {
 
     @Throws(RuntimeException::class)
     fun build(subject: String, caseId: String, buc: String, sedID: String, aktoerID: String, institutions: List<InstitusjonItem>): PrefillDataModel {
-        this.subject =  subject
-        this.caseId = caseId
+        this.rinaSubject =  subject
+        this.penSaksnummer = caseId
         this.buc = buc
         this.aktoerID = aktoerID
         this.sed = createSED(sedID)
@@ -71,8 +68,8 @@ class PrefillDataModel(private val aktoerIdClient: AktoerIdClient) {
 
     @Throws(RuntimeException::class)
     fun build(subject: String, caseId: String, buc: String, sedID: String, aktoerID: String, institutions: List<InstitusjonItem>, dodaktorid: String): PrefillDataModel {
-        this.subject =  subject
-        this.caseId = caseId
+        this.rinaSubject =  subject
+        this.penSaksnummer = caseId
         this.buc = buc
         this.aktoerID = aktoerID
         this.sed = createSED(sedID)
@@ -85,7 +82,7 @@ class PrefillDataModel(private val aktoerIdClient: AktoerIdClient) {
     }
 
     fun debug():String {
-        return "Sektor: $subject, pen-saknr: $caseId, buc: $buc, sedid: ${sed.sed}, instirusjoner: $institution, aktorid: $aktoerID, norpin: $pin, dodaktorID: $etterlattAktoerID, dodpin: $etterlattPin haretterlatt: ${isValidEtterlatt()}"
+        return "Sektor: $rinaSubject, pen-saknr: $penSaksnummer, buc: $buc, sedid: ${sed.sed}, instirusjoner: $institution, aktorid: $aktoerID, norpin: $pin, dodaktorID: $etterlattAktoerID, dodpin: $etterlattPin haretterlatt: ${isValidEtterlatt()}"
     }
 
     @Throws(RuntimeException::class)
@@ -128,7 +125,7 @@ class PrefillDataModel(private val aktoerIdClient: AktoerIdClient) {
     }
 
     fun getSaksnr(): String {
-        return caseId
+        return penSaksnummer
     }
 
     fun getPartSEDasJson(key: String): String {

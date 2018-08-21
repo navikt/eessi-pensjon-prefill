@@ -82,9 +82,9 @@ class ExperimentController {
 //            @PathVariable("sed", required = true) sed: String = "",
 //        @PathVariable("navn", required = true) navn: String = "Update"): Boolean {
 //        if (navn == "Update") {
-//            return rinaActions.confirmUpdate(sed, rinanr)
+//            return rinaActions.canUpdate(sed, rinanr)
 //        }
-//        return rinaActions.confirmCreate(sed, rinanr)
+//        return rinaActions.canCreate(sed, rinanr)
 //    }
 
 }

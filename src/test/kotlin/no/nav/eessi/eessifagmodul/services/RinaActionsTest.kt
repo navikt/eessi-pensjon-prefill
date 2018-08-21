@@ -96,7 +96,7 @@ class RinaActionsTest {
 
 
     @Test
-    fun `check confirmUpdate muligeaksjoner found at end`() {
+    fun `check canUpdate actions found at end`() {
         val response = mockNotValidData()
         val finalResponse = mockValidData("Update")
 
@@ -106,48 +106,48 @@ class RinaActionsTest {
                 .thenReturn(response)
                 .thenReturn(finalResponse)
 
-        val result = rinaActions.confirmUpdate("P2000", "92223424234")
+        val result = rinaActions.canUpdate("P2000", "92223424234")
         assertEquals(true, result)
     }
 
     @Test
-    fun `check confirmUpdate muligeaksjoner ikke funnet`() {
+    fun `check canUpdate actions not found`() {
         val response = mockNotValidData()
         whenever(mockEuxService.getPossibleActions (ArgumentMatchers.anyString()))
                 .thenReturn(response)
 
-        val result = rinaActions.confirmUpdate("P2000", "92223424234")
+        val result = rinaActions.canUpdate("P2000", "92223424234")
         assertEquals(false, result)
     }
 
     @Test
-    fun `check confirmUpdate muligeaksjoner valid med en gang`() {
+    fun `check canUpdate actions valid at once`() {
         val finalResponse = mockValidData("Update")
 
         whenever(mockEuxService.getPossibleActions (ArgumentMatchers.anyString()))
                 .thenReturn(finalResponse)
 
-        val result = rinaActions.confirmUpdate("P2000", "92223424234")
+        val result = rinaActions.canUpdate("P2000", "92223424234")
         assertEquals(true, result)
     }
 
     @Test
-    fun `check confirmCreate muligeaksjoner kan ikke create`() {
+    fun `check canCreate action can not create`() {
         val response = mockNotValidData()
 
         whenever(mockEuxService.getPossibleActions (ArgumentMatchers.anyString()))
                 .thenReturn(response)
-        val result = rinaActions.confirmCreate("P2000", "92223424234")
+        val result = rinaActions.canCreate("P2000", "92223424234")
         assertEquals(false, result)
     }
 
     @Test
-    fun `check confirmCreate muligeaksjoner kan create`() {
+    fun `check canCreate actions can create selected SED`() {
         val response = mockValidData("Create")
 
         whenever(mockEuxService.getPossibleActions (ArgumentMatchers.anyString()))
                 .thenReturn(response)
-        val result = rinaActions.confirmCreate("P2000", "92223424234")
+        val result = rinaActions.canCreate("P2000", "92223424234")
         assertEquals(true, result)
     }
 

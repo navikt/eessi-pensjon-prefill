@@ -74,11 +74,11 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
         val sed = data.getSED()
         val sedAsJson = mapAnyToJson(sed, true)
 
-        if (rinaActions.confirmCreate(data.getSEDid(), rinanr)) {
+        if (rinaActions.canCreate(data.getSEDid(), rinanr)) {
             euxService.createSEDonExistingRinaCase(sedAsJson, rinanr, korrid.toString())
             //ingen ting tilbake.. sjekke om alt er ok?
             //val aksjon = euxService.getPossibleActions(rinanr)
-            if (rinaActions.confirmUpdate(data.getSEDid() , rinanr)) {
+            if (rinaActions.canUpdate(data.getSEDid() , rinanr)) {
                 return rinanr
             }
             throw SedDokumentIkkeOpprettetException("SED dokument feilet ved opprettelse ved RINANR: $rinanr")
@@ -98,7 +98,7 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
         val fagSaknr = data.getSaksnr() // = "EESSI-PEN-123"
         val bucType = data.getBUC() // = "P_BUC_06" //P6000
 
-        val mottaker = getFirstinstitution(data.getInstitutionsList())
+        val mottaker = getFirstInstitution(data.getInstitutionsList())
         val sedAsJson = mapAnyToJson(sed, true)
 
         logger.debug("Følgende jsonSED blir sendt : $sedAsJson")
@@ -111,7 +111,7 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
                 korrelasjonID = korrid.toString()
         )
         logger.debug("(rina) caseid:  $euSaksnr")
-        if (rinaActions.confirmUpdate(data.getSEDid(), euSaksnr)) {
+        if (rinaActions.canUpdate(data.getSEDid(), euSaksnr)) {
             if (request.sendsed != null && request.sendsed == true) {
                 val result = euxService.sendSED(euSaksnr, data.getSEDid(), korrid.toString())
                 if (result == false) {
@@ -123,7 +123,8 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
         throw SedDokumentIkkeOpprettetException("SED dokument feilet ved opprettelse ved RINANR: $euSaksnr")
     }
 
-    private fun getFirstinstitution(institutions: List<InstitusjonItem>): String {
+    //muligens midlertidig metode for å sende kun en mottaker til EUX.
+    private fun getFirstInstitution(institutions: List<InstitusjonItem>): String {
         institutions.forEach {
             return it.institution ?: throw IkkeGyldigKallException("institujson kan ikke være tom")
         }
