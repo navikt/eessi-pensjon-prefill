@@ -63,7 +63,7 @@ node {
                             string(name: 'APP', value: "eessi-fagmodul"),
                             string(name: 'REPO', value: "navikt/eessi-pensjon-fagmodul"),
                             string(name: 'VERSION', value: version),
-                            string(name: 'COMMIT_HASH', value: commitHash),
+                            string(name: 'DEPLOY_REF', value: version),
                             string(name: 'DEPLOY_ENV', value: 't1')
                     ]
             ])
