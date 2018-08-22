@@ -1,0 +1,53 @@
+## Følgende variabler må eksistere for å bruke denne propertyfilen:
+## - SRVPENSJON_USERNAME
+## - SRVPENSJON_PASSWORD
+## - OPENAM_SECRET
+
+freg:
+  security:
+    oidc:
+      refresh:
+        enabled: 'false'
+      auth:
+        header-filter-enabled: 'true'
+        cookie-filter-enabled: 'false'
+      login:
+        enabled: 'false'
+      openam:
+        url: 'https://isso-t.adeo.no:443/isso'
+      client-id: 'eessi-fagmodul-localhost'
+      client-secret: '${OPENAM_SECRET}'
+
+security:
+  oidc:
+    host: '${freg.security.oidc.openam.url}'
+  openam:
+    username: 'eessi-fagmodul-localhost'
+    password: '${OPENAM_SECRET}'
+    redirectUri: 'http://localhost:8081/login/oauth2/code/openam'
+
+eessibasis:
+#  url: 'https://eux-app.nais.preprod.local'
+  url: 'http://localhost:9090'
+
+aktoer.v2:
+  endpointurl: 'https://app-t8.adeo.no/aktoerid/AktoerService/v2'
+
+virksomhet.person.v3:
+  endpointurl: 'https://wasapp-t7.adeo.no/tpsws/ws/Person/v3'  # maskert-data
+#  endpointurl: 'https://wasapp-t8.adeo.no/tpsws/ws/Person/v3' # prod-data
+
+credentials:
+  srvpensjon:
+    username: '${SRVPENSJON_USERNAME}'
+    password: '${SRVPENSJON_PASSWORD'
+
+app:
+  name: 'DEVELOP'
+  version: '0.1'
+
+securitytokenservice:
+  url: 'https://sts-t8.test.local/SecurityTokenServiceProvider/'
+
+server:
+  port: '8081'

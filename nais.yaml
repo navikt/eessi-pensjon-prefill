@@ -20,7 +20,7 @@ healthcheck:
       path: /internal/isready
 resources:
     limits:
-      cpu: 1
+      cpu: 2
       memory: 2048Mi
     requests:
       cpu: 100m

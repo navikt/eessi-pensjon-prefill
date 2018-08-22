@@ -1,12 +1,12 @@
 buildscript {
     ext {
-        kotlinVersion = '1.2.40'
-        springBootVersion = '2.0.0.RELEASE'
+        kotlinVersion = '1.2.61'
+        springBootVersion = '2.0.4.RELEASE'
         springSecurityVersion = '5.0.5.RELEASE'
-        prometheusVersion = '0.2.0'
-        springfoxVersion = '2.8.0'
-        jacksonModuleKotlinVersion = '2.9.4'
-        cxfVersion = '3.2.1'
+        prometheusVersion = '0.5.0'
+        springfoxVersion = '2.9.2'
+        jacksonModuleKotlinVersion = '2.9.6'
+        cxfVersion = '3.2.6'
         aktoerIdVersion = '2.0.1'
         mockitoVersion = '2.8.+'
         fregSecurityVersion = '2.1.0'
@@ -68,7 +68,7 @@ dependencies {
     compile("org.bitbucket.b_c:jose4j:0.6.4")
 
     // Apache CXF
-    compile("org.apache.cxf:cxf-spring-boot-starter-jaxws:3.2.1")
+    compile("org.apache.cxf:cxf-spring-boot-starter-jaxws:${cxfVersion}")
     compile("org.apache.cxf:cxf-rt-ws-security:${cxfVersion}")
 
     // Kotlin
