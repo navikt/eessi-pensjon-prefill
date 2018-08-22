@@ -1,6 +1,14 @@
 package no.nav.eessi.eessifagmodul.models
 
+import com.nhaarman.mockito_kotlin.any
+import com.nhaarman.mockito_kotlin.whenever
+import no.nav.eessi.eessifagmodul.clients.aktoerid.AktoerIdClient
 import no.nav.eessi.eessifagmodul.controllers.ApiController
+import no.nav.eessi.eessifagmodul.prefill.PrefillDataModel
+import no.nav.eessi.eessifagmodul.prefill.PrefillPerson
+import no.nav.eessi.eessifagmodul.prefill.PrefillSED
+import no.nav.eessi.eessifagmodul.services.EuxService
+import no.nav.eessi.eessifagmodul.services.LandkodeService
 import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
 import no.nav.eessi.eessifagmodul.utils.mapJsonToAny
 import no.nav.eessi.eessifagmodul.utils.typeRefs
@@ -8,6 +16,8 @@ import no.nav.eessi.eessifagmodul.utils.validateJson
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.ArgumentMatchers
+import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import org.mockito.junit.MockitoJUnitRunner
 import org.slf4j.Logger
@@ -21,12 +31,26 @@ import kotlin.test.assertNotNull
 @RunWith(MockitoJUnitRunner::class)
 class SedP4000Test {
 
+    @Mock
+    lateinit var mockEuxService: EuxService
+
+    @Mock
+    lateinit var mockPersonPreutfyll: PrefillPerson
+
+    @Mock
+    private lateinit var mockAktoerIdClient: AktoerIdClient
+
+    private lateinit var prefillDataMock: PrefillDataModel
+
+    lateinit var apiController: ApiController
+
     val logger: Logger by lazy { LoggerFactory.getLogger(SedP4000Test::class.java) }
 
     @Before
     fun setup() {
+        prefillDataMock = PrefillDataModel(mockAktoerIdClient)
+        apiController = ApiController(mockEuxService, PrefillSED(mockPersonPreutfyll), prefillDataMock)
         logger.debug("Starting tests.... ...")
-        MockitoAnnotations.initMocks(this)
     }
 
     @Test
@@ -140,7 +164,9 @@ class SedP4000Test {
 
         val payload = mapAnyToJson(obj)
 
+        val items = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
         val req = ApiController.ApiRequest(
+                institutions = items,
                 sed = "P4000",
                 caseId = "12231231",
                 euxCaseId = "99191999911",
@@ -155,8 +181,50 @@ class SedP4000Test {
         println("-------------------------------------------------------------------------------------------------------")
         println(  jsonreq        )
         println("-------------------------------------------------------------------------------------------------------")
+    }
+
+    @Test
+    fun `create trygdetid P4000_2 from file`() {
+        val path = Paths.get("src/test/resources/json/requestP4000.json")
+        val jsonfile = String(Files.readAllBytes(path))
+        assertNotNull(jsonfile)
+        validateJson(jsonfile)
+
+        val items = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
+        val req = ApiController.ApiRequest(
+                institutions = items,
+                sed = "P4000",
+                caseId = "12231231",
+                euxCaseId = "99191999911",
+                pinid = "1000060964183",
+                buc = "P_BUC_01",
+                subjectArea = "Pensjon",
+                payload = "$jsonfile"
+        )
+        val reqjson = mapAnyToJson(req,true)
+        assertNotNull(reqjson)
+        validateJson(reqjson)
+
+        val data = apiController.createPrefillData(req)
+        assertNotNull(data)
+
+        whenever(mockPersonPreutfyll.prefill(any() )).thenReturn(data.getSED())
+        //whenever(mockAktoerIdClient.hentPinIdentFraAktorid(any())).thenReturn("12345")
+
+        val result = apiController.createPreutfyltSED(data)
+
+        val jsondata = mapAnyToJson(result.getSED(), true)
+
+        println("----- ReqiestAPI P4000 --------------------------------------------------------------------------------")
+        println(reqjson)
+        println("-------------------------------------------------------------------------------------------------------")
+        println("\n")
+        println("----- SED P4000 test-----------------------------------------------------------------------------------")
+        println(jsondata)
+        println("-------------------------------------------------------------------------------------------------------")
 
     }
+
 
 }
 

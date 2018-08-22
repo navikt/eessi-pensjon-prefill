@@ -27,6 +27,8 @@ class RinaActionsTest {
     fun setup() {
         logger.debug("Starting tests.... ...")
         rinaActions = RinaActions(mockEuxService)
+        rinaActions.waittime = 500
+
     }
 
     private fun mockNotValidData(): List<RINAaksjoner> {

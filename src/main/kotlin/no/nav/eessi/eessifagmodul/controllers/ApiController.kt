@@ -131,8 +131,8 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
         throw IkkeGyldigKallException("Mangler mottaker register (InstitusjonItem)")
     }
 
-    //validaring og preutfylling
-    private fun createPreutfyltSED(request: ApiRequest): PrefillDataModel {
+    //validatate request and convert to PrefillDataModel
+    fun createPrefillData(request: ApiRequest): PrefillDataModel {
         return when  {
             request.caseId == null -> throw IkkeGyldigKallException("Mangler Saksnummer")
             request.sed == null -> throw IkkeGyldigKallException("Mangler SED")
@@ -141,39 +141,45 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
             request.pinid == null -> throw IkkeGyldigKallException("Mangler AktoerID")
             request.institutions == null -> throw IkkeGyldigKallException("Mangler Institusjoner")
 
-            //Denne validering og utfylling kan benyttes på SED P2000 og P6000
+        //Denne validering og utfylling kan benyttes på SED P2000 og P6000
             validsed(request.sed , "P2000,P6000,P5000") -> {
-                prefillSED.prefill(
-                    prefillData.build(
-                                caseId = request.caseId,
-                                buc = request.buc,
-                                subject = request.subjectArea,
-                                sedID = request.sed,
-                                aktoerID = request.pinid,
-                                institutions = request.institutions,
-                                dodaktorid = request.dodpinid ?: "" // vil kanskje komme som en del av pen-utveklsing ikke fra forntend.
-                        )
+                prefillData.build(
+                        caseId = request.caseId,
+                        buc = request.buc,
+                        subject = request.subjectArea,
+                        sedID = request.sed,
+                        aktoerID = request.pinid,
+                        institutions = request.institutions,
+                        dodaktorid = request.dodpinid ?: "" // vil kanskje komme som en del av pen-utveklsing ikke fra forntend.
                 )
             }
-            //denne validering og utfylling kan kun benyttes på SED P4000
+        //denne validering og utfylling kan kun benyttes på SED P4000
             validsed(request.sed, "P4000") -> {
                 if (request.payload == null) { throw IkkeGyldigKallException("Mangler metadata, payload") }
                 if (request.euxCaseId == null) { throw IkkeGyldigKallException("Mangler euxCaseId (RINANR)") }
-                prefillSED.prefill(
-                        prefillData.build(
-                                caseId = request.caseId,
-                                buc = request.buc,
-                                subject = request.subjectArea,
-                                sedID = request.sed,
-                                aktoerID = request.pinid,
-                                institutions = request.institutions,
-                                payload = request.payload,
-                                euxcaseId = request.euxCaseId
-                        )
+                prefillData.build(
+                        caseId = request.caseId,
+                        buc = request.buc,
+                        subject = request.subjectArea,
+                        sedID = request.sed,
+                        aktoerID = request.pinid,
+                        institutions = request.institutions,
+                        payload = request.payload,
+                        euxcaseId = request.euxCaseId
                 )
             }
             else -> throw IkkeGyldigKallException("Mangler SED, eller ugyldig type SED")
         }
+
+    }
+
+    //Prefill data and create SED (PEN and TPS..)
+    fun createPreutfyltSED(data: PrefillDataModel): PrefillDataModel {
+        return prefillSED.prefill(data)
+    }
+
+    private fun createPreutfyltSED(request: ApiRequest): PrefillDataModel {
+        return createPreutfyltSED(createPrefillData(request))
     }
 
     private fun validsed(sed: String, validsed: String) : Boolean {

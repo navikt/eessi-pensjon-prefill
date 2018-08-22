@@ -10,8 +10,8 @@ class RinaActions(private val euxService: EuxService) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(RinaActions::class.java) }
 
-    private val timeTries = 5               // times to try
-    private val waittime : Long = 3000      // waittime (basis venter 6000 på flere tjenester?)
+    var timeTries = 5               // times to try
+    var waittime : Long = 4000      // waittime (basis venter 6000 på flere tjenester?)
 
     private val create = "Create"
     private val update = "Update"
