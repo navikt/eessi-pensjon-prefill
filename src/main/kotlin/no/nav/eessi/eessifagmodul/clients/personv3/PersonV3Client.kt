@@ -1,9 +1,7 @@
 package no.nav.eessi.eessifagmodul.clients.personv3
 
-import io.swagger.models.auth.In
 import no.nav.eessi.eessifagmodul.config.sts.configureRequestSamlTokenOnBehalfOfOidc
-import no.nav.freg.security.oidc.common.OidcTokenAuthentication
-import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonPersonIkkeFunnet
+import no.nav.security.oidc.context.OIDCRequestContextHolder
 import no.nav.tjeneste.virksomhet.person.v3.binding.PersonV3
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Informasjonsbehov
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.NorskIdent
@@ -12,17 +10,15 @@ import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentGeografiskTilknytningR
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentGeografiskTilknytningResponse
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonRequest
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonResponse
-import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Component
 
 @Component
-class PersonV3Client(val service: PersonV3) {
+class PersonV3Client(val service: PersonV3, val oidcRequestContextHolder: OIDCRequestContextHolder) {
 
 
     fun hentPerson(fnr: String): HentPersonResponse {
-
-        val auth = SecurityContextHolder.getContext().authentication as OidcTokenAuthentication
-        configureRequestSamlTokenOnBehalfOfOidc(service, auth.idToken)
+        val token = oidcRequestContextHolder.oidcValidationContext.getToken("oidc")
+        configureRequestSamlTokenOnBehalfOfOidc(service, token.idToken)
 
         val request = HentPersonRequest().apply {
             withAktoer(PersonIdent().withIdent(
@@ -39,8 +35,8 @@ class PersonV3Client(val service: PersonV3) {
     //Experimental only
     fun hentGeografi(fnr: String): HentGeografiskTilknytningResponse {
 
-        val auth = SecurityContextHolder.getContext().authentication as OidcTokenAuthentication
-        configureRequestSamlTokenOnBehalfOfOidc(service, auth.idToken)
+        val token = oidcRequestContextHolder.oidcValidationContext.getToken("oidc")
+        configureRequestSamlTokenOnBehalfOfOidc(service, token.idToken)
 
         val request = HentGeografiskTilknytningRequest().apply {
             withAktoer(PersonIdent().withIdent(
