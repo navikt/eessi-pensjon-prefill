@@ -74,7 +74,7 @@ class PrefillPersonDataFromTPS(private val personV3Client: PersonV3Client, priva
         return response.person as no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker
     }
 
-    //personnr
+    //personNr
     private fun hentNorIdent(person: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): String {
         val persident = person.aktoer as PersonIdent
         val pinid: NorskIdent = persident.ident
@@ -170,7 +170,7 @@ class PrefillPersonDataFromTPS(private val personV3Client: PersonV3Client, priva
                         PinItem(
                         sektor = "alle",
                         identifikator = hentNorIdent(brukerTps),
-                        // norsk personnr er for NO
+                        // norsk personNr er for NO
                         land = "NO"
                         )
                     ),

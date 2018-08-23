@@ -7,6 +7,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers
 import org.mockito.Mock
+import org.mockito.MockitoAnnotations
 import org.mockito.junit.MockitoJUnitRunner
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -17,7 +18,6 @@ class RinaActionsTest {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(RinaActionsTest::class.java) }
 
-
     @Mock
     private lateinit var mockEuxService: EuxService
 
@@ -27,8 +27,8 @@ class RinaActionsTest {
     fun setup() {
         logger.debug("Starting tests.... ...")
         rinaActions = RinaActions(mockEuxService)
-        rinaActions.waittime = 500
-
+        rinaActions.waittime = "500"
+        println("watetime : ${rinaActions.waittime}")
     }
 
     private fun mockNotValidData(): List<RINAaksjoner> {

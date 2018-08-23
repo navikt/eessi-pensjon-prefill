@@ -2,6 +2,7 @@ package no.nav.eessi.eessifagmodul.controllers
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.swagger.annotations.ApiOperation
+import no.nav.eessi.eessifagmodul.clients.aktoerid.AktoerIdClient
 import no.nav.eessi.eessifagmodul.models.*
 import no.nav.eessi.eessifagmodul.prefill.PrefillSED
 import no.nav.eessi.eessifagmodul.prefill.PrefillDataModel
@@ -18,7 +19,7 @@ import java.util.*
 
 @RestController
 @RequestMapping("/api")
-class ApiController(private val euxService: EuxService, private val prefillSED: PrefillSED, private val prefillData: PrefillDataModel) {
+class ApiController(private val euxService: EuxService, private val prefillSED: PrefillSED, private val aktoerIdClient: AktoerIdClient) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(ApiController::class.java) }
 
@@ -39,7 +40,7 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
     fun confirmDocument(@RequestBody request: ApiRequest): SED {
 
         val data = createPreutfyltSED(request)
-        val sed = data.getSED()
+        val sed = data.sed
 
         val sedjson = mapAnyToJson(sed, true)
         logger.debug("SED : $sedjson")
@@ -71,7 +72,7 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
         val korrid = UUID.randomUUID()
 
         val data = createPreutfyltSED(request)
-        val sed = data.getSED()
+        val sed = data.sed
         val sedAsJson = mapAnyToJson(sed, true)
 
         if (rinaActions.canCreate(data.getSEDid(), rinanr)) {
@@ -93,10 +94,10 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
 
         val korrid = UUID.randomUUID()
         val data = createPreutfyltSED(request)
-        val sed = data.getSED()
+        val sed = data.sed
 
-        val fagSaknr = data.getSaksnr() // = "EESSI-PEN-123"
-        val bucType = data.getBUC() // = "P_BUC_06" //P6000
+        val fagSaknr = data.penSaksnummer // = "EESSI-PEN-123"
+        val bucType = data.buc // = "P_BUC_06" //P6000
 
         val mottaker = getFirstInstitution(data.getInstitutionsList())
         val sedAsJson = mapAnyToJson(sed, true)
@@ -143,26 +144,27 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
 
         //Denne validering og utfylling kan benyttes på SED P2000 og P6000
             validsed(request.sed , "P2000,P6000,P5000") -> {
-                prefillData.build(
+                PrefillDataModel().build(
                         caseId = request.caseId,
                         buc = request.buc,
                         subject = request.subjectArea,
                         sedID = request.sed,
                         aktoerID = request.pinid,
-                        institutions = request.institutions,
-                        dodaktorid = request.dodpinid ?: "" // vil kanskje komme som en del av pen-utveklsing ikke fra forntend.
+                        pinID = hentAktoerIdPin(request.pinid),
+                        institutions = request.institutions
                 )
             }
         //denne validering og utfylling kan kun benyttes på SED P4000
             validsed(request.sed, "P4000") -> {
                 if (request.payload == null) { throw IkkeGyldigKallException("Mangler metadata, payload") }
                 if (request.euxCaseId == null) { throw IkkeGyldigKallException("Mangler euxCaseId (RINANR)") }
-                prefillData.build(
+                PrefillDataModel().build(
                         caseId = request.caseId,
                         buc = request.buc,
                         subject = request.subjectArea,
                         sedID = request.sed,
                         aktoerID = request.pinid,
+                        pinID = hentAktoerIdPin(request.pinid),
                         institutions = request.institutions,
                         payload = request.payload,
                         euxcaseId = request.euxCaseId
@@ -186,6 +188,13 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
         val result: List<String> = validsed.split(",").map { it.trim() }
         return result.contains(sed)
     }
+
+    @Throws(RuntimeException::class)
+    fun hentAktoerIdPin(aktorid: String): String {
+        if (aktorid.isBlank()) return ""
+        return aktoerIdClient.hentPinIdentFraAktorid(aktorid)
+    }
+
 
     //kommer fra frontend
     //{"institutions":[{"NO:"DUMMY"}],"buc":"P_BUC_06","sed":"P6000","caseId":"caseId","subjectArea":"pensjon","actorId":"2323123"}

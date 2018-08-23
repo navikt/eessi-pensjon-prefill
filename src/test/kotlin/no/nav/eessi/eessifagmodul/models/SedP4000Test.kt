@@ -8,7 +8,6 @@ import no.nav.eessi.eessifagmodul.prefill.PrefillDataModel
 import no.nav.eessi.eessifagmodul.prefill.PrefillPerson
 import no.nav.eessi.eessifagmodul.prefill.PrefillSED
 import no.nav.eessi.eessifagmodul.services.EuxService
-import no.nav.eessi.eessifagmodul.services.LandkodeService
 import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
 import no.nav.eessi.eessifagmodul.utils.mapJsonToAny
 import no.nav.eessi.eessifagmodul.utils.typeRefs
@@ -16,9 +15,7 @@ import no.nav.eessi.eessifagmodul.utils.validateJson
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.ArgumentMatchers
 import org.mockito.Mock
-import org.mockito.MockitoAnnotations
 import org.mockito.junit.MockitoJUnitRunner
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -48,8 +45,8 @@ class SedP4000Test {
 
     @Before
     fun setup() {
-        prefillDataMock = PrefillDataModel(mockAktoerIdClient)
-        apiController = ApiController(mockEuxService, PrefillSED(mockPersonPreutfyll), prefillDataMock)
+        prefillDataMock = PrefillDataModel()
+        apiController = ApiController(mockEuxService, PrefillSED(mockPersonPreutfyll), mockAktoerIdClient)
         logger.debug("Starting tests.... ...")
     }
 
@@ -184,7 +181,7 @@ class SedP4000Test {
     }
 
     @Test
-    fun `create trygdetid P4000_2 from file`() {
+    fun `validate and prefill P4000_2 from file`() {
         val path = Paths.get("src/test/resources/json/requestP4000.json")
         val jsonfile = String(Files.readAllBytes(path))
         assertNotNull(jsonfile)
@@ -205,15 +202,17 @@ class SedP4000Test {
         assertNotNull(reqjson)
         validateJson(reqjson)
 
+        whenever(mockAktoerIdClient.hentPinIdentFraAktorid(any())).thenReturn("12345")
+
         val data = apiController.createPrefillData(req)
         assertNotNull(data)
+        assertEquals("12345", data.personNr)
 
-        whenever(mockPersonPreutfyll.prefill(any() )).thenReturn(data.getSED())
-        //whenever(mockAktoerIdClient.hentPinIdentFraAktorid(any())).thenReturn("12345")
+        whenever(mockPersonPreutfyll.prefill(any() )).thenReturn(data.sed)
 
         val result = apiController.createPreutfyltSED(data)
 
-        val jsondata = mapAnyToJson(result.getSED(), true)
+        val jsondata = mapAnyToJson(result.sed, true)
 
         println("----- ReqiestAPI P4000 --------------------------------------------------------------------------------")
         println(reqjson)

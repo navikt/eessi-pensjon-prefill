@@ -19,7 +19,7 @@ class PrefillPensjon(private val preutfyllingPersonFraTPS: PrefillPersonDataFrom
         //validere om vi kan preutfylle for angitt SED
         if (validseds.contains(utfyllingData.getSEDid())) {
             //norskident pnr.
-            val pinid = utfyllingData.getPinid()
+            val pinid = utfyllingData.personNr
 
             // er denne person en gjenlevende? hva må da gjøres i nav.bruker.person?
             //

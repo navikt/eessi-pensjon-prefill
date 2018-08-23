@@ -98,7 +98,7 @@ data class EmailItem(
 
 
 data class Person(
-        @JsonProperty("pin")
+        @JsonProperty("personNr")
         var pin: List<PinItem>? = null,
         var pinannen: PinItem? = null,
         @JsonProperty("statsborgerskap")

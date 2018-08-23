@@ -43,9 +43,9 @@ class ApiControllerTest {
 
     @Before
     fun setUp() {
-        prefillDataMock = PrefillDataModel(mockAktoerIdClient)
+        prefillDataMock = PrefillDataModel()
         mockRinaActions = RinaActions(mockEuxService)
-        apiController = ApiController(mockEuxService, PrefillSED(mockPersonPreutfyll), prefillDataMock)
+        apiController = ApiController(mockEuxService, PrefillSED(mockPersonPreutfyll), mockAktoerIdClient)
         apiController.landkodeService = LandkodeService()
         apiController.rinaActions = mockRinaActions
     }
@@ -84,17 +84,20 @@ class ApiControllerTest {
 
         whenever(mockAktoerIdClient.hentPinIdentFraAktorid(ArgumentMatchers.anyString())).thenReturn("12345")
 
+        val pinid = apiController.hentAktoerIdPin("0105094340092")
+
         val utfyllMock =  prefillDataMock.build(
                 subject = requestMock.subjectArea!!,
                 caseId = requestMock.caseId!!,
                 sedID = requestMock.sed!!,
                 aktoerID = requestMock.pinid!!,
+                pinID = pinid,
                 buc = requestMock.buc!!,
                 institutions = requestMock.institutions!!
         )
 
-        assertNotNull(utfyllMock.getPinid())
-        assertEquals("12345", utfyllMock.getPinid())
+        assertNotNull(utfyllMock.personNr)
+        assertEquals("12345", utfyllMock.personNr)
 
         val mockAksjonlist = listOf(
             RINAaksjoner(
@@ -113,7 +116,7 @@ class ApiControllerTest {
             )
         )
 
-        whenever(mockPersonPreutfyll.prefill(any() )).thenReturn(utfyllMock.getSED())
+        whenever(mockPersonPreutfyll.prefill(any() )).thenReturn(utfyllMock.sed)
         whenever(mockEuxService.createCaseAndDocument(anyString(), anyString(), anyString(), anyString(), anyString(), anyString() )).thenReturn(mockResponse)
 
         whenever(mockEuxService.getPossibleActions(ArgumentMatchers.anyString())).thenReturn(mockAksjonlist)
@@ -137,16 +140,19 @@ class ApiControllerTest {
         val mockResponse = "1234567890"
 
         whenever(mockAktoerIdClient.hentPinIdentFraAktorid(ArgumentMatchers.anyString())).thenReturn("12345")
+        val pinid = apiController.hentAktoerIdPin("0105094340092")
+
         val utfyllMock =  prefillDataMock.build(
                 subject = requestMock.subjectArea!!,
                 caseId = requestMock.caseId!!,
                 sedID = requestMock.sed!!,
                 aktoerID = requestMock.pinid!!,
+                pinID = pinid,
                 buc = requestMock.buc!!,
                 institutions = requestMock.institutions!!
         )
-        assertNotNull(utfyllMock.getPinid())
-        assertEquals("12345", utfyllMock.getPinid())
+        assertNotNull(utfyllMock.personNr)
+        assertEquals("12345", utfyllMock.personNr)
 
         val mockAksjonlist = listOf(
                 RINAaksjoner(
@@ -157,7 +163,7 @@ class ApiControllerTest {
                         dokumentId = "213123123"
                 )
         )
-        whenever(mockPersonPreutfyll.prefill(any())).thenReturn(utfyllMock.getSED())
+        whenever(mockPersonPreutfyll.prefill(any())).thenReturn(utfyllMock.sed)
         whenever(mockEuxService.createCaseAndDocument(anyString(), anyString(), anyString(), anyString(), anyString(), anyString() )).thenReturn(mockResponse)
         whenever(mockEuxService.getPossibleActions(anyString())).thenReturn(mockAksjonlist)
 
@@ -175,11 +181,22 @@ class ApiControllerTest {
                 buc = "P_BUC_06",
                 pinid = "0105094340092"
         )
-        val items = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
-        val utfyllMock = prefillDataMock.build(subject = "Pensjon",caseId = "EESSI-PEN-123", sedID = "P6000", aktoerID = "0105094340092", buc = "P_BUC_06", institutions = items)
-        utfyllMock.getSED().nav = Nav(bruker = Bruker(person = Person(fornavn = "Dummy", etternavn = "Dummy")))
+        whenever(mockAktoerIdClient.hentPinIdentFraAktorid(ArgumentMatchers.anyString())).thenReturn("12345")
+        val pinid = apiController.hentAktoerIdPin("0105094340092")
 
-        whenever(mockPersonPreutfyll.prefill(any() )).thenReturn(utfyllMock.getSED())
+        val items = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
+        val utfyllMock = prefillDataMock.build(
+                subject = "Pensjon",
+                caseId = "EESSI-PEN-123",
+                sedID = "P6000",
+                aktoerID = "0105094340092",
+                pinID = pinid,
+                buc = "P_BUC_06",
+                institutions = items
+            )
+        utfyllMock.sed.nav = Nav(bruker = Bruker(person = Person(fornavn = "Dummy", etternavn = "Dummy")))
+
+        whenever(mockPersonPreutfyll.prefill(any() )).thenReturn(utfyllMock.sed)
 
         val response = apiController.confirmDocument(mockData)
 
@@ -233,6 +250,12 @@ class ApiControllerTest {
         apiController.confirmDocument(mockData)
     }
 
+    @Test(expected = PersonIkkeFunnetException::class)
+    fun `create and test notvalid pinid for aktoerid`() {
+        val exp = PersonIkkeFunnetException("Ident ikke funnet", Exception())
+        whenever(mockAktoerIdClient.hentPinIdentFraAktorid("-5")).thenThrow(exp)
+        apiController.hentAktoerIdPin("-5")
+    }
 
 
 }

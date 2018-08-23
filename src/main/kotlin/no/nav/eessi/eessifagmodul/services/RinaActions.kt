@@ -1,8 +1,10 @@
 package no.nav.eessi.eessifagmodul.services
 
+import javafx.beans.binding.LongBinding
 import no.nav.eessi.eessifagmodul.models.RINAaksjoner
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 
 @Component
@@ -10,8 +12,10 @@ class RinaActions(private val euxService: EuxService) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(RinaActions::class.java) }
 
+    @Value("\${rinaaction.waittime}")
+    lateinit var waittime : String
+
     var timeTries = 5               // times to try
-    var waittime : Long = 4000      // waittime (basis venter 6000 på flere tjenester?)
 
     private val create = "Create"
     private val update = "Update"
@@ -48,7 +52,7 @@ class RinaActions(private val euxService: EuxService) {
             return validCheck
         }
         logger.debug("prøver igjen etter $waittime ms på å hente opp aksjoner...")
-        Thread.sleep(waittime)
+        Thread.sleep( waittime.toLong())
         return isActionPossible(sed, rinanr, navn, deep+1)
     }
 

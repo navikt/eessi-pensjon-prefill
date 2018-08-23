@@ -31,3 +31,6 @@ freg:
   security:
     oidc:
       enabled: 'false'
+
+rinaaction:
+  waittime: '400'
