@@ -5,6 +5,7 @@ import io.prometheus.client.exporter.common.TextFormat
 import io.prometheus.client.hotspot.DefaultExports
 import no.nav.eessi.eessifagmodul.clients.aktoerid.AktoerIdClient
 import no.nav.eessi.eessifagmodul.clients.personv3.PersonV3Client
+import no.nav.security.oidc.api.Unprotected
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpHeaders
@@ -19,6 +20,7 @@ import java.time.Instant
 import java.util.*
 import kotlin.collections.HashSet
 
+@Unprotected
 @CrossOrigin
 @RestController
 class DiagnosticsController(val aktoerIdClient: AktoerIdClient) {
@@ -70,8 +72,8 @@ class DiagnosticsController(val aktoerIdClient: AktoerIdClient) {
 }
 
 data class SelftestResult(
-        val name: String = "eessi-fagmodul",
-        val version: String = "0.0.1-SNAPSHOT",
+        val name: String = "TODO: hent applikasjonsnavn fra env",
+        val version: String = "TODO: hent versjonsnummer fra env",
         val timestamp: Instant = Instant.now(),
         val aggregateResult: Int,
         val checks: List<Check>?

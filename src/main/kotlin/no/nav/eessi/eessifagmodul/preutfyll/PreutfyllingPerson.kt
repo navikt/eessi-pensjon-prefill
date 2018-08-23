@@ -15,7 +15,7 @@ class PreutfyllingPerson(private val aktoerIdClient: AktoerIdClient, private val
     private fun hentPinIdentFraAktorid(pin: String? = ""): String? {
         logger.debug("henter pinid fra aktoerid $pin")
         return try {
-            aktoerIdClient.hentIdentForAktoerId(aktoerId = pin ?: "" )?.ident
+            aktoerIdClient.hentIdentForAktoerId(aktoerId = pin ?: "" ).ident
         } catch (ex: Exception) {
             logger.error(ex.message)
             null

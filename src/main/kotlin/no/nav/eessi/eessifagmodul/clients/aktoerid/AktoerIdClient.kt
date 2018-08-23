@@ -3,17 +3,16 @@ package no.nav.eessi.eessifagmodul.clients.aktoerid
 import no.nav.eessi.eessifagmodul.config.sts.configureRequestSamlToken
 import no.nav.eessi.eessifagmodul.config.sts.configureRequestSamlTokenOnBehalfOfOidc
 import no.nav.eessi.eessifagmodul.models.PersonIkkeFunnetException
-import no.nav.freg.security.oidc.common.OidcTokenAuthentication
+import no.nav.security.oidc.context.OIDCRequestContextHolder
 import no.nav.tjeneste.virksomhet.aktoer.v2.binding.AktoerV2
 import no.nav.tjeneste.virksomhet.aktoer.v2.binding.HentIdentForAktoerIdPersonIkkeFunnet
 import no.nav.tjeneste.virksomhet.aktoer.v2.meldinger.*
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Component
 
 @Component
-class AktoerIdClient(val service: AktoerV2) {
+class AktoerIdClient(val service: AktoerV2, val oidcRequestContextHolder: OIDCRequestContextHolder) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(AktoerIdClient::class.java) }
 
@@ -24,8 +23,8 @@ class AktoerIdClient(val service: AktoerV2) {
     }
 
     fun hentAktoerIdForIdent(ident: String): HentAktoerIdForIdentResponse? {
-        val auth = SecurityContextHolder.getContext().authentication as OidcTokenAuthentication
-        configureRequestSamlTokenOnBehalfOfOidc(service, auth.idToken)
+        val token = oidcRequestContextHolder.oidcValidationContext.getToken("oidc")
+        configureRequestSamlTokenOnBehalfOfOidc(service, token.idToken)
 
         val request = HentAktoerIdForIdentRequest()
         request.ident = ident
@@ -33,8 +32,8 @@ class AktoerIdClient(val service: AktoerV2) {
     }
 
     fun hentIdentForAktoerId(aktoerId: String): HentIdentForAktoerIdResponse {
-        val auth = SecurityContextHolder.getContext().authentication as OidcTokenAuthentication
-        configureRequestSamlTokenOnBehalfOfOidc(service, auth.idToken)
+        val token = oidcRequestContextHolder.oidcValidationContext.getToken("oidc")
+        configureRequestSamlTokenOnBehalfOfOidc(service, token.idToken)
 
         val request = HentIdentForAktoerIdRequest().apply {
             setAktoerId(aktoerId)
@@ -58,7 +57,7 @@ class AktoerIdClient(val service: AktoerV2) {
     fun hentPinIdentFraAktorid(pin: String = ""): String {
         return try {
             hentIdentForAktoerId(aktoerId = pin).ident
-        } catch(err: HentIdentForAktoerIdPersonIkkeFunnet) {
+        } catch (err: HentIdentForAktoerIdPersonIkkeFunnet) {
             logger.error(err.message)
             throw PersonIkkeFunnetException("Fant ikke aktoer", err)
         } catch (ex: Exception) {
