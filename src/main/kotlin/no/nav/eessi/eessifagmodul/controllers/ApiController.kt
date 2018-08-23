@@ -9,13 +9,14 @@ import no.nav.eessi.eessifagmodul.services.RinaActions
 import no.nav.eessi.eessifagmodul.services.EuxService
 import no.nav.eessi.eessifagmodul.services.LandkodeService
 import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
+import no.nav.security.oidc.api.Protected
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
 import java.util.*
 
-
+@Protected
 @RestController
 @RequestMapping("/api")
 class ApiController(private val euxService: EuxService, private val prefillSED: PrefillSED, private val prefillData: PrefillDataModel) {

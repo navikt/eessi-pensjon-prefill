@@ -3,29 +3,6 @@
 ## - SRVPENSJON_PASSWORD
 ## - OPENAM_SECRET
 
-freg:
-  security:
-    oidc:
-      refresh:
-        enabled: 'false'
-      auth:
-        header-filter-enabled: 'true'
-        cookie-filter-enabled: 'false'
-      login:
-        enabled: 'false'
-      openam:
-        url: 'https://isso-t.adeo.no:443/isso'
-      client-id: 'eessi-fagmodul-localhost'
-      client-secret: '${OPENAM_SECRET}'
-
-security:
-  oidc:
-    host: '${freg.security.oidc.openam.url}'
-  openam:
-    username: 'eessi-fagmodul-localhost'
-    password: '${OPENAM_SECRET}'
-    redirectUri: 'http://localhost:8081/login/oauth2/code/openam'
-
 eessibasis:
 #  url: 'https://eux-app.nais.preprod.local'
   url: 'http://localhost:9090'
@@ -40,7 +17,7 @@ virksomhet.person.v3:
 credentials:
   srvpensjon:
     username: '${SRVPENSJON_USERNAME}'
-    password: '${SRVPENSJON_PASSWORD'
+    password: '${SRVPENSJON_PASSWORD}'
 
 app:
   name: 'DEVELOP'
@@ -51,3 +28,10 @@ securitytokenservice:
 
 server:
   port: '8081'
+
+no.nav.security.oidc:
+  issuer.oidc:
+    discoveryurl: 'https://isso-t.adeo.no:443/isso/oauth2/.well-known/openid-configuration'
+    accepted_audience: 'eessi-fagmodul-localhost,eessi-fagmodul-t8,freg-token-provider-t0'
+
+http.proxy.parametername:
