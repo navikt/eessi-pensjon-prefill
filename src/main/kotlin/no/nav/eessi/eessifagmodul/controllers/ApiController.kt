@@ -30,7 +30,7 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
     lateinit var rinaActions: RinaActions
 
     @ApiOperation("Henter liste over landkoder av ISO Alpha2 standard")
-    @PostMapping("/v1.0/landkoder")
+    @PostMapping("/landkoder")
     fun getLandKoder(): List<String> {
         return landkodeService.hentLandkoer2()
     }
@@ -49,7 +49,7 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
     }
 
     @ApiOperation("Send sender valgt SED ut av RINA til mottaker(e)")
-    @PostMapping("/v1.0/sed/send")
+    @PostMapping("/sed/send")
     fun sendSed(@RequestBody request: ApiRequest): Boolean {
 
         val rinanr = request.euxCaseId ?: throw IkkeGyldigKallException("Mangler euxCaseID (RINANR)")
@@ -60,7 +60,7 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
     }
 
     @ApiOperation("Legge til SED på et eksisterende RINA document. kjører preutfylling")
-    @PostMapping("/v1.1/sed/add")
+    @PostMapping("/sed/add")
     fun addDocument(@RequestBody request: ApiRequest): String {
         //vi må ha mer fra frontend // backend..
 
@@ -89,7 +89,7 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
     }
 
     @ApiOperation("Kjører prosess OpprettBuCogSED på EUX for å få opprette et RINA dokument med en SED")
-    @PostMapping("/v1.2/buc/create")
+    @PostMapping("/buc/create")
     fun createDocument(@RequestBody request: ApiRequest): String {
 
         val korrid = UUID.randomUUID()
