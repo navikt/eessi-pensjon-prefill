@@ -2,18 +2,13 @@ package no.nav.eessi.eessifagmodul.prefill
 
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.whenever
-import no.nav.eessi.eessifagmodul.clients.aktoerid.AktoerIdClient
 import no.nav.eessi.eessifagmodul.models.*
 import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
-import no.nav.tjeneste.virksomhet.aktoer.v2.binding.HentIdentForAktoerIdPersonIkkeFunnet
-import no.nav.tjeneste.virksomhet.aktoer.v2.feil.PersonIkkeFunnet
-import no.nav.tjeneste.virksomhet.aktoer.v2.meldinger.HentIdentForAktoerIdResponse
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
 import org.junit.runners.Parameterized.Parameters
-import org.mockito.ArgumentMatchers
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import org.slf4j.Logger
@@ -21,7 +16,6 @@ import org.slf4j.LoggerFactory
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
-//@RunWith(MockitoJUnitRunner::class)
 @RunWith(Parameterized::class)
 class PrefillPersonTest(val index: Int, val sedid: String) {
 

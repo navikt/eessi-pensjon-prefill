@@ -30,13 +30,13 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
     lateinit var rinaActions: RinaActions
 
     @ApiOperation("Henter liste over landkoder av ISO Alpha2 standard")
-    @PostMapping("/landkoder")
+    @PostMapping("/v1.0/landkoder")
     fun getLandKoder(): List<String> {
         return landkodeService.hentLandkoer2()
     }
 
-    @ApiOperation("viser en oppsumering av SED prefill. Før innsending til EUX Basis")
-    @PostMapping("/confirm")
+    @ApiOperation("Viser en oppsumering av preutfylt SED. Før innsending til EUX")
+    @PostMapping("/v1.0/sed/confirm")
     fun confirmDocument(@RequestBody request: ApiRequest): SED {
 
         val data = createPreutfyltSED(request)
@@ -48,8 +48,8 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
         return sed
     }
 
-    @ApiOperation("sendSed send current sed")
-    @PostMapping("/sendsed")
+    @ApiOperation("Send sender valgt SED ut av RINA til mottaker(e)")
+    @PostMapping("/v1.0/sed/send")
     fun sendSed(@RequestBody request: ApiRequest): Boolean {
 
         val rinanr = request.euxCaseId ?: throw IkkeGyldigKallException("Mangler euxCaseID (RINANR)")
@@ -59,8 +59,8 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
         return euxService.sendSED(rinanr, sed, korrid.toString())
     }
 
-    @ApiOperation("legge til SED på et eksisterende Rina document. kjører preutfylling")
-    @PostMapping("/addsed")
+    @ApiOperation("Legge til SED på et eksisterende RINA document. kjører preutfylling")
+    @PostMapping("/v1.1/sed/add")
     fun addDocument(@RequestBody request: ApiRequest): String {
         //vi må ha mer fra frontend // backend..
 
@@ -88,8 +88,8 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
 
     }
 
-    @ApiOperation("Kjører prosess OpprettBuCogSED på EUX for å få opprette dokument")
-    @PostMapping("/create")
+    @ApiOperation("Kjører prosess OpprettBuCogSED på EUX for å få opprette et RINA dokument med en SED")
+    @PostMapping("/v1.2/buc/create")
     fun createDocument(@RequestBody request: ApiRequest): String {
 
         val korrid = UUID.randomUUID()

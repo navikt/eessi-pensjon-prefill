@@ -32,5 +32,4 @@ freg:
     oidc:
       enabled: 'false'
 
-rinaaction:
-  waittime: '400'
+rinaaction.waittime: '4000'

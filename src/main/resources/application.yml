@@ -18,5 +18,4 @@ freg:
       client-id: '${APP_NAME}-${FASIT_ENVIRONMENT_NAME}'
       client-secret: '${OPENIDCONNECTAGENT_PASSWORD}'
 
-rinaaction:
-  waittime: '4000'
+rinaaction.waittime: '4000'

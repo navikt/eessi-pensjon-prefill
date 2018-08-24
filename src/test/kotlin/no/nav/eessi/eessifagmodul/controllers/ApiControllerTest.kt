@@ -45,6 +45,7 @@ class ApiControllerTest {
     fun setUp() {
         prefillDataMock = PrefillDataModel()
         mockRinaActions = RinaActions(mockEuxService)
+        mockRinaActions.waittime = "500"
         apiController = ApiController(mockEuxService, PrefillSED(mockPersonPreutfyll), mockAktoerIdClient)
         apiController.landkodeService = LandkodeService()
         apiController.rinaActions = mockRinaActions
@@ -164,8 +165,8 @@ class ApiControllerTest {
                 )
         )
         whenever(mockPersonPreutfyll.prefill(any())).thenReturn(utfyllMock.sed)
-        whenever(mockEuxService.createCaseAndDocument(anyString(), anyString(), anyString(), anyString(), anyString(), anyString() )).thenReturn(mockResponse)
         whenever(mockEuxService.getPossibleActions(anyString())).thenReturn(mockAksjonlist)
+        whenever(mockEuxService.createCaseAndDocument(anyString(), anyString(), anyString(), anyString(), anyString(), anyString() )).thenReturn(mockResponse)
 
         apiController.createDocument(requestMock)
     }
