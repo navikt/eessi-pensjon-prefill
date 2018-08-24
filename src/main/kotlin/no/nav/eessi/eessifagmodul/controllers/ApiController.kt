@@ -36,7 +36,7 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
     }
 
     @ApiOperation("viser en oppsumering av SED prefill. Før innsending til EUX Basis")
-    @PostMapping("/confirm")
+    @PostMapping("/sed/confirm")
     fun confirmDocument(@RequestBody request: ApiRequest): SED {
 
         val data = createPreutfyltSED(request)
@@ -49,7 +49,7 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
     }
 
     @ApiOperation("sendSed send current sed")
-    @PostMapping("/sendsed")
+    @PostMapping("/sed/send")
     fun sendSed(@RequestBody request: ApiRequest): Boolean {
 
         val rinanr = request.euxCaseId ?: throw IkkeGyldigKallException("Mangler euxCaseID (RINANR)")
@@ -60,7 +60,7 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
     }
 
     @ApiOperation("legge til SED på et eksisterende Rina document. kjører preutfylling")
-    @PostMapping("/addsed")
+    @PostMapping("/sed/add")
     fun addDocument(@RequestBody request: ApiRequest): String {
         //vi må ha mer fra frontend // backend..
 
@@ -89,7 +89,7 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
     }
 
     @ApiOperation("Kjører prosess OpprettBuCogSED på EUX for å få opprette dokument")
-    @PostMapping("/create")
+    @PostMapping("/buc/create")
     fun createDocument(@RequestBody request: ApiRequest): String {
 
         val korrid = UUID.randomUUID()
