@@ -1,7 +1,5 @@
 package no.nav.eessi.eessifagmodul.models
 
-import com.fasterxml.jackson.annotation.JsonProperty
-
 /**
  * data class model from EUX Basis
  */

@@ -15,7 +15,7 @@ class PostnummerServiceTest {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PostnummerServiceTest::class.java) }
 
-    lateinit var service: PostnummerService
+    private lateinit var service: PostnummerService
 
     @Before
     fun setup() {

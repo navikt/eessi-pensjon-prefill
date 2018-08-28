@@ -4,7 +4,6 @@ import no.nav.eessi.eessifagmodul.models.*
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
-import org.springframework.stereotype.Service
 
 @Component
 class PrefillNav(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS) {
@@ -60,7 +59,7 @@ class PrefillNav(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS)
 
         }
         logger.debug("SED er ikke P6000,P2000,P4000,P5000.. - (fyller ut med mock)")
-        val brukerfake = Bruker(
+        return Bruker(
                 person = Person(
                     fornavn = "F",
                     kjoenn = "k",
@@ -68,7 +67,6 @@ class PrefillNav(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS)
                     etternavn = "E"
                 )
             )
-        return brukerfake
     }
 
     private fun hentBarnaFraTPS(utfyllingData: PrefillDataModel) :List<BarnItem> {

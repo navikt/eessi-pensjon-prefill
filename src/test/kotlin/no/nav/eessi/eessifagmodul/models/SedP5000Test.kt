@@ -24,7 +24,6 @@ class SedP5000Test {
         MockitoAnnotations.initMocks(this)
     }
 
-
     @Test
     fun `validate P5000 to json and back`() {
         val navSedP5000 = SedMock().genererP5000Mock()
@@ -40,15 +39,12 @@ class SedP5000Test {
         logger.debug("\n\n $json \n\n")
 
     }
-
-
 }
 
 //P5000 - bekreftforsikred
 fun createMedlemskapMock(): Pensjon {
 
-    val pensjon = Pensjon(
-
+    return Pensjon(
             sak = Sak(
                     enkeltkrav = KravtypeItem(
                             krav = "10"
@@ -111,5 +107,4 @@ fun createMedlemskapMock(): Pensjon {
                     )
             )
     )
-    return pensjon
 }

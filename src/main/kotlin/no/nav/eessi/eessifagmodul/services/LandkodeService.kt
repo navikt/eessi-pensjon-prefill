@@ -29,8 +29,8 @@ class LandkodeService {
                     continue
                 }
                 val data = Landkode(landArray[0], landArray[1], landArray[2], landArray[3])
-                landKodeTable.put(data.alpha3, data)
-                landKodeTable.put(data.alpha2, data)
+                landKodeTable[data.alpha3] = data
+                landKodeTable[data.alpha2] = data
             }
         }
         logger.debug("Har importert kodeverk fra $FILENAME")
@@ -73,7 +73,7 @@ class LandkodeService {
     }
 
     private companion object {
-        private val FILENAME = "/kodeverk/landkoder.txt"
+        private const val FILENAME = "/kodeverk/landkoder.txt"
     }
 
     private data class Landkode(

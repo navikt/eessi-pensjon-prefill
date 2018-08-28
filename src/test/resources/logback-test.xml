@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration debug="true">
+
+    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+
+    <logger name="no.nav" level="DEBUG"/>
+    <!--<logger name="no.nav.eessi.eessifagmodul.config.RequestResponseLoggerInterceptor" level="DEBUG"/>-->
+
+</configuration>
