@@ -70,8 +70,7 @@ class ExperimentController {
 
     @GetMapping("/testPerson/{ident}")
     fun testPerson(@PathVariable("ident") ident: String): HentPersonResponse {
-        val personV3 = personV3Client.hentPerson(ident)
-        return personV3
+        return personV3Client.hentPerson(ident)
     }
 
     @GetMapping("/possibleactions/{rinanr}", produces = [MediaType.APPLICATION_JSON_VALUE])

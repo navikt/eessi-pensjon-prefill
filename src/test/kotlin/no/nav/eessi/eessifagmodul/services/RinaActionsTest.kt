@@ -32,7 +32,7 @@ class RinaActionsTest {
     }
 
     private fun mockNotValidData(): List<RINAaksjoner> {
-        val aksjonlist = listOf(
+        return listOf(
                 RINAaksjoner(
                     navn = "Read",
                     id = "123123123123",
@@ -77,7 +77,6 @@ class RinaActionsTest {
                 )
 
         )
-        return aksjonlist
     }
 
     private fun mockValidData(navn: String): List<RINAaksjoner> {

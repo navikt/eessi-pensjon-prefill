@@ -5,9 +5,6 @@ import com.nhaarman.mockito_kotlin.whenever
 import no.nav.eessi.eessifagmodul.clients.aktoerid.AktoerIdClient
 import no.nav.eessi.eessifagmodul.models.*
 import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
-import no.nav.tjeneste.virksomhet.aktoer.v2.binding.HentIdentForAktoerIdPersonIkkeFunnet
-import no.nav.tjeneste.virksomhet.aktoer.v2.feil.PersonIkkeFunnet
-import no.nav.tjeneste.virksomhet.aktoer.v2.meldinger.HentIdentForAktoerIdResponse
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -21,7 +18,6 @@ import org.slf4j.LoggerFactory
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
-//@RunWith(MockitoJUnitRunner::class)
 @RunWith(Parameterized::class)
 class PrefillPersonTest(val index: Int, val sedid: String) {
 
@@ -36,12 +32,9 @@ class PrefillPersonTest(val index: Int, val sedid: String) {
     @Mock
     private lateinit var mockPreutfyllingPensjon: PrefillPensjon
 
-    @Mock
-    private lateinit var sed: SED
+    private lateinit var preutfylling: PrefillPerson
 
-    lateinit var preutfylling: PrefillPerson
-
-    lateinit var prefillDataMock: PrefillDataModel
+    private lateinit var prefillDataMock: PrefillDataModel
 
     @Before
     fun setup() {
@@ -103,9 +96,5 @@ class PrefillPersonTest(val index: Int, val sedid: String) {
         assertEquals(sedid, responseSED.sed)
         assertNotNull(prefillDataMock)
         assertEquals("1234", prefillDataMock.getPinid())
-
     }
-
-
-
 }

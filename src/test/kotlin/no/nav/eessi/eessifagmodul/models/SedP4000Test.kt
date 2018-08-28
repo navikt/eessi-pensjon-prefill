@@ -8,7 +8,6 @@ import no.nav.eessi.eessifagmodul.prefill.PrefillDataModel
 import no.nav.eessi.eessifagmodul.prefill.PrefillPerson
 import no.nav.eessi.eessifagmodul.prefill.PrefillSED
 import no.nav.eessi.eessifagmodul.services.EuxService
-import no.nav.eessi.eessifagmodul.services.LandkodeService
 import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
 import no.nav.eessi.eessifagmodul.utils.mapJsonToAny
 import no.nav.eessi.eessifagmodul.utils.typeRefs
@@ -16,9 +15,7 @@ import no.nav.eessi.eessifagmodul.utils.validateJson
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.ArgumentMatchers
 import org.mockito.Mock
-import org.mockito.MockitoAnnotations
 import org.mockito.junit.MockitoJUnitRunner
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -42,7 +39,7 @@ class SedP4000Test {
 
     private lateinit var prefillDataMock: PrefillDataModel
 
-    lateinit var apiController: ApiController
+    private lateinit var apiController: ApiController
 
     val logger: Logger by lazy { LoggerFactory.getLogger(SedP4000Test::class.java) }
 
@@ -199,7 +196,7 @@ class SedP4000Test {
                 pinid = "1000060964183",
                 buc = "P_BUC_01",
                 subjectArea = "Pensjon",
-                payload = "$jsonfile"
+                payload = jsonfile
         )
         val reqjson = mapAnyToJson(req,true)
         assertNotNull(reqjson)
@@ -209,7 +206,6 @@ class SedP4000Test {
         assertNotNull(data)
 
         whenever(mockPersonPreutfyll.prefill(any() )).thenReturn(data.getSED())
-        //whenever(mockAktoerIdClient.hentPinIdentFraAktorid(any())).thenReturn("12345")
 
         val result = apiController.createPreutfyltSED(data)
 
@@ -224,13 +220,11 @@ class SedP4000Test {
         println("-------------------------------------------------------------------------------------------------------")
 
     }
-
-
 }
 
 fun createPersonTrygdeTidMock(): PersonTrygdeTid {
 
-    val personTrygdeTid = PersonTrygdeTid(
+    return PersonTrygdeTid(
             foedselspermisjonPerioder = listOf(
                     StandardItem(
                             land = "NO",
@@ -428,5 +422,4 @@ fun createPersonTrygdeTidMock(): PersonTrygdeTid {
                     )
             )
     )
-    return personTrygdeTid
 }

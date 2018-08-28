@@ -29,7 +29,7 @@ class EuxServiceTest {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(EuxServiceTest::class.java) }
 
-    lateinit var service: EuxService
+    private lateinit var service: EuxService
 
     private val objMapper = jacksonObjectMapper()
 
@@ -52,7 +52,6 @@ class EuxServiceTest {
         service.getPossibleActions(rinaSaksnr)
     }
 
-    //@Ignore("Not yet implemented")
     @Test
     fun `check for mulige aksjoner on rinacaseid`() {
         val bucType = "FB_BUC_01"

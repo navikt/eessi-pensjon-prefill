@@ -1,8 +1,9 @@
 package no.nav.eessi.eessifagmodul.models
 
-import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import no.nav.eessi.eessifagmodul.utils.*
+import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
+import no.nav.eessi.eessifagmodul.utils.mapJsonToAny
+import no.nav.eessi.eessifagmodul.utils.typeRefs
+import no.nav.eessi.eessifagmodul.utils.validateJson
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -10,14 +11,13 @@ import org.mockito.MockitoAnnotations
 import org.mockito.junit.MockitoJUnitRunner
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.boot.convert.ApplicationConversionService.configure
 import java.nio.file.Files
 import java.nio.file.Paths
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
 @RunWith(MockitoJUnitRunner::class)
-class SedP6000Test{
+class SedP6000Test {
 
     val logger: Logger by lazy { LoggerFactory.getLogger(SedP6000Test::class.java) }
 
@@ -26,7 +26,6 @@ class SedP6000Test{
         logger.debug("Starting tests.... ...")
         MockitoAnnotations.initMocks(this)
     }
-
 
     @Test
     fun createP6000sed() {
@@ -92,10 +91,9 @@ class SedP6000Test{
 
     @Test
     fun `check for valid json to object`() {
-       val test = "{\"postnummer\":\"sdafsdaf\",\"by\":\"asfdsdaf\",\"land\":\"BG\",\"gate\":\"sdfasd\",\"bygning\":\"sdfsdf\","
-       val result = validateJson(test)
-       assertNotNull(result)
-       assertEquals(false, result)
+        val test = "{\"postnummer\":\"sdafsdaf\",\"by\":\"asfdsdaf\",\"land\":\"BG\",\"gate\":\"sdfasd\",\"bygning\":\"sdfsdf\","
+        val result = validateJson(test)
+        assertNotNull(result)
+        assertEquals(false, result)
     }
-
 }

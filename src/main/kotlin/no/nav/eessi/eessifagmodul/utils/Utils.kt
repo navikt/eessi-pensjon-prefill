@@ -20,8 +20,7 @@ inline fun <reified T : Any> mapJsonToAny(json: String, objec : TypeReference<T>
 }
 
 fun createErrorMessage(responseBody: String): RestClientException {
-    val error = mapJsonToAny(responseBody, typeRefs<RestClientException>())
-    return error
+    return mapJsonToAny(responseBody, typeRefs())
 }
 
 fun mapAnyToJson(data: Any): String {

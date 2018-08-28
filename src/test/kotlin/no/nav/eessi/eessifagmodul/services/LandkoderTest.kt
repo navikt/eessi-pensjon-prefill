@@ -14,7 +14,7 @@ class LandkoderTest {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(LandkoderTest::class.java) }
 
-    lateinit var service: LandkodeService
+    private lateinit var service: LandkodeService
 
     @Before
     fun setup() {

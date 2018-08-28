@@ -46,7 +46,7 @@ class PrefillDataModel(private val aktoerIdClient: AktoerIdClient) {
         this.aktoerID = aktoerID
         this.sed = createSED(sedID)
         this.institution = institutions
-        this.partSedasJson.put(sedID, payload)
+        this.partSedasJson[sedID] = payload
         this.euxCaseID = euxcaseId
         this.pin = hentAktoerIdPin(aktoerID)
         println(debug())
@@ -82,7 +82,7 @@ class PrefillDataModel(private val aktoerIdClient: AktoerIdClient) {
     }
 
     fun debug():String {
-        return "Sektor: $rinaSubject, pen-saknr: $penSaksnummer, buc: $buc, sedid: ${sed.sed}, instirusjoner: $institution, aktorid: $aktoerID, norpin: $pin, dodaktorID: $etterlattAktoerID, dodpin: $etterlattPin haretterlatt: ${isValidEtterlatt()} payload: ${partSedasJson?.size}  payload: $partSedasJson "
+        return "Sektor: $rinaSubject, pen-saknr: $penSaksnummer, buc: $buc, sedid: ${sed.sed}, instirusjoner: $institution, aktorid: $aktoerID, norpin: $pin, dodaktorID: $etterlattAktoerID, dodpin: $etterlattPin haretterlatt: ${isValidEtterlatt()} payload: ${partSedasJson.size}  payload: $partSedasJson "
     }
 
     @Throws(RuntimeException::class)

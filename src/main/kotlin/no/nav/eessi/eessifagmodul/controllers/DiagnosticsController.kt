@@ -4,7 +4,6 @@ import io.prometheus.client.CollectorRegistry
 import io.prometheus.client.exporter.common.TextFormat
 import io.prometheus.client.hotspot.DefaultExports
 import no.nav.eessi.eessifagmodul.clients.aktoerid.AktoerIdClient
-import no.nav.eessi.eessifagmodul.clients.personv3.PersonV3Client
 import no.nav.security.oidc.api.Unprotected
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory

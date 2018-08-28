@@ -127,8 +127,8 @@ class NavMock {
 class PensjonMock {
 
     fun genererMockDataMedMeldemskap(): Pensjon {
-        var pensjon = genererMockData()
-        var pensjonMeldemskap = createMedlemskapMock()
+        val pensjon = genererMockData()
+        val pensjonMeldemskap = createMedlemskapMock()
         pensjon.medlemskap = pensjonMeldemskap.medlemskap
         pensjon.medlemskapAnnen = pensjonMeldemskap.medlemskapAnnen
         pensjon.medlemskapTotal = pensjonMeldemskap.medlemskapTotal

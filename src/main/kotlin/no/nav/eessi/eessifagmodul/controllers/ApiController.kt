@@ -115,7 +115,7 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
         if (rinaActions.canUpdate(data.getSEDid(), euSaksnr)) {
             if (request.sendsed != null && request.sendsed == true) {
                 val result = euxService.sendSED(euSaksnr, data.getSEDid(), korrid.toString())
-                if (result == false) {
+                if (!result) {
                     throw SedDokumentIkkeSendtException("SED ikke sendt. muligens opprettet på RINANR: $euSaksnr")
                 }
             }

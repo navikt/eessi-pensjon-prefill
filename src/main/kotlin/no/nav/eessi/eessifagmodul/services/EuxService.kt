@@ -1,14 +1,12 @@
 package no.nav.eessi.eessifagmodul.services
 
 import no.nav.eessi.eessifagmodul.models.IkkeGyldigKallException
-import no.nav.eessi.eessifagmodul.models.RINASaker
 import no.nav.eessi.eessifagmodul.models.RINAaksjoner
 import no.nav.eessi.eessifagmodul.models.RinaCasenrIkkeMottattException
 import no.nav.eessi.eessifagmodul.utils.createErrorMessage
 import no.nav.eessi.eessifagmodul.utils.mapJsonToAny
 import no.nav.eessi.eessifagmodul.utils.typeRef
 import no.nav.eessi.eessifagmodul.utils.typeRefs
-import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Description
 import org.springframework.core.io.ByteArrayResource
@@ -21,13 +19,13 @@ import org.springframework.web.util.UriComponentsBuilder
 import java.io.IOException
 
 
+private const val EUX_PATH: String = "/cpi"
+
+private val logger = LoggerFactory.getLogger(EuxService::class.java)
+
 @Service
 @Description("Service class for EuxBasis - EuxCpiServiceController.java")
 class EuxService(private val oidcRestTemplate: RestTemplate) {
-
-    private val logger: Logger by lazy { LoggerFactory.getLogger(EuxService::class.java) }
-
-    private val EUX_PATH: String = "/cpi"
 
     //Henter en liste over tilgjengelige aksjoner for den aktuelle RINA saken PK-51365"
     fun getPossibleActions(euSaksnr: String): List<RINAaksjoner> {
@@ -44,8 +42,7 @@ class EuxService(private val oidcRestTemplate: RestTemplate) {
             if (response.statusCode.isError) {
                 throw createErrorMessage(responseBody)
             } else {
-                val list = mapJsonToAny(responseBody, typeRefs<List<RINAaksjoner>>()  )
-                return list
+                return mapJsonToAny(responseBody, typeRefs())
             }
         } catch (ex: IOException) {
             throw RuntimeException(ex.message)
@@ -77,7 +74,9 @@ class EuxService(private val oidcRestTemplate: RestTemplate) {
         val urlPath = "/SendSED"
 
         val documentID = hentDocuemntID(euxCaseId, sed)
-        if (documentID.isBlank()) { throw IkkeGyldigKallException("Kan ikke Sende valgt sed") }
+        if (documentID.isBlank()) {
+            throw IkkeGyldigKallException("Kan ikke Sende valgt sed")
+        }
 
         val builder = UriComponentsBuilder.fromPath("$EUX_PATH$urlPath")
                 .queryParam("RINASaksnummer", euxCaseId)
@@ -110,10 +109,9 @@ class EuxService(private val oidcRestTemplate: RestTemplate) {
         val urlPath = "/SED"
 
         val builder = UriComponentsBuilder.fromPath("$EUX_PATH$urlPath")
-            .queryParam("RINASaksnummer", euxCaseId)
-            .queryParam("KorrelasjonsID", korrelasjonID)
+                .queryParam("RINASaksnummer", euxCaseId)
+                .queryParam("KorrelasjonsID", korrelasjonID)
 
-//        val headers = logonBasis()
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_JSON
 

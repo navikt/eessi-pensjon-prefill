@@ -1,14 +1,12 @@
 package no.nav.eessi.eessifagmodul.models
 
-import com.fasterxml.jackson.core.type.TypeReference
-import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import no.nav.eessi.eessifagmodul.utils.*
-import org.bouncycastle.asn1.x500.style.RFC4519Style.l
+import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
+import no.nav.eessi.eessifagmodul.utils.mapJsonToAny
+import no.nav.eessi.eessifagmodul.utils.typeRefs
+import no.nav.eessi.eessifagmodul.utils.validateJson
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import org.mockito.junit.MockitoJUnitRunner
 import org.slf4j.Logger
@@ -19,7 +17,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
 @RunWith(MockitoJUnitRunner::class)
-class SedTest{
+class SedTest {
 
     val logger: Logger by lazy { LoggerFactory.getLogger(SedTest::class.java) }
 
@@ -94,9 +92,9 @@ class SedTest{
 
     @Test
     fun `check for valid json to object`() {
-       // val test = "{\"postnummer\":\"1400\",\"by\":\"SKI\",\"bygning\":\"32\",\"land\":\"NO\",\"gate\":\"Storgata\",\"region\":\"SKI\"}"
+        // val test = "{\"postnummer\":\"1400\",\"by\":\"SKI\",\"bygning\":\"32\",\"land\":\"NO\",\"gate\":\"Storgata\",\"region\":\"SKI\"}"
         //val test = "{\"postnummer\":\"sdafsdaf\",\"by\":\"asfdsdaf\",\"land\":\"BG\",\"gate\": \"sdfasd\",\"bygning\":\"sdfsdf\",\"region\":\"sdafsdf\"}"
-       val test = "{\"postnummer\":\"sdafsdaf\",\"by\":\"asfdsdaf\",\"land\":\"BG\",\"gate\":\"sdfasd\",\"bygning\":\"sdfsdf\","
+        val test = "{\"postnummer\":\"sdafsdaf\",\"by\":\"asfdsdaf\",\"land\":\"BG\",\"gate\":\"sdfasd\",\"bygning\":\"sdfsdf\","
 
         val result = validateJson(test)
         assertNotNull(result)
