@@ -42,8 +42,6 @@ class EuxServiceTest {
         logger.debug("Starting tests.... ...")
         objMapper.enable(SerializationFeature.WRAP_ROOT_VALUE)
         service = EuxService(mockrestTemplate)
-        service.overrideheaders = true
-
     }
 
     private fun createSendSEDmedFeilResponse(data: String, status: HttpStatus) {
