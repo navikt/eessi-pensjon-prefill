@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
-@RunWith(MockitoJUnitRunner::class)
 class SedP5000Test {
 
     val logger: Logger by lazy { LoggerFactory.getLogger(SedP5000Test::class.java) }
@@ -21,9 +20,8 @@ class SedP5000Test {
     @Before
     fun setup() {
         logger.debug("Starting tests.... ...")
-        MockitoAnnotations.initMocks(this)
+        //MockitoAnnotations.initMocks(this)
     }
-
 
     @Test
     fun `validate P5000 to json and back`() {
@@ -36,9 +34,7 @@ class SedP5000Test {
         assertNotNull(pensjondata)
         assertEquals(navSedP5000, pensjondata)
 
-
-        logger.debug("\n\n $json \n\n")
-
+        //logger.debug("\n\n $json \n\n")
     }
 
 

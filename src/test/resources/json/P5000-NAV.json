@@ -81,7 +81,7 @@
       },
       "person" : {
         "fornavn" : "sdafsdf",
-        "forrnavnvedfoedsel" : "safsdaf",
+        "fornavnvedfoedsel" : "safsdaf",
         "kjoenn" : "m",
         "statsborgerskap" : [ {
           "land" : "AT"

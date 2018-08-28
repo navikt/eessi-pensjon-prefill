@@ -10,10 +10,14 @@ import no.nav.eessi.eessifagmodul.services.RinaActions
 import no.nav.eessi.eessifagmodul.services.EuxService
 import no.nav.eessi.eessifagmodul.services.LandkodeService
 import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
+import no.nav.eessi.eessifagmodul.utils.mapJsonToAny
+import no.nav.eessi.eessifagmodul.utils.typeRefs
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
+import java.nio.file.Files
+import java.nio.file.Paths
 import java.util.*
 
 
@@ -88,13 +92,43 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
 
     }
 
+    fun mockSED(request: ApiRequest) : SED {
+        var sed: SED?
+        //Mocking P2000-P2200 muligens P2100...
+            when {
+                request.payload == null -> throw IkkeGyldigKallException("Mangler PayLoad")
+                request.sed == null -> throw IkkeGyldigKallException("Mangler SED")
+                request.sed == "P2000"  ->  {
+                    val seds = mapJsonToAny(request.payload, typeRefs<SED>())
+                    sed = seds
+                }
+                else -> {
+                    val seds = mapJsonToAny(request.payload, typeRefs<SED>())
+                    sed = seds
+                }
+            }
+        return sed
+        //end Mocking
+    }
+
     @ApiOperation("Kjører prosess OpprettBuCogSED på EUX for å få opprette et RINA dokument med en SED")
     @PostMapping("/buc/create")
     fun createDocument(@RequestBody request: ApiRequest): String {
 
         val korrid = UUID.randomUUID()
-        val data = createPreutfyltSED(request)
-        val sed = data.sed
+
+        val datamodel = createPrefillData(request)
+
+        val data = createPreutfyltSED(datamodel)
+
+        var sed: SED?
+        //mock SED P2000-P2200
+        sed = if (request.mockSED is Boolean && request.mockSED) {
+            mockSED(request)
+        } else {
+            data.sed
+        }
+        //val data = createPreutfyltSED(request)
 
         val fagSaknr = data.penSaksnummer // = "EESSI-PEN-123"
         val bucType = data.buc // = "P_BUC_06" //P6000
@@ -119,6 +153,7 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
                     throw SedDokumentIkkeSendtException("SED ikke sendt. muligens opprettet på RINANR: $euSaksnr")
                 }
             }
+            logger.info("EUX RINANR: $euSaksnr")
             return "{\"euxcaseid\":\"$euSaksnr\"}"
         }
         throw SedDokumentIkkeOpprettetException("SED dokument feilet ved opprettelse ved RINANR: $euSaksnr")
@@ -216,7 +251,8 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
             val euxCaseId: String? = null,
             //partpayload json/sed
             val payload: String? = null,
-            val sendsed: Boolean? = null
+            val sendsed: Boolean? = null,
+            val mockSED: Boolean? = null
     )
 
 

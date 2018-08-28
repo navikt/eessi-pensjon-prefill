@@ -17,7 +17,7 @@
       },
       "person" : {
         "fornavn" : "sdfsdf",
-        "forrnavnvedfoedsel" : "fornavn",
+        "fornavnvedfoedsel" : "fornavn",
         "foedested" : {
           "land" : "EE",
           "region" : "regeion",
@@ -27,10 +27,13 @@
         "etternavn" : "dfsfdsdfd",
         "etternavnvedfoedsel" : "familie",
         "pin" : [ {
-          "land" : "NO",
-          "institusjonsid" : "NO:noinst002",
-          "identifikator" : "11111122321111",
-          "institusjonsnavn" : "NOINST002, NO INST002, NO"
+          "sektor" : "alle",
+          "identifikator" : "123456789012",
+          "institusjon" : {
+            "institusjonsid" : "NO:NAVT002",
+            "institusjonsnavn" : "12347, NAVT002, NO"
+          },
+          "land" : "NO"
         } ],
         "tidligereetternavn" : "prev-family",
         "foedselsdato" : "1980-01-01"
@@ -59,9 +62,13 @@
         "tidligerefornavn" : "tidligere fornavn",
         "etternavnvedfoedsel" : "sadas dasda sadsd",
         "pin" : [ {
-          "institusjonsnavn" : "NOINST002, NO INST002, NO",
-          "identifikator" : "1111111111111",
-          "institusjonsid" : "NO:noinst002"
+          "sektor" : "alle",
+          "identifikator" : "123456789012",
+          "institusjon" : {
+            "institusjonsid" : "NO:NAVT002",
+            "institusjonsnavn" : "12347, NAVT002, NO"
+          },
+          "land" : "NO"
         } ]
       },
       "adresse" : {
@@ -137,8 +144,10 @@
         "bygning" : "sadasd asdasd 212"
       },
       "periode" : {
-        "tom" : "1995-12-20",
-        "fom" : "1990-01-01"
+        "lukketPeriode" : {
+          "tom" : "1995-12-20",
+          "fom" : "1990-01-01"
+        }
       },
       "jobbUnderAnsattEllerSelvstendig" : "asdasd dasdasd",
       "usikkerDatoIndikator" : "no",
@@ -146,7 +155,7 @@
       "forsikkringEllerRegistreringNr" : "1234567890",
       "annenInformasjon" : "dasd asdasd adsasda dasdasd"
     } ],
-    "opplearingPerioder" : [ {
+    "opplaeringPerioder" : [ {
       "annenInformasjon" : "Stocholm",
       "periode" : {
         "lukketPeriode" : {
@@ -159,16 +168,18 @@
       "usikkerDatoIndikator" : "no"
     } ],
     "barnepassPerioder" : [ {
-      "land" : "SE",
-      "fornavn" : "sdas sdasd",
       "periode" : {
         "openPeriode" : {
           "extra" : "endDatePeriodUnknown",
           "fom" : "2018-01-01"
         }
       },
-      "etternavn" : "asdasd asdasd",
-      "foedseldato" : "2017-01-01",
+      "informasjonBarn" : {
+        "land" : "SE",
+        "fornavn" : "sdas sdasd",
+        "etternavn" : "asdasd asdasd",
+        "foedseldato" : "2017-01-01"
+      },
       "annenInformasjon" : "asdasd asdasdas",
       "usikkerDatoIndikator" : "yes"
     } ],
@@ -231,6 +242,5 @@
     } ]
   },
   "sedGVer" : "4",
-  "Sector Components/Pensions/P4000": "Sector Components/Pensions/P4000",
   "sed" : "P4000"
 }

@@ -103,7 +103,7 @@ class NavMock {
                                         land = "DK",
                                         by = "gafdgsf"
                                 ),
-                                forrnavnvedfoedsel = "werwerwe",
+                                fornavnvedfoedsel = "werwerwe",
                                 tidligerefornavn = "asdfdsffsd",
                                 etternavnvedfoedsel = "werwreq"
                         )
@@ -127,8 +127,8 @@ class NavMock {
 class PensjonMock {
 
     fun genererMockDataMedMeldemskap(): Pensjon {
-        var pensjon = genererMockData()
-        var pensjonMeldemskap = createMedlemskapMock()
+        val pensjon = genererMockData()
+        val pensjonMeldemskap = createMedlemskapMock()
         pensjon.medlemskap = pensjonMeldemskap.medlemskap
         pensjon.medlemskapAnnen = pensjonMeldemskap.medlemskapAnnen
         pensjon.medlemskapTotal = pensjonMeldemskap.medlemskapTotal
@@ -161,7 +161,7 @@ class PensjonMock {
                         ),
                         person = Person(
                                 fornavn = "gafgfdga",
-                                forrnavnvedfoedsel = "ffsdfgsfgadfg",
+                                fornavnvedfoedsel = "ffsdfgsfgadfg",
                                 kjoenn = "m",
                                 statsborgerskap = listOf(
                                         StatsborgerskapItem("AT"),
@@ -361,7 +361,7 @@ class PensjonMock {
                                                 startdato = "2034-10-01"
                                         )
                                 ),
-                                arsak = Arsak(
+                                aarsak = Arsak(
                                         annenytelseellerinntekt = "06",
                                         inntektAnnen = "adfasfsd"
                                 )
@@ -373,7 +373,7 @@ class PensjonMock {
                                                 startdato = "2033-10-01"
                                         )
                                 ),
-                                arsak = Arsak(
+                                aarsak = Arsak(
                                         annenytelseellerinntekt = "02",
                                         inntektAnnen = "ewrwer"
                                 ),

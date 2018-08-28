@@ -18,7 +18,6 @@ import java.nio.file.Paths
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
-@RunWith(MockitoJUnitRunner::class)
 class SedTest{
 
     val logger: Logger by lazy { LoggerFactory.getLogger(SedTest::class.java) }
@@ -26,9 +25,8 @@ class SedTest{
     @Before
     fun setup() {
         logger.debug("Starting tests.... ...")
-        MockitoAnnotations.initMocks(this)
+        //MockitoAnnotations.initMocks(this)
     }
-
 
     @Test
     fun createP6000sed() {

@@ -92,7 +92,7 @@
       },
       "person": {
         "fornavn": "sdafsdf",
-        "forrnavnvedfoedsel": "safsdaf",
+        "fornavnvedfoedsel": "safsdaf",
         "kjoenn": "m",
         "statsborgerskap": [
           {
@@ -355,6 +355,5 @@
   },
   "sedVer": "0",
   "sedGVer": "4",
-  "Sector Components/Pensions/P6000": "Sector Components/Pensions/P6000",
   "sed": "P6000"
 }

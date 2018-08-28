@@ -8,6 +8,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.MockitoAnnotations
 import org.mockito.junit.MockitoJUnitRunner
+import org.skyscreamer.jsonassert.JSONAssert
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.boot.convert.ApplicationConversionService.configure
@@ -16,15 +17,16 @@ import java.nio.file.Paths
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
-@RunWith(MockitoJUnitRunner::class)
 class SedP6000Test{
 
     val logger: Logger by lazy { LoggerFactory.getLogger(SedP6000Test::class.java) }
 
+    private val printout : Boolean = false
+
     @Before
     fun setup() {
         logger.debug("Starting tests.... ...")
-        MockitoAnnotations.initMocks(this)
+        //MockitoAnnotations.initMocks(this)
     }
 
 
@@ -47,17 +49,17 @@ class SedP6000Test{
 
         //map P6000-NAV back to P6000 object.
         val pensjondataFile = mapJsonToAny(p6000file, typeRefs<SED>())
+
         assertNotNull(pensjondataFile)
-
-        //map P6000-NAV obj back to json
-        val jsonnav = mapAnyToJson(sed6000)
-
-        println("------------------generated----------------------")
-        println("\n\n $json \n\n")
-        println("------------------p6000-nav----------------------")
-        println("\n\n $jsonnav \n\n")
-        println("-------------------------------------------------")
-
+        val jsonnav = mapAnyToJson(pensjondataFile, true)
+        if (printout) {
+            println("------------------generated----------------------")
+            println("\n\n $p6000file \n\n")
+            println("------------------p6000-nav----------------------")
+            println("\n\n $jsonnav \n\n")
+            println("-------------------------------------------------")
+        }
+        JSONAssert.assertEquals(p6000file, jsonnav, false)
     }
 
     @Test
@@ -84,9 +86,11 @@ class SedP6000Test{
         )
         val testPersjson = mapAnyToJson(sed, true)
 
-        println("------------------generated----------------------")
-        println("\n\n $testPersjson \n\n")
-        println("------------------p6000-nav----------------------")
+        if (printout) {
+            println("------------------generated----------------------")
+            println("\n\n $testPersjson \n\n")
+            println("------------------p6000-nav----------------------")
+        }
 
     }
 

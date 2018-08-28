@@ -4,10 +4,10 @@ package no.nav.eessi.eessifagmodul.models
 // SED class main request class to basis
 // Strukturerte Elektroniske Dokumenter
 data class SED (
-        var nav: Nav? = null,
         var sed: String? = null,
         val sedGVer: String? = null,
         val sedVer: String? = null,
+        var nav: Nav? = null,
         var pensjon: Pensjon? = null,
         var trygdetid: PersonTrygdeTid? = null,
     	//val medlemskap: Medlemskap? = null, A01?.

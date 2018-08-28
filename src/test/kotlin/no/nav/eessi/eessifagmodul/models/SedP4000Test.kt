@@ -17,6 +17,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
+import org.skyscreamer.jsonassert.JSONAssert
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.nio.file.Files
@@ -43,6 +44,8 @@ class SedP4000Test {
 
     val logger: Logger by lazy { LoggerFactory.getLogger(SedP4000Test::class.java) }
 
+    private val printout : Boolean = false
+
     @Before
     fun setup() {
         prefillDataMock = PrefillDataModel()
@@ -65,16 +68,17 @@ class SedP4000Test {
         sed.pensjon = pen
         sed.trygdetid = result
 
-        logger.debug("\n\n\n------------------------------------------------------------------------------------------------\n\n\n")
-
         val json2 = mapAnyToJson(sed, true)
-        logger.debug(json2)
+        if (printout) {
+            println("\n\n\n------------------------------------------------------------------------------------------------\n\n\n")
+            println(json2)
+            println("\n\n\n------------------------------------------------------------------------------------------------\n\n\n")
+        }
 
         val mapSED = mapJsonToAny(json2, typeRefs<SED>())
 
         assertNotNull(mapSED)
         assertEquals(result, mapSED.trygdetid)
-
     }
 
 
@@ -87,15 +91,22 @@ class SedP4000Test {
         assertNotNull(p4000file)
         validateJson(p4000file)
 
-
         val sed = mapJsonToAny(p4000file, typeRefs<SED>())
         assertNotNull(sed)
 
-        println(sed)
+        assertNotNull(sed.trygdetid)
+        assertNotNull(sed.trygdetid?.ansattSelvstendigPerioder)
+
 
         val json = mapAnyToJson(sed, true)
-        logger.debug("\n\n\n-------------[ Fra fil -> SED -> Json ]--------------------------------------------------------------------------\n\n\n")
-        logger.debug(json)
+        if (true) {
+            println(p4000file)
+            println("\n\n\n-------------[ Fra fil -> SED -> Json ]--------------------------------------------------------------------------\n\n\n")
+            println(json)
+            println("\n\n\n------------------------------------------------------------------------------------------------\n\n\n")
+        }
+        JSONAssert.assertEquals(p4000file, json, false)
+
     }
 
 
@@ -118,12 +129,13 @@ class SedP4000Test {
 
         val json = mapAnyToJson(req)
         assertNotNull(json)
-        logger.debug("-------------------------------------------------------------------------------------------------------")
-        logger.debug(json)
-        logger.debug("-------------------------------------------------------------------------------------------------------")
+        if (printout) {
+            println("-------------------------------------------------------------------------------------------------------")
+            println(json)
+            println("-------------------------------------------------------------------------------------------------------")
+        }
 
         val apireq = mapJsonToAny(json, typeRefs<ApiController.ApiRequest>())
-
         val payjson = apireq.payload ?: ""
         assertNotNull(payjson)
 
@@ -151,16 +163,16 @@ class SedP4000Test {
         val backtojson = mapAnyToJson(obj, true)
         assertNotNull(backtojson)
         validateJson(backtojson)
-        println("jsonfile size : ${jsonfile.length}")
-        println("backtojs size : ${backtojson.length}")
 
-        println("-------------------------------------------------------------------------------------------------------")
-        println(jsonfile)
-        println("-------------------------------------------------------------------------------------------------------")
-        println(backtojson)
+        if (printout) {
+            println("-------------------------------------------------------------------------------------------------------")
+            println(jsonfile)
+            println("-------------------------------------------------------------------------------------------------------")
+            println(backtojson)
+            println("-------------------------------------------------------------------------------------------------------")
+        }
 
         val payload = mapAnyToJson(obj)
-
         val items = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
         val req = ApiController.ApiRequest(
                 institutions = items,
@@ -175,9 +187,11 @@ class SedP4000Test {
 
         val jsonreq = mapAnyToJson(req)
 
-        println("-------------------------------------------------------------------------------------------------------")
-        println(  jsonreq        )
-        println("-------------------------------------------------------------------------------------------------------")
+        if (printout) {
+            println("-------------------------------------------------------------------------------------------------------")
+            println(  jsonreq        )
+            println("-------------------------------------------------------------------------------------------------------")
+        }
     }
 
     @Test
@@ -196,7 +210,7 @@ class SedP4000Test {
                 pinid = "1000060964183",
                 buc = "P_BUC_01",
                 subjectArea = "Pensjon",
-                payload = "$jsonfile"
+                payload = jsonfile
         )
         val reqjson = mapAnyToJson(req,true)
         assertNotNull(reqjson)
@@ -214,14 +228,15 @@ class SedP4000Test {
 
         val jsondata = mapAnyToJson(result.sed, true)
 
-        println("----- ReqiestAPI P4000 --------------------------------------------------------------------------------")
-        println(reqjson)
-        println("-------------------------------------------------------------------------------------------------------")
-        println("\n")
-        println("----- SED P4000 test-----------------------------------------------------------------------------------")
-        println(jsondata)
-        println("-------------------------------------------------------------------------------------------------------")
-
+        if (printout) {
+            println("----- ReqiestAPI P4000 --------------------------------------------------------------------------------")
+            println(reqjson)
+            println("-------------------------------------------------------------------------------------------------------")
+            println("\n")
+            println("----- SED P4000 test-----------------------------------------------------------------------------------")
+            println(jsondata)
+            println("-------------------------------------------------------------------------------------------------------")
+        }
     }
 
 
