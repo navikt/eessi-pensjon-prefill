@@ -61,7 +61,7 @@ class PrefillNav(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS)
 
         }
         logger.debug("SED er ikke P6000,P2000,P4000,P5000.. - (fyller ut med mock)")
-        val brukerfake = Bruker(
+        return Bruker(
                 person = Person(
                     fornavn = "F",
                     kjoenn = "k",
@@ -69,7 +69,6 @@ class PrefillNav(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS)
                     etternavn = "E"
                 )
             )
-        return brukerfake
     }
 
     private fun hentBarnaFraTPS(utfyllingData: PrefillDataModel) :List<BarnItem> {

@@ -19,17 +19,4 @@ app:
 securitytokenservice:
   url: 'https://example.com/SecurityTokenServiceProvider/'
 
-security:
-  basic:
-    enabled: 'false'
-
-management:
-  security:
-    enabled: 'false'
-
-freg:
-  security:
-    oidc:
-      enabled: 'false'
-
 rinaaction.waittime: '4000'

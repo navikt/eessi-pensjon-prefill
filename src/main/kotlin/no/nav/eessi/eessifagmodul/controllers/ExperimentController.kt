@@ -6,6 +6,7 @@ import no.nav.eessi.eessifagmodul.models.*
 import no.nav.eessi.eessifagmodul.services.RinaActions
 import no.nav.eessi.eessifagmodul.services.EuxService
 import no.nav.eessi.eessifagmodul.services.PostnummerService
+import no.nav.security.oidc.api.Protected
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonResponse
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -17,6 +18,7 @@ import java.net.URI
 @CrossOrigin
 @RestController
 @RequestMapping("/api/experiments")
+@Protected
 class ExperimentController {
 
     @Autowired
@@ -68,8 +70,7 @@ class ExperimentController {
 
     @GetMapping("/testPerson/{ident}")
     fun testPerson(@PathVariable("ident") ident: String): HentPersonResponse {
-        val personV3 = personV3Client.hentPerson(ident)
-        return personV3
+        return personV3Client.hentPerson(ident)
     }
 
     @GetMapping("/possibleactions/{rinanr}", produces = [MediaType.APPLICATION_JSON_VALUE])

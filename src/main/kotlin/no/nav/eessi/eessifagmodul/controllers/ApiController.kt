@@ -10,17 +10,16 @@ import no.nav.eessi.eessifagmodul.services.RinaActions
 import no.nav.eessi.eessifagmodul.services.EuxService
 import no.nav.eessi.eessifagmodul.services.LandkodeService
 import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
+import no.nav.security.oidc.api.Protected
 import no.nav.eessi.eessifagmodul.utils.mapJsonToAny
 import no.nav.eessi.eessifagmodul.utils.typeRefs
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
-import java.nio.file.Files
-import java.nio.file.Paths
 import java.util.*
 
-
+@Protected
 @RestController
 @RequestMapping("/api")
 class ApiController(private val euxService: EuxService, private val prefillSED: PrefillSED, private val aktoerIdClient: AktoerIdClient) {
@@ -39,8 +38,8 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
         return landkodeService.hentLandkoer2()
     }
 
-    @ApiOperation("Viser en oppsumering av preutfylt SED. Før innsending til EUX")
-    @PostMapping("/v1.0/sed/confirm")
+    @ApiOperation("viser en oppsumering av SED prefill. Før innsending til EUX Basis")
+    @PostMapping("/sed/confirm")
     fun confirmDocument(@RequestBody request: ApiRequest): SED {
 
         val data = createPreutfyltSED(request)
@@ -52,7 +51,7 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
         return sed
     }
 
-    @ApiOperation("Send sender valgt SED ut av RINA til mottaker(e)")
+    @ApiOperation("sendSed send current sed")
     @PostMapping("/sed/send")
     fun sendSed(@RequestBody request: ApiRequest): Boolean {
 
@@ -63,7 +62,7 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
         return euxService.sendSED(rinanr, sed, korrid.toString())
     }
 
-    @ApiOperation("Legge til SED på et eksisterende RINA document. kjører preutfylling")
+    @ApiOperation("legge til SED på et eksisterende Rina document. kjører preutfylling")
     @PostMapping("/sed/add")
     fun addDocument(@RequestBody request: ApiRequest): String {
         //vi må ha mer fra frontend // backend..
@@ -149,7 +148,7 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
         if (rinaActions.canUpdate(data.getSEDid(), euSaksnr)) {
             if (request.sendsed != null && request.sendsed == true) {
                 val result = euxService.sendSED(euSaksnr, data.getSEDid(), korrid.toString())
-                if (result == false) {
+                if (!result) {
                     throw SedDokumentIkkeSendtException("SED ikke sendt. muligens opprettet på RINANR: $euSaksnr")
                 }
             }

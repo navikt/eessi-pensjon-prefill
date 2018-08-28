@@ -39,7 +39,7 @@ class ApiControllerTest {
 
     private lateinit var prefillDataMock: PrefillDataModel
 
-    lateinit var apiController: ApiController
+    private lateinit var apiController: ApiController
 
     @Before
     fun setUp() {

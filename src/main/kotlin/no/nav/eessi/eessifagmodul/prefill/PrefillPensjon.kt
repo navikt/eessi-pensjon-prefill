@@ -5,7 +5,6 @@ import no.nav.eessi.eessifagmodul.models.Pensjon
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
-import org.springframework.stereotype.Service
 
 @Component
 class PrefillPensjon(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS) {
@@ -57,8 +56,7 @@ class PrefillPensjon(private val preutfyllingPersonFraTPS: PrefillPersonDataFrom
             return pensjon
         }
         logger.debug("SED er ikke gyldig?")
-        val pensjonfake = Pensjon()
-        return pensjonfake
+        return Pensjon()
     }
 
 }

@@ -1,16 +1,12 @@
 package no.nav.eessi.eessifagmodul.prefill
 
-import no.nav.eessi.eessifagmodul.clients.aktoerid.AktoerIdClient
-import no.nav.eessi.eessifagmodul.models.PersonIkkeFunnetException
 import no.nav.eessi.eessifagmodul.models.SED
-import no.nav.tjeneste.virksomhet.aktoer.v2.binding.HentIdentForAktoerIdPersonIkkeFunnet
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
-import org.springframework.stereotype.Service
 
 @Component
-class PrefillPerson(private val prefillNav: PrefillNav, private val prefilliPensjon: PrefillPensjon): Prefill<SED> {
+class PrefillPerson(private val prefillNav: PrefillNav, private val prefilliPensjon: PrefillPensjon) : Prefill<SED> {
 
     //private val aktoerIdClient: AktoerIdClient,
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillPerson::class.java) }
@@ -73,7 +69,6 @@ class PrefillPerson(private val prefillNav: PrefillNav, private val prefilliPens
         return prefillData.sed
 
     }
-
 
 
 }

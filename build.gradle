@@ -9,8 +9,9 @@ buildscript {
         cxfVersion = '3.2.6'
         aktoerIdVersion = '2.0.1'
         mockitoVersion = '2.8.+'
-        fregSecurityVersion = '2.1.0'
         personV3Version = '3.4.1'
+        oidcTokenSupportVersion = '0.2.7'
+        logstashLogbackVersion = '4.10'
     }
     repositories {
         maven {
@@ -59,13 +60,7 @@ dependencies {
 
     // Spring-boot
     compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
-    compile("org.springframework.boot:spring-boot-starter-security:${springBootVersion}")
-    compile("org.springframework.boot:spring-boot-devtools:${springBootVersion}")
     testCompile("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
-
-    // OIDC-support
-    compile("no.nav.freg:freg-security-oidc:2.1.1")
-    compile("org.bitbucket.b_c:jose4j:0.6.4")
 
     // Apache CXF
     compile("org.apache.cxf:cxf-spring-boot-starter-jaxws:${cxfVersion}")
@@ -86,6 +81,12 @@ dependencies {
     testCompile("org.jetbrains.kotlin:kotlin-test-junit")
     testCompile("com.nhaarman:mockito-kotlin-kt1.1:1.5.0")
     testCompile("org.skyscreamer:jsonassert:1.5.0")
+
+    // Logging
+    compile("net.logstash.logback:logstash-logback-encoder:${logstashLogbackVersion}")
+
+    // OIDC
+    compile("no.nav.security:oidc-spring-support:${oidcTokenSupportVersion}")
 
     // Tjenestespesifikasjoner
     compile("no.nav.tjenester.fim:nav-fim-aktoer-v2-tjenestespesifikasjon:${aktoerIdVersion}:jaxws")

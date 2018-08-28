@@ -36,15 +36,12 @@ class SedP5000Test {
 
         //logger.debug("\n\n $json \n\n")
     }
-
-
 }
 
 //P5000 - bekreftforsikred
 fun createMedlemskapMock(): Pensjon {
 
-    val pensjon = Pensjon(
-
+    return Pensjon(
             sak = Sak(
                     enkeltkrav = KravtypeItem(
                             krav = "10"
@@ -107,5 +104,4 @@ fun createMedlemskapMock(): Pensjon {
                     )
             )
     )
-    return pensjon
 }

@@ -25,7 +25,7 @@ class PostnummerService {
             if (line != null) {
                 val postArray = line.split(csvSplitBy.toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
                 val data = PostData(postArray[0], postArray[1])
-                postalCodeTable.put(data.postnmmer, data)
+                postalCodeTable[data.postnmmer] = data
             }
         }
         logger.debug("Har importert kodeverk fra $FILENAME")
@@ -46,6 +46,6 @@ class PostnummerService {
     }
 
     private companion object {
-        private val FILENAME = "/kodeverk/postnummerregister.txt"
+        private const val FILENAME = "/kodeverk/postnummerregister.txt"
     }
 }

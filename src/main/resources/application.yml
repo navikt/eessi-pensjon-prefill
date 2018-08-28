@@ -2,20 +2,12 @@ eessibasis:
   url: 'https://eux-app.nais.preprod.local'
 #  url: 'https://eux-app-t8.nais.preprod.local'
 
-freg:
-  security:
-    oidc:
-      secured-path: '/api/**'
-      refresh:
-        enabled: 'false'
-      auth:
-        header-filter-enabled: 'true'
-        cookie-filter-enabled: 'false'
-      login:
-        enabled: 'false'
-      openam:
-        url: '${OPENIDCONNECT_URL}'
-      client-id: '${APP_NAME}-${FASIT_ENVIRONMENT_NAME}'
-      client-secret: '${OPENIDCONNECTAGENT_PASSWORD}'
+no.nav.security.oidc:
+  issuer.oidc:
+    discoveryurl: '${OPENIDCONNECT_URL}/oauth2/.well-known/openid-configuration'
+    accepted_audience: 'eessi-fagmodul-${FASIT_ENVIRONMENT_NAME}'
+
+# Empty on purpose so that oidc-spring-support doesn't use http.proxy
+http.proxy.parametername:
 
 rinaaction.waittime: '4000'

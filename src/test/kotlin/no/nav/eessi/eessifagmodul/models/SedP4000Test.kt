@@ -40,7 +40,7 @@ class SedP4000Test {
 
     private lateinit var prefillDataMock: PrefillDataModel
 
-    lateinit var apiController: ApiController
+    private lateinit var apiController: ApiController
 
     val logger: Logger by lazy { LoggerFactory.getLogger(SedP4000Test::class.java) }
 
@@ -244,7 +244,7 @@ class SedP4000Test {
 
 fun createPersonTrygdeTidMock(): PersonTrygdeTid {
 
-    val personTrygdeTid = PersonTrygdeTid(
+    return PersonTrygdeTid(
             foedselspermisjonPerioder = listOf(
                     StandardItem(
                             land = "NO",
@@ -442,5 +442,5 @@ fun createPersonTrygdeTidMock(): PersonTrygdeTid {
                     )
             )
     )
-    return personTrygdeTid
+
 }

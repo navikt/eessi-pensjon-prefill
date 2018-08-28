@@ -18,7 +18,7 @@ class PrefillPersonDataFromTPSTest{
     @Mock
     lateinit var mockPersonClient: PersonV3Client
 
-    lateinit var preutfyllingTPS: PrefillPersonDataFromTPS
+    private lateinit var preutfyllingTPS: PrefillPersonDataFromTPS
 
 
     @Before

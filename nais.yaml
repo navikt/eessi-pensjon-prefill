@@ -1,14 +1,18 @@
 name: eessi-fagmodul
 image: repo.adeo.no:5443/eessi-fagmodul
 team: eessi-pensjon
+
 replicas:
     min: 1
     max: 1
     cpuThresholdPercentage: 50
+
 prometheus:
     enabled: true
     path: /internal/prometheus
+
 port: 8080
+
 healthcheck:
     liveness:
       initialDelay: 60
@@ -18,6 +22,7 @@ healthcheck:
       initialDelay: 60
       failureThreshold: 10
       path: /internal/isready
+
 resources:
     limits:
       cpu: 2
@@ -25,10 +30,12 @@ resources:
     requests:
       cpu: 100m
       memory: 512Mi
+
 fasitResources:
   used:
   - alias: Aktoer_v2
     resourceType: WebserviceEndpoint
+
   - alias: virksomhet:Person_v3
     resourceType: WebserviceEndpoint
 
@@ -40,15 +47,7 @@ fasitResources:
 
   - alias: OpenIdConnect
     resourceType: baseurl
-    propertyMap:
-      url: security.oidc.host
-  - alias: OpenIdConnect
-    resourceType: baseurl
-  - alias: OpenIdConnectAgent
-    resourceType: credential
-    propertyMap:
-      username: security.oidc.agentName
-      password: security.oidc.clientSecret
+
   - alias: securityTokenService
     resourceType: baseurl
 
