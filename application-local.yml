@@ -35,3 +35,11 @@ no.nav.security.oidc:
     accepted_audience: 'eessi-fagmodul-localhost,eessi-fagmodul-t8,freg-token-provider-t0'
 
 http.proxy.parametername:
+
+management:
+  endpoints:
+    enabled-by-default: 'true'
+    jmx:
+      exposure.include: '*'
+    web:
+      exposure.include: '*'

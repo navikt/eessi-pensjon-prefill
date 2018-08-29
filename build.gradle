@@ -59,8 +59,9 @@ dependencies {
     compile("io.prometheus:simpleclient_pushgateway:${prometheusVersion}")
 
     // Spring-boot
-    compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
-    testCompile("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
+    compile("org.springframework.boot:spring-boot-starter-web")
+    compile("org.springframework.boot:spring-boot-starter-actuator")
+    testCompile("org.springframework.boot:spring-boot-starter-test")
 
     // Apache CXF
     compile("org.apache.cxf:cxf-spring-boot-starter-jaxws:${cxfVersion}")
