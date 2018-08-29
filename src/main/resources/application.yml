@@ -5,9 +5,18 @@ eessibasis:
 no.nav.security.oidc:
   issuer.oidc:
     discoveryurl: '${OPENIDCONNECT_URL}/oauth2/.well-known/openid-configuration'
-    accepted_audience: 'eessi-fagmodul-${FASIT_ENVIRONMENT_NAME}'
+    accepted_audience: 'eessi-fagmodul-${FASIT_ENVIRONMENT_NAME},eessi-fagmodul-frontend-${FASIT_ENVIRONMENT_NAME}'
 
 # Empty on purpose so that oidc-spring-support doesn't use http.proxy
 http.proxy.parametername:
+
+# TODO: These actuator-endpoints need to be secured before going to production. Also, enable only whats needed.
+management:
+  endpoints:
+    enabled-by-default: 'true'
+    jmx:
+      exposure.include: '*'
+    web:
+      exposure.include: '*'
 
 rinaaction.waittime: '4000'
