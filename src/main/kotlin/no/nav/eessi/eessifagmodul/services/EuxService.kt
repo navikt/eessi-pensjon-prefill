@@ -1,6 +1,5 @@
 package no.nav.eessi.eessifagmodul.services
 
-import com.sun.org.apache.xpath.internal.operations.Bool
 import no.nav.eessi.eessifagmodul.models.*
 import no.nav.eessi.eessifagmodul.utils.createErrorMessage
 import no.nav.eessi.eessifagmodul.utils.mapJsonToAny
@@ -17,25 +16,20 @@ import org.springframework.web.client.RestTemplate
 import org.springframework.web.util.UriComponentsBuilder
 import java.io.IOException
 
-
-private const val EUX_PATH: String = "/cpi"
-
 private val logger = LoggerFactory.getLogger(EuxService::class.java)
 
 @Service
 @Description("Service class for EuxBasis - EuxCpiServiceController.java")
-class EuxService(private val oidcRestTemplate: RestTemplate) {
+class EuxService(private val euxCpiRestTemplate: RestTemplate) {
 
     //Henter en liste over tilgjengelige aksjoner for den aktuelle RINA saken PK-51365"
-    fun getPossibleActions(euxCaseId: String): List<RINAaksjoner> {
-        val urlPath = "/MuligeAksjoner"
-
-        val builder = UriComponentsBuilder.fromPath("$EUX_PATH$urlPath")
-                .queryParam("RINASaksnummer", euxCaseId)
+    fun getPossibleActions(euSaksnr: String): List<RINAaksjoner> {
+        val builder = UriComponentsBuilder.fromPath("/MuligeAksjoner")
+                .queryParam("RINASaksnummer", euSaksnr)
 
         val httpEntity = HttpEntity("")
 
-        val response = oidcRestTemplate.exchange(builder.toUriString(), HttpMethod.GET, httpEntity, typeRef<String>())
+        val response = euxCpiRestTemplate.exchange(builder.toUriString(), HttpMethod.GET, httpEntity, typeRef<String>())
         val responseBody = response.body!!
         try {
             if (response.statusCode.isError) {
@@ -70,14 +64,12 @@ class EuxService(private val oidcRestTemplate: RestTemplate) {
      * @param sed (sed type P6000, P2000)
      */
     fun sendSED(euxCaseId: String, sed: String, korrelasjonID: String): Boolean {
-        val urlPath = "/SendSED"
-
         val documentID = hentDocuemntID(euxCaseId, sed)
         if (documentID.isBlank()) {
             throw IkkeGyldigKallException("Kan ikke Sende valgt sed")
         }
 
-        val builder = UriComponentsBuilder.fromPath("$EUX_PATH$urlPath")
+        val builder = UriComponentsBuilder.fromPath("/SendSED")
                 .queryParam("RINASaksnummer", euxCaseId)
                 .queryParam("DokumentID", documentID)
                 .queryParam("KorrelasjonsID", korrelasjonID)
@@ -86,7 +78,7 @@ class EuxService(private val oidcRestTemplate: RestTemplate) {
         headers.contentType = MediaType.APPLICATION_JSON
         val httpEntity = HttpEntity("", headers)
 
-        val response = oidcRestTemplate.exchange(builder.toUriString(), HttpMethod.POST, httpEntity, String::class.java)
+        val response = euxCpiRestTemplate.exchange(builder.toUriString(), HttpMethod.POST, httpEntity, String::class.java)
         logger.debug("Response SendSED på Rina: $euxCaseId, response:  $response")
 
         if (response.statusCodeValue == 200) {
@@ -105,9 +97,8 @@ class EuxService(private val oidcRestTemplate: RestTemplate) {
      */
     //void no confirmaton?
     fun createSEDonExistingRinaCase(jsonPayload: String, euxCaseId: String, korrelasjonID: String): HttpStatus {
-        val urlPath = "/SED"
 
-        val builder = UriComponentsBuilder.fromPath("$EUX_PATH$urlPath")
+        val builder = UriComponentsBuilder.fromPath("/SED")
                 .queryParam("RINASaksnummer", euxCaseId)
                 .queryParam("KorrelasjonsID", korrelasjonID)
 
@@ -115,7 +106,7 @@ class EuxService(private val oidcRestTemplate: RestTemplate) {
         headers.contentType = MediaType.APPLICATION_JSON
 
         val httpEntity = HttpEntity(jsonPayload, headers)
-        val response = oidcRestTemplate.exchange(builder.toUriString(), HttpMethod.POST, httpEntity, String::class.java)
+        val response = euxCpiRestTemplate.exchange(builder.toUriString(), HttpMethod.POST, httpEntity, String::class.java)
         logger.debug("Response opprett SED på Rina: $euxCaseId, response:  $response")
         return response.statusCode
     }
@@ -126,14 +117,13 @@ class EuxService(private val oidcRestTemplate: RestTemplate) {
      * @param documentId (sed documentid)
      */
     fun fetchSEDfromExistingRinaCase(euxCaseId: String, documentId: String): SED {
-        val urlPath = "/SED"
 
-        val builder = UriComponentsBuilder.fromPath("$EUX_PATH$urlPath")
+        val builder = UriComponentsBuilder.fromPath("/SED")
                 .queryParam("RINASaksnummer", euxCaseId)
 
         val httpEntity = HttpEntity("")
 
-        val response = oidcRestTemplate.exchange(builder.toUriString(), HttpMethod.GET, httpEntity, typeRef<String>())
+        val response = euxCpiRestTemplate.exchange(builder.toUriString(), HttpMethod.GET, httpEntity, typeRef<String>())
         val responseBody = response.body ?: throw SedDokumentIkkeOpprettetException("Sed dokument ikke funnet")
         try {
             if (response.statusCode.isError) {
@@ -152,14 +142,12 @@ class EuxService(private val oidcRestTemplate: RestTemplate) {
      * @param documentId (sed documentid)
      */
     fun deleteSEDfromExistingRinaCase(euxCaseId: String, documentId: String): Boolean {
-        val urlPath = "/SED"
-
-        val builder = UriComponentsBuilder.fromPath("$EUX_PATH$urlPath")
+        val builder = UriComponentsBuilder.fromPath("/SED")
                 .queryParam("RINASaksnummer", euxCaseId)
 
         val httpEntity = HttpEntity("")
 
-        val response = oidcRestTemplate.exchange(builder.toUriString(), HttpMethod.DELETE, httpEntity, typeRef<String>())
+        val response = euxCpiRestTemplate.exchange(builder.toUriString(), HttpMethod.DELETE, httpEntity, typeRef<String>())
         logger.debug("Response SendSED på Rina: $euxCaseId, response:  $response")
 
         if (response.statusCodeValue == 200) {
@@ -188,9 +176,8 @@ class EuxService(private val oidcRestTemplate: RestTemplate) {
      * @return The ID of the created case
      */
     fun createCaseAndDocument(jsonPayload: String, bucType: String, fagSaknr: String, mottaker: String, vedleggType: String = "", korrelasjonID: String): String {
-        val urlPath = "/OpprettBuCogSED"
 
-        val builder = UriComponentsBuilder.fromPath("$EUX_PATH$urlPath")
+        val builder = UriComponentsBuilder.fromPath("/OpprettBuCogSED")
                 .queryParam("BuCType", bucType)
                 .queryParam("FagSakNummer", fagSaknr)
                 .queryParam("MottagerID", mottaker)
@@ -210,7 +197,7 @@ class EuxService(private val oidcRestTemplate: RestTemplate) {
         headers.contentType = MediaType.MULTIPART_FORM_DATA
 
         val httpEntity = HttpEntity(map, headers)
-        val response = oidcRestTemplate.exchange(builder.toUriString(), HttpMethod.POST, httpEntity, String::class.java)
+        val response = euxCpiRestTemplate.exchange(builder.toUriString(), HttpMethod.POST, httpEntity, String::class.java)
         return response.body ?: throw RinaCasenrIkkeMottattException("Ikke mottatt RINA casenr, feiler ved opprettelse av BUC og SED")
     }
 }
