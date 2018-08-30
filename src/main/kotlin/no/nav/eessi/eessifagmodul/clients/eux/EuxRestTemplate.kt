@@ -19,11 +19,11 @@ private val logger: Logger by lazy { LoggerFactory.getLogger(EuxRestTemplate::cl
 @Component
 class EuxRestTemplate(val oidcRequestContextHolder: OIDCRequestContextHolder) {
 
-    @Value("\${eessibasis.url}")
+    @Value("\${euxbasis.v1.url}")
     lateinit var url: String
 
     @Bean
-    fun createEuxRestTemplate(templateBuilder: RestTemplateBuilder): RestTemplate {
+    fun createEuxCpiRestTemplate(templateBuilder: RestTemplateBuilder): RestTemplate {
         return templateBuilder
                 .rootUri(url)
                 .errorHandler(DefaultResponseErrorHandler())
