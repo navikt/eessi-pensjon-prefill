@@ -120,6 +120,7 @@ class EuxService(private val euxCpiRestTemplate: RestTemplate) {
 
         val builder = UriComponentsBuilder.fromPath("/SED")
                 .queryParam("RINASaksnummer", euxCaseId)
+                .queryParam("DokumentID", documentId)
 
         val httpEntity = HttpEntity("")
 
@@ -144,6 +145,7 @@ class EuxService(private val euxCpiRestTemplate: RestTemplate) {
     fun deleteSEDfromExistingRinaCase(euxCaseId: String, documentId: String): Boolean {
         val builder = UriComponentsBuilder.fromPath("/SED")
                 .queryParam("RINASaksnummer", euxCaseId)
+                .queryParam("DokumentID", documentId)
 
         val httpEntity = HttpEntity("")
 
@@ -197,6 +199,7 @@ class EuxService(private val euxCpiRestTemplate: RestTemplate) {
         headers.contentType = MediaType.MULTIPART_FORM_DATA
 
         val httpEntity = HttpEntity(map, headers)
+
         val response = euxCpiRestTemplate.exchange(builder.toUriString(), HttpMethod.POST, httpEntity, String::class.java)
         return response.body ?: throw RinaCasenrIkkeMottattException("Ikke mottatt RINA casenr, feiler ved opprettelse av BUC og SED")
     }

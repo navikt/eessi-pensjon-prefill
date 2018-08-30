@@ -35,10 +35,12 @@ class EuxRestTemplate(val oidcRequestContextHolder: OIDCRequestContextHolder) {
 
     class OidcAuthorizationHeaderInterceptor(private val oidcRequestContextHolder: OIDCRequestContextHolder) : ClientHttpRequestInterceptor {
         override fun intercept(request: HttpRequest, body: ByteArray, execution: ClientHttpRequestExecution): ClientHttpResponse {
-            request.headers[HttpHeaders.AUTHORIZATION]?.let {
+            if (request.headers[HttpHeaders.AUTHORIZATION] == null) {
                 val oidcToken = oidcRequestContextHolder.oidcValidationContext.getToken("oidc").idToken
                 logger.debug("Adding Bearer-token to request: $oidcToken")
                 request.headers[HttpHeaders.AUTHORIZATION] = "Bearer $oidcToken"
+            } else {
+                logger.debug("Authorization header already set: ${request.headers[HttpHeaders.AUTHORIZATION]}")
             }
             return execution.execute(request, body)
         }

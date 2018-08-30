@@ -4,11 +4,12 @@
 ## - OPENAM_SECRET
 
 euxbasis.v1:
-#  url: 'https://eux-app.nais.preprod.local'
-  url: 'http://localhost:9090'
+  url: 'https://eux-app.nais.preprod.local/cpi'
+#  url: 'http://localhost:9090/cpi'
 
 aktoer.v2:
-  endpointurl: 'https://app-t8.adeo.no/aktoerid/AktoerService/v2'
+  endpointurl: 'https://app-t11.adeo.no/aktoerid/AktoerService/v2'
+#  endpointurl: 'https://app-t8.adeo.no/aktoerid/AktoerService/v2'
 
 virksomhet.person.v3:
   endpointurl: 'https://wasapp-t7.adeo.no/tpsws/ws/Person/v3'  # maskert-data
@@ -32,7 +33,7 @@ server:
 no.nav.security.oidc:
   issuer.oidc:
     discoveryurl: 'https://isso-t.adeo.no:443/isso/oauth2/.well-known/openid-configuration'
-    accepted_audience: 'eessi-fagmodul-localhost,eessi-fagmodul-t8,freg-token-provider-t0'
+    accepted_audience: 'eessi-fagmodul-localhost,eessi-fagmodul-t8,freg-token-provider-t0,eessi-fagmodul-frontend-t8'
 
 http.proxy.parametername:
 
