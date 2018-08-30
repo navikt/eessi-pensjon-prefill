@@ -19,8 +19,13 @@ import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
+import org.springframework.web.util.UriComponentsBuilder
+import java.util.*
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
+import java.util.HashMap
+
+
 
 @RunWith(MockitoJUnitRunner::class)
 class ApiControllerTest {
@@ -233,6 +238,26 @@ class ApiControllerTest {
         apiController.confirmDocument(mockData)
     }
 
+    @Test
+    fun `check rest api path correct`() {
+        val path = "/sed/get/{rinanr}/{documentid}"
+
+        val uriParams = HashMap<String, String>()
+        uriParams["rinanr"] = "123456789"
+        uriParams["documentid"] = "DOC1223213234234"
+
+        val builder = UriComponentsBuilder.fromUriString(path).buildAndExpand(uriParams)
+
+
+        val uristr = builder.toUriString()
+        println(uristr)
+        val uri = builder.toUri()
+        println(uri)
+        val path2 = builder.path
+        println(path2)
+
+        assertEquals("/sed/get/123456789/DOC1223213234234", builder.path)
+    }
 
 
 }
