@@ -115,7 +115,7 @@ class SedP4000Test {
 
         val trygdetid  = createPersonTrygdeTidMock()
         val payload = mapAnyToJson(trygdetid)
-        logger.debug(payload)
+        //logger.debug(payload)
 
         val req = ApiController.ApiRequest(
                 sed = "P4000",
@@ -129,7 +129,7 @@ class SedP4000Test {
 
         val json = mapAnyToJson(req)
         assertNotNull(json)
-        if (printout) {
+        if (true) {
             println("-------------------------------------------------------------------------------------------------------")
             println(json)
             println("-------------------------------------------------------------------------------------------------------")
@@ -139,12 +139,10 @@ class SedP4000Test {
         val payjson = apireq.payload ?: ""
         assertNotNull(payjson)
 
-        logger.debug(payjson)
+        //logger.debug(payjson)
         assertEquals(payload, payjson)
-
         val p4k = mapJsonToAny(payjson, typeRefs<PersonTrygdeTid>())
         assertNotNull(p4k)
-
         assertEquals("DK", p4k.boPerioder!![0].land)
 
     }

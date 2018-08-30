@@ -57,10 +57,10 @@ class EuxService(private val oidcRestTemplate: RestTemplate) {
         val aksjoner = getPossibleActions(euxCaseId)
         aksjoner.forEach {
             if (sed == it.dokumentType && aksjon == it.navn) {
-                return it.dokumentId ?: ""
+                return it.dokumentId ?: throw IkkeGyldigKallException("Ingen gyldig dokumentID funnet")
             }
         }
-        return ""
+        throw IkkeGyldigKallException("Ingen gyldig dokumentID funnet")
     }
 
     /**

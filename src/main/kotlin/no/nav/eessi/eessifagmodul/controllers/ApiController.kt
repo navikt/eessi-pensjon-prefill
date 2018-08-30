@@ -92,7 +92,7 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
     }
 
     fun mockSED(request: ApiRequest) : SED {
-        var sed: SED?
+        val sed: SED?
         //Mocking P2000-P2200 muligens P2100...
             when {
                 request.payload == null -> throw IkkeGyldigKallException("Mangler PayLoad")
@@ -116,11 +116,22 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
 
         val korrid = UUID.randomUUID()
 
-        val datamodel = createPrefillData(request)
 
-        val data = createPreutfyltSED(datamodel)
+        //temp for mock sendt on payload..
+        val data: PrefillDataModel?
+        if (request.mockSED is Boolean && request.mockSED) {
+            data = PrefillDataModel()
+            data.penSaksnummer = "1232134234234"
+            data.personNr = "123456789"
+            data.buc = request.buc!!
+            data.institution = request.institutions!!
+        } else {
+//            val data = createPreutfyltSED(datamodel)
+            val datamodel = createPrefillData(request)
+            data = createPreutfyltSED(datamodel)
+        }
 
-        var sed: SED?
+        val sed: SED?
         //mock SED P2000-P2200
         sed = if (request.mockSED is Boolean && request.mockSED) {
             mockSED(request)
@@ -177,14 +188,15 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
             request.institutions == null -> throw IkkeGyldigKallException("Mangler Institusjoner")
 
         //Denne validering og utfylling kan benyttes på SED P2000 og P6000
-            validsed(request.sed , "P2000,P6000,P5000") -> {
+            validsed(request.sed , "P2000,P2200,P6000,P5000") -> {
+                val pinid = hentAktoerIdPin(request.pinid)
                 PrefillDataModel().build(
                         caseId = request.caseId,
                         buc = request.buc,
                         subject = request.subjectArea,
                         sedID = request.sed,
                         aktoerID = request.pinid,
-                        pinID = hentAktoerIdPin(request.pinid),
+                        pinID = pinid,
                         institutions = request.institutions
                 )
             }
@@ -192,13 +204,14 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
             validsed(request.sed, "P4000") -> {
                 if (request.payload == null) { throw IkkeGyldigKallException("Mangler metadata, payload") }
                 if (request.euxCaseId == null) { throw IkkeGyldigKallException("Mangler euxCaseId (RINANR)") }
+                val pinid = hentAktoerIdPin(request.pinid)
                 PrefillDataModel().build(
                         caseId = request.caseId,
                         buc = request.buc,
                         subject = request.subjectArea,
                         sedID = request.sed,
                         aktoerID = request.pinid,
-                        pinID = hentAktoerIdPin(request.pinid),
+                        pinID = pinid,
                         institutions = request.institutions,
                         payload = request.payload,
                         euxcaseId = request.euxCaseId
@@ -223,9 +236,9 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
         return result.contains(sed)
     }
 
-    @Throws(RuntimeException::class)
+    @Throws(PersonIkkeFunnetException::class)
     fun hentAktoerIdPin(aktorid: String): String {
-        if (aktorid.isBlank()) return ""
+        if (aktorid.isBlank()) throw IkkeGyldigKallException("Mangler aktoearID")
         return aktoerIdClient.hentPinIdentFraAktorid(aktorid)
     }
 
