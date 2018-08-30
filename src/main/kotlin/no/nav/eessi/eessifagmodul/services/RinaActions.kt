@@ -13,14 +13,17 @@ class RinaActions(private val euxService: EuxService) {
     var timeTries = 5               // times to try
     var waittime : Long = 4000      // waittime (basis venter 6000 på flere tjenester?)
 
-    private val create = "Create"
-    private val update = "Update"
+    val create = "Create"
+    val update = "Update"
 
     fun canUpdate(sed: String, rinanr: String) : Boolean {
-        return isActionPossible(sed, rinanr, update, 1)
+        return canDoWhat(sed, rinanr, update, 1)
     }
     fun canCreate(sed: String, rinanr: String) : Boolean {
-        return isActionPossible(sed, rinanr, create,  5)
+        return canDoWhat(sed, rinanr, create,  5)
+    }
+    fun canDoWhat(sed: String, rinanr: String, aNavn: String, deep: Int) : Boolean {
+        return isActionPossible(sed, rinanr, aNavn,  deep)
     }
 
     private fun isActionPossible(sed: String, rinanr: String, navn: String, deep: Int = 1) : Boolean {
@@ -31,11 +34,17 @@ class RinaActions(private val euxService: EuxService) {
 
         run breaker@ {
             result.forEach {
-                logger.debug("iterating igjennon aksjoner for å finne $sed. har: ${it.dokumentType} og ${it.navn} ")
-                if (sed == it.dokumentType && navn == it.navn) {
-                    validCheck = true
-                    logger.debug("Funnet sed og sjekker om '$navn' finnes. validCheck: $validCheck")
-                    return@breaker //exit foreatch
+                logger.debug("iterating igjennon aksjoner for å finne $sed. har: ${it.dokumentType} og ${it.navn} eller ${it.dokumentId} ")
+                if (sed.startsWith("P")) {
+                    if (sed == it.dokumentType && navn == it.navn) {
+                        validCheck = true
+                        logger.debug("Funnet sed og sjekker om '$navn' finnes. validCheck: $validCheck")
+                        return@breaker //exit foreatch
+                    }
+                } else if (sed == it.dokumentId && navn == it.navn) {
+                        validCheck = true
+                        logger.debug("Funnet sed og sjekker om '$navn' finnes. validCheck: $validCheck")
+                        return@breaker //exit foreatch
                 }
             }
         }

@@ -1,8 +1,7 @@
 package no.nav.eessi.eessifagmodul.services
 
-import no.nav.eessi.eessifagmodul.models.IkkeGyldigKallException
-import no.nav.eessi.eessifagmodul.models.RINAaksjoner
-import no.nav.eessi.eessifagmodul.models.RinaCasenrIkkeMottattException
+import com.sun.org.apache.xpath.internal.operations.Bool
+import no.nav.eessi.eessifagmodul.models.*
 import no.nav.eessi.eessifagmodul.utils.createErrorMessage
 import no.nav.eessi.eessifagmodul.utils.mapJsonToAny
 import no.nav.eessi.eessifagmodul.utils.typeRef
@@ -28,11 +27,11 @@ private val logger = LoggerFactory.getLogger(EuxService::class.java)
 class EuxService(private val oidcRestTemplate: RestTemplate) {
 
     //Henter en liste over tilgjengelige aksjoner for den aktuelle RINA saken PK-51365"
-    fun getPossibleActions(euSaksnr: String): List<RINAaksjoner> {
+    fun getPossibleActions(euxCaseId: String): List<RINAaksjoner> {
         val urlPath = "/MuligeAksjoner"
 
         val builder = UriComponentsBuilder.fromPath("$EUX_PATH$urlPath")
-                .queryParam("RINASaksnummer", euSaksnr)
+                .queryParam("RINASaksnummer", euxCaseId)
 
         val httpEntity = HttpEntity("")
 
@@ -120,6 +119,55 @@ class EuxService(private val oidcRestTemplate: RestTemplate) {
         logger.debug("Response opprett SED på Rina: $euxCaseId, response:  $response")
         return response.statusCode
     }
+
+    /**
+     * call to fetch existing sed document on existing rina case.
+     * @param euxCaseId (rina id)
+     * @param documentId (sed documentid)
+     */
+    fun fetchSEDfromExistingRinaCase(euxCaseId: String, documentId: String): SED {
+        val urlPath = "/SED"
+
+        val builder = UriComponentsBuilder.fromPath("$EUX_PATH$urlPath")
+                .queryParam("RINASaksnummer", euxCaseId)
+
+        val httpEntity = HttpEntity("")
+
+        val response = oidcRestTemplate.exchange(builder.toUriString(), HttpMethod.GET, httpEntity, typeRef<String>())
+        val responseBody = response.body ?: throw SedDokumentIkkeOpprettetException("Sed dokument ikke funnet")
+        try {
+            if (response.statusCode.isError) {
+                throw createErrorMessage(responseBody)
+            } else {
+                return mapJsonToAny(responseBody, typeRefs<SED>())
+            }
+        } catch (ex: IOException) {
+            throw RuntimeException(ex.message)
+        }
+    }
+
+    /**
+     * call to fetch existing sed document on existing rina case.
+     * @param euxCaseId (rina id)
+     * @param documentId (sed documentid)
+     */
+    fun deleteSEDfromExistingRinaCase(euxCaseId: String, documentId: String): Boolean {
+        val urlPath = "/SED"
+
+        val builder = UriComponentsBuilder.fromPath("$EUX_PATH$urlPath")
+                .queryParam("RINASaksnummer", euxCaseId)
+
+        val httpEntity = HttpEntity("")
+
+        val response = oidcRestTemplate.exchange(builder.toUriString(), HttpMethod.DELETE, httpEntity, typeRef<String>())
+        logger.debug("Response SendSED på Rina: $euxCaseId, response:  $response")
+
+        if (response.statusCodeValue == 200) {
+            return true
+        }
+        return false
+    }
+
 
 
     /**
