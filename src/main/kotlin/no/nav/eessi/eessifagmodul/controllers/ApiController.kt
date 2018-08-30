@@ -74,7 +74,7 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
 
         val response = euxService.deleteSEDfromExistingRinaCase(rinanr, documentid)
         return if (response) {
-            return if (rinaActions.canDoWhat(sed, rinanr, rinaActions.create, 3)) {
+            return if (rinaActions.isActionPossible(sed, rinanr, rinaActions.create, 3)) {
                 HttpStatus.OK
             } else {
                 HttpStatus.BAD_REQUEST

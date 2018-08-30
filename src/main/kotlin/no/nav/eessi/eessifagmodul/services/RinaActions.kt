@@ -17,17 +17,14 @@ class RinaActions(private val euxService: EuxService) {
     val update = "Update"
 
     fun canUpdate(sed: String, rinanr: String) : Boolean {
-        return canDoWhat(sed, rinanr, update, 1)
+        return isActionPossible(sed, rinanr, update, 1)
     }
     fun canCreate(sed: String, rinanr: String) : Boolean {
-        return canDoWhat(sed, rinanr, create,  5)
-    }
-    fun canDoWhat(sed: String, rinanr: String, aNavn: String, deep: Int) : Boolean {
-        return isActionPossible(sed, rinanr, aNavn,  deep)
+        return isActionPossible(sed, rinanr, create,  5)
     }
 
-    private fun isActionPossible(sed: String, rinanr: String, navn: String, deep: Int = 1) : Boolean {
-        logger.debug("henter RINAaksjoner på sed: $sed, mot rinanr: $rinanr, letter etter: $navn og deep er: $deep")
+    fun isActionPossible(sed: String, rinanr: String, navn: String, deep: Int = 1) : Boolean {
+        logger.debug("Henter RINAaksjoner på sed: $sed, mot rinanr: $rinanr, letter etter: $navn og deep er: $deep")
 
         var validCheck = false
         val result = getMuligeAksjoner(rinanr)
@@ -42,13 +39,13 @@ class RinaActions(private val euxService: EuxService) {
                         return@breaker //exit foreatch
                     }
                 } else if (sed == it.dokumentId && navn == it.navn) {
-                        validCheck = true
-                        logger.debug("Funnet sed og sjekker om '$navn' finnes. validCheck: $validCheck")
-                        return@breaker //exit foreatch
+                    validCheck = true
+                    logger.debug("Funnet sed og sjekker om '$navn' finnes. validCheck: $validCheck")
+                    return@breaker //exit foreatch
                 }
             }
         }
-        logger.debug("Slutt paa resultatlist validCheck: $validCheck")
+        logger.debug("Slutt på resultatlist validCheck: $validCheck")
         if (validCheck) {
             logger.debug("alt funnet rett verdi")
             return validCheck
@@ -56,7 +53,7 @@ class RinaActions(private val euxService: EuxService) {
             logger.debug("antall tries er kjørt")
             return validCheck
         }
-        logger.debug("prøver igjen etter $waittime ms på å hente opp aksjoner...")
+        logger.debug("Prøver igjen etter $waittime ms på å hente opp aksjoner.")
         Thread.sleep(waittime)
         return isActionPossible(sed, rinanr, navn, deep+1)
     }
