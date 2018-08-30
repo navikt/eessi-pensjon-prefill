@@ -3,7 +3,7 @@
 ## - SRVPENSJON_PASSWORD
 ## - OPENAM_SECRET
 
-eessibasis:
+euxbasis.v1:
 #  url: 'https://eux-app.nais.preprod.local'
   url: 'http://localhost:9090'
 
