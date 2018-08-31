@@ -14,4 +14,3 @@ management:
     web:
       exposure.include: '*'
 
-rinaaction.waittime: '4000'

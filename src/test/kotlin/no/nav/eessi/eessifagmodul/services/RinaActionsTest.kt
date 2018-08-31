@@ -27,7 +27,7 @@ class RinaActionsTest {
     fun setup() {
         logger.debug("Starting tests.... ...")
         rinaActions = RinaActions(mockEuxService)
-        rinaActions.waittime = "500"
+        rinaActions.waittime = 500
         println("watetime : ${rinaActions.waittime}")
     }
 

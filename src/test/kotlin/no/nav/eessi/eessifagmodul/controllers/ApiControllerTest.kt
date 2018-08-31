@@ -19,6 +19,7 @@ import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
+import org.springframework.web.util.UriComponentsBuilder
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
@@ -46,7 +47,7 @@ class ApiControllerTest {
         prefillDataMock = PrefillDataModel()
         mockRinaActions = RinaActions(mockEuxService)
         mockRinaActions.waittime = 500
-        apiController = ApiController(mockEuxService, PrefillSED(mockPersonPreutfyll), prefillDataMock)
+        apiController = ApiController(mockEuxService, PrefillSED(mockPersonPreutfyll), mockAktoerIdClient)
         apiController.landkodeService = LandkodeService()
         apiController.rinaActions = mockRinaActions
     }
@@ -262,10 +263,7 @@ class ApiControllerTest {
     fun `check rest api path correct`() {
         val path = "/sed/get/{rinanr}/{documentid}"
 
-        val uriParams = HashMap<String, String>()
-        uriParams["rinanr"] = "123456789"
-        uriParams["documentid"] = "DOC1223213234234"
-
+        val uriParams = mapOf("rinanr" to "123456789", "documentid" to "DOC1223213234234")
         val builder = UriComponentsBuilder.fromUriString(path).buildAndExpand(uriParams)
 
 
