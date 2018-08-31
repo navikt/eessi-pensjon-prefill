@@ -11,7 +11,7 @@ class RinaActions(private val euxService: EuxService) {
     private val logger: Logger by lazy { LoggerFactory.getLogger(RinaActions::class.java) }
 
     var timeTries = 5               // times to try
-    var waittime : Long = 4000      // waittime (basis venter 6000 på flere tjenester?)
+    var waittime : Long = 4000  // waittime (basis venter 6000 på flere tjenester?)
 
     val create = "Create"
     val update = "Update"
@@ -31,14 +31,8 @@ class RinaActions(private val euxService: EuxService) {
 
         run breaker@ {
             result.forEach {
-                logger.debug("iterating igjennon aksjoner for å finne $sed. har: ${it.dokumentType} og ${it.navn} eller ${it.dokumentId} ")
-                if (sed.startsWith("P")) {
-                    if (sed == it.dokumentType && navn == it.navn) {
-                        validCheck = true
-                        logger.debug("Funnet sed og sjekker om '$navn' finnes. validCheck: $validCheck")
-                        return@breaker //exit foreatch
-                    }
-                } else if (sed == it.dokumentId && navn == it.navn) {
+                logger.debug("Prøver å finne $sed og $navn ,har: ${it.dokumentType} og ${it.navn}")
+                if (sed == it.dokumentType && navn == it.navn) {
                     validCheck = true
                     logger.debug("Funnet sed og sjekker om '$navn' finnes. validCheck: $validCheck")
                     return@breaker //exit foreatch

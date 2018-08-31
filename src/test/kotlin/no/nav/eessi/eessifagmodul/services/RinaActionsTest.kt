@@ -152,16 +152,4 @@ class RinaActionsTest {
         assertEquals(true, result)
     }
 
-    @Test
-    fun `check canCreate actions with documentid can create selected SED`() {
-        val response = mockValidData("Create")
-
-        whenever(mockEuxService.getPossibleActions (ArgumentMatchers.anyString()))
-                .thenReturn(response)
-        val result = rinaActions.canCreate("23123123", "92223424234")
-        assertEquals(true, result)
-    }
-
-
-
 }

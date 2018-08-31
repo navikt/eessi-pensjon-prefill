@@ -17,6 +17,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.anyString
+import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
 import org.springframework.web.util.UriComponentsBuilder
@@ -50,6 +51,7 @@ class ApiControllerTest {
     fun setUp() {
         prefillDataMock = PrefillDataModel(mockAktoerIdClient)
         mockRinaActions = RinaActions(mockEuxService)
+        mockRinaActions.waittime = 500
         apiController = ApiController(mockEuxService, PrefillSED(mockPersonPreutfyll), prefillDataMock)
         apiController.landkodeService = LandkodeService()
         apiController.rinaActions = mockRinaActions
@@ -142,6 +144,7 @@ class ApiControllerTest {
         val mockResponse = "1234567890"
 
         whenever(mockAktoerIdClient.hentPinIdentFraAktorid(ArgumentMatchers.anyString())).thenReturn("12345")
+
         val utfyllMock =  prefillDataMock.build(
                 subject = requestMock.subjectArea!!,
                 caseId = requestMock.caseId!!,
