@@ -13,6 +13,7 @@ import no.nav.security.oidc.api.Protected
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 import java.util.*
 
@@ -58,6 +59,32 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
 
         return euxService.sendSED(rinanr, sed, korrid.toString())
     }
+
+    @ApiOperation("henter ut en SED fra et eksisterende Rina document. krever unik dokumentid fra valgt SED")
+    @GetMapping("/sed/get/{rinanr}/{documentid}")
+    fun getDocument(@PathVariable("rinanr", required = true) rinanr: String, @PathVariable("documentid", required = true) documentid: String): SED {
+
+        return euxService.fetchSEDfromExistingRinaCase(rinanr, documentid)
+
+    }
+
+    @ApiOperation("sletter SED fra et eksisterende Rina document. krever unik dokumentid fra valgt SED")
+    @GetMapping("/sed/delete/{rinanr}/{sed}/{documentid}")
+    fun deleteDocument(@PathVariable("rinanr", required = true) rinanr: String, @PathVariable("sed", required = true) sed: String, @PathVariable("documentid", required = true) documentid: String): HttpStatus {
+
+        val response = euxService.deleteSEDfromExistingRinaCase(rinanr, documentid)
+        return if (response) {
+            return if (rinaActions.isActionPossible(sed, rinanr, rinaActions.create, 3)) {
+                HttpStatus.OK
+            } else {
+                HttpStatus.BAD_REQUEST
+            }
+        } else {
+            HttpStatus.BAD_REQUEST
+        }
+
+    }
+
 
     @ApiOperation("legge til SED på et eksisterende Rina document. kjører preutfylling")
     @PostMapping("/sed/add")

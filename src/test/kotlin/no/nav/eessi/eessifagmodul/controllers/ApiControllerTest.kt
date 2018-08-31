@@ -17,10 +17,16 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.anyString
+import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
+import org.springframework.web.util.UriComponentsBuilder
+import java.util.*
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
+import java.util.HashMap
+
+
 
 @RunWith(MockitoJUnitRunner::class)
 class ApiControllerTest {
@@ -45,6 +51,7 @@ class ApiControllerTest {
     fun setUp() {
         prefillDataMock = PrefillDataModel(mockAktoerIdClient)
         mockRinaActions = RinaActions(mockEuxService)
+        mockRinaActions.waittime = 500
         apiController = ApiController(mockEuxService, PrefillSED(mockPersonPreutfyll), prefillDataMock)
         apiController.landkodeService = LandkodeService()
         apiController.rinaActions = mockRinaActions
@@ -137,6 +144,7 @@ class ApiControllerTest {
         val mockResponse = "1234567890"
 
         whenever(mockAktoerIdClient.hentPinIdentFraAktorid(ArgumentMatchers.anyString())).thenReturn("12345")
+
         val utfyllMock =  prefillDataMock.build(
                 subject = requestMock.subjectArea!!,
                 caseId = requestMock.caseId!!,
@@ -233,6 +241,26 @@ class ApiControllerTest {
         apiController.confirmDocument(mockData)
     }
 
+    @Test
+    fun `check rest api path correct`() {
+        val path = "/sed/get/{rinanr}/{documentid}"
+
+        val uriParams = HashMap<String, String>()
+        uriParams["rinanr"] = "123456789"
+        uriParams["documentid"] = "DOC1223213234234"
+
+        val builder = UriComponentsBuilder.fromUriString(path).buildAndExpand(uriParams)
+
+
+        val uristr = builder.toUriString()
+        println(uristr)
+        val uri = builder.toUri()
+        println(uri)
+        val path2 = builder.path
+        println(path2)
+
+        assertEquals("/sed/get/123456789/DOC1223213234234", builder.path)
+    }
 
 
 }

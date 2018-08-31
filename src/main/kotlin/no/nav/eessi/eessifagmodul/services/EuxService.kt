@@ -1,8 +1,6 @@
 package no.nav.eessi.eessifagmodul.services
 
-import no.nav.eessi.eessifagmodul.models.IkkeGyldigKallException
-import no.nav.eessi.eessifagmodul.models.RINAaksjoner
-import no.nav.eessi.eessifagmodul.models.RinaCasenrIkkeMottattException
+import no.nav.eessi.eessifagmodul.models.*
 import no.nav.eessi.eessifagmodul.utils.createErrorMessage
 import no.nav.eessi.eessifagmodul.utils.mapJsonToAny
 import no.nav.eessi.eessifagmodul.utils.typeRef
@@ -113,6 +111,54 @@ class EuxService(private val euxCpiRestTemplate: RestTemplate) {
         return response.statusCode
     }
 
+    /**
+     * call to fetch existing sed document on existing rina case.
+     * @param euxCaseId (rina id)
+     * @param documentId (sed documentid)
+     */
+    fun fetchSEDfromExistingRinaCase(euxCaseId: String, documentId: String): SED {
+
+        val builder = UriComponentsBuilder.fromPath("/SED")
+                .queryParam("RINASaksnummer", euxCaseId)
+                .queryParam("DokumentID", documentId)
+
+        val httpEntity = HttpEntity("")
+
+        val response = euxCpiRestTemplate.exchange(builder.toUriString(), HttpMethod.GET, httpEntity, typeRef<String>())
+        val responseBody = response.body ?: throw SedDokumentIkkeOpprettetException("Sed dokument ikke funnet")
+        try {
+            if (response.statusCode.isError) {
+                throw createErrorMessage(responseBody)
+            } else {
+                return mapJsonToAny(responseBody, typeRefs<SED>())
+            }
+        } catch (ex: IOException) {
+            throw RuntimeException(ex.message)
+        }
+    }
+
+    /**
+     * call to fetch existing sed document on existing rina case.
+     * @param euxCaseId (rina id)
+     * @param documentId (sed documentid)
+     */
+    fun deleteSEDfromExistingRinaCase(euxCaseId: String, documentId: String): Boolean {
+        val builder = UriComponentsBuilder.fromPath("/SED")
+                .queryParam("RINASaksnummer", euxCaseId)
+                .queryParam("DokumentID", documentId)
+
+        val httpEntity = HttpEntity("")
+
+        val response = euxCpiRestTemplate.exchange(builder.toUriString(), HttpMethod.DELETE, httpEntity, typeRef<String>())
+        logger.debug("Response SendSED på Rina: $euxCaseId, response:  $response")
+
+        if (response.statusCodeValue == 200) {
+            return true
+        }
+        return false
+    }
+
+
 
     /**
      * Call the orchestrator endpoint with necessary information to create a case in RINA, set
@@ -153,6 +199,7 @@ class EuxService(private val euxCpiRestTemplate: RestTemplate) {
         headers.contentType = MediaType.MULTIPART_FORM_DATA
 
         val httpEntity = HttpEntity(map, headers)
+
         val response = euxCpiRestTemplate.exchange(builder.toUriString(), HttpMethod.POST, httpEntity, String::class.java)
         return response.body ?: throw RinaCasenrIkkeMottattException("Ikke mottatt RINA casenr, feiler ved opprettelse av BUC og SED")
     }

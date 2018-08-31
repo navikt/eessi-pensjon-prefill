@@ -152,7 +152,4 @@ class RinaActionsTest {
         assertEquals(true, result)
     }
 
-
-
-
 }
