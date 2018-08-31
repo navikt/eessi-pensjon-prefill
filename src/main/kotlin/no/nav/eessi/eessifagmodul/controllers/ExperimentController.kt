@@ -30,9 +30,6 @@ class ExperimentController {
     @Autowired
     private lateinit var restTemplate: RestTemplate
 
-    @Value("\${eessibasis.url}")
-    private lateinit var eessiBasisUrl: String
-
     @Autowired
     private lateinit var euxService: EuxService
 
@@ -46,7 +43,7 @@ class ExperimentController {
     fun testEuxOidc(): ResponseEntity<String> {
         val httpHeaders = HttpHeaders()
         httpHeaders.add(HttpHeaders.AUTHORIZATION, "Bearer ")
-        val requestEntity = RequestEntity<String>(httpHeaders, HttpMethod.GET, URI("$eessiBasisUrl/sample"))
+        val requestEntity = RequestEntity<String>(httpHeaders, HttpMethod.GET, URI("/sample"))
 
         try {
             return restTemplate.exchange(requestEntity, String::class.java)
@@ -77,16 +74,5 @@ class ExperimentController {
     fun getMuligeAksjoner(@PathVariable(value = "rinanr",  required = true)rinanr: String): List<RINAaksjoner> {
         return euxService.getPossibleActions(rinanr)
     }
-
-//    @GetMapping("/aksjoner/{rina}/{sed}/{navn}")
-//    fun getAksjoner(@PathVariable("rina", required = true) rinanr: String = "",
-//            @PathVariable("sed", required = true) sed: String = "",
-//        @PathVariable("navn", required = true) navn: String = "Update"): Boolean {
-//        if (navn == "Update") {
-//            return rinaActions.canUpdate(sed, rinanr)
-//        }
-//        return rinaActions.canCreate(sed, rinanr)
-//    }
-
 }
 

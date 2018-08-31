@@ -19,11 +19,11 @@ private val logger: Logger by lazy { LoggerFactory.getLogger(EuxRestTemplate::cl
 @Component
 class EuxRestTemplate(val oidcRequestContextHolder: OIDCRequestContextHolder) {
 
-    @Value("\${eessibasis.url}")
+    @Value("\${euxbasis.v1.url}")
     lateinit var url: String
 
     @Bean
-    fun createEuxRestTemplate(templateBuilder: RestTemplateBuilder): RestTemplate {
+    fun createEuxCpiRestTemplate(templateBuilder: RestTemplateBuilder): RestTemplate {
         return templateBuilder
                 .rootUri(url)
                 .errorHandler(DefaultResponseErrorHandler())
@@ -35,10 +35,12 @@ class EuxRestTemplate(val oidcRequestContextHolder: OIDCRequestContextHolder) {
 
     class OidcAuthorizationHeaderInterceptor(private val oidcRequestContextHolder: OIDCRequestContextHolder) : ClientHttpRequestInterceptor {
         override fun intercept(request: HttpRequest, body: ByteArray, execution: ClientHttpRequestExecution): ClientHttpResponse {
-            request.headers[HttpHeaders.AUTHORIZATION]?.let {
+            if (request.headers[HttpHeaders.AUTHORIZATION] == null) {
                 val oidcToken = oidcRequestContextHolder.oidcValidationContext.getToken("oidc").idToken
                 logger.debug("Adding Bearer-token to request: $oidcToken")
                 request.headers[HttpHeaders.AUTHORIZATION] = "Bearer $oidcToken"
+            } else {
+                logger.debug("Authorization header already set: ${request.headers[HttpHeaders.AUTHORIZATION]}")
             }
             return execution.execute(request, body)
         }

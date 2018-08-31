@@ -45,8 +45,8 @@ class ApiControllerTest {
     fun setUp() {
         prefillDataMock = PrefillDataModel()
         mockRinaActions = RinaActions(mockEuxService)
-        mockRinaActions.waittime = "500"
-        apiController = ApiController(mockEuxService, PrefillSED(mockPersonPreutfyll), mockAktoerIdClient)
+        mockRinaActions.waittime = 500
+        apiController = ApiController(mockEuxService, PrefillSED(mockPersonPreutfyll), prefillDataMock)
         apiController.landkodeService = LandkodeService()
         apiController.rinaActions = mockRinaActions
     }
@@ -142,6 +142,7 @@ class ApiControllerTest {
 
         whenever(mockAktoerIdClient.hentPinIdentFraAktorid(ArgumentMatchers.anyString())).thenReturn("12345")
         val pinid = apiController.hentAktoerIdPin("0105094340092")
+
 
         val utfyllMock =  prefillDataMock.build(
                 subject = requestMock.subjectArea!!,
@@ -256,6 +257,26 @@ class ApiControllerTest {
         val exp = PersonIkkeFunnetException("Ident ikke funnet", Exception())
         whenever(mockAktoerIdClient.hentPinIdentFraAktorid("-5")).thenThrow(exp)
         apiController.hentAktoerIdPin("-5")
+    }
+    @Test
+    fun `check rest api path correct`() {
+        val path = "/sed/get/{rinanr}/{documentid}"
+
+        val uriParams = HashMap<String, String>()
+        uriParams["rinanr"] = "123456789"
+        uriParams["documentid"] = "DOC1223213234234"
+
+        val builder = UriComponentsBuilder.fromUriString(path).buildAndExpand(uriParams)
+
+
+        val uristr = builder.toUriString()
+        println(uristr)
+        val uri = builder.toUri()
+        println(uri)
+        val path2 = builder.path
+        println(path2)
+
+        assertEquals("/sed/get/123456789/DOC1223213234234", builder.path)
     }
 
 
