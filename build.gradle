@@ -7,7 +7,6 @@ buildscript {
         springfoxVersion = '2.9.2'
         jacksonModuleKotlinVersion = '2.9.6'
         cxfVersion = '3.2.6'
-        aktoerIdVersion = '2.0.1'
         mockitoVersion = '2.8.+'
         personV3Version = '3.4.1'
         oidcTokenSupportVersion = '0.2.7'
@@ -89,7 +88,6 @@ dependencies {
     compile("no.nav.security:oidc-spring-support:${oidcTokenSupportVersion}")
 
     // Tjenestespesifikasjoner
-    compile("no.nav.tjenester.fim:nav-fim-aktoer-v2-tjenestespesifikasjon:${aktoerIdVersion}:jaxws")
     compile("no.nav.tjenester:nav-person-v3-tjenestespesifikasjon:${personV3Version}")
 }
 
@@ -98,6 +96,6 @@ repositories {
         url "https://repo.adeo.no/repository/maven-central"
     }
     maven {
-        url "https://repo.adeo.no/repository/maven-releases/"
+        url "https://repo.adeo.no/repository/maven-releases"
     }
 }

@@ -17,7 +17,7 @@ class PrefillNav(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS)
 
     fun utfyllNav(utfyllingData: PrefillDataModel): Nav {
 
-        //bruker død hvis etterlatt (etterlatt aktoerid fylt ut)
+        //bruker død hvis etterlatt (etterlatt aktoerregister fylt ut)
         val brukertps = bruker(utfyllingData)
 
         //skal denne kjøres hver gang? eller kun under P2000?

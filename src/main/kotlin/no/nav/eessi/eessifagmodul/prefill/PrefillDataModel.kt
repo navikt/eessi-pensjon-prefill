@@ -1,21 +1,21 @@
 package no.nav.eessi.eessifagmodul.prefill
 
-import no.nav.eessi.eessifagmodul.clients.aktoerid.AktoerIdClient
 import no.nav.eessi.eessifagmodul.models.InstitusjonItem
 import no.nav.eessi.eessifagmodul.models.SED
 import no.nav.eessi.eessifagmodul.models.createSED
+import no.nav.eessi.eessifagmodul.services.AktoerregisterService
 import org.springframework.stereotype.Component
 
 /**
  * Data class to store different required data to build any given sed, auto or semiauto.
  *
- * sed, aktoerid,  psak-saknr, rinanr, institutions (mottaker eg. nav),
+ * sed, aktoerregister,  psak-saknr, rinanr, institutions (mottaker eg. nav),
  *
- * servives:  aktoerid, tps, pen, maybe joark, eux-basis.
+ * servives:  aktoerregister, tps, pen, maybe joark, eux-basis.
  *
  */
 @Component
-class PrefillDataModel(private val aktoerIdClient: AktoerIdClient) {
+class PrefillDataModel(private val aktoerregisterService: AktoerregisterService) {
 
     private lateinit var sed: SED
     private var pin: String = ""
@@ -88,7 +88,7 @@ class PrefillDataModel(private val aktoerIdClient: AktoerIdClient) {
     @Throws(RuntimeException::class)
     fun hentAktoerIdPin(aktorid: String): String {
         if (aktorid.isBlank()) return ""
-        return aktoerIdClient.hentPinIdentFraAktorid(aktorid)
+        return aktoerregisterService.hentGjeldendeNorskIdentForAktorId(aktorid)
     }
 
     //Pinid (FNR) aktorID
