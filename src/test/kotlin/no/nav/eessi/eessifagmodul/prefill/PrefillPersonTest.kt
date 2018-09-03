@@ -2,8 +2,8 @@ package no.nav.eessi.eessifagmodul.prefill
 
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.whenever
-import no.nav.eessi.eessifagmodul.clients.aktoerid.AktoerIdClient
 import no.nav.eessi.eessifagmodul.models.*
+import no.nav.eessi.eessifagmodul.services.AktoerregisterService
 import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
 import org.junit.Before
 import org.junit.Test
@@ -24,7 +24,7 @@ class PrefillPersonTest(val index: Int, val sedid: String) {
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillPersonTest::class.java) }
 
     @Mock
-    private lateinit var mockAktoerIdClient: AktoerIdClient
+    private lateinit var mockAktoerregisterService: AktoerregisterService
 
     @Mock
     private lateinit var mockPreutfyllingNav: PrefillNav
@@ -40,7 +40,7 @@ class PrefillPersonTest(val index: Int, val sedid: String) {
     fun setup() {
         logger.debug("Starting tests.... ...")
         MockitoAnnotations.initMocks(this)
-        prefillDataMock = PrefillDataModel(mockAktoerIdClient)
+        prefillDataMock = PrefillDataModel(mockAktoerregisterService)
         preutfylling = PrefillPerson(prefillNav = mockPreutfyllingNav, prefilliPensjon = mockPreutfyllingPensjon)
     }
 
@@ -62,8 +62,7 @@ class PrefillPersonTest(val index: Int, val sedid: String) {
         logger.debug("jobber med test på følgende sed: $sedid")
         val response = "1234"
 
-        //whenever(mockAktoerIdClient.hentIdentForAktoerId(ArgumentMatchers.anyString())).thenReturn(response)
-        whenever(mockAktoerIdClient.hentPinIdentFraAktorid(ArgumentMatchers.anyString())).thenReturn(response)
+        whenever(mockAktoerregisterService.hentGjeldendeNorskIdentForAktorId(ArgumentMatchers.anyString())).thenReturn(response)
 
         val navresponse = Nav(bruker = Bruker(person = Person(fornavn = "Dummy", etternavn = "Dummy", pin = listOf(PinItem(sektor = "alle", identifikator = response, land = "NO")))))
         whenever(mockPreutfyllingNav.utfyllNav(any())).thenReturn(navresponse)

@@ -3,29 +3,26 @@ package no.nav.eessi.eessifagmodul.controllers
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.whenever
-import no.nav.eessi.eessifagmodul.clients.aktoerid.AktoerIdClient
 import no.nav.eessi.eessifagmodul.models.*
 import no.nav.eessi.eessifagmodul.prefill.PrefillDataModel
 import no.nav.eessi.eessifagmodul.prefill.PrefillPerson
 import no.nav.eessi.eessifagmodul.prefill.PrefillSED
-import no.nav.eessi.eessifagmodul.services.RinaActions
+import no.nav.eessi.eessifagmodul.services.AktoerregisterService
 import no.nav.eessi.eessifagmodul.services.EuxService
 import no.nav.eessi.eessifagmodul.services.LandkodeService
+import no.nav.eessi.eessifagmodul.services.RinaActions
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.anyString
-import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
 import org.springframework.web.util.UriComponentsBuilder
 import java.util.*
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
-import java.util.HashMap
-
 
 
 @RunWith(MockitoJUnitRunner::class)
@@ -38,7 +35,7 @@ class ApiControllerTest {
     lateinit var mockPersonPreutfyll: PrefillPerson
 
     @Mock
-    private lateinit var mockAktoerIdClient: AktoerIdClient
+    private lateinit var mockAktoerregisterService: AktoerregisterService
 
     @Mock
     private lateinit var mockRinaActions: RinaActions
@@ -49,7 +46,7 @@ class ApiControllerTest {
 
     @Before
     fun setUp() {
-        prefillDataMock = PrefillDataModel(mockAktoerIdClient)
+        prefillDataMock = PrefillDataModel(mockAktoerregisterService)
         mockRinaActions = RinaActions(mockEuxService)
         mockRinaActions.waittime = 500
         apiController = ApiController(mockEuxService, PrefillSED(mockPersonPreutfyll), prefillDataMock)
@@ -89,7 +86,7 @@ class ApiControllerTest {
         )
         val mockResponse = "1234567890"
 
-        whenever(mockAktoerIdClient.hentPinIdentFraAktorid(ArgumentMatchers.anyString())).thenReturn("12345")
+        whenever(mockAktoerregisterService.hentGjeldendeNorskIdentForAktorId(ArgumentMatchers.anyString())).thenReturn("12345")
 
         val utfyllMock =  prefillDataMock.build(
                 subject = requestMock.subjectArea!!,
@@ -143,7 +140,7 @@ class ApiControllerTest {
         )
         val mockResponse = "1234567890"
 
-        whenever(mockAktoerIdClient.hentPinIdentFraAktorid(ArgumentMatchers.anyString())).thenReturn("12345")
+        whenever(mockAktoerregisterService.hentGjeldendeNorskIdentForAktorId(ArgumentMatchers.anyString())).thenReturn("12345")
 
         val utfyllMock =  prefillDataMock.build(
                 subject = requestMock.subjectArea!!,

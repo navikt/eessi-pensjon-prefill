@@ -1,9 +1,10 @@
 package no.nav.eessi.eessifagmodul.prefill
 
 import com.nhaarman.mockito_kotlin.whenever
-import no.nav.eessi.eessifagmodul.clients.aktoerid.AktoerIdClient
 import no.nav.eessi.eessifagmodul.models.InstitusjonItem
 import no.nav.eessi.eessifagmodul.models.PersonIkkeFunnetException
+import no.nav.eessi.eessifagmodul.services.AktoerregisterException
+import no.nav.eessi.eessifagmodul.services.AktoerregisterService
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -23,14 +24,14 @@ class PrefillDataModelTest {
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillDataModelTest::class.java) }
 
     @Mock
-    private lateinit var mockAktoerIdClient: AktoerIdClient
+    private lateinit var mockAktoerregisterService: AktoerregisterService
 
     private lateinit var prefill: PrefillDataModel
 
     @Before
     fun setup() {
         logger.debug("Starting tests..")
-        prefill = PrefillDataModel(mockAktoerIdClient)
+        prefill = PrefillDataModel(mockAktoerregisterService)
     }
 
     @Test
@@ -70,7 +71,7 @@ class PrefillDataModelTest {
     @Test
     fun `validate and check model build`() {
         val res = "9"
-        whenever(mockAktoerIdClient.hentPinIdentFraAktorid("567890")).thenReturn(res)
+        whenever(mockAktoerregisterService.hentGjeldendeNorskIdentForAktorId("567890")).thenReturn(res)
 
         val items = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
         prefill.build(
@@ -90,10 +91,10 @@ class PrefillDataModelTest {
 
     }
 
-    @Test(expected = PersonIkkeFunnetException::class)
+    @Test(expected = AktoerregisterException::class)
     fun `create and test notvalid pinid for aktoerid`() {
-        val exp = PersonIkkeFunnetException("Ident ikke funnet", Exception())
-        whenever(mockAktoerIdClient.hentPinIdentFraAktorid("-5")).thenThrow(exp)
+        val exp = AktoerregisterException("Ident ikke funnet")
+        whenever(mockAktoerregisterService.hentGjeldendeNorskIdentForAktorId("-5")).thenThrow(exp)
 
         val items = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
         prefill.build(
@@ -112,7 +113,7 @@ class PrefillDataModelTest {
     fun `create and test valid pinid for aktoerid`() {
         val res = "39"
 
-        whenever(mockAktoerIdClient.hentPinIdentFraAktorid(ArgumentMatchers.anyString())).thenReturn(res)
+        whenever(mockAktoerregisterService.hentGjeldendeNorskIdentForAktorId(ArgumentMatchers.anyString())).thenReturn(res)
         //prefill.aktoerIdClient = mockAktoerIdClient
 
         val items = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))

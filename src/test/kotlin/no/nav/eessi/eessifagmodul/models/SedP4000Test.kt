@@ -2,11 +2,11 @@ package no.nav.eessi.eessifagmodul.models
 
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.whenever
-import no.nav.eessi.eessifagmodul.clients.aktoerid.AktoerIdClient
 import no.nav.eessi.eessifagmodul.controllers.ApiController
 import no.nav.eessi.eessifagmodul.prefill.PrefillDataModel
 import no.nav.eessi.eessifagmodul.prefill.PrefillPerson
 import no.nav.eessi.eessifagmodul.prefill.PrefillSED
+import no.nav.eessi.eessifagmodul.services.AktoerregisterService
 import no.nav.eessi.eessifagmodul.services.EuxService
 import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
 import no.nav.eessi.eessifagmodul.utils.mapJsonToAny
@@ -35,7 +35,7 @@ class SedP4000Test {
     lateinit var mockPersonPreutfyll: PrefillPerson
 
     @Mock
-    private lateinit var mockAktoerIdClient: AktoerIdClient
+    private lateinit var mockAktoerregisterService: AktoerregisterService
 
     private lateinit var prefillDataMock: PrefillDataModel
 
@@ -45,7 +45,7 @@ class SedP4000Test {
 
     @Before
     fun setup() {
-        prefillDataMock = PrefillDataModel(mockAktoerIdClient)
+        prefillDataMock = PrefillDataModel(mockAktoerregisterService)
         apiController = ApiController(mockEuxService, PrefillSED(mockPersonPreutfyll), prefillDataMock)
         logger.debug("Starting tests.... ...")
     }
