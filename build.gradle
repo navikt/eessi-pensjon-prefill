@@ -89,7 +89,6 @@ dependencies {
 
     // Tjenestespesifikasjoner
     compile("no.nav.tjenester:nav-person-v3-tjenestespesifikasjon:${personV3Version}")
-//    compile("no.nav.aktoerregister:aktoerregister-contracts-rest-identer-v1:2.2.3")
 }
 
 repositories {
