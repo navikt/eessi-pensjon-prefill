@@ -14,6 +14,7 @@ import no.nav.eessi.eessifagmodul.models.createSED
  */
 class PrefillDataModel {
 
+    //pensjon
     lateinit var penSaksnummer: String
     lateinit var vedtakId: String
     lateinit var karavId: String
@@ -26,13 +27,14 @@ class PrefillDataModel {
     lateinit var avdodAktoerID: String
     lateinit var avdodPersonnr: String
 
-
+    //rina
     lateinit var rinaSubject: String
     lateinit var euxCaseID: String
     lateinit var  buc: String
     lateinit var sed: SED
     lateinit var institution: List<InstitusjonItem>
 
+    //div payload seddata json
     val partSedasJson: MutableMap<String, String> = mutableMapOf()
 
     fun build(subject: String, caseId: String, buc: String, sedID: String, aktoerID: String, pinID: String, institutions: List<InstitusjonItem>, payload: String, euxcaseId: String): PrefillDataModel {

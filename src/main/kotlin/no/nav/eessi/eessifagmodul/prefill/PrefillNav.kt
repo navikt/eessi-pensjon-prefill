@@ -10,7 +10,7 @@ class PrefillNav(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS)
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillNav::class.java) }
 
-    private val validseds : List<String> = listOf("P6000","P4000","P2000", "P5000")
+    private val validseds : List<String> = listOf("P6000","P4000","P2000","P2200", "P5000")
 
     //TODO hva vil avsender ID på RINA være for NAV-PEN?
     //vil dette hentes fra Fasit? eller Rina?

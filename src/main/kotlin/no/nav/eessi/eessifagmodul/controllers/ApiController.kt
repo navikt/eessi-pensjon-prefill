@@ -120,19 +120,14 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
 
     fun mockSED(request: ApiRequest) : SED {
         val sed: SED?
-        //Mocking P2000-P2200 muligens P2100...
-            when {
-                request.payload == null -> throw IkkeGyldigKallException("Mangler PayLoad")
-                request.sed == null -> throw IkkeGyldigKallException("Mangler SED")
-                request.sed == "P2000"  ->  {
-                    val seds = mapJsonToAny(request.payload, typeRefs<SED>())
-                    sed = seds
-                }
-                else -> {
-                    val seds = mapJsonToAny(request.payload, typeRefs<SED>())
-                    sed = seds
-                }
+        when {
+            request.payload == null -> throw IkkeGyldigKallException("Mangler PayLoad")
+            request.sed == null -> throw IkkeGyldigKallException("Mangler SED")
+            else -> {
+                val seds = mapJsonToAny(request.payload, typeRefs<SED>())
+                sed = seds
             }
+        }
         return sed
         //end Mocking
     }
@@ -143,29 +138,21 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
 
         val korrid = UUID.randomUUID()
 
-
         //temp for mock sendt on payload..
         val data: PrefillDataModel?
         if (request.mockSED is Boolean && request.mockSED) {
             data = PrefillDataModel()
             data.penSaksnummer = "1232134234234"
-            data.personNr = "123456789"
+            data.personNr = "123456789011"
+            data.aktoerID = request.pinid!!
             data.buc = request.buc!!
             data.institution = request.institutions!!
+            data.sed = mockSED(request)
         } else {
-//            val data = createPreutfyltSED(datamodel)
-            val datamodel = createPrefillData(request)
-            data = createPreutfyltSED(datamodel)
+            data = createPreutfyltSED(createPrefillData(request))
         }
 
-        val sed: SED?
-        //mock SED P2000-P2200
-        sed = if (request.mockSED is Boolean && request.mockSED) {
-            mockSED(request)
-        } else {
-            data.sed
-        }
-        //val data = createPreutfyltSED(request)
+        val sed: SED = data.sed
 
         val fagSaknr = data.penSaksnummer // = "EESSI-PEN-123"
         val bucType = data.buc // = "P_BUC_06" //P6000

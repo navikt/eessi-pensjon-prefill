@@ -196,6 +196,18 @@
   },
   "sedVer" : "0",
   "pensjon" : {
+    "bruker" : {
+      "arbeidsforhold" : [
+        {
+          "yrke" : "SDFSDFSDFSDFSDF",
+          "type" : "03"
+        },
+        {
+          "yrke" : "SDFSDFSDFSDFSDF DSDGDFGDFGDF",
+          "type" : "03"
+        }
+      ]
+    },
     "ytelser" : [ {
       "status" : "01",
       "startdatoutbetaling" : "1994-01-01",

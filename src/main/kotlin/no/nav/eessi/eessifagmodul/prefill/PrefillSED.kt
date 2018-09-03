@@ -8,11 +8,7 @@ class PrefillSED(private val prefillPerson: PrefillPerson) : Prefill<PrefillData
     override fun prefill(prefillData: PrefillDataModel): PrefillDataModel {
 
         return when (prefillData.getSEDid()) {
-            "P2000" -> {
-                prefillPerson.prefill(prefillData)
-                prefillData
-            }
-            "P6000" -> {
+            "P2000","P2200","P6000","P5000" -> {
                 prefillPerson.prefill(prefillData)
                 prefillData
             }
@@ -20,10 +16,6 @@ class PrefillSED(private val prefillPerson: PrefillPerson) : Prefill<PrefillData
                 //skal person data komme fra P4000? eller kun fra TPS?
                 val sed = prefillPerson.prefill(prefillData)
                 sed.trygdetid = PrefillP4000().prefill(prefillData)
-                prefillData
-            }
-            "P5000" -> {
-                prefillPerson.prefill(prefillData)
                 prefillData
             }
             else -> throw IllegalArgumentException("Mangler SED, eller ugyldig type SED")

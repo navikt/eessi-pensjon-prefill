@@ -4,8 +4,8 @@
 ## - OPENAM_SECRET
 
 euxbasis.v1:
-  url: 'https://eux-app.nais.preprod.local/cpi'
-#  url: 'http://localhost:9090/cpi'
+#  url: 'https://eux-app.nais.preprod.local/cpi'
+  url: 'http://localhost:9090/cpi'
 
 aktoer.v2:
   endpointurl: 'https://app-t11.adeo.no/aktoerid/AktoerService/v2'

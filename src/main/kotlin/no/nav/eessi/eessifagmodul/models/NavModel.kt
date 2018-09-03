@@ -33,13 +33,21 @@ data class Bruker(
 )
 
 data class Bank(
-        val konto: Konto? = null
+        val navn: String? = null,
+        val konto: Konto? = null,
+        val adresse: Adresse? = null
 )
 data class Konto(
         val sepa: Sepa? = null,
         val innehaver: Innehaver? = null,
+        val ikkesepa: IkkeSepa? = null,
         val kontonr: String? = null
 )
+
+data class IkkeSepa(
+        val swift: String? = null
+)
+
 data class Sepa(
         val iban: String? = null,
         val swift: String? = null
