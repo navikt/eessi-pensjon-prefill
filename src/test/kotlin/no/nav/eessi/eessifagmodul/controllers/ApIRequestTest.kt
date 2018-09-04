@@ -14,8 +14,8 @@ import kotlin.test.assertTrue
 
 class ApIRequestTest {
 
-    val printout = true
-    val printsed = true
+    val printout = false
+    val printsed = false
 
     fun createMockApiRequest(sedName: String, buc: String, payload: String): ApiController.ApiRequest {
         val items = listOf(InstitusjonItem(country = "NO", institution = "NAVT003"))
@@ -40,6 +40,9 @@ class ApIRequestTest {
     }
 
     fun validateAndPrint(req: ApiController.ApiRequest) {
+        val json = mapAnyToJson(req)
+        assertNotNull(json)
+
         if (printsed) {
             val payload = mapJsonToAny(req.payload!!, typeRefs<SED>())
             assertNotNull(payload)
@@ -47,8 +50,6 @@ class ApIRequestTest {
             printOut(req.sed!!, jsonSed)
         }
         if (printout) {
-            val json = mapAnyToJson(req)
-            assertNotNull(json)
             printOut(req.sed!!, json)
         }
     }
@@ -63,7 +64,6 @@ class ApIRequestTest {
     fun `generate request mock payload of SED P2000`() {
         val payload = readJsonAndParseToSed("P2000-NAV.json")
         validateAndPrint(createMockApiRequest("P2000","P_BUC_01", payload))
-
     }
 
 //    @Test
