@@ -63,6 +63,8 @@ class PrefillPersonTest(val index: Int, val sedid: String) {
         logger.debug("jobber med test på følgende sed: $sedid")
         val mockPinResponse = "12345"
 
+        //whenever(mockAktoerregisterService.hentGjeldendeNorskIdentForAktorId(ArgumentMatchers.anyString())).thenReturn(response)
+
         val navresponse = Nav(bruker = Bruker(person = Person(fornavn = "Dummy", etternavn = "Dummy", pin = listOf(PinItem(sektor = "alle", identifikator = mockPinResponse, land = "NO")))))
         whenever(mockPreutfyllingNav.utfyllNav(any())).thenReturn(navresponse)
 

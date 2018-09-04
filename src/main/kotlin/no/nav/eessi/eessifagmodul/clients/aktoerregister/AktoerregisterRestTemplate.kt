@@ -1,4 +1,4 @@
-package no.nav.eessi.eessifagmodul.clients.eux
+package no.nav.eessi.eessifagmodul.clients.aktoerregister
 
 import no.nav.eessi.eessifagmodul.config.OidcAuthorizationHeaderInterceptor
 import no.nav.eessi.eessifagmodul.config.RequestResponseLoggerInterceptor
@@ -13,13 +13,13 @@ import org.springframework.web.client.DefaultResponseErrorHandler
 import org.springframework.web.client.RestTemplate
 
 @Component
-class EuxRestTemplate(val oidcRequestContextHolder: OIDCRequestContextHolder) {
+class AktoerregisterRestTemplate(val oidcRequestContextHolder: OIDCRequestContextHolder) {
 
-    @Value("\${euxbasis.v1.url}")
+    @Value("\${aktoerregister.api.v1.url}")
     lateinit var url: String
 
     @Bean
-    fun euxOidcRestTemplate(templateBuilder: RestTemplateBuilder): RestTemplate {
+    fun aktoerregisterOidcRestTemplate(templateBuilder: RestTemplateBuilder): RestTemplate {
         return templateBuilder
                 .rootUri(url)
                 .errorHandler(DefaultResponseErrorHandler())

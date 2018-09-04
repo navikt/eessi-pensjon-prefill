@@ -33,8 +33,8 @@ resources:
 
 fasitResources:
   used:
-  - alias: Aktoer_v2
-    resourceType: WebserviceEndpoint
+  - alias: aktoerregister.api.v1
+    resourceType: RestService
 
   - alias: virksomhet:Person_v3
     resourceType: WebserviceEndpoint

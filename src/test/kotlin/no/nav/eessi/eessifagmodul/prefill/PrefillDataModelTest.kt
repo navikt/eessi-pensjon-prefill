@@ -1,14 +1,12 @@
 package no.nav.eessi.eessifagmodul.prefill
 
 import com.nhaarman.mockito_kotlin.whenever
-import no.nav.eessi.eessifagmodul.clients.aktoerid.AktoerIdClient
 import no.nav.eessi.eessifagmodul.models.InstitusjonItem
-import no.nav.eessi.eessifagmodul.models.PersonIkkeFunnetException
+import no.nav.eessi.eessifagmodul.services.AktoerregisterService
 import no.nav.eessi.eessifagmodul.models.SED
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.ArgumentMatchers
 import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
 import org.slf4j.Logger
@@ -22,6 +20,9 @@ import kotlin.test.assertTrue
 class PrefillDataModelTest {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillDataModelTest::class.java) }
+
+    @Mock
+    private lateinit var mockAktoerregisterService: AktoerregisterService
 
     private lateinit var prefill: PrefillDataModel
 

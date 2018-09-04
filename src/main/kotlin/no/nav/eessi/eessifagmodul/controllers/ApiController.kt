@@ -269,7 +269,7 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
             //mottakere
             val institutions: List<InstitusjonItem>? = null,
             @JsonProperty("actorId")
-            //aktoerid
+            //aktoerregister
             val pinid: String? = null,
             @JsonProperty("dodactorId")
             val dodpinid: String? = null,

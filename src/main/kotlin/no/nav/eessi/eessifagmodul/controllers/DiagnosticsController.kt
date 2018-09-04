@@ -3,10 +3,10 @@ package no.nav.eessi.eessifagmodul.controllers
 import io.prometheus.client.CollectorRegistry
 import io.prometheus.client.exporter.common.TextFormat
 import io.prometheus.client.hotspot.DefaultExports
-import no.nav.eessi.eessifagmodul.clients.aktoerid.AktoerIdClient
 import no.nav.security.oidc.api.Unprotected
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -22,7 +22,13 @@ import kotlin.collections.HashSet
 @Unprotected
 @CrossOrigin
 @RestController
-class DiagnosticsController(val aktoerIdClient: AktoerIdClient) {
+class DiagnosticsController {
+
+    @Value("\${app.name}")
+    lateinit var appName: String
+
+    @Value("\${app.version}")
+    private lateinit var appVersion: String
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(DiagnosticsController::class.java) }
     private val registry: CollectorRegistry by lazy { CollectorRegistry.defaultRegistry }
@@ -38,9 +44,8 @@ class DiagnosticsController(val aktoerIdClient: AktoerIdClient) {
 
     @GetMapping("/internal/selftest")
     fun selftest(): SelftestResult {
-        aktoerIdClient.ping()
-        logger.debug("selftest passed")
-        return SelftestResult(aggregateResult = 0, checks = null)
+        logger.debug("Selftest passed")
+        return SelftestResult(name = appName, version = appVersion, aggregateResult = 0, checks = null)
     }
 
     @GetMapping("/internal/isalive")
@@ -71,8 +76,8 @@ class DiagnosticsController(val aktoerIdClient: AktoerIdClient) {
 }
 
 data class SelftestResult(
-        val name: String = "TODO: hent applikasjonsnavn fra env",
-        val version: String = "TODO: hent versjonsnummer fra env",
+        val name: String,
+        val version: String,
         val timestamp: Instant = Instant.now(),
         val aggregateResult: Int,
         val checks: List<Check>?

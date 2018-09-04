@@ -3,11 +3,11 @@ package no.nav.eessi.eessifagmodul.controllers
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.whenever
-import no.nav.eessi.eessifagmodul.clients.aktoerid.AktoerIdClient
 import no.nav.eessi.eessifagmodul.models.*
 import no.nav.eessi.eessifagmodul.prefill.PrefillDataModel
 import no.nav.eessi.eessifagmodul.prefill.PrefillPerson
 import no.nav.eessi.eessifagmodul.prefill.PrefillSED
+import no.nav.eessi.eessifagmodul.services.AktoerregisterService
 import no.nav.eessi.eessifagmodul.services.EuxService
 import no.nav.eessi.eessifagmodul.services.LandkodeService
 import no.nav.eessi.eessifagmodul.services.RinaActions
@@ -23,6 +23,7 @@ import org.springframework.web.util.UriComponentsBuilder
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
+
 @RunWith(MockitoJUnitRunner::class)
 class ApiControllerTest {
 
@@ -33,7 +34,7 @@ class ApiControllerTest {
     lateinit var mockPersonPreutfyll: PrefillPerson
 
     @Mock
-    private lateinit var mockAktoerIdClient: AktoerIdClient
+    private lateinit var mockAktoerregisterService: AktoerregisterService
 
     @Mock
     private lateinit var mockRinaActions: RinaActions
@@ -47,7 +48,7 @@ class ApiControllerTest {
         prefillDataMock = PrefillDataModel()
         mockRinaActions = RinaActions(mockEuxService)
         mockRinaActions.waittime = 500
-        apiController = ApiController(mockEuxService, PrefillSED(mockPersonPreutfyll), mockAktoerIdClient)
+        apiController = ApiController(mockEuxService, PrefillSED(mockPersonPreutfyll), mockAktoerregisterService)
         apiController.landkodeService = LandkodeService()
         apiController.rinaActions = mockRinaActions
     }
@@ -84,7 +85,7 @@ class ApiControllerTest {
         )
         val mockResponse = "1234567890"
 
-        whenever(mockAktoerIdClient.hentPinIdentFraAktorid(ArgumentMatchers.anyString())).thenReturn("12345")
+        whenever(mockAktoerregisterService.hentGjeldendeNorskIdentForAktorId(ArgumentMatchers.anyString())).thenReturn("12345")
 
         val pinid = apiController.hentAktoerIdPin("0105094340092")
 
@@ -141,7 +142,7 @@ class ApiControllerTest {
         )
         val mockResponse = "1234567890"
 
-        whenever(mockAktoerIdClient.hentPinIdentFraAktorid(ArgumentMatchers.anyString())).thenReturn("12345")
+        whenever(mockAktoerregisterService.hentGjeldendeNorskIdentForAktorId(ArgumentMatchers.anyString())).thenReturn("12345")
         val pinid = apiController.hentAktoerIdPin("0105094340092")
 
 
@@ -184,7 +185,7 @@ class ApiControllerTest {
                 buc = "P_BUC_06",
                 pinid = "0105094340092"
         )
-        whenever(mockAktoerIdClient.hentPinIdentFraAktorid(ArgumentMatchers.anyString())).thenReturn("12345")
+        whenever(mockAktoerregisterService.hentGjeldendeNorskIdentForAktorId(ArgumentMatchers.anyString())).thenReturn("12345")
         val pinid = apiController.hentAktoerIdPin("0105094340092")
 
         val items = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
@@ -252,13 +253,6 @@ class ApiControllerTest {
                 pinid = null
         )
         apiController.confirmDocument(mockData)
-    }
-
-    @Test(expected = PersonIkkeFunnetException::class)
-    fun `create and test notvalid pinid for aktoerid`() {
-        val exp = PersonIkkeFunnetException("Ident ikke funnet", Exception())
-        whenever(mockAktoerIdClient.hentPinIdentFraAktorid("-5")).thenThrow(exp)
-        apiController.hentAktoerIdPin("-5")
     }
 
     @Test

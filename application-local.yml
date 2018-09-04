@@ -7,13 +7,12 @@ euxbasis.v1:
 #  url: 'https://eux-app.nais.preprod.local/cpi'
   url: 'http://localhost:9090/cpi'
 
-aktoer.v2:
-  endpointurl: 'https://app-t11.adeo.no/aktoerid/AktoerService/v2'
-#  endpointurl: 'https://app-t8.adeo.no/aktoerid/AktoerService/v2'
-
 virksomhet.person.v3:
   endpointurl: 'https://wasapp-t7.adeo.no/tpsws/ws/Person/v3'  # maskert-data
 #  endpointurl: 'https://wasapp-t8.adeo.no/tpsws/ws/Person/v3' # prod-data
+
+aktoerregister.api.v1:
+  url: 'https://app-t8.adeo.no/aktoerregister/api/v1'
 
 credentials:
   srvpensjon:

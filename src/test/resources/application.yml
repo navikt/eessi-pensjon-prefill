@@ -1,11 +1,11 @@
 euxbasis.v1:
   url: 'http://example.com:8089'
 
-aktoer.v2:
-  endpointurl: 'https://example.com/aktoerid/AktoerService/v2'
-
 virksomhet.person.v3:
   endpointurl: 'https://example.com/tpsws/ws/Person/v3'
+
+aktoerregister.api.v1:
+  url: 'http://example.com:8090'
 
 credentials:
   srvpensjon:

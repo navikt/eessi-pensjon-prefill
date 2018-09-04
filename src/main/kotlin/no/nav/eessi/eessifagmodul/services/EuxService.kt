@@ -20,7 +20,7 @@ private val logger = LoggerFactory.getLogger(EuxService::class.java)
 
 @Service
 @Description("Service class for EuxBasis - EuxCpiServiceController.java")
-class EuxService(private val euxCpiRestTemplate: RestTemplate) {
+class EuxService(private val euxOidcRestTemplate: RestTemplate) {
 
     //Henter en liste over tilgjengelige aksjoner for den aktuelle RINA saken PK-51365"
     fun getPossibleActions(euSaksnr: String): List<RINAaksjoner> {
@@ -29,7 +29,7 @@ class EuxService(private val euxCpiRestTemplate: RestTemplate) {
 
         val httpEntity = HttpEntity("")
 
-        val response = euxCpiRestTemplate.exchange(builder.toUriString(), HttpMethod.GET, httpEntity, typeRef<String>())
+        val response = euxOidcRestTemplate.exchange(builder.toUriString(), HttpMethod.GET, httpEntity, typeRef<String>())
         val responseBody = response.body!!
         try {
             if (response.statusCode.isError) {
@@ -78,7 +78,7 @@ class EuxService(private val euxCpiRestTemplate: RestTemplate) {
         headers.contentType = MediaType.APPLICATION_JSON
         val httpEntity = HttpEntity("", headers)
 
-        val response = euxCpiRestTemplate.exchange(builder.toUriString(), HttpMethod.POST, httpEntity, String::class.java)
+        val response = euxOidcRestTemplate.exchange(builder.toUriString(), HttpMethod.POST, httpEntity, String::class.java)
         logger.debug("Response SendSED på Rina: $euxCaseId, response:  $response")
 
         if (response.statusCodeValue == 200) {
@@ -106,7 +106,7 @@ class EuxService(private val euxCpiRestTemplate: RestTemplate) {
         headers.contentType = MediaType.APPLICATION_JSON
 
         val httpEntity = HttpEntity(jsonPayload, headers)
-        val response = euxCpiRestTemplate.exchange(builder.toUriString(), HttpMethod.POST, httpEntity, String::class.java)
+        val response = euxOidcRestTemplate.exchange(builder.toUriString(), HttpMethod.POST, httpEntity, String::class.java)
         logger.debug("Response opprett SED på Rina: $euxCaseId, response:  $response")
         return response.statusCode
     }
@@ -124,7 +124,7 @@ class EuxService(private val euxCpiRestTemplate: RestTemplate) {
 
         val httpEntity = HttpEntity("")
 
-        val response = euxCpiRestTemplate.exchange(builder.toUriString(), HttpMethod.GET, httpEntity, typeRef<String>())
+        val response = euxOidcRestTemplate.exchange(builder.toUriString(), HttpMethod.GET, httpEntity, typeRef<String>())
         val responseBody = response.body ?: throw SedDokumentIkkeOpprettetException("Sed dokument ikke funnet")
         try {
             if (response.statusCode.isError) {
@@ -149,7 +149,7 @@ class EuxService(private val euxCpiRestTemplate: RestTemplate) {
 
         val httpEntity = HttpEntity("")
 
-        val response = euxCpiRestTemplate.exchange(builder.toUriString(), HttpMethod.DELETE, httpEntity, typeRef<String>())
+        val response = euxOidcRestTemplate.exchange(builder.toUriString(), HttpMethod.DELETE, httpEntity, typeRef<String>())
         logger.debug("Response SendSED på Rina: $euxCaseId, response:  $response")
 
         if (response.statusCodeValue == 200) {
@@ -200,7 +200,7 @@ class EuxService(private val euxCpiRestTemplate: RestTemplate) {
 
         val httpEntity = HttpEntity(map, headers)
 
-        val response = euxCpiRestTemplate.exchange(builder.toUriString(), HttpMethod.POST, httpEntity, String::class.java)
+        val response = euxOidcRestTemplate.exchange(builder.toUriString(), HttpMethod.POST, httpEntity, String::class.java)
         return response.body ?: throw RinaCasenrIkkeMottattException("Ikke mottatt RINA casenr, feiler ved opprettelse av BUC og SED")
     }
 }

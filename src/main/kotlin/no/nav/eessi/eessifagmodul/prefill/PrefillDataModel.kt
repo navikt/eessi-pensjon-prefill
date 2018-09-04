@@ -7,9 +7,9 @@ import no.nav.eessi.eessifagmodul.models.createSED
 /**
  * Data class to store different required data to build any given sed, auto or semiauto.
  *
- * sed, aktoerid,  psak-saknr, rinanr, institutions (mottaker eg. nav),
+ * sed, aktoerregister,  psak-saknr, rinanr, institutions (mottaker eg. nav),
  *
- * servives:  aktoerid, tps, pen, maybe joark, eux-basis.
+ * servives:  aktoerregister, tps, pen, maybe joark, eux-basis.
  *
  */
 class PrefillDataModel {
