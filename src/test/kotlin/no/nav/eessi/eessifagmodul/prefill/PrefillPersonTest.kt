@@ -4,9 +4,6 @@ import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.whenever
 import no.nav.eessi.eessifagmodul.models.*
 import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
-import no.nav.tjeneste.virksomhet.aktoer.v2.binding.HentIdentForAktoerIdPersonIkkeFunnet
-import no.nav.tjeneste.virksomhet.aktoer.v2.feil.PersonIkkeFunnet
-import no.nav.tjeneste.virksomhet.aktoer.v2.meldinger.HentIdentForAktoerIdResponse
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -62,8 +59,6 @@ class PrefillPersonTest(val index: Int, val sedid: String) {
     fun `create mock on preutfyll SED`() {
         logger.debug("jobber med test på følgende sed: $sedid")
         val mockPinResponse = "12345"
-
-        //whenever(mockAktoerregisterService.hentGjeldendeNorskIdentForAktorId(ArgumentMatchers.anyString())).thenReturn(response)
 
         val navresponse = Nav(bruker = Bruker(person = Person(fornavn = "Dummy", etternavn = "Dummy", pin = listOf(PinItem(sektor = "alle", identifikator = mockPinResponse, land = "NO")))))
         whenever(mockPreutfyllingNav.utfyllNav(any())).thenReturn(navresponse)

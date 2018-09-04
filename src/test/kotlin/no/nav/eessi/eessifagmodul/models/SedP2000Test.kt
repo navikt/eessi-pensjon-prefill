@@ -54,23 +54,5 @@ class SedP2000Test {
         JSONAssert.assertEquals(p2000file, json, false)
     }
 
-//    @Test
-//    fun `create SED P2000 Pensjon from json Pensjon datafile`() {
-//        val p2000path = Paths.get("src/test/resources/json/temp_p2000_pensjon.json")
-//        val p2000file = String(Files.readAllBytes(p2000path))
-//
-//        assertTrue(validateJson(p2000file))
-//
-//        if (printout) {
-//            println("--------------------------------------------------------------------------------------------")
-//            println(p2000file)
-//            println("--------------------------------------------------------------------------------------------")
-//        }
-//
-//        val p2000sed = mapJsonToAny(p2000file, typeRefs<Pensjon>(), true)
-//        assertNotNull(p2000sed)
-//
-//    }
-
 
 }

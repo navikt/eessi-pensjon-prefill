@@ -66,7 +66,6 @@ class PrefillDataModelTest {
 
     @Test
     fun `validate and check model build`() {
-        val res = "9"
 
         val items = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
         prefill.build(
@@ -84,9 +83,6 @@ class PrefillDataModelTest {
         assertEquals("12345", prefill.penSaksnummer)
         assertEquals("567890", prefill.aktoerID)
         assertEquals("123456789", prefill.personNr)
-
-
-
     }
 
 
@@ -106,8 +102,5 @@ class PrefillDataModelTest {
         assertNotNull(prefill.personNr)
         assertEquals("1234000001", prefill.personNr)
     }
-
-
-
 
 }

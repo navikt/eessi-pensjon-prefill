@@ -15,6 +15,7 @@ import no.nav.eessi.eessifagmodul.utils.validateJson
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.ArgumentMatchers
 import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
 import org.skyscreamer.jsonassert.JSONAssert
@@ -214,7 +215,7 @@ class SedP4000Test {
         assertNotNull(reqjson)
         validateJson(reqjson)
 
-        whenever(mockAktoerIdClient.hentPinIdentFraAktorid(any())).thenReturn("12345")
+        whenever(mockAktoerregisterService.hentGjeldendeNorskIdentForAktorId(ArgumentMatchers.anyString())).thenReturn("12345")
 
         val data = apiController.createPrefillData(req)
         assertNotNull(data)

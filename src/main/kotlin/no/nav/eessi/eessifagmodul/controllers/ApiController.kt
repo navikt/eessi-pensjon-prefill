@@ -2,17 +2,14 @@ package no.nav.eessi.eessifagmodul.controllers
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.swagger.annotations.ApiOperation
-import no.nav.eessi.eessifagmodul.clients.aktoerid.AktoerIdClient
 import no.nav.eessi.eessifagmodul.models.*
-import no.nav.eessi.eessifagmodul.prefill.PrefillSED
 import no.nav.eessi.eessifagmodul.prefill.PrefillDataModel
-import no.nav.eessi.eessifagmodul.services.RinaActions
-import no.nav.eessi.eessifagmodul.services.EuxService
-import no.nav.eessi.eessifagmodul.services.LandkodeService
+import no.nav.eessi.eessifagmodul.prefill.PrefillSED
+import no.nav.eessi.eessifagmodul.services.*
 import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
-import no.nav.security.oidc.api.Protected
 import no.nav.eessi.eessifagmodul.utils.mapJsonToAny
 import no.nav.eessi.eessifagmodul.utils.typeRefs
+import no.nav.security.oidc.api.Protected
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -23,7 +20,7 @@ import java.util.*
 @Protected
 @RestController
 @RequestMapping("/api")
-class ApiController(private val euxService: EuxService, private val prefillSED: PrefillSED, private val aktoerIdClient: AktoerIdClient) {
+class ApiController(private val euxService: EuxService, private val prefillSED: PrefillSED, private val aktoerIdClient: AktoerregisterService) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(ApiController::class.java) }
 
@@ -250,10 +247,10 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
         return result.contains(sed)
     }
 
-    @Throws(PersonIkkeFunnetException::class)
+    @Throws(AktoerregisterException::class)
     fun hentAktoerIdPin(aktorid: String): String {
-        if (aktorid.isBlank()) throw IkkeGyldigKallException("Mangler aktoearID")
-        return aktoerIdClient.hentPinIdentFraAktorid(aktorid)
+        if (aktorid.isBlank()) throw IkkeGyldigKallException("Mangler AktorId")
+        return aktoerIdClient.hentGjeldendeNorskIdentForAktorId(aktorid)
     }
 
 
