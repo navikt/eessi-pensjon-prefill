@@ -70,6 +70,10 @@ node {
             ])
         }
 
+        stage("update api-gw") {
+            apigw.registerFromFSSToSBSInTestEnvironment("eessi-pensjon-fagmodul", "eessifagmodulservice", "eessi-pensjon-frontend-api", "t8")
+        }
+
         github.commitStatus("navikt-ci-oauthtoken", "navikt/eessi-pensjon-fagmodul", 'continuous-integration/jenkins', commitHash, 'success', "Build #${env.BUILD_NUMBER} has finished")
     } catch (err) {
         github.commitStatus("navikt-ci-oauthtoken", "navikt/eessi-pensjon-fagmodul", 'continuous-integration/jenkins', commitHash, 'failure', "Build #${env.BUILD_NUMBER} has failed")
