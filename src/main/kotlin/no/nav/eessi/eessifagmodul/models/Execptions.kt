@@ -4,9 +4,6 @@ import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.ResponseStatus
 
 @ResponseStatus(value = HttpStatus.NOT_FOUND)
-class PersonIkkeFunnetException(message: String, exception: Exception): Exception(message, exception)
-
-@ResponseStatus(value = HttpStatus.NOT_FOUND)
 class SedDokumentIkkeOpprettetException(message: String): Exception(message)
 
 @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)

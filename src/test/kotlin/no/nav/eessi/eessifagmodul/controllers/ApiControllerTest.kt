@@ -258,18 +258,8 @@ class ApiControllerTest {
     @Test
     fun `check rest api path correct`() {
         val path = "/sed/get/{rinanr}/{documentid}"
-
         val uriParams = mapOf("rinanr" to "123456789", "documentid" to "DOC1223213234234")
         val builder = UriComponentsBuilder.fromUriString(path).buildAndExpand(uriParams)
-
-
-        val uristr = builder.toUriString()
-        println(uristr)
-        val uri = builder.toUri()
-        println(uri)
-        val path2 = builder.path
-        println(path2)
-
         assertEquals("/sed/get/123456789/DOC1223213234234", builder.path)
     }
 

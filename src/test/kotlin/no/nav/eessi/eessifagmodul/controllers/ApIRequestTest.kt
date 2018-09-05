@@ -6,6 +6,7 @@ import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
 import no.nav.eessi.eessifagmodul.utils.mapJsonToAny
 import no.nav.eessi.eessifagmodul.utils.typeRefs
 import no.nav.eessi.eessifagmodul.utils.validateJson
+import org.junit.Ignore
 import org.junit.Test
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -66,12 +67,12 @@ class ApIRequestTest {
         validateAndPrint(createMockApiRequest("P2000","P_BUC_01", payload))
     }
 
-//    @Test
-//    fun `generate request mock payload of SED P2100`() {
-//        val payload = readJsonAndParseToSed("P2100-NAV.json")
-//        validateAndPrint(createMockApiRequest("P2100","P_BUC_02", payload))
-//
-//    }
+    @Ignore
+    fun `generate request mock payload of SED P2100`() {
+        val payload = readJsonAndParseToSed("P2100-NAV.json")
+        validateAndPrint(createMockApiRequest("P2100","P_BUC_02", payload))
+
+    }
 
     @Test
     fun `generate request mock payload of SED P2200`() {

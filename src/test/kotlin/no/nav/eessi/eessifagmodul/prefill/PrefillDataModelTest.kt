@@ -33,31 +33,26 @@ class PrefillDataModelTest {
     }
 
     @Test
-    fun `check for none valid etterlatt`() {
+    fun `check for valid claimant fail`() {
         assertFalse(prefill.isValidEtterlatt())
     }
 
     @Test
-    fun `check for none valid etterlatt mangler pin`() {
+    fun `check for valid claimant lack pin fail`() {
         //val prefill = PrefillDataModel()
         prefill.avdodAktoerID = "123123"
         assertFalse(prefill.isValidEtterlatt())
     }
+
     @Test
-    fun `check for none valid etterlatt mangler aktoerid`() {
-        //val prefill = PrefillDataModel()
-        prefill.avdodPersonnr = "23123"
-        assertFalse(prefill.isValidEtterlatt())
-    }
-    @Test
-    fun `check for none valid etterlatt begge er blank`() {
+    fun `check for valid claimant pin and aktorid is blank fail`() {
         prefill.avdodAktoerID = ""
         prefill.avdodPersonnr = ""
         assertFalse(prefill.isValidEtterlatt())
     }
 
     @Test
-    fun `check for valid etterlatt`() {
+    fun `check for valid claimant deceased pin and aktorid is filled`() {
         //val prefill = PrefillDataModel()
         prefill.avdodAktoerID = "123123"
         prefill.avdodPersonnr = "23123"

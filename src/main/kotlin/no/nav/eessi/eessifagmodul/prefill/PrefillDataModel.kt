@@ -47,7 +47,6 @@ class PrefillDataModel {
         this.partSedasJson.put(sedID, payload)
         this.euxCaseID = euxcaseId
         this.personNr = pinID
-        println(debug())
         return this
     }
 
@@ -59,14 +58,8 @@ class PrefillDataModel {
         this.sed = createSED(sedID)
         this.institution = institutions
         this.personNr = pinID
-        println(debug())
         return this
     }
-
-    fun debug():String {
-        return "Sektor: $rinaSubject, pen-saknr: $penSaksnummer, buc: $buc, sedid: ${sed.sed}, instirusjoner: $institution, aktorid: $aktoerID, norpin: $personNr, haretterlatt: ${isValidEtterlatt()} payload: ${partSedasJson.size}  payload: $partSedasJson "
-    }
-
 
     fun getSEDid(): String {
         return sed.sed!!
@@ -80,10 +73,11 @@ class PrefillDataModel {
     }
 
     fun isValidEtterlatt(): Boolean {
+        //TODO finne bedre metode?
         return try {
-            avdodAktoerID.isNotBlank() && avdodPersonnr.isNotBlank()
+            val state = checkNotNull(avdodPersonnr)
+            state.isNotBlank()
         } catch (ex: Exception) {
-            print(ex.message)
             false
         }
     }

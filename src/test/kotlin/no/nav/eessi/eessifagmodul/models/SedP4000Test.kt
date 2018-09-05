@@ -45,8 +45,6 @@ class SedP4000Test {
 
     val logger: Logger by lazy { LoggerFactory.getLogger(SedP4000Test::class.java) }
 
-    private val printout : Boolean = false
-
     @Before
     fun setup() {
         prefillDataMock = PrefillDataModel()
@@ -58,9 +56,6 @@ class SedP4000Test {
     fun `create mock structure P4000`() {
         val result = createPersonTrygdeTidMock()
         assertNotNull(result)
-        val json = mapAnyToJson(result, true)
-        println(json)
-
 
         val sed = createSED("P4000")
         val nav = NavMock().genererNavMock()
@@ -70,12 +65,6 @@ class SedP4000Test {
         sed.trygdetid = result
 
         val json2 = mapAnyToJson(sed, true)
-        if (printout) {
-            println("\n\n\n------------------------------------------------------------------------------------------------\n\n\n")
-            println(json2)
-            println("\n\n\n------------------------------------------------------------------------------------------------\n\n\n")
-        }
-
         val mapSED = mapJsonToAny(json2, typeRefs<SED>())
 
         assertNotNull(mapSED)
@@ -84,28 +73,17 @@ class SedP4000Test {
 
 
     @Test
-    fun `create and validate P4000 on multiple ways`() {
-
+    fun `create and validate P4000 from json to nav-sed back to json`() {
         //map load P4000-NAV refrence
         val path = Paths.get("src/test/resources/json/P4000-NAV.json")
         val p4000file = String(Files.readAllBytes(path))
         assertNotNull(p4000file)
         validateJson(p4000file)
-
         val sed = mapJsonToAny(p4000file, typeRefs<SED>())
         assertNotNull(sed)
-
         assertNotNull(sed.trygdetid)
         assertNotNull(sed.trygdetid?.ansattSelvstendigPerioder)
-
-
         val json = mapAnyToJson(sed, true)
-        if (true) {
-            println(p4000file)
-            println("\n\n\n-------------[ Fra fil -> SED -> Json ]--------------------------------------------------------------------------\n\n\n")
-            println(json)
-            println("\n\n\n------------------------------------------------------------------------------------------------\n\n\n")
-        }
         JSONAssert.assertEquals(p4000file, json, false)
 
     }
@@ -127,29 +105,21 @@ class SedP4000Test {
                 subjectArea = "Pensjon",
                 payload = payload
         )
-
         val json = mapAnyToJson(req)
         assertNotNull(json)
-        if (true) {
-            println("-------------------------------------------------------------------------------------------------------")
-            println(json)
-            println("-------------------------------------------------------------------------------------------------------")
-        }
-
         val apireq = mapJsonToAny(json, typeRefs<ApiController.ApiRequest>())
         val payjson = apireq.payload ?: ""
         assertNotNull(payjson)
-
-        //logger.debug(payjson)
         assertEquals(payload, payjson)
-        val p4k = mapJsonToAny(payjson, typeRefs<PersonTrygdeTid>())
-        assertNotNull(p4k)
-        assertEquals("DK", p4k.boPerioder!![0].land)
+
+        val check = mapJsonToAny(payjson, typeRefs<PersonTrygdeTid>())
+        assertNotNull(check)
+        assertEquals("DK", check.boPerioder!![0].land)
 
     }
 
     @Test
-    fun `create trygdetid P4000 from file`() {
+    fun `create insurance periods P4000 from file`() {
 
         val path = Paths.get("src/test/resources/json/Trygdetid_part.json")
         val jsonfile = String(Files.readAllBytes(path))
@@ -162,15 +132,6 @@ class SedP4000Test {
         val backtojson = mapAnyToJson(obj, true)
         assertNotNull(backtojson)
         validateJson(backtojson)
-
-        if (printout) {
-            println("-------------------------------------------------------------------------------------------------------")
-            println(jsonfile)
-            println("-------------------------------------------------------------------------------------------------------")
-            println(backtojson)
-            println("-------------------------------------------------------------------------------------------------------")
-        }
-
         val payload = mapAnyToJson(obj)
         val items = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
         val req = ApiController.ApiRequest(
@@ -183,14 +144,9 @@ class SedP4000Test {
                 subjectArea = "Pensjon",
                 payload = payload
         )
+        assertNotNull(req)
+        JSONAssert.assertEquals(jsonfile, backtojson, false)
 
-        val jsonreq = mapAnyToJson(req)
-
-        if (printout) {
-            println("-------------------------------------------------------------------------------------------------------")
-            println(  jsonreq        )
-            println("-------------------------------------------------------------------------------------------------------")
-        }
     }
 
     @Test
@@ -226,16 +182,7 @@ class SedP4000Test {
         val result = apiController.createPreutfyltSED(data)
 
         val jsondata = mapAnyToJson(result.sed, true)
-
-        if (printout) {
-            println("----- ReqiestAPI P4000 --------------------------------------------------------------------------------")
-            println(reqjson)
-            println("-------------------------------------------------------------------------------------------------------")
-            println("\n")
-            println("----- SED P4000 test-----------------------------------------------------------------------------------")
-            println(jsondata)
-            println("-------------------------------------------------------------------------------------------------------")
-        }
+        assertNotNull(jsondata)
     }
 
 

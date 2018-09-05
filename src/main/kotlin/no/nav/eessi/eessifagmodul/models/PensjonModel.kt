@@ -89,23 +89,6 @@ data class YtelserItem(
         val status: String? = null
 )
 
-//data class YtelserItem2(
-//
-//        val annenytelse: String? = null,
-//        val institusjon: Institusjon? = null,
-//
-//        val pin: PinItem? = null,
-//        val startdatoutbetaling: String? = null,
-//
-//        val ytelse: String? = null,
-//
-//        val startdatoretttilytelse: String? = null,
-//
-//        val beloep: List<BeloepItem?>? = null,
-//        val sluttdatoutbetaling: String? = null,
-//        val status: String? = null
-//)
-
 data class BeloepItem(
        val annenbetalingshyppighetytelse: String? = null,
        val betalingshyppighetytelse: String? = null,

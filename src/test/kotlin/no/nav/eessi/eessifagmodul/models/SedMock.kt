@@ -1,7 +1,5 @@
 package no.nav.eessi.eessifagmodul.models
 
-// 351595
-
 class SedMock {
 
     fun genererP6000Mock(): SED {
@@ -24,27 +22,6 @@ class SedMock {
                 sedGVer = "4"
         )
     }
-
-//    fun genererEmptyP6000Mock(): SED {
-//        return SED(
-//                nav = Nav(),
-//                pensjon = Pensjon(),
-//                sed = "P6000",
-//                sedVer = "0",
-//                sedGVer = "4"
-//                //sector = "Sector Components/Pensions/P6000"
-//        )
-//    }
-//    fun genererEmptyP2000Mock(): SED {
-//        return SED(
-//                nav = Nav(),
-//                pensjon = Pensjon(),
-//                sed = "P2000",
-//                sedVer = "0",
-//                sedGVer = "4"
-//                //sector = "Sector Components/Pensions/P2000"
-//        )
-//    }
 
 }
 

@@ -17,12 +17,6 @@ class SedP5000Test {
 
     val logger: Logger by lazy { LoggerFactory.getLogger(SedP5000Test::class.java) }
 
-    @Before
-    fun setup() {
-        logger.debug("Starting tests.... ...")
-        //MockitoAnnotations.initMocks(this)
-    }
-
     @Test
     fun `validate P5000 to json and back`() {
         val navSedP5000 = SedMock().genererP5000Mock()
@@ -33,8 +27,6 @@ class SedP5000Test {
         val pensjondata = mapJsonToAny(json, typeRefs<SED>())
         assertNotNull(pensjondata)
         assertEquals(navSedP5000, pensjondata)
-
-        //logger.debug("\n\n $json \n\n")
     }
 }
 

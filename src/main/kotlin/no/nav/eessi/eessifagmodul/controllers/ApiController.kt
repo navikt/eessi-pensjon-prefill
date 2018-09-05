@@ -20,7 +20,7 @@ import java.util.*
 @Protected
 @RestController
 @RequestMapping("/api")
-class ApiController(private val euxService: EuxService, private val prefillSED: PrefillSED, private val aktoerIdClient: AktoerregisterService) {
+class ApiController(private val euxService: EuxService, private val prefillSED: PrefillSED, private val aktoerregisterService: AktoerregisterService) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(ApiController::class.java) }
 
@@ -73,7 +73,7 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
     fun deleteDocument(@PathVariable("rinanr", required = true) rinanr: String, @PathVariable("sed", required = true) sed: String, @PathVariable("documentid", required = true) documentid: String): HttpStatus {
 
         val response = euxService.deleteSEDfromExistingRinaCase(rinanr, documentid)
-        return if (response) {
+        return if (response.is2xxSuccessful) {
             return if (rinaActions.isActionPossible(sed, rinanr, rinaActions.create, 3)) {
                 HttpStatus.OK
             } else {
@@ -82,7 +82,6 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
         } else {
             HttpStatus.BAD_REQUEST
         }
-
     }
 
 
@@ -115,6 +114,7 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
 
     }
 
+    //TODO remove when done!
     fun mockSED(request: ApiRequest) : SED {
         val sed: SED?
         when {
@@ -136,11 +136,12 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
         val korrid = UUID.randomUUID()
 
         //temp for mock sendt on payload..
+        //TODO remove when done!
         val data: PrefillDataModel?
         if (request.mockSED is Boolean && request.mockSED) {
             data = PrefillDataModel()
-            data.penSaksnummer = "1232134234234"
-            data.personNr = "123456789011"
+            data.penSaksnummer = request.caseId!!
+            data.personNr = "12345678901"
             data.aktoerID = request.pinid!!
             data.buc = request.buc!!
             data.institution = request.institutions!!
@@ -250,7 +251,7 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
     @Throws(AktoerregisterException::class)
     fun hentAktoerIdPin(aktorid: String): String {
         if (aktorid.isBlank()) throw IkkeGyldigKallException("Mangler AktorId")
-        return aktoerIdClient.hentGjeldendeNorskIdentForAktorId(aktorid)
+        return aktoerregisterService.hentGjeldendeNorskIdentForAktorId(aktorid)
     }
 
 

@@ -56,7 +56,7 @@ class PrefillPersonTest(val index: Int, val sedid: String) {
     }
 
     @Test
-    fun `create mock on preutfyll SED`() {
+    fun `create mock on prefill SED`() {
         logger.debug("jobber med test på følgende sed: $sedid")
         val mockPinResponse = "12345"
 

@@ -20,12 +20,6 @@ class SedP6000Test{
 
     private val printout : Boolean = false
 
-    @Before
-    fun setup() {
-        logger.debug("Starting tests.... ...")
-        //MockitoAnnotations.initMocks(this)
-    }
-
     @Test
     fun createP6000sed() {
         val sed6000 = SedMock().genererP6000Mock()
@@ -59,7 +53,7 @@ class SedP6000Test{
     }
 
     @Test
-    fun `create part json to object`() {
+    fun `create part json and validate to object`() {
         val sed6000 = SedMock().genererP6000Mock()
         assertNotNull(sed6000)
 
@@ -88,14 +82,6 @@ class SedP6000Test{
             println("------------------p6000-nav----------------------")
         }
 
-    }
-
-    @Test
-    fun `check for valid json to object`() {
-       val test = "{\"postnummer\":\"sdafsdaf\",\"by\":\"asfdsdaf\",\"land\":\"BG\",\"gate\":\"sdfasd\",\"bygning\":\"sdfsdf\","
-       val result = validateJson(test)
-       assertNotNull(result)
-       assertEquals(false, result)
     }
 
 }
