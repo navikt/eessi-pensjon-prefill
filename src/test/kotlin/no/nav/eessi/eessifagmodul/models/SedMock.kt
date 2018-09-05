@@ -1,7 +1,5 @@
 package no.nav.eessi.eessifagmodul.models
 
-
-
 class SedMock {
 
     fun genererP6000Mock(): SED {
@@ -24,27 +22,6 @@ class SedMock {
                 sedGVer = "4"
         )
     }
-
-//    fun genererEmptyP6000Mock(): SED {
-//        return SED(
-//                nav = Nav(),
-//                pensjon = Pensjon(),
-//                sed = "P6000",
-//                sedVer = "0",
-//                sedGVer = "4"
-//                //sector = "Sector Components/Pensions/P6000"
-//        )
-//    }
-//    fun genererEmptyP2000Mock(): SED {
-//        return SED(
-//                nav = Nav(),
-//                pensjon = Pensjon(),
-//                sed = "P2000",
-//                sedVer = "0",
-//                sedGVer = "4"
-//                //sector = "Sector Components/Pensions/P2000"
-//        )
-//    }
 
 }
 
@@ -103,7 +80,7 @@ class NavMock {
                                         land = "DK",
                                         by = "gafdgsf"
                                 ),
-                                forrnavnvedfoedsel = "werwerwe",
+                                fornavnvedfoedsel = "werwerwe",
                                 tidligerefornavn = "asdfdsffsd",
                                 etternavnvedfoedsel = "werwreq"
                         )
@@ -161,7 +138,7 @@ class PensjonMock {
                         ),
                         person = Person(
                                 fornavn = "gafgfdga",
-                                forrnavnvedfoedsel = "ffsdfgsfgadfg",
+                                fornavnvedfoedsel = "ffsdfgsfgadfg",
                                 kjoenn = "m",
                                 statsborgerskap = listOf(
                                         StatsborgerskapItem("AT"),
@@ -361,7 +338,7 @@ class PensjonMock {
                                                 startdato = "2034-10-01"
                                         )
                                 ),
-                                arsak = Arsak(
+                                aarsak = Arsak(
                                         annenytelseellerinntekt = "06",
                                         inntektAnnen = "adfasfsd"
                                 )
@@ -373,7 +350,7 @@ class PensjonMock {
                                                 startdato = "2033-10-01"
                                         )
                                 ),
-                                arsak = Arsak(
+                                aarsak = Arsak(
                                         annenytelseellerinntekt = "02",
                                         inntektAnnen = "ewrwer"
                                 ),

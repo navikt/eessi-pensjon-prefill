@@ -28,7 +28,7 @@ class PrefillPersonDataFromTPSTest{
 
 
     @Test
-    fun `create fodested som ukjent`() {
+    fun `create birthplace as unknown`() {
         val bruker = Bruker()
         bruker.foedested = null
 
@@ -40,7 +40,7 @@ class PrefillPersonDataFromTPSTest{
 
     }
     @Test
-    fun `create correct fodested kjent`() {
+    fun `create correct birthplace known`() {
         val bruker = Bruker()
         bruker.foedested = "NOR"
 

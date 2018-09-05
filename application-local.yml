@@ -4,8 +4,8 @@
 ## - OPENAM_SECRET
 
 euxbasis.v1:
-  url: 'https://eux-app.nais.preprod.local/cpi'
-#  url: 'http://localhost:9090/cpi'
+#  url: 'https://eux-app.nais.preprod.local/cpi'
+  url: 'http://localhost:9090/cpi'
 
 virksomhet.person.v3:
   endpointurl: 'https://wasapp-t7.adeo.no/tpsws/ws/Person/v3'  # maskert-data

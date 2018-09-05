@@ -8,26 +8,40 @@ import com.fasterxml.jackson.annotation.JsonProperty
  *
  */
 data class Pensjon(
-        @JsonProperty("reduksjon")
         var reduksjon: List<ReduksjonItem>? = null,
-        @JsonProperty("vedtak")
-        var vedtak: List<VedtakItem?>? = null,
+        var vedtak: List<VedtakItem>? = null,
         var sak: Sak? = null,
-        @JsonProperty("gjenlevende")
+
         var gjenlevende: Bruker? = null,
-        //var gjenlevende: Gjenlevende? = null,
-        @JsonProperty("tilleggsinformasjon")
+        var bruker: Bruker? = null,
+
         var tilleggsinformasjon: Tilleggsinformasjon? = null,
-        //p2000
+        //p2000 - p2200
         val ytterligeinformasjon: String? = null,
-        val ytelse: List<InstitusjonYtelseItem>? = null,
+        val etterspurtedokumenter: String? = null,
         val ytelser: List<YtelserItem>? = null,
         val forespurtstartdato: String? = null,
         //P5000
         var medlemskapAnnen: List<MedlemskapItem>? = null,
         var medlemskapTotal: List<MedlemskapItem>? = null,
         var medlemskap: List<MedlemskapItem>? = null,
-        var trygdetid: List<MedlemskapItem>? = null
+        var trygdetid: List<MedlemskapItem>? = null,
+
+        var institusjonennaaikkesoektompensjon: List<String>? = null,
+
+        var utsettelse: List<Utsettelse>? = null,
+        //P2000, P2100, P2200
+        val vedlegg: List<String>? = null,
+
+        val vedleggandre: String? = null,
+        val angitidligstdato: String? = null
+
+)
+
+//P2000
+data class Utsettelse(
+        val institusjon: Institusjon? = null,
+        val tildato : String? = null
 )
 
 //P5000
@@ -48,6 +62,7 @@ data class Dager(
         val type: String? = null
 )
 
+
 //P5000
 data class TotalSum(
         val kvartal: String? = null,
@@ -57,21 +72,12 @@ data class TotalSum(
         val maaneder: String? = null
 )
 
-data class InstitusjonYtelseItem(
-        val institusjon: Institusjon? = null
-)
-
-data class Institusjon(
-        val land: String? = null,
-        val sektor: String? = null,
-        val saksnummer: String? = null
-)
-
-//P2000
+//P2000 - P2200
 data class YtelserItem(
         val annenytelse: String? = null,
         val totalbruttobeloeparbeidsbasert: String? = null,
         val institusjon: Institusjon? = null,
+        val pin: PinItem? = null,
         val startdatoutbetaling: String? = null,
         val mottasbasertpaa: String? = null,
         val ytelse: String? = null,
@@ -85,10 +91,10 @@ data class YtelserItem(
 
 data class BeloepItem(
        val annenbetalingshyppighetytelse: String? = null,
-        val betalingshyppighetytelse: String? = null,
-        val valuta: String? = null,
-        val beloep: String? = null,
-        val gjeldendesiden: String? = null
+       val betalingshyppighetytelse: String? = null,
+       val valuta: String? = null,
+       val beloep: String? = null,
+       val gjeldendesiden: String? = null
 )
 
 data class Sak(
@@ -108,6 +114,8 @@ data class KravtypeItem(
 )
 
 data class VedtakItem(
+        val trekkgrunnlag : List<String>? = null,
+        val mottaker : List<String>? = null,
         val grunnlag: Grunnlag? = null,
         val begrunnelseAnnen: String? = null,
         val artikkel: String? = null,
@@ -162,9 +170,8 @@ data class Ukjent(
 
 data class ReduksjonItem (
         val type: String? = null,
-        @JsonProperty("virkningsdato")
         val virkningsdato: List<VirkningsdatoItem>? = null,
-        val arsak: Arsak? = null,
+        val aarsak: Arsak? = null,
         val artikkeltype: String? = null
 )
 

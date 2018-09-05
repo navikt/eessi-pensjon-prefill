@@ -33,12 +33,21 @@ data class Bruker(
 )
 
 data class Bank(
-        val konto: Konto? = null
+        val navn: String? = null,
+        val konto: Konto? = null,
+        val adresse: Adresse? = null
 )
 data class Konto(
         val sepa: Sepa? = null,
-        val innehaver: Innehaver? = null
+        val innehaver: Innehaver? = null,
+        val ikkesepa: IkkeSepa? = null,
+        val kontonr: String? = null
 )
+
+data class IkkeSepa(
+        val swift: String? = null
+)
+
 data class Sepa(
         val iban: String? = null,
         val swift: String? = null
@@ -98,10 +107,8 @@ data class EmailItem(
 
 
 data class Person(
-        @JsonProperty("pin")
         var pin: List<PinItem>? = null,
         var pinannen: PinItem? = null,
-        @JsonProperty("statsborgerskap")
         var statsborgerskap: List<StatsborgerskapItem>? = null,
         var etternavn: String? = null,
         var fornavn: String? = null,
@@ -109,7 +116,7 @@ data class Person(
         var foedested: Foedested? = null,
         var tidligerefornavn: String? = null,
         var tidligereetternavn: String? = null,
-        var forrnavnvedfoedsel: String? = null,
+        var fornavnvedfoedsel: String? = null,
         var etternavnvedfoedsel: String? = null,
         var foedselsdato: String? = null,
         val doedsdato: String? = null,
@@ -149,7 +156,9 @@ data class InntektItem(
 data class PinItem(
         val sektor: String? = null,
         val identifikator: String? = null,
-        val land: String? = null
+        val land: String? = null,
+        //P2000, P2100, P2200
+        val institusjon : Institusjon? = null
 )
 
 data class Adresse(
@@ -171,6 +180,14 @@ data class EessisakItem(
         val institusjonsid: String? = null,
         val institusjonsnavn: String? = null,
         val saksnummer: String? = null,
+        val land: String? = null
+)
+
+data class Institusjon(
+        val institusjonsid: String? = null,
+        val institusjonsnavn: String? = null,
+        val saksnummer: String? = null,
+        val sektor: String? = null,
         val land: String? = null
 )
 

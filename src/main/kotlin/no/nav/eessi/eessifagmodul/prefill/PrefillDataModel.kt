@@ -3,8 +3,6 @@ package no.nav.eessi.eessifagmodul.prefill
 import no.nav.eessi.eessifagmodul.models.InstitusjonItem
 import no.nav.eessi.eessifagmodul.models.SED
 import no.nav.eessi.eessifagmodul.models.createSED
-import no.nav.eessi.eessifagmodul.services.AktoerregisterService
-import org.springframework.stereotype.Component
 
 /**
  * Data class to store different required data to build any given sed, auto or semiauto.
@@ -14,120 +12,58 @@ import org.springframework.stereotype.Component
  * servives:  aktoerregister, tps, pen, maybe joark, eux-basis.
  *
  */
-@Component
-class PrefillDataModel(private val aktoerregisterService: AktoerregisterService) {
+class PrefillDataModel {
 
-    private lateinit var sed: SED
-    private var pin: String = ""
+    //pensjon
+    lateinit var penSaksnummer: String
+    lateinit var vedtakId: String
+    lateinit var karavId: String
 
-    private lateinit var rinaSubject: String
-    private lateinit var penSaksnummer: String
-    private lateinit var vedtakId: String
-    private lateinit var karavId: String
+    //aktoearid og pinid for person
+    lateinit var personNr: String
+    lateinit var aktoerID: String
 
-    private lateinit var  buc: String
-    private lateinit var institution: List<InstitusjonItem>
-    private lateinit var aktoerID: String
+    //aktoerid og pinid for avdod
+    lateinit var avdodAktoerID: String
+    lateinit var avdodPersonnr: String
 
-    //aktorid-etterlatt - når gjenlevende fylles ut?
-    private var etterlattAktoerID: String? = null
-    private var etterlattPin: String? = null
+    //rina
+    lateinit var rinaSubject: String
+    lateinit var euxCaseID: String
+    lateinit var  buc: String
+    lateinit var sed: SED
+    lateinit var institution: List<InstitusjonItem>
 
-    private var partSedasJson: MutableMap<String, String> = mutableMapOf()
+    //div payload seddata json
+    val partSedasJson: MutableMap<String, String> = mutableMapOf()
 
-    //euxCaseId (RINA caseID)
-    private lateinit var euxCaseID: String
-
-    @Throws(RuntimeException::class)
-    fun build(subject: String, caseId: String, buc: String, sedID: String, aktoerID: String, institutions: List<InstitusjonItem>, payload: String, euxcaseId: String): PrefillDataModel {
+    fun build(subject: String, caseId: String, buc: String, sedID: String, aktoerID: String, pinID: String, institutions: List<InstitusjonItem>, payload: String, euxcaseId: String): PrefillDataModel {
         this.rinaSubject =  subject
         this.penSaksnummer = caseId
         this.buc = buc
         this.aktoerID = aktoerID
         this.sed = createSED(sedID)
         this.institution = institutions
-        this.partSedasJson[sedID] = payload
+        this.partSedasJson.put(sedID, payload)
         this.euxCaseID = euxcaseId
-        this.pin = hentAktoerIdPin(aktoerID)
-        println(debug())
+        this.personNr = pinID
         return this
     }
 
-    @Throws(RuntimeException::class)
-    fun build(subject: String, caseId: String, buc: String, sedID: String, aktoerID: String, institutions: List<InstitusjonItem>): PrefillDataModel {
+    fun build(subject: String, caseId: String, buc: String, sedID: String, aktoerID: String,pinID: String, institutions: List<InstitusjonItem>): PrefillDataModel {
         this.rinaSubject =  subject
         this.penSaksnummer = caseId
         this.buc = buc
         this.aktoerID = aktoerID
         this.sed = createSED(sedID)
         this.institution = institutions
-        this.pin = hentAktoerIdPin(aktoerID)
-        println(debug())
+        this.personNr = pinID
         return this
-    }
-
-    @Throws(RuntimeException::class)
-    fun build(subject: String, caseId: String, buc: String, sedID: String, aktoerID: String, institutions: List<InstitusjonItem>, dodaktorid: String): PrefillDataModel {
-        this.rinaSubject =  subject
-        this.penSaksnummer = caseId
-        this.buc = buc
-        this.aktoerID = aktoerID
-        this.sed = createSED(sedID)
-        this.institution = institutions
-        this.pin = hentAktoerIdPin(aktoerID)
-        this.etterlattAktoerID = dodaktorid
-        this.etterlattPin = hentAktoerIdPin(dodaktorid)
-        println(debug())
-        return this
-    }
-
-    fun debug():String {
-        return "Sektor: $rinaSubject, pen-saknr: $penSaksnummer, buc: $buc, sedid: ${sed.sed}, instirusjoner: $institution, aktorid: $aktoerID, norpin: $pin, dodaktorID: $etterlattAktoerID, dodpin: $etterlattPin haretterlatt: ${isValidEtterlatt()} payload: ${partSedasJson.size}  payload: $partSedasJson "
-    }
-
-    @Throws(RuntimeException::class)
-    fun hentAktoerIdPin(aktorid: String): String {
-        if (aktorid.isBlank()) return ""
-        return aktoerregisterService.hentGjeldendeNorskIdentForAktorId(aktorid)
-    }
-
-    //Pinid (FNR) aktorID
-    fun getPinid(): String { return pin }
-
-    fun getAktoerid(): String {
-        return aktoerID
-    }
-
-    fun getSED(): SED {
-        return sed
     }
 
     fun getSEDid(): String {
         return sed.sed!!
     }
-
-    fun getBUC(): String {
-        return buc
-    }
-
-    fun setPinID(pinid: String) {
-        this.pin = pinid
-    }
-
-    fun getEtterlattPinid(): String { return etterlattPin ?: "" }
-    fun setEtterlattPinID(etterlattPinid: String) {
-        this.etterlattPin = etterlattPinid
-    }
-    fun getEtterlattAktoerID(): String { return etterlattAktoerID ?: "" }
-
-    fun setEtterlattAktoerID(etterlattAktoerid: String) {
-        this.etterlattAktoerID = etterlattAktoerid
-    }
-
-    fun getSaksnr(): String {
-        return penSaksnummer
-    }
-
     fun getPartSEDasJson(key: String): String {
         return partSedasJson[key].orEmpty()
     }
@@ -137,8 +73,10 @@ class PrefillDataModel(private val aktoerregisterService: AktoerregisterService)
     }
 
     fun isValidEtterlatt(): Boolean {
+        //TODO finne bedre metode?
         return try {
-            etterlattAktoerID?.isNotBlank() ?: false && etterlattPin?.isNotBlank() ?: false
+            val state = checkNotNull(avdodPersonnr)
+            state.isNotBlank()
         } catch (ex: Exception) {
             false
         }
@@ -146,11 +84,6 @@ class PrefillDataModel(private val aktoerregisterService: AktoerregisterService)
 
     fun validSED(sedid: String): Boolean {
         return getSEDid() == sedid
-    }
-
-    fun print(post: String): String {
-        val sedid = getSEDid()
-        return "$sedid\t\t$post"
     }
 
 }

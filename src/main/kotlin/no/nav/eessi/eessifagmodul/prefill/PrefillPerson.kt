@@ -53,20 +53,20 @@ class PrefillPerson(private val prefillNav: PrefillNav, private val prefilliPens
 
         logger.debug("------------------| Preutfylling START |------------------ ")
 
-        logger.debug(prefillData.print("Preutfylling Utfylling Data"))
+        logger.debug("[${prefillData.getSEDid()}] Preutfylling Utfylling Data")
 
-        val sed = prefillData.getSED()
+        val sed = prefillData.sed
 
         sed.nav = prefillNav.utfyllNav(prefillData)
 
-        logger.debug(prefillData.print("Preutfylling Utfylling NAV"))
+        logger.debug("[${prefillData.getSEDid()}] Preutfylling Utfylling NAV")
 
         sed.pensjon = prefilliPensjon.pensjon(prefillData)
 
-        logger.debug(prefillData.print("Preutfylling Utfylling Pensjon"))
+        logger.debug("[${prefillData.getSEDid()}] Preutfylling Utfylling Pensjon")
 
         logger.debug("-------------------| Preutfylling END |------------------- ")
-        return prefillData.getSED()
+        return prefillData.sed
 
     }
 

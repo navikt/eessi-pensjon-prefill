@@ -177,8 +177,8 @@ class PrefillPersonDataFromTPS(private val personV3Client: PersonV3Client, priva
                                 // norsk personnr er for NO
                                 land = "NO"
                         )
-                ),
-                forrnavnvedfoedsel = navn.fornavn,
+                    ),
+                fornavnvedfoedsel = navn.fornavn,
                 fornavn = navn.fornavn,
                 etternavn = navn.etternavn,
                 foedselsdato = datoFormat(brukerTps),

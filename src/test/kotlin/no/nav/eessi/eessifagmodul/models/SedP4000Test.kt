@@ -2,11 +2,11 @@ package no.nav.eessi.eessifagmodul.models
 
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.whenever
+import no.nav.eessi.eessifagmodul.services.AktoerregisterService
 import no.nav.eessi.eessifagmodul.controllers.ApiController
 import no.nav.eessi.eessifagmodul.prefill.PrefillDataModel
 import no.nav.eessi.eessifagmodul.prefill.PrefillPerson
 import no.nav.eessi.eessifagmodul.prefill.PrefillSED
-import no.nav.eessi.eessifagmodul.services.AktoerregisterService
 import no.nav.eessi.eessifagmodul.services.EuxService
 import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
 import no.nav.eessi.eessifagmodul.utils.mapJsonToAny
@@ -15,8 +15,10 @@ import no.nav.eessi.eessifagmodul.utils.validateJson
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.ArgumentMatchers
 import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
+import org.skyscreamer.jsonassert.JSONAssert
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.nio.file.Files
@@ -45,8 +47,8 @@ class SedP4000Test {
 
     @Before
     fun setup() {
-        prefillDataMock = PrefillDataModel(mockAktoerregisterService)
-        apiController = ApiController(mockEuxService, PrefillSED(mockPersonPreutfyll), prefillDataMock)
+        prefillDataMock = PrefillDataModel()
+        apiController = ApiController(mockEuxService, PrefillSED(mockPersonPreutfyll), mockAktoerregisterService)
         logger.debug("Starting tests.... ...")
     }
 
@@ -54,9 +56,6 @@ class SedP4000Test {
     fun `create mock structure P4000`() {
         val result = createPersonTrygdeTidMock()
         assertNotNull(result)
-        val json = mapAnyToJson(result, true)
-        println(json)
-
 
         val sed = createSED("P4000")
         val nav = NavMock().genererNavMock()
@@ -65,37 +64,28 @@ class SedP4000Test {
         sed.pensjon = pen
         sed.trygdetid = result
 
-        logger.debug("\n\n\n------------------------------------------------------------------------------------------------\n\n\n")
-
         val json2 = mapAnyToJson(sed, true)
-        logger.debug(json2)
-
         val mapSED = mapJsonToAny(json2, typeRefs<SED>())
 
         assertNotNull(mapSED)
         assertEquals(result, mapSED.trygdetid)
-
     }
 
 
     @Test
-    fun `create and validate P4000 on multiple ways`() {
-
+    fun `create and validate P4000 from json to nav-sed back to json`() {
         //map load P4000-NAV refrence
         val path = Paths.get("src/test/resources/json/P4000-NAV.json")
         val p4000file = String(Files.readAllBytes(path))
         assertNotNull(p4000file)
         validateJson(p4000file)
-
-
         val sed = mapJsonToAny(p4000file, typeRefs<SED>())
         assertNotNull(sed)
-
-        println(sed)
-
+        assertNotNull(sed.trygdetid)
+        assertNotNull(sed.trygdetid?.ansattSelvstendigPerioder)
         val json = mapAnyToJson(sed, true)
-        logger.debug("\n\n\n-------------[ Fra fil -> SED -> Json ]--------------------------------------------------------------------------\n\n\n")
-        logger.debug(json)
+        JSONAssert.assertEquals(p4000file, json, false)
+
     }
 
 
@@ -104,7 +94,7 @@ class SedP4000Test {
 
         val trygdetid  = createPersonTrygdeTidMock()
         val payload = mapAnyToJson(trygdetid)
-        logger.debug(payload)
+        //logger.debug(payload)
 
         val req = ApiController.ApiRequest(
                 sed = "P4000",
@@ -115,30 +105,21 @@ class SedP4000Test {
                 subjectArea = "Pensjon",
                 payload = payload
         )
-
         val json = mapAnyToJson(req)
         assertNotNull(json)
-        logger.debug("-------------------------------------------------------------------------------------------------------")
-        logger.debug(json)
-        logger.debug("-------------------------------------------------------------------------------------------------------")
-
         val apireq = mapJsonToAny(json, typeRefs<ApiController.ApiRequest>())
-
         val payjson = apireq.payload ?: ""
         assertNotNull(payjson)
-
-        logger.debug(payjson)
         assertEquals(payload, payjson)
 
-        val p4k = mapJsonToAny(payjson, typeRefs<PersonTrygdeTid>())
-        assertNotNull(p4k)
-
-        assertEquals("DK", p4k.boPerioder!![0].land)
+        val check = mapJsonToAny(payjson, typeRefs<PersonTrygdeTid>())
+        assertNotNull(check)
+        assertEquals("DK", check.boPerioder!![0].land)
 
     }
 
     @Test
-    fun `create trygdetid P4000 from file`() {
+    fun `create insurance periods P4000 from file`() {
 
         val path = Paths.get("src/test/resources/json/Trygdetid_part.json")
         val jsonfile = String(Files.readAllBytes(path))
@@ -151,16 +132,7 @@ class SedP4000Test {
         val backtojson = mapAnyToJson(obj, true)
         assertNotNull(backtojson)
         validateJson(backtojson)
-        println("jsonfile size : ${jsonfile.length}")
-        println("backtojs size : ${backtojson.length}")
-
-        println("-------------------------------------------------------------------------------------------------------")
-        println(jsonfile)
-        println("-------------------------------------------------------------------------------------------------------")
-        println(backtojson)
-
         val payload = mapAnyToJson(obj)
-
         val items = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
         val req = ApiController.ApiRequest(
                 institutions = items,
@@ -172,16 +144,13 @@ class SedP4000Test {
                 subjectArea = "Pensjon",
                 payload = payload
         )
+        assertNotNull(req)
+        JSONAssert.assertEquals(jsonfile, backtojson, false)
 
-        val jsonreq = mapAnyToJson(req)
-
-        println("-------------------------------------------------------------------------------------------------------")
-        println(  jsonreq        )
-        println("-------------------------------------------------------------------------------------------------------")
     }
 
     @Test
-    fun `create trygdetid P4000_2 from file`() {
+    fun `validate and prefill P4000_2 from file`() {
         val path = Paths.get("src/test/resources/json/requestP4000.json")
         val jsonfile = String(Files.readAllBytes(path))
         assertNotNull(jsonfile)
@@ -202,24 +171,21 @@ class SedP4000Test {
         assertNotNull(reqjson)
         validateJson(reqjson)
 
+        whenever(mockAktoerregisterService.hentGjeldendeNorskIdentForAktorId(ArgumentMatchers.anyString())).thenReturn("12345")
+
         val data = apiController.createPrefillData(req)
         assertNotNull(data)
+        assertEquals("12345", data.personNr)
 
-        whenever(mockPersonPreutfyll.prefill(any() )).thenReturn(data.getSED())
+        whenever(mockPersonPreutfyll.prefill(any() )).thenReturn(data.sed)
 
         val result = apiController.createPreutfyltSED(data)
 
-        val jsondata = mapAnyToJson(result.getSED(), true)
-
-        println("----- ReqiestAPI P4000 --------------------------------------------------------------------------------")
-        println(reqjson)
-        println("-------------------------------------------------------------------------------------------------------")
-        println("\n")
-        println("----- SED P4000 test-----------------------------------------------------------------------------------")
-        println(jsondata)
-        println("-------------------------------------------------------------------------------------------------------")
-
+        val jsondata = mapAnyToJson(result.sed, true)
+        assertNotNull(jsondata)
     }
+
+
 }
 
 fun createPersonTrygdeTidMock(): PersonTrygdeTid {
@@ -422,4 +388,5 @@ fun createPersonTrygdeTidMock(): PersonTrygdeTid {
                     )
             )
     )
+
 }

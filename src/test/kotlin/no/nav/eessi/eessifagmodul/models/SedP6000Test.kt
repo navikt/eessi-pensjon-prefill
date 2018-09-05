@@ -6,9 +6,7 @@ import no.nav.eessi.eessifagmodul.utils.typeRefs
 import no.nav.eessi.eessifagmodul.utils.validateJson
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.mockito.MockitoAnnotations
-import org.mockito.junit.MockitoJUnitRunner
+import org.skyscreamer.jsonassert.JSONAssert
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.nio.file.Files
@@ -16,16 +14,11 @@ import java.nio.file.Paths
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
-@RunWith(MockitoJUnitRunner::class)
-class SedP6000Test {
+class SedP6000Test{
 
     val logger: Logger by lazy { LoggerFactory.getLogger(SedP6000Test::class.java) }
 
-    @Before
-    fun setup() {
-        logger.debug("Starting tests.... ...")
-        MockitoAnnotations.initMocks(this)
-    }
+    private val printout : Boolean = false
 
     @Test
     fun createP6000sed() {
@@ -46,21 +39,21 @@ class SedP6000Test {
 
         //map P6000-NAV back to P6000 object.
         val pensjondataFile = mapJsonToAny(p6000file, typeRefs<SED>())
+
         assertNotNull(pensjondataFile)
-
-        //map P6000-NAV obj back to json
-        val jsonnav = mapAnyToJson(sed6000)
-
-        println("------------------generated----------------------")
-        println("\n\n $json \n\n")
-        println("------------------p6000-nav----------------------")
-        println("\n\n $jsonnav \n\n")
-        println("-------------------------------------------------")
-
+        val jsonnav = mapAnyToJson(pensjondataFile, true)
+        if (printout) {
+            println("------------------generated----------------------")
+            println("\n\n $p6000file \n\n")
+            println("------------------p6000-nav----------------------")
+            println("\n\n $jsonnav \n\n")
+            println("-------------------------------------------------")
+        }
+        JSONAssert.assertEquals(p6000file, jsonnav, false)
     }
 
     @Test
-    fun `create part json to object`() {
+    fun `create part json and validate to object`() {
         val sed6000 = SedMock().genererP6000Mock()
         assertNotNull(sed6000)
 
@@ -83,17 +76,12 @@ class SedP6000Test {
         )
         val testPersjson = mapAnyToJson(sed, true)
 
-        println("------------------generated----------------------")
-        println("\n\n $testPersjson \n\n")
-        println("------------------p6000-nav----------------------")
+        if (printout) {
+            println("------------------generated----------------------")
+            println("\n\n $testPersjson \n\n")
+            println("------------------p6000-nav----------------------")
+        }
 
     }
 
-    @Test
-    fun `check for valid json to object`() {
-        val test = "{\"postnummer\":\"sdafsdaf\",\"by\":\"asfdsdaf\",\"land\":\"BG\",\"gate\":\"sdfasd\",\"bygning\":\"sdfsdf\","
-        val result = validateJson(test)
-        assertNotNull(result)
-        assertEquals(false, result)
-    }
 }

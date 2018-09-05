@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component
 class PrefillPensjon(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillPensjon::class.java) }
-    private val validseds : List<String> = listOf("P6000", "P4000", "P2000", "P5000")
+    private val validseds : List<String> = listOf("P6000", "P4000", "P2000", "P2200", "P5000")
 
     fun pensjon(utfyllingData: PrefillDataModel): Pensjon {
 
@@ -18,7 +18,7 @@ class PrefillPensjon(private val preutfyllingPersonFraTPS: PrefillPersonDataFrom
         //validere om vi kan preutfylle for angitt SED
         if (validseds.contains(utfyllingData.getSEDid())) {
             //norskident pnr.
-            val pinid = utfyllingData.getPinid()
+            val pinid = utfyllingData.personNr
 
             // er denne person en gjenlevende? hva må da gjøres i nav.bruker.person?
             //

@@ -13,3 +13,4 @@ management:
       exposure.include: '*'
     web:
       exposure.include: '*'
+

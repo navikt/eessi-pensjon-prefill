@@ -3,12 +3,12 @@ package no.nav.eessi.eessifagmodul.controllers
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.swagger.annotations.ApiOperation
 import no.nav.eessi.eessifagmodul.models.*
-import no.nav.eessi.eessifagmodul.prefill.PrefillSED
 import no.nav.eessi.eessifagmodul.prefill.PrefillDataModel
-import no.nav.eessi.eessifagmodul.services.RinaActions
-import no.nav.eessi.eessifagmodul.services.EuxService
-import no.nav.eessi.eessifagmodul.services.LandkodeService
+import no.nav.eessi.eessifagmodul.prefill.PrefillSED
+import no.nav.eessi.eessifagmodul.services.*
 import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
+import no.nav.eessi.eessifagmodul.utils.mapJsonToAny
+import no.nav.eessi.eessifagmodul.utils.typeRefs
 import no.nav.security.oidc.api.Protected
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -20,7 +20,7 @@ import java.util.*
 @Protected
 @RestController
 @RequestMapping("/api")
-class ApiController(private val euxService: EuxService, private val prefillSED: PrefillSED, private val prefillData: PrefillDataModel) {
+class ApiController(private val euxService: EuxService, private val prefillSED: PrefillSED, private val aktoerregisterService: AktoerregisterService) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(ApiController::class.java) }
 
@@ -41,7 +41,7 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
     fun confirmDocument(@RequestBody request: ApiRequest): SED {
 
         val data = createPreutfyltSED(request)
-        val sed = data.getSED()
+        val sed = data.sed
 
         val sedjson = mapAnyToJson(sed, true)
         logger.debug("SED : $sedjson")
@@ -73,7 +73,7 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
     fun deleteDocument(@PathVariable("rinanr", required = true) rinanr: String, @PathVariable("sed", required = true) sed: String, @PathVariable("documentid", required = true) documentid: String): HttpStatus {
 
         val response = euxService.deleteSEDfromExistingRinaCase(rinanr, documentid)
-        return if (response) {
+        return if (response.is2xxSuccessful) {
             return if (rinaActions.isActionPossible(sed, rinanr, rinaActions.create, 3)) {
                 HttpStatus.OK
             } else {
@@ -82,7 +82,6 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
         } else {
             HttpStatus.BAD_REQUEST
         }
-
     }
 
 
@@ -99,7 +98,7 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
         val korrid = UUID.randomUUID()
 
         val data = createPreutfyltSED(request)
-        val sed = data.getSED()
+        val sed = data.sed
         val sedAsJson = mapAnyToJson(sed, true)
 
         if (rinaActions.canCreate(data.getSEDid(), rinanr)) {
@@ -115,16 +114,46 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
 
     }
 
-    @ApiOperation("Kjører prosess OpprettBuCogSED på EUX for å få opprette dokument")
+    //TODO remove when done!
+    fun mockSED(request: ApiRequest) : SED {
+        val sed: SED?
+        when {
+            request.payload == null -> throw IkkeGyldigKallException("Mangler PayLoad")
+            request.sed == null -> throw IkkeGyldigKallException("Mangler SED")
+            else -> {
+                val seds = mapJsonToAny(request.payload, typeRefs<SED>())
+                sed = seds
+            }
+        }
+        return sed
+        //end Mocking
+    }
+
+    @ApiOperation("Kjører prosess OpprettBuCogSED på EUX for å få opprette et RINA dokument med en SED")
     @PostMapping("/buc/create")
     fun createDocument(@RequestBody request: ApiRequest): String {
 
         val korrid = UUID.randomUUID()
-        val data = createPreutfyltSED(request)
-        val sed = data.getSED()
 
-        val fagSaknr = data.getSaksnr() // = "EESSI-PEN-123"
-        val bucType = data.getBUC() // = "P_BUC_06" //P6000
+        //temp for mock sendt on payload..
+        //TODO remove when done!
+        val data: PrefillDataModel?
+        if (request.mockSED is Boolean && request.mockSED) {
+            data = PrefillDataModel()
+            data.penSaksnummer = request.caseId!!
+            data.personNr = "12345678901"
+            data.aktoerID = request.pinid!!
+            data.buc = request.buc!!
+            data.institution = request.institutions!!
+            data.sed = mockSED(request)
+        } else {
+            data = createPreutfyltSED(createPrefillData(request))
+        }
+
+        val sed: SED = data.sed
+
+        val fagSaknr = data.penSaksnummer // = "EESSI-PEN-123"
+        val bucType = data.buc // = "P_BUC_06" //P6000
 
         val mottaker = getFirstInstitution(data.getInstitutionsList())
         val sedAsJson = mapAnyToJson(sed, true)
@@ -146,6 +175,7 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
                     throw SedDokumentIkkeSendtException("SED ikke sendt. muligens opprettet på RINANR: $euSaksnr")
                 }
             }
+            logger.info("EUX RINANR: $euSaksnr")
             return "{\"euxcaseid\":\"$euSaksnr\"}"
         }
         throw SedDokumentIkkeOpprettetException("SED dokument feilet ved opprettelse ved RINANR: $euSaksnr")
@@ -170,27 +200,30 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
             request.institutions == null -> throw IkkeGyldigKallException("Mangler Institusjoner")
 
         //Denne validering og utfylling kan benyttes på SED P2000 og P6000
-            validsed(request.sed , "P2000,P6000,P5000") -> {
-                prefillData.build(
+            validsed(request.sed , "P2000,P2200,P6000,P5000") -> {
+                val pinid = hentAktoerIdPin(request.pinid)
+                PrefillDataModel().build(
                         caseId = request.caseId,
                         buc = request.buc,
                         subject = request.subjectArea,
                         sedID = request.sed,
                         aktoerID = request.pinid,
-                        institutions = request.institutions,
-                        dodaktorid = request.dodpinid ?: "" // vil kanskje komme som en del av pen-utveklsing ikke fra forntend.
+                        pinID = pinid,
+                        institutions = request.institutions
                 )
             }
         //denne validering og utfylling kan kun benyttes på SED P4000
             validsed(request.sed, "P4000") -> {
                 if (request.payload == null) { throw IkkeGyldigKallException("Mangler metadata, payload") }
                 if (request.euxCaseId == null) { throw IkkeGyldigKallException("Mangler euxCaseId (RINANR)") }
-                prefillData.build(
+                val pinid = hentAktoerIdPin(request.pinid)
+                PrefillDataModel().build(
                         caseId = request.caseId,
                         buc = request.buc,
                         subject = request.subjectArea,
                         sedID = request.sed,
                         aktoerID = request.pinid,
+                        pinID = pinid,
                         institutions = request.institutions,
                         payload = request.payload,
                         euxcaseId = request.euxCaseId
@@ -215,6 +248,13 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
         return result.contains(sed)
     }
 
+    @Throws(AktoerregisterException::class)
+    fun hentAktoerIdPin(aktorid: String): String {
+        if (aktorid.isBlank()) throw IkkeGyldigKallException("Mangler AktorId")
+        return aktoerregisterService.hentGjeldendeNorskIdentForAktorId(aktorid)
+    }
+
+
     //kommer fra frontend
     //{"institutions":[{"NO:"DUMMY"}],"buc":"P_BUC_06","sed":"P6000","caseId":"caseId","subjectArea":"pensjon","actorId":"2323123"}
     data class ApiRequest(
@@ -235,7 +275,8 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
             val euxCaseId: String? = null,
             //partpayload json/sed
             val payload: String? = null,
-            val sendsed: Boolean? = null
+            val sendsed: Boolean? = null,
+            val mockSED: Boolean? = null
     )
 
 
