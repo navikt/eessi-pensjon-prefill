@@ -196,6 +196,18 @@
   },
   "sedVer" : "0",
   "pensjon" : {
+    "bruker" : {
+      "arbeidsforhold" : [
+        {
+          "yrke" : "SDFSDFSDFSDFSDF",
+          "type" : "03"
+        },
+        {
+          "yrke" : "SDFSDFSDFSDFSDF DSDGDFGDFGDF",
+          "type" : "03"
+        }
+      ]
+    },
     "ytelser" : [ {
       "status" : "01",
       "startdatoutbetaling" : "1994-01-01",
@@ -221,43 +233,6 @@
       "ytelse" : "02"
     } ],
     "ytterligeinformasjon" : "sfhfgh sfghsfhsfgh",
-    "bruker" : {
-      "arbeidsforhold" : [ {
-        "yrke" : "ljlhjkl",
-        "planlagtpensjoneringsdato" : "2020-03-01",
-        "inntekt" : [ {
-          "beloeputbetaltsiden" : "2016-02-01",
-          "annenbetalingshyppighetinntekt" : "hljhjkh",
-          "beloep" : "7000",
-          "valuta" : "HUF",
-          "betalingshyppighetinntekt" : "03"
-        }, {
-          "valuta" : "NGN",
-          "beloep" : "7678",
-          "annenbetalingshyppighetinntekt" : "kjklj",
-          "betalingshyppighetinntekt" : "06",
-          "beloeputbetaltsiden" : "2005-01-01"
-        } ],
-        "type" : "forsikrede_har_fortsatt_inntektsgivende_arbeid",
-        "arbeidstimerperuke" : "40",
-        "sluttdato" : "2018-02-01",
-        "planlagtstartdato" : "2017-04-01"
-      }, {
-        "inntekt" : [ {
-          "beloeputbetaltsiden" : "2014-04-01",
-          "beloep" : "3000",
-          "annenbetalingshyppighetinntekt" : "klljk",
-          "betalingshyppighetinntekt" : "03",
-          "valuta" : "ISK"
-        } ],
-        "arbeidstimerperuke" : "30",
-        "yrke" : "qwqwewe",
-        "type" : "forsikrede_driver_ikke_lenger_selvstendig_naerigsvirksomhet",
-        "sluttdato" : "2018-03-03",
-        "planlagtstartdato" : "2017-01-01",
-        "planlagtpensjoneringsdato" : "2021-04-01"
-      } ]
-    },
     "etterspurtedokumenter" : "sgh sfghfg sfg",
     "vedtak" : [ {
       "mottaker" : [ "representant_eller_verge" ]
