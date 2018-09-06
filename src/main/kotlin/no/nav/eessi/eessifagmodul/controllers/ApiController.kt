@@ -7,8 +7,6 @@ import no.nav.eessi.eessifagmodul.prefill.PrefillDataModel
 import no.nav.eessi.eessifagmodul.prefill.PrefillSED
 import no.nav.eessi.eessifagmodul.services.*
 import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
-import no.nav.eessi.eessifagmodul.utils.mapJsonToAny
-import no.nav.eessi.eessifagmodul.utils.typeRefs
 import no.nav.security.oidc.api.Protected
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -84,7 +82,6 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
         }
     }
 
-
     @ApiOperation("legge til SED på et eksisterende Rina document. kjører preutfylling")
     @PostMapping("/sed/add")
     fun addDocument(@RequestBody request: ApiRequest): String {
@@ -114,42 +111,12 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
 
     }
 
-    //TODO remove when done!
-    fun mockSED(request: ApiRequest) : SED {
-        val sed: SED?
-        when {
-            request.payload == null -> throw IkkeGyldigKallException("Mangler PayLoad")
-            request.sed == null -> throw IkkeGyldigKallException("Mangler SED")
-            else -> {
-                val seds = mapJsonToAny(request.payload, typeRefs<SED>())
-                sed = seds
-            }
-        }
-        return sed
-        //end Mocking
-    }
-
     @ApiOperation("Kjører prosess OpprettBuCogSED på EUX for å få opprette et RINA dokument med en SED")
     @PostMapping("/buc/create")
     fun createDocument(@RequestBody request: ApiRequest): String {
 
         val korrid = UUID.randomUUID()
-
-        //temp for mock sendt on payload..
-        //TODO remove when done!
-        val data: PrefillDataModel?
-        if (request.mockSED is Boolean && request.mockSED) {
-            data = PrefillDataModel()
-            data.penSaksnummer = request.caseId!!
-            data.personNr = "12345678901"
-            data.aktoerID = request.pinid!!
-            data.buc = request.buc!!
-            data.institution = request.institutions!!
-            data.sed = mockSED(request)
-        } else {
-            data = createPreutfyltSED(createPrefillData(request))
-        }
-
+        val data = createPreutfyltSED(createPrefillData(request))
         val sed: SED = data.sed
 
         val fagSaknr = data.penSaksnummer // = "EESSI-PEN-123"
@@ -182,7 +149,7 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
     }
 
     //muligens midlertidig metode for å sende kun en mottaker til EUX.
-    private fun getFirstInstitution(institutions: List<InstitusjonItem>): String {
+    fun getFirstInstitution(institutions: List<InstitusjonItem>): String {
         institutions.forEach {
             return it.institution ?: throw IkkeGyldigKallException("institujson kan ikke være tom")
         }

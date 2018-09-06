@@ -23,6 +23,16 @@ class SedMock {
         )
     }
 
+    fun genererP2000Mock(): SED {
+        return SED(
+                nav = NavMock().genererNavMock(),
+                pensjon = PensjonMock().genererMockData(),
+                sed = "P2200",
+                sedVer = "0",
+                sedGVer = "4"
+        )
+    }
+
 }
 
 /**
@@ -83,6 +93,27 @@ class NavMock {
                                 fornavnvedfoedsel = "werwerwe",
                                 tidligerefornavn = "asdfdsffsd",
                                 etternavnvedfoedsel = "werwreq"
+                        ),
+                        bank = Bank(
+                                konto = Konto(
+                                        innehaver = Innehaver(
+                                                rolle = "02",
+                                                navn = "sdfsfsfsdf"
+                                        ),
+                                        ikkesepa = IkkeSepa(
+                                                swift = "AAAADK32323"
+                                        ),
+                                        kontonr = "12323434"
+                                ),
+                                adresse = Adresse(
+                                        postnummer = "12344",
+                                        bygning = "sfsfsdf",
+                                        by = "fsdfsfs",
+                                        land = "NO",
+                                        region = "dsgdf",
+                                        gate = "fsdfsdf"
+                                ),
+                                navn = "sdfsdfsdfsdf sdfsdfsdf"
                         )
                 ),
                 eessisak = listOf(
@@ -389,6 +420,27 @@ class PensjonMock {
                         saksnummerAnnen = "werwer",
                         saksnummer = "werwer",
                         artikkel48 = "0"
+                ),
+                bruker = Bruker(
+                        arbeidsforhold = listOf(
+                                ArbeidsforholdItem(
+                                        yrke = "Test yrke",
+                                        type = "03",
+                                        planlagtstartdato = "2024-10-01",
+                                        planlagtpensjoneringsdato = "2024-10-01",
+                                        sluttdato = "2024-10-01",
+                                        arbeidstimerperuke = "42",
+                                        inntekt = listOf(InntektItem(
+                                                beloep = "1234",
+                                                valuta = "NOK",
+                                                beloeputbetaltsiden = "2024-10-01",
+                                                annenbetalingshyppighetinntekt = "234234",
+                                                betalingshyppighetinntekt = "06"
+
+                                                )
+                                        )
+                                )
+                        )
                 )
         )
     }

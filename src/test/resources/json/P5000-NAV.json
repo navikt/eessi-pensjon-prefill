@@ -1,27 +1,31 @@
 {
+  "sed" : "P5000",
+  "sedGVer" : "4",
+  "sedVer" : "0",
   "nav" : {
     "bruker" : {
       "mor" : {
         "person" : {
-          "etternavnvedfoedsel" : "asdfsdf",
-          "fornavn" : "asfsdf"
+          "fornavn" : "asfsdf",
+          "etternavnvedfoedsel" : "asdfsdf"
+        }
+      },
+      "far" : {
+        "person" : {
+          "fornavn" : "farfornavn",
+          "etternavnvedfoedsel" : "safasfsd"
         }
       },
       "person" : {
-        "fornavn" : "Gul",
         "pin" : [ {
           "sektor" : "pensjoner",
           "identifikator" : "weqrwerwqe",
           "land" : "BG"
         }, {
           "sektor" : "alle",
-          "land" : "NO",
-          "identifikator" : "01126712345"
+          "identifikator" : "01126712345",
+          "land" : "NO"
         } ],
-        "kjoenn" : "f",
-        "etternavn" : "Konsoll",
-        "foedselsdato" : "1967-12-01",
-        "tidligereetternavn" : "sdfsfasdf",
         "statsborgerskap" : [ {
           "land" : "BE"
         }, {
@@ -31,28 +35,19 @@
         }, {
           "land" : "GB"
         } ],
+        "etternavn" : "Konsoll",
+        "fornavn" : "Gul",
+        "kjoenn" : "f",
         "foedested" : {
-          "region" : "sfgdfdgs",
+          "by" : "gafdgsf",
           "land" : "DK",
-          "by" : "gafdgsf"
+          "region" : "sfgdfdgs"
         },
-        "fornavnvedfoedsel" : "werwerwe",
         "tidligerefornavn" : "asdfdsffsd",
-        "etternavnvedfoedsel" : "werwreq"
-      },
-      "adresse" : {
-        "region" : "sadfsd",
-        "land" : "BG",
-        "gate" : "dsfasdf",
-        "bygning" : "asdfsfd",
-        "postnummer" : "safdsdf",
-        "by" : "sfdsdaf"
-      },
-      "far" : {
-        "person" : {
-          "fornavn" : "safasfsd",
-          "etternavnvedfoedsel" : "sadfsfd"
-        }
+        "tidligereetternavn" : "sdfsfasdf",
+        "fornavnvedfoedsel" : "werwerwe",
+        "etternavnvedfoedsel" : "werwreq",
+        "foedselsdato" : "1967-12-01"
       }
     },
     "eessisak" : [ {
@@ -64,25 +59,187 @@
     } ]
   },
   "pensjon" : {
+    "reduksjon" : [ {
+      "type" : "02",
+      "virkningsdato" : [ {
+        "startdato" : "2020-12-01",
+        "sluttdato" : "2021-09-01"
+      }, {
+        "startdato" : "2034-10-01",
+        "sluttdato" : "2022-10-01"
+      } ],
+      "aarsak" : {
+        "inntektAnnen" : "adfasfsd",
+        "annenytelseellerinntekt" : "06"
+      }
+    }, {
+      "type" : "02",
+      "virkningsdato" : [ {
+        "startdato" : "2033-10-01",
+        "sluttdato" : "2034-10-01"
+      } ],
+      "aarsak" : {
+        "inntektAnnen" : "ewrwer",
+        "annenytelseellerinntekt" : "02"
+      }
+    } ],
+    "vedtak" : [ {
+      "grunnlag" : {
+        "medlemskap" : "02",
+        "opptjening" : {
+          "forsikredeAnnen" : "01"
+        },
+        "framtidigtrygdetid" : "0"
+      },
+      "begrunnelseAnnen" : "afsdaf\\nsdafsfasd\\nsadfsd",
+      "artikkel" : "02",
+      "virkningsdato" : "2020-10-01",
+      "ukjent" : {
+        "beloepBrutto" : {
+          "ytelseskomponentAnnen" : "sdfsfd\\nsdf\\nsfd"
+        }
+      },
+      "type" : "02",
+      "resultat" : "01",
+      "beregning" : [ {
+        "beloepNetto" : {
+          "beloep" : "344"
+        },
+        "valuta" : "HUF",
+        "beloepBrutto" : {
+          "ytelseskomponentTilleggspensjon" : "234",
+          "beloep" : "523",
+          "ytelseskomponentGrunnpensjon" : "2344"
+        },
+        "utbetalingshyppighetAnnen" : "13123",
+        "periode" : {
+          "fom" : "2023-10-01",
+          "tom" : "2030-10-01"
+        },
+        "utbetalingshyppighet" : "maaned_12_per_aar"
+      }, {
+        "beloepNetto" : {
+          "beloep" : "344"
+        },
+        "valuta" : "ISK",
+        "beloepBrutto" : {
+          "ytelseskomponentTilleggspensjon" : "22",
+          "beloep" : "234",
+          "ytelseskomponentGrunnpensjon" : "342"
+        },
+        "utbetalingshyppighetAnnen" : "werwer",
+        "periode" : {
+          "fom" : "2020-10-01",
+          "tom" : "2025-10-01"
+        },
+        "utbetalingshyppighet" : "annet"
+      } ],
+      "avslagbegrunnelse" : [ {
+        "begrunnelse" : "03",
+        "annenbegrunnelse" : "fsafasfd\\nasd\\nfsda"
+      }, {
+        "begrunnelse" : "02",
+        "annenbegrunnelse" : "tet\\nertert\\nretret"
+      } ],
+      "kjoeringsdato" : "2020-12-01",
+      "basertPaa" : "02",
+      "basertPaaAnnen" : "sadfsdf",
+      "delvisstans" : {
+        "utbetaling" : {
+          "begrunnelse" : "sfdgsdf\\nfdg\\ns",
+          "valuta" : "SEK",
+          "beloepBrutto" : "24234"
+        },
+        "indikator" : "1"
+      }
+    }, {
+      "grunnlag" : {
+        "medlemskap" : "03",
+        "opptjening" : {
+          "forsikredeAnnen" : "03"
+        },
+        "framtidigtrygdetid" : "0"
+      },
+      "begrunnelseAnnen" : "sdfsdf\\nsd\\nfsd",
+      "artikkel" : "03",
+      "virkningsdato" : "2030-10-01",
+      "ukjent" : {
+        "beloepBrutto" : {
+          "ytelseskomponentAnnen" : "dsfsdf\\ns\\ndf\\nsdf"
+        }
+      },
+      "type" : "03",
+      "resultat" : "03",
+      "beregning" : [ {
+        "beloepNetto" : {
+          "beloep" : "23"
+        },
+        "valuta" : "ERN",
+        "beloepBrutto" : {
+          "ytelseskomponentTilleggspensjon" : "12",
+          "beloep" : "234",
+          "ytelseskomponentGrunnpensjon" : "122"
+        },
+        "utbetalingshyppighetAnnen" : "gagfdgg",
+        "periode" : {
+          "fom" : "2032-10-01",
+          "tom" : "2043-10-01"
+        },
+        "utbetalingshyppighet" : "kvartalsvis"
+      } ],
+      "avslagbegrunnelse" : [ {
+        "begrunnelse" : "04",
+        "annenbegrunnelse" : "324234\\n234\\n234\\n4"
+      }, {
+        "begrunnelse" : "04",
+        "annenbegrunnelse" : "sdfafs\\nsdfsdf\\nfsadfsdf"
+      } ],
+      "kjoeringsdato" : "2022-10-01",
+      "basertPaa" : "01",
+      "basertPaaAnnen" : "wertwertwert",
+      "delvisstans" : {
+        "utbetaling" : {
+          "begrunnelse" : "sdfsdf\nsdfsdf\nsdf\nfsd",
+          "valuta" : "NZD",
+          "beloepBrutto" : "234"
+        },
+        "indikator" : "0"
+      }
+    } ],
+    "sak" : {
+      "artikkel54" : "0",
+      "reduksjon" : [ {
+        "artikkeltype" : "02"
+      }, {
+        "artikkeltype" : "03"
+      } ],
+      "kravtype" : [ {
+        "datoFrist" : "fasfsda"
+      } ]
+    },
     "gjenlevende" : {
-      "adresse" : {
-        "postnummer" : "sdafsdaf",
-        "by" : "asfdsdaf",
-        "land" : "BG",
-        "gate" : "sdfasd",
-        "bygning" : "sdfsdf",
-        "region" : "sdafsdf"
+      "mor" : {
+        "person" : {
+          "fornavn" : "asdfsdafsdf",
+          "etternavnvedfoedsel" : "asdfsdf"
+        }
       },
       "far" : {
         "person" : {
-          "fornavn" : "asdfsdf",
-          "etternavnvedfoedsel" : "asfdsdf"
+          "fornavn" : "sdfsdf",
+          "etternavnvedfoedsel" : "sdfsd"
         }
       },
       "person" : {
-        "fornavn" : "sdafsdf",
-        "fornavnvedfoedsel" : "safsdaf",
-        "kjoenn" : "m",
+        "pin" : [ {
+          "sektor" : "dagpenger",
+          "identifikator" : "sdafsdf",
+          "land" : "BE"
+        }, {
+          "sektor" : "alle",
+          "identifikator" : "sdfgsdgh",
+          "land" : "HR"
+        } ],
         "statsborgerskap" : [ {
           "land" : "AT"
         }, {
@@ -90,103 +247,112 @@
         }, {
           "land" : "GR"
         } ],
+        "etternavn" : "asdffsdaf",
+        "fornavn" : "gafgfdga",
+        "kjoenn" : "m",
         "foedested" : {
+          "by" : "Testaeveisgiverby2",
           "land" : "BE",
-          "region" : "sfsadfsda",
-          "by" : "Testarbeidsgiverby2"
+          "region" : "sdfsdfsdf"
         },
         "tidligerefornavn" : "sadfsdf",
-        "etternavn" : "asdffsdaf",
-        "etternavnvedfoedsel" : "sdfsd",
-        "pin" : [ {
-          "sektor" : "dagpenger",
-          "land" : "BE",
-          "identifikator" : "sdafsdf"
-        }, {
-          "identifikator" : "dfasdf",
-          "sektor" : "alle",
-          "land" : "HR"
-        } ],
         "tidligereetternavn" : "asdfasdf",
+        "fornavnvedfoedsel" : "ffsdfgsfgadfg",
+        "etternavnvedfoedsel" : "sdfsd",
         "foedselsdato" : "1964-12-01"
       },
-      "mor" : {
-        "person" : {
-          "etternavnvedfoedsel" : "asdfsdf",
-          "fornavn" : "asdfsdafsdf"
-        }
+      "adresse" : {
+        "postnummer" : "sdfsdf",
+        "by" : "sfsdf",
+        "bygning" : "sdfsdfs",
+        "land" : "BG",
+        "gate" : "sdfsdfs",
+        "region" : "dfsdf"
       }
     },
+    "tilleggsinformasjon" : {
+      "annen" : {
+        "institusjonsadresse" : {
+          "land" : "BE"
+        }
+      },
+      "anneninformation" : "werwer\\nwer\\nwer",
+      "saksnummer" : "werwer",
+      "person" : {
+        "pinannen" : {
+          "sektor" : "alle",
+          "identifikator" : "retertret"
+        }
+      },
+      "dato" : "2019-10-01",
+      "andreinstitusjoner" : [ {
+        "institusjonsadresse" : "asdfsdf",
+        "postnummer" : "asdfsdf",
+        "bygningsnr" : "sdafsadf",
+        "land" : "HR",
+        "region" : "sadfasdf",
+        "poststed" : "safsd"
+      } ],
+      "saksnummerAnnen" : "werwer",
+      "artikkel48" : "0",
+      "opphoer" : {
+        "dato" : "2022-10-01",
+        "annulleringdato" : "2024-10-01"
+      }
+    },
+    "medlemskapAnnen" : [ {
+      "relevans" : "100",
+      "ordning" : "01",
+      "land" : "DE",
+      "sum" : {
+        "aar" : "4",
+        "dager" : {
+          "nr" : "5"
+        },
+        "maaneder" : "2"
+      },
+      "type" : "21",
+      "beregning" : "100"
+    } ],
     "medlemskapTotal" : [ {
+      "relevans" : "100",
       "sum" : {
         "aar" : "11",
-        "kvartal" : "0",
         "dager" : {
-          "nr" : "6",
-          "type" : "5"
+          "nr" : "6"
         },
-        "maaneder" : "0",
-        "uker" : "0"
+        "maaneder" : "1"
       },
-      "type" : "10",
-      "relevans" : "100"
+      "type" : "10"
     } ],
     "medlemskap" : [ {
-      "periode" : {
-        "tom" : "1999-01-01",
-        "fom" : "2009-01-01"
-      },
-      "sum" : {
-        "dager" : {
-          "type" : "5",
-          "nr" : "8"
-        },
-        "maaneder" : "6",
-        "kvartal" : "7",
-        "aar" : "10"
-      },
       "relevans" : "100",
-      "land" : "DK",
-      "gyldigperiode" : "3",
       "ordning" : "01",
+      "land" : "DK",
+      "sum" : {
+        "aar" : "4",
+        "dager" : {
+          "nr" : "2"
+        },
+        "maaneder" : "2"
+      },
+      "gyldigperiode" : "1",
+      "type" : "10",
       "beregning" : "100",
-      "type" : "11",
-      "yrke" : "2250"
+      "periode" : {
+        "fom" : "2000-01-01",
+        "tom" : "2010-01-01"
+      }
     } ],
     "trygdetid" : [ {
       "sum" : {
-        "uker" : "0",
-        "maaneder" : "0",
-        "dager" : {
-          "type" : "5",
-          "nr" : "0"
-        },
         "aar" : "10",
-        "kvartal" : "0"
+        "dager" : {
+          "nr" : "5"
+        },
+        "maaneder" : "2"
       },
       "type" : "11"
-    } ],
-    "medlemskapAnnen" : [ {
-      "land" : "DE",
-      "type" : "21",
-      "ordning" : "01",
-      "yrke" : "2250",
-      "sum" : {
-        "dager" : {
-          "nr" : "7",
-          "type" : "5"
-        },
-        "uker" : "5",
-        "aar" : "4",
-        "kvartal" : "3",
-        "maaneder" : "11"
-      },
-      "relevans" : "100",
-      "beregning" : "100"
     } ]
-  },
-  "sedVer" : "0",
-  "Sector Components/Pensions/P5000" : "Sector Components/Pensions/P5000",
-  "sedGVer" : "4",
-  "sed" : "P5000"
+  }
 }

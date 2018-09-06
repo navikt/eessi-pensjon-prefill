@@ -20,6 +20,24 @@ class SedP2200Test {
     val logger: Logger by lazy { LoggerFactory.getLogger(SedP2200Test::class.java) }
 
     @Test
+    fun `create SED P2200 from mockData`() {
+
+        val p2200 =  SedMock().genererP2000Mock()
+        assertNotNull(p2200)
+
+        val p2200json = mapAnyToJson(p2200, true)
+        assertNotNull(p2200json)
+
+        println(p2200json)
+
+        val p2200path = Paths.get("src/test/resources/json/P2200-NAV.json")
+        val p2200file = String(Files.readAllBytes(p2200path))
+        JSONAssert.assertEquals(p2200file, p2200json, false)
+
+    }
+
+
+    @Test
     fun `create SED P2200 from json datafile`() {
 
         val p2200path = Paths.get("src/test/resources/json/P2200-NAV.json")

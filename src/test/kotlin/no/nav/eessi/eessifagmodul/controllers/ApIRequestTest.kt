@@ -41,9 +41,6 @@ class ApIRequestTest {
     }
 
     fun validateAndPrint(req: ApiController.ApiRequest) {
-        val json = mapAnyToJson(req)
-        assertNotNull(json)
-
         if (printsed) {
             val payload = mapJsonToAny(req.payload!!, typeRefs<SED>())
             assertNotNull(payload)
@@ -51,6 +48,8 @@ class ApIRequestTest {
             printOut(req.sed!!, jsonSed)
         }
         if (printout) {
+            val json = mapAnyToJson(req)
+            assertNotNull(json)
             printOut(req.sed!!, json)
         }
     }
