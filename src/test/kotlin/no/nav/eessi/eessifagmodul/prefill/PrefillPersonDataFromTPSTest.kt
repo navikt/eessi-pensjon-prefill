@@ -1,6 +1,6 @@
 package no.nav.eessi.eessifagmodul.prefill
 
-import no.nav.eessi.eessifagmodul.clients.personv3.PersonV3Client
+import no.nav.eessi.eessifagmodul.services.personv3.PersonV3Service
 import no.nav.eessi.eessifagmodul.services.LandkodeService
 import no.nav.eessi.eessifagmodul.services.PostnummerService
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.*
@@ -16,14 +16,14 @@ import kotlin.test.assertNotNull
 class PrefillPersonDataFromTPSTest{
 
     @Mock
-    lateinit var mockPersonClient: PersonV3Client
+    lateinit var mockPersonV3Service: PersonV3Service
 
     private lateinit var preutfyllingTPS: PrefillPersonDataFromTPS
 
 
     @Before
     fun setup() {
-        preutfyllingTPS = PrefillPersonDataFromTPS(mockPersonClient , PostnummerService(), LandkodeService())
+        preutfyllingTPS = PrefillPersonDataFromTPS(mockPersonV3Service , PostnummerService(), LandkodeService())
     }
 
 

@@ -1,4 +1,4 @@
-package no.nav.eessi.eessifagmodul.clients.personv3
+package no.nav.eessi.eessifagmodul.services.personv3
 
 import no.nav.tjeneste.virksomhet.person.v3.binding.PersonV3
 import org.apache.cxf.jaxws.JaxWsProxyFactoryBean

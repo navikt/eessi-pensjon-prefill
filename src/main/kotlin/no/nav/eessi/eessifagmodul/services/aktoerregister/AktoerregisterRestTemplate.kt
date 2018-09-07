@@ -1,4 +1,4 @@
-package no.nav.eessi.eessifagmodul.clients.aktoerregister
+package no.nav.eessi.eessifagmodul.services.aktoerregister
 
 import no.nav.eessi.eessifagmodul.config.OidcAuthorizationHeaderInterceptor
 import no.nav.eessi.eessifagmodul.config.RequestResponseLoggerInterceptor

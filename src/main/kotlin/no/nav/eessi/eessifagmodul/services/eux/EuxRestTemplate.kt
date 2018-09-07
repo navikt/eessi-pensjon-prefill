@@ -1,4 +1,4 @@
-package no.nav.eessi.eessifagmodul.clients.eux
+package no.nav.eessi.eessifagmodul.services.eux
 
 import no.nav.eessi.eessifagmodul.config.OidcAuthorizationHeaderInterceptor
 import no.nav.eessi.eessifagmodul.config.RequestResponseLoggerInterceptor

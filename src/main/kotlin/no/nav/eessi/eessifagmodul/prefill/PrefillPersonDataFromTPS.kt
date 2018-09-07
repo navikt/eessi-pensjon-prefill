@@ -1,11 +1,11 @@
 package no.nav.eessi.eessifagmodul.prefill
 
-import no.nav.eessi.eessifagmodul.clients.personv3.PersonV3Client
 import no.nav.eessi.eessifagmodul.models.*
 import no.nav.eessi.eessifagmodul.models.Bruker
 import no.nav.eessi.eessifagmodul.models.Person
 import no.nav.eessi.eessifagmodul.services.LandkodeService
 import no.nav.eessi.eessifagmodul.services.PostnummerService
+import no.nav.eessi.eessifagmodul.services.personv3.PersonV3Service
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.*
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -14,7 +14,9 @@ import java.text.SimpleDateFormat
 import javax.xml.datatype.XMLGregorianCalendar
 
 @Component
-class PrefillPersonDataFromTPS(private val personV3Client: PersonV3Client, private val postnummerService: PostnummerService, private val landkoder: LandkodeService) {
+class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
+                               private val postnummerService: PostnummerService,
+                               private val landkodeService: LandkodeService) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillPersonDataFromTPS::class.java) }
     private val dateformat = "YYYY-MM-dd"
@@ -77,7 +79,7 @@ class PrefillPersonDataFromTPS(private val personV3Client: PersonV3Client, priva
 
     //bruker fra TPS
     private fun hentBrukerTPS(ident: String): no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker {
-        val response = personV3Client.hentPerson(ident)
+        val response = personV3Service.hentPerson(ident)
         logger.debug("Preutfylling henter v3.Bruker fra TPS")
         return response.person as no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker
     }
@@ -177,7 +179,7 @@ class PrefillPersonDataFromTPS(private val personV3Client: PersonV3Client, priva
                                 // norsk personnr er for NO
                                 land = "NO"
                         )
-                    ),
+                ),
                 fornavnvedfoedsel = navn.fornavn,
                 fornavn = navn.fornavn,
                 etternavn = navn.etternavn,
@@ -243,7 +245,7 @@ class PrefillPersonDataFromTPS(private val personV3Client: PersonV3Client, priva
 
     //Denne blir vel flyttet til Basis når mapping blir rettet opp fra NO=NO til NOR=NO (TPS/EU-RINA)??
     private fun hentLandkode(landkodertps: no.nav.tjeneste.virksomhet.person.v3.informasjon.Landkoder): String? {
-        val result = landkoder.finnLandkode2(landkodertps.value)
+        val result = landkodeService.finnLandkode2(landkodertps.value)
         logger.debug("Preutfylling Landkode (alpha3-alpha2)  ${landkodertps.value} til $result")
         return result
     }

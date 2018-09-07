@@ -7,10 +7,10 @@ import no.nav.eessi.eessifagmodul.models.*
 import no.nav.eessi.eessifagmodul.prefill.PrefillDataModel
 import no.nav.eessi.eessifagmodul.prefill.PrefillPerson
 import no.nav.eessi.eessifagmodul.prefill.PrefillSED
-import no.nav.eessi.eessifagmodul.services.AktoerregisterService
-import no.nav.eessi.eessifagmodul.services.EuxService
+import no.nav.eessi.eessifagmodul.services.aktoerregister.AktoerregisterService
+import no.nav.eessi.eessifagmodul.services.eux.EuxService
 import no.nav.eessi.eessifagmodul.services.LandkodeService
-import no.nav.eessi.eessifagmodul.services.RinaActions
+import no.nav.eessi.eessifagmodul.services.eux.RinaActions
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
