@@ -1,4 +1,4 @@
-package no.nav.eessi.eessifagmodul.clients.personv3
+package no.nav.eessi.eessifagmodul.services.personv3
 
 import no.nav.eessi.eessifagmodul.config.sts.configureRequestSamlTokenOnBehalfOfOidc
 import no.nav.security.oidc.context.OIDCRequestContextHolder
@@ -13,7 +13,7 @@ import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonResponse
 import org.springframework.stereotype.Component
 
 @Component
-class PersonV3Client(val service: PersonV3, val oidcRequestContextHolder: OIDCRequestContextHolder) {
+class PersonV3Service(val service: PersonV3, val oidcRequestContextHolder: OIDCRequestContextHolder) {
 
 
     fun hentPerson(fnr: String): HentPersonResponse {

@@ -1,8 +1,7 @@
 package no.nav.eessi.eessifagmodul.prefill
 
-import com.nhaarman.mockito_kotlin.whenever
 import no.nav.eessi.eessifagmodul.models.InstitusjonItem
-import no.nav.eessi.eessifagmodul.services.AktoerregisterService
+import no.nav.eessi.eessifagmodul.services.aktoerregister.AktoerregisterService
 import no.nav.eessi.eessifagmodul.models.SED
 import org.junit.Before
 import org.junit.Test

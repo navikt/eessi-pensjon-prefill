@@ -1,10 +1,10 @@
 package no.nav.eessi.eessifagmodul.controllers
 
-import no.nav.eessi.eessifagmodul.clients.personv3.PersonV3Client
+import no.nav.eessi.eessifagmodul.services.personv3.PersonV3Service
 import no.nav.eessi.eessifagmodul.models.*
 import no.nav.eessi.eessifagmodul.prefill.PrefillDataModel
-import no.nav.eessi.eessifagmodul.services.AktoerregisterService
-import no.nav.eessi.eessifagmodul.services.EuxService
+import no.nav.eessi.eessifagmodul.services.aktoerregister.AktoerregisterService
+import no.nav.eessi.eessifagmodul.services.eux.EuxService
 import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
 import no.nav.eessi.eessifagmodul.utils.mapJsonToAny
 import no.nav.eessi.eessifagmodul.utils.typeRefs
@@ -22,7 +22,7 @@ import java.util.*
 class ExperimentController {
 
     @Autowired
-    private lateinit var personV3Client: PersonV3Client
+    private lateinit var personV3Service: PersonV3Service
 
     @Autowired
     private lateinit var euxService: EuxService
@@ -43,7 +43,7 @@ class ExperimentController {
 
     @GetMapping("/testPerson/{ident}")
     fun testPerson(@PathVariable("ident") ident: String): HentPersonResponse {
-        return personV3Client.hentPerson(ident)
+        return personV3Service.hentPerson(ident)
     }
 
     @GetMapping("/possibleactions/{rinanr}", produces = [MediaType.APPLICATION_JSON_VALUE])

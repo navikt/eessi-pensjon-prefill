@@ -1,4 +1,4 @@
-package no.nav.eessi.eessifagmodul.services
+package no.nav.eessi.eessifagmodul.services.aktoerregister
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue

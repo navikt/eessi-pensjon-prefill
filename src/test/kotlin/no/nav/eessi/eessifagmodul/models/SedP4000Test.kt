@@ -2,12 +2,12 @@ package no.nav.eessi.eessifagmodul.models
 
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.whenever
-import no.nav.eessi.eessifagmodul.services.AktoerregisterService
+import no.nav.eessi.eessifagmodul.services.aktoerregister.AktoerregisterService
 import no.nav.eessi.eessifagmodul.controllers.ApiController
 import no.nav.eessi.eessifagmodul.prefill.PrefillDataModel
 import no.nav.eessi.eessifagmodul.prefill.PrefillPerson
 import no.nav.eessi.eessifagmodul.prefill.PrefillSED
-import no.nav.eessi.eessifagmodul.services.EuxService
+import no.nav.eessi.eessifagmodul.services.eux.EuxService
 import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
 import no.nav.eessi.eessifagmodul.utils.mapJsonToAny
 import no.nav.eessi.eessifagmodul.utils.typeRefs

@@ -2,6 +2,8 @@ package no.nav.eessi.eessifagmodul.services
 
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.whenever
+import no.nav.eessi.eessifagmodul.services.aktoerregister.AktoerregisterException
+import no.nav.eessi.eessifagmodul.services.aktoerregister.AktoerregisterService
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -12,7 +14,6 @@ import org.springframework.http.HttpEntity
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.client.RestTemplate
-import java.net.URI
 import java.nio.file.Files
 import java.nio.file.Paths
 import kotlin.test.assertEquals

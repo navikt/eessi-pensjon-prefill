@@ -1,4 +1,4 @@
-package no.nav.eessi.eessifagmodul.services
+package no.nav.eessi.eessifagmodul.services.eux
 
 import no.nav.eessi.eessifagmodul.models.RINAaksjoner
 import org.slf4j.Logger
