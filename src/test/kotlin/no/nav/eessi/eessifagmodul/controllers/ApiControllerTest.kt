@@ -10,6 +10,7 @@ import no.nav.eessi.eessifagmodul.prefill.PrefillSED
 import no.nav.eessi.eessifagmodul.services.aktoerregister.AktoerregisterService
 import no.nav.eessi.eessifagmodul.services.eux.EuxService
 import no.nav.eessi.eessifagmodul.services.LandkodeService
+import no.nav.eessi.eessifagmodul.services.PrefillService
 import no.nav.eessi.eessifagmodul.services.eux.RinaActions
 import org.junit.Assert
 import org.junit.Before
@@ -39,6 +40,11 @@ class ApiControllerTest {
     @Mock
     private lateinit var mockRinaActions: RinaActions
 
+    @Mock
+    private lateinit var mockPrefillService: PrefillService
+
+    private lateinit var mockPrefillSED: PrefillSED
+
     private lateinit var prefillDataMock: PrefillDataModel
 
     private lateinit var apiController: ApiController
@@ -47,10 +53,13 @@ class ApiControllerTest {
     fun setUp() {
         prefillDataMock = PrefillDataModel()
         mockRinaActions = RinaActions(mockEuxService)
-        mockRinaActions.waittime = 500
-        apiController = ApiController(mockEuxService, PrefillSED(mockPersonPreutfyll), mockAktoerregisterService)
+        mockRinaActions.waittime = 200
+        mockPrefillSED = PrefillSED(mockPersonPreutfyll)
+
+        mockPrefillService = PrefillService(mockEuxService, mockPrefillSED, mockRinaActions)
+
+        apiController = ApiController(mockEuxService, mockPrefillService, mockAktoerregisterService)
         apiController.landkodeService = LandkodeService()
-        apiController.rinaActions = mockRinaActions
     }
 
     @Test

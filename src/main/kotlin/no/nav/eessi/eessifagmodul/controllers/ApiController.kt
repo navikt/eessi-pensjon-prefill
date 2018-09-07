@@ -2,15 +2,15 @@ package no.nav.eessi.eessifagmodul.controllers
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.swagger.annotations.ApiOperation
-import no.nav.eessi.eessifagmodul.models.*
+import no.nav.eessi.eessifagmodul.models.IkkeGyldigKallException
+import no.nav.eessi.eessifagmodul.models.InstitusjonItem
+import no.nav.eessi.eessifagmodul.models.SED
 import no.nav.eessi.eessifagmodul.prefill.PrefillDataModel
-import no.nav.eessi.eessifagmodul.prefill.PrefillSED
-import no.nav.eessi.eessifagmodul.services.*
+import no.nav.eessi.eessifagmodul.services.LandkodeService
+import no.nav.eessi.eessifagmodul.services.PrefillService
 import no.nav.eessi.eessifagmodul.services.aktoerregister.AktoerregisterException
 import no.nav.eessi.eessifagmodul.services.aktoerregister.AktoerregisterService
 import no.nav.eessi.eessifagmodul.services.eux.EuxService
-import no.nav.eessi.eessifagmodul.services.eux.RinaActions
-import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
 import no.nav.security.oidc.api.Protected
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -19,21 +19,21 @@ import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 import java.util.*
 
+
 @Protected
 @RestController
 @RequestMapping("/api")
-class ApiController(private val euxService: EuxService, private val prefillSED: PrefillSED, private val aktoerregisterService: AktoerregisterService) {
+class ApiController(private val euxService: EuxService, private val prefillService: PrefillService,  private val aktoerregisterService: AktoerregisterService) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(ApiController::class.java) }
 
     @Autowired
+    //TODO hører denne til her eller egen controller?
     lateinit var landkodeService: LandkodeService
-
-    @Autowired
-    lateinit var rinaActions: RinaActions
 
     @ApiOperation("Henter liste over landkoder av ISO Alpha2 standard")
     @PostMapping("/landkoder")
+    //TODO hører denne til her eller egen controller?
     fun getLandKoder(): List<String> {
         return landkodeService.hentLandkoer2()
     }
@@ -42,24 +42,17 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
     @PostMapping("/sed/confirm")
     fun confirmDocument(@RequestBody request: ApiRequest): SED {
 
-        val data = createPreutfyltSED(request)
-        val sed = data.sed
-
-        val sedjson = mapAnyToJson(sed, true)
-        logger.debug("SED : $sedjson")
-
-        return sed
+        return prefillService.prefillSed(buildPrefillDataModel(request)).sed
     }
 
     @ApiOperation("sendSed send current sed")
     @PostMapping("/sed/send")
     fun sendSed(@RequestBody request: ApiRequest): Boolean {
 
-        val rinanr = request.euxCaseId ?: throw IkkeGyldigKallException("Mangler euxCaseID (RINANR)")
+        val euxCaseId = request.euxCaseId ?: throw IkkeGyldigKallException("Mangler euxCaseID (RINANR)")
         val sed =  request.sed ?: throw IkkeGyldigKallException("Mangler SED")
-        val korrid = UUID.randomUUID()
-
-        return euxService.sendSED(rinanr, sed, korrid.toString())
+        val korrid = UUID.randomUUID().toString()
+        return euxService.sendSED(euxCaseId, sed, korrid)
     }
 
     @ApiOperation("henter ut en SED fra et eksisterende Rina document. krever unik dokumentid fra valgt SED")
@@ -74,44 +67,14 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
     @GetMapping("/sed/delete/{rinanr}/{sed}/{documentid}")
     fun deleteDocument(@PathVariable("rinanr", required = true) rinanr: String, @PathVariable("sed", required = true) sed: String, @PathVariable("documentid", required = true) documentid: String): HttpStatus {
 
-        val response = euxService.deleteSEDfromExistingRinaCase(rinanr, documentid)
-        return if (response.is2xxSuccessful) {
-            return if (rinaActions.isActionPossible(sed, rinanr, rinaActions.create, 3)) {
-                HttpStatus.OK
-            } else {
-                HttpStatus.BAD_REQUEST
-            }
-        } else {
-            HttpStatus.BAD_REQUEST
-        }
+        return euxService.deleteSEDfromExistingRinaCase(rinanr, documentid)
     }
 
     @ApiOperation("legge til SED på et eksisterende Rina document. kjører preutfylling")
     @PostMapping("/sed/add")
     fun addDocument(@RequestBody request: ApiRequest): String {
-        //vi må ha mer fra frontend // backend..
 
-        // Trenger RinaNr fra tidligere (opprettBucOgSed) gir oss orginale rinanr.
-        // payload fra f.eks P4000,P2000,xx dene er vel da bare delevis.
-        // dette legges vel til i ApiRequest model som payload.
-
-        val rinanr = request.euxCaseId ?: throw IkkeGyldigKallException("Mangler euxCaseId (RINANR)")
-        val korrid = UUID.randomUUID()
-
-        val data = createPreutfyltSED(request)
-        val sed = data.sed
-        val sedAsJson = mapAnyToJson(sed, true)
-
-        if (rinaActions.canCreate(data.getSEDid(), rinanr)) {
-            euxService.createSEDonExistingRinaCase(sedAsJson, rinanr, korrid.toString())
-            //ingen ting tilbake.. sjekke om alt er ok?
-            //val aksjon = euxService.getPossibleActions(rinanr)
-            if (rinaActions.canUpdate(data.getSEDid() , rinanr)) {
-                return rinanr
-            }
-            throw SedDokumentIkkeOpprettetException("SED dokument feilet ved opprettelse ved RINANR: $rinanr")
-        }
-        throw SedDokumentIkkeGyldigException("Kan ikke opprette følgende  SED: ${sed.sed} på RINANR: $rinanr")
+        return prefillService.prefillAndAddSedOnExistingCase(buildPrefillDataModel(request)).euxCaseID
 
     }
 
@@ -119,49 +82,12 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
     @PostMapping("/buc/create")
     fun createDocument(@RequestBody request: ApiRequest): String {
 
-        val korrid = UUID.randomUUID()
-        val data = createPreutfyltSED(createPrefillData(request))
-        val sed: SED = data.sed
+        return prefillService.prefillAndCreateSedOnNewCase(buildPrefillDataModel(request)).euxCaseID
 
-        val fagSaknr = data.penSaksnummer // = "EESSI-PEN-123"
-        val bucType = data.buc // = "P_BUC_06" //P6000
-
-        val mottaker = getFirstInstitution(data.getInstitutionsList())
-        val sedAsJson = mapAnyToJson(sed, true)
-
-        logger.debug("Følgende jsonSED blir sendt : $sedAsJson")
-
-        val euSaksnr = euxService.createCaseAndDocument(
-                jsonPayload = sedAsJson,
-                fagSaknr = fagSaknr,
-                mottaker = mottaker,
-                bucType = bucType,
-                korrelasjonID = korrid.toString()
-        )
-        logger.debug("(rina) caseid:  $euSaksnr")
-        if (rinaActions.canUpdate(data.getSEDid(), euSaksnr)) {
-            if (request.sendsed != null && request.sendsed == true) {
-                val result = euxService.sendSED(euSaksnr, data.getSEDid(), korrid.toString())
-                if (!result) {
-                    throw SedDokumentIkkeSendtException("SED ikke sendt. muligens opprettet på RINANR: $euSaksnr")
-                }
-            }
-            logger.info("EUX RINANR: $euSaksnr")
-            return "{\"euxcaseid\":\"$euSaksnr\"}"
-        }
-        throw SedDokumentIkkeOpprettetException("SED dokument feilet ved opprettelse ved RINANR: $euSaksnr")
-    }
-
-    //muligens midlertidig metode for å sende kun en mottaker til EUX.
-    fun getFirstInstitution(institutions: List<InstitusjonItem>): String {
-        institutions.forEach {
-            return it.institution ?: throw IkkeGyldigKallException("institujson kan ikke være tom")
-        }
-        throw IkkeGyldigKallException("Mangler mottaker register (InstitusjonItem)")
     }
 
     //validatate request and convert to PrefillDataModel
-    fun createPrefillData(request: ApiRequest): PrefillDataModel {
+    fun buildPrefillDataModel(request: ApiRequest): PrefillDataModel {
         return when  {
             request.caseId == null -> throw IkkeGyldigKallException("Mangler Saksnummer")
             request.sed == null -> throw IkkeGyldigKallException("Mangler SED")
@@ -173,6 +99,7 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
         //Denne validering og utfylling kan benyttes på SED P2000 og P6000
             validsed(request.sed , "P2000,P2200,P6000,P5000") -> {
                 val pinid = hentAktoerIdPin(request.pinid)
+
                 PrefillDataModel().build(
                         caseId = request.caseId,
                         buc = request.buc,
@@ -188,6 +115,7 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
                 if (request.payload == null) { throw IkkeGyldigKallException("Mangler metadata, payload") }
                 if (request.euxCaseId == null) { throw IkkeGyldigKallException("Mangler euxCaseId (RINANR)") }
                 val pinid = hentAktoerIdPin(request.pinid)
+
                 PrefillDataModel().build(
                         caseId = request.caseId,
                         buc = request.buc,
@@ -205,15 +133,6 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
 
     }
 
-    //Prefill data and create SED (PEN and TPS..)
-    fun createPreutfyltSED(data: PrefillDataModel): PrefillDataModel {
-        return prefillSED.prefill(data)
-    }
-
-    private fun createPreutfyltSED(request: ApiRequest): PrefillDataModel {
-        return createPreutfyltSED(createPrefillData(request))
-    }
-
     private fun validsed(sed: String, validsed: String) : Boolean {
         val result: List<String> = validsed.split(",").map { it.trim() }
         return result.contains(sed)
@@ -224,7 +143,6 @@ class ApiController(private val euxService: EuxService, private val prefillSED: 
         if (aktorid.isBlank()) throw IkkeGyldigKallException("Mangler AktorId")
         return aktoerregisterService.hentGjeldendeNorskIdentForAktorId(aktorid)
     }
-
 
     //kommer fra frontend
     //{"institutions":[{"NO:"DUMMY"}],"buc":"P_BUC_06","sed":"P6000","caseId":"caseId","subjectArea":"pensjon","actorId":"2323123"}

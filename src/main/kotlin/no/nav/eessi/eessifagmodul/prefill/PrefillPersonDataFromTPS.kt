@@ -34,6 +34,7 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
         }
     }
 
+    //henter kun personnNr (ident/pin) for alle barn under person
     fun hentBarnaPinIdFraBruker(ident: String): List<String> {
         val brukerTPS = hentBrukerTPS(ident)
         val person = brukerTPS
