@@ -34,10 +34,10 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
         }
     }
 
-    //henter kun personnNr (ident/pin) for alle barn under person
-    fun hentBarnaPinIdFraBruker(ident: String): List<String> {
-        val brukerTPS = hentBrukerTPS(ident)
-        val person = brukerTPS
+    //henter kun personnNr (brukerNorIdent/pin) for alle barn under person
+    fun hentBarnaPinIdFraBruker(brukerNorIdent: String): List<String> {
+        val brukerTPS = hentBrukerTPS(brukerNorIdent)
+        val person = brukerTPS as no.nav.tjeneste.virksomhet.person.v3.informasjon.Person
         val resultat = mutableListOf<String>()
         person.harFraRolleI.forEach {
             val tpsvalue = it.tilRolle.value   //mulig nullpoint? kan tilRolle være null?
@@ -46,7 +46,7 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
                 val persontps = it.tilPerson as no.nav.tjeneste.virksomhet.person.v3.informasjon.Person
                 //henter kun ut norskident ut
                 resultat.add(hentNorIdent(persontps))
-                logger.debug("Preutfylling barn norident")
+                logger.debug("Preutfylling barn NorIdent")
             }
         }
         return resultat.toList()
@@ -60,7 +60,6 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
                 mor = Foreldre(person = hentRelasjon(RelasjonEnum.MOR, brukerTPS)),
                 person = personData(brukerTPS),
                 adresse = personAdresse(brukerTPS)
-
         )
         logger.debug("Preutfylling Bruker")
         return bruker
@@ -173,14 +172,7 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
         val kjonn = brukerTps.kjoenn
 
         val person = Person(
-                pin = listOf(
-                        PinItem(
-                                sektor = "alle",
-                                identifikator = hentNorIdent(brukerTps),
-                                // norsk personnr er for NO
-                                land = "NO"
-                        )
-                ),
+                pin = hentPersonPinNorIdent(brukerTps),
                 fornavnvedfoedsel = navn.fornavn,
                 fornavn = navn.fornavn,
                 etternavn = navn.etternavn,
@@ -192,6 +184,17 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
         )
         logger.debug("Preutfylling Person")
         return person
+    }
+
+    private fun hentPersonPinNorIdent(brukerTps: no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker): List<PinItem> {
+        return listOf(
+                PinItem(
+                        sektor = "alle",
+                        identifikator = hentNorIdent(brukerTps),
+                        // norsk personnr alltid NO
+                        land = "NO"
+                )
+        )
     }
 
     private fun hentPersonStatus(brukerTps: no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker): String {

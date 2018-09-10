@@ -121,9 +121,49 @@ data class Person(
         var foedselsdato: String? = null,
         val doedsdato: String? = null,
 
+        val dodsDetalj: DodsDetalj? = null, //4 P2100
         val kontakt: Kontakt? = null,
-        val sivilstand: List<SivilstandItem>? = null
+        val sivilstand: List<SivilstandItem>? = null,   //familiestatus
+        val relasjontilavdod: RelasjonAvdodItem? = null, //5.2.5 P2100
+        val nyttEkteskapPartnerskapEtterForsikredeDod: NyttEkteskapPartnerskap? = null //5.3.4 P2100
+)
 
+data class DodsDetalj(
+        val sted: String? = null, //4.1
+        val dato: String? = null, //4.2
+        val arsaker: List<DodsDetaljOrsakItem>? = null // 4.3
+)
+
+data class DodsDetaljOrsakItem(
+        val arsak: String? = null, //4.3.1 P2100
+        val annenArsak: String? = null //4.3.2.1
+)
+
+data class NyttEkteskapPartnerskap(
+        val fraDato: String? = null,   //5.3.4. P2100
+        val etternavn: String? = null, //5.3.4.2.1
+        val fornavn: String? = null,   //5.3.4.2.2
+        val borsammen: String? = null  //5.3
+
+)
+
+data class RelasjonAvdodItem(
+        val pensjondetalj: List<AvdodPensjonItem>? = null, //3
+
+        val relasjon: String? = null,  //5.2.5  P2100
+        val sammehusholdning: String? = null,    //5.2.6  P2100
+        val sammehusholdningfradato: String? = null, //5.2.7.1 P2100
+        val harfellesbarn: String? = null, //5.3.2.1 P2100
+        val forventetTerim: String? = null, //5.3.2.2
+        val sperasjonType: String? = null, //5.3.3
+        val giftParnerDato: String? = null // 5.3.1
+)
+
+data class AvdodPensjonItem(
+        val mottattPensjonvedDod: String? = null, //3.2 P2100
+        val mottattPensjonType: String? = null, //3.2.1
+        val startDatoPensjonrettighet: String? = null, //3.2.3
+        val institusjon: EessisakItem? = null // 3.2.2.1
 )
 
 data class SivilstandItem(

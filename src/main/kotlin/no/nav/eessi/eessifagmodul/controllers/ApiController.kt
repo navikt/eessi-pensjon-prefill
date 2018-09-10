@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiOperation
 import no.nav.eessi.eessifagmodul.models.IkkeGyldigKallException
 import no.nav.eessi.eessifagmodul.models.InstitusjonItem
 import no.nav.eessi.eessifagmodul.models.SED
+import no.nav.eessi.eessifagmodul.models.createSED
 import no.nav.eessi.eessifagmodul.prefill.PrefillDataModel
 import no.nav.eessi.eessifagmodul.services.LandkodeService
 import no.nav.eessi.eessifagmodul.services.PrefillService
@@ -100,15 +101,15 @@ class ApiController(private val euxService: EuxService, private val prefillServi
             validsed(request.sed , "P2000,P2200,P6000,P5000") -> {
                 val pinid = hentAktoerIdPin(request.pinid)
 
-                PrefillDataModel().build(
-                        caseId = request.caseId,
-                        buc = request.buc,
-                        subject = request.subjectArea,
-                        sedID = request.sed,
-                        aktoerID = request.pinid,
-                        pinID = pinid,
-                        institutions = request.institutions
-                )
+                PrefillDataModel().apply {
+                    penSaksnummer = request.caseId
+                    buc = request.buc
+                    rinaSubject = request.subjectArea
+                    sed =  createSED(request.sed)
+                    aktoerID = request.pinid
+                    personNr = pinid
+                    institution = request.institutions
+                }
             }
         //denne validering og utfylling kan kun benyttes på SED P4000
             validsed(request.sed, "P4000") -> {
@@ -116,17 +117,17 @@ class ApiController(private val euxService: EuxService, private val prefillServi
                 if (request.euxCaseId == null) { throw IkkeGyldigKallException("Mangler euxCaseId (RINANR)") }
                 val pinid = hentAktoerIdPin(request.pinid)
 
-                PrefillDataModel().build(
-                        caseId = request.caseId,
-                        buc = request.buc,
-                        subject = request.subjectArea,
-                        sedID = request.sed,
-                        aktoerID = request.pinid,
-                        pinID = pinid,
-                        institutions = request.institutions,
-                        payload = request.payload,
-                        euxcaseId = request.euxCaseId
-                )
+                PrefillDataModel().apply {
+                    penSaksnummer = request.caseId
+                    buc = request.buc
+                    rinaSubject = request.subjectArea
+                    sed = createSED(request.sed)
+                    aktoerID = request.pinid
+                    personNr = pinid
+                    institution = request.institutions
+                    partSedasJson.put(request.sed, request.payload)
+                    euxCaseID = request.euxCaseId
+                }
             }
             else -> throw IkkeGyldigKallException("Mangler SED, eller ugyldig type SED")
         }

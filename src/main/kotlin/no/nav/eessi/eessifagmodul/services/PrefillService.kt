@@ -29,10 +29,12 @@ class PrefillService(private val euxService: EuxService, private val prefillSED:
                 euxService.createSEDonExistingRinaCase(sedAsJson, data.euxCaseID, korrid)
                 //ingen ting tilbake.. sjekke om alt er ok?
                 //val aksjon = euxService.getPossibleActions(rinanr)
-                if (rinaActions.canUpdate(data.getSEDid() , data.euxCaseID)) {
-                    return data
-                }
-                throw SedDokumentIkkeOpprettetException("SED dokument feilet ved opprettelse ved RINANR: ${data.euxCaseID}")
+                checkForUpdateStatus(data.euxCaseID, data.getSEDid())
+
+//                if (rinaActions.canUpdate(data.getSEDid() , data.euxCaseID)) {
+//                    return data
+//                }
+//                throw SedDokumentIkkeOpprettetException("SED dokument feilet ved opprettelse ved RINANR: ${data.euxCaseID}")
             }
             throw SedDokumentIkkeGyldigException("Kan ikke opprette følgende  SED: ${{data.getSEDid()}} på RINANR: ${data.euxCaseID}")
 
