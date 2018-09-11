@@ -42,11 +42,8 @@ fasitResources:
   - alias: EuxBasis_v1
     resourceType: RestService
 
-  - alias: srvPensjon
+  - alias: srveessipensjon
     resourceType: Credential
-    propertyMap:
-      username: credentials.srvpensjon.username
-      password: credentials.srvpensjon.password
 
   - alias: OpenIdConnect
     resourceType: BaseUrl
