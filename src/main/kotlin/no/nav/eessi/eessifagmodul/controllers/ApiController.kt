@@ -40,14 +40,14 @@ class ApiController(private val euxService: EuxService, private val prefillServi
     }
 
     @ApiOperation("viser en oppsumering av SED prefill. Før innsending til EUX Basis")
-    @PostMapping("/sed/person")
-    fun previewPerson(@RequestBody request: ApiRequest): SED {
-
+    @PostMapping("/data/person")
+    fun previewPerson(@RequestBody request: ApiRequest): Map<String, Any?> {
         val dataModel = PrefillDataModel().apply {
             sed = createSED("P2000")
             personNr = request.pinid ?: throw IkkeGyldigKallException("Ingen gyldig pinid")
         }
-        return prefillService.prefillSed(dataModel).sed
+        val sed = prefillService.prefillSed(dataModel).sed
+        return  mapOf("Bruker" to sed.nav?.bruker, "Pensjon" to sed.pensjon)
     }
 
 
