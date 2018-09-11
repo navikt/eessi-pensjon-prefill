@@ -40,9 +40,20 @@ class ApiController(private val euxService: EuxService, private val prefillServi
     }
 
     @ApiOperation("viser en oppsumering av SED prefill. Før innsending til EUX Basis")
+    @PostMapping("/sed/person")
+    fun previewPerson(@RequestBody request: ApiRequest): SED {
+
+        val dataModel = PrefillDataModel().apply {
+            sed = createSED("P2000")
+            personNr = request.pinid ?: throw IkkeGyldigKallException("Ingen gyldig pinid")
+        }
+        return prefillService.prefillSed(dataModel).sed
+    }
+
+
+    @ApiOperation("viser en oppsumering av SED prefill. Før innsending til EUX Basis")
     @PostMapping("/sed/confirm")
     fun confirmDocument(@RequestBody request: ApiRequest): SED {
-
         return prefillService.prefillSed(buildPrefillDataModel(request)).sed
     }
 
