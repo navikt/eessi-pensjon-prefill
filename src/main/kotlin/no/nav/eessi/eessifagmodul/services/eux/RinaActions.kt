@@ -12,7 +12,7 @@ class RinaActions(private val euxService: EuxService) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(RinaActions::class.java) }
 
-    @Value("\${rinaaction_waittime:4000}")
+    @Value("\${rinaaction.waittime:4000}")
     lateinit var waittime : String  // waittime (basis venter 6000 på flere tjenester?)
 
     var timeTries = 5               // times to try

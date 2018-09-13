@@ -45,4 +45,4 @@ management:
       exposure.include: '*'
 
 rinaaction:
-    waittime: '4000'
+    waittime: '4200'
