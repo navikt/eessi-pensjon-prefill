@@ -2,9 +2,6 @@ package no.nav.eessi.eessifagmodul.controllers
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
-import io.micrometer.core.annotation.Timed
-import io.micrometer.core.instrument.MeterRegistry
-import io.prometheus.client.Counter
 import io.swagger.annotations.ApiOperation
 import no.nav.eessi.eessifagmodul.models.IkkeGyldigKallException
 import no.nav.eessi.eessifagmodul.models.InstitusjonItem
@@ -40,13 +37,9 @@ class ApiController(private val euxService: EuxService, private val prefillServi
     //TODO hører denne til her eller egen controller?
     lateinit var landkodeService: LandkodeService
 
-    @Autowired
-    lateinit var registry: MeterRegistry
-
     @ApiOperation("Henter liste over landkoder av ISO Alpha2 standard")
     @PostMapping("/landkoder")
     //TODO hører denne til her eller egen controller?
-    @Timed("controller.api.landkoder")
     fun getLandKoder(): List<String> {
         return landkodeService.hentLandkoer2()
     }
@@ -83,7 +76,6 @@ class ApiController(private val euxService: EuxService, private val prefillServi
 
     @ApiOperation("sendSed send current sed")
     @PostMapping("/sed/send")
-    @Timed("controller.api.sed.send")
     fun sendSed(@RequestBody request: ApiRequest): Boolean {
         val euxCaseId = request.euxCaseId ?: throw IkkeGyldigKallException("Mangler euxCaseID (RINANR)")
         val sed =  request.sed ?: throw IkkeGyldigKallException("Mangler SED")
@@ -109,7 +101,6 @@ class ApiController(private val euxService: EuxService, private val prefillServi
 
     @ApiOperation("legge til SED på et eksisterende Rina document. kjører preutfylling")
     @PostMapping("/sed/add")
-    @Timed("controller.api.add.add")
     fun addDocument(@RequestBody request: ApiRequest): String {
 
         return prefillService.prefillAndAddSedOnExistingCase(buildPrefillDataModel(request)).euxCaseID
@@ -118,7 +109,6 @@ class ApiController(private val euxService: EuxService, private val prefillServi
 
     @ApiOperation("Kjører prosess OpprettBuCogSED på EUX for å få opprette et RINA dokument med en SED")
     @PostMapping("/buc/create")
-    @Timed("controller.api.buc.create")
     fun createDocument(@RequestBody request: ApiRequest): String {
 
         return prefillService.prefillAndCreateSedOnNewCase(buildPrefillDataModel(request)).euxCaseID

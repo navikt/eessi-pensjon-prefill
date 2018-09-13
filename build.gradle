@@ -58,8 +58,8 @@ dependencies {
     compile("io.prometheus:simpleclient_pushgateway:${prometheusVersion}")
 
     // Micrometer
-    compile('io.micrometer:micrometer-core:latest.integration')
-    compile('io.micrometer:micrometer-registry-prometheus:latest.integration')
+    //compile('io.micrometer:micrometer-core:latest.integration')
+    //compile('io.micrometer:micrometer-registry-prometheus:latest.integration')
 
     // Spring-boot
     compile("org.springframework.boot:spring-boot-starter-web")
