@@ -50,3 +50,11 @@ fun validateJson(json: String) : Boolean {
         false
     }
 }
+
+val STANDARD_SED = "P2000,P2100,P2200,P6000,P5000"
+val P4000_SED = "P4000"
+
+fun validsed(sed: String, validsed: String) : Boolean {
+    val result: List<String> = validsed.split(",").map { it.trim() }
+    return result.contains(sed)
+}

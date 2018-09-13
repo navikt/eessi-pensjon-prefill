@@ -10,7 +10,7 @@ class PrefillNav(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS)
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillNav::class.java) }
 
-    private val validseds : List<String> = listOf("P6000","P4000","P2000","P2200", "P5000")
+    //private val validseds : List<String> = listOf("P6000","P4000","P2000","P2200", "P5000")
 
     //TODO hva vil avsender ID på RINA være for NAV-PEN?
     //vil dette hentes fra Fasit? eller Rina?
@@ -44,7 +44,7 @@ class PrefillNav(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS)
 
     private fun bruker(utfyllingData: PrefillDataModel): Bruker {
         //kan denne utfylling benyttes på alle SED?
-        if (validseds.contains(utfyllingData.getSEDid())) {
+        //if (validseds.contains(utfyllingData.getSEDid())) {
 
             //etterlatt pensjon da er dette den avdøde.(ikke levende)
             //etterlatt pensjon da er den levende i pk.3 sed (gjenlevende) (pensjon.gjenlevende)
@@ -59,16 +59,16 @@ class PrefillNav(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS)
             logger.debug("Preutfylling Utfylling Nav END")
             return bruker
 
-        }
-        logger.debug("SED er ikke P6000,P2000,P4000,P5000.. - (fyller ut med mock)")
-        return Bruker(
-                person = Person(
-                    fornavn = "F",
-                    kjoenn = "k",
-                    foedselsdato = "1901-12-01",
-                    etternavn = "E"
-                )
-            )
+//        }
+        //logger.debug("SED er ikke P6000,P2000,P4000,P5000.. - (fyller ut med mock)")
+//        return Bruker(
+//                person = Person(
+//                    fornavn = "F",
+//                    kjoenn = "k",
+//                    foedselsdato = "1901-12-01",
+//                    etternavn = "E"
+//                )
+//            )
     }
 
     private fun hentBarnaFraTPS(utfyllingData: PrefillDataModel) :List<BarnItem> {
@@ -95,7 +95,7 @@ class PrefillNav(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS)
     }
 
     /**
-     *
+     * NAV lokal institusjon må hentes fra Fasit? Rina?
      */
     private fun opprettLokalSaknr(pensaknr: String = ""): List<EessisakItem> {
         //Må få hentet ut NAV institusjon avsender fra fasit?
