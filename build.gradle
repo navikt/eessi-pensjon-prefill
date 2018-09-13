@@ -57,9 +57,14 @@ dependencies {
     compile("io.prometheus:simpleclient_httpserver:${prometheusVersion}")
     compile("io.prometheus:simpleclient_pushgateway:${prometheusVersion}")
 
+    // Micrometer
+    compile('io.micrometer:micrometer-core:latest.integration')
+    compile('io.micrometer:micrometer-registry-prometheus:latest.integration')
+
     // Spring-boot
     compile("org.springframework.boot:spring-boot-starter-web")
     compile("org.springframework.boot:spring-boot-starter-actuator")
+    compile("org.springframework.boot:spring-boot-actuator-autoconfigure")
     testCompile("org.springframework.boot:spring-boot-starter-test")
 
     // Apache CXF

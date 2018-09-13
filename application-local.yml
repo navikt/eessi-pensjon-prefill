@@ -43,3 +43,9 @@ management:
       exposure.include: '*'
     web:
       exposure.include: '*'
+    metrics:
+      enabled:  'true'
+  metrics:
+    export:
+      prometheus:
+        enabled:  'true'
