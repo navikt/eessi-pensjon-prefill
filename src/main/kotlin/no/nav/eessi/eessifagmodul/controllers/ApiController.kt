@@ -102,8 +102,11 @@ class ApiController(private val euxService: EuxService, private val prefillServi
     @ApiOperation("legge til SED på et eksisterende Rina document. kjører preutfylling")
     @PostMapping("/sed/add")
     fun addDocument(@RequestBody request: ApiRequest): String {
-
-        return prefillService.prefillAndAddSedOnExistingCase(buildPrefillDataModel(request)).euxCaseID
+        return prefillService.prefillAndAddSedOnExistingCase(
+                buildPrefillDataModel(request).apply {
+                    euxCaseID = request.euxCaseId ?: throw IkkeGyldigKallException("Mangler euCaseId (RINAnr)")
+                }
+            ).euxCaseID
 
     }
 

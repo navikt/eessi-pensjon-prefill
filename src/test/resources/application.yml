@@ -18,3 +18,6 @@ app:
 
 securitytokenservice:
   url: 'https://example.com/SecurityTokenServiceProvider/'
+
+rinaaction:
+    waittime: '5'

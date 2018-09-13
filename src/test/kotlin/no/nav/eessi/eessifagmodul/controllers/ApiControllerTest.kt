@@ -7,10 +7,10 @@ import no.nav.eessi.eessifagmodul.models.*
 import no.nav.eessi.eessifagmodul.prefill.PrefillDataModel
 import no.nav.eessi.eessifagmodul.prefill.PrefillPerson
 import no.nav.eessi.eessifagmodul.prefill.PrefillSED
-import no.nav.eessi.eessifagmodul.services.aktoerregister.AktoerregisterService
-import no.nav.eessi.eessifagmodul.services.eux.EuxService
 import no.nav.eessi.eessifagmodul.services.LandkodeService
 import no.nav.eessi.eessifagmodul.services.PrefillService
+import no.nav.eessi.eessifagmodul.services.aktoerregister.AktoerregisterService
+import no.nav.eessi.eessifagmodul.services.eux.EuxService
 import no.nav.eessi.eessifagmodul.services.eux.RinaActions
 import org.junit.Assert
 import org.junit.Before
@@ -38,10 +38,10 @@ class ApiControllerTest {
     private lateinit var mockAktoerregisterService: AktoerregisterService
 
     @Mock
-    private lateinit var mockRinaActions: RinaActions
+    private lateinit var mockPrefillService: PrefillService
 
     @Mock
-    private lateinit var mockPrefillService: PrefillService
+    private lateinit var mockRinaActions: RinaActions
 
     private lateinit var mockPrefillSED: PrefillSED
 
@@ -52,8 +52,6 @@ class ApiControllerTest {
     @Before
     fun setUp() {
         prefillDataMock = PrefillDataModel()
-        mockRinaActions = RinaActions(mockEuxService)
-        mockRinaActions.waittime = 200
         mockPrefillSED = PrefillSED(mockPersonPreutfyll)
 
         mockPrefillService = PrefillService(mockEuxService, mockPrefillSED, mockRinaActions)
@@ -130,7 +128,8 @@ class ApiControllerTest {
 
         whenever(mockPersonPreutfyll.prefill(any())).thenReturn(utfyllMock.sed)
         whenever(mockEuxService.createCaseAndDocument(anyString(), anyString(), anyString(), anyString(), anyString(), anyString())).thenReturn(mockResponse)
-
+        whenever(mockRinaActions.canCreate(anyString(), anyString())).thenReturn(true)
+        whenever(mockRinaActions.canUpdate(anyString(), anyString())).thenReturn(true)
         whenever(mockEuxService.getPossibleActions(ArgumentMatchers.anyString())).thenReturn(mockAksjonlist)
 
         val response = apiController.createDocument(requestMock)
