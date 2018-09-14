@@ -1,9 +1,7 @@
-package no.nav.eessi.eessifagmodul.services
+package no.nav.eessi.eessifagmodul.services.eux
 
 import com.nhaarman.mockito_kotlin.whenever
 import no.nav.eessi.eessifagmodul.models.RINAaksjoner
-import no.nav.eessi.eessifagmodul.services.eux.EuxService
-import no.nav.eessi.eessifagmodul.services.eux.RinaActions
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -28,7 +26,7 @@ class RinaActionsTest {
     fun setup() {
         logger.debug("Starting tests.... ...")
         rinaActions = RinaActions(mockEuxService)
-        rinaActions.waittime = 200
+        rinaActions.waittime = "2"
         println("watetime : ${rinaActions.waittime}")
     }
 

@@ -34,8 +34,8 @@ data class Pensjon(
         val vedlegg: List<String>? = null,
 
         val vedleggandre: String? = null,
-        val angitidligstdato: String? = null
-
+        val angitidligstdato: String? = null,
+        val antallSokereKjent: String? = null //P2100 11.7
 )
 
 //P2000
@@ -86,7 +86,8 @@ data class YtelserItem(
         val beloep: List<BeloepItem>? = null,
         val sluttdatoretttilytelse: String? = null,
         val sluttdatoutbetaling: String? = null,
-        val status: String? = null
+        val status: String? = null,
+        val ytelseVedSykdom: String? = null //7.2 //P2100
 )
 
 data class BeloepItem(

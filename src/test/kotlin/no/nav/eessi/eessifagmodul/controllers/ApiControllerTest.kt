@@ -7,9 +7,10 @@ import no.nav.eessi.eessifagmodul.models.*
 import no.nav.eessi.eessifagmodul.prefill.PrefillDataModel
 import no.nav.eessi.eessifagmodul.prefill.PrefillPerson
 import no.nav.eessi.eessifagmodul.prefill.PrefillSED
+import no.nav.eessi.eessifagmodul.services.LandkodeService
+import no.nav.eessi.eessifagmodul.services.PrefillService
 import no.nav.eessi.eessifagmodul.services.aktoerregister.AktoerregisterService
 import no.nav.eessi.eessifagmodul.services.eux.EuxService
-import no.nav.eessi.eessifagmodul.services.LandkodeService
 import no.nav.eessi.eessifagmodul.services.eux.RinaActions
 import org.junit.Assert
 import org.junit.Before
@@ -23,8 +24,7 @@ import org.springframework.web.util.UriComponentsBuilder
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
-
-@RunWith(MockitoJUnitRunner::class)
+@RunWith(MockitoJUnitRunner.Silent::class)
 class ApiControllerTest {
 
     @Mock
@@ -34,23 +34,28 @@ class ApiControllerTest {
     lateinit var mockPersonPreutfyll: PrefillPerson
 
     @Mock
-    private lateinit var mockAktoerregisterService: AktoerregisterService
+    lateinit var mockAktoerregisterService: AktoerregisterService
 
     @Mock
-    private lateinit var mockRinaActions: RinaActions
+    lateinit var mockRinaActions: RinaActions
 
+    @Mock
+    lateinit var mockPrefillService: PrefillService
+
+
+    private lateinit var mockPrefillSED: PrefillSED
     private lateinit var prefillDataMock: PrefillDataModel
-
     private lateinit var apiController: ApiController
 
     @Before
     fun setUp() {
         prefillDataMock = PrefillDataModel()
-        mockRinaActions = RinaActions(mockEuxService)
-        mockRinaActions.waittime = 500
-        apiController = ApiController(mockEuxService, PrefillSED(mockPersonPreutfyll), mockAktoerregisterService)
+        mockPrefillSED = PrefillSED(mockPersonPreutfyll)
+
+        mockPrefillService = PrefillService(mockEuxService, mockPrefillSED, mockRinaActions)
+
+        apiController = ApiController(mockEuxService, mockPrefillService, mockAktoerregisterService)
         apiController.landkodeService = LandkodeService()
-        apiController.rinaActions = mockRinaActions
     }
 
     @Test
@@ -102,27 +107,10 @@ class ApiControllerTest {
         assertNotNull(utfyllMock.personNr)
         assertEquals("12345", utfyllMock.personNr)
 
-        val mockAksjonlist = listOf(
-                RINAaksjoner(
-                        navn = "Update",
-                        id = "123123123123",
-                        kategori = "Documents",
-                        dokumentType = "P6000",
-                        dokumentId = "23123123"
-                ),
-                RINAaksjoner(
-                        navn = "Delete",
-                        id = "123123343123",
-                        kategori = "Documents",
-                        dokumentType = "P6000",
-                        dokumentId = "213123123"
-                )
-        )
-
+        whenever(mockRinaActions.canCreate(anyString(), anyString())).thenReturn(true)
+        whenever(mockRinaActions.canUpdate(utfyllMock.getSEDid(), mockResponse)).thenReturn(true)
         whenever(mockPersonPreutfyll.prefill(any())).thenReturn(utfyllMock.sed)
         whenever(mockEuxService.createCaseAndDocument(anyString(), anyString(), anyString(), anyString(), anyString(), anyString())).thenReturn(mockResponse)
-
-        whenever(mockEuxService.getPossibleActions(ArgumentMatchers.anyString())).thenReturn(mockAksjonlist)
 
         val response = apiController.createDocument(requestMock)
         Assert.assertEquals("{\"euxcaseid\":\"$mockResponse\"}", response)
@@ -167,9 +155,10 @@ class ApiControllerTest {
                         dokumentId = "213123123"
                 )
         )
+
         whenever(mockPersonPreutfyll.prefill(any())).thenReturn(utfyllMock.sed)
-        whenever(mockEuxService.getPossibleActions(anyString())).thenReturn(mockAksjonlist)
         whenever(mockEuxService.createCaseAndDocument(anyString(), anyString(), anyString(), anyString(), anyString(), anyString())).thenReturn(mockResponse)
+
 
         apiController.createDocument(requestMock)
     }

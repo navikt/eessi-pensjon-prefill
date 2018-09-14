@@ -45,19 +45,22 @@ class PrefillPersonTest(val index: Int, val sedid: String) {
     companion object {
         @Parameters
         @JvmStatic
-        fun data(): Collection<Array<Any>> {
+        fun `collection data`(): Collection<Array<Any>> {
             return listOf(
                     arrayOf(1, "P2000"),
+                    arrayOf(1, "P2100"),
+                    arrayOf(1, "P2200"),
                     arrayOf(2, "P4000"),
                     arrayOf(3, "P5000"),
-                    arrayOf(4, "P6000")
+                    arrayOf(4, "P6000"),
+                    arrayOf(4, "P7000")
             )
         }
     }
 
     @Test
     fun `create mock on prefill SED`() {
-        logger.debug("jobber med test på følgende sed: $sedid")
+        logger.debug("\n\njobber med test på følgende sed: $sedid\n\n")
         val mockPinResponse = "12345"
 
         val navresponse = Nav(bruker = Bruker(person = Person(fornavn = "Dummy", etternavn = "Dummy", pin = listOf(PinItem(sektor = "alle", identifikator = mockPinResponse, land = "NO")))))

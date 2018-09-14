@@ -43,3 +43,6 @@ management:
       exposure.include: '*'
     web:
       exposure.include: '*'
+
+rinaaction:
+    waittime: '4200'
