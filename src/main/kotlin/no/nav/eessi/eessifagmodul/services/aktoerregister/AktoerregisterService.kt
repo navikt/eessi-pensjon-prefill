@@ -68,7 +68,7 @@ class AktoerregisterService(val aktoerregisterOidcRestTemplate: RestTemplate) {
 
     private fun doRequest(ident: String, identGruppe: String, gjeldende: Boolean = true): Map<String, IdentinfoForAktoer> {
         val headers = HttpHeaders()
-        headers["Nav-Identer"] = ident
+        headers["Nav-Personidenter"] = ident
         headers["Nav-Consumer-Id"] = appName
         headers["Nav-Call-Id"] = UUID.randomUUID().toString()
         val requestEntity = HttpEntity<String>(headers)
