@@ -15,40 +15,40 @@ import java.util.*
 @Service
 class PrefillService(private val euxService: EuxService, private val prefillSED: PrefillSED, private val rinaActions: RinaActions) {
 
-        fun prefillSed(dataModel: PrefillDataModel): PrefillDataModel {
-            return prefillSED.prefill(dataModel)
+    fun prefillSed(dataModel: PrefillDataModel): PrefillDataModel {
+        return prefillSED.prefill(dataModel)
+    }
+
+    fun prefillAndAddSedOnExistingCase(dataModel: PrefillDataModel): PrefillDataModel {
+
+        val data = prefillSED.prefill(dataModel)
+        val korrid = UUID.randomUUID().toString()
+        val sedAsJson = mapAnyToJson(data.sed, true)
+
+        if (rinaActions.canCreate(data.getSEDid(), data.euxCaseID)) {
+            euxService.createSEDonExistingRinaCase(sedAsJson, data.euxCaseID, korrid)
+            //ingen ting tilbake.. sjekke om alt er ok?
+            //val aksjon = euxService.getPossibleActions(rinanr)
+            dataModel.euxCaseID = checkForUpdateStatus(data.euxCaseID, data.getSEDid())
+            return dataModel
         }
+        throw SedDokumentIkkeGyldigException("Kan ikke opprette følgende  SED: ${{ data.getSEDid() }} på RINANR: ${data.euxCaseID}")
 
-        fun prefillAndAddSedOnExistingCase(dataModel: PrefillDataModel) : PrefillDataModel {
+    }
 
-            val data = prefillSED.prefill(dataModel)
-            val korrid = UUID.randomUUID().toString()
-            val sedAsJson = mapAnyToJson(data.sed, true)
-
-            if (rinaActions.canCreate(data.getSEDid(), data.euxCaseID)) {
-                euxService.createSEDonExistingRinaCase(sedAsJson, data.euxCaseID, korrid)
-                //ingen ting tilbake.. sjekke om alt er ok?
-                //val aksjon = euxService.getPossibleActions(rinanr)
-                dataModel.euxCaseID = checkForUpdateStatus(data.euxCaseID, data.getSEDid())
-                return dataModel
-            }
-            throw SedDokumentIkkeGyldigException("Kan ikke opprette følgende  SED: ${{data.getSEDid()}} på RINANR: ${data.euxCaseID}")
-
-        }
-
-        fun prefillAndCreateSedOnNewCase(dataModel: PrefillDataModel) : PrefillDataModel {
+    fun prefillAndCreateSedOnNewCase(dataModel: PrefillDataModel): PrefillDataModel {
 
         val data = prefillSED.prefill(dataModel)
         val payload = mapAnyToJson(data.sed, true)
         val korrid = UUID.randomUUID().toString()
 
         val euxCaseId = euxService.createCaseAndDocument(
-                jsonPayload =  payload,
+                jsonPayload = payload,
                 bucType = data.buc,
                 fagSaknr = data.penSaksnummer,
                 mottaker = getFirstInstitution(data.institution),
                 korrelasjonID = korrid
-            )
+        )
 
         dataModel.euxCaseID = checkForUpdateStatus(euxCaseId, data.getSEDid())
         return dataModel

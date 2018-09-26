@@ -21,7 +21,7 @@ class RinaActions(private val euxService: EuxService) {
     val update = "Update"
 
     fun canUpdate(sed: String, rinanr: String) : Boolean {
-        return isActionPossible(sed, rinanr, update, 1)
+        return isActionPossible(sed, rinanr, update, 5)
     }
     fun canCreate(sed: String, rinanr: String) : Boolean {
         return isActionPossible(sed, rinanr, create,  5)
