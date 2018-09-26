@@ -4,8 +4,8 @@
 ## - OPENAM_SECRET
 
 euxbasis.v1:
-#  url: 'https://eux-app.nais.preprod.local/cpi'
-  url: 'http://localhost:9090/cpi'
+  url: 'https://eux-app.nais.preprod.local/cpi'
+#  url: 'http://localhost:9090/cpi'
 
 virksomhet.person.v3:
   endpointurl: 'https://wasapp-t7.adeo.no/tpsws/ws/Person/v3'  # maskert-data
@@ -14,10 +14,9 @@ virksomhet.person.v3:
 aktoerregister.api.v1:
   url: 'https://app-t8.adeo.no/aktoerregister/api/v1'
 
-credentials:
-  srveessipensjon:
-    username: '${SRVEESSIPENSJON_USERNAME}'
-    password: '${SRVEESSIPENSJON_PASSWORD}'
+srveessipensjon:
+  username: '${SRVEESSIPENSJON_USERNAME}'
+  password: '${SRVEESSIPENSJON_PASSWORD}'
 
 app:
   name: 'DEVELOP'
@@ -32,7 +31,7 @@ server:
 no.nav.security.oidc:
   issuer.oidc:
     discoveryurl: 'https://isso-t.adeo.no:443/isso/oauth2/.well-known/openid-configuration'
-    accepted_audience: 'eessi-fagmodul-localhost,eessi-fagmodul-t8,freg-token-provider-t0,eessi-fagmodul-frontend-t8'
+    accepted_audience: 'eessi-fagmodul-localhost,eessi-fagmodul-t8,freg-token-provider-t0,eessi-pensjon-frontend-api-t8'
 
 http.proxy.parametername:
 

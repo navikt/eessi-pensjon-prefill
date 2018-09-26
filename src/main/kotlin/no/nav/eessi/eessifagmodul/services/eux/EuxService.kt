@@ -179,7 +179,7 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
         val builder = UriComponentsBuilder.fromPath("/OpprettBuCogSED")
                 .queryParam("BuCType", bucType)
                 .queryParam("FagSakNummer", fagSaknr)
-                .queryParam("MottagerID", mottaker)
+                .queryParam("MottakerID", mottaker)
                 .queryParam("Filtype", vedleggType)
                 .queryParam("KorrelasjonsID", korrelasjonID)
 
