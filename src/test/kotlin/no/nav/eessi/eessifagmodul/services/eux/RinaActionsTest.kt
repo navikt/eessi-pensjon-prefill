@@ -33,25 +33,25 @@ class RinaActionsTest {
     private fun mockNotValidData(): List<RINAaksjoner> {
         return listOf(
                 RINAaksjoner(
-                    navn = "Read",
-                    id = "123123123123",
-                    kategori = "Documents",
-                    dokumentType = "P2000",
-                    dokumentId = "23123123"
+                        navn = "Read",
+                        id = "123123123123",
+                        kategori = "Documents",
+                        dokumentType = "P2000",
+                        dokumentId = "23123123"
                 ),
                 RINAaksjoner(
-                    navn = "Send",
-                    id = "123123123123",
-                    kategori = "Documents",
-                    dokumentType = "P3000",
-                    dokumentId = "23123123"
+                        navn = "Send",
+                        id = "123123123123",
+                        kategori = "Documents",
+                        dokumentType = "P3000",
+                        dokumentId = "23123123"
                 ),
                 RINAaksjoner(
-                    navn = "Delete",
-                    id = "123123123123",
-                    kategori = "Documents",
-                    dokumentType = "P3000",
-                    dokumentId = "23123123"
+                        navn = "Delete",
+                        id = "123123123123",
+                        kategori = "Documents",
+                        dokumentType = "P3000",
+                        dokumentId = "23123123"
                 ),
                 RINAaksjoner(
                         navn = "Read",
@@ -100,10 +100,7 @@ class RinaActionsTest {
         val response = mockNotValidData()
         val finalResponse = mockValidData("Update")
 
-        whenever(mockEuxService.getPossibleActions (ArgumentMatchers.anyString()))
-                .thenReturn(response)
-                .thenReturn(response)
-                .thenReturn(response)
+        whenever(mockEuxService.getPossibleActions(ArgumentMatchers.anyString()))
                 .thenReturn(finalResponse)
 
         val result = rinaActions.canUpdate("P2000", "92223424234")
@@ -113,7 +110,7 @@ class RinaActionsTest {
     @Test
     fun `check canUpdate actions not found`() {
         val response = mockNotValidData()
-        whenever(mockEuxService.getPossibleActions (ArgumentMatchers.anyString()))
+        whenever(mockEuxService.getPossibleActions(ArgumentMatchers.anyString()))
                 .thenReturn(response)
 
         val result = rinaActions.canUpdate("P2000", "92223424234")
@@ -124,7 +121,7 @@ class RinaActionsTest {
     fun `check canUpdate actions valid at once`() {
         val finalResponse = mockValidData("Update")
 
-        whenever(mockEuxService.getPossibleActions (ArgumentMatchers.anyString()))
+        whenever(mockEuxService.getPossibleActions(ArgumentMatchers.anyString()))
                 .thenReturn(finalResponse)
 
         val result = rinaActions.canUpdate("P2000", "92223424234")
@@ -135,7 +132,7 @@ class RinaActionsTest {
     fun `check canCreate action can not create`() {
         val response = mockNotValidData()
 
-        whenever(mockEuxService.getPossibleActions (ArgumentMatchers.anyString()))
+        whenever(mockEuxService.getPossibleActions(ArgumentMatchers.anyString()))
                 .thenReturn(response)
         val result = rinaActions.canCreate("P2000", "92223424234")
         assertEquals(false, result)
@@ -145,7 +142,7 @@ class RinaActionsTest {
     fun `check canCreate actions can create selected SED`() {
         val response = mockValidData("Create")
 
-        whenever(mockEuxService.getPossibleActions (ArgumentMatchers.anyString()))
+        whenever(mockEuxService.getPossibleActions(ArgumentMatchers.anyString()))
                 .thenReturn(response)
         val result = rinaActions.canCreate("P2000", "92223424234")
         assertEquals(true, result)
