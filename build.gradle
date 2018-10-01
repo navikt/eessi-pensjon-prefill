@@ -106,23 +106,31 @@ dependencies {
     jaxb 'org.glassfish.jaxb:jaxb-runtime:2.2.11'
 }
 
-task copyXsdFromArtifacts(type: Copy) {
+ext.schemasDir = "${projectDir}/src/main/resources/schemas"
+ext.pensjonsinformasjonDir = "${schemasDir}/${configurations.xsd.dependencies[0].name}_${configurations.xsd.dependencies[0].version}"
+
+task copyPensjonsinformasjonXsdsFromArtifacts(type: Copy) {
     includeEmptyDirs = false
     from {
         configurations.xsd.asFileTree.forEach { artifact ->
             from zipTree(artifact)
         }
     }
-    into "${projectDir}/src/main/resources/schemas/"
-    include '**/*.xsd'
+    into "${pensjonsinformasjonDir}"
+    include '**/validation/*.xsd'
 }
 
 jaxb {
-    xsdDir = "${projectDir}/src/main/resources/schemas/pensjonsinformasjon/v1/validation"
+    xsdDir = schemasDir
 }
 
-xjc.dependsOn copyXsdFromArtifacts
+xjc.dependsOn copyPensjonsinformasjonXsdsFromArtifacts
+
 compileKotlin.dependsOn xjc
+
+clean.doFirst {
+    delete pensjonsinformasjonDir
+}
 
 sourceSets["main"].java.srcDir("${buildDir}/generated-sources/xjc")
 

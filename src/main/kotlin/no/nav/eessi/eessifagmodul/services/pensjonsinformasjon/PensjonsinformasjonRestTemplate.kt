@@ -13,11 +13,11 @@ import org.springframework.web.client.RestTemplate
 
 @Component
 class PensjonsinformasjonRestTemplate(val oidcRequestContextHolder: OIDCRequestContextHolder) {
-    @Value("\${pensjonsinformasjon.api.v1.url")
+    @Value("\${pensjonsinformasjon.api.v1.url:http://temp")
     lateinit var url: String
 
     @Bean
-    fun pensjonsinformasjonRestTemplate(templateBuilder: RestTemplateBuilder): RestTemplate {
+    fun pensjonsinformasjonOidcRestTemplate(templateBuilder: RestTemplateBuilder): RestTemplate {
         return templateBuilder
                 .rootUri(url)
                 .additionalInterceptors(RequestResponseLoggerInterceptor(), OidcAuthorizationHeaderInterceptor(oidcRequestContextHolder))

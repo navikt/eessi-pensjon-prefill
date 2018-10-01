@@ -1,6 +1,5 @@
-package no.nav.eessi.eessifagmodul.services.pensjonsinformasjon.requesttransformer
+package no.nav.eessi.eessifagmodul.services.pensjonsinformasjon
 
-import no.nav.eessi.eessifagmodul.services.pensjonsinformasjon.InformasjonsType
 import org.springframework.stereotype.Component
 import org.w3c.dom.Document
 import org.w3c.dom.Element
