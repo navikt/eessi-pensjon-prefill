@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        kotlinVersion = '1.2.61'
+        kotlinVersion = '1.2.71'
         springBootVersion = '2.0.4.RELEASE'
         springSecurityVersion = '5.0.5.RELEASE'
         prometheusVersion = '0.5.0'
@@ -16,11 +16,15 @@ buildscript {
         maven {
             url "https://repo.adeo.no/repository/maven-central"
         }
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlinVersion}")
         classpath("org.jetbrains.kotlin:kotlin-allopen:${kotlinVersion}")
+        classpath("gradle.plugin.org.openrepose:gradle-jaxb-plugin:2.5.0")
     }
 }
 
@@ -28,6 +32,7 @@ apply plugin: 'kotlin'
 apply plugin: 'kotlin-spring'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
+apply plugin: 'org.openrepose.gradle.plugins.jaxb'
 
 group = 'no.nav.eessi'
 version = '0.0.1'
@@ -47,6 +52,10 @@ compileTestKotlin {
 }
 jar {
     baseName = 'eessi-fagmodul'
+}
+
+configurations {
+    xsd
 }
 
 dependencies {
@@ -90,7 +99,40 @@ dependencies {
 
     // Tjenestespesifikasjoner
     compile("no.nav.tjenester:nav-person-v3-tjenestespesifikasjon:${personV3Version}")
+    xsd("no.nav.pensjon:pensjonsinformasjon-xsd:9.3.9")
+    compile("no.nav.pensjon:pensjonsinformasjon-xsd:9.3.9")
+
+    jaxb 'org.glassfish.jaxb:jaxb-xjc:2.2.11'
+    jaxb 'org.glassfish.jaxb:jaxb-runtime:2.2.11'
 }
+
+ext.schemasDir = "${projectDir}/src/main/resources/schemas"
+ext.pensjonsinformasjonDir = "${schemasDir}/${configurations.xsd.dependencies[0].name}_${configurations.xsd.dependencies[0].version}"
+
+task copyPensjonsinformasjonXsdsFromArtifacts(type: Copy) {
+    includeEmptyDirs = false
+    from {
+        configurations.xsd.asFileTree.forEach { artifact ->
+            from zipTree(artifact)
+        }
+    }
+    into "${pensjonsinformasjonDir}"
+    include '**/validation/*.xsd'
+}
+
+jaxb {
+    xsdDir = schemasDir
+}
+
+xjc.dependsOn copyPensjonsinformasjonXsdsFromArtifacts
+
+compileKotlin.dependsOn xjc
+
+clean.doFirst {
+    delete pensjonsinformasjonDir
+}
+
+sourceSets["main"].java.srcDir("${buildDir}/generated-sources/xjc")
 
 repositories {
     maven {

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema
+        attributeFormDefault="unqualified"
+        elementFormDefault="qualified"
+        targetNamespace="http://nav.no/eessi/sed/v1/PX000"
+        xmlns="http://nav.no/eessi/sed/v1/PX000"
+        xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="pensjonsinformasjon" type="Pensjonsinformasjon"/>
+    <xs:complexType name="Pensjonsinformasjon">
+        <xs:all>
+        </xs:all>
+    </xs:complexType>
+</xs:schema>
