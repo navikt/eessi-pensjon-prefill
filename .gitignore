@@ -25,3 +25,7 @@ nbbuild/
 dist/
 nbdist/
 .nb-gradle/
+
+### JAXB & XSD generation related files ###
+classes/
+src/main/resources/schemas/pensjonsinformasjon-xsd_*
