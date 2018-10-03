@@ -99,15 +99,15 @@ dependencies {
 
     // Tjenestespesifikasjoner
     compile("no.nav.tjenester:nav-person-v3-tjenestespesifikasjon:${personV3Version}")
-    xsd("no.nav.pensjon:pensjonsinformasjon-xsd:9.3.9")
-    compile("no.nav.pensjon:pensjonsinformasjon-xsd:9.3.9")
+//    compile("no.nav.pensjon:pensjonsinformasjon-xsd:9.4.3")
+    xsd("no.nav.pensjon:pensjonsinformasjon-xsd:9.4.3")
 
     jaxb 'org.glassfish.jaxb:jaxb-xjc:2.2.11'
     jaxb 'org.glassfish.jaxb:jaxb-runtime:2.2.11'
 }
 
 ext.schemasDir = "${projectDir}/src/main/resources/schemas"
-ext.pensjonsinformasjonDir = "${schemasDir}/${configurations.xsd.dependencies[0].name}_${configurations.xsd.dependencies[0].version}"
+ext.pensjonsinformasjonDir = "${schemasDir}/${configurations.xsd.dependencies[0].name}"
 
 task copyPensjonsinformasjonXsdsFromArtifacts(type: Copy) {
     includeEmptyDirs = false
@@ -116,12 +116,13 @@ task copyPensjonsinformasjonXsdsFromArtifacts(type: Copy) {
             from zipTree(artifact)
         }
     }
-    into "${pensjonsinformasjonDir}"
-    include '**/validation/*.xsd'
+    println(schemasDir)
+    into pensjonsinformasjonDir
+    include '**/*.xsd'
 }
 
 jaxb {
-    xsdDir = schemasDir
+    xsdDir = pensjonsinformasjonDir
 }
 
 xjc.dependsOn copyPensjonsinformasjonXsdsFromArtifacts

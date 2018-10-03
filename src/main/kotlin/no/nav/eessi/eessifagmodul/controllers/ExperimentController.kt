@@ -5,6 +5,7 @@ import no.nav.eessi.eessifagmodul.models.*
 import no.nav.eessi.eessifagmodul.prefill.PrefillDataModel
 import no.nav.eessi.eessifagmodul.services.aktoerregister.AktoerregisterService
 import no.nav.eessi.eessifagmodul.services.eux.EuxService
+import no.nav.eessi.eessifagmodul.services.pensjonsinformasjon.PensjonsinformasjonService
 import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
 import no.nav.eessi.eessifagmodul.utils.mapJsonToAny
 import no.nav.eessi.eessifagmodul.utils.typeRefs
@@ -22,6 +23,9 @@ import java.util.*
 class ExperimentController {
 
     @Autowired
+    private lateinit var pensjonsinformasjonService: PensjonsinformasjonService
+
+    @Autowired
     private lateinit var personV3Service: PersonV3Service
 
     @Autowired
@@ -29,6 +33,12 @@ class ExperimentController {
 
     @Autowired
     private lateinit var aktoerregisterService: AktoerregisterService
+
+    @GetMapping("/testPensjonsinformasjon/{vedtaksId}")
+    fun testPensjonsinformasjon(@PathVariable("vedtaksId") vedtaksId: String): String {
+        val response = pensjonsinformasjonService.hentAlt(vedtaksId)
+        return response.toString()
+    }
 
     @GetMapping("/testAktoer/{ident}")
     fun testAktoer(@PathVariable("ident") ident: String): String {
