@@ -27,7 +27,7 @@ class RinaActionsTest {
         logger.debug("Starting tests.... ...")
         rinaActions = RinaActions(mockEuxService)
         rinaActions.waittime = "2"
-        println("watetime : ${rinaActions.waittime}")
+        println("waittime: ${rinaActions.waittime}")
     }
 
     private fun mockNotValidData(): List<RINAaksjoner> {
@@ -97,11 +97,10 @@ class RinaActionsTest {
 
     @Test
     fun `check canUpdate actions found at end`() {
-        val response = mockNotValidData()
+        //val response = mockNotValidData()
         val finalResponse = mockValidData("Update")
 
-        whenever(mockEuxService.getPossibleActions(ArgumentMatchers.anyString()))
-                .thenReturn(finalResponse)
+        whenever(mockEuxService.getPossibleActions(ArgumentMatchers.anyString())).thenReturn(finalResponse)
 
         val result = rinaActions.canUpdate("P2000", "92223424234")
         assertEquals(true, result)

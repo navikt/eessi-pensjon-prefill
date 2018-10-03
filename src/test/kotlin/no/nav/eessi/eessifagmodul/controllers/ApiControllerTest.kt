@@ -4,9 +4,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.whenever
 import no.nav.eessi.eessifagmodul.models.*
-import no.nav.eessi.eessifagmodul.prefill.PrefillDataModel
-import no.nav.eessi.eessifagmodul.prefill.PrefillPerson
-import no.nav.eessi.eessifagmodul.prefill.PrefillSED
+import no.nav.eessi.eessifagmodul.prefill.*
 import no.nav.eessi.eessifagmodul.services.LandkodeService
 import no.nav.eessi.eessifagmodul.services.PrefillService
 import no.nav.eessi.eessifagmodul.services.aktoerregister.AktoerregisterService
@@ -42,6 +40,14 @@ class ApiControllerTest {
     @Mock
     lateinit var mockPrefillService: PrefillService
 
+    @Mock
+    lateinit var pre2000: PrefillP2000
+    @Mock
+    lateinit var pre4000: PrefillP4000
+    @Mock
+    lateinit var pre6000: PrefillP6000
+    @Mock
+    lateinit var preDefault: PrefillDefaultSED
 
     private lateinit var mockPrefillSED: PrefillSED
     private lateinit var prefillDataMock: PrefillDataModel
@@ -50,7 +56,12 @@ class ApiControllerTest {
     @Before
     fun setUp() {
         prefillDataMock = PrefillDataModel()
-        mockPrefillSED = PrefillSED(mockPersonPreutfyll)
+
+        mockPrefillSED = PrefillSED()
+        mockPrefillSED.prefill2000 = pre2000
+        mockPrefillSED.prefill4000 = pre4000
+        mockPrefillSED.prefill6000 = pre6000
+        mockPrefillSED.prefillDefault = preDefault
 
         mockPrefillService = PrefillService(mockEuxService, mockPrefillSED, mockRinaActions)
 
@@ -94,25 +105,29 @@ class ApiControllerTest {
 
         val pinid = apiController.hentAktoerIdPin("0105094340092")
 
-        val utfyllMock = prefillDataMock.build(
-                subject = requestMock.subjectArea!!,
-                caseId = requestMock.caseId!!,
-                sedID = requestMock.sed!!,
-                aktoerID = requestMock.pinid!!,
-                pinID = pinid,
-                buc = requestMock.buc!!,
-                institutions = requestMock.institutions!!
-        )
+        val utfyllMock = prefillDataMock.apply {
+            rinaSubject = requestMock.subjectArea!!
+            penSaksnummer = requestMock.caseId!!
+            sed = createSED( requestMock.sed!!)
+            aktoerID = requestMock.pinid!!
+            personNr = pinid
+            buc = requestMock.buc!!
+            institution = requestMock.institutions!!
+        }
 
         assertNotNull(utfyllMock.personNr)
         assertEquals("12345", utfyllMock.personNr)
 
         whenever(mockRinaActions.canCreate(anyString(), anyString())).thenReturn(true)
+
         whenever(mockRinaActions.canUpdate(utfyllMock.getSEDid(), mockResponse)).thenReturn(true)
+
         whenever(mockPersonPreutfyll.prefill(any())).thenReturn(utfyllMock.sed)
+
         whenever(mockEuxService.createCaseAndDocument(anyString(), anyString(), anyString(), anyString(), anyString(), anyString())).thenReturn(mockResponse)
 
         val response = apiController.createDocument(requestMock)
+
         Assert.assertEquals("{\"euxcaseid\":\"$mockResponse\"}", response)
     }
 
@@ -133,32 +148,31 @@ class ApiControllerTest {
         whenever(mockAktoerregisterService.hentGjeldendeNorskIdentForAktorId(ArgumentMatchers.anyString())).thenReturn("12345")
         val pinid = apiController.hentAktoerIdPin("0105094340092")
 
+        val utfyllMock = prefillDataMock.apply {
+            rinaSubject = requestMock.subjectArea!!
+            penSaksnummer = requestMock.caseId!!
+            sed = createSED( requestMock.sed!! )
+            aktoerID = requestMock.pinid!!
+            personNr = pinid
+            buc = requestMock.buc!!
+            institution = requestMock.institutions!!
+        }
 
-        val utfyllMock = prefillDataMock.build(
-                subject = requestMock.subjectArea!!,
-                caseId = requestMock.caseId!!,
-                sedID = requestMock.sed!!,
-                aktoerID = requestMock.pinid!!,
-                pinID = pinid,
-                buc = requestMock.buc!!,
-                institutions = requestMock.institutions!!
-        )
         assertNotNull(utfyllMock.personNr)
         assertEquals("12345", utfyllMock.personNr)
 
-        val mockAksjonlist = listOf(
-                RINAaksjoner(
-                        navn = "Create",
-                        id = "123123343123",
-                        kategori = "Documents",
-                        dokumentType = "P6000",
-                        dokumentId = "213123123"
-                )
-        )
+//        val mockAksjonlist = listOf(
+//                RINAaksjoner(
+//                        navn = "Create",
+//                        id = "123123343123",
+//                        kategori = "Documents",
+//                        dokumentType = "P6000",
+//                        dokumentId = "213123123"
+//                )
+//        )
 
         whenever(mockPersonPreutfyll.prefill(any())).thenReturn(utfyllMock.sed)
         whenever(mockEuxService.createCaseAndDocument(anyString(), anyString(), anyString(), anyString(), anyString(), anyString())).thenReturn(mockResponse)
-
 
         apiController.createDocument(requestMock)
     }
@@ -178,15 +192,16 @@ class ApiControllerTest {
         val pinid = apiController.hentAktoerIdPin("0105094340092")
 
         val items = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
-        val utfyllMock = prefillDataMock.build(
-                subject = "Pensjon",
-                caseId = "EESSI-PEN-123",
-                sedID = "P6000",
-                aktoerID = "0105094340092",
-                pinID = pinid,
-                buc = "P_BUC_06",
-                institutions = items
-        )
+        val utfyllMock = prefillDataMock.apply {
+            rinaSubject = "Pensjon"
+            penSaksnummer = "EESSI-PEN-123"
+            sed = createSED("P6000")
+            aktoerID = "0105094340092"
+            personNr = pinid
+            buc = "P_BUC_06"
+            institution = items
+        }
+
         utfyllMock.sed.nav = Nav(bruker = Bruker(person = Person(fornavn = "Dummy", etternavn = "Dummy")))
 
         whenever(mockPersonPreutfyll.prefill(any())).thenReturn(utfyllMock.sed)

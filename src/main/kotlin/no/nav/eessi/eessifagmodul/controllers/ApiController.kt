@@ -13,10 +13,7 @@ import no.nav.eessi.eessifagmodul.services.PrefillService
 import no.nav.eessi.eessifagmodul.services.aktoerregister.AktoerregisterException
 import no.nav.eessi.eessifagmodul.services.aktoerregister.AktoerregisterService
 import no.nav.eessi.eessifagmodul.services.eux.EuxService
-import no.nav.eessi.eessifagmodul.utils.P4000_SED
-import no.nav.eessi.eessifagmodul.utils.STANDARD_SED
-import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
-import no.nav.eessi.eessifagmodul.utils.validsed
+import no.nav.eessi.eessifagmodul.utils.*
 import no.nav.security.oidc.api.Protected
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -71,18 +68,21 @@ class ApiController(private val euxService: EuxService, private val prefillServi
     @ApiOperation("viser en oppsumering av SED prefill. Før innsending til EUX Basis")
     @PostMapping("/sed/confirm")
     fun confirmDocument(@RequestBody request: ApiRequest): SED {
-        return prefillService.prefillSed(buildPrefillDataModel(request)).sed
+
+        return prefillService.prefillSed( buildPrefillDataModel(request) ).sed
+
     }
 
     @ApiOperation("sendSed send current sed")
     @PostMapping("/sed/send")
     fun sendSed(@RequestBody request: ApiRequest): Boolean {
+
         val euxCaseId = request.euxCaseId ?: throw IkkeGyldigKallException("Mangler euxCaseID (RINANR)")
         val sed =  request.sed ?: throw IkkeGyldigKallException("Mangler SED")
         val korrid = UUID.randomUUID().toString()
         return  euxService.sendSED(euxCaseId, sed, korrid)
-    }
 
+    }
 
     @ApiOperation("henter ut en SED fra et eksisterende Rina document. krever unik dokumentid fra valgt SED")
     @GetMapping("/sed/get/{rinanr}/{documentid}")
@@ -102,6 +102,7 @@ class ApiController(private val euxService: EuxService, private val prefillServi
     @ApiOperation("legge til SED på et eksisterende Rina document. kjører preutfylling")
     @PostMapping("/sed/add")
     fun addDocument(@RequestBody request: ApiRequest): String {
+
         return prefillService.prefillAndAddSedOnExistingCase(
                 buildPrefillDataModel(request).apply {
                     euxCaseID = request.euxCaseId ?: throw IkkeGyldigKallException("Mangler euCaseId (RINAnr)")
@@ -142,7 +143,7 @@ class ApiController(private val euxService: EuxService, private val prefillServi
                 }
             }
         //denne validering og utfylling kan kun benyttes på SED P4000
-            validsed(request.sed, P4000_SED) -> {
+            validSedEnum(request.sed, ENUM_SED.P4000) -> {
                 if (request.payload == null) { throw IkkeGyldigKallException("Mangler metadata, payload") }
                 if (request.euxCaseId == null) { throw IkkeGyldigKallException("Mangler euxCaseId (RINANR)") }
                 val pinid = hentAktoerIdPin(request.pinid)

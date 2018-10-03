@@ -4,9 +4,7 @@ import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.whenever
 import no.nav.eessi.eessifagmodul.services.aktoerregister.AktoerregisterService
 import no.nav.eessi.eessifagmodul.controllers.ApiController
-import no.nav.eessi.eessifagmodul.prefill.PrefillDataModel
-import no.nav.eessi.eessifagmodul.prefill.PrefillPerson
-import no.nav.eessi.eessifagmodul.prefill.PrefillSED
+import no.nav.eessi.eessifagmodul.prefill.*
 import no.nav.eessi.eessifagmodul.services.PrefillService
 import no.nav.eessi.eessifagmodul.services.eux.EuxService
 import no.nav.eessi.eessifagmodul.services.eux.RinaActions
@@ -36,13 +34,13 @@ class SedP4000Test {
     lateinit var mockEuxService: EuxService
 
     @Mock
-    lateinit var mockPersonPreutfyll: PrefillPerson
-
-    @Mock
     private lateinit var mockAktoerregisterService: AktoerregisterService
 
     @Mock
     lateinit var mockPrefillService: PrefillService
+
+    @Mock
+    lateinit var pre4000: PrefillP4000
 
     private lateinit var prefillDataMock: PrefillDataModel
 
@@ -52,13 +50,17 @@ class SedP4000Test {
 
     private lateinit var mockPrefillSED: PrefillSED
 
+
     val logger: Logger by lazy { LoggerFactory.getLogger(SedP4000Test::class.java) }
 
     @Before
     fun setup() {
         prefillDataMock = PrefillDataModel()
         rinaActions =  RinaActions(mockEuxService)
-        mockPrefillSED = PrefillSED(mockPersonPreutfyll)
+
+        mockPrefillSED = PrefillSED()
+        mockPrefillSED.prefill4000 = pre4000
+
         mockPrefillService = PrefillService(mockEuxService, mockPrefillSED, rinaActions)
         apiController = ApiController(mockEuxService, mockPrefillService, mockAktoerregisterService)
         logger.debug("Starting tests.... ...")
@@ -189,13 +191,9 @@ class SedP4000Test {
         assertNotNull(data)
         assertEquals("12345", data.personNr)
 
-        whenever(mockPersonPreutfyll.prefill(any() )).thenReturn(data.sed)
-
+        //whenever(mockPersonPreutfyll.prefill(any() )).thenReturn(data.sed)
         val result = mockPrefillService.prefillSed(data)
-        //val result = apiController.createPreutfyltSED(data)
-
         assertNotNull(result)
-
         val jsondata = mapAnyToJson(result.sed, true)
         assertNotNull(jsondata)
     }

@@ -3,6 +3,7 @@ package no.nav.eessi.eessifagmodul.prefill
 import no.nav.eessi.eessifagmodul.models.InstitusjonItem
 import no.nav.eessi.eessifagmodul.models.SED
 import no.nav.eessi.eessifagmodul.models.createSED
+import java.util.*
 
 /**
  * Data class to store different required data to build any given sed, auto or semiauto.
@@ -18,6 +19,8 @@ class PrefillDataModel {
     lateinit var penSaksnummer: String
     lateinit var vedtakId: String
     lateinit var karavId: String
+
+    lateinit var virkningstidspunkt: Calendar
 
     //aktoearid og pinid for person
     lateinit var personNr: String

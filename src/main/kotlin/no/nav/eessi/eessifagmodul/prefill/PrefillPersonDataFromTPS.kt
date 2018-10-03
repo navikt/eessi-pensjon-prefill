@@ -6,11 +6,13 @@ import no.nav.eessi.eessifagmodul.models.Person
 import no.nav.eessi.eessifagmodul.services.LandkodeService
 import no.nav.eessi.eessifagmodul.services.PostnummerService
 import no.nav.eessi.eessifagmodul.services.personv3.PersonV3Service
+import no.nav.eessi.eessifagmodul.utils.simpleFormat
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.*
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import java.text.SimpleDateFormat
+import java.util.*
 import javax.xml.datatype.XMLGregorianCalendar
 
 @Component
@@ -55,6 +57,8 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
     fun prefillBruker(ident: String): Bruker {
         val brukerTPS = hentBrukerTPS(ident)
         setPersonStatus(hentPersonStatus(brukerTPS))
+
+
         val bruker = Bruker(
                 far = Foreldre(person = hentRelasjon(RelasjonEnum.FAR, brukerTPS)),
                 mor = Foreldre(person = hentRelasjon(RelasjonEnum.MOR, brukerTPS)),
@@ -100,13 +104,13 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
     //fdato i rinaformat
     private fun datoFormat(person: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): String? {
         val fdato = person.foedselsdato
-        return if (fdato == null) null else standardDatoformat(fdato.foedselsdato)
+        return fdato?.foedselsdato?.simpleFormat()
     }
 
     //doddato i rina
     private fun dodDatoFormat(person: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): String? {
         val doddato = person.doedsdato
-        return if (doddato == null) null else standardDatoformat(doddato.doedsdato)
+        return doddato?.doedsdato?.simpleFormat()
     }
 
     fun hentFodested(bruker: no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker): Foedested {
@@ -119,7 +123,6 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
         if (fsted.land == "Unknown") {
             return Foedested()
         }
-
         return fsted
     }
 
@@ -171,6 +174,7 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
         //val statsborgerskap = brukerTps.statsborgerskap as Statsborgerskap
         val kjonn = brukerTps.kjoenn
 
+
         val person = Person(
                 pin = hentPersonPinNorIdent(brukerTps),
                 fornavnvedfoedsel = navn.fornavn,
@@ -205,7 +209,8 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
     private fun hentSivilstand(brukerTps: no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker): List<SivilstandItem> {
         val sivilstand = brukerTps.sivilstand as Sivilstand
         val sivil = SivilstandItem(
-                fradato = standardDatoformat(sivilstand.fomGyldighetsperiode),
+                //fradato = standardDatoformat(sivilstand.fomGyldighetsperiode),
+                fradato = sivilstand.fomGyldighetsperiode.simpleFormat(),
                 status = sivilstand.sivilstand.value
         )
         return listOf(sivil)

@@ -1,5 +1,6 @@
 package no.nav.eessi.eessifagmodul.services.pensjonsinformasjon
 
+import no.nav.eessi.sed.v1.px000.Pensjonsinformasjon
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.util.ResourceUtils
@@ -12,7 +13,7 @@ private val logger = LoggerFactory.getLogger(PensjonsinformasjonService::class.j
 @Service
 class PensjonsinformasjonService(val pensjonsinformasjonOidcRestTemplate: RestTemplate, val requestTransformer: RequestBuilder) {
 
-    fun hentAlt(saksId: String) {
+    fun hentAlt(saksId: String): Pensjonsinformasjon {
         val document = getBaseDocument()
         requestTransformer.addPensjonsinformasjonElement(document, InformasjonsType.AVDOD)
         requestTransformer.addPensjonsinformasjonElement(document, InformasjonsType.INNGANG_OG_EXPORT)
@@ -27,6 +28,7 @@ class PensjonsinformasjonService(val pensjonsinformasjonOidcRestTemplate: RestTe
         requestTransformer.addPensjonsinformasjonElement(document, InformasjonsType.VILKARSVURDERING_LISTE)
         requestTransformer.addPensjonsinformasjonElement(document, InformasjonsType.YTELSE_PR_MAANED_LISTE)
         logger.debug("\n" + documentToString(document))
+        return Pensjonsinformasjon()
     }
 
     private fun getBaseDocument(): Document {

@@ -6,6 +6,10 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.web.client.RestClientException
+import java.text.SimpleDateFormat
+import javax.xml.datatype.XMLGregorianCalendar
+
+private val dateformat = "YYYY-MM-dd"
 
 inline fun <reified T : Any> typeRef(): ParameterizedTypeReference<T> = object : ParameterizedTypeReference<T>() {}
 inline fun <reified T : Any> typeRefs(): TypeReference<T> = object : TypeReference<T>() {}
@@ -51,10 +55,31 @@ fun validateJson(json: String) : Boolean {
     }
 }
 
-val STANDARD_SED = "P2000,P2100,P2200,P6000,P5000"
-val P4000_SED = "P4000"
+
+enum class ENUM_SED(val sed: String) {
+    P2000("P2000"),
+    P4000("P4000"),
+    P6000("P6000"),
+    P2100("P2100"),
+    P5000("P5000"),
+    P2200("P6000");
+}
+
+val STANDARD_SED = "P2100,P2200,P5000,${ENUM_SED.P6000.sed},${ENUM_SED.P2000.sed}"
+//val P4000_SED = "P4000"
+
+fun validSedEnum(sed: String, enum: ENUM_SED) : Boolean {
+    val validsed = enum.sed
+    return sed === validsed
+}
+
 
 fun validsed(sed: String, validsed: String) : Boolean {
     val result: List<String> = validsed.split(",").map { it.trim() }
     return result.contains(sed)
 }
+
+fun XMLGregorianCalendar.simpleFormat(): String {
+    return SimpleDateFormat(dateformat).format(this.toGregorianCalendar().time)
+}
+

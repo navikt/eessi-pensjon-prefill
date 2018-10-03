@@ -51,6 +51,7 @@ class PrefillService(private val euxService: EuxService, private val prefillSED:
         )
 
         dataModel.euxCaseID = checkForUpdateStatus(euxCaseId, data.getSEDid())
+
         return dataModel
     }
 

@@ -5,10 +5,7 @@ import com.nhaarman.mockito_kotlin.whenever
 import no.nav.eessi.eessifagmodul.models.InstitusjonItem
 import no.nav.eessi.eessifagmodul.models.SedMock
 import no.nav.eessi.eessifagmodul.models.createSED
-import no.nav.eessi.eessifagmodul.prefill.PrefillDataModel
-import no.nav.eessi.eessifagmodul.prefill.PrefillNav
-import no.nav.eessi.eessifagmodul.prefill.PrefillPerson
-import no.nav.eessi.eessifagmodul.prefill.PrefillSED
+import no.nav.eessi.eessifagmodul.prefill.*
 import no.nav.eessi.eessifagmodul.services.eux.EuxService
 import no.nav.eessi.eessifagmodul.services.eux.RinaActions
 import org.junit.Before
@@ -16,6 +13,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
+import org.springframework.beans.factory.annotation.Autowired
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
@@ -32,6 +30,15 @@ class PrefillServiceTest {
     @Mock
     lateinit var mockPrefillPerson: PrefillPerson
 
+    @Mock
+    lateinit var pre2000: PrefillP2000
+    @Mock
+    lateinit var pre4000: PrefillP4000
+    @Mock
+    lateinit var pre6000: PrefillP6000
+    @Mock
+    lateinit var preDefault: PrefillDefaultSED
+
     lateinit var mockPrefillSED: PrefillSED
 
     lateinit var mockPrefillDataModel: PrefillDataModel
@@ -43,7 +50,13 @@ class PrefillServiceTest {
     fun `startup initilize testing`() {
         mockPrefillDataModel = PrefillDataModel()
 
-        mockPrefillSED = PrefillSED(mockPrefillPerson)
+        pre2000 = PrefillP2000(mockPrefillPerson)
+
+        mockPrefillSED = PrefillSED()
+        mockPrefillSED.prefill2000 = pre2000
+        mockPrefillSED.prefill4000 = pre4000
+        mockPrefillSED.prefill6000 = pre6000
+        mockPrefillSED.prefillDefault = preDefault
 
         prefillService = PrefillService(mockEuxService, mockPrefillSED, mockRinaActions)
 

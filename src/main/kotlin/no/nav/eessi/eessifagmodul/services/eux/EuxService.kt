@@ -56,6 +56,10 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
         throw IkkeGyldigKallException("Ingen gyldig dokumentID funnet")
     }
 
+    //TODO: euxBasis hva finnes av metoder for:
+    //TODO: euxBasis metode for å legge til flere mottakere (Institusjoner)
+    //TODO: euxBasis metode for å fjenre en eller flere mottakere (Institusjoner)
+
     /**
      * call to send sed on rina document.
      *
