@@ -9,8 +9,6 @@ import org.springframework.web.client.RestClientException
 import java.text.SimpleDateFormat
 import javax.xml.datatype.XMLGregorianCalendar
 
-private val dateformat = "YYYY-MM-dd"
-
 inline fun <reified T : Any> typeRef(): ParameterizedTypeReference<T> = object : ParameterizedTypeReference<T>() {}
 inline fun <reified T : Any> typeRefs(): TypeReference<T> = object : TypeReference<T>() {}
 inline fun <reified T : Any> mapJsonToAny(json: String, objec : TypeReference<T>, failonunknown: Boolean = false): T {
@@ -56,23 +54,30 @@ fun validateJson(json: String) : Boolean {
 }
 
 
-enum class ENUM_SED(val sed: String) {
+enum class SedEnum (val sed: String) {
     P2000("P2000"),
+    P2100("P2100"),
+    P2200("P2200"),
     P4000("P4000"),
     P6000("P6000"),
-    P2100("P2100"),
     P5000("P5000"),
-    P2200("P6000");
+    P7000("P7000");
+    fun valid(sed: String): Boolean {
+        return sed == this.sed
+    }
 }
 
-val STANDARD_SED = "P2100,P2200,P5000,${ENUM_SED.P6000.sed},${ENUM_SED.P2000.sed}"
-//val P4000_SED = "P4000"
+//andre sed..
+val STANDARD_SED = sedEnumToString()
 
-fun validSedEnum(sed: String, enum: ENUM_SED) : Boolean {
-    val validsed = enum.sed
-    return sed === validsed
+fun sedEnumToString(): String {
+    val strb = StringBuilder()
+    SedEnum.values().toList().forEach {
+        strb.append(it.sed).append(",")
+    }
+    strb.deleteCharAt(strb.length-1)
+    return strb.toString()
 }
-
 
 fun validsed(sed: String, validsed: String) : Boolean {
     val result: List<String> = validsed.split(",").map { it.trim() }
@@ -80,6 +85,6 @@ fun validsed(sed: String, validsed: String) : Boolean {
 }
 
 fun XMLGregorianCalendar.simpleFormat(): String {
-    return SimpleDateFormat(dateformat).format(this.toGregorianCalendar().time)
+    return SimpleDateFormat("YYYY-MM-dd").format(this.toGregorianCalendar().time)
 }
 

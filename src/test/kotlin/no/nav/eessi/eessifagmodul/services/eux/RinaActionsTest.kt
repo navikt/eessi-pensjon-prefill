@@ -94,6 +94,20 @@ class RinaActionsTest {
         return aksjonlist
     }
 
+    private fun mockValidDataAtOnce(navn: String): List<RINAaksjoner> {
+        val aksjonlist: MutableList<RINAaksjoner> = mutableListOf()
+        aksjonlist.add(
+                RINAaksjoner(
+                        navn = navn,
+                        id = "123123123123",
+                        kategori = "Documents",
+                        dokumentType = "P2000",
+                        dokumentId = "23123123"
+                )
+        )
+        return aksjonlist
+    }
+
 
     @Test
     fun `check canUpdate actions found at end`() {
@@ -118,7 +132,7 @@ class RinaActionsTest {
 
     @Test
     fun `check canUpdate actions valid at once`() {
-        val finalResponse = mockValidData("Update")
+        val finalResponse = mockValidDataAtOnce("Update")
 
         whenever(mockEuxService.getPossibleActions(ArgumentMatchers.anyString()))
                 .thenReturn(finalResponse)
@@ -146,5 +160,16 @@ class RinaActionsTest {
         val result = rinaActions.canCreate("P2000", "92223424234")
         assertEquals(true, result)
     }
+
+    @Test
+    fun `check canCreate actions can create selected SED at once`() {
+        val response = mockValidDataAtOnce("Create")
+
+        whenever(mockEuxService.getPossibleActions(ArgumentMatchers.anyString()))
+                .thenReturn(response)
+        val result = rinaActions.canCreate("P2000", "92223424234")
+        assertEquals(true, result)
+    }
+
 
 }

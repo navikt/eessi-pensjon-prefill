@@ -2,8 +2,6 @@ package no.nav.eessi.eessifagmodul.prefill
 
 import no.nav.eessi.eessifagmodul.models.InstitusjonItem
 import no.nav.eessi.eessifagmodul.models.SED
-import no.nav.eessi.eessifagmodul.models.createSED
-import java.util.*
 
 /**
  * Data class to store different required data to build any given sed, auto or semiauto.
@@ -19,8 +17,6 @@ class PrefillDataModel {
     lateinit var penSaksnummer: String
     lateinit var vedtakId: String
     lateinit var karavId: String
-
-    lateinit var virkningstidspunkt: Calendar
 
     //aktoearid og pinid for person
     lateinit var personNr: String
@@ -39,30 +35,6 @@ class PrefillDataModel {
 
     //div payload seddata json
     val partSedasJson: MutableMap<String, String> = mutableMapOf()
-
-    fun build(subject: String, caseId: String, buc: String, sedID: String, aktoerID: String, pinID: String, institutions: List<InstitusjonItem>, payload: String, euxcaseId: String): PrefillDataModel {
-        this.rinaSubject =  subject
-        this.penSaksnummer = caseId
-        this.buc = buc
-        this.aktoerID = aktoerID
-        this.sed = createSED(sedID)
-        this.institution = institutions
-        this.partSedasJson.put(sedID, payload)
-        this.euxCaseID = euxcaseId
-        this.personNr = pinID
-        return this
-    }
-
-    fun build(subject: String, caseId: String, buc: String, sedID: String, aktoerID: String,pinID: String, institutions: List<InstitusjonItem>): PrefillDataModel {
-        this.rinaSubject =  subject
-        this.penSaksnummer = caseId
-        this.buc = buc
-        this.aktoerID = aktoerID
-        this.sed = createSED(sedID)
-        this.institution = institutions
-        this.personNr = pinID
-        return this
-    }
 
     fun getSEDid(): String {
         return sed.sed!!

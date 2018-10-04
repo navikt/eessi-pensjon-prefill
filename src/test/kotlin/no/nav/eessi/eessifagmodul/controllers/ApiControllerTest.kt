@@ -43,6 +43,10 @@ class ApiControllerTest {
     @Mock
     lateinit var pre2000: PrefillP2000
     @Mock
+    lateinit var pre2100: PrefillP2100
+    @Mock
+    lateinit var pre2200: PrefillP2200
+    @Mock
     lateinit var pre4000: PrefillP4000
     @Mock
     lateinit var pre6000: PrefillP6000
@@ -59,6 +63,8 @@ class ApiControllerTest {
 
         mockPrefillSED = PrefillSED()
         mockPrefillSED.prefill2000 = pre2000
+        mockPrefillSED.prefill2100 = pre2100
+        mockPrefillSED.prefill2200 = pre2200
         mockPrefillSED.prefill4000 = pre4000
         mockPrefillSED.prefill6000 = pre6000
         mockPrefillSED.prefillDefault = preDefault
@@ -161,18 +167,9 @@ class ApiControllerTest {
         assertNotNull(utfyllMock.personNr)
         assertEquals("12345", utfyllMock.personNr)
 
-//        val mockAksjonlist = listOf(
-//                RINAaksjoner(
-//                        navn = "Create",
-//                        id = "123123343123",
-//                        kategori = "Documents",
-//                        dokumentType = "P6000",
-//                        dokumentId = "213123123"
-//                )
-//        )
-
         whenever(mockPersonPreutfyll.prefill(any())).thenReturn(utfyllMock.sed)
         whenever(mockEuxService.createCaseAndDocument(anyString(), anyString(), anyString(), anyString(), anyString(), anyString())).thenReturn(mockResponse)
+        whenever(mockRinaActions.canUpdate(anyString(), anyString())).thenReturn(false)
 
         apiController.createDocument(requestMock)
     }

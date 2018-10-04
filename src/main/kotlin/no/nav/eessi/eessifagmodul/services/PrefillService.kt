@@ -1,9 +1,6 @@
 package no.nav.eessi.eessifagmodul.services
 
-import no.nav.eessi.eessifagmodul.models.IkkeGyldigKallException
-import no.nav.eessi.eessifagmodul.models.InstitusjonItem
-import no.nav.eessi.eessifagmodul.models.SedDokumentIkkeGyldigException
-import no.nav.eessi.eessifagmodul.models.SedDokumentIkkeOpprettetException
+import no.nav.eessi.eessifagmodul.models.*
 import no.nav.eessi.eessifagmodul.prefill.PrefillDataModel
 import no.nav.eessi.eessifagmodul.prefill.PrefillSED
 import no.nav.eessi.eessifagmodul.services.eux.EuxService
@@ -21,11 +18,12 @@ class PrefillService(private val euxService: EuxService, private val prefillSED:
 
     fun prefillAndAddSedOnExistingCase(dataModel: PrefillDataModel): PrefillDataModel {
 
-        val data = prefillSED.prefill(dataModel)
+        val data = prefillSed(dataModel)
         val korrid = UUID.randomUUID().toString()
         val sedAsJson = mapAnyToJson(data.sed, true)
 
-        if (rinaActions.canCreate(data.getSEDid(), data.euxCaseID)) {
+        if (checkForCreateStatus(data.euxCaseID, data.getSEDid())) {
+
             euxService.createSEDonExistingRinaCase(sedAsJson, data.euxCaseID, korrid)
             //ingen ting tilbake.. sjekke om alt er ok?
             //val aksjon = euxService.getPossibleActions(rinanr)
@@ -38,7 +36,7 @@ class PrefillService(private val euxService: EuxService, private val prefillSED:
 
     fun prefillAndCreateSedOnNewCase(dataModel: PrefillDataModel): PrefillDataModel {
 
-        val data = prefillSED.prefill(dataModel)
+        val data = prefillSed(dataModel)
         val payload = mapAnyToJson(data.sed, true)
         val korrid = UUID.randomUUID().toString()
 
@@ -55,6 +53,10 @@ class PrefillService(private val euxService: EuxService, private val prefillSED:
         return dataModel
     }
 
+    private fun checkForCreateStatus(euxCaseId: String, sedName: String): Boolean {
+        return rinaActions.canCreate(sedName, euxCaseId)
+    }
+
     private fun checkForUpdateStatus(euxCaseId: String, sedName: String): String {
         if (rinaActions.canUpdate(sedName, euxCaseId)) {
             return "{\"euxcaseid\":\"$euxCaseId\"}"
@@ -63,6 +65,7 @@ class PrefillService(private val euxService: EuxService, private val prefillSED:
     }
 
     //muligens midlertidig metode for å sende kun en mottaker til EUX.
+    //TODO: funksjon for å legge til flere mottaker (InstitusjonItem) til Rina/SED etter oppretting.
     private fun getFirstInstitution(institutions: List<InstitusjonItem>): String {
         institutions.forEach {
             return it.institution ?: throw IkkeGyldigKallException("institujson kan ikke være tom")

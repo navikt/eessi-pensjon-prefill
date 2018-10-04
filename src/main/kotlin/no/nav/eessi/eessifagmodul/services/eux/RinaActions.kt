@@ -14,8 +14,6 @@ class RinaActions(private val euxService: EuxService) {
     @Value("\${rinaaction.waittime:4000}")
     lateinit var waittime: String  // waittime (basis venter 6000 på flere tjenester?)
 
-    var timeTries = 30               // times to try
-
     val create = "Create"
     val update = "Update"
 
@@ -27,21 +25,22 @@ class RinaActions(private val euxService: EuxService) {
         return isActionPossible(sed, rinanr, create, 5)
     }
 
-    fun isActionPossible(sed: String, rinanr: String, navn: String, deep: Int = 1): Boolean {
-        logger.debug("Henter RINAaksjoner på sed: $sed, mot rinanr: $rinanr, leter etter: $navn og deep er: $deep")
-        val result = getMuligeAksjoner(rinanr)
-
-        result.forEach {
-            if (sed == it.dokumentType && navn == it.navn) {
-                return true
+    fun isActionPossible(sed: String, euxCaseId: String, keyWord: String, maxLoop: Int = 1): Boolean {
+        for (i in 1..maxLoop) {
+            logger.debug("Henter RINAaksjoner på sed: $sed, mot euxCaseId: $euxCaseId, leter etter: $keyWord og maxLoop er: $maxLoop og i er: $i")
+            val result = getMuligeAksjoner(euxCaseId)
+            result.forEach {
+                if (sed == it.dokumentType && keyWord == it.navn) {
+                    logger.debug("Found $keyWord for $sed  exit out.")
+                    return true
+                }
+                logger.debug("Not found $keyWord for $sed")
             }
+            logger.debug("Prøver igjen etter $waittime ms på å hente opp aksjoner.")
+            Thread.sleep(waittime.toLong())
         }
-        if (deep >= timeTries) {
-            return false
-        }
-        logger.debug("Prøver igjen etter $waittime ms på å hente opp aksjoner.")
-        Thread.sleep(waittime.toLong())
-        return isActionPossible(sed, rinanr, navn, deep + 1)
+        logger.debug("Max looping exit with false")
+        return false
     }
 
     private fun getMuligeAksjoner(rinanr: String): List<RINAaksjoner> {

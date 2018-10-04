@@ -143,7 +143,7 @@ class ApiController(private val euxService: EuxService, private val prefillServi
                 }
             }
         //denne validering og utfylling kan kun benyttes på SED P4000
-            validSedEnum(request.sed, ENUM_SED.P4000) -> {
+            SedEnum.P4000.valid(request.sed) -> {
                 if (request.payload == null) { throw IkkeGyldigKallException("Mangler metadata, payload") }
                 if (request.euxCaseId == null) { throw IkkeGyldigKallException("Mangler euxCaseId (RINANR)") }
                 val pinid = hentAktoerIdPin(request.pinid)

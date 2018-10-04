@@ -4,7 +4,7 @@ import com.nhaarman.mockito_kotlin.whenever
 import no.nav.eessi.eessifagmodul.models.InstitusjonItem
 import no.nav.eessi.eessifagmodul.models.createSED
 import no.nav.eessi.eessifagmodul.services.pensjonsinformasjon.PensjonsinformasjonService
-import no.nav.eessi.sed.v1.px000.Pensjonsinformasjon
+import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import no.nav.pensjon.v1.sak.V1Sak
 import no.nav.pensjon.v1.vedtak.V1Vedtak
 import no.nav.pensjon.v1.ytelsepermaaned.V1YtelsePerMaaned

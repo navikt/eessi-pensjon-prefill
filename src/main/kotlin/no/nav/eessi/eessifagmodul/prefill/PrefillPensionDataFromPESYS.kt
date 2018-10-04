@@ -4,10 +4,8 @@ import no.nav.eessi.eessifagmodul.models.Pensjon
 import no.nav.eessi.eessifagmodul.models.VedtakItem
 import no.nav.eessi.eessifagmodul.services.pensjonsinformasjon.PensjonsinformasjonService
 import no.nav.eessi.eessifagmodul.utils.simpleFormat
-import no.nav.eessi.sed.v1.px000.Pensjonsinformasjon
+import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import no.nav.pensjon.v1.sak.V1Sak
-import no.nav.pensjon.v1.vilkarsvurdering.V1Vilkarsvurdering
-import no.nav.pensjon.v1.vilkarsvurderingliste.V1VilkarsvurderingListe
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
