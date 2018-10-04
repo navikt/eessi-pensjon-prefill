@@ -28,4 +28,4 @@ nbdist/
 
 ### JAXB & XSD generation related files ###
 classes/
-src/main/resources/schemas/pensjonsinformasjon-xsd_*
+src/main/resources/schemas/pensjonsinformasjon-xsd
