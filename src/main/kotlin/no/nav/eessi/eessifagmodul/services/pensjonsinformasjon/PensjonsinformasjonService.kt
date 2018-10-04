@@ -6,7 +6,9 @@ import org.slf4j.LoggerFactory
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
+import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
+import org.springframework.util.MimeType
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.util.UriComponentsBuilder
 import java.io.StringReader
@@ -52,7 +54,7 @@ class PensjonsinformasjonService(val pensjonsinformasjonOidcRestTemplate: RestTe
 
     private fun doRequest(vedtaksId: String, requestBody: String): Pensjonsinformasjon {
         val headers = HttpHeaders()
-        headers.add(HttpHeaders.CONTENT_TYPE, "application/xml")
+        headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_XML.toString())
         val requestEntity = HttpEntity(requestBody, headers)
 
         val uriBuilder = UriComponentsBuilder.fromPath("/vedtak").pathSegment(vedtaksId)
