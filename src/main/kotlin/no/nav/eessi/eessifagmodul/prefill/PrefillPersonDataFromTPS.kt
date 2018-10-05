@@ -58,7 +58,6 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
         val brukerTPS = hentBrukerTPS(ident)
         setPersonStatus(hentPersonStatus(brukerTPS))
 
-
         val bruker = Bruker(
                 far = Foreldre(person = hentRelasjon(RelasjonEnum.FAR, brukerTPS)),
                 mor = Foreldre(person = hentRelasjon(RelasjonEnum.MOR, brukerTPS)),

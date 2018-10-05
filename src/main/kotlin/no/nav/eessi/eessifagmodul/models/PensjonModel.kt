@@ -140,14 +140,16 @@ data class Tilleggsinformasjon(
         val saksnummer: String? = null,
         val person: Person? = null,
         val dato: String? = null,
-        @JsonProperty("andreinstitusjoner")
         val andreinstitusjoner: List<AndreinstitusjonerItem>? = null,
         val saksnummerAnnen: String? = null,
         val artikkel48: String? = null,
         val opphoer: Opphoer? = null
 )
 
+//TODO: endre til bruk av Institusjon og Institusjonsadresse
 data class AndreinstitusjonerItem(
+        val institusjonsid: String? = null,
+        val institusjonsnavn: String? = null,
         val institusjonsadresse: String? = null,
         val postnummer: String? = null,
         val bygningsnr: String? = null,
@@ -176,6 +178,8 @@ data class ReduksjonItem (
         val artikkeltype: String? = null
 )
 
+
+//TODO: endre til Periode?
 data class VirkningsdatoItem(
        val startdato: String? = null,
        val sluttdato: String? = null

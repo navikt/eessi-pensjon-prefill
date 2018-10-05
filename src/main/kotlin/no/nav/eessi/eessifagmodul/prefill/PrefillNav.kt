@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
 @Component
-class PrefillNav(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS) {
+class PrefillNav(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS): Prefill<Nav> {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillNav::class.java) }
 
@@ -15,7 +15,11 @@ class PrefillNav(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS)
     private val institutionid = "NO:noinst002"
     private val institutionnavn = "NOINST002, NO INST002, NO"
 
-    fun utfyllNav(utfyllingData: PrefillDataModel): Nav {
+    override fun prefill(prefillData: PrefillDataModel): Nav {
+        return utfyllNav(prefillData)
+    }
+
+    private fun utfyllNav(utfyllingData: PrefillDataModel): Nav {
 
         //bruker død hvis etterlatt (etterlatt aktoerregister fylt ut)
         val brukertps = bruker(utfyllingData)

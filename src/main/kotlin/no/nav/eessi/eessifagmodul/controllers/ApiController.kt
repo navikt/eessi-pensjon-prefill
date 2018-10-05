@@ -48,7 +48,7 @@ class ApiController(private val euxService: EuxService, private val prefillServi
         val aktorid = request.pinid ?: throw IkkeGyldigKallException("Ingen gyldig pinid")
 
         val dataModel = PrefillDataModel().apply {
-            sed = createSED("P2000")
+            sed = SED().create("P2000")
             penSaksnummer = ""
             personNr = hentAktoerIdPin(aktorid)
 
@@ -69,7 +69,7 @@ class ApiController(private val euxService: EuxService, private val prefillServi
     @PostMapping("/sed/confirm")
     fun confirmDocument(@RequestBody request: ApiRequest): SED {
 
-        return prefillService.prefillSed( buildPrefillDataModel(request) ).sed
+        return prefillService.prefillSed( buildPrefillDataModel( request) ).sed
 
     }
 
@@ -115,7 +115,9 @@ class ApiController(private val euxService: EuxService, private val prefillServi
     @PostMapping("/buc/create")
     fun createDocument(@RequestBody request: ApiRequest): String {
 
-        return prefillService.prefillAndCreateSedOnNewCase(buildPrefillDataModel(request)).euxCaseID
+        val data = buildPrefillDataModel(request)
+        val result = prefillService.prefillAndCreateSedOnNewCase( data )
+        return result.euxCaseID
     }
 
     //validatate request and convert to PrefillDataModel
@@ -128,10 +130,10 @@ class ApiController(private val euxService: EuxService, private val prefillServi
             request.pinid == null -> throw IkkeGyldigKallException("Mangler AktoerID")
             request.institutions == null -> throw IkkeGyldigKallException("Mangler Institusjoner")
 
-        //Denne validering og utfylling kan benyttes på SED P2000 og P6000
-            validsed(request.sed , STANDARD_SED) -> {
+            //Denne validering og utfylling kan benyttes på SED P2000,P2100,P2200
+            validsed(request.sed , START_SED) -> {
+                println("P2000,P2100,P2200 -> SED: ${request.sed}")
                 val pinid = hentAktoerIdPin(request.pinid)
-
                 PrefillDataModel().apply {
                     penSaksnummer = request.caseId
                     buc = request.buc
@@ -142,8 +144,25 @@ class ApiController(private val euxService: EuxService, private val prefillServi
                     institution = request.institutions
                 }
             }
-        //denne validering og utfylling kan kun benyttes på SED P4000
+            //P3000. P6000. ..
+            validsed(request.sed , STANDARD_SED) -> {
+                println("P3000, P5000, P6000 -> SED: ${request.sed}")
+                if (request.euxCaseId == null) { throw IkkeGyldigKallException("Mangler euxCaseId (RINANR)") }
+                val pinid = hentAktoerIdPin(request.pinid)
+                PrefillDataModel().apply {
+                    penSaksnummer = request.caseId
+                    buc = request.buc
+                    rinaSubject = request.subjectArea
+                    sed =  createSED(request.sed)
+                    aktoerID = request.pinid
+                    personNr = pinid
+                    institution = request.institutions
+                    euxCaseID = request.euxCaseId
+                }
+            }
+            //denne validering og utfylling kan kun benyttes på SED P4000
             SedEnum.P4000.valid(request.sed) -> {
+                println("P4000 only -> SED: ${request.sed}")
                 if (request.payload == null) { throw IkkeGyldigKallException("Mangler metadata, payload") }
                 if (request.euxCaseId == null) { throw IkkeGyldigKallException("Mangler euxCaseId (RINANR)") }
                 val pinid = hentAktoerIdPin(request.pinid)

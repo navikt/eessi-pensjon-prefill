@@ -40,28 +40,29 @@ class SedP4000Test {
     lateinit var mockPrefillService: PrefillService
 
     @Mock
+    private lateinit var mockPrefillSED: PrefillSED
+
+    @Mock
+    private lateinit var prefillPerson: PrefillPerson
+
+    @Mock
+    private lateinit var rinaActions: RinaActions
+
     lateinit var pre4000: PrefillP4000
 
     private lateinit var prefillDataMock: PrefillDataModel
-
     private lateinit var apiController: ApiController
-
-    private lateinit var rinaActions: RinaActions
-
-    private lateinit var mockPrefillSED: PrefillSED
-
 
     val logger: Logger by lazy { LoggerFactory.getLogger(SedP4000Test::class.java) }
 
     @Before
     fun setup() {
         prefillDataMock = PrefillDataModel()
-        rinaActions =  RinaActions(mockEuxService)
 
-        mockPrefillSED = PrefillSED()
-        mockPrefillSED.prefill4000 = pre4000
+        pre4000 = PrefillP4000(prefillPerson)
 
-        mockPrefillService = PrefillService(mockEuxService, mockPrefillSED, rinaActions)
+        //mockPrefillService = PrefillService(mockEuxService, mockPrefillSED, rinaActions)
+
         apiController = ApiController(mockEuxService, mockPrefillService, mockAktoerregisterService)
         logger.debug("Starting tests.... ...")
     }
@@ -185,16 +186,38 @@ class SedP4000Test {
         assertNotNull(reqjson)
         validateJson(reqjson)
 
-        whenever(mockAktoerregisterService.hentGjeldendeNorskIdentForAktorId(ArgumentMatchers.anyString())).thenReturn("12345")
+        println(reqjson)
+        println("----------------------------------------")
 
+
+        whenever(mockAktoerregisterService.hentGjeldendeNorskIdentForAktorId(ArgumentMatchers.anyString())).thenReturn("12345")
         val data = apiController.buildPrefillDataModel(req)
+
         assertNotNull(data)
+        assertNotNull(data.getPartSEDasJson("P4000"))
         assertEquals("12345", data.personNr)
 
-        //whenever(mockPersonPreutfyll.prefill(any() )).thenReturn(data.sed)
-        val result = mockPrefillService.prefillSed(data)
-        assertNotNull(result)
-        val jsondata = mapAnyToJson(result.sed, true)
+        println(data.getPartSEDasJson("P4000"))
+        println("----------------------------------------")
+
+
+        val resultData = data
+
+        println(resultData.sed.toJson())
+        println("----------------------------------------")
+
+        whenever(prefillPerson.prefill(any())).thenReturn(data.sed)
+        val sed =  pre4000.prefill(resultData)
+
+        whenever(mockPrefillService.prefillSed(any())).thenReturn(resultData)
+        //val result = mockPrefillService.prefillSed(resultData)
+
+        val result = apiController.confirmDocument(req)
+
+        val jsondata = mapAnyToJson(result, true)
+
+        println(jsondata)
+        println("----------------------------------------")
         assertNotNull(jsondata)
     }
 

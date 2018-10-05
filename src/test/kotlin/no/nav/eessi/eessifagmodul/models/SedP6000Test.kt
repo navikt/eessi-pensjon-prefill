@@ -25,9 +25,12 @@ class SedP6000Test{
         val sed6000 = SedMock().genererP6000Mock()
         assertNotNull(sed6000)
 
-        val json = mapAnyToJson(sed6000)
+
+        val json = sed6000.toJson()
+        assertNotNull(json)
         //map json back to P6000 obj
-        val pensjondata = mapJsonToAny(json, typeRefs<SED>())
+
+        val pensjondata = SED().fromJson(json)
         assertNotNull(pensjondata)
         assertEquals(sed6000, pensjondata)
 

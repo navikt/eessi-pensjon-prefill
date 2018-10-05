@@ -68,11 +68,25 @@ enum class SedEnum (val sed: String) {
 }
 
 //andre sed..
+val START_SED = "P2000,P2100,P2200"
 val STANDARD_SED = sedEnumToString()
+val ALL_SED = sedEnumToStringWidthSkip()
 
 fun sedEnumToString(): String {
+    return sedEnumToStringWidthSkip("P2000,P2100,P2200,P4000")
+}
+
+fun sedEnumToStringWidthSkip(skip: String = ""): String {
+    val enumList = mutableListOf<SedEnum>()
+    enumList.addAll(SedEnum.values().toList())
+    if (skip.isNotEmpty()) {
+        val enumExcludeList : List<String> = skip.split(",").map { it.trim() }
+        enumExcludeList.forEach {
+            enumList.remove(SedEnum.valueOf(it))
+        }
+    }
     val strb = StringBuilder()
-    SedEnum.values().toList().forEach {
+    enumList.forEach {
         strb.append(it.sed).append(",")
     }
     strb.deleteCharAt(strb.length-1)

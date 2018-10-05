@@ -12,7 +12,7 @@ class UtilsTest {
 
         val result = sedEnumToString()
         assertNotNull(result)
-        assertEquals("P2000,P2100,P2200,P4000,P6000,P5000,P7000", result)
+        assertEquals("P6000,P5000,P7000", result)
 
     }
 
@@ -28,11 +28,28 @@ class UtilsTest {
         assertEquals("2020-05-20", toRinaDate)
     }
 
+    @Test
+    fun `check variables containing SED`() {
+        val funlist = sedEnumToStringWidthSkip("P4000")
+        assertEquals("P2000,P2100,P2200,P6000,P5000,P7000", funlist)
+
+        val all = ALL_SED
+        assertEquals("P2000,P2100,P2200,P4000,P6000,P5000,P7000", all)
+
+        val start = START_SED
+        assertEquals("P2000,P2100,P2200", start)
+
+        val standard = STANDARD_SED
+        assertEquals("P6000,P5000,P7000", standard)
+
+        //assertEquals("P2000,P2100,P2200,P6000,P5000,P7000", STANDARD_SED)
+        //assertEquals("P2000,P2100,P2200,P6000,P5000,P7000", START_SED)
+        //assertEquals("P2000,P2100,P2200,P6000,P5000,P7000", ALL_SED)
+    }
+
 
     @Test
     fun `playground testing`() {
-
-
 
 
     }

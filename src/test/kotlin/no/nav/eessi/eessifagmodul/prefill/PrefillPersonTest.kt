@@ -5,7 +5,6 @@ import com.nhaarman.mockito_kotlin.whenever
 import no.nav.eessi.eessifagmodul.models.*
 import no.nav.eessi.eessifagmodul.services.pensjonsinformasjon.PensjonsinformasjonService
 import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
-import no.nav.eessi.eessifagmodul.utils.validateJson
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -15,7 +14,6 @@ import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Autowired
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
@@ -37,7 +35,7 @@ class PrefillPersonTest(val index: Int, val sedid: String) {
     lateinit var mockPersonFraTPS: PrefillPersonDataFromTPS
 
     @Mock
-    lateinit var mockDataFromPESYS: PrefillPensionDataFromPESYS
+    lateinit var mockDataFromPESYS: PrefillP6000PensionDataFromPESYS
 
     @Mock
     lateinit var preutfylling: PrefillPerson
@@ -52,8 +50,7 @@ class PrefillPersonTest(val index: Int, val sedid: String) {
     private lateinit var prefillDefault: PrefillDefaultSED
 
     private lateinit var prefillDataMock: PrefillDataModel
-
-    //private lateinit var sed: SED
+    private lateinit var mockPrefillFactory: PrefillFactory
 
     @Before
     fun setup() {
@@ -62,7 +59,7 @@ class PrefillPersonTest(val index: Int, val sedid: String) {
 
         prefillDataMock = PrefillDataModel()
         preutfylling = PrefillPerson(prefillNav = mockPreutfyllingNav, prefilliPensjon = mockPreutfyllingPensjon)
-        mockDataFromPESYS = PrefillPensionDataFromPESYS(mockPensjonsinformasjonService)
+        mockDataFromPESYS = PrefillP6000PensionDataFromPESYS(mockPensjonsinformasjonService)
 
         prefillDefault = PrefillDefaultSED(preutfylling)
         prefill2000 = PrefillP2000(preutfylling)
@@ -71,13 +68,16 @@ class PrefillPersonTest(val index: Int, val sedid: String) {
         prefill4000 = PrefillP4000(preutfylling)
         prefill6000 = PrefillP6000(mockPreutfyllingNav, mockDataFromPESYS, mockPersonFraTPS)
 
-        mockPrefillSED = PrefillSED()
-        mockPrefillSED.prefillDefault = prefillDefault
-        mockPrefillSED.prefill2000 = prefill2000
-        mockPrefillSED.prefill2100 = prefill2100
-        mockPrefillSED.prefill2200 = prefill2200
-        mockPrefillSED.prefill4000 = prefill4000
-        mockPrefillSED.prefill6000 = prefill6000
+        mockPrefillFactory = PrefillFactory()
+        mockPrefillFactory.prefill2000 = prefill2000
+        mockPrefillFactory.prefill2100 = prefill2100
+        mockPrefillFactory.prefill2200 = prefill2200
+        mockPrefillFactory.prefill4000 = prefill4000
+        mockPrefillFactory.prefill6000 = prefill6000
+        mockPrefillFactory.prefillDefault = prefillDefault
+
+        mockPrefillSED = PrefillSED(mockPrefillFactory)
+
     }
 
     companion object {
@@ -90,7 +90,7 @@ class PrefillPersonTest(val index: Int, val sedid: String) {
                     arrayOf(3, "P2200"),
                     //arrayOf(4, "P4000"),
                     arrayOf(5, "P5000"),
-                    //arrayOf(6, "P6000"),
+                    arrayOf(6, "P6000"),
                     arrayOf(7, "P7000")
             )
         }
@@ -101,11 +101,14 @@ class PrefillPersonTest(val index: Int, val sedid: String) {
         logger.debug("\n\njobber med test på følgende sed: $sedid\n\n")
         val mockPinResponse = "12345"
 
-        val navresponse = Nav(bruker = Bruker(person = Person(fornavn = "Dummy", etternavn = "Dummy", pin = listOf(PinItem(sektor = "alle", identifikator = mockPinResponse, land = "NO")))))
-        whenever(mockPreutfyllingNav.utfyllNav(any())).thenReturn(navresponse)
+        val navresponse = NavMock().genererNavMock()
+        //val navresponse = Nav(bruker = Bruker(person = Person(fornavn = "Dummy", etternavn = "Dummy", pin = listOf(PinItem(sektor = "alle", identifikator = mockPinResponse, land = "NO")))))
 
-        val pensjonresponse = Pensjon(gjenlevende = Bruker(person = Person(fornavn = "Dummy", etternavn = "Dummy")))
-        whenever(mockPreutfyllingPensjon.pensjon(any())).thenReturn(pensjonresponse)
+        whenever(mockPreutfyllingNav.prefill(any())).thenReturn(navresponse)
+
+        val pensjonresponse = PensjonMock().genererMockData()
+        //val pensjonresponse = Pensjon(gjenlevende = Bruker(person = Person(fornavn = "Dummy", etternavn = "Dummy")))
+        whenever(mockPreutfyllingPensjon.prefill(any())).thenReturn(pensjonresponse)
 
         val items = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
         prefillDataMock.apply {
@@ -131,10 +134,15 @@ class PrefillPersonTest(val index: Int, val sedid: String) {
         assertNotNull(responseSED.nav?.bruker)
         assertNotNull(responseSED.nav?.bruker?.person)
 
-        assertEquals("Dummy", responseSED.nav?.bruker?.person?.etternavn)
-        assertEquals("Dummy", responseSED.nav?.bruker?.person?.fornavn)
+        assertEquals("Konsoll", responseSED.nav?.bruker?.person?.etternavn)
+        assertEquals("Gul", responseSED.nav?.bruker?.person?.fornavn)
+        assertEquals("1967-12-01", responseSED.nav?.bruker?.person?.foedselsdato)
+        assertEquals("asfsdf", responseSED.nav?.bruker?.mor?.person?.fornavn)
+
         val pin = responseSED.nav?.bruker?.person?.pin
-        assertEquals(mockPinResponse, pin!![0].identifikator)
+        assertEquals("weqrwerwqe", pin!![0].identifikator)
+        assertEquals("sdfsdfsdfsdf sdfsdfsdf", responseSED.nav?.bruker?.bank?.navn)
+
         assertEquals(sedid, responseSED.sed)
         assertNotNull(prefillDataMock)
         assertEquals(mockPinResponse, prefillDataMock.personNr)

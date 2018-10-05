@@ -11,6 +11,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.nio.file.Files
 import java.nio.file.Paths
+import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
@@ -24,11 +25,12 @@ class SedP2000Test {
         val p2000path = Paths.get("src/test/resources/json/P2000-NAV.json")
         val p2000file = String(Files.readAllBytes(p2000path))
         assertTrue(validateJson(p2000file))
-        val p2000sed = mapJsonToAny(p2000file, typeRefs<SED>(), true)
-        assertNotNull(p2000sed)
 
-        val json = mapAnyToJson(p2000sed, true)
+        val p2000sed = SED().fromJson(p2000file)
+        val json = p2000sed.toJson()
+        //val json = mapAnyToJson(p2000sed, true)
         JSONAssert.assertEquals(p2000file, json, false)
+
     }
 
 }

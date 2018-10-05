@@ -39,12 +39,10 @@ class PrefillServiceTest {
     @Mock
     lateinit var preDefault: PrefillDefaultSED
 
-    lateinit var mockPrefillSED: PrefillSED
-
-    lateinit var mockPrefillDataModel: PrefillDataModel
-
-    lateinit var prefillService: PrefillService
-
+    private lateinit var mockPrefillSED: PrefillSED
+    private lateinit var mockPrefillDataModel: PrefillDataModel
+    private lateinit var prefillService: PrefillService
+    private lateinit var prefillFactory: PrefillFactory
 
     @Before
     fun `startup initilize testing`() {
@@ -52,12 +50,13 @@ class PrefillServiceTest {
 
         pre2000 = PrefillP2000(mockPrefillPerson)
 
-        mockPrefillSED = PrefillSED()
-        mockPrefillSED.prefill2000 = pre2000
-        mockPrefillSED.prefill4000 = pre4000
-        mockPrefillSED.prefill6000 = pre6000
-        mockPrefillSED.prefillDefault = preDefault
+        prefillFactory = PrefillFactory()
+        prefillFactory .prefill2000 = pre2000
+        prefillFactory .prefill4000 = pre4000
+        prefillFactory .prefill6000 = pre6000
+        prefillFactory .prefillDefault = preDefault
 
+        mockPrefillSED = PrefillSED(prefillFactory)
         prefillService = PrefillService(mockEuxService, mockPrefillSED, mockRinaActions)
 
     }

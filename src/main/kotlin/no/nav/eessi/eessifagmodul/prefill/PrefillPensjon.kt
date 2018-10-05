@@ -7,12 +7,16 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
 @Component
-class PrefillPensjon(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS) {
+class PrefillPensjon(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS): Prefill<Pensjon> {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillPensjon::class.java) }
     private val validseds : List<String> = listOf("P6000", "P4000", "P2000", "P2200", "P5000")
 
-    fun pensjon(utfyllingData: PrefillDataModel): Pensjon {
+    override fun prefill(prefillData: PrefillDataModel): Pensjon {
+        return pensjon(prefillData)
+    }
+
+    private fun pensjon(utfyllingData: PrefillDataModel): Pensjon {
 
         //min krav for P6000,P2000,P5000,P4000?
         //validere om vi kan preutfylle for angitt SED

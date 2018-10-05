@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
+import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.util.UriComponentsBuilder
@@ -17,6 +18,29 @@ private val logger = LoggerFactory.getLogger(PensjonsinformasjonService::class.j
 
 @Service
 class PensjonsinformasjonService(val pensjonsinformasjonOidcRestTemplate: RestTemplate, val requestBuilder: RequestBuilder) {
+
+    fun henPersonInformasjonFraVedtak(vedtaksId: String): Pensjonsinformasjon {
+        return henPersonInformasjon("/vedtak", vedtaksId)
+    }
+    fun henPersonInformasjonFraSak(saksnummer: String): Pensjonsinformasjon {
+        return henPersonInformasjon("/sak", saksnummer)
+    }
+
+    private fun henPersonInformasjon(path: String, id: String): Pensjonsinformasjon {
+        val informationBlocks = listOf(
+                InformasjonsType.PERSON
+        )
+        val document = requestBuilder.getBaseRequestDocument()
+
+        informationBlocks.forEach {
+            requestBuilder.addPensjonsinformasjonElement(document, it)
+        }
+        logger.debug("Requestbody:\n${document.documentToString()}")
+        val response = doRequest(path, id, document.documentToString())
+        validateResponse(informationBlocks, response)
+        return response
+
+    }
 
     fun hentAlt(vedtaksId: String): Pensjonsinformasjon {
 
@@ -41,7 +65,7 @@ class PensjonsinformasjonService(val pensjonsinformasjonOidcRestTemplate: RestTe
         }
 
         logger.debug("Requestbody:\n${document.documentToString()}")
-        val response = doRequest(vedtaksId, document.documentToString())
+        val response = doRequest("/vedtak", vedtaksId, document.documentToString())
         validateResponse(informationBlocks, response)
         return response
     }
@@ -50,12 +74,12 @@ class PensjonsinformasjonService(val pensjonsinformasjonOidcRestTemplate: RestTe
         // TODO: Hva skal vi egentlig validere? Skal vi validere noe mer enn at vi fikk en gyldig xml-response, som skjer ved JAXB-marshalling?
     }
 
-    private fun doRequest(vedtaksId: String, requestBody: String): Pensjonsinformasjon {
+    private fun doRequest(path: String, id: String, requestBody: String): Pensjonsinformasjon {
         val headers = HttpHeaders()
-        headers.add(HttpHeaders.CONTENT_TYPE, "application/xml")
+        headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_XML_VALUE)
         val requestEntity = HttpEntity(requestBody, headers)
 
-        val uriBuilder = UriComponentsBuilder.fromPath("/vedtak").pathSegment(vedtaksId)
+        val uriBuilder = UriComponentsBuilder.fromPath(path).pathSegment(id)
 
         val responseEntity = pensjonsinformasjonOidcRestTemplate.exchange(
                 uriBuilder.toUriString(),

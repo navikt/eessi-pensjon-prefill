@@ -1,13 +1,15 @@
 package no.nav.eessi.eessifagmodul.prefill
 
 import no.nav.eessi.eessifagmodul.models.Bruker
+import no.nav.eessi.eessifagmodul.models.Nav
+import no.nav.eessi.eessifagmodul.models.Pensjon
 import no.nav.eessi.eessifagmodul.models.SED
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
 @Component
-class PrefillP6000(private val prefillNav: PrefillNav, private val prefillPensjonFromPen: PrefillPensionDataFromPESYS, private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS): Prefill<SED> {
+class PrefillP6000(private val prefillNav: PrefillNav, private val prefillPensjonFromPen: PrefillP6000PensionDataFromPESYS, private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS): Prefill<SED> {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillP6000::class.java) }
 
@@ -27,18 +29,11 @@ class PrefillP6000(private val prefillNav: PrefillNav, private val prefillPensjo
 
         val sed = prefillData.sed
 
-        sed.nav = prefillNav.utfyllNav(prefillData)
+        sed.nav = createNav(prefillData)
 
-        logger.debug("[$sedId] Preutfylling Utfylling NAV")
+        val pensjon = createPensjon(prefillData)
 
-        //henter pensjondata fra PESYS
-        val pensjon = prefillPensjonFromPen.prefill(prefillData)
-        logger.debug("[$sedId] Preutfylling Utfylling Pensjon")
-
-        //fylle på med annen persondata fra TPS o.l
         pensjon.gjenlevende = createGjenlevende(prefillData)
-        logger.debug("[$sedId] Preutfylling Utfylling Pensjon TPS")
-
 
         sed.pensjon = pensjon
 
@@ -48,15 +43,27 @@ class PrefillP6000(private val prefillNav: PrefillNav, private val prefillPensjo
 
     }
 
+    //henter persondata fra TPS fyller ut sed.nav
+    private fun createNav(prefillData: PrefillDataModel): Nav {
+        logger.debug("[${prefillData.getSEDid()}] Preutfylling Utfylling NAV")
+        return prefillNav.prefill(prefillData)
+    }
+
+    //henter pensjondata fra PESYS fyller ut sed.pensjon
+    private fun createPensjon(prefillData: PrefillDataModel): Pensjon {
+        logger.debug("[${prefillData.getSEDid()}] Preutfylling Utfylling Pensjon")
+        return prefillPensjonFromPen.prefill(prefillData)
+    }
+
     //fylles ut kun når vi har etterlatt aktoerId og etterlattPinID.
     //noe vi må få fra PSAK. o.l
-
     private fun createGjenlevende(prefillData: PrefillDataModel): Bruker? {
         var gjenlevende: Bruker? = null
         if (prefillData.isValidEtterlatt()) {
             logger.debug("Preutfylling Utfylling Pensjon Gjenlevende (etterlatt)")
             gjenlevende = preutfyllingPersonFraTPS.prefillBruker(prefillData.personNr)
         }
+        logger.debug("[${prefillData.getSEDid()}] Preutfylling Utfylling Pensjon TPS")
         return gjenlevende
     }
 
