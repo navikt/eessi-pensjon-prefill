@@ -127,7 +127,7 @@ class PrefillPersonTest(val index: Int, val sedid: String) {
         //val responseSED = preutfylling.prefill(prefillDataMock)
         val responseSED = responseData.sed
 
-        println(mapAnyToJson(responseSED, true))
+        //println(mapAnyToJson(responseSED, true))
 
         assertNotNull(responseSED)
         assertNotNull(responseSED.nav)

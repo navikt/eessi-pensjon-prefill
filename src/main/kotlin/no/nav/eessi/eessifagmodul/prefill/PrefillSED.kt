@@ -24,12 +24,12 @@ class PrefillSED(private val factory: PrefillFactory) {
         logger.debug("Mapping prefillClass ${prefilling.javaClass}")
 
         val starttime = System.currentTimeMillis()
-        logger.debug(" henter pensjon data fra PESYS ")
-        val seddata = prefilling.prefill(prefillData)
+
+        prefilling.prefill(prefillData)
         val endtime = System.currentTimeMillis()
         val tottime = endtime - starttime
-        logger.debug(" ferdig PrefillSED. Det tok $tottime ms")
-        println(seddata)
+
+        logger.debug("Ferdig med prefillClass, Det tok $tottime ms")
         return prefillData
 
     }

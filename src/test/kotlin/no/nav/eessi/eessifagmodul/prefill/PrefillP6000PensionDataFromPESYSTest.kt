@@ -1,9 +1,11 @@
 package no.nav.eessi.eessifagmodul.prefill
 
+import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.whenever
 import no.nav.eessi.eessifagmodul.models.InstitusjonItem
 import no.nav.eessi.eessifagmodul.models.createSED
 import no.nav.eessi.eessifagmodul.services.pensjonsinformasjon.PensjonsinformasjonService
+import no.nav.eessi.eessifagmodul.services.pensjonsinformasjon.RequestBuilder
 import no.nav.eessi.eessifagmodul.utils.simpleFormat
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import no.nav.pensjon.v1.sak.V1Sak
@@ -18,6 +20,13 @@ import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers
 import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
+import org.springframework.http.HttpEntity
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
+import org.springframework.util.ResourceUtils
+import org.springframework.web.client.RestTemplate
+import java.nio.file.Files
+import java.nio.file.Paths
 import java.time.LocalDate
 import javax.xml.datatype.DatatypeFactory
 import kotlin.test.assertEquals
@@ -26,8 +35,12 @@ import kotlin.test.assertNotNull
 @RunWith(MockitoJUnitRunner::class)
 class PrefillP6000PensionDataFromPESYSTest {
 
+
     @Mock
     lateinit var pensjonsinformasjonService: PensjonsinformasjonService
+
+    @Mock
+    lateinit var pensjonsinformasjonRestTemplate: RestTemplate
 
     @Mock
     lateinit var preutfyllingPersonFraTPS: PrefillPersonDataFromTPS
@@ -39,6 +52,8 @@ class PrefillP6000PensionDataFromPESYSTest {
     @Before
     fun setup() {
         prefill = PrefillDataModel()
+
+
         dataFromPESYS = PrefillP6000PensionDataFromPESYS(pensjonsinformasjonService)
     }
 
@@ -60,7 +75,40 @@ class PrefillP6000PensionDataFromPESYSTest {
 
     }
 
+    fun readXMLresponse(file: String): ResponseEntity<String> {
+        //P6000-AP-101.xml
+        val p600ap101 = ResourceUtils.getFile("classpath:pensjonsinformasjon/$file").readText()
+        return ResponseEntity(p600ap101, HttpStatus.OK)
+    }
 
+//    @Test
+//    fun `Grunnlag for vedtak alderpensjon utland old age use P6000-APUtland-101`() {
+//        prefill = generatePrefillData(68, "P6000")
+//        //val mockResult = generateFakePensjoninformasjonForALDER()
+//        //map load P6000-NAV refrence
+//
+//
+//        val pensjonsinformasjonService1 = PensjonsinformasjonService(pensjonsinformasjonRestTemplate, RequestBuilder())
+//        val dataFromPESYS1 = PrefillP6000PensionDataFromPESYS(pensjonsinformasjonService1)
+//        whenever(pensjonsinformasjonRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java))).thenReturn(readXMLresponse("P6000-APUtland-301.xml"))
+//
+//        val pendata = dataFromPESYS1.getPensjoninformasjonFraVedtak(prefill.vedtakId)
+//
+//        //val result = dataFromPESYS1.prefill(prefill)
+//        val result = dataFromPESYS1.createVedtakItem(pendata)
+//
+//        assertNotNull(result)
+//
+//
+////        assertNotNull(result)
+////        val vedtak = result.vedtak
+////        assertNotNull(vedtak)
+////        vedtak?.forEach {
+////            assertEquals("01", it.type)
+////            assertEquals("2017-05-01" , it.virkningsdato)
+////        }
+//
+//    }
 
     @Test
     fun `Grunnlag for ytelse alderpensjon old age`() {

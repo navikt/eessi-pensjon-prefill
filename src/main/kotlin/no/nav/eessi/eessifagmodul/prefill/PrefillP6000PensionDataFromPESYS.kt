@@ -55,6 +55,11 @@ class PrefillP6000PensionDataFromPESYS(private val pensjonsinformasjonService: P
         }
     }
 
+    fun getPensjoninformasjonFraVedtak(vedtakId: String): Pensjonsinformasjon {
+        val pendata: Pensjonsinformasjon = pensjonsinformasjonService.hentAlt(vedtakId) // ha med saknr og vedtak?
+        logger.debug("Pensjonsinformasjon\n$pendata")
+        return pendata
+    }
 
 
     override fun prefill(prefillData: PrefillDataModel): Pensjon {
@@ -73,7 +78,9 @@ class PrefillP6000PensionDataFromPESYS(private val pensjonsinformasjonService: P
 
         val starttime = System.currentTimeMillis()
         logger.debug(" henter pensjon data fra PESYS ")
-        val pendata: Pensjonsinformasjon = pensjonsinformasjonService.hentAlt(prefillData.penSaksnummer) // ha med saknr og vedtak?
+
+        val pendata = getPensjoninformasjonFraVedtak(prefillData.vedtakId)
+
         val endtime = System.currentTimeMillis()
         val tottime = endtime - starttime
         logger.debug(" ferdig hentet pensjon data fra PESYS. Det tok $tottime ms")
@@ -97,9 +104,8 @@ class PrefillP6000PensionDataFromPESYS(private val pensjonsinformasjonService: P
 
     }
 
-
     //4.1
-    private fun createVedtakItem(pendata: Pensjonsinformasjon): VedtakItem {
+    fun createVedtakItem(pendata: Pensjonsinformasjon): VedtakItem {
 
         logger.debug("4.1       VedtakItem")
 

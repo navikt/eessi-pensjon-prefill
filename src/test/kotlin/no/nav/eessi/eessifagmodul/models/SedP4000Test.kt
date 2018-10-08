@@ -186,10 +186,6 @@ class SedP4000Test {
         assertNotNull(reqjson)
         validateJson(reqjson)
 
-        println(reqjson)
-        println("----------------------------------------")
-
-
         whenever(mockAktoerregisterService.hentGjeldendeNorskIdentForAktorId(ArgumentMatchers.anyString())).thenReturn("12345")
         val data = apiController.buildPrefillDataModel(req)
 
@@ -197,15 +193,7 @@ class SedP4000Test {
         assertNotNull(data.getPartSEDasJson("P4000"))
         assertEquals("12345", data.personNr)
 
-        println(data.getPartSEDasJson("P4000"))
-        println("----------------------------------------")
-
-
         val resultData = data
-
-        println(resultData.sed.toJson())
-        println("----------------------------------------")
-
         whenever(prefillPerson.prefill(any())).thenReturn(data.sed)
         val sed =  pre4000.prefill(resultData)
 
@@ -215,9 +203,6 @@ class SedP4000Test {
         val result = apiController.confirmDocument(req)
 
         val jsondata = mapAnyToJson(result, true)
-
-        println(jsondata)
-        println("----------------------------------------")
         assertNotNull(jsondata)
     }
 
