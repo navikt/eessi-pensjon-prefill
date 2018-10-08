@@ -1,9 +1,8 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<px0:pensjonsinformasjon xmlns:px0="http://nav.no/eessi/sed/v1/PX000" xmlns:avd="http://nav.no/pensjon/v1/avdod" xmlns:inn="http://nav.no/pensjon/v1/inngangOgEksport" xmlns:per="http://nav.no/pensjon/v1/person" xmlns:sak="http://nav.no/pensjon/v1/sak"
+<pen:pensjonsinformasjon xmlns:pen="http://nav.no/pensjon/v1/pensjonsinformasjon" xmlns:avd="http://nav.no/pensjon/v1/avdod" xmlns:inn="http://nav.no/pensjon/v1/inngangOgEksport" xmlns:per="http://nav.no/pensjon/v1/person" xmlns:sak="http://nav.no/pensjon/v1/sak"
                          xmlns:try="http://nav.no/pensjon/v1/trygdeavtale" xmlns:try1="http://nav.no/pensjon/v1/trygdetidAvdodFarListe" xmlns:try2="http://nav.no/pensjon/v1/trygdetid" xmlns:try3="http://nav.no/pensjon/v1/trygdetidAvdodListe"
                          xmlns:try4="http://nav.no/pensjon/v1/trygdetidAvdodMorListe" xmlns:try5="http://nav.no/pensjon/v1/trygdetidListe" xmlns:ved="http://nav.no/pensjon/v1/vedtak" xmlns:vil="http://nav.no/pensjon/v1/vilkarsvurderingListe" xmlns:vil1="http://nav.no/pensjon/v1/vilkarsvurdering"
-                         xmlns:vil2="http://nav.no/pensjon/v1/vilkarsvurderingUforetrygd">
-    <px0:avdod>
+                         xmlns:vil2="http://nav.no/pensjon/v1/vilkarsvurderingUforetrygd" xmlns:ytel="http://nav.no/pensjon/v1/ytelsePerMaanedListe" xmlns:ytel1="http://nav.no/pensjon/v1/ytelsePerMaaned" xmlns:ytel2="http://nav.no/pensjon/v1/ytelseskomponent">
+    <pen:avdod>
         <avd:avdod>string</avd:avdod>
         <avd:avdodMor>string</avd:avdodMor>
         <avd:avdodFar>string</avd:avdodFar>
@@ -16,22 +15,22 @@
         <avd:avdodVurdereTrygdeavtale>true</avd:avdodVurdereTrygdeavtale>
         <avd:avdodMorVurdereTrygdeavtale>true</avd:avdodMorVurdereTrygdeavtale>
         <avd:avdodFarVurdereTrygdeavtale>true</avd:avdodFarVurdereTrygdeavtale>
-    </px0:avdod>
-    <px0:inngangOgEksport>
+    </pen:avdod>
+    <pen:inngangOgEksport>
         <inn:unntakForutgaendeMedlemskap>string</inn:unntakForutgaendeMedlemskap>
         <inn:unntakForutgaendeMedlemskapAvdod>string</inn:unntakForutgaendeMedlemskapAvdod>
         <inn:unntakForutgaendeMedlemskapMor>string</inn:unntakForutgaendeMedlemskapMor>
         <inn:unntakForutgaendeMedlemskapFar>string</inn:unntakForutgaendeMedlemskapFar>
-    </px0:inngangOgEksport>
-    <px0:person>
+    </pen:inngangOgEksport>
+    <pen:person>
         <per:pid>string</per:pid>
         <per:aktorId>string</per:aktorId>
-    </px0:person>
-    <px0:sak>
+    </pen:person>
+    <pen:sak>
         <sak:sakType>string</sak:sakType>
         <sak:uttakFor67>true</sak:uttakFor67>
-    </px0:sak>
-    <px0:trygdeavtale>
+    </pen:sak>
+    <pen:trygdeavtale>
         <try:erArt10BruktGP>false</try:erArt10BruktGP>
         <try:erArt10BruktTP>false</try:erArt10BruktTP>
         <try:erArt10BruktGPAvdod>false</try:erArt10BruktGPAvdod>
@@ -40,8 +39,8 @@
         <try:erArt10BruktTPMor>false</try:erArt10BruktTPMor>
         <try:erArt10BruktGPFar>true</try:erArt10BruktGPFar>
         <try:erArt10BruktTPFar>false</try:erArt10BruktTPFar>
-    </px0:trygdeavtale>
-    <px0:trygdetidAvdodFarListe>
+    </pen:trygdeavtale>
+    <pen:trygdetidAvdodFarListe>
         <try1:trygdetidAvdodFarListe>
             <try2:fom>2012-09-13T15:00:34+02:00</try2:fom>
             <try2:tom>2009-10-14T09:16:36</try2:tom>
@@ -50,8 +49,8 @@
             <try2:poengIInnAr>true</try2:poengIInnAr>
             <try2:poengIUtAr>true</try2:poengIUtAr>
         </try1:trygdetidAvdodFarListe>
-    </px0:trygdetidAvdodFarListe>
-    <px0:trygdetidAvdodListe>
+    </pen:trygdetidAvdodFarListe>
+    <pen:trygdetidAvdodListe>
         <try3:trygdetidAvdodListe>
             <try2:fom>2018-12-28T20:51:14+01:00</try2:fom>
             <try2:tom>2017-11-01T09:15:53+01:00</try2:tom>
@@ -60,8 +59,8 @@
             <try2:poengIInnAr>false</try2:poengIInnAr>
             <try2:poengIUtAr>false</try2:poengIUtAr>
         </try3:trygdetidAvdodListe>
-    </px0:trygdetidAvdodListe>
-    <px0:trygdetidAvdodMorListe>
+    </pen:trygdetidAvdodListe>
+    <pen:trygdetidAvdodMorListe>
         <try4:trygdetidAvdodMorListe>
             <try2:fom>2003-11-10T08:56:46+01:00</try2:fom>
             <try2:tom>2000-09-25T08:18:09</try2:tom>
@@ -70,8 +69,8 @@
             <try2:poengIInnAr>false</try2:poengIInnAr>
             <try2:poengIUtAr>true</try2:poengIUtAr>
         </try4:trygdetidAvdodMorListe>
-    </px0:trygdetidAvdodMorListe>
-    <px0:trygdetidListe>
+    </pen:trygdetidAvdodMorListe>
+    <pen:trygdetidListe>
         <try5:trygdetidListe>
             <try2:fom>2017-10-20T03:04:37</try2:fom>
             <try2:tom>2000-01-06T22:03:12</try2:tom>
@@ -80,8 +79,8 @@
             <try2:poengIInnAr>false</try2:poengIInnAr>
             <try2:poengIUtAr>true</try2:poengIUtAr>
         </try5:trygdetidListe>
-    </px0:trygdetidListe>
-    <px0:vedtak>
+    </pen:trygdetidListe>
+    <pen:vedtak>
         <ved:virkningstidspunkt>2016-09-11T23:45:33</ved:virkningstidspunkt>
         <ved:kravGjelder>string</ved:kravGjelder>
         <ved:kravVelgType>string</ved:kravVelgType>
@@ -91,8 +90,8 @@
         <ved:boddArbeidetUtland>false</ved:boddArbeidetUtland>
         <ved:vurdereTrygdeAvtale>true</ved:vurdereTrygdeAvtale>
         <ved:datoFattetVedtak>2000-08-23T02:34:44</ved:datoFattetVedtak>
-    </px0:vedtak>
-    <px0:vilkarsvurderingListe>
+    </pen:vedtak>
+    <pen:vilkarsvurderingListe>
         <vil:vilkarsvurderingListe>
             <vil1:fom>2003-07-23T00:04:46</vil1:fom>
             <vil1:tom>2008-07-09T05:26:36</vil1:tom>
@@ -117,5 +116,26 @@
             <vil1:avslagFasteUtgifter>string</vil1:avslagFasteUtgifter>
             <vil1:avslagGjenlevendetillegg>string</vil1:avslagGjenlevendetillegg>
         </vil:vilkarsvurderingListe>
-    </px0:vilkarsvurderingListe>
-</px0:pensjonsinformasjon>
+    </pen:vilkarsvurderingListe>
+    <pen:ytelsePerMaanedListe>
+        <ytel:ytelsePerMaanedListe>
+            <ytel1:fom>2008-02-06T14:51:05+01:00</ytel1:fom>
+            <ytel1:tom>2015-08-04T02:55:16</ytel1:tom>
+            <ytel1:mottarMinstePensjonsniva>true</ytel1:mottarMinstePensjonsniva>
+            <ytel1:gjenlevendetilleggAnvendtAlderspensjon>true</ytel1:gjenlevendetilleggAnvendtAlderspensjon>
+            <ytel1:yrkesskadeAnvendtAlderspensjon>true</ytel1:yrkesskadeAnvendtAlderspensjon>
+            <ytel1:vinnendeBeregningsmetode>string</ytel1:vinnendeBeregningsmetode>
+            <ytel1:vinnendeBeregningsmetodeKap20>string</ytel1:vinnendeBeregningsmetodeKap20>
+            <ytel1:vurdertBeregningsmetodeFolketrygd>false</ytel1:vurdertBeregningsmetodeFolketrygd>
+            <ytel1:vurdertBeregningsmetodeEOS>true</ytel1:vurdertBeregningsmetodeEOS>
+            <ytel1:vurdertBeregningsmetodeNordisk>true</ytel1:vurdertBeregningsmetodeNordisk>
+            <ytel1:belop>3</ytel1:belop>
+            <ytel1:belopUtenAvkorting>3</ytel1:belopUtenAvkorting>
+            <ytel1:ytelseskomponentListe>
+                <ytel2:ytelsesKomponentType>string</ytel2:ytelsesKomponentType>
+                <ytel2:belopTilUtbetaling>3</ytel2:belopTilUtbetaling>
+                <ytel2:belopUtenAvkorting>3</ytel2:belopUtenAvkorting>
+            </ytel1:ytelseskomponentListe>
+        </ytel:ytelsePerMaanedListe>
+    </pen:ytelsePerMaanedListe>
+</pen:pensjonsinformasjon>
