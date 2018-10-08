@@ -2,7 +2,6 @@ package no.nav.eessi.eessifagmodul.services.pensjonsinformasjon
 
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.whenever
-import no.nav.pensjon.v1.inngangogeksport.V1InngangOgEksport
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -32,7 +31,7 @@ class PensjonsinformasjonServiceTest {
     fun hentAlt() {
         val mockResponseEntity = createResponseEntityFromJsonFile("classpath:pensjonsinformasjon/full-generated-response.xml")
         whenever(mockrestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java))).thenReturn(mockResponseEntity)
-        pensjonsinformasjonService.hentAlt("1243")
+        val data = pensjonsinformasjonService.hentAlt("1243")
         // TODO: add asserts
     }
 
