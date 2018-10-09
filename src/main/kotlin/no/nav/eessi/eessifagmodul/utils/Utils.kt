@@ -53,7 +53,6 @@ fun validateJson(json: String) : Boolean {
     }
 }
 
-
 enum class SedEnum (val sed: String) {
     P2000("P2000"),
     P2100("P2100"),
@@ -69,29 +68,29 @@ enum class SedEnum (val sed: String) {
 
 //andre sed..
 val START_SED = "P2000,P2100,P2200"
-val STANDARD_SED = sedEnumToString()
-val ALL_SED = sedEnumToStringWidthSkip()
+val STANDARD_SED = "P5000,P6000,P7000"         //= sedEnumToString()
+val ALL_SED = "P2000,P2100,P2200,P4000,P6000,P5000,P7000"
 
-fun sedEnumToString(): String {
-    return sedEnumToStringWidthSkip("P2000,P2100,P2200,P4000")
-}
+//fun sedEnumToString(): String {
+//    return sedEnumToStringWidthSkip("P2000,P2100,P2200,P4000")
+//}
 
-fun sedEnumToStringWidthSkip(skip: String = ""): String {
-    val enumList = mutableListOf<SedEnum>()
-    enumList.addAll(SedEnum.values().toList())
-    if (skip.isNotEmpty()) {
-        val enumExcludeList : List<String> = skip.split(",").map { it.trim() }
-        enumExcludeList.forEach {
-            enumList.remove(SedEnum.valueOf(it))
-        }
-    }
-    val strb = StringBuilder()
-    enumList.forEach {
-        strb.append(it.sed).append(",")
-    }
-    strb.deleteCharAt(strb.length-1)
-    return strb.toString()
-}
+//fun sedEnumToStringWidthSkip(skip: String = ""): String {
+//    val enumList = mutableListOf<SedEnum>()
+//    enumList.addAll(SedEnum.values().toList())
+//    if (skip.isNotEmpty()) {
+//        val enumExcludeList : List<String> = skip.split(",").map { it.trim() }
+//        enumExcludeList.forEach {
+//            enumList.remove(SedEnum.valueOf(it))
+//        }
+//    }
+//    val strb = StringBuilder()
+//    enumList.forEach {
+//        strb.append(it.sed).append(",")
+//    }
+//    strb.deleteCharAt(strb.length-1)
+//    return strb.toString()
+//}
 
 fun validsed(sed: String, validsed: String) : Boolean {
     val result: List<String> = validsed.split(",").map { it.trim() }

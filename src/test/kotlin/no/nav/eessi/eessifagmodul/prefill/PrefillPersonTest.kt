@@ -29,24 +29,13 @@ class PrefillPersonTest(val index: Int, val sedid: String) {
     private lateinit var mockPreutfyllingPensjon: PrefillPensjon
 
     @Mock
-    lateinit var mockPensjonsinformasjonService: PensjonsinformasjonService
-
-    @Mock
-    lateinit var mockPersonFraTPS: PrefillPersonDataFromTPS
-
-    @Mock
-    lateinit var mockDataFromPESYS: PrefillP6000PensionDataFromPESYS
-
-    @Mock
     lateinit var preutfylling: PrefillPerson
 
     private lateinit var mockPrefillSED: PrefillSED
 
-    private lateinit var prefill6000: PrefillP6000
     private lateinit var prefill2000: PrefillP2000
     private lateinit var prefill2100: PrefillP2100
     private lateinit var prefill2200: PrefillP2200
-    private lateinit var prefill4000: PrefillP4000
     private lateinit var prefillDefault: PrefillDefaultSED
 
     private lateinit var prefillDataMock: PrefillDataModel
@@ -59,21 +48,16 @@ class PrefillPersonTest(val index: Int, val sedid: String) {
 
         prefillDataMock = PrefillDataModel()
         preutfylling = PrefillPerson(prefillNav = mockPreutfyllingNav, prefilliPensjon = mockPreutfyllingPensjon)
-        mockDataFromPESYS = PrefillP6000PensionDataFromPESYS(mockPensjonsinformasjonService)
 
         prefillDefault = PrefillDefaultSED(preutfylling)
         prefill2000 = PrefillP2000(preutfylling)
         prefill2100 = PrefillP2100(preutfylling)
         prefill2200 = PrefillP2200(preutfylling)
-        prefill4000 = PrefillP4000(preutfylling)
-        prefill6000 = PrefillP6000(mockPreutfyllingNav, mockDataFromPESYS, mockPersonFraTPS)
 
         mockPrefillFactory = PrefillFactory()
         mockPrefillFactory.prefill2000 = prefill2000
         mockPrefillFactory.prefill2100 = prefill2100
         mockPrefillFactory.prefill2200 = prefill2200
-        mockPrefillFactory.prefill4000 = prefill4000
-        mockPrefillFactory.prefill6000 = prefill6000
         mockPrefillFactory.prefillDefault = prefillDefault
 
         mockPrefillSED = PrefillSED(mockPrefillFactory)

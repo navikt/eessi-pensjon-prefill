@@ -2,6 +2,7 @@ package no.nav.eessi.eessifagmodul.services.pensjonsinformasjon
 
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.whenever
+import no.nav.eessi.eessifagmodul.utils.simpleFormat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -13,6 +14,8 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.util.ResourceUtils
 import org.springframework.web.client.RestTemplate
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 
 @RunWith(MockitoJUnitRunner::class)
 class PensjonsinformasjonServiceTest {
@@ -33,6 +36,9 @@ class PensjonsinformasjonServiceTest {
         whenever(mockrestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java))).thenReturn(mockResponseEntity)
         val data = pensjonsinformasjonService.hentAlt("1243")
         // TODO: add asserts
+
+        assertNotNull(data.vedtak, "Vedtak er null")
+        assertEquals("2016-09-11", data.vedtak.virkningstidspunkt.simpleFormat())
     }
 
     private fun createResponseEntityFromJsonFile(filePath: String, httpStatus: HttpStatus = HttpStatus.OK): ResponseEntity<String> {

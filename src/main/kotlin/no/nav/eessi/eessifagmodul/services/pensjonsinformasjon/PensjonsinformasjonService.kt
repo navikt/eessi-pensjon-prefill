@@ -95,7 +95,7 @@ class PensjonsinformasjonService(val pensjonsinformasjonOidcRestTemplate: RestTe
             }
             throw RuntimeException("Received ${responseEntity.statusCode} ${responseEntity.statusCode.reasonPhrase} from pensjonsinformasjon")
         }
-        logger.debug("Responsebody:\n${responseEntity.body}")
+        //logger.debug("Responsebody:\n${responseEntity.body}")
 
         val context = JAXBContext.newInstance(Pensjonsinformasjon::class.java)
         val unmarshaller = context.createUnmarshaller()
