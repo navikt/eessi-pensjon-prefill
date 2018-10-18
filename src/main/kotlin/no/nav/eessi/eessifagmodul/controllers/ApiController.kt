@@ -226,26 +226,4 @@ class ApiController(private val euxService: EuxService, private val prefillServi
             val mockSED: Boolean? = null
     )
 
-    data class NewApiRequest(
-            //rina-metadata
-            val sector: String? = null,
-            val euxCaseId: String? = null,
-            val buc: String? = null,
-            val sed : String,
-            val institutions: List<InstitusjonItem>? = null,
-
-            //pen-metadata
-            val penSaksnr: String,
-            val penVedtakId: String? = null,
-            val penKravId: String? = null,
-            val aktoerId: String,
-
-            //payload (p4000.. )
-            val payload: String? = null,
-
-            //other
-            val sendsed: Boolean? = null,
-            val mockSED: Boolean? = null
-    )
-
 }

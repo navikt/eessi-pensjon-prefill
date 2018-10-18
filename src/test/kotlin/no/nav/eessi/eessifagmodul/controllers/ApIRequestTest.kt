@@ -63,54 +63,6 @@ class ApIRequestTest {
     }
 
     @Test
-    fun `generate new  apirequest json`() {
-
-        val req = ApiController.NewApiRequest(
-            sector =  "Pensjon",
-            euxCaseId = null,
-            buc = null,
-            sed = "P2000",
-            institutions = listOf( InstitusjonItem("NO", "NAV003")),
-
-            //pen-metadata
-            penSaksnr = "123456789",
-            penVedtakId = "123" ,
-            aktoerId = "123456789000",
-
-            //payload (p4000.. )
-            payload = null
-        )
-
-        val json = mapAnyToJson(req)
-
-        println(json)
-
-        val req2 = ApiController.NewApiRequest(aktoerId = "123", penSaksnr = "12312", sed = "P33")
-        println(mapAnyToJson(req2))
-
-    }
-
-    @Test(expected = MissingKotlinParameterException::class)
-    fun `generate new api request fail missing SED`() {
-        val req2json ="{\n" +
-                "  \"sector\" : null,\n" +
-                "  \"euxCaseId\" : null,\n" +
-                "  \"buc\" : null,\n" +
-                "  \"sed\" : null,\n" +
-                "  \"institutions\" : null,\n" +
-                "  \"penSaksnr\" : \"12312\",\n" +
-                "  \"penVedtakId\" : null,\n" +
-                "  \"penKravId\" : null,\n" +
-                "  \"aktoerId\" : \"123\",\n" +
-                "  \"payload\" : null,\n" +
-                "  \"sendsed\" : null,\n" +
-                "  \"mockSED\" : null\n" +
-                "}"
-        mapJsonToAny(req2json, typeRefs<ApiController.NewApiRequest>())
-    }
-
-
-    @Test
     fun `generate request mock payload of SED P2000`() {
         val payload = readJsonAndParseToSed("P2000-NAV.json")
         validateAndPrint(createMockApiRequest("P2000","P_BUC_01", payload))
