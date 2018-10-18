@@ -1,0 +1,26 @@
+no.nav.security.oidc.issuer:
+  oidc:
+    discoveryurl: http://metadata
+    accepted_audience: aud-localhost
+http.proxy.parametername:
+
+app:
+  name: eessi-fagmodul-integrationtest
+  version: 0.1-IT
+
+# Fasitresource-mocks
+srveessipensjon:
+  username: srveessipensjon
+  password: password
+
+securitytokenservice:
+  url: http://localhost:8081
+
+euxbasis.v1:
+  url: http://localhost:8082
+
+virksomhet.person.v3:
+  endpointurl: http://localhost:8083
+
+aktoerregister.api.v1:
+  url: http://localhost:8084

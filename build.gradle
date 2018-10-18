@@ -94,16 +94,23 @@ dependencies {
     // Logging
     compile("net.logstash.logback:logstash-logback-encoder:${logstashLogbackVersion}")
 
+    testCompile("info.cukes:cucumber-spring:1.2.5")
+    testCompile("info.cukes:cucumber-java:1.2.5")
+    testCompile("info.cukes:cucumber-junit:1.2.5")
+    testCompile('org.apache.httpcomponents:fluent-hc:4.5.6')
+
     // OIDC
     compile("no.nav.security:oidc-spring-support:${oidcTokenSupportVersion}")
+    compile("no.nav.security:oidc-test-support:${oidcTokenSupportVersion}")
+    testCompile("org.pac4j:spring-webmvc-pac4j:3.0.0")
+
 
     // Tjenestespesifikasjoner
     compile("no.nav.tjenester:nav-person-v3-tjenestespesifikasjon:${personV3Version}")
-//    compile("no.nav.pensjon:pensjonsinformasjon-xsd:9.4.3")
     xsd("no.nav.pensjon:pensjonsinformasjon-xsd:9.4.3")
 
-    jaxb 'org.glassfish.jaxb:jaxb-xjc:2.2.11'
-    jaxb 'org.glassfish.jaxb:jaxb-runtime:2.2.11'
+    jaxb ('org.glassfish.jaxb:jaxb-xjc:2.2.11')
+    jaxb ('org.glassfish.jaxb:jaxb-runtime:2.2.11')
 }
 
 ext.schemasDir = "${projectDir}/src/main/resources/schemas"
@@ -134,6 +141,25 @@ clean.doFirst {
 }
 
 sourceSets["main"].java.srcDir("${buildDir}/generated-sources/xjc")
+
+sourceSets {
+    integrationtest {
+        java {
+            compileClasspath += main.output
+            compileClasspath += main.compileClasspath
+            compileClasspath += test.output
+            compileClasspath += test.compileClasspath
+            runtimeClasspath += test.runtimeClasspath
+        }
+    }
+}
+
+task integrationtest(type: Test) {
+    group = LifecycleBasePlugin.VERIFICATION_GROUP
+    testClassesDirs = sourceSets.integrationtest.output.classesDirs
+    classpath = sourceSets.integrationtest.runtimeClasspath
+}
+integrationtest.dependsOn assemble
 
 repositories {
     maven {
