@@ -77,14 +77,21 @@ abstract class PensjonData {
 
     fun summerTrygdeTid(trygdeListe: V1TrygdetidListe): Int {
         Preconditions.checkArgument(trygdeListe.trygdetidListe != null, "trygdetidListe er Null")
-        var days: Long = 0
+        val daylist = mutableListOf<Int>()
+
         trygdeListe.trygdetidListe.forEach {
             val fom = it.fom.toGregorianCalendar().time.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
             val tom = it.tom.toGregorianCalendar().time.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
-            days += ChronoUnit.DAYS.between(fom,tom)
-            logger.debug("              SummerTrygdeTid: $days  fom: $fom  tom: $tom")
+            val nrdays = ChronoUnit.DAYS.between(fom,    tom)
+            logger.debug("              SummerTrygdeTid: $nrdays  fom: $fom  tom: $tom ")
+            daylist.add(nrdays.toInt())
         }
-        return days.toInt()
+        var days: Int = 0
+        daylist.forEach {
+            days += it
+        }
+        logger.debug("              Total SummerTrygdeTid: $days ")
+        return days
     }
 
     fun hentYtelseskomponentBelop(keys: String, ytelse: V1YtelsePerMaaned) : Int {
@@ -154,7 +161,7 @@ abstract class PensjonData {
         return V1VilkarsvurderingUforetrygd()
     }
 
-    //TODO -         //Kodeverk K_RESULT_BEGR 2017
+    //         Kodeverk K_RESULT_BEGR 2017
     fun hentVilkarsProvingAvslagHovedYtelse(pendata: Pensjonsinformasjon): String {
         val v1VilkarsvurderingListe = pendata?.vilkarsvurderingListe ?: return ""
         v1VilkarsvurderingListe.vilkarsvurderingListe.forEach {
