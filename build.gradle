@@ -79,7 +79,6 @@ dependencies {
     compile("com.fasterxml.jackson.module:jackson-module-kotlin:${jacksonModuleKotlinVersion}")
     compile("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${kotlinVersion}")
     compile("org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}")
-    compile("org.jetbrains.kotlinx:kotlinx-coroutines-core:0.30.2")
 
     // Swagger
     compile("io.springfox:springfox-swagger2:${springfoxVersion}")

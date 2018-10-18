@@ -68,7 +68,6 @@ class ApiController(private val euxService: EuxService, private val prefillServi
     @PostMapping("/sed/confirm")
     fun confirmDocument(@RequestBody request: ApiRequest): SED {
 
-        //return prefillService.prefillSed( buildPrefillDataModel( request) ).sed
         return prefillService.prefillSed( buildPrefillDataModelConfirm( request) ).sed
 
     }
