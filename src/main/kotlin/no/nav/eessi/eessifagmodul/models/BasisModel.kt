@@ -27,9 +27,9 @@ data class RINAProperties(
     val criticality: String? = null
 )
 data class RINAaksjoner(
-        val dokumentType: String? = null,
-        val navn: String? = null,
-        val dokumentId: String? = null,
-        val kategori: String? = null,
-        val id: String? = null
+    val dokumentType: String? = null,
+    val navn: String? = null,
+    val dokumentId: String? = null,
+    val kategori: String? = null,
+    val id: String? = null
 )

@@ -74,5 +74,19 @@
     <ns19:sak xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns7:v1.Sak">
         <ns7:sakType>UFOREP</ns7:sakType>
     </ns19:sak>
+   <ns19:vilkarsvurderingListe xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns17:v1.VilkarsvurderingListe">
+        <ns17:vilkarsvurderingListe>
+            <ns15:fom>2017-05-01T00:00:00+02:00</ns15:fom>
+            <ns15:vilkarsvurderingUforetrygd>
+                <ns16:ungUfor>IKKE_VURDERT</ns16:ungUfor>
+                <ns16:alder>OPPFYLT</ns16:alder>
+                <ns16:hensiktsmessigBehandling>OPPFYLT</ns16:hensiktsmessigBehandling>
+                <ns16:hensiktsmessigArbeidsrettedeTiltak>OPPFYLT</ns16:hensiktsmessigArbeidsrettedeTiltak>
+                <ns16:sykdomSkadeLyte>OPPFYLT</ns16:sykdomSkadeLyte>
+                <ns16:nedsattInntektsevne>OPPFYLT</ns16:nedsattInntektsevne>
+            </ns15:vilkarsvurderingUforetrygd>
+            <ns15:resultatHovedytelse>INNV</ns15:resultatHovedytelse>
+        </ns17:vilkarsvurderingListe>
+    </ns19:vilkarsvurderingListe>
     <ns19:inngangOgEksport xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"></ns19:inngangOgEksport>
 </ns19:pensjonsinformasjon>

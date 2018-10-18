@@ -22,9 +22,9 @@ class SedTest{
         val sed6000 = SedMock().genererP6000Mock()
         assertNotNull(sed6000)
 
-        val json = mapAnyToJson(sed6000)
+        val json = sed6000.toJson()
         //map json back to P6000 obj
-        val pensjondata = mapJsonToAny(json, typeRefs<SED>())
+        val pensjondata = SED().fromJson(json)
         assertNotNull(pensjondata)
         assertEquals(sed6000, pensjondata)
 
@@ -35,16 +35,8 @@ class SedTest{
         validateJson(p6000file)
 
         //map P6000-NAV back to P6000 object.
-        val pensjondataFile = mapJsonToAny(p6000file, typeRefs<SED>())
+        val pensjondataFile = SED().fromJson(p6000file)
         assertNotNull(pensjondataFile)
-
-//        Printout map P6000-NAV obj back to json
-//        val jsonnav = mapAnyToJson(sed6000)
-//        println("------------------generated----------------------")
-//        println("\n\n $json \n\n")
-//        println("------------------p6000-nav----------------------")
-//        println("\n\n $jsonnav \n\n")
-//        println("-------------------------------------------------")
 
     }
 
@@ -61,7 +53,7 @@ class SedTest{
         assertNotNull(brukerback)
         assertEquals(bruker, brukerback)
 
-        val sed = createSED("P6000")
+        val sed = SED().create("P6000")
         val navmock = NavMock().genererNavMock()
         sed.nav = Nav(
                 bruker = navmock.bruker

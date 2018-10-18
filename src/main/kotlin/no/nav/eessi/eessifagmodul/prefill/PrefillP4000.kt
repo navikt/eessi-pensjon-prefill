@@ -13,11 +13,7 @@ class PrefillP4000(private val prefillPerson: PrefillPerson): Prefill<SED> {
 
         val json = prefillData.getPartSEDasJson("P4000")
 
-        println("json")
-
         val trygdeTid = mapJsonToAny(json, typeRefs<PersonTrygdeTid>())
-
-        println("trygdeTid")
 
         val sed = prefillPerson.prefill(prefillData)
         sed.trygdetid = trygdeTid

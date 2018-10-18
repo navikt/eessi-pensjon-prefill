@@ -60,6 +60,7 @@ class NavFodselsnummer(private val fodselsnummer: String) {
     }
 
     fun getAge(): Int {
+        logger.debug("BirthDate: ${getBirthDate()}  now: ${LocalDate.now()}")
         return ChronoUnit.YEARS.between(getBirthDate(), LocalDate.now()).toInt()
     }
 

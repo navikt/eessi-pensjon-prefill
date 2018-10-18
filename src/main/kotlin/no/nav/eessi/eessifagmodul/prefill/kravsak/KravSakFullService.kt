@@ -10,7 +10,7 @@ import java.io.InputStreamReader
 class KravSakFullService {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(KravSakFullService::class.java) }
-    private val kravSakFull: MutableMap<String?, KravSak>
+    private val kravSakMap: MutableMap<String?, List<KravSak>>
 
     init {
         val FILENAME = "/kodeverk/k-krav-sak-full.txt"
@@ -18,57 +18,51 @@ class KravSakFullService {
         val br = BufferedReader(InputStreamReader(`in`, "UTF-8"))
         var line: String? = ""
         val csvSplitBy = ";"
-        kravSakFull = mutableMapOf()
+        kravSakMap = mutableMapOf()
 
         while (line  != null) {
             line = br.readLine()
             if (line != null) {
                 val sakArray = line.split(csvSplitBy.toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
 
-                val data = KravSak(sakArray[0], sakArray[1], sakArray[2], sakArray[3])
+                val keyword = sakArray[1]
+                val data = KravSak(sakArray[1], sakArray[0], sakArray[2], sakArray[3])
 
-                kravSakFull[data.kKravGjelder] = data
-                kravSakFull[data.kKravSakFull] = data
-                kravSakFull[data.kSakT] = data
+                addKravSakToMap(keyword, data)
+                //logger.debug("kravSakMap:  ${kravSakMap[keyword]}")
             }
         }
         logger.debug("Har importert kodeverk fra $FILENAME")
-//        hentListeKravSak().forEach {
-//            logger.debug("$it")
-//        }
     }
 
-    fun finnKravSakFull(kKravSakFull: String): KravSak? {
-        return if (kravSakFull[kKravSakFull] == null) {
-            logger.debug("Finner ikke KravSak for $kKravSakFull, sjekk om ny KravSak må lastes.")
-            null
-        } else {
-            kravSakFull[kKravSakFull]
-        }
+    private final fun addKravSakToMap(keyword: String, model: KravSak) {
+            if (kravSakMap[keyword] == null) {
+                kravSakMap.put(keyword, mutableListOf(model))
+            }  else {
+                val list = kravSakMap.get(keyword) as MutableList<KravSak>
+                list.add(model)
+            }
     }
 
-    fun finnKravGjelder(kKravGjelder: String): KravSak? {
-        return if (kravSakFull[kKravGjelder] == null) {
-            logger.debug("Finner ikke KravSak for $kKravGjelder, sjekk om ny KravSak må lastes.")
-            null
-        } else {
-            kravSakFull[kKravGjelder]
-        }
-    }
 
-    fun hentListeKravSak(): List<KravSak> {
-        val kravset = mutableSetOf<KravSak>()
-        kravSakFull.keys.forEach {
-            val value = kravSakFull[it]
-            if (value != null) {
-                kravset.add(value)
+    fun finnKravSakFull(kravSakFull: String): KravSak? {
+        kravSakMap.keys.forEach {
+            kravSakMap[it]?.forEach {
+                if (kravSakFull == it.kravSakFull) {
+                    return it
+                }
             }
         }
-        return kravset.toList()
+        return null
     }
 
-    fun hentKravSakMap(): Map<String?, KravSak> {
-        return kravSakFull
+    fun finnKravGjelder(kravGjelder: String): List<KravSak>? {
+        kravSakMap.keys.forEach {
+            if (kravGjelder == it) {
+                return kravSakMap[it]
+            }
+        }
+        return null
     }
 
 }

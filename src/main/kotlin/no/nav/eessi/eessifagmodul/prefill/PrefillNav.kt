@@ -20,7 +20,8 @@ class PrefillNav(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS)
     }
 
     private fun utfyllNav(utfyllingData: PrefillDataModel): Nav {
-
+        logger.debug("perfill pinid: ${utfyllingData.personNr}")
+        logger.debug("perfill aktoerid: ${utfyllingData.aktoerID}")
         //bruker død hvis etterlatt (etterlatt aktoerregister fylt ut)
         val brukertps = bruker(utfyllingData)
 

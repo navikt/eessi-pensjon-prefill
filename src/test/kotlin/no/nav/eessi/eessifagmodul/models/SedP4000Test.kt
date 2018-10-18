@@ -72,15 +72,15 @@ class SedP4000Test {
         val result = createPersonTrygdeTidMock()
         assertNotNull(result)
 
-        val sed = createSED("P4000")
+        val sed = SED().create("P4000")
         val nav = NavMock().genererNavMock()
         val pen = PensjonMock().genererMockData()
         sed.nav = nav
         sed.pensjon = pen
         sed.trygdetid = result
 
-        val json2 = mapAnyToJson(sed, true)
-        val mapSED = mapJsonToAny(json2, typeRefs<SED>())
+        val json2 = sed.toJson()
+        val mapSED = SED().fromJson(json2)
 
         assertNotNull(mapSED)
         assertEquals(result, mapSED.trygdetid)
@@ -94,11 +94,11 @@ class SedP4000Test {
         val p4000file = String(Files.readAllBytes(path))
         assertNotNull(p4000file)
         validateJson(p4000file)
-        val sed = mapJsonToAny(p4000file, typeRefs<SED>())
+        val sed = SED().fromJson(p4000file)
         assertNotNull(sed)
         assertNotNull(sed.trygdetid)
         assertNotNull(sed.trygdetid?.ansattSelvstendigPerioder)
-        val json = mapAnyToJson(sed, true)
+        val json = sed.toJson()
         JSONAssert.assertEquals(p4000file, json, false)
 
     }
@@ -187,7 +187,7 @@ class SedP4000Test {
         validateJson(reqjson)
 
         whenever(mockAktoerregisterService.hentGjeldendeNorskIdentForAktorId(ArgumentMatchers.anyString())).thenReturn("12345")
-        val data = apiController.buildPrefillDataModel(req)
+        val data = apiController.buildPrefillDataModelConfirm(req)
 
         assertNotNull(data)
         assertNotNull(data.getPartSEDasJson("P4000"))
@@ -196,13 +196,15 @@ class SedP4000Test {
         val resultData = data
         whenever(prefillPerson.prefill(any())).thenReturn(data.sed)
         val sed =  pre4000.prefill(resultData)
+        assertNotNull(sed)
+
 
         whenever(mockPrefillService.prefillSed(any())).thenReturn(resultData)
         //val result = mockPrefillService.prefillSed(resultData)
 
         val result = apiController.confirmDocument(req)
 
-        val jsondata = mapAnyToJson(result, true)
+        val jsondata = result.toJson()
         assertNotNull(jsondata)
     }
 

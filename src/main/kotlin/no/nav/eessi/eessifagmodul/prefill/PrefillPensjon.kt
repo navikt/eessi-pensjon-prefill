@@ -2,6 +2,7 @@ package no.nav.eessi.eessifagmodul.prefill
 
 import no.nav.eessi.eessifagmodul.models.Bruker
 import no.nav.eessi.eessifagmodul.models.Pensjon
+import no.nav.eessi.eessifagmodul.utils.ALL_SED
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
@@ -10,7 +11,9 @@ import org.springframework.stereotype.Component
 class PrefillPensjon(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS): Prefill<Pensjon> {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillPensjon::class.java) }
-    private val validseds : List<String> = listOf("P6000", "P4000", "P2000", "P2200", "P5000")
+    //private val validseds : List<String> = listOf("P6000", "P4000", "P2000", "P2200", "P5000")
+    private val validseds = ALL_SED.split(",")
+    //private val validseds : List<String> = listOf()
 
     override fun prefill(prefillData: PrefillDataModel): Pensjon {
         return pensjon(prefillData)

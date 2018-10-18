@@ -58,6 +58,8 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
         val brukerTPS = hentBrukerTPS(ident)
         setPersonStatus(hentPersonStatus(brukerTPS))
 
+
+
         val bruker = Bruker(
                 far = Foreldre(person = hentRelasjon(RelasjonEnum.FAR, brukerTPS)),
                 mor = Foreldre(person = hentRelasjon(RelasjonEnum.MOR, brukerTPS)),
@@ -82,8 +84,15 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
 
     //bruker fra TPS
     private fun hentBrukerTPS(ident: String): no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker {
+        val starttime = System.nanoTime()
+
         val response = personV3Service.hentPerson(ident)
-        logger.debug("Preutfylling henter v3.Bruker fra TPS")
+
+        val endtime = System.nanoTime()
+        val tottime = endtime - starttime
+
+        logger.debug("Metrics")
+        logger.debug("Preutfylling ferdig med å hente v3.Bruker fra TPS Det tok ${(tottime/1.0e9)} sekunder.")
         return response.person as no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker
     }
 
@@ -221,8 +230,9 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
         if (validatePersonStatus(dod)) {
             return Adresse()
         }
+        val bostedsadresse: Bostedsadresse = person.bostedsadresse ?: return personAdresseUstrukturert(person.postadresse)
+        val gateAdresse = bostedsadresse.strukturertAdresse as Gateadresse
 
-        val gateAdresse = person.bostedsadresse.strukturertAdresse as Gateadresse
         val postnr = gateAdresse.poststed.value
 
         val gate = gateAdresse.gatenavn
@@ -238,6 +248,20 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
         // region = gateAdresse.kommunenummer, Ikke i bruk
 
         logger.debug("Preutfylling Adresse")
+        return adr
+    }
+
+    private fun personAdresseUstrukturert(postadr: no.nav.tjeneste.virksomhet.person.v3.informasjon.Postadresse): Adresse {
+        val gateAdresse = postadr.ustrukturertAdresse as UstrukturertAdresse
+        val adr = Adresse(
+                bygning = gateAdresse.adresselinje1,
+                gate = gateAdresse.adresselinje2,
+                postnummer = gateAdresse.adresselinje3,
+                by = gateAdresse.adresselinje4,
+                land = hentLandkode(gateAdresse.landkode)
+        )
+        //bygning =          Ikke i bruk
+        // region = gateAdresse.kommunenummer, Ikke i bruk
         return adr
     }
 

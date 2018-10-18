@@ -32,6 +32,11 @@ fun mapAnyToJson(data: Any): String {
 }
 fun mapAnyToJson(data: Any, nonempty: Boolean = false): String {
     return if (nonempty) {
+
+        val list = mutableListOf<String>()
+
+        list.add("2adfgadfg ")
+
         val json = jacksonObjectMapper()
                 .setDefaultPropertyInclusion(JsonInclude.Include.NON_EMPTY)
                 .writerWithDefaultPrettyPrinter()
@@ -57,6 +62,7 @@ enum class SedEnum (val sed: String) {
     P2000("P2000"),
     P2100("P2100"),
     P2200("P2200"),
+    P3000("P3000"),
     P4000("P4000"),
     P6000("P6000"),
     P5000("P5000"),
@@ -64,33 +70,13 @@ enum class SedEnum (val sed: String) {
     fun valid(sed: String): Boolean {
         return sed == this.sed
     }
+
 }
 
 //andre sed..
-val START_SED = "P2000,P2100,P2200"
-val STANDARD_SED = "P5000,P6000,P7000"         //= sedEnumToString()
-val ALL_SED = "P2000,P2100,P2200,P4000,P6000,P5000,P7000"
-
-//fun sedEnumToString(): String {
-//    return sedEnumToStringWidthSkip("P2000,P2100,P2200,P4000")
-//}
-
-//fun sedEnumToStringWidthSkip(skip: String = ""): String {
-//    val enumList = mutableListOf<SedEnum>()
-//    enumList.addAll(SedEnum.values().toList())
-//    if (skip.isNotEmpty()) {
-//        val enumExcludeList : List<String> = skip.split(",").map { it.trim() }
-//        enumExcludeList.forEach {
-//            enumList.remove(SedEnum.valueOf(it))
-//        }
-//    }
-//    val strb = StringBuilder()
-//    enumList.forEach {
-//        strb.append(it.sed).append(",")
-//    }
-//    strb.deleteCharAt(strb.length-1)
-//    return strb.toString()
-//}
+const val START_SED = "P2000,P2100,P2200"
+const val STANDARD_SED = "P3000,P5000,P6000,P7000"
+const val ALL_SED = "P2000,P2100,P2200,P3000,P4000,P6000,P5000,P7000"
 
 fun validsed(sed: String, validsed: String) : Boolean {
     val result: List<String> = validsed.split(",").map { it.trim() }
@@ -100,4 +86,3 @@ fun validsed(sed: String, validsed: String) : Boolean {
 fun XMLGregorianCalendar.simpleFormat(): String {
     return SimpleDateFormat("YYYY-MM-dd").format(this.toGregorianCalendar().time)
 }
-

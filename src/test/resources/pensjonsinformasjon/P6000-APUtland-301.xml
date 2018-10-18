@@ -15,7 +15,7 @@ xmlns:ns16="http://nav.no/pensjon/v1/vilkarsvurderingUforetrygd" xmlns:ns17="htt
         <ns6:datoFattetVedtak>2017-05-21T00:00:00+02:00</ns6:datoFattetVedtak>
     </pen:vedtak>
     <pen:person xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns2:v1.Person">
-        <ns2:pid>12345678912</ns2:pid>
+        <ns2:pid>01234567890</ns2:pid>
         <ns2:aktorId>Ingen</ns2:aktorId>
     </pen:person>
     <pen:trygdetidAvdodFarListe xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"></pen:trygdetidAvdodFarListe>
@@ -54,7 +54,7 @@ xmlns:ns16="http://nav.no/pensjon/v1/vilkarsvurderingUforetrygd" xmlns:ns17="htt
     </pen:trygdetidListe>
     <pen:ytelsePerMaanedListe xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns5:v1.YtelsePerMaanedListe">
         <ns5:ytelsePerMaanedListe>
-            <ns3:fom>2017-10-05T00:00:00+02:00</ns3:fom>
+            <ns3:fom>2017-05-01T00:00:00+02:00</ns3:fom>
             <ns3:mottarMinstePensjonsniva>false</ns3:mottarMinstePensjonsniva>
             <ns3:gjenlevendetilleggAnvendtAlderspensjon>false</ns3:gjenlevendetilleggAnvendtAlderspensjon>
             <ns3:yrkesskadeAnvendtAlderspensjon>false</ns3:yrkesskadeAnvendtAlderspensjon>
@@ -62,22 +62,22 @@ xmlns:ns16="http://nav.no/pensjon/v1/vilkarsvurderingUforetrygd" xmlns:ns17="htt
             <ns3:vurdertBeregningsmetodeFolketrygd>false</ns3:vurdertBeregningsmetodeFolketrygd>
             <ns3:vurdertBeregningsmetodeEOS>true</ns3:vurdertBeregningsmetodeEOS>
             <ns3:vurdertBeregningsmetodeNordisk>false</ns3:vurdertBeregningsmetodeNordisk>
-            <ns3:belop>10000</ns3:belop>
-            <ns3:belopUtenAvkorting>10000</ns3:belopUtenAvkorting>
+            <ns3:belop>11831</ns3:belop>
+            <ns3:belopUtenAvkorting>28410</ns3:belopUtenAvkorting>
             <ns3:ytelseskomponentListe>
                 <ns4:ytelsesKomponentType>GP</ns4:ytelsesKomponentType>
-                <ns4:belopTilUtbetaling>100</ns4:belopTilUtbetaling>
-                <ns4:belopUtenAvkorting>110</ns4:belopUtenAvkorting>
+                <ns4:belopTilUtbetaling>2719</ns4:belopTilUtbetaling>
+                <ns4:belopUtenAvkorting>2626</ns4:belopUtenAvkorting>
             </ns3:ytelseskomponentListe>
             <ns3:ytelseskomponentListe>
                 <ns4:ytelsesKomponentType>TP</ns4:ytelsesKomponentType>
-                <ns4:belopTilUtbetaling>220</ns4:belopTilUtbetaling>
-                <ns4:belopUtenAvkorting>230</ns4:belopUtenAvkorting>
+                <ns4:belopTilUtbetaling>8996</ns4:belopTilUtbetaling>
+                <ns4:belopUtenAvkorting>8685</ns4:belopUtenAvkorting>
             </ns3:ytelseskomponentListe>
             <ns3:ytelseskomponentListe>
                 <ns4:ytelsesKomponentType>SKJERMT</ns4:ytelsesKomponentType>
-                <ns4:belopTilUtbetaling>120</ns4:belopTilUtbetaling>
-                <ns4:belopUtenAvkorting>130</ns4:belopUtenAvkorting>
+                <ns4:belopTilUtbetaling>116</ns4:belopTilUtbetaling>
+                <ns4:belopUtenAvkorting>113</ns4:belopUtenAvkorting>
             </ns3:ytelseskomponentListe>
         </ns5:ytelsePerMaanedListe>
     </pen:ytelsePerMaanedListe>
@@ -85,5 +85,11 @@ xmlns:ns16="http://nav.no/pensjon/v1/vilkarsvurderingUforetrygd" xmlns:ns17="htt
         <ns7:sakType>ALDER</ns7:sakType>
         <ns7:uttakFor67>false</ns7:uttakFor67>
     </pen:sak>
+    <pen:vilkarsvurderingListe xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns17:v1.VilkarsvurderingListe">
+        <ns17:vilkarsvurderingListe>
+            <ns15:fom>2017-05-01T00:00:00+02:00</ns15:fom>
+            <ns15:resultatHovedytelse>INNV</ns15:resultatHovedytelse>
+        </ns17:vilkarsvurderingListe>
+    </pen:vilkarsvurderingListe>
     <pen:inngangOgEksport xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns10:v1.InngangOgEksport"></pen:inngangOgEksport>
 </pen:pensjonsinformasjon>

@@ -2,9 +2,10 @@ package no.nav.eessi.eessifagmodul.prefill
 
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.whenever
-import no.nav.eessi.eessifagmodul.models.*
-import no.nav.eessi.eessifagmodul.services.pensjonsinformasjon.PensjonsinformasjonService
-import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
+import no.nav.eessi.eessifagmodul.models.InstitusjonItem
+import no.nav.eessi.eessifagmodul.models.NavMock
+import no.nav.eessi.eessifagmodul.models.PensjonMock
+import no.nav.eessi.eessifagmodul.models.SED
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -31,15 +32,14 @@ class PrefillPersonTest(val index: Int, val sedid: String) {
     @Mock
     lateinit var preutfylling: PrefillPerson
 
+    @Mock
+    private lateinit var mockPrefillFactory: PrefillFactory
+
     private lateinit var mockPrefillSED: PrefillSED
 
-    private lateinit var prefill2000: PrefillP2000
-    private lateinit var prefill2100: PrefillP2100
-    private lateinit var prefill2200: PrefillP2200
-    private lateinit var prefillDefault: PrefillDefaultSED
-
     private lateinit var prefillDataMock: PrefillDataModel
-    private lateinit var mockPrefillFactory: PrefillFactory
+
+    private lateinit var prefillDefaultSED: PrefillDefaultSED
 
     @Before
     fun setup() {
@@ -49,16 +49,7 @@ class PrefillPersonTest(val index: Int, val sedid: String) {
         prefillDataMock = PrefillDataModel()
         preutfylling = PrefillPerson(prefillNav = mockPreutfyllingNav, prefilliPensjon = mockPreutfyllingPensjon)
 
-        prefillDefault = PrefillDefaultSED(preutfylling)
-        prefill2000 = PrefillP2000(preutfylling)
-        prefill2100 = PrefillP2100(preutfylling)
-        prefill2200 = PrefillP2200(preutfylling)
-
-        mockPrefillFactory = PrefillFactory()
-        mockPrefillFactory.prefill2000 = prefill2000
-        mockPrefillFactory.prefill2100 = prefill2100
-        mockPrefillFactory.prefill2200 = prefill2200
-        mockPrefillFactory.prefillDefault = prefillDefault
+        prefillDefaultSED = PrefillDefaultSED(preutfylling)
 
         mockPrefillSED = PrefillSED(mockPrefillFactory)
 
@@ -69,13 +60,14 @@ class PrefillPersonTest(val index: Int, val sedid: String) {
         @JvmStatic
         fun `collection data`(): Collection<Array<Any>> {
             return listOf(
-                    arrayOf(1, "P2000"),
-                    arrayOf(2, "P2100"),
-                    arrayOf(3, "P2200"),
-                    //arrayOf(4, "P4000"),
-                    arrayOf(5, "P5000"),
-                    arrayOf(6, "P6000"),
-                    arrayOf(7, "P7000")
+                    arrayOf(10, "P2000"),
+                    arrayOf(20, "P2100"),
+                    arrayOf(30, "P2200"),
+                    arrayOf(40, "P3000"),
+                    //arrayOf(50, "P4000"),
+                    arrayOf(60, "P5000"),
+                    arrayOf(70, "P6000"),
+                    arrayOf(80, "P7000")
             )
         }
     }
@@ -94,16 +86,19 @@ class PrefillPersonTest(val index: Int, val sedid: String) {
         //val pensjonresponse = Pensjon(gjenlevende = Bruker(person = Person(fornavn = "Dummy", etternavn = "Dummy")))
         whenever(mockPreutfyllingPensjon.prefill(any())).thenReturn(pensjonresponse)
 
+
         val items = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
         prefillDataMock.apply {
                 rinaSubject = "Pensjon"
-                sed = createSED(sedid)
+                sed = SED().create(sedid)
                 penSaksnummer = "12345"
                 buc = "P_BUC_06"
                 aktoerID = "1234"
                 personNr = "12345"
                 institution = items
         }
+
+        whenever(mockPrefillFactory.createPrefillClass(prefillDataMock)).thenReturn(prefillDefaultSED)
 
         val responseData = mockPrefillSED.prefill(prefillDataMock)
         assertNotNull(responseData)

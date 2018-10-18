@@ -38,9 +38,6 @@ data class InstitusjonItem(
 
 //Oppretter ny sed ut ifra navn (P2000-P4000-P5000-osv..)
 fun createSED(sedName: String): SED {
-    return SED (
-        sed = sedName,
-        sedVer = "0",
-        sedGVer = "4"
-    )
+    //TODO vil etterhvert utgå. SED().create(xx) tar over..
+    return SED().create(sedName)
 }

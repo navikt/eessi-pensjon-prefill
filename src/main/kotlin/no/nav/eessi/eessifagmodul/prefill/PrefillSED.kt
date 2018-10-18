@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component
 
 @Component
 /**
- * Deligate sed to dedicated prefillclass
+ * Deligate SED to dedicated prefillClass
  */
 class PrefillSED(private val factory: PrefillFactory) {
 
@@ -26,9 +26,11 @@ class PrefillSED(private val factory: PrefillFactory) {
         val starttime = System.currentTimeMillis()
 
         prefilling.prefill(prefillData)
+
         val endtime = System.currentTimeMillis()
         val tottime = endtime - starttime
 
+        //Metrics..
         logger.debug("Ferdig med prefillClass, Det tok $tottime ms")
         return prefillData
 

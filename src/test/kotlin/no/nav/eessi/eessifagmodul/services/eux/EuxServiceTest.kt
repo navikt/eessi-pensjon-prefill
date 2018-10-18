@@ -84,7 +84,7 @@ class EuxServiceTest {
         val mottaker = "DUMMY"
 
         val sed = SedMock().genererP6000Mock()
-        val sedAsJson = mapAnyToJson(sed)
+        //val sedAsJson = mapAnyToJson(sed)
 
         val bucType = "P_BUC_06" //p6000
         //val bucType = "P_BUC_01" //p2000
@@ -97,7 +97,7 @@ class EuxServiceTest {
         whenever(mockrestTemplate.exchange(anyString(), eq(HttpMethod.POST), any(), eq(String::class.java))).thenReturn(response)
 
         try {
-            val data = service.createCaseAndDocument(sedAsJson, bucType, fagSaknr, mottaker, vedleggType, korrid.toString())
+            val data = service.createCaseAndDocument(sed, bucType, fagSaknr, mottaker, vedleggType, korrid.toString())
             assertTrue("Skal komme hit!", true)
             logger.info("Response: $data")
             assertEquals("12345", data)

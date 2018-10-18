@@ -1,9 +1,8 @@
 package no.nav.eessi.eessifagmodul.prefill
 
 import no.nav.eessi.eessifagmodul.models.InstitusjonItem
-import no.nav.eessi.eessifagmodul.services.aktoerregister.AktoerregisterService
 import no.nav.eessi.eessifagmodul.models.SED
-import no.nav.eessi.eessifagmodul.models.createSED
+import no.nav.eessi.eessifagmodul.services.aktoerregister.AktoerregisterService
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -65,7 +64,7 @@ class PrefillDataModelTest {
         val items = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
         prefill.apply {
                 rinaSubject = "Pensjon"
-                sed =  createSED("P6000")
+                sed =  SED().create("P6000")
                 penSaksnummer = "12345"
                 buc = "P_BUC_06"
                 aktoerID = "567890"
@@ -86,7 +85,7 @@ class PrefillDataModelTest {
         val items = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
         prefill.apply {
             rinaSubject= "Pensjon"
-            sed = createSED("P6000")
+            sed = SED().create("P6000")
             penSaksnummer = "12345"
             buc = "P_BUC_06"
             aktoerID = "32"
