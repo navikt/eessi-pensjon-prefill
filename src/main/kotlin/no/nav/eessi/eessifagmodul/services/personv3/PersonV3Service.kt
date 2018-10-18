@@ -18,9 +18,6 @@ import org.springframework.web.filter.RequestContextFilter
 class PersonV3Service(val service: PersonV3, val oidcRequestContextHolder: OIDCRequestContextHolder) {
 
     fun hentPerson(fnr: String): HentPersonResponse {
-        val reqContextfilter = RequestContextFilter()
-        reqContextfilter.setThreadContextInheritable(true)
-
         val token = oidcRequestContextHolder.oidcValidationContext.getToken("oidc")
 
         configureRequestSamlTokenOnBehalfOfOidc(service, token.idToken)

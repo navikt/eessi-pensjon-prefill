@@ -15,41 +15,34 @@ abstract class PensjonData {
     private val logger: Logger by lazy { LoggerFactory.getLogger(PensjonData::class.java) }
 
     //K_SAK_T Kodeverk fra PESYS
-    enum class KSAK(val ksak: String) {
-        ALDER("ALDER"),
-        UFOREP("UFOREP"),
-        GJENLEV("GJENLEV"),
-        BARNEP("BARNEP");
-        fun valid(value: String): Boolean {
-            return this.ksak == value
-        }
+    enum class KSAK {
+        ALDER,
+        UFOREP,
+        GJENLEV,
+        BARNEP;
     }
 
     //K_KRAV_VELG_T Kodeverk fra PESYS
-    enum class KKRAV(val kkrav: String) {
-        AVDOD_MOR("AVDOD_MOR"),
-        AVDOD_FAR("AVDOD_FAR"),
-        FORELDRELOS("FORELDRELOS"),
-        MIL_INV("MIL_INV"),
-        MIL_GJENLEV("MIL_GJENLEV"),
-        MIL_BARNEP("MIL_BARNEP"),
-        SIVIL_INV("SIVIL_INV"),
-        SIVIL_GJENLEV("SIVIL_GJENLEV"),
-        SIVIL_BARNEP("SIVIL_BARNEP"),
-        FORELOPIG("FORELOPIG"),
-        VARIG("VARIG"),
-        UP("UP"),
-        EP("EP"),
-        BP("BP"),
-        NSB("NSB");
-        fun valid(value: String): Boolean {
-            return this.kkrav== value
-        }
+    enum class KKRAV {
+        AVDOD_MOR,
+        AVDOD_FAR,
+        FORELDRELOS,
+        MIL_INV,
+        MIL_GJENLEV,
+        MIL_BARNEP,
+        SIVIL_INV,
+        SIVIL_GJENLEV,
+        SIVIL_BARNEP,
+        FORELOPIG,
+        VARIG,
+        UP,
+        EP,
+        BP,
+        NSB;
     }
 
     init {
         logger.debug("PensjonData")
-        //val gjelderKrav = KravSakFullService()
     }
 
     fun harBoddArbeidetUtland(pendata: Pensjonsinformasjon): Boolean {
@@ -114,13 +107,6 @@ abstract class PensjonData {
         return ""
     }
 
-    fun hentVurdertBeregningsmetodeFolketrygd(pendata: Pensjonsinformasjon): Boolean {
-        pendata.ytelsePerMaanedListe.ytelsePerMaanedListe.forEach {
-            return it.isVurdertBeregningsmetodeFolketrygd
-        }
-        return false
-    }
-
     fun hentGrunnPerson(pendata: Pensjonsinformasjon?): Boolean {
         return pendata?.trygdeavtale?.isErArt10BruktGP ?: false
     }
@@ -129,13 +115,6 @@ abstract class PensjonData {
         return pendata?.trygdeavtale?.isErArt10BruktTP?: false
     }
 
-
-    fun hentVurdertBeregningsmetodeEOS(pendata: Pensjonsinformasjon): Boolean {
-        pendata.ytelsePerMaanedListe.ytelsePerMaanedListe.forEach {
-            return it.isVurdertBeregningsmetodeEOS
-        }
-        return false
-    }
 
     fun hentVurdertBeregningsmetodeNordisk(pendata: Pensjonsinformasjon): Boolean {
         pendata.ytelsePerMaanedListe.ytelsePerMaanedListe.forEach {
@@ -186,7 +165,6 @@ abstract class PensjonData {
         }
         return false
     }
-
 
     //hjelpefunkjson for isMottarMinstePensjonsniva
     //Uføretrygd og beregnet ytelse er på minstenivå (minsteytelse)

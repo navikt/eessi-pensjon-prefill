@@ -16,15 +16,15 @@ class NavFodselsnummer(private val fodselsnummer: String) {
         return fodselsnummer
     }
 
-    fun getDayInMonth(): String {
+    private fun getDayInMonth(): String {
         return parseDNumber(getValue()).substring(0, 2)
     }
 
-    fun getMonth(): String {
+    private fun getMonth(): String {
         return parseDNumber(getValue()).substring(2, 4)
     }
 
-    fun get2DigitBirthYear(): String {
+    private fun get2DigitBirthYear(): String {
         return getValue().substring(4, 6)
     }
 
@@ -32,7 +32,7 @@ class NavFodselsnummer(private val fodselsnummer: String) {
         return getCentury() + get2DigitBirthYear()
     }
 
-    fun getCentury(): String {
+    private fun getCentury(): String {
         val individnummerInt = Integer.parseInt(getIndividnummer())
         val birthYear = Integer.parseInt(get2DigitBirthYear())
 

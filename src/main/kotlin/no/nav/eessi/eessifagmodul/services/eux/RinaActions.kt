@@ -20,9 +20,8 @@ class RinaActions(private val euxService: EuxService) {
     fun canUpdate(sed: String, rinanr: String): Boolean {
         return isActionPossible(sed, rinanr, update, 1)
     }
-
     fun canCreate(sed: String, rinanr: String): Boolean {
-        return isActionPossible(sed, rinanr, create, 5)
+        return isActionPossible(sed, rinanr, create, 30)
     }
 
     fun isActionPossible(sed: String, euxCaseId: String, keyWord: String, maxLoop: Int = 1): Boolean {

@@ -694,8 +694,7 @@ class PrefillPensjonVedtak: PensjonData() {
         if (pendata.vilkarsvurderingListe == null || pendata.vilkarsvurderingListe.vilkarsvurderingListe == null) {
             return null
         }
-
-        val sakType = pendata.sak.sakType
+        val sakType = KSAK.valueOf(pendata.sak.sakType)
 
         val avslag_vilkarsproving = hentVilkarsResultatHovedytelse(pendata) == "AVSLAG"
 
@@ -727,32 +726,32 @@ class PrefillPensjonVedtak: PensjonData() {
         logger.debug("                  erALDER: $erALDER")
 
         //pkt1 og pkt.9
-        if ((KSAK.ALDER.valid(sakType) || KSAK.BARNEP.valid(sakType) || KSAK.GJENLEV.valid(sakType))  && harBoddArbeidetUtland && erTrygdetidListeTom && avslag_vilkarsproving)
+        if ((KSAK.ALDER == sakType || KSAK.BARNEP == sakType || KSAK.GJENLEV == sakType)  && harBoddArbeidetUtland && erTrygdetidListeTom && avslag_vilkarsproving)
             return "01"
 
         //pkt.2 og pkt.10
-        if ((KSAK.ALDER.valid(sakType) || KSAK.BARNEP.valid(sakType) || KSAK.GJENLEV.valid(sakType)) && harBoddArbeidetUtland && erTrygdeTid(pendata) && avslag_vilkarsproving)
+        if ((KSAK.ALDER == sakType || KSAK.BARNEP == sakType || KSAK.GJENLEV == sakType) && harBoddArbeidetUtland && erTrygdeTid(pendata) && avslag_vilkarsproving)
             return "02"
 
-        if (KSAK.ALDER.valid(sakType) && harBoddArbeidetUtland && erLAVT_TIDLIG_UTTAK && avslag_vilkarsproving)
+        if (KSAK.ALDER == sakType && harBoddArbeidetUtland && erLAVT_TIDLIG_UTTAK && avslag_vilkarsproving)
             return "03"
 
-        if (KSAK.ALDER.valid(sakType) && harBoddArbeidetUtland && erUNDER_62 && avslag_vilkarsproving)
+        if (KSAK.ALDER == sakType && harBoddArbeidetUtland && erUNDER_62 && avslag_vilkarsproving)
             return "06"
         //hentVilkarsvurderingUforetrygd
-        if (KSAK.UFOREP.valid(sakType) && harBoddArbeidetUtland && erALDER && avslag_vilkarsproving)
+        if (KSAK.UFOREP == sakType && harBoddArbeidetUtland && erALDER && avslag_vilkarsproving)
             return "03"
 
-        if (KSAK.UFOREP.valid(sakType) && harBoddArbeidetUtland && (erHENSIKTSMESSIG_BEH || erHENS_ARBRETT_TILTAK) && avslag_vilkarsproving)
+        if (KSAK.UFOREP == sakType && harBoddArbeidetUtland && (erHENSIKTSMESSIG_BEH || erHENS_ARBRETT_TILTAK) && avslag_vilkarsproving)
             return "08"
         //
-        if (KSAK.UFOREP.valid(sakType) && harBoddArbeidetUtland && erNEDSATT_INNT_EVNE && avslag_vilkarsproving)
+        if (KSAK.UFOREP == sakType && harBoddArbeidetUtland && erNEDSATT_INNT_EVNE && avslag_vilkarsproving)
             return "04"
         //
-        if (KSAK.UFOREP.valid(sakType) && harBoddArbeidetUtland && erTrygdeTid(pendata) && erFORUT_MEDL && avslag_vilkarsproving)
+        if (KSAK.UFOREP == sakType && harBoddArbeidetUtland && erTrygdeTid(pendata) && erFORUT_MEDL && avslag_vilkarsproving)
             return "02"
         //pkt.5
-        if (KSAK.UFOREP.valid(sakType) && harBoddArbeidetUtland && pendata.trygdetidListe.trygdetidListe.isEmpty() && erFORUT_MEDL && avslag_vilkarsproving)
+        if (KSAK.UFOREP == sakType && harBoddArbeidetUtland && pendata.trygdetidListe.trygdetidListe.isEmpty() && erFORUT_MEDL && avslag_vilkarsproving)
             return "01"
 
         //siste..   pendata.sak.sakType alle..

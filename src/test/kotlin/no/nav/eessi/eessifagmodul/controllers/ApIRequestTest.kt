@@ -16,8 +16,8 @@ import kotlin.test.assertTrue
 
 class ApIRequestTest {
 
-    private val printout = true
-    private val printsed = true
+    private val printout = false
+    private val printsed = false
 
     fun createMockApiRequest(sedName: String, buc: String, payload: String): ApiController.ApiRequest {
         val items = listOf(InstitusjonItem(country = "NO", institution = "NAVT003"))

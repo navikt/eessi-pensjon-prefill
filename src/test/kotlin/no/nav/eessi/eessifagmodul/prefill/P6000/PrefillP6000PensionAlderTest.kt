@@ -114,4 +114,13 @@ class PrefillP6000PensionAlderTest: AbstractPensionDataFromPESYSTests() {
     }
 
 
+    @Test
+    fun `sjekke enum correct value`() {
+
+        val sakType = PensjonData.KSAK.valueOf("ALDER")
+
+        assertEquals(sakType, PensjonData.KSAK.ALDER)
+
+    }
+
 }

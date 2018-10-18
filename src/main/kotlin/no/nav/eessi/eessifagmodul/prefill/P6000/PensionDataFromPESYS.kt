@@ -19,13 +19,10 @@ class PensionDataFromPESYS(private val pensjonsinformasjonService: Pensjonsinfor
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PensionDataFromPESYS::class.java) }
 
-    final var reduksjon: PrefillPensjonReduksjon
-
-    final var tilleggsinformasjon: PrefillPensjonTilleggsinformasjon
-
-    final  var pensjonSak: PrefillPensjonSak
-
-    final  var pensjonVedtak: PrefillPensjonVedtak
+    private final val reduksjon: PrefillPensjonReduksjon
+    final val tilleggsinformasjon: PrefillPensjonTilleggsinformasjon
+    private final val pensjonSak: PrefillPensjonSak
+    final val pensjonVedtak: PrefillPensjonVedtak
 
     init {
         logger.debug("\nLaster opp hjelperklasser for preutfylling.")
