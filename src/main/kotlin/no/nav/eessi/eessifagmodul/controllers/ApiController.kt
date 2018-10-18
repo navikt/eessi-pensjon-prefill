@@ -115,72 +115,6 @@ class ApiController(private val euxService: EuxService, private val prefillServi
 
     }
 
-//    //validatate request and convert to PrefillDataModel
-//    fun buildPrefillDataModel(request: ApiRequest): PrefillDataModel {
-//        return when  {
-//            request.caseId == null -> throw IkkeGyldigKallException("Mangler Saksnummer")
-//            request.sed == null -> throw IkkeGyldigKallException("Mangler SED")
-//            request.pinid == null -> throw IkkeGyldigKallException("Mangler AktoerID")
-//
-//            //Denne validering og utfylling kan benyttes på SED P2000,P2100,P2200
-//            validsed(request.sed , START_SED) -> {
-//                if (request.buc == null)  throw IkkeGyldigKallException("Mangler BUC")
-//                if (request.subjectArea == null)  throw IkkeGyldigKallException("Mangler Subjekt/Sektor")
-//                if (request.institutions == null) throw IkkeGyldigKallException("Mangler Institusjoner")
-//
-//                println("P2000,P2100,P2200 -> SED: ${request.sed}")
-//                val pinid = hentAktoerIdPin(request.pinid)
-//                PrefillDataModel().apply {
-//                    penSaksnummer = request.caseId
-//                    buc = request.buc
-//                    rinaSubject = request.subjectArea
-//                    sed =  SED().create(request.sed)
-//                    aktoerID = request.pinid
-//                    personNr = pinid
-//                    institution = request.institutions
-//                }
-//            }
-//            //P3000. P6000. ..
-//            validsed(request.sed , STANDARD_SED) -> {
-//                println("P3000, P5000, P6000 -> SED: ${request.sed}")
-//                if (request.euxCaseId == null) { throw IkkeGyldigKallException("Mangler euxCaseId (RINANR)") }
-//                if (request.vedtakId == null) { throw IkkeGyldigKallException("Mangler vedtaksId") }
-//                val pinid = hentAktoerIdPin(request.pinid)
-//                PrefillDataModel().apply {
-//                    penSaksnummer = request.caseId
-//                    //buc = request.buc
-//                    //rinaSubject = request.subjectArea
-//                    sed =  SED().create(request.sed)
-//                    aktoerID = request.pinid
-//                    personNr = pinid
-//                    //institution = request.institutions
-//                    euxCaseID = request.euxCaseId
-//                    vedtakId = request.vedtakId
-//                }
-//            }
-//            //denne validering og utfylling kan kun benyttes på SED P4000
-//            SedEnum.P4000.valid(request.sed) -> {
-//                println("P4000 only -> SED: ${request.sed}")
-//                if (request.payload == null) { throw IkkeGyldigKallException("Mangler metadata, payload") }
-//                if (request.euxCaseId == null) { throw IkkeGyldigKallException("Mangler euxCaseId (RINANR)") }
-//                val pinid = hentAktoerIdPin(request.pinid)
-//
-//                PrefillDataModel().apply {
-//                    penSaksnummer = request.caseId
-//                    //buc = request.buc
-//                    //rinaSubject = request.subjectArea
-//                    sed = SED().create(request.sed)
-//                    aktoerID = request.pinid
-//                    personNr = pinid
-//                    //institution = request.institutions
-//                    partSedasJson.put(request.sed, request.payload)
-//                    euxCaseID = request.euxCaseId
-//                }
-//            }
-//            else -> throw IkkeGyldigKallException("Mangler SED, eller ugyldig type SED")
-//        }
-//    }
-
     //validatate request and convert to PrefillDataModel
     fun buildPrefillDataModelOnExisting(request: ApiRequest): PrefillDataModel {
         return when {
@@ -194,13 +128,11 @@ class ApiController(private val euxService: EuxService, private val prefillServi
                 val pinid = hentAktoerIdPin(request.pinid)
                 PrefillDataModel().apply {
                     penSaksnummer = request.caseId
-                    //buc = request.buc
-                    //rinaSubject = request.subjectArea
-                    //institution = request.institutions
                     sed = SED().create(request.sed)
                     aktoerID = request.pinid
                     personNr = pinid
                     euxCaseID = request.euxCaseId
+
                     vedtakId = request.vedtakId ?: ""
                     partSedasJson.put(request.sed, request.payload ?: "")
                 }
@@ -231,6 +163,7 @@ class ApiController(private val euxService: EuxService, private val prefillServi
                     aktoerID = request.pinid
                     personNr = pinid
                     institution = request.institutions
+
                     vedtakId = request.vedtakId ?: ""
                 }
             }
@@ -245,20 +178,14 @@ class ApiController(private val euxService: EuxService, private val prefillServi
             request.caseId == null -> throw IkkeGyldigKallException("Mangler Saksnummer")
             request.sed == null -> throw IkkeGyldigKallException("Mangler SED")
             request.pinid == null -> throw IkkeGyldigKallException("Mangler AktoerID")
-            //request.buc == null -> throw IkkeGyldigKallException("Mangler BUC")
-            //request.subjectArea == null -> throw IkkeGyldigKallException("Mangler Subjekt/Sektor")
-            //request.institutions == null -> throw IkkeGyldigKallException("Mangler Institusjoner")
 
             validsed(request.sed , ALL_SED) -> {
                 PrefillDataModel().apply {
-                    //buc = request.buc
-                    //rinaSubject = request.subjectArea
-                    //institution = request.institutions
-                    //euxCaseID = request.euxCaseId ?: ""
                     penSaksnummer = request.caseId
                     sed = SED().create(request.sed)
                     aktoerID = request.pinid
                     personNr = hentAktoerIdPin(request.pinid)
+
                     vedtakId = request.vedtakId ?: ""
                     if (request.payload != null) {
                         partSedasJson.put(request.sed, request.payload)
@@ -282,7 +209,6 @@ class ApiController(private val euxService: EuxService, private val prefillServi
             val subjectArea: String? = null,
             //PEN-saksnummer
             val caseId: String? = null,
-
             val vedtakId: String? = null,
             val buc: String? = null,
             val sed : String? = null,
@@ -301,5 +227,26 @@ class ApiController(private val euxService: EuxService, private val prefillServi
             val mockSED: Boolean? = null
     )
 
+    data class NewApiRequest(
+            //rina-metadata
+            val sector: String? = null,
+            val euxCaseId: String? = null,
+            val buc: String? = null,
+            val sed : String,
+            val institutions: List<InstitusjonItem>? = null,
+
+            //pen-metadata
+            val penSaksnr: String,
+            val penVedtakId: String? = null,
+            val penKravId: String? = null,
+            val aktoerId: String,
+
+            //payload (p4000.. )
+            val payload: String? = null,
+
+            //other
+            val sendsed: Boolean? = null,
+            val mockSED: Boolean? = null
+    )
 
 }

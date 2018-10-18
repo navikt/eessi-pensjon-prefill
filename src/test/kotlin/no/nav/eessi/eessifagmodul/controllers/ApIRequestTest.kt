@@ -1,5 +1,6 @@
 package no.nav.eessi.eessifagmodul.controllers
 
+import com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException
 import no.nav.eessi.eessifagmodul.models.InstitusjonItem
 import no.nav.eessi.eessifagmodul.models.SED
 import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
@@ -60,6 +61,54 @@ class ApIRequestTest {
         println(json)
         println("------------------------------------------------------------------------------------------------------")
     }
+
+    @Test
+    fun `generate new  apirequest json`() {
+
+        val req = ApiController.NewApiRequest(
+            sector =  "Pensjon",
+            euxCaseId = null,
+            buc = null,
+            sed = "P2000",
+            institutions = listOf( InstitusjonItem("NO", "NAV003")),
+
+            //pen-metadata
+            penSaksnr = "123456789",
+            penVedtakId = "123" ,
+            aktoerId = "123456789000",
+
+            //payload (p4000.. )
+            payload = null
+        )
+
+        val json = mapAnyToJson(req)
+
+        println(json)
+
+        val req2 = ApiController.NewApiRequest(aktoerId = "123", penSaksnr = "12312", sed = "P33")
+        println(mapAnyToJson(req2))
+
+    }
+
+    @Test(expected = MissingKotlinParameterException::class)
+    fun `generate new api request fail missing SED`() {
+        val req2json ="{\n" +
+                "  \"sector\" : null,\n" +
+                "  \"euxCaseId\" : null,\n" +
+                "  \"buc\" : null,\n" +
+                "  \"sed\" : null,\n" +
+                "  \"institutions\" : null,\n" +
+                "  \"penSaksnr\" : \"12312\",\n" +
+                "  \"penVedtakId\" : null,\n" +
+                "  \"penKravId\" : null,\n" +
+                "  \"aktoerId\" : \"123\",\n" +
+                "  \"payload\" : null,\n" +
+                "  \"sendsed\" : null,\n" +
+                "  \"mockSED\" : null\n" +
+                "}"
+        mapJsonToAny(req2json, typeRefs<ApiController.NewApiRequest>())
+    }
+
 
     @Test
     fun `generate request mock payload of SED P2000`() {
