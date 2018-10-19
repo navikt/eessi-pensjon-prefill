@@ -89,8 +89,7 @@ abstract class PensjonData {
     fun hentYtelseskomponentBelop(keys: String, ytelse: V1YtelsePerMaaned) : Int {
         val keylist = keys.split(",")
         var summer = 0
-        keylist.forEach { it ->
-            val keyword = it
+        keylist.forEach { keyword ->
             ytelse.ytelseskomponentListe.forEach { it2 ->
                 if (keyword.trim() == it2.ytelsesKomponentType) {
                     summer += it2.belopTilUtbetaling

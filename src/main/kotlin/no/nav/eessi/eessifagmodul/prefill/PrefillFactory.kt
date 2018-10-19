@@ -38,7 +38,7 @@ class PrefillFactory {
 
     fun createPrefillClass(prefillData: PrefillDataModel): Prefill<SED> {
         val sedValue = SedEnum.valueOf(prefillData.getSEDid())
-        logger.debug("mapping prefillClass to SED: ${sedValue.sed}")
+        logger.debug("mapping prefillClass to SED: $sedValue")
 
         return when(sedValue) {
             SedEnum.P6000 -> {
@@ -64,7 +64,7 @@ class PrefillFactory {
             else -> {
                 //"P5000" -> {
                 return when {
-                    validsed(sedValue.sed, ALL_SED) ->  {
+                    validsed(sedValue.name, ALL_SED) ->  {
                         prefillDefault
                     }
                     else -> throw IllegalArgumentException("Mangler SED, eller ugyldig type SED")
