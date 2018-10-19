@@ -82,7 +82,7 @@ class ApiControllerTest {
                 euxCaseId = mockResponse,
                 vedtakId = "1234567",
                 institutions = items,
-                sed = "vedtak",
+                sed = "P6000",
                 buc = "P_BUC_06",
                 pinid = "0105094340092"
         )
@@ -112,7 +112,7 @@ class ApiControllerTest {
                 vedtakId = "123456",
                 institutions = items,
                 euxCaseId = "1234567",
-                sed = "vedtak",
+                sed = "P6000",
                 buc = "P_BUC_02",
                 pinid = "0105094340092"
         )
@@ -140,7 +140,7 @@ class ApiControllerTest {
                 vedtakId = "1234567",
                 institutions = listOf(InstitusjonItem("NO", "DUMMY")),
                 euxCaseId = "1234567890",
-                sed = "vedtak",
+                sed = "P6000",
                 buc = "P_BUC_06",
                 pinid = "0105094340092"
         )
@@ -154,7 +154,7 @@ class ApiControllerTest {
         val response = apiController.confirmDocument(mockData)
 
         assertNotNull(response)
-        assertEquals("vedtak", response.sed)
+        assertEquals("P6000", response.sed)
         assertEquals("Dummy", response.nav?.bruker?.person?.fornavn)
         assertEquals("Dummy", response.nav?.bruker?.person?.etternavn)
     }
@@ -165,7 +165,7 @@ class ApiControllerTest {
                 subjectArea = "Pensjon",
                 //caseId = "EESSI-PEN-123",
                 institutions = listOf(InstitusjonItem("NO", "DUMMY")),
-                sed = "vedtak",
+                sed = "P6000",
                 buc = "P_BUC_06",
                 pinid = "0105094340092"
         )
@@ -214,7 +214,7 @@ class ApiControllerTest {
     fun `check on pinID is null`() {
         val mockData = ApiController.ApiRequest(
                 caseId = "1213123123",
-                sed = "vedtak",
+                sed = "P6000",
                 pinid = null
         )
         apiController.confirmDocument(mockData)
