@@ -1,4 +1,4 @@
-package no.nav.eessi.eessifagmodul.prefill.P6000
+package no.nav.eessi.eessifagmodul.prefill.vedtak
 
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.whenever
@@ -66,7 +66,7 @@ abstract class AbstractPensionDataFromPESYSTests {
         val sed = prefill.sed
         sed.pensjon = result
         val json = sed.toJson()
-        println("P6000")
+        println("vedtak")
         println("----------------------------------------------------------------------\n")
         println(json)
         println("----------------------------------------------------------------------\n")
@@ -190,7 +190,7 @@ abstract class AbstractPensionDataFromPESYSTests {
 
     @Test(expected = IllegalArgumentException::class)
     fun `preutfylling P6000 feiler ved mangler av vedtakId`() {
-        prefill = generatePrefillData(68, "P6000")
+        prefill = generatePrefillData(68, "vedtak")
         prefill.vedtakId = ""
         dataFromPESYS.prefill(prefill)
 
@@ -289,7 +289,7 @@ abstract class AbstractPensionDataFromPESYSTests {
 
     @Test(expected = java.lang.IllegalArgumentException::class)
     fun `feiler ved boddArbeidetUtland ikke sann`() {
-        prefill = generatePrefillData(66, "P6000")
+        prefill = generatePrefillData(66, "vedtak")
         val pensjonsinformasjonService1 = PensjonsinformasjonService(pensjonsinformasjonRestTemplate, RequestBuilder())
         val dataFromPESYS2 = PensionDataFromPESYS(pensjonsinformasjonService1)
         whenever(pensjonsinformasjonRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java))).thenReturn(readXMLresponse("P6000-AP-101.xml"))

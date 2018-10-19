@@ -1,4 +1,4 @@
-package no.nav.eessi.eessifagmodul.prefill.P6000
+package no.nav.eessi.eessifagmodul.prefill.vedtak
 
 import no.nav.eessi.eessifagmodul.models.IkkeGyldigKallException
 import no.nav.eessi.eessifagmodul.models.Pensjon
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component
 
 @Component
 /**
- * Hjelpe klasse for P6000 som fyller ut NAV-SED med pensjondata fra PESYS.
+ * Hjelpe klasse for vedtak som fyller ut NAV-SED med pensjondata fra PESYS.
  */
 class PensionDataFromPESYS(private val pensjonsinformasjonService: PensjonsinformasjonService): PensjonData(), Prefill<Pensjon>  {
 
@@ -59,7 +59,7 @@ class PensionDataFromPESYS(private val pensjonsinformasjonService: Pensjonsinfor
         logger.debug("----------------------------------------------------------")
         val starttime = System.nanoTime()
 
-        logger.debug("Starter [P6000] Preutfylling Utfylling Data")
+        logger.debug("Starter [vedtak] Preutfylling Utfylling Data")
 
         logger.debug("vedtakId: $vedtakId")
         logger.debug("Henter pensjondata fra PESYS")
@@ -72,7 +72,7 @@ class PensionDataFromPESYS(private val pensjonsinformasjonService: Pensjonsinfor
         logger.debug("Ferdig hentet pensjondata fra PESYS. Det tok ${(tottime/1.0e9)} sekunder.")
         logger.debug("----------------------------------------------------------")
 
-        if (!harBoddArbeidetUtland(pendata)) throw IkkeGyldigKallException("Har ikke bodd eller arbeidet i utlandet. Avslutter P6000")
+        if (!harBoddArbeidetUtland(pendata)) throw IkkeGyldigKallException("Har ikke bodd eller arbeidet i utlandet. Avslutter vedtak")
 
         //prefill Pensjon obj med data fra PESYS. (pendata)
         return Pensjon(

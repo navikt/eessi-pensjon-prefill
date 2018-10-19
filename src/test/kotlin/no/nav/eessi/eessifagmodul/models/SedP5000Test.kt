@@ -23,7 +23,7 @@ class SedP5000Test {
         assertNotNull(navSedP5000)
 
         val json = mapAnyToJson(navSedP5000, true)
-        //map json back to P6000 obj
+        //map json back to vedtak obj
         val pensjondata = mapJsonToAny(json, typeRefs<SED>())
         assertNotNull(pensjondata)
         assertEquals(navSedP5000, pensjondata)

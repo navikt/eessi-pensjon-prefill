@@ -1,7 +1,7 @@
 package no.nav.eessi.eessifagmodul.prefill
 
 import no.nav.eessi.eessifagmodul.models.SED
-import no.nav.eessi.eessifagmodul.prefill.P6000.PrefillP6000
+import no.nav.eessi.eessifagmodul.prefill.vedtak.PrefillP6000
 import no.nav.eessi.eessifagmodul.utils.ALL_SED
 import no.nav.eessi.eessifagmodul.utils.SedEnum
 import no.nav.eessi.eessifagmodul.utils.validsed

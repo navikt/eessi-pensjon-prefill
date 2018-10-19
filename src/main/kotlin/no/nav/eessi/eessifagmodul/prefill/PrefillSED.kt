@@ -1,13 +1,7 @@
 package no.nav.eessi.eessifagmodul.prefill
 
-import no.nav.eessi.eessifagmodul.models.SED
-import no.nav.eessi.eessifagmodul.utils.STANDARD_SED
-import no.nav.eessi.eessifagmodul.utils.SedEnum
-import no.nav.eessi.eessifagmodul.utils.validsed
-import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 @Component

@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component
 class PrefillPensjon(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS): Prefill<Pensjon> {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillPensjon::class.java) }
-    //private val validseds : List<String> = listOf("P6000", "P4000", "P2000", "P2200", "P5000")
+    //private val validseds : List<String> = listOf("vedtak", "P4000", "P2000", "P2200", "P5000")
     private val validseds = ALL_SED.split(",")
     //private val validseds : List<String> = listOf()
 
@@ -21,7 +21,7 @@ class PrefillPensjon(private val preutfyllingPersonFraTPS: PrefillPersonDataFrom
 
     private fun pensjon(utfyllingData: PrefillDataModel): Pensjon {
 
-        //min krav for P6000,P2000,P5000,P4000?
+        //min krav for vedtak,P2000,P5000,P4000?
         //validere om vi kan preutfylle for angitt SED
         if (validseds.contains(utfyllingData.getSEDid())) {
             //norskident pnr.

@@ -1,4 +1,4 @@
-package no.nav.eessi.eessifagmodul.prefill.P6000
+package no.nav.eessi.eessifagmodul.prefill.vedtak
 
 import com.google.common.base.Preconditions
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
@@ -65,7 +65,7 @@ abstract class PensjonData {
         //days =  70 -> 30 > 70 && 70 < 360   - true
         //days =  15 -> 30 > 15 && 15 < 360   - false
         //days = 500 -> 30 > 500 && 500 < 360 - false
-        return days > storreEnn && days < mindreEnn
+        return days in (storreEnn + 1)..(mindreEnn - 1)
     }
 
     fun summerTrygdeTid(trygdeListe: V1TrygdetidListe): Int {
@@ -78,7 +78,7 @@ abstract class PensjonData {
             logger.debug("              SummerTrygdeTid: $nrdays  fom: $fom  tom: $tom ")
             daylist.add(nrdays.toInt())
         }
-        var days: Int = 0
+        var days = 0
         daylist.forEach {
             days += it
         }
@@ -89,10 +89,11 @@ abstract class PensjonData {
     fun hentYtelseskomponentBelop(keys: String, ytelse: V1YtelsePerMaaned) : Int {
         val keylist = keys.split(",")
         var summer = 0
-        keylist.forEach { val keyword = it
-            ytelse.ytelseskomponentListe.forEach {
-                if (keyword.trim() == it.ytelsesKomponentType) {
-                    summer += it.belopTilUtbetaling
+        keylist.forEach { it ->
+            val keyword = it
+            ytelse.ytelseskomponentListe.forEach { it2 ->
+                if (keyword.trim() == it2.ytelsesKomponentType) {
+                    summer += it2.belopTilUtbetaling
                 }
             }
         }
@@ -155,7 +156,7 @@ abstract class PensjonData {
     fun hentSisteYtelsePerMaaned(pendata: Pensjonsinformasjon): V1YtelsePerMaaned{
         val ytelseprmnd = pendata.ytelsePerMaanedListe
         val liste = ytelseprmnd.ytelsePerMaanedListe as List<V1YtelsePerMaaned>
-        return liste.sortedBy{ it.fom.toGregorianCalendar() }.toList().get(liste.size-1)
+        return liste.asSequence().sortedBy{ it.fom.toGregorianCalendar() }.toList()[liste.size-1]
     }
 
 

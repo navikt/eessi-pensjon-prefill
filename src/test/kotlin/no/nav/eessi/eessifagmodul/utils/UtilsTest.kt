@@ -14,7 +14,7 @@ class UtilsTest {
 
         val result = STANDARD_SED
         assertNotNull(result)
-        assertEquals("P3000,P5000,P6000,P7000", result)
+        assertEquals("P3000,P5000,vedtak,P7000", result)
 
     }
 
@@ -34,16 +34,16 @@ class UtilsTest {
     fun `check variables containing SED`() {
         //val funlist = sedEnumToStringWidthSkip("P4000")
         val funlist = START_SED+","+STANDARD_SED
-        assertEquals("P2000,P2100,P2200,P3000,P5000,P6000,P7000", funlist)
+        assertEquals("P2000,P2100,P2200,P3000,P5000,vedtak,P7000", funlist)
 
         val all = ALL_SED
-        assertEquals("P2000,P2100,P2200,P3000,P4000,P6000,P5000,P7000", all)
+        assertEquals("P2000,P2100,P2200,P3000,P4000,vedtak,P5000,P7000", all)
 
         val start = START_SED
         assertEquals("P2000,P2100,P2200", start)
 
         val standard = STANDARD_SED
-        assertEquals("P3000,P5000,P6000,P7000", standard)
+        assertEquals("P3000,P5000,vedtak,P7000", standard)
     }
 
     @Test

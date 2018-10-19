@@ -5,13 +5,11 @@ import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.whenever
 import no.nav.eessi.eessifagmodul.models.*
 import no.nav.eessi.eessifagmodul.prefill.*
-import no.nav.eessi.eessifagmodul.prefill.P6000.PrefillP6000
 import no.nav.eessi.eessifagmodul.services.LandkodeService
 import no.nav.eessi.eessifagmodul.services.PrefillService
 import no.nav.eessi.eessifagmodul.services.aktoerregister.AktoerregisterService
 import no.nav.eessi.eessifagmodul.services.eux.EuxService
 import no.nav.eessi.eessifagmodul.services.eux.RinaActions
-import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -64,7 +62,7 @@ class ApiControllerTest {
 
     @Test
     fun `create frontend request`() {
-        val json = "{\"institutions\":[{\"country\":\"NO\",\"institution\":\"DUMMY\"}],\"buc\":\"P_BUC_06\",\"sed\":\"P6000\",\"caseId\":\"caseId\",\"actorId\":\"0105094340092\"}"
+        val json = "{\"institutions\":[{\"country\":\"NO\",\"institution\":\"DUMMY\"}],\"buc\":\"P_BUC_06\",\"sed\":\"vedtak\",\"caseId\":\"caseId\",\"actorId\":\"0105094340092\"}"
         //map json request back to FrontendRequest obj
         val map = jacksonObjectMapper()
         val req = map.readValue(json, ApiController.ApiRequest::class.java)
@@ -84,7 +82,7 @@ class ApiControllerTest {
                 euxCaseId = mockResponse,
                 vedtakId = "1234567",
                 institutions = items,
-                sed = "P6000",
+                sed = "vedtak",
                 buc = "P_BUC_06",
                 pinid = "0105094340092"
         )
@@ -114,7 +112,7 @@ class ApiControllerTest {
                 vedtakId = "123456",
                 institutions = items,
                 euxCaseId = "1234567",
-                sed = "P6000",
+                sed = "vedtak",
                 buc = "P_BUC_02",
                 pinid = "0105094340092"
         )
@@ -142,7 +140,7 @@ class ApiControllerTest {
                 vedtakId = "1234567",
                 institutions = listOf(InstitusjonItem("NO", "DUMMY")),
                 euxCaseId = "1234567890",
-                sed = "P6000",
+                sed = "vedtak",
                 buc = "P_BUC_06",
                 pinid = "0105094340092"
         )
@@ -156,7 +154,7 @@ class ApiControllerTest {
         val response = apiController.confirmDocument(mockData)
 
         assertNotNull(response)
-        assertEquals("P6000", response.sed)
+        assertEquals("vedtak", response.sed)
         assertEquals("Dummy", response.nav?.bruker?.person?.fornavn)
         assertEquals("Dummy", response.nav?.bruker?.person?.etternavn)
     }
@@ -167,7 +165,7 @@ class ApiControllerTest {
                 subjectArea = "Pensjon",
                 //caseId = "EESSI-PEN-123",
                 institutions = listOf(InstitusjonItem("NO", "DUMMY")),
-                sed = "P6000",
+                sed = "vedtak",
                 buc = "P_BUC_06",
                 pinid = "0105094340092"
         )
@@ -206,7 +204,7 @@ class ApiControllerTest {
     fun `check on caseID is null`() {
         val mockData = ApiController.ApiRequest(
                 caseId = null,
-                sed = "P6000",
+                sed = "vedtak",
                 pinid = "0105094340092"
         )
         apiController.confirmDocument(mockData)
@@ -216,7 +214,7 @@ class ApiControllerTest {
     fun `check on pinID is null`() {
         val mockData = ApiController.ApiRequest(
                 caseId = "1213123123",
-                sed = "P6000",
+                sed = "vedtak",
                 pinid = null
         )
         apiController.confirmDocument(mockData)

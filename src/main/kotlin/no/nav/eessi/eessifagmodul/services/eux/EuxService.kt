@@ -66,7 +66,7 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
      *
      * @parem euxCaseID (rinaid)
      * @param korrelasjonID CorrelationId
-     * @param sed (sed type P6000, P2000)
+     * @param sed (sed type vedtak, P2000)
      */
     fun sendSED(euxCaseId: String, sed: String, korrelasjonID: String): Boolean {
         val documentID = hentDocuemntID(euxCaseId, sed)
@@ -139,7 +139,7 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
             if (response.statusCode.isError) {
                 throw createErrorMessage(responseBody)
             } else {
-                return mapJsonToAny(responseBody, typeRefs<SED>())
+                return mapJsonToAny(responseBody, typeRefs())
             }
         } catch (ex: IOException) {
             throw RuntimeException(ex.message)

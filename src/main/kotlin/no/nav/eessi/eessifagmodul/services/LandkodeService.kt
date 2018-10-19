@@ -53,7 +53,7 @@ class LandkodeService {
                 landlist.add( landKodeTable[it]!! )
             }
         }
-        val listsort: List<Landkode> = landlist.sortedBy { (_,_,_, sorting) -> sorting}.toList()
+        val listsort: List<Landkode> = landlist.asSequence().sortedBy { (_,_,_, sorting) -> sorting}.toList()
         val list : MutableList<String> = mutableListOf()
         listsort.forEach {
             list.add(it.alpha2!!)

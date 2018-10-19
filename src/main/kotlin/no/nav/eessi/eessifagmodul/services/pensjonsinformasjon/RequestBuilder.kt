@@ -4,9 +4,7 @@ import org.springframework.stereotype.Component
 import org.springframework.util.ResourceUtils
 import org.w3c.dom.Document
 import org.w3c.dom.Element
-import org.w3c.dom.Node
 import java.io.StringWriter
-import javax.xml.XMLConstants
 import javax.xml.parsers.DocumentBuilderFactory
 import javax.xml.transform.OutputKeys
 import javax.xml.transform.TransformerFactory

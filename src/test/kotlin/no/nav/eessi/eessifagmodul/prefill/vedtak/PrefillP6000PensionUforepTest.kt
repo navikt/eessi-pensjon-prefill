@@ -1,4 +1,4 @@
-package no.nav.eessi.eessifagmodul.prefill.P6000
+package no.nav.eessi.eessifagmodul.prefill.vedtak
 
 import no.nav.eessi.eessifagmodul.utils.simpleFormat
 import org.junit.Test
@@ -6,7 +6,6 @@ import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
-import kotlin.test.assertTrue
 
 @RunWith(MockitoJUnitRunner::class)
 class PrefillP6000PensionUforepTest: AbstractPensionDataFromPESYSTests() {
@@ -14,7 +13,7 @@ class PrefillP6000PensionUforepTest: AbstractPensionDataFromPESYSTests() {
 
     @Test
     fun `forventet korrekt utfylling av Pensjon objekt på Uførepensjon`() {
-        prefill = generatePrefillData(66, "P6000")
+        prefill = generatePrefillData(66, "vedtak")
 
         val dataFromPESYS1 = mockPrefillP6000PensionDataFromPESYS("P6000-UT-201.xml")
         val result = dataFromPESYS1.prefill(prefill)

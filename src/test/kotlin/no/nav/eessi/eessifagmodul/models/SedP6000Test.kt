@@ -28,19 +28,19 @@ class SedP6000Test{
 
         val json = sed6000.toJson()
         assertNotNull(json)
-        //map json back to P6000 obj
+        //map json back to vedtak obj
 
         val pensjondata = SED().fromJson(json)
         assertNotNull(pensjondata)
         assertEquals(sed6000, pensjondata)
 
-        //map load P6000-NAV refrence
+        //map load vedtak-NAV refrence
         val path = Paths.get("src/test/resources/json/P6000-NAV.json")
         val p6000file = String(Files.readAllBytes(path))
         assertNotNull(p6000file)
         validateJson(p6000file)
 
-        //map P6000-NAV back to P6000 object.
+        //map vedtak-NAV back to vedtak object.
         val pensjondataFile = mapJsonToAny(p6000file, typeRefs<SED>())
 
         assertNotNull(pensjondataFile)
@@ -68,7 +68,7 @@ class SedP6000Test{
         assertNotNull(brukerback)
         assertEquals(bruker, brukerback)
 
-        val sed = createSED("P6000")
+        val sed = createSED("vedtak")
         val navmock = NavMock().genererNavMock()
         sed.nav = Nav(
                 bruker = navmock.bruker

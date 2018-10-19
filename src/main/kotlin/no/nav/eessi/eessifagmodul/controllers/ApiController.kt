@@ -133,7 +133,7 @@ class ApiController(private val euxService: EuxService, private val prefillServi
                     euxCaseID = request.euxCaseId
 
                     vedtakId = request.vedtakId ?: ""
-                    partSedasJson.put(request.sed, request.payload ?: "")
+                    partSedasJson[request.sed] = request.payload ?: ""
                 }
             }
             else -> throw IkkeGyldigKallException("Mangler SED, eller ugyldig type SED")
@@ -187,7 +187,7 @@ class ApiController(private val euxService: EuxService, private val prefillServi
 
                     vedtakId = request.vedtakId ?: ""
                     if (request.payload != null) {
-                        partSedasJson.put(request.sed, request.payload)
+                        partSedasJson[request.sed] = request.payload
                     }
                 }
             }
@@ -202,7 +202,7 @@ class ApiController(private val euxService: EuxService, private val prefillServi
     }
 
     //kommer fra frontend
-    //{"institutions":[{"NO:"DUMMY"}],"buc":"P_BUC_06","sed":"P6000","caseId":"caseId","subjectArea":"pensjon","actorId":"2323123"}
+    //{"institutions":[{"NO:"DUMMY"}],"buc":"P_BUC_06","sed":"vedtak","caseId":"caseId","subjectArea":"pensjon","actorId":"2323123"}
     data class ApiRequest(
             //sector
             val subjectArea: String? = null,

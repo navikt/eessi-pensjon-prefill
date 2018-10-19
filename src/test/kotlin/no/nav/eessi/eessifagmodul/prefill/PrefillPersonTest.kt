@@ -66,7 +66,7 @@ class PrefillPersonTest(val index: Int, val sedid: String) {
                     arrayOf(40, "P3000"),
                     //arrayOf(50, "P4000"),
                     arrayOf(60, "P5000"),
-                    arrayOf(70, "P6000"),
+                    arrayOf(70, "vedtak"),
                     arrayOf(80, "P7000")
             )
         }

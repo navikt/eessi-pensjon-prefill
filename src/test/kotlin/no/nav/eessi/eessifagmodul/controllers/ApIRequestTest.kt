@@ -100,7 +100,7 @@ class ApIRequestTest {
     fun `generate request mock payload of SED P6000`() {
         //tmp-p6000-pesys.json
         val payload = readJsonAndParseToSed("P6000-NAV.json")
-        validateAndPrint(createMockApiRequest("P6000","P_BUC_06", payload))
+        validateAndPrint(createMockApiRequest("vedtak","P_BUC_06", payload))
 
     }
 

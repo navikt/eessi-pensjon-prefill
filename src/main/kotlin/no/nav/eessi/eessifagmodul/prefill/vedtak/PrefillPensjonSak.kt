@@ -1,4 +1,4 @@
-package no.nav.eessi.eessifagmodul.prefill.P6000
+package no.nav.eessi.eessifagmodul.prefill.vedtak
 
 import no.nav.eessi.eessifagmodul.models.*
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon

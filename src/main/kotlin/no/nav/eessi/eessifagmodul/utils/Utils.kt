@@ -64,7 +64,7 @@ enum class SedEnum (val sed: String) {
     P2200("P2200"),
     P3000("P3000"),
     P4000("P4000"),
-    P6000("P6000"),
+    P6000("vedtak"),
     P5000("P5000"),
     P7000("P7000");
     fun valid(sed: String): Boolean {
@@ -75,8 +75,8 @@ enum class SedEnum (val sed: String) {
 
 //andre sed..
 const val START_SED = "P2000,P2100,P2200"
-const val STANDARD_SED = "P3000,P5000,P6000,P7000"
-const val ALL_SED = "P2000,P2100,P2200,P3000,P4000,P6000,P5000,P7000"
+const val STANDARD_SED = "P3000,P5000,vedtak,P7000"
+const val ALL_SED = "P2000,P2100,P2200,P3000,P4000,vedtak,P5000,P7000"
 
 fun validsed(sed: String, validsed: String) : Boolean {
     val result: List<String> = validsed.split(",").map { it.trim() }

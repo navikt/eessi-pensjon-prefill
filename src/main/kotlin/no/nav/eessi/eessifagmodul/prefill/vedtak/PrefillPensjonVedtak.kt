@@ -1,4 +1,4 @@
-package no.nav.eessi.eessifagmodul.prefill.P6000
+package no.nav.eessi.eessifagmodul.prefill.vedtak
 
 import no.nav.eessi.eessifagmodul.models.*
 import no.nav.eessi.eessifagmodul.utils.simpleFormat
@@ -141,7 +141,7 @@ class PrefillPensjonVedtak: PensjonData() {
 
         Det må lages flere regler for UT og for etterlattepensjon
      */
-    //4.1.2 P6000
+    //4.1.2 vedtak
     fun createVedtakGrunnlagPentionWithRule(pendata: Pensjonsinformasjon): String {
         //01-residece, 02-working, 99-other --> 4.1.3.1 --> other
 
@@ -566,7 +566,7 @@ class PrefillPensjonVedtak: PensjonData() {
 
         val sakType = KSAK.valueOf(pendata.sak.sakType)
 
-        val resultatGjenlevendetillegg = pendata?.vilkarsvurderingListe?.vilkarsvurderingListe?.get(0)?.resultatGjenlevendetillegg ?: ""
+        val resultatGjenlevendetillegg = pendata.vilkarsvurderingListe?.vilkarsvurderingListe?.get(0)?.resultatGjenlevendetillegg ?: ""
         val erUtenGjenlevendetillegg = resultatGjenlevendetillegg == ""
         val erMedGjenlevendetillegg = resultatGjenlevendetillegg != ""
         val vinnendeMetode = hentVinnendeBergeningsMetode(pendata)
@@ -696,14 +696,14 @@ class PrefillPensjonVedtak: PensjonData() {
         }
         val sakType = KSAK.valueOf(pendata.sak.sakType)
 
-        val avslag_vilkarsproving = hentVilkarsResultatHovedytelse(pendata) == "AVSLAG"
+        val avslagVilkarsproving = hentVilkarsResultatHovedytelse(pendata) == "AVSLAG"
 
         val harBoddArbeidetUtland = harBoddArbeidetUtland(pendata)
         val erTrygdetidListeTom = pendata.trygdetidListe.trygdetidListe.isEmpty()
 
-        val erLAVT_TIDLIG_UTTAK = isVilkarsvurderingAvslagHovedytelseSamme("LAVT_TIDLIG_UTTAK", pendata)
-        val erUNDER_62 = isVilkarsvurderingAvslagHovedytelseSamme("UNDER_62", pendata)
-        val erIKKE_MOTTATT_DOK = "IKKE_MOTTATT_DOK" == hentVilkarsProvingAvslagHovedYtelse(pendata)
+        val erLavtTidligUttak = isVilkarsvurderingAvslagHovedytelseSamme("LAVT_TIDLIG_UTTAK", pendata)
+        val erUnder62 = isVilkarsvurderingAvslagHovedytelseSamme("UNDER_62", pendata)
+        val erIkkeMottattDok = "IKKE_MOTTATT_DOK" == hentVilkarsProvingAvslagHovedYtelse(pendata)
 
         //UFOREP
         val erFORUT_MEDL = "FORUT_MEDL" == hentVilkarsvurderingUforetrygd(pendata).unntakForutgaendeMedlemskap
@@ -713,49 +713,49 @@ class PrefillPensjonVedtak: PensjonData() {
         val erALDER = "ALDER" == hentVilkarsvurderingUforetrygd(pendata).alder
 
         // debugger
-        logger.debug("                  avslag_vilkarsproving: $avslag_vilkarsproving  TODO:: Må hente denne inn fra rett XMLdata")
+        logger.debug("                  avslag_vilkarsproving: $avslagVilkarsproving  TODO:: Må hente denne inn fra rett XMLdata")
         logger.debug("                  SAK-type: $sakType")
         logger.debug("                  harBoddArbridet i utland: $harBoddArbeidetUtland")
         logger.debug("                  erTrygdeliste tom: $erTrygdetidListeTom")
-        logger.debug("                  erLAVT_TIDLIG_UTTAK: $erLAVT_TIDLIG_UTTAK")
-        logger.debug("                  erUNDER_62: $erUNDER_62")
-        logger.debug("                  erIKKE_MOTTATT_DOK: $erIKKE_MOTTATT_DOK")
+        logger.debug("                  erLAVT_TIDLIG_UTTAK: $erLavtTidligUttak")
+        logger.debug("                  erUNDER_62: $erUnder62")
+        logger.debug("                  erIKKE_MOTTATT_DOK: $erIkkeMottattDok")
         logger.debug("                  erFORUT_MEDL: $erFORUT_MEDL")
         logger.debug("                  erHENS_ARBRETT_TILTAK: $erHENS_ARBRETT_TILTAK")
         logger.debug("                  erNEDSATT_INNT_EVNE: $erNEDSATT_INNT_EVNE")
         logger.debug("                  erALDER: $erALDER")
 
         //pkt1 og pkt.9
-        if ((KSAK.ALDER == sakType || KSAK.BARNEP == sakType || KSAK.GJENLEV == sakType)  && harBoddArbeidetUtland && erTrygdetidListeTom && avslag_vilkarsproving)
+        if ((KSAK.ALDER == sakType || KSAK.BARNEP == sakType || KSAK.GJENLEV == sakType)  && harBoddArbeidetUtland && erTrygdetidListeTom && avslagVilkarsproving)
             return "01"
 
         //pkt.2 og pkt.10
-        if ((KSAK.ALDER == sakType || KSAK.BARNEP == sakType || KSAK.GJENLEV == sakType) && harBoddArbeidetUtland && erTrygdeTid(pendata) && avslag_vilkarsproving)
+        if ((KSAK.ALDER == sakType || KSAK.BARNEP == sakType || KSAK.GJENLEV == sakType) && harBoddArbeidetUtland && erTrygdeTid(pendata) && avslagVilkarsproving)
             return "02"
 
-        if (KSAK.ALDER == sakType && harBoddArbeidetUtland && erLAVT_TIDLIG_UTTAK && avslag_vilkarsproving)
+        if (KSAK.ALDER == sakType && harBoddArbeidetUtland && erLavtTidligUttak && avslagVilkarsproving)
             return "03"
 
-        if (KSAK.ALDER == sakType && harBoddArbeidetUtland && erUNDER_62 && avslag_vilkarsproving)
+        if (KSAK.ALDER == sakType && harBoddArbeidetUtland && erUnder62 && avslagVilkarsproving)
             return "06"
         //hentVilkarsvurderingUforetrygd
-        if (KSAK.UFOREP == sakType && harBoddArbeidetUtland && erALDER && avslag_vilkarsproving)
+        if (KSAK.UFOREP == sakType && harBoddArbeidetUtland && erALDER && avslagVilkarsproving)
             return "03"
 
-        if (KSAK.UFOREP == sakType && harBoddArbeidetUtland && (erHENSIKTSMESSIG_BEH || erHENS_ARBRETT_TILTAK) && avslag_vilkarsproving)
+        if (KSAK.UFOREP == sakType && harBoddArbeidetUtland && (erHENSIKTSMESSIG_BEH || erHENS_ARBRETT_TILTAK) && avslagVilkarsproving)
             return "08"
         //
-        if (KSAK.UFOREP == sakType && harBoddArbeidetUtland && erNEDSATT_INNT_EVNE && avslag_vilkarsproving)
+        if (KSAK.UFOREP == sakType && harBoddArbeidetUtland && erNEDSATT_INNT_EVNE && avslagVilkarsproving)
             return "04"
         //
-        if (KSAK.UFOREP == sakType && harBoddArbeidetUtland && erTrygdeTid(pendata) && erFORUT_MEDL && avslag_vilkarsproving)
+        if (KSAK.UFOREP == sakType && harBoddArbeidetUtland && erTrygdeTid(pendata) && erFORUT_MEDL && avslagVilkarsproving)
             return "02"
         //pkt.5
-        if (KSAK.UFOREP == sakType && harBoddArbeidetUtland && pendata.trygdetidListe.trygdetidListe.isEmpty() && erFORUT_MEDL && avslag_vilkarsproving)
+        if (KSAK.UFOREP == sakType && harBoddArbeidetUtland && pendata.trygdetidListe.trygdetidListe.isEmpty() && erFORUT_MEDL && avslagVilkarsproving)
             return "01"
 
         //siste..   pendata.sak.sakType alle..
-        if (harBoddArbeidetUtland && erIKKE_MOTTATT_DOK && avslag_vilkarsproving)
+        if (harBoddArbeidetUtland && erIkkeMottattDok && avslagVilkarsproving)
             return "07"
 
         logger.debug("              -- Ingen avslagsbegrunnelse")

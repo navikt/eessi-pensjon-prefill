@@ -1,6 +1,5 @@
-package no.nav.eessi.eessifagmodul.prefill.P6000
+package no.nav.eessi.eessifagmodul.prefill.vedtak
 
-import no.nav.eessi.eessifagmodul.models.Arsak
 import no.nav.eessi.eessifagmodul.models.ReduksjonItem
 import no.nav.eessi.eessifagmodul.models.VirkningsdatoItem
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
@@ -76,7 +75,7 @@ class PrefillPensjonReduksjon: PensjonData() {
         OG Vilkårsprøving Detaljer Trygdeavtale Skal artikkel 10 anvendes på grunnpensjon
         SÅ skal det hukes av for "[02] Ytelse som fastsettes på grunnlag av en godskrevet periode"
      */
-    fun createReduksjonType(pendata: Pensjonsinformasjon): String? {
+    private fun createReduksjonType(pendata: Pensjonsinformasjon): String? {
         logger.debug("5.1.1         ReduksjonType")
         val sakType = PensjonData.KSAK.valueOf(pendata.sak.sakType)
 
@@ -105,7 +104,7 @@ class PrefillPensjonReduksjon: PensjonData() {
         OG Detaljer trygdeavtale Skal artikkel 10 anvendes på grunnpensjon
         SÅ skal det hukes av for "[02] 883/2004: Art. 54(2)b»
      */
-    fun createReduksjonArtikkelType(pendata: Pensjonsinformasjon): String? {
+    private fun createReduksjonArtikkelType(pendata: Pensjonsinformasjon): String? {
         logger.debug("5.1.4         ReduksjonArtikkelType")
         val sakType = PensjonData.KSAK.valueOf(pendata.sak.sakType)
 

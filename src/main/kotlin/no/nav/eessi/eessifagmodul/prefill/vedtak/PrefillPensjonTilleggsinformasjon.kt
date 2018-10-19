@@ -1,9 +1,8 @@
-package no.nav.eessi.eessifagmodul.prefill.P6000
+package no.nav.eessi.eessifagmodul.prefill.vedtak
 
 import no.nav.eessi.eessifagmodul.models.*
 import no.nav.eessi.eessifagmodul.utils.simpleFormat
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
-import no.nav.pensjon.v1.vedtak.V1Vedtak
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 

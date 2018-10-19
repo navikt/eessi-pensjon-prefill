@@ -64,7 +64,7 @@ class PrefillDataModelTest {
         val items = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
         prefill.apply {
                 rinaSubject = "Pensjon"
-                sed =  SED().create("P6000")
+                sed =  SED().create("vedtak")
                 penSaksnummer = "12345"
                 buc = "P_BUC_06"
                 aktoerID = "567890"
@@ -72,7 +72,7 @@ class PrefillDataModelTest {
                 institution = items
         }
         assertNotNull(prefill)
-        assertEquals("P6000", prefill.getSEDid())
+        assertEquals("vedtak", prefill.getSEDid())
         assertEquals(SED::class.java , prefill.sed.javaClass)
         assertEquals("12345", prefill.penSaksnummer)
         assertEquals("567890", prefill.aktoerID)
@@ -85,7 +85,7 @@ class PrefillDataModelTest {
         val items = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
         prefill.apply {
             rinaSubject= "Pensjon"
-            sed = SED().create("P6000")
+            sed = SED().create("vedtak")
             penSaksnummer = "12345"
             buc = "P_BUC_06"
             aktoerID = "32"

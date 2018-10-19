@@ -244,7 +244,7 @@ data class Periode(
 
 /***
  *
- * end of data class. Pensjon/P6000,P2000,P4000,P5000
+ * end of data class. Pensjon/vedtak,P2000,P4000,P5000
  *
  */
 

@@ -12,7 +12,6 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import java.text.SimpleDateFormat
-import java.util.*
 import javax.xml.datatype.XMLGregorianCalendar
 
 @Component
@@ -253,16 +252,15 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
 
     private fun personAdresseUstrukturert(postadr: no.nav.tjeneste.virksomhet.person.v3.informasjon.Postadresse): Adresse {
         val gateAdresse = postadr.ustrukturertAdresse as UstrukturertAdresse
-        val adr = Adresse(
+        //bygning =          Ikke i bruk
+        // region = gateAdresse.kommunenummer, Ikke i bruk
+        return Adresse(
                 bygning = gateAdresse.adresselinje1,
                 gate = gateAdresse.adresselinje2,
                 postnummer = gateAdresse.adresselinje3,
                 by = gateAdresse.adresselinje4,
                 land = hentLandkode(gateAdresse.landkode)
         )
-        //bygning =          Ikke i bruk
-        // region = gateAdresse.kommunenummer, Ikke i bruk
-        return adr
     }
 
     private fun statsBorgerskap(person: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): StatsborgerskapItem {

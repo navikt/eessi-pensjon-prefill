@@ -1,4 +1,4 @@
-package no.nav.eessi.eessifagmodul.prefill.P6000
+package no.nav.eessi.eessifagmodul.prefill.vedtak
 
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -11,7 +11,7 @@ class PrefillP6000PensionGjenlevTest: AbstractPensionDataFromPESYSTests() {
 
     @Test
     fun `forventet korrekt utfylling av Pensjon objekt på Gjenlevendepensjon`() {
-        prefill = generatePrefillData(66, "P6000")
+        prefill = generatePrefillData(66, "vedtak")
 
         val dataFromPESYS1 = mockPrefillP6000PensionDataFromPESYS("P6000-GP-401.xml")
         val result = dataFromPESYS1.prefill(prefill)

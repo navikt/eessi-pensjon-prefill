@@ -11,8 +11,6 @@ import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentGeografiskTilknytningR
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonRequest
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonResponse
 import org.springframework.stereotype.Component
-import org.springframework.web.context.request.RequestContextListener
-import org.springframework.web.filter.RequestContextFilter
 
 @Component
 class PersonV3Service(val service: PersonV3, val oidcRequestContextHolder: OIDCRequestContextHolder) {
