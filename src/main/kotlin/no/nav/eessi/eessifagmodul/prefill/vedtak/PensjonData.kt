@@ -22,25 +22,6 @@ abstract class PensjonData {
         BARNEP;
     }
 
-    //K_KRAV_VELG_T Kodeverk fra PESYS
-    enum class KKRAV {
-        AVDOD_MOR,
-        AVDOD_FAR,
-        FORELDRELOS,
-        MIL_INV,
-        MIL_GJENLEV,
-        MIL_BARNEP,
-        SIVIL_INV,
-        SIVIL_GJENLEV,
-        SIVIL_BARNEP,
-        FORELOPIG,
-        VARIG,
-        UP,
-        EP,
-        BP,
-        NSB;
-    }
-
     init {
         logger.debug("PensjonData")
     }
@@ -99,7 +80,7 @@ abstract class PensjonData {
         return summer
     }
 
-    fun hentGrunnPerson(pendata: Pensjonsinformasjon?): Boolean {
+    fun hentGrunnPersjon(pendata: Pensjonsinformasjon?): Boolean {
         return pendata?.trygdeavtale?.isErArt10BruktGP ?: false
     }
 

@@ -20,13 +20,6 @@ private val logger = LoggerFactory.getLogger(PensjonsinformasjonService::class.j
 @Service
 class PensjonsinformasjonService(val pensjonsinformasjonOidcRestTemplate: RestTemplate, val requestBuilder: RequestBuilder) {
 
-    fun henPersonInformasjonFraVedtak(vedtaksId: String): Pensjonsinformasjon {
-        return henPersonInformasjon("/vedtak", vedtaksId)
-    }
-    fun henPersonInformasjonFraSak(saksnummer: String): Pensjonsinformasjon {
-        return henPersonInformasjon("/sak", saksnummer)
-    }
-
     private fun henPersonInformasjon(path: String, id: String): Pensjonsinformasjon {
         val informationBlocks = listOf(
                 InformasjonsType.PERSON
@@ -56,7 +49,7 @@ class PensjonsinformasjonService(val pensjonsinformasjonOidcRestTemplate: RestTe
                 InformasjonsType.TRYGDETID_AVDOD_MOR_LISTE,
                 InformasjonsType.TRYGDETID_LISTE,
                 InformasjonsType.VEDTAK,
-//                InformasjonsType.VILKARSVURDERING_LISTE, // TODO: Ta med denne når pensjon-fss har implementert
+                InformasjonsType.VILKARSVURDERING_LISTE,
                 InformasjonsType.YTELSE_PR_MAANED_LISTE)
 
         val document = requestBuilder.getBaseRequestDocument()

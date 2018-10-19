@@ -103,12 +103,6 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
     }
 
     //fdato i rinaformat
-    private fun standardDatoformat(xmldato: XMLGregorianCalendar): String {
-        val calendar = xmldato.toGregorianCalendar()
-        return SimpleDateFormat(dateformat).format(calendar.time)
-    }
-
-    //fdato i rinaformat
     private fun datoFormat(person: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): String? {
         val fdato = person.foedselsdato
         return fdato?.foedselsdato?.simpleFormat()

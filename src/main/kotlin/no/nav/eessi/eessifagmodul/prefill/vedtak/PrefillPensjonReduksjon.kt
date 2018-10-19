@@ -24,20 +24,20 @@ class PrefillPensjonReduksjon: PensjonData() {
                 type  = createReduksjonType(pendata),
 
                 //5.1.3.1 - 5.1.2 - Nei
-                aarsak = null, // Arsak(
-                        //5.1.3.1 $pensjon`.reduksjon[x].aarsak.inntektAnnen - Nei
-                        //inntektAnnen = null,
-                        //5.1.2 - Nei!
-                        //annenytelseellerinntekt = null
-                //),
+                aarsak = null,
+                    // Arsak(
+                    //5.1.3.1 $pensjon`.reduksjon[x].aarsak.inntektAnnen - Nei
+                    //inntektAnnen = null,
+                    //5.1.2 - Nei!
+                    //annenytelseellerinntekt = null
+                    //),
 
                 //5.1.4 -- $pensjon.sak.reduksjon[x].artikkeltype
                 artikkeltype = createReduksjonArtikkelType(pendata),
 
                 //5.1.5 - Nei
-                virkningsdato = null //listOf(
-                        //createReduksjonDato(pendata)
-                //)
+                virkningsdato = createReduksjonDato(pendata)
+
         )
         if (reduksjon.type == null && reduksjon.artikkeltype == null) {
             return null
@@ -47,16 +47,11 @@ class PrefillPensjonReduksjon: PensjonData() {
 
     }
 
-    //5.1.5
-    fun createReduksjonDato(pendata: Pensjonsinformasjon): VirkningsdatoItem {
-        logger.debug("5.1.5         ReduksjonDato")
+    //5.1.5 (nei)
+    fun createReduksjonDato(pendata: Pensjonsinformasjon): List<VirkningsdatoItem>? {
+        logger.debug("5.1.5         ReduksjonDato  (nei)")
         //Nei
-        return VirkningsdatoItem(
-                //5.1.5.1  -- Nei
-                startdato = null,
-                //5.1.5.2  -- Nei
-                sluttdato = null
-        )
+        return null
     }
 
     //5.1.1
@@ -77,13 +72,13 @@ class PrefillPensjonReduksjon: PensjonData() {
      */
     private fun createReduksjonType(pendata: Pensjonsinformasjon): String? {
         logger.debug("5.1.1         ReduksjonType")
-        val sakType = PensjonData.KSAK.valueOf(pendata.sak.sakType)
+        val sakType = KSAK.valueOf(pendata.sak.sakType)
 
-        if (sakType == PensjonData.KSAK.UFOREP && hentTilleggsPensjon(pendata))
+        if (sakType == KSAK.UFOREP && hentTilleggsPensjon(pendata))
             return "02"
-        if (sakType == PensjonData.KSAK.GJENLEV && hentGrunnPerson(pendata) || hentTilleggsPensjon(pendata))
+        if (sakType == KSAK.GJENLEV && hentGrunnPersjon(pendata) || hentTilleggsPensjon(pendata))
             return "02"
-        if (sakType == PensjonData.KSAK.BARNEP && hentGrunnPerson(pendata))
+        if (sakType == KSAK.BARNEP && hentGrunnPersjon(pendata))
             return "02"
 
         return null
@@ -110,9 +105,9 @@ class PrefillPensjonReduksjon: PensjonData() {
 
         if (sakType == PensjonData.KSAK.UFOREP && hentVurdertBeregningsmetodeNordisk(pendata))
             return "02"
-        if (sakType == PensjonData.KSAK.GJENLEV && hentGrunnPerson(pendata))
+        if (sakType == PensjonData.KSAK.GJENLEV && hentGrunnPersjon(pendata))
             return "02"
-        if (sakType == PensjonData.KSAK.BARNEP && hentGrunnPerson(pendata))
+        if (sakType == PensjonData.KSAK.BARNEP && hentGrunnPersjon(pendata))
             return "02"
 
         return null
