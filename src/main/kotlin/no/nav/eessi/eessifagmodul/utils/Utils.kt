@@ -7,6 +7,9 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.web.client.RestClientException
 import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import javax.xml.datatype.XMLGregorianCalendar
 
 inline fun <reified T : Any> typeRef(): ParameterizedTypeReference<T> = object : ParameterizedTypeReference<T>() {}
@@ -71,8 +74,8 @@ enum class SedEnum {
 
 //andre sed..
 const val START_SED = "P2000,P2100,P2200"
-const val STANDARD_SED = "P3000,P5000,vedtak,P7000"
-const val ALL_SED = "P2000,P2100,P2200,P3000,P4000,vedtak,P5000,P7000"
+const val STANDARD_SED = "P3000,P5000,P6000,P7000"
+const val ALL_SED = "P2000,P2100,P2200,P3000,P4000,P6000,P5000,P7000"
 
 fun validsed(sed: String, validsed: String) : Boolean {
     val result: List<String> = validsed.split(",").map { it.trim() }
@@ -80,5 +83,6 @@ fun validsed(sed: String, validsed: String) : Boolean {
 }
 
 fun XMLGregorianCalendar.simpleFormat(): String {
-    return SimpleDateFormat("YYYY-MM-dd").format(this.toGregorianCalendar().time)
+    //return SimpleDateFormat("YYYY-MM-dd").format(this.toGregorianCalendar().time)
+    return this.toString().substring (0, 10)
 }

@@ -1,5 +1,7 @@
 package no.nav.eessi.eessifagmodul.prefill.vedtak
 
+import no.nav.eessi.eessifagmodul.models.BeregningItem
+import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
 import no.nav.eessi.eessifagmodul.utils.simpleFormat
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -98,6 +100,37 @@ class PrefillP6000PensionUforepTest: AbstractPensionDataFromPESYSTests() {
 
         assertEquals(false, dataFromPESYS1.hentVurdertBeregningsmetodeNordisk(pendata))
         assertEquals("EOS", dataFromPESYS1.hentVinnendeBergeningsMetode(pendata))
+    }
+
+    @Test
+    fun `forventet korrekt utregnet ytelsePrMnd`() {
+        val dataFromPESYS1 = mockPrefillP6000PensionDataFromPESYS("P6000-UT-220.xml")
+        val pendata = dataFromPESYS1.getPensjoninformasjonFraVedtak("123456789")
+
+        val result = dataFromPESYS1.pensjonVedtak.createBeregningItemList(pendata)
+
+        val json = mapAnyToJson(result, true)
+        println("----------------------------------------------------------------")
+        println(json)
+        println("----------------------------------------------------------------")
+
+        assertEquals(6, result.size)
+
+        val ytelsePerMaaned1 = result[0]
+        assertEquals("6917", ytelsePerMaaned1.beloepBrutto?.beloep)
+        assertEquals("2015-12-01", ytelsePerMaaned1.periode?.fom)
+        assertEquals("2015-12-31", ytelsePerMaaned1.periode?.tom)
+
+        val ytelsePerMaaned2 = result[1]
+        assertEquals("6917", ytelsePerMaaned2.beloepBrutto?.beloep)
+        assertEquals("2016-01-01", ytelsePerMaaned2.periode?.fom)
+        assertEquals("2016-04-30", ytelsePerMaaned2.periode?.tom)
+
+        val ytelsePerMaaned3 = result[2]
+        assertEquals("7110", ytelsePerMaaned3.beloepBrutto?.beloep)
+        assertEquals("2016-05-01", ytelsePerMaaned3.periode?.fom)
+        assertEquals("2016-08-31", ytelsePerMaaned3.periode?.tom)
+
     }
 
 

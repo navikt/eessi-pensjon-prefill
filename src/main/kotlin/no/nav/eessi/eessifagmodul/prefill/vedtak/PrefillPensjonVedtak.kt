@@ -344,7 +344,11 @@ class PrefillPensjonVedtak: PensjonData() {
     //4.1.7 --
     fun createBeregningItemList(pendata: Pensjonsinformasjon): List<BeregningItem> {
 
+        //val ytelsePerMaaned = pendata.ytelsePerMaanedListe.ytelsePerMaanedListe
         val ytelsePerMaaned = pendata.ytelsePerMaanedListe.ytelsePerMaanedListe
+                .asSequence().sortedBy{ it.fom.toGregorianCalendar() }.toMutableList()
+
+
         val resultList = mutableListOf<BeregningItem>()
         val sakType = KSAK.valueOf(pendata.sak.sakType)
 
@@ -358,7 +362,7 @@ class PrefillPensjonVedtak: PensjonData() {
     private fun createBeregningItem(ytelsePrMnd: V1YtelsePerMaaned, sakType: KSAK): BeregningItem {
         logger.debug("4.1.7         BeregningItem (Repeterbart)")
 
-        val belop = ytelsePrMnd.belop.toString()
+        //val belop = ytelsePrMnd.belop.toString()
 
         return BeregningItem(
                 //4.1.7.1 -- 4.1.7.2
@@ -369,7 +373,7 @@ class PrefillPensjonVedtak: PensjonData() {
 
                 beloepBrutto = BeloepBrutto(
                         //4.1.7.3.1. Gross amount
-                        beloep = belop,
+                        beloep = createBelop(ytelsePrMnd, sakType),
 
                         //4.1.7.3.3. Gross amount of basic pension
                         ytelseskomponentGrunnpensjon = createYtelseskomponentGrunnpensjon(ytelsePrMnd, sakType),
@@ -390,6 +394,30 @@ class PrefillPensjonVedtak: PensjonData() {
                 //4.1.7.6.1     - Nei
                 utbetalingshyppighetAnnen = null
         )
+    }
+
+    /**
+     Hvis Annet en Alderpensjon skal YtelsePerMaaned belop benytes.
+
+     Hvis Uførep med UT_ORDINER og eller UT_TBF eller UT_TBS er større en belop
+     skal denne sum benyttes hvis ikke skal belop benyttes.
+     */
+    //4.1.7.3.1
+    fun createBelop(ytelsePrMnd: V1YtelsePerMaaned, sakType: KSAK): String {
+        logger.debug("4.1.7.3.1         Gross amount")
+        //4.1.7.3.1. Gross amount
+        val belop = ytelsePrMnd.belop
+
+        if (KSAK.UFOREP == sakType) {
+            val uforUtOrd = hentYtelseskomponentBelop("UT_ORDINER,UT_TBF,UT_TBS", ytelsePrMnd)
+            //logger.debug("              uforep UT_ORDINER belop : $uforUtOrd  belop : $belop")
+            if (uforUtOrd > belop) {
+                return uforUtOrd.toString()
+            }
+            return belop.toString()
+        }
+
+        return belop.toString()
     }
 
     /*

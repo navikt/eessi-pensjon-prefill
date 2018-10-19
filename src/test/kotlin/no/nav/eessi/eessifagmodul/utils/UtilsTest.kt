@@ -31,6 +31,23 @@ class UtilsTest {
     }
 
     @Test
+    fun `verify XML date is still 2016-01-01 to simpleFormat`() {
+        val xmlcal = DatatypeFactory.newInstance().newXMLGregorianCalendar()
+        xmlcal.month = 1
+        xmlcal.year = 2016
+        xmlcal.day = 1
+        xmlcal.hour = 0
+        xmlcal.minute = 0
+        xmlcal.second = 1
+
+        val toRinaDate = xmlcal.simpleFormat()
+        println("XMLdata: $xmlcal   SimpleDate: $toRinaDate")
+
+        assertNotNull(toRinaDate)
+        assertEquals("2016-01-01", toRinaDate)
+    }
+
+    @Test
     fun `check variables containing SED`() {
         //val funlist = sedEnumToStringWidthSkip("P4000")
         val funlist = START_SED+","+STANDARD_SED

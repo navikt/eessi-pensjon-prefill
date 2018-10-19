@@ -72,6 +72,7 @@ abstract class PensjonData {
         var summer = 0
         keylist.forEach { keyword ->
             ytelse.ytelseskomponentListe.forEach { it2 ->
+                //logger.debug("keyword: $keyword ==> type: ${it2.ytelsesKomponentType}")
                 if (keyword.trim() == it2.ytelsesKomponentType) {
                     summer += it2.belopTilUtbetaling
                 }
