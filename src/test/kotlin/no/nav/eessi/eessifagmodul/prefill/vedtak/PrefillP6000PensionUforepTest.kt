@@ -85,7 +85,7 @@ class PrefillP6000PensionUforepTest: AbstractPensionDataFromPESYSTests() {
     }
 
     @Test
-    fun `forventer at ytelseprMaaned er på 10 sortert etter fom dato`() {
+    fun `forventer at ytelseprMaaned er siste i listen`() {
         val dataFromPESYS1 = mockPrefillP6000PensionDataFromPESYS("P6000-UT-220.xml")
         val pendata = dataFromPESYS1.getPensjoninformasjonFraVedtak("123456789")
 
