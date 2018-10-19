@@ -1,10 +1,12 @@
 package no.nav.eessi.eessifagmodul.prefill.P6000
 
+import no.nav.eessi.eessifagmodul.utils.simpleFormat
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 
 @RunWith(MockitoJUnitRunner::class)
 class PrefillP6000PensionUforepTest: AbstractPensionDataFromPESYSTests() {
@@ -82,6 +84,23 @@ class PrefillP6000PensionUforepTest: AbstractPensionDataFromPESYSTests() {
         val result1 = dataFromPESYS.pensjonVedtak.createAvlsagsBegrunnelse(pendata1)
         assertEquals("03", result1)
     }
+
+    @Test
+    fun `forventer at ytelseprMaaned er på 10 sortert etter fom dato`() {
+        val dataFromPESYS1 = mockPrefillP6000PensionDataFromPESYS("P6000-UT-220.xml")
+        val pendata = dataFromPESYS1.getPensjoninformasjonFraVedtak("123456789")
+
+        val sisteprmnd = dataFromPESYS1.hentSisteYtelsePerMaaned(pendata)
+
+        assertEquals("2017-05-01", sisteprmnd.fom.simpleFormat())
+        assertEquals("7191", sisteprmnd.belop.toString())
+        assertEquals(false, dataFromPESYS1.isMottarMinstePensjonsniva(pendata))
+        assertEquals("7191", dataFromPESYS1.hentYtelseBelop(pendata))
+
+        assertEquals(false, dataFromPESYS1.hentVurdertBeregningsmetodeNordisk(pendata))
+        assertEquals("EOS", dataFromPESYS1.hentVinnendeBergeningsMetode(pendata))
+    }
+
 
 
 }

@@ -71,7 +71,6 @@ abstract class PensjonData {
     fun summerTrygdeTid(trygdeListe: V1TrygdetidListe): Int {
         Preconditions.checkArgument(trygdeListe.trygdetidListe != null, "trygdetidListe er Null")
         val daylist = mutableListOf<Int>()
-
         trygdeListe.trygdetidListe.forEach {
             val fom = it.fom.toGregorianCalendar().time.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
             val tom = it.tom.toGregorianCalendar().time.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
@@ -100,13 +99,6 @@ abstract class PensjonData {
         return summer
     }
 
-    fun hentVinnendeBergeningsMetode(pendata: Pensjonsinformasjon): String {
-        pendata.ytelsePerMaanedListe.ytelsePerMaanedListe.forEach {
-            return it.vinnendeBeregningsmetode
-        }
-        return ""
-    }
-
     fun hentGrunnPerson(pendata: Pensjonsinformasjon?): Boolean {
         return pendata?.trygdeavtale?.isErArt10BruktGP ?: false
     }
@@ -115,46 +107,20 @@ abstract class PensjonData {
         return pendata?.trygdeavtale?.isErArt10BruktTP?: false
     }
 
-
-    fun hentVurdertBeregningsmetodeNordisk(pendata: Pensjonsinformasjon): Boolean {
-        pendata.ytelsePerMaanedListe.ytelsePerMaanedListe.forEach {
-            return it.isVurdertBeregningsmetodeNordisk
-        }
-        return false
-    }
-
-
-    fun hentYtelseBelop(pendata: Pensjonsinformasjon): String {
-        pendata.ytelsePerMaanedListe.ytelsePerMaanedListe.forEach {
-            return it.belop.toString()
-        }
-        return "0"
-    }
-
-
     fun hentVilkarsvurderingUforetrygd(pendata: Pensjonsinformasjon): V1VilkarsvurderingUforetrygd {
-        val v1VilkarsvurderingListe = pendata?.vilkarsvurderingListe ?: return V1VilkarsvurderingUforetrygd()
-        v1VilkarsvurderingListe.vilkarsvurderingListe.forEach {
-            return it?.vilkarsvurderingUforetrygd ?: return V1VilkarsvurderingUforetrygd()//
-        }
-        return V1VilkarsvurderingUforetrygd()
+        val v1VilkarsvurderingListe = pendata.vilkarsvurderingListe
+        return v1VilkarsvurderingListe.vilkarsvurderingListe?.get(0)?.vilkarsvurderingUforetrygd ?: return V1VilkarsvurderingUforetrygd()//
     }
 
     //         Kodeverk K_RESULT_BEGR 2017
     fun hentVilkarsProvingAvslagHovedYtelse(pendata: Pensjonsinformasjon): String {
-        val v1VilkarsvurderingListe = pendata?.vilkarsvurderingListe ?: return ""
-        v1VilkarsvurderingListe.vilkarsvurderingListe.forEach {
-            return it?.avslagHovedytelse ?: return "" // UNDER_62 -- LAVT_TIDLIG_UTTAK osv..
-        }
-        return ""
+        val v1VilkarsvurderingListe = pendata.vilkarsvurderingListe
+        return v1VilkarsvurderingListe.vilkarsvurderingListe?.get(0)?.avslagHovedytelse ?: return "" // UNDER_62 -- LAVT_TIDLIG_UTTAK osv..
     }
 
     fun hentVilkarsResultatHovedytelse(pendata: Pensjonsinformasjon): String {
-        val v1VilkarsvurderingListe = pendata?.vilkarsvurderingListe ?: return ""
-        v1VilkarsvurderingListe.vilkarsvurderingListe.forEach {
-            return it.resultatHovedytelse // UNDER_62 -- LAVT_TIDLIG_UTTAK osv..
-        }
-        return ""
+        val v1VilkarsvurderingListe = pendata.vilkarsvurderingListe
+        return v1VilkarsvurderingListe.vilkarsvurderingListe?.get(0)?.resultatHovedytelse ?: return "" // UNDER_62 -- LAVT_TIDLIG_UTTAK osv..
     }
 
     fun isForeldelos(pendata: Pensjonsinformasjon): Boolean {
@@ -166,19 +132,32 @@ abstract class PensjonData {
         return false
     }
 
-    //hjelpefunkjson for isMottarMinstePensjonsniva
-    //Uføretrygd og beregnet ytelse er på minstenivå (minsteytelse)
+    fun hentVinnendeBergeningsMetode(pendata: Pensjonsinformasjon): String {
+        logger.debug(" +            hentVinnendeBergeningsMetode")
+        return hentSisteYtelsePerMaaned(pendata).vinnendeBeregningsmetode
+    }
+
+    fun hentVurdertBeregningsmetodeNordisk(pendata: Pensjonsinformasjon): Boolean {
+        logger.debug(" +            hentVurdertBeregningsmetodeNordisk")
+        return hentSisteYtelsePerMaaned(pendata).isVurdertBeregningsmetodeNordisk
+    }
+
+    fun hentYtelseBelop(pendata: Pensjonsinformasjon): String {
+        logger.debug(" +            hentYtelseBelop")
+        return hentSisteYtelsePerMaaned(pendata).belop.toString()
+    }
+
     fun isMottarMinstePensjonsniva(pendata: Pensjonsinformasjon): Boolean {
         logger.debug(" +            isMottarMinstePensjonsniva")
-
-        val ytelseprmnd = pendata.ytelsePerMaanedListe
-        val liste = ytelseprmnd.ytelsePerMaanedListe
-
-        liste.forEach {
-            return it.isMottarMinstePensjonsniva
-        }
-        return false
+        return hentSisteYtelsePerMaaned(pendata).isMottarMinstePensjonsniva
     }
+
+    fun hentSisteYtelsePerMaaned(pendata: Pensjonsinformasjon): V1YtelsePerMaaned{
+        val ytelseprmnd = pendata.ytelsePerMaanedListe
+        val liste = ytelseprmnd.ytelsePerMaanedListe as List<V1YtelsePerMaaned>
+        return liste.sortedBy{ it.fom.toGregorianCalendar() }.toList().get(liste.size-1)
+    }
+
 
 
 }
