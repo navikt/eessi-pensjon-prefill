@@ -113,7 +113,7 @@ class ExperimentController {
             request.payload == null -> throw IkkeGyldigKallException("Mangler PayLoad")
             request.sed == null -> throw IkkeGyldigKallException("Mangler SED")
             else -> {
-                val seds = SED().fromJson(request.payload)
+                val seds = SED.fromJson(request.payload)
                 sed = seds
             }
         }

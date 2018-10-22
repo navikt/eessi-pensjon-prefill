@@ -64,7 +64,7 @@ class PrefillDataModelTest {
         val items = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
         prefill.apply {
                 rinaSubject = "Pensjon"
-                sed =  SED().create("vedtak")
+                sed =  SED.create("vedtak")
                 penSaksnummer = "12345"
                 buc = "P_BUC_06"
                 aktoerID = "567890"
@@ -85,7 +85,7 @@ class PrefillDataModelTest {
         val items = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
         prefill.apply {
             rinaSubject= "Pensjon"
-            sed = SED().create("vedtak")
+            sed = SED.create("vedtak")
             penSaksnummer = "12345"
             buc = "P_BUC_06"
             aktoerID = "32"
