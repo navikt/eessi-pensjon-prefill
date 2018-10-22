@@ -2,10 +2,13 @@ package no.nav.eessi.eessifagmodul.models
 
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.whenever
-import no.nav.eessi.eessifagmodul.services.aktoerregister.AktoerregisterService
 import no.nav.eessi.eessifagmodul.controllers.ApiController
-import no.nav.eessi.eessifagmodul.prefill.*
+import no.nav.eessi.eessifagmodul.prefill.PrefillDataModel
+import no.nav.eessi.eessifagmodul.prefill.PrefillP4000
+import no.nav.eessi.eessifagmodul.prefill.PrefillPerson
+import no.nav.eessi.eessifagmodul.prefill.PrefillSED
 import no.nav.eessi.eessifagmodul.services.PrefillService
+import no.nav.eessi.eessifagmodul.services.aktoerregister.AktoerregisterService
 import no.nav.eessi.eessifagmodul.services.eux.EuxService
 import no.nav.eessi.eessifagmodul.services.eux.RinaActions
 import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
@@ -72,7 +75,7 @@ class SedP4000Test {
         val result = createPersonTrygdeTidMock()
         assertNotNull(result)
 
-        val sed = SED().create("P4000")
+        val sed = SED.create("P4000")
         val nav = NavMock().genererNavMock()
         val pen = PensjonMock().genererMockData()
         sed.nav = nav
@@ -80,7 +83,7 @@ class SedP4000Test {
         sed.trygdetid = result
 
         val json2 = sed.toJson()
-        val mapSED = SED().fromJson(json2)
+        val mapSED = SED.fromJson(json2)
 
         assertNotNull(mapSED)
         assertEquals(result, mapSED.trygdetid)
@@ -94,7 +97,7 @@ class SedP4000Test {
         val p4000file = String(Files.readAllBytes(path))
         assertNotNull(p4000file)
         validateJson(p4000file)
-        val sed = SED().fromJson(p4000file)
+        val sed = SED.fromJson(p4000file)
         assertNotNull(sed)
         assertNotNull(sed.trygdetid)
         assertNotNull(sed.trygdetid?.ansattSelvstendigPerioder)

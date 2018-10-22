@@ -4,7 +4,6 @@ import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
 import no.nav.eessi.eessifagmodul.utils.mapJsonToAny
 import no.nav.eessi.eessifagmodul.utils.typeRefs
 import no.nav.eessi.eessifagmodul.utils.validateJson
-import org.junit.Before
 import org.junit.Test
 import org.skyscreamer.jsonassert.JSONAssert
 import org.slf4j.Logger
@@ -30,7 +29,7 @@ class SedP6000Test{
         assertNotNull(json)
         //map json back to vedtak obj
 
-        val pensjondata = SED().fromJson(json)
+        val pensjondata = SED.fromJson(json)
         assertNotNull(pensjondata)
         assertEquals(sed6000, pensjondata)
 
@@ -68,7 +67,7 @@ class SedP6000Test{
         assertNotNull(brukerback)
         assertEquals(bruker, brukerback)
 
-        val sed = createSED("vedtak")
+        val sed = SED.create("vedtak")
         val navmock = NavMock().genererNavMock()
         sed.nav = Nav(
                 bruker = navmock.bruker

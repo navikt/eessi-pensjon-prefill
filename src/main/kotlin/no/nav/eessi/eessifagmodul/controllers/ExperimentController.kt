@@ -12,9 +12,6 @@ import no.nav.eessi.eessifagmodul.services.bucbucket.QueryResult
 import no.nav.eessi.eessifagmodul.services.eux.EuxService
 import no.nav.eessi.eessifagmodul.services.pensjonsinformasjon.PensjonsinformasjonService
 import no.nav.eessi.eessifagmodul.services.personv3.PersonV3Service
-import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
-import no.nav.eessi.eessifagmodul.utils.mapJsonToAny
-import no.nav.eessi.eessifagmodul.utils.typeRefs
 import no.nav.security.oidc.api.Protected
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonResponse
 import org.springframework.beans.factory.annotation.Autowired
@@ -116,7 +113,7 @@ class ExperimentController {
             request.payload == null -> throw IkkeGyldigKallException("Mangler PayLoad")
             request.sed == null -> throw IkkeGyldigKallException("Mangler SED")
             else -> {
-                val seds = SED().fromJson(request.payload)
+                val seds = SED.fromJson(request.payload)
                 sed = seds
             }
         }

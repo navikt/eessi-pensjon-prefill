@@ -1,11 +1,8 @@
 package no.nav.eessi.eessifagmodul.controllers
 
-import com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException
 import no.nav.eessi.eessifagmodul.models.InstitusjonItem
 import no.nav.eessi.eessifagmodul.models.SED
 import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
-import no.nav.eessi.eessifagmodul.utils.mapJsonToAny
-import no.nav.eessi.eessifagmodul.utils.typeRefs
 import no.nav.eessi.eessifagmodul.utils.validateJson
 import org.junit.Ignore
 import org.junit.Test
@@ -44,7 +41,7 @@ class ApIRequestTest {
     fun validateAndPrint(req: ApiController.ApiRequest) {
         if (printsed) {
             //val payload = mapJsonToAny(req.payload!!, typeRefs<SED>())
-            val payload = SED().fromJson(req.payload!!)
+            val payload = SED.fromJson(req.payload!!)
             assertNotNull(payload)
             val jsonSed = payload.toJson()
             printOut(req.sed!!, jsonSed)

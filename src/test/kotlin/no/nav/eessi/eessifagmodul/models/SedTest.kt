@@ -4,7 +4,6 @@ import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
 import no.nav.eessi.eessifagmodul.utils.mapJsonToAny
 import no.nav.eessi.eessifagmodul.utils.typeRefs
 import no.nav.eessi.eessifagmodul.utils.validateJson
-import org.junit.Before
 import org.junit.Test
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -24,7 +23,7 @@ class SedTest{
 
         val json = sed6000.toJson()
         //map json back to vedtak obj
-        val pensjondata = SED().fromJson(json)
+        val pensjondata = SED.fromJson(json)
         assertNotNull(pensjondata)
         assertEquals(sed6000, pensjondata)
 
@@ -35,7 +34,7 @@ class SedTest{
         validateJson(p6000file)
 
         //map vedtak-NAV back to vedtak object.
-        val pensjondataFile = SED().fromJson(p6000file)
+        val pensjondataFile = SED.fromJson(p6000file)
         assertNotNull(pensjondataFile)
 
     }
@@ -53,7 +52,7 @@ class SedTest{
         assertNotNull(brukerback)
         assertEquals(bruker, brukerback)
 
-        val sed = SED().create("vedtak")
+        val sed = SED.create("vedtak")
         val navmock = NavMock().genererNavMock()
         sed.nav = Nav(
                 bruker = navmock.bruker

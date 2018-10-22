@@ -4,7 +4,7 @@ import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.whenever
 import no.nav.eessi.eessifagmodul.models.InstitusjonItem
 import no.nav.eessi.eessifagmodul.models.Pensjon
-import no.nav.eessi.eessifagmodul.models.createSED
+import no.nav.eessi.eessifagmodul.models.SED
 import no.nav.eessi.eessifagmodul.prefill.PrefillDataModel
 import no.nav.eessi.eessifagmodul.services.pensjonsinformasjon.PensjonsinformasjonService
 import no.nav.eessi.eessifagmodul.services.pensjonsinformasjon.RequestBuilder
@@ -88,7 +88,7 @@ abstract class AbstractPensionDataFromPESYSTests {
         val items = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
         prefill.apply {
             rinaSubject= "Pensjon"
-            sed = createSED(sedId)
+            sed = SED.create(sedId)
             penSaksnummer = "12345"
             vedtakId = "12312312"
             buc = "P_BUC_99"

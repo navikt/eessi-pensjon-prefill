@@ -3,7 +3,8 @@ package no.nav.eessi.eessifagmodul.services
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.whenever
 import no.nav.eessi.eessifagmodul.models.*
-import no.nav.eessi.eessifagmodul.prefill.*
+import no.nav.eessi.eessifagmodul.prefill.PrefillDataModel
+import no.nav.eessi.eessifagmodul.prefill.PrefillSED
 import no.nav.eessi.eessifagmodul.services.eux.EuxService
 import no.nav.eessi.eessifagmodul.services.eux.RinaActions
 import org.junit.Before
@@ -165,7 +166,7 @@ class PrefillServiceTest {
     fun generatePrefillModel(): PrefillDataModel {
         return PrefillDataModel().apply {
             euxCaseID = "1000"
-            sed = SED().create("P2000")
+            sed = SED.create("P2000")
             buc  = "P_BUC_01"
             institution = listOf(
                     InstitusjonItem(

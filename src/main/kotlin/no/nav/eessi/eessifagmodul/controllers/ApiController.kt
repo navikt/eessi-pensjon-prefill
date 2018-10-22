@@ -12,7 +12,9 @@ import no.nav.eessi.eessifagmodul.services.PrefillService
 import no.nav.eessi.eessifagmodul.services.aktoerregister.AktoerregisterException
 import no.nav.eessi.eessifagmodul.services.aktoerregister.AktoerregisterService
 import no.nav.eessi.eessifagmodul.services.eux.EuxService
-import no.nav.eessi.eessifagmodul.utils.*
+import no.nav.eessi.eessifagmodul.utils.ALL_SED
+import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
+import no.nav.eessi.eessifagmodul.utils.validsed
 import no.nav.security.oidc.api.Protected
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -47,7 +49,7 @@ class ApiController(private val euxService: EuxService, private val prefillServi
         val aktorid = request.pinid ?: throw IkkeGyldigKallException("Ingen gyldig pinid")
 
         val dataModel = PrefillDataModel().apply {
-            sed = SED().create("P2000")
+            sed = SED.create("P2000")
             penSaksnummer = ""
             personNr = hentAktoerIdPin(aktorid)
 
@@ -127,7 +129,7 @@ class ApiController(private val euxService: EuxService, private val prefillServi
                 val pinid = hentAktoerIdPin(request.pinid)
                 PrefillDataModel().apply {
                     penSaksnummer = request.caseId
-                    sed = SED().create(request.sed)
+                    sed = SED.create(request.sed)
                     aktoerID = request.pinid
                     personNr = pinid
                     euxCaseID = request.euxCaseId
@@ -158,7 +160,7 @@ class ApiController(private val euxService: EuxService, private val prefillServi
                     penSaksnummer = request.caseId
                     buc = request.buc
                     rinaSubject = request.subjectArea
-                    sed =  SED().create(request.sed)
+                    sed =  SED.create(request.sed)
                     aktoerID = request.pinid
                     personNr = pinid
                     institution = request.institutions
@@ -181,7 +183,7 @@ class ApiController(private val euxService: EuxService, private val prefillServi
             validsed(request.sed , ALL_SED) -> {
                 PrefillDataModel().apply {
                     penSaksnummer = request.caseId
-                    sed = SED().create(request.sed)
+                    sed = SED.create(request.sed)
                     aktoerID = request.pinid
                     personNr = hentAktoerIdPin(request.pinid)
 
