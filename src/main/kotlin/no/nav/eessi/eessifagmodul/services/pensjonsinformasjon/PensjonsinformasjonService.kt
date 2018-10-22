@@ -8,7 +8,6 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
-import org.springframework.util.MimeType
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.util.UriComponentsBuilder
 import java.io.StringReader
@@ -20,17 +19,19 @@ private val logger = LoggerFactory.getLogger(PensjonsinformasjonService::class.j
 @Service
 class PensjonsinformasjonService(val pensjonsinformasjonOidcRestTemplate: RestTemplate, val requestBuilder: RequestBuilder) {
 
-    private fun henPersonInformasjon(path: String, id: String): Pensjonsinformasjon {
+    fun hentPerson(saksnummer: String): Pensjonsinformasjon {
         val informationBlocks = listOf(
-                InformasjonsType.PERSON
-        )
+            InformasjonsType.AVDOD,
+            InformasjonsType.PERSON)
+
         val document = requestBuilder.getBaseRequestDocument()
 
         informationBlocks.forEach {
             requestBuilder.addPensjonsinformasjonElement(document, it)
         }
-//        logger.debug("Requestbody:\n${document.documentToString()}")
-        val response = doRequest(path, id, document.documentToString())
+
+        logger.debug("Requestbody:\n${document.documentToString()}")
+        val response = doRequest("/sak", saksnummer, document.documentToString())
         validateResponse(informationBlocks, response)
         return response
 

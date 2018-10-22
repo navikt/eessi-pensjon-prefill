@@ -8,14 +8,16 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 @RunWith(MockitoJUnitRunner::class)
-class PrefillP6000PensionAlderTest: AbstractPensionDataFromPESYSTests() {
+class PrefillP6000PensionAlderTest: AbstractPensionDataFromPESYSTests("P6000-APUtland-301.xml") {
 
 
     @Test
     fun `forventet korrekt utfylling av Pensjon objekt på Alderpensjon`() {
         prefill = generatePrefillData(68, "vedtak")
 
-        val dataFromPESYS1 = mockPrefillP6000PensionDataFromPESYS("P6000-APUtland-301.xml")
+        //val dataFromPESYS1 = mockPrefillP6000PensionDataFromPESYS("P6000-APUtland-301.xml")
+        //val result = dataFromPESYS1.prefill(prefill)
+
         val result = dataFromPESYS1.prefill(prefill)
 
         //debugPrintFinalResult(result)
@@ -61,6 +63,15 @@ class PrefillP6000PensionAlderTest: AbstractPensionDataFromPESYSTests() {
         assertEquals("NAV", tillegg?.andreinstitusjoner?.get(0)?.institusjonsid)
 
     }
+
+    @Test
+    fun `forventet createVedtakTypePensionWithRule verdi`() {
+        prefill = generatePrefillData(68, "vedtak")
+        //dataFromPESYS1.getPensjoninformasjonFraVedtak("23123123")
+        val result = dataFromPESYS1.pensjonVedtak.createVedtakTypePensionWithRule(pendata)
+        assertEquals("01", result)
+    }
+
 
     @Test
     fun `forventer "01" på AvlsagsBegrunnelse for Alderpensjon,Gjenlevende TrygdleListeTom `() {

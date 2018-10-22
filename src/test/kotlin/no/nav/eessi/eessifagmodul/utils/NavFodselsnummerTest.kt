@@ -4,6 +4,7 @@ import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 
 class NavFodselsnummerTest {
@@ -12,10 +13,18 @@ class NavFodselsnummerTest {
     fun `valid check for age`() {
         val fnr = generateRandomFnr(48)
         println("RandomFnr: $fnr")
+        val actualDate = LocalDate.now().minusYears(48)
 
         val navfnr = NavFodselsnummer(fnr)
         assertEquals(48, navfnr.getAge())
         assertEquals(false, navfnr.getValidPentionAge())
+
+        assertEquals(actualDate, navfnr.getBirthDate())
+
+        val dtf = DateTimeFormatter.ofPattern("YYYY-MM-dd")
+        val exprectedFormat = actualDate.format(dtf)
+        val actualFormat = navfnr.getBirthDate().format(dtf)
+        assertEquals(exprectedFormat, actualFormat)
     }
 
     @Test

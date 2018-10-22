@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import io.swagger.annotations.ApiOperation
 import no.nav.eessi.eessifagmodul.models.IkkeGyldigKallException
 import no.nav.eessi.eessifagmodul.models.InstitusjonItem
+import no.nav.eessi.eessifagmodul.models.Nav
 import no.nav.eessi.eessifagmodul.models.SED
 import no.nav.eessi.eessifagmodul.prefill.PrefillDataModel
 import no.nav.eessi.eessifagmodul.services.LandkodeService
@@ -27,7 +28,7 @@ import java.util.*
 @RequestMapping("/api")
 class ApiController(private val euxService: EuxService, private val prefillService: PrefillService,  private val aktoerregisterService: AktoerregisterService) {
 
-    private val logger: Logger by lazy { LoggerFactory.getLogger(ApiController::class.java) }
+    //private val logger: Logger by lazy { LoggerFactory.getLogger(ApiController::class.java) }
 
     @Autowired
     //TODO hører denne til her eller egen controller?
@@ -41,26 +42,19 @@ class ApiController(private val euxService: EuxService, private val prefillServi
     }
 
     @ApiOperation("viser en oppsumering av SED prefill. Før innsending til EUX Basis")
-    @PostMapping("/data/person")
+    @PostMapping("/data/personinfor")
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    fun previewPerson(@RequestBody request: ApiRequest): Map<String, Any?> {
+    fun hentPersonInformasjon(@RequestBody request: ApiRequest): Nav? {
         val aktorid = request.pinid ?: throw IkkeGyldigKallException("Ingen gyldig pinid")
 
         val dataModel = PrefillDataModel().apply {
             sed = SED().create("P2000")
             penSaksnummer = ""
             personNr = hentAktoerIdPin(aktorid)
-
         }
-        val sed = prefillService.prefillSed(dataModel).sed
-        println(mapAnyToJson(sed, true))
-        val nav = sed.nav
-        val bruker = nav?.bruker
-        val bank = bruker?.bank
-        val person = bruker?.person
-        val adresse = bruker?.adresse
 
-        return  mapOf("person" to person, "adresse" to adresse, "bank" to bank)
+        val sed = prefillService.prefillSed(dataModel).sed
+        return  sed.nav
     }
 
 

@@ -17,8 +17,7 @@ class BucBucketService(val bucBucketOidcRestTemplate: RestTemplate) {
     fun queryDocuments(queryParams: Map<QueryParameters, String>): List<QueryResult> {
         val responseEntity = doRequest("/seds", queryParams)
 
-        val queryResult = jacksonObjectMapper().readValue<List<QueryResult>>(responseEntity.body!!)
-        return queryResult
+        return jacksonObjectMapper().readValue<List<QueryResult>>(responseEntity.body!!)
     }
 
     fun getDocument(correlationId: String): SED {
@@ -31,7 +30,6 @@ class BucBucketService(val bucBucketOidcRestTemplate: RestTemplate) {
         queryParams.forEach {
             uriBuilder.queryParam(it.key.paramName(), it.value)
         }
-        val responseEntity = bucBucketOidcRestTemplate.exchange(uriBuilder.toUriString(), HttpMethod.GET,null, String::class.java)
-        return responseEntity
+        return bucBucketOidcRestTemplate.exchange(uriBuilder.toUriString(), HttpMethod.GET,null, String::class.java)
     }
 }

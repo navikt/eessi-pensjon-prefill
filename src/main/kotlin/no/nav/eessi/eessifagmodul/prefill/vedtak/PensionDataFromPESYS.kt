@@ -37,18 +37,16 @@ class PensionDataFromPESYS(private val pensjonsinformasjonService: Pensjonsinfor
 
     fun getPensjoninformasjonFraVedtak(vedtakId: String): Pensjonsinformasjon {
         val pendata: Pensjonsinformasjon = pensjonsinformasjonService.hentAlt(vedtakId) // ha med saknr og vedtak?
-        /*
-            logger.debug("Pensjonsinformasjon: $pendata")
-            logger.debug("Pensjonsinformasjon.vedtak: ${pendata.vedtak}")
-            logger.debug("Pensjonsinformasjon.vedtak.virkningstidspunkt: ${pendata.vedtak.virkningstidspunkt}")
-            logger.debug("Pensjonsinformasjon.sak: ${pendata.sak}")
-            logger.debug("Pensjonsinformasjon.trygdetidListe: ${pendata.trygdetidListe}")
-            logger.debug("Pensjonsinformasjon.vilkarsvurderingListe: ${pendata.vilkarsvurderingListe}")
-            logger.debug("Pensjonsinformasjon.ytelsePerMaanedListe: ${pendata.ytelsePerMaanedListe}")
-            logger.debug("Pensjonsinformasjon.trygdeavtale: ${pendata.trygdeavtale}")
-            logger.debug("Pensjonsinformasjon.person: ${pendata.person}")
-            logger.debug("Pensjonsinformasjon.person.pin: ${pendata.person.pid}")
-        */
+        logger.debug("Pensjonsinformasjon: $pendata")
+        logger.debug("Pensjonsinformasjon.vedtak: ${pendata.vedtak}")
+        logger.debug("Pensjonsinformasjon.vedtak.virkningstidspunkt: ${pendata.vedtak.virkningstidspunkt}")
+        logger.debug("Pensjonsinformasjon.sak: ${pendata.sak}")
+        logger.debug("Pensjonsinformasjon.trygdetidListe: ${pendata.trygdetidListe}")
+        logger.debug("Pensjonsinformasjon.vilkarsvurderingListe: ${pendata.vilkarsvurderingListe}")
+        logger.debug("Pensjonsinformasjon.ytelsePerMaanedListe: ${pendata.ytelsePerMaanedListe}")
+        logger.debug("Pensjonsinformasjon.trygdeavtale: ${pendata.trygdeavtale}")
+        logger.debug("Pensjonsinformasjon.person: ${pendata.person}")
+        logger.debug("Pensjonsinformasjon.person.pin: ${pendata.person.pid}")
         return pendata
     }
 

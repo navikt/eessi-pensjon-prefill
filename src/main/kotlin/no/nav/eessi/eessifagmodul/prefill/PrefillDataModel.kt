@@ -16,7 +16,7 @@ class PrefillDataModel {
     //pensjon
     lateinit var penSaksnummer: String
     lateinit var vedtakId: String
-    lateinit var karavId: String
+    lateinit var kravId: String
 
     //aktoearid og pinid for person
     lateinit var personNr: String
@@ -29,7 +29,7 @@ class PrefillDataModel {
     //rina
     lateinit var rinaSubject: String
     lateinit var euxCaseID: String
-    lateinit var  buc: String
+    lateinit var buc: String
     lateinit var sed: SED
     lateinit var institution: List<InstitusjonItem>
 

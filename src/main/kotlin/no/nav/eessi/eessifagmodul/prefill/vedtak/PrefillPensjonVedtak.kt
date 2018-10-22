@@ -734,11 +734,11 @@ class PrefillPensjonVedtak: PensjonData() {
         val erIkkeMottattDok = "IKKE_MOTTATT_DOK" == hentVilkarsProvingAvslagHovedYtelse(pendata)
 
         //UFOREP
-        val erFORUT_MEDL = "FORUT_MEDL" == hentVilkarsvurderingUforetrygd(pendata).unntakForutgaendeMedlemskap
-        val erHENS_ARBRETT_TILTAK =  "HENS_ARBRETT_TILTAK" == hentVilkarsvurderingUforetrygd(pendata).hensiktsmessigArbeidsrettedeTiltak
-        val erHENSIKTSMESSIG_BEH = "HENSIKTSMESSIG_BEH" == hentVilkarsvurderingUforetrygd(pendata).hensiktsmessigBehandling
-        val erNEDSATT_INNT_EVNE = "NEDSATT_INNT_EVNE" == hentVilkarsvurderingUforetrygd(pendata).nedsattInntektsevne
-        val erALDER = "ALDER" == hentVilkarsvurderingUforetrygd(pendata).alder
+        val erForutMedlem = "FORUT_MEDL" == hentVilkarsvurderingUforetrygd(pendata).unntakForutgaendeMedlemskap
+        val erHensArbrettTiltak =  "HENS_ARBRETT_TILTAK" == hentVilkarsvurderingUforetrygd(pendata).hensiktsmessigArbeidsrettedeTiltak
+        val erHensiktmessigBeh = "HENSIKTSMESSIG_BEH" == hentVilkarsvurderingUforetrygd(pendata).hensiktsmessigBehandling
+        val erNedsattInntEvne = "NEDSATT_INNT_EVNE" == hentVilkarsvurderingUforetrygd(pendata).nedsattInntektsevne
+        val erAlder = "ALDER" == hentVilkarsvurderingUforetrygd(pendata).alder
 
         // debugger
         logger.debug("                  avslag_vilkarsproving: $avslagVilkarsproving  TODO:: Må hente denne inn fra rett XMLdata")
@@ -748,10 +748,10 @@ class PrefillPensjonVedtak: PensjonData() {
         logger.debug("                  erLAVT_TIDLIG_UTTAK: $erLavtTidligUttak")
         logger.debug("                  erUNDER_62: $erUnder62")
         logger.debug("                  erIKKE_MOTTATT_DOK: $erIkkeMottattDok")
-        logger.debug("                  erFORUT_MEDL: $erFORUT_MEDL")
-        logger.debug("                  erHENS_ARBRETT_TILTAK: $erHENS_ARBRETT_TILTAK")
-        logger.debug("                  erNEDSATT_INNT_EVNE: $erNEDSATT_INNT_EVNE")
-        logger.debug("                  erALDER: $erALDER")
+        logger.debug("                  erFORUT_MEDL: $erForutMedlem")
+        logger.debug("                  erHENS_ARBRETT_TILTAK: $erHensArbrettTiltak")
+        logger.debug("                  erNEDSATT_INNT_EVNE: $erNedsattInntEvne")
+        logger.debug("                  erALDER: $erAlder")
 
         //pkt1 og pkt.9
         if ((KSAK.ALDER == sakType || KSAK.BARNEP == sakType || KSAK.GJENLEV == sakType)  && harBoddArbeidetUtland && erTrygdetidListeTom && avslagVilkarsproving)
@@ -767,19 +767,19 @@ class PrefillPensjonVedtak: PensjonData() {
         if (KSAK.ALDER == sakType && harBoddArbeidetUtland && erUnder62 && avslagVilkarsproving)
             return "06"
         //hentVilkarsvurderingUforetrygd
-        if (KSAK.UFOREP == sakType && harBoddArbeidetUtland && erALDER && avslagVilkarsproving)
+        if (KSAK.UFOREP == sakType && harBoddArbeidetUtland && erAlder && avslagVilkarsproving)
             return "03"
 
-        if (KSAK.UFOREP == sakType && harBoddArbeidetUtland && (erHENSIKTSMESSIG_BEH || erHENS_ARBRETT_TILTAK) && avslagVilkarsproving)
+        if (KSAK.UFOREP == sakType && harBoddArbeidetUtland && (erHensiktmessigBeh || erHensArbrettTiltak) && avslagVilkarsproving)
             return "08"
         //
-        if (KSAK.UFOREP == sakType && harBoddArbeidetUtland && erNEDSATT_INNT_EVNE && avslagVilkarsproving)
+        if (KSAK.UFOREP == sakType && harBoddArbeidetUtland && erNedsattInntEvne && avslagVilkarsproving)
             return "04"
         //
-        if (KSAK.UFOREP == sakType && harBoddArbeidetUtland && erTrygdeTid(pendata) && erFORUT_MEDL && avslagVilkarsproving)
+        if (KSAK.UFOREP == sakType && harBoddArbeidetUtland && erTrygdeTid(pendata) && erForutMedlem && avslagVilkarsproving)
             return "02"
         //pkt.5
-        if (KSAK.UFOREP == sakType && harBoddArbeidetUtland && pendata.trygdetidListe.trygdetidListe.isEmpty() && erFORUT_MEDL && avslagVilkarsproving)
+        if (KSAK.UFOREP == sakType && harBoddArbeidetUtland && pendata.trygdetidListe.trygdetidListe.isEmpty() && erForutMedlem && avslagVilkarsproving)
             return "01"
 
         //siste..   pendata.sak.sakType alle..

@@ -17,6 +17,7 @@ import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
+import org.springframework.http.HttpStatus
 import org.springframework.web.util.UriComponentsBuilder
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -102,6 +103,96 @@ class ApiControllerTest {
         assertEquals("{\"euxcaseid\":\"$mockResponse\"}", response)
     }
 
+    @Test
+    fun `validate addDocument SED on exisiting buc`() {
+
+        val items = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
+
+        val requestMock = ApiController.ApiRequest(
+                subjectArea = "Pensjon",
+                caseId = "EESSI-PEN-123",
+                euxCaseId = "1234567890",
+                vedtakId = "1234567",
+                institutions = items,
+                sed = "P6000",
+                buc = "P_BUC_06",
+                pinid = "0105094340092"
+        )
+
+        whenever(mockAktoerregisterService.hentGjeldendeNorskIdentForAktorId(ArgumentMatchers.anyString())).thenReturn("12345")
+        val utfyllMock = apiController.buildPrefillDataModelOnExisting(requestMock)
+
+        assertNotNull(utfyllMock.personNr)
+        assertEquals("12345", utfyllMock.personNr)
+
+        whenever(mockPrefillSED.prefill(any())).thenReturn(utfyllMock)
+        whenever(mockEuxService.createSEDonExistingRinaCase(any(), any(), any())).thenReturn(HttpStatus.OK)
+        whenever(mockRinaActions.canCreate(anyString(), anyString())).thenReturn(true)
+        whenever(mockRinaActions.canUpdate(utfyllMock.getSEDid(), utfyllMock.euxCaseID)).thenReturn(true)
+
+        val response = apiController.addDocument(requestMock)
+
+        assertEquals("{\"euxcaseid\":\"${utfyllMock.euxCaseID}\"}", response)
+    }
+
+    @Test(expected = SedDokumentIkkeGyldigException::class)
+    fun `addDocument SED on exisiting buc faild canCreate false`() {
+
+        val items = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
+
+        val requestMock = ApiController.ApiRequest(
+                subjectArea = "Pensjon",
+                caseId = "EESSI-PEN-123",
+                euxCaseId = "1234567890",
+                vedtakId = "1234567",
+                institutions = items,
+                sed = "P6000",
+                buc = "P_BUC_06",
+                pinid = "0105094340092"
+        )
+
+        whenever(mockAktoerregisterService.hentGjeldendeNorskIdentForAktorId(ArgumentMatchers.anyString())).thenReturn("12345")
+        val utfyllMock = apiController.buildPrefillDataModelOnExisting(requestMock)
+
+        assertNotNull(utfyllMock.personNr)
+        assertEquals("12345", utfyllMock.personNr)
+
+        whenever(mockPrefillSED.prefill(any())).thenReturn(utfyllMock)
+        whenever(mockRinaActions.canCreate(anyString(), anyString())).thenReturn(false)
+        apiController.addDocument(requestMock)
+    }
+
+    @Test(expected = SedDokumentIkkeOpprettetException::class)
+    fun `addDocument SED on exisiting buc faild canUpdate false`() {
+
+        val items = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
+
+        val requestMock = ApiController.ApiRequest(
+                subjectArea = "Pensjon",
+                caseId = "EESSI-PEN-123",
+                euxCaseId = "1234567890",
+                vedtakId = "1234567",
+                institutions = items,
+                sed = "P6000",
+                buc = "P_BUC_06",
+                pinid = "0105094340092"
+        )
+
+        whenever(mockAktoerregisterService.hentGjeldendeNorskIdentForAktorId(ArgumentMatchers.anyString())).thenReturn("12345")
+        val utfyllMock = apiController.buildPrefillDataModelOnExisting(requestMock)
+
+        assertNotNull(utfyllMock.personNr)
+        assertEquals("12345", utfyllMock.personNr)
+
+        whenever(mockPrefillSED.prefill(any())).thenReturn(utfyllMock)
+        whenever(mockEuxService.createSEDonExistingRinaCase(any(), any(), any())).thenReturn(HttpStatus.OK)
+        whenever(mockRinaActions.canCreate(anyString(), anyString())).thenReturn(true)
+        whenever(mockRinaActions.canUpdate(utfyllMock.getSEDid(), utfyllMock.euxCaseID)).thenReturn(false)
+        apiController.addDocument(requestMock)
+    }
+
+
+
     @Test(expected = SedDokumentIkkeOpprettetException::class)
     fun `create document fail on confirmUpdate`() {
         val items = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
@@ -163,7 +254,6 @@ class ApiControllerTest {
     fun `confirm document mangler pensjonSaksnr`() {
         val mockData = ApiController.ApiRequest(
                 subjectArea = "Pensjon",
-                //caseId = "EESSI-PEN-123",
                 institutions = listOf(InstitusjonItem("NO", "DUMMY")),
                 sed = "P6000",
                 buc = "P_BUC_06",
@@ -180,7 +270,7 @@ class ApiControllerTest {
                 subjectArea = "Pensjon",
                 caseId = "EESSI-PEN-123",
                 institutions = listOf(InstitusjonItem("NO", "DUMMY")),
-                sed = "P3300",
+                sed = "Q3300",
                 buc = "P_BUC_06",
                 pinid = "0105094340092"
         )
@@ -204,7 +294,7 @@ class ApiControllerTest {
     fun `check on caseID is null`() {
         val mockData = ApiController.ApiRequest(
                 caseId = null,
-                sed = "vedtak",
+                sed = "P6000",
                 pinid = "0105094340092"
         )
         apiController.confirmDocument(mockData)

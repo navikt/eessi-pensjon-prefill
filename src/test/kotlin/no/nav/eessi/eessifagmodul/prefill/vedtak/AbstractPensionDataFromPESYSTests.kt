@@ -34,7 +34,7 @@ import javax.xml.datatype.DatatypeFactory
 import javax.xml.datatype.XMLGregorianCalendar
 import kotlin.test.assertEquals
 
-abstract class AbstractPensionDataFromPESYSTests {
+abstract class AbstractPensionDataFromPESYSTests(private val xmlFilename: String) {
 
     @Mock
     lateinit var pensjonsinformasjonService: PensjonsinformasjonService
@@ -42,13 +42,25 @@ abstract class AbstractPensionDataFromPESYSTests {
     @Mock
     lateinit var pensjonsinformasjonRestTemplate: RestTemplate
 
-    lateinit var  prefill: PrefillDataModel
-    lateinit var dataFromPESYS: PensionDataFromPESYS
+    protected lateinit var  prefill: PrefillDataModel
+    protected lateinit var dataFromPESYS: PensionDataFromPESYS
+    protected lateinit var dataFromPESYS1: PensionDataFromPESYS
+    protected lateinit var pendata: Pensjonsinformasjon
 
     @Before
     fun setup() {
         prefill = PrefillDataModel()
         dataFromPESYS = PensionDataFromPESYS(pensjonsinformasjonService)
+        dataFromPESYS1 = readPensionDataFromPESYS()
+        pendata = readPensjonsinformasjon( dataFromPESYS1 )
+    }
+
+    fun readPensionDataFromPESYS(): PensionDataFromPESYS {
+        return mockPrefillP6000PensionDataFromPESYS(xmlFilename)
+    }
+
+    fun readPensjonsinformasjon(penDatafromPesys: PensionDataFromPESYS) : Pensjonsinformasjon {
+        return penDatafromPesys.getPensjoninformasjonFraVedtak("1234567")
     }
 
     fun readXMLresponse(file: String): ResponseEntity<String> {
@@ -71,6 +83,7 @@ abstract class AbstractPensionDataFromPESYSTests {
         println(json)
         println("----------------------------------------------------------------------\n")
     }
+
 
     fun generateFakePensjoninformasjonForALDER(): Pensjonsinformasjon {
         return generateFakePensjoninformasjonForKSAK("ALDER")

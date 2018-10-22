@@ -7,13 +7,15 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
 @RunWith(MockitoJUnitRunner::class)
-class PrefillP6000PensionGjenlevTest: AbstractPensionDataFromPESYSTests() {
+class PrefillP6000PensionGjenlevTest: AbstractPensionDataFromPESYSTests("P6000-GP-401.xml") {
 
     @Test
     fun `forventet korrekt utfylling av Pensjon objekt på Gjenlevendepensjon`() {
         prefill = generatePrefillData(66, "vedtak")
 
-        val dataFromPESYS1 = mockPrefillP6000PensionDataFromPESYS("P6000-GP-401.xml")
+//        val dataFromPESYS1 = mockPrefillP6000PensionDataFromPESYS("P6000-GP-401.xml")
+//        val result = dataFromPESYS1.prefill(prefill)
+
         val result = dataFromPESYS1.prefill(prefill)
 
         //ekstra for å sjekke om Gjenlevepensjon finnes.
@@ -76,6 +78,14 @@ class PrefillP6000PensionGjenlevTest: AbstractPensionDataFromPESYSTests() {
         assertEquals("01", result1)
     }
 
+
+    @Test
+    fun `forventet createVedtakTypePensionWithRule verdi`() {
+        prefill = generatePrefillData(68, "vedtak")
+        //dataFromPESYS1.getPensjoninformasjonFraVedtak("23123123")
+        val result = dataFromPESYS1.pensjonVedtak.createVedtakTypePensionWithRule(pendata)
+        assertEquals("03", result)
+    }
 
 
 

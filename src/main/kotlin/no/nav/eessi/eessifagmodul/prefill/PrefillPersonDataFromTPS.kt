@@ -11,8 +11,6 @@ import no.nav.tjeneste.virksomhet.person.v3.informasjon.*
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
-import java.text.SimpleDateFormat
-import javax.xml.datatype.XMLGregorianCalendar
 
 @Component
 class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
@@ -20,7 +18,6 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
                                private val landkodeService: LandkodeService) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillPersonDataFromTPS::class.java) }
-    private val dateformat = "YYYY-MM-dd"
     private val dod = "DØD"
 
     private var personstatus = ""

@@ -12,9 +12,6 @@ import no.nav.eessi.eessifagmodul.services.bucbucket.QueryResult
 import no.nav.eessi.eessifagmodul.services.eux.EuxService
 import no.nav.eessi.eessifagmodul.services.pensjonsinformasjon.PensjonsinformasjonService
 import no.nav.eessi.eessifagmodul.services.personv3.PersonV3Service
-import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
-import no.nav.eessi.eessifagmodul.utils.mapJsonToAny
-import no.nav.eessi.eessifagmodul.utils.typeRefs
 import no.nav.security.oidc.api.Protected
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonResponse
 import org.springframework.beans.factory.annotation.Autowired
@@ -131,7 +128,7 @@ class ExperimentController {
             throw IkkeGyldigKallException("Ikke MOCK!")
         }
         val korrid = UUID.randomUUID()
-        val penSaksnr = if (request.caseId == null) { throw IkkeGyldigKallException("Mangler pensjonSaksnr") } else { request.caseId }
+        val penSaksnr = request.caseId ?: throw IkkeGyldigKallException("Mangler pensjonSaksnr")
         val sedObj = mockSED(request)
 
         return if (request.euxCaseId != null) {
@@ -146,8 +143,8 @@ class ExperimentController {
             data.euxCaseID
 
         } else {
-            val bucId = if (request.buc == null) { throw IkkeGyldigKallException("Mangler BUC") } else { request.buc }
-            val institutin = if (request.institutions == null) { throw IkkeGyldigKallException("Mangler pensjonSaksnr") } else { request.institutions }
+            val bucId = request.buc ?: throw IkkeGyldigKallException("Mangler BUC")
+            val institutin = request.institutions ?: throw IkkeGyldigKallException("Mangler pensjonSaksnr")
 
             val data = PrefillDataModel().apply {
                 penSaksnummer = penSaksnr
