@@ -20,10 +20,10 @@ data class SED(
     }
 
     companion object {
-        fun create(name: String): SED {
+        @JvmStatic fun create(name: String): SED {
             return SED(sed = name, sedVer = "0", sedGVer = "4")
         }
-        fun fromJson(sed: String): SED {
+        @JvmStatic fun fromJson(sed: String): SED {
             return mapJsonToAny(sed, typeRefs(), true)
         }
     }
