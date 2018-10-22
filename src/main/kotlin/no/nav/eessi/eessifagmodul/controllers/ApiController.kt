@@ -44,7 +44,7 @@ class ApiController(private val euxService: EuxService, private val prefillServi
     }
 
     @ApiOperation("viser en oppsumering av SED prefill. Før innsending til EUX Basis")
-    @PostMapping("/data/personinfor")
+    @PostMapping("/data/personinfo")
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     fun hentPersonInformasjon(@RequestBody request: ApiRequest): Nav? {
         val aktorid = request.pinid ?: throw IkkeGyldigKallException("Ingen gyldig pinid")
@@ -139,14 +139,14 @@ class ApiController(private val euxService: EuxService, private val prefillServi
     //validatate request and convert to PrefillDataModel
     fun buildPrefillDataModelOnNew(request: ApiRequest): PrefillDataModel {
         return when {
-        request.caseId == null -> throw IkkeGyldigKallException("Mangler Saksnummer")
-        request.sed == null -> throw IkkeGyldigKallException("Mangler SED")
-        request.pinid == null -> throw IkkeGyldigKallException("Mangler AktoerID")
-        request.buc == null ->  throw IkkeGyldigKallException("Mangler BUC")
-        request.subjectArea == null ->  throw IkkeGyldigKallException("Mangler Subjekt/Sektor")
-        request.institutions == null -> throw IkkeGyldigKallException("Mangler Institusjoner")
+            request.caseId == null -> throw IkkeGyldigKallException("Mangler Saksnummer")
+            request.sed == null -> throw IkkeGyldigKallException("Mangler SED")
+            request.pinid == null -> throw IkkeGyldigKallException("Mangler AktoerID")
+            request.buc == null ->  throw IkkeGyldigKallException("Mangler BUC")
+            request.subjectArea == null ->  throw IkkeGyldigKallException("Mangler Subjekt/Sektor")
+            request.institutions == null -> throw IkkeGyldigKallException("Mangler Institusjoner")
 
-        //Denne validering og utfylling kan benyttes på SED P2000,P2100,P2200
+            //Denne validering og utfylling kan benyttes på SED P2000,P2100,P2200
             validsed(request.sed , ALL_SED) -> {
                 println("ALL SED on new RinaCase -> SED: ${request.sed}")
                 val pinid = hentAktoerIdPin(request.pinid)
@@ -180,7 +180,6 @@ class ApiController(private val euxService: EuxService, private val prefillServi
                     sed = SED.create(request.sed)
                     aktoerID = request.pinid
                     personNr = hentAktoerIdPin(request.pinid)
-
                     vedtakId = request.vedtakId ?: ""
                     if (request.payload != null) {
                         partSedasJson[request.sed] = request.payload
@@ -200,24 +199,26 @@ class ApiController(private val euxService: EuxService, private val prefillServi
     //kommer fra frontend
     //{"institutions":[{"NO:"DUMMY"}],"buc":"P_BUC_06","sed":"vedtak","caseId":"caseId","subjectArea":"pensjon","actorId":"2323123"}
     data class ApiRequest(
-            //sector
-            val subjectArea: String? = null,
             //PEN-saksnummer
             val caseId: String? = null,
             val vedtakId: String? = null,
+            val kravId: String? = null,
+
+            @JsonProperty("actorId")
+            //aktoerregister
+            val pinid: String? = null,
+            val fnr: String? = null,
+
+            //sector
+            val subjectArea: String? = null,
             val buc: String? = null,
             val sed : String? = null,
             //mottakere
             val institutions: List<InstitusjonItem>? = null,
-            @JsonProperty("actorId")
-            //aktoerregister
-            val pinid: String? = null,
-            @JsonProperty("dodactorId")
-            val dodpinid: String? = null,
-            //mere maa legges til..
             val euxCaseId: String? = null,
             //partpayload json/sed
             val payload: String? = null,
+
             val sendsed: Boolean? = null,
             val mockSED: Boolean? = null
     )
