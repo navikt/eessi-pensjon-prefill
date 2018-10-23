@@ -116,9 +116,9 @@ class SedP4000Test {
 
         val req = ApiController.ApiRequest(
                 sed = "P4000",
-                caseId = "12231231",
+                sakId = "12231231",
                 euxCaseId = "99191999911",
-                pinid = "00000",
+                aktoerId = "00000",
                 buc = "P_BUC_01",
                 subjectArea = "Pensjon",
                 payload = payload
@@ -155,9 +155,9 @@ class SedP4000Test {
         val req = ApiController.ApiRequest(
                 institutions = items,
                 sed = "P4000",
-                caseId = "12231231",
+                sakId = "12231231",
                 euxCaseId = "99191999911",
-                pinid = "00000",
+                aktoerId = "00000",
                 buc = "P_BUC_01",
                 subjectArea = "Pensjon",
                 payload = payload
@@ -178,9 +178,9 @@ class SedP4000Test {
         val req = ApiController.ApiRequest(
                 institutions = items,
                 sed = "P4000",
-                caseId = "12231231",
+                sakId = "12231231",
                 euxCaseId = "99191999911",
-                pinid = "1000060964183",
+                aktoerId = "1000060964183",
                 buc = "P_BUC_01",
                 subjectArea = "Pensjon",
                 payload = jsonfile

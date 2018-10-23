@@ -128,7 +128,7 @@ class ExperimentController {
             throw IkkeGyldigKallException("Ikke MOCK!")
         }
         val korrid = UUID.randomUUID()
-        val penSaksnr = request.caseId ?: throw IkkeGyldigKallException("Mangler pensjonSaksnr")
+        val penSaksnr = request.sakId ?: throw IkkeGyldigKallException("Mangler pensjonSaksnr")
         val sedObj = mockSED(request)
 
         return if (request.euxCaseId != null) {

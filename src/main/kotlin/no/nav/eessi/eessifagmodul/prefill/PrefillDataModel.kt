@@ -18,11 +18,11 @@ class PrefillDataModel {
     lateinit var vedtakId: String
     lateinit var kravId: String
 
-    //aktoearid og pinid for person
+    //aktoearid og aktoerId for person
     lateinit var personNr: String
     lateinit var aktoerID: String
 
-    //aktoerid og pinid for avdod
+    //aktoerid og aktoerId for avdod
     lateinit var avdodAktoerID: String
     lateinit var avdodPersonnr: String
 

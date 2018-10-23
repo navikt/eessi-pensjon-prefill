@@ -63,13 +63,13 @@ class ApiControllerTest {
 
     @Test
     fun `create frontend request`() {
-        val json = "{\"institutions\":[{\"country\":\"NO\",\"institution\":\"DUMMY\"}],\"buc\":\"P_BUC_06\",\"sed\":\"vedtak\",\"caseId\":\"caseId\",\"actorId\":\"0105094340092\"}"
+        val json = "{\"institutions\":[{\"country\":\"NO\",\"institution\":\"DUMMY\"}],\"buc\":\"P_BUC_06\",\"sed\":\"P6000\",\"sakId\":\"123456\",\"aktoerId\":\"0105094340092\"}"
         //map json request back to FrontendRequest obj
         val map = jacksonObjectMapper()
         val req = map.readValue(json, ApiController.ApiRequest::class.java)
-        assertNotNull(req)
         assertEquals("P_BUC_06", req.buc)
         assertEquals("DUMMY", req.institutions!![0].institution)
+        assertEquals("123456", req?.sakId)
     }
 
     @Test
@@ -79,13 +79,13 @@ class ApiControllerTest {
 
         val requestMock = ApiController.ApiRequest(
                 subjectArea = "Pensjon",
-                caseId = "EESSI-PEN-123",
+                sakId = "EESSI-PEN-123",
                 euxCaseId = mockResponse,
                 vedtakId = "1234567",
                 institutions = items,
                 sed = "P6000",
                 buc = "P_BUC_06",
-                pinid = "0105094340092"
+                aktoerId = "0105094340092"
         )
 
         whenever(mockAktoerregisterService.hentGjeldendeNorskIdentForAktorId(ArgumentMatchers.anyString())).thenReturn("12345")
@@ -110,13 +110,13 @@ class ApiControllerTest {
 
         val requestMock = ApiController.ApiRequest(
                 subjectArea = "Pensjon",
-                caseId = "EESSI-PEN-123",
+                sakId = "EESSI-PEN-123",
                 euxCaseId = "1234567890",
                 vedtakId = "1234567",
                 institutions = items,
                 sed = "P6000",
                 buc = "P_BUC_06",
-                pinid = "0105094340092"
+                aktoerId = "0105094340092"
         )
 
         whenever(mockAktoerregisterService.hentGjeldendeNorskIdentForAktorId(ArgumentMatchers.anyString())).thenReturn("12345")
@@ -142,13 +142,13 @@ class ApiControllerTest {
 
         val requestMock = ApiController.ApiRequest(
                 subjectArea = "Pensjon",
-                caseId = "EESSI-PEN-123",
+                sakId = "EESSI-PEN-123",
                 euxCaseId = "1234567890",
                 vedtakId = "1234567",
                 institutions = items,
                 sed = "P6000",
                 buc = "P_BUC_06",
-                pinid = "0105094340092"
+                aktoerId = "0105094340092"
         )
 
         whenever(mockAktoerregisterService.hentGjeldendeNorskIdentForAktorId(ArgumentMatchers.anyString())).thenReturn("12345")
@@ -169,13 +169,13 @@ class ApiControllerTest {
 
         val requestMock = ApiController.ApiRequest(
                 subjectArea = "Pensjon",
-                caseId = "EESSI-PEN-123",
+                sakId = "EESSI-PEN-123",
                 euxCaseId = "1234567890",
                 vedtakId = "1234567",
                 institutions = items,
                 sed = "P6000",
                 buc = "P_BUC_06",
-                pinid = "0105094340092"
+                aktoerId = "0105094340092"
         )
 
         whenever(mockAktoerregisterService.hentGjeldendeNorskIdentForAktorId(ArgumentMatchers.anyString())).thenReturn("12345")
@@ -199,13 +199,13 @@ class ApiControllerTest {
 
         val requestMock = ApiController.ApiRequest(
                 subjectArea = "Pensjon",
-                caseId = "EESSI-PEN-123",
+                sakId = "EESSI-PEN-123",
                 vedtakId = "123456",
                 institutions = items,
                 euxCaseId = "1234567",
                 sed = "P6000",
                 buc = "P_BUC_02",
-                pinid = "0105094340092"
+                aktoerId = "0105094340092"
         )
         val mockResponse = "1234567890"
 
@@ -227,13 +227,13 @@ class ApiControllerTest {
     fun `confirm document`() {
         val mockData = ApiController.ApiRequest(
                 subjectArea = "Pensjon",
-                caseId = "EESSI-PEN-123",
+                sakId = "EESSI-PEN-123",
                 vedtakId = "1234567",
                 institutions = listOf(InstitusjonItem("NO", "DUMMY")),
                 euxCaseId = "1234567890",
                 sed = "P6000",
                 buc = "P_BUC_06",
-                pinid = "0105094340092"
+                aktoerId = "0105094340092"
         )
         whenever(mockAktoerregisterService.hentGjeldendeNorskIdentForAktorId(ArgumentMatchers.anyString())).thenReturn("12345")
 
@@ -257,7 +257,7 @@ class ApiControllerTest {
                 institutions = listOf(InstitusjonItem("NO", "DUMMY")),
                 sed = "P6000",
                 buc = "P_BUC_06",
-                pinid = "0105094340092"
+                aktoerId = "0105094340092"
         )
         whenever(mockAktoerregisterService.hentGjeldendeNorskIdentForAktorId(ArgumentMatchers.anyString())).thenReturn("12345")
         apiController.buildPrefillDataModelConfirm(mockData)
@@ -268,11 +268,11 @@ class ApiControllerTest {
     fun `confirm document when sed is not valid`() {
         val mockData = ApiController.ApiRequest(
                 subjectArea = "Pensjon",
-                caseId = "EESSI-PEN-123",
+                sakId = "EESSI-PEN-123",
                 institutions = listOf(InstitusjonItem("NO", "DUMMY")),
                 sed = "Q3300",
                 buc = "P_BUC_06",
-                pinid = "0105094340092"
+                aktoerId = "0105094340092"
         )
         apiController.confirmDocument(mockData)
     }
@@ -281,11 +281,11 @@ class ApiControllerTest {
     fun `confirm document sed is null`() {
         val mockData = ApiController.ApiRequest(
                 subjectArea = "Pensjon",
-                caseId = "EESSI-PEN-123",
+                sakId = "EESSI-PEN-123",
                 institutions = listOf(InstitusjonItem("NO", "DUMMY")),
                 sed = null,
                 buc = "P_BUC_06",
-                pinid = "0105094340092"
+                aktoerId = "0105094340092"
         )
         apiController.confirmDocument(mockData)
     }
@@ -293,9 +293,9 @@ class ApiControllerTest {
     @Test(expected = IllegalArgumentException::class)
     fun `check on caseID is null`() {
         val mockData = ApiController.ApiRequest(
-                caseId = null,
+                sakId = null,
                 sed = "P6000",
-                pinid = "0105094340092"
+                aktoerId = "0105094340092"
         )
         apiController.confirmDocument(mockData)
     }
@@ -303,9 +303,9 @@ class ApiControllerTest {
     @Test(expected = IllegalArgumentException::class)
     fun `check on pinID is null`() {
         val mockData = ApiController.ApiRequest(
-                caseId = "1213123123",
+                sakId = "1213123123",
                 sed = "P6000",
-                pinid = null
+                aktoerId = null
         )
         apiController.confirmDocument(mockData)
     }

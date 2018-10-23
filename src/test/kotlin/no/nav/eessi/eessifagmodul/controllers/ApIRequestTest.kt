@@ -21,9 +21,9 @@ class ApIRequestTest {
         return  ApiController.ApiRequest(
                 institutions = items,
                 sed = sedName,
-                caseId = "01234567890",
+                sakId = "01234567890",
                 euxCaseId = "99191999911",
-                pinid = "1000060964183",
+                aktoerId = "1000060964183",
                 buc = buc,
                 subjectArea = "Pensjon",
                 payload = payload,
