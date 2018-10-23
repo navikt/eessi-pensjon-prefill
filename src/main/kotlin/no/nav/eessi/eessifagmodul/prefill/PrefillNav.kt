@@ -4,6 +4,9 @@ import no.nav.eessi.eessifagmodul.models.*
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
+import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.util.*
 
 @Component
 class PrefillNav(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS): Prefill<Nav> {
@@ -32,11 +35,15 @@ class PrefillNav(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS)
 
         val nav = Nav(
                 barn = barnatps,
+
                 bruker = brukertps,
                 //korrekt bruk av eessisak? skal pen-saknr legges ved?
                 //eller peker denne til en ekisterende rina-casenr?
+
                 eessisak = lokalSaksnr,
-                krav = Krav("2016-01-01")
+
+                //YYYY-MM-dd -- now date"
+                krav = Krav(SimpleDateFormat("yyyy-MM-dd").format(Date()))
             )
         logger.debug("[${utfyllingData.getSEDid()}] Sjekker PinID : ${utfyllingData.personNr}")
 

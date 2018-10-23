@@ -20,7 +20,7 @@ class PrefillP6000PensionAlderTest: AbstractPensionDataFromPESYSTests("P6000-APU
 
         val result = dataFromPESYS1.prefill(prefill)
 
-        //debugPrintFinalResult(result)
+        debugPrintFinalResult(result)
 
         val vedtaklst = result.vedtak
         val sak = result.sak
@@ -60,7 +60,7 @@ class PrefillP6000PensionAlderTest: AbstractPensionDataFromPESYSTests("P6000-APU
         assertEquals("six weeks from the date the decision is received", dataof)
 
         assertEquals("2017-05-21", tillegg?.dato)
-        assertEquals("NAV", tillegg?.andreinstitusjoner?.get(0)?.institusjonsid)
+        assertEquals(null, tillegg?.andreinstitusjoner?.get(0)?.institusjonsid)
 
     }
 

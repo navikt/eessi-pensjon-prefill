@@ -58,7 +58,7 @@ class PrefillP6000PensionUforepTest: AbstractPensionDataFromPESYSTests("P6000-UT
         assertEquals("six weeks from the date the decision is received", dataof)
 
         assertEquals("2017-05-21", tillegg?.dato)
-        assertEquals("NAV", tillegg?.andreinstitusjoner?.get(0)?.institusjonsid)
+        //assertEquals("NAV", tillegg?.andreinstitusjoner?.get(0)?.institusjonsid)
 
     }
 

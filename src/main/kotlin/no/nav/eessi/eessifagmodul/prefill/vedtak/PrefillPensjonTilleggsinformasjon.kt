@@ -21,19 +21,12 @@ class PrefillPensjonTilleggsinformasjon: PensjonData() {
         return Tilleggsinformasjon(
 
                 //6.2-6.3
-                opphoer = Opphoer(
-                        //6.2
-                        dato = createOpphorerDato(pendata),
-                        //6.3
-                        annulleringdato = createAnnulleringDato(pendata)
-                ),
+                opphoer = createOpphoer(pendata),
 
                 //6.5.2.1
                 //På logges EnhetID /NAV avsender (PENSJO, UTFORP, ETTERLATP)?
                 //TODO Hvor skal vi få denne listen/informasjon ifra? RINA?.
-                andreinstitusjoner  = listOf(
-                        createAndreinstitusjonerItem(pendata)
-                ),
+                andreinstitusjoner  = createAndreinstitusjonerItem(pendata),
 
                 //6.5.2 - 6.6  $pensjon.tilleggsinformasjon.artikkel48
                 //05.10.2018 -
@@ -62,28 +55,55 @@ class PrefillPensjonTilleggsinformasjon: PensjonData() {
                 //??
                 person = null, //Person()
 
-                //6.5.1. Time limits for the review
-                dato = pendata.vedtak.datoFattetVedtak.simpleFormat()
+                //6.4 //
+                dato = createTilleggsInfoDato(pendata)
         )
     }
 
+    private fun createOpphoer(pendata: Pensjonsinformasjon): Opphoer? {
+        logger.debug("6.2       Opphører..")
+
+        val dato = createOpphorerDato(pendata)
+        val annulleringdato = createAnnulleringDato(pendata)
+
+        val opphorer = Opphoer(
+                //6.2
+                dato = dato,
+                //6.3
+                annulleringdato = annulleringdato
+        )
+
+        if (dato == null && annulleringdato == null) {
+            return null
+        }
+        return opphorer
+    }
+
+    private fun createTilleggsInfoDato(pendata: Pensjonsinformasjon): String {
+        //6.4 //
+        logger.debug("6.4       Tilleggsinformasjon dato (dato vedtak)")
+        return pendata.vedtak.datoFattetVedtak.simpleFormat()
+
+    }
 
 
     //6.5.2.1
-    private fun createAndreinstitusjonerItem(pendata: Pensjonsinformasjon): AndreinstitusjonerItem {
+    private fun createAndreinstitusjonerItem(pendata: Pensjonsinformasjon): List<AndreinstitusjonerItem>? {
         //På logges EnhetID /NAV avsender (PENSJO, UTFORP, ETTERLATP)?
-
-        logger.debug("6.5.2.1       AndreinstitusjonerItem")
-        return AndreinstitusjonerItem(
-                institusjonsid = "NAV",
-                institusjonsnavn  = "NAV",
-                institusjonsadresse  = null,
-                postnummer  = null,
-                bygningsnr = null,
-                land = null,
-                region = null,
-                poststed = null
-        )
+        logger.debug("6.5.2.1       AndreinstitusjonerItem (Må fylles ut manuelt!!) sakType: ${pendata.sak.sakType}")
+        //TODO Hvor skal denne informasjon/data komme ifra?
+        return null
+//        return listOf( AndreinstitusjonerItem(
+//                    institusjonsid = "NAV",
+//                    institusjonsnavn  = "NAV",
+//                    institusjonsadresse  = null,
+//                    postnummer  = null,
+//                    bygningsnr = null,
+//                    land = null,
+//                    region = null,
+//                    poststed = null
+//            )
+//        )
     }
 
     //6.6

@@ -1,6 +1,5 @@
 package no.nav.eessi.eessifagmodul.utils
 
-import no.nav.eessi.eessifagmodul.models.Bruker
 import no.nav.eessi.eessifagmodul.models.Nav
 import org.junit.Test
 import javax.xml.datatype.DatatypeFactory
@@ -113,12 +112,9 @@ class UtilsTest {
                 "    }\n" +
                 "}"
 
-
-        val nav = mapJsonToAny(tst, typeRefs<Nav>())
-
-        val navJson = mapAnyToJson(nav)
-        print("bruker: $navJson")
-
+        //val nav = mapJsonToAny(tst, typeRefs<Nav>())
+        //val navJson = mapAnyToJson(nav)
+        //print("bruker: $navJson")
     }
 
 }

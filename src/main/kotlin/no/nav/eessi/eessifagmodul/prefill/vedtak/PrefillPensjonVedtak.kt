@@ -60,7 +60,7 @@ class PrefillPensjonVedtak: PensjonData() {
                 begrunnelseAnnen = null,
 
                 //4.1.13.1 -- 4.1.13.2.1 - $pensjon.vedtak[x].avslagbegrunnelse[x].begrunnelse
-                avslagbegrunnelse = listOf( createAvlsagsBegrunnelseItem(pendata) ),
+                avslagbegrunnelse = createAvlsagsBegrunnelseItem(pendata) ,
 
                 //4.1.14.1 // Ikke i bruk
                 delvisstans = null
@@ -291,23 +291,23 @@ class PrefillPensjonVedtak: PensjonData() {
      */
     fun createArtikkelInnvilgelseAvYtelseWithRule(pendata: Pensjonsinformasjon): String? {
         //01=> 883/2004 art 52 A, 02=> 883/2004 art 52 B, 03=> 883/2004 art 57 2, 04=> 883/2004 art 57 3, 05=> 833/2004 art 60 2
-        logger.debug("4.1.5         ArtikkelInnvilgelseAvYtelse (vedtak.artikkel) TODO: Må fyllesut manuelt!!")
+        logger.debug("4.1.5         ArtikkelInnvilgelseAvYtelse (vedtak.artikkel) TODO: Må fyllesut manuelt!! sak: ${pendata.sak.sakType}")
+        return null
 
-        val kravGjelder = pendata.vedtak.kravGjelder
-        val sakType = KSAK.valueOf(pendata.sak.sakType)
-
-        val vinnendeBeregn = hentVinnendeBergeningsMetode(pendata)
-        val vedtaksresultat = hentVilkarsResultatHovedytelse(pendata)
-        logger.debug("              vedtaksresultat : $vedtaksresultat")
-
-        val erAvslag = vedtaksresultat == "AVSLAG"
-        val erInnvilgelse = vedtaksresultat == "INNV"
+//        val kravGjelder = pendata.vedtak.kravGjelder
+//        val sakType = KSAK.valueOf(pendata.sak.sakType)
+//
+//        val vinnendeBeregn = hentVinnendeBergeningsMetode(pendata)
+//        val vedtaksresultat = hentVilkarsResultatHovedytelse(pendata)
+//        logger.debug("              vedtaksresultat : $vedtaksresultat")
+//
+//        val erAvslag = vedtaksresultat == "AVSLAG"
+//        val erInnvilgelse = vedtaksresultat == "INNV"
 
         //pendata.vilkarsvurderingListe.vilkarsvurderingListe.get(0).avslagHovedytelse
         //pendata.inngangOgEksport.
 
         //TODO regler her er ikke 100% det må uthentes bedre svar fra PESYS.
-        return null
 //        return when(sakType) {
 //            KSAK.ALDER -> {
 //                logger.debug("              alder")
@@ -618,17 +618,24 @@ class PrefillPensjonVedtak: PensjonData() {
 
 
     //4.1.13.1 - 4.1.13.2.1
-    fun createAvlsagsBegrunnelseItem(pendata: Pensjonsinformasjon): AvslagbegrunnelseItem {
+    fun createAvlsagsBegrunnelseItem(pendata: Pensjonsinformasjon): List<AvslagbegrunnelseItem>? {
 
         logger.debug("4.1.13        AvlsagsBegrunnelseItem")
-        return AvslagbegrunnelseItem(
 
-                begrunnelse = createAvlsagsBegrunnelse(pendata),
+        val avslagbegrn = createAvlsagsBegrunnelse(pendata)
 
-                //4.1.13.2 Other - Nei
-                annenbegrunnelse  = null
+        val item = listOf( AvslagbegrunnelseItem(
+
+                    begrunnelse = avslagbegrn,
+
+                    //4.1.13.2 Other - Nei
+                    annenbegrunnelse  = null
+            )
         )
+        if (avslagbegrn == null)
+            return null
 
+        return item
     }
 
     //4.1.13.1

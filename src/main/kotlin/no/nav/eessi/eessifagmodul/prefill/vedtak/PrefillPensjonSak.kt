@@ -22,36 +22,24 @@ class PrefillPensjonSak: PensjonData() {
                 //6.1 --
                 artikkel54  = createArtikkel54(pendata),
 
-                reduksjon = listOf(
-                        ReduksjonItem(
-                                type = null,
+                reduksjon = null,
 
-                                virkningsdato  = listOf(
-                                        VirkningsdatoItem(
-                                                startdato = null,
-                                                sluttdato= null
-                                        )
-                                ),
-                                aarsak = Arsak(
-                                        inntektAnnen = null,
-                                        annenytelseellerinntekt = null
-                                ),
-                                artikkeltype = null
+                //6.5.1
+                kravtype  = createKravBegrensetInnsyn(),
 
-                        )
-
-                ),
-                //$pensjon.sak.kravtype[x]
-                kravtype  = listOf(
-                        KravtypeItem(
-
-                                //6.5.1 $pensjon.sak.kravtype[x].datoFrist
-                                datoFrist = "six weeks from the date the decision is received",
-
-                                krav = null
-                        )
-                ),
                 enkeltkrav = null
+        )
+    }
+
+    private fun createKravBegrensetInnsyn() : List<KravtypeItem> {
+        logger.debug("6.5.1         Information innsyn")
+        return listOf(
+                KravtypeItem(
+
+                        //6.5.1 $pensjon.sak.kravtype[x].datoFrist
+                        datoFrist = "six weeks from the date the decision is received",
+                        krav = null
+                )
         )
     }
     /*
