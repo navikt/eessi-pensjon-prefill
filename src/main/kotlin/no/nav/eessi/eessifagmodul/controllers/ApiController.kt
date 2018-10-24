@@ -77,16 +77,16 @@ class ApiController(private val euxService: EuxService, private val prefillServi
     }
 
     @ApiOperation("henter ut en SED fra et eksisterende Rina document. krever unik dokumentid fra valgt SED")
-    @GetMapping("/sed/get/{rinanr}/{documentid}")
+    @GetMapping("/sed/{rinanr}/{documentid}")
     fun getDocument(@PathVariable("rinanr", required = true) rinanr: String, @PathVariable("documentid", required = true) documentid: String): SED {
 
-        return euxService.fetchSEDfromExistingRinaCase(rinanr, documentid)
+        return euxService.fetchSEDfromExistingRinaCase( rinanr, documentid)
 
     }
 
     @ApiOperation("sletter SED fra et eksisterende Rina document. krever unik dokumentid fra valgt SED")
-    @GetMapping("/sed/delete/{rinanr}/{sed}/{documentid}")
-    fun deleteDocument(@PathVariable("rinanr", required = true) rinanr: String, @PathVariable("sed", required = true) sed: String, @PathVariable("documentid", required = true) documentid: String): HttpStatus {
+    @DeleteMapping("/sed/{rinanr}/{documentid}")
+    fun deleteDocument(@PathVariable("rinanr", required = true) rinanr: String, @PathVariable("documentid", required = true) sed: String, @PathVariable("documentid", required = true) documentid: String): HttpStatus {
 
         return euxService.deleteSEDfromExistingRinaCase(rinanr, documentid)
     }

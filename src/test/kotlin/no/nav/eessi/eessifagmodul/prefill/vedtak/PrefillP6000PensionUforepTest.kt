@@ -37,7 +37,7 @@ class PrefillP6000PensionUforepTest: AbstractPensionDataFromPESYSTests("P6000-UT
         assertEquals(null, vedtak?.artikkel, "4.1.5 vedtak.artikkel (må fylles ut manuelt nå)")
 
         assertEquals("01", vedtak?.grunnlag?.opptjening?.forsikredeAnnen)
-        assertEquals("2", vedtak?.grunnlag?.framtidigtrygdetid)
+        assertEquals("0", vedtak?.grunnlag?.framtidigtrygdetid)
 
         val bergen = vedtak?.beregning?.get(0)
         assertEquals("2017-05-01", bergen?.periode?.fom)

@@ -17,3 +17,6 @@ class RinaCasenrIkkeMottattException(message: String): Exception(message)
 
 @ResponseStatus(value = HttpStatus.BAD_REQUEST)
 class IkkeGyldigKallException(message: String) : IllegalArgumentException(message)
+
+@ResponseStatus(value = HttpStatus.NOT_FOUND)
+class SedDokumentIkkeLestException(message: String): Exception(message)

@@ -547,18 +547,22 @@ class PrefillPensjonVedtak: PensjonData() {
         Hvis sakstype er Alderspensjon SÅ skal det velges alternativ "[2] Nei"
      */
     fun createFramtidigtrygdetid(pendata: Pensjonsinformasjon): String {
-        logger.debug("4.1.12        Framtidigtrygdetid")
+        logger.debug("4.1.12        Framtidigtrygdetid --- Trenger mer input")
+
+//        4.1.12. Credited period
+//              [1] Yes
+//              [0] No
 
         val key = "FOLKETRYGD"
         val sakType = KSAK.valueOf(pendata.sak.sakType)
 
         return when(sakType) {
-            KSAK.ALDER -> "2" //nei
+            KSAK.ALDER -> "0" //nei
             else -> {
                 when (hentVinnendeBergeningsMetode(pendata)) {
                     key -> "1" //ja
 
-                    else -> "2" //nei
+                    else -> "0" //nei
                 }
             }
         }

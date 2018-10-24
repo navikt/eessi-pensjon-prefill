@@ -137,9 +137,9 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
         val responseBody = response.body ?: throw SedDokumentIkkeOpprettetException("Sed dokument ikke funnet")
         try {
             if (response.statusCode.isError) {
-                throw createErrorMessage(responseBody)
+                throw SedDokumentIkkeLestException("Får ikke lest SED dokument fra Rina")
             } else {
-                return mapJsonToAny(responseBody, typeRefs())
+                return SED.fromJson(responseBody) //  mapJsonToAny(responseBody, typeRefs())
             }
         } catch (ex: IOException) {
             throw RuntimeException(ex.message)
