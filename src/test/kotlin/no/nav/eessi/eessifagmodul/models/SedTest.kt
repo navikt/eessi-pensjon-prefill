@@ -4,7 +4,6 @@ import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
 import no.nav.eessi.eessifagmodul.utils.mapJsonToAny
 import no.nav.eessi.eessifagmodul.utils.typeRefs
 import no.nav.eessi.eessifagmodul.utils.validateJson
-import org.junit.Before
 import org.junit.Test
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -13,7 +12,7 @@ import java.nio.file.Paths
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
-class SedTest{
+class SedTest {
 
     val logger: Logger by lazy { LoggerFactory.getLogger(SedTest::class.java) }
 
@@ -22,29 +21,21 @@ class SedTest{
         val sed6000 = SedMock().genererP6000Mock()
         assertNotNull(sed6000)
 
-        val json = mapAnyToJson(sed6000)
-        //map json back to P6000 obj
-        val pensjondata = mapJsonToAny(json, typeRefs<SED>())
+        val json = sed6000.toJson()
+        //map json back to vedtak obj
+        val pensjondata = SED.fromJson(json)
         assertNotNull(pensjondata)
         assertEquals(sed6000, pensjondata)
 
-        //map load P6000-NAV refrence
+        //map load vedtak-NAV refrence
         val path = Paths.get("src/test/resources/json/P6000-NAV.json")
         val p6000file = String(Files.readAllBytes(path))
         assertNotNull(p6000file)
         validateJson(p6000file)
 
-        //map P6000-NAV back to P6000 object.
-        val pensjondataFile = mapJsonToAny(p6000file, typeRefs<SED>())
+        //map vedtak-NAV back to vedtak object.
+        val pensjondataFile = SED.fromJson(p6000file)
         assertNotNull(pensjondataFile)
-
-//        Printout map P6000-NAV obj back to json
-//        val jsonnav = mapAnyToJson(sed6000)
-//        println("------------------generated----------------------")
-//        println("\n\n $json \n\n")
-//        println("------------------p6000-nav----------------------")
-//        println("\n\n $jsonnav \n\n")
-//        println("-------------------------------------------------")
 
     }
 
@@ -53,23 +44,16 @@ class SedTest{
         val sed6000 = SedMock().genererP6000Mock()
         assertNotNull(sed6000)
 
-        //hente ut bruker
         val bruker = sed6000.nav!!.bruker!!
-        //map bruker til json så tilbake til brukerback
         val brukerback = mapJsonToAny(mapAnyToJson(bruker), typeRefs<Bruker>())
-        //alt ok?
         assertNotNull(brukerback)
         assertEquals(bruker, brukerback)
 
-        val sed = createSED("P6000")
+        val sed = SED.create("vedtak")
         val navmock = NavMock().genererNavMock()
-        sed.nav = Nav(
-                bruker = navmock.bruker
-        )
+        sed.nav = Nav(bruker = navmock.bruker)
         val penmock = PensjonMock().genererMockData()
-        sed.pensjon = Pensjon(
-                gjenlevende = penmock.gjenlevende
-        )
+        sed.pensjon = Pensjon(gjenlevende = penmock.gjenlevende)
         val testPersjson = mapAnyToJson(sed, true)
         assertNotNull(testPersjson)
 

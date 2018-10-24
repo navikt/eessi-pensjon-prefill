@@ -4,9 +4,7 @@ import org.springframework.stereotype.Component
 import org.springframework.util.ResourceUtils
 import org.w3c.dom.Document
 import org.w3c.dom.Element
-import org.w3c.dom.Node
 import java.io.StringWriter
-import javax.xml.XMLConstants
 import javax.xml.parsers.DocumentBuilderFactory
 import javax.xml.transform.OutputKeys
 import javax.xml.transform.TransformerFactory
@@ -53,7 +51,7 @@ class RequestBuilder {
 
         // Remove all <xs:element>-nodes from <xs:all>
         val elements = baseDocument.getElementsByTagNameNS(XS, "all").item(0)
-        while(elements.hasChildNodes())
+        while (elements.hasChildNodes())
             elements.removeChild(elements.firstChild)
 
         return baseDocument

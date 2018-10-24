@@ -8,7 +8,6 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
-import org.springframework.util.MimeType
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.util.UriComponentsBuilder
 import java.io.StringReader
@@ -19,6 +18,24 @@ private val logger = LoggerFactory.getLogger(PensjonsinformasjonService::class.j
 
 @Service
 class PensjonsinformasjonService(val pensjonsinformasjonOidcRestTemplate: RestTemplate, val requestBuilder: RequestBuilder) {
+
+    fun hentPerson(saksnummer: String): Pensjonsinformasjon {
+        val informationBlocks = listOf(
+                InformasjonsType.AVDOD,
+                InformasjonsType.PERSON)
+
+        val document = requestBuilder.getBaseRequestDocument()
+
+        informationBlocks.forEach {
+            requestBuilder.addPensjonsinformasjonElement(document, it)
+        }
+
+        logger.debug("Requestbody:\n${document.documentToString()}")
+        val response = doRequest("/sak", saksnummer, document.documentToString())
+        validateResponse(informationBlocks, response)
+        return response
+
+    }
 
     fun hentAlt(vedtaksId: String): Pensjonsinformasjon {
 
@@ -33,7 +50,7 @@ class PensjonsinformasjonService(val pensjonsinformasjonOidcRestTemplate: RestTe
                 InformasjonsType.TRYGDETID_AVDOD_MOR_LISTE,
                 InformasjonsType.TRYGDETID_LISTE,
                 InformasjonsType.VEDTAK,
-//                InformasjonsType.VILKARSVURDERING_LISTE, // TODO: Ta med denne når pensjon-fss har implementert
+                InformasjonsType.VILKARSVURDERING_LISTE,
                 InformasjonsType.YTELSE_PR_MAANED_LISTE)
 
         val document = requestBuilder.getBaseRequestDocument()
@@ -43,7 +60,7 @@ class PensjonsinformasjonService(val pensjonsinformasjonOidcRestTemplate: RestTe
         }
 
         logger.debug("Requestbody:\n${document.documentToString()}")
-        val response = doRequest(vedtaksId, document.documentToString())
+        val response = doRequest("/vedtak", vedtaksId, document.documentToString())
         validateResponse(informationBlocks, response)
         return response
     }
@@ -52,12 +69,12 @@ class PensjonsinformasjonService(val pensjonsinformasjonOidcRestTemplate: RestTe
         // TODO: Hva skal vi egentlig validere? Skal vi validere noe mer enn at vi fikk en gyldig xml-response, som skjer ved JAXB-marshalling?
     }
 
-    private fun doRequest(vedtaksId: String, requestBody: String): Pensjonsinformasjon {
+    private fun doRequest(path: String, id: String, requestBody: String): Pensjonsinformasjon {
         val headers = HttpHeaders()
-        headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_XML.toString())
+        headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_XML_VALUE)
         val requestEntity = HttpEntity(requestBody, headers)
 
-        val uriBuilder = UriComponentsBuilder.fromPath("/vedtak").pathSegment(vedtaksId)
+        val uriBuilder = UriComponentsBuilder.fromPath(path).pathSegment(id)
 
         val responseEntity = pensjonsinformasjonOidcRestTemplate.exchange(
                 uriBuilder.toUriString(),
@@ -72,7 +89,7 @@ class PensjonsinformasjonService(val pensjonsinformasjonOidcRestTemplate: RestTe
             }
             throw RuntimeException("Received ${responseEntity.statusCode} ${responseEntity.statusCode.reasonPhrase} from pensjonsinformasjon")
         }
-        logger.debug("Responsebody:\n${responseEntity.body}")
+//        logger.debug("Responsebody:\n${responseEntity.body}")
 
         val context = JAXBContext.newInstance(Pensjonsinformasjon::class.java)
         val unmarshaller = context.createUnmarshaller()

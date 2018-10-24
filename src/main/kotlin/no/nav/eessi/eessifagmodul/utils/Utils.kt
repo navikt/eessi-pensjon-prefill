@@ -6,10 +6,12 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.web.client.RestClientException
+import java.text.SimpleDateFormat
+import javax.xml.datatype.XMLGregorianCalendar
 
 inline fun <reified T : Any> typeRef(): ParameterizedTypeReference<T> = object : ParameterizedTypeReference<T>() {}
 inline fun <reified T : Any> typeRefs(): TypeReference<T> = object : TypeReference<T>() {}
-inline fun <reified T : Any> mapJsonToAny(json: String, objec : TypeReference<T>, failonunknown: Boolean = false): T {
+inline fun <reified T : Any> mapJsonToAny(json: String, objec: TypeReference<T>, failonunknown: Boolean = false): T {
     if (validateJson(json)) {
         return jacksonObjectMapper()
                 .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, failonunknown)
@@ -24,23 +26,23 @@ fun createErrorMessage(responseBody: String): RestClientException {
 }
 
 fun mapAnyToJson(data: Any): String {
-    return  jacksonObjectMapper()
+    return jacksonObjectMapper()
             .writerWithDefaultPrettyPrinter()
             .writeValueAsString(data)
 }
+
 fun mapAnyToJson(data: Any, nonempty: Boolean = false): String {
     return if (nonempty) {
-        val json = jacksonObjectMapper()
+        jacksonObjectMapper()
                 .setDefaultPropertyInclusion(JsonInclude.Include.NON_EMPTY)
                 .writerWithDefaultPrettyPrinter()
                 .writeValueAsString(data)
-        json
     } else {
         mapAnyToJson(data)
     }
 }
 
-fun validateJson(json: String) : Boolean {
+fun validateJson(json: String): Boolean {
     return try {
         jacksonObjectMapper()
                 .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true)
@@ -51,10 +53,8 @@ fun validateJson(json: String) : Boolean {
     }
 }
 
-val STANDARD_SED = "P2000,P2100,P2200,P6000,P5000"
-val P4000_SED = "P4000"
-
-fun validsed(sed: String, validsed: String) : Boolean {
-    val result: List<String> = validsed.split(",").map { it.trim() }
-    return result.contains(sed)
+fun XMLGregorianCalendar.simpleFormat(): String {
+    //private val dateformat = "YYYY-MM-dd"
+    //dd-MM-YYYY rinaformat
+    return SimpleDateFormat("yyyy-MM-dd").format(this.toGregorianCalendar().time)
 }

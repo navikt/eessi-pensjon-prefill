@@ -8,41 +8,7 @@ import org.springframework.stereotype.Component
 @Component
 class PrefillPerson(private val prefillNav: PrefillNav, private val prefilliPensjon: PrefillPensjon) : Prefill<SED> {
 
-    //private val aktoerIdClient: AktoerIdClient,
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillPerson::class.java) }
-
-    /*
-    hva trenger vi å hente ut fra TPS
-	person {
-		pinid ->
-		sivilstatus ->
-		personstatus -> leve/død?
-
-		//P2000
-		barn -> [
-
-			pinid ->
-			sivilstatus ->
-
-			//alle sed?
-			foreldre -> [
-				fara -> pinid
-					personstatus ->
-						doedsdato ->
-				mora -> pinid
-					personstatus ->
-						doedsdato ->
-			]
-		]
-
-	}
-	pensjon {
-	    //hvis data finnes i pensjon.gjenlevende -> da er nav.person død?
-        //hvis data ikke finnes? da er det nav.perosn som er levende?
-		gjenlevende
-			person ->
-	}
-	*/
 
     override fun prefill(prefillData: PrefillDataModel): SED {
 
@@ -57,11 +23,11 @@ class PrefillPerson(private val prefillNav: PrefillNav, private val prefilliPens
 
         val sed = prefillData.sed
 
-        sed.nav = prefillNav.utfyllNav(prefillData)
+        sed.nav = prefillNav.prefill(prefillData)
 
         logger.debug("[${prefillData.getSEDid()}] Preutfylling Utfylling NAV")
 
-        sed.pensjon = prefilliPensjon.pensjon(prefillData)
+        sed.pensjon = prefilliPensjon.prefill(prefillData)
 
         logger.debug("[${prefillData.getSEDid()}] Preutfylling Utfylling Pensjon")
 
@@ -69,7 +35,6 @@ class PrefillPerson(private val prefillNav: PrefillNav, private val prefilliPens
         return prefillData.sed
 
     }
-
 
 }
 

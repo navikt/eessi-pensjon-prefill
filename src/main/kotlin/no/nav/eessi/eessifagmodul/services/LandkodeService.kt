@@ -21,7 +21,7 @@ class LandkodeService {
         var line: String? = ""
         val csvSplitBy = ";"
 
-        while (line  != null) {
+        while (line != null) {
             line = br.readLine()
             if (line != null) {
                 val landArray = line.split(csvSplitBy.toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
@@ -50,11 +50,11 @@ class LandkodeService {
         println("Map landKodeTable : $landKodeTable")
         landKodeTable.keys.forEach {
             if (it?.length == 2) {
-                landlist.add( landKodeTable[it]!! )
+                landlist.add(landKodeTable[it]!!)
             }
         }
-        val listsort: List<Landkode> = landlist.sortedBy { (_,_,_, sorting) -> sorting}.toList()
-        val list : MutableList<String> = mutableListOf()
+        val listsort: List<Landkode> = landlist.asSequence().sortedBy { (_, _, _, sorting) -> sorting }.toList()
+        val list: MutableList<String> = mutableListOf()
         listsort.forEach {
             list.add(it.alpha2!!)
         }
@@ -75,11 +75,11 @@ class LandkodeService {
     }
 
     private data class Landkode(
-        val alpha2: String? = null,
-        val alpha3: String? = null,
-        val land: String? = null,
-        val sorting: String? = null
-       )
+            val alpha2: String? = null,
+            val alpha3: String? = null,
+            val land: String? = null,
+            val sorting: String? = null
+    )
 
 
 }

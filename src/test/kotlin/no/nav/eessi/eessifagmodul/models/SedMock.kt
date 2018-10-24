@@ -6,10 +6,10 @@ class SedMock {
         return SED(
                 nav = NavMock().genererNavMock(),
                 pensjon = PensjonMock().genererMockData(),
-                sed = "P6000",
+                sed = "vedtak",
                 sedVer = "0",
                 sedGVer = "4"
-                //sector = "Sector Components/Pensions/P6000"
+                //sector = "Sector Components/Pensions/vedtak"
         )
     }
 
@@ -131,7 +131,7 @@ class NavMock {
 
 }
 
-//Mock prefill av en P6000
+//Mock prefill av en vedtak
 class PensjonMock {
 
     fun genererMockDataMedMeldemskap(): Pensjon {

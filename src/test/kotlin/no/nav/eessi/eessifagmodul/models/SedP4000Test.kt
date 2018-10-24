@@ -2,12 +2,13 @@ package no.nav.eessi.eessifagmodul.models
 
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.whenever
-import no.nav.eessi.eessifagmodul.services.aktoerregister.AktoerregisterService
 import no.nav.eessi.eessifagmodul.controllers.ApiController
 import no.nav.eessi.eessifagmodul.prefill.PrefillDataModel
+import no.nav.eessi.eessifagmodul.prefill.PrefillP4000
 import no.nav.eessi.eessifagmodul.prefill.PrefillPerson
 import no.nav.eessi.eessifagmodul.prefill.PrefillSED
 import no.nav.eessi.eessifagmodul.services.PrefillService
+import no.nav.eessi.eessifagmodul.services.aktoerregister.AktoerregisterService
 import no.nav.eessi.eessifagmodul.services.eux.EuxService
 import no.nav.eessi.eessifagmodul.services.eux.RinaActions
 import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
@@ -36,30 +37,35 @@ class SedP4000Test {
     lateinit var mockEuxService: EuxService
 
     @Mock
-    lateinit var mockPersonPreutfyll: PrefillPerson
-
-    @Mock
     private lateinit var mockAktoerregisterService: AktoerregisterService
 
     @Mock
     lateinit var mockPrefillService: PrefillService
 
-    private lateinit var prefillDataMock: PrefillDataModel
+    @Mock
+    private lateinit var mockPrefillSED: PrefillSED
 
-    private lateinit var apiController: ApiController
+    @Mock
+    private lateinit var prefillPerson: PrefillPerson
 
+    @Mock
     private lateinit var rinaActions: RinaActions
 
-    private lateinit var mockPrefillSED: PrefillSED
+    lateinit var pre4000: PrefillP4000
+
+    private lateinit var prefillDataMock: PrefillDataModel
+    private lateinit var apiController: ApiController
 
     val logger: Logger by lazy { LoggerFactory.getLogger(SedP4000Test::class.java) }
 
     @Before
     fun setup() {
         prefillDataMock = PrefillDataModel()
-        rinaActions =  RinaActions(mockEuxService)
-        mockPrefillSED = PrefillSED(mockPersonPreutfyll)
-        mockPrefillService = PrefillService(mockEuxService, mockPrefillSED, rinaActions)
+
+        pre4000 = PrefillP4000(prefillPerson)
+
+        //mockPrefillService = PrefillService(mockEuxService, mockPrefillSED, rinaActions)
+
         apiController = ApiController(mockEuxService, mockPrefillService, mockAktoerregisterService)
         logger.debug("Starting tests.... ...")
     }
@@ -69,20 +75,19 @@ class SedP4000Test {
         val result = createPersonTrygdeTidMock()
         assertNotNull(result)
 
-        val sed = createSED("P4000")
+        val sed = SED.create("P4000")
         val nav = NavMock().genererNavMock()
         val pen = PensjonMock().genererMockData()
         sed.nav = nav
         sed.pensjon = pen
         sed.trygdetid = result
 
-        val json2 = mapAnyToJson(sed, true)
-        val mapSED = mapJsonToAny(json2, typeRefs<SED>())
+        val json2 = sed.toJson()
+        val mapSED = SED.fromJson(json2)
 
         assertNotNull(mapSED)
         assertEquals(result, mapSED.trygdetid)
     }
-
 
     @Test
     fun `create and validate P4000 from json to nav-sed back to json`() {
@@ -91,28 +96,26 @@ class SedP4000Test {
         val p4000file = String(Files.readAllBytes(path))
         assertNotNull(p4000file)
         validateJson(p4000file)
-        val sed = mapJsonToAny(p4000file, typeRefs<SED>())
+        val sed = SED.fromJson(p4000file)
         assertNotNull(sed)
         assertNotNull(sed.trygdetid)
         assertNotNull(sed.trygdetid?.ansattSelvstendigPerioder)
-        val json = mapAnyToJson(sed, true)
+        val json = sed.toJson()
         JSONAssert.assertEquals(p4000file, json, false)
-
     }
-
 
     @Test
     fun `create dummy or mock apiRequest with p4000 json as payload`() {
 
-        val trygdetid  = createPersonTrygdeTidMock()
+        val trygdetid = createPersonTrygdeTidMock()
         val payload = mapAnyToJson(trygdetid)
         //logger.debug(payload)
 
         val req = ApiController.ApiRequest(
                 sed = "P4000",
-                caseId = "12231231",
+                sakId = "12231231",
                 euxCaseId = "99191999911",
-                pinid = "00000",
+                aktoerId = "00000",
                 buc = "P_BUC_01",
                 subjectArea = "Pensjon",
                 payload = payload
@@ -127,7 +130,6 @@ class SedP4000Test {
         val check = mapJsonToAny(payjson, typeRefs<PersonTrygdeTid>())
         assertNotNull(check)
         assertEquals("DK", check.boPerioder!![0].land)
-
     }
 
     @Test
@@ -149,16 +151,15 @@ class SedP4000Test {
         val req = ApiController.ApiRequest(
                 institutions = items,
                 sed = "P4000",
-                caseId = "12231231",
+                sakId = "12231231",
                 euxCaseId = "99191999911",
-                pinid = "00000",
+                aktoerId = "00000",
                 buc = "P_BUC_01",
                 subjectArea = "Pensjon",
                 payload = payload
         )
         assertNotNull(req)
         JSONAssert.assertEquals(jsonfile, backtojson, false)
-
     }
 
     @Test
@@ -172,35 +173,37 @@ class SedP4000Test {
         val req = ApiController.ApiRequest(
                 institutions = items,
                 sed = "P4000",
-                caseId = "12231231",
+                sakId = "12231231",
                 euxCaseId = "99191999911",
-                pinid = "1000060964183",
+                aktoerId = "1000060964183",
                 buc = "P_BUC_01",
                 subjectArea = "Pensjon",
                 payload = jsonfile
         )
-        val reqjson = mapAnyToJson(req,true)
+        val reqjson = mapAnyToJson(req, true)
         assertNotNull(reqjson)
         validateJson(reqjson)
 
         whenever(mockAktoerregisterService.hentGjeldendeNorskIdentForAktorId(ArgumentMatchers.anyString())).thenReturn("12345")
+        val data = apiController.buildPrefillDataModelConfirm(req)
 
-        val data = apiController.buildPrefillDataModel(req)
         assertNotNull(data)
+        assertNotNull(data.getPartSEDasJson("P4000"))
         assertEquals("12345", data.personNr)
 
-        whenever(mockPersonPreutfyll.prefill(any() )).thenReturn(data.sed)
+        val resultData = data
+        whenever(prefillPerson.prefill(any())).thenReturn(data.sed)
+        val sed = pre4000.prefill(resultData)
+        assertNotNull(sed)
 
-        val result = mockPrefillService.prefillSed(data)
-        //val result = apiController.createPreutfyltSED(data)
 
-        assertNotNull(result)
+        whenever(mockPrefillService.prefillSed(any())).thenReturn(resultData)
 
-        val jsondata = mapAnyToJson(result.sed, true)
+        val result = apiController.confirmDocument(req)
+
+        val jsondata = result.toJson()
         assertNotNull(jsondata)
     }
-
-
 }
 
 fun createPersonTrygdeTidMock(): PersonTrygdeTid {
@@ -210,7 +213,7 @@ fun createPersonTrygdeTidMock(): PersonTrygdeTid {
                     StandardItem(
                             land = "NO",
                             usikkerDatoIndikator = "1",
-                            annenInformasjon= "førdeslperm i Norge",
+                            annenInformasjon = "førdeslperm i Norge",
                             periode = TrygdeTidPeriode(
                                     lukketPeriode = Periode(
                                             fom = "2000-01-01",
@@ -221,9 +224,9 @@ fun createPersonTrygdeTidMock(): PersonTrygdeTid {
                     StandardItem(
                             land = "FR",
                             usikkerDatoIndikator = "0",
-                            annenInformasjon= "fødselperm i frankrike",
+                            annenInformasjon = "fødselperm i frankrike",
                             periode = TrygdeTidPeriode(
-                                    openPeriode = Periode (
+                                    openPeriode = Periode(
                                             fom = "2002-01-01",
                                             extra = "98"
                                     )
@@ -244,8 +247,8 @@ fun createPersonTrygdeTidMock(): PersonTrygdeTid {
                                     land = "NO",
                                     by = "Oslo"
                             ),
-                            periode = TrygdeTidPeriode (
-                                    lukketPeriode = Periode (
+                            periode = TrygdeTidPeriode(
+                                    lukketPeriode = Periode(
                                             tom = "1995-01-01",
                                             fom = "1990-01-01"
                                     )
@@ -259,10 +262,10 @@ fun createPersonTrygdeTidMock(): PersonTrygdeTid {
                     StandardItem(
                             land = "SE",
                             usikkerDatoIndikator = "1",
-                            annenInformasjon= "ikkenoe",
+                            annenInformasjon = "ikkenoe",
                             typePeriode = "Ingen spesielt",
-                            periode = TrygdeTidPeriode (
-                                    lukketPeriode = Periode (
+                            periode = TrygdeTidPeriode(
+                                    lukketPeriode = Periode(
                                             fom = "2000-01-01",
                                             tom = "2001-01-01"
                                     )
@@ -271,10 +274,10 @@ fun createPersonTrygdeTidMock(): PersonTrygdeTid {
                     StandardItem(
                             land = "SE",
                             usikkerDatoIndikator = "1",
-                            annenInformasjon= "ikkenoemere",
+                            annenInformasjon = "ikkenoemere",
                             typePeriode = "Leve og ha det gøy",
                             periode = TrygdeTidPeriode(
-                                    openPeriode = Periode (
+                                    openPeriode = Periode(
                                             fom = "2000-01-01",
                                             extra = "01"
                                     )
@@ -404,4 +407,69 @@ fun createPersonTrygdeTidMock(): PersonTrygdeTid {
             )
     )
 
+}
+
+//P5000 - bekreftforsikred
+fun createMedlemskapMock(): Pensjon {
+
+    return Pensjon(
+            sak = Sak(
+                    enkeltkrav = KravtypeItem(krav = "10")
+            ),
+            medlemskap = listOf(
+                    MedlemskapItem(
+                            land = "DK",
+                            ordning = "01",
+                            type = "10",
+                            relevans = "100",
+                            gyldigperiode = "1",
+                            beregning = "100",
+                            periode = Periode(
+                                    fom = "2000-01-01",
+                                    tom = "2010-01-01"
+                            ),
+                            sum = TotalSum(
+                                    aar = "4",
+                                    dager = Dager(nr = "2"),
+                                    maaneder = "2"
+                            )
+                    )
+            ),
+            medlemskapAnnen = listOf(
+                    MedlemskapItem(
+                            land = "DE",
+                            type = "21",
+                            ordning = "01",
+                            relevans = "100",
+                            beregning = "100",
+                            sum = TotalSum(
+                                    aar = "4",
+                                    maaneder = "2",
+                                    dager = Dager(nr = "5")
+                            )
+
+                    )
+            ),
+            medlemskapTotal = listOf(
+                    MedlemskapItem(
+                            type = "10",
+                            relevans = "100",
+                            sum = TotalSum(
+                                    aar = "11",
+                                    maaneder = "1",
+                                    dager = Dager(nr = "6")
+                            )
+                    )
+            ),
+            trygdetid = listOf(
+                    MedlemskapItem(
+                            type = "11",
+                            sum = TotalSum(
+                                    aar = "10",
+                                    maaneder = "2",
+                                    dager = Dager(nr = "5")
+                            )
+                    )
+            )
+    )
 }

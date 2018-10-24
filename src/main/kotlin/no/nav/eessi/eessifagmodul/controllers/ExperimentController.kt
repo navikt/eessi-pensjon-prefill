@@ -12,9 +12,6 @@ import no.nav.eessi.eessifagmodul.services.bucbucket.QueryResult
 import no.nav.eessi.eessifagmodul.services.eux.EuxService
 import no.nav.eessi.eessifagmodul.services.pensjonsinformasjon.PensjonsinformasjonService
 import no.nav.eessi.eessifagmodul.services.personv3.PersonV3Service
-import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
-import no.nav.eessi.eessifagmodul.utils.mapJsonToAny
-import no.nav.eessi.eessifagmodul.utils.typeRefs
 import no.nav.security.oidc.api.Protected
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonResponse
 import org.springframework.beans.factory.annotation.Autowired
@@ -116,45 +113,49 @@ class ExperimentController {
             request.payload == null -> throw IkkeGyldigKallException("Mangler PayLoad")
             request.sed == null -> throw IkkeGyldigKallException("Mangler SED")
             else -> {
-                val seds = mapJsonToAny(request.payload, typeRefs<SED>())
+                val seds = SED.fromJson(request.payload)
                 sed = seds
             }
         }
         return sed
-        //end Mocking
     }
 
     //TODO remove when done!! test and send existing sed json to rina
     @PostMapping("/testingsed")
     fun testingDocument(@RequestBody request: ApiController.ApiRequest): String {
-
+        //TODO remove when done!
         if (!checkNotNull(request.mockSED)) {
             throw IkkeGyldigKallException("Ikke MOCK!")
         }
-
-        val rinanr = request.euxCaseId
         val korrid = UUID.randomUUID()
+        val penSaksnr = request.sakId ?: throw IkkeGyldigKallException("Mangler pensjonSaksnr")
+        val sedObj = mockSED(request)
 
-        //temp for mock sendt on payload..
-        //TODO remove when done!
+        return if (request.euxCaseId != null) {
+            val data = PrefillDataModel().apply {
+                penSaksnummer = penSaksnr
+                //personNr = "12345678901"
+                //aktoerID = "12345678901"
+                sed = sedObj
+                euxCaseID = request.euxCaseId
+            }
+            euxService.createSEDonExistingRinaCase(data.sed, data.euxCaseID, korrid.toString())
+            data.euxCaseID
 
-        val data = PrefillDataModel()
-        data.penSaksnummer = request.caseId!!
-        data.personNr = "12345678901"
-        data.aktoerID = request.pinid!!
-        data.buc = request.buc!!
-        data.institution = request.institutions!!
-        data.sed = mockSED(request)
-
-        val sed = data.sed
-        val sedAsJson = mapAnyToJson(sed, true)
-
-        return if (rinanr != null) {
-            euxService.createSEDonExistingRinaCase(sedAsJson, rinanr, korrid.toString())
-            rinanr
         } else {
+            val bucId = request.buc ?: throw IkkeGyldigKallException("Mangler BUC")
+            val institutin = request.institutions ?: throw IkkeGyldigKallException("Mangler pensjonSaksnr")
+
+            val data = PrefillDataModel().apply {
+                penSaksnummer = penSaksnr
+                //personNr = "12345678901"
+                //aktoerID = "12345678901"
+                buc = bucId
+                institution = institutin
+                sed = sedObj
+            }
             val euSaksnr = euxService.createCaseAndDocument(
-                    jsonPayload = sedAsJson,
+                    sed = data.sed,
                     fagSaknr = data.penSaksnummer,
                     mottaker = getFirstInstitution(data.getInstitutionsList()),
                     bucType = data.buc,

@@ -4,32 +4,33 @@ package no.nav.eessi.eessifagmodul.models
  * data class model from EUX Basis
  */
 data class RINASaker(
-    val id: String? = null,
-    val applicationRoleId: String? = null,
-    val status: String? = null,
-    val processDefinitionId: String? = null,
-    val traits: RINATraits? = null,
-    val properties: RINAProperties? = null
+        var id: String? = null,
+        var applicationRoleId: String? = null,
+        var status: String? = null,
+        var processDefinitionId: String? = null,
+        var traits: RINATraits? = null,
+        var properties: RINAProperties? = null
 )
 
 data class RINATraits(
-    val birthday: String? =null,
-    val localPin: String? = null,
-    val surname: String? = null,
-    val caseId: String? = null,
-    val name: String? = null,
-    val flowType: String? = null,
-    val status: String? = null
+        var birthday: String? = null,
+        var localPin: String? = null,
+        var surname: String? = null,
+        var caseId: String? = null,
+        var name: String? = null,
+        var flowType: String? = null,
+        var status: String? = null
 )
 
 data class RINAProperties(
-    val importance: String? = null,
-    val criticality: String? = null
+        var importance: String? = null,
+        var criticality: String? = null
 )
+
 data class RINAaksjoner(
-        val dokumentType: String? = null,
-        val navn: String? = null,
-        val dokumentId: String? = null,
-        val kategori: String? = null,
-        val id: String? = null
+        var dokumentType: String? = null,
+        var navn: String? = null,
+        var dokumentId: String? = null,
+        var kategori: String? = null,
+        var id: String? = null
 )

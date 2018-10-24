@@ -1,8 +1,8 @@
 package no.nav.eessi.eessifagmodul.prefill
 
 import no.nav.eessi.eessifagmodul.models.InstitusjonItem
-import no.nav.eessi.eessifagmodul.services.aktoerregister.AktoerregisterService
 import no.nav.eessi.eessifagmodul.models.SED
+import no.nav.eessi.eessifagmodul.services.aktoerregister.AktoerregisterService
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -62,17 +62,17 @@ class PrefillDataModelTest {
     fun `validate and check model build`() {
 
         val items = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
-        prefill.build(
-                subject = "Pensjon",
-                sedID = "P6000",
-                caseId = "12345",
-                buc = "P_BUC_06",
-                aktoerID = "567890",
-                pinID = "123456789",
-                institutions = items
-        )
+        prefill.apply {
+                rinaSubject = "Pensjon"
+                sed =  SED.create("vedtak")
+                penSaksnummer = "12345"
+                buc = "P_BUC_06"
+                aktoerID = "567890"
+                personNr = "123456789"
+                institution = items
+        }
         assertNotNull(prefill)
-        assertEquals("P6000", prefill.getSEDid())
+        assertEquals("vedtak", prefill.getSEDid())
         assertEquals(SED::class.java , prefill.sed.javaClass)
         assertEquals("12345", prefill.penSaksnummer)
         assertEquals("567890", prefill.aktoerID)
@@ -83,15 +83,15 @@ class PrefillDataModelTest {
     @Test
     fun `create and test valid pinid for aktoerid`() {
         val items = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
-        prefill.build(
-                subject = "Pensjon",
-                sedID = "P6000",
-                caseId = "12345",
-                buc = "P_BUC_06",
-                aktoerID = "32",
-                pinID = "1234000001",
-                institutions = items
-        )
+        prefill.apply {
+            rinaSubject= "Pensjon"
+            sed = SED.create("vedtak")
+            penSaksnummer = "12345"
+            buc = "P_BUC_06"
+            aktoerID = "32"
+            personNr = "1234000001"
+            institution = items
+        }
         assertNotNull(prefill)
         assertNotNull(prefill.personNr)
         assertEquals("1234000001", prefill.personNr)

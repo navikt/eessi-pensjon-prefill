@@ -10,7 +10,7 @@
             </encoder>
         </appender>
 
-        <logger name="no.nav" level="DEBUG" />
+        <logger name="no.nav" level="DEBUG"/>
 
         <root level="info">
             <appender-ref ref="stdout_json"/>
@@ -19,7 +19,7 @@
 
     <springProfile name="local">
         <include resource="org/springframework/boot/logging/logback/base.xml"/>
-        <logger name="no.nav" level="DEBUG" />
+        <logger name="no.nav" level="DEBUG"/>
     </springProfile>
 
 </configuration>

@@ -15,6 +15,7 @@ import org.springframework.util.MultiValueMap
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.util.UriComponentsBuilder
 import java.io.IOException
+import java.net.UnknownHostException
 
 private val logger = LoggerFactory.getLogger(EuxService::class.java)
 
@@ -56,12 +57,16 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
         throw IkkeGyldigKallException("Ingen gyldig dokumentID funnet")
     }
 
+    //TODO: euxBasis hva finnes av metoder for:
+    //TODO: euxBasis metode for å legge til flere mottakere (Institusjoner)
+    //TODO: euxBasis metode for å fjenre en eller flere mottakere (Institusjoner)
+
     /**
      * call to send sed on rina document.
      *
      * @parem euxCaseID (rinaid)
      * @param korrelasjonID CorrelationId
-     * @param sed (sed type P6000, P2000)
+     * @param sed (sed type vedtak, P2000)
      */
     fun sendSED(euxCaseId: String, sed: String, korrelasjonID: String): Boolean {
         val documentID = hentDocuemntID(euxCaseId, sed)
@@ -92,12 +97,13 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
     /**
      * call to make new sed on existing rina document.
      *
+     * @param sed (actual SED)
      * @parem euxCaseID (rina id)
      * @param korrelasjonID CorrelationId
-     * @param jsonPayload (actual sed as json)
      */
     //void no confirmaton?
-    fun createSEDonExistingRinaCase(jsonPayload: String, euxCaseId: String, korrelasjonID: String): HttpStatus {
+    @Throws(UnknownHostException::class)
+    fun createSEDonExistingRinaCase(sed: SED, euxCaseId: String, korrelasjonID: String): HttpStatus {
 
         val builder = UriComponentsBuilder.fromPath("/SED")
                 .queryParam("RINASaksnummer", euxCaseId)
@@ -106,7 +112,7 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_JSON
 
-        val httpEntity = HttpEntity(jsonPayload, headers)
+        val httpEntity = HttpEntity(sed.toJson(), headers)
 
         logger.info("createSEDonExistingRinaCase KorrelasjonsID : {}", korrelasjonID)
         val response = euxOidcRestTemplate.exchange(builder.toUriString(), HttpMethod.POST, httpEntity, String::class.java)
@@ -131,9 +137,9 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
         val responseBody = response.body ?: throw SedDokumentIkkeOpprettetException("Sed dokument ikke funnet")
         try {
             if (response.statusCode.isError) {
-                throw createErrorMessage(responseBody)
+                throw SedDokumentIkkeLestException("Får ikke lest SED dokument fra Rina")
             } else {
-                return mapJsonToAny(responseBody, typeRefs<SED>())
+                return SED.fromJson(responseBody) //  mapJsonToAny(responseBody, typeRefs())
             }
         } catch (ex: IOException) {
             throw RuntimeException(ex.message)
@@ -156,7 +162,6 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
     }
 
 
-
     /**
      * Call the orchestrator endpoint with necessary information to create a case in RINA, set
      * its receiver, create a document and add attachments to it.
@@ -166,7 +171,7 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
      *
      * if something goes wrong after caseid. no sed is shown on case.
      *
-     * @param jsonPayload SED-document in NAV-format
+     * @param sed SED-document in NAV-format
      * @param bucType The RINA case type to create
      * @param fagSaknr local case number
      * @param mottaker The RINA ID of the organisation that is to receive the SED on a sned action
@@ -174,7 +179,7 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
      * @param korrelasjonID CorrelationId
      * @return The ID of the created case
      */
-    fun createCaseAndDocument(jsonPayload: String, bucType: String, fagSaknr: String, mottaker: String, vedleggType: String = "", korrelasjonID: String): String {
+    fun createCaseAndDocument(sed: SED, bucType: String, fagSaknr: String, mottaker: String, vedleggType: String = "", korrelasjonID: String): String {
 
         val builder = UriComponentsBuilder.fromPath("/OpprettBuCogSED")
                 .queryParam("BuCType", bucType)
@@ -184,7 +189,7 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
                 .queryParam("KorrelasjonsID", korrelasjonID)
 
         val map: MultiValueMap<String, Any> = LinkedMultiValueMap()
-        val document = object : ByteArrayResource(jsonPayload.toByteArray()) {
+        val document = object : ByteArrayResource(sed.toJson().toByteArray()) {
             override fun getFilename(): String? {
                 return "document"
             }

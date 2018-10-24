@@ -15,9 +15,9 @@ import org.springframework.stereotype.Component
 @Component
 class PersonV3Service(val service: PersonV3, val oidcRequestContextHolder: OIDCRequestContextHolder) {
 
-
     fun hentPerson(fnr: String): HentPersonResponse {
         val token = oidcRequestContextHolder.oidcValidationContext.getToken("oidc")
+
         configureRequestSamlTokenOnBehalfOfOidc(service, token.idToken)
 
         val request = HentPersonRequest().apply {

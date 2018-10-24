@@ -6,12 +6,11 @@ import no.nav.eessi.eessifagmodul.models.Person
 import no.nav.eessi.eessifagmodul.services.LandkodeService
 import no.nav.eessi.eessifagmodul.services.PostnummerService
 import no.nav.eessi.eessifagmodul.services.personv3.PersonV3Service
+import no.nav.eessi.eessifagmodul.utils.simpleFormat
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.*
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
-import java.text.SimpleDateFormat
-import javax.xml.datatype.XMLGregorianCalendar
 
 @Component
 class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
@@ -19,7 +18,6 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
                                private val landkodeService: LandkodeService) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillPersonDataFromTPS::class.java) }
-    private val dateformat = "YYYY-MM-dd"
     private val dod = "DØD"
 
     private var personstatus = ""
@@ -55,6 +53,7 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
     fun prefillBruker(ident: String): Bruker {
         val brukerTPS = hentBrukerTPS(ident)
         setPersonStatus(hentPersonStatus(brukerTPS))
+
         val bruker = Bruker(
                 far = Foreldre(person = hentRelasjon(RelasjonEnum.FAR, brukerTPS)),
                 mor = Foreldre(person = hentRelasjon(RelasjonEnum.MOR, brukerTPS)),
@@ -80,7 +79,6 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
     //bruker fra TPS
     private fun hentBrukerTPS(ident: String): no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker {
         val response = personV3Service.hentPerson(ident)
-        logger.debug("Preutfylling henter v3.Bruker fra TPS")
         return response.person as no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker
     }
 
@@ -92,21 +90,15 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
     }
 
     //fdato i rinaformat
-    private fun standardDatoformat(xmldato: XMLGregorianCalendar): String {
-        val calendar = xmldato.toGregorianCalendar()
-        return SimpleDateFormat(dateformat).format(calendar.time)
-    }
-
-    //fdato i rinaformat
     private fun datoFormat(person: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): String? {
         val fdato = person.foedselsdato
-        return if (fdato == null) null else standardDatoformat(fdato.foedselsdato)
+        return fdato?.foedselsdato?.simpleFormat()
     }
 
     //doddato i rina
     private fun dodDatoFormat(person: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): String? {
         val doddato = person.doedsdato
-        return if (doddato == null) null else standardDatoformat(doddato.doedsdato)
+        return doddato?.doedsdato?.simpleFormat()
     }
 
     fun hentFodested(bruker: no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker): Foedested {
@@ -119,7 +111,6 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
         if (fsted.land == "Unknown") {
             return Foedested()
         }
-
         return fsted
     }
 
@@ -171,6 +162,7 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
         //val statsborgerskap = brukerTps.statsborgerskap as Statsborgerskap
         val kjonn = brukerTps.kjoenn
 
+
         val person = Person(
                 pin = hentPersonPinNorIdent(brukerTps),
                 fornavnvedfoedsel = navn.fornavn,
@@ -205,7 +197,8 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
     private fun hentSivilstand(brukerTps: no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker): List<SivilstandItem> {
         val sivilstand = brukerTps.sivilstand as Sivilstand
         val sivil = SivilstandItem(
-                fradato = standardDatoformat(sivilstand.fomGyldighetsperiode),
+                //fradato = standardDatoformat(sivilstand.fomGyldighetsperiode),
+                fradato = sivilstand.fomGyldighetsperiode.simpleFormat(),
                 status = sivilstand.sivilstand.value
         )
         return listOf(sivil)
@@ -217,8 +210,9 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
         if (validatePersonStatus(dod)) {
             return Adresse()
         }
+        val bostedsadresse: Bostedsadresse = person.bostedsadresse ?: return personAdresseUstrukturert(person.postadresse)
+        val gateAdresse = bostedsadresse.strukturertAdresse as Gateadresse
 
-        val gateAdresse = person.bostedsadresse.strukturertAdresse as Gateadresse
         val postnr = gateAdresse.poststed.value
 
         val gate = gateAdresse.gatenavn
@@ -230,11 +224,19 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
                 land = hentLandkode(gateAdresse.landkode),
                 by = postnummerService.finnPoststed(postnr)
         )
-        //bygning =          Ikke i bruk
-        // region = gateAdresse.kommunenummer, Ikke i bruk
-
         logger.debug("Preutfylling Adresse")
         return adr
+    }
+
+    private fun personAdresseUstrukturert(postadr: no.nav.tjeneste.virksomhet.person.v3.informasjon.Postadresse): Adresse {
+        val gateAdresse = postadr.ustrukturertAdresse as UstrukturertAdresse
+        return Adresse(
+                bygning = gateAdresse.adresselinje1,
+                gate = gateAdresse.adresselinje2,
+                postnummer = gateAdresse.adresselinje3,
+                by = gateAdresse.adresselinje4,
+                land = hentLandkode(gateAdresse.landkode)
+        )
     }
 
     private fun statsBorgerskap(person: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): StatsborgerskapItem {
@@ -247,15 +249,14 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
         return statitem
     }
 
-    //Denne blir vel flyttet til Basis når mapping blir rettet opp fra NO=NO til NOR=NO (TPS/EU-RINA)??
+    //TODO: Mapping av landkoder skal gjøres i codemapping i EUX
     private fun hentLandkode(landkodertps: no.nav.tjeneste.virksomhet.person.v3.informasjon.Landkoder): String? {
         val result = landkodeService.finnLandkode2(landkodertps.value)
         logger.debug("Preutfylling Landkode (alpha3-alpha2)  ${landkodertps.value} til $result")
         return result
     }
 
-    //Midlertidige - mapping i Basis vil bli rettet slik at det sammkjører mot tps mapping.
-    //Midlertidig funksjon for map TPS til EUX/Rina
+    //TODO: Mapping av kjønn skal defineres i codemapping i EUX
     private fun mapKjonn(kjonn: Kjoenn): String {
         val ktyper = kjonn.kjoenn
         val map: Map<String, String> = hashMapOf("M" to "m", "K" to "f")

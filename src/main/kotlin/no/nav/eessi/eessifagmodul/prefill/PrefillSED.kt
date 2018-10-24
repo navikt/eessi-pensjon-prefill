@@ -1,29 +1,31 @@
 package no.nav.eessi.eessifagmodul.prefill
 
-import no.nav.eessi.eessifagmodul.utils.P4000_SED
-import no.nav.eessi.eessifagmodul.utils.STANDARD_SED
-import no.nav.eessi.eessifagmodul.utils.validsed
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
 @Component
-class PrefillSED(private val prefillPerson: PrefillPerson) : Prefill<PrefillDataModel> {
+/**
+ * Deligate SED to dedicated prefillClass
+ */
+class PrefillSED(private val factory: PrefillFactory) {
 
-    override fun prefill(prefillData: PrefillDataModel): PrefillDataModel {
+    private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillSED::class.java) }
 
-        return when {
-            validsed(prefillData.getSEDid(), STANDARD_SED) -> {
+    fun prefill(prefillData: PrefillDataModel): PrefillDataModel {
 
-            //"P2000","P2100","P2200","P6000","P5000" -> {
-                prefillPerson.prefill(prefillData)
-                prefillData
-            }
-            validsed(prefillData.getSEDid(), P4000_SED) -> {
-                //skal person data komme fra P4000? eller kun fra TPS?
-                val sed = prefillPerson.prefill(prefillData)
-                sed.trygdetid = PrefillP4000().prefill(prefillData)
-                prefillData
-            }
-            else -> throw IllegalArgumentException("Mangler SED, eller ugyldig type SED")
-        }
+        val prefilling = factory.createPrefillClass(prefillData)
+        logger.debug("Mapping prefillClass ${prefilling.javaClass}")
+
+        val starttime = System.currentTimeMillis()
+
+        prefilling.prefill(prefillData)
+
+        val endtime = System.currentTimeMillis()
+        val tottime = endtime - starttime
+
+        //Metrics..
+        logger.debug("Ferdig med prefillClass, Det tok $tottime ms")
+        return prefillData
     }
 }

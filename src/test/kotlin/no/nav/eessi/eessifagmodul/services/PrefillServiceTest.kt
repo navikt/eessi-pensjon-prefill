@@ -2,12 +2,8 @@ package no.nav.eessi.eessifagmodul.services
 
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.whenever
-import no.nav.eessi.eessifagmodul.models.InstitusjonItem
-import no.nav.eessi.eessifagmodul.models.SedMock
-import no.nav.eessi.eessifagmodul.models.createSED
+import no.nav.eessi.eessifagmodul.models.*
 import no.nav.eessi.eessifagmodul.prefill.PrefillDataModel
-import no.nav.eessi.eessifagmodul.prefill.PrefillNav
-import no.nav.eessi.eessifagmodul.prefill.PrefillPerson
 import no.nav.eessi.eessifagmodul.prefill.PrefillSED
 import no.nav.eessi.eessifagmodul.services.eux.EuxService
 import no.nav.eessi.eessifagmodul.services.eux.RinaActions
@@ -16,6 +12,8 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
+import org.springframework.http.HttpStatus
+import java.net.UnknownHostException
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
@@ -30,32 +28,145 @@ class PrefillServiceTest {
     lateinit var mockEuxService: EuxService
 
     @Mock
-    lateinit var mockPrefillPerson: PrefillPerson
-
     lateinit var mockPrefillSED: PrefillSED
 
-    lateinit var mockPrefillDataModel: PrefillDataModel
-
-    lateinit var prefillService: PrefillService
-
+    private lateinit var prefillService: PrefillService
 
     @Before
     fun `startup initilize testing`() {
-        mockPrefillDataModel = PrefillDataModel()
-
-        mockPrefillSED = PrefillSED(mockPrefillPerson)
-
         prefillService = PrefillService(mockEuxService, mockPrefillSED, mockRinaActions)
+
+    }
+
+    @Test
+    fun `mock prefillAndAddSedOnExistingCase valid`() {
+        val dataModel = generatePrefillModel()
+        dataModel.euxCaseID = "1234567890"
+
+        val resultData = generatePrefillModel()
+        resultData.sed = generateMockP2000(dataModel)
+
+        whenever(mockPrefillSED.prefill(any())).thenReturn(resultData)
+        whenever(mockRinaActions.canCreate(any() ,any() )).thenReturn(true)
+        whenever(mockRinaActions.canUpdate(any() ,any() )).thenReturn(true)
+        whenever(mockEuxService.createSEDonExistingRinaCase(any(), any(), any())).thenReturn(HttpStatus.OK)
+
+        val result = prefillService.prefillAndAddSedOnExistingCase(dataModel)
+
+        assertNotNull(result)
+        assertEquals(dataModel.euxCaseID, result.euxCaseID)
+
+    }
+
+    @Test(expected = UnknownHostException::class)
+    fun `mock prefillAndAddSedOnExistingCase euxserver exception`() {
+        val dataModel = generatePrefillModel()
+        dataModel.euxCaseID = "1234567890"
+
+        val resultData = generatePrefillModel()
+        resultData.sed = generateMockP2000(dataModel)
+
+        whenever(mockPrefillSED.prefill(any())).thenReturn(resultData)
+        whenever(mockRinaActions.canCreate(any() ,any() )).thenReturn(true)
+        whenever(mockEuxService.createSEDonExistingRinaCase(any(), any(), any())).thenThrow(UnknownHostException::class.java)
+        prefillService.prefillAndAddSedOnExistingCase(dataModel)
+    }
+
+    @Test(expected = SedDokumentIkkeGyldigException::class)
+    fun `mock prefillAndAddSedOnExistingCase checkCanCreate fail`() {
+        val dataModel = generatePrefillModel()
+        dataModel.euxCaseID = "1234567890"
+
+        val resultData = generatePrefillModel()
+        resultData.sed = generateMockP2000(dataModel)
+
+        whenever(mockPrefillSED.prefill(any())).thenReturn(resultData)
+        whenever(mockRinaActions.canCreate(any() ,any() )).thenReturn(false)
+
+        prefillService.prefillAndAddSedOnExistingCase(dataModel)
+
+    }
+
+    @Test(expected = SedDokumentIkkeOpprettetException::class)
+    fun `mock prefillAndAddSedOnExistingCase checkCanUpdate fail`() {
+        val dataModel = generatePrefillModel()
+        dataModel.euxCaseID = "1234567890"
+
+        val resultData = generatePrefillModel()
+        resultData.sed = generateMockP2000(dataModel)
+
+        whenever(mockPrefillSED.prefill(any())).thenReturn(resultData)
+        whenever(mockRinaActions.canCreate(any() ,any() )).thenReturn(true)
+        whenever(mockRinaActions.canUpdate(any() ,any() )).thenReturn(false)
+        whenever(mockEuxService.createSEDonExistingRinaCase(any(), any(), any())).thenReturn(HttpStatus.OK)
+
+        prefillService.prefillAndAddSedOnExistingCase(dataModel)
+
+    }
+
+    @Test
+    fun `mock prefillAndCreateSedOnNewCase valid`() {
+        val dataModel = generatePrefillModel()
+        dataModel.euxCaseID = "1234567890"
+
+        val resultData = generatePrefillModel()
+        resultData.sed = generateMockP2000(dataModel)
+
+        whenever(mockPrefillSED.prefill(any())).thenReturn(resultData)
+        whenever(mockRinaActions.canUpdate(any() ,any() )).thenReturn(true)
+        whenever(mockEuxService.createCaseAndDocument(any(), any(), any(),any(),any(),any())).thenReturn(dataModel.euxCaseID)
+
+        val result = prefillService.prefillAndCreateSedOnNewCase(resultData)
+        assertEquals("{\"euxcaseid\":\"1234567890\"}", result.euxCaseID)
+
+    }
+
+    @Test(expected = SedDokumentIkkeOpprettetException::class)
+    fun `mock prefillAndCreateSedOnNewCase checkForUpdateStatus fail`() {
+        val dataModel = generatePrefillModel()
+        dataModel.euxCaseID = "1234567890"
+
+        val resultData = generatePrefillModel()
+        resultData.sed = generateMockP2000(dataModel)
+
+        whenever(mockPrefillSED.prefill(any())).thenReturn(resultData)
+        whenever(mockRinaActions.canUpdate(any() ,any() )).thenReturn(false)
+        whenever(mockEuxService.createCaseAndDocument(any(), any(), any(),any(),any(),any())).thenReturn(dataModel.euxCaseID)
+
+        prefillService.prefillAndCreateSedOnNewCase(resultData)
 
     }
 
 
     @Test
-    fun `test prefillSed valid value`() {
+    fun `mock prefillSed valid value`() {
+        val mockPrefillDataModel = generatePrefillModel()
 
-        mockPrefillDataModel.apply {
+        val returnData = generatePrefillModel()
+        returnData.sed = generateMockP2000(mockPrefillDataModel)
+
+        whenever(mockPrefillSED.prefill(any())).thenReturn(returnData)
+
+        val result = prefillService.prefillSed(mockPrefillDataModel)
+
+        assertNotNull(result)
+        assertEquals("P2000", result.getSEDid())
+        assertEquals("Gul", result.sed.nav?.bruker?.person?.fornavn)
+        assertEquals("Konsoll", result.sed.nav?.bruker?.person?.etternavn)
+    }
+
+    fun generateMockP2000(prefillModel: PrefillDataModel): SED {
+        val mocksed = prefillModel.sed
+        val mockp2000 = SedMock().genererP2000Mock()
+        mocksed.nav = mockp2000.nav
+        mocksed.pensjon = mockp2000.pensjon
+        return mocksed
+    }
+
+    fun generatePrefillModel(): PrefillDataModel {
+        return PrefillDataModel().apply {
             euxCaseID = "1000"
-            sed = createSED("P2000")
+            sed = SED.create("P2000")
             buc  = "P_BUC_01"
             institution = listOf(
                     InstitusjonItem(
@@ -67,20 +178,6 @@ class PrefillServiceTest {
             personNr = "12345678901"
         }
 
-        val mocksed = mockPrefillDataModel.sed
-        val mockp2000 = SedMock().genererP2000Mock()
-        mocksed.nav = mockp2000.nav
-        mocksed.pensjon = mockp2000.pensjon
-
-        whenever(mockPrefillPerson.prefill(any() )).thenReturn(mocksed)
-        val result = prefillService.prefillSed(mockPrefillDataModel)
-
-        assertNotNull(result)
-        assertEquals(mockPrefillDataModel.sed, mocksed)
-        assertEquals("P2000", result.getSEDid())
-        assertEquals("Gul", result.sed.nav?.bruker?.person?.fornavn)
-        assertEquals("Konsoll", result.sed.nav?.bruker?.person?.etternavn)
     }
-
 
 }
