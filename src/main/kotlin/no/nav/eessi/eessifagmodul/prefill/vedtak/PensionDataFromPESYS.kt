@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component
 /**
  * Hjelpe klasse for vedtak som fyller ut NAV-SED med pensjondata fra PESYS.
  */
-class PensionDataFromPESYS(private val pensjonsinformasjonService: PensjonsinformasjonService): PensjonData(), Prefill<Pensjon>  {
+class PensionDataFromPESYS(private val pensjonsinformasjonService: PensjonsinformasjonService) : PensjonData(), Prefill<Pensjon> {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PensionDataFromPESYS::class.java) }
 
@@ -52,7 +52,7 @@ class PensionDataFromPESYS(private val pensjonsinformasjonService: Pensjonsinfor
 
     override fun prefill(prefillData: PrefillDataModel): Pensjon {
         //Kast exception dersom vedtakId mangler
-        val vedtakId = if ( prefillData.vedtakId.isNotBlank() ) prefillData.vedtakId else throw IkkeGyldigKallException("Mangler vedtakID")
+        val vedtakId = if (prefillData.vedtakId.isNotBlank()) prefillData.vedtakId else throw IkkeGyldigKallException("Mangler vedtakID")
 
         logger.debug("----------------------------------------------------------")
         val starttime = System.nanoTime()
@@ -67,7 +67,7 @@ class PensionDataFromPESYS(private val pensjonsinformasjonService: Pensjonsinfor
         val tottime = endtime - starttime
 
         logger.debug("Metrics")
-        logger.debug("Ferdig hentet pensjondata fra PESYS. Det tok ${(tottime/1.0e9)} sekunder.")
+        logger.debug("Ferdig hentet pensjondata fra PESYS. Det tok ${(tottime / 1.0e9)} sekunder.")
         logger.debug("----------------------------------------------------------")
 
         if (!harBoddArbeidetUtland(pendata)) throw IkkeGyldigKallException("Har ikke bodd eller arbeidet i utlandet. Avslutter vedtak")
@@ -75,7 +75,7 @@ class PensionDataFromPESYS(private val pensjonsinformasjonService: Pensjonsinfor
         //prefill Pensjon obj med data fra PESYS. (pendata)
         return Pensjon(
                 //4.1
-                vedtak = listOf( pensjonVedtak.createVedtakItem(pendata)),
+                vedtak = listOf(pensjonVedtak.createVedtakItem(pendata)),
                 //5.1
                 reduksjon = reduksjon.createReduksjon(pendata),
                 //6.1
@@ -83,8 +83,6 @@ class PensionDataFromPESYS(private val pensjonsinformasjonService: Pensjonsinfor
                 //6.x
                 tilleggsinformasjon = tilleggsinformasjon.createTilleggsinformasjon(pendata)
         )
-
     }
-
 }
 

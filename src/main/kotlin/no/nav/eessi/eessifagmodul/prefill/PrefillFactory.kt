@@ -1,10 +1,8 @@
 package no.nav.eessi.eessifagmodul.prefill
 
 import no.nav.eessi.eessifagmodul.models.SED
+import no.nav.eessi.eessifagmodul.models.SEDType
 import no.nav.eessi.eessifagmodul.prefill.vedtak.PrefillP6000
-import no.nav.eessi.eessifagmodul.utils.ALL_SED
-import no.nav.eessi.eessifagmodul.utils.SedEnum
-import no.nav.eessi.eessifagmodul.utils.validsed
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -37,38 +35,31 @@ class PrefillFactory {
     lateinit var prefillDefault: PrefillDefaultSED
 
     fun createPrefillClass(prefillData: PrefillDataModel): Prefill<SED> {
-        val sedValue = SedEnum.valueOf(prefillData.getSEDid())
+        val sedValue = SEDType.valueOf(prefillData.getSEDid())
         logger.debug("mapping prefillClass to SED: $sedValue")
 
-        return when(sedValue) {
-            SedEnum.P6000 -> {
-                //prefillDefault
+        return when (sedValue) {
+            SEDType.P6000 -> {
                 //TODO legge prefill6000 tilbake når klar til test
                 prefill6000
             }
-            SedEnum.P2000 -> {
+            SEDType.P2000 -> {
                 prefill2000
             }
-            SedEnum.P2100 -> {
+            SEDType.P2100 -> {
                 prefill2100
             }
-            SedEnum.P2200 -> {
+            SEDType.P2200 -> {
                 prefill2200
             }
-            SedEnum.P3000 -> {
+            SEDType.P3000 -> {
                 prefill3000
             }
-            SedEnum.P4000 -> {
+            SEDType.P4000 -> {
                 prefill4000
             }
             else -> {
-                //"P5000" -> {
-                return when {
-                    validsed(sedValue.name, ALL_SED) ->  {
-                        prefillDefault
-                    }
-                    else -> throw IllegalArgumentException("Mangler SED, eller ugyldig type SED")
-                }
+                prefillDefault
             }
         }
     }

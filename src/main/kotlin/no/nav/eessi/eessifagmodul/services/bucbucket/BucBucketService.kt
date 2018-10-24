@@ -30,6 +30,6 @@ class BucBucketService(val bucBucketOidcRestTemplate: RestTemplate) {
         queryParams.forEach {
             uriBuilder.queryParam(it.key.paramName(), it.value)
         }
-        return bucBucketOidcRestTemplate.exchange(uriBuilder.toUriString(), HttpMethod.GET,null, String::class.java)
+        return bucBucketOidcRestTemplate.exchange(uriBuilder.toUriString(), HttpMethod.GET, null, String::class.java)
     }
 }

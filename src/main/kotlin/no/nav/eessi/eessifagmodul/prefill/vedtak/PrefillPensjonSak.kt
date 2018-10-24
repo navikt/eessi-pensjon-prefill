@@ -1,16 +1,17 @@
 package no.nav.eessi.eessifagmodul.prefill.vedtak
 
-import no.nav.eessi.eessifagmodul.models.*
+import no.nav.eessi.eessifagmodul.models.KravtypeItem
+import no.nav.eessi.eessifagmodul.models.Sak
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-class PrefillPensjonSak: PensjonData() {
+class PrefillPensjonSak : PensjonData() {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillPensjonSak::class.java) }
 
     init {
-        logger.debug ("PrefillPensjonReduksjon")
+        logger.debug("PrefillPensjonReduksjon")
     }
 
     //6.1..
@@ -18,30 +19,26 @@ class PrefillPensjonSak: PensjonData() {
 
         logger.debug("6         Sak")
         return Sak(
-
                 //6.1 --
-                artikkel54  = createArtikkel54(pendata),
-
+                artikkel54 = createArtikkel54(pendata),
                 reduksjon = null,
-
                 //6.5.1
-                kravtype  = createKravBegrensetInnsyn(),
-
+                kravtype = createKravBegrensetInnsyn(),
                 enkeltkrav = null
         )
     }
 
-    private fun createKravBegrensetInnsyn() : List<KravtypeItem> {
+    private fun createKravBegrensetInnsyn(): List<KravtypeItem> {
         logger.debug("6.5.1         Information innsyn")
         return listOf(
                 KravtypeItem(
-
                         //6.5.1 $pensjon.sak.kravtype[x].datoFrist
                         datoFrist = "six weeks from the date the decision is received",
                         krav = null
                 )
         )
     }
+
     /*
         6.1
         HVIS sakstyper er uføretrygd,
@@ -59,5 +56,4 @@ class PrefillPensjonSak: PensjonData() {
         }
         return null
     }
-
 }

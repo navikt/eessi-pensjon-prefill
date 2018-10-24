@@ -7,7 +7,7 @@ import no.nav.eessi.eessifagmodul.utils.typeRefs
 import org.springframework.stereotype.Component
 
 @Component
-class PrefillP4000(private val prefillPerson: PrefillPerson): Prefill<SED> {
+class PrefillP4000(private val prefillPerson: PrefillPerson) : Prefill<SED> {
 
     override fun prefill(prefillData: PrefillDataModel): SED {
 

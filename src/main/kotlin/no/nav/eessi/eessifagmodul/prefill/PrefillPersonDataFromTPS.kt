@@ -54,8 +54,6 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
         val brukerTPS = hentBrukerTPS(ident)
         setPersonStatus(hentPersonStatus(brukerTPS))
 
-
-
         val bruker = Bruker(
                 far = Foreldre(person = hentRelasjon(RelasjonEnum.FAR, brukerTPS)),
                 mor = Foreldre(person = hentRelasjon(RelasjonEnum.MOR, brukerTPS)),
@@ -80,15 +78,7 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
 
     //bruker fra TPS
     private fun hentBrukerTPS(ident: String): no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker {
-        val starttime = System.nanoTime()
-
         val response = personV3Service.hentPerson(ident)
-
-        val endtime = System.nanoTime()
-        val tottime = endtime - starttime
-
-        logger.debug("Metrics")
-        logger.debug("Preutfylling ferdig med å hente v3.Bruker fra TPS Det tok ${(tottime/1.0e9)} sekunder.")
         return response.person as no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker
     }
 
@@ -234,17 +224,12 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
                 land = hentLandkode(gateAdresse.landkode),
                 by = postnummerService.finnPoststed(postnr)
         )
-        //bygning =          Ikke i bruk
-        // region = gateAdresse.kommunenummer, Ikke i bruk
-
         logger.debug("Preutfylling Adresse")
         return adr
     }
 
     private fun personAdresseUstrukturert(postadr: no.nav.tjeneste.virksomhet.person.v3.informasjon.Postadresse): Adresse {
         val gateAdresse = postadr.ustrukturertAdresse as UstrukturertAdresse
-        //bygning =          Ikke i bruk
-        // region = gateAdresse.kommunenummer, Ikke i bruk
         return Adresse(
                 bygning = gateAdresse.adresselinje1,
                 gate = gateAdresse.adresselinje2,
@@ -264,15 +249,14 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
         return statitem
     }
 
-    //Denne blir vel flyttet til Basis når mapping blir rettet opp fra NO=NO til NOR=NO (TPS/EU-RINA)??
+    //TODO: Mapping av landkoder skal gjøres i codemapping i EUX
     private fun hentLandkode(landkodertps: no.nav.tjeneste.virksomhet.person.v3.informasjon.Landkoder): String? {
         val result = landkodeService.finnLandkode2(landkodertps.value)
         logger.debug("Preutfylling Landkode (alpha3-alpha2)  ${landkodertps.value} til $result")
         return result
     }
 
-    //Midlertidige - mapping i Basis vil bli rettet slik at det sammkjører mot tps mapping.
-    //Midlertidig funksjon for map TPS til EUX/Rina
+    //TODO: Mapping av kjønn skal defineres i codemapping i EUX
     private fun mapKjonn(kjonn: Kjoenn): String {
         val ktyper = kjonn.kjoenn
         val map: Map<String, String> = hashMapOf("M" to "m", "K" to "f")

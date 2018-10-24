@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
 @Component
-class PrefillDefaultSED(private val prefillPerson: PrefillPerson): Prefill<SED> {
+class PrefillDefaultSED(private val prefillPerson: PrefillPerson) : Prefill<SED> {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillDefaultSED::class.java) }
 

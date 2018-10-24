@@ -20,7 +20,7 @@ class PostnummerService {
         var line: String? = ""
         val csvSplitBy = "\t"
 
-        while (line  != null) {
+        while (line != null) {
             line = br.readLine()
             if (line != null) {
                 val postArray = line.split(csvSplitBy.toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
@@ -31,9 +31,9 @@ class PostnummerService {
         logger.debug("Har importert kodeverk fra $FILENAME")
     }
 
-    private data class PostData (
-        val postnmmer: String? = null,
-        val poststed: String? = null
+    private data class PostData(
+            val postnmmer: String? = null,
+            val poststed: String? = null
     )
 
     fun finnPoststed(postnr: String): String? {

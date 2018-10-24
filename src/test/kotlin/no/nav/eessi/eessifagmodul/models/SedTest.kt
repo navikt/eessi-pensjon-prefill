@@ -12,7 +12,7 @@ import java.nio.file.Paths
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
-class SedTest{
+class SedTest {
 
     val logger: Logger by lazy { LoggerFactory.getLogger(SedTest::class.java) }
 
@@ -44,23 +44,16 @@ class SedTest{
         val sed6000 = SedMock().genererP6000Mock()
         assertNotNull(sed6000)
 
-        //hente ut bruker
         val bruker = sed6000.nav!!.bruker!!
-        //map bruker til json så tilbake til brukerback
         val brukerback = mapJsonToAny(mapAnyToJson(bruker), typeRefs<Bruker>())
-        //alt ok?
         assertNotNull(brukerback)
         assertEquals(bruker, brukerback)
 
         val sed = SED.create("vedtak")
         val navmock = NavMock().genererNavMock()
-        sed.nav = Nav(
-                bruker = navmock.bruker
-        )
+        sed.nav = Nav(bruker = navmock.bruker)
         val penmock = PensjonMock().genererMockData()
-        sed.pensjon = Pensjon(
-                gjenlevende = penmock.gjenlevende
-        )
+        sed.pensjon = Pensjon(gjenlevende = penmock.gjenlevende)
         val testPersjson = mapAnyToJson(sed, true)
         assertNotNull(testPersjson)
 

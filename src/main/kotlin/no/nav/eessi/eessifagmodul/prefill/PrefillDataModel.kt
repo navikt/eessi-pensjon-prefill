@@ -34,13 +34,14 @@ class PrefillDataModel {
     lateinit var institution: List<InstitusjonItem>
 
     //div payload seddata json
-    val partSedasJson: MutableMap<String, String> = mutableMapOf()
+    val partSedAsJson: MutableMap<String, String> = mutableMapOf()
 
     fun getSEDid(): String {
         return sed.sed!!
     }
+
     fun getPartSEDasJson(key: String): String {
-        return partSedasJson[key].orEmpty()
+        return partSedAsJson[key].orEmpty()
     }
 
     fun getInstitutionsList(): List<InstitusjonItem> {
@@ -60,5 +61,4 @@ class PrefillDataModel {
     fun validSED(sedid: String): Boolean {
         return getSEDid() == sedid
     }
-
 }

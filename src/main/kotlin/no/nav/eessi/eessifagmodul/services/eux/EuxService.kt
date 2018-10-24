@@ -162,7 +162,6 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
     }
 
 
-
     /**
      * Call the orchestrator endpoint with necessary information to create a case in RINA, set
      * its receiver, create a document and add attachments to it.

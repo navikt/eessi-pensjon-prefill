@@ -1,7 +1,6 @@
 package no.nav.eessi.eessifagmodul.utils
 
-import org.junit.Assert.*
-import org.junit.Before
+import org.junit.Assert.assertEquals
 import org.junit.Test
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -91,7 +90,7 @@ class NavFodselsnummerTest {
     @Test
     fun `not valid pention age young age with DNR`() {
         val fnr = generateRandomFnr(25)
-        val newfnr = "" + "5" + fnr.substring(1,fnr.length)
+        val newfnr = "" + "5" + fnr.substring(1, fnr.length)
         println("RandomFnr: $newfnr")
         val navfnr = NavFodselsnummer(newfnr)
 
@@ -110,13 +109,13 @@ class NavFodselsnummerTest {
     }
 
 
-    private fun generateRandomFnr(yearsToSubtract: Int, indivdnr: String = "433" ) : String {
+    private fun generateRandomFnr(yearsToSubtract: Int, indivdnr: String = "433"): String {
         val fnrdate = LocalDate.now().minusYears(yearsToSubtract.toLong())
         val y = fnrdate.year.toString()
         val day = fixDigits(fnrdate.dayOfMonth.toString())
         val month = fixDigits(fnrdate.month.value.toString())
-        val fixedyear = y.substring(2,y.length)
-        return day+month+fixedyear+indivdnr+ "52" //43352
+        val fixedyear = y.substring(2, y.length)
+        return day + month + fixedyear + indivdnr + "52" //43352
     }
 
     private fun fixDigits(str: String): String {

@@ -27,6 +27,5 @@ class PrefillSED(private val factory: PrefillFactory) {
         //Metrics..
         logger.debug("Ferdig med prefillClass, Det tok $tottime ms")
         return prefillData
-
     }
 }

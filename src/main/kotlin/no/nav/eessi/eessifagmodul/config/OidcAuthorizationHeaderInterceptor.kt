@@ -13,7 +13,7 @@ private val logger = LoggerFactory.getLogger(OidcAuthorizationHeaderInterceptor:
 
 class OidcAuthorizationHeaderInterceptor(private val oidcRequestContextHolder: OIDCRequestContextHolder) : ClientHttpRequestInterceptor {
     override fun intercept(request: HttpRequest, body: ByteArray, execution: ClientHttpRequestExecution): ClientHttpResponse {
-        if(request.headers[HttpHeaders.AUTHORIZATION] == null) {
+        if (request.headers[HttpHeaders.AUTHORIZATION] == null) {
             val oidcToken = oidcRequestContextHolder.oidcValidationContext.getToken("oidc").idToken
             logger.debug("Adding Bearer-token to request: $oidcToken")
             request.headers[HttpHeaders.AUTHORIZATION] = "Bearer $oidcToken"

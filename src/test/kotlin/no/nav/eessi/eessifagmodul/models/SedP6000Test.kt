@@ -13,11 +13,9 @@ import java.nio.file.Paths
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
-class SedP6000Test{
+class SedP6000Test {
 
     val logger: Logger by lazy { LoggerFactory.getLogger(SedP6000Test::class.java) }
-
-    private val printout : Boolean = false
 
     @Test
     fun createP6000sed() {
@@ -27,13 +25,11 @@ class SedP6000Test{
 
         val json = sed6000.toJson()
         assertNotNull(json)
-        //map json back to vedtak obj
 
         val pensjondata = SED.fromJson(json)
         assertNotNull(pensjondata)
         assertEquals(sed6000, pensjondata)
 
-        //map load vedtak-NAV refrence
         val path = Paths.get("src/test/resources/json/P6000-NAV.json")
         val p6000file = String(Files.readAllBytes(path))
         assertNotNull(p6000file)
@@ -44,13 +40,6 @@ class SedP6000Test{
 
         assertNotNull(pensjondataFile)
         val jsonnav = mapAnyToJson(pensjondataFile, true)
-        if (printout) {
-            println("------------------generated----------------------")
-            println("\n\n $p6000file \n\n")
-            println("------------------p6000-nav----------------------")
-            println("\n\n $jsonnav \n\n")
-            println("-------------------------------------------------")
-        }
         JSONAssert.assertEquals(p6000file, jsonnav, false)
     }
 
@@ -59,31 +48,15 @@ class SedP6000Test{
         val sed6000 = SedMock().genererP6000Mock()
         assertNotNull(sed6000)
 
-        //hente ut bruker
         val bruker = sed6000.nav!!.bruker!!
-        //map bruker til json så tilbake til brukerback
         val brukerback = mapJsonToAny(mapAnyToJson(bruker), typeRefs<Bruker>())
-        //alt ok?
         assertNotNull(brukerback)
         assertEquals(bruker, brukerback)
 
         val sed = SED.create("vedtak")
         val navmock = NavMock().genererNavMock()
-        sed.nav = Nav(
-                bruker = navmock.bruker
-        )
+        sed.nav = Nav(bruker = navmock.bruker)
         val penmock = PensjonMock().genererMockData()
-        sed.pensjon = Pensjon(
-                gjenlevende = penmock.gjenlevende
-        )
-        val testPersjson = mapAnyToJson(sed, true)
-
-        if (printout) {
-            println("------------------generated----------------------")
-            println("\n\n $testPersjson \n\n")
-            println("------------------p6000-nav----------------------")
-        }
-
+        sed.pensjon = Pensjon(gjenlevende = penmock.gjenlevende)
     }
-
 }

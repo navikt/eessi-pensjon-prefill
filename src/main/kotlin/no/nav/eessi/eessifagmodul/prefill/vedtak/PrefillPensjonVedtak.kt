@@ -8,13 +8,14 @@ import no.nav.pensjon.v1.ytelsepermaaned.V1YtelsePerMaaned
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-class PrefillPensjonVedtak: PensjonData() {
+class PrefillPensjonVedtak : PensjonData() {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillPensjonVedtak::class.java) }
 
     init {
-        logger.debug ("PrefillPensjonReduksjon")
+        logger.debug("PrefillPensjonReduksjon")
     }
+
     //4.1
     fun createVedtakItem(pendata: Pensjonsinformasjon): VedtakItem {
 
@@ -50,17 +51,17 @@ class PrefillPensjonVedtak: PensjonData() {
                 ukjent = createEkstraTilleggPensjon(pendata),
 
                 //4.1.10 - 4.1.12 $pensjon.vedtak[x].grunnlag
-                grunnlag =  createGrunnlag(pendata),
+                grunnlag = createGrunnlag(pendata),
 
                 //Na
-                mottaker =  null,      //ikke i bruk?
+                mottaker = null,      //ikke i bruk?
                 trekkgrunnlag = null,  //ikke i bruk?
 
                 //4.1.13.2 Nei
                 begrunnelseAnnen = null,
 
                 //4.1.13.1 -- 4.1.13.2.1 - $pensjon.vedtak[x].avslagbegrunnelse[x].begrunnelse
-                avslagbegrunnelse = createAvlsagsBegrunnelseItem(pendata) ,
+                avslagbegrunnelse = createAvlsagsBegrunnelseItem(pendata),
 
                 //4.1.14.1 // Ikke i bruk
                 delvisstans = null
@@ -94,10 +95,10 @@ class PrefillPensjonVedtak: PensjonData() {
         val sakType = KSAK.valueOf(type)
         logger.debug("4.1.1         VedtakTypePension")
 
-        return when(sakType) {
+        return when (sakType) {
 
             KSAK.ALDER -> {
-                when(pensjonUttakTidligereEnn67) {
+                when (pensjonUttakTidligereEnn67) {
                     true -> "06" //"Førdtispensjon" //06
                     else -> "01"  //""Alderspensjon" //01
                 }
@@ -150,15 +151,15 @@ class PrefillPensjonVedtak: PensjonData() {
         val sakType = KSAK.valueOf(pendata.sak.sakType)
         logger.debug("              KSAK: $sakType")
 
-        return when(sakType) {
+        return when (sakType) {
             KSAK.ALDER -> {
-                when(isMottarMinstePensjonsniva(pendata)) {
+                when (isMottarMinstePensjonsniva(pendata)) {
                     true -> "01"
                     false -> "02"
                 }
             }
             KSAK.UFOREP -> {
-                when(isMottarMinstePensjonsniva(pendata)) {
+                when (isMottarMinstePensjonsniva(pendata)) {
                     true -> "01"
                     false -> {
                         "02"
@@ -166,7 +167,7 @@ class PrefillPensjonVedtak: PensjonData() {
                 }
             }
             KSAK.GJENLEV -> {
-                when(isMottarMinstePensjonsniva(pendata)) {
+                when (isMottarMinstePensjonsniva(pendata)) {
                     true -> "01"
                     false -> {
                         "02"
@@ -174,7 +175,7 @@ class PrefillPensjonVedtak: PensjonData() {
                 }
             }
             KSAK.BARNEP -> {
-                when(isForeldelos(pendata)) {
+                when (isForeldelos(pendata)) {
                     false -> "99"
                     true -> "99"
                 }
@@ -346,7 +347,7 @@ class PrefillPensjonVedtak: PensjonData() {
 
         //val ytelsePerMaaned = pendata.ytelsePerMaanedListe.ytelsePerMaanedListe
         val ytelsePerMaaned = pendata.ytelsePerMaanedListe.ytelsePerMaanedListe
-                .asSequence().sortedBy{ it.fom.toGregorianCalendar() }.toMutableList()
+                .asSequence().sortedBy { it.fom.toGregorianCalendar() }.toMutableList()
 
 
         val resultList = mutableListOf<BeregningItem>()
@@ -389,7 +390,7 @@ class PrefillPensjonVedtak: PensjonData() {
                 valuta = "NOK",
 
                 //4.1.7.5              //03 - montly 12/year
-                utbetalingshyppighet =  "03",
+                utbetalingshyppighet = "03",
 
                 //4.1.7.6.1     - Nei
                 utbetalingshyppighetAnnen = null
@@ -397,10 +398,10 @@ class PrefillPensjonVedtak: PensjonData() {
     }
 
     /**
-     Hvis Annet en Alderpensjon skal YtelsePerMaaned belop benytes.
+    Hvis Annet en Alderpensjon skal YtelsePerMaaned belop benytes.
 
-     Hvis Uførep med UT_ORDINER og eller UT_TBF eller UT_TBS er større en belop
-     skal denne sum benyttes hvis ikke skal belop benyttes.
+    Hvis Uførep med UT_ORDINER og eller UT_TBF eller UT_TBS er større en belop
+    skal denne sum benyttes hvis ikke skal belop benyttes.
      */
     //4.1.7.3.1
     fun createBelop(ytelsePrMnd: V1YtelsePerMaaned, sakType: KSAK): String {
@@ -509,7 +510,7 @@ class PrefillPensjonVedtak: PensjonData() {
         pendata.ytelsePerMaanedListe.ytelsePerMaanedListe.forEach {
             summer += hentYtelseskomponentBelop("GJENLEV,TBF,TBS,PP,SKJERMT", it)
         }
-        val ukjent = Ukjent( beloepBrutto = BeloepBrutto( ytelseskomponentAnnen = summer.toString() )  )
+        val ukjent = Ukjent(beloepBrutto = BeloepBrutto(ytelseskomponentAnnen = summer.toString()))
         if (summer > 0) {
             return ukjent
         }
@@ -526,7 +527,7 @@ class PrefillPensjonVedtak: PensjonData() {
                 medlemskap = null,
 
                 //4.1.11
-                opptjening = Opptjening(  forsikredeAnnen = createOpptjeningForsikredeAnnen(pendata) ),
+                opptjening = Opptjening(forsikredeAnnen = createOpptjeningForsikredeAnnen(pendata)),
 
                 //4.1.12   $pensjon.vedtak[x].grunnlag.framtidigtrygdetid
                 framtidigtrygdetid = createFramtidigtrygdetid(pendata)
@@ -589,7 +590,7 @@ class PrefillPensjonVedtak: PensjonData() {
         SÅ skal det velges alternativ "[03] Fullstendig".
      */
     //4.1.11
-    fun createOpptjeningForsikredeAnnen(pendata: Pensjonsinformasjon): String? {
+    private fun createOpptjeningForsikredeAnnen(pendata: Pensjonsinformasjon): String? {
         logger.debug("4.1.11        OpptjeningForsikredeAnnen")
 
         pendata.sak.sakType
@@ -622,19 +623,19 @@ class PrefillPensjonVedtak: PensjonData() {
 
 
     //4.1.13.1 - 4.1.13.2.1
-    fun createAvlsagsBegrunnelseItem(pendata: Pensjonsinformasjon): List<AvslagbegrunnelseItem>? {
+    private fun createAvlsagsBegrunnelseItem(pendata: Pensjonsinformasjon): List<AvslagbegrunnelseItem>? {
 
         logger.debug("4.1.13        AvlsagsBegrunnelseItem")
 
         val avslagbegrn = createAvlsagsBegrunnelse(pendata)
 
-        val item = listOf( AvslagbegrunnelseItem(
+        val item = listOf(AvslagbegrunnelseItem(
 
-                    begrunnelse = avslagbegrn,
+                begrunnelse = avslagbegrn,
 
-                    //4.1.13.2 Other - Nei
-                    annenbegrunnelse  = null
-            )
+                //4.1.13.2 Other - Nei
+                annenbegrunnelse = null
+        )
         )
         if (avslagbegrn == null)
             return null
@@ -746,7 +747,7 @@ class PrefillPensjonVedtak: PensjonData() {
 
         //UFOREP
         val erForutMedlem = "FORUT_MEDL" == hentVilkarsvurderingUforetrygd(pendata).unntakForutgaendeMedlemskap
-        val erHensArbrettTiltak =  "HENS_ARBRETT_TILTAK" == hentVilkarsvurderingUforetrygd(pendata).hensiktsmessigArbeidsrettedeTiltak
+        val erHensArbrettTiltak = "HENS_ARBRETT_TILTAK" == hentVilkarsvurderingUforetrygd(pendata).hensiktsmessigArbeidsrettedeTiltak
         val erHensiktmessigBeh = "HENSIKTSMESSIG_BEH" == hentVilkarsvurderingUforetrygd(pendata).hensiktsmessigBehandling
         val erNedsattInntEvne = "NEDSATT_INNT_EVNE" == hentVilkarsvurderingUforetrygd(pendata).nedsattInntektsevne
         val erAlder = "ALDER" == hentVilkarsvurderingUforetrygd(pendata).alder
@@ -765,7 +766,7 @@ class PrefillPensjonVedtak: PensjonData() {
         logger.debug("                  erALDER: $erAlder")
 
         //pkt1 og pkt.9
-        if ((KSAK.ALDER == sakType || KSAK.BARNEP == sakType || KSAK.GJENLEV == sakType)  && harBoddArbeidetUtland && erTrygdetidListeTom && avslagVilkarsproving)
+        if ((KSAK.ALDER == sakType || KSAK.BARNEP == sakType || KSAK.GJENLEV == sakType) && harBoddArbeidetUtland && erTrygdetidListeTom && avslagVilkarsproving)
             return "01"
 
         //pkt.2 og pkt.10

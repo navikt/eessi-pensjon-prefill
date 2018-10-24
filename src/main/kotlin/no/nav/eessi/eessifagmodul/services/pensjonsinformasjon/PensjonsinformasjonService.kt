@@ -21,8 +21,8 @@ class PensjonsinformasjonService(val pensjonsinformasjonOidcRestTemplate: RestTe
 
     fun hentPerson(saksnummer: String): Pensjonsinformasjon {
         val informationBlocks = listOf(
-            InformasjonsType.AVDOD,
-            InformasjonsType.PERSON)
+                InformasjonsType.AVDOD,
+                InformasjonsType.PERSON)
 
         val document = requestBuilder.getBaseRequestDocument()
 

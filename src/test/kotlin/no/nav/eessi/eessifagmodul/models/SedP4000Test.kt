@@ -89,7 +89,6 @@ class SedP4000Test {
         assertEquals(result, mapSED.trygdetid)
     }
 
-
     @Test
     fun `create and validate P4000 from json to nav-sed back to json`() {
         //map load P4000-NAV refrence
@@ -103,14 +102,12 @@ class SedP4000Test {
         assertNotNull(sed.trygdetid?.ansattSelvstendigPerioder)
         val json = sed.toJson()
         JSONAssert.assertEquals(p4000file, json, false)
-
     }
-
 
     @Test
     fun `create dummy or mock apiRequest with p4000 json as payload`() {
 
-        val trygdetid  = createPersonTrygdeTidMock()
+        val trygdetid = createPersonTrygdeTidMock()
         val payload = mapAnyToJson(trygdetid)
         //logger.debug(payload)
 
@@ -133,7 +130,6 @@ class SedP4000Test {
         val check = mapJsonToAny(payjson, typeRefs<PersonTrygdeTid>())
         assertNotNull(check)
         assertEquals("DK", check.boPerioder!![0].land)
-
     }
 
     @Test
@@ -164,7 +160,6 @@ class SedP4000Test {
         )
         assertNotNull(req)
         JSONAssert.assertEquals(jsonfile, backtojson, false)
-
     }
 
     @Test
@@ -185,7 +180,7 @@ class SedP4000Test {
                 subjectArea = "Pensjon",
                 payload = jsonfile
         )
-        val reqjson = mapAnyToJson(req,true)
+        val reqjson = mapAnyToJson(req, true)
         assertNotNull(reqjson)
         validateJson(reqjson)
 
@@ -198,20 +193,17 @@ class SedP4000Test {
 
         val resultData = data
         whenever(prefillPerson.prefill(any())).thenReturn(data.sed)
-        val sed =  pre4000.prefill(resultData)
+        val sed = pre4000.prefill(resultData)
         assertNotNull(sed)
 
 
         whenever(mockPrefillService.prefillSed(any())).thenReturn(resultData)
-        //val result = mockPrefillService.prefillSed(resultData)
 
         val result = apiController.confirmDocument(req)
 
         val jsondata = result.toJson()
         assertNotNull(jsondata)
     }
-
-
 }
 
 fun createPersonTrygdeTidMock(): PersonTrygdeTid {
@@ -221,7 +213,7 @@ fun createPersonTrygdeTidMock(): PersonTrygdeTid {
                     StandardItem(
                             land = "NO",
                             usikkerDatoIndikator = "1",
-                            annenInformasjon= "førdeslperm i Norge",
+                            annenInformasjon = "førdeslperm i Norge",
                             periode = TrygdeTidPeriode(
                                     lukketPeriode = Periode(
                                             fom = "2000-01-01",
@@ -232,9 +224,9 @@ fun createPersonTrygdeTidMock(): PersonTrygdeTid {
                     StandardItem(
                             land = "FR",
                             usikkerDatoIndikator = "0",
-                            annenInformasjon= "fødselperm i frankrike",
+                            annenInformasjon = "fødselperm i frankrike",
                             periode = TrygdeTidPeriode(
-                                    openPeriode = Periode (
+                                    openPeriode = Periode(
                                             fom = "2002-01-01",
                                             extra = "98"
                                     )
@@ -255,8 +247,8 @@ fun createPersonTrygdeTidMock(): PersonTrygdeTid {
                                     land = "NO",
                                     by = "Oslo"
                             ),
-                            periode = TrygdeTidPeriode (
-                                    lukketPeriode = Periode (
+                            periode = TrygdeTidPeriode(
+                                    lukketPeriode = Periode(
                                             tom = "1995-01-01",
                                             fom = "1990-01-01"
                                     )
@@ -270,10 +262,10 @@ fun createPersonTrygdeTidMock(): PersonTrygdeTid {
                     StandardItem(
                             land = "SE",
                             usikkerDatoIndikator = "1",
-                            annenInformasjon= "ikkenoe",
+                            annenInformasjon = "ikkenoe",
                             typePeriode = "Ingen spesielt",
-                            periode = TrygdeTidPeriode (
-                                    lukketPeriode = Periode (
+                            periode = TrygdeTidPeriode(
+                                    lukketPeriode = Periode(
                                             fom = "2000-01-01",
                                             tom = "2001-01-01"
                                     )
@@ -282,10 +274,10 @@ fun createPersonTrygdeTidMock(): PersonTrygdeTid {
                     StandardItem(
                             land = "SE",
                             usikkerDatoIndikator = "1",
-                            annenInformasjon= "ikkenoemere",
+                            annenInformasjon = "ikkenoemere",
                             typePeriode = "Leve og ha det gøy",
                             periode = TrygdeTidPeriode(
-                                    openPeriode = Periode (
+                                    openPeriode = Periode(
                                             fom = "2000-01-01",
                                             extra = "01"
                                     )
@@ -415,4 +407,69 @@ fun createPersonTrygdeTidMock(): PersonTrygdeTid {
             )
     )
 
+}
+
+//P5000 - bekreftforsikred
+fun createMedlemskapMock(): Pensjon {
+
+    return Pensjon(
+            sak = Sak(
+                    enkeltkrav = KravtypeItem(krav = "10")
+            ),
+            medlemskap = listOf(
+                    MedlemskapItem(
+                            land = "DK",
+                            ordning = "01",
+                            type = "10",
+                            relevans = "100",
+                            gyldigperiode = "1",
+                            beregning = "100",
+                            periode = Periode(
+                                    fom = "2000-01-01",
+                                    tom = "2010-01-01"
+                            ),
+                            sum = TotalSum(
+                                    aar = "4",
+                                    dager = Dager(nr = "2"),
+                                    maaneder = "2"
+                            )
+                    )
+            ),
+            medlemskapAnnen = listOf(
+                    MedlemskapItem(
+                            land = "DE",
+                            type = "21",
+                            ordning = "01",
+                            relevans = "100",
+                            beregning = "100",
+                            sum = TotalSum(
+                                    aar = "4",
+                                    maaneder = "2",
+                                    dager = Dager(nr = "5")
+                            )
+
+                    )
+            ),
+            medlemskapTotal = listOf(
+                    MedlemskapItem(
+                            type = "10",
+                            relevans = "100",
+                            sum = TotalSum(
+                                    aar = "11",
+                                    maaneder = "1",
+                                    dager = Dager(nr = "6")
+                            )
+                    )
+            ),
+            trygdetid = listOf(
+                    MedlemskapItem(
+                            type = "11",
+                            sum = TotalSum(
+                                    aar = "10",
+                                    maaneder = "2",
+                                    dager = Dager(nr = "5")
+                            )
+                    )
+            )
+    )
 }

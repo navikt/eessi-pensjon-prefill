@@ -5,11 +5,10 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import java.text.SimpleDateFormat
-import java.time.LocalDate
 import java.util.*
 
 @Component
-class PrefillNav(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS): Prefill<Nav> {
+class PrefillNav(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS) : Prefill<Nav> {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillNav::class.java) }
 
@@ -19,58 +18,51 @@ class PrefillNav(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS)
     private val institutionnavn = "NOINST002, NO INST002, NO"
 
     override fun prefill(prefillData: PrefillDataModel): Nav {
-        return utfyllNav(prefillData)
-    }
-
-    private fun utfyllNav(utfyllingData: PrefillDataModel): Nav {
-        logger.debug("perfill aktoerId: ${utfyllingData.personNr}")
-        logger.debug("perfill aktoerid: ${utfyllingData.aktoerID}")
+        logger.debug("perfill aktoerId: ${prefillData.personNr}")
+        logger.debug("perfill aktoerid: ${prefillData.aktoerID}")
         //bruker død hvis etterlatt (etterlatt aktoerregister fylt ut)
-        val brukertps = bruker(utfyllingData)
+        val brukertps = bruker(prefillData)
 
         //skal denne kjøres hver gang? eller kun under P2000?
-        val barnatps = hentBarnaFraTPS(utfyllingData)
-        val pensaknr = utfyllingData.penSaksnummer
-        val lokalSaksnr = opprettLokalSaknr( pensaknr )
+        val barnatps = hentBarnaFraTPS(prefillData)
+        val pensaknr = prefillData.penSaksnummer
+        val lokalSaksnr = opprettLokalSaknr(pensaknr)
 
         val nav = Nav(
                 barn = barnatps,
-
                 bruker = brukertps,
                 //korrekt bruk av eessisak? skal pen-saknr legges ved?
                 //eller peker denne til en ekisterende rina-casenr?
-
                 eessisak = lokalSaksnr,
-
-                //YYYY-MM-dd -- now date"
                 krav = Krav(SimpleDateFormat("yyyy-MM-dd").format(Date()))
-            )
-        logger.debug("[${utfyllingData.getSEDid()}] Sjekker PinID : ${utfyllingData.personNr}")
+        )
+        logger.debug("[${prefillData.getSEDid()}] Sjekker PinID : ${prefillData.personNr}")
 
         //${nav.eessisak}"
-        logger.debug("[${utfyllingData.getSEDid()}] Utfylling av NAV data med lokalsaksnr: $pensaknr")
+        logger.debug("[${prefillData.getSEDid()}] Utfylling av NAV data med lokalsaksnr: $pensaknr")
         return nav
     }
 
+
     private fun bruker(utfyllingData: PrefillDataModel): Bruker {
 
-            // kan denne utfylling benyttes på alle SED?
-            // etterlatt pensjon da er dette den avdøde.(ikke levende)
-            // etterlatt pensjon da er den levende i pk.3 sed (gjenlevende) (pensjon.gjenlevende)
+        // kan denne utfylling benyttes på alle SED?
+        // etterlatt pensjon da er dette den avdøde.(ikke levende)
+        // etterlatt pensjon da er den levende i pk.3 sed (gjenlevende) (pensjon.gjenlevende)
 
-            if (utfyllingData.isValidEtterlatt()) {
-                val pinid = utfyllingData.avdodPersonnr
-                val bruker = preutfyllingPersonFraTPS.prefillBruker(pinid)
-                logger.debug("Preutfylling Utfylling (avdød) Nav END")
-                return bruker
-            }
-            val pinid = utfyllingData.personNr
+        if (utfyllingData.isValidEtterlatt()) {
+            val pinid = utfyllingData.avdodPersonnr
             val bruker = preutfyllingPersonFraTPS.prefillBruker(pinid)
-            logger.debug("Preutfylling Utfylling Nav END")
+            logger.debug("Preutfylling Utfylling (avdød) Nav END")
             return bruker
+        }
+        val pinid = utfyllingData.personNr
+        val bruker = preutfyllingPersonFraTPS.prefillBruker(pinid)
+        logger.debug("Preutfylling Utfylling Nav END")
+        return bruker
     }
 
-    private fun hentBarnaFraTPS(utfyllingData: PrefillDataModel) :List<BarnItem> {
+    private fun hentBarnaFraTPS(utfyllingData: PrefillDataModel): List<BarnItem> {
         if (utfyllingData.getSEDid() != "P2000") {
             logger.debug("Preutfylling barn SKIP not valid SED?")
             return listOf()

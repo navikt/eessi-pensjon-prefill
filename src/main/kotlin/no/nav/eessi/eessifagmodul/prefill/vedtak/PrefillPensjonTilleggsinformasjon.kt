@@ -1,17 +1,19 @@
 package no.nav.eessi.eessifagmodul.prefill.vedtak
 
-import no.nav.eessi.eessifagmodul.models.*
+import no.nav.eessi.eessifagmodul.models.AndreinstitusjonerItem
+import no.nav.eessi.eessifagmodul.models.Opphoer
+import no.nav.eessi.eessifagmodul.models.Tilleggsinformasjon
 import no.nav.eessi.eessifagmodul.utils.simpleFormat
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-class PrefillPensjonTilleggsinformasjon: PensjonData() {
+class PrefillPensjonTilleggsinformasjon : PensjonData() {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillPensjonTilleggsinformasjon::class.java) }
 
     init {
-        logger.debug ("PrefillPensjonTilleggsinformasjon")
+        logger.debug("PrefillPensjonTilleggsinformasjon")
     }
 
     //6.2
@@ -26,7 +28,7 @@ class PrefillPensjonTilleggsinformasjon: PensjonData() {
                 //6.5.2.1
                 //På logges EnhetID /NAV avsender (PENSJO, UTFORP, ETTERLATP)?
                 //TODO Hvor skal vi få denne listen/informasjon ifra? RINA?.
-                andreinstitusjoner  = createAndreinstitusjonerItem(pendata),
+                andreinstitusjoner = createAndreinstitusjonerItem(pendata),
 
                 //6.5.2 - 6.6  $pensjon.tilleggsinformasjon.artikkel48
                 //05.10.2018 -
@@ -36,8 +38,8 @@ class PrefillPensjonTilleggsinformasjon: PensjonData() {
                 //6.7.1.4
                 //05.10.2018 - Nei
                 annen = null, //  Annen(
-                        //  $pensjon.tilleggsinformasjon.annen.institusjonsid
-                        //institusjonsadresse = Institusjonsadresse())
+                //  $pensjon.tilleggsinformasjon.annen.institusjonsid
+                //institusjonsadresse = Institusjonsadresse())
 
                 //6.7.2
                 //05.10.2018 Nei
@@ -131,7 +133,7 @@ class PrefillPensjonTilleggsinformasjon: PensjonData() {
     private fun createOpphorerDato(pendata: Pensjonsinformasjon): String? {
         logger.debug("6.2       OpphorerDato")
 
-        val resultatbegrunnelse  = hentVilkarsResultatHovedytelse(pendata)
+        val resultatbegrunnelse = hentVilkarsResultatHovedytelse(pendata)
 
         if ("REVURD" == pendata.vedtak.kravGjelder && "ANNULERING" == resultatbegrunnelse)
             return pendata.vedtak.virkningstidspunkt.simpleFormat()
@@ -155,11 +157,11 @@ class PrefillPensjonTilleggsinformasjon: PensjonData() {
         logger.debug("6.x       AnnulleringDato")
         val v1Vedtak = pendata.vedtak
 
-        if ( v1Vedtak.isHovedytelseTrukket && v1Vedtak.kravGjelder == "F_BH_BO_UTL"  ) {
+        if (v1Vedtak.isHovedytelseTrukket && v1Vedtak.kravGjelder == "F_BH_BO_UTL") {
             return v1Vedtak.virkningstidspunkt.simpleFormat()
         }
 
-        if ("ENDR_UTTAKSGRAD" == v1Vedtak.kravGjelder  && "0" == hentYtelseBelop(pendata))
+        if ("ENDR_UTTAKSGRAD" == v1Vedtak.kravGjelder && "0" == hentYtelseBelop(pendata))
             return v1Vedtak.virkningstidspunkt.simpleFormat()
 
         return null

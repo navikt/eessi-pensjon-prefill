@@ -36,7 +36,7 @@ abstract class PensjonData {
     }
 
     //TODO - summere opp i ant. dager . trygdetidListe.fom - tom.
-    fun erTrygdeTid(pendata: Pensjonsinformasjon, storreEnn: Int=30, mindreEnn: Int=360): Boolean {
+    fun erTrygdeTid(pendata: Pensjonsinformasjon, storreEnn: Int = 30, mindreEnn: Int = 360): Boolean {
         Preconditions.checkArgument(pendata.trygdetidListe != null, "trygdetidListe er Null")
         Preconditions.checkArgument(pendata.trygdetidListe.trygdetidListe != null, "trygdetidListe er Null")
         val trygdeListe = pendata.trygdetidListe
@@ -55,7 +55,7 @@ abstract class PensjonData {
         trygdeListe.trygdetidListe.forEach {
             val fom = it.fom.toGregorianCalendar().time.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
             val tom = it.tom.toGregorianCalendar().time.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
-            val nrdays = ChronoUnit.DAYS.between(fom,    tom)
+            val nrdays = ChronoUnit.DAYS.between(fom, tom)
             logger.debug("              SummerTrygdeTid: $nrdays  fom: $fom  tom: $tom ")
             daylist.add(nrdays.toInt())
         }
@@ -67,7 +67,7 @@ abstract class PensjonData {
         return days
     }
 
-    fun hentYtelseskomponentBelop(keys: String, ytelse: V1YtelsePerMaaned) : Int {
+    fun hentYtelseskomponentBelop(keys: String, ytelse: V1YtelsePerMaaned): Int {
         val keylist = keys.split(",")
         var summer = 0
         keylist.forEach { keyword ->
@@ -86,7 +86,7 @@ abstract class PensjonData {
     }
 
     fun hentTilleggsPensjon(pendata: Pensjonsinformasjon?): Boolean {
-        return pendata?.trygdeavtale?.isErArt10BruktTP?: false
+        return pendata?.trygdeavtale?.isErArt10BruktTP ?: false
     }
 
     fun hentVilkarsvurderingUforetrygd(pendata: Pensjonsinformasjon): V1VilkarsvurderingUforetrygd {
@@ -106,8 +106,8 @@ abstract class PensjonData {
     }
 
     fun isForeldelos(pendata: Pensjonsinformasjon): Boolean {
-        val avdodpinfar : String? = pendata.avdod.avdodFar ?: "INGEN"
-        val avdodpinmor : String? = pendata.avdod.avdodMor ?: "INGEN"
+        val avdodpinfar: String? = pendata.avdod.avdodFar ?: "INGEN"
+        val avdodpinmor: String? = pendata.avdod.avdodMor ?: "INGEN"
         if (avdodpinfar != "INGEN" && avdodpinmor != "INGEN") {
             return true
         }
@@ -134,12 +134,11 @@ abstract class PensjonData {
         return hentSisteYtelsePerMaaned(pendata).isMottarMinstePensjonsniva
     }
 
-    fun hentSisteYtelsePerMaaned(pendata: Pensjonsinformasjon): V1YtelsePerMaaned{
+    fun hentSisteYtelsePerMaaned(pendata: Pensjonsinformasjon): V1YtelsePerMaaned {
         val ytelseprmnd = pendata.ytelsePerMaanedListe
         val liste = ytelseprmnd.ytelsePerMaanedListe as List<V1YtelsePerMaaned>
-        return liste.asSequence().sortedBy{ it.fom.toGregorianCalendar() }.toList()[liste.size-1]
+        return liste.asSequence().sortedBy { it.fom.toGregorianCalendar() }.toList().last()
     }
-
 
 
 }

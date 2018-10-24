@@ -51,7 +51,7 @@ class RequestBuilder {
 
         // Remove all <xs:element>-nodes from <xs:all>
         val elements = baseDocument.getElementsByTagNameNS(XS, "all").item(0)
-        while(elements.hasChildNodes())
+        while (elements.hasChildNodes())
             elements.removeChild(elements.firstChild)
 
         return baseDocument

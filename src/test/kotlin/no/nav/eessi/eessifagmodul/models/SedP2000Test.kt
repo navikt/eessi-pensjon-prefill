@@ -15,16 +15,12 @@ class SedP2000Test {
 
     @Test
     fun `create SED P2000 from json datafile`() {
-
         val p2000path = Paths.get("src/test/resources/json/P2000-NAV.json")
         val p2000file = String(Files.readAllBytes(p2000path))
         assertTrue(validateJson(p2000file))
 
         val p2000sed = SED.fromJson(p2000file)
         val json = p2000sed.toJson()
-        //val json = mapAnyToJson(p2000sed, true)
         JSONAssert.assertEquals(p2000file, json, false)
-
     }
-
 }
