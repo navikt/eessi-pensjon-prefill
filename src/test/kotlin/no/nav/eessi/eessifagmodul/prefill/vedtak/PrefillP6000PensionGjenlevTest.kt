@@ -92,7 +92,6 @@ class PrefillP6000PensionGjenlevTest: AbstractPensionDataFromPESYSTests("P6000-G
         prefill = generatePrefillData(66, "P6000")
 
         val dataFromPESYS1 = mockPrefillP6000PensionDataFromPESYS("P6000-GP-IkkeUtland.xml")
-        //val pendata = dataFromPESYS1.getPensjoninformasjonFraVedtak("123456789")
 
         val result = dataFromPESYS1.prefill(prefill)
 
