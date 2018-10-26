@@ -47,12 +47,14 @@ abstract class AbstractPensionDataFromPESYSTests(private val xmlFilename: String
     protected lateinit var dataFromPESYS1: PensionDataFromPESYS
     protected lateinit var pendata: Pensjonsinformasjon
 
+
     @Before
     fun setup() {
         prefill = PrefillDataModel()
         dataFromPESYS = PensionDataFromPESYS(pensjonsinformasjonService)
         dataFromPESYS1 = readPensionDataFromPESYS()
         pendata = readPensjonsinformasjon( dataFromPESYS1 )
+
     }
 
     fun readPensionDataFromPESYS(): PensionDataFromPESYS {

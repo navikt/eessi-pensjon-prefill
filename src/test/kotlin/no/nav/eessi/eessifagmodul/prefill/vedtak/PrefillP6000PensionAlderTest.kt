@@ -13,7 +13,7 @@ class PrefillP6000PensionAlderTest: AbstractPensionDataFromPESYSTests("P6000-APU
 
     @Test
     fun `forventet korrekt utfylling av Pensjon objekt på Alderpensjon`() {
-        prefill = generatePrefillData(68, "vedtak")
+        prefill = generatePrefillData(68, "P6000")
 
         //val dataFromPESYS1 = mockPrefillP6000PensionDataFromPESYS("P6000-APUtland-301.xml")
         //val result = dataFromPESYS1.prefill(prefill)
@@ -66,7 +66,7 @@ class PrefillP6000PensionAlderTest: AbstractPensionDataFromPESYSTests("P6000-APU
 
     @Test
     fun `forventet createVedtakTypePensionWithRule verdi`() {
-        prefill = generatePrefillData(68, "vedtak")
+        prefill = generatePrefillData(68, "P6000")
         //dataFromPESYS1.getPensjoninformasjonFraVedtak("23123123")
         val result = dataFromPESYS1.pensjonVedtak.createVedtakTypePensionWithRule(pendata)
         assertEquals("01", result)

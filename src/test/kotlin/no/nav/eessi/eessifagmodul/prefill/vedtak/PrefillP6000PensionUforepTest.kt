@@ -1,6 +1,5 @@
 package no.nav.eessi.eessifagmodul.prefill.vedtak
 
-import no.nav.eessi.eessifagmodul.models.BeregningItem
 import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
 import no.nav.eessi.eessifagmodul.utils.simpleFormat
 import org.junit.Test
@@ -15,7 +14,7 @@ class PrefillP6000PensionUforepTest: AbstractPensionDataFromPESYSTests("P6000-UT
 
     @Test
     fun `forventet korrekt utfylling av Pensjon objekt på Uførepensjon`() {
-        prefill = generatePrefillData(66, "vedtak")
+        prefill = generatePrefillData(66, "P6000")
 
         val result = dataFromPESYS1.prefill(prefill)
 
@@ -134,7 +133,7 @@ class PrefillP6000PensionUforepTest: AbstractPensionDataFromPESYSTests("P6000-UT
 
     @Test
     fun `forventet createVedtakTypePensionWithRule verdi`() {
-        prefill = generatePrefillData(68, "vedtak")
+        prefill = generatePrefillData(68, "P6000")
         val result = dataFromPESYS1.pensjonVedtak.createVedtakTypePensionWithRule(pendata)
         assertEquals("02", result)
     }

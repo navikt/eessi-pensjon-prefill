@@ -81,12 +81,61 @@ class PrefillP6000PensionGjenlevTest: AbstractPensionDataFromPESYSTests("P6000-G
 
     @Test
     fun `forventet createVedtakTypePensionWithRule verdi`() {
-        prefill = generatePrefillData(68, "vedtak")
+        prefill = generatePrefillData(68, "P6000")
         //dataFromPESYS1.getPensjoninformasjonFraVedtak("23123123")
         val result = dataFromPESYS1.pensjonVedtak.createVedtakTypePensionWithRule(pendata)
         assertEquals("03", result)
     }
 
+    @Test
+    fun `forventet korrekt utfylt P6000 gjenlevende ikke bosat utland (avdød bodd i utland)`() {
+        prefill = generatePrefillData(66, "P6000")
 
+        val dataFromPESYS1 = mockPrefillP6000PensionDataFromPESYS("P6000-GP-IkkeUtland.xml")
+        //val pendata = dataFromPESYS1.getPensjoninformasjonFraVedtak("123456789")
+
+        val result = dataFromPESYS1.prefill(prefill)
+
+        val vedtaklst = result.vedtak
+        val sak = result.sak
+        val tillegg = result.tilleggsinformasjon
+        assertNotNull(vedtaklst)
+        assertNotNull(sak)
+        assertNotNull(tillegg)
+
+        val vedtak = vedtaklst?.get(0)
+        assertEquals("2018-05-01", vedtak?.virkningsdato, "vedtak.virkningsdato")
+        assertEquals("03", vedtak?.type, "vedtak.type")
+        assertEquals("02", vedtak?.basertPaa, "vedtak.basertPaa")
+        assertEquals("03", vedtak?.resultat, "vedtak.resultat")
+        assertEquals("2018-05-26", vedtak?.kjoeringsdato)
+        assertEquals(null, vedtak?.artikkel, "4.1.5 vedtak.artikkel (må fylles ut manuelt nå)")
+
+        assertEquals("03", vedtak?.grunnlag?.opptjening?.forsikredeAnnen)
+        assertEquals("1", vedtak?.grunnlag?.framtidigtrygdetid)
+
+        val bergen = vedtak?.beregning?.get(0)
+        assertEquals("2018-05-01", bergen?.periode?.fom)
+        assertEquals(null, bergen?.periode?.tom)
+        assertEquals("NOK", bergen?.valuta)
+        assertEquals("03", bergen?.utbetalingshyppighet)
+
+        assertEquals("6766", bergen?.beloepBrutto?.beloep)
+        assertEquals("4319", bergen?.beloepBrutto?.ytelseskomponentGrunnpensjon)
+        assertEquals("2447", bergen?.beloepBrutto?.ytelseskomponentTilleggspensjon)
+
+        assertEquals(null, vedtak?.ukjent?.beloepBrutto?.ytelseskomponentAnnen)
+
+        val avslagbrg = vedtak?.avslagbegrunnelse?.get(0)
+        assertEquals(null, avslagbrg?.begrunnelse)
+
+        val dataof = sak?.kravtype?.get(0)?.datoFrist
+        assertEquals("six weeks from the date the decision is received", dataof)
+
+        assertEquals("2018-05-26", tillegg?.dato)
+        //assertEquals("NAV", tillegg?.andreinstitusjoner?.get(0)?.institusjonsid)
+
+
+    }
 
 }

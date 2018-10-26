@@ -1,8 +1,11 @@
 package no.nav.eessi.eessifagmodul.prefill.vedtak
 
 import com.google.common.base.Preconditions
+import no.nav.pensjon.v1.avdod.V1Avdod
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import no.nav.pensjon.v1.trygdetidliste.V1TrygdetidListe
+import no.nav.pensjon.v1.vilkarsvurdering.V1Vilkarsvurdering
+import no.nav.pensjon.v1.vilkarsvurderingliste.V1VilkarsvurderingListe
 import no.nav.pensjon.v1.vilkarsvurderinguforetrygd.V1VilkarsvurderingUforetrygd
 import no.nav.pensjon.v1.ytelsepermaaned.V1YtelsePerMaaned
 import org.slf4j.Logger
@@ -28,7 +31,16 @@ abstract class PensjonData {
 
     fun harBoddArbeidetUtland(pendata: Pensjonsinformasjon): Boolean {
         Preconditions.checkArgument(pendata.vedtak != null, "Vedtak er null")
-        return pendata.vedtak.isBoddArbeidetUtland
+        return pendata.vedtak.isBoddArbeidetUtland || harAvdodBoddArbeidetUtland(pendata)
+    }
+
+    fun harAvdodBoddArbeidetUtland(pendata: Pensjonsinformasjon): Boolean {
+        val avdod: V1Avdod = pendata.avdod ?: V1Avdod()
+
+        if (avdod.avdod != "") {
+            return avdod.isAvdodBoddArbeidetUtland
+        }
+        return false
     }
 
     fun isVilkarsvurderingAvslagHovedytelseSamme(key: String, pendata: Pensjonsinformasjon): Boolean {
@@ -90,19 +102,28 @@ abstract class PensjonData {
     }
 
     fun hentVilkarsvurderingUforetrygd(pendata: Pensjonsinformasjon): V1VilkarsvurderingUforetrygd {
-        val v1VilkarsvurderingListe = pendata.vilkarsvurderingListe
-        return v1VilkarsvurderingListe.vilkarsvurderingListe?.get(0)?.vilkarsvurderingUforetrygd ?: return V1VilkarsvurderingUforetrygd()//
+        return hentV1Vilkarsvurdering(pendata)?.vilkarsvurderingUforetrygd ?: return V1VilkarsvurderingUforetrygd()
+//        val v1VilkarsvurderingListe = pendata.vilkarsvurderingListe
+//        return v1VilkarsvurderingListe.vilkarsvurderingListe?.get(0)?.vilkarsvurderingUforetrygd ?: return V1VilkarsvurderingUforetrygd()//
     }
 
     //         Kodeverk K_RESULT_BEGR 2017
     fun hentVilkarsProvingAvslagHovedYtelse(pendata: Pensjonsinformasjon): String {
-        val v1VilkarsvurderingListe = pendata.vilkarsvurderingListe
-        return v1VilkarsvurderingListe.vilkarsvurderingListe?.get(0)?.avslagHovedytelse ?: return "" // UNDER_62 -- LAVT_TIDLIG_UTTAK osv..
+        return hentV1Vilkarsvurdering(pendata)?.avslagHovedytelse ?: return ""
+//        val v1VilkarsvurderingListe = pendata.vilkarsvurderingListe
+//        return v1VilkarsvurderingListe.vilkarsvurderingListe?.get(0)?.avslagHovedytelse ?: return "" // UNDER_62 -- LAVT_TIDLIG_UTTAK osv..
+    }
+
+    fun hentV1Vilkarsvurdering(pendata: Pensjonsinformasjon): V1Vilkarsvurdering? {
+        val v1VilkarsvurderingListe: V1VilkarsvurderingListe? = pendata.vilkarsvurderingListe
+                ?: V1VilkarsvurderingListe()
+        val vilkarsvurdering: V1Vilkarsvurdering? = v1VilkarsvurderingListe?.vilkarsvurderingListe?.getOrElse(0) { V1Vilkarsvurdering() }
+        return vilkarsvurdering
     }
 
     fun hentVilkarsResultatHovedytelse(pendata: Pensjonsinformasjon): String {
-        val v1VilkarsvurderingListe = pendata.vilkarsvurderingListe
-        return v1VilkarsvurderingListe.vilkarsvurderingListe?.get(0)?.resultatHovedytelse ?: return "" // UNDER_62 -- LAVT_TIDLIG_UTTAK osv..
+        return hentV1Vilkarsvurdering(pendata)?.resultatHovedytelse ?: return "" // UNDER_62 -- LAVT_TIDLIG_UTTAK osv..
+        //return v1VilkarsvurderingListe.vilkarsvurderingListe?.get(0)?.resultatHovedytelse ?: return "" // UNDER_62 -- LAVT_TIDLIG_UTTAK osv..
     }
 
     fun isForeldelos(pendata: Pensjonsinformasjon): Boolean {
