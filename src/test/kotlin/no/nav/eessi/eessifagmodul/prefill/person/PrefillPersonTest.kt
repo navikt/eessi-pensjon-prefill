@@ -1,4 +1,4 @@
-package no.nav.eessi.eessifagmodul.prefill
+package no.nav.eessi.eessifagmodul.prefill.person
 
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.whenever
@@ -6,6 +6,7 @@ import no.nav.eessi.eessifagmodul.models.InstitusjonItem
 import no.nav.eessi.eessifagmodul.models.NavMock
 import no.nav.eessi.eessifagmodul.models.PensjonMock
 import no.nav.eessi.eessifagmodul.models.SED
+import no.nav.eessi.eessifagmodul.prefill.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -97,7 +98,6 @@ class PrefillPersonTest(val index: Int, val sedid: String) {
                 personNr = "12345"
                 institution = items
         }
-
         whenever(mockPrefillFactory.createPrefillClass(prefillDataMock)).thenReturn(prefillDefaultSED)
 
         val responseData = mockPrefillSED.prefill(prefillDataMock)
@@ -105,8 +105,6 @@ class PrefillPersonTest(val index: Int, val sedid: String) {
 
         //val responseSED = preutfylling.prefill(prefillDataMock)
         val responseSED = responseData.sed
-
-        //println(mapAnyToJson(responseSED, true))
 
         assertNotNull(responseSED)
         assertNotNull(responseSED.nav)

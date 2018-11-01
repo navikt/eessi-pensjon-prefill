@@ -18,56 +18,52 @@ class PrefillNav(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS)
     private val institutionnavn = "NOINST002, NO INST002, NO"
 
     override fun prefill(prefillData: PrefillDataModel): Nav {
-        logger.debug("perfill aktoerId: ${prefillData.personNr}")
-        logger.debug("perfill aktoerid: ${prefillData.aktoerID}")
-        //bruker død hvis etterlatt (etterlatt aktoerregister fylt ut)
-        val brukertps = bruker(prefillData)
-
-        //skal denne kjøres hver gang? eller kun under P2000?
-        val barnatps = hentBarnaFraTPS(prefillData)
-        val pensaknr = prefillData.penSaksnummer
-        val lokalSaksnr = opprettLokalSaknr(pensaknr)
+        logger.debug("perfill aktoerId: ${prefillData.aktoerID}")
 
         val nav = Nav(
-                barn = barnatps,
-                bruker = brukertps,
-                //korrekt bruk av eessisak? skal pen-saknr legges ved?
-                //eller peker denne til en ekisterende rina-casenr?
-                eessisak = lokalSaksnr,
+                eessisak = opprettLokalSaknr(prefillData),
+
+                //skal denne kjøres hver gang? eller kun under P2000? P2100
+                barn = hentBarnaFraTPS(prefillData),
+
+                //bruker død hvis etterlatt (etterlatt aktoerregister fylt ut)
+                bruker = bruker(prefillData),
+
+                //benyttes i P2x000
                 krav = Krav(SimpleDateFormat("yyyy-MM-dd").format(Date()))
         )
-        logger.debug("[${prefillData.getSEDid()}] Sjekker PinID : ${prefillData.personNr}")
 
-        //${nav.eessisak}"
-        logger.debug("[${prefillData.getSEDid()}] Utfylling av NAV data med lokalsaksnr: $pensaknr")
+        logger.debug("[${prefillData.getSEDid()}] Utfylling av NAV data med lokalsaksnr: ${prefillData.penSaksnummer}")
+
         return nav
     }
 
 
+    // kan denne utfylling benyttes på alle SED?
+    // etterlatt pensjon da er dette den avdøde.(ikke levende)
+    // etterlatt pensjon da er den levende i pk.3 sed (gjenlevende) (pensjon.gjenlevende)
     private fun bruker(utfyllingData: PrefillDataModel): Bruker {
-
-        // kan denne utfylling benyttes på alle SED?
-        // etterlatt pensjon da er dette den avdøde.(ikke levende)
-        // etterlatt pensjon da er den levende i pk.3 sed (gjenlevende) (pensjon.gjenlevende)
-
-        if (utfyllingData.isValidEtterlatt()) {
-            val pinid = utfyllingData.avdodPersonnr
+        logger.debug("2.1       Forsikret person")
+        if (utfyllingData.erGyldigEtterlatt()) {
+            logger.debug("2.1           Avdod person")
+            val pinid = utfyllingData.avdod
             val bruker = preutfyllingPersonFraTPS.prefillBruker(pinid)
             logger.debug("Preutfylling Utfylling (avdød) Nav END")
             return bruker
         }
-        val pinid = utfyllingData.personNr
-        val bruker = preutfyllingPersonFraTPS.prefillBruker(pinid)
-        logger.debug("Preutfylling Utfylling Nav END")
+
+        val bruker = preutfyllingPersonFraTPS.prefillBruker(utfyllingData.personNr)
+
+        //logger.debug("Preutfylling Utfylling Nav END")
         return bruker
     }
 
     private fun hentBarnaFraTPS(utfyllingData: PrefillDataModel): List<BarnItem> {
-        if (utfyllingData.getSEDid() != "P2000") {
+        if (utfyllingData.getSEDid() != "P2100") {
             logger.debug("Preutfylling barn SKIP not valid SED?")
             return listOf()
         }
-        logger.debug("Preutfylling barn START")
+        logger.debug("8.1           Preutfylling barn")
         val barnaspin = preutfyllingPersonFraTPS.hentBarnaPinIdFraBruker(utfyllingData.personNr)
         val barna = mutableListOf<BarnItem>()
         barnaspin.forEach {
@@ -88,15 +84,37 @@ class PrefillNav(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS)
     /**
      * TODO NAV lokal institusjon må hentes fra Fasit? Rina?
      */
-    private fun opprettLokalSaknr(pensaknr: String = ""): List<EessisakItem> {
-        //Må få hentet ut NAV institusjon avsender fra fasit?
-        val lokalsak = EessisakItem(
+    //korrekt bruk av eessisak? skal pen-saknr legges ved?
+    //eller peker denne til en ekisterende rina-casenr?
+    private fun opprettLokalSaknr(prefillData: PrefillDataModel): List<EessisakItem> {
+        logger.debug("1.1           Lokalt saksnummer (hvor hentes disse verider ifra?")
+
+        //lokalsak
+        val lokalsaksnr = EessisakItem(
                 institusjonsid = institutionid,
                 institusjonsnavn = institutionnavn,
-                saksnummer = pensaknr,
+                saksnummer = prefillData.penSaksnummer,
                 land = "NO"
         )
-        return listOf(lokalsak)
+        //lokalvedtak
+        val lokalvedtaksnr = EessisakItem(
+                institusjonsid = institutionid,
+                institusjonsnavn = institutionnavn,
+                saksnummer = prefillData.vedtakId,
+                land = "NO"
+        )
+        val eessisak = mutableListOf<EessisakItem>()
+
+        eessisak.add(lokalsaksnr)
+        try {
+            if (prefillData.vedtakId.isNotBlank()) {
+                eessisak.add(lokalvedtaksnr)
+            }
+        } catch (ex: Exception) {
+            logger.debug("      Ingen vedtak")
+        }
+
+        return eessisak
     }
 
 
