@@ -2,7 +2,6 @@ package no.nav.eessi.eessifagmodul.controllers
 
 import no.nav.eessi.eessifagmodul.models.InstitusjonItem
 import no.nav.eessi.eessifagmodul.utils.validateJson
-import org.junit.Ignore
 import org.junit.Test
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -38,7 +37,6 @@ class ApIRequestTest {
         createMockApiRequest("P2000", "P_BUC_01", payload)
     }
 
-    @Ignore
     @Test
     fun `generate request mock payload of SED P2100`() {
         val payload = readJsonAndParseToSed("P2100-NAV.json")

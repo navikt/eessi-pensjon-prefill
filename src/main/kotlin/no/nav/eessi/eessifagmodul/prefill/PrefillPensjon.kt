@@ -28,7 +28,7 @@ class PrefillPensjon(private val preutfyllingPersonFraTPS: PrefillPersonDataFrom
         //fylles ut kun når vi har etterlatt aktoerId og etterlattPinID.
         //noe vi må få fra PSAK. o.l
         var gjenlevende: Bruker? = null
-        if (utfyllingData.isValidEtterlatt()) {
+        if (utfyllingData.erGyldigEtterlatt()) {
             logger.debug("Preutfylling Utfylling Pensjon Gjenlevende (etterlatt)")
             gjenlevende = preutfyllingPersonFraTPS.prefillBruker(pinid)
         }

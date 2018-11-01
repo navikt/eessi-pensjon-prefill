@@ -1,4 +1,4 @@
-package no.nav.eessi.eessifagmodul.prefill
+package no.nav.eessi.eessifagmodul.prefill.person
 
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.whenever
@@ -6,6 +6,7 @@ import no.nav.eessi.eessifagmodul.models.InstitusjonItem
 import no.nav.eessi.eessifagmodul.models.NavMock
 import no.nav.eessi.eessifagmodul.models.PensjonMock
 import no.nav.eessi.eessifagmodul.models.SED
+import no.nav.eessi.eessifagmodul.prefill.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -64,7 +65,6 @@ class PrefillPersonTest(val index: Int, val sedid: String) {
                     arrayOf(20, "P2100"),
                     arrayOf(30, "P2200"),
                     arrayOf(40, "P3000"),
-                    //arrayOf(50, "P4000"),
                     arrayOf(60, "P5000"),
                     arrayOf(70, "vedtak"),
                     arrayOf(80, "P7000")
@@ -78,12 +78,10 @@ class PrefillPersonTest(val index: Int, val sedid: String) {
         val mockPinResponse = "12345"
 
         val navresponse = NavMock().genererNavMock()
-        //val navresponse = Nav(bruker = Bruker(person = Person(fornavn = "Dummy", etternavn = "Dummy", pin = listOf(PinItem(sektor = "alle", identifikator = mockPinResponse, land = "NO")))))
 
         whenever(mockPreutfyllingNav.prefill(any())).thenReturn(navresponse)
 
         val pensjonresponse = PensjonMock().genererMockData()
-        //val pensjonresponse = Pensjon(gjenlevende = Bruker(person = Person(fornavn = "Dummy", etternavn = "Dummy")))
         whenever(mockPreutfyllingPensjon.prefill(any())).thenReturn(pensjonresponse)
 
 
@@ -97,16 +95,11 @@ class PrefillPersonTest(val index: Int, val sedid: String) {
                 personNr = "12345"
                 institution = items
         }
-
         whenever(mockPrefillFactory.createPrefillClass(prefillDataMock)).thenReturn(prefillDefaultSED)
 
         val responseData = mockPrefillSED.prefill(prefillDataMock)
         assertNotNull(responseData)
-
-        //val responseSED = preutfylling.prefill(prefillDataMock)
         val responseSED = responseData.sed
-
-        //println(mapAnyToJson(responseSED, true))
 
         assertNotNull(responseSED)
         assertNotNull(responseSED.nav)

@@ -103,9 +103,9 @@ class PrefillPensjonReduksjon : PensjonData() {
         logger.debug("5.1.4         ReduksjonArtikkelType")
         val sakType = PensjonData.KSAK.valueOf(pendata.sak.sakType)
 
-        if (sakType == PensjonData.KSAK.UFOREP && hentVurdertBeregningsmetodeNordisk(pendata))
+        if (sakType == PensjonData.KSAK.UFOREP && hentTilleggsPensjon(pendata))
             return "02"
-        if (sakType == PensjonData.KSAK.GJENLEV && hentGrunnPersjon(pendata))
+        if (sakType == PensjonData.KSAK.GJENLEV && hentGrunnPersjon(pendata) || hentTilleggsPensjon(pendata))
             return "02"
         if (sakType == PensjonData.KSAK.BARNEP && hentGrunnPersjon(pendata))
             return "02"

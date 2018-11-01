@@ -60,8 +60,10 @@ class NavFodselsnummer(private val fodselsnummer: String) {
     }
 
     fun getAge(): Int {
+        val years = ChronoUnit.YEARS.between(getBirthDate(), LocalDate.now()).toInt()
         logger.debug("BirthDate: ${getBirthDate()}  now: ${LocalDate.now()}")
-        return ChronoUnit.YEARS.between(getBirthDate(), LocalDate.now()).toInt()
+        logger.debug("Years: $years")
+        return years
     }
 
     private fun getIndividnummer(): String {
@@ -88,7 +90,7 @@ class NavFodselsnummer(private val fodselsnummer: String) {
         return false
     }
 
-    private fun getFirstDigit(fodselsnummer: String): Int {
+    fun getFirstDigit(fodselsnummer: String): Int {
         return Integer.parseInt(fodselsnummer.substring(0, 1))
     }
 

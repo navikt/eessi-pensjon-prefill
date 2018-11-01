@@ -57,7 +57,7 @@ class PrefillPensjonTilleggsinformasjon : PensjonData() {
                 //??
                 person = null, //Person()
 
-                //6.4 //
+                //6.4 //Vedtakets utstedelsesdato (angitt på vedtaket
                 dato = createTilleggsInfoDato(pendata)
         )
     }

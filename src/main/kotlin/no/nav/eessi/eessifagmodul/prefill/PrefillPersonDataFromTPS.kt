@@ -32,11 +32,31 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
         }
     }
 
+    fun prefillBruker(ident: String): Bruker {
+        logger.debug("         Bruker")
+        val brukerTPS = hentBrukerTPS(ident)
+
+        setPersonStatus(hentPersonStatus(brukerTPS))
+
+        val bruker = Bruker(
+                person = personData(brukerTPS),
+
+                far = Foreldre(person = hentRelasjon(RelasjonEnum.FAR, brukerTPS)),
+
+                mor = Foreldre(person = hentRelasjon(RelasjonEnum.MOR, brukerTPS)),
+
+                adresse = hentPersonAdresse(brukerTPS)
+        )
+        logger.debug("Preutfylling Bruker")
+        return bruker
+    }
+
     //henter kun personnNr (brukerNorIdent/pin) for alle barn under person
     fun hentBarnaPinIdFraBruker(brukerNorIdent: String): List<String> {
         val brukerTPS = hentBrukerTPS(brukerNorIdent)
         val person = brukerTPS as no.nav.tjeneste.virksomhet.person.v3.informasjon.Person
         val resultat = mutableListOf<String>()
+
         person.harFraRolleI.forEach {
             val tpsvalue = it.tilRolle.value   //mulig nullpoint? kan tilRolle være null?
 
@@ -48,20 +68,6 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
             }
         }
         return resultat.toList()
-    }
-
-    fun prefillBruker(ident: String): Bruker {
-        val brukerTPS = hentBrukerTPS(ident)
-        setPersonStatus(hentPersonStatus(brukerTPS))
-
-        val bruker = Bruker(
-                far = Foreldre(person = hentRelasjon(RelasjonEnum.FAR, brukerTPS)),
-                mor = Foreldre(person = hentRelasjon(RelasjonEnum.MOR, brukerTPS)),
-                person = personData(brukerTPS),
-                adresse = personAdresse(brukerTPS)
-        )
-        logger.debug("Preutfylling Bruker")
-        return bruker
     }
 
     private fun setPersonStatus(status: String = "") {
@@ -84,6 +90,7 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
 
     //personnr
     private fun hentNorIdent(person: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): String {
+        logger.debug("2.1.7.1.2     Personal Identification Number (PIN) personnr")
         val persident = person.aktoer as PersonIdent
         val pinid: NorskIdent = persident.ident
         return pinid.ident
@@ -91,22 +98,25 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
 
     //fdato i rinaformat
     private fun datoFormat(person: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): String? {
+        logger.debug("2.1.3     Date of birth")
         val fdato = person.foedselsdato
         return fdato?.foedselsdato?.simpleFormat()
     }
 
     //doddato i rina
     private fun dodDatoFormat(person: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): String? {
+        logger.debug("4.2     Date of death / dødsdato P2100")
         val doddato = person.doedsdato
         return doddato?.doedsdato?.simpleFormat()
     }
 
     fun hentFodested(bruker: no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker): Foedested {
-        val fstedTPS = bruker.foedested
+        logger.debug("2.1.8.1       Fødested")
+
         val fsted = Foedested(
-                land = fstedTPS ?: "Unknown",
+                land = bruker.foedested ?: "Unknown",
                 by = "Unkown",
-                region = "Unknown"
+                region = ""
         )
         if (fsted.land == "Unknown") {
             return Foedested()
@@ -117,29 +127,20 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
     //mor / far
     private fun hentRelasjon(relasjon: RelasjonEnum, person: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): Person? {
         person.harFraRolleI.forEach {
+
             val tpsvalue = it.tilRolle.value
+
             if (relasjon.erSamme(tpsvalue)) {
-                logger.debug("Finner relasjon til : $tpsvalue")
+                logger.debug("              Relasjon til : $tpsvalue")
                 val persontps = it.tilPerson as no.nav.tjeneste.virksomhet.person.v3.informasjon.Person
-                val land: String? = try {
-                    if (persontps.statsborgerskap != null) {
-                        val statsborgerskap = persontps.statsborgerskap as Statsborgerskap
-                        hentLandkode(statsborgerskap.land)
-                    } else {
-                        null
-                    }
-                } catch (ex: NullPointerException) {
-                    logger.debug(ex.message)
-                    null
-                }
-                logger.debug("har vi hentet ut land rett: $land")
+
                 val navntps = persontps.personnavn as Personnavn
                 val relasjonperson = Person(
                         pin = listOf(
                                 PinItem(
                                         sektor = "alle",
                                         identifikator = hentNorIdent(persontps),
-                                        land = land
+                                        land = hentLandkodeRelasjoner(persontps)
                                 )
                         ),
                         fornavn = navntps.fornavn,
@@ -149,115 +150,158 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
                 if (RelasjonEnum.MOR.erSamme(tpsvalue)) {
                     relasjonperson.etternavnvedfoedsel = null
                 }
-                logger.debug("Preutfylling Foreldre")
                 return relasjonperson
             }
         }
         return null
     }
 
-    //persondata - rina format
+    //persondata - nav-sed format
     private fun personData(brukerTps: no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker): Person {
+        logger.debug("2         Persondata (forsikret person)")
         val navn = brukerTps.personnavn as Personnavn
-        //val statsborgerskap = brukerTps.statsborgerskap as Statsborgerskap
         val kjonn = brukerTps.kjoenn
 
+        return Person(
 
-        val person = Person(
+                //2.1.7
                 pin = hentPersonPinNorIdent(brukerTps),
+
+                //2.1.6
                 fornavnvedfoedsel = navn.fornavn,
+
+                //2.1.2     forname
                 fornavn = navn.fornavn,
+
+                //2.1.1     familiy name
                 etternavn = navn.etternavn,
+
+                //2.1.3
                 foedselsdato = datoFormat(brukerTps),
-                statsborgerskap = listOf(statsBorgerskap(brukerTps)),
+
+                //2.2.1
+                statsborgerskap = listOf(hentStatsborgerskapTps(brukerTps)),
+
+                //2.1.4     //sex
                 kjoenn = mapKjonn(kjonn),
+
+                //2.1.8.1           place of birth
                 foedested = hentFodested(brukerTps),
+
+
                 sivilstand = hentSivilstand(brukerTps)
         )
-        logger.debug("Preutfylling Person")
-        return person
+
     }
 
     private fun hentPersonPinNorIdent(brukerTps: no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker): List<PinItem> {
+        logger.debug("2.1.7       Personnummer")
         return listOf(
                 PinItem(
-                        sektor = "alle",
+                        //all sector
+                        sektor = "03",
+
+                        //personnr
                         identifikator = hentNorIdent(brukerTps),
+
                         // norsk personnr alltid NO
                         land = "NO"
                 )
         )
     }
 
+    //hjelpe funkson for personstatus.
     private fun hentPersonStatus(brukerTps: no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker): String {
         val personstatus = brukerTps.personstatus as Personstatus
         return personstatus.personstatus.value
     }
 
+    //sivilstand ENKE, PENS, SINGLE
     private fun hentSivilstand(brukerTps: no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker): List<SivilstandItem> {
+        logger.debug("x.x.x         Sivilstand")
         val sivilstand = brukerTps.sivilstand as Sivilstand
-        val sivil = SivilstandItem(
+
+        return listOf(SivilstandItem(
                 //fradato = standardDatoformat(sivilstand.fomGyldighetsperiode),
                 fradato = sivilstand.fomGyldighetsperiode.simpleFormat(),
                 status = sivilstand.sivilstand.value
-        )
-        return listOf(sivil)
+        ))
     }
 
 
-    fun personAdresse(person: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): Adresse {
+    //2.2.2
+    fun hentPersonAdresse(person: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): Adresse {
+        logger.debug("2.2.2         Adresse")
+
         //ikke adresse for død
         if (validatePersonStatus(dod)) {
+            logger.debug("           Ingenting på avdod")
             return Adresse()
         }
-        val bostedsadresse: Bostedsadresse = person.bostedsadresse ?: return personAdresseUstrukturert(person.postadresse)
+
+        //Gateadresse eller UstrukturertAdresse
+        val bostedsadresse: Bostedsadresse = person.bostedsadresse
+                ?: return hentPersonAdresseUstrukturert(person.postadresse)
+
         val gateAdresse = bostedsadresse.strukturertAdresse as Gateadresse
-
-        val postnr = gateAdresse.poststed.value
-
         val gate = gateAdresse.gatenavn
         val husnr = gateAdresse.husnummer
+        return Adresse(
+                postnummer = gateAdresse.poststed.value,
 
-        val adr = Adresse(
-                postnummer = postnr,
                 gate = "$gate $husnr",
+
                 land = hentLandkode(gateAdresse.landkode),
-                by = postnummerService.finnPoststed(postnr)
+
+                by = postnummerService.finnPoststed(gateAdresse.poststed.value)
         )
-        logger.debug("Preutfylling Adresse")
-        return adr
     }
 
-    private fun personAdresseUstrukturert(postadr: no.nav.tjeneste.virksomhet.person.v3.informasjon.Postadresse): Adresse {
+    //2.2.2 ustrukturert
+    private fun hentPersonAdresseUstrukturert(postadr: no.nav.tjeneste.virksomhet.person.v3.informasjon.Postadresse): Adresse {
+        logger.debug("             UstrukturertAdresse (utland)")
         val gateAdresse = postadr.ustrukturertAdresse as UstrukturertAdresse
+
         return Adresse(
-                bygning = gateAdresse.adresselinje1,
-                gate = gateAdresse.adresselinje2,
-                postnummer = gateAdresse.adresselinje3,
-                by = gateAdresse.adresselinje4,
+                gate = gateAdresse.adresselinje1,
+
+                bygning = gateAdresse.adresselinje2,
+
+                by = gateAdresse.adresselinje3,
+
+                postnummer = gateAdresse.adresselinje4,
+
                 land = hentLandkode(gateAdresse.landkode)
         )
+
     }
 
-    private fun statsBorgerskap(person: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): StatsborgerskapItem {
+    private fun hentStatsborgerskapTps(person: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): StatsborgerskapItem {
+        logger.debug("2.1.7.1.1     Land / Statsborgerskap")
+
         val statsborgerskap = person.statsborgerskap as Statsborgerskap
         val land = statsborgerskap.land as no.nav.tjeneste.virksomhet.person.v3.informasjon.Landkoder
-        val statitem = StatsborgerskapItem(
+
+        return StatsborgerskapItem(
                 land = hentLandkode(land)
         )
-        logger.debug("Preutfylling Statsborgerskap")
-        return statitem
+    }
+
+    private fun hentLandkodeRelasjoner(persontps: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): String? {
+        if (persontps.statsborgerskap != null && persontps.statsborgerskap.land != null) {
+            return hentLandkode(persontps.statsborgerskap.land)
+        }
+        return null
     }
 
     //TODO: Mapping av landkoder skal gjøres i codemapping i EUX
     private fun hentLandkode(landkodertps: no.nav.tjeneste.virksomhet.person.v3.informasjon.Landkoder): String? {
-        val result = landkodeService.finnLandkode2(landkodertps.value)
-        logger.debug("Preutfylling Landkode (alpha3-alpha2)  ${landkodertps.value} til $result")
-        return result
+        return landkodeService.finnLandkode2(landkodertps.value)
     }
 
     //TODO: Mapping av kjønn skal defineres i codemapping i EUX
     private fun mapKjonn(kjonn: Kjoenn): String {
+        logger.debug("2.1.4         Kjønn")
         val ktyper = kjonn.kjoenn
         val map: Map<String, String> = hashMapOf("M" to "m", "K" to "f")
         val value = map[ktyper.value]

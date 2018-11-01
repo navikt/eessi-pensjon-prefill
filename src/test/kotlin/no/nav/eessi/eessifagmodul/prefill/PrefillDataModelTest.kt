@@ -33,29 +33,26 @@ class PrefillDataModelTest {
 
     @Test
     fun `check for valid claimant fail`() {
-        assertFalse(prefill.isValidEtterlatt())
-    }
-
-    @Test
-    fun `check for valid claimant lack pin fail`() {
-        //val prefill = PrefillDataModel()
-        prefill.avdodAktoerID = "123123"
-        assertFalse(prefill.isValidEtterlatt())
+        assertFalse(prefill.erGyldigEtterlatt())
     }
 
     @Test
     fun `check for valid claimant pin and aktorid is blank fail`() {
-        prefill.avdodAktoerID = ""
-        prefill.avdodPersonnr = ""
-        assertFalse(prefill.isValidEtterlatt())
+        prefill.avdod = ""
+        assertFalse(prefill.erGyldigEtterlatt())
     }
 
     @Test
     fun `check for valid claimant deceased pin and aktorid is filled`() {
-        //val prefill = PrefillDataModel()
-        prefill.avdodAktoerID = "123123"
-        prefill.avdodPersonnr = "23123"
-        assertTrue(prefill.isValidEtterlatt())
+        prefill.avdod = "23123"
+        assertTrue(prefill.erGyldigEtterlatt())
+    }
+
+    @Test
+    fun `check for valid claimant deceased parents filled`() {
+        prefill.avdodFar = "2312354"
+        prefill.avdodMor = "2312376"
+        assertTrue(prefill.erForeldreLos())
     }
 
     @Test
@@ -73,7 +70,7 @@ class PrefillDataModelTest {
         }
         assertNotNull(prefill)
         assertEquals("vedtak", prefill.getSEDid())
-        assertEquals(SED::class.java , prefill.sed.javaClass)
+        assertEquals(SED::class, prefill.sed::class)
         assertEquals("12345", prefill.penSaksnummer)
         assertEquals("567890", prefill.aktoerID)
         assertEquals("123456789", prefill.personNr)

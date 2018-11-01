@@ -7,6 +7,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.web.client.RestClientException
 import java.text.SimpleDateFormat
+import java.util.*
 import javax.xml.datatype.XMLGregorianCalendar
 
 inline fun <reified T : Any> typeRef(): ParameterizedTypeReference<T> = object : ParameterizedTypeReference<T>() {}
@@ -54,7 +55,10 @@ fun validateJson(json: String): Boolean {
 }
 
 fun XMLGregorianCalendar.simpleFormat(): String {
-    //private val dateformat = "YYYY-MM-dd"
-    //dd-MM-YYYY rinaformat
+    //rinaformat dd-MM-YYYY
     return SimpleDateFormat("yyyy-MM-dd").format(this.toGregorianCalendar().time)
+}
+
+fun Date.simpleFormat(): String {
+    return SimpleDateFormat("yyyy-MM-dd").format(this)
 }
