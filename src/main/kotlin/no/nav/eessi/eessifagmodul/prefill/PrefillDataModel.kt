@@ -8,7 +8,7 @@ import no.nav.eessi.eessifagmodul.models.SED
  *
  * sed, aktoerregister,  psak-saknr, rinanr, institutions (mottaker eg. nav),
  *
- * servives:  aktoerregister, person, pen, maybe joark, eux-basis.
+ * services:  aktoerregister, person, pen, maybe joark, eux-basis.
  *
  */
 class PrefillDataModel {
@@ -22,7 +22,7 @@ class PrefillDataModel {
     lateinit var personNr: String
     lateinit var aktoerID: String
 
-    //sakType:
+    //data fra pesys
     lateinit var saktype: String
     //aktoerid og aktoerId for avdod
     lateinit var avdod: String

@@ -61,7 +61,7 @@ class PrefillPersonEnkeTest : PersonDataFromTPS(
         val person = Person()
         person.bostedsadresse = bostedadr
 
-        val result = preutfyllingTPS.personAdresse(person)
+        val result = preutfyllingTPS.hentPersonAdresse(person)
         println(result)
 
         assertNotNull(result)
@@ -73,7 +73,6 @@ class PrefillPersonEnkeTest : PersonDataFromTPS(
 
     @Test
     fun `forvent utfylling av person data av ENKE fra TPS P2000`() {
-        //val prefillNav = PrefillNav(initPersonDataMedMockResponse("Person-20000.json"))
         val prefillData = generatePrefillData("P2000", "02345678901")
         val response = prefillNav.prefill(prefillData)
 
@@ -89,7 +88,6 @@ class PrefillPersonEnkeTest : PersonDataFromTPS(
 
     @Test
     fun `forvent utfylling av person data av ENKE fra TPS P2100`() {
-        //val prefillNav = PrefillNav(initPersonDataMedMockResponse("Person-20000.json"))
         val prefillData = generatePrefillData("P2100", "02345678901")
         val response = prefillNav.prefill(prefillData)
 
@@ -117,7 +115,6 @@ class PrefillPersonEnkeTest : PersonDataFromTPS(
 
     @Test
     fun `forvent utfylling av person data av ENKE fra TPS P2200`() {
-        //val prefillNav = PrefillNav(initPersonDataMedMockResponse("Person-20000.json"))
         val prefillData = generatePrefillData("P2200", "02345678901")
         val response = prefillNav.prefill(prefillData)
 
@@ -132,7 +129,6 @@ class PrefillPersonEnkeTest : PersonDataFromTPS(
         assertEquals("P2200", sed.sed)
 
     }
-
 
 
 }

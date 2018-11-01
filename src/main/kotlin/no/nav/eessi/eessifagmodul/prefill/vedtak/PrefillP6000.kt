@@ -32,11 +32,11 @@ class PrefillP6000(private val prefillNav: PrefillNav, private val dataFromPEN: 
 
         val sed = prefillData.sed
 
-        logger.debug("Henter opp Persondata fra TPS")
-        sed.nav = createNav(prefillData)
-
         logger.debug("Henter opp Pernsjondata fra PESYS")
         val pensjon = createPensjon(prefillData)
+
+        logger.debug("Henter opp Persondata fra TPS")
+        sed.nav = createNav(prefillData)
 
         pensjon.gjenlevende = createGjenlevende(prefillData)
 

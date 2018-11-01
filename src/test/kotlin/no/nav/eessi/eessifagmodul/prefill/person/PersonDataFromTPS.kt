@@ -52,13 +52,6 @@ abstract class PersonDataFromTPS(private val mocktps: Set<MockTPS>) {
         val landkode = strukturertAdresse["landkode"]
         val harFraRolleI = rootNode["harFraRolleI"]
 
-//        println("NodeType:${rootNode.nodeType}")
-//        println("---------------------------------------------------------------------------------")
-//        harFraRolleI.forEach {
-//            println("\tFields: ${it.fields()}\t\tNodeType: ${it.nodeType}\t\tRaw: $it")
-//        }
-//        println("---------------------------------------------------------------------------------")
-
         val v3struktAdr = mapJsonToAny(bostedsadresse.toString(), typeRefs<Gateadresse>())
         val v3personstatus = mapJsonToAny(personstatus.toString(), typeRefs<Personstatus>())
         val v3statsborgerskap = mapJsonToAny(statsborgerskap.toString(), typeRefs<Statsborgerskap>())
@@ -72,29 +65,22 @@ abstract class PersonDataFromTPS(private val mocktps: Set<MockTPS>) {
         val v3person = Bruker()
 
         harFraRolleI.forEach {
-            //println("\tFields: ${it.fields()}\t\tNodeType: ${it.nodeType}\t\tRaw: $it")
             val v3familieRelasjon = Familierelasjon()
 
             val tilRolle = it["tilRolle"]
 
             val tilPerson = it["tilPerson"]
-            val kjoenn = tilPerson["kjoenn"]
-            val aktoer = tilPerson["aktoer"]
-            val personnavn = tilPerson["personnavn"]
-//            println("tilRolle  : $tilRolle")
-//            println("kjoenn    : $kjoenn")
-//            println("tilPerson : $tilPerson")
-//            println("aktoer    : $aktoer")
-//            println("personnavn: $personnavn")
+            val kjoennitem = tilPerson["kjoenn"]
+            val aktoeritem = tilPerson["aktoer"]
+            val personnavnitem = tilPerson["personnavn"]
 
             v3familieRelasjon.tilRolle = mapJsonToAny(tilRolle.toString(), typeRefs<Familierelasjoner>())
             v3familieRelasjon.tilPerson = Bruker()
-            try {
-                v3familieRelasjon.tilPerson.kjoenn = mapJsonToAny(kjoenn.toString(), typeRefs<Kjoenn>())
-            } catch (ex: Exception) {
+            if (!kjoennitem.isNull) {
+                v3familieRelasjon.tilPerson.kjoenn = mapJsonToAny(kjoennitem.toString(), typeRefs<Kjoenn>())
             }
-            v3familieRelasjon.tilPerson.aktoer = mapJsonToAny(aktoer.toString(), typeRefs<PersonIdent>())
-            v3familieRelasjon.tilPerson.personnavn = mapJsonToAny(personnavn.toString(), typeRefs<Personnavn>())
+            v3familieRelasjon.tilPerson.aktoer = mapJsonToAny(aktoeritem.toString(), typeRefs<PersonIdent>())
+            v3familieRelasjon.tilPerson.personnavn = mapJsonToAny(personnavnitem.toString(), typeRefs<Personnavn>())
 
             v3person.harFraRolleI.add(v3familieRelasjon)
         }
@@ -113,14 +99,11 @@ abstract class PersonDataFromTPS(private val mocktps: Set<MockTPS>) {
         val v3PersonResponse = HentPersonResponse()
         v3PersonResponse.person = v3person
 
-        //return PrefillPersonDataFromTPS(mockPersonV3Service, PostnummerService(), LandkodeService())
         return v3PersonResponse
     }
 
     private fun mockPrefillPersonDataFromTPS(): PrefillPersonDataFromTPS {
         mocktps.forEach {
-
-            //whenever(mockPersonV3Service.hentPerson("")).
             whenever(mockPersonV3Service.hentPerson(it.mockPin)).thenReturn(initMockHentPersonResponse(it.mockFile))
         }
         return PrefillPersonDataFromTPS(mockPersonV3Service, PostnummerService(), LandkodeService())
