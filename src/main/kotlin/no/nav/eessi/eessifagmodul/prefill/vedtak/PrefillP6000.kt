@@ -32,8 +32,10 @@ class PrefillP6000(private val prefillNav: PrefillNav, private val dataFromPEN: 
 
         val sed = prefillData.sed
 
+        logger.debug("Henter opp Persondata fra TPS")
         sed.nav = createNav(prefillData)
 
+        logger.debug("Henter opp Pernsjondata fra PESYS")
         val pensjon = createPensjon(prefillData)
 
         pensjon.gjenlevende = createGjenlevende(prefillData)
@@ -61,7 +63,7 @@ class PrefillP6000(private val prefillNav: PrefillNav, private val dataFromPEN: 
     //noe vi må få fra PSAK. o.l
     private fun createGjenlevende(prefillData: PrefillDataModel): Bruker? {
         var gjenlevende: Bruker? = null
-        if (prefillData.isValidEtterlatt()) {
+        if (prefillData.erGyldigEtterlatt()) {
             logger.debug("Preutfylling Utfylling Pensjon Gjenlevende (etterlatt)")
             gjenlevende = dataFromTPS.prefillBruker(prefillData.personNr)
         }

@@ -161,17 +161,13 @@ class PrefillPensjonVedtak : PensjonData() {
             KSAK.UFOREP -> {
                 when (isMottarMinstePensjonsniva(pendata)) {
                     true -> "01"
-                    false -> {
-                        "02"
-                    }
+                    false -> "02"
                 }
             }
             KSAK.GJENLEV -> {
                 when (isMottarMinstePensjonsniva(pendata)) {
                     true -> "01"
-                    false -> {
-                        "02"
-                    }
+                    false -> "02"
                 }
             }
             KSAK.BARNEP -> {
@@ -207,7 +203,7 @@ class PrefillPensjonVedtak : PensjonData() {
         Opphør - må håndteres Se pkt 6.2
      */
     fun createTypeVedtakPentionWithRule(pendata: Pensjonsinformasjon): String? {
-        //01> invilg , 02> avslag , 03> ny beregning , 04> foreløping utbeteling
+        //01> invillg , 02> avslag , 03> ny beregning , 04> foreløping utbeteling
         logger.debug("4.1.4         TypeVedtakPention (vedtak.resultat")
 
         val sakType = KSAK.valueOf(pendata.sak.sakType)
@@ -222,11 +218,12 @@ class PrefillPensjonVedtak : PensjonData() {
 
         //PESYS kodeverk K_KRAV_SAK_FULL
         val erForsteGangBehandlingNorgeUtland = "F_BH_MED_UTL" == kravGjelder
+        val erForsteGangBehandlingBosattUtland = "F_BH_BO_UTL" == kravGjelder
         val erMellombehandling = "MELLOMBH" == kravGjelder
         val erRevurdering = kravGjelder == "REVURD"
 
         if (KSAK.UFOREP != sakType) {
-            if (erInnvilgelse && (erForsteGangBehandlingNorgeUtland || erMellombehandling))
+            if (erInnvilgelse && (erForsteGangBehandlingNorgeUtland || erMellombehandling || erForsteGangBehandlingBosattUtland))
                 return "01"
         }
         if (erAvslag)
@@ -237,6 +234,9 @@ class PrefillPensjonVedtak : PensjonData() {
 
         if (KSAK.UFOREP == sakType && (erForsteGangBehandlingNorgeUtland || erMellombehandling))
             return "04"
+
+        if (KSAK.UFOREP == sakType && erForsteGangBehandlingBosattUtland)
+            return "01"
 
         logger.debug("              Ingen verdier funnet. (null)")
         return null
@@ -390,7 +390,7 @@ class PrefillPensjonVedtak : PensjonData() {
                 valuta = "NOK",
 
                 //4.1.7.5              //03 - montly 12/year
-                utbetalingshyppighet = "03",
+                utbetalingshyppighet = "03", //TODO "03" skal være korrekte!!
 
                 //4.1.7.6.1     - Nei
                 utbetalingshyppighetAnnen = null
@@ -524,7 +524,7 @@ class PrefillPensjonVedtak : PensjonData() {
         return Grunnlag(
 
                 //4.1.10 - Nei
-                medlemskap = null,
+                medlemskap = createGrunnladMedlemskap(),
 
                 //4.1.11
                 opptjening = Opptjening(forsikredeAnnen = createOpptjeningForsikredeAnnen(pendata)),
@@ -532,6 +532,13 @@ class PrefillPensjonVedtak : PensjonData() {
                 //4.1.12   $pensjon.vedtak[x].grunnlag.framtidigtrygdetid
                 framtidigtrygdetid = createFramtidigtrygdetid(pendata)
         )
+    }
+
+    //4.1.10 - Nei
+    //må fylles ut manuelt
+    fun createGrunnladMedlemskap(): String? {
+        logger.debug("4.1.10            Basert på friviligperioder (Må fylles ut manuelt) Nei som default")
+        return null
     }
 
     //4.1.12 - creditedPeriodIndicator -

@@ -26,17 +26,16 @@ class RinaActions(private val euxService: EuxService) {
     }
 
     fun isActionPossible(sed: String, euxCaseId: String, keyWord: String, maxLoop: Int = 1): Boolean {
+        logger.debug("Henter RINAaksjoner på sed: $sed, mot euxCaseId: $euxCaseId, leter etter: $keyWord")
         for (i in 1..maxLoop) {
-            logger.debug("Henter RINAaksjoner på sed: $sed, mot euxCaseId: $euxCaseId, leter etter: $keyWord og maxLoop er: $maxLoop og i er: $i")
             val result = getMuligeAksjoner(euxCaseId)
             result.forEach {
                 if (sed == it.dokumentType && keyWord == it.navn) {
-                    logger.debug("Found $keyWord for $sed  exit out.")
+                    logger.debug("Found $keyWord for $sed  exit.")
                     return true
                 }
-                logger.debug("Not found $keyWord for $sed")
             }
-            logger.debug("Prøver igjen etter $waittime ms på å hente opp aksjoner.")
+            logger.debug("Not found, Try again in $waittime ms.")
             Thread.sleep(waittime.toLong())
         }
         logger.debug("Max looping exit with false")

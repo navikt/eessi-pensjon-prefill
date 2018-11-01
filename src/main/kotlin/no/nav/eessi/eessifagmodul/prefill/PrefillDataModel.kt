@@ -8,7 +8,7 @@ import no.nav.eessi.eessifagmodul.models.SED
  *
  * sed, aktoerregister,  psak-saknr, rinanr, institutions (mottaker eg. nav),
  *
- * servives:  aktoerregister, tps, pen, maybe joark, eux-basis.
+ * servives:  aktoerregister, person, pen, maybe joark, eux-basis.
  *
  */
 class PrefillDataModel {
@@ -22,9 +22,12 @@ class PrefillDataModel {
     lateinit var personNr: String
     lateinit var aktoerID: String
 
+    //sakType:
+    lateinit var saktype: String
     //aktoerid og aktoerId for avdod
-    lateinit var avdodAktoerID: String
-    lateinit var avdodPersonnr: String
+    lateinit var avdod: String
+    lateinit var avdodFar: String
+    lateinit var avdodMor: String
 
     //rina
     lateinit var rinaSubject: String
@@ -48,15 +51,27 @@ class PrefillDataModel {
         return institution
     }
 
-    fun isValidEtterlatt(): Boolean {
+    fun erGyldigEtterlatt(): Boolean {
         //TODO finne bedre metode?
         return try {
-            val state = checkNotNull(avdodPersonnr)
-            state.isNotBlank()
+            val state = checkNotNull(avdod)
+            return state.isNotBlank()
         } catch (ex: Exception) {
             false
         }
     }
+
+    fun erForeldreLos(): Boolean {
+        //TODO finne bedre metode?
+        return try {
+            val stateOne = checkNotNull(avdodFar)
+            val stateTwo = checkNotNull(avdodMor)
+            stateOne.isNotBlank() && stateTwo.isNotBlank()
+        } catch (ex: Exception) {
+            false
+        }
+    }
+
 
     fun validSED(sedid: String): Boolean {
         return getSEDid() == sedid

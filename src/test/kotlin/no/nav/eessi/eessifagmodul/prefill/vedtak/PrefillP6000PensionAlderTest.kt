@@ -33,7 +33,7 @@ class PrefillP6000PensionAlderTest: AbstractPensionDataFromPESYSTests("P6000-APU
         assertEquals("2017-05-01" , vedtak?.virkningsdato, "4.1.6  pensjon.vedtak[x].virkningsdato")
         assertEquals("01", vedtak?.type, "4.1.1 vedtak.type")
         assertEquals("02", vedtak?.basertPaa, "4.1.2 vedtak.basertPaa")
-        assertEquals(null, vedtak?.resultat, "4.1.4 vedtak.resultat ")
+        assertEquals("01", vedtak?.resultat, "4.1.4 vedtak.resultat ")
         assertEquals("2017-05-21", vedtak?.kjoeringsdato, "4.1.8 vedtak.kjoeringsdato")
         assertEquals(null, vedtak?.artikkel, "4.1.5 vedtak.artikkel (må fylles ut manuelt nå)")
 

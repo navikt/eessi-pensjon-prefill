@@ -90,10 +90,9 @@ class NavFodselsnummerTest {
     @Test
     fun `not valid pention age young age with DNR`() {
         val fnr = generateRandomFnr(25)
-        val newfnr = "" + "5" + fnr.substring(1, fnr.length)
-        println("RandomFnr: $newfnr")
-        val navfnr = NavFodselsnummer(newfnr)
+        val newfnr = mockDnr(fnr)
 
+        val navfnr = NavFodselsnummer(newfnr)
         assertEquals(25, navfnr.getAge())
         assertEquals(false, navfnr.getValidPentionAge())
     }
@@ -109,13 +108,26 @@ class NavFodselsnummerTest {
     }
 
 
-    private fun generateRandomFnr(yearsToSubtract: Int, indivdnr: String = "433"): String {
+    private fun generateRandomFnr(yearsToSubtract: Int, indivdnr: String = "496"): String {
         val fnrdate = LocalDate.now().minusYears(yearsToSubtract.toLong())
         val y = fnrdate.year.toString()
         val day = fixDigits(fnrdate.dayOfMonth.toString())
         val month = fixDigits(fnrdate.month.value.toString())
         val fixedyear = y.substring(2, y.length)
+        println(day + month + fixedyear + indivdnr + "52")
         return day + month + fixedyear + indivdnr + "52" //43352
+    }
+
+    private fun mockDnr(strFnr: String): String {
+        val nvf = NavFodselsnummer(strFnr)
+        val fdig = nvf.getFirstDigit(strFnr)
+        return when (fdig) {
+            0 -> "4" + strFnr.substring(1, strFnr.length)
+            1 -> "5" + strFnr.substring(1, strFnr.length)
+            2 -> "6" + strFnr.substring(1, strFnr.length)
+            3 -> "7" + strFnr.substring(1, strFnr.length)
+            else -> strFnr
+        }
     }
 
     private fun fixDigits(str: String): String {
