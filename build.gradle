@@ -56,9 +56,15 @@ jar {
 
 configurations {
     xsd
+    developmentOnly
+    runtimeClasspath {
+        extendsFrom developmentOnly
+    }    
 }
 
 dependencies {
+    //devtools
+    developmentOnly("org.springframework.boot:spring-boot-devtools")
 
     // Prometheus
     compile("io.prometheus:simpleclient:${prometheusVersion}")
@@ -107,7 +113,7 @@ dependencies {
 
     // Tjenestespesifikasjoner
     compile("no.nav.tjenester:nav-person-v3-tjenestespesifikasjon:${personV3Version}")
-    xsd("no.nav.pensjon:pensjonsinformasjon-xsd:9.4.3")
+    xsd("no.nav.pensjon:pensjonsinformasjon-xsd:9.4.8")
 
     jaxb ('org.glassfish.jaxb:jaxb-xjc:2.2.11')
     jaxb ('org.glassfish.jaxb:jaxb-runtime:2.2.11')

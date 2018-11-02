@@ -136,7 +136,7 @@ abstract class AbstractPensionDataFromPESYSTests(private val xmlFilename: String
 
         val v1sak = V1Sak()
         v1sak.sakType = ksak // "ALDER"
-        v1sak.isUttakFor67 = false
+        //v1sak.isUttakFor67 = false
         val v1vedtak = V1Vedtak()
 
         v1vedtak.datoFattetVedtak = xmlcal

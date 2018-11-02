@@ -34,8 +34,40 @@ class PensjonsinformasjonService(val pensjonsinformasjonOidcRestTemplate: RestTe
         val response = doRequest("/sak", saksnummer, document.documentToString())
         validateResponse(informationBlocks, response)
         return response
-
     }
+
+    fun hentAltSaker(sakId: String): Pensjonsinformasjon {
+
+        val informationBlocks = listOf(
+//                InformasjonsType.AVDOD,
+//                InformasjonsType.INNGANG_OG_EXPORT,
+                InformasjonsType.PERSON,
+                InformasjonsType.SAK
+//                InformasjonsType.SAKALDER
+//                InformasjonsType.TRYGDEAVTALE,
+//                InformasjonsType.TRYGDETID_AVDOD_FAR_LISTE,
+//                InformasjonsType.TRYGDETID_AVDOD_LISTE,
+//                InformasjonsType.TRYGDETID_AVDOD_MOR_LISTE,
+//                InformasjonsType.TRYGDETID_LISTE,
+//                InformasjonsType.YTELSE_PR_MAANED_LISTE,
+//                InformasjonsType.BRUKER_SAKER_LISTE,
+//                InformasjonsType.EKTEFELLE_PARTNER_SAMBOER_LISTE
+//                InformasjonsType.KRAV_HISTORIKK_LISTE,
+//                InformasjonsType.BRUKERS_BARN_LISTE
+        )
+
+        val document = requestBuilder.getBaseRequestDocument()
+
+        informationBlocks.forEach {
+            requestBuilder.addPensjonsinformasjonElement(document, it)
+        }
+
+        logger.debug("Requestbody:\n${document.documentToString()}")
+        val response = doRequest("/sak", sakId, document.documentToString())
+        validateResponse(informationBlocks, response)
+        return response
+    }
+
 
     fun hentAlt(vedtaksId: String): Pensjonsinformasjon {
 
@@ -44,6 +76,7 @@ class PensjonsinformasjonService(val pensjonsinformasjonOidcRestTemplate: RestTe
                 InformasjonsType.INNGANG_OG_EXPORT,
                 InformasjonsType.PERSON,
                 InformasjonsType.SAK,
+                //InformasjonsType.SAKALDER,
                 InformasjonsType.TRYGDEAVTALE,
                 InformasjonsType.TRYGDETID_AVDOD_FAR_LISTE,
                 InformasjonsType.TRYGDETID_AVDOD_LISTE,
@@ -51,7 +84,12 @@ class PensjonsinformasjonService(val pensjonsinformasjonOidcRestTemplate: RestTe
                 InformasjonsType.TRYGDETID_LISTE,
                 InformasjonsType.VEDTAK,
                 InformasjonsType.VILKARSVURDERING_LISTE,
-                InformasjonsType.YTELSE_PR_MAANED_LISTE)
+                InformasjonsType.YTELSE_PR_MAANED_LISTE
+//                InformasjonsType.BRUKER_SAKER_LISTE,
+//                InformasjonsType.EKTEFELLE_PARTNER_SAMBOER_LISTE,
+//                InformasjonsType.KRAV_HISTORIKK_LISTE,
+//                InformasjonsType.BRUKERS_BARN_LISTE
+        )
 
         val document = requestBuilder.getBaseRequestDocument()
 

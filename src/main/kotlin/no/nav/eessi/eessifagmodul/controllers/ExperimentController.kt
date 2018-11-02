@@ -12,6 +12,7 @@ import no.nav.eessi.eessifagmodul.services.bucbucket.QueryResult
 import no.nav.eessi.eessifagmodul.services.eux.EuxService
 import no.nav.eessi.eessifagmodul.services.pensjonsinformasjon.PensjonsinformasjonService
 import no.nav.eessi.eessifagmodul.services.personv3.PersonV3Service
+import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import no.nav.security.oidc.api.Protected
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonResponse
 import org.springframework.beans.factory.annotation.Autowired
@@ -83,6 +84,12 @@ class ExperimentController {
     fun testPensjonsinformasjon(@PathVariable("vedtaksId") vedtaksId: String): String {
         val response = pensjonsinformasjonService.hentAlt(vedtaksId)
         return response.toString()
+    }
+
+    @GetMapping("/testPensjonsinformasjon/sak/{sakId}")
+    fun testPensjonsinformasjonSak(@PathVariable("sakId") sakId: String): Pensjonsinformasjon {
+        val response = pensjonsinformasjonService.hentAltSaker(sakId)
+        return response
     }
 
     @GetMapping("/testAktoer/{ident}")
