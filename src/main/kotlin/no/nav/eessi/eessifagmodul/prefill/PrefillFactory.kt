@@ -2,6 +2,7 @@ package no.nav.eessi.eessifagmodul.prefill
 
 import no.nav.eessi.eessifagmodul.models.SED
 import no.nav.eessi.eessifagmodul.models.SEDType
+import no.nav.eessi.eessifagmodul.prefill.kravpensjon.PrefillP2000
 import no.nav.eessi.eessifagmodul.prefill.vedtak.PrefillP6000
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -40,10 +41,11 @@ class PrefillFactory {
 
         return when (sedValue) {
             SEDType.P6000 -> {
-                //TODO legge prefill6000 tilbake når klar til test
                 prefill6000
             }
             SEDType.P2000 -> {
+                //prefillDefault
+                //TODO legge prefill2000 tilbake når klar til test
                 prefill2000
             }
             SEDType.P2100 -> {

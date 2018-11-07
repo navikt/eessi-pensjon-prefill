@@ -4,6 +4,8 @@ import org.junit.Test
 import javax.xml.datatype.DatatypeFactory
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
+import kotlin.test.fail
 
 class UtilsTest {
 
@@ -35,4 +37,24 @@ class UtilsTest {
         assertNotNull(toRinaDate)
         assertEquals("2016-01-01", toRinaDate)
     }
+
+    @Test
+    fun `playground testing`() {
+        val barnSEDlist = listOf<String>("P2000", "P2100", "P2200")
+
+        if (barnSEDlist.contains("P6000").not()) {
+            assertTrue(true, "Yes")
+        } else {
+            fail("no")
+        }
+
+        if (barnSEDlist.contains("P2000").not()) {
+            fail("no")
+        } else {
+            assertTrue(true, "Yes")
+        }
+
+
+    }
+
 }

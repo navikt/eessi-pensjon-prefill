@@ -36,7 +36,24 @@ class PensjonsinformasjonService(val pensjonsinformasjonOidcRestTemplate: RestTe
         return response
     }
 
-    fun hentAltSaker(sakId: String): Pensjonsinformasjon {
+    fun hentPersonSak(sakId: String): Pensjonsinformasjon {
+        val informationBlocks = listOf(
+                InformasjonsType.PERSON,
+                InformasjonsType.SAK
+        )
+        val document = requestBuilder.getBaseRequestDocument()
+
+        informationBlocks.forEach {
+            requestBuilder.addPensjonsinformasjonElement(document, it)
+        }
+
+        logger.debug("Requestbody:\n${document.documentToString()}")
+        val response = doRequest("/sak", sakId, document.documentToString())
+        validateResponse(informationBlocks, response)
+        return response
+    }
+
+    fun hentAltSak(sakId: String): Pensjonsinformasjon {
 
         val informationBlocks = listOf(
 //                InformasjonsType.AVDOD,
@@ -50,8 +67,8 @@ class PensjonsinformasjonService(val pensjonsinformasjonOidcRestTemplate: RestTe
 //                InformasjonsType.TRYGDETID_AVDOD_MOR_LISTE,
 //                InformasjonsType.TRYGDETID_LISTE,
 //                InformasjonsType.YTELSE_PR_MAANED_LISTE,
-//                InformasjonsType.BRUKER_SAKER_LISTE,
-//                InformasjonsType.EKTEFELLE_PARTNER_SAMBOER_LISTE
+//                InformasjonsType.BRUKER_SAKER_LISTE
+//                InformasjonsType.EKTEFELLE_PARTNER_SAMBOER_LISTE,
 //                InformasjonsType.KRAV_HISTORIKK_LISTE,
 //                InformasjonsType.BRUKERS_BARN_LISTE
         )
@@ -75,8 +92,8 @@ class PensjonsinformasjonService(val pensjonsinformasjonOidcRestTemplate: RestTe
                 InformasjonsType.AVDOD,
                 InformasjonsType.INNGANG_OG_EXPORT,
                 InformasjonsType.PERSON,
-                InformasjonsType.SAK,
-                //InformasjonsType.SAKALDER,
+                //InformasjonsType.SAK,
+                InformasjonsType.SAKALDER,
                 InformasjonsType.TRYGDEAVTALE,
                 InformasjonsType.TRYGDETID_AVDOD_FAR_LISTE,
                 InformasjonsType.TRYGDETID_AVDOD_LISTE,

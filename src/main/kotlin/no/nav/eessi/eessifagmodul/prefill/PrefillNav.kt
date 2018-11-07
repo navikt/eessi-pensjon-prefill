@@ -11,6 +11,7 @@ import java.util.*
 class PrefillNav(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS) : Prefill<Nav> {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillNav::class.java) }
+    private val barnSEDlist = listOf<String>("P2000", "P2100", "P2200")
 
     //TODO hva vil avsender ID på RINA være for NAV-PEN?
     //vil dette hentes fra Fasit? eller Rina?
@@ -57,8 +58,8 @@ class PrefillNav(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS)
     }
 
     private fun createBarnlistefraTPS(utfyllingData: PrefillDataModel): List<BarnItem> {
-        if (utfyllingData.getSEDid() != "P2100") {
-            logger.debug("8.1           SKIP Preutfylling barn, ikke P2100")
+        if (barnSEDlist.contains(utfyllingData.getSEDid()).not()) {
+            logger.debug("8.1           SKIP Preutfylling barn, ikke P2x00")
             return listOf()
         }
         logger.debug("8.1           Preutfylling barn")

@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component
 
 @Component
 /**
- * Hjelpe klasse for vedtak som fyller ut NAV-SED med pensjondata fra PESYS.
+ * Hjelpe klasse for vedtak som fyller ut NAV-SED-P6000 med pensjondata fra PESYS.
  */
 class PensionDataFromPESYS(private val pensjonsinformasjonService: PensjonsinformasjonService) : PensjonData(), Prefill<Pensjon> {
 

@@ -1,9 +1,6 @@
 package no.nav.eessi.eessifagmodul.controllers
 
-import no.nav.eessi.eessifagmodul.models.IkkeGyldigKallException
-import no.nav.eessi.eessifagmodul.models.InstitusjonItem
-import no.nav.eessi.eessifagmodul.models.RINAaksjoner
-import no.nav.eessi.eessifagmodul.models.SED
+import no.nav.eessi.eessifagmodul.models.*
 import no.nav.eessi.eessifagmodul.prefill.PrefillDataModel
 import no.nav.eessi.eessifagmodul.services.aktoerregister.AktoerregisterService
 import no.nav.eessi.eessifagmodul.services.bucbucket.BucBucketService
@@ -88,8 +85,37 @@ class ExperimentController {
 
     @GetMapping("/testPensjonsinformasjon/sak/{sakId}")
     fun testPensjonsinformasjonSak(@PathVariable("sakId") sakId: String): Pensjonsinformasjon {
-        val response = pensjonsinformasjonService.hentAltSaker(sakId)
+        val response = pensjonsinformasjonService.hentAltSak(sakId)
         return response
+    }
+
+    @GetMapping("/testPensjonPerson/{sakId}")
+    fun testPensjonPersonInfo(@PathVariable("sakId") sakId: String): PersonDetail {
+        val pinfo = pensjonsinformasjonService.hentPersonSak(sakId)
+
+        val sakType = pinfo.sak.sakType
+
+        var bucId: String
+        when (sakType) {
+            "ALDER" -> bucId = "P_BUC_01"
+            "GJENLEV" -> bucId = "P_BUC_02"
+            "UFOREP" -> bucId = "P_BUC_03"
+            else -> bucId = ""
+        }
+
+        val fnr = pinfo.person.pid
+        val aktoerId = aktoerregisterService.hentGjeldendeAktorIdForNorskIdent(fnr)
+        val personv3 = personV3Service.hentPerson(fnr)
+        val personNavn = personv3.person.personnavn.sammensattNavn
+
+        return PersonDetail(
+                sakType = sakType,
+                buc = bucId,
+                aktoerId = aktoerId,
+                fnr = fnr,
+                personNavn = personNavn,
+                euxCaseId = null
+        )
     }
 
     @GetMapping("/testAktoer/{ident}")

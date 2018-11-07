@@ -61,6 +61,12 @@ data class BarnItem(
         var relasjontilbruker: String? = null
 )
 
+data class Barn(
+        var fnr: String?,
+        var aktoer: String?,
+        var type: String?
+)
+
 data class Ektefelle(
         var mor: Foreldre? = null,
         var person: Person? = null,

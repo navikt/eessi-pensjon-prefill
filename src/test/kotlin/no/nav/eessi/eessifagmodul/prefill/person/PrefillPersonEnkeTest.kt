@@ -82,7 +82,7 @@ class PrefillPersonEnkeTest : PersonDataFromTPS(
         assertEquals("JESSINE TORDNU", sed.nav?.bruker?.person?.fornavn)
         assertEquals("BOUWMANS", sed.nav?.bruker?.person?.etternavn)
         assertEquals("f", sed.nav?.bruker?.person?.kjoenn)
-        assertEquals(0, sed.nav?.barn?.size)
+        assertEquals(2, sed.nav?.barn?.size)
 
     }
 
@@ -124,7 +124,7 @@ class PrefillPersonEnkeTest : PersonDataFromTPS(
         assertEquals("JESSINE TORDNU", sed.nav?.bruker?.person?.fornavn)
         assertEquals("BOUWMANS", sed.nav?.bruker?.person?.etternavn)
         assertEquals("f", sed.nav?.bruker?.person?.kjoenn)
-        assertEquals(0, sed.nav?.barn?.size)
+        assertEquals(2, sed.nav?.barn?.size)
 
         assertEquals("P2200", sed.sed)
 

@@ -1,5 +1,15 @@
 package no.nav.eessi.eessifagmodul.models
 
+
+data class PersonDetail(
+        var sakType: String? = null,
+        var buc: String? = null,
+        var personNavn: String? = null,
+        var fnr: String? = null,
+        var aktoerId: String? = null,
+        var euxCaseId: String? = null
+)
+
 data class Pensjon(
         var reduksjon: List<ReduksjonItem>? = null,
         var vedtak: List<VedtakItem>? = null,

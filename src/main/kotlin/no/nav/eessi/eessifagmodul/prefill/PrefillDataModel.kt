@@ -1,5 +1,6 @@
 package no.nav.eessi.eessifagmodul.prefill
 
+import no.nav.eessi.eessifagmodul.models.Barn
 import no.nav.eessi.eessifagmodul.models.InstitusjonItem
 import no.nav.eessi.eessifagmodul.models.SED
 
@@ -24,7 +25,9 @@ class PrefillDataModel {
 
     //data fra pesys
     lateinit var saktype: String
+    lateinit var barnlist: List<Barn>
     //aktoerid og aktoerId for avdod
+
     lateinit var avdod: String
     lateinit var avdodFar: String
     lateinit var avdodMor: String
