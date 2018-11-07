@@ -33,6 +33,9 @@ resources:
 
 fasitResources:
   used:
+  - alias: Pensjonsinformasjon
+    resourceType: RestService
+
   - alias: aktoerregister.api.v1
     resourceType: RestService
 
