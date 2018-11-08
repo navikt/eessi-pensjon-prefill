@@ -23,23 +23,23 @@ class RequestResponseLoggerInterceptor : ClientHttpRequestInterceptor {
 
     private fun logRequest(request: HttpRequest, body: ByteArray) {
         if (log.isDebugEnabled) {
-            log.debug("===========================request begin================================================")
-            log.debug("URI         : {}", request.uri)
-            log.debug("Method      : {}", request.method)
-            log.debug("Headers     : {}", request.headers)
-            log.debug("Request body: {}", String(body))
-            log.debug("==========================request end================================================")
+            log.debug("\n===========================request begin================================================\n"
+                    + "URI         : " + request.uri + "\n"
+                    + "Method      : " + request.method + "\n"
+                    + "Headers     : " + request.headers + "\n"
+                    + "Request body: " + String(body) + "\n"
+                    + "==========================request end================================================")
         }
     }
 
     private fun logResponse(response: ClientHttpResponse) {
         if (log.isDebugEnabled) {
-            log.debug("============================response begin==========================================")
-            log.debug("Status code  : {}", response.statusCode)
-            log.debug("Status text  : {}", response.statusText)
-            log.debug("Headers      : {}", response.headers)
-            log.debug("Response body: {}", StreamUtils.copyToString(response.body, Charset.defaultCharset()))
-            log.debug("=======================response end=================================================")
+            log.debug("\n============================response begin=========================================="
+                    + "Status code  : " + response.statusCode + "\n"
+                    + "Status text  : " + response.statusText + "\n"
+                    + "Headers      : " + response.headers + "\n"
+                    + "Response body: " + StreamUtils.copyToString(response.body, Charset.defaultCharset()) + "\n"
+                    + "=======================response end=================================================")
         }
     }
 }
