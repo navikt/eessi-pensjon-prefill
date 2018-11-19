@@ -47,7 +47,7 @@ node {
     stage("deploy") {
         build([
                 job       : 'nais-deploy-pipeline',
-                wait      : false,
+                wait      : true,
                 parameters: [
                         string(name: 'APP', value: "eessi-fagmodul"),
                         string(name: 'REPO', value: "navikt/eessi-pensjon-fagmodul"),
@@ -60,6 +60,6 @@ node {
     }
 
     stage("update api-gw") {
-        apigw.registerFromFSSToSBSInTestEnvironment("eessi-fagmodul", "eessifagmodulservice", "eessi-pensjon-frontend-api", "t10")
+        apigw.registerFromFSSToSBSInTestEnvironment("eessi-fagmodul", "eessifagmodulservice", "eessi-pensjon-frontend-api-sbs", "t10")
     }
 }
