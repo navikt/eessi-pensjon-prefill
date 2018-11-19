@@ -60,6 +60,6 @@ node {
     }
 
     stage("update api-gw") {
-        apigw.registerFromFSSToSBSInTestEnvironment("eessi-fagmodul", "eessifagmodulservice", "eessi-pensjon-frontend-api", "t10")
+        apigw.registerFromFSSToSBSInTestEnvironment("eessi-fagmodul", "eessifagmodulservice", "eessi-pensjon-frontend-api-sbs", "t10")
     }
 }
