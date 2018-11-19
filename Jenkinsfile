@@ -58,7 +58,7 @@ node {
             def version = sh(script: 'git describe --abbrev=0', returnStdout: true).trim()
             build([
                     job       : 'nais-deploy-pipeline',
-                    wait      : false,
+                    wait      : true,
                     parameters: [
                             string(name: 'APP', value: "eessi-fagmodul"),
                             string(name: 'REPO', value: "navikt/eessi-pensjon-fagmodul"),
