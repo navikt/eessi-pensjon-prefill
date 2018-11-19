@@ -53,13 +53,13 @@ node {
                         string(name: 'REPO', value: "navikt/eessi-pensjon-fagmodul"),
                         string(name: 'VERSION', value: commitHash),
                         string(name: 'DEPLOY_REF', value: commitHash),
-                        string(name: 'NAMESPACE', value: 't8'),
-                        string(name: 'DEPLOY_ENV', value: 't8')
+                        string(name: 'NAMESPACE', value: 't10'),
+                        string(name: 'DEPLOY_ENV', value: 't10')
                 ]
         ])
     }
 
     stage("update api-gw") {
-        apigw.registerFromFSSToSBSInTestEnvironment("eessi-fagmodul", "eessifagmodulservice", "eessi-pensjon-frontend-api", "t8")
+        apigw.registerFromFSSToSBSInTestEnvironment("eessi-fagmodul", "eessifagmodulservice", "eessi-pensjon-frontend-api", "t10")
     }
 }
