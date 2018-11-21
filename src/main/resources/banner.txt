@@ -8,8 +8,3 @@
     EESSI-APP : ${app.name}:${app.version}                          :: Spring Boot ::      (${spring-boot.version})
 
              -=<>=- Electronic Exchange of Social Security Information  -=<>=-
-
-    EUX : ${euxbasis.v1.url}
-    PEN : ${pensjonsinformasjon.api.v1.url}
-    TPS : ${virksomhet.person.v3.endpointurl}
-

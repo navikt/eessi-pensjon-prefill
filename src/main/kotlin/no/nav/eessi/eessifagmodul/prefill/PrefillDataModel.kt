@@ -1,5 +1,6 @@
 package no.nav.eessi.eessifagmodul.prefill
 
+import no.nav.eessi.eessifagmodul.models.AndreinstitusjonerItem
 import no.nav.eessi.eessifagmodul.models.Barn
 import no.nav.eessi.eessifagmodul.models.InstitusjonItem
 import no.nav.eessi.eessifagmodul.models.SED
@@ -39,6 +40,9 @@ class PrefillDataModel {
     lateinit var sed: SED
     lateinit var institution: List<InstitusjonItem>
 
+    //extra hjelpe parametere for utfylling
+    var andreInstitusjon: AndreinstitusjonerItem? = null
+
     //div payload seddata json
     val partSedAsJson: MutableMap<String, String> = mutableMapOf()
 
@@ -46,8 +50,8 @@ class PrefillDataModel {
         return sed.sed!!
     }
 
-    fun getPartSEDasJson(key: String): String {
-        return partSedAsJson[key].orEmpty()
+    fun getPartSEDasJson(key: String): String? {
+        return partSedAsJson[key]
     }
 
     fun getInstitutionsList(): List<InstitusjonItem> {
@@ -75,8 +79,4 @@ class PrefillDataModel {
         }
     }
 
-
-    fun validSED(sedid: String): Boolean {
-        return getSEDid() == sedid
-    }
 }

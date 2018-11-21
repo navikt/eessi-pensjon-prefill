@@ -1,4 +1,4 @@
-package no.nav.eessi.eessifagmodul.prefill
+package no.nav.eessi.eessifagmodul.prefill.nav
 
 import no.nav.eessi.eessifagmodul.models.*
 import no.nav.eessi.eessifagmodul.models.Bruker

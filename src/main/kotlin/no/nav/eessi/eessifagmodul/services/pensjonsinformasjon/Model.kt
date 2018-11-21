@@ -53,8 +53,8 @@ enum class InformasjonsType : Metadata {
         override fun elementName() = "sakAlder"
         override fun typeName() = "v1.SakAlder"
     },
-    BRUKER_SAKER_LISTE {
-        override fun elementName() = "brukerssakerliste"
+    BRUKERS_SAKER_LISTE {
+        override fun elementName() = "brukersSakerListe"
         override fun typeName() = "v1.BrukersSakerListe"
     },
     EKTEFELLE_PARTNER_SAMBOER_LISTE {

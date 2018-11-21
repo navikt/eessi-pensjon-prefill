@@ -6,8 +6,8 @@ import com.nhaarman.mockito_kotlin.whenever
 import no.nav.eessi.eessifagmodul.models.InstitusjonItem
 import no.nav.eessi.eessifagmodul.models.SED
 import no.nav.eessi.eessifagmodul.prefill.PrefillDataModel
-import no.nav.eessi.eessifagmodul.prefill.PrefillNav
-import no.nav.eessi.eessifagmodul.prefill.PrefillPersonDataFromTPS
+import no.nav.eessi.eessifagmodul.prefill.nav.PrefillNav
+import no.nav.eessi.eessifagmodul.prefill.nav.PrefillPersonDataFromTPS
 import no.nav.eessi.eessifagmodul.services.LandkodeService
 import no.nav.eessi.eessifagmodul.services.PostnummerService
 import no.nav.eessi.eessifagmodul.services.personv3.PersonV3Service
@@ -16,22 +16,29 @@ import no.nav.eessi.eessifagmodul.utils.typeRefs
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.*
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonResponse
 import org.junit.Before
+import org.junit.runner.RunWith
 import org.mockito.Mock
+import org.mockito.junit.MockitoJUnitRunner
 import org.springframework.util.ResourceUtils
 
+@RunWith(MockitoJUnitRunner::class)
 abstract class PersonDataFromTPS(private val mocktps: Set<MockTPS>) {
 
     @Mock
-    protected lateinit var mockPersonV3Service: PersonV3Service
+    lateinit var mockPersonV3Service: PersonV3Service
 
     protected lateinit var preutfyllingTPS: PrefillPersonDataFromTPS
 
+    @Mock
     protected lateinit var prefillNav: PrefillNav
 
     @Before
     fun setup() {
         preutfyllingTPS = mockPrefillPersonDataFromTPS()
         prefillNav = PrefillNav(preutfyllingTPS)
+
+        prefillNav.institutionid = "NO:noinst002"
+        prefillNav.institutionnavn = "NOINST002, NO INST002, NO"
     }
 
 
@@ -102,7 +109,7 @@ abstract class PersonDataFromTPS(private val mocktps: Set<MockTPS>) {
         return v3PersonResponse
     }
 
-    private fun mockPrefillPersonDataFromTPS(): PrefillPersonDataFromTPS {
+    fun mockPrefillPersonDataFromTPS(): PrefillPersonDataFromTPS {
         mocktps.forEach {
             whenever(mockPersonV3Service.hentPerson(it.mockPin)).thenReturn(initMockHentPersonResponse(it.mockFile))
         }

@@ -2,6 +2,7 @@ package no.nav.eessi.eessifagmodul.services.pensjonsinformasjon
 
 
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
+import no.nav.pensjon.v1.sak.V1Sak
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
@@ -19,27 +20,22 @@ private val logger = LoggerFactory.getLogger(PensjonsinformasjonService::class.j
 @Service
 class PensjonsinformasjonService(val pensjonsinformasjonOidcRestTemplate: RestTemplate, val requestBuilder: RequestBuilder) {
 
-    fun hentPerson(saksnummer: String): Pensjonsinformasjon {
-        val informationBlocks = listOf(
-                InformasjonsType.AVDOD,
-                InformasjonsType.PERSON)
-
-        val document = requestBuilder.getBaseRequestDocument()
-
-        informationBlocks.forEach {
-            requestBuilder.addPensjonsinformasjonElement(document, it)
+    fun hentAltPaaSak(sakId: String = "", pendata: Pensjonsinformasjon): V1Sak {
+        logger.debug("Pendata: $pendata")
+        if (sakId.isNotBlank()) {
+            pendata.brukersSakerListe.brukersSakerListe.forEach {
+                if (sakId == it.sakId.toString())
+                    return it
+            }
         }
-
-        logger.debug("Requestbody:\n${document.documentToString()}")
-        val response = doRequest("/sak", saksnummer, document.documentToString())
-        validateResponse(informationBlocks, response)
-        return response
+        return V1Sak()
     }
 
-    fun hentPersonSak(sakId: String): Pensjonsinformasjon {
+    fun hentAltPaaFnr(fnr: String): Pensjonsinformasjon {
+        //APIet skal ha urlen {host}:{port}/pensjon-ws/api/pensjonsinformasjon/v1/{ressurs}?sakId=123+fom=2018-01-01+tom=2018-28-02.
+
         val informationBlocks = listOf(
-                InformasjonsType.PERSON,
-                InformasjonsType.SAK
+                InformasjonsType.BRUKERS_SAKER_LISTE
         )
         val document = requestBuilder.getBaseRequestDocument()
 
@@ -48,51 +44,19 @@ class PensjonsinformasjonService(val pensjonsinformasjonOidcRestTemplate: RestTe
         }
 
         logger.debug("Requestbody:\n${document.documentToString()}")
-        val response = doRequest("/sak", sakId, document.documentToString())
+        val response = doRequest("/fnr/", fnr, document.documentToString())
         validateResponse(informationBlocks, response)
-        return response
-    }
-
-    fun hentAltSak(sakId: String): Pensjonsinformasjon {
-
-        val informationBlocks = listOf(
-//                InformasjonsType.AVDOD,
-//                InformasjonsType.INNGANG_OG_EXPORT,
-                InformasjonsType.PERSON,
-                InformasjonsType.SAK
-//                InformasjonsType.SAKALDER
-//                InformasjonsType.TRYGDEAVTALE,
-//                InformasjonsType.TRYGDETID_AVDOD_FAR_LISTE,
-//                InformasjonsType.TRYGDETID_AVDOD_LISTE,
-//                InformasjonsType.TRYGDETID_AVDOD_MOR_LISTE,
-//                InformasjonsType.TRYGDETID_LISTE,
-//                InformasjonsType.YTELSE_PR_MAANED_LISTE,
-//                InformasjonsType.BRUKER_SAKER_LISTE
-//                InformasjonsType.EKTEFELLE_PARTNER_SAMBOER_LISTE,
-//                InformasjonsType.KRAV_HISTORIKK_LISTE,
-//                InformasjonsType.BRUKERS_BARN_LISTE
-        )
-
-        val document = requestBuilder.getBaseRequestDocument()
-
-        informationBlocks.forEach {
-            requestBuilder.addPensjonsinformasjonElement(document, it)
-        }
-
-        logger.debug("Requestbody:\n${document.documentToString()}")
-        val response = doRequest("/sak", sakId, document.documentToString())
-        validateResponse(informationBlocks, response)
+        logger.debug("Response: $response")
         return response
     }
 
 
-    fun hentAlt(vedtaksId: String): Pensjonsinformasjon {
+    fun hentAltPaaVedtak(vedtaksId: String): Pensjonsinformasjon {
 
         val informationBlocks = listOf(
                 InformasjonsType.AVDOD,
                 InformasjonsType.INNGANG_OG_EXPORT,
                 InformasjonsType.PERSON,
-                //InformasjonsType.SAK,
                 InformasjonsType.SAKALDER,
                 InformasjonsType.TRYGDEAVTALE,
                 InformasjonsType.TRYGDETID_AVDOD_FAR_LISTE,
@@ -102,10 +66,6 @@ class PensjonsinformasjonService(val pensjonsinformasjonOidcRestTemplate: RestTe
                 InformasjonsType.VEDTAK,
                 InformasjonsType.VILKARSVURDERING_LISTE,
                 InformasjonsType.YTELSE_PR_MAANED_LISTE
-//                InformasjonsType.BRUKER_SAKER_LISTE,
-//                InformasjonsType.EKTEFELLE_PARTNER_SAMBOER_LISTE,
-//                InformasjonsType.KRAV_HISTORIKK_LISTE,
-//                InformasjonsType.BRUKERS_BARN_LISTE
         )
 
         val document = requestBuilder.getBaseRequestDocument()
@@ -144,7 +104,8 @@ class PensjonsinformasjonService(val pensjonsinformasjonOidcRestTemplate: RestTe
             }
             throw RuntimeException("Received ${responseEntity.statusCode} ${responseEntity.statusCode.reasonPhrase} from pensjonsinformasjon")
         }
-//        logger.debug("Responsebody:\n${responseEntity.body}")
+
+        logger.debug("Responsebody:\n${responseEntity.body}")
 
         val context = JAXBContext.newInstance(Pensjonsinformasjon::class.java)
         val unmarshaller = context.createUnmarshaller()

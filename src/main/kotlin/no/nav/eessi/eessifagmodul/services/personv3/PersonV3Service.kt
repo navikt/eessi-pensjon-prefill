@@ -43,7 +43,6 @@ class PersonV3Service(val service: PersonV3, val oidcRequestContextHolder: OIDCR
                     NorskIdent().withIdent(fnr))
             )
         }
-
         return service.hentGeografiskTilknytning(request)
     }
 

@@ -10,6 +10,7 @@ import no.nav.eessi.eessifagmodul.services.eux.EuxService
 import no.nav.eessi.eessifagmodul.services.pensjonsinformasjon.PensjonsinformasjonService
 import no.nav.eessi.eessifagmodul.services.personv3.PersonV3Service
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
+import no.nav.pensjon.v1.sak.V1Sak
 import no.nav.security.oidc.api.Protected
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonResponse
 import org.springframework.beans.factory.annotation.Autowired
@@ -79,40 +80,42 @@ class ExperimentController {
 
     @GetMapping("/testPensjonsinformasjon/{vedtaksId}")
     fun testPensjonsinformasjon(@PathVariable("vedtaksId") vedtaksId: String): String {
-        val response = pensjonsinformasjonService.hentAlt(vedtaksId)
+        val response = pensjonsinformasjonService.hentAltPaaVedtak(vedtaksId)
         return response.toString()
     }
 
-    @GetMapping("/testPensjonsinformasjon/sak/{sakId}")
-    fun testPensjonsinformasjonSak(@PathVariable("sakId") sakId: String): Pensjonsinformasjon {
-        val response = pensjonsinformasjonService.hentAltSak(sakId)
-        return response
+    @GetMapping("/testPensjonsinformasjonkrav/{fnr}")
+    fun testPensjonsinformasjonSakFnr(@PathVariable("fnr") fnr: String): Pensjonsinformasjon {
+        return pensjonsinformasjonService.hentAltPaaFnr(fnr)
     }
 
-    @GetMapping("/testPensjonPerson/{sakId}")
-    fun testPensjonPersonInfo(@PathVariable("sakId") sakId: String): PersonDetail {
-        val pinfo = pensjonsinformasjonService.hentPersonSak(sakId)
+    @GetMapping("/testPensjonsinformasjonkrav/{fnr}/{sakid}")
+    fun testPensjonsinformasjonSakFnrOgSak(@PathVariable("fnr") fnr: String, @PathVariable("sakid") sakId: String): V1Sak {
+        return pensjonsinformasjonService.hentAltPaaSak(sakId, pensjonsinformasjonService.hentAltPaaFnr(fnr))
+    }
 
-        val sakType = pinfo.sak.sakType
+    @GetMapping("/testPensjonPerson/{fnr}/{sakId}")
+    fun testPensjonPersonInfo(@PathVariable("fnr") fnrId: String, @PathVariable("sakId") sakId: String): PersonDetail {
+        val vSak = pensjonsinformasjonService.hentAltPaaSak(sakId, pensjonsinformasjonService.hentAltPaaFnr(fnrId))
 
-        var bucId: String
-        when (sakType) {
-            "ALDER" -> bucId = "P_BUC_01"
-            "GJENLEV" -> bucId = "P_BUC_02"
-            "UFOREP" -> bucId = "P_BUC_03"
-            else -> bucId = ""
+        val sakType = vSak.sakType
+
+        val bucId: String
+        bucId = when (sakType) {
+            "ALDER" -> "P_BUC_01"
+            "GJENLEV" -> "P_BUC_02"
+            "UFOREP" -> "P_BUC_03"
+            else -> ""
         }
-
-        val fnr = pinfo.person.pid
-        val aktoerId = aktoerregisterService.hentGjeldendeAktorIdForNorskIdent(fnr)
-        val personv3 = personV3Service.hentPerson(fnr)
+        val aktoerId = aktoerregisterService.hentGjeldendeAktorIdForNorskIdent(fnrId)
+        val personv3 = personV3Service.hentPerson(fnrId)
         val personNavn = personv3.person.personnavn.sammensattNavn
 
         return PersonDetail(
                 sakType = sakType,
                 buc = bucId,
                 aktoerId = aktoerId,
-                fnr = fnr,
+                fnr = fnrId,
                 personNavn = personNavn,
                 euxCaseId = null
         )
@@ -161,7 +164,7 @@ class ExperimentController {
             throw IkkeGyldigKallException("Ikke MOCK!")
         }
         val korrid = UUID.randomUUID()
-        val penSaksnr = request.sakId ?: throw IkkeGyldigKallException("Mangler pensjonSaksnr")
+        val penSaksnr = request.sakId
         val sedObj = mockSED(request)
 
         return if (request.euxCaseId != null) {

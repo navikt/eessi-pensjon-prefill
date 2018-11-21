@@ -28,7 +28,9 @@
     </pen:person>
     <pen:sak>
         <sak:sakType>string</sak:sakType>
-        <sak:uttakFor67>true</sak:uttakFor67>
+        <!--
+                <sak:uttakFor67>true</sak:uttakFor67>
+        -->
     </pen:sak>
     <pen:trygdeavtale>
         <try:erArt10BruktGP>false</try:erArt10BruktGP>

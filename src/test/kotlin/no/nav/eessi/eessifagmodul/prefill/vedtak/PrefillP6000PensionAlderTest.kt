@@ -8,17 +8,13 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 @RunWith(MockitoJUnitRunner::class)
-class PrefillP6000PensionAlderTest: AbstractPensionDataFromPESYSTests("P6000-APUtland-301.xml") {
-
+class PrefillP6000PensionAlderTest : AbstractMockVedtakPensionHelper("P6000-APUtland-301.xml") {
 
     @Test
     fun `forventet korrekt utfylling av Pensjon objekt på Alderpensjon`() {
         prefill = generatePrefillData(68, "P6000")
 
-        //val dataFromPESYS1 = mockPrefillP6000PensionDataFromPESYS("P6000-APUtland-301.xml")
-        //val result = dataFromPESYS1.prefill(prefill)
-
-        val result = dataFromPESYS1.prefill(prefill)
+        val result = dataFromPESYS.prefill(prefill)
 
         debugPrintFinalResult(result)
 
@@ -60,7 +56,10 @@ class PrefillP6000PensionAlderTest: AbstractPensionDataFromPESYSTests("P6000-APU
         assertEquals("six weeks from the date the decision is received", dataof)
 
         assertEquals("2017-05-21", tillegg?.dato)
-        assertEquals(null, tillegg?.andreinstitusjoner?.get(0)?.institusjonsid)
+        assertEquals("NO", tillegg?.andreinstitusjoner?.get(0)?.institusjonsid)
+        assertEquals("[NO] NAV NORGE", tillegg?.andreinstitusjoner?.get(0)?.institusjonsnavn)
+        assertEquals("Postboks 6600 Etterstad", tillegg?.andreinstitusjoner?.get(0)?.institusjonsadresse)
+        assertEquals("0607", tillegg?.andreinstitusjoner?.get(0)?.postnummer)
 
     }
 
@@ -68,7 +67,7 @@ class PrefillP6000PensionAlderTest: AbstractPensionDataFromPESYSTests("P6000-APU
     fun `forventet createVedtakTypePensionWithRule verdi`() {
         prefill = generatePrefillData(68, "P6000")
         //dataFromPESYS1.getPensjoninformasjonFraVedtak("23123123")
-        val result = dataFromPESYS1.pensjonVedtak.createVedtakTypePensionWithRule(pendata)
+        val result = dataFromPESYS.pensjonVedtak.createVedtakTypePensionWithRule(pendata)
         assertEquals("01", result)
     }
 
@@ -105,8 +104,11 @@ class PrefillP6000PensionAlderTest: AbstractPensionDataFromPESYSTests("P6000-APU
 
     @Test
     fun `forventer "13482" dager i sum summerTrygdeTid`() {
-        val dataFromPESYS1 = mockPrefillP6000PensionDataFromPESYS("P6000-APUtland-301.xml")
-        val pendata = dataFromPESYS1.getPensjoninformasjonFraVedtak("342342342234")
+        val dataFromPESYS1 = mockPrefillPensionDataFromPESYS("P6000-APUtland-301.xml")
+
+        prefill.vedtakId = "121341234234"
+
+        val pendata = dataFromPESYS1.getPensjoninformasjonFraVedtak(prefill)
 
         val sumResult = dataFromPESYS1.summerTrygdeTid(pendata.trygdetidListe)
         assertTrue( 13400 < sumResult)
@@ -128,9 +130,9 @@ class PrefillP6000PensionAlderTest: AbstractPensionDataFromPESYSTests("P6000-APU
     @Test
     fun `sjekke enum correct value`() {
 
-        val sakType = PensjonData.KSAK.valueOf("ALDER")
+        val sakType = VedtakPensjonData.KSAK.valueOf("ALDER")
 
-        assertEquals(sakType, PensjonData.KSAK.ALDER)
+        assertEquals(sakType, VedtakPensjonData.KSAK.ALDER)
 
     }
 

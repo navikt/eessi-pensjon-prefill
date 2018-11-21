@@ -95,24 +95,15 @@ class ApiController(private val euxService: EuxService, private val prefillServi
 
     }
 
-    private fun isValidSEDType(input: String): Boolean {
-        return try {
-            SEDType.valueOf(input)
-            true
-        } catch (ex: EnumConstantNotPresentException) {
-            false
-        }
-    }
-
     //validatate request and convert to PrefillDataModel
     fun buildPrefillDataModelOnExisting(request: ApiRequest): PrefillDataModel {
         return when {
-            request.sakId == null -> throw IkkeGyldigKallException("Mangler Saksnummer")
+            //request.sakId == null -> throw IkkeGyldigKallException("Mangler Saksnummer")
             request.sed == null -> throw IkkeGyldigKallException("Mangler SED")
             request.aktoerId == null -> throw IkkeGyldigKallException("Mangler AktoerID")
             request.euxCaseId == null -> throw IkkeGyldigKallException("Mangler euxCaseId (RINANR)")
 
-            isValidSEDType(request.sed) -> {
+            SEDType.isValidSEDType(request.sed) -> {
                 println("ALL SED on existin Rina -> SED: ${request.sed} -> euxCaseId: ${request.sakId}")
                 val pinid = hentAktoerIdPin(request.aktoerId)
                 PrefillDataModel().apply {
@@ -133,7 +124,7 @@ class ApiController(private val euxService: EuxService, private val prefillServi
     //validatate request and convert to PrefillDataModel
     fun buildPrefillDataModelOnNew(request: ApiRequest): PrefillDataModel {
         return when {
-            request.sakId == null -> throw IkkeGyldigKallException("Mangler Saksnummer")
+            //request.sakId == null -> throw IkkeGyldigKallException("Mangler Saksnummer")
             request.sed == null -> throw IkkeGyldigKallException("Mangler SED")
             request.aktoerId == null -> throw IkkeGyldigKallException("Mangler AktoerID")
             request.buc == null -> throw IkkeGyldigKallException("Mangler BUC")
@@ -141,7 +132,7 @@ class ApiController(private val euxService: EuxService, private val prefillServi
             request.institutions == null -> throw IkkeGyldigKallException("Mangler Institusjoner")
 
             //Denne validering og utfylling kan benyttes på SED P2000,P2100,P2200
-            isValidSEDType(request.sed) -> {
+            SEDType.isValidSEDType(request.sed) -> {
                 println("ALL SED on new RinaCase -> SED: ${request.sed}")
                 val pinid = hentAktoerIdPin(request.aktoerId)
                 PrefillDataModel().apply {
@@ -163,11 +154,11 @@ class ApiController(private val euxService: EuxService, private val prefillServi
     //validatate request and convert to PrefillDataModel
     fun buildPrefillDataModelConfirm(request: ApiRequest): PrefillDataModel {
         return when {
-            request.sakId == null -> throw IkkeGyldigKallException("Mangler Saksnummer")
+            //request.sakId == null -> throw IkkeGyldigKallException("Mangler Saksnummer")
             request.sed == null -> throw IkkeGyldigKallException("Mangler SED")
             request.aktoerId == null -> throw IkkeGyldigKallException("Mangler AktoerID")
 
-            isValidSEDType(request.sed) -> {
+            SEDType.isValidSEDType(request.sed) -> {
                 PrefillDataModel().apply {
                     penSaksnummer = request.sakId
                     sed = SED.create(request.sed)
@@ -190,7 +181,7 @@ class ApiController(private val euxService: EuxService, private val prefillServi
     }
 
     data class ApiRequest(
-            val sakId: String? = null,
+            val sakId: String,
             val vedtakId: String? = null,
             val kravId: String? = null,
             val aktoerId: String? = null,

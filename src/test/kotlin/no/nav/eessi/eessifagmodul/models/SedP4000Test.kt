@@ -5,8 +5,8 @@ import com.nhaarman.mockito_kotlin.whenever
 import no.nav.eessi.eessifagmodul.controllers.ApiController
 import no.nav.eessi.eessifagmodul.prefill.PrefillDataModel
 import no.nav.eessi.eessifagmodul.prefill.PrefillP4000
-import no.nav.eessi.eessifagmodul.prefill.PrefillPerson
 import no.nav.eessi.eessifagmodul.prefill.PrefillSED
+import no.nav.eessi.eessifagmodul.prefill.nav.PrefillPerson
 import no.nav.eessi.eessifagmodul.services.PrefillService
 import no.nav.eessi.eessifagmodul.services.aktoerregister.AktoerregisterService
 import no.nav.eessi.eessifagmodul.services.eux.EuxService
@@ -127,7 +127,7 @@ class SedP4000Test {
         assertNotNull(payjson)
         assertEquals(payload, payjson)
 
-        val check = mapJsonToAny(payjson, typeRefs<PersonTrygdeTid>())
+        val check = mapJsonToAny(payjson, typeRefs<PersonArbeidogOppholdUtland>())
         assertNotNull(check)
         assertEquals("DK", check.boPerioder!![0].land)
     }
@@ -140,7 +140,7 @@ class SedP4000Test {
         assertNotNull(jsonfile)
         validateJson(jsonfile)
 
-        val obj = mapJsonToAny(jsonfile, typeRefs<PersonTrygdeTid>(), true)
+        val obj = mapJsonToAny(jsonfile, typeRefs<PersonArbeidogOppholdUtland>(), true)
         assertNotNull(obj)
 
         val backtojson = mapAnyToJson(obj, true)
@@ -206,9 +206,9 @@ class SedP4000Test {
     }
 }
 
-fun createPersonTrygdeTidMock(): PersonTrygdeTid {
+fun createPersonTrygdeTidMock(): PersonArbeidogOppholdUtland {
 
-    return PersonTrygdeTid(
+    return PersonArbeidogOppholdUtland(
             foedselspermisjonPerioder = listOf(
                     StandardItem(
                             land = "NO",

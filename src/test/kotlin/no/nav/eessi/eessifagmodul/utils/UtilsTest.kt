@@ -1,6 +1,8 @@
 package no.nav.eessi.eessifagmodul.utils
 
+import no.nav.eessi.eessifagmodul.models.SEDType
 import org.junit.Test
+import org.springframework.web.util.UriComponentsBuilder
 import javax.xml.datatype.DatatypeFactory
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -54,6 +56,30 @@ class UtilsTest {
             assertTrue(true, "Yes")
         }
 
+    }
+
+    @Test
+    fun `check urlBuilder path correct`() {
+        val path = "/fnr/"
+        val id = "2342342342"
+
+        val ekstra = "sakId"
+        val ekstraval = "123412313"
+
+        val uriBuilder = UriComponentsBuilder.fromPath(path).pathSegment(id)
+        uriBuilder.queryParam(ekstra, ekstraval)
+
+        assertEquals("/fnr/2342342342?sakId=123412313", uriBuilder.toUriString())
+
+    }
+
+    @Test
+    fun `check for value on SEDtype`() {
+        val px = "P3000"
+
+        val result = SEDType.isValidSEDType(px)
+
+        assertTrue(result)
 
     }
 

@@ -51,7 +51,6 @@ class NavFodselsnummer(private val fodselsnummer: String) {
         return LocalDate.of(get4DigitBirthYear().toInt(), getMonth().toInt(), getDayInMonth().toInt())
     }
 
-
     fun getValidPentionAge(): Boolean {
         val validAge = 67
         val nowDate = LocalDate.now()
@@ -76,6 +75,10 @@ class NavFodselsnummer(private val fodselsnummer: String) {
         } else {
             "" + (getFirstDigit(fodselsnummer) - 4) + fodselsnummer.substring(1)
         }
+    }
+
+    fun harDNummber(): Boolean {
+        return isDNumber(getValue())
     }
 
     private fun isDNumber(fodselsnummer: String): Boolean {

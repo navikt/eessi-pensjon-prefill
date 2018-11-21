@@ -1,6 +1,9 @@
-package no.nav.eessi.eessifagmodul.prefill
+package no.nav.eessi.eessifagmodul.prefill.nav
 
 import no.nav.eessi.eessifagmodul.models.SED
+import no.nav.eessi.eessifagmodul.prefill.Prefill
+import no.nav.eessi.eessifagmodul.prefill.PrefillDataModel
+import no.nav.eessi.eessifagmodul.prefill.PrefillPensjon
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component

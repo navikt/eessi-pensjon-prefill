@@ -34,7 +34,7 @@ class PensjonsinformasjonServiceTest {
     fun hentAlt() {
         val mockResponseEntity = createResponseEntityFromJsonFile("classpath:pensjonsinformasjon/full-generated-response.xml")
         whenever(mockrestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java))).thenReturn(mockResponseEntity)
-        val data = pensjonsinformasjonService.hentAlt("1243")
+        val data = pensjonsinformasjonService.hentAltPaaVedtak("1243")
         // TODO: add asserts
 
         assertNotNull(data.vedtak, "Vedtak er null")
