@@ -16,12 +16,9 @@ import no.nav.eessi.eessifagmodul.utils.typeRefs
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.*
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonResponse
 import org.junit.Before
-import org.junit.runner.RunWith
 import org.mockito.Mock
-import org.mockito.junit.MockitoJUnitRunner
 import org.springframework.util.ResourceUtils
 
-@RunWith(MockitoJUnitRunner::class)
 abstract class PersonDataFromTPS(private val mocktps: Set<MockTPS>) {
 
     @Mock

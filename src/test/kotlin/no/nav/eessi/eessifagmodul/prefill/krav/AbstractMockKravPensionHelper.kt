@@ -32,9 +32,6 @@ abstract class AbstractMockKravPensionHelper(private val sedId: String, private 
     @Mock
     protected lateinit var mockPersonV3Service: PersonV3Service
 
-    //løsning for å laste in abstract mockTPStestklasse
-    protected class DataFromTPS(mocktps: Set<MockTPS>) : PersonDataFromTPS(mocktps)
-
     protected lateinit var prefillData: PrefillDataModel
 
     protected lateinit var pendata: Pensjonsinformasjon
@@ -82,6 +79,8 @@ abstract class AbstractMockKravPensionHelper(private val sedId: String, private 
 
     //alle tester med aamme personlist for tiden. MOCK TPS
     private fun initMockPrefillPersonDataFromTPS(): PrefillPersonDataFromTPS {
+        //løsning for å laste in abstract mockTPStestklasse
+        class DataFromTPS(mocktps: Set<MockTPS>) : PersonDataFromTPS(mocktps)
         val datatps = DataFromTPS(
                 setOf(
                         PersonDataFromTPS.MockTPS("Person-20000.json", "02345678901"),
