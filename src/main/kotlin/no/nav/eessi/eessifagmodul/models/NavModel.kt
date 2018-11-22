@@ -189,12 +189,12 @@ data class PinItem(
 )
 
 data class Adresse(
-        var postnummer: String? = null,
-        var by: String? = null,
-        var bygning: String? = null,
-        var land: String? = null,
         var gate: String? = null,
-        var region: String? = null
+        var bygning: String? = null,
+        var by: String? = null,
+        var postnummer: String? = null,
+        var region: String? = null,
+        var land: String? = null
 )
 
 data class Foedested(
