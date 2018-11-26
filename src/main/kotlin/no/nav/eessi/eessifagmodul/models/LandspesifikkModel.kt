@@ -10,6 +10,17 @@ data class Norge (
         var ufore: Ufore? = null
 )
 
+//6.
+data class Ufore (
+        var nasjonaliteter: List<Nasjonalitet>? = null,
+        var brukerInfo: BrukerInfo? = null,
+        var andreRessurserInntektskilder: AndreRessurserInntektskilder? = null,
+        var ytelseInfo: YtelseInfo? = null,
+        var ektefelleInfo: EktefelleInfo? = null,
+        var barnInfo: List<BarnInfo>? = null,
+        var tilgjengeligInfo: String? = null,
+        var grunn: String? = null
+)
 
 //4. Ytterligere informasjon om krav om alderspensjon
 data class Alderspensjon (
@@ -31,6 +42,26 @@ data class Etterlatte (
         var avdod: Avdod? = null,
         var tilgjengeligInfo: String? = null,
         var grunn: String? = null
+)
+
+data class Arbeidsgiver (
+        var ansattIdentifikasjonAvArbeidsgiver: AnsattIdentifikasjonAvArbeidsgiver? = null,
+        var arbeidsgiverIdentifikasjonAvArbeidsgiver: ArbeidsgiverIdentifikasjonAvArbeidsgiver? = null //arbeidsgiverIdentifikasjon
+)
+
+data class AnsattIdentifikasjonAvArbeidsgiver (
+        var ansattIndikator: String? = null,
+        var navn: String? = null,
+        var adresse: Adresse? = null,
+        var arbeidsgiverIndikator: String? = null
+)
+
+data class ArbeidsgiverIdentifikasjonAvArbeidsgiver (
+        var arbeidsgiverIndikator: String? = null,
+        var registreringsNummer: String? = null,
+        var personNummer: String? = null,
+        var skatteNummer: String? = null,
+        var bedriftsRegister: String? = null
 )
 
 //5.4, 5.5 & 5.6
@@ -60,7 +91,9 @@ data class SoskenNavn (
 data class BrukerInfo (
         var borMedEktefelleEllerPartner: String? = null,
         var boddFrahverandreSiden: String? = null,
-        var samboer: Samboer? = null
+        var samboer: Samboer? = null,
+        var arbeidsAvklaringskurs: String? = null,
+        var yrke: String? = null
 )
 
 //4.2 og 5.2 Ytterligere informasjon om forsikredes ansettelsesforhold eller selvstendig næringsvirksomhet
@@ -79,7 +112,8 @@ data class YtelseInfo (
         var hjelpestonad: String? = null,
         var grunnleggendeYtelser: String? = null,
         var ytelserTilUtdanning: String? = null,
-        var forsorgelseBarn: String? = null
+        var forsorgelseBarn: String? = null,
+        var frivilligInnskudd: String? = null
 )
 
 //4.4 Ytterligere informasjon om ektefellen
@@ -116,8 +150,11 @@ data class Barnetrygd (
 
 data class AndreRessurserInntektskilder (
         var andreRessurserInntektskilder: String? = null,
-        var andreRessurserInntektskilderType: String? = null,
-        var belop: List<Belop>? = null
+        var typeAndreRessurserInntektskilder: String? = null,
+        var belop: List<Belop>? = null,
+        var oppgirIngenInntekt: String? = null,
+        var arbeidsgiver: List<Arbeidsgiver>? = null,
+        var startDatoAnsettelse: String? = null
 )
 
 data class AndreYtelser (
@@ -177,57 +214,10 @@ data class Samboer (
         var boddSammenSiden: String? = null,
         var barnMedSamboer: String? = null,
         var tidligereGiftMedSamboer: String? = null,
-        var nasjonaliteter: List<Nasjonalitet>? = null
+        var nasjonaliteter: List<Nasjonalitet>? = null,
+        var forsikringMotArbeidsuforhet: String? = null
 )
 
 data class Nasjonalitet (
         var nasjonalitet: String? = null
-)
-
-
-//AdditionalInformationForInvalidityPensionClaim (P3000_NO_6)
-data class Ufore (
-        var ekstraInfoBarn: List<EkstraInfoBarn>? = null
-)
-
-//AdditionalInformationChildrenInsuredPerson
-data class EkstraInfoBarn (
-        var adresse: Adresse? = null,
-        var barn: Person? = null, //AdditionalInformationChildInsuredPerson
-        var barnBorMedBeggeForeldre: BarnBorMedBeggeForeldre? = null
-)
-
-//DoesChildLiveTogetherWithBothParents
-data class BarnBorMedBeggeForeldre (
-        var barnBorMedBruker: BarnBorMedBruker? = null,
-        var barnForsorgetAvBruker: BarnForsorgetAvBruker? = null,
-        var barnBorMedBeggeForeldreIndikator: BarnBorMedBeggeForeldreIndikator? = null
-)
-
-data class BarnForsorgetAvBruker (
-        var barnForsorgetAvBrukerIndikator: List<BarnFosorgetAvBrukerIndikator>? = null
-)
-
-data class BarnFosorgetAvBrukerIndikator (
-        var forsorget: String? = null
-)
-
-//FillInFollowingIfDoesChildLiveTogether
-data class BarnBorMedBruker (
-        var barnBorMedBrukerIndikator: List<BarnBorMedBrukerIndikator>? = null,
-        var brukerHarOmsorgForBarnIndikator: List<BrukerHarOmsorgForBarnIndikator> //doesInsuredPersonSupportChildIndicator
-)
-
-data class BrukerHarOmsorgForBarnIndikator (
-        var omsorgForBarn: String? = null
-)
-
-//doesChildLiveWithInsuredPersonIndicator
-data class BarnBorMedBrukerIndikator (
-        var borMedBruker: String? = null
-)
-
-//doesChildLiveTogetherWithBothParentsIndicator
-data class BarnBorMedBeggeForeldreIndikator (
-        var barnBorMedBeggeForeldre: String? = null
 )
