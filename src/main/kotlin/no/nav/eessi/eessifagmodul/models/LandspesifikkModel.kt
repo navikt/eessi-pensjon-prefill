@@ -6,7 +6,7 @@ data class Landspesifikk (
 
 data class Norge (
         var alderspensjon: Alderspensjon? = null,
-        var etterlatte: Etterlatte,
+        var etterlatte: Etterlatte? = null,
         var ufore: Ufore? = null
 )
 
@@ -145,7 +145,7 @@ data class BarnInfo (
 data class Barnetrygd (
         var barnetrygd: String? = null,
         var typeBarnetrygd: String? = null,
-        var belop: List<Belop>?
+        var belop: List<Belop>? = null
 )
 
 data class AndreRessurserInntektskilder (
@@ -190,8 +190,8 @@ data class InntektsgivendeArbeid (
 
 //4.4.1 Familiestatus
 data class Familiestatus (
-        var familestatus: String? = null,
-        var datoFamiliestatus: String? = null
+        var familiestatus: String? = null,
+        var datoFamilieStatus: String? = null
 )
 
 //4.2.2
