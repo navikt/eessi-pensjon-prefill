@@ -1,740 +1,861 @@
 {
-  "landspesifikk" : {
-    "norge" : {
-      "ufore" : {
-        "ektefelleInfo" : {
-          "pensjonsmottaker" : [ {
-            "pensjonBasertPa" : "02",
-            "sluttDatoYtelse" : "1999-03-20",
-            "institusjonsopphold" : {
-              "institusjon" : {
-                "institusjonsid" : "FR:TSRG75V003",
-                "institusjonsnavn" : "TSNAMUT 3, FR RINA MUTUALIZED 3, FR"
+  "landspesifikk": {
+    "norge": {
+      "ufore": {
+        "ektefelleInfo": {
+          "pensjonsmottaker": [
+            {
+              "pensjonBasertPa": "02",
+              "sluttDatoYtelse": "1999-03-20",
+              "institusjonsopphold": {
+                "institusjon": {
+                  "institusjonsid": "FR:TSRG75V003",
+                  "institusjonsnavn": "TSNAMUT 3, FR RINA MUTUALIZED 3, FR"
+                },
+                "belop": [
+                  {
+                    "betalingshyppighet": "99",
+                    "belopGjelderFra": "1995-03-20",
+                    "annenBetalingshyppighet": "645351",
+                    "belop": "64531",
+                    "valuta": "HRK"
+                  },
+                  {
+                    "betalingshyppighet": "99",
+                    "annenBetalingshyppighet": "645351",
+                    "belop": "64531",
+                    "belopGjelderFra": "1995-03-20",
+                    "valuta": "EUR"
+                  }
+                ],
+                "sektor": "familieytelser",
+                "land": "CZ",
+                "personNummer": "64522"
               },
-              "belop" : [ {
-                "betalingshyppighet" : "99",
-                "belopGjelderFra" : "1995-03-20",
-                "annenBetalingshyppighet" : "645351",
-                "belop" : "64531",
-                "valuta" : "HRK"
-              }, {
-                "betalingshyppighet" : "99",
-                "annenBetalingshyppighet" : "645351",
-                "belop" : "64531",
-                "belopGjelderFra" : "1995-03-20",
-                "valuta" : "EUR"
-              } ],
-              "sektor" : "familieytelser",
-              "land" : "CZ",
-              "personNummer" : "64522"
+              "erPensjonsmottaker": "1",
+              "typePensjon": "01",
+              "startDatoYtelse": "1995-03-20",
+              "pensjonsnummer": "64513"
             },
-            "erPensjonsmottaker" : "1_12",
-            "typePensjon" : "01",
-            "startDatoYtelse" : "1995-03-20",
-            "pensjonsnummer" : "64513"
-          }, {
-            "institusjonsopphold" : {
-              "belop" : [ {
-                "belopGjelderFra" : "1995-03-20",
-                "belop" : "64531",
-                "betalingshyppighet" : "99",
-                "valuta" : "CZK",
-                "annenBetalingshyppighet" : "645351"
-              }, {
-                "betalingshyppighet" : "99",
-                "annenBetalingshyppighet" : "645351",
-                "valuta" : "DKK",
-                "belop" : "64531",
-                "belopGjelderFra" : "1995-03-20"
-              } ],
-              "institusjon" : {
-                "institusjonsnavn" : "SS V CASTELO, ISS, District Centre of Viana do Castelo, PT",
-                "institusjonsid" : "PT:PT1114"
+            {
+              "institusjonsopphold": {
+                "belop": [
+                  {
+                    "belopGjelderFra": "1995-03-20",
+                    "belop": "64531",
+                    "betalingshyppighet": "99",
+                    "valuta": "CZK",
+                    "annenBetalingshyppighet": "645351"
+                  },
+                  {
+                    "betalingshyppighet": "99",
+                    "annenBetalingshyppighet": "645351",
+                    "valuta": "DKK",
+                    "belop": "64531",
+                    "belopGjelderFra": "1995-03-20"
+                  }
+                ],
+                "institusjon": {
+                  "institusjonsnavn": "SS V CASTELO, ISS, District Centre of Viana do Castelo, PT",
+                  "institusjonsid": "PT:PT1114"
+                },
+                "personNummer": "64522",
+                "land": "DK",
+                "sektor": "alle"
               },
-              "personNummer" : "64522",
-              "land" : "DK",
-              "sektor" : "alle"
-            },
-            "pensjonsnummer" : "64513",
-            "typePensjon" : "01",
-            "startDatoYtelse" : "1995-03-20",
-            "erPensjonsmottaker" : "1_13",
-            "sluttDatoYtelse" : "1997-03-20",
-            "pensjonBasertPa" : "01"
-          } ],
-          "andreRessurserInntektskilder" : {
-            "belop" : [ {
-              "betalingshyppighet" : "99",
-              "valuta" : "SEK",
-              "belopGjelderFra" : "1995-03-20",
-              "belop" : "64831",
-              "annenBetalingshyppighet" : "648351"
-            }, {
-              "annenBetalingshyppighet" : "648351",
-              "belop" : "64831",
-              "belopGjelderFra" : "1995-03-20",
-              "valuta" : "CZK",
-              "betalingshyppighet" : "99"
-            } ],
-            "typeAndreRessurserInntektskilder" : "6482",
-            "andreRessurserInntektskilder" : "1_10"
-          },
-          "andreYtelser" : {
-            "belop" : [ {
-              "annenBetalingshyppighet" : "647351",
-              "belop" : "64731",
-              "betalingshyppighet" : "99",
-              "valuta" : "HRK",
-              "belopGjelderFra" : "1995-03-20"
-            }, {
-              "valuta" : "CZK",
-              "belopGjelderFra" : "1995-03-20",
-              "annenBetalingshyppighet" : "647351",
-              "betalingshyppighet" : "99",
-              "belop" : "64731"
-            } ],
-            "andreYtelser" : "1_9",
-            "andreYtelserType" : "6472"
-          },
-          "inntektsgivedeArbeid" : {
-            "belop" : [ {
-              "betalingshyppighet" : "99",
-              "valuta" : "CZK",
-              "belop" : "64321",
-              "belopGjelderFra" : "1995-03-20",
-              "annenBetalingshyppighet" : "643251"
-            }, {
-              "betalingshyppighet" : "99",
-              "valuta" : "ISK",
-              "belopGjelderFra" : "1995-03-20",
-              "belop" : "64321",
-              "annenBetalingshyppighet" : "643251"
-            } ],
-            "inntektsgivendeArbeid" : "1_11"
-          },
-          "familiestatus" : {
-            "datoFamilieStatus" : "1995-03-20",
-            "familiestatus" : "04"
-          },
-          "arbeidsfor" : "01",
-          "nasjonalitet" : [ {
-            "nasjonalitet" : "BE"
-          }, {
-            "nasjonalitet" : "CY"
-          } ],
-          "ikkeYrkesaktiv" : "1_14"
-        },
-        "andreRessurserInntektskilder" : {
-          "belop" : [ {
-            "belopGjelderFra" : "1995-03-20",
-            "belop" : "62131",
-            "betalingshyppighet" : "99",
-            "annenBetalingshyppighet" : "621351",
-            "valuta" : "ISK"
-          }, {
-            "annenBetalingshyppighet" : "621351",
-            "belop" : "62131",
-            "valuta" : "CZK",
-            "belopGjelderFra" : "1995-03-20",
-            "betalingshyppighet" : "99"
-          } ],
-          "startDatoAnsettelse" : "1995-03-20",
-          "oppgirIngenInntekt" : "1_15",
-          "arbeidsgiver" : [ {
-            "ansattIdentifikasjonAvArbeidsgiver" : {
-              "ansattIndikator" : "1_16"
-            },
-            "arbeidsgiverIdentifikasjonAvArbeidsgiver" : {
-              "arbeidsgiverIndikator" : "1_17"
+              "pensjonsnummer": "64513",
+              "typePensjon": "01",
+              "startDatoYtelse": "1995-03-20",
+              "erPensjonsmottaker": "1",
+              "sluttDatoYtelse": "1997-03-20",
+              "pensjonBasertPa": "01"
             }
-          }, {
-            "ansattIdentifikasjonAvArbeidsgiver" : {
-              "ansattIndikator" : "1_18"
+          ],
+          "andreRessurserInntektskilder": {
+            "belop": [
+              {
+                "betalingshyppighet": "99",
+                "valuta": "SEK",
+                "belopGjelderFra": "1995-03-20",
+                "belop": "64831",
+                "annenBetalingshyppighet": "648351"
+              },
+              {
+                "annenBetalingshyppighet": "648351",
+                "belop": "64831",
+                "belopGjelderFra": "1995-03-20",
+                "valuta": "CZK",
+                "betalingshyppighet": "99"
+              }
+            ],
+            "typeAndreRessurserInntektskilder": "6482",
+            "andreRessurserInntektskilder": "1"
+          },
+          "andreYtelser": {
+            "belop": [
+              {
+                "annenBetalingshyppighet": "647351",
+                "belop": "64731",
+                "betalingshyppighet": "99",
+                "valuta": "HRK",
+                "belopGjelderFra": "1995-03-20"
+              },
+              {
+                "valuta": "CZK",
+                "belopGjelderFra": "1995-03-20",
+                "annenBetalingshyppighet": "647351",
+                "betalingshyppighet": "99",
+                "belop": "64731"
+              }
+            ],
+            "andreYtelser": "1",
+            "andreYtelserType": "6472"
+          },
+          "inntektsgivedeArbeid": {
+            "belop": [
+              {
+                "betalingshyppighet": "99",
+                "valuta": "CZK",
+                "belop": "64321",
+                "belopGjelderFra": "1995-03-20",
+                "annenBetalingshyppighet": "643251"
+              },
+              {
+                "betalingshyppighet": "99",
+                "valuta": "ISK",
+                "belopGjelderFra": "1995-03-20",
+                "belop": "64321",
+                "annenBetalingshyppighet": "643251"
+              }
+            ],
+            "inntektsgivendeArbeid": "1"
+          },
+          "familiestatus": {
+            "datoFamilieStatus": "1995-03-20",
+            "familiestatus": "04"
+          },
+          "arbeidsfor": "01",
+          "nasjonalitet": [
+            {
+              "nasjonalitet": "BE"
             },
-            "arbeidsgiverIdentifikasjonAvArbeidsgiver" : {
-              "arbeidsgiverIndikator" : "1_19"
+            {
+              "nasjonalitet": "CY"
             }
-          } ],
-          "typeAndreRessurserInntektskilder" : "6212",
-          "andreRessurserInntektskilder" : "1_20"
+          ],
+          "ikkeYrkesaktiv": "1"
         },
-        "barnInfo" : [ {
-          "adresse" : {
-            "bygning" : "6532",
-            "region" : "6535",
-            "postnummer" : "6534",
-            "by" : "6533",
-            "land" : "BE",
-            "gate" : "6531"
-          },
-          "familiestatus" : [ {
-            "datoFamilieStatus" : "1995-03-20",
-            "familiestatus" : "04"
-          }, {
-            "datoFamilieStatus" : "1999-03-20",
-            "familiestatus" : "02"
-          } ],
-          "barnetrygd" : {
-            "belop" : [ {
-              "belop" : "65231",
-              "belopGjelderFra" : "1995-03-20",
-              "betalingshyppighet" : "99",
-              "valuta" : "CHF",
-              "annenBetalingshyppighet" : "652351"
-            }, {
-              "valuta" : "DKK",
-              "annenBetalingshyppighet" : "652351",
-              "betalingshyppighet" : "99",
-              "belopGjelderFra" : "1995-03-20",
-              "belop" : "65231"
-            } ],
-            "typeBarnetrygd" : "6522",
-            "barnetrygd" : "01"
-          },
-          "forsikredeForsorgerBarnet" : "1_2",
-          "barnetBorHosForsikrede" : "1_1",
-          "etternavn" : "6511",
-          "fornavn" : "6512"
-        }, {
-          "etternavn" : "6511",
-          "barnetrygd" : {
-            "belop" : [ {
-              "betalingshyppighet" : "99",
-              "belop" : "65231",
-              "valuta" : "CZK",
-              "annenBetalingshyppighet" : "652351",
-              "belopGjelderFra" : "1995-03-20"
-            }, {
-              "valuta" : "ISK",
-              "belopGjelderFra" : "1996-03-20",
-              "betalingshyppighet" : "99",
-              "belop" : "65231",
-              "annenBetalingshyppighet" : "652351"
-            } ],
-            "barnetrygd" : "02",
-            "typeBarnetrygd" : "6522"
-          },
-          "adresse" : {
-            "postnummer" : "6534",
-            "region" : "6635",
-            "land" : "BG",
-            "by" : "6533",
-            "bygning" : "6532",
-            "gate" : "6531"
-          },
-          "familiestatus" : [ {
-            "datoFamilieStatus" : "1998-03-20",
-            "familiestatus" : "05"
-          }, {
-            "familiestatus" : "02",
-            "datoFamilieStatus" : "1999-03-20"
-          } ],
-          "forsikredeForsorgerBarnet" : "1_3",
-          "fornavn" : "6512"
-        } ],
-        "brukerInfo" : {
-          "samboer" : {
-            "forsikringMotArbeidsuforhet" : "1_6",
-            "boddSammenSiden" : "1998-03-20",
-            "tidligereGiftMedSamboer" : "1_8",
-            "barnMedSamboer" : "1_7"
-          },
-          "borMedEktefelleEllerPartner" : "0",
-          "arbeidsAvklaringskurs" : "02",
-          "boddFrahverandreSiden" : "1995-03-20",
-          "yrke" : "61621"
-        },
-        "nasjonaliteter" : [ {
-          "nasjonalitet" : "BG"
-        }, {
-          "nasjonalitet" : "CY"
-        } ],
-        "tilgjengeligInfo" : "0",
-        "ytelseInfo" : {
-          "frivilligInnskudd" : "1_4",
-          "grunnleggendeYtelser" : "01",
-          "hjelpestonad" : "01",
-          "kontantYtelserSykdom" : "1_5"
-        },
-        "grunn" : "6621"
-      },
-      "alderspensjon" : {
-        "ektefelleInfo" : {
-          "pensjonsmottaker" : [ {
-            "sluttDatoYtelse" : "1999-03-20",
-            "institusjonsopphold" : {
-              "institusjon" : {
-                "institusjonsnavn" : "AP5, TEST_AP testing 5, FI",
-                "institusjonsid" : "FI:0199000005"
-              },
-              "belop" : [ {
-                "annenBetalingshyppighet" : "445351",
-                "belop" : "44531",
-                "betalingshyppighet" : "99",
-                "belopGjelderFra" : "1998-03-20",
-                "valuta" : "SEK"
-              }, {
-                "belopGjelderFra" : "1997-03-20",
-                "betalingshyppighet" : "99",
-                "belop" : "44531",
-                "valuta" : "CZK",
-                "annenBetalingshyppighet" : "445351"
-              } ],
-              "land" : "BG",
-              "personNummer" : "44522",
-              "sektor" : "tIlbakekreving"
+        "andreRessurserInntektskilder": {
+          "belop": [
+            {
+              "belopGjelderFra": "1995-03-20",
+              "belop": "62131",
+              "betalingshyppighet": "99",
+              "annenBetalingshyppighet": "621351",
+              "valuta": "ISK"
             },
-            "startDatoYtelse" : "1998-03-20",
-            "pensjonsnummer" : "44513",
-            "typePensjon" : "01",
-            "erPensjonsmottaker" : "1_39",
-            "pensjonBasertPa" : "01"
-          }, {
-            "institusjonsopphold" : {
-              "belop" : [ {
-                "belopGjelderFra" : "1999-03-20",
-                "annenBetalingshyppighet" : "445351",
-                "valuta" : "HUF",
-                "belop" : "44531",
-                "betalingshyppighet" : "99"
-              }, {
-                "betalingshyppighet" : "99",
-                "annenBetalingshyppighet" : "445351",
-                "belopGjelderFra" : "1999-03-20",
-                "valuta" : "EUR",
-                "belop" : "44531"
-              } ],
-              "institusjon" : {
-                "institusjonsid" : "DE:DE05RINA4",
-                "institusjonsnavn" : "ITSG RINA 4, ITSG RINA 4, DE"
+            {
+              "annenBetalingshyppighet": "621351",
+              "belop": "62131",
+              "valuta": "CZK",
+              "belopGjelderFra": "1995-03-20",
+              "betalingshyppighet": "99"
+            }
+          ],
+          "startDatoAnsettelse": "1995-03-20",
+          "oppgirIngenInntekt": "1",
+          "arbeidsgiver": [
+            {
+              "ansattIdentifikasjonAvArbeidsgiver": {
+                "ansattIndikator": "1"
               },
-              "personNummer" : "44522",
-              "sektor" : "sykdom",
-              "land" : "BE"
+              "arbeidsgiverIdentifikasjonAvArbeidsgiver": {
+                "arbeidsgiverIndikator": "1"
+              }
             },
-            "startDatoYtelse" : "1998-03-20",
-            "pensjonsnummer" : "44513",
-            "erPensjonsmottaker" : "1_40",
-            "typePensjon" : "01",
-            "sluttDatoYtelse" : "1999-03-20",
-            "pensjonBasertPa" : "01"
-          } ],
-          "arbeidsfor" : "01",
-          "andreYtelser" : {
-            "belop" : [ {
-              "belopGjelderFra" : "1999-03-20",
-              "annenBetalingshyppighet" : "447351",
-              "valuta" : "HRK",
-              "belop" : "44731",
-              "betalingshyppighet" : "99"
-            }, {
-              "annenBetalingshyppighet" : "447351",
-              "valuta" : "DKK",
-              "belop" : "44731",
-              "betalingshyppighet" : "99",
-              "belopGjelderFra" : "1999-03-20"
-            } ],
-            "andreYtelser" : "1_36",
-            "andreYtelserType" : "4472"
-          },
-          "nasjonalitet" : [ {
-            "nasjonalitet" : "BE"
-          }, {
-            "nasjonalitet" : "HR"
-          } ],
-          "andreRessurserInntektskilder" : {
-            "belop" : [ {
-              "annenBetalingshyppighet" : "448351",
-              "belopGjelderFra" : "1999-03-20",
-              "belop" : "44831",
-              "betalingshyppighet" : "99",
-              "valuta" : "HUF"
-            }, {
-              "belop" : "44831",
-              "belopGjelderFra" : "1999-03-20",
-              "betalingshyppighet" : "99",
-              "valuta" : "CZK",
-              "annenBetalingshyppighet" : "448351"
-            } ],
-            "typeAndreRessurserInntektskilder" : "4482",
-            "andreRessurserInntektskilder" : "1_37"
-          },
-          "familiestatus" : {
-            "familiestatus" : "03",
-            "datoFamilieStatus" : "1999-03-20"
-          },
-          "inntektsgivedeArbeid" : {
-            "belop" : [ {
-              "betalingshyppighet" : "99",
-              "belop" : "44321",
-              "belopGjelderFra" : "1999-03-20",
-              "valuta" : "EUR",
-              "annenBetalingshyppighet" : "443251"
-            }, {
-              "belop" : "44321",
-              "betalingshyppighet" : "99",
-              "valuta" : "HRK",
-              "annenBetalingshyppighet" : "443251",
-              "belopGjelderFra" : "1999-03-20"
-            } ],
-            "inntektsgivendeArbeid" : "1_38"
-          },
-          "ikkeYrkesaktiv" : "1_41"
+            {
+              "ansattIdentifikasjonAvArbeidsgiver": {
+                "ansattIndikator": "1"
+              },
+              "arbeidsgiverIdentifikasjonAvArbeidsgiver": {
+                "arbeidsgiverIndikator": "1"
+              }
+            }
+          ],
+          "typeAndreRessurserInntektskilder": "6212",
+          "andreRessurserInntektskilder": "1"
         },
-        "tilgjengeligInfo" : "0",
-        "barnInfo" : [ {
-          "barnetrygd" : {
-            "belop" : [ {
-              "betalingshyppighet" : "99",
-              "belopGjelderFra" : "1995-03-20",
-              "annenBetalingshyppighet" : "452351",
-              "belop" : "45231",
-              "valuta" : "EUR"
-            }, {
-              "belopGjelderFra" : "1995-03-20",
-              "annenBetalingshyppighet" : "452351",
-              "betalingshyppighet" : "99",
-              "valuta" : "CZK",
-              "belop" : "45231"
-            } ],
-            "typeBarnetrygd" : "4522",
-            "barnetrygd" : "01"
+        "barnInfo": [
+          {
+            "adresse": {
+              "bygning": "6532",
+              "region": "6535",
+              "postnummer": "6534",
+              "by": "6533",
+              "land": "BE",
+              "gate": "6531"
+            },
+            "familiestatus": [
+              {
+                "datoFamilieStatus": "1995-03-20",
+                "familiestatus": "04"
+              },
+              {
+                "datoFamilieStatus": "1999-03-20",
+                "familiestatus": "02"
+              }
+            ],
+            "barnetrygd": {
+              "belop": [
+                {
+                  "belop": "65231",
+                  "belopGjelderFra": "1995-03-20",
+                  "betalingshyppighet": "99",
+                  "valuta": "CHF",
+                  "annenBetalingshyppighet": "652351"
+                },
+                {
+                  "valuta": "DKK",
+                  "annenBetalingshyppighet": "652351",
+                  "betalingshyppighet": "99",
+                  "belopGjelderFra": "1995-03-20",
+                  "belop": "65231"
+                }
+              ],
+              "typeBarnetrygd": "6522",
+              "barnetrygd": "01"
+            },
+            "forsikredeForsorgerBarnet": "1",
+            "barnetBorHosForsikrede": "1",
+            "etternavn": "6511",
+            "fornavn": "6512"
           },
-          "barnetBorHosForsikrede" : "1_26",
-          "etternavn" : "4511",
-          "adresse" : {
-            "region" : "4535",
-            "postnummer" : "4534",
-            "gate" : "4531",
-            "land" : "BG",
-            "by" : "4533",
-            "bygning" : "4532"
+          {
+            "etternavn": "6511",
+            "barnetrygd": {
+              "belop": [
+                {
+                  "betalingshyppighet": "99",
+                  "belop": "65231",
+                  "valuta": "CZK",
+                  "annenBetalingshyppighet": "652351",
+                  "belopGjelderFra": "1995-03-20"
+                },
+                {
+                  "valuta": "ISK",
+                  "belopGjelderFra": "1996-03-20",
+                  "betalingshyppighet": "99",
+                  "belop": "65231",
+                  "annenBetalingshyppighet": "652351"
+                }
+              ],
+              "barnetrygd": "02",
+              "typeBarnetrygd": "6522"
+            },
+            "adresse": {
+              "postnummer": "6534",
+              "region": "6635",
+              "land": "BG",
+              "by": "6533",
+              "bygning": "6532",
+              "gate": "6531"
+            },
+            "familiestatus": [
+              {
+                "datoFamilieStatus": "1998-03-20",
+                "familiestatus": "05"
+              },
+              {
+                "familiestatus": "02",
+                "datoFamilieStatus": "1999-03-20"
+              }
+            ],
+            "forsikredeForsorgerBarnet": "1",
+            "fornavn": "6512"
+          }
+        ],
+        "brukerInfo": {
+          "samboer": {
+            "forsikringMotArbeidsuforhet": "1",
+            "boddSammenSiden": "1998-03-20",
+            "tidligereGiftMedSamboer": "1",
+            "barnMedSamboer": "1"
           },
-          "familiestatus" : [ {
-            "familiestatus" : "01",
-            "datoFamilieStatus" : "1999-03-20"
-          }, {
-            "datoFamilieStatus" : "1995-03-20",
-            "familiestatus" : "07"
-          } ],
-          "borMedBeggeForeldre" : "1_28",
-          "forsikredeForsorgerBarnet" : "1_27",
-          "fornavn" : "4512"
-        }, {
-          "fornavn" : "4512",
-          "barnetrygd" : {
-            "belop" : [ {
-              "annenBetalingshyppighet" : "452351",
-              "valuta" : "CZK",
-              "betalingshyppighet" : "99",
-              "belop" : "45231",
-              "belopGjelderFra" : "1995-03-20"
-            }, {
-              "betalingshyppighet" : "99",
-              "annenBetalingshyppighet" : "452351",
-              "valuta" : "HRK",
-              "belopGjelderFra" : "1996-03-20",
-              "belop" : "45231"
-            } ],
-            "barnetrygd" : "01",
-            "typeBarnetrygd" : "4522"
-          },
-          "adresse" : {
-            "postnummer" : "4534",
-            "by" : "4533",
-            "gate" : "4531",
-            "bygning" : "4532",
-            "region" : "4535",
-            "land" : "BG"
-          },
-          "familiestatus" : [ {
-            "datoFamilieStatus" : "1996-03-20",
-            "familiestatus" : "02"
-          }, {
-            "datoFamilieStatus" : "1995-03-20",
-            "familiestatus" : "04"
-          } ],
-          "borMedBeggeForeldre" : "1_31",
-          "barnetBorHosForsikrede" : "1_29",
-          "forsikredeForsorgerBarnet" : "1_30",
-          "etternavn" : "4511"
-        } ],
-        "ansettelsesforhold" : {
-          "obligatoriskPensjonsDekning" : "1_42",
-          "lonnsInntekt" : [ {
-            "annenBetalingshyppighet" : "321151",
-            "belop" : "42111",
-            "valuta" : "HRK",
-            "belopGjelderFra" : "1999-03-20",
-            "betalingshyppighet" : "99"
-          }, {
-            "valuta" : "HRK",
-            "annenBetalingshyppighet" : "421151",
-            "belop" : "42111",
-            "betalingshyppighet" : "99",
-            "belopGjelderFra" : "1999-03-20"
-          } ],
-          "andreInntektskilder" : {
-            "andreInntektskilderBelop" : [ {
-              "annenBetalingshyppighet" : "422351",
-              "belopGjelderFra" : "1999-03-20",
-              "betalingshyppighet" : "99",
-              "valuta" : "HUF",
-              "belop" : "42231"
-            }, {
-              "valuta" : "EUR",
-              "annenBetalingshyppighet" : "422351",
-              "belop" : "42231",
-              "betalingshyppighet" : "99",
-              "belopGjelderFra" : "1999-03-20"
-            } ],
-            "typeAndreInntektskilder" : "4222",
-            "andreInntektskilderIndikator" : "1_44"
-          },
-          "inntektsType" : "01",
-          "ingenInntektOppgitt" : "1_43"
+          "borMedEktefelleEllerPartner": "0",
+          "arbeidsAvklaringskurs": "02",
+          "boddFrahverandreSiden": "1995-03-20",
+          "yrke": "61621"
         },
-        "brukerInfo" : {
-          "boddFrahverandreSiden" : "1999-03-20",
-          "samboer" : {
-            "barnMedSamboer" : "1_34",
-            "boddSammenSiden" : "1997-03-20",
-            "tidligereGiftMedSamboer" : "1_35",
-            "nasjonaliteter" : [ {
-              "nasjonalitet" : "BE"
-            }, {
-              "nasjonalitet" : "HR"
-            } ]
+        "nasjonaliteter": [
+          {
+            "nasjonalitet": "BG"
           },
-          "borMedEktefelleEllerPartner" : "0"
+          {
+            "nasjonalitet": "CY"
+          }
+        ],
+        "tilgjengeligInfo": "0",
+        "ytelseInfo": {
+          "frivilligInnskudd": "1",
+          "grunnleggendeYtelser": "01",
+          "hjelpestonad": "01",
+          "kontantYtelserSykdom": "1"
         },
-        "ytelseInfo" : {
-          "hjelpestonad" : "1_32",
-          "kontantYtelserSykdom" : "1_33",
-          "grunnleggendeYtelser" : "01"
-        },
-        "grunn" : "4721",
-        "pensjonsgrad" : "02"
+        "grunn": "6621"
       },
-      "etterlatte" : {
-        "ansettelsesforhold" : {
-          "andreInntektskilder" : {
-            "andreInntektskilderBelop" : [ {
-              "belopGjelderFra" : "1995-03-20",
-              "belop" : "52331",
-              "valuta" : "DKK",
-              "betalingshyppighet" : "99",
-              "annenBetalingshyppighet" : "523351"
-            }, {
-              "belopGjelderFra" : "1995-03-20",
-              "belop" : "52331",
-              "annenBetalingshyppighet" : "523351",
-              "valuta" : "CZK",
-              "betalingshyppighet" : "99"
-            } ],
-            "andreInntektskilderIndikator" : "1_21",
-            "typeAndreInntektskilder" : "5232"
+      "alderspensjon": {
+        "ektefelleInfo": {
+          "pensjonsmottaker": [
+            {
+              "sluttDatoYtelse": "1999-03-20",
+              "institusjonsopphold": {
+                "institusjon": {
+                  "institusjonsnavn": "AP5, TEST_AP testing 5, FI",
+                  "institusjonsid": "FI:0199000005"
+                },
+                "belop": [
+                  {
+                    "annenBetalingshyppighet": "445351",
+                    "belop": "44531",
+                    "betalingshyppighet": "99",
+                    "belopGjelderFra": "1998-03-20",
+                    "valuta": "SEK"
+                  },
+                  {
+                    "belopGjelderFra": "1997-03-20",
+                    "betalingshyppighet": "99",
+                    "belop": "44531",
+                    "valuta": "CZK",
+                    "annenBetalingshyppighet": "445351"
+                  }
+                ],
+                "land": "BG",
+                "personNummer": "44522",
+                "sektor": "tIlbakekreving"
+              },
+              "startDatoYtelse": "1998-03-20",
+              "pensjonsnummer": "44513",
+              "typePensjon": "01",
+              "erPensjonsmottaker": "1",
+              "pensjonBasertPa": "01"
+            },
+            {
+              "institusjonsopphold": {
+                "belop": [
+                  {
+                    "belopGjelderFra": "1999-03-20",
+                    "annenBetalingshyppighet": "445351",
+                    "valuta": "HUF",
+                    "belop": "44531",
+                    "betalingshyppighet": "99"
+                  },
+                  {
+                    "betalingshyppighet": "99",
+                    "annenBetalingshyppighet": "445351",
+                    "belopGjelderFra": "1999-03-20",
+                    "valuta": "EUR",
+                    "belop": "44531"
+                  }
+                ],
+                "institusjon": {
+                  "institusjonsid": "DE:DE05RINA4",
+                  "institusjonsnavn": "ITSG RINA 4, ITSG RINA 4, DE"
+                },
+                "personNummer": "44522",
+                "sektor": "sykdom",
+                "land": "BE"
+              },
+              "startDatoYtelse": "1998-03-20",
+              "pensjonsnummer": "44513",
+              "erPensjonsmottaker": "1",
+              "typePensjon": "01",
+              "sluttDatoYtelse": "1999-03-20",
+              "pensjonBasertPa": "01"
+            }
+          ],
+          "arbeidsfor": "01",
+          "andreYtelser": {
+            "belop": [
+              {
+                "belopGjelderFra": "1999-03-20",
+                "annenBetalingshyppighet": "447351",
+                "valuta": "HRK",
+                "belop": "44731",
+                "betalingshyppighet": "99"
+              },
+              {
+                "annenBetalingshyppighet": "447351",
+                "valuta": "DKK",
+                "belop": "44731",
+                "betalingshyppighet": "99",
+                "belopGjelderFra": "1999-03-20"
+              }
+            ],
+            "andreYtelser": "1",
+            "andreYtelserType": "4472"
           },
-          "ansettelsesforholdType" : "01",
-          "lonnsInntekt" : [ {
-            "annenBetalingshyppighet" : "522151",
-            "betalingshyppighet" : "99",
-            "valuta" : "CZK",
-            "belop" : "52211",
-            "belopGjelderFra" : "1995-03-20"
-          }, {
-            "belopGjelderFra" : "1995-03-20",
-            "annenBetalingshyppighet" : "522151",
-            "valuta" : "CZK",
-            "belop" : "52211",
-            "betalingshyppighet" : "99"
-          } ]
-        },
-        "avdod" : {
-          "nasjonaliteter" : [ {
-            "nasjonalitet" : "BG"
-          }, {
-            "nasjonalitet" : "HR"
-          } ],
-          "pensjonsMottaker" : {
-            "sluttDatoYtelse" : "1995-03-20",
-            "pensjonBasertPa" : "01",
-            "typePensjon" : "01"
+          "nasjonalitet": [
+            {
+              "nasjonalitet": "BE"
+            },
+            {
+              "nasjonalitet": "HR"
+            }
+          ],
+          "andreRessurserInntektskilder": {
+            "belop": [
+              {
+                "annenBetalingshyppighet": "448351",
+                "belopGjelderFra": "1999-03-20",
+                "belop": "44831",
+                "betalingshyppighet": "99",
+                "valuta": "HUF"
+              },
+              {
+                "belop": "44831",
+                "belopGjelderFra": "1999-03-20",
+                "betalingshyppighet": "99",
+                "valuta": "CZK",
+                "annenBetalingshyppighet": "448351"
+              }
+            ],
+            "typeAndreRessurserInntektskilder": "4482",
+            "andreRessurserInntektskilder": "1"
           },
-          "inntektsgivendeArbeid" : "1_23"
+          "familiestatus": {
+            "familiestatus": "03",
+            "datoFamilieStatus": "1999-03-20"
+          },
+          "inntektsgivedeArbeid": {
+            "belop": [
+              {
+                "betalingshyppighet": "99",
+                "belop": "44321",
+                "belopGjelderFra": "1999-03-20",
+                "valuta": "EUR",
+                "annenBetalingshyppighet": "443251"
+              },
+              {
+                "belop": "44321",
+                "betalingshyppighet": "99",
+                "valuta": "HRK",
+                "annenBetalingshyppighet": "443251",
+                "belopGjelderFra": "1999-03-20"
+              }
+            ],
+            "inntektsgivendeArbeid": "1"
+          },
+          "ikkeYrkesaktiv": "1"
         },
-        "sokersYtelser" : {
-          "ytelserTilUtdanning" : "01",
-          "grunnleggendeYtelser" : "01",
-          "forsorgelseBarn" : "01",
-          "hjelpestonad" : "1_22"
+        "tilgjengeligInfo": "0",
+        "barnInfo": [
+          {
+            "barnetrygd": {
+              "belop": [
+                {
+                  "betalingshyppighet": "99",
+                  "belopGjelderFra": "1995-03-20",
+                  "annenBetalingshyppighet": "452351",
+                  "belop": "45231",
+                  "valuta": "EUR"
+                },
+                {
+                  "belopGjelderFra": "1995-03-20",
+                  "annenBetalingshyppighet": "452351",
+                  "betalingshyppighet": "99",
+                  "valuta": "CZK",
+                  "belop": "45231"
+                }
+              ],
+              "typeBarnetrygd": "4522",
+              "barnetrygd": "01"
+            },
+            "barnetBorHosForsikrede": "1",
+            "etternavn": "4511",
+            "adresse": {
+              "region": "4535",
+              "postnummer": "4534",
+              "gate": "4531",
+              "land": "BG",
+              "by": "4533",
+              "bygning": "4532"
+            },
+            "familiestatus": [
+              {
+                "familiestatus": "01",
+                "datoFamilieStatus": "1999-03-20"
+              },
+              {
+                "datoFamilieStatus": "1995-03-20",
+                "familiestatus": "07"
+              }
+            ],
+            "borMedBeggeForeldre": "1",
+            "forsikredeForsorgerBarnet": "1",
+            "fornavn": "4512"
+          },
+          {
+            "fornavn": "4512",
+            "barnetrygd": {
+              "belop": [
+                {
+                  "annenBetalingshyppighet": "452351",
+                  "valuta": "CZK",
+                  "betalingshyppighet": "99",
+                  "belop": "45231",
+                  "belopGjelderFra": "1995-03-20"
+                },
+                {
+                  "betalingshyppighet": "99",
+                  "annenBetalingshyppighet": "452351",
+                  "valuta": "HRK",
+                  "belopGjelderFra": "1996-03-20",
+                  "belop": "45231"
+                }
+              ],
+              "barnetrygd": "01",
+              "typeBarnetrygd": "4522"
+            },
+            "adresse": {
+              "postnummer": "4534",
+              "by": "4533",
+              "gate": "4531",
+              "bygning": "4532",
+              "region": "4535",
+              "land": "BG"
+            },
+            "familiestatus": [
+              {
+                "datoFamilieStatus": "1996-03-20",
+                "familiestatus": "02"
+              },
+              {
+                "datoFamilieStatus": "1995-03-20",
+                "familiestatus": "04"
+              }
+            ],
+            "borMedBeggeForeldre": "1",
+            "barnetBorHosForsikrede": "1",
+            "forsikredeForsorgerBarnet": "1",
+            "etternavn": "4511"
+          }
+        ],
+        "ansettelsesforhold": {
+          "obligatoriskPensjonsDekning": "1",
+          "lonnsInntekt": [
+            {
+              "annenBetalingshyppighet": "321151",
+              "belop": "42111",
+              "valuta": "HRK",
+              "belopGjelderFra": "1999-03-20",
+              "betalingshyppighet": "99"
+            },
+            {
+              "valuta": "HRK",
+              "annenBetalingshyppighet": "421151",
+              "belop": "42111",
+              "betalingshyppighet": "99",
+              "belopGjelderFra": "1999-03-20"
+            }
+          ],
+          "andreInntektskilder": {
+            "andreInntektskilderBelop": [
+              {
+                "annenBetalingshyppighet": "422351",
+                "belopGjelderFra": "1999-03-20",
+                "betalingshyppighet": "99",
+                "valuta": "HUF",
+                "belop": "42231"
+              },
+              {
+                "valuta": "EUR",
+                "annenBetalingshyppighet": "422351",
+                "belop": "42231",
+                "betalingshyppighet": "99",
+                "belopGjelderFra": "1999-03-20"
+              }
+            ],
+            "typeAndreInntektskilder": "4222",
+            "andreInntektskilderIndikator": "1"
+          },
+          "inntektsType": "01",
+          "ingenInntektOppgitt": "1"
         },
-        "sosken" : {
-          "soskenNavn" : [ {
-            "navn" : "5151",
-            "personnummer" : "5152",
-            "borMedSosken" : "1_25"
-          }, {
-            "navn" : "5151",
-            "personnummer" : "5152",
-            "borMedSosken" : "0"
-          } ],
-          "arbeidsufor" : "01",
-          "forsorgelsesplikt" : "1_24",
-          "arbeidsforhet" : "01",
-          "nasjonaliteter" : [ {
-            "nasjonalitet" : "BG"
-          }, {
-            "nasjonalitet" : "DK"
-          } ]
+        "brukerInfo": {
+          "boddFrahverandreSiden": "1999-03-20",
+          "samboer": {
+            "barnMedSamboer": "1",
+            "boddSammenSiden": "1997-03-20",
+            "tidligereGiftMedSamboer": "1",
+            "nasjonaliteter": [
+              {
+                "nasjonalitet": "BE"
+              },
+              {
+                "nasjonalitet": "HR"
+              }
+            ]
+          },
+          "borMedEktefelleEllerPartner": "0"
         },
-        "grunn" : "5721",
-        "tilgjengeligInfo" : "0"
+        "ytelseInfo": {
+          "hjelpestonad": "1",
+          "kontantYtelserSykdom": "1",
+          "grunnleggendeYtelser": "01"
+        },
+        "grunn": "4721",
+        "pensjonsgrad": "02"
+      },
+      "etterlatte": {
+        "ansettelsesforhold": {
+          "andreInntektskilder": {
+            "andreInntektskilderBelop": [
+              {
+                "belopGjelderFra": "1995-03-20",
+                "belop": "52331",
+                "valuta": "DKK",
+                "betalingshyppighet": "99",
+                "annenBetalingshyppighet": "523351"
+              },
+              {
+                "belopGjelderFra": "1995-03-20",
+                "belop": "52331",
+                "annenBetalingshyppighet": "523351",
+                "valuta": "CZK",
+                "betalingshyppighet": "99"
+              }
+            ],
+            "andreInntektskilderIndikator": "1",
+            "typeAndreInntektskilder": "5232"
+          },
+          "ansettelsesforholdType": "01",
+          "lonnsInntekt": [
+            {
+              "annenBetalingshyppighet": "522151",
+              "betalingshyppighet": "99",
+              "valuta": "CZK",
+              "belop": "52211",
+              "belopGjelderFra": "1995-03-20"
+            },
+            {
+              "belopGjelderFra": "1995-03-20",
+              "annenBetalingshyppighet": "522151",
+              "valuta": "CZK",
+              "belop": "52211",
+              "betalingshyppighet": "99"
+            }
+          ]
+        },
+        "avdod": {
+          "nasjonaliteter": [
+            {
+              "nasjonalitet": "BG"
+            },
+            {
+              "nasjonalitet": "HR"
+            }
+          ],
+          "pensjonsMottaker": {
+            "sluttDatoYtelse": "1995-03-20",
+            "pensjonBasertPa": "01",
+            "typePensjon": "01"
+          },
+          "inntektsgivendeArbeid": "1"
+        },
+        "sokersYtelser": {
+          "ytelserTilUtdanning": "01",
+          "grunnleggendeYtelser": "01",
+          "forsorgelseBarn": "01",
+          "hjelpestonad": "1"
+        },
+        "sosken": {
+          "soskenNavn": [
+            {
+              "navn": "5151",
+              "personnummer": "5152",
+              "borMedSosken": "1"
+            },
+            {
+              "navn": "5151",
+              "personnummer": "5152",
+              "borMedSosken": "0"
+            }
+          ],
+          "arbeidsufor": "01",
+          "forsorgelsesplikt": "1",
+          "arbeidsforhet": "01",
+          "nasjonaliteter": [
+            {
+              "nasjonalitet": "BG"
+            },
+            {
+              "nasjonalitet": "DK"
+            }
+          ]
+        },
+        "grunn": "5721",
+        "tilgjengeligInfo": "0"
       }
     }
   },
-  "sedVer" : "0",
-  "pensjon" : {
-    "gjenlevende" : {
-      "person" : {
-        "kjoenn" : "m",
-        "statsborgerskap" : [ {
-          "land" : "BE"
-        }, {
-          "land" : "FR"
-        } ],
-        "pin" : [ {
-          "sektor" : "pensjoner",
-          "identifikator" : "31712",
-          "land" : "BG",
-          "institusjon" : {
-            "institusjonsid" : "PT:PT1106",
-            "institusjonsnavn" : "SS BRAGANCA, ISS, District Centre of Bragan?a, PT"
-          }
-        }, {
-          "land" : "HR",
-          "identifikator" : "31712",
-          "institusjon" : {
-            "institusjonsnavn" : "AGIRC - ARRCO, National complementary pension scheme, FR",
-            "institusjonsid" : "FR:0068000000"
+  "sedVer": "0",
+  "pensjon": {
+    "gjenlevende": {
+      "person": {
+        "kjoenn": "m",
+        "statsborgerskap": [
+          {
+            "land": "BE"
           },
-          "sektor" : "sykdom"
-        } ],
-        "tidligerefornavn" : "3213",
-        "etternavnvedfoedsel" : "315",
-        "foedested" : {
-          "region" : "31812",
-          "by" : "31811",
-          "land" : "BG"
+          {
+            "land": "FR"
+          }
+        ],
+        "pin": [
+          {
+            "sektor": "pensjoner",
+            "identifikator": "31712",
+            "land": "BG",
+            "institusjon": {
+              "institusjonsid": "PT:PT1106",
+              "institusjonsnavn": "SS BRAGANCA, ISS, District Centre of Bragan?a, PT"
+            }
+          },
+          {
+            "land": "HR",
+            "identifikator": "31712",
+            "institusjon": {
+              "institusjonsnavn": "AGIRC - ARRCO, National complementary pension scheme, FR",
+              "institusjonsid": "FR:0068000000"
+            },
+            "sektor": "sykdom"
+          }
+        ],
+        "tidligerefornavn": "3213",
+        "etternavnvedfoedsel": "315",
+        "foedested": {
+          "region": "31812",
+          "by": "31811",
+          "land": "BG"
         },
-        "tidligereetternavn" : "3212",
-        "fornavnvedfoedsel" : "316",
-        "etternavn" : "311",
-        "fornavn" : "312",
-        "foedselsdato" : "1940-06-21"
+        "tidligereetternavn": "3212",
+        "fornavnvedfoedsel": "316",
+        "etternavn": "311",
+        "fornavn": "312",
+        "foedselsdato": "1940-06-21"
       },
-      "adresse" : {
-        "by" : "3223",
-        "land" : "HR",
-        "region" : "3225",
-        "gate" : "3221",
-        "bygning" : "3222",
-        "postnummer" : "3224"
+      "adresse": {
+        "by": "3223",
+        "land": "HR",
+        "region": "3225",
+        "gate": "3221",
+        "bygning": "3222",
+        "postnummer": "3224"
       },
-      "far" : {
-        "person" : {
-          "fornavnvedfoedsel" : "3183",
-          "etternavnvedfoedsel" : "3182"
+      "far": {
+        "person": {
+          "fornavnvedfoedsel": "3183",
+          "etternavnvedfoedsel": "3182"
         }
       },
-      "mor" : {
-        "person" : {
-          "etternavnvedfoedsel" : "3184",
-          "fornavnvedfoedsel" : "3185"
+      "mor": {
+        "person": {
+          "etternavnvedfoedsel": "3184",
+          "fornavnvedfoedsel": "3185"
         }
       }
     }
   },
-  "nav" : {
-    "bruker" : {
-      "person" : {
-        "statsborgerskap" : [ {
-          "land" : "BE"
-        }, {
-          "land" : "HR"
-        } ],
-        "pin" : [ {
-          "land" : "EE",
-          "institusjon" : {
-            "institusjonsid" : "HR:2000",
-            "institusjonsnavn" : "HZMO, CROATIAN PENSION INS INST, HR"
+  "nav": {
+    "bruker": {
+      "person": {
+        "statsborgerskap": [
+          {
+            "land": "BE"
           },
-          "sektor" : "pensjoner",
-          "identifikator" : "21712"
-        }, {
-          "sektor" : "pensjoner",
-          "land" : "CY",
-          "identifikator" : "21712",
-          "institusjon" : {
-            "institusjonsnavn" : "T-ADEM, Employment Office, LU",
-            "institusjonsid" : "LU:0053"
+          {
+            "land": "HR"
           }
-        }, {
-          "institusjon" : {
-            "institusjonsid" : "FR:0068000000",
-            "institusjonsnavn" : "AGIRC - ARRCO, National complementary pension scheme, FR"
+        ],
+        "pin": [
+          {
+            "land": "EE",
+            "institusjon": {
+              "institusjonsid": "HR:2000",
+              "institusjonsnavn": "HZMO, CROATIAN PENSION INS INST, HR"
+            },
+            "sektor": "pensjoner",
+            "identifikator": "21712"
           },
-          "land" : "BE",
-          "sektor" : "tIlbakekreving",
-          "identifikator" : "2.1.7.1.2"
-        } ],
-        "etternavn" : "211",
-        "fornavnvedfoedsel" : "216",
-        "foedested" : {
-          "land" : "LI",
-          "by" : "21811",
-          "region" : "21812"
+          {
+            "sektor": "pensjoner",
+            "land": "CY",
+            "identifikator": "21712",
+            "institusjon": {
+              "institusjonsnavn": "T-ADEM, Employment Office, LU",
+              "institusjonsid": "LU:0053"
+            }
+          },
+          {
+            "institusjon": {
+              "institusjonsid": "FR:0068000000",
+              "institusjonsnavn": "AGIRC - ARRCO, National complementary pension scheme, FR"
+            },
+            "land": "BE",
+            "sektor": "tIlbakekreving",
+            "identifikator": "2.1.7.1.2"
+          }
+        ],
+        "etternavn": "211",
+        "fornavnvedfoedsel": "216",
+        "foedested": {
+          "land": "LI",
+          "by": "21811",
+          "region": "21812"
         },
-        "etternavnvedfoedsel" : "215",
-        "kjoenn" : "u",
-        "foedselsdato" : "1938-08-18",
-        "fornavn" : "212",
-        "tidligereetternavn" : "2212",
-        "tidligerefornavn" : "2213"
+        "etternavnvedfoedsel": "215",
+        "kjoenn": "u",
+        "foedselsdato": "1938-08-18",
+        "fornavn": "212",
+        "tidligereetternavn": "2212",
+        "tidligerefornavn": "2213"
       },
-      "adresse" : {
-        "gate" : "2221",
-        "by" : "2223",
-        "region" : "2225",
-        "land" : "DK",
-        "bygning" : "2222",
-        "postnummer" : "2224"
+      "adresse": {
+        "gate": "2221",
+        "by": "2223",
+        "region": "2225",
+        "land": "DK",
+        "bygning": "2222",
+        "postnummer": "2224"
       },
-      "mor" : {
-        "person" : {
-          "fornavn" : "2185",
-          "etternavnvedfoedsel" : "2184"
+      "mor": {
+        "person": {
+          "fornavn": "2185",
+          "etternavnvedfoedsel": "2184"
         }
       },
-      "far" : {
-        "person" : {
-          "fornavn" : "2183",
-          "etternavnvedfoedsel" : "2182"
+      "far": {
+        "person": {
+          "fornavn": "2183",
+          "etternavnvedfoedsel": "2182"
         }
       }
     },
-    "eessisak" : [ {
-      "institusjonsnavn" : "Kauno m. _sav, Kaunas City Administration, LT",
-      "institusjonsid" : "LT:188764867",
-      "land" : "BE",
-      "saksnummer" : "112"
-    }, {
-      "saksnummer" : "112",
-      "land" : "HR",
-      "institusjonsnavn" : "SS V CASTELO, ISS, District Centre of Viana do Castelo, PT",
-      "institusjonsid" : "PT:PT1114"
-    } ]
+    "eessisak": [
+      {
+        "institusjonsnavn": "Kauno m. _sav, Kaunas City Administration, LT",
+        "institusjonsid": "LT:188764867",
+        "land": "BE",
+        "saksnummer": "112"
+      },
+      {
+        "saksnummer": "112",
+        "land": "HR",
+        "institusjonsnavn": "SS V CASTELO, ISS, District Centre of Viana do Castelo, PT",
+        "institusjonsid": "PT:PT1114"
+      }
+    ]
   },
-  "sedGVer" : "4",
-  "sed" : "P3000_NO"
+  "sedGVer": "4",
+  "sed": "P3000_NO"
 }

@@ -10,7 +10,6 @@ data class Norge (
         var ufore: Ufore? = null
 )
 
-//6.
 data class Ufore (
         var nasjonaliteter: List<Nasjonalitet>? = null,
         var brukerInfo: BrukerInfo? = null,
@@ -22,7 +21,6 @@ data class Ufore (
         var grunn: String? = null
 )
 
-//4. Ytterligere informasjon om krav om alderspensjon
 data class Alderspensjon (
         var brukerInfo: BrukerInfo? = null,
         var ansettelsesforhold: Ansettelsesforhold? = null,
@@ -34,7 +32,6 @@ data class Alderspensjon (
         var grunn: String? = null
     )
 
-//5. Ytterligere informasjon om krav om etterlattepensjon
 data class Etterlatte (
         var sosken: Sosken? = null,
         var ansettelsesforhold: Ansettelsesforhold? = null,
@@ -64,14 +61,12 @@ data class ArbeidsgiverIdentifikasjonAvArbeidsgiver (
         var bedriftsRegister: String? = null
 )
 
-//5.4, 5.5 & 5.6
 data class Avdod (
         var nasjonaliteter: List<Nasjonalitet>? = null,
         var pensjonsMottaker: PensjonsMottaker? = null,
         var inntektsgivendeArbeid: String? = null
 )
 
-//5.1 Ytterligere informasjon om søsken
 data class Sosken (
         var nasjonaliteter: List<Nasjonalitet>? = null,
         var forsorgelsesplikt: String? = null,
@@ -80,14 +75,12 @@ data class Sosken (
         var soskenNavn: List<SoskenNavn>? = null
 )
 
-//5.1.5 Navn på søsken (helsøsken desom søkeren er avdødes eget barn)
 data class SoskenNavn (
         var navn: String? = null,
         var personnummer: String? = null,
         var borMedSosken: String? = null
 )
 
-//4.1 Ytterligere informasjon om forsikrede
 data class BrukerInfo (
         var borMedEktefelleEllerPartner: String? = null,
         var boddFrahverandreSiden: String? = null,
@@ -96,7 +89,6 @@ data class BrukerInfo (
         var yrke: String? = null
 )
 
-//4.2 og 5.2 Ytterligere informasjon om forsikredes ansettelsesforhold eller selvstendig næringsvirksomhet
 data class Ansettelsesforhold (
         var ansettelsesforholdType: String? = null,
         var lonnsInntekt: List<Belop>? = null,
@@ -106,7 +98,6 @@ data class Ansettelsesforhold (
         var inntektsType: String? = null
 )
 
-//4.3 Ytterligere informasjon om ytelser den forsikrede mottar
 data class YtelseInfo (
         var kontantYtelserSykdom: String? = null,
         var hjelpestonad: String? = null,
@@ -116,7 +107,6 @@ data class YtelseInfo (
         var frivilligInnskudd: String? = null
 )
 
-//4.4 Ytterligere informasjon om ektefellen
 data class EktefelleInfo (
         var familiestatus: Familiestatus? = null,
         var nasjonalitet: List<Nasjonalitet>? = null,
@@ -126,10 +116,8 @@ data class EktefelleInfo (
         var ikkeYrkesaktiv: String? = null,
         var andreYtelser: AndreYtelser? = null,
         var andreRessurserInntektskilder: AndreRessurserInntektskilder? = null
-
 )
 
-//4.5 Ytterligere inforrmasjon om barn av forsikrede
 data class BarnInfo (
         var etternavn: String? = null,
         var fornavn: String? = null,
@@ -139,7 +127,6 @@ data class BarnInfo (
         var borMedBeggeForeldre: String? = null,
         var forsikredeForsorgerBarnet: String? = null,
         var barnetBorHosForsikrede: String? = null
-
 )
 
 data class Barnetrygd (
@@ -182,19 +169,16 @@ data class Institusjonsopphold (
         var belop: List<Belop>? = null
 )
 
-//4.4.3
 data class InntektsgivendeArbeid (
         var inntektsgivendeArbeid: String? = null,
         var belop: List<Belop>? = null
 )
 
-//4.4.1 Familiestatus
 data class Familiestatus (
         var familiestatus: String? = null,
         var datoFamilieStatus: String? = null
 )
 
-//4.2.2
 data class AndreInntektskilder (
         var andreInntektskilderIndikator: String? = null,
         var typeAndreInntektskilder: String? = null,
@@ -208,7 +192,6 @@ data class Belop (
         var betalingshyppighet: String? = null,
         var annenBetalingshyppighet: String? = null
 )
-
 
 data class Samboer (
         var boddSammenSiden: String? = null,
