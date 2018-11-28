@@ -23,11 +23,11 @@ class SedP7000Test {
         val json = p7000sed.toJson()
         JSONAssert.assertEquals(p7000file, json, false)
 
-        assertEquals("daglig4166", p7000sed?.pensjon?.ytelser?.get(0)?.beloep?.get(0)?.annenbetalingshyppighetytelse)
+        assertEquals("daglig4166", p7000sed.pensjon?.ytelser?.get(0)?.beloep?.get(0)?.annenbetalingshyppighetytelse)
 
-        assertEquals("5.1.5.2.1. Adressat for revurderingen Repetetive", p7000sed?.pensjon?.samletVedtak?.avslag?.get(0)?.adresse)
+        assertEquals("5.1.5.2.1. Adressat for revurderingen Repetetive", p7000sed.pensjon?.samletVedtak?.avslag?.get(0)?.adresse)
 
-        assertEquals("1942-12-19", p7000sed?.pensjon?.ytelser?.get(0)?.startdatoutbetaling)
-        assertEquals("4163", p7000sed?.pensjon?.vedtak?.get(0)?.beregning?.get(0)?.beloepBrutto?.beloep)
+        assertEquals("1942-12-19", p7000sed.pensjon?.ytelser?.get(0)?.startdatoutbetaling)
+        assertEquals("4163", p7000sed.pensjon?.vedtak?.get(0)?.beregning?.get(0)?.beloepBrutto?.beloep)
     }
 }
