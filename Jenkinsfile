@@ -58,26 +58,21 @@ node {
             def version = sh(script: 'git describe --abbrev=0', returnStdout: true).trim()
             build([
                     job       : 'nais-deploy-pipeline',
-                    wait      : false,
+                    wait      : true,
                     parameters: [
                             string(name: 'APP', value: "eessi-fagmodul"),
                             string(name: 'REPO', value: "navikt/eessi-pensjon-fagmodul"),
                             string(name: 'VERSION', value: version),
                             string(name: 'DEPLOY_REF', value: version),
-                            string(name: 'NAMESPACE', value: 'default'),
+                            string(name: 'NAMESPACE', value: 't8'),
                             string(name: 'DEPLOY_ENV', value: 't8')
                     ]
             ])
         }
 
-        stage("update api-gw") {
-            apigw.registerFromFSSToSBSInTestEnvironment("eessi-fagmodul", "eessifagmodulservice", "eessi-pensjon-frontend-api", "t8")
-        }
-
         github.commitStatus("navikt-ci-oauthtoken", "navikt/eessi-pensjon-fagmodul", 'continuous-integration/jenkins', commitHash, 'success', "Build #${env.BUILD_NUMBER} has finished")
     } catch (err) {
         github.commitStatus("navikt-ci-oauthtoken", "navikt/eessi-pensjon-fagmodul", 'continuous-integration/jenkins', commitHash, 'failure', "Build #${env.BUILD_NUMBER} has failed")
-
         throw err
     }
 }
