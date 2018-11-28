@@ -13,7 +13,8 @@ data class SED(
         var nav: Nav? = null,
         var pensjon: Pensjon? = null,
         var trygdetid: PersonTrygdeTid? = null,
-        var ignore: Ignore? = null
+        var ignore: Ignore? = null,
+        var landspesifikk: Landspesifikk? = null
 ) {
     fun toJson(): String {
         return mapAnyToJson(this, true)
