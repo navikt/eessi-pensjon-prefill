@@ -180,9 +180,10 @@ data class InntektItem(
         var beloep: String? = null
 )
 
+//TODO må kanskje oppdatere mot andre SED legge institusjonsid rett inn i PinItem..
 data class PinItem(
         var sektor: String? = null,
-        var identifikator: String? = null,
+        var identifikator: String? = null,  //rename? f.eks personnummer
         var land: String? = null,
         //P2000, P2100, P2200
         var institusjon: Institusjon? = null
@@ -203,6 +204,8 @@ data class Foedested(
         var region: String? = null
 )
 
+//refakt.. slå sammen til Institusjon
+////TODO:
 data class EessisakItem(
         var institusjonsid: String? = null,
         var institusjonsnavn: String? = null,
@@ -210,20 +213,24 @@ data class EessisakItem(
         var land: String? = null
 )
 
-data class Institusjon(
-        var institusjonsid: String? = null,
-        var institusjonsnavn: String? = null,
-        var saksnummer: String? = null,
-        var sektor: String? = null,
-        var land: String? = null
-)
+//
+//data class Institusjon(
+//        var institusjonsid: String? = null,
+//        var institusjonsnavn: String? = null,
+//        var saksnummer: String? = null,
+//        var sektor: String? = null,
+//        var land: String? = null
+//)
 
+////TODO:
+//hvor brukes denne?
 data class Institusjonsadresse(
         var poststed: String? = null,
         var postnummer: String? = null,
         var land: String? = null
 )
 
+//hva benyttes denne til? må fjernes.
 data class Ignore(
         var buildingName: String? = null,
         var region: String? = null,
