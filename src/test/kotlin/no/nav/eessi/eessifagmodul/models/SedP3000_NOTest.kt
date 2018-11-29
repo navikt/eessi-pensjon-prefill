@@ -24,7 +24,7 @@ class SedP3000_NOTest {
         val json = p3000sed.toJson()
         JSONAssert.assertEquals(p3000file, json, false)
 
-        assertEquals("6511", p3000sed.landspesifikk?.norge?.ufore?.barnInfo!!.get(0).etternavn)
-        assertEquals("CZK", p3000sed.landspesifikk?.norge?.alderspensjon?.ektefelleInfo?.pensjonsmottaker!!.first().institusjonsopphold?.belop?.last()!!.valuta)
+        assertEquals("6511", p3000sed.pensjon?.landspesifikk?.norge?.ufore?.barnInfo!!.get(0).etternavn)
+        assertEquals("CZK", p3000sed.pensjon?.landspesifikk?.norge?.alderspensjon?.ektefelleInfo?.pensjonsmottaker!!.first().institusjonsopphold?.belop?.last()!!.valuta)
     }
 }

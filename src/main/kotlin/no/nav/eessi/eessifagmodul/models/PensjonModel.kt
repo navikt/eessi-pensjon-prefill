@@ -14,6 +14,9 @@ data class Pensjon(
         var ytelser: List<YtelserItem>? = null,
         var forespurtstartdato: String? = null,
 
+        //P3000
+        var landspesifikk: Landspesifikk? = null,
+
         //P5000
         var medlemskapAnnen: List<MedlemskapItem>? = null,
         var medlemskapTotal: List<MedlemskapItem>? = null,
