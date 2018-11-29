@@ -42,9 +42,6 @@ fasitResources:
   - alias: virksomhet:Person_v3
     resourceType: WebserviceEndpoint
 
-  - alias: EuxBasis_v1
-    resourceType: RestService
-
   - alias: srveessipensjon
     resourceType: Credential
 
