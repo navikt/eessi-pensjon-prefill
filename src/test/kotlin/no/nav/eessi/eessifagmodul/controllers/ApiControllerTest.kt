@@ -97,7 +97,8 @@ class ApiControllerTest {
         assertEquals("12345", utfyllMock.personNr)
 
         whenever(mockPrefillSED.prefill(any())).thenReturn(utfyllMock)
-        whenever(mockEuxService.createCaseAndDocument(any(), anyString(), anyString(), anyString(), anyString(), anyString())).thenReturn(mockResponse)
+        //whenever(mockEuxService.createCaseAndDocument(any(), anyString(), anyString(), anyString(), anyString(), anyString())).thenReturn(mockResponse)
+        whenever(mockEuxService.createCaseWithDocument(any(), any(), any())).thenReturn(mockResponse)
         whenever(mockRinaActions.canCreate(anyString(), anyString())).thenReturn(true)
         whenever(mockRinaActions.canUpdate(utfyllMock.getSEDid(), mockResponse)).thenReturn(true)
 
@@ -245,6 +246,7 @@ class ApiControllerTest {
         whenever(mockPrefillSED.prefill(any())).thenReturn(utfyllMock)
 
         val response = apiController.confirmDocument(mockData)
+        //val response = SED.fromJson(response2)
 
         assertNotNull(response)
         assertEquals("P6000", response.sed)

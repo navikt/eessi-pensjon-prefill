@@ -1,9 +1,10 @@
 package no.nav.eessi.eessifagmodul.prefill
 
 import no.nav.eessi.eessifagmodul.models.AndreinstitusjonerItem
-import no.nav.eessi.eessifagmodul.models.Barn
 import no.nav.eessi.eessifagmodul.models.InstitusjonItem
 import no.nav.eessi.eessifagmodul.models.SED
+import no.nav.pensjon.v1.brukersbarn.V1BrukersBarn
+import no.nav.pensjon.v1.ektefellepartnersamboer.V1EktefellePartnerSamboer
 
 /**
  * Data class to store different required data to build any given sed, auto or semiauto.
@@ -26,9 +27,10 @@ class PrefillDataModel {
 
     //data fra pesys
     lateinit var saktype: String
-    lateinit var barnlist: List<Barn>
-    //aktoerid og aktoerId for avdod
+    lateinit var barnlist: List<V1BrukersBarn>
+    lateinit var partnerFnr: List<V1EktefellePartnerSamboer>
 
+    //avdod rellasjon - gjennlevende
     lateinit var avdod: String
     lateinit var avdodFar: String
     lateinit var avdodMor: String
@@ -40,7 +42,7 @@ class PrefillDataModel {
     lateinit var sed: SED
     lateinit var institution: List<InstitusjonItem>
 
-    //extra hjelpe parametere for utfylling
+    //hjelpe parametere for utfylling av institusjon
     var andreInstitusjon: AndreinstitusjonerItem? = null
 
     //div payload seddata json

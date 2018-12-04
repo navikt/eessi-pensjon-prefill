@@ -81,12 +81,4 @@ class PrefillP2200(private val prefillNav: PrefillNav, private val preutfyllingP
         return gjenlevende
     }
 
-
-//    override fun prefill(prefillData: PrefillDataModel): SED {
-//        val pensjon = PrefillPensjon(dataFromTPS)
-//        val prefillPerson = PrefillPerson(prefillNav, pensjon)
-//
-//        return prefillPerson.prefill(prefillData)
-//    }
-
 }

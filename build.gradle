@@ -63,9 +63,6 @@ configurations {
 }
 
 dependencies {
-    //devtools
-    developmentOnly("org.springframework.boot:spring-boot-devtools")
-
     // Prometheus
     compile("io.prometheus:simpleclient:${prometheusVersion}")
     compile("io.prometheus:simpleclient_hotspot:${prometheusVersion}")

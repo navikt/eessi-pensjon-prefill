@@ -11,6 +11,7 @@ import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.util.UriComponentsBuilder
+import org.springframework.web.util.UriTemplateHandler
 import java.io.StringReader
 import javax.xml.bind.JAXBContext
 import javax.xml.transform.stream.StreamSource
@@ -43,10 +44,12 @@ class PensjonsinformasjonService(val pensjonsinformasjonOidcRestTemplate: RestTe
             requestBuilder.addPensjonsinformasjonElement(document, it)
         }
 
-        logger.debug("Requestbody:\n${document.documentToString()}")
-        val response = doRequest("/fnr/", fnr, document.documentToString())
+        //logger.debug("Requestbody:\n${document.documentToString()}")
+
+        val sakHandler = PensjoninformasjonUriHandler("https://wasapp-t5.adeo.no/pensjon-ws/api/pensjonsinformasjon/v1")
+        val response = doRequest("/fnr/", fnr, document.documentToString(), sakHandler)
         validateResponse(informationBlocks, response)
-        logger.debug("Response: $response")
+        //logger.debug("Response: $response")
         return response
     }
 
@@ -73,10 +76,12 @@ class PensjonsinformasjonService(val pensjonsinformasjonOidcRestTemplate: RestTe
         informationBlocks.forEach {
             requestBuilder.addPensjonsinformasjonElement(document, it)
         }
+        //logger.debug("Requestbody:\n${document.documentToString()}")
 
-        logger.debug("Requestbody:\n${document.documentToString()}")
-        val response = doRequest("/vedtak", vedtaksId, document.documentToString())
+        val sakHandler = PensjoninformasjonUriHandler("https://wasapp-t5.adeo.no/pensjon-ws/api/pensjonsinformasjon/v1")
+        val response = doRequest("/vedtak", vedtaksId, document.documentToString(), sakHandler)
         validateResponse(informationBlocks, response)
+        //logger.debug("Response: $response")
         return response
     }
 
@@ -84,14 +89,16 @@ class PensjonsinformasjonService(val pensjonsinformasjonOidcRestTemplate: RestTe
         // TODO: Hva skal vi egentlig validere? Skal vi validere noe mer enn at vi fikk en gyldig xml-response, som skjer ved JAXB-marshalling?
     }
 
-    private fun doRequest(path: String, id: String, requestBody: String): Pensjonsinformasjon {
+    private fun doRequest(path: String, id: String, requestBody: String, uriHandler: UriTemplateHandler = PensjoninformasjonUriHandler("https://wasapp-t4.adeo.no/pensjon-ws/api/pensjonsinformasjon")): Pensjonsinformasjon {
         val headers = HttpHeaders()
         headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_XML_VALUE)
         val requestEntity = HttpEntity(requestBody, headers)
 
         val uriBuilder = UriComponentsBuilder.fromPath(path).pathSegment(id)
 
+        pensjonsinformasjonOidcRestTemplate.uriTemplateHandler = uriHandler
         val responseEntity = pensjonsinformasjonOidcRestTemplate.exchange(
+
                 uriBuilder.toUriString(),
                 HttpMethod.POST,
                 requestEntity,
@@ -105,12 +112,13 @@ class PensjonsinformasjonService(val pensjonsinformasjonOidcRestTemplate: RestTe
             throw RuntimeException("Received ${responseEntity.statusCode} ${responseEntity.statusCode.reasonPhrase} from pensjonsinformasjon")
         }
 
-        logger.debug("Responsebody:\n${responseEntity.body}")
-
+        //logger.debug("Responsebody:\n\n${responseEntity.body}\n\n")
         val context = JAXBContext.newInstance(Pensjonsinformasjon::class.java)
         val unmarshaller = context.createUnmarshaller()
 
         val res = unmarshaller.unmarshal(StreamSource(StringReader(responseEntity.body)), Pensjonsinformasjon::class.java)
         return res.value as Pensjonsinformasjon
     }
+
 }
+

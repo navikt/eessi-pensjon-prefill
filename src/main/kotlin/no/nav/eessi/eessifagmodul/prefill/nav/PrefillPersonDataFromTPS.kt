@@ -3,6 +3,7 @@ package no.nav.eessi.eessifagmodul.prefill.nav
 import no.nav.eessi.eessifagmodul.models.*
 import no.nav.eessi.eessifagmodul.models.Bruker
 import no.nav.eessi.eessifagmodul.models.Person
+import no.nav.eessi.eessifagmodul.prefill.PrefillDataModel
 import no.nav.eessi.eessifagmodul.services.LandkodeService
 import no.nav.eessi.eessifagmodul.services.PostnummerService
 import no.nav.eessi.eessifagmodul.services.personv3.PersonV3Service
@@ -33,12 +34,11 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
     }
 
     fun prefillBruker(ident: String): Bruker {
-        logger.debug("         Bruker")
+        logger.debug("              Bruker")
         val brukerTPS = hentBrukerTPS(ident)
-
         setPersonStatus(hentPersonStatus(brukerTPS))
 
-        val bruker = Bruker(
+        return Bruker(
                 person = personData(brukerTPS),
 
                 far = Foreldre(person = hentRelasjon(RelasjonEnum.FAR, brukerTPS)),
@@ -47,8 +47,6 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
 
                 adresse = hentPersonAdresse(brukerTPS)
         )
-        logger.debug("Preutfylling Bruker")
-        return bruker
     }
 
     //henter kun personnNr (brukerNorIdent/pin) for alle barn under person
@@ -59,15 +57,62 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
 
         person.harFraRolleI.forEach {
             val tpsvalue = it.tilRolle.value   //mulig nullpoint? kan tilRolle være null?
-
             if (RelasjonEnum.BARN.erSamme(tpsvalue)) {
                 val persontps = it.tilPerson as no.nav.tjeneste.virksomhet.person.v3.informasjon.Person
-                //henter kun ut norskident ut
                 resultat.add(hentNorIdent(persontps))
-                logger.debug("Preutfylling barn NorIdent")
             }
         }
         return resultat.toList()
+    }
+
+    fun hentEktefelleEllerPartnerFraBruker(utfyllingData: PrefillDataModel): Ektefelle? {
+        val fnr = utfyllingData.personNr
+        val bruker = hentBrukerTPS(fnr)
+
+        var ektepinid = ""
+        var ekteTypeValue = ""
+
+        bruker.harFraRolleI.forEach {
+            if (it.tilRolle.value == "EKTE") {
+
+                ekteTypeValue = it.tilRolle.value
+                val tilperson = it.tilPerson
+                val pident = tilperson.aktoer as PersonIdent
+
+                ektepinid = pident.ident.ident
+                if (ektepinid.isNotBlank()) {
+                    return@forEach
+                }
+            }
+        }
+        if (ektepinid.isBlank()) return null
+
+        //hente ut og genere en bruker ut i fra ektefelle/partner fnr
+        val ektefellpartnerbruker = prefillBruker(ektepinid)
+
+        return Ektefelle(
+                //foreldre
+                mor = ektefellpartnerbruker.mor,
+
+                //ektefelle
+                person = ektefellpartnerbruker.person,
+
+                //foreldre
+                far = ektefellpartnerbruker.far,
+
+                //type
+                //5.1   -- 01 - ektefelle, 02, part i partnerskap, 3, samboer
+                type = createEktefelleType(ekteTypeValue)
+        )
+    }
+
+    private fun createEktefelleType(typevalue: String): String {
+        logger.debug("5.1           Ektefelle/Partnerskap-type")
+        return when (typevalue) {
+            "EKTE" -> "01"
+            "PART" -> "02"
+            else -> "03"
+        }
     }
 
     private fun setPersonStatus(status: String = "") {
@@ -88,9 +133,9 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
         return response.person as no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker
     }
 
-    //personnr
+    //personnr fnr
     private fun hentNorIdent(person: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): String {
-        logger.debug("2.1.7.1.2     Personal Identification Number (PIN) personnr")
+        logger.debug("2.1.7.1.2         Personal Identification Number (PIN) personnr")
         val persident = person.aktoer as PersonIdent
         val pinid: NorskIdent = persident.ident
         return pinid.ident
@@ -98,14 +143,14 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
 
     //fdato i rinaformat
     private fun datoFormat(person: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): String? {
-        logger.debug("2.1.3     Date of birth")
+        logger.debug("2.1.3         Date of birth")
         val fdato = person.foedselsdato
         return fdato?.foedselsdato?.simpleFormat()
     }
 
-    //doddato i rina
+    //doddato i rina P2100?
     private fun dodDatoFormat(person: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): String? {
-        logger.debug("4.2     Date of death / dødsdato P2100")
+        logger.debug("4.2       Date of death / dødsdato P2100")
         val doddato = person.doedsdato
         return doddato?.doedsdato?.simpleFormat()
     }
@@ -158,7 +203,8 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
 
     //persondata - nav-sed format
     private fun personData(brukerTps: no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker): Person {
-        logger.debug("2         Persondata (forsikret person)")
+        logger.debug("2.1           Persondata (forsikret person / gjenlevende person / barn)")
+
         val navn = brukerTps.personnavn as Personnavn
         val kjonn = brukerTps.kjoenn
 
@@ -188,14 +234,14 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
                 //2.1.8.1           place of birth
                 foedested = hentFodested(brukerTps),
 
-
+                //
                 sivilstand = hentSivilstand(brukerTps)
         )
 
     }
 
     private fun hentPersonPinNorIdent(brukerTps: no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker): List<PinItem> {
-        logger.debug("2.1.7       Personnummer")
+        logger.debug("2.1.7         Fodselsnummer/Personnummer")
         return listOf(
                 PinItem(
                         //all sector
@@ -218,7 +264,7 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
 
     //sivilstand ENKE, PENS, SINGLE
     private fun hentSivilstand(brukerTps: no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker): List<SivilstandItem> {
-        logger.debug("x.x.x         Sivilstand")
+        logger.debug("               Sivilstand (hvordan skal dnene benyttes)")
         val sivilstand = brukerTps.sivilstand as Sivilstand
 
         return listOf(SivilstandItem(
@@ -229,19 +275,18 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
     }
 
 
-    //2.2.2
+    //2.2.2 adresse informasjon
     fun hentPersonAdresse(person: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): Adresse {
         logger.debug("2.2.2         Adresse")
 
         //ikke adresse for død
         if (validatePersonStatus(dod)) {
-            logger.debug("           Ingenting på avdod")
+            logger.debug("           Person er avdod (ingen adresse å hente).")
             return Adresse()
         }
 
         //Gateadresse eller UstrukturertAdresse
-        val bostedsadresse: Bostedsadresse = person.bostedsadresse
-                ?: return hentPersonAdresseUstrukturert(person.postadresse)
+        val bostedsadresse: Bostedsadresse = person.bostedsadresse ?: return hentPersonAdresseUstrukturert(person.postadresse)
 
         val gateAdresse = bostedsadresse.strukturertAdresse as Gateadresse
         val gate = gateAdresse.gatenavn

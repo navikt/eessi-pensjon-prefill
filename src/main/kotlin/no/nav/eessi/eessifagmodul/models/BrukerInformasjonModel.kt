@@ -2,7 +2,7 @@ package no.nav.eessi.eessifagmodul.models
 
 import java.util.*
 
-//fra UI til Fagmodul
+//fra UI til Fagmodul (person info)
 data class BrukerInformasjon(
         //bank
         var bankAddress: String?,

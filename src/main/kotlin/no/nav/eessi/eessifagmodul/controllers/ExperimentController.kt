@@ -9,6 +9,8 @@ import no.nav.eessi.eessifagmodul.services.bucbucket.QueryResult
 import no.nav.eessi.eessifagmodul.services.eux.EuxService
 import no.nav.eessi.eessifagmodul.services.pensjonsinformasjon.PensjonsinformasjonService
 import no.nav.eessi.eessifagmodul.services.personv3.PersonV3Service
+import no.nav.eessi.eessifagmodul.utils.NavFodselsnummer
+import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import no.nav.pensjon.v1.sak.V1Sak
 import no.nav.security.oidc.api.Protected
@@ -81,7 +83,7 @@ class ExperimentController {
     @GetMapping("/testPensjonsinformasjon/{vedtaksId}")
     fun testPensjonsinformasjon(@PathVariable("vedtaksId") vedtaksId: String): String {
         val response = pensjonsinformasjonService.hentAltPaaVedtak(vedtaksId)
-        return response.toString()
+        return mapAnyToJson(response)
     }
 
     @GetMapping("/testPensjonsinformasjonkrav/{fnr}")
@@ -105,11 +107,21 @@ class ExperimentController {
             "ALDER" -> "P_BUC_01"
             "GJENLEV" -> "P_BUC_02"
             "UFOREP" -> "P_BUC_03"
-            else -> ""
+            else -> "UKJENT"
         }
+
+        val barnList = vSak.brukersBarnListe
         val aktoerId = aktoerregisterService.hentGjeldendeAktorIdForNorskIdent(fnrId)
         val personv3 = personV3Service.hentPerson(fnrId)
+        val kjoenn = personv3.person.kjoenn.kjoenn.value
         val personNavn = personv3.person.personnavn.sammensattNavn
+
+        val sivilStand = personv3.person.sivilstand.sivilstand.value
+        val personStatus = personv3.person.personstatus.personstatus.value
+
+
+        val navfnr = NavFodselsnummer(fnrId)
+
 
         return PersonDetail(
                 sakType = sakType,
@@ -117,6 +129,12 @@ class ExperimentController {
                 aktoerId = aktoerId,
                 fnr = fnrId,
                 personNavn = personNavn,
+                kjoenn = kjoenn,
+                fodselDato = navfnr.getBirthDate(),
+                aar16Dato = navfnr.getYearWhen16(),
+                alder = navfnr.getAge(),
+                sivilStand = sivilStand,
+                persomStatus = personStatus,
                 euxCaseId = null
         )
     }
@@ -140,6 +158,11 @@ class ExperimentController {
     @GetMapping("/possibleactions/{rinanr}", produces = [MediaType.APPLICATION_JSON_VALUE])
     fun getMuligeAksjoner(@PathVariable(value = "rinanr", required = true) rinanr: String): List<RINAaksjoner> {
         return euxService.getPossibleActions(rinanr)
+    }
+
+    @GetMapping("/institusjoner", "/institusjoner/{land}")
+    fun getEuxInstitusjoner(@PathVariable("land", required = false) landkode: String? = ""): List<String> {
+        return euxService.getInstitutions(landkode).sorted()
     }
 
     //TODO remove when done!
@@ -170,8 +193,6 @@ class ExperimentController {
         return if (request.euxCaseId != null) {
             val data = PrefillDataModel().apply {
                 penSaksnummer = penSaksnr
-                //personNr = "12345678901"
-                //aktoerID = "12345678901"
                 sed = sedObj
                 euxCaseID = request.euxCaseId
             }
@@ -184,8 +205,6 @@ class ExperimentController {
 
             val data = PrefillDataModel().apply {
                 penSaksnummer = penSaksnr
-                //personNr = "12345678901"
-                //aktoerID = "12345678901"
                 buc = bucId
                 institution = institutin
                 sed = sedObj

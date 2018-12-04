@@ -20,9 +20,11 @@ rinaaction:
 eessi:
   pensjon:
     lokalid: 'NO:noinst002'
+    //lokalid: 'NO:NAVT002'
+    //lokaknavn: '12347, NAVT002, NO'
     lokalnavn: 'NOINST002, NO INST002, NO'
     adresse:
       gate: 'Postboks 6600 Etterstad'
       by:   'Oslo'
       postnummer: '0607'
-      land: '[NO] Norge'
+      land: 'NO'

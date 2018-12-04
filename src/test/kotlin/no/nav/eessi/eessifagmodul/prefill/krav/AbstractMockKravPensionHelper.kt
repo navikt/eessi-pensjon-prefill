@@ -4,6 +4,7 @@ import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.whenever
 import no.nav.eessi.eessifagmodul.models.InstitusjonItem
 import no.nav.eessi.eessifagmodul.models.SED
+import no.nav.eessi.eessifagmodul.models.SEDType
 import no.nav.eessi.eessifagmodul.prefill.PensjonsinformasjonHjelper
 import no.nav.eessi.eessifagmodul.prefill.Prefill
 import no.nav.eessi.eessifagmodul.prefill.PrefillDataModel
@@ -24,7 +25,9 @@ import org.springframework.util.ResourceUtils
 import org.springframework.web.client.RestTemplate
 import java.time.LocalDate
 
-abstract class AbstractMockKravPensionHelper(private val sedId: String, private val mockKravXMLfil: String) {
+abstract class AbstractMockKravPensionHelper {
+
+    var personFnr: String = ""
 
     @Mock
     protected lateinit var pensjonsinformasjonRestTemplate: RestTemplate
@@ -48,7 +51,14 @@ abstract class AbstractMockKravPensionHelper(private val sedId: String, private 
 
     @Before
     fun onStart() {
+        setFakePersonFnr(createFakePersonFnr())
+        val mockPair = mockPesysTestfilepath()
+
         //mock prefillDataModel
+        val sedId = mockPair.first
+        SEDType.valueOf(sedId)
+        val mockKravXMLfil = mockPair.second
+
         prefillData = generatePrefillData(sedId, "02345678901")
         createPayload(prefillData)
 
@@ -69,24 +79,59 @@ abstract class AbstractMockKravPensionHelper(private val sedId: String, private 
         prefill = createTestClass(prefillNav, personTPS, pensionDataFromPEN)
     }
 
+//    fun createFakePersonFnr(): String {
+//        if (personFnr.isNullOrBlank()) {
+//            personFnr = PersonDataFromTPS.generateRandomFnr(68)
+//        }
+//        return personFnr
+//    }
+
+    abstract fun createFakePersonFnr(): String
+
+    private fun setFakePersonFnr(fnr: String) {
+        personFnr = fnr
+    }
+
+    fun getFakePersonFnr(): String {
+        return personFnr
+    }
+
+    //mock pesys info
+    abstract fun mockPesysTestfilepath(): Pair<String, String>
+
+    //mock prefill SED class
     abstract fun createTestClass(prefillNav: PrefillNav, personTPS: PrefillPersonDataFromTPS, pensionDataFromPEN: PensjonsinformasjonHjelper): Prefill<SED>
 
+    //mock payloiad from api
     abstract fun createPayload(prefillData: PrefillDataModel)
 
+    //mock person informastion payload
     abstract fun createPersonInfoPayLoad(): String
 
+    //mock person trygdetid utland opphold (p4000) payload
     abstract fun createPersonTrygdetidHistorikk(): String
+
+    //mock datafromtps..
+    open class DataFromTPS(mocktps: Set<MockTPS>) : PersonDataFromTPS(mocktps)
+
+    //metod person tps to override default..
+    abstract fun creareMockPersonDataTPS(): Set<PersonDataFromTPS.MockTPS>?
+
+    //mock person tps default.. enke with 1chold u 18y
+    private fun initMockPersonDataTPS(): Set<PersonDataFromTPS.MockTPS> {
+        return setOf(
+                PersonDataFromTPS.MockTPS("Person-20000.json", generateRandomFnr(67), PersonDataFromTPS.MockTPS.TPSType.PERSON),
+                PersonDataFromTPS.MockTPS("Person-21000.json", generateRandomFnr(43), PersonDataFromTPS.MockTPS.TPSType.BARN),
+                PersonDataFromTPS.MockTPS("Person-22000.json", generateRandomFnr(17), PersonDataFromTPS.MockTPS.TPSType.BARN)
+        )
+    }
 
     //alle tester med aamme personlist for tiden. MOCK TPS
     private fun initMockPrefillPersonDataFromTPS(): PrefillPersonDataFromTPS {
         //løsning for å laste in abstract mockTPStestklasse
-        class DataFromTPS(mocktps: Set<MockTPS>) : PersonDataFromTPS(mocktps)
-        val datatps = DataFromTPS(
-                setOf(
-                        PersonDataFromTPS.MockTPS("Person-20000.json", "02345678901"),
-                        PersonDataFromTPS.MockTPS("Person-21000.json", "22345678901"),
-                        PersonDataFromTPS.MockTPS("Person-22000.json", "12345678901")
-                ))
+        val mockDataSet = creareMockPersonDataTPS() ?: initMockPersonDataTPS()
+
+        val datatps = DataFromTPS(mockDataSet)
         datatps.mockPersonV3Service = mockPersonV3Service
         return datatps.mockPrefillPersonDataFromTPS()
     }

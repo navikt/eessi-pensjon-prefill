@@ -12,6 +12,8 @@ import no.nav.eessi.eessifagmodul.services.eux.EuxService
 import no.nav.security.oidc.api.Protected
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
+import org.springframework.scheduling.annotation.Async
 import org.springframework.web.bind.annotation.*
 import java.util.*
 
@@ -52,7 +54,8 @@ class ApiController(private val euxService: EuxService, private val prefillServi
 
 
     @ApiOperation("viser en oppsumering av SED prefill. Før innsending til EUX Basis")
-    @PostMapping("/sed/confirm")
+    @PostMapping("/sed/confirm", produces = [MediaType.APPLICATION_JSON_VALUE])
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     fun confirmDocument(@RequestBody request: ApiRequest): SED {
         return prefillService.prefillSed(buildPrefillDataModelConfirm(request)).sed
     }
@@ -90,7 +93,9 @@ class ApiController(private val euxService: EuxService, private val prefillServi
 
     @ApiOperation("Kjører prosess OpprettBuCogSED på EUX for å få opprette et RINA dokument med en SED")
     @PostMapping("/buc/create")
+    @Async
     fun createDocument(@RequestBody request: ApiRequest): String {
+
         return prefillService.prefillAndCreateSedOnNewCase(buildPrefillDataModelOnNew(request)).euxCaseID
 
     }
@@ -143,7 +148,6 @@ class ApiController(private val euxService: EuxService, private val prefillServi
                     aktoerID = request.aktoerId
                     personNr = pinid
                     institution = request.institutions
-
                     vedtakId = request.vedtakId ?: ""
                 }
             }

@@ -11,6 +11,7 @@ import no.nav.eessi.eessifagmodul.prefill.nav.PrefillPersonDataFromTPS
 import no.nav.eessi.eessifagmodul.services.LandkodeService
 import no.nav.eessi.eessifagmodul.services.PostnummerService
 import no.nav.eessi.eessifagmodul.services.personv3.PersonV3Service
+import no.nav.eessi.eessifagmodul.utils.NavFodselsnummer
 import no.nav.eessi.eessifagmodul.utils.mapJsonToAny
 import no.nav.eessi.eessifagmodul.utils.typeRefs
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.*
@@ -18,6 +19,7 @@ import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonResponse
 import org.junit.Before
 import org.mockito.Mock
 import org.springframework.util.ResourceUtils
+import java.time.LocalDate
 
 abstract class PersonDataFromTPS(private val mocktps: Set<MockTPS>) {
 
@@ -29,6 +31,8 @@ abstract class PersonDataFromTPS(private val mocktps: Set<MockTPS>) {
     @Mock
     protected lateinit var prefillNav: PrefillNav
 
+    //lateinit var prefilData: PrefillDataModel
+
     @Before
     fun setup() {
         preutfyllingTPS = mockPrefillPersonDataFromTPS()
@@ -39,8 +43,23 @@ abstract class PersonDataFromTPS(private val mocktps: Set<MockTPS>) {
     }
 
 
-    private fun initMockHentPersonResponse(mockFile: String): HentPersonResponse {
-        val resource = ResourceUtils.getFile("classpath:personv3/$mockFile").readText()
+    private fun initMockHentPersonResponse(mockTPS: MockTPS, mockTPSset: Set<MockTPS>): HentPersonResponse {
+        val resource = ResourceUtils.getFile("classpath:personv3/${mockTPS.mockFile}").readText()
+
+        println("Parsing TPS mockfile: ${mockTPS.mockFile}   Generated fnr:  ${mockTPS.replaceMockfnr}   type:  ${mockTPS.mockType} ")
+
+        val mockBarnList = mutableListOf<MockTPS>()
+        val mockEkteItem = mutableListOf<MockTPS>()
+        mockTPSset.forEach {
+            if (it.mockType == MockTPS.TPSType.BARN) {
+                mockBarnList.add(it)
+            }
+            if (it.mockType == MockTPS.TPSType.EKTE) {
+                mockEkteItem.add(it)
+            }
+        }
+        println("---------------------------------------------------------------------------------")
+
         val mapper = jacksonObjectMapper()
         val rootNode = mapper.readValue(resource, JsonNode::class.java)
 
@@ -69,23 +88,42 @@ abstract class PersonDataFromTPS(private val mocktps: Set<MockTPS>) {
         val v3person = Bruker()
 
         harFraRolleI.forEach {
-            val v3familieRelasjon = Familierelasjon()
-
             val tilRolle = it["tilRolle"]
-
             val tilPerson = it["tilPerson"]
             val kjoennitem = tilPerson["kjoenn"]
             val aktoeritem = tilPerson["aktoer"]
             val personnavnitem = tilPerson["personnavn"]
 
+            val v3familieRelasjon = Familierelasjon()
             v3familieRelasjon.tilRolle = mapJsonToAny(tilRolle.toString(), typeRefs<Familierelasjoner>())
+
             v3familieRelasjon.tilPerson = Bruker()
             if (!kjoennitem.isNull) {
                 v3familieRelasjon.tilPerson.kjoenn = mapJsonToAny(kjoennitem.toString(), typeRefs<Kjoenn>())
             }
-            v3familieRelasjon.tilPerson.aktoer = mapJsonToAny(aktoeritem.toString(), typeRefs<PersonIdent>())
-            v3familieRelasjon.tilPerson.personnavn = mapJsonToAny(personnavnitem.toString(), typeRefs<Personnavn>())
+            val familieIdent = mapJsonToAny(aktoeritem.toString(), typeRefs<PersonIdent>())
 
+            if (v3familieRelasjon.tilRolle.value == "BARN") {
+                for (i in mockBarnList) {
+                    if (i.mockType == MockTPS.TPSType.BARN && i.used == false) {
+                        familieIdent.ident.ident = i.replaceMockfnr
+                        i.used = true
+                        break
+                    }
+                }
+            }
+            if (v3familieRelasjon.tilRolle.value == "EKTE") {
+                for (i in mockEkteItem) {
+                    if (i.mockType == MockTPS.TPSType.EKTE && i.used == false)
+                        familieIdent.ident.ident = i.replaceMockfnr
+                    i.used = true
+                    break
+                }
+            }
+            v3familieRelasjon.tilPerson.aktoer = familieIdent
+            //println("Aktoer : " + v3familieRelasjon.tilPerson.aktoer)
+
+            v3familieRelasjon.tilPerson.personnavn = mapJsonToAny(personnavnitem.toString(), typeRefs<Personnavn>())
             v3person.harFraRolleI.add(v3familieRelasjon)
         }
 
@@ -100,6 +138,12 @@ abstract class PersonDataFromTPS(private val mocktps: Set<MockTPS>) {
         v3person.kjoenn = v3kjoenn
         v3person.aktoer = v3aktoer
 
+        val ident = v3person.aktoer as PersonIdent
+        ident.ident.ident = mockTPS.replaceMockfnr
+
+        val navfnr = NavFodselsnummer(ident.ident.ident)
+        println("Person-Aldrer: ${navfnr.getAge()}")
+
         val v3PersonResponse = HentPersonResponse()
         v3PersonResponse.person = v3person
 
@@ -108,12 +152,24 @@ abstract class PersonDataFromTPS(private val mocktps: Set<MockTPS>) {
 
     fun mockPrefillPersonDataFromTPS(): PrefillPersonDataFromTPS {
         mocktps.forEach {
-            whenever(mockPersonV3Service.hentPerson(it.mockPin)).thenReturn(initMockHentPersonResponse(it.mockFile))
+            //whenever(mockPersonV3Service.hentPerson(it.mockPin)).thenReturn(initMockHentPersonResponse(it, mocktps))
+
+            val result = initMockHentPersonResponse(it, mocktps)
+            whenever(mockPersonV3Service.hentPerson(it.replaceMockfnr)).thenReturn(result)
         }
         return PrefillPersonDataFromTPS(mockPersonV3Service, PostnummerService(), LandkodeService())
     }
 
-    fun generatePrefillData(sedName: String = "P2000", pinId: String = "123456789"): PrefillDataModel {
+    fun getRandomNavFodselsnummer(value: MockTPS.TPSType): String? {
+        mocktps.forEach {
+            if (it.mockType == MockTPS.TPSType.PERSON) {
+                return it.replaceMockfnr
+            }
+        }
+        return null
+    }
+
+    fun generatePrefillData(sedName: String = "P2000", pinId: String = getRandomNavFodselsnummer(MockTPS.TPSType.PERSON)!!): PrefillDataModel {
         val items = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
         return PrefillDataModel().apply {
             rinaSubject = "Pensjon"
@@ -128,9 +184,72 @@ abstract class PersonDataFromTPS(private val mocktps: Set<MockTPS>) {
         }
     }
 
+    companion object {
+        fun generateRandomFnr(fixedAlder: Int = 67): String {
+
+            val fnrdate = LocalDate.now().minusYears(fixedAlder.toLong())
+
+            val y = fnrdate.year.toString()
+            val day = "01"
+            val month = fixDigits(fnrdate.month.value.toString())
+            val fixedyear = y.substring(2, y.length)
+
+            val indivdnr = generateIndvididnr(fnrdate.year)
+
+            val fnr = day + month + fixedyear + indivdnr + "52"
+
+            val navfnr = NavFodselsnummer(fnr)
+            println("Generert fnr: ${navfnr.fnr()}  age: ${navfnr.getAge()}  birthday:  ${navfnr.get4DigitBirthYear()}  isunder18: ${navfnr.isUnder18Year()}")
+            return fnr
+        }
+
+        private fun mockDnr(strFnr: String): String {
+            val nvf = NavFodselsnummer(strFnr)
+            val fdig = nvf.getFirstDigit()
+            return when (fdig) {
+                0 -> "4" + strFnr.substring(1, strFnr.length)
+                1 -> "5" + strFnr.substring(1, strFnr.length)
+                2 -> "6" + strFnr.substring(1, strFnr.length)
+                3 -> "7" + strFnr.substring(1, strFnr.length)
+                else -> strFnr
+            }
+        }
+
+        private fun fixDigits(str: String): String {
+            if (str.length == 1) {
+                return "0$str"
+            }
+            return str
+        }
+
+        private fun generateIndvididnr(year: Int): String {
+//        1854-1899, brukes serien 749-500
+//        1900-1999, brukes serien 499-000
+//        1940-1999, brukes også serien 999-900
+//        2000-2039, brukes serien 999-500
+//        println("Year: $year")
+            return when (year) {
+                in 1900..1999 -> "433"
+                in 1940..1999 -> "954"
+                in 2000..2039 -> "543"
+                else -> "739"
+            }
+        }
+
+    }
+
+
     data class MockTPS(
             val mockFile: String,
-            val mockPin: String
-    )
+            val replaceMockfnr: String,
+            val mockType: TPSType,
+            var used: Boolean = false
+    ) {
+        enum class TPSType {
+            PERSON,
+            EKTE,
+            BARN;
+        }
+    }
 
 }

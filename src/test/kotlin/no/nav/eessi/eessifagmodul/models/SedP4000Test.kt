@@ -201,8 +201,8 @@ class SedP4000Test {
 
         val result = apiController.confirmDocument(req)
 
-        val jsondata = result.toJson()
-        assertNotNull(jsondata)
+        //val jsondata = result.toJson()
+        assertNotNull(result)
     }
 }
 

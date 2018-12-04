@@ -1,4 +1,6 @@
-<pen:pensjonsinformasjon xmlns:pen="http://nav.no/pensjon/v1/pensjonsinformasjon" xmlns:avd="http://nav.no/pensjon/v1/avdod" xmlns:inn="http://nav.no/pensjon/v1/inngangOgEksport" xmlns:per="http://nav.no/pensjon/v1/person" xmlns:sak="http://nav.no/pensjon/v1/sak"
+<pen:pensjonsinformasjon xmlns:pen="http://nav.no/pensjon/v1/pensjonsinformasjon" xmlns:avd="http://nav.no/pensjon/v1/avdod"
+                         xmlns:inn="http://nav.no/pensjon/v1/inngangOgEksport" xmlns:per="http://nav.no/pensjon/v1/person"
+                         xmlns:sakAlder="http://nav.no/pensjon/v1/sakAlder"
                          xmlns:try="http://nav.no/pensjon/v1/trygdeavtale" xmlns:try1="http://nav.no/pensjon/v1/trygdetidAvdodFarListe" xmlns:try2="http://nav.no/pensjon/v1/trygdetid" xmlns:try3="http://nav.no/pensjon/v1/trygdetidAvdodListe"
                          xmlns:try4="http://nav.no/pensjon/v1/trygdetidAvdodMorListe" xmlns:try5="http://nav.no/pensjon/v1/trygdetidListe" xmlns:ved="http://nav.no/pensjon/v1/vedtak" xmlns:vil="http://nav.no/pensjon/v1/vilkarsvurderingListe" xmlns:vil1="http://nav.no/pensjon/v1/vilkarsvurdering"
                          xmlns:vil2="http://nav.no/pensjon/v1/vilkarsvurderingUforetrygd" xmlns:ytel="http://nav.no/pensjon/v1/ytelsePerMaanedListe" xmlns:ytel1="http://nav.no/pensjon/v1/ytelsePerMaaned" xmlns:ytel2="http://nav.no/pensjon/v1/ytelseskomponent">
@@ -26,12 +28,10 @@
         <per:pid>string</per:pid>
         <per:aktorId>string</per:aktorId>
     </pen:person>
-    <pen:sak>
-        <sak:sakType>string</sak:sakType>
-        <!--
-                <sak:uttakFor67>true</sak:uttakFor67>
-        -->
-    </pen:sak>
+    <pen:sakAlder>
+        <sakAlder:sakType>string</sakAlder:sakType>
+        <sakAlder:uttakFor67>true</sakAlder:uttakFor67>
+    </pen:sakAlder>
     <pen:trygdeavtale>
         <try:erArt10BruktGP>false</try:erArt10BruktGP>
         <try:erArt10BruktTP>false</try:erArt10BruktTP>
@@ -123,6 +123,24 @@
         <ytel:ytelsePerMaanedListe>
             <ytel1:fom>2008-02-06T14:51:05+01:00</ytel1:fom>
             <ytel1:tom>2015-08-04T02:55:16</ytel1:tom>
+            <ytel1:mottarMinstePensjonsniva>true</ytel1:mottarMinstePensjonsniva>
+            <ytel1:gjenlevendetilleggAnvendtAlderspensjon>true</ytel1:gjenlevendetilleggAnvendtAlderspensjon>
+            <ytel1:yrkesskadeAnvendtAlderspensjon>true</ytel1:yrkesskadeAnvendtAlderspensjon>
+            <ytel1:vinnendeBeregningsmetode>string</ytel1:vinnendeBeregningsmetode>
+            <ytel1:vinnendeBeregningsmetodeKap20>string</ytel1:vinnendeBeregningsmetodeKap20>
+            <ytel1:vurdertBeregningsmetodeFolketrygd>false</ytel1:vurdertBeregningsmetodeFolketrygd>
+            <ytel1:vurdertBeregningsmetodeEOS>true</ytel1:vurdertBeregningsmetodeEOS>
+            <ytel1:vurdertBeregningsmetodeNordisk>true</ytel1:vurdertBeregningsmetodeNordisk>
+            <ytel1:belop>3</ytel1:belop>
+            <ytel1:belopUtenAvkorting>3</ytel1:belopUtenAvkorting>
+            <ytel1:ytelseskomponentListe>
+                <ytel2:ytelsesKomponentType>string</ytel2:ytelsesKomponentType>
+                <ytel2:belopTilUtbetaling>3</ytel2:belopTilUtbetaling>
+                <ytel2:belopUtenAvkorting>3</ytel2:belopUtenAvkorting>
+            </ytel1:ytelseskomponentListe>
+        </ytel:ytelsePerMaanedListe>
+        <ytel:ytelsePerMaanedListe>
+            <ytel1:fom>2008-02-06T14:51:05+01:00</ytel1:fom>
             <ytel1:mottarMinstePensjonsniva>true</ytel1:mottarMinstePensjonsniva>
             <ytel1:gjenlevendetilleggAnvendtAlderspensjon>true</ytel1:gjenlevendetilleggAnvendtAlderspensjon>
             <ytel1:yrkesskadeAnvendtAlderspensjon>true</ytel1:yrkesskadeAnvendtAlderspensjon>

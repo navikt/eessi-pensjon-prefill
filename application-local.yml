@@ -14,6 +14,12 @@ virksomhet.person.v3:
 aktoerregister.api.v1:
   url: 'https://app-t8.adeo.no/aktoerregister/api/v1'
 
+pensjonsinformasjon:
+  api:
+    v1:
+      url: 'https://wasapp-t5.adeo.no/pensjon-ws/api/pensjonsinformasjon/v1'
+
+
 srveessipensjon:
   username: '${SRVEESSIPENSJON_USERNAME}'
   password: '${SRVEESSIPENSJON_PASSWORD}'
@@ -46,12 +52,3 @@ management:
 rinaaction:
     waittime: '5000'
 
-eessi:
-  pensjon:
-    lokalid: 'NO:noinst002'
-    lokalnavn: 'NOINST002, NO INST002, NO'
-    adresse:
-      gate: 'Postboks 6600 Etterstad'
-      by:   'Oslo'
-      postnummer: '0607'
-      land: '[NO] Norge'

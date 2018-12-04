@@ -6,8 +6,7 @@
         xmlns:ns27="http://nav.no/pensjon/v1/pensjonsinformasjon"
         xmlns:ns5="http://nav.no/pensjon/v1/ytelsePerMaaned"
         xmlns:ns6="http://nav.no/pensjon/v1/ytelseskomponent"
-        xmlns:ns7="http://nav.no/pensjon/v1/ytelsePerMaanedListe"
->
+        xmlns:ns7="http://nav.no/pensjon/v1/ytelsePerMaanedListe">
     <ns27:brukersSakerListe xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns26:v1.BrukersSakerListe">
         <ns26:brukersSakerListe>
             <ns25:sakType>ALDER</ns25:sakType>

@@ -62,3 +62,7 @@ fun XMLGregorianCalendar.simpleFormat(): String {
 fun Date.simpleFormat(): String {
     return SimpleDateFormat("yyyy-MM-dd").format(this)
 }
+
+inline fun <T : Any, R> whenNotNull(input: T?, callback: (T) -> R): R? {
+    return input?.let(callback)
+}

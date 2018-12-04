@@ -6,13 +6,32 @@ import no.nav.eessi.eessifagmodul.prefill.Prefill
 import no.nav.eessi.eessifagmodul.prefill.PrefillDataModel
 import no.nav.eessi.eessifagmodul.prefill.nav.PrefillNav
 import no.nav.eessi.eessifagmodul.prefill.nav.PrefillPersonDataFromTPS
+import no.nav.eessi.eessifagmodul.prefill.person.PersonDataFromTPS
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
 import kotlin.test.assertNotNull
 
 @RunWith(MockitoJUnitRunner::class)
-class PrefillP2200UforpensjonTest : AbstractMockKravPensionHelper("P2200", "P2000-AP-14069110.xml") {
+class PrefillP2200UforpensjonTest : AbstractMockKravPensionHelper() {
+
+
+    override fun mockPesysTestfilepath(): Pair<String, String> {
+        return Pair("P2200", "P2000-AP-14069110.xml")
+    }
+
+    override fun creareMockPersonDataTPS(): Set<PersonDataFromTPS.MockTPS>? {
+        return setOf(
+                PersonDataFromTPS.MockTPS("Person-20000.json", getFakePersonFnr(), PersonDataFromTPS.MockTPS.TPSType.PERSON),
+                PersonDataFromTPS.MockTPS("Person-21000.json", PersonDataFromTPS.generateRandomFnr(43), PersonDataFromTPS.MockTPS.TPSType.BARN),
+                PersonDataFromTPS.MockTPS("Person-22000.json", PersonDataFromTPS.generateRandomFnr(17), PersonDataFromTPS.MockTPS.TPSType.BARN)
+        )
+    }
+
+    override fun createFakePersonFnr(): String {
+        return PersonDataFromTPS.generateRandomFnr(67)
+    }
+
 
     override fun createTestClass(prefillNav: PrefillNav, personTPS: PrefillPersonDataFromTPS, pensionDataFromPEN: PensjonsinformasjonHjelper): Prefill<SED> {
         return PrefillP2200(prefillNav, personTPS, pensionDataFromPEN)
@@ -20,6 +39,7 @@ class PrefillP2200UforpensjonTest : AbstractMockKravPensionHelper("P2200", "P200
 
     override fun createPayload(prefillData: PrefillDataModel) {
         prefillData.penSaksnummer = "14069110"
+        prefillData.personNr = getFakePersonFnr()
         prefillData.partSedAsJson["PersonInfo"] = createPersonInfoPayLoad()
     }
 
@@ -33,7 +53,7 @@ class PrefillP2200UforpensjonTest : AbstractMockKravPensionHelper("P2200", "P200
 
 
     @Test
-    fun `testing av komplett utfylling kravsøknad uforepen P2200`() {
+    fun `Testing av komplett utfylling kravsøknad uførepensjon P2200`() {
 
         pendata = kravdata.getPensjoninformasjonFraSak(prefillData)
         assertNotNull(pendata)

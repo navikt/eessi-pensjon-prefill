@@ -37,9 +37,7 @@ class PrefillPensjonTilleggsinformasjon : VedtakPensjonData() {
 
                 //6.7.1.4
                 //05.10.2018 - Nei
-                annen = null, //  Annen(
-                //  $pensjon.tilleggsinformasjon.annen.institusjonsid
-                //institusjonsadresse = Institusjonsadresse())
+                annen = null,
 
                 //6.7.2
                 //05.10.2018 Nei
@@ -92,9 +90,9 @@ class PrefillPensjonTilleggsinformasjon : VedtakPensjonData() {
     //6.5.2.1
     private fun createAndreinstitusjonerItem(pendata: Pensjonsinformasjon, prefillData: PrefillDataModel): List<AndreinstitusjonerItem>? {
         logger.debug("6.5.2.1       AndreinstitusjonerItem (review address)")
-
-        val data = prefillData.andreInstitusjon ?: AndreinstitusjonerItem()
+        val data = prefillData.andreInstitusjon ?: return null
         return listOf(data)
+        //return null
     }
 
     //6.6

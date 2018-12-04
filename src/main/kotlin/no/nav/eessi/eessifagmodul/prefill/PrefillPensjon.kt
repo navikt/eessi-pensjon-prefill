@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
 @Component
+//TODO Vil utgå når SED blir koblet direkte mot PEN/PESYS for uthenting og preutfylling av data
 class PrefillPensjon(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS) : Prefill<Pensjon> {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillPensjon::class.java) }

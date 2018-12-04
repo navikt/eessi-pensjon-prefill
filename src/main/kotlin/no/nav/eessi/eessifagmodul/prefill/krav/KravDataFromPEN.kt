@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory
 /**
  * Hjelpe klasse for sak som fyller ut NAV-SED-P2000 med pensjondata fra PESYS.
  */
-class KravDataFromPEN(private val dataFromPEN: PensjonsinformasjonHjelper) : VedtakPensjonData(), Prefill<Pensjon> {
+open class KravDataFromPEN(private val dataFromPEN: PensjonsinformasjonHjelper) : VedtakPensjonData(), Prefill<Pensjon> {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(KravDataFromPEN::class.java) }
 
@@ -31,31 +31,32 @@ class KravDataFromPEN(private val dataFromPEN: PensjonsinformasjonHjelper) : Ved
     }
 
 
-    fun getPensjoninformasjonFraSak(prefillData: PrefillDataModel): Pensjonsinformasjon {
-        return dataFromPEN.hentMedFnr(prefillData)
-    }
-
-    fun getPensjonSak(prefillData: PrefillDataModel, pendata: Pensjonsinformasjon): V1Sak {
-        return dataFromPEN.hentMedSak(prefillData, pendata)
-    }
-
     override fun prefill(prefillData: PrefillDataModel): Pensjon {
         val pendata: Pensjonsinformasjon = getPensjoninformasjonFraSak(prefillData)
         val pensak = getPensjonSak(prefillData, pendata)
 
         return Pensjon(
 
-                //4.1
+                //4.0
                 ytelser = createInformasjonOmYtelserList(prefillData, pensak)
-
 
         )
 
     }
 
+    //i bruk av tester også
+    fun getPensjoninformasjonFraSak(prefillData: PrefillDataModel): Pensjonsinformasjon {
+        return dataFromPEN.hentMedFnr(prefillData)
+    }
+
+    //i bruk av tester også
+    fun getPensjonSak(prefillData: PrefillDataModel, pendata: Pensjonsinformasjon): V1Sak {
+        return dataFromPEN.hentMedSak(prefillData, pendata)
+    }
+
     //4.1
     private fun createInformasjonOmYtelserList(prefillData: PrefillDataModel, pensak: V1Sak): List<YtelserItem> {
-        logger.debug("4.1       Informasjon om ytelser")
+        logger.debug("4.1           Informasjon om ytelser")
 
         val ytelseprmnd = hentYtelsePerMaanedSortert(pensak)
 
@@ -69,48 +70,76 @@ class KravDataFromPEN(private val dataFromPEN: PensjonsinformasjonHjelper) : Ved
     }
 
     //4.1..
-    private fun createYtelserItem(prefillData: PrefillDataModel, ytelsek: V1YtelsePerMaaned, pensak: V1Sak): YtelserItem {
+    private fun createYtelserItem(prefillData: PrefillDataModel, ytelsePrmnd: V1YtelsePerMaaned, pensak: V1Sak): YtelserItem {
 
         return YtelserItem(
 
-                //4.1.10.2
-                totalbruttobeloeparbeidsbasert = ytelsek.belop.toString(),
-
-                //
-                institusjon = null, //,
-
-                //4.1.4.1
-                pin = createInstitusjonPin(prefillData),
-
-                //4.1.10.1
-                mottasbasertpaa = createPensionBasedOn(prefillData, pensak),
-
                 //4.1.1
-                ytelse = null,
-
-                //4.1.2.1
-                annenytelse = ytelsek.vinnendeBeregningsmetode,
+                ytelse = creatYtelser(prefillData, pensak),
 
                 //4.1.3
                 status = createPensionStatus(prefillData, pensak),
 
+                //4.1.4.1
+                pin = createInstitusjonPin(prefillData),
+
+                //4.1.4.1.4
+                institusjon = createInstitusjon(prefillData),
+
+                //4.1.10.1
+                mottasbasertpaa = createPensionBasedOn(prefillData, pensak),
+
+                //4.1.2.1
+                annenytelse = ytelsePrmnd.vinnendeBeregningsmetode,
+
+                //4.1.10.2
                 totalbruttobeloepbostedsbasert = null,
 
+                //4.1.10.2
+                totalbruttobeloeparbeidsbasert = ytelsePrmnd.belop.toString(),
+
+                //4.1.7
                 startdatoretttilytelse = null,
 
-                beloep = createYtelseItemBelop(ytelsek, ytelsek.ytelseskomponentListe),
+                //4.1.9
+                beloep = createYtelseItemBelop(ytelsePrmnd, ytelsePrmnd.ytelseskomponentListe),
 
-                //TODO hva gjøre en hvis fom og tom er null??
-                startdatoutbetaling = ytelsek.fom?.simpleFormat() ?: null,
+                //TODO hva gjøre en hvis fom og tom er null?
+                startdatoutbetaling = ytelsePrmnd.fom?.let { it.simpleFormat() },
 
-                sluttdatoretttilytelse = ytelsek.tom?.simpleFormat() ?: null,
+                sluttdatoretttilytelse = ytelsePrmnd.tom?.let { it.simpleFormat() },
 
                 sluttdatoutbetaling = null,
-
 
                 ytelseVedSykdom = null //7.2 //P2100
 
         )
+
+    }
+
+
+    private fun createInstitusjon(prefillData: PrefillDataModel): Institusjon? {
+        logger.debug("4.1.4.1.4     Institusjon")
+        return Institusjon(
+                institusjonsid = prefillData.andreInstitusjon?.institusjonsid,
+                institusjonsnavn = prefillData.andreInstitusjon?.institusjonsnavn,
+                saksnummer = prefillData.penSaksnummer
+        )
+
+    }
+
+
+    //4.1.1
+    private fun creatYtelser(prefillData: PrefillDataModel, pensak: V1Sak): String? {
+        logger.debug("4.1.1         Ytelser")
+        val sakType = KSAK.valueOf(pensak.sakType)
+        return when (sakType) {
+            KSAK.ALDER -> "10"
+            KSAK.GJENLEV -> "11"
+            KSAK.UFOREP -> "08"
+            else -> "07"
+        }
+
 
     }
 
@@ -122,7 +151,9 @@ class KravDataFromPEN(private val dataFromPEN: PensjonsinformasjonHjelper) : Ved
     [04] Foreløpig
      */
     private fun createPensionStatus(prefillData: PrefillDataModel, pensak: V1Sak): String? {
+        logger.debug("4.1.3         Status")
         val status = pensak.status
+        val temp = prefillData.personNr
 
         if (status == "INNV") {
             return "02" // Innvilget
@@ -138,34 +169,28 @@ class KravDataFromPEN(private val dataFromPEN: PensjonsinformasjonHjelper) : Ved
     Hvis UT: Hvis bruker har minsteytelse, velges kun Residence. Ellers velges både Residence og Working.
     Hvis AP: Hvis bruker mottar tilleggspensjon, velges både Residence og Working. Ellers velges kun Residence.
     Hvis GJP: Hvis bruker mottar tilleggspensjon, velges både Residence og Working. Ellers velges kun Residence.
-
      */
     //4.1.10.1
     private fun createPensionBasedOn(prefillData: PrefillDataModel, pensak: V1Sak): String? {
+        logger.debug("4.1.10.1      Pensjon basertpå")
         val navfnr = NavFodselsnummer(prefillData.personNr)
 
         val sakType = KSAK.valueOf(pensak.sakType)
 
-        if (navfnr.harDNummber()) {
+        if (navfnr.isDNumber()) {
             return "01" // Botid
-        } else {
-            if (sakType == KSAK.ALDER) {
-                return "02" // Working
-            }
-            if (sakType == KSAK.UFOREP) {
-                return "01" // Botid
-            }
-            if (sakType == KSAK.GJENLEV) {
-                return "01" // Botid
-            }
         }
-
-        return null
+        return when (sakType) {
+            KSAK.ALDER -> "02"
+            KSAK.UFOREP -> "01"
+            KSAK.GJENLEV -> "01"
+            else -> null
+        }
     }
 
     //4.1.4.1
     private fun createInstitusjonPin(prefillData: PrefillDataModel): PinItem {
-        logger.debug("4.1.4.1   Institusjon Pin")
+        logger.debug("4.1.4.1       Institusjon Pin")
         return PinItem(
                 //4.1.4.1.3
                 sektor = "alle",
@@ -183,9 +208,8 @@ class KravDataFromPEN(private val dataFromPEN: PensjonsinformasjonHjelper) : Ved
 
     //4.1.9
     private fun createYtelseItemBelop(ytelsek: V1YtelsePerMaaned, ytelsekomp: List<V1Ytelseskomponent>): List<BeloepItem> {
-
+        logger.debug("4.1.9         Beløp ${ytelsek.fom.simpleFormat()}")
         val list = mutableListOf<BeloepItem>()
-        logger.debug("4.1.9     Beløp ${ytelsek.fom.simpleFormat()}")
         ytelsekomp.forEach {
             list.add(BeloepItem(
 

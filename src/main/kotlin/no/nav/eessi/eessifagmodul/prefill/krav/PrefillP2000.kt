@@ -32,26 +32,14 @@ class PrefillP2000(private val prefillNav: PrefillNav, private val preutfyllingP
 
         val sed = prefillData.sed
 
-        logger.debug("Henter opp Pernsjondata fra PESYS")
         val pensjon = createPensjon(prefillData)
-        //legger til pensjon på SED
-        sed.pensjon = pensjon
 
-        logger.debug("Henter opp Persondata fra TPS")
         sed.nav = createNav(prefillData)
 
-
-        logger.debug("Legger til 4. Informasjon om ytelser den forsikrede mottar")
-
-        //TODO: 5. Ektefelle hva kan vi hente av informasjon? fra hvor
-        logger.debug("Legger til 5. Ektefelle")
-        logger.debug("      mangler familieforhold fra EP-Selvbetjening.")
-
-        //TODO: 7. Informasjon om representant/verge hva kan vi hente av informasjon? fra hvor
-        logger.debug("Legger til 7. Informasjon om representant/verge")
-
-        logger.debug("Henter opp Persondata/Gjenlevende fra TPS")
         pensjon.gjenlevende = createGjenlevende(prefillData)
+
+        //legger pensjon på sed (få med oss gjenlevende/avdød)
+        sed.pensjon = pensjon
 
         logger.debug("-------------------| Preutfylling [$sedId] END |------------------- ")
         return prefillData.sed
@@ -59,13 +47,13 @@ class PrefillP2000(private val prefillNav: PrefillNav, private val preutfyllingP
 
     //henter persondata fra TPS fyller ut sed.nav
     private fun createNav(prefillData: PrefillDataModel): Nav {
-        logger.debug("[${prefillData.getSEDid()}] Preutfylling Utfylling NAV")
+        logger.debug("[${prefillData.getSEDid()}] Preutfylling NAV")
         return prefillNav.prefill(prefillData)
     }
 
     //henter pensjondata fra PESYS fyller ut sed.pensjon
     private fun createPensjon(prefillData: PrefillDataModel): Pensjon {
-        logger.debug("[${prefillData.getSEDid()}] Preutfylling Utfylling Pensjon")
+        logger.debug("[${prefillData.getSEDid()}]   Preutfylling PENSJON")
         return sakPensiondata.prefill(prefillData)
     }
 
