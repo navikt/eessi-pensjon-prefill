@@ -20,10 +20,10 @@ import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.*
 import java.util.*
 
+@Protected
 @CrossOrigin
 @RestController
 @RequestMapping("/api/experiments")
-@Protected
 class ExperimentController {
 
     @Autowired

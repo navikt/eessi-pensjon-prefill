@@ -7,7 +7,10 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.web.client.RestClientException
 import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.ZoneId
 import java.util.*
+import javax.xml.datatype.DatatypeFactory
 import javax.xml.datatype.XMLGregorianCalendar
 
 inline fun <reified T : Any> typeRef(): ParameterizedTypeReference<T> = object : ParameterizedTypeReference<T>() {}
@@ -58,6 +61,14 @@ fun XMLGregorianCalendar.simpleFormat(): String {
     //rinaformat dd-MM-YYYY
     return SimpleDateFormat("yyyy-MM-dd").format(this.toGregorianCalendar().time)
 }
+
+fun createXMLCalendarFromString(dateStr: String): XMLGregorianCalendar {
+    val time = LocalDate.parse(dateStr)
+    val gcal = GregorianCalendar()
+    gcal.timeInMillis = time.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
+    return DatatypeFactory.newInstance().newXMLGregorianCalendar(gcal)
+}
+
 
 fun Date.simpleFormat(): String {
     return SimpleDateFormat("yyyy-MM-dd").format(this)
