@@ -1,7 +1,5 @@
 package no.nav.eessi.eessifagmodul.utils
 
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
@@ -10,22 +8,20 @@ import java.time.temporal.ChronoUnit
  */
 class NavFodselsnummer(private val fodselsnummer: String) {
 
-    private val logger: Logger by lazy { LoggerFactory.getLogger(NavFodselsnummer::class.java) }
-
-    private fun getValue(): String {
+    fun fnr(): String {
         return fodselsnummer
     }
 
     private fun getDayInMonth(): String {
-        return parseDNumber(getValue()).substring(0, 2)
+        return parseDNumber().substring(0, 2)
     }
 
     private fun getMonth(): String {
-        return parseDNumber(getValue()).substring(2, 4)
+        return parseDNumber().substring(2, 4)
     }
 
     private fun get2DigitBirthYear(): String {
-        return getValue().substring(4, 6)
+        return fodselsnummer.substring(4, 6)
     }
 
     fun get4DigitBirthYear(): String {
@@ -35,22 +31,23 @@ class NavFodselsnummer(private val fodselsnummer: String) {
     private fun getCentury(): String {
         val individnummerInt = Integer.parseInt(getIndividnummer())
         val birthYear = Integer.parseInt(get2DigitBirthYear())
-
-        logger.debug("IndividnummerInt: $individnummerInt  BirthYear: $birthYear ")
-
+        //println("Fnr: $fodselsnummer   BirthYear: $birthYear    IndividNr: $individnummerInt")
         return when {
             (individnummerInt <= 499) -> "19"
             (individnummerInt >= 900 && birthYear > 39) -> "19"
             (individnummerInt >= 500 && birthYear < 40) -> "20"
             (individnummerInt in 500..749 && birthYear > 54) -> "18"
-            else -> throw IllegalArgumentException("Ingen gyldig årstall funnet")
+            else -> {
+                println("individNr not found ")
+                println("Fnr: $fodselsnummer   BirthYear: $birthYear    IndividNr: $individnummerInt")
+                throw IllegalArgumentException("Ingen gyldig årstall funnet")
+            }
         }
     }
 
     fun getBirthDate(): LocalDate {
         return LocalDate.of(get4DigitBirthYear().toInt(), getMonth().toInt(), getDayInMonth().toInt())
     }
-
 
     fun getValidPentionAge(): Boolean {
         val validAge = 67
@@ -59,28 +56,39 @@ class NavFodselsnummer(private val fodselsnummer: String) {
         return (resultAge >= validAge)
     }
 
+    fun getYearWhen16(): LocalDate {
+        val copyBdate = LocalDate.from(getBirthDate())
+        return copyBdate.plusYears(16)
+    }
+
+    fun isUnder18Year(): Boolean {
+        val validAge = 18
+        val nowDate = LocalDate.now()
+        val copyBdate = LocalDate.from(getBirthDate())
+        val resultAge = ChronoUnit.YEARS.between(copyBdate, nowDate).toInt()
+        return resultAge < validAge
+    }
+
+
     fun getAge(): Int {
-        val years = ChronoUnit.YEARS.between(getBirthDate(), LocalDate.now()).toInt()
-        logger.debug("BirthDate: ${getBirthDate()}  now: ${LocalDate.now()}")
-        logger.debug("Years: $years")
-        return years
+        return ChronoUnit.YEARS.between(getBirthDate(), LocalDate.now()).toInt()
     }
 
     private fun getIndividnummer(): String {
-        return getValue().substring(6, 9)
+        return fodselsnummer.substring(6, 9)
     }
 
-    private fun parseDNumber(fodselsnummer: String): String {
-        return if (!isDNumber(fodselsnummer)) {
+    private fun parseDNumber(): String {
+        return if (!isDNumber()) {
             fodselsnummer
         } else {
-            "" + (getFirstDigit(fodselsnummer) - 4) + fodselsnummer.substring(1)
+            "" + (getFirstDigit() - 4) + fodselsnummer.substring(1)
         }
     }
 
-    private fun isDNumber(fodselsnummer: String): Boolean {
+    fun isDNumber(): Boolean {
         try {
-            val firstDigit = getFirstDigit(fodselsnummer)
+            val firstDigit = getFirstDigit()
             if (firstDigit in 4..7) {
                 return true
             }
@@ -90,7 +98,7 @@ class NavFodselsnummer(private val fodselsnummer: String) {
         return false
     }
 
-    fun getFirstDigit(fodselsnummer: String): Int {
+    fun getFirstDigit(): Int {
         return Integer.parseInt(fodselsnummer.substring(0, 1))
     }
 

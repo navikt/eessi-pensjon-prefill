@@ -13,9 +13,9 @@ import org.slf4j.LoggerFactory
 import java.time.ZoneId
 import java.time.temporal.ChronoUnit
 
-abstract class PensjonData {
+abstract class VedtakPensjonData {
 
-    private val logger: Logger by lazy { LoggerFactory.getLogger(PensjonData::class.java) }
+    private val logger: Logger by lazy { LoggerFactory.getLogger(VedtakPensjonData::class.java) }
 
     //K_SAK_T Kodeverk fra PESYS
     enum class KSAK {
@@ -34,7 +34,7 @@ abstract class PensjonData {
         return pendata.vedtak.isBoddArbeidetUtland || harAvdodBoddArbeidetUtland(pendata)
     }
 
-    fun harAvdodBoddArbeidetUtland(pendata: Pensjonsinformasjon): Boolean {
+    private fun harAvdodBoddArbeidetUtland(pendata: Pensjonsinformasjon): Boolean {
         val avdod: V1Avdod = pendata.avdod ?: V1Avdod()
 
         if (avdod.avdod != "") {
@@ -103,27 +103,20 @@ abstract class PensjonData {
 
     fun hentVilkarsvurderingUforetrygd(pendata: Pensjonsinformasjon): V1VilkarsvurderingUforetrygd {
         return hentV1Vilkarsvurdering(pendata)?.vilkarsvurderingUforetrygd ?: return V1VilkarsvurderingUforetrygd()
-//        val v1VilkarsvurderingListe = pendata.vilkarsvurderingListe
-//        return v1VilkarsvurderingListe.vilkarsvurderingListe?.get(0)?.vilkarsvurderingUforetrygd ?: return V1VilkarsvurderingUforetrygd()//
     }
 
     //         Kodeverk K_RESULT_BEGR 2017
     fun hentVilkarsProvingAvslagHovedYtelse(pendata: Pensjonsinformasjon): String {
         return hentV1Vilkarsvurdering(pendata)?.avslagHovedytelse ?: return ""
-//        val v1VilkarsvurderingListe = pendata.vilkarsvurderingListe
-//        return v1VilkarsvurderingListe.vilkarsvurderingListe?.get(0)?.avslagHovedytelse ?: return "" // UNDER_62 -- LAVT_TIDLIG_UTTAK osv..
     }
 
-    fun hentV1Vilkarsvurdering(pendata: Pensjonsinformasjon): V1Vilkarsvurdering? {
-        val v1VilkarsvurderingListe: V1VilkarsvurderingListe? = pendata.vilkarsvurderingListe
-                ?: V1VilkarsvurderingListe()
-        val vilkarsvurdering: V1Vilkarsvurdering? = v1VilkarsvurderingListe?.vilkarsvurderingListe?.getOrElse(0) { V1Vilkarsvurdering() }
-        return vilkarsvurdering
+    private fun hentV1Vilkarsvurdering(pendata: Pensjonsinformasjon): V1Vilkarsvurdering? {
+        val v1VilkarsvurderingListe: V1VilkarsvurderingListe? = pendata.vilkarsvurderingListe ?: V1VilkarsvurderingListe()
+        return v1VilkarsvurderingListe?.vilkarsvurderingListe?.getOrElse(0) { V1Vilkarsvurdering() }
     }
 
     fun hentVilkarsResultatHovedytelse(pendata: Pensjonsinformasjon): String {
         return hentV1Vilkarsvurdering(pendata)?.resultatHovedytelse ?: return "" // UNDER_62 -- LAVT_TIDLIG_UTTAK osv..
-        //return v1VilkarsvurderingListe.vilkarsvurderingListe?.get(0)?.resultatHovedytelse ?: return "" // UNDER_62 -- LAVT_TIDLIG_UTTAK osv..
     }
 
     fun isForeldelos(pendata: Pensjonsinformasjon): Boolean {

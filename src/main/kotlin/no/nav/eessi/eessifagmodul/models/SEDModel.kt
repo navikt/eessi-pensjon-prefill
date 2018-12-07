@@ -12,7 +12,7 @@ data class SED(
         var sedVer: String? = null,
         var nav: Nav? = null,
         var pensjon: Pensjon? = null,
-        var trygdetid: PersonTrygdeTid? = null,
+        var trygdetid: PersonArbeidogOppholdUtland? = null, //P4000
         var ignore: Ignore? = null
 ) {
     fun toJson(): String {
@@ -30,6 +30,13 @@ data class SED(
             return mapJsonToAny(sed, typeRefs(), true)
         }
     }
+
+    fun print() {
+        println("----------------------------------------------------------------------")
+        println(this.toJson())
+        println("----------------------------------------------------------------------")
+    }
+
 }
 
 //Data struktur for bruk av apirequest(frontend) og utfyllingdata (backend)
@@ -47,4 +54,20 @@ enum class SEDType {
     P6000,
     P5000,
     P7000;
+
+    companion object {
+        @JvmStatic
+        fun isValidSEDType(input: String): Boolean {
+            return try {
+                SEDType.valueOf(input)
+                true
+//            } catch (ex: EnumConstantNotPresentException) {
+//                //false
+//                throw SedDokumentIkkeGyldigException("Ikke gyldig SED")
+            } catch (ia: IllegalArgumentException) {
+                //false
+                throw SedDokumentIkkeGyldigException("Ikke gyldig SED")
+            }
+        }
+    }
 }

@@ -1,5 +1,6 @@
 package no.nav.eessi.eessifagmodul.prefill.person
 
+import no.nav.eessi.eessifagmodul.utils.NavFodselsnummer
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.*
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -11,13 +12,16 @@ import kotlin.test.assertNotNull
 @RunWith(MockitoJUnitRunner::class)
 class PrefillPersonEnkeTest : PersonDataFromTPS(
         setOf(
-                MockTPS("Person-20000.json", "02345678901"),
-                MockTPS("Person-21000.json", "22345678901"),
-                MockTPS("Person-22000.json", "12345678901")
+                MockTPS("Person-20000.json", generateRandomFnr(67), MockTPS.TPSType.PERSON),
+                MockTPS("Person-21000.json", generateRandomFnr(37), MockTPS.TPSType.BARN),
+                MockTPS("Person-22000.json", generateRandomFnr(17), MockTPS.TPSType.BARN)
         )) {
 
     @Test
     fun `create birthplace as unknown`() {
+        //val fnr = getRandomNavFodselsnummer(MockTPS.TPSType.PERSON) ?: "02345678901"
+        //val prefillData = generatePrefillData("P2000", fnr)
+
         val bruker = Bruker()
         bruker.foedested = null
 
@@ -73,7 +77,10 @@ class PrefillPersonEnkeTest : PersonDataFromTPS(
 
     @Test
     fun `forvent utfylling av person data av ENKE fra TPS P2000`() {
-        val prefillData = generatePrefillData("P2000", "02345678901")
+        MockTPS.TPSType.PERSON
+        val fnr = getRandomNavFodselsnummer(MockTPS.TPSType.PERSON) ?: "02345678901"
+        val prefillData = generatePrefillData("P2000", fnr)
+
         val response = prefillNav.prefill(prefillData)
 
         val sed = prefillData.sed
@@ -82,13 +89,14 @@ class PrefillPersonEnkeTest : PersonDataFromTPS(
         assertEquals("JESSINE TORDNU", sed.nav?.bruker?.person?.fornavn)
         assertEquals("BOUWMANS", sed.nav?.bruker?.person?.etternavn)
         assertEquals("f", sed.nav?.bruker?.person?.kjoenn)
-        assertEquals(0, sed.nav?.barn?.size)
+        assertEquals(2, sed.nav?.barn?.size)
 
     }
 
     @Test
     fun `forvent utfylling av person data av ENKE fra TPS P2100`() {
-        val prefillData = generatePrefillData("P2100", "02345678901")
+        val fnr = getRandomNavFodselsnummer(MockTPS.TPSType.PERSON) ?: "02345678901"
+        val prefillData = generatePrefillData("P2100", fnr)
         val response = prefillNav.prefill(prefillData)
 
         val sed = prefillData.sed
@@ -106,16 +114,24 @@ class PrefillPersonEnkeTest : PersonDataFromTPS(
         val item1 = resultBarn.orEmpty().get(0)
         assertEquals("BOUWMANS", item1.person?.etternavn)
         assertEquals("TOPPI DOTTO", item1.person?.fornavn)
+        val ident1 = item1.person?.pin?.get(0)?.identifikator
+        val navfnr1 = NavFodselsnummer(ident1!!)
+        assertEquals(false, navfnr1.isUnder18Year())
+        assertEquals(37, navfnr1.getAge())
+
 
         val item2 = resultBarn.orEmpty().get(1)
         assertEquals("BOUWMANS", item2.person?.etternavn)
         assertEquals("EGIDIJS MASKOT", item2.person?.fornavn)
-
+        val ident = item2.person?.pin?.get(0)?.identifikator
+        val navfnr = NavFodselsnummer(ident!!)
+        assertEquals(true, navfnr.isUnder18Year())
     }
 
     @Test
     fun `forvent utfylling av person data av ENKE fra TPS P2200`() {
-        val prefillData = generatePrefillData("P2200", "02345678901")
+        val fnr = getRandomNavFodselsnummer(MockTPS.TPSType.PERSON) ?: "02345678901"
+        val prefillData = generatePrefillData("P2200", fnr)
         val response = prefillNav.prefill(prefillData)
 
         val sed = prefillData.sed
@@ -124,7 +140,7 @@ class PrefillPersonEnkeTest : PersonDataFromTPS(
         assertEquals("JESSINE TORDNU", sed.nav?.bruker?.person?.fornavn)
         assertEquals("BOUWMANS", sed.nav?.bruker?.person?.etternavn)
         assertEquals("f", sed.nav?.bruker?.person?.kjoenn)
-        assertEquals(0, sed.nav?.barn?.size)
+        assertEquals(2, sed.nav?.barn?.size)
 
         assertEquals("P2200", sed.sed)
 

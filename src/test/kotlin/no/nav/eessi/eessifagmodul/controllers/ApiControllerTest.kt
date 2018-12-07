@@ -4,7 +4,9 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.whenever
 import no.nav.eessi.eessifagmodul.models.*
-import no.nav.eessi.eessifagmodul.prefill.*
+import no.nav.eessi.eessifagmodul.prefill.PrefillDataModel
+import no.nav.eessi.eessifagmodul.prefill.PrefillFactory
+import no.nav.eessi.eessifagmodul.prefill.PrefillSED
 import no.nav.eessi.eessifagmodul.services.LandkodeService
 import no.nav.eessi.eessifagmodul.services.PrefillService
 import no.nav.eessi.eessifagmodul.services.aktoerregister.AktoerregisterService
@@ -95,7 +97,8 @@ class ApiControllerTest {
         assertEquals("12345", utfyllMock.personNr)
 
         whenever(mockPrefillSED.prefill(any())).thenReturn(utfyllMock)
-        whenever(mockEuxService.createCaseAndDocument(any(), anyString(), anyString(), anyString(), anyString(), anyString())).thenReturn(mockResponse)
+        //whenever(mockEuxService.createCaseAndDocument(any(), anyString(), anyString(), anyString(), anyString(), anyString())).thenReturn(mockResponse)
+        whenever(mockEuxService.createCaseWithDocument(any(), any(), any())).thenReturn(mockResponse)
         whenever(mockRinaActions.canCreate(anyString(), anyString())).thenReturn(true)
         whenever(mockRinaActions.canUpdate(utfyllMock.getSEDid(), mockResponse)).thenReturn(true)
 
@@ -243,6 +246,7 @@ class ApiControllerTest {
         whenever(mockPrefillSED.prefill(any())).thenReturn(utfyllMock)
 
         val response = apiController.confirmDocument(mockData)
+        //val response = SED.fromJson(response2)
 
         assertNotNull(response)
         assertEquals("P6000", response.sed)
@@ -250,21 +254,7 @@ class ApiControllerTest {
         assertEquals("Dummy", response.nav?.bruker?.person?.etternavn)
     }
 
-    @Test(expected = IllegalArgumentException::class)
-    fun `confirm document mangler pensjonSaksnr`() {
-        val mockData = ApiController.ApiRequest(
-                subjectArea = "Pensjon",
-                institutions = listOf(InstitusjonItem("NO", "DUMMY")),
-                sed = "P6000",
-                buc = "P_BUC_06",
-                aktoerId = "0105094340092"
-        )
-        whenever(mockAktoerregisterService.hentGjeldendeNorskIdentForAktorId(ArgumentMatchers.anyString())).thenReturn("12345")
-        apiController.buildPrefillDataModelConfirm(mockData)
-    }
-
-
-    @Test(expected = IllegalArgumentException::class)
+    @Test(expected = SedDokumentIkkeGyldigException::class)
     fun `confirm document when sed is not valid`() {
         val mockData = ApiController.ApiRequest(
                 subjectArea = "Pensjon",
@@ -274,7 +264,7 @@ class ApiControllerTest {
                 buc = "P_BUC_06",
                 aktoerId = "0105094340092"
         )
-        apiController.confirmDocument(mockData)
+        apiController.buildPrefillDataModelConfirm(mockData)
     }
 
     @Test(expected = IllegalArgumentException::class)
@@ -287,27 +277,34 @@ class ApiControllerTest {
                 buc = "P_BUC_06",
                 aktoerId = "0105094340092"
         )
-        apiController.confirmDocument(mockData)
+        apiController.buildPrefillDataModelConfirm(mockData)
     }
 
-    @Test(expected = IllegalArgumentException::class)
-    fun `check on caseID is null`() {
+    @Test
+    fun `check on minimum valid request to model`() {
         val mockData = ApiController.ApiRequest(
-                sakId = null,
+                sakId = "12234",
                 sed = "P6000",
                 aktoerId = "0105094340092"
         )
-        apiController.confirmDocument(mockData)
+        whenever(mockAktoerregisterService.hentGjeldendeNorskIdentForAktorId(ArgumentMatchers.anyString())).thenReturn("12345")
+        val model = apiController.buildPrefillDataModelConfirm(mockData)
+
+        assertEquals("12345", model.personNr)
+        assertEquals("12234", model.penSaksnummer)
+        assertEquals("0105094340092", model.aktoerID)
+        assertEquals("P6000", model.getSEDid())
+        assertEquals(SED::class.java, model.sed::class.java)
     }
 
     @Test(expected = IllegalArgumentException::class)
-    fun `check on pinID is null`() {
+    fun `check on aktoerId is null`() {
         val mockData = ApiController.ApiRequest(
                 sakId = "1213123123",
                 sed = "P6000",
                 aktoerId = null
         )
-        apiController.confirmDocument(mockData)
+        apiController.buildPrefillDataModelConfirm(mockData)
     }
 
     @Test

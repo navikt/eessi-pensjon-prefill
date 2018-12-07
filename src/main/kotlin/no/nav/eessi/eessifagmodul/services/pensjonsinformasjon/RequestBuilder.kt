@@ -54,6 +54,7 @@ class RequestBuilder {
         while (elements.hasChildNodes())
             elements.removeChild(elements.firstChild)
 
+        //println("baseDocument ${baseDocument.textContent}")
         return baseDocument
     }
 }

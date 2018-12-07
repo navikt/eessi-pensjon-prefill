@@ -4,7 +4,7 @@ package no.nav.eessi.eessifagmodul.models
 /**
  * Nav SED for P4000
  */
-data class PersonTrygdeTid(
+data class PersonArbeidogOppholdUtland(
         val andrePerioder: List<StandardItem>? = null,
         val arbeidsledigPerioder: List<StandardItem>? = null,
         val boPerioder: List<StandardItem>? = null,

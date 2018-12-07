@@ -56,10 +56,13 @@ jar {
 
 configurations {
     xsd
+    developmentOnly
+    runtimeClasspath {
+        extendsFrom developmentOnly
+    }    
 }
 
 dependencies {
-
     // Prometheus
     compile("io.prometheus:simpleclient:${prometheusVersion}")
     compile("io.prometheus:simpleclient_hotspot:${prometheusVersion}")
@@ -70,6 +73,9 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-web")
     compile("org.springframework.boot:spring-boot-starter-actuator")
     testCompile("org.springframework.boot:spring-boot-starter-test")
+
+    // Allows for variable expiration-date of each cache-entry
+    compile("net.jodah:expiringmap:0.5.8")
 
     // Apache CXF
     compile("org.apache.cxf:cxf-spring-boot-starter-jaxws:${cxfVersion}")
@@ -107,7 +113,7 @@ dependencies {
 
     // Tjenestespesifikasjoner
     compile("no.nav.tjenester:nav-person-v3-tjenestespesifikasjon:${personV3Version}")
-    xsd("no.nav.pensjon:pensjonsinformasjon-xsd:9.4.3")
+    xsd("no.nav.pensjon:pensjonsinformasjon-xsd:9.4.10")
 
     jaxb ('org.glassfish.jaxb:jaxb-xjc:2.2.11')
     jaxb ('org.glassfish.jaxb:jaxb-runtime:2.2.11')

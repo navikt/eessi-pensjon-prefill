@@ -2,11 +2,13 @@ package no.nav.eessi.eessifagmodul.prefill
 
 import no.nav.eessi.eessifagmodul.models.Bruker
 import no.nav.eessi.eessifagmodul.models.Pensjon
+import no.nav.eessi.eessifagmodul.prefill.nav.PrefillPersonDataFromTPS
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
 @Component
+//TODO Vil utgå når SED blir koblet direkte mot PEN/PESYS for uthenting og preutfylling av data
 class PrefillPensjon(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS) : Prefill<Pensjon> {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillPensjon::class.java) }
@@ -15,12 +17,12 @@ class PrefillPensjon(private val preutfyllingPersonFraTPS: PrefillPersonDataFrom
         return pensjon(prefillData)
     }
 
-    private fun pensjon(utfyllingData: PrefillDataModel): Pensjon {
+    private fun pensjon(prefillData: PrefillDataModel): Pensjon {
 
         //min krav for vedtak,P2000,P5000,P4000?
         //validere om vi kan preutfylle for angitt SED
         //norskident pnr.
-        val pinid = utfyllingData.personNr
+        val pinid = prefillData.personNr
 
         // er denne person en gjenlevende? hva må da gjøres i nav.bruker.person?
         //
@@ -28,17 +30,17 @@ class PrefillPensjon(private val preutfyllingPersonFraTPS: PrefillPersonDataFrom
         //fylles ut kun når vi har etterlatt aktoerId og etterlattPinID.
         //noe vi må få fra PSAK. o.l
         var gjenlevende: Bruker? = null
-        if (utfyllingData.erGyldigEtterlatt()) {
+        if (prefillData.erGyldigEtterlatt()) {
             logger.debug("Preutfylling Utfylling Pensjon Gjenlevende (etterlatt)")
             gjenlevende = preutfyllingPersonFraTPS.prefillBruker(pinid)
         }
 
         //kun ved bruk av P5000
         //var p5000pensjon: Pensjon? = null
-        if (utfyllingData.validSED("P5000")) {
-            logger.debug("Preutfylling Utfylling Pensjon Medlemskap")
-            //p5000pensjon = createMedlemskapMock()
-        }
+//        if (prefillData.validSED("P5000")) {
+//            logger.debug("Preutfylling Utfylling Pensjon Medlemskap")
+//            //p5000pensjon = createMedlemskapMock()
+//        }
 
         val pensjon = Pensjon(
 

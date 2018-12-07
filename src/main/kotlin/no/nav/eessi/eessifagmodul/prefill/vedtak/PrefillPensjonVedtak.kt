@@ -3,12 +3,12 @@ package no.nav.eessi.eessifagmodul.prefill.vedtak
 import no.nav.eessi.eessifagmodul.models.*
 import no.nav.eessi.eessifagmodul.utils.simpleFormat
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
-import no.nav.pensjon.v1.sak.V1Sak
+import no.nav.pensjon.v1.sakalder.V1SakAlder
 import no.nav.pensjon.v1.ytelsepermaaned.V1YtelsePerMaaned
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-class PrefillPensjonVedtak : PensjonData() {
+class PrefillPensjonVedtak : VedtakPensjonData() {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillPensjonVedtak::class.java) }
 
@@ -83,7 +83,7 @@ class PrefillPensjonVedtak : PensjonData() {
         //04 og 05 benyttes ikke
 
         //v1sak fra PESYS
-        val v1sak = pendata.sak as V1Sak
+        val v1sak = pendata.sakAlder as V1SakAlder
 
         //pensjon før 67 (ja/nei - sann/usann)
         val pensjonUttakTidligereEnn67 = v1sak.isUttakFor67
@@ -143,12 +143,12 @@ class PrefillPensjonVedtak : PensjonData() {
         Det må lages flere regler for UT og for etterlattepensjon
      */
     //4.1.2 vedtak
-    fun createVedtakGrunnlagPentionWithRule(pendata: Pensjonsinformasjon): String {
+    private fun createVedtakGrunnlagPentionWithRule(pendata: Pensjonsinformasjon): String {
         //01-residece, 02-working, 99-other --> 4.1.3.1 --> other
 
         logger.debug("4.1.2         VedtakGrunnlagPention")
 
-        val sakType = KSAK.valueOf(pendata.sak.sakType)
+        val sakType = KSAK.valueOf(pendata.sakAlder.sakType)
         logger.debug("              KSAK: $sakType")
 
         return when (sakType) {
@@ -180,7 +180,7 @@ class PrefillPensjonVedtak : PensjonData() {
     }
 
     //4.1.3.1 (other type)
-    fun createVedtakAnnenTypePentionWithRule(pendata: Pensjonsinformasjon): String? {
+    private fun createVedtakAnnenTypePentionWithRule(pendata: Pensjonsinformasjon): String? {
 
         logger.debug("4.1.3.1       VedtakAnnenTypePention")
         if (createVedtakGrunnlagPentionWithRule(pendata) == "99") {
@@ -202,11 +202,11 @@ class PrefillPensjonVedtak : PensjonData() {
         HVIS sakstype er Uføretrygd, OG kravtype er Førstegangsbehandling Norge/utland ELLER Mellombehandling, SÅ skal det hukes for «[04] Provisional or advance payment»
         Opphør - må håndteres Se pkt 6.2
      */
-    fun createTypeVedtakPentionWithRule(pendata: Pensjonsinformasjon): String? {
+    private fun createTypeVedtakPentionWithRule(pendata: Pensjonsinformasjon): String? {
         //01> invillg , 02> avslag , 03> ny beregning , 04> foreløping utbeteling
         logger.debug("4.1.4         TypeVedtakPention (vedtak.resultat")
 
-        val sakType = KSAK.valueOf(pendata.sak.sakType)
+        val sakType = KSAK.valueOf(pendata.sakAlder.sakType)
         val kravGjelder = pendata.vedtak.kravGjelder
 
         //TODO: finner man vedtaksresultat?
@@ -290,9 +290,9 @@ class PrefillPensjonVedtak : PensjonData() {
         OG Vedtakssammendrag viser vinnende beregning «EØS pro rata» [Vedtakssammendrag],
         SÅ skal punkt 4.1.5. Award benefit article hukes for «[02]
      */
-    fun createArtikkelInnvilgelseAvYtelseWithRule(pendata: Pensjonsinformasjon): String? {
+    private fun createArtikkelInnvilgelseAvYtelseWithRule(pendata: Pensjonsinformasjon): String? {
         //01=> 883/2004 art 52 A, 02=> 883/2004 art 52 B, 03=> 883/2004 art 57 2, 04=> 883/2004 art 57 3, 05=> 833/2004 art 60 2
-        logger.debug("4.1.5         ArtikkelInnvilgelseAvYtelse (vedtak.artikkel) TODO: Må fyllesut manuelt!! sak: ${pendata.sak.sakType}")
+        logger.debug("4.1.5         ArtikkelInnvilgelseAvYtelse (vedtak.artikkel) TODO: Må fyllesut manuelt!! sak: ${pendata.sakAlder.sakType}")
         return null
 
         //        val kravGjelder = pendata.vedtak.kravGjelder
@@ -351,7 +351,7 @@ class PrefillPensjonVedtak : PensjonData() {
 
 
         val resultList = mutableListOf<BeregningItem>()
-        val sakType = KSAK.valueOf(pendata.sak.sakType)
+        val sakType = KSAK.valueOf(pendata.sakAlder.sakType)
 
         ytelsePerMaaned.forEach {
             resultList.add(createBeregningItem(it, sakType))
@@ -404,7 +404,7 @@ class PrefillPensjonVedtak : PensjonData() {
     skal denne sum benyttes hvis ikke skal belop benyttes.
      */
     //4.1.7.3.1
-    fun createBelop(ytelsePrMnd: V1YtelsePerMaaned, sakType: KSAK): String {
+    private fun createBelop(ytelsePrMnd: V1YtelsePerMaaned, sakType: KSAK): String {
         logger.debug("4.1.7.3.1         Gross amount")
         //4.1.7.3.1. Gross amount
         val belop = ytelsePrMnd.belop
@@ -423,19 +423,15 @@ class PrefillPensjonVedtak : PensjonData() {
 
     /*
         Her skal det automatisk vises brutto grunnpensjon for de ulike beregningsperioder  Brutto garantipensjon for alderspensjon beregnet etter kapittel 20.
-
         Uføretrygd: feltet viser tomt
-
         Gjenlevendepensjon og barnepensjon: Grunnpensjon
-
         Hvis bruker har særtillegg, så skal det oppgis i dette feltet sammen med grunnpensjon, dvs. summen av grunnpensjon og særtillegg, eller summen av garantipensjon og pensjonstillegg.
-
         Behov for et nytt element fra Pensjon? Eller skal vi legge det sammen selv?
 
         GP grunnpensjon, ST særtillegg, GT garantipensjon,
      */
     //4.1.7.3.3
-    fun createYtelseskomponentGrunnpensjon(ytelsePrMnd: V1YtelsePerMaaned, sakType: KSAK): String? {
+    private fun createYtelseskomponentGrunnpensjon(ytelsePrMnd: V1YtelsePerMaaned, sakType: KSAK): String? {
         logger.debug("4.1.7.3.3         Grunnpensjon")
 
         if (KSAK.UFOREP != sakType) {
@@ -454,7 +450,7 @@ class PrefillPensjonVedtak : PensjonData() {
         Tilleggspensjon.brutto TP, Inntektspensjon.brutto IP
      */
     //4.1.7.3.4
-    fun createYtelseskomponentTilleggspensjon(ytelsePrMnd: V1YtelsePerMaaned, sakType: KSAK): String? {
+    private fun createYtelseskomponentTilleggspensjon(ytelsePrMnd: V1YtelsePerMaaned, sakType: KSAK): String? {
         logger.debug("4.1.7.3.4         Tilleggspensjon")
 
         if (KSAK.UFOREP != sakType) {
@@ -465,7 +461,7 @@ class PrefillPensjonVedtak : PensjonData() {
 
 
     //4.1.8
-    fun createBeregningItemPeriode(ytelsePrMnd: V1YtelsePerMaaned): Periode {
+    private fun createBeregningItemPeriode(ytelsePrMnd: V1YtelsePerMaaned): Periode {
         logger.debug("4.1.7.1         BeregningItemPeriode")
 
         var tomstr: String? = null
@@ -502,7 +498,7 @@ class PrefillPensjonVedtak : PensjonData() {
     Skjermingstillegg.brutto SKJERMT
      */
     //4.1.9
-    fun createEkstraTilleggPensjon(pendata: Pensjonsinformasjon): Ukjent? {
+    private fun createEkstraTilleggPensjon(pendata: Pensjonsinformasjon): Ukjent? {
         logger.debug("4.1.9         ekstra tilleggpensjon")
 
         var summer = 0
@@ -517,7 +513,7 @@ class PrefillPensjonVedtak : PensjonData() {
     }
 
     //4.1.10 - 4.1.12
-    fun createGrunnlag(pendata: Pensjonsinformasjon): Grunnlag {
+    private fun createGrunnlag(pendata: Pensjonsinformasjon): Grunnlag {
 
         logger.debug("4.1.10        Grunnlag")
         return Grunnlag(
@@ -535,7 +531,7 @@ class PrefillPensjonVedtak : PensjonData() {
 
     //4.1.10 - Nei
     //må fylles ut manuelt
-    fun createGrunnladMedlemskap(): String? {
+    private fun createGrunnladMedlemskap(): String? {
         logger.debug("4.1.10            Basert på friviligperioder (Må fylles ut manuelt) Nei som default")
         return null
     }
@@ -553,15 +549,12 @@ class PrefillPensjonVedtak : PensjonData() {
 
         Hvis sakstype er Alderspensjon SÅ skal det velges alternativ "[2] Nei"
      */
-    fun createFramtidigtrygdetid(pendata: Pensjonsinformasjon): String {
-        logger.debug("4.1.12        Framtidigtrygdetid --- Trenger mer input (Må fylles ut manuelt?)")
-
-//        4.1.12. Credited period
-//              [1] Yes
-//              [0] No
+    private fun createFramtidigtrygdetid(pendata: Pensjonsinformasjon): String {
+        logger.debug("4.1.12        Framtidigtrygdetid")
+//        4.1.12. Credited period  [1] Yes | [0] No
 
         val key = "FOLKETRYGD"
-        val sakType = KSAK.valueOf(pendata.sak.sakType)
+        val sakType = KSAK.valueOf(pendata.sakAlder.sakType)
 
         return when(sakType) {
             KSAK.ALDER -> "0" //nei
@@ -599,11 +592,11 @@ class PrefillPensjonVedtak : PensjonData() {
     private fun createOpptjeningForsikredeAnnen(pendata: Pensjonsinformasjon): String? {
         logger.debug("4.1.11        OpptjeningForsikredeAnnen")
 
-        pendata.sak.sakType
-        pendata.vedtak.kravVelgType
-        pendata.vedtak.kravGjelder
+//        pendata.sakAlder.sakType
+//        pendata.vedtak.kravVelgType
+//        pendata.vedtak.kravGjelder
 
-        val sakType = KSAK.valueOf(pendata.sak.sakType)
+        val sakType = KSAK.valueOf(pendata.sakAlder.sakType)
 
         val resultatGjenlevendetillegg = pendata.vilkarsvurderingListe?.vilkarsvurderingListe?.get(0)?.resultatGjenlevendetillegg ?: ""
         val erUtenGjenlevendetillegg = resultatGjenlevendetillegg == ""
@@ -741,7 +734,7 @@ class PrefillPensjonVedtak : PensjonData() {
         if (pendata.vilkarsvurderingListe == null || pendata.vilkarsvurderingListe.vilkarsvurderingListe == null) {
             return null
         }
-        val sakType = KSAK.valueOf(pendata.sak.sakType)
+        val sakType = KSAK.valueOf(pendata.sakAlder.sakType)
 
         val avslagVilkarsproving = hentVilkarsResultatHovedytelse(pendata) == "AVSLAG"
 

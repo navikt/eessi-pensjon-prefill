@@ -1,4 +1,11 @@
-<ns19:pensjonsinformasjon xmlns:ns10="http://nav.no/pensjon/v1/inngangOgEksport" xmlns:ns11="http://nav.no/pensjon/v1/trygdetidAvdodListe" xmlns:ns12="http://nav.no/pensjon/v1/trygdeavtale" xmlns:ns13="http://nav.no/pensjon/v1/trygdetidAvdodFarListe" xmlns:ns14="http://nav.no/pensjon/v1/trygdetidAvdodMorListe" xmlns:ns15="http://nav.no/pensjon/v1/vilkarsvurdering" xmlns:ns16="http://nav.no/pensjon/v1/vilkarsvurderingUforetrygd" xmlns:ns17="http://nav.no/pensjon/v1/vilkarsvurderingListe" xmlns:ns18="http://nav.no/pensjon/v1/avdod"  xmlns:ns19="http://nav.no/pensjon/v1/pensjonsinformasjon" xmlns:ns2="http://nav.no/pensjon/v1/person" xmlns:ns3="http://nav.no/pensjon/v1/ytelsePerMaaned" xmlns:ns4="http://nav.no/pensjon/v1/ytelseskomponent" xmlns:ns5="http://nav.no/pensjon/v1/ytelsePerMaanedListe" xmlns:ns6="http://nav.no/pensjon/v1/vedtak" xmlns:ns7="http://nav.no/pensjon/v1/sak" xmlns:ns8="http://nav.no/pensjon/v1/trygdetid" xmlns:ns9="http://nav.no/pensjon/v1/trygdetidListe">
+<ns19:pensjonsinformasjon xmlns:ns10="http://nav.no/pensjon/v1/inngangOgEksport"
+                          xmlns:ns12="http://nav.no/pensjon/v1/trygdeavtale"
+                          xmlns:ns18="http://nav.no/pensjon/v1/avdod" xmlns:ns19="http://nav.no/pensjon/v1/pensjonsinformasjon"
+                          xmlns:ns2="http://nav.no/pensjon/v1/person" xmlns:ns3="http://nav.no/pensjon/v1/ytelsePerMaaned"
+                          xmlns:ns4="http://nav.no/pensjon/v1/ytelseskomponent"
+                          xmlns:ns5="http://nav.no/pensjon/v1/ytelsePerMaanedListe" xmlns:ns6="http://nav.no/pensjon/v1/vedtak"
+                          xmlns:ns7="http://nav.no/pensjon/v1/sak"
+>
     <ns19:trygdeavtale xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns12:v1.Trygdeavtale"></ns19:trygdeavtale>
     <ns19:vedtak xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns6:v1.Vedtak">
         <ns6:virkningstidspunkt>2017-05-01T00:00:00+02:00</ns6:virkningstidspunkt>
@@ -14,7 +21,8 @@
         <ns2:pid>12345678912</ns2:pid>
         <ns2:aktorId>Ingen</ns2:aktorId>
     </ns19:person>
-    <ns19:trygdetidAvdodFarListe xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"></ns19:trygdetidAvdodFarListe>
+    <ns19:trygdetidAvdodFarListe xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                                 xsi:nil="true"></ns19:trygdetidAvdodFarListe>
     <ns19:trygdetidAvdodListe xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"></ns19:trygdetidAvdodListe>
     <ns19:avdod xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns18:v1.Avdod">
         <ns18:avdodAktorId>Ingen</ns18:avdodAktorId>
@@ -24,7 +32,8 @@
         <ns18:avdodFarBoddArbeidetUtland>false</ns18:avdodFarBoddArbeidetUtland>
         <ns18:avdodMorBoddArbeidetUtland>false</ns18:avdodMorBoddArbeidetUtland>
     </ns19:avdod>
-    <ns19:trygdetidAvdodMorListe xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"></ns19:trygdetidAvdodMorListe>
+    <ns19:trygdetidAvdodMorListe xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                                 xsi:nil="true"></ns19:trygdetidAvdodMorListe>
     <ns19:trygdetidListe xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"></ns19:trygdetidListe>
     <ns19:ytelsePerMaanedListe xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns5:v1.YtelsePerMaanedListe">
         <ns5:ytelsePerMaanedListe>
@@ -54,5 +63,6 @@
         <ns7:sakType>ALDER</ns7:sakType>
         <ns7:uttakFor67>false</ns7:uttakFor67>
     </ns19:sak>
-    <ns19:inngangOgEksport xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns10:v1.InngangOgEksport"></ns19:inngangOgEksport>
+    <ns19:inngangOgEksport xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                           xsi:type="ns10:v1.InngangOgEksport"></ns19:inngangOgEksport>
 </ns19:pensjonsinformasjon>

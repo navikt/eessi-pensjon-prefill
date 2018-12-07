@@ -8,6 +8,7 @@ import no.nav.eessi.eessifagmodul.prefill.PrefillDataModel
 import no.nav.eessi.eessifagmodul.prefill.PrefillSED
 import no.nav.eessi.eessifagmodul.services.eux.EuxService
 import no.nav.eessi.eessifagmodul.services.eux.RinaActions
+import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
 import java.util.*
 
@@ -35,7 +36,28 @@ class PrefillService(private val euxService: EuxService, private val prefillSED:
         throw SedDokumentIkkeGyldigException("Kan ikke opprette følgende  SED: ${{ data.getSEDid() }} på RINANR: ${data.euxCaseID}")
     }
 
+    /**
+     * service function to call eux and then return model with euxCaseId (rinaID back)
+     */
+    @Async
     fun prefillAndCreateSedOnNewCase(dataModel: PrefillDataModel): PrefillDataModel {
+
+        val data = prefillSed(dataModel)
+        val sed = data.sed
+
+        val euxCaseId = euxService.createCaseWithDocument(
+                sed = sed,
+                bucType = data.buc,
+                mottaker = getFirstInstitution(data.institution)
+        )
+        dataModel.euxCaseID = checkForUpdateStatus(euxCaseId, data.getSEDid())
+        return dataModel
+    }
+
+    /**
+     * service function to call eux and then return model with euxCaseId (rinaID back)
+     */
+    fun prefillAndCreateSedOnNewCaseOLD(dataModel: PrefillDataModel): PrefillDataModel {
 
         val data = prefillSed(dataModel)
         val sed = data.sed
@@ -48,7 +70,6 @@ class PrefillService(private val euxService: EuxService, private val prefillSED:
                 mottaker = getFirstInstitution(data.institution),
                 korrelasjonID = korrid
         )
-
         dataModel.euxCaseID = checkForUpdateStatus(euxCaseId, data.getSEDid())
         return dataModel
     }

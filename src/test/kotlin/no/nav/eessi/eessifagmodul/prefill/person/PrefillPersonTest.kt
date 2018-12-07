@@ -7,6 +7,8 @@ import no.nav.eessi.eessifagmodul.models.NavMock
 import no.nav.eessi.eessifagmodul.models.PensjonMock
 import no.nav.eessi.eessifagmodul.models.SED
 import no.nav.eessi.eessifagmodul.prefill.*
+import no.nav.eessi.eessifagmodul.prefill.nav.PrefillNav
+import no.nav.eessi.eessifagmodul.prefill.nav.PrefillPerson
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -53,7 +55,6 @@ class PrefillPersonTest(val index: Int, val sedid: String) {
         prefillDefaultSED = PrefillDefaultSED(preutfylling)
 
         mockPrefillSED = PrefillSED(mockPrefillFactory)
-
     }
 
     companion object {
@@ -66,7 +67,7 @@ class PrefillPersonTest(val index: Int, val sedid: String) {
                     arrayOf(30, "P2200"),
                     arrayOf(40, "P3000"),
                     arrayOf(60, "P5000"),
-                    arrayOf(70, "vedtak"),
+                    arrayOf(70, "P6000"),
                     arrayOf(80, "P7000")
             )
         }

@@ -1,7 +1,10 @@
 package no.nav.eessi.eessifagmodul.prefill
 
+import no.nav.eessi.eessifagmodul.models.AndreinstitusjonerItem
 import no.nav.eessi.eessifagmodul.models.InstitusjonItem
 import no.nav.eessi.eessifagmodul.models.SED
+import no.nav.pensjon.v1.brukersbarn.V1BrukersBarn
+import no.nav.pensjon.v1.ektefellepartnersamboer.V1EktefellePartnerSamboer
 
 /**
  * Data class to store different required data to build any given sed, auto or semiauto.
@@ -24,7 +27,10 @@ class PrefillDataModel {
 
     //data fra pesys
     lateinit var saktype: String
-    //aktoerid og aktoerId for avdod
+    lateinit var barnlist: List<V1BrukersBarn>
+    lateinit var partnerFnr: List<V1EktefellePartnerSamboer>
+
+    //avdod rellasjon - gjennlevende
     lateinit var avdod: String
     lateinit var avdodFar: String
     lateinit var avdodMor: String
@@ -36,6 +42,9 @@ class PrefillDataModel {
     lateinit var sed: SED
     lateinit var institution: List<InstitusjonItem>
 
+    //hjelpe parametere for utfylling av institusjon
+    var andreInstitusjon: AndreinstitusjonerItem? = null
+
     //div payload seddata json
     val partSedAsJson: MutableMap<String, String> = mutableMapOf()
 
@@ -43,8 +52,8 @@ class PrefillDataModel {
         return sed.sed!!
     }
 
-    fun getPartSEDasJson(key: String): String {
-        return partSedAsJson[key].orEmpty()
+    fun getPartSEDasJson(key: String): String? {
+        return partSedAsJson[key]
     }
 
     fun getInstitutionsList(): List<InstitusjonItem> {
@@ -72,8 +81,4 @@ class PrefillDataModel {
         }
     }
 
-
-    fun validSED(sedid: String): Boolean {
-        return getSEDid() == sedid
-    }
 }
