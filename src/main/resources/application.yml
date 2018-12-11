@@ -8,11 +8,10 @@ http.proxy.parametername:
 # TODO: These actuator-endpoints need to be secured before going to production. Also, enable only whats needed.
 management:
   endpoints:
-    enabled-by-default: 'true'
-    jmx:
-      exposure.include: '*'
-    web:
-      exposure.include: '*'
+    metrics.enabled: true
+    web.exposure.include: '*'
+    export.prometheus.enabled: true
+    prometheus.enabled: true
 
 rinaaction:
   waittime: '5000'
