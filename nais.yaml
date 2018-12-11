@@ -9,7 +9,7 @@ replicas:
 
 prometheus:
     enabled: true
-    path: /internal/prometheus
+    path: /actuator/prometheus
 
 port: 8080
 
