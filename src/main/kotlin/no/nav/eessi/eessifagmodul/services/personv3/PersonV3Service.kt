@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component
 @Component
 class PersonV3Service(val service: PersonV3, val oidcRequestContextHolder: OIDCRequestContextHolder) {
 
-    val HENTPERSON_TELLER_NAVN = "pensjonmottak.hentperson"
+    val HENTPERSON_TELLER_NAVN = "eessipensjon_fagmodul.hentperson"
     val HENTPERSON_TELLER_TYPE_VELLYKKEDE = counter(HENTPERSON_TELLER_NAVN, "vellykkede")
     val HENTPERSON_TELLER_TYPE_FEILEDE = counter(HENTPERSON_TELLER_NAVN, "feilede")
 
