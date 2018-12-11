@@ -60,12 +60,6 @@ configurations {
 
 dependencies {
 
-    // Prometheus
-    compile("io.prometheus:simpleclient:${prometheusVersion}")
-    compile("io.prometheus:simpleclient_hotspot:${prometheusVersion}")
-    compile("io.prometheus:simpleclient_httpserver:${prometheusVersion}")
-    compile("io.prometheus:simpleclient_pushgateway:${prometheusVersion}")
-
     // Spring-boot
     compile("org.springframework.boot:spring-boot-starter-web")
     compile("org.springframework.boot:spring-boot-starter-actuator")
@@ -111,6 +105,9 @@ dependencies {
 
     jaxb ('org.glassfish.jaxb:jaxb-xjc:2.2.11')
     jaxb ('org.glassfish.jaxb:jaxb-runtime:2.2.11')
+
+    // Micrometer
+    compile("io.micrometer:micrometer-registry-prometheus")
 }
 
 ext.schemasDir = "${projectDir}/src/main/resources/schemas"
