@@ -1,4 +1,4 @@
-package no.nav.eessi.eessifagmodul.controllers
+package no.nav.eessi.eessifagmodul.pesys
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import io.swagger.annotations.ApiOperation
@@ -26,6 +26,7 @@ class PensjonsinformasjonController {
     @GetMapping("/kravFraUtland/{sakId)")
     @JsonInclude(JsonInclude.Include.NON_NULL)
     fun hentKravFraUtland(@PathVariable("sakId", required = false) sakId: Long? = 0L): Pensjonsinformasjon {
+
         val v1sak = V1Sak()
         v1sak.forsteVirkningstidspunkt = createXMLCalendarFromString("2016-01-01")
         v1sak.sakType = "ALDER"
