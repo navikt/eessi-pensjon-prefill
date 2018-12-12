@@ -250,7 +250,6 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
 
         val httpEntity = HttpEntity(map, headers)
 
-
         logger.info("createCaseAndDocument KorrelasjonsID : {}", korrelasjonID)
         val response = euxOidcRestTemplate.exchange(builder.toUriString(), HttpMethod.POST, httpEntity, String::class.java)
         return response.body ?: throw RinaCasenrIkkeMottattException("Ikke mottatt RINA casenr, feiler ved opprettelse av BUC og SED")
