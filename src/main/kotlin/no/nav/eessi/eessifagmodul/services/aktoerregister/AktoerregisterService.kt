@@ -2,6 +2,8 @@ package no.nav.eessi.eessifagmodul.services.aktoerregister
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import io.micrometer.core.instrument.Counter
+import io.micrometer.core.instrument.Metrics
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpEntity
@@ -24,6 +26,14 @@ data class IdentinfoForAktoer(
         val identer: List<Identinfo>?,
         val feilmelding: String?
 )
+
+val AKTOERREGISTER_TELLER_NAVN = "eessipensjon_fagmodul.aktoerregister"
+val AKTOERREGISTER_TELLER_TYPE_VELLYKKEDE = counter(AKTOERREGISTER_TELLER_NAVN, "vellykkede")
+val AKTOERREGISTER_TELLER_TYPE_FEILEDE = counter(AKTOERREGISTER_TELLER_NAVN, "feilede")
+
+fun counter(name: String, type: String): Counter {
+    return Metrics.counter(name, "type", type)
+}
 
 class AktoerregisterException(message: String) : RuntimeException(message)
 
@@ -81,11 +91,13 @@ class AktoerregisterService(val aktoerregisterOidcRestTemplate: RestTemplate) {
 
         if (responseEntity.statusCode.isError) {
             logger.error("Received ${responseEntity.statusCode} from aktørregister")
+            AKTOERREGISTER_TELLER_TYPE_FEILEDE.increment()
             if (responseEntity.hasBody()) {
                 logger.error(responseEntity.body.toString())
             }
             throw RuntimeException("Received ${responseEntity.statusCode} ${responseEntity.statusCode.reasonPhrase} from aktørregisteret")
         }
+        AKTOERREGISTER_TELLER_TYPE_VELLYKKEDE.increment()
 
         return jacksonObjectMapper().readValue(responseEntity.body!!)
     }
