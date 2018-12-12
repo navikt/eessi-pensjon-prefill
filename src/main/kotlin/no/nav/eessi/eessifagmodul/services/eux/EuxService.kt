@@ -21,33 +21,32 @@ import java.net.UnknownHostException
 
 private val logger = LoggerFactory.getLogger(EuxService::class.java)
 
-val EUX_MULIGEAKSJONER_TELLER_NAVN = "eessipensjon_fagmodul.euxmuligeaksjoner"
-val EUX_MULIGEAKSJONER_TELLER_TYPE_VELLYKKEDE = counter(EUX_MULIGEAKSJONER_TELLER_NAVN, "vellykkede")
-val EUX_MULIGEAKSJONER_TELLER_TYPE_FEILEDE = counter(EUX_MULIGEAKSJONER_TELLER_NAVN, "feilede")
-val EUX_SENDSED_TELLER_NAVN = "eessipensjon_fagmodul.sendsed"
-val EUX_SENDSED_TELLER_TYPE_VELLYKKEDE = counter(EUX_SENDSED_TELLER_NAVN, "vellykkede")
-val EUX_SENDSED_TELLER_TYPE_FEILEDE = counter(EUX_SENDSED_TELLER_NAVN, "feilede")
-val EUX_OPPRETTSED_TELLER_NAVN = "eessipensjon_fagmodul.opprettsed"
-val EUX_OPPRETTSED_TELLER_TYPE_VELLYKKEDE = counter(EUX_OPPRETTSED_TELLER_NAVN, "vellykkede")
-val EUX_OPPRETTSED_TELLER_TYPE_FEILEDE = counter(EUX_OPPRETTSED_TELLER_NAVN, "feilede")
-val EUX_HENTSED_TELLER_NAVN = "eessipensjon_fagmodul.hentsed"
-val EUX_HENTSED_TELLER_TYPE_VELLYKKEDE = counter(EUX_HENTSED_TELLER_NAVN, "vellykkede")
-val EUX_HENTSED_TELLER_TYPE_FEILEDE = counter(EUX_HENTSED_TELLER_NAVN, "feilede")
-val EUX_SLETTSED_TELLER_NAVN = "eessipensjon_fagmodul.slettsed"
-val EUX_SLETTSED_TELLER_TYPE_VELLYKKEDE = counter(EUX_SLETTSED_TELLER_NAVN, "vellykkede")
-val EUX_SLETTSED_TELLER_TYPE_FEILEDE = counter(EUX_SLETTSED_TELLER_NAVN, "feilede")
-val EUX_OPPRETTBUCOGSED_TELLER_NAVN = "eessipensjon_fagmodul.opprettbucogsed"
-val EUX_OPPRETTBUCOGSED_TELLER_TYPE_VELLYKKEDE = counter(EUX_OPPRETTBUCOGSED_TELLER_NAVN, "vellykkede")
-val EUX_OPPRETTBUCOGSED_TELLER_TYPE_FEILEDE = counter(EUX_OPPRETTBUCOGSED_TELLER_NAVN, "feilede")
-
-fun counter(name: String, type: String): Counter {
-    return Metrics.counter(name, "type", type)
-}
-
-
 @Service
 @Description("Service class for EuxBasis - EuxCpiServiceController.java")
 class EuxService(private val euxOidcRestTemplate: RestTemplate) {
+
+    private val EUX_MULIGEAKSJONER_TELLER_NAVN = "eessipensjon_fagmodul.euxmuligeaksjoner"
+    private val EUX_MULIGEAKSJONER_TELLER_TYPE_VELLYKKEDE = counter(EUX_MULIGEAKSJONER_TELLER_NAVN, "vellykkede")
+    private val EUX_MULIGEAKSJONER_TELLER_TYPE_FEILEDE = counter(EUX_MULIGEAKSJONER_TELLER_NAVN, "feilede")
+    private val EUX_SENDSED_TELLER_NAVN = "eessipensjon_fagmodul.sendsed"
+    private val EUX_SENDSED_TELLER_TYPE_VELLYKKEDE = counter(EUX_SENDSED_TELLER_NAVN, "vellykkede")
+    private val EUX_SENDSED_TELLER_TYPE_FEILEDE = counter(EUX_SENDSED_TELLER_NAVN, "feilede")
+    private val EUX_OPPRETTSED_TELLER_NAVN = "eessipensjon_fagmodul.opprettsed"
+    private val EUX_OPPRETTSED_TELLER_TYPE_VELLYKKEDE = counter(EUX_OPPRETTSED_TELLER_NAVN, "vellykkede")
+    private val EUX_OPPRETTSED_TELLER_TYPE_FEILEDE = counter(EUX_OPPRETTSED_TELLER_NAVN, "feilede")
+    private val EUX_HENTSED_TELLER_NAVN = "eessipensjon_fagmodul.hentsed"
+    private val EUX_HENTSED_TELLER_TYPE_VELLYKKEDE = counter(EUX_HENTSED_TELLER_NAVN, "vellykkede")
+    private val EUX_HENTSED_TELLER_TYPE_FEILEDE = counter(EUX_HENTSED_TELLER_NAVN, "feilede")
+    private val EUX_SLETTSED_TELLER_NAVN = "eessipensjon_fagmodul.slettsed"
+    private val EUX_SLETTSED_TELLER_TYPE_VELLYKKEDE = counter(EUX_SLETTSED_TELLER_NAVN, "vellykkede")
+    private val EUX_SLETTSED_TELLER_TYPE_FEILEDE = counter(EUX_SLETTSED_TELLER_NAVN, "feilede")
+    private val EUX_OPPRETTBUCOGSED_TELLER_NAVN = "eessipensjon_fagmodul.opprettbucogsed"
+    private val EUX_OPPRETTBUCOGSED_TELLER_TYPE_VELLYKKEDE = counter(EUX_OPPRETTBUCOGSED_TELLER_NAVN, "vellykkede")
+    private val EUX_OPPRETTBUCOGSED_TELLER_TYPE_FEILEDE = counter(EUX_OPPRETTBUCOGSED_TELLER_NAVN, "feilede")
+
+    fun counter(name: String, type: String): Counter {
+        return Metrics.counter(name, "type", type)
+    }
 
     //Henter en liste over tilgjengelige aksjoner for den aktuelle RINA saken PK-51365"
     fun getPossibleActions(euSaksnr: String): List<RINAaksjoner> {

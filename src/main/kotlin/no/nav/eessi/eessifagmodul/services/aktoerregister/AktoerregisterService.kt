@@ -27,18 +27,18 @@ data class IdentinfoForAktoer(
         val feilmelding: String?
 )
 
-val AKTOERREGISTER_TELLER_NAVN = "eessipensjon_fagmodul.aktoerregister"
-val AKTOERREGISTER_TELLER_TYPE_VELLYKKEDE = counter(AKTOERREGISTER_TELLER_NAVN, "vellykkede")
-val AKTOERREGISTER_TELLER_TYPE_FEILEDE = counter(AKTOERREGISTER_TELLER_NAVN, "feilede")
-
-fun counter(name: String, type: String): Counter {
-    return Metrics.counter(name, "type", type)
-}
-
 class AktoerregisterException(message: String) : RuntimeException(message)
 
 @Service
 class AktoerregisterService(val aktoerregisterOidcRestTemplate: RestTemplate) {
+
+    private val AKTOERREGISTER_TELLER_NAVN = "eessipensjon_fagmodul.aktoerregister"
+    private val AKTOERREGISTER_TELLER_TYPE_VELLYKKEDE = counter(AKTOERREGISTER_TELLER_NAVN, "vellykkede")
+    private val AKTOERREGISTER_TELLER_TYPE_FEILEDE = counter(AKTOERREGISTER_TELLER_NAVN, "feilede")
+
+    fun counter(name: String, type: String): Counter {
+        return Metrics.counter(name, "type", type)
+    }
 
     @Value("\${app.name}")
     lateinit var appName: String

@@ -14,17 +14,17 @@ import org.springframework.web.util.UriComponentsBuilder
 
 private val logger = LoggerFactory.getLogger(BucBucketService::class.java)
 
-val BUCBUCKET_TELLER_NAVN = "eessipensjon_fagmodul.bucbucket"
-val BUCBUCKET_TELLER_TYPE_VELLYKKEDE = counter(BUCBUCKET_TELLER_NAVN, "vellykkede")
-val BUCBUCKET_TELLER_TYPE_FEILEDE = counter(BUCBUCKET_TELLER_NAVN, "feilede")
-
-fun counter(name: String, type: String): Counter {
-    return Metrics.counter(name, "type", type)
-}
-
 // TODO: Work-in-progress. Venter på at grensesnittet dokumenteres og implementeres i eux-bucbucket
 @Service
 class BucBucketService(val bucBucketOidcRestTemplate: RestTemplate) {
+
+    private val BUCBUCKET_TELLER_NAVN = "eessipensjon_fagmodul.bucbucket"
+    private val BUCBUCKET_TELLER_TYPE_VELLYKKEDE = counter(BUCBUCKET_TELLER_NAVN, "vellykkede")
+    private val BUCBUCKET_TELLER_TYPE_FEILEDE = counter(BUCBUCKET_TELLER_NAVN, "feilede")
+
+    fun counter(name: String, type: String): Counter {
+        return Metrics.counter(name, "type", type)
+    }
 
     fun queryDocuments(queryParams: Map<QueryParameters, String>): List<QueryResult> {
         val responseEntity = doRequest("/seds", queryParams)
