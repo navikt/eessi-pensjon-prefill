@@ -180,7 +180,7 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
                 EUX_HENTSED_TELLER_TYPE_VELLYKKEDE.increment()
                 return SED.fromJson(responseBody) //  mapJsonToAny(responseBody, typeRefs())
             }
-        } catch (ex: IOException) {
+        } catch (ex: Exception) {
             EUX_HENTSED_TELLER_TYPE_FEILEDE.increment()
             throw RuntimeException(ex.message)
         }
