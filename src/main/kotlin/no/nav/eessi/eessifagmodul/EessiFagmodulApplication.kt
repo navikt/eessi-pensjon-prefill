@@ -4,7 +4,7 @@ import no.nav.security.spring.oidc.api.EnableOIDCTokenValidation
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 
-@EnableOIDCTokenValidation(ignore = ["org.springframework", "springfox.documentation"])
+@EnableOIDCTokenValidation(ignore = ["org.springframework", "springfox.documentation", "no.nav.eessi.fagmodul.frontend.services.DiagnosticsController"])
 @SpringBootApplication
 class EessiFagmodulApplication
 

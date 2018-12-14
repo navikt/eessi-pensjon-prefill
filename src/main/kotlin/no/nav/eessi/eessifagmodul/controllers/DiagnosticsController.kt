@@ -1,6 +1,5 @@
 package no.nav.eessi.eessifagmodul.controllers
 
-import no.nav.security.oidc.api.Unprotected
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
@@ -10,7 +9,6 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
 import java.time.Instant
 
-@Unprotected
 @CrossOrigin
 @RestController
 class DiagnosticsController {
