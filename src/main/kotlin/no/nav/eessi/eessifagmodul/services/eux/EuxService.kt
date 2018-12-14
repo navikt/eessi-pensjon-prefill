@@ -133,15 +133,15 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
 
         val httpEntity = HttpEntity("")
 
-        val response = euxOidcRestTemplate.exchange(builder.toUriString(), HttpMethod.GET, httpEntity, typeRef<String>())
-        val responseBody = response.body ?: throw SedDokumentIkkeOpprettetException("Sed dokument ikke funnet")
         try {
+            val response = euxOidcRestTemplate.exchange(builder.toUriString(), HttpMethod.GET, httpEntity, typeRef<String>())
+            val responseBody = response.body ?: throw SedDokumentIkkeOpprettetException("Sed dokument ikke funnet")
             if (response.statusCode.isError) {
                 throw SedDokumentIkkeLestException("Får ikke lest SED dokument fra Rina")
             } else {
                 return SED.fromJson(responseBody) //  mapJsonToAny(responseBody, typeRefs())
             }
-        } catch (ex: IOException) {
+        } catch (ex: Exception) {
             throw RuntimeException(ex.message)
         }
     }

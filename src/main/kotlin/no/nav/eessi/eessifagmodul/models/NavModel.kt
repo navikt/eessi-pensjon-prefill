@@ -1,10 +1,10 @@
 package no.nav.eessi.eessifagmodul.models
 
 data class Nav(
-        var ektefelle: Ektefelle? = null,
-        var barn: List<BarnItem>? = null,
-        var bruker: Bruker? = null,
         var eessisak: List<EessisakItem>? = null,
+        var bruker: Bruker? = null,
+        var ektefelle: Ektefelle? = null,
+        var barn: List<BarnItem>? = null, //pkt 6 og 8
         var verge: Verge? = null,
         var krav: Krav? = null
 )
@@ -14,12 +14,12 @@ data class Krav(
 )
 
 data class Bruker(
-        var arbeidsforhold: List<ArbeidsforholdItem>? = null,
-        var bank: Bank? = null,
         var mor: Foreldre? = null,
         var far: Foreldre? = null,
         var person: Person? = null,
-        var adresse: Adresse? = null
+        var adresse: Adresse? = null,
+        var arbeidsforhold: List<ArbeidsforholdItem>? = null,
+        var bank: Bank? = null
 )
 
 data class Bank(
@@ -96,7 +96,7 @@ data class EmailItem(
 data class Person(
         var pin: List<PinItem>? = null,
         var pinannen: PinItem? = null,
-        var statsborgerskap: List<StatsborgerskapItem>? = null,
+        var statsborgerskap: List<StatsborgerskapItem>? = null, //nasjonalitet
         var etternavn: String? = null,
         var fornavn: String? = null,
         var kjoenn: String? = null,

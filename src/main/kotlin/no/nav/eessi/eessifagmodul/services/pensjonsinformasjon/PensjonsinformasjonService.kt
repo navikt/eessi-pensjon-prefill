@@ -21,7 +21,7 @@ private val logger = LoggerFactory.getLogger(PensjonsinformasjonService::class.j
 @Service
 class PensjonsinformasjonService(val pensjonsinformasjonOidcRestTemplate: RestTemplate, val requestBuilder: RequestBuilder) {
 
-    fun hentAltPaaSak(sakId: String = "", pendata: Pensjonsinformasjon): V1Sak {
+    fun hentAltPaaSak(sakId: String = "", pendata: Pensjonsinformasjon): V1Sak? {
         logger.debug("Pendata: $pendata")
         if (sakId.isNotBlank()) {
             pendata.brukersSakerListe.brukersSakerListe.forEach {
@@ -29,7 +29,7 @@ class PensjonsinformasjonService(val pensjonsinformasjonOidcRestTemplate: RestTe
                     return it
             }
         }
-        return V1Sak()
+        return null
     }
 
     fun hentAltPaaFnr(fnr: String): Pensjonsinformasjon {

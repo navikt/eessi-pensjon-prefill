@@ -10,7 +10,7 @@
       "tilleggsadresse": null,
       "tilleggsadresseType": "Offisiell adresse",
       "poststed": {
-        "value": "1266",
+        "value": "0010",
         "kodeRef": null,
         "kodeverksRef": "http://nav.no/kodeverk/Kodeverk/Postnummer"
       },

@@ -21,6 +21,7 @@ class PrefillP2000(private val prefillNav: PrefillNav, private val preutfyllingP
 
     private val sakPensiondata: KravDataFromPEN = KravDataFromPEN(dataFromPEN)
 
+    //PK-55333
     override fun prefill(prefillData: PrefillDataModel): SED {
         val sedId = prefillData.getSEDid()
 
@@ -32,14 +33,21 @@ class PrefillP2000(private val prefillNav: PrefillNav, private val preutfyllingP
 
         val sed = prefillData.sed
 
-        val pensjon = createPensjon(prefillData)
-
+        //henter opp persondata
         sed.nav = createNav(prefillData)
 
+        //henter opp pensjondat
+        val pensjon = createPensjon(prefillData)
+
+        //gjenlevende hvis det finnes..
         pensjon.gjenlevende = createGjenlevende(prefillData)
 
         //legger pensjon på sed (få med oss gjenlevende/avdød)
         sed.pensjon = pensjon
+
+        //sette korrekt kravdato på sed (denne kommer fra PESYS men opprettes i nav?!)
+        sed.nav?.krav = pensjon.kravDato
+        pensjon.kravDato = null
 
         logger.debug("-------------------| Preutfylling [$sedId] END |------------------- ")
         return prefillData.sed

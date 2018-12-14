@@ -46,7 +46,9 @@ data class Pensjon(
 
         var vedleggandre: String? = null,
         var angitidligstdato: String? = null,
-        var antallSokereKjent: String? = null //P2100 11.7
+        var antallSokereKjent: String? = null, //P2100 11.7
+
+        var kravDato: Krav? = null //kravDato pkt. 9.1 P2000
 )
 
 //P2000

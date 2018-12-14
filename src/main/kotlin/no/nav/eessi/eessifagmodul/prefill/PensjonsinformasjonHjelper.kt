@@ -71,6 +71,7 @@ class PensjonsinformasjonHjelper(private val pensjonsinformasjonService: Pensjon
     fun hentMedSak(prefillData: PrefillDataModel, pendata: Pensjonsinformasjon): V1Sak {
         val sakId = if (prefillData.penSaksnummer.isNotBlank()) prefillData.penSaksnummer else throw IkkeGyldigKallException("Mangler sakId")
         return pensjonsinformasjonService.hentAltPaaSak(sakId, pendata)
+                ?: throw IkkeGyldigKallException("Feil, finner ingen sak på sakId")
     }
 
     //henter ut nødvendige familie relasjoner

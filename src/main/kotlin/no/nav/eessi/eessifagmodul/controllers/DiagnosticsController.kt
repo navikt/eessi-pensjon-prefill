@@ -3,6 +3,7 @@ package no.nav.eessi.eessifagmodul.controllers
 import io.prometheus.client.CollectorRegistry
 import io.prometheus.client.exporter.common.TextFormat
 import io.prometheus.client.hotspot.DefaultExports
+import no.nav.eessi.eessifagmodul.services.personv3.PersonV3Service
 import no.nav.security.oidc.api.Unprotected
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -22,7 +23,7 @@ import kotlin.collections.HashSet
 @Unprotected
 @CrossOrigin
 @RestController
-class DiagnosticsController {
+class DiagnosticsController(private val personV3Service: PersonV3Service) {
 
     @Value("\${app.name}")
     lateinit var appName: String
@@ -41,6 +42,16 @@ class DiagnosticsController {
     fun ping(): ResponseEntity<Unit> {
         return ResponseEntity.ok().build()
     }
+
+    @GetMapping("/pingAll")
+    fun pingAll(): Map<String, Boolean> {
+
+        val fagmodulPing = Pair<String, Boolean>("Fagmodul", true)
+        val personv3Ping = Pair<String, Boolean>("Personv3", personV3Service.ping())
+        val pairs = listOf<Pair<String, Boolean>>(fagmodulPing, personv3Ping)
+        return pairs.toMap()
+    }
+
 
     @GetMapping("/internal/selftest")
     fun selftest(): SelftestResult {

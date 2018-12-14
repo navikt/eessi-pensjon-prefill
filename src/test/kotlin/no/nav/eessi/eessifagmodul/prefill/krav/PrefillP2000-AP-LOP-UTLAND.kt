@@ -2,6 +2,7 @@ package no.nav.eessi.eessifagmodul.prefill.krav
 
 import no.nav.eessi.eessifagmodul.controllers.ApiController
 import no.nav.eessi.eessifagmodul.models.InstitusjonItem
+import no.nav.eessi.eessifagmodul.models.Nav
 import no.nav.eessi.eessifagmodul.models.SED
 import no.nav.eessi.eessifagmodul.prefill.PensjonsinformasjonHjelper
 import no.nav.eessi.eessifagmodul.prefill.Prefill
@@ -18,11 +19,11 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
 @RunWith(MockitoJUnitRunner::class)
-class PrefillP2000_UTL_INNV_AlderpensjonTest : AbstractMockKravPensionHelper() {
+class `PrefillP2000-AP-LOP-UTLAND` : AbstractMockKravPensionHelper() {
 
 
     override fun mockPesysTestfilepath(): Pair<String, String> {
-        return Pair("P2000", "P2000-AP-UTL-INNV-24015012345.xml")
+        return Pair("P2000", "AP-LOP-21644722.xml")
     }
 
     override fun createTestClass(prefillNav: PrefillNav, personTPS: PrefillPersonDataFromTPS, pensionDataFromPEN: PensjonsinformasjonHjelper): Prefill<SED> {
@@ -30,7 +31,7 @@ class PrefillP2000_UTL_INNV_AlderpensjonTest : AbstractMockKravPensionHelper() {
     }
 
     override fun createPayload(prefillData: PrefillDataModel) {
-        prefillData.penSaksnummer = "14398627"
+        prefillData.penSaksnummer = "21644722"
         prefillData.personNr = getFakePersonFnr()
         prefillData.partSedAsJson["PersonInfo"] = createPersonInfoPayLoad()
         prefillData.partSedAsJson["P4000"] = createPersonTrygdetidHistorikk()
@@ -61,13 +62,30 @@ class PrefillP2000_UTL_INNV_AlderpensjonTest : AbstractMockKravPensionHelper() {
     @Test
     fun `sjekk av kravsøknad alderpensjon P2000`() {
         pendata = kravdata.getPensjoninformasjonFraSak(prefillData)
+
         assertNotNull(pendata)
 
-        val pensak = kravdata.getPensjonSak(prefillData, pendata)
-        assertNotNull(pensak)
+        val list = kravdata.getPensjonSakTypeList(pendata)
 
-        assertNotNull(pendata.brukersSakerListe)
-        assertEquals("ALDER", pensak.sakType)
+        assertEquals(1, list.size)
+    }
+
+    @Test
+    fun `forventet korrekt utfylt P2000 alderpensjon med kap4 og 9`() {
+        prefillData.penSaksnummer = "21644722"
+        val P2000 = prefill.prefill(prefillData)
+
+        val P2000pensjon = SED.create("P2000")
+        P2000pensjon.pensjon = P2000.pensjon
+        P2000pensjon.nav = Nav(
+                krav = P2000.nav?.krav
+        )
+        P2000pensjon.print()
+
+        val sed = P2000pensjon
+        assertNotNull(sed.nav?.krav)
+        assertEquals("2014-05-01", sed.nav?.krav?.dato)
+
 
     }
 

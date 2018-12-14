@@ -92,6 +92,7 @@ class PrefillNav(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS)
         logger.debug("2.0           Forsikret person")
         val bruker = preutfyllingPersonFraTPS.prefillBruker(utfyllingData.personNr)
 
+        //Denne finnes ikke i PK-553333
         logger.debug("3.0           Informasjon om personens ansettelsesforhold og selvstendige næringsvirksomhet")
         bruker.arbeidsforhold = createInformasjonOmAnsettelsesforhold(utfyllingData)
 

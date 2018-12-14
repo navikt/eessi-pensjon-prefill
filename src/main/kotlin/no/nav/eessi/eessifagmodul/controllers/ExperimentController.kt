@@ -92,13 +92,14 @@ class ExperimentController {
     }
 
     @GetMapping("/testPensjonsinformasjonkrav/{fnr}/{sakid}")
-    fun testPensjonsinformasjonSakFnrOgSak(@PathVariable("fnr") fnr: String, @PathVariable("sakid") sakId: String): V1Sak {
+    fun testPensjonsinformasjonSakFnrOgSak(@PathVariable("fnr") fnr: String, @PathVariable("sakid") sakId: String): V1Sak? {
         return pensjonsinformasjonService.hentAltPaaSak(sakId, pensjonsinformasjonService.hentAltPaaFnr(fnr))
     }
 
     @GetMapping("/testPensjonPerson/{fnr}/{sakId}")
     fun testPensjonPersonInfo(@PathVariable("fnr") fnrId: String, @PathVariable("sakId") sakId: String): PersonDetail {
         val vSak = pensjonsinformasjonService.hentAltPaaSak(sakId, pensjonsinformasjonService.hentAltPaaFnr(fnrId))
+                ?: throw IkkeGyldigKallException("Feiler henting av sak på sakId")
 
         val sakType = vSak.sakType
 
