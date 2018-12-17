@@ -75,7 +75,7 @@ open class KravDataFromPEN(private val dataFromPEN: PensjonsinformasjonHjelper) 
 
         logger.debug("Prøver å sette kravDato til førsteVirkningstidpunkt: ${valgtSak.sakType} og dato: ${valgtSak.forsteVirkningstidspunkt}")
         return Krav(
-                dato = valgtSak.forsteVirkningstidspunkt.let { it.simpleFormat() }
+                dato = valgtSak?.forsteVirkningstidspunkt?.simpleFormat()
         )
     }
 
@@ -137,7 +137,7 @@ open class KravDataFromPEN(private val dataFromPEN: PensjonsinformasjonHjelper) 
             } else {
                 if (valgtSak.sakType == "ALDER") {
                     try {
-                        val kravHistorikkMedUtland = hentKravHistorikkForsteGangsBehandlingUtland(valgtSak)
+                        val kravHistorikkMedUtland = hentKravHistorikkForsteGangsBehandlingUtlandEllerForsteGang(valgtSak)
                         val ytelseprmnd = hentYtelsePerMaanedDenSisteFraKrav(kravHistorikkMedUtland, valgtSak)
                         //kjøre ytelselist på normal
                         ytelselist.add(createYtelserItem(prefillData, ytelseprmnd, valgtSak))
@@ -410,7 +410,10 @@ open class KravDataFromPEN(private val dataFromPEN: PensjonsinformasjonHjelper) 
 
     private fun hentYtelsePerMaanedSortert(pensak: V1Sak): List<V1YtelsePerMaaned> {
         val ytelseprmnd = pensak.ytelsePerMaanedListe
-        val liste = ytelseprmnd.ytelsePerMaanedListe as List<V1YtelsePerMaaned>
+        val liste = mutableListOf<V1YtelsePerMaaned>()
+        if (ytelseprmnd != null) {
+            liste.addAll(ytelseprmnd.ytelsePerMaanedListe)
+        }
         return liste.asSequence().sortedBy { it.fom.toGregorianCalendar() }.toList()
     }
 
@@ -437,9 +440,10 @@ open class KravDataFromPEN(private val dataFromPEN: PensjonsinformasjonHjelper) 
         return V1YtelsePerMaaned()
     }
 
+    //                it.toGregorianCalendar()
     private fun sortertKravHistorikk(pensak: V1Sak): List<V1KravHistorikk> {
         val list = pensak.kravHistorikkListe.kravHistorikkListe.toList()
-        return list.asSequence().sortedBy { it.virkningstidspunkt.toGregorianCalendar() }.toList()
+        return list.asSequence().sortedBy { it.mottattDato.toGregorianCalendar() }.toList()
     }
 
     private fun hentKravHistorikkSisteRevurdering(pensak: V1Sak): V1KravHistorikk {
@@ -455,15 +459,15 @@ open class KravDataFromPEN(private val dataFromPEN: PensjonsinformasjonHjelper) 
         return V1KravHistorikk()
     }
 
-    private fun hentKravHistorikkForsteGangsBehandlingUtland(pensak: V1Sak): V1KravHistorikk {
-        return hentKravHistorikkMedKravType("F_BH_MED_UTL", pensak)
+    private fun hentKravHistorikkForsteGangsBehandlingUtlandEllerForsteGang(pensak: V1Sak): V1KravHistorikk {
+        return hentKravHistorikkMedKravType(listOf("F_BH_MED_UTL", "FORSTEG_BH"), pensak)
     }
 
-    private fun hentKravHistorikkMedKravType(kravType: String, pensak: V1Sak): V1KravHistorikk {
+    private fun hentKravHistorikkMedKravType(kravType: List<String>, pensak: V1Sak): V1KravHistorikk {
         val sortList = sortertKravHistorikk(pensak)
         sortList.forEach {
             logger.debug("leter etter Kravtype: $kravType, fant ${it.kravType} med dato i ${it.virkningstidspunkt}")
-            if (it.kravType == kravType) {
+            if (kravType.contains(it.kravType)) {
                 logger.debug("Fant Kravhistorikk med $kravType")
                 return it
             }

@@ -57,10 +57,13 @@ class ApiController(private val euxService: EuxService, private val prefillServi
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     fun confirmDocument(@RequestBody request: ApiRequest): SED {
         val confirmsed = prefillService.prefillSed(buildPrefillDataModelConfirm(request)).sed
+        //preutfylling av P2000 testing
+        //TODO fjernes etter endt testing
         if (confirmsed.sed == "P2000") {
             val p2000 = SED.create("P2000")
             p2000.pensjon = confirmsed.pensjon
             p2000.nav = Nav(krav = confirmsed.nav?.krav)
+            p2000.print()
             return p2000
         }
         return confirmsed

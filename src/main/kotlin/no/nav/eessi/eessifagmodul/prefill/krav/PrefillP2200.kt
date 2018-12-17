@@ -33,26 +33,21 @@ class PrefillP2200(private val prefillNav: PrefillNav, private val preutfyllingP
 
         val sed = prefillData.sed
 
-        logger.debug("Henter opp Pernsjondata fra PESYS")
-        val pensjon = createPensjon(prefillData)
-        //legger til pensjon på SED
-        sed.pensjon = pensjon
-
-        logger.debug("Henter opp Persondata fra TPS")
+        //henter opp persondata
         sed.nav = createNav(prefillData)
 
+        //henter opp pensjondat
+        val pensjon = createPensjon(prefillData)
 
-        logger.debug("Legger til 4. Informasjon om ytelser den forsikrede mottar")
-
-        //TODO: 5. Ektefelle hva kan vi hente av informasjon? fra hvor
-        logger.debug("Legger til 5. Ektefelle")
-        logger.debug("      mangler familieforhold fra EP-Selvbetjening.")
-
-        //TODO: 7. Informasjon om representant/verge hva kan vi hente av informasjon? fra hvor
-        logger.debug("Legger til 7. Informasjon om representant/verge")
-
-        logger.debug("Henter opp Persondata/Gjenlevende fra TPS")
+        //gjenlevende hvis det finnes..
         pensjon.gjenlevende = createGjenlevende(prefillData)
+
+        //legger pensjon på sed (få med oss gjenlevende/avdød)
+        sed.pensjon = pensjon
+
+        //sette korrekt kravdato på sed (denne kommer fra PESYS men opprettes i nav?!)
+        sed.nav?.krav = pensjon.kravDato
+        pensjon.kravDato = null
 
         logger.debug("-------------------| Preutfylling [$sedId] END |------------------- ")
         return prefillData.sed

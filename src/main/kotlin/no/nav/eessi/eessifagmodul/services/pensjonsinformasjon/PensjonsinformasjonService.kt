@@ -44,12 +44,12 @@ class PensjonsinformasjonService(val pensjonsinformasjonOidcRestTemplate: RestTe
             requestBuilder.addPensjonsinformasjonElement(document, it)
         }
 
-        //logger.debug("Requestbody:\n${document.documentToString()}")
+        logger.debug("Requestbody:\n${document.documentToString()}")
 
         val sakHandler = PensjoninformasjonUriHandler("https://wasapp-t5.adeo.no/pensjon-ws/api/pensjonsinformasjon/v1")
         val response = doRequest("/fnr/", fnr, document.documentToString(), sakHandler)
         validateResponse(informationBlocks, response)
-        //logger.debug("Response: $response")
+        logger.debug("Response: $response")
         return response
     }
 
@@ -76,12 +76,12 @@ class PensjonsinformasjonService(val pensjonsinformasjonOidcRestTemplate: RestTe
         informationBlocks.forEach {
             requestBuilder.addPensjonsinformasjonElement(document, it)
         }
-        //logger.debug("Requestbody:\n${document.documentToString()}")
+        logger.debug("Requestbody:\n${document.documentToString()}")
 
         val sakHandler = PensjoninformasjonUriHandler("https://wasapp-t5.adeo.no/pensjon-ws/api/pensjonsinformasjon/v1")
         val response = doRequest("/vedtak", vedtaksId, document.documentToString(), sakHandler)
         validateResponse(informationBlocks, response)
-        //logger.debug("Response: $response")
+        logger.debug("Response: $response")
         return response
     }
 

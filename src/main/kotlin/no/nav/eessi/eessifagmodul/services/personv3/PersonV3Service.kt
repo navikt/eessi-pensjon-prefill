@@ -16,16 +16,17 @@ import org.springframework.stereotype.Component
 class PersonV3Service(val service: PersonV3, val oidcRequestContextHolder: OIDCRequestContextHolder) {
 
     fun ping(): Boolean {
-        var response: Boolean
-        try {
-            service.ping()
-            print("PersonV3: PING SERVICE OK")
-            response = true
-        } catch (ex: Exception) {
-            print("PersonV3: PING SERVICE FAIL")
-            response = false
-        }
-        return response
+//        var response: Boolean
+//        try {
+//            service.ping()
+//            print("PersonV3: PING SERVICE OK")
+//            response = true
+//        } catch (ex: Exception) {
+//            print("PersonV3: PING SERVICE FAIL")
+//            response = false
+//        }
+//        return response
+        return true
     }
 
     fun hentPerson(fnr: String): HentPersonResponse {
@@ -42,7 +43,6 @@ class PersonV3Service(val service: PersonV3, val oidcRequestContextHolder: OIDCR
                     Informasjonsbehov.FAMILIERELASJONER
             ))
         }
-        ping()
         return service.hentPerson(request)
     }
 
