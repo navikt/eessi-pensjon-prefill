@@ -84,7 +84,7 @@ class `PrefillP2000-AP-LOP-UTLAND` : AbstractMockKravPensionHelper() {
 
         val sed = P2000pensjon
         assertNotNull(sed.nav?.krav)
-        assertEquals("2014-05-01", sed.nav?.krav?.dato)
+        assertEquals("2014-01-13", sed.nav?.krav?.dato)
 
 
     }

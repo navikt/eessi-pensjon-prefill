@@ -49,10 +49,6 @@ open class KravDataFromPEN(private val dataFromPEN: PensjonsinformasjonHjelper) 
 
         //4.0
         return createInformasjonOmYtelserList(prefillData, pendata)
-//        return Pensjon(
-//
-//                ytelser = createInformasjonOmYtelserList(prefillData, pendata),
-//        )
 
     }
 
@@ -84,16 +80,16 @@ open class KravDataFromPEN(private val dataFromPEN: PensjonsinformasjonHjelper) 
         logger.debug("9.1        Dato Krav (med korrekt data fra PESYS krav.virkningstidspunkt)")
 
         logger.debug("--------------------------------------------------------------------------------------------------------")
-        logger.debug("SakId:  ${valgtSak.sakId}")
-        logger.debug("SakType:  ${valgtSak.sakType}")
-        logger.debug("Status:  ${valgtSak.status}")
-        logger.debug("KravType: ${valgtKrav.kravType}")
-        logger.debug("forsteVirkningstidspunkt:  ${valgtKrav.virkningstidspunkt}")
+        logger.debug("SakId      :  ${valgtSak.sakId}")
+        logger.debug("SakType    :  ${valgtSak.sakType}")
+        logger.debug("Status     :  ${valgtSak.status}")
+        logger.debug("KravType   : ${valgtKrav.kravType}")
+        logger.debug("mottattDato:  ${valgtKrav.mottattDato}")
         logger.debug("--------------------------------------------------------------")
-        logger.debug("Prøver å sette kravDato til Virkningstidpunkt: ${valgtKrav.kravType} og dato: ${valgtKrav.virkningstidspunkt}")
+        logger.debug("Prøver å sette kravDato til Virkningstidpunkt: ${valgtKrav.kravType} og dato: ${valgtKrav.mottattDato}")
 
         return Krav(
-                dato = valgtKrav?.virkningstidspunkt?.simpleFormat()
+                dato = valgtKrav?.mottattDato?.simpleFormat()
 
         )
     }
