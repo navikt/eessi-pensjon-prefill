@@ -85,6 +85,7 @@ class `PrefillP2000-AP-ForsteGangTest` : AbstractMockKravPensionHelper() {
         val navfnr = NavFodselsnummer(sed.pensjon?.ytelser?.get(0)?.pin?.identifikator!!)
         assertEquals(67, navfnr.getAge())
         assertEquals("1951", navfnr.get4DigitBirthYear())
+        assertEquals("2014-05-01", sed.nav?.krav?.dato)
 
     }
 

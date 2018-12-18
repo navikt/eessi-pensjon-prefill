@@ -47,13 +47,12 @@ open class KravDataFromPEN(private val dataFromPEN: PensjonsinformasjonHjelper) 
         val pendata: Pensjonsinformasjon = getPensjoninformasjonFraSak(prefillData)
         val pensak = getPensjonSak(prefillData, pendata)
 
-        return Pensjon(
-
-                //4.0
-                ytelser = createInformasjonOmYtelserList(prefillData, pendata),
-
-                kravDato = createKravData(prefillData, pensak)
-        )
+        //4.0
+        return createInformasjonOmYtelserList(prefillData, pendata)
+//        return Pensjon(
+//
+//                ytelser = createInformasjonOmYtelserList(prefillData, pendata),
+//        )
 
     }
 
@@ -76,8 +75,29 @@ open class KravDataFromPEN(private val dataFromPEN: PensjonsinformasjonHjelper) 
         logger.debug("Prøver å sette kravDato til førsteVirkningstidpunkt: ${valgtSak.sakType} og dato: ${valgtSak.forsteVirkningstidspunkt}")
         return Krav(
                 dato = valgtSak?.forsteVirkningstidspunkt?.simpleFormat()
+                //kravhistorikk
+
         )
     }
+
+    private fun createKravDato(prefillData: PrefillDataModel, valgtSak: V1Sak, valgtKrav: V1KravHistorikk): Krav? {
+        logger.debug("9.1        Dato Krav (med korrekt data fra PESYS krav.virkningstidspunkt)")
+
+        logger.debug("--------------------------------------------------------------------------------------------------------")
+        logger.debug("SakId:  ${valgtSak.sakId}")
+        logger.debug("SakType:  ${valgtSak.sakType}")
+        logger.debug("Status:  ${valgtSak.status}")
+        logger.debug("KravType: ${valgtKrav.kravType}")
+        logger.debug("forsteVirkningstidspunkt:  ${valgtKrav.virkningstidspunkt}")
+        logger.debug("--------------------------------------------------------------")
+        logger.debug("Prøver å sette kravDato til Virkningstidpunkt: ${valgtKrav.kravType} og dato: ${valgtKrav.virkningstidspunkt}")
+
+        return Krav(
+                dato = valgtKrav?.virkningstidspunkt?.simpleFormat()
+
+        )
+    }
+
 
 
     //4.1
@@ -94,7 +114,8 @@ open class KravDataFromPEN(private val dataFromPEN: PensjonsinformasjonHjelper) 
     For å finne om han har søkt om en norsk ytelse, skal man se om det finnes krav av typen «Førstegangsbehandling», «Førstegangsbehandling Norge/utland», «Førstegangsbehandling bosatt utland» eller «Mellombehandling».
     Obs, krav av typen «Førstegangsbehandling kun utland» eller Sluttbehandling kun utland» gjelder ikke norsk ytelse.
     * */
-    private fun createInformasjonOmYtelserList(prefillData: PrefillDataModel, pendata: Pensjonsinformasjon): List<YtelserItem> {
+    private fun createInformasjonOmYtelserList(prefillData: PrefillDataModel, pendata: Pensjonsinformasjon): Pensjon {
+        //: List<YtelserItem>
         logger.debug("4.1           Informasjon om ytelser")
 
         val spesialStatusList = listOf<String>("TIL_BEHANDLING")
@@ -102,8 +123,10 @@ open class KravDataFromPEN(private val dataFromPEN: PensjonsinformasjonHjelper) 
         //TIL_BEHANDLING
         //INNV
         //
+        //kravDato = createKravData(prefillData, pensak)
 
         val listKsak = getPensjonSakTypeList(pendata)
+        var krav: Krav? = null
 
         val ytelselist = mutableListOf<YtelserItem>()
         listKsak.forEach {
@@ -140,6 +163,10 @@ open class KravDataFromPEN(private val dataFromPEN: PensjonsinformasjonHjelper) 
                         val kravHistorikkMedUtland = hentKravHistorikkForsteGangsBehandlingUtlandEllerForsteGang(valgtSak)
                         val ytelseprmnd = hentYtelsePerMaanedDenSisteFraKrav(kravHistorikkMedUtland, valgtSak)
                         //kjøre ytelselist på normal
+                        if (krav == null) {
+                            krav = createKravDato(prefillData, valgtSak, kravHistorikkMedUtland)
+                        }
+
                         ytelselist.add(createYtelserItem(prefillData, ytelseprmnd, valgtSak))
                     } catch (ex: Exception) {
                         ytelselist.add(createYtelseMedManglendeYtelse(prefillData, valgtSak))
@@ -163,7 +190,12 @@ open class KravDataFromPEN(private val dataFromPEN: PensjonsinformasjonHjelper) 
             //}
 
         }
-        return ytelselist
+        return Pensjon(
+                ytelser = ytelselist,
+
+                kravDato = krav
+        )
+
 
     }
 

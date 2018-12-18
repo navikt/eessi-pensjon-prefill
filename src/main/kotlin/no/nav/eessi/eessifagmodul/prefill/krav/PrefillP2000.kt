@@ -46,6 +46,7 @@ class PrefillP2000(private val prefillNav: PrefillNav, private val preutfyllingP
         sed.pensjon = pensjon
 
         //sette korrekt kravdato på sed (denne kommer fra PESYS men opprettes i nav?!)
+        //9.1.
         sed.nav?.krav = pensjon.kravDato
         pensjon.kravDato = null
 

@@ -309,17 +309,22 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
         logger.debug("             UstrukturertAdresse (utland)")
         val gateAdresse = postadr.ustrukturertAdresse as UstrukturertAdresse
 
-        return Adresse(
-                gate = gateAdresse.adresselinje1,
+        try {
+            return Adresse(
+                    gate = gateAdresse?.adresselinje1 ?: null,
 
-                bygning = gateAdresse.adresselinje2,
+                    bygning = gateAdresse?.adresselinje2 ?: null,
 
-                by = gateAdresse.adresselinje3,
+                    by = gateAdresse?.adresselinje3 ?: null,
 
-                postnummer = gateAdresse.adresselinje4,
+                    postnummer = gateAdresse?.adresselinje4 ?: null,
 
-                land = hentLandkode(gateAdresse.landkode)
-        )
+                    land = hentLandkode(gateAdresse.landkode)
+            )
+        } catch (ex: Exception) {
+            logger.error("Feiler ved mapping av Ustrukturert Adresse.")
+            return Adresse()
+        }
 
     }
 
