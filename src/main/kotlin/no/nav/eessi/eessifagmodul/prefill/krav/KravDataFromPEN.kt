@@ -252,6 +252,7 @@ open class KravDataFromPEN(private val dataFromPEN: PensjonsinformasjonHjelper) 
 
     }
 
+    //4.1.7 Start date of entitlement to benefits  - trenger ikke fylles ut
     private fun createStartdatoForRettTilYtelse(pensak: V1Sak): String? {
         logger.debug("4.1.7         Startdato for ytelse (forsteVirkningstidspunkt) ")
         return pensak.forsteVirkningstidspunkt?.let { it.simpleFormat() }
@@ -336,6 +337,23 @@ open class KravDataFromPEN(private val dataFromPEN: PensjonsinformasjonHjelper) 
     }
 
     //4.1.4.1
+    /*
+
+    //4.1.4.1.1
+    preutfylles med Norge.Dette kan gjøres av EESSI-pensjon
+    //4.1.4.1.2
+    preutfylles med norsk PIN
+    //4.1.4.1.3
+    kan preutfylles med Pensjon (men det er vel opplagt at pensjonsytelse tilhører sektor Pensjon)  Dette kan gjøres av EESSI-pensjon
+    //4.1.4.1.4
+    nei
+    //4.1.4.1.4.1
+    Preutfylles med NAV sin Institusjons-ID fra IR.    Dette kan gjøres av EESSI-pensjon
+    //4.1.4.1.4.2
+    preutfylles med NAV Dette kan gjøres av EESSI-pensjon
+
+     */
+
     private fun createInstitusjonPin(prefillData: PrefillDataModel): PinItem {
         logger.debug("4.1.4.1       Institusjon Pin")
         return PinItem(
@@ -344,7 +362,7 @@ open class KravDataFromPEN(private val dataFromPEN: PensjonsinformasjonHjelper) 
                 //4.1.4.1.2
                 identifikator = prefillData.personNr,
                 //4.1.4.1.3
-                sektor = "alle",
+                sektor = "04", //(kun pensjon)
                 institusjon = null
 //                institusjon = Institusjon(
 //                        institusjonsid = prefillData.andreInstitusjon?.institusjonsid,
@@ -354,6 +372,23 @@ open class KravDataFromPEN(private val dataFromPEN: PensjonsinformasjonHjelper) 
     }
 
     //4.1.9
+    /*
+    //4.1.9 Fra PSAK
+    Denne seksjonen (4.1.9) er gjentakende.
+    Vi skal vise beløpshistorikk 5 år tilbake i tid.
+
+    Hvis bruker mottar en løpende ytelse med beløp større enn 0 kr, skal det nåværende beløpet vises her.
+    Det skal gjentas et beløp for hver beløpsendring, inntil 5 år tilbake i tid.
+
+    //4.1.9.2 Currency Fra PSAK.
+    Her fylles ut FOM-dato for hvert beløp i beløpshistorikk 5 år tilbake i tid.
+
+    //4.1.9.4 Payment frequency     Preutfylt med Månedlig
+    OBS – fra år 2021 kan det bli aktuelt med årlige utbetalinger, pga da kan brukere få utbetalt kap 20-pensjoner med veldig små beløp (ingen nedre grense)
+
+    //4.1.9.5.1  nei
+
+    */
     private fun createYtelseItemBelop(ytelsePrMnd: V1YtelsePerMaaned, ytelsekomp: List<V1Ytelseskomponent>): List<BeloepItem> {
         logger.debug("4.1.9         Beløp")
         val list = mutableListOf<BeloepItem>()

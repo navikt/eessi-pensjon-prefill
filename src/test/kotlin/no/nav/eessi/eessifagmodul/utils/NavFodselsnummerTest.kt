@@ -14,18 +14,9 @@ class NavFodselsnummerTest {
     fun `valid check for age`() {
         val fnr = generateRandomFnr(48)
         println("RandomFnr: $fnr")
-        //val actualDate = LocalDate.now().minusYears(48)
-
         val navfnr = NavFodselsnummer(fnr)
         assertEquals(48, navfnr.getAge())
         assertEquals(false, navfnr.getValidPentionAge())
-
-        //assertEquals(actualDate, navfnr.getBirthDate())
-
-        //val dtf = DateTimeFormatter.ofPattern("YYYY-MM-dd")
-        //val exprectedFormat = actualDate.format(dtf)
-        //val actualFormat = navfnr.getBirthDate().format(dtf)
-        //assertEquals(exprectedFormat, actualFormat)
     }
 
     @Test
@@ -172,13 +163,52 @@ class NavFodselsnummerTest {
     @Test
     fun `Is 19 year of age is NOT under 18year`() {
         val fnr = generateRandomFnr(19)
-//        println("RandomFnr: $fnr")
         val navfnr = NavFodselsnummer(fnr)
-
         assertEquals(19, navfnr.getAge())
         assertEquals(false, navfnr.isUnder18Year())
     }
 
+
+    @Test
+    fun `Dette er ikke et gyldig fodselsnummer`() {
+        val fnrfeil = "08045500000"
+        val navfnr = NavFodselsnummer(fnrfeil)
+        val check = navfnr.validate()
+        assertEquals(false, check)
+        assertEquals(63, navfnr.getAge())
+        assertEquals("1955", navfnr.get4DigitBirthYear())
+        assertEquals(false, navfnr.isUnder18Year())
+    }
+
+    @Test
+    fun `Dette er heller ikke et gyldig fodselsnummer`() {
+        val fnrfeil = "20124200000"
+        val navfnr = NavFodselsnummer(fnrfeil)
+        val check = navfnr.validate()
+        assertEquals(false, check)
+        assertEquals(false, navfnr.isUnder18Year())
+        assertEquals(75, navfnr.getAge())
+        assertEquals("1942", navfnr.get4DigitBirthYear())
+        assertEquals(LocalDate.parse("1942-12-20"), navfnr.getBirthDate())
+    }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun `Dette er iallefall ikke et gyldig fodselsnummer da noen taster tegn inn`() {
+        val fnrfeil = "201242ABBA2"
+        NavFodselsnummer(fnrfeil)
+    }
+
+
+    @Test
+    fun `Dette er dog et gyldig fodselsnummer`() {
+        val fnrfeil = generateRandomFnr(67)
+        val navfnr = NavFodselsnummer(fnrfeil)
+        val check = navfnr.validate()
+        assertEquals(true, check)
+        assertEquals(false, navfnr.isUnder18Year())
+        assertEquals(67, navfnr.getAge())
+        assertEquals("1951", navfnr.get4DigitBirthYear())
+    }
 
     @Test
     fun `finne dato for 5 eller 10 eller 25år siden`() {
@@ -234,12 +264,5 @@ class NavFodselsnummerTest {
             else -> strFnr
         }
     }
-
-//    private fun fixDigits(str: String): String {
-//        if (str.length == 1) {
-//            return "0$str"
-//        }
-//        return str
-//    }
 
 }

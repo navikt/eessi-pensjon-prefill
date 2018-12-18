@@ -7,6 +7,7 @@ import no.nav.eessi.eessifagmodul.prefill.PrefillDataModel
 import no.nav.eessi.eessifagmodul.services.LandkodeService
 import no.nav.eessi.eessifagmodul.services.PostnummerService
 import no.nav.eessi.eessifagmodul.services.personv3.PersonV3Service
+import no.nav.eessi.eessifagmodul.utils.NavFodselsnummer
 import no.nav.eessi.eessifagmodul.utils.simpleFormat
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.*
 import org.slf4j.Logger
@@ -35,34 +36,52 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
 
     fun prefillBruker(ident: String): Bruker {
         logger.debug("              Bruker")
-        val brukerTPS = hentBrukerTPS(ident)
-        setPersonStatus(hentPersonStatus(brukerTPS))
+        try {
+            val brukerTPS = hentBrukerTPS(ident)
+            setPersonStatus(hentPersonStatus(brukerTPS))
 
-        return Bruker(
-                person = personData(brukerTPS),
+            return Bruker(
+                    person = personData(brukerTPS),
 
-                far = Foreldre(person = hentRelasjon(RelasjonEnum.FAR, brukerTPS)),
+                    far = Foreldre(person = hentRelasjon(RelasjonEnum.FAR, brukerTPS)),
 
-                mor = Foreldre(person = hentRelasjon(RelasjonEnum.MOR, brukerTPS)),
+                    mor = Foreldre(person = hentRelasjon(RelasjonEnum.MOR, brukerTPS)),
 
-                adresse = hentPersonAdresse(brukerTPS)
-        )
+                    adresse = hentPersonAdresse(brukerTPS)
+            )
+        } catch (ex: Exception) {
+            logger.error("Feil ved henting av Bruker fra TPS, sjekk ident?")
+            return Bruker()
+        }
+
     }
 
     //henter kun personnNr (brukerNorIdent/pin) for alle barn under person
     fun hentBarnaPinIdFraBruker(brukerNorIdent: String): List<String> {
-        val brukerTPS = hentBrukerTPS(brukerNorIdent)
-        val person = brukerTPS as no.nav.tjeneste.virksomhet.person.v3.informasjon.Person
-        val resultat = mutableListOf<String>()
+        //brukerPin henter ut persondetalj fra TPS. med liste over barna
+        try {
+            val brukerTPS = hentBrukerTPS(brukerNorIdent)
 
-        person.harFraRolleI.forEach {
-            val tpsvalue = it.tilRolle.value   //mulig nullpoint? kan tilRolle være null?
-            if (RelasjonEnum.BARN.erSamme(tpsvalue)) {
-                val persontps = it.tilPerson as no.nav.tjeneste.virksomhet.person.v3.informasjon.Person
-                resultat.add(hentNorIdent(persontps))
+            val person = brukerTPS as no.nav.tjeneste.virksomhet.person.v3.informasjon.Person
+            val resultat = mutableListOf<String>()
+
+            person.harFraRolleI.forEach {
+                val tpsvalue = it.tilRolle.value   //mulig nullpoint? kan tilRolle være null?
+                if (RelasjonEnum.BARN.erSamme(tpsvalue)) {
+                    val persontps = it.tilPerson as no.nav.tjeneste.virksomhet.person.v3.informasjon.Person
+                    val norIdent = hentNorIdent(persontps)
+                    if (NavFodselsnummer(norIdent).validate()) {
+                        resultat.add(norIdent)
+                    } else {
+                        logger.error("følgende ident funnet ikke gyldig: $norIdent")
+                    }
+                }
             }
+            return resultat.toList()
+        } catch (ex: Exception) {
+            logger.error("feiler ved henting av TPS")
+            return listOf()
         }
-        return resultat.toList()
     }
 
     fun hentEktefelleEllerPartnerFraBruker(utfyllingData: PrefillDataModel): Ektefelle? {
