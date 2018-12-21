@@ -225,7 +225,7 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
                 //2.1.3
                 foedselsdato = datoFormat(brukerTps),
 
-                //2.2.1
+                //2.2.1.1
                 statsborgerskap = listOf(hentStatsborgerskapTps(brukerTps)),
 
                 //2.1.4     //sex
