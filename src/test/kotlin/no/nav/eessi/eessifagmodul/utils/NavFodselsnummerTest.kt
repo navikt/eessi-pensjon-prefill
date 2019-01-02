@@ -74,8 +74,6 @@ class NavFodselsnummerTest {
         val fnr = generateRandomFnr(10)
         println("RandomFnr: $fnr")
         val navfnr = NavFodselsnummer(fnr)
-
-        assertEquals("2008", navfnr.get4DigitBirthYear())
         assertEquals(10, navfnr.getAge())
         assertEquals(true, navfnr.isUnder18Year())
         assertEquals(false, navfnr.getValidPentionAge())

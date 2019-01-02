@@ -171,8 +171,6 @@ class PrefillP2000AlderpensjonTest : AbstractMockKravPensionHelper() {
         assertEquals("FOLKETRYGD", P2000.pensjon?.ytelser?.get(0)?.annenytelse)
         val navfnr = NavFodselsnummer(P2000.pensjon?.ytelser?.get(0)?.pin?.identifikator!!)
         assertEquals(67, navfnr.getAge())
-        assertEquals("1951", navfnr.get4DigitBirthYear())
-
 
         assertEquals("7839", P2000.pensjon?.ytelser?.get(1)?.totalbruttobeloeparbeidsbasert)
         assertEquals("FOLKETRYGD", P2000.pensjon?.ytelser?.get(1)?.annenytelse)
