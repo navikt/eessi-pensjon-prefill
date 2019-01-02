@@ -21,7 +21,9 @@ import java.util.*
 @Protected
 @RestController
 @RequestMapping("/api")
-class ApiController(private val euxService: EuxService, private val prefillService: PrefillService, private val aktoerregisterService: AktoerregisterService) {
+class ApiController(private val euxService: EuxService,
+                    private val prefillService: PrefillService,
+                    private val aktoerregisterService: AktoerregisterService) {
 
     //private val logger: Logger by lazy { LoggerFactory.getLogger(ApiController::class.java) }
 
@@ -72,14 +74,17 @@ class ApiController(private val euxService: EuxService, private val prefillServi
 
     @ApiOperation("henter ut en SED fra et eksisterende Rina document. krever unik dokumentid fra valgt SED")
     @GetMapping("/sed/{rinanr}/{documentid}")
-    fun getDocument(@PathVariable("rinanr", required = true) rinanr: String, @PathVariable("documentid", required = true) documentid: String): SED {
+    fun getDocument(@PathVariable("rinanr", required = true) rinanr: String,
+                    @PathVariable("documentid", required = true) documentid: String): SED {
         return euxService.fetchSEDfromExistingRinaCase(rinanr, documentid)
 
     }
 
     @ApiOperation("sletter SED fra et eksisterende Rina document. krever unik dokumentid fra valgt SED")
     @DeleteMapping("/sed/{rinanr}/{documentid}")
-    fun deleteDocument(@PathVariable("rinanr", required = true) rinanr: String, @PathVariable("documentid", required = true) sed: String, @PathVariable("documentid", required = true) documentid: String): HttpStatus {
+    fun deleteDocument(@PathVariable("rinanr", required = true) rinanr: String,
+                       @PathVariable("documentid", required = true) sed: String,
+                       @PathVariable("documentid", required = true) documentid: String) {
 
         return euxService.deleteSEDfromExistingRinaCase(rinanr, documentid)
     }

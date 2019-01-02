@@ -1,5 +1,7 @@
 package no.nav.eessi.eessifagmodul.services.eux
 
+import io.micrometer.core.instrument.Counter
+import io.micrometer.core.instrument.Metrics
 import no.nav.eessi.eessifagmodul.models.*
 import no.nav.eessi.eessifagmodul.utils.createErrorMessage
 import no.nav.eessi.eessifagmodul.utils.mapJsonToAny
@@ -23,6 +25,29 @@ private val logger = LoggerFactory.getLogger(EuxService::class.java)
 @Description("Service class for EuxBasis - EuxCpiServiceController.java")
 class EuxService(private val euxOidcRestTemplate: RestTemplate) {
 
+    private val EUX_MULIGEAKSJONER_TELLER_NAVN = "eessipensjon_fagmodul.euxmuligeaksjoner"
+    private val EUX_MULIGEAKSJONER_TELLER_TYPE_VELLYKKEDE = counter(EUX_MULIGEAKSJONER_TELLER_NAVN, "vellykkede")
+    private val EUX_MULIGEAKSJONER_TELLER_TYPE_FEILEDE = counter(EUX_MULIGEAKSJONER_TELLER_NAVN, "feilede")
+    private val EUX_SENDSED_TELLER_NAVN = "eessipensjon_fagmodul.sendsed"
+    private val EUX_SENDSED_TELLER_TYPE_VELLYKKEDE = counter(EUX_SENDSED_TELLER_NAVN, "vellykkede")
+    private val EUX_SENDSED_TELLER_TYPE_FEILEDE = counter(EUX_SENDSED_TELLER_NAVN, "feilede")
+    private val EUX_OPPRETTSED_TELLER_NAVN = "eessipensjon_fagmodul.opprettsed"
+    private val EUX_OPPRETTSED_TELLER_TYPE_VELLYKKEDE = counter(EUX_OPPRETTSED_TELLER_NAVN, "vellykkede")
+    private val EUX_OPPRETTSED_TELLER_TYPE_FEILEDE = counter(EUX_OPPRETTSED_TELLER_NAVN, "feilede")
+    private val EUX_HENTSED_TELLER_NAVN = "eessipensjon_fagmodul.hentsed"
+    private val EUX_HENTSED_TELLER_TYPE_VELLYKKEDE = counter(EUX_HENTSED_TELLER_NAVN, "vellykkede")
+    private val EUX_HENTSED_TELLER_TYPE_FEILEDE = counter(EUX_HENTSED_TELLER_NAVN, "feilede")
+    private val EUX_SLETTSED_TELLER_NAVN = "eessipensjon_fagmodul.slettsed"
+    private val EUX_SLETTSED_TELLER_TYPE_VELLYKKEDE = counter(EUX_SLETTSED_TELLER_NAVN, "vellykkede")
+    private val EUX_SLETTSED_TELLER_TYPE_FEILEDE = counter(EUX_SLETTSED_TELLER_NAVN, "feilede")
+    private val EUX_OPPRETTBUCOGSED_TELLER_NAVN = "eessipensjon_fagmodul.opprettbucogsed"
+    private val EUX_OPPRETTBUCOGSED_TELLER_TYPE_VELLYKKEDE = counter(EUX_OPPRETTBUCOGSED_TELLER_NAVN, "vellykkede")
+    private val EUX_OPPRETTBUCOGSED_TELLER_TYPE_FEILEDE = counter(EUX_OPPRETTBUCOGSED_TELLER_NAVN, "feilede")
+
+    fun counter(name: String, type: String): Counter {
+        return Metrics.counter(name, "type", type)
+    }
+
     //Henter en liste over tilgjengelige aksjoner for den aktuelle RINA saken PK-51365"
     fun getPossibleActions(euSaksnr: String): List<RINAaksjoner> {
         val builder = UriComponentsBuilder.fromPath("/MuligeAksjoner")
@@ -34,11 +59,14 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
         val responseBody = response.body!!
         try {
             if (response.statusCode.isError) {
+                EUX_MULIGEAKSJONER_TELLER_TYPE_FEILEDE.increment()
                 throw createErrorMessage(responseBody)
             } else {
+                EUX_MULIGEAKSJONER_TELLER_TYPE_VELLYKKEDE.increment()
                 return mapJsonToAny(responseBody, typeRefs())
             }
         } catch (ex: IOException) {
+            EUX_MULIGEAKSJONER_TELLER_TYPE_FEILEDE.increment()
             throw RuntimeException(ex.message)
         }
     }
@@ -88,8 +116,10 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
         logger.debug("Response SendSED på Rina: $euxCaseId, response:  $response")
 
         if (response.statusCodeValue == 200) {
+            EUX_SENDSED_TELLER_TYPE_VELLYKKEDE.increment()
             return true
         }
+        EUX_SENDSED_TELLER_TYPE_FEILEDE.increment()
         return false
     }
 
@@ -116,7 +146,14 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
 
         logger.info("createSEDonExistingRinaCase KorrelasjonsID : {}", korrelasjonID)
         val response = euxOidcRestTemplate.exchange(builder.toUriString(), HttpMethod.POST, httpEntity, String::class.java)
-        logger.debug("Response opprett SED på Rina: $euxCaseId, response:  $response")
+
+        if(response.statusCode.is2xxSuccessful) {
+            logger.debug("Response opprett SED på Rina: $euxCaseId, response:  $response")
+            EUX_OPPRETTSED_TELLER_TYPE_VELLYKKEDE.increment()
+        }
+        logger.error("Opprettelse av SED på Rina feilet")
+        EUX_OPPRETTSED_TELLER_TYPE_FEILEDE.increment()
+
         return response.statusCode
     }
 
@@ -133,32 +170,42 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
 
         val httpEntity = HttpEntity("")
 
-        val response = euxOidcRestTemplate.exchange(builder.toUriString(), HttpMethod.GET, httpEntity, typeRef<String>())
-        val responseBody = response.body ?: throw SedDokumentIkkeOpprettetException("Sed dokument ikke funnet")
         try {
+            val response = euxOidcRestTemplate.exchange(builder.toUriString(), HttpMethod.GET, httpEntity, typeRef<String>())
+            val responseBody = response.body ?: throw SedDokumentIkkeOpprettetException("Sed dokument ikke funnet")
             if (response.statusCode.isError) {
+                EUX_HENTSED_TELLER_TYPE_FEILEDE.increment()
                 throw SedDokumentIkkeLestException("Får ikke lest SED dokument fra Rina")
             } else {
+                EUX_HENTSED_TELLER_TYPE_VELLYKKEDE.increment()
                 return SED.fromJson(responseBody) //  mapJsonToAny(responseBody, typeRefs())
             }
-        } catch (ex: IOException) {
+        } catch (ex: Exception) {
+            EUX_HENTSED_TELLER_TYPE_FEILEDE.increment()
             throw RuntimeException(ex.message)
         }
     }
 
     /**
-     * call to fetch existing sed document on existing rina case.
+     * call to delete existing sed document on existing rina case.
      * @param euxCaseId (rina id)
      * @param documentId (sed documentid)
      */
-    fun deleteSEDfromExistingRinaCase(euxCaseId: String, documentId: String): HttpStatus {
+    fun deleteSEDfromExistingRinaCase(euxCaseId: String, documentId: String) {
         val builder = UriComponentsBuilder.fromPath("/SED")
                 .queryParam("RINASaksnummer", euxCaseId)
                 .queryParam("DokumentID", documentId)
 
         val httpEntity = HttpEntity("")
-        return euxOidcRestTemplate.exchange(builder.toUriString(), HttpMethod.DELETE, httpEntity, typeRef<String>()).statusCode
-
+        try {
+            val response = euxOidcRestTemplate.exchange(builder.toUriString(), HttpMethod.DELETE, httpEntity, typeRef<String>()).statusCode
+            if(response.is2xxSuccessful){
+                EUX_SLETTSED_TELLER_TYPE_VELLYKKEDE.increment()
+            }
+        } catch (ex: IOException) {
+            EUX_SLETTSED_TELLER_TYPE_FEILEDE.increment()
+            throw RuntimeException(ex.message)
+        }
     }
 
 

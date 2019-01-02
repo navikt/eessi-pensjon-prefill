@@ -2,6 +2,8 @@ package no.nav.eessi.eessifagmodul.services.aktoerregister
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import io.micrometer.core.instrument.Counter
+import io.micrometer.core.instrument.Metrics
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpEntity
@@ -29,6 +31,14 @@ class AktoerregisterException(message: String) : RuntimeException(message)
 
 @Service
 class AktoerregisterService(val aktoerregisterOidcRestTemplate: RestTemplate) {
+
+    private val AKTOERREGISTER_TELLER_NAVN = "eessipensjon_fagmodul.aktoerregister"
+    private val AKTOERREGISTER_TELLER_TYPE_VELLYKKEDE = counter(AKTOERREGISTER_TELLER_NAVN, "vellykkede")
+    private val AKTOERREGISTER_TELLER_TYPE_FEILEDE = counter(AKTOERREGISTER_TELLER_NAVN, "feilede")
+
+    fun counter(name: String, type: String): Counter {
+        return Metrics.counter(name, "type", type)
+    }
 
     @Value("\${app.name}")
     lateinit var appName: String
@@ -81,11 +91,13 @@ class AktoerregisterService(val aktoerregisterOidcRestTemplate: RestTemplate) {
 
         if (responseEntity.statusCode.isError) {
             logger.error("Received ${responseEntity.statusCode} from aktørregister")
+            AKTOERREGISTER_TELLER_TYPE_FEILEDE.increment()
             if (responseEntity.hasBody()) {
                 logger.error(responseEntity.body.toString())
             }
             throw RuntimeException("Received ${responseEntity.statusCode} ${responseEntity.statusCode.reasonPhrase} from aktørregisteret")
         }
+        AKTOERREGISTER_TELLER_TYPE_VELLYKKEDE.increment()
 
         return jacksonObjectMapper().readValue(responseEntity.body!!)
     }
