@@ -48,7 +48,28 @@ enum class InformasjonsType : Metadata {
     YTELSE_PR_MAANED_LISTE {
         override fun elementName() = "ytelsePerMaanedListe"
         override fun typeName() = "v1.YtelsePerMaanedListe"
-    }
+    },
+    SAKALDER {
+        override fun elementName() = "sakAlder"
+        override fun typeName() = "v1.SakAlder"
+    },
+    BRUKERS_SAKER_LISTE {
+        override fun elementName() = "brukersSakerListe"
+        override fun typeName() = "v1.BrukersSakerListe"
+    },
+    EKTEFELLE_PARTNER_SAMBOER_LISTE {
+        override fun elementName() = "ektefellepartnersamboerliste"
+        override fun typeName() = "v1.EktefellePartnerSamboerListe"
+    },
+    KRAV_HISTORIKK_LISTE {
+        override fun elementName() = "kravhistorikkliste"
+        override fun typeName() = "v1.KravHistorikkListe"
+    },
+    BRUKERS_BARN_LISTE {
+        override fun elementName() = "brukersBarnListe"
+        override fun typeName() = "v1.BrukersBarnListe"
+    },
+
 }
 
 interface Metadata {

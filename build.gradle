@@ -2,6 +2,7 @@ buildscript {
     ext {
         kotlinVersion = '1.2.71'
         springBootVersion = '2.0.4.RELEASE'
+        //springBootVersion = '2.1.1.RELEASE'
         springSecurityVersion = '5.0.5.RELEASE'
         prometheusVersion = '0.5.0'
         springfoxVersion = '2.9.2'
@@ -11,6 +12,7 @@ buildscript {
         personV3Version = '3.4.1'
         oidcTokenSupportVersion = '0.2.7'
         logstashLogbackVersion = '4.10'
+        pensjonInformasjonVersion = '9.4.10'
     }
     repositories {
         maven {
@@ -65,6 +67,9 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-actuator")
     testCompile("org.springframework.boot:spring-boot-starter-test")
 
+    // Allows for variable expiration-date of each cache-entry
+    compile("net.jodah:expiringmap:0.5.8")
+
     // Apache CXF
     compile("org.apache.cxf:cxf-spring-boot-starter-jaxws:${cxfVersion}")
     compile("org.apache.cxf:cxf-rt-ws-security:${cxfVersion}")
@@ -101,7 +106,7 @@ dependencies {
 
     // Tjenestespesifikasjoner
     compile("no.nav.tjenester:nav-person-v3-tjenestespesifikasjon:${personV3Version}")
-    xsd("no.nav.pensjon:pensjonsinformasjon-xsd:9.4.3")
+    xsd("no.nav.pensjon:pensjonsinformasjon-xsd:${pensjonInformasjonVersion}")
 
     jaxb ('org.glassfish.jaxb:jaxb-xjc:2.2.11')
     jaxb ('org.glassfish.jaxb:jaxb-runtime:2.2.11')

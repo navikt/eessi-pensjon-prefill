@@ -1,23 +1,24 @@
 package no.nav.eessi.eessifagmodul.prefill
 
-import no.nav.eessi.eessifagmodul.models.PersonTrygdeTid
+import no.nav.eessi.eessifagmodul.models.PersonArbeidogOppholdUtland
 import no.nav.eessi.eessifagmodul.models.SED
+import no.nav.eessi.eessifagmodul.prefill.nav.PrefillPerson
 import no.nav.eessi.eessifagmodul.utils.mapJsonToAny
 import no.nav.eessi.eessifagmodul.utils.typeRefs
-import org.springframework.stereotype.Component
 
-@Component
 class PrefillP4000(private val prefillPerson: PrefillPerson) : Prefill<SED> {
 
     override fun prefill(prefillData: PrefillDataModel): SED {
 
-        val json = prefillData.getPartSEDasJson("P4000")
+        prefillData.getPartSEDasJson("P4000")?.let {
 
-        val trygdeTid = mapJsonToAny(json, typeRefs<PersonTrygdeTid>())
+            val trygdeTid = mapJsonToAny(it, typeRefs<PersonArbeidogOppholdUtland>())
 
-        val sed = prefillPerson.prefill(prefillData)
-        sed.trygdetid = trygdeTid
-        prefillData.sed = sed
+            val sed = prefillPerson.prefill(prefillData)
+            sed.trygdetid = trygdeTid
+            prefillData.sed = sed
+        }
+
         return prefillData.sed
 
     }

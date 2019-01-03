@@ -4,46 +4,42 @@ import no.nav.eessi.eessifagmodul.models.Bruker
 import no.nav.eessi.eessifagmodul.models.Nav
 import no.nav.eessi.eessifagmodul.models.Pensjon
 import no.nav.eessi.eessifagmodul.models.SED
+import no.nav.eessi.eessifagmodul.prefill.PensjonsinformasjonHjelper
 import no.nav.eessi.eessifagmodul.prefill.Prefill
 import no.nav.eessi.eessifagmodul.prefill.PrefillDataModel
-import no.nav.eessi.eessifagmodul.prefill.PrefillNav
-import no.nav.eessi.eessifagmodul.prefill.PrefillPersonDataFromTPS
+import no.nav.eessi.eessifagmodul.prefill.nav.PrefillNav
+import no.nav.eessi.eessifagmodul.prefill.nav.PrefillPersonDataFromTPS
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.stereotype.Component
 
-@Component
-class PrefillP6000(private val prefillNav: PrefillNav, private val dataFromPEN: PensionDataFromPESYS, private val dataFromTPS: PrefillPersonDataFromTPS) : Prefill<SED> {
+class PrefillP6000(private val prefillNav: PrefillNav, private val dataFromTPS: PrefillPersonDataFromTPS, penHjelper: PensjonsinformasjonHjelper) : Prefill<SED> {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillP6000::class.java) }
+
+    private var vedtakPensiondata: VedtakDataFromPEN = VedtakDataFromPEN(penHjelper)
 
     override fun prefill(prefillData: PrefillDataModel): SED {
         val sedId = prefillData.getSEDid()
 
-        logger.debug("----------------------------------------------------------")
-
-        logger.debug("Preutfylling NAV     : ${prefillNav::class.java} ")
-        logger.debug("Preutfylling TPS     : ${dataFromTPS::class.java} ")
-        logger.debug("Preutfylling Pensjon : ${dataFromPEN::class.java} ")
-
-        logger.debug("------------------| Preutfylling [$sedId] START |------------------ ")
-
-        logger.debug("[$$sedId] Preutfylling Utfylling Data")
+        logger.debug("----------------------------------------------------------"
+                + "\nPreutfylling NAV     : ${prefillNav::class.java} "
+                + "\nPreutfylling TPS     : ${dataFromTPS::class.java} "
+                + "\nPreutfylling Pensjon : ${vedtakPensiondata::class.java} "
+                + "\n------------------| Preutfylling [$sedId] START |------------------ ")
 
         val sed = prefillData.sed
 
         logger.debug("Henter opp Pernsjondata fra PESYS")
         val pensjon = createPensjon(prefillData)
+        sed.pensjon = pensjon
 
         logger.debug("Henter opp Persondata fra TPS")
         sed.nav = createNav(prefillData)
 
+        logger.debug("Henter opp Persondata/Gjenlevende fra TPS")
         pensjon.gjenlevende = createGjenlevende(prefillData)
 
-        sed.pensjon = pensjon
-
         logger.debug("-------------------| Preutfylling [$sedId] END |------------------- ")
-
         return prefillData.sed
     }
 
@@ -56,7 +52,7 @@ class PrefillP6000(private val prefillNav: PrefillNav, private val dataFromPEN: 
     //henter pensjondata fra PESYS fyller ut sed.pensjon
     private fun createPensjon(prefillData: PrefillDataModel): Pensjon {
         logger.debug("[${prefillData.getSEDid()}] Preutfylling Utfylling Pensjon")
-        return dataFromPEN.prefill(prefillData)
+        return vedtakPensiondata.prefill(prefillData)
     }
 
     //fylles ut kun når vi har etterlatt aktoerId og etterlattPinID.

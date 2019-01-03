@@ -9,14 +9,14 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
 @RunWith(MockitoJUnitRunner::class)
-class PrefillP6000PensionUforepTest: AbstractPensionDataFromPESYSTests("P6000-UT-201.xml") {
+class PrefillP6000PensionUforepTest : AbstractMockVedtakPensionHelper("P6000-UT-201.xml") {
 
 
     @Test
     fun `forventet korrekt utfylling av Pensjon objekt på Uførepensjon`() {
         prefill = generatePrefillData(66, "P6000")
 
-        val result = dataFromPESYS1.prefill(prefill)
+        val result = dataFromPESYS.prefill(prefill)
 
         //debugPrintFinalResult(result)
 
@@ -57,7 +57,10 @@ class PrefillP6000PensionUforepTest: AbstractPensionDataFromPESYSTests("P6000-UT
         assertEquals("six weeks from the date the decision is received", dataof)
 
         assertEquals("2017-05-21", tillegg?.dato)
-        //assertEquals("NAV", tillegg?.andreinstitusjoner?.get(0)?.institusjonsid)
+        assertEquals("NO", tillegg?.andreinstitusjoner?.get(0)?.institusjonsid)
+        assertEquals("[NO] NAV NORGE", tillegg?.andreinstitusjoner?.get(0)?.institusjonsnavn)
+        assertEquals("Postboks 6600 Etterstad", tillegg?.andreinstitusjoner?.get(0)?.institusjonsadresse)
+        assertEquals("0607", tillegg?.andreinstitusjoner?.get(0)?.postnummer)
 
     }
 
@@ -86,8 +89,10 @@ class PrefillP6000PensionUforepTest: AbstractPensionDataFromPESYSTests("P6000-UT
 
     @Test
     fun `forventer at ytelseprMaaned er siste i listen`() {
-        val dataFromPESYS1 = mockPrefillP6000PensionDataFromPESYS("P6000-UT-220.xml")
-        val pendata = dataFromPESYS1.getPensjoninformasjonFraVedtak("123456789")
+        val dataFromPESYS1 = mockPrefillPensionDataFromPESYS("P6000-UT-220.xml")
+
+        prefill.vedtakId = "123456789"
+        val pendata = dataFromPESYS1.getPensjoninformasjonFraVedtak(prefill)
 
         val sisteprmnd = dataFromPESYS1.hentSisteYtelsePerMaaned(pendata)
 
@@ -102,8 +107,9 @@ class PrefillP6000PensionUforepTest: AbstractPensionDataFromPESYSTests("P6000-UT
 
     @Test
     fun `forventet korrekt utregnet ytelsePrMnd på Uforep hvor UT_ORDINER`() {
-        val dataFromPESYS1 = mockPrefillP6000PensionDataFromPESYS("P6000-UT-220.xml")
-        val pendata = dataFromPESYS1.getPensjoninformasjonFraVedtak("123456789")
+        val dataFromPESYS1 = mockPrefillPensionDataFromPESYS("P6000-UT-220.xml")
+        prefill.vedtakId = "123456789"
+        val pendata = dataFromPESYS1.getPensjoninformasjonFraVedtak(prefill)
 
         val result = dataFromPESYS1.pensjonVedtak.createBeregningItemList(pendata)
 
@@ -134,7 +140,7 @@ class PrefillP6000PensionUforepTest: AbstractPensionDataFromPESYSTests("P6000-UT
     @Test
     fun `forventet createVedtakTypePensionWithRule verdi`() {
         prefill = generatePrefillData(68, "P6000")
-        val result = dataFromPESYS1.pensjonVedtak.createVedtakTypePensionWithRule(pendata)
+        val result = dataFromPESYS.pensjonVedtak.createVedtakTypePensionWithRule(pendata)
         assertEquals("02", result)
     }
 

@@ -6,7 +6,7 @@ import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-class PrefillPensjonSak : PensjonData() {
+class PrefillPensjonSak : VedtakPensjonData() {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillPensjonSak::class.java) }
 
@@ -49,7 +49,7 @@ class PrefillPensjonSak : PensjonData() {
     */
     private fun createArtikkel54(pendata: Pensjonsinformasjon): String? {
         logger.debug("6.1       createArtikkel54")
-        val ksakUfor = KSAK.valueOf(pendata.sak.sakType)
+        val ksakUfor = KSAK.valueOf(pendata.sakAlder.sakType)
 
         if (KSAK.UFOREP == ksakUfor) {
             return "0"

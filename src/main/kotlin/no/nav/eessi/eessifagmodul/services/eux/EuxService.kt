@@ -44,7 +44,7 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
     private val EUX_OPPRETTBUCOGSED_TELLER_TYPE_VELLYKKEDE = counter(EUX_OPPRETTBUCOGSED_TELLER_NAVN, "vellykkede")
     private val EUX_OPPRETTBUCOGSED_TELLER_TYPE_FEILEDE = counter(EUX_OPPRETTBUCOGSED_TELLER_NAVN, "feilede")
 
-    fun counter(name: String, type: String): Counter {
+    final fun counter(name: String, type: String): Counter {
         return Metrics.counter(name, "type", type)
     }
 
@@ -170,9 +170,9 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
 
         val httpEntity = HttpEntity("")
 
+        val response = euxOidcRestTemplate.exchange(builder.toUriString(), HttpMethod.GET, httpEntity, typeRef<String>())
+        val responseBody = response.body ?: throw SedDokumentIkkeOpprettetException("Sed dokument ikke funnet")
         try {
-            val response = euxOidcRestTemplate.exchange(builder.toUriString(), HttpMethod.GET, httpEntity, typeRef<String>())
-            val responseBody = response.body ?: throw SedDokumentIkkeOpprettetException("Sed dokument ikke funnet")
             if (response.statusCode.isError) {
                 EUX_HENTSED_TELLER_TYPE_FEILEDE.increment()
                 throw SedDokumentIkkeLestException("Får ikke lest SED dokument fra Rina")
@@ -252,5 +252,46 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
         logger.info("createCaseAndDocument KorrelasjonsID : {}", korrelasjonID)
         val response = euxOidcRestTemplate.exchange(builder.toUriString(), HttpMethod.POST, httpEntity, String::class.java)
         return response.body ?: throw RinaCasenrIkkeMottattException("Ikke mottatt RINA casenr, feiler ved opprettelse av BUC og SED")
+    }
+
+    /**
+     *  An simplified interface for creating a case with an initial document without attachment
+     */
+    fun createCaseWithDocument(sed: SED, bucType: String, mottaker: String): String {
+
+        val builder = UriComponentsBuilder.fromPath("/CreateCaseWithDocument")
+                .queryParam("BuCType", bucType)
+                .queryParam("MottakerID", mottaker)
+
+        val document = object : ByteArrayResource(sed.toJson().toByteArray()) {
+            override fun getFilename(): String? {
+                return "document"
+            }
+        }
+
+        val map: MultiValueMap<String, Any> = LinkedMultiValueMap()
+        map.add("document", document.byteArray)
+
+        val headers = HttpHeaders()
+        headers.contentType = MediaType.APPLICATION_PROBLEM_JSON
+        val httpEntity = HttpEntity(map, headers)
+
+        val response = euxOidcRestTemplate.exchange(builder.toUriString(), HttpMethod.POST, httpEntity, String::class.java)
+        return response.body
+                ?: throw RinaCasenrIkkeMottattException("Ikke mottatt RINA casenr, feiler ved opprettelse av BUC og SED")
+
+    }
+
+    /**
+     * List all institutions connected to RINA.
+     * (all take long time, country faster)
+     */
+    fun getInstitutions(landkode: String? = ""): List<String> {
+        val builder = UriComponentsBuilder.fromPath("/Institusjoner")
+                .queryParam("LandKode", landkode ?: "")
+
+        val httpEntity = HttpEntity("")
+        val response = euxOidcRestTemplate.exchange(builder.toUriString(), HttpMethod.GET, httpEntity, typeRef<List<String>>())
+        return response.body ?: listOf()
     }
 }

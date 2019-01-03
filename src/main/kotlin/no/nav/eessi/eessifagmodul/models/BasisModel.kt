@@ -3,14 +3,16 @@ package no.nav.eessi.eessifagmodul.models
 /**
  * data class model from EUX Basis
  */
-data class RINASaker(
-        var id: String? = null,
-        var applicationRoleId: String? = null,
-        var status: String? = null,
-        var processDefinitionId: String? = null,
-        var traits: RINATraits? = null,
-        var properties: RINAProperties? = null
-)
+
+//TODO: Er denne i bruk?
+//data class RINASaker(
+//        var id: String? = null,
+//        var applicationRoleId: String? = null,
+//        var status: String? = null,
+//        var processDefinitionId: String? = null,
+//        var traits: RINATraits? = null,
+//        var properties: RINAProperties? = null
+//)
 
 data class RINATraits(
         var birthday: String? = null,

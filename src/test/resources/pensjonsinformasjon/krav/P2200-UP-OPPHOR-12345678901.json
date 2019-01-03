@@ -1,0 +1,78 @@
+{
+  "avdod": null,
+  "inngangOgEksport": null,
+  "person": null,
+  "sakAlder": null,
+  "trygdeavtale": null,
+  "trygdetidAvdodFarListe": null,
+  "trygdetidAvdodListe": null,
+  "trygdetidAvdodMorListe": null,
+  "trygdetidListe": null,
+  "vedtak": null,
+  "vilkarsvurderingListe": null,
+  "ytelsePerMaanedListe": null,
+  "brukersSakerListe": {
+    "brukersSakerListe": [
+      {
+        "sakType": "UFOREP",
+        "sakId": 21088200,
+        "forsteVirkningstidspunkt": "2011-04-30T22:00:00.000+0000",
+        "kravHistorikkListe": {
+          "kravHistorikkListe": [
+            {
+              "kravType": "REVURD",
+              "mottattDato": "2011-08-08T22:00:00.000+0000",
+              "virkningstidspunkt": "2011-08-31T22:00:00.000+0000",
+              "status": "OPPHOR"
+            },
+            {
+              "kravType": "FORSTEG_BH",
+              "mottattDato": "2011-05-26T22:00:00.000+0000",
+              "virkningstidspunkt": "2011-04-30T22:00:00.000+0000",
+              "status": "INNV"
+            }
+          ]
+        },
+        "ytelsePerMaanedListe": {
+          "ytelsePerMaanedListe": [
+            {
+              "fom": "2011-04-30T22:00:00.000+0000",
+              "tom": null,
+              "mottarMinstePensjonsniva": false,
+              "gjenlevendetilleggAnvendtAlderspensjon": null,
+              "yrkesskadeAnvendtAlderspensjon": null,
+              "vinnendeBeregningsmetode": "FOLKETRYGD",
+              "vinnendeBeregningsmetodeKap20": null,
+              "vurdertBeregningsmetodeFolketrygd": false,
+              "vurdertBeregningsmetodeEOS": false,
+              "vurdertBeregningsmetodeNordisk": false,
+              "belop": 18117,
+              "belopUtenAvkorting": 18117,
+              "ytelseskomponentListe": [
+                {
+                  "ytelsesKomponentType": "GP",
+                  "belopTilUtbetaling": 5611,
+                  "belopUtenAvkorting": 5611
+                },
+                {
+                  "ytelsesKomponentType": "TP",
+                  "belopTilUtbetaling": 12506,
+                  "belopUtenAvkorting": 12506
+                }
+              ],
+              "benyttetSivilstand": "J_EKTEF",
+              "uforetidspunkt": null
+            }
+          ]
+        },
+        "brukersBarnListe": {
+          "brukersBarnListe": []
+        },
+        "status": "OPPHOR"
+      }
+    ]
+  },
+  "brukersBarnListe": null,
+  "kravHistorikkListe": null,
+  "ektefellePartnerSamboerListe": null
+}

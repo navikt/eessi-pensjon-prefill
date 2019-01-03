@@ -8,7 +8,7 @@
         xmlns:ns4="http://nav.no/pensjon/v1/ytelseskomponent"
         xmlns:ns5="http://nav.no/pensjon/v1/ytelsePerMaanedListe"
         xmlns:ns6="http://nav.no/pensjon/v1/vedtak"
-        xmlns:ns7="http://nav.no/pensjon/v1/sak"
+        xmlns:ns7="http://nav.no/pensjon/v1/sakAlder"
         xmlns:ns8="http://nav.no/pensjon/v1/trygdetid"
         xmlns:ns9="http://nav.no/pensjon/v1/trygdetidListe">
     <ns19:trygdeavtale xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns12:v1.Trygdeavtale">
@@ -98,7 +98,7 @@
             </ns3:ytelseskomponentListe>
         </ns5:ytelsePerMaanedListe>
     </ns19:ytelsePerMaanedListe>
-    <ns19:sak xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns7:v1.Sak">
+    <ns19:sakAlder xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns7:v1.SakAlder">
         <ns7:sakType>GJENLEV</ns7:sakType>
-    </ns19:sak>
+    </ns19:sakAlder>
 </ns19:pensjonsinformasjon>

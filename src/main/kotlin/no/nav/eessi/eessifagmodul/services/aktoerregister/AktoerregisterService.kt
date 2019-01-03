@@ -36,7 +36,7 @@ class AktoerregisterService(val aktoerregisterOidcRestTemplate: RestTemplate) {
     private val AKTOERREGISTER_TELLER_TYPE_VELLYKKEDE = counter(AKTOERREGISTER_TELLER_NAVN, "vellykkede")
     private val AKTOERREGISTER_TELLER_TYPE_FEILEDE = counter(AKTOERREGISTER_TELLER_NAVN, "feilede")
 
-    fun counter(name: String, type: String): Counter {
+    final fun counter(name: String, type: String): Counter {
         return Metrics.counter(name, "type", type)
     }
 
