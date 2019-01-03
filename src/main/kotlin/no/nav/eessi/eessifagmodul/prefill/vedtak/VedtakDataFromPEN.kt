@@ -58,7 +58,12 @@ class VedtakDataFromPEN(private val dataFromPESYS: PensjonsinformasjonHjelper) :
         logger.debug("Ferdig hentet pensjondata fra PESYS. Det tok ${(tottime / 1.0e9)} sekunder.")
         logger.debug("----------------------------------------------------------")
 
+        //Sjekk opp om det er Bodd eller Arbeid utland. (hvis ikke avslutt)
         if (!harBoddArbeidetUtland(pendata)) throw IkkeGyldigKallException("Har ikke bodd eller arbeidet i utlandet. Avslutter vedtak")
+        //Sjekk opp om det finnes et dato fattet vedtak. (hvis ikke avslutt)
+        if (pendata.vedtak.datoFattetVedtak == null) {
+            throw IkkeGyldigKallException("Vedak mangler dato for fatet vedtak. Avslutter")
+        }
 
         //prefill Pensjon obj med data fra PESYS. (pendata)
         return Pensjon(

@@ -30,8 +30,8 @@ class PrefillFactory(private val prefillNav: PrefillNav, private val dataFromTPS
             }
             //Status hva gjendstår
             SEDType.P2000 -> {
-                PrefillDefaultSED(prefillPerson)
-                //PrefillP2000(prefillNav, dataFromTPS, dataFromPEN)
+                //PrefillDefaultSED(prefillPerson)
+                PrefillP2000(prefillNav, dataFromTPS, dataFromPEN)
             }
             //Status hva gjendstår
             SEDType.P2200 -> {

@@ -8,8 +8,22 @@ import java.time.temporal.ChronoUnit
  */
 class NavFodselsnummer(private val fodselsnummer: String) {
 
+    init {
+        try {
+            validate()
+        } catch (ex: Exception) {
+            throw IllegalArgumentException("Ugydlig fødselsummer lagt inn, kan de inneholde tegn? kun tall")
+        }
+    }
+
     fun fnr(): String {
         return fodselsnummer
+    }
+
+    fun validate(): Boolean {
+        val pnr = Integer.parseInt(getIndividnummer())
+        val fnr = Integer.parseInt(getFnr())
+        return fnr > 0 && pnr > 0
     }
 
     private fun getDayInMonth(): String {
@@ -19,6 +33,11 @@ class NavFodselsnummer(private val fodselsnummer: String) {
     private fun getMonth(): String {
         return parseDNumber().substring(2, 4)
     }
+
+    private fun getFnr(): String {
+        return fodselsnummer.substring(0, 5)
+    }
+
 
     private fun get2DigitBirthYear(): String {
         return fodselsnummer.substring(4, 6)

@@ -13,7 +13,6 @@ import no.nav.security.oidc.api.Protected
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
-import org.springframework.scheduling.annotation.Async
 import org.springframework.web.bind.annotation.*
 import java.util.*
 
@@ -59,7 +58,17 @@ class ApiController(private val euxService: EuxService,
     @PostMapping("/sed/confirm", produces = [MediaType.APPLICATION_JSON_VALUE])
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     fun confirmDocument(@RequestBody request: ApiRequest): SED {
-        return prefillService.prefillSed(buildPrefillDataModelConfirm(request)).sed
+        val confirmsed = prefillService.prefillSed(buildPrefillDataModelConfirm(request)).sed
+        //preutfylling av P2000 testing
+        //TODO fjernes etter endt testing
+        if (confirmsed.sed == "P2000") {
+            val p2000 = SED.create("P2000")
+            p2000.pensjon = confirmsed.pensjon
+            p2000.nav = Nav(krav = confirmsed.nav?.krav)
+            p2000.print()
+            return p2000
+        }
+        return confirmsed
     }
 
     @ApiOperation("sendSed send current sed")
@@ -98,7 +107,6 @@ class ApiController(private val euxService: EuxService,
 
     @ApiOperation("Kjører prosess OpprettBuCogSED på EUX for å få opprette et RINA dokument med en SED")
     @PostMapping("/buc/create")
-    @Async
     fun createDocument(@RequestBody request: ApiRequest): String {
 
         return prefillService.prefillAndCreateSedOnNewCase(buildPrefillDataModelOnNew(request)).euxCaseID

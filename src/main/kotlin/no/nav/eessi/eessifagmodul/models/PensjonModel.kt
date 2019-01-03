@@ -50,6 +50,9 @@ data class Pensjon(
         var angitidligstdato: String? = null,
         var antallSokereKjent: String? = null, //P2100 11.7
 
+        var kravDato: Krav? = null //kravDato pkt. 9.1 P2000
+        var antallSokereKjent: String? = null, //P2100 11.7
+
         //P8000
         var anmodning: AnmodningOmTilleggsInfo? = null,
 
