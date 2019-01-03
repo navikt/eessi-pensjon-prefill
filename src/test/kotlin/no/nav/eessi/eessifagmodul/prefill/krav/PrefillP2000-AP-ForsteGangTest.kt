@@ -9,9 +9,11 @@ import no.nav.eessi.eessifagmodul.prefill.nav.PrefillNav
 import no.nav.eessi.eessifagmodul.prefill.nav.PrefillPersonDataFromTPS
 import no.nav.eessi.eessifagmodul.prefill.person.PersonDataFromTPS
 import no.nav.eessi.eessifagmodul.utils.NavFodselsnummer
+import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
+import java.time.LocalDate
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
@@ -84,7 +86,9 @@ class `PrefillP2000-AP-ForsteGangTest` : AbstractMockKravPensionHelper() {
 
         val navfnr = NavFodselsnummer(sed.pensjon?.ytelser?.get(0)?.pin?.identifikator!!)
         assertEquals(67, navfnr.getAge())
-        assertEquals("1951", navfnr.get4DigitBirthYear())
+        val yearnow = LocalDate.now().year
+        val bdate = yearnow - navfnr.getAge()
+        Assert.assertEquals("" + bdate, navfnr.get4DigitBirthYear())
         assertEquals("2018-05-31", sed.nav?.krav?.dato)
 
     }

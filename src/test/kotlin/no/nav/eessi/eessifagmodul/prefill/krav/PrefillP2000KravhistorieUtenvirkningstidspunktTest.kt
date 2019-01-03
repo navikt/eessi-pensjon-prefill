@@ -84,7 +84,6 @@ class PrefillP2000KravhistorieUtenvirkningstidspunktTest : AbstractMockKravPensi
 
         val navfnr = NavFodselsnummer(sed.pensjon?.ytelser?.get(0)?.pin?.identifikator!!)
         assertEquals(67, navfnr.getAge())
-        assertEquals("1951", navfnr.get4DigitBirthYear())
 
     }
 

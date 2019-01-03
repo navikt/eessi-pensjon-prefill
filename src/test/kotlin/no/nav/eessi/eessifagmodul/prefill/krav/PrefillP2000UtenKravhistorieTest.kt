@@ -171,7 +171,6 @@ class PrefillP2000UtenKravhistorieTest : AbstractMockKravPensionHelper() {
 
         val navfnr = NavFodselsnummer(P2000.pensjon?.ytelser?.get(0)?.pin?.identifikator!!)
         assertEquals(67, navfnr.getAge())
-        assertEquals("1951", navfnr.get4DigitBirthYear())
 
         P2000.print()
 

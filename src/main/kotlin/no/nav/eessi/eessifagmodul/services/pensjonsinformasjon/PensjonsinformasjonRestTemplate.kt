@@ -1,8 +1,8 @@
 package no.nav.eessi.eessifagmodul.services.pensjonsinformasjon
 
-import no.nav.eessi.eessifagmodul.config.OidcAuthorizationHeaderInterceptor
 import no.nav.eessi.eessifagmodul.config.RequestResponseLoggerInterceptor
 import no.nav.eessi.eessifagmodul.config.securitytokenexchange.SecurityTokenExchangeService
+import no.nav.eessi.eessifagmodul.config.securitytokenexchange.UntToOidcInterceptor
 import no.nav.security.oidc.context.OIDCRequestContextHolder
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.web.client.RestTemplateBuilder
@@ -24,8 +24,8 @@ class PensjonsinformasjonRestTemplate(val securityTokenExchangeService: Security
     fun pensjonsinformasjonOidcRestTemplate(templateBuilder: RestTemplateBuilder): RestTemplate {
         return templateBuilder
                 .rootUri(url)
-                //.additionalInterceptors(RequestResponseLoggerInterceptor(), UntToOidcInterceptor(securityTokenExchangeService))
-                .additionalInterceptors(RequestResponseLoggerInterceptor(), OidcAuthorizationHeaderInterceptor(oidcRequestContextHolder))
+                .additionalInterceptors(RequestResponseLoggerInterceptor(), UntToOidcInterceptor(securityTokenExchangeService))
+                //.additionalInterceptors(RequestResponseLoggerInterceptor(), OidcAuthorizationHeaderInterceptor(oidcRequestContextHolder))
                 //.additionalInterceptors(RequestResponseLoggerInterceptor(), OidcAuthorizationHeaderInterceptor(oidcRequestContextHolder))
                 .build().apply {
                     requestFactory = BufferingClientHttpRequestFactory(SimpleClientHttpRequestFactory())
