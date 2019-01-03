@@ -23,7 +23,7 @@ class PersonV3Service(val service: PersonV3, val oidcRequestContextHolder: OIDCR
     private val HENTPERSON_TELLER_TYPE_VELLYKKEDE = counter(HENTPERSON_TELLER_NAVN, "vellykkede")
     private val HENTPERSON_TELLER_TYPE_FEILEDE = counter(HENTPERSON_TELLER_NAVN, "feilede")
 
-    fun counter(name: String, type: String): Counter {
+    final fun counter(name: String, type: String): Counter {
         return Metrics.counter(name, "type", type)
     }
 

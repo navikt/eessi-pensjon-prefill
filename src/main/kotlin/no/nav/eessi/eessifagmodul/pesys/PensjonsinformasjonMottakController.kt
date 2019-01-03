@@ -47,8 +47,8 @@ class PensjonsinformasjonMottakController {
                 ),
                 krav = Krav(dato = "2020-05-30")
         )
-        val p3000_no = SED("P3000_NO")
-        p3000_no.pensjon = Pensjon(
+        val p3000no = SED("P3000_NO")
+        p3000no.pensjon = Pensjon(
 
                 landspesifikk = Landspesifikk(
                         norge = Norge(
@@ -64,7 +64,7 @@ class PensjonsinformasjonMottakController {
                 //P2000 9.1
                 mottattDato = LocalDate.parse(p2000.nav?.krav?.dato) ?: null,
                 //P3000_NO 4.6.1. Forsikredes anmodede prosentdel av full pensjon
-                uttaksgrad = parsePensjonsgrad(p3000_no.pensjon?.landspesifikk?.norge?.alderspensjon?.pensjonsgrad),
+                uttaksgrad = parsePensjonsgrad(p3000no.pensjon?.landspesifikk?.norge?.alderspensjon?.pensjonsgrad),
                 //P2000 2.2.1.1
                 statsborgerskap = StatsborgerskapItem("SE"),
                 //hentes fra P4000?

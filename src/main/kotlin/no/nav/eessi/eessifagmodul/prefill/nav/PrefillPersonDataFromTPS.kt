@@ -330,14 +330,10 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
 
         try {
             return Adresse(
-                    gate = gateAdresse?.adresselinje1 ?: null,
-
+                    gate = gateAdresse.adresselinje1 ?: null,
                     bygning = gateAdresse?.adresselinje2 ?: null,
-
-                    by = gateAdresse?.adresselinje3 ?: null,
-
+                    by = gateAdresse?.adresselinje3 ?: "",
                     postnummer = gateAdresse?.adresselinje4 ?: null,
-
                     land = hentLandkode(gateAdresse.landkode)
             )
         } catch (ex: Exception) {

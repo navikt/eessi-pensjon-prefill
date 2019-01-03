@@ -102,8 +102,8 @@ data class AnmodningOmTilleggsInfo(
         var ytterligereInfoOmDokumenter: String? = null, //6.1
         var begrunnKrav: String? = null,
         var seder: List<SedAnmodningItem>? = null,
-        var personAktivitet: List<personAktivitetItem>? = null,
-        var personAktivitetSom: List<personAktivitetSomItem>? = null,
+        var personAktivitet: List<PersonAktivitetItem>? = null,
+        var personAktivitetSom: List<PersonAktivitetSomItem>? = null,
         var personInntekt: List<PersonensInntekt>? = null,
         var annenInfoOmYtelse: String? = null    //8.5
 )
@@ -111,11 +111,11 @@ data class AnmodningOmTilleggsInfo(
 // 8.4
 data class PersonensInntekt(
         var oppgiInntektFOM: String? = null,
-        var personInntekt: List<personInntektItem>? = null
+        var personInntekt: List<PersonInntektItem>? = null
 )
 
 data class AnmodningOmInformasjon(
-        var generellInformasjon: List<generellInfo>? = null, // 8.1
+        var generellInformasjon: List<GenerellInfo>? = null, // 8.1
         var infoOmPersonYtelse: List<InfoOmPersonYtelse>? = null, // 8.2
         var annenEtterspurtInformasjon: String? = null,
         var begrunnelseKrav: String? = null //8.6
@@ -143,7 +143,7 @@ data class AnmodningOmBekreftelse(
         var bekreftelsesGrunn: String? = null //9.2
 )
 
-data class generellInfo(
+data class GenerellInfo(
         var generellInfoOmPers: String? = null
 )
 
@@ -153,15 +153,15 @@ data class SedAnmodningItem(
         var sendFolgendeSEDer: List<String>? = null //7.1.1
 )
 
-data class personAktivitetItem(
+data class PersonAktivitetItem(
         var persAktivitet: String? = null
 )
 
-data class personAktivitetSomItem(
+data class PersonAktivitetSomItem(
         var persAktivitetSom: String? = null
 )
 
-data class personInntektItem(
+data class PersonInntektItem(
         var persInntekt: String? = null
 )
 

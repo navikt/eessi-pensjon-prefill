@@ -44,7 +44,7 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
     private val EUX_OPPRETTBUCOGSED_TELLER_TYPE_VELLYKKEDE = counter(EUX_OPPRETTBUCOGSED_TELLER_NAVN, "vellykkede")
     private val EUX_OPPRETTBUCOGSED_TELLER_TYPE_FEILEDE = counter(EUX_OPPRETTBUCOGSED_TELLER_NAVN, "feilede")
 
-    fun counter(name: String, type: String): Counter {
+    final fun counter(name: String, type: String): Counter {
         return Metrics.counter(name, "type", type)
     }
 

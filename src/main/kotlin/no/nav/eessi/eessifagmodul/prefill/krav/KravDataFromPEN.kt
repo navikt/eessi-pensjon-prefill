@@ -114,7 +114,7 @@ open class KravDataFromPEN(private val dataFromPEN: PensjonsinformasjonHjelper) 
         //: List<YtelserItem>
         logger.debug("4.1           Informasjon om ytelser")
 
-        val spesialStatusList = listOf<String>("TIL_BEHANDLING")
+        val spesialStatusList = listOf("TIL_BEHANDLING")
         // HVIS sak status er denne..:  kan vi avbryte P2000?
         //TIL_BEHANDLING
         //INNV
@@ -227,7 +227,7 @@ open class KravDataFromPEN(private val dataFromPEN: PensjonsinformasjonHjelper) 
                 institusjon = createInstitusjon(prefillData),
 
                 //4.1.5
-                startdatoutbetaling = ytelsePrmnd.fom?.let { it.simpleFormat() },
+                startdatoutbetaling = ytelsePrmnd?.fom?.let { it.simpleFormat() },
                 //4.1.6
                 sluttdatoutbetaling = null,
                 //4.1.7 (sak - forstevirkningstidspunkt)
