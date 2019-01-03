@@ -12,6 +12,7 @@ import no.nav.eessi.eessifagmodul.services.PrefillService
 import no.nav.eessi.eessifagmodul.services.aktoerregister.AktoerregisterService
 import no.nav.eessi.eessifagmodul.services.eux.EuxService
 import no.nav.eessi.eessifagmodul.services.eux.RinaActions
+import no.nav.eessi.eessifagmodul.services.personv3.PersonV3Service
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -40,6 +41,9 @@ class ApiControllerTest {
     lateinit var mockPrefillService: PrefillService
 
     @Mock
+    lateinit var mockPersonService: PersonV3Service
+
+    @Mock
     lateinit var mockPrefillSED: PrefillSED
 
     @Mock
@@ -52,7 +56,7 @@ class ApiControllerTest {
     fun setUp() {
         prefillDataMock = PrefillDataModel()
         mockPrefillService = PrefillService(mockEuxService, mockPrefillSED, mockRinaActions)
-        apiController = ApiController(mockEuxService, mockPrefillService, mockAktoerregisterService)
+        apiController = ApiController(mockEuxService, mockPrefillService, mockAktoerregisterService, mockPersonService)
         apiController.landkodeService = LandkodeService()
     }
 

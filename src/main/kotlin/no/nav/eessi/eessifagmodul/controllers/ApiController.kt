@@ -9,6 +9,7 @@ import no.nav.eessi.eessifagmodul.services.PrefillService
 import no.nav.eessi.eessifagmodul.services.aktoerregister.AktoerregisterException
 import no.nav.eessi.eessifagmodul.services.aktoerregister.AktoerregisterService
 import no.nav.eessi.eessifagmodul.services.eux.EuxService
+import no.nav.eessi.eessifagmodul.services.personv3.PersonV3Service
 import no.nav.security.oidc.api.Protected
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
@@ -21,7 +22,8 @@ import java.util.*
 @RequestMapping("/api")
 class ApiController(private val euxService: EuxService,
                     private val prefillService: PrefillService,
-                    private val aktoerregisterService: AktoerregisterService) {
+                    private val aktoerregisterService: AktoerregisterService,
+                    private val personService: PersonV3Service) {
 
     //private val logger: Logger by lazy { LoggerFactory.getLogger(ApiController::class.java) }
 
@@ -112,6 +114,13 @@ class ApiController(private val euxService: EuxService,
 
     }
 
+    @ApiOperation("henter ut personinformasjon for en aktørID")
+    @GetMapping("/{aktoerid}")
+    fun getDocument(@PathVariable("aktoerid", required = true) aktoerid: String): Personinformasjon {
+        val norskIdent = aktoerregisterService.hentGjeldendeNorskIdentForAktorId(aktoerid)
+        val personresp = personService.hentPerson(norskIdent)
+        return Personinformasjon(personresp.person.personnavn.sammensattNavn)
+    }
     //validatate request and convert to PrefillDataModel
     fun buildPrefillDataModelOnExisting(request: ApiRequest): PrefillDataModel {
         return when {
