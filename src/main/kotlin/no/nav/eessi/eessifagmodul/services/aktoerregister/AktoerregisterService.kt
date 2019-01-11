@@ -4,6 +4,8 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import io.micrometer.core.instrument.Counter
 import io.micrometer.core.instrument.Metrics
+import no.nav.eessi.eessifagmodul.models.AktoerregisterException
+import no.nav.eessi.eessifagmodul.models.AktoerregisterIkkeFunnetException
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpEntity
@@ -27,14 +29,12 @@ data class IdentinfoForAktoer(
         val feilmelding: String?
 )
 
-class AktoerregisterException(message: String) : RuntimeException(message)
-
 @Service
 class AktoerregisterService(val aktoerregisterOidcRestTemplate: RestTemplate) {
 
-    private val AKTOERREGISTER_TELLER_NAVN = "eessipensjon_fagmodul.aktoerregister"
-    private val AKTOERREGISTER_TELLER_TYPE_VELLYKKEDE = counter(AKTOERREGISTER_TELLER_NAVN, "vellykkede")
-    private val AKTOERREGISTER_TELLER_TYPE_FEILEDE = counter(AKTOERREGISTER_TELLER_NAVN, "feilede")
+    private val aktoerregister_teller_navn = "eessipensjon_fagmodul.aktoerregister"
+    private val aktoerregister_teller_type_vellykkede = counter(aktoerregister_teller_navn, "vellykkede")
+    private val aktoerregister_teller_type_feilede = counter(aktoerregister_teller_navn, "feilede")
 
     final fun counter(name: String, type: String): Counter {
         return Metrics.counter(name, "type", type)
@@ -57,7 +57,7 @@ class AktoerregisterService(val aktoerregisterOidcRestTemplate: RestTemplate) {
 
     private fun validateResponse(aktorid: String, response: Map<String, IdentinfoForAktoer>) {
         if (response[aktorid] == null)
-            throw RuntimeException("Ingen identinfo for $aktorid ble funnet")
+            throw AktoerregisterIkkeFunnetException("Ingen identinfo for $aktorid ble funnet")
 
         val identInfoForAktoer = response[aktorid]!!
 
@@ -65,18 +65,20 @@ class AktoerregisterService(val aktoerregisterOidcRestTemplate: RestTemplate) {
             throw AktoerregisterException(identInfoForAktoer.feilmelding)
 
         if (identInfoForAktoer.identer == null || identInfoForAktoer.identer.isEmpty())
-            throw RuntimeException("Ingen identer returnert for $aktorid")
+            throw AktoerregisterIkkeFunnetException("Ingen identer returnert for $aktorid")
 
         if (identInfoForAktoer.identer.size > 1) {
             logger.debug("Identer returnert fra api:")
             identInfoForAktoer.identer.forEach {
                 logger.debug("ident: ${it.ident}, gjeldende: ${it.gjeldende}, identgruppe: ${it.identgruppe}")
             }
-            throw RuntimeException("Forventet 1 ident, fant ${identInfoForAktoer.identer.size}")
+            throw AktoerregisterException("Forventet 1 ident, fant ${identInfoForAktoer.identer.size}")
         }
     }
 
-    private fun doRequest(ident: String, identGruppe: String, gjeldende: Boolean = true): Map<String, IdentinfoForAktoer> {
+    private fun doRequest(ident: String,
+                          identGruppe: String,
+                          gjeldende: Boolean = true): Map<String, IdentinfoForAktoer> {
         val headers = HttpHeaders()
         headers["Nav-Personidenter"] = ident
         headers["Nav-Consumer-Id"] = appName
@@ -86,18 +88,21 @@ class AktoerregisterService(val aktoerregisterOidcRestTemplate: RestTemplate) {
         val uriBuilder = UriComponentsBuilder.fromPath("/identer")
                 .queryParam("identgruppe", identGruppe)
                 .queryParam("gjeldende", gjeldende)
-
-        val responseEntity = aktoerregisterOidcRestTemplate.exchange(uriBuilder.toUriString(), HttpMethod.GET, requestEntity, String::class.java)
+        logger.info("Kaller aktørregisteret: /identer")
+        val responseEntity = aktoerregisterOidcRestTemplate.exchange(uriBuilder.toUriString(),
+                HttpMethod.GET,
+                requestEntity,
+                String::class.java)
 
         if (responseEntity.statusCode.isError) {
-            logger.error("Received ${responseEntity.statusCode} from aktørregister")
-            AKTOERREGISTER_TELLER_TYPE_FEILEDE.increment()
+            logger.error("Fikk ${responseEntity.statusCode} feil fra aktørregisteret")
+            aktoerregister_teller_type_feilede.increment()
             if (responseEntity.hasBody()) {
                 logger.error(responseEntity.body.toString())
             }
-            throw RuntimeException("Received ${responseEntity.statusCode} ${responseEntity.statusCode.reasonPhrase} from aktørregisteret")
+            throw AktoerregisterException("Received ${responseEntity.statusCode} ${responseEntity.statusCode.reasonPhrase} from aktørregisteret")
         }
-        AKTOERREGISTER_TELLER_TYPE_VELLYKKEDE.increment()
+        aktoerregister_teller_type_vellykkede.increment()
 
         return jacksonObjectMapper().readValue(responseEntity.body!!)
     }
