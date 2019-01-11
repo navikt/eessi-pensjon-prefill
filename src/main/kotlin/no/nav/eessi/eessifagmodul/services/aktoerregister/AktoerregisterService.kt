@@ -68,9 +68,9 @@ class AktoerregisterService(val aktoerregisterOidcRestTemplate: RestTemplate) {
             throw AktoerregisterIkkeFunnetException("Ingen identer returnert for $aktorid")
 
         if (identInfoForAktoer.identer.size > 1) {
-            logger.debug("Identer returnert fra api:")
+            logger.info("Identer returnert fra api:")
             identInfoForAktoer.identer.forEach {
-                logger.debug("ident: ${it.ident}, gjeldende: ${it.gjeldende}, identgruppe: ${it.identgruppe}")
+                logger.info("ident: ${it.ident}, gjeldende: ${it.gjeldende}, identgruppe: ${it.identgruppe}")
             }
             throw AktoerregisterException("Forventet 1 ident, fant ${identInfoForAktoer.identer.size}")
         }

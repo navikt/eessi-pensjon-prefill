@@ -15,7 +15,7 @@ class PrefillSED(private val factory: PrefillFactory) : Prefill<PrefillDataModel
     override fun prefill(prefillData: PrefillDataModel): PrefillDataModel {
 
         val prefilling = factory.createPrefillClass(prefillData)
-        logger.debug("Mapping prefillClass ${prefilling.javaClass}")
+        logger.info("Mapping prefillClass ${prefilling.javaClass}")
 
         val starttime = System.currentTimeMillis()
 
@@ -26,7 +26,7 @@ class PrefillSED(private val factory: PrefillFactory) : Prefill<PrefillDataModel
         val tottime = endtime - starttime
 
         //Metrics..
-        logger.debug("Ferdig med prefillClass, Det tok $tottime ms")
+        logger.info("Ferdig med prefillClass, Det tok $tottime ms")
 
         return prefillData
     }

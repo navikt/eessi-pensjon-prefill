@@ -113,7 +113,7 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
 
         logger.info("sendSED KorrelasjonsID : {}", korrelasjonID)
         val response = euxOidcRestTemplate.exchange(builder.toUriString(), HttpMethod.POST, httpEntity, String::class.java)
-        logger.debug("Response SendSED på Rina: $euxCaseId, response:  $response")
+        logger.info("Response SendSED på Rina: $euxCaseId, response:  $response")
 
         if (response.statusCodeValue == 200) {
             EUX_SENDSED_TELLER_TYPE_VELLYKKEDE.increment()
@@ -148,7 +148,7 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
         val response = euxOidcRestTemplate.exchange(builder.toUriString(), HttpMethod.POST, httpEntity, String::class.java)
 
         if(response.statusCode.is2xxSuccessful) {
-            logger.debug("Response opprett SED på Rina: $euxCaseId, response:  $response")
+            logger.info("Response opprett SED på Rina: $euxCaseId, response:  $response")
             EUX_OPPRETTSED_TELLER_TYPE_VELLYKKEDE.increment()
         }
         logger.error("Opprettelse av SED på Rina feilet")

@@ -28,7 +28,7 @@ class PostnummerService {
                 postalCodeTable[data.postnmmer] = data
             }
         }
-        logger.debug("Har importert kodeverk fra $FILENAME")
+        logger.info("Har importert kodeverk fra $FILENAME")
     }
 
     private data class PostData(
@@ -38,7 +38,7 @@ class PostnummerService {
 
     fun finnPoststed(postnr: String): String? {
         return if (postalCodeTable[postnr] == null) {
-            logger.debug("Finner ikke poststed for postnummer: $postnr, sjekk om ny postnummer.txt må lastes ned.")
+            logger.error("Finner ikke poststed for postnummer: $postnr, sjekk om ny postnummer.txt må lastes ned.")
             null
         } else {
             postalCodeTable[postnr]?.poststed

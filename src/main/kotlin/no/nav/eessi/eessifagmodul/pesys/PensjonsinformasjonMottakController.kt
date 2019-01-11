@@ -27,7 +27,7 @@ class PensjonsinformasjonMottakController {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     fun hentKravFraUtland(@PathVariable("bucId", required = false) buckId: Long? = 0L): KravUtland {
 
-        logger.debug("Starter prosess for henting av krav fra utloand (P2000...)")
+        logger.info("Starter prosess for henting av krav fra utloand (P2000...)")
 
         val p2000 = SED("P2000")
         p2000.nav = Nav(
