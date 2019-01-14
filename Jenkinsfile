@@ -18,9 +18,7 @@ node {
             sh "git init"
             sh "git pull https://x-access-token:$appToken@github.com/navikt/eessi-pensjon-fagmodul.git"
         }
-            
-            
-
+        
             // commitHash = sh(script: 'git rev-parse HEAD', returnStdout: true).trim()
             commitHash = sh(script: "git rev-parse HEAD", returnStdout: true).trim()
             // github.commitStatus("navikt-ci-oauthtoken", "navikt/eessi-pensjon-fagmodul", 'continuous-integration/jenkins', commitHash, 'pending', "Build #${env.BUILD_NUMBER} has started")
