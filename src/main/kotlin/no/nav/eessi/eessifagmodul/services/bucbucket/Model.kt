@@ -44,6 +44,7 @@ enum class QueryParameters {
     abstract fun paramName(): String
 }
 
+@Deprecated(replaceWith = ReplaceWith("Nothing"), level = DeprecationLevel.WARNING, message = "Utgår")
 data class QueryResult(
         val navCaseId: String?,
         val lastUpdate: String?,

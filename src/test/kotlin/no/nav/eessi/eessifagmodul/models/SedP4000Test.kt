@@ -5,12 +5,13 @@ import com.nhaarman.mockito_kotlin.whenever
 import no.nav.eessi.eessifagmodul.controllers.ApiController
 import no.nav.eessi.eessifagmodul.prefill.PrefillDataModel
 import no.nav.eessi.eessifagmodul.prefill.PrefillP4000
-import no.nav.eessi.eessifagmodul.prefill.PrefillPerson
 import no.nav.eessi.eessifagmodul.prefill.PrefillSED
+import no.nav.eessi.eessifagmodul.prefill.nav.PrefillPerson
 import no.nav.eessi.eessifagmodul.services.PrefillService
 import no.nav.eessi.eessifagmodul.services.aktoerregister.AktoerregisterService
 import no.nav.eessi.eessifagmodul.services.eux.EuxService
 import no.nav.eessi.eessifagmodul.services.eux.RinaActions
+import no.nav.eessi.eessifagmodul.services.personv3.PersonV3Service
 import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
 import no.nav.eessi.eessifagmodul.utils.mapJsonToAny
 import no.nav.eessi.eessifagmodul.utils.typeRefs
@@ -43,6 +44,9 @@ class SedP4000Test {
     lateinit var mockPrefillService: PrefillService
 
     @Mock
+    lateinit var personService: PersonV3Service
+
+    @Mock
     private lateinit var mockPrefillSED: PrefillSED
 
     @Mock
@@ -66,7 +70,7 @@ class SedP4000Test {
 
         //mockPrefillService = PrefillService(mockEuxService, mockPrefillSED, rinaActions)
 
-        apiController = ApiController(mockEuxService, mockPrefillService, mockAktoerregisterService)
+        apiController = ApiController(mockEuxService, mockPrefillService, mockAktoerregisterService, personService)
         logger.debug("Starting tests.... ...")
     }
 
@@ -127,7 +131,7 @@ class SedP4000Test {
         assertNotNull(payjson)
         assertEquals(payload, payjson)
 
-        val check = mapJsonToAny(payjson, typeRefs<PersonTrygdeTid>())
+        val check = mapJsonToAny(payjson, typeRefs<PersonArbeidogOppholdUtland>())
         assertNotNull(check)
         assertEquals("DK", check.boPerioder!![0].land)
     }
@@ -140,7 +144,7 @@ class SedP4000Test {
         assertNotNull(jsonfile)
         validateJson(jsonfile)
 
-        val obj = mapJsonToAny(jsonfile, typeRefs<PersonTrygdeTid>(), true)
+        val obj = mapJsonToAny(jsonfile, typeRefs<PersonArbeidogOppholdUtland>(), true)
         assertNotNull(obj)
 
         val backtojson = mapAnyToJson(obj, true)
@@ -201,14 +205,14 @@ class SedP4000Test {
 
         val result = apiController.confirmDocument(req)
 
-        val jsondata = result.toJson()
-        assertNotNull(jsondata)
+        //val jsondata = result.toJson()
+        assertNotNull(result)
     }
 }
 
-fun createPersonTrygdeTidMock(): PersonTrygdeTid {
+fun createPersonTrygdeTidMock(): PersonArbeidogOppholdUtland {
 
-    return PersonTrygdeTid(
+    return PersonArbeidogOppholdUtland(
             foedselspermisjonPerioder = listOf(
                     StandardItem(
                             land = "NO",

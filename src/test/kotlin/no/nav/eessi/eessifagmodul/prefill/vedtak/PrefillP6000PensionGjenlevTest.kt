@@ -7,7 +7,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
 @RunWith(MockitoJUnitRunner::class)
-class PrefillP6000PensionGjenlevTest: AbstractPensionDataFromPESYSTests("P6000-GP-401.xml") {
+class PrefillP6000PensionGjenlevTest : AbstractMockVedtakPensionHelper("P6000-GP-401.xml") {
 
     @Test
     fun `forventet korrekt utfylling av Pensjon objekt på Gjenlevendepensjon`() {
@@ -16,11 +16,11 @@ class PrefillP6000PensionGjenlevTest: AbstractPensionDataFromPESYSTests("P6000-G
 //        val dataFromPESYS1 = mockPrefillP6000PensionDataFromPESYS("P6000-GP-401.xml")
 //        val result = dataFromPESYS1.prefill(prefill)
 
-        val result = dataFromPESYS1.prefill(prefill)
+        val result = dataFromPESYS.prefill(prefill)
 
         //ekstra for å sjekke om Gjenlevepensjon finnes.
-        val pendata = dataFromPESYS1.getPensjoninformasjonFraVedtak(prefill.vedtakId)
-        assertEquals("GJENLEV", pendata.sak.sakType)
+        val pendata = dataFromPESYS.getPensjoninformasjonFraVedtak(prefill)
+        assertEquals("GJENLEV", pendata.sakAlder.sakType)
         assertEquals("12345678901", pendata.person.pid)
 
         //debugPrintFinalResult(result)
@@ -83,7 +83,7 @@ class PrefillP6000PensionGjenlevTest: AbstractPensionDataFromPESYSTests("P6000-G
     fun `forventet createVedtakTypePensionWithRule verdi`() {
         prefill = generatePrefillData(68, "P6000")
         //dataFromPESYS1.getPensjoninformasjonFraVedtak("23123123")
-        val result = dataFromPESYS1.pensjonVedtak.createVedtakTypePensionWithRule(pendata)
+        val result = dataFromPESYS.pensjonVedtak.createVedtakTypePensionWithRule(pendata)
         assertEquals("03", result)
     }
 
@@ -91,7 +91,7 @@ class PrefillP6000PensionGjenlevTest: AbstractPensionDataFromPESYSTests("P6000-G
     fun `forventet korrekt utfylt P6000 gjenlevende ikke bosat utland (avdød bodd i utland)`() {
         prefill = generatePrefillData(66, "P6000")
 
-        val dataFromPESYS1 = mockPrefillP6000PensionDataFromPESYS("P6000-GP-IkkeUtland.xml")
+        val dataFromPESYS1 = mockPrefillPensionDataFromPESYS("P6000-GP-IkkeUtland.xml")
 
         val result = dataFromPESYS1.prefill(prefill)
 
@@ -132,7 +132,10 @@ class PrefillP6000PensionGjenlevTest: AbstractPensionDataFromPESYSTests("P6000-G
         assertEquals("six weeks from the date the decision is received", dataof)
 
         assertEquals("2018-05-26", tillegg?.dato)
-        //assertEquals("NAV", tillegg?.andreinstitusjoner?.get(0)?.institusjonsid)
+        assertEquals("NO", tillegg?.andreinstitusjoner?.get(0)?.institusjonsid)
+        assertEquals("[NO] NAV NORGE", tillegg?.andreinstitusjoner?.get(0)?.institusjonsnavn)
+        assertEquals("Postboks 6600 Etterstad", tillegg?.andreinstitusjoner?.get(0)?.institusjonsadresse)
+        assertEquals("0607", tillegg?.andreinstitusjoner?.get(0)?.postnummer)
 
 
     }

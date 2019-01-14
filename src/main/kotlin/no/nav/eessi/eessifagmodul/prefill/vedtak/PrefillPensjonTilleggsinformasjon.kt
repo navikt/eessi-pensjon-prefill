@@ -3,12 +3,13 @@ package no.nav.eessi.eessifagmodul.prefill.vedtak
 import no.nav.eessi.eessifagmodul.models.AndreinstitusjonerItem
 import no.nav.eessi.eessifagmodul.models.Opphoer
 import no.nav.eessi.eessifagmodul.models.Tilleggsinformasjon
+import no.nav.eessi.eessifagmodul.prefill.PrefillDataModel
 import no.nav.eessi.eessifagmodul.utils.simpleFormat
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-class PrefillPensjonTilleggsinformasjon : PensjonData() {
+class PrefillPensjonTilleggsinformasjon : VedtakPensjonData() {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillPensjonTilleggsinformasjon::class.java) }
 
@@ -17,7 +18,7 @@ class PrefillPensjonTilleggsinformasjon : PensjonData() {
     }
 
     //6.2
-    fun createTilleggsinformasjon(pendata: Pensjonsinformasjon): Tilleggsinformasjon {
+    fun createTilleggsinformasjon(pendata: Pensjonsinformasjon, prefillData: PrefillDataModel): Tilleggsinformasjon {
 
         logger.debug("6.2           Tilleggsinformasjon")
         return Tilleggsinformasjon(
@@ -27,8 +28,7 @@ class PrefillPensjonTilleggsinformasjon : PensjonData() {
 
                 //6.5.2.1
                 //På logges EnhetID /NAV avsender (PENSJO, UTFORP, ETTERLATP)?
-                //TODO Hvor skal vi få denne listen/informasjon ifra? RINA?.
-                andreinstitusjoner = createAndreinstitusjonerItem(pendata),
+                andreinstitusjoner = createAndreinstitusjonerItem(pendata, prefillData),
 
                 //6.5.2 - 6.6  $pensjon.tilleggsinformasjon.artikkel48
                 //05.10.2018 -
@@ -37,9 +37,7 @@ class PrefillPensjonTilleggsinformasjon : PensjonData() {
 
                 //6.7.1.4
                 //05.10.2018 - Nei
-                annen = null, //  Annen(
-                //  $pensjon.tilleggsinformasjon.annen.institusjonsid
-                //institusjonsadresse = Institusjonsadresse())
+                annen = null,
 
                 //6.7.2
                 //05.10.2018 Nei
@@ -90,22 +88,11 @@ class PrefillPensjonTilleggsinformasjon : PensjonData() {
 
 
     //6.5.2.1
-    private fun createAndreinstitusjonerItem(pendata: Pensjonsinformasjon): List<AndreinstitusjonerItem>? {
-        //På logges EnhetID /NAV avsender (PENSJO, UTFORP, ETTERLATP)?
-        logger.debug("6.5.2.1       AndreinstitusjonerItem (Må fylles ut manuelt!!) sakType: ${pendata.sak.sakType}")
-        //TODO Hvor skal denne informasjon/data komme ifra?
-        return null
-//        return listOf( AndreinstitusjonerItem(
-//                    institusjonsid = "NAV",
-//                    institusjonsnavn  = "NAV",
-//                    institusjonsadresse  = null,
-//                    postnummer  = null,
-//                    bygningsnr = null,
-//                    land = null,
-//                    region = null,
-//                    poststed = null
-//            )
-//        )
+    private fun createAndreinstitusjonerItem(pendata: Pensjonsinformasjon, prefillData: PrefillDataModel): List<AndreinstitusjonerItem>? {
+        logger.debug("6.5.2.1       AndreinstitusjonerItem (review address)")
+        val data = prefillData.andreInstitusjon ?: return null
+        return listOf(data)
+        //return null
     }
 
     //6.6

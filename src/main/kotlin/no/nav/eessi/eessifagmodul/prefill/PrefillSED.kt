@@ -8,24 +8,27 @@ import org.springframework.stereotype.Component
 /**
  * Deligate SED to dedicated prefillClass
  */
-class PrefillSED(private val factory: PrefillFactory) {
+class PrefillSED(private val factory: PrefillFactory) : Prefill<PrefillDataModel> {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillSED::class.java) }
 
-    fun prefill(prefillData: PrefillDataModel): PrefillDataModel {
+    override fun prefill(prefillData: PrefillDataModel): PrefillDataModel {
 
         val prefilling = factory.createPrefillClass(prefillData)
-        logger.debug("Mapping prefillClass ${prefilling.javaClass}")
+        logger.info("Mapping prefillClass ${prefilling.javaClass}")
 
         val starttime = System.currentTimeMillis()
 
+        //magic happens here...
         prefilling.prefill(prefillData)
 
         val endtime = System.currentTimeMillis()
         val tottime = endtime - starttime
 
         //Metrics..
-        logger.debug("Ferdig med prefillClass, Det tok $tottime ms")
+        logger.info("Ferdig med prefillClass, Det tok $tottime ms")
+
         return prefillData
     }
+
 }

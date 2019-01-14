@@ -6,7 +6,7 @@ import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-class PrefillPensjonReduksjon : PensjonData() {
+class PrefillPensjonReduksjon : VedtakPensjonData() {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillPensjonReduksjon::class.java) }
 
@@ -36,7 +36,7 @@ class PrefillPensjonReduksjon : PensjonData() {
                 artikkeltype = createReduksjonArtikkelType(pendata),
 
                 //5.1.5 - Nei
-                virkningsdato = createReduksjonDato()
+                virkningsdato = createReduksjonDato(pendata)
 
         )
         if (reduksjon.type == null && reduksjon.artikkeltype == null) {
@@ -48,7 +48,7 @@ class PrefillPensjonReduksjon : PensjonData() {
     }
 
     //5.1.5 (nei)
-    fun createReduksjonDato(): List<VirkningsdatoItem>? {
+    private fun createReduksjonDato(pendata: Pensjonsinformasjon): List<VirkningsdatoItem>? {
         logger.debug("5.1.5         ReduksjonDato  (nei)")
         //Nei
         return null
@@ -72,7 +72,7 @@ class PrefillPensjonReduksjon : PensjonData() {
      */
     private fun createReduksjonType(pendata: Pensjonsinformasjon): String? {
         logger.debug("5.1.1         ReduksjonType")
-        val sakType = KSAK.valueOf(pendata.sak.sakType)
+        val sakType = KSAK.valueOf(pendata.sakAlder.sakType)
 
         if (sakType == KSAK.UFOREP && hentTilleggsPensjon(pendata))
             return "02"
@@ -101,13 +101,13 @@ class PrefillPensjonReduksjon : PensjonData() {
      */
     private fun createReduksjonArtikkelType(pendata: Pensjonsinformasjon): String? {
         logger.debug("5.1.4         ReduksjonArtikkelType")
-        val sakType = PensjonData.KSAK.valueOf(pendata.sak.sakType)
+        val sakType = VedtakPensjonData.KSAK.valueOf(pendata.sakAlder.sakType)
 
-        if (sakType == PensjonData.KSAK.UFOREP && hentTilleggsPensjon(pendata))
+        if (sakType == VedtakPensjonData.KSAK.UFOREP && hentTilleggsPensjon(pendata))
             return "02"
-        if (sakType == PensjonData.KSAK.GJENLEV && hentGrunnPersjon(pendata) || hentTilleggsPensjon(pendata))
+        if (sakType == VedtakPensjonData.KSAK.GJENLEV && hentGrunnPersjon(pendata) || hentTilleggsPensjon(pendata))
             return "02"
-        if (sakType == PensjonData.KSAK.BARNEP && hentGrunnPersjon(pendata))
+        if (sakType == VedtakPensjonData.KSAK.BARNEP && hentGrunnPersjon(pendata))
             return "02"
 
         return null

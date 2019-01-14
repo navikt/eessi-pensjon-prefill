@@ -33,7 +33,7 @@ class LandkodeService {
                 landKodeTable[data.alpha2] = data
             }
         }
-        logger.debug("Har importert kodeverk fra $FILENAME")
+        logger.info("Har importert kodeverk fra $FILENAME")
     }
 
     fun finnLandkode3(alpha2: String): String? {
@@ -63,7 +63,7 @@ class LandkodeService {
 
     fun finnLandkode2(alpha3: String): String? {
         return if (landKodeTable[alpha3] == null) {
-            logger.debug("Finner ikke landkode for $alpha3, sjekk om ny landkoder.txt må lastes ned.")
+            logger.error("Finner ikke landkode for $alpha3, sjekk om ny landkoder.txt må lastes ned.")
             null
         } else {
             landKodeTable[alpha3]?.alpha2

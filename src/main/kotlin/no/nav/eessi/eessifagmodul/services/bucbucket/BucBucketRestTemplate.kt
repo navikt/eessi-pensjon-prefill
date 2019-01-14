@@ -13,6 +13,7 @@ import org.springframework.web.client.DefaultResponseErrorHandler
 import org.springframework.web.client.RestTemplate
 
 @Component
+@Deprecated(replaceWith = ReplaceWith("Nothing"), level = DeprecationLevel.WARNING, message = "Utgår")
 class BucBucketRestTemplate(val oidcRequestContextHolder: OIDCRequestContextHolder) {
 
     // TODO: Fjern default-verdien når eux-bucbucket eksponerer ressursen i fasit

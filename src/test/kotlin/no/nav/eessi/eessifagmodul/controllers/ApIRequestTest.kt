@@ -1,13 +1,19 @@
 package no.nav.eessi.eessifagmodul.controllers
 
 import no.nav.eessi.eessifagmodul.models.InstitusjonItem
+import no.nav.eessi.eessifagmodul.models.SED
+import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
 import no.nav.eessi.eessifagmodul.utils.validateJson
 import org.junit.Test
 import java.nio.file.Files
 import java.nio.file.Paths
+import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 class ApIRequestTest {
+
+    private val printout = false
+    private val printsed = false
 
     private fun createMockApiRequest(sedName: String, buc: String, payload: String): ApiController.ApiRequest {
         val items = listOf(InstitusjonItem(country = "NO", institution = "NAVT003"))
@@ -31,10 +37,23 @@ class ApIRequestTest {
         return p2200file
     }
 
+    fun validateAndPrint(req: ApiController.ApiRequest) {
+        if (printsed) {
+            val json = SED.fromJson(req.payload!!).toJson()
+            println(json)
+        }
+        if (printout) {
+            val json = mapAnyToJson(req)
+            assertNotNull(json)
+            println("\n\n\n $json \n\n\n")
+        }
+    }
+
     @Test
     fun `generate request mock payload of SED P2000`() {
         val payload = readJsonAndParseToSed("P2000-NAV.json")
-        createMockApiRequest("P2000", "P_BUC_01", payload)
+        //val payload = readJsonAndParseToSed("MOCK-P2000-AP.json")
+        validateAndPrint(createMockApiRequest("P2000", "P_BUC_01", payload))
     }
 
     @Test

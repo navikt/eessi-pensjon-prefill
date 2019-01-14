@@ -1,5 +1,18 @@
-<pen:pensjonsinformasjon xmlns:pen="http://nav.no/pensjon/v1/pensjonsinformasjon" xmlns:ns10="http://nav.no/pensjon/v1/inngangOgEksport" xmlns:ns11="http://nav.no/pensjon/v1/trygdetidAvdodListe" xmlns:ns12="http://nav.no/pensjon/v1/trygdeavtale" xmlns:ns13="http://nav.no/pensjon/v1/trygdetidAvdodFarListe" xmlns:ns14="http://nav.no/pensjon/v1/trygdetidAvdodMorListe" xmlns:ns15="http://nav.no/pensjon/v1/vilkarsvurdering" 
-xmlns:ns16="http://nav.no/pensjon/v1/vilkarsvurderingUforetrygd" xmlns:ns17="http://nav.no/pensjon/v1/vilkarsvurderingListe" xmlns:ns18="http://nav.no/pensjon/v1/avdod" xmlns:ns19="http://nav.no/eessi/sed/v1/PX000" xmlns:ns2="http://nav.no/pensjon/v1/person" xmlns:ns3="http://nav.no/pensjon/v1/ytelsePerMaaned" xmlns:ns4="http://nav.no/pensjon/v1/ytelseskomponent" xmlns:ns5="http://nav.no/pensjon/v1/ytelsePerMaanedListe" xmlns:ns6="http://nav.no/pensjon/v1/vedtak" xmlns:ns7="http://nav.no/pensjon/v1/sak" xmlns:ns8="http://nav.no/pensjon/v1/trygdetid" xmlns:ns9="http://nav.no/pensjon/v1/trygdetidListe">
+<pen:pensjonsinformasjon
+        xmlns:pen="http://nav.no/pensjon/v1/pensjonsinformasjon"
+        xmlns:ns10="http://nav.no/pensjon/v1/inngangOgEksport"
+        xmlns:ns12="http://nav.no/pensjon/v1/trygdeavtale"
+        xmlns:ns15="http://nav.no/pensjon/v1/vilkarsvurdering"
+        xmlns:ns17="http://nav.no/pensjon/v1/vilkarsvurderingListe"
+        xmlns:ns18="http://nav.no/pensjon/v1/avdod"
+        xmlns:ns2="http://nav.no/pensjon/v1/person"
+        xmlns:ns3="http://nav.no/pensjon/v1/ytelsePerMaaned"
+        xmlns:ns4="http://nav.no/pensjon/v1/ytelseskomponent"
+        xmlns:ns5="http://nav.no/pensjon/v1/ytelsePerMaanedListe"
+        xmlns:ns6="http://nav.no/pensjon/v1/vedtak"
+        xmlns:ns7="http://nav.no/pensjon/v1/sakAlder"
+        xmlns:ns8="http://nav.no/pensjon/v1/trygdetid"
+        xmlns:ns9="http://nav.no/pensjon/v1/trygdetidListe">
     <pen:trygdeavtale xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns12:v1.Trygdeavtale">
         <ns12:erArt10BruktGP>false</ns12:erArt10BruktGP>
         <ns12:erArt10BruktTP>false</ns12:erArt10BruktTP>
@@ -81,15 +94,16 @@ xmlns:ns16="http://nav.no/pensjon/v1/vilkarsvurderingUforetrygd" xmlns:ns17="htt
             </ns3:ytelseskomponentListe>
         </ns5:ytelsePerMaanedListe>
     </pen:ytelsePerMaanedListe>
-    <pen:sak xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns7:v1.Sak">
+    <pen:sakAlder xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns7:v1.SakAlder">
         <ns7:sakType>ALDER</ns7:sakType>
         <ns7:uttakFor67>false</ns7:uttakFor67>
-    </pen:sak>
+    </pen:sakAlder>
     <pen:vilkarsvurderingListe xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns17:v1.VilkarsvurderingListe">
         <ns17:vilkarsvurderingListe>
             <ns15:fom>2017-05-01T00:00:00+02:00</ns15:fom>
             <ns15:resultatHovedytelse>INNV</ns15:resultatHovedytelse>
         </ns17:vilkarsvurderingListe>
     </pen:vilkarsvurderingListe>
-    <pen:inngangOgEksport xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns10:v1.InngangOgEksport"></pen:inngangOgEksport>
+    <pen:inngangOgEksport xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                          xsi:type="ns10:v1.InngangOgEksport"></pen:inngangOgEksport>
 </pen:pensjonsinformasjon>

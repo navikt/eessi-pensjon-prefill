@@ -1,7 +1,7 @@
 no.nav.security.oidc:
   issuer.oidc:
     discoveryurl: '${OPENIDCONNECT_URL}/oauth2/.well-known/openid-configuration'
-    accepted_audience: 'eessi-fagmodul-${FASIT_ENVIRONMENT_NAME},eessi-pensjon-frontend-api-fss-${FASIT_ENVIRONMENT_NAME}'
+    accepted_audience: 'freg-token-provider-t0,eessi-fagmodul-t8,eessi-fagmodul-${FASIT_ENVIRONMENT_NAME},eessi-pensjon-frontend-api-fss-t8,eessi-pensjon-frontend-api-fss-${FASIT_ENVIRONMENT_NAME}'
 # Empty on purpose so that oidc-spring-support doesn't use http.proxy
 http.proxy.parametername:
 
@@ -17,3 +17,15 @@ rinaaction:
   waittime: '5000'
 
 euxbasis.v1.url: 'http://eux-app/cpi'
+
+eessi:
+  pensjon:
+    lokalid: 'NO:noinst002'
+    //lokalid: 'NO:NAVT002'
+    //lokaknavn: '12347, NAVT002, NO'
+    lokalnavn: 'NOINST002, NO INST002, NO'
+    adresse:
+      gate: 'Postboks 6600 Etterstad'
+      by:   'Oslo'
+      postnummer: '0607'
+      land: 'NO'

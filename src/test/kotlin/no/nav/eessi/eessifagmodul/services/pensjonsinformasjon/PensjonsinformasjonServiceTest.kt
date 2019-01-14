@@ -34,7 +34,7 @@ class PensjonsinformasjonServiceTest {
     fun hentAlt() {
         val mockResponseEntity = createResponseEntityFromJsonFile("classpath:pensjonsinformasjon/full-generated-response.xml")
         whenever(mockrestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java))).thenReturn(mockResponseEntity)
-        val data = pensjonsinformasjonService.hentAlt("1243")
+        val data = pensjonsinformasjonService.hentAltPaaVedtak("1243")
         // TODO: add asserts
 
         assertNotNull(data.vedtak, "Vedtak er null")
@@ -45,4 +45,26 @@ class PensjonsinformasjonServiceTest {
         val mockResponseString = ResourceUtils.getFile(filePath).readText()
         return ResponseEntity(mockResponseString, httpStatus)
     }
+
+    @Test
+    fun `Sjekker om pensjoninformasjon XmlCalendar kan være satt eller null også sette simpleFormat`() {
+        val mockResponseEntity = createResponseEntityFromJsonFile("classpath:pensjonsinformasjon/full-generated-response.xml")
+        whenever(mockrestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java))).thenReturn(mockResponseEntity)
+        val data = pensjonsinformasjonService.hentAltPaaVedtak("1243")
+
+        var result = data.ytelsePerMaanedListe.ytelsePerMaanedListe.get(0)
+
+        assertEquals("2008-02-06", result.fom.simpleFormat())
+        assertEquals("2015-08-04", result.tom?.let { it.simpleFormat() })
+
+        result = data.ytelsePerMaanedListe.ytelsePerMaanedListe.get(1)
+
+        assertNotNull(result)
+        assertNotNull(result.fom)
+
+        assertEquals("2008-02-06", result.fom.simpleFormat())
+        assertEquals(null, result.tom?.let { it.simpleFormat() })
+
+    }
+
 }
