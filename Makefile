@@ -5,7 +5,7 @@ GIT     := git
 VERSION := $(shell cat ./VERSION)
 REGISTRY:= repo.adeo.no:5443
 
-.PHONY: all build test docker docker-push release manifest
+.PHONY: all build test docker docker-push bump-version release manifest
 
 all: build test docker
 release: tag docker-push
