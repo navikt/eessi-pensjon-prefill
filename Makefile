@@ -28,7 +28,7 @@ bump-version:
 	@echo $$(($$(cat ./VERSION) + 1)) > ./VERSION
 
 tag:
-	$(eval VERSION=$(shell echo $$(($(VERSION) + 1))))
+	$(eval VERSION=$(shell echo $$(($(VERSION)))))
 	$(GIT) tag -a $(VERSION) -m "auto-tag from Makefile"
 
 manifest:
