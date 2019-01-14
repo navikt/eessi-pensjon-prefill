@@ -2,7 +2,7 @@ DOCKER  := docker
 GRADLE  := ./gradlew
 NAIS    := nais
 GIT     := git
-VERSION := $(shell git describe --abbrev=0)
+VERSION := $(shell cat ./VERSION)
 REGISTRY:= repo.adeo.no:5443
 
 .PHONY: all build test docker docker-push release manifest
@@ -23,6 +23,9 @@ docker:
 docker-push:
 	$(DOCKER) tag $(REGISTRY)/eessi-fagmodul $(REGISTRY)/eessi-fagmodul:$(VERSION)
 	$(DOCKER) push $(REGISTRY)/eessi-fagmodul:$(VERSION)
+
+bump-version:
+	@echo $$(($$(cat ./VERSION) + 1)) > ./VERSION
 
 tag:
 	$(eval VERSION=$(shell echo $$(($(VERSION) + 1))))
