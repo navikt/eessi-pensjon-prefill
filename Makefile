@@ -28,8 +28,9 @@ bump-version:
 	@echo $$(($$(cat ./VERSION) + 1)) > ./VERSION
 
 tag:
-	$(eval VERSION=$(shell echo $$(($(VERSION)))))
-	$(GIT) tag -a $(VERSION) -m "auto-tag from Makefile"
+    git add VERSION
+    git commit -m "Bump version to $(VERSION) [skip ci]"
+    git tag -a $(VERSION) -m "auto-tag from Makefile"
 
 manifest:
 	$(NAIS) upload --app eessi-fagmodul -v $(VERSION)
