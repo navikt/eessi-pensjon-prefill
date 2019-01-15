@@ -4,8 +4,6 @@ import no.nav.eessi.eessifagmodul.models.*
 import no.nav.eessi.eessifagmodul.prefill.PrefillDataModel
 import no.nav.eessi.eessifagmodul.services.aktoerregister.AktoerregisterService
 import no.nav.eessi.eessifagmodul.services.bucbucket.BucBucketService
-import no.nav.eessi.eessifagmodul.services.bucbucket.QueryParameters
-import no.nav.eessi.eessifagmodul.services.bucbucket.QueryResult
 import no.nav.eessi.eessifagmodul.services.eux.EuxService
 import no.nav.eessi.eessifagmodul.services.pensjonsinformasjon.PensjonsinformasjonService
 import no.nav.eessi.eessifagmodul.services.personv3.PersonV3Service
@@ -41,44 +39,44 @@ class ExperimentController {
     @Autowired
     private lateinit var bucBucketService: BucBucketService
 
-    @GetMapping("/testBucBucket/query")
-    fun testBucBucketQuery(
-            @RequestParam("correlationId", required = false) correlationId: String?,
-            @RequestParam("sedId", required = false) sedId: String?,
-            @RequestParam("sedType", required = false) sedType: String?,
-            @RequestParam("bucType", required = false) bucType: String?,
-            @RequestParam("aktoerId", required = false) aktoerId: String?,
-            @RequestParam("pin", required = false) pin: String?,
-            @RequestParam("navCaseId", required = false) navCaseId: String?,
-            @RequestParam("rinaCaseId", required = false) rinaCaseId: String?,
-            @RequestParam("journalId", required = false) journalId: String?,
-            @RequestParam("tema", required = false) tema: String?,
-            @RequestParam("nationCode", required = false) nationCode: String?,
-            @RequestParam("maxResults", required = false) maxResults: String?,
-            @RequestParam("resultStart", required = false) resultStart: String?
-    ): List<QueryResult> {
-
-        val queryParams = mutableMapOf<QueryParameters, String>()
-        correlationId?.let { queryParams[QueryParameters.CORRELATION_ID] = correlationId }
-        sedId?.let { queryParams[QueryParameters.SED_ID] = sedId }
-        sedType?.let { queryParams[QueryParameters.SED_TYPE] = sedType }
-        bucType?.let { queryParams[QueryParameters.BUC_TYPE] = bucType }
-        aktoerId?.let { queryParams[QueryParameters.AKTOER_ID] = aktoerId }
-        pin?.let { queryParams[QueryParameters.PIN] = pin }
-        navCaseId?.let { queryParams[QueryParameters.NAV_CASE_ID] = navCaseId }
-        rinaCaseId?.let { queryParams[QueryParameters.RINA_CASE_ID] = rinaCaseId }
-        journalId?.let { queryParams[QueryParameters.JOURNALPOST_ID] = journalId }
-        nationCode?.let { queryParams[QueryParameters.NATION_CODE] = nationCode }
-        maxResults?.let { queryParams[QueryParameters.MAX_RESULTS] = maxResults }
-        resultStart?.let { queryParams[QueryParameters.RESULT_START] = resultStart }
-
-        return bucBucketService.queryDocuments(queryParams)
-    }
-
-    @GetMapping("/testBucBucket/getDocument/{correlationId}")
-    fun testBucBucketFetchDocument(@PathVariable("correlationId") correlationId: String): SED {
-        return bucBucketService.getDocument(correlationId)
-    }
+//    @GetMapping("/testBucBucket/query")
+//    fun testBucBucketQuery(
+//            @RequestParam("correlationId", required = false) correlationId: String?,
+//            @RequestParam("sedId", required = false) sedId: String?,
+//            @RequestParam("sedType", required = false) sedType: String?,
+//            @RequestParam("bucType", required = false) bucType: String?,
+//            @RequestParam("aktoerId", required = false) aktoerId: String?,
+//            @RequestParam("pin", required = false) pin: String?,
+//            @RequestParam("navCaseId", required = false) navCaseId: String?,
+//            @RequestParam("rinaCaseId", required = false) rinaCaseId: String?,
+//            @RequestParam("journalId", required = false) journalId: String?,
+//            @RequestParam("tema", required = false) tema: String?,
+//            @RequestParam("nationCode", required = false) nationCode: String?,
+//            @RequestParam("maxResults", required = false) maxResults: String?,
+//            @RequestParam("resultStart", required = false) resultStart: String?
+//    ): List<QueryResult> {
+//
+//        val queryParams = mutableMapOf<QueryParameters, String>()
+//        correlationId?.let { queryParams[QueryParameters.CORRELATION_ID] = correlationId }
+//        sedId?.let { queryParams[QueryParameters.SED_ID] = sedId }
+//        sedType?.let { queryParams[QueryParameters.SED_TYPE] = sedType }
+//        bucType?.let { queryParams[QueryParameters.BUC_TYPE] = bucType }
+//        aktoerId?.let { queryParams[QueryParameters.AKTOER_ID] = aktoerId }
+//        pin?.let { queryParams[QueryParameters.PIN] = pin }
+//        navCaseId?.let { queryParams[QueryParameters.NAV_CASE_ID] = navCaseId }
+//        rinaCaseId?.let { queryParams[QueryParameters.RINA_CASE_ID] = rinaCaseId }
+//        journalId?.let { queryParams[QueryParameters.JOURNALPOST_ID] = journalId }
+//        nationCode?.let { queryParams[QueryParameters.NATION_CODE] = nationCode }
+//        maxResults?.let { queryParams[QueryParameters.MAX_RESULTS] = maxResults }
+//        resultStart?.let { queryParams[QueryParameters.RESULT_START] = resultStart }
+//
+//        return bucBucketService.queryDocuments(queryParams)
+//    }
+//
+//    @GetMapping("/testBucBucket/getDocument/{correlationId}")
+//    fun testBucBucketFetchDocument(@PathVariable("correlationId") correlationId: String): SED {
+//        return bucBucketService.getDocument(correlationId)
+//    }
 
     @GetMapping("/testPensjonsinformasjon/{vedtaksId}")
     fun testPensjonsinformasjon(@PathVariable("vedtaksId") vedtaksId: String): String {

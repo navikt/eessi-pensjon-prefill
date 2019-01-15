@@ -1,0 +1,30 @@
+{
+  "errorMelding": null,
+  "mottattDato": "1967-12-01",
+  "iverksettelsesdato": "1967-12-01",
+  "personopplysninger": {
+    "land": "SE",
+    "utvandret": true
+  },
+  "sivilstand": {
+    "sivilstatusDatoFom": "1967-12-01",
+    "valgtSivilstatus": "ENKE"
+  },
+  "utland": {
+    "harOpphold": true,
+    "utlandsopphold": [
+      {
+        "arbeidet": true,
+        "bodd": false,
+        "fom": "1957-12-01",
+        "land": "SVE",
+        "pensjonsordning": "USIKKER",
+        "tom": "1967-12-01",
+        "utlandPin": "40123456789"
+      }
+    ]
+  },
+  "uttaksgrad": "50",
+  "vurdereTrygdeavtale": true,
+  "statsborgerskap": "Sverige"
+}

@@ -27,6 +27,7 @@ class PersonV3Service(val service: PersonV3, val oidcRequestContextHolder: OIDCR
         return Metrics.counter(name, "type", type)
     }
 
+    @Throws(Exception::class)
     fun hentPerson(fnr: String): HentPersonResponse {
         val token = oidcRequestContextHolder.oidcValidationContext.getToken("oidc")
 
@@ -51,7 +52,8 @@ class PersonV3Service(val service: PersonV3, val oidcRequestContextHolder: OIDCR
         } catch (personSikkerhetsbegrensning: HentPersonSikkerhetsbegrensning) {
             HENTPERSON_TELLER_TYPE_FEILEDE.increment()
             throw personSikkerhetsbegrensning
-        }    }
+        }
+    }
 
     //Experimental only
     fun hentGeografi(fnr: String): HentGeografiskTilknytningResponse {

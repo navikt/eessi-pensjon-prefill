@@ -18,6 +18,8 @@ inline fun <reified T : Any> typeRefs(): TypeReference<T> = object : TypeReferen
 inline fun <reified T : Any> mapJsonToAny(json: String, objec: TypeReference<T>, failonunknown: Boolean = false): T {
     if (validateJson(json)) {
         return jacksonObjectMapper()
+//                .registerModule(JavaTimeModule())
+//                .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
                 .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, failonunknown)
                 .readValue<T>(json, objec)
     } else {

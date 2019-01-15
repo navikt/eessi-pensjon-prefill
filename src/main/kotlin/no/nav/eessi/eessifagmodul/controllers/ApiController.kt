@@ -30,7 +30,7 @@ class ApiController(private val euxService: EuxService,
     lateinit var landkodeService: LandkodeService
 
     @ApiOperation("Henter liste over landkoder av ISO Alpha2 standard")
-    @PostMapping("/landkoder")
+    @GetMapping("/landkoder")
     //TODO hører denne til her eller egen controller?
     fun getLandKoder(): List<String> {
         return landkodeService.hentLandkoer2()
