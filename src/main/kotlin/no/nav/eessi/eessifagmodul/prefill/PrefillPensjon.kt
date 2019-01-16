@@ -31,7 +31,7 @@ class PrefillPensjon(private val preutfyllingPersonFraTPS: PrefillPersonDataFrom
         //noe vi må få fra PSAK. o.l
         var gjenlevende: Bruker? = null
         if (prefillData.erGyldigEtterlatt()) {
-            logger.debug("Preutfylling Utfylling Pensjon Gjenlevende (etterlatt)")
+            logger.info("Preutfylling Utfylling Pensjon Gjenlevende (etterlatt)")
             gjenlevende = preutfyllingPersonFraTPS.prefillBruker(pinid)
         }
 
@@ -55,7 +55,7 @@ class PrefillPensjon(private val preutfyllingPersonFraTPS: PrefillPersonDataFrom
                 trygdetid = p5000pensjon?.trygdetid
                 */
         )
-        logger.debug("Preutfylling Utfylling Pensjon END")
+        logger.info("Preutfylling Utfylling Pensjon END")
 
         return pensjon
     }

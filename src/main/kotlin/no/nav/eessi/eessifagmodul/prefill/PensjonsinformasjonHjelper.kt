@@ -45,7 +45,7 @@ class PensjonsinformasjonHjelper(private val pensjonsinformasjonService: Pensjon
         val pendata: Pensjonsinformasjon = pensjonsinformasjonService.hentAltPaaVedtak(vedtakId)
         createInstitusionReview(prefillData)
 
-        logger.debug("Pensjonsinformasjon: $pendata"
+        logger.info("Pensjonsinformasjon: $pendata"
                 + "\nPensjonsinformasjon.vedtak: ${pendata.vedtak}"
                 + "\nPensjonsinformasjon.vedtak.virkningstidspunkt: ${pendata.vedtak.virkningstidspunkt}"
                 + "\nPensjonsinformasjon.sak: ${pendata.sakAlder}"
@@ -76,7 +76,7 @@ class PensjonsinformasjonHjelper(private val pensjonsinformasjonService: Pensjon
 
     //henter ut nødvendige familie relasjoner
     fun createRelasjonerBarnOgAvdod(dataModel: PrefillDataModel, pendata: Pensjonsinformasjon): PrefillDataModel {
-        logger.debug("Henter ut liste barn fra PESYS")
+        logger.info("Henter ut liste barn fra PESYS")
 
         val listbarmItem = mutableListOf<V1BrukersBarn>()
         if (pendata.brukersBarnListe != null) {
@@ -85,7 +85,7 @@ class PensjonsinformasjonHjelper(private val pensjonsinformasjonService: Pensjon
             }
         }
 
-        logger.debug("Henter ut liste ektefeller/partnere fra PESYS")
+        logger.info("Henter ut liste ektefeller/partnere fra PESYS")
         val listEktefellePartnerFnrlist = mutableListOf<V1EktefellePartnerSamboer>()
         if (pendata.ektefellePartnerSamboerListe != null) {
             pendata.ektefellePartnerSamboerListe.ektefellePartnerSamboerListe.forEach {
@@ -96,7 +96,7 @@ class PensjonsinformasjonHjelper(private val pensjonsinformasjonService: Pensjon
         dataModel.partnerFnr = listEktefellePartnerFnrlist
         dataModel.barnlist = listbarmItem
 
-        logger.debug("Henter ut avdod relasjoner fra PESYS")
+        logger.info("Henter ut avdod relasjoner fra PESYS")
         dataModel.avdod = pendata.avdod?.avdod ?: ""
         dataModel.avdodMor = pendata.avdod?.avdodMor ?: ""
         dataModel.avdodFar = pendata.avdod?.avdodFar ?: ""
@@ -105,7 +105,7 @@ class PensjonsinformasjonHjelper(private val pensjonsinformasjonService: Pensjon
     }
 
     fun createInstitusionReview(prefillData: PrefillDataModel) {
-        logger.debug("Henter ut lokal kontakt, institusjon (NAV Utland)")
+        logger.info("Henter ut lokal kontakt, institusjon (NAV Utland)")
 
         prefillData.andreInstitusjon = AndreinstitusjonerItem(
                 institusjonsid = institutionid,
@@ -118,7 +118,7 @@ class PensjonsinformasjonHjelper(private val pensjonsinformasjonService: Pensjon
                 poststed = institutionBy
         )
 
-        logger.debug("Andreinstitusjoner: ${prefillData.andreInstitusjon} ")
+        logger.info("Andreinstitusjoner: ${prefillData.andreInstitusjon} ")
 
     }
 

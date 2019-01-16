@@ -20,3 +20,11 @@ class IkkeGyldigKallException(message: String) : IllegalArgumentException(messag
 
 @ResponseStatus(value = HttpStatus.NOT_FOUND)
 class SedDokumentIkkeLestException(message: String): Exception(message)
+
+class PersonV3IkkeFunnetException(message: String?): Exception(message)
+
+class PersonV3SikkerhetsbegrensningException(message: String?): Exception(message)
+
+class AktoerregisterIkkeFunnetException(message: String?): Exception(message)
+
+class AktoerregisterException(message: String) : Exception(message)

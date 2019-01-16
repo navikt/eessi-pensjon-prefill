@@ -6,24 +6,28 @@ import no.nav.eessi.eessifagmodul.models.*
 import no.nav.eessi.eessifagmodul.prefill.PrefillDataModel
 import no.nav.eessi.eessifagmodul.services.LandkodeService
 import no.nav.eessi.eessifagmodul.services.PrefillService
-import no.nav.eessi.eessifagmodul.services.aktoerregister.AktoerregisterException
 import no.nav.eessi.eessifagmodul.services.aktoerregister.AktoerregisterService
 import no.nav.eessi.eessifagmodul.services.eux.EuxService
+import no.nav.eessi.eessifagmodul.services.personv3.PersonV3Service
 import no.nav.security.oidc.api.Protected
+import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonResponse
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.util.*
 
+private val logger = LoggerFactory.getLogger(ApiController::class.java)
 
 @Protected
 @RestController
 @RequestMapping("/api")
 class ApiController(private val euxService: EuxService,
                     private val prefillService: PrefillService,
-                    private val aktoerregisterService: AktoerregisterService) {
-
-    //private val logger: Logger by lazy { LoggerFactory.getLogger(ApiController::class.java) }
+                    private val aktoerregisterService: AktoerregisterService,
+                    private val personService: PersonV3Service) {
 
     @Autowired
     //TODO hører denne til her eller egen controller?
@@ -112,6 +116,39 @@ class ApiController(private val euxService: EuxService,
 
     }
 
+    /**
+     * Kaller AktørRegisteret , bytter aktørId mot Fnr/Dnr ,
+     * deretter kalles PersonV3 hvor personinformasjon hentes
+     *
+     * @param aktoerid
+     */
+    @ApiOperation("henter ut personinformasjon for en aktørId")
+    @GetMapping("/{aktoerid}")
+    fun getDocument(@PathVariable("aktoerid", required = true) aktoerid: String): ResponseEntity<Personinformasjon> {
+        logger.info("Henter personinformasjon for aktørId: $aktoerid")
+
+        val norskIdent: String
+        var personresp = HentPersonResponse()
+
+        try {
+            norskIdent = aktoerregisterService.hentGjeldendeNorskIdentForAktorId(aktoerid)
+            personresp = personService.hentPerson(norskIdent)
+
+        } catch (are: AktoerregisterException) {
+            logger.error("Kall til Akørregisteret med aktørId: $aktoerid feilet på grunn av: " + are.message)
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(AktoerregisterException::class.simpleName)
+        } catch (arife: AktoerregisterIkkeFunnetException) {
+            logger.error("Kall til Akørregisteret med aktørId: $aktoerid feilet på grunn av: " + arife.message)
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(AktoerregisterException::class.simpleName)
+        } catch (sbe: PersonV3SikkerhetsbegrensningException) {
+            logger.error("Kall til PersonV3 med aktørId: $aktoerid feilet på grunn av sikkerhetsbegrensning")
+            ResponseEntity.status(HttpStatus.FORBIDDEN).body(PersonV3SikkerhetsbegrensningException::class.simpleName)
+        } catch (ife: PersonV3IkkeFunnetException) {
+            logger.error("Kall til PersonV3 med aktørId: $aktoerid feilet på grunn av person ikke funnet")
+            ResponseEntity.status(HttpStatus.NOT_FOUND).body(PersonV3IkkeFunnetException::class.simpleName)
+        }
+        return ResponseEntity.ok(Personinformasjon(personresp.person.personnavn.sammensattNavn))
+    }
     //validatate request and convert to PrefillDataModel
     fun buildPrefillDataModelOnExisting(request: ApiRequest): PrefillDataModel {
         return when {

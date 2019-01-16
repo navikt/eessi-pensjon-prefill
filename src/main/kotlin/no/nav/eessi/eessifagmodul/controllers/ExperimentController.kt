@@ -109,7 +109,6 @@ class ExperimentController {
             else -> "UKJENT"
         }
 
-        val barnList = vSak.brukersBarnListe
         val aktoerId = aktoerregisterService.hentGjeldendeAktorIdForNorskIdent(fnrId)
         val personv3 = personV3Service.hentPerson(fnrId)
         val kjoenn = personv3.person.kjoenn.kjoenn.value

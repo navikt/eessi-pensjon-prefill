@@ -2,7 +2,8 @@ package no.nav.eessi.eessifagmodul.services
 
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.whenever
-import no.nav.eessi.eessifagmodul.services.aktoerregister.AktoerregisterException
+import no.nav.eessi.eessifagmodul.models.AktoerregisterException
+import no.nav.eessi.eessifagmodul.models.AktoerregisterIkkeFunnetException
 import no.nav.eessi.eessifagmodul.services.aktoerregister.AktoerregisterService
 import org.junit.Before
 import org.junit.Test
@@ -61,7 +62,7 @@ class AktoerregisterServiceTest {
     }
 
 
-    @Test(expected = RuntimeException::class)
+    @Test(expected = AktoerregisterIkkeFunnetException::class)
     fun `hentGjeldendeNorskIdentForAktorId() should fail if ident is not found in response`() {
         val mockResponseEntity = createResponseEntityFromJsonFile("src/test/resources/json/aktoerregister/200-OK_1-IdentinfoForAktoer-with-1-gjeldende-AktoerId.json")
         whenever(mockrestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java))).thenReturn(mockResponseEntity)
@@ -76,7 +77,7 @@ class AktoerregisterServiceTest {
         }
     }
 
-    @Test(expected = RuntimeException::class)
+    @Test(expected = AktoerregisterIkkeFunnetException::class)
     fun `should throw runtimeexception if no ident is found in response`() {
         val mockResponseEntity = createResponseEntityFromJsonFile("src/test/resources/json/aktoerregister/200-OK_0-IdentinfoForAktoer.json")
         whenever(mockrestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java))).thenReturn(mockResponseEntity)
@@ -107,7 +108,7 @@ class AktoerregisterServiceTest {
         }
     }
 
-    @Test(expected = RuntimeException::class)
+    @Test(expected = AktoerregisterException::class)
     fun `should throw runtimeexception when multiple idents are returned`() {
         val mockResponseEntity = createResponseEntityFromJsonFile("src/test/resources/json/aktoerregister/200-OK_1-IdentinfoForAktoer-with-2-gjeldende-AktoerId.json")
         whenever(mockrestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java))).thenReturn(mockResponseEntity)
@@ -122,7 +123,7 @@ class AktoerregisterServiceTest {
         }
     }
 
-    @Test(expected = RuntimeException::class)
+    @Test(expected = AktoerregisterException::class)
     fun `should throw runtimeexception when 403-forbidden is returned`() {
         val mockResponseEntity = createResponseEntityFromJsonFile("src/test/resources/json/aktoerregister/403-Forbidden.json", HttpStatus.FORBIDDEN)
         whenever(mockrestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java))).thenReturn(mockResponseEntity)
