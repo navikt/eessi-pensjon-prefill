@@ -23,6 +23,8 @@ class PensjonsinformasjonUtlandController {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PensjonsinformasjonUtlandController::class.java) }
 
+    private val mockSed = MockSED001()
+
     private val landkodeService = LandkodeService()
 
     //no.nav.eessi.eessifagmodul.pesys.PensjonsinformasjonMottakController
@@ -119,7 +121,6 @@ class PensjonsinformasjonUtlandController {
 
         val p2000 = getSED(SEDType.P2000, seds) ?: return KravUtland(errorMelding = "Ingen P2000 funnet")
         val p3000no = getSED(SEDType.P3000, seds) ?: return KravUtland(errorMelding = "Ingen P3000no funnet")
-
         logger.debug("oppretter KravUtland")
 
         //https://confluence.adeo.no/pages/viewpage.action?pageId=203178268
@@ -415,51 +416,56 @@ class PensjonsinformasjonUtlandController {
         val map = mapOf<SEDType, SED>(SEDType.P2000 to fetchDocument(bucId, SEDType.P2000),
                 SEDType.P3000 to fetchDocument(bucId, SEDType.P3000),
                 SEDType.P4000 to fetchDocument(bucId, SEDType.P4000))
+
+        val keys = map.keys
+//        logger.debug("mapSeds inneholder følgende SED på buc: $bucId")
+//        keys.forEach {
+//            logger.debug(" $it , ${map[it]} ")
+//        }
         return map
     }
 
     //Henter inn valgt sedType fra Rina og returerer denne
     //returnerer generell ERROR sed hvis feil!
     fun fetchDocument(buc: Int, sedType: SEDType): SED {
-//        val bucId = buc.toLong()
-//        } else {
-        val mockSed = MockSED001()
-        return when (sedType) {
 
-            SEDType.P2000 -> mockSed.mockP2000()
-
-            SEDType.P3000 -> mockSed.mockP3000NO()
-
-            SEDType.P4000 -> mockSed.mockP4000()
-
-            else -> SED("ERROR")
+        when (buc) {
+            1050 -> {
+                logger.debug("henter ut SED data for buc: $buc og sedType: $sedType")
+                return when (sedType) {
+                    SEDType.P2000 -> mockSed.mockP2000()
+                    SEDType.P3000 -> {
+                        val p3000 = mockSed.mockP3000NO()
+                        p3000.pensjon?.landspesifikk?.norge?.alderspensjon?.pensjonsgrad = null
+                        p3000
+                    }
+                    SEDType.P4000 -> mockSed.mockP4000()
+                    else -> SED("ERROR")
+                }
+            }
+            else -> {
+                logger.debug("henter ut SED data for buc: $buc og sedType: $sedType")
+                return when (sedType) {
+                    SEDType.P2000 -> mockSed.mockP2000()
+                    SEDType.P3000 -> mockSed.mockP3000NO()
+                    SEDType.P4000 -> mockSed.mockP4000()
+                    else -> SED("ERROR")
+                }
+            }
         }
-//        }
-//        else {
-//            val mapsId = euxService.hentDocumentID(buc)
-//            return when(sedType) {
-//
-//                SEDType.P2000 -> euxService.fetchSEDfromExistingRinaCase(buc, mapsId[SEDType.P2000.toString()].orEmpty())
-//
-//                SEDType.P3000 -> euxService.fetchSEDfromExistingRinaCase(buc, mapsId["P3000_NO"].orEmpty())
-//
-//                SEDType.P4000 -> euxService.fetchSEDfromExistingRinaCase(buc, mapsId[SEDType.P4000.toString()].orEmpty())
-//
-//                else -> SED("ERROR")
-//            }
-//        }
     }
 
 
     //pensjon utatksgrad mapping fra P3000 til pesys verdi.
-    fun parsePensjonsgrad(pensjonsgrad: String?): String {
+    fun parsePensjonsgrad(pensjonsgrad: String?): String? {
         return when (pensjonsgrad) {
             "01" -> "20"
             "02" -> "40"
             "03" -> "50"
             "04" -> "60"
             "05" -> "80"
-            else -> "100"
+            "06" -> "100"
+            else -> null
         }
     }
 

@@ -8,10 +8,7 @@ import org.junit.Test
 import org.mockito.Mock
 import org.springframework.util.ResourceUtils
 import java.time.LocalDate
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
-import kotlin.test.assertTrue
-import kotlin.test.fail
+import kotlin.test.*
 
 class PensjonsinformasjonUtlandControllerTest {
 
@@ -101,9 +98,20 @@ class PensjonsinformasjonUtlandControllerTest {
     fun hentKravUtlandMockBuc() {
         val response = controller.hentKravUtland(1099)
         assertNotNull(response)
+        assertEquals("50", response.uttaksgrad)
 
         val json = mapAnyToJson(response)
         println(json)
+
+
+        val response2 = controller.hentKravUtland(1050)
+        assertNotNull(response2)
+
+        assertNull(response2.uttaksgrad)
+
+        val json2 = mapAnyToJson(response2)
+        println(json2)
+
     }
 
     @Test
