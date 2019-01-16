@@ -31,9 +31,6 @@ class PensjonsinformasjonUtlandController {
         val mockmap = mutableMapOf<Int, KravUtland>()
     }
 
-//    @Autowired
-//    private lateinit var euxService: EuxService
-
     fun hentAlpha3Land(land: String): String? {
         return landkodeService.finnLandkode3(land)
     }
@@ -55,12 +52,11 @@ class PensjonsinformasjonUtlandController {
     @ApiOperation(httpMethod = "PUT", value = "legger mock KravUtland til på map med bucid som key, KravUtland som verdi", response = KravUtland::class)
     @PutMapping("/mockPutKravUtland/{bucId}")
     fun mockPutKravUtland(@PathVariable("bucId", required = true) bucId: Int, @RequestBody kravUtland: KravUtland): KravUtland {
-        if (bucId > 1000) {
-            //mockmap.put(bucId, kravUtland)
+        if (bucId > 0 && bucId < 1000) {
             putKravUtlandMap(bucId, kravUtland)
             return hentKravUtland(bucId)
         }
-        return KravUtland(errorMelding = "feil ved opprettelse av mock KravUtland, bucId for lav prævd over 1000")
+        return KravUtland(errorMelding = "feil ved opprettelse av mock KravUtland, bucId må være mellom 1 og 999")
     }
 
     @ApiOperation(httpMethod = "DELETE", value = "sletter mock KravUtland fra map med buckid som key.", response = KravUtland::class)
@@ -87,11 +83,11 @@ class PensjonsinformasjonUtlandController {
         logger.debug("Starter prosess for henting av krav fra utloand (P2000...)")
         //henter ut maping til lokal variabel for enkel uthenting.
 
-        return if (bucId > 1000) {
-            logger.debug("henter ut buc fra mockMap<buc, KravUtland> som legges inn i mockPutKravFraUtland(key, KravUtland)")
+        return if (bucId < 1000) {
+            logger.debug("henter ut buc fra mockMap<buc, KravUtland> som legges inn i mockPutKravFraUtland(key, KravUtland alt under 1000)")
             hentKravUtlandFraMap(bucId)
         } else {
-            logger.debug("henter ut buc fra mock SED, p2000, p3000, p4000 og p5000 (alle kall fra buc 1 - 999 er lik")
+            logger.debug("henter ut buc fra mock SED, p2000, p3000, p4000 og p5000 (alle kall fra buc 1000..n.. er lik")
 
             val seds = mapSeds(bucId)
 
@@ -128,10 +124,10 @@ class PensjonsinformasjonUtlandController {
 
         //https://confluence.adeo.no/pages/viewpage.action?pageId=203178268
         //Kode om fra Alpha2 - Alpha3 teng i Avtaleland (eu, eøs og par andre)  og Statborgerskap (alle verdens land)
-        var landAlpha3 = hentAlpha3Land(p2000.nav?.bruker?.person?.statsborgerskap?.get(0)?.land ?: "N/A")
-        //landkodeService.finnLandkode3(p2000.nav?.bruker?.person?.statsborgerskap?.get(0)?.land ?: "N/A")
+        //val statsborgerskapItem = p2000.nav?.bruker?.person?.statsborgerskap?.first()
+        //statsborgerskap = hentAlpha3Land(p2000.nav?.bruker?.person?.statsborgerskap?.first()?.land ?: "N/A") ?: "N/A",
+        var landAlpha3 = hentAlpha3Land(p2000.nav?.bruker?.person?.statsborgerskap?.first()?.land ?: "N/A")
 
-        //hentAlpha3Land
         return KravUtland(
                 //P2000 9.1
                 mottattDato = LocalDate.parse(p2000.nav?.krav?.dato) ?: null,
@@ -139,28 +135,22 @@ class PensjonsinformasjonUtlandController {
                 //P2000 ?? kravdatao?
                 iverksettelsesdato = hentRettIverksettelsesdato(p2000),
 
+                //P3000_NO 4.6.1. Forsikredes anmodede prosentdel av full pensjon
+                uttaksgrad = parsePensjonsgrad(p3000no.pensjon?.landspesifikk?.norge?.alderspensjon?.pensjonsgrad),
+
                 //P2000 2.2.1.1
                 personopplysninger = SkjemaPersonopplysninger(
-                        utvandret = false,
-                        land = landAlpha3
-                        //p2000.nav?.bruker?.person?.statsborgerskap?.get(0)?.land ?: "NA"
+                        statsborgerskap = landAlpha3
                 ),
 
                 //P2000 - 2.2.2
                 sivilstand = SkjemaFamilieforhold(
-                        valgtSivilstatus = "UGIF",
+                        valgtSivilstatus = hentFamilieStatus("01"),
                         sivilstatusDatoFom = LocalDate.now()
                 ),
 
-                //
-                //P3000_NO 4.6.1. Forsikredes anmodede prosentdel av full pensjon
-                uttaksgrad = parsePensjonsgrad(p3000no.pensjon?.landspesifikk?.norge?.alderspensjon?.pensjonsgrad),
-
                 //P4000 - P5000 opphold utland (norge filtrert bort)
                 utland = hentSkjemaUtland(seds),
-
-                //val statsborgerskapItem = p2000.nav?.bruker?.person?.statsborgerskap?.first()
-                statsborgerskap = hentAlpha3Land(p2000.nav?.bruker?.person?.statsborgerskap?.first()?.land ?: "N/A") ?: "N/A",
 
                 //denne må hentes utenfor SED finne orginal avsender-land for BUC/SED..
                 soknadFraLand = hentAlpha3Land("SE")
@@ -177,6 +167,15 @@ class PensjonsinformasjonUtlandController {
             val kravdato = LocalDate.parse(p2000.nav?.krav?.dato) ?: LocalDate.now()
             kravdato.withDayOfMonth(1).plusMonths(1)
         }
+    }
+
+    fun hentFamilieStatus(key: String): String {
+        val status = mapOf<String, String>("01" to "UGIF", "02" to "GIFT", "03" to "SAMB", "04" to "REPA", "05" to "SKIL", "06" to "SKPA", "07" to "SEPA", "08" to "ENKE")
+        //Sivilstand for søker. Må være en gyldig verdi fra T_K_SIVILSTATUS_T:
+        //ENKE, GIFT, GJES, GJPA, GJSA, GLAD, PLAD, REPA,SAMB, SEPA, SEPR, SKIL, SKPA, UGIF.
+        //Pkt p2000 - 2.2.2.1. Familiestatus
+        //var valgtSivilstatus: String? = null,
+        return status[key].orEmpty()
     }
 
     //P2200
@@ -210,7 +209,7 @@ class PensjonsinformasjonUtlandController {
         logger.debug("oppretter utlandopphold P4000")
         list.addAll(hentUtlandsOppholdFraP4000(p4000))
         logger.debug("oppretter utlandopphold P5000")
-        //list.addAll(hentUtlandsOppholdFraP5000(p5000!!))
+        list.addAll(hentUtlandsOppholdFraP5000(p5000))
 
         return list
     }
@@ -255,18 +254,18 @@ class PensjonsinformasjonUtlandController {
                 logger.error(ex.message)
             }
             val land = landAlpha3
+
             logger.debug("oppretter arbeid P4000")
             list.add(
                     Utlandsoppholditem(
                             land = land,
-//                        fom = LocalDate.parse(periode.fom),
-//                        tom = LocalDate.parse(periode.tom),
                             fom = fom,
                             tom = tom,
                             arbeidet = true,
                             bodd = false,
                             utlandPin = hentPinIdFraBoArbeidLand(p4000, landAlpha2),
-                            pensjonsordning = hentPensjonsOrdning(p4000, landAlpha2) // "Hva?"
+                            //kommer ut ifa avsenderLand (hvor orginal buc kommer ifra)
+                            pensjonsordning = hentPensjonsOrdning(p4000, landAlpha2)
                     )
             )
 
@@ -355,10 +354,42 @@ class PensjonsinformasjonUtlandController {
     }
 
     //oppretter UtlandsOpphold fra P5000 (trygdeland)
-    fun hentUtlandsOppholdFraP5000(p5000: SED): List<Utlandsoppholditem> {
+    fun hentUtlandsOppholdFraP5000(p5000: SED?): List<Utlandsoppholditem> {
         val list = mutableListOf<Utlandsoppholditem>()
         //P5000
         val trygdetidList = p5000?.pensjon?.trygdetid
+
+        trygdetidList?.forEach {
+            //            var bodd: Boolean? = null,
+//            var arbeidet: Boolean? = null,
+//            var pensjonsordning: String? = null,
+//            var utlandPin: String? = null
+
+            var fom: LocalDate? = null
+            var tom: LocalDate? = null
+            try {
+                fom = LocalDate.parse(it.periode?.fom)
+            } catch (ex: Exception) {
+                logger.error(ex.message)
+            }
+            try {
+                tom = LocalDate.parse(it.periode?.tom)
+            } catch (ex: Exception) {
+                logger.error(ex.message)
+            }
+
+            val pin = hentPinIdFraBoArbeidLand(p5000, it.land ?: "N/A")
+
+            list.add(Utlandsoppholditem(
+                    land = hentAlpha3Land(it.land ?: "N/A"),
+                    fom = fom,
+                    tom = tom,
+                    bodd = true,
+                    arbeidet = false,
+                    pensjonsordning = "???",
+                    utlandPin = pin
+            ))
+        }
 
         return list
     }

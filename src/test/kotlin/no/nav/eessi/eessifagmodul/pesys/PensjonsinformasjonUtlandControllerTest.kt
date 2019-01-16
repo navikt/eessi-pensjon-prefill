@@ -3,7 +3,6 @@ package no.nav.eessi.eessifagmodul.pesys
 import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
 import no.nav.eessi.eessifagmodul.utils.mapJsonToAny
 import no.nav.eessi.eessifagmodul.utils.typeRefs
-import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mock
@@ -24,19 +23,16 @@ class PensjonsinformasjonUtlandControllerTest {
         controller = PensjonsinformasjonUtlandController()
     }
 
-    @After
-    fun takeItDown() {
-    }
-
     @Test
     fun mockPutKravUtland() {
-        val buckey = 1001
+        val buckey = 999
         val resource = ResourceUtils.getFile("classpath:json/pesys/kravutlandalderpen.json").readText()
         val testdata = mapJsonToAny(resource, typeRefs<KravUtland>())
+
+        //feil med ikke godtatt id
         controller.mockPutKravUtland(buckey, testdata)
         val svar = controller.hentKravUtland(buckey)
         assertEquals(testdata, svar)
-
         val set = controller.mockGetKravUtlandKeys()
         assertEquals(1, set.size)
         assertEquals(buckey, set.first())
@@ -59,9 +55,9 @@ class PensjonsinformasjonUtlandControllerTest {
         //skal være tom, 0 i set
         assertEquals(0, controller.mockGetKravUtlandKeys().size)
         //legger til
-        controller.mockPutKravUtland(1040, KravUtland())
+        controller.mockPutKravUtland(940, KravUtland())
         //fjerner
-        controller.mockDeleteKravUtland(1040)
+        controller.mockDeleteKravUtland(940)
         //skal være tom, 0 i set
         assertEquals(0, controller.mockGetKravUtlandKeys().size)
     }
@@ -80,13 +76,13 @@ class PensjonsinformasjonUtlandControllerTest {
         val resource = ResourceUtils.getFile("classpath:json/pesys/kravutlandalderpen.json").readText()
         val testdata = mapJsonToAny(resource, typeRefs<KravUtland>())
 
-        val buckey1 = 1010
+        val buckey1 = 910
         controller.mockPutKravUtland(buckey1, testdata)
 
         val svar1 = controller.hentKravUtland(buckey1)
         assertEquals(testdata, svar1)
 
-        val buckey2 = 1099
+        val buckey2 = 920
         controller.mockPutKravUtland(buckey2, testdata)
 
         val svar2 = controller.hentKravUtland(buckey2)
@@ -95,34 +91,20 @@ class PensjonsinformasjonUtlandControllerTest {
         val set = controller.mockGetKravUtlandKeys()
         assertEquals(2, set.size)
 
-        controller.mockDeleteKravUtland(1010)
-        controller.mockDeleteKravUtland(1099)
+        controller.mockDeleteKravUtland(910)
+        controller.mockDeleteKravUtland(920)
 
         assertEquals(0, controller.mockGetKravUtlandKeys().size)
     }
 
     @Test
     fun hentKravUtlandMockBuc() {
-        val response = controller.hentKravUtland(99)
+        val response = controller.hentKravUtland(1099)
         assertNotNull(response)
 
         val json = mapAnyToJson(response)
         println(json)
     }
-
-
-    @Test
-    fun kravAlderpensjonUtland() {
-    }
-
-    @Test
-    fun hentSkjemaUtland() {
-    }
-
-    @Test
-    fun prosessUtlandsOpphold() {
-    }
-
 
     @Test
     fun testLocalDatetilJson() {
@@ -137,14 +119,13 @@ class PensjonsinformasjonUtlandControllerTest {
                 uttaksgrad = "60",
                 vurdereTrygdeavtale = false,
                 personopplysninger = SkjemaPersonopplysninger(
-                        land = "SE",
-                        utvandret = true
+                        statsborgerskap = "SWE"
                 )
         )
-
         val json = mapAnyToJson(test)
-
         println(json)
 
+
     }
+
 }

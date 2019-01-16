@@ -31,18 +31,18 @@ data class KravUtland(
         val utland: SkjemaUtland? = null,
         //P2000
         var sivilstand: SkjemaFamilieforhold? = null,
-        //P2000 pkt. 2.2.1.1
-        var statsborgerskap: String? = null,
 
         var soknadFraLand: String? = null
 
 )
 
 data class SkjemaPersonopplysninger(
-        //utvandret?
-        var utvandret: Boolean? = null,
-        //statsborgeskap
-        var land: String? = null
+        //P2000 pkt. 2.2.1.1 land_3 tegn
+        var statsborgerskap: String? = null
+//        //utvandret?
+//        var utvandret: Boolean? = null,
+//        //statsborgeskap
+//        var land: String? = null
 )
 
 //P4000
