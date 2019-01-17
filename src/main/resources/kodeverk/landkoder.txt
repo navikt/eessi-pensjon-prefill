@@ -29,3 +29,4 @@ CY;CYP;Kypros;Z
 BE;BEL;Belgia;H
 BG;BGR;Bulgaria;Z
 CZ;CZE;Tsjekkia;Z
+CH,CHE,Sveits,H

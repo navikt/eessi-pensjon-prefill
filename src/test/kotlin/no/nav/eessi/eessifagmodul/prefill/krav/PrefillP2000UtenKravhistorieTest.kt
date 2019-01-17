@@ -52,7 +52,7 @@ class PrefillP2000UtenKravhistorieTest : AbstractMockKravPensionHelper() {
     }
 
     override fun createPersonTrygdetidHistorikk(): String {
-        return readJsonResponse("Trygdetid_part.json")
+        return readJsonResponse("p4000_trygdetid_part.json")
     }
 
     @Test

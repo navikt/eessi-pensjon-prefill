@@ -34,7 +34,7 @@ class ApiController(private val euxService: EuxService,
     lateinit var landkodeService: LandkodeService
 
     @ApiOperation("Henter liste over landkoder av ISO Alpha2 standard")
-    @PostMapping("/landkoder")
+    @GetMapping("/landkoder")
     //TODO hører denne til her eller egen controller?
     fun getLandKoder(): List<String> {
         return landkodeService.hentLandkoer2()
@@ -123,7 +123,7 @@ class ApiController(private val euxService: EuxService,
      * @param aktoerid
      */
     @ApiOperation("henter ut personinformasjon for en aktørId")
-    @GetMapping("/{aktoerid}")
+    @GetMapping("/person/{aktoerid}")
     fun getDocument(@PathVariable("aktoerid", required = true) aktoerid: String): ResponseEntity<Personinformasjon> {
         logger.info("Henter personinformasjon for aktørId: $aktoerid")
 
@@ -233,6 +233,7 @@ class ApiController(private val euxService: EuxService,
         return aktoerregisterService.hentGjeldendeNorskIdentForAktorId(aktorid)
     }
 
+    //Samme som SedRequest i frontend-api
     data class ApiRequest(
             val sakId: String,
             val vedtakId: String? = null,
