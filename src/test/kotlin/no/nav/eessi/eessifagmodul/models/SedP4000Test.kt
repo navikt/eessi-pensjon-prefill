@@ -96,7 +96,7 @@ class SedP4000Test {
     @Test
     fun `create and validate P4000 from json to nav-sed back to json`() {
         //map load P4000-NAV refrence
-        val path = Paths.get("src/test/resources/json/P4000-NAV.json")
+        val path = Paths.get("src/test/resources/json/nav/P4000-NAV.json")
         val p4000file = String(Files.readAllBytes(path))
         assertNotNull(p4000file)
         validateJson(p4000file)
@@ -139,7 +139,7 @@ class SedP4000Test {
     @Test
     fun `create insurance periods P4000 from file`() {
 
-        val path = Paths.get("src/test/resources/json/Trygdetid_part.json")
+        val path = Paths.get("src/test/resources/json/nav/p4000_trygdetid_part.json")
         val jsonfile = String(Files.readAllBytes(path))
         assertNotNull(jsonfile)
         validateJson(jsonfile)
@@ -168,7 +168,7 @@ class SedP4000Test {
 
     @Test
     fun `validate and prefill P4000_2 from file`() {
-        val path = Paths.get("src/test/resources/json/requestP4000.json")
+        val path = Paths.get("src/test/resources/json/nav/requestP4000.json")
         val jsonfile = String(Files.readAllBytes(path))
         assertNotNull(jsonfile)
         validateJson(jsonfile)

@@ -26,12 +26,12 @@
         } ],
         "pin" : [ {
           "sektor" : "alle",
-          "identifikator" : "32451345134513451345",
+          "identifikator": "123456789012",
           "institusjon" : {
             "institusjonsid" : "NO:NAVT002",
             "institusjonsnavn" : "12347, NAVT002, NO"
           },
-          "land" : "DK"
+          "land": "NO"
         } ],
         "foedested" : {
           "region" : "sdfsdf",
@@ -107,13 +107,13 @@
       },
       "person" : {
         "pin" : [ {
-          "identifikator" : "35345345345345345345345345",
-          "institusjon" : {
-            "institusjonsnavn" : "12348, NAVT003, NO",
-            "institusjonsid" : "NO:NAVT003"
-          },
           "sektor" : "alle",
-          "land" : "DK"
+          "identifikator": "123456789012",
+          "institusjon": {
+            "institusjonsid": "NO:NAVT002",
+            "institusjonsnavn": "12347, NAVT002, NO"
+          },
+          "land": "NO"
         } ],
         "foedested" : {
           "by" : "fgdfgadfgadgadd",
@@ -198,10 +198,12 @@
         } ],
         "pin" : [ {
           "sektor" : "alle",
-          "land" : "NO",
-          "institusjonsid" : "NO:NAVT002",
-          "identifikator" : "534513451345134513451345",
-          "institusjonsnavn" : "12347, NAVT002, NO"
+          "identifikator": "123456789012",
+          "institusjon": {
+            "institusjonsid": "NO:NAVT002",
+            "institusjonsnavn": "12347, NAVT002, NO"
+          },
+          "land": "NO"
         } ],
         "tidligereetternavn" : "rtqertqertqertqertqer",
         "foedselsdato" : "1969-09-11",

@@ -30,7 +30,7 @@ class SedP6000Test {
         assertNotNull(pensjondata)
         assertEquals(sed6000, pensjondata)
 
-        val path = Paths.get("src/test/resources/json/P6000-NAV.json")
+        val path = Paths.get("src/test/resources/json/nav/P6000-NAV.json")
         val p6000file = String(Files.readAllBytes(path))
         assertNotNull(p6000file)
         validateJson(p6000file)
