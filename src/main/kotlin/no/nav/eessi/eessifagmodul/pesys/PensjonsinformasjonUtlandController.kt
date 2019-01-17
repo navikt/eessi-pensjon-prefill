@@ -236,7 +236,7 @@ class PensjonsinformasjonUtlandController {
         filterArbeidUtenNorgeList.forEach {
             val arbeid = it
 
-            val landAlpha2 = arbeid?.adresseFirma?.land ?: "N/A"
+            val landAlpha2 = arbeid.adresseFirma?.land ?: "N/A"
             val landAlpha3 = hentAlpha3Land(landAlpha2) ?: ""
 
 

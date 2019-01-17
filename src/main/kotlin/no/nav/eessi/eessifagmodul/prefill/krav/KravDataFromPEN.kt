@@ -71,8 +71,6 @@ open class KravDataFromPEN(private val dataFromPEN: PensjonsinformasjonHjelper) 
         logger.debug("Prøver å sette kravDato til førsteVirkningstidpunkt: ${valgtSak.sakType} og dato: ${valgtSak.forsteVirkningstidspunkt}")
         return Krav(
                 dato = valgtSak?.forsteVirkningstidspunkt?.simpleFormat()
-                //kravhistorikk
-
         )
     }
 

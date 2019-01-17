@@ -123,7 +123,7 @@ class ApiController(private val euxService: EuxService,
      * @param aktoerid
      */
     @ApiOperation("henter ut personinformasjon for en aktørId")
-    @GetMapping("/{aktoerid}")
+    @GetMapping("/person/{aktoerid}")
     fun getDocument(@PathVariable("aktoerid", required = true) aktoerid: String): ResponseEntity<Personinformasjon> {
         logger.info("Henter personinformasjon for aktørId: $aktoerid")
 
@@ -233,6 +233,7 @@ class ApiController(private val euxService: EuxService,
         return aktoerregisterService.hentGjeldendeNorskIdentForAktorId(aktorid)
     }
 
+    //Samme som SedRequest i frontend-api
     data class ApiRequest(
             val sakId: String,
             val vedtakId: String? = null,
