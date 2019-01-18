@@ -23,7 +23,7 @@ class RequestResponseLoggerInterceptor : ClientHttpRequestInterceptor {
 
     private fun logRequest(request: HttpRequest, body: ByteArray) {
         if (log.isDebugEnabled) {
-            log.debug("\n===========================request begin================================================\n"
+            log.info("\n===========================request begin================================================\n"
                     + "URI         : " + request.uri + "\n"
                     + "Method      : " + request.method + "\n"
                     + "Headers     : " + request.headers + "\n"
@@ -34,7 +34,7 @@ class RequestResponseLoggerInterceptor : ClientHttpRequestInterceptor {
 
     private fun logResponse(response: ClientHttpResponse) {
         if (log.isDebugEnabled) {
-            log.debug("\n============================response begin=========================================="
+            log.info("\n============================response begin=========================================="
                     + "Status code  : " + response.statusCode + "\n"
                     + "Status text  : " + response.statusText + "\n"
                     + "Headers      : " + response.headers + "\n"

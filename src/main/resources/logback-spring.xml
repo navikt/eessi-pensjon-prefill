@@ -12,7 +12,7 @@
 
         <logger name="no.nav" level="DEBUG"/>
 
-        <root level="info">
+        <root level="debug">
             <appender-ref ref="stdout_json"/>
         </root>
     </springProfile>

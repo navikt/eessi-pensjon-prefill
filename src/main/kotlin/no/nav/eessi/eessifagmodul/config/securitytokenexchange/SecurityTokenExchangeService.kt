@@ -45,6 +45,7 @@ class SecurityTokenExchangeService(val securityTokenExchangeBasicAuthRestTemplat
                 .queryParam("scope", "openid")
                 .build().toUriString()
 
+        logger.debug("kobler opp mot systembruker token")
         val responseEntity = securityTokenExchangeBasicAuthRestTemplate.exchange(uri, HttpMethod.GET, null, SecurityTokenResponse::class.java)
         validateResponse(responseEntity)
         val accessToken = responseEntity.body!!.accessToken
