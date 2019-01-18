@@ -1,12 +1,7 @@
 package no.nav.eessi.eessifagmodul.services.eux
 
-import io.micrometer.core.instrument.Counter
-import io.micrometer.core.instrument.Metrics
 import no.nav.eessi.eessifagmodul.models.*
-import no.nav.eessi.eessifagmodul.utils.createErrorMessage
-import no.nav.eessi.eessifagmodul.utils.mapJsonToAny
-import no.nav.eessi.eessifagmodul.utils.typeRef
-import no.nav.eessi.eessifagmodul.utils.typeRefs
+import no.nav.eessi.eessifagmodul.utils.*
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Description
 import org.springframework.core.io.ByteArrayResource
@@ -25,29 +20,6 @@ private val logger = LoggerFactory.getLogger(EuxService::class.java)
 @Description("Service class for EuxBasis - EuxCpiServiceController.java")
 class EuxService(private val euxOidcRestTemplate: RestTemplate) {
 
-    private val EUX_MULIGEAKSJONER_TELLER_NAVN = "eessipensjon_fagmodul.euxmuligeaksjoner"
-    private val EUX_MULIGEAKSJONER_TELLER_TYPE_VELLYKKEDE = counter(EUX_MULIGEAKSJONER_TELLER_NAVN, "vellykkede")
-    private val EUX_MULIGEAKSJONER_TELLER_TYPE_FEILEDE = counter(EUX_MULIGEAKSJONER_TELLER_NAVN, "feilede")
-    private val EUX_SENDSED_TELLER_NAVN = "eessipensjon_fagmodul.sendsed"
-    private val EUX_SENDSED_TELLER_TYPE_VELLYKKEDE = counter(EUX_SENDSED_TELLER_NAVN, "vellykkede")
-    private val EUX_SENDSED_TELLER_TYPE_FEILEDE = counter(EUX_SENDSED_TELLER_NAVN, "feilede")
-    private val EUX_OPPRETTSED_TELLER_NAVN = "eessipensjon_fagmodul.opprettsed"
-    private val EUX_OPPRETTSED_TELLER_TYPE_VELLYKKEDE = counter(EUX_OPPRETTSED_TELLER_NAVN, "vellykkede")
-    private val EUX_OPPRETTSED_TELLER_TYPE_FEILEDE = counter(EUX_OPPRETTSED_TELLER_NAVN, "feilede")
-    private val EUX_HENTSED_TELLER_NAVN = "eessipensjon_fagmodul.hentsed"
-    private val EUX_HENTSED_TELLER_TYPE_VELLYKKEDE = counter(EUX_HENTSED_TELLER_NAVN, "vellykkede")
-    private val EUX_HENTSED_TELLER_TYPE_FEILEDE = counter(EUX_HENTSED_TELLER_NAVN, "feilede")
-    private val EUX_SLETTSED_TELLER_NAVN = "eessipensjon_fagmodul.slettsed"
-    private val EUX_SLETTSED_TELLER_TYPE_VELLYKKEDE = counter(EUX_SLETTSED_TELLER_NAVN, "vellykkede")
-    private val EUX_SLETTSED_TELLER_TYPE_FEILEDE = counter(EUX_SLETTSED_TELLER_NAVN, "feilede")
-    private val EUX_OPPRETTBUCOGSED_TELLER_NAVN = "eessipensjon_fagmodul.opprettbucogsed"
-    private val EUX_OPPRETTBUCOGSED_TELLER_TYPE_VELLYKKEDE = counter(EUX_OPPRETTBUCOGSED_TELLER_NAVN, "vellykkede")
-    private val EUX_OPPRETTBUCOGSED_TELLER_TYPE_FEILEDE = counter(EUX_OPPRETTBUCOGSED_TELLER_NAVN, "feilede")
-
-    final fun counter(name: String, type: String): Counter {
-        return Metrics.counter(name, "type", type)
-    }
-
     //Henter en liste over tilgjengelige aksjoner for den aktuelle RINA saken PK-51365"
     fun getPossibleActions(euSaksnr: String): List<RINAaksjoner> {
         val builder = UriComponentsBuilder.fromPath("/MuligeAksjoner")
@@ -59,14 +31,14 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
         val responseBody = response.body!!
         try {
             if (response.statusCode.isError) {
-                EUX_MULIGEAKSJONER_TELLER_TYPE_FEILEDE.increment()
+                getCounter("AKSJONFEIL").increment()
                 throw createErrorMessage(responseBody)
             } else {
-                EUX_MULIGEAKSJONER_TELLER_TYPE_VELLYKKEDE.increment()
+                getCounter("AKSJONOK").increment()
                 return mapJsonToAny(responseBody, typeRefs())
             }
         } catch (ex: IOException) {
-            EUX_MULIGEAKSJONER_TELLER_TYPE_FEILEDE.increment()
+            getCounter("AKSJONFEIL").increment()
             throw RuntimeException(ex.message)
         }
     }
@@ -116,10 +88,10 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
         logger.info("Response SendSED på Rina: $euxCaseId, response:  $response")
 
         if (response.statusCodeValue == 200) {
-            EUX_SENDSED_TELLER_TYPE_VELLYKKEDE.increment()
+            getCounter("SENDSEDOK").increment()
             return true
         }
-        EUX_SENDSED_TELLER_TYPE_FEILEDE.increment()
+        getCounter("SENDSEDFEIL").increment()
         return false
     }
 
@@ -149,10 +121,10 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
 
         if(response.statusCode.is2xxSuccessful) {
             logger.info("Response opprett SED på Rina: $euxCaseId, response:  $response")
-            EUX_OPPRETTSED_TELLER_TYPE_VELLYKKEDE.increment()
+            getCounter("OPPRETTEDOK").increment()
         }
         logger.error("Opprettelse av SED på Rina feilet")
-        EUX_OPPRETTSED_TELLER_TYPE_FEILEDE.increment()
+        getCounter("OPPRETTEDFEIL").increment()
 
         return response.statusCode
     }
@@ -174,14 +146,14 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
         val responseBody = response.body ?: throw SedDokumentIkkeOpprettetException("Sed dokument ikke funnet")
         try {
             if (response.statusCode.isError) {
-                EUX_HENTSED_TELLER_TYPE_FEILEDE.increment()
+                getCounter("HENTSEDFEIL").increment()
                 throw SedDokumentIkkeLestException("Får ikke lest SED dokument fra Rina")
             } else {
-                EUX_HENTSED_TELLER_TYPE_VELLYKKEDE.increment()
+                getCounter("HENTSEDOK").increment()
                 return SED.fromJson(responseBody) //  mapJsonToAny(responseBody, typeRefs())
             }
         } catch (ex: Exception) {
-            EUX_HENTSED_TELLER_TYPE_FEILEDE.increment()
+            getCounter("HENTSEDFEIL").increment()
             throw RuntimeException(ex.message)
         }
     }
@@ -200,10 +172,10 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
         try {
             val response = euxOidcRestTemplate.exchange(builder.toUriString(), HttpMethod.DELETE, httpEntity, typeRef<String>()).statusCode
             if(response.is2xxSuccessful){
-                EUX_SLETTSED_TELLER_TYPE_VELLYKKEDE.increment()
+                getCounter("SLETTSEDOK").increment()
             }
         } catch (ex: IOException) {
-            EUX_SLETTSED_TELLER_TYPE_FEILEDE.increment()
+            getCounter("SLETTSEDFEIL").increment()
             throw RuntimeException(ex.message)
         }
     }

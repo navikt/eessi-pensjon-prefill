@@ -184,6 +184,7 @@ class SedController(private val euxService: EuxService,
         return aktoerregisterService.hentGjeldendeNorskIdentForAktorId(aktorid)
     }
 
+    //Samme som SedRequest i frontend-api
     data class ApiRequest(
             val sakId: String,
             val vedtakId: String? = null,

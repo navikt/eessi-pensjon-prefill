@@ -1,8 +1,8 @@
 buildscript {
     ext {
         kotlinVersion = '1.2.71'
-        springBootVersion = '2.0.4.RELEASE'
-        //springBootVersion = '2.1.1.RELEASE'
+        //springBootVersion = '2.0.4.RELEASE'
+        springBootVersion = '2.1.2.RELEASE'
         springSecurityVersion = '5.0.5.RELEASE'
         prometheusVersion = '0.5.0'
         springfoxVersion = '2.9.2'
@@ -63,56 +63,56 @@ configurations {
 dependencies {
 
     // Spring-boot
-    compile("org.springframework.boot:spring-boot-starter-web")
-    compile("org.springframework.boot:spring-boot-starter-actuator")
-    testCompile("org.springframework.boot:spring-boot-starter-test")
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
 
     // Allows for variable expiration-date of each cache-entry
-    compile("net.jodah:expiringmap:0.5.8")
+    implementation("net.jodah:expiringmap:0.5.8")
 
     // Apache CXF
-    compile("org.apache.cxf:cxf-spring-boot-starter-jaxws:${cxfVersion}")
-    compile("org.apache.cxf:cxf-rt-ws-security:${cxfVersion}")
+    implementation("org.apache.cxf:cxf-spring-boot-starter-jaxws:${cxfVersion}")
+    implementation("org.apache.cxf:cxf-rt-ws-security:${cxfVersion}")
 
     // Kotlin
-    compile("com.fasterxml.jackson.module:jackson-module-kotlin:${jacksonModuleKotlinVersion}")
-    compile("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${kotlinVersion}")
-    compile("org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:${jacksonModuleKotlinVersion}")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${kotlinVersion}")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}")
 
     // Swagger
-    compile("io.springfox:springfox-swagger2:${springfoxVersion}")
-    compile("io.springfox:springfox-swagger-ui:${springfoxVersion}")
+    implementation("io.springfox:springfox-swagger2:${springfoxVersion}")
+    implementation("io.springfox:springfox-swagger-ui:${springfoxVersion}")
 
     //mock - test
-    testCompile("org.mockito:mockito-core:${mockitoVersion}")
-    testCompile("org.jetbrains.kotlin:kotlin-test")
-    testCompile("org.jetbrains.kotlin:kotlin-test-junit")
-    testCompile("com.nhaarman:mockito-kotlin-kt1.1:1.5.0")
-    testCompile("org.skyscreamer:jsonassert:1.5.0")
+    testImplementation("org.mockito:mockito-core:${mockitoVersion}")
+    testImplementation("org.jetbrains.kotlin:kotlin-test")
+    testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
+    testImplementation("com.nhaarman:mockito-kotlin-kt1.1:1.5.0")
+    testImplementation("org.skyscreamer:jsonassert:1.5.0")
 
     // Logging
-    compile("net.logstash.logback:logstash-logback-encoder:${logstashLogbackVersion}")
+    implementation("net.logstash.logback:logstash-logback-encoder:${logstashLogbackVersion}")
 
-    testCompile("info.cukes:cucumber-spring:1.2.5")
-    testCompile("info.cukes:cucumber-java:1.2.5")
-    testCompile("info.cukes:cucumber-junit:1.2.5")
-    testCompile('org.apache.httpcomponents:fluent-hc:4.5.6')
+    testImplementation("info.cukes:cucumber-spring:1.2.5")
+    testImplementation("info.cukes:cucumber-java:1.2.5")
+    testImplementation("info.cukes:cucumber-junit:1.2.5")
+    testImplementation('org.apache.httpcomponents:fluent-hc:4.5.6')
 
     // OIDC
-    compile("no.nav.security:oidc-spring-support:${oidcTokenSupportVersion}")
-    compile("no.nav.security:oidc-test-support:${oidcTokenSupportVersion}")
-    testCompile("org.pac4j:spring-webmvc-pac4j:3.0.0")
+    implementation("no.nav.security:oidc-spring-support:${oidcTokenSupportVersion}")
+    implementation("no.nav.security:oidc-test-support:${oidcTokenSupportVersion}")
+    testImplementation("org.pac4j:spring-webmvc-pac4j:3.0.0")
 
 
     // Tjenestespesifikasjoner
-    compile("no.nav.tjenester:nav-person-v3-tjenestespesifikasjon:${personV3Version}")
+    implementation("no.nav.tjenester:nav-person-v3-tjenestespesifikasjon:${personV3Version}")
     xsd("no.nav.pensjon:pensjonsinformasjon-xsd:${pensjonInformasjonVersion}")
 
     jaxb ('org.glassfish.jaxb:jaxb-xjc:2.2.11')
     jaxb ('org.glassfish.jaxb:jaxb-runtime:2.2.11')
 
     // Micrometer
-    compile("io.micrometer:micrometer-registry-prometheus")
+    implementation("io.micrometer:micrometer-registry-prometheus")
 }
 
 ext.schemasDir = "${projectDir}/src/main/resources/schemas"

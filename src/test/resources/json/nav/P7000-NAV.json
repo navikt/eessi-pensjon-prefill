@@ -1,63 +1,13 @@
 {
   "nav" : {
-    "bruker" : {
-      "mor" : {
-        "person" : {
-          "etternavnvedfoedsel" : "MorsEtternavnVedFodsel2184",
-          "fornavn" : "MorsFornavn2185"
-        }
-      },
-      "person" : {
-        "fornavn" : "Fornavn212",
-        "etternavnvedfoedsel" : "EtternavnVedFødsel",
-        "foedselsdato" : "1970-11-08",
-        "tidligereetternavn" : "TidligereEtternavn2212",
-        "statsborgerskap" : [ {
-          "land" : "DK"
-        } ],
-        "pin" : [ {
-          "identifikator" : "21712",
-          "sektor" : "pensjoner",
-          "institusjon" : {
-            "institusjonsid" : "NO:NAVT002",
-            "institusjonsnavn" : "12347, NAVT002, NO"
-          },
-          "land" : "DK"
-        } ],
-        "foedested" : {
-          "region" : "Region21812",
-          "by" : "Town21811",
-          "land" : "DK"
-        },
-        "fornavnvedfoedsel" : "FornavnVedFødsel",
-        "tidligerefornavn" : "TidligereFornavn2213"
-      },
-      "adresse" : {
-        "bygning" : "ByningsNavn2222",
-        "region" : "Region2225",
-        "postnummer" : "2224",
-        "by" : "Town2223",
-        "land" : "DK",
-        "gate" : "2221Street"
-      },
-      "far" : {
-        "person" : {
-          "fornavn" : "FarsFornavn2183",
-          "etternavnvedfoedsel" : "FarsEtternavnVedFodsel2182"
-        }
-      }
-    },
-    "eessisak" : [ {
+    "eessisak": [
+      {
       "institusjonsnavn" : "12347, NAVT002, NO",
       "saksnummer" : "112Saksnummer",
       "land" : "DK",
       "institusjonsid" : "NO:NAVT002"
-    } ],
-    "ektefelle" : {
-      "person" : {
-        "etternavn" : "Etternavn211"
       }
-    }
+    ]
   },
   "pensjon" : {
     "gjenlevende" : {

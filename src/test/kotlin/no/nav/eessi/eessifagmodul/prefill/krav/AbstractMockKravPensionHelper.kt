@@ -143,7 +143,7 @@ abstract class AbstractMockKravPensionHelper {
     }
 
     protected fun readJsonResponse(file: String): String {
-        return ResourceUtils.getFile("classpath:json/$file").readText()
+        return ResourceUtils.getFile("classpath:json/nav/$file").readText()
     }
 
     private fun mockPrefillPensionDataFromPEN(responseXMLfilename: String): PensjonsinformasjonHjelper {

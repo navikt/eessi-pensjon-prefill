@@ -1,6 +1,7 @@
 package no.nav.eessi.eessifagmodul.pesys
 
-import no.nav.eessi.eessifagmodul.models.StatsborgerskapItem
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import java.time.LocalDate
 
 //Model for opprettelse av kravhode til pesys.
@@ -9,34 +10,74 @@ import java.time.LocalDate
 
 //omhandler alle SED?
 data class KravUtland(
-        var avsenderLand: String? = null,
+        var errorMelding: String? = null,
+        //P2000 - format pattern yyyy-MM-dd
+        @JsonDeserialize(using = LocalDateDeserializer::class)
+        @JsonSerialize(using = LocalDateSerializer::class)
         var mottattDato: LocalDate? = null,
-        var virkningsTidspunkt: LocalDate? = null,
-        var utvandret: Boolean? = null,
-        var vurdertrygdeavtale: Boolean? = null,
+        //virkningsTidspunkt: LocalDate? = null,
+        @JsonDeserialize(using = LocalDateDeserializer::class)
+        @JsonSerialize(using = LocalDateSerializer::class)
+        var iverksettelsesdato: LocalDate? = null,
+
+        //P3000
         var uttaksgrad: String? = null,
-        var utlandsopphold: List<Utlandsoppholditem>? = null,
-        var sivilstand: Sivilstandkilde? = null,
-        var statsborgerskap: StatsborgerskapItem? = null
+        //P5000
+        var vurdereTrygdeavtale: Boolean? = null,
+
+        var personopplysninger: SkjemaPersonopplysninger? = null,
+
+        //P4000
+        val utland: SkjemaUtland? = null,
+        //P2000
+        var sivilstand: SkjemaFamilieforhold? = null,
+
+        var soknadFraLand: String? = null
+
 )
 
+data class SkjemaPersonopplysninger(
+        //P2000 pkt. 2.2.1.1 land_3 tegn
+        var statsborgerskap: String? = null
+//        //utvandret?
+//        var utvandret: Boolean? = null,
+//        //statsborgeskap
+//        var land: String? = null
+)
+
+//P4000
+data class SkjemaUtland(
+        var utlandsopphold: List<Utlandsoppholditem>? = null,
+        var harOpphold: Boolean? = null
+)
+
+//P4000 - P5000 (for bosted nå) P4000 kan f.eks inneholde kun norge noe pesys ikke vil ha
+//da må vi også sende med data fra P5000.
 data class Utlandsoppholditem(
         var land: String? = null,
+        //2017-05-01T00:00:00+02:00
+        @JsonDeserialize(using = LocalDateDeserializer::class)
+        @JsonSerialize(using = LocalDateSerializer::class)
+        //format pattern yyyy-MM-dd
         var fom: LocalDate? = null,
+        @JsonDeserialize(using = LocalDateDeserializer::class)
+        @JsonSerialize(using = LocalDateSerializer::class)
+        //format pattern yyyy-MM-dd
         var tom: LocalDate? = null,
         var bodd: Boolean? = null,
         var arbeidet: Boolean? = null,
-        var pensjonordningutland: PensjonOrdningUtland? = null,
+        var pensjonsordning: String? = null,
         var utlandPin: String? = null
 )
 
-data class PensjonOrdningUtland(
-        var ordning: String? = null
-)
-
-data class Sivilstandkilde(
-        var sivilstand: String? = null,
-        var fom: LocalDate? = null,
-        var tom: LocalDate? = null,
-        var kilde: String? = null
+//P2000
+data class SkjemaFamilieforhold(
+        //Sivilstand for søker. Må være en gyldig verdi fra T_K_SIVILSTATUS_T:
+        //ENKE, GIFT, GJES, GJPA, GJSA, GLAD, PLAD, REPA,SAMB, SEPA, SEPR, SKIL, SKPA, UGIF.
+        //Pkt p2000 - 2.2.2.1. Familiestatus
+        var valgtSivilstatus: String? = null,
+        @JsonDeserialize(using = LocalDateDeserializer::class)
+        @JsonSerialize(using = LocalDateSerializer::class)
+        //format pattern yyyy-MM-dd
+        var sivilstatusDatoFom: LocalDate? = null
 )

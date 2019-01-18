@@ -26,7 +26,6 @@ class PensjonsinformasjonRestTemplate(val securityTokenExchangeService: Security
                 .rootUri(url)
                 .additionalInterceptors(RequestResponseLoggerInterceptor(), UntToOidcInterceptor(securityTokenExchangeService))
                 //.additionalInterceptors(RequestResponseLoggerInterceptor(), OidcAuthorizationHeaderInterceptor(oidcRequestContextHolder))
-                //.additionalInterceptors(RequestResponseLoggerInterceptor(), OidcAuthorizationHeaderInterceptor(oidcRequestContextHolder))
                 .build().apply {
                     requestFactory = BufferingClientHttpRequestFactory(SimpleClientHttpRequestFactory())
                 }

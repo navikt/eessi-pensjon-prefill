@@ -31,7 +31,7 @@ class ApIRequestTest {
     }
 
     private fun readJsonAndParseToSed(filename: String): String {
-        val p2200path = Paths.get("src/test/resources/json/$filename")
+        val p2200path = Paths.get("src/test/resources/json/nav/$filename")
         val p2200file = String(Files.readAllBytes(p2200path))
         assertTrue(validateJson(p2200file))
         return p2200file
@@ -52,13 +52,13 @@ class ApIRequestTest {
     @Test
     fun `generate request mock payload of SED P2000`() {
         val payload = readJsonAndParseToSed("P2000-NAV.json")
-        //val payload = readJsonAndParseToSed("MOCK-P2000-AP.json")
+        //val payload = readJsonAndParseToSed("P2000-NAV-mockAP.json")
         validateAndPrint(createMockApiRequest("P2000", "P_BUC_01", payload))
     }
 
     @Test
     fun `generate request mock payload of SED P2100`() {
-        val payload = readJsonAndParseToSed("P2100-NAV.json")
+        val payload = readJsonAndParseToSed("P2100-NAV-unfin.json")
         createMockApiRequest("P2100", "P_BUC_02", payload)
     }
 
