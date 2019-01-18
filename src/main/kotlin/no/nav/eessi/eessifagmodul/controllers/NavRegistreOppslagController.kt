@@ -30,7 +30,7 @@ class RegisterOppslagController(private val aktoerregisterService: Aktoerregiste
      * @param aktoerid
      */
     @ApiOperation("henter ut personinformasjon for en aktørId")
-    @GetMapping("/{aktoerid}")
+    @GetMapping("/person/{aktoerid}")
     fun getDocument(@PathVariable("aktoerid", required = true) aktoerid: String): ResponseEntity<Personinformasjon> {
         logger.info("Henter personinformasjon for aktørId: $aktoerid")
 
