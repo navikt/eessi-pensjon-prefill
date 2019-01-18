@@ -15,9 +15,9 @@ class ApIRequestTest {
     private val printout = false
     private val printsed = false
 
-    private fun createMockApiRequest(sedName: String, buc: String, payload: String): ApiController.ApiRequest {
+    private fun createMockApiRequest(sedName: String, buc: String, payload: String): SedController.ApiRequest {
         val items = listOf(InstitusjonItem(country = "NO", institution = "NAVT003"))
-        return ApiController.ApiRequest(
+        return SedController.ApiRequest(
                 institutions = items,
                 sed = sedName,
                 sakId = "01234567890",
@@ -37,7 +37,7 @@ class ApIRequestTest {
         return p2200file
     }
 
-    fun validateAndPrint(req: ApiController.ApiRequest) {
+    fun validateAndPrint(req: SedController.ApiRequest) {
         if (printsed) {
             val json = SED.fromJson(req.payload!!).toJson()
             println(json)

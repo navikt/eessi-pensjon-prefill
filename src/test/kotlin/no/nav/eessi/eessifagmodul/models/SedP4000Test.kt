@@ -2,7 +2,7 @@ package no.nav.eessi.eessifagmodul.models
 
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.whenever
-import no.nav.eessi.eessifagmodul.controllers.ApiController
+import no.nav.eessi.eessifagmodul.controllers.SedController
 import no.nav.eessi.eessifagmodul.prefill.PrefillDataModel
 import no.nav.eessi.eessifagmodul.prefill.PrefillP4000
 import no.nav.eessi.eessifagmodul.prefill.PrefillSED
@@ -58,7 +58,7 @@ class SedP4000Test {
     lateinit var pre4000: PrefillP4000
 
     private lateinit var prefillDataMock: PrefillDataModel
-    private lateinit var apiController: ApiController
+    private lateinit var sedController: SedController
 
     val logger: Logger by lazy { LoggerFactory.getLogger(SedP4000Test::class.java) }
 
@@ -70,7 +70,7 @@ class SedP4000Test {
 
         //mockPrefillService = PrefillService(mockEuxService, mockPrefillSED, rinaActions)
 
-        apiController = ApiController(mockEuxService, mockPrefillService, mockAktoerregisterService, personService)
+        sedController = SedController(mockEuxService, mockPrefillService, mockAktoerregisterService)
         logger.debug("Starting tests.... ...")
     }
 
@@ -115,7 +115,7 @@ class SedP4000Test {
         val payload = mapAnyToJson(trygdetid)
         //logger.debug(payload)
 
-        val req = ApiController.ApiRequest(
+        val req = SedController.ApiRequest(
                 sed = "P4000",
                 sakId = "12231231",
                 euxCaseId = "99191999911",
@@ -126,7 +126,7 @@ class SedP4000Test {
         )
         val json = mapAnyToJson(req)
         assertNotNull(json)
-        val apireq = mapJsonToAny(json, typeRefs<ApiController.ApiRequest>())
+        val apireq = mapJsonToAny(json, typeRefs<SedController.ApiRequest>())
         val payjson = apireq.payload ?: ""
         assertNotNull(payjson)
         assertEquals(payload, payjson)
@@ -152,7 +152,7 @@ class SedP4000Test {
         validateJson(backtojson)
         val payload = mapAnyToJson(obj)
         val items = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
-        val req = ApiController.ApiRequest(
+        val req = SedController.ApiRequest(
                 institutions = items,
                 sed = "P4000",
                 sakId = "12231231",
@@ -174,7 +174,7 @@ class SedP4000Test {
         validateJson(jsonfile)
 
         val items = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
-        val req = ApiController.ApiRequest(
+        val req = SedController.ApiRequest(
                 institutions = items,
                 sed = "P4000",
                 sakId = "12231231",
@@ -189,7 +189,7 @@ class SedP4000Test {
         validateJson(reqjson)
 
         whenever(mockAktoerregisterService.hentGjeldendeNorskIdentForAktorId(ArgumentMatchers.anyString())).thenReturn("12345")
-        val data = apiController.buildPrefillDataModelConfirm(req)
+        val data = sedController.buildPrefillDataModelConfirm(req)
 
         assertNotNull(data)
         assertNotNull(data.getPartSEDasJson("P4000"))
@@ -203,7 +203,7 @@ class SedP4000Test {
 
         whenever(mockPrefillService.prefillSed(any())).thenReturn(resultData)
 
-        val result = apiController.confirmDocument(req)
+        val result = sedController.confirmDocument(req)
 
         //val jsondata = result.toJson()
         assertNotNull(result)

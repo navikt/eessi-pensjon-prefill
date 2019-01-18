@@ -39,7 +39,7 @@ class LandkoderTest {
 
     @Test
     fun `hente liste over land`() {
-        val list = service.hentLandkoer2()
+        val list = service.hentLandkode2()
         assertNotNull(list)
         assertEquals(31, list.size)
     }

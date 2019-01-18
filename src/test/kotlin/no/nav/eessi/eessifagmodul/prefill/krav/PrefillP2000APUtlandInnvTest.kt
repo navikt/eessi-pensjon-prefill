@@ -1,6 +1,6 @@
 package no.nav.eessi.eessifagmodul.prefill.krav
 
-import no.nav.eessi.eessifagmodul.controllers.ApiController
+import no.nav.eessi.eessifagmodul.controllers.SedController
 import no.nav.eessi.eessifagmodul.models.IkkeGyldigKallException
 import no.nav.eessi.eessifagmodul.models.InstitusjonItem
 import no.nav.eessi.eessifagmodul.models.Nav
@@ -133,9 +133,9 @@ class PrefillP2000APUtlandInnvTest : AbstractMockKravPensionHelper() {
 
     }
 
-    private fun createMockApiRequest(sedName: String, buc: String, payload: String): ApiController.ApiRequest {
+    private fun createMockApiRequest(sedName: String, buc: String, payload: String): SedController.ApiRequest {
         val items = listOf(InstitusjonItem(country = "NO", institution = "NAVT003"))
-        return ApiController.ApiRequest(
+        return SedController.ApiRequest(
                 institutions = items,
                 sed = sedName,
                 sakId = "01234567890",
@@ -148,7 +148,7 @@ class PrefillP2000APUtlandInnvTest : AbstractMockKravPensionHelper() {
         )
     }
 
-    fun validateAndPrint(req: ApiController.ApiRequest, printout: Boolean = true) {
+    fun validateAndPrint(req: SedController.ApiRequest, printout: Boolean = true) {
         if (printout) {
             val json = mapAnyToJson(req)
             assertNotNull(json)

@@ -4,41 +4,25 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import io.swagger.annotations.ApiOperation
 import no.nav.eessi.eessifagmodul.models.*
 import no.nav.eessi.eessifagmodul.prefill.PrefillDataModel
-import no.nav.eessi.eessifagmodul.services.LandkodeService
 import no.nav.eessi.eessifagmodul.services.PrefillService
 import no.nav.eessi.eessifagmodul.services.aktoerregister.AktoerregisterService
 import no.nav.eessi.eessifagmodul.services.eux.EuxService
 import no.nav.eessi.eessifagmodul.services.personv3.PersonV3Service
 import no.nav.security.oidc.api.Protected
-import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonResponse
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
-import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.util.*
 
-private val logger = LoggerFactory.getLogger(ApiController::class.java)
+private val logger = LoggerFactory.getLogger(SedController::class.java)
 
 @Protected
 @RestController
-@RequestMapping("/api")
-class ApiController(private val euxService: EuxService,
+@RequestMapping("/sed")
+class SedController(private val euxService: EuxService,
                     private val prefillService: PrefillService,
-                    private val aktoerregisterService: AktoerregisterService,
-                    private val personService: PersonV3Service) {
+                    private val aktoerregisterService: AktoerregisterService) {
 
-    @Autowired
-    //TODO hører denne til her eller egen controller?
-    lateinit var landkodeService: LandkodeService
-
-    @ApiOperation("Henter liste over landkoder av ISO Alpha2 standard")
-    @PostMapping("/landkoder")
-    //TODO hører denne til her eller egen controller?
-    fun getLandKoder(): List<String> {
-        return landkodeService.hentLandkoer2()
-    }
 
     @ApiOperation("viser en oppsumering av SED prefill. Før innsending til EUX Basis")
     @PostMapping("/data/personinfo")
@@ -58,7 +42,7 @@ class ApiController(private val euxService: EuxService,
 
 
     @ApiOperation("viser en oppsumering av SED prefill. Før innsending til EUX Basis")
-    @PostMapping("/sed/confirm", produces = [MediaType.APPLICATION_JSON_VALUE])
+    @PostMapping("/confirm", produces = [MediaType.APPLICATION_JSON_VALUE])
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     fun confirmDocument(@RequestBody request: ApiRequest): SED {
         val confirmsed = prefillService.prefillSed(buildPrefillDataModelConfirm(request)).sed
@@ -75,7 +59,7 @@ class ApiController(private val euxService: EuxService,
     }
 
     @ApiOperation("sendSed send current sed")
-    @PostMapping("/sed/send")
+    @PostMapping("/send")
     fun sendSed(@RequestBody request: ApiRequest): Boolean {
         val euxCaseId = request.euxCaseId ?: throw IkkeGyldigKallException("Mangler euxCaseID (RINANR)")
         val sed = request.sed ?: throw IkkeGyldigKallException("Mangler SED")
@@ -85,7 +69,7 @@ class ApiController(private val euxService: EuxService,
     }
 
     @ApiOperation("henter ut en SED fra et eksisterende Rina document. krever unik dokumentid fra valgt SED")
-    @GetMapping("/sed/{rinanr}/{documentid}")
+    @GetMapping("/{rinanr}/{documentid}")
     fun getDocument(@PathVariable("rinanr", required = true) rinanr: String,
                     @PathVariable("documentid", required = true) documentid: String): SED {
         return euxService.fetchSEDfromExistingRinaCase(rinanr, documentid)
@@ -93,7 +77,7 @@ class ApiController(private val euxService: EuxService,
     }
 
     @ApiOperation("sletter SED fra et eksisterende Rina document. krever unik dokumentid fra valgt SED")
-    @DeleteMapping("/sed/{rinanr}/{documentid}")
+    @DeleteMapping("/{rinanr}/{documentid}")
     fun deleteDocument(@PathVariable("rinanr", required = true) rinanr: String,
                        @PathVariable("documentid", required = true) sed: String,
                        @PathVariable("documentid", required = true) documentid: String) {
@@ -102,7 +86,7 @@ class ApiController(private val euxService: EuxService,
     }
 
     @ApiOperation("legge til SED på et eksisterende Rina document. kjører preutfylling")
-    @PostMapping("/sed/add")
+    @PostMapping("/add")
     fun addDocument(@RequestBody request: ApiRequest): String {
         return prefillService.prefillAndAddSedOnExistingCase(buildPrefillDataModelOnExisting(request)).euxCaseID
 
@@ -116,39 +100,6 @@ class ApiController(private val euxService: EuxService,
 
     }
 
-    /**
-     * Kaller AktørRegisteret , bytter aktørId mot Fnr/Dnr ,
-     * deretter kalles PersonV3 hvor personinformasjon hentes
-     *
-     * @param aktoerid
-     */
-    @ApiOperation("henter ut personinformasjon for en aktørId")
-    @GetMapping("/{aktoerid}")
-    fun getDocument(@PathVariable("aktoerid", required = true) aktoerid: String): ResponseEntity<Personinformasjon> {
-        logger.info("Henter personinformasjon for aktørId: $aktoerid")
-
-        val norskIdent: String
-        var personresp = HentPersonResponse()
-
-        try {
-            norskIdent = aktoerregisterService.hentGjeldendeNorskIdentForAktorId(aktoerid)
-            personresp = personService.hentPerson(norskIdent)
-
-        } catch (are: AktoerregisterException) {
-            logger.error("Kall til Akørregisteret med aktørId: $aktoerid feilet på grunn av: " + are.message)
-            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(AktoerregisterException::class.simpleName)
-        } catch (arife: AktoerregisterIkkeFunnetException) {
-            logger.error("Kall til Akørregisteret med aktørId: $aktoerid feilet på grunn av: " + arife.message)
-            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(AktoerregisterException::class.simpleName)
-        } catch (sbe: PersonV3SikkerhetsbegrensningException) {
-            logger.error("Kall til PersonV3 med aktørId: $aktoerid feilet på grunn av sikkerhetsbegrensning")
-            ResponseEntity.status(HttpStatus.FORBIDDEN).body(PersonV3SikkerhetsbegrensningException::class.simpleName)
-        } catch (ife: PersonV3IkkeFunnetException) {
-            logger.error("Kall til PersonV3 med aktørId: $aktoerid feilet på grunn av person ikke funnet")
-            ResponseEntity.status(HttpStatus.NOT_FOUND).body(PersonV3IkkeFunnetException::class.simpleName)
-        }
-        return ResponseEntity.ok(Personinformasjon(personresp.person.personnavn.sammensattNavn))
-    }
     //validatate request and convert to PrefillDataModel
     fun buildPrefillDataModelOnExisting(request: ApiRequest): PrefillDataModel {
         return when {

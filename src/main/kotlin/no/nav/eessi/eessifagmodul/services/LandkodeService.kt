@@ -3,12 +3,13 @@ package no.nav.eessi.eessifagmodul.services
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
+import org.springframework.stereotype.Service
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.util.*
 
 
-@Component
+@Service
 class LandkodeService {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(LandkodeService::class.java) }
@@ -45,7 +46,7 @@ class LandkodeService {
         }
     }
 
-    fun hentLandkoer2(): List<String> {
+    fun hentLandkode2(): List<String> {
         val landlist: MutableList<Landkode> = mutableListOf()
         println("Map landKodeTable : $landKodeTable")
         landKodeTable.keys.forEach {

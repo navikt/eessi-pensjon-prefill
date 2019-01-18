@@ -166,7 +166,7 @@ class ExperimentController {
     }
 
     //TODO remove when done!
-    private fun mockSED(request: ApiController.ApiRequest): SED {
+    private fun mockSED(request: SedController.ApiRequest): SED {
         val sed: SED?
         when {
             request.payload == null -> throw IkkeGyldigKallException("Mangler PayLoad")
@@ -181,7 +181,7 @@ class ExperimentController {
 
     //TODO remove when done!! test and send existing sed json to rina
     @PostMapping("/testingsed")
-    fun testingDocument(@RequestBody request: ApiController.ApiRequest): String {
+    fun testingDocument(@RequestBody request: SedController.ApiRequest): String {
         //TODO remove when done!
         if (!checkNotNull(request.mockSED)) {
             throw IkkeGyldigKallException("Ikke MOCK!")
