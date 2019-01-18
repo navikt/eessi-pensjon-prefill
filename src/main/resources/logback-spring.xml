@@ -10,7 +10,7 @@
             </encoder>
         </appender>
 
-        <logger name="no.nav" level="INFO"/>
+        <logger name="no.nav" level="DEBUG"/>
 
         <root level="info">
             <appender-ref ref="stdout_json"/>
