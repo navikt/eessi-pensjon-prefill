@@ -32,3 +32,9 @@ class AktoerregisterIkkeFunnetException(message: String?): Exception(message)
 
 @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
 class AktoerregisterException(message: String) : Exception(message)
+
+@ResponseStatus(value = HttpStatus.SERVICE_UNAVAILABLE)
+class PensjoninformasjonException(message: String) : Exception(message)
+
+@ResponseStatus(value = HttpStatus.SERVICE_UNAVAILABLE)
+class SystembrukerTokenException(message: String) : Exception(message)

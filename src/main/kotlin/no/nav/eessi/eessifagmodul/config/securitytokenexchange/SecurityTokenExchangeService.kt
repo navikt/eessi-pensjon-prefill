@@ -3,6 +3,7 @@ package no.nav.eessi.eessifagmodul.config.securitytokenexchange
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import net.jodah.expiringmap.ExpiringMap
+import no.nav.eessi.eessifagmodul.models.SystembrukerTokenException
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpMethod
 import org.springframework.http.ResponseEntity
@@ -40,24 +41,29 @@ class SecurityTokenExchangeService(val securityTokenExchangeBasicAuthRestTemplat
             return checkNotNull(token)
         }
 
-        val uri = UriComponentsBuilder.fromPath("/")
-                .queryParam("grant_type", "client_credentials")
-                .queryParam("scope", "openid")
-                .build().toUriString()
+        try {
+            val uri = UriComponentsBuilder.fromPath("/")
+                    .queryParam("grant_type", "client_credentials")
+                    .queryParam("scope", "openid")
+                    .build().toUriString()
 
-        logger.debug("kobler opp mot systembruker token")
-        val responseEntity = securityTokenExchangeBasicAuthRestTemplate.exchange(uri, HttpMethod.GET, null, SecurityTokenResponse::class.java)
-        validateResponse(responseEntity)
-        val accessToken = responseEntity.body!!.accessToken
+            logger.debug("kobler opp mot systembruker token")
+            val responseEntity = securityTokenExchangeBasicAuthRestTemplate.exchange(uri, HttpMethod.GET, null, SecurityTokenResponse::class.java)
+            validateResponse(responseEntity)
+            val accessToken = responseEntity.body!!.accessToken
 
-        val exp = extractExpirationField(accessToken)
-        var expiresInSeconds = Duration.between(LocalDateTime.now(), exp).seconds
-        // Make the cache-entry expire 30 seconds before the token is no longer valid, to be sure not to use any invalid tokens
-        expiresInSeconds = expiresInSeconds.minus(30)
+            val exp = extractExpirationField(accessToken)
+            var expiresInSeconds = Duration.between(LocalDateTime.now(), exp).seconds
+            // Make the cache-entry expire 30 seconds before the token is no longer valid, to be sure not to use any invalid tokens
+            expiresInSeconds = expiresInSeconds.minus(30)
 
-        tokenCache.put("token", accessToken, expiresInSeconds, TimeUnit.SECONDS)
-        logger.debug("Added token to cache, expires in $expiresInSeconds seconds")
-        return accessToken
+            tokenCache.put("token", accessToken, expiresInSeconds, TimeUnit.SECONDS)
+            logger.debug("Added token to cache, expires in $expiresInSeconds seconds")
+            return accessToken
+        } catch (ex: Exception) {
+            logger.error("Feil ved tildeling av token til Systembruker", ex)
+            throw SystembrukerTokenException(ex.message!!)
+        }
     }
 
     private fun validateResponse(responseEntity: ResponseEntity<SecurityTokenResponse>) {
