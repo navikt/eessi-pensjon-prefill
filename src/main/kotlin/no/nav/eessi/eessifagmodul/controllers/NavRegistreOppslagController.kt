@@ -11,8 +11,6 @@ import org.springframework.web.bind.annotation.*
 
 private val logger = LoggerFactory.getLogger(RegisterOppslagController::class.java)
 
-@Protected
-@RestController
 
 /**
  * Controller for å kalle NAV interne registre
@@ -20,6 +18,8 @@ private val logger = LoggerFactory.getLogger(RegisterOppslagController::class.ja
  * @property aktoerregisterService
  * @property personService
  */
+@Protected
+@RestController
 class RegisterOppslagController(private val aktoerregisterService: AktoerregisterService,
                                 private val personService: PersonV3Service) {
 
