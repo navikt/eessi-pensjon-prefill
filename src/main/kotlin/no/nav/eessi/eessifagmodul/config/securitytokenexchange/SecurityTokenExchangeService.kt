@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import net.jodah.expiringmap.ExpiringMap
 import no.nav.eessi.eessifagmodul.models.SystembrukerTokenException
+import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
+import no.nav.eessi.eessifagmodul.utils.typeRef
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpMethod
 import org.springframework.http.ResponseEntity
@@ -48,10 +50,10 @@ class SecurityTokenExchangeService(val securityTokenExchangeBasicAuthRestTemplat
                     .build().toUriString()
 
             logger.debug("kobler opp mot systembruker token")
-            val responseEntity = securityTokenExchangeBasicAuthRestTemplate.exchange(uri, HttpMethod.GET, null, SecurityTokenResponse::class.java)
+            val responseEntity = securityTokenExchangeBasicAuthRestTemplate.exchange(uri, HttpMethod.GET, null, typeRef<SecurityTokenResponse>())
+            logger.info("SecurityTokenResponse ${mapAnyToJson(responseEntity)} ")
             validateResponse(responseEntity)
             val accessToken = responseEntity.body!!.accessToken
-
             val exp = extractExpirationField(accessToken)
             var expiresInSeconds = Duration.between(LocalDateTime.now(), exp).seconds
             // Make the cache-entry expire 30 seconds before the token is no longer valid, to be sure not to use any invalid tokens
@@ -61,7 +63,7 @@ class SecurityTokenExchangeService(val securityTokenExchangeBasicAuthRestTemplat
             logger.debug("Added token to cache, expires in $expiresInSeconds seconds")
             return accessToken
         } catch (ex: Exception) {
-            logger.error("Feil ved tildeling av token til Systembruker", ex)
+            logger.error("Feil ved tildeling av token til Systembruker: ${ex.message}", ex)
             throw SystembrukerTokenException(ex.message!!)
         }
     }

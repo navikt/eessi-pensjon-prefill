@@ -8,7 +8,6 @@ import no.nav.eessi.eessifagmodul.prefill.PrefillDataModel
 import no.nav.eessi.eessifagmodul.prefill.PrefillSED
 import no.nav.eessi.eessifagmodul.services.eux.EuxService
 import no.nav.eessi.eessifagmodul.services.eux.RinaActions
-import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
 import java.util.*
 
@@ -39,8 +38,7 @@ class PrefillService(private val euxService: EuxService, private val prefillSED:
     /**
      * service function to call eux and then return model with euxCaseId (rinaID back)
      */
-    @Async
-    fun prefillAndCreateSedOnNewCase(dataModel: PrefillDataModel): PrefillDataModel {
+    fun prefillAndCreateSedOnNewCaseOLD(dataModel: PrefillDataModel): PrefillDataModel {
 
         val data = prefillSed(dataModel)
         val sed = data.sed
@@ -57,7 +55,7 @@ class PrefillService(private val euxService: EuxService, private val prefillSED:
     /**
      * service function to call eux and then return model with euxCaseId (rinaID back)
      */
-    fun prefillAndCreateSedOnNewCaseOLD(dataModel: PrefillDataModel): PrefillDataModel {
+    fun prefillAndCreateSedOnNewCase(dataModel: PrefillDataModel): PrefillDataModel {
 
         val data = prefillSed(dataModel)
         val sed = data.sed

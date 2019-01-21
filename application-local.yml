@@ -4,7 +4,7 @@
 ## - OPENAM_SECRET
 
 euxbasis.v1:
-  url: 'https://eux-app.nais.preprod.local/cpi'
+  url: 'https://eux-app-t8.nais.preprod.local/cpi'
 #  url: 'http://localhost:9090/cpi'
 
 virksomhet.person.v3:
@@ -19,6 +19,8 @@ pensjonsinformasjon:
     v1:
       url: 'https://wasapp-t5.adeo.no/pensjon-ws/api/pensjonsinformasjon/v1'
 
+eessi-security-token-service:
+  url: 'https://security-token-service-t10.nais.preprod.local/rest/v1/sts/token'
 
 srveessipensjon:
   username: '${SRVEESSIPENSJON_USERNAME}'

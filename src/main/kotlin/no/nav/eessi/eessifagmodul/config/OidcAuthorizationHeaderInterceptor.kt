@@ -9,9 +9,9 @@ import org.springframework.http.client.ClientHttpRequestInterceptor
 import org.springframework.http.client.ClientHttpResponse
 
 
-private val logger = LoggerFactory.getLogger(OidcAuthorizationHeaderInterceptor::class.java)
-
 class OidcAuthorizationHeaderInterceptor(private val oidcRequestContextHolder: OIDCRequestContextHolder) : ClientHttpRequestInterceptor {
+    private val logger = LoggerFactory.getLogger(OidcAuthorizationHeaderInterceptor::class.java)
+
     override fun intercept(request: HttpRequest, body: ByteArray, execution: ClientHttpRequestExecution): ClientHttpResponse {
         if (request.headers[HttpHeaders.AUTHORIZATION] == null) {
             val oidcToken = oidcRequestContextHolder.oidcValidationContext.getToken("oidc").idToken

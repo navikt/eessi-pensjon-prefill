@@ -7,7 +7,6 @@ import no.nav.eessi.eessifagmodul.prefill.PrefillDataModel
 import no.nav.eessi.eessifagmodul.services.PrefillService
 import no.nav.eessi.eessifagmodul.services.aktoerregister.AktoerregisterService
 import no.nav.eessi.eessifagmodul.services.eux.EuxService
-import no.nav.eessi.eessifagmodul.services.personv3.PersonV3Service
 import no.nav.security.oidc.api.Protected
 import org.slf4j.LoggerFactory
 import org.springframework.http.MediaType
@@ -29,7 +28,6 @@ class SedController(private val euxService: EuxService,
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     fun hentPersonInformasjon(@RequestBody request: ApiRequest): Nav? {
         val aktorid = request.aktoerId ?: throw IkkeGyldigKallException("Ingen gyldig aktoerId")
-
         val dataModel = PrefillDataModel().apply {
             sed = SED.create("P2000")
             penSaksnummer = ""
@@ -45,17 +43,17 @@ class SedController(private val euxService: EuxService,
     @PostMapping("/confirm", produces = [MediaType.APPLICATION_JSON_VALUE])
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     fun confirmDocument(@RequestBody request: ApiRequest): SED {
-        val confirmsed = prefillService.prefillSed(buildPrefillDataModelConfirm(request)).sed
-        //preutfylling av P2000 testing
-        //TODO fjernes etter endt testing
-        if (confirmsed.sed == "P2000") {
-            val p2000 = SED.create("P2000")
-            p2000.pensjon = confirmsed.pensjon
-            p2000.nav = Nav(krav = confirmsed.nav?.krav)
-            p2000.print()
-            return p2000
-        }
-        return confirmsed
+        return prefillService.prefillSed(buildPrefillDataModelConfirm(request)).sed
+//        //preutfylling av P2000 testing
+//        //TODO fjernes etter endt testing
+//        if (confirmsed.sed == "P2000") {
+//            val p2000 = SED.create("P2000")
+//            p2000.pensjon = confirmsed.pensjon
+//            p2000.nav = Nav(krav = confirmsed.nav?.krav)
+//            p2000.print()
+//            return p2000
+//        }
+//        return confirmsed
     }
 
     @ApiOperation("sendSed send current sed")

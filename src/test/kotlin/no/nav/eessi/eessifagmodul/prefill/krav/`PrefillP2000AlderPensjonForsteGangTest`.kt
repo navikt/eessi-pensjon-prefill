@@ -19,8 +19,9 @@ import kotlin.test.assertNotNull
 
 
 @RunWith(MockitoJUnitRunner::class)
-class `PrefillP2000-AP-ForsteGangTest` : AbstractMockKravPensionHelper() {
+class `PrefillP2000AlderPensjonUtlandForsteGangTest` : AbstractMockKravPensionHelper() {
 
+    //mock familie
     override fun creareMockPersonDataTPS(): Set<PersonDataFromTPS.MockTPS>? {
         return setOf(
                 PersonDataFromTPS.MockTPS("Person-11000-GIFT.json", getFakePersonFnr(), PersonDataFromTPS.MockTPS.TPSType.PERSON),
@@ -28,6 +29,7 @@ class `PrefillP2000-AP-ForsteGangTest` : AbstractMockKravPensionHelper() {
         )
     }
 
+    //Generere fakePersonFnr nr
     override fun createFakePersonFnr(): String {
         if (personFnr.isNullOrBlank()) {
             personFnr = PersonDataFromTPS.generateRandomFnr(67)
@@ -36,6 +38,7 @@ class `PrefillP2000-AP-ForsteGangTest` : AbstractMockKravPensionHelper() {
         //return PersonDataFromTPS.generateRandomFnr(67)
     }
 
+    //Pesys Persjoninformasjon data
     override fun mockPesysTestfilepath(): Pair<String, String> {
         return Pair("P2000", "AP_FORSTEG_BH.xml")
     }
@@ -44,6 +47,7 @@ class `PrefillP2000-AP-ForsteGangTest` : AbstractMockKravPensionHelper() {
         return PrefillP2000(prefillNav, personTPS, pensionDataFromPEN)
     }
 
+    //Mock persondata (P4000, persondata fra EP11)
     override fun createPayload(prefillData: PrefillDataModel) {
         prefillData.penSaksnummer = "22580170"
         prefillData.personNr = getFakePersonFnr()
@@ -72,7 +76,7 @@ class `PrefillP2000-AP-ForsteGangTest` : AbstractMockKravPensionHelper() {
     }
 
     @Test
-    fun `Utfylling alderpensjon uten kravhistorikk Kunutland uten virkningstidspunkt`() {
+    fun `Korrekt ttfylling alderpensjon uten kravhistorikk KunUtland uten virkningstidspunkt`() {
         val P2000 = prefill.prefill(prefillData)
 
         val P2000pensjon = SED.create("P2000")
@@ -88,9 +92,9 @@ class `PrefillP2000-AP-ForsteGangTest` : AbstractMockKravPensionHelper() {
         assertEquals(67, navfnr.getAge())
         val yearnow = LocalDate.now().year
         val bdate = yearnow - navfnr.getAge()
+
         Assert.assertEquals("" + bdate, navfnr.get4DigitBirthYear())
         assertEquals("2018-05-31", sed.nav?.krav?.dato)
-
     }
 
 }

@@ -5,14 +5,12 @@ import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.whenever
 import no.nav.eessi.eessifagmodul.models.*
 import no.nav.eessi.eessifagmodul.prefill.PrefillDataModel
-import no.nav.eessi.eessifagmodul.prefill.PrefillFactory
 import no.nav.eessi.eessifagmodul.prefill.PrefillSED
 import no.nav.eessi.eessifagmodul.services.LandkodeService
 import no.nav.eessi.eessifagmodul.services.PrefillService
 import no.nav.eessi.eessifagmodul.services.aktoerregister.AktoerregisterService
 import no.nav.eessi.eessifagmodul.services.eux.EuxService
 import no.nav.eessi.eessifagmodul.services.eux.RinaActions
-import no.nav.eessi.eessifagmodul.services.personv3.PersonV3Service
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -100,8 +98,8 @@ class SedControllerTest {
         assertEquals("12345", utfyllMock.personNr)
 
         whenever(mockPrefillSED.prefill(any())).thenReturn(utfyllMock)
-        //whenever(mockEuxService.createCaseAndDocument(any(), anyString(), anyString(), anyString(), anyString(), anyString())).thenReturn(mockResponse)
-        whenever(mockEuxService.createCaseWithDocument(any(), any(), any())).thenReturn(mockResponse)
+        whenever(mockEuxService.createCaseAndDocument(any(), anyString(), anyString(), anyString(), anyString(), anyString())).thenReturn(mockResponse)
+        //whenever(mockEuxService.createCaseWithDocument(any(), any(), any())).thenReturn(mockResponse)
         whenever(mockRinaActions.canCreate(anyString(), anyString())).thenReturn(true)
         whenever(mockRinaActions.canUpdate(utfyllMock.getSEDid(), mockResponse)).thenReturn(true)
 

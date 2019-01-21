@@ -1,9 +1,12 @@
 package no.nav.eessi.eessifagmodul.config.securitytokenexchange
 
 import no.nav.eessi.eessifagmodul.config.RequestResponseLoggerInterceptor
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.web.client.RestTemplateBuilder
 import org.springframework.context.annotation.Bean
+import org.springframework.http.client.BufferingClientHttpRequestFactory
+import org.springframework.http.client.SimpleClientHttpRequestFactory
 import org.springframework.http.client.support.BasicAuthenticationInterceptor
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestTemplate
@@ -11,7 +14,10 @@ import org.springframework.web.client.RestTemplate
 @Component
 class SecurityTokenExchangeRestTemplate {
 
-    @Value("\${security-token-service-token.url:https://security-token-service.nais.preprod.local/rest/v1/sts/token}")
+    private val logger = LoggerFactory.getLogger(SecurityTokenExchangeRestTemplate::class.java)
+
+    //:https://security-token-service.nais.preprod.local/rest/v1/sts/token
+    @Value("\${eessi-security-token-service.url}")
     lateinit var baseUrl: String
 
     @Value("\${srveessipensjon.username}")
@@ -22,10 +28,13 @@ class SecurityTokenExchangeRestTemplate {
 
     @Bean
     fun securityTokenExchangeBasicAuthRestTemplate(templateBuilder: RestTemplateBuilder): RestTemplate {
+        logger.info("Oppretter RestTemplate for: $baseUrl")
         return templateBuilder
                 .rootUri(baseUrl)
                 .additionalInterceptors(RequestResponseLoggerInterceptor())
                 .additionalInterceptors(BasicAuthenticationInterceptor(username, password))
-                .build()
+                .build().apply {
+                    requestFactory = BufferingClientHttpRequestFactory(SimpleClientHttpRequestFactory())
+                }
     }
 }

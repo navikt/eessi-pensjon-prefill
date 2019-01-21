@@ -114,8 +114,8 @@ class PrefillServiceTest {
 
         whenever(mockPrefillSED.prefill(any())).thenReturn(resultData)
         whenever(mockRinaActions.canUpdate(any() ,any() )).thenReturn(true)
-        //whenever(mockEuxService.createCaseAndDocument(any(), any(), any(),any(),any(),any())).thenReturn(dataModel.euxCaseID)
-        whenever(mockEuxService.createCaseWithDocument(any(), any(), any())).thenReturn(dataModel.euxCaseID)
+        whenever(mockEuxService.createCaseAndDocument(any(), any(), any(), any(), any(), any())).thenReturn(dataModel.euxCaseID)
+        //whenever(mockEuxService.createCaseWithDocument(any(), any(), any())).thenReturn(dataModel.euxCaseID)
 
         val result = prefillService.prefillAndCreateSedOnNewCase(resultData)
         assertEquals("{\"euxcaseid\":\"1234567890\"}", result.euxCaseID)
@@ -132,8 +132,8 @@ class PrefillServiceTest {
 
         whenever(mockPrefillSED.prefill(any())).thenReturn(resultData)
         whenever(mockRinaActions.canUpdate(any() ,any() )).thenReturn(false)
-        //whenever(mockEuxService.createCaseAndDocument(any(), any(), any(),any(),any(),any())).thenReturn(dataModel.euxCaseID)
-        whenever(mockEuxService.createCaseWithDocument(any(), any(), any())).thenReturn(dataModel.euxCaseID)
+        whenever(mockEuxService.createCaseAndDocument(any(), any(), any(), any(), any(), any())).thenReturn(dataModel.euxCaseID)
+        //whenever(mockEuxService.createCaseWithDocument(any(), any(), any())).thenReturn(dataModel.euxCaseID)
         prefillService.prefillAndCreateSedOnNewCase(resultData)
 
     }

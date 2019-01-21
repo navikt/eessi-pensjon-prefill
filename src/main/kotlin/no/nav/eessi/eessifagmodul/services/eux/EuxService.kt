@@ -13,6 +13,7 @@ import org.springframework.web.client.RestTemplate
 import org.springframework.web.util.UriComponentsBuilder
 import java.io.IOException
 import java.net.UnknownHostException
+import javax.naming.ServiceUnavailableException
 
 private val logger = LoggerFactory.getLogger(EuxService::class.java)
 
@@ -229,6 +230,7 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
     /**
      *  An simplified interface for creating a case with an initial document without attachment
      */
+    @Deprecated(message = "Søttes ikke lenger av aux", replaceWith = ReplaceWith("createCaseAndDocument"))
     fun createCaseWithDocument(sed: SED, bucType: String, mottaker: String): String {
 
         val builder = UriComponentsBuilder.fromPath("/CreateCaseWithDocument")
@@ -252,6 +254,19 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
         return response.body
                 ?: throw RinaCasenrIkkeMottattException("Ikke mottatt RINA casenr, feiler ved opprettelse av BUC og SED")
 
+    }
+
+    /**
+     * Call to EUX-app to get list over mal/template for selected Bucid
+     */
+    fun getAvailableDocumentTemplate(euxCaseId: String, sedType: SEDType?): String {
+        val builder = UriComponentsBuilder.fromPath("/TilgjengeligDokumentMal")
+                .queryParam("RINASaksnummer", euxCaseId)
+                .queryParam("SEDType", sedType ?: "")
+
+        val httpEntity = HttpEntity("")
+        val response = euxOidcRestTemplate.exchange(builder.toUriString(), HttpMethod.GET, httpEntity, typeRef<String>())
+        return response.body ?: throw ServiceUnavailableException("Mangler svar fra EUX")
     }
 
     /**

@@ -17,6 +17,7 @@ import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentGeografiskTilknytningR
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentGeografiskTilknytningResponse
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonRequest
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonResponse
+import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
@@ -24,6 +25,7 @@ private val logger = LoggerFactory.getLogger(SedController::class.java)
 
 @Component
 class PersonV3Service(val service: PersonV3, val oidcRequestContextHolder: OIDCRequestContextHolder) {
+    private val logger: Logger by lazy { LoggerFactory.getLogger(PersonV3Service::class.java) }
 
     private val hentperson_teller_navn = "eessipensjon_fagmodul.hentperson"
     private val hentperson_teller_type_vellykkede = counter(hentperson_teller_navn, "vellykkede")
@@ -34,6 +36,7 @@ class PersonV3Service(val service: PersonV3, val oidcRequestContextHolder: OIDCR
     }
 
     fun hentPerson(fnr: String): HentPersonResponse {
+        logger.debug("Henter person fra PersonV3Service")
         val token = oidcRequestContextHolder.oidcValidationContext.getToken("oidc")
 
         configureRequestSamlTokenOnBehalfOfOidc(service, token.idToken)
@@ -48,7 +51,7 @@ class PersonV3Service(val service: PersonV3, val oidcRequestContextHolder: OIDCR
             ))
         }
         try {
-            logger.info("Kaller PersonV3.hentPerson")
+            logger.info("Kaller PersonV3.hentPerson service")
             val resp = service.hentPerson(request)
             hentperson_teller_type_vellykkede.increment()
             return resp
