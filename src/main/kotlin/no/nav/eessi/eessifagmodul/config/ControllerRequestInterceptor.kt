@@ -1,6 +1,5 @@
 package no.nav.eessi.eessifagmodul.config
 
-import no.nav.eessi.eessifagmodul.controllers.SedController
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter
@@ -13,7 +12,7 @@ import javax.servlet.http.HttpServletResponse
 @Component
 class ControllerRequestInterceptor : HandlerInterceptorAdapter() {
 
-    private val logger = LoggerFactory.getLogger(SedController::class.java)
+    private val logger = LoggerFactory.getLogger(ControllerRequestInterceptor::class.java)
 
     override fun preHandle(request: HttpServletRequest, response: HttpServletResponse, handler: Any): Boolean {
         //logger.info("Oppretter tidlig preHandler")

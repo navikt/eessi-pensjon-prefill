@@ -3,7 +3,6 @@ package no.nav.eessi.eessifagmodul.services.personv3
 import io.micrometer.core.instrument.Counter
 import io.micrometer.core.instrument.Metrics
 import no.nav.eessi.eessifagmodul.config.sts.configureRequestSamlTokenOnBehalfOfOidc
-import no.nav.eessi.eessifagmodul.controllers.SedController
 import no.nav.eessi.eessifagmodul.models.PersonV3IkkeFunnetException
 import no.nav.eessi.eessifagmodul.models.PersonV3SikkerhetsbegrensningException
 import no.nav.security.oidc.context.OIDCRequestContextHolder
@@ -20,7 +19,7 @@ import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonResponse
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
-private val logger = LoggerFactory.getLogger(SedController::class.java)
+private val logger = LoggerFactory.getLogger(PersonV3Service::class.java)
 
 @Component
 class PersonV3Service(val service: PersonV3, val oidcRequestContextHolder: OIDCRequestContextHolder) {
