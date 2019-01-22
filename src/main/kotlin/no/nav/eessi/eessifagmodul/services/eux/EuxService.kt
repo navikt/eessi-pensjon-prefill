@@ -210,11 +210,12 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
                 .queryParam("KorrelasjonsID", korrelasjonID)
 
         val map: MultiValueMap<String, Any> = LinkedMultiValueMap()
-        val document = object : ByteArrayResource(sed.toJson().toByteArray()) {
-            override fun getFilename(): String? {
-                return "document"
-            }
-        }
+        val document = getFileAsResource(sed.toJson().toByteArray(), "document")
+//        val document = object : ByteArrayResource(sed.toJson().toByteArray()) {
+//            override fun getFilename(): String? {
+//                return "document"
+//            }
+//        }
         map.add("document", document)
         map.add("attachment", null)
 
@@ -223,9 +224,18 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
 
         val httpEntity = HttpEntity(map, headers)
 
-        logger.info("createCaseAndDocument KorrelasjonsID : {}", korrelasjonID)
-        val response = euxOidcRestTemplate.exchange(builder.toUriString(), HttpMethod.POST, httpEntity, String::class.java)
-        return response.body ?: throw RinaCasenrIkkeMottattException("Ikke mottatt RINA casenr, feiler ved opprettelse av BUC og SED")
+        try {
+            logger.info("Prøver å kontakte EUX /OpprettBuCogSED med KorrelasjonsID : {}", korrelasjonID)
+            val response = euxOidcRestTemplate.exchange(builder.toUriString(), HttpMethod.POST, httpEntity, String::class.java)
+            val euxCaseId = response.body
+                    ?: throw RinaCasenrIkkeMottattException("Ikke mottatt RINA casenr, feiler ved opprettelse av BUC og SED")
+            getCounter("OPPRETTBUCOGSEDOK").increment()
+            return euxCaseId
+        } catch (ex: Exception) {
+            logger.error(ex.message)
+            getCounter("OPPRETTBUCOGSEDFEIL").increment()
+            throw SedDokumentIkkeOpprettetException("Feil ved kontakt mot EUX/RINA")
+        }
     }
 
     /**

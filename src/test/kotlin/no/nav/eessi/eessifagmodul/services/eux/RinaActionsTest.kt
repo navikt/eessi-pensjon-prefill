@@ -1,7 +1,6 @@
 package no.nav.eessi.eessifagmodul.services.eux
 
 import com.nhaarman.mockito_kotlin.whenever
-import no.nav.eessi.eessifagmodul.models.RINAaksjoner
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith

@@ -7,6 +7,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.micrometer.core.instrument.Counter
 import io.micrometer.core.instrument.Metrics
 import org.springframework.core.ParameterizedTypeReference
+import org.springframework.core.io.ByteArrayResource
 import org.springframework.web.client.RestClientException
 import java.text.SimpleDateFormat
 import java.time.LocalDate
@@ -102,3 +103,13 @@ fun getCounter(key: String): Counter {
 fun counter(name: String, type: String): Counter {
     return Metrics.counter(name, "type", type)
 }
+
+fun getFileAsResource(bytearr: ByteArray, filename: String): ByteArrayResource {
+    class FileAsResource : ByteArrayResource(bytearr) {
+        override fun getFilename(): String? {
+            return filename
+        }
+    }
+    return FileAsResource()
+}
+

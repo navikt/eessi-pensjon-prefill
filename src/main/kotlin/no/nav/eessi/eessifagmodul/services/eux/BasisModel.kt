@@ -1,4 +1,4 @@
-package no.nav.eessi.eessifagmodul.models
+package no.nav.eessi.eessifagmodul.services.eux
 
 /**
  * data class model from EUX Basis

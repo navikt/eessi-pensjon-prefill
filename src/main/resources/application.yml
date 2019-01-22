@@ -16,7 +16,7 @@ management:
 rinaaction:
   waittime: '5000'
 
-euxbasis.v1.url: 'http://eux-app/cpi'
+euxbasis.v1.url: 'https://eux-app.nais.preprod.local/cpi'
 
 eessi:
   pensjon:
