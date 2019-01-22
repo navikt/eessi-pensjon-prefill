@@ -8,11 +8,14 @@ import no.nav.eessi.eessifagmodul.prefill.PrefillDataModel
 import no.nav.eessi.eessifagmodul.prefill.PrefillSED
 import no.nav.eessi.eessifagmodul.services.eux.EuxService
 import no.nav.eessi.eessifagmodul.services.eux.RinaActions
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.util.*
 
 @Service
 class PrefillService(private val euxService: EuxService, private val prefillSED: PrefillSED, private val rinaActions: RinaActions) {
+
+    private val logger = LoggerFactory.getLogger(PrefillService::class.java)
 
     //preutfylling av sed fra TPS, PESYS, AAREG o.l skjer her..
     fun prefillSed(dataModel: PrefillDataModel): PrefillDataModel {
@@ -24,8 +27,9 @@ class PrefillService(private val euxService: EuxService, private val prefillSED:
         val korrid = UUID.randomUUID().toString()
         val sed = data.sed
 
-        if (checkForCreateStatus(data.euxCaseID, data.getSEDid())) {
 
+        if (checkForCreateStatus(data.euxCaseID, data.getSEDid())) {
+            logger.debug("Klar til å kalle euxService.createSEDonExistingRinaCase mot buc: ${data.euxCaseID} ")
             euxService.createSEDonExistingRinaCase(sed, data.euxCaseID, korrid)
             //ingen ting tilbake.. sjekke om alt er ok?
             //val aksjon = euxService.getPossibleActions(rinanr)

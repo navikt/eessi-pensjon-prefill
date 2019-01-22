@@ -18,6 +18,9 @@ app:
 securitytokenservice:
   url: 'https://example.com/SecurityTokenServiceProvider/'
 
+eessi-security-token-service:
+  url: 'https://example.com/rest/v1/sts/token'
+
 rinaaction:
     waittime: '5'
 

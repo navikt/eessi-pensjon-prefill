@@ -22,7 +22,7 @@ data class SED(
     companion object {
         @JvmStatic
         fun create(name: String): SED {
-            return SED(sed = name, sedVer = "0", sedGVer = "4")
+            return SED(sed = name, sedVer = "1", sedGVer = "4")
         }
 
         @JvmStatic

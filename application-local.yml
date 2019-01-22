@@ -4,7 +4,8 @@
 ## - OPENAM_SECRET
 
 euxbasis.v1:
-  url: 'https://eux-app-t8.nais.preprod.local/cpi'
+  url: 'https://eux-app.nais.preprod.local/cpi'
+#  url: 'https://eux-app-t8.nais.preprod.local/cpi'
 #  url: 'http://localhost:9090/cpi'
 
 virksomhet.person.v3:

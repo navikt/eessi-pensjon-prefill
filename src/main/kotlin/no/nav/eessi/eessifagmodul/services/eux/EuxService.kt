@@ -15,11 +15,11 @@ import java.io.IOException
 import java.net.UnknownHostException
 import javax.naming.ServiceUnavailableException
 
-private val logger = LoggerFactory.getLogger(EuxService::class.java)
 
 @Service
 @Description("Service class for EuxBasis - EuxCpiServiceController.java")
 class EuxService(private val euxOidcRestTemplate: RestTemplate) {
+    private val logger = LoggerFactory.getLogger(EuxService::class.java)
 
     //Henter en liste over tilgjengelige aksjoner for den aktuelle RINA saken PK-51365"
     fun getPossibleActions(euSaksnr: String): List<RINAaksjoner> {
@@ -110,6 +110,7 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
 
         val builder = UriComponentsBuilder.fromPath("/SED")
                 .queryParam("RINASaksnummer", euxCaseId)
+                .queryParam("Sed", sed.sed)
                 .queryParam("KorrelasjonsID", korrelasjonID)
 
         val headers = HttpHeaders()
