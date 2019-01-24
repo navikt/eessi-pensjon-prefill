@@ -21,6 +21,38 @@ import javax.naming.ServiceUnavailableException
 class EuxService(private val euxOidcRestTemplate: RestTemplate) {
     private val logger = LoggerFactory.getLogger(EuxService::class.java)
 
+    ///Nye API kall er er fra 23.01.19
+
+
+    //Oppretter ny RINA sak(buc) og en ny Sed
+    fun opprettBucSed(navSED: SED, bucType: String, mottakerid: String): String {
+        val path = "/buc/sed"
+        val builder = UriComponentsBuilder.fromPath("/SendSED")
+                .queryParam("navSed", navSED)
+                .queryParam("buctype", bucType)
+                .queryParam("mottakerid", mottakerid)
+
+        try {
+            logger.info("Prøver å kontakte EUX /$path")
+            val response = euxOidcRestTemplate.exchange(builder.toUriString(), HttpMethod.POST, null, String::class.java)
+            val euxCaseId = response.body ?: throw RinaCasenrIkkeMottattException("Ikke mottatt RINA casenr, feiler ved opprettelse av BUC og SED")
+            getCounter("OPPRETTBUCOGSEDOK").increment()
+            return euxCaseId
+        } catch (ex: Exception) {
+            logger.error(ex.message)
+            getCounter("OPPRETTBUCOGSEDFEIL").increment()
+            throw SedDokumentIkkeOpprettetException("Feiler ved kontakt mot EUX")
+        }
+    }
+
+
+//    val path = "/buc/sed/{rinanr}/{documentid}"
+//    val uriParams = mapOf("rinanr" to euxCaseId, "documentid" to documentId)
+
+
+    //Eldre API kall er under denne disse vil ikke virke
+
+
     //Henter en liste over tilgjengelige aksjoner for den aktuelle RINA saken PK-51365"
     fun getPossibleActions(euSaksnr: String): List<RINAaksjoner> {
         val builder = UriComponentsBuilder.fromPath("/MuligeAksjoner")
