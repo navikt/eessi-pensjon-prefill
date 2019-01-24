@@ -123,9 +123,11 @@ open class KravDataFromPEN(private val dataFromPEN: PensjonsinformasjonHjelper) 
         var krav: Krav? = null
 
         val ytelselist = mutableListOf<YtelserItem>()
+
         listKsak.forEach {
 
             val valgtSak = getPensjonValgAvSak(pendata, it)
+
             logger.debug("--------------------------------------------------------------------------------------------------------")
             logger.debug("SakId:  ${valgtSak.sakId}")
             logger.debug("SakType:  ${valgtSak.sakType}")
@@ -149,8 +151,10 @@ open class KravDataFromPEN(private val dataFromPEN: PensjonsinformasjonHjelper) 
             logger.debug("--------------------------------------------------------------------------------------------------------")
 
             if (spesialStatusList.contains(valgtSak.status)) {
+                logger.debug("Valgtstatus")
                 //kjøre ytelselist forkortet
                 ytelselist.add(createYtelseMedManglendeYtelse(prefillData, valgtSak))
+
             } else {
                 if (valgtSak.sakType == "ALDER") {
                     try {
@@ -170,18 +174,13 @@ open class KravDataFromPEN(private val dataFromPEN: PensjonsinformasjonHjelper) 
                     try {
                         val kravHistorikk = hentKravHistorikkSisteRevurdering(valgtSak)
                         val ytelseprmnd = hentYtelsePerMaanedDenSisteFraKrav(kravHistorikk, valgtSak)
+
                         ytelselist.add(createYtelserItem(prefillData, ytelseprmnd, valgtSak))
                     } catch (ex: Exception) {
                         ytelselist.add(createYtelseMedManglendeYtelse(prefillData, valgtSak))
                     }
                 }
             }
-
-            //val ytelseprmnd = hentYtelsePerMaanedDenSiste(pensak)
-            //val ytelseprmnd = hentYtelsePerMaanedSortert(pensak)
-            //ytelseprmnd.forEach {
-            //ytelselist.add(createYtelserItem(prefillData, it, pensak))
-            //}
 
         }
         return Pensjon(

@@ -92,7 +92,6 @@ class PensjonsinformasjonUtlandController {
             logger.debug("henter ut buc fra mock SED, p2000, p3000, p4000 og p5000 (alle kall fra buc 1000..n.. er lik")
 
             val seds = mapSeds(bucId)
-
             //finner rette hjelep metode for utfylling av KravUtland
             //ut ifra hvilke SED/saktype det gjelder.
             if (erAlderpensjon(seds)) {
@@ -154,12 +153,30 @@ class PensjonsinformasjonUtlandController {
                 utland = hentSkjemaUtland(seds),
 
                 //denne må hentes utenfor SED finne orginal avsender-land for BUC/SED..
-                soknadFraLand = hentAlpha3Land("SE")
+                soknadFraLand = hentAlpha3Land("SE"),
+                //avtale mellom land? SED sendes kun fra EU/EØS? blir denne alltid true?
+                vurdereTrygdeavtale = true,
+
+                initiertAv = hentInitiertAv(p2000)
         )
 
     }
 
+    //finnes verge ktp 7.1 og 7.2 settes VERGE hvis ikke BRUKER
+    fun hentInitiertAv(p2000: SED): String {
+        val vergeetter = p2000.nav?.verge?.person?.etternavn.orEmpty()
+        val vergenavn = p2000.nav?.verge?.person?.fornavn.orEmpty()
+        logger.debug("vergeetter: $vergeetter , vergenavn: $vergenavn")
+        val verge = vergeetter + vergenavn
+        logger.debug("verge: $verge")
+        if (verge.length == 0) {
+            return "BRUKER"
+        }
+        return "VERGE"
+    }
+
     //iverksettelsesdato
+    //p2000 9.4.1 - 9.4.4
     fun hentRettIverksettelsesdato(p2000: SED): LocalDate {
         val startDatoUtbet = p2000.pensjon?.forespurtstartdato
         return if (p2000.pensjon?.angitidligstdato == "1") {
@@ -361,11 +378,6 @@ class PensjonsinformasjonUtlandController {
         val trygdetidList = p5000?.pensjon?.trygdetid
 
         trygdetidList?.forEach {
-            //            var bodd: Boolean? = null,
-//            var arbeidet: Boolean? = null,
-//            var pensjonsordning: String? = null,
-//            var utlandPin: String? = null
-
             var fom: LocalDate? = null
             var tom: LocalDate? = null
             try {
@@ -416,12 +428,7 @@ class PensjonsinformasjonUtlandController {
         val map = mapOf<SEDType, SED>(SEDType.P2000 to fetchDocument(bucId, SEDType.P2000),
                 SEDType.P3000 to fetchDocument(bucId, SEDType.P3000),
                 SEDType.P4000 to fetchDocument(bucId, SEDType.P4000))
-
         val keys = map.keys
-//        logger.debug("mapSeds inneholder følgende SED på buc: $bucId")
-//        keys.forEach {
-//            logger.debug(" $it , ${map[it]} ")
-//        }
         return map
     }
 

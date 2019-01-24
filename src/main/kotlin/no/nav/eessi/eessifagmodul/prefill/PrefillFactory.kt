@@ -3,6 +3,7 @@ package no.nav.eessi.eessifagmodul.prefill
 import no.nav.eessi.eessifagmodul.models.SED
 import no.nav.eessi.eessifagmodul.models.SEDType
 import no.nav.eessi.eessifagmodul.prefill.krav.PrefillP2000
+import no.nav.eessi.eessifagmodul.prefill.krav.PrefillP2200
 import no.nav.eessi.eessifagmodul.prefill.nav.PrefillNav
 import no.nav.eessi.eessifagmodul.prefill.nav.PrefillPerson
 import no.nav.eessi.eessifagmodul.prefill.nav.PrefillPersonDataFromTPS
@@ -35,7 +36,7 @@ class PrefillFactory(private val prefillNav: PrefillNav, private val dataFromTPS
             }
             //Status hva gjendstår
             SEDType.P2200 -> {
-                PrefillP2000(prefillNav, dataFromTPS, dataFromPEN)
+                PrefillP2200(prefillNav, dataFromTPS, dataFromPEN)
             }
             SEDType.P2100 -> {
                 PrefillP2100(prefillPerson)

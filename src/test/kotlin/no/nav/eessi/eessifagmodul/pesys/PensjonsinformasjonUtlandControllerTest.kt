@@ -99,20 +99,57 @@ class PensjonsinformasjonUtlandControllerTest {
         val response = controller.hentKravUtland(1099)
         assertNotNull(response)
         assertEquals("50", response.uttaksgrad)
+        assertEquals("2019-03-11", response.mottattDato.toString())
+        assertEquals("SWE", response.personopplysninger?.statsborgerskap)
+        assertEquals("SWE", response.soknadFraLand)
+        assertEquals(true, response.vurdereTrygdeavtale)
+
+        assertEquals("BRUKER", response.initiertAv)
+
+        assertEquals("UGIF", response.sivilstand?.valgtSivilstatus)
+        assertEquals("2019-01-24", response.sivilstand?.sivilstatusDatoFom.toString())
+
+        val utland = response.utland
+        assertEquals(true, utland?.harOpphold)
+        assertEquals(3, utland?.utlandsopphold?.size)
+
+        val utlandEn = utland?.utlandsopphold?.get(0)
+        assertEquals("DEU", utlandEn?.land)
+        assertEquals("1960-01-01", utlandEn?.fom.toString())
+        assertEquals("1965-01-01", utlandEn?.tom.toString())
+        assertEquals(false, utlandEn?.bodd)
+        assertEquals(true, utlandEn?.arbeidet)
+        assertEquals("10010101010", utlandEn?.utlandPin)
+
+        val utlandTo = utland?.utlandsopphold?.get(1)
+        assertEquals("DNK", utlandTo?.land)
+        assertEquals("2003-01-01", utlandTo?.fom.toString())
+        assertEquals("2004-01-01", utlandTo?.tom.toString())
+        assertEquals(true, utlandTo?.bodd)
+        assertEquals(false, utlandTo?.arbeidet)
+        assertEquals("23456789001", utlandTo?.utlandPin)
+
+        val utlandTre = utland?.utlandsopphold?.get(2)
+        assertEquals("DNK", utlandTre?.land)
+        assertEquals("2002-01-01", utlandTre?.fom.toString())
+        assertEquals(null, utlandTre?.tom)
+        assertEquals(true, utlandTre?.bodd)
+        assertEquals(false, utlandTre?.arbeidet)
+        assertEquals("23456789001", utlandTre?.utlandPin)
 
         val json = mapAnyToJson(response)
         println(json)
-
-
-        val response2 = controller.hentKravUtland(1050)
-        assertNotNull(response2)
-
-        assertNull(response2.uttaksgrad)
-
-        val json2 = mapAnyToJson(response2)
-        println(json2)
-
     }
+
+    @Test
+    fun hentKravUtlandManglerUttaksgradMockBuc() {
+        val response = controller.hentKravUtland(1050)
+        assertNotNull(response)
+        assertNull(response.uttaksgrad)
+//        val json2 = mapAnyToJson(response)
+//        println(json2)
+    }
+
 
     @Test
     fun testLocalDatetilJson() {

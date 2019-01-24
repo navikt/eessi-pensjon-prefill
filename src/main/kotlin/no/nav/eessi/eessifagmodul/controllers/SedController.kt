@@ -23,37 +23,27 @@ class SedController(private val euxService: EuxService,
                     private val aktoerregisterService: AktoerregisterService) {
 
 
-    @ApiOperation("viser en oppsumering av SED prefill. Før innsending til EUX Basis")
-    @PostMapping("/data/personinfo")
-    @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    fun hentPersonInformasjon(@RequestBody request: ApiRequest): Nav? {
-        val aktorid = request.aktoerId ?: throw IkkeGyldigKallException("Ingen gyldig aktoerId")
-        val dataModel = PrefillDataModel().apply {
-            sed = SED.create("P2000")
-            penSaksnummer = ""
-            personNr = hentAktoerIdPin(aktorid)
-        }
+//    @ApiOperation("viser en oppsumering av SED prefill. Før innsending til EUX Basis")
+//    @PostMapping("/data/personinfo")
+//    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+//    fun hentPersonInformasjon(@RequestBody request: ApiRequest): Nav? {
+//        val aktorid = request.aktoerId ?: throw IkkeGyldigKallException("Ingen gyldig aktoerId")
+//        val dataModel = PrefillDataModel().apply {
+//            sed = SED.create("P2000")
+//            penSaksnummer = ""
+//            personNr = hentAktoerIdPin(aktorid)
+//        }
+//
+//        val sed = prefillService.prefillSed(dataModel).sed
+//        return sed.nav
+//    }
 
-        val sed = prefillService.prefillSed(dataModel).sed
-        return sed.nav
-    }
 
-
-    @ApiOperation("viser en oppsumering av SED prefill. Før innsending til EUX Basis")
-    @PostMapping("/confirm", produces = [MediaType.APPLICATION_JSON_VALUE])
+    @ApiOperation("Genereren en NAVSED, viser en oppsumering av SED. Før innsending til EUX Basis")
+    @PostMapping("/confirm", "/preview", consumes = ["application/json"], produces = [MediaType.APPLICATION_JSON_VALUE])
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     fun confirmDocument(@RequestBody request: ApiRequest): SED {
         return prefillService.prefillSed(buildPrefillDataModelConfirm(request)).sed
-//        //preutfylling av P2000 testing
-//        //TODO fjernes etter endt testing
-//        if (confirmsed.sed == "P2000") {
-//            val p2000 = SED.create("P2000")
-//            p2000.pensjon = confirmsed.pensjon
-//            p2000.nav = Nav(krav = confirmsed.nav?.krav)
-//            p2000.print()
-//            return p2000
-//        }
-//        return confirmsed
     }
 
     @ApiOperation("sendSed send current sed")
