@@ -1,6 +1,7 @@
 package no.nav.eessi.eessifagmodul.services.eux
 
 import no.nav.eessi.eessifagmodul.models.*
+import no.nav.eessi.eessifagmodul.services.eux.bucmodel.Buc
 import no.nav.eessi.eessifagmodul.utils.*
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Description
@@ -13,6 +14,7 @@ import org.springframework.web.client.RestTemplate
 import org.springframework.web.util.UriComponentsBuilder
 import java.io.IOException
 import java.net.UnknownHostException
+import java.util.*
 import javax.naming.ServiceUnavailableException
 
 
@@ -21,37 +23,179 @@ import javax.naming.ServiceUnavailableException
 class EuxService(private val euxOidcRestTemplate: RestTemplate) {
     private val logger = LoggerFactory.getLogger(EuxService::class.java)
 
-    ///Nye API kall er er fra 23.01.19
+    // Nye API kall er er fra 23.01.19
+    // https://eux-app.nais.preprod.local/swagger-ui.html#/eux-cpi-service-controller/getDocumentUsingGET
 
 
     //Oppretter ny RINA sak(buc) og en ny Sed
-    fun opprettBucSed(navSED: SED, bucType: String, mottakerid: String): String {
+    @Throws(EuxServerException::class, RinaCasenrIkkeMottattException::class)
+    fun opprettBucSed(navSED: SED, bucType: String, mottakerid: String, fagSaknr: String): String {
         val path = "/buc/sed"
-        val builder = UriComponentsBuilder.fromPath("/SendSED")
-                .queryParam("navSed", navSED)
-                .queryParam("buctype", bucType)
-                .queryParam("mottakerid", mottakerid)
+        val builder = UriComponentsBuilder.fromPath(path)
+                .queryParam("BucType", bucType)
+                .queryParam("MottakerId", bucType)
+                .queryParam("FagSakNummer", fagSaknr)
+
+        val headers = HttpHeaders()
+        headers.contentType = MediaType.APPLICATION_JSON
+        val httpEntity = HttpEntity(navSED.toJson(), headers)
 
         try {
-            logger.info("Prøver å kontakte EUX /$path")
-            val response = euxOidcRestTemplate.exchange(builder.toUriString(), HttpMethod.POST, null, String::class.java)
-            val euxCaseId = response.body ?: throw RinaCasenrIkkeMottattException("Ikke mottatt RINA casenr, feiler ved opprettelse av BUC og SED")
-            getCounter("OPPRETTBUCOGSEDOK").increment()
-            return euxCaseId
+            logger.info("Prøver å kontakte EUX /${builder.toUriString()}")
+            val response = euxOidcRestTemplate.exchange(builder.toUriString(), HttpMethod.POST, httpEntity, String::class.java)
+            if (response.statusCode.is2xxSuccessful) {
+                getCounter("OPPRETTBUCOGSEDOK").increment()
+                return response.body!!
+            } else {
+                throw RinaCasenrIkkeMottattException("Ikke mottatt RINA casenr, feiler ved opprettelse av BUC og SED")
+            }
+        } catch (rx: RinaCasenrIkkeMottattException) {
+            logger.error(rx.message)
+            getCounter("OPPRETTBUCOGSEDFEIL").increment()
+            throw RinaCasenrIkkeMottattException(rx.message)
         } catch (ex: Exception) {
             logger.error(ex.message)
             getCounter("OPPRETTBUCOGSEDFEIL").increment()
-            throw SedDokumentIkkeOpprettetException("Feiler ved kontakt mot EUX")
+            throw EuxServerException("Feiler ved kontakt mot EUX")
         }
     }
 
 
-//    val path = "/buc/sed/{rinanr}/{documentid}"
-//    val uriParams = mapOf("rinanr" to euxCaseId, "documentid" to documentId)
+    //ny SED på ekisterende buc
+    @Throws(EuxServerException::class, SedDokumentIkkeOpprettetException::class)
+    fun opprettSedOnBuc(navSED: SED, euxCaseId: String): Boolean {
+        val path = "/buc/{RinaSakId}/sed"
+
+        val uriParams = mapOf("RinaSakId" to euxCaseId)
+        val builder = UriComponentsBuilder.fromUriString(path)
+                .queryParam("KorrelasjonsId", UUID.randomUUID().toString())
+                .buildAndExpand(uriParams)
+
+        val headers = HttpHeaders()
+        headers.contentType = MediaType.APPLICATION_JSON
+        val httpEntity = HttpEntity(navSED.toJson(), headers)
+
+        try {
+            logger.info("Prøver å kontakte EUX /${builder.toUriString()}")
+            val response = euxOidcRestTemplate.exchange(builder.toUriString(), HttpMethod.POST, httpEntity, String::class.java)
+            return if (response.statusCode.is2xxSuccessful) {
+                getCounter("OPPRETTBUCOGSEDOK").increment()
+                true
+            } else {
+                throw SedDokumentIkkeOpprettetException("Nav Sed ikke opprettet")
+            }
+        } catch (sx: SedDokumentIkkeOpprettetException) {
+            logger.error(sx.message)
+            getCounter("OPPRETTBUCOGSEDFEIL").increment()
+            throw SedDokumentIkkeOpprettetException(sx.message!!)
+        } catch (ex: Exception) {
+            logger.error(ex.message)
+            getCounter("OPPRETTBUCOGSEDFEIL").increment()
+            throw EuxServerException("Feiler ved kontakt mot EUX")
+        }
+    }
+
+
+    //henter ut sed fra rina med bucid og documentid
+    fun getSedOnBuc(euxCaseId: String, sedType: SEDType): List<SED> {
+        val docid = getBucUtils(euxCaseId).getDocuments()
+
+        val sedlist = mutableListOf<SED>()
+        docid.forEach {
+            it.id?.let {
+                sedlist.add(getSedOnBucByDocumentId(euxCaseId, it))
+            }
+        }
+        return sedlist
+    }
+
+
+    //henter ut sed fra rina med bucid og documentid
+    @Throws(EuxServerException::class, SedIkkeMottattException::class)
+    fun getSedOnBucByDocumentId(euxCaseId: String, documentId: String): SED {
+        val path = "/buc/{RinaSakId}/sed/{DokumentId}"
+        val uriParams = mapOf("RinaSakId" to euxCaseId, "DokumentId" to documentId)
+        val builder = UriComponentsBuilder.fromUriString(path).buildAndExpand(uriParams)
+
+        try {
+            logger.info("Prøver å kontakte EUX /${builder.toUriString()}")
+            val response = euxOidcRestTemplate.exchange(builder.toUriString(), HttpMethod.POST, null, String::class.java)
+            val jsonbuc = response.body ?: throw SedIkkeMottattException("Ikke mottatt SED, feiler ved uthenting av Nav-Sed")
+            getCounter("HENTSEDOK").increment()
+            return mapJsonToAny(jsonbuc, typeRefs())
+        } catch (rx: SedIkkeMottattException) {
+            logger.error(rx.message)
+            getCounter("HENTSEDFEIL").increment()
+            throw SedIkkeMottattException(rx.message)
+        } catch (ex: Exception) {
+            logger.error(ex.message)
+            getCounter("HENTSEDFEIL").increment()
+            throw EuxServerException("Feiler ved kontakt mot EUX")
+        }
+
+    }
+
+
+    //henter ut bucdata fra valgt buc/euxCaseId
+    @Throws(BucIkkeMottattException::class, EuxServerException::class)
+    fun getBuc(euxCaseId: String): Buc {
+        val path = "/buc/{RinaSakId}"
+        val uriParams = mapOf("RinaSakId" to euxCaseId)
+        val builder = UriComponentsBuilder.fromUriString(path).buildAndExpand(uriParams)
+
+        try {
+            logger.info("Prøver å kontakte EUX /${builder.toUriString()}")
+            val response = euxOidcRestTemplate.exchange(builder.toUriString(), HttpMethod.POST, null, String::class.java)
+            if (response.statusCode.is2xxSuccessful) {
+                val jsonbuc = response.body!!
+                getCounter("HENTBUCOK").increment()
+                return mapJsonToAny(jsonbuc, typeRefs())
+            } else {
+                throw BucIkkeMottattException("Ikke mottatt Buc, feiler ved uthenting av Buc")
+            }
+        } catch (rx: BucIkkeMottattException) {
+            logger.error(rx.message)
+            getCounter("HENTBUCFEIL").increment()
+            throw BucIkkeMottattException(rx.message)
+        } catch (ex: Exception) {
+            logger.error(ex.message)
+            getCounter("HENTBUCFEIL").increment()
+            throw EuxServerException("Feiler ved kontakt mot EUX")
+        }
+
+    }
+
+    //henter ut BucUtils med valgt Buc for diverse uthentinger..
+    fun getBucUtils(euxCaseId: String): BucUtils {
+        return BucUtils(getBuc(euxCaseId))
+    }
+
+
+    //skal denne være her? eller bær en benytte BucUtils direkte?
+    //hjelpefunkson for å hente ut list over alle documentid til valgt SEDType (kan ha flere docid i buc)
+    fun findDocmentIdBySedType(euxCaseId: String, sedType: SEDType): List<String?> {
+        val doclist = getBucUtils(euxCaseId).findAndFilterDocumentItemByType(sedType)
+        return doclist.map { it.id }.toList()
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     //Eldre API kall er under denne disse vil ikke virke
-
 
     //Henter en liste over tilgjengelige aksjoner for den aktuelle RINA saken PK-51365"
     fun getPossibleActions(euSaksnr: String): List<RINAaksjoner> {
@@ -174,6 +318,7 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
                 .queryParam("RINASaksnummer", euxCaseId)
                 .queryParam("DokumentID", documentId)
 
+        //cpi/buc/2342342/sed/3545345
         val httpEntity = HttpEntity("")
 
         val response = euxOidcRestTemplate.exchange(builder.toUriString(), HttpMethod.GET, httpEntity, typeRef<String>())

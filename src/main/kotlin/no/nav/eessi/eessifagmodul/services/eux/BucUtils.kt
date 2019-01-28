@@ -90,6 +90,11 @@ class BucUtils {
         return lists
     }
 
+    fun findDocmentIdBySedType(sedType: SEDType): List<String?> {
+        val doclist = findAndFilterDocumentItemByType(sedType)
+        return doclist.map { it.id }.toList()
+    }
+
     fun getSbdh(): List<Sbdh> {
         val lists = mutableListOf<Sbdh>()
         val documents = getDocuments()

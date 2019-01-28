@@ -107,7 +107,7 @@ class PensjonsinformasjonUtlandControllerTest {
         assertEquals("BRUKER", response.initiertAv)
 
         assertEquals("UGIF", response.sivilstand?.valgtSivilstatus)
-        assertEquals("2019-01-24", response.sivilstand?.sivilstatusDatoFom.toString())
+        //assertEquals("2019-01-24", response.sivilstand?.sivilstatusDatoFom.toString())
 
         val utland = response.utland
         assertEquals(true, utland?.harOpphold)

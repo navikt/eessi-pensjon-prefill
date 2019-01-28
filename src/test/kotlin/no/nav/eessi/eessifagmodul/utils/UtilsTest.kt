@@ -2,6 +2,7 @@ package no.nav.eessi.eessifagmodul.utils
 
 import io.micrometer.core.instrument.Metrics
 import no.nav.eessi.eessifagmodul.models.SEDType
+import no.nav.eessi.eessifagmodul.services.eux.bucmodel.ShortDocumentItem
 import org.junit.Test
 import org.springframework.web.util.UriComponentsBuilder
 import java.time.format.DateTimeParseException
@@ -10,6 +11,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 import kotlin.test.fail
+
 
 class UtilsTest {
 
@@ -108,6 +110,21 @@ class UtilsTest {
     @Test(expected = NoSuchElementException::class)
     fun `testing getCounter for key not found in euxservice`() {
         getCounter("NOKEYISINMAP")
+    }
+
+    @Test
+    fun `testing some kotling list filter stuff`() {
+        val listdocs = listOf(ShortDocumentItem(id = "123123", type = "P2000", status = "done"),
+                ShortDocumentItem(id = "234234", type = "P2200", status = "done")
+        )
+        listdocs.forEach {
+            print(it)
+        }
+        val result = listdocs.map { it.id }.toList()
+        println("-------------------------------")
+        println(result)
+        println("-------------------------------")
+
 
     }
 

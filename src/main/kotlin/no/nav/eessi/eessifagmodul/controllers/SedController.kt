@@ -23,23 +23,7 @@ class SedController(private val euxService: EuxService,
                     private val aktoerregisterService: AktoerregisterService) {
 
 
-//    @ApiOperation("viser en oppsumering av SED prefill. Før innsending til EUX Basis")
-//    @PostMapping("/data/personinfo")
-//    @JsonInclude(JsonInclude.Include.NON_EMPTY)
-//    fun hentPersonInformasjon(@RequestBody request: ApiRequest): Nav? {
-//        val aktorid = request.aktoerId ?: throw IkkeGyldigKallException("Ingen gyldig aktoerId")
-//        val dataModel = PrefillDataModel().apply {
-//            sed = SED.create("P2000")
-//            penSaksnummer = ""
-//            personNr = hentAktoerIdPin(aktorid)
-//        }
-//
-//        val sed = prefillService.prefillSed(dataModel).sed
-//        return sed.nav
-//    }
-
-
-    @ApiOperation("Genereren en NAVSED, viser en oppsumering av SED. Før innsending til EUX Basis")
+    @ApiOperation("Genereren en Nav-Sed (SED), viser en oppsumering av SED. Før evt. innsending til EUX/Rina")
     @PostMapping("/confirm", "/preview", consumes = ["application/json"], produces = [MediaType.APPLICATION_JSON_VALUE])
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     fun confirmDocument(@RequestBody request: ApiRequest): SED {
@@ -56,11 +40,14 @@ class SedController(private val euxService: EuxService,
 
     }
 
-    @ApiOperation("henter ut en SED fra et eksisterende Rina document. krever unik dokumentid fra valgt SED")
+    @ApiOperation("henter ut en SED fra et eksisterende Rina document. krever unik dokumentid fra valgt SED, ny api kall til eux")
     @GetMapping("/{rinanr}/{documentid}")
-    fun getDocument(@PathVariable("rinanr", required = true) rinanr: String,
+    fun getDocument(@PathVariable("rinanr", required = true) rinaSakId: String,
                     @PathVariable("documentid", required = true) documentid: String): SED {
-        return euxService.fetchSEDfromExistingRinaCase(rinanr, documentid)
+
+        //ny api kall til eux
+        return euxService.getSedOnBucByDocumentId(rinaSakId, documentid)
+        //return euxService.fetchSEDfromExistingRinaCase(rinanr, documentid)
 
     }
 
@@ -73,17 +60,18 @@ class SedController(private val euxService: EuxService,
         return euxService.deleteSEDfromExistingRinaCase(rinanr, documentid)
     }
 
-    @ApiOperation("legge til SED på et eksisterende Rina document. kjører preutfylling")
+    @ApiOperation("legge til SED på et eksisterende Rina document. kjører preutfylling, ny api kall til eux")
     @PostMapping("/add")
     fun addDocument(@RequestBody request: ApiRequest): String {
+        //ny api kall til eux
         return prefillService.prefillAndAddSedOnExistingCase(buildPrefillDataModelOnExisting(request)).euxCaseID
 
     }
 
-    @ApiOperation("Kjører prosess OpprettBuCogSED på EUX for å få opprette et RINA dokument med en SED")
+    @ApiOperation("Kjører prosess OpprettBuCogSED på EUX for å få opprette et RINA dokument med en SED, ny api kall til eux")
     @PostMapping("/buc/create")
     fun createDocument(@RequestBody request: ApiRequest): String {
-
+        //ny api kall til eux
         return prefillService.prefillAndCreateSedOnNewCase(buildPrefillDataModelOnNew(request)).euxCaseID
 
     }

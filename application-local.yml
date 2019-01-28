@@ -5,7 +5,7 @@
 
 euxbasis.v1:
   #  url: 'http://10.33.44.43:9090/cpi'
-  url: 'https://eux-app.nais.preprod.local/cpi'
+  url: 'https://eux-app.nais.preprod.local/rina'
 #  url: 'https://eux-app-t8.nais.preprod.local/cpi'
 #  url: 'http://localhost:9090/cpi'
 

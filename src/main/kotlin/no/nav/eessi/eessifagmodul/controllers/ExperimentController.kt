@@ -149,15 +149,17 @@ class ExperimentController {
         val penSaksnr = request.sakId
         val sedObj = mockSED(request)
 
+        //sjekk opprett sed på ekisternede buc
         return if (request.euxCaseId != null) {
             val data = PrefillDataModel().apply {
                 penSaksnummer = penSaksnr
                 sed = sedObj
                 euxCaseID = request.euxCaseId
             }
-            euxService.createSEDonExistingRinaCase(data.sed, data.euxCaseID, korrid.toString())
+            euxService.opprettSedOnBuc(data.sed, data.euxCaseID)
             data.euxCaseID
 
+            //sjekk opprett buc og sed
         } else {
             val bucId = request.buc ?: throw IkkeGyldigKallException("Mangler BUC")
             val institutin = request.institutions ?: throw IkkeGyldigKallException("Mangler pensjonSaksnr")
@@ -168,15 +170,9 @@ class ExperimentController {
                 institution = institutin
                 sed = sedObj
             }
-            val euSaksnr = euxService.createCaseAndDocument(
-                    sed = data.sed,
-                    fagSaknr = data.penSaksnummer,
-                    mottaker = getFirstInstitution(data.getInstitutionsList()),
-                    bucType = data.buc,
-                    korrelasjonID = korrid.toString()
-            )
-            print("(rina) caseid:  $euSaksnr")
-            euSaksnr
+            val euxSaknr = euxService.opprettBucSed(data.sed, data.buc, getFirstInstitution(data.getInstitutionsList()), data.penSaksnummer)
+            print("(rina) caseid:  $euxSaknr")
+            euxSaknr
         }
     }
 
