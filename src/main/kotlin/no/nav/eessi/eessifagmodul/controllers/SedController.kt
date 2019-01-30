@@ -72,6 +72,7 @@ class SedController(private val euxService: EuxService,
     @PostMapping("/buc/create")
     fun createDocument(@RequestBody request: ApiRequest): String {
         //ny api kall til eux
+        logger.info("Kaller createDocument /buc/create med request body $request")
         return prefillService.prefillAndCreateSedOnNewCase(buildPrefillDataModelOnNew(request)).euxCaseID
 
     }

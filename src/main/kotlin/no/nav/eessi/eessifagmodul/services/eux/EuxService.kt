@@ -30,6 +30,7 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
     //Oppretter ny RINA sak(buc) og en ny Sed
     @Throws(EuxServerException::class, RinaCasenrIkkeMottattException::class)
     fun opprettBucSed(navSED: SED, bucType: String, mottakerid: String, fagSaknr: String): String {
+        logger.info("opprettBucSed navSED: $navSED, bucType: $bucType, mottakerid: $mottakerid, fagSaknr: $fagSaknr")
         val path = "/buc/sed"
         val builder = UriComponentsBuilder.fromPath(path)
                 .queryParam("BucType", bucType)

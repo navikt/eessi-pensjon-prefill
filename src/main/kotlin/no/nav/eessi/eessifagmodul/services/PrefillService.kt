@@ -36,6 +36,7 @@ class PrefillService(private val euxService: EuxService, private val prefillSED:
      */
     @Throws(EuxServerException::class, RinaCasenrIkkeMottattException::class)
     fun prefillAndCreateSedOnNewCase(dataModel: PrefillDataModel): PrefillDataModel {
+        logger.info("Kaller prefillAndCreateSedOnNewCase $dataModel")
         val data = prefillSed(dataModel)
         val navSed = data.sed
         val mottakerId = getFirstInstitution(data.institution)
