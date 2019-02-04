@@ -9,8 +9,8 @@ import no.nav.eessi.eessifagmodul.prefill.PrefillSED
 import no.nav.eessi.eessifagmodul.services.LandkodeService
 import no.nav.eessi.eessifagmodul.services.PrefillService
 import no.nav.eessi.eessifagmodul.services.aktoerregister.AktoerregisterService
+import no.nav.eessi.eessifagmodul.services.eux.BucSedResponse
 import no.nav.eessi.eessifagmodul.services.eux.EuxService
-import no.nav.eessi.eessifagmodul.services.eux.RinaActions
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -32,9 +32,6 @@ class SedControllerTest {
     lateinit var mockAktoerregisterService: AktoerregisterService
 
     @Mock
-    lateinit var mockRinaActions: RinaActions
-
-    @Mock
     lateinit var mockPrefillService: PrefillService
 
     @Mock
@@ -50,7 +47,7 @@ class SedControllerTest {
     @Before
     fun setUp() {
         prefillDataMock = PrefillDataModel()
-        mockPrefillService = PrefillService(mockEuxService, mockPrefillSED, mockRinaActions)
+        mockPrefillService = PrefillService(mockEuxService, mockPrefillSED)
         this.sedController = SedController(mockEuxService, mockPrefillService, mockAktoerregisterService)
         this.landkodeController = LandkodeController(landkodeService)
     }
@@ -76,12 +73,12 @@ class SedControllerTest {
     @Test
     fun `forventer euxCaseid eller Rinacaseid tilbake ved kall til createDocument opprett sed i rina`() {
         val items = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
-        val mockResponse = "1234567890"
+        val mockResponse = BucSedResponse("1234567890", "123123123-123123123-123131")
 
         val requestMock = SedController.ApiRequest(
                 subjectArea = "Pensjon",
                 sakId = "EESSI-PEN-123",
-                euxCaseId = mockResponse,
+                euxCaseId = mockResponse.caseId,
                 vedtakId = "1234567",
                 institutions = items,
                 sed = "P6000",
@@ -98,11 +95,13 @@ class SedControllerTest {
         whenever(mockEuxService.opprettBucSed(any(), any(), any(), any())).thenReturn(mockResponse)
 
         val response = sedController.createDocument(requestMock)
-        assertEquals("1234567890", response)
+        assertEquals("1234567890", response.caseId)
+        assertEquals("123123123-123123123-123131", response.documentId)
     }
 
     @Test
-    fun `validate addDocument SED on exisiting buc`() {
+    fun `forventer alt ok ved å legge til en ny SED på en ekisternede buc `() {
+        val bucresponse = BucSedResponse("123444455", "2a427c10325c4b5eaf3c27ba5e8f1877")
 
         val items = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
 
@@ -124,10 +123,11 @@ class SedControllerTest {
         assertEquals("12345", utfyllMock.personNr)
 
         whenever(mockPrefillSED.prefill(any())).thenReturn(utfyllMock)
-        whenever(mockEuxService.opprettSedOnBuc(any(), any())).thenReturn(true)
+        whenever(mockEuxService.opprettSedOnBuc(any(), any())).thenReturn(bucresponse)
 
         val response = sedController.addDocument(requestMock)
-        assertEquals("1234567890", response)
+        assertEquals("123444455", response.caseId)
+        assertEquals("2a427c10325c4b5eaf3c27ba5e8f1877", response.documentId)
     }
 
 //    @Test(expected = SedDokumentIkkeGyldigException::class)

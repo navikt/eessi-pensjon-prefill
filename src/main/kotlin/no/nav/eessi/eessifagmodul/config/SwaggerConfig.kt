@@ -21,6 +21,7 @@ class SwaggerConfig {
                 .select()
                 //.apis(RequestHandlerSelectors.any())
                 .apis(RequestHandlerSelectors.basePackage("no.nav.eessi.eessifagmodul.controllers"))
+                .apis(RequestHandlerSelectors.basePackage("no.nav.eessi.eessifagmodul.pesys"))
                 .paths(PathSelectors.any())
                 .build()
                 .apiInfo(metaData())

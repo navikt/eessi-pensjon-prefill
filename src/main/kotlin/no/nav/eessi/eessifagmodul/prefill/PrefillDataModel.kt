@@ -3,6 +3,7 @@ package no.nav.eessi.eessifagmodul.prefill
 import no.nav.eessi.eessifagmodul.models.AndreinstitusjonerItem
 import no.nav.eessi.eessifagmodul.models.InstitusjonItem
 import no.nav.eessi.eessifagmodul.models.SED
+import no.nav.eessi.eessifagmodul.services.eux.BucSedResponse
 import no.nav.pensjon.v1.brukersbarn.V1BrukersBarn
 import no.nav.pensjon.v1.ektefellepartnersamboer.V1EktefellePartnerSamboer
 
@@ -38,6 +39,7 @@ class PrefillDataModel {
     //rina
     lateinit var rinaSubject: String
     lateinit var euxCaseID: String
+    lateinit var bucsedres: BucSedResponse
     lateinit var buc: String
     lateinit var sed: SED
     lateinit var institution: List<InstitusjonItem>

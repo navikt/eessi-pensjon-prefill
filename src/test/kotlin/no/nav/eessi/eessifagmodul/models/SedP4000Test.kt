@@ -10,7 +10,6 @@ import no.nav.eessi.eessifagmodul.prefill.nav.PrefillPerson
 import no.nav.eessi.eessifagmodul.services.PrefillService
 import no.nav.eessi.eessifagmodul.services.aktoerregister.AktoerregisterService
 import no.nav.eessi.eessifagmodul.services.eux.EuxService
-import no.nav.eessi.eessifagmodul.services.eux.RinaActions
 import no.nav.eessi.eessifagmodul.services.personv3.PersonV3Service
 import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
 import no.nav.eessi.eessifagmodul.utils.mapJsonToAny
@@ -52,9 +51,6 @@ class SedP4000Test {
     @Mock
     private lateinit var prefillPerson: PrefillPerson
 
-    @Mock
-    private lateinit var rinaActions: RinaActions
-
     lateinit var pre4000: PrefillP4000
 
     private lateinit var prefillDataMock: PrefillDataModel
@@ -67,8 +63,6 @@ class SedP4000Test {
         prefillDataMock = PrefillDataModel()
 
         pre4000 = PrefillP4000(prefillPerson)
-
-        //mockPrefillService = PrefillService(mockEuxService, mockPrefillSED, rinaActions)
 
         sedController = SedController(mockEuxService, mockPrefillService, mockAktoerregisterService)
         logger.debug("Starting tests.... ...")

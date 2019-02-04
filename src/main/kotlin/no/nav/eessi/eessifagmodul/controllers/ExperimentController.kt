@@ -7,7 +7,6 @@ import no.nav.eessi.eessifagmodul.models.SED
 import no.nav.eessi.eessifagmodul.prefill.PrefillDataModel
 import no.nav.eessi.eessifagmodul.services.aktoerregister.AktoerregisterService
 import no.nav.eessi.eessifagmodul.services.eux.EuxService
-import no.nav.eessi.eessifagmodul.services.eux.RINAaksjoner
 import no.nav.eessi.eessifagmodul.services.pensjonsinformasjon.PensjonsinformasjonService
 import no.nav.eessi.eessifagmodul.services.personv3.PersonV3Service
 import no.nav.eessi.eessifagmodul.utils.NavFodselsnummer
@@ -17,7 +16,6 @@ import no.nav.pensjon.v1.sak.V1Sak
 import no.nav.security.oidc.api.Protected
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonResponse
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.*
 import java.util.*
 
@@ -114,14 +112,14 @@ class ExperimentController {
         return personV3Service.hentPerson(ident)
     }
 
-    @GetMapping("/possibleactions/{rinanr}", produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun getMuligeAksjoner(@PathVariable(value = "rinanr", required = true) rinanr: String): List<RINAaksjoner> {
-        return euxService.getPossibleActions(rinanr)
-    }
+//    @GetMapping("/possibleactions/{rinanr}", produces = [MediaType.APPLICATION_JSON_VALUE])
+//    fun getMuligeAksjoner(@PathVariable(value = "rinanr", required = true) rinanr: String): List<RINAaksjoner> {
+//        return euxService.getPossibleActions(rinanr)
+//    }
 
-    @GetMapping("/institusjoner", "/institusjoner/{land}")
-    fun getEuxInstitusjoner(@PathVariable("land", required = false) landkode: String? = ""): List<String> {
-        return euxService.getInstitutions(landkode).sorted()
+    @GetMapping("/institusjoner/{buctype}", "/institusjoner/{buctype}/{land}")
+    fun getEuxInstitusjoner(@PathVariable("buctype", required = true) buctype: String, @PathVariable("land", required = false) landkode: String? = ""): List<String> {
+        return euxService.getInstitutions(buctype, landkode).sorted()
     }
 
     //TODO remove when done!
@@ -170,9 +168,9 @@ class ExperimentController {
                 institution = institutin
                 sed = sedObj
             }
-            val euxSaknr = euxService.opprettBucSed(data.sed, data.buc, getFirstInstitution(data.getInstitutionsList()), data.penSaksnummer)
-            print("(rina) caseid:  $euxSaknr")
-            euxSaknr
+            val response = euxService.opprettBucSed(data.sed, data.buc, getFirstInstitution(data.getInstitutionsList()), data.penSaksnummer)
+            print(" caseID:  ${response.caseId},   documentId:  ${response.documentId} ")
+            response.caseId
         }
     }
 

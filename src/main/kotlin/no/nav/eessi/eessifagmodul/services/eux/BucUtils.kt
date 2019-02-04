@@ -90,6 +90,7 @@ class BucUtils {
         return lists
     }
 
+    //hjelpefunkson for å hente ut list over alle documentid til valgt SEDType (kan ha flere docid i buc)
     fun findDocmentIdBySedType(sedType: SEDType): List<String?> {
         val doclist = findAndFilterDocumentItemByType(sedType)
         return doclist.map { it.id }.toList()

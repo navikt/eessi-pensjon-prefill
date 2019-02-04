@@ -3,13 +3,13 @@ package no.nav.eessi.eessifagmodul.services
 import no.nav.eessi.eessifagmodul.models.*
 import no.nav.eessi.eessifagmodul.prefill.PrefillDataModel
 import no.nav.eessi.eessifagmodul.prefill.PrefillSED
+import no.nav.eessi.eessifagmodul.services.eux.BucSedResponse
 import no.nav.eessi.eessifagmodul.services.eux.EuxService
-import no.nav.eessi.eessifagmodul.services.eux.RinaActions
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 
 @Service
-class PrefillService(private val euxService: EuxService, private val prefillSED: PrefillSED, private val rinaActions: RinaActions) {
+class PrefillService(private val euxService: EuxService, private val prefillSED: PrefillSED) {
 
     private val logger = LoggerFactory.getLogger(PrefillService::class.java)
 
@@ -18,30 +18,28 @@ class PrefillService(private val euxService: EuxService, private val prefillSED:
         return prefillSED.prefill(dataModel)
     }
 
-
     /**
     service function to prefill sed and call eux to put sed on existing buc
      */
     @Throws(EuxServerException::class, SedDokumentIkkeOpprettetException::class)
-    fun prefillAndAddSedOnExistingCase(dataModel: PrefillDataModel): PrefillDataModel {
+    fun prefillAndAddSedOnExistingCase(dataModel: PrefillDataModel): BucSedResponse {
+
         val data = prefillSed(dataModel)
         val navSed = data.sed
 
-        euxService.opprettSedOnBuc(navSed, data.euxCaseID)
-        return data
+        return euxService.opprettSedOnBuc(navSed, data.euxCaseID)
     }
 
     /**
      * service function to prefill sed and call eux and then return model with euxCaseId (rinaID back)
      */
     @Throws(EuxServerException::class, RinaCasenrIkkeMottattException::class)
-    fun prefillAndCreateSedOnNewCase(dataModel: PrefillDataModel): PrefillDataModel {
+    fun prefillAndCreateSedOnNewCase(dataModel: PrefillDataModel): BucSedResponse {
+
         val data = prefillSed(dataModel)
-        val navSed = data.sed
         val mottakerId = getFirstInstitution(data.institution)
 
-        data.euxCaseID = euxService.opprettBucSed(navSed, data.buc, mottakerId, data.penSaksnummer)
-        return data
+        return euxService.opprettBucSed(data.sed, data.buc, mottakerId, data.penSaksnummer)
     }
 
     //muligens midlertidig metode for å sende kun en mottaker til EUX.

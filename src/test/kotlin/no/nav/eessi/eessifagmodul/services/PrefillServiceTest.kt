@@ -5,8 +5,8 @@ import com.nhaarman.mockito_kotlin.whenever
 import no.nav.eessi.eessifagmodul.models.*
 import no.nav.eessi.eessifagmodul.prefill.PrefillDataModel
 import no.nav.eessi.eessifagmodul.prefill.PrefillSED
+import no.nav.eessi.eessifagmodul.services.eux.BucSedResponse
 import no.nav.eessi.eessifagmodul.services.eux.EuxService
-import no.nav.eessi.eessifagmodul.services.eux.RinaActions
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -18,10 +18,6 @@ import kotlin.test.assertNotNull
 @RunWith(MockitoJUnitRunner::class)
 class PrefillServiceTest {
 
-
-    @Mock
-    lateinit var mockRinaActions: RinaActions
-
     @Mock
     lateinit var mockEuxService: EuxService
 
@@ -32,22 +28,28 @@ class PrefillServiceTest {
 
     @Before
     fun `startup initilize testing`() {
-        prefillService = PrefillService(mockEuxService, mockPrefillSED, mockRinaActions)
+        prefillService = PrefillService(mockEuxService, mockPrefillSED)
 
     }
 
     @Test
-    fun `forventer et euxCaseId eller rinasakid tilbake på et vellykket kall til prefillAndAddSedOnExistingCase`() {
+    fun `forventer et euxCaseId eller rinasakid og documentID, tilbake på et vellykket kall til prefillAndAddSedOnExistingCase`() {
+        val mockBucResponse = BucSedResponse("1234567", "2a427c10325c4b5eaf3c27ba5e8f1877")
+
         val dataModel = generatePrefillModel()
         val resultData = generatePrefillModel()
         resultData.sed = generateMockP2000(dataModel)
         resultData.euxCaseID = "12131234"
+
         whenever(mockPrefillSED.prefill(any())).thenReturn(resultData)
-        whenever(mockEuxService.opprettSedOnBuc(any(), any())).thenReturn(true)
+        whenever(mockEuxService.opprettSedOnBuc(any(), any())).thenReturn(mockBucResponse)
 
         val result = prefillService.prefillAndAddSedOnExistingCase(dataModel)
+
         assertNotNull(result)
-        assertEquals("12131234", result.euxCaseID)
+        assertEquals("1234567", result.caseId)
+        assertEquals("2a427c10325c4b5eaf3c27ba5e8f1877", result.documentId)
+
     }
 
     @Test(expected = SedDokumentIkkeOpprettetException::class)
@@ -78,18 +80,19 @@ class PrefillServiceTest {
 
 
     @Test
-    fun `forventer euxCaseID eller RinaId tilbake ved vellykket kall til prefillAndCreateSedOnNewCase`() {
+    fun `forventer euxCaseID eller RinaId og documentId tilbake ved vellykket kall til prefillAndCreateSedOnNewCase`() {
         val dataModel = generatePrefillModel()
-        dataModel.euxCaseID = "1234567890"
+        val bucResponse = BucSedResponse("1234567890", "1231231-123123-123123")
 
         val resultData = generatePrefillModel()
         resultData.sed = generateMockP2000(dataModel)
 
         whenever(mockPrefillSED.prefill(any())).thenReturn(resultData)
-        whenever(mockEuxService.opprettBucSed(any(), any(), any(), any())).thenReturn(dataModel.euxCaseID)
+        whenever(mockEuxService.opprettBucSed(any(), any(), any(), any())).thenReturn(bucResponse)
 
         val result = prefillService.prefillAndCreateSedOnNewCase(resultData)
-        assertEquals("1234567890", result.euxCaseID)
+        assertEquals("1234567890", result.caseId)
+        assertEquals("1231231-123123-123123", result.documentId)
     }
 
     @Test(expected = RinaCasenrIkkeMottattException::class)
