@@ -14,7 +14,6 @@ import org.slf4j.LoggerFactory
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.*
 
-private val logger = LoggerFactory.getLogger(SedController::class.java)
 
 @Protected
 @RestController
@@ -23,23 +22,28 @@ class SedController(private val euxService: EuxService,
                     private val prefillService: PrefillService,
                     private val aktoerregisterService: AktoerregisterService) {
 
+    private val logger = LoggerFactory.getLogger(SedController::class.java)
 
     @ApiOperation("Genereren en Nav-Sed (SED), viser en oppsumering av SED. Før evt. innsending til EUX/Rina")
     @PostMapping("/confirm", "/preview", consumes = ["application/json"], produces = [MediaType.APPLICATION_JSON_VALUE])
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     fun confirmDocument(@RequestBody request: ApiRequest): SED {
+        logger.info("kaller confirmDocument med request: $request")
         return prefillService.prefillSed(buildPrefillDataModelConfirm(request)).sed
     }
 
     @ApiOperation("Sender valgt sedtype på valgt bucid, ny api kall til eux")
     @PostMapping("/send")
     fun sendSed(@RequestBody request: ApiRequest): Boolean {
+        logger.info("kaller send med request: $request")
+
         val euxCaseId = request.euxCaseId ?: throw IkkeGyldigKallException("Mangler euxCaseID (RINANR)")
         val sed = request.sed ?: throw IkkeGyldigKallException("Mangler SED")
 
         val sedType = SEDType.valueOf(sed)
         val documentid = euxService.getBucUtils(euxCaseId).findFirstDocumentItemByType(sedType)?.id
                 ?: throw SedDokumentIkkeGyldigException("Fant ikke documentId")
+
 
         return euxService.sendDocumentById(euxCaseId, documentid)
 
@@ -49,7 +53,7 @@ class SedController(private val euxService: EuxService,
     @GetMapping("/{rinanr}/{documentid}")
     fun getDocument(@PathVariable("rinanr", required = true) rinaSakId: String,
                     @PathVariable("documentid", required = true) documentid: String): SED {
-
+        logger.info("kaller /${rinaSakId}/${documentid} ")
         return euxService.getSedOnBucByDocumentId(rinaSakId, documentid)
 
     }
@@ -58,7 +62,7 @@ class SedController(private val euxService: EuxService,
     @GetMapping("/{rinanr}/{sedtype}")
     fun getDocument(@PathVariable("rinanr", required = true) rinaSakId: String,
                     @PathVariable("sedtype", required = true) sedType: SEDType): List<SED> {
-
+        logger.info("kaller /${rinaSakId}/${sedType} ")
         return euxService.getSedOnBuc(rinaSakId, sedType)
 
     }
@@ -67,9 +71,8 @@ class SedController(private val euxService: EuxService,
     @ApiOperation("sletter SED fra et eksisterende Rina document. krever unik dokumentid fra valgt SED, ny api kall til eux")
     @DeleteMapping("/{rinanr}/{documentid}")
     fun deleteDocument(@PathVariable("rinanr", required = true) rinanr: String,
-                       @PathVariable("documentid", required = true) sed: String,
                        @PathVariable("documentid", required = true) documentid: String) {
-
+        logger.info("kaller delete  /${rinanr}/${documentid} ")
         euxService.deleteDocumentById(rinanr, documentid)
 
     }
@@ -78,7 +81,7 @@ class SedController(private val euxService: EuxService,
     @ApiOperation("legge til SED på et eksisterende Rina document. kjører preutfylling, ny api kall til eux")
     @PostMapping("/add")
     fun addDocument(@RequestBody request: ApiRequest): BucSedResponse {
-
+        logger.info("kaller add med request: $request")
         return prefillService.prefillAndAddSedOnExistingCase(buildPrefillDataModelOnExisting(request))
 
     }
@@ -86,7 +89,7 @@ class SedController(private val euxService: EuxService,
     @ApiOperation("Kjører prosess OpprettBuCogSED på EUX for å få opprette et RINA dokument med en SED, ny api kall til eux")
     @PostMapping("/buc/create")
     fun createDocument(@RequestBody request: ApiRequest): BucSedResponse {
-
+        logger.info("kaller buc/create med request: $request")
         return prefillService.prefillAndCreateSedOnNewCase(buildPrefillDataModelOnNew(request))
 
     }
@@ -94,7 +97,7 @@ class SedController(private val euxService: EuxService,
     @ApiOperation("Henter ut en liste av documents på valgt buc. ny api kall til eux")
     @GetMapping("/buc/{rinanr}/documents")
     fun getDocumentId(@PathVariable("rinanr", required = true) rinanr: String): List<DocumentsItem> {
-
+        logger.info("kaller /buc/${rinanr}/documents ")
         return euxService.getBucUtils(rinanr).getDocuments()
 
     }
