@@ -27,7 +27,7 @@
   },
   "sivilstand": {
     "sivilstand": {
-      "value": "SINGLE",
+      "value": "UGIF",
       "kodeRef": null,
       "kodeverksRef": "http://nav.no/kodeverk/Kodeverk/Sivilstander"
     },

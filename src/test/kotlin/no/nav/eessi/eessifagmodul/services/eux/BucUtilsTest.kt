@@ -101,4 +101,60 @@ class BucUtilsTest {
         assertEquals("NO", result)
     }
 
+    @Test
+    fun getProcessDefinitionName() {
+        val result = bucUtils.getProcessDefinitionName()
+        assertEquals("P_BUC_01", result)
+    }
+
+    @Test
+    fun getProcessDefinitionVersion() {
+        val result41 = bucUtils.getProcessDefinitionVersion()
+        assertEquals("v4.1", result41)
+        val bucdef41 = bucUtils.getProcessDefinitionName()
+        assertEquals("P_BUC_01", bucdef41)
+
+        val bucjson = getTestJsonFile("buc-362590_v4.0.json")
+        val buc = mapJsonToAny(bucjson, typeRefs<Buc>())
+        val bucUtilsLocal = BucUtils(buc)
+
+        val result = bucUtilsLocal.getProcessDefinitionVersion()
+        assertEquals("v1.0", result)
+        val name = bucUtilsLocal.getProcessDefinitionName()
+        assertEquals("P_BUC_01", name)
+    }
+
+    @Test
+    fun getLastDate() {
+        val result41 = bucUtils.getLastDate()
+        assertEquals("2019-01-23", result41.toString())
+
+        val bucjson = getTestJsonFile("buc-362590_v4.0.json")
+        val buc = mapJsonToAny(bucjson, typeRefs<Buc>())
+        val bucUtilsLocal = BucUtils(buc)
+
+        val result10 = bucUtilsLocal.getLastDate()
+        assertEquals("2018-11-08", result10.toString())
+
+    }
+
+
+    @Test
+    fun getActions() {
+        val result = bucUtils.getBucAction()
+        assertEquals(18, result?.size)
+    }
+
+    @Test
+    fun getRinaAksjoner() {
+        val result = bucUtils.getRinaAksjon()
+        assertEquals(16, result.size)
+        val rinaaksjon = result.get(5)
+        assertEquals("P2000", rinaaksjon.dokumentType)
+        assertEquals("P_BUC_01", rinaaksjon.id)
+        assertEquals("Update", rinaaksjon.navn)
+
+    }
+
+
 }

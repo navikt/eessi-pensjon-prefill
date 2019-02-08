@@ -2,7 +2,7 @@ package no.nav.eessi.eessifagmodul.services.eux.bucmodel
 
 data class Receiver(
         val address: Address? = null,
-        val activeSince: Long? = null,
+        val activeSince: Any? = null,
         val registryNumber: Any? = null,
         val acronym: String? = null,
         val countryCode: String? = null,

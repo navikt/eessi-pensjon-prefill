@@ -10,13 +10,10 @@
             </encoder>
         </appender>
 
-        <logger name="org" level="INFO"/>
-        <logger name="com" level="INFO"/>
+        <logger name="org" level="ERROR"/>
+        <logger name="com" level="ERROR"/>
         <logger name="no.nav.security.spring" level="ERROR"/>
         <logger name="no.nav.eessi" level="DEBUG"/>
-        <logger name="org.springframework.web.filter.CommonsRequestLoggingFilter">
-            <level value="DEBUG"/>
-        </logger>
 
         <root level="info">
             <appender-ref ref="stdout_json"/>

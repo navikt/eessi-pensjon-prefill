@@ -2,6 +2,7 @@ package no.nav.eessi.eessifagmodul.prefill.krav
 
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.whenever
+import no.nav.eessi.eessifagmodul.config.TimingService
 import no.nav.eessi.eessifagmodul.models.InstitusjonItem
 import no.nav.eessi.eessifagmodul.models.SED
 import no.nav.eessi.eessifagmodul.models.SEDType
@@ -34,6 +35,9 @@ abstract class AbstractMockKravPensionHelper {
 
     @Mock
     protected lateinit var mockPersonV3Service: PersonV3Service
+
+    @Mock
+    protected lateinit var mockTimingService: TimingService
 
     protected lateinit var prefillData: PrefillDataModel
 
@@ -149,7 +153,7 @@ abstract class AbstractMockKravPensionHelper {
     private fun mockPrefillPensionDataFromPEN(responseXMLfilename: String): PensjonsinformasjonHjelper {
         whenever(pensjonsinformasjonRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java))).thenReturn(readXMLresponse(responseXMLfilename))
 
-        val pensjonsinformasjonService1 = PensjonsinformasjonService(pensjonsinformasjonRestTemplate, RequestBuilder())
+        val pensjonsinformasjonService1 = PensjonsinformasjonService(pensjonsinformasjonRestTemplate, RequestBuilder(), mockTimingService)
 
         return PensjonsinformasjonHjelper(pensjonsinformasjonService1)
     }

@@ -39,8 +39,8 @@ class PersonV3IkkeFunnetException(message: String?): Exception(message)
 @ResponseStatus(value = HttpStatus.FORBIDDEN)
 class PersonV3SikkerhetsbegrensningException(message: String?): Exception(message)
 
-@ResponseStatus(value = HttpStatus.SERVICE_UNAVAILABLE)
-class PensjoninformasjonException(message: String) : Exception(message)
+@ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
+class PensjoninformasjonException(message: String) : RuntimeException(message)
 
 @ResponseStatus(value = HttpStatus.NOT_FOUND)
 class AktoerregisterIkkeFunnetException(message: String?): Exception(message)
@@ -50,3 +50,5 @@ class AktoerregisterException(message: String) : Exception(message)
 
 @ResponseStatus(value = HttpStatus.SERVICE_UNAVAILABLE)
 class SystembrukerTokenException(message: String) : Exception(message)
+
+

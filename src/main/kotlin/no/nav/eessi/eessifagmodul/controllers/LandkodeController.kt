@@ -6,7 +6,6 @@ import no.nav.security.oidc.api.Unprotected
 import org.slf4j.LoggerFactory
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RestController
 
 
@@ -17,10 +16,10 @@ class LandkodeController(private val landkodeService: LandkodeService) {
     private val logger = LoggerFactory.getLogger(LandkodeController::class.java)
 
     @ApiOperation("Henter liste over landkoder av ISO Alpha2 standard")
-    @PostMapping("/landkoder")
-    fun getLandKoder(): List<String> {
+    @GetMapping("/landkoder")
+    fun getLandKoder(): String {
         logger.info("Henter landkoder")
-        return landkodeService.hentLandkode2()
+        return landkodeService.hentAlleLandkoder()
     }
 
 

@@ -1,8 +1,8 @@
 package no.nav.eessi.eessifagmodul.services
 
+import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.stereotype.Component
 import org.springframework.stereotype.Service
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -47,19 +47,35 @@ class LandkodeService {
     }
 
     fun hentLandkode2(): List<String> {
-        val landlist: MutableList<Landkode> = mutableListOf()
-        println("Map landKodeTable : $landKodeTable")
-        landKodeTable.keys.forEach {
-            if (it?.length == 2) {
-                landlist.add(landKodeTable[it]!!)
-            }
-        }
-        val listsort: List<Landkode> = landlist.asSequence().sortedBy { (_, _, _, sorting) -> sorting }.toList()
+//        val landlist: MutableList<Landkode> = mutableListOf()
+//        println("Map landKodeTable : $landKodeTable")
+//        landKodeTable.keys.forEach {
+//            if (it?.length == 2) {
+//                landlist.add(landKodeTable[it]!!)
+//            }
+//        }
+//        val listsort: List<Landkode> = landlist.asSequence().sortedBy { (_, _, _, sorting) -> sorting }.toList()
+        val listsort = hentLandkoder()
         val list: MutableList<String> = mutableListOf()
         listsort.forEach {
             list.add(it.alpha2!!)
         }
         return list
+    }
+
+    private fun hentLandkoder(): List<Landkode> {
+        val landlist = mutableListOf<Landkode>()
+        landKodeTable.keys.forEach {
+            if (it?.length == 2) {
+                landlist.add(landKodeTable[it]!!)
+            }
+        }
+        return landlist.asSequence().sortedBy { (_, _, _, sorting) -> sorting }.toList()
+    }
+
+    fun hentAlleLandkoder(): String {
+        val listsort = hentLandkoder()
+        return mapAnyToJson(listsort)
     }
 
     fun finnLandkode2(alpha3: String): String? {

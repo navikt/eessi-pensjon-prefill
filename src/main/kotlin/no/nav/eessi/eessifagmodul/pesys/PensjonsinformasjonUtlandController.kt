@@ -5,16 +5,17 @@ import io.swagger.annotations.ApiOperation
 import no.nav.eessi.eessifagmodul.models.*
 import no.nav.eessi.eessifagmodul.pesys.mockup.MockSED001
 import no.nav.eessi.eessifagmodul.services.LandkodeService
-import no.nav.security.oidc.api.Unprotected
+import no.nav.security.oidc.api.Protected
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.web.bind.annotation.*
 import java.time.LocalDate
 
-@Unprotected
+@Protected
 @CrossOrigin
 @RestController
 @RequestMapping("/pesys")
+
 /**
  * tjeneste for opprettelse av automatiske krav ved mottakk av Buc/Krav fra utland.
  * Se PK-55797 , EESSIPEN-68

@@ -6,6 +6,10 @@ import no.nav.eessi.eessifagmodul.models.SEDType
 import no.nav.eessi.eessifagmodul.services.eux.bucmodel.*
 import no.nav.eessi.eessifagmodul.utils.mapJsonToAny
 import no.nav.eessi.eessifagmodul.utils.typeRefs
+import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneId
+
 
 class BucUtils {
 
@@ -57,6 +61,29 @@ class BucUtils {
 
     fun getDocuments(): List<DocumentsItem> {
         return getBuc().documents ?: throw NoSuchFieldException("Fant ikke DocumentsItem")
+    }
+
+    fun getLastDate(): LocalDate {
+
+        val date = getBuc().lastUpdate
+
+        if (date is Long) {
+            println(date)
+            return Instant.ofEpochMilli(date).atZone(ZoneId.systemDefault()).toLocalDate()
+        } else if (date is String) {
+            val datestr = date.substring(0, date.indexOf('T'))
+            println(datestr)
+            return LocalDate.parse(datestr)
+        }
+        return LocalDate.now().minusYears(1000)
+    }
+
+    fun getProcessDefinitionName(): String? {
+        return getBuc().processDefinitionName
+    }
+
+    fun getProcessDefinitionVersion(): String? {
+        return getBuc().processDefinitionVersion
     }
 
     fun findFirstDocumentItemByType(sedType: SEDType): ShortDocumentItem? {
@@ -124,6 +151,30 @@ class BucUtils {
 
         }
         return ""
+    }
+
+    fun getBucAction(): List<ActionsItem>? {
+        return getBuc().actions
+    }
+
+    fun getRinaAksjon(): List<RinaAksjon> {
+        val aksjoner = mutableListOf<RinaAksjon>()
+        val actionitems = getBuc().actions
+        val buctype = getProcessDefinitionName()
+        actionitems?.forEach {
+            if (it.documentType != null) {
+                aksjoner.add(
+                        RinaAksjon(
+                                dokumentType = it.documentType,
+                                navn = it.name,
+                                dokumentId = it.documentId,
+                                kategori = "Documents",
+                                id = buctype
+                        )
+                )
+            }
+        }
+        return aksjoner.sortedBy { it.dokumentType }.toList()
     }
 
 }

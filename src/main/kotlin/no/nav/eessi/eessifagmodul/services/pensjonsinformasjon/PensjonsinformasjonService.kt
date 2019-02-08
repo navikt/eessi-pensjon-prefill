@@ -1,6 +1,8 @@
 package no.nav.eessi.eessifagmodul.services.pensjonsinformasjon
 
 
+import no.nav.eessi.eessifagmodul.config.TimingService
+import no.nav.eessi.eessifagmodul.models.PensjoninformasjonException
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import no.nav.pensjon.v1.sak.V1Sak
 import org.slf4j.LoggerFactory
@@ -19,7 +21,7 @@ import javax.xml.transform.stream.StreamSource
 private val logger = LoggerFactory.getLogger(PensjonsinformasjonService::class.java)
 
 @Service
-class PensjonsinformasjonService(val pensjonsinformasjonOidcRestTemplate: RestTemplate, val requestBuilder: RequestBuilder) {
+class PensjonsinformasjonService(val pensjonsinformasjonOidcRestTemplate: RestTemplate, val requestBuilder: RequestBuilder, val timingService: TimingService) {
 
     fun hentAltPaaSak(sakId: String = "", pendata: Pensjonsinformasjon): V1Sak? {
         logger.info("Pendata: $pendata")
@@ -89,6 +91,7 @@ class PensjonsinformasjonService(val pensjonsinformasjonOidcRestTemplate: RestTe
         // TODO: Hva skal vi egentlig validere? Skal vi validere noe mer enn at vi fikk en gyldig xml-response, som skjer ved JAXB-marshalling?
     }
 
+    @Throws(PensjoninformasjonException::class)
     private fun doRequest(path: String, id: String, requestBody: String, uriHandler: UriTemplateHandler = PensjoninformasjonUriHandler("https://wasapp-t4.adeo.no/pensjon-ws/api/pensjonsinformasjon")): Pensjonsinformasjon {
         val headers = HttpHeaders()
         headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_XML_VALUE)
@@ -96,28 +99,43 @@ class PensjonsinformasjonService(val pensjonsinformasjonOidcRestTemplate: RestTe
 
         val uriBuilder = UriComponentsBuilder.fromPath(path).pathSegment(id)
 
+        val pentimed = timingService.timedStart("pensjoninformasjon")
+
         pensjonsinformasjonOidcRestTemplate.uriTemplateHandler = uriHandler
-        val responseEntity = pensjonsinformasjonOidcRestTemplate.exchange(
 
-                uriBuilder.toUriString(),
-                HttpMethod.POST,
-                requestEntity,
-                String::class.java)
+        try {
 
-        if (responseEntity.statusCode.isError) {
-            logger.error("Received ${responseEntity.statusCode} from pensjonsinformasjon")
-            if (responseEntity.hasBody()) {
-                logger.error(responseEntity.body.toString())
+            val responseEntity = pensjonsinformasjonOidcRestTemplate.exchange(
+                    uriBuilder.toUriString(),
+                    HttpMethod.POST,
+                    requestEntity,
+                    String::class.java)
+
+            if (responseEntity.statusCode.isError) {
+                timingService.timesStop(pentimed)
+                logger.error("Received ${responseEntity.statusCode} from pensjonsinformasjon")
+                if (responseEntity.hasBody()) {
+                    logger.error(responseEntity.body.toString())
+                }
+                //throw RuntimeException("Received ${responseEntity.statusCode} ${responseEntity.statusCode.reasonPhrase} from pensjonsinformasjon")
+                throw PensjoninformasjonException("Received ${responseEntity.statusCode} ${responseEntity.statusCode.reasonPhrase} from pensjonsinformasjon")
             }
-            throw RuntimeException("Received ${responseEntity.statusCode} ${responseEntity.statusCode.reasonPhrase} from pensjonsinformasjon")
+
+            //logger.debug("Responsebody:\n\n${responseEntity.body}\n\n")
+            val context = JAXBContext.newInstance(Pensjonsinformasjon::class.java)
+            val unmarshaller = context.createUnmarshaller()
+
+            val res = unmarshaller.unmarshal(StreamSource(StringReader(responseEntity.body)), Pensjonsinformasjon::class.java)
+
+            timingService.timesStop(pentimed)
+
+            return res.value as Pensjonsinformasjon
+
+        } catch (ex: Exception) {
+            logger.error("Feil med kontak til PESYS pensjoninformason, ${ex.message}")
+            throw PensjoninformasjonException("Feil med kontak til PESYS pensjoninformason")
         }
 
-        //logger.debug("Responsebody:\n\n${responseEntity.body}\n\n")
-        val context = JAXBContext.newInstance(Pensjonsinformasjon::class.java)
-        val unmarshaller = context.createUnmarshaller()
-
-        val res = unmarshaller.unmarshal(StreamSource(StringReader(responseEntity.body)), Pensjonsinformasjon::class.java)
-        return res.value as Pensjonsinformasjon
     }
 
 }

@@ -30,6 +30,11 @@ inline fun <reified T : Any> mapJsonToAny(json: String, objec: TypeReference<T>,
     }
 }
 
+fun <K, V> Map<K, V>.reversed() = HashMap<V, K>().also { newMap ->
+    entries.forEach { newMap.put(it.value, it.key) }
+}
+
+
 fun createErrorMessage(responseBody: String): RestClientException {
     return mapJsonToAny(responseBody, typeRefs())
 }

@@ -7,6 +7,7 @@ import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 
 
 @RunWith(MockitoJUnitRunner::class)
@@ -27,9 +28,8 @@ class PrefillPersonEnkeTest : PersonDataFromTPS(
 
         val result = preutfyllingTPS.hentFodested(bruker)
 
-        assertNotNull(result)
-        println(result)
-        assertEquals(null, result.land)
+        assertNull(result)
+        //assertEquals(null, result?.land)
 
     }
     @Test
@@ -40,7 +40,7 @@ class PrefillPersonEnkeTest : PersonDataFromTPS(
         val result = preutfyllingTPS.hentFodested(bruker)
 
         assertNotNull(result)
-        assertEquals("NOR", result.land)
+        assertEquals("NOR", result?.land)
 
     }
 
@@ -65,9 +65,9 @@ class PrefillPersonEnkeTest : PersonDataFromTPS(
         val person = Person()
         person.bostedsadresse = bostedadr
 
-        val result = preutfyllingTPS.hentPersonAdresse(person)
-        println(result)
+        val result = preutfyllingTPS.hentPersonAdresse(person)!!
 
+        println(result)
         assertNotNull(result)
 
         assertEquals("NO", result.land)
@@ -88,7 +88,7 @@ class PrefillPersonEnkeTest : PersonDataFromTPS(
 
         assertEquals("JESSINE TORDNU", sed.nav?.bruker?.person?.fornavn)
         assertEquals("BOUWMANS", sed.nav?.bruker?.person?.etternavn)
-        assertEquals("f", sed.nav?.bruker?.person?.kjoenn)
+        assertEquals("K", sed.nav?.bruker?.person?.kjoenn)
         assertEquals(2, sed.nav?.barn?.size)
 
     }
@@ -104,8 +104,8 @@ class PrefillPersonEnkeTest : PersonDataFromTPS(
 
         assertEquals("JESSINE TORDNU", sed.nav?.bruker?.person?.fornavn)
         assertEquals("BOUWMANS", sed.nav?.bruker?.person?.etternavn)
-        assertEquals("f", sed.nav?.bruker?.person?.kjoenn)
-        assertEquals("ENKE", sed.nav?.bruker?.person?.sivilstand?.get(0)?.status)
+        assertEquals("K", sed.nav?.bruker?.person?.kjoenn)
+        assertEquals("08", sed.nav?.bruker?.person?.sivilstand?.get(0)?.status)
 
         assertEquals(2, sed.nav?.barn?.size)
 
@@ -139,7 +139,7 @@ class PrefillPersonEnkeTest : PersonDataFromTPS(
 
         assertEquals("JESSINE TORDNU", sed.nav?.bruker?.person?.fornavn)
         assertEquals("BOUWMANS", sed.nav?.bruker?.person?.etternavn)
-        assertEquals("f", sed.nav?.bruker?.person?.kjoenn)
+        assertEquals("K", sed.nav?.bruker?.person?.kjoenn)
         assertEquals(2, sed.nav?.barn?.size)
 
         assertEquals("P2200", sed.sed)

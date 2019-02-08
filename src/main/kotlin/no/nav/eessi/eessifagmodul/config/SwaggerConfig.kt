@@ -1,5 +1,6 @@
 package no.nav.eessi.eessifagmodul.config
 
+import com.google.common.base.Predicates
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import springfox.documentation.builders.ApiInfoBuilder
@@ -17,20 +18,19 @@ class SwaggerConfig {
     @Bean
     fun api(): Docket {
         return Docket(DocumentationType.SWAGGER_2)
+                .apiInfo(metaData())
                 .groupName("EESSI-Pensjon - Spring Boot REST API")
                 .select()
-                //.apis(RequestHandlerSelectors.any())
-                .apis(RequestHandlerSelectors.basePackage("no.nav.eessi.eessifagmodul.controllers"))
-                .apis(RequestHandlerSelectors.basePackage("no.nav.eessi.eessifagmodul.pesys"))
+                .apis(Predicates.not(RequestHandlerSelectors.basePackage("org.springframework.boot")))
                 .paths(PathSelectors.any())
                 .build()
-                .apiInfo(metaData())
     }
 
     private fun metaData(): ApiInfo {
         return ApiInfoBuilder()
                 .title("EESSI-Pensjon - Spring Boot REST API")
-                .description("Spring Boot REST API for EESSI-Pensjon")
+                .description("Spring Boot REST API for EESSI-Pensjon.\n" +
+                        "Vi finnes på slack https://nav-it.slack.com/messages/CAB4L39T6 eller https://nav-it.slack.com/messages/CADNRDN5T")
                 .build()
     }
 }

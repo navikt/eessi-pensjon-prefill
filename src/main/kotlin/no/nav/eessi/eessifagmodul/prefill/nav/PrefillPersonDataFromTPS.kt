@@ -176,7 +176,7 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
         return doddato?.doedsdato?.simpleFormat()
     }
 
-    fun hentFodested(bruker: no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker): Foedested {
+    fun hentFodested(bruker: no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker): Foedested? {
         logger.debug("2.1.8.1       Fødested")
 
         val fsted = Foedested(
@@ -185,7 +185,7 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
                 region = ""
         )
         if (fsted.land == "Unknown") {
-            return Foedested()
+            return null
         }
         return fsted
     }
@@ -288,22 +288,25 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
         logger.debug("2.2.2           Sivilstand / Familiestatus (01 Enslig, 02 Gift, 03 Samboer, 04 Partnerskal, 05 Skilt, 06 Skilt partner, 07 Separert, 08 Enke)")
         val sivilstand = brukerTps.sivilstand as Sivilstand
 
+        //val status = mapOf<String, String>("01" to "UGIF", "02" to "GIFT", "03" to "SAMB", "04" to "REPA", "05" to "SKIL", "06" to "SKPA", "07" to "SEPA", "08" to "ENKE")
+        val status = mapOf<String, String>("GIFT" to "02", "REPA" to "04", "ENKE" to "08", "SAMB" to "03", "SEPA" to "07", "UGIF" to "01", "SKIL" to "05", "SKPA" to "06")
+
         return listOf(SivilstandItem(
                 //fradato = standardDatoformat(sivilstand.fomGyldighetsperiode),
                 fradato = sivilstand.fomGyldighetsperiode.simpleFormat(),
-                status = sivilstand.sivilstand.value
+                status = status.get(sivilstand.sivilstand.value)
         ))
     }
 
 
     //2.2.2 adresse informasjon
-    fun hentPersonAdresse(person: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): Adresse {
+    fun hentPersonAdresse(person: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): Adresse? {
         logger.debug("2.2.2         Adresse")
 
         //ikke adresse for død
         if (validatePersonStatus(dod)) {
             logger.debug("           Person er avdod (ingen adresse å hente).")
-            return Adresse()
+            return null
         }
 
         //Gateadresse eller UstrukturertAdresse
@@ -314,11 +317,8 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
         val husnr = gateAdresse.husnummer
         return Adresse(
                 postnummer = gateAdresse.poststed.value,
-
                 gate = "$gate $husnr",
-
                 land = hentLandkode(gateAdresse.landkode),
-
                 by = postnummerService.finnPoststed(gateAdresse.poststed.value)
         )
     }
@@ -328,18 +328,28 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
         logger.debug("             UstrukturertAdresse (utland)")
         val gateAdresse = postadr.ustrukturertAdresse as UstrukturertAdresse
 
-        try {
-            return Adresse(
-                    gate = gateAdresse.adresselinje1 ?: null,
-                    bygning = gateAdresse?.adresselinje2 ?: null,
-                    by = gateAdresse?.adresselinje3 ?: "",
-                    postnummer = gateAdresse?.adresselinje4 ?: null,
-                    land = hentLandkode(gateAdresse.landkode)
-            )
-        } catch (ex: Exception) {
-            logger.error("Feiler ved mapping av Ustrukturert Adresse.")
-            return Adresse()
-        }
+        //returnerer nå en bank adresse dersom det finnes en ustrukturertAdresse hos borger.
+        //dette må så endres/rettes av saksbehendlaer i rina?
+        return Adresse(
+                gate = "",
+                bygning = "",
+                by = "",
+                postnummer = "",
+                land = ""
+        )
+
+//        try {
+//
+//                    gate = gateAdresse.adresselinje1 ?: null,
+//                    bygning = gateAdresse?.adresselinje2 ?: null,
+//                    by = gateAdresse?.adresselinje3 ?: "",
+//                    postnummer = gateAdresse?.adresselinje4 ?: null,
+//                    land = hentLandkode(gateAdresse.landkode)
+//            )
+//        } catch (ex: Exception) {
+//            logger.error("Feiler ved mapping av Ustrukturert Adresse.")
+//            return Adresse()
+//        }
 
     }
 
@@ -371,9 +381,10 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
     private fun mapKjonn(kjonn: Kjoenn): String {
         logger.debug("2.1.4         Kjønn")
         val ktyper = kjonn.kjoenn
-        val map: Map<String, String> = hashMapOf("M" to "m", "K" to "f")
-        val value = map[ktyper.value]
-        return value ?: "u"
+//        val map: Map<String, String> = hashMapOf("M" to "m", "K" to "f")
+//        val value = map[ktyper.value]
+//        return value ?: "u"
+        return ktyper.value
     }
 
 

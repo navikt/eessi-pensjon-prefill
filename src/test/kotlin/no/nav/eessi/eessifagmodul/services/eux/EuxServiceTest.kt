@@ -5,6 +5,8 @@ import com.nhaarman.mockito_kotlin.eq
 import com.nhaarman.mockito_kotlin.whenever
 import no.nav.eessi.eessifagmodul.models.*
 import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
+import no.nav.eessi.eessifagmodul.utils.mapJsonToAny
+import no.nav.eessi.eessifagmodul.utils.typeRefs
 import no.nav.eessi.eessifagmodul.utils.validateJson
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -21,6 +23,7 @@ import org.springframework.web.util.UriComponentsBuilder
 import java.nio.file.Files
 import java.nio.file.Paths
 import kotlin.String
+import kotlin.test.assertTrue
 
 
 @RunWith(MockitoJUnitRunner::class)
@@ -85,6 +88,37 @@ class EuxServiceTest {
         service.opprettBucSed(SED("P2000"), "P_BUC_99", "NAVT003", "213123")
     }
 
+    @Test
+    fun `forventer et korrekt navsed P6000 ved kall til getSedOnBucByDocumentId`() {
+        val filepath = "src/test/resources/json/nav/P6000-NAV.json"
+        val json = String(Files.readAllBytes(Paths.get(filepath)))
+        assertTrue(validateJson(json))
+
+        val orgsed = mapJsonToAny(json, typeRefs<SED>())
+
+        val response: ResponseEntity<String> = ResponseEntity(json, HttpStatus.OK)
+
+        //val response = euxOidcRestTemplate.exchange(builder.toUriString(), HttpMethod.GET, null, String::class.java)
+        whenever(mockrestTemplate.exchange(anyString(), eq(HttpMethod.GET), eq(null), eq(String::class.java))).thenReturn(response)
+        val result = service.getSedOnBucByDocumentId("12345678900", "P_BUC_99")
+
+        assertEquals(orgsed, result)
+        assertEquals("P6000", result.sed)
+
+    }
+
+    @Test(expected = EuxServerException::class)
+    fun `feiler med kontakt fra eux med kall til getSedOnBucByDocumentId`() {
+        whenever(mockrestTemplate.exchange(anyString(), eq(HttpMethod.GET), eq(null), eq(String::class.java))).thenThrow(java.lang.RuntimeException::class.java)
+        service.getSedOnBucByDocumentId("12345678900", "P_BUC_99")
+    }
+
+    @Test(expected = SedDokumentIkkeLestException::class)
+    fun `feiler med motta navsed fra eux med kall til getSedOnBucByDocumentId`() {
+        val errorresponse = ResponseEntity<String?>(HttpStatus.UNAUTHORIZED)
+        whenever(mockrestTemplate.exchange(anyString(), eq(HttpMethod.GET), eq(null), eq(String::class.java))).thenReturn(errorresponse)
+        service.getSedOnBucByDocumentId("12345678900", "P_BUC_99")
+    }
 
     //Test Hent Buc
     @Test
@@ -94,7 +128,7 @@ class EuxServiceTest {
         kotlin.test.assertTrue(validateJson(json))
         val response: ResponseEntity<String> = ResponseEntity(json, HttpStatus.OK)
 
-        whenever(mockrestTemplate.exchange(anyString(), eq(HttpMethod.POST), eq(null), eq(String::class.java))).thenReturn(response)
+        whenever(mockrestTemplate.exchange(anyString(), eq(HttpMethod.GET), eq(null), eq(String::class.java))).thenReturn(response)
         val result = service.getBuc("P_BUC_99")
         assertEquals("22909", result.id)
     }
@@ -102,13 +136,13 @@ class EuxServiceTest {
     @Test(expected = BucIkkeMottattException::class)
     fun `feiler med svar tilbake fra et kall til hentbuc`() {
         val errorresponse = ResponseEntity<String?>("", HttpStatus.BAD_REQUEST)
-        whenever(mockrestTemplate.exchange(anyString(), eq(HttpMethod.POST), eq(null), eq(String::class.java))).thenReturn(errorresponse)
+        whenever(mockrestTemplate.exchange(anyString(), eq(HttpMethod.GET), eq(null), eq(String::class.java))).thenReturn(errorresponse)
         service.getBuc("P_BUC_99")
     }
 
     @Test(expected = EuxServerException::class)
     fun `feiler med kontakt fra eux med kall til hentbuc`() {
-        whenever(mockrestTemplate.exchange(anyString(), eq(HttpMethod.POST), eq(null), eq(String::class.java))).thenThrow(RuntimeException::class.java)
+        whenever(mockrestTemplate.exchange(anyString(), eq(HttpMethod.GET), eq(null), eq(String::class.java))).thenThrow(RuntimeException::class.java)
         service.getBuc("P_BUC_99")
     }
 

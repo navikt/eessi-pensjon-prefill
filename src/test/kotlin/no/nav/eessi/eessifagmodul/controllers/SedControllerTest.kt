@@ -6,7 +6,6 @@ import com.nhaarman.mockito_kotlin.whenever
 import no.nav.eessi.eessifagmodul.models.*
 import no.nav.eessi.eessifagmodul.prefill.PrefillDataModel
 import no.nav.eessi.eessifagmodul.prefill.PrefillSED
-import no.nav.eessi.eessifagmodul.services.LandkodeService
 import no.nav.eessi.eessifagmodul.services.PrefillService
 import no.nav.eessi.eessifagmodul.services.aktoerregister.AktoerregisterService
 import no.nav.eessi.eessifagmodul.services.eux.BucSedResponse
@@ -16,7 +15,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers
 import org.mockito.Mock
-import org.mockito.Spy
 import org.mockito.junit.MockitoJUnitRunner
 import org.springframework.web.util.UriComponentsBuilder
 import kotlin.test.assertEquals
@@ -37,26 +35,14 @@ class SedControllerTest {
     @Mock
     lateinit var mockPrefillSED: PrefillSED
 
-    @Spy
-    lateinit var landkodeService: LandkodeService
-
     private lateinit var prefillDataMock: PrefillDataModel
     private lateinit var sedController: SedController
-    private lateinit var landkodeController: LandkodeController
 
     @Before
     fun setUp() {
         prefillDataMock = PrefillDataModel()
         mockPrefillService = PrefillService(mockEuxService, mockPrefillSED)
         this.sedController = SedController(mockEuxService, mockPrefillService, mockAktoerregisterService)
-        this.landkodeController = LandkodeController(landkodeService)
-    }
-
-    @Test
-    fun `create list landkoder`() {
-        val response = landkodeController.getLandKoder()
-        assertNotNull(response)
-        assertEquals(31, response.size)
     }
 
     @Test
@@ -129,92 +115,6 @@ class SedControllerTest {
         assertEquals("123444455", response.caseId)
         assertEquals("2a427c10325c4b5eaf3c27ba5e8f1877", response.documentId)
     }
-
-//    @Test(expected = SedDokumentIkkeGyldigException::class)
-//    fun `addDocument SED on exisiting buc faild canCreate false`() {
-//
-//        val items = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
-//
-//        val requestMock = SedController.ApiRequest(
-//                subjectArea = "Pensjon",
-//                sakId = "EESSI-PEN-123",
-//                euxCaseId = "1234567890",
-//                vedtakId = "1234567",
-//                institutions = items,
-//                sed = "P6000",
-//                buc = "P_BUC_06",
-//                aktoerId = "0105094340092"
-//        )
-//
-//        whenever(mockAktoerregisterService.hentGjeldendeNorskIdentForAktorId(ArgumentMatchers.anyString())).thenReturn("12345")
-//        val utfyllMock = sedController.buildPrefillDataModelOnExisting(requestMock)
-//
-//        assertNotNull(utfyllMock.personNr)
-//        assertEquals("12345", utfyllMock.personNr)
-//
-//        whenever(mockPrefillSED.prefill(any())).thenReturn(utfyllMock)
-//        whenever(mockRinaActions.canCreate(anyString(), anyString())).thenReturn(false)
-//        sedController.addDocument(requestMock)
-//    }
-
-//    @Test(expected = SedDokumentIkkeOpprettetException::class)
-//    fun `addDocument SED on exisiting buc faild canUpdate false`() {
-//
-//        val items = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
-//
-//        val requestMock = SedController.ApiRequest(
-//                subjectArea = "Pensjon",
-//                sakId = "EESSI-PEN-123",
-//                euxCaseId = "1234567890",
-//                vedtakId = "1234567",
-//                institutions = items,
-//                sed = "P6000",
-//                buc = "P_BUC_06",
-//                aktoerId = "0105094340092"
-//        )
-//
-//        whenever(mockAktoerregisterService.hentGjeldendeNorskIdentForAktorId(ArgumentMatchers.anyString())).thenReturn("12345")
-//        val utfyllMock = sedController.buildPrefillDataModelOnExisting(requestMock)
-//
-//        assertNotNull(utfyllMock.personNr)
-//        assertEquals("12345", utfyllMock.personNr)
-//
-//        whenever(mockPrefillSED.prefill(any())).thenReturn(utfyllMock)
-//        whenever(mockEuxService.createSEDonExistingRinaCase(any(), any(), any())).thenReturn(HttpStatus.OK)
-//        whenever(mockRinaActions.canCreate(anyString(), anyString())).thenReturn(true)
-//        whenever(mockRinaActions.canUpdate(utfyllMock.getSEDid(), utfyllMock.euxCaseID)).thenReturn(false)
-//        sedController.addDocument(requestMock)
-//    }
-
-
-//    @Test(expected = SedDokumentIkkeOpprettetException::class)
-//    fun `create document fail on confirmUpdate`() {
-//        val items = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
-//
-//        val requestMock = SedController.ApiRequest(
-//                subjectArea = "Pensjon",
-//                sakId = "EESSI-PEN-123",
-//                vedtakId = "123456",
-//                institutions = items,
-//                euxCaseId = "1234567",
-//                sed = "P6000",
-//                buc = "P_BUC_02",
-//                aktoerId = "0105094340092"
-//        )
-//        val mockResponse = "1234567890"
-//
-//        whenever(mockAktoerregisterService.hentGjeldendeNorskIdentForAktorId(ArgumentMatchers.anyString())).thenReturn("12345")
-//
-//        val utfyllMock = sedController.buildPrefillDataModelOnNew(requestMock)
-//        assertNotNull(utfyllMock.personNr)
-//        assertEquals("12345", utfyllMock.personNr)
-//
-//        whenever(mockEuxService.opprettBucSed(any(), anyString(), anyString(), anyString())).thenReturn(mockResponse)
-//        whenever(mockPrefillSED.prefill(any())).thenReturn(utfyllMock)
-//
-//        val result = sedController.createDocument(requestMock)
-//        assertEquals("1234567890", result)
-//    }
 
     @Test
     fun `confirm document`() {

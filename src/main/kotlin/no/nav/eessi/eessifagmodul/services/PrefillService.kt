@@ -15,7 +15,20 @@ class PrefillService(private val euxService: EuxService, private val prefillSED:
 
     //preutfylling av sed fra TPS, PESYS, AAREG o.l skjer her..
     fun prefillSed(dataModel: PrefillDataModel): PrefillDataModel {
+
         return prefillSED.prefill(dataModel)
+
+        //kun nå under testing
+//        val sed = data.sed
+//        sed.nav?.eessisak = null
+//        sed.nav?.bruker?.person?.pin = null
+//        sed.nav?.bruker?.adresse = null
+//        sed.nav?.barn = null
+//        sed.nav?.bruker?.far = null
+//        sed.nav?.bruker?.mor = null
+//        sed.nav?.ektefelle = null
+        //kun nå under testing
+
     }
 
     /**

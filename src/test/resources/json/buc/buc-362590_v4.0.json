@@ -1,0 +1,3375 @@
+{
+  "creator": {
+    "name": "Z990511",
+    "organisation": {
+      "activeSince": "2017-10-19T22:00:00Z",
+      "address": {
+        "country": "NO",
+        "town": null,
+        "street": null,
+        "postalCode": null,
+        "region": null
+      },
+      "registryNumber": null,
+      "acronym": "12347",
+      "countryCode": "NO",
+      "name": "NAVT002",
+      "contactMethods": null,
+      "location": null,
+      "id": "NAVT002"
+    },
+    "id": "AWP9c_wdE2L8AIJZ8L0C",
+    "type": "User"
+  },
+  "attachments": [],
+  "comments": [],
+  "documents": [
+    {
+      "attachments": null,
+      "displayName": "Country specific information",
+      "isDummyDocument": false,
+      "mimeType": "json",
+      "type": "P3000_NO",
+      "conversations": [
+        {
+          "id": "fdb2f3e171fa4fc7abb94857430d82c7",
+          "participants": [
+            {
+              "role": "Receiver",
+              "organisation": {
+                "activeSince": "2018-02-12T23:00:00Z",
+                "address": {
+                  "country": "NO",
+                  "town": null,
+                  "street": null,
+                  "postalCode": null,
+                  "region": null
+                },
+                "registryNumber": null,
+                "acronym": "12348",
+                "countryCode": "NO",
+                "name": "NAVT003",
+                "contactMethods": null,
+                "location": null,
+                "id": "NAVT003"
+              }
+            },
+            {
+              "role": "Sender",
+              "organisation": {
+                "activeSince": "2017-10-19T22:00:00Z",
+                "address": {
+                  "country": "NO",
+                  "town": null,
+                  "street": null,
+                  "postalCode": null,
+                  "region": null
+                },
+                "registryNumber": null,
+                "acronym": "12347",
+                "countryCode": "NO",
+                "name": "NAVT002",
+                "contactMethods": null,
+                "location": null,
+                "id": "NAVT002"
+              }
+            }
+          ]
+        }
+      ],
+      "hasMultipleVersions": true,
+      "hasBusinessValidation": false,
+      "ParentType": "P3000_NO",
+      "id": "9386bc54a06b4476b240466b70464d36",
+      "hasCancel": true,
+      "direction": "OUT",
+      "hasLetter": false,
+      "creator": {
+        "name": "Z990638",
+        "organisation": {
+          "activeSince": "2017-10-19T22:00:00Z",
+          "address": {
+            "country": "NO",
+            "town": null,
+            "street": null,
+            "postalCode": null,
+            "region": null
+          },
+          "registryNumber": null,
+          "acronym": "12347",
+          "countryCode": "NO",
+          "name": "NAVT002",
+          "contactMethods": null,
+          "location": null,
+          "id": "NAVT002"
+        },
+        "id": "0",
+        "type": "User"
+      },
+      "hasReject": false,
+      "hasReplyClarify": false,
+      "comments": [],
+      "starter": false,
+      "isMLC": true,
+      "selectParticipants": false,
+      "subProcessId": 362605,
+      "isAdmin": false,
+      "hasClarify": false,
+      "creationDate": "2018-09-06T08:35:11Z",
+      "createTemplate": null,
+      "toSenderOnly": false,
+      "typeVersion": "4.0",
+      "allowsAttachments": true,
+      "versions": [
+        {
+          "date": "2018-09-06T08:35:11Z",
+          "id": "1",
+          "user": {
+            "name": "Z990638",
+            "organisation": {
+              "activeSince": "2017-10-19T22:00:00Z",
+              "address": {
+                "country": "NO",
+                "town": null,
+                "street": null,
+                "postalCode": null,
+                "region": null
+              },
+              "registryNumber": null,
+              "acronym": "12347",
+              "countryCode": "NO",
+              "name": "NAVT002",
+              "contactMethods": null,
+              "location": null,
+              "id": "NAVT002"
+            },
+            "id": "0",
+            "type": "User"
+          }
+        }
+      ],
+      "lastUpdate": "2018-09-06T08:35:11Z",
+      "bulk": false,
+      "isFirstDocument": false,
+      "status": "empty"
+    },
+    {
+      "attachments": null,
+      "displayName": "Invalidate Sed",
+      "isDummyDocument": false,
+      "mimeType": "json",
+      "type": "X008",
+      "conversations": [
+        {
+          "id": "42cbd9795a17401bad099033977d4870",
+          "participants": [
+            {
+              "role": "Sender",
+              "organisation": {
+                "activeSince": "2017-10-19T22:00:00Z",
+                "address": {
+                  "country": "NO",
+                  "town": null,
+                  "street": null,
+                  "postalCode": null,
+                  "region": null
+                },
+                "registryNumber": null,
+                "acronym": "12347",
+                "countryCode": "NO",
+                "name": "NAVT002",
+                "contactMethods": null,
+                "location": null,
+                "id": "NAVT002"
+              }
+            },
+            {
+              "role": "Receiver",
+              "organisation": {
+                "activeSince": "2018-02-12T23:00:00Z",
+                "address": {
+                  "country": "NO",
+                  "town": null,
+                  "street": null,
+                  "postalCode": null,
+                  "region": null
+                },
+                "registryNumber": null,
+                "acronym": "12348",
+                "countryCode": "NO",
+                "name": "NAVT003",
+                "contactMethods": null,
+                "location": null,
+                "id": "NAVT003"
+              }
+            }
+          ]
+        }
+      ],
+      "isSendExecuted": true,
+      "hasMultipleVersions": false,
+      "hasBusinessValidation": false,
+      "ParentType": "P2000",
+      "id": "825605d852f1479eae918a4b651d6bc3",
+      "hasCancel": false,
+      "validation": {
+        "status": "valid"
+      },
+      "direction": "OUT",
+      "order": 1,
+      "hasLetter": false,
+      "creator": {
+        "name": "Z990638",
+        "organisation": {
+          "activeSince": "2017-10-19T22:00:00Z",
+          "address": {
+            "country": "NO",
+            "town": null,
+            "street": null,
+            "postalCode": null,
+            "region": null
+          },
+          "registryNumber": null,
+          "acronym": "12347",
+          "countryCode": "NO",
+          "name": "NAVT002",
+          "contactMethods": null,
+          "location": null,
+          "id": "NAVT002"
+        },
+        "id": "AWP9c_wdE2L8AIJZ8L0C",
+        "type": "User"
+      },
+      "hasReject": false,
+      "hasReplyClarify": false,
+      "comments": [],
+      "starter": false,
+      "isMLC": true,
+      "selectParticipants": false,
+      "subProcessId": 362603,
+      "isAdmin": true,
+      "hasClarify": false,
+      "creationDate": "2018-09-06T08:35:11Z",
+      "createTemplate": null,
+      "toSenderOnly": false,
+      "typeVersion": "4.0",
+      "allowsAttachments": true,
+      "versions": [
+        {
+          "date": "2018-09-06T08:35:11Z",
+          "id": "1",
+          "user": {
+            "name": "Z990638",
+            "organisation": {
+              "activeSince": "2017-10-19T22:00:00Z",
+              "address": {
+                "country": "NO",
+                "town": null,
+                "street": null,
+                "postalCode": null,
+                "region": null
+              },
+              "registryNumber": null,
+              "acronym": "12347",
+              "countryCode": "NO",
+              "name": "NAVT002",
+              "contactMethods": null,
+              "location": null,
+              "id": "NAVT002"
+            },
+            "id": "AWP9c_wdE2L8AIJZ8L0C",
+            "type": "User"
+          }
+        }
+      ],
+      "lastUpdate": "2018-09-06T08:35:11Z",
+      "bulk": false,
+      "isFirstDocument": false,
+      "parentDocumentId": "8a8c24ebaf3f44f3a4b281c0e0275f0e",
+      "status": "empty"
+    },
+    {
+      "attachments": null,
+      "displayName": "Forward Case",
+      "isDummyDocument": false,
+      "mimeType": "json",
+      "type": "X007",
+      "conversations": [
+        {
+          "id": "d70381f899d14b73bbd440bf0e10117b",
+          "participants": [
+            {
+              "role": "Sender",
+              "organisation": {
+                "activeSince": "2017-10-19T22:00:00Z",
+                "address": {
+                  "country": "NO",
+                  "town": null,
+                  "street": null,
+                  "postalCode": null,
+                  "region": null
+                },
+                "registryNumber": null,
+                "acronym": "12347",
+                "countryCode": "NO",
+                "name": "NAVT002",
+                "contactMethods": null,
+                "location": null,
+                "id": "NAVT002"
+              }
+            },
+            {
+              "role": "Receiver",
+              "organisation": {
+                "activeSince": "2018-02-12T23:00:00Z",
+                "address": {
+                  "country": "NO",
+                  "town": null,
+                  "street": null,
+                  "postalCode": null,
+                  "region": null
+                },
+                "registryNumber": null,
+                "acronym": "12348",
+                "countryCode": "NO",
+                "name": "NAVT003",
+                "contactMethods": null,
+                "location": null,
+                "id": "NAVT003"
+              }
+            }
+          ]
+        }
+      ],
+      "hasMultipleVersions": null,
+      "hasBusinessValidation": true,
+      "ParentType": "X007",
+      "id": "f22911bb71174040b0781e82942b59a6",
+      "hasCancel": null,
+      "direction": "OUT",
+      "hasLetter": false,
+      "creator": {
+        "name": "Z990638",
+        "organisation": {
+          "activeSince": "2017-10-19T22:00:00Z",
+          "address": {
+            "country": "NO",
+            "town": null,
+            "street": null,
+            "postalCode": null,
+            "region": null
+          },
+          "registryNumber": null,
+          "acronym": "12347",
+          "countryCode": "NO",
+          "name": "NAVT002",
+          "contactMethods": null,
+          "location": null,
+          "id": "NAVT002"
+        },
+        "id": "0",
+        "type": "User"
+      },
+      "hasReject": null,
+      "hasReplyClarify": false,
+      "comments": [],
+      "starter": false,
+      "isMLC": true,
+      "selectParticipants": null,
+      "subProcessId": 362611,
+      "isAdmin": false,
+      "hasClarify": null,
+      "creationDate": "2018-09-06T08:35:11Z",
+      "createTemplate": null,
+      "toSenderOnly": false,
+      "typeVersion": "4.0",
+      "allowsAttachments": false,
+      "versions": [
+        {
+          "date": "2018-09-06T08:35:11Z",
+          "id": "1",
+          "user": {
+            "name": "Z990638",
+            "organisation": {
+              "activeSince": "2017-10-19T22:00:00Z",
+              "address": {
+                "country": "NO",
+                "town": null,
+                "street": null,
+                "postalCode": null,
+                "region": null
+              },
+              "registryNumber": null,
+              "acronym": "12347",
+              "countryCode": "NO",
+              "name": "NAVT002",
+              "contactMethods": null,
+              "location": null,
+              "id": "NAVT002"
+            },
+            "id": "0",
+            "type": "User"
+          }
+        }
+      ],
+      "lastUpdate": "2018-09-06T08:35:11Z",
+      "bulk": false,
+      "isFirstDocument": false,
+      "status": "empty"
+    },
+    {
+      "attachments": null,
+      "displayName": "Request for additional information",
+      "isDummyDocument": false,
+      "mimeType": "json",
+      "type": "P8000",
+      "conversations": [
+        {
+          "id": "f0cae96aada4430faaae69cfa72190b9",
+          "participants": [
+            {
+              "role": "Sender",
+              "organisation": {
+                "activeSince": "2017-10-19T22:00:00Z",
+                "address": {
+                  "country": "NO",
+                  "town": null,
+                  "street": null,
+                  "postalCode": null,
+                  "region": null
+                },
+                "registryNumber": null,
+                "acronym": "12347",
+                "countryCode": "NO",
+                "name": "NAVT002",
+                "contactMethods": null,
+                "location": null,
+                "id": "NAVT002"
+              }
+            },
+            {
+              "role": "Receiver",
+              "organisation": {
+                "activeSince": "2018-02-12T23:00:00Z",
+                "address": {
+                  "country": "NO",
+                  "town": null,
+                  "street": null,
+                  "postalCode": null,
+                  "region": null
+                },
+                "registryNumber": null,
+                "acronym": "12348",
+                "countryCode": "NO",
+                "name": "NAVT003",
+                "contactMethods": null,
+                "location": null,
+                "id": "NAVT003"
+              }
+            }
+          ]
+        }
+      ],
+      "hasMultipleVersions": true,
+      "hasBusinessValidation": false,
+      "ParentType": "P8000",
+      "id": "90d468da4d5c40b4a9d146e2f718c6f4",
+      "hasCancel": true,
+      "direction": "OUT",
+      "hasLetter": false,
+      "creator": {
+        "name": "Z990638",
+        "organisation": {
+          "activeSince": "2017-10-19T22:00:00Z",
+          "address": {
+            "country": "NO",
+            "town": null,
+            "street": null,
+            "postalCode": null,
+            "region": null
+          },
+          "registryNumber": null,
+          "acronym": "12347",
+          "countryCode": "NO",
+          "name": "NAVT002",
+          "contactMethods": null,
+          "location": null,
+          "id": "NAVT002"
+        },
+        "id": "0",
+        "type": "User"
+      },
+      "hasReject": false,
+      "hasReplyClarify": false,
+      "comments": [],
+      "starter": false,
+      "isMLC": true,
+      "selectParticipants": true,
+      "subProcessId": 362620,
+      "isAdmin": false,
+      "hasClarify": false,
+      "creationDate": "2018-09-06T08:35:12Z",
+      "createTemplate": null,
+      "toSenderOnly": false,
+      "typeVersion": "4.0",
+      "allowsAttachments": true,
+      "versions": [
+        {
+          "date": "2018-09-06T08:35:12Z",
+          "id": "1",
+          "user": {
+            "name": "Z990638",
+            "organisation": {
+              "activeSince": "2017-10-19T22:00:00Z",
+              "address": {
+                "country": "NO",
+                "town": null,
+                "street": null,
+                "postalCode": null,
+                "region": null
+              },
+              "registryNumber": null,
+              "acronym": "12347",
+              "countryCode": "NO",
+              "name": "NAVT002",
+              "contactMethods": null,
+              "location": null,
+              "id": "NAVT002"
+            },
+            "id": "0",
+            "type": "User"
+          }
+        }
+      ],
+      "lastUpdate": "2018-09-06T08:35:12Z",
+      "bulk": false,
+      "isFirstDocument": false,
+      "status": "empty"
+    },
+    {
+      "attachments": null,
+      "displayName": "Notification of Summary note",
+      "isDummyDocument": false,
+      "mimeType": "json",
+      "type": "P7000",
+      "conversations": [
+        {
+          "id": "144e40faa4434419879ca632efbf3f3b",
+          "participants": [
+            {
+              "role": "Sender",
+              "organisation": {
+                "activeSince": "2017-10-19T22:00:00Z",
+                "address": {
+                  "country": "NO",
+                  "town": null,
+                  "street": null,
+                  "postalCode": null,
+                  "region": null
+                },
+                "registryNumber": null,
+                "acronym": "12347",
+                "countryCode": "NO",
+                "name": "NAVT002",
+                "contactMethods": null,
+                "location": null,
+                "id": "NAVT002"
+              }
+            },
+            {
+              "role": "Receiver",
+              "organisation": {
+                "activeSince": "2018-02-12T23:00:00Z",
+                "address": {
+                  "country": "NO",
+                  "town": null,
+                  "street": null,
+                  "postalCode": null,
+                  "region": null
+                },
+                "registryNumber": null,
+                "acronym": "12348",
+                "countryCode": "NO",
+                "name": "NAVT003",
+                "contactMethods": null,
+                "location": null,
+                "id": "NAVT003"
+              }
+            }
+          ]
+        }
+      ],
+      "hasMultipleVersions": true,
+      "hasBusinessValidation": false,
+      "ParentType": "P7000",
+      "id": "b193d2bd87344f31924fc1d381de929e",
+      "hasCancel": true,
+      "direction": "OUT",
+      "hasLetter": false,
+      "creator": {
+        "name": "Z990638",
+        "organisation": {
+          "activeSince": "2017-10-19T22:00:00Z",
+          "address": {
+            "country": "NO",
+            "town": null,
+            "street": null,
+            "postalCode": null,
+            "region": null
+          },
+          "registryNumber": null,
+          "acronym": "12347",
+          "countryCode": "NO",
+          "name": "NAVT002",
+          "contactMethods": null,
+          "location": null,
+          "id": "NAVT002"
+        },
+        "id": "0",
+        "type": "User"
+      },
+      "hasReject": false,
+      "hasReplyClarify": false,
+      "comments": [],
+      "starter": false,
+      "isMLC": true,
+      "selectParticipants": false,
+      "subProcessId": 362604,
+      "isAdmin": false,
+      "hasClarify": false,
+      "creationDate": "2018-09-06T08:35:11Z",
+      "createTemplate": null,
+      "toSenderOnly": false,
+      "typeVersion": "4.0",
+      "allowsAttachments": false,
+      "versions": [
+        {
+          "date": "2018-09-06T08:35:11Z",
+          "id": "1",
+          "user": {
+            "name": "Z990638",
+            "organisation": {
+              "activeSince": "2017-10-19T22:00:00Z",
+              "address": {
+                "country": "NO",
+                "town": null,
+                "street": null,
+                "postalCode": null,
+                "region": null
+              },
+              "registryNumber": null,
+              "acronym": "12347",
+              "countryCode": "NO",
+              "name": "NAVT002",
+              "contactMethods": null,
+              "location": null,
+              "id": "NAVT002"
+            },
+            "id": "0",
+            "type": "User"
+          }
+        }
+      ],
+      "lastUpdate": "2018-09-06T08:35:11Z",
+      "bulk": false,
+      "isFirstDocument": false,
+      "status": "empty"
+    },
+    {
+      "attachments": null,
+      "displayName": "Add New Participant",
+      "isDummyDocument": false,
+      "mimeType": "json",
+      "type": "X005",
+      "conversations": [
+        {
+          "id": "8c0f0f584204487a91dbcaedaa25417c",
+          "participants": [
+            {
+              "role": "Sender",
+              "organisation": {
+                "activeSince": "2017-10-19T22:00:00Z",
+                "address": {
+                  "country": "NO",
+                  "town": null,
+                  "street": null,
+                  "postalCode": null,
+                  "region": null
+                },
+                "registryNumber": null,
+                "acronym": "12347",
+                "countryCode": "NO",
+                "name": "NAVT002",
+                "contactMethods": null,
+                "location": null,
+                "id": "NAVT002"
+              }
+            },
+            {
+              "role": "Receiver",
+              "organisation": {
+                "activeSince": "2018-02-12T23:00:00Z",
+                "address": {
+                  "country": "NO",
+                  "town": null,
+                  "street": null,
+                  "postalCode": null,
+                  "region": null
+                },
+                "registryNumber": null,
+                "acronym": "12348",
+                "countryCode": "NO",
+                "name": "NAVT003",
+                "contactMethods": null,
+                "location": null,
+                "id": "NAVT003"
+              }
+            }
+          ]
+        }
+      ],
+      "hasMultipleVersions": null,
+      "hasBusinessValidation": true,
+      "ParentType": "X005",
+      "id": "75dfae641d834adabe122fa6a85df3fa",
+      "hasCancel": null,
+      "direction": "OUT",
+      "hasLetter": false,
+      "creator": {
+        "name": "Z990638",
+        "organisation": {
+          "activeSince": "2017-10-19T22:00:00Z",
+          "address": {
+            "country": "NO",
+            "town": null,
+            "street": null,
+            "postalCode": null,
+            "region": null
+          },
+          "registryNumber": null,
+          "acronym": "12347",
+          "countryCode": "NO",
+          "name": "NAVT002",
+          "contactMethods": null,
+          "location": null,
+          "id": "NAVT002"
+        },
+        "id": "0",
+        "type": "User"
+      },
+      "hasReject": null,
+      "hasReplyClarify": false,
+      "comments": [],
+      "starter": false,
+      "isMLC": true,
+      "selectParticipants": null,
+      "subProcessId": 362610,
+      "isAdmin": false,
+      "hasClarify": null,
+      "creationDate": "2018-09-06T08:35:12Z",
+      "createTemplate": null,
+      "toSenderOnly": false,
+      "typeVersion": "4.0",
+      "allowsAttachments": false,
+      "versions": [
+        {
+          "date": "2018-09-06T08:35:12Z",
+          "id": "1",
+          "user": {
+            "name": "Z990638",
+            "organisation": {
+              "activeSince": "2017-10-19T22:00:00Z",
+              "address": {
+                "country": "NO",
+                "town": null,
+                "street": null,
+                "postalCode": null,
+                "region": null
+              },
+              "registryNumber": null,
+              "acronym": "12347",
+              "countryCode": "NO",
+              "name": "NAVT002",
+              "contactMethods": null,
+              "location": null,
+              "id": "NAVT002"
+            },
+            "id": "0",
+            "type": "User"
+          }
+        }
+      ],
+      "lastUpdate": "2018-09-06T08:35:12Z",
+      "bulk": false,
+      "isFirstDocument": false,
+      "status": "empty"
+    },
+    {
+      "attachments": null,
+      "displayName": "Report on insurance history",
+      "isDummyDocument": false,
+      "mimeType": "json",
+      "type": "P4000",
+      "conversations": [
+        {
+          "id": "3b59e63a3547442a8e3d6a21769136ac",
+          "participants": [
+            {
+              "role": "Sender",
+              "organisation": {
+                "activeSince": "2017-10-19T22:00:00Z",
+                "address": {
+                  "country": "NO",
+                  "town": null,
+                  "street": null,
+                  "postalCode": null,
+                  "region": null
+                },
+                "registryNumber": null,
+                "acronym": "12347",
+                "countryCode": "NO",
+                "name": "NAVT002",
+                "contactMethods": null,
+                "location": null,
+                "id": "NAVT002"
+              }
+            },
+            {
+              "role": "Receiver",
+              "organisation": {
+                "activeSince": "2018-02-12T23:00:00Z",
+                "address": {
+                  "country": "NO",
+                  "town": null,
+                  "street": null,
+                  "postalCode": null,
+                  "region": null
+                },
+                "registryNumber": null,
+                "acronym": "12348",
+                "countryCode": "NO",
+                "name": "NAVT003",
+                "contactMethods": null,
+                "location": null,
+                "id": "NAVT003"
+              }
+            }
+          ]
+        }
+      ],
+      "hasMultipleVersions": true,
+      "hasBusinessValidation": false,
+      "ParentType": "P4000",
+      "id": "1a4f7d5f713646d2a648a6e1bd3fbd47",
+      "hasCancel": true,
+      "validation": {
+        "status": "valid"
+      },
+      "direction": "OUT",
+      "hasLetter": false,
+      "creator": {
+        "name": "Z990511",
+        "organisation": {
+          "activeSince": "2017-10-19T22:00:00Z",
+          "address": {
+            "country": "NO",
+            "town": null,
+            "street": null,
+            "postalCode": null,
+            "region": null
+          },
+          "registryNumber": null,
+          "acronym": "12347",
+          "countryCode": "NO",
+          "name": "NAVT002",
+          "contactMethods": null,
+          "location": null,
+          "id": "NAVT002"
+        },
+        "id": "AWP9c_wdE2L8AIJZ8L0C",
+        "type": "User"
+      },
+      "hasReject": false,
+      "hasReplyClarify": false,
+      "comments": [],
+      "starter": false,
+      "isMLC": true,
+      "selectParticipants": false,
+      "subProcessId": 362640,
+      "isAdmin": false,
+      "hasClarify": false,
+      "creationDate": "2018-09-06T09:06:04.387Z",
+      "createTemplate": null,
+      "toSenderOnly": false,
+      "typeVersion": "4.0",
+      "allowsAttachments": true,
+      "versions": [
+        {
+          "date": "2018-09-06T09:06:04.387Z",
+          "id": "1",
+          "user": {
+            "name": "Z990511",
+            "organisation": {
+              "activeSince": "2017-10-19T22:00:00Z",
+              "address": {
+                "country": "NO",
+                "town": null,
+                "street": null,
+                "postalCode": null,
+                "region": null
+              },
+              "registryNumber": null,
+              "acronym": "12347",
+              "countryCode": "NO",
+              "name": "NAVT002",
+              "contactMethods": null,
+              "location": null,
+              "id": "NAVT002"
+            },
+            "id": "AWP9c_wdE2L8AIJZ8L0C",
+            "type": "User"
+          }
+        }
+      ],
+      "lastUpdate": "2018-09-06T09:06:04.387Z",
+      "bulk": false,
+      "isFirstDocument": false,
+      "status": "new"
+    },
+    {
+      "attachments": null,
+      "displayName": "Old age pension claim",
+      "isDummyDocument": false,
+      "mimeType": "json",
+      "type": "P2000",
+      "conversations": [
+        {
+          "date": "2018-09-06T08:34:54Z",
+          "versionId": "1",
+          "userMessages": [
+            {
+              "receiver": {
+                "activeSince": "2018-02-12T23:00:00Z",
+                "address": {
+                  "country": "NO",
+                  "town": null,
+                  "street": null,
+                  "postalCode": null,
+                  "region": null
+                },
+                "registryNumber": null,
+                "acronym": "12348",
+                "countryCode": "NO",
+                "name": "NAVT003",
+                "contactMethods": null,
+                "location": null,
+                "id": "NAVT003"
+              },
+              "sender": {
+                "activeSince": "2017-10-19T22:00:00Z",
+                "address": {
+                  "country": "NO",
+                  "town": null,
+                  "street": null,
+                  "postalCode": null,
+                  "region": null
+                },
+                "registryNumber": null,
+                "acronym": "12347",
+                "countryCode": "NO",
+                "name": "NAVT002",
+                "contactMethods": null,
+                "location": null,
+                "id": "NAVT002"
+              },
+              "sbdh": {
+                "attachments": [],
+                "sender": {
+                  "identifier": "NO:NAVT002",
+                  "contactTypeIdentifier": "CASE_OWNER",
+                  "authority": "urn:eu:europa:ec:dgempl:eessi:ir"
+                },
+                "receivers": [
+                  {
+                    "identifier": "NO:NAVT003",
+                    "contactTypeIdentifier": "COUNTERPARTY",
+                    "authority": "urn:eu:europa:ec:dgempl:eessi:ir"
+                  }
+                ],
+                "headerVersion": "1.1",
+                "documentIdentification": {
+                  "identifier": "65cd41e9-2292-4256-8525-d407a36d2953",
+                  "schemaVersion": "4.0",
+                  "setIdentifier": "8a8c24eb-af3f-44f3-a4b2-81c0e0275f0e",
+                  "action": "START",
+                  "relatedSetIdentifier": null,
+                  "type": "P2000",
+                  "creationDate": "2018-09-06T08:34:42.987+0000",
+                  "version": "1"
+                },
+                "caseIdentification": {
+                  "identifier": "9dd47bb7-8ab8-4453-9bf3-d8227271c7f8",
+                  "protectedPerson": false,
+                  "type": "P_BUC_01",
+                  "version": "1.0"
+                }
+              },
+              "ack": {
+                "date": "2018-09-06T08:35:27.563Z",
+                "receiver": {
+                  "activeSince": "2018-02-12T23:00:00Z",
+                  "address": {
+                    "country": "NO",
+                    "town": null,
+                    "street": null,
+                    "postalCode": null,
+                    "region": null
+                  },
+                  "registryNumber": null,
+                  "acronym": "12348",
+                  "countryCode": "NO",
+                  "name": "NAVT003",
+                  "contactMethods": null,
+                  "location": null,
+                  "id": "NAVT003"
+                },
+                "sender": {
+                  "activeSince": "2017-10-19T22:00:00Z",
+                  "address": {
+                    "country": "NO",
+                    "town": null,
+                    "street": null,
+                    "postalCode": null,
+                    "region": null
+                  },
+                  "registryNumber": null,
+                  "acronym": "12347",
+                  "countryCode": "NO",
+                  "name": "NAVT002",
+                  "contactMethods": null,
+                  "location": null,
+                  "id": "NAVT002"
+                },
+                "id": "049f9b5c35b2482faa35ebe306520aee"
+              },
+              "action": "Start",
+              "isSent": true,
+              "id": "049f9b5c35b2482faa35ebe306520aee"
+            }
+          ],
+          "id": "e34646335e494741b31ab59271f00ebb",
+          "participants": [
+            {
+              "role": "Sender",
+              "organisation": {
+                "activeSince": "2017-10-19T22:00:00Z",
+                "address": {
+                  "country": "NO",
+                  "town": null,
+                  "street": null,
+                  "postalCode": null,
+                  "region": null
+                },
+                "registryNumber": null,
+                "acronym": "12347",
+                "countryCode": "NO",
+                "name": "NAVT002",
+                "contactMethods": null,
+                "location": null,
+                "id": "NAVT002"
+              }
+            },
+            {
+              "role": "Receiver",
+              "organisation": {
+                "activeSince": "2018-02-12T23:00:00Z",
+                "address": {
+                  "country": "NO",
+                  "town": null,
+                  "street": null,
+                  "postalCode": null,
+                  "region": null
+                },
+                "registryNumber": null,
+                "acronym": "12348",
+                "countryCode": "NO",
+                "name": "NAVT003",
+                "contactMethods": null,
+                "location": null,
+                "id": "NAVT003"
+              }
+            }
+          ]
+        }
+      ],
+      "isSendExecuted": true,
+      "hasMultipleVersions": true,
+      "hasBusinessValidation": false,
+      "ParentType": "P2000",
+      "id": "8a8c24ebaf3f44f3a4b281c0e0275f0e",
+      "hasCancel": true,
+      "validation": {
+        "status": "valid"
+      },
+      "direction": "OUT",
+      "order": 1,
+      "hasLetter": false,
+      "creator": {
+        "name": "Z990511",
+        "organisation": {
+          "activeSince": "2017-10-19T22:00:00Z",
+          "address": {
+            "country": "NO",
+            "town": null,
+            "street": null,
+            "postalCode": null,
+            "region": null
+          },
+          "registryNumber": null,
+          "acronym": "12347",
+          "countryCode": "NO",
+          "name": "NAVT002",
+          "contactMethods": null,
+          "location": null,
+          "id": "NAVT002"
+        },
+        "id": "AWP9c_wdE2L8AIJZ8L0C",
+        "type": "User"
+      },
+      "hasReject": false,
+      "hasReplyClarify": false,
+      "comments": [],
+      "starter": true,
+      "isMLC": true,
+      "selectParticipants": true,
+      "subProcessId": 362593,
+      "isAdmin": false,
+      "hasClarify": false,
+      "creationDate": "2018-09-06T08:34:42.987Z",
+      "createTemplate": null,
+      "toSenderOnly": false,
+      "typeVersion": "4.0",
+      "allowsAttachments": true,
+      "versions": [
+        {
+          "date": "2018-09-06T08:34:42.987Z",
+          "id": "1",
+          "user": {
+            "name": "Z990511",
+            "organisation": {
+              "activeSince": "2017-10-19T22:00:00Z",
+              "address": {
+                "country": "NO",
+                "town": null,
+                "street": null,
+                "postalCode": null,
+                "region": null
+              },
+              "registryNumber": null,
+              "acronym": "12347",
+              "countryCode": "NO",
+              "name": "NAVT002",
+              "contactMethods": null,
+              "location": null,
+              "id": "NAVT002"
+            },
+            "id": "AWP9c_wdE2L8AIJZ8L0C",
+            "type": "User"
+          }
+        }
+      ],
+      "lastUpdate": "2018-09-06T08:34:42.987Z",
+      "bulk": false,
+      "isFirstDocument": true,
+      "status": "sent"
+    },
+    {
+      "attachments": null,
+      "displayName": "Insurance/residence periods",
+      "isDummyDocument": false,
+      "mimeType": "json",
+      "type": "P5000",
+      "conversations": [
+        {
+          "id": "51ff1ed67253457fb63b74f7d0f022c0",
+          "participants": [
+            {
+              "role": "Sender",
+              "organisation": {
+                "activeSince": "2017-10-19T22:00:00Z",
+                "address": {
+                  "country": "NO",
+                  "town": null,
+                  "street": null,
+                  "postalCode": null,
+                  "region": null
+                },
+                "registryNumber": null,
+                "acronym": "12347",
+                "countryCode": "NO",
+                "name": "NAVT002",
+                "contactMethods": null,
+                "location": null,
+                "id": "NAVT002"
+              }
+            },
+            {
+              "role": "Receiver",
+              "organisation": {
+                "activeSince": "2018-02-12T23:00:00Z",
+                "address": {
+                  "country": "NO",
+                  "town": null,
+                  "street": null,
+                  "postalCode": null,
+                  "region": null
+                },
+                "registryNumber": null,
+                "acronym": "12348",
+                "countryCode": "NO",
+                "name": "NAVT003",
+                "contactMethods": null,
+                "location": null,
+                "id": "NAVT003"
+              }
+            }
+          ]
+        }
+      ],
+      "hasMultipleVersions": true,
+      "hasBusinessValidation": false,
+      "ParentType": "P5000",
+      "id": "401efdee0d54431aae4af59049ff21ac",
+      "hasCancel": true,
+      "validation": {
+        "status": "valid"
+      },
+      "direction": "OUT",
+      "hasLetter": false,
+      "creator": {
+        "name": "Z990511",
+        "organisation": {
+          "activeSince": "2017-10-19T22:00:00Z",
+          "address": {
+            "country": "NO",
+            "town": null,
+            "street": null,
+            "postalCode": null,
+            "region": null
+          },
+          "registryNumber": null,
+          "acronym": "12347",
+          "countryCode": "NO",
+          "name": "NAVT002",
+          "contactMethods": null,
+          "location": null,
+          "id": "NAVT002"
+        },
+        "id": "AWP9c_wdE2L8AIJZ8L0C",
+        "type": "User"
+      },
+      "hasReject": false,
+      "hasReplyClarify": false,
+      "comments": [
+        {
+          "date": "2018-11-08T15:10:55.997Z",
+          "creator": {
+            "name": "Z990638",
+            "organisation": {
+              "activeSince": "2017-10-19T22:00:00.000Z",
+              "address": {
+                "country": "NO",
+                "town": null,
+                "street": null,
+                "postalCode": null,
+                "region": null
+              },
+              "registryNumber": null,
+              "acronym": "12347",
+              "countryCode": "NO",
+              "name": "NAVT002",
+              "contactMethods": null,
+              "location": null,
+              "id": "NAVT002"
+            },
+            "type": "ROLE_REGULAR"
+          },
+          "caseId": "362590",
+          "comment": "shsfghsfgh",
+          "documentId": "401efdee0d54431aae4af59049ff21ac",
+          "id": "08d538b63e674621bebde0b1445e4d38"
+        },
+        {
+          "date": "2018-11-08T15:10:57.213Z",
+          "creator": {
+            "name": "Z990638",
+            "organisation": {
+              "activeSince": "2017-10-19T22:00:00.000Z",
+              "address": {
+                "country": "NO",
+                "town": null,
+                "street": null,
+                "postalCode": null,
+                "region": null
+              },
+              "registryNumber": null,
+              "acronym": "12347",
+              "countryCode": "NO",
+              "name": "NAVT002",
+              "contactMethods": null,
+              "location": null,
+              "id": "NAVT002"
+            },
+            "type": "ROLE_REGULAR"
+          },
+          "caseId": "362590",
+          "comment": "aghsfghsfghdf gh",
+          "documentId": "401efdee0d54431aae4af59049ff21ac",
+          "id": "5b4bbcf85d994cd0a401b75072a5d627"
+        },
+        {
+          "date": "2018-11-08T15:10:54.871Z",
+          "creator": {
+            "name": "Z990638",
+            "organisation": {
+              "activeSince": "2017-10-19T22:00:00.000Z",
+              "address": {
+                "country": "NO",
+                "town": null,
+                "street": null,
+                "postalCode": null,
+                "region": null
+              },
+              "registryNumber": null,
+              "acronym": "12347",
+              "countryCode": "NO",
+              "name": "NAVT002",
+              "contactMethods": null,
+              "location": null,
+              "id": "NAVT002"
+            },
+            "type": "ROLE_REGULAR"
+          },
+          "caseId": "362590",
+          "comment": "xdfghsfhsfh",
+          "documentId": "401efdee0d54431aae4af59049ff21ac",
+          "id": "e6029a994a174f90aab517308e55d3dc"
+        }
+      ],
+      "starter": false,
+      "isMLC": true,
+      "selectParticipants": false,
+      "subProcessId": 362608,
+      "isAdmin": false,
+      "hasClarify": false,
+      "creationDate": "2018-09-06T09:15:59.578Z",
+      "createTemplate": null,
+      "toSenderOnly": false,
+      "typeVersion": "4.0",
+      "allowsAttachments": false,
+      "versions": [
+        {
+          "date": "2018-09-06T09:15:59.578Z",
+          "id": "1",
+          "user": {
+            "name": "Z990511",
+            "organisation": {
+              "activeSince": "2017-10-19T22:00:00Z",
+              "address": {
+                "country": "NO",
+                "town": null,
+                "street": null,
+                "postalCode": null,
+                "region": null
+              },
+              "registryNumber": null,
+              "acronym": "12347",
+              "countryCode": "NO",
+              "name": "NAVT002",
+              "contactMethods": null,
+              "location": null,
+              "id": "NAVT002"
+            },
+            "id": "AWP9c_wdE2L8AIJZ8L0C",
+            "type": "User"
+          }
+        },
+        {
+          "date": "2018-11-08T15:09:56.358Z",
+          "id": "2",
+          "user": {
+            "name": "Z990638",
+            "organisation": {
+              "activeSince": "2017-10-19T22:00:00Z",
+              "address": {
+                "country": "NO",
+                "town": null,
+                "street": null,
+                "postalCode": null,
+                "region": null
+              },
+              "registryNumber": null,
+              "acronym": "12347",
+              "countryCode": "NO",
+              "name": "NAVT002",
+              "contactMethods": null,
+              "location": null,
+              "id": "NAVT002"
+            },
+            "id": "9fee2ce236923957a7e197239070630d",
+            "type": "User"
+          }
+        }
+      ],
+      "lastUpdate": "2018-11-08T15:09:56.358Z",
+      "bulk": false,
+      "isFirstDocument": false,
+      "status": "new"
+    },
+    {
+      "attachments": null,
+      "displayName": "Transfer of additional information",
+      "isDummyDocument": false,
+      "mimeType": "json",
+      "type": "P10000",
+      "conversations": [
+        {
+          "id": "98bd940c59924f419e94eef4880319d6",
+          "participants": [
+            {
+              "role": "Sender",
+              "organisation": {
+                "activeSince": "2017-10-19T22:00:00Z",
+                "address": {
+                  "country": "NO",
+                  "town": null,
+                  "street": null,
+                  "postalCode": null,
+                  "region": null
+                },
+                "registryNumber": null,
+                "acronym": "12347",
+                "countryCode": "NO",
+                "name": "NAVT002",
+                "contactMethods": null,
+                "location": null,
+                "id": "NAVT002"
+              }
+            },
+            {
+              "role": "Receiver",
+              "organisation": {
+                "activeSince": "2018-02-12T23:00:00Z",
+                "address": {
+                  "country": "NO",
+                  "town": null,
+                  "street": null,
+                  "postalCode": null,
+                  "region": null
+                },
+                "registryNumber": null,
+                "acronym": "12348",
+                "countryCode": "NO",
+                "name": "NAVT003",
+                "contactMethods": null,
+                "location": null,
+                "id": "NAVT003"
+              }
+            }
+          ]
+        }
+      ],
+      "hasMultipleVersions": true,
+      "hasBusinessValidation": false,
+      "ParentType": "P10000",
+      "id": "6e6bce16123e4c38ac9af7101fb4c2a2",
+      "hasCancel": true,
+      "direction": "OUT",
+      "hasLetter": false,
+      "creator": {
+        "name": "Z990638",
+        "organisation": {
+          "activeSince": "2017-10-19T22:00:00Z",
+          "address": {
+            "country": "NO",
+            "town": null,
+            "street": null,
+            "postalCode": null,
+            "region": null
+          },
+          "registryNumber": null,
+          "acronym": "12347",
+          "countryCode": "NO",
+          "name": "NAVT002",
+          "contactMethods": null,
+          "location": null,
+          "id": "NAVT002"
+        },
+        "id": "0",
+        "type": "User"
+      },
+      "hasReject": false,
+      "hasReplyClarify": false,
+      "comments": [],
+      "starter": false,
+      "isMLC": true,
+      "selectParticipants": true,
+      "subProcessId": 362617,
+      "isAdmin": false,
+      "hasClarify": false,
+      "creationDate": "2018-09-06T08:35:12Z",
+      "createTemplate": null,
+      "toSenderOnly": false,
+      "typeVersion": "4.0",
+      "allowsAttachments": true,
+      "versions": [
+        {
+          "date": "2018-09-06T08:35:12Z",
+          "id": "1",
+          "user": {
+            "name": "Z990638",
+            "organisation": {
+              "activeSince": "2017-10-19T22:00:00Z",
+              "address": {
+                "country": "NO",
+                "town": null,
+                "street": null,
+                "postalCode": null,
+                "region": null
+              },
+              "registryNumber": null,
+              "acronym": "12347",
+              "countryCode": "NO",
+              "name": "NAVT002",
+              "contactMethods": null,
+              "location": null,
+              "id": "NAVT002"
+            },
+            "id": "0",
+            "type": "User"
+          }
+        }
+      ],
+      "lastUpdate": "2018-09-06T08:35:12Z",
+      "bulk": false,
+      "isFirstDocument": false,
+      "status": "empty"
+    },
+    {
+      "attachments": null,
+      "displayName": "Reminder",
+      "isDummyDocument": false,
+      "mimeType": "json",
+      "type": "X009",
+      "conversations": [
+        {
+          "id": "ce7df1d3d49441dbb4e003f19d5ef2d4",
+          "participants": [
+            {
+              "role": "Sender",
+              "organisation": {
+                "activeSince": "2017-10-19T22:00:00Z",
+                "address": {
+                  "country": "NO",
+                  "town": null,
+                  "street": null,
+                  "postalCode": null,
+                  "region": null
+                },
+                "registryNumber": null,
+                "acronym": "12347",
+                "countryCode": "NO",
+                "name": "NAVT002",
+                "contactMethods": null,
+                "location": null,
+                "id": "NAVT002"
+              }
+            },
+            {
+              "role": "Receiver",
+              "organisation": {
+                "activeSince": "2018-02-12T23:00:00Z",
+                "address": {
+                  "country": "NO",
+                  "town": null,
+                  "street": null,
+                  "postalCode": null,
+                  "region": null
+                },
+                "registryNumber": null,
+                "acronym": "12348",
+                "countryCode": "NO",
+                "name": "NAVT003",
+                "contactMethods": null,
+                "location": null,
+                "id": "NAVT003"
+              }
+            }
+          ]
+        }
+      ],
+      "hasMultipleVersions": false,
+      "hasBusinessValidation": false,
+      "ParentType": "X009",
+      "id": "3a3ff563d3564a1bb02919975afee665",
+      "hasCancel": false,
+      "direction": "OUT",
+      "hasLetter": false,
+      "creator": {
+        "name": "Z990638",
+        "organisation": {
+          "activeSince": "2017-10-19T22:00:00Z",
+          "address": {
+            "country": "NO",
+            "town": null,
+            "street": null,
+            "postalCode": null,
+            "region": null
+          },
+          "registryNumber": null,
+          "acronym": "12347",
+          "countryCode": "NO",
+          "name": "NAVT002",
+          "contactMethods": null,
+          "location": null,
+          "id": "NAVT002"
+        },
+        "id": "0",
+        "type": "User"
+      },
+      "hasReject": false,
+      "hasReplyClarify": false,
+      "comments": [],
+      "starter": false,
+      "isMLC": true,
+      "selectParticipants": true,
+      "subProcessId": 362596,
+      "isAdmin": false,
+      "hasClarify": false,
+      "creationDate": "2018-09-06T08:34:53Z",
+      "createTemplate": null,
+      "toSenderOnly": false,
+      "typeVersion": "4.0",
+      "allowsAttachments": false,
+      "versions": [
+        {
+          "date": "2018-09-06T08:34:53Z",
+          "id": "1",
+          "user": {
+            "name": "Z990638",
+            "organisation": {
+              "activeSince": "2017-10-19T22:00:00Z",
+              "address": {
+                "country": "NO",
+                "town": null,
+                "street": null,
+                "postalCode": null,
+                "region": null
+              },
+              "registryNumber": null,
+              "acronym": "12347",
+              "countryCode": "NO",
+              "name": "NAVT002",
+              "contactMethods": null,
+              "location": null,
+              "id": "NAVT002"
+            },
+            "id": "0",
+            "type": "User"
+          }
+        }
+      ],
+      "lastUpdate": "2018-09-06T08:34:53Z",
+      "bulk": false,
+      "isFirstDocument": false,
+      "status": "empty"
+    },
+    {
+      "attachments": null,
+      "displayName": "Request for Medical Information",
+      "isDummyDocument": false,
+      "mimeType": "json",
+      "type": "H120",
+      "conversations": [
+        {
+          "id": "8d066e0924ec4c35920d522aa3d6dc11",
+          "participants": [
+            {
+              "role": "Sender",
+              "organisation": {
+                "activeSince": "2017-10-19T22:00:00Z",
+                "address": {
+                  "country": "NO",
+                  "town": null,
+                  "street": null,
+                  "postalCode": null,
+                  "region": null
+                },
+                "registryNumber": null,
+                "acronym": "12347",
+                "countryCode": "NO",
+                "name": "NAVT002",
+                "contactMethods": null,
+                "location": null,
+                "id": "NAVT002"
+              }
+            },
+            {
+              "role": "Receiver",
+              "organisation": {
+                "activeSince": "2018-02-12T23:00:00Z",
+                "address": {
+                  "country": "NO",
+                  "town": null,
+                  "street": null,
+                  "postalCode": null,
+                  "region": null
+                },
+                "registryNumber": null,
+                "acronym": "12348",
+                "countryCode": "NO",
+                "name": "NAVT003",
+                "contactMethods": null,
+                "location": null,
+                "id": "NAVT003"
+              }
+            }
+          ]
+        }
+      ],
+      "hasMultipleVersions": true,
+      "hasBusinessValidation": false,
+      "ParentType": "H120",
+      "id": "c84153f2fcae4a67896c8cb47e68e349",
+      "hasCancel": true,
+      "direction": "OUT",
+      "hasLetter": false,
+      "creator": {
+        "name": "Z990638",
+        "organisation": {
+          "activeSince": "2017-10-19T22:00:00Z",
+          "address": {
+            "country": "NO",
+            "town": null,
+            "street": null,
+            "postalCode": null,
+            "region": null
+          },
+          "registryNumber": null,
+          "acronym": "12347",
+          "countryCode": "NO",
+          "name": "NAVT002",
+          "contactMethods": null,
+          "location": null,
+          "id": "NAVT002"
+        },
+        "id": "0",
+        "type": "User"
+      },
+      "hasReject": false,
+      "hasReplyClarify": false,
+      "comments": [],
+      "starter": false,
+      "isMLC": false,
+      "selectParticipants": true,
+      "subProcessId": 362628,
+      "isAdmin": false,
+      "hasClarify": false,
+      "creationDate": "2018-09-06T08:35:13Z",
+      "createTemplate": null,
+      "toSenderOnly": false,
+      "typeVersion": "4.0",
+      "allowsAttachments": true,
+      "versions": [
+        {
+          "date": "2018-09-06T08:35:13Z",
+          "id": "1",
+          "user": {
+            "name": "Z990638",
+            "organisation": {
+              "activeSince": "2017-10-19T22:00:00Z",
+              "address": {
+                "country": "NO",
+                "town": null,
+                "street": null,
+                "postalCode": null,
+                "region": null
+              },
+              "registryNumber": null,
+              "acronym": "12347",
+              "countryCode": "NO",
+              "name": "NAVT002",
+              "contactMethods": null,
+              "location": null,
+              "id": "NAVT002"
+            },
+            "id": "0",
+            "type": "User"
+          }
+        }
+      ],
+      "lastUpdate": "2018-09-06T08:35:13Z",
+      "bulk": false,
+      "isFirstDocument": false,
+      "status": "empty"
+    },
+    {
+      "attachments": null,
+      "displayName": "Notification of death",
+      "isDummyDocument": false,
+      "mimeType": "json",
+      "type": "H070",
+      "conversations": [
+        {
+          "id": "129456e0cd5c4b4c9d1546518e0e4881",
+          "participants": [
+            {
+              "role": "Sender",
+              "organisation": {
+                "activeSince": "2017-10-19T22:00:00Z",
+                "address": {
+                  "country": "NO",
+                  "town": null,
+                  "street": null,
+                  "postalCode": null,
+                  "region": null
+                },
+                "registryNumber": null,
+                "acronym": "12347",
+                "countryCode": "NO",
+                "name": "NAVT002",
+                "contactMethods": null,
+                "location": null,
+                "id": "NAVT002"
+              }
+            },
+            {
+              "role": "Receiver",
+              "organisation": {
+                "activeSince": "2018-02-12T23:00:00Z",
+                "address": {
+                  "country": "NO",
+                  "town": null,
+                  "street": null,
+                  "postalCode": null,
+                  "region": null
+                },
+                "registryNumber": null,
+                "acronym": "12348",
+                "countryCode": "NO",
+                "name": "NAVT003",
+                "contactMethods": null,
+                "location": null,
+                "id": "NAVT003"
+              }
+            }
+          ]
+        }
+      ],
+      "hasMultipleVersions": true,
+      "hasBusinessValidation": false,
+      "ParentType": "H070",
+      "id": "609455e7e8bd4edd87e705a970faa268",
+      "hasCancel": true,
+      "direction": "OUT",
+      "hasLetter": false,
+      "creator": {
+        "name": "Z990638",
+        "organisation": {
+          "activeSince": "2017-10-19T22:00:00Z",
+          "address": {
+            "country": "NO",
+            "town": null,
+            "street": null,
+            "postalCode": null,
+            "region": null
+          },
+          "registryNumber": null,
+          "acronym": "12347",
+          "countryCode": "NO",
+          "name": "NAVT002",
+          "contactMethods": null,
+          "location": null,
+          "id": "NAVT002"
+        },
+        "id": "0",
+        "type": "User"
+      },
+      "hasReject": false,
+      "hasReplyClarify": false,
+      "comments": [],
+      "starter": false,
+      "isMLC": true,
+      "selectParticipants": true,
+      "subProcessId": 362625,
+      "isAdmin": false,
+      "hasClarify": false,
+      "creationDate": "2018-09-06T08:35:13Z",
+      "createTemplate": null,
+      "toSenderOnly": false,
+      "typeVersion": "4.0",
+      "allowsAttachments": false,
+      "versions": [
+        {
+          "date": "2018-09-06T08:35:13Z",
+          "id": "1",
+          "user": {
+            "name": "Z990638",
+            "organisation": {
+              "activeSince": "2017-10-19T22:00:00Z",
+              "address": {
+                "country": "NO",
+                "town": null,
+                "street": null,
+                "postalCode": null,
+                "region": null
+              },
+              "registryNumber": null,
+              "acronym": "12347",
+              "countryCode": "NO",
+              "name": "NAVT002",
+              "contactMethods": null,
+              "location": null,
+              "id": "NAVT002"
+            },
+            "id": "0",
+            "type": "User"
+          }
+        }
+      ],
+      "lastUpdate": "2018-09-06T08:35:13Z",
+      "bulk": false,
+      "isFirstDocument": false,
+      "status": "empty"
+    },
+    {
+      "attachments": null,
+      "displayName": "Claim for - Reimbursement - Administrative Check /Medical information",
+      "isDummyDocument": false,
+      "mimeType": "json",
+      "type": "H020",
+      "conversations": [
+        {
+          "id": "8429757736e347deb91375bb2bc97e67",
+          "participants": [
+            {
+              "role": "Sender",
+              "organisation": {
+                "activeSince": "2017-10-19T22:00:00Z",
+                "address": {
+                  "country": "NO",
+                  "town": null,
+                  "street": null,
+                  "postalCode": null,
+                  "region": null
+                },
+                "registryNumber": null,
+                "acronym": "12347",
+                "countryCode": "NO",
+                "name": "NAVT002",
+                "contactMethods": null,
+                "location": null,
+                "id": "NAVT002"
+              }
+            },
+            {
+              "role": "Receiver",
+              "organisation": {
+                "activeSince": "2018-02-12T23:00:00Z",
+                "address": {
+                  "country": "NO",
+                  "town": null,
+                  "street": null,
+                  "postalCode": null,
+                  "region": null
+                },
+                "registryNumber": null,
+                "acronym": "12348",
+                "countryCode": "NO",
+                "name": "NAVT003",
+                "contactMethods": null,
+                "location": null,
+                "id": "NAVT003"
+              }
+            }
+          ]
+        }
+      ],
+      "hasMultipleVersions": true,
+      "hasBusinessValidation": false,
+      "ParentType": "H020",
+      "id": "86afa66a20944c72a92b6fdabab6ed02",
+      "hasCancel": false,
+      "direction": "OUT",
+      "hasLetter": false,
+      "creator": {
+        "name": "Z990638",
+        "organisation": {
+          "activeSince": "2017-10-19T22:00:00Z",
+          "address": {
+            "country": "NO",
+            "town": null,
+            "street": null,
+            "postalCode": null,
+            "region": null
+          },
+          "registryNumber": null,
+          "acronym": "12347",
+          "countryCode": "NO",
+          "name": "NAVT002",
+          "contactMethods": null,
+          "location": null,
+          "id": "NAVT002"
+        },
+        "id": "0",
+        "type": "User"
+      },
+      "hasReject": false,
+      "hasReplyClarify": false,
+      "comments": [],
+      "starter": false,
+      "isMLC": false,
+      "selectParticipants": true,
+      "subProcessId": 362626,
+      "isAdmin": false,
+      "hasClarify": false,
+      "creationDate": "2018-09-06T08:35:13Z",
+      "createTemplate": null,
+      "toSenderOnly": false,
+      "typeVersion": "4.0",
+      "allowsAttachments": true,
+      "versions": [
+        {
+          "date": "2018-09-06T08:35:13Z",
+          "id": "1",
+          "user": {
+            "name": "Z990638",
+            "organisation": {
+              "activeSince": "2017-10-19T22:00:00Z",
+              "address": {
+                "country": "NO",
+                "town": null,
+                "street": null,
+                "postalCode": null,
+                "region": null
+              },
+              "registryNumber": null,
+              "acronym": "12347",
+              "countryCode": "NO",
+              "name": "NAVT002",
+              "contactMethods": null,
+              "location": null,
+              "id": "NAVT002"
+            },
+            "id": "0",
+            "type": "User"
+          }
+        }
+      ],
+      "lastUpdate": "2018-09-06T08:35:13Z",
+      "bulk": false,
+      "isFirstDocument": false,
+      "status": "empty"
+    },
+    {
+      "attachments": null,
+      "displayName": "Pension decision",
+      "isDummyDocument": false,
+      "mimeType": "json",
+      "type": "P6000",
+      "conversations": [
+        {
+          "id": "9fefd82857e1407ea104c50ef241eb49",
+          "participants": [
+            {
+              "role": "Sender",
+              "organisation": {
+                "activeSince": "2017-10-19T22:00:00Z",
+                "address": {
+                  "country": "NO",
+                  "town": null,
+                  "street": null,
+                  "postalCode": null,
+                  "region": null
+                },
+                "registryNumber": null,
+                "acronym": "12347",
+                "countryCode": "NO",
+                "name": "NAVT002",
+                "contactMethods": null,
+                "location": null,
+                "id": "NAVT002"
+              }
+            },
+            {
+              "role": "Receiver",
+              "organisation": {
+                "activeSince": "2018-02-12T23:00:00Z",
+                "address": {
+                  "country": "NO",
+                  "town": null,
+                  "street": null,
+                  "postalCode": null,
+                  "region": null
+                },
+                "registryNumber": null,
+                "acronym": "12348",
+                "countryCode": "NO",
+                "name": "NAVT003",
+                "contactMethods": null,
+                "location": null,
+                "id": "NAVT003"
+              }
+            }
+          ]
+        }
+      ],
+      "hasMultipleVersions": true,
+      "hasBusinessValidation": false,
+      "ParentType": "P6000",
+      "id": "6f972070a5cc4923a787237c0840968a",
+      "hasCancel": true,
+      "validation": {
+        "status": "valid"
+      },
+      "direction": "OUT",
+      "hasLetter": false,
+      "creator": {
+        "name": "Z990511",
+        "organisation": {
+          "activeSince": "2017-10-19T22:00:00Z",
+          "address": {
+            "country": "NO",
+            "town": null,
+            "street": null,
+            "postalCode": null,
+            "region": null
+          },
+          "registryNumber": null,
+          "acronym": "12347",
+          "countryCode": "NO",
+          "name": "NAVT002",
+          "contactMethods": null,
+          "location": null,
+          "id": "NAVT002"
+        },
+        "id": "AWP9c_wdE2L8AIJZ8L0C",
+        "type": "User"
+      },
+      "hasReject": false,
+      "hasReplyClarify": false,
+      "comments": [],
+      "starter": false,
+      "isMLC": true,
+      "selectParticipants": false,
+      "subProcessId": 362609,
+      "isAdmin": false,
+      "hasClarify": false,
+      "creationDate": "2018-09-06T09:10:55.797Z",
+      "createTemplate": null,
+      "toSenderOnly": false,
+      "typeVersion": "4.0",
+      "allowsAttachments": true,
+      "versions": [
+        {
+          "date": "2018-09-06T09:10:55.797Z",
+          "id": "1",
+          "user": {
+            "name": "Z990511",
+            "organisation": {
+              "activeSince": "2017-10-19T22:00:00Z",
+              "address": {
+                "country": "NO",
+                "town": null,
+                "street": null,
+                "postalCode": null,
+                "region": null
+              },
+              "registryNumber": null,
+              "acronym": "12347",
+              "countryCode": "NO",
+              "name": "NAVT002",
+              "contactMethods": null,
+              "location": null,
+              "id": "NAVT002"
+            },
+            "id": "AWP9c_wdE2L8AIJZ8L0C",
+            "type": "User"
+          }
+        }
+      ],
+      "lastUpdate": "2018-09-06T09:10:55.797Z",
+      "bulk": false,
+      "isFirstDocument": false,
+      "status": "new"
+    }
+  ],
+  "subject": {
+    "birthday": "1967-12-01",
+    "address": {
+      "country": "BG",
+      "town": "sfdsdaf",
+      "street": "dsfasdf",
+      "postalCode": "safdsdf",
+      "region": "sadfsd"
+    },
+    "surname": "Konsoll",
+    "sex": "f",
+    "name": "Gul",
+    "pid": ""
+  },
+  "businessId": "362590",
+  "processDefinitionName": "P_BUC_01",
+  "sensitive": false,
+  "sensitiveCommitted": null,
+  "lastUpdate": "2018-11-08T15:09:56Z",
+  "internationalId": "9dd47bb78ab844539bf3d8227271c7f8",
+  "id": 362590,
+  "applicationRoleId": "PO",
+  "actions": [
+    {
+      "canClose": false,
+      "template": "P5000_Read",
+      "isDocumentRelated": true,
+      "documentType": "P5000",
+      "displayName": "Read",
+      "tempDocumentId": "8bc205d2b6a64cd495dac41c84ac84d6",
+      "type": "existing.regular",
+      "tags": {
+        "category": "Documents",
+        "type": "sectorial"
+      },
+      "actor": "Authorized",
+      "typeVersion": "4.0",
+      "poolGroup": {
+        "Type": "P5000",
+        "ParentDocId": null,
+        "DMProcessId": "362608",
+        "DocumentId": "401efdee0d54431aae4af59049ff21ac",
+        "ParentType": null,
+        "Operation": "Read"
+      },
+      "caseId": "362590",
+      "isCaseRelated": false,
+      "hasBusinessValidation": false,
+      "name": "Read",
+      "documentId": "401efdee0d54431aae4af59049ff21ac",
+      "id": "362590_fe21e21ee3754febbb83639441be26f9",
+      "actionGroup": {
+        "Type": "P5000",
+        "ParentDocId": null,
+        "DMProcessId": "362608",
+        "DocumentId": "401efdee0d54431aae4af59049ff21ac",
+        "ParentType": null,
+        "Operation": "Read"
+      },
+      "isBulk": false,
+      "operation": "Read",
+      "parentDocumentId": null,
+      "status": "active"
+    },
+    {
+      "canClose": true,
+      "template": "P2000",
+      "isDocumentRelated": true,
+      "documentType": "P2000",
+      "displayName": "Update",
+      "tempDocumentId": "fa1fe6c2d6f14b56890b19a563fff30f",
+      "type": "existing.regular",
+      "tags": {
+        "category": "Documents",
+        "type": "sectorial"
+      },
+      "actor": "Authorized",
+      "typeVersion": "4.0",
+      "poolGroup": {
+        "Type": "P2000",
+        "ParentDocId": null,
+        "DMProcessId": "362593",
+        "DocumentId": "8a8c24ebaf3f44f3a4b281c0e0275f0e",
+        "ParentType": null,
+        "Operation": "Update"
+      },
+      "caseId": "362590",
+      "isCaseRelated": false,
+      "hasBusinessValidation": false,
+      "name": "Update",
+      "documentId": "8a8c24ebaf3f44f3a4b281c0e0275f0e",
+      "id": "362590_f95a1fe618374dd5a1289080023bc55d",
+      "actionGroup": {
+        "Type": "P2000",
+        "ParentDocId": null,
+        "DMProcessId": "362593",
+        "DocumentId": "8a8c24ebaf3f44f3a4b281c0e0275f0e",
+        "ParentType": null,
+        "Operation": "Update"
+      },
+      "isBulk": false,
+      "operation": "Update",
+      "parentDocumentId": null,
+      "status": "active"
+    },
+    {
+      "canClose": true,
+      "template": "P6000",
+      "isDocumentRelated": true,
+      "documentType": "P6000",
+      "displayName": "Edit draft",
+      "tempDocumentId": "9b5c594f7d704d388722ea1b3353a95c",
+      "type": "existing.regular",
+      "tags": {
+        "category": "Documents",
+        "type": "sectorial"
+      },
+      "actor": "Authorized",
+      "typeVersion": "4.0",
+      "poolGroup": {
+        "Type": "P6000",
+        "ParentDocId": null,
+        "DMProcessId": "362609",
+        "DocumentId": "6f972070a5cc4923a787237c0840968a",
+        "ParentType": null,
+        "Operation": "Update"
+      },
+      "caseId": "362590",
+      "isCaseRelated": false,
+      "hasBusinessValidation": false,
+      "name": "Update",
+      "documentId": "6f972070a5cc4923a787237c0840968a",
+      "id": "362590_f48bd0ebf52f402a97ff8b7b9f641ac4",
+      "actionGroup": {
+        "Type": "P6000",
+        "ParentDocId": null,
+        "DMProcessId": "362609",
+        "DocumentId": "6f972070a5cc4923a787237c0840968a",
+        "ParentType": null,
+        "Operation": "Update"
+      },
+      "isBulk": false,
+      "operation": "Update",
+      "parentDocumentId": null,
+      "status": "active"
+    },
+    {
+      "canClose": true,
+      "template": "X008",
+      "isDocumentRelated": true,
+      "documentType": "X008",
+      "displayName": "Invalidate SED",
+      "tempDocumentId": "da95ad80f8044310b1fc2c917fba60b5",
+      "type": "new.regular",
+      "tags": {
+        "category": "Documents",
+        "type": "admin"
+      },
+      "actor": "Authorized",
+      "typeVersion": "4.0",
+      "poolGroup": {
+        "Type": "X008",
+        "ParentDocId": "8a8c24ebaf3f44f3a4b281c0e0275f0e",
+        "DMProcessId": "362603",
+        "DocumentId": "825605d852f1479eae918a4b651d6bc3",
+        "ParentType": "P2000",
+        "Operation": "Create"
+      },
+      "caseId": "362590",
+      "isCaseRelated": false,
+      "hasBusinessValidation": false,
+      "name": "Create",
+      "documentId": "825605d852f1479eae918a4b651d6bc3",
+      "id": "362590_e26f63e7a8734a6a8a37bc8bb1515afe",
+      "actionGroup": {
+        "Type": "X008",
+        "ParentDocId": "8a8c24ebaf3f44f3a4b281c0e0275f0e",
+        "DMProcessId": "362603",
+        "DocumentId": "825605d852f1479eae918a4b651d6bc3",
+        "ParentType": "P2000",
+        "Operation": "Create"
+      },
+      "isBulk": false,
+      "operation": "Create",
+      "parentDocumentId": "8a8c24ebaf3f44f3a4b281c0e0275f0e",
+      "status": "active"
+    },
+    {
+      "canClose": false,
+      "template": "Read_Participants",
+      "isDocumentRelated": false,
+      "requiresValidDocument": true,
+      "displayName": "Read Participants",
+      "tempDocumentId": "3ce47dce172d46c4bee0be7c85a03721",
+      "type": "popup",
+      "tags": {
+        "category": "Participants",
+        "type": "sectorial"
+      },
+      "actor": "Authorized",
+      "typeVersion": "1.0",
+      "poolGroup": {
+        "Type": "P2000",
+        "ParentDocId": null,
+        "DMProcessId": "362593",
+        "DocumentId": "8a8c24ebaf3f44f3a4b281c0e0275f0e",
+        "ParentType": null,
+        "Operation": "ReadParticipants"
+      },
+      "caseId": "362590",
+      "isCaseRelated": true,
+      "hasBusinessValidation": false,
+      "name": "ReadParticipants",
+      "documentId": "8a8c24ebaf3f44f3a4b281c0e0275f0e",
+      "id": "362590_c32b3b0fc6d4470dbb535fc0693202dc",
+      "actionGroup": {
+        "Type": "P2000",
+        "ParentDocId": null,
+        "DMProcessId": "362593",
+        "DocumentId": "8a8c24ebaf3f44f3a4b281c0e0275f0e",
+        "ParentType": null,
+        "Operation": "ReadParticipants"
+      },
+      "isBulk": false,
+      "operation": "ReadParticipants",
+      "parentDocumentId": null,
+      "status": "active"
+    },
+    {
+      "canClose": true,
+      "template": "H070",
+      "isDocumentRelated": false,
+      "documentType": "H070",
+      "displayName": "Create H070",
+      "tempDocumentId": "4497866f9a6344799d1e0a64a4cccbd6",
+      "type": "new.regular",
+      "tags": {
+        "category": "Horizontal Documents",
+        "type": "admin"
+      },
+      "actor": "Authorized",
+      "typeVersion": "4.0",
+      "poolGroup": {
+        "Type": "H070",
+        "ParentDocId": null,
+        "DMProcessId": "362625",
+        "DocumentId": "609455e7e8bd4edd87e705a970faa268",
+        "ParentType": "H070",
+        "Operation": "Create"
+      },
+      "caseId": "362590",
+      "isCaseRelated": true,
+      "hasBusinessValidation": false,
+      "name": "Create",
+      "documentId": "609455e7e8bd4edd87e705a970faa268",
+      "id": "362590_b215c5d6ad8248deb479185e1512e989",
+      "actionGroup": {
+        "Type": "H070",
+        "ParentDocId": null,
+        "DMProcessId": "362625",
+        "DocumentId": "609455e7e8bd4edd87e705a970faa268",
+        "ParentType": "H070",
+        "Operation": "Create"
+      },
+      "isBulk": false,
+      "operation": "Create",
+      "parentDocumentId": null,
+      "status": "active"
+    },
+    {
+      "canClose": true,
+      "template": "X005",
+      "isDocumentRelated": false,
+      "documentType": "X005",
+      "displayName": "Add Participant",
+      "tempDocumentId": "dbd912b895aa4eb5b3797b00c13812be",
+      "type": "new.regular",
+      "tags": {
+        "category": "Case Actions",
+        "type": "admin"
+      },
+      "actor": "Authorized",
+      "typeVersion": "4.0",
+      "poolGroup": {
+        "Type": "X005",
+        "ParentDocId": null,
+        "DMProcessId": "362610",
+        "DocumentId": "75dfae641d834adabe122fa6a85df3fa",
+        "ParentType": "X005",
+        "Operation": "Create"
+      },
+      "caseId": "362590",
+      "isCaseRelated": true,
+      "hasBusinessValidation": true,
+      "name": "Create",
+      "documentId": "75dfae641d834adabe122fa6a85df3fa",
+      "id": "362590_affda23170e74a77b5d18ce01f062823",
+      "actionGroup": {
+        "Type": "X005",
+        "ParentDocId": null,
+        "DMProcessId": "362610",
+        "DocumentId": "75dfae641d834adabe122fa6a85df3fa",
+        "ParentType": "X005",
+        "Operation": "Create"
+      },
+      "isBulk": false,
+      "operation": "Create",
+      "parentDocumentId": null,
+      "status": "active"
+    },
+    {
+      "canClose": true,
+      "template": "P5000",
+      "isDocumentRelated": true,
+      "documentType": "P5000",
+      "displayName": "Edit draft",
+      "tempDocumentId": "9aa25e5c1c884732a8a2b5ef8d67d009",
+      "type": "existing.regular",
+      "tags": {
+        "category": "Documents",
+        "type": "sectorial"
+      },
+      "actor": "Authorized",
+      "typeVersion": "4.0",
+      "poolGroup": {
+        "Type": "P5000",
+        "ParentDocId": null,
+        "DMProcessId": "362608",
+        "DocumentId": "401efdee0d54431aae4af59049ff21ac",
+        "ParentType": null,
+        "Operation": "Update"
+      },
+      "caseId": "362590",
+      "isCaseRelated": false,
+      "hasBusinessValidation": false,
+      "name": "Update",
+      "documentId": "401efdee0d54431aae4af59049ff21ac",
+      "id": "362590_96aedbee9cc34589b6f9ccb0edb05018",
+      "actionGroup": {
+        "Type": "P5000",
+        "ParentDocId": null,
+        "DMProcessId": "362608",
+        "DocumentId": "401efdee0d54431aae4af59049ff21ac",
+        "ParentType": null,
+        "Operation": "Update"
+      },
+      "isBulk": false,
+      "operation": "Update",
+      "parentDocumentId": null,
+      "status": "active"
+    },
+    {
+      "canClose": true,
+      "template": "Send_Document",
+      "isDocumentRelated": true,
+      "documentType": "P5000",
+      "requiresValidDocument": true,
+      "displayName": "Send",
+      "tempDocumentId": "53a1c6b32dfa45f0a9a347e15e3bc60b",
+      "type": "popup",
+      "tags": {
+        "category": "Documents",
+        "type": "sectorial"
+      },
+      "actor": "Authorized",
+      "typeVersion": "1.0",
+      "poolGroup": {
+        "Type": "P5000",
+        "ParentDocId": null,
+        "DMProcessId": "362608",
+        "DocumentId": "401efdee0d54431aae4af59049ff21ac",
+        "ParentType": null,
+        "Operation": "Send"
+      },
+      "caseId": "362590",
+      "isCaseRelated": false,
+      "hasBusinessValidation": false,
+      "name": "Send",
+      "documentId": "401efdee0d54431aae4af59049ff21ac",
+      "id": "362590_8f830acd01de4ffea38d47d65ea91c88",
+      "actionGroup": {
+        "Type": "P5000",
+        "ParentDocId": null,
+        "DMProcessId": "362608",
+        "DocumentId": "401efdee0d54431aae4af59049ff21ac",
+        "ParentType": null,
+        "Operation": "Send"
+      },
+      "isBulk": false,
+      "operation": "Send",
+      "parentDocumentId": null,
+      "status": "active"
+    },
+    {
+      "canClose": false,
+      "template": "P2000_Read",
+      "isDocumentRelated": true,
+      "documentType": "P2000",
+      "displayName": "Read",
+      "tempDocumentId": "16a3a1cbb9754b208e5d9d7bdb2b456e",
+      "type": "existing.regular",
+      "tags": {
+        "category": "Documents",
+        "type": "sectorial"
+      },
+      "actor": "Authorized",
+      "typeVersion": "4.0",
+      "poolGroup": {
+        "Type": "P2000",
+        "ParentDocId": null,
+        "DMProcessId": "362593",
+        "DocumentId": "8a8c24ebaf3f44f3a4b281c0e0275f0e",
+        "ParentType": null,
+        "Operation": "Read"
+      },
+      "caseId": "362590",
+      "isCaseRelated": false,
+      "hasBusinessValidation": false,
+      "name": "Read",
+      "documentId": "8a8c24ebaf3f44f3a4b281c0e0275f0e",
+      "id": "362590_899037c8350b463f9040f6e8d25be490",
+      "actionGroup": {
+        "Type": "P2000",
+        "ParentDocId": null,
+        "DMProcessId": "362593",
+        "DocumentId": "8a8c24ebaf3f44f3a4b281c0e0275f0e",
+        "ParentType": null,
+        "Operation": "Read"
+      },
+      "isBulk": false,
+      "operation": "Read",
+      "parentDocumentId": null,
+      "status": "active"
+    },
+    {
+      "canClose": false,
+      "template": "P6000_Read",
+      "isDocumentRelated": true,
+      "documentType": "P6000",
+      "displayName": "Read",
+      "tempDocumentId": "c2c7e8a869f8443e9b29f7e1a9043fa6",
+      "type": "existing.regular",
+      "tags": {
+        "category": "Documents",
+        "type": "sectorial"
+      },
+      "actor": "Authorized",
+      "typeVersion": "4.0",
+      "poolGroup": {
+        "Type": "P6000",
+        "ParentDocId": null,
+        "DMProcessId": "362609",
+        "DocumentId": "6f972070a5cc4923a787237c0840968a",
+        "ParentType": null,
+        "Operation": "Read"
+      },
+      "caseId": "362590",
+      "isCaseRelated": false,
+      "hasBusinessValidation": false,
+      "name": "Read",
+      "documentId": "6f972070a5cc4923a787237c0840968a",
+      "id": "362590_8629255d3a844d1fa4a89dc437655d40",
+      "actionGroup": {
+        "Type": "P6000",
+        "ParentDocId": null,
+        "DMProcessId": "362609",
+        "DocumentId": "6f972070a5cc4923a787237c0840968a",
+        "ParentType": null,
+        "Operation": "Read"
+      },
+      "isBulk": false,
+      "operation": "Read",
+      "parentDocumentId": null,
+      "status": "active"
+    },
+    {
+      "canClose": true,
+      "template": "P3000_NO",
+      "isDocumentRelated": false,
+      "documentType": "P3000_NO",
+      "displayName": "Create P3000_NO",
+      "tempDocumentId": "9eb533625f254025a3c12bda80fbec4c",
+      "type": "new.regular",
+      "tags": {
+        "category": "Documents",
+        "type": "sectorial"
+      },
+      "actor": "Authorized",
+      "typeVersion": "4.0",
+      "poolGroup": {
+        "Type": "P3000_NO",
+        "ParentDocId": null,
+        "DMProcessId": "362605",
+        "DocumentId": "9386bc54a06b4476b240466b70464d36",
+        "ParentType": "P3000_NO",
+        "Operation": "Create"
+      },
+      "caseId": "362590",
+      "isCaseRelated": true,
+      "hasBusinessValidation": false,
+      "name": "Create",
+      "documentId": "9386bc54a06b4476b240466b70464d36",
+      "id": "362590_81af0e8265c94be8b1eb26215aa112a8",
+      "actionGroup": {
+        "Type": "P3000_NO",
+        "ParentDocId": null,
+        "DMProcessId": "362605",
+        "DocumentId": "9386bc54a06b4476b240466b70464d36",
+        "ParentType": "P3000_NO",
+        "Operation": "Create"
+      },
+      "isBulk": false,
+      "operation": "Create",
+      "parentDocumentId": null,
+      "status": "active"
+    },
+    {
+      "canClose": true,
+      "template": "Send_Document",
+      "isDocumentRelated": true,
+      "documentType": "P4000",
+      "requiresValidDocument": true,
+      "displayName": "Send",
+      "tempDocumentId": "73ad54e6c26d430c9284dcc848bc6825",
+      "type": "popup",
+      "tags": {
+        "category": "Documents",
+        "type": "sectorial"
+      },
+      "actor": "Authorized",
+      "typeVersion": "1.0",
+      "poolGroup": {
+        "Type": "P4000",
+        "ParentDocId": null,
+        "DMProcessId": "362640",
+        "DocumentId": "1a4f7d5f713646d2a648a6e1bd3fbd47",
+        "ParentType": null,
+        "Operation": "Send"
+      },
+      "caseId": "362590",
+      "isCaseRelated": false,
+      "hasBusinessValidation": false,
+      "name": "Send",
+      "documentId": "1a4f7d5f713646d2a648a6e1bd3fbd47",
+      "id": "362590_808133a382544e21b675951112a4fc0b",
+      "actionGroup": {
+        "Type": "P4000",
+        "ParentDocId": null,
+        "DMProcessId": "362640",
+        "DocumentId": "1a4f7d5f713646d2a648a6e1bd3fbd47",
+        "ParentType": null,
+        "Operation": "Send"
+      },
+      "isBulk": false,
+      "operation": "Send",
+      "parentDocumentId": null,
+      "status": "active"
+    },
+    {
+      "canClose": true,
+      "template": "H020",
+      "isDocumentRelated": false,
+      "documentType": "H020",
+      "displayName": "Create H020",
+      "tempDocumentId": "ef52fc347b214f02906a6c8551d13e6e",
+      "type": "new.regular",
+      "tags": {
+        "category": "Horizontal Documents",
+        "type": "admin"
+      },
+      "actor": "Authorized",
+      "typeVersion": "4.0",
+      "poolGroup": {
+        "Type": "H020",
+        "ParentDocId": null,
+        "DMProcessId": "362626",
+        "DocumentId": "86afa66a20944c72a92b6fdabab6ed02",
+        "ParentType": "H020",
+        "Operation": "Create"
+      },
+      "caseId": "362590",
+      "isCaseRelated": true,
+      "hasBusinessValidation": false,
+      "name": "Create",
+      "documentId": "86afa66a20944c72a92b6fdabab6ed02",
+      "id": "362590_7d86d1071bbc4a21a4966e05f7119c84",
+      "actionGroup": {
+        "Type": "H020",
+        "ParentDocId": null,
+        "DMProcessId": "362626",
+        "DocumentId": "86afa66a20944c72a92b6fdabab6ed02",
+        "ParentType": "H020",
+        "Operation": "Create"
+      },
+      "isBulk": false,
+      "operation": "Create",
+      "parentDocumentId": null,
+      "status": "active"
+    },
+    {
+      "canClose": true,
+      "template": "P8000",
+      "isDocumentRelated": false,
+      "documentType": "P8000",
+      "displayName": "Create P8000",
+      "tempDocumentId": "f4684654df084ba38b499d6ff4b9cb10",
+      "type": "new.regular",
+      "tags": {
+        "category": "Documents",
+        "type": "sectorial"
+      },
+      "actor": "Authorized",
+      "typeVersion": "4.0",
+      "poolGroup": {
+        "Type": "P8000",
+        "ParentDocId": null,
+        "DMProcessId": "362620",
+        "DocumentId": "90d468da4d5c40b4a9d146e2f718c6f4",
+        "ParentType": "P8000",
+        "Operation": "Create"
+      },
+      "caseId": "362590",
+      "isCaseRelated": true,
+      "hasBusinessValidation": false,
+      "name": "Create",
+      "documentId": "90d468da4d5c40b4a9d146e2f718c6f4",
+      "id": "362590_77f7fc798d1340d3b50b11264cce3898",
+      "actionGroup": {
+        "Type": "P8000",
+        "ParentDocId": null,
+        "DMProcessId": "362620",
+        "DocumentId": "90d468da4d5c40b4a9d146e2f718c6f4",
+        "ParentType": "P8000",
+        "Operation": "Create"
+      },
+      "isBulk": false,
+      "operation": "Create",
+      "parentDocumentId": null,
+      "status": "active"
+    },
+    {
+      "canClose": false,
+      "template": "P4000_Read",
+      "isDocumentRelated": true,
+      "documentType": "P4000",
+      "displayName": "Read",
+      "tempDocumentId": "9f0df351690d43e78b586059ece3e3ec",
+      "type": "existing.regular",
+      "tags": {
+        "category": "Documents",
+        "type": "sectorial"
+      },
+      "actor": "Authorized",
+      "typeVersion": "4.0",
+      "poolGroup": {
+        "Type": "P4000",
+        "ParentDocId": null,
+        "DMProcessId": "362640",
+        "DocumentId": "1a4f7d5f713646d2a648a6e1bd3fbd47",
+        "ParentType": null,
+        "Operation": "Read"
+      },
+      "caseId": "362590",
+      "isCaseRelated": false,
+      "hasBusinessValidation": false,
+      "name": "Read",
+      "documentId": "1a4f7d5f713646d2a648a6e1bd3fbd47",
+      "id": "362590_73283860da1f40fb8f8bcac363f24f19",
+      "actionGroup": {
+        "Type": "P4000",
+        "ParentDocId": null,
+        "DMProcessId": "362640",
+        "DocumentId": "1a4f7d5f713646d2a648a6e1bd3fbd47",
+        "ParentType": null,
+        "Operation": "Read"
+      },
+      "isBulk": false,
+      "operation": "Read",
+      "parentDocumentId": null,
+      "status": "active"
+    },
+    {
+      "canClose": true,
+      "template": "X007",
+      "isDocumentRelated": false,
+      "documentType": "X007",
+      "displayName": "Forward Case",
+      "tempDocumentId": "b32f58a02e38436b87040c7987c3b734",
+      "type": "new.regular",
+      "tags": {
+        "category": "Case Actions",
+        "type": "admin"
+      },
+      "actor": "Authorized",
+      "typeVersion": "4.0",
+      "poolGroup": {
+        "Type": "X007",
+        "ParentDocId": null,
+        "DMProcessId": "362611",
+        "DocumentId": "f22911bb71174040b0781e82942b59a6",
+        "ParentType": "X007",
+        "Operation": "Create"
+      },
+      "caseId": "362590",
+      "isCaseRelated": true,
+      "hasBusinessValidation": true,
+      "name": "Create",
+      "documentId": "f22911bb71174040b0781e82942b59a6",
+      "id": "362590_6bbb04cd22d043c6a8b9429645d6b991",
+      "actionGroup": {
+        "Type": "X007",
+        "ParentDocId": null,
+        "DMProcessId": "362611",
+        "DocumentId": "f22911bb71174040b0781e82942b59a6",
+        "ParentType": "X007",
+        "Operation": "Create"
+      },
+      "isBulk": false,
+      "operation": "Create",
+      "parentDocumentId": null,
+      "status": "active"
+    },
+    {
+      "canClose": true,
+      "template": "X009",
+      "isDocumentRelated": false,
+      "documentType": "X009",
+      "displayName": "Create Reminder",
+      "tempDocumentId": "08f70d7cb634438fa71922ae49bd0191",
+      "type": "new.regular",
+      "tags": {
+        "category": "Case Actions",
+        "type": "admin"
+      },
+      "actor": "Authorized",
+      "typeVersion": "4.0",
+      "poolGroup": {
+        "Type": "X009",
+        "ParentDocId": null,
+        "DMProcessId": "362596",
+        "DocumentId": "3a3ff563d3564a1bb02919975afee665",
+        "ParentType": "X009",
+        "Operation": "Create"
+      },
+      "caseId": "362590",
+      "isCaseRelated": true,
+      "hasBusinessValidation": false,
+      "name": "Create",
+      "documentId": "3a3ff563d3564a1bb02919975afee665",
+      "id": "362590_4e6770115acc46e9932bee1b86e6ff9d",
+      "actionGroup": {
+        "Type": "X009",
+        "ParentDocId": null,
+        "DMProcessId": "362596",
+        "DocumentId": "3a3ff563d3564a1bb02919975afee665",
+        "ParentType": "X009",
+        "Operation": "Create"
+      },
+      "isBulk": false,
+      "operation": "Create",
+      "parentDocumentId": null,
+      "status": "active"
+    },
+    {
+      "canClose": false,
+      "template": "Close_Case",
+      "isDocumentRelated": false,
+      "documentType": null,
+      "displayName": "Close Case (Local)",
+      "tempDocumentId": "1fb777299a7746eda507facb34b5e3a3",
+      "type": "popup",
+      "tags": {
+        "DMProcessId": 362590,
+        "Operation": "LocalClose",
+        "category": "Case Actions",
+        "type": "admin"
+      },
+      "actor": "Authorized",
+      "typeVersion": "1.0",
+      "poolGroup": {},
+      "caseId": "362590",
+      "isCaseRelated": true,
+      "hasBusinessValidation": false,
+      "name": "Close case",
+      "documentId": null,
+      "id": "362590_41057d73b2aa46f68d823cae53771363",
+      "actionGroup": {},
+      "isBulk": false,
+      "operation": "LocalClose",
+      "parentDocumentId": null,
+      "status": "active"
+    },
+    {
+      "canClose": true,
+      "template": "P10000",
+      "isDocumentRelated": false,
+      "documentType": "P10000",
+      "displayName": "Create P10000",
+      "tempDocumentId": "18064fcddcac43a8bb66908ebd98fcd4",
+      "type": "new.regular",
+      "tags": {
+        "category": "Documents",
+        "type": "sectorial"
+      },
+      "actor": "Authorized",
+      "typeVersion": "4.0",
+      "poolGroup": {
+        "Type": "P10000",
+        "ParentDocId": null,
+        "DMProcessId": "362617",
+        "DocumentId": "6e6bce16123e4c38ac9af7101fb4c2a2",
+        "ParentType": "P10000",
+        "Operation": "Create"
+      },
+      "caseId": "362590",
+      "isCaseRelated": true,
+      "hasBusinessValidation": false,
+      "name": "Create",
+      "documentId": "6e6bce16123e4c38ac9af7101fb4c2a2",
+      "id": "362590_3cb4c1a36de84486ae58e4034391a61b",
+      "actionGroup": {
+        "Type": "P10000",
+        "ParentDocId": null,
+        "DMProcessId": "362617",
+        "DocumentId": "6e6bce16123e4c38ac9af7101fb4c2a2",
+        "ParentType": "P10000",
+        "Operation": "Create"
+      },
+      "isBulk": false,
+      "operation": "Create",
+      "parentDocumentId": null,
+      "status": "active"
+    },
+    {
+      "canClose": true,
+      "template": "Send_Document",
+      "isDocumentRelated": true,
+      "documentType": "P6000",
+      "requiresValidDocument": true,
+      "displayName": "Send",
+      "tempDocumentId": "affd8d00437746819348253ba72cdc50",
+      "type": "popup",
+      "tags": {
+        "category": "Documents",
+        "type": "sectorial"
+      },
+      "actor": "Authorized",
+      "typeVersion": "1.0",
+      "poolGroup": {
+        "Type": "P6000",
+        "ParentDocId": null,
+        "DMProcessId": "362609",
+        "DocumentId": "6f972070a5cc4923a787237c0840968a",
+        "ParentType": null,
+        "Operation": "Send"
+      },
+      "caseId": "362590",
+      "isCaseRelated": false,
+      "hasBusinessValidation": false,
+      "name": "Send",
+      "documentId": "6f972070a5cc4923a787237c0840968a",
+      "id": "362590_2f0627d9399749dabffe940f5198a55f",
+      "actionGroup": {
+        "Type": "P6000",
+        "ParentDocId": null,
+        "DMProcessId": "362609",
+        "DocumentId": "6f972070a5cc4923a787237c0840968a",
+        "ParentType": null,
+        "Operation": "Send"
+      },
+      "isBulk": false,
+      "operation": "Send",
+      "parentDocumentId": null,
+      "status": "active"
+    },
+    {
+      "canClose": true,
+      "template": "Delete_Document",
+      "isDocumentRelated": true,
+      "displayName": "Delete",
+      "tempDocumentId": "4196e089f8204edabb93f0cd87dfc2c1",
+      "type": "popup",
+      "tags": {
+        "category": "Documents",
+        "type": "admin"
+      },
+      "actor": "Authorized",
+      "typeVersion": "1.0",
+      "poolGroup": {
+        "Type": "P6000",
+        "ParentDocId": null,
+        "DMProcessId": "362609",
+        "DocumentId": "6f972070a5cc4923a787237c0840968a",
+        "ParentType": null,
+        "Operation": "Delete"
+      },
+      "caseId": "362590",
+      "isCaseRelated": false,
+      "hasBusinessValidation": false,
+      "name": "Delete",
+      "documentId": "6f972070a5cc4923a787237c0840968a",
+      "id": "362590_2ad9d0090d394affa37c7490468e8604",
+      "actionGroup": {
+        "Type": "P6000",
+        "ParentDocId": null,
+        "DMProcessId": "362609",
+        "DocumentId": "6f972070a5cc4923a787237c0840968a",
+        "ParentType": null,
+        "Operation": "Delete"
+      },
+      "isBulk": false,
+      "operation": "Delete",
+      "parentDocumentId": null,
+      "status": "active"
+    },
+    {
+      "canClose": true,
+      "template": "P4000",
+      "isDocumentRelated": true,
+      "documentType": "P4000",
+      "displayName": "Edit draft",
+      "tempDocumentId": "1ba6e3fbd5324c0688b95f2816930f17",
+      "type": "existing.regular",
+      "tags": {
+        "category": "Documents",
+        "type": "sectorial"
+      },
+      "actor": "Authorized",
+      "typeVersion": "4.0",
+      "poolGroup": {
+        "Type": "P4000",
+        "ParentDocId": null,
+        "DMProcessId": "362640",
+        "DocumentId": "1a4f7d5f713646d2a648a6e1bd3fbd47",
+        "ParentType": null,
+        "Operation": "Update"
+      },
+      "caseId": "362590",
+      "isCaseRelated": false,
+      "hasBusinessValidation": false,
+      "name": "Update",
+      "documentId": "1a4f7d5f713646d2a648a6e1bd3fbd47",
+      "id": "362590_27f18b0ce980461286d57759114fde57",
+      "actionGroup": {
+        "Type": "P4000",
+        "ParentDocId": null,
+        "DMProcessId": "362640",
+        "DocumentId": "1a4f7d5f713646d2a648a6e1bd3fbd47",
+        "ParentType": null,
+        "Operation": "Update"
+      },
+      "isBulk": false,
+      "operation": "Update",
+      "parentDocumentId": null,
+      "status": "active"
+    },
+    {
+      "canClose": true,
+      "template": "H120",
+      "isDocumentRelated": false,
+      "documentType": "H120",
+      "displayName": "Create H120",
+      "tempDocumentId": "eb9705c97e704fd7b08bbed4300a935b",
+      "type": "new.regular",
+      "tags": {
+        "category": "Horizontal Documents",
+        "type": "admin"
+      },
+      "actor": "Authorized",
+      "typeVersion": "4.0",
+      "poolGroup": {
+        "Type": "H120",
+        "ParentDocId": null,
+        "DMProcessId": "362628",
+        "DocumentId": "c84153f2fcae4a67896c8cb47e68e349",
+        "ParentType": "H120",
+        "Operation": "Create"
+      },
+      "caseId": "362590",
+      "isCaseRelated": true,
+      "hasBusinessValidation": false,
+      "name": "Create",
+      "documentId": "c84153f2fcae4a67896c8cb47e68e349",
+      "id": "362590_26961371c66a47eb992df15e8825134d",
+      "actionGroup": {
+        "Type": "H120",
+        "ParentDocId": null,
+        "DMProcessId": "362628",
+        "DocumentId": "c84153f2fcae4a67896c8cb47e68e349",
+        "ParentType": "H120",
+        "Operation": "Create"
+      },
+      "isBulk": false,
+      "operation": "Create",
+      "parentDocumentId": null,
+      "status": "active"
+    },
+    {
+      "canClose": true,
+      "template": "Delete_Document",
+      "isDocumentRelated": true,
+      "displayName": "Delete",
+      "tempDocumentId": "e09076e6fc5c4f4bbabcaf0d3832ca38",
+      "type": "popup",
+      "tags": {
+        "category": "Documents",
+        "type": "admin"
+      },
+      "actor": "Authorized",
+      "typeVersion": "1.0",
+      "poolGroup": {
+        "Type": "P4000",
+        "ParentDocId": null,
+        "DMProcessId": "362640",
+        "DocumentId": "1a4f7d5f713646d2a648a6e1bd3fbd47",
+        "ParentType": null,
+        "Operation": "Delete"
+      },
+      "caseId": "362590",
+      "isCaseRelated": false,
+      "hasBusinessValidation": false,
+      "name": "Delete",
+      "documentId": "1a4f7d5f713646d2a648a6e1bd3fbd47",
+      "id": "362590_1bbed46b535b47399a19b5b1b36c2922",
+      "actionGroup": {
+        "Type": "P4000",
+        "ParentDocId": null,
+        "DMProcessId": "362640",
+        "DocumentId": "1a4f7d5f713646d2a648a6e1bd3fbd47",
+        "ParentType": null,
+        "Operation": "Delete"
+      },
+      "isBulk": false,
+      "operation": "Delete",
+      "parentDocumentId": null,
+      "status": "active"
+    },
+    {
+      "canClose": true,
+      "template": "P7000",
+      "isDocumentRelated": false,
+      "documentType": "P7000",
+      "displayName": "Create P7000",
+      "tempDocumentId": "4a2db32aaa984b8ea274743fb0d3ecc7",
+      "type": "new.regular",
+      "tags": {
+        "category": "Documents",
+        "type": "sectorial"
+      },
+      "actor": "Authorized",
+      "typeVersion": "4.0",
+      "poolGroup": {
+        "Type": "P7000",
+        "ParentDocId": null,
+        "DMProcessId": "362604",
+        "DocumentId": "b193d2bd87344f31924fc1d381de929e",
+        "ParentType": "P7000",
+        "Operation": "Create"
+      },
+      "caseId": "362590",
+      "isCaseRelated": true,
+      "hasBusinessValidation": false,
+      "name": "Create",
+      "documentId": "b193d2bd87344f31924fc1d381de929e",
+      "id": "362590_11ad7be2f6344a85befc3597e3396c0f",
+      "actionGroup": {
+        "Type": "P7000",
+        "ParentDocId": null,
+        "DMProcessId": "362604",
+        "DocumentId": "b193d2bd87344f31924fc1d381de929e",
+        "ParentType": "P7000",
+        "Operation": "Create"
+      },
+      "isBulk": false,
+      "operation": "Create",
+      "parentDocumentId": null,
+      "status": "active"
+    },
+    {
+      "canClose": true,
+      "template": "Delete_Document",
+      "isDocumentRelated": true,
+      "displayName": "Delete",
+      "tempDocumentId": "265f25894b6d4218bfe5710454be57d4",
+      "type": "popup",
+      "tags": {
+        "category": "Documents",
+        "type": "admin"
+      },
+      "actor": "Authorized",
+      "typeVersion": "1.0",
+      "poolGroup": {
+        "Type": "P5000",
+        "ParentDocId": null,
+        "DMProcessId": "362608",
+        "DocumentId": "401efdee0d54431aae4af59049ff21ac",
+        "ParentType": null,
+        "Operation": "Delete"
+      },
+      "caseId": "362590",
+      "isCaseRelated": false,
+      "hasBusinessValidation": false,
+      "name": "Delete",
+      "documentId": "401efdee0d54431aae4af59049ff21ac",
+      "id": "362590_0a4dc6ae784d407891c2ac77daf45e1e",
+      "actionGroup": {
+        "Type": "P5000",
+        "ParentDocId": null,
+        "DMProcessId": "362608",
+        "DocumentId": "401efdee0d54431aae4af59049ff21ac",
+        "ParentType": null,
+        "Operation": "Delete"
+      },
+      "isBulk": false,
+      "operation": "Delete",
+      "parentDocumentId": null,
+      "status": "active"
+    }
+  ],
+  "startDate": "2018-09-06T08:34:26Z",
+  "processDefinitionVersion": "v1.0",
+  "properties": {
+    "importance": "1",
+    "criticality": "1"
+  },
+  "participants": [
+    {
+      "role": "CaseOwner",
+      "organisation": {
+        "activeSince": "2017-10-19T22:00:00Z",
+        "address": {
+          "country": "NO",
+          "town": null,
+          "street": null,
+          "postalCode": null,
+          "region": null
+        },
+        "registryNumber": null,
+        "acronym": "12347",
+        "countryCode": "NO",
+        "name": "NAVT002",
+        "contactMethods": null,
+        "location": null,
+        "id": "NAVT002"
+      }
+    },
+    {
+      "role": "CounterParty",
+      "organisation": {
+        "activeSince": "2018-02-12T23:00:00Z",
+        "address": {
+          "country": "NO",
+          "town": null,
+          "street": null,
+          "postalCode": null,
+          "region": null
+        },
+        "registryNumber": null,
+        "acronym": "12348",
+        "countryCode": "NO",
+        "name": "NAVT003",
+        "contactMethods": null,
+        "location": null,
+        "id": "NAVT003"
+      }
+    }
+  ],
+  "status": "open"
+}

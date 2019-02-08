@@ -9,7 +9,7 @@ data class DocumentIdentification(
         val id: Any? = null,
         val contentLocation: Any? = null,
         val relatedSetIdentifier: Any? = null,
-        val creationDate: Long? = null,
+        val creationDate: Any? = null,
         val type: String? = null,
         val version: String? = null
 )

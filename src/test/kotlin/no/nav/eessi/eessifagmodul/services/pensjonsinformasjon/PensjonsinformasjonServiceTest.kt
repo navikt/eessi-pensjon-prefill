@@ -2,6 +2,7 @@ package no.nav.eessi.eessifagmodul.services.pensjonsinformasjon
 
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.whenever
+import no.nav.eessi.eessifagmodul.config.TimingService
 import no.nav.eessi.eessifagmodul.utils.simpleFormat
 import org.junit.Before
 import org.junit.Test
@@ -23,11 +24,14 @@ class PensjonsinformasjonServiceTest {
     @Mock
     private lateinit var mockrestTemplate: RestTemplate
 
+    @Mock
+    private lateinit var mockTimingService: TimingService
+
     lateinit var pensjonsinformasjonService: PensjonsinformasjonService
 
     @Before
     fun setup() {
-        pensjonsinformasjonService = PensjonsinformasjonService(mockrestTemplate, RequestBuilder())
+        pensjonsinformasjonService = PensjonsinformasjonService(mockrestTemplate, RequestBuilder(), mockTimingService)
     }
 
     @Test

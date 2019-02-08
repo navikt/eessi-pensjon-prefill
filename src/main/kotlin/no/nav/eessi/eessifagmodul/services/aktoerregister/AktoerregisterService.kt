@@ -4,6 +4,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import io.micrometer.core.instrument.Counter
 import io.micrometer.core.instrument.Metrics
+import no.nav.eessi.eessifagmodul.config.TimingService
 import no.nav.eessi.eessifagmodul.models.AktoerregisterException
 import no.nav.eessi.eessifagmodul.models.AktoerregisterIkkeFunnetException
 import org.slf4j.LoggerFactory
@@ -30,7 +31,7 @@ data class IdentinfoForAktoer(
 )
 
 @Service
-class AktoerregisterService(val aktoerregisterOidcRestTemplate: RestTemplate) {
+class AktoerregisterService(val aktoerregisterOidcRestTemplate: RestTemplate, val timingService: TimingService) {
 
     private val aktoerregister_teller_navn = "eessipensjon_fagmodul.aktoerregister"
     private val aktoerregister_teller_type_vellykkede = counter(aktoerregister_teller_navn, "vellykkede")
@@ -89,12 +90,15 @@ class AktoerregisterService(val aktoerregisterOidcRestTemplate: RestTemplate) {
                 .queryParam("identgruppe", identGruppe)
                 .queryParam("gjeldende", gjeldende)
         logger.info("Kaller aktørregisteret: /identer")
+
+        val aktoertimed = timingService.timedStart("aktoer")
         val responseEntity = aktoerregisterOidcRestTemplate.exchange(uriBuilder.toUriString(),
                 HttpMethod.GET,
                 requestEntity,
                 String::class.java)
 
         if (responseEntity.statusCode.isError) {
+            timingService.timesStop(aktoertimed)
             logger.error("Fikk ${responseEntity.statusCode} feil fra aktørregisteret")
             aktoerregister_teller_type_feilede.increment()
             if (responseEntity.hasBody()) {
@@ -102,6 +106,7 @@ class AktoerregisterService(val aktoerregisterOidcRestTemplate: RestTemplate) {
             }
             throw AktoerregisterException("Received ${responseEntity.statusCode} ${responseEntity.statusCode.reasonPhrase} from aktørregisteret")
         }
+        timingService.timesStop(aktoertimed)
         aktoerregister_teller_type_vellykkede.increment()
 
         return jacksonObjectMapper().readValue(responseEntity.body!!)

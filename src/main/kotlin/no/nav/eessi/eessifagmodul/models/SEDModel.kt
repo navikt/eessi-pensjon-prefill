@@ -61,11 +61,7 @@ enum class SEDType {
             return try {
                 SEDType.valueOf(input)
                 true
-//            } catch (ex: EnumConstantNotPresentException) {
-//                //false
-//                throw SedDokumentIkkeGyldigException("Ikke gyldig SED")
             } catch (ia: IllegalArgumentException) {
-                //false
                 throw SedDokumentIkkeGyldigException("Ikke gyldig SED")
             }
         }

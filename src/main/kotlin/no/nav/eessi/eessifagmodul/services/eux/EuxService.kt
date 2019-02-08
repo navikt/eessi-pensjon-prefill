@@ -13,6 +13,7 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
+import org.springframework.web.client.HttpServerErrorException
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.util.UriComponentsBuilder
 import java.util.*
@@ -33,20 +34,23 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
         val path = "/buc/sed"
         val builder = UriComponentsBuilder.fromPath(path)
                 .queryParam("BucType", bucType)
-                .queryParam("MottakerId", bucType)
+                .queryParam("MottakerId", mottakerid)
                 .queryParam("FagSakNummer", fagSaknr)
 
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_JSON
         val httpEntity = HttpEntity(navSED.toJson(), headers)
 
-        try {
+        return try {
             logger.info("Prøver å kontakte EUX /${builder.toUriString()}")
-            val response = euxOidcRestTemplate.exchange(builder.toUriString(), HttpMethod.POST, httpEntity, String::class.java)
+            val response = euxOidcRestTemplate.exchange(builder.toUriString(),
+                    HttpMethod.POST,
+                    httpEntity,
+                    String::class.java)
 
             if (response.statusCode.is2xxSuccessful) {
                 getCounter("OPPRETTBUCOGSEDOK").increment()
-                return mapJsonToAny(response.body!!, typeRefs())
+                mapJsonToAny(response.body!!, typeRefs())
             } else {
                 throw RinaCasenrIkkeMottattException("Ikke mottatt RINA casenr, feiler ved opprettelse av BUC og SED")
             }
@@ -54,6 +58,10 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
             logger.error(rx.message)
             getCounter("OPPRETTBUCOGSEDFEIL").increment()
             throw RinaCasenrIkkeMottattException(rx.message)
+        } catch (sx: HttpServerErrorException) {
+            logger.error(sx.message)
+            getCounter("OPPRETTBUCOGSEDFEIL").increment()
+            throw EuxServerException("Feiler med kontakt med EUX/Rina.")
         } catch (ex: Exception) {
             logger.error(ex.message)
             getCounter("OPPRETTBUCOGSEDFEIL").increment()
@@ -78,7 +86,12 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
 
         try {
             logger.info("Prøver å kontakte EUX /${builder.toUriString()}")
-            val response = euxOidcRestTemplate.exchange(builder.toUriString(), HttpMethod.POST, httpEntity, String::class.java)
+
+            val response = euxOidcRestTemplate.exchange(builder.toUriString(),
+                    HttpMethod.POST,
+                    httpEntity,
+                    String::class.java)
+
             return if (response.statusCode.is2xxSuccessful) {
                 getCounter("OPPRETTBUCOGSEDOK").increment()
                 BucSedResponse(euxCaseId, response.body!!)
@@ -110,24 +123,32 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
         return sedlist
     }
 
+    fun getRinaAksjon(euxCaseId: String): List<RinaAksjon> {
+        return getBucUtils(euxCaseId).getRinaAksjon()
+    }
+
 
     //henter ut sed fra rina med bucid og documentid
-    @Throws(EuxServerException::class, SedIkkeMottattException::class)
+    @Throws(EuxServerException::class, SedDokumentIkkeLestException::class)
     fun getSedOnBucByDocumentId(euxCaseId: String, documentId: String): SED {
         val path = "/buc/{RinaSakId}/sed/{DokumentId}"
         val uriParams = mapOf("RinaSakId" to euxCaseId, "DokumentId" to documentId)
         val builder = UriComponentsBuilder.fromUriString(path).buildAndExpand(uriParams)
 
+        logger.info("Prøver å kontakte EUX /${builder.toUriString()}")
         try {
-            logger.info("Prøver å kontakte EUX /${builder.toUriString()}")
-            val response = euxOidcRestTemplate.exchange(builder.toUriString(), HttpMethod.POST, null, String::class.java)
-            val jsonbuc = response.body ?: throw SedIkkeMottattException("Ikke mottatt SED, feiler ved uthenting av Nav-Sed")
+            val response = euxOidcRestTemplate.exchange(builder.toUriString(),
+                    HttpMethod.GET,
+                    null,
+                    String::class.java)
+            val jsonsed = response.body ?: throw SedDokumentIkkeLestException("Feiler ved lesing av navSED, feiler ved uthenting av SED")
+            val navsed = mapJsonToAny(jsonsed, typeRefs<SED>())
             getCounter("HENTSEDOK").increment()
-            return mapJsonToAny(jsonbuc, typeRefs())
-        } catch (rx: SedIkkeMottattException) {
+            return navsed
+        } catch (rx: SedDokumentIkkeLestException) {
             logger.error(rx.message)
             getCounter("HENTSEDFEIL").increment()
-            throw SedIkkeMottattException(rx.message)
+            throw SedDokumentIkkeLestException(rx.message)
         } catch (ex: Exception) {
             logger.error(ex.message)
             getCounter("HENTSEDFEIL").increment()
@@ -140,13 +161,20 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
     //henter ut bucdata fra valgt buc/euxCaseId
     @Throws(BucIkkeMottattException::class, EuxServerException::class)
     fun getBuc(euxCaseId: String): Buc {
+        logger.info("har euxCaseId verdi: $euxCaseId")
+
         val path = "/buc/{RinaSakId}"
         val uriParams = mapOf("RinaSakId" to euxCaseId)
         val builder = UriComponentsBuilder.fromUriString(path).buildAndExpand(uriParams)
 
         try {
             logger.info("Prøver å kontakte EUX /${builder.toUriString()}")
-            val response = euxOidcRestTemplate.exchange(builder.toUriString(), HttpMethod.POST, null, String::class.java)
+
+            val response = euxOidcRestTemplate.exchange(builder.toUriString(),
+                    HttpMethod.GET,
+                    null,
+                    String::class.java)
+
             if (response.statusCode.is2xxSuccessful) {
                 val jsonbuc = response.body!!
                 getCounter("HENTBUCOK").increment()
@@ -168,6 +196,7 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
 
     //henter ut BucUtils med valgt Buc for diverse uthentinger..
     fun getBucUtils(euxCaseId: String): BucUtils {
+        logger.info("Prøver å hente ut en BucUtils for buc $euxCaseId")
         return BucUtils(getBuc(euxCaseId))
     }
 
@@ -184,7 +213,13 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
         val builder = UriComponentsBuilder.fromUriString(path).buildAndExpand(uriParams)
 
         try {
-            val response = euxOidcRestTemplate.exchange(builder.toUriString(), HttpMethod.DELETE, null, String::class.java).statusCode
+            logger.info("Prøver å kontakte EUX /${builder.toUriString()}")
+
+            val response = euxOidcRestTemplate.exchange(builder.toUriString(),
+                    HttpMethod.DELETE,
+                    null,
+                    String::class.java).statusCode
+
             if (response.is2xxSuccessful) {
                 getCounter("SLETTSEDOK").increment()
                 return true
@@ -214,7 +249,11 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
         val builder = UriComponentsBuilder.fromUriString(path).buildAndExpand(uriParams)
 
         try {
-            val response = euxOidcRestTemplate.exchange(builder.toUriString(), HttpMethod.POST, null, String::class.java).statusCode
+            val response = euxOidcRestTemplate.exchange(builder.toUriString(),
+                    HttpMethod.POST,
+                    null,
+                    String::class.java).statusCode
+
             if (response.is2xxSuccessful) {
                 getCounter("SENDSEDOK").increment()
                 return true
@@ -240,7 +279,10 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
                 .queryParam("LandKode", landkode ?: "")
 
         val httpEntity = HttpEntity("")
-        val response = euxOidcRestTemplate.exchange(builder.toUriString(), HttpMethod.GET, httpEntity, typeRef<List<String>>())
+        val response = euxOidcRestTemplate.exchange(builder.toUriString(),
+                HttpMethod.GET,
+                httpEntity,
+                typeRef<List<String>>())
         return response.body ?: listOf()
     }
 

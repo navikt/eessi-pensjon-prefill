@@ -37,7 +37,7 @@ abstract class VedtakPensjonData {
     private fun harAvdodBoddArbeidetUtland(pendata: Pensjonsinformasjon): Boolean {
         val avdod: V1Avdod = pendata.avdod ?: V1Avdod()
 
-        if (avdod.avdod != "") {
+        if (avdod.avdod != "" && avdod.isAvdodBoddArbeidetUtland != null) {
             return avdod.isAvdodBoddArbeidetUtland
         }
         return false
