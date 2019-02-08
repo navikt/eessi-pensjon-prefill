@@ -1,0 +1,63 @@
+package no.nav.eessi.eessifagmodul.controllers
+
+import io.swagger.annotations.ApiOperation
+import no.nav.eessi.eessifagmodul.services.eux.EuxService
+import no.nav.eessi.eessifagmodul.services.eux.RinaAksjon
+import no.nav.eessi.eessifagmodul.services.eux.bucmodel.Buc
+import no.nav.eessi.eessifagmodul.services.eux.bucmodel.Creator
+import no.nav.security.oidc.api.Protected
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
+
+@Protected
+@RestController
+@RequestMapping("/buc")
+class BucController(private val euxService: EuxService) {
+
+    @ApiOperation("Henter opp hele BUC på valgt caseid")
+    @GetMapping("/{rinanr}")
+    fun getBuc(@PathVariable(value = "rinanr", required = true) rinanr: String): Buc {
+        return euxService.getBuc(rinanr)
+    }
+
+    @ApiOperation("Henter opp hele BUC på valgt caseid")
+    @GetMapping("/{rinanr}/name")
+    fun getProcessDefinitionName(@PathVariable(value = "rinanr", required = true) rinanr: String): String? {
+        return euxService.getBucUtils(rinanr).getProcessDefinitionName()
+    }
+
+    @ApiOperation("Henter opp den opprinelige inststusjon på valgt caseid (buc)")
+    @GetMapping("/{rinanr}/creator")
+    fun getCreator(@PathVariable(value = "rinanr", required = true) rinanr: String): Creator? {
+        return euxService.getBucUtils(rinanr).getCreator()
+    }
+
+    @ApiOperation("Henter opp mulige aksjin som kan utføres på valgt buc, filtert på sed starter med 'P'")
+    @GetMapping("/aksjoner/{rinanr}", "/aksjoner/{rinanr}/{filter}")
+    fun getMuligeAksjoner(@PathVariable(value = "rinanr", required = true) rinanr: String,
+                          @PathVariable(value = "filter", required = false) filter: String? = null): List<RinaAksjon> {
+
+        val list = euxService.getBucUtils(rinanr).getRinaAksjon()
+
+        if (filter == null) {
+            return list
+        }
+        return getMuligeAksjonerFilter(list, filter)
+    }
+
+    private fun getMuligeAksjonerFilter(list: List<RinaAksjon>, filter: String = ""): List<RinaAksjon> {
+        val filterlist = mutableListOf<RinaAksjon>()
+        println("list: $list")
+        list.forEach {
+            println("it: $it")
+            if (it.dokumentType != null && it.dokumentType.startsWith(filter)) {
+                filterlist.add(it)
+            }
+        }
+        return filterlist.toList()
+    }
+
+
+}
