@@ -123,11 +123,6 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
         return sedlist
     }
 
-    fun getRinaAksjon(euxCaseId: String): List<RinaAksjon> {
-        return getBucUtils(euxCaseId).getRinaAksjon()
-    }
-
-
     //henter ut sed fra rina med bucid og documentid
     @Throws(EuxServerException::class, SedDokumentIkkeLestException::class)
     fun getSedOnBucByDocumentId(euxCaseId: String, documentId: String): SED {

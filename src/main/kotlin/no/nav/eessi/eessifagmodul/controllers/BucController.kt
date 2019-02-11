@@ -1,6 +1,7 @@
 package no.nav.eessi.eessifagmodul.controllers
 
 import io.swagger.annotations.ApiOperation
+import no.nav.eessi.eessifagmodul.services.eux.BucUtils
 import no.nav.eessi.eessifagmodul.services.eux.EuxService
 import no.nav.eessi.eessifagmodul.services.eux.RinaAksjon
 import no.nav.eessi.eessifagmodul.services.eux.bucmodel.Buc
@@ -25,13 +26,13 @@ class BucController(private val euxService: EuxService) {
     @ApiOperation("Henter opp hele BUC på valgt caseid")
     @GetMapping("/{rinanr}/name")
     fun getProcessDefinitionName(@PathVariable(value = "rinanr", required = true) rinanr: String): String? {
-        return euxService.getBucUtils(rinanr).getProcessDefinitionName()
+        return getBucUtils(rinanr).getProcessDefinitionName()
     }
 
     @ApiOperation("Henter opp den opprinelige inststusjon på valgt caseid (buc)")
     @GetMapping("/{rinanr}/creator")
     fun getCreator(@PathVariable(value = "rinanr", required = true) rinanr: String): Creator? {
-        return euxService.getBucUtils(rinanr).getCreator()
+        return getBucUtils(rinanr).getCreator()
     }
 
     @ApiOperation("Henter opp mulige aksjin som kan utføres på valgt buc, filtert på sed starter med 'P'")
@@ -39,7 +40,7 @@ class BucController(private val euxService: EuxService) {
     fun getMuligeAksjoner(@PathVariable(value = "rinanr", required = true) rinanr: String,
                           @PathVariable(value = "filter", required = false) filter: String? = null): List<RinaAksjon> {
 
-        val list = euxService.getBucUtils(rinanr).getRinaAksjon()
+        val list = getBucUtils(rinanr).getRinaAksjon()
 
         if (filter == null) {
             return list
@@ -48,16 +49,21 @@ class BucController(private val euxService: EuxService) {
     }
 
     private fun getMuligeAksjonerFilter(list: List<RinaAksjon>, filter: String = ""): List<RinaAksjon> {
-        val filterlist = mutableListOf<RinaAksjon>()
+        //val filterlist = mutableListOf<RinaAksjon>()
+
         println("list: $list")
-        list.forEach {
-            println("it: $it")
-            if (it.dokumentType != null && it.dokumentType.startsWith(filter)) {
-                filterlist.add(it)
-            }
-        }
+        val filterlist = list.filter { it.dokumentType?.startsWith(filter)!! }.toList()
+//        list.forEach {
+//            println("it: $it")
+//            if (it.dokumentType != null && it.dokumentType.startsWith(filter)) {
+//                filterlist.add(it)
+//            }
+//        }
         return filterlist.toList()
     }
 
+    private fun getBucUtils(rinanr: String): BucUtils {
+        return euxService.getBucUtils(rinanr)
+    }
 
 }

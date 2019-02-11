@@ -19,10 +19,9 @@ class BucUtils {
     constructor(buc: Buc) {
         this.buc = buc
     }
-
     constructor(bucjson: String) {
-        this.bucjson = bucjson
         this.buc = parseBuc(bucjson)
+        this.bucjson = bucjson
     }
 
     fun parseBuc(bucjson: String): Buc {

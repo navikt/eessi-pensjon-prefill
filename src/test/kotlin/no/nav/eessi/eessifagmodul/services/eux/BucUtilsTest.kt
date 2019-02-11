@@ -156,5 +156,23 @@ class BucUtilsTest {
 
     }
 
+    @Test
+    fun getRinaAksjonerFilteredOnP() {
+        val result = bucUtils.getRinaAksjon()
+        assertEquals(16, result.size)
+        val rinaaksjon = result.get(5)
+        assertEquals("P2000", rinaaksjon.dokumentType)
+        assertEquals("P_BUC_01", rinaaksjon.id)
+        assertEquals("Update", rinaaksjon.navn)
+
+        val filterlist = result.filter { it.dokumentType?.startsWith("P")!! }.toList()
+
+        assertEquals(9, filterlist.size)
+        val rinaaksjon2 = filterlist.get(5)
+        assertEquals("P5000", rinaaksjon2.dokumentType)
+        assertEquals("P_BUC_01", rinaaksjon2.id)
+        assertEquals("Create", rinaaksjon2.navn)
+
+    }
 
 }
