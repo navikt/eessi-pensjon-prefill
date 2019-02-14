@@ -3,6 +3,7 @@ package no.nav.eessi.eessifagmodul.services.personv3
 import io.micrometer.core.instrument.Counter
 import io.micrometer.core.instrument.Metrics
 import no.nav.eessi.eessifagmodul.config.TimingService
+import no.nav.eessi.eessifagmodul.config.getTokenContextFromIssuer
 import no.nav.eessi.eessifagmodul.config.sts.configureRequestSamlTokenOnBehalfOfOidc
 import no.nav.eessi.eessifagmodul.models.PersonV3IkkeFunnetException
 import no.nav.eessi.eessifagmodul.models.PersonV3SikkerhetsbegrensningException
@@ -37,8 +38,10 @@ class PersonV3Service(val service: PersonV3, val oidcRequestContextHolder: OIDCR
 
     fun hentPerson(fnr: String): HentPersonResponse {
         logger.debug("Henter person fra PersonV3Service")
-        val token = oidcRequestContextHolder.oidcValidationContext.getToken("oidc")
+        //val token = oidcRequestContextHolder.oidcValidationContext.getToken("oidc")
+        val token = getTokenContextFromIssuer(oidcRequestContextHolder)
 
+        logger.debug("Token: $token")
         configureRequestSamlTokenOnBehalfOfOidc(service, token.idToken)
 
         val request = HentPersonRequest().apply {

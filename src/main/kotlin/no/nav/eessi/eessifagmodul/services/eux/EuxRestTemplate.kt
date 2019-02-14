@@ -16,7 +16,7 @@ import org.springframework.web.client.DefaultResponseErrorHandler
 import org.springframework.web.client.RestTemplate
 
 @Component
-class EuxRestTemplate(val oidcRequestContextHolder: OIDCRequestContextHolder, val registry: MeterRegistry) {
+class EuxRestTemplate(private val oidcRequestContextHolder: OIDCRequestContextHolder, private val registry: MeterRegistry) {
 
     @Value("\${euxbasis.v1.url}")
     lateinit var url: String

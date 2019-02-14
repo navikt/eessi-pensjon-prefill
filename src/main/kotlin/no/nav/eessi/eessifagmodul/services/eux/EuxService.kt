@@ -162,7 +162,7 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
         val uriParams = mapOf("RinaSakId" to euxCaseId)
         val builder = UriComponentsBuilder.fromUriString(path).buildAndExpand(uriParams)
 
-        try {
+        return try {
             logger.info("Prøver å kontakte EUX /${builder.toUriString()}")
 
             val response = euxOidcRestTemplate.exchange(builder.toUriString(),
@@ -173,7 +173,7 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
             if (response.statusCode.is2xxSuccessful) {
                 val jsonbuc = response.body!!
                 getCounter("HENTBUCOK").increment()
-                return mapJsonToAny(jsonbuc, typeRefs())
+                mapJsonToAny(jsonbuc, typeRefs())
             } else {
                 throw BucIkkeMottattException("Ikke mottatt Buc, feiler ved uthenting av Buc")
             }
@@ -213,18 +213,21 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
             val response = euxOidcRestTemplate.exchange(builder.toUriString(),
                     HttpMethod.DELETE,
                     null,
-                    String::class.java).statusCode
+                    String::class.java)
 
-            if (response.is2xxSuccessful) {
+            if (response.statusCode.is2xxSuccessful) {
+                logger.info("Slettet SED document OK")
                 getCounter("SLETTSEDOK").increment()
                 return true
             } else {
                 throw SedIkkeSlettetException("Feil, SED document ble ikke slettet")
             }
         } catch (sx: SedIkkeSlettetException) {
+            logger.error(sx.message)
             getCounter("SLETTSEDFEIL").increment()
             throw SedIkkeSlettetException(sx.message)
         } catch (ex: Exception) {
+            logger.error(ex.message)
             getCounter("SLETTSEDFEIL").increment()
             throw EuxServerException(ex.message)
         }
@@ -239,25 +242,27 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
      */
     @Throws(SedDokumentIkkeSendtException::class, EuxServerException::class)
     fun sendDocumentById(euxCaseId: String, documentId: String): Boolean {
+
         val path = "/buc/{RinaSakId}/sed/{DokumentId}/send"
         val uriParams = mapOf("RinaSakId" to euxCaseId, "DokumentId" to documentId)
         val builder = UriComponentsBuilder.fromUriString(path).buildAndExpand(uriParams)
 
-        try {
-            val response = euxOidcRestTemplate.exchange(builder.toUriString(),
+        return try {
+            val response = euxOidcRestTemplate.exchange(
+                    builder.toUriString(),
                     HttpMethod.POST,
                     null,
-                    String::class.java).statusCode
+                    String::class.java)
 
-            if (response.is2xxSuccessful) {
+            if (response.statusCode.is2xxSuccessful) {
                 getCounter("SENDSEDOK").increment()
-                return true
+                true
             } else {
                 throw SedDokumentIkkeSendtException("Feil, SED document ble ikke sendt")
             }
         } catch (sx: SedDokumentIkkeSendtException) {
             getCounter("SENDSEDFEIL").increment()
-            throw SedDokumentIkkeSendtException(sx.message)
+            throw sx
         } catch (ex: Exception) {
             getCounter("SENDSEDFEIL").increment()
             throw EuxServerException(ex.message)

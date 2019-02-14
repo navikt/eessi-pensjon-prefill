@@ -36,12 +36,11 @@ class BucController(private val euxService: EuxService) {
     }
 
     @ApiOperation("Henter opp mulige aksjin som kan utføres på valgt buc, filtert på sed starter med 'P'")
-    @GetMapping("/aksjoner/{rinanr}", "/aksjoner/{rinanr}/{filter}")
+    @GetMapping("/{rinanr}/aksjoner", "/{rinanr}/aksjoner/{filter}")
     fun getMuligeAksjoner(@PathVariable(value = "rinanr", required = true) rinanr: String,
                           @PathVariable(value = "filter", required = false) filter: String? = null): List<RinaAksjon> {
 
         val list = getBucUtils(rinanr).getRinaAksjon()
-
         if (filter == null) {
             return list
         }
@@ -49,17 +48,7 @@ class BucController(private val euxService: EuxService) {
     }
 
     private fun getMuligeAksjonerFilter(list: List<RinaAksjon>, filter: String = ""): List<RinaAksjon> {
-        //val filterlist = mutableListOf<RinaAksjon>()
-
-        println("list: $list")
-        val filterlist = list.filter { it.dokumentType?.startsWith(filter)!! }.toList()
-//        list.forEach {
-//            println("it: $it")
-//            if (it.dokumentType != null && it.dokumentType.startsWith(filter)) {
-//                filterlist.add(it)
-//            }
-//        }
-        return filterlist.toList()
+        return list.filter { it.dokumentType?.startsWith(filter)!! }.toList()
     }
 
     private fun getBucUtils(rinanr: String): BucUtils {

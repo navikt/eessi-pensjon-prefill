@@ -11,10 +11,12 @@ import org.slf4j.LoggerFactory
 import org.springframework.web.bind.annotation.*
 import java.time.LocalDate
 
-@Protected
 @CrossOrigin
 @RestController
 @RequestMapping("/pesys")
+@Protected
+
+//@ProtectedWithClaims(issuer = "pesys")
 
 /**
  * tjeneste for opprettelse av automatiske krav ved mottakk av Buc/Krav fra utland.

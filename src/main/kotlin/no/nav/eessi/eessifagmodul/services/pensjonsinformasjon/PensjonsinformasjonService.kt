@@ -1,7 +1,6 @@
 package no.nav.eessi.eessifagmodul.services.pensjonsinformasjon
 
 
-import no.nav.eessi.eessifagmodul.config.TimingService
 import no.nav.eessi.eessifagmodul.models.PensjoninformasjonException
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import no.nav.pensjon.v1.sak.V1Sak
@@ -21,7 +20,7 @@ import javax.xml.transform.stream.StreamSource
 private val logger = LoggerFactory.getLogger(PensjonsinformasjonService::class.java)
 
 @Service
-class PensjonsinformasjonService(val pensjonsinformasjonOidcRestTemplate: RestTemplate, val requestBuilder: RequestBuilder, val timingService: TimingService) {
+class PensjonsinformasjonService(val pensjonsinformasjonOidcRestTemplate: RestTemplate, val requestBuilder: RequestBuilder) {
 
     fun hentAltPaaSak(sakId: String = "", pendata: Pensjonsinformasjon): V1Sak? {
         logger.info("Pendata: $pendata")
@@ -99,12 +98,8 @@ class PensjonsinformasjonService(val pensjonsinformasjonOidcRestTemplate: RestTe
 
         val uriBuilder = UriComponentsBuilder.fromPath(path).pathSegment(id)
 
-        val pentimed = timingService.timedStart("pensjoninformasjon")
-
         pensjonsinformasjonOidcRestTemplate.uriTemplateHandler = uriHandler
-
         try {
-
             val responseEntity = pensjonsinformasjonOidcRestTemplate.exchange(
                     uriBuilder.toUriString(),
                     HttpMethod.POST,
@@ -112,7 +107,6 @@ class PensjonsinformasjonService(val pensjonsinformasjonOidcRestTemplate: RestTe
                     String::class.java)
 
             if (responseEntity.statusCode.isError) {
-                timingService.timesStop(pentimed)
                 logger.error("Received ${responseEntity.statusCode} from pensjonsinformasjon")
                 if (responseEntity.hasBody()) {
                     logger.error(responseEntity.body.toString())
@@ -126,8 +120,6 @@ class PensjonsinformasjonService(val pensjonsinformasjonOidcRestTemplate: RestTe
             val unmarshaller = context.createUnmarshaller()
 
             val res = unmarshaller.unmarshal(StreamSource(StringReader(responseEntity.body)), Pensjonsinformasjon::class.java)
-
-            timingService.timesStop(pentimed)
 
             return res.value as Pensjonsinformasjon
 

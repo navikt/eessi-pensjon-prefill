@@ -63,7 +63,6 @@ class BucUtils {
     }
 
     fun getLastDate(): LocalDate {
-
         val date = getBuc().lastUpdate
 
         if (date is Long) {
@@ -98,6 +97,19 @@ class BucUtils {
             }
         }
         return null
+    }
+
+    fun getAllDocuments(): List<ShortDocumentItem> {
+        val documents = getDocuments()
+        val lists = mutableListOf<ShortDocumentItem>()
+        documents.forEach {
+            lists.add(ShortDocumentItem(
+                    id = it.id,
+                    type = it.type,
+                    status = it.status
+            ))
+        }
+        return lists
     }
 
     fun findAndFilterDocumentItemByType(sedType: SEDType): List<ShortDocumentItem> {

@@ -47,14 +47,6 @@ class LandkodeService {
     }
 
     fun hentLandkode2(): List<String> {
-//        val landlist: MutableList<Landkode> = mutableListOf()
-//        println("Map landKodeTable : $landKodeTable")
-//        landKodeTable.keys.forEach {
-//            if (it?.length == 2) {
-//                landlist.add(landKodeTable[it]!!)
-//            }
-//        }
-//        val listsort: List<Landkode> = landlist.asSequence().sortedBy { (_, _, _, sorting) -> sorting }.toList()
         val listsort = hentLandkoder()
         val list: MutableList<String> = mutableListOf()
         listsort.forEach {

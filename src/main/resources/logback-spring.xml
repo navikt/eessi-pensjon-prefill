@@ -10,9 +10,11 @@
             </encoder>
         </appender>
 
-        <logger name="org" level="ERROR"/>
-        <logger name="com" level="ERROR"/>
-        <logger name="no.nav.security.spring" level="ERROR"/>
+        <logger name="io" level="DEBUG"/>
+        <logger name="org" level="DEBUG"/>
+        <logger name="com" level="DEBUG"/>
+        <logger name="no.nav" level="DEBUG"/>
+        <logger name="no.nav.security" level="DEBUG"/>
         <logger name="no.nav.eessi" level="DEBUG"/>
 
         <root level="info">

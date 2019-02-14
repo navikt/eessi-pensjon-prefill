@@ -17,9 +17,7 @@ aktoerregister.api.v1:
   url: 'https://app-t8.adeo.no/aktoerregister/api/v1'
 
 pensjonsinformasjon:
-  api:
-    v1:
-      url: 'https://wasapp-t5.adeo.no/pensjon-ws/api/pensjonsinformasjon/v1'
+  url: 'https://wasapp-t5.adeo.no/pensjon-ws/api/pensjonsinformasjon/v1'
 
 eessi-security-token-service:
   url: 'https://security-token-service-t10.nais.preprod.local/rest/v1/sts/token'
@@ -46,8 +44,13 @@ no.nav.security.oidc:
   issuer.oidc:
     discoveryurl: 'https://isso-t.adeo.no:443/isso/oauth2/.well-known/openid-configuration'
     accepted_audience: 'eessi-fagmodul-localhost,eessi-fagmodul-t8,freg-token-provider-t0,eessi-pensjon-frontend-api-t8,eessi-pensjon-frontend-api-fss-t8,eux-app-t8,ida-t'
+  issuer.pesys:
+    discoveryurl: 'https://security-token-service-t10.nais.preprod.local/rest/v1/sts/.well-known/openid-configuration'
+    accepted_audience: 'preprod.local,srveessipensjon,srvpensjon'
 
 http.proxy.parametername:
+
+#  preprod.local,security-token-service-t10,: security-token-service-t10 ,ida-t
 
 management:
   endpoints:
@@ -56,7 +59,3 @@ management:
       exposure.include: '*'
     web:
       exposure.include: '*'
-
-rinaaction:
-    waittime: '5000'
-

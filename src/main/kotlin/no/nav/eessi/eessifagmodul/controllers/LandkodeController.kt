@@ -17,13 +17,19 @@ class LandkodeController(private val landkodeService: LandkodeService) {
 
     private val logger = LoggerFactory.getLogger(LandkodeController::class.java)
 
-    @ApiOperation("Henter liste over landkoder av ISO Alpha2 standard")
+    @ApiOperation("Henter liste over land, land2 og land3 av ISO Alpha2 og ISO Alpha3 standard")
     @GetMapping("/")
     fun getLandKoder(): String {
         logger.info("Henter landkoder")
         return landkodeService.hentAlleLandkoder()
     }
 
+    @ApiOperation("Henter liste over landkoder av ISO Alpha2 standard")
+    @GetMapping("/landkoder2")
+    fun getLandKode2(): List<String> {
+        logger.info("Henter landkoder")
+        return landkodeService.hentLandkode2()
+    }
 
     @ApiOperation("Henter ut land ISO Alpha3 standard hvor nøkkel er ISO Alpha2")
     @GetMapping("/{land2}/land3")

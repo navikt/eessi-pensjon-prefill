@@ -2,7 +2,6 @@ package no.nav.eessi.eessifagmodul.prefill.vedtak
 
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.whenever
-import no.nav.eessi.eessifagmodul.config.TimingService
 import no.nav.eessi.eessifagmodul.models.InstitusjonItem
 import no.nav.eessi.eessifagmodul.models.Pensjon
 import no.nav.eessi.eessifagmodul.models.SED
@@ -42,9 +41,6 @@ abstract class AbstractMockVedtakPensionHelper(private val xmlFilename: String) 
 
     @Mock
     private lateinit var mockRestTemplate: RestTemplate
-
-    @Mock
-    private lateinit var mockTimingService: TimingService
 
     protected lateinit var dataFromPESYS: VedtakDataFromPEN
 
@@ -88,7 +84,7 @@ abstract class AbstractMockVedtakPensionHelper(private val xmlFilename: String) 
     }
 
     private fun mockPensjonsinformasjonService(mockRestTemplate: RestTemplate): PensjonsinformasjonService {
-        return PensjonsinformasjonService(mockRestTemplate, RequestBuilder(), mockTimingService)
+        return PensjonsinformasjonService(mockRestTemplate, RequestBuilder())
     }
 
     private fun mockPensjonsinformasjonRestTemplate(responseXMLfilename: String): RestTemplate {

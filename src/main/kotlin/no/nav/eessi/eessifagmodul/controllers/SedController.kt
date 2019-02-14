@@ -29,46 +29,45 @@ class SedController(private val euxService: EuxService,
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @ResponseBody
     fun confirmDocument(@RequestBody request: ApiRequest): SED {
-        logger.info("kaller confirmDocument med request: $request")
+        logger.info("kaller /preview med request: $request")
         return prefillService.prefillSed(buildPrefillDataModelConfirm(request)).sed
     }
 
-    @ApiOperation("Sender valgt sedtype på valgt bucid, ny api kall til eux")
-    @PostMapping("/buc/{rinanr}/sed/{documentid}/send")
-    fun sendSed(@PathVariable("rinanr", required = true) euxCaseId: String,
+    @ApiOperation("Sender valgt NavSed på rina med valgt documentid og bucid, ut til eu/eøs, ny api kall til eux")
+    @PostMapping("/buc/{euxcaseid}/sed/{documentid}/send")
+    fun sendSed(@PathVariable("euxcaseid", required = true) euxCaseId: String,
                 @PathVariable("documentid", required = true) documentid: String): Boolean {
 
-        logger.info("kaller send med request: $euxCaseId / $documentid")
-
+        logger.info("kaller /buc/${euxCaseId}/sed/${documentid}/send med request: $euxCaseId / $documentid")
         return euxService.sendDocumentById(euxCaseId, documentid)
 
     }
 
     @ApiOperation("henter ut en SED fra et eksisterende Rina document. krever unik dokumentid fra valgt SED, ny api kall til eux")
-    @GetMapping("/{rinanr}/{documentid}")
-    fun getDocument(@PathVariable("rinanr", required = true) rinaSakId: String,
+    @GetMapping("/{euxcaseid}/{documentid}")
+    fun getDocument(@PathVariable("euxcaseid", required = true) euxcaseid: String,
                     @PathVariable("documentid", required = true) documentid: String): SED {
-        logger.info("kaller /${rinaSakId}/${documentid} ")
-        return euxService.getSedOnBucByDocumentId(rinaSakId, documentid)
+        logger.info("kaller /${euxcaseid}/${documentid} ")
+        return euxService.getSedOnBucByDocumentId(euxcaseid, documentid)
 
     }
 
     @ApiOperation("henter ut en liste av SED fra en valgt buc, men bruk av sedType. ny api kall til eux")
-    @GetMapping("/{rinanr}/{sedtype}/list")
-    fun getDocumentlist(@PathVariable("rinanr", required = true) rinaSakId: String,
+    @GetMapping("/{euxcaseid}/{sedtype}/list")
+    fun getDocumentlist(@PathVariable("euxcaseid", required = true) euxcaseid: String,
                     @PathVariable("sedtype", required = true) sedType: SEDType): List<SED> {
-        logger.info("kaller /${rinaSakId}/${sedType} ")
-        return euxService.getSedOnBuc(rinaSakId, sedType)
+        logger.info("kaller /${euxcaseid}/${sedType} ")
+        return euxService.getSedOnBuc(euxcaseid, sedType)
 
     }
 
 
     @ApiOperation("sletter SED fra et eksisterende Rina document. krever unik dokumentid fra valgt SED, ny api kall til eux")
-    @DeleteMapping("/{rinanr}/{documentid}")
-    fun deleteDocument(@PathVariable("rinanr", required = true) rinanr: String,
+    @DeleteMapping("/{euxcaseid}/{documentid}")
+    fun deleteDocument(@PathVariable("euxcaseid", required = true) euxcaseid: String,
                        @PathVariable("documentid", required = true) documentid: String) {
-        logger.info("kaller delete  /${rinanr}/${documentid} ")
-        euxService.deleteDocumentById(rinanr, documentid)
+        logger.info("kaller delete  /${euxcaseid}/${documentid} ")
+        euxService.deleteDocumentById(euxcaseid, documentid)
 
     }
 
@@ -90,10 +89,10 @@ class SedController(private val euxService: EuxService,
     }
 
     @ApiOperation("Henter ut en liste av documents på valgt buc. ny api kall til eux")
-    @GetMapping("/buc/{rinanr}/documents")
-    fun getDocumentId(@PathVariable("rinanr", required = true) rinanr: String): List<DocumentsItem> {
-        logger.info("kaller /buc/${rinanr}/documents ")
-        return euxService.getBucUtils(rinanr).getDocuments()
+    @GetMapping("/buc/{euxcaseid}/documents")
+    fun getDocumentId(@PathVariable("euxcaseid", required = true) euxcaseid: String): List<DocumentsItem> {
+        logger.info("kaller /buc/${euxcaseid}/documents ")
+        return euxService.getBucUtils(euxcaseid).getDocuments()
 
     }
 

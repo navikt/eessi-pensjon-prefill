@@ -1,6 +1,9 @@
 euxbasis.v1:
   url: 'http://example.com:8089'
 
+pensjonsinformasjon:
+  url: 'http://example.com:8099'
+
 virksomhet.person.v3:
   endpointurl: 'https://example.com/tpsws/ws/Person/v3'
 
@@ -20,9 +23,6 @@ securitytokenservice:
 
 eessi-security-token-service:
   url: 'https://example.com/rest/v1/sts/token'
-
-rinaaction:
-    waittime: '5'
 
 eessi:
   pensjon:

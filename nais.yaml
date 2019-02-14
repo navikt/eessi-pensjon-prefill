@@ -5,7 +5,7 @@ team: eessi-pensjon
 replicas:
     min: 1
     max: 1
-    cpuThresholdPercentage: 50
+    cpuThresholdPercentage: 80
 
 prometheus:
     enabled: true
@@ -25,10 +25,10 @@ healthcheck:
 
 resources:
     limits:
-      cpu: 2
-      memory: 2048Mi
+      cpu: 1000m
+      memory: 4096Mi
     requests:
-      cpu: 100m
+      cpu: 250m
       memory: 512Mi
 
 fasitResources:
@@ -55,6 +55,9 @@ fasitResources:
     resourceType: BaseUrl
 
   - alias: eessi-security-token-service
+    resourceType: BaseUrl
+
+  - alias: eessi-security-token-service-config
     resourceType: BaseUrl
 
   exposed:

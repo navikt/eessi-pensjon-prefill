@@ -2,6 +2,7 @@ package no.nav.eessi.eessifagmodul.controllers
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.nhaarman.mockito_kotlin.any
+import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.whenever
 import no.nav.eessi.eessifagmodul.models.*
 import no.nav.eessi.eessifagmodul.prefill.PrefillDataModel
@@ -57,7 +58,7 @@ class SedControllerTest {
     }
 
     @Test
-    fun `forventer euxCaseid eller Rinacaseid tilbake ved kall til createDocument opprett sed i rina`() {
+    fun `calling SedController| createDocument forventer BucSedResponse (euxCaseid, documentid) ved mockedResponse`() {
         val items = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
         val mockResponse = BucSedResponse("1234567890", "123123123-123123123-123131")
 
@@ -71,16 +72,29 @@ class SedControllerTest {
                 buc = "P_BUC_06",
                 aktoerId = "0105094340092"
         )
-        whenever(mockAktoerregisterService.hentGjeldendeNorskIdentForAktorId(ArgumentMatchers.anyString())).thenReturn("12345")
+
+        //må være først
+        doReturn("12345").whenever(mockAktoerregisterService).hentGjeldendeNorskIdentForAktorId(
+                ArgumentMatchers.anyString())
+
         val utfyllMock = sedController.buildPrefillDataModelOnNew(requestMock)
 
         assertNotNull(utfyllMock.personNr)
         assertEquals("12345", utfyllMock.personNr)
 
-        whenever(mockPrefillSED.prefill(any())).thenReturn(utfyllMock)
-        whenever(mockEuxService.opprettBucSed(any(), any(), any(), any())).thenReturn(mockResponse)
+        //mock prefillSED
+        doReturn(utfyllMock).whenever(mockPrefillSED).prefill(any())
+
+        //mock opprett buc og sed til RINA
+        doReturn(mockResponse).whenever(mockEuxService).opprettBucSed(
+                any(),
+                any(),
+                any(),
+                any()
+        )
 
         val response = sedController.createDocument(requestMock)
+
         assertEquals("1234567890", response.caseId)
         assertEquals("123123123-123123123-123131", response.documentId)
     }
@@ -177,14 +191,18 @@ class SedControllerTest {
                 sed = "P6000",
                 aktoerId = "0105094340092"
         )
+
         whenever(mockAktoerregisterService.hentGjeldendeNorskIdentForAktorId(ArgumentMatchers.anyString())).thenReturn("12345")
+
         val model = sedController.buildPrefillDataModelConfirm(mockData)
 
         assertEquals("12345", model.personNr)
         assertEquals("12234", model.penSaksnummer)
         assertEquals("0105094340092", model.aktoerID)
         assertEquals("P6000", model.getSEDid())
+
         assertEquals(SED::class.java, model.sed::class.java)
+
     }
 
     @Test(expected = IllegalArgumentException::class)

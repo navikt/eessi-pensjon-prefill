@@ -1,7 +1,12 @@
 no.nav.security.oidc:
   issuer.oidc:
     discoveryurl: '${OPENIDCONNECT_URL}/oauth2/.well-known/openid-configuration'
-    accepted_audience: 'freg-token-provider-t0,eessi-fagmodul-t8,eessi-fagmodul-${FASIT_ENVIRONMENT_NAME},eessi-pensjon-frontend-api-fss-t8,eessi-pensjon-frontend-api-fss-${FASIT_ENVIRONMENT_NAME},ida-t'
+    accepted_audience: 'srvpensjon,security-token-service,freg-token-provider-t0,eessi-fagmodul-t8,eessi-fagmodul-${FASIT_ENVIRONMENT_NAME},eessi-pensjon-frontend-api-fss-t8,eessi-pensjon-frontend-api-fss-${FASIT_ENVIRONMENT_NAME},ida-t'
+  issuer.pesys:
+    discoveryurl: '${eessi-security-token-service-config_url}'
+    accepted_audience: 'srveessipensjon,srvpensjon'
+
+# preprod.local,security-token-service-t10,  https://security-token-service-t10.nais.preprod.local/rest/v1/sts/.well-known/openid-configuration
 # Empty on purpose so that oidc-spring-support doesn't use http.proxy
 http.proxy.parametername:
 
@@ -13,10 +18,6 @@ management:
     export.prometheus.enabled: true
     prometheus.enabled: true
 
-rinaaction:
-  waittime: '5000'
-
-#euxbasis.v1.url: 'https://eux-app.nais.preprod.local/cpi'
 
 eessi:
   pensjon:

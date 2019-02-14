@@ -9,7 +9,8 @@ buildscript {
         cxfVersion = '3.2.6'
         mockitoVersion = '2.8.+'
         personV3Version = '3.4.1'
-        oidcTokenSupportVersion = '0.2.7'
+//        oidcTokenSupportVersion = '0.2.7'
+        oidcTokenSupportVersion = '0.2.9'
         logstashLogbackVersion = '4.10'
         pensjonInformasjonVersion = '9.4.10'
     }
@@ -106,6 +107,7 @@ dependencies {
 
 
     // Tjenestespesifikasjoner
+    implementation('no.nav.helse:cxf-prometheus-metrics:dd7d125')
     implementation("no.nav.tjenester:nav-person-v3-tjenestespesifikasjon:${personV3Version}")
     xsd("no.nav.pensjon:pensjonsinformasjon-xsd:${pensjonInformasjonVersion}")
 
