@@ -79,13 +79,6 @@ abstract class AbstractMockKravPensionHelper {
         prefill = createTestClass(prefillNav, personTPS, pensionDataFromPEN)
     }
 
-//    fun createFakePersonFnr(): String {
-//        if (personFnr.isNullOrBlank()) {
-//            personFnr = PersonDataFromTPS.generateRandomFnr(68)
-//        }
-//        return personFnr
-//    }
-
     abstract fun createFakePersonFnr(): String
 
     private fun setFakePersonFnr(fnr: String) {

@@ -1,23 +1,30 @@
 package no.nav.eessi.eessifagmodul.pesys
 
+import no.nav.eessi.eessifagmodul.config.TimingService
 import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
 import no.nav.eessi.eessifagmodul.utils.mapJsonToAny
 import no.nav.eessi.eessifagmodul.utils.typeRefs
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
 import org.mockito.Mock
+import org.mockito.junit.MockitoJUnitRunner
 import org.springframework.util.ResourceUtils
 import java.time.LocalDate
 import kotlin.test.*
 
+@RunWith(MockitoJUnitRunner::class)
 class PensjonsinformasjonUtlandControllerTest {
 
     @Mock
     lateinit var controller: PensjonsinformasjonUtlandController
 
+    @Mock
+    lateinit var timingService: TimingService
+
     @Before
     fun bringItOn() {
-        controller = PensjonsinformasjonUtlandController()
+        controller = PensjonsinformasjonUtlandController(timingService)
     }
 
     @Test
@@ -110,7 +117,7 @@ class PensjonsinformasjonUtlandControllerTest {
         //assertEquals("2019-01-24", response.sivilstand?.sivilstatusDatoFom.toString())
 
         val utland = response.utland
-        assertEquals(true, utland?.harOpphold)
+        //assertEquals(true, utland?.harOpphold)
         assertEquals(3, utland?.utlandsopphold?.size)
 
         val utlandEn = utland?.utlandsopphold?.get(0)
@@ -158,8 +165,7 @@ class PensjonsinformasjonUtlandControllerTest {
                 mottattDato = LocalDate.now(),
                 iverksettelsesdato = LocalDate.now(),
                 utland = SkjemaUtland(
-                        utlandsopphold = null,
-                        harOpphold = false
+                        utlandsopphold = null
                 ),
                 uttaksgrad = "60",
                 vurdereTrygdeavtale = false,

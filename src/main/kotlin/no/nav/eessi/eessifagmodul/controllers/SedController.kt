@@ -8,7 +8,7 @@ import no.nav.eessi.eessifagmodul.services.PrefillService
 import no.nav.eessi.eessifagmodul.services.aktoerregister.AktoerregisterService
 import no.nav.eessi.eessifagmodul.services.eux.BucSedResponse
 import no.nav.eessi.eessifagmodul.services.eux.EuxService
-import no.nav.eessi.eessifagmodul.services.eux.bucmodel.DocumentsItem
+import no.nav.eessi.eessifagmodul.services.eux.bucmodel.ShortDocumentItem
 import no.nav.security.oidc.api.Protected
 import org.slf4j.LoggerFactory
 import org.springframework.http.MediaType
@@ -24,15 +24,17 @@ class SedController(private val euxService: EuxService,
 
     private val logger = LoggerFactory.getLogger(SedController::class.java)
 
+    //** oppdatert i api 18.02.2019
     @ApiOperation("Genereren en Nav-Sed (SED), viser en oppsumering av SED. Før evt. innsending til EUX/Rina")
     @PostMapping("/confirm", "/preview", consumes = ["application/json"], produces = [MediaType.APPLICATION_JSON_VALUE])
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    @ResponseBody
     fun confirmDocument(@RequestBody request: ApiRequest): SED {
         logger.info("kaller /preview med request: $request")
         return prefillService.prefillSed(buildPrefillDataModelConfirm(request)).sed
     }
 
+
+    //** oppdatert i api 18.02.2019
     @ApiOperation("Sender valgt NavSed på rina med valgt documentid og bucid, ut til eu/eøs, ny api kall til eux")
     @PostMapping("/buc/{euxcaseid}/sed/{documentid}/send")
     fun sendSed(@PathVariable("euxcaseid", required = true) euxCaseId: String,
@@ -43,35 +45,28 @@ class SedController(private val euxService: EuxService,
 
     }
 
+    //** oppdatert i api 18.02.2019
     @ApiOperation("henter ut en SED fra et eksisterende Rina document. krever unik dokumentid fra valgt SED, ny api kall til eux")
     @GetMapping("/{euxcaseid}/{documentid}")
     fun getDocument(@PathVariable("euxcaseid", required = true) euxcaseid: String,
                     @PathVariable("documentid", required = true) documentid: String): SED {
+
         logger.info("kaller /${euxcaseid}/${documentid} ")
         return euxService.getSedOnBucByDocumentId(euxcaseid, documentid)
 
     }
 
-    @ApiOperation("henter ut en liste av SED fra en valgt buc, men bruk av sedType. ny api kall til eux")
-    @GetMapping("/{euxcaseid}/{sedtype}/list")
-    fun getDocumentlist(@PathVariable("euxcaseid", required = true) euxcaseid: String,
-                    @PathVariable("sedtype", required = true) sedType: SEDType): List<SED> {
-        logger.info("kaller /${euxcaseid}/${sedType} ")
-        return euxService.getSedOnBuc(euxcaseid, sedType)
-
-    }
-
-
+    //** oppdatert i api 18.02.2019
     @ApiOperation("sletter SED fra et eksisterende Rina document. krever unik dokumentid fra valgt SED, ny api kall til eux")
     @DeleteMapping("/{euxcaseid}/{documentid}")
     fun deleteDocument(@PathVariable("euxcaseid", required = true) euxcaseid: String,
-                       @PathVariable("documentid", required = true) documentid: String) {
+                       @PathVariable("documentid", required = true) documentid: String): Boolean {
         logger.info("kaller delete  /${euxcaseid}/${documentid} ")
-        euxService.deleteDocumentById(euxcaseid, documentid)
+        return euxService.deleteDocumentById(euxcaseid, documentid)
 
     }
 
-
+    //** oppdatert i api 18.02.2019
     @ApiOperation("legge til SED på et eksisterende Rina document. kjører preutfylling, ny api kall til eux")
     @PostMapping("/add")
     fun addDocument(@RequestBody request: ApiRequest): BucSedResponse {
@@ -80,6 +75,7 @@ class SedController(private val euxService: EuxService,
 
     }
 
+    //** oppdatert i api 18.02.2019
     @ApiOperation("Kjører prosess OpprettBuCogSED på EUX for å få opprette et RINA dokument med en SED, ny api kall til eux")
     @PostMapping("/buc/create")
     fun createDocument(@RequestBody request: ApiRequest): BucSedResponse {
@@ -88,12 +84,21 @@ class SedController(private val euxService: EuxService,
 
     }
 
+    //** oppdatert i api 18.02.2019
     @ApiOperation("Henter ut en liste av documents på valgt buc. ny api kall til eux")
-    @GetMapping("/buc/{euxcaseid}/documents")
-    fun getDocumentId(@PathVariable("euxcaseid", required = true) euxcaseid: String): List<DocumentsItem> {
+    @GetMapping("/buc/{euxcaseid}/shortdocumentslist")
+    fun getShortDocumentList(@PathVariable("euxcaseid", required = true) euxcaseid: String): List<ShortDocumentItem> {
         logger.info("kaller /buc/${euxcaseid}/documents ")
-        return euxService.getBucUtils(euxcaseid).getDocuments()
+        return euxService.getBucUtils(euxcaseid).getAllDocuments()
 
+    }
+
+    @ApiOperation("henter ut en liste av SED fra en valgt buc, men bruk av sedType. ny api kall til eux")
+    @GetMapping("/{euxcaseid}/{sedtype}/list")
+    fun getDocumentlist(@PathVariable("euxcaseid", required = true) euxcaseid: String,
+                        @PathVariable("sedtype", required = false) sedType: String?): List<SED> {
+        logger.info("kaller /${euxcaseid}/${sedType} ")
+        return euxService.getSedOnBuc(euxcaseid, sedType)
     }
 
     @ApiOperation("Henter ut en liste over registrerte institusjoner innenfor spesifiserte EU-land. ny api kall til eux")

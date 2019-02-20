@@ -18,7 +18,8 @@ class PostkodeController(private val postnummerService: PostnummerService) {
 
     @ApiOperation("Henter ut Poststed med postnr som nøkkel")
     @GetMapping("/{postnr}/sted")
-    fun getLandKoderAlpha3(@PathVariable("postnr", required = true) postnr: String): String? {
+    fun getPostSted(@PathVariable("postnr", required = true) postnr: String): String? {
+
         logger.info("Henter poststed fra postnr: $postnr")
         return postnummerService.finnPoststed(postnr)
     }

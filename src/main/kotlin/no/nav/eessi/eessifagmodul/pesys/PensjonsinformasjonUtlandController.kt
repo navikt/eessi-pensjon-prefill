@@ -2,6 +2,7 @@ package no.nav.eessi.eessifagmodul.pesys
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import io.swagger.annotations.ApiOperation
+import no.nav.eessi.eessifagmodul.config.TimingService
 import no.nav.eessi.eessifagmodul.models.*
 import no.nav.eessi.eessifagmodul.pesys.mockup.MockSED001
 import no.nav.eessi.eessifagmodul.services.LandkodeService
@@ -15,14 +16,13 @@ import java.time.LocalDate
 @RestController
 @RequestMapping("/pesys")
 @Protected
-
 //@ProtectedWithClaims(issuer = "pesys")
 
 /**
  * tjeneste for opprettelse av automatiske krav ved mottakk av Buc/Krav fra utland.
  * Se PK-55797 , EESSIPEN-68
  */
-class PensjonsinformasjonUtlandController {
+class PensjonsinformasjonUtlandController(private val timingService: TimingService) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PensjonsinformasjonUtlandController::class.java) }
 
@@ -88,8 +88,10 @@ class PensjonsinformasjonUtlandController {
         logger.debug("Starter prosess for henting av krav fra utloand (P2000...)")
         //henter ut maping til lokal variabel for enkel uthenting.
 
+        val pesystime = timingService.timedStart("pesys_hentKravUtland")
         return if (bucId < 1000) {
             logger.debug("henter ut buc fra mockMap<buc, KravUtland> som legges inn i mockPutKravFraUtland(key, KravUtland alt under 1000)")
+            timingService.timesStop(pesystime)
             hentKravUtlandFraMap(bucId)
         } else {
             logger.debug("henter ut buc fra mock SED, p2000, p3000, p4000 og p5000 (alle kall fra buc 1000..n.. er lik")
@@ -99,14 +101,17 @@ class PensjonsinformasjonUtlandController {
             //ut ifra hvilke SED/saktype det gjelder.
             if (erAlderpensjon(seds)) {
                 logger.debug("buc er alderpensjon")
+                timingService.timesStop(pesystime)
                 kravAlderpensjonUtland(seds)
 
             } else if (erUforpensjon(seds)) {
                 logger.debug("buc er utføre")
+                timingService.timesStop(pesystime)
                 kravUforepensjonUtland(seds)
 
             } else {
                 logger.debug("buc er gjenlevende")
+                timingService.timesStop(pesystime)
                 kravGjenlevendeUtland(seds)
             }
         }
@@ -215,8 +220,7 @@ class PensjonsinformasjonUtlandController {
         var list = prosessUtlandsOpphold(seds)
         logger.debug("liste Utlandsoppholditem er størrelse : ${list.size}")
         return SkjemaUtland(
-                utlandsopphold = list,
-                harOpphold = !list.isEmpty()
+                utlandsopphold = list
         )
     }
 

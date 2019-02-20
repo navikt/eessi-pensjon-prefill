@@ -19,7 +19,7 @@ import kotlin.test.assertNotNull
 
 
 @RunWith(MockitoJUnitRunner::class)
-class `PrefillP2000AlderPensjonUtlandForsteGangTest` : AbstractMockKravPensionHelper() {
+class PrefillP2000AlderPensjonUtlandForsteGangTest : AbstractMockKravPensionHelper() {
 
     //mock familie
     override fun creareMockPersonDataTPS(): Set<PersonDataFromTPS.MockTPS>? {

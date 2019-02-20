@@ -37,11 +37,12 @@ class PostnummerService {
     )
 
     fun finnPoststed(postnr: String): String? {
-        return if (postalCodeTable[postnr] == null) {
+        val sted = postalCodeTable.get(postnr)
+        return if (sted != null) {
+            sted.poststed
+        } else {
             logger.error("Finner ikke poststed for postnummer: $postnr, sjekk om ny postnummer.txt må lastes ned.")
             null
-        } else {
-            postalCodeTable[postnr]?.poststed
         }
     }
 

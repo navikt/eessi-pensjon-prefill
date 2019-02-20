@@ -111,13 +111,19 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
 
 
     //henter ut sed fra rina med bucid og documentid
-    fun getSedOnBuc(euxCaseId: String, sedType: SEDType): List<SED> {
+    fun getSedOnBuc(euxCaseId: String, sedType: String?): List<SED> {
         val docid = getBucUtils(euxCaseId).getDocuments()
 
         val sedlist = mutableListOf<SED>()
         docid.forEach {
-            it.id?.let {
-                sedlist.add(getSedOnBucByDocumentId(euxCaseId, it))
+            if (sedType != null && sedType == it.type) {
+                it.id?.let { id ->
+                    sedlist.add(getSedOnBucByDocumentId(euxCaseId, id))
+                }
+            } else {
+                it.id?.let { id ->
+                    sedlist.add(getSedOnBucByDocumentId(euxCaseId, id))
+                }
             }
         }
         return sedlist
