@@ -129,9 +129,7 @@ class PrefillP6000PensionAlderTest : AbstractMockVedtakPensionHelper("P6000-APUt
 
     @Test
     fun `sjekke enum correct value`() {
-
         val sakType = VedtakPensjonData.KSAK.valueOf("ALDER")
-
         assertEquals(sakType, VedtakPensjonData.KSAK.ALDER)
 
     }

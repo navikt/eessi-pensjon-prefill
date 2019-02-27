@@ -2,7 +2,6 @@ package no.nav.eessi.eessifagmodul.services.aktoerregister
 
 import io.micrometer.core.instrument.MeterRegistry
 import no.nav.eessi.eessifagmodul.config.OidcAuthorizationHeaderInterceptor
-import no.nav.eessi.eessifagmodul.config.RequestResponseLoggerInterceptor
 import no.nav.security.oidc.context.OIDCRequestContextHolder
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.actuate.metrics.web.client.DefaultRestTemplateExchangeTagsProvider
@@ -26,7 +25,7 @@ class AktoerregisterRestTemplate(val oidcRequestContextHolder: OIDCRequestContex
         return templateBuilder
                 .rootUri(url)
                 .errorHandler(DefaultResponseErrorHandler())
-                .additionalInterceptors(RequestResponseLoggerInterceptor(), OidcAuthorizationHeaderInterceptor(oidcRequestContextHolder))
+                .additionalInterceptors(OidcAuthorizationHeaderInterceptor(oidcRequestContextHolder))
                 .customizers(MetricsRestTemplateCustomizer(registry, DefaultRestTemplateExchangeTagsProvider(), "eessipensjon_fagmodul_aktoer"))
                 .build().apply {
                     requestFactory = BufferingClientHttpRequestFactory(SimpleClientHttpRequestFactory())

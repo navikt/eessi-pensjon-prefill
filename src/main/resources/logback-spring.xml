@@ -15,7 +15,8 @@
         <logger name="com" level="ERROR"/>
         <logger name="no.nav" level="INFO"/>
         <logger name="no.nav.security" level="ERROR"/>
-        <logger name="no.nav.eessi" level="DEBUG"/>
+        <logger name="no.nav.eessi" level="INFO"/>
+        <logger name="no.nav.eessi.eessifagmodul.config.RequestResponseLoggerInterceptor" level="OFF"/>
 
         <root level="info">
             <appender-ref ref="stdout_json"/>

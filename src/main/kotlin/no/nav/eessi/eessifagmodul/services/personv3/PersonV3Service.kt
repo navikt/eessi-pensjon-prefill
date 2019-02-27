@@ -37,11 +37,11 @@ class PersonV3Service(val service: PersonV3, val oidcRequestContextHolder: OIDCR
     }
 
     fun hentPerson(fnr: String): HentPersonResponse {
-        logger.debug("Henter person fra PersonV3Service")
+        logger.info("Henter person fra PersonV3Service")
         //val token = oidcRequestContextHolder.oidcValidationContext.getToken("oidc")
         val token = getTokenContextFromIssuer(oidcRequestContextHolder)
 
-        logger.debug("Token: $token")
+        //logger.debug("Token: $token")
         configureRequestSamlTokenOnBehalfOfOidc(service, token.idToken)
 
         val request = HentPersonRequest().apply {
@@ -61,10 +61,12 @@ class PersonV3Service(val service: PersonV3, val oidcRequestContextHolder: OIDCR
             timingService.timesStop(persontimed)
             return resp
         } catch (personIkkefunnet : HentPersonPersonIkkeFunnet) {
+            logger.error("Kaller PersonV3.hentPerson service Feilet")
             timingService.timesStop(persontimed)
             hentperson_teller_type_feilede.increment()
             throw PersonV3IkkeFunnetException(personIkkefunnet.message)
         } catch (personSikkerhetsbegrensning: HentPersonSikkerhetsbegrensning) {
+            logger.error("Kaller PersonV3.hentPerson service Feilet")
             timingService.timesStop(persontimed)
             hentperson_teller_type_feilede.increment()
             throw PersonV3SikkerhetsbegrensningException(personSikkerhetsbegrensning.message)
