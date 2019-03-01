@@ -55,7 +55,10 @@ class NavRegistreOppslagController(private val aktoerregisterService: Aktoerregi
             logger.error("Kall til PersonV3 med aktørId: $aktoerid feilet på grunn av person ikke funnet")
             ResponseEntity.status(HttpStatus.NOT_FOUND).body(PersonV3IkkeFunnetException::class.simpleName)
         }
-        return ResponseEntity.ok(Personinformasjon(personresp.person.personnavn.sammensattNavn))
+        return ResponseEntity.ok(Personinformasjon(personresp.person.personnavn.sammensattNavn,
+                personresp.person.personnavn.fornavn,
+                personresp.person.personnavn.mellomnavn,
+                personresp.person.personnavn.etternavn))
     }
 }
 
