@@ -102,7 +102,9 @@ fun getCounter(key: String): Counter {
             "OPPRETTBUCOGSEDOK" to counter("eessipensjon_fagmodul.opprettbucogsed", "vellykkede"),
             "OPPRETTBUCOGSEDFEIL" to counter("eessipensjon_fagmodul.opprettbucogsed", "feilede"),
             "HENTBUCOK" to counter("eessipensjon_fagmodul.hentbuc", "vellykkede"),
-            "HENTBUCFEIL" to counter("eessipensjon_fagmodul.hentbuc", "feilede")
+            "HENTBUCFEIL" to counter("eessipensjon_fagmodul.hentbuc", "feilede"),
+            "PERSONINFORMASJONOK" to counter("eessipensjon_fagmodul.hentperson", "vellykkede"),
+            "PERSONINFORMASJONFEIL" to counter("eessipensjon_fagmodul.hentperson", "feilede")
     )
     return countermap.getValue(key)
 }

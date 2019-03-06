@@ -19,6 +19,6 @@
     Nav Tokensupport accept         : ${no.nav.security.oidc.issuer.pesys.accepted_audience}
 
     securityTokenService            : ${securitytokenservice.url}
-    eessi-security-token-service    : ${eessi-security-token-service.url}
+    security-token-service          : ${security-token-service.url}
 
 =====================================================================================================

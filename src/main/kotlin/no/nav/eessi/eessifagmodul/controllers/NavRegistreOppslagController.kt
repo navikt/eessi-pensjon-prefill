@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiOperation
 import no.nav.eessi.eessifagmodul.models.*
 import no.nav.eessi.eessifagmodul.services.aktoerregister.AktoerregisterService
 import no.nav.eessi.eessifagmodul.services.personv3.PersonV3Service
+import no.nav.eessi.eessifagmodul.utils.getCounter
 import no.nav.security.oidc.api.Protected
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonResponse
 import org.slf4j.LoggerFactory
@@ -44,17 +45,23 @@ class NavRegistreOppslagController(private val aktoerregisterService: Aktoerregi
 
         } catch (are: AktoerregisterException) {
             logger.error("Kall til Akørregisteret med aktørId: $aktoerid feilet på grunn av: " + are.message)
+            getCounter("PERSONINFORMASJONFEIL").increment()
             ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(AktoerregisterException::class.simpleName)
         } catch (arife: AktoerregisterIkkeFunnetException) {
             logger.error("Kall til Akørregisteret med aktørId: $aktoerid feilet på grunn av: " + arife.message)
+            getCounter("PERSONINFORMASJONFEIL").increment()
             ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(AktoerregisterException::class.simpleName)
         } catch (sbe: PersonV3SikkerhetsbegrensningException) {
             logger.error("Kall til PersonV3 med aktørId: $aktoerid feilet på grunn av sikkerhetsbegrensning")
+            getCounter("PERSONINFORMASJONFEIL").increment()
             ResponseEntity.status(HttpStatus.FORBIDDEN).body(PersonV3SikkerhetsbegrensningException::class.simpleName)
         } catch (ife: PersonV3IkkeFunnetException) {
             logger.error("Kall til PersonV3 med aktørId: $aktoerid feilet på grunn av person ikke funnet")
+            getCounter("PERSONINFORMASJONFEIL").increment()
             ResponseEntity.status(HttpStatus.NOT_FOUND).body(PersonV3IkkeFunnetException::class.simpleName)
         }
+
+        getCounter("PERSONINFORMASJONOK").increment()
         return ResponseEntity.ok(Personinformasjon(personresp.person.personnavn.sammensattNavn,
                 personresp.person.personnavn.fornavn,
                 personresp.person.personnavn.mellomnavn,

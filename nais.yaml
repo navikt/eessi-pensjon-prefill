@@ -54,10 +54,7 @@ fasitResources:
   - alias: securityTokenService
     resourceType: BaseUrl
 
-  - alias: eessi-security-token-service
-    resourceType: BaseUrl
-
-  - alias: eessi-security-token-service-config
+  - alias: security-token-service-issuer
     resourceType: BaseUrl
 
   exposed:

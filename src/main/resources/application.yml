@@ -3,7 +3,7 @@ no.nav.security.oidc:
     discoveryurl: '${OPENIDCONNECT_URL}/oauth2/.well-known/openid-configuration'
     accepted_audience: 'srvpensjon,security-token-service,freg-token-provider-t0,eessi-fagmodul-t8,eessi-fagmodul-${FASIT_ENVIRONMENT_NAME},eessi-pensjon-frontend-api-fss-t8,eessi-pensjon-frontend-api-fss-${FASIT_ENVIRONMENT_NAME},ida-t'
   issuer.pesys:
-    discoveryurl: '${eessi-security-token-service-config_url}'
+    discoveryurl: '${security-token-service_url}/rest/v1/sts/.well-known/openid-configuration'
     accepted_audience: 'srveessipensjon,srvpensjon'
 
 # preprod.local,security-token-service-t10,  https://security-token-service-t10.nais.preprod.local/rest/v1/sts/.well-known/openid-configuration

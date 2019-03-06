@@ -19,8 +19,9 @@ aktoerregister.api.v1:
 pensjonsinformasjon:
   url: 'https://wasapp-t5.adeo.no/pensjon-ws/api/pensjonsinformasjon/v1'
 
-eessi-security-token-service:
-  url: 'https://security-token-service-t10.nais.preprod.local/rest/v1/sts/token'
+security-token-service-issuer:
+ url: 'https://security-token-service-t10.nais.preprod.local'
+#rest/v1/sts/token
 
 srveessipensjon:
   username: '${SRVEESSIPENSJON_USERNAME}'

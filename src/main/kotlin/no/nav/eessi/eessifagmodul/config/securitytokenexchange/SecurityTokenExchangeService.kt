@@ -44,7 +44,7 @@ class SecurityTokenExchangeService(val securityTokenExchangeBasicAuthRestTemplat
         }
 
         try {
-            val uri = UriComponentsBuilder.fromPath("/")
+            val uri = UriComponentsBuilder.fromPath("/rest/v1/sts/token")
                     .queryParam("grant_type", "client_credentials")
                     .queryParam("scope", "openid")
                     .build().toUriString()
