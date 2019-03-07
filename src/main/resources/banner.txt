@@ -15,10 +15,11 @@
 
     Nav Tokensupport OIDC           : ${no.nav.security.oidc.issuer.oidc.discoveryurl}
     Nav Tokensupport accept         : ${no.nav.security.oidc.issuer.oidc.accepted_audience}
+
     Nav Tokensupport PESYS          : ${no.nav.security.oidc.issuer.pesys.discoveryurl}
     Nav Tokensupport accept         : ${no.nav.security.oidc.issuer.pesys.accepted_audience}
 
     securityTokenService            : ${securitytokenservice.url}
-    security-token-service          : ${security-token-service.url}
+    security-token-service-issuer   : ${security-token-service-issuer.url}
 
 =====================================================================================================

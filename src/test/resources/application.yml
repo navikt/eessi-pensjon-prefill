@@ -21,7 +21,7 @@ app:
 securitytokenservice:
   url: 'https://example.com/SecurityTokenServiceProvider/'
 
-security-token-service:
+security-token-service-issuer:
   url: 'https://example.com/rest/v1/sts/token'
 
 eessi:
