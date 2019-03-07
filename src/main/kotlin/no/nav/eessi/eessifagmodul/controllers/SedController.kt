@@ -26,7 +26,7 @@ class SedController(private val euxService: EuxService,
 
     //** oppdatert i api 18.02.2019
     @ApiOperation("Genereren en Nav-Sed (SED), viser en oppsumering av SED. Før evt. innsending til EUX/Rina")
-    @PostMapping("/sed/preview", consumes = ["application/json"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @PostMapping("/preview", consumes = ["application/json"], produces = [MediaType.APPLICATION_JSON_VALUE])
     @JsonInclude(JsonInclude.Include.NON_NULL)
     fun confirmDocument(@RequestBody request: ApiRequest): SED {
         logger.info("kaller /preview med request: $request")
@@ -84,13 +84,12 @@ class SedController(private val euxService: EuxService,
 
     }
 
-    //** oppdatert i api 18.02.2019
+    //** oppdatert i api 18.02.2019 -- går ut da den nå likker i BuController
     @ApiOperation("Henter ut en liste av documents på valgt buc. ny api kall til eux")
     @GetMapping("/buc/{euxcaseid}/shortdocumentslist")
     fun getShortDocumentList(@PathVariable("euxcaseid", required = true) euxcaseid: String): List<ShortDocumentItem> {
         logger.info("kaller /buc/${euxcaseid}/documents ")
         return euxService.getBucUtils(euxcaseid).getAllDocuments()
-
     }
 
     @ApiOperation("henter ut en liste av SED fra en valgt buc, men bruk av sedType. ny api kall til eux")
