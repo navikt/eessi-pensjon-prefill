@@ -54,6 +54,10 @@ fasitResources:
   - alias: security-token-service-token
     resourceType: RestService
 
+#    Denne brukes av LoginService
+  - alias: security-token-service-issuer
+    resourceType: BaseUrl
+
   exposed:
   - alias: eessifagmodulservice
     resourceType: RestService
