@@ -30,7 +30,7 @@ const val STS_CLIENT_AUTHENTICATION_POLICY = "classpath:policy/untPolicy.xml"
 @Component
 class STSClientConfig {
 
-    @Value("\${securitytokenservice.url}")
+    @Value("\${security-token-service-token.url}")
     fun setSTSurl(url: String) {
         STS_URL = url
     }

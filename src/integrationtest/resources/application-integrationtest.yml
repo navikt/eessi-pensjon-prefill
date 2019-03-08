@@ -13,7 +13,7 @@ srveessipensjon:
   username: srveessipensjon
   password: password
 
-securitytokenservice:
+security-token-service-token:
   url: http://localhost:8081
 
 euxbasis.v1:

@@ -16,8 +16,7 @@ class SecurityTokenExchangeRestTemplate {
 
     private val logger = LoggerFactory.getLogger(SecurityTokenExchangeRestTemplate::class.java)
 
-    //:https://security-token-service.nais.preprod.local/rest/v1/sts/token
-    @Value("\${security-token-service-issuer.url}")
+    @Value("\${security-token-service-token.url}")
     lateinit var baseUrl: String
 
     @Value("\${srveessipensjon.username}")

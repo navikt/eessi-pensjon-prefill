@@ -51,11 +51,8 @@ fasitResources:
   - alias: OpenIdConnect
     resourceType: BaseUrl
 
-  - alias: securityTokenService
-    resourceType: BaseUrl
-
-  - alias: security-token-service-issuer
-    resourceType: BaseUrl
+  - alias: security-token-service-token
+    resourceType: RestService
 
   exposed:
   - alias: eessifagmodulservice

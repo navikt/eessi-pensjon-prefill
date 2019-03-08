@@ -18,11 +18,8 @@ app:
   name: 'TEST'
   version: '0.1'
 
-securitytokenservice:
+security-token-service-token:
   url: 'https://example.com/SecurityTokenServiceProvider/'
-
-security-token-service-issuer:
-  url: 'https://example.com/rest/v1/sts/token'
 
 eessi:
   pensjon:

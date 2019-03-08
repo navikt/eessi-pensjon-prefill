@@ -31,9 +31,8 @@ app:
   name: 'DEVELOP'
   version: '0.1'
 
-securitytokenservice:
+security-token-service-token:
   url: 'https://sts-t8.test.local/SecurityTokenServiceProvider/'
-
 
 server:
   servlet:
