@@ -21,6 +21,9 @@ app:
 security-token-service-token:
   url: 'https://example.com/SecurityTokenServiceProvider/'
 
+securitytokenservice:
+  url: 'https://example.com/SecurityTokenServiceProvider/'
+
 eessi:
   pensjon:
     lokalid: 'NO:noinst002'
