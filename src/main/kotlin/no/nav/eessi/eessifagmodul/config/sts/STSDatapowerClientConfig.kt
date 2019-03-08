@@ -27,10 +27,13 @@ lateinit var SERVICEUSER_PASSWORD: String
 lateinit var STS_REQUEST_SAML_POLICY: String
 const val STS_CLIENT_AUTHENTICATION_POLICY = "classpath:policy/untPolicy.xml"
 
+/**
+ * Denne STS tjenesten benyttes ved kall mot gamle tjenester sånn som PersonV3
+ */
 @Component
 class STSClientConfig {
 
-    @Value("\${security-token-service-token.url}")
+    @Value("\${securitytokenservice.url}")
     fun setSTSurl(url: String) {
         STS_URL = url
     }

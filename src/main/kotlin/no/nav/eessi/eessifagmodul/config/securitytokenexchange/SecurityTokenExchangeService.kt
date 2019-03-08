@@ -29,7 +29,9 @@ data class SecurityTokenResponse(
         @JsonProperty("expires_in")
         val expiresIn: Long
 )
-
+/**
+ * Denne STS tjenesten benyttes ved kall mot nye REST tjenester sånn som Aktørregisteret
+ */
 @Service
 class SecurityTokenExchangeService(val securityTokenExchangeBasicAuthRestTemplate: RestTemplate) {
 
@@ -44,14 +46,14 @@ class SecurityTokenExchangeService(val securityTokenExchangeBasicAuthRestTemplat
         }
 
         try {
-            val uri = UriComponentsBuilder.fromPath("/rest/v1/sts/token")
+            val uri = UriComponentsBuilder.fromPath("/")
                     .queryParam("grant_type", "client_credentials")
                     .queryParam("scope", "openid")
                     .build().toUriString()
 
-            logger.debug("kobler opp mot systembruker token")
+            logger.info("kobler opp mot systembruker token")
             val responseEntity = securityTokenExchangeBasicAuthRestTemplate.exchange(uri, HttpMethod.GET, null, typeRef<SecurityTokenResponse>())
-            logger.info("SecurityTokenResponse ${mapAnyToJson(responseEntity)} ")
+            logger.debug("SecurityTokenResponse ${mapAnyToJson(responseEntity)} ")
             validateResponse(responseEntity)
             val accessToken = responseEntity.body!!.accessToken
             val exp = extractExpirationField(accessToken)

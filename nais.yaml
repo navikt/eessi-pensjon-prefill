@@ -51,11 +51,16 @@ fasitResources:
   - alias: OpenIdConnect
     resourceType: BaseUrl
 
+#    Denne brukes av nye rest tjenester
   - alias: security-token-service-token
     resourceType: RestService
 
 #    Denne brukes av LoginService
   - alias: security-token-service-issuer
+    resourceType: BaseUrl
+
+#    Denne brukes av gamle tjenester
+  - alias: securityTokenService
     resourceType: BaseUrl
 
   exposed:

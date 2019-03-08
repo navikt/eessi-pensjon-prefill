@@ -32,7 +32,10 @@ app:
   version: '0.1'
 
 security-token-service-token:
-  url: 'https://sts-t8.test.local/SecurityTokenServiceProvider/'
+  url: 'https://security-token-service-t10.nais.preprod.local/rest/v1/sts/token'
+
+securityTokenService:
+  url: 'https://sts-t4.test.local/SecurityTokenServiceProvider/'
 
 server:
   servlet:
