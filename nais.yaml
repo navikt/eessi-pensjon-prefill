@@ -33,6 +33,9 @@ resources:
 
 fasitResources:
   used:
+  - alias: eessi-pensjon-active-profiles
+    resourceType: ApplicationProperties
+
   - alias: Pensjonsinformasjon
     resourceType: RestService
 
