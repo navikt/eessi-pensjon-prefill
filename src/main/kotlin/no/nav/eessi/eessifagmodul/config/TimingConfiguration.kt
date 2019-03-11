@@ -5,18 +5,6 @@ import io.micrometer.core.instrument.Timer
 import org.springframework.stereotype.Service
 import java.util.concurrent.TimeUnit
 
-
-//@Configuration
-//@EnableAspectJAutoProxy
-//class TimingConfiguration {
-//
-//    @Bean
-//    fun timedAspect(registry: MeterRegistry): TimedAspect {
-//        return TimedAspect(registry)
-//    }
-//
-//}
-
 data class TimingObject(
         val timer: Timer,
         val start: Long
@@ -40,47 +28,5 @@ class TimingService(private val registry: MeterRegistry) {
         timer.record(System.nanoTime() - start, TimeUnit.NANOSECONDS)
     }
 
-//    fun helloManual() {
-//        // you can keep a ref to this; ok to call multiple times, though
-//        val timer = Timer.builder("eessipensjon_fagmodul").tag("method", "manual").register(registry)
-//
-//        // manually do the timing calculation
-//        val start = System.nanoTime()
-//        doSomething()
-//        timer.record(System.nanoTime() - start, TimeUnit.NANOSECONDS)
-//    }
-//
-//    fun helloSupplier() {
-//        //eessipensjon_fagmodul.euxmuligeaksjoner
-//        val timer = Timer.builder("eessipensjon_fagmodul").tag("method", "supplier").register(registry)
-//
-//        // execution of the method is timed internally
-//        timer.record({ doSomething() })
-//    }
-//
-//    fun helloSample() {
-//        val timer = Timer.builder("eessipensjon_fagmodul").tag("method", "sample").register(registry)
-//
-//        // records time taken between Sample creation and registering the
-//        // stop() with the given Timer
-//        val sample = Timer.start(registry)
-//        doSomething()
-//        sample.stop(timer)
-//    }
-
-//    // TimedAspect adds "class" and "method" tags
-//    @Timed(value = "eessipensjon_fagmodul.aspect")
-//    fun helloAspect() {
-//        doSomething()
-//    }
-
-//    private fun doSomething() {
-//        try {
-//            Thread.sleep(50)
-//        } catch (e: InterruptedException) {
-//            //
-//        }
-//
-//    }
 
 }

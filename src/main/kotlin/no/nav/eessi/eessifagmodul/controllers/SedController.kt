@@ -36,7 +36,7 @@ class SedController(private val euxService: EuxService,
 
     //** oppdatert i api 18.02.2019
     @ApiOperation("Sender valgt NavSed på rina med valgt documentid og bucid, ut til eu/eøs, ny api kall til eux")
-    @PostMapping("/buc/{euxcaseid}/sed/{documentid}/send")
+    @GetMapping("/send/{euxcaseid}/{documentid}")
     fun sendSed(@PathVariable("euxcaseid", required = true) euxCaseId: String,
                 @PathVariable("documentid", required = true) documentid: String): Boolean {
 
@@ -127,6 +127,7 @@ class SedController(private val euxService: EuxService,
 
                     vedtakId = request.vedtakId ?: ""
                     partSedAsJson[request.sed] = request.payload ?: ""
+                    skipSedkey = request.skipSEDkey ?: listOf()
                 }
             }
             else -> throw IkkeGyldigKallException("Mangler SED, eller ugyldig type SED")
@@ -156,6 +157,7 @@ class SedController(private val euxService: EuxService,
                     personNr = pinid
                     institution = request.institutions
                     vedtakId = request.vedtakId ?: ""
+                    skipSedkey = request.skipSEDkey ?: listOf()
                 }
             }
             else -> throw IkkeGyldigKallException("Mangler SED, eller ugyldig type SED")
@@ -179,6 +181,7 @@ class SedController(private val euxService: EuxService,
                     if (request.payload != null) {
                         partSedAsJson[request.sed] = request.payload
                     }
+                    skipSedkey = request.skipSEDkey ?: listOf()
                 }
             }
             else -> throw IkkeGyldigKallException("Mangler SED, eller ugyldig type SED")
@@ -205,6 +208,7 @@ class SedController(private val euxService: EuxService,
             val euxCaseId: String? = null,
             val institutions: List<InstitusjonItem>? = null,
             val subjectArea: String? = null,
+            val skipSEDkey: List<String>? = null,
             val mockSED: Boolean? = null
     )
 }

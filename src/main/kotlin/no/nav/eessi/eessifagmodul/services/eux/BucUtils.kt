@@ -50,8 +50,9 @@ class BucUtils {
         return buc
     }
 
-    fun getCreator(): Creator {
-        return getBuc().creator ?: throw NoSuchFieldException("Fant ikke Creator")
+    fun getCreator(): Organisation? {
+        val participantsItem = getParticipants()?.filter { participantsItem -> participantsItem.role == "CaseOwner" }?.first()
+        return participantsItem?.organisation
     }
 
     fun getSubject(): Subject {
@@ -150,18 +151,16 @@ class BucUtils {
         return lists
     }
 
-    fun getCaseOwnerCountryCode(): String {
-        val creator = getCreator()
-        val participants = getBuc().participants ?: throw NoSuchFieldException("Fant ikke Participants")
-        participants.forEach {
-            if ("CaseOwner" == it?.role) {
-                if (it.organisation?.id == creator.organisation?.id) {
-                    creator.organisation?.countryCode?.let { return it }
-                }
-            }
+    fun getInternatinalId(): String? {
+        return getBuc().internationalId
+    }
 
-        }
-        return ""
+    fun getParticipants(): List<ParticipantsItem>? {
+        return getBuc().participants
+    }
+
+    fun getCaseOwnerCountryCode(): String {
+        return getCreator()?.countryCode ?: "N/A"
     }
 
     fun getBucAction(): List<ActionsItem>? {

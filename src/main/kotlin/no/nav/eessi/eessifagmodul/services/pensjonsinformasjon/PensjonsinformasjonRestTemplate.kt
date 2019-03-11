@@ -17,10 +17,7 @@ import org.springframework.web.client.RestTemplate
 
 @Component
 class PensjonsinformasjonRestTemplate(val securityTokenExchangeService: SecurityTokenExchangeService, val oidcRequestContextHolder: OIDCRequestContextHolder, private val registry: MeterRegistry) {
-    //(val oidcRequestContextHolder: OIDCRequestContextHolder) {
-    // TODO: Fjern denne defaulten etter pensjon-fss eksponerer tjenesten i Fasit
-    //@Value("\${pensjonsinformasjon.api.v1.url:https://wasapp-t4.adeo.no/pensjon-ws/api/pensjonsinformasjon}")
-    //:https://wasapp-t5.adeo.no/pensjon-ws/api/pensjonsinformasjon/v1
+
     @Value("\${pensjonsinformasjon.url}")
     lateinit var url: String
 

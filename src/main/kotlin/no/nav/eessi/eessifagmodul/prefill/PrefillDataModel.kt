@@ -44,6 +44,8 @@ class PrefillDataModel {
     lateinit var sed: SED
     lateinit var institution: List<InstitusjonItem>
 
+    lateinit var skipSedkey: List<String>
+
     //hjelpe parametere for utfylling av institusjon
     var andreInstitusjon: AndreinstitusjonerItem? = null
 
@@ -80,6 +82,14 @@ class PrefillDataModel {
             stateOne.isNotBlank() && stateTwo.isNotBlank()
         } catch (ex: Exception) {
             false
+        }
+    }
+
+    fun kanFeltSkippes(key: String): Boolean {
+        return try {
+            skipSedkey.contains(key).not()
+        } catch (ex: Exception) {
+            true
         }
     }
 

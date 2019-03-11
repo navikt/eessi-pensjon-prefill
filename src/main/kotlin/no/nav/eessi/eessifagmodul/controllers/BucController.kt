@@ -5,7 +5,7 @@ import no.nav.eessi.eessifagmodul.services.eux.BucUtils
 import no.nav.eessi.eessifagmodul.services.eux.EuxService
 import no.nav.eessi.eessifagmodul.services.eux.RinaAksjon
 import no.nav.eessi.eessifagmodul.services.eux.bucmodel.Buc
-import no.nav.eessi.eessifagmodul.services.eux.bucmodel.Creator
+import no.nav.eessi.eessifagmodul.services.eux.bucmodel.Organisation
 import no.nav.eessi.eessifagmodul.services.eux.bucmodel.ShortDocumentItem
 import no.nav.security.oidc.api.Protected
 import org.springframework.web.bind.annotation.GetMapping
@@ -32,8 +32,14 @@ class BucController(private val euxService: EuxService) {
 
     @ApiOperation("Henter opp den opprinelige inststusjon på valgt caseid (buc)")
     @GetMapping("/{rinanr}/creator")
-    fun getCreator(@PathVariable(value = "rinanr", required = true) rinanr: String): Creator? {
+    fun getCreator(@PathVariable(value = "rinanr", required = true) rinanr: String): Organisation? {
         return getBucUtils(rinanr).getCreator()
+    }
+
+    @ApiOperation("Henter opp internationalid på caseid (buc)")
+    @GetMapping("/{rinanr}/internationalId")
+    fun getInternationalId(@PathVariable(value = "rinanr", required = true) rinanr: String): String? {
+        return getBucUtils(rinanr).getInternatinalId()
     }
 
     @ApiOperation("Henter opp den opprinelige inststusjon på valgt caseid (buc)")
@@ -41,7 +47,6 @@ class BucController(private val euxService: EuxService) {
     fun getAllDocuments(@PathVariable(value = "rinanr", required = true) rinanr: String): List<ShortDocumentItem> {
         return getBucUtils(rinanr).getAllDocuments()
     }
-
 
     @ApiOperation("Henter opp mulige aksjon som kan utføres på valgt buc, filtert på sed starter med 'P'")
     @GetMapping("/{rinanr}/aksjoner", "/{rinanr}/aksjoner/{filter}")

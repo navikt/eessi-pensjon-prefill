@@ -1,0 +1,72 @@
+## Følgende variabler må eksistere for å bruke denne propertyfilen:
+## - SRVPENSJON_USERNAME
+## - SRVPENSJON_PASSWORD
+## - OPENAM_SECRET
+
+FASIT_ENVIRONMENT_NAME: 'localhost'
+
+euxbasis.v1:
+  #  url: 'http://10.33.44.43:9090/cpi'
+  url: 'https://eux-app.nais.preprod.local/cpi'
+#  utl: 'https://eux-app-q1.nais.preprod.local/cpi'
+
+virksomhet.person.v3:
+  #  endpointurl: 'https://wasapp-t7.adeo.no/tpsws/ws/Person/v3'  # maskert-data
+  #  endpointurl: 'https://wasapp-t8.adeo.no/tpsws/ws/Person/v3' # prod-data
+  endpointurl: 'https://wasapp-q1.adeo.no/tpsws/ws/Person/v3'
+
+aktoerregister.api.v1:
+  #  url: 'https://app-t8.adeo.no/aktoerregister/api/v1'
+  url: 'https://app-q1.adeo.no/aktoerregister/api/v1'
+
+pensjonsinformasjon:
+  #  url: 'https://wasapp-t5.adeo.no/pensjon-ws/api/pensjonsinformasjon/v1'
+  #  url: 'https://wasapp-q1.adeo.no/pensjon-ws/api/pensjonsinformasjon/v1'
+  url: 'https://wasapp-q5.adeo.no/pensjon-ws/api/pensjonsinformasjon/v1'
+
+requestsamlpolicy:
+  path: 'classpath:policy/requestSamlPolicyNoTransportBinding.xml'
+
+srveessipensjon:
+  username: '${SRVEESSI_PENSJON_USERNAME}'
+  password: '${SRVEESSI_PENSJON_PASSWORD_Q}'
+#  password: '${SRVEESSI_PENSJON_PASSWORD_T}'
+
+app:
+  name: 'DEVELOP'
+  version: '0.1'
+
+security-token-service-token:
+  #  url: 'https://security-token-service-t10.nais.preprod.local/rest/v1/sts/token'
+  url: 'https://security-token-service.nais.preprod.local/rest/v1/sts/token'
+
+securityTokenService:
+  #  url: 'https://sts-t4.test.local/SecurityTokenServiceProvider/'
+  #  url: 'https://sts-q1.preprod.local/SecurityTokenServiceProvider/'
+  url: 'https://sts-q4.preprod.local/SecurityTokenServiceProvider/'
+
+server:
+  servlet:
+    session:
+      timeout:  '2m'
+  port:         '8081'
+
+no.nav.security.oidc:
+  issuer.oidc:
+    discoveryurl: 'https://isso-q.adeo.no:443/isso/oauth2/.well-known/openid-configuration'
+    #    discoveryurl: 'https://isso-t.adeo.no:443/isso/oauth2/.well-known/openid-configuration'
+    accepted_audience: 'localhost,eessi-fagmodul-localhost,eessi-fagmodul-t8,eessi-fagmodul,freg-token-provider-t0,eessi-pensjon-frontend-api-fss-q1,eessi-pensjon-frontend-api-q1,eessi-pensjon-frontend-api-t8,eessi-pensjon-frontend-api-q1,eux-app-t8,ida-t,ida-q'
+  issuer.pesys:
+    discoveryurl: 'https://security-token-service.nais.preprod.local/rest/v1/sts/.well-known/openid-configuration'
+    #    discoveryurl: 'https://security-token-service-t10.nais.preprod.local/rest/v1/sts/.well-known/openid-configuration'
+    accepted_audience: 'preprod.local,srveessipensjon,srvpensjon,ida-q'
+
+http.proxy.parametername:
+
+management:
+  endpoints:
+    enabled-by-default: 'true'
+    jmx:
+      exposure.include: '*'
+    web:
+      exposure.include: '*'

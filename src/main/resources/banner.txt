@@ -18,6 +18,7 @@
     Nav Tokensupport PESYS          : ${no.nav.security.oidc.issuer.pesys.discoveryurl}
     Nav Tokensupport accept         : ${no.nav.security.oidc.issuer.pesys.accepted_audience}
 
-    securityTokenService            : ${security-token-service-token.url}
+    securityTokenService            : ${securityTokenService.url}
+
 
 =====================================================================================================

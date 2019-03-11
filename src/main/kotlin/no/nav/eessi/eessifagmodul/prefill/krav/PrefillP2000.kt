@@ -34,7 +34,9 @@ class PrefillP2000(private val prefillNav: PrefillNav, private val preutfyllingP
         val sed = prefillData.sed
 
         //henter opp persondata
-        sed.nav = createNav(prefillData)
+        if (prefillData.kanFeltSkippes("NAVSED")) {
+            sed.nav = createNav(prefillData)
+        }
 
         //henter opp pensjondat
         val pensjon = createPensjon(prefillData)
@@ -47,8 +49,10 @@ class PrefillP2000(private val prefillNav: PrefillNav, private val preutfyllingP
 
         //sette korrekt kravdato på sed (denne kommer fra PESYS men opprettes i nav?!)
         //9.1.
-        sed.nav?.krav = pensjon.kravDato
-        pensjon.kravDato = null
+        if (prefillData.kanFeltSkippes("NAVSED")) {
+            sed.nav?.krav = pensjon.kravDato
+            pensjon.kravDato = null
+        }
 
         logger.debug("-------------------| Preutfylling [$sedId] END |------------------- ")
         return prefillData.sed

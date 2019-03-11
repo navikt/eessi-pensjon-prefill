@@ -21,11 +21,10 @@ pensjonsinformasjon:
 
 security-token-service-issuer:
  url: 'https://security-token-service-t10.nais.preprod.local'
-#rest/v1/sts/token
 
 srveessipensjon:
-  username: '${SRVEESSIPENSJON_USERNAME}'
-  password: '${SRVEESSIPENSJON_PASSWORD}'
+  username: '${SRVEESSI_PENSJON_USERNAME}'
+  password: '${SRVEESSI_PENSJON_PASSWORD_T}'
 
 app:
   name: 'DEVELOP'

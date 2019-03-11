@@ -2,7 +2,6 @@ package no.nav.eessi.eessifagmodul.services
 
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.whenever
-import no.nav.eessi.eessifagmodul.config.TimingService
 import no.nav.eessi.eessifagmodul.models.AktoerregisterException
 import no.nav.eessi.eessifagmodul.models.AktoerregisterIkkeFunnetException
 import no.nav.eessi.eessifagmodul.services.aktoerregister.AktoerregisterService
@@ -28,14 +27,11 @@ class AktoerregisterServiceTest {
     @Mock
     private lateinit var mockrestTemplate: RestTemplate
 
-    @Mock
-    private lateinit var mockTimingService: TimingService
-
     lateinit var aktoerregisterService: AktoerregisterService
 
     @Before
     fun setup() {
-        aktoerregisterService = AktoerregisterService(mockrestTemplate, mockTimingService)
+        aktoerregisterService = AktoerregisterService(mockrestTemplate)
         aktoerregisterService.appName = "unittests"
     }
 

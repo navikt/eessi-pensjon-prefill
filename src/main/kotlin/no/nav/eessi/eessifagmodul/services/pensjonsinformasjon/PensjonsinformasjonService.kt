@@ -12,7 +12,6 @@ import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.util.UriComponentsBuilder
-import org.springframework.web.util.UriTemplateHandler
 import java.io.StringReader
 import javax.xml.bind.JAXBContext
 import javax.xml.transform.stream.StreamSource
@@ -47,8 +46,7 @@ class PensjonsinformasjonService(val pensjonsinformasjonOidcRestTemplate: RestTe
 
         logger.info("Requestbody:\n${document.documentToString()}")
 
-        val sakHandler = PensjoninformasjonUriHandler("https://wasapp-t5.adeo.no/pensjon-ws/api/pensjonsinformasjon/v1")
-        val response = doRequest("/fnr/", fnr, document.documentToString(), sakHandler)
+        val response = doRequest("/fnr/", fnr, document.documentToString())
         validateResponse(informationBlocks, response)
         logger.info("Response: $response")
         return response
@@ -79,8 +77,7 @@ class PensjonsinformasjonService(val pensjonsinformasjonOidcRestTemplate: RestTe
         }
         logger.info("Requestbody:\n${document.documentToString()}")
 
-        val sakHandler = PensjoninformasjonUriHandler("https://wasapp-t5.adeo.no/pensjon-ws/api/pensjonsinformasjon/v1")
-        val response = doRequest("/vedtak", vedtaksId, document.documentToString(), sakHandler)
+        val response = doRequest("/vedtak", vedtaksId, document.documentToString())
         validateResponse(informationBlocks, response)
         logger.info("Response: $response")
         return response
@@ -91,14 +88,13 @@ class PensjonsinformasjonService(val pensjonsinformasjonOidcRestTemplate: RestTe
     }
 
     @Throws(PensjoninformasjonException::class)
-    private fun doRequest(path: String, id: String, requestBody: String, uriHandler: UriTemplateHandler = PensjoninformasjonUriHandler("https://wasapp-t4.adeo.no/pensjon-ws/api/pensjonsinformasjon")): Pensjonsinformasjon {
+    private fun doRequest(path: String, id: String, requestBody: String): Pensjonsinformasjon {
         val headers = HttpHeaders()
         headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_XML_VALUE)
         val requestEntity = HttpEntity(requestBody, headers)
 
         val uriBuilder = UriComponentsBuilder.fromPath(path).pathSegment(id)
 
-        pensjonsinformasjonOidcRestTemplate.uriTemplateHandler = uriHandler
         try {
             val responseEntity = pensjonsinformasjonOidcRestTemplate.exchange(
                     uriBuilder.toUriString(),
@@ -115,7 +111,6 @@ class PensjonsinformasjonService(val pensjonsinformasjonOidcRestTemplate: RestTe
                 throw PensjoninformasjonException("Received ${responseEntity.statusCode} ${responseEntity.statusCode.reasonPhrase} from pensjonsinformasjon")
             }
 
-            //logger.debug("Responsebody:\n\n${responseEntity.body}\n\n")
             val context = JAXBContext.newInstance(Pensjonsinformasjon::class.java)
             val unmarshaller = context.createUnmarshaller()
 

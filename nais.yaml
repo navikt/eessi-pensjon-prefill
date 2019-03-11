@@ -58,9 +58,9 @@ fasitResources:
   - alias: security-token-service-token
     resourceType: RestService
 
-#    Denne brukes av LoginService
-  - alias: security-token-service-issuer
-    resourceType: BaseUrl
+    #     nye rest tjeneste config
+  - alias: security-token-service-openid-configuration
+    resourceType: RestService
 
 #    Denne brukes av gamle tjenester
   - alias: securityTokenService
