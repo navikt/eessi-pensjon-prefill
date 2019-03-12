@@ -79,6 +79,7 @@ dependencies {
     // Apache CXF
     implementation("org.apache.cxf:cxf-spring-boot-starter-jaxws:${cxfVersion}")
     implementation("org.apache.cxf:cxf-rt-ws-security:${cxfVersion}")
+    compile("commons-io:commons-io:2.6")
 
     // Kotlin
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:${jacksonModuleKotlinVersion}")
