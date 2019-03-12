@@ -37,5 +37,6 @@ fun getTokenContextFromIssuer(oidcRequestContextHolder: OIDCRequestContextHolder
         throw RuntimeException("No issuer found in context")
     }
     logger.info("Returning token on : oidc")
+    context.issuers.iterator().forEach { logger.debug("Issuer: $it") }
     return context.getToken("oidc")
 }
