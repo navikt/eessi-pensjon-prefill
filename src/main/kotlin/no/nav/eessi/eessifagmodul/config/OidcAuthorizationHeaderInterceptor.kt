@@ -31,12 +31,10 @@ fun getIdTokenFromIssuer(oidcRequestContextHolder: OIDCRequestContextHolder): St
 
 fun getTokenContextFromIssuer(oidcRequestContextHolder: OIDCRequestContextHolder): TokenContext {
     val context = oidcRequestContextHolder.oidcValidationContext
-    if (context.issuers.isEmpty()) {
-        throw RuntimeException("No issuer found in context")
-    }
-    logger.info("Returning token on : oidc")
-    context.issuers.iterator().forEach { logger.debug("Issuer: $it") }
+    if (context.issuers.isEmpty()) throw RuntimeException("No issuer found in context")
+    // At this point more than one issuer is not supporteted. May be changed later.
+    if(context.issuers.size > 1) throw RuntimeException("More than one issuer found in context. ")
 
-    return if (context.issuers.contains("oidc")) {context.getToken("oidc") }
-    else context.getToken("pesys")
+    logger.debug("Returning token on : ${context.issuers.first()}")
+    return context.getToken(context.issuers.first())
 }

@@ -13,19 +13,25 @@ import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
 import java.io.File
 import java.nio.charset.Charset
+import kotlin.test.assertFailsWith
 
 @RunWith(MockitoJUnitRunner::class)
 class OidcAuthorizationHeaderInterceptorKtTest {
 
-    private val pesysRequestContextHolder = generateMockContextHolder(listOf("pesys", "oidc"))
-    private val oidcRequestContextHolder = generateMockContextHolder(listOf("pesys"))
+    private val oidcRequestContextHolder = generateMockContextHolder(listOf("oidc"))
+    private val pesysRequestContextHolder = generateMockContextHolder(listOf("pesys"))
+    private val mulitpleRequestContextHolders = generateMockContextHolder(listOf("pesys", "oidc"))
 
-    @Test fun `gitt innlogget med issuer oidc når leter etter token så returner gyldig pesys token`() {
-        assertEquals("oidcIdToken", getIdTokenFromIssuer(pesysRequestContextHolder))
+    @Test fun `gitt issuer oidc returner gyldig oidcIdToken`() {
+        assertEquals("oidcIdToken", getIdTokenFromIssuer(oidcRequestContextHolder))
     }
 
-    @Test fun `gitt liste med issuers uten oidc så returner pesys`() {
-        assertEquals("pesysIdToken", getIdTokenFromIssuer(oidcRequestContextHolder))
+    @Test fun `gitt issuer pesys returner gyldig pesysIdToken`() {
+        assertEquals("pesysIdToken", getIdTokenFromIssuer(pesysRequestContextHolder))
+    }
+
+    @Test fun `gitt mulitple issuers returner RuntimeException`() {
+        assertFailsWith(RuntimeException::class) { getIdTokenFromIssuer(mulitpleRequestContextHolders) }
     }
 
     fun generateMockContextHolder(issuer: List<String>): OIDCRequestContextHolder {
