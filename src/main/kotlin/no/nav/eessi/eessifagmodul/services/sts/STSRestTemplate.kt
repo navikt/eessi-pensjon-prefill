@@ -1,4 +1,4 @@
-package no.nav.eessi.eessifagmodul.config.securitytokenexchange
+package no.nav.eessi.eessifagmodul.services.sts
 
 import no.nav.eessi.eessifagmodul.config.RequestResponseLoggerInterceptor
 import org.slf4j.LoggerFactory
@@ -11,10 +11,14 @@ import org.springframework.http.client.support.BasicAuthenticationInterceptor
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestTemplate
 
+/**
+ * STS rest template for å hente OIDCtoken for nye tjenester
+ *
+ */
 @Component
-class SecurityTokenExchangeRestTemplate {
+class STSRestTemplate {
 
-    private val logger = LoggerFactory.getLogger(SecurityTokenExchangeRestTemplate::class.java)
+    private val logger = LoggerFactory.getLogger(STSRestTemplate::class.java)
 
     @Value("\${security-token-service-token.url}")
     lateinit var baseUrl: String

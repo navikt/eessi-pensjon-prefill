@@ -3,11 +3,10 @@ package no.nav.eessi.eessifagmodul.services.personv3
 import io.micrometer.core.instrument.Counter
 import io.micrometer.core.instrument.Metrics
 import no.nav.eessi.eessifagmodul.config.TimingService
-import no.nav.eessi.eessifagmodul.config.getTokenContextFromIssuer
-import no.nav.eessi.eessifagmodul.config.sts.configureRequestSamlTokenOnBehalfOfOidc
+import no.nav.eessi.eessifagmodul.services.sts.configureRequestSamlTokenOnBehalfOfOidc
 import no.nav.eessi.eessifagmodul.models.PersonV3IkkeFunnetException
 import no.nav.eessi.eessifagmodul.models.PersonV3SikkerhetsbegrensningException
-import no.nav.security.oidc.context.OIDCRequestContextHolder
+import no.nav.eessi.eessifagmodul.services.sts.SecurityTokenExchangeService
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonPersonIkkeFunnet
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonSikkerhetsbegrensning
 import no.nav.tjeneste.virksomhet.person.v3.binding.PersonV3
@@ -22,10 +21,11 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
-private val logger = LoggerFactory.getLogger(PersonV3Service::class.java)
-
 @Component
-class PersonV3Service(val service: PersonV3, val oidcRequestContextHolder: OIDCRequestContextHolder, val timingService: TimingService) {
+class PersonV3Service(val service: PersonV3,
+                      val securityTokenExchangeService: SecurityTokenExchangeService,
+                      val timingService: TimingService) {
+
     private val logger: Logger by lazy { LoggerFactory.getLogger(PersonV3Service::class.java) }
 
     private val hentperson_teller_navn = "eessipensjon_fagmodul.hentperson"
@@ -38,11 +38,9 @@ class PersonV3Service(val service: PersonV3, val oidcRequestContextHolder: OIDCR
 
     fun hentPerson(fnr: String): HentPersonResponse {
         logger.info("Henter person fra PersonV3Service")
-        //val token = oidcRequestContextHolder.oidcValidationContext.getToken("oidc")
-        val token = getTokenContextFromIssuer(oidcRequestContextHolder)
+        val token = securityTokenExchangeService.getSystemOidcToken()
 
-        //logger.debug("Token: $token")
-        configureRequestSamlTokenOnBehalfOfOidc(service, token.idToken)
+        configureRequestSamlTokenOnBehalfOfOidc(service, token)
 
         val request = HentPersonRequest().apply {
             withAktoer(PersonIdent().withIdent(
@@ -76,8 +74,8 @@ class PersonV3Service(val service: PersonV3, val oidcRequestContextHolder: OIDCR
     //Experimental only
     fun hentGeografi(fnr: String): HentGeografiskTilknytningResponse {
 
-        val token = oidcRequestContextHolder.oidcValidationContext.getToken("oidc")
-        configureRequestSamlTokenOnBehalfOfOidc(service, token.idToken)
+        val token = securityTokenExchangeService.getSystemOidcToken()
+        configureRequestSamlTokenOnBehalfOfOidc(service, token)
 
         val request = HentGeografiskTilknytningRequest().apply {
             withAktoer(PersonIdent().withIdent(

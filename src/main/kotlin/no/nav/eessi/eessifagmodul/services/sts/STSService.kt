@@ -1,4 +1,4 @@
-package no.nav.eessi.eessifagmodul.config.securitytokenexchange
+package no.nav.eessi.eessifagmodul.services.sts
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
@@ -51,8 +51,12 @@ class SecurityTokenExchangeService(val securityTokenExchangeBasicAuthRestTemplat
                     .queryParam("scope", "openid")
                     .build().toUriString()
 
-            logger.info("kobler opp mot systembruker token")
-            val responseEntity = securityTokenExchangeBasicAuthRestTemplate.exchange(uri, HttpMethod.GET, null, typeRef<SecurityTokenResponse>())
+            logger.info("Kaller STS for å bytte username/password til OIDC token")
+            val responseEntity = securityTokenExchangeBasicAuthRestTemplate.exchange(uri,
+                    HttpMethod.GET,
+                    null,
+                    typeRef<SecurityTokenResponse>())
+
             logger.debug("SecurityTokenResponse ${mapAnyToJson(responseEntity)} ")
             validateResponse(responseEntity)
             val accessToken = responseEntity.body!!.accessToken
@@ -65,7 +69,7 @@ class SecurityTokenExchangeService(val securityTokenExchangeBasicAuthRestTemplat
             logger.debug("Added token to cache, expires in $expiresInSeconds seconds")
             return accessToken
         } catch (ex: Exception) {
-            logger.error("Feil ved tildeling av token til Systembruker: ${ex.message}", ex)
+            logger.error("Feil ved bytting av username/password til OIDC token: ${ex.message}", ex)
             throw SystembrukerTokenException(ex.message!!)
         }
     }

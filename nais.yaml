@@ -36,6 +36,7 @@ fasitResources:
   - alias: eessi-pensjon-active-profiles
     resourceType: ApplicationProperties
 
+  #PESYS
   - alias: Pensjonsinformasjon
     resourceType: RestService
 
@@ -54,17 +55,17 @@ fasitResources:
   - alias: OpenIdConnect
     resourceType: BaseUrl
 
-#    Denne brukes av nye rest tjenester
+  #Brukes av nye rest tjenester
   - alias: security-token-service-token
     resourceType: RestService
 
-    #     nye rest tjeneste config
-  - alias: security-token-service-openid-configuration
-    resourceType: RestService
-
-#    Denne brukes av gamle tjenester
+  #Brukes av gamle tjenester
   - alias: securityTokenService
     resourceType: BaseUrl
+
+  #Brukes av Loginservice
+  - alias: security-token-service-openid-configuration
+    resourceType: RestService
 
   exposed:
   - alias: eessifagmodulservice
