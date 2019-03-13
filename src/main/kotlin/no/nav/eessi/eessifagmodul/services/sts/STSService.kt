@@ -1,8 +1,6 @@
 package no.nav.eessi.eessifagmodul.services.sts
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import net.jodah.expiringmap.ExpiringMap
 import no.nav.eessi.eessifagmodul.models.SystembrukerTokenException
 import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
 import no.nav.eessi.eessifagmodul.utils.typeRef
@@ -12,12 +10,6 @@ import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.util.UriComponentsBuilder
-import java.time.Duration
-import java.time.Instant
-import java.time.LocalDateTime
-import java.time.ZoneId
-import java.util.*
-import java.util.concurrent.TimeUnit
 
 private val logger = LoggerFactory.getLogger(SecurityTokenExchangeService::class.java)
 
@@ -35,16 +27,7 @@ data class SecurityTokenResponse(
 @Service
 class SecurityTokenExchangeService(val securityTokenExchangeBasicAuthRestTemplate: RestTemplate) {
 
-    private val tokenCache = ExpiringMap.builder().variableExpiration().build<String, String>()
-
     fun getSystemOidcToken(): String {
-
-        val token = tokenCache["token"]
-        if (!token.isNullOrEmpty()) {
-            logger.debug("Using cached token")
-            return checkNotNull(token)
-        }
-
         try {
             val uri = UriComponentsBuilder.fromPath("/")
                     .queryParam("grant_type", "client_credentials")
@@ -59,15 +42,7 @@ class SecurityTokenExchangeService(val securityTokenExchangeBasicAuthRestTemplat
 
             logger.debug("SecurityTokenResponse ${mapAnyToJson(responseEntity)} ")
             validateResponse(responseEntity)
-            val accessToken = responseEntity.body!!.accessToken
-            val exp = extractExpirationField(accessToken)
-            var expiresInSeconds = Duration.between(LocalDateTime.now(), exp).seconds
-            // Make the cache-entry expire 30 seconds before the token is no longer valid, to be sure not to use any invalid tokens
-            expiresInSeconds = expiresInSeconds.minus(30)
-
-            tokenCache.put("token", accessToken, expiresInSeconds, TimeUnit.SECONDS)
-            logger.debug("Added token to cache, expires in $expiresInSeconds seconds")
-            return accessToken
+            return responseEntity.body!!.accessToken
         } catch (ex: Exception) {
             logger.error("Feil ved bytting av username/password til OIDC token: ${ex.message}", ex)
             throw SystembrukerTokenException(ex.message!!)
@@ -77,12 +52,5 @@ class SecurityTokenExchangeService(val securityTokenExchangeBasicAuthRestTemplat
     private fun validateResponse(responseEntity: ResponseEntity<SecurityTokenResponse>) {
         if (responseEntity.statusCode.isError)
             throw RuntimeException("SecurityTokenExchange received http-error ${responseEntity.statusCode}:${responseEntity.statusCodeValue}")
-
-    }
-
-    private fun extractExpirationField(jwtString: String): LocalDateTime {
-        val parts = jwtString.split('.')
-        val expirationTimestamp = jacksonObjectMapper().readTree(Base64.getDecoder().decode(parts[1])).at("/exp")
-        return LocalDateTime.ofInstant(Instant.ofEpochSecond(expirationTimestamp.asLong()), ZoneId.systemDefault())
     }
 }
