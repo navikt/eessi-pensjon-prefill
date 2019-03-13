@@ -2,9 +2,8 @@ package no.nav.eessi.eessifagmodul.services.pensjonsinformasjon
 
 import io.micrometer.core.instrument.MeterRegistry
 import no.nav.eessi.eessifagmodul.config.RequestResponseLoggerInterceptor
-import no.nav.eessi.eessifagmodul.config.securitytokenexchange.SecurityTokenExchangeService
-import no.nav.eessi.eessifagmodul.config.securitytokenexchange.UntToOidcInterceptor
-import no.nav.security.oidc.context.OIDCRequestContextHolder
+import no.nav.eessi.eessifagmodul.services.sts.SecurityTokenExchangeService
+import no.nav.eessi.eessifagmodul.services.sts.UsernameToOidcInterceptor
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.actuate.metrics.web.client.DefaultRestTemplateExchangeTagsProvider
 import org.springframework.boot.actuate.metrics.web.client.MetricsRestTemplateCustomizer
@@ -15,8 +14,15 @@ import org.springframework.http.client.SimpleClientHttpRequestFactory
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestTemplate
 
+/**
+ * Rest template for PESYS pensjonsinformasjon
+ *
+ * @property securityTokenExchangeService
+ * @property registry
+ */
 @Component
-class PensjonsinformasjonRestTemplate(val securityTokenExchangeService: SecurityTokenExchangeService, val oidcRequestContextHolder: OIDCRequestContextHolder, private val registry: MeterRegistry) {
+class PensjonsinformasjonRestTemplate(val securityTokenExchangeService: SecurityTokenExchangeService,
+                                      private val registry: MeterRegistry) {
 
     @Value("\${pensjonsinformasjon.url}")
     lateinit var url: String
@@ -25,8 +31,7 @@ class PensjonsinformasjonRestTemplate(val securityTokenExchangeService: Security
     fun pensjonsinformasjonOidcRestTemplate(templateBuilder: RestTemplateBuilder): RestTemplate {
         return templateBuilder
                 .rootUri(url)
-                .additionalInterceptors(RequestResponseLoggerInterceptor(), UntToOidcInterceptor(securityTokenExchangeService))
-                //.additionalInterceptors(RequestResponseLoggerInterceptor(), OidcAuthorizationHeaderInterceptor(oidcRequestContextHolder))
+                .additionalInterceptors(RequestResponseLoggerInterceptor(), UsernameToOidcInterceptor(securityTokenExchangeService))
                 .customizers(MetricsRestTemplateCustomizer(registry, DefaultRestTemplateExchangeTagsProvider(), "eessipensjon_fagmodul_pensjonsinformasjon"))
                 .build().apply {
                     requestFactory = BufferingClientHttpRequestFactory(SimpleClientHttpRequestFactory())

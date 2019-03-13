@@ -1,8 +1,8 @@
 package no.nav.eessi.eessifagmodul.services.aktoerregister
 
 import io.micrometer.core.instrument.MeterRegistry
-import no.nav.eessi.eessifagmodul.config.OidcAuthorizationHeaderInterceptor
-import no.nav.security.oidc.context.OIDCRequestContextHolder
+import no.nav.eessi.eessifagmodul.services.sts.SecurityTokenExchangeService
+import no.nav.eessi.eessifagmodul.services.sts.UsernameToOidcInterceptor
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.actuate.metrics.web.client.DefaultRestTemplateExchangeTagsProvider
 import org.springframework.boot.actuate.metrics.web.client.MetricsRestTemplateCustomizer
@@ -15,7 +15,8 @@ import org.springframework.web.client.DefaultResponseErrorHandler
 import org.springframework.web.client.RestTemplate
 
 @Component
-class AktoerregisterRestTemplate(val oidcRequestContextHolder: OIDCRequestContextHolder, val registry: MeterRegistry) {
+class AktoerregisterRestTemplate(val securityTokenExchangeService: SecurityTokenExchangeService,
+                                 val registry: MeterRegistry) {
 
     @Value("\${aktoerregister.api.v1.url}")
     lateinit var url: String
@@ -25,7 +26,7 @@ class AktoerregisterRestTemplate(val oidcRequestContextHolder: OIDCRequestContex
         return templateBuilder
                 .rootUri(url)
                 .errorHandler(DefaultResponseErrorHandler())
-                .additionalInterceptors(OidcAuthorizationHeaderInterceptor(oidcRequestContextHolder))
+                .additionalInterceptors(UsernameToOidcInterceptor(securityTokenExchangeService))
                 .customizers(MetricsRestTemplateCustomizer(registry, DefaultRestTemplateExchangeTagsProvider(), "eessipensjon_fagmodul_aktoer"))
                 .build().apply {
                     requestFactory = BufferingClientHttpRequestFactory(SimpleClientHttpRequestFactory())

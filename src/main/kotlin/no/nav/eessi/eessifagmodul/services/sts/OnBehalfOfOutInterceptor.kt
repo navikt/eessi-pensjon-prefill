@@ -1,4 +1,4 @@
-package no.nav.eessi.eessifagmodul.config.sts
+package no.nav.eessi.eessifagmodul.services.sts
 
 /**
  * Documentation at https://confluence.adeo.no/display/KES/STS+-+Brukerdokumentasjon
