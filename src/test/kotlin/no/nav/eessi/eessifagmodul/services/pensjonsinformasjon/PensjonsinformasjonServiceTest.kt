@@ -12,12 +12,15 @@ import org.mockito.junit.MockitoJUnitRunner
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.test.context.ActiveProfiles
 import org.springframework.util.ResourceUtils
+import org.springframework.web.client.HttpServerErrorException
 import org.springframework.web.client.RestTemplate
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
-@RunWith(MockitoJUnitRunner::class)
+@ActiveProfiles("test")
+@RunWith(MockitoJUnitRunner.Silent::class)
 class PensjonsinformasjonServiceTest {
 
     @Mock
@@ -28,6 +31,7 @@ class PensjonsinformasjonServiceTest {
     @Before
     fun setup() {
         pensjonsinformasjonService = PensjonsinformasjonService(mockrestTemplate, RequestBuilder())
+        pensjonsinformasjonService.fasitenv = "q1"
     }
 
     @Test
@@ -41,7 +45,27 @@ class PensjonsinformasjonServiceTest {
         assertEquals("2016-09-11", data.vedtak.virkningstidspunkt.simpleFormat())
     }
 
-    private fun createResponseEntityFromJsonFile(filePath: String, httpStatus: HttpStatus = HttpStatus.OK): ResponseEntity<String> {
+    @Test
+    fun hentAltFeilersaaProverViIgjen() {
+        val mockResponseEntity = createResponseEntityFromJsonFile("classpath:pensjonsinformasjon/full-generated-response.xml")
+
+        whenever(mockrestTemplate.exchange(
+                any<String>(),
+                any(),
+                any<HttpEntity<Unit>>(),
+                ArgumentMatchers.eq(String::class.java))
+        ).thenThrow(HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "dummy error"))
+                .thenReturn(mockResponseEntity)
+
+        val data = pensjonsinformasjonService.hentAltPaaVedtak("1243")
+        // TODO: add asserts
+
+        assertNotNull(data.vedtak, "Vedtak er null")
+        assertEquals("2016-09-11", data.vedtak.virkningstidspunkt.simpleFormat())
+    }
+
+
+    private fun createResponseEntityFromJsonFile(filePath: String, httpStatus: HttpStatus = HttpStatus.OK): ResponseEntity<String?> {
         val mockResponseString = ResourceUtils.getFile(filePath).readText()
         return ResponseEntity(mockResponseString, httpStatus)
     }

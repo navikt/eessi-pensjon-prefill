@@ -95,7 +95,7 @@ data class EmailItem(
 
 data class Person(
         var pin: List<PinItem>? = null,
-        var pinannen: PinItem? = null,
+        var pinannen: PinItem? = null, //kan fjernes hvis ikke i bruk
         var statsborgerskap: List<StatsborgerskapItem>? = null, //nasjonalitet
         var etternavn: String? = null,
         var fornavn: String? = null,
@@ -182,6 +182,8 @@ data class InntektItem(
 
 //TODO må kanskje oppdatere mot andre SED legge institusjonsid rett inn i PinItem..
 data class PinItem(
+        var institusjonsnavn: String? = null,
+        var institusjonsid: String? = null,
         var sektor: String? = null,
         var identifikator: String? = null,  //rename? f.eks personnummer
         var land: String? = null,

@@ -36,22 +36,30 @@ class PrefillP2000(private val prefillNav: PrefillNav, private val preutfyllingP
         //henter opp persondata
         if (prefillData.kanFeltSkippes("NAVSED")) {
             sed.nav = createNav(prefillData)
+        } else {
+            sed.nav = Nav()
         }
 
         //henter opp pensjondat
-        val pensjon = createPensjon(prefillData)
+        if (prefillData.kanFeltSkippes("PENSED")) {
 
-        //gjenlevende hvis det finnes..
-        pensjon.gjenlevende = createGjenlevende(prefillData)
+            val pensjon = createPensjon(prefillData)
 
-        //legger pensjon på sed (få med oss gjenlevende/avdød)
-        sed.pensjon = pensjon
+            //gjenlevende hvis det finnes..
+            pensjon.gjenlevende = createGjenlevende(prefillData)
+
+            //legger pensjon på sed (få med oss gjenlevende/avdød)
+            sed.pensjon = pensjon
+
+        } else {
+            sed.pensjon = Pensjon()
+        }
 
         //sette korrekt kravdato på sed (denne kommer fra PESYS men opprettes i nav?!)
         //9.1.
         if (prefillData.kanFeltSkippes("NAVSED")) {
-            sed.nav?.krav = pensjon.kravDato
-            pensjon.kravDato = null
+            sed.nav?.krav = sed.pensjon?.kravDato
+            //pensjon.kravDato = null
         }
 
         logger.debug("-------------------| Preutfylling [$sedId] END |------------------- ")

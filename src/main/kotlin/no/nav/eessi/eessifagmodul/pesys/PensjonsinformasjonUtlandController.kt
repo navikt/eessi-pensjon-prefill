@@ -6,6 +6,7 @@ import no.nav.eessi.eessifagmodul.config.TimingService
 import no.nav.eessi.eessifagmodul.models.*
 import no.nav.eessi.eessifagmodul.pesys.mockup.MockSED001
 import no.nav.eessi.eessifagmodul.services.LandkodeService
+import no.nav.eessi.eessifagmodul.utils.getCounter
 import no.nav.security.oidc.api.Protected
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -102,24 +103,22 @@ class PensjonsinformasjonUtlandController(private val timingService: TimingServi
             if (erAlderpensjon(seds)) {
                 logger.debug("buc er alderpensjon")
                 timingService.timesStop(pesystime)
+                getCounter("HENTKRAVUTLANDOK").increment()
                 kravAlderpensjonUtland(seds)
 
             } else if (erUforpensjon(seds)) {
                 logger.debug("buc er utføre")
                 timingService.timesStop(pesystime)
+                getCounter("HENTKRAVUTLANDOK").increment()
                 kravUforepensjonUtland(seds)
 
             } else {
                 logger.debug("buc er gjenlevende")
                 timingService.timesStop(pesystime)
+                getCounter("HENTKRAVUTLANDOK").increment()
                 kravGjenlevendeUtland(seds)
             }
         }
-
-//        val p2100 = getSED(SEDType.P2100, seds)
-//        val p2200 = getSED(SEDType.P2200, seds)
-//
-//        return when()
 
     }
 

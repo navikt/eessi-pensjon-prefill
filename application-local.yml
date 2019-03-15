@@ -3,15 +3,17 @@
 ## - SRVPENSJON_PASSWORD
 ## - OPENAM_SECRET
 
+FASIT_ENVIRONMENT_NAME: 'local'
+
 euxbasis.v1:
-  #  url: 'http://10.33.44.43:9090/cpi'
   url: 'https://eux-app.nais.preprod.local/cpi'
+  #  url: 'http://10.33.44.43:9090/cpi'
 #  url: 'https://eux-app-t8.nais.preprod.local/cpi'
 #  url: 'http://localhost:9090/cpi'
 
 virksomhet.person.v3:
-  #  endpointurl: 'https://wasapp-t7.adeo.no/tpsws/ws/Person/v3'  # maskert-data
   endpointurl: 'https://wasapp-t8.adeo.no/tpsws/ws/Person/v3' # prod-data
+  #  endpointurl: 'https://wasapp-t7.adeo.no/tpsws/ws/Person/v3'  # maskert-data
 
 aktoerregister.api.v1:
   url: 'https://app-t8.adeo.no/aktoerregister/api/v1'
@@ -19,8 +21,8 @@ aktoerregister.api.v1:
 pensjonsinformasjon:
   url: 'https://wasapp-t5.adeo.no/pensjon-ws/api/pensjonsinformasjon/v1'
 
-security-token-service-issuer:
- url: 'https://security-token-service-t10.nais.preprod.local'
+#security-token-service-issuer:
+# url: 'https://security-token-service-t10.nais.preprod.local'
 
 srveessipensjon:
   username: '${SRVEESSI_PENSJON_USERNAME}'
@@ -46,13 +48,11 @@ no.nav.security.oidc:
   issuer.oidc:
     discoveryurl: 'https://isso-t.adeo.no:443/isso/oauth2/.well-known/openid-configuration'
     accepted_audience: 'localhost,eessi-fagmodul-localhost,eessi-fagmodul-t8,freg-token-provider-t0,eessi-pensjon-frontend-api-t8,eessi-pensjon-frontend-api-fss-t8,eux-app-t8,ida-t'
-  issuer.pesys:
-    discoveryurl: 'https://security-token-service-t10.nais.preprod.local/rest/v1/sts/.well-known/openid-configuration'
-    accepted_audience: 'preprod.local,srveessipensjon,srvpensjon'
+#  issuer.pesys:
+#    discoveryurl: 'https://security-token-service-t10.nais.preprod.local/rest/v1/sts/.well-known/openid-configuration'
+#    accepted_audience: 'preprod.local,srveessipensjon,srvpensjon'
 
 http.proxy.parametername:
-
-#  preprod.local,security-token-service-t10,: security-token-service-t10 ,ida-t
 
 management:
   endpoints:

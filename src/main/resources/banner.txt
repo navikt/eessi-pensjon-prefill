@@ -15,10 +15,8 @@
 
     Nav Tokensupport OIDC           : ${no.nav.security.oidc.issuer.oidc.discoveryurl}
     Nav Tokensupport accept         : ${no.nav.security.oidc.issuer.oidc.accepted_audience}
-    Nav Tokensupport PESYS          : ${no.nav.security.oidc.issuer.pesys.discoveryurl}
-    Nav Tokensupport accept         : ${no.nav.security.oidc.issuer.pesys.accepted_audience}
-
     securityTokenService            : ${securityTokenService.url}
 
+    fasit env                       : ${FASIT_ENVIRONMENT_NAME}
 
 =====================================================================================================

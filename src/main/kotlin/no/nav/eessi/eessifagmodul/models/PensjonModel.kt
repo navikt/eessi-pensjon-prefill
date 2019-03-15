@@ -85,6 +85,7 @@ data class Institusjon(
         var saksnummer: String? = null,
         var sektor: String? = null,
         var land: String? = null,
+        var pin: String? = null,
         var personNr: String? = null,
         var innvilgetPensjon: String? = null,  // 4.1.3.
         var utstedelsesDato: String? = null,  //4.1.4.
@@ -167,6 +168,9 @@ data class PersonInntektItem(
 
 //P2000
 data class Utsettelse(
+        var institusjonsnavn: String? = null,
+        var institusjonsid: String? = null,
+        var land: String? = null,
         var institusjon: Institusjon? = null,
         var tildato: String? = null
 )
