@@ -13,10 +13,14 @@
     EUXBais                         : ${euxbasis.v1.url}
     Person_v3                       : ${virksomhet.person.v3.endpointurl}
 
-    Nav Tokensupport OIDC           : ${no.nav.security.oidc.issuer.oidc.discoveryurl}
-    Nav Tokensupport accept         : ${no.nav.security.oidc.issuer.oidc.accepted_audience}
+    ISSO Tokensupport OIDC          : ${no.nav.security.oidc.issuer.oidc.discoveryurl}
+    ISSO Tokensupport accept        : ${no.nav.security.oidc.issuer.oidc.accepted_audience}
+
+    PESYS Tokensupport OIDC         : ${no.nav.security.oidc.issuer.pesys.discoveryurl}
+    PESYS Tokensupport accept       : ${no.nav.security.oidc.issuer.pesys.accepted_audience}
+
     securityTokenService            : ${securityTokenService.url}
 
     fasit env                       : ${FASIT_ENVIRONMENT_NAME}
-
+    active-profiles                 : ${eessi-pensjon-active-profiles}
 =====================================================================================================

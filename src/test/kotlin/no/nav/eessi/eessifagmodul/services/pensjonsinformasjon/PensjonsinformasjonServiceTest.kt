@@ -31,7 +31,6 @@ class PensjonsinformasjonServiceTest {
     @Before
     fun setup() {
         pensjonsinformasjonService = PensjonsinformasjonService(mockrestTemplate, RequestBuilder())
-        pensjonsinformasjonService.fasitenv = "q1"
     }
 
     @Test
@@ -48,6 +47,7 @@ class PensjonsinformasjonServiceTest {
     @Test
     fun hentAltFeilersaaProverViIgjen() {
         val mockResponseEntity = createResponseEntityFromJsonFile("classpath:pensjonsinformasjon/full-generated-response.xml")
+        pensjonsinformasjonService.fasitenv = "q1"
 
         whenever(mockrestTemplate.exchange(
                 any<String>(),

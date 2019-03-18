@@ -1,5 +1,7 @@
 FASIT_ENVIRONMENT_NAME: 'test'
 
+eessi-pensjon-active-profiles: ${spring.profiles.active}
+
 euxbasis.v1:
   url: 'http://example.com:8089'
 

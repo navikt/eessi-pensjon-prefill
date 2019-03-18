@@ -12,6 +12,11 @@ EESSI Pensjon Fagmodul
 ./gradlew assemble
 ```
 
+legge systembruker 'srveessipensjon' og passord inn som systemverdier:
+SRVEESSI_PENSJON_USERNAME
+SRVEESSI_PENSJON_PASSWORD_T
+
+
 ## Oppdatere avhengigheter
 
 Sjekke om man har utdaterte avhengigheter (forsøker å unngå milestones og beta-versjoner):

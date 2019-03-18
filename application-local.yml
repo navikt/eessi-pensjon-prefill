@@ -5,6 +5,8 @@
 
 FASIT_ENVIRONMENT_NAME: 'local'
 
+eessi-pensjon-active-profiles: ${spring.profiles.active}
+
 euxbasis.v1:
   url: 'https://eux-app.nais.preprod.local/cpi'
   #  url: 'http://10.33.44.43:9090/cpi'
@@ -48,9 +50,9 @@ no.nav.security.oidc:
   issuer.oidc:
     discoveryurl: 'https://isso-t.adeo.no:443/isso/oauth2/.well-known/openid-configuration'
     accepted_audience: 'localhost,eessi-fagmodul-localhost,eessi-fagmodul-t8,freg-token-provider-t0,eessi-pensjon-frontend-api-t8,eessi-pensjon-frontend-api-fss-t8,eux-app-t8,ida-t'
-#  issuer.pesys:
-#    discoveryurl: 'https://security-token-service-t10.nais.preprod.local/rest/v1/sts/.well-known/openid-configuration'
-#    accepted_audience: 'preprod.local,srveessipensjon,srvpensjon'
+  issuer.pesys:
+    discoveryurl: 'https://security-token-service-t10.nais.preprod.local/rest/v1/sts/.well-known/openid-configuration'
+    accepted_audience: 'preprod.local,srveessipensjon,srvpensjon'
 
 http.proxy.parametername:
 
