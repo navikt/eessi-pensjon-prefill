@@ -34,7 +34,7 @@ class NavRegistreOppslagController(private val aktoerregisterService: Aktoerregi
     @ApiOperation("henter ut personinformasjon for en aktørId")
     @GetMapping("/person/{aktoerid}")
     fun getDocument(@PathVariable("aktoerid", required = true) aktoerid: String): ResponseEntity<Personinformasjon> {
-        logger.info("Henter personinformasjon for aktørId: $aktoerid")
+        logger.info("Henter personinformasjon for aktørId")
 
         val norskIdent: String
         var personresp = HentPersonResponse()
@@ -44,19 +44,19 @@ class NavRegistreOppslagController(private val aktoerregisterService: Aktoerregi
             personresp = personService.hentPerson(norskIdent)
 
         } catch (are: AktoerregisterException) {
-            logger.error("Kall til Akørregisteret med aktørId: $aktoerid feilet på grunn av: " + are.message)
+            logger.error("Kall til Akørregisteret feilet på grunn av: " + are.message)
             getCounter("PERSONINFORMASJONFEIL").increment()
             ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(AktoerregisterException::class.simpleName)
         } catch (arife: AktoerregisterIkkeFunnetException) {
-            logger.error("Kall til Akørregisteret med aktørId: $aktoerid feilet på grunn av: " + arife.message)
+            logger.error("Kall til Akørregisteret feilet på grunn av: " + arife.message)
             getCounter("PERSONINFORMASJONFEIL").increment()
             ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(AktoerregisterException::class.simpleName)
         } catch (sbe: PersonV3SikkerhetsbegrensningException) {
-            logger.error("Kall til PersonV3 med aktørId: $aktoerid feilet på grunn av sikkerhetsbegrensning")
+            logger.error("Kall til PersonV3 med feilet på grunn av sikkerhetsbegrensning")
             getCounter("PERSONINFORMASJONFEIL").increment()
             ResponseEntity.status(HttpStatus.FORBIDDEN).body(PersonV3SikkerhetsbegrensningException::class.simpleName)
         } catch (ife: PersonV3IkkeFunnetException) {
-            logger.error("Kall til PersonV3 med aktørId: $aktoerid feilet på grunn av person ikke funnet")
+            logger.error("Kall til PersonV3 feilet på grunn av person ikke funnet")
             getCounter("PERSONINFORMASJONFEIL").increment()
             ResponseEntity.status(HttpStatus.NOT_FOUND).body(PersonV3IkkeFunnetException::class.simpleName)
         }
