@@ -1,6 +1,5 @@
 package no.nav.eessi.eessifagmodul.prefill
 
-import no.nav.eessi.eessifagmodul.models.AndreinstitusjonerItem
 import no.nav.eessi.eessifagmodul.models.IkkeGyldigKallException
 import no.nav.eessi.eessifagmodul.services.pensjonsinformasjon.PensjonsinformasjonService
 import no.nav.pensjon.v1.brukersbarn.V1BrukersBarn
@@ -9,7 +8,6 @@ import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import no.nav.pensjon.v1.sak.V1Sak
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 
 /**
@@ -17,32 +15,15 @@ import org.springframework.stereotype.Component
  * sakid eller vedtakid.
  */
 @Component
-class PensjonsinformasjonHjelper(private val pensjonsinformasjonService: PensjonsinformasjonService) {
+class PensjonsinformasjonHjelper(private val pensjonsinformasjonService: PensjonsinformasjonService, private val eessiInfo: EessiInformasjon) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PensjonsinformasjonHjelper::class.java) }
-
-    @Value("\${eessi.pensjon.lokalid}")
-    lateinit var institutionid: String
-
-    @Value("\${eessi.pensjon.lokalnavn}")
-    lateinit var institutionnavn: String
-
-    @Value("\${eessi.pensjon.adresse.gate}")
-    lateinit var institutionGate: String
-
-    @Value("\${eessi.pensjon.adresse.by}")
-    lateinit var institutionBy: String
-
-    @Value("\${eessi.pensjon.adresse.postnummer}")
-    lateinit var institutionPostnr: String
-
-    @Value("\${eessi.pensjon.adresse.land}")
-    lateinit var institutionLand: String
 
     //hjelemetode for Vedtak P6000 P5000
     fun hentMedVedtak(prefillData: PrefillDataModel): Pensjonsinformasjon {
         val vedtakId = if (prefillData.vedtakId.isNotBlank()) prefillData.vedtakId else throw IkkeGyldigKallException("Mangler vedtakID")
         val pendata: Pensjonsinformasjon = pensjonsinformasjonService.hentAltPaaVedtak(vedtakId)
+
         createInstitusionReview(prefillData)
 
         logger.info("Pensjonsinformasjon: $pendata"
@@ -54,8 +35,8 @@ class PensjonsinformasjonHjelper(private val pensjonsinformasjonService: Pensjon
                 + "\nPensjonsinformasjon.ytelsePerMaanedListe: ${pendata.ytelsePerMaanedListe}"
                 + "\nPensjonsinformasjon.trygdeavtale: ${pendata.trygdeavtale}"
                 + "\nPensjonsinformasjon.person: ${pendata.person}"
-                + "\nPensjonsinformasjon.person.pin: ${pendata.person.pid}")
-
+//                + "\nPensjonsinformasjon.person.pin: ${pendata.person.pid}")
+                + "")
         return pendata
     }
 
@@ -70,8 +51,7 @@ class PensjonsinformasjonHjelper(private val pensjonsinformasjonService: Pensjon
     //hjelpe metode for å hente ut valgt V1SAK på vetak/SAK fnr og sakid benyttes
     fun hentMedSak(prefillData: PrefillDataModel, pendata: Pensjonsinformasjon): V1Sak {
         val sakId = if (prefillData.penSaksnummer.isNotBlank()) prefillData.penSaksnummer else throw IkkeGyldigKallException("Mangler sakId")
-        return pensjonsinformasjonService.hentAltPaaSak(sakId, pendata)
-                ?: throw IkkeGyldigKallException("Feil, finner ingen sak på sakId")
+        return pensjonsinformasjonService.hentAltPaaSak(sakId, pendata) ?: throw IkkeGyldigKallException("Finner ingen sak, saktype på valgt sakId")
     }
 
     //henter ut nødvendige familie relasjoner
@@ -106,20 +86,8 @@ class PensjonsinformasjonHjelper(private val pensjonsinformasjonService: Pensjon
 
     fun createInstitusionReview(prefillData: PrefillDataModel) {
         logger.info("Henter ut lokal kontakt, institusjon (NAV Utland)")
-
-        prefillData.andreInstitusjon = AndreinstitusjonerItem(
-                institusjonsid = institutionid,
-                institusjonsnavn = institutionnavn,
-                institusjonsadresse = institutionGate,
-                postnummer = institutionPostnr,
-                bygningsnr = null,
-                land = institutionLand,
-                region = null,
-                poststed = institutionBy
-        )
-
+        eessiInfo.mapEssiInformasjonTilPrefillDataModel(prefillData)
         logger.info("Andreinstitusjoner: ${prefillData.andreInstitusjon} ")
-
     }
 
 }

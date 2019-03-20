@@ -16,12 +16,14 @@ import no.nav.pensjon.v1.sak.V1Sak
 import no.nav.security.oidc.api.Protected
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonResponse
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.annotation.Profile
 import org.springframework.web.bind.annotation.*
 import java.util.*
 
 @Protected
 @CrossOrigin
 @RestController
+@Profile("test", "local")
 @RequestMapping("/api/experiments")
 class ExperimentController {
 

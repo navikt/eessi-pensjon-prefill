@@ -31,8 +31,8 @@ requestsamlpolicy:
   path: 'classpath:policy/requestSamlPolicyNoTransportBinding.xml'
 
 srveessipensjon:
-  username: '${SRVEESSI_PENSJON_USERNAME}'
-  password: '${SRVEESSI_PENSJON_PASSWORD_Q}'
+  username: '${SRVEESSIPENSJON_USERNAME}'
+  password: '${SRVEESSIPENSJON_PASSWORD_Q}'
 
 app:
   name: 'DEVELOP'

@@ -76,3 +76,8 @@ interface Metadata {
     fun elementName(): String
     fun typeName(): String
 }
+
+data class Pensjontype(
+        val sakId: String,
+        val sakType: String
+)

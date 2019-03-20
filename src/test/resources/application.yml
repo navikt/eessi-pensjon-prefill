@@ -29,11 +29,9 @@ securitytokenservice:
   url: 'https://example.com/SecurityTokenServiceProvider/'
 
 eessi:
-  pensjon:
-    lokalid: 'NO:noinst002'
-    lokalnavn: 'NOINST002, NO INST002, NO'
-    adresse:
-      gate: 'Postboks 6600 Etterstad TEST'
-      by:   'Oslo'
-      postnummer: '0607'
-      land: 'NO'
+  pensjon_lokalid: 'NO:noinst002'
+  pensjon_lokalnavn: 'NOINST002, NO INST002, NO'
+  pensjon_adresse_gate: 'Postboks 6600 Etterstad TEST'
+  pensjon_adresse_by:   'Oslo'
+  pensjon_adresse_postnummer: '0607'
+  pensjon_adresse_land: 'NO'

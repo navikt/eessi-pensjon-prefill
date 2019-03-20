@@ -5,6 +5,7 @@ import com.nhaarman.mockito_kotlin.whenever
 import no.nav.eessi.eessifagmodul.models.InstitusjonItem
 import no.nav.eessi.eessifagmodul.models.Pensjon
 import no.nav.eessi.eessifagmodul.models.SED
+import no.nav.eessi.eessifagmodul.prefill.EessiInformasjon
 import no.nav.eessi.eessifagmodul.prefill.PensjonsinformasjonHjelper
 import no.nav.eessi.eessifagmodul.prefill.PrefillDataModel
 import no.nav.eessi.eessifagmodul.services.pensjonsinformasjon.PensjonsinformasjonService
@@ -21,13 +22,18 @@ import no.nav.pensjon.v1.ytelsepermaaned.V1YtelsePerMaaned
 import no.nav.pensjon.v1.ytelsepermaanedliste.V1YtelsePerMaanedListe
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers
 import org.mockito.Mock
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Primary
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.util.ResourceUtils
 import org.springframework.web.client.RestTemplate
 import java.time.LocalDate
@@ -37,6 +43,9 @@ import javax.xml.datatype.DatatypeFactory
 import javax.xml.datatype.XMLGregorianCalendar
 import kotlin.test.assertEquals
 
+@RunWith(SpringRunner::class)
+@ActiveProfiles("test")
+@SpringBootTest
 abstract class AbstractMockVedtakPensionHelper(private val xmlFilename: String) {
 
     @Mock
@@ -48,6 +57,8 @@ abstract class AbstractMockVedtakPensionHelper(private val xmlFilename: String) 
 
     protected lateinit var pendata: Pensjonsinformasjon
 
+    @Autowired
+    protected lateinit var eessiInformasjon: EessiInformasjon
 
     @Before
     fun setup() {
@@ -66,17 +77,17 @@ abstract class AbstractMockVedtakPensionHelper(private val xmlFilename: String) 
         return ResponseEntity(resource, HttpStatus.OK)
     }
 
-    @Bean
     @Primary
+    @Bean
     fun mockPrefillPensionDataFromPEN(pensjonsinformasjonService: PensjonsinformasjonService): PensjonsinformasjonHjelper {
-        val dataPEN2 = PensjonsinformasjonHjelper(pensjonsinformasjonService)
-        dataPEN2.institutionid = "NO"
-        dataPEN2.institutionnavn = "[NO] NAV NORGE"
-        dataPEN2.institutionBy = "OSLO"
-        dataPEN2.institutionGate = "Postboks 6600 Etterstad"
-        dataPEN2.institutionPostnr = "0607"
-        dataPEN2.institutionLand = "NO"
-        return dataPEN2
+//        val eessiInfo = EessiInformasjon()
+//        eessiInfo.institutionid = "NO"
+//        eessiInfo.institutionnavn = "[NO] NAV NORGE"
+//        eessiInfo.institutionBy = "OSLO"
+//        eessiInfo.institutionGate = "Postboks 6600 Etterstad"
+//        eessiInfo.institutionPostnr = "0607"
+//        eessiInfo.institutionLand = "NO"
+        return PensjonsinformasjonHjelper(pensjonsinformasjonService, eessiInformasjon)
     }
 
     private fun mockVedtakFromPEN(mockPrefillPensionDataFromPEN: PensjonsinformasjonHjelper): VedtakDataFromPEN {
@@ -340,6 +351,5 @@ abstract class AbstractMockVedtakPensionHelper(private val xmlFilename: String) 
         val result = dataFromPESYS.pensjonVedtak.createAvlsagsBegrunnelse(pendata)
         assertEquals("07", result)
     }
-
 
 }

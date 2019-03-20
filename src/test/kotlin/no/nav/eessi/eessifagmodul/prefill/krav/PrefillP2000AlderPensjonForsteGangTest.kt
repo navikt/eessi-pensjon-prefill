@@ -11,14 +11,12 @@ import no.nav.eessi.eessifagmodul.prefill.person.PersonDataFromTPS
 import no.nav.eessi.eessifagmodul.utils.NavFodselsnummer
 import org.junit.Assert
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.mockito.junit.MockitoJUnitRunner
 import java.time.LocalDate
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
 
-@RunWith(MockitoJUnitRunner::class)
+//@RunWith(MockitoJUnitRunner::class)
 class PrefillP2000AlderPensjonUtlandForsteGangTest : AbstractMockKravPensionHelper() {
 
     //mock familie

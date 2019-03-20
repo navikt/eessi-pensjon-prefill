@@ -5,6 +5,7 @@ import com.nhaarman.mockito_kotlin.whenever
 import no.nav.eessi.eessifagmodul.models.InstitusjonItem
 import no.nav.eessi.eessifagmodul.models.SED
 import no.nav.eessi.eessifagmodul.models.SEDType
+import no.nav.eessi.eessifagmodul.prefill.EessiInformasjon
 import no.nav.eessi.eessifagmodul.prefill.PensjonsinformasjonHjelper
 import no.nav.eessi.eessifagmodul.prefill.Prefill
 import no.nav.eessi.eessifagmodul.prefill.PrefillDataModel
@@ -16,15 +17,23 @@ import no.nav.eessi.eessifagmodul.services.pensjonsinformasjon.RequestBuilder
 import no.nav.eessi.eessifagmodul.services.personv3.PersonV3Service
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import org.junit.Before
+import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers
 import org.mockito.Mock
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.util.ResourceUtils
 import org.springframework.web.client.RestTemplate
 import java.time.LocalDate
 
+@RunWith(SpringRunner::class)
+@ActiveProfiles("test")
+@SpringBootTest
 abstract class AbstractMockKravPensionHelper {
 
     var personFnr: String = ""
@@ -42,6 +51,9 @@ abstract class AbstractMockKravPensionHelper {
     protected lateinit var kravdata: KravDataFromPEN
 
     private lateinit var pensionDataFromPEN: PensjonsinformasjonHjelper
+
+    @Autowired
+    protected lateinit var eessiInformasjon: EessiInformasjon
 
     private lateinit var prefillNav: PrefillNav
 
@@ -143,8 +155,16 @@ abstract class AbstractMockKravPensionHelper {
         whenever(pensjonsinformasjonRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java))).thenReturn(readXMLresponse(responseXMLfilename))
 
         val pensjonsinformasjonService1 = PensjonsinformasjonService(pensjonsinformasjonRestTemplate, RequestBuilder())
+//
+//        val eessiInfo = EessiInformasjon()
+//        eessiInfo.institutionid = "NO"
+//        eessiInfo.institutionnavn = "[NO] NAV NORGE"
+//        eessiInfo.institutionBy = "OSLO"
+//        eessiInfo.institutionGate = "Postboks 6600 Etterstad"
+//        eessiInfo.institutionPostnr = "0607"
+//        eessiInfo.institutionLand = "NO"
 
-        return PensjonsinformasjonHjelper(pensjonsinformasjonService1)
+        return PensjonsinformasjonHjelper(pensjonsinformasjonService1, eessiInformasjon)
     }
 
     private fun mockKravDataFromPEN(prefillPensionDataFromPEN: PensjonsinformasjonHjelper): KravDataFromPEN {

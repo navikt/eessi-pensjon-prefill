@@ -3,12 +3,10 @@ package no.nav.eessi.eessifagmodul.prefill.vedtak
 import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
 import no.nav.eessi.eessifagmodul.utils.simpleFormat
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.mockito.junit.MockitoJUnitRunner
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
-@RunWith(MockitoJUnitRunner::class)
+//@RunWith(MockitoJUnitRunner::class)
 class PrefillP6000PensionUforepTest : AbstractMockVedtakPensionHelper("P6000-UT-201.xml") {
 
 
@@ -57,9 +55,10 @@ class PrefillP6000PensionUforepTest : AbstractMockVedtakPensionHelper("P6000-UT-
         assertEquals("six weeks from the date the decision is received", dataof)
 
         assertEquals("2017-05-21", tillegg?.dato)
-        assertEquals("NO", tillegg?.andreinstitusjoner?.get(0)?.institusjonsid)
-        assertEquals("[NO] NAV NORGE", tillegg?.andreinstitusjoner?.get(0)?.institusjonsnavn)
-        assertEquals("Postboks 6600 Etterstad", tillegg?.andreinstitusjoner?.get(0)?.institusjonsadresse)
+
+        assertEquals("NO:noinst002", tillegg?.andreinstitusjoner?.get(0)?.institusjonsid)
+        assertEquals("NOINST002, NO INST002, NO", tillegg?.andreinstitusjoner?.get(0)?.institusjonsnavn)
+        assertEquals("Postboks 6600 Etterstad TEST", tillegg?.andreinstitusjoner?.get(0)?.institusjonsadresse)
         assertEquals("0607", tillegg?.andreinstitusjoner?.get(0)?.postnummer)
 
     }

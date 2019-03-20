@@ -22,5 +22,6 @@
     securityTokenService            : ${securityTokenService.url}
 
     fasit env                       : ${FASIT_ENVIRONMENT_NAME}
-    active-profiles                 : ${eessi-pensjon-active-profiles}
+    active-profiles                 : ${spring.profiles.active}
+
 =====================================================================================================

@@ -18,10 +18,10 @@ class PrefillNav(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS)
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillNav::class.java) }
     private val barnSEDlist = listOf("P2000", "P2100", "P2200")
 
-    @Value("\${eessi.pensjon.lokalid}")
+    @Value("\${eessi.pensjon_lokalid}")
     lateinit var institutionid: String
 
-    @Value("\${eessi.pensjon.lokalnavn}")
+    @Value("\${eessi.pensjon_lokalnavn}")
     lateinit var institutionnavn: String
 
     override fun prefill(prefillData: PrefillDataModel): Nav {

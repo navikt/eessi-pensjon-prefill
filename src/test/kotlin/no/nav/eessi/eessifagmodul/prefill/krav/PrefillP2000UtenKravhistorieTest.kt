@@ -10,14 +10,12 @@ import no.nav.eessi.eessifagmodul.prefill.person.PersonDataFromTPS
 import no.nav.eessi.eessifagmodul.utils.NavFodselsnummer
 import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.mockito.junit.MockitoJUnitRunner
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
 
-@RunWith(MockitoJUnitRunner::class)
+//@RunWith(MockitoJUnitRunner::class)
 class PrefillP2000UtenKravhistorieTest : AbstractMockKravPensionHelper() {
 
     override fun creareMockPersonDataTPS(): Set<PersonDataFromTPS.MockTPS>? {
