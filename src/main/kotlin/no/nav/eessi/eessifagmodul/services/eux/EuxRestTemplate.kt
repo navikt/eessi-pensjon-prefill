@@ -1,7 +1,7 @@
 package no.nav.eessi.eessifagmodul.services.eux
 
 import io.micrometer.core.instrument.MeterRegistry
-import no.nav.eessi.eessifagmodul.config.OidcAuthorizationHeaderInterceptor
+import no.nav.eessi.eessifagmodul.config.OidcAuthorizationHeaderInterceptorSelectIssuer
 import no.nav.eessi.eessifagmodul.config.RequestResponseLoggerInterceptor
 import no.nav.security.oidc.context.OIDCRequestContextHolder
 import org.springframework.beans.factory.annotation.Value
@@ -27,7 +27,7 @@ class EuxRestTemplate(private val oidcRequestContextHolder: OIDCRequestContextHo
                 .rootUri(url)
                 .errorHandler(DefaultResponseErrorHandler())
                 .additionalInterceptors(RequestResponseLoggerInterceptor(),
-                        OidcAuthorizationHeaderInterceptor(oidcRequestContextHolder))
+                        OidcAuthorizationHeaderInterceptorSelectIssuer(oidcRequestContextHolder, "oidc"))
                 .customizers(MetricsRestTemplateCustomizer(registry, DefaultRestTemplateExchangeTagsProvider(), "eessipensjon_fagmodul_eux"))
                 .build().apply {
                     requestFactory = BufferingClientHttpRequestFactory(SimpleClientHttpRequestFactory())

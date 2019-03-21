@@ -6,9 +6,9 @@ import no.nav.security.oidc.context.OIDCClaims
 import no.nav.security.oidc.context.OIDCRequestContextHolder
 import no.nav.security.oidc.context.OIDCValidationContext
 import no.nav.security.oidc.context.TokenContext
-import org.junit.Test
 import org.apache.commons.io.FileUtils
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
+import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
 import java.io.File
@@ -22,17 +22,36 @@ class OidcAuthorizationHeaderInterceptorKtTest {
     private val pesysRequestContextHolder = generateMockContextHolder(listOf("pesys"))
     private val mulitpleRequestContextHolders = generateMockContextHolder(listOf("pesys", "oidc"))
 
+    private lateinit var authInterceptor: OidcAuthorizationHeaderInterceptor
+    private lateinit var authInterceptorIssuer: OidcAuthorizationHeaderInterceptorSelectIssuer
+
     @Test fun `gitt issuer oidc returner gyldig oidcIdToken`() {
-        assertEquals("oidcIdToken", getIdTokenFromIssuer(oidcRequestContextHolder))
+        authInterceptor = OidcAuthorizationHeaderInterceptor(oidcRequestContextHolder)
+        assertEquals("oidcIdToken", authInterceptor.getIdTokenFromIssuer(oidcRequestContextHolder))
     }
 
     @Test fun `gitt issuer pesys returner gyldig pesysIdToken`() {
-        assertEquals("pesysIdToken", getIdTokenFromIssuer(pesysRequestContextHolder))
+        authInterceptor = OidcAuthorizationHeaderInterceptor(pesysRequestContextHolder)
+        assertEquals("pesysIdToken", authInterceptor.getIdTokenFromIssuer(pesysRequestContextHolder))
     }
 
     @Test fun `gitt mulitple issuers returner RuntimeException`() {
-        assertFailsWith(RuntimeException::class) { getIdTokenFromIssuer(mulitpleRequestContextHolders) }
+        authInterceptor = OidcAuthorizationHeaderInterceptor(mulitpleRequestContextHolders)
+        assertFailsWith(RuntimeException::class) { authInterceptor.getIdTokenFromIssuer(mulitpleRequestContextHolders) }
     }
+
+    @Test
+    fun `gitt mulitple issuers returner selected ussuer pesys`() {
+        authInterceptorIssuer = OidcAuthorizationHeaderInterceptorSelectIssuer(mulitpleRequestContextHolders, "pesys")
+        assertEquals("pesysIdToken", authInterceptorIssuer.getIdTokenFromSelectedIssuer(mulitpleRequestContextHolders, "pesys"))
+    }
+
+    @Test
+    fun `gitt mulitple issuers returner selected ussuer oidc`() {
+        authInterceptorIssuer = OidcAuthorizationHeaderInterceptorSelectIssuer(mulitpleRequestContextHolders, "oidc")
+        assertEquals("oidcIdToken", authInterceptorIssuer.getIdTokenFromSelectedIssuer(mulitpleRequestContextHolders, "oidc"))
+    }
+
 
     fun generateMockContextHolder(issuer: List<String>): OIDCRequestContextHolder {
         val oidcContext = OIDCValidationContext()
