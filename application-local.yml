@@ -7,9 +7,10 @@ FASIT_ENVIRONMENT_NAME: 'local'
 
 eessi-pensjon-active-profiles: ${spring.profiles.active}
 
-euxbasis.v1:
-  url: 'https://eux-app.nais.preprod.local/cpi'
-  #  url: 'http://10.33.44.43:9090/cpi'
+eux-rina-api_v1:
+  url: 'https://eux-rina-api.nais.preprod.local/cpi'
+#  url: 'https://eux-app.nais.preprod.local/cpi'
+#  url: 'http://10.33.44.43:9090/cpi'
 #  url: 'https://eux-app-t8.nais.preprod.local/cpi'
 #  url: 'http://localhost:9090/cpi'
 
@@ -21,7 +22,8 @@ aktoerregister.api.v1:
   url: 'https://app-t8.adeo.no/aktoerregister/api/v1'
 
 pensjonsinformasjon:
-  url: 'https://wasapp-t5.adeo.no/pensjon-ws/api/pensjonsinformasjon/v1'
+  url: 'https://wasapp-t8.adeo.no/pensjon-ws/api/pensjonsinformasjon/v1'
+#  url: 'https://wasapp-t5.adeo.no/pensjon-ws/api/pensjonsinformasjon/v1'
 
 #security-token-service-issuer:
 # url: 'https://security-token-service-t10.nais.preprod.local'
