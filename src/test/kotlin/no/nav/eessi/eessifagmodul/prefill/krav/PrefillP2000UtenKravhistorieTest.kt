@@ -90,7 +90,7 @@ class PrefillP2000UtenKravhistorieTest : AbstractMockKravPensionHelper() {
 
         assertEquals("01", P2000.nav?.barn?.get(1)?.person?.sivilstand?.get(0)?.status)
 
-        assertEquals("N/A", P2000.nav?.bruker?.arbeidsforhold?.get(0)?.yrke)
+        assertEquals("", P2000.nav?.bruker?.arbeidsforhold?.get(0)?.yrke)
         assertEquals("2018-11-12", P2000.nav?.bruker?.arbeidsforhold?.get(0)?.planlagtstartdato)
         assertEquals("2018-11-14", P2000.nav?.bruker?.arbeidsforhold?.get(0)?.planlagtpensjoneringsdato)
         assertEquals("07", P2000.nav?.bruker?.arbeidsforhold?.get(0)?.type)

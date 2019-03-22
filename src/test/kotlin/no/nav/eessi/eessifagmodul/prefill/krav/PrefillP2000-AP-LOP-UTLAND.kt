@@ -95,7 +95,7 @@ class `PrefillP2000-AP-LOP-UTLAND` : AbstractMockKravPensionHelper() {
 
         assertEquals(null, P2000.nav?.barn)
 
-        assertEquals("N/A", P2000.nav?.bruker?.arbeidsforhold?.get(0)?.yrke)
+        assertEquals("", P2000.nav?.bruker?.arbeidsforhold?.get(0)?.yrke)
         assertEquals("2018-11-12", P2000.nav?.bruker?.arbeidsforhold?.get(0)?.planlagtstartdato)
         assertEquals("2018-11-14", P2000.nav?.bruker?.arbeidsforhold?.get(0)?.planlagtpensjoneringsdato)
         assertEquals("07", P2000.nav?.bruker?.arbeidsforhold?.get(0)?.type)
