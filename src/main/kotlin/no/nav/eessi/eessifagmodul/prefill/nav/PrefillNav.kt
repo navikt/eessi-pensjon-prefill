@@ -160,22 +160,22 @@ class PrefillNav(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS)
         return ArbeidsforholdItem(
 
                 //3.1.1.
-                yrke = "N/A",
+                yrke = "",
 
                 //3.1.2
-                type = personInfo.workType,
+                type = personInfo.workType ?: "",
 
                 //3.1.3
-                planlagtstartdato = personInfo.workStartDate?.simpleFormat() ?: null,
+                planlagtstartdato = personInfo.workStartDate?.simpleFormat() ?: "",
 
                 //3.1.4
-                sluttdato = personInfo.workEndDate?.simpleFormat() ?: null,
+                sluttdato = personInfo.workEndDate?.simpleFormat() ?: "",
 
                 //3.1.5
-                planlagtpensjoneringsdato = personInfo.workEstimatedRetirementDate?.simpleFormat() ?: null,
+                planlagtpensjoneringsdato = personInfo.workEstimatedRetirementDate?.simpleFormat() ?: "",
 
                 //3.1.6
-                arbeidstimerperuke = personInfo.workHourPerWeek
+                arbeidstimerperuke = personInfo.workHourPerWeek ?: ""
 
         )
     }
