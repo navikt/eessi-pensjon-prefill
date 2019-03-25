@@ -67,6 +67,9 @@ fasitResources:
   - alias: security-token-service-openid-configuration
     resourceType: RestService
 
+  - alias: appdynamics
+    resourceType: ApplicationProperties
+
   exposed:
   - alias: eessifagmodulservice
     resourceType: RestService
