@@ -18,7 +18,6 @@ management:
     export.prometheus.enabled: true
     prometheus.enabled: true
 
-
 eessi:
   pensjon_lokalid: 'NO:noinst002'
   pensjon_lokalnavn: 'NOINST002, NO INST002, NO'
