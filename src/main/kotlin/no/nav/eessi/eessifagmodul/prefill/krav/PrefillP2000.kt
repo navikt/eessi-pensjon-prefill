@@ -36,23 +36,17 @@ class PrefillP2000(private val prefillNav: PrefillNav, private val preutfyllingP
         //skipper å hente persondata dersom NAVSED finnes
         if (prefillData.kanFeltSkippes("NAVSED")) {
             sed.nav = Nav()
-
-        } else {
             //henter opp persondata
+        } else {
             sed.nav = createNav(prefillData)
         }
 
         //skipper å henter opp pensjondata hvis PENSED finnes
         if (prefillData.kanFeltSkippes("PENSED")) {
             val pensjon = createPensjon(prefillData)
-
-            if (prefillData.kanFeltSkippes("NAVSED")) {
-                sed.nav = Nav()
-                sed.nav?.krav = pensjon?.kravDato
-            } else {
-                sed.nav?.krav = pensjon?.kravDato
-            }
-            sed.pensjon = Pensjon()
+            //vi skal ha blank pensjon ved denne toggle
+            //vi må ha med kravdato
+            sed.pensjon = Pensjon(kravDato = pensjon.kravDato)
 
             //henter opp pensjondata
         } else {
@@ -60,7 +54,6 @@ class PrefillP2000(private val prefillNav: PrefillNav, private val preutfyllingP
 
             //gjenlevende hvis det finnes..
             pensjon.gjenlevende = createGjenlevende(prefillData)
-
             //legger pensjon på sed (få med oss gjenlevende/avdød)
             sed.pensjon = pensjon
         }
@@ -71,6 +64,7 @@ class PrefillP2000(private val prefillNav: PrefillNav, private val preutfyllingP
             //sed.nav?.krav = Krav("")
             //pensjon.kravDato = null
         } else {
+            logger.debug("9.1     legger til nav kravdato fra pensjon kravdato")
             sed.nav?.krav = sed.pensjon?.kravDato
         }
 
