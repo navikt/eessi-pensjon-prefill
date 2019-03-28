@@ -48,9 +48,9 @@ class PrefillP2000(private val prefillNav: PrefillNav, private val preutfyllingP
 
             if (prefillData.kanFeltSkippes("NAVSED")) {
                 sed.nav = Nav()
-                sed.nav?.krav = sed.pensjon?.kravDato
+                sed.nav?.krav = pensjon?.kravDato
             } else {
-                sed.nav?.krav = sed.pensjon?.kravDato
+                sed.nav?.krav = pensjon?.kravDato
             }
             sed.pensjon = Pensjon()
 
