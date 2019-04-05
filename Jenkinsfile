@@ -65,14 +65,6 @@ node {
                     ]
             ])
         }
-        post {
-            always {
-                script {
-                    junit '**/junit.xml'
-                }
-            }
-        }            
-
         github.commitStatus("success", "navikt/eessi-pensjon-fagmodul", appToken, commitHash)
     } catch (err) {
         github.commitStatus("failure", "navikt/eessi-pensjon-fagmodul", appToken, commitHash)
@@ -80,3 +72,13 @@ node {
     }
 
 }
+post {
+   always {
+        node {
+            script {
+              junit '**/junit.xml'
+             }
+        }
+    }
+}
+
