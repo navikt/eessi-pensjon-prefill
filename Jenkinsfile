@@ -67,9 +67,7 @@ node {
         }
         stage("post") {
                always {
-                    script {
-                      junit '**/junit.xml'
-                     }
+                    junit('build/test-results/test/**/*.xml')
                }
         }
         
