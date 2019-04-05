@@ -71,4 +71,11 @@ node {
         github.commitStatus("failure", "navikt/eessi-pensjon-fagmodul", appToken, commitHash)
         throw err
     }
+    post {
+        always {
+            script {
+                junit '**/junit.xml'
+            }
+        }
+    }    
 }
