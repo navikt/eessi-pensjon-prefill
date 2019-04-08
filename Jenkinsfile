@@ -65,12 +65,7 @@ node {
                     ]
             ])
         }
-        stage("post") {
-               always {
-                    junit 'build/test-results/test/*.xml'
-               }
-        }
-        
+       
         github.commitStatus("success", "navikt/eessi-pensjon-fagmodul", appToken, commitHash)
     } catch (err) {
         github.commitStatus("failure", "navikt/eessi-pensjon-fagmodul", appToken, commitHash)
