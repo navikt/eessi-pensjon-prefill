@@ -68,7 +68,7 @@ class PrefillP2000(private val prefillNav: PrefillNav, private val preutfyllingP
             //sed.nav?.krav = Krav("")
             //pensjon.kravDato = null
         } else {
-            logger.debug("9.1     legger til nav kravdato fra pensjon kravdato")
+            logger.debug("9.1     legger til nav kravdato fra pensjon kravdato : ${sed.pensjon?.kravDato} ")
             sed.nav?.krav = sed.pensjon?.kravDato
         }
 

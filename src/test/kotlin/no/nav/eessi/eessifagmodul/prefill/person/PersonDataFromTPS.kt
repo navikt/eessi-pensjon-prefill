@@ -75,6 +75,8 @@ abstract class PersonDataFromTPS(private val mocktps: Set<MockTPS>, private val 
         val poststed = strukturertAdresse["poststed"]
         val landkode = strukturertAdresse["landkode"]
         val harFraRolleI = rootNode["harFraRolleI"]
+        val foedselsdato = rootNode["foedselsdato"]
+
 
         val v3struktAdr = mapJsonToAny(bostedsadresse.toString(), typeRefs<Gateadresse>())
         val v3personstatus = mapJsonToAny(personstatus.toString(), typeRefs<Personstatus>())
@@ -85,6 +87,7 @@ abstract class PersonDataFromTPS(private val mocktps: Set<MockTPS>, private val 
         val v3aktoer = mapJsonToAny(aktoer.toString(), typeRefs<PersonIdent>())
         val v3poststed = mapJsonToAny(poststed.toString(), typeRefs<Postnummer>())
         val v3landkode = mapJsonToAny(landkode.toString(), typeRefs<Landkoder>())
+        val v3foedselsdato = mapJsonToAny(foedselsdato.toString(), typeRefs<Foedselsdato>())
 
         val v3person = Bruker()
 
@@ -135,6 +138,7 @@ abstract class PersonDataFromTPS(private val mocktps: Set<MockTPS>, private val 
         v3person.sivilstand = v3sivilstand // v3sivilstand
         v3person.personnavn = v3pernavn // v3pernavn
         v3person.personstatus = v3personstatus
+        v3person.foedselsdato = v3foedselsdato
         v3person.statsborgerskap = v3statsborgerskap
         v3person.kjoenn = v3kjoenn
         v3person.aktoer = v3aktoer

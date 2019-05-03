@@ -171,6 +171,7 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
     private fun datoFormat(person: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): String? {
         logger.debug("2.1.3         Date of birth")
         val fdato = person.foedselsdato
+        logger.debug("              Date of birth: $fdato")
         return fdato?.foedselsdato?.simpleFormat()
     }
 

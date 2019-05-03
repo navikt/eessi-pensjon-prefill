@@ -10,11 +10,13 @@ import no.nav.eessi.eessifagmodul.prefill.PrefillDataModel
 import no.nav.eessi.eessifagmodul.prefill.nav.PrefillNav
 import no.nav.eessi.eessifagmodul.prefill.nav.PrefillPersonDataFromTPS
 import no.nav.eessi.eessifagmodul.prefill.person.PersonDataFromTPS
+import no.nav.eessi.eessifagmodul.services.SedValidator
 import no.nav.eessi.eessifagmodul.utils.NavFodselsnummer
 import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
+import kotlin.test.fail
 
 //@RunWith(MockitoJUnitRunner::class)
 class `PrefillP2000-AP-LOP-UTLAND` : AbstractMockKravPensionHelper() {
@@ -89,44 +91,52 @@ class `PrefillP2000-AP-LOP-UTLAND` : AbstractMockKravPensionHelper() {
 
     @Test
     fun `forventet korrekt utfylt P2000 alderpersjon med mockdata fra testfiler`() {
-        val P2000 = prefill.prefill(prefillData)
+        val p2000 = prefill.prefill(prefillData)
 
-        P2000.print()
+        p2000.print()
 
-        assertEquals(null, P2000.nav?.barn)
+        val validator = SedValidator()
+        try{
+            validator.validateP2000(p2000)
+        }catch (ex: Exception){
+            println("Feilen er ${ex.message}")
+            fail("Validatoren skal ikke komme hit!")
+        }
 
-        assertEquals("", P2000.nav?.bruker?.arbeidsforhold?.get(0)?.yrke)
-        assertEquals("2018-11-12", P2000.nav?.bruker?.arbeidsforhold?.get(0)?.planlagtstartdato)
-        assertEquals("2018-11-14", P2000.nav?.bruker?.arbeidsforhold?.get(0)?.planlagtpensjoneringsdato)
-        assertEquals("07", P2000.nav?.bruker?.arbeidsforhold?.get(0)?.type)
+        assertEquals(null, p2000.nav?.barn)
 
-        assertEquals("foo", P2000.nav?.bruker?.bank?.navn)
-        assertEquals("bar", P2000.nav?.bruker?.bank?.konto?.sepa?.iban)
-        assertEquals("baz", P2000.nav?.bruker?.bank?.konto?.sepa?.swift)
+        assertEquals("", p2000.nav?.bruker?.arbeidsforhold?.get(0)?.yrke)
+        assertEquals("2018-11-12", p2000.nav?.bruker?.arbeidsforhold?.get(0)?.planlagtstartdato)
+        assertEquals("2018-11-14", p2000.nav?.bruker?.arbeidsforhold?.get(0)?.planlagtpensjoneringsdato)
+        assertEquals("07", p2000.nav?.bruker?.arbeidsforhold?.get(0)?.type)
 
-        assertEquals("HASNAWI-MASK", P2000.nav?.bruker?.person?.fornavn)
-        assertEquals("OKOULOV", P2000.nav?.bruker?.person?.etternavn)
-        val navfnr1 = NavFodselsnummer(P2000.nav?.bruker?.person?.pin?.get(0)?.identifikator!!)
+        assertEquals("foo", p2000.nav?.bruker?.bank?.navn)
+        assertEquals("bar", p2000.nav?.bruker?.bank?.konto?.sepa?.iban)
+        assertEquals("baz", p2000.nav?.bruker?.bank?.konto?.sepa?.swift)
+
+        assertEquals("HASNAWI-MASK", p2000.nav?.bruker?.person?.fornavn)
+        assertEquals("OKOULOV", p2000.nav?.bruker?.person?.etternavn)
+        val navfnr1 = NavFodselsnummer(p2000.nav?.bruker?.person?.pin?.get(0)?.identifikator!!)
         assertEquals(68, navfnr1.getAge())
 
-        assertNotNull(P2000.nav?.bruker?.person?.pin)
-        val pinlist = P2000.nav?.bruker?.person?.pin
+        assertNotNull(p2000.nav?.bruker?.person?.pin)
+        val pinlist = p2000.nav?.bruker?.person?.pin
         val pinitem = pinlist?.get(0)
         assertEquals("pensjon", pinitem?.sektor)
         assertEquals("NOINST002, NO INST002, NO", pinitem?.institusjonsnavn)
         assertEquals("NO:noinst002", pinitem?.institusjonsid)
         assertEquals(createFakePersonFnr(), pinitem?.identifikator)
 
-        assertEquals("RANNAR-MASK", P2000.nav?.ektefelle?.person?.fornavn)
-        assertEquals("MIZINTSEV", P2000.nav?.ektefelle?.person?.etternavn)
+        assertEquals("RANNAR-MASK", p2000.nav?.ektefelle?.person?.fornavn)
+        assertEquals("MIZINTSEV", p2000.nav?.ektefelle?.person?.etternavn)
 
-        val navfnr = NavFodselsnummer(P2000.nav?.ektefelle?.person?.pin?.get(0)?.identifikator!!)
+        val navfnr = NavFodselsnummer(p2000.nav?.ektefelle?.person?.pin?.get(0)?.identifikator!!)
         assertEquals(70, navfnr.getAge())
 
-        assertEquals(1, P2000.pensjon?.ytelser?.size)
+        assertEquals(1, p2000.pensjon?.ytelser?.size)
 
-        assertEquals("13049", P2000.pensjon?.ytelser?.get(0)?.totalbruttobeloeparbeidsbasert)
-        assertEquals(null, P2000.pensjon?.ytelser?.get(0)?.annenytelse)
+        assertEquals("13049", p2000.pensjon?.ytelser?.get(0)?.totalbruttobeloeparbeidsbasert)
+        assertEquals(null, p2000.pensjon?.ytelser?.get(0)?.annenytelse)
 
 //        assertEquals("7839", P2000.pensjon?.ytelser?.get(1)?.totalbruttobeloeparbeidsbasert)
 //        assertEquals("FOLKETRYGD", P2000.pensjon?.ytelser?.get(1)?.annenytelse)

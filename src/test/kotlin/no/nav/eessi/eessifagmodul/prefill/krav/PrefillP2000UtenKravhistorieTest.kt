@@ -7,12 +7,11 @@ import no.nav.eessi.eessifagmodul.prefill.PrefillDataModel
 import no.nav.eessi.eessifagmodul.prefill.nav.PrefillNav
 import no.nav.eessi.eessifagmodul.prefill.nav.PrefillPersonDataFromTPS
 import no.nav.eessi.eessifagmodul.prefill.person.PersonDataFromTPS
+import no.nav.eessi.eessifagmodul.services.SedValidator
 import no.nav.eessi.eessifagmodul.utils.NavFodselsnummer
 import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
 import org.junit.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
-import kotlin.test.assertNull
+import kotlin.test.*
 
 
 //@RunWith(MockitoJUnitRunner::class)
@@ -68,46 +67,56 @@ class PrefillP2000UtenKravhistorieTest : AbstractMockKravPensionHelper() {
 
     @Test
     fun `Testing av komplett utfylling kravsøknad alderpensjon ENKW med 2 barn P2000`() {
-        val P2000 = prefill.prefill(prefillData)
+        val p2000 = prefill.prefill(prefillData)
 
-        P2000.print()
+        p2000.print()
 
-        assertEquals(2, P2000.nav?.barn?.size)
+        val validator = SedValidator()
+        try{
+            validator.validateP2000(p2000)
+        }catch (ex: Exception){
+            println("Feilen er ${ex.message}")
+            println("Feilen er ${ex.message}")
+            assertEquals("Kravdato mangler", ex.message)
+            assertTrue(true)
+        }
 
-        assertEquals("BOUWMANS", P2000.nav?.barn?.get(0)?.person?.etternavn)
-        assertEquals("TOPPI DOTTO", P2000.nav?.barn?.get(0)?.person?.fornavn)
+        assertEquals(2, p2000.nav?.barn?.size)
 
-        val navfnr1 = NavFodselsnummer(P2000.nav?.barn?.get(0)?.person?.pin?.get(0)?.identifikator!!)
+        assertEquals("BOUWMANS", p2000.nav?.barn?.get(0)?.person?.etternavn)
+        assertEquals("TOPPI DOTTO", p2000.nav?.barn?.get(0)?.person?.fornavn)
+
+        val navfnr1 = NavFodselsnummer(p2000.nav?.barn?.get(0)?.person?.pin?.get(0)?.identifikator!!)
         assertEquals(43, navfnr1.getAge())
 
-        assertEquals("01", P2000.nav?.barn?.get(0)?.person?.sivilstand?.get(0)?.status)
+        assertEquals("01", p2000.nav?.barn?.get(0)?.person?.sivilstand?.get(0)?.status)
 
-        assertEquals("BOUWMANS", P2000.nav?.barn?.get(1)?.person?.etternavn)
-        assertEquals("EGIDIJS MASKOT", P2000.nav?.barn?.get(1)?.person?.fornavn)
+        assertEquals("BOUWMANS", p2000.nav?.barn?.get(1)?.person?.etternavn)
+        assertEquals("EGIDIJS MASKOT", p2000.nav?.barn?.get(1)?.person?.fornavn)
 
-        val navfnr2 = NavFodselsnummer(P2000.nav?.barn?.get(1)?.person?.pin?.get(0)?.identifikator!!)
+        val navfnr2 = NavFodselsnummer(p2000.nav?.barn?.get(1)?.person?.pin?.get(0)?.identifikator!!)
         assertEquals(17, navfnr2.getAge())
 
-        assertNotNull(P2000.nav?.bruker?.person?.pin)
-        val pinlist = P2000.nav?.bruker?.person?.pin
+        assertNotNull(p2000.nav?.bruker?.person?.pin)
+        val pinlist = p2000.nav?.bruker?.person?.pin
         val pinitem = pinlist?.get(0)
         assertEquals("pensjon", pinitem?.sektor)
         assertEquals("NOINST002, NO INST002, NO", pinitem?.institusjonsnavn)
         assertEquals("NO:noinst002", pinitem?.institusjonsid)
         assertEquals(createFakePersonFnr(), pinitem?.identifikator)
 
-        assertEquals("01", P2000.nav?.barn?.get(1)?.person?.sivilstand?.get(0)?.status)
+        assertEquals("01", p2000.nav?.barn?.get(1)?.person?.sivilstand?.get(0)?.status)
 
-        assertEquals("", P2000.nav?.bruker?.arbeidsforhold?.get(0)?.yrke)
-        assertEquals("2018-11-12", P2000.nav?.bruker?.arbeidsforhold?.get(0)?.planlagtstartdato)
-        assertEquals("2018-11-14", P2000.nav?.bruker?.arbeidsforhold?.get(0)?.planlagtpensjoneringsdato)
-        assertEquals("07", P2000.nav?.bruker?.arbeidsforhold?.get(0)?.type)
+        assertEquals("", p2000.nav?.bruker?.arbeidsforhold?.get(0)?.yrke)
+        assertEquals("2018-11-12", p2000.nav?.bruker?.arbeidsforhold?.get(0)?.planlagtstartdato)
+        assertEquals("2018-11-14", p2000.nav?.bruker?.arbeidsforhold?.get(0)?.planlagtpensjoneringsdato)
+        assertEquals("07", p2000.nav?.bruker?.arbeidsforhold?.get(0)?.type)
 
-        assertEquals("foo", P2000.nav?.bruker?.bank?.navn)
-        assertEquals("bar", P2000.nav?.bruker?.bank?.konto?.sepa?.iban)
-        assertEquals("baz", P2000.nav?.bruker?.bank?.konto?.sepa?.swift)
+        assertEquals("foo", p2000.nav?.bruker?.bank?.navn)
+        assertEquals("bar", p2000.nav?.bruker?.bank?.konto?.sepa?.iban)
+        assertEquals("baz", p2000.nav?.bruker?.bank?.konto?.sepa?.swift)
 
-        assertEquals(1, P2000.pensjon?.ytelser?.size)
+        assertEquals(1, p2000.pensjon?.ytelser?.size)
 
 //        assertEquals("7618", P2000.pensjon?.ytelser?.get(0)?.totalbruttobeloeparbeidsbasert)
 //        assertEquals("FOLKETRYGD", P2000.pensjon?.ytelser?.get(0)?.annenytelse)
