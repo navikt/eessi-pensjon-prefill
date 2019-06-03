@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.*
 
+
 @Protected
 @RestController
 @RequestMapping("/sed")
@@ -48,7 +49,7 @@ class SedController(private val euxService: EuxService,
 
     //** oppdatert i api 18.02.2019
     @ApiOperation("henter ut en SED fra et eksisterende Rina document. krever unik dokumentid fra valgt SED, ny api kall til eux")
-    @GetMapping("/sed/{euxcaseid}/{documentid}")
+    @GetMapping("/{euxcaseid}/{documentid}")
     fun getDocument(@PathVariable("euxcaseid", required = true) euxcaseid: String,
                     @PathVariable("documentid", required = true) documentid: String): SED {
 
@@ -59,7 +60,7 @@ class SedController(private val euxService: EuxService,
 
     //** oppdatert i api 18.02.2019
     @ApiOperation("sletter SED fra et eksisterende Rina document. krever unik dokumentid fra valgt SED, ny api kall til eux")
-    @DeleteMapping("/sed/{euxcaseid}/{documentid}")
+    @DeleteMapping("/{euxcaseid}/{documentid}")
     fun deleteDocument(@PathVariable("euxcaseid", required = true) euxcaseid: String,
                        @PathVariable("documentid", required = true) documentid: String): Boolean {
         logger.info("kaller delete  /${euxcaseid}/${documentid} ")
@@ -94,7 +95,7 @@ class SedController(private val euxService: EuxService,
     }
 
     @ApiOperation("henter ut en liste av SED fra en valgt buc, men bruk av sedType. ny api kall til eux")
-    @GetMapping("/sed/{euxcaseid}/{sedtype}/list")
+    @GetMapping("/{euxcaseid}/{sedtype}/list")
     fun getDocumentlist(@PathVariable("euxcaseid", required = true) euxcaseid: String,
                         @PathVariable("sedtype", required = false) sedType: String?): List<SED> {
         logger.info("kaller /${euxcaseid}/${sedType} ")
@@ -120,7 +121,7 @@ class SedController(private val euxService: EuxService,
     //ny view call for bucogsed design pr 01.04-01.05)
     //flytte denne over til BucController? eller hva?
     @ApiOperation("Henter ut en json struktur for buc og sed menyliste for ui. ny api kall til eux")
-    @GetMapping("/bucdetaljer/{aktoerid}/", "/bucdetaljer/{aktoerid}/{sakid}/", "/bucdetaljer/{aktoerId}/{sakId}/{euxcaseid}/")
+    @GetMapping("/{aktoerid}/bucdetaljer/", "/{aktoerid}/{sakid}/bucdetaljer/", "/{aktoerId}/{sakId}/{euxcaseid}/bucdetaljer/")
     fun getBucogSedView(@PathVariable("aktoerid", required = true) aktoerid: String,
                         @PathVariable("sakid", required = false) sakid: String? = "",
                         @PathVariable("euxcaseid", required = false) euxcaseid: String? = ""): List<BucAndSedView> {
