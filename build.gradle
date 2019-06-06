@@ -10,7 +10,7 @@ buildscript {
         mockitoVersion = '2.8.+'
         personV3Version = '3.4.1'
         oidcTokenSupportVersion = '0.2.9'
-        logstashLogbackVersion = '4.10'
+        logstashLogbackVersion = '5.3'
         pensjonInformasjonVersion = '9.4.10'
     }
     repositories {
