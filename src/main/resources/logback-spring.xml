@@ -39,6 +39,10 @@
         <logger name="no.nav" level="DEBUG"/>
         <logger name="no.nav.security" level="ERROR"/>
         <logger name="no.nav.eessi" level="DEBUG"/>
+
+        <root level="info">
+            <appender-ref ref="stdout_json"/>
+        </root>
     </springProfile>
 
 </configuration>
