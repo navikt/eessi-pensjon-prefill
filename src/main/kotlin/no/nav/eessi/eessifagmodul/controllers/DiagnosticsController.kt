@@ -26,7 +26,6 @@ class DiagnosticsController {
 
     @GetMapping("/ping")
     fun ping(): ResponseEntity<Unit> {
-        logger.debug("Ping kalt, så alt er ok")
         return ResponseEntity.ok().build()
     }
 
