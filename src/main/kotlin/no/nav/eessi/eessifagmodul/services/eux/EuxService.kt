@@ -2,24 +2,33 @@ package no.nav.eessi.eessifagmodul.services.eux
 
 import com.google.common.base.Preconditions
 import no.nav.eessi.eessifagmodul.models.*
-import no.nav.eessi.eessifagmodul.prefill.PrefillDataModel
 import no.nav.eessi.eessifagmodul.services.eux.bucmodel.Buc
 import no.nav.eessi.eessifagmodul.services.eux.bucmodel.BucAndSedView
 import no.nav.eessi.eessifagmodul.services.eux.bucmodel.ParticipantsItem
+import no.nav.eessi.eessifagmodul.services.saf.SafService
+import no.nav.eessi.eessifagmodul.utils.getCounter
+import no.nav.eessi.eessifagmodul.utils.mapJsonToAny
+import no.nav.eessi.eessifagmodul.utils.typeRef
+import no.nav.eessi.eessifagmodul.utils.typeRefs
 import no.nav.eessi.eessifagmodul.utils.*
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Description
 import org.springframework.http.*
 import org.springframework.stereotype.Service
-import org.springframework.web.client.*
+import org.springframework.web.client.HttpClientErrorException
+import org.springframework.web.client.HttpServerErrorException
+import org.springframework.web.client.ResourceAccessException
+import org.springframework.web.client.RestTemplate
 import org.springframework.web.util.UriComponentsBuilder
 import java.io.IOException
+import java.lang.RuntimeException
 import java.util.*
 
 
 @Service
 @Description("Service class for EuxBasis - EuxCpiServiceController.java")
-class EuxService(private val euxOidcRestTemplate: RestTemplate) {
+class EuxService(private val euxOidcRestTemplate: RestTemplate,
+                 val safService: SafService) {
     private val logger = LoggerFactory.getLogger(EuxService::class.java)
 
     // Nye API kall er er fra 23.01.19
@@ -509,6 +518,32 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
             throw IOException(io.message, io)
         } catch (ex: Exception) {
             logger.error("Annen uspesefikk feil oppstod mellom fagmodul og eux ${ex.message}", ex)
+            throw ex
+        }
+    }
+
+    fun leggTilVedleggPaaDokument(aktoerId: String,
+                                  rinaSakId: String,
+                                  rinaDokumentId: String,
+                                  joarkJournalpostId: String,
+                                  joarkDokumentInfoId : String) {
+        try {
+            val hentDokumentResponse = safService.hentDokumentInnhold(joarkJournalpostId, joarkDokumentInfoId)
+            val requestBody = Vedlegg(hentDokumentResponse.fileName, hentDokumentResponse.base64)
+
+            val httpEntity = HttpEntity(requestBody)
+            val path = "/cpi/buc/$rinaSakId/sed/$rinaDokumentId/vedlegg"
+            val response = euxOidcRestTemplate.exchange(
+                    path,
+                    HttpMethod.PUT,
+                    httpEntity,
+                    String::class.java)
+
+            if (!response.statusCode.is2xxSuccessful) {
+                throw RuntimeException("En feil opppstod under tilknytning av vedlegg: ${response.statusCode}, ${response.body}")
+            }
+        } catch (ex: java.lang.Exception) {
+            logger.error("En feil opppstod under tilknytning av vedlegg, $ex")
             throw ex
         }
     }

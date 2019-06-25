@@ -40,3 +40,8 @@ data class Traits(
         val flowType: String? = null,
         val status: String? = null
 )
+
+data class Vedlegg(
+        val Filnavn: String,
+        val file: String
+)
