@@ -48,7 +48,7 @@ class SafService(val safGraphQlOidcRestTemplate: RestTemplate,
          }
     }
 
-    fun hentDokumentInnhold(journalpostId: String, dokumentInfoId: String) : ResponseEntity<String> {
+    fun hentDokumentInnhold(journalpostId: String, dokumentInfoId: String) : HentdokumentResponse {
         try {
             val path = "/$journalpostId/$dokumentInfoId/ARKIV"
             val response = safRestOidcRestTemplate.exchange(path,
@@ -57,8 +57,10 @@ class SafService(val safGraphQlOidcRestTemplate: RestTemplate,
                     String::class.java)
             if (response.statusCode.is2xxSuccessful) {
                 saf_teller_type_vellykkede.increment()
-                logger.info(response.headers["filename"].toString())
-                return ResponseEntity.ok().body(response.body!!)
+                val filnavn = response.headers.contentDisposition.filename
+                val contentType = response.headers.contentType!!.type
+                val base64innhold = Base64.getEncoder().encodeToString(response.body!!.toByteArray())
+                return HentdokumentResponse(base64innhold, filnavn!!, contentType)
             } else {
                 saf_teller_type_feilede.increment()
                 throw RuntimeException("En feil oppstod under henting av dokumentinnhold fra SAF: ${response.statusCode}")

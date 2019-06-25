@@ -78,6 +78,16 @@ data class DatoHolder(
         val datotype: String
 )
 
+data class HentdokumentResponse (
+        val base64: String,
+        val fileName: String,
+        val contentType: String
+)
+{
+    fun toJson(): String {
+        return mapAnyToJson(this, false)
+    }
+}
 
 
 
