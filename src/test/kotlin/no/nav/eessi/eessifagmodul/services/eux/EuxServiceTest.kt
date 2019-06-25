@@ -1,11 +1,10 @@
 package no.nav.eessi.eessifagmodul.services.eux
 
 import com.nhaarman.mockito_kotlin.*
-import com.sun.net.httpserver.Authenticator
 import no.nav.eessi.eessifagmodul.models.*
 import no.nav.eessi.eessifagmodul.services.eux.bucmodel.Buc
+import no.nav.eessi.eessifagmodul.services.saf.SafService
 import no.nav.eessi.eessifagmodul.utils.*
-import org.assertj.core.api.Assertions.assertThatExceptionOfType
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -27,7 +26,6 @@ import java.nio.charset.Charset
 import java.nio.file.Files
 import java.nio.file.Paths
 import kotlin.String
-import kotlin.test.assertFailsWith
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
@@ -40,19 +38,21 @@ class EuxServiceTest {
     private lateinit var service: EuxService
 
     @Mock
-    private lateinit var mockrestTemplate: RestTemplate
+    private lateinit var mockEuxrestTemplate: RestTemplate
 
+    @Mock
+    private lateinit var mockSafService: SafService
 
     @Before
     fun setup() {
         logger.debug("Starting tests.... ...")
-        mockrestTemplate.errorHandler = DefaultResponseErrorHandler()
-        service = EuxService(mockrestTemplate)
+        mockEuxrestTemplate.errorHandler = DefaultResponseErrorHandler()
+        service = EuxService(mockEuxrestTemplate, mockSafService)
     }
 
     @After
     fun takedown() {
-        Mockito.reset(mockrestTemplate)
+        Mockito.reset(mockEuxrestTemplate)
     }
 
 
@@ -78,7 +78,7 @@ class EuxServiceTest {
         headers.contentType = MediaType.APPLICATION_JSON
         val httpEntity = HttpEntity(SED("P2000").toJson(), headers)
 
-        whenever(mockrestTemplate.exchange(anyString(), eq(HttpMethod.POST), any(), eq(String::class.java))).thenReturn(response)
+        whenever(mockEuxrestTemplate.exchange(anyString(), eq(HttpMethod.POST), any(), eq(String::class.java))).thenReturn(response)
         val result = service.opprettBucSed(SED("P2000"), "P_BUC_99", "NO:NAVT003", "1234567")
 
         assertEquals("123456", result.caseId)
@@ -90,14 +90,14 @@ class EuxServiceTest {
     @Test(expected = RinaCasenrIkkeMottattException::class)
     fun `Calling EuxService| feiler med svar tilbake fra et kall til opprettBucSed`() {
         val errorresponse = ResponseEntity<String?>(HttpStatus.BAD_REQUEST)
-        whenever(mockrestTemplate.exchange(anyString(), eq(HttpMethod.POST), any(), eq(String::class.java))).thenReturn(errorresponse)
+        whenever(mockEuxrestTemplate.exchange(anyString(), eq(HttpMethod.POST), any(), eq(String::class.java))).thenReturn(errorresponse)
         service.opprettBucSed(SED("P2200"), "P_BUC_99", "NO:NAVT003", "1231233")
     }
 
     //opprett type og sed feil med eux service
     @Test(expected = EuxServerException::class)
     fun `Calling EuxService| feiler med kontakt fra eux med kall til opprettBucSed`() {
-        whenever(mockrestTemplate.exchange(anyString(), eq(HttpMethod.POST), any(), eq(String::class.java))).thenThrow(RuntimeException::class.java)
+        whenever(mockEuxrestTemplate.exchange(anyString(), eq(HttpMethod.POST), any(), eq(String::class.java))).thenThrow(RuntimeException::class.java)
         service.opprettBucSed(SED("P2000"), "P_BUC_99", "NO:NAVT003", "213123")
     }
 
@@ -112,7 +112,7 @@ class EuxServiceTest {
         val response: ResponseEntity<String> = ResponseEntity(json, HttpStatus.OK)
 
         //val response = euxOidcRestTemplate.exchange(builder.toUriString(), HttpMethod.GET, null, String::class.java)
-        whenever(mockrestTemplate.exchange(anyString(), eq(HttpMethod.GET), eq(null), eq(String::class.java))).thenReturn(response)
+        whenever(mockEuxrestTemplate.exchange(anyString(), eq(HttpMethod.GET), eq(null), eq(String::class.java))).thenReturn(response)
         val result = service.getSedOnBucByDocumentId("12345678900", "P_BUC_99")
 
         assertEquals(orgsed, result)
@@ -122,14 +122,14 @@ class EuxServiceTest {
 
     @Test(expected = EuxServerException::class)
     fun `Calling EuxService| feiler med kontakt fra eux med kall til getSedOnBucByDocumentId`() {
-        whenever(mockrestTemplate.exchange(anyString(), eq(HttpMethod.GET), eq(null), eq(String::class.java))).thenThrow(java.lang.RuntimeException::class.java)
+        whenever(mockEuxrestTemplate.exchange(anyString(), eq(HttpMethod.GET), eq(null), eq(String::class.java))).thenThrow(java.lang.RuntimeException::class.java)
         service.getSedOnBucByDocumentId("12345678900", "P_BUC_99")
     }
 
     @Test(expected = SedDokumentIkkeLestException::class)
     fun `Calling EuxService| feiler med motta navsed fra eux med kall til getSedOnBucByDocumentId`() {
         val errorresponse = ResponseEntity<String?>(HttpStatus.UNAUTHORIZED)
-        whenever(mockrestTemplate.exchange(anyString(), eq(HttpMethod.GET), eq(null), eq(String::class.java))).thenReturn(errorresponse)
+        whenever(mockEuxrestTemplate.exchange(anyString(), eq(HttpMethod.GET), eq(null), eq(String::class.java))).thenReturn(errorresponse)
         service.getSedOnBucByDocumentId("12345678900", "P_BUC_99")
     }
 
@@ -141,7 +141,7 @@ class EuxServiceTest {
         assertTrue(validateJson(json))
         val response: ResponseEntity<String> = ResponseEntity(json, HttpStatus.OK)
 
-        whenever(mockrestTemplate.exchange(anyString(), eq(HttpMethod.GET), eq(null), eq(String::class.java))).thenReturn(response)
+        whenever(mockEuxrestTemplate.exchange(anyString(), eq(HttpMethod.GET), eq(null), eq(String::class.java))).thenReturn(response)
         val result = service.getBuc("P_BUC_99")
         assertEquals("22909", result.id)
     }
@@ -149,13 +149,13 @@ class EuxServiceTest {
     @Test(expected = BucIkkeMottattException::class)
     fun `Calling EuxService| feiler med svar tilbake fra et kall til hentbuc`() {
         val errorresponse = ResponseEntity<String?>("", HttpStatus.BAD_REQUEST)
-        whenever(mockrestTemplate.exchange(anyString(), eq(HttpMethod.GET), eq(null), eq(String::class.java))).thenReturn(errorresponse)
+        whenever(mockEuxrestTemplate.exchange(anyString(), eq(HttpMethod.GET), eq(null), eq(String::class.java))).thenReturn(errorresponse)
         service.getBuc("P_BUC_99")
     }
 
     @Test(expected = EuxServerException::class)
     fun `Calling EuxService| feiler med kontakt fra eux med kall til hentbuc`() {
-        whenever(mockrestTemplate.exchange(anyString(), eq(HttpMethod.GET), eq(null), eq(String::class.java))).thenThrow(RuntimeException::class.java)
+        whenever(mockEuxrestTemplate.exchange(anyString(), eq(HttpMethod.GET), eq(null), eq(String::class.java))).thenThrow(RuntimeException::class.java)
         service.getBuc("P_BUC_99")
     }
 
@@ -164,7 +164,7 @@ class EuxServiceTest {
     @Test
     fun `Calling EuxService| forventer korrekt svar tilbake fra et kall til opprettSedOnBuc`() {
         val response: ResponseEntity<String> = ResponseEntity("323413415dfvsdfgq343145sdfsdfg34135", HttpStatus.OK)
-        whenever(mockrestTemplate.exchange(anyString(), eq(HttpMethod.POST), any(), eq(String::class.java))).thenReturn(response)
+        whenever(mockEuxrestTemplate.exchange(anyString(), eq(HttpMethod.POST), any(), eq(String::class.java))).thenReturn(response)
 
         val result = service.opprettSedOnBuc(SED("P2000"), "123456")
 
@@ -176,14 +176,14 @@ class EuxServiceTest {
     @Test(expected = SedDokumentIkkeOpprettetException::class)
     fun `Calling EuxService| feiler med svar tilbake fra et kall til opprettSedOnBuc`() {
         val errorresponse = ResponseEntity<String?>(HttpStatus.BAD_REQUEST)
-        whenever(mockrestTemplate.exchange(anyString(), eq(HttpMethod.POST), any(), eq(String::class.java))).thenReturn(errorresponse)
+        whenever(mockEuxrestTemplate.exchange(anyString(), eq(HttpMethod.POST), any(), eq(String::class.java))).thenReturn(errorresponse)
         service.opprettSedOnBuc(SED("P2200"), "1231233")
     }
 
     //opprett sed på en valgt type, feil med eux service
     @Test(expected = EuxGenericServerException::class)
     fun `Calling EuxService| feiler med kontakt fra eux med kall til opprettSedOnBuc`() {
-        whenever(mockrestTemplate.exchange(anyString(), eq(HttpMethod.POST), any(), eq(String::class.java))).thenThrow(RuntimeException::class.java)
+        whenever(mockEuxrestTemplate.exchange(anyString(), eq(HttpMethod.POST), any(), eq(String::class.java))).thenThrow(RuntimeException::class.java)
         service.opprettSedOnBuc(SED("P2000"), "213123")
     }
 
@@ -194,7 +194,7 @@ class EuxServiceTest {
         val euxCaseId = "123456"
         val documentId = "213213-123123-123123"
 
-        doReturn(response).whenever(mockrestTemplate).exchange(
+        doReturn(response).whenever(mockEuxrestTemplate).exchange(
                 ArgumentMatchers.eq("/buc/${euxCaseId}/sed/${documentId}"),
                 ArgumentMatchers.any(HttpMethod::class.java),
                 ArgumentMatchers.eq(null),
@@ -209,18 +209,18 @@ class EuxServiceTest {
     @Test(expected = SedIkkeSlettetException::class)
     fun `Calling EuxService| feiler med svar tilbake fra et kall til deleteDocumentById`() {
         val response: ResponseEntity<String> = ResponseEntity(HttpStatus.NOT_EXTENDED)
-        whenever(mockrestTemplate.exchange(anyString(), eq(HttpMethod.DELETE), eq(null), eq(String::class.java))).thenReturn(response)
+        whenever(mockEuxrestTemplate.exchange(anyString(), eq(HttpMethod.DELETE), eq(null), eq(String::class.java))).thenReturn(response)
         service.deleteDocumentById("12132131", "12312312-123123123123")
     }
 
     @Test(expected = EuxServerException::class)
     fun `Calling EuxService| feiler med kontakt fra eux med kall til deleteDocumentById`() {
-        //whenever(mockrestTemplate.exchange(anyString(), eq(HttpMethod.DELETE), eq(null), eq(String::class.java))).thenThrow(RuntimeException::class.java)
+        //whenever(mockEuxrestTemplate.exchange(anyString(), eq(HttpMethod.DELETE), eq(null), eq(String::class.java))).thenThrow(RuntimeException::class.java)
 
         val euxCaseId = "123456"
         val documentId = "213213-123123-123123"
 
-        doThrow(RuntimeException("error")).whenever(mockrestTemplate).exchange(
+        doThrow(RuntimeException("error")).whenever(mockEuxrestTemplate).exchange(
                 ArgumentMatchers.eq("/type/${euxCaseId}/sed/${documentId}/send"),
                 ArgumentMatchers.any(HttpMethod::class.java),
                 ArgumentMatchers.eq(null),
@@ -236,7 +236,7 @@ class EuxServiceTest {
         val euxCaseId = "123456"
         val documentId = "213213-123123-123123"
 
-        doReturn(response).whenever(mockrestTemplate).exchange(
+        doReturn(response).whenever(mockEuxrestTemplate).exchange(
                 ArgumentMatchers.eq("/buc/${euxCaseId}/sed/${documentId}/send"),
                 ArgumentMatchers.any(HttpMethod::class.java),
                 ArgumentMatchers.eq(null),
@@ -253,7 +253,7 @@ class EuxServiceTest {
         val documentId = "213213-123123-123123"
         val errorresponse = ResponseEntity.badRequest().body("")
 
-        doReturn(errorresponse).whenever(mockrestTemplate).exchange(
+        doReturn(errorresponse).whenever(mockEuxrestTemplate).exchange(
                 ArgumentMatchers.eq("/buc/${euxCaseId}/sed/${documentId}/send"),
                 ArgumentMatchers.any(HttpMethod::class.java),
                 ArgumentMatchers.eq(null),
@@ -265,7 +265,7 @@ class EuxServiceTest {
     //opprett sed på en valgt type, feil med eux service
     @Test(expected = EuxServerException::class)
     fun `Calling EuxService| feiler med kontakt fra eux med kall til sendDocumentById`() {
-        doThrow(RuntimeException("error")).whenever(mockrestTemplate).exchange(
+        doThrow(RuntimeException("error")).whenever(mockEuxrestTemplate).exchange(
                 ArgumentMatchers.eq("/type/1234567/sed/3123sfdf23-4324svfsdf324/send"),
                 ArgumentMatchers.any(HttpMethod::class.java),
                 ArgumentMatchers.eq(null),
@@ -284,7 +284,7 @@ class EuxServiceTest {
         val response: ResponseEntity<String> = ResponseEntity(json, HttpStatus.OK)
 
         val orgRinasaker = mapJsonToAny(json, typeRefs<List<Rinasak>>())
-        whenever(mockrestTemplate.exchange(
+        whenever(mockEuxrestTemplate.exchange(
                 anyString(),
                 eq(HttpMethod.GET),
                 eq(null),
@@ -302,7 +302,7 @@ class EuxServiceTest {
     @Test(expected = IOException::class)
     fun callingEuxServiceListOfRinasaker_IOError() {
 
-        whenever(mockrestTemplate.exchange(anyString(), eq(HttpMethod.GET), eq(null), eq(String::class.java))).thenThrow(ResourceAccessException("I/O error"))
+        whenever(mockEuxrestTemplate.exchange(anyString(), eq(HttpMethod.GET), eq(null), eq(String::class.java))).thenThrow(ResourceAccessException("I/O error"))
         service.getRinasaker("12345678900")
 
     }
@@ -311,7 +311,7 @@ class EuxServiceTest {
     fun callingEuxServiceListOfRinasaker_ClientError() {
 
         val clientError = HttpClientErrorException.create(HttpStatus.UNAUTHORIZED, "Error in Token", HttpHeaders(), "Error in Token".toByteArray(), Charset.defaultCharset())
-        whenever(mockrestTemplate.exchange(anyString(), eq(HttpMethod.GET), eq(null), eq(String::class.java))).thenThrow(clientError)
+        whenever(mockEuxrestTemplate.exchange(anyString(), eq(HttpMethod.GET), eq(null), eq(String::class.java))).thenThrow(clientError)
         service.getRinasaker("12345678900")
 
     }
@@ -320,7 +320,7 @@ class EuxServiceTest {
     fun callingEuxServiceListOfRinasaker_ServerError() {
 
         val serverError = HttpServerErrorException.create(HttpStatus.BAD_GATEWAY, "Error in Gate", HttpHeaders(), "Error in Gate".toByteArray(), Charset.defaultCharset())
-        whenever(mockrestTemplate.exchange(anyString(), eq(HttpMethod.GET), eq(null), eq(String::class.java))).thenThrow(serverError)
+        whenever(mockEuxrestTemplate.exchange(anyString(), eq(HttpMethod.GET), eq(null), eq(String::class.java))).thenThrow(serverError)
         service.getRinasaker("12345678900")
 
     }
@@ -361,7 +361,7 @@ class EuxServiceTest {
         val mockBuc = "12345678909999"
         val response: ResponseEntity<String> = ResponseEntity("12345678909999", HttpStatus.OK)
 
-        whenever(mockrestTemplate.exchange(
+        whenever(mockEuxrestTemplate.exchange(
                 anyString(),
                 eq(HttpMethod.POST),
                 eq(null),
@@ -376,7 +376,7 @@ class EuxServiceTest {
     @Test(expected = IOException::class)
     fun callingEuxServiceCreateBuc_IOError() {
 
-        whenever(mockrestTemplate.exchange(
+        whenever(mockEuxrestTemplate.exchange(
                 anyString(),
                 eq(HttpMethod.POST),
                 eq(null),
@@ -391,7 +391,7 @@ class EuxServiceTest {
     fun callingEuxServiceCreateBuc_ClientError() {
 
         val clientError = HttpClientErrorException.create(HttpStatus.UNAUTHORIZED, "Error in Token", HttpHeaders(), "Error in Token".toByteArray(), Charset.defaultCharset())
-        whenever(mockrestTemplate.exchange(
+        whenever(mockEuxrestTemplate.exchange(
                 anyString(),
                 eq(HttpMethod.POST),
                 eq(null),
@@ -406,7 +406,7 @@ class EuxServiceTest {
     fun callingEuxServiceCreateBuc_ServerError() {
 
         val serverError = HttpServerErrorException.create(HttpStatus.BAD_GATEWAY, "Error in Gate", HttpHeaders(), "Error in Gate".toByteArray(), Charset.defaultCharset())
-        whenever(mockrestTemplate.exchange(
+        whenever(mockEuxrestTemplate.exchange(
                 anyString(),
                 eq(HttpMethod.POST),
                 eq(null),
@@ -426,7 +426,7 @@ class EuxServiceTest {
     fun callingEuxServicePutBucDeltager_ClientError() {
 
         val clientError = HttpClientErrorException.create(HttpStatus.UNAUTHORIZED, "Token authorization error", HttpHeaders(),"Token authorization error".toByteArray(),Charset.defaultCharset())
-        whenever(mockrestTemplate.exchange(
+        whenever(mockEuxrestTemplate.exchange(
                 anyString(),
                 eq(HttpMethod.PUT),
                 eq(null),
@@ -440,7 +440,7 @@ class EuxServiceTest {
     fun putBucDeltager_ServerError(){
 
         val serverError = HttpServerErrorException.create(HttpStatus.BAD_GATEWAY,"Server error",HttpHeaders(),"Server error".toByteArray(),Charset.defaultCharset())
-        whenever(mockrestTemplate.exchange(
+        whenever(mockEuxrestTemplate.exchange(
                 anyString(),
                 eq(HttpMethod.PUT),
                 eq(null),
@@ -452,7 +452,7 @@ class EuxServiceTest {
 
     @Test(expected = IOException::class)
     fun putBucDeltager_ResourceAccessError() {
-        whenever(mockrestTemplate.exchange(
+        whenever(mockEuxrestTemplate.exchange(
                 anyString(),
                 eq(HttpMethod.PUT),
                 eq(null),
@@ -468,7 +468,7 @@ class EuxServiceTest {
 
         val theResponse = ResponseEntity.ok().body("")
 
-        whenever(mockrestTemplate.exchange(
+        whenever(mockEuxrestTemplate.exchange(
                 anyString(),
                 eq(HttpMethod.PUT),
                 eq(null),
@@ -490,7 +490,7 @@ class EuxServiceTest {
 
         val response: ResponseEntity<String> = ResponseEntity(json, HttpStatus.OK)
 
-        whenever(mockrestTemplate.exchange(
+        whenever(mockEuxrestTemplate.exchange(
                 anyString(),
                 eq(HttpMethod.GET),
                 eq(null),
@@ -515,7 +515,7 @@ class EuxServiceTest {
 
         val response: ResponseEntity<String> = ResponseEntity(json, HttpStatus.OK)
 
-        whenever(mockrestTemplate.exchange(
+        whenever(mockEuxrestTemplate.exchange(
                 anyString(),
                 eq(HttpMethod.GET),
                 eq(null),
