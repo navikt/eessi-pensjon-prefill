@@ -58,7 +58,7 @@ class SafService(val safGraphQlOidcRestTemplate: RestTemplate,
             if (response.statusCode.is2xxSuccessful) {
                 saf_teller_type_vellykkede.increment()
                 val filnavn = response.headers.contentDisposition.filename
-                val contentType = response.headers.contentType!!.type
+                val contentType = response.headers.contentType!!.toString()
                 val base64innhold = Base64.getEncoder().encodeToString(response.body!!.toByteArray())
                 return HentdokumentResponse(base64innhold, filnavn!!, contentType)
             } else {
