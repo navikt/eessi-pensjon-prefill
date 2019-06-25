@@ -58,6 +58,7 @@ class SafService(val safGraphQlOidcRestTemplate: RestTemplate,
                     String::class.java)
             if (response.statusCode.is2xxSuccessful) {
                 saf_teller_type_vellykkede.increment()
+                logger.info(response.headers["filename"].toString())
                 return ResponseEntity.ok().body(response.body!!)
             } else {
                 saf_teller_type_feilede.increment()
