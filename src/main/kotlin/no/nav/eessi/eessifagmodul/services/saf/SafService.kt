@@ -3,7 +3,6 @@ package no.nav.eessi.eessifagmodul.services.saf
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.micrometer.core.instrument.Counter
 import io.micrometer.core.instrument.Metrics
-import no.nav.eessi.eessifagmodul.utils.errorBody
 import org.slf4j.LoggerFactory
 import org.springframework.http.*
 import org.springframework.stereotype.Service
@@ -66,8 +65,7 @@ class SafService(val safGraphQlOidcRestTemplate: RestTemplate,
             }
         } catch(ex: Exception) {
             logger.error("En feil oppstod under henting av dokumentInnhold fra SAF: $ex")
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(errorBody(ex.message!!, UUID.randomUUID().toString()))
+            throw ex
         }
     }
 

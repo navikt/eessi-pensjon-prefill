@@ -34,6 +34,11 @@ class SafController(val safService: SafService) {
     fun getDokumentInnhold(@PathVariable("journalpostId", required = true) journalpostId: String,
                     @PathVariable("dokumentInfoId", required = true) dokumentInfoId: String): ResponseEntity<String> {
         logger.info("Henter dokumentinnhold fra SAF for journalpostId: $journalpostId, dokumentInfoId: $dokumentInfoId")
-        return safService.hentDokumentInnhold(journalpostId, dokumentInfoId)
+        return try {
+            ResponseEntity.ok().body(safService.hentDokumentInnhold(journalpostId, dokumentInfoId).toJson())
+        } catch(ex: Exception) {
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(errorBody(ex.message!!, UUID.randomUUID().toString()))
+        }
     }
 }
