@@ -2,6 +2,7 @@ package no.nav.eessi.eessifagmodul.models
 
 import org.junit.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class SEDModelTest {
     @Test
@@ -29,5 +30,13 @@ class SEDModelTest {
         val actual = institusjonItem.checkAndConvertInstituion()
 
         assertEquals(":", actual)
+    }
+
+    @Test
+    fun `check for value on SEDtype`() {
+        val px = "P3000"
+        val result = SEDType.isValidSEDType(px)
+        assertTrue(result)
+
     }
 }
