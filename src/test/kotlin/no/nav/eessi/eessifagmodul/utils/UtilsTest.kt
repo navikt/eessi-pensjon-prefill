@@ -1,6 +1,5 @@
 package no.nav.eessi.eessifagmodul.utils
 
-import io.micrometer.core.instrument.Metrics
 import no.nav.eessi.eessifagmodul.models.InstitusjonItem
 import no.nav.eessi.eessifagmodul.models.SEDType
 import no.nav.eessi.eessifagmodul.services.eux.bucmodel.ShortDocumentItem
@@ -105,19 +104,6 @@ class UtilsTest {
     @Test(expected = DateTimeParseException::class)
     fun `Test av konvertere datotekst til xmlkalender feiler`() {
         createXMLCalendarFromString("2016-Ø1-01")
-    }
-
-    @Test
-    fun `testing getCounter for right key in euxservice`() {
-        val value = getCounter("SENDSEDOK")
-        val tst = Metrics.counter("eessipensjon_fagmodul.sendsed", "type", "vellykkede")
-        assertEquals(tst::class.java, value::class.java)
-        assertEquals(tst, value)
-    }
-
-    @Test(expected = NoSuchElementException::class)
-    fun `testing getCounter for key not found in euxservice`() {
-        getCounter("NOKEYISINMAP")
     }
 
     @Test

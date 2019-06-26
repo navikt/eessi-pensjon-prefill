@@ -6,7 +6,7 @@ import no.nav.eessi.eessifagmodul.config.TimingService
 import no.nav.eessi.eessifagmodul.models.*
 import no.nav.eessi.eessifagmodul.pesys.mockup.MockSED001
 import no.nav.eessi.eessifagmodul.services.LandkodeService
-import no.nav.eessi.eessifagmodul.utils.getCounter
+import no.nav.eessi.eessifagmodul.metrics.getCounter
 import no.nav.security.oidc.api.Protected
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
