@@ -44,8 +44,16 @@ data class SED(
 data class InstitusjonItem(
         var country: String,
         var institution: String,
-        var name: String? = null
-)
+        var name: String? = null) {
+
+        //sjekker på Instisjon legger ut ID til rina som <XX:ZZZZZ>
+        fun checkAndConvertInstituion(): String {
+            if (institution.contains(":")) {
+                return institution
+            }
+            return "$country:$institution"
+        }
+}
 
 enum class SEDType {
     P2000,

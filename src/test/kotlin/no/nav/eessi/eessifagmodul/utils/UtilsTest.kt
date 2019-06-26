@@ -1,6 +1,5 @@
 package no.nav.eessi.eessifagmodul.utils
 
-import no.nav.eessi.eessifagmodul.models.InstitusjonItem
 import no.nav.eessi.eessifagmodul.models.SEDType
 import no.nav.eessi.eessifagmodul.services.eux.bucmodel.ShortDocumentItem
 import org.junit.Test
@@ -142,32 +141,4 @@ class UtilsTest {
         assertEquals("08", rev.get("ENKE"))
 
     }
-
-    @Test
-    fun `call checkAndConvertInstituion med spesialtegn som input`() {
-
-        val institusjonItem = InstitusjonItem(country = "NO", institution = "NO:NAVT002", name = null)
-        val actual = checkAndConvertInstituion(institusjonItem)
-
-        assertEquals(institusjonItem.institution, actual)
-
-    }
-    @Test
-    fun `call checkAndConvertInstituion uten spesialtegn som input`() {
-
-        val institusjonItem = InstitusjonItem(country = "NO", institution = "NAVT002", name = null)
-        val actual = checkAndConvertInstituion(institusjonItem)
-
-        assertEquals("NO:NAVT002", actual)
-    }
-
-    @Test
-    fun `call checkAndConvertInstituion that is null as input`() {
-
-        val institusjonItem = InstitusjonItem(country = "", institution = "", name = null)
-        val actual = checkAndConvertInstituion(institusjonItem)
-
-        assertEquals(":", actual)
-    }
-
 }

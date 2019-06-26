@@ -1,6 +1,5 @@
 package no.nav.eessi.eessifagmodul.utils
 
-import no.nav.eessi.eessifagmodul.models.InstitusjonItem
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.ZoneId
@@ -28,14 +27,3 @@ fun createXMLCalendarFromString(dateStr: String): XMLGregorianCalendar {
 fun Date.simpleFormat(): String {
     return SimpleDateFormat("yyyy-MM-dd").format(this)
 }
-
-//sjekker på Instisjon legger ut ID til rina som <XX:ZZZZZ>
-fun checkAndConvertInstituion(item: InstitusjonItem): String {
-    val institution = item.institution
-    val country = item.country
-    if (institution.contains(":")) {
-        return institution
-    }
-    return "$country:$institution"
-}
-
