@@ -118,27 +118,4 @@ class UtilsTest {
 
 
     }
-
-    @Test
-    fun `reverse map in kotlin`() {
-        val status = mapOf<String, String>("01" to "UGIF", "02" to "GIFT", "03" to "SAMB", "04" to "REPA", "05" to "SKIL", "06" to "SKPA", "07" to "SEPA", "08" to "ENKE")
-
-        val keys1 = status.keys
-        keys1.forEach {
-            print(" \"$it\" to \"${status.get(it)}\", ")
-        }
-        logger.info("---------------------------------------------------------------------------------------------")
-        val rev = status.reversed()
-        val keys = rev.keys
-        keys.forEach {
-            print(" \"$it\" to \"${rev.get(it)}\", ")
-        }
-
-        assertEquals("UGIF", status.get("01"))
-        assertEquals("01", rev.get("UGIF"))
-
-        assertEquals("ENKE", status.get("08"))
-        assertEquals("08", rev.get("ENKE"))
-
-    }
 }

@@ -7,10 +7,6 @@ import java.util.*
 import javax.xml.datatype.DatatypeFactory
 import javax.xml.datatype.XMLGregorianCalendar
 
-fun <K, V> Map<K, V>.reversed() = HashMap<V, K>().also { newMap ->
-    entries.forEach { newMap.put(it.value, it.key) }
-}
-
 fun XMLGregorianCalendar.simpleFormat(): String {
     //rinaformat dd-MM-YYYY
     return SimpleDateFormat("yyyy-MM-dd").format(this.toGregorianCalendar().time)
