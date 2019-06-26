@@ -1,8 +1,8 @@
 package no.nav.eessi.eessifagmodul.models
 
-import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
-import no.nav.eessi.eessifagmodul.utils.mapJsonToAny
-import no.nav.eessi.eessifagmodul.utils.typeRefs
+import no.nav.eessi.eessifagmodul.json.mapAnyToJson
+import no.nav.eessi.eessifagmodul.json.mapJsonToAny
+import no.nav.eessi.eessifagmodul.json.typeRefs
 
 // SED class main request class to basis
 // Strukturerte Elektroniske Dokumenter
@@ -44,8 +44,16 @@ data class SED(
 data class InstitusjonItem(
         var country: String,
         var institution: String,
-        var name: String? = null
-)
+        var name: String? = null) {
+
+        //sjekker på Instisjon legger ut ID til rina som <XX:ZZZZZ>
+        fun checkAndConvertInstituion(): String {
+            if (institution.contains(":")) {
+                return institution
+            }
+            return "$country:$institution"
+        }
+}
 
 enum class SEDType {
     P2000,

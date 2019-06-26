@@ -11,7 +11,6 @@ import no.nav.eessi.eessifagmodul.services.eux.BucSedResponse
 import no.nav.eessi.eessifagmodul.services.eux.BucUtils
 import no.nav.eessi.eessifagmodul.services.eux.EuxService
 import no.nav.eessi.eessifagmodul.services.eux.bucmodel.ShortDocumentItem
-import no.nav.eessi.eessifagmodul.utils.checkAndConvertInstituion
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 
@@ -112,8 +111,8 @@ class PrefillService(private val euxService: EuxService, private val prefillSED:
                 logger.debug("Legger til Institusjon på X005 ${it.institution}")
                 //ID og Navn på X005 er påkrevd må hente innn navn fra UI.
                 val institusjonX005 = InstitusjonX005(
-                        id = checkAndConvertInstituion(it),
-                        navn = it.name ?: checkAndConvertInstituion(it)
+                        id = it.checkAndConvertInstituion(),
+                        navn = it.name ?: it.checkAndConvertInstituion()
                 )
                 sedX005.nav?.sak?.leggtilinstitusjon?.institusjon = institusjonX005
                 val docresult = euxService.opprettSedOnBuc(sedX005, datax005.euxCaseID)

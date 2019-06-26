@@ -1,16 +1,15 @@
 package no.nav.eessi.eessifagmodul.services.eux
 
 import com.google.common.base.Preconditions
+import no.nav.eessi.eessifagmodul.json.mapJsonToAny
+import no.nav.eessi.eessifagmodul.json.typeRef
+import no.nav.eessi.eessifagmodul.json.typeRefs
+import no.nav.eessi.eessifagmodul.metrics.getCounter
 import no.nav.eessi.eessifagmodul.models.*
 import no.nav.eessi.eessifagmodul.services.eux.bucmodel.Buc
 import no.nav.eessi.eessifagmodul.services.eux.bucmodel.BucAndSedView
 import no.nav.eessi.eessifagmodul.services.eux.bucmodel.ParticipantsItem
 import no.nav.eessi.eessifagmodul.services.saf.SafService
-import no.nav.eessi.eessifagmodul.utils.getCounter
-import no.nav.eessi.eessifagmodul.utils.mapJsonToAny
-import no.nav.eessi.eessifagmodul.utils.typeRef
-import no.nav.eessi.eessifagmodul.utils.typeRefs
-import no.nav.eessi.eessifagmodul.utils.*
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Description
 import org.springframework.http.*
@@ -21,7 +20,6 @@ import org.springframework.web.client.ResourceAccessException
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.util.UriComponentsBuilder
 import java.io.IOException
-import java.lang.RuntimeException
 import java.util.*
 
 
@@ -553,7 +551,7 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate,
         logger.debug("Prøver å legge til liste over nye InstitusjonItem til Rina ")
         try {
             mottaker.forEach {
-                val mottakerItem = checkAndConvertInstituion(it)
+                val mottakerItem = it.checkAndConvertInstituion()
                 logger.debug("putter $mottaker på Rina buc $euxCaseId")
                 putBucDeltager(euxCaseId, mottakerItem)
                 //Kan fjernes: Sjekk opp med EUX når de legger in støtte for å legge til flere Deltakere.

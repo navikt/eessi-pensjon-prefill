@@ -4,7 +4,7 @@ import com.nhaarman.mockito_kotlin.*
 import no.nav.eessi.eessifagmodul.models.*
 import no.nav.eessi.eessifagmodul.services.eux.bucmodel.Buc
 import no.nav.eessi.eessifagmodul.services.saf.SafService
-import no.nav.eessi.eessifagmodul.utils.*
+import no.nav.eessi.eessifagmodul.json.*
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
