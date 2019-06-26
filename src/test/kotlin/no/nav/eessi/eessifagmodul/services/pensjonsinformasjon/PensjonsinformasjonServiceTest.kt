@@ -46,6 +46,9 @@ class PensjonsinformasjonServiceTest {
         // TODO: add asserts
 
         assertNotNull(data.vedtak, "Vedtak er null")
+
+        println("XML date: ${data.vedtak.virkningstidspunkt}")
+
         assertEquals("2016-09-11", data.vedtak.virkningstidspunkt.simpleFormat())
     }
 

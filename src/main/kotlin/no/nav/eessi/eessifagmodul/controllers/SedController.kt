@@ -145,8 +145,8 @@ class SedController(private val euxService: EuxService,
                     euxCaseID = request.euxCaseId
                     institution = request.institutions
                     vedtakId = request.vedtakId ?: ""
-                    partSedAsJson[request.sed] = request.payload ?: ""
-                    skipSedkey = request.skipSEDkey ?: listOf()
+                    partSedAsJson[request.sed] = request.payload ?: "{}"
+                    skipSedkey = request.skipSEDkey ?: listOf("PENSED") //skipper all pensjon utfylling untatt kravdato
                 }
             }
             else -> throw IkkeGyldigKallException("Mangler SED, eller ugyldig type SED")
@@ -176,7 +176,8 @@ class SedController(private val euxService: EuxService,
                     personNr = pinid
                     institution = request.institutions
                     vedtakId = request.vedtakId ?: ""
-                    skipSedkey = request.skipSEDkey ?: listOf()
+                    partSedAsJson[request.sed] = request.payload ?: "{}"
+                    skipSedkey = request.skipSEDkey ?: listOf("PENSED")
                 }
             }
             else -> throw IkkeGyldigKallException("Mangler SED, eller ugyldig type SED")
@@ -197,10 +198,11 @@ class SedController(private val euxService: EuxService,
                     aktoerID = request.aktoerId
                     personNr = hentAktoerIdPin(request.aktoerId)
                     vedtakId = request.vedtakId ?: ""
-                    if (request.payload != null) {
-                        partSedAsJson[request.sed] = request.payload
-                    }
-                    skipSedkey = request.skipSEDkey ?: listOf()
+                    partSedAsJson[request.sed] = request.payload ?: "{}"
+//                    if (request.payload != null) {
+//                        partSedAsJson[request.sed] = request.payload
+//                    }
+                    skipSedkey = request.skipSEDkey ?: listOf("PENSED")
                 }
             }
             else -> throw IkkeGyldigKallException("Mangler SED, eller ugyldig type SED")

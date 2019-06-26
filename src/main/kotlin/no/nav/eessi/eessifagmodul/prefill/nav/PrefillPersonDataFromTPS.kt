@@ -302,7 +302,7 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
     }
 
     //Sivilstand ENKE, PENS, SINGLE Familiestatus
-    private fun hentSivilstand(brukerTps: no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker): List<SivilstandItem> {
+    fun hentSivilstand(brukerTps: no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker): List<SivilstandItem> {
         logger.debug("2.2.2           Sivilstand / Familiestatus (01 Enslig, 02 Gift, 03 Samboer, 04 Partnerskal, 05 Skilt, 06 Skilt partner, 07 Separert, 08 Enke)")
         val sivilstand = brukerTps.sivilstand as Sivilstand
 
@@ -312,7 +312,7 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
         return listOf(SivilstandItem(
                 //fradato = standardDatoformat(sivilstand.fomGyldighetsperiode),
                 fradato = sivilstand.fomGyldighetsperiode.simpleFormat(),
-                status = status.get(sivilstand.sivilstand.value)
+                status = status[sivilstand.sivilstand.value]
         ))
     }
 
