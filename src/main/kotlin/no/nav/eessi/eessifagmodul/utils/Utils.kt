@@ -1,7 +1,6 @@
 package no.nav.eessi.eessifagmodul.utils
 
 import no.nav.eessi.eessifagmodul.models.InstitusjonItem
-import org.springframework.core.io.ByteArrayResource
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.ZoneId
@@ -28,19 +27,6 @@ fun createXMLCalendarFromString(dateStr: String): XMLGregorianCalendar {
 
 fun Date.simpleFormat(): String {
     return SimpleDateFormat("yyyy-MM-dd").format(this)
-}
-
-inline fun <T : Any, R> whenNotNull(input: T?, callback: (T) -> R): R? {
-    return input?.let(callback)
-}
-
-fun getFileAsResource(bytearr: ByteArray, filename: String): ByteArrayResource {
-    class FileAsResource : ByteArrayResource(bytearr) {
-        override fun getFilename(): String? {
-            return filename
-        }
-    }
-    return FileAsResource()
 }
 
 //sjekker på Instisjon legger ut ID til rina som <XX:ZZZZZ>
