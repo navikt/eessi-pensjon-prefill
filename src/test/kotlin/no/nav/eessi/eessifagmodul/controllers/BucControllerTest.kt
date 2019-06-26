@@ -7,9 +7,9 @@ import no.nav.eessi.eessifagmodul.services.aktoerregister.AktoerregisterService
 import no.nav.eessi.eessifagmodul.services.eux.BucUtils
 import no.nav.eessi.eessifagmodul.services.eux.EuxService
 import no.nav.eessi.eessifagmodul.services.eux.RinaAksjon
-import no.nav.eessi.eessifagmodul.utils.mapJsonToAny
-import no.nav.eessi.eessifagmodul.utils.typeRefs
-import no.nav.eessi.eessifagmodul.utils.validateJson
+import no.nav.eessi.eessifagmodul.json.mapJsonToAny
+import no.nav.eessi.eessifagmodul.json.typeRefs
+import no.nav.eessi.eessifagmodul.json.validateJson
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
