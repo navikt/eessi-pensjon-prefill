@@ -6,7 +6,6 @@ import no.nav.eessi.eessifagmodul.models.IkkeFunnetException
 import no.nav.eessi.eessifagmodul.models.PensjoninformasjonException
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import no.nav.pensjon.v1.sak.V1Sak
-import org.aspectj.weaver.tools.cache.SimpleCacheFactory.path
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
@@ -20,7 +19,6 @@ import org.springframework.web.util.UriComponentsBuilder
 import java.io.StringReader
 import javax.xml.bind.JAXBContext
 import javax.xml.transform.stream.StreamSource
-import kotlin.reflect.jvm.internal.impl.types.checker.TypeCheckerContext
 
 
 @Service

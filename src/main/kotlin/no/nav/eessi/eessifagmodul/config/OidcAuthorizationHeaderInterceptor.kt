@@ -3,7 +3,6 @@ package no.nav.eessi.eessifagmodul.config
 import no.nav.security.oidc.context.OIDCRequestContextHolder
 import no.nav.security.oidc.context.OIDCValidationContext
 import no.nav.security.oidc.context.TokenContext
-import org.apache.cxf.rt.security.saml.utils.SAMLUtils.getClaims
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpRequest

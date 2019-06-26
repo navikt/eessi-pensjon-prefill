@@ -2,7 +2,6 @@ package no.nav.eessi.eessifagmodul.services.saf
 
 import io.micrometer.core.instrument.MeterRegistry
 import no.nav.eessi.eessifagmodul.config.OidcAuthorizationHeaderInterceptorMagic
-import no.nav.eessi.eessifagmodul.config.OidcAuthorizationHeaderInterceptorSelectIssuer
 import no.nav.eessi.eessifagmodul.config.RequestResponseLoggerInterceptor
 import no.nav.security.oidc.context.OIDCRequestContextHolder
 import org.springframework.beans.factory.annotation.Value
