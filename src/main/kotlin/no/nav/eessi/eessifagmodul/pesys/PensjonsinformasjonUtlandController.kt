@@ -2,7 +2,7 @@ package no.nav.eessi.eessifagmodul.pesys
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import io.swagger.annotations.ApiOperation
-import no.nav.eessi.eessifagmodul.config.TimingService
+import no.nav.eessi.eessifagmodul.metrics.TimingService
 import no.nav.eessi.eessifagmodul.models.*
 import no.nav.eessi.eessifagmodul.pesys.mockup.MockSED001
 import no.nav.eessi.eessifagmodul.services.LandkodeService

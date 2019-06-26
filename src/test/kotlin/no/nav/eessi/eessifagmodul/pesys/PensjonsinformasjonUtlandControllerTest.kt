@@ -1,6 +1,6 @@
 package no.nav.eessi.eessifagmodul.pesys
 
-import no.nav.eessi.eessifagmodul.config.TimingService
+import no.nav.eessi.eessifagmodul.metrics.TimingService
 import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
 import no.nav.eessi.eessifagmodul.utils.mapJsonToAny
 import no.nav.eessi.eessifagmodul.utils.typeRefs
