@@ -23,7 +23,7 @@
         </root>
     </springProfile>
 
-    <springProfile name="!prod">
+    <springProfile name="local">
         <appender name="stdout_json" class="ch.qos.logback.core.ConsoleAppender">
             <encoder>
                 <pattern>%level %logger %msg %n</pattern>
@@ -44,5 +44,18 @@
             <appender-ref ref="stdout_json"/>
         </root>
     </springProfile>
+
+    <springProfile name="localjc, test">
+        <logger name="io" level="ERROR"/>
+        <logger name="org" level="ERROR"/>
+        <logger name="com" level="ERROR"/>
+        <logger name="no.nav" level="DEBUG"/>
+        <logger name="no.nav.security" level="ERROR"/>
+        <logger name="no.nav.eessi" level="DEBUG"/>
+
+        <root level="info"/>
+
+    </springProfile>
+
 
 </configuration>

@@ -1,6 +1,7 @@
 package no.nav.eessi.eessifagmodul.utils
 
 import org.junit.Test
+import java.time.format.DateTimeParseException
 import javax.xml.datatype.DatatypeFactory
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -35,5 +36,19 @@ class DateUtilsTest {
 
         assertNotNull(toRinaDate)
         assertEquals("2016-01-01", toRinaDate)
+    }
+
+    @Test
+    fun `Test av konvertere datotekst til xmlkalender`() {
+        val result = createXMLCalendarFromString("2016-01-01")
+        assertNotNull(result)
+        assertEquals("2016-01-01T00:00:00.000+01:00", result.toString())
+        assertEquals("2016-01-01", result.simpleFormat())
+
+    }
+
+    @Test(expected = DateTimeParseException::class)
+    fun `Test av konvertere datotekst til xmlkalender feiler`() {
+        createXMLCalendarFromString("2016-Ø1-01")
     }
 }
