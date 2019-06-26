@@ -1,17 +1,12 @@
 package no.nav.eessi.eessifagmodul.utils
 
 import org.junit.Test
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import javax.xml.datatype.DatatypeFactory
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
 
-class UtilsTest {
-
-    private val logger: Logger by lazy { LoggerFactory.getLogger(UtilsTest::class.java) }
-
+class DateUtilsTest {
 
     @Test
     fun `check XML calendar to Rina Date`() {
@@ -21,6 +16,7 @@ class UtilsTest {
         xmlcal.day = 20
 
         val toRinaDate = xmlcal.simpleFormat()
+
         assertNotNull(toRinaDate)
         assertEquals("2020-05-20", toRinaDate)
     }
@@ -36,10 +32,8 @@ class UtilsTest {
         xmlcal.second = 1
 
         val toRinaDate = xmlcal.simpleFormat()
-        logger.info("XMLdata: $xmlcal   SimpleDate: $toRinaDate")
 
         assertNotNull(toRinaDate)
         assertEquals("2016-01-01", toRinaDate)
     }
-
 }
