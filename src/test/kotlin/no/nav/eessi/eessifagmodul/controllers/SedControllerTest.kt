@@ -15,6 +15,8 @@ import no.nav.eessi.eessifagmodul.services.eux.EuxService
 import no.nav.eessi.eessifagmodul.services.eux.bucmodel.Buc
 import no.nav.eessi.eessifagmodul.services.eux.bucmodel.DocumentsItem
 import no.nav.eessi.eessifagmodul.services.eux.bucmodel.ShortDocumentItem
+import no.nav.eessi.eessifagmodul.utils.*
+import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -22,6 +24,7 @@ import org.mockito.ArgumentMatchers
 import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.junit.MockitoJUnitRunner
+import org.springframework.http.ResponseEntity
 import org.springframework.web.util.UriComponentsBuilder
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -243,4 +246,59 @@ class SedControllerTest {
         assertEquals("/sed/get/123456789/DOC1223213234234", builder.path)
     }
 
+    @Test
+    fun `Test liste med SED kun PensjonSED skal returneres`() {
+        val list  = listOf("X005","P2000","P4000","H02","X06","P9000", "")
+
+        val result = sedController.filterPensionSedAndSort(list)
+
+        assertEquals(3, result.size)
+        assertEquals("[P2000, P4000, P9000]", result.toString())
+    }
+
+    @Test
+    fun `Test av liste med SEDer der kun PensjonSEDer skal returneres`() {
+        val list  = listOf("X005","P2000","P4000","H02","X06","P9000", "")
+
+        val result = sedController.filterPensionSedAndSort(list)
+
+        assertEquals(3, result.size)
+        assertEquals("[ \"P2000\", \"P4000\", \"P9000\" ]", result.toJson())
+    }
+
+    @Test
+    fun `Calling euxController|getSeds returns SEDs for a given BUC`() {
+
+        val buc = "P_BUC_05"
+        val rinanr = null
+
+        val expectedResponse = ResponseEntity.ok().body(mapAnyToJson(listOf("P2000")))
+        whenever(mockEuxService.getAvailableSEDonBuc(any())).thenReturn(listOf("P2000"))
+        val generatedResponse = sedController.getSeds(buc, rinanr)
+
+        assertEquals(expectedResponse, generatedResponse)
+    }
+
+    @Test
+    fun euxController_getSeds_returnsSEDOnsgivenBUC() {
+        val buc = "P_BUC_01"
+        val rinanr = "1000101"
+
+        val mockBucAksjonList =  listOf("P6000","X6000")
+
+        val mockGetBucUtils = Mockito.mock(BucUtils::class.java)
+        whenever(mockGetBucUtils.getAksjonListAsString()).thenReturn(mockBucAksjonList)
+        whenever(mockEuxService.getBucUtils(rinanr)).thenReturn(mockGetBucUtils)
+
+
+
+        val expectedSedList = listOf("P6000").toResponse()
+        val generatedResponse = sedController.getSeds(buc, rinanr)
+
+        Assert.assertEquals(expectedSedList, generatedResponse)
+
+        val json = generatedResponse.body!!
+        val validSedListforBuc = mapJsonToAny(json, typeRefs<List<String>>())
+        Assert.assertEquals(1, validSedListforBuc.size)
+    }
 }

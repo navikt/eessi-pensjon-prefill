@@ -12,9 +12,12 @@ import no.nav.eessi.eessifagmodul.services.aktoerregister.AktoerregisterService
 import no.nav.eessi.eessifagmodul.services.eux.BucSedResponse
 import no.nav.eessi.eessifagmodul.services.eux.EuxService
 import no.nav.eessi.eessifagmodul.services.eux.bucmodel.ShortDocumentItem
+import no.nav.eessi.eessifagmodul.utils.toResponse
 import no.nav.security.oidc.api.Protected
 import org.slf4j.LoggerFactory
+import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 
@@ -125,7 +128,34 @@ class SedController(private val euxService: EuxService,
         return euxService.getInstitutions(buctype, landkode).sorted()
     }
 
-    //validatate request and convert to PrefillDataModel
+    @ApiOperation("henter liste over seds, seds til valgt buc eller seds til valgt rinasak")
+    @GetMapping("/seds", "/seds/{buctype}", "/seds/{buctype}/{rinanr}")
+    fun getSeds(@PathVariable(value = "buctype", required = false) bucType: String?,
+                @PathVariable(value = "rinanr", required = false) euxCaseId: String?): ResponseEntity<String?> {
+
+
+        if (euxCaseId != null) {
+            val resultListe = euxService.getBucUtils(euxCaseId).getAksjonListAsString()
+                if (resultListe.isEmpty()) {
+                    return euxService.getAvailableSEDonBuc(bucType).toResponse()
+                } else {
+                    return filterPensionSedAndSort(resultListe).toResponse()
+                }
+        }
+        //seds eller bestem mulige seds på en bucType (hardkoddet liste)
+        val sedOnBuc = euxService.getAvailableSEDonBuc(bucType).toResponse()
+        logger.debug("Sed On Buc: $sedOnBuc")
+        return sedOnBuc
+    }
+
+    fun filterPensionSedAndSort(sedList: List<String>): List<String> {
+        if (sedList.isNotEmpty()) {
+            return sedList.asSequence().filter { it.startsWith("P") }.filterNot { it.startsWith("P3000") } .sortedBy { it }.toList()
+        }
+        return sedList
+    }
+
+        //validatate request and convert to PrefillDataModel
     fun buildPrefillDataModelOnExisting(request: ApiRequest): PrefillDataModel {
         return when {
             //request.sakId == null -> throw IkkeGyldigKallException("Mangler Saksnummer")
