@@ -1,9 +1,6 @@
 package no.nav.eessi.eessifagmodul.controllers
 
 import io.swagger.annotations.ApiOperation
-import no.nav.eessi.eessifagmodul.json.errorBody
-import no.nav.eessi.eessifagmodul.json.mapAnyToJson
-import no.nav.eessi.eessifagmodul.json.successBody
 import no.nav.eessi.eessifagmodul.models.InstitusjonItem
 import no.nav.eessi.eessifagmodul.models.Krav
 import no.nav.eessi.eessifagmodul.services.aktoerregister.AktoerregisterService
@@ -16,6 +13,9 @@ import no.nav.eessi.eessifagmodul.services.eux.bucmodel.BucAndSedView
 import no.nav.eessi.eessifagmodul.services.eux.bucmodel.Creator
 import no.nav.eessi.eessifagmodul.services.eux.bucmodel.ShortDocumentItem
 import no.nav.eessi.eessifagmodul.services.saf.VariantFormat
+import no.nav.eessi.eessifagmodul.utils.errorBody
+import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
+import no.nav.eessi.eessifagmodul.utils.successBody
 import no.nav.security.oidc.api.Protected
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
