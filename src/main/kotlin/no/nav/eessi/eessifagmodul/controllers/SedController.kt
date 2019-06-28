@@ -12,14 +12,14 @@ import no.nav.eessi.eessifagmodul.services.aktoerregister.AktoerregisterService
 import no.nav.eessi.eessifagmodul.services.eux.BucSedResponse
 import no.nav.eessi.eessifagmodul.services.eux.EuxService
 import no.nav.eessi.eessifagmodul.services.eux.bucmodel.ShortDocumentItem
-import no.nav.eessi.eessifagmodul.utils.toResponse
+import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
 import no.nav.security.oidc.api.Protected
 import org.slf4j.LoggerFactory
-import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
+internal fun List<String>.filterPensionSedAndSort() = this.filter { it.startsWith("P") }.filterNot { it.startsWith("P3000") } .sorted()
 
 @Protected
 @RestController
@@ -133,26 +133,13 @@ class SedController(private val euxService: EuxService,
     fun getSeds(@PathVariable(value = "buctype", required = false) bucType: String?,
                 @PathVariable(value = "rinanr", required = false) euxCaseId: String?): ResponseEntity<String?> {
 
+        if (euxCaseId == null) return ResponseEntity.ok().body(mapAnyToJson(EuxService.getAvailableSedOnBuc(bucType)))
 
-        if (euxCaseId != null) {
-            val resultListe = euxService.getBucUtils(euxCaseId).getAksjonListAsString()
-                if (resultListe.isEmpty()) {
-                    return euxService.getAvailableSEDonBuc(bucType).toResponse()
-                } else {
-                    return filterPensionSedAndSort(resultListe).toResponse()
-                }
-        }
-        //seds eller bestem mulige seds på en bucType (hardkoddet liste)
-        val sedOnBuc = euxService.getAvailableSEDonBuc(bucType).toResponse()
-        logger.debug("Sed On Buc: $sedOnBuc")
-        return sedOnBuc
-    }
+        val resultListe = euxService.getBucUtils(euxCaseId).getAksjonListAsString()
 
-    fun filterPensionSedAndSort(sedList: List<String>): List<String> {
-        if (sedList.isNotEmpty()) {
-            return sedList.asSequence().filter { it.startsWith("P") }.filterNot { it.startsWith("P3000") } .sortedBy { it }.toList()
-        }
-        return sedList
+        if (resultListe.isEmpty()) return ResponseEntity.ok().body(mapAnyToJson(EuxService.getAvailableSedOnBuc(bucType)))
+
+        return ResponseEntity.ok().body(mapAnyToJson(resultListe.filterPensionSedAndSort()))
     }
 
         //validatate request and convert to PrefillDataModel

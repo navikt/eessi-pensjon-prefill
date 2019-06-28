@@ -69,12 +69,5 @@ fun successBody(): String {
     return "{\"success\": true}"
 }
 
-fun <E> List<E>.toJson(): String {
-    return mapAnyToJson(this)
-}
-
-fun <E> List<E>.toResponse(): ResponseEntity<String?> {
-    return ResponseEntity.ok().body(this.toJson())
-}
 
 

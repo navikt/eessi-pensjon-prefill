@@ -2,6 +2,7 @@ package no.nav.eessi.eessifagmodul.utils
 
 import no.nav.eessi.eessifagmodul.models.InstitusjonItem
 import org.junit.Test
+import org.skyscreamer.jsonassert.JSONAssert
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.time.LocalDateTime
@@ -85,8 +86,8 @@ class JsonUtilsTest {
                 "} ]"
 
 
-        println(list.toJson())
-        assertEquals(actualjson.replace("\n", "") , list.toJson().replace(System.lineSeparator(), ""))
+        println(mapAnyToJson(list))
+        JSONAssert.assertEquals(actualjson, mapAnyToJson(list), true)
 
     }
 

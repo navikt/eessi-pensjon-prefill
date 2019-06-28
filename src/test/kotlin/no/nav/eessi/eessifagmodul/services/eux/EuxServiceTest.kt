@@ -531,12 +531,12 @@ class EuxServiceTest {
 
         var buc = "P_BUC_01"
         var expectedResponse = listOf("P2000")
-        var generatedResponse = service.getAvailableSEDonBuc(buc)
+        var generatedResponse = EuxService.getAvailableSedOnBuc (buc)
         Assert.assertEquals(generatedResponse, expectedResponse)
 
         buc = "P_BUC_06"
         expectedResponse = listOf("P5000", "P6000", "P7000", "P10000")
-        generatedResponse = service.getAvailableSEDonBuc(buc)
+        generatedResponse = EuxService.getAvailableSedOnBuc(buc)
         Assert.assertEquals(generatedResponse, expectedResponse)
     }
 

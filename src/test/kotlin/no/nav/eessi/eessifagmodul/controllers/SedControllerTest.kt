@@ -250,7 +250,7 @@ class SedControllerTest {
     fun `Test liste med SED kun PensjonSED skal returneres`() {
         val list  = listOf("X005","P2000","P4000","H02","X06","P9000", "")
 
-        val result = sedController.filterPensionSedAndSort(list)
+        val result = list.filterPensionSedAndSort()
 
         assertEquals(3, result.size)
         assertEquals("[P2000, P4000, P9000]", result.toString())
@@ -260,22 +260,80 @@ class SedControllerTest {
     fun `Test av liste med SEDer der kun PensjonSEDer skal returneres`() {
         val list  = listOf("X005","P2000","P4000","H02","X06","P9000", "")
 
-        val result = sedController.filterPensionSedAndSort(list)
+        val result = list.filterPensionSedAndSort()
 
         assertEquals(3, result.size)
-        assertEquals("[ \"P2000\", \"P4000\", \"P9000\" ]", result.toJson())
+        assertEquals("[ \"P2000\", \"P4000\", \"P9000\" ]", mapAnyToJson(result))
     }
 
     @Test
-    fun `Calling euxController|getSeds returns SEDs for a given BUC`() {
-
-        val buc = "P_BUC_05"
+    fun `Calling euxController|getSeds on BUC01 returns SEDs for a given BUC`() {
+        val buc = "P_BUC_01"
         val rinanr = null
 
         val expectedResponse = ResponseEntity.ok().body(mapAnyToJson(listOf("P2000")))
-        whenever(mockEuxService.getAvailableSEDonBuc(any())).thenReturn(listOf("P2000"))
         val generatedResponse = sedController.getSeds(buc, rinanr)
+        assertEquals(expectedResponse, generatedResponse)
+    }
 
+    @Test
+    fun `Calling euxController|getSeds on BUC02 returns SEDs for a given BUC`() {
+        val buc = "P_BUC_02"
+        val rinanr = null
+
+        val expectedResponse = ResponseEntity.ok().body(mapAnyToJson(listOf("P2100")))
+        val generatedResponse = sedController.getSeds(buc, rinanr)
+        assertEquals(expectedResponse, generatedResponse)
+    }
+
+    @Test
+    fun `Calling euxController|getSeds on BUC03 returns SEDs for a given BUC`() {
+        val buc = "P_BUC_03"
+        val rinanr = null
+
+        val expectedResponse = ResponseEntity.ok().body(mapAnyToJson(listOf("P2200")))
+        val generatedResponse = sedController.getSeds(buc, rinanr)
+        assertEquals(expectedResponse, generatedResponse)
+    }
+
+
+    @Test
+    fun `Calling euxController|getSeds on BUC05 returns SEDs for a given BUC`() {
+        val buc = "P_BUC_05"
+        val rinanr = null
+
+        val expectedResponse = ResponseEntity.ok().body(mapAnyToJson(listOf("P5000", "P6000", "P7000", "P8000", "P9000")))
+        val generatedResponse = sedController.getSeds(buc, rinanr)
+        assertEquals(expectedResponse, generatedResponse)
+    }
+
+    @Test
+    fun `Calling euxController|getSeds on BUC06 returns SEDs for a given BUC`() {
+        val buc = "P_BUC_06"
+        val rinanr = null
+
+        val expectedResponse = ResponseEntity.ok().body(mapAnyToJson(listOf("P5000", "P6000", "P7000", "P10000")))
+        val generatedResponse = sedController.getSeds(buc, rinanr)
+        assertEquals(expectedResponse, generatedResponse)
+    }
+
+    @Test
+    fun `Calling euxController|getSeds on BUC10 returns SEDs for a given BUC`() {
+        val buc = "P_BUC_10"
+        val rinanr = null
+
+        val expectedResponse = ResponseEntity.ok().body(mapAnyToJson(listOf("P15000")))
+        val generatedResponse = sedController.getSeds(buc, rinanr)
+        assertEquals(expectedResponse, generatedResponse)
+    }
+
+    @Test
+    fun `Calling euxController|getSeds on blank returns all SEDs`() {
+        val buc = null
+        val rinanr = null
+
+        val expectedResponse = ResponseEntity.ok().body(mapAnyToJson(listOf("P2000", "P2100", "P2200", "P5000", "P6000", "P7000", "P8000", "P9000", "P10000", "P15000")))
+        val generatedResponse = sedController.getSeds(buc, rinanr)
         assertEquals(expectedResponse, generatedResponse)
     }
 
@@ -284,7 +342,7 @@ class SedControllerTest {
         val buc = "P_BUC_01"
         val rinanr = "1000101"
 
-        val mockBucAksjonList =  listOf("P6000","X6000")
+        val mockBucAksjonList =  listOf("P6000","X6000","X005","P2200","P3000_SE","P3000_NO")
 
         val mockGetBucUtils = Mockito.mock(BucUtils::class.java)
         whenever(mockGetBucUtils.getAksjonListAsString()).thenReturn(mockBucAksjonList)
@@ -292,13 +350,13 @@ class SedControllerTest {
 
 
 
-        val expectedSedList = listOf("P6000").toResponse()
+        val expectedSedList = ResponseEntity.ok().body(mapAnyToJson( listOf("P2200", "P6000")))
         val generatedResponse = sedController.getSeds(buc, rinanr)
 
-        Assert.assertEquals(expectedSedList, generatedResponse)
+        assertEquals(expectedSedList, generatedResponse)
 
         val json = generatedResponse.body!!
         val validSedListforBuc = mapJsonToAny(json, typeRefs<List<String>>())
-        Assert.assertEquals(1, validSedListforBuc.size)
+        assertEquals(2, validSedListforBuc.size)
     }
 }

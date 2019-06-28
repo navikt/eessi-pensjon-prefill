@@ -23,12 +23,11 @@ import org.springframework.web.util.UriComponentsBuilder
 import java.io.IOException
 import java.util.*
 
-
+private val logger = LoggerFactory.getLogger(EuxService::class.java)
 @Service
 @Description("Service class for EuxBasis - EuxCpiServiceController.java")
 class EuxService(private val euxOidcRestTemplate: RestTemplate,
                  val safService: SafService) {
-    private val logger = LoggerFactory.getLogger(EuxService::class.java)
 
     // Nye API kall er er fra 23.01.19
     // https://eux-app.nais.preprod.local/swagger-ui.html#/eux-cpi-service-controller/
@@ -117,6 +116,45 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate,
         return BucSedResponse(euxCaseId, response.body!!)
     }
 
+//    class AvailableSedOnBuc(val bucType: String?) {
+//        companion object SedOnBuc{
+//            val bucType = listOf<String>()
+//
+//            fun getAvailableSedOnBuc (bucType: String?): List<String> {
+//                println("BucType : $bucType")
+//
+//                val buc01 = listOf("P2000")
+//                val buc02 = listOf("P2100")
+//                val buc03 = listOf("P2200")
+//                val buc05 = listOf("P5000","P6000","P7000","P8000","P9000")
+//                val buc06 = listOf("P5000","P6000","P7000","P10000")
+//
+//                val map: Map<String, List<String>> = mapOf(
+//                        "P_BUC_01" to buc01,
+//                        "P_BUC_02" to buc02,
+//                        "P_BUC_03" to buc03,
+//                        "P_BUC_05" to buc05,
+//                        "P_BUC_06" to buc06
+//                )
+//
+//                println("BucType: $bucType")
+//
+//                if (bucType.isNullOrEmpty()) {
+//                    val set = mutableSetOf<String>()
+//                    set.addAll(buc01)
+//                    set.addAll(buc02)
+//                    set.addAll(buc03)
+//                    set.addAll(buc05)
+//                    set.addAll(buc06)
+//                    return set.toList()
+//                }
+//                val sed = map[bucType].orEmpty()
+//                println("valgt sed: $sed fra buc: $bucType")
+//                logger.debug("valgt sed: $sed fra buc: $bucType")
+//                return sed
+//            }
+//        }
+//    }
 
     //henter ut sed fra rina med bucid og documentid
     fun getSedOnBuc(euxCaseId: String, sedType: String?): List<SED> {
@@ -604,37 +642,35 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate,
      * Own impl. no list from eux that contains list of SED to a speific BUC
      * @param bucType
      */
-    fun getAvailableSEDonBuc(bucType: String?): List<String> {
-        println("BucType : $bucType")
-
-        val buc01 = listOf("P2000")
-        val buc02 = listOf("P2100")
-        val buc03 = listOf("P2200")
-        val buc05 = listOf("P5000","P6000","P7000","P8000","P9000")
-        val buc06 = listOf("P5000","P6000","P7000","P10000")
-
-        val map: Map<String, List<String>> = mapOf(
-                "P_BUC_01" to buc01,
-                "P_BUC_02" to buc02,
-                "P_BUC_03" to buc03,
-                "P_BUC_05" to buc05,
-                "P_BUC_06" to buc06
-        )
-
-        println("BucType: $bucType")
-
-        if (bucType.isNullOrEmpty()) {
-            val set = mutableSetOf<String>()
-            set.addAll(buc01)
-            set.addAll(buc02)
-            set.addAll(buc03)
-            set.addAll(buc05)
-            set.addAll(buc06)
-            return set.toList()
+    companion object {
+        @JvmStatic
+        fun initSedOnBuc(): Map<String, List<String>> {
+            return mapOf(
+                    "P_BUC_01" to listOf("P2000"),
+                    "P_BUC_02" to listOf("P2100"),
+                    "P_BUC_03" to listOf("P2200"),
+                    "P_BUC_05" to listOf("P5000", "P6000", "P7000", "P8000", "P9000"),
+                    "P_BUC_06" to listOf("P5000", "P6000", "P7000", "P10000"),
+                    "P_BUC_10" to listOf("P15000")
+            )
         }
-        val sed = map[bucType].orEmpty()
-        println("valgt sed: $sed fra buc: $bucType")
-        logger.debug("valgt sed: $sed fra buc: $bucType")
-        return sed
+
+        @JvmStatic
+        fun getAvailableSedOnBuc(bucType: String?): List<String> {
+            println("BucType : $bucType")
+            val map = initSedOnBuc()
+
+            if (bucType.isNullOrEmpty()) {
+                val set = mutableSetOf<String>()
+                map["P_BUC_01"]?.let { set.addAll(it) }
+                map["P_BUC_02"]?.let { set.addAll(it) }
+                map["P_BUC_03"]?.let { set.addAll(it) }
+                map["P_BUC_05"]?.let { set.addAll(it) }
+                map["P_BUC_06"]?.let { set.addAll(it) }
+                map["P_BUC_10"]?.let { set.addAll(it) }
+                return set.toList()
+            }
+            return map[bucType].orEmpty()
+        }
     }
 }
