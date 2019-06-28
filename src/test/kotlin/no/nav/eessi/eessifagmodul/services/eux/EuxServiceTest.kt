@@ -4,11 +4,9 @@ import com.nhaarman.mockito_kotlin.*
 import no.nav.eessi.eessifagmodul.models.*
 import no.nav.eessi.eessifagmodul.services.eux.bucmodel.Buc
 import no.nav.eessi.eessifagmodul.services.saf.SafService
-import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
-import no.nav.eessi.eessifagmodul.utils.mapJsonToAny
-import no.nav.eessi.eessifagmodul.utils.typeRefs
-import no.nav.eessi.eessifagmodul.utils.validateJson
+import no.nav.eessi.eessifagmodul.utils.*
 import org.junit.After
+import org.junit.Assert
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
@@ -526,6 +524,20 @@ class EuxServiceTest {
         ).thenReturn(response)
 
         service.hentYtelseKravtype("1234567890","100001000010000")
+    }
+
+    @Test
+    fun `Calling euxService|getAvailableSEDonBuc returns BuC lists`() {
+
+        var buc = "P_BUC_01"
+        var expectedResponse = listOf("P2000")
+        var generatedResponse = EuxService.getAvailableSedOnBuc (buc)
+        Assert.assertEquals(generatedResponse, expectedResponse)
+
+        buc = "P_BUC_06"
+        expectedResponse = listOf("P5000", "P6000", "P7000", "P10000")
+        generatedResponse = EuxService.getAvailableSedOnBuc(buc)
+        Assert.assertEquals(generatedResponse, expectedResponse)
     }
 
 

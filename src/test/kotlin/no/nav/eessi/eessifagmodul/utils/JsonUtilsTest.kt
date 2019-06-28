@@ -2,6 +2,7 @@ package no.nav.eessi.eessifagmodul.utils
 
 import no.nav.eessi.eessifagmodul.models.InstitusjonItem
 import org.junit.Test
+import org.skyscreamer.jsonassert.JSONAssert
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.time.LocalDateTime
@@ -70,6 +71,23 @@ class JsonUtilsTest {
 
         assertEquals(3, result.size)
         assertEquals("No", result["country"])
+    }
+
+    @Test
+    fun `Test listMapToJson`() {
+        val list = listOf(mapOf("Name" to "Johnnyboy", "place" to "dummy"), mapOf("Name" to "Kjent dorull", "place" to "Q2"))
+
+        val actualjson = "[ {\n" +
+                "  \"Name\" : \"Johnnyboy\",\n" +
+                "  \"place\" : \"dummy\"\n" +
+                "}, {\n" +
+                "  \"Name\" : \"Kjent dorull\",\n" +
+                "  \"place\" : \"Q2\"\n" +
+                "} ]"
+
+
+        println(mapAnyToJson(list))
+        JSONAssert.assertEquals(actualjson, mapAnyToJson(list), true)
 
     }
 
