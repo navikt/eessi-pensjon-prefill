@@ -23,7 +23,7 @@
         </root>
     </springProfile>
 
-    <springProfile name="local">
+    <springProfile name="test">
         <appender name="stdout_json" class="ch.qos.logback.core.ConsoleAppender">
             <encoder>
                 <pattern>%level %logger %msg %n</pattern>
@@ -45,7 +45,15 @@
         </root>
     </springProfile>
 
-    <springProfile name="localjc, test">
+    <springProfile name="local">
+        <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder>
+                <pattern>
+                    %d{dd-MM-yyyy HH:mm:ss.SSS} %magenta([%thread]) %highlight(%-5level) %logger{36}.%M - %msg%n
+                </pattern>
+            </encoder>
+        </appender>
+
         <logger name="io" level="ERROR"/>
         <logger name="org" level="ERROR"/>
         <logger name="com" level="ERROR"/>
@@ -53,9 +61,10 @@
         <logger name="no.nav.security" level="ERROR"/>
         <logger name="no.nav.eessi" level="DEBUG"/>
 
-        <root level="info"/>
+        <root level="info">
+            <appender-ref ref="stdout" />
+        </root>
 
     </springProfile>
-
 
 </configuration>
