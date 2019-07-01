@@ -87,19 +87,6 @@ class BucController(private val euxService: EuxService,
         return getBucUtils(rinanr).getAksjonListAsString()
     }
 
-//    @ApiOperation("Henter opp mulige aksjon som kan utføres på valgt type, filtert på sed starter med 'P'")
-//    @GetMapping("/{rinanr}/aksjoner", "/{rinanr}/aksjoner/{filter}")
-//    fun getMuligeAksjoner(@PathVariable(value = "rinanr", required = true) rinanr: String,
-//                          @PathVariable(value = "filter", required = false) filter: String? = null): List<RinaAksjon> {
-//
-//        logger.debug("Henter ut muligeaksjoner på valgt type")
-//        val list = getBucUtils(rinanr).getRinaAksjon()
-//        if (filter == null) {
-//            return list
-//        }
-//        return getMuligeAksjonerFilter(list, filter)
-//    }
-
     @ApiOperation("Henter ut en liste over saker på valgt aktoerid. ny api kall til eux")
     @GetMapping("/rinasaker/{aktoerId}")
     fun getRinasaker(@PathVariable("aktoerId", required = true) aktoerId: String): List<Rinasak> {
@@ -146,7 +133,6 @@ class BucController(private val euxService: EuxService,
 
         //create bucDetail back from newly created buc call eux-rina-api to get data.
         return euxService.createBucDetails(euxCaseId, "", euxService)
-
     }
 
     @ApiOperation("Oppretter nye deltaker(e) på valgt buc. ny api kall til eux")

@@ -7,7 +7,9 @@ import no.nav.eessi.eessifagmodul.services.eux.bucmodel.*
 import org.slf4j.LoggerFactory
 import java.time.Instant
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.ZoneId
+import java.time.temporal.ChronoField
 
 
 class BucUtils(private val buc: Buc ) {
@@ -58,6 +60,17 @@ class BucUtils(private val buc: Buc ) {
         return getLocalDate(date)
     }
 
+    fun getStartDateLong(): Long {
+        val date = getBuc().startDate
+        return getLocalDateTimeToLong(date)
+    }
+
+    fun getLastDateLong(): Long {
+        val date = getBuc().lastUpdate
+        return getLocalDateTimeToLong(date)
+    }
+
+
     fun getLocalDate(date: Any?): LocalDate {
         return if (date is Long) {
             Instant.ofEpochMilli(date).atZone(ZoneId.systemDefault()).toLocalDate()
@@ -66,6 +79,22 @@ class BucUtils(private val buc: Buc ) {
             LocalDate.parse(datestr)
         } else {
             LocalDate.now().minusYears(1000)
+        }
+    }
+
+    fun getLocalDateTimeToLong(dateTime: Any?): Long {
+        val zoneId = ZoneId.systemDefault()
+        return getLocalDateTime(dateTime).atZone(zoneId).toEpochSecond()
+    }
+
+    fun getLocalDateTime(dateTime: Any?): LocalDateTime {
+        return if (dateTime is Long) {
+            Instant.ofEpochSecond(dateTime).atZone(ZoneId.systemDefault()).toLocalDateTime()
+        } else if (dateTime is String) {
+            //val datestr = dateTime.substring(0, dateTime.indexOf('T'))
+            LocalDateTime.parse(dateTime)
+        } else {
+            LocalDateTime.now().minusYears(1000)
         }
     }
 
@@ -97,8 +126,8 @@ class BucUtils(private val buc: Buc ) {
                 id = docuemntItem.id,
                 type = docuemntItem.type,
                 status = docuemntItem.status,
-                creationDate = docuemntItem.creationDate,
-                lastUpdate = getLocalDate(docuemntItem.lastUpdate),
+                creationDate = getLocalDateTimeToLong(docuemntItem.creationDate),
+                lastUpdate = getLocalDateTimeToLong(docuemntItem.lastUpdate),
                 participants = createParticipants(docuemntItem.conversations),
                 attachments = createShortAttachemnt(docuemntItem.attachments)
         )
@@ -125,7 +154,7 @@ class BucUtils(private val buc: Buc ) {
                             mimeType = it.mimeType,
                             fileName = it.fileName,
                             documentId = it.documentId,
-                            lastUpdate = getLocalDate(it.lastUpdate),
+                            lastUpdate = getLocalDateTimeToLong(it.lastUpdate),
                             medical = it.medical
                     )
             )

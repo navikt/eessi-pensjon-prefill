@@ -16,6 +16,7 @@ import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.junit.MockitoJUnitRunner
+import org.skyscreamer.jsonassert.JSONAssert
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.*
@@ -26,6 +27,8 @@ import java.lang.IllegalArgumentException
 import java.nio.charset.Charset
 import java.nio.file.Files
 import java.nio.file.Paths
+import java.time.Instant
+import java.time.ZoneId
 import kotlin.String
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
@@ -328,12 +331,17 @@ class EuxServiceTest {
 
     @Test
     fun callingEuxServiceFormenuUI_AllOK() {
+        val bucdetaljerpath = "src/test/resources/json/buc/bucdetaljer-158123.json"
+        val bucdetaljer = String(Files.readAllBytes(Paths.get(bucdetaljerpath)))
+        assertTrue(validateJson(bucdetaljer))
+
 
         val rinasakerjson = "src/test/resources/json/rinasaker/rinasaker_34567890111.json"
         val rinasakStr = String(Files.readAllBytes(Paths.get(rinasakerjson)))
         assertTrue(validateJson(rinasakStr))
 
-        val bucjson = "src/test/resources/json/buc/buc-22909_v4.1.json"
+        //val bucjson = "src/test/resources/json/buc/buc-22909_v4.1.json"
+        val bucjson = "src/test/resources/json/buc/buc-158123_2_v4.1.json"
         val bucStr = String(Files.readAllBytes(Paths.get(bucjson)))
         assertTrue(validateJson(bucStr))
 
@@ -344,15 +352,25 @@ class EuxServiceTest {
 
         whenever(mockService.getRinasaker("12345678900")).thenReturn(orgRinasaker)
 
+        //158123
         whenever(mockService.getBucUtils("8877665511")).thenReturn(BucUtils(orgBuc))
 
         val result = service.getBucAndSedView("12345678900", "001122334455", null, null, mockService)
 
         assertNotNull(result)
+        assertEquals(6, orgRinasaker.size)
+        assertEquals(6, result.size)
 
-        assertEquals(orgRinasaker.size, result.size)
+        val firstJson = result.first()
+        assertEquals("8877665511", firstJson.caseId)
 
+        var lastUpdate: Long = 0
+        firstJson.lastUpdate?.let { lastUpdate = it }
+        assertEquals("2019-05-20T16:35:34",  Instant.ofEpochMilli(lastUpdate).atZone(ZoneId.systemDefault()).toLocalDateTime().toString())
+        assertEquals(18, firstJson.seds.size)
+        val json = mapAnyToJson(firstJson)
 
+        JSONAssert.assertEquals(bucdetaljer, json, true)
     }
 
 
