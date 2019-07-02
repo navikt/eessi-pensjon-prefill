@@ -9,7 +9,6 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
-import java.time.temporal.ChronoField
 
 
 class BucUtils(private val buc: Buc ) {
@@ -121,16 +120,16 @@ class BucUtils(private val buc: Buc ) {
         return null
     }
 
-    private fun createShortDocument(docuemntItem: DocumentsItem): ShortDocumentItem {
+    private fun createShortDocument(documentItem: DocumentsItem): ShortDocumentItem {
         return ShortDocumentItem(
-                id = docuemntItem.id,
-                type = docuemntItem.type,
-                displayName = docuemntItem.displayName,
-                status = docuemntItem.status,
-                creationDate = getLocalDateTimeToLong(docuemntItem.creationDate),
-                lastUpdate = getLocalDateTimeToLong(docuemntItem.lastUpdate),
-                participants = createParticipants(docuemntItem.conversations),
-                attachments = createShortAttachemnt(docuemntItem.attachments)
+                id = documentItem.id,
+                type = documentItem.type,
+                displayName = documentItem.displayName,
+                status = documentItem.status,
+                creationDate = getLocalDateTimeToLong(documentItem.creationDate),
+                lastUpdate = getLocalDateTimeToLong(documentItem.lastUpdate),
+                participants = createParticipants(documentItem.conversations),
+                attachments = createShortAttachemnt(documentItem.attachments)
         )
     }
 
