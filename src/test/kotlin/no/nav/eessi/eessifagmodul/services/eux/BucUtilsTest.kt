@@ -147,7 +147,6 @@ class BucUtilsTest {
     fun getActions() {
         val result = bucUtils.getBucAction()
         assertEquals(18, result?.size)
-        println(mapAnyToJson(result!!))
     }
 
     @Test
@@ -197,7 +196,8 @@ class BucUtilsTest {
 
             if (it.type == "P8000") {
                 logger.info("\tattachments:\t${it.attachments?.size}")
-                assertEquals("2019-05-20", it.lastUpdate.toString())
+                assertEquals("1557825747269", it.creationDate.toString())
+                assertEquals("1558362934400", it.lastUpdate.toString())
                 assertEquals(2, it.attachments?.size)
 
             } else {

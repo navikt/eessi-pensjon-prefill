@@ -25,6 +25,6 @@ data class ShortAttachment(
         val fileName: String? = null,
         val mimeType: String? = null,
         val documentId: String? = null,
-        val lastUpdate: LocalDate? = null,
+        val lastUpdate: Long? = null,
         val medical: Boolean? = null
 )

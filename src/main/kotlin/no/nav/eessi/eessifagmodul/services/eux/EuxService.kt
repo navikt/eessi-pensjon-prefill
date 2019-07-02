@@ -116,46 +116,6 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate,
         return BucSedResponse(euxCaseId, response.body!!)
     }
 
-//    class AvailableSedOnBuc(val bucType: String?) {
-//        companion object SedOnBuc{
-//            val bucType = listOf<String>()
-//
-//            fun getAvailableSedOnBuc (bucType: String?): List<String> {
-//                println("BucType : $bucType")
-//
-//                val buc01 = listOf("P2000")
-//                val buc02 = listOf("P2100")
-//                val buc03 = listOf("P2200")
-//                val buc05 = listOf("P5000","P6000","P7000","P8000","P9000")
-//                val buc06 = listOf("P5000","P6000","P7000","P10000")
-//
-//                val map: Map<String, List<String>> = mapOf(
-//                        "P_BUC_01" to buc01,
-//                        "P_BUC_02" to buc02,
-//                        "P_BUC_03" to buc03,
-//                        "P_BUC_05" to buc05,
-//                        "P_BUC_06" to buc06
-//                )
-//
-//                println("BucType: $bucType")
-//
-//                if (bucType.isNullOrEmpty()) {
-//                    val set = mutableSetOf<String>()
-//                    set.addAll(buc01)
-//                    set.addAll(buc02)
-//                    set.addAll(buc03)
-//                    set.addAll(buc05)
-//                    set.addAll(buc06)
-//                    return set.toList()
-//                }
-//                val sed = map[bucType].orEmpty()
-//                println("valgt sed: $sed fra buc: $bucType")
-//                logger.debug("valgt sed: $sed fra buc: $bucType")
-//                return sed
-//            }
-//        }
-//    }
-
     //henter ut sed fra rina med bucid og documentid
     fun getSedOnBuc(euxCaseId: String, sedType: String?): List<SED> {
         val docid = getBucUtils(euxCaseId).getDocuments()
@@ -471,8 +431,8 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate,
                 ),
                 caseId = euxCaseId,
                 sakType = "",
-                startDate = bucUtil.getStartDate(),
-                lastUpdate = bucUtil.getLastDate(),
+                startDate = bucUtil.getStartDateLong(),
+                lastUpdate = bucUtil.getLastDateLong(),
                 aktoerId = aktoerid,
                 status = bucUtil.getBuc().status,
                 institusjon = institusjonlist.toList(),
@@ -657,7 +617,6 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate,
 
         @JvmStatic
         fun getAvailableSedOnBuc(bucType: String?): List<String> {
-            println("BucType : $bucType")
             val map = initSedOnBuc()
 
             if (bucType.isNullOrEmpty()) {
