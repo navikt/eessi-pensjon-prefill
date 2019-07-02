@@ -19,10 +19,5 @@ class SedX005Test : AbstractSedTest() {
         val json = x005sed.toJson()
         JSONAssert.assertEquals(x005json, json, false)
 
-
-        val jsonsmall = x005sed.toJsonSkipEmpty()
-        println(jsonsmall)
-
-
     }
 }

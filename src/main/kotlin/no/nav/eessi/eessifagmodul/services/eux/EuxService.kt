@@ -617,7 +617,6 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate,
 
         @JvmStatic
         fun getAvailableSedOnBuc(bucType: String?): List<String> {
-            println("BucType : $bucType")
             val map = initSedOnBuc()
 
             if (bucType.isNullOrEmpty()) {

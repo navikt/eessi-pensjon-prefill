@@ -147,7 +147,6 @@ class BucUtilsTest {
     fun getActions() {
         val result = bucUtils.getBucAction()
         assertEquals(18, result?.size)
-        println(mapAnyToJson(result!!))
     }
 
     @Test

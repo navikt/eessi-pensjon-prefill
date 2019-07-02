@@ -85,8 +85,6 @@ class JsonUtilsTest {
                 "  \"place\" : \"Q2\"\n" +
                 "} ]"
 
-
-        println(mapAnyToJson(list))
         JSONAssert.assertEquals(actualjson, mapAnyToJson(list), true)
 
     }
