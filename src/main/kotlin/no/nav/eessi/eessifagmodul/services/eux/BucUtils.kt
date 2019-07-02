@@ -125,6 +125,7 @@ class BucUtils(private val buc: Buc ) {
         return ShortDocumentItem(
                 id = docuemntItem.id,
                 type = docuemntItem.type,
+                displayName = docuemntItem.displayName,
                 status = docuemntItem.status,
                 creationDate = getLocalDateTimeToLong(docuemntItem.creationDate),
                 lastUpdate = getLocalDateTimeToLong(docuemntItem.lastUpdate),

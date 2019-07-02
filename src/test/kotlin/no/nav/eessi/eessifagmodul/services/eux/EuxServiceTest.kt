@@ -370,6 +370,8 @@ class EuxServiceTest {
         assertEquals(18, firstJson.seds.size)
         val json = mapAnyToJson(firstJson)
 
+        //println(json)
+
         JSONAssert.assertEquals(bucdetaljer, json, true)
     }
 

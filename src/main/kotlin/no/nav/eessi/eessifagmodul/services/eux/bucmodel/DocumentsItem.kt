@@ -61,6 +61,7 @@ data class ShortDocumentItem(
         val status: String? = null,
         val creationDate: Long? = null,
         val lastUpdate: Long? = null,
+        val displayName: String? = null,
         val participants: List<ParticipantsItem?>? = null,
         val attachments: List<ShortAttachment>? = null
 )

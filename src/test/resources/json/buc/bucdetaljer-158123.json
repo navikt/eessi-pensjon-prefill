@@ -26,6 +26,7 @@
     "status" : "empty",
     "creationDate" : 1557393035000,
     "lastUpdate" : 1557393035000,
+    "displayName" : "Claim for - Reimbursement - Administrative Check /Medical information",
     "participants" : [ {
       "role" : "Sender",
       "organisation" : {
@@ -78,6 +79,7 @@
     "status" : "empty",
     "creationDate" : 1557393035000,
     "lastUpdate" : 1557393035000,
+    "displayName" : "Transfer of additional information",
     "participants" : [ {
       "role" : "Sender",
       "organisation" : {
@@ -130,6 +132,7 @@
     "status" : "sent",
     "creationDate" : 1557393062757,
     "lastUpdate" : 1557393062757,
+    "displayName" : "Report on insurance history",
     "participants" : [ {
       "role" : "Sender",
       "organisation" : {
@@ -182,6 +185,7 @@
     "status" : "empty",
     "creationDate" : 1557393101000,
     "lastUpdate" : 1557393101000,
+    "displayName" : "Pension decision",
     "participants" : [ {
       "role" : "Sender",
       "organisation" : {
@@ -234,6 +238,7 @@
     "status" : "new",
     "creationDate" : 1557393081308,
     "lastUpdate" : 1558360875571,
+    "displayName" : "Insurance/residence periods",
     "participants" : [ {
       "role" : "Sender",
       "organisation" : {
@@ -286,6 +291,7 @@
     "status" : "new",
     "creationDate" : 1557825747269,
     "lastUpdate" : 1558362934400,
+    "displayName" : "Request for additional information",
     "participants" : [ {
       "role" : "Sender",
       "organisation" : {
@@ -354,6 +360,7 @@
     "status" : "sent",
     "creationDate" : 1557392992767,
     "lastUpdate" : 1557392992767,
+    "displayName" : "Old age pension claim",
     "participants" : [ {
       "role" : "Sender",
       "organisation" : {
@@ -406,6 +413,7 @@
     "status" : "empty",
     "creationDate" : 1557393034000,
     "lastUpdate" : 1557393034000,
+    "displayName" : "Country specific information",
     "participants" : [ {
       "role" : "Receiver",
       "organisation" : {
@@ -458,6 +466,7 @@
     "status" : "empty",
     "creationDate" : 1557393034000,
     "lastUpdate" : 1557393034000,
+    "displayName" : "Invalidate Sed",
     "participants" : [ {
       "role" : "Sender",
       "organisation" : {
@@ -510,6 +519,7 @@
     "status" : "empty",
     "creationDate" : 1557393034000,
     "lastUpdate" : 1557393034000,
+    "displayName" : "Notification of Summary note",
     "participants" : [ {
       "role" : "Sender",
       "organisation" : {
@@ -562,6 +572,7 @@
     "status" : "empty",
     "creationDate" : 1557393035000,
     "lastUpdate" : 1557393035000,
+    "displayName" : "Notification of death",
     "participants" : [ {
       "role" : "Sender",
       "organisation" : {
@@ -614,6 +625,7 @@
     "status" : "empty",
     "creationDate" : 1557393034000,
     "lastUpdate" : 1557393034000,
+    "displayName" : "Add New Participant",
     "participants" : [ {
       "role" : "Sender",
       "organisation" : {
@@ -666,6 +678,7 @@
     "status" : "empty",
     "creationDate" : 1557393101000,
     "lastUpdate" : 1557393101000,
+    "displayName" : "Invalidate Sed",
     "participants" : [ {
       "role" : "Sender",
       "organisation" : {
@@ -718,6 +731,7 @@
     "status" : "empty",
     "creationDate" : 1557393078000,
     "lastUpdate" : 1557393078000,
+    "displayName" : "Invalidate Sed",
     "participants" : [ {
       "role" : "Sender",
       "organisation" : {
@@ -770,6 +784,7 @@
     "status" : "empty",
     "creationDate" : 1557393035000,
     "lastUpdate" : 1557393035000,
+    "displayName" : "Request for Medical Information",
     "participants" : [ {
       "role" : "Sender",
       "organisation" : {
@@ -822,6 +837,7 @@
     "status" : "empty",
     "creationDate" : 1557393033000,
     "lastUpdate" : 1557393033000,
+    "displayName" : "Reminder",
     "participants" : [ {
       "role" : "Sender",
       "organisation" : {
@@ -874,6 +890,7 @@
     "status" : "empty",
     "creationDate" : 1557393034000,
     "lastUpdate" : 1557393034000,
+    "displayName" : "Forward Case",
     "participants" : [ {
       "role" : "Sender",
       "organisation" : {
@@ -926,6 +943,7 @@
     "status" : "sent",
     "creationDate" : 1557393087051,
     "lastUpdate" : 1557393087051,
+    "displayName" : "Pension decision",
     "participants" : [ {
       "role" : "Sender",
       "organisation" : {
