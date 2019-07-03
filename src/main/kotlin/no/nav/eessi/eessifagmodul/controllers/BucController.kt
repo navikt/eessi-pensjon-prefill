@@ -159,7 +159,7 @@ class BucController(private val euxService: EuxService,
     }
 
     @ApiOperation("Legger til et vedlegg for det gitte dokumentet")
-    @PutMapping("/cpi/buc/{rinaSakId}/sed/{rinaDokumentId}/{variantFormat}/vedlegg")
+    @PutMapping("/vedlegg/{aktoerId}/{rinaSakId}/{rinaDokumentId}/{joarkJournalpostId}/{joarkDokumentInfoId}/{variantFormat}")
     fun putVedleggTilDokument(@PathVariable("aktoerId", required = true) aktoerId: String,
                               @PathVariable("rinaSakId", required = true) rinaSakId: String,
                               @PathVariable("rinaDokumentId", required = true) rinaDokumentId: String,
