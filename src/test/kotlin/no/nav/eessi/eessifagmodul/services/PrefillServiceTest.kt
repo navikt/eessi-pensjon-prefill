@@ -532,7 +532,7 @@ class PrefillServiceTest {
                                         id = "",
                                         navn = ""
                                 ),
-                                grunn = ""
+                                grunn = null
                         )
                 )
         )

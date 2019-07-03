@@ -28,8 +28,13 @@ data class Kontekst(
 //X005
 data class Leggtilinstitusjon(
         var institusjon: InstitusjonX005? = null,
-        var grunn: String? = null
+        var grunn: LeggtilinstitusjonGrunn? = null
 
+)
+
+data class LeggtilinstitusjonGrunn(
+        val type: String? = null,
+        val annet: String? = null
 )
 
 //X005
