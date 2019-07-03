@@ -1,9 +1,9 @@
 package no.nav.eessi.eessifagmodul.services.eux
 
 import com.google.common.base.Preconditions
-import no.nav.eessi.eessifagmodul.json.mapJsonToAny
-import no.nav.eessi.eessifagmodul.json.typeRef
-import no.nav.eessi.eessifagmodul.json.typeRefs
+import no.nav.eessi.eessifagmodul.utils.mapJsonToAny
+import no.nav.eessi.eessifagmodul.utils.typeRef
+import no.nav.eessi.eessifagmodul.utils.typeRefs
 import no.nav.eessi.eessifagmodul.metrics.getCounter
 import no.nav.eessi.eessifagmodul.models.*
 import no.nav.eessi.eessifagmodul.services.eux.bucmodel.Buc
@@ -23,12 +23,11 @@ import org.springframework.web.util.UriComponentsBuilder
 import java.io.IOException
 import java.util.*
 
-
+private val logger = LoggerFactory.getLogger(EuxService::class.java)
 @Service
 @Description("Service class for EuxBasis - EuxCpiServiceController.java")
 class EuxService(private val euxOidcRestTemplate: RestTemplate,
                  val safService: SafService) {
-    private val logger = LoggerFactory.getLogger(EuxService::class.java)
 
     // Nye API kall er er fra 23.01.19
     // https://eux-app.nais.preprod.local/swagger-ui.html#/eux-cpi-service-controller/
@@ -116,7 +115,6 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate,
         getCounter("OPPRETTBUCOGSEDOK").increment()
         return BucSedResponse(euxCaseId, response.body!!)
     }
-
 
     //henter ut sed fra rina med bucid og documentid
     fun getSedOnBuc(euxCaseId: String, sedType: String?): List<SED> {
@@ -433,8 +431,8 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate,
                 ),
                 caseId = euxCaseId,
                 sakType = "",
-                startDate = bucUtil.getStartDate(),
-                lastUpdate = bucUtil.getLastDate(),
+                startDate = bucUtil.getStartDateLong(),
+                lastUpdate = bucUtil.getLastDateLong(),
                 aktoerId = aktoerid,
                 status = bucUtil.getBuc().status,
                 institusjon = institusjonlist.toList(),
@@ -600,47 +598,38 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate,
         }
     }
 
-    //Eldre API kall er under denne disse vil ikke virke
+    /**
+     * Own impl. no list from eux that contains list of SED to a speific BUC
+     * @param bucType
+     */
+    companion object {
+        @JvmStatic
+        fun initSedOnBuc(): Map<String, List<String>> {
+            return mapOf(
+                    "P_BUC_01" to listOf("P2000"),
+                    "P_BUC_02" to listOf("P2100"),
+                    "P_BUC_03" to listOf("P2200"),
+                    "P_BUC_05" to listOf("P5000", "P6000", "P7000", "P8000", "P9000"),
+                    "P_BUC_06" to listOf("P5000", "P6000", "P7000", "P10000"),
+                    "P_BUC_10" to listOf("P15000")
+            )
+        }
 
-    //Henter en liste over tilgjengelige aksjoner for den aktuelle RINA saken PK-51365"
-//    fun getPossibleActions(euSaksnr: String): List<RINAaksjoner> {
-//        val builder = UriComponentsBuilder.fromPath("/MuligeAksjoner")
-//                .queryParam("RINASaksnummer", euSaksnr)
-//
-//        val httpEntity = HttpEntity("")
-//
-//        val response = euxOidcRestTemplate.exchange(builder.toUriString(), HttpMethod.GET, httpEntity, typeRef<String>())
-//        val responseBody = response.body!!
-//        try {
-//            if (response.statusCode.isError) {
-//                getCounter("AKSJONFEIL").increment()
-//                throw createErrorMessage(responseBody)
-//            } else {
-//                getCounter("AKSJONOK").increment()
-//                return mapJsonToAny(responseBody, typeRefs())
-//            }
-//        } catch (ex: IOException) {
-//            getCounter("AKSJONFEIL").increment()
-//            throw RuntimeException(ex.message)
-//        }
-//    }
-//
-//    /*
-//        hjelpe funksjon for sendSED må hente ut dokumentID for valgt sed f.eks P2000
-//     */
-//    fun hentDocuemntID(euxCaseId: String, sed: String): String {
-//        val aksjon = "Send"
-//        val aksjoner = getPossibleActions(euxCaseId)
-//        aksjoner.forEach {
-//            if (sed == it.dokumentType && aksjon == it.navn) {
-//                return it.dokumentId ?: throw IkkeGyldigKallException("Ingen gyldig dokumentID funnet")
-//            }
-//        }
-//        throw IkkeGyldigKallException("Ingen gyldig dokumentID funnet")
-//    }
+        @JvmStatic
+        fun getAvailableSedOnBuc(bucType: String?): List<String> {
+            val map = initSedOnBuc()
 
-    //TODO: euxBasis hva finnes av metoder for:
-    //TODO: euxBasis metode for å legge til flere mottakere (Institusjoner)
-    //TODO: euxBasis metode for å fjenre en eller flere mottakere (Institusjoner)
-
+            if (bucType.isNullOrEmpty()) {
+                val set = mutableSetOf<String>()
+                map["P_BUC_01"]?.let { set.addAll(it) }
+                map["P_BUC_02"]?.let { set.addAll(it) }
+                map["P_BUC_03"]?.let { set.addAll(it) }
+                map["P_BUC_05"]?.let { set.addAll(it) }
+                map["P_BUC_06"]?.let { set.addAll(it) }
+                map["P_BUC_10"]?.let { set.addAll(it) }
+                return set.toList()
+            }
+            return map[bucType].orEmpty()
+        }
+    }
 }

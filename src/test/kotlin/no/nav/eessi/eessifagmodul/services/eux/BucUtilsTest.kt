@@ -5,10 +5,10 @@ import no.nav.eessi.eessifagmodul.models.IkkeGyldigKallException
 import no.nav.eessi.eessifagmodul.models.InstitusjonItem
 import no.nav.eessi.eessifagmodul.models.SEDType
 import no.nav.eessi.eessifagmodul.services.eux.bucmodel.Buc
-import no.nav.eessi.eessifagmodul.json.mapAnyToJson
-import no.nav.eessi.eessifagmodul.json.mapJsonToAny
-import no.nav.eessi.eessifagmodul.json.typeRefs
-import no.nav.eessi.eessifagmodul.json.validateJson
+import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
+import no.nav.eessi.eessifagmodul.utils.mapJsonToAny
+import no.nav.eessi.eessifagmodul.utils.typeRefs
+import no.nav.eessi.eessifagmodul.utils.validateJson
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -147,7 +147,6 @@ class BucUtilsTest {
     fun getActions() {
         val result = bucUtils.getBucAction()
         assertEquals(18, result?.size)
-        println(mapAnyToJson(result!!))
     }
 
     @Test
@@ -197,7 +196,8 @@ class BucUtilsTest {
 
             if (it.type == "P8000") {
                 logger.info("\tattachments:\t${it.attachments?.size}")
-                assertEquals("2019-05-20", it.lastUpdate.toString())
+                assertEquals("1557825747269", it.creationDate.toString())
+                assertEquals("1558362934400", it.lastUpdate.toString())
                 assertEquals(2, it.attachments?.size)
 
             } else {

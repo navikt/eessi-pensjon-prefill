@@ -47,7 +47,8 @@ class SafControllerTest {
 
         val responseJson = String(Files.readAllBytes(Paths.get("src/test/resources/json/saf/hentMetadataResponse.json")))
                 .trim()
-                .replace(System.lineSeparator(), "")
+                .replace("\r", "")
+                .replace("\n", "")
                 .replace(" ", "")
         val mapper = jacksonObjectMapper()
 
@@ -56,7 +57,7 @@ class SafControllerTest {
 
         val resp = safController.hentDokumentMetadata("123")
         assertEquals(HttpStatus.valueOf(200), resp.statusCode)
-        assertEquals(resp.body!!.trim().replace(System.lineSeparator(), "").replace(" ", ""), responseJson)
+        assertEquals(resp.body!!.trim().replace("\r", "").replace("\n", "").replace(" ", ""), responseJson)
     }
 
     @Test
@@ -76,7 +77,7 @@ class SafControllerTest {
 
         val resp = safController.getDokumentInnhold("123", "4567", VariantFormat.ARKIV)
         assertEquals(HttpStatus.valueOf(200), resp.statusCode)
-        assertEquals(resp.body, String(Files.readAllBytes(Paths.get("src/test/resources/json/saf/hentDokumentInnholdResponse.json")))
+        assertEquals(resp.body?.replace("\r","") , String(Files.readAllBytes(Paths.get("src/test/resources/json/saf/hentDokumentInnholdResponse.json"))).replace("\r","")
         )
     }
 }

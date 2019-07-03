@@ -12,11 +12,14 @@ import no.nav.eessi.eessifagmodul.services.aktoerregister.AktoerregisterService
 import no.nav.eessi.eessifagmodul.services.eux.BucSedResponse
 import no.nav.eessi.eessifagmodul.services.eux.EuxService
 import no.nav.eessi.eessifagmodul.services.eux.bucmodel.ShortDocumentItem
+import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
 import no.nav.security.oidc.api.Protected
 import org.slf4j.LoggerFactory
 import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
+internal fun List<String>.filterPensionSedAndSort() = this.filter { it.startsWith("P") }.filterNot { it.startsWith("P3000") } .sorted()
 
 @Protected
 @RestController
@@ -125,7 +128,21 @@ class SedController(private val euxService: EuxService,
         return euxService.getInstitutions(buctype, landkode).sorted()
     }
 
-    //validatate request and convert to PrefillDataModel
+    @ApiOperation("henter liste over seds, seds til valgt buc eller seds til valgt rinasak")
+    @GetMapping("/seds", "/seds/{buctype}", "/seds/{buctype}/{rinanr}")
+    fun getSeds(@PathVariable(value = "buctype", required = false) bucType: String?,
+                @PathVariable(value = "rinanr", required = false) euxCaseId: String?): ResponseEntity<String?> {
+
+        if (euxCaseId == null) return ResponseEntity.ok().body(mapAnyToJson(EuxService.getAvailableSedOnBuc(bucType)))
+
+        val resultListe = euxService.getBucUtils(euxCaseId).getAksjonListAsString()
+
+        if (resultListe.isEmpty()) return ResponseEntity.ok().body(mapAnyToJson(EuxService.getAvailableSedOnBuc(bucType)))
+
+        return ResponseEntity.ok().body(mapAnyToJson(resultListe.filterPensionSedAndSort()))
+    }
+
+        //validatate request and convert to PrefillDataModel
     fun buildPrefillDataModelOnExisting(request: ApiRequest): PrefillDataModel {
         return when {
             //request.sakId == null -> throw IkkeGyldigKallException("Mangler Saksnummer")

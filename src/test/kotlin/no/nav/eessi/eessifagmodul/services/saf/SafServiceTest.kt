@@ -10,6 +10,7 @@ import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers
 import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
+import org.skyscreamer.jsonassert.JSONAssert
 import org.springframework.http.*
 import org.springframework.web.client.RestClientException
 import org.springframework.web.client.RestTemplate
@@ -36,17 +37,13 @@ class SafServiceTest {
     @Test
     fun `gitt en gyldig hentMetadata reponse når metadata hentes så map til HentMetadataResponse`() {
         val responseJson = String(Files.readAllBytes(Paths.get("src/test/resources/json/saf/hentMetadataResponse.json")))
-                .trim()
-                .replace("\n", "")
-                .replace("\r", "")
-                .replace(" ", "")
 
         whenever(safGraphQlOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java)))
                 .thenReturn(ResponseEntity(responseJson, HttpStatus.OK))
         val resp = safService.hentDokumentMetadata("1234567891000")
 
         val mapper = jacksonObjectMapper()
-        assertEquals(mapper.writeValueAsString(resp), responseJson)
+        JSONAssert.assertEquals(mapper.writeValueAsString(resp), responseJson, true)
     }
 
     @Test(expected = EessiServiceException::class)
