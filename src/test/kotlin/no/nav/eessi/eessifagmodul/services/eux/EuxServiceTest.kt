@@ -284,10 +284,9 @@ class EuxServiceTest {
         val filepath = "src/test/resources/json/rinasaker/rinasaker_12345678901.json"
         val json = String(Files.readAllBytes(Paths.get(filepath)))
         assertTrue(validateJson(json))
+        val orgRinasaker = mapJsonToAny(json, typeRefs<List<Rinasak>>())
 
         val response: ResponseEntity<String> = ResponseEntity(json, HttpStatus.OK)
-
-        val orgRinasaker = mapJsonToAny(json, typeRefs<List<Rinasak>>())
         whenever(mockEuxrestTemplate.exchange(
                 anyString(),
                 eq(HttpMethod.GET),
@@ -295,12 +294,11 @@ class EuxServiceTest {
                 eq(String::class.java))
         ).thenReturn(response)
 
-
         val result = service.getRinasaker("12345678900")
 
-        assertEquals(orgRinasaker, result)
+        assertEquals(154, orgRinasaker.size)
         assertEquals(orgRinasaker.size, result.size)
-
+        JSONAssert.assertEquals(json, mapAnyToJson(result), true)
     }
 
     @Test(expected = IOException::class)
