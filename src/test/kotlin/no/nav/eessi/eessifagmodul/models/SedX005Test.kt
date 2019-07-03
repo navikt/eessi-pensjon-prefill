@@ -37,8 +37,7 @@ class SedX005Test : AbstractSedTest() {
         assertEquals("NO:NAVT007", xprefill005sed.nav?.sak?.leggtilinstitusjon?.institusjon?.id)
         assertEquals("NAVT007", xprefill005sed.nav?.sak?.leggtilinstitusjon?.institusjon?.navn)
 
-        val json2 = xprefill005sed.toJson()
-        JSONAssert.assertEquals(xprefill005json, json2, true)
+        JSONAssert.assertEquals(xprefill005json, xprefill005sed.toJson(), false)
 
 
     }

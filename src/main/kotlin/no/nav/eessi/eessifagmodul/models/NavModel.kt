@@ -7,11 +7,20 @@ data class Nav(
         var barn: List<BarnItem>? = null, //pkt 6 og 8
         var verge: Verge? = null,
         var krav: Krav? = null,
+
         //X005
         var sak: Navsak? = null,
         //P10000
-        var annenperson: Bruker? = null
+        var annenperson: Bruker? = null,
 
+        //H120
+        val endredeforhold: Endredeforhold? = null,
+        var ytterligereinformasjon: String? = null
+)
+
+//H121
+data class Endredeforhold(
+        val bruker: Bruker? = null
 )
 
 //X005
@@ -55,8 +64,17 @@ data class Bruker(
         var far: Foreldre? = null,
         var person: Person? = null,
         var adresse: Adresse? = null,
+
+        //H120?
+        var bostedsadresse: Adresse? = null,
+        var status: BrukerStatus? = null,
+
         var arbeidsforhold: List<ArbeidsforholdItem>? = null,
         var bank: Bank? = null
+)
+
+data class BrukerStatus(
+        var id: String? = null
 )
 
 data class Bank(
