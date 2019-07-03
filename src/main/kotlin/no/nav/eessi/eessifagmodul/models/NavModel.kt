@@ -68,9 +68,29 @@ data class Bruker(
         //H120?
         var bostedsadresse: Adresse? = null,
         var status: BrukerStatus? = null,
+        //H070
+        val doedsfall: Doedsfall? = null,
 
         var arbeidsforhold: List<ArbeidsforholdItem>? = null,
         var bank: Bank? = null
+)
+
+//H070
+data class Doedsfall(
+        val sted: Sted? = null,
+        val doedsdato: String? = null,
+        val dokumentervedlagt: Dokumentervedlagt? = null
+)
+
+//H070
+data class Sted(
+        val adresse: Adresse? = null
+)
+
+//H070
+data class Dokumentervedlagt(
+        val annet: List<String?>? = null,
+       val type: List<String?>? = null
 )
 
 data class BrukerStatus(
