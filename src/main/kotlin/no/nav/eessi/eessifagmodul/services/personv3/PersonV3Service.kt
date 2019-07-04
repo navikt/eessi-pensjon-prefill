@@ -22,8 +22,8 @@ import org.springframework.stereotype.Component
 import java.lang.Exception
 
 @Component
-class PersonV3Service(val service: PersonV3,
-                      val timingService: TimingService) {
+class PersonV3Service(private val service: PersonV3,
+                      private val timingService: TimingService) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PersonV3Service::class.java) }
 

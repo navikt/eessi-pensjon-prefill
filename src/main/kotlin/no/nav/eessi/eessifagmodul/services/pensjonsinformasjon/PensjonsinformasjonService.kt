@@ -22,7 +22,9 @@ import javax.xml.transform.stream.StreamSource
 
 
 @Service
-class PensjonsinformasjonService(val pensjonsinformasjonOidcRestTemplate: RestTemplate, val requestBuilder: RequestBuilder) {
+class PensjonsinformasjonService(
+        private val pensjonsinformasjonOidcRestTemplate: RestTemplate,
+        private val requestBuilder: RequestBuilder) {
 
     private val logger = LoggerFactory.getLogger(PensjonsinformasjonService::class.java)
 

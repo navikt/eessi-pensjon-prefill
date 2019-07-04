@@ -15,8 +15,8 @@ import org.springframework.web.client.DefaultResponseErrorHandler
 import org.springframework.web.client.RestTemplate
 
 @Component
-class AktoerregisterRestTemplate(val stsService: STSService,
-                                 val registry: MeterRegistry) {
+class AktoerregisterRestTemplate(private val stsService: STSService,
+                                 private val registry: MeterRegistry) {
 
     @Value("\${aktoerregister.api.v1.url}")
     lateinit var url: String

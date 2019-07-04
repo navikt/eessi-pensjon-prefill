@@ -14,7 +14,7 @@ import java.util.*
 @Protected
 @RestController
 @RequestMapping("/saf")
-class SafController(val safService: SafService) {
+class SafController(private val safService: SafService) {
 
     private val logger = LoggerFactory.getLogger(SafController::class.java)
 

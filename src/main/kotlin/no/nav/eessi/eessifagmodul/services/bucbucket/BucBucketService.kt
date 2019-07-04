@@ -14,7 +14,7 @@ import org.springframework.web.util.UriComponentsBuilder
 // TODO: Work-in-progress. Venter på at grensesnittet dokumenteres og implementeres i eux-bucbucket
 //@Service
 @Deprecated(replaceWith = ReplaceWith("Nothing"), level = DeprecationLevel.WARNING, message = "Utgår")
-class BucBucketService(val bucBucketOidcRestTemplate: RestTemplate) {
+class BucBucketService(private val bucBucketOidcRestTemplate: RestTemplate) {
 
     private val BUCBUCKET_TELLER_NAVN = "eessipensjon_fagmodul.bucbucket"
     private val BUCBUCKET_TELLER_TYPE_VELLYKKEDE = counter(BUCBUCKET_TELLER_NAVN, "vellykkede")

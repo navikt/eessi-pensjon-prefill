@@ -26,7 +26,7 @@ import java.util.*
 @Service
 @Description("Service class for EuxBasis - EuxCpiServiceController.java")
 class EuxService(private val euxOidcRestTemplate: RestTemplate,
-                 val safService: SafService) {
+                 private val safService: SafService) {
 
     private val logger = LoggerFactory.getLogger(EuxService::class.java)
 

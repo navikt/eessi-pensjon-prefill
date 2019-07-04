@@ -23,7 +23,7 @@ data class SecurityTokenResponse(
  * Denne STS tjenesten benyttes ved kall mot nye REST tjenester sånn som Aktørregisteret
  */
 @Service
-class STSService(val securityTokenExchangeBasicAuthRestTemplate: RestTemplate) {
+class STSService(private val securityTokenExchangeBasicAuthRestTemplate: RestTemplate) {
 
     private val logger = LoggerFactory.getLogger(STSService::class.java)
 

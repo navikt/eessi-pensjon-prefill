@@ -28,7 +28,7 @@ data class IdentinfoForAktoer(
 )
 
 @Service
-class AktoerregisterService(val aktoerregisterOidcRestTemplate: RestTemplate) {
+class AktoerregisterService(private val aktoerregisterOidcRestTemplate: RestTemplate) {
 
     private val logger = LoggerFactory.getLogger(AktoerregisterService::class.java)
 
