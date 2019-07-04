@@ -21,17 +21,11 @@ class SedIkkeSlettetException(message: String?) : Exception(message)
 @ResponseStatus(value = HttpStatus.NOT_FOUND)
 class BucIkkeMottattException(message: String?) : Exception(message)
 
-@ResponseStatus(value = HttpStatus.NOT_FOUND)
-class IkkeFunnetException(message: String) : IllegalArgumentException(message)
-
 @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
 class EuxGenericServerException(message: String?) : Exception(message)
 
 @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
 class RinaCasenrIkkeMottattException(message: String?) : Exception(message)
-
-@ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
-class PensjoninformasjonException(message: String) : RuntimeException(message)
 
 @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
 class SedDokumentIkkeSendtException(message: String?) : Exception(message)

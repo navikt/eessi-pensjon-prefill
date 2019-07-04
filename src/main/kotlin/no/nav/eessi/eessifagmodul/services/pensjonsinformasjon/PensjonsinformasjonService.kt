@@ -2,16 +2,12 @@ package no.nav.eessi.eessifagmodul.services.pensjonsinformasjon
 
 
 import com.google.common.base.Preconditions
-import no.nav.eessi.eessifagmodul.models.IkkeFunnetException
-import no.nav.eessi.eessifagmodul.models.PensjoninformasjonException
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import no.nav.pensjon.v1.sak.V1Sak
 import org.slf4j.LoggerFactory
-import org.springframework.http.HttpEntity
-import org.springframework.http.HttpHeaders
-import org.springframework.http.HttpMethod
-import org.springframework.http.MediaType
+import org.springframework.http.*
 import org.springframework.stereotype.Service
+import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.HttpServerErrorException
 import org.springframework.web.client.RestTemplate
@@ -219,3 +215,8 @@ class PensjonsinformasjonService(
 
 }
 
+@ResponseStatus(value = HttpStatus.NOT_FOUND)
+class IkkeFunnetException(message: String) : IllegalArgumentException(message)
+
+@ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
+class PensjoninformasjonException(message: String) : RuntimeException(message)
