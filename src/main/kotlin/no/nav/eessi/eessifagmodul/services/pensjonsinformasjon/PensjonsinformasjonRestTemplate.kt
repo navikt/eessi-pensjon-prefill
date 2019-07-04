@@ -26,7 +26,6 @@ class PensjonsinformasjonRestTemplate(val stsService: STSService, private val re
         return templateBuilder
                 .rootUri(url)
                 .additionalInterceptors(RequestResponseLoggerInterceptor(), UsernameToOidcInterceptor(stsService))
-                //.customizers(MetricsRestTemplateCustomizer(registry, DefaultRestTemplateExchangeTagsProvider(), "eessipensjon_fagmodul_pensjonsinformasjon"))
                 .build().apply {
                     requestFactory = BufferingClientHttpRequestFactory(SimpleClientHttpRequestFactory())
                 }

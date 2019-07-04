@@ -45,7 +45,7 @@
           "id" : "NO:NAVT007",
           "navn" : "NAVT007"
         },
-        "grunn" : ""
+        "grunn" : null
       }
     },
     "annenperson" : null

@@ -35,7 +35,7 @@ class PrefillX005(private val prefillNav: PrefillNav) : Prefill<SED> {
                         id = "",
                         navn = ""
                     ),
-                    grunn = ""
+                    grunn = null
                 )
             )
         )

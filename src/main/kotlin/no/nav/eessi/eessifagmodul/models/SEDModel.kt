@@ -13,7 +13,10 @@ data class SED(
         var nav: Nav? = null,
         var pensjon: Pensjon? = null,
         var trygdetid: PersonArbeidogOppholdUtland? = null, //P4000
-        var ignore: Ignore? = null
+        var ignore: Ignore? = null,
+
+        //H120
+        var horisontal: Horisontal? = null
 ) {
     fun toJson(): String {
         return mapAnyToJson(this, false)
@@ -68,7 +71,10 @@ enum class SEDType {
     P9000,
     P10000,
     P15000,
-    X005;
+    X005,
+    H070,
+    H120,
+    H121;
 
     companion object {
         @JvmStatic

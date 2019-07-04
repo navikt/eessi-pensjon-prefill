@@ -19,7 +19,6 @@ import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
-internal fun List<String>.filterPensionSedAndSort() = this.filter { it.startsWith("P") }.filterNot { it.startsWith("P3000") } .sorted()
 
 @Protected
 @RestController
@@ -142,7 +141,7 @@ class SedController(private val euxService: EuxService,
         return ResponseEntity.ok().body(mapAnyToJson(resultListe.filterPensionSedAndSort()))
     }
 
-        //validatate request and convert to PrefillDataModel
+    //validatate request and convert to PrefillDataModel
     fun buildPrefillDataModelOnExisting(request: ApiRequest): PrefillDataModel {
         return when {
             //request.sakId == null -> throw IkkeGyldigKallException("Mangler Saksnummer")
@@ -243,4 +242,7 @@ class SedController(private val euxService: EuxService,
             val skipSEDkey: List<String>? = null,
             val mockSED: Boolean? = null
     )
+
 }
+
+internal fun List<String>.filterPensionSedAndSort() = this.filter { it.startsWith("P").or( it.startsWith("H12").or( it.startsWith("H07"))) }.filterNot { it.startsWith("P3000") }.sorted()

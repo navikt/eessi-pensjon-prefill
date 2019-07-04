@@ -257,6 +257,19 @@ class SedControllerTest {
     }
 
     @Test
+    fun `Test liste med SED som skal returneres`() {
+        val list  = listOf("X005","P2000","P4000","H02","H070", "X06", "H121","P9000", "")
+
+        val result = list.filterPensionSedAndSort()
+
+        println(result.toString())
+
+        assertEquals(5, result.size)
+        assertEquals("[H070, H121, P2000, P4000, P9000]", result.toString())
+    }
+
+
+    @Test
     fun `Test av liste med SEDer der kun PensjonSEDer skal returneres`() {
         val list  = listOf("X005","P2000","P4000","H02","X06","P9000", "")
 

@@ -7,11 +7,20 @@ data class Nav(
         var barn: List<BarnItem>? = null, //pkt 6 og 8
         var verge: Verge? = null,
         var krav: Krav? = null,
+
         //X005
         var sak: Navsak? = null,
         //P10000
-        var annenperson: Bruker? = null
+        var annenperson: Bruker? = null,
 
+        //H120
+        val endredeforhold: Endredeforhold? = null,
+        var ytterligereinformasjon: String? = null
+)
+
+//H121
+data class Endredeforhold(
+        val bruker: Bruker? = null
 )
 
 //X005
@@ -28,8 +37,13 @@ data class Kontekst(
 //X005
 data class Leggtilinstitusjon(
         var institusjon: InstitusjonX005? = null,
-        var grunn: String? = null
+        var grunn: LeggtilinstitusjonGrunn? = null
 
+)
+
+data class LeggtilinstitusjonGrunn(
+        val type: String? = null,
+        val annet: String? = null
 )
 
 //X005
@@ -50,8 +64,37 @@ data class Bruker(
         var far: Foreldre? = null,
         var person: Person? = null,
         var adresse: Adresse? = null,
+
+        //H120?
+        var bostedsadresse: Adresse? = null,
+        var status: BrukerStatus? = null,
+        //H070
+        val doedsfall: Doedsfall? = null,
+
         var arbeidsforhold: List<ArbeidsforholdItem>? = null,
         var bank: Bank? = null
+)
+
+//H070
+data class Doedsfall(
+        val sted: Sted? = null,
+        val doedsdato: String? = null,
+        val dokumentervedlagt: Dokumentervedlagt? = null
+)
+
+//H070
+data class Sted(
+        val adresse: Adresse? = null
+)
+
+//H070
+data class Dokumentervedlagt(
+        val annet: List<String?>? = null,
+       val type: List<String?>? = null
+)
+
+data class BrukerStatus(
+        var id: String? = null
 )
 
 data class Bank(
