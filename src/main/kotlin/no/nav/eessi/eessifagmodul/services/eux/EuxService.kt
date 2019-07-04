@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Description
 import org.springframework.http.*
 import org.springframework.stereotype.Service
+import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.HttpServerErrorException
 import org.springframework.web.client.ResourceAccessException
@@ -634,3 +635,6 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate,
         }
     }
 }
+
+@ResponseStatus(value = HttpStatus.NOT_FOUND)
+class IkkeFunnetException(message: String) : IllegalArgumentException(message)
