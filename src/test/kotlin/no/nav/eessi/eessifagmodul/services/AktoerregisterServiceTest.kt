@@ -2,8 +2,8 @@ package no.nav.eessi.eessifagmodul.services
 
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.whenever
-import no.nav.eessi.eessifagmodul.models.AktoerregisterException
-import no.nav.eessi.eessifagmodul.models.AktoerregisterIkkeFunnetException
+import no.nav.eessi.eessifagmodul.services.aktoerregister.AktoerregisterException
+import no.nav.eessi.eessifagmodul.services.aktoerregister.AktoerregisterIkkeFunnetException
 import no.nav.eessi.eessifagmodul.services.aktoerregister.AktoerregisterService
 import org.junit.Before
 import org.junit.Test

@@ -27,9 +27,6 @@ class IkkeFunnetException(message: String) : IllegalArgumentException(message)
 @ResponseStatus(value = HttpStatus.NOT_FOUND)
 class PersonV3IkkeFunnetException(message: String?): Exception(message)
 
-@ResponseStatus(value = HttpStatus.NOT_FOUND)
-class AktoerregisterIkkeFunnetException(message: String?) : Exception(message)
-
 @ResponseStatus(value = HttpStatus.FORBIDDEN)
 class PersonV3SikkerhetsbegrensningException(message: String?): Exception(message)
 
@@ -41,9 +38,6 @@ class RinaCasenrIkkeMottattException(message: String?) : Exception(message)
 
 @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
 class PensjoninformasjonException(message: String) : RuntimeException(message)
-
-@ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
-class AktoerregisterException(message: String) : Exception(message)
 
 @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
 class SedDokumentIkkeSendtException(message: String?) : Exception(message)

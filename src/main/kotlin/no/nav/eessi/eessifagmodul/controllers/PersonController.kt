@@ -5,6 +5,8 @@ import no.nav.eessi.eessifagmodul.models.*
 import no.nav.eessi.eessifagmodul.services.aktoerregister.AktoerregisterService
 import no.nav.eessi.eessifagmodul.services.personv3.PersonV3Service
 import no.nav.eessi.eessifagmodul.metrics.getCounter
+import no.nav.eessi.eessifagmodul.services.aktoerregister.AktoerregisterException
+import no.nav.eessi.eessifagmodul.services.aktoerregister.AktoerregisterIkkeFunnetException
 import no.nav.security.oidc.api.Protected
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonResponse
 import org.slf4j.LoggerFactory
