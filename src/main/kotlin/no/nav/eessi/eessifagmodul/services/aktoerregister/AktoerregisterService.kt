@@ -16,8 +16,6 @@ import org.springframework.web.client.RestTemplate
 import org.springframework.web.util.UriComponentsBuilder
 import java.util.*
 
-private val logger = LoggerFactory.getLogger(AktoerregisterService::class.java)
-
 data class Identinfo(
         val ident: String,
         val identgruppe: String,
@@ -31,6 +29,8 @@ data class IdentinfoForAktoer(
 
 @Service
 class AktoerregisterService(val aktoerregisterOidcRestTemplate: RestTemplate) {
+
+    private val logger = LoggerFactory.getLogger(AktoerregisterService::class.java)
 
     private val aktoerregister_teller_navn = "eessipensjon_fagmodul.aktoerregister"
     private val aktoerregister_teller_type_vellykkede = counter(aktoerregister_teller_navn, "vellykkede")

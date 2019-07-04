@@ -11,8 +11,6 @@ import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.util.UriComponentsBuilder
 
-private val logger = LoggerFactory.getLogger(STSService::class.java)
-
 data class SecurityTokenResponse(
         @JsonProperty("access_token")
         val accessToken: String,
@@ -26,6 +24,8 @@ data class SecurityTokenResponse(
  */
 @Service
 class STSService(val securityTokenExchangeBasicAuthRestTemplate: RestTemplate) {
+
+    private val logger = LoggerFactory.getLogger(STSService::class.java)
 
     fun getSystemOidcToken(): String {
         try {
