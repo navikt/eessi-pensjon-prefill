@@ -16,7 +16,7 @@ import org.springframework.web.client.RestTemplate
  * Rest template for PESYS pensjonsinformasjon
  */
 @Component
-class PensjonsinformasjonRestTemplate(val stsService: STSService, private val registry: MeterRegistry) {
+class PensjonsinformasjonRestTemplate(private val stsService: STSService, private val registry: MeterRegistry) {
 
     @Value("\${pensjonsinformasjon.url}")
     lateinit var url: String

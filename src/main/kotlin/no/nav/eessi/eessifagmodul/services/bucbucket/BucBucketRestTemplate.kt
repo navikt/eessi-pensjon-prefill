@@ -11,7 +11,7 @@ import org.springframework.web.client.RestTemplate
 
 //@Component
 @Deprecated(replaceWith = ReplaceWith("Nothing"), level = DeprecationLevel.WARNING, message = "Utgår")
-class BucBucketRestTemplate(val oidcRequestContextHolder: OIDCRequestContextHolder) {
+class BucBucketRestTemplate(private val oidcRequestContextHolder: OIDCRequestContextHolder) {
 
     // TODO: Fjern default-verdien når eux-bucbucket eksponerer ressursen i fasit
     @Value("\${bucbucket.v1.url:https://eux-bucbucket.nais.preprod.local/bucBucket/v1}")
