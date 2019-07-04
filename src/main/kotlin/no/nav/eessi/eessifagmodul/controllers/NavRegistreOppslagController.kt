@@ -12,8 +12,6 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
-private val logger = LoggerFactory.getLogger(NavRegistreOppslagController::class.java)
-
 /**
  * Controller for å kalle NAV interne registre
  *
@@ -24,6 +22,8 @@ private val logger = LoggerFactory.getLogger(NavRegistreOppslagController::class
 @RestController
 class NavRegistreOppslagController(private val aktoerregisterService: AktoerregisterService,
                                 private val personService: PersonV3Service) {
+
+    private val logger = LoggerFactory.getLogger(NavRegistreOppslagController::class.java)
 
     /**
      * Kaller AktørRegisteret , bytter aktørId mot Fnr/Dnr ,

@@ -10,11 +10,11 @@ import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
 import java.util.*
 
-private val logger = LoggerFactory.getLogger(SafService::class.java)
-
 @Service
 class SafService(var safGraphQlOidcRestTemplate: RestTemplate,
                 var safRestOidcRestTemplate: RestTemplate) {
+
+    private val logger = LoggerFactory.getLogger(SafService::class.java)
 
     private val hentDokumentMetadata_teller_navn = "eessipensjon_fagmodul.hentDokumentMetadata"
     private val hentDokumentMetadata_teller_type_vellykkede = counter(hentDokumentMetadata_teller_navn, "vellykkede")
