@@ -4,14 +4,14 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import io.micrometer.core.instrument.Counter
 import io.micrometer.core.instrument.Metrics
-import no.nav.eessi.eessifagmodul.models.AktoerregisterException
-import no.nav.eessi.eessifagmodul.models.AktoerregisterIkkeFunnetException
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
+import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.util.UriComponentsBuilder
 import java.util.*
@@ -107,3 +107,9 @@ class AktoerregisterService(private val aktoerregisterOidcRestTemplate: RestTemp
         return jacksonObjectMapper().readValue(responseEntity.body!!)
     }
 }
+
+@ResponseStatus(value = HttpStatus.NOT_FOUND)
+class AktoerregisterIkkeFunnetException(message: String?) : Exception(message)
+
+@ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
+class AktoerregisterException(message: String) : Exception(message)

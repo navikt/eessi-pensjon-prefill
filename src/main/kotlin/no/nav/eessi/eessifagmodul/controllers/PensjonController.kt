@@ -1,7 +1,7 @@
 package no.nav.eessi.eessifagmodul.controllers
 
 import io.swagger.annotations.ApiOperation
-import no.nav.eessi.eessifagmodul.models.AktoerregisterException
+import no.nav.eessi.eessifagmodul.services.aktoerregister.AktoerregisterException
 import no.nav.eessi.eessifagmodul.models.IkkeFunnetException
 import no.nav.eessi.eessifagmodul.models.IkkeGyldigKallException
 import no.nav.eessi.eessifagmodul.services.aktoerregister.AktoerregisterService
