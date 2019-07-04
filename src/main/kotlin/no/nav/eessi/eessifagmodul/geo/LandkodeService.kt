@@ -1,4 +1,4 @@
-package no.nav.eessi.eessifagmodul.services
+package no.nav.eessi.eessifagmodul.geo
 
 import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
 import org.slf4j.Logger

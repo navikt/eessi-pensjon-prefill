@@ -1,4 +1,4 @@
-package no.nav.eessi.eessifagmodul.services
+package no.nav.eessi.eessifagmodul.geo
 
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory

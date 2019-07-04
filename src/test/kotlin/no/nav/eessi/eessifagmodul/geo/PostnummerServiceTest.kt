@@ -1,4 +1,4 @@
-package no.nav.eessi.eessifagmodul.services
+package no.nav.eessi.eessifagmodul.geo
 
 import org.junit.Before
 import org.junit.Test
