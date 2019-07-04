@@ -23,11 +23,12 @@ import org.springframework.web.util.UriComponentsBuilder
 import java.io.IOException
 import java.util.*
 
-private val logger = LoggerFactory.getLogger(EuxService::class.java)
 @Service
 @Description("Service class for EuxBasis - EuxCpiServiceController.java")
 class EuxService(private val euxOidcRestTemplate: RestTemplate,
                  val safService: SafService) {
+
+    private val logger = LoggerFactory.getLogger(EuxService::class.java)
 
     // Nye API kall er er fra 23.01.19
     // https://eux-app.nais.preprod.local/swagger-ui.html#/eux-cpi-service-controller/
