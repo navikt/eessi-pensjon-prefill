@@ -24,12 +24,6 @@ class BucIkkeMottattException(message: String?) : Exception(message)
 @ResponseStatus(value = HttpStatus.NOT_FOUND)
 class IkkeFunnetException(message: String) : IllegalArgumentException(message)
 
-@ResponseStatus(value = HttpStatus.NOT_FOUND)
-class PersonV3IkkeFunnetException(message: String?): Exception(message)
-
-@ResponseStatus(value = HttpStatus.FORBIDDEN)
-class PersonV3SikkerhetsbegrensningException(message: String?): Exception(message)
-
 @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
 class EuxGenericServerException(message: String?) : Exception(message)
 
