@@ -1,12 +1,7 @@
-package no.nav.eessi.eessifagmodul.controllers
+package no.nav.eessi.eessifagmodul.arkiv
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.nhaarman.mockito_kotlin.whenever
-import no.nav.eessi.eessifagmodul.services.EessiServiceException
-import no.nav.eessi.eessifagmodul.services.saf.HentMetadataResponse
-import no.nav.eessi.eessifagmodul.services.saf.HentdokumentInnholdResponse
-import no.nav.eessi.eessifagmodul.services.saf.SafService
-import no.nav.eessi.eessifagmodul.services.saf.VariantFormat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -35,7 +30,7 @@ class SafControllerTest {
     @Test
     fun `gitt en 400 httpstatuscode fra safService når metadata hentes så returnes 400 httpstatuscode`() {
         whenever(safService.hentDokumentMetadata("123"))
-                .thenThrow(EessiServiceException("noe gikk galt", HttpStatus.valueOf(400)))
+                .thenThrow(SafException("noe gikk galt", HttpStatus.valueOf(400)))
 
         val resp = safController.hentDokumentMetadata("123")
         assertEquals(HttpStatus.valueOf(400), resp.statusCode)
@@ -63,7 +58,7 @@ class SafControllerTest {
     @Test
     fun `gitt en 400 httpstatuscode fra safService når dokumentinnhold hentes så returnes 400 httpstatuscode`() {
         whenever(safService.hentDokumentInnhold("123", "4567", VariantFormat.ARKIV))
-                .thenThrow(EessiServiceException("noe gikk galt", HttpStatus.valueOf(400)))
+                .thenThrow(SafException("noe gikk galt", HttpStatus.valueOf(400)))
 
         val resp = safController.getDokumentInnhold("123", "4567", VariantFormat.ARKIV)
         assertEquals(HttpStatus.valueOf(400), resp.statusCode)

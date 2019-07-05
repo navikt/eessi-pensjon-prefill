@@ -1,9 +1,6 @@
-package no.nav.eessi.eessifagmodul.controllers
+package no.nav.eessi.eessifagmodul.arkiv
 
 import io.swagger.annotations.ApiOperation
-import no.nav.eessi.eessifagmodul.services.EessiServiceException
-import no.nav.eessi.eessifagmodul.services.saf.SafService
-import no.nav.eessi.eessifagmodul.services.saf.VariantFormat
 import no.nav.eessi.eessifagmodul.utils.errorBody
 import no.nav.security.oidc.api.Protected
 import org.slf4j.LoggerFactory
@@ -24,7 +21,7 @@ class SafController(private val safService: SafService) {
         logger.info("Henter metadata for dokumenter i SAF for aktørid: $aktoerId")
         return try {
             ResponseEntity.ok().body(safService.hentDokumentMetadata(aktoerId).toJson())
-        } catch(ex: EessiServiceException) {
+        } catch (ex: SafException) {
             ResponseEntity.status(ex.httpStatus).body(errorBody(ex.message!!, UUID.randomUUID().toString()))
         }
     }
@@ -37,7 +34,7 @@ class SafController(private val safService: SafService) {
         logger.info("Henter dokumentinnhold fra SAF for journalpostId: $journalpostId, dokumentInfoId: $dokumentInfoId")
         return try {
             ResponseEntity.ok().body(safService.hentDokumentInnhold(journalpostId, dokumentInfoId, variantFormat).toJson())
-        } catch(ex: EessiServiceException) {
+        } catch (ex: SafException) {
             ResponseEntity.status(ex.httpStatus).body(errorBody(ex.message!!, UUID.randomUUID().toString()))
         }
     }

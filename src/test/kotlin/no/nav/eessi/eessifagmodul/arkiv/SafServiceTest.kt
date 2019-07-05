@@ -1,9 +1,8 @@
-package no.nav.eessi.eessifagmodul.services.saf
+package no.nav.eessi.eessifagmodul.arkiv
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.whenever
-import no.nav.eessi.eessifagmodul.services.EessiServiceException
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -46,15 +45,15 @@ class SafServiceTest {
         JSONAssert.assertEquals(mapper.writeValueAsString(resp), responseJson, true)
     }
 
-    @Test(expected = EessiServiceException::class)
-    fun `gitt noe annet enn 200 httpCopde feil når metadata hentes så kast EessiServiceExeption med tilhørende httpCode`() {
+    @Test(expected = SafException::class)
+    fun `gitt noe annet enn 200 httpCopde feil når metadata hentes så kast SafException med tilhørende httpCode`() {
         whenever(safGraphQlOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java)))
                 .thenReturn(ResponseEntity("", HttpStatus.NOT_FOUND))
         safService.hentDokumentMetadata("1234567891000")
     }
 
-    @Test(expected = EessiServiceException::class)
-    fun `gitt en feil når metadata hentes så kast EessiServiceExeption med tilhørende httpCode`() {
+    @Test(expected = SafException::class)
+    fun `gitt en feil når metadata hentes så kast SafException med tilhørende httpCode`() {
         whenever(safGraphQlOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java)))
                 .thenThrow(RestClientException("some error"))
         safService.hentDokumentMetadata("1234567891000")
@@ -73,15 +72,15 @@ class SafServiceTest {
         assertEquals("YWJj", resp.base64)
     }
 
-    @Test(expected = EessiServiceException::class)
-    fun `gitt noe annet enn 200 httpCopde feil når dokumentinnhold hentes så kast EessiServiceExeption med tilhørende httpCode`() {
+    @Test(expected = SafException::class)
+    fun `gitt noe annet enn 200 httpCopde feil når dokumentinnhold hentes så kast SafException med tilhørende httpCode`() {
         whenever(safRestOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java)))
                 .thenReturn(ResponseEntity("", HttpStatus.NOT_FOUND))
         safService.hentDokumentInnhold("123","456", VariantFormat.ARKIV)
     }
 
-    @Test(expected = EessiServiceException::class)
-    fun `gitt en feil når dokumentinnhold hentes så kast EessiServiceExeption med tilhørende httpCode`() {
+    @Test(expected = SafException::class)
+    fun `gitt en feil når dokumentinnhold hentes så kast SafException med tilhørende httpCode`() {
         whenever(safRestOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java)))
                 .thenThrow(RestClientException("some error"))
         safService.hentDokumentInnhold("123","456", VariantFormat.ARKIV)

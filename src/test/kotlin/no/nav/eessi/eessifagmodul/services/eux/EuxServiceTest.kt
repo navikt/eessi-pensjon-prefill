@@ -3,7 +3,7 @@ package no.nav.eessi.eessifagmodul.services.eux
 import com.nhaarman.mockito_kotlin.*
 import no.nav.eessi.eessifagmodul.models.*
 import no.nav.eessi.eessifagmodul.services.eux.bucmodel.Buc
-import no.nav.eessi.eessifagmodul.services.saf.SafService
+import no.nav.eessi.eessifagmodul.arkiv.SafService
 import no.nav.eessi.eessifagmodul.utils.*
 import org.junit.After
 import org.junit.Assert
