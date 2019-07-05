@@ -2,10 +2,7 @@ package no.nav.eessi.eessifagmodul.controllers
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import io.swagger.annotations.ApiOperation
-import no.nav.eessi.eessifagmodul.models.IkkeGyldigKallException
-import no.nav.eessi.eessifagmodul.models.InstitusjonItem
-import no.nav.eessi.eessifagmodul.models.SED
-import no.nav.eessi.eessifagmodul.models.SEDType
+import no.nav.eessi.eessifagmodul.models.*
 import no.nav.eessi.eessifagmodul.person.AktoerIdHelper
 import no.nav.eessi.eessifagmodul.prefill.PrefillDataModel
 import no.nav.eessi.eessifagmodul.services.PrefillService
@@ -141,6 +138,18 @@ class SedController(private val euxService: EuxService,
 
         return ResponseEntity.ok().body(mapAnyToJson(resultListe.filterPensionSedAndSort()))
     }
+
+    //ny knall for journalforing app henter ytelsetype ut ifra P15000
+    @ApiOperation("Henter ytelsetype fra P15000 på valgt Buc og Documentid")
+    @GetMapping("/ytelseKravtype/{rinanr}/sedid/{documentid}")
+    fun getPinOgYtelseKravtype(@PathVariable("rinanr", required = true) rinanr: String,
+                               @PathVariable("documentid", required = false) documentid: String): PinOgKrav {
+
+        logger.debug("Henter opp ytelseKravType fra P2100 eller P15000, feiler hvis ikke rett SED")
+        return euxService.hentFnrOgYtelseKravtype(rinanr, documentid)
+
+    }
+
 
     //validatate request and convert to PrefillDataModel
     fun buildPrefillDataModelOnExisting(request: ApiRequest): PrefillDataModel {
