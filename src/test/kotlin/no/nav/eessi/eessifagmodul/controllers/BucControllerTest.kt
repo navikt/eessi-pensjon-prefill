@@ -3,7 +3,7 @@ package no.nav.eessi.eessifagmodul.controllers
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.whenever
 import no.nav.eessi.eessifagmodul.models.*
-import no.nav.eessi.eessifagmodul.services.aktoerregister.AktoerregisterService
+import no.nav.eessi.eessifagmodul.person.aktoerregister.AktoerregisterService
 import no.nav.eessi.eessifagmodul.services.eux.BucUtils
 import no.nav.eessi.eessifagmodul.services.eux.EuxService
 import no.nav.eessi.eessifagmodul.services.eux.RinaAksjon
