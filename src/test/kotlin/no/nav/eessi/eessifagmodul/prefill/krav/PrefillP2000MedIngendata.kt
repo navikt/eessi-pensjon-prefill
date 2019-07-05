@@ -3,7 +3,7 @@ package no.nav.eessi.eessifagmodul.prefill.krav
 import no.nav.eessi.eessifagmodul.controllers.SedController
 import no.nav.eessi.eessifagmodul.models.InstitusjonItem
 import no.nav.eessi.eessifagmodul.models.Nav
-import no.nav.eessi.eessifagmodul.services.pensjonsinformasjon.PensjoninformasjonException
+import no.nav.eessi.eessifagmodul.pensjon.pensjonsinformasjon.PensjoninformasjonException
 import no.nav.eessi.eessifagmodul.models.SED
 import no.nav.eessi.eessifagmodul.prefill.AbstractPrefillIntegrationTestHelper
 import no.nav.eessi.eessifagmodul.prefill.PensjonsinformasjonHjelper
