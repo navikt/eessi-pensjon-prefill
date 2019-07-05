@@ -1,4 +1,4 @@
-package no.nav.eessi.eessifagmodul.services.pensjonsinformasjon
+package no.nav.eessi.eessifagmodul.pensjon.pensjonsinformasjon
 
 
 import com.google.common.base.Preconditions

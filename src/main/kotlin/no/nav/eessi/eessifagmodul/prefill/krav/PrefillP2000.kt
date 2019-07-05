@@ -6,7 +6,7 @@ import no.nav.eessi.eessifagmodul.prefill.Prefill
 import no.nav.eessi.eessifagmodul.prefill.PrefillDataModel
 import no.nav.eessi.eessifagmodul.prefill.nav.PrefillNav
 import no.nav.eessi.eessifagmodul.prefill.nav.PrefillPersonDataFromTPS
-import no.nav.eessi.eessifagmodul.services.pensjonsinformasjon.PensjoninformasjonException
+import no.nav.eessi.eessifagmodul.pensjon.pensjonsinformasjon.PensjoninformasjonException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 

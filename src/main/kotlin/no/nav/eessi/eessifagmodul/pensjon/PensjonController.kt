@@ -1,11 +1,10 @@
-package no.nav.eessi.eessifagmodul.controllers
+package no.nav.eessi.eessifagmodul.pensjon
 
 import io.swagger.annotations.ApiOperation
 import no.nav.eessi.eessifagmodul.person.aktoerregister.AktoerregisterException
-import no.nav.eessi.eessifagmodul.services.pensjonsinformasjon.IkkeFunnetException
-import no.nav.eessi.eessifagmodul.models.IkkeGyldigKallException
+import no.nav.eessi.eessifagmodul.pensjon.pensjonsinformasjon.IkkeFunnetException
 import no.nav.eessi.eessifagmodul.person.aktoerregister.AktoerregisterService
-import no.nav.eessi.eessifagmodul.services.pensjonsinformasjon.PensjonsinformasjonService
+import no.nav.eessi.eessifagmodul.pensjon.pensjonsinformasjon.PensjonsinformasjonService
 import no.nav.eessi.eessifagmodul.utils.errorBody
 import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
 import no.nav.security.oidc.api.Protected
@@ -41,13 +40,18 @@ class PensjonController(private val pensjonsinformasjonService: Pensjonsinformas
 
     @Throws(AktoerregisterException::class)
     fun hentAktoerIdPin(aktorid: String): String {
-        if (aktorid.isBlank()) throw IkkeGyldigKallException("Mangler AktorId")
+        if (aktorid.isBlank()) throw IkkeGyldigAktoerIdException("Mangler AktorId")
         return aktoerregisterService.hentGjeldendeNorskIdentForAktorId(aktorid)
     }
 
     private fun isProbablyAnFnrSentAsAktoerId(aktorid: String) = aktorid.length == 11
 
 }
+
+@ResponseStatus(value = HttpStatus.BAD_REQUEST)
+class IkkeGyldigAktoerIdException(message: String) : IllegalArgumentException(message)
+
+
 
 
 
