@@ -36,7 +36,7 @@ data class SafRequest(
 data class Variables(
         val brukerId: BrukerId,
         val foerste: Int,
-        val journalstatuser: List<String> = listOf("JOURNALFOERT", "FERDIGSTILT", "EKSPEDERT", "MOTTATT")
+        val journalstatuser: List<String> = listOf("JOURNALFOERT", "FERDIGSTILT", "EKSPEDERT", "MOTTATT", "UNDER_ARBEID")
 )
 
 
