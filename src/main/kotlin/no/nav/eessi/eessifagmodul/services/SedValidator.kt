@@ -1,7 +1,9 @@
 package no.nav.eessi.eessifagmodul.services
 
+import no.nav.eessi.eessifagmodul.services.eux.GenericUnprocessableEntity
 import no.nav.eessi.eessifagmodul.models.SED
-import no.nav.eessi.eessifagmodul.models.SedValidatorException
+import org.springframework.http.HttpStatus
+import org.springframework.web.bind.annotation.ResponseStatus
 
 class SedValidator {
 
@@ -16,3 +18,6 @@ class SedValidator {
     }
 
 }
+
+@ResponseStatus(value = HttpStatus.UNPROCESSABLE_ENTITY)
+class SedValidatorException(message: String) : GenericUnprocessableEntity(message)

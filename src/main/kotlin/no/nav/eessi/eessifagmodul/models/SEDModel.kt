@@ -3,6 +3,8 @@ package no.nav.eessi.eessifagmodul.models
 import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
 import no.nav.eessi.eessifagmodul.utils.mapJsonToAny
 import no.nav.eessi.eessifagmodul.utils.typeRefs
+import org.springframework.http.HttpStatus
+import org.springframework.web.bind.annotation.ResponseStatus
 
 // SED class main request class to basis
 // Strukturerte Elektroniske Dokumenter
@@ -88,3 +90,7 @@ enum class SEDType {
         }
     }
 }
+
+@ResponseStatus(value = HttpStatus.BAD_REQUEST)
+class SedDokumentIkkeGyldigException(message: String?) : Exception(message)
+
