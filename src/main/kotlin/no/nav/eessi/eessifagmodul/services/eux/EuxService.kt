@@ -535,15 +535,15 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate,
             val hentDokumentResponse = safService.hentDokumentInnhold(joarkJournalpostId, joarkDokumentInfoId, variantFormat)
 
             val body = LinkedMultiValueMap<String, Any>()
-            body.add("File", ByteArrayResource(hentDokumentResponse.base64.toByteArray()))
+            body.add("file", ByteArrayResource(hentDokumentResponse.base64.toByteArray()))
             body.add("Filnavn", hentDokumentResponse.fileName)
-            body.add("Filtype", hentDokumentResponse.contentType.split("/")[1])
+            val filtype = hentDokumentResponse.contentType.split("/")[1]
 
             val headers = HttpHeaders()
             headers.contentType = MediaType.MULTIPART_FORM_DATA
             val httpEntity = HttpEntity(body, headers)
 
-            val path = "/cpi/buc/$rinaSakId/sed/$rinaDokumentId/vedlegg"
+            val path = "/cpi/buc/$rinaSakId/sed/$rinaDokumentId/vedlegg?Filtype=$filtype"
             logger.info("Legger til vedlegg i rinaSakId: $rinaSakId rinaDokumentId: $rinaDokumentId")
 
             val response = euxOidcRestTemplate.exchange(
