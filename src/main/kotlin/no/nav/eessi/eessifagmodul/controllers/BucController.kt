@@ -12,7 +12,7 @@ import no.nav.eessi.eessifagmodul.services.eux.bucmodel.Buc
 import no.nav.eessi.eessifagmodul.services.eux.bucmodel.BucAndSedView
 import no.nav.eessi.eessifagmodul.services.eux.bucmodel.Creator
 import no.nav.eessi.eessifagmodul.services.eux.bucmodel.ShortDocumentItem
-import no.nav.eessi.eessifagmodul.services.saf.VariantFormat
+import no.nav.eessi.eessifagmodul.arkiv.VariantFormat
 import no.nav.eessi.eessifagmodul.utils.errorBody
 import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
 import no.nav.eessi.eessifagmodul.utils.successBody

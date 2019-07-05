@@ -1,4 +1,4 @@
-package no.nav.eessi.eessifagmodul.services.saf
+package no.nav.eessi.eessifagmodul.arkiv
 
 import io.micrometer.core.instrument.MeterRegistry
 import no.nav.eessi.eessifagmodul.config.OidcAuthorizationHeaderInterceptor

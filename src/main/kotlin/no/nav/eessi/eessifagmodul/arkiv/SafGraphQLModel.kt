@@ -1,4 +1,4 @@
-package no.nav.eessi.eessifagmodul.services.saf
+package no.nav.eessi.eessifagmodul.arkiv
 
 import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
 

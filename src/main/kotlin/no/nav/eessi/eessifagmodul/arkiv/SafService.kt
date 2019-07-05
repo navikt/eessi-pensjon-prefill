@@ -1,9 +1,8 @@
-package no.nav.eessi.eessifagmodul.services.saf
+package no.nav.eessi.eessifagmodul.arkiv
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.micrometer.core.instrument.Counter
 import io.micrometer.core.instrument.Metrics
-import no.nav.eessi.eessifagmodul.services.EessiServiceException
 import org.slf4j.LoggerFactory
 import org.springframework.http.*
 import org.springframework.stereotype.Service
@@ -43,16 +42,16 @@ class SafService(var safGraphQlOidcRestTemplate: RestTemplate,
                  return mappedResponse
              } else {
                  hentDokumentMetadata_teller_type_feilede.increment()
-                 throw EessiServiceException("En feil oppstod under henting av dokument metadata fra SAF: ${response.statusCode}", response.statusCode)
+                 throw SafException("En feil oppstod under henting av dokument metadata fra SAF: ${response.statusCode}", response.statusCode)
              }
-         } catch(ex: EessiServiceException) {
+         } catch(ex: SafException) {
              logger.error("En feil oppstod under henting av dokument metadata fra SAF: $ex")
              hentDokumentMetadata_teller_type_feilede.increment()
              throw ex
          } catch(ex: Exception) {
              logger.error("En feil oppstod under henting av dokument metadata fra SAF: $ex")
              hentDokumentMetadata_teller_type_feilede.increment()
-             throw EessiServiceException("En feil oppstod under henting av dokument metadata fra SAF: $ex", HttpStatus.INTERNAL_SERVER_ERROR)
+             throw SafException("En feil oppstod under henting av dokument metadata fra SAF: $ex", HttpStatus.INTERNAL_SERVER_ERROR)
          }
     }
 
@@ -75,16 +74,16 @@ class SafService(var safGraphQlOidcRestTemplate: RestTemplate,
                 hentDokumentInnhold_teller_type_vellykkede.increment()
                 return HentdokumentInnholdResponse(base64innhold, filnavn!!, contentType)
             } else {
-                throw EessiServiceException("En feil oppstod under henting av dokumentinnhold fra SAF: ${response.statusCode}", response.statusCode)
+                throw SafException("En feil oppstod under henting av dokumentinnhold fra SAF: ${response.statusCode}", response.statusCode)
             }
-        } catch(ex: EessiServiceException) {
+        } catch(ex: SafException) {
             logger.error("En feil oppstod under henting av dokumentInnhold fra SAF: $ex")
             hentDokumentInnhold_teller_type_feilede.increment()
             throw ex
         } catch(ex: Exception) {
             logger.error("En feil oppstod under henting av dokumentInnhold fra SAF: $ex")
             hentDokumentInnhold_teller_type_feilede.increment()
-            throw EessiServiceException("En feil oppstod under henting av dokumentinnhold fra SAF", HttpStatus.INTERNAL_SERVER_ERROR)
+            throw SafException("En feil oppstod under henting av dokumentinnhold fra SAF", HttpStatus.INTERNAL_SERVER_ERROR)
         }
     }
 
