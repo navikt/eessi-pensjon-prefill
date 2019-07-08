@@ -98,6 +98,9 @@ dependencies {
     testImplementation("com.nhaarman:mockito-kotlin-kt1.1:1.5.0")
     testImplementation("org.skyscreamer:jsonassert:1.5.0")
 
+    // Architecture tests
+    testImplementation 'com.tngtech.archunit:archunit:0.10.2'
+
     // Logging
     implementation("net.logstash.logback:logstash-logback-encoder:${logstashLogbackVersion}")
 
