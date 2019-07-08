@@ -4,7 +4,7 @@ import no.nav.eessi.eessifagmodul.models.*
 import no.nav.eessi.eessifagmodul.prefill.PensjonsinformasjonHjelper
 import no.nav.eessi.eessifagmodul.prefill.Prefill
 import no.nav.eessi.eessifagmodul.prefill.PrefillDataModel
-import no.nav.eessi.eessifagmodul.utils.NavFodselsnummer
+import no.nav.eessi.eessifagmodul.prefill.person.NavFodselsnummer
 import no.nav.eessi.eessifagmodul.utils.simpleFormat
 import no.nav.pensjon.v1.kravhistorikk.V1KravHistorikk
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon

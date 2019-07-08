@@ -1,7 +1,6 @@
 package no.nav.eessi.eessifagmodul.prefill.person
 
 import no.nav.eessi.eessifagmodul.prefill.EessiInformasjon
-import no.nav.eessi.eessifagmodul.utils.NavFodselsnummer
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.*
 import org.junit.Test
 import org.junit.runner.RunWith

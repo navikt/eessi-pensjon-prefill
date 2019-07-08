@@ -1,4 +1,4 @@
-package no.nav.eessi.eessifagmodul.utils
+package no.nav.eessi.eessifagmodul.prefill.person
 
 import org.slf4j.LoggerFactory
 import java.time.LocalDate

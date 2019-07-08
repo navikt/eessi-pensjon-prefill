@@ -1,4 +1,4 @@
-package no.nav.eessi.eessifagmodul.utils
+package no.nav.eessi.eessifagmodul.prefill.person
 
 import no.nav.eessi.eessifagmodul.prefill.person.PersonDataFromTPS.Companion.generateRandomFnr
 import org.junit.Assert.assertEquals

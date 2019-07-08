@@ -9,7 +9,7 @@ import no.nav.eessi.eessifagmodul.prefill.PrefillDataModel
 import no.nav.eessi.eessifagmodul.prefill.nav.PrefillNav
 import no.nav.eessi.eessifagmodul.prefill.nav.PrefillPersonDataFromTPS
 import no.nav.eessi.eessifagmodul.prefill.person.PersonDataFromTPS
-import no.nav.eessi.eessifagmodul.utils.NavFodselsnummer
+import no.nav.eessi.eessifagmodul.prefill.person.NavFodselsnummer
 import org.junit.Test
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
