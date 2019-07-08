@@ -1,6 +1,5 @@
 package no.nav.eessi.eessifagmodul.utils
 
-import no.nav.eessi.eessifagmodul.models.InstitusjonItem
 import org.junit.Test
 import org.skyscreamer.jsonassert.JSONAssert
 import org.slf4j.Logger
@@ -62,9 +61,14 @@ class JsonUtilsTest {
     @Test
     fun testMapDatatoMap() {
 
+        data class InstitusjonItem(
+                var country: String,
+                var institution: String,
+                var name: String? = null)
+
         val testData = InstitusjonItem(
-                institution = "Nav",
-                country = "No"
+            institution = "Nav",
+            country = "No"
         )
 
         val result = datatClazzToMap(testData)
