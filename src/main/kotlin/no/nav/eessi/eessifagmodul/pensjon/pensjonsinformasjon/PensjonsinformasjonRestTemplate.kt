@@ -1,7 +1,7 @@
 package no.nav.eessi.eessifagmodul.pensjon.pensjonsinformasjon
 
 import io.micrometer.core.instrument.MeterRegistry
-import no.nav.eessi.eessifagmodul.config.RequestResponseLoggerInterceptor
+import no.nav.eessi.eessifagmodul.logging.RequestResponseLoggerInterceptor
 import no.nav.eessi.eessifagmodul.security.sts.STSService
 import no.nav.eessi.eessifagmodul.security.sts.UsernameToOidcInterceptor
 import org.springframework.beans.factory.annotation.Value

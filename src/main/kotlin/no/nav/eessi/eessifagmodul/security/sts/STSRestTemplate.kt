@@ -1,6 +1,6 @@
 package no.nav.eessi.eessifagmodul.security.sts
 
-import no.nav.eessi.eessifagmodul.config.RequestResponseLoggerInterceptor
+import no.nav.eessi.eessifagmodul.logging.RequestResponseLoggerInterceptor
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.web.client.RestTemplateBuilder
