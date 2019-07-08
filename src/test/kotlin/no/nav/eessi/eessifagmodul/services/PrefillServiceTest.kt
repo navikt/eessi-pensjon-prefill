@@ -7,9 +7,12 @@ import no.nav.eessi.eessifagmodul.prefill.PrefillDataModel
 import no.nav.eessi.eessifagmodul.prefill.PrefillSED
 import no.nav.eessi.eessifagmodul.services.eux.BucSedResponse
 import no.nav.eessi.eessifagmodul.services.eux.BucUtils
+import no.nav.eessi.eessifagmodul.services.eux.EuxGenericServerException
+import no.nav.eessi.eessifagmodul.services.eux.EuxServerException
 import no.nav.eessi.eessifagmodul.services.eux.EuxService
+import no.nav.eessi.eessifagmodul.services.eux.RinaCasenrIkkeMottattException
+import no.nav.eessi.eessifagmodul.services.eux.SedDokumentIkkeOpprettetException
 import no.nav.eessi.eessifagmodul.services.eux.bucmodel.Buc
-import no.nav.eessi.eessifagmodul.services.eux.bucmodel.ParticipantsItem
 import no.nav.eessi.eessifagmodul.services.eux.bucmodel.ShortDocumentItem
 import no.nav.eessi.eessifagmodul.utils.mapJsonToAny
 import no.nav.eessi.eessifagmodul.utils.typeRefs

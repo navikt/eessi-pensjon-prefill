@@ -1,13 +1,14 @@
 package no.nav.eessi.eessifagmodul.security.sts
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import no.nav.eessi.eessifagmodul.models.SystembrukerTokenException
 import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
 import no.nav.eessi.eessifagmodul.utils.typeRef
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpMethod
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
+import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.util.UriComponentsBuilder
 
@@ -55,3 +56,6 @@ class STSService(private val securityTokenExchangeBasicAuthRestTemplate: RestTem
             throw RuntimeException("SecurityTokenExchange received http-error ${responseEntity.statusCode}:${responseEntity.statusCodeValue}")
     }
 }
+
+@ResponseStatus(value = HttpStatus.SERVICE_UNAVAILABLE)
+class SystembrukerTokenException(message: String) : Exception(message)
