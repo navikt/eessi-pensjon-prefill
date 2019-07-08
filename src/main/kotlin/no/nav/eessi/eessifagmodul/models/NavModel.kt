@@ -116,6 +116,12 @@ data class PersonpinEndringer(
         val nytt: String? = null
 )
 
+//P15000-P2100 levende PinID og Krav
+data class PinOgKrav(
+        val fnr: String? = null,
+        val krav: Krav? = null
+)
+
 
 //H070
 data class Doedsfall(

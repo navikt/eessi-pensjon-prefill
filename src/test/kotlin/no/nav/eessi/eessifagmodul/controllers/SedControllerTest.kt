@@ -372,4 +372,22 @@ class SedControllerTest {
         val validSedListforBuc = mapJsonToAny(json, typeRefs<List<String>>())
         assertEquals(2, validSedListforBuc.size)
     }
+
+    @Test
+    fun getYtelseKravtypeOk() {
+        val mockKrav = PinOgKrav(fnr = "13212312", krav =  Krav(dato = "2019-02-01", type = "01"))
+
+        doReturn(mockKrav).whenever(mockEuxService).
+                hentFnrOgYtelseKravtype(
+                        ArgumentMatchers.anyString(),
+                        ArgumentMatchers.anyString()
+                )
+
+        val mockResult =  sedController.getPinOgYtelseKravtype("12123", "3123123")
+
+        assertEquals("13212312", mockResult.fnr)
+        assertEquals("01", mockResult.krav?.type)
+        assertEquals("2019-02-01", mockResult.krav?.dato)
+    }
+
 }
