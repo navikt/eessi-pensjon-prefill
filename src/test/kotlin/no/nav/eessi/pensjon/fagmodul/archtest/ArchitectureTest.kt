@@ -12,9 +12,7 @@ class ArchitectureTest {
     companion object {
 
         @JvmStatic
-        private val root = EessiFagmodulApplication::class.qualifiedName!!
-                .replace("." + EessiFagmodulApplication::class.simpleName, "") +
-                ".fagmodul" // TODO Fix
+        private val root = EessiFagmodulApplication::class.qualifiedName!!.replace("." + EessiFagmodulApplication::class.simpleName, "")
 
         @JvmStatic
         lateinit var classesToAnalyze: JavaClasses
@@ -29,53 +27,68 @@ class ArchitectureTest {
     fun `check architecture`() {
 
         // components
-        val health = "health"
-        val coreDomain = "core"
-        val subdomainPensjon = "pensjon"
-        val subdomainPerson = "person"
-        val subdomainArkiv = "arkiv"
-        val subdomainGeo = "geo"
-        val config = "config"
+        val api = "fagmodul.api"
+        val health = "fagmodul.health"
+        val core = "fagmodul.core"
+        val config = "fagmodul.config"
+        val metrics = "fagmodul.metrics"
+        val services = "services"
         val security = "security"
         val utils = "utils"
 
+        val packages: Map<String, String> = mapOf(
+                "$root.fagmodul.health.." to health,
+
+                "$root.fagmodul.arkiv.." to api,
+                "$root.fagmodul.geo.." to api,
+                "$root.fagmodul.person.." to api,
+                "$root.fagmodul.pensjon.." to api,
+
+                "$root.fagmodul.controllers.." to core,
+                "$root.fagmodul.prefill.." to core,
+                "$root.fagmodul.services.." to core,
+                "$root.fagmodul.pesys.." to core,
+                "$root.fagmodul.models.." to core,
+
+                "$root.fagmodul.config.." to config,
+                "$root.fagmodul.metrics.." to metrics,
+
+                "$root.services.." to services,
+
+                "$root.security.." to security,
+
+                "$root.metrics.." to utils,
+                "$root.utils.." to utils,
+                "$root.logging.." to utils)
+
         // packages in each component - default is the package with the component name
-        val packages: Map<String, Array<String>> = mapOf(
-                coreDomain to arrayOf(/* TODO there is too much stuff here */
-                        "$root.controllers..", "$root.prefill..", "$root.services..", "$root.pesys..", "$root.models.."),
-                config to arrayOf("$root.config..", "$root.metrics"),
-                utils to arrayOf("$root.utils..", "$root.logging"))
-                .withDefault { layer -> arrayOf("$root.$layer..") }
+        fun packagesFor(layer: String) = packages.entries.filter { it.value == layer }.map { it.key }.toTypedArray()
 
         // mentally replace the word "layer" with "component":
-
         layeredArchitecture()
-                .layer(health).definedBy(*packages.getValue(health))
+                .layer(api).definedBy(*packagesFor(api))
+                .whereLayer(api).mayNotBeAccessedByAnyLayer()
+
+                .layer(health).definedBy(*packagesFor(health))
                 .whereLayer(health).mayNotBeAccessedByAnyLayer()
 
-                .layer(coreDomain).definedBy(*packages.getValue(coreDomain))
-                .whereLayer(coreDomain).mayOnlyBeAccessedByLayers(health)
+                .layer(core).definedBy(*packagesFor(core))
+                .whereLayer(health).mayNotBeAccessedByAnyLayer()
 
-                .layer(subdomainPensjon).definedBy(*packages.getValue(subdomainPensjon))
-                .whereLayer(subdomainPensjon).mayOnlyBeAccessedByLayers(health, coreDomain)
+                .layer(config).definedBy(*packagesFor(config))
+                .whereLayer(config).mayNotBeAccessedByAnyLayer()
 
-                .layer(subdomainPerson).definedBy(*packages.getValue(subdomainPerson))
-                .whereLayer(subdomainPerson).mayOnlyBeAccessedByLayers(health, coreDomain, /* TODO should not use other subdomain */ subdomainPensjon)
+                .layer(metrics).definedBy(*packagesFor(metrics))
+                .whereLayer(metrics).mayOnlyBeAccessedByLayers(health, api, core)
 
-                .layer(subdomainArkiv).definedBy(*packages.getValue(subdomainArkiv))
-                .whereLayer(subdomainArkiv).mayOnlyBeAccessedByLayers(health, coreDomain)
+                .layer(services).definedBy(*packagesFor(services))
+                .whereLayer(services).mayOnlyBeAccessedByLayers(api, health, core)
 
-                .layer(subdomainGeo).definedBy(*packages.getValue(subdomainGeo))
-                .whereLayer(subdomainGeo).mayOnlyBeAccessedByLayers(health, coreDomain)
+                .layer(security).definedBy(*packagesFor(security))
+                .whereLayer(security).mayOnlyBeAccessedByLayers(health, services, core)
 
-                .layer(config).definedBy(*packages.getValue(config))
-                .whereLayer(config).mayOnlyBeAccessedByLayers(health, coreDomain, subdomainGeo, subdomainArkiv, subdomainPensjon, subdomainPerson)
-
-                .layer(security).definedBy(*packages.getValue(security))
-                .whereLayer(security).mayOnlyBeAccessedByLayers(health, coreDomain, subdomainGeo, subdomainArkiv, subdomainPensjon, subdomainPerson)
-
-                .layer(utils).definedBy(*packages.getValue(utils))
-                .whereLayer(utils).mayOnlyBeAccessedByLayers(health, coreDomain, subdomainGeo, subdomainArkiv, subdomainPensjon, subdomainPerson, config, security)
+                .layer(utils).definedBy(*packagesFor(utils))
+                .whereLayer(utils).mayOnlyBeAccessedByLayers(api, health, core, metrics, services, security, config)
 
                 .check(classesToAnalyze)
     }
