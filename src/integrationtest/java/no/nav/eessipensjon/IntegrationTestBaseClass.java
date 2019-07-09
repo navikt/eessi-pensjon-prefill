@@ -1,6 +1,6 @@
 package no.nav.eessipensjon;
 
-import no.nav.eessi.eessifagmodul.EessiFagmodulApplication;
+import no.nav.eessi.pensjon.fagmodul.EessiFagmodulApplication;
 import no.nav.security.oidc.test.support.spring.TokenGeneratorConfiguration;
 import org.apache.http.client.fluent.Request;
 import org.springframework.boot.test.context.SpringBootTest;
