@@ -12,7 +12,6 @@ import no.nav.eessi.pensjon.fagmodul.services.eux.bucmodel.BucAndSedView
 import no.nav.eessi.pensjon.fagmodul.services.eux.bucmodel.Creator
 import no.nav.eessi.pensjon.fagmodul.services.eux.bucmodel.ShortDocumentItem
 import no.nav.eessi.pensjon.services.arkiv.VariantFormat
-import no.nav.eessi.pensjon.fagmodul.person.AktoerIdHelper
 import no.nav.eessi.pensjon.utils.errorBody
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import no.nav.eessi.pensjon.utils.successBody

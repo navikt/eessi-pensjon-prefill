@@ -3,7 +3,6 @@ package no.nav.eessi.pensjon.fagmodul.controllers
 import com.fasterxml.jackson.annotation.JsonInclude
 import io.swagger.annotations.ApiOperation
 import no.nav.eessi.pensjon.fagmodul.models.*
-import no.nav.eessi.pensjon.fagmodul.person.AktoerIdHelper
 import no.nav.eessi.pensjon.fagmodul.prefill.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.services.PrefillService
 import no.nav.eessi.pensjon.fagmodul.services.eux.BucSedResponse

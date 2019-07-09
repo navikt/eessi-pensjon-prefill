@@ -3,7 +3,7 @@ package no.nav.eessi.pensjon.fagmodul.pensjon
 import io.swagger.annotations.ApiOperation
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.IkkeFunnetException
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonService
-import no.nav.eessi.pensjon.fagmodul.person.AktoerIdHelper
+import no.nav.eessi.pensjon.fagmodul.controllers.AktoerIdHelper
 import no.nav.eessi.pensjon.utils.errorBody
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import no.nav.security.oidc.api.Protected
