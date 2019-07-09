@@ -61,8 +61,6 @@ class ArchitectureTest {
 
                 "$root.fagmodul.controllers.." to coreApi,
 
-                "$root.fagmodul.helper.." to helper, /* TODO This should be removed */
-
                 "$root.fagmodul.prefill.." to core,
                 "$root.fagmodul.services.." to core,
                 "$root.fagmodul.pesys.." to core,
@@ -70,6 +68,8 @@ class ArchitectureTest {
 
                 "$root.fagmodul.config.." to config,
                 "$root.fagmodul.metrics.." to metrics,
+
+                "$root.helper.." to helper, /* TODO This should be removed */
 
                 "$root.services.aktoerregister" to aktoerregisterService,
                 "$root.services.arkiv" to arkivService,
