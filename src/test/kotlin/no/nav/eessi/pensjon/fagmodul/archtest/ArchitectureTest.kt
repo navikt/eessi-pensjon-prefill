@@ -116,7 +116,7 @@ class ArchitectureTest {
                 .whereLayer(config).mayNotBeAccessedByAnyLayer()
 
                 .layer(metrics).definedBy(*packagesFor(metrics))
-                .whereLayer(metrics).mayOnlyBeAccessedByLayers(health, arkivApi, personApi, core)
+                .whereLayer(metrics).mayOnlyBeAccessedByLayers(health, core)
 
                 .layer(aktoerregisterService).definedBy(*packagesFor(aktoerregisterService))
                 .whereLayer(aktoerregisterService).mayOnlyBeAccessedByLayers(personApi, helper)

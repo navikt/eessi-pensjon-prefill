@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiOperation
 import no.nav.eessi.pensjon.services.aktoerregister.AktoerregisterService
 import no.nav.eessi.pensjon.services.personv3.PersonV3Service
 import no.nav.eessi.pensjon.fagmodul.metrics.getCounter
+import no.nav.eessi.pensjon.metrics.counter
 import no.nav.eessi.pensjon.services.personv3.PersonV3IkkeFunnetException
 import no.nav.eessi.pensjon.services.personv3.PersonV3SikkerhetsbegrensningException
 import no.nav.eessi.pensjon.services.aktoerregister.AktoerregisterException
@@ -48,23 +49,23 @@ class NavRegistreOppslagController(private val aktoerregisterService: Aktoerregi
 
         } catch (are: AktoerregisterException) {
             logger.error("Kall til Akørregisteret feilet på grunn av: " + are.message)
-            getCounter("PERSONINFORMASJONFEIL").increment()
+            counter("eessipensjon_fagmodul.personinfo", "feilede").increment()
             ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(AktoerregisterException::class.simpleName)
         } catch (arife: AktoerregisterIkkeFunnetException) {
             logger.error("Kall til Akørregisteret feilet på grunn av: " + arife.message)
-            getCounter("PERSONINFORMASJONFEIL").increment()
+            counter("eessipensjon_fagmodul.personinfo", "feilede").increment()
             ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(AktoerregisterException::class.simpleName)
         } catch (sbe: PersonV3SikkerhetsbegrensningException) {
             logger.error("Kall til PersonV3 med feilet på grunn av sikkerhetsbegrensning")
-            getCounter("PERSONINFORMASJONFEIL").increment()
+            counter("eessipensjon_fagmodul.personinfo", "feilede").increment()
             ResponseEntity.status(HttpStatus.FORBIDDEN).body(PersonV3SikkerhetsbegrensningException::class.simpleName)
         } catch (ife: PersonV3IkkeFunnetException) {
             logger.error("Kall til PersonV3 feilet på grunn av person ikke funnet")
-            getCounter("PERSONINFORMASJONFEIL").increment()
+            counter("eessipensjon_fagmodul.personinfo", "feilede").increment()
             ResponseEntity.status(HttpStatus.NOT_FOUND).body(PersonV3IkkeFunnetException::class.simpleName)
         }
 
-        getCounter("PERSONINFORMASJONOK").increment()
+        counter("eessipensjon_fagmodul.personinfo", "vellykkede").increment()
         return ResponseEntity.ok(Personinformasjon(personresp.person.personnavn.sammensattNavn,
                 personresp.person.personnavn.fornavn,
                 personresp.person.personnavn.mellomnavn,
