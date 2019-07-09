@@ -3,9 +3,11 @@ package no.nav.eessi.eessifagmodul.person
 import no.nav.eessi.eessifagmodul.person.aktoerregister.AktoerregisterException
 import no.nav.eessi.eessifagmodul.person.aktoerregister.AktoerregisterService
 import org.springframework.http.HttpStatus
+import org.springframework.stereotype.Component
 import org.springframework.web.bind.annotation.ResponseStatus
 
-abstract class AktoerIdHelper(private val aktoerregisterService: AktoerregisterService) {
+@Component
+class AktoerIdHelper(private val aktoerregisterService: AktoerregisterService) {
 
     @Throws(AktoerregisterException::class)
     fun hentAktoerIdPin(aktorid: String): String {

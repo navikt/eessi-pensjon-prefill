@@ -9,6 +9,7 @@ import no.nav.eessi.eessifagmodul.pensjon.pensjonsinformasjon.IkkeFunnetExceptio
 import no.nav.eessi.eessifagmodul.pensjon.pensjonsinformasjon.PensjoninformasjonException
 import no.nav.eessi.eessifagmodul.pensjon.pensjonsinformasjon.PensjonsinformasjonService
 import no.nav.eessi.eessifagmodul.pensjon.pensjonsinformasjon.Pensjontype
+import no.nav.eessi.eessifagmodul.person.AktoerIdHelper
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito.`when`
@@ -22,9 +23,9 @@ class PensjonControllerTest {
 
     private val pensjonsinformasjonService: PensjonsinformasjonService = mock()
 
-    private val aktoerregisterService: AktoerregisterService = mock()
+    private val aktoerIdHelper: AktoerIdHelper = mock()
 
-    private val controller = PensjonController(pensjonsinformasjonService, aktoerregisterService)
+    private val controller = PensjonController(pensjonsinformasjonService, aktoerIdHelper)
 
     private val sakId = "Some sakId"
 
@@ -34,7 +35,7 @@ class PensjonControllerTest {
         val fnrForAktoerID = "23037328392" // 11 sifre
         val sakId = "Some sakId"
 
-        `when`(aktoerregisterService.hentGjeldendeNorskIdentForAktorId(aktoerId)).thenReturn(fnrForAktoerID)
+        `when`(aktoerIdHelper.hentAktoerIdPin(aktoerId)).thenReturn(fnrForAktoerID)
 
         whenever(pensjonsinformasjonService.hentKunSakType(sakId, fnrForAktoerID)).thenReturn(Pensjontype(sakId, "Type"))
 
@@ -52,7 +53,7 @@ class PensjonControllerTest {
         controller.hentPensjonSakType(sakId, aktoerIdSomFaktiskErEtFnr)
 
         verify(pensjonsinformasjonService).hentKunSakType(sakId, aktoerIdSomFaktiskErEtFnr)
-        verify(aktoerregisterService, never()).hentGjeldendeNorskIdentForAktorId(any())
+        verify(aktoerIdHelper, never()).hentAktoerIdPin(any())
     }
 
     @Test
@@ -61,7 +62,7 @@ class PensjonControllerTest {
         val fnrForAktoerID = "23037328392" // 11 sifre
         val sakId = "Some sakId"
 
-        `when`(aktoerregisterService.hentGjeldendeNorskIdentForAktorId(aktoerId)).thenReturn(fnrForAktoerID)
+        `when`(aktoerIdHelper.hentAktoerIdPin(aktoerId)).thenReturn(fnrForAktoerID)
 
         whenever(pensjonsinformasjonService.hentKunSakType(sakId, fnrForAktoerID)).thenThrow(IkkeFunnetException("Saktype ikke funnet"))
         val response = controller.hentPensjonSakType(sakId, aktoerId)
@@ -77,7 +78,7 @@ class PensjonControllerTest {
         val fnrForAktoerID = "23037328392" // 11 sifre
         val sakId = "Some sakId"
 
-        `when`(aktoerregisterService.hentGjeldendeNorskIdentForAktorId(aktoerId)).thenReturn(fnrForAktoerID)
+        `when`(aktoerIdHelper.hentAktoerIdPin(aktoerId)).thenReturn(fnrForAktoerID)
         whenever(pensjonsinformasjonService.hentKunSakType(sakId, fnrForAktoerID)).thenThrow(PensjoninformasjonException("Ingen svar med PESYS"))
         val response = controller.hentPensjonSakType(sakId, aktoerId)
 

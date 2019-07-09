@@ -3,6 +3,7 @@ package no.nav.eessi.eessifagmodul.models
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.whenever
 import no.nav.eessi.eessifagmodul.controllers.SedController
+import no.nav.eessi.eessifagmodul.person.AktoerIdHelper
 import no.nav.eessi.eessifagmodul.prefill.PrefillDataModel
 import no.nav.eessi.eessifagmodul.prefill.PrefillP4000
 import no.nav.eessi.eessifagmodul.prefill.PrefillSED
@@ -37,7 +38,7 @@ class SedP4000Test {
     lateinit var mockEuxService: EuxService
 
     @Mock
-    private lateinit var mockAktoerregisterService: AktoerregisterService
+    private lateinit var mockAktoerIdHelper: AktoerIdHelper
 
     @Mock
     lateinit var mockPrefillService: PrefillService
@@ -64,7 +65,7 @@ class SedP4000Test {
 
         pre4000 = PrefillP4000(prefillPerson)
 
-        sedController = SedController(mockEuxService, mockPrefillService, mockAktoerregisterService)
+        sedController = SedController(mockEuxService, mockPrefillService, mockAktoerIdHelper)
         logger.debug("Starting tests.... ...")
     }
 
@@ -182,7 +183,7 @@ class SedP4000Test {
         assertNotNull(reqjson)
         validateJson(reqjson)
 
-        whenever(mockAktoerregisterService.hentGjeldendeNorskIdentForAktorId(ArgumentMatchers.anyString())).thenReturn("12345")
+        whenever(mockAktoerIdHelper.hentAktoerIdPin(ArgumentMatchers.anyString())).thenReturn("12345")
         val data = sedController.buildPrefillDataModelConfirm(req)
 
         assertNotNull(data)

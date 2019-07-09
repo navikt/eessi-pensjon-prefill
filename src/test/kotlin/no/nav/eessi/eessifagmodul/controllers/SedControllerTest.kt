@@ -5,10 +5,10 @@ import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.whenever
 import no.nav.eessi.eessifagmodul.models.*
+import no.nav.eessi.eessifagmodul.person.AktoerIdHelper
 import no.nav.eessi.eessifagmodul.prefill.PrefillDataModel
 import no.nav.eessi.eessifagmodul.prefill.PrefillSED
 import no.nav.eessi.eessifagmodul.services.PrefillService
-import no.nav.eessi.eessifagmodul.person.aktoerregister.AktoerregisterService
 import no.nav.eessi.eessifagmodul.services.eux.BucSedResponse
 import no.nav.eessi.eessifagmodul.services.eux.BucUtils
 import no.nav.eessi.eessifagmodul.services.eux.EuxService
@@ -36,7 +36,7 @@ class SedControllerTest {
     lateinit var mockEuxService: EuxService
 
     @Mock
-    lateinit var mockAktoerregisterService: AktoerregisterService
+    lateinit var mockAktoerIdHelper: AktoerIdHelper
 
     @Mock
     lateinit var mockPrefillService: PrefillService
@@ -51,7 +51,7 @@ class SedControllerTest {
     fun setUp() {
         prefillDataMock = PrefillDataModel()
         mockPrefillService = PrefillService(mockEuxService, mockPrefillSED)
-        this.sedController = SedController(mockEuxService, mockPrefillService, mockAktoerregisterService)
+        this.sedController = SedController(mockEuxService, mockPrefillService, mockAktoerIdHelper)
     }
 
     @Test
@@ -85,8 +85,7 @@ class SedControllerTest {
         )
 
         //må være først
-        doReturn("12345").whenever(mockAktoerregisterService).hentGjeldendeNorskIdentForAktorId(
-                ArgumentMatchers.anyString())
+        doReturn("12345").whenever(mockAktoerIdHelper).hentAktoerIdPin(ArgumentMatchers.anyString())
 
         val utfyllMock = sedController.buildPrefillDataModelOnNew(requestMock)
 
@@ -127,7 +126,7 @@ class SedControllerTest {
                 aktoerId = "0105094340092"
         )
 
-        whenever(mockAktoerregisterService.hentGjeldendeNorskIdentForAktorId(ArgumentMatchers.anyString())).thenReturn("12345")
+        whenever(mockAktoerIdHelper.hentAktoerIdPin(ArgumentMatchers.anyString())).thenReturn("12345")
         val utfyllMock = sedController.buildPrefillDataModelOnExisting(requestMock)
 
         assertNotNull(utfyllMock.personNr)
@@ -165,7 +164,7 @@ class SedControllerTest {
                 buc = "P_BUC_06",
                 aktoerId = "0105094340092"
         )
-        whenever(mockAktoerregisterService.hentGjeldendeNorskIdentForAktorId(ArgumentMatchers.anyString())).thenReturn("12345")
+        whenever(mockAktoerIdHelper.hentAktoerIdPin(ArgumentMatchers.anyString())).thenReturn("12345")
 
         val utfyllMock = sedController.buildPrefillDataModelConfirm(mockData)
 
@@ -215,7 +214,7 @@ class SedControllerTest {
                 aktoerId = "0105094340092"
         )
 
-        whenever(mockAktoerregisterService.hentGjeldendeNorskIdentForAktorId(ArgumentMatchers.anyString())).thenReturn("12345")
+        whenever(mockAktoerIdHelper.hentAktoerIdPin(ArgumentMatchers.anyString())).thenReturn("12345")
 
         val model = sedController.buildPrefillDataModelConfirm(mockData)
 
