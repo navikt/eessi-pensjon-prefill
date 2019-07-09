@@ -1,0 +1,25 @@
+package no.nav.eessi.pensjon.fagmodul.prefill
+
+import no.nav.eessi.pensjon.fagmodul.models.PersonArbeidogOppholdUtland
+import no.nav.eessi.pensjon.fagmodul.models.SED
+import no.nav.eessi.pensjon.fagmodul.prefill.nav.PrefillPerson
+import no.nav.eessi.pensjon.fagmodul.utils.mapJsonToAny
+import no.nav.eessi.pensjon.fagmodul.utils.typeRefs
+
+class PrefillP4000(private val prefillPerson: PrefillPerson) : Prefill<SED> {
+
+    override fun prefill(prefillData: PrefillDataModel): SED {
+
+        prefillData.getPartSEDasJson("P4000")?.let {
+
+            val trygdeTid = mapJsonToAny(it, typeRefs<PersonArbeidogOppholdUtland>())
+
+            val sed = prefillPerson.prefill(prefillData)
+            sed.trygdetid = trygdeTid
+            prefillData.sed = sed
+        }
+
+        return prefillData.sed
+
+    }
+}
