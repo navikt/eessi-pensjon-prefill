@@ -1,4 +1,4 @@
-package no.nav.eessi.pensjon.fagmodul.pensjon.pensjonsinformasjon
+package no.nav.eessi.pensjon.services.pensjonsinformasjon
 
 import org.springframework.stereotype.Component
 import org.springframework.util.ResourceUtils

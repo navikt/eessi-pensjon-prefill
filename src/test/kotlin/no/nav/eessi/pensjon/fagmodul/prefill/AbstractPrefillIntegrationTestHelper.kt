@@ -10,8 +10,8 @@ import no.nav.eessi.pensjon.fagmodul.prefill.nav.PrefillNav
 import no.nav.eessi.pensjon.fagmodul.prefill.nav.PrefillPersonDataFromTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PersonDataFromTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PersonDataFromTPS.Companion.generateRandomFnr
-import no.nav.eessi.pensjon.fagmodul.pensjon.pensjonsinformasjon.PensjonsinformasjonService
-import no.nav.eessi.pensjon.fagmodul.pensjon.pensjonsinformasjon.RequestBuilder
+import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonService
+import no.nav.eessi.pensjon.services.pensjonsinformasjon.RequestBuilder
 import no.nav.eessi.pensjon.services.personv3.PersonV3Service
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import org.junit.Before

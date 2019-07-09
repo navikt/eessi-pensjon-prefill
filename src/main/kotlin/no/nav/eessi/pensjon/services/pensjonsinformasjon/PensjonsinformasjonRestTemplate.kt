@@ -1,4 +1,4 @@
-package no.nav.eessi.pensjon.fagmodul.pensjon.pensjonsinformasjon
+package no.nav.eessi.pensjon.services.pensjonsinformasjon
 
 import io.micrometer.core.instrument.MeterRegistry
 import no.nav.eessi.pensjon.logging.RequestResponseLoggerInterceptor

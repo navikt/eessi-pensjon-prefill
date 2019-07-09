@@ -1,4 +1,4 @@
-package no.nav.eessi.pensjon.fagmodul.pensjon.pensjonsinformasjon
+package no.nav.eessi.pensjon.services.pensjonsinformasjon
 
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.doReturn

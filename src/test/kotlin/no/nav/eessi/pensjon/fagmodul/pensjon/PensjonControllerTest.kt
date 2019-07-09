@@ -4,10 +4,10 @@ import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever
-import no.nav.eessi.pensjon.fagmodul.pensjon.pensjonsinformasjon.IkkeFunnetException
-import no.nav.eessi.pensjon.fagmodul.pensjon.pensjonsinformasjon.PensjoninformasjonException
-import no.nav.eessi.pensjon.fagmodul.pensjon.pensjonsinformasjon.PensjonsinformasjonService
-import no.nav.eessi.pensjon.fagmodul.pensjon.pensjonsinformasjon.Pensjontype
+import no.nav.eessi.pensjon.services.pensjonsinformasjon.IkkeFunnetException
+import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjoninformasjonException
+import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonService
+import no.nav.eessi.pensjon.services.pensjonsinformasjon.Pensjontype
 import no.nav.eessi.pensjon.fagmodul.person.AktoerIdHelper
 import org.junit.Test
 import org.junit.runner.RunWith
