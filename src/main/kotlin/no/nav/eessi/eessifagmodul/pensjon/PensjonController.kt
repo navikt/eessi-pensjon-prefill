@@ -1,10 +1,10 @@
 package no.nav.eessi.eessifagmodul.pensjon
 
 import io.swagger.annotations.ApiOperation
-import no.nav.eessi.eessifagmodul.person.aktoerregister.AktoerregisterException
 import no.nav.eessi.eessifagmodul.pensjon.pensjonsinformasjon.IkkeFunnetException
 import no.nav.eessi.eessifagmodul.person.aktoerregister.AktoerregisterService
 import no.nav.eessi.eessifagmodul.pensjon.pensjonsinformasjon.PensjonsinformasjonService
+import no.nav.eessi.eessifagmodul.person.AktoerIdHelper
 import no.nav.eessi.eessifagmodul.utils.errorBody
 import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
 import no.nav.security.oidc.api.Protected
@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/pensjon")
 class PensjonController(private val pensjonsinformasjonService: PensjonsinformasjonService,
-                        private val aktoerregisterService: AktoerregisterService) {
+                        aktoerregisterService: AktoerregisterService) : AktoerIdHelper(aktoerregisterService) {
 
     @ApiOperation("Henter ut saktype knyttet til den valgte sakId og aktoerId")
     @GetMapping("/saktype/{sakId}/{aktoerId}")
@@ -35,20 +35,5 @@ class PensjonController(private val pensjonsinformasjonService: Pensjonsinformas
         }
     }
 
-    @Throws(AktoerregisterException::class)
-    fun hentAktoerIdPin(aktorid: String): String {
-        if (aktorid.isBlank()) throw IkkeGyldigAktoerIdException("Mangler AktorId")
-        return aktoerregisterService.hentGjeldendeNorskIdentForAktorId(aktorid)
-    }
-
     private fun isProbablyAnFnrSentAsAktoerId(aktorid: String) = aktorid.length == 11
-
 }
-
-@ResponseStatus(value = HttpStatus.BAD_REQUEST)
-class IkkeGyldigAktoerIdException(message: String) : IllegalArgumentException(message)
-
-
-
-
-
