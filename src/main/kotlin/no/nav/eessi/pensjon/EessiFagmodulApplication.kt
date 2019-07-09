@@ -1,4 +1,4 @@
-package no.nav.eessi.pensjon.fagmodul
+package no.nav.eessi.pensjon
 
 import no.nav.security.spring.oidc.api.EnableOIDCTokenValidation
 import org.springframework.boot.autoconfigure.SpringBootApplication

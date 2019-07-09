@@ -3,7 +3,7 @@ package no.nav.eessi.pensjon.fagmodul.archtest
 import com.tngtech.archunit.core.domain.JavaClasses
 import com.tngtech.archunit.core.importer.ClassFileImporter
 import com.tngtech.archunit.library.Architectures.layeredArchitecture
-import no.nav.eessi.pensjon.fagmodul.EessiFagmodulApplication
+import no.nav.eessi.pensjon.EessiFagmodulApplication
 import org.junit.BeforeClass
 import org.junit.Test
 
@@ -12,7 +12,9 @@ class ArchitectureTest {
     companion object {
 
         @JvmStatic
-        private val root = EessiFagmodulApplication::class.qualifiedName!!.replace("." + EessiFagmodulApplication::class.simpleName, "")
+        private val root = EessiFagmodulApplication::class.qualifiedName!!
+                .replace("." + EessiFagmodulApplication::class.simpleName, "") +
+                ".fagmodul" // TODO Fix
 
         @JvmStatic
         lateinit var classesToAnalyze: JavaClasses

@@ -1,4 +1,4 @@
-package no.nav.eessi.pensjon.fagmodul
+package no.nav.eessi.pensjon
 
 import org.junit.Test
 import org.junit.runner.RunWith
