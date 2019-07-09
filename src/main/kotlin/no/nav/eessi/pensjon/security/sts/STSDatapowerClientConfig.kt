@@ -1,4 +1,4 @@
-package no.nav.eessi.pensjon.fagmodul.security.sts
+package no.nav.eessi.pensjon.security.sts
 
 /**
  * Documentation at https://confluence.adeo.no/display/KES/STS+-+Brukerdokumentasjon

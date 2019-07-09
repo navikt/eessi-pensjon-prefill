@@ -1,4 +1,4 @@
-package no.nav.eessi.pensjon.fagmodul.config
+package no.nav.eessi.pensjon.security.oidc
 
 import com.nimbusds.jwt.JWTClaimsSet
 import com.nimbusds.jwt.PlainJWT

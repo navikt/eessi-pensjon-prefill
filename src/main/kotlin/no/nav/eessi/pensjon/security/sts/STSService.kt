@@ -1,4 +1,4 @@
-package no.nav.eessi.pensjon.fagmodul.security.sts
+package no.nav.eessi.pensjon.security.sts
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import no.nav.eessi.pensjon.utils.mapAnyToJson

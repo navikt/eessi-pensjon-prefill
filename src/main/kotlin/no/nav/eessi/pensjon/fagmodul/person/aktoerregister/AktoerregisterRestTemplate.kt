@@ -1,8 +1,8 @@
 package no.nav.eessi.pensjon.fagmodul.person.aktoerregister
 
 import io.micrometer.core.instrument.MeterRegistry
-import no.nav.eessi.pensjon.fagmodul.security.sts.STSService
-import no.nav.eessi.pensjon.fagmodul.security.sts.UsernameToOidcInterceptor
+import no.nav.eessi.pensjon.security.sts.STSService
+import no.nav.eessi.pensjon.security.sts.UsernameToOidcInterceptor
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.actuate.metrics.web.client.DefaultRestTemplateExchangeTagsProvider
 import org.springframework.boot.actuate.metrics.web.client.MetricsRestTemplateCustomizer

@@ -1,4 +1,4 @@
-package no.nav.eessi.pensjon.fagmodul.config
+package no.nav.eessi.pensjon.security.oidc
 
 import no.nav.security.oidc.context.OIDCRequestContextHolder
 import no.nav.security.oidc.context.OIDCValidationContext

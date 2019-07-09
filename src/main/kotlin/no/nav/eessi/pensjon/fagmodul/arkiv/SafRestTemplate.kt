@@ -1,8 +1,8 @@
 package no.nav.eessi.pensjon.fagmodul.arkiv
 
 import io.micrometer.core.instrument.MeterRegistry
-import no.nav.eessi.pensjon.fagmodul.config.OidcAuthorizationHeaderInterceptor
 import no.nav.eessi.pensjon.logging.RequestResponseLoggerInterceptor
+import no.nav.eessi.pensjon.security.oidc.OidcAuthorizationHeaderInterceptor
 import no.nav.security.oidc.context.OIDCRequestContextHolder
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.actuate.metrics.web.client.DefaultRestTemplateExchangeTagsProvider

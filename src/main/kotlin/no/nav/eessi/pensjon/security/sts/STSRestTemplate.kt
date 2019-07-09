@@ -1,4 +1,4 @@
-package no.nav.eessi.pensjon.fagmodul.security.sts
+package no.nav.eessi.pensjon.security.sts
 
 import no.nav.eessi.pensjon.logging.RequestResponseLoggerInterceptor
 import org.slf4j.LoggerFactory

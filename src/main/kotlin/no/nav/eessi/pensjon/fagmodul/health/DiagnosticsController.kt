@@ -4,7 +4,7 @@ import no.nav.eessi.pensjon.fagmodul.models.IkkeGyldigKallException
 import no.nav.eessi.pensjon.fagmodul.services.eux.EuxService
 import no.nav.eessi.pensjon.fagmodul.pensjon.pensjonsinformasjon.PensjonsinformasjonService
 import no.nav.eessi.pensjon.fagmodul.person.personv3.PersonV3Service
-import no.nav.eessi.pensjon.fagmodul.security.sts.STSService
+import no.nav.eessi.pensjon.security.sts.STSService
 import no.nav.eessi.pensjon.fagmodul.metrics.getCounter
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.typeRefs
