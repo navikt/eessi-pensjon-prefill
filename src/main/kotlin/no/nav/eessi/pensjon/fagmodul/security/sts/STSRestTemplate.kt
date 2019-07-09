@@ -1,6 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.security.sts
 
-import no.nav.eessi.pensjon.fagmodul.logging.RequestResponseLoggerInterceptor
+import no.nav.eessi.pensjon.logging.RequestResponseLoggerInterceptor
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.web.client.RestTemplateBuilder
