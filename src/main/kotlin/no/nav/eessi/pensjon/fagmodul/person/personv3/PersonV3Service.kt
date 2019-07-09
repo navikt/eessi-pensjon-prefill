@@ -2,7 +2,7 @@ package no.nav.eessi.pensjon.fagmodul.person.personv3
 
 import io.micrometer.core.instrument.Counter
 import io.micrometer.core.instrument.Metrics
-import no.nav.eessi.pensjon.fagmodul.metrics.TimingService
+import no.nav.eessi.pensjon.metrics.TimingService
 import no.nav.eessi.pensjon.security.sts.configureRequestSamlToken
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonPersonIkkeFunnet
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonSikkerhetsbegrensning

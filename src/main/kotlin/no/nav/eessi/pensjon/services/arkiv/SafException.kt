@@ -1,4 +1,4 @@
-package no.nav.eessi.pensjon.fagmodul.arkiv
+package no.nav.eessi.pensjon.services.arkiv
 
 import org.springframework.http.HttpStatus
 

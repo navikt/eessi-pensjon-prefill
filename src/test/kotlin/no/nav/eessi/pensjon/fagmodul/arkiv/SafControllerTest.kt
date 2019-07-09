@@ -2,6 +2,11 @@ package no.nav.eessi.pensjon.fagmodul.arkiv
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.nhaarman.mockito_kotlin.whenever
+import no.nav.eessi.pensjon.services.arkiv.HentMetadataResponse
+import no.nav.eessi.pensjon.services.arkiv.HentdokumentInnholdResponse
+import no.nav.eessi.pensjon.services.arkiv.SafException
+import no.nav.eessi.pensjon.services.arkiv.SafService
+import no.nav.eessi.pensjon.services.arkiv.VariantFormat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith

@@ -3,7 +3,7 @@ package no.nav.eessi.pensjon.fagmodul.services.eux
 import com.nhaarman.mockito_kotlin.*
 import no.nav.eessi.pensjon.fagmodul.models.*
 import no.nav.eessi.pensjon.fagmodul.services.eux.bucmodel.Buc
-import no.nav.eessi.pensjon.fagmodul.arkiv.SafService
+import no.nav.eessi.pensjon.services.arkiv.SafService
 import no.nav.eessi.pensjon.utils.*
 import org.junit.After
 import org.junit.Assert

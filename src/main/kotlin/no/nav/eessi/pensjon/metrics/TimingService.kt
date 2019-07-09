@@ -1,4 +1,4 @@
-package no.nav.eessi.pensjon.fagmodul.metrics
+package no.nav.eessi.pensjon.metrics
 
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.Timer
