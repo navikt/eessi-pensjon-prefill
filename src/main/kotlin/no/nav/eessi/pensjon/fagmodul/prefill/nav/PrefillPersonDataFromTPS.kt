@@ -9,7 +9,7 @@ import no.nav.eessi.pensjon.fagmodul.geo.LandkodeService
 import no.nav.eessi.pensjon.fagmodul.geo.PostnummerService
 import no.nav.eessi.pensjon.fagmodul.person.personv3.PersonV3Service
 import no.nav.eessi.pensjon.fagmodul.prefill.person.NavFodselsnummer
-import no.nav.eessi.pensjon.fagmodul.utils.simpleFormat
+import no.nav.eessi.pensjon.utils.simpleFormat
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.*
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory

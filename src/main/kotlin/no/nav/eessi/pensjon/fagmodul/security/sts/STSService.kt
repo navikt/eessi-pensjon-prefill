@@ -1,8 +1,8 @@
 package no.nav.eessi.pensjon.fagmodul.security.sts
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import no.nav.eessi.pensjon.fagmodul.utils.mapAnyToJson
-import no.nav.eessi.pensjon.fagmodul.utils.typeRef
+import no.nav.eessi.pensjon.utils.mapAnyToJson
+import no.nav.eessi.pensjon.utils.typeRef
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus

@@ -1,4 +1,4 @@
-package no.nav.eessi.pensjon.fagmodul.utils
+package no.nav.eessi.pensjon.utils
 
 import java.text.SimpleDateFormat
 import java.time.LocalDate

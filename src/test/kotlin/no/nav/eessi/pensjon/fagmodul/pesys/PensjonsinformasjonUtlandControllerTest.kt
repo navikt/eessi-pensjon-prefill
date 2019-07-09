@@ -1,9 +1,9 @@
 package no.nav.eessi.pensjon.fagmodul.pesys
 
 import no.nav.eessi.pensjon.fagmodul.metrics.TimingService
-import no.nav.eessi.pensjon.fagmodul.utils.mapAnyToJson
-import no.nav.eessi.pensjon.fagmodul.utils.mapJsonToAny
-import no.nav.eessi.pensjon.fagmodul.utils.typeRefs
+import no.nav.eessi.pensjon.utils.mapAnyToJson
+import no.nav.eessi.pensjon.utils.mapJsonToAny
+import no.nav.eessi.pensjon.utils.typeRefs
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith

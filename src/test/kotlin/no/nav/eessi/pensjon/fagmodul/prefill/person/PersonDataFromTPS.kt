@@ -12,8 +12,8 @@ import no.nav.eessi.pensjon.fagmodul.prefill.nav.PrefillPersonDataFromTPS
 import no.nav.eessi.pensjon.fagmodul.geo.LandkodeService
 import no.nav.eessi.pensjon.fagmodul.geo.PostnummerService
 import no.nav.eessi.pensjon.fagmodul.person.personv3.PersonV3Service
-import no.nav.eessi.pensjon.fagmodul.utils.mapJsonToAny
-import no.nav.eessi.pensjon.fagmodul.utils.typeRefs
+import no.nav.eessi.pensjon.utils.mapJsonToAny
+import no.nav.eessi.pensjon.utils.typeRefs
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.*
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonResponse
 import org.junit.Before

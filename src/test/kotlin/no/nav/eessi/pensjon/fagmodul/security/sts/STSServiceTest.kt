@@ -2,7 +2,7 @@ package no.nav.eessi.pensjon.fagmodul.security.sts
 
 import com.nhaarman.mockito_kotlin.eq
 import com.nhaarman.mockito_kotlin.whenever
-import no.nav.eessi.pensjon.fagmodul.utils.typeRef
+import no.nav.eessi.pensjon.utils.typeRef
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith

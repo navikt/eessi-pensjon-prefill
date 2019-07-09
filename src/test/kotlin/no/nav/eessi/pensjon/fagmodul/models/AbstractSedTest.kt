@@ -1,6 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.models
 
-import no.nav.eessi.pensjon.fagmodul.utils.validateJson
+import no.nav.eessi.pensjon.utils.validateJson
 import java.nio.file.Files
 import java.nio.file.Paths
 import kotlin.test.assertTrue

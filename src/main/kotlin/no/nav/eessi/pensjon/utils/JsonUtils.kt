@@ -1,4 +1,4 @@
-package no.nav.eessi.pensjon.fagmodul.utils
+package no.nav.eessi.pensjon.utils
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.core.type.TypeReference
@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.springframework.core.ParameterizedTypeReference
-import org.springframework.http.ResponseEntity
 import org.springframework.web.client.RestClientException
 
 inline fun <reified T : Any> typeRef(): ParameterizedTypeReference<T> = object : ParameterizedTypeReference<T>() {}

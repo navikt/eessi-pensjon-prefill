@@ -1,7 +1,7 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.vedtak
 
-import no.nav.eessi.pensjon.fagmodul.utils.mapAnyToJson
-import no.nav.eessi.pensjon.fagmodul.utils.simpleFormat
+import no.nav.eessi.pensjon.utils.mapAnyToJson
+import no.nav.eessi.pensjon.utils.simpleFormat
 import org.junit.Test
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory

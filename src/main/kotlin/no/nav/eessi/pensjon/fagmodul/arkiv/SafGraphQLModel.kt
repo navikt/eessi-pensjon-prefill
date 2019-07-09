@@ -1,6 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.arkiv
 
-import no.nav.eessi.pensjon.fagmodul.utils.mapAnyToJson
+import no.nav.eessi.pensjon.utils.mapAnyToJson
 
 /**
  * Request og responsemodell for SAF GraphQL tjeneste

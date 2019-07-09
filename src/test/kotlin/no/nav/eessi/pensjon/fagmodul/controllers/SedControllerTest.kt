@@ -15,8 +15,8 @@ import no.nav.eessi.pensjon.fagmodul.services.eux.EuxService
 import no.nav.eessi.pensjon.fagmodul.services.eux.bucmodel.Buc
 import no.nav.eessi.pensjon.fagmodul.services.eux.bucmodel.DocumentsItem
 import no.nav.eessi.pensjon.fagmodul.services.eux.bucmodel.ShortDocumentItem
-import no.nav.eessi.pensjon.fagmodul.utils.*
 import org.junit.Assert
+import no.nav.eessi.pensjon.utils.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith

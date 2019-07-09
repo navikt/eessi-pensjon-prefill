@@ -3,8 +3,8 @@ package no.nav.eessi.pensjon.fagmodul.prefill
 import no.nav.eessi.pensjon.fagmodul.models.PersonArbeidogOppholdUtland
 import no.nav.eessi.pensjon.fagmodul.models.SED
 import no.nav.eessi.pensjon.fagmodul.prefill.nav.PrefillPerson
-import no.nav.eessi.pensjon.fagmodul.utils.mapJsonToAny
-import no.nav.eessi.pensjon.fagmodul.utils.typeRefs
+import no.nav.eessi.pensjon.utils.mapJsonToAny
+import no.nav.eessi.pensjon.utils.typeRefs
 
 class PrefillP4000(private val prefillPerson: PrefillPerson) : Prefill<SED> {
 

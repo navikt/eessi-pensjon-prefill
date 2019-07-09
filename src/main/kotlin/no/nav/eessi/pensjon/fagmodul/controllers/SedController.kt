@@ -9,7 +9,7 @@ import no.nav.eessi.pensjon.fagmodul.services.PrefillService
 import no.nav.eessi.pensjon.fagmodul.services.eux.BucSedResponse
 import no.nav.eessi.pensjon.fagmodul.services.eux.EuxService
 import no.nav.eessi.pensjon.fagmodul.services.eux.bucmodel.ShortDocumentItem
-import no.nav.eessi.pensjon.fagmodul.utils.mapAnyToJson
+import no.nav.eessi.pensjon.utils.mapAnyToJson
 import no.nav.security.oidc.api.Protected
 import org.slf4j.LoggerFactory
 import org.springframework.http.MediaType

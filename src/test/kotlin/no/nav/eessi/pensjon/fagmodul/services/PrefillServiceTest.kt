@@ -14,9 +14,9 @@ import no.nav.eessi.pensjon.fagmodul.services.eux.RinaCasenrIkkeMottattException
 import no.nav.eessi.pensjon.fagmodul.services.eux.SedDokumentIkkeOpprettetException
 import no.nav.eessi.pensjon.fagmodul.services.eux.bucmodel.Buc
 import no.nav.eessi.pensjon.fagmodul.services.eux.bucmodel.ShortDocumentItem
-import no.nav.eessi.pensjon.fagmodul.utils.mapJsonToAny
-import no.nav.eessi.pensjon.fagmodul.utils.typeRefs
-import no.nav.eessi.pensjon.fagmodul.utils.validateJson
+import no.nav.eessi.pensjon.utils.mapJsonToAny
+import no.nav.eessi.pensjon.utils.typeRefs
+import no.nav.eessi.pensjon.utils.validateJson
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith

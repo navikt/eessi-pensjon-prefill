@@ -1,9 +1,9 @@
 package no.nav.eessi.pensjon.fagmodul.services.eux
 
 import com.google.common.base.Preconditions
-import no.nav.eessi.pensjon.fagmodul.utils.mapJsonToAny
-import no.nav.eessi.pensjon.fagmodul.utils.typeRef
-import no.nav.eessi.pensjon.fagmodul.utils.typeRefs
+import no.nav.eessi.pensjon.utils.mapJsonToAny
+import no.nav.eessi.pensjon.utils.typeRef
+import no.nav.eessi.pensjon.utils.typeRefs
 import no.nav.eessi.pensjon.fagmodul.metrics.getCounter
 import no.nav.eessi.pensjon.fagmodul.models.*
 import no.nav.eessi.pensjon.fagmodul.services.eux.bucmodel.Buc

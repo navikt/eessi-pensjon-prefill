@@ -10,7 +10,7 @@ import no.nav.eessi.pensjon.fagmodul.prefill.nav.PrefillPersonDataFromTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PersonDataFromTPS
 import no.nav.eessi.pensjon.fagmodul.services.SedValidator
 import no.nav.eessi.pensjon.fagmodul.prefill.person.NavFodselsnummer
-import no.nav.eessi.pensjon.fagmodul.utils.mapAnyToJson
+import no.nav.eessi.pensjon.utils.mapAnyToJson
 import org.junit.Test
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory

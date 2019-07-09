@@ -1,6 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.geo
 
-import no.nav.eessi.pensjon.fagmodul.utils.mapAnyToJson
+import no.nav.eessi.pensjon.utils.mapAnyToJson
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service

@@ -1,8 +1,8 @@
 package no.nav.eessi.pensjon.fagmodul.models
 
-import no.nav.eessi.pensjon.fagmodul.utils.mapAnyToJson
-import no.nav.eessi.pensjon.fagmodul.utils.mapJsonToAny
-import no.nav.eessi.pensjon.fagmodul.utils.typeRefs
+import no.nav.eessi.pensjon.utils.mapAnyToJson
+import no.nav.eessi.pensjon.utils.mapJsonToAny
+import no.nav.eessi.pensjon.utils.typeRefs
 import org.junit.Test
 import org.skyscreamer.jsonassert.JSONAssert
 import org.slf4j.Logger
