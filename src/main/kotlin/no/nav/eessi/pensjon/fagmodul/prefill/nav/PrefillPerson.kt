@@ -1,7 +1,7 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.nav
 
 import no.nav.eessi.pensjon.fagmodul.models.Pensjon
-import no.nav.eessi.pensjon.fagmodul.pensjon.pensjonsinformasjon.PensjoninformasjonException
+import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjoninformasjonException
 import no.nav.eessi.pensjon.fagmodul.models.SED
 import no.nav.eessi.pensjon.fagmodul.prefill.Prefill
 import no.nav.eessi.pensjon.fagmodul.prefill.PrefillDataModel

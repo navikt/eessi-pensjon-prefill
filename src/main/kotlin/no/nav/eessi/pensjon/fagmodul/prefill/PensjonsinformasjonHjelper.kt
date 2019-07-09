@@ -1,8 +1,8 @@
 package no.nav.eessi.pensjon.fagmodul.prefill
 
 import no.nav.eessi.pensjon.fagmodul.models.IkkeGyldigKallException
-import no.nav.eessi.pensjon.fagmodul.pensjon.pensjonsinformasjon.PensjoninformasjonException
-import no.nav.eessi.pensjon.fagmodul.pensjon.pensjonsinformasjon.PensjonsinformasjonService
+import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjoninformasjonException
+import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonService
 import no.nav.pensjon.v1.brukersbarn.V1BrukersBarn
 import no.nav.pensjon.v1.ektefellepartnersamboer.V1EktefellePartnerSamboer
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon

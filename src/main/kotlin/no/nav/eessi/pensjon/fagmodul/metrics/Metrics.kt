@@ -1,7 +1,7 @@
 package no.nav.eessi.pensjon.fagmodul.metrics
 
 import io.micrometer.core.instrument.Counter
-import io.micrometer.core.instrument.Metrics
+import no.nav.eessi.pensjon.metrics.counter
 
 fun getCounter(key: String): Counter {
     val countermap = mapOf("AKSJONOK" to counter("eessipensjon_fagmodul.euxmuligeaksjoner", "vellykkede"),
@@ -31,8 +31,4 @@ fun getCounter(key: String): Counter {
 
     )
     return countermap.getValue(key)
-}
-
-fun counter(name: String, type: String): Counter {
-    return Metrics.counter(name, "type", type)
 }

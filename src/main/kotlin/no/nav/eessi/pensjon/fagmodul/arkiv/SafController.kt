@@ -1,7 +1,10 @@
 package no.nav.eessi.pensjon.fagmodul.arkiv
 
 import io.swagger.annotations.ApiOperation
-import no.nav.eessi.pensjon.fagmodul.utils.errorBody
+import no.nav.eessi.pensjon.services.arkiv.SafException
+import no.nav.eessi.pensjon.services.arkiv.SafService
+import no.nav.eessi.pensjon.services.arkiv.VariantFormat
+import no.nav.eessi.pensjon.utils.errorBody
 import no.nav.security.oidc.api.Protected
 import org.slf4j.LoggerFactory
 import org.springframework.http.ResponseEntity

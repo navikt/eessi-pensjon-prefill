@@ -5,7 +5,6 @@ import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.whenever
 import no.nav.eessi.pensjon.fagmodul.models.*
-import no.nav.eessi.pensjon.fagmodul.person.AktoerIdHelper
 import no.nav.eessi.pensjon.fagmodul.prefill.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.PrefillSED
 import no.nav.eessi.pensjon.fagmodul.services.PrefillService
@@ -15,8 +14,8 @@ import no.nav.eessi.pensjon.fagmodul.services.eux.EuxService
 import no.nav.eessi.pensjon.fagmodul.services.eux.bucmodel.Buc
 import no.nav.eessi.pensjon.fagmodul.services.eux.bucmodel.DocumentsItem
 import no.nav.eessi.pensjon.fagmodul.services.eux.bucmodel.ShortDocumentItem
-import no.nav.eessi.pensjon.fagmodul.utils.*
 import org.junit.Assert
+import no.nav.eessi.pensjon.utils.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith

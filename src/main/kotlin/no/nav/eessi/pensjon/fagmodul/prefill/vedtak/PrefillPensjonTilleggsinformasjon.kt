@@ -4,7 +4,7 @@ import no.nav.eessi.pensjon.fagmodul.models.AndreinstitusjonerItem
 import no.nav.eessi.pensjon.fagmodul.models.Opphoer
 import no.nav.eessi.pensjon.fagmodul.models.Tilleggsinformasjon
 import no.nav.eessi.pensjon.fagmodul.prefill.PrefillDataModel
-import no.nav.eessi.pensjon.fagmodul.utils.simpleFormat
+import no.nav.eessi.pensjon.utils.simpleFormat
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory

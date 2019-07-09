@@ -1,6 +1,7 @@
 package no.nav.eessi.pensjon.fagmodul.geo
 
 import io.swagger.annotations.ApiOperation
+import no.nav.eessi.pensjon.services.geo.LandkodeService
 import no.nav.security.oidc.api.Unprotected
 import org.slf4j.LoggerFactory
 import org.springframework.web.bind.annotation.GetMapping

@@ -1,13 +1,13 @@
 package no.nav.eessi.pensjon.fagmodul.person
 
 import io.swagger.annotations.ApiOperation
-import no.nav.eessi.pensjon.fagmodul.person.aktoerregister.AktoerregisterService
-import no.nav.eessi.pensjon.fagmodul.person.personv3.PersonV3Service
+import no.nav.eessi.pensjon.services.aktoerregister.AktoerregisterService
+import no.nav.eessi.pensjon.services.personv3.PersonV3Service
 import no.nav.eessi.pensjon.fagmodul.metrics.getCounter
-import no.nav.eessi.pensjon.fagmodul.person.personv3.PersonV3IkkeFunnetException
-import no.nav.eessi.pensjon.fagmodul.person.personv3.PersonV3SikkerhetsbegrensningException
-import no.nav.eessi.pensjon.fagmodul.person.aktoerregister.AktoerregisterException
-import no.nav.eessi.pensjon.fagmodul.person.aktoerregister.AktoerregisterIkkeFunnetException
+import no.nav.eessi.pensjon.services.personv3.PersonV3IkkeFunnetException
+import no.nav.eessi.pensjon.services.personv3.PersonV3SikkerhetsbegrensningException
+import no.nav.eessi.pensjon.services.aktoerregister.AktoerregisterException
+import no.nav.eessi.pensjon.services.aktoerregister.AktoerregisterIkkeFunnetException
 import no.nav.security.oidc.api.Protected
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonResponse
 import org.slf4j.LoggerFactory

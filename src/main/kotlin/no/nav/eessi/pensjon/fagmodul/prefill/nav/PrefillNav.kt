@@ -3,9 +3,9 @@ package no.nav.eessi.pensjon.fagmodul.prefill.nav
 import no.nav.eessi.pensjon.fagmodul.models.*
 import no.nav.eessi.pensjon.fagmodul.prefill.Prefill
 import no.nav.eessi.pensjon.fagmodul.prefill.PrefillDataModel
-import no.nav.eessi.pensjon.fagmodul.utils.mapJsonToAny
-import no.nav.eessi.pensjon.fagmodul.utils.simpleFormat
-import no.nav.eessi.pensjon.fagmodul.utils.typeRefs
+import no.nav.eessi.pensjon.utils.mapJsonToAny
+import no.nav.eessi.pensjon.utils.simpleFormat
+import no.nav.eessi.pensjon.utils.typeRefs
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value

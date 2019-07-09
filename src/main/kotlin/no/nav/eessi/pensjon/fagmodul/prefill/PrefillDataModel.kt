@@ -3,9 +3,9 @@ package no.nav.eessi.pensjon.fagmodul.prefill
 import no.nav.eessi.pensjon.fagmodul.models.AndreinstitusjonerItem
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.models.SED
-import no.nav.eessi.pensjon.fagmodul.utils.mapAnyToJson
-import no.nav.eessi.pensjon.fagmodul.utils.mapJsonToAny
-import no.nav.eessi.pensjon.fagmodul.utils.typeRefs
+import no.nav.eessi.pensjon.utils.mapAnyToJson
+import no.nav.eessi.pensjon.utils.mapJsonToAny
+import no.nav.eessi.pensjon.utils.typeRefs
 import no.nav.pensjon.v1.brukersbarn.V1BrukersBarn
 import no.nav.pensjon.v1.ektefellepartnersamboer.V1EktefellePartnerSamboer
 

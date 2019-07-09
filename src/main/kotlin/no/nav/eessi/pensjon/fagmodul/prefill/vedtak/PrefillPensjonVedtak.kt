@@ -1,7 +1,7 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.vedtak
 
 import no.nav.eessi.pensjon.fagmodul.models.*
-import no.nav.eessi.pensjon.fagmodul.utils.simpleFormat
+import no.nav.eessi.pensjon.utils.simpleFormat
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import no.nav.pensjon.v1.sakalder.V1SakAlder
 import no.nav.pensjon.v1.ytelsepermaaned.V1YtelsePerMaaned

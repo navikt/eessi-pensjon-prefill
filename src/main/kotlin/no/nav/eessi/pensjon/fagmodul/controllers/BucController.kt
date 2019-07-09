@@ -11,11 +11,10 @@ import no.nav.eessi.pensjon.fagmodul.services.eux.bucmodel.Buc
 import no.nav.eessi.pensjon.fagmodul.services.eux.bucmodel.BucAndSedView
 import no.nav.eessi.pensjon.fagmodul.services.eux.bucmodel.Creator
 import no.nav.eessi.pensjon.fagmodul.services.eux.bucmodel.ShortDocumentItem
-import no.nav.eessi.pensjon.fagmodul.arkiv.VariantFormat
-import no.nav.eessi.pensjon.fagmodul.person.AktoerIdHelper
-import no.nav.eessi.pensjon.fagmodul.utils.errorBody
-import no.nav.eessi.pensjon.fagmodul.utils.mapAnyToJson
-import no.nav.eessi.pensjon.fagmodul.utils.successBody
+import no.nav.eessi.pensjon.services.arkiv.VariantFormat
+import no.nav.eessi.pensjon.utils.errorBody
+import no.nav.eessi.pensjon.utils.mapAnyToJson
+import no.nav.eessi.pensjon.utils.successBody
 import no.nav.security.oidc.api.Protected
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus

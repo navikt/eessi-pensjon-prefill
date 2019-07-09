@@ -8,8 +8,8 @@ import no.nav.eessi.pensjon.fagmodul.models.SED
 import no.nav.eessi.pensjon.fagmodul.prefill.EessiInformasjon
 import no.nav.eessi.pensjon.fagmodul.prefill.PensjonsinformasjonHjelper
 import no.nav.eessi.pensjon.fagmodul.prefill.PrefillDataModel
-import no.nav.eessi.pensjon.fagmodul.pensjon.pensjonsinformasjon.PensjonsinformasjonService
-import no.nav.eessi.pensjon.fagmodul.pensjon.pensjonsinformasjon.RequestBuilder
+import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonService
+import no.nav.eessi.pensjon.services.pensjonsinformasjon.RequestBuilder
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import no.nav.pensjon.v1.sakalder.V1SakAlder
 import no.nav.pensjon.v1.trygdetid.V1Trygdetid

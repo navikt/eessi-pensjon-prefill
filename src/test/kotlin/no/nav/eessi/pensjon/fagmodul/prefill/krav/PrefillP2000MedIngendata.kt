@@ -3,7 +3,7 @@ package no.nav.eessi.pensjon.fagmodul.prefill.krav
 import no.nav.eessi.pensjon.fagmodul.controllers.SedController
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.models.Nav
-import no.nav.eessi.pensjon.fagmodul.pensjon.pensjonsinformasjon.PensjoninformasjonException
+import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjoninformasjonException
 import no.nav.eessi.pensjon.fagmodul.models.SED
 import no.nav.eessi.pensjon.fagmodul.prefill.AbstractPrefillIntegrationTestHelper
 import no.nav.eessi.pensjon.fagmodul.prefill.PensjonsinformasjonHjelper
@@ -14,7 +14,7 @@ import no.nav.eessi.pensjon.fagmodul.prefill.nav.PrefillPersonDataFromTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PersonDataFromTPS
 import no.nav.eessi.pensjon.fagmodul.services.SedValidator
 import no.nav.eessi.pensjon.fagmodul.prefill.person.NavFodselsnummer
-import no.nav.eessi.pensjon.fagmodul.utils.mapAnyToJson
+import no.nav.eessi.pensjon.utils.mapAnyToJson
 import org.junit.Test
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
