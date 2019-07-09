@@ -1,8 +1,8 @@
 package no.nav.eessi.pensjon.fagmodul.controllers
 
 import io.swagger.annotations.ApiOperation
+import no.nav.eessi.pensjon.fagmodul.helper.AktoerIdHelper
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
-import no.nav.eessi.pensjon.fagmodul.models.Krav
 import no.nav.eessi.pensjon.fagmodul.services.eux.BucUtils
 import no.nav.eessi.pensjon.fagmodul.services.eux.EuxService
 import no.nav.eessi.pensjon.fagmodul.services.eux.RinaAksjon

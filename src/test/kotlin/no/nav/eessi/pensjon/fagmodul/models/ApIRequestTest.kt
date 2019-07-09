@@ -1,7 +1,5 @@
-package no.nav.eessi.pensjon.fagmodul.controllers
+package no.nav.eessi.pensjon.fagmodul.models
 
-import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
-import no.nav.eessi.pensjon.fagmodul.models.SED
 import no.nav.eessi.pensjon.services.geo.LandkodeService
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import no.nav.eessi.pensjon.utils.validateJson
@@ -21,9 +19,9 @@ class ApIRequestTest {
     private val logger: Logger by lazy { LoggerFactory.getLogger(LandkodeService::class.java) }
 
 
-    private fun createMockApiRequest(sedName: String, buc: String, payload: String): SedController.ApiRequest {
+    private fun createMockApiRequest(sedName: String, buc: String, payload: String): ApiRequest {
         val items = listOf(InstitusjonItem(country = "NO", institution = "NAVT003"))
-        return SedController.ApiRequest(
+        return ApiRequest(
                 institutions = items,
                 sed = sedName,
                 sakId = "01234567890",
@@ -43,7 +41,7 @@ class ApIRequestTest {
         return p2200file
     }
 
-    fun validateAndPrint(req: SedController.ApiRequest) {
+    fun validateAndPrint(req: ApiRequest) {
         if (printsed) {
             val json = SED.fromJson(req.payload!!).toJson()
             logger.info(json)

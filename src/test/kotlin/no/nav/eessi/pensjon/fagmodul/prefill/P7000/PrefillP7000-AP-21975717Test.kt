@@ -1,6 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.P7000
 
-import no.nav.eessi.pensjon.fagmodul.controllers.SedController
+import no.nav.eessi.pensjon.fagmodul.models.ApiRequest
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.models.SED
 import no.nav.eessi.pensjon.fagmodul.prefill.*
@@ -91,9 +91,9 @@ class `PrefillP7000-AP-21975717Test` : AbstractPrefillIntegrationTestHelper() {
     }
 
 
-    private fun createMockApiRequest(sedName: String, buc: String, payload: String): SedController.ApiRequest {
+    private fun createMockApiRequest(sedName: String, buc: String, payload: String): ApiRequest {
         val items = listOf(InstitusjonItem(country = "NO", institution = "NAVT003"))
-        return SedController.ApiRequest(
+        return ApiRequest(
                 institutions = items,
                 sed = sedName,
                 sakId = "21975717",
@@ -106,7 +106,7 @@ class `PrefillP7000-AP-21975717Test` : AbstractPrefillIntegrationTestHelper() {
         )
     }
 
-    fun validateAndPrint(req: SedController.ApiRequest, printout: Boolean = true) {
+    fun validateAndPrint(req: ApiRequest, printout: Boolean = true) {
         if (printout) {
             val json = mapAnyToJson(req)
             assertNotNull(json)

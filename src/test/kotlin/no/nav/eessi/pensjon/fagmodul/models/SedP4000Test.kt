@@ -2,15 +2,10 @@ package no.nav.eessi.pensjon.fagmodul.models
 
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.whenever
-import no.nav.eessi.pensjon.fagmodul.controllers.SedController
-import no.nav.eessi.pensjon.fagmodul.controllers.AktoerIdHelper
+import no.nav.eessi.pensjon.fagmodul.helper.AktoerIdHelper
 import no.nav.eessi.pensjon.fagmodul.prefill.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.PrefillP4000
-import no.nav.eessi.pensjon.fagmodul.prefill.PrefillSED
 import no.nav.eessi.pensjon.fagmodul.prefill.nav.PrefillPerson
-import no.nav.eessi.pensjon.fagmodul.services.PrefillService
-import no.nav.eessi.pensjon.fagmodul.services.eux.EuxService
-import no.nav.eessi.pensjon.services.personv3.PersonV3Service
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.typeRefs
@@ -34,19 +29,7 @@ import kotlin.test.assertNotNull
 class SedP4000Test {
 
     @Mock
-    lateinit var mockEuxService: EuxService
-
-    @Mock
     private lateinit var mockAktoerIdHelper: AktoerIdHelper
-
-    @Mock
-    lateinit var mockPrefillService: PrefillService
-
-    @Mock
-    lateinit var personService: PersonV3Service
-
-    @Mock
-    private lateinit var mockPrefillSED: PrefillSED
 
     @Mock
     private lateinit var prefillPerson: PrefillPerson
@@ -54,7 +37,6 @@ class SedP4000Test {
     lateinit var pre4000: PrefillP4000
 
     private lateinit var prefillDataMock: PrefillDataModel
-    private lateinit var sedController: SedController
 
     val logger: Logger by lazy { LoggerFactory.getLogger(SedP4000Test::class.java) }
 
@@ -64,7 +46,6 @@ class SedP4000Test {
 
         pre4000 = PrefillP4000(prefillPerson)
 
-        sedController = SedController(mockEuxService, mockPrefillService, mockAktoerIdHelper)
         logger.debug("Starting tests.... ...")
     }
 
@@ -109,7 +90,7 @@ class SedP4000Test {
         val payload = mapAnyToJson(trygdetid)
         //logger.debug(payload)
 
-        val req = SedController.ApiRequest(
+        val req = ApiRequest(
                 sed = "P4000",
                 sakId = "12231231",
                 euxCaseId = "99191999911",
@@ -120,7 +101,7 @@ class SedP4000Test {
         )
         val json = mapAnyToJson(req)
         assertNotNull(json)
-        val apireq = mapJsonToAny(json, typeRefs<SedController.ApiRequest>())
+        val apireq = mapJsonToAny(json, typeRefs<ApiRequest>())
         val payjson = apireq.payload ?: ""
         assertNotNull(payjson)
         assertEquals(payload, payjson)
@@ -146,7 +127,7 @@ class SedP4000Test {
         validateJson(backtojson)
         val payload = mapAnyToJson(obj)
         val items = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
-        val req = SedController.ApiRequest(
+        val req = ApiRequest(
                 institutions = items,
                 sed = "P4000",
                 sakId = "12231231",
@@ -168,7 +149,7 @@ class SedP4000Test {
         validateJson(jsonfile)
 
         val items = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
-        val req = SedController.ApiRequest(
+        val req = ApiRequest(
                 institutions = items,
                 sed = "P4000",
                 sakId = "12231231",
@@ -183,7 +164,7 @@ class SedP4000Test {
         validateJson(reqjson)
 
         whenever(mockAktoerIdHelper.hentAktoerIdPin(ArgumentMatchers.anyString())).thenReturn("12345")
-        val data = sedController.buildPrefillDataModelConfirm(req)
+        val data = ApiRequest.buildPrefillDataModelConfirm(req, mockAktoerIdHelper)
 
         assertNotNull(data)
         assertNotNull(data.getPartSEDasJson("P4000"))
@@ -193,14 +174,6 @@ class SedP4000Test {
         whenever(prefillPerson.prefill(any())).thenReturn(data.sed)
         val sed = pre4000.prefill(resultData)
         assertNotNull(sed)
-
-
-        whenever(mockPrefillService.prefillSed(any())).thenReturn(resultData)
-
-        val result = sedController.confirmDocument(req)
-
-        //val jsondata = result.toJson()
-        assertNotNull(result)
     }
 }
 
