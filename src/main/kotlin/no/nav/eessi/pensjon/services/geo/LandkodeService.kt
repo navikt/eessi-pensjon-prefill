@@ -1,4 +1,4 @@
-package no.nav.eessi.pensjon.fagmodul.geo
+package no.nav.eessi.pensjon.services.geo
 
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import org.slf4j.Logger

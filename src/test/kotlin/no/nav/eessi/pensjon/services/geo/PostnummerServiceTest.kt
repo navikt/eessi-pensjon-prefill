@@ -1,4 +1,4 @@
-package no.nav.eessi.pensjon.fagmodul.geo
+package no.nav.eessi.pensjon.services.geo
 
 import org.junit.Before
 import org.junit.Test

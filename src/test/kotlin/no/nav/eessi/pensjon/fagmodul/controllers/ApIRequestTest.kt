@@ -2,7 +2,7 @@ package no.nav.eessi.pensjon.fagmodul.controllers
 
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.models.SED
-import no.nav.eessi.pensjon.fagmodul.geo.LandkodeService
+import no.nav.eessi.pensjon.services.geo.LandkodeService
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import no.nav.eessi.pensjon.utils.validateJson
 import org.junit.Test

@@ -9,8 +9,8 @@ import no.nav.eessi.pensjon.fagmodul.prefill.EessiInformasjon
 import no.nav.eessi.pensjon.fagmodul.prefill.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.nav.PrefillNav
 import no.nav.eessi.pensjon.fagmodul.prefill.nav.PrefillPersonDataFromTPS
-import no.nav.eessi.pensjon.fagmodul.geo.LandkodeService
-import no.nav.eessi.pensjon.fagmodul.geo.PostnummerService
+import no.nav.eessi.pensjon.services.geo.LandkodeService
+import no.nav.eessi.pensjon.services.geo.PostnummerService
 import no.nav.eessi.pensjon.fagmodul.person.personv3.PersonV3Service
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.typeRefs

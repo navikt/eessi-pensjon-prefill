@@ -5,7 +5,7 @@ import io.swagger.annotations.ApiOperation
 import no.nav.eessi.pensjon.fagmodul.metrics.TimingService
 import no.nav.eessi.pensjon.fagmodul.models.*
 import no.nav.eessi.pensjon.fagmodul.pesys.mockup.MockSED001
-import no.nav.eessi.pensjon.fagmodul.geo.LandkodeService
+import no.nav.eessi.pensjon.services.geo.LandkodeService
 import no.nav.eessi.pensjon.fagmodul.metrics.getCounter
 import no.nav.security.oidc.api.Protected
 import org.slf4j.Logger
