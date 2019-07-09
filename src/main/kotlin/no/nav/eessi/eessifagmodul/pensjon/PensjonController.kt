@@ -1,10 +1,9 @@
 package no.nav.eessi.eessifagmodul.pensjon
 
 import io.swagger.annotations.ApiOperation
-import no.nav.eessi.eessifagmodul.person.aktoerregister.AktoerregisterException
 import no.nav.eessi.eessifagmodul.pensjon.pensjonsinformasjon.IkkeFunnetException
-import no.nav.eessi.eessifagmodul.person.aktoerregister.AktoerregisterService
 import no.nav.eessi.eessifagmodul.pensjon.pensjonsinformasjon.PensjonsinformasjonService
+import no.nav.eessi.eessifagmodul.person.AktoerIdHelper
 import no.nav.eessi.eessifagmodul.utils.errorBody
 import no.nav.eessi.eessifagmodul.utils.mapAnyToJson
 import no.nav.security.oidc.api.Protected
@@ -15,14 +14,13 @@ import org.springframework.web.bind.annotation.*
 @Protected
 @RestController
 @RequestMapping("/pensjon")
-class PensjonController(private val pensjonsinformasjonService: PensjonsinformasjonService,
-                        private val aktoerregisterService: AktoerregisterService) {
+class PensjonController(private val pensjonsinformasjonService: PensjonsinformasjonService, private val aktoerIdHelper: AktoerIdHelper) {
 
     @ApiOperation("Henter ut saktype knyttet til den valgte sakId og aktoerId")
     @GetMapping("/saktype/{sakId}/{aktoerId}")
     fun hentPensjonSakType(@PathVariable("sakId", required = true) sakId: String, @PathVariable("aktoerId", required = true) aktoerId: String): ResponseEntity<String>? {
         // FIXME This is a hack because Pesys uses the wrong identifier in some cases
-        val fnr = if (isProbablyAnFnrSentAsAktoerId(aktoerId)) aktoerId else hentAktoerIdPin(aktoerId)
+        val fnr = if (isProbablyAnFnrSentAsAktoerId(aktoerId)) aktoerId else aktoerIdHelper.hentAktoerIdPin(aktoerId)
 
         //Pensjontype //= Pensjontype(sakId = "", sakType = "")
         try {
@@ -35,20 +33,5 @@ class PensjonController(private val pensjonsinformasjonService: Pensjonsinformas
         }
     }
 
-    @Throws(AktoerregisterException::class)
-    fun hentAktoerIdPin(aktorid: String): String {
-        if (aktorid.isBlank()) throw IkkeGyldigAktoerIdException("Mangler AktorId")
-        return aktoerregisterService.hentGjeldendeNorskIdentForAktorId(aktorid)
-    }
-
     private fun isProbablyAnFnrSentAsAktoerId(aktorid: String) = aktorid.length == 11
-
 }
-
-@ResponseStatus(value = HttpStatus.BAD_REQUEST)
-class IkkeGyldigAktoerIdException(message: String) : IllegalArgumentException(message)
-
-
-
-
-

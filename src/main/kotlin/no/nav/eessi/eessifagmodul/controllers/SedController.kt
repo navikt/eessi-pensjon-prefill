@@ -6,7 +6,6 @@ import no.nav.eessi.eessifagmodul.models.*
 import no.nav.eessi.eessifagmodul.person.AktoerIdHelper
 import no.nav.eessi.eessifagmodul.prefill.PrefillDataModel
 import no.nav.eessi.eessifagmodul.services.PrefillService
-import no.nav.eessi.eessifagmodul.person.aktoerregister.AktoerregisterService
 import no.nav.eessi.eessifagmodul.services.eux.BucSedResponse
 import no.nav.eessi.eessifagmodul.services.eux.EuxService
 import no.nav.eessi.eessifagmodul.services.eux.bucmodel.ShortDocumentItem
@@ -23,7 +22,7 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/sed")
 class SedController(private val euxService: EuxService,
                     private val prefillService: PrefillService,
-                    aktoerregisterService: AktoerregisterService) : AktoerIdHelper(aktoerregisterService) {
+                    private val aktoerIdHelper: AktoerIdHelper) {
 
     private val logger = LoggerFactory.getLogger(SedController::class.java)
 
@@ -162,7 +161,7 @@ class SedController(private val euxService: EuxService,
 
             SEDType.isValidSEDType(request.sed) -> {
                 logger.info("ALL SED on existing Rina -> SED: ${request.sed} -> euxCaseId: ${request.sakId}")
-                val pinid = hentAktoerIdPin(request.aktoerId)
+                val pinid = aktoerIdHelper.hentAktoerIdPin(request.aktoerId)
                 PrefillDataModel().apply {
                     penSaksnummer = request.sakId
                     sed = SED.create(request.sed)
@@ -192,7 +191,7 @@ class SedController(private val euxService: EuxService,
             //Denne validering og utfylling kan benyttes på SED P2000,P2100,P2200
             SEDType.isValidSEDType(request.sed) -> {
                 logger.info("ALL SED on new RinaCase -> SED: ${request.sed}")
-                val pinid = hentAktoerIdPin(request.aktoerId)
+                val pinid = aktoerIdHelper.hentAktoerIdPin(request.aktoerId)
                 PrefillDataModel().apply {
                     penSaksnummer = request.sakId
                     buc = request.buc
@@ -222,7 +221,7 @@ class SedController(private val euxService: EuxService,
                     penSaksnummer = request.sakId
                     sed = SED.create(request.sed)
                     aktoerID = request.aktoerId
-                    personNr = hentAktoerIdPin(request.aktoerId)
+                    personNr = aktoerIdHelper.hentAktoerIdPin(request.aktoerId)
                     vedtakId = request.vedtakId ?: ""
                     partSedAsJson[request.sed] = request.payload ?: "{}"
 //                    if (request.payload != null) {

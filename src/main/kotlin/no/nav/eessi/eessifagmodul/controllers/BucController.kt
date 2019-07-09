@@ -3,7 +3,6 @@ package no.nav.eessi.eessifagmodul.controllers
 import io.swagger.annotations.ApiOperation
 import no.nav.eessi.eessifagmodul.models.InstitusjonItem
 import no.nav.eessi.eessifagmodul.models.Krav
-import no.nav.eessi.eessifagmodul.person.aktoerregister.AktoerregisterService
 import no.nav.eessi.eessifagmodul.services.eux.BucUtils
 import no.nav.eessi.eessifagmodul.services.eux.EuxService
 import no.nav.eessi.eessifagmodul.services.eux.RinaAksjon
@@ -29,7 +28,7 @@ import java.util.*
 @RestController
 @RequestMapping("/buc")
 class BucController(private val euxService: EuxService,
-                    aktoerregisterService: AktoerregisterService) : AktoerIdHelper(aktoerregisterService) {
+                    private val aktoerIdHelper: AktoerIdHelper) {
 
     private val logger = LoggerFactory.getLogger(BucController::class.java)
 
@@ -93,7 +92,7 @@ class BucController(private val euxService: EuxService,
     fun getRinasaker(@PathVariable("aktoerId", required = true) aktoerId: String): List<Rinasak> {
 
         logger.debug("henter rinasaker på valgt aktoerid: $aktoerId")
-        val fnr = hentAktoerIdPin(aktoerId)
+        val fnr = aktoerIdHelper.hentAktoerIdPin(aktoerId)
         return euxService.getRinasaker(fnr)
     }
 
@@ -106,7 +105,7 @@ class BucController(private val euxService: EuxService,
 
 
         logger.debug("1 prøver å dekode til fnr fra aktoerid: $aktoerid")
-        val fnr = hentAktoerIdPin(aktoerid)
+        val fnr = aktoerIdHelper.hentAktoerIdPin(aktoerid)
         return euxService.getBucAndSedView(fnr, aktoerid, sakid, euxcaseid, euxService)
 
     }
