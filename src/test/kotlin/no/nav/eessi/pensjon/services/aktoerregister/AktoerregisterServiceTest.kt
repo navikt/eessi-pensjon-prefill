@@ -1,4 +1,4 @@
-package no.nav.eessi.pensjon.fagmodul.person.aktoerregister
+package no.nav.eessi.pensjon.services.aktoerregister
 
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.whenever

@@ -1,4 +1,4 @@
-package no.nav.eessi.pensjon.fagmodul.person.personv3
+package no.nav.eessi.pensjon.services.personv3
 
 import io.micrometer.core.instrument.Counter
 import io.micrometer.core.instrument.Metrics

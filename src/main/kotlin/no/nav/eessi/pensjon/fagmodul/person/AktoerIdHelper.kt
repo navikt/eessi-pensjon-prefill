@@ -1,7 +1,7 @@
 package no.nav.eessi.pensjon.fagmodul.person
 
-import no.nav.eessi.pensjon.fagmodul.person.aktoerregister.AktoerregisterException
-import no.nav.eessi.pensjon.fagmodul.person.aktoerregister.AktoerregisterService
+import no.nav.eessi.pensjon.services.aktoerregister.AktoerregisterException
+import no.nav.eessi.pensjon.services.aktoerregister.AktoerregisterService
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
 import org.springframework.web.bind.annotation.ResponseStatus

@@ -1,4 +1,4 @@
-package no.nav.eessi.pensjon.fagmodul.person.aktoerregister
+package no.nav.eessi.pensjon.services.aktoerregister
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue

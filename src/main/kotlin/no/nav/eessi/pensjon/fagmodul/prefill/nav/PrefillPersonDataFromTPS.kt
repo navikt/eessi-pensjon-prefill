@@ -7,7 +7,7 @@ import no.nav.eessi.pensjon.fagmodul.prefill.EessiInformasjon
 import no.nav.eessi.pensjon.fagmodul.prefill.PrefillDataModel
 import no.nav.eessi.pensjon.services.geo.LandkodeService
 import no.nav.eessi.pensjon.services.geo.PostnummerService
-import no.nav.eessi.pensjon.fagmodul.person.personv3.PersonV3Service
+import no.nav.eessi.pensjon.services.personv3.PersonV3Service
 import no.nav.eessi.pensjon.fagmodul.prefill.person.NavFodselsnummer
 import no.nav.eessi.pensjon.utils.simpleFormat
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.*

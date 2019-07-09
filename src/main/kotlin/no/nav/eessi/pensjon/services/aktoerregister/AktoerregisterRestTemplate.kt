@@ -1,4 +1,4 @@
-package no.nav.eessi.pensjon.fagmodul.person.aktoerregister
+package no.nav.eessi.pensjon.services.aktoerregister
 
 import io.micrometer.core.instrument.MeterRegistry
 import no.nav.eessi.pensjon.security.sts.STSService

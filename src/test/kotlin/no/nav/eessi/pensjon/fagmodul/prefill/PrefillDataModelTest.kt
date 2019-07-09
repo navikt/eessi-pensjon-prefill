@@ -2,7 +2,7 @@ package no.nav.eessi.pensjon.fagmodul.prefill
 
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.models.SED
-import no.nav.eessi.pensjon.fagmodul.person.aktoerregister.AktoerregisterService
+import no.nav.eessi.pensjon.services.aktoerregister.AktoerregisterService
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith

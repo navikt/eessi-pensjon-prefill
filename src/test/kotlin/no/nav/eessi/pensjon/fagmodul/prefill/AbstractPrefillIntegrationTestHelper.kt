@@ -12,7 +12,7 @@ import no.nav.eessi.pensjon.fagmodul.prefill.person.PersonDataFromTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PersonDataFromTPS.Companion.generateRandomFnr
 import no.nav.eessi.pensjon.fagmodul.pensjon.pensjonsinformasjon.PensjonsinformasjonService
 import no.nav.eessi.pensjon.fagmodul.pensjon.pensjonsinformasjon.RequestBuilder
-import no.nav.eessi.pensjon.fagmodul.person.personv3.PersonV3Service
+import no.nav.eessi.pensjon.services.personv3.PersonV3Service
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import org.junit.Before
 import org.junit.runner.RunWith

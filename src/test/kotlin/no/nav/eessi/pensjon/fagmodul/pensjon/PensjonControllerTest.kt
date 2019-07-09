@@ -4,7 +4,6 @@ import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever
-import no.nav.eessi.pensjon.fagmodul.person.aktoerregister.AktoerregisterService
 import no.nav.eessi.pensjon.fagmodul.pensjon.pensjonsinformasjon.IkkeFunnetException
 import no.nav.eessi.pensjon.fagmodul.pensjon.pensjonsinformasjon.PensjoninformasjonException
 import no.nav.eessi.pensjon.fagmodul.pensjon.pensjonsinformasjon.PensjonsinformasjonService

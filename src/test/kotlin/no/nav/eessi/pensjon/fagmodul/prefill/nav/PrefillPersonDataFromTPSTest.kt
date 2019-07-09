@@ -3,7 +3,7 @@ package no.nav.eessi.pensjon.fagmodul.prefill.nav
 import no.nav.eessi.pensjon.fagmodul.prefill.EessiInformasjon
 import no.nav.eessi.pensjon.services.geo.LandkodeService
 import no.nav.eessi.pensjon.services.geo.PostnummerService
-import no.nav.eessi.pensjon.fagmodul.person.personv3.PersonV3Service
+import no.nav.eessi.pensjon.services.personv3.PersonV3Service
 import no.nav.eessi.pensjon.utils.createXMLCalendarFromString
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Personnavn

@@ -10,7 +10,7 @@ import no.nav.eessi.pensjon.fagmodul.prefill.PrefillSED
 import no.nav.eessi.pensjon.fagmodul.prefill.nav.PrefillPerson
 import no.nav.eessi.pensjon.fagmodul.services.PrefillService
 import no.nav.eessi.pensjon.fagmodul.services.eux.EuxService
-import no.nav.eessi.pensjon.fagmodul.person.personv3.PersonV3Service
+import no.nav.eessi.pensjon.services.personv3.PersonV3Service
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.typeRefs

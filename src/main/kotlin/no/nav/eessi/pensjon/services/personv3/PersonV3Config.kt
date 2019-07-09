@@ -1,4 +1,4 @@
-package no.nav.eessi.pensjon.fagmodul.person.personv3
+package no.nav.eessi.pensjon.services.personv3
 
 import no.nav.cxf.metrics.MetricFeature
 import no.nav.tjeneste.virksomhet.person.v3.binding.PersonV3
