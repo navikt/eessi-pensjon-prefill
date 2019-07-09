@@ -1,4 +1,4 @@
-package no.nav.eessi.pensjon.fagmodul.pensjon
+package no.nav.eessi.pensjon.api.pensjon
 
 import io.swagger.annotations.ApiOperation
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.IkkeFunnetException

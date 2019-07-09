@@ -37,10 +37,10 @@ class ArchitectureTest {
         val coreApi = "fagmodul.coreApi"
         val helper = "fagmodul.helper"
         val core = "fagmodul.core"
-        val arkivApi = "fagmodul.arkivApi"
-        val geoApi = "fagmodul.geoApi"
-        val personApi = "fagmodul.personApi"
-        val pensjonApi = "fagmodul.pensjonApi"
+        val arkivApi = "api.arkiv"
+        val geoApi = "api.geo"
+        val personApi = "api.person"
+        val pensjonApi = "api.pensjon"
         val config = "fagmodul.config"
         val metrics = "fagmodul.metrics"
         val aktoerregisterService = "services.aktoerregister"
@@ -54,10 +54,10 @@ class ArchitectureTest {
         val packages: Map<String, String> = mapOf(
                 "$root.fagmodul.health.." to health,
 
-                "$root.fagmodul.arkiv.." to arkivApi,
-                "$root.fagmodul.geo.." to geoApi,
-                "$root.fagmodul.person.." to personApi,
-                "$root.fagmodul.pensjon.." to pensjonApi,
+                "$root.api.arkiv.." to arkivApi,
+                "$root.api.geo.." to geoApi,
+                "$root.api.person.." to personApi,
+                "$root.api.pensjon.." to pensjonApi,
 
                 "$root.fagmodul.controllers.." to coreApi,
 

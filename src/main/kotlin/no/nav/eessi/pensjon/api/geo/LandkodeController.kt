@@ -1,4 +1,4 @@
-package no.nav.eessi.pensjon.fagmodul.geo
+package no.nav.eessi.pensjon.api.geo
 
 import io.swagger.annotations.ApiOperation
 import no.nav.eessi.pensjon.services.geo.LandkodeService

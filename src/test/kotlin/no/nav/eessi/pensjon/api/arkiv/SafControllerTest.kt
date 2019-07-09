@@ -1,4 +1,4 @@
-package no.nav.eessi.pensjon.fagmodul.arkiv
+package no.nav.eessi.pensjon.api.arkiv
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.nhaarman.mockito_kotlin.whenever

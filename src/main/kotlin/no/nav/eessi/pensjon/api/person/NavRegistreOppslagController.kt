@@ -1,4 +1,4 @@
-package no.nav.eessi.pensjon.fagmodul.person
+package no.nav.eessi.pensjon.api.person
 
 import io.swagger.annotations.ApiOperation
 import no.nav.eessi.pensjon.services.aktoerregister.AktoerregisterService

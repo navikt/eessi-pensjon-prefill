@@ -1,4 +1,4 @@
-package no.nav.eessi.pensjon.fagmodul.arkiv
+package no.nav.eessi.pensjon.api.arkiv
 
 import io.swagger.annotations.ApiOperation
 import no.nav.eessi.pensjon.services.arkiv.SafException

@@ -1,4 +1,4 @@
-package no.nav.eessi.pensjon.fagmodul.pensjon
+package no.nav.eessi.pensjon.api.pensjon
 
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.mock
