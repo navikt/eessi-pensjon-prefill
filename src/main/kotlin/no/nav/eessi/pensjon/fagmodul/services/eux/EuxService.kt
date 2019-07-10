@@ -440,7 +440,7 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate,
                 startDate = bucUtil.getStartDateLong(),
                 lastUpdate = bucUtil.getLastDateLong(),
                 aktoerId = aktoerid,
-                status = bucUtil.getBuc().status,
+                status = bucUtil.getStatus(),
                 institusjon = institusjonlist.toList(),
                 seds = bucUtil.getAllDocuments()
         )

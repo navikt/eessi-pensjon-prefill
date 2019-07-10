@@ -8,9 +8,7 @@ import no.nav.eessi.pensjon.fagmodul.prefill.PrefillSED
 import no.nav.eessi.pensjon.fagmodul.services.eux.BucSedResponse
 import no.nav.eessi.pensjon.fagmodul.services.eux.BucUtils
 import no.nav.eessi.pensjon.fagmodul.services.eux.EuxGenericServerException
-import no.nav.eessi.pensjon.fagmodul.services.eux.EuxServerException
 import no.nav.eessi.pensjon.fagmodul.services.eux.EuxService
-import no.nav.eessi.pensjon.fagmodul.services.eux.RinaCasenrIkkeMottattException
 import no.nav.eessi.pensjon.fagmodul.services.eux.SedDokumentIkkeOpprettetException
 import no.nav.eessi.pensjon.fagmodul.services.eux.bucmodel.Buc
 import no.nav.eessi.pensjon.fagmodul.services.eux.bucmodel.ShortDocumentItem
@@ -236,7 +234,7 @@ class PrefillServiceTest {
         //mock bucUtils
         val mockbuc = Mockito.mock(BucUtils::class.java)
 
-        whenever(prefillService.addInstitutionsOrCreateX005(dataModel, mockbuc)).thenReturn(mockInstitusjonList)
+        whenever(mockbuc.findNewParticipants(dataModel.institution)).thenReturn(mockInstitusjonList)
 
         whenever(mockbuc.findFirstDocumentItemByType("X005")).thenReturn(null)
 
