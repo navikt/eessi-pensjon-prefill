@@ -52,9 +52,11 @@ class PrefillService(private val euxService: EuxService, private val prefillSED:
         //ferdig med å legge til X005 eller Institusjon/Deltaker
 
         //prefiller orginal SED og oppreter denne inn i RRina
-        //val data = prefillSed(dataModel)
+        val data = prefillSed(dataModel)
+
         logger.debug("Prøver å sende SED:${dataModel.getSEDid()} inn på buc: ${dataModel.euxCaseID}")
-        return prefillAndAddSedOnExistingCase(dataModel)
+        val docresult = euxService.opprettSedOnBuc(data.sed, data.euxCaseID)
+        return euxService.getBucUtils(docresult.caseId).findDocument(docresult.documentId)
     }
 
     //Legger til Deltakere på buc eller oppretter X005
@@ -131,37 +133,4 @@ class PrefillService(private val euxService: EuxService, private val prefillSED:
         }
         return deltakerListe.size == resultX005.size
     }
-
-
-    /**
-    service function to prefill sed and call eux to put sed on existing type
-     */
-    @Throws(EuxGenericServerException::class, SedDokumentIkkeOpprettetException::class)
-    fun prefillAndAddSedOnExistingCase(dataModel: PrefillDataModel): ShortDocumentItem {
-
-        val data = prefillSed(dataModel)
-        val navSed = data.sed
-
-        val docresult = euxService.opprettSedOnBuc(navSed, data.euxCaseID)
-        return euxService.getBucUtils(docresult.caseId).findDocument(docresult.documentId)
-    }
-
-    /**
-     * service function to prefill sed and call eux and then return model with euxCaseId (rinaID back)
-     */
-    @Throws(EuxServerException::class, RinaCasenrIkkeMottattException::class)
-    fun prefillAndCreateSedOnNewCase(dataModel: PrefillDataModel): BucSedResponse {
-        val data = prefillSed(dataModel)
-        val mottaker = getFirstInstitution(data.institution)
-        return euxService.opprettBucSed(data.sed, data.buc, mottaker.institution ?: ":", data.penSaksnummer)
-    }
-
-    //muligens midlertidig metode for å sende kun en mottaker til EUX.
-    //TODO: funksjon for å legge til flere mottaker (InstitusjonItem) til Rina/SED etter oppretting.
-    fun getFirstInstitution(institutions: List<InstitusjonItem>): InstitusjonItem {
-        return institutions.firstOrNull() ?: throw IkkeGyldigKallException("institujson kan ikke være tom")
-    }
-
-
-
 }

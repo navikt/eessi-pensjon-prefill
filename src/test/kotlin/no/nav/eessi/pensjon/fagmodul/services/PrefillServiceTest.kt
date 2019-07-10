@@ -246,22 +246,6 @@ class PrefillServiceTest {
 
     }
 
-    @Test
-    fun `call getFirstInstitution | two elements first return ok`() {
-        val mockInstitusjonList = listOf(
-                InstitusjonItem(country = "FI", institution = "Finland", name="Finland test"),
-                InstitusjonItem(country = "DE", institution = "Tyskland", name="Tyskland test")
-        )
-        val result = prefillService.getFirstInstitution(mockInstitusjonList)
-        assertEquals(mockInstitusjonList[0], result)
-    }
-
-    @Test(expected = IkkeGyldigKallException::class)
-    fun `call getFirstInstitution | no elements`() {
-        val mockInstitusjonList = listOf<InstitusjonItem>()
-        prefillService.getFirstInstitution(mockInstitusjonList)
-    }
-
     @Test(expected = SedDokumentIkkeOpprettetException::class)
     fun `call prefillAndAddInstitusionAndSedOnExistingCase| Exception eller feil`() {
         val dataModel = generatePrefillModel()
@@ -278,129 +262,6 @@ class PrefillServiceTest {
         prefillService.prefillAndAddInstitusionAndSedOnExistingCase(dataModel)
     }
 
-
-
-
-    @Test
-    fun `call prefillAndAddSedOnExistingCase| forventer euxCaseId og documentID, tilbake vellykket`() {
-
-        val euxCaseId = "12131234"
-        val docId = "2a427c10325c4b5eaf3c27ba5e8f1877"
-
-        val dataModel = generatePrefillModel()
-        val resultData = generatePrefillModel()
-
-        resultData.sed = generateMockP2000(dataModel)
-        resultData.euxCaseID = euxCaseId
-
-        //mock bucResponse
-        val mockBucResponse = BucSedResponse(euxCaseId, docId)
-
-        //mock prefill utfylling av sed
-        whenever(mockPrefillSED.prefill(any())).thenReturn(resultData)
-
-        //mock shortdoc svar
-        val mockShortDoc = ShortDocumentItem(id = docId, type = "P2000", status = "Nadada")
-
-        //mock bucUtils
-        val mockbuc = Mockito.mock(BucUtils::class.java)
-
-        //mock find shortdoc from id
-        whenever(mockbuc.findDocument(docId)).thenReturn(mockShortDoc)
-
-        //mock antal participant
-        //whenever(mockbuc.getParticipants()).thenReturn(listOf(ParticipantsItem()))
-
-        //mock bucutls return mocked bucdata
-        whenever(mockEuxService.getBucUtils(euxCaseId)).thenReturn(mockbuc)
-
-        //mock opprett SED on buc return mockBuc response
-        whenever(mockEuxService.opprettSedOnBuc(resultData.sed, euxCaseId)).thenReturn(mockBucResponse)
-
-        //mock leggetil detalger
-        //whenever(mockEuxService.addDeltagerInstitutions(any(), any())).thenReturn(true)
-
-        //run impl.
-        val result = prefillService.prefillAndAddSedOnExistingCase(dataModel)
-
-        //assert result
-        assertNotNull(result)
-        assertEquals(docId, result.id)
-    }
-
-    @Test(expected = SedDokumentIkkeOpprettetException::class)
-    fun `call prefillAndAddSedOnExistingCase| Exception eller feil`() {
-        val dataModel = generatePrefillModel()
-
-        val resultData = generatePrefillModel()
-        resultData.sed = generateMockP2000(dataModel)
-        resultData.euxCaseID = "12131234"
-        whenever(mockPrefillSED.prefill(any())).thenReturn(resultData)
-
-        whenever(mockEuxService.opprettSedOnBuc(any(), any())).thenThrow(SedDokumentIkkeOpprettetException::class.java)
-
-        prefillService.prefillAndAddSedOnExistingCase(dataModel)
-    }
-
-    @Test(expected = EuxGenericServerException::class)
-    fun `call prefillAndAddSedOnExistingCase| Exception eller feil tilbake EUX-RINA er nede`() {
-        val dataModel = generatePrefillModel()
-        val resultData = generatePrefillModel()
-        resultData.sed = generateMockP2000(dataModel)
-
-        resultData.euxCaseID = "12131234"
-        whenever(mockPrefillSED.prefill(any())).thenReturn(resultData)
-
-        whenever(mockEuxService.opprettSedOnBuc(any(), any())).thenThrow(EuxGenericServerException::class.java)
-
-        prefillService.prefillAndAddSedOnExistingCase(dataModel)
-    }
-
-
-    @Test
-    fun `call prefillAndCreateSedOnNewCase| forventer euxCaseID og documentId tilbake OK`() {
-        val dataModel = generatePrefillModel()
-        val bucResponse = BucSedResponse("1234567890", "1231231-123123-123123")
-
-        val resultData = generatePrefillModel()
-        resultData.sed = generateMockP2000(dataModel)
-
-        whenever(mockPrefillSED.prefill(any())).thenReturn(resultData)
-        whenever(mockEuxService.opprettBucSed(any(), any(), any(), any())).thenReturn(bucResponse)
-
-        val result = prefillService.prefillAndCreateSedOnNewCase(resultData)
-        assertEquals("1234567890", result.caseId)
-        assertEquals("1231231-123123-123123", result.documentId)
-    }
-
-    @Test(expected = RinaCasenrIkkeMottattException::class)
-    fun `call prefillAndCreateSedOnNewCase| Exception feiler`() {
-        val dataModel = generatePrefillModel()
-        dataModel.euxCaseID = "1234567890"
-
-        val resultData = generatePrefillModel()
-        resultData.sed = generateMockP2000(dataModel)
-
-        whenever(mockPrefillSED.prefill(any())).thenReturn(resultData)
-        whenever(mockEuxService.opprettBucSed(any(), any(), any(), any())).thenThrow(RinaCasenrIkkeMottattException::class.java)
-
-        prefillService.prefillAndCreateSedOnNewCase(resultData)
-    }
-
-    @Test(expected = EuxServerException::class)
-    fun `call prefillAndCreateSedOnNewCase| Exception ved kall EUX er nede`() {
-        val dataModel = generatePrefillModel()
-        dataModel.euxCaseID = "1234567890"
-
-        val resultData = generatePrefillModel()
-        resultData.sed = generateMockP2000(dataModel)
-
-        whenever(mockPrefillSED.prefill(any())).thenReturn(resultData)
-        whenever(mockEuxService.opprettBucSed(any(), any(), any(), any())).thenThrow(EuxServerException::class.java)
-
-        prefillService.prefillAndCreateSedOnNewCase(resultData)
-    }
-
     @Test(expected = SedValidatorException::class)
     fun `call prefillAndPreview| Exception ved validating SED`() {
         val dataModel = generatePrefillModel()
@@ -409,8 +270,7 @@ class PrefillServiceTest {
         resultData.sed = generateMockP2000ForValidatorError(dataModel)
 
         whenever(mockPrefillSED.prefill(any())).thenReturn(resultData)
-
-        prefillService.prefillSed(resultData)
+        prefillService.prefillSed(dataModel)
     }
 
     @Test
