@@ -98,7 +98,11 @@ class SedController(private val euxService: EuxService,
     fun createDocument(@RequestBody request: ApiRequest): BucSedResponse {
 
         logger.info("kaller type/create med request: $request")
-        return prefillService.prefillAndCreateSedOnNewCase(ApiRequest.buildPrefillDataModelOnNew(request, aktoerIdHelper))
+        val dataModel = ApiRequest.buildPrefillDataModelOnNew(request, aktoerIdHelper)
+        val data = prefillService.prefillSed(dataModel)
+        val firstInstitution =
+                data.institution.firstOrNull() ?: throw IkkeGyldigKallException("institusjon kan ikke være tom")
+        return euxService.opprettBucSed(data.sed, data.buc, firstInstitution.institution, data.penSaksnummer)
 
     }
 
