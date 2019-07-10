@@ -4,17 +4,16 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.whenever
+import no.nav.eessi.pensjon.fagmodul.helper.AktoerIdHelper
 import no.nav.eessi.pensjon.fagmodul.models.*
 import no.nav.eessi.pensjon.fagmodul.prefill.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.PrefillSED
+import no.nav.eessi.pensjon.fagmodul.prefill.nav.PrefillPerson
 import no.nav.eessi.pensjon.fagmodul.services.PrefillService
 import no.nav.eessi.pensjon.fagmodul.services.eux.BucSedResponse
 import no.nav.eessi.pensjon.fagmodul.services.eux.BucUtils
 import no.nav.eessi.pensjon.fagmodul.services.eux.EuxService
-import no.nav.eessi.pensjon.fagmodul.services.eux.bucmodel.Buc
-import no.nav.eessi.pensjon.fagmodul.services.eux.bucmodel.DocumentsItem
 import no.nav.eessi.pensjon.fagmodul.services.eux.bucmodel.ShortDocumentItem
-import org.junit.Assert
 import no.nav.eessi.pensjon.utils.*
 import org.junit.Before
 import org.junit.Test
@@ -43,6 +42,9 @@ class SedControllerTest {
     @Mock
     lateinit var mockPrefillSED: PrefillSED
 
+    @Mock
+    private lateinit var prefillPerson: PrefillPerson
+
     private lateinit var prefillDataMock: PrefillDataModel
     private lateinit var sedController: SedController
 
@@ -59,7 +61,7 @@ class SedControllerTest {
 
         //map json request back to FrontendRequest obj
         val map = jacksonObjectMapper()
-        val req = map.readValue(json, SedController.ApiRequest::class.java)
+        val req = map.readValue(json, ApiRequest::class.java)
 
 
         assertEquals("P_BUC_06", req.buc)
@@ -72,7 +74,7 @@ class SedControllerTest {
         val items = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
         val mockResponse = BucSedResponse("1234567890", "123123123-123123123-123131")
 
-        val requestMock = SedController.ApiRequest(
+        val requestMock = ApiRequest(
                 subjectArea = "Pensjon",
                 sakId = "EESSI-PEN-123",
                 euxCaseId = mockResponse.caseId,
@@ -86,7 +88,7 @@ class SedControllerTest {
         //må være først
         doReturn("12345").whenever(mockAktoerIdHelper).hentAktoerIdPin(ArgumentMatchers.anyString())
 
-        val utfyllMock = sedController.buildPrefillDataModelOnNew(requestMock)
+        val utfyllMock = ApiRequest.buildPrefillDataModelOnNew(requestMock, mockAktoerIdHelper)
 
         assertNotNull(utfyllMock.personNr)
         assertEquals("12345", utfyllMock.personNr)
@@ -114,7 +116,7 @@ class SedControllerTest {
         val bucresponse = BucSedResponse("123444455", "2a427c10325c4b5eaf3c27ba5e8f1877")
 
         val items = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
-        val requestMock = SedController.ApiRequest(
+        val requestMock = ApiRequest(
                 subjectArea = "Pensjon",
                 sakId = "EESSI-PEN-123",
                 euxCaseId = "1234567890",
@@ -126,7 +128,7 @@ class SedControllerTest {
         )
 
         whenever(mockAktoerIdHelper.hentAktoerIdPin(ArgumentMatchers.anyString())).thenReturn("12345")
-        val utfyllMock = sedController.buildPrefillDataModelOnExisting(requestMock)
+        val utfyllMock = ApiRequest.buildPrefillDataModelOnExisting(requestMock, mockAktoerIdHelper)
 
         assertNotNull(utfyllMock.personNr)
         assertEquals("12345", utfyllMock.personNr)
@@ -153,7 +155,7 @@ class SedControllerTest {
 
     @Test
     fun `confirm document`() {
-        val mockData = SedController.ApiRequest(
+        val mockData = ApiRequest(
                 subjectArea = "Pensjon",
                 sakId = "EESSI-PEN-123",
                 vedtakId = "1234567",
@@ -165,7 +167,7 @@ class SedControllerTest {
         )
         whenever(mockAktoerIdHelper.hentAktoerIdPin(ArgumentMatchers.anyString())).thenReturn("12345")
 
-        val utfyllMock = sedController.buildPrefillDataModelConfirm(mockData)
+        val utfyllMock = ApiRequest.buildPrefillDataModelConfirm(mockData, mockAktoerIdHelper)
 
         utfyllMock.sed.nav = Nav(bruker = Bruker(person = Person(fornavn = "Dummy", etternavn = "Dummy", foedselsdato = "1900-10-11", kjoenn = "K")), krav = Krav("1937-12-11"))
         whenever(mockPrefillSED.prefill(any())).thenReturn(utfyllMock)
@@ -181,7 +183,7 @@ class SedControllerTest {
 
     @Test(expected = SedDokumentIkkeGyldigException::class)
     fun `confirm document when sed is not valid`() {
-        val mockData = SedController.ApiRequest(
+        val mockData = ApiRequest(
                 subjectArea = "Pensjon",
                 sakId = "EESSI-PEN-123",
                 institutions = listOf(InstitusjonItem("NO", "DUMMY")),
@@ -189,12 +191,12 @@ class SedControllerTest {
                 buc = "P_BUC_06",
                 aktoerId = "0105094340092"
         )
-        sedController.buildPrefillDataModelConfirm(mockData)
+        ApiRequest.buildPrefillDataModelConfirm(mockData, mockAktoerIdHelper)
     }
 
     @Test(expected = IllegalArgumentException::class)
     fun `confirm document sed is null`() {
-        val mockData = SedController.ApiRequest(
+        val mockData = ApiRequest(
                 subjectArea = "Pensjon",
                 sakId = "EESSI-PEN-123",
                 institutions = listOf(InstitusjonItem("NO", "DUMMY")),
@@ -202,12 +204,12 @@ class SedControllerTest {
                 buc = "P_BUC_06",
                 aktoerId = "0105094340092"
         )
-        sedController.buildPrefillDataModelConfirm(mockData)
+        ApiRequest.buildPrefillDataModelConfirm(mockData, mockAktoerIdHelper)
     }
 
     @Test
     fun `check on minimum valid request to model`() {
-        val mockData = SedController.ApiRequest(
+        val mockData = ApiRequest(
                 sakId = "12234",
                 sed = "P6000",
                 aktoerId = "0105094340092"
@@ -215,7 +217,7 @@ class SedControllerTest {
 
         whenever(mockAktoerIdHelper.hentAktoerIdPin(ArgumentMatchers.anyString())).thenReturn("12345")
 
-        val model = sedController.buildPrefillDataModelConfirm(mockData)
+        val model = ApiRequest.buildPrefillDataModelConfirm(mockData, mockAktoerIdHelper)
 
         assertEquals("12345", model.personNr)
         assertEquals("12234", model.penSaksnummer)
@@ -228,12 +230,12 @@ class SedControllerTest {
 
     @Test(expected = IllegalArgumentException::class)
     fun `check on aktoerId is null`() {
-        val mockData = SedController.ApiRequest(
+        val mockData = ApiRequest(
                 sakId = "1213123123",
                 sed = "P6000",
                 aktoerId = null
         )
-        sedController.buildPrefillDataModelConfirm(mockData)
+        ApiRequest.buildPrefillDataModelConfirm(mockData, mockAktoerIdHelper)
     }
 
     @Test

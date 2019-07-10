@@ -8,7 +8,7 @@ import no.nav.eessi.pensjon.services.pensjonsinformasjon.IkkeFunnetException
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjoninformasjonException
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonService
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.Pensjontype
-import no.nav.eessi.pensjon.fagmodul.controllers.AktoerIdHelper
+import no.nav.eessi.pensjon.fagmodul.helper.AktoerIdHelper
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito.`when`

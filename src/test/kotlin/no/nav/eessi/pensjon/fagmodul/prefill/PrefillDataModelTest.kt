@@ -20,9 +20,6 @@ class PrefillDataModelTest {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillDataModelTest::class.java) }
 
-    @Mock
-    private lateinit var mockAktoerregisterService: AktoerregisterService
-
     private lateinit var prefill: PrefillDataModel
 
     @Before

@@ -1,4 +1,4 @@
-package no.nav.eessi.pensjon.fagmodul.controllers
+package no.nav.eessi.pensjon.fagmodul.helper
 
 import no.nav.eessi.pensjon.services.aktoerregister.AktoerregisterException
 import no.nav.eessi.pensjon.services.aktoerregister.AktoerregisterService
