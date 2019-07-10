@@ -1,9 +1,9 @@
 package no.nav.eessi.pensjon.fagmodul.services
 
-import no.nav.eessi.pensjon.fagmodul.services.eux.GenericUnprocessableEntity
 import no.nav.eessi.pensjon.fagmodul.models.SED
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.ResponseStatus
+import java.lang.IllegalArgumentException
 
 class SedValidator {
 
@@ -20,4 +20,4 @@ class SedValidator {
 }
 
 @ResponseStatus(value = HttpStatus.UNPROCESSABLE_ENTITY)
-class SedValidatorException(message: String) : GenericUnprocessableEntity(message)
+class SedValidatorException(message: String) : IllegalArgumentException(message)
