@@ -83,9 +83,11 @@ class SedController(private val euxService: EuxService,
     @ApiOperation("legge til SED på et eksisterende Rina document. kjører preutfylling, ny api kall til eux")
     @PostMapping("/addSed")
     fun addDocument(@RequestBody request: ApiRequest): ShortDocumentItem {
-
+        val dataModel = ApiRequest.buildPrefillDataModelOnExisting(request, aktoerIdHelper)
+        val data = prefillService.prefillSed(dataModel)
         logger.info("kaller add med request: $request")
-        return prefillService.prefillAndAddSedOnExistingCase(ApiRequest.buildPrefillDataModelOnExisting(request, aktoerIdHelper))
+        val docresult = euxService.opprettSedOnBuc(data.sed, data.euxCaseID)
+        return euxService.getBucUtils(docresult.caseId).findDocument(docresult.documentId)
 
     }
 
