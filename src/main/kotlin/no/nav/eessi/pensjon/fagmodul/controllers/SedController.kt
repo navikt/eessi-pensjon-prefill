@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import io.swagger.annotations.ApiOperation
 import no.nav.eessi.pensjon.helper.AktoerIdHelper
 import no.nav.eessi.pensjon.fagmodul.models.*
+import no.nav.eessi.pensjon.fagmodul.services.ApiRequest
 import no.nav.eessi.pensjon.fagmodul.services.PrefillService
 import no.nav.eessi.pensjon.fagmodul.services.eux.BucSedResponse
 import no.nav.eessi.pensjon.fagmodul.services.eux.EuxService

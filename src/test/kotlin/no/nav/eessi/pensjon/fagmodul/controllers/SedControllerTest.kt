@@ -9,6 +9,7 @@ import no.nav.eessi.pensjon.fagmodul.models.*
 import no.nav.eessi.pensjon.fagmodul.prefill.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.PrefillSED
 import no.nav.eessi.pensjon.fagmodul.prefill.nav.PrefillPerson
+import no.nav.eessi.pensjon.fagmodul.services.ApiRequest
 import no.nav.eessi.pensjon.fagmodul.services.PrefillService
 import no.nav.eessi.pensjon.fagmodul.services.eux.BucSedResponse
 import no.nav.eessi.pensjon.fagmodul.services.eux.BucUtils
