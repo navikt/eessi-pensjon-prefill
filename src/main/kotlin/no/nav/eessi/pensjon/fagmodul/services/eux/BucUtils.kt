@@ -15,8 +15,12 @@ class BucUtils(private val buc: Buc ) {
 
     private val logger = LoggerFactory.getLogger(BucUtils::class.java)
 
-    fun getBuc(): Buc {
+    private fun getBuc(): Buc {
         return buc
+    }
+
+    fun getStatus(): String? {
+        return getBuc().status
     }
 
     fun getCreator(): Creator? {
@@ -212,71 +216,8 @@ class BucUtils(private val buc: Buc ) {
         return getBuc().internationalId
     }
 
-    fun getParticipants(): List<ParticipantsItem>? {
-        return getBuc().participants
-    }
-
-    //trenger testing
-    fun getParticipantsExclusiveCaseowner(): List<ParticipantsItem> {
-        val parts = getParticipants()
-        val caseOwner = "CaseOwner"
-        val bucdeltakere = mutableListOf<ParticipantsItem>()
-        parts?.forEach {
-            if (it.role != caseOwner) {
-                bucdeltakere.add(it)
-            }
-        }
-        return bucdeltakere
-    }
-
-    //trenger testing
-    fun getParticipantsExclusiveCaseownerAsInstitusjonItem(): List<InstitusjonItem> {
-        val list = getParticipantsExclusiveCaseowner()
-        logger.debug("ParticipantsExclusive size: ${list.size}")
-
-        val result = mutableListOf<InstitusjonItem>()
-        list.forEach{
-            val institusjonItem = InstitusjonItem(
-                    country = it.organisation?.countryCode ?: "",
-                    institution = it.organisation?.id ?: "",  //kan hende må være id?!
-                    name = "" //
-            )
-            logger.debug("Legger til BucParticipants som InstitusjonItem i liste")
-            result.add(institusjonItem)
-        }
-        return result
-    }
-
-    fun matchParticipantsToInstitusjonItem(bucParticipants: List<InstitusjonItem>, list: List<InstitusjonItem>): List<InstitusjonItem> {
-        logger.debug("Sjekker på bucDeltakere mot Nye")
-        if (bucParticipants.isEmpty() && list.isEmpty()) {
-            logger.debug("BucDeltakere og Nye er Begge tomme (bør ikke skje)")
-            throw IkkeGyldigKallException("Ingen deltakere/Institusjon er tom")
-        }
-        if (bucParticipants.isEmpty() && list.isNotEmpty()) {
-            logger.debug("BucDeltaker (filtrert) er tom (helt ny Buc) returnerer Ny")
-            return list
-        }
-        if (bucParticipants.isNotEmpty() && list.isEmpty()) {
-            logger.debug("BucDeltaker er ikke tom, Ny er tom returner Ny")
-            return list
-        }
-
-        logger.debug("BucDeltaker er ikke tom, Ny er ikke tom, finne unike som ikke finnes i Buc")
-        val deltakere = mutableListOf<InstitusjonItem>()
-        deltakere.addAll(list)
-        val found = mutableListOf<InstitusjonItem>()
-        bucParticipants.forEach { bucpart ->
-           for (apidel in list) {
-                if (apidel.country == bucpart.country && apidel.institution == bucpart.institution) {
-                    found.add(apidel)
-                }
-            }
-        }
-        logger.debug("Fjerner funnet Deltakere i Buc fra nye Deltakere $found")
-        deltakere.removeAll(found)
-        logger.debug("Returnerer filtrert liste over Deltakere $deltakere")
-        return deltakere
+    fun getParticipants(): List<ParticipantsItem> {
+        return getBuc().participants ?: emptyList()
     }
 
     fun getBucAction(): List<ActionsItem>? {
@@ -318,6 +259,27 @@ class BucUtils(private val buc: Buc ) {
             }
         }
         return aksjoner.sortedBy { it.dokumentType }.toList()
+    }
+
+    fun findNewParticipants(potentialNewParticipants: List<InstitusjonItem>): List<InstitusjonItem> {
+        val currentParticipants =
+                getParticipants()
+                        .filter { it.role != "CaseOwner" }
+                        .map {
+                            InstitusjonItem(
+                                    country = it.organisation?.countryCode ?: "",
+                                    institution = it.organisation?.id ?: "",  //kan hende må være id?!
+                                    name = "" //
+                            )
+                        }
+
+        if (currentParticipants.isEmpty() && potentialNewParticipants.isEmpty()) {
+            throw IkkeGyldigKallException("Ingen deltakere/Institusjon er tom")
+        }
+
+        return potentialNewParticipants.filter {
+            candidate -> currentParticipants.none { current -> candidate.country == current.country && candidate.institution == current.institution }
+        }
     }
 
 }

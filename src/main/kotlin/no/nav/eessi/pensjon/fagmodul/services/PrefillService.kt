@@ -3,12 +3,9 @@ package no.nav.eessi.pensjon.fagmodul.services
 import no.nav.eessi.pensjon.fagmodul.models.*
 import no.nav.eessi.pensjon.fagmodul.prefill.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.PrefillSED
-import no.nav.eessi.pensjon.fagmodul.services.eux.BucSedResponse
 import no.nav.eessi.pensjon.fagmodul.services.eux.BucUtils
 import no.nav.eessi.pensjon.fagmodul.services.eux.EuxGenericServerException
-import no.nav.eessi.pensjon.fagmodul.services.eux.EuxServerException
 import no.nav.eessi.pensjon.fagmodul.services.eux.EuxService
-import no.nav.eessi.pensjon.fagmodul.services.eux.RinaCasenrIkkeMottattException
 import no.nav.eessi.pensjon.fagmodul.services.eux.SedDokumentIkkeOpprettetException
 import no.nav.eessi.pensjon.fagmodul.services.eux.bucmodel.ShortDocumentItem
 import org.slf4j.LoggerFactory
@@ -61,36 +58,24 @@ class PrefillService(private val euxService: EuxService, private val prefillSED:
 
     //Legger til Deltakere på buc eller oppretter X005
     fun addInstitution(bucUtil: BucUtils, data: PrefillDataModel) {
-        val deltakerListe = addInstitutionsOrCreateX005(data, bucUtil)
+        val nyeDeltakere = bucUtil.findNewParticipants(data.getInstitutionsList())
 
-        logger.debug("DeltakerListe (InstitusjonItem) size: ${deltakerListe.size}")
-        if (deltakerListe.isNotEmpty()) {
+        logger.debug("DeltakerListe (InstitusjonItem) size: ${nyeDeltakere.size}")
+        if (nyeDeltakere.isNotEmpty()) {
             val bucX005 = bucUtil.findFirstDocumentItemByType("X005")
 
             //bucX005 er null kan vi legge til Deltakere/Institusjon på vanlig måte
             if (bucX005 == null) {
                 logger.debug("X005 finnes ikke på buc, legger til Deltakere/Institusjon på vanlig måte")
-                euxService.addDeltagerInstitutions(data.euxCaseID, deltakerListe)
+                euxService.addDeltagerInstitutions(data.euxCaseID, nyeDeltakere)
 
             //bucX005 ikke er null må det sendes en X005 sed for hver ny Deltaker/Institusjon
             } else {
                 logger.debug("X005 finnes på buc, Sed X005 prefills og sendes inn")
-                addX005(data, deltakerListe)
+                addX005(data, nyeDeltakere)
             }
         }
     }
-
-    //skal legge til Deltakere/Instiusjon på vanlig måte.
-    // frem til det finnes er lagt inn og sendt en SED ut av RINA
-    fun addInstitutionsOrCreateX005(data: PrefillDataModel, bucUtil: BucUtils): List<InstitusjonItem> {
-        val bucListe = bucUtil.getParticipantsExclusiveCaseownerAsInstitusjonItem()
-        val dataListe = data.getInstitutionsList()
-
-        logger.debug("Prøver å filtere ut like InstitusjonItem i Buc og Nye(fra Requestkall) BucSize: ${bucListe.size} mot dataListe: ${dataListe.size} ")
-
-        return bucUtil.matchParticipantsToInstitusjonItem(bucListe, dataListe)
-    }
-
 
     //Oppretter NavSedX005 og sender til Rina
     fun addX005(data: PrefillDataModel, deltakerListe: List<InstitusjonItem>): Boolean {
