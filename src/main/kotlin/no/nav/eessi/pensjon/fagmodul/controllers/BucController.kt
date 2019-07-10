@@ -3,9 +3,7 @@ package no.nav.eessi.pensjon.fagmodul.controllers
 import io.swagger.annotations.ApiOperation
 import no.nav.eessi.pensjon.helper.AktoerIdHelper
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
-import no.nav.eessi.pensjon.fagmodul.services.eux.BucUtils
 import no.nav.eessi.pensjon.fagmodul.services.eux.EuxService
-import no.nav.eessi.pensjon.fagmodul.services.eux.RinaAksjon
 import no.nav.eessi.pensjon.fagmodul.services.eux.Rinasak
 import no.nav.eessi.pensjon.fagmodul.services.eux.bucmodel.Buc
 import no.nav.eessi.pensjon.fagmodul.services.eux.bucmodel.BucAndSedView
@@ -44,7 +42,7 @@ class BucController(private val euxService: EuxService,
     fun getProcessDefinitionName(@PathVariable(value = "rinanr", required = true) rinanr: String): String? {
 
         logger.debug("Henter ut definisjonsnavn (type type) på valgt Buc")
-        return getBucUtils(rinanr).getProcessDefinitionName()
+        return euxService.getBucUtils(rinanr).getProcessDefinitionName()
     }
 
     @ApiOperation("Henter opp den opprinelige inststusjon på valgt caseid (type)")
@@ -52,7 +50,7 @@ class BucController(private val euxService: EuxService,
     fun getCreator(@PathVariable(value = "rinanr", required = true) rinanr: String): Creator? {
 
         logger.debug("Henter ut Creator på valgt Buc")
-        return getBucUtils(rinanr).getCreator()
+        return euxService.getBucUtils(rinanr).getCreator()
     }
 
     @ApiOperation("Henter opp den opprinelige inststusjon landkode på valgt caseid (type)")
@@ -60,7 +58,7 @@ class BucController(private val euxService: EuxService,
     fun getCreatorCountryCode(@PathVariable(value = "rinanr", required = true) rinanr: String): String? {
 
         logger.debug("Henter ut CountryCode på Creator på valgt Buc")
-        return mapAnyToJson(getBucUtils(rinanr).getCreatorContryCode())
+        return mapAnyToJson(euxService.getBucUtils(rinanr).getCreatorContryCode())
     }
 
     @ApiOperation("Henter opp internationalid på caseid (type)")
@@ -68,7 +66,7 @@ class BucController(private val euxService: EuxService,
     fun getInternationalId(@PathVariable(value = "rinanr", required = true) rinanr: String): String? {
 
         logger.debug("Henter ut InternationalId på valgt Buc")
-        return getBucUtils(rinanr).getInternatinalId()
+        return euxService.getBucUtils(rinanr).getInternatinalId()
     }
 
     @ApiOperation("Henter opp den opprinelige inststusjon på valgt caseid (type)")
@@ -76,14 +74,14 @@ class BucController(private val euxService: EuxService,
     fun getAllDocuments(@PathVariable(value = "rinanr", required = true) rinanr: String): List<ShortDocumentItem> {
 
         logger.debug("Henter ut documentId på alle dokumenter som finnes på valgt type")
-        return getBucUtils(rinanr).getAllDocuments()
+        return euxService.getBucUtils(rinanr).getAllDocuments()
     }
 
     @ApiOperation("Henter opp mulige aksjon(er) som kan utføres på valgt buc")
     @GetMapping("/{rinanr}/aksjoner")
     fun getMuligeAksjoner(@PathVariable(value = "rinanr", required = true) rinanr: String): List<String> {
         logger.debug("Henter ut muligeaksjoner på valgt buc ${rinanr}")
-        return getBucUtils(rinanr).getAksjonListAsString()
+        return euxService.getBucUtils(rinanr).getAksjonListAsString()
     }
 
     @ApiOperation("Henter ut en liste over saker på valgt aktoerid. ny api kall til eux")
@@ -109,7 +107,6 @@ class BucController(private val euxService: EuxService,
 
     }
 
-    //flyttes to BucController
     @ApiOperation("Oppretter ny tom BUC i RINA via eux-api. ny api kall til eux")
     @PostMapping("/{buctype}")
     fun createBuc(@PathVariable("buctype", required = true) buctype: String): BucAndSedView {
@@ -155,13 +152,5 @@ class BucController(private val euxService: EuxService,
             ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(errorBody(ex.message!!, UUID.randomUUID().toString()))
         }
-    }
-
-    private fun getMuligeAksjonerFilter(list: List<RinaAksjon>, filter: String = ""): List<RinaAksjon> {
-        return list.filter { it.dokumentType?.startsWith(filter)!! }.toList()
-    }
-
-    private fun getBucUtils(rinanr: String): BucUtils {
-        return euxService.getBucUtils(rinanr)
     }
 }
