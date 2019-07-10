@@ -1,6 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.krav
 
-import no.nav.eessi.pensjon.fagmodul.models.ApiRequest
+import no.nav.eessi.pensjon.fagmodul.services.ApiRequest
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.models.Nav
 import no.nav.eessi.pensjon.fagmodul.models.SED
