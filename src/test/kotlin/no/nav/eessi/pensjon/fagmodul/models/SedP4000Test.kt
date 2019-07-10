@@ -2,7 +2,7 @@ package no.nav.eessi.pensjon.fagmodul.models
 
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.whenever
-import no.nav.eessi.pensjon.fagmodul.helper.AktoerIdHelper
+import no.nav.eessi.pensjon.helper.AktoerIdHelper
 import no.nav.eessi.pensjon.fagmodul.prefill.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.PrefillP4000
 import no.nav.eessi.pensjon.fagmodul.prefill.nav.PrefillPerson

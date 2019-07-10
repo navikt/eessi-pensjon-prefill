@@ -1,4 +1,4 @@
-package no.nav.eessi.pensjon.fagmodul.person
+package no.nav.eessi.pensjon.api.person
 
 /**
  * Personinformasjon fra TPS ( PersonV3 )

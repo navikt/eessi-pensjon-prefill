@@ -1,4 +1,4 @@
-package no.nav.eessi.pensjon.fagmodul.pensjon
+package no.nav.eessi.pensjon.api.pensjon
 
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.mock
@@ -8,7 +8,7 @@ import no.nav.eessi.pensjon.services.pensjonsinformasjon.IkkeFunnetException
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjoninformasjonException
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonService
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.Pensjontype
-import no.nav.eessi.pensjon.fagmodul.helper.AktoerIdHelper
+import no.nav.eessi.pensjon.helper.AktoerIdHelper
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito.`when`
