@@ -101,13 +101,13 @@ class PrefillPensjonReduksjon : VedtakPensjonData() {
      */
     private fun createReduksjonArtikkelType(pendata: Pensjonsinformasjon): String? {
         logger.debug("5.1.4         ReduksjonArtikkelType")
-        val sakType = VedtakPensjonData.KSAK.valueOf(pendata.sakAlder.sakType)
+        val sakType = KSAK.valueOf(pendata.sakAlder.sakType)
 
-        if (sakType == VedtakPensjonData.KSAK.UFOREP && hentTilleggsPensjon(pendata))
+        if (sakType == KSAK.UFOREP && hentTilleggsPensjon(pendata))
             return "02"
-        if (sakType == VedtakPensjonData.KSAK.GJENLEV && hentGrunnPersjon(pendata) || hentTilleggsPensjon(pendata))
+        if (sakType == KSAK.GJENLEV && hentGrunnPersjon(pendata) || hentTilleggsPensjon(pendata))
             return "02"
-        if (sakType == VedtakPensjonData.KSAK.BARNEP && hentGrunnPersjon(pendata))
+        if (sakType == KSAK.BARNEP && hentGrunnPersjon(pendata))
             return "02"
 
         return null

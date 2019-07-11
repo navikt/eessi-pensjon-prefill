@@ -58,7 +58,7 @@ class PensjonsinformasjonUtlandController(private val timingService: TimingServi
     @ApiOperation(httpMethod = "PUT", value = "legger mock KravUtland til på map med bucid som key, KravUtland som verdi", response = KravUtland::class)
     @PutMapping("/mockPutKravUtland/{bucId}")
     fun mockPutKravUtland(@PathVariable("bucId", required = true) bucId: Int, @RequestBody kravUtland: KravUtland): KravUtland {
-        if (bucId > 0 && bucId < 1000) {
+        if (bucId in 1..999) {
             putKravUtlandMap(bucId, kravUtland)
             return hentKravUtland(bucId)
         }
@@ -100,23 +100,27 @@ class PensjonsinformasjonUtlandController(private val timingService: TimingServi
             val seds = mapSeds(bucId)
             //finner rette hjelep metode for utfylling av KravUtland
             //ut ifra hvilke SED/saktype det gjelder.
-            if (erAlderpensjon(seds)) {
-                logger.debug("type er alderpensjon")
-                timingService.timesStop(pesystime)
-                getCounter("HENTKRAVUTLANDOK").increment()
-                kravAlderpensjonUtland(seds)
+            when {
+                erAlderpensjon(seds) -> {
+                    logger.debug("type er alderpensjon")
+                    timingService.timesStop(pesystime)
+                    getCounter("HENTKRAVUTLANDOK").increment()
+                    kravAlderpensjonUtland(seds)
 
-            } else if (erUforpensjon(seds)) {
-                logger.debug("type er utføre")
-                timingService.timesStop(pesystime)
-                getCounter("HENTKRAVUTLANDOK").increment()
-                kravUforepensjonUtland(seds)
+                }
+                erUforpensjon(seds) -> {
+                    logger.debug("type er utføre")
+                    timingService.timesStop(pesystime)
+                    getCounter("HENTKRAVUTLANDOK").increment()
+                    kravUforepensjonUtland(seds)
 
-            } else {
-                logger.debug("type er gjenlevende")
-                timingService.timesStop(pesystime)
-                getCounter("HENTKRAVUTLANDOK").increment()
-                kravGjenlevendeUtland(seds)
+                }
+                else -> {
+                    logger.debug("type er gjenlevende")
+                    timingService.timesStop(pesystime)
+                    getCounter("HENTKRAVUTLANDOK").increment()
+                    kravGjenlevendeUtland(seds)
+                }
             }
         }
 
@@ -133,7 +137,7 @@ class PensjonsinformasjonUtlandController(private val timingService: TimingServi
         //Kode om fra Alpha2 - Alpha3 teng i Avtaleland (eu, eøs og par andre)  og Statborgerskap (alle verdens land)
         //val statsborgerskapItem = p2000.nav?.bruker?.person?.statsborgerskap?.first()
         //statsborgerskap = hentAlpha3Land(p2000.nav?.bruker?.person?.statsborgerskap?.first()?.land ?: "N/A") ?: "N/A",
-        var landAlpha3 = hentAlpha3Land(p2000.nav?.bruker?.person?.statsborgerskap?.first()?.land ?: "N/A")
+        val landAlpha3 = hentAlpha3Land(p2000.nav?.bruker?.person?.statsborgerskap?.first()?.land ?: "N/A")
 
         return KravUtland(
                 //P2000 9.1
@@ -176,7 +180,7 @@ class PensjonsinformasjonUtlandController(private val timingService: TimingServi
         logger.debug("vergeetter: $vergeetter , vergenavn: $vergenavn")
         val verge = vergeetter + vergenavn
         logger.debug("verge: $verge")
-        if (verge.length == 0) {
+        if (verge.isEmpty()) {
             return "BRUKER"
         }
         return "VERGE"
@@ -195,7 +199,7 @@ class PensjonsinformasjonUtlandController(private val timingService: TimingServi
     }
 
     fun hentFamilieStatus(key: String): String {
-        val status = mapOf<String, String>("01" to "UGIF", "02" to "GIFT", "03" to "SAMB", "04" to "REPA", "05" to "SKIL", "06" to "SKPA", "07" to "SEPA", "08" to "ENKE")
+        val status = mapOf("01" to "UGIF", "02" to "GIFT", "03" to "SAMB", "04" to "REPA", "05" to "SKIL", "06" to "SKPA", "07" to "SEPA", "08" to "ENKE")
         //Sivilstand for søker. Må være en gyldig verdi fra T_K_SIVILSTATUS_T:
         //ENKE, GIFT, GJES, GJPA, GJSA, GLAD, PLAD, REPA,SAMB, SEPA, SEPR, SKIL, SKPA, UGIF.
         //Pkt p2000 - 2.2.2.1. Familiestatus
@@ -216,7 +220,7 @@ class PensjonsinformasjonUtlandController(private val timingService: TimingServi
 
     fun hentSkjemaUtland(seds: Map<SEDType, SED>): SkjemaUtland {
         logger.debug("oppretter SkjemaUtland")
-        var list = prosessUtlandsOpphold(seds)
+        val list = prosessUtlandsOpphold(seds)
         logger.debug("liste Utlandsoppholditem er størrelse : ${list.size}")
         return SkjemaUtland(
                 utlandsopphold = list
@@ -277,12 +281,11 @@ class PensjonsinformasjonUtlandController(private val timingService: TimingServi
             } catch (ex: Exception) {
                 logger.error(ex.message)
             }
-            val land = landAlpha3
 
             logger.debug("oppretter arbeid P4000")
             list.add(
                     Utlandsoppholditem(
-                            land = land,
+                            land = landAlpha3,
                             fom = fom,
                             tom = tom,
                             arbeidet = true,
@@ -413,25 +416,18 @@ class PensjonsinformasjonUtlandController(private val timingService: TimingServi
         return list
     }
 
-    private fun getSED(sedType: SEDType, maps: Map<SEDType, SED>): SED? {
-        return maps.get(sedType)
-    }
+    private fun getSED(sedType: SEDType, maps: Map<SEDType, SED>) = maps[sedType]
 
     //finne ut som type er for P2000
-    private fun erAlderpensjon(maps: Map<SEDType, SED>): Boolean {
-        return getSED(SEDType.P2000, maps) != null
-    }
+    private fun erAlderpensjon(maps: Map<SEDType, SED>) = getSED(SEDType.P2000, maps) != null
 
     //finne ut som type er for P2200
-    private fun erUforpensjon(maps: Map<SEDType, SED>): Boolean {
-        return getSED(SEDType.P2200, maps) != null
-    }
-
+    private fun erUforpensjon(maps: Map<SEDType, SED>) = getSED(SEDType.P2200, maps) != null
 
     //henter de nødvendige SEDer fra Rina, legger de på maps med bucId som Key.
     private fun mapSeds(bucId: Int): Map<SEDType, SED> {
         logger.debug("Henter ut alle nødvendige SED for lettere utfylle tjenesten")
-        val map = mapOf<SEDType, SED>(SEDType.P2000 to fetchDocument(bucId, SEDType.P2000),
+        val map = mapOf(SEDType.P2000 to fetchDocument(bucId, SEDType.P2000),
                 SEDType.P3000 to fetchDocument(bucId, SEDType.P3000),
                 SEDType.P4000 to fetchDocument(bucId, SEDType.P4000))
         val keys = map.keys

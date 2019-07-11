@@ -41,7 +41,7 @@ class OidcAuthorizationHeaderInterceptor(private val oidcRequestContextHolder: O
         val tokenkeys = context.issuers
         logger.debug("Found : ${tokenkeys.size} valid issuers")
 
-        var found = mutableListOf<TokenContext>()
+        val found = mutableListOf<TokenContext>()
         var token: TokenContext ?= null
         tokenkeys.forEach {
             token = context.getToken(it)

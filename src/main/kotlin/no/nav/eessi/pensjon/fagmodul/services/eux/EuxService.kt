@@ -414,7 +414,7 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate,
             parts = bucUtil.getParticipants()
             logger.debug(" Henter ut liste over deltagere på type")
 
-            parts?.forEach {
+            parts.forEach {
                 institusjonlist.add(
                         InstitusjonItem(
                                 country = it.organisation?.countryCode ?: "",
@@ -645,7 +645,6 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate,
 
     /**
      * Own impl. no list from eux that contains list of SED to a speific BUC
-     * @param bucType
      */
     companion object {
         @JvmStatic

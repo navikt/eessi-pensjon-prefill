@@ -54,7 +54,7 @@ abstract class VedtakPensjonData {
         val trygdeListe = pendata.trygdetidListe
         val days = summerTrygdeTid(trygdeListe)
 
-        return days in (storreEnn + 1)..(mindreEnn - 1)
+        return days in (storreEnn + 1) until mindreEnn
     }
 
     fun summerTrygdeTid(trygdeListe: V1TrygdetidListe): Int {

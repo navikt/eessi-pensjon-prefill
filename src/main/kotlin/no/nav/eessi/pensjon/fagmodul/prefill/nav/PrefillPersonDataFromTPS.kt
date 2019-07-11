@@ -307,7 +307,7 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
         val sivilstand = brukerTps.sivilstand as Sivilstand
 
         //val status = mapOf<String, String>("01" to "UGIF", "02" to "GIFT", "03" to "SAMB", "04" to "REPA", "05" to "SKIL", "06" to "SKPA", "07" to "SEPA", "08" to "ENKE")
-        val status = mapOf<String, String>("GIFT" to "02", "REPA" to "04", "ENKE" to "08", "SAMB" to "03", "SEPA" to "07", "UGIF" to "01", "SKIL" to "05", "SKPA" to "06")
+        val status = mapOf("GIFT" to "02", "REPA" to "04", "ENKE" to "08", "SAMB" to "03", "SEPA" to "07", "UGIF" to "01", "SKIL" to "05", "SKPA" to "06")
 
         return listOf(SivilstandItem(
                 //fradato = standardDatoformat(sivilstand.fomGyldighetsperiode),
@@ -342,7 +342,7 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
     }
 
     //2.2.2 ustrukturert
-    private fun hentPersonAdresseUstrukturert(postadr: no.nav.tjeneste.virksomhet.person.v3.informasjon.Postadresse): Adresse {
+    private fun hentPersonAdresseUstrukturert(postadr: Postadresse): Adresse {
         logger.debug("             UstrukturertAdresse (utland)")
         val gateAdresse = postadr.ustrukturertAdresse as UstrukturertAdresse
 
@@ -376,7 +376,7 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
         logger.debug("2.2.1.1         Land / Statsborgerskap")
 
         val statsborgerskap = person.statsborgerskap as Statsborgerskap
-        val land = statsborgerskap.land as no.nav.tjeneste.virksomhet.person.v3.informasjon.Landkoder
+        val land = statsborgerskap.land as Landkoder
 
         return StatsborgerskapItem(
                 land = hentLandkode(land)
@@ -391,7 +391,7 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
     }
 
     //TODO: Mapping av landkoder skal gjøres i codemapping i EUX
-    private fun hentLandkode(landkodertps: no.nav.tjeneste.virksomhet.person.v3.informasjon.Landkoder): String? {
+    private fun hentLandkode(landkodertps: Landkoder): String? {
         return landkodeService.finnLandkode2(landkodertps.value)
     }
 

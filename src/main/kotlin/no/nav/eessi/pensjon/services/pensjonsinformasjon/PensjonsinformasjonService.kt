@@ -31,7 +31,7 @@ class PensjonsinformasjonService(
 
         v1saklist.forEach {
             logger.debug("Itererer brukersakliste sakType: ${it.sakType} sakid: ${it.sakId}")
-            if (sakId.equals(it.sakId.toString())) {
+            if (sakId == it.sakId.toString()) {
                 logger.debug("Fant sakid på brukersakliste, returnerer kun V1Sak på sakid: ${it.sakId}\"")
                     return it
             }

@@ -3,7 +3,6 @@ package no.nav.eessi.pensjon.api.person
 import io.swagger.annotations.ApiOperation
 import no.nav.eessi.pensjon.services.aktoerregister.AktoerregisterService
 import no.nav.eessi.pensjon.services.personv3.PersonV3Service
-import no.nav.eessi.pensjon.fagmodul.metrics.getCounter
 import no.nav.eessi.pensjon.metrics.counter
 import no.nav.eessi.pensjon.services.personv3.PersonV3IkkeFunnetException
 import no.nav.eessi.pensjon.services.personv3.PersonV3SikkerhetsbegrensningException
