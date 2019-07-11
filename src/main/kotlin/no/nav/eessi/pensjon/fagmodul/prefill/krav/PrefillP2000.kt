@@ -4,6 +4,7 @@ import no.nav.eessi.pensjon.fagmodul.models.*
 import no.nav.eessi.pensjon.fagmodul.prefill.PensjonsinformasjonHjelper
 import no.nav.eessi.pensjon.fagmodul.prefill.Prefill
 import no.nav.eessi.pensjon.fagmodul.prefill.PrefillDataModel
+import no.nav.eessi.pensjon.fagmodul.prefill.ValidationException
 import no.nav.eessi.pensjon.fagmodul.prefill.nav.PrefillNav
 import no.nav.eessi.pensjon.fagmodul.prefill.nav.PrefillPersonDataFromTPS
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjoninformasjonException
@@ -103,5 +104,13 @@ class PrefillP2000(private val prefillNav: PrefillNav, private val preutfyllingP
         return gjenlevende
     }
 
-
+    override fun validate(data: SED) {
+        when {
+            data.nav?.bruker?.person?.etternavn == null -> throw ValidationException("Etternavn mangler")
+            data.nav?.bruker?.person?.fornavn == null -> throw ValidationException("Fornavn mangler")
+            data.nav?.bruker?.person?.foedselsdato == null -> throw ValidationException("Fødseldsdato mangler")
+            data.nav?.bruker?.person?.kjoenn == null -> throw ValidationException("Kjønn mangler")
+            data.nav?.krav?.dato == null -> throw ValidationException("Kravdato mangler")
+        }
+    }
 }

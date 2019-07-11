@@ -11,7 +11,6 @@ import no.nav.eessi.pensjon.fagmodul.prefill.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.nav.PrefillNav
 import no.nav.eessi.pensjon.fagmodul.prefill.nav.PrefillPersonDataFromTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PersonDataFromTPS
-import no.nav.eessi.pensjon.fagmodul.services.SedValidator
 import no.nav.eessi.pensjon.fagmodul.prefill.person.NavFodselsnummer
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import org.junit.Test
@@ -100,10 +99,9 @@ class PrefillP2000APUtlandInnvTest : AbstractPrefillIntegrationTestHelper() {
 
         logger.info(p2000.toString())
 
-        val validator = SedValidator()
-        try{
-            validator.validateP2000(p2000)
-        }catch (ex: Exception){
+        try {
+            prefill.validate(p2000)
+        } catch (ex: Exception){
             logger.error("Feilen er ${ex.message}")
             fail("Validatoren skal ikke komme hit!")
         }
