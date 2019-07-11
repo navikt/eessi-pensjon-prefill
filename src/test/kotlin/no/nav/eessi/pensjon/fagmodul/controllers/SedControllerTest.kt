@@ -3,6 +3,10 @@ package no.nav.eessi.pensjon.fagmodul.controllers
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.doReturn
+import com.nhaarman.mockito_kotlin.eq
+import com.nhaarman.mockito_kotlin.never
+import com.nhaarman.mockito_kotlin.times
+import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever
 import no.nav.eessi.pensjon.helper.AktoerIdHelper
 import no.nav.eessi.pensjon.fagmodul.models.*
@@ -14,6 +18,7 @@ import no.nav.eessi.pensjon.fagmodul.services.PrefillService
 import no.nav.eessi.pensjon.fagmodul.services.eux.BucSedResponse
 import no.nav.eessi.pensjon.fagmodul.services.eux.BucUtils
 import no.nav.eessi.pensjon.fagmodul.services.eux.EuxService
+import no.nav.eessi.pensjon.fagmodul.services.eux.SedDokumentIkkeOpprettetException
 import no.nav.eessi.pensjon.fagmodul.services.eux.bucmodel.ShortDocumentItem
 import no.nav.eessi.pensjon.utils.*
 import org.junit.Before
@@ -38,13 +43,7 @@ class SedControllerTest {
     lateinit var mockAktoerIdHelper: AktoerIdHelper
 
     @Mock
-    lateinit var mockPrefillService: PrefillService
-
-    @Mock
     lateinit var mockPrefillSED: PrefillSED
-
-    @Mock
-    private lateinit var prefillPerson: PrefillPerson
 
     private lateinit var prefillDataMock: PrefillDataModel
     private lateinit var sedController: SedController
@@ -52,8 +51,7 @@ class SedControllerTest {
     @Before
     fun setUp() {
         prefillDataMock = PrefillDataModel()
-        mockPrefillService = PrefillService(mockEuxService, mockPrefillSED)
-        this.sedController = SedController(mockEuxService, mockPrefillService, mockAktoerIdHelper)
+        this.sedController = SedController(mockEuxService, PrefillService(mockPrefillSED), mockAktoerIdHelper)
     }
 
     @Test
@@ -182,62 +180,6 @@ class SedControllerTest {
         assertEquals("Dummy", response.nav?.bruker?.person?.etternavn)
     }
 
-    @Test(expected = SedDokumentIkkeGyldigException::class)
-    fun `confirm document when sed is not valid`() {
-        val mockData = ApiRequest(
-                subjectArea = "Pensjon",
-                sakId = "EESSI-PEN-123",
-                institutions = listOf(InstitusjonItem("NO", "DUMMY")),
-                sed = "Q3300",
-                buc = "P_BUC_06",
-                aktoerId = "0105094340092"
-        )
-        ApiRequest.buildPrefillDataModelConfirm(mockData, mockAktoerIdHelper)
-    }
-
-    @Test(expected = IllegalArgumentException::class)
-    fun `confirm document sed is null`() {
-        val mockData = ApiRequest(
-                subjectArea = "Pensjon",
-                sakId = "EESSI-PEN-123",
-                institutions = listOf(InstitusjonItem("NO", "DUMMY")),
-                sed = null,
-                buc = "P_BUC_06",
-                aktoerId = "0105094340092"
-        )
-        ApiRequest.buildPrefillDataModelConfirm(mockData, mockAktoerIdHelper)
-    }
-
-    @Test
-    fun `check on minimum valid request to model`() {
-        val mockData = ApiRequest(
-                sakId = "12234",
-                sed = "P6000",
-                aktoerId = "0105094340092"
-        )
-
-        whenever(mockAktoerIdHelper.hentAktoerIdPin(ArgumentMatchers.anyString())).thenReturn("12345")
-
-        val model = ApiRequest.buildPrefillDataModelConfirm(mockData, mockAktoerIdHelper)
-
-        assertEquals("12345", model.personNr)
-        assertEquals("12234", model.penSaksnummer)
-        assertEquals("0105094340092", model.aktoerID)
-        assertEquals("P6000", model.getSEDid())
-
-        assertEquals(SED::class.java, model.sed::class.java)
-
-    }
-
-    @Test(expected = IllegalArgumentException::class)
-    fun `check on aktoerId is null`() {
-        val mockData = ApiRequest(
-                sakId = "1213123123",
-                sed = "P6000",
-                aktoerId = null
-        )
-        ApiRequest.buildPrefillDataModelConfirm(mockData, mockAktoerIdHelper)
-    }
 
     @Test
     fun `check rest api path correct`() {
@@ -390,5 +332,126 @@ class SedControllerTest {
         assertEquals("01", mockResult.krav?.type)
         assertEquals("2019-02-01", mockResult.krav?.dato)
     }
+
+    @Test
+    fun `call addInstutionAndDocument| mock adding two institusjon when X005 exists already`() {
+        val euxCaseId = "1234567890"
+
+        doReturn("12345").whenever(mockAktoerIdHelper).hentAktoerIdPin(ArgumentMatchers.anyString())
+
+        val mockBucUtils = Mockito.mock(BucUtils::class.java)
+        whenever(mockEuxService.getBucUtils(euxCaseId)).thenReturn(mockBucUtils)
+
+        val newParticipants = listOf(
+                InstitusjonItem(country = "FI", institution = "Finland", name="Finland test"),
+                InstitusjonItem(country = "DE", institution = "Tyskland", name="Tyskland test")
+        )
+        whenever(mockBucUtils.findNewParticipants(any())).thenReturn(newParticipants)
+
+        val currentX005 = ShortDocumentItem()
+        whenever(mockBucUtils.findFirstDocumentItemByType("X005")).thenReturn(currentX005)
+
+        val dummyPrefillData = ApiRequest.buildPrefillDataModelOnExisting(apiRequestWith(euxCaseId), mockAktoerIdHelper)
+        whenever(mockPrefillSED.prefill(any())).thenReturn(dummyPrefillData)
+
+        whenever(mockEuxService.opprettSedOnBuc(any(), eq(euxCaseId))).thenReturn(BucSedResponse(euxCaseId, "1"))
+
+        sedController.addInstutionAndDocument(apiRequestWith(euxCaseId))
+
+        verify(mockEuxService, times(newParticipants.size + 1)).opprettSedOnBuc(any(), eq(euxCaseId))
+        verify(mockEuxService, never()).addDeltagerInstitutions(any(), any())
+    }
+
+    @Test
+    fun `call addInstutionAndDocument| ingen ny Deltaker kun hovedsed`() {
+        val euxCaseId = "1234567890"
+
+        doReturn("12345").whenever(mockAktoerIdHelper).hentAktoerIdPin(ArgumentMatchers.anyString())
+
+        val mockBucUtils = Mockito.mock(BucUtils::class.java)
+        whenever(mockEuxService.getBucUtils(euxCaseId)).thenReturn(mockBucUtils)
+
+        val noNewParticipants = listOf<InstitusjonItem>()
+        whenever(mockBucUtils.findNewParticipants(any())).thenReturn(noNewParticipants)
+
+        val dummyPrefillData = ApiRequest.buildPrefillDataModelOnExisting(apiRequestWith(euxCaseId), mockAktoerIdHelper)
+        whenever(mockPrefillSED.prefill(any())).thenReturn(dummyPrefillData)
+
+        whenever(mockEuxService.opprettSedOnBuc(any(), eq(euxCaseId))).thenReturn(BucSedResponse(euxCaseId, "1"))
+
+        sedController.addInstutionAndDocument(apiRequestWith(euxCaseId))
+
+        verify(mockEuxService, times(noNewParticipants.size + 1)).opprettSedOnBuc(any(), eq(euxCaseId))
+        verify(mockEuxService, never()).addDeltagerInstitutions(any(), any())
+    }
+
+    @Test
+    fun `call addInstutionAndDocument| to nye deltakere, men ingen X005`() {
+        val euxCaseId = "1234567890"
+
+        doReturn("12345").whenever(mockAktoerIdHelper).hentAktoerIdPin(ArgumentMatchers.anyString())
+
+        val mockBucUtils = Mockito.mock(BucUtils::class.java)
+        whenever(mockEuxService.getBucUtils(euxCaseId)).thenReturn(mockBucUtils)
+
+        val newParticipants = listOf(
+                InstitusjonItem(country = "FI", institution = "Finland", name="Finland test"),
+                InstitusjonItem(country = "DE", institution = "Tyskland", name="Tyskland test")
+        )
+        whenever(mockBucUtils.findNewParticipants(any())).thenReturn(newParticipants)
+
+        val noCurrentX005 = null
+        whenever(mockBucUtils.findFirstDocumentItemByType("X005")).thenReturn(noCurrentX005)
+
+        val dummyPrefillData = ApiRequest.buildPrefillDataModelOnExisting(apiRequestWith(euxCaseId), mockAktoerIdHelper)
+        whenever(mockPrefillSED.prefill(any())).thenReturn(dummyPrefillData)
+
+        whenever(mockEuxService.opprettSedOnBuc(any(), eq(euxCaseId))).thenReturn(BucSedResponse(euxCaseId, "1"))
+
+        sedController.addInstutionAndDocument(apiRequestWith(euxCaseId))
+
+        verify(mockEuxService).addDeltagerInstitutions(euxCaseId, newParticipants)
+        verify(mockEuxService, times(1)).opprettSedOnBuc(any(), eq(euxCaseId))
+    }
+
+    @Test(expected = SedDokumentIkkeOpprettetException::class)
+    fun `call addInstutionAndDocument| Exception eller feil`() {
+        val euxCaseId = "1234567890"
+
+        doReturn("12345").whenever(mockAktoerIdHelper).hentAktoerIdPin(ArgumentMatchers.anyString())
+
+        val mockBucUtils = Mockito.mock(BucUtils::class.java)
+        whenever(mockEuxService.getBucUtils(euxCaseId)).thenReturn(mockBucUtils)
+
+        val newParticipants = listOf(
+                InstitusjonItem(country = "FI", institution = "Finland", name="Finland test"),
+                InstitusjonItem(country = "DE", institution = "Tyskland", name="Tyskland test")
+        )
+        whenever(mockBucUtils.findNewParticipants(any())).thenReturn(newParticipants)
+
+        val currentX005 = ShortDocumentItem()
+        whenever(mockBucUtils.findFirstDocumentItemByType("X005")).thenReturn(currentX005)
+
+        val dummyPrefillData = ApiRequest.buildPrefillDataModelOnExisting(apiRequestWith(euxCaseId), mockAktoerIdHelper)
+        whenever(mockPrefillSED.prefill(any())).thenReturn(dummyPrefillData)
+
+        whenever(mockEuxService.opprettSedOnBuc(any(), eq(euxCaseId))).thenThrow(SedDokumentIkkeOpprettetException("Expected!"))
+
+        sedController.addInstutionAndDocument(apiRequestWith(euxCaseId))
+    }
+
+    private fun apiRequestWith(euxCaseId: String): ApiRequest {
+        return ApiRequest(
+                subjectArea = "Pensjon",
+                sakId = "EESSI-PEN-123",
+                euxCaseId = euxCaseId,
+                vedtakId = "1234567",
+                institutions = listOf(),
+                sed = "P6000",
+                buc = "P_BUC_06",
+                aktoerId = "0105094340092"
+        )
+    }
+
 
 }
