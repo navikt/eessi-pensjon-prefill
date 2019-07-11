@@ -1,9 +1,136 @@
 package no.nav.eessi.pensjon.fagmodul.models
 
-data class Horisontal(
-        val anmodningmedisinskinformasjon: Anmodningmedisinskinformasjon? = null
+import com.fasterxml.jackson.annotation.JsonProperty
+import no.nav.eessi.pensjon.utils.mapAnyToJson
+import no.nav.eessi.pensjon.utils.mapJsonToAny
+import no.nav.eessi.pensjon.utils.typeRefs
+
+data class HSED(
+        var sed: String? = null,
+        var sedGVer: String? = null,
+        var sedVer: String? = null,
+        var nav: HNav? = null,
+        var ignore: Ignore? = null,
+        //H120-H121-H070-H020-H021
+        var horisontal: Horisontal? = null
+) {
+    fun toJson(): String {
+        return mapAnyToJson(this, false)
+    }
+
+    fun toJsonSkipEmpty(): String {
+        return mapAnyToJson(this, true)
+    }
+
+
+    companion object {
+        @JvmStatic
+        fun create(name: String): HSED {
+            return HSED(sed = name, sedVer = "1", sedGVer = "4")
+        }
+
+        @JvmStatic
+        fun fromJson(hsed: String): HSED {
+            return mapJsonToAny(hsed, typeRefs(), true)
+        }
+    }
+
+    override fun toString() : String = this.toJson()
+
+}
+
+data class HNav(
+    val bruker: HBruker? = null
 )
 
+data class HBruker(
+        val person: HPerson? = null
+)
+
+data class HPerson(
+        val etternavnvedfoedsel: String? = null,
+        val etternavn: String? = null,
+        val pin: HPin? = null,
+        val kjoenn: String? = null,
+        val foedselsdato: String? = null,
+        val fornavn: String? = null,
+        val fornavnvedfoedsel: String? = null
+)
+
+data class HPin(
+       val oppholdsland: String? = null,
+        val kompetenteuland: String? = null
+)
+
+data class Horisontal(
+        val anmodningmedisinskinformasjon: Anmodningmedisinskinformasjon? = null,
+        val refusjonskrav: Refusjonskrav? = null
+)
+
+//H020
+data class Refusjonskrav(
+        val debitorinstitusjon: Debitorinstitusjon? = null,
+        val bank: Bank? = null,
+        val totaltantallfakturaer: String? = null,
+        val refusjon: List<RefusjonItem?>? = null,
+        val kreditorinstitusjon: Kreditorinstitusjon? = null
+)
+
+data class Debitorinstitusjon(
+        val navn: String? = null,
+        val id: String? = null,
+        val globalreferanse: String? = null
+)
+
+data class RefusjonItem(
+        val henvisningtil: String? = null,
+        val utstedelsesdato: String? = null,
+        val kreditorinstitusjon: Kreditorinstitusjon? = null,
+        val avslag: Avslag? = null
+
+)
+
+data class Avslag(
+        val valuta: String? = null,
+        val grunn: Grunn? = null,
+        val type: Type? = null,
+        val beloep: String? = null
+)
+
+data class Type(
+        val id: String? = null
+)
+
+data class Kreditorinstitusjon(
+        val navn: String? = null,
+        val globalreferanse: String? = null,
+        val id: String? = null,
+        val krav: KreditorKrav? = null,
+        val fakturanummer: String? = null,
+        val valuta: String? = null,
+        val beloep: String? = null,
+        val utbetaling: KreditorUtbetaling? = null,
+        val betalingsreferanse: String? = null
+)
+
+data class KreditorUtbetaling(
+       val valuta: String? = null,
+       val totalbeloep: String? = null
+)
+
+data class KreditorKrav(
+        val valuta: String? = null,
+        val forfallsdato: String? = null,
+        val totalbeloep: String? = null,
+        val avvist: Avvist? = null
+)
+
+data class Avvist(
+       val valuta: String? = null,
+       val totalbeloep: String? = null
+)
+
+//H120 - H121
 data class Anmodningmedisinskinformasjon(
         val etterspurtdokumentasjon: List<String?>? = null,
         val familie: Familie? = null,
@@ -96,7 +223,8 @@ data class Ikkegjennomfoert(
 
 data class Grunn(
        val annen: String? = null,
-       val type: String? = null
+       val type: String? = null,
+       val annet: String? = null
 )
 
 data class Estimat(

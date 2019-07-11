@@ -7,7 +7,8 @@ class PrefillP2100(private val prefillPerson: PrefillPerson) : Prefill<SED> {
 
     override fun prefill(prefillData: PrefillDataModel): SED {
 
-        return prefillPerson.prefill(prefillData)
+        //return prefillPerson.prefill(prefillData)
+        return prefillData.sed
     }
 
 }
