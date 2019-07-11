@@ -2,9 +2,10 @@ package no.nav.eessi.pensjon.fagmodul.services
 
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.whenever
+import no.nav.eessi.pensjon.fagmodul.models.IkkeGyldigKallException
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.models.SED
-import no.nav.eessi.pensjon.fagmodul.models.SedDokumentIkkeGyldigException
+import no.nav.eessi.pensjon.fagmodul.services.eux.SedDokumentIkkeGyldigException
 import no.nav.eessi.pensjon.helper.AktoerIdHelper
 import no.nav.eessi.pensjon.services.geo.LandkodeService
 import no.nav.eessi.pensjon.utils.mapAnyToJson
@@ -110,7 +111,7 @@ class ApIRequestTest {
         createMockApiRequest("vedtak", "P_BUC_06", payload)
     }
 
-    @Test(expected = SedDokumentIkkeGyldigException::class)
+    @Test(expected = IkkeGyldigKallException::class)
     fun `confirm document when sed is not valid`() {
         val mockData = ApiRequest(
                 subjectArea = "Pensjon",
