@@ -1,18 +1,29 @@
 package no.nav.eessi.pensjon.fagmodul.services
 
+import com.nhaarman.mockito_kotlin.doReturn
+import com.nhaarman.mockito_kotlin.whenever
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.models.SED
+import no.nav.eessi.pensjon.fagmodul.models.SedDokumentIkkeGyldigException
+import no.nav.eessi.pensjon.helper.AktoerIdHelper
 import no.nav.eessi.pensjon.services.geo.LandkodeService
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import no.nav.eessi.pensjon.utils.validateJson
+import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.mockito.ArgumentMatchers
+import org.mockito.Mock
+import org.mockito.junit.MockitoJUnitRunner
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.nio.file.Files
 import java.nio.file.Paths
+import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
+@RunWith(MockitoJUnitRunner.Silent::class)
 class ApIRequestTest {
 
     private val printout = false
@@ -20,6 +31,13 @@ class ApIRequestTest {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(LandkodeService::class.java) }
 
+    @Mock
+    lateinit var mockAktoerIdHelper: AktoerIdHelper
+
+    @Before
+    fun before() {
+        doReturn("12345").whenever(mockAktoerIdHelper).hentAktoerIdPin(ArgumentMatchers.anyString())
+    }
 
     private fun createMockApiRequest(sedName: String, buc: String, payload: String): ApiRequest {
         val items = listOf(InstitusjonItem(country = "NO", institution = "NAVT003"))
@@ -91,4 +109,62 @@ class ApIRequestTest {
         val payload = readJsonAndParseToSed("P6000-NAV.json")
         createMockApiRequest("vedtak", "P_BUC_06", payload)
     }
+
+    @Test(expected = SedDokumentIkkeGyldigException::class)
+    fun `confirm document when sed is not valid`() {
+        val mockData = ApiRequest(
+                subjectArea = "Pensjon",
+                sakId = "EESSI-PEN-123",
+                institutions = listOf(InstitusjonItem("NO", "DUMMY")),
+                sed = "Q3300",
+                buc = "P_BUC_06",
+                aktoerId = "0105094340092"
+        )
+        ApiRequest.buildPrefillDataModelConfirm(mockData, mockAktoerIdHelper)
+    }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun `confirm document sed is null`() {
+        val mockData = ApiRequest(
+                subjectArea = "Pensjon",
+                sakId = "EESSI-PEN-123",
+                institutions = listOf(InstitusjonItem("NO", "DUMMY")),
+                sed = null,
+                buc = "P_BUC_06",
+                aktoerId = "0105094340092"
+        )
+        ApiRequest.buildPrefillDataModelConfirm(mockData, mockAktoerIdHelper)
+    }
+
+    @Test
+    fun `check on minimum valid request to model`() {
+        val mockData = ApiRequest(
+                sakId = "12234",
+                sed = "P6000",
+                aktoerId = "0105094340092"
+        )
+
+        whenever(mockAktoerIdHelper.hentAktoerIdPin(ArgumentMatchers.anyString())).thenReturn("12345")
+
+        val model = ApiRequest.buildPrefillDataModelConfirm(mockData, mockAktoerIdHelper)
+
+        assertEquals("12345", model.personNr)
+        assertEquals("12234", model.penSaksnummer)
+        assertEquals("0105094340092", model.aktoerID)
+        assertEquals("P6000", model.getSEDid())
+
+        assertEquals(SED::class.java, model.sed::class.java)
+
+    }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun `check on aktoerId is null`() {
+        val mockData = ApiRequest(
+                sakId = "1213123123",
+                sed = "P6000",
+                aktoerId = null
+        )
+        ApiRequest.buildPrefillDataModelConfirm(mockData, mockAktoerIdHelper)
+    }
+
 }

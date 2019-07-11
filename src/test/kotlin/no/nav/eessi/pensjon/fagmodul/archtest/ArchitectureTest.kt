@@ -36,14 +36,17 @@ class ArchitectureTest {
         val health = "fagmodul.health"
         val coreApi = "fagmodul.coreApi"
         val helper = "fagmodul.helper"
-        val core = "fagmodul.core"
+        val prefill = "fagmodul.prefill"
+        val prefillModels = "fagmodul.prefillmodels"
         val arkivApi = "api.arkiv"
         val geoApi = "api.geo"
         val personApi = "api.person"
         val pensjonApi = "api.pensjon"
+        val pensjonUtlandApi = "api.pensjonUtland"
         val config = "fagmodul.config"
         val metrics = "fagmodul.metrics"
         val aktoerregisterService = "services.aktoerregister"
+        val euxService = "services.eux"
         val arkivService = "services.arkiv"
         val geoService = "services.geo"
         val personService = "services.person"
@@ -61,10 +64,11 @@ class ArchitectureTest {
 
                 "$root.fagmodul.controllers.." to coreApi,
 
-                "$root.fagmodul.prefill.." to core,
-                "$root.fagmodul.services.." to core,
-                "$root.fagmodul.pesys.." to core,
-                "$root.fagmodul.models.." to core,
+                "$root.fagmodul.prefill.." to prefill,
+                "$root.fagmodul.services" to prefill,
+                "$root.fagmodul.models.." to prefillModels,
+                "$root.fagmodul.services.eux.." to euxService,
+                "$root.fagmodul.pesys.." to pensjonUtlandApi,
 
                 "$root.fagmodul.config.." to config,
                 "$root.fagmodul.metrics.." to metrics,
@@ -94,8 +98,17 @@ class ArchitectureTest {
                 .layer(coreApi).definedBy(*packagesFor(coreApi))
                 .whereLayer(coreApi).mayNotBeAccessedByAnyLayer()
 
-                .layer(core).definedBy(*packagesFor(core))
-                .whereLayer(core).mayOnlyBeAccessedByLayers(coreApi, health)
+                .layer(pensjonUtlandApi).definedBy(*packagesFor(pensjonUtlandApi))
+                .whereLayer(pensjonUtlandApi).mayNotBeAccessedByAnyLayer()
+
+                .layer(prefill).definedBy(*packagesFor(prefill))
+                .whereLayer(prefill).mayOnlyBeAccessedByLayers(coreApi)
+
+                .layer(euxService).definedBy(*packagesFor(euxService))
+                .whereLayer(euxService).mayOnlyBeAccessedByLayers(health, coreApi)
+
+                .layer(prefillModels).definedBy(*packagesFor(prefillModels))
+                .whereLayer(prefillModels).mayOnlyBeAccessedByLayers(prefill, /* TODO consider this list */ euxService, pensjonUtlandApi, health, coreApi)
 
                 .layer(arkivApi).definedBy(*packagesFor(arkivApi))
                 .whereLayer(arkivApi).mayNotBeAccessedByAnyLayer()
@@ -110,31 +123,31 @@ class ArchitectureTest {
                 .whereLayer(pensjonApi).mayNotBeAccessedByAnyLayer()
 
                 .layer(helper).definedBy(*packagesFor(helper)) /** TODO This layer should be removed */
-                .whereLayer(helper).mayOnlyBeAccessedByLayers(coreApi, pensjonApi, core)
+                .whereLayer(helper).mayOnlyBeAccessedByLayers(coreApi, pensjonApi, /* TODO consider this */ prefill)
 
                 .layer(config).definedBy(*packagesFor(config))
                 .whereLayer(config).mayNotBeAccessedByAnyLayer()
 
                 .layer(metrics).definedBy(*packagesFor(metrics))
-                .whereLayer(metrics).mayOnlyBeAccessedByLayers(health, core)
+                .whereLayer(metrics).mayOnlyBeAccessedByLayers(health, euxService, pensjonUtlandApi)
 
                 .layer(aktoerregisterService).definedBy(*packagesFor(aktoerregisterService))
                 .whereLayer(aktoerregisterService).mayOnlyBeAccessedByLayers(personApi, helper)
 
                 .layer(arkivService).definedBy(*packagesFor(arkivService))
-                .whereLayer(arkivService).mayOnlyBeAccessedByLayers(arkivApi, coreApi, core)
+                .whereLayer(arkivService).mayOnlyBeAccessedByLayers(arkivApi, coreApi, /* TODO consider this */ euxService)
 
                 .layer(geoService).definedBy(*packagesFor(geoService))
-                .whereLayer(geoService).mayOnlyBeAccessedByLayers(geoApi, core)
+                .whereLayer(geoService).mayOnlyBeAccessedByLayers(geoApi, pensjonUtlandApi, prefill)
 
                 .layer(personService).definedBy(*packagesFor(personService))
-                .whereLayer(personService).mayOnlyBeAccessedByLayers(health, personApi, core)
+                .whereLayer(personService).mayOnlyBeAccessedByLayers(health, personApi, prefill)
 
                 .layer(pensjonService).definedBy(*packagesFor(pensjonService))
-                .whereLayer(pensjonService).mayOnlyBeAccessedByLayers(health, pensjonApi, core)
+                .whereLayer(pensjonService).mayOnlyBeAccessedByLayers(health, pensjonApi, prefill)
 
                 .layer(security).definedBy(*packagesFor(security))
-                .whereLayer(security).mayOnlyBeAccessedByLayers(health, core, aktoerregisterService, arkivService, pensjonService, personService)
+                .whereLayer(security).mayOnlyBeAccessedByLayers(health, euxService, aktoerregisterService, arkivService, pensjonService, personService)
 
                 .layer(utils).definedBy(*packagesFor(utils))
 
