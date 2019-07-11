@@ -1,6 +1,7 @@
 package no.nav.eessi.pensjon.fagmodul.models
 
 import org.junit.Test
+import org.skyscreamer.jsonassert.JSONAssert
 import org.slf4j.LoggerFactory
 import kotlin.test.assertEquals
 
@@ -19,6 +20,7 @@ class SedH120Test  : AbstractSedTest() {
         val startskap = h120sed.nav?.bruker?.person?.statsborgerskap
         assertEquals(3, startskap?.size)
 
+        JSONAssert.assertEquals(h120json, h120sed.toJsonSkipEmpty(), false)
 
     }
 

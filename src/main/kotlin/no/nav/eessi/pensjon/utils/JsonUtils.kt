@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.exc.MismatchedInputException
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.web.client.RestClientException
@@ -18,11 +19,19 @@ fun datatClazzToMap(clazz: Any): Map<String, String> {
 
 inline fun <reified T : Any> mapJsonToAny(json: String, objec: TypeReference<T>, failonunknown: Boolean = false): T {
     if (validateJson(json)) {
-        return jacksonObjectMapper()
+        try {
+            return jacksonObjectMapper()
 //                .registerModule(JavaTimeModule())
 //                .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
-                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, failonunknown)
-                .readValue<T>(json, objec)
+                    .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, failonunknown)
+                    .readValue<T>(json, objec)
+        } catch (mex: MismatchedInputException) {
+            mex.printStackTrace()
+            throw mex
+        } catch (ex: Exception) {
+            ex.printStackTrace()
+            throw ex
+        }
     } else {
         throw IllegalArgumentException("Not valid json format")
     }
@@ -52,6 +61,7 @@ fun validateJson(json: String): Boolean {
                 .readTree(json)
         true
     } catch (ex: Exception) {
+        ex.printStackTrace()
         false
     }
 }

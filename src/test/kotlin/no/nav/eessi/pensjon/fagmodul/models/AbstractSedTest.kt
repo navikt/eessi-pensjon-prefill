@@ -18,6 +18,10 @@ abstract class AbstractSedTest {
         return SED.fromJson(json)
     }
 
+    fun getHSEDfromTestfile(json: String): HSED {
+        return HSED.fromJson(json)
+    }
+
     fun getSED(filename: String): SED {
         return getSEDfromTestfile(getTestJsonFile(filename))
     }
