@@ -1,6 +1,7 @@
 package no.nav.eessi.pensjon.fagmodul.services
 
 import com.nhaarman.mockito_kotlin.any
+import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever
 import no.nav.eessi.pensjon.fagmodul.models.*
 import no.nav.eessi.pensjon.fagmodul.prefill.PrefillDataModel
@@ -20,6 +21,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.Mockito
+import org.mockito.Mockito.times
 import org.mockito.junit.MockitoJUnitRunner
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -220,28 +222,34 @@ class PrefillServiceTest {
     }
 
     @Test
-    fun `call addInstitution| adding two institusjon normal way`() {
-        val euxCaseId = "12131234"
-        val dataModel = generatePrefillModel()
-        dataModel.euxCaseID = euxCaseId
+    fun `call prefillAndAddInstitusionAndSedOnExistingCase| adding two institusjon when no X005`() {
+        val inputDataModel = generatePrefillModel()
 
-        val resultData = generatePrefillModel()
-        resultData.sed = generateMockP2000(dataModel)
-        val mockInstitusjonList = listOf(
+        val dataModelAfterPrefill = generatePrefillModel()
+        dataModelAfterPrefill.sed = generateMockP2000(inputDataModel)
+
+        whenever(mockPrefillSED.prefill(any())).thenReturn(dataModelAfterPrefill)
+
+        val mockBuckUtils = Mockito.mock(BucUtils::class.java)
+        whenever(mockEuxService.getBucUtils(inputDataModel.euxCaseID)).thenReturn(mockBuckUtils)
+
+        val newInstitutions = listOf(
                 InstitusjonItem(country = "FI", institution = "Finland", name="Finland test"),
                 InstitusjonItem(country = "DE", institution = "Tyskland", name="Tyskland test")
         )
-        //mock bucUtils
-        val mockbuc = Mockito.mock(BucUtils::class.java)
+        whenever(mockBuckUtils.findNewParticipants(any())).thenReturn(newInstitutions)
 
-        whenever(mockbuc.findNewParticipants(dataModel.institution)).thenReturn(mockInstitusjonList)
+        whenever(mockBuckUtils.findFirstDocumentItemByType("X005")).thenReturn(null)
 
-        whenever(mockbuc.findFirstDocumentItemByType("X005")).thenReturn(null)
+        whenever(mockEuxService.opprettSedOnBuc(dataModelAfterPrefill.sed, dataModelAfterPrefill.euxCaseID)).thenReturn(
+                BucSedResponse(dataModelAfterPrefill.euxCaseID, "aDocumentId")
+        )
+        whenever(mockBuckUtils.findDocument("aDocumentId")).thenReturn(ShortDocumentItem(id = "myId"))
 
-        whenever(mockEuxService.addDeltagerInstitutions(any(), any())).thenReturn(true)
+        val shortDocumentItem = prefillService.prefillAndAddInstitusionAndSedOnExistingCase(inputDataModel)
+        assertTrue(shortDocumentItem.id == "myId")
 
-        prefillService.addInstitution(mockbuc, dataModel)
-
+        verify(mockEuxService, times(1)).addDeltagerInstitutions(inputDataModel.euxCaseID, newInstitutions)
     }
 
     @Test(expected = SedDokumentIkkeOpprettetException::class)
