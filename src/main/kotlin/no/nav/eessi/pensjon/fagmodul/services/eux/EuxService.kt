@@ -9,7 +9,6 @@ import no.nav.eessi.pensjon.fagmodul.models.*
 import no.nav.eessi.pensjon.fagmodul.services.eux.bucmodel.Buc
 import no.nav.eessi.pensjon.fagmodul.services.eux.bucmodel.BucAndSedView
 import no.nav.eessi.pensjon.fagmodul.services.eux.bucmodel.ParticipantsItem
-import no.nav.eessi.pensjon.fagmodul.services.eux.bucmodel.ShortDocumentItem
 import no.nav.eessi.pensjon.services.arkiv.SafService
 import no.nav.eessi.pensjon.services.arkiv.VariantFormat
 import org.slf4j.LoggerFactory
@@ -709,3 +708,6 @@ class EuxServerException(message: String?) : Exception(message)
 
 @ResponseStatus(value = HttpStatus.UNPROCESSABLE_ENTITY)
 open class GenericUnprocessableEntity(message: String) : IllegalArgumentException(message)
+
+@ResponseStatus(value = HttpStatus.BAD_REQUEST)
+class SedDokumentIkkeGyldigException(message: String?) : Exception(message)
