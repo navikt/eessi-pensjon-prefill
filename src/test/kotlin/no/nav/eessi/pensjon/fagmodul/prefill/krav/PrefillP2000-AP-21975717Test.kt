@@ -130,6 +130,9 @@ class `PrefillP2000-AP-21975717Test` : AbstractPrefillIntegrationTestHelper() {
         assertEquals("RANNAR-MASK", p2000.nav?.ektefelle?.person?.fornavn)
         assertEquals("MIZINTSEV", p2000.nav?.ektefelle?.person?.etternavn)
 
+        assertEquals("01074943352", p2000.nav?.ektefelle?.person?.pin?.get(0)?.identifikator)
+        assertEquals("NO", p2000.nav?.ektefelle?.person?.pin?.get(0)?.land)
+
         val navfnr = NavFodselsnummer(p2000.nav?.ektefelle?.person?.pin?.get(0)?.identifikator!!)
         assertEquals(70, navfnr.getAge())
 

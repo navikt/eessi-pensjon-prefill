@@ -211,11 +211,9 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
                                 PinItem(
                                         institusjonsnavn = eessiInfo.institutionnavn,
                                         institusjonsid = eessiInfo.institutionid,
-                                        //land = eessiInfo.institutionLand,
 
-                                        sektor = "pensjon",
                                         identifikator = hentNorIdent(persontps),
-                                        land = hentLandkodeRelasjoner(persontps)
+                                        land = "NO"
                                 )
                         ),
                         fornavn = navntps.fornavn,
@@ -277,7 +275,6 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
                 PinItem(
                         //hentet lokal NAV insitusjondata fra applikasjon properties.
                         institusjonsnavn = eessiInfo.institutionnavn,
-
                         institusjonsid = eessiInfo.institutionid,
 
                         //land = eessiInfo.institutionLand,
@@ -288,9 +285,8 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
                         //personnr
                         identifikator = hentNorIdent(brukerTps),
 
-                        // norsk personnr alltid NO
-                        //land = "NO"
-                        land = hentLandkodeRelasjoner(brukerTps)
+                        // norsk personnr settes alltid til NO da vi henter NorIdent
+                        land = "NO"
                 )
         )
     }
@@ -381,13 +377,6 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
         return StatsborgerskapItem(
                 land = hentLandkode(land)
         )
-    }
-
-    private fun hentLandkodeRelasjoner(persontps: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): String? {
-        if (persontps.statsborgerskap != null && persontps.statsborgerskap.land != null) {
-            return hentLandkode(persontps.statsborgerskap.land)
-        }
-        return null
     }
 
     //TODO: Mapping av landkoder skal gjøres i codemapping i EUX
