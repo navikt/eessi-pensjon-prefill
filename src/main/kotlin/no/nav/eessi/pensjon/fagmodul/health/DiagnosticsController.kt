@@ -1,11 +1,11 @@
 package no.nav.eessi.pensjon.fagmodul.health
 
+import no.nav.eessi.pensjon.fagmodul.metrics.getCounter
 import no.nav.eessi.pensjon.fagmodul.models.IkkeGyldigKallException
 import no.nav.eessi.pensjon.fagmodul.services.eux.EuxService
+import no.nav.eessi.pensjon.security.sts.STSService
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonService
 import no.nav.eessi.pensjon.services.personv3.PersonV3Service
-import no.nav.eessi.pensjon.security.sts.STSService
-import no.nav.eessi.pensjon.fagmodul.metrics.getCounter
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.typeRefs
 import no.nav.security.oidc.api.Protected
@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.context.request.RequestContextHolder
 import org.springframework.web.context.request.ServletRequestAttributes
 import java.time.Instant
+import javax.servlet.http.HttpServletRequest
 
 @CrossOrigin
 @RestController
@@ -28,9 +29,6 @@ import java.time.Instant
 class DiagnosticsController(private val stsService: STSService) {
 
     private val logger = LoggerFactory.getLogger(DiagnosticsController::class.java)
-
-    @Value("\${eessifagmodulservice:http://localhost:8081}")
-    lateinit var eessifagurl: String
 
     @Value("\${app.name}")
     lateinit var appName: String
@@ -50,13 +48,14 @@ class DiagnosticsController(private val stsService: STSService) {
         val sessionId = requestAttrib.sessionId
         val request = requestAttrib.request
 
-        logger.debug("Kall til selftest fra ip: ${request.remoteAddr} på sessionid: $sessionId")
-
         try {
-            val token = stsService.getSystemOidcToken()
+            val fagurl = getLocalProtectedAddr(request)
+            logger.debug("Kall til selftest fra ip: ${fagurl} på sessionid: $sessionId")
 
-            val localProtectedUrl = "${eessifagurl}/internal/protected/selftest"
+            val localProtectedUrl = "${fagurl}/internal/protected/selftest"
             logger.debug("Prøver å kontakte Url: $localProtectedUrl")
+
+            val token = stsService.getSystemOidcToken()
             val response = Request
                     .Get(localProtectedUrl)
                     .setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + token)
@@ -73,6 +72,14 @@ class DiagnosticsController(private val stsService: STSService) {
             logger.error("Feil ved Selftest", ex)
             throw IkkeGyldigKallException("Feiler ved selftest, ${ex.message}")
         }
+    }
+
+    private fun getLocalProtectedAddr(request: HttpServletRequest): String {
+        logger.debug("Request URL : ${request.requestURL}")
+        if (request.localPort == 8081) {
+            return "http://localhost:8081"
+        }
+        return request.localName
     }
 
     @GetMapping("/internal/isalive")
@@ -95,6 +102,7 @@ class DiagnosticsControllerProtected(private val personService: PersonV3Service,
     @Value("\${app.name}")
     lateinit var appName: String
 
+    private val CORRECT_RESULTCOUNTER = 3
 
     @Protected
     @GetMapping("/internal/protected/selftest")
@@ -118,7 +126,7 @@ class DiagnosticsControllerProtected(private val personService: PersonV3Service,
             counter += item.result
         }
         logger.debug("Selftest/ping SELF")
-        if (counter==3) {
+        if (counter == CORRECT_RESULTCOUNTER) {
             selfTestChecklist.add(selfTestSelfOk())
         } else {
             selfTestChecklist.add(selfTestSelfFail())
@@ -129,8 +137,7 @@ class DiagnosticsControllerProtected(private val personService: PersonV3Service,
     }
 
     private fun selfTestSelfOk() = Check(appName,"Eessi-Pensjon-Fagmodul OK","",1)
-
-    private fun selfTestSelfFail() = Check(appName,"Eessi-Pensjon-Fagmodul OK","Noe feilet",0)
+    private fun selfTestSelfFail() = Check(appName,"Eessi-Pensjon-Fagmodul OK","selftest feilet",0)
 
     private fun selfTestEux(): Check {
         return try {
