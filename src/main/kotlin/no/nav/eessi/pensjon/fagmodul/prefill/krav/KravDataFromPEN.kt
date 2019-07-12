@@ -23,9 +23,9 @@ open class KravDataFromPEN(private val dataFromPEN: PensjonsinformasjonHjelper) 
     private val logger: Logger by lazy { LoggerFactory.getLogger(KravDataFromPEN::class.java) }
 
     //gyldige kravhistorikk status og typer.
-    val TIL_BEHANDLING = "TIL_BEHANDLING"
-    val F_BH_MED_UTL = "F_BH_MED_UTL"
-    val FORSTEG_BH = "FORSTEG_BH"
+    private val TIL_BEHANDLING = "TIL_BEHANDLING"
+    private val F_BH_MED_UTL = "F_BH_MED_UTL"
+    private val FORSTEG_BH = "FORSTEG_BH"
 
     val REVURD = "REVURD"
 
@@ -41,7 +41,7 @@ open class KravDataFromPEN(private val dataFromPEN: PensjonsinformasjonHjelper) 
             @JvmStatic
             fun isValid(input: String): Boolean {
                 return try {
-                    KSAK.valueOf(input)
+                    valueOf(input)
                     true
                 } catch (ia: IllegalArgumentException) {
                     false
@@ -226,7 +226,7 @@ open class KravDataFromPEN(private val dataFromPEN: PensjonsinformasjonHjelper) 
                 institusjon = createInstitusjon(prefillData),
 
                 //4.1.5
-                startdatoutbetaling = ytelsePrmnd.fom?.let { it.simpleFormat() },
+                startdatoutbetaling = ytelsePrmnd.fom?.simpleFormat(),
                 //4.1.6
                 sluttdatoutbetaling = null,
                 //4.1.7 (sak - forstevirkningstidspunkt)
@@ -254,7 +254,7 @@ open class KravDataFromPEN(private val dataFromPEN: PensjonsinformasjonHjelper) 
     //4.1.7 Start date of entitlement to benefits  - trenger ikke fylles ut
     private fun createStartdatoForRettTilYtelse(pensak: V1Sak): String? {
         logger.debug("4.1.7         Startdato for ytelse (forsteVirkningstidspunkt) ")
-        return pensak.forsteVirkningstidspunkt?.let { it.simpleFormat() }
+        return pensak.forsteVirkningstidspunkt?.simpleFormat()
     }
 
 
@@ -422,7 +422,7 @@ open class KravDataFromPEN(private val dataFromPEN: PensjonsinformasjonHjelper) 
      */
     private fun createGjeldendesiden(ytelsePrMnd: V1YtelsePerMaaned): String? {
         logger.debug("4.1.9.3         Gjeldendesiden")
-        return ytelsePrMnd.fom.let { it.simpleFormat() }
+        return ytelsePrMnd.fom.simpleFormat()
     }
 
     //4.1.9.4
@@ -494,7 +494,7 @@ open class KravDataFromPEN(private val dataFromPEN: PensjonsinformasjonHjelper) 
         logger.debug("-----------------------------------------------------")
         sortList.forEach {
             logger.debug("Sammenligner ytelsePerMaaned: ${it.fom}  Med virkningtidpunkt: ${fraKravhistorik.virkningstidspunkt}")
-            if (it.fom.toGregorianCalendar().compareTo(fraKravhistorik.virkningstidspunkt.toGregorianCalendar()) >= 0) {
+            if (it.fom.toGregorianCalendar() >= fraKravhistorik.virkningstidspunkt.toGregorianCalendar()) {
                 logger.debug("Return følgende ytelsePerMaaned: ${it.fom}")
                 return it
             }

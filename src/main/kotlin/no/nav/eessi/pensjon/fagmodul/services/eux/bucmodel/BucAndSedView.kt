@@ -1,7 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.services.eux.bucmodel
 
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
-import java.time.LocalDate
 
 data class BucAndSedView(
         val type: String,

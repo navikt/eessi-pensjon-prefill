@@ -24,7 +24,7 @@ inline fun <reified T : Any> mapJsonToAny(json: String, objec: TypeReference<T>,
 //                .registerModule(JavaTimeModule())
 //                .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
                     .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, failonunknown)
-                    .readValue<T>(json, objec)
+                    .readValue(json, objec)
         } catch (mex: MismatchedInputException) {
             mex.printStackTrace()
             throw mex

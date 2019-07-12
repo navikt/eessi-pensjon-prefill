@@ -74,58 +74,41 @@ class BucUtils(private val buc: Buc ) {
     }
 
 
-    fun getLocalDate(date: Any?): LocalDate {
-        return if (date is Long) {
-            Instant.ofEpochMilli(date).atZone(ZoneId.systemDefault()).toLocalDate()
-        } else if (date is String) {
-            val datestr = date.substring(0, date.indexOf('T'))
-            LocalDate.parse(datestr)
-        } else {
-            LocalDate.now().minusYears(1000)
-        }
-    }
+    fun getLocalDate(date: Any?) =
+            when (date) {
+                is Long -> Instant.ofEpochMilli(date).atZone(ZoneId.systemDefault()).toLocalDate()
+                is String -> {
+                    val datestr = date.substring(0, date.indexOf('T'))
+                    LocalDate.parse(datestr)
+                }
+                else -> LocalDate.now().minusYears(1000)
+            }
 
     fun getLocalDateTimeToLong(dateTime: Any?): Long {
         val zoneId = ZoneId.systemDefault()
         return getLocalDateTime(dateTime).atZone(zoneId).toEpochSecond()
     }
 
-    fun getLocalDateTime(dateTime: Any?): LocalDateTime {
-        return if (dateTime is Long) {
-            Instant.ofEpochSecond(dateTime).atZone(ZoneId.systemDefault()).toLocalDateTime()
-        } else if (dateTime is String) {
-            //val datestr = dateTime.substring(0, dateTime.indexOf('T'))
-            LocalDateTime.parse(dateTime)
-        } else {
-            LocalDateTime.now().minusYears(1000)
-        }
-    }
-
-    fun getProcessDefinitionName(): String? {
-        return getBuc().processDefinitionName
-    }
-
-    fun getProcessDefinitionVersion(): String? {
-        return getBuc().processDefinitionVersion
-    }
-
-    fun findFirstDocumentItemByType(sedType: SEDType): ShortDocumentItem? {
-        return findFirstDocumentItemByType(sedType.name)
-    }
-
-    fun findFirstDocumentItemByType(sedType: String): ShortDocumentItem? {
-        val documents = getDocuments()
-        documents.forEach {
-            if (sedType == it.type) {
-                val shortdoc = createShortDocument(it)
-                return shortdoc
+    fun getLocalDateTime(dateTime: Any?) =
+            when (dateTime) {
+                is Long -> Instant.ofEpochSecond(dateTime).atZone(ZoneId.systemDefault()).toLocalDateTime()
+                is String -> //val datestr = dateTime.substring(0, dateTime.indexOf('T'))
+                    LocalDateTime.parse(dateTime)
+                else -> LocalDateTime.now().minusYears(1000)
             }
-        }
-        return null
-    }
 
-    private fun createShortDocument(documentItem: DocumentsItem): ShortDocumentItem {
-        return ShortDocumentItem(
+    fun getProcessDefinitionName() = getBuc().processDefinitionName
+
+    fun getProcessDefinitionVersion() = getBuc().processDefinitionVersion
+
+    fun findFirstDocumentItemByType(sedType: SEDType) =
+            findFirstDocumentItemByType(sedType.name)
+
+    fun findFirstDocumentItemByType(sedType: String) =
+            getDocuments().find { sedType == it.type }?.let { createShortDocument(it) }
+
+    private fun createShortDocument(documentItem: DocumentsItem) =
+            ShortDocumentItem(
                 id = documentItem.id,
                 type = documentItem.type,
                 displayName = documentItem.displayName,
@@ -135,8 +118,8 @@ class BucUtils(private val buc: Buc ) {
                 participants = createParticipants(documentItem.conversations),
                 attachments = createShortAttachemnt(documentItem.attachments)
         )
-    }
 
+    /* TODO Is this working as expected? */
     private fun createParticipants(conventions: List<ConversationsItem>?): List<ParticipantsItem?>? {
 
         conventions?.forEach {
@@ -147,54 +130,29 @@ class BucUtils(private val buc: Buc ) {
     }
 
 
-    private fun createShortAttachemnt(attachments: List<Attachment>?): List<ShortAttachment> {
+    private fun createShortAttachemnt(attachments: List<Attachment>?) =
+            attachments?.map {
+                ShortAttachment(
+                    id = it.id,
+                    name = it.name,
+                    mimeType = it.mimeType,
+                    fileName = it.fileName,
+                    documentId = it.documentId,
+                    lastUpdate = getLocalDateTimeToLong(it.lastUpdate),
+                    medical = it.medical
+                )
+            }.orEmpty()
 
-        val list = mutableListOf<ShortAttachment>()
-        attachments?.forEach {
-            list.add(
-                    ShortAttachment(
-                            id = it.id,
-                            name = it.name,
-                            mimeType = it.mimeType,
-                            fileName = it.fileName,
-                            documentId = it.documentId,
-                            lastUpdate = getLocalDateTimeToLong(it.lastUpdate),
-                            medical = it.medical
-                    )
-            )
-        }
-        return list
-    }
+    fun getAllDocuments() = getDocuments().map { createShortDocument(it) }
 
-    fun getAllDocuments(): List<ShortDocumentItem> {
-        val documents = getDocuments()
-        val lists = mutableListOf<ShortDocumentItem>()
-        documents.forEach {
-            lists.add(createShortDocument(it))
-        }
-        return lists
-    }
+    fun findAndFilterDocumentItemByType(sedType: SEDType) = findAndFilterDocumentItemByType(sedType.name)
 
-    fun findAndFilterDocumentItemByType(sedType: SEDType): List<ShortDocumentItem> {
-        return findAndFilterDocumentItemByType(sedType.name)
-    }
-
-    fun findAndFilterDocumentItemByType(sedType: String): List<ShortDocumentItem> {
-        val documents = getDocuments()
-        val lists = mutableListOf<ShortDocumentItem>()
-        documents.forEach {
-            if (sedType == it.type) {
-                lists.add(createShortDocument(it))
-            }
-        }
-        return lists
-    }
+    fun findAndFilterDocumentItemByType(sedType: String) =
+            getDocuments().filter { it.type == sedType }.map { createShortDocument(it) }
 
     //hjelpefunkson for å hente ut list over alle documentid til valgt SEDType (kan ha flere docid i type)
-    fun findDocmentIdBySedType(sedType: SEDType): List<String?> {
-        val doclist = findAndFilterDocumentItemByType(sedType)
-        return doclist.map { it.id }.toList()
-    }
+    fun findDocmentIdBySedType(sedType: SEDType) =
+            findAndFilterDocumentItemByType(sedType).map { it.id }.toList()
 
     fun getSbdh(): List<Sbdh> {
         val lists = mutableListOf<Sbdh>()
@@ -212,17 +170,11 @@ class BucUtils(private val buc: Buc ) {
         return lists
     }
 
-    fun getInternatinalId(): String? {
-        return getBuc().internationalId
-    }
+    fun getInternatinalId() = getBuc().internationalId
 
-    fun getParticipants(): List<ParticipantsItem> {
-        return getBuc().participants ?: emptyList()
-    }
+    fun getParticipants() = getBuc().participants ?: emptyList()
 
-    fun getBucAction(): List<ActionsItem>? {
-        return getBuc().actions
-    }
+    fun getBucAction() = getBuc().actions
 
     fun getAksjonListAsString() : List<String> {
         val keywordCreate = "Create"

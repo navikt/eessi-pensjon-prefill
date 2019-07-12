@@ -27,7 +27,7 @@ class LocalDateDeserializer protected constructor() : StdDeserializer<LocalDate>
     }
 
     companion object {
-        private val serialVersionUID = 1L
+        private const val serialVersionUID = 1L
     }
 
 }
@@ -45,6 +45,6 @@ class LocalDateSerializer : StdSerializer<LocalDate>(LocalDate::class.java) {
     }
 
     companion object {
-        private val serialVersionUID = 1L
+        private const val serialVersionUID = 1L
     }
 }

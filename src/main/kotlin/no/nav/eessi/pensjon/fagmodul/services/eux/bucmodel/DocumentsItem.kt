@@ -1,7 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.services.eux.bucmodel
 
 import com.fasterxml.jackson.annotation.JsonIgnore
-import java.time.LocalDate
 
 data class DocumentsItem(
         val parendDocumentId: Any? = null,

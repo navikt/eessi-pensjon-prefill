@@ -31,7 +31,7 @@ class PensjonController(private val pensjonsinformasjonService: Pensjonsinformas
 
         //Pensjontype //= Pensjontype(sakId = "", sakType = "")
         try {
-            var hentKunSakType = pensjonsinformasjonService.hentKunSakType(sakId, fnr)
+            val hentKunSakType = pensjonsinformasjonService.hentKunSakType(sakId, fnr)
             hentSakTypeVellykkede.increment()
             return ResponseEntity.ok().body(mapAnyToJson(hentKunSakType))
         } catch (ife: IkkeFunnetException) {

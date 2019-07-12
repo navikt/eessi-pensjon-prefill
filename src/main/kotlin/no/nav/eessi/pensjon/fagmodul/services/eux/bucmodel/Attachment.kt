@@ -1,7 +1,5 @@
 package no.nav.eessi.pensjon.fagmodul.services.eux.bucmodel
 
-import java.time.LocalDate
-
 data class Attachment(
         val creator: Creator? = null,
         val fileName: String? = null,

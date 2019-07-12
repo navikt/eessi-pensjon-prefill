@@ -31,7 +31,7 @@ class PensjonsinformasjonUtlandControllerTest {
         controller = PensjonsinformasjonUtlandController(timingService)
     }
 
-    @Test
+    @Test(expected = NoSuchElementException::class)
     fun mockPutKravUtland() {
         val buckey = 999
         val resource = ResourceUtils.getFile("classpath:json/pesys/kravutlandalderpen.json").readText()
@@ -49,13 +49,7 @@ class PensjonsinformasjonUtlandControllerTest {
         controller.mockDeleteKravUtland(buckey)
 
         //prøver å hente ut som skal feile.
-        try {
-            controller.hentKravUtland(buckey)
-            fail("skal ikke komme hit")
-        } catch (ex: Exception) {
-            assertTrue(true)
-            ex.printStackTrace()
-        }
+        controller.hentKravUtland(buckey)
     }
 
     @Test
