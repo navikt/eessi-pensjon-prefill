@@ -8,7 +8,6 @@ import no.nav.eessi.pensjon.fagmodul.prefill.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.nav.PrefillNav
 import no.nav.eessi.pensjon.fagmodul.prefill.nav.PrefillPersonDataFromTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PersonDataFromTPS
-import no.nav.eessi.pensjon.fagmodul.services.SedValidator
 import no.nav.eessi.pensjon.fagmodul.prefill.person.NavFodselsnummer
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import org.junit.Test
@@ -17,7 +16,6 @@ import org.slf4j.LoggerFactory
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
-import kotlin.test.assertTrue
 
 
 class PrefillP2000UtenKravhistorieTest : AbstractPrefillIntegrationTestHelper() {
@@ -81,13 +79,11 @@ class PrefillP2000UtenKravhistorieTest : AbstractPrefillIntegrationTestHelper() 
 
         logger.info(p2000.toString())
 
-        val validator = SedValidator()
-        try{
-            validator.validateP2000(p2000)
-        }catch (ex: Exception){
+        try {
+            prefill.validate(p2000)
+        } catch (ex: Exception){
             logger.error("Feilen er ${ex.message}")
             assertEquals("Kravdato mangler", ex.message)
-            assertTrue(true)
         }
 
         assertEquals(2, p2000.nav?.barn?.size)

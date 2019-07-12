@@ -11,7 +11,6 @@ import no.nav.eessi.pensjon.fagmodul.prefill.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.nav.PrefillNav
 import no.nav.eessi.pensjon.fagmodul.prefill.nav.PrefillPersonDataFromTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PersonDataFromTPS
-import no.nav.eessi.pensjon.fagmodul.services.SedValidator
 import no.nav.eessi.pensjon.fagmodul.prefill.person.NavFodselsnummer
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import org.junit.Test
@@ -19,7 +18,6 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
-import kotlin.test.fail
 
 class `PrefillP2000-AP-21975717Test` : AbstractPrefillIntegrationTestHelper() {
 
@@ -103,13 +101,7 @@ class `PrefillP2000-AP-21975717Test` : AbstractPrefillIntegrationTestHelper() {
 
         logger.info(p2000.toString())
 
-        val validator = SedValidator()
-        try {
-            validator.validateP2000(p2000)
-        } catch (ex: Exception) {
-            logger.error("Feilen er ${ex.message}")
-            fail("Validatoren skal ikke komme hit!")
-        }
+        prefill.validate(p2000)
 
         assertEquals(null, p2000.nav?.barn)
 
@@ -149,6 +141,7 @@ class `PrefillP2000-AP-21975717Test` : AbstractPrefillIntegrationTestHelper() {
     @Test
     fun `testing av komplett P2000 med utskrift og testing av innsending`() {
         val P2000 = prefill.prefill(prefillData)
+        prefill.validate(P2000)
 
         logger.info(P2000.toString())
 

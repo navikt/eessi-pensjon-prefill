@@ -31,4 +31,7 @@ class PrefillSED(private val factory: PrefillFactory) : Prefill<PrefillDataModel
         return prefillData
     }
 
+    override fun validate(data: PrefillDataModel) {
+        factory.createPrefillClass(data).validate(data.sed)
+    }
 }

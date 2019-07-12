@@ -1,33 +1,16 @@
 package no.nav.eessi.pensjon.fagmodul.services
 
 import com.nhaarman.mockito_kotlin.any
-import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever
 import no.nav.eessi.pensjon.fagmodul.models.*
 import no.nav.eessi.pensjon.fagmodul.prefill.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.PrefillSED
-import no.nav.eessi.pensjon.fagmodul.services.eux.BucSedResponse
-import no.nav.eessi.pensjon.fagmodul.services.eux.BucUtils
-import no.nav.eessi.pensjon.fagmodul.services.eux.EuxService
-import no.nav.eessi.pensjon.fagmodul.services.eux.SedDokumentIkkeOpprettetException
-import no.nav.eessi.pensjon.fagmodul.services.eux.bucmodel.Buc
-import no.nav.eessi.pensjon.fagmodul.services.eux.bucmodel.ShortDocumentItem
-import no.nav.eessi.pensjon.utils.mapJsonToAny
-import no.nav.eessi.pensjon.utils.typeRefs
-import no.nav.eessi.pensjon.utils.validateJson
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
-import org.mockito.Mockito
-import org.mockito.Mockito.times
 import org.mockito.junit.MockitoJUnitRunner
-import java.nio.file.Files
-import java.nio.file.Paths
 import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
-import kotlin.test.assertTrue
-import kotlin.test.fail
 
 @RunWith(MockitoJUnitRunner::class)
 class PrefillServiceTest {
@@ -40,7 +23,6 @@ class PrefillServiceTest {
     @Before
     fun `startup initilize testing`() {
         prefillService = PrefillService(mockPrefillSED)
-
     }
 
     @Test
@@ -62,107 +44,6 @@ class PrefillServiceTest {
 
         assertEquals(x005Liste.size, 2)
     }
-
-    @Test(expected = SedValidatorException::class)
-    fun `call prefillAndPreview| Exception ved validating SED`() {
-        val dataModel = generatePrefillModel()
-
-        val resultData = generatePrefillModel()
-        resultData.sed = generateMockP2000ForValidatorError(dataModel)
-
-        whenever(mockPrefillSED.prefill(any())).thenReturn(resultData)
-        prefillService.prefillSed(dataModel)
-    }
-
-    @Test
-    fun `call prefillAndPreview| Exception ved validating SED etternavn`() {
-        val dataModel = generatePrefillModel()
-
-        val resultData = generatePrefillModel()
-        resultData.sed = generateMockP2000ForValidatorError(dataModel)
-
-        whenever(mockPrefillSED.prefill(any())).thenReturn(resultData)
-
-        try {
-            prefillService.prefillSed(resultData)
-            fail("skal ikke komme hit!")
-        } catch (sedv: SedValidatorException) {
-            assertEquals("Etternavn mangler", sedv.message)
-        }
-    }
-
-    @Test
-    fun `call prefillAndPreview| Exception ved validating SED fornavn`() {
-        val dataModel = generatePrefillModel()
-
-        val resultData = generatePrefillModel()
-        resultData.sed = generateMockP2000ForValidatorError(dataModel)
-        resultData.sed.nav?.bruker = Bruker(person = Person(etternavn = "BAMSELUR"))
-
-        whenever(mockPrefillSED.prefill(any())).thenReturn(resultData)
-
-        try {
-            prefillService.prefillSed(resultData)
-            fail("skal ikke komme hit!")
-        } catch (sedv: SedValidatorException) {
-            assertEquals("Fornavn mangler", sedv.message)
-        }
-    }
-
-    @Test
-    fun `call prefillAndPreview| Exception ved validating SED fdato`() {
-        val dataModel = generatePrefillModel()
-
-        val resultData = generatePrefillModel()
-        resultData.sed = generateMockP2000ForValidatorError(dataModel)
-        resultData.sed.nav?.bruker = Bruker(person = Person(etternavn = "BAMSELUR", fornavn = "DUMMY"))
-
-        whenever(mockPrefillSED.prefill(any())).thenReturn(resultData)
-
-        try {
-            prefillService.prefillSed(resultData)
-            fail("skal ikke komme hit!")
-        } catch (sedv: SedValidatorException) {
-            assertEquals("Fødseldsdato mangler", sedv.message)
-        }
-    }
-
-    @Test
-    fun `call prefillAndPreview| Exception ved validating SED kjonn`() {
-        val dataModel = generatePrefillModel()
-
-        val resultData = generatePrefillModel()
-        resultData.sed = generateMockP2000ForValidatorError(dataModel)
-        resultData.sed.nav?.bruker = Bruker(person = Person(etternavn = "BAMSELUR", fornavn = "DUMMY", kjoenn = "M"))
-
-        whenever(mockPrefillSED.prefill(any())).thenReturn(resultData)
-
-        try {
-            prefillService.prefillSed(resultData)
-            fail("skal ikke komme hit!")
-        } catch (sedv: SedValidatorException) {
-            assertEquals("Fødseldsdato mangler", sedv.message)
-        }
-    }
-
-    @Test
-    fun `call prefillAndPreview| Exception ved validating SED kravDato`() {
-        val dataModel = generatePrefillModel()
-
-        val resultData = generatePrefillModel()
-        resultData.sed = generateMockP2000ForValidatorError(dataModel)
-        resultData.sed.nav?.bruker = Bruker(person = Person(etternavn = "BAMSELUR", fornavn = "DUMMY", kjoenn = "M", foedselsdato = "1955-05-05"))
-
-        whenever(mockPrefillSED.prefill(any())).thenReturn(resultData)
-
-        try {
-            prefillService.prefillSed(resultData)
-            fail("skal ikke komme hit!")
-        } catch (sedv: SedValidatorException) {
-            assertEquals("Kravdato mangler", sedv.message)
-        }
-    }
-
 
     fun generateMockP2000(prefillModel: PrefillDataModel): SED {
         val mocksed = prefillModel.sed
@@ -204,13 +85,6 @@ class PrefillServiceTest {
         return x005Datamodel.sed
     }
 
-    fun generateMockP2000ForValidatorError(prefillModel: PrefillDataModel): SED {
-        val mocksed = prefillModel.sed
-        mocksed.nav = Nav()
-        mocksed.pensjon = Pensjon()
-        return mocksed
-    }
-
     fun generatePrefillModel(): PrefillDataModel {
         return PrefillDataModel().apply {
             euxCaseID = "1000"
@@ -225,7 +99,6 @@ class PrefillServiceTest {
             penSaksnummer = "123456789999"
             personNr = "12345678901"
         }
-
     }
 
     fun generatePrefillModel(bucType: String, caseID: String, navSed: SED): PrefillDataModel {
@@ -242,8 +115,5 @@ class PrefillServiceTest {
             penSaksnummer = "123456789999"
             personNr = "12345678901"
         }
-
     }
-
-
 }
