@@ -79,7 +79,7 @@ class DiagnosticsController(private val stsService: STSService) {
         if (request.localPort == 8081) {
             return "http://localhost:8081"
         }
-        return request.localName
+        return "http://${request.localName}"
     }
 
     @GetMapping("/internal/isalive")
