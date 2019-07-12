@@ -125,7 +125,7 @@ class PrefillP2000APUtlandInnvTest : AbstractPrefillIntegrationTestHelper() {
         assertNotNull(p2000.nav?.bruker?.person?.pin)
         val pinlist = p2000.nav?.bruker?.person?.pin
         val pinitem = pinlist?.get(0)
-        assertEquals("pensjon", pinitem?.sektor)
+        assertEquals(null, pinitem?.sektor)
         assertEquals("NOINST002, NO INST002, NO", pinitem?.institusjonsnavn)
         assertEquals("NO:noinst002", pinitem?.institusjonsid)
         assertEquals(createFakePersonFnr(), pinitem?.identifikator)

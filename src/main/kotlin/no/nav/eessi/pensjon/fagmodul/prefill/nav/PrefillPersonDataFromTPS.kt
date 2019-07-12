@@ -277,10 +277,8 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
                         institusjonsnavn = eessiInfo.institutionnavn,
                         institusjonsid = eessiInfo.institutionid,
 
-                        //land = eessiInfo.institutionLand,
-
-                        //harkode sektor penjson? er dette korrekt?
-                        sektor = "pensjon",
+                        //NAV/Norge benytter ikke seg av sektor, setter denne til null
+                        //sektor = "",
 
                         //personnr
                         identifikator = hentNorIdent(brukerTps),
