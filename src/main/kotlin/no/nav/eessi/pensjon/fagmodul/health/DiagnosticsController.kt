@@ -75,11 +75,11 @@ class DiagnosticsController(private val stsService: STSService) {
     }
 
     private fun getLocalProtectedAddr(request: HttpServletRequest): String {
-        logger.debug("Request URL : ${request.requestURL}")
+        logger.debug("Request URL : HTTP://${appName}")
         if (request.localPort == 8081) {
             return "http://localhost:8081"
         }
-        return "http://${request.localName}"
+        return "http://$appName"
     }
 
     @GetMapping("/internal/isalive")
