@@ -1,5 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.eux
 
+import no.nav.eessi.pensjon.fagmodul.eux.basismodel.RinaAksjon
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.*

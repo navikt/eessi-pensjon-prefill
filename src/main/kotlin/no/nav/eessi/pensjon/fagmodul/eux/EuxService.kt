@@ -1,6 +1,9 @@
 package no.nav.eessi.pensjon.fagmodul.eux
 
 import com.google.common.base.Preconditions
+import no.nav.eessi.pensjon.fagmodul.eux.basismodel.BucSedResponse
+import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Rinasak
+import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Vedlegg
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.typeRef
 import no.nav.eessi.pensjon.utils.typeRefs
@@ -12,8 +15,6 @@ import no.nav.eessi.pensjon.fagmodul.models.PinOgKrav
 import no.nav.eessi.pensjon.fagmodul.models.SED
 import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Buc
-import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.BucAndSedView
-import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ParticipantsItem
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Description
 import org.springframework.http.*
@@ -125,7 +126,8 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
 
     //henter ut sed fra rina med bucid og documentid
     fun getSedOnBuc(euxCaseId: String, sedType: String?): List<SED> {
-        val docid = getBucUtils(euxCaseId).getDocuments()
+        logger.info("Prøver å hente ut en BucUtils for type $euxCaseId")
+        val docid = getBuc(euxCaseId).documents ?: throw NoSuchFieldException("Fant ikke DocumentsItem")
 
         val sedlist = mutableListOf<SED>()
         docid.forEach {
@@ -225,12 +227,6 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
             throw EuxServerException("Feiler ved kontakt mot EUX")
         }
 
-    }
-
-    //henter ut BucUtils med valgt Buc for diverse uthentinger..
-    fun getBucUtils(euxCaseId: String): BucUtils {
-        logger.info("Prøver å hente ut en BucUtils for type $euxCaseId")
-        return BucUtils(getBuc(euxCaseId))
     }
 
     /**
@@ -372,14 +368,14 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
 
     }
 
-    fun getBucAndSedView(fnr: String, aktoerid: String, sakId: String?, euxCaseId: String?, euxService: EuxService): List<BucAndSedView> {
+    fun getBucAndSedView(fnr: String, aktoerid: String, sakId: String?, euxCaseId: String?): List<BucAndSedView> {
         val startTime = System.currentTimeMillis()
 
         logger.debug("2 fant fnr.")
 
         logger.debug("3 henter rinasaker på valgt aktoerid: $aktoerid")
 
-        val rinasaker = euxService.getRinasaker(fnr)
+        val rinasaker = getRinasaker(fnr)
 
         logger.debug("4 hentet ut rinasaker på valgt borger, antall: ${rinasaker.size}")
 
@@ -389,7 +385,7 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
 
         rinasaker.forEach {
             val caseId = it.id ?: throw UgyldigCaseIdException("Feil er ikke gyldig caseId fra Rina(Rinasak)")
-            list.add(createBucDetails(caseId, aktoerid, euxService))
+            list.add(BucAndSedView.from(getBuc(caseId), caseId, aktoerid))
         }
         logger.debug("9 ferdig returnerer list av BucAndSedView. Antall BUC: ${list.size}")
 
@@ -403,51 +399,6 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
 
         return sortlist
 
-    }
-
-    //make single bucDetails form rina/list or return when create buc
-    fun createBucDetails(euxCaseId: String, aktoerid: String, euxService: EuxService): BucAndSedView {
-
-        val bucUtil = euxService.getBucUtils(euxCaseId)
-
-        val institusjonlist = mutableListOf<InstitusjonItem>()
-        var parts: List<ParticipantsItem>? = null
-        try {
-            parts = bucUtil.getParticipants()
-            logger.debug(" Henter ut liste over deltagere på type")
-
-            parts.forEach {
-                institusjonlist.add(
-                        InstitusjonItem(
-                                country = it.organisation?.countryCode ?: "",
-                                institution = it.organisation?.id ?: "",
-                                name = it.organisation?.name
-                        )
-                )
-            }
-        } catch (ex: Exception) {
-            logger.debug("Ingen meldlemmer i BUC")
-        }
-        logger.debug(" oppretter bucogsedview")
-        val bucAndSedView = BucAndSedView(
-                type = bucUtil.getProcessDefinitionName()!!,
-                creator = InstitusjonItem(
-                        country = bucUtil.getCreator()?.organisation?.countryCode ?: "",
-                        institution = bucUtil.getCreator()?.organisation?.id ?: "",
-                        name = bucUtil.getCreator()?.name
-                ),
-                caseId = euxCaseId,
-                sakType = "",
-                startDate = bucUtil.getStartDateLong(),
-                lastUpdate = bucUtil.getLastDateLong(),
-                aktoerId = aktoerid,
-                status = bucUtil.getStatus(),
-                institusjon = institusjonlist.toList(),
-                seds = bucUtil.getAllDocuments()
-        )
-        logger.debug("8 legger bucogsedview til liste")
-
-        return bucAndSedView
     }
 
     fun createBuc(bucType: String): String {

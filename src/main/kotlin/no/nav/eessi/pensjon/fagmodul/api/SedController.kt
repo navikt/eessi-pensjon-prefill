@@ -7,7 +7,8 @@ import no.nav.eessi.pensjon.fagmodul.models.SED
 import no.nav.eessi.pensjon.helper.AktoerIdHelper
 import no.nav.eessi.pensjon.fagmodul.prefill.ApiRequest
 import no.nav.eessi.pensjon.fagmodul.prefill.PrefillService
-import no.nav.eessi.pensjon.fagmodul.eux.BucSedResponse
+import no.nav.eessi.pensjon.fagmodul.eux.basismodel.BucSedResponse
+import no.nav.eessi.pensjon.fagmodul.eux.BucUtils
 import no.nav.eessi.pensjon.fagmodul.eux.EuxService
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ShortDocumentItem
 import no.nav.eessi.pensjon.utils.mapAnyToJson
@@ -80,7 +81,7 @@ class SedController(private val euxService: EuxService,
         val dataModel = ApiRequest.buildPrefillDataModelOnExisting(request, aktoerIdHelper.hentAktoerIdPin(request.aktoerId))
 
         logger.debug("Prøver å legge til Deltaker/Institusions på buc samt prefillSed og sende inn til Rina ")
-        val bucUtil = euxService.getBucUtils(dataModel.euxCaseID)
+        val bucUtil = BucUtils(euxService.getBuc(dataModel.euxCaseID))
         val nyeDeltakere = bucUtil.findNewParticipants(dataModel.getInstitutionsList())
         if (nyeDeltakere.isNotEmpty()) {
             logger.debug("DeltakerListe (InstitusjonItem) size: ${nyeDeltakere.size}")
@@ -97,7 +98,7 @@ class SedController(private val euxService: EuxService,
         val data = prefillService.prefillSed(dataModel)
         logger.debug("Prøver å sende SED:${dataModel.getSEDid()} inn på buc: ${dataModel.euxCaseID}")
         val docresult = euxService.opprettSedOnBuc(data.sed, data.euxCaseID)
-        return euxService.getBucUtils(docresult.caseId).findDocument(docresult.documentId)
+        return BucUtils(euxService.getBuc(docresult.caseId)).findDocument(docresult.documentId)
 
     }
 
@@ -109,7 +110,7 @@ class SedController(private val euxService: EuxService,
         val data = prefillService.prefillSed(dataModel)
         logger.info("kaller add med request: $request")
         val docresult = euxService.opprettSedOnBuc(data.sed, data.euxCaseID)
-        return euxService.getBucUtils(docresult.caseId).findDocument(docresult.documentId)
+        return BucUtils(euxService.getBuc(docresult.caseId)).findDocument(docresult.documentId)
 
     }
 
@@ -134,7 +135,7 @@ class SedController(private val euxService: EuxService,
     fun getShortDocumentList(@PathVariable("euxcaseid", required = true) euxcaseid: String): List<ShortDocumentItem> {
 
         logger.info("kaller /type/${euxcaseid}/documents ")
-        return euxService.getBucUtils(euxcaseid).getAllDocuments()
+        return BucUtils(euxService.getBuc(euxcaseid)).getAllDocuments()
     }
 
     @ApiOperation("henter ut en liste av SED fra en valgt type, men bruk av sedType. ny api kall til eux")
@@ -159,7 +160,7 @@ class SedController(private val euxService: EuxService,
 
         if (euxCaseId == null) return ResponseEntity.ok().body(mapAnyToJson(EuxService.getAvailableSedOnBuc(bucType)))
 
-        val resultListe = euxService.getBucUtils(euxCaseId).getAksjonListAsString()
+        val resultListe = BucUtils(euxService.getBuc(euxCaseId)).getAksjonListAsString()
 
         if (resultListe.isEmpty()) return ResponseEntity.ok().body(mapAnyToJson(EuxService.getAvailableSedOnBuc(bucType)))
 

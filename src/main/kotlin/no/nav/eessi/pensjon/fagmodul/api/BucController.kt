@@ -1,13 +1,14 @@
 package no.nav.eessi.pensjon.fagmodul.api
 
 import io.swagger.annotations.ApiOperation
+import no.nav.eessi.pensjon.fagmodul.eux.BucUtils
 import no.nav.eessi.pensjon.helper.AktoerIdHelper
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.eux.EuxService
-import no.nav.eessi.pensjon.fagmodul.eux.Rinasak
-import no.nav.eessi.pensjon.fagmodul.eux.Vedlegg
+import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Rinasak
+import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Vedlegg
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Buc
-import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.BucAndSedView
+import no.nav.eessi.pensjon.fagmodul.eux.BucAndSedView
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Creator
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ShortDocumentItem
 import no.nav.eessi.pensjon.services.arkiv.SafService
@@ -45,7 +46,7 @@ class BucController(private val euxService: EuxService,
     fun getProcessDefinitionName(@PathVariable(value = "rinanr", required = true) rinanr: String): String? {
 
         logger.debug("Henter ut definisjonsnavn (type type) på valgt Buc")
-        return euxService.getBucUtils(rinanr).getProcessDefinitionName()
+        return BucUtils(euxService.getBuc(rinanr)).getProcessDefinitionName()
     }
 
     @ApiOperation("Henter opp den opprinelige inststusjon på valgt caseid (type)")
@@ -53,7 +54,7 @@ class BucController(private val euxService: EuxService,
     fun getCreator(@PathVariable(value = "rinanr", required = true) rinanr: String): Creator? {
 
         logger.debug("Henter ut Creator på valgt Buc")
-        return euxService.getBucUtils(rinanr).getCreator()
+        return BucUtils(euxService.getBuc(rinanr)).getCreator()
     }
 
     @ApiOperation("Henter opp den opprinelige inststusjon landkode på valgt caseid (type)")
@@ -61,7 +62,7 @@ class BucController(private val euxService: EuxService,
     fun getCreatorCountryCode(@PathVariable(value = "rinanr", required = true) rinanr: String): String? {
 
         logger.debug("Henter ut CountryCode på Creator på valgt Buc")
-        return mapAnyToJson(euxService.getBucUtils(rinanr).getCreatorContryCode())
+        return mapAnyToJson(BucUtils(euxService.getBuc(rinanr)).getCreatorContryCode())
     }
 
     @ApiOperation("Henter opp internationalid på caseid (type)")
@@ -69,7 +70,7 @@ class BucController(private val euxService: EuxService,
     fun getInternationalId(@PathVariable(value = "rinanr", required = true) rinanr: String): String? {
 
         logger.debug("Henter ut InternationalId på valgt Buc")
-        return euxService.getBucUtils(rinanr).getInternatinalId()
+        return BucUtils(euxService.getBuc(rinanr)).getInternatinalId()
     }
 
     @ApiOperation("Henter opp den opprinelige inststusjon på valgt caseid (type)")
@@ -77,14 +78,14 @@ class BucController(private val euxService: EuxService,
     fun getAllDocuments(@PathVariable(value = "rinanr", required = true) rinanr: String): List<ShortDocumentItem> {
 
         logger.debug("Henter ut documentId på alle dokumenter som finnes på valgt type")
-        return euxService.getBucUtils(rinanr).getAllDocuments()
+        return BucUtils(euxService.getBuc(rinanr)).getAllDocuments()
     }
 
     @ApiOperation("Henter opp mulige aksjon(er) som kan utføres på valgt buc")
     @GetMapping("/{rinanr}/aksjoner")
     fun getMuligeAksjoner(@PathVariable(value = "rinanr", required = true) rinanr: String): List<String> {
         logger.debug("Henter ut muligeaksjoner på valgt buc ${rinanr}")
-        return euxService.getBucUtils(rinanr).getAksjonListAsString()
+        return BucUtils(euxService.getBuc(rinanr)).getAksjonListAsString()
     }
 
     @ApiOperation("Henter ut en liste over saker på valgt aktoerid. ny api kall til eux")
@@ -106,7 +107,7 @@ class BucController(private val euxService: EuxService,
 
         logger.debug("1 prøver å dekode til fnr fra aktoerid: $aktoerid")
         val fnr = aktoerIdHelper.hentAktoerIdPin(aktoerid)
-        return euxService.getBucAndSedView(fnr, aktoerid, sakid, euxcaseid, euxService)
+        return euxService.getBucAndSedView(fnr, aktoerid, sakid, euxcaseid)
 
     }
 
@@ -120,7 +121,8 @@ class BucController(private val euxService: EuxService,
         logger.info("Mottatt følgende euxCaseId(RinaID): $euxCaseId")
 
         //create bucDetail back from newly created buc call eux-rina-api to get data.
-        return euxService.createBucDetails(euxCaseId, "", euxService)
+        val buc = euxService.getBuc(euxCaseId)
+        return BucAndSedView.from(buc, euxCaseId, "")
     }
 
     @ApiOperation("Oppretter nye deltaker(e) på valgt buc. ny api kall til eux")
