@@ -1,11 +1,12 @@
 package no.nav.eessi.pensjon.fagmodul.services
 
-import no.nav.eessi.pensjon.fagmodul.models.IkkeGyldigKallException
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.models.SED
 import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.prefill.PrefillDataModel
 import org.slf4j.LoggerFactory
+import org.springframework.http.HttpStatus
+import org.springframework.web.bind.annotation.ResponseStatus
 
 //Samme som SedRequest i frontend-api
 data class ApiRequest(
@@ -31,11 +32,11 @@ data class ApiRequest(
         //validatate request and convert to PrefillDataModel
         fun buildPrefillDataModelOnExisting(request: ApiRequest, fodselsnr: String): PrefillDataModel {
             return when {
-                //request.sakId == null -> throw IkkeGyldigKallException("Mangler Saksnummer")
-                request.sed == null -> throw IkkeGyldigKallException("Mangler SED")
-                request.aktoerId == null -> throw IkkeGyldigKallException("Mangler AktoerID")
-                request.euxCaseId == null -> throw IkkeGyldigKallException("Mangler euxCaseId (RINANR)")
-                request.institutions == null -> throw IkkeGyldigKallException("Mangler Institusjoner")
+                //request.sakId == null -> throw MangelfulleInndataException("Mangler Saksnummer")
+                request.sed == null -> throw MangelfulleInndataException("Mangler SED")
+                request.aktoerId == null -> throw MangelfulleInndataException("Mangler AktoerID")
+                request.euxCaseId == null -> throw MangelfulleInndataException("Mangler euxCaseId (RINANR)")
+                request.institutions == null -> throw MangelfulleInndataException("Mangler Institusjoner")
 
                 SEDType.isValidSEDType(request.sed) -> {
                     logger.info("ALL SED on existing Rina -> SED: ${request.sed} -> euxCaseId: ${request.sakId}")
@@ -53,16 +54,16 @@ data class ApiRequest(
                                 ?: listOf("PENSED") //skipper all pensjon utfylling untatt kravdato
                     }
                 }
-                else -> throw IkkeGyldigKallException("Mangler SED, eller ugyldig type SED")
+                else -> throw MangelfulleInndataException("Mangler SED, eller ugyldig type SED")
             }
         }
 
         //validatate request and convert to PrefillDataModel
         fun buildPrefillDataModelConfirm(request: ApiRequest, fodselsnr: String): PrefillDataModel {
             return when {
-                //request.sakId == null -> throw IkkeGyldigKallException("Mangler Saksnummer")
-                request.sed == null -> throw IkkeGyldigKallException("Mangler SED")
-                request.aktoerId == null -> throw IkkeGyldigKallException("Mangler AktoerID")
+                //request.sakId == null -> throw MangelfulleInndataException("Mangler Saksnummer")
+                request.sed == null -> throw MangelfulleInndataException("Mangler SED")
+                request.aktoerId == null -> throw MangelfulleInndataException("Mangler AktoerID")
 
                 SEDType.isValidSEDType(request.sed) -> {
                     PrefillDataModel().apply {
@@ -78,19 +79,19 @@ data class ApiRequest(
                         skipSedkey = request.skipSEDkey ?: listOf("PENSED")
                     }
                 }
-                else -> throw IkkeGyldigKallException("Mangler SED, eller ugyldig type SED")
+                else -> throw MangelfulleInndataException("Mangler SED, eller ugyldig type SED")
             }
         }
 
         //validatate request and convert to PrefillDataModel
         fun buildPrefillDataModelOnNew(request: ApiRequest, fodselsnr: String): PrefillDataModel {
             return when {
-                //request.sakId == null -> throw IkkeGyldigKallException("Mangler Saksnummer")
-                request.sed == null -> throw IkkeGyldigKallException("Mangler SED")
-                request.aktoerId == null -> throw IkkeGyldigKallException("Mangler AktoerID")
-                request.buc == null -> throw IkkeGyldigKallException("Mangler BUC")
-                request.subjectArea == null -> throw IkkeGyldigKallException("Mangler Subjekt/Sektor")
-                request.institutions == null -> throw IkkeGyldigKallException("Mangler Institusjoner")
+                //request.sakId == null -> throw MangelfulleInndataException("Mangler Saksnummer")
+                request.sed == null -> throw MangelfulleInndataException("Mangler SED")
+                request.aktoerId == null -> throw MangelfulleInndataException("Mangler AktoerID")
+                request.buc == null -> throw MangelfulleInndataException("Mangler BUC")
+                request.subjectArea == null -> throw MangelfulleInndataException("Mangler Subjekt/Sektor")
+                request.institutions == null -> throw MangelfulleInndataException("Mangler Institusjoner")
 
                 //Denne validering og utfylling kan benyttes på SED P2000,P2100,P2200
                 SEDType.isValidSEDType(request.sed) -> {
@@ -109,8 +110,11 @@ data class ApiRequest(
                         skipSedkey = request.skipSEDkey ?: listOf("PENSED")
                     }
                 }
-                else -> throw IkkeGyldigKallException("Mangler SED, eller ugyldig type SED")
+                else -> throw MangelfulleInndataException("Mangler SED, eller ugyldig type SED")
             }
         }
     }
 }
+
+@ResponseStatus(value = HttpStatus.BAD_REQUEST)
+class MangelfulleInndataException(message: String) : IllegalArgumentException(message)

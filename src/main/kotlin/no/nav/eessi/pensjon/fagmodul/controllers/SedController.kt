@@ -2,8 +2,9 @@ package no.nav.eessi.pensjon.fagmodul.controllers
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import io.swagger.annotations.ApiOperation
+import no.nav.eessi.pensjon.fagmodul.models.PinOgKrav
+import no.nav.eessi.pensjon.fagmodul.models.SED
 import no.nav.eessi.pensjon.helper.AktoerIdHelper
-import no.nav.eessi.pensjon.fagmodul.models.*
 import no.nav.eessi.pensjon.fagmodul.services.ApiRequest
 import no.nav.eessi.pensjon.fagmodul.services.PrefillService
 import no.nav.eessi.pensjon.fagmodul.services.eux.BucSedResponse
@@ -12,6 +13,7 @@ import no.nav.eessi.pensjon.fagmodul.services.eux.bucmodel.ShortDocumentItem
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import no.nav.security.oidc.api.Protected
 import org.slf4j.LoggerFactory
+import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -121,7 +123,7 @@ class SedController(private val euxService: EuxService,
         val dataModel = ApiRequest.buildPrefillDataModelOnNew(request, aktoerIdHelper.hentAktoerIdPin(request.aktoerId))
         val data = prefillService.prefillSed(dataModel)
         val firstInstitution =
-                data.institution.firstOrNull() ?: throw IkkeGyldigKallException("institusjon kan ikke være tom")
+                data.institution.firstOrNull() ?: throw ManglendeInstitusjonException("institusjon kan ikke være tom")
         return euxService.opprettBucSed(data.sed, data.buc, firstInstitution.institution, data.penSaksnummer)
 
     }
@@ -176,5 +178,8 @@ class SedController(private val euxService: EuxService,
     }
 
 }
+
+@ResponseStatus(value = HttpStatus.BAD_REQUEST)
+class ManglendeInstitusjonException(message: String) : IllegalArgumentException(message)
 
 internal fun List<String>.filterPensionSedAndSort() = this.filter { it.startsWith("P").or( it.startsWith("H12").or( it.startsWith("H07"))) }.filterNot { it.startsWith("P3000") }.sorted()

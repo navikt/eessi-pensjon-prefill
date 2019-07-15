@@ -1,6 +1,5 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.vedtak
 
-import no.nav.eessi.pensjon.fagmodul.models.IkkeGyldigKallException
 import no.nav.eessi.pensjon.fagmodul.models.Pensjon
 import no.nav.eessi.pensjon.fagmodul.prefill.PensjonsinformasjonHjelper
 import no.nav.eessi.pensjon.fagmodul.prefill.Prefill
@@ -8,6 +7,9 @@ import no.nav.eessi.pensjon.fagmodul.prefill.PrefillDataModel
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.http.HttpStatus
+import org.springframework.web.bind.annotation.ResponseStatus
+import java.lang.IllegalStateException
 
 
 /**
@@ -40,7 +42,7 @@ class VedtakDataFromPEN(private val dataFromPESYS: PensjonsinformasjonHjelper) :
 
     override fun prefill(prefillData: PrefillDataModel): Pensjon {
         //Kast exception dersom vedtakId mangler
-        val vedtakId = if (prefillData.vedtakId.isNotBlank()) prefillData.vedtakId else throw IkkeGyldigKallException("Mangler vedtakID")
+        val vedtakId = if (prefillData.vedtakId.isNotBlank()) prefillData.vedtakId else throw IkkeGyldigStatusPaaSakException("Mangler vedtakID")
 
         logger.debug("----------------------------------------------------------")
         val starttime = System.nanoTime()
@@ -59,10 +61,10 @@ class VedtakDataFromPEN(private val dataFromPESYS: PensjonsinformasjonHjelper) :
         logger.debug("----------------------------------------------------------")
 
         //Sjekk opp om det er Bodd eller Arbeid utland. (hvis ikke avslutt)
-        if (!harBoddArbeidetUtland(pendata)) throw IkkeGyldigKallException("Har ikke bodd eller arbeidet i utlandet. Avslutter vedtak")
+        if (!harBoddArbeidetUtland(pendata)) throw IkkeGyldigStatusPaaSakException("Har ikke bodd eller arbeidet i utlandet. Avslutter vedtak")
         //Sjekk opp om det finnes et dato fattet vedtak. (hvis ikke avslutt)
         if (pendata.vedtak.datoFattetVedtak == null) {
-            throw IkkeGyldigKallException("Vedak mangler dato for fatet vedtak. Avslutter")
+            throw IkkeGyldigStatusPaaSakException("Vedak mangler dato for fatet vedtak. Avslutter")
         }
 
         //prefill Pensjon obj med data fra PESYS. (pendata)
@@ -79,3 +81,5 @@ class VedtakDataFromPEN(private val dataFromPESYS: PensjonsinformasjonHjelper) :
     }
 }
 
+@ResponseStatus(value = HttpStatus.BAD_REQUEST)
+class IkkeGyldigStatusPaaSakException(message: String) : IllegalStateException(message)
