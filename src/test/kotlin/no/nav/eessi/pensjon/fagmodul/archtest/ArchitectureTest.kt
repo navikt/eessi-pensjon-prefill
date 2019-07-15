@@ -34,10 +34,10 @@ class ArchitectureTest {
 
         // components
         val health = "fagmodul.health"
-        val coreApi = "fagmodul.coreApi"
+        val bucSedApi = "fagmodul.bucSedApi"
         val helper = "fagmodul.helper"
         val prefill = "fagmodul.prefill"
-        val prefillModels = "fagmodul.prefillmodels"
+        val models = "fagmodul.models"
         val arkivApi = "api.arkiv"
         val geoApi = "api.geo"
         val personApi = "api.person"
@@ -62,11 +62,11 @@ class ArchitectureTest {
                 "$root.api.person.." to personApi,
                 "$root.api.pensjon.." to pensjonApi,
 
-                "$root.fagmodul.controllers.." to coreApi,
+                "$root.fagmodul.controllers.." to bucSedApi,
 
                 "$root.fagmodul.prefill.." to prefill,
                 "$root.fagmodul.services" to prefill,
-                "$root.fagmodul.models.." to prefillModels,
+                "$root.fagmodul.models.." to models,
                 "$root.fagmodul.services.eux.." to euxService,
                 "$root.fagmodul.pesys.." to pensjonUtlandApi,
 
@@ -95,20 +95,20 @@ class ArchitectureTest {
                 .layer(health).definedBy(*packagesFor(health))
                 .whereLayer(health).mayNotBeAccessedByAnyLayer()
 
-                .layer(coreApi).definedBy(*packagesFor(coreApi))
-                .whereLayer(coreApi).mayNotBeAccessedByAnyLayer()
+                .layer(bucSedApi).definedBy(*packagesFor(bucSedApi))
+                .whereLayer(bucSedApi).mayNotBeAccessedByAnyLayer()
 
                 .layer(pensjonUtlandApi).definedBy(*packagesFor(pensjonUtlandApi))
                 .whereLayer(pensjonUtlandApi).mayNotBeAccessedByAnyLayer()
 
                 .layer(prefill).definedBy(*packagesFor(prefill))
-                .whereLayer(prefill).mayOnlyBeAccessedByLayers(coreApi)
+                .whereLayer(prefill).mayOnlyBeAccessedByLayers(bucSedApi)
 
                 .layer(euxService).definedBy(*packagesFor(euxService))
-                .whereLayer(euxService).mayOnlyBeAccessedByLayers(health, coreApi)
+                .whereLayer(euxService).mayOnlyBeAccessedByLayers(health, bucSedApi)
 
-                .layer(prefillModels).definedBy(*packagesFor(prefillModels))
-                .whereLayer(prefillModels).mayOnlyBeAccessedByLayers(prefill, /* TODO consider this list */ euxService, pensjonUtlandApi, health, coreApi)
+                .layer(models).definedBy(*packagesFor(models))
+                .whereLayer(models).mayOnlyBeAccessedByLayers(prefill, /* TODO consider this list */ euxService, pensjonUtlandApi, health, bucSedApi)
 
                 .layer(arkivApi).definedBy(*packagesFor(arkivApi))
                 .whereLayer(arkivApi).mayNotBeAccessedByAnyLayer()
@@ -123,7 +123,7 @@ class ArchitectureTest {
                 .whereLayer(pensjonApi).mayNotBeAccessedByAnyLayer()
 
                 .layer(helper).definedBy(*packagesFor(helper)) /** TODO This layer should be removed */
-                .whereLayer(helper).mayOnlyBeAccessedByLayers(coreApi, pensjonApi, /* TODO consider this */ prefill)
+                .whereLayer(helper).mayOnlyBeAccessedByLayers(bucSedApi, pensjonApi, /* TODO consider this */ prefill)
 
                 .layer(config).definedBy(*packagesFor(config))
                 .whereLayer(config).mayNotBeAccessedByAnyLayer()
@@ -135,7 +135,7 @@ class ArchitectureTest {
                 .whereLayer(aktoerregisterService).mayOnlyBeAccessedByLayers(personApi, helper)
 
                 .layer(arkivService).definedBy(*packagesFor(arkivService))
-                .whereLayer(arkivService).mayOnlyBeAccessedByLayers(arkivApi, coreApi, /* TODO consider this */ euxService)
+                .whereLayer(arkivService).mayOnlyBeAccessedByLayers(arkivApi, bucSedApi, /* TODO consider this */ euxService)
 
                 .layer(geoService).definedBy(*packagesFor(geoService))
                 .whereLayer(geoService).mayOnlyBeAccessedByLayers(geoApi, pensjonUtlandApi, prefill)

@@ -1,0 +1,83 @@
+@startuml
+
+together {
+(Nais)
+(Frontend)
+(Pesys) as Pesys1
+}
+
+together {
+(EUX)
+(Joark)
+(TPS)
+(AktReg)
+(Pesys) as Pesys2
+}
+
+package "Fagmodul API" as FagmodulAPI {
+Pesys1 --> [pensjonUtlandApi]
+Frontend --> [bucSedApi]
+}
+
+package "Support API" as SupportAPI {
+Frontend --> [arkivApi]
+Frontend --> [personApi]
+Frontend --> [pensjonApi]
+Frontend --> [geoApi]
+}
+
+package "App" {
+Pesys1 -> [health]
+Nais -> [health]
+[security]
+[metrics]
+[utils]
+[config]
+}
+
+bucSedApi --> [euxService]
+health --> [euxService]
+euxService ---> EUX
+
+package "Core" {
+[models]
+bucSedApi --> [prefill]
+models <- prefill
+pensjonUtlandApi --> [models]
+health --> [models]
+bucSedApi ---> [models]
+}
+
+euxService --> models
+
+bucSedApi --> [helper]
+pensjonApi --> [helper]
+prefill --> [helper]
+
+arkivApi ---> [arkivService] 
+arkivService ---> Joark 
+euxService ---> [arkivService]
+geoApi ---> [geoService]
+pensjonUtlandApi ---> [geoService]
+prefill ---> [geoService]
+
+together {
+personApi ---> [aktoerregisterService]
+aktoerregisterService --> AktReg
+helper ---> [aktoerregisterService]
+health ---> [personService]
+personService -> TPS
+personApi ---> [personService]
+prefill ---> [personService]
+}
+
+health ---> [pensjonService]
+pensjonApi ---> [pensjonService]
+prefill ---> [pensjonService]
+pensjonService -> Pesys2
+
+together {
+SupportAPI -[hidden]> FagmodulAPI
+}
+
+@enduml
