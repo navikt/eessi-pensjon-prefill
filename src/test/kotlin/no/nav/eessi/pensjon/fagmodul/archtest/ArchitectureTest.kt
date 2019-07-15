@@ -135,7 +135,7 @@ class ArchitectureTest {
                 .whereLayer(aktoerregisterService).mayOnlyBeAccessedByLayers(personApi, helper)
 
                 .layer(arkivService).definedBy(*packagesFor(arkivService))
-                .whereLayer(arkivService).mayOnlyBeAccessedByLayers(arkivApi, bucSedApi, /* TODO consider this */ euxService)
+                .whereLayer(arkivService).mayOnlyBeAccessedByLayers(arkivApi, bucSedApi)
 
                 .layer(geoService).definedBy(*packagesFor(geoService))
                 .whereLayer(geoService).mayOnlyBeAccessedByLayers(geoApi, pensjonUtlandApi, prefill)

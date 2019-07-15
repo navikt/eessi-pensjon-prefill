@@ -53,8 +53,8 @@ bucSedApi --> [helper]
 pensjonApi --> [helper]
 
 arkivApi ---> [arkivService] 
-arkivService ---> Joark 
-euxService ---> [arkivService]
+bucSedApi ---> [arkivService]
+arkivService ---> Joark
 geoApi ---> [geoService]
 pensjonUtlandApi ---> [geoService]
 prefill ---> [geoService]
