@@ -6,9 +6,11 @@ import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.models.NavMock
 import no.nav.eessi.pensjon.fagmodul.models.PensjonMock
 import no.nav.eessi.pensjon.fagmodul.models.SED
-import no.nav.eessi.pensjon.fagmodul.prefill.*
-import no.nav.eessi.pensjon.fagmodul.prefill.nav.PrefillNav
-import no.nav.eessi.pensjon.fagmodul.prefill.nav.PrefillPerson
+import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
+import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillDefaultSED
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillFactory
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillSED
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith

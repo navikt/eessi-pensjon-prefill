@@ -62,12 +62,11 @@ class ArchitectureTest {
                 "$root.api.person.." to personApi,
                 "$root.api.pensjon.." to pensjonApi,
 
-                "$root.fagmodul.controllers.." to bucSedApi,
+                "$root.fagmodul.api.." to bucSedApi,
 
                 "$root.fagmodul.prefill.." to prefill,
-                "$root.fagmodul.services" to prefill,
                 "$root.fagmodul.models.." to models,
-                "$root.fagmodul.services.eux.." to euxService,
+                "$root.fagmodul.eux.." to euxService,
                 "$root.fagmodul.pesys.." to pensjonUtlandApi,
 
                 "$root.fagmodul.config.." to config,
