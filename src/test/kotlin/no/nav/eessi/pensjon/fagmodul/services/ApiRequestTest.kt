@@ -15,7 +15,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
-class Api2RequestTest {
+class ApiRequestTest {
 
     private val printout = false
     private val printsed = false
