@@ -9,14 +9,11 @@ import org.springframework.web.bind.annotation.ResponseStatus
 @Component
 class AktoerIdHelper(private val aktoerregisterService: AktoerregisterService) {
 
-    @Throws(AktoerregisterException::class)
-    fun hentAktoerIdPin(aktorid: String): String {
-
-        if (aktorid.isBlank()) throw ManglerAktoerIdException("Mangler AktorId")
+    @Throws(AktoerregisterException::class, ManglerAktoerIdException::class)
+    fun hentAktoerIdPin(aktorid: String?): String {
+        if (aktorid.isNullOrBlank()) throw ManglerAktoerIdException("Mangler AktorId")
         return aktoerregisterService.hentGjeldendeNorskIdentForAktorId(aktorid)
-
     }
-
 }
 
 @ResponseStatus(value = HttpStatus.BAD_REQUEST)

@@ -1,21 +1,12 @@
 package no.nav.eessi.pensjon.fagmodul.services
 
-import com.nhaarman.mockito_kotlin.doReturn
-import com.nhaarman.mockito_kotlin.whenever
 import no.nav.eessi.pensjon.fagmodul.models.IkkeGyldigKallException
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.models.SED
-import no.nav.eessi.pensjon.fagmodul.services.eux.SedDokumentIkkeGyldigException
-import no.nav.eessi.pensjon.helper.AktoerIdHelper
 import no.nav.eessi.pensjon.services.geo.LandkodeService
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import no.nav.eessi.pensjon.utils.validateJson
-import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.mockito.ArgumentMatchers
-import org.mockito.Mock
-import org.mockito.junit.MockitoJUnitRunner
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.nio.file.Files
@@ -24,21 +15,12 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
-@RunWith(MockitoJUnitRunner.Silent::class)
-class ApIRequestTest {
+class Api2RequestTest {
 
     private val printout = false
     private val printsed = false
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(LandkodeService::class.java) }
-
-    @Mock
-    lateinit var mockAktoerIdHelper: AktoerIdHelper
-
-    @Before
-    fun before() {
-        doReturn("12345").whenever(mockAktoerIdHelper).hentAktoerIdPin(ArgumentMatchers.anyString())
-    }
 
     private fun createMockApiRequest(sedName: String, buc: String, payload: String): ApiRequest {
         val items = listOf(InstitusjonItem(country = "NO", institution = "NAVT003"))
@@ -121,7 +103,7 @@ class ApIRequestTest {
                 buc = "P_BUC_06",
                 aktoerId = "0105094340092"
         )
-        ApiRequest.buildPrefillDataModelConfirm(mockData, mockAktoerIdHelper)
+        ApiRequest.buildPrefillDataModelConfirm(mockData, "12345")
     }
 
     @Test(expected = IllegalArgumentException::class)
@@ -134,7 +116,7 @@ class ApIRequestTest {
                 buc = "P_BUC_06",
                 aktoerId = "0105094340092"
         )
-        ApiRequest.buildPrefillDataModelConfirm(mockData, mockAktoerIdHelper)
+        ApiRequest.buildPrefillDataModelConfirm(mockData, "12345")
     }
 
     @Test
@@ -145,9 +127,7 @@ class ApIRequestTest {
                 aktoerId = "0105094340092"
         )
 
-        whenever(mockAktoerIdHelper.hentAktoerIdPin(ArgumentMatchers.anyString())).thenReturn("12345")
-
-        val model = ApiRequest.buildPrefillDataModelConfirm(mockData, mockAktoerIdHelper)
+        val model = ApiRequest.buildPrefillDataModelConfirm(mockData, "12345")
 
         assertEquals("12345", model.personNr)
         assertEquals("12234", model.penSaksnummer)
@@ -165,7 +145,7 @@ class ApIRequestTest {
                 sed = "P6000",
                 aktoerId = null
         )
-        ApiRequest.buildPrefillDataModelConfirm(mockData, mockAktoerIdHelper)
+        ApiRequest.buildPrefillDataModelConfirm(mockData, "12345")
     }
 
 }

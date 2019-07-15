@@ -3,7 +3,6 @@ package no.nav.eessi.pensjon.fagmodul.prefill
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.whenever
 import no.nav.eessi.pensjon.fagmodul.models.*
-import no.nav.eessi.pensjon.helper.AktoerIdHelper
 import no.nav.eessi.pensjon.fagmodul.prefill.nav.PrefillPerson
 import no.nav.eessi.pensjon.fagmodul.services.ApiRequest
 import no.nav.eessi.pensjon.utils.mapAnyToJson
@@ -13,7 +12,6 @@ import no.nav.eessi.pensjon.utils.validateJson
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.ArgumentMatchers
 import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
 import org.skyscreamer.jsonassert.JSONAssert
@@ -27,9 +25,6 @@ import kotlin.test.assertNotNull
 
 @RunWith(MockitoJUnitRunner::class)
 class SedP4000Test {
-
-    @Mock
-    private lateinit var mockAktoerIdHelper: AktoerIdHelper
 
     @Mock
     private lateinit var prefillPerson: PrefillPerson
@@ -163,8 +158,7 @@ class SedP4000Test {
         assertNotNull(reqjson)
         validateJson(reqjson)
 
-        whenever(mockAktoerIdHelper.hentAktoerIdPin(ArgumentMatchers.anyString())).thenReturn("12345")
-        val data = ApiRequest.buildPrefillDataModelConfirm(req, mockAktoerIdHelper)
+        val data = ApiRequest.buildPrefillDataModelConfirm(req, "12345")
 
         assertNotNull(data)
         assertNotNull(data.getPartSEDasJson("P4000"))

@@ -51,7 +51,6 @@ euxService --> models
 
 bucSedApi --> [helper]
 pensjonApi --> [helper]
-prefill --> [helper]
 
 arkivApi ---> [arkivService] 
 arkivService ---> Joark 
@@ -76,7 +75,7 @@ prefill ---> [pensjonService]
 pensjonService -> Pesys2
 
 together {
-SupportAPI -[hidden]> FagmodulAPI
+FagmodulAPI -[hidden]> SupportAPI
 }
 
 @enduml

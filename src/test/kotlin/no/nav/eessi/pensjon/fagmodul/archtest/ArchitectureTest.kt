@@ -122,8 +122,8 @@ class ArchitectureTest {
                 .layer(pensjonApi).definedBy(*packagesFor(pensjonApi))
                 .whereLayer(pensjonApi).mayNotBeAccessedByAnyLayer()
 
-                .layer(helper).definedBy(*packagesFor(helper)) /** TODO This layer should be removed */
-                .whereLayer(helper).mayOnlyBeAccessedByLayers(bucSedApi, pensjonApi, /* TODO consider this */ prefill)
+                .layer(helper).definedBy(*packagesFor(helper))
+                .whereLayer(helper).mayOnlyBeAccessedByLayers(bucSedApi, pensjonApi)
 
                 .layer(config).definedBy(*packagesFor(config))
                 .whereLayer(config).mayNotBeAccessedByAnyLayer()
