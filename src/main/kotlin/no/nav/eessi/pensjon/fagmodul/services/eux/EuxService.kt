@@ -9,8 +9,6 @@ import no.nav.eessi.pensjon.fagmodul.models.*
 import no.nav.eessi.pensjon.fagmodul.services.eux.bucmodel.Buc
 import no.nav.eessi.pensjon.fagmodul.services.eux.bucmodel.BucAndSedView
 import no.nav.eessi.pensjon.fagmodul.services.eux.bucmodel.ParticipantsItem
-import no.nav.eessi.pensjon.services.arkiv.SafService
-import no.nav.eessi.pensjon.services.arkiv.VariantFormat
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Description
 import org.springframework.http.*
@@ -29,8 +27,7 @@ import org.springframework.util.LinkedMultiValueMap
 
 @Service
 @Description("Service class for EuxBasis - EuxCpiServiceController.java")
-class EuxService(private val euxOidcRestTemplate: RestTemplate,
-                 private val safService: SafService) {
+class EuxService(private val euxOidcRestTemplate: RestTemplate) {
 
     private val logger = LoggerFactory.getLogger(EuxService::class.java)
 
@@ -527,17 +524,12 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate,
     fun leggTilVedleggPaaDokument(aktoerId: String,
                                   rinaSakId: String,
                                   rinaDokumentId: String,
-                                  joarkJournalpostId: String,
-                                  joarkDokumentInfoId : String,
-                                  variantFormat: VariantFormat) {
+                                  vedlegg: Vedlegg,
+                                  filtype: String) {
         try {
-            logger.info("Henter dokumentinnhold fra joark")
-            val hentDokumentResponse = safService.hentDokumentInnhold(joarkJournalpostId, joarkDokumentInfoId, variantFormat)
-
             val body = LinkedMultiValueMap<String, Any>()
-            body.add("file", ByteArrayResource(hentDokumentResponse.base64.toByteArray()))
-            body.add("Filnavn", hentDokumentResponse.fileName)
-            val filtype = hentDokumentResponse.contentType.split("/")[1]
+            body.add("file", ByteArrayResource(vedlegg.file.toByteArray()))
+            body.add("Filnavn", vedlegg.Filnavn)
 
             val headers = HttpHeaders()
             headers.contentType = MediaType.MULTIPART_FORM_DATA

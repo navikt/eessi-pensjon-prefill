@@ -44,14 +44,11 @@ class EuxServiceTest {
     @Mock
     private lateinit var mockEuxrestTemplate: RestTemplate
 
-    @Mock
-    private lateinit var mockSafService: SafService
-
     @Before
     fun setup() {
         logger.debug("Starting tests.... ...")
         mockEuxrestTemplate.errorHandler = DefaultResponseErrorHandler()
-        service = EuxService(mockEuxrestTemplate, mockSafService)
+        service = EuxService(mockEuxrestTemplate)
     }
 
     @After

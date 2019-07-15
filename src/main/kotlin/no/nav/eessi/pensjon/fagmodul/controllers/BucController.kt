@@ -5,10 +5,12 @@ import no.nav.eessi.pensjon.helper.AktoerIdHelper
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.services.eux.EuxService
 import no.nav.eessi.pensjon.fagmodul.services.eux.Rinasak
+import no.nav.eessi.pensjon.fagmodul.services.eux.Vedlegg
 import no.nav.eessi.pensjon.fagmodul.services.eux.bucmodel.Buc
 import no.nav.eessi.pensjon.fagmodul.services.eux.bucmodel.BucAndSedView
 import no.nav.eessi.pensjon.fagmodul.services.eux.bucmodel.Creator
 import no.nav.eessi.pensjon.fagmodul.services.eux.bucmodel.ShortDocumentItem
+import no.nav.eessi.pensjon.services.arkiv.SafService
 import no.nav.eessi.pensjon.services.arkiv.VariantFormat
 import no.nav.eessi.pensjon.utils.errorBody
 import no.nav.eessi.pensjon.utils.mapAnyToJson
@@ -25,6 +27,7 @@ import java.util.*
 @RestController
 @RequestMapping("/buc")
 class BucController(private val euxService: EuxService,
+                    private val safService: SafService,
                     private val aktoerIdHelper: AktoerIdHelper) {
 
     private val logger = LoggerFactory.getLogger(BucController::class.java)
@@ -141,12 +144,12 @@ class BucController(private val euxService: EuxService,
                 "rinaSakId: $rinaSakId, rinaDokumentId: $rinaDokumentId")
 
         return try {
+            val dokument = safService.hentDokumentInnhold(joarkJournalpostId, joarkDokumentInfoId, variantFormat)
             euxService.leggTilVedleggPaaDokument(aktoerId,
                     rinaSakId,
                     rinaDokumentId,
-                    joarkJournalpostId,
-                    joarkDokumentInfoId,
-                    variantFormat)
+                    Vedlegg(file = dokument.base64, Filnavn = dokument.fileName),
+                    dokument.contentType.split("/")[1])
             return ResponseEntity.ok().body(successBody())
         } catch(ex: Exception) {
             ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
