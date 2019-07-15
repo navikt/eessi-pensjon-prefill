@@ -44,7 +44,6 @@ package "Core" {
 bucSedApi --> [prefill]
 models <- prefill
 pensjonUtlandApi --> [models]
-health --> [models]
 bucSedApi ---> [models]
 }
 
@@ -52,7 +51,6 @@ euxService --> models
 
 bucSedApi --> [helper]
 pensjonApi --> [helper]
-prefill --> [helper]
 
 arkivApi ---> [arkivService] 
 arkivService ---> Joark 
@@ -77,7 +75,7 @@ prefill ---> [pensjonService]
 pensjonService -> Pesys2
 
 together {
-SupportAPI -[hidden]> FagmodulAPI
+FagmodulAPI -[hidden]> SupportAPI
 }
 
 @enduml

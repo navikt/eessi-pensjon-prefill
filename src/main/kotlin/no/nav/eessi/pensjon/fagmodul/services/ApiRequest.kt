@@ -4,7 +4,6 @@ import no.nav.eessi.pensjon.fagmodul.models.IkkeGyldigKallException
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.models.SED
 import no.nav.eessi.pensjon.fagmodul.models.SEDType
-import no.nav.eessi.pensjon.helper.AktoerIdHelper
 import no.nav.eessi.pensjon.fagmodul.prefill.PrefillDataModel
 import org.slf4j.LoggerFactory
 
@@ -30,7 +29,7 @@ data class ApiRequest(
         private val logger = LoggerFactory.getLogger(ApiRequest::class.java)
 
         //validatate request and convert to PrefillDataModel
-        fun buildPrefillDataModelOnExisting(request: ApiRequest, aktoerIdHelper: AktoerIdHelper): PrefillDataModel {
+        fun buildPrefillDataModelOnExisting(request: ApiRequest, fodselsnr: String): PrefillDataModel {
             return when {
                 //request.sakId == null -> throw IkkeGyldigKallException("Mangler Saksnummer")
                 request.sed == null -> throw IkkeGyldigKallException("Mangler SED")
@@ -40,7 +39,7 @@ data class ApiRequest(
 
                 SEDType.isValidSEDType(request.sed) -> {
                     logger.info("ALL SED on existing Rina -> SED: ${request.sed} -> euxCaseId: ${request.sakId}")
-                    val pinid = aktoerIdHelper.hentAktoerIdPin(request.aktoerId)
+                    val pinid = fodselsnr
                     PrefillDataModel().apply {
                         penSaksnummer = request.sakId
                         sed = SED.create(request.sed)
@@ -59,7 +58,7 @@ data class ApiRequest(
         }
 
         //validatate request and convert to PrefillDataModel
-        fun buildPrefillDataModelConfirm(request: ApiRequest, aktoerIdHelper: AktoerIdHelper): PrefillDataModel {
+        fun buildPrefillDataModelConfirm(request: ApiRequest, fodselsnr: String): PrefillDataModel {
             return when {
                 //request.sakId == null -> throw IkkeGyldigKallException("Mangler Saksnummer")
                 request.sed == null -> throw IkkeGyldigKallException("Mangler SED")
@@ -70,7 +69,7 @@ data class ApiRequest(
                         penSaksnummer = request.sakId
                         sed = SED.create(request.sed)
                         aktoerID = request.aktoerId
-                        personNr = aktoerIdHelper.hentAktoerIdPin(request.aktoerId)
+                        personNr = fodselsnr
                         vedtakId = request.vedtakId ?: ""
                         partSedAsJson[request.sed] = request.payload ?: "{}"
 //                    if (request.payload != null) {
@@ -84,7 +83,7 @@ data class ApiRequest(
         }
 
         //validatate request and convert to PrefillDataModel
-        fun buildPrefillDataModelOnNew(request: ApiRequest, aktoerIdHelper: AktoerIdHelper): PrefillDataModel {
+        fun buildPrefillDataModelOnNew(request: ApiRequest, fodselsnr: String): PrefillDataModel {
             return when {
                 //request.sakId == null -> throw IkkeGyldigKallException("Mangler Saksnummer")
                 request.sed == null -> throw IkkeGyldigKallException("Mangler SED")
@@ -96,7 +95,7 @@ data class ApiRequest(
                 //Denne validering og utfylling kan benyttes på SED P2000,P2100,P2200
                 SEDType.isValidSEDType(request.sed) -> {
                     logger.info("ALL SED on new RinaCase -> SED: ${request.sed}")
-                    val pinid = aktoerIdHelper.hentAktoerIdPin(request.aktoerId)
+                    val pinid = fodselsnr
                     PrefillDataModel().apply {
                         penSaksnummer = request.sakId
                         buc = request.buc

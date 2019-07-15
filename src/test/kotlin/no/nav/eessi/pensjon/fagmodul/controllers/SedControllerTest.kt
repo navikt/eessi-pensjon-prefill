@@ -12,7 +12,6 @@ import no.nav.eessi.pensjon.helper.AktoerIdHelper
 import no.nav.eessi.pensjon.fagmodul.models.*
 import no.nav.eessi.pensjon.fagmodul.prefill.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.PrefillSED
-import no.nav.eessi.pensjon.fagmodul.prefill.nav.PrefillPerson
 import no.nav.eessi.pensjon.fagmodul.services.ApiRequest
 import no.nav.eessi.pensjon.fagmodul.services.PrefillService
 import no.nav.eessi.pensjon.fagmodul.services.eux.BucSedResponse
@@ -87,7 +86,7 @@ class SedControllerTest {
         //må være først
         doReturn("12345").whenever(mockAktoerIdHelper).hentAktoerIdPin(ArgumentMatchers.anyString())
 
-        val utfyllMock = ApiRequest.buildPrefillDataModelOnNew(requestMock, mockAktoerIdHelper)
+        val utfyllMock = ApiRequest.buildPrefillDataModelOnNew(requestMock, mockAktoerIdHelper.hentAktoerIdPin(requestMock.aktoerId))
 
         assertNotNull(utfyllMock.personNr)
         assertEquals("12345", utfyllMock.personNr)
@@ -127,7 +126,7 @@ class SedControllerTest {
         )
 
         whenever(mockAktoerIdHelper.hentAktoerIdPin(ArgumentMatchers.anyString())).thenReturn("12345")
-        val utfyllMock = ApiRequest.buildPrefillDataModelOnExisting(requestMock, mockAktoerIdHelper)
+        val utfyllMock = ApiRequest.buildPrefillDataModelOnExisting(requestMock, mockAktoerIdHelper.hentAktoerIdPin(requestMock.aktoerId))
 
         assertNotNull(utfyllMock.personNr)
         assertEquals("12345", utfyllMock.personNr)
@@ -166,7 +165,7 @@ class SedControllerTest {
         )
         whenever(mockAktoerIdHelper.hentAktoerIdPin(ArgumentMatchers.anyString())).thenReturn("12345")
 
-        val utfyllMock = ApiRequest.buildPrefillDataModelConfirm(mockData, mockAktoerIdHelper)
+        val utfyllMock = ApiRequest.buildPrefillDataModelConfirm(mockData, mockAktoerIdHelper.hentAktoerIdPin(mockData.aktoerId))
 
         utfyllMock.sed.nav = Nav(bruker = Bruker(person = Person(fornavn = "Dummy", etternavn = "Dummy", foedselsdato = "1900-10-11", kjoenn = "K")), krav = Krav("1937-12-11"))
         whenever(mockPrefillSED.prefill(any())).thenReturn(utfyllMock)
@@ -351,7 +350,7 @@ class SedControllerTest {
         val currentX005 = ShortDocumentItem()
         whenever(mockBucUtils.findFirstDocumentItemByType("X005")).thenReturn(currentX005)
 
-        val dummyPrefillData = ApiRequest.buildPrefillDataModelOnExisting(apiRequestWith(euxCaseId), mockAktoerIdHelper)
+        val dummyPrefillData = ApiRequest.buildPrefillDataModelOnExisting(apiRequestWith(euxCaseId), mockAktoerIdHelper.hentAktoerIdPin(apiRequestWith(euxCaseId).aktoerId))
         whenever(mockPrefillSED.prefill(any())).thenReturn(dummyPrefillData)
 
         whenever(mockEuxService.opprettSedOnBuc(any(), eq(euxCaseId))).thenReturn(BucSedResponse(euxCaseId, "1"))
@@ -374,7 +373,7 @@ class SedControllerTest {
         val noNewParticipants = listOf<InstitusjonItem>()
         whenever(mockBucUtils.findNewParticipants(any())).thenReturn(noNewParticipants)
 
-        val dummyPrefillData = ApiRequest.buildPrefillDataModelOnExisting(apiRequestWith(euxCaseId), mockAktoerIdHelper)
+        val dummyPrefillData = ApiRequest.buildPrefillDataModelOnExisting(apiRequestWith(euxCaseId), mockAktoerIdHelper.hentAktoerIdPin(apiRequestWith(euxCaseId).aktoerId))
         whenever(mockPrefillSED.prefill(any())).thenReturn(dummyPrefillData)
 
         whenever(mockEuxService.opprettSedOnBuc(any(), eq(euxCaseId))).thenReturn(BucSedResponse(euxCaseId, "1"))
@@ -403,7 +402,7 @@ class SedControllerTest {
         val noCurrentX005 = null
         whenever(mockBucUtils.findFirstDocumentItemByType("X005")).thenReturn(noCurrentX005)
 
-        val dummyPrefillData = ApiRequest.buildPrefillDataModelOnExisting(apiRequestWith(euxCaseId), mockAktoerIdHelper)
+        val dummyPrefillData = ApiRequest.buildPrefillDataModelOnExisting(apiRequestWith(euxCaseId), mockAktoerIdHelper.hentAktoerIdPin(apiRequestWith(euxCaseId).aktoerId))
         whenever(mockPrefillSED.prefill(any())).thenReturn(dummyPrefillData)
 
         whenever(mockEuxService.opprettSedOnBuc(any(), eq(euxCaseId))).thenReturn(BucSedResponse(euxCaseId, "1"))
@@ -432,7 +431,7 @@ class SedControllerTest {
         val currentX005 = ShortDocumentItem()
         whenever(mockBucUtils.findFirstDocumentItemByType("X005")).thenReturn(currentX005)
 
-        val dummyPrefillData = ApiRequest.buildPrefillDataModelOnExisting(apiRequestWith(euxCaseId), mockAktoerIdHelper)
+        val dummyPrefillData = ApiRequest.buildPrefillDataModelOnExisting(apiRequestWith(euxCaseId), mockAktoerIdHelper.hentAktoerIdPin(apiRequestWith(euxCaseId).aktoerId))
         whenever(mockPrefillSED.prefill(any())).thenReturn(dummyPrefillData)
 
         whenever(mockEuxService.opprettSedOnBuc(any(), eq(euxCaseId))).thenThrow(SedDokumentIkkeOpprettetException("Expected!"))

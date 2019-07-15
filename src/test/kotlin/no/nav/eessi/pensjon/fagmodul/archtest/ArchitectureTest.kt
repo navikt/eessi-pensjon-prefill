@@ -108,7 +108,7 @@ class ArchitectureTest {
                 .whereLayer(euxService).mayOnlyBeAccessedByLayers(health, bucSedApi)
 
                 .layer(models).definedBy(*packagesFor(models))
-                .whereLayer(models).mayOnlyBeAccessedByLayers(prefill, /* TODO consider this list */ euxService, pensjonUtlandApi, health, bucSedApi)
+                .whereLayer(models).mayOnlyBeAccessedByLayers(prefill, /* TODO consider this list */ euxService, pensjonUtlandApi, bucSedApi)
 
                 .layer(arkivApi).definedBy(*packagesFor(arkivApi))
                 .whereLayer(arkivApi).mayNotBeAccessedByAnyLayer()
@@ -122,8 +122,8 @@ class ArchitectureTest {
                 .layer(pensjonApi).definedBy(*packagesFor(pensjonApi))
                 .whereLayer(pensjonApi).mayNotBeAccessedByAnyLayer()
 
-                .layer(helper).definedBy(*packagesFor(helper)) /** TODO This layer should be removed */
-                .whereLayer(helper).mayOnlyBeAccessedByLayers(bucSedApi, pensjonApi, /* TODO consider this */ prefill)
+                .layer(helper).definedBy(*packagesFor(helper))
+                .whereLayer(helper).mayOnlyBeAccessedByLayers(bucSedApi, pensjonApi)
 
                 .layer(config).definedBy(*packagesFor(config))
                 .whereLayer(config).mayNotBeAccessedByAnyLayer()

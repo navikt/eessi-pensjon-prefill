@@ -1,7 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.health
 
 import no.nav.eessi.pensjon.fagmodul.metrics.getCounter
-import no.nav.eessi.pensjon.fagmodul.models.IkkeGyldigKallException
 import no.nav.eessi.pensjon.fagmodul.services.eux.EuxService
 import no.nav.eessi.pensjon.security.sts.STSService
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonService
@@ -70,7 +69,7 @@ class DiagnosticsController(private val stsService: STSService) {
         } catch (ex: Exception) {
             logger.debug("Selftest failed")
             logger.error("Feil ved Selftest", ex)
-            throw IkkeGyldigKallException("Feiler ved selftest, ${ex.message}")
+            throw Exception("Feiler ved selftest, ${ex.message}")
         }
     }
 
