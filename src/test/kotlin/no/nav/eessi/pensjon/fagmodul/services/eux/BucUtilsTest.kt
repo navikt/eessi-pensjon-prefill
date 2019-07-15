@@ -1,7 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.services.eux
 
 import com.google.common.collect.Lists
-import no.nav.eessi.pensjon.fagmodul.models.IkkeGyldigKallException
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.services.eux.bucmodel.Buc
@@ -284,7 +283,7 @@ class BucUtilsTest {
     }
 
 
-    @Test(expected = IkkeGyldigKallException::class)
+    @Test(expected = ManglerDeltakereException::class)
     fun `findNewParticipants | listene er tom forventer exception`(){
         val bucUtils = BucUtils(Buc(participants = listOf()))
         val candidates = listOf<InstitusjonItem>()

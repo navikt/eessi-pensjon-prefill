@@ -38,6 +38,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.util.ResourceUtils
 import org.springframework.web.client.RestTemplate
+import java.lang.IllegalStateException
 import java.time.LocalDate
 import java.time.ZoneId
 import java.util.*
@@ -233,7 +234,7 @@ abstract class AbstractMockVedtakPensionHelper(private val xmlFilename: String) 
     }
 
 
-    @Test(expected = IllegalArgumentException::class)
+    @Test(expected = IllegalStateException::class)
     fun `preutfylling P6000 feiler ved mangler av vedtakId`() {
         prefill = generatePrefillData(68, "P6000")
         prefill.vedtakId = ""
@@ -332,7 +333,7 @@ abstract class AbstractMockVedtakPensionHelper(private val xmlFilename: String) 
         assertEquals(0, result)
     }
 
-    @Test(expected = java.lang.IllegalArgumentException::class)
+    @Test(expected = java.lang.IllegalStateException::class)
     fun `feiler ved boddArbeidetUtland ikke sann`() {
         prefill = generatePrefillData(66, "P6000")
         val resdata = mockPrefillPensionDataFromPESYS("P6000-AP-101.xml")

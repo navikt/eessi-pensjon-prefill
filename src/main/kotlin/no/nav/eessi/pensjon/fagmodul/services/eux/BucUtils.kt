@@ -1,10 +1,12 @@
 package no.nav.eessi.pensjon.fagmodul.services.eux
 
-import no.nav.eessi.pensjon.fagmodul.models.IkkeGyldigKallException
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.services.eux.bucmodel.*
 import org.slf4j.LoggerFactory
+import org.springframework.http.HttpStatus
+import org.springframework.web.bind.annotation.ResponseStatus
+import java.lang.IllegalStateException
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -226,7 +228,7 @@ class BucUtils(private val buc: Buc ) {
                         }
 
         if (currentParticipants.isEmpty() && potentialNewParticipants.isEmpty()) {
-            throw IkkeGyldigKallException("Ingen deltakere/Institusjon er tom")
+            throw ManglerDeltakereException("Ingen deltakere/Institusjon er tom")
         }
 
         return potentialNewParticipants.filter {
@@ -236,3 +238,5 @@ class BucUtils(private val buc: Buc ) {
 
 }
 
+@ResponseStatus(value = HttpStatus.BAD_REQUEST)
+class ManglerDeltakereException(message: String) : IllegalStateException(message)

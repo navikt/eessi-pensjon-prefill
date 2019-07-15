@@ -1,6 +1,5 @@
 package no.nav.eessi.pensjon.fagmodul.services
 
-import no.nav.eessi.pensjon.fagmodul.models.IkkeGyldigKallException
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.models.SED
 import no.nav.eessi.pensjon.services.geo.LandkodeService
@@ -93,7 +92,7 @@ class ApiRequestTest {
         createMockApiRequest("vedtak", "P_BUC_06", payload)
     }
 
-    @Test(expected = IkkeGyldigKallException::class)
+    @Test(expected = MangelfulleInndataException::class)
     fun `confirm document when sed is not valid`() {
         val mockData = ApiRequest(
                 subjectArea = "Pensjon",
@@ -106,7 +105,7 @@ class ApiRequestTest {
         ApiRequest.buildPrefillDataModelConfirm(mockData, "12345")
     }
 
-    @Test(expected = IllegalArgumentException::class)
+    @Test(expected = MangelfulleInndataException::class)
     fun `confirm document sed is null`() {
         val mockData = ApiRequest(
                 subjectArea = "Pensjon",

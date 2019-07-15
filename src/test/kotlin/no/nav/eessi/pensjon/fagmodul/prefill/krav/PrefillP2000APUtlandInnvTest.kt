@@ -75,7 +75,7 @@ class PrefillP2000APUtlandInnvTest : AbstractPrefillIntegrationTestHelper() {
         assertEquals(1, list.size)
     }
 
-    @Test //(expected = IkkeGyldigKallException::class)
+    @Test //(expected = MangelfulleInndataException::class)
     fun `forventet korrekt utfylt P2000 alderpensjon med kap4 og 9`() {
         prefillData.penSaksnummer = "14398627"
         val P2000 = prefill.prefill(prefillData)

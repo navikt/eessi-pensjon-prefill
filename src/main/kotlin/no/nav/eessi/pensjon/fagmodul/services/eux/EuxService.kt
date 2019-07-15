@@ -5,7 +5,12 @@ import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.typeRef
 import no.nav.eessi.pensjon.utils.typeRefs
 import no.nav.eessi.pensjon.fagmodul.metrics.getCounter
-import no.nav.eessi.pensjon.fagmodul.models.*
+import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
+import no.nav.eessi.pensjon.fagmodul.models.Krav
+import no.nav.eessi.pensjon.fagmodul.models.PinItem
+import no.nav.eessi.pensjon.fagmodul.models.PinOgKrav
+import no.nav.eessi.pensjon.fagmodul.models.SED
+import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.services.eux.bucmodel.Buc
 import no.nav.eessi.pensjon.fagmodul.services.eux.bucmodel.BucAndSedView
 import no.nav.eessi.pensjon.fagmodul.services.eux.bucmodel.ParticipantsItem
@@ -383,7 +388,7 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
         val list = mutableListOf<BucAndSedView>()
 
         rinasaker.forEach {
-            val caseId = it.id ?: throw IkkeGyldigKallException("Feil er ikke gyldig caseId fra Rina(Rinasak)")
+            val caseId = it.id ?: throw UgyldigCaseIdException("Feil er ikke gyldig caseId fra Rina(Rinasak)")
             list.add(createBucDetails(caseId, aktoerid, euxService))
         }
         logger.debug("9 ferdig returnerer list av BucAndSedView. Antall BUC: ${list.size}")
@@ -702,3 +707,6 @@ open class GenericUnprocessableEntity(message: String) : IllegalArgumentExceptio
 
 @ResponseStatus(value = HttpStatus.BAD_REQUEST)
 class SedDokumentIkkeGyldigException(message: String?) : Exception(message)
+
+@ResponseStatus(value = HttpStatus.BAD_REQUEST)
+class UgyldigCaseIdException(message: String) : IllegalArgumentException(message)

@@ -1,6 +1,5 @@
 package no.nav.eessi.pensjon.fagmodul.prefill
 
-import no.nav.eessi.pensjon.fagmodul.models.IkkeGyldigKallException
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjoninformasjonException
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonService
 import no.nav.pensjon.v1.brukersbarn.V1BrukersBarn
@@ -9,7 +8,9 @@ import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import no.nav.pensjon.v1.sak.V1Sak
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
+import org.springframework.web.bind.annotation.ResponseStatus
 
 /**
  * hjelpe klass for utfylling av alle SED med pensjondata fra PESYS.
@@ -104,3 +105,6 @@ class PensjonsinformasjonHjelper(private val pensjonsinformasjonService: Pensjon
     }
 
 }
+
+@ResponseStatus(value = HttpStatus.BAD_REQUEST)
+class IkkeGyldigKallException(message: String) : IllegalArgumentException(message)
