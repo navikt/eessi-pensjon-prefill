@@ -44,7 +44,6 @@ package "Core" {
 bucSedApi --> [prefill]
 models <- prefill
 pensjonUtlandApi --> [models]
-health --> [models]
 bucSedApi ---> [models]
 }
 

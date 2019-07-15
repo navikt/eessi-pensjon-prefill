@@ -108,7 +108,7 @@ class ArchitectureTest {
                 .whereLayer(euxService).mayOnlyBeAccessedByLayers(health, bucSedApi)
 
                 .layer(models).definedBy(*packagesFor(models))
-                .whereLayer(models).mayOnlyBeAccessedByLayers(prefill, /* TODO consider this list */ euxService, pensjonUtlandApi, health, bucSedApi)
+                .whereLayer(models).mayOnlyBeAccessedByLayers(prefill, /* TODO consider this list */ euxService, pensjonUtlandApi, bucSedApi)
 
                 .layer(arkivApi).definedBy(*packagesFor(arkivApi))
                 .whereLayer(arkivApi).mayNotBeAccessedByAnyLayer()
