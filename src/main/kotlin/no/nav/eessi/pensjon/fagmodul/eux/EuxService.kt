@@ -9,10 +9,9 @@ import no.nav.eessi.pensjon.utils.typeRef
 import no.nav.eessi.pensjon.utils.typeRefs
 import no.nav.eessi.pensjon.fagmodul.metrics.getCounter
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
-import no.nav.eessi.pensjon.fagmodul.models.Krav
-import no.nav.eessi.pensjon.fagmodul.models.PinItem
-import no.nav.eessi.pensjon.fagmodul.models.PinOgKrav
-import no.nav.eessi.pensjon.fagmodul.models.SED
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Krav
+import no.nav.eessi.pensjon.fagmodul.sedmodel.PinItem
+import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Buc
 import org.slf4j.LoggerFactory

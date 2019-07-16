@@ -1,7 +1,7 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.person
 
-import no.nav.eessi.pensjon.fagmodul.models.Bruker
-import no.nav.eessi.pensjon.fagmodul.models.Pensjon
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Bruker
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Pensjon
 import no.nav.eessi.pensjon.fagmodul.prefill.model.Prefill
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillPersonDataFromTPS

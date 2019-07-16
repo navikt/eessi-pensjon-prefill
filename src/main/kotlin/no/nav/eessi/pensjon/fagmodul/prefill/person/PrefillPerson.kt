@@ -1,8 +1,8 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.person
 
-import no.nav.eessi.pensjon.fagmodul.models.Pensjon
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Pensjon
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjoninformasjonException
-import no.nav.eessi.pensjon.fagmodul.models.SED
+import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.fagmodul.prefill.model.Prefill
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import org.slf4j.Logger

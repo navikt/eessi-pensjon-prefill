@@ -1,6 +1,11 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed.krav
 
-import no.nav.eessi.pensjon.fagmodul.models.*
+import no.nav.eessi.pensjon.fagmodul.sedmodel.BeloepItem
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Institusjon
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Krav
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Pensjon
+import no.nav.eessi.pensjon.fagmodul.sedmodel.PinItem
+import no.nav.eessi.pensjon.fagmodul.sedmodel.YtelserItem
 import no.nav.eessi.pensjon.fagmodul.prefill.model.Prefill
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonHjelper

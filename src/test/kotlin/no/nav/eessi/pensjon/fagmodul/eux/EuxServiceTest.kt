@@ -3,7 +3,8 @@ package no.nav.eessi.pensjon.fagmodul.eux
 import com.nhaarman.mockito_kotlin.*
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.BucSedResponse
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Rinasak
-import no.nav.eessi.pensjon.fagmodul.models.*
+import no.nav.eessi.pensjon.fagmodul.sedmodel.PinItem
+import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.utils.*
 import org.junit.After
 import org.junit.Assert

@@ -2,7 +2,7 @@ package no.nav.eessi.pensjon.fagmodul.prefill.sed.P7000
 
 import no.nav.eessi.pensjon.fagmodul.prefill.ApiRequest
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
-import no.nav.eessi.pensjon.fagmodul.models.SED
+import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.fagmodul.prefill.model.Prefill
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav

@@ -10,6 +10,9 @@ import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever
 import no.nav.eessi.pensjon.helper.AktoerIdHelper
 import no.nav.eessi.pensjon.fagmodul.models.*
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Nav
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Person
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Bruker
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillSED
 import no.nav.eessi.pensjon.fagmodul.prefill.ApiRequest
@@ -21,6 +24,8 @@ import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ActionsItem
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Buc
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.DocumentsItem
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ParticipantsItem
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Krav
+import no.nav.eessi.pensjon.fagmodul.eux.PinOgKrav
 import no.nav.eessi.pensjon.utils.*
 import org.junit.Before
 import org.junit.Test
@@ -324,7 +329,7 @@ class SedControllerTest {
 
     @Test
     fun getYtelseKravtypeOk() {
-        val mockKrav = PinOgKrav(fnr = "13212312", krav =  Krav(dato = "2019-02-01", type = "01"))
+        val mockKrav = PinOgKrav(fnr = "13212312", krav = Krav(dato = "2019-02-01", type = "01"))
 
         doReturn(mockKrav).whenever(mockEuxService).
                 hentFnrOgYtelseKravtype(

@@ -1,9 +1,8 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.model
 
-import no.nav.eessi.pensjon.fagmodul.models.AndreinstitusjonerItem
-import no.nav.eessi.pensjon.fagmodul.models.BrukerInformasjon
+import no.nav.eessi.pensjon.fagmodul.sedmodel.AndreinstitusjonerItem
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
-import no.nav.eessi.pensjon.fagmodul.models.SED
+import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.typeRefs

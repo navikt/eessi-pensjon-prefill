@@ -2,7 +2,7 @@ package no.nav.eessi.pensjon.fagmodul.prefill.sed.krav
 
 import no.nav.eessi.pensjon.fagmodul.prefill.ApiRequest
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
-import no.nav.eessi.pensjon.fagmodul.models.SED
+import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.AbstractPrefillIntegrationTestHelper
 import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonHjelper
 import no.nav.eessi.pensjon.fagmodul.prefill.model.Prefill
