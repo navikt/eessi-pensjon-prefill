@@ -2,13 +2,9 @@ package no.nav.eessi.pensjon.fagmodul.sedmodel
 
 import org.junit.Test
 import org.skyscreamer.jsonassert.JSONAssert
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import kotlin.test.assertEquals
 
-class SedP3000noTest : AbstractSedTest() {
-
-    val logger: Logger by lazy { LoggerFactory.getLogger(SedP3000noTest::class.java) }
+class SedP3000noTest {
 
     @Test
     fun `create SED P3000_NO from json datafile`() {

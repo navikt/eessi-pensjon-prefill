@@ -5,13 +5,9 @@ import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.typeRefs
 import org.junit.Test
 import org.skyscreamer.jsonassert.JSONAssert
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import kotlin.test.assertNotNull
 
-class SedP4000fileTest : AbstractSedTest() {
-
-    val logger: Logger by lazy { LoggerFactory.getLogger(SedP4000fileTest::class.java) }
+class SedP4000fileTest {
 
     @Test
     fun `validate P4000 to json and back`() {

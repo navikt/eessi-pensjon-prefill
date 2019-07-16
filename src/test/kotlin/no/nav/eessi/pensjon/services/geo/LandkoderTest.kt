@@ -4,21 +4,16 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
 @RunWith(MockitoJUnitRunner::class)
 class LandkoderTest {
 
-    private val logger: Logger by lazy { LoggerFactory.getLogger(LandkoderTest::class.java) }
-
     private lateinit var service: LandkodeService
 
     @Before
     fun setup() {
-        logger.debug("Starting tests.... ...")
         service = LandkodeService()
     }
 

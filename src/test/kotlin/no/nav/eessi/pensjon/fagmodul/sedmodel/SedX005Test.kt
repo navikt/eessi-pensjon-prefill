@@ -2,13 +2,9 @@ package no.nav.eessi.pensjon.fagmodul.sedmodel
 
 import org.junit.Test
 import org.skyscreamer.jsonassert.JSONAssert
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import kotlin.test.assertEquals
 
-class SedX005Test : AbstractSedTest() {
-
-    val logger: Logger by lazy { LoggerFactory.getLogger(SedP5000Test::class.java) }
+class SedX005Test {
 
     @Test
     fun `compare SED X005 to X005 from json datafile`() {
@@ -38,7 +34,5 @@ class SedX005Test : AbstractSedTest() {
         assertEquals("NAVT007", xprefill005sed.nav?.sak?.leggtilinstitusjon?.institusjon?.navn)
 
         JSONAssert.assertEquals(xprefill005json, xprefill005sed.toJson(), false)
-
-
     }
 }

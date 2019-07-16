@@ -13,14 +13,10 @@ import no.nav.eessi.pensjon.fagmodul.prefill.person.PersonDataFromTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.NavFodselsnummer
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import org.junit.Test
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
 class `PrefillP2200-AP-21975717Test` : AbstractPrefillIntegrationTestHelper() {
-
-    val logger: Logger by lazy { LoggerFactory.getLogger(`PrefillP2200-AP-21975717Test`::class.java) }
 
     override fun mockPesysTestfilepath(): Pair<String, String> {
         return Pair("P2200", "P2000_21975717_AP_UTLAND.xml")
@@ -69,17 +65,12 @@ class `PrefillP2200-AP-21975717Test` : AbstractPrefillIntegrationTestHelper() {
         assertNotNull(pendata)
 
         val list = kravdata.getPensjonSakTypeList(pendata)
-        list.forEach {
-            logger.info(it.name)
-        }
         assertEquals(2, list.size)
     }
 
     @Test
     fun `forventet korrekt utfylt P2200 uforerpensjon med mockdata fra testfiler`() {
         val p2200 = prefill.prefill(prefillData)
-
-        logger.info(p2200.toString())
 
         assertEquals(null, p2200.nav?.barn)
 
@@ -116,8 +107,8 @@ class `PrefillP2200-AP-21975717Test` : AbstractPrefillIntegrationTestHelper() {
     @Test
     fun `testing av komplett P2200 med utskrift og testing av innsending`() {
         val P2200 = prefill.prefill(prefillData)
-        logger.info(P2200.toString())
-        validateAndPrint(createMockApiRequest("P2200", "P_BUC_01", P2200.toJson()))
+        val json = mapAnyToJson(createMockApiRequest("P2200", "P_BUC_01", P2200.toJson()))
+        assertNotNull(json)
     }
 
     private fun createMockApiRequest(sedName: String, buc: String, payload: String): ApiRequest {
@@ -133,14 +124,6 @@ class `PrefillP2200-AP-21975717Test` : AbstractPrefillIntegrationTestHelper() {
                 payload = payload,
                 mockSED = true
         )
-    }
-
-    fun validateAndPrint(req: ApiRequest, printout: Boolean = true) {
-        if (printout) {
-            val json = mapAnyToJson(req)
-            assertNotNull(json)
-            logger.info("\n\n\n $json \n\n\n")
-        }
     }
 
 }

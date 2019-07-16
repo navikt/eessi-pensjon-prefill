@@ -5,16 +5,12 @@ import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.typeRefs
 import no.nav.eessi.pensjon.utils.validateJson
 import org.junit.Test
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import java.nio.file.Files
 import java.nio.file.Paths
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
 class SedTest {
-
-    val logger: Logger by lazy { LoggerFactory.getLogger(SedTest::class.java) }
 
     @Test
     fun createP6000sed() {

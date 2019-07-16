@@ -14,15 +14,10 @@ import no.nav.eessi.pensjon.fagmodul.prefill.sed.AbstractPrefillIntegrationTestH
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.NavFodselsnummer
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import org.junit.Test
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
 class `PrefillP2000-AP-21975717Test` : AbstractPrefillIntegrationTestHelper() {
-
-
-    val logger: Logger by lazy { LoggerFactory.getLogger(`PrefillP2000-AP-21975717Test`::class.java) }
 
     override fun mockPesysTestfilepath(): Pair<String, String> {
         return Pair("P2000", "P2000_21975717_AP_UTLAND.xml")
@@ -71,9 +66,7 @@ class `PrefillP2000-AP-21975717Test` : AbstractPrefillIntegrationTestHelper() {
         assertNotNull(pendata)
 
         val list = kravdata.getPensjonSakTypeList(pendata)
-        list.forEach {
-            logger.info(it.name)
-        }
+
         assertEquals(2, list.size)
     }
 
@@ -86,8 +79,6 @@ class `PrefillP2000-AP-21975717Test` : AbstractPrefillIntegrationTestHelper() {
         P2000pensjon.nav = Nav(
                 krav = P2000.nav?.krav
         )
-        logger.info(P2000pensjon.toString())
-
         val sed = P2000pensjon
         assertNotNull(sed.nav?.krav)
         assertEquals("2015-06-16", sed.nav?.krav?.dato)
@@ -98,8 +89,6 @@ class `PrefillP2000-AP-21975717Test` : AbstractPrefillIntegrationTestHelper() {
     @Test
     fun `forventet korrekt utfylt P2000 alderpersjon med mockdata fra testfiler`() {
         val p2000 = prefill.prefill(prefillData)
-
-        logger.info(p2000.toString())
 
         prefill.validate(p2000)
 
@@ -146,10 +135,8 @@ class `PrefillP2000-AP-21975717Test` : AbstractPrefillIntegrationTestHelper() {
         val P2000 = prefill.prefill(prefillData)
         prefill.validate(P2000)
 
-        logger.info(P2000.toString())
-
-        validateAndPrint(createMockApiRequest("P2000", "P_BUC_01", P2000.toJson()))
-
+        val json = mapAnyToJson(createMockApiRequest("P2000", "P_BUC_01", P2000.toJson()))
+        assertNotNull(json)
     }
 
     private fun createMockApiRequest(sedName: String, buc: String, payload: String): ApiRequest {
@@ -166,14 +153,5 @@ class `PrefillP2000-AP-21975717Test` : AbstractPrefillIntegrationTestHelper() {
                 mockSED = true
         )
     }
-
-    fun validateAndPrint(req: ApiRequest, printout: Boolean = true) {
-        if (printout) {
-            val json = mapAnyToJson(req)
-            assertNotNull(json)
-            logger.info("\n\n\n $json \n\n\n")
-        }
-    }
-
 }
 

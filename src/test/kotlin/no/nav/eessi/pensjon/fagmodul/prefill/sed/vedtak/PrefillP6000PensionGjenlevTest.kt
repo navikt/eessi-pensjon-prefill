@@ -4,7 +4,6 @@ import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
-//@RunWith(MockitoJUnitRunner::class)
 class PrefillP6000PensionGjenlevTest : AbstractMockVedtakPensionHelper("P6000-GP-401.xml") {
 
     @Test
@@ -21,8 +20,6 @@ class PrefillP6000PensionGjenlevTest : AbstractMockVedtakPensionHelper("P6000-GP
         val pendata = dataFromPESYS.getPensjoninformasjonFraVedtak(prefill)
         assertEquals("GJENLEV", pendata.sakAlder.sakType)
         assertEquals("12345678901", pendata.person.pid)
-
-        //debugPrintFinalResult(result)
 
         val vedtaklst = result.vedtak
         val sak = result.sak
@@ -62,7 +59,6 @@ class PrefillP6000PensionGjenlevTest : AbstractMockVedtakPensionHelper("P6000-GP
 
         assertEquals("2018-05-26", tillegg?.dato)
         //assertEquals("NAV", tillegg?.andreinstitusjoner?.get(0)?.institusjonsid)
-
     }
 
     @Test
@@ -137,8 +133,5 @@ class PrefillP6000PensionGjenlevTest : AbstractMockVedtakPensionHelper("P6000-GP
         assertEquals("NOINST002, NO INST002, NO", tillegg?.andreinstitusjoner?.get(0)?.institusjonsnavn)
         assertEquals("Postboks 6600 Etterstad TEST", tillegg?.andreinstitusjoner?.get(0)?.institusjonsadresse)
         assertEquals("0607", tillegg?.andreinstitusjoner?.get(0)?.postnummer)
-
-
     }
-
 }

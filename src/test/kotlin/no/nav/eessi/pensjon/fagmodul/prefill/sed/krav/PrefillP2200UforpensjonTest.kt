@@ -8,14 +8,11 @@ import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillPersonDataFromTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PersonDataFromTPS
+import no.nav.eessi.pensjon.utils.mapAnyToJson
 import org.junit.Test
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import kotlin.test.assertNotNull
 
 class PrefillP2200UforpensjonTest : AbstractPrefillIntegrationTestHelper() {
-
-    val logger: Logger by lazy { LoggerFactory.getLogger(PrefillP2200UforpensjonTest::class.java) }
 
     override fun mockPesysTestfilepath(): Pair<String, String> {
         return Pair("P2200", "P2000-AP-14069110.xml")
@@ -65,8 +62,7 @@ class PrefillP2200UforpensjonTest : AbstractPrefillIntegrationTestHelper() {
         assertNotNull(pendata.brukersSakerListe)
 
         val P2200 = prefill.prefill(prefillData)
-
-        logger.info(P2200.toString())
+        assertNotNull(mapAnyToJson(P2200))
     }
 
 }

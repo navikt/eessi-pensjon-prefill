@@ -2,13 +2,9 @@ package no.nav.eessi.pensjon.fagmodul.sedmodel
 
 import org.junit.Test
 import org.skyscreamer.jsonassert.JSONAssert
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import kotlin.test.assertEquals
 
-class SedP10000Test : AbstractSedTest() {
-
-    val logger: Logger by lazy { LoggerFactory.getLogger(SedP5000Test::class.java) }
+class SedP10000Test {
 
     @Test
     fun `compare SED P10000 to P10000 from json datafile`() {

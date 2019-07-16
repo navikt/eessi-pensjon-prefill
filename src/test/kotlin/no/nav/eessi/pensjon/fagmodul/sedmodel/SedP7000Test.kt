@@ -2,13 +2,10 @@ package no.nav.eessi.pensjon.fagmodul.sedmodel
 
 import org.junit.Test
 import org.skyscreamer.jsonassert.JSONAssert
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import kotlin.test.assertEquals
 
 
-class SedP7000Test : AbstractSedTest() {
-    val logger: Logger by lazy { LoggerFactory.getLogger(SedP7000Test::class.java) }
+class SedP7000Test {
 
     @Test
     fun `create SED P7000 from json datafile`() {
@@ -32,12 +29,8 @@ class SedP7000Test : AbstractSedTest() {
         val p7000json = getTestJsonFile("P7000_2-NAV_v4_1.json")
         val p7000sed = getSEDfromTestfile(p7000json)
 
-        logger.info(p7000json)
-        logger.info(p7000sed.toString())
-
         val json = p7000sed.toJson()
 
         JSONAssert.assertEquals(p7000json, json, false)
-
     }
 }

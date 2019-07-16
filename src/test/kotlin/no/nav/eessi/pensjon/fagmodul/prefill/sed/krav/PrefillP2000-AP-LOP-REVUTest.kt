@@ -14,15 +14,10 @@ import no.nav.eessi.pensjon.fagmodul.prefill.person.PersonDataFromTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.NavFodselsnummer
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import org.junit.Test
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
-import kotlin.test.fail
 
 class `PrefillP2000-AP-LOP-REVUTest` : AbstractPrefillIntegrationTestHelper() {
-
-    val logger: Logger by lazy { LoggerFactory.getLogger(`PrefillP2000-AP-LOP-REVUTest`::class.java) }
 
     override fun mockPesysTestfilepath(): Pair<String, String> {
         return Pair("P2000", "P2000-AP-LP-RVUR-20541862.xml")
@@ -85,7 +80,6 @@ class `PrefillP2000-AP-LOP-REVUTest` : AbstractPrefillIntegrationTestHelper() {
         P2000pensjon.nav = Nav(
                 krav = P2000.nav?.krav
         )
-        logger.info(P2000pensjon.toString())
 
         val sed = P2000pensjon
         assertNotNull(sed.nav?.krav)
@@ -99,14 +93,7 @@ class `PrefillP2000-AP-LOP-REVUTest` : AbstractPrefillIntegrationTestHelper() {
 
         val p2000 = prefill.prefill(prefillData)
 
-        logger.info(p2000.toString())
-
-        try {
-            prefill.validate(p2000)
-        } catch (ex: Exception){
-            logger.error("Feilen er ${ex.message}")
-            fail("Validatoren skal ikke komme hit!")
-        }
+        prefill.validate(p2000)
 
         assertEquals(null, p2000.nav?.barn)
 
@@ -144,10 +131,8 @@ class `PrefillP2000-AP-LOP-REVUTest` : AbstractPrefillIntegrationTestHelper() {
     fun `testing av komplett P2000 med utskrift og testing av innsending`() {
         val P2000 = prefill.prefill(prefillData)
 
-        logger.info(P2000.toString())
-
-        validateAndPrint(createMockApiRequest("P2000", "P_BUC_01", P2000.toJson()))
-
+        val json = mapAnyToJson(createMockApiRequest("P2000", "P_BUC_01", P2000.toJson()))
+        assertNotNull(json)
     }
 
     private fun createMockApiRequest(sedName: String, buc: String, payload: String): ApiRequest {
@@ -164,14 +149,5 @@ class `PrefillP2000-AP-LOP-REVUTest` : AbstractPrefillIntegrationTestHelper() {
                 mockSED = true
         )
     }
-
-    fun validateAndPrint(req: ApiRequest, printout: Boolean = true) {
-        if (printout) {
-            val json = mapAnyToJson(req)
-            assertNotNull(json)
-            logger.info("\n\n\n $json \n\n\n")
-        }
-    }
-
 }
 

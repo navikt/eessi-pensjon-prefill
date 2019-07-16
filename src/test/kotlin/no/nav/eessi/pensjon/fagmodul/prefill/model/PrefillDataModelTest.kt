@@ -6,8 +6,6 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
@@ -16,13 +14,10 @@ import kotlin.test.assertTrue
 @RunWith(MockitoJUnitRunner::class)
 class PrefillDataModelTest {
 
-    private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillDataModelTest::class.java) }
-
     private lateinit var prefill: PrefillDataModel
 
     @Before
     fun setup() {
-        logger.debug("Starting tests..")
         prefill = PrefillDataModel()
     }
 

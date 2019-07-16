@@ -2,12 +2,9 @@ package no.nav.eessi.pensjon.fagmodul.sedmodel
 
 import org.junit.Test
 import org.skyscreamer.jsonassert.JSONAssert
-import org.slf4j.LoggerFactory
 import kotlin.test.assertEquals
 
-class SedH121Test  : AbstractSedTest() {
-
-    private val logger = LoggerFactory.getLogger(SedH121Test::class.java)
+class SedH121Test {
 
     @Test
     fun `compare SED H121 from json datafile`() {

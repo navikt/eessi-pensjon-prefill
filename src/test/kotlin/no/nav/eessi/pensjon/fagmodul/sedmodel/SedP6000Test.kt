@@ -6,16 +6,12 @@ import no.nav.eessi.pensjon.utils.typeRefs
 import no.nav.eessi.pensjon.utils.validateJson
 import org.junit.Test
 import org.skyscreamer.jsonassert.JSONAssert
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import java.nio.file.Files
 import java.nio.file.Paths
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
 class SedP6000Test {
-
-    val logger: Logger by lazy { LoggerFactory.getLogger(SedP6000Test::class.java) }
 
     @Test
     fun createP6000sed() {

@@ -18,12 +18,8 @@ import no.nav.tjeneste.virksomhet.person.v3.informasjon.*
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonResponse
 import org.junit.Before
 import org.mockito.Mock
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import org.springframework.util.ResourceUtils
 import java.time.LocalDate
-
-private val logger: Logger by lazy { LoggerFactory.getLogger(PersonDataFromTPS::class.java) }
 
 abstract class PersonDataFromTPS(private val mocktps: Set<MockTPS>, private val eessiInformasjon: EessiInformasjon) {
 
@@ -48,8 +44,6 @@ abstract class PersonDataFromTPS(private val mocktps: Set<MockTPS>, private val 
     private fun initMockHentPersonResponse(mockTPS: MockTPS, mockTPSset: Set<MockTPS>): HentPersonResponse {
         val resource = ResourceUtils.getFile("classpath:personv3/${mockTPS.mockFile}").readText()
 
-        logger.info("Parsing TPS mockfile: ${mockTPS.mockFile}   Generated fnr:  ${mockTPS.replaceMockfnr}   type:  ${mockTPS.mockType} ")
-
         val mockBarnList = mutableListOf<MockTPS>()
         val mockEkteItem = mutableListOf<MockTPS>()
         mockTPSset.forEach {
@@ -60,7 +54,6 @@ abstract class PersonDataFromTPS(private val mocktps: Set<MockTPS>, private val 
                 mockEkteItem.add(it)
             }
         }
-        logger.info("---------------------------------------------------------------------------------")
 
         val mapper = jacksonObjectMapper()
         val rootNode = mapper.readValue(resource, JsonNode::class.java)
@@ -147,7 +140,6 @@ abstract class PersonDataFromTPS(private val mocktps: Set<MockTPS>, private val 
         ident.ident.ident = mockTPS.replaceMockfnr
 
         val navfnr = NavFodselsnummer(ident.ident.ident)
-        logger.info("Person-Aldrer: ${navfnr.getAge()}")
 
         val v3PersonResponse = HentPersonResponse()
         v3PersonResponse.person = v3person
@@ -202,7 +194,6 @@ abstract class PersonDataFromTPS(private val mocktps: Set<MockTPS>, private val 
             val fnr = day + month + fixedyear + indivdnr + "52"
 
             val navfnr = NavFodselsnummer(fnr)
-            logger.info("Generert fnr: ${navfnr.fnr()}  age: ${navfnr.getAge()}  birthday:  ${navfnr.get4DigitBirthYear()}  isunder18: ${navfnr.isUnder18Year()}")
             return fnr
         }
 

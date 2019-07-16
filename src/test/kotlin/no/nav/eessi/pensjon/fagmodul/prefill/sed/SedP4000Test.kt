@@ -17,8 +17,6 @@ import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
 import org.skyscreamer.jsonassert.JSONAssert
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import java.nio.file.Files
 import java.nio.file.Paths
 import kotlin.test.assertEquals
@@ -35,15 +33,11 @@ class SedP4000Test {
 
     private lateinit var prefillDataMock: PrefillDataModel
 
-    val logger: Logger by lazy { LoggerFactory.getLogger(SedP4000Test::class.java) }
-
     @Before
     fun setup() {
         prefillDataMock = PrefillDataModel()
 
         pre4000 = PrefillP4000(prefillPerson)
-
-        logger.debug("Starting tests.... ...")
     }
 
     @Test
@@ -85,7 +79,6 @@ class SedP4000Test {
 
         val trygdetid = createPersonTrygdeTidMock()
         val payload = mapAnyToJson(trygdetid)
-        //logger.debug(payload)
 
         val req = ApiRequest(
                 sed = "P4000",

@@ -10,18 +10,13 @@ import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillPersonDataFromTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PersonDataFromTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.NavFodselsnummer
-import org.junit.Assert
 import org.junit.Test
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import java.time.LocalDate
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
 
 class PrefillP2000AlderPensjonUtlandForsteGangTest : AbstractPrefillIntegrationTestHelper() {
-
-    val logger: Logger by lazy { LoggerFactory.getLogger(PrefillP2000AlderPensjonUtlandForsteGangTest::class.java) }
 
     //mock familie
     override fun opprettMockPersonDataTPS(): Set<PersonDataFromTPS.MockTPS>? {
@@ -88,7 +83,6 @@ class PrefillP2000AlderPensjonUtlandForsteGangTest : AbstractPrefillIntegrationT
         P2000pensjon.nav = Nav(
                 krav = P2000.nav?.krav
         )
-        logger.info(P2000pensjon.toString())
 
         val sed = P2000pensjon
 
@@ -97,7 +91,7 @@ class PrefillP2000AlderPensjonUtlandForsteGangTest : AbstractPrefillIntegrationT
         val yearnow = LocalDate.now().year
         val bdate = yearnow - navfnr.getAge()
 
-        Assert.assertEquals("" + bdate, navfnr.get4DigitBirthYear())
+        assertEquals("" + bdate, navfnr.get4DigitBirthYear())
         assertEquals("2018-05-31", sed.nav?.krav?.dato)
     }
 

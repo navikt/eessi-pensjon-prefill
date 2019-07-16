@@ -4,6 +4,7 @@ import com.tngtech.archunit.core.domain.JavaClasses
 import com.tngtech.archunit.core.importer.ClassFileImporter
 import com.tngtech.archunit.core.importer.ImportOption
 import com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes
+import com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses
 import com.tngtech.archunit.library.Architectures.layeredArchitecture
 import com.tngtech.archunit.library.dependencies.SlicesRuleDefinition.slices
 import no.nav.eessi.pensjon.EessiFagmodulApplication
@@ -23,6 +24,8 @@ class ArchitectureTest {
         lateinit var allClasses: JavaClasses
         @JvmStatic
         lateinit var productionClasses: JavaClasses
+        @JvmStatic
+        lateinit var testClasses: JavaClasses
 
         @BeforeClass @JvmStatic
         fun `extract classes`() {
@@ -37,6 +40,13 @@ class ArchitectureTest {
 
             assertTrue("Sanity check on no. of classes to analyze", productionClasses.size > 200)
             assertTrue("Sanity check on no. of classes to analyze", productionClasses.size < 800)
+
+            testClasses = ClassFileImporter()
+                    .withImportOption{ !ImportOption.DoNotIncludeTests().includes(it) }
+                    .importPackages(root)
+
+            assertTrue("Sanity check on no. of classes to analyze", testClasses.size > 100)
+            assertTrue("Sanity check on no. of classes to analyze", testClasses.size < 500)
         }
     }
 
@@ -258,7 +268,16 @@ class ArchitectureTest {
         classes().that()
                 .areAnnotatedWith(RestController::class.java)
                 .should().onlyBeAccessed().byClassesThat().areNotAnnotatedWith(RestController::class.java)
+                .because("Controllers should not call each other")
                 .check(allClasses)
+    }
+
+    @Test
+    fun `tests should assert, not log`() {
+        noClasses()
+                .should().dependOnClassesThat().resideInAPackage("org.slf4j..")
+                .because("Test should assert, not log; after you made your test the logs will not be checked")
+                .check(testClasses)
     }
 }
 

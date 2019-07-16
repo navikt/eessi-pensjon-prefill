@@ -2,11 +2,8 @@ package no.nav.eessi.pensjon.fagmodul.sedmodel
 
 import org.junit.Test
 import org.skyscreamer.jsonassert.JSONAssert
-import org.slf4j.LoggerFactory
 
-class SedH021Test  : AbstractSedTest() {
-
-    private val logger = LoggerFactory.getLogger(SedH021Test::class.java)
+class SedH021Test {
 
     @Test
     fun `compare SED H021 from json datafile`() {
@@ -15,7 +12,5 @@ class SedH021Test  : AbstractSedTest() {
         val h021sed = getHSEDfromTestfile(h021json)
 
         JSONAssert.assertEquals(h021json, h021sed.toString(), false)
-
     }
-
 }

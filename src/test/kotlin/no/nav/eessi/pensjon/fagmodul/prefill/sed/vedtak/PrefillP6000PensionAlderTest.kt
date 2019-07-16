@@ -14,8 +14,6 @@ class PrefillP6000PensionAlderTest : AbstractMockVedtakPensionHelper("P6000-APUt
 
         val result = dataFromPESYS.prefill(prefill)
 
-        debugPrintFinalResult(result)
-
         val vedtaklst = result.vedtak
         val sak = result.sak
         val tillegg = result.tilleggsinformasjon

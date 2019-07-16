@@ -2,13 +2,9 @@ package no.nav.eessi.pensjon.fagmodul.sedmodel
 
 import org.junit.Test
 import org.skyscreamer.jsonassert.JSONAssert
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import kotlin.test.assertEquals
 
-class SedP9000Test : AbstractSedTest() {
-
-    val logger: Logger by lazy { LoggerFactory.getLogger(SedP5000Test::class.java) }
+class SedP9000Test {
 
     @Test
     fun `compare SED P9000 to P9000 from json datafile`() {
@@ -38,7 +34,5 @@ class SedP9000Test : AbstractSedTest() {
 
         //
         assertEquals("09041984799 91", p9000sed.nav?.annenperson?.person?.pinannen?.identifikator)
-
-
     }
 }

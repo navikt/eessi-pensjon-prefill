@@ -17,15 +17,11 @@ import org.junit.runners.Parameterized
 import org.junit.runners.Parameterized.Parameters
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
 @RunWith(Parameterized::class)
 class PrefillPersonTest(val index: Int, val sedid: String) {
-
-    private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillPersonTest::class.java) }
 
     @Mock
     private lateinit var mockPreutfyllingNav: PrefillNav
@@ -48,7 +44,6 @@ class PrefillPersonTest(val index: Int, val sedid: String) {
     @Before
     fun setup() {
         MockitoAnnotations.initMocks(this)
-        logger.debug("Starting tests.... ...")
 
         prefillDataMock = PrefillDataModel()
         preutfylling = PrefillPerson(prefillNav = mockPreutfyllingNav, prefilliPensjon = mockPreutfyllingPensjon)
@@ -76,7 +71,6 @@ class PrefillPersonTest(val index: Int, val sedid: String) {
 
     @Test
     fun `create mock on prefill SED`() {
-        logger.debug("\n\njobber med test på følgende sed: $sedid\n\n")
         val mockPinResponse = "12345"
 
         val navresponse = NavMock().genererNavMock()

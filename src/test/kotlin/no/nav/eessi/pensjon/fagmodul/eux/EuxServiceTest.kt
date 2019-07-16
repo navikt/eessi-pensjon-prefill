@@ -19,8 +19,6 @@ import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.junit.MockitoJUnitRunner
 import org.skyscreamer.jsonassert.JSONAssert
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import org.springframework.http.*
 import org.springframework.web.client.*
 import org.springframework.web.util.UriComponentsBuilder
@@ -39,8 +37,6 @@ import kotlin.test.assertTrue
 @RunWith(MockitoJUnitRunner::class)
 class EuxServiceTest {
 
-    private val logger: Logger by lazy { LoggerFactory.getLogger(EuxServiceTest::class.java) }
-
     private lateinit var service: EuxService
 
     @Mock
@@ -48,7 +44,6 @@ class EuxServiceTest {
 
     @Before
     fun setup() {
-        logger.debug("Starting tests.... ...")
         mockEuxrestTemplate.errorHandler = DefaultResponseErrorHandler()
         service = EuxService(mockEuxrestTemplate)
     }

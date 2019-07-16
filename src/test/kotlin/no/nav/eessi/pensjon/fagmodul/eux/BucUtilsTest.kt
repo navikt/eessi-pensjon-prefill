@@ -14,8 +14,6 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import java.nio.file.Files
 import java.nio.file.Paths
 import kotlin.test.assertEquals
@@ -23,8 +21,6 @@ import kotlin.test.assertTrue
 
 @RunWith(MockitoJUnitRunner::class)
 class BucUtilsTest {
-
-    private val logger: Logger by lazy { LoggerFactory.getLogger(BucUtilsTest::class.java) }
 
     lateinit var bucUtils: BucUtils
     lateinit var bucjson: String
@@ -42,14 +38,12 @@ class BucUtilsTest {
         bucjson = getTestJsonFile("buc-22909_v4.1.json")
         buc = mapJsonToAny(bucjson, typeRefs<Buc>())
         bucUtils = BucUtils(buc)
-
     }
 
     @Test
     fun getListofSbdh() {
         val result = bucUtils.getSbdh()
         val resjson = mapAnyToJson(result)
-        logger.info(resjson)
         assertEquals(1, result.size)
         val sbdh = result.first()
 
@@ -190,19 +184,13 @@ class BucUtilsTest {
 
         assertEquals(18, bucUtils.getAllDocuments().size)
 
-        var counter = 1
         bucUtils.getAllDocuments().forEach {
 
-            print("Nr:\t${counter++}\ttype:\t${it.type}\t")
-
             if (it.type == "P8000") {
-                logger.info("\tattachments:\t${it.attachments?.size}")
                 assertEquals("1557825747269", it.creationDate.toString())
                 assertEquals("1558362934400", it.lastUpdate.toString())
                 assertEquals(2, it.attachments?.size)
 
-            } else {
-                logger.info("\tattachments:\t0")
             }
         }
 

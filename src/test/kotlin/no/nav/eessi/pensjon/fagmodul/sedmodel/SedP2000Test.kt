@@ -2,12 +2,8 @@ package no.nav.eessi.pensjon.fagmodul.sedmodel
 
 import org.junit.Test
 import org.skyscreamer.jsonassert.JSONAssert
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 
-class SedP2000Test : AbstractSedTest() {
-
-    val logger: Logger by lazy { LoggerFactory.getLogger(SedP2000Test::class.java) }
+class SedP2000Test {
 
     @Test
     fun `create SED P2000 from json datafile`() {

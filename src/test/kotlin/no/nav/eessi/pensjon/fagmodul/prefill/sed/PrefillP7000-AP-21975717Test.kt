@@ -1,29 +1,21 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed
 
-import no.nav.eessi.pensjon.fagmodul.prefill.ApiRequest
-import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
-import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.fagmodul.prefill.model.Prefill
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
 import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonHjelper
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillPersonDataFromTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PersonDataFromTPS
-import no.nav.eessi.pensjon.utils.mapAnyToJson
+import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.utils.validateJson
 import org.skyscreamer.jsonassert.JSONAssert
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import java.nio.file.Files
 import java.nio.file.Paths
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 class `PrefillP7000-AP-21975717Test` : AbstractPrefillIntegrationTestHelper() {
-
-    val logger: Logger by lazy { LoggerFactory.getLogger(`PrefillP7000-AP-21975717Test`::class.java) }
 
     override fun mockPesysTestfilepath(): Pair<String, String> {
         return Pair("P7000", "P2000_21975717_AP_UTLAND.xml")
@@ -69,8 +61,6 @@ class `PrefillP7000-AP-21975717Test` : AbstractPrefillIntegrationTestHelper() {
     fun `forventet korrekt utfylt P7000 Melding om vedtakssammendrag med MockData fra testfiler`() {
         val p7000 = prefill.prefill(prefillData)
 
-        logger.info(p7000.toJsonSkipEmpty())
-
         assertEquals("OKOULOV", p7000.nav?.ektefelle?.person?.etternavn)
         assertEquals("M", p7000.pensjon?.bruker?.person?.kjoenn)
     }
@@ -88,33 +78,7 @@ class `PrefillP7000-AP-21975717Test` : AbstractPrefillIntegrationTestHelper() {
         val sed = p7000.toJsonSkipEmpty()
 
         assertTrue(validateJson(sed))
-       JSONAssert.assertEquals(json, sed, true)
-
+        JSONAssert.assertEquals(json, sed, true)
     }
-
-
-    private fun createMockApiRequest(sedName: String, buc: String, payload: String): ApiRequest {
-        val items = listOf(InstitusjonItem(country = "NO", institution = "NAVT003"))
-        return ApiRequest(
-                institutions = items,
-                sed = sedName,
-                sakId = "21975717",
-                euxCaseId = null,
-                aktoerId = "1000060964183",
-                buc = buc,
-                subjectArea = "Pensjon",
-                payload = payload,
-                mockSED = true
-        )
-    }
-
-    fun validateAndPrint(req: ApiRequest, printout: Boolean = true) {
-        if (printout) {
-            val json = mapAnyToJson(req)
-            assertNotNull(json)
-            logger.info("\n\n\n $json \n\n\n")
-        }
-    }
-
 }
 

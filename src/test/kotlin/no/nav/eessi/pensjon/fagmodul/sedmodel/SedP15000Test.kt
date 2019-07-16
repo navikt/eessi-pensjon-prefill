@@ -2,13 +2,9 @@ package no.nav.eessi.pensjon.fagmodul.sedmodel
 
 import org.junit.Test
 import org.skyscreamer.jsonassert.JSONAssert
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import kotlin.test.assertEquals
 
-class SedP15000Test : AbstractSedTest() {
-
-    val logger: Logger by lazy { LoggerFactory.getLogger(SedP5000Test::class.java) }
+class SedP15000Test {
 
     @Test
     fun `compare SED P15000 to P15000 from json datafile`() {
@@ -31,7 +27,5 @@ class SedP15000Test : AbstractSedTest() {
         //
         assertEquals("2019-02-01", p15000sed.nav?.krav?.dato)
         assertEquals("01", p15000sed.nav?.krav?.type)
-
-
     }
 }

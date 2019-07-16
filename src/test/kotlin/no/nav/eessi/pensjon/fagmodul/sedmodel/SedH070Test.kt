@@ -1,16 +1,12 @@
 package no.nav.eessi.pensjon.fagmodul.sedmodel
 
 import org.junit.Test
-import org.slf4j.LoggerFactory
 import kotlin.test.assertEquals
 
-class SedH070Test  : AbstractSedTest() {
-
-    private val logger = LoggerFactory.getLogger(SedH070Test::class.java)
+class SedH070Test {
 
     @Test
     fun `compare SED H070 from json datafile`() {
-
         val h070json = getTestJsonFile("horisontal/H070-NAV.json")
         val h070sed = getSEDfromTestfile(h070json)
 
@@ -23,7 +19,5 @@ class SedH070Test  : AbstractSedTest() {
 
         assertEquals(2, doedsfall?.dokumentervedlagt?.annet?.size)
         assertEquals(3, doedsfall?.dokumentervedlagt?.type?.size)
-
     }
-
 }

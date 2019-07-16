@@ -3,20 +3,15 @@ package no.nav.eessi.pensjon.fagmodul.prefill.tps
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PersonDataFromTPS.Companion.generateRandomFnr
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import java.time.LocalDate
 import kotlin.test.assertFalse
 
 
 class NavFodselsnummerTest {
 
-    private val logger: Logger by lazy { LoggerFactory.getLogger(NavFodselsnummerTest::class.java) }
-
     @Test
     fun `valid check for age`() {
         val fnr = generateRandomFnr(48)
-        logger.info("RandomFnr: $fnr")
         val navfnr = NavFodselsnummer(fnr)
         assertEquals(48, navfnr.getAge())
         assertEquals(false, navfnr.getValidPentionAge())
@@ -25,8 +20,6 @@ class NavFodselsnummerTest {
     @Test
     fun `valid check for old age`() {
         val fnr = generateRandomFnr(72)
-        logger.info("RandomFnr: $fnr")
-
         val navfnr = NavFodselsnummer(fnr)
         assertEquals(72, navfnr.getAge())
         assertEquals(true, navfnr.getValidPentionAge())
@@ -36,9 +29,7 @@ class NavFodselsnummerTest {
     @Test
     fun `valid pention age`() {
         val fnr = generateRandomFnr(67)
-        logger.info("RandomFnr: $fnr")
         val navfnr = NavFodselsnummer(fnr)
-
         assertEquals(67, navfnr.getAge())
         assertEquals(true, navfnr.getValidPentionAge())
     }
@@ -46,8 +37,6 @@ class NavFodselsnummerTest {
     @Test
     fun `not valid pention age`() {
         val fnr = generateRandomFnr(66)
-        logger.info("RandomFnr: $fnr")
-
         val navfnr = NavFodselsnummer(fnr)
         assertEquals(false, navfnr.getValidPentionAge())
     }
@@ -55,9 +44,7 @@ class NavFodselsnummerTest {
     @Test
     fun `Test på bruker fnr 20år`() {
         val fnr = generateRandomFnr(20)
-        logger.info("RandomFnr: $fnr")
         val navfnr = NavFodselsnummer(fnr)
-
         assertEquals(20, navfnr.getAge())
         assertEquals(false, navfnr.isUnder18Year())
         assertEquals(false, navfnr.getValidPentionAge())
@@ -66,7 +53,6 @@ class NavFodselsnummerTest {
     @Test
     fun `not valid pention very young age`() {
         val fnr = generateRandomFnr(10)
-        logger.info("RandomFnr: $fnr")
         val navfnr = NavFodselsnummer(fnr)
         assertEquals(10, navfnr.getAge())
         assertEquals(true, navfnr.isUnder18Year())
@@ -76,8 +62,6 @@ class NavFodselsnummerTest {
     @Test
     fun `not valid pention age young age`() {
         val fnr = generateRandomFnr(25)
-        logger.info("RandomFnr: $fnr")
-
         val navfnr = NavFodselsnummer(fnr)
         assertEquals(false, navfnr.getValidPentionAge())
     }
@@ -86,7 +70,6 @@ class NavFodselsnummerTest {
     fun `not valid pention age young age with DNR`() {
         val fnr = generateRandomFnr(25)
         val newfnr = mockDnr(fnr)
-
         val navfnr = NavFodselsnummer(newfnr)
         assertEquals(25, navfnr.getAge())
         assertEquals(false, navfnr.getValidPentionAge())
@@ -124,7 +107,6 @@ class NavFodselsnummerTest {
     @Test
     fun `not valid pention age young age2`() {
         val fnr = generateRandomFnr(25)
-        logger.info("RandomFnr: $fnr")
         val navfnr = NavFodselsnummer(fnr)
 
         assertEquals(25, navfnr.getAge())
@@ -134,7 +116,6 @@ class NavFodselsnummerTest {
     @Test
     fun `Is 17 year of age is under 18year`() {
         val fnr = generateRandomFnr(17)
-        logger.info("RandomFnr: $fnr")
         val navfnr = NavFodselsnummer(fnr)
 
         assertEquals(17, navfnr.getAge())
@@ -211,7 +192,6 @@ class NavFodselsnummerTest {
         assertEquals("2020-05-30", nowdate.toString())
         assertEquals("2010-05-30", tenyears.toString())
         assertEquals("1970-05-30", fiftyyears.toString())
-        logger.info("--------------------------------")
 
         val freakdate = LocalDate.of(2012, 2, 29)
         assertEquals("2012-02-29", freakdate.toString())

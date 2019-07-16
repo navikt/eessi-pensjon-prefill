@@ -2,16 +2,12 @@ package no.nav.eessi.pensjon.utils
 
 import org.junit.Test
 import org.skyscreamer.jsonassert.JSONAssert
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.test.assertEquals
 
 
 class JsonUtilsTest {
-
-    private val logger: Logger by lazy { LoggerFactory.getLogger(JsonUtilsTest::class.java) }
 
     @Test
     fun testJsonmapingList() {

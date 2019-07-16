@@ -2,12 +2,9 @@ package no.nav.eessi.pensjon.fagmodul.prefill
 
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
-import no.nav.eessi.pensjon.services.geo.LandkodeService
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import no.nav.eessi.pensjon.utils.validateJson
 import org.junit.Test
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import java.nio.file.Files
 import java.nio.file.Paths
 import kotlin.test.assertEquals
@@ -15,11 +12,6 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 class ApiRequestTest {
-
-    private val printout = false
-    private val printsed = false
-
-    private val logger: Logger by lazy { LoggerFactory.getLogger(LandkodeService::class.java) }
 
     private fun createMockApiRequest(sedName: String, buc: String, payload: String): ApiRequest {
         val items = listOf(InstitusjonItem(country = "NO", institution = "NAVT003"))
@@ -43,23 +35,15 @@ class ApiRequestTest {
         return p2200file
     }
 
-    fun validateAndPrint(req: ApiRequest) {
-        if (printsed) {
-            val json = SED.fromJson(req.payload!!).toJson()
-            logger.info(json)
-        }
-        if (printout) {
-            val json = mapAnyToJson(req)
-            assertNotNull(json)
-            logger.info("\n\n\n $json \n\n\n")
-        }
-    }
-
     @Test
     fun `generate request mock payload of SED P2000`() {
         val payload = readJsonAndParseToSed("P2000-NAV.json")
         //val payload = readJsonAndParseToSed("P2000-NAV-mockAP.json")
-        validateAndPrint(createMockApiRequest("P2000", "P_BUC_01", payload))
+        val req = createMockApiRequest("P2000", "P_BUC_01", payload)
+        val sedjson = SED.fromJson(req.payload!!).toJson()
+        assertNotNull(sedjson)
+        val json = mapAnyToJson(req)
+        assertNotNull(json)
     }
 
     @Test

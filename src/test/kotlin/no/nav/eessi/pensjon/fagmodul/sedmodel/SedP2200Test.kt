@@ -6,17 +6,19 @@ import no.nav.eessi.pensjon.utils.typeRefs
 import org.junit.Before
 import org.junit.Test
 import org.skyscreamer.jsonassert.JSONAssert
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
-class SedP2200Test : AbstractSedTest() {
-
-    val logger: Logger by lazy { LoggerFactory.getLogger(SedP2200Test::class.java) }
+class SedP2200Test {
 
     lateinit var p2200json: String
     lateinit var p2200sed: SED
+
+    @Before
+    fun bringItOn() {
+        p2200json = getTestJsonFile("P2000-NAV.json")
+        p2200sed = getSEDfromTestfile(p2200json)
+    }
 
     @Test
     fun `create SED P2200 from mockData`() {
@@ -30,12 +32,6 @@ class SedP2200Test : AbstractSedTest() {
         val p2200back = mapJsonToAny(p2200json, typeRefs<SED>())
         assertEquals(p2200, p2200back)
 
-    }
-
-    @Before
-    fun bringItOn() {
-        p2200json = getTestJsonFile("P2000-NAV.json")
-        p2200sed = getSEDfromTestfile(p2200json)
     }
 
     @Test

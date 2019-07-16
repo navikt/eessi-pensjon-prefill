@@ -9,18 +9,14 @@ import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillPersonDataFromTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PersonDataFromTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.NavFodselsnummer
-import no.nav.eessi.pensjon.utils.mapAnyToJson
 import org.junit.Test
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
+import kotlin.test.fail
 
 
 class PrefillP2000UtenKravhistorieTest : AbstractPrefillIntegrationTestHelper() {
-
-    val logger: Logger by lazy { LoggerFactory.getLogger(PrefillP2000UtenKravhistorieTest::class.java) }
 
     override fun opprettMockPersonDataTPS(): Set<PersonDataFromTPS.MockTPS>? {
         return setOf(
@@ -77,12 +73,11 @@ class PrefillP2000UtenKravhistorieTest : AbstractPrefillIntegrationTestHelper() 
     fun `Testing av komplett utfylling kravsøknad alderpensjon ENKW med 2 barn P2000`() {
         val p2000 = prefill.prefill(prefillData)
 
-        logger.info(p2000.toString())
-
         try {
             prefill.validate(p2000)
+            fail("TODO why is this expected?")
         } catch (ex: Exception){
-            logger.error("Feilen er ${ex.message}")
+            // TODO why is this expected?
             assertEquals("Kravdato mangler", ex.message)
         }
 
@@ -150,13 +145,8 @@ class PrefillP2000UtenKravhistorieTest : AbstractPrefillIntegrationTestHelper() 
         val P2000 = prefill.prefill(prefillData)
 
         val result = P2000.nav?.ektefelle
-
-        if (result != null) {
-
-            logger.info(mapAnyToJson(result))
-
-        }
-
+        // TODO Why?
+        assertNull(result)
     }
 
     @Test
@@ -167,14 +157,11 @@ class PrefillP2000UtenKravhistorieTest : AbstractPrefillIntegrationTestHelper() 
         assertNull(result)
     }
 
-
     @Test
     fun `Utfylling alderpensjon ENKKE med uten kravhistorikk (nær blank P2000)`() {
         val P2000 = prefill.prefill(prefillData)
 
         val navfnr = NavFodselsnummer(P2000.pensjon?.ytelser?.get(0)?.pin?.identifikator!!)
         assertEquals(67, navfnr.getAge())
-
-        logger.info(P2000.toString())
     }
 }
