@@ -1,6 +1,7 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.person
 
-import no.nav.eessi.pensjon.fagmodul.prefill.EessiInformasjon
+import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjon
+import no.nav.eessi.pensjon.fagmodul.prefill.tps.NavFodselsnummer
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.*
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -85,8 +86,8 @@ class PrefillPersonEnkeTest : PersonDataFromTPS(
 
     @Test
     fun `forvent utfylling av person data av ENKE fra TPS P2000`() {
-        PersonDataFromTPS.MockTPS.TPSType.PERSON
-        val fnr = getRandomNavFodselsnummer(PersonDataFromTPS.MockTPS.TPSType.PERSON) ?: "02345678901"
+        MockTPS.TPSType.PERSON
+        val fnr = getRandomNavFodselsnummer(MockTPS.TPSType.PERSON) ?: "02345678901"
         val prefillData = generatePrefillData("P2000", fnr)
 
         val response = prefillNav.prefill(prefillData)
@@ -103,7 +104,7 @@ class PrefillPersonEnkeTest : PersonDataFromTPS(
 
     @Test
     fun `forvent utfylling av person data av ENKE fra TPS P2100`() {
-        val fnr = getRandomNavFodselsnummer(PersonDataFromTPS.MockTPS.TPSType.PERSON) ?: "02345678901"
+        val fnr = getRandomNavFodselsnummer(MockTPS.TPSType.PERSON) ?: "02345678901"
         val prefillData = generatePrefillData("P2100", fnr)
         val response = prefillNav.prefill(prefillData)
 

@@ -5,10 +5,11 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.nhaarman.mockito_kotlin.whenever
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.models.SED
-import no.nav.eessi.pensjon.fagmodul.prefill.EessiInformasjon
-import no.nav.eessi.pensjon.fagmodul.prefill.PrefillDataModel
-import no.nav.eessi.pensjon.fagmodul.prefill.nav.PrefillNav
-import no.nav.eessi.pensjon.fagmodul.prefill.nav.PrefillPersonDataFromTPS
+import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjon
+import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
+import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
+import no.nav.eessi.pensjon.fagmodul.prefill.tps.NavFodselsnummer
+import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillPersonDataFromTPS
 import no.nav.eessi.pensjon.services.geo.LandkodeService
 import no.nav.eessi.pensjon.services.geo.PostnummerService
 import no.nav.eessi.pensjon.services.personv3.PersonV3Service

@@ -1,7 +1,7 @@
 package no.nav.eessi.pensjon.fagmodul.health
 
 import no.nav.eessi.pensjon.fagmodul.metrics.getCounter
-import no.nav.eessi.pensjon.fagmodul.services.eux.EuxService
+import no.nav.eessi.pensjon.fagmodul.eux.EuxService
 import no.nav.eessi.pensjon.security.sts.STSService
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonService
 import no.nav.eessi.pensjon.services.personv3.PersonV3Service
