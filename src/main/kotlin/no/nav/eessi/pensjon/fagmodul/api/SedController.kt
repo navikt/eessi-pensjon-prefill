@@ -2,8 +2,8 @@ package no.nav.eessi.pensjon.fagmodul.api
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import io.swagger.annotations.ApiOperation
-import no.nav.eessi.pensjon.fagmodul.models.PinOgKrav
-import no.nav.eessi.pensjon.fagmodul.models.SED
+import no.nav.eessi.pensjon.fagmodul.eux.PinOgKrav
+import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.helper.AktoerIdHelper
 import no.nav.eessi.pensjon.fagmodul.prefill.ApiRequest
 import no.nav.eessi.pensjon.fagmodul.prefill.PrefillService

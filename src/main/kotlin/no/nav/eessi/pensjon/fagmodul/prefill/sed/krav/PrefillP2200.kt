@@ -1,6 +1,9 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed.krav
 
-import no.nav.eessi.pensjon.fagmodul.models.*
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Nav
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Bruker
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Pensjon
+import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonHjelper
 import no.nav.eessi.pensjon.fagmodul.prefill.model.Prefill
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel

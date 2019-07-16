@@ -2,6 +2,11 @@ package no.nav.eessi.pensjon.fagmodul.pesys
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import io.swagger.annotations.ApiOperation
+import no.nav.eessi.pensjon.fagmodul.sedmodel.AnsattSelvstendigItem
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Periode
+import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
+import no.nav.eessi.pensjon.fagmodul.sedmodel.StandardItem
+import no.nav.eessi.pensjon.fagmodul.sedmodel.TrygdeTidPeriode
 import no.nav.eessi.pensjon.metrics.TimingService
 import no.nav.eessi.pensjon.fagmodul.models.*
 import no.nav.eessi.pensjon.fagmodul.pesys.mockup.MockSED001

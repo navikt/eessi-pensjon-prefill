@@ -1,8 +1,14 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.tps
 
-import no.nav.eessi.pensjon.fagmodul.models.*
-import no.nav.eessi.pensjon.fagmodul.models.Bruker
-import no.nav.eessi.pensjon.fagmodul.models.Person
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Adresse
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Ektefelle
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Foedested
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Foreldre
+import no.nav.eessi.pensjon.fagmodul.sedmodel.PinItem
+import no.nav.eessi.pensjon.fagmodul.sedmodel.SivilstandItem
+import no.nav.eessi.pensjon.fagmodul.sedmodel.StatsborgerskapItem
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Bruker
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Person
 import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjon
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.services.geo.LandkodeService

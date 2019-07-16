@@ -1,6 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.pesys.mockup
 
-import no.nav.eessi.pensjon.fagmodul.models.*
+import no.nav.eessi.pensjon.fagmodul.sedmodel.*
 import org.slf4j.LoggerFactory
 
 class MockSED001 {

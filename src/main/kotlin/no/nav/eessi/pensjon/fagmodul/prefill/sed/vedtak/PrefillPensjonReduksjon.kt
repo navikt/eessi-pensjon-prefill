@@ -1,7 +1,7 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak
 
-import no.nav.eessi.pensjon.fagmodul.models.ReduksjonItem
-import no.nav.eessi.pensjon.fagmodul.models.VirkningsdatoItem
+import no.nav.eessi.pensjon.fagmodul.sedmodel.ReduksjonItem
+import no.nav.eessi.pensjon.fagmodul.sedmodel.VirkningsdatoItem
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory

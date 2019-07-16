@@ -1,8 +1,7 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.model
 
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
-import no.nav.eessi.pensjon.fagmodul.models.SED
-import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
+import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith

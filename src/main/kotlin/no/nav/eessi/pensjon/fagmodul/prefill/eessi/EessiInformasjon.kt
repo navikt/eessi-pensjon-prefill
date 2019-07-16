@@ -1,6 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.eessi
 
-import no.nav.eessi.pensjon.fagmodul.models.AndreinstitusjonerItem
+import no.nav.eessi.pensjon.fagmodul.sedmodel.AndreinstitusjonerItem
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory

@@ -46,7 +46,7 @@ class ArchitectureTest {
         val config = "fagmodul.config"
         val metrics = "fagmodul.metrics"
         val aktoerregisterService = "services.aktoerregister"
-        val euxService = "services.eux"
+        val euxService = "fagmodul.eux"
         val arkivService = "services.arkiv"
         val geoService = "services.geo"
         val personService = "services.person"
@@ -66,6 +66,7 @@ class ArchitectureTest {
 
                 "$root.fagmodul.prefill.." to prefill,
                 "$root.fagmodul.models.." to models,
+                "$root.fagmodul.sedmodel.." to models,
                 "$root.fagmodul.eux.." to euxService,
                 "$root.fagmodul.pesys.." to pensjonUtlandApi,
 
@@ -104,7 +105,7 @@ class ArchitectureTest {
                 .whereLayer(prefill).mayOnlyBeAccessedByLayers(bucSedApi)
 
                 .layer(euxService).definedBy(*packagesFor(euxService))
-                .whereLayer(euxService).mayOnlyBeAccessedByLayers(health, bucSedApi)
+                .whereLayer(euxService).mayOnlyBeAccessedByLayers(health, bucSedApi, pensjonUtlandApi)
 
                 .layer(models).definedBy(*packagesFor(models))
                 .whereLayer(models).mayOnlyBeAccessedByLayers(prefill, /* TODO consider this list */ euxService, pensjonUtlandApi, bucSedApi)
