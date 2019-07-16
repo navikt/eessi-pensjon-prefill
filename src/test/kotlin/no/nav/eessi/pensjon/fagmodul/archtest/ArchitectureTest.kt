@@ -2,8 +2,10 @@ package no.nav.eessi.pensjon.fagmodul.archtest
 
 import com.tngtech.archunit.core.domain.JavaClasses
 import com.tngtech.archunit.core.importer.ClassFileImporter
+import com.tngtech.archunit.core.importer.ImportOption
 import com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes
 import com.tngtech.archunit.library.Architectures.layeredArchitecture
+import com.tngtech.archunit.library.dependencies.SlicesRuleDefinition.slices
 import no.nav.eessi.pensjon.EessiFagmodulApplication
 import org.junit.Assert.assertTrue
 import org.junit.BeforeClass
@@ -18,19 +20,28 @@ class ArchitectureTest {
         private val root = EessiFagmodulApplication::class.qualifiedName!!.replace("." + EessiFagmodulApplication::class.simpleName, "")
 
         @JvmStatic
-        lateinit var classesToAnalyze: JavaClasses
+        lateinit var allClasses: JavaClasses
+        @JvmStatic
+        lateinit var productionClasses: JavaClasses
 
         @BeforeClass @JvmStatic
         fun `extract classes`() {
-            classesToAnalyze = ClassFileImporter().importPackages(root)
+            allClasses = ClassFileImporter().importPackages(root)
 
-            assertTrue("Sanity check on no. of classes to analyze", classesToAnalyze.size > 200)
-            assertTrue("Sanity check on no. of classes to analyze", classesToAnalyze.size < 800)
+            assertTrue("Sanity check on no. of classes to analyze", allClasses.size > 200)
+            assertTrue("Sanity check on no. of classes to analyze", allClasses.size < 800)
+
+            productionClasses = ClassFileImporter()
+                    .withImportOption(ImportOption.DoNotIncludeTests())
+                    .importPackages(root)
+
+            assertTrue("Sanity check on no. of classes to analyze", productionClasses.size > 200)
+            assertTrue("Sanity check on no. of classes to analyze", productionClasses.size < 800)
         }
     }
 
     @Test
-    fun `check architecture`() {
+    fun `check architecture in detail`() {
 
         // components
         val health = "fagmodul.health"
@@ -38,6 +49,7 @@ class ArchitectureTest {
         val helper = "fagmodul.helper"
         val prefill = "fagmodul.prefill"
         val models = "fagmodul.models"
+        val sedmodel = "fagmodul.sedmodel"
         val arkivApi = "api.arkiv"
         val geoApi = "api.geo"
         val personApi = "api.person"
@@ -46,7 +58,9 @@ class ArchitectureTest {
         val config = "fagmodul.config"
         val metrics = "fagmodul.metrics"
         val aktoerregisterService = "services.aktoerregister"
-        val euxService = "fagmodul.eux"
+        val euxService = "fagmodul.euxservice"
+        val euxBasisModel = "fagmodul.euxBasisModel"
+        val euxBucModel = "fagmodul.euxBucModel"
         val arkivService = "services.arkiv"
         val geoService = "services.geo"
         val personService = "services.person"
@@ -66,8 +80,10 @@ class ArchitectureTest {
 
                 "$root.fagmodul.prefill.." to prefill,
                 "$root.fagmodul.models.." to models,
-                "$root.fagmodul.sedmodel.." to models,
-                "$root.fagmodul.eux.." to euxService,
+                "$root.fagmodul.sedmodel.." to sedmodel,
+                "$root.fagmodul.eux" to euxService,
+                "$root.fagmodul.eux.basismodel.." to euxBasisModel,
+                "$root.fagmodul.eux.bucmodel.." to euxBucModel,
                 "$root.fagmodul.pesys.." to pensjonUtlandApi,
 
                 "$root.fagmodul.config.." to config,
@@ -93,65 +109,140 @@ class ArchitectureTest {
         // mentally replace the word "layer" with "component":
         layeredArchitecture()
                 .layer(health).definedBy(*packagesFor(health))
-                .whereLayer(health).mayNotBeAccessedByAnyLayer()
-
-                .layer(bucSedApi).definedBy(*packagesFor(bucSedApi))
-                .whereLayer(bucSedApi).mayNotBeAccessedByAnyLayer()
-
-                .layer(pensjonUtlandApi).definedBy(*packagesFor(pensjonUtlandApi))
-                .whereLayer(pensjonUtlandApi).mayNotBeAccessedByAnyLayer()
-
-                .layer(prefill).definedBy(*packagesFor(prefill))
-                .whereLayer(prefill).mayOnlyBeAccessedByLayers(bucSedApi)
-
-                .layer(euxService).definedBy(*packagesFor(euxService))
-                .whereLayer(euxService).mayOnlyBeAccessedByLayers(health, bucSedApi, pensjonUtlandApi)
-
-                .layer(models).definedBy(*packagesFor(models))
-                .whereLayer(models).mayOnlyBeAccessedByLayers(prefill, /* TODO consider this list */ euxService, pensjonUtlandApi, bucSedApi)
 
                 .layer(arkivApi).definedBy(*packagesFor(arkivApi))
-                .whereLayer(arkivApi).mayNotBeAccessedByAnyLayer()
-
                 .layer(geoApi).definedBy(*packagesFor(geoApi))
-                .whereLayer(geoApi).mayNotBeAccessedByAnyLayer()
-
                 .layer(personApi).definedBy(*packagesFor(personApi))
-                .whereLayer(personApi).mayNotBeAccessedByAnyLayer()
-
                 .layer(pensjonApi).definedBy(*packagesFor(pensjonApi))
-                .whereLayer(pensjonApi).mayNotBeAccessedByAnyLayer()
+
+                .layer(pensjonUtlandApi).definedBy(*packagesFor(pensjonUtlandApi))
+
+                .layer(bucSedApi).definedBy(*packagesFor(bucSedApi))
+                .layer(prefill).definedBy(*packagesFor(prefill))
+                .layer(euxService).definedBy(*packagesFor(euxService))
+                .layer(euxBasisModel).definedBy(*packagesFor(euxBasisModel))
+                .layer(euxBucModel).definedBy(*packagesFor(euxBucModel))
+                .layer(models).definedBy(*packagesFor(models))
+                .layer(sedmodel).definedBy(*packagesFor(sedmodel))
 
                 .layer(helper).definedBy(*packagesFor(helper))
-                .whereLayer(helper).mayOnlyBeAccessedByLayers(bucSedApi, pensjonApi)
-
-                .layer(config).definedBy(*packagesFor(config))
-                .whereLayer(config).mayNotBeAccessedByAnyLayer()
-
-                .layer(metrics).definedBy(*packagesFor(metrics))
-                .whereLayer(metrics).mayOnlyBeAccessedByLayers(health, euxService, pensjonUtlandApi)
 
                 .layer(aktoerregisterService).definedBy(*packagesFor(aktoerregisterService))
-                .whereLayer(aktoerregisterService).mayOnlyBeAccessedByLayers(personApi, helper)
-
                 .layer(arkivService).definedBy(*packagesFor(arkivService))
-                .whereLayer(arkivService).mayOnlyBeAccessedByLayers(arkivApi, bucSedApi)
-
                 .layer(geoService).definedBy(*packagesFor(geoService))
-                .whereLayer(geoService).mayOnlyBeAccessedByLayers(geoApi, pensjonUtlandApi, prefill)
-
                 .layer(personService).definedBy(*packagesFor(personService))
-                .whereLayer(personService).mayOnlyBeAccessedByLayers(health, personApi, prefill)
-
                 .layer(pensjonService).definedBy(*packagesFor(pensjonService))
-                .whereLayer(pensjonService).mayOnlyBeAccessedByLayers(health, pensjonApi, prefill)
 
+                .layer(config).definedBy(*packagesFor(config))
+                .layer(metrics).definedBy(*packagesFor(metrics))
                 .layer(security).definedBy(*packagesFor(security))
-                .whereLayer(security).mayOnlyBeAccessedByLayers(health, euxService, aktoerregisterService, arkivService, pensjonService, personService)
-
                 .layer(utils).definedBy(*packagesFor(utils))
 
-                .check(classesToAnalyze)
+                .whereLayer(health).mayNotBeAccessedByAnyLayer()
+
+                .whereLayer(arkivApi).mayNotBeAccessedByAnyLayer()
+                .whereLayer(geoApi).mayNotBeAccessedByAnyLayer()
+                .whereLayer(personApi).mayNotBeAccessedByAnyLayer()
+                .whereLayer(pensjonApi).mayNotBeAccessedByAnyLayer()
+
+                .whereLayer(pensjonUtlandApi).mayNotBeAccessedByAnyLayer()
+                .whereLayer(bucSedApi).mayNotBeAccessedByAnyLayer()
+                .whereLayer(prefill).mayOnlyBeAccessedByLayers(bucSedApi)
+                .whereLayer(euxService).mayOnlyBeAccessedByLayers(health, bucSedApi)
+                .whereLayer(euxBasisModel).mayOnlyBeAccessedByLayers(euxService, bucSedApi)
+                .whereLayer(euxBucModel).mayOnlyBeAccessedByLayers(euxService, bucSedApi)
+                .whereLayer(euxService).mayOnlyBeAccessedByLayers(health, bucSedApi)
+                .whereLayer(models).mayOnlyBeAccessedByLayers(prefill, /* TODO consider this list */ euxService, pensjonUtlandApi, bucSedApi)
+
+                .whereLayer(sedmodel).mayOnlyBeAccessedByLayers(prefill, euxService, pensjonUtlandApi, bucSedApi)
+
+                .whereLayer(helper).mayOnlyBeAccessedByLayers(bucSedApi, pensjonApi)
+
+                .whereLayer(aktoerregisterService).mayOnlyBeAccessedByLayers(personApi, helper)
+                .whereLayer(arkivService).mayOnlyBeAccessedByLayers(arkivApi, bucSedApi)
+                .whereLayer(geoService).mayOnlyBeAccessedByLayers(geoApi, pensjonUtlandApi, prefill)
+                .whereLayer(personService).mayOnlyBeAccessedByLayers(health, personApi, prefill)
+                .whereLayer(pensjonService).mayOnlyBeAccessedByLayers(health, pensjonApi, prefill)
+
+                .whereLayer(config).mayNotBeAccessedByAnyLayer()
+                .whereLayer(metrics).mayOnlyBeAccessedByLayers(health, euxService, pensjonUtlandApi)
+                .whereLayer(security).mayOnlyBeAccessedByLayers(health, euxService, aktoerregisterService, arkivService, pensjonService, personService)
+
+                .check(allClasses)
+    }
+
+    @Test
+    fun `main layers check`() {
+        val frontendAPI = "Frontend API"
+        val fagmodulCore = "Fagmodul Core"
+        val helper = "Helper"
+        val services = "Services"
+        val support = "Support"
+        layeredArchitecture()
+                .layer(frontendAPI).definedBy("$root.api..")
+                .layer(fagmodulCore).definedBy("$root.fagmodul..")
+                .layer(helper).definedBy("$root.helper..")
+                .layer(services).definedBy("$root.services..")
+                .layer(support).definedBy(
+                        "$root.metrics..",
+                        "$root.security..",
+                        "$root.logging..",
+                        "$root.utils.."
+                )
+                .whereLayer(frontendAPI).mayNotBeAccessedByAnyLayer()
+                .whereLayer(fagmodulCore).mayNotBeAccessedByAnyLayer()
+                .whereLayer(helper).mayOnlyBeAccessedByLayers(
+                        frontendAPI,
+                        fagmodulCore)
+                .whereLayer(services).mayOnlyBeAccessedByLayers(
+                        frontendAPI,
+                        fagmodulCore,
+                        helper)
+                .whereLayer(support).mayOnlyBeAccessedByLayers(
+                        frontendAPI,
+                        fagmodulCore,
+                        helper,
+                        services)
+                .check(allClasses)
+    }
+
+    @Test
+    fun `prefill structure test`() {
+        val prefillRoot = "$root.prefill"
+        val sedModel = "$root.sedModel"
+        val prefillClasses = ClassFileImporter()
+                .importPackages(prefillRoot, sedModel)
+
+        layeredArchitecture()
+                .layer("service").definedBy(prefillRoot)
+                .layer("sed").definedBy("$prefillRoot.sed..")
+                .layer("person").definedBy("$prefillRoot.person..")
+                .layer("pen").definedBy("$prefillRoot.pen..")
+                .layer("tps").definedBy("$prefillRoot.tps..")
+                .layer("eessi").definedBy("$prefillRoot.eessi..")
+                .layer("model").definedBy("$prefillRoot.model..")
+                .whereLayer("service").mayNotBeAccessedByAnyLayer()
+                .whereLayer("sed").mayOnlyBeAccessedByLayers("service")
+                .whereLayer("person").mayOnlyBeAccessedByLayers("sed")
+                .whereLayer("pen").mayOnlyBeAccessedByLayers("sed")
+                .whereLayer("tps").mayOnlyBeAccessedByLayers("sed")
+                .whereLayer("eessi").mayOnlyBeAccessedByLayers("sed", "tps")
+                .check(prefillClasses)
+    }
+    @Test
+    fun `no cycles on top level`() {
+        slices()
+                .matching("$root.(*)..")
+                .should().beFreeOfCycles()
+                .check(allClasses)
+    }
+
+    @Test
+    fun `no cycles on any level for production classes`() {
+        slices()
+                .matching("$root..(*)")
+                .should().beFreeOfCycles()
+                .check(productionClasses)
     }
 
     @Test
@@ -159,7 +250,7 @@ class ArchitectureTest {
         classes().that()
                 .haveSimpleNameEndingWith("Controller")
                 .should().beAnnotatedWith(RestController::class.java)
-                .check(classesToAnalyze)
+                .check(allClasses)
     }
 
     @Test
@@ -167,6 +258,7 @@ class ArchitectureTest {
         classes().that()
                 .areAnnotatedWith(RestController::class.java)
                 .should().onlyBeAccessed().byClassesThat().areNotAnnotatedWith(RestController::class.java)
-                .check(classesToAnalyze)
+                .check(allClasses)
     }
 }
+
