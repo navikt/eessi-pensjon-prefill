@@ -1,4 +1,4 @@
-package no.nav.eessi.pensjon.fagmodul.eux
+package no.nav.eessi.pensjon.fagmodul.eux.basismodel
 
 /**
  * data class model from EUX Basis

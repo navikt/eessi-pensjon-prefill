@@ -1,8 +1,9 @@
 package no.nav.eessi.pensjon.fagmodul.eux
 
 import com.nhaarman.mockito_kotlin.*
+import no.nav.eessi.pensjon.fagmodul.eux.basismodel.BucSedResponse
+import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Rinasak
 import no.nav.eessi.pensjon.fagmodul.models.*
-import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Buc
 import no.nav.eessi.pensjon.utils.*
 import org.junit.After
 import org.junit.Assert
@@ -10,6 +11,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.AdditionalMatchers.not
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mock
@@ -73,10 +75,6 @@ class EuxServiceTest {
     fun `Calling EuxService| forventer korrekt svar tilbake fra et kall til opprettBucSed`() {
         val bucresp = BucSedResponse("123456", "2a427c10325c4b5eaf3c27ba5e8f1877")
         val response: ResponseEntity<String> = ResponseEntity(mapAnyToJson(bucresp), HttpStatus.OK)
-
-        val headers = HttpHeaders()
-        headers.contentType = MediaType.APPLICATION_JSON
-        val httpEntity = HttpEntity(SED("P2000").toJson(), headers)
 
         whenever(mockEuxrestTemplate.exchange(anyString(), eq(HttpMethod.POST), any(), eq(String::class.java))).thenReturn(response)
         val result = service.opprettBucSed(SED("P2000"), "P_BUC_99", "NO:NAVT003", "1234567")
@@ -325,31 +323,27 @@ class EuxServiceTest {
 
     @Test
     fun callingEuxServiceFormenuUI_AllOK() {
-        val bucdetaljerpath = "src/test/resources/json/buc/bucdetaljer-158123.json"
-        val bucdetaljer = String(Files.readAllBytes(Paths.get(bucdetaljerpath)))
-        assertTrue(validateJson(bucdetaljer))
-
-
         val rinasakerjson = "src/test/resources/json/rinasaker/rinasaker_34567890111.json"
         val rinasakStr = String(Files.readAllBytes(Paths.get(rinasakerjson)))
         assertTrue(validateJson(rinasakStr))
 
-        //val bucjson = "src/test/resources/json/buc/buc-22909_v4.1.json"
+        whenever(mockEuxrestTemplate.exchange(
+                eq("/rinasaker?Fødselsnummer=12345678900&RINASaksnummer=&BuCType=&Status="),
+                eq(HttpMethod.GET), eq(null), eq(String::class.java)))
+                .thenReturn(ResponseEntity.ok(rinasakStr))
+
         val bucjson = "src/test/resources/json/buc/buc-158123_2_v4.1.json"
         val bucStr = String(Files.readAllBytes(Paths.get(bucjson)))
         assertTrue(validateJson(bucStr))
 
+        whenever(mockEuxrestTemplate.exchange(
+                not(eq("/rinasaker?Fødselsnummer=12345678900&RINASaksnummer=&BuCType=&Status=")),
+                eq(HttpMethod.GET), eq(null), eq(String::class.java)))
+                .thenReturn(ResponseEntity.ok(bucStr))
+
         val orgRinasaker = mapJsonToAny(rinasakStr, typeRefs<List<Rinasak>>())
-        val orgBuc = mapJsonToAny(bucStr, typeRefs<Buc>())
 
-        val mockService: EuxService = Mockito.mock(EuxService::class.java)
-
-        whenever(mockService.getRinasaker("12345678900")).thenReturn(orgRinasaker)
-
-        //158123
-        whenever(mockService.getBucUtils("8877665511")).thenReturn(BucUtils(orgBuc))
-
-        val result = service.getBucAndSedView("12345678900", "001122334455", null, null, mockService)
+        val result = service.getBucAndSedView("12345678900", "001122334455", null, null)
 
         assertNotNull(result)
         assertEquals(6, orgRinasaker.size)
@@ -363,6 +357,10 @@ class EuxServiceTest {
         assertEquals("2019-05-20T16:35:34",  Instant.ofEpochMilli(lastUpdate).atZone(ZoneId.systemDefault()).toLocalDateTime().toString())
         assertEquals(18, firstJson.seds.size)
         val json = mapAnyToJson(firstJson)
+
+        val bucdetaljerpath = "src/test/resources/json/buc/bucdetaljer-158123.json"
+        val bucdetaljer = String(Files.readAllBytes(Paths.get(bucdetaljerpath)))
+        assertTrue(validateJson(bucdetaljer))
 
         JSONAssert.assertEquals(bucdetaljer, json, true)
     }
