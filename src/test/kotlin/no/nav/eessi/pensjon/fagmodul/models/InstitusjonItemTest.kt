@@ -1,12 +1,10 @@
-package no.nav.eessi.pensjon.fagmodul.sedmodel
+package no.nav.eessi.pensjon.fagmodul.models
 
-import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
-import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import org.junit.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
-class SEDModelTest {
+class InstitusjonItemTest {
+
     @Test
     fun `call checkAndConvertInstituion med spesialtegn som input`() {
 
@@ -14,8 +12,8 @@ class SEDModelTest {
         val actual = institusjonItem.checkAndConvertInstituion()
 
         assertEquals(institusjonItem.institution, actual)
-
     }
+
     @Test
     fun `call checkAndConvertInstituion uten spesialtegn som input`() {
 
@@ -32,13 +30,5 @@ class SEDModelTest {
         val actual = institusjonItem.checkAndConvertInstituion()
 
         assertEquals(":", actual)
-    }
-
-    @Test
-    fun `check for value on SEDtype`() {
-        val px = "P3000"
-        val result = SEDType.isValidSEDType(px)
-        assertTrue(result)
-
     }
 }
