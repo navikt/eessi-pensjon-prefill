@@ -1,16 +1,16 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed
 
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Ektefelle
-import no.nav.eessi.pensjon.fagmodul.sedmodel.PinItem
-import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Nav
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Person
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Bruker
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Institusjon
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Pensjon
 import no.nav.eessi.pensjon.fagmodul.prefill.model.Prefill
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Bruker
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Ektefelle
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Institusjon
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Nav
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Pensjon
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Person
+import no.nav.eessi.pensjon.fagmodul.sedmodel.PinItem
+import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 

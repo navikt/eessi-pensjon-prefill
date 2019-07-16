@@ -1,4 +1,4 @@
-package no.nav.eessi.pensjon.fagmodul.prefill.sed.P7000
+package no.nav.eessi.pensjon.fagmodul.prefill.sed
 
 import no.nav.eessi.pensjon.fagmodul.prefill.ApiRequest
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
@@ -9,8 +9,6 @@ import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
 import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonHjelper
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillPersonDataFromTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PersonDataFromTPS
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.AbstractPrefillIntegrationTestHelper
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillP7000
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import no.nav.eessi.pensjon.utils.validateJson
 import org.skyscreamer.jsonassert.JSONAssert
