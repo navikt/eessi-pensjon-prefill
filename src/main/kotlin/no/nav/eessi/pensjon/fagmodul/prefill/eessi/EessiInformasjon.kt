@@ -8,29 +8,14 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 
 @Component
-class EessiInformasjon {
-
-    private val logger: Logger by lazy { LoggerFactory.getLogger(EessiInformasjon::class.java) }
-
-    @Value("\${eessi.pensjon_lokalid}")
-    lateinit var institutionid: String
-
-    @Value("\${eessi.pensjon_lokalnavn}")
-    lateinit var institutionnavn: String
-
-    @Value("\${eessi.pensjon_adresse_gate}")
-    lateinit var institutionGate: String
-
-    @Value("\${eessi.pensjon_adresse_by}")
-    lateinit var institutionBy: String
-
-    @Value("\${eessi.pensjon_adresse_postnummer}")
-    lateinit var institutionPostnr: String
-
-    @Value("\${eessi.pensjon_adresse_land}")
-    lateinit var institutionLand: String
-
-
+class EessiInformasjon(
+        @Value("\${eessi.pensjon_lokalid}") val institutionid: String = "",
+        @Value("\${eessi.pensjon_lokalnavn}") val institutionnavn: String = "",
+        @Value("\${eessi.pensjon_adresse_gate}") val institutionGate: String = "",
+        @Value("\${eessi.pensjon_adresse_by}") val institutionBy: String = "",
+        @Value("\${eessi.pensjon_adresse_postnummer}") val institutionPostnr: String = "",
+        @Value("\${eessi.pensjon_adresse_land}") val institutionLand: String = ""
+) {
     fun mapEssiInformasjonTilPrefillDataModel(prefillDataModel: PrefillDataModel): PrefillDataModel {
         prefillDataModel.andreInstitusjon = AndreinstitusjonerItem(
                 institusjonsid = institutionid,
@@ -45,5 +30,4 @@ class EessiInformasjon {
 
         return prefillDataModel
     }
-
 }

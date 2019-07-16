@@ -1,7 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed
 
 import com.nhaarman.mockito_kotlin.any
-import com.nhaarman.mockito_kotlin.whenever
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.fagmodul.models.SEDType
@@ -22,19 +21,15 @@ import org.junit.Before
 import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers
 import org.mockito.Mock
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
+import org.mockito.Mockito.lenient
+import org.mockito.junit.MockitoJUnitRunner
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.util.ResourceUtils
 import org.springframework.web.client.RestTemplate
 
-@RunWith(SpringRunner::class)
-@ActiveProfiles("test")
-@SpringBootTest
+@RunWith(MockitoJUnitRunner::class)
 abstract class AbstractPrefillIntegrationTestHelper {
 
     var personFnr: String = ""
@@ -53,8 +48,14 @@ abstract class AbstractPrefillIntegrationTestHelper {
 
     private lateinit var pensionDataFromPEN: PensjonsinformasjonHjelper
 
-    @Autowired
-    protected lateinit var eessiInformasjon: EessiInformasjon
+    protected val eessiInformasjon = EessiInformasjon(
+            institutionid = "NO:noinst002",
+            institutionnavn = "NOINST002, NO INST002, NO",
+            institutionGate = "Postboks 6600 Etterstad TEST",
+            institutionBy = "Oslo",
+            institutionPostnr = "0607",
+            institutionLand = "NO"
+    )
 
     private lateinit var prefillNav: PrefillNav
 
@@ -160,7 +161,7 @@ abstract class AbstractPrefillIntegrationTestHelper {
     }
 
     private fun mockPrefillPensionDataFromPEN(responseXMLfilename: String): PensjonsinformasjonHjelper {
-        whenever(pensjonsinformasjonRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java))).thenReturn(readXMLresponse(responseXMLfilename))
+        lenient().`when`(pensjonsinformasjonRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java))).thenReturn(readXMLresponse(responseXMLfilename))
 
         val pensjonsinformasjonService1 = PensjonsinformasjonService(pensjonsinformasjonRestTemplate, RequestBuilder())
 

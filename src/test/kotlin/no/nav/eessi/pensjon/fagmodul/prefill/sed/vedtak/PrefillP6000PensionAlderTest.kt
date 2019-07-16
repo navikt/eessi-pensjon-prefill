@@ -5,11 +5,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
-//@RunWith(MockitoJUnitRunner::class)
-//@RunWith(SpringRunner::class)
-//@ActiveProfiles("test")
-//@SpringBootTest
-//@TestPropertySource(locations = ["classpath:application-integrationtest.yml"])
 class PrefillP6000PensionAlderTest : AbstractMockVedtakPensionHelper("P6000-APUtland-301.xml") {
 
     @Test

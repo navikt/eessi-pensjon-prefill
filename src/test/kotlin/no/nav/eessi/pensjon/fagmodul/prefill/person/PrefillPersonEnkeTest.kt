@@ -20,14 +20,11 @@ class PrefillPersonEnkeTest : PersonDataFromTPS(
                 MockTPS("Person-20000.json", generateRandomFnr(67), MockTPS.TPSType.PERSON),
                 MockTPS("Person-21000.json", generateRandomFnr(37), MockTPS.TPSType.BARN),
                 MockTPS("Person-22000.json", generateRandomFnr(17), MockTPS.TPSType.BARN)
-        ), EessiInformasjon().apply
-{
-    institutionBy = "Oslo"
-    institutionLand = "NO"
-    institutionid = "NO:NAV"
-    institutionnavn = "NAV"
-}
-) {
+        ), EessiInformasjon(
+            institutionBy = "Oslo",
+            institutionLand = "NO",
+            institutionid = "NO:NAV",
+            institutionnavn = "NAV")) {
 
     @Test
     fun `create birthplace as unknown`() {

@@ -13,20 +13,16 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.junit4.SpringRunner
+import org.mockito.junit.MockitoJUnitRunner
 import kotlin.test.assertEquals
 
-@RunWith(SpringRunner::class)
-@ActiveProfiles("test")
-@SpringBootTest
+@RunWith(MockitoJUnitRunner::class)
 class PrefillPersonDataFromTPSTest{
 
     @Mock
     private lateinit var personV3Service: PersonV3Service
 
-    private val  postnummerService = PostnummerService()
+    private val postnummerService = PostnummerService()
 
     private val landkodeService = LandkodeService()
 

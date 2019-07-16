@@ -25,17 +25,14 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers
 import org.mockito.Mock
+import org.mockito.junit.MockitoJUnitRunner
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Primary
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.util.ResourceUtils
 import org.springframework.web.client.RestTemplate
 import java.lang.IllegalStateException
@@ -46,9 +43,7 @@ import javax.xml.datatype.DatatypeFactory
 import javax.xml.datatype.XMLGregorianCalendar
 import kotlin.test.assertEquals
 
-@RunWith(SpringRunner::class)
-@ActiveProfiles("test")
-@SpringBootTest
+@RunWith(MockitoJUnitRunner::class)
 abstract class AbstractMockVedtakPensionHelper(private val xmlFilename: String) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(AbstractMockVedtakPensionHelper::class.java) }
@@ -62,8 +57,14 @@ abstract class AbstractMockVedtakPensionHelper(private val xmlFilename: String) 
 
     protected lateinit var pendata: Pensjonsinformasjon
 
-    @Autowired
-    protected lateinit var eessiInformasjon: EessiInformasjon
+    protected val eessiInformasjon = EessiInformasjon(
+            institutionid = "NO:noinst002",
+            institutionnavn = "NOINST002, NO INST002, NO",
+            institutionGate = "Postboks 6600 Etterstad TEST",
+            institutionBy = "Oslo",
+            institutionPostnr = "0607",
+            institutionLand = "NO"
+    )
 
     @Before
     fun setup() {
@@ -82,9 +83,7 @@ abstract class AbstractMockVedtakPensionHelper(private val xmlFilename: String) 
         return ResponseEntity(resource, HttpStatus.OK)
     }
 
-    @Primary
-    @Bean
-    fun mockPrefillPensionDataFromPEN(pensjonsinformasjonService: PensjonsinformasjonService): PensjonsinformasjonHjelper {
+    private fun mockPrefillPensionDataFromPEN(pensjonsinformasjonService: PensjonsinformasjonService): PensjonsinformasjonHjelper {
         return PensjonsinformasjonHjelper(pensjonsinformasjonService)
     }
 
