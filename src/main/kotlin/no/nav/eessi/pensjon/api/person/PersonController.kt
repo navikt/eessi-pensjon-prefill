@@ -36,7 +36,27 @@ class PersonController(private val aktoerregisterService: AktoerregisterService,
      */
     @ApiOperation("henter ut personinformasjon for en aktørId")
     @GetMapping("/person/{aktoerid}")
-    fun getDocument(@PathVariable("aktoerid", required = true) aktoerid: String): ResponseEntity<HentPersonResponse> {
+    fun getPersonResponse(@PathVariable("aktoerid", required = true) aktoerid: String): ResponseEntity<HentPersonResponse> {
+        return ResponseEntity.ok(hentPersonResponse(aktoerid))
+    }
+
+    /**
+     * Kaller AktørRegisteret , bytter aktørId mot Fnr/Dnr ,
+     * deretter kalles PersonV3 hvor personinformasjon hentes
+     *
+     * @param aktoerid
+     */
+    @ApiOperation("henter ut personinformasjon for en aktørId")
+    @GetMapping("/personinfo/{aktoerid}")
+    fun getPersoninformasjon(@PathVariable("aktoerid", required = true) aktoerid: String): ResponseEntity<Personinformasjon> {
+        val personresp = hentPersonResponse(aktoerid)
+        return ResponseEntity.ok(Personinformasjon(personresp.person.personnavn.sammensattNavn,
+                personresp.person.personnavn.fornavn,
+                personresp.person.personnavn.mellomnavn,
+                personresp.person.personnavn.etternavn))
+    }
+
+    private fun hentPersonResponse(aktoerid: String): HentPersonResponse {
         logger.info("Henter personinformasjon for aktørId")
 
         val norskIdent: String
@@ -45,7 +65,6 @@ class PersonController(private val aktoerregisterService: AktoerregisterService,
         try {
             norskIdent = aktoerregisterService.hentGjeldendeNorskIdentForAktorId(aktoerid)
             personresp = personService.hentPerson(norskIdent)
-
         } catch (are: AktoerregisterException) {
             logger.error("Kall til Akørregisteret feilet på grunn av: " + are.message)
             counter("eessipensjon_fagmodul.personinfo", "feilede").increment()
@@ -65,6 +84,14 @@ class PersonController(private val aktoerregisterService: AktoerregisterService,
         }
 
         counter("eessipensjon_fagmodul.personinfo", "vellykkede").increment()
-        return ResponseEntity.ok(personresp)
+        return personresp
     }
+
+    /**
+     * Personinformasjon fra TPS ( PersonV3 )
+     */
+    data class Personinformasjon(var fulltNavn: String? = null,
+                                 var fornavn: String? = null,
+                                 var mellomnavn: String? = null,
+                                 var etternavn: String? = null)
 }
