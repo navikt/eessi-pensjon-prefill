@@ -35,7 +35,7 @@ class SedController(private val euxService: EuxService,
     @JsonInclude(JsonInclude.Include.NON_NULL)
     fun confirmDocument(@RequestBody request: ApiRequest): SED {
         logger.info("kaller /preview med request: $request")
-        return prefillService.prefillSed(ApiRequest.buildPrefillDataModelConfirm(request, aktoerIdHelper.hentAktoerIdPin(request.aktoerId))).sed
+        return prefillService.prefillSed(ApiRequest.buildPrefillDataModelConfirm(request, aktoerIdHelper.hentPinForAktoer(request.aktoerId))).sed
     }
 
 
@@ -78,7 +78,7 @@ class SedController(private val euxService: EuxService,
 
         logger.info("kaller add (institutions and sed)")
 
-        val dataModel = ApiRequest.buildPrefillDataModelOnExisting(request, aktoerIdHelper.hentAktoerIdPin(request.aktoerId))
+        val dataModel = ApiRequest.buildPrefillDataModelOnExisting(request, aktoerIdHelper.hentPinForAktoer(request.aktoerId))
 
         logger.debug("Prøver å legge til Deltaker/Institusions på buc samt prefillSed og sende inn til Rina ")
         val bucUtil = BucUtils(euxService.getBuc(dataModel.euxCaseID))
@@ -106,7 +106,7 @@ class SedController(private val euxService: EuxService,
     @ApiOperation("legge til SED på et eksisterende Rina document. kjører preutfylling, ny api kall til eux")
     @PostMapping("/addSed")
     fun addDocument(@RequestBody request: ApiRequest): ShortDocumentItem {
-        val dataModel = ApiRequest.buildPrefillDataModelOnExisting(request, aktoerIdHelper.hentAktoerIdPin(request.aktoerId))
+        val dataModel = ApiRequest.buildPrefillDataModelOnExisting(request, aktoerIdHelper.hentPinForAktoer(request.aktoerId))
         val data = prefillService.prefillSed(dataModel)
         logger.info("kaller add med request: $request")
         val docresult = euxService.opprettSedOnBuc(data.sed, data.euxCaseID)
@@ -121,7 +121,7 @@ class SedController(private val euxService: EuxService,
     fun createDocument(@RequestBody request: ApiRequest): BucSedResponse {
 
         logger.info("kaller type/create med request: $request")
-        val dataModel = ApiRequest.buildPrefillDataModelOnNew(request, aktoerIdHelper.hentAktoerIdPin(request.aktoerId))
+        val dataModel = ApiRequest.buildPrefillDataModelOnNew(request, aktoerIdHelper.hentPinForAktoer(request.aktoerId))
         val data = prefillService.prefillSed(dataModel)
         val firstInstitution =
                 data.institution.firstOrNull() ?: throw ManglendeInstitusjonException("institusjon kan ikke være tom")

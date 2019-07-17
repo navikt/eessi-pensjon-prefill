@@ -27,7 +27,7 @@ class PensjonController(private val pensjonsinformasjonService: Pensjonsinformas
     fun hentPensjonSakType(@PathVariable("sakId", required = true) sakId: String, @PathVariable("aktoerId", required = true) aktoerId: String): ResponseEntity<String>? {
         logger.debug("Henter sakstype på ${sakId}")
         // FIXME This is a hack because Pesys uses the wrong identifier in some cases
-        val fnr = if (isProbablyAnFnrSentAsAktoerId(aktoerId)) aktoerId else aktoerIdHelper.hentAktoerIdPin(aktoerId)
+        val fnr = if (isProbablyAnFnrSentAsAktoerId(aktoerId)) aktoerId else aktoerIdHelper.hentPinForAktoer(aktoerId)
 
         //Pensjontype //= Pensjontype(sakId = "", sakType = "")
         try {

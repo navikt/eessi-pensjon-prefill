@@ -93,7 +93,7 @@ class BucController(private val euxService: EuxService,
     fun getRinasaker(@PathVariable("aktoerId", required = true) aktoerId: String): List<Rinasak> {
 
         logger.debug("henter rinasaker på valgt aktoerid: $aktoerId")
-        val fnr = aktoerIdHelper.hentAktoerIdPin(aktoerId)
+        val fnr = aktoerIdHelper.hentPinForAktoer(aktoerId)
         return euxService.getRinasaker(fnr)
     }
 
@@ -106,7 +106,7 @@ class BucController(private val euxService: EuxService,
 
 
         logger.debug("1 prøver å dekode til fnr fra aktoerid: $aktoerid")
-        val fnr = aktoerIdHelper.hentAktoerIdPin(aktoerid)
+        val fnr = aktoerIdHelper.hentPinForAktoer(aktoerid)
         return euxService.getBucAndSedView(fnr, aktoerid, sakid, euxcaseid)
 
     }

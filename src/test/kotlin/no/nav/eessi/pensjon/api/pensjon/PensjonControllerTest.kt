@@ -34,7 +34,7 @@ class PensjonControllerTest {
         val fnrForAktoerID = "23037328392" // 11 sifre
         val sakId = "Some sakId"
 
-        `when`(aktoerIdHelper.hentAktoerIdPin(aktoerId)).thenReturn(fnrForAktoerID)
+        `when`(aktoerIdHelper.hentPinForAktoer(aktoerId)).thenReturn(fnrForAktoerID)
 
         whenever(pensjonsinformasjonService.hentKunSakType(sakId, fnrForAktoerID)).thenReturn(Pensjontype(sakId, "Type"))
 
@@ -52,7 +52,7 @@ class PensjonControllerTest {
         controller.hentPensjonSakType(sakId, aktoerIdSomFaktiskErEtFnr)
 
         verify(pensjonsinformasjonService).hentKunSakType(sakId, aktoerIdSomFaktiskErEtFnr)
-        verify(aktoerIdHelper, never()).hentAktoerIdPin(any())
+        verify(aktoerIdHelper, never()).hentPinForAktoer(any())
     }
 
     @Test
@@ -61,7 +61,7 @@ class PensjonControllerTest {
         val fnrForAktoerID = "23037328392" // 11 sifre
         val sakId = "Some sakId"
 
-        `when`(aktoerIdHelper.hentAktoerIdPin(aktoerId)).thenReturn(fnrForAktoerID)
+        `when`(aktoerIdHelper.hentPinForAktoer(aktoerId)).thenReturn(fnrForAktoerID)
 
         whenever(pensjonsinformasjonService.hentKunSakType(sakId, fnrForAktoerID)).thenThrow(IkkeFunnetException("Saktype ikke funnet"))
         val response = controller.hentPensjonSakType(sakId, aktoerId)
@@ -77,7 +77,7 @@ class PensjonControllerTest {
         val fnrForAktoerID = "23037328392" // 11 sifre
         val sakId = "Some sakId"
 
-        `when`(aktoerIdHelper.hentAktoerIdPin(aktoerId)).thenReturn(fnrForAktoerID)
+        `when`(aktoerIdHelper.hentPinForAktoer(aktoerId)).thenReturn(fnrForAktoerID)
         whenever(pensjonsinformasjonService.hentKunSakType(sakId, fnrForAktoerID)).thenThrow(PensjoninformasjonException("Ingen svar med PESYS"))
         val response = controller.hentPensjonSakType(sakId, aktoerId)
 

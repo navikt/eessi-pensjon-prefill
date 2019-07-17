@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.ResponseStatus
 class AktoerIdHelper(private val aktoerregisterService: AktoerregisterService) {
 
     @Throws(AktoerregisterException::class, ManglerAktoerIdException::class)
-    fun hentAktoerIdPin(aktorid: String?): String {
+    fun hentPinForAktoer(aktorid: String?): String {
         if (aktorid.isNullOrBlank()) throw ManglerAktoerIdException("Mangler AktorId")
         return aktoerregisterService.hentGjeldendeNorskIdentForAktorId(aktorid)
     }
