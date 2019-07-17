@@ -2,8 +2,10 @@ package no.nav.eessi.pensjon.api.person
 
 import com.nhaarman.mockito_kotlin.whenever
 import no.nav.eessi.pensjon.services.aktoerregister.AktoerregisterService
+import no.nav.eessi.pensjon.services.personv3.PersonV3IkkeFunnetException
 import no.nav.eessi.pensjon.services.personv3.PersonV3Service
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Person
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Personnavn
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonResponse
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -17,6 +19,8 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 
 @RunWith(SpringRunner::class)
@@ -36,23 +40,54 @@ class PersonControllerTest {
 
     @Test
     fun `getPerson should return Person as json`() {
-        val anAktorId = "012345"
-        val anFnr = "01010123456"
-
         whenever(mockAktoerregisterService.hentGjeldendeNorskIdentForAktorId(anAktorId)).thenReturn(anFnr)
-
-        whenever(mockPersonV3Service.hentPerson(anFnr)).thenReturn(
-            HentPersonResponse().withPerson(Person()))
+        whenever(mockPersonV3Service.hentPerson(anFnr)).thenReturn(hentPersonResponse)
 
         val response = mvc.perform(
             get("/person/$anAktorId")
                 .accept(MediaType.APPLICATION_JSON))
             .andReturn().response
 
-        JSONAssert.assertEquals(personAsJson(), response.contentAsString, false)
+        JSONAssert.assertEquals(personAsJson, response.contentAsString, false)
     }
 
-    private fun personAsJson() = """{
+    @Test
+    fun `getNameOnly should return names as json`() {
+        whenever(mockAktoerregisterService.hentGjeldendeNorskIdentForAktorId(anAktorId)).thenReturn(anFnr)
+        whenever(mockPersonV3Service.hentPerson(anFnr)).thenReturn(hentPersonResponse)
+
+        val response = mvc.perform(
+            get("/personinfo/$anAktorId")
+                .accept(MediaType.APPLICATION_JSON))
+            .andReturn().response
+
+        JSONAssert.assertEquals(namesAsJson, response.contentAsString, false)
+    }
+
+    @Test
+    fun `should return NOT_FOUND hvis personen ikke finnes i TPS`() {
+        whenever(mockAktoerregisterService.hentGjeldendeNorskIdentForAktorId(anAktorId)).thenReturn(anFnr)
+        whenever(mockPersonV3Service.hentPerson(anFnr)).thenThrow(PersonV3IkkeFunnetException("EXPECTED"))
+
+        mvc.perform(
+            get("/personinfo/$anAktorId")
+                .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isNotFound)
+            .andExpect(content().string("PersonV3IkkeFunnetException"))
+    }
+
+    private val anAktorId = "012345"
+    private val anFnr = "01010123456"
+
+    private val hentPersonResponse =
+        HentPersonResponse()
+            .withPerson(Person()
+                .withPersonnavn(Personnavn()
+                    .withFornavn("OLA")
+                    .withEtternavn("NORDMANN")
+                    .withSammensattNavn("NORDMANN OLA")))
+
+    private val personAsJson = """{
                   "person": {
                     "diskresjonskode": null,
                     "bostedsadresse": null,
@@ -61,11 +96,13 @@ class PersonControllerTest {
                     "harFraRolleI": [],
                     "aktoer": null,
                     "kjoenn": null,
-                    "personnavn": null,
+                    "personnavn": { fornavn: "OLA", etternavn: "NORDMANN", mellomnavn: null, sammensattNavn: "NORDMANN OLA"},
                     "personstatus": null,
                     "postadresse": null,
                     "doedsdato": null,
                     "foedselsdato": null
                   }
                 }"""
+
+    private val namesAsJson = """{ fornavn: "OLA", etternavn: "NORDMANN", mellomnavn: null, fulltNavn: "NORDMANN OLA"}"""
 }

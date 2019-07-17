@@ -47,6 +47,7 @@ class PersonV3Service(private val service: PersonV3,
         }
     }
 
+    @Throws(PersonV3IkkeFunnetException::class, PersonV3SikkerhetsbegrensningException::class)
     fun hentPerson(fnr: String): HentPersonResponse {
         logger.info("Henter person fra PersonV3Service")
         configureRequestSamlToken(service)
