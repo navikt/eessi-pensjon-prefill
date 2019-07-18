@@ -584,3 +584,9 @@ data class TildeltePensjoner(
 data class PensjonsInstitusjon(
         var sektor: String? = null
 )
+
+data class Institusjonsadresse(
+		val poststed: String? = null,
+		val postnummer: String? = null,
+		val land: String? = null
+)
