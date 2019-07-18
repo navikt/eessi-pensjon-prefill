@@ -206,12 +206,9 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
                                 )
                         ),
                         fornavn = navntps.fornavn,
-                        etternavnvedfoedsel = navntps.etternavn
+                        etternavnvedfoedsel = if (RelasjonEnum.MOR.erSamme(tpsvalue)) null else navntps.etternavn
                         //doedsdato = dodDatoFormat(persontps)
                 )
-                if (RelasjonEnum.MOR.erSamme(tpsvalue)) {
-                    relasjonperson.etternavnvedfoedsel = null
-                }
                 return Foreldre(person = relasjonperson)
                 //return relasjonperson
             }

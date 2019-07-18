@@ -223,7 +223,7 @@ data class Person(
         val tidligerefornavn: String? = null,
         val tidligereetternavn: String? = null,
         val fornavnvedfoedsel: String? = null,
-        var etternavnvedfoedsel: String? = null, // TODO fix mutable
+        val etternavnvedfoedsel: String? = null,
         val foedselsdato: String? = null,
 
         val doedsdato: String? = null,
