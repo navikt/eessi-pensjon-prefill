@@ -1,16 +1,10 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.tps
 
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Adresse
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Ektefelle
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Foedested
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Foreldre
-import no.nav.eessi.pensjon.fagmodul.sedmodel.PinItem
-import no.nav.eessi.pensjon.fagmodul.sedmodel.SivilstandItem
-import no.nav.eessi.pensjon.fagmodul.sedmodel.StatsborgerskapItem
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Bruker
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Person
 import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjon
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
+import no.nav.eessi.pensjon.fagmodul.sedmodel.*
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Bruker
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Person
 import no.nav.eessi.pensjon.services.geo.LandkodeService
 import no.nav.eessi.pensjon.services.geo.PostnummerService
 import no.nav.eessi.pensjon.services.personv3.PersonV3Service
@@ -38,7 +32,7 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
         }
     }
 
-    fun prefillBruker(ident: String): Bruker {
+    fun prefillBruker(ident: String, bank: Bank? = null, ansettelsesforhold: List<ArbeidsforholdItem>? = null): Bruker {
         logger.debug("              Bruker")
         try {
             val brukerTPS = hentBrukerTPS(ident)
@@ -53,7 +47,11 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
 //                    far = Foreldre(person = hentRelasjon(RelasjonEnum.FAR, brukerTPS)),
 //                    mor = Foreldre(person = hentRelasjon(RelasjonEnum.MOR, brukerTPS)),
 
-                    adresse = hentPersonAdresse(brukerTPS)
+                    adresse = hentPersonAdresse(brukerTPS),
+
+                    bank = bank,
+
+                    arbeidsforhold = ansettelsesforhold
             )
         } catch (ex: Exception) {
             logger.error("Feil ved henting av Bruker fra TPS, sjekk ident?")

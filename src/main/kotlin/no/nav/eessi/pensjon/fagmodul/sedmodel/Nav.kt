@@ -73,8 +73,8 @@ data class Bruker(
         //P14000
         val endringer: Personendringer? = null,
 
-        var arbeidsforhold: List<ArbeidsforholdItem>? = null, // TODO fix mutable
-        var bank: Bank? = null  // TODO fix mutable
+        val arbeidsforhold: List<ArbeidsforholdItem>? = null,
+        val bank: Bank? = null
 )
 
 //P14000
