@@ -34,10 +34,7 @@ abstract class PersonDataFromTPS(private val mocktps: Set<MockTPS>, private val 
     @Before
     fun setup() {
         preutfyllingTPS = mockPrefillPersonDataFromTPS()
-        prefillNav = PrefillNav(preutfyllingTPS)
-
-        prefillNav.institutionid = "NO:noinst002"
-        prefillNav.institutionnavn = "NOINST002, NO INST002, NO"
+        prefillNav = PrefillNav(preutfyllingTPS, institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO")
     }
 
 

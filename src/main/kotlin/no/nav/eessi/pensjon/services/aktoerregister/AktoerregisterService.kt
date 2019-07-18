@@ -28,7 +28,8 @@ data class IdentinfoForAktoer(
 )
 
 @Service
-class AktoerregisterService(private val aktoerregisterOidcRestTemplate: RestTemplate) {
+class AktoerregisterService(private val aktoerregisterOidcRestTemplate: RestTemplate,
+                            @Value("\${app.name}") private val appName: String) {
 
     private val logger = LoggerFactory.getLogger(AktoerregisterService::class.java)
 
@@ -39,9 +40,6 @@ class AktoerregisterService(private val aktoerregisterOidcRestTemplate: RestTemp
     final fun counter(name: String, type: String): Counter {
         return Metrics.counter(name, "type", type)
     }
-
-    @Value("\${app.name}")
-    lateinit var appName: String
 
     fun hentGjeldendeNorskIdentForAktorId(aktorid: String): String {
         val response = doRequest(aktorid, "NorskIdent")

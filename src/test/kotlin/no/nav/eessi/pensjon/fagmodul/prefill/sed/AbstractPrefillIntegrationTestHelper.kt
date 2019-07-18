@@ -80,9 +80,7 @@ abstract class AbstractPrefillIntegrationTestHelper {
         //mock TPS data
         personTPS = initMockPrefillPersonDataFromTPS()
         //mock prefillNav data
-        prefillNav = PrefillNav(personTPS)
-        prefillNav.institutionid = "NO:noinst002"
-        prefillNav.institutionnavn = "NOINST002, NO INST002, NO"
+        prefillNav = PrefillNav(personTPS, institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO")
 
         //mock pensjonData
         pensionDataFromPEN = mockPrefillPensionDataFromPEN(mockKravXMLfil)
