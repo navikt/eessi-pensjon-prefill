@@ -306,7 +306,7 @@ data class PinItem(
         val institusjonsnavn: String? = null,
         val institusjonsid: String? = null,
         val sektor: String? = null,
-        var identifikator: String? = null,  //rename? f.eks personnummer TODO: fix mutable
+        val identifikator: String? = null,  //rename? f.eks personnummer
         val land: String? = null,
         //P2000, P2100, P2200
         val institusjon: Institusjon? = null
