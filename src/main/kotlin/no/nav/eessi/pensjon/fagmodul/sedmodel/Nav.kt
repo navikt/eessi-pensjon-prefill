@@ -73,8 +73,8 @@ data class Bruker(
         //P14000
         val endringer: Personendringer? = null,
 
-        var arbeidsforhold: List<ArbeidsforholdItem>? = null, // TODO fix mutable
-        var bank: Bank? = null  // TODO fix mutable
+        val arbeidsforhold: List<ArbeidsforholdItem>? = null,
+        val bank: Bank? = null
 )
 
 //P14000
@@ -223,7 +223,7 @@ data class Person(
         val tidligerefornavn: String? = null,
         val tidligereetternavn: String? = null,
         val fornavnvedfoedsel: String? = null,
-        var etternavnvedfoedsel: String? = null, // TODO fix mutable
+        val etternavnvedfoedsel: String? = null,
         val foedselsdato: String? = null,
 
         val doedsdato: String? = null,
@@ -306,7 +306,7 @@ data class PinItem(
         val institusjonsnavn: String? = null,
         val institusjonsid: String? = null,
         val sektor: String? = null,
-        var identifikator: String? = null,  //rename? f.eks personnummer TODO: fix mutable
+        val identifikator: String? = null,  //rename? f.eks personnummer
         val land: String? = null,
         //P2000, P2100, P2200
         val institusjon: Institusjon? = null
