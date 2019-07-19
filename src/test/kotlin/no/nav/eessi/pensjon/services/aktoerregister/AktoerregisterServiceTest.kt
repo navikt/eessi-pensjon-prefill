@@ -28,8 +28,7 @@ class AktoerregisterServiceTest {
 
     @Before
     fun setup() {
-        aktoerregisterService = AktoerregisterService(mockrestTemplate)
-        aktoerregisterService.appName = "unittests"
+        aktoerregisterService = AktoerregisterService(mockrestTemplate, appName = "unittests")
     }
 
 

@@ -27,9 +27,6 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
                                private val eessiInfo: EessiInformasjon) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillPersonDataFromTPS::class.java) }
-    private val dod = "DØD"
-
-    private var personstatus = ""
 
     private enum class RelasjonEnum(val relasjon: String) {
         FAR("FARA"),
@@ -45,7 +42,6 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
         logger.debug("              Bruker")
         try {
             val brukerTPS = hentBrukerTPS(ident)
-            setPersonStatus(hentPersonStatus(brukerTPS))
 
             return Bruker(
                     person = personData(brukerTPS),
@@ -144,18 +140,6 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
             "PART" -> "02"
             else -> "03"
         }
-    }
-
-    private fun setPersonStatus(status: String = "") {
-        this.personstatus = status
-    }
-
-    private fun getPersonStatus(): String {
-        return this.personstatus
-    }
-
-    private fun validatePersonStatus(value: String): Boolean {
-        return getPersonStatus() == value
     }
 
     //bruker fra TPS
@@ -295,9 +279,8 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
     }
 
     //hjelpe funkson for personstatus.
-    private fun hentPersonStatus(brukerTps: no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker): String {
-        val personstatus = brukerTps.personstatus as Personstatus
-        return personstatus.personstatus.value
+    private fun hentPersonStatus(personTPS: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): String? {
+        return personTPS.personstatus?.personstatus?.value
     }
 
     //Sivilstand ENKE, PENS, SINGLE Familiestatus
@@ -317,17 +300,18 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
 
 
     //2.2.2 adresse informasjon
-    fun hentPersonAdresse(person: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): Adresse? {
+    fun hentPersonAdresse(personTPS: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): Adresse? {
         logger.debug("2.2.2         Adresse")
 
-        //ikke adresse for død
-        if (validatePersonStatus(dod)) {
+        val personstatus = hentPersonStatus(personTPS)
+
+        if (personstatus == "DØD") {
             logger.debug("           Person er avdod (ingen adresse å hente).")
             return null
         }
 
         //Gateadresse eller UstrukturertAdresse
-        val bostedsadresse: Bostedsadresse = person.bostedsadresse ?: return hentPersonAdresseUstrukturert(person.postadresse)
+        val bostedsadresse: Bostedsadresse = personTPS.bostedsadresse ?: return hentPersonAdresseUstrukturert(personTPS.postadresse)
 
         val gateAdresse = bostedsadresse.strukturertAdresse as Gateadresse
         val gate = gateAdresse.gatenavn

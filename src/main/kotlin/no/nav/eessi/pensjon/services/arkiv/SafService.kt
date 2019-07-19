@@ -10,8 +10,8 @@ import org.springframework.web.client.RestTemplate
 import java.util.*
 
 @Service
-class SafService(var safGraphQlOidcRestTemplate: RestTemplate,
-                var safRestOidcRestTemplate: RestTemplate) {
+class SafService(private val safGraphQlOidcRestTemplate: RestTemplate,
+                 private val safRestOidcRestTemplate: RestTemplate) {
 
     private val logger = LoggerFactory.getLogger(SafService::class.java)
 

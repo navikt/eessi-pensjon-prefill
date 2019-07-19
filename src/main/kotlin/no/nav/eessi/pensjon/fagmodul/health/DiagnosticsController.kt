@@ -25,15 +25,12 @@ import javax.servlet.http.HttpServletRequest
 @CrossOrigin
 @RestController
 @Unprotected
-class DiagnosticsController(private val stsService: STSService) {
+class DiagnosticsController(private val stsService: STSService,
+                            @Value("\${app.name}") private val appName: String,
+                            @Value("\${app.version}") private val appVersion: String
+) {
 
     private val logger = LoggerFactory.getLogger(DiagnosticsController::class.java)
-
-    @Value("\${app.name}")
-    lateinit var appName: String
-
-    @Value("\${app.version}")
-    private lateinit var appVersion: String
 
 
     @GetMapping("/ping")
@@ -94,12 +91,12 @@ class DiagnosticsController(private val stsService: STSService) {
 }
 
 @RestController
-class DiagnosticsControllerProtected(private val personService: PersonV3Service, private val euxService: EuxService, private val penService: PensjonsinformasjonService) {
+class DiagnosticsControllerProtected(private val personService: PersonV3Service,
+                                     private val euxService: EuxService,
+                                     private val penService: PensjonsinformasjonService,
+                                     @Value("\${app.name}") val appName: String) {
 
     private val logger = LoggerFactory.getLogger(DiagnosticsController::class.java)
-
-    @Value("\${app.name}")
-    lateinit var appName: String
 
     private val CORRECT_RESULTCOUNTER = 3
 

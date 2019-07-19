@@ -13,19 +13,14 @@ import org.springframework.stereotype.Component
 import java.util.*
 
 @Component
-class PrefillNav(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS) : Prefill<Nav> {
+class PrefillNav(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS,
+                 @Value("\${eessi.pensjon_lokalid}") private val institutionid: String,
+                 @Value("\${eessi.pensjon_lokalnavn}") private val institutionnavn: String) : Prefill<Nav> {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillNav::class.java) }
     private val barnSEDlist = listOf("P2000", "P2100", "P2200")
 
-    @Value("\${eessi.pensjon_lokalid}")
-    lateinit var institutionid: String
-
-    @Value("\${eessi.pensjon_lokalnavn}")
-    lateinit var institutionnavn: String
-
     override fun prefill(prefillData: PrefillDataModel): Nav {
-
         return Nav(
                 //1.0
                 eessisak = createLokaltsaksnummer(prefillData),
