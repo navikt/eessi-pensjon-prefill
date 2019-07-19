@@ -2,6 +2,7 @@ package no.nav.eessi.pensjon.fagmodul.prefill.model
 
 import no.nav.eessi.pensjon.fagmodul.sedmodel.AndreinstitusjonerItem
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
+import no.nav.eessi.pensjon.fagmodul.sedmodel.InstitusjonX005
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import no.nav.eessi.pensjon.utils.mapJsonToAny
@@ -18,7 +19,7 @@ import no.nav.pensjon.v1.ektefellepartnersamboer.V1EktefellePartnerSamboer
  *
  */
 
-open class PrefillDataModel {
+class PrefillDataModel {
 
     //pensjon
     lateinit var penSaksnummer: String
@@ -50,6 +51,7 @@ open class PrefillDataModel {
 
     //hjelpe parametere for utfylling av institusjon
     var andreInstitusjon: AndreinstitusjonerItem? = null
+    var institusjonX005: InstitusjonX005? = null
 
     //div payload seddata json
     val partSedAsJson: MutableMap<String, String> = mutableMapOf()

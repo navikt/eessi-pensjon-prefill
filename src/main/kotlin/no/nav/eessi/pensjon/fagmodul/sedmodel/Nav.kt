@@ -34,10 +34,10 @@ data class Kontekst(
         val bruker: Bruker? = null
 )
 
-//X005 TODO: fix mutable
+//X005
 data class Leggtilinstitusjon(
-        var institusjon: InstitusjonX005? = null,
-        var grunn: LeggtilinstitusjonGrunn? = null
+        val institusjon: InstitusjonX005? = null,
+        val grunn: LeggtilinstitusjonGrunn? = null
 
 )
 

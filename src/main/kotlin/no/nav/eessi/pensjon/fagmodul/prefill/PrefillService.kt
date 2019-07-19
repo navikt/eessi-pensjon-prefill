@@ -32,22 +32,22 @@ class PrefillService(private val prefillSED: PrefillSED) {
     @Throws(ValidationException::class)
     fun prefillEnX005ForHverInstitusjon(nyeDeltakere: List<InstitusjonItem>, data: PrefillDataModel) =
             nyeDeltakere.map {
+                logger.debug("Legger til Institusjon på X005 ${it.institution}")
+                // ID og Navn på X005 er påkrevd må hente innn navn fra UI.
+                val institusjon = InstitusjonX005(
+                        id = it.checkAndConvertInstituion(),
+                        navn = it.name ?: it.checkAndConvertInstituion()
+                )
                 val datax005 = PrefillDataModel().apply {
                     sed = SED.create(SEDType.X005.name)
                     penSaksnummer = data.penSaksnummer
                     personNr = data.personNr
                     euxCaseID = data.euxCaseID
+                    institusjonX005 = institusjon
                 }
 
                 val x005 = prefillSED.prefill(datax005)
 
-                logger.debug("Legger til Institusjon på X005 ${it.institution}")
-                // ID og Navn på X005 er påkrevd må hente innn navn fra UI.
-                val institusjonX005 = InstitusjonX005(
-                        id = it.checkAndConvertInstituion(),
-                        navn = it.name ?: it.checkAndConvertInstituion()
-                )
-                x005.sed.nav?.sak?.leggtilinstitusjon?.institusjon = institusjonX005
                 x005
             }
 }
