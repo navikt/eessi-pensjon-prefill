@@ -36,10 +36,7 @@ class `PrefillP7000-AP-21975717Test` : AbstractPrefillIntegrationTestHelper() {
     }
 
     override fun createFakePersonFnr(): String {
-        if (personFnr.isNullOrBlank()) {
-            personFnr = PersonDataFromTPS.generateRandomFnr(101)
-        }
-        return personFnr
+        return "01071843352"
     }
 
     override fun createPersonInfoPayLoad(): String {
@@ -72,8 +69,6 @@ class `PrefillP7000-AP-21975717Test` : AbstractPrefillIntegrationTestHelper() {
         assertTrue(validateJson(json))
 
         val p7000 = prefill.prefill(prefillData)
-        //setter pin id lik det json fila er ellers vil denne test feile!
-        p7000.nav?.bruker?.person?.pin?.get(0)?.identifikator = "01051843352"
 
         val sed = p7000.toJsonSkipEmpty()
 

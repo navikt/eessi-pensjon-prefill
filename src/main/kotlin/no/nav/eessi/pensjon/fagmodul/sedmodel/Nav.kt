@@ -1,21 +1,21 @@
 package no.nav.eessi.pensjon.fagmodul.sedmodel
 
 data class Nav(
-        var eessisak: List<EessisakItem>? = null,
-        var bruker: Bruker? = null,
-        var ektefelle: Ektefelle? = null,
-        var barn: List<BarnItem>? = null, //pkt 6 og 8
-        var verge: Verge? = null,
-        var krav: Krav? = null,
+        val eessisak: List<EessisakItem>? = null,
+        val bruker: Bruker? = null,
+        var ektefelle: Ektefelle? = null, // TODO fix mutable
+        val barn: List<BarnItem>? = null, //pkt 6 og 8
+        val verge: Verge? = null,
+        var krav: Krav? = null, // TODO fix mutable
 
         //X005
-        var sak: Navsak? = null,
+        val sak: Navsak? = null,
         //P10000
-        var annenperson: Bruker? = null,
+        val annenperson: Bruker? = null,
 
         //H120
         val endredeforhold: Endredeforhold? = null,
-        var ytterligereinformasjon: String? = null
+        val ytterligereinformasjon: String? = null
 )
 
 //H121
@@ -25,16 +25,16 @@ data class Endredeforhold(
 
 //X005
 data class Navsak (
-        var kontekst: Kontekst? = null,
-        var leggtilinstitusjon: Leggtilinstitusjon? = null
+        val kontekst: Kontekst? = null,
+        val leggtilinstitusjon: Leggtilinstitusjon? = null
 )
 
 //X005
 data class Kontekst(
-        var bruker: Bruker? = null
+        val bruker: Bruker? = null
 )
 
-//X005
+//X005 TODO: fix mutable
 data class Leggtilinstitusjon(
         var institusjon: InstitusjonX005? = null,
         var grunn: LeggtilinstitusjonGrunn? = null
@@ -53,28 +53,28 @@ data class InstitusjonX005(
 )
 
 data class Krav(
-        var dato: String? = null,
+        val dato: String? = null,
         //P15000
-        var type: String? = null
+        val type: String? = null
 )
 
 data class Bruker(
-        var mor: Foreldre? = null,
-        var far: Foreldre? = null,
-        var person: Person? = null,
-        var adresse: Adresse? = null,
+        val mor: Foreldre? = null,
+        val far: Foreldre? = null,
+        val person: Person? = null,
+        val adresse: Adresse? = null,
 
         //H120?
-        var bostedsadresse: Adresse? = null,
-        var status: BrukerStatus? = null,
+        val bostedsadresse: Adresse? = null,
+        val status: BrukerStatus? = null,
         //H070
         val doedsfall: Doedsfall? = null,
 
         //P14000
-        var endringer: Personendringer? = null,
+        val endringer: Personendringer? = null,
 
-        var arbeidsforhold: List<ArbeidsforholdItem>? = null,
-        var bank: Bank? = null
+        val arbeidsforhold: List<ArbeidsforholdItem>? = null,
+        val bank: Bank? = null
 )
 
 //P14000
@@ -130,228 +130,219 @@ data class Sted(
 //H070
 data class Dokumentervedlagt(
         val annet: List<String?>? = null,
-       val type: List<String?>? = null
+        val type: List<String?>? = null
 )
 
 data class BrukerStatus(
-        var id: String? = null
+        val id: String? = null
 )
 
 data class Bank(
-        var navn: String? = null,
-        var konto: Konto? = null,
-        var adresse: Adresse? = null
+        val navn: String? = null,
+        val konto: Konto? = null,
+        val adresse: Adresse? = null
 )
 
 data class Konto(
-        var sepa: Sepa? = null,
-        var innehaver: Innehaver? = null,
-        var ikkesepa: IkkeSepa? = null,
-        var kontonr: String? = null
+        val sepa: Sepa? = null,
+        val innehaver: Innehaver? = null,
+        val ikkesepa: IkkeSepa? = null,
+        val kontonr: String? = null
 )
 
 data class IkkeSepa(
-        var swift: String? = null
+        val swift: String
 )
 
 data class Sepa(
-        var iban: String? = null,
-        var swift: String? = null
+        val iban: String? = null,
+        val swift: String? = null
 )
 
 data class Innehaver(
-        var rolle: String? = null,
-        var navn: String? = null
+        val rolle: String? = null,
+        val navn: String? = null
 )
 
 data class Foreldre(
-        var person: Person? = null
+        val person: Person
 )
 
 data class BarnItem(
-        var mor: Foreldre? = null,
-        var person: Person? = null,
-        var far: Foreldre? = null,
-        var opplysningeromannetbarn: String? = null,
-        var relasjontilbruker: String? = null
+        val mor: Foreldre? = null,
+        val person: Person? = null,
+        val far: Foreldre? = null,
+        val opplysningeromannetbarn: String? = null,
+        val relasjontilbruker: String? = null
 )
 
 data class Ektefelle(
-        var mor: Foreldre? = null,
-        var person: Person? = null,
-        var far: Foreldre? = null,
-        var type: String? = null
+        val mor: Foreldre? = null,
+        val person: Person? = null,
+        val far: Foreldre? = null,
+        val type: String? = null
 )
 
 data class Verge(
-        var person: Person? = null,
-        var adresse: Adresse? = null,
-        var vergemaal: Vergemaal? = null,
-        var vergenavn: String? = null
+        val person: Person? = null,
+        val adresse: Adresse? = null,
+        val vergemaal: Vergemaal? = null,
+        val vergenavn: String? = null
 )
 
 data class Vergemaal(
-        var mandat: String? = null
+        val mandat: String? = null
 )
 
 data class Kontakt(
-        var telefon: List<TelefonItem>? = null,
-        var email: List<EmailItem>? = null,
+        val telefon: List<TelefonItem>? = null,
+        val email: List<EmailItem>? = null,
 
         //direkte uten bruk av list?
-        var telefonnr: String? = null,
-        var emailadr: String? = null
+        val telefonnr: String? = null,
+        val emailadr: String? = null
 )
 
 data class TelefonItem(
-        var type: String? = null,
-        var nummer: String? = null
+        val type: String? = null,
+        val nummer: String? = null
 )
 
 data class EmailItem(
-        var adresse: String? = null
+        val adresse: String? = null
 )
 
 data class Person(
-        var pin: List<PinItem>? = null,
-        var pinannen: PinItem? = null, //kan fjernes hvis ikke i bruk
-        var statsborgerskap: List<StatsborgerskapItem>? = null, //nasjonalitet
-        var etternavn: String? = null,
-        var fornavn: String? = null,
-        var kjoenn: String? = null,
-        var foedested: Foedested? = null,
-        var tidligerefornavn: String? = null,
-        var tidligereetternavn: String? = null,
-        var fornavnvedfoedsel: String? = null,
-        var etternavnvedfoedsel: String? = null,
-        var foedselsdato: String? = null,
+        var pin: List<PinItem>? = null,  // TODO fix mutable
+        val pinannen: PinItem? = null, //kan fjernes hvis ikke i bruk
+        val statsborgerskap: List<StatsborgerskapItem>? = null, //nasjonalitet
+        val etternavn: String? = null,
+        val fornavn: String? = null,
+        val kjoenn: String? = null,
+        val foedested: Foedested? = null,
+        val tidligerefornavn: String? = null,
+        val tidligereetternavn: String? = null,
+        val fornavnvedfoedsel: String? = null,
+        val etternavnvedfoedsel: String? = null,
+        val foedselsdato: String? = null,
 
-        var doedsdato: String? = null,
-        var dodsDetalj: DodsDetalj? = null, //4 P2100
+        val doedsdato: String? = null,
+        val dodsDetalj: DodsDetalj? = null, //4 P2100
 
-        var kontakt: Kontakt? = null,
-        var sivilstand: List<SivilstandItem>? = null,   //familiestatus
-        var relasjontilavdod: RelasjonAvdodItem? = null, //5.2.5 P2100
-        var nyttEkteskapPartnerskapEtterForsikredeDod: NyttEkteskapPartnerskap? = null, //5.3.4 P2100
-        var rolle: String? = null  //3.1 i P10000
+        val kontakt: Kontakt? = null,
+        val sivilstand: List<SivilstandItem>? = null,   //familiestatus
+        val relasjontilavdod: RelasjonAvdodItem? = null, //5.2.5 P2100
+        val nyttEkteskapPartnerskapEtterForsikredeDod: NyttEkteskapPartnerskap? = null, //5.3.4 P2100
+        val rolle: String? = null  //3.1 i P10000
 
 )
 
 data class DodsDetalj(
-        var sted: String? = null, //4.1
-        var dato: String? = null, //4.2
-        var arsaker: List<DodsDetaljOrsakItem>? = null // 4.3
+        val sted: String? = null, //4.1
+        val dato: String? = null, //4.2
+        val arsaker: List<DodsDetaljOrsakItem>? = null // 4.3
 )
 
 data class DodsDetaljOrsakItem(
-        var arsak: String? = null, //4.3.1 P2100
-        var annenArsak: String? = null //4.3.2.1
+        val arsak: String? = null, //4.3.1 P2100
+        val annenArsak: String? = null //4.3.2.1
 )
 
 data class NyttEkteskapPartnerskap(
-        var fraDato: String? = null,   //5.3.4. P2100
-        var etternavn: String? = null, //5.3.4.2.1
-        var fornavn: String? = null,   //5.3.4.2.2
-        var borsammen: String? = null  //5.3
+        val fraDato: String? = null,   //5.3.4. P2100
+        val etternavn: String? = null, //5.3.4.2.1
+        val fornavn: String? = null,   //5.3.4.2.2
+        val borsammen: String? = null  //5.3
 
 )
 
 data class RelasjonAvdodItem(
-        var pensjondetalj: List<AvdodPensjonItem>? = null, //3
-
-        var relasjon: String? = null,  //5.2.5  P2100
-        var sammehusholdning: String? = null,    //5.2.6  P2100
-        var sammehusholdningfradato: String? = null, //5.2.7.1 P2100
-        var harfellesbarn: String? = null, //5.3.2.1 P2100
-        var forventetTerim: String? = null, //5.3.2.2
-        var sperasjonType: String? = null, //5.3.3
-        var giftParnerDato: String? = null // 5.3.1
+        val pensjondetalj: List<AvdodPensjonItem>? = null, //3
+        val relasjon: String? = null,  //5.2.5  P2100
+        val sammehusholdning: String? = null,    //5.2.6  P2100
+        val sammehusholdningfradato: String? = null, //5.2.7.1 P2100
+        val harfellesbarn: String? = null, //5.3.2.1 P2100
+        val forventetTerim: String? = null, //5.3.2.2
+        val sperasjonType: String? = null, //5.3.3
+        val giftParnerDato: String? = null // 5.3.1
 )
 
 data class AvdodPensjonItem(
-        var mottattPensjonvedDod: String? = null, //3.2 P2100
-        var mottattPensjonType: String? = null, //3.2.1
-        var startDatoPensjonrettighet: String? = null, //3.2.3
-        var institusjon: EessisakItem? = null // 3.2.2.1
+        val mottattPensjonvedDod: String? = null, //3.2 P2100
+        val mottattPensjonType: String? = null, //3.2.1
+        val startDatoPensjonrettighet: String? = null, //3.2.3
+        val institusjon: EessisakItem? = null // 3.2.2.1
 )
 
 data class SivilstandItem(
-        var fradato: String? = null,
-        var status: String? = null
+        val fradato: String? = null,
+        val status: String? = null
 )
 
 data class StatsborgerskapItem(
-        var land: String? = null
+        val land: String? = null
 )
 
 data class ArbeidsforholdItem(
-        var inntekt: List<InntektItem?>? = null,
-        var planlagtstartdato: String? = null,
-        var arbeidstimerperuke: String? = null,
-        var planlagtpensjoneringsdato: String? = null,
-        var yrke: String? = null,
-        var type: String? = null,
-        var sluttdato: String? = null
+        val inntekt: List<InntektItem?>? = null,
+        val planlagtstartdato: String? = null,
+        val arbeidstimerperuke: String? = null,
+        val planlagtpensjoneringsdato: String? = null,
+        val yrke: String? = null,
+        val type: String? = null,
+        val sluttdato: String? = null
 )
 
 data class InntektItem(
-        var betalingshyppighetinntekt: String? = null,
-        var beloeputbetaltsiden: String? = null,
-        var valuta: String? = null,
-        var annenbetalingshyppighetinntekt: String? = null,
-        var beloep: String? = null
+        val betalingshyppighetinntekt: String? = null,
+        val beloeputbetaltsiden: String? = null,
+        val valuta: String? = null,
+        val annenbetalingshyppighetinntekt: String? = null,
+        val beloep: String? = null
 )
 
 //TODO må kanskje oppdatere mot andre SED legge institusjonsid rett inn i PinItem..
 data class PinItem(
-        var institusjonsnavn: String? = null,
-        var institusjonsid: String? = null,
-        var sektor: String? = null,
-        var identifikator: String? = null,  //rename? f.eks personnummer
-        var land: String? = null,
+        val institusjonsnavn: String? = null,
+        val institusjonsid: String? = null,
+        val sektor: String? = null,
+        val identifikator: String? = null,  //rename? f.eks personnummer
+        val land: String? = null,
         //P2000, P2100, P2200
-        var institusjon: Institusjon? = null
+        val institusjon: Institusjon? = null
 )
 
 data class Adresse(
-        var gate: String? = null,
-        var bygning: String? = null,
-        var by: String? = null,
-        var postnummer: String? = null,
-        var region: String? = null,
-        var land: String? = null,
-        var kontaktpersonadresse: String? = null,
-        var datoforadresseendring: String? = null,
-        var postadresse: String? = null,
+        val gate: String? = null,
+        val bygning: String? = null,
+        val by: String? = null,
+        val postnummer: String? = null,
+        val region: String? = null,
+        val land: String? = null,
+        val kontaktpersonadresse: String? = null,
+        val datoforadresseendring: String? = null,
+        val postadresse: String? = null,
         val startdato: String? = null
 )
 
 data class Foedested(
-        var by: String? = null,
-        var land: String? = null,
-        var region: String? = null
+        val by: String? = null,
+        val land: String? = null,
+        val region: String? = null
 )
 
 //refakt.. slå sammen til Institusjon
 ////TODO:
 data class EessisakItem(
-        var institusjonsid: String? = null,
-        var institusjonsnavn: String? = null,
-        var saksnummer: String? = null,
-        var land: String? = null
-)
-
-////TODO:
-//hvor brukes denne?
-data class Institusjonsadresse(
-        var poststed: String? = null,
-        var postnummer: String? = null,
-        var land: String? = null
+        val institusjonsid: String? = null,
+        val institusjonsnavn: String? = null,
+        val saksnummer: String? = null,
+        val land: String? = null
 )
 
 //hva benyttes denne til? må fjernes.
 data class Ignore(
-        var buildingName: String? = null,
-        var region: String? = null,
-        var otherInformation: String? = null
+        val buildingName: String? = null,
+        val region: String? = null,
+        val otherInformation: String? = null
 )
