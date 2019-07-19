@@ -3,7 +3,7 @@ package no.nav.eessi.pensjon.fagmodul.sedmodel
 data class Nav(
         val eessisak: List<EessisakItem>? = null,
         val bruker: Bruker? = null,
-        var ektefelle: Ektefelle? = null, // TODO fix mutable
+        val ektefelle: Ektefelle? = null,
         val barn: List<BarnItem>? = null, //pkt 6 og 8
         val verge: Verge? = null,
         var krav: Krav? = null, // TODO fix mutable
