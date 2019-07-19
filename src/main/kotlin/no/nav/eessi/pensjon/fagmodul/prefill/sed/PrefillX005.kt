@@ -40,10 +40,7 @@ class PrefillX005(private val prefillNav: PrefillNav) : Prefill<SED> {
                     )
                 ),
                 leggtilinstitusjon = Leggtilinstitusjon(
-                    institusjon = InstitusjonX005(
-                        id = "",
-                        navn = ""
-                    ),
+                    institusjon = prefillData.institusjonX005,
                     grunn = null
                 )
             )

@@ -37,7 +37,9 @@ class PrefillP7000(private val prefillNav: PrefillNav) : Prefill<SED> {
                                 foedselsdato = person?.foedselsdato,
                                 kjoenn = person?.kjoenn
                         )
-                )
+                ),
+                //mappe om etternavn til mappingfeil
+                ektefelle = Ektefelle(person = Person(etternavn = navsed.bruker?.person?.etternavn))
         )
         p7000.nav?.bruker?.person?.pin = listOf(
                 PinItem(
@@ -49,8 +51,7 @@ class PrefillP7000(private val prefillNav: PrefillNav) : Prefill<SED> {
                         )
                 )
         )
-        //mappe om etternavn til mappingfeil
-        p7000.nav?.ektefelle = Ektefelle(person = Person(etternavn = navsed.bruker?.person?.etternavn))
+
 
         //mappe om kjoenn for mappingfeil
         p7000.pensjon = Pensjon(bruker = Bruker(person = Person(kjoenn = navsed.bruker?.person?.kjoenn)))
