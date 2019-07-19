@@ -58,7 +58,27 @@ class PrefillNav(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS,
     //8.0 Bank detalsjer om bank betalinger.
     private fun createBankData(prefillData: PrefillDataModel): Bank? {
         logger.debug("8.0           Informasjon om betaling")
-        return createBetaling(prefillData)
+        logger.debug("8.1           Informasjon om betaling")
+        return prefillData.getPersonInfo()?.let { personInfo ->
+            Bank(
+                    navn = personInfo.bankName,
+                    konto = Konto(
+                            innehaver = Innehaver(
+                                    rolle = "01", //forsikkret bruker .. avventer med Verge "02",
+                                    navn = personInfo.bankName
+                            ),
+                            sepa = Sepa(
+                                    iban = personInfo.bankIban,
+                                    swift = personInfo.bankBicSwift
+                            )
+
+                    ),
+                    adresse = Adresse(
+                            gate = personInfo.bankAddress,
+                            land = personInfo.bankCountry?.currencyLabel
+                    )
+            )
+        }
     }
 
     //
@@ -72,29 +92,19 @@ class PrefillNav(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS,
     // etterlatt pensjon da er dette den avdøde.(ikke levende)
     // etterlatt pensjon da er den levende i pk.3 sed (gjenlevende) (pensjon.gjenlevende)
     private fun createBrukerfraTPS(utfyllingData: PrefillDataModel): Bruker {
-        if (utfyllingData.erGyldigEtterlatt()) {
-            logger.debug("2.0           Avdod person (Gjenlevende pensjon)")
-            val bruker = preutfyllingPersonFraTPS.prefillBruker(utfyllingData.avdod)
-
-            logger.debug("3.0           Informasjon om personens ansettelsesforhold og selvstendige næringsvirksomhet")
-            bruker.arbeidsforhold = createInformasjonOmAnsettelsesforhold(utfyllingData)
-
-            //logger.debug("8.0           Informasjon om betaling")
-            bruker.bank = createBankData(utfyllingData)
-            return bruker
-        }
-
-        logger.debug("2.0           Forsikret person")
-        val bruker = preutfyllingPersonFraTPS.prefillBruker(utfyllingData.personNr)
-
-        //Denne finnes ikke i PK-553333
-        logger.debug("3.0           Informasjon om personens ansettelsesforhold og selvstendige næringsvirksomhet")
-        bruker.arbeidsforhold = createInformasjonOmAnsettelsesforhold(utfyllingData)
-
-        //logger.debug("8.0           Informasjon om betaling")
-        bruker.bank = createBankData(utfyllingData)
-
-        return bruker
+        val subjektIdent =
+                if (utfyllingData.erGyldigEtterlatt()) {
+                    logger.debug("2.0           Avdod person (Gjenlevende pensjon)")
+                    utfyllingData.avdod
+                } else {
+                    logger.debug("2.0           Forsikret person")
+                    utfyllingData.personNr
+                }
+        return preutfyllingPersonFraTPS.prefillBruker(
+                subjektIdent,
+                createBankData(utfyllingData),
+                createInformasjonOmAnsettelsesforhold(utfyllingData)
+        )
     }
 
     //utfylling av liste av barn under 18år
@@ -144,6 +154,7 @@ class PrefillNav(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS,
 
 
     private fun createInformasjonOmAnsettelsesforhold(prefillData: PrefillDataModel): List<ArbeidsforholdItem>? {
+        logger.debug("3.0           Informasjon om personens ansettelsesforhold og selvstendige næringsvirksomhet")
         logger.debug("3.1           Informasjon om ansettelsesforhold og selvstendig næringsvirksomhet ")
         val personInfo = prefillData.getPersonInfo() ?: return null
         return listOf(createAnsettelsesforhold(personInfo))
@@ -173,31 +184,6 @@ class PrefillNav(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS,
                 arbeidstimerperuke = personInfo.workHourPerWeek ?: ""
 
         )
-    }
-
-    private fun createBetaling(prefillData: PrefillDataModel): Bank? {
-        logger.debug("8.1           Informasjon om betaling")
-        val personInfo = prefillData.getPersonInfo() ?: return null
-
-        return Bank(
-                navn = personInfo.bankName,
-                konto = Konto(
-                        innehaver = Innehaver(
-                                rolle = "01", //forsikkret bruker .. avventer med Verge "02",
-                                navn = personInfo.bankName
-                        ),
-                        sepa = Sepa(
-                                iban = personInfo.bankIban,
-                                swift = personInfo.bankBicSwift
-                        )
-
-                ),
-                adresse = Adresse(
-                        gate = personInfo.bankAddress,
-                        land = personInfo.bankCountry?.currencyLabel
-                )
-        )
-
     }
 
 }
