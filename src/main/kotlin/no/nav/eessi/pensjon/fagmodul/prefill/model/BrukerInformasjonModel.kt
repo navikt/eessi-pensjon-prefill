@@ -5,45 +5,45 @@ import java.util.*
 //fra UI til Fagmodul (person info)
 data class BrukerInformasjon(
         //bank
-        var bankAddress: String?,
-        var bankBicSwift: String?,
-        var bankCode: String?,
-        var bankCountry: BankCountry?,
-        var bankIban: String?,
-        var bankName: String?,
-        var userEmail: String?,
-        var userPhone: String?,
+        val bankAddress: String?,
+        val bankBicSwift: String?,
+        val bankCode: String?,
+        val bankCountry: BankCountry?,
+        val bankIban: String?,
+        val bankName: String?,
+        val userEmail: String?,
+        val userPhone: String?,
         //work
-        var retirementCountry: RetirementCountry?,
-        var workType: String?,
-        var workHourPerWeek: String?,
-        var workIncome: String?,
-        var workIncomeCurrency: WorkIncomeCurrency?,
-        var workPaymentDate: String?,
-        var workPaymentFrequency: String?,
-        var workEstimatedRetirementDate: Date?,
-        var workStartDate: Date?,
-        var workEndDate: Date?
+        val retirementCountry: RetirementCountry?,
+        val workType: String?,
+        val workHourPerWeek: String?,
+        val workIncome: String?,
+        val workIncomeCurrency: WorkIncomeCurrency?,
+        val workPaymentDate: String?,
+        val workPaymentFrequency: String?,
+        val workEstimatedRetirementDate: Date?,
+        val workStartDate: Date?,
+        val workEndDate: Date?
 
 )
 
 data class BankCountry(
-        var currency: String?,
-        var currencyLabel: String?,
-        var label: String?,
-        var value: String?
+        val currency: String?,
+        val currencyLabel: String?,
+        val label: String?,
+        val value: String?
 )
 
 data class WorkIncomeCurrency(
-        var currency: String?,
-        var currencyLabel: String?,
-        var label: String?,
-        var value: String?
+        val currency: String?,
+        val currencyLabel: String?,
+        val label: String?,
+        val value: String?
 )
 
 data class RetirementCountry(
-        var currency: String?,
-        var currencyLabel: String?,
-        var label: String?,
-        var value: String?
+        val currency: String?,
+        val currencyLabel: String?,
+        val label: String?,
+        val value: String?
 )
