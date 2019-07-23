@@ -5,7 +5,7 @@ buildscript {
         springSecurityVersion = '5.0.5.RELEASE'
         prometheusVersion = '0.5.0'
         springfoxVersion = '2.9.2'
-        jacksonModuleKotlinVersion = '2.9.6'
+        jacksonModuleKotlinVersion = '2.9.9'
         cxfVersion = '3.2.6'
         mockitoVersion = '2.8.+'
         personV3Version = '3.4.1'
