@@ -79,10 +79,10 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 
     // Allows for variable expiration-date of each cache-entry
-    implementation("net.jodah:expiringmap:0.5.8")
+    implementation("net.jodah:expiringmap:0.5.9")
 
     // Apache httpcomponents
-    implementation("org.apache.httpcomponents:fluent-hc:4.5.6")
+    implementation("org.apache.httpcomponents:fluent-hc:4.5.9")
 
     // Apache CXF
     implementation("org.apache.cxf:cxf-spring-boot-starter-jaxws:${cxfVersion}")
