@@ -101,7 +101,7 @@ dependencies {
     //mock - test
     testImplementation("org.jetbrains.kotlin:kotlin-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
-    testImplementation("com.nhaarman:mockito-kotlin-kt1.1:1.5.0")
+    testImplementation("com.nhaarman:mockito-kotlin-kt1.1:1.6.0")
     testImplementation("org.skyscreamer:jsonassert:1.5.0")
 
     // Architecture tests
@@ -115,12 +115,12 @@ dependencies {
     testImplementation("info.cukes:cucumber-spring:1.2.5")
     testImplementation("info.cukes:cucumber-java:1.2.5")
     testImplementation("info.cukes:cucumber-junit:1.2.5")
-    testImplementation('org.apache.httpcomponents:fluent-hc:4.5.6')
+    testImplementation('org.apache.httpcomponents:fluent-hc:4.5.9')
 
     // OIDC
     implementation("no.nav.security:oidc-spring-support:${oidcTokenSupportVersion}")
     implementation("no.nav.security:oidc-test-support:${oidcTokenSupportVersion}")
-    testImplementation("org.pac4j:spring-webmvc-pac4j:3.0.0")
+    testImplementation("org.pac4j:spring-webmvc-pac4j:3.2.0")
 
 
     // Tjenestespesifikasjoner
