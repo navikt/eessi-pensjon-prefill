@@ -1,206 +1,206 @@
 package no.nav.eessi.pensjon.fagmodul.sedmodel
 
 data class Landspesifikk (
-        var norge: Norge? = null
+        val norge: Norge? = null
 )
 
 data class Norge (
-        var alderspensjon: Alderspensjon? = null,
-        var etterlatte: Etterlatte? = null,
-        var ufore: Ufore? = null
+        val alderspensjon: Alderspensjon? = null,
+        val etterlatte: Etterlatte? = null,
+        val ufore: Ufore? = null
 )
 
 data class Ufore (
-        var nasjonaliteter: List<Nasjonalitet>? = null,
-        var brukerInfo: BrukerInfo? = null,
-        var andreRessurserInntektskilder: AndreRessurserInntektskilder? = null,
-        var ytelseInfo: YtelseInfo? = null,
-        var ektefelleInfo: EktefelleInfo? = null,
-        var barnInfo: List<BarnInfo>? = null,
-        var tilgjengeligInfo: String? = null,
-        var grunn: String? = null
+        val nasjonaliteter: List<Nasjonalitet>? = null,
+        val brukerInfo: BrukerInfo? = null,
+        val andreRessurserInntektskilder: AndreRessurserInntektskilder? = null,
+        val ytelseInfo: YtelseInfo? = null,
+        val ektefelleInfo: EktefelleInfo? = null,
+        val barnInfo: List<BarnInfo>? = null,
+        val tilgjengeligInfo: String? = null,
+        val grunn: String? = null
 )
 
 data class Alderspensjon (
-        var brukerInfo: BrukerInfo? = null,
-        var ansettelsesforhold: Ansettelsesforhold? = null,
-        var ytelseInfo: YtelseInfo? = null,
-        var ektefelleInfo: EktefelleInfo? = null,
-        var barnInfo: List<BarnInfo>? = null,
-        var pensjonsgrad: String? = null,
-        var tilgjengeligInfo: String? = null,
-        var grunn: String? = null
+        val brukerInfo: BrukerInfo? = null,
+        val ansettelsesforhold: Ansettelsesforhold? = null,
+        val ytelseInfo: YtelseInfo? = null,
+        val ektefelleInfo: EktefelleInfo? = null,
+        val barnInfo: List<BarnInfo>? = null,
+        val pensjonsgrad: String? = null,
+        val tilgjengeligInfo: String? = null,
+        val grunn: String? = null
     )
 
 data class Etterlatte (
-        var sosken: Sosken? = null,
-        var ansettelsesforhold: Ansettelsesforhold? = null,
-        var sokersYtelser: YtelseInfo? = null,
-        var avdod: Avdod? = null,
-        var tilgjengeligInfo: String? = null,
-        var grunn: String? = null
+        val sosken: Sosken? = null,
+        val ansettelsesforhold: Ansettelsesforhold? = null,
+        val sokersYtelser: YtelseInfo? = null,
+        val avdod: Avdod? = null,
+        val tilgjengeligInfo: String? = null,
+        val grunn: String? = null
 )
 
 data class Arbeidsgiver (
-        var ansattIdentifikasjonAvArbeidsgiver: AnsattIdentifikasjonAvArbeidsgiver? = null,
-        var arbeidsgiverIdentifikasjonAvArbeidsgiver: ArbeidsgiverIdentifikasjonAvArbeidsgiver? = null //arbeidsgiverIdentifikasjon
+        val ansattIdentifikasjonAvArbeidsgiver: AnsattIdentifikasjonAvArbeidsgiver? = null,
+        val arbeidsgiverIdentifikasjonAvArbeidsgiver: ArbeidsgiverIdentifikasjonAvArbeidsgiver? = null //arbeidsgiverIdentifikasjon
 )
 
 data class AnsattIdentifikasjonAvArbeidsgiver (
-        var ansattIndikator: String? = null,
-        var navn: String? = null,
-        var adresse: Adresse? = null,
-        var arbeidsgiverIndikator: String? = null
+        val ansattIndikator: String? = null,
+        val navn: String? = null,
+        val adresse: Adresse? = null,
+        val arbeidsgiverIndikator: String? = null
 )
 
 data class ArbeidsgiverIdentifikasjonAvArbeidsgiver (
-        var arbeidsgiverIndikator: String? = null,
-        var registreringsNummer: String? = null,
-        var personNummer: String? = null,
-        var skatteNummer: String? = null,
-        var bedriftsRegister: String? = null
+        val arbeidsgiverIndikator: String? = null,
+        val registreringsNummer: String? = null,
+        val personNummer: String? = null,
+        val skatteNummer: String? = null,
+        val bedriftsRegister: String? = null
 )
 
 data class Avdod (
-        var nasjonaliteter: List<Nasjonalitet>? = null,
-        var pensjonsMottaker: PensjonsMottaker? = null,
-        var inntektsgivendeArbeid: String? = null
+        val nasjonaliteter: List<Nasjonalitet>? = null,
+        val pensjonsMottaker: PensjonsMottaker? = null,
+        val inntektsgivendeArbeid: String? = null
 )
 
 data class Sosken (
-        var nasjonaliteter: List<Nasjonalitet>? = null,
-        var forsorgelsesplikt: String? = null,
-        var arbeidsforhet: String? = null,
-        var arbeidsufor: String? = null,
-        var soskenNavn: List<SoskenNavn>? = null
+        val nasjonaliteter: List<Nasjonalitet>? = null,
+        val forsorgelsesplikt: String? = null,
+        val arbeidsforhet: String? = null,
+        val arbeidsufor: String? = null,
+        val soskenNavn: List<SoskenNavn>? = null
 )
 
 data class SoskenNavn (
-        var navn: String? = null,
-        var personnummer: String? = null,
-        var borMedSosken: String? = null
+        val navn: String? = null,
+        val personnummer: String? = null,
+        val borMedSosken: String? = null
 )
 
 data class BrukerInfo (
-        var borMedEktefelleEllerPartner: String? = null,
-        var boddFrahverandreSiden: String? = null,
-        var samboer: Samboer? = null,
-        var arbeidsAvklaringskurs: String? = null,
-        var yrke: String? = null
+        val borMedEktefelleEllerPartner: String? = null,
+        val boddFrahverandreSiden: String? = null,
+        val samboer: Samboer? = null,
+        val arbeidsAvklaringskurs: String? = null,
+        val yrke: String? = null
 )
 
 data class Ansettelsesforhold (
-        var ansettelsesforholdType: String? = null,
-        var lonnsInntekt: List<Belop>? = null,
-        var andreInntektskilder: AndreInntektskilder? = null,
-        var ingenInntektOppgitt: String? = null,
-        var obligatoriskPensjonsDekning: String? = null,
-        var inntektsType: String? = null
+        val ansettelsesforholdType: String? = null,
+        val lonnsInntekt: List<Belop>? = null,
+        val andreInntektskilder: AndreInntektskilder? = null,
+        val ingenInntektOppgitt: String? = null,
+        val obligatoriskPensjonsDekning: String? = null,
+        val inntektsType: String? = null
 )
 
 data class YtelseInfo (
-        var kontantYtelserSykdom: String? = null,
-        var hjelpestonad: String? = null,
-        var grunnleggendeYtelser: String? = null,
-        var ytelserTilUtdanning: String? = null,
-        var forsorgelseBarn: String? = null,
-        var frivilligInnskudd: String? = null
+        val kontantYtelserSykdom: String? = null,
+        val hjelpestonad: String? = null,
+        val grunnleggendeYtelser: String? = null,
+        val ytelserTilUtdanning: String? = null,
+        val forsorgelseBarn: String? = null,
+        val frivilligInnskudd: String? = null
 )
 
 data class EktefelleInfo (
-        var familiestatus: Familiestatus? = null,
-        var nasjonalitet: List<Nasjonalitet>? = null,
-        var inntektsgivedeArbeid: InntektsgivendeArbeid? = null,
-        var arbeidsfor: String? = null,
-        var pensjonsmottaker: List<PensjonsMottaker>?  = null,
-        var ikkeYrkesaktiv: String? = null,
-        var andreYtelser: AndreYtelser? = null,
-        var andreRessurserInntektskilder: AndreRessurserInntektskilder? = null
+        val familiestatus: Familiestatus? = null,
+        val nasjonalitet: List<Nasjonalitet>? = null,
+        val inntektsgivedeArbeid: InntektsgivendeArbeid? = null,
+        val arbeidsfor: String? = null,
+        val pensjonsmottaker: List<PensjonsMottaker>?  = null,
+        val ikkeYrkesaktiv: String? = null,
+        val andreYtelser: AndreYtelser? = null,
+        val andreRessurserInntektskilder: AndreRessurserInntektskilder? = null
 )
 
 data class BarnInfo (
-        var etternavn: String? = null,
-        var fornavn: String? = null,
-        var familiestatus: List<Familiestatus>? = null,
-        var barnetrygd: Barnetrygd? = null,
-        var adresse: Adresse? = null,
-        var borMedBeggeForeldre: String? = null,
-        var forsikredeForsorgerBarnet: String? = null,
-        var barnetBorHosForsikrede: String? = null
+        val etternavn: String? = null,
+        val fornavn: String? = null,
+        val familiestatus: List<Familiestatus>? = null,
+        val barnetrygd: Barnetrygd? = null,
+        val adresse: Adresse? = null,
+        val borMedBeggeForeldre: String? = null,
+        val forsikredeForsorgerBarnet: String? = null,
+        val barnetBorHosForsikrede: String? = null
 )
 
 data class Barnetrygd (
-        var barnetrygd: String? = null,
-        var typeBarnetrygd: String? = null,
-        var belop: List<Belop>? = null
+        val barnetrygd: String? = null,
+        val typeBarnetrygd: String? = null,
+        val belop: List<Belop>? = null
 )
 
 data class AndreRessurserInntektskilder (
-        var andreRessurserInntektskilder: String? = null,
-        var typeAndreRessurserInntektskilder: String? = null,
-        var belop: List<Belop>? = null,
-        var oppgirIngenInntekt: String? = null,
-        var arbeidsgiver: List<Arbeidsgiver>? = null,
-        var startDatoAnsettelse: String? = null
+        val andreRessurserInntektskilder: String? = null,
+        val typeAndreRessurserInntektskilder: String? = null,
+        val belop: List<Belop>? = null,
+        val oppgirIngenInntekt: String? = null,
+        val arbeidsgiver: List<Arbeidsgiver>? = null,
+        val startDatoAnsettelse: String? = null
 )
 
 data class AndreYtelser (
-        var andreYtelser: String? = null,
-        var andreYtelserType: String? = null,
-        var belop: List<Belop>? = null
+        val andreYtelser: String? = null,
+        val andreYtelserType: String? = null,
+        val belop: List<Belop>? = null
 )
 
 //4.4.5 Pensjonsmottaker
 data class PensjonsMottaker (
-        var erPensjonsmottaker: String? = null,
-        var typePensjon: String? = null,
-        var pensjonsnummer: String? = null,
-        var institusjonsopphold: Institusjonsopphold? = null,
-        var startDatoYtelse: String? = null,
-        var sluttDatoYtelse: String? = null,
-        var pensjonBasertPa: String? = null
+        val erPensjonsmottaker: String? = null,
+        val typePensjon: String? = null,
+        val pensjonsnummer: String? = null,
+        val institusjonsopphold: Institusjonsopphold? = null,
+        val startDatoYtelse: String? = null,
+        val sluttDatoYtelse: String? = null,
+        val pensjonBasertPa: String? = null
 )
 
 data class Institusjonsopphold (
-        var land: String? = null,
-        var personNummer: String? = null,
-        var sektor: String? = null,
-        var institusjon: Institusjon? = null,
-        var belop: List<Belop>? = null
+        val land: String? = null,
+        val personNummer: String? = null,
+        val sektor: String? = null,
+        val institusjon: Institusjon? = null,
+        val belop: List<Belop>? = null
 )
 
 data class InntektsgivendeArbeid (
-        var inntektsgivendeArbeid: String? = null,
-        var belop: List<Belop>? = null
+        val inntektsgivendeArbeid: String? = null,
+        val belop: List<Belop>? = null
 )
 
 data class Familiestatus (
-        var familiestatus: String? = null,
-        var datoFamilieStatus: String? = null
+        val familiestatus: String? = null,
+        val datoFamilieStatus: String? = null
 )
 
 data class AndreInntektskilder (
-        var andreInntektskilderIndikator: String? = null,
-        var typeAndreInntektskilder: String? = null,
-        var andreInntektskilderBelop: List<Belop>? = null
+        val andreInntektskilderIndikator: String? = null,
+        val typeAndreInntektskilder: String? = null,
+        val andreInntektskilderBelop: List<Belop>? = null
 )
 
 data class Belop (
-        var belop: String? = null,
-        var valuta: String? = null,
-        var belopGjelderFra: String? = null,
-        var betalingshyppighet: String? = null,
-        var annenBetalingshyppighet: String? = null
+        val belop: String? = null,
+        val valuta: String? = null,
+        val belopGjelderFra: String? = null,
+        val betalingshyppighet: String? = null,
+        val annenBetalingshyppighet: String? = null
 )
 
 data class Samboer (
-        var boddSammenSiden: String? = null,
-        var barnMedSamboer: String? = null,
-        var tidligereGiftMedSamboer: String? = null,
-        var nasjonaliteter: List<Nasjonalitet>? = null,
-        var forsikringMotArbeidsuforhet: String? = null
+        val boddSammenSiden: String? = null,
+        val barnMedSamboer: String? = null,
+        val tidligereGiftMedSamboer: String? = null,
+        val nasjonaliteter: List<Nasjonalitet>? = null,
+        val forsikringMotArbeidsuforhet: String? = null
 )
 
 data class Nasjonalitet (
-        var nasjonalitet: String? = null
+        val nasjonalitet: String? = null
 )

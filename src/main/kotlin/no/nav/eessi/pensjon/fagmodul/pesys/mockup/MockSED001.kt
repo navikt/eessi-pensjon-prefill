@@ -29,13 +29,13 @@ class MockSED001 {
         return p2000
     }
 
-    fun mockP3000NO(): SED {
+    fun mockP3000NO(pensjonsgrad: String? = null): SED {
         val p3000no = SED("P3000_NO")
         p3000no.pensjon = Pensjon(
                 landspesifikk = Landspesifikk(
                         norge = Norge(
                                 alderspensjon = Alderspensjon(
-                                        pensjonsgrad = "03"
+                                        pensjonsgrad = pensjonsgrad
                                 )
                         )
                 )

@@ -448,11 +448,7 @@ class PensjonsinformasjonUtlandController(private val timingService: TimingServi
                 logger.debug("henter ut SED data for type: $buc og sedType: $sedType")
                 return when (sedType) {
                     SEDType.P2000 -> mockSed.mockP2000()
-                    SEDType.P3000 -> {
-                        val p3000 = mockSed.mockP3000NO()
-                        p3000.pensjon?.landspesifikk?.norge?.alderspensjon?.pensjonsgrad = null
-                        p3000
-                    }
+                    SEDType.P3000 -> mockSed.mockP3000NO()
                     SEDType.P4000 -> mockSed.mockP4000()
                     else -> SED("ERROR")
                 }
@@ -461,7 +457,7 @@ class PensjonsinformasjonUtlandController(private val timingService: TimingServi
                 logger.debug("henter ut SED data for type: $buc og sedType: $sedType")
                 return when (sedType) {
                     SEDType.P2000 -> mockSed.mockP2000()
-                    SEDType.P3000 -> mockSed.mockP3000NO()
+                    SEDType.P3000 -> mockSed.mockP3000NO("03")
                     SEDType.P4000 -> mockSed.mockP4000()
                     else -> SED("ERROR")
                 }
