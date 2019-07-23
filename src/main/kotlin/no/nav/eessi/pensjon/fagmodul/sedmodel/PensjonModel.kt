@@ -15,7 +15,7 @@ data class Pensjon(
 		var forespurtstartdato: String? = null,
 
         //P3000
-		var landspesifikk: Landspesifikk? = null,
+		val landspesifikk: Landspesifikk? = null,
 
         //P5000
 		var medlemskapAnnen: List<MedlemskapItem>? = null,
@@ -41,7 +41,7 @@ data class Pensjon(
 		var samletVedtak: SamletMeldingVedtak? = null,
 
 		//P10000 //P9000
-		val merinformasjon: Merinformasjon? = null
+		var merinformasjon: Merinformasjon? = null
         )
 
 //P10000 -- innholder ytteligere informasjon om person (se kp. 5.1) som skal oversendes tilbake
@@ -76,7 +76,7 @@ data class Merinformasjon(
 		//merinfo, tillegginformajon for P10000
 		val tilleggsinformasjon: String? = null,
 
-		var ytelser: List<YtelserItem>? = null
+		val ytelser: List<YtelserItem>? = null
 
 )
 
@@ -209,164 +209,164 @@ data class InfoarbeidsledigItem(
 
 //P7000
 data class SamletMeldingVedtak(
-		var avslag: List<PensjonAvslagItem>? = null,
-		var vedtaksammendrag: String? = null,
-		var tildeltepensjoner: TildeltePensjoner? = null,
-		var startdatoPensjonsRettighet: String? = null,  // 4.1.5
-		var reduksjonsGrunn: String? = null    // 4.1.7
+		val avslag: List<PensjonAvslagItem>? = null,
+		val vedtaksammendrag: String? = null,
+		val tildeltepensjoner: TildeltePensjoner? = null,
+		val startdatoPensjonsRettighet: String? = null,  // 4.1.5
+		val reduksjonsGrunn: String? = null    // 4.1.7
 )
 
 //P7000-5
 data class PensjonAvslagItem(
-        var pensjonType: String?= null,
-        var begrunnelse: String? = null, //5.1
-        var dato: String? = null,   //5.2
-        var datoFrist: String? = null,
-        var pin : PinItem? = null,
-        var adresse: String? = null
+        val pensjonType: String?= null,
+        val begrunnelse: String? = null, //5.1
+        val dato: String? = null,   //5.2
+        val datoFrist: String? = null,
+        val pin : PinItem? = null,
+        val adresse: String? = null
 )
 
 //Institusjon
 data class Institusjon(
-        var institusjonsid: String? = null,
-        var institusjonsnavn: String? = null,
-        var saksnummer: String? = null,
-        var sektor: String? = null,
-        var land: String? = null,
-        var pin: String? = null,
-        var personNr: String? = null,
-        var innvilgetPensjon: String? = null,  // 4.1.3.
-        var utstedelsesDato: String? = null,  //4.1.4.
-        var startdatoPensjonsRettighet: String? = null  //4.1.5
+        val institusjonsid: String? = null,
+        val institusjonsnavn: String? = null,
+        val saksnummer: String? = null,
+        val sektor: String? = null,
+        val land: String? = null,
+        val pin: String? = null,
+        val personNr: String? = null,
+        val innvilgetPensjon: String? = null,  // 4.1.3.
+        val utstedelsesDato: String? = null,  //4.1.4.
+        val startdatoPensjonsRettighet: String? = null  //4.1.5
 )
 
 //P8000
 data class AnmodningOmTilleggsInfo(
-		var relasjonTilForsikretPerson: String? =  null, //4.1.1
-		var beskrivelseAnnenSlektning: String? = null, // 4.2.1
-		var referanseTilPerson: String? = null,
-		var anmodningPerson: AnmodningOmPerson? = null, //10.
-		var anmodningOmBekreftelse: AnmodningOmBekreftelse? = null, //9.
-		var informasjon: AnmodningOmInformasjon? = null, //8
-		var ytterligereInfoOmDokumenter: String? = null, //6.1
-		var begrunnKrav: String? = null,
-		var seder: List<SedAnmodningItem>? = null,
-		var personAktivitet: List<PersonAktivitetItem>? = null,
-		var personAktivitetSom: List<PersonAktivitetSomItem>? = null,
-		var personInntekt: List<PersonensInntekt>? = null,
-		var annenInfoOmYtelse: String? = null    //8.5
+		val relasjonTilForsikretPerson: String? =  null, //4.1.1
+		val beskrivelseAnnenSlektning: String? = null, // 4.2.1
+		val referanseTilPerson: String? = null,
+		val anmodningPerson: AnmodningOmPerson? = null, //10.
+		val anmodningOmBekreftelse: AnmodningOmBekreftelse? = null, //9.
+		val informasjon: AnmodningOmInformasjon? = null, //8
+		val ytterligereInfoOmDokumenter: String? = null, //6.1
+		val begrunnKrav: String? = null,
+		val seder: List<SedAnmodningItem>? = null,
+		val personAktivitet: List<PersonAktivitetItem>? = null,
+		val personAktivitetSom: List<PersonAktivitetSomItem>? = null,
+		val personInntekt: List<PersonensInntekt>? = null,
+		val annenInfoOmYtelse: String? = null    //8.5
 )
 
 // 8.4
 data class PersonensInntekt(
-        var oppgiInntektFOM: String? = null,
-        var personInntekt: List<PersonInntektItem>? = null
+        val oppgiInntektFOM: String? = null,
+        val personInntekt: List<PersonInntektItem>? = null
 )
 
 data class AnmodningOmInformasjon(
-		var generellInformasjon: List<GenerellInfo>? = null, // 8.1
-		var infoOmPersonYtelse: List<InfoOmPersonYtelse>? = null, // 8.2
-		var annenEtterspurtInformasjon: String? = null,
-		var begrunnelseKrav: String? = null //8.6
+		val generellInformasjon: List<GenerellInfo>? = null, // 8.1
+		val infoOmPersonYtelse: List<InfoOmPersonYtelse>? = null, // 8.2
+		val annenEtterspurtInformasjon: String? = null,
+		val begrunnelseKrav: String? = null //8.6
 )
 
 // Alt i denne blokken er 8.2
 data class InfoOmPersonYtelse(
-        var informerOmPersonFremsattKravEllerIkkeEllerMottattYtelse: String? = null, // 8.2.1
-        var annenYtelse: String? = null, //8.2.2.1
-        var sendInfoOm: List<SendInfoOm>? = null // 8.2.3.1
+        val informerOmPersonFremsattKravEllerIkkeEllerMottattYtelse: String? = null, // 8.2.1
+        val annenYtelse: String? = null, //8.2.2.1
+        val sendInfoOm: List<SendInfoOm>? = null // 8.2.3.1
 )
 
 data class SendInfoOm(
-        var sendInfoOm: String? = null,
-        var annenInfoOmYtelser: String? = null // 8.2.3.2.1
+        val sendInfoOm: String? = null,
+        val annenInfoOmYtelser: String? = null // 8.2.3.2.1
 )
 
 data class AnmodningOmPerson(
-        var egenerklaering: String? = null, //10.1
-        var begrunnelseKrav: String? = null //10.2
+        val egenerklaering: String? = null, //10.1
+        val begrunnelseKrav: String? = null //10.2
 )
 
 data class AnmodningOmBekreftelse(
-        var bekreftelseInfo: String? = null,
-        var bekreftelsesGrunn: String? = null //9.2
+        val bekreftelseInfo: String? = null,
+        val bekreftelsesGrunn: String? = null //9.2
 )
 
 data class GenerellInfo(
-        var generellInfoOmPers: String? = null
+        val generellInfoOmPers: String? = null
 )
 
 data class SedAnmodningItem(
-        var begrunnelse: String? = null,
-        var andreEtterspurteSEDer: String? = null,
-        var sendFolgendeSEDer: List<String>? = null //7.1.1
+        val begrunnelse: String? = null,
+        val andreEtterspurteSEDer: String? = null,
+        val sendFolgendeSEDer: List<String>? = null //7.1.1
 )
 
 data class PersonAktivitetItem(
-        var persAktivitet: String? = null
+        val persAktivitet: String? = null
 )
 
 data class PersonAktivitetSomItem(
-        var persAktivitetSom: String? = null
+        val persAktivitetSom: String? = null
 )
 
 data class PersonInntektItem(
-        var persInntekt: String? = null
+        val persInntekt: String? = null
 )
 
 //P2000
 data class Utsettelse(
-		var institusjonsnavn: String? = null,
-		var institusjonsid: String? = null,
-		var land: String? = null,
-		var institusjon: Institusjon? = null,
-		var tildato: String? = null
+		val institusjonsnavn: String? = null,
+		val institusjonsid: String? = null,
+		val land: String? = null,
+		val institusjon: Institusjon? = null,
+		val tildato: String? = null
 )
 
 //P5000
 data class MedlemskapItem(
-		var relevans: String? = null,
-		var ordning: String? = null,
-		var land: String? = null,
-		var sum: TotalSum? = null,
-		var yrke: String? = null,
-		var gyldigperiode: String? = null,
-		var type: String? = null,
-		var beregning: String? = null,
-		var periode: Periode? = null
+		val relevans: String? = null,
+		val ordning: String? = null,
+		val land: String? = null,
+		val sum: TotalSum? = null,
+		val yrke: String? = null,
+		val gyldigperiode: String? = null,
+		val type: String? = null,
+		val beregning: String? = null,
+		val periode: Periode? = null
 )
 
 //P5000
 data class Dager(
-        var nr: String? = null,
-        var type: String? = null
+        val nr: String? = null,
+        val type: String? = null
 )
 
 //P5000
 data class TotalSum(
-		var kvartal: String? = null,
-		var aar: String? = null,
-		var uker: String? = null,
-		var dager: Dager? = null,
-		var maaneder: String? = null
+		val kvaltal: String? = null,
+		val aar: String? = null,
+		val uker: String? = null,
+		val dager: Dager? = null,
+		val maaneder: String? = null
 )
 
 //P2000 - P2200 - //P10000
 data class YtelserItem(
-		var annenytelse: String? = null,
-		var totalbruttobeloeparbeidsbasert: String? = null,
-		var institusjon: Institusjon? = null,
-		var pin: PinItem? = null,
-		var startdatoutbetaling: String? = null,
-		var mottasbasertpaa: String? = null,
-		var ytelse: String? = null,
-		var totalbruttobeloepbostedsbasert: String? = null,
-		var startdatoretttilytelse: String? = null,
-		var beloep: List<BeloepItem>? = null,
-		var sluttdatoretttilytelse: String? = null,
-		var sluttdatoutbetaling: String? = null,
-		var status: String? = null,
-		var ytelseVedSykdom: String? = null, //7.2 //P2100
+		val annenytelse: String? = null,
+		val totalbruttobeloeparbeidsbasert: String? = null,
+		val institusjon: Institusjon? = null,
+		val pin: PinItem? = null,
+		val startdatoutbetaling: String? = null,
+		val mottasbasertpaa: String? = null,
+		val ytelse: String? = null,
+		val totalbruttobeloepbostedsbasert: String? = null,
+		val startdatoretttilytelse: String? = null,
+		val beloep: List<BeloepItem>? = null,
+		val sluttdatoretttilytelse: String? = null,
+		val sluttdatoutbetaling: String? = null,
+		val status: String? = null,
+		val ytelseVedSykdom: String? = null, //7.2 //P2100
 
         //P10000
 		val annenbetalingshyppighet: String? = null,
@@ -380,53 +380,53 @@ data class YtelserItem(
 
 
 data class BeloepItem(
-        var annenbetalingshyppighetytelse: String? = null,
-        var betalingshyppighetytelse: String? = null,
-        var valuta: String? = null,
-        var beloep: String? = null,
-        var gjeldendesiden: String? = null
+        val annenbetalingshyppighetytelse: String? = null,
+        val betalingshyppighetytelse: String? = null,
+        val valuta: String? = null,
+        val beloep: String? = null,
+        val gjeldendesiden: String? = null
 )
 
 data class Sak(
-		var artikkel54: String? = null,
-		var reduksjon: List<ReduksjonItem>? = null,
-		var kravtype: List<KravtypeItem>? = null,
-		var enkeltkrav: KravtypeItem? = null
+		val artikkel54: String? = null,
+		val reduksjon: List<ReduksjonItem>? = null,
+		val kravtype: List<KravtypeItem>? = null,
+		val enkeltkrav: KravtypeItem? = null
 )
 
 data class KravtypeItem(
-        var datoFrist: String? = null,
-        var krav: String? = null
+        val datoFrist: String? = null,
+        val krav: String? = null
 )
 
 data class VedtakItem(
-		var trekkgrunnlag: List<String>? = null,
-		var mottaker: List<String>? = null,
-		var grunnlag: Grunnlag? = null,
-		var begrunnelseAnnen: String? = null,
-		var artikkel: String? = null,
-		var virkningsdato: String? = null,
-		var ukjent: Ukjent? = null,
-		var type: String? = null,
-		var resultat: String? = null,
-		var beregning: List<BeregningItem>? = null,
-		var avslagbegrunnelse: List<AvslagbegrunnelseItem>? = null,
-		var kjoeringsdato: String? = null,
-		var basertPaa: String? = null,
-		var basertPaaAnnen: String? = null,
-		var delvisstans: Delvisstans? = null
+		val trekkgrunnlag: List<String>? = null,
+		val mottaker: List<String>? = null,
+		val grunnlag: Grunnlag? = null,
+		val begrunnelseAnnen: String? = null,
+		val artikkel: String? = null,
+		val virkningsdato: String? = null,
+		val ukjent: Ukjent? = null,
+		val type: String? = null,
+		val resultat: String? = null,
+		val beregning: List<BeregningItem>? = null,
+		val avslagbegrunnelse: List<AvslagbegrunnelseItem>? = null,
+		val kjoeringsdato: String? = null,
+		val basertPaa: String? = null,
+		val basertPaaAnnen: String? = null,
+		val delvisstans: Delvisstans? = null
 )
 
 data class Tilleggsinformasjon(
-		var annen: Annen? = null,
-		var anneninformation: String? = null,
-		var saksnummer: String? = null,
-		var person: Person? = null,
-		var dato: String? = null,
-		var andreinstitusjoner: List<AndreinstitusjonerItem>? = null,
-		var saksnummerAnnen: String? = null,
-		var artikkel48: String? = null,
-		var opphoer: Opphoer? = null,
+		val annen: Annen? = null,
+		val anneninformation: String? = null,
+		val saksnummer: String? = null,
+		val person: Person? = null,
+		val dato: String? = null,
+		val andreinstitusjoner: List<AndreinstitusjonerItem>? = null,
+		val saksnummerAnnen: String? = null,
+		val artikkel48: String? = null,
+		val opphoer: Opphoer? = null,
 		val tilleggsopplysning: String? = null,
 
 		//P9000
@@ -479,110 +479,110 @@ data class Yrkesaktivitet(
 )
 
 data class AndreinstitusjonerItem(
-        var institusjonsid: String? = null,
-        var institusjonsnavn: String? = null,
-        var institusjonsadresse: String? = null,
-        var postnummer: String? = null,
-        var bygningsnr: String? = null,
-        var land: String? = null,
-        var region: String? = null,
-        var poststed: String? = null
+        val institusjonsid: String? = null,
+        val institusjonsnavn: String? = null,
+        val institusjonsadresse: String? = null,
+        val postnummer: String? = null,
+        val bygningsnr: String? = null,
+        val land: String? = null,
+        val region: String? = null,
+        val poststed: String? = null
 )
 
 data class Annen(
-        var institusjonsadresse: Institusjonsadresse? = null
+        val institusjonsadresse: Institusjonsadresse? = null
 )
 
 data class Delvisstans(
-		var utbetaling: Utbetaling? = null,
-		var indikator: String? = null
+		val utbetaling: Utbetaling? = null,
+		val indikator: String? = null
 )
 
 data class Ukjent(
-        var beloepBrutto: BeloepBrutto? = null
+        val beloepBrutto: BeloepBrutto? = null
 )
 
 data class ReduksjonItem(
-		var type: String? = null,
-		var virkningsdato: List<VirkningsdatoItem>? = null,
-		var aarsak: Arsak? = null,
-		var artikkeltype: String? = null
+		val type: String? = null,
+		val virkningsdato: List<VirkningsdatoItem>? = null,
+		val aarsak: Arsak? = null,
+		val artikkeltype: String? = null
 )
 
 data class VirkningsdatoItem(
-        var startdato: String? = null,
-        var sluttdato: String? = null
+        val startdato: String? = null,
+        val sluttdato: String? = null
 )
 
 data class Arsak(
-        var inntektAnnen: String? = null,
-        var annenytelseellerinntekt: String? = null
+        val inntektAnnen: String? = null,
+        val annenytelseellerinntekt: String? = null
 )
 
 data class Opphoer(
-        var dato: String? = null,
-        var annulleringdato: String? = null
+        val dato: String? = null,
+        val annulleringdato: String? = null
 )
 
 data class Utbetaling(
-        var begrunnelse: String? = null,
-        var valuta: String? = null,
-        var beloepBrutto: String? = null
+        val begrunnelse: String? = null,
+        val valuta: String? = null,
+        val beloepBrutto: String? = null
 )
 
 data class Grunnlag(
-		var medlemskap: String? = null,
-		var opptjening: Opptjening? = null,
-		var framtidigtrygdetid: String? = null
+		val medlemskap: String? = null,
+		val opptjening: Opptjening? = null,
+		val framtidigtrygdetid: String? = null
 )
 
 data class Opptjening(
-        var forsikredeAnnen: String? = null
+        val forsikredeAnnen: String? = null
 )
 
 data class AvslagbegrunnelseItem(
-        var begrunnelse: String? = null,
-        var annenbegrunnelse: String? = null
+        val begrunnelse: String? = null,
+        val annenbegrunnelse: String? = null
 )
 
 data class BeregningItem(
-		var beloepNetto: BeloepNetto? = null,
-		var valuta: String? = null,
-		var beloepBrutto: BeloepBrutto? = null,
-		var utbetalingshyppighetAnnen: String? = null,
-		var periode: Periode? = null,
-		var utbetalingshyppighet: String? = null
+		val beloepNetto: BeloepNetto? = null,
+		val valuta: String? = null,
+		val beloepBrutto: BeloepBrutto? = null,
+		val utbetalingshyppighetAnnen: String? = null,
+		val periode: Periode? = null,
+		val utbetalingshyppighet: String? = null
 )
 
 data class BeloepNetto(
-        var beloep: String? = null
+        val beloep: String? = null
 )
 
 data class BeloepBrutto(
-        var ytelseskomponentTilleggspensjon: String? = null,
-        var beloep: String? = null,
-        var ytelseskomponentGrunnpensjon: String? = null,
-        var ytelseskomponentAnnen: String? = null
+        val ytelseskomponentTilleggspensjon: String? = null,
+        val beloep: String? = null,
+        val ytelseskomponentGrunnpensjon: String? = null,
+        val ytelseskomponentAnnen: String? = null
 )
 
 data class Periode(
-        var fom: String? = null,
-        var tom: String? = null,
-        var extra: String? = null
+        val fom: String? = null,
+        val tom: String? = null,
+        val extra: String? = null
 )
 
 //P7000 4. Tildelte pensjoner
 data class TildeltePensjoner(
-		var pensjonType: String? = null, //4.1.2
-		var vedtakPensjonType: String? = null, //4.1.1
-		var tildeltePensjonerLand: String? = null,   //4.1.2.1.1.
-		var addressatForRevurdering: String? = null,   //4.1.8.2.1.
-		var institusjonPensjon: PensjonsInstitusjon? = null,
-		var institusjon: Institusjon? = null
+		val pensjonType: String? = null, //4.1.2
+		val vedtakPensjonType: String? = null, //4.1.1
+		val tildeltePensjonerLand: String? = null,   //4.1.2.1.1.
+		val addressatForRevurdering: String? = null,   //4.1.8.2.1.
+		val institusjonPensjon: PensjonsInstitusjon? = null,
+		val institusjon: Institusjon? = null
 )
 
 data class PensjonsInstitusjon(
-        var sektor: String? = null
+        val sektor: String? = null
 )
 
 data class Institusjonsadresse(
