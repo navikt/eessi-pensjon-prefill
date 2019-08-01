@@ -1,6 +1,6 @@
 package no.nav.eessi.pensjon.api.person
 
-import com.nhaarman.mockito_kotlin.whenever
+import com.nhaarman.mockitokotlin2.whenever
 import no.nav.eessi.pensjon.services.aktoerregister.AktoerregisterService
 import no.nav.eessi.pensjon.services.personv3.PersonV3IkkeFunnetException
 import no.nav.eessi.pensjon.services.personv3.PersonV3Service

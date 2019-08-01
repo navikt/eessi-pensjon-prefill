@@ -101,7 +101,7 @@ dependencies {
     //mock - test
     testImplementation("org.jetbrains.kotlin:kotlin-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
-    testImplementation("com.nhaarman:mockito-kotlin-kt1.1:1.6.0")
+    testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:2.1.0")
     testImplementation("org.skyscreamer:jsonassert:1.5.0")
 
     // Architecture tests

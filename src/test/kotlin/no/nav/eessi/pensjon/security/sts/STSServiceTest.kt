@@ -1,7 +1,7 @@
 package no.nav.eessi.pensjon.security.sts
 
-import com.nhaarman.mockito_kotlin.eq
-import com.nhaarman.mockito_kotlin.whenever
+import com.nhaarman.mockitokotlin2.eq
+import com.nhaarman.mockitokotlin2.whenever
 import no.nav.eessi.pensjon.utils.typeRef
 import org.junit.Before
 import org.junit.Test
