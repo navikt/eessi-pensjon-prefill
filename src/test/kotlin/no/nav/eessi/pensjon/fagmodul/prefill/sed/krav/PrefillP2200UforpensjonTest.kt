@@ -1,7 +1,7 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed.krav
 
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.generatePrefillData
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.createInitialPrefillData
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.mockPrefillPersonDataFromTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.pensjonsDataFraPEN
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.readJsonResponse
@@ -19,6 +19,8 @@ import kotlin.test.assertNotNull
 @RunWith(MockitoJUnitRunner::class)
 class PrefillP2200UforpensjonTest {
 
+    private val personFnr = PersonDataFromTPS.generateRandomFnr(67)
+
     private val pesysSaksnummer = "14069110"
 
     lateinit var prefillData: PrefillDataModel
@@ -30,11 +32,12 @@ class PrefillP2200UforpensjonTest {
     fun setup() {
         val pensionDataFromPEN = pensjonsDataFraPEN("P2000-AP-14069110.xml")
         val prefillPersonDataFromTPS = mockPrefillPersonDataFromTPS(setOf(
-                PersonDataFromTPS.MockTPS("Person-20000.json", PersonDataFromTPS.generateRandomFnr(67), PersonDataFromTPS.MockTPS.TPSType.PERSON),
+                PersonDataFromTPS.MockTPS("Person-20000.json", personFnr, PersonDataFromTPS.MockTPS.TPSType.PERSON),
                 PersonDataFromTPS.MockTPS("Person-21000.json", PersonDataFromTPS.generateRandomFnr(43), PersonDataFromTPS.MockTPS.TPSType.BARN),
-                PersonDataFromTPS.MockTPS("Person-22000.json", PersonDataFromTPS.generateRandomFnr(17), PersonDataFromTPS.MockTPS.TPSType.BARN)))
-        prefillData = generatePrefillData("P2200", "02345678901", sakId = pesysSaksnummer)
-        prefillData.personNr = PersonDataFromTPS.generateRandomFnr(67)
+                PersonDataFromTPS.MockTPS("Person-22000.json", PersonDataFromTPS.generateRandomFnr(17), PersonDataFromTPS.MockTPS.TPSType.BARN)
+        ))
+
+        prefillData = createInitialPrefillData("P2200", personFnr, sakId = pesysSaksnummer)
         prefillData.partSedAsJson["PersonInfo"] = readJsonResponse("other/person_informasjon_selvb.json")
 
         val prefillNav = PrefillNav(prefillPersonDataFromTPS, institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO")

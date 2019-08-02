@@ -1,7 +1,7 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed.krav
 
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.generatePrefillData
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.createInitialPrefillData
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.mockPrefillPersonDataFromTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.pensjonsDataFraPEN
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.readJsonResponse
@@ -41,8 +41,7 @@ class PrefillP2000UtenKravhistorieTest {
                 PersonDataFromTPS.MockTPS("Person-21000.json", PersonDataFromTPS.generateRandomFnr(43), PersonDataFromTPS.MockTPS.TPSType.BARN),
                 PersonDataFromTPS.MockTPS("Person-22000.json", PersonDataFromTPS.generateRandomFnr(17), PersonDataFromTPS.MockTPS.TPSType.BARN)
         ))
-        prefillData = generatePrefillData("P2000", "02345678901", sakId = pesysSaksnummer)
-        prefillData.personNr = personFnr
+        prefillData = createInitialPrefillData("P2000", personFnr, sakId = pesysSaksnummer)
         prefillData.partSedAsJson["PersonInfo"] = readJsonResponse("other/person_informasjon_selvb.json")
         prefillData.partSedAsJson["P4000"] = readJsonResponse("other/p4000_trygdetid_part.json")
         val prefillNav = PrefillNav(prefillPersonDataFromTPS, institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO")

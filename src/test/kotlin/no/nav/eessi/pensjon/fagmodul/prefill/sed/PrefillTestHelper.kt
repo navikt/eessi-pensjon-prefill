@@ -57,7 +57,7 @@ object PrefillTestHelper {
     }
 
 
-    fun generatePrefillData(sedId: String, fnr: String? = null, subtractYear: Int? = null, sakId: String? = null): PrefillDataModel {
+    fun createInitialPrefillData(sedId: String, fnr: String? = null, subtractYear: Int? = null, sakId: String? = null): PrefillDataModel {
         val items = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
 
         val year = subtractYear ?: 68

@@ -4,7 +4,7 @@ import no.nav.eessi.pensjon.fagmodul.prefill.model.Prefill
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PersonDataFromTPS
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.generatePrefillData
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.createInitialPrefillData
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.mockPrefillPersonDataFromTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.readJsonResponse
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
@@ -36,8 +36,7 @@ class PrefillP7000_AP_21975717Test {
                 PersonDataFromTPS.MockTPS("Person-12000-EKTE.json", PersonDataFromTPS.generateRandomFnr(70), PersonDataFromTPS.MockTPS.TPSType.EKTE)
         ))
 
-        prefillData = generatePrefillData("P7000", "02345678901", sakId = pesysSaksnummer)
-        prefillData.personNr = personFnr
+        prefillData = createInitialPrefillData("P7000", personFnr, sakId = pesysSaksnummer)
         prefillData.partSedAsJson["PersonInfo"] = readJsonResponse("other/person_informasjon_selvb.json")
         prefillData.partSedAsJson["P4000"] = readJsonResponse("other/p4000_trygdetid_part.json")
 
