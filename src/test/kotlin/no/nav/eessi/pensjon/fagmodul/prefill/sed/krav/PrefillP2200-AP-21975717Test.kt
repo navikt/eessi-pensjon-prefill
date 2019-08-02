@@ -10,7 +10,6 @@ import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PersonDataFromTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.NavFodselsnummer
 import no.nav.eessi.pensjon.utils.mapAnyToJson
-import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -21,7 +20,7 @@ import kotlin.test.assertNotNull
 @RunWith(MockitoJUnitRunner::class)
 class `PrefillP2200-AP-21975717Test` : AbstractPrefillIntegrationTestHelper() {
 
-    private val fakeFnr = PersonDataFromTPS.generateRandomFnr(68)
+    private val personFnr = PersonDataFromTPS.generateRandomFnr(68)
 
     private val pesysSaksnummer = "14915730"
 
@@ -35,11 +34,11 @@ class `PrefillP2200-AP-21975717Test` : AbstractPrefillIntegrationTestHelper() {
     fun setup() {
         val pensionDataFromPEN = pensjonsDataFraPEN("P2000_21975717_AP_UTLAND.xml")
         val prefillPersonDataFromTPS = mockPrefillPersonDataFromTPS(setOf(
-                PersonDataFromTPS.MockTPS("Person-11000-GIFT.json", fakeFnr, PersonDataFromTPS.MockTPS.TPSType.PERSON),
+                PersonDataFromTPS.MockTPS("Person-11000-GIFT.json", personFnr, PersonDataFromTPS.MockTPS.TPSType.PERSON),
                 PersonDataFromTPS.MockTPS("Person-12000-EKTE.json", PersonDataFromTPS.generateRandomFnr(70), PersonDataFromTPS.MockTPS.TPSType.EKTE)
         ))
         prefillData = generatePrefillData("P2200", "02345678901", sakId = pesysSaksnummer)
-        prefillData.personNr = fakeFnr
+        prefillData.personNr = personFnr
         prefillData.partSedAsJson["PersonInfo"] = readJsonResponse("other/person_informasjon_selvb.json")
         prefillData.partSedAsJson["P4000"] = readJsonResponse("other/p4000_trygdetid_part.json")
         val prefillNav = PrefillNav(prefillPersonDataFromTPS, institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO")
@@ -83,7 +82,7 @@ class `PrefillP2200-AP-21975717Test` : AbstractPrefillIntegrationTestHelper() {
         assertEquals(null, pinitem?.sektor)
         assertEquals("NOINST002, NO INST002, NO", pinitem?.institusjonsnavn)
         assertEquals("NO:noinst002", pinitem?.institusjonsid)
-        assertEquals(fakeFnr, pinitem?.identifikator)
+        assertEquals(personFnr, pinitem?.identifikator)
 
         assertEquals("RANNAR-MASK", p2200.nav?.ektefelle?.person?.fornavn)
         assertEquals("MIZINTSEV", p2200.nav?.ektefelle?.person?.etternavn)

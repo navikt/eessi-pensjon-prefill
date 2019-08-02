@@ -7,7 +7,6 @@ import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PersonDataFromTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.NavFodselsnummer
-import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -21,7 +20,7 @@ import kotlin.test.fail
 @RunWith(MockitoJUnitRunner::class)
 class PrefillP2000UtenKravhistorieTest : AbstractPrefillIntegrationTestHelper() {
 
-    private val fakeFnr = PersonDataFromTPS.generateRandomFnr(67)
+    private val personFnr = PersonDataFromTPS.generateRandomFnr(67)
 
     private val pesysSaksnummer = "14069110"
 
@@ -36,12 +35,12 @@ class PrefillP2000UtenKravhistorieTest : AbstractPrefillIntegrationTestHelper() 
 
         val pensionDataFromPEN = pensjonsDataFraPEN("P2000-AP-14069110.xml")
         val prefillPersonDataFromTPS = mockPrefillPersonDataFromTPS(setOf(
-                PersonDataFromTPS.MockTPS("Person-20000.json", fakeFnr, PersonDataFromTPS.MockTPS.TPSType.PERSON),
+                PersonDataFromTPS.MockTPS("Person-20000.json", personFnr, PersonDataFromTPS.MockTPS.TPSType.PERSON),
                 PersonDataFromTPS.MockTPS("Person-21000.json", PersonDataFromTPS.generateRandomFnr(43), PersonDataFromTPS.MockTPS.TPSType.BARN),
                 PersonDataFromTPS.MockTPS("Person-22000.json", PersonDataFromTPS.generateRandomFnr(17), PersonDataFromTPS.MockTPS.TPSType.BARN)
         ))
         prefillData = generatePrefillData("P2000", "02345678901", sakId = pesysSaksnummer)
-        prefillData.personNr = fakeFnr
+        prefillData.personNr = personFnr
         prefillData.partSedAsJson["PersonInfo"] = readJsonResponse("other/person_informasjon_selvb.json")
         prefillData.partSedAsJson["P4000"] = readJsonResponse("other/p4000_trygdetid_part.json")
         val prefillNav = PrefillNav(prefillPersonDataFromTPS, institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO")
@@ -96,7 +95,7 @@ class PrefillP2000UtenKravhistorieTest : AbstractPrefillIntegrationTestHelper() 
         assertEquals(null, pinitem?.sektor)
         assertEquals("NOINST002, NO INST002, NO", pinitem?.institusjonsnavn)
         assertEquals("NO:noinst002", pinitem?.institusjonsid)
-        assertEquals(fakeFnr, pinitem?.identifikator)
+        assertEquals(personFnr, pinitem?.identifikator)
 
         assertEquals("01", p2000.nav?.barn?.get(1)?.person?.sivilstand?.get(0)?.status)
 

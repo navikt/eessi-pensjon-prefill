@@ -11,7 +11,6 @@ import no.nav.eessi.pensjon.fagmodul.prefill.person.PersonDataFromTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.AbstractPrefillIntegrationTestHelper
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.NavFodselsnummer
 import no.nav.eessi.pensjon.utils.mapAnyToJson
-import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -22,7 +21,7 @@ import kotlin.test.assertNotNull
 @RunWith(MockitoJUnitRunner::class)
 class `PrefillP2000-AP-21975717Test` : AbstractPrefillIntegrationTestHelper() {
 
-    private val fakeFnr = PersonDataFromTPS.generateRandomFnr(68)
+    private val personFnr = PersonDataFromTPS.generateRandomFnr(68)
     private val pesysSaksnummer = "21975717"
 
     private val giftFnr = PersonDataFromTPS.generateRandomFnr(68)
@@ -44,7 +43,7 @@ class `PrefillP2000-AP-21975717Test` : AbstractPrefillIntegrationTestHelper() {
                 PersonDataFromTPS.MockTPS("Person-12000-EKTE.json", ekteFnr, PersonDataFromTPS.MockTPS.TPSType.EKTE)
         ))
         prefillData = generatePrefillData("P2000", "02345678901", sakId = pesysSaksnummer)
-        prefillData.personNr = fakeFnr
+        prefillData.personNr = personFnr
         prefillData.partSedAsJson["PersonInfo"] = readJsonResponse("other/person_informasjon_selvb.json")
         prefillData.partSedAsJson["P4000"] = readJsonResponse("other/p4000_trygdetid_part.json")
         val prefillNav = PrefillNav(prefillPersonDataFromTPS, institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO")
@@ -107,7 +106,7 @@ class `PrefillP2000-AP-21975717Test` : AbstractPrefillIntegrationTestHelper() {
         assertEquals(null, pinitem?.sektor)
         assertEquals("NOINST002, NO INST002, NO", pinitem?.institusjonsnavn)
         assertEquals("NO:noinst002", pinitem?.institusjonsid)
-        assertEquals(fakeFnr, pinitem?.identifikator)
+        assertEquals(personFnr, pinitem?.identifikator)
 
         assertEquals("RANNAR-MASK", p2000.nav?.ektefelle?.person?.fornavn)
         assertEquals("MIZINTSEV", p2000.nav?.ektefelle?.person?.etternavn)

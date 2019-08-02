@@ -6,7 +6,6 @@ import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PersonDataFromTPS
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.utils.validateJson
-import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import org.junit.Before
 import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
@@ -20,7 +19,7 @@ import kotlin.test.assertTrue
 @RunWith(MockitoJUnitRunner::class)
 class `PrefillP7000-AP-21975717Test` : AbstractPrefillIntegrationTestHelper() {
 
-    private val fakeFnr = "01071843352"
+    private val personFnr = "01071843352"
 
     private val pesysSaksnummer = "21975717"
 
@@ -31,12 +30,12 @@ class `PrefillP7000-AP-21975717Test` : AbstractPrefillIntegrationTestHelper() {
     @Before
     fun setup() {
         val prefillPersonDataFromTPS = mockPrefillPersonDataFromTPS(setOf(
-                PersonDataFromTPS.MockTPS("Person-11000-GIFT.json", fakeFnr, PersonDataFromTPS.MockTPS.TPSType.PERSON),
+                PersonDataFromTPS.MockTPS("Person-11000-GIFT.json", personFnr, PersonDataFromTPS.MockTPS.TPSType.PERSON),
                 PersonDataFromTPS.MockTPS("Person-12000-EKTE.json", PersonDataFromTPS.generateRandomFnr(70), PersonDataFromTPS.MockTPS.TPSType.EKTE)
         ))
 
         prefillData = generatePrefillData("P7000", "02345678901", sakId = pesysSaksnummer)
-        prefillData.personNr = fakeFnr
+        prefillData.personNr = personFnr
         prefillData.partSedAsJson["PersonInfo"] = readJsonResponse("other/person_informasjon_selvb.json")
         prefillData.partSedAsJson["P4000"] = readJsonResponse("other/p4000_trygdetid_part.json")
 
