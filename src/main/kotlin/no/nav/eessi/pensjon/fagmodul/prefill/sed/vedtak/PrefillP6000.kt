@@ -4,11 +4,13 @@ import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjon
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.fagmodul.prefill.model.Prefill
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
+import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.SakHelper
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-class PrefillP6000(private val sakHelper: SakHelper,
+class PrefillP6000(private val prefillNav: PrefillNav,
+                   private val sakHelper: SakHelper,
                    private val eessiInfo: EessiInformasjon) : Prefill<SED> {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillP6000::class.java) }
@@ -34,7 +36,7 @@ class PrefillP6000(private val sakHelper: SakHelper,
         sed.pensjon = pensjon
 
         logger.debug("Henter opp Persondata fra TPS")
-        sed.nav = sakHelper.createNav(prefillData)
+        sed.nav = prefillNav.prefill(prefillData)
 
         logger.debug("-------------------| Preutfylling [$sedId] END |------------------- ")
         return prefillData.sed
