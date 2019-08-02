@@ -23,9 +23,11 @@ class PrefillP2000KravhistorieUtenvirkningstidspunktTest : AbstractPrefillIntegr
 
     private val fakeFnr = PersonDataFromTPS.generateRandomFnr(67)
 
+    private val pesysSaksnummer = "21920707"
+
     @Before
     fun setup() {
-        onStart()
+        onStart(pesysSaksnummer)
     }
 
     override fun opprettMockPersonDataTPS(): Set<PersonDataFromTPS.MockTPS>? {
@@ -33,10 +35,6 @@ class PrefillP2000KravhistorieUtenvirkningstidspunktTest : AbstractPrefillIntegr
                 PersonDataFromTPS.MockTPS("Person-11000-GIFT.json", fakeFnr, PersonDataFromTPS.MockTPS.TPSType.PERSON),
                 PersonDataFromTPS.MockTPS("Person-12000-EKTE.json", PersonDataFromTPS.generateRandomFnr(69), PersonDataFromTPS.MockTPS.TPSType.EKTE)
         )
-    }
-
-    override fun createSaksnummer(): String {
-        return "21920707"
     }
 
     override fun mockPesysTestfilepath(): Pair<String, String> {

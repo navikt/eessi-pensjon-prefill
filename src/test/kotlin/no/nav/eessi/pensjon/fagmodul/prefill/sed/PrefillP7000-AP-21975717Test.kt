@@ -23,9 +23,11 @@ class `PrefillP7000-AP-21975717Test` : AbstractPrefillIntegrationTestHelper() {
 
     private val fakeFnr = "01071843352"
 
+    private val pesysSaksnummer = "21975717"
+
     @Before
     fun setup() {
-        onStart()
+        onStart(pesysSaksnummer)
     }
 
     override fun mockPesysTestfilepath(): Pair<String, String> {
@@ -34,10 +36,6 @@ class `PrefillP7000-AP-21975717Test` : AbstractPrefillIntegrationTestHelper() {
 
     override fun createTestClass(prefillNav: PrefillNav, personTPS: PrefillPersonDataFromTPS, pensionDataFromPEN: PensjonsinformasjonHjelper): Prefill<SED> {
         return PrefillP7000(prefillNav)
-    }
-
-    override fun createSaksnummer(): String {
-        return "21975717"
     }
 
     override fun createPayload(prefillData: PrefillDataModel) {

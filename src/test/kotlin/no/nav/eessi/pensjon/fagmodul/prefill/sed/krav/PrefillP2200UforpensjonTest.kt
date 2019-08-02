@@ -18,9 +18,11 @@ import kotlin.test.assertNotNull
 @RunWith(MockitoJUnitRunner::class)
 class PrefillP2200UforpensjonTest : AbstractPrefillIntegrationTestHelper() {
 
+    private val pesysSaksnummer = "14069110"
+
     @Before
     fun setup() {
-        onStart()
+        onStart(pesysSaksnummer)
     }
 
     override fun mockPesysTestfilepath(): Pair<String, String> {
@@ -33,10 +35,6 @@ class PrefillP2200UforpensjonTest : AbstractPrefillIntegrationTestHelper() {
                 PersonDataFromTPS.MockTPS("Person-21000.json", PersonDataFromTPS.generateRandomFnr(43), PersonDataFromTPS.MockTPS.TPSType.BARN),
                 PersonDataFromTPS.MockTPS("Person-22000.json", PersonDataFromTPS.generateRandomFnr(17), PersonDataFromTPS.MockTPS.TPSType.BARN)
         )
-    }
-
-    override fun createSaksnummer(): String {
-        return "14069110"
     }
 
     override fun createTestClass(prefillNav: PrefillNav, personTPS: PrefillPersonDataFromTPS, pensionDataFromPEN: PensjonsinformasjonHjelper): Prefill<SED> {

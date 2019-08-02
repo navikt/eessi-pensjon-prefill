@@ -24,9 +24,11 @@ class `PrefillP2200-AP-21975717Test` : AbstractPrefillIntegrationTestHelper() {
 
     private val fakeFnr = PersonDataFromTPS.generateRandomFnr(68)
 
+    private val pesysSaksnummer = "14915730"
+
     @Before
     fun setup() {
-        onStart()
+        onStart(pesysSaksnummer)
     }
 
     override fun mockPesysTestfilepath(): Pair<String, String> {
@@ -35,10 +37,6 @@ class `PrefillP2200-AP-21975717Test` : AbstractPrefillIntegrationTestHelper() {
 
     override fun createTestClass(prefillNav: PrefillNav, personTPS: PrefillPersonDataFromTPS, pensionDataFromPEN: PensjonsinformasjonHjelper): Prefill<SED> {
         return PrefillP2200(sakHelper, kravHistorikkHelper)
-    }
-
-    override fun createSaksnummer(): String {
-        return "14915730"
     }
 
     override fun createPayload(prefillData: PrefillDataModel) {
@@ -120,7 +118,7 @@ class `PrefillP2200-AP-21975717Test` : AbstractPrefillIntegrationTestHelper() {
         return ApiRequest(
                 institutions = items,
                 sed = sedName,
-                sakId = "14915730",
+                sakId = pesysSaksnummer,
                 euxCaseId = null,
                 aktoerId = "1000060964183",
                 buc = buc,

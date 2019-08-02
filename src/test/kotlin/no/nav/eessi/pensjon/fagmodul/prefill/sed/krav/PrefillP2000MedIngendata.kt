@@ -28,9 +28,11 @@ class PrefillP2000MedIngendata : AbstractPrefillIntegrationTestHelper() {
 
     private val fakeFnr = PersonDataFromTPS.generateRandomFnr(68)
 
+    private val pesysSaksnummer = "21644722"
+
     @Before
     fun setup() {
-        onStart()
+        onStart(pesysSaksnummer)
     }
 
     override fun mockPesysTestfilepath(): Pair<String, String> {
@@ -45,10 +47,6 @@ class PrefillP2000MedIngendata : AbstractPrefillIntegrationTestHelper() {
         prefillData.personNr = fakeFnr
         prefillData.partSedAsJson["PersonInfo"] = createPersonInfoPayLoad()
         prefillData.partSedAsJson["P4000"] = createPersonTrygdetidHistorikk()
-    }
-
-    override fun createSaksnummer(): String {
-        return "21644722"
     }
 
     override fun createPersonInfoPayLoad(): String {
@@ -76,7 +74,7 @@ class PrefillP2000MedIngendata : AbstractPrefillIntegrationTestHelper() {
 
     @Test
     fun `forventet korrekt utfylt P2000 alderpensjon med kap4 og 9`() {
-        prefillData.penSaksnummer = "21644722"
+        prefillData.penSaksnummer = pesysSaksnummer
         val P2000 = prefill.prefill(prefillData)
 
         val P2000pensjon = SED("P2000")

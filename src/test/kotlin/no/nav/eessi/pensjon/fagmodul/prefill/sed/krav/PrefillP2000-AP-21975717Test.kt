@@ -24,13 +24,14 @@ import kotlin.test.assertNotNull
 class `PrefillP2000-AP-21975717Test` : AbstractPrefillIntegrationTestHelper() {
 
     private val fakeFnr = PersonDataFromTPS.generateRandomFnr(68)
+    private val pesysSaksnummer = "21975717"
 
     private val giftFnr = PersonDataFromTPS.generateRandomFnr(68)
     private val ekteFnr = PersonDataFromTPS.generateRandomFnr(70)
 
     @Before
     fun setup() {
-        onStart()
+        onStart(pesysSaksnummer)
     }
 
     override fun mockPesysTestfilepath(): Pair<String, String> {
@@ -39,10 +40,6 @@ class `PrefillP2000-AP-21975717Test` : AbstractPrefillIntegrationTestHelper() {
 
     override fun createTestClass(prefillNav: PrefillNav, personTPS: PrefillPersonDataFromTPS, pensionDataFromPEN: PensjonsinformasjonHjelper): Prefill<SED> {
         return PrefillP2000(sakHelper, kravHistorikkHelper)
-    }
-
-    override fun createSaksnummer(): String {
-        return "21975717"
     }
 
     override fun createPayload(prefillData: PrefillDataModel) {
@@ -153,7 +150,7 @@ class `PrefillP2000-AP-21975717Test` : AbstractPrefillIntegrationTestHelper() {
         return ApiRequest(
                 institutions = items,
                 sed = sedName,
-                sakId = "21975717",
+                sakId = pesysSaksnummer,
                 euxCaseId = null,
                 aktoerId = "1000060964183",
                 buc = buc,

@@ -18,7 +18,6 @@ import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonServ
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.RequestBuilder
 import no.nav.eessi.pensjon.services.personv3.PersonV3Service
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
-import org.junit.Before
 import org.mockito.ArgumentMatchers
 import org.mockito.Mock
 import org.mockito.Mockito.lenient
@@ -61,7 +60,7 @@ abstract class AbstractPrefillIntegrationTestHelper {
 
     protected lateinit var prefill: Prefill<SED>
 
-    fun onStart() {
+    fun onStart(pesysSaksnummer: String) {
         val mockPair = mockPesysTestfilepath()
 
         //mock prefillDataModel
@@ -69,7 +68,7 @@ abstract class AbstractPrefillIntegrationTestHelper {
         SEDType.valueOf(sedId)
         val mockKravXMLfil = mockPair.second
 
-        prefillData = generatePrefillData(sedId, "02345678901", sakId = createSaksnummer())
+        prefillData = generatePrefillData(sedId, "02345678901", sakId = pesysSaksnummer)
 
         createPayload(prefillData)
 
@@ -87,9 +86,6 @@ abstract class AbstractPrefillIntegrationTestHelper {
         //mock PrefillP2x00 class
         prefill = createTestClass(prefillNav, personTPS, pensionDataFromPEN)
     }
-
-    //pesys saksnummer
-    abstract fun createSaksnummer(): String
 
     //mock pesys pensjoninformasjon datafil i xml format
     abstract fun mockPesysTestfilepath(): Pair<String, String>
