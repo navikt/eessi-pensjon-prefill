@@ -29,7 +29,6 @@ class PrefillP2000_AP_LOP_REVUTest {
 
     lateinit var prefillData: PrefillDataModel
     lateinit var sakHelper: SakHelper
-    var kravHistorikkHelper = KravHistorikkHelper()
     lateinit var prefill: Prefill<SED>
 
     @Before
@@ -55,8 +54,8 @@ class PrefillP2000_AP_LOP_REVUTest {
                     "P4000" to readJsonResponse("other/p4000_trygdetid_part.json"))
         }
         val prefillNav = PrefillNav(prefillPersonDataFromTPS, institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO")
-        sakHelper = SakHelper(prefillNav, prefillPersonDataFromTPS, inputPensjonsdataFraPEN, kravHistorikkHelper)
-        prefill = PrefillP2000(sakHelper, kravHistorikkHelper)
+        sakHelper = SakHelper(prefillNav, prefillPersonDataFromTPS, inputPensjonsdataFraPEN)
+        prefill = PrefillP2000(sakHelper)
     }
 
     @Test
