@@ -34,7 +34,6 @@ class PrefillP8000(private val prefillPerson: PrefillPerson) : Prefill<SED> {
                         saksnummer = eessielm?.saksnummer
                 )),
 
-                //bruker = Bruker(person = navsed.nav?.bruker?.person)
                 bruker = Bruker(
                         person = Person(
                                 etternavn = person?.etternavn,
@@ -66,5 +65,4 @@ class PrefillP8000(private val prefillPerson: PrefillPerson) : Prefill<SED> {
 
         return prefillData.sed
     }
-
 }
