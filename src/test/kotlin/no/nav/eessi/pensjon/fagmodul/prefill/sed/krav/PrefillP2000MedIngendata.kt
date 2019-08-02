@@ -14,6 +14,7 @@ import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillPersonDataFromTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PersonDataFromTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.NavFodselsnummer
 import no.nav.eessi.pensjon.utils.mapAnyToJson
+import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -30,28 +31,38 @@ class PrefillP2000MedIngendata : AbstractPrefillIntegrationTestHelper() {
 
     private val pesysSaksnummer = "21644722"
 
+    lateinit var prefillData: PrefillDataModel
+    lateinit var pendata: Pensjonsinformasjon
+    lateinit var sakHelper: SakHelper
+    var kravHistorikkHelper = KravHistorikkHelper()
+    lateinit var prefill: Prefill<SED>
+
     @Before
     fun setup() {
         val pensionDataFromPEN = mockPensjonsdataFraPEN("P2000-TOMT-SVAR-PESYS.xml")
         val prefillPersonDataFromTPS = mockPrefillPersonDataFromTPS(mockPersonDataFromTPS())
-        onstart(pesysSaksnummer, pensionDataFromPEN, "P2000", prefillPersonDataFromTPS)
+        prefillData = generatePrefillData("P2000", "02345678901", sakId = pesysSaksnummer)
+        createPayload(prefillData)
+        val prefillNav = PrefillNav(prefillPersonDataFromTPS, institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO")
+        sakHelper = SakHelper(prefillNav, prefillPersonDataFromTPS, pensionDataFromPEN, kravHistorikkHelper)
+        prefill = createTestClass(prefillNav, prefillPersonDataFromTPS, pensionDataFromPEN)
     }
 
-    override fun createTestClass(prefillNav: PrefillNav, personTPS: PrefillPersonDataFromTPS, pensionDataFromPEN: PensjonsinformasjonHjelper): Prefill<SED> {
+    fun createTestClass(prefillNav: PrefillNav, personTPS: PrefillPersonDataFromTPS, pensionDataFromPEN: PensjonsinformasjonHjelper): Prefill<SED> {
         return PrefillP2000(sakHelper, kravHistorikkHelper)
     }
 
-    override fun createPayload(prefillData: PrefillDataModel) {
+    fun createPayload(prefillData: PrefillDataModel) {
         prefillData.personNr = fakeFnr
         prefillData.partSedAsJson["PersonInfo"] = createPersonInfoPayLoad()
         prefillData.partSedAsJson["P4000"] = createPersonTrygdetidHistorikk()
     }
 
-    override fun createPersonInfoPayLoad(): String {
+    fun createPersonInfoPayLoad(): String {
         return readJsonResponse("other/person_informasjon_selvb.json")
     }
 
-    override fun createPersonTrygdetidHistorikk(): String {
+    fun createPersonTrygdetidHistorikk(): String {
         return readJsonResponse("other/p4000_trygdetid_part.json")
     }
 

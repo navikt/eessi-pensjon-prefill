@@ -80,77 +80,13 @@ abstract class AbstractPrefillIntegrationTestHelper {
             }
         }
 
+        fun readJsonResponse(file: String): String {
+            return ResourceUtils.getFile("classpath:json/nav/$file").readText()
+        }
+
         private fun readXMLresponse(file: String): ResponseEntity<String> {
             val resource = ResourceUtils.getFile("classpath:pensjonsinformasjon/krav/$file").readText()
             return ResponseEntity(resource, HttpStatus.OK)
         }
     }
-
-    protected lateinit var prefillData: PrefillDataModel
-
-    protected lateinit var pendata: Pensjonsinformasjon
-
-    protected lateinit var sakHelper: SakHelper
-
-    protected var kravHistorikkHelper = KravHistorikkHelper()
-
-    private lateinit var prefillNav: PrefillNav
-
-    private lateinit var personTPS: PrefillPersonDataFromTPS
-
-    protected lateinit var prefill: Prefill<SED>
-
-    fun onstart(pesysSaksnummer: String, pensjonsDataFraPEN: PensjonsinformasjonHjelper, sedId: String, mockPrefillPersonDataFromTPS: PrefillPersonDataFromTPS) {
-
-        prefillData = generatePrefillData(sedId, "02345678901", sakId = pesysSaksnummer)
-
-        createPayload(prefillData)
-
-        //mock TPS data
-        personTPS = mockPrefillPersonDataFromTPS
-
-        //mock prefillNav data
-        prefillNav = PrefillNav(personTPS, institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO")
-
-        //mock kravData
-        sakHelper = SakHelper(prefillNav, personTPS, pensjonsDataFraPEN, kravHistorikkHelper)
-
-        //mock PrefillP2x00 class
-        prefill = createTestClass(prefillNav, personTPS, pensjonsDataFraPEN)
-    }
-
-    //mock prefill SED class
-    abstract fun createTestClass(prefillNav: PrefillNav, personTPS: PrefillPersonDataFromTPS, pensionDataFromPEN: PensjonsinformasjonHjelper): Prefill<SED>
-
-    //mock payloiad from api
-    abstract fun createPayload(prefillData: PrefillDataModel)
-
-    //mock person informastion payload
-    abstract fun createPersonInfoPayLoad(): String
-
-    //mock person trygdetid utland opphold (p4000) payload
-    abstract fun createPersonTrygdetidHistorikk(): String
-
-    protected fun readJsonResponse(file: String): String {
-        return ResourceUtils.getFile("classpath:json/nav/$file").readText()
-    }
-
-    fun generatePrefillData(sedId: String, fnr: String? = null, subtractYear: Int? = null, sakId: String? = null): PrefillDataModel {
-        val items = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
-
-        val year = subtractYear ?: 68
-
-        return PrefillDataModel().apply {
-            rinaSubject = "Pensjon"
-            sed = SED(sedId)
-            penSaksnummer = sakId ?: "12345678"
-            vedtakId = "12312312"
-            buc = "P_BUC_99"
-            aktoerID = "123456789"
-            personNr = fnr ?: generateRandomFnr(year)
-            institution = items
-        }
-    }
-
-
 }
