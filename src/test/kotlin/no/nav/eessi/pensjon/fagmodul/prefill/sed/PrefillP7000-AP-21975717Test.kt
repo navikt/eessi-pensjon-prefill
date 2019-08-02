@@ -3,8 +3,6 @@ package no.nav.eessi.pensjon.fagmodul.prefill.sed
 import no.nav.eessi.pensjon.fagmodul.prefill.model.Prefill
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
-import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonHjelper
-import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillPersonDataFromTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PersonDataFromTPS
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.utils.validateJson
@@ -32,37 +30,19 @@ class `PrefillP7000-AP-21975717Test` : AbstractPrefillIntegrationTestHelper() {
 
     @Before
     fun setup() {
-        val pensionDataFromPEN = mockPensjonsdataFraPEN("P2000_21975717_AP_UTLAND.xml")
-        val prefillPersonDataFromTPS = mockPrefillPersonDataFromTPS(mockPersonDataFromTPS())
-        prefillData = generatePrefillData("P7000", "02345678901", sakId = pesysSaksnummer)
-        createPayload(prefillData)
-        val prefillNav = PrefillNav(prefillPersonDataFromTPS, institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO")
-        prefill = createTestClass(prefillNav, prefillPersonDataFromTPS, pensionDataFromPEN)
-    }
-
-    fun createTestClass(prefillNav: PrefillNav, personTPS: PrefillPersonDataFromTPS, pensionDataFromPEN: PensjonsinformasjonHjelper): Prefill<SED> {
-        return PrefillP7000(prefillNav)
-    }
-
-    fun createPayload(prefillData: PrefillDataModel) {
-        prefillData.personNr = fakeFnr
-        prefillData.partSedAsJson["PersonInfo"] = createPersonInfoPayLoad()
-        prefillData.partSedAsJson["P4000"] = createPersonTrygdetidHistorikk()
-    }
-
-    fun createPersonInfoPayLoad(): String {
-        return readJsonResponse("other/person_informasjon_selvb.json")
-    }
-
-    fun createPersonTrygdetidHistorikk(): String {
-        return readJsonResponse("other/p4000_trygdetid_part.json")
-    }
-
-    fun mockPersonDataFromTPS(): Set<PersonDataFromTPS.MockTPS> {
-        return setOf(
+        val prefillPersonDataFromTPS = mockPrefillPersonDataFromTPS(setOf(
                 PersonDataFromTPS.MockTPS("Person-11000-GIFT.json", fakeFnr, PersonDataFromTPS.MockTPS.TPSType.PERSON),
                 PersonDataFromTPS.MockTPS("Person-12000-EKTE.json", PersonDataFromTPS.generateRandomFnr(70), PersonDataFromTPS.MockTPS.TPSType.EKTE)
-        )
+        ))
+
+        prefillData = generatePrefillData("P7000", "02345678901", sakId = pesysSaksnummer)
+        prefillData.personNr = fakeFnr
+        prefillData.partSedAsJson["PersonInfo"] = readJsonResponse("other/person_informasjon_selvb.json")
+        prefillData.partSedAsJson["P4000"] = readJsonResponse("other/p4000_trygdetid_part.json")
+
+        val prefillNav = PrefillNav(prefillPersonDataFromTPS, institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO")
+
+        prefill = PrefillP7000(prefillNav)
     }
 
     @Test

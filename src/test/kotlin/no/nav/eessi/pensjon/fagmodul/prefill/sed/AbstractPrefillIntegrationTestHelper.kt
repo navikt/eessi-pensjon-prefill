@@ -28,7 +28,7 @@ import org.springframework.web.client.RestTemplate
 abstract class AbstractPrefillIntegrationTestHelper {
 
     companion object {
-        fun mockPensjonsdataFraPEN(responseXMLfilename: String): PensjonsinformasjonHjelper {
+        fun pensjonsDataFraPEN(responseXMLfilename: String): PensjonsinformasjonHjelper {
             val pensjonsinformasjonRestTemplate = mock<RestTemplate>()
             lenient().`when`(pensjonsinformasjonRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java))).thenReturn(readXMLresponse(responseXMLfilename))
 
