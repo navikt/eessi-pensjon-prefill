@@ -19,6 +19,7 @@ import org.mockito.junit.MockitoJUnitRunner
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
+@RunWith(MockitoJUnitRunner::class)
 class `PrefillP2000-AP-21975717Test` : AbstractPrefillIntegrationTestHelper() {
 
     private val giftFnr = PersonDataFromTPS.generateRandomFnr(68)

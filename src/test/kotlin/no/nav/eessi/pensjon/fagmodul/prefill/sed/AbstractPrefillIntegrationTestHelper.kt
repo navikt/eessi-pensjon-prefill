@@ -30,7 +30,6 @@ import org.springframework.http.ResponseEntity
 import org.springframework.util.ResourceUtils
 import org.springframework.web.client.RestTemplate
 
-@RunWith(MockitoJUnitRunner::class)
 abstract class AbstractPrefillIntegrationTestHelper {
 
     var personFnr: String = ""

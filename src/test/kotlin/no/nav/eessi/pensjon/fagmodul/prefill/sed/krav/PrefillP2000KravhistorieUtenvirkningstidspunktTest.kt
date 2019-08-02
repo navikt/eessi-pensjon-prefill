@@ -13,8 +13,11 @@ import no.nav.eessi.pensjon.fagmodul.prefill.tps.NavFodselsnummer
 import org.junit.Test
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
+import org.junit.runner.RunWith
+import org.mockito.junit.MockitoJUnitRunner
 
 
+@RunWith(MockitoJUnitRunner::class)
 class PrefillP2000KravhistorieUtenvirkningstidspunktTest : AbstractPrefillIntegrationTestHelper() {
 
     override fun opprettMockPersonDataTPS(): Set<PersonDataFromTPS.MockTPS>? {

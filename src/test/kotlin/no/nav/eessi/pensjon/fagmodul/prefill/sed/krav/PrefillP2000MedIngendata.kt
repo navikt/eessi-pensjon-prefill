@@ -15,11 +15,14 @@ import no.nav.eessi.pensjon.fagmodul.prefill.person.PersonDataFromTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.NavFodselsnummer
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.mockito.junit.MockitoJUnitRunner
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.fail
 
+@RunWith(MockitoJUnitRunner::class)
 class PrefillP2000MedIngendata : AbstractPrefillIntegrationTestHelper() {
 
     override fun mockPesysTestfilepath(): Pair<String, String> {

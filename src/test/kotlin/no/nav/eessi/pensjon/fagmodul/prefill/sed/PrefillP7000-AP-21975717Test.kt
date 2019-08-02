@@ -8,6 +8,8 @@ import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillPersonDataFromTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PersonDataFromTPS
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.utils.validateJson
+import org.junit.runner.RunWith
+import org.mockito.junit.MockitoJUnitRunner
 import org.skyscreamer.jsonassert.JSONAssert
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -15,6 +17,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
+@RunWith(MockitoJUnitRunner::class)
 class `PrefillP7000-AP-21975717Test` : AbstractPrefillIntegrationTestHelper() {
 
     override fun mockPesysTestfilepath(): Pair<String, String> {

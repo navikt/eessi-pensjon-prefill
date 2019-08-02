@@ -19,6 +19,7 @@ import org.mockito.junit.MockitoJUnitRunner
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
+@RunWith(MockitoJUnitRunner::class)
 class `PrefillP2000-AP-LOP-REVUTest` : AbstractPrefillIntegrationTestHelper() {
 
     override fun mockPesysTestfilepath(): Pair<String, String> {
