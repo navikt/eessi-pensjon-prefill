@@ -19,7 +19,6 @@ import no.nav.eessi.pensjon.services.pensjonsinformasjon.RequestBuilder
 import no.nav.eessi.pensjon.services.personv3.PersonV3Service
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import org.mockito.ArgumentMatchers
-import org.mockito.Mock
 import org.mockito.Mockito.lenient
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpStatus
@@ -48,14 +47,28 @@ abstract class AbstractPrefillIntegrationTestHelper {
                 institutionLand = "NO"
         )
 
+        fun generatePrefillData(sedId: String, fnr: String? = null, subtractYear: Int? = null, sakId: String? = null): PrefillDataModel {
+            val items = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
+
+            val year = subtractYear ?: 68
+
+            return PrefillDataModel().apply {
+                rinaSubject = "Pensjon"
+                sed = SED(sedId)
+                penSaksnummer = sakId ?: "12345678"
+                vedtakId = "12312312"
+                buc = "P_BUC_99"
+                aktoerID = "123456789"
+                personNr = fnr ?: generateRandomFnr(year)
+                institution = items
+            }
+        }
+
         private fun readXMLresponse(file: String): ResponseEntity<String> {
             val resource = ResourceUtils.getFile("classpath:pensjonsinformasjon/krav/$file").readText()
             return ResponseEntity(resource, HttpStatus.OK)
         }
     }
-
-    @Mock
-    protected lateinit var mockPersonV3Service: PersonV3Service
 
     protected lateinit var prefillData: PrefillDataModel
 
@@ -65,7 +78,6 @@ abstract class AbstractPrefillIntegrationTestHelper {
 
     protected var kravHistorikkHelper = KravHistorikkHelper()
 
-
     private lateinit var prefillNav: PrefillNav
 
     private lateinit var personTPS: PrefillPersonDataFromTPS
@@ -73,17 +85,19 @@ abstract class AbstractPrefillIntegrationTestHelper {
     protected lateinit var prefill: Prefill<SED>
 
     fun onstart(pesysSaksnummer: String, pensjonsDataFraPEN: PensjonsinformasjonHjelper, sedId: String) {
+
         prefillData = generatePrefillData(sedId, "02345678901", sakId = pesysSaksnummer)
 
         createPayload(prefillData)
 
         //mock TPS data
         personTPS = initMockPrefillPersonDataFromTPS()
+
         //mock prefillNav data
         prefillNav = PrefillNav(personTPS, institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO")
 
         //mock kravData
-        sakHelper = mockKravDataFromPEN(pensjonsDataFraPEN)
+        sakHelper = SakHelper(prefillNav, personTPS, pensjonsDataFraPEN, kravHistorikkHelper)
 
         //mock PrefillP2x00 class
         prefill = createTestClass(prefillNav, personTPS, pensjonsDataFraPEN)
@@ -101,9 +115,6 @@ abstract class AbstractPrefillIntegrationTestHelper {
     //mock person trygdetid utland opphold (p4000) payload
     abstract fun createPersonTrygdetidHistorikk(): String
 
-    //mock datafromtps..
-    open class DataFromTPS(mocktps: Set<MockTPS>, eessiInformasjon: EessiInformasjon) : PersonDataFromTPS(mocktps, eessiInformasjon)
-
     //metod person tps to override default..
     abstract fun opprettMockPersonDataTPS(): Set<PersonDataFromTPS.MockTPS>?
 
@@ -119,21 +130,20 @@ abstract class AbstractPrefillIntegrationTestHelper {
 
     //alle tester med aamme personlist for tiden. MOCK TPS
     private fun initMockPrefillPersonDataFromTPS(): PrefillPersonDataFromTPS {
+        //mock datafromtps..
+        open class DataFromTPS(mocktps: Set<MockTPS>, eessiInformasjon: EessiInformasjon) : PersonDataFromTPS(mocktps, eessiInformasjon)
+
         //løsning for å laste in abstract mockTPStestklasse
         val mockDataSet = opprettMockPersonDataTPS() ?: initMockPersonDataTPS()
 
         val datatps = DataFromTPS(mockDataSet, mockEessiInformasjon)
-        datatps.mockPersonV3Service = mockPersonV3Service
+        datatps.mockPersonV3Service = mock<PersonV3Service>()
         return datatps.mockPrefillPersonDataFromTPS()
     }
 
 
     protected fun readJsonResponse(file: String): String {
         return ResourceUtils.getFile("classpath:json/nav/$file").readText()
-    }
-
-    fun mockKravDataFromPEN(prefillPensionDataFromPEN: PensjonsinformasjonHjelper): SakHelper {
-        return SakHelper(prefillNav, personTPS, prefillPensionDataFromPEN, kravHistorikkHelper)
     }
 
     fun generatePrefillData(sedId: String, fnr: String? = null, subtractYear: Int? = null, sakId: String? = null): PrefillDataModel {
