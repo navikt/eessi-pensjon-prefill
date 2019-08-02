@@ -8,6 +8,7 @@ import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillPersonDataFromTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PersonDataFromTPS
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.utils.validateJson
+import org.junit.Before
 import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
 import org.skyscreamer.jsonassert.JSONAssert
@@ -21,6 +22,11 @@ import kotlin.test.assertTrue
 class `PrefillP7000-AP-21975717Test` : AbstractPrefillIntegrationTestHelper() {
 
     private val fakeFnr = "01071843352"
+
+    @Before
+    fun setup() {
+        onStart()
+    }
 
     override fun mockPesysTestfilepath(): Pair<String, String> {
         return Pair("P7000", "P2000_21975717_AP_UTLAND.xml")

@@ -13,6 +13,7 @@ import no.nav.eessi.pensjon.fagmodul.prefill.person.PersonDataFromTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.AbstractPrefillIntegrationTestHelper
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.NavFodselsnummer
 import no.nav.eessi.pensjon.utils.mapAnyToJson
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
@@ -26,6 +27,11 @@ class `PrefillP2000-AP-21975717Test` : AbstractPrefillIntegrationTestHelper() {
 
     private val giftFnr = PersonDataFromTPS.generateRandomFnr(68)
     private val ekteFnr = PersonDataFromTPS.generateRandomFnr(70)
+
+    @Before
+    fun setup() {
+        onStart()
+    }
 
     override fun mockPesysTestfilepath(): Pair<String, String> {
         return Pair("P2000", "P2000_21975717_AP_UTLAND.xml")

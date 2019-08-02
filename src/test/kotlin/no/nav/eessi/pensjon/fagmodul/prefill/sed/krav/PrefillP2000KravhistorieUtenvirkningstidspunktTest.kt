@@ -13,6 +13,7 @@ import no.nav.eessi.pensjon.fagmodul.prefill.tps.NavFodselsnummer
 import org.junit.Test
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
+import org.junit.Before
 import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
 
@@ -21,6 +22,11 @@ import org.mockito.junit.MockitoJUnitRunner
 class PrefillP2000KravhistorieUtenvirkningstidspunktTest : AbstractPrefillIntegrationTestHelper() {
 
     private val fakeFnr = PersonDataFromTPS.generateRandomFnr(67)
+
+    @Before
+    fun setup() {
+        onStart()
+    }
 
     override fun opprettMockPersonDataTPS(): Set<PersonDataFromTPS.MockTPS>? {
         return setOf(

@@ -12,6 +12,7 @@ import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillPersonDataFromTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PersonDataFromTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.NavFodselsnummer
 import no.nav.eessi.pensjon.utils.mapAnyToJson
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
@@ -22,6 +23,11 @@ import kotlin.test.assertNotNull
 class `PrefillP2200-AP-21975717Test` : AbstractPrefillIntegrationTestHelper() {
 
     private val fakeFnr = PersonDataFromTPS.generateRandomFnr(68)
+
+    @Before
+    fun setup() {
+        onStart()
+    }
 
     override fun mockPesysTestfilepath(): Pair<String, String> {
         return Pair("P2200", "P2000_21975717_AP_UTLAND.xml")

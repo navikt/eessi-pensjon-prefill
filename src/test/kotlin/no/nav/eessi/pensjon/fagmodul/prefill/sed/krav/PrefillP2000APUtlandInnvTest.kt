@@ -13,6 +13,7 @@ import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillPersonDataFromTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PersonDataFromTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.NavFodselsnummer
 import no.nav.eessi.pensjon.utils.mapAnyToJson
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
@@ -23,6 +24,12 @@ import kotlin.test.assertNotNull
 class PrefillP2000APUtlandInnvTest : AbstractPrefillIntegrationTestHelper() {
 
     private val fakeFnr = PersonDataFromTPS.generateRandomFnr(68)
+
+    @Before
+    fun setup() {
+        onStart()
+    }
+
 
     override fun mockPesysTestfilepath(): Pair<String, String> {
         return Pair("P2000", "P2000-AP-UTL-INNV-24015012345_PlanB.xml")

@@ -14,6 +14,7 @@ import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillPersonDataFromTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PersonDataFromTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.NavFodselsnummer
 import no.nav.eessi.pensjon.utils.mapAnyToJson
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
@@ -26,6 +27,11 @@ import kotlin.test.fail
 class PrefillP2000MedIngendata : AbstractPrefillIntegrationTestHelper() {
 
     private val fakeFnr = PersonDataFromTPS.generateRandomFnr(68)
+
+    @Before
+    fun setup() {
+        onStart()
+    }
 
     override fun mockPesysTestfilepath(): Pair<String, String> {
         return Pair("P2000", "P2000-TOMT-SVAR-PESYS.xml")

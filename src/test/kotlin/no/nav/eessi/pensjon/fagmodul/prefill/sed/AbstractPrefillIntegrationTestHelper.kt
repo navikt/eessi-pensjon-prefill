@@ -61,7 +61,6 @@ abstract class AbstractPrefillIntegrationTestHelper {
 
     protected lateinit var prefill: Prefill<SED>
 
-    @Before
     fun onStart() {
         val mockPair = mockPesysTestfilepath()
 
