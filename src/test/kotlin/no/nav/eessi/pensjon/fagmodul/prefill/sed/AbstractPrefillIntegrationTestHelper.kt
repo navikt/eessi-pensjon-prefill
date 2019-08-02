@@ -16,7 +16,6 @@ import no.nav.eessi.pensjon.fagmodul.prefill.person.PersonDataFromTPS.Companion.
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.KravHistorikkHelper
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonService
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.RequestBuilder
-import no.nav.eessi.pensjon.services.personv3.PersonV3Service
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.lenient
@@ -46,6 +45,23 @@ abstract class AbstractPrefillIntegrationTestHelper {
                 institutionPostnr = "0607",
                 institutionLand = "NO"
         )
+
+        fun mockPrefillPersonDataFromTPS(mockPersonDataFraTPS: Set<PersonDataFromTPS.MockTPS>): PrefillPersonDataFromTPS {
+            open class DataFromTPS(mocktps: Set<MockTPS>, eessiInformasjon: EessiInformasjon) : PersonDataFromTPS(mocktps, eessiInformasjon)
+            val datatps = DataFromTPS(mockPersonDataFraTPS, mockEessiInformasjon)
+            datatps.mockPersonV3Service = mock()
+            return datatps.mockPrefillPersonDataFromTPS()
+        }
+
+        fun defaultPersondataFromTPS(): Set<PersonDataFromTPS.MockTPS> {
+            val defaultPersonDataFromTPS = setOf(
+                    PersonDataFromTPS.MockTPS("Person-20000.json", generateRandomFnr(67), PersonDataFromTPS.MockTPS.TPSType.PERSON),
+                    PersonDataFromTPS.MockTPS("Person-21000.json", generateRandomFnr(43), PersonDataFromTPS.MockTPS.TPSType.BARN),
+                    PersonDataFromTPS.MockTPS("Person-22000.json", generateRandomFnr(17), PersonDataFromTPS.MockTPS.TPSType.BARN)
+            )
+            return defaultPersonDataFromTPS
+        }
+
 
         fun generatePrefillData(sedId: String, fnr: String? = null, subtractYear: Int? = null, sakId: String? = null): PrefillDataModel {
             val items = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
@@ -84,14 +100,14 @@ abstract class AbstractPrefillIntegrationTestHelper {
 
     protected lateinit var prefill: Prefill<SED>
 
-    fun onstart(pesysSaksnummer: String, pensjonsDataFraPEN: PensjonsinformasjonHjelper, sedId: String) {
+    fun onstart(pesysSaksnummer: String, pensjonsDataFraPEN: PensjonsinformasjonHjelper, sedId: String, mockPrefillPersonDataFromTPS: PrefillPersonDataFromTPS) {
 
         prefillData = generatePrefillData(sedId, "02345678901", sakId = pesysSaksnummer)
 
         createPayload(prefillData)
 
         //mock TPS data
-        personTPS = initMockPrefillPersonDataFromTPS()
+        personTPS = mockPrefillPersonDataFromTPS
 
         //mock prefillNav data
         prefillNav = PrefillNav(personTPS, institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO")
@@ -116,31 +132,7 @@ abstract class AbstractPrefillIntegrationTestHelper {
     abstract fun createPersonTrygdetidHistorikk(): String
 
     //metod person tps to override default..
-    abstract fun opprettMockPersonDataTPS(): Set<PersonDataFromTPS.MockTPS>?
-
-    //mock person tps default.. enke with 1chold u 18y
-    //alle person mock er lik siiden de hentes fra disse 3 datafilene.
-    private fun initMockPersonDataTPS(): Set<PersonDataFromTPS.MockTPS> {
-        return setOf(
-                PersonDataFromTPS.MockTPS("Person-20000.json", generateRandomFnr(67), PersonDataFromTPS.MockTPS.TPSType.PERSON),
-                PersonDataFromTPS.MockTPS("Person-21000.json", generateRandomFnr(43), PersonDataFromTPS.MockTPS.TPSType.BARN),
-                PersonDataFromTPS.MockTPS("Person-22000.json", generateRandomFnr(17), PersonDataFromTPS.MockTPS.TPSType.BARN)
-        )
-    }
-
-    //alle tester med aamme personlist for tiden. MOCK TPS
-    private fun initMockPrefillPersonDataFromTPS(): PrefillPersonDataFromTPS {
-        //mock datafromtps..
-        open class DataFromTPS(mocktps: Set<MockTPS>, eessiInformasjon: EessiInformasjon) : PersonDataFromTPS(mocktps, eessiInformasjon)
-
-        //løsning for å laste in abstract mockTPStestklasse
-        val mockDataSet = opprettMockPersonDataTPS() ?: initMockPersonDataTPS()
-
-        val datatps = DataFromTPS(mockDataSet, mockEessiInformasjon)
-        datatps.mockPersonV3Service = mock<PersonV3Service>()
-        return datatps.mockPrefillPersonDataFromTPS()
-    }
-
+    open fun overrideDefaultMockPersonDataTPS(): Set<PersonDataFromTPS.MockTPS> = defaultPersondataFromTPS()
 
     protected fun readJsonResponse(file: String): String {
         return ResourceUtils.getFile("classpath:json/nav/$file").readText()

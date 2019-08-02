@@ -23,10 +23,11 @@ class PrefillP2200UforpensjonTest : AbstractPrefillIntegrationTestHelper() {
     @Before
     fun setup() {
         val pensionDataFromPEN = mockPensjonsdataFraPEN("P2000-AP-14069110.xml")
-        onstart(pesysSaksnummer, pensionDataFromPEN, "P2200")
+        val prefillPersonDataFromTPS = mockPrefillPersonDataFromTPS(overrideDefaultMockPersonDataTPS())
+        onstart(pesysSaksnummer, pensionDataFromPEN, "P2200", prefillPersonDataFromTPS)
     }
 
-    override fun opprettMockPersonDataTPS(): Set<PersonDataFromTPS.MockTPS>? {
+    override fun overrideDefaultMockPersonDataTPS(): Set<PersonDataFromTPS.MockTPS> {
         return setOf(
                 PersonDataFromTPS.MockTPS("Person-20000.json", PersonDataFromTPS.generateRandomFnr(67), PersonDataFromTPS.MockTPS.TPSType.PERSON),
                 PersonDataFromTPS.MockTPS("Person-21000.json", PersonDataFromTPS.generateRandomFnr(43), PersonDataFromTPS.MockTPS.TPSType.BARN),
