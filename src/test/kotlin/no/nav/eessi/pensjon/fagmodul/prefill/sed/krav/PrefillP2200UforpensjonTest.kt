@@ -23,11 +23,7 @@ class PrefillP2200UforpensjonTest : AbstractPrefillIntegrationTestHelper() {
     @Before
     fun setup() {
         val pensionDataFromPEN = mockPensjonsdataFraPEN("P2000-AP-14069110.xml")
-        onstart(pesysSaksnummer, pensionDataFromPEN)
-    }
-
-    override fun mockPesysTestfilepath(): Pair<String, String> {
-        return Pair("P2200", "P2000-AP-14069110.xml")
+        onstart(pesysSaksnummer, pensionDataFromPEN, "P2200")
     }
 
     override fun opprettMockPersonDataTPS(): Set<PersonDataFromTPS.MockTPS>? {

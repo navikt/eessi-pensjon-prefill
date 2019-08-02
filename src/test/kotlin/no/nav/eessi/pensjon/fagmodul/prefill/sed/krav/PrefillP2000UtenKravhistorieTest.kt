@@ -29,7 +29,7 @@ class PrefillP2000UtenKravhistorieTest : AbstractPrefillIntegrationTestHelper() 
     @Before
     fun setup() {
         val pensionDataFromPEN = mockPensjonsdataFraPEN("P2000-AP-14069110.xml")
-        onstart(pesysSaksnummer, pensionDataFromPEN)
+        onstart(pesysSaksnummer, pensionDataFromPEN, "P2000")
     }
 
     override fun opprettMockPersonDataTPS(): Set<PersonDataFromTPS.MockTPS>? {
@@ -38,10 +38,6 @@ class PrefillP2000UtenKravhistorieTest : AbstractPrefillIntegrationTestHelper() 
                 PersonDataFromTPS.MockTPS("Person-21000.json", PersonDataFromTPS.generateRandomFnr(43), PersonDataFromTPS.MockTPS.TPSType.BARN),
                 PersonDataFromTPS.MockTPS("Person-22000.json", PersonDataFromTPS.generateRandomFnr(17), PersonDataFromTPS.MockTPS.TPSType.BARN)
         )
-    }
-
-    override fun mockPesysTestfilepath(): Pair<String, String> {
-        return Pair("P2000", "P2000-AP-14069110.xml")
     }
 
     override fun createTestClass(prefillNav: PrefillNav, personTPS: PrefillPersonDataFromTPS, pensionDataFromPEN: PensjonsinformasjonHjelper): Prefill<SED> {

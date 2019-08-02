@@ -39,6 +39,15 @@ abstract class AbstractPrefillIntegrationTestHelper {
             return PensjonsinformasjonHjelper(pensjonsinformasjonService)
         }
 
+        val mockEessiInformasjon = EessiInformasjon(
+                institutionid = "NO:noinst002",
+                institutionnavn = "NOINST002, NO INST002, NO",
+                institutionGate = "Postboks 6600 Etterstad TEST",
+                institutionBy = "Oslo",
+                institutionPostnr = "0607",
+                institutionLand = "NO"
+        )
+
         private fun readXMLresponse(file: String): ResponseEntity<String> {
             val resource = ResourceUtils.getFile("classpath:pensjonsinformasjon/krav/$file").readText()
             return ResponseEntity(resource, HttpStatus.OK)
@@ -56,14 +65,6 @@ abstract class AbstractPrefillIntegrationTestHelper {
 
     protected var kravHistorikkHelper = KravHistorikkHelper()
 
-    protected val eessiInformasjon = EessiInformasjon(
-            institutionid = "NO:noinst002",
-            institutionnavn = "NOINST002, NO INST002, NO",
-            institutionGate = "Postboks 6600 Etterstad TEST",
-            institutionBy = "Oslo",
-            institutionPostnr = "0607",
-            institutionLand = "NO"
-    )
 
     private lateinit var prefillNav: PrefillNav
 
@@ -71,9 +72,8 @@ abstract class AbstractPrefillIntegrationTestHelper {
 
     protected lateinit var prefill: Prefill<SED>
 
-    fun onstart(pesysSaksnummer: String, pensjonsDataFraPEN: PensjonsinformasjonHjelper) {
-        val (sedId2, mockKravXMLfil2) = mockPesysTestfilepath()
-        prefillData = generatePrefillData(sedId2, "02345678901", sakId = pesysSaksnummer)
+    fun onstart(pesysSaksnummer: String, pensjonsDataFraPEN: PensjonsinformasjonHjelper, sedId: String) {
+        prefillData = generatePrefillData(sedId, "02345678901", sakId = pesysSaksnummer)
 
         createPayload(prefillData)
 
@@ -88,9 +88,6 @@ abstract class AbstractPrefillIntegrationTestHelper {
         //mock PrefillP2x00 class
         prefill = createTestClass(prefillNav, personTPS, pensjonsDataFraPEN)
     }
-
-    //mock pesys pensjoninformasjon datafil i xml format
-    abstract fun mockPesysTestfilepath(): Pair<String, String>
 
     //mock prefill SED class
     abstract fun createTestClass(prefillNav: PrefillNav, personTPS: PrefillPersonDataFromTPS, pensionDataFromPEN: PensjonsinformasjonHjelper): Prefill<SED>
@@ -125,7 +122,7 @@ abstract class AbstractPrefillIntegrationTestHelper {
         //løsning for å laste in abstract mockTPStestklasse
         val mockDataSet = opprettMockPersonDataTPS() ?: initMockPersonDataTPS()
 
-        val datatps = DataFromTPS(mockDataSet, eessiInformasjon)
+        val datatps = DataFromTPS(mockDataSet, mockEessiInformasjon)
         datatps.mockPersonV3Service = mockPersonV3Service
         return datatps.mockPrefillPersonDataFromTPS()
     }

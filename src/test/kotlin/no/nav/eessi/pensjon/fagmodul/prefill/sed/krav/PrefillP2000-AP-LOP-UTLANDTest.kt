@@ -30,12 +30,7 @@ class `PrefillP2000-AP-LOP-UTLANDTest` : AbstractPrefillIntegrationTestHelper() 
     @Before
     fun setup() {
         val pensionDataFromPEN = mockPensjonsdataFraPEN("AP-LOP-21644722.xml")
-        onstart(pesysSaksnr, pensionDataFromPEN)
-    }
-
-
-    override fun mockPesysTestfilepath(): Pair<String, String> {
-        return Pair("P2000", "AP-LOP-21644722.xml")
+        onstart(pesysSaksnr, pensionDataFromPEN, "P2000")
     }
 
     override fun createTestClass(prefillNav: PrefillNav, personTPS: PrefillPersonDataFromTPS, pensionDataFromPEN: PensjonsinformasjonHjelper): Prefill<SED> {
