@@ -5,7 +5,10 @@ import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Nav
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjoninformasjonException
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.AbstractPrefillIntegrationTestHelper
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.generatePrefillData
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.mockPrefillPersonDataFromTPS
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.pensjonsDataFraPEN
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.readJsonResponse
 import no.nav.eessi.pensjon.fagmodul.prefill.model.Prefill
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
@@ -22,7 +25,7 @@ import kotlin.test.assertNull
 import kotlin.test.fail
 
 @RunWith(MockitoJUnitRunner::class)
-class PrefillP2000MedIngendata : AbstractPrefillIntegrationTestHelper() {
+class PrefillP2000MedIngendata {
 
     private val personFnr = PersonDataFromTPS.generateRandomFnr(68)
 

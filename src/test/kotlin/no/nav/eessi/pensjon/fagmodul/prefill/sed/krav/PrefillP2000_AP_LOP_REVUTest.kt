@@ -4,12 +4,14 @@ import no.nav.eessi.pensjon.fagmodul.prefill.ApiRequest
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Nav
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.AbstractPrefillIntegrationTestHelper
 import no.nav.eessi.pensjon.fagmodul.prefill.model.Prefill
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PersonDataFromTPS
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.AbstractPrefillIntegrationTestHelper.Companion.pensjonsDataFraPEN
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.generatePrefillData
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.mockPrefillPersonDataFromTPS
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.pensjonsDataFraPEN
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.readJsonResponse
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.NavFodselsnummer
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import org.junit.Before
@@ -20,14 +22,13 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
 @RunWith(MockitoJUnitRunner::class)
-class PrefillP2000_AP_LOP_REVUTest : AbstractPrefillIntegrationTestHelper() {
+class PrefillP2000_AP_LOP_REVUTest {
 
     private val personFnr = PersonDataFromTPS.generateRandomFnr(68)
 
     private val pesysSaksnummer = "20541862"
 
     lateinit var prefillData: PrefillDataModel
-    lateinit var pendata: Pensjonsinformasjon
     lateinit var sakHelper: SakHelper
     var kravHistorikkHelper = KravHistorikkHelper()
     lateinit var prefill: Prefill<SED>
@@ -50,7 +51,7 @@ class PrefillP2000_AP_LOP_REVUTest : AbstractPrefillIntegrationTestHelper() {
 
     @Test
     fun `sjekk av kravsøknad alderpensjon P2000`() {
-        pendata = sakHelper.getPensjoninformasjonFraSak(prefillData)
+        val pendata = sakHelper.getPensjoninformasjonFraSak(prefillData)
 
         assertNotNull(pendata)
 

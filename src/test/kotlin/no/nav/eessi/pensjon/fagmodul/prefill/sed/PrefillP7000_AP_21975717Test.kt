@@ -4,6 +4,9 @@ import no.nav.eessi.pensjon.fagmodul.prefill.model.Prefill
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PersonDataFromTPS
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.generatePrefillData
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.mockPrefillPersonDataFromTPS
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.readJsonResponse
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.utils.validateJson
 import org.junit.Before
@@ -17,14 +20,13 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 @RunWith(MockitoJUnitRunner::class)
-class PrefillP7000_AP_21975717Test : AbstractPrefillIntegrationTestHelper() {
+class PrefillP7000_AP_21975717Test {
 
     private val personFnr = "01071843352"
 
     private val pesysSaksnummer = "21975717"
 
     lateinit var prefillData: PrefillDataModel
-    lateinit var pendata: Pensjonsinformasjon
     lateinit var prefill: Prefill<SED>
 
     @Before

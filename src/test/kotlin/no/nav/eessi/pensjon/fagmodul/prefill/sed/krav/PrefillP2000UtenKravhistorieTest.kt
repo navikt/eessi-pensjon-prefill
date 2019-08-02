@@ -1,7 +1,10 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed.krav
 
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.AbstractPrefillIntegrationTestHelper
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.generatePrefillData
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.mockPrefillPersonDataFromTPS
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.pensjonsDataFraPEN
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.readJsonResponse
 import no.nav.eessi.pensjon.fagmodul.prefill.model.Prefill
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
@@ -18,14 +21,13 @@ import kotlin.test.fail
 
 
 @RunWith(MockitoJUnitRunner::class)
-class PrefillP2000UtenKravhistorieTest : AbstractPrefillIntegrationTestHelper() {
+class PrefillP2000UtenKravhistorieTest {
 
     private val personFnr = PersonDataFromTPS.generateRandomFnr(67)
 
     private val pesysSaksnummer = "14069110"
 
     lateinit var prefillData: PrefillDataModel
-    lateinit var pendata: Pensjonsinformasjon
     lateinit var sakHelper: SakHelper
     var kravHistorikkHelper = KravHistorikkHelper()
     lateinit var prefill: Prefill<SED>
@@ -50,7 +52,7 @@ class PrefillP2000UtenKravhistorieTest : AbstractPrefillIntegrationTestHelper() 
 
     @Test
     fun `Sjekk av kravsøknad alderpensjon P2000`() {
-        pendata = sakHelper.getPensjoninformasjonFraSak(prefillData)
+        val pendata = sakHelper.getPensjoninformasjonFraSak(prefillData)
         assertNotNull(pendata)
 
         val pensak = sakHelper.getPensjonSak(prefillData, pendata)

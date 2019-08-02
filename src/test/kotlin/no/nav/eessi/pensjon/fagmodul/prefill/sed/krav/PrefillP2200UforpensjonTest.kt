@@ -1,13 +1,15 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed.krav
 
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.AbstractPrefillIntegrationTestHelper
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.generatePrefillData
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.mockPrefillPersonDataFromTPS
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.pensjonsDataFraPEN
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.readJsonResponse
 import no.nav.eessi.pensjon.fagmodul.prefill.model.Prefill
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PersonDataFromTPS
 import no.nav.eessi.pensjon.utils.mapAnyToJson
-import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -15,12 +17,11 @@ import org.mockito.junit.MockitoJUnitRunner
 import kotlin.test.assertNotNull
 
 @RunWith(MockitoJUnitRunner::class)
-class PrefillP2200UforpensjonTest : AbstractPrefillIntegrationTestHelper() {
+class PrefillP2200UforpensjonTest {
 
     private val pesysSaksnummer = "14069110"
 
     lateinit var prefillData: PrefillDataModel
-    lateinit var pendata: Pensjonsinformasjon
     lateinit var sakHelper: SakHelper
     var kravHistorikkHelper = KravHistorikkHelper()
     lateinit var prefill: Prefill<SED>
@@ -43,8 +44,8 @@ class PrefillP2200UforpensjonTest : AbstractPrefillIntegrationTestHelper() {
 
     @Test
     fun `Testing av komplett utfylling kravsøknad uførepensjon P2200`() {
+        val pendata = sakHelper.getPensjoninformasjonFraSak(prefillData)
 
-        pendata = sakHelper.getPensjoninformasjonFraSak(prefillData)
         assertNotNull(pendata)
 
         val pensak = sakHelper.getPensjonSak(prefillData, pendata)
