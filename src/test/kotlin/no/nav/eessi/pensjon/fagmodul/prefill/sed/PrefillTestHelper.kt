@@ -47,16 +47,6 @@ object PrefillTestHelper {
         return datatps.mockPrefillPersonDataFromTPS()
     }
 
-    fun defaultPersondataFromTPS(): Set<PersonDataFromTPS.MockTPS> {
-        val defaultPersonDataFromTPS = setOf(
-                PersonDataFromTPS.MockTPS("Person-20000.json", generateRandomFnr(67), PersonDataFromTPS.MockTPS.TPSType.PERSON),
-                PersonDataFromTPS.MockTPS("Person-21000.json", generateRandomFnr(43), PersonDataFromTPS.MockTPS.TPSType.BARN),
-                PersonDataFromTPS.MockTPS("Person-22000.json", generateRandomFnr(17), PersonDataFromTPS.MockTPS.TPSType.BARN)
-        )
-        return defaultPersonDataFromTPS
-    }
-
-
     fun createInitialPrefillData(sedId: String, fnr: String? = null, subtractYear: Int? = null, sakId: String? = null): PrefillDataModel {
         val items = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
 
