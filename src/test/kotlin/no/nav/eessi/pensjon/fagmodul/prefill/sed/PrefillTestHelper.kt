@@ -18,7 +18,7 @@ import org.springframework.web.client.RestTemplate
 
 object PrefillTestHelper {
 
-    fun pensjonsDataFraPEN(responseXMLfilename: String): PensjonsinformasjonHjelper {
+    fun lesPensjonsdataFraFil(responseXMLfilename: String): PensjonsinformasjonHjelper {
         val pensjonsinformasjonRestTemplate = mock<RestTemplate>()
         lenient().`when`(pensjonsinformasjonRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java))).thenReturn(readXMLresponse(responseXMLfilename))
 
@@ -36,7 +36,7 @@ object PrefillTestHelper {
             institutionLand = "NO"
     )
 
-    fun mockPrefillPersonDataFromTPS(mockPersonDataFraTPS: Set<PersonDataFromTPS.MockTPS>): PrefillPersonDataFromTPS {
+    fun setupPersondataFraTPS(mockPersonDataFraTPS: Set<PersonDataFromTPS.MockTPS>): PrefillPersonDataFromTPS {
         open class DataFromTPS(mocktps: Set<MockTPS>, eessiInformasjon: EessiInformasjon) : PersonDataFromTPS(mocktps, eessiInformasjon)
         val datatps = DataFromTPS(mockPersonDataFraTPS, mockEessiInformasjon)
         datatps.mockPersonV3Service = mock()

@@ -2,8 +2,8 @@ package no.nav.eessi.pensjon.fagmodul.prefill.sed.krav
 
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.mockPrefillPersonDataFromTPS
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.pensjonsDataFraPEN
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.setupPersondataFraTPS
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.lesPensjonsdataFraFil
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.readJsonResponse
 import no.nav.eessi.pensjon.fagmodul.prefill.model.Prefill
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
@@ -27,12 +27,20 @@ class PrefillP2200UforpensjonTest {
 
     @Before
     fun setup() {
-        val pensionDataFromPEN = pensjonsDataFraPEN("P2000-AP-14069110.xml")
-        val prefillPersonDataFromTPS = mockPrefillPersonDataFromTPS(setOf(
+        val persondataFraTPS = setupPersondataFraTPS(setOf(
                 PersonDataFromTPS.MockTPS("Person-20000.json", personFnr, PersonDataFromTPS.MockTPS.TPSType.PERSON),
                 PersonDataFromTPS.MockTPS("Person-21000.json", PersonDataFromTPS.generateRandomFnr(43), PersonDataFromTPS.MockTPS.TPSType.BARN),
                 PersonDataFromTPS.MockTPS("Person-22000.json", PersonDataFromTPS.generateRandomFnr(17), PersonDataFromTPS.MockTPS.TPSType.BARN)
         ))
+
+        sakHelper = SakHelper(
+                prefillNav = PrefillNav(
+                        preutfyllingPersonFraTPS = persondataFraTPS,
+                        institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO"),
+                preutfyllingPersonFraTPS = persondataFraTPS,
+                dataFromPEN = lesPensjonsdataFraFil("P2000-AP-14069110.xml"))
+
+        prefill = PrefillP2200(sakHelper)
 
         prefillData = PrefillDataModel().apply {
             rinaSubject = "Pensjon"
@@ -43,12 +51,8 @@ class PrefillP2200UforpensjonTest {
             aktoerID = "123456789"
             personNr = personFnr
             institution = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
+            partSedAsJson = mutableMapOf("PersonInfo" to readJsonResponse("other/person_informasjon_selvb.json"))
         }
-        prefillData.partSedAsJson["PersonInfo"] = readJsonResponse("other/person_informasjon_selvb.json")
-
-        val prefillNav = PrefillNav(prefillPersonDataFromTPS, institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO")
-        sakHelper = SakHelper(prefillNav, prefillPersonDataFromTPS, pensionDataFromPEN)
-        prefill = PrefillP2200(sakHelper)
     }
 
     @Test
