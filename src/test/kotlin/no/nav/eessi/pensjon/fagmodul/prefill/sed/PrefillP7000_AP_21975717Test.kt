@@ -17,7 +17,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 @RunWith(MockitoJUnitRunner::class)
-class `PrefillP7000-AP-21975717Test` : AbstractPrefillIntegrationTestHelper() {
+class PrefillP7000_AP_21975717Test : AbstractPrefillIntegrationTestHelper() {
 
     private val personFnr = "01071843352"
 
