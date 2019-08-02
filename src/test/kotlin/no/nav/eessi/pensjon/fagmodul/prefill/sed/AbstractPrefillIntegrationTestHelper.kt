@@ -68,7 +68,7 @@ abstract class AbstractPrefillIntegrationTestHelper {
 
     @Before
     fun onStart() {
-        setFakePersonFnr(createFakePersonFnr())
+        personFnr = createFakePersonFnr()
         val mockPair = mockPesysTestfilepath()
 
         //mock prefillDataModel
@@ -97,15 +97,6 @@ abstract class AbstractPrefillIntegrationTestHelper {
 
     //genererer et tilfeldig falsk personnr for person under kjøring av test
     abstract fun createFakePersonFnr(): String
-
-    private fun setFakePersonFnr(fnr: String) {
-        personFnr = fnr
-    }
-
-    //henter et tilfeldig generert personnr.
-    fun getFakePersonFnr(): String {
-        return personFnr
-    }
 
     //pesys saksnummer
     abstract fun createSaksnummer(): String
