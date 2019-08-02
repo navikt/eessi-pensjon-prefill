@@ -19,11 +19,9 @@ import no.nav.eessi.pensjon.services.pensjonsinformasjon.RequestBuilder
 import no.nav.eessi.pensjon.services.personv3.PersonV3Service
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import org.junit.Before
-import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers
 import org.mockito.Mock
 import org.mockito.Mockito.lenient
-import org.mockito.junit.MockitoJUnitRunner
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -31,8 +29,6 @@ import org.springframework.util.ResourceUtils
 import org.springframework.web.client.RestTemplate
 
 abstract class AbstractPrefillIntegrationTestHelper {
-
-    var personFnr: String = ""
 
     @Mock
     protected lateinit var pensjonsinformasjonRestTemplate: RestTemplate
@@ -67,7 +63,6 @@ abstract class AbstractPrefillIntegrationTestHelper {
 
     @Before
     fun onStart() {
-        personFnr = createFakePersonFnr()
         val mockPair = mockPesysTestfilepath()
 
         //mock prefillDataModel
@@ -93,9 +88,6 @@ abstract class AbstractPrefillIntegrationTestHelper {
         //mock PrefillP2x00 class
         prefill = createTestClass(prefillNav, personTPS, pensionDataFromPEN)
     }
-
-    //genererer et tilfeldig falsk personnr for person under kjøring av test
-    abstract fun createFakePersonFnr(): String
 
     //pesys saksnummer
     abstract fun createSaksnummer(): String

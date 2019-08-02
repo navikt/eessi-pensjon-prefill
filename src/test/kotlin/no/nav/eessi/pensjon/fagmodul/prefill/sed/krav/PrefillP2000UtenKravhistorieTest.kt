@@ -21,16 +21,14 @@ import kotlin.test.fail
 @RunWith(MockitoJUnitRunner::class)
 class PrefillP2000UtenKravhistorieTest : AbstractPrefillIntegrationTestHelper() {
 
+    private val fakeFnr = PersonDataFromTPS.generateRandomFnr(67)
+
     override fun opprettMockPersonDataTPS(): Set<PersonDataFromTPS.MockTPS>? {
         return setOf(
-                PersonDataFromTPS.MockTPS("Person-20000.json", personFnr, PersonDataFromTPS.MockTPS.TPSType.PERSON),
+                PersonDataFromTPS.MockTPS("Person-20000.json", fakeFnr, PersonDataFromTPS.MockTPS.TPSType.PERSON),
                 PersonDataFromTPS.MockTPS("Person-21000.json", PersonDataFromTPS.generateRandomFnr(43), PersonDataFromTPS.MockTPS.TPSType.BARN),
                 PersonDataFromTPS.MockTPS("Person-22000.json", PersonDataFromTPS.generateRandomFnr(17), PersonDataFromTPS.MockTPS.TPSType.BARN)
         )
-    }
-
-    override fun createFakePersonFnr(): String {
-        return PersonDataFromTPS.generateRandomFnr(67)
     }
 
     override fun createSaksnummer(): String {
@@ -46,7 +44,7 @@ class PrefillP2000UtenKravhistorieTest : AbstractPrefillIntegrationTestHelper() 
     }
 
     override fun createPayload(prefillData: PrefillDataModel) {
-        prefillData.personNr = personFnr
+        prefillData.personNr = fakeFnr
         prefillData.partSedAsJson["PersonInfo"] = createPersonInfoPayLoad()
         prefillData.partSedAsJson["P4000"] = createPersonTrygdetidHistorikk()
     }
@@ -106,7 +104,7 @@ class PrefillP2000UtenKravhistorieTest : AbstractPrefillIntegrationTestHelper() 
         assertEquals(null, pinitem?.sektor)
         assertEquals("NOINST002, NO INST002, NO", pinitem?.institusjonsnavn)
         assertEquals("NO:noinst002", pinitem?.institusjonsid)
-        assertEquals(createFakePersonFnr(), pinitem?.identifikator)
+        assertEquals(fakeFnr, pinitem?.identifikator)
 
         assertEquals("01", p2000.nav?.barn?.get(1)?.person?.sivilstand?.get(0)?.status)
 

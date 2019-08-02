@@ -22,6 +22,8 @@ import kotlin.test.assertNotNull
 @RunWith(MockitoJUnitRunner::class)
 class `PrefillP2000-AP-21975717Test` : AbstractPrefillIntegrationTestHelper() {
 
+    private val fakeFnr = PersonDataFromTPS.generateRandomFnr(68)
+
     private val giftFnr = PersonDataFromTPS.generateRandomFnr(68)
     private val ekteFnr = PersonDataFromTPS.generateRandomFnr(70)
 
@@ -38,16 +40,9 @@ class `PrefillP2000-AP-21975717Test` : AbstractPrefillIntegrationTestHelper() {
     }
 
     override fun createPayload(prefillData: PrefillDataModel) {
-        prefillData.personNr = personFnr
+        prefillData.personNr = fakeFnr
         prefillData.partSedAsJson["PersonInfo"] = createPersonInfoPayLoad()
         prefillData.partSedAsJson["P4000"] = createPersonTrygdetidHistorikk()
-    }
-
-    override fun createFakePersonFnr(): String {
-        if (personFnr.isNullOrBlank()) {
-            personFnr = PersonDataFromTPS.generateRandomFnr(68)
-        }
-        return personFnr
     }
 
     override fun createPersonInfoPayLoad(): String {
@@ -120,7 +115,7 @@ class `PrefillP2000-AP-21975717Test` : AbstractPrefillIntegrationTestHelper() {
         assertEquals(null, pinitem?.sektor)
         assertEquals("NOINST002, NO INST002, NO", pinitem?.institusjonsnavn)
         assertEquals("NO:noinst002", pinitem?.institusjonsid)
-        assertEquals(createFakePersonFnr(), pinitem?.identifikator)
+        assertEquals(fakeFnr, pinitem?.identifikator)
 
         assertEquals("RANNAR-MASK", p2000.nav?.ektefelle?.person?.fornavn)
         assertEquals("MIZINTSEV", p2000.nav?.ektefelle?.person?.etternavn)

@@ -21,6 +21,8 @@ import kotlin.test.assertNotNull
 @RunWith(MockitoJUnitRunner::class)
 class `PrefillP2200-AP-21975717Test` : AbstractPrefillIntegrationTestHelper() {
 
+    private val fakeFnr = PersonDataFromTPS.generateRandomFnr(68)
+
     override fun mockPesysTestfilepath(): Pair<String, String> {
         return Pair("P2200", "P2000_21975717_AP_UTLAND.xml")
     }
@@ -34,16 +36,9 @@ class `PrefillP2200-AP-21975717Test` : AbstractPrefillIntegrationTestHelper() {
     }
 
     override fun createPayload(prefillData: PrefillDataModel) {
-        prefillData.personNr = personFnr
+        prefillData.personNr = fakeFnr
         prefillData.partSedAsJson["PersonInfo"] = createPersonInfoPayLoad()
         prefillData.partSedAsJson["P4000"] = createPersonTrygdetidHistorikk()
-    }
-
-    override fun createFakePersonFnr(): String {
-        if (personFnr.isNullOrBlank()) {
-            personFnr = PersonDataFromTPS.generateRandomFnr(68)
-        }
-        return personFnr
     }
 
     override fun createPersonInfoPayLoad(): String {
@@ -56,7 +51,7 @@ class `PrefillP2200-AP-21975717Test` : AbstractPrefillIntegrationTestHelper() {
 
     override fun opprettMockPersonDataTPS(): Set<PersonDataFromTPS.MockTPS>? {
         return setOf(
-                PersonDataFromTPS.MockTPS("Person-11000-GIFT.json", personFnr, PersonDataFromTPS.MockTPS.TPSType.PERSON),
+                PersonDataFromTPS.MockTPS("Person-11000-GIFT.json", fakeFnr, PersonDataFromTPS.MockTPS.TPSType.PERSON),
                 PersonDataFromTPS.MockTPS("Person-12000-EKTE.json", PersonDataFromTPS.generateRandomFnr(70), PersonDataFromTPS.MockTPS.TPSType.EKTE)
         )
     }
@@ -97,7 +92,7 @@ class `PrefillP2200-AP-21975717Test` : AbstractPrefillIntegrationTestHelper() {
         assertEquals(null, pinitem?.sektor)
         assertEquals("NOINST002, NO INST002, NO", pinitem?.institusjonsnavn)
         assertEquals("NO:noinst002", pinitem?.institusjonsid)
-        assertEquals(createFakePersonFnr(), pinitem?.identifikator)
+        assertEquals(fakeFnr, pinitem?.identifikator)
 
         assertEquals("RANNAR-MASK", p2200.nav?.ektefelle?.person?.fornavn)
         assertEquals("MIZINTSEV", p2200.nav?.ektefelle?.person?.etternavn)

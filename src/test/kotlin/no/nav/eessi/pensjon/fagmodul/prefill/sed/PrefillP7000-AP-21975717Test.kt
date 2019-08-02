@@ -20,6 +20,8 @@ import kotlin.test.assertTrue
 @RunWith(MockitoJUnitRunner::class)
 class `PrefillP7000-AP-21975717Test` : AbstractPrefillIntegrationTestHelper() {
 
+    private val fakeFnr = "01071843352"
+
     override fun mockPesysTestfilepath(): Pair<String, String> {
         return Pair("P7000", "P2000_21975717_AP_UTLAND.xml")
     }
@@ -33,13 +35,9 @@ class `PrefillP7000-AP-21975717Test` : AbstractPrefillIntegrationTestHelper() {
     }
 
     override fun createPayload(prefillData: PrefillDataModel) {
-        prefillData.personNr = personFnr
+        prefillData.personNr = fakeFnr
         prefillData.partSedAsJson["PersonInfo"] = createPersonInfoPayLoad()
         prefillData.partSedAsJson["P4000"] = createPersonTrygdetidHistorikk()
-    }
-
-    override fun createFakePersonFnr(): String {
-        return "01071843352"
     }
 
     override fun createPersonInfoPayLoad(): String {
@@ -52,7 +50,7 @@ class `PrefillP7000-AP-21975717Test` : AbstractPrefillIntegrationTestHelper() {
 
     override fun opprettMockPersonDataTPS(): Set<PersonDataFromTPS.MockTPS>? {
         return setOf(
-                PersonDataFromTPS.MockTPS("Person-11000-GIFT.json", personFnr, PersonDataFromTPS.MockTPS.TPSType.PERSON),
+                PersonDataFromTPS.MockTPS("Person-11000-GIFT.json", fakeFnr, PersonDataFromTPS.MockTPS.TPSType.PERSON),
                 PersonDataFromTPS.MockTPS("Person-12000-EKTE.json", PersonDataFromTPS.generateRandomFnr(70), PersonDataFromTPS.MockTPS.TPSType.EKTE)
         )
     }

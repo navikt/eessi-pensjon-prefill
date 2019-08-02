@@ -20,20 +20,14 @@ import kotlin.test.assertNotNull
 @RunWith(MockitoJUnitRunner::class)
 class PrefillP2000AlderPensjonUtlandForsteGangTest : AbstractPrefillIntegrationTestHelper() {
 
+    private val fakeFnr = PersonDataFromTPS.generateRandomFnr(67)
+
     //mock familie
     override fun opprettMockPersonDataTPS(): Set<PersonDataFromTPS.MockTPS>? {
         return setOf(
-                PersonDataFromTPS.MockTPS("Person-11000-GIFT.json", personFnr, PersonDataFromTPS.MockTPS.TPSType.PERSON),
+                PersonDataFromTPS.MockTPS("Person-11000-GIFT.json", fakeFnr, PersonDataFromTPS.MockTPS.TPSType.PERSON),
                 PersonDataFromTPS.MockTPS("Person-12000-EKTE.json", PersonDataFromTPS.generateRandomFnr(69), PersonDataFromTPS.MockTPS.TPSType.EKTE)
         )
-    }
-
-    //Generere fakePersonFnr nr
-    override fun createFakePersonFnr(): String {
-        if (personFnr.isNullOrBlank()) {
-            personFnr = PersonDataFromTPS.generateRandomFnr(67)
-        }
-        return personFnr
     }
 
     override fun createSaksnummer(): String {
@@ -51,7 +45,7 @@ class PrefillP2000AlderPensjonUtlandForsteGangTest : AbstractPrefillIntegrationT
 
     //Mock persondata (P4000, persondata fra EP11)
     override fun createPayload(prefillData: PrefillDataModel) {
-        prefillData.personNr = personFnr
+        prefillData.personNr = fakeFnr
         prefillData.partSedAsJson["PersonInfo"] = createPersonInfoPayLoad()
         prefillData.partSedAsJson["P4000"] = createPersonTrygdetidHistorikk()
     }
