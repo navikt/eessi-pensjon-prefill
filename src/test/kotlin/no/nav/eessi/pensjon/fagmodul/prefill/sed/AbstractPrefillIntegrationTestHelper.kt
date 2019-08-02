@@ -1,9 +1,9 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed
 
 import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.mock
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
-import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjon
 import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonHjelper
 import no.nav.eessi.pensjon.fagmodul.prefill.model.Prefill
@@ -29,8 +29,21 @@ import org.springframework.web.client.RestTemplate
 
 abstract class AbstractPrefillIntegrationTestHelper {
 
-    @Mock
-    protected lateinit var pensjonsinformasjonRestTemplate: RestTemplate
+    companion object {
+        fun mockPensjonsdataFraPEN(responseXMLfilename: String): PensjonsinformasjonHjelper {
+            val pensjonsinformasjonRestTemplate = mock<RestTemplate>()
+            lenient().`when`(pensjonsinformasjonRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java))).thenReturn(readXMLresponse(responseXMLfilename))
+
+            val pensjonsinformasjonService = PensjonsinformasjonService(pensjonsinformasjonRestTemplate, RequestBuilder())
+
+            return PensjonsinformasjonHjelper(pensjonsinformasjonService)
+        }
+
+        private fun readXMLresponse(file: String): ResponseEntity<String> {
+            val resource = ResourceUtils.getFile("classpath:pensjonsinformasjon/krav/$file").readText()
+            return ResponseEntity(resource, HttpStatus.OK)
+        }
+    }
 
     @Mock
     protected lateinit var mockPersonV3Service: PersonV3Service
@@ -40,8 +53,6 @@ abstract class AbstractPrefillIntegrationTestHelper {
     protected lateinit var pendata: Pensjonsinformasjon
 
     protected lateinit var sakHelper: SakHelper
-
-    private lateinit var pensionDataFromPEN: PensjonsinformasjonHjelper
 
     protected var kravHistorikkHelper = KravHistorikkHelper()
 
@@ -60,15 +71,9 @@ abstract class AbstractPrefillIntegrationTestHelper {
 
     protected lateinit var prefill: Prefill<SED>
 
-    fun onStart(pesysSaksnummer: String) {
-        val mockPair = mockPesysTestfilepath()
-
-        //mock prefillDataModel
-        val sedId = mockPair.first
-        SEDType.valueOf(sedId)
-        val mockKravXMLfil = mockPair.second
-
-        prefillData = generatePrefillData(sedId, "02345678901", sakId = pesysSaksnummer)
+    fun onstart(pesysSaksnummer: String, pensjonsDataFraPEN: PensjonsinformasjonHjelper) {
+        val (sedId2, mockKravXMLfil2) = mockPesysTestfilepath()
+        prefillData = generatePrefillData(sedId2, "02345678901", sakId = pesysSaksnummer)
 
         createPayload(prefillData)
 
@@ -77,14 +82,11 @@ abstract class AbstractPrefillIntegrationTestHelper {
         //mock prefillNav data
         prefillNav = PrefillNav(personTPS, institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO")
 
-        //mock pensjonData
-        pensionDataFromPEN = mockPrefillPensionDataFromPEN(mockKravXMLfil)
-
         //mock kravData
-        sakHelper = mockKravDataFromPEN(pensionDataFromPEN)
+        sakHelper = mockKravDataFromPEN(pensjonsDataFraPEN)
 
         //mock PrefillP2x00 class
-        prefill = createTestClass(prefillNav, personTPS, pensionDataFromPEN)
+        prefill = createTestClass(prefillNav, personTPS, pensjonsDataFraPEN)
     }
 
     //mock pesys pensjoninformasjon datafil i xml format
@@ -129,29 +131,15 @@ abstract class AbstractPrefillIntegrationTestHelper {
     }
 
 
-    private fun readXMLresponse(file: String): ResponseEntity<String> {
-        val resource = ResourceUtils.getFile("classpath:pensjonsinformasjon/krav/$file").readText()
-        return ResponseEntity(resource, HttpStatus.OK)
-    }
-
     protected fun readJsonResponse(file: String): String {
         return ResourceUtils.getFile("classpath:json/nav/$file").readText()
-    }
-
-    private fun mockPrefillPensionDataFromPEN(responseXMLfilename: String): PensjonsinformasjonHjelper {
-        lenient().`when`(pensjonsinformasjonRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java))).thenReturn(readXMLresponse(responseXMLfilename))
-
-        val pensjonsinformasjonService1 = PensjonsinformasjonService(pensjonsinformasjonRestTemplate, RequestBuilder())
-
-        return PensjonsinformasjonHjelper(pensjonsinformasjonService1)
     }
 
     fun mockKravDataFromPEN(prefillPensionDataFromPEN: PensjonsinformasjonHjelper): SakHelper {
         return SakHelper(prefillNav, personTPS, prefillPensionDataFromPEN, kravHistorikkHelper)
     }
 
-
-    private fun generatePrefillData(sedId: String, fnr: String? = null, subtractYear: Int? = null, sakId: String? = null): PrefillDataModel {
+    fun generatePrefillData(sedId: String, fnr: String? = null, subtractYear: Int? = null, sakId: String? = null): PrefillDataModel {
         val items = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
 
         val year = subtractYear ?: 68

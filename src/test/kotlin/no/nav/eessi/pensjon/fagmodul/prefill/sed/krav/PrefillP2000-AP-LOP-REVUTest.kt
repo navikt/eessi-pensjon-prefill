@@ -29,7 +29,8 @@ class `PrefillP2000-AP-LOP-REVUTest` : AbstractPrefillIntegrationTestHelper() {
 
     @Before
     fun setup() {
-        onStart(pesysSaksnummer)
+        val pensionDataFromPEN = mockPensjonsdataFraPEN("P2000-AP-LP-RVUR-20541862.xml")
+        onstart(pesysSaksnummer, pensionDataFromPEN)
     }
 
 
@@ -152,5 +153,6 @@ class `PrefillP2000-AP-LOP-REVUTest` : AbstractPrefillIntegrationTestHelper() {
                 mockSED = true
         )
     }
+
 }
 

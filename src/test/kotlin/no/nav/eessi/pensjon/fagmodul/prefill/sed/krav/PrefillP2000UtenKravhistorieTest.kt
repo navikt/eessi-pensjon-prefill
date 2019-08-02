@@ -28,7 +28,8 @@ class PrefillP2000UtenKravhistorieTest : AbstractPrefillIntegrationTestHelper() 
 
     @Before
     fun setup() {
-        onStart(pesysSaksnummer)
+        val pensionDataFromPEN = mockPensjonsdataFraPEN("P2000-AP-14069110.xml")
+        onstart(pesysSaksnummer, pensionDataFromPEN)
     }
 
     override fun opprettMockPersonDataTPS(): Set<PersonDataFromTPS.MockTPS>? {
@@ -169,4 +170,5 @@ class PrefillP2000UtenKravhistorieTest : AbstractPrefillIntegrationTestHelper() 
         val navfnr = NavFodselsnummer(P2000.pensjon?.ytelser?.get(0)?.pin?.identifikator!!)
         assertEquals(67, navfnr.getAge())
     }
+
 }

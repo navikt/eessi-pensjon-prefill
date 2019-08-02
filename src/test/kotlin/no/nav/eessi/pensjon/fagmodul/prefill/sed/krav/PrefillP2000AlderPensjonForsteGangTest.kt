@@ -27,7 +27,8 @@ class PrefillP2000AlderPensjonUtlandForsteGangTest : AbstractPrefillIntegrationT
 
     @Before
     fun setup() {
-        onStart(pesysSaksnummer)
+        val pensionDataFromPEN = mockPensjonsdataFraPEN("AP_FORSTEG_BH.xml")
+        onstart(pesysSaksnummer, pensionDataFromPEN)
     }
 
 

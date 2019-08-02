@@ -29,7 +29,8 @@ class PrefillP2000APUtlandInnvTest : AbstractPrefillIntegrationTestHelper() {
 
     @Before
     fun setup() {
-        onStart(pesysSaksnummer)
+        val pensionDataFromPEN = mockPensjonsdataFraPEN("P2000-AP-UTL-INNV-24015012345_PlanB.xml")
+        onstart(pesysSaksnummer, pensionDataFromPEN)
     }
 
 

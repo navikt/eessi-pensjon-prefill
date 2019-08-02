@@ -32,7 +32,8 @@ class PrefillP2000MedIngendata : AbstractPrefillIntegrationTestHelper() {
 
     @Before
     fun setup() {
-        onStart(pesysSaksnummer)
+        val pensionDataFromPEN = mockPensjonsdataFraPEN("P2000-TOMT-SVAR-PESYS.xml")
+        onstart(pesysSaksnummer, pensionDataFromPEN)
     }
 
     override fun mockPesysTestfilepath(): Pair<String, String> {
@@ -158,5 +159,6 @@ class PrefillP2000MedIngendata : AbstractPrefillIntegrationTestHelper() {
                 mockSED = true
         )
     }
+
 }
 

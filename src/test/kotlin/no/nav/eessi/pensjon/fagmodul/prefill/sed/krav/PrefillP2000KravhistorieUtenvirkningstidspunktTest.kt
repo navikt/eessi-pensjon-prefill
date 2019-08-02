@@ -27,7 +27,8 @@ class PrefillP2000KravhistorieUtenvirkningstidspunktTest : AbstractPrefillIntegr
 
     @Before
     fun setup() {
-        onStart(pesysSaksnummer)
+        val pensionDataFromPEN = mockPensjonsdataFraPEN("P2000-AP-KUNUTL-IKKEVIRKNINGTID.xml")
+        onstart(pesysSaksnummer, pensionDataFromPEN)
     }
 
     override fun opprettMockPersonDataTPS(): Set<PersonDataFromTPS.MockTPS>? {

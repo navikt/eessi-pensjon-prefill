@@ -29,7 +29,8 @@ class `PrefillP2000-AP-LOP-UTLANDTest` : AbstractPrefillIntegrationTestHelper() 
 
     @Before
     fun setup() {
-        onStart(pesysSaksnr)
+        val pensionDataFromPEN = mockPensjonsdataFraPEN("AP-LOP-21644722.xml")
+        onstart(pesysSaksnr, pensionDataFromPEN)
     }
 
 
