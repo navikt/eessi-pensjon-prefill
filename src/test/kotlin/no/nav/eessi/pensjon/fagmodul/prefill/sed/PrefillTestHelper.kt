@@ -2,14 +2,10 @@ package no.nav.eessi.pensjon.fagmodul.prefill.sed
 
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
-import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
-import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjon
 import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonHjelper
-import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillPersonDataFromTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PersonDataFromTPS
-import no.nav.eessi.pensjon.fagmodul.prefill.person.PersonDataFromTPS.Companion.generateRandomFnr
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonService
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.RequestBuilder
 import org.mockito.ArgumentMatchers
@@ -45,23 +41,6 @@ object PrefillTestHelper {
         val datatps = DataFromTPS(mockPersonDataFraTPS, mockEessiInformasjon)
         datatps.mockPersonV3Service = mock()
         return datatps.mockPrefillPersonDataFromTPS()
-    }
-
-    fun createInitialPrefillData(sedId: String, fnr: String? = null, subtractYear: Int? = null, sakId: String? = null): PrefillDataModel {
-        val items = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
-
-        val year = subtractYear ?: 68
-
-        return PrefillDataModel().apply {
-            rinaSubject = "Pensjon"
-            sed = SED(sedId)
-            penSaksnummer = sakId ?: "12345678"
-            vedtakId = "12312312"
-            buc = "P_BUC_99"
-            aktoerID = "123456789"
-            personNr = fnr ?: generateRandomFnr(year)
-            institution = items
-        }
     }
 
     fun readJsonResponse(file: String): String {

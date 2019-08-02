@@ -8,7 +8,6 @@ import no.nav.eessi.pensjon.fagmodul.prefill.model.Prefill
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PersonDataFromTPS
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.createInitialPrefillData
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.mockPrefillPersonDataFromTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.pensjonsDataFraPEN
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.readJsonResponse
@@ -35,16 +34,28 @@ class PrefillP2000_AP_LOP_REVUTest {
 
     @Before
     fun setup() {
-        val pensionDataFromPEN = pensjonsDataFraPEN("P2000-AP-LP-RVUR-20541862.xml")
+        val inputPensjonsdataFraPEN = pensjonsDataFraPEN("P2000-AP-LP-RVUR-20541862.xml")
+
         val prefillPersonDataFromTPS = mockPrefillPersonDataFromTPS(setOf(
                 PersonDataFromTPS.MockTPS("Person-11000-GIFT.json", personFnr, PersonDataFromTPS.MockTPS.TPSType.PERSON),
                 PersonDataFromTPS.MockTPS("Person-12000-EKTE.json", PersonDataFromTPS.generateRandomFnr(70), PersonDataFromTPS.MockTPS.TPSType.EKTE)
         ))
-        prefillData = createInitialPrefillData("P2000", personFnr, sakId = pesysSaksnummer)
-        prefillData.partSedAsJson["PersonInfo"] = readJsonResponse("other/person_informasjon_selvb.json")
-        prefillData.partSedAsJson["P4000"] = readJsonResponse("other/p4000_trygdetid_part.json")
+
+        prefillData = PrefillDataModel().apply {
+            rinaSubject = "Pensjon"
+            sed = SED("P2000")
+            penSaksnummer = pesysSaksnummer
+            vedtakId = "12312312"
+            buc = "P_BUC_99"
+            aktoerID = "123456789"
+            personNr = personFnr
+            institution = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
+            partSedAsJson = mutableMapOf(
+                    "PersonInfo" to readJsonResponse("other/person_informasjon_selvb.json"),
+                    "P4000" to readJsonResponse("other/p4000_trygdetid_part.json"))
+        }
         val prefillNav = PrefillNav(prefillPersonDataFromTPS, institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO")
-        sakHelper = SakHelper(prefillNav, prefillPersonDataFromTPS, pensionDataFromPEN, kravHistorikkHelper)
+        sakHelper = SakHelper(prefillNav, prefillPersonDataFromTPS, inputPensjonsdataFraPEN, kravHistorikkHelper)
         prefill = PrefillP2000(sakHelper, kravHistorikkHelper)
     }
 

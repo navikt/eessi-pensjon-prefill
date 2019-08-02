@@ -1,7 +1,7 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed.krav
 
+import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.createInitialPrefillData
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.mockPrefillPersonDataFromTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.pensjonsDataFraPEN
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.readJsonResponse
@@ -21,8 +21,6 @@ class PrefillP2200UforpensjonTest {
 
     private val personFnr = PersonDataFromTPS.generateRandomFnr(67)
 
-    private val pesysSaksnummer = "14069110"
-
     lateinit var prefillData: PrefillDataModel
     lateinit var sakHelper: SakHelper
     var kravHistorikkHelper = KravHistorikkHelper()
@@ -37,7 +35,16 @@ class PrefillP2200UforpensjonTest {
                 PersonDataFromTPS.MockTPS("Person-22000.json", PersonDataFromTPS.generateRandomFnr(17), PersonDataFromTPS.MockTPS.TPSType.BARN)
         ))
 
-        prefillData = createInitialPrefillData("P2200", personFnr, sakId = pesysSaksnummer)
+        prefillData = PrefillDataModel().apply {
+            rinaSubject = "Pensjon"
+            sed = SED("P2200")
+            penSaksnummer = "14069110"
+            vedtakId = "12312312"
+            buc = "P_BUC_99"
+            aktoerID = "123456789"
+            personNr = personFnr
+            institution = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
+        }
         prefillData.partSedAsJson["PersonInfo"] = readJsonResponse("other/person_informasjon_selvb.json")
 
         val prefillNav = PrefillNav(prefillPersonDataFromTPS, institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO")

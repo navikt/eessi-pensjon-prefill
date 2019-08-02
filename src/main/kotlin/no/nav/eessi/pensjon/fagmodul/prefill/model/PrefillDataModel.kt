@@ -54,7 +54,7 @@ class PrefillDataModel {
     var institusjonX005: InstitusjonX005? = null
 
     //div payload seddata json
-    val partSedAsJson: MutableMap<String, String> = mutableMapOf()
+    var partSedAsJson: MutableMap<String, String> = mutableMapOf()
 
     fun getSEDid(): String {
         return sed.sed!!

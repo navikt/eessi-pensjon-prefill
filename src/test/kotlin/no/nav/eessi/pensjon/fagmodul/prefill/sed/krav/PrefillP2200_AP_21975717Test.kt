@@ -3,7 +3,6 @@ package no.nav.eessi.pensjon.fagmodul.prefill.sed.krav
 import no.nav.eessi.pensjon.fagmodul.prefill.ApiRequest
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.createInitialPrefillData
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.mockPrefillPersonDataFromTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.pensjonsDataFraPEN
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.readJsonResponse
@@ -39,9 +38,19 @@ class PrefillP2200_AP_21975717Test {
                 PersonDataFromTPS.MockTPS("Person-11000-GIFT.json", personFnr, PersonDataFromTPS.MockTPS.TPSType.PERSON),
                 PersonDataFromTPS.MockTPS("Person-12000-EKTE.json", PersonDataFromTPS.generateRandomFnr(70), PersonDataFromTPS.MockTPS.TPSType.EKTE)
         ))
-        prefillData = createInitialPrefillData("P2200", personFnr, sakId = pesysSaksnummer)
-        prefillData.partSedAsJson["PersonInfo"] = readJsonResponse("other/person_informasjon_selvb.json")
-        prefillData.partSedAsJson["P4000"] = readJsonResponse("other/p4000_trygdetid_part.json")
+        prefillData = PrefillDataModel().apply {
+            rinaSubject = "Pensjon"
+            sed = SED("P2200")
+            penSaksnummer = pesysSaksnummer
+            vedtakId = "12312312"
+            buc = "P_BUC_99"
+            aktoerID = "123456789"
+            personNr = personFnr
+            institution = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
+            partSedAsJson = mutableMapOf(
+                    "PersonInfo" to readJsonResponse("other/person_informasjon_selvb.json"),
+                    "P4000" to readJsonResponse("other/p4000_trygdetid_part.json"))
+        }
         val prefillNav = PrefillNav(prefillPersonDataFromTPS, institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO")
         sakHelper = SakHelper(prefillNav, prefillPersonDataFromTPS, pensionDataFromPEN, kravHistorikkHelper)
         prefill = PrefillP2200(sakHelper, kravHistorikkHelper)
