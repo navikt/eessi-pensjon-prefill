@@ -12,8 +12,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
-@Component
-class KravHistorikkHelper {
+object KravHistorikkHelper {
     private val logger: Logger by lazy { LoggerFactory.getLogger(KravHistorikkHelper::class.java) }
 
     /**

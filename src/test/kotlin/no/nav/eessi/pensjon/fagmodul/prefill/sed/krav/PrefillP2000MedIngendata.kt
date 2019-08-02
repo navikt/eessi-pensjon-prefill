@@ -5,61 +5,64 @@ import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Nav
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjoninformasjonException
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.AbstractPrefillIntegrationTestHelper
-import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonHjelper
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.setupPersondataFraTPS
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.lesPensjonsdataFraFil
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.readJsonResponse
 import no.nav.eessi.pensjon.fagmodul.prefill.model.Prefill
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
-import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillPersonDataFromTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PersonDataFromTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.NavFodselsnummer
 import no.nav.eessi.pensjon.utils.mapAnyToJson
+import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.mockito.junit.MockitoJUnitRunner
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.fail
 
-class PrefillP2000MedIngendata : AbstractPrefillIntegrationTestHelper() {
+@RunWith(MockitoJUnitRunner::class)
+class PrefillP2000MedIngendata {
 
-    override fun mockPesysTestfilepath(): Pair<String, String> {
-        return Pair("P2000", "P2000-TOMT-SVAR-PESYS.xml")
-    }
+    private val personFnr = PersonDataFromTPS.generateRandomFnr(68)
 
-    override fun createTestClass(prefillNav: PrefillNav, personTPS: PrefillPersonDataFromTPS, pensionDataFromPEN: PensjonsinformasjonHjelper): Prefill<SED> {
-        return PrefillP2000(sakHelper, kravHistorikkHelper)
-    }
+    private val pesysSaksnummer = "21644722"
 
-    override fun createPayload(prefillData: PrefillDataModel) {
-        prefillData.personNr = getFakePersonFnr()
-        prefillData.partSedAsJson["PersonInfo"] = createPersonInfoPayLoad()
-        prefillData.partSedAsJson["P4000"] = createPersonTrygdetidHistorikk()
-    }
+    lateinit var prefillData: PrefillDataModel
+    lateinit var sakHelper: SakHelper
+    lateinit var prefill: Prefill<SED>
 
-    override fun createFakePersonFnr(): String {
-        if (personFnr.isNullOrBlank()) {
-            personFnr = PersonDataFromTPS.generateRandomFnr(68)
-        }
-        return personFnr
-    }
-
-    override fun createSaksnummer(): String {
-        return "21644722"
-    }
-
-    override fun createPersonInfoPayLoad(): String {
-        return readJsonResponse("other/person_informasjon_selvb.json")
-    }
-
-    override fun createPersonTrygdetidHistorikk(): String {
-        return readJsonResponse("other/p4000_trygdetid_part.json")
-    }
-
-    override fun opprettMockPersonDataTPS(): Set<PersonDataFromTPS.MockTPS>? {
-        return setOf(
-                PersonDataFromTPS.MockTPS("Person-11000-GIFT.json", getFakePersonFnr(), PersonDataFromTPS.MockTPS.TPSType.PERSON),
+    @Before
+    fun setup() {
+        val persondataFraTPS = setupPersondataFraTPS(setOf(
+                PersonDataFromTPS.MockTPS("Person-11000-GIFT.json", personFnr, PersonDataFromTPS.MockTPS.TPSType.PERSON),
                 PersonDataFromTPS.MockTPS("Person-12000-EKTE.json", PersonDataFromTPS.generateRandomFnr(70), PersonDataFromTPS.MockTPS.TPSType.EKTE)
-        )
+        ))
+
+        sakHelper = SakHelper(
+                prefillNav = PrefillNav(
+                        preutfyllingPersonFraTPS = persondataFraTPS,
+                        institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO"),
+                preutfyllingPersonFraTPS = persondataFraTPS,
+                dataFromPEN = lesPensjonsdataFraFil("P2000-TOMT-SVAR-PESYS.xml"))
+
+        prefill = PrefillP2000(sakHelper)
+
+        prefillData = PrefillDataModel().apply {
+            rinaSubject = "Pensjon"
+            sed = SED("P2000")
+            penSaksnummer = pesysSaksnummer
+            vedtakId = "12312312"
+            buc = "P_BUC_99"
+            aktoerID = "123456789"
+            personNr = personFnr
+            institution = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
+            partSedAsJson = mutableMapOf(
+                    "PersonInfo" to readJsonResponse("other/person_informasjon_selvb.json"),
+                    "P4000" to readJsonResponse("other/p4000_trygdetid_part.json"))
+        }
     }
 
     @Test(expected = PensjoninformasjonException::class)
@@ -72,7 +75,7 @@ class PrefillP2000MedIngendata : AbstractPrefillIntegrationTestHelper() {
 
     @Test
     fun `forventet korrekt utfylt P2000 alderpensjon med kap4 og 9`() {
-        prefillData.penSaksnummer = "21644722"
+        prefillData.penSaksnummer = pesysSaksnummer
         val P2000 = prefill.prefill(prefillData)
 
         val P2000pensjon = SED("P2000")
@@ -124,7 +127,7 @@ class PrefillP2000MedIngendata : AbstractPrefillIntegrationTestHelper() {
         assertEquals(null, pinitem?.sektor)
         assertEquals("NOINST002, NO INST002, NO", pinitem?.institusjonsnavn)
         assertEquals("NO:noinst002", pinitem?.institusjonsid)
-        assertEquals(createFakePersonFnr(), pinitem?.identifikator)
+        assertEquals(personFnr, pinitem?.identifikator)
 
         assertEquals("RANNAR-MASK", p2000.nav?.ektefelle?.person?.fornavn)
         assertEquals("MIZINTSEV", p2000.nav?.ektefelle?.person?.etternavn)
@@ -156,5 +159,6 @@ class PrefillP2000MedIngendata : AbstractPrefillIntegrationTestHelper() {
                 mockSED = true
         )
     }
+
 }
 

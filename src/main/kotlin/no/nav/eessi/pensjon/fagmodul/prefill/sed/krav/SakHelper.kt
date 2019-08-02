@@ -18,8 +18,7 @@ import org.springframework.stereotype.Component
 @Component
 class SakHelper(private val prefillNav: PrefillNav,
                 private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS,
-                private val dataFromPEN: PensjonsinformasjonHjelper,
-                private val kravHistorikkHelper: KravHistorikkHelper) {
+                private val dataFromPEN: PensjonsinformasjonHjelper) {
     private val logger: Logger by lazy { LoggerFactory.getLogger(SakHelper::class.java) }
 
     /**
@@ -71,7 +70,7 @@ class SakHelper(private val prefillNav: PrefillNav,
         val pensak: V1Sak = getPensjonSak(prefillData, pendata)
 
         //4.0
-        return kravHistorikkHelper.createInformasjonOmYtelserList(prefillData, pensak, gjenlevende)
+        return KravHistorikkHelper.createInformasjonOmYtelserList(prefillData, pensak, gjenlevende)
     }
 
     /**

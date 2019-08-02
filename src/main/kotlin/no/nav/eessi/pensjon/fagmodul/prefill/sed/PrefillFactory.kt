@@ -11,7 +11,6 @@ import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillPensjon
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillPerson
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.SakHelper
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.KravHistorikkHelper
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillPersonDataFromTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.PrefillP6000
 import org.slf4j.Logger
@@ -22,8 +21,7 @@ import org.springframework.stereotype.Component
 class PrefillFactory(private val prefillNav: PrefillNav,
                      dataFromTPS: PrefillPersonDataFromTPS,
                      private val eessiInformasjon: EessiInformasjon,
-                     private val sakHelper: SakHelper,
-                     private val kravHistorikkHelper: KravHistorikkHelper) {
+                     private val sakHelper: SakHelper) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillFactory::class.java) }
 
@@ -42,11 +40,11 @@ class PrefillFactory(private val prefillNav: PrefillNav,
             //Status hva gjendstår
             SEDType.P2000 -> {
                 //PrefillDefaultSED(prefillPerson)
-                PrefillP2000(sakHelper, kravHistorikkHelper)
+                PrefillP2000(sakHelper)
             }
             //Status hva gjendstår
             SEDType.P2200 -> {
-                PrefillP2200(sakHelper, kravHistorikkHelper)
+                PrefillP2200(sakHelper)
             }
             SEDType.P2100 -> {
                 PrefillP2100()
