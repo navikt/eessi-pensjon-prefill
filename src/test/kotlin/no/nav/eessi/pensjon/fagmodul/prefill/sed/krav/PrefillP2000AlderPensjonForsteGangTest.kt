@@ -28,12 +28,12 @@ class PrefillP2000AlderPensjonUtlandForsteGangTest : AbstractPrefillIntegrationT
     @Before
     fun setup() {
         val pensionDataFromPEN = mockPensjonsdataFraPEN("AP_FORSTEG_BH.xml")
-        val prefillPersonDataFromTPS = mockPrefillPersonDataFromTPS(overrideDefaultMockPersonDataTPS())
+        val prefillPersonDataFromTPS = mockPrefillPersonDataFromTPS(mockPersonDataFromTPS())
         onstart(pesysSaksnummer, pensionDataFromPEN, "P2000", prefillPersonDataFromTPS)
     }
 
     //mock familie
-    override fun overrideDefaultMockPersonDataTPS(): Set<PersonDataFromTPS.MockTPS> {
+    fun mockPersonDataFromTPS(): Set<PersonDataFromTPS.MockTPS> {
         return setOf(
                 PersonDataFromTPS.MockTPS("Person-11000-GIFT.json", fakeFnr, PersonDataFromTPS.MockTPS.TPSType.PERSON),
                 PersonDataFromTPS.MockTPS("Person-12000-EKTE.json", PersonDataFromTPS.generateRandomFnr(69), PersonDataFromTPS.MockTPS.TPSType.EKTE)

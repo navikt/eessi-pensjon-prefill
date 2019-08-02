@@ -33,7 +33,7 @@ class `PrefillP2000-AP-21975717Test` : AbstractPrefillIntegrationTestHelper() {
     fun setup() {
         val pensionDataFromPEN = mockPensjonsdataFraPEN("P2000_21975717_AP_UTLAND.xml")
 
-        val prefillPersonDataFromTPS = mockPrefillPersonDataFromTPS(overrideDefaultMockPersonDataTPS())
+        val prefillPersonDataFromTPS = mockPrefillPersonDataFromTPS(mockPersonDataFromTPS())
         onstart(pesysSaksnummer, pensionDataFromPEN, "P2000",prefillPersonDataFromTPS)
     }
 
@@ -55,7 +55,7 @@ class `PrefillP2000-AP-21975717Test` : AbstractPrefillIntegrationTestHelper() {
         return readJsonResponse("other/p4000_trygdetid_part.json")
     }
 
-    override fun overrideDefaultMockPersonDataTPS(): Set<PersonDataFromTPS.MockTPS> {
+    fun mockPersonDataFromTPS(): Set<PersonDataFromTPS.MockTPS> {
         return setOf(
                 PersonDataFromTPS.MockTPS("Person-11000-GIFT.json", giftFnr, PersonDataFromTPS.MockTPS.TPSType.PERSON),
                 PersonDataFromTPS.MockTPS("Person-12000-EKTE.json", ekteFnr, PersonDataFromTPS.MockTPS.TPSType.EKTE)

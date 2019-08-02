@@ -131,9 +131,6 @@ abstract class AbstractPrefillIntegrationTestHelper {
     //mock person trygdetid utland opphold (p4000) payload
     abstract fun createPersonTrygdetidHistorikk(): String
 
-    //metod person tps to override default..
-    open fun overrideDefaultMockPersonDataTPS(): Set<PersonDataFromTPS.MockTPS> = defaultPersondataFromTPS()
-
     protected fun readJsonResponse(file: String): String {
         return ResourceUtils.getFile("classpath:json/nav/$file").readText()
     }
