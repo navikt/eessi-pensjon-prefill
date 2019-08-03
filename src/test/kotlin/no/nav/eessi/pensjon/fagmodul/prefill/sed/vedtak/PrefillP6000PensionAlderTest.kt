@@ -3,7 +3,7 @@ package no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak
 import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjonMother.dummyEessiInfo
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModelMother.initialPrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.PensjonsinformasjonMother.pensjoninformasjonForSakstype
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.PrefillPensjonVedtakFromPENMother.fraFil
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.PensjonsinformasjonHjelperMother.fraFil
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
@@ -19,10 +19,9 @@ class PrefillP6000PensionAlderTest {
         val prefill = initialPrefillDataModel("P6000", 68).apply {
             andreInstitusjon = dummyEessiInfo().asAndreinstitusjonerItem()
         }
+        val prefillPensjonVedtak = PrefillPensjonVedtakFromPEN(fraFil("P6000-APUtland-301.xml"))
 
-        val dataFromPESYS = fraFil("P6000-APUtland-301.xml")
-
-        val result = dataFromPESYS.prefill(prefill)
+        val result = prefillPensjonVedtak.prefill(prefill)
 
         assertNotNull(result.vedtak)
         assertNotNull(result.sak)
@@ -63,77 +62,6 @@ class PrefillP6000PensionAlderTest {
         assertEquals("NOINST002, NO INST002, NO", result.tilleggsinformasjon?.andreinstitusjoner?.get(0)?.institusjonsnavn)
         assertEquals("Postboks 6600 Etterstad TEST", result.tilleggsinformasjon?.andreinstitusjoner?.get(0)?.institusjonsadresse)
         assertEquals("0607", result.tilleggsinformasjon?.andreinstitusjoner?.get(0)?.postnummer)
-
-    }
-
-    @Test
-    fun `forventet createVedtakTypePensionWithRule verdi`() {
-        val prefill = initialPrefillDataModel("P6000", 68)
-        val dataFromPESYS = fraFil("P6000-APUtland-301.xml")
-
-        val pendata = dataFromPESYS.getPensjoninformasjonFraVedtak(prefill.vedtakId)
-
-        assertEquals("01", dataFromPESYS.pensjonVedtak.createVedtakTypePensionWithRule(pendata))
-    }
-
-
-    @Test
-    fun `forventer "01" på AvlsagsBegrunnelse for Alderpensjon,Gjenlevende TrygdleListeTom `() {
-        val dataFromPESYS = fraFil("P6000-APUtland-301.xml")
-
-        val pendata = pensjoninformasjonForSakstype("ALDER").apply {
-            vedtak.isBoddArbeidetUtland = true
-            trygdetidListe.trygdetidListe.clear()
-            vilkarsvurderingListe.vilkarsvurderingListe.get(0).resultatHovedytelse = "AVSLAG"
-        }
-
-        assertEquals("01", dataFromPESYS.pensjonVedtak.createAvlsagsBegrunnelse(pendata))
-
-        val pendata1 = pensjoninformasjonForSakstype("GJENLEV").apply {
-            vedtak.isBoddArbeidetUtland = true
-            trygdetidListe.trygdetidListe.clear()
-            vilkarsvurderingListe.vilkarsvurderingListe.get(0).resultatHovedytelse = "AVSLAG"
-
-        }
-        assertEquals("01", dataFromPESYS.pensjonVedtak.createAvlsagsBegrunnelse(pendata1))
-    }
-
-    @Test
-    fun `forventer "03" på AvlsagsBegrunnelse for AlderPensjon TrygdleListeTom, LAVT_TIDLIG_UTTAK`() {
-        val dataFromPESYS = fraFil("P6000-APUtland-301.xml")
-
-        val pendata = pensjoninformasjonForSakstype("ALDER").apply {
-            vedtak.isBoddArbeidetUtland = true
-            vilkarsvurderingListe.vilkarsvurderingListe.get(0).avslagHovedytelse = "LAVT_TIDLIG_UTTAK"
-            vilkarsvurderingListe.vilkarsvurderingListe.get(0).resultatHovedytelse = "AVSLAG"
-        }
-
-        assertEquals("03", dataFromPESYS.pensjonVedtak.createAvlsagsBegrunnelse(pendata))
-    }
-
-    @Test
-    fun `forventer "13482" dager i sum summerTrygdeTid`() {
-        val prefill = initialPrefillDataModel("P6000", 60).apply {
-            vedtakId = "121341234234"
-        }
-
-        val dataFromPESYS = fraFil("P6000-APUtland-301.xml")
-
-        val pendata = dataFromPESYS.getPensjoninformasjonFraVedtak(prefill.vedtakId)
-
-        assertTrue( 13400 < VedtakPensjonDataHelper.summerTrygdeTid(pendata.trygdetidListe))
-    }
-
-    @Test
-    fun `forventer "06" på AvlsagsBegrunnelse AlderPensjon TrygdleListeTom, UNDER_62`() {
-        val pendata = pensjoninformasjonForSakstype("ALDER").apply {
-            vilkarsvurderingListe.vilkarsvurderingListe.get(0).avslagHovedytelse = "UNDER_62"
-            vilkarsvurderingListe.vilkarsvurderingListe.get(0).resultatHovedytelse = "AVSLAG"
-        }
-
-        val dataFromPESYS = fraFil("P6000-APUtland-301.xml")
-
-        assertEquals("06", dataFromPESYS.pensjonVedtak.createAvlsagsBegrunnelse(pendata))
     }
 
     @Test(expected = IllegalStateException::class)
@@ -141,29 +69,17 @@ class PrefillP6000PensionAlderTest {
         val prefill = initialPrefillDataModel("P6000", 68).apply {
             vedtakId = ""
         }
+        val prefillPensjonVedtak = PrefillPensjonVedtakFromPEN(fraFil("P6000-APUtland-301.xml"))
 
-        val dataFromPESYS = fraFil("P6000-APUtland-301.xml")
-
-        dataFromPESYS.prefill(prefill)
+        prefillPensjonVedtak.prefill(prefill)
     }
 
     @Test(expected = java.lang.IllegalStateException::class)
     fun `feiler ved boddArbeidetUtland ikke sann`() {
         val prefill = initialPrefillDataModel("P6000", 66)
-        val vedtakDataFromPEN = fraFil("P6000-AP-101.xml")
+        val prefillPensjonVedtak = PrefillPensjonVedtakFromPEN(fraFil("P6000-AP-101.xml"))
 
-        vedtakDataFromPEN.prefill(prefill)
+        prefillPensjonVedtak.prefill(prefill)
     }
 
-    @Test
-    fun `forventer "07" på AvlsagsBegrunnelse IKKE_MOTTATT_DOK`() {
-        val dataFromPESYS = fraFil("P6000-APUtland-301.xml")
-
-        val pendata = pensjoninformasjonForSakstype("ALDER").apply {
-            vilkarsvurderingListe.vilkarsvurderingListe.get(0).resultatHovedytelse = "AVSLAG"
-            vilkarsvurderingListe.vilkarsvurderingListe.get(0).avslagHovedytelse = "IKKE_MOTTATT_DOK"
-        }
-
-        assertEquals("07", dataFromPESYS.pensjonVedtak.createAvlsagsBegrunnelse(pendata))
-    }
 }

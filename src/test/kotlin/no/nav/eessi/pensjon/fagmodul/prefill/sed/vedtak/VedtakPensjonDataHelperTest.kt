@@ -1,5 +1,8 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak
 
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.PensjonsinformasjonHjelperMother.fraFil
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.PensjonsinformasjonMother.pensjoninformasjonForSakstype
+import no.nav.eessi.pensjon.utils.simpleFormat
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import no.nav.pensjon.v1.trygdetid.V1Trygdetid
 import no.nav.pensjon.v1.trygdetidliste.V1TrygdetidListe
@@ -97,4 +100,38 @@ class VedtakPensjonDataHelperTest {
         assertFalse(VedtakPensjonDataHelper.erTrygdeTid(pendata))
     }
 
+    @Test
+    fun `forventer "13482" dager i sum summerTrygdeTid`() {
+        val dataFromPESYS = fraFil("P6000-APUtland-301.xml")
+
+        val pendata = dataFromPESYS.hentMedVedtak("someVedtakId")
+
+        assertTrue( 13400 < VedtakPensjonDataHelper.summerTrygdeTid(pendata.trygdetidListe))
+    }
+
+    @Test
+    fun `forventer "07" på AvlsagsBegrunnelse IKKE_MOTTATT_DOK`() {
+        val pendata = pensjoninformasjonForSakstype("ALDER").apply {
+            vilkarsvurderingListe.vilkarsvurderingListe.get(0).resultatHovedytelse = "AVSLAG"
+            vilkarsvurderingListe.vilkarsvurderingListe.get(0).avslagHovedytelse = "IKKE_MOTTATT_DOK"
+        }
+
+        assertEquals("07", PrefillPensjonVedtak().createAvlsagsBegrunnelse(pendata))
+    }
+
+    @Test
+    fun `forventer at ytelseprMaaned er siste i listen`() {
+        val dataFromPESYS = fraFil("P6000-UT-220.xml")
+        val pendata = dataFromPESYS.hentMedVedtak("someVedtakId")
+
+        val sisteprmnd = VedtakPensjonDataHelper.hentSisteYtelsePerMaaned(pendata)
+
+        assertEquals("2017-05-01", sisteprmnd.fom.simpleFormat())
+        assertEquals("7191", sisteprmnd.belop.toString())
+        assertEquals(false, VedtakPensjonDataHelper.isMottarMinstePensjonsniva(pendata))
+        assertEquals("7191", VedtakPensjonDataHelper.hentYtelseBelop(pendata))
+
+        assertEquals(false, VedtakPensjonDataHelper.hentVurdertBeregningsmetodeNordisk(pendata))
+        assertEquals("EOS", VedtakPensjonDataHelper.hentVinnendeBergeningsMetode(pendata))
+    }
 }
