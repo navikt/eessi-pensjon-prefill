@@ -107,15 +107,15 @@ class PrefillP6000PensionUforepTest {
 
         val pendata = dataFromPESYS.getPensjoninformasjonFraVedtak(prefill)
 
-        val sisteprmnd = dataFromPESYS.hentSisteYtelsePerMaaned(pendata)
+        val sisteprmnd = VedtakPensjonDataHelper.hentSisteYtelsePerMaaned(pendata)
 
         assertEquals("2017-05-01", sisteprmnd.fom.simpleFormat())
         assertEquals("7191", sisteprmnd.belop.toString())
-        assertEquals(false, dataFromPESYS.isMottarMinstePensjonsniva(pendata))
-        assertEquals("7191", dataFromPESYS.hentYtelseBelop(pendata))
+        assertEquals(false, VedtakPensjonDataHelper.isMottarMinstePensjonsniva(pendata))
+        assertEquals("7191", VedtakPensjonDataHelper.hentYtelseBelop(pendata))
 
-        assertEquals(false, dataFromPESYS.hentVurdertBeregningsmetodeNordisk(pendata))
-        assertEquals("EOS", dataFromPESYS.hentVinnendeBergeningsMetode(pendata))
+        assertEquals(false, VedtakPensjonDataHelper.hentVurdertBeregningsmetodeNordisk(pendata))
+        assertEquals("EOS", VedtakPensjonDataHelper.hentVinnendeBergeningsMetode(pendata))
     }
 
     @Test
@@ -168,99 +168,6 @@ class PrefillP6000PensionUforepTest {
         }
 
         dataFromPESYS.prefill(prefill)
-    }
-
-    @Test
-    fun `summerTrygdeTid forventet 10 dager, erTrygdeTid forventet til false`() {
-        val dataFromPESYS = fraFil("P6000-UT-201.xml")
-
-        val trygdetidListen = V1TrygdetidListe().apply {
-            trygdetidListe.add(V1Trygdetid().apply {
-                fom = 50.daysAgo()
-                tom = 40.daysAgo()
-            })
-        }
-
-        assertEquals(10, dataFromPESYS.summerTrygdeTid(trygdetidListen))
-
-        val pendata = Pensjonsinformasjon().apply {
-            trygdetidListe = trygdetidListen
-        }
-
-        //bod i utland mindre totalt 10dager en mer en mindre enn 30 og mindre enn 360
-        assertFalse(dataFromPESYS.erTrygdeTid(pendata))
-    }
-
-    @Test
-    fun `summerTrygdeTid forventet 70 dager, erTrygdeTid forventet til true`() {
-        val dataFromPESYS = fraFil("P6000-UT-201.xml")
-
-        val trygdetidListen = V1TrygdetidListe().apply {
-            trygdetidListe.add(V1Trygdetid().apply {
-                fom = 170.daysAgo()
-                tom = 100.daysAgo()
-            })
-        }
-
-        assertEquals(70, dataFromPESYS.summerTrygdeTid(trygdetidListen))
-
-        val pendata = Pensjonsinformasjon().apply {
-            trygdetidListe = trygdetidListen
-        }
-
-        //bod i utland mindre en mer en 30 mindre en 360?
-        assertTrue(dataFromPESYS.erTrygdeTid(pendata))
-    }
-
-    @Test
-    fun `summerTrygdeTid forventet 15 dager, erTrygdeTid forventet til false`() {
-        val dataFromPESYS = fraFil("P6000-UT-201.xml")
-
-        val trygdetidListen = PensjonsinformasjonMother.trePerioderMed5DagerHver()
-
-        assertEquals(15, dataFromPESYS.summerTrygdeTid(trygdetidListen))
-
-        val pendata = Pensjonsinformasjon().apply {
-            trygdetidListe = trygdetidListen
-        }
-
-        //bod for lite i utland mindre en 30 dager?
-        assertFalse(dataFromPESYS.erTrygdeTid(pendata))
-    }
-
-    @Test
-    fun `summerTrygdeTid forventet 500 dager, erTrygdeTid forventet til false`() {
-        val dataFromPESYS = fraFil("P6000-UT-201.xml")
-
-        val trygdetidListen = V1TrygdetidListe().apply {
-            trygdetidListe.add(V1Trygdetid().apply {
-                fom = 700.daysAgo()
-                tom = 200.daysAgo()
-            })
-        }
-
-        assertEquals(500, dataFromPESYS.summerTrygdeTid(trygdetidListen))
-
-        val pendata = Pensjonsinformasjon().apply {
-            trygdetidListe = trygdetidListen
-        }
-
-        //bod mye i utland mer en 360d.
-        assertFalse(dataFromPESYS.erTrygdeTid(pendata))
-    }
-
-    @Test
-    fun `summerTrygdeTid forventet 0`() {
-        val dataFromPESYS = fraFil("P6000-UT-201.xml")
-
-        val trygdetidListen = V1TrygdetidListe().apply {
-            trygdetidListe.add(V1Trygdetid().apply {
-                fom = 0.daysAgo()
-                tom = 0.daysAhead()
-            })
-        }
-
-        assertEquals(0, dataFromPESYS.summerTrygdeTid(trygdetidListen))
     }
 
     @Test(expected = java.lang.IllegalStateException::class)

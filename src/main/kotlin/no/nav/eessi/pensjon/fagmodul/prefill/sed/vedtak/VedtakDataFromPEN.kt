@@ -4,6 +4,7 @@ import no.nav.eessi.pensjon.fagmodul.sedmodel.Pensjon
 import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonHjelper
 import no.nav.eessi.pensjon.fagmodul.prefill.model.Prefill
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.VedtakPensjonDataHelper.harBoddArbeidetUtland
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -15,7 +16,7 @@ import java.lang.IllegalStateException
 /**
  * Hjelpe klasse for utfyller ut NAV-SED-P6000 med pensjondata med vedtak fra PESYS.
  */
-class VedtakDataFromPEN(private val dataFromPESYS: PensjonsinformasjonHjelper) : VedtakPensjonData(), Prefill<Pensjon> {
+class VedtakDataFromPEN(private val dataFromPESYS: PensjonsinformasjonHjelper): Prefill<Pensjon> {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(VedtakDataFromPEN::class.java) }
 

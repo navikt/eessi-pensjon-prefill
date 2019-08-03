@@ -13,17 +13,9 @@ import org.slf4j.LoggerFactory
 import java.time.ZoneId
 import java.time.temporal.ChronoUnit
 
-abstract class VedtakPensjonData {
+object VedtakPensjonDataHelper {
 
-    private val logger: Logger by lazy { LoggerFactory.getLogger(VedtakPensjonData::class.java) }
-
-    //K_SAK_T Kodeverk fra PESYS
-    enum class KSAK {
-        ALDER,
-        UFOREP,
-        GJENLEV,
-        BARNEP;
-    }
+    private val logger: Logger by lazy { LoggerFactory.getLogger(VedtakPensjonDataHelper::class.java) }
 
     init {
         logger.debug("PensjonData")

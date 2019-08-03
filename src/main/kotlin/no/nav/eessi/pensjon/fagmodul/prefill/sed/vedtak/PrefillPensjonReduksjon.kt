@@ -1,12 +1,14 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak
 
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.VedtakPensjonDataHelper.hentGrunnPersjon
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.VedtakPensjonDataHelper.hentTilleggsPensjon
 import no.nav.eessi.pensjon.fagmodul.sedmodel.ReduksjonItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.VirkningsdatoItem
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-class PrefillPensjonReduksjon : VedtakPensjonData() {
+class PrefillPensjonReduksjon {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillPensjonReduksjon::class.java) }
 

@@ -6,7 +6,7 @@ import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-class PrefillPensjonSak : VedtakPensjonData() {
+class PrefillPensjonSak {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillPensjonSak::class.java) }
 

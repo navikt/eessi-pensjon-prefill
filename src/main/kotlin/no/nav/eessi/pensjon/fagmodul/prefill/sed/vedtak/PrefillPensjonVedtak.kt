@@ -1,5 +1,15 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak
 
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.VedtakPensjonDataHelper.erTrygdeTid
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.VedtakPensjonDataHelper.harBoddArbeidetUtland
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.VedtakPensjonDataHelper.hentVilkarsProvingAvslagHovedYtelse
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.VedtakPensjonDataHelper.hentVilkarsResultatHovedytelse
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.VedtakPensjonDataHelper.hentVilkarsvurderingUforetrygd
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.VedtakPensjonDataHelper.hentVinnendeBergeningsMetode
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.VedtakPensjonDataHelper.hentYtelseskomponentBelop
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.VedtakPensjonDataHelper.isForeldelos
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.VedtakPensjonDataHelper.isMottarMinstePensjonsniva
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.VedtakPensjonDataHelper.isVilkarsvurderingAvslagHovedytelseSamme
 import no.nav.eessi.pensjon.fagmodul.sedmodel.AvslagbegrunnelseItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.BeloepBrutto
 import no.nav.eessi.pensjon.fagmodul.sedmodel.BeregningItem
@@ -11,11 +21,11 @@ import no.nav.eessi.pensjon.fagmodul.sedmodel.VedtakItem
 import no.nav.eessi.pensjon.utils.simpleFormat
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import no.nav.pensjon.v1.sakalder.V1SakAlder
-import no.nav.pensjon.v1.ytelsepermaaned.V1YtelsePerMaaned
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import no.nav.pensjon.v1.ytelsepermaaned.V1YtelsePerMaaned as V1YtelsePerMaaned1
 
-class PrefillPensjonVedtak : VedtakPensjonData() {
+class PrefillPensjonVedtak {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillPensjonVedtak::class.java) }
 
@@ -321,7 +331,7 @@ class PrefillPensjonVedtak : VedtakPensjonData() {
         return resultList
     }
 
-    private fun createBeregningItem(ytelsePrMnd: V1YtelsePerMaaned, sakType: KSAK): BeregningItem {
+    private fun createBeregningItem(ytelsePrMnd: V1YtelsePerMaaned1, sakType: KSAK): BeregningItem {
         logger.debug("4.1.7         BeregningItem (Repeterbart)")
 
         //val belop = ytelsePrMnd.belop.toString()
@@ -365,7 +375,7 @@ class PrefillPensjonVedtak : VedtakPensjonData() {
     skal denne sum benyttes hvis ikke skal belop benyttes.
      */
     //4.1.7.3.1
-    private fun createBelop(ytelsePrMnd: V1YtelsePerMaaned, sakType: KSAK): String {
+    private fun createBelop(ytelsePrMnd: V1YtelsePerMaaned1, sakType: KSAK): String {
         logger.debug("4.1.7.3.1         Gross amount")
         //4.1.7.3.1. Gross amount
         val belop = ytelsePrMnd.belop
@@ -392,7 +402,7 @@ class PrefillPensjonVedtak : VedtakPensjonData() {
         GP grunnpensjon, ST særtillegg, GT garantipensjon,
      */
     //4.1.7.3.3
-    private fun createYtelseskomponentGrunnpensjon(ytelsePrMnd: V1YtelsePerMaaned, sakType: KSAK): String? {
+    private fun createYtelseskomponentGrunnpensjon(ytelsePrMnd: V1YtelsePerMaaned1, sakType: KSAK): String? {
         logger.debug("4.1.7.3.3         Grunnpensjon")
 
         if (KSAK.UFOREP != sakType) {
@@ -411,7 +421,7 @@ class PrefillPensjonVedtak : VedtakPensjonData() {
         Tilleggspensjon.brutto TP, Inntektspensjon.brutto IP
      */
     //4.1.7.3.4
-    private fun createYtelseskomponentTilleggspensjon(ytelsePrMnd: V1YtelsePerMaaned, sakType: KSAK): String? {
+    private fun createYtelseskomponentTilleggspensjon(ytelsePrMnd: V1YtelsePerMaaned1, sakType: KSAK): String? {
         logger.debug("4.1.7.3.4         Tilleggspensjon")
 
         if (KSAK.UFOREP != sakType) {
@@ -422,7 +432,7 @@ class PrefillPensjonVedtak : VedtakPensjonData() {
 
 
     //4.1.8
-    private fun createBeregningItemPeriode(ytelsePrMnd: V1YtelsePerMaaned): Periode {
+    private fun createBeregningItemPeriode(ytelsePrMnd: V1YtelsePerMaaned1): Periode {
         logger.debug("4.1.7.1         BeregningItemPeriode")
 
         var tomstr: String? = null
