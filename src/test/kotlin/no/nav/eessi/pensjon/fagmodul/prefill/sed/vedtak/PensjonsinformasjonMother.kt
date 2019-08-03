@@ -12,74 +12,56 @@ import no.nav.pensjon.v1.vilkarsvurderinguforetrygd.V1VilkarsvurderingUforetrygd
 import no.nav.pensjon.v1.ytelsepermaaned.V1YtelsePerMaaned
 import no.nav.pensjon.v1.ytelsepermaanedliste.V1YtelsePerMaanedListe
 import java.time.LocalDate
-import java.time.ZoneId
-import java.util.*
 import javax.xml.datatype.DatatypeFactory
-import javax.xml.datatype.XMLGregorianCalendar
 
 object PensjonsinformasjonMother {
 
-    fun generateFakePensjoninformasjonForKSAK(ksak: String): Pensjonsinformasjon {
-        val xmlcal = DatatypeFactory.newInstance().newXMLGregorianCalendar()
+    fun pensjoninformasjonForSakstype(saksType: String) =
+            Pensjonsinformasjon().apply {
+                    sakAlder = V1SakAlder().apply {
+                        sakType = saksType
+                        isUttakFor67 = false
+                    }
+                    vedtak = V1Vedtak().apply {
+                        datoFattetVedtak = dummyDate()
+                        virkningstidspunkt = dummyDate()
+                        isBoddArbeidetUtland = true
+                    }
+                    ytelsePerMaanedListe = V1YtelsePerMaanedListe().apply {
+                        ytelsePerMaanedListe.add(V1YtelsePerMaaned().apply {
+                            isMottarMinstePensjonsniva = true
+                            fom = dummyDate()
+                            tom = dummyDate()
+                        })
+                    }
+                    vilkarsvurderingListe = V1VilkarsvurderingListe().apply {
+                        vilkarsvurderingListe.add(V1Vilkarsvurdering().apply {
+                            avslagHovedytelse = "ALDER_PPP"
+                            vilkarsvurderingUforetrygd = V1VilkarsvurderingUforetrygd().apply {
+                                alder = "ALDER"
+                                nedsattInntektsevne = "SANN"
+                            }
+                        })
+                    }
+                    trygdetidListe = trePerioderMed5DagerHver()
+                }
 
-        val v1sak = V1SakAlder()
-        v1sak.sakType = ksak // "ALDER"
-        v1sak.isUttakFor67 = false
-        val v1vedtak = V1Vedtak()
-
-        v1vedtak.datoFattetVedtak = xmlcal
-        v1vedtak.virkningstidspunkt = xmlcal
-        v1vedtak.isBoddArbeidetUtland = true
-
-        val ytelsePerMaanedListe = V1YtelsePerMaanedListe()
-
-        val v1YtelsePerMaaned = V1YtelsePerMaaned()
-        v1YtelsePerMaaned.isMottarMinstePensjonsniva = true
-        v1YtelsePerMaaned.fom = xmlcal
-        v1YtelsePerMaaned.tom = xmlcal
-        ytelsePerMaanedListe.ytelsePerMaanedListe.add(v1YtelsePerMaaned)
-
-        val vilvirdUtfor = V1VilkarsvurderingUforetrygd()
-        vilvirdUtfor.alder = "ALDER"
-        vilvirdUtfor.nedsattInntektsevne = "SANN"
-
-        val vilvurder = V1Vilkarsvurdering()
-        vilvurder.avslagHovedytelse = "ALDER_PPP"
-        vilvurder.vilkarsvurderingUforetrygd = vilvirdUtfor
-
-        val vilkarsvurderingListe = V1VilkarsvurderingListe()
-        vilkarsvurderingListe.vilkarsvurderingListe.add(vilvurder)
-
-        val trygdetidListe = createTrygdelisteTid()
-
-        val peninfo = Pensjonsinformasjon()
-        peninfo.sakAlder = v1sak
-        peninfo.vedtak = v1vedtak
-
-        peninfo.ytelsePerMaanedListe = ytelsePerMaanedListe
-        peninfo.vilkarsvurderingListe = vilkarsvurderingListe
-        peninfo.trygdetidListe = trygdetidListe
-
-        return peninfo
-    }
-
-    fun createTrygdelisteTid(): V1TrygdetidListe {
-        val ttid1 = V1Trygdetid()
-        ttid1.fom = convertToXMLocal(LocalDate.now().minusDays(25))
-        ttid1.tom = convertToXMLocal(LocalDate.now().minusDays(20))
-
-        val ttid2 = V1Trygdetid()
-        ttid2.fom = convertToXMLocal(LocalDate.now().minusDays(10))
-        ttid2.tom = convertToXMLocal(LocalDate.now().minusDays(5))
-
-        val ttid3 = V1Trygdetid()
-        ttid3.fom = convertToXMLocal(LocalDate.now().minusDays(0))
-        ttid3.tom = convertToXMLocal(LocalDate.now().plusDays(5))
-
-        val trygdetidListe = V1TrygdetidListe()
-        trygdetidListe.trygdetidListe.add(ttid1)
-        trygdetidListe.trygdetidListe.add(ttid2)
-        trygdetidListe.trygdetidListe.add(ttid3)
-        return trygdetidListe
-    }
+    fun trePerioderMed5DagerHver() =
+            V1TrygdetidListe().apply {
+                trygdetidListe.add(V1Trygdetid().apply {
+                    fom = 25.daysAgo()
+                    tom = 20.daysAgo()
+                })
+                trygdetidListe.add(V1Trygdetid().apply {
+                    fom = 10.daysAgo()
+                    tom = 5.daysAgo()
+                })
+                trygdetidListe.add(V1Trygdetid().apply {
+                    fom = 0.daysAgo()
+                    tom = 5.daysAhead()
+                })
+            }
 }
+private fun dummyDate() = DatatypeFactory.newInstance().newXMLGregorianCalendar()
+fun Int.daysAgo() = convertToXMLocal(LocalDate.now().minusDays(this.toLong()))
+fun Int.daysAhead() = convertToXMLocal(LocalDate.now().plusDays(this.toLong()))
