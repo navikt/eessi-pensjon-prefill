@@ -3,11 +3,8 @@ package no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
-import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjon
-import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonHjelper
-import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonService
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.RequestBuilder
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
@@ -45,20 +42,6 @@ object PrefillVedtakTestHelper {
         return VedtakDataFromPEN(
                 PensjonsinformasjonHjelper(
                         PensjonsinformasjonService(mockRestTemplate, RequestBuilder())))
-    }
-
-    fun generatePrefillData(subtractYear: Int, sedId: String, prefill: PrefillDataModel): PrefillDataModel {
-        prefill.apply {
-            rinaSubject = "Pensjon"
-            sed = SED(sedId)
-            penSaksnummer = "12345"
-            vedtakId = "12312312"
-            buc = "P_BUC_99"
-            aktoerID = "123456789"
-            personNr = generateRandomFnr(subtractYear)
-            institution = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
-        }
-        return prefill
     }
 
     val eessiInformasjon = EessiInformasjon(
@@ -139,22 +122,5 @@ object PrefillVedtakTestHelper {
         gcal.setTime(Date.from(time.atStartOfDay(ZoneId.systemDefault()).toInstant()))
         val xgcal = DatatypeFactory.newInstance().newXMLGregorianCalendar(gcal)
         return xgcal
-    }
-
-    private fun generateRandomFnr(yearsToSubtract: Int): String {
-        val fnrdate = LocalDate.now().minusYears(yearsToSubtract.toLong())
-        val y = fnrdate.year.toString()
-        val day = fixDigits(fnrdate.dayOfMonth.toString())
-        val month = fixDigits(fnrdate.month.value.toString())
-        val fixedyear = y.substring(2, y.length)
-        val fnr = day + month + fixedyear + 43352
-        return fnr
-    }
-
-    private fun fixDigits(str: String): String {
-        if (str.length == 1) {
-            return "0$str"
-        }
-        return str
     }
 }

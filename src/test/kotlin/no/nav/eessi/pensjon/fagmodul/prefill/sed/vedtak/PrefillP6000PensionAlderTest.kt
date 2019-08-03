@@ -1,9 +1,9 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak
 
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
+import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModelMother.initialPrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.PrefillVedtakTestHelper.eessiInformasjon
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.PrefillVedtakTestHelper.generateFakePensjoninformasjonForKSAK
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.PrefillVedtakTestHelper.generatePrefillData
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.PrefillVedtakTestHelper.vedtakDataFromPENFraFil
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import no.nav.pensjon.v1.trygdetid.V1Trygdetid
@@ -26,15 +26,17 @@ class PrefillP6000PensionAlderTest {
 
     @Before
     fun setup() {
-        prefill = PrefillDataModel()
         dataFromPESYS = vedtakDataFromPENFraFil("P6000-APUtland-301.xml")
-        generatePrefillData(60, "P6000", prefill)
+
+        prefill = initialPrefillDataModel("P6000", 60)
+
         pendata = dataFromPESYS.getPensjoninformasjonFraVedtak(prefill)
     }
 
     @Test
     fun `forventet korrekt utfylling av Pensjon objekt på Alderpensjon`() {
-        prefill = generatePrefillData(68, "P6000", prefill)
+        prefill = initialPrefillDataModel("P6000", 68)
+
         eessiInformasjon.mapEssiInformasjonTilPrefillDataModel(prefill)
 
         val result = dataFromPESYS.prefill(prefill)
@@ -87,7 +89,7 @@ class PrefillP6000PensionAlderTest {
 
     @Test
     fun `forventet createVedtakTypePensionWithRule verdi`() {
-        prefill = generatePrefillData(68, "P6000", prefill)
+        prefill = initialPrefillDataModel("P6000", 68)
         //dataFromPESYS1.getPensjoninformasjonFraVedtak("23123123")
         val result = dataFromPESYS.pensjonVedtak.createVedtakTypePensionWithRule(pendata)
         assertEquals("01", result)
@@ -158,7 +160,7 @@ class PrefillP6000PensionAlderTest {
 
     @Test(expected = IllegalStateException::class)
     fun `preutfylling P6000 feiler ved mangler av vedtakId`() {
-        prefill = generatePrefillData(68, "P6000", prefill)
+        prefill = initialPrefillDataModel("P6000", 68)
         prefill.vedtakId = ""
         dataFromPESYS.prefill(prefill)
 
@@ -256,7 +258,7 @@ class PrefillP6000PensionAlderTest {
 
     @Test(expected = java.lang.IllegalStateException::class)
     fun `feiler ved boddArbeidetUtland ikke sann`() {
-        prefill = generatePrefillData(66, "P6000", prefill)
+        prefill = initialPrefillDataModel("P6000", 66)
         val resdata = vedtakDataFromPENFraFil("P6000-AP-101.xml")
         resdata.prefill(prefill)
     }
