@@ -1,10 +1,13 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak
 
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.mockito.junit.MockitoJUnitRunner
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
+@RunWith(MockitoJUnitRunner::class)
 class PrefillP6000PensionAlderTest : AbstractMockVedtakPensionHelper("P6000-APUtland-301.xml") {
 
     @Test
