@@ -28,14 +28,11 @@ class PrefillP6000PensionAlderTest {
 
         val result = dataFromPESYS.prefill(prefill)
 
-        val vedtaklst = result.vedtak
-        val sak = result.sak
-        val tillegg = result.tilleggsinformasjon
-        assertNotNull(vedtaklst)
-        assertNotNull(sak)
-        assertNotNull(tillegg)
+        assertNotNull(result.vedtak)
+        assertNotNull(result.sak)
+        assertNotNull(result.tilleggsinformasjon)
 
-        val vedtak = vedtaklst?.get(0)
+        val vedtak = result.vedtak?.get(0)
         assertEquals("2017-05-01" , vedtak?.virkningsdato, "4.1.6  pensjon.vedtak[x].virkningsdato")
         assertEquals("01", vedtak?.type, "4.1.1 vedtak.type")
         assertEquals("02", vedtak?.basertPaa, "4.1.2 vedtak.basertPaa")
@@ -46,31 +43,30 @@ class PrefillP6000PensionAlderTest {
         assertEquals("01", vedtak?.grunnlag?.opptjening?.forsikredeAnnen, "4.1.10 vedtak?.grunnlag?.opptjening?.forsikredeAnnen")
         assertEquals("0", vedtak?.grunnlag?.framtidigtrygdetid, "4.1.10 vedtak?.grunnlag?.framtidigtrygdetid")
 
-        val bergen = vedtak?.beregning?.get(0)
-        assertEquals("2017-05-01", bergen?.periode?.fom)
-        assertEquals(null, bergen?.periode?.tom)
-        assertEquals("NOK", bergen?.valuta)
-        assertEquals("2017-05-01", bergen?.periode?.fom)
-        assertEquals("03", bergen?.utbetalingshyppighet)
+        val beregning = vedtak?.beregning?.get(0)
+        assertEquals("2017-05-01", beregning?.periode?.fom)
+        assertEquals(null, beregning?.periode?.tom)
+        assertEquals("NOK", beregning?.valuta)
+        assertEquals("2017-05-01", beregning?.periode?.fom)
+        assertEquals("03", beregning?.utbetalingshyppighet)
 
-        assertEquals("11831", bergen?.beloepBrutto?.beloep)
-        assertEquals("2719", bergen?.beloepBrutto?.ytelseskomponentGrunnpensjon)
-        assertEquals("8996", bergen?.beloepBrutto?.ytelseskomponentTilleggspensjon)
+        assertEquals("11831", beregning?.beloepBrutto?.beloep)
+        assertEquals("2719", beregning?.beloepBrutto?.ytelseskomponentGrunnpensjon)
+        assertEquals("8996", beregning?.beloepBrutto?.ytelseskomponentTilleggspensjon)
 
         assertEquals("116", vedtak?.ukjent?.beloepBrutto?.ytelseskomponentAnnen)
 
-        val avslagbrg = vedtak?.avslagbegrunnelse?.get(0)
-        assertEquals(null, avslagbrg?.begrunnelse, "4.1.13.1 vedtak?.avslagbegrunnelse?")
+        val avslagBegrunnelse = vedtak?.avslagbegrunnelse?.get(0)
+        assertEquals(null, avslagBegrunnelse?.begrunnelse, "4.1.13.1 vedtak?.avslagbegrunnelse?")
 
-        val dataof = sak?.kravtype?.get(0)?.datoFrist
-        assertEquals("six weeks from the date the decision is received", dataof)
+        assertEquals("six weeks from the date the decision is received", result.sak?.kravtype?.get(0)?.datoFrist)
 
-        assertEquals("2017-05-21", tillegg?.dato)
+        assertEquals("2017-05-21", result.tilleggsinformasjon?.dato)
 
-        assertEquals("NO:noinst002", tillegg?.andreinstitusjoner?.get(0)?.institusjonsid)
-        assertEquals("NOINST002, NO INST002, NO", tillegg?.andreinstitusjoner?.get(0)?.institusjonsnavn)
-        assertEquals("Postboks 6600 Etterstad TEST", tillegg?.andreinstitusjoner?.get(0)?.institusjonsadresse)
-        assertEquals("0607", tillegg?.andreinstitusjoner?.get(0)?.postnummer)
+        assertEquals("NO:noinst002", result.tilleggsinformasjon?.andreinstitusjoner?.get(0)?.institusjonsid)
+        assertEquals("NOINST002, NO INST002, NO", result.tilleggsinformasjon?.andreinstitusjoner?.get(0)?.institusjonsnavn)
+        assertEquals("Postboks 6600 Etterstad TEST", result.tilleggsinformasjon?.andreinstitusjoner?.get(0)?.institusjonsadresse)
+        assertEquals("0607", result.tilleggsinformasjon?.andreinstitusjoner?.get(0)?.postnummer)
 
     }
 
@@ -80,7 +76,6 @@ class PrefillP6000PensionAlderTest {
         val dataFromPESYS = fraFil("P6000-APUtland-301.xml")
         val pendata = dataFromPESYS.getPensjoninformasjonFraVedtak(prefill)
 
-        //dataFromPESYS1.getPensjoninformasjonFraVedtak("23123123")
         val result = dataFromPESYS.pensjonVedtak.createVedtakTypePensionWithRule(pendata)
         assertEquals("01", result)
     }

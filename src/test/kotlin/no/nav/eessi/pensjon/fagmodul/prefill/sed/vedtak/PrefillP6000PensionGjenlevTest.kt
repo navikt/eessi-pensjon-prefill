@@ -32,14 +32,11 @@ class PrefillP6000PensionGjenlevTest {
         assertEquals("GJENLEV", pendata.sakAlder.sakType)
         assertEquals("12345678901", pendata.person.pid)
 
-        val vedtaklst = result.vedtak
-        val sak = result.sak
-        val tillegg = result.tilleggsinformasjon
-        assertNotNull(vedtaklst)
-        assertNotNull(sak)
-        assertNotNull(tillegg)
+        assertNotNull(result.vedtak)
+        assertNotNull(result.sak)
+        assertNotNull(result.tilleggsinformasjon)
 
-        val vedtak = vedtaklst?.get(0)
+        val vedtak = result.vedtak?.get(0)
         assertEquals("2018-05-01" , vedtak?.virkningsdato, "vedtak.virkningsdato")
         assertEquals("03", vedtak?.type, "vedtak.type")
         assertEquals("02", vedtak?.basertPaa, "vedtak.basertPaa")
@@ -50,26 +47,24 @@ class PrefillP6000PensionGjenlevTest {
         assertEquals("03", vedtak?.grunnlag?.opptjening?.forsikredeAnnen)
         assertEquals("1", vedtak?.grunnlag?.framtidigtrygdetid)
 
-        val bergen = vedtak?.beregning?.get(0)
-        assertEquals("2018-05-01", bergen?.periode?.fom)
-        assertEquals(null, bergen?.periode?.tom)
-        assertEquals("NOK", bergen?.valuta)
-        assertEquals("03", bergen?.utbetalingshyppighet)
+        val beregning = vedtak?.beregning?.get(0)
+        assertEquals("2018-05-01", beregning?.periode?.fom)
+        assertEquals(null, beregning?.periode?.tom)
+        assertEquals("NOK", beregning?.valuta)
+        assertEquals("03", beregning?.utbetalingshyppighet)
 
-        assertEquals("5248", bergen?.beloepBrutto?.beloep)
-        assertEquals("3519", bergen?.beloepBrutto?.ytelseskomponentGrunnpensjon)
-        assertEquals("1729", bergen?.beloepBrutto?.ytelseskomponentTilleggspensjon)
+        assertEquals("5248", beregning?.beloepBrutto?.beloep)
+        assertEquals("3519", beregning?.beloepBrutto?.ytelseskomponentGrunnpensjon)
+        assertEquals("1729", beregning?.beloepBrutto?.ytelseskomponentTilleggspensjon)
 
         assertEquals(null, vedtak?.ukjent?.beloepBrutto?.ytelseskomponentAnnen)
 
-        val avslagbrg = vedtak?.avslagbegrunnelse?.get(0)
-        assertEquals(null, avslagbrg?.begrunnelse)
+        val avslagBegrunnelse = vedtak?.avslagbegrunnelse?.get(0)
+        assertEquals(null, avslagBegrunnelse?.begrunnelse)
 
-        val dataof = sak?.kravtype?.get(0)?.datoFrist
-        assertEquals("six weeks from the date the decision is received", dataof)
+        assertEquals("six weeks from the date the decision is received", result.sak?.kravtype?.get(0)?.datoFrist)
 
-        assertEquals("2018-05-26", tillegg?.dato)
-        //assertEquals("NAV", tillegg?.andreinstitusjoner?.get(0)?.institusjonsid)
+        assertEquals("2018-05-26", result.tilleggsinformasjon?.dato)
     }
 
     @Test
@@ -106,14 +101,11 @@ class PrefillP6000PensionGjenlevTest {
 
         val result = dataFromPESYS.prefill(prefill)
 
-        val vedtaklst = result.vedtak
-        val sak = result.sak
-        val tillegg = result.tilleggsinformasjon
-        assertNotNull(vedtaklst)
-        assertNotNull(sak)
-        assertNotNull(tillegg)
+        assertNotNull(result.vedtak)
+        assertNotNull(result.sak)
+        assertNotNull(result.tilleggsinformasjon)
 
-        val vedtak = vedtaklst?.get(0)
+        val vedtak = result.vedtak?.get(0)
         assertEquals("2018-05-01", vedtak?.virkningsdato, "vedtak.virkningsdato")
         assertEquals("03", vedtak?.type, "vedtak.type")
         assertEquals("02", vedtak?.basertPaa, "vedtak.basertPaa")
@@ -124,31 +116,31 @@ class PrefillP6000PensionGjenlevTest {
         assertEquals("03", vedtak?.grunnlag?.opptjening?.forsikredeAnnen)
         assertEquals("1", vedtak?.grunnlag?.framtidigtrygdetid)
 
-        val bergen = vedtak?.beregning?.get(0)
-        assertEquals("2018-05-01", bergen?.periode?.fom)
-        assertEquals(null, bergen?.periode?.tom)
-        assertEquals("NOK", bergen?.valuta)
-        assertEquals("03", bergen?.utbetalingshyppighet)
+        val beregning = vedtak?.beregning?.get(0)
+        assertEquals("2018-05-01", beregning?.periode?.fom)
+        assertEquals(null, beregning?.periode?.tom)
+        assertEquals("NOK", beregning?.valuta)
+        assertEquals("03", beregning?.utbetalingshyppighet)
 
-        assertEquals("6766", bergen?.beloepBrutto?.beloep)
-        assertEquals("4319", bergen?.beloepBrutto?.ytelseskomponentGrunnpensjon)
-        assertEquals("2447", bergen?.beloepBrutto?.ytelseskomponentTilleggspensjon)
+        assertEquals("6766", beregning?.beloepBrutto?.beloep)
+        assertEquals("4319", beregning?.beloepBrutto?.ytelseskomponentGrunnpensjon)
+        assertEquals("2447", beregning?.beloepBrutto?.ytelseskomponentTilleggspensjon)
 
         assertEquals(null, vedtak?.ukjent?.beloepBrutto?.ytelseskomponentAnnen)
 
-        val avslagbrg = vedtak?.avslagbegrunnelse?.get(0)
-        assertEquals(null, avslagbrg?.begrunnelse)
+        val avslagBegrunnelse = vedtak?.avslagbegrunnelse?.get(0)
+        assertEquals(null, avslagBegrunnelse?.begrunnelse)
 
-        val dataof = sak?.kravtype?.get(0)?.datoFrist
-        assertEquals("six weeks from the date the decision is received", dataof)
+        assertEquals("six weeks from the date the decision is received", result.sak?.kravtype?.get(0)?.datoFrist)
 
-        assertEquals("2018-05-26", tillegg?.dato)
+        assertEquals("2018-05-26", result.tilleggsinformasjon?.dato)
 
-        assertEquals("NO:noinst002", tillegg?.andreinstitusjoner?.get(0)?.institusjonsid)
-        assertEquals("NOINST002, NO INST002, NO", tillegg?.andreinstitusjoner?.get(0)?.institusjonsnavn)
-        assertEquals("Postboks 6600 Etterstad TEST", tillegg?.andreinstitusjoner?.get(0)?.institusjonsadresse)
-        assertEquals("0607", tillegg?.andreinstitusjoner?.get(0)?.postnummer)
+        assertEquals("NO:noinst002", result.tilleggsinformasjon?.andreinstitusjoner?.get(0)?.institusjonsid)
+        assertEquals("NOINST002, NO INST002, NO", result.tilleggsinformasjon?.andreinstitusjoner?.get(0)?.institusjonsnavn)
+        assertEquals("Postboks 6600 Etterstad TEST", result.tilleggsinformasjon?.andreinstitusjoner?.get(0)?.institusjonsadresse)
+        assertEquals("0607", result.tilleggsinformasjon?.andreinstitusjoner?.get(0)?.postnummer)
     }
+
     @Test(expected = IllegalStateException::class)
     fun `preutfylling P6000 feiler ved mangler av vedtakId`() {
         val prefill = initialPrefillDataModel("P6000", 68)
