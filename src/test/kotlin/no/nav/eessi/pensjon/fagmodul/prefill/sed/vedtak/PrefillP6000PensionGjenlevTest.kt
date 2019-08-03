@@ -20,12 +20,9 @@ class PrefillP6000PensionGjenlevTest {
     @Test
     fun `forventet korrekt utfylling av Pensjon objekt på Gjenlevendepensjon`() {
         val prefill = initialPrefillDataModel("vedtak", 66)
+        prefill.andreInstitusjon = eessiInformasjon.asAndreinstitusjonerItem()
+
         val dataFromPESYS = fraFil("P6000-GP-401.xml")
-
-        eessiInformasjon.mapEssiInformasjonTilPrefillDataModel(prefill)
-
-//        val dataFromPESYS1 = mockPrefillP6000PensionDataFromPESYS("P6000-GP-401.xml")
-//        val result = dataFromPESYS1.prefill(prefill)
 
         val result = dataFromPESYS.prefill(prefill)
 
@@ -102,8 +99,7 @@ class PrefillP6000PensionGjenlevTest {
     @Test
     fun `forventet korrekt utfylt P6000 gjenlevende ikke bosat utland (avdød bodd i utland)`() {
         val prefill = initialPrefillDataModel("P6000", 66)
-
-        eessiInformasjon.mapEssiInformasjonTilPrefillDataModel(prefill)
+        prefill.andreInstitusjon = eessiInformasjon.asAndreinstitusjonerItem()
 
         val dataFromPESYS = fraFil("P6000-GP-IkkeUtland.xml")
 

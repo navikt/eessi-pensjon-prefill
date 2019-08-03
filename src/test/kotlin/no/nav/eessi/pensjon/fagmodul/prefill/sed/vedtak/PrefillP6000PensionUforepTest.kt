@@ -22,10 +22,9 @@ class PrefillP6000PensionUforepTest {
     @Test
     fun `forventet korrekt utfylling av Pensjon objekt på Uførepensjon`() {
         val prefill = initialPrefillDataModel("P6000", 66)
+        prefill.andreInstitusjon = eessiInformasjon.asAndreinstitusjonerItem()
 
         val dataFromPESYS = fraFil("P6000-UT-201.xml")
-
-        eessiInformasjon.mapEssiInformasjonTilPrefillDataModel(prefill)
 
         val result = dataFromPESYS.prefill(prefill)
 

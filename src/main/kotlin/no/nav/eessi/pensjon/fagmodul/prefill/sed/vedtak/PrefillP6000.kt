@@ -27,7 +27,7 @@ class PrefillP6000(private val sakHelper: SakHelper,
         val sed = prefillData.sed
 
         logger.info("Henter ut lokal kontakt, institusjon (NAV Utland)")
-        eessiInfo.mapEssiInformasjonTilPrefillDataModel(prefillData)
+        prefillData.andreInstitusjon = eessiInfo.asAndreinstitusjonerItem()
         logger.info("Andreinstitusjoner: ${prefillData.andreInstitusjon} ")
 
         logger.debug("Henter opp Persondata/Gjenlevende fra TPS")
