@@ -4,14 +4,18 @@ import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjon
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.fagmodul.prefill.model.Prefill
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
+import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonHjelper
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.SakHelper
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 class PrefillP6000(private val sakHelper: SakHelper,
-                   private val eessiInfo: EessiInformasjon) : Prefill<SED> {
+                   private val eessiInfo: EessiInformasjon,
+                   dataFromPESYS: PensjonsinformasjonHjelper) : Prefill<SED> {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillP6000::class.java) }
+
+    private var vedtakPensiondata: VedtakDataFromPEN = VedtakDataFromPEN(dataFromPESYS)
 
     override fun prefill(prefillData: PrefillDataModel): SED {
         val sedId = prefillData.getSEDid()
@@ -30,7 +34,7 @@ class PrefillP6000(private val sakHelper: SakHelper,
         val gjenlevende = sakHelper.createGjenlevende(prefillData)
 
         logger.debug("Henter opp Pernsjondata fra PESYS")
-        val pensjon = sakHelper.createPensjon(prefillData, gjenlevende)
+        val pensjon = vedtakPensiondata.prefill(prefillData)
         sed.pensjon = pensjon
 
         logger.debug("Henter opp Persondata fra TPS")
