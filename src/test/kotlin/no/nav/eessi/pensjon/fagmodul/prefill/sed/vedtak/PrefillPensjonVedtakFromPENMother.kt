@@ -13,9 +13,9 @@ import org.springframework.http.ResponseEntity
 import org.springframework.util.ResourceUtils
 import org.springframework.web.client.RestTemplate
 
-object VedtakDataFromPENMother {
+object PrefillPensjonVedtakFromPENMother {
 
-    fun fraFil(responseXMLfilename: String): VedtakDataFromPEN {
+    fun fraFil(responseXMLfilename: String): PrefillPensjonVedtakFromPEN {
         val resource = ResourceUtils.getFile("classpath:pensjonsinformasjon/vedtak/$responseXMLfilename").readText()
         val readXMLresponse = ResponseEntity(resource, HttpStatus.OK)
 
@@ -23,7 +23,7 @@ object VedtakDataFromPENMother {
         whenever(mockRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java)))
                 .thenReturn(readXMLresponse)
 
-        return VedtakDataFromPEN(
+        return PrefillPensjonVedtakFromPEN(
                 PensjonsinformasjonHjelper(
                         PensjonsinformasjonService(mockRestTemplate, RequestBuilder())))
     }

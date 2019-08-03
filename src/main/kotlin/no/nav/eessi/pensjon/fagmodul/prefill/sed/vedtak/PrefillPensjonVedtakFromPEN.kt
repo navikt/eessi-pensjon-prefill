@@ -16,9 +16,9 @@ import java.lang.IllegalStateException
 /**
  * Hjelpe klasse for utfyller ut NAV-SED-P6000 med pensjondata med vedtak fra PESYS.
  */
-class VedtakDataFromPEN(private val dataFromPESYS: PensjonsinformasjonHjelper): Prefill<Pensjon> {
+class PrefillPensjonVedtakFromPEN(private val dataFromPESYS: PensjonsinformasjonHjelper): Prefill<Pensjon> {
 
-    private val logger: Logger by lazy { LoggerFactory.getLogger(VedtakDataFromPEN::class.java) }
+    private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillPensjonVedtakFromPEN::class.java) }
 
     private val reduksjon: PrefillPensjonReduksjon
     val tilleggsinformasjon: PrefillPensjonTilleggsinformasjon

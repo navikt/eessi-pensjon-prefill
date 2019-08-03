@@ -15,7 +15,7 @@ class PrefillP6000(private val sakHelper: SakHelper,
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillP6000::class.java) }
 
-    private var vedtakPensiondata: VedtakDataFromPEN = VedtakDataFromPEN(dataFromPESYS)
+    private var prefillPensjonVedtakPensiondata: PrefillPensjonVedtakFromPEN = PrefillPensjonVedtakFromPEN(dataFromPESYS)
 
     override fun prefill(prefillData: PrefillDataModel): SED {
         val sedId = prefillData.getSEDid()
@@ -34,7 +34,7 @@ class PrefillP6000(private val sakHelper: SakHelper,
         val gjenlevende = sakHelper.createGjenlevende(prefillData)
 
         logger.debug("Henter opp Pernsjondata fra PESYS")
-        val pensjon = vedtakPensiondata.prefill(prefillData)
+        val pensjon = prefillPensjonVedtakPensiondata.prefill(prefillData)
         sed.pensjon = pensjon
 
         logger.debug("Henter opp Persondata fra TPS")
