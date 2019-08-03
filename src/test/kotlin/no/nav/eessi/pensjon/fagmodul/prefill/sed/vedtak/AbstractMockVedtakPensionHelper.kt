@@ -64,12 +64,12 @@ abstract class AbstractMockVedtakPensionHelper(private val xmlFilename: String) 
         pendata = readPensjonsinformasjon(dataFromPESYS)
     }
 
-    fun readPensjonsinformasjon(penDatafromPesys: VedtakDataFromPEN): Pensjonsinformasjon {
+    private fun readPensjonsinformasjon(penDatafromPesys: VedtakDataFromPEN): Pensjonsinformasjon {
         prefill = generatePrefillData(60, "P6000")
         return penDatafromPesys.getPensjoninformasjonFraVedtak(prefill)
     }
 
-    fun readXMLresponse(file: String): ResponseEntity<String> {
+    private fun readXMLresponse(file: String): ResponseEntity<String> {
         val resource = ResourceUtils.getFile("classpath:pensjonsinformasjon/vedtak/$file").readText()
         return ResponseEntity(resource, HttpStatus.OK)
     }
