@@ -1,5 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak
 
+import no.nav.eessi.pensjon.utils.convertToXMLocal
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import no.nav.pensjon.v1.sakalder.V1SakAlder
 import no.nav.pensjon.v1.trygdetid.V1Trygdetid
@@ -16,7 +17,7 @@ import java.util.*
 import javax.xml.datatype.DatatypeFactory
 import javax.xml.datatype.XMLGregorianCalendar
 
-object PrefillVedtakTestHelper {
+object PensjonsinformasjonMother {
 
     fun generateFakePensjoninformasjonForKSAK(ksak: String): Pensjonsinformasjon {
         val xmlcal = DatatypeFactory.newInstance().newXMLGregorianCalendar()
@@ -64,28 +65,21 @@ object PrefillVedtakTestHelper {
 
     fun createTrygdelisteTid(): V1TrygdetidListe {
         val ttid1 = V1Trygdetid()
-        ttid1.fom = convertToXMLcal(LocalDate.now().minusDays(25))
-        ttid1.tom = convertToXMLcal(LocalDate.now().minusDays(20))
+        ttid1.fom = convertToXMLocal(LocalDate.now().minusDays(25))
+        ttid1.tom = convertToXMLocal(LocalDate.now().minusDays(20))
 
         val ttid2 = V1Trygdetid()
-        ttid2.fom = convertToXMLcal(LocalDate.now().minusDays(10))
-        ttid2.tom = convertToXMLcal(LocalDate.now().minusDays(5))
+        ttid2.fom = convertToXMLocal(LocalDate.now().minusDays(10))
+        ttid2.tom = convertToXMLocal(LocalDate.now().minusDays(5))
 
         val ttid3 = V1Trygdetid()
-        ttid3.fom = convertToXMLcal(LocalDate.now().minusDays(0))
-        ttid3.tom = convertToXMLcal(LocalDate.now().plusDays(5))
+        ttid3.fom = convertToXMLocal(LocalDate.now().minusDays(0))
+        ttid3.tom = convertToXMLocal(LocalDate.now().plusDays(5))
 
         val trygdetidListe = V1TrygdetidListe()
         trygdetidListe.trygdetidListe.add(ttid1)
         trygdetidListe.trygdetidListe.add(ttid2)
         trygdetidListe.trygdetidListe.add(ttid3)
         return trygdetidListe
-    }
-
-    fun convertToXMLcal(time: LocalDate): XMLGregorianCalendar {
-        val gcal = GregorianCalendar()
-        gcal.setTime(Date.from(time.atStartOfDay(ZoneId.systemDefault()).toInstant()))
-        val xgcal = DatatypeFactory.newInstance().newXMLGregorianCalendar(gcal)
-        return xgcal
     }
 }

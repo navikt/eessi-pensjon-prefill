@@ -2,8 +2,9 @@ package no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak
 
 import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjonMother.dummyEessiInfo
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModelMother.initialPrefillDataModel
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.PrefillVedtakTestHelper.generateFakePensjoninformasjonForKSAK
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.PensjonsinformasjonMother.generateFakePensjoninformasjonForKSAK
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.VedtakDataFromPENMother.fraFil
+import no.nav.eessi.pensjon.utils.convertToXMLocal
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import no.nav.pensjon.v1.trygdetid.V1Trygdetid
 import no.nav.pensjon.v1.trygdetidliste.V1TrygdetidListe
@@ -165,8 +166,8 @@ class PrefillP6000PensionAlderTest {
         val dataFromPESYS = fraFil("P6000-APUtland-301.xml")
 
         val ttid1 = V1Trygdetid()
-        ttid1.fom = PrefillVedtakTestHelper.convertToXMLcal(LocalDate.now().minusDays(50))
-        ttid1.tom = PrefillVedtakTestHelper.convertToXMLcal(LocalDate.now().minusDays(40))
+        ttid1.fom = convertToXMLocal(LocalDate.now().minusDays(50))
+        ttid1.tom = convertToXMLocal(LocalDate.now().minusDays(40))
 
 
         val trygdetidListe = V1TrygdetidListe()
@@ -188,8 +189,8 @@ class PrefillP6000PensionAlderTest {
         val dataFromPESYS = fraFil("P6000-APUtland-301.xml")
 
         val ttid1 = V1Trygdetid()
-        ttid1.fom = PrefillVedtakTestHelper.convertToXMLcal(LocalDate.now().minusDays(170))
-        ttid1.tom = PrefillVedtakTestHelper.convertToXMLcal(LocalDate.now().minusDays(100))
+        ttid1.fom = convertToXMLocal(LocalDate.now().minusDays(170))
+        ttid1.tom = convertToXMLocal(LocalDate.now().minusDays(100))
 
         val trygdetidListe = V1TrygdetidListe()
         trygdetidListe.trygdetidListe.add(ttid1)
@@ -208,7 +209,7 @@ class PrefillP6000PensionAlderTest {
     fun `summerTrygdeTid forventet 15 dager, erTrygdeTid forventet til false`() {
         val dataFromPESYS = fraFil("P6000-APUtland-301.xml")
 
-        val trygdetidListe = PrefillVedtakTestHelper.createTrygdelisteTid()
+        val trygdetidListe = PensjonsinformasjonMother.createTrygdelisteTid()
 
         val result = dataFromPESYS.summerTrygdeTid(trygdetidListe)
 
@@ -227,8 +228,8 @@ class PrefillP6000PensionAlderTest {
         val dataFromPESYS = fraFil("P6000-APUtland-301.xml")
 
         val ttid1 = V1Trygdetid()
-        ttid1.fom = PrefillVedtakTestHelper.convertToXMLcal(LocalDate.now().minusDays(700))
-        ttid1.tom = PrefillVedtakTestHelper.convertToXMLcal(LocalDate.now().minusDays(200))
+        ttid1.fom = convertToXMLocal(LocalDate.now().minusDays(700))
+        ttid1.tom = convertToXMLocal(LocalDate.now().minusDays(200))
 
         val trygdetidListe = V1TrygdetidListe()
         trygdetidListe.trygdetidListe.add(ttid1)
@@ -253,8 +254,8 @@ class PrefillP6000PensionAlderTest {
         val tom = LocalDate.now().plusDays(0)
         val trygdetidListe = V1TrygdetidListe()
         val ttid1 = V1Trygdetid()
-        ttid1.fom = PrefillVedtakTestHelper.convertToXMLcal(fom)
-        ttid1.tom = PrefillVedtakTestHelper.convertToXMLcal(tom)
+        ttid1.fom = convertToXMLocal(fom)
+        ttid1.tom = convertToXMLocal(tom)
         trygdetidListe.trygdetidListe.add(ttid1)
         val result = dataFromPESYS.summerTrygdeTid(trygdetidListe)
         assertEquals(0, result)
