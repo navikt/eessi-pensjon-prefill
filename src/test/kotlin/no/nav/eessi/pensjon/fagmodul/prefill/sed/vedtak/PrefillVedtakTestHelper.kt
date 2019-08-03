@@ -31,19 +31,6 @@ import javax.xml.datatype.XMLGregorianCalendar
 
 object PrefillVedtakTestHelper {
 
-    fun vedtakDataFromPENFraFil(responseXMLfilename: String): VedtakDataFromPEN {
-        val resource = ResourceUtils.getFile("classpath:pensjonsinformasjon/vedtak/$responseXMLfilename").readText()
-        val readXMLresponse = ResponseEntity(resource, HttpStatus.OK)
-
-        val mockRestTemplate = mock<RestTemplate>()
-        whenever(mockRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java)))
-                .thenReturn(readXMLresponse)
-
-        return VedtakDataFromPEN(
-                PensjonsinformasjonHjelper(
-                        PensjonsinformasjonService(mockRestTemplate, RequestBuilder())))
-    }
-
     val eessiInformasjon = EessiInformasjon(
             institutionid = "NO:noinst002",
             institutionnavn = "NOINST002, NO INST002, NO",
