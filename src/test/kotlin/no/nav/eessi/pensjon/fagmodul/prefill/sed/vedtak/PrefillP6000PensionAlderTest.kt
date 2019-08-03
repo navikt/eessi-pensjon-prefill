@@ -1,7 +1,7 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak
 
+import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjonMother.dummyEessiInfo
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModelMother.initialPrefillDataModel
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.PrefillVedtakTestHelper.eessiInformasjon
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.PrefillVedtakTestHelper.generateFakePensjoninformasjonForKSAK
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.VedtakDataFromPENMother.fraFil
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
@@ -21,7 +21,7 @@ class PrefillP6000PensionAlderTest {
     @Test
     fun `forventet korrekt utfylling av Pensjon objekt på Alderpensjon`() {
         val prefill = initialPrefillDataModel("P6000", 68)
-        prefill.andreInstitusjon = eessiInformasjon.asAndreinstitusjonerItem()
+        prefill.andreInstitusjon = dummyEessiInfo().asAndreinstitusjonerItem()
 
         val dataFromPESYS = fraFil("P6000-APUtland-301.xml")
 

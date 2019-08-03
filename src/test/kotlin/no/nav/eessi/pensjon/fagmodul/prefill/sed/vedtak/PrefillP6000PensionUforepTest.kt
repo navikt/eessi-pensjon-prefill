@@ -1,7 +1,8 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak
 
+import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjonMother
+import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjonMother.dummyEessiInfo
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModelMother.initialPrefillDataModel
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.PrefillVedtakTestHelper.eessiInformasjon
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.PrefillVedtakTestHelper.generateFakePensjoninformasjonForKSAK
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.VedtakDataFromPENMother.fraFil
 import no.nav.eessi.pensjon.utils.mapAnyToJson
@@ -22,7 +23,7 @@ class PrefillP6000PensionUforepTest {
     @Test
     fun `forventet korrekt utfylling av Pensjon objekt på Uførepensjon`() {
         val prefill = initialPrefillDataModel("P6000", 66)
-        prefill.andreInstitusjon = eessiInformasjon.asAndreinstitusjonerItem()
+        prefill.andreInstitusjon = dummyEessiInfo().asAndreinstitusjonerItem()
 
         val dataFromPESYS = fraFil("P6000-UT-201.xml")
 

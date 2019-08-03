@@ -1,12 +1,5 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak
 
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.whenever
-import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjon
-import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonHjelper
-import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonService
-import no.nav.eessi.pensjon.services.pensjonsinformasjon.RequestBuilder
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import no.nav.pensjon.v1.sakalder.V1SakAlder
 import no.nav.pensjon.v1.trygdetid.V1Trygdetid
@@ -17,12 +10,6 @@ import no.nav.pensjon.v1.vilkarsvurderingliste.V1VilkarsvurderingListe
 import no.nav.pensjon.v1.vilkarsvurderinguforetrygd.V1VilkarsvurderingUforetrygd
 import no.nav.pensjon.v1.ytelsepermaaned.V1YtelsePerMaaned
 import no.nav.pensjon.v1.ytelsepermaanedliste.V1YtelsePerMaanedListe
-import org.mockito.ArgumentMatchers
-import org.springframework.http.HttpEntity
-import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
-import org.springframework.util.ResourceUtils
-import org.springframework.web.client.RestTemplate
 import java.time.LocalDate
 import java.time.ZoneId
 import java.util.*
@@ -30,15 +17,6 @@ import javax.xml.datatype.DatatypeFactory
 import javax.xml.datatype.XMLGregorianCalendar
 
 object PrefillVedtakTestHelper {
-
-    val eessiInformasjon = EessiInformasjon(
-            institutionid = "NO:noinst002",
-            institutionnavn = "NOINST002, NO INST002, NO",
-            institutionGate = "Postboks 6600 Etterstad TEST",
-            institutionBy = "Oslo",
-            institutionPostnr = "0607",
-            institutionLand = "NO"
-    )
 
     fun generateFakePensjoninformasjonForKSAK(ksak: String): Pensjonsinformasjon {
         val xmlcal = DatatypeFactory.newInstance().newXMLGregorianCalendar()

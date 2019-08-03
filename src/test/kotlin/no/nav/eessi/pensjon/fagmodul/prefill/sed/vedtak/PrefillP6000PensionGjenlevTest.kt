@@ -1,7 +1,8 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak
 
+import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjonMother
+import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjonMother.dummyEessiInfo
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModelMother.initialPrefillDataModel
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.PrefillVedtakTestHelper.eessiInformasjon
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.PrefillVedtakTestHelper.generateFakePensjoninformasjonForKSAK
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.VedtakDataFromPENMother.fraFil
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
@@ -20,7 +21,7 @@ class PrefillP6000PensionGjenlevTest {
     @Test
     fun `forventet korrekt utfylling av Pensjon objekt på Gjenlevendepensjon`() {
         val prefill = initialPrefillDataModel("vedtak", 66)
-        prefill.andreInstitusjon = eessiInformasjon.asAndreinstitusjonerItem()
+        prefill.andreInstitusjon = dummyEessiInfo().asAndreinstitusjonerItem()
 
         val dataFromPESYS = fraFil("P6000-GP-401.xml")
 
@@ -99,7 +100,7 @@ class PrefillP6000PensionGjenlevTest {
     @Test
     fun `forventet korrekt utfylt P6000 gjenlevende ikke bosat utland (avdød bodd i utland)`() {
         val prefill = initialPrefillDataModel("P6000", 66)
-        prefill.andreInstitusjon = eessiInformasjon.asAndreinstitusjonerItem()
+        prefill.andreInstitusjon = dummyEessiInfo().asAndreinstitusjonerItem()
 
         val dataFromPESYS = fraFil("P6000-GP-IkkeUtland.xml")
 
