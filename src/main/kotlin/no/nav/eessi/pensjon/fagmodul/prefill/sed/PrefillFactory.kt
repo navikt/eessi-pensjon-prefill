@@ -5,6 +5,7 @@ import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjon
 import no.nav.eessi.pensjon.fagmodul.prefill.model.Prefill
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
+import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonHjelper
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.PrefillP2000
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.PrefillP2200
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
@@ -21,7 +22,8 @@ import org.springframework.stereotype.Component
 class PrefillFactory(private val prefillNav: PrefillNav,
                      dataFromTPS: PrefillPersonDataFromTPS,
                      private val eessiInformasjon: EessiInformasjon,
-                     private val sakHelper: SakHelper) {
+                     private val sakHelper: SakHelper,
+                     private val dataFromPEN: PensjonsinformasjonHjelper) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillFactory::class.java) }
 
@@ -35,7 +37,7 @@ class PrefillFactory(private val prefillNav: PrefillNav,
         return when (sedValue) {
             //Status hva gjendstår
             SEDType.P6000 -> {
-                PrefillP6000(sakHelper, eessiInformasjon)
+                PrefillP6000(sakHelper, eessiInformasjon, dataFromPEN)
             }
             //Status hva gjendstår
             SEDType.P2000 -> {
