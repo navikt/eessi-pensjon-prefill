@@ -2,8 +2,8 @@ package no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak
 
 import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjonMother.dummyEessiInfo
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModelMother.initialPrefillDataModel
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.PensjonsinformasjonHjelperMother.fraFil
-import no.nav.eessi.pensjon.utils.mapAnyToJson
+import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonHjelper
+import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonServiceMother.fraFil
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
@@ -18,7 +18,7 @@ class PrefillPensjonVedtakFromPEN_UFORE_Test {
         val prefill = initialPrefillDataModel("P6000", 66).apply {
             andreInstitusjon = dummyEessiInfo().asAndreinstitusjonerItem()
         }
-        val prefillPensjonVedtak = PrefillPensjonVedtakFromPEN(fraFil("P6000-UT-201.xml"))
+        val prefillPensjonVedtak = PrefillPensjonVedtakFromPEN(PensjonsinformasjonHjelper(fraFil("P6000-UT-201.xml")))
 
         val result = prefillPensjonVedtak.prefill(prefill)
 
@@ -68,7 +68,7 @@ class PrefillPensjonVedtakFromPEN_UFORE_Test {
         val prefill = initialPrefillDataModel("P6000", 68).apply {
             vedtakId = ""
         }
-        val prefillPensjonVedtak = PrefillPensjonVedtakFromPEN(fraFil("P6000-UT-201.xml"))
+        val prefillPensjonVedtak = PrefillPensjonVedtakFromPEN(PensjonsinformasjonHjelper(fraFil("P6000-UT-201.xml")))
 
         prefillPensjonVedtak.prefill(prefill)
     }
@@ -76,7 +76,7 @@ class PrefillPensjonVedtakFromPEN_UFORE_Test {
     @Test(expected = java.lang.IllegalStateException::class)
     fun `feiler ved boddArbeidetUtland ikke sann`() {
         val prefill = initialPrefillDataModel("P6000", personAge = 66)
-        val prefillPensjonVedtak = PrefillPensjonVedtakFromPEN(fraFil("P6000-AP-101.xml"))
+        val prefillPensjonVedtak = PrefillPensjonVedtakFromPEN(PensjonsinformasjonHjelper(fraFil("P6000-AP-101.xml")))
 
         prefillPensjonVedtak.prefill(prefill)
     }

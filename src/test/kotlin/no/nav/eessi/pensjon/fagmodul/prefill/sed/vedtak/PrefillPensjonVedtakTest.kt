@@ -1,5 +1,7 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak
 
+import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonHjelper
+import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonServiceMother.fraFil
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -8,7 +10,7 @@ class PrefillPensjonVedtakTest {
 
     @Test
     fun `forventet createVedtakTypePensionWithRule verdi ALDER`() {
-        val dataFromPESYS = PensjonsinformasjonHjelperMother.fraFil("P6000-APUtland-301.xml")
+        val dataFromPESYS = PensjonsinformasjonHjelper(fraFil("P6000-APUtland-301.xml"))
 
         val pendata = dataFromPESYS.hentMedVedtak("someVedtakId")
 
@@ -17,7 +19,7 @@ class PrefillPensjonVedtakTest {
 
     @Test
     fun `forventet createVedtakTypePensionWithRule verdi GJENLEVENDE`() {
-        val dataFromPESYS = PensjonsinformasjonHjelperMother.fraFil("P6000-GP-401.xml")
+        val dataFromPESYS = PensjonsinformasjonHjelper(fraFil("P6000-GP-401.xml"))
         val pendata = dataFromPESYS.hentMedVedtak("someVedtakId")
 
         assertEquals("03", PrefillPensjonVedtak().createVedtakTypePensionWithRule(pendata))
@@ -25,7 +27,7 @@ class PrefillPensjonVedtakTest {
 
     @Test
     fun `forventet createVedtakTypePensionWithRule verdi UFØRE`() {
-        val dataFromPESYS = PensjonsinformasjonHjelperMother.fraFil("P6000-UT-201.xml")
+        val dataFromPESYS = PensjonsinformasjonHjelper(fraFil("P6000-UT-201.xml"))
         val pendata = dataFromPESYS.hentMedVedtak("someVedtakId")
 
         assertEquals("02", PrefillPensjonVedtak().createVedtakTypePensionWithRule(pendata))
@@ -120,7 +122,7 @@ class PrefillPensjonVedtakTest {
 
     @Test
     fun `forventet korrekt utregnet ytelsePrMnd på Uforep hvor UT_ORDINER`() {
-        val dataFromPESYS = PensjonsinformasjonHjelperMother.fraFil("P6000-UT-220.xml")
+        val dataFromPESYS = PensjonsinformasjonHjelper(fraFil("P6000-UT-220.xml"))
         val pendata = dataFromPESYS.hentMedVedtak("someVedtakId")
 
         val result = PrefillPensjonVedtak().createBeregningItemList(pendata)

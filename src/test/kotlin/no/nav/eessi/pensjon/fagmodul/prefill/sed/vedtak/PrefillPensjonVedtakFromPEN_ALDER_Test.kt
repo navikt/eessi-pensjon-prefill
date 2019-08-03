@@ -2,14 +2,13 @@ package no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak
 
 import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjonMother.dummyEessiInfo
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModelMother.initialPrefillDataModel
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.PensjonsinformasjonMother.pensjoninformasjonForSakstype
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.PensjonsinformasjonHjelperMother.fraFil
+import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonHjelper
+import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonServiceMother.fraFil
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
-import kotlin.test.assertTrue
 
 @RunWith(MockitoJUnitRunner::class)
 class PrefillPensjonVedtakFromPEN_ALDER_Test {
@@ -19,7 +18,7 @@ class PrefillPensjonVedtakFromPEN_ALDER_Test {
         val prefill = initialPrefillDataModel("P6000", 68).apply {
             andreInstitusjon = dummyEessiInfo().asAndreinstitusjonerItem()
         }
-        val prefillPensjonVedtak = PrefillPensjonVedtakFromPEN(fraFil("P6000-APUtland-301.xml"))
+        val prefillPensjonVedtak = PrefillPensjonVedtakFromPEN(PensjonsinformasjonHjelper(fraFil("P6000-APUtland-301.xml")))
 
         val result = prefillPensjonVedtak.prefill(prefill)
 
@@ -69,7 +68,7 @@ class PrefillPensjonVedtakFromPEN_ALDER_Test {
         val prefill = initialPrefillDataModel("P6000", 68).apply {
             vedtakId = ""
         }
-        val prefillPensjonVedtak = PrefillPensjonVedtakFromPEN(fraFil("P6000-APUtland-301.xml"))
+        val prefillPensjonVedtak = PrefillPensjonVedtakFromPEN(PensjonsinformasjonHjelper(fraFil("P6000-APUtland-301.xml")))
 
         prefillPensjonVedtak.prefill(prefill)
     }
@@ -77,7 +76,7 @@ class PrefillPensjonVedtakFromPEN_ALDER_Test {
     @Test(expected = java.lang.IllegalStateException::class)
     fun `feiler ved boddArbeidetUtland ikke sann`() {
         val prefill = initialPrefillDataModel("P6000", 66)
-        val prefillPensjonVedtak = PrefillPensjonVedtakFromPEN(fraFil("P6000-AP-101.xml"))
+        val prefillPensjonVedtak = PrefillPensjonVedtakFromPEN(PensjonsinformasjonHjelper(fraFil("P6000-AP-101.xml")))
 
         prefillPensjonVedtak.prefill(prefill)
     }

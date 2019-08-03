@@ -1,6 +1,7 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak
 
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.PensjonsinformasjonHjelperMother.fraFil
+import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonHjelper
+import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonServiceMother.fraFil
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.PensjonsinformasjonMother.pensjoninformasjonForSakstype
 import no.nav.eessi.pensjon.utils.simpleFormat
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
@@ -102,7 +103,7 @@ class VedtakPensjonDataHelperTest {
 
     @Test
     fun `forventer "13482" dager i sum summerTrygdeTid`() {
-        val dataFromPESYS = fraFil("P6000-APUtland-301.xml")
+        val dataFromPESYS = PensjonsinformasjonHjelper(fraFil("P6000-APUtland-301.xml"))
 
         val pendata = dataFromPESYS.hentMedVedtak("someVedtakId")
 
@@ -121,7 +122,7 @@ class VedtakPensjonDataHelperTest {
 
     @Test
     fun `forventer at ytelseprMaaned er siste i listen`() {
-        val dataFromPESYS = fraFil("P6000-UT-220.xml")
+        val dataFromPESYS = PensjonsinformasjonHjelper(fraFil("P6000-UT-220.xml"))
         val pendata = dataFromPESYS.hentMedVedtak("someVedtakId")
 
         val sisteprmnd = VedtakPensjonDataHelper.hentSisteYtelsePerMaaned(pendata)
