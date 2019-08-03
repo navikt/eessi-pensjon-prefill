@@ -2,10 +2,9 @@ package no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak
 
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.PrefillVedtakTestHelper.eessiInformasjon
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.PrefillVedtakTestHelper.generateFakePensjoninformasjonForGJENLEV
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.PrefillVedtakTestHelper.generateFakePensjoninformasjonForKSAK
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.PrefillVedtakTestHelper.generatePrefillData
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.PrefillVedtakTestHelper.mockPrefillPensionDataFromPESYS
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.PrefillVedtakTestHelper.readPensjonsinformasjon
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.PrefillVedtakTestHelper.vedtakDataFromPENFraFil
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import no.nav.pensjon.v1.trygdetid.V1Trygdetid
 import no.nav.pensjon.v1.trygdetidliste.V1TrygdetidListe
@@ -27,8 +26,9 @@ class PrefillP6000PensionGjenlevTest {
     @Before
     fun setup() {
         prefill = PrefillDataModel()
-        dataFromPESYS = mockPrefillPensionDataFromPESYS("P6000-GP-401.xml")
-        pendata = readPensjonsinformasjon(dataFromPESYS, prefill)
+        dataFromPESYS = vedtakDataFromPENFraFil("P6000-GP-401.xml")
+        generatePrefillData(60, "P6000", prefill)
+        pendata = dataFromPESYS.getPensjoninformasjonFraVedtak(prefill)
     }
 
     @Test
@@ -89,7 +89,7 @@ class PrefillP6000PensionGjenlevTest {
     @Test
     fun `forventer "01" på AvlsagsBegrunnelse Gjenlevendepensjon, TrygdleListeTom`() {
 
-        val pendata1 = generateFakePensjoninformasjonForGJENLEV()
+        val pendata1 = generateFakePensjoninformasjonForKSAK("GJENLEV")
         pendata1.vedtak.isBoddArbeidetUtland = true
         pendata1.trygdetidListe.trygdetidListe.clear()
         pendata1.vilkarsvurderingListe.vilkarsvurderingListe.get(0).resultatHovedytelse = "AVSLAG"
@@ -112,7 +112,7 @@ class PrefillP6000PensionGjenlevTest {
         prefill = generatePrefillData(66, "P6000", prefill)
         eessiInformasjon.mapEssiInformasjonTilPrefillDataModel(prefill)
 
-        val dataFromPESYS1 = mockPrefillPensionDataFromPESYS("P6000-GP-IkkeUtland.xml")
+        val dataFromPESYS1 = vedtakDataFromPENFraFil("P6000-GP-IkkeUtland.xml")
 
         val result = dataFromPESYS1.prefill(prefill)
 
@@ -260,14 +260,14 @@ class PrefillP6000PensionGjenlevTest {
     @Test(expected = java.lang.IllegalStateException::class)
     fun `feiler ved boddArbeidetUtland ikke sann`() {
         prefill = generatePrefillData(66, "P6000", prefill)
-        val resdata = mockPrefillPensionDataFromPESYS("P6000-AP-101.xml")
+        val resdata = vedtakDataFromPENFraFil("P6000-AP-101.xml")
         resdata.prefill(prefill)
     }
 
     @Test
     fun `forventer "07" på AvlsagsBegrunnelse IKKE_MOTTATT_DOK`() {
 
-        val pendata = PrefillVedtakTestHelper.generateFakePensjoninformasjonForALDER()
+        val pendata = generateFakePensjoninformasjonForKSAK("ALDER")
         pendata.vilkarsvurderingListe.vilkarsvurderingListe.get(0).resultatHovedytelse = "AVSLAG"
         pendata.vilkarsvurderingListe.vilkarsvurderingListe.get(0).avslagHovedytelse = "IKKE_MOTTATT_DOK"
         val result = dataFromPESYS.pensjonVedtak.createAvlsagsBegrunnelse(pendata)

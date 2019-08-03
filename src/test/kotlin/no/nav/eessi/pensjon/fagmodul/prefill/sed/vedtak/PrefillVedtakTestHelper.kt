@@ -34,36 +34,20 @@ import javax.xml.datatype.XMLGregorianCalendar
 
 object PrefillVedtakTestHelper {
 
-    fun mockPrefillPensionDataFromPESYS(responseXMLfilename: String): VedtakDataFromPEN {
-        val pensjonsinformasjonService = mockPensjonsinformasjonService(mockPensjonsinformasjonRestTemplate(responseXMLfilename))
-        return mockVedtakFromPEN(mockPrefillPensionDataFromPEN(pensjonsinformasjonService))
-    }
+    fun vedtakDataFromPENFraFil(responseXMLfilename: String): VedtakDataFromPEN {
+        val resource = ResourceUtils.getFile("classpath:pensjonsinformasjon/vedtak/$responseXMLfilename").readText()
+        val readXMLresponse = ResponseEntity(resource, HttpStatus.OK)
 
-    private fun mockPensjonsinformasjonService(mockRestTemplate: RestTemplate): PensjonsinformasjonService {
-        return PensjonsinformasjonService(mockRestTemplate, RequestBuilder())
-    }
-
-    private fun mockPensjonsinformasjonRestTemplate(responseXMLfilename: String): RestTemplate {
         val mockRestTemplate = mock<RestTemplate>()
-        whenever(mockRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java))).thenReturn(readXMLresponse(responseXMLfilename))
-        return mockRestTemplate
-    }
+        whenever(mockRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java)))
+                .thenReturn(readXMLresponse)
 
-    fun mockPrefillPensionDataFromPEN(pensjonsinformasjonService: PensjonsinformasjonService): PensjonsinformasjonHjelper {
-        return PensjonsinformasjonHjelper(pensjonsinformasjonService)
-    }
-
-    private fun mockVedtakFromPEN(mockPrefillPensionDataFromPEN: PensjonsinformasjonHjelper): VedtakDataFromPEN {
-        return VedtakDataFromPEN(mockPrefillPensionDataFromPEN)
-    }
-
-    fun readPensjonsinformasjon(penDatafromPesys: VedtakDataFromPEN, prefill: PrefillDataModel): Pensjonsinformasjon {
-        generatePrefillData(60, "P6000", prefill)
-        return penDatafromPesys.getPensjoninformasjonFraVedtak(prefill)
+        return VedtakDataFromPEN(
+                PensjonsinformasjonHjelper(
+                        PensjonsinformasjonService(mockRestTemplate, RequestBuilder())))
     }
 
     fun generatePrefillData(subtractYear: Int, sedId: String, prefill: PrefillDataModel): PrefillDataModel {
-        val items = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
         prefill.apply {
             rinaSubject = "Pensjon"
             sed = SED(sedId)
@@ -72,7 +56,7 @@ object PrefillVedtakTestHelper {
             buc = "P_BUC_99"
             aktoerID = "123456789"
             personNr = generateRandomFnr(subtractYear)
-            institution = items
+            institution = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
         }
         return prefill
     }
@@ -86,19 +70,7 @@ object PrefillVedtakTestHelper {
             institutionLand = "NO"
     )
 
-    fun generateFakePensjoninformasjonForALDER(): Pensjonsinformasjon {
-        return generateFakePensjoninformasjonForKSAK("ALDER")
-    }
-
-    fun generateFakePensjoninformasjonForUFOREP(): Pensjonsinformasjon {
-        return generateFakePensjoninformasjonForKSAK("UFOREP")
-    }
-
-    fun generateFakePensjoninformasjonForGJENLEV(): Pensjonsinformasjon {
-        return generateFakePensjoninformasjonForKSAK("GJENLEV")
-    }
-
-    private fun generateFakePensjoninformasjonForKSAK(ksak: String): Pensjonsinformasjon {
+    fun generateFakePensjoninformasjonForKSAK(ksak: String): Pensjonsinformasjon {
         val xmlcal = DatatypeFactory.newInstance().newXMLGregorianCalendar()
 
         val v1sak = V1SakAlder()
@@ -167,11 +139,6 @@ object PrefillVedtakTestHelper {
         gcal.setTime(Date.from(time.atStartOfDay(ZoneId.systemDefault()).toInstant()))
         val xgcal = DatatypeFactory.newInstance().newXMLGregorianCalendar(gcal)
         return xgcal
-    }
-
-    private fun readXMLresponse(file: String): ResponseEntity<String> {
-        val resource = ResourceUtils.getFile("classpath:pensjonsinformasjon/vedtak/$file").readText()
-        return ResponseEntity(resource, HttpStatus.OK)
     }
 
     private fun generateRandomFnr(yearsToSubtract: Int): String {
