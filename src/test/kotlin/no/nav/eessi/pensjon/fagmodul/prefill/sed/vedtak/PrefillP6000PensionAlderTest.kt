@@ -70,7 +70,8 @@ class PrefillP6000PensionAlderTest {
     fun `forventet createVedtakTypePensionWithRule verdi`() {
         val prefill = initialPrefillDataModel("P6000", 68)
         val dataFromPESYS = fraFil("P6000-APUtland-301.xml")
-        val pendata = dataFromPESYS.getPensjoninformasjonFraVedtak(prefill)
+
+        val pendata = dataFromPESYS.getPensjoninformasjonFraVedtak(prefill.vedtakId)
 
         assertEquals("01", dataFromPESYS.pensjonVedtak.createVedtakTypePensionWithRule(pendata))
     }
@@ -118,7 +119,7 @@ class PrefillP6000PensionAlderTest {
 
         val dataFromPESYS = fraFil("P6000-APUtland-301.xml")
 
-        val pendata = dataFromPESYS.getPensjoninformasjonFraVedtak(prefill)
+        val pendata = dataFromPESYS.getPensjoninformasjonFraVedtak(prefill.vedtakId)
 
         assertTrue( 13400 < VedtakPensjonDataHelper.summerTrygdeTid(pendata.trygdetidListe))
     }

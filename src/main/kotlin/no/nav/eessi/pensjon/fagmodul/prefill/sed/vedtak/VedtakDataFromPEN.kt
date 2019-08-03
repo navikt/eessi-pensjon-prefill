@@ -37,8 +37,8 @@ class VedtakDataFromPEN(private val dataFromPESYS: PensjonsinformasjonHjelper): 
     }
 
     //henter ut felles pen-data og kun pensjoninformasjon med vedtak
-    fun getPensjoninformasjonFraVedtak(prefillData: PrefillDataModel): Pensjonsinformasjon {
-        return dataFromPESYS.hentMedVedtak(prefillData)
+    fun getPensjoninformasjonFraVedtak(vedtakId: String): Pensjonsinformasjon {
+        return dataFromPESYS.hentMedVedtak(vedtakId)
     }
 
     override fun prefill(prefillData: PrefillDataModel): Pensjon {
@@ -51,7 +51,7 @@ class VedtakDataFromPEN(private val dataFromPESYS: PensjonsinformasjonHjelper): 
         logger.debug("Starter [vedtak] Preutfylling Utfylling Data")
 
         logger.debug("vedtakId: $vedtakId")
-        val pendata: Pensjonsinformasjon = getPensjoninformasjonFraVedtak(prefillData)
+        val pendata: Pensjonsinformasjon = getPensjoninformasjonFraVedtak(prefillData.vedtakId)
         logger.debug("Henter pensjondata fra PESYS")
 
         val endtime = System.nanoTime()

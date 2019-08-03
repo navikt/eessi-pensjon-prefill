@@ -4,16 +4,11 @@ import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjonMother.dummyE
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModelMother.initialPrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.PensjonsinformasjonMother.pensjoninformasjonForSakstype
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.VedtakDataFromPENMother.fraFil
-import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
-import no.nav.pensjon.v1.trygdetid.V1Trygdetid
-import no.nav.pensjon.v1.trygdetidliste.V1TrygdetidListe
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
-import kotlin.test.assertTrue
 
 @RunWith(MockitoJUnitRunner::class)
 class PrefillP6000PensionGjenlevTest {
@@ -29,7 +24,7 @@ class PrefillP6000PensionGjenlevTest {
         val result = dataFromPESYS.prefill(prefill)
 
         //ekstra for å sjekke om Gjenlevepensjon finnes.
-        val pendata = dataFromPESYS.getPensjoninformasjonFraVedtak(prefill)
+        val pendata = dataFromPESYS.getPensjoninformasjonFraVedtak(prefill.vedtakId)
         assertEquals("GJENLEV", pendata.sakAlder.sakType)
         assertEquals("12345678901", pendata.person.pid)
 
@@ -86,7 +81,7 @@ class PrefillP6000PensionGjenlevTest {
     fun `forventet createVedtakTypePensionWithRule verdi`() {
         val prefill = initialPrefillDataModel("P6000", 68)
         val dataFromPESYS = fraFil("P6000-GP-401.xml")
-        val pendata = dataFromPESYS.getPensjoninformasjonFraVedtak(prefill)
+        val pendata = dataFromPESYS.getPensjoninformasjonFraVedtak(prefill.vedtakId)
 
         assertEquals("03", dataFromPESYS.pensjonVedtak.createVedtakTypePensionWithRule(pendata))
     }
