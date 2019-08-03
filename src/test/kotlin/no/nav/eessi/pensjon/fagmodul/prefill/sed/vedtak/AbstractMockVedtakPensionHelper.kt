@@ -1,6 +1,7 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak
 
 import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
@@ -40,9 +41,6 @@ import kotlin.test.assertEquals
 
 @RunWith(MockitoJUnitRunner::class)
 abstract class AbstractMockVedtakPensionHelper(private val xmlFilename: String) {
-
-    @Mock
-    private lateinit var mockRestTemplate: RestTemplate
 
     protected lateinit var dataFromPESYS: VedtakDataFromPEN
 
@@ -89,6 +87,7 @@ abstract class AbstractMockVedtakPensionHelper(private val xmlFilename: String) 
     }
 
     private fun mockPensjonsinformasjonRestTemplate(responseXMLfilename: String): RestTemplate {
+        val mockRestTemplate = mock<RestTemplate>()
         whenever(mockRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java))).thenReturn(readXMLresponse(responseXMLfilename))
         return mockRestTemplate
     }
