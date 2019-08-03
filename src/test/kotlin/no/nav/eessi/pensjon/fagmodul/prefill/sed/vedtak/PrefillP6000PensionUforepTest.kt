@@ -1,6 +1,5 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak
 
-import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModelMother.initialPrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.PrefillVedtakTestHelper.eessiInformasjon
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.PrefillVedtakTestHelper.generateFakePensjoninformasjonForKSAK
@@ -10,7 +9,6 @@ import no.nav.eessi.pensjon.utils.simpleFormat
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import no.nav.pensjon.v1.trygdetid.V1Trygdetid
 import no.nav.pensjon.v1.trygdetidliste.V1TrygdetidListe
-import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
@@ -21,22 +19,11 @@ import kotlin.test.assertNotNull
 @RunWith(MockitoJUnitRunner::class)
 class PrefillP6000PensionUforepTest {
 
-    lateinit var dataFromPESYS: VedtakDataFromPEN
-    lateinit var prefill: PrefillDataModel
-    lateinit var pendata: Pensjonsinformasjon
-
-    @Before
-    fun setup() {
-        dataFromPESYS = vedtakDataFromPENFraFil("P6000-UT-201.xml")
-
-        prefill = initialPrefillDataModel("P6000", 60)
-
-        pendata = dataFromPESYS.getPensjoninformasjonFraVedtak(prefill)
-    }
-
     @Test
     fun `forventet korrekt utfylling av Pensjon objekt på Uførepensjon`() {
-        prefill = initialPrefillDataModel("P6000", 66)
+        val prefill = initialPrefillDataModel("P6000", 66)
+
+        val dataFromPESYS = vedtakDataFromPENFraFil("P6000-UT-201.xml")
 
         eessiInformasjon.mapEssiInformasjonTilPrefillDataModel(prefill)
 
@@ -89,6 +76,7 @@ class PrefillP6000PensionUforepTest {
 
     @Test
     fun `forventet "08" ved  AvlsagsBegrunnelse på Uførepensjon ved TrygdleListeTom, HENSIKTSMESSIG_BEH`() {
+        val dataFromPESYS = vedtakDataFromPENFraFil("P6000-UT-201.xml")
         val pendata = generateFakePensjoninformasjonForKSAK("UFOREP")
         pendata.vedtak.isBoddArbeidetUtland = true
         pendata.trygdetidListe.trygdetidListe.clear()
@@ -101,40 +89,42 @@ class PrefillP6000PensionUforepTest {
 
     @Test
     fun `forventer "03" på AvlsagsBegrunnelse Gjenlevendepensjon, TrygdleListeTom`() {
-
-        val pendata1 = generateFakePensjoninformasjonForKSAK("UFOREP")
-        pendata1.vedtak.isBoddArbeidetUtland = true
-        pendata1.trygdetidListe.trygdetidListe.clear()
-        pendata1.vilkarsvurderingListe.vilkarsvurderingListe.get(0).resultatHovedytelse = "AVSLAG"
-        val result1 = dataFromPESYS.pensjonVedtak.createAvlsagsBegrunnelse(pendata1)
+        val dataFromPESYS = vedtakDataFromPENFraFil("P6000-UT-201.xml")
+        val pendata = generateFakePensjoninformasjonForKSAK("UFOREP")
+        pendata.vedtak.isBoddArbeidetUtland = true
+        pendata.trygdetidListe.trygdetidListe.clear()
+        pendata.vilkarsvurderingListe.vilkarsvurderingListe.get(0).resultatHovedytelse = "AVSLAG"
+        val result1 = dataFromPESYS.pensjonVedtak.createAvlsagsBegrunnelse(pendata)
         assertEquals("03", result1)
     }
 
     @Test
     fun `forventer at ytelseprMaaned er siste i listen`() {
-        val dataFromPESYS1 = vedtakDataFromPENFraFil("P6000-UT-220.xml")
-
+        val dataFromPESYS = vedtakDataFromPENFraFil("P6000-UT-220.xml")
+        val prefill = initialPrefillDataModel("P6000", 60)
         prefill.vedtakId = "123456789"
-        val pendata = dataFromPESYS1.getPensjoninformasjonFraVedtak(prefill)
+        val pendata = dataFromPESYS.getPensjoninformasjonFraVedtak(prefill)
 
-        val sisteprmnd = dataFromPESYS1.hentSisteYtelsePerMaaned(pendata)
+        val sisteprmnd = dataFromPESYS.hentSisteYtelsePerMaaned(pendata)
 
         assertEquals("2017-05-01", sisteprmnd.fom.simpleFormat())
         assertEquals("7191", sisteprmnd.belop.toString())
-        assertEquals(false, dataFromPESYS1.isMottarMinstePensjonsniva(pendata))
-        assertEquals("7191", dataFromPESYS1.hentYtelseBelop(pendata))
+        assertEquals(false, dataFromPESYS.isMottarMinstePensjonsniva(pendata))
+        assertEquals("7191", dataFromPESYS.hentYtelseBelop(pendata))
 
-        assertEquals(false, dataFromPESYS1.hentVurdertBeregningsmetodeNordisk(pendata))
-        assertEquals("EOS", dataFromPESYS1.hentVinnendeBergeningsMetode(pendata))
+        assertEquals(false, dataFromPESYS.hentVurdertBeregningsmetodeNordisk(pendata))
+        assertEquals("EOS", dataFromPESYS.hentVinnendeBergeningsMetode(pendata))
     }
 
     @Test
     fun `forventet korrekt utregnet ytelsePrMnd på Uforep hvor UT_ORDINER`() {
-        val dataFromPESYS1 = vedtakDataFromPENFraFil("P6000-UT-220.xml")
-        prefill.vedtakId = "123456789"
-        val pendata = dataFromPESYS1.getPensjoninformasjonFraVedtak(prefill)
+        val dataFromPESYS = vedtakDataFromPENFraFil("P6000-UT-220.xml")
 
-        val result = dataFromPESYS1.pensjonVedtak.createBeregningItemList(pendata)
+        val prefill = initialPrefillDataModel("P6000", 60)
+        prefill.vedtakId = "123456789"
+        val pendata = dataFromPESYS.getPensjoninformasjonFraVedtak(prefill)
+
+        val result = dataFromPESYS.pensjonVedtak.createBeregningItemList(pendata)
 
         val json = mapAnyToJson(result, true)
 
@@ -159,19 +149,28 @@ class PrefillP6000PensionUforepTest {
 
     @Test
     fun `forventet createVedtakTypePensionWithRule verdi`() {
-        prefill = initialPrefillDataModel("P6000", 68)
+        val prefill = initialPrefillDataModel("P6000", 68)
+        val dataFromPESYS = vedtakDataFromPENFraFil("P6000-UT-201.xml")
+        val pendata = dataFromPESYS.getPensjoninformasjonFraVedtak(prefill)
+
         val result = dataFromPESYS.pensjonVedtak.createVedtakTypePensionWithRule(pendata)
         assertEquals("02", result)
     }
+
     @Test(expected = IllegalStateException::class)
     fun `preutfylling P6000 feiler ved mangler av vedtakId`() {
-        prefill = initialPrefillDataModel("P6000", 68)
+        val dataFromPESYS = vedtakDataFromPENFraFil("P6000-UT-201.xml")
+
+        val prefill = initialPrefillDataModel("P6000", 68)
         prefill.vedtakId = ""
+
         dataFromPESYS.prefill(prefill)
     }
 
     @Test
     fun `summerTrygdeTid forventet 10 dager, erTrygdeTid forventet til false`() {
+        val dataFromPESYS = vedtakDataFromPENFraFil("P6000-UT-201.xml")
+
         val ttid1 = V1Trygdetid()
         ttid1.fom = PrefillVedtakTestHelper.convertToXMLcal(LocalDate.now().minusDays(50))
         ttid1.tom = PrefillVedtakTestHelper.convertToXMLcal(LocalDate.now().minusDays(40))
@@ -193,6 +192,8 @@ class PrefillP6000PensionUforepTest {
 
     @Test
     fun `summerTrygdeTid forventet 70 dager, erTrygdeTid forventet til true`() {
+        val dataFromPESYS = vedtakDataFromPENFraFil("P6000-UT-201.xml")
+
         val ttid1 = V1Trygdetid()
         ttid1.fom = PrefillVedtakTestHelper.convertToXMLcal(LocalDate.now().minusDays(170))
         ttid1.tom = PrefillVedtakTestHelper.convertToXMLcal(LocalDate.now().minusDays(100))
@@ -212,6 +213,8 @@ class PrefillP6000PensionUforepTest {
 
     @Test
     fun `summerTrygdeTid forventet 15 dager, erTrygdeTid forventet til false`() {
+        val dataFromPESYS = vedtakDataFromPENFraFil("P6000-UT-201.xml")
+
         val trygdetidListe = PrefillVedtakTestHelper.createTrygdelisteTid()
 
         val result = dataFromPESYS.summerTrygdeTid(trygdetidListe)
@@ -228,6 +231,8 @@ class PrefillP6000PensionUforepTest {
 
     @Test
     fun `summerTrygdeTid forventet 500 dager, erTrygdeTid forventet til false`() {
+        val dataFromPESYS = vedtakDataFromPENFraFil("P6000-UT-201.xml")
+
         val ttid1 = V1Trygdetid()
         ttid1.fom = PrefillVedtakTestHelper.convertToXMLcal(LocalDate.now().minusDays(700))
         ttid1.tom = PrefillVedtakTestHelper.convertToXMLcal(LocalDate.now().minusDays(200))
@@ -249,6 +254,8 @@ class PrefillP6000PensionUforepTest {
 
     @Test
     fun `summerTrygdeTid forventet 0`() {
+        val dataFromPESYS = vedtakDataFromPENFraFil("P6000-UT-201.xml")
+
         val fom = LocalDate.now().minusDays(0)
         val tom = LocalDate.now().plusDays(0)
         val trygdetidListe = V1TrygdetidListe()
@@ -262,7 +269,7 @@ class PrefillP6000PensionUforepTest {
 
     @Test(expected = java.lang.IllegalStateException::class)
     fun `feiler ved boddArbeidetUtland ikke sann`() {
-        prefill = initialPrefillDataModel("P6000", personAge = 66)
+        val prefill = initialPrefillDataModel("P6000", personAge = 66)
 
         val resdata = vedtakDataFromPENFraFil("P6000-AP-101.xml")
         resdata.prefill(prefill)
@@ -270,6 +277,7 @@ class PrefillP6000PensionUforepTest {
 
     @Test
     fun `forventer "07" på AvlsagsBegrunnelse IKKE_MOTTATT_DOK`() {
+        val dataFromPESYS = vedtakDataFromPENFraFil("P6000-UT-201.xml")
 
         val pendata = generateFakePensjoninformasjonForKSAK("ALDER")
         pendata.vilkarsvurderingListe.vilkarsvurderingListe.get(0).resultatHovedytelse = "AVSLAG"
