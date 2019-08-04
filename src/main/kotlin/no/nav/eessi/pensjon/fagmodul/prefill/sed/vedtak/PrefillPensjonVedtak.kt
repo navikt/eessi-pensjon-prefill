@@ -23,7 +23,7 @@ import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import no.nav.pensjon.v1.sakalder.V1SakAlder
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import no.nav.pensjon.v1.ytelsepermaaned.V1YtelsePerMaaned as V1YtelsePerMaaned1
+import no.nav.pensjon.v1.ytelsepermaaned.V1YtelsePerMaaned
 
 class PrefillPensjonVedtak {
 
@@ -331,7 +331,7 @@ class PrefillPensjonVedtak {
         return resultList
     }
 
-    private fun createBeregningItem(ytelsePrMnd: V1YtelsePerMaaned1, sakType: KSAK): BeregningItem {
+    private fun createBeregningItem(ytelsePrMnd: V1YtelsePerMaaned, sakType: KSAK): BeregningItem {
         logger.debug("4.1.7         BeregningItem (Repeterbart)")
 
         //val belop = ytelsePrMnd.belop.toString()
@@ -375,7 +375,7 @@ class PrefillPensjonVedtak {
     skal denne sum benyttes hvis ikke skal belop benyttes.
      */
     //4.1.7.3.1
-    private fun createBelop(ytelsePrMnd: V1YtelsePerMaaned1, sakType: KSAK): String {
+    private fun createBelop(ytelsePrMnd: V1YtelsePerMaaned, sakType: KSAK): String {
         logger.debug("4.1.7.3.1         Gross amount")
         //4.1.7.3.1. Gross amount
         val belop = ytelsePrMnd.belop
@@ -402,7 +402,7 @@ class PrefillPensjonVedtak {
         GP grunnpensjon, ST særtillegg, GT garantipensjon,
      */
     //4.1.7.3.3
-    private fun createYtelseskomponentGrunnpensjon(ytelsePrMnd: V1YtelsePerMaaned1, sakType: KSAK): String? {
+    private fun createYtelseskomponentGrunnpensjon(ytelsePrMnd: V1YtelsePerMaaned, sakType: KSAK): String? {
         logger.debug("4.1.7.3.3         Grunnpensjon")
 
         if (KSAK.UFOREP != sakType) {
@@ -421,7 +421,7 @@ class PrefillPensjonVedtak {
         Tilleggspensjon.brutto TP, Inntektspensjon.brutto IP
      */
     //4.1.7.3.4
-    private fun createYtelseskomponentTilleggspensjon(ytelsePrMnd: V1YtelsePerMaaned1, sakType: KSAK): String? {
+    private fun createYtelseskomponentTilleggspensjon(ytelsePrMnd: V1YtelsePerMaaned, sakType: KSAK): String? {
         logger.debug("4.1.7.3.4         Tilleggspensjon")
 
         if (KSAK.UFOREP != sakType) {
@@ -432,7 +432,7 @@ class PrefillPensjonVedtak {
 
 
     //4.1.8
-    private fun createBeregningItemPeriode(ytelsePrMnd: V1YtelsePerMaaned1): Periode {
+    private fun createBeregningItemPeriode(ytelsePrMnd: V1YtelsePerMaaned): Periode {
         logger.debug("4.1.7.1         BeregningItemPeriode")
 
         var tomstr: String? = null
