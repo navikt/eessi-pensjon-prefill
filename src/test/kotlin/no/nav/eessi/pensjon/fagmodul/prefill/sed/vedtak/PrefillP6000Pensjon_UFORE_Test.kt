@@ -1,6 +1,7 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak
 
-import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjonMother.dummyEessiInfo
+import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjonMother
+import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjonMother.standardEessiInfo
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModelMother.initialPrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonHjelper
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonServiceMother.fraFil
@@ -11,16 +12,13 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
 @RunWith(MockitoJUnitRunner::class)
-class PrefillPensjonVedtakFromPEN_UFORE_Test {
+class PrefillP6000Pensjon_UFORE_Test {
 
     @Test
     fun `forventet korrekt utfylling av Pensjon objekt på Uførepensjon`() {
-        val prefill = initialPrefillDataModel("P6000", 66).apply {
-            andreInstitusjon = dummyEessiInfo().asAndreinstitusjonerItem()
-        }
-        val prefillPensjonVedtak = PrefillPensjonVedtakFromPEN(PensjonsinformasjonHjelper(fraFil("P6000-UT-201.xml")))
+        val dataFromPESYS = PensjonsinformasjonHjelper(fraFil("P6000-UT-201.xml"))
 
-        val result = prefillPensjonVedtak.prefill(prefill)
+        val result = PrefillP6000Pensjon.createPensjon(dataFromPESYS, "12312312", standardEessiInfo().asAndreinstitusjonerItem())
 
         assertNotNull(result.vedtak)
         assertNotNull(result.sak)
@@ -65,19 +63,8 @@ class PrefillPensjonVedtakFromPEN_UFORE_Test {
 
     @Test(expected = IllegalStateException::class)
     fun `preutfylling P6000 feiler ved mangler av vedtakId`() {
-        val prefill = initialPrefillDataModel("P6000", 68).apply {
-            vedtakId = ""
-        }
-        val prefillPensjonVedtak = PrefillPensjonVedtakFromPEN(PensjonsinformasjonHjelper(fraFil("P6000-UT-201.xml")))
+        val dataFromPESYS = PensjonsinformasjonHjelper(fraFil("P6000-UT-201.xml"))
 
-        prefillPensjonVedtak.prefill(prefill)
-    }
-
-    @Test(expected = java.lang.IllegalStateException::class)
-    fun `feiler ved boddArbeidetUtland ikke sann`() {
-        val prefill = initialPrefillDataModel("P6000", personAge = 66)
-        val prefillPensjonVedtak = PrefillPensjonVedtakFromPEN(PensjonsinformasjonHjelper(fraFil("P6000-AP-101.xml")))
-
-        prefillPensjonVedtak.prefill(prefill)
+        PrefillP6000Pensjon.createPensjon(dataFromPESYS, "", null)
     }
 }

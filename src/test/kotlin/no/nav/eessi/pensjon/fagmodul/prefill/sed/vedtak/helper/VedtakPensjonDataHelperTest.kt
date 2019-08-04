@@ -1,8 +1,13 @@
-package no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak
+package no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.helper
 
 import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonHjelper
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.PensjonsinformasjonMother
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonServiceMother.fraFil
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.PensjonsinformasjonMother.pensjoninformasjonForSakstype
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.daysAgo
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.daysAhead
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.hjelper.PrefillPensjonVedtak
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.hjelper.VedtakPensjonDataHelper
 import no.nav.eessi.pensjon.utils.simpleFormat
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import no.nav.pensjon.v1.trygdetid.V1Trygdetid
@@ -117,7 +122,7 @@ class VedtakPensjonDataHelperTest {
             vilkarsvurderingListe.vilkarsvurderingListe.get(0).avslagHovedytelse = "IKKE_MOTTATT_DOK"
         }
 
-        assertEquals("07", PrefillPensjonVedtak().createAvlsagsBegrunnelse(pendata))
+        assertEquals("07", PrefillPensjonVedtak.createAvlsagsBegrunnelse(pendata))
     }
 
     @Test

@@ -1,6 +1,8 @@
-package no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak
+package no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.helper
 
 import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonHjelper
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.PensjonsinformasjonMother
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.hjelper.PrefillPensjonVedtak
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonServiceMother.fraFil
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import org.junit.Test
@@ -14,7 +16,7 @@ class PrefillPensjonVedtakTest {
 
         val pendata = dataFromPESYS.hentMedVedtak("someVedtakId")
 
-        assertEquals("01", PrefillPensjonVedtak().createVedtakTypePensionWithRule(pendata))
+        assertEquals("01", PrefillPensjonVedtak.createVedtakTypePensionWithRule(pendata))
     }
 
     @Test
@@ -22,7 +24,7 @@ class PrefillPensjonVedtakTest {
         val dataFromPESYS = PensjonsinformasjonHjelper(fraFil("P6000-GP-401.xml"))
         val pendata = dataFromPESYS.hentMedVedtak("someVedtakId")
 
-        assertEquals("03", PrefillPensjonVedtak().createVedtakTypePensionWithRule(pendata))
+        assertEquals("03", PrefillPensjonVedtak.createVedtakTypePensionWithRule(pendata))
     }
 
     @Test
@@ -30,7 +32,7 @@ class PrefillPensjonVedtakTest {
         val dataFromPESYS = PensjonsinformasjonHjelper(fraFil("P6000-UT-201.xml"))
         val pendata = dataFromPESYS.hentMedVedtak("someVedtakId")
 
-        assertEquals("02", PrefillPensjonVedtak().createVedtakTypePensionWithRule(pendata))
+        assertEquals("02", PrefillPensjonVedtak.createVedtakTypePensionWithRule(pendata))
     }
 
     @Test
@@ -41,7 +43,7 @@ class PrefillPensjonVedtakTest {
             vilkarsvurderingListe.vilkarsvurderingListe.get(0).resultatHovedytelse = "AVSLAG"
         }
 
-        assertEquals("01", PrefillPensjonVedtak().createAvlsagsBegrunnelse(pendata))
+        assertEquals("01", PrefillPensjonVedtak.createAvlsagsBegrunnelse(pendata))
     }
 
     @Test
@@ -52,7 +54,7 @@ class PrefillPensjonVedtakTest {
             vilkarsvurderingListe.vilkarsvurderingListe.get(0).resultatHovedytelse = "AVSLAG"
 
         }
-        assertEquals("01", PrefillPensjonVedtak().createAvlsagsBegrunnelse(pendata1))
+        assertEquals("01", PrefillPensjonVedtak.createAvlsagsBegrunnelse(pendata1))
     }
 
     @Test
@@ -63,7 +65,7 @@ class PrefillPensjonVedtakTest {
             vilkarsvurderingListe.vilkarsvurderingListe.get(0).resultatHovedytelse = "AVSLAG"
         }
 
-        assertEquals("03", PrefillPensjonVedtak().createAvlsagsBegrunnelse(pendata))
+        assertEquals("03", PrefillPensjonVedtak.createAvlsagsBegrunnelse(pendata))
     }
 
     @Test
@@ -72,7 +74,7 @@ class PrefillPensjonVedtakTest {
             vilkarsvurderingListe.vilkarsvurderingListe.get(0).avslagHovedytelse = "UNDER_62"
             vilkarsvurderingListe.vilkarsvurderingListe.get(0).resultatHovedytelse = "AVSLAG"
         }
-        assertEquals("06", PrefillPensjonVedtak().createAvlsagsBegrunnelse(pendata))
+        assertEquals("06", PrefillPensjonVedtak.createAvlsagsBegrunnelse(pendata))
     }
 
     @Test
@@ -82,7 +84,7 @@ class PrefillPensjonVedtakTest {
             vilkarsvurderingListe.vilkarsvurderingListe.get(0).avslagHovedytelse = "IKKE_MOTTATT_DOK"
         }
 
-        assertEquals("07", PrefillPensjonVedtak().createAvlsagsBegrunnelse(pendata))
+        assertEquals("07", PrefillPensjonVedtak.createAvlsagsBegrunnelse(pendata))
     }
 
     @Test
@@ -93,7 +95,7 @@ class PrefillPensjonVedtakTest {
             vilkarsvurderingListe.vilkarsvurderingListe.get(0).resultatHovedytelse = "AVSLAG"
         }
 
-        assertEquals("01", PrefillPensjonVedtak().createAvlsagsBegrunnelse(pendata))
+        assertEquals("01", PrefillPensjonVedtak.createAvlsagsBegrunnelse(pendata))
     }
 
     @Test
@@ -104,7 +106,7 @@ class PrefillPensjonVedtakTest {
             vilkarsvurderingListe.vilkarsvurderingListe.get(0).resultatHovedytelse = "AVSLAG"
         }
 
-        assertEquals("03", PrefillPensjonVedtak().createAvlsagsBegrunnelse(pendata))
+        assertEquals("03", PrefillPensjonVedtak.createAvlsagsBegrunnelse(pendata))
     }
 
     @Test
@@ -117,7 +119,7 @@ class PrefillPensjonVedtakTest {
             vilkarsvurderingListe.vilkarsvurderingListe.get(0).vilkarsvurderingUforetrygd.alder = ""
         }
 
-        assertEquals("08", PrefillPensjonVedtak().createAvlsagsBegrunnelse(pendata))
+        assertEquals("08", PrefillPensjonVedtak.createAvlsagsBegrunnelse(pendata))
     }
 
     @Test
@@ -125,7 +127,7 @@ class PrefillPensjonVedtakTest {
         val dataFromPESYS = PensjonsinformasjonHjelper(fraFil("P6000-UT-220.xml"))
         val pendata = dataFromPESYS.hentMedVedtak("someVedtakId")
 
-        val result = PrefillPensjonVedtak().createBeregningItemList(pendata)
+        val result = PrefillPensjonVedtak.createBeregningItemList(pendata)
 
         val json = mapAnyToJson(result, true)
 

@@ -1,4 +1,4 @@
-package no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak
+package no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.hjelper
 
 import com.google.common.base.Preconditions
 import no.nav.pensjon.v1.avdod.V1Avdod
@@ -16,10 +16,6 @@ import java.time.temporal.ChronoUnit
 object VedtakPensjonDataHelper {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(VedtakPensjonDataHelper::class.java) }
-
-    init {
-        logger.debug("PensjonData")
-    }
 
     fun harBoddArbeidetUtland(pendata: Pensjonsinformasjon): Boolean {
         Preconditions.checkArgument(pendata.vedtak != null, "Vedtak er null")

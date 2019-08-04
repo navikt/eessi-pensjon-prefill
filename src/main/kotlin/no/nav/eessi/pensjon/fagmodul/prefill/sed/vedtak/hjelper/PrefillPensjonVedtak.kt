@@ -1,15 +1,15 @@
-package no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak
+package no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.hjelper
 
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.VedtakPensjonDataHelper.erTrygdeTid
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.VedtakPensjonDataHelper.harBoddArbeidetUtland
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.VedtakPensjonDataHelper.hentVilkarsProvingAvslagHovedYtelse
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.VedtakPensjonDataHelper.hentVilkarsResultatHovedytelse
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.VedtakPensjonDataHelper.hentVilkarsvurderingUforetrygd
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.VedtakPensjonDataHelper.hentVinnendeBergeningsMetode
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.VedtakPensjonDataHelper.hentYtelseskomponentBelop
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.VedtakPensjonDataHelper.isForeldelos
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.VedtakPensjonDataHelper.isMottarMinstePensjonsniva
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.VedtakPensjonDataHelper.isVilkarsvurderingAvslagHovedytelseSamme
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.hjelper.VedtakPensjonDataHelper.erTrygdeTid
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.hjelper.VedtakPensjonDataHelper.harBoddArbeidetUtland
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.hjelper.VedtakPensjonDataHelper.hentVilkarsProvingAvslagHovedYtelse
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.hjelper.VedtakPensjonDataHelper.hentVilkarsResultatHovedytelse
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.hjelper.VedtakPensjonDataHelper.hentVilkarsvurderingUforetrygd
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.hjelper.VedtakPensjonDataHelper.hentVinnendeBergeningsMetode
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.hjelper.VedtakPensjonDataHelper.hentYtelseskomponentBelop
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.hjelper.VedtakPensjonDataHelper.isForeldelos
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.hjelper.VedtakPensjonDataHelper.isMottarMinstePensjonsniva
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.hjelper.VedtakPensjonDataHelper.isVilkarsvurderingAvslagHovedytelseSamme
 import no.nav.eessi.pensjon.fagmodul.sedmodel.AvslagbegrunnelseItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.BeloepBrutto
 import no.nav.eessi.pensjon.fagmodul.sedmodel.BeregningItem
@@ -25,17 +25,13 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import no.nav.pensjon.v1.ytelsepermaaned.V1YtelsePerMaaned
 
-class PrefillPensjonVedtak {
+object PrefillPensjonVedtak {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillPensjonVedtak::class.java) }
 
-    init {
-        logger.debug("PrefillPensjonReduksjon")
-    }
-
     //4.1
     fun createVedtakItem(pendata: Pensjonsinformasjon): VedtakItem {
-
+        logger.debug("PrefillPensjonReduksjon")
         logger.debug("4.1       VedtakItem")
 
         return VedtakItem(

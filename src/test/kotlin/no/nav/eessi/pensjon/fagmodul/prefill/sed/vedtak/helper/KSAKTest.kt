@@ -1,5 +1,6 @@
-package no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak
+package no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.helper
 
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.hjelper.KSAK
 import org.junit.Test
 import kotlin.test.assertEquals
 
