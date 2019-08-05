@@ -3,6 +3,7 @@ package no.nav.eessi.pensjon.fagmodul.prefill.person
 import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjon
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.NavFodselsnummer
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.*
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
@@ -21,6 +22,12 @@ class PrefillPersonEnkeTest : PersonDataFromTPS(
             institutionLand = "NO",
             institutionid = "NO:NAV",
             institutionnavn = "NAV")) {
+
+    @Before
+    fun setup() {
+        preutfyllingTPS = mockPrefillPersonDataFromTPS()
+        prefillNav = PrefillNav(preutfyllingTPS, institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO")
+    }
 
     @Test
     fun `create birthplace as unknown`() {

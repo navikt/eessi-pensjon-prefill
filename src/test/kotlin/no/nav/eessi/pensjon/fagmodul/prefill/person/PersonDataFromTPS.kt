@@ -38,12 +38,6 @@ abstract class PersonDataFromTPS(private val mocktps: Set<MockTPS>, private val 
 
     protected var prefillAdresse = PrefillAdresse(postnummerService, landkodeService)
 
-    @Before
-    fun setup() {
-        preutfyllingTPS = mockPrefillPersonDataFromTPS()
-        prefillNav = PrefillNav(preutfyllingTPS, institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO")
-    }
-
 
     private fun initMockHentPersonResponse(mockTPS: MockTPS, mockTPSset: Set<MockTPS>): HentPersonResponse {
         val resource = ResourceUtils.getFile("classpath:personv3/${mockTPS.mockFile}").readText()
