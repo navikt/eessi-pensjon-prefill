@@ -35,28 +35,9 @@ class PensjonsinformasjonUtlandController(private val timingService: TimingServi
 
     private val landkodeService = LandkodeService()
 
-    //no.nav.eessi.eessifagmodul.pesys.PensjonsinformasjonMottakController
     companion object {
         @JvmStatic
         val mockmap = mutableMapOf<Int, KravUtland>()
-    }
-
-    fun hentAlpha3Land(land: String): String? {
-        return landkodeService.finnLandkode3(land)
-    }
-
-
-    //TODO: vil trenge en innhentSedFraRinaService..
-    //TODO: vil trenge en navSED->PESYS regel.
-
-    fun hentKravUtlandFraMap(buckey: Int): KravUtland {
-        logger.debug("prøver å hente ut KravUtland fra map med key: $buckey")
-        return mockmap.getValue(buckey)
-    }
-
-    fun putKravUtlandMap(buckey: Int, kravUtland: KravUtland) {
-        logger.debug("legger til kravUtland til map, hvis det ikke finnes fra før. med følgende key: $buckey")
-        mockmap.putIfAbsent(buckey, kravUtland)
     }
 
     @ApiOperation(httpMethod = "PUT", value = "legger mock KravUtland til på map med bucid som key, KravUtland som verdi", response = KravUtland::class)
@@ -128,6 +109,24 @@ class PensjonsinformasjonUtlandController(private val timingService: TimingServi
             }
         }
 
+    }
+
+    fun hentAlpha3Land(land: String): String? {
+        return landkodeService.finnLandkode3(land)
+    }
+
+
+    //TODO: vil trenge en innhentSedFraRinaService..
+    //TODO: vil trenge en navSED->PESYS regel.
+
+    fun hentKravUtlandFraMap(buckey: Int): KravUtland {
+        logger.debug("prøver å hente ut KravUtland fra map med key: $buckey")
+        return mockmap.getValue(buckey)
+    }
+
+    fun putKravUtlandMap(buckey: Int, kravUtland: KravUtland) {
+        logger.debug("legger til kravUtland til map, hvis det ikke finnes fra før. med følgende key: $buckey")
+        mockmap.putIfAbsent(buckey, kravUtland)
     }
 
     //funksjon for P2000
