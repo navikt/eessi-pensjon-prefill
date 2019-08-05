@@ -14,8 +14,10 @@ import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModelMother
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PersonDataFromTPS
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.SakHelper.Companion.addRelasjonerBarnOgAvdod
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.NavFodselsnummer
 import no.nav.eessi.pensjon.utils.mapAnyToJson
+import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -63,10 +65,7 @@ class PrefillP2000MedIngendata {
 
     @Test(expected = PensjoninformasjonException::class)
     fun `sjekk av kravsøknad alderpensjon P2000`() {
-        sakHelper.getPensjoninformasjonFraSak(prefillData)
-//        assertNotNull(pendata)
-//        val list = sakHelper.getPensjonSakTypeList(pendata)
-//        assertEquals(1, list.size)
+        sakHelper.hentPensjoninformasjonMedAktoerId(prefillData.aktoerID)
     }
 
     @Test

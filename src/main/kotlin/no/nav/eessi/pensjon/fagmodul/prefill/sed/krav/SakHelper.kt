@@ -11,6 +11,8 @@ import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillPersonDataFromTPS
 import no.nav.eessi.pensjon.fagmodul.sedmodel.*
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjoninformasjonException
 import no.nav.eessi.pensjon.utils.simpleFormat
+import no.nav.pensjon.v1.brukersbarn.V1BrukersBarn
+import no.nav.pensjon.v1.ektefellepartnersamboer.V1EktefellePartnerSamboer
 import no.nav.pensjon.v1.kravhistorikk.V1KravHistorikk
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import no.nav.pensjon.v1.sak.V1Sak
@@ -107,17 +109,10 @@ class SakHelper(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS,
     }
 
     /**
-     *  Henter ut pensjoninformasjon med brukersSakerListe
-     */
-    fun getPensjoninformasjonFraSak(prefillData: PrefillDataModel): Pensjonsinformasjon {
-        return dataFromPEN.hentPensjoninformasjonMedPinid(prefillData)
-    }
-
-    /**
      *  Henter ut v1Sak på brukersSakerListe ut ifra valgt sakid i prefilldatamodel
      */
     fun getPensjonSak(prefillData: PrefillDataModel, pendata: Pensjonsinformasjon): V1Sak {
-        return dataFromPEN.hentMedSak(prefillData, pendata)
+        return dataFromPEN.hentMedSak(prefillData.penSaksnummer, pendata)
     }
 
     /**
@@ -139,15 +134,19 @@ class SakHelper(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS,
      *  Henter pensjondata fra PESYS fyller ut sed.pensjon
      */
     fun createPensjon(prefillData: PrefillDataModel, gjenlevende: Bruker? = null): Pensjon {
-        logger.debug("[${prefillData.getSEDid()}]   Preutfylling PENSJON")
+        val pendata: Pensjonsinformasjon = hentPensjoninformasjonMedAktoerId(prefillData.aktoerID)
 
-        val pendata: Pensjonsinformasjon = getPensjoninformasjonFraSak(prefillData)
+        addRelasjonerBarnOgAvdod(prefillData, pendata)
 
         //hent korrekt sak fra context
         val pensak: V1Sak = getPensjonSak(prefillData, pendata)
 
         //4.0
         return createInformasjonOmYtelserList(prefillData, pensak, gjenlevende)
+    }
+
+    fun hentPensjoninformasjonMedAktoerId(aktoerId: String): Pensjonsinformasjon {
+        return dataFromPEN.hentPersonInformasjonMedAktoerId(aktoerId)
     }
 
     /**
@@ -187,6 +186,32 @@ class SakHelper(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS,
             sed.pensjon = Pensjon()
         } catch (ex: Exception) {
             logger.error(ex.message, ex)
+        }
+    }
+
+    companion object {
+        //henter ut nødvendige familie relasjoner
+        fun addRelasjonerBarnOgAvdod(dataModel: PrefillDataModel, pendata: Pensjonsinformasjon) {
+            val listbarmItem = mutableListOf<V1BrukersBarn>()
+            if (pendata.brukersBarnListe != null) {
+                pendata.brukersBarnListe.brukersBarnListe.forEach {
+                    listbarmItem.add(it)
+                }
+            }
+
+            val listEktefellePartnerFnrlist = mutableListOf<V1EktefellePartnerSamboer>()
+            if (pendata.ektefellePartnerSamboerListe != null) {
+                pendata.ektefellePartnerSamboerListe.ektefellePartnerSamboerListe.forEach {
+                    listEktefellePartnerFnrlist.add(it)
+                }
+            }
+
+            dataModel.partnerFnr = listEktefellePartnerFnrlist
+            dataModel.barnlist = listbarmItem
+
+            dataModel.avdod = pendata.avdod?.avdod ?: ""
+            dataModel.avdodMor = pendata.avdod?.avdodMor ?: ""
+            dataModel.avdodFar = pendata.avdod?.avdodFar ?: ""
         }
     }
 

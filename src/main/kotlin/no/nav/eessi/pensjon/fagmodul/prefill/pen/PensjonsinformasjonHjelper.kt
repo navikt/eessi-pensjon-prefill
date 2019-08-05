@@ -1,10 +1,7 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.pen
 
-import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjoninformasjonException
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonService
-import no.nav.pensjon.v1.brukersbarn.V1BrukersBarn
-import no.nav.pensjon.v1.ektefellepartnersamboer.V1EktefellePartnerSamboer
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import no.nav.pensjon.v1.sak.V1Sak
 import org.slf4j.Logger
@@ -42,8 +39,8 @@ class PensjonsinformasjonHjelper(private val pensjonsinformasjonService: Pensjon
     }
 
     //hjelpe metode for å hente ut date for SAK/krav P2x00 fnr benyttes
-    fun hentPensjoninformasjonMedPinid(prefillData: PrefillDataModel): Pensjonsinformasjon {
-        val aktoer = if (prefillData.aktoerID.isNotBlank()) prefillData.aktoerID else throw IkkeGyldigKallException("Mangler AktoerId")
+    fun hentPersonInformasjonMedAktoerId(aktoerId: String): Pensjonsinformasjon {
+        if (aktoerId.isBlank()) throw IkkeGyldigKallException("Mangler AktoerId")
 
         //**********************************************
         //skal det gjøre en sjekk med en gang på tilgang av data? sjekke person? sjekke pensjon?
@@ -51,49 +48,18 @@ class PensjonsinformasjonHjelper(private val pensjonsinformasjonService: Pensjon
         //hvis det inne inneholder noe data så feiler vi!
         //**********************************************
 
-        val pendata: Pensjonsinformasjon = pensjonsinformasjonService.hentAltPaaAktoerId(aktoer)
+        val pendata: Pensjonsinformasjon = pensjonsinformasjonService.hentAltPaaAktoerId(aktoerId)
         //val pendata: Pensjonsinformasjon = pensjonsinformasjonService.hentAltPaaFnr(fnr)
         if (pendata.brukersSakerListe == null) {
             throw PensjoninformasjonException("Ingen gyldig brukerSakerListe")
         }
-        createRelasjonerBarnOgAvdod(prefillData, pendata)
         return pendata
     }
 
     //hjelpe metode for å hente ut valgt V1SAK på vetak/SAK fnr og sakid benyttes
-    fun hentMedSak(prefillData: PrefillDataModel, pendata: Pensjonsinformasjon): V1Sak {
-        val sakId = if (prefillData.penSaksnummer.isNotBlank()) prefillData.penSaksnummer else throw IkkeGyldigKallException("Mangler sakId")
+    fun hentMedSak(sakId: String, pendata: Pensjonsinformasjon): V1Sak {
+        if (sakId.isBlank()) throw IkkeGyldigKallException("Mangler sakId")
         return pensjonsinformasjonService.hentAltPaaSak(sakId, pendata) ?: throw IkkeGyldigKallException("Finner ingen sak, saktype på valgt sakId")
-    }
-
-    //henter ut nødvendige familie relasjoner
-    fun createRelasjonerBarnOgAvdod(dataModel: PrefillDataModel, pendata: Pensjonsinformasjon): PrefillDataModel {
-        logger.info("Henter ut liste barn fra PESYS")
-
-        val listbarmItem = mutableListOf<V1BrukersBarn>()
-        if (pendata.brukersBarnListe != null) {
-            pendata.brukersBarnListe.brukersBarnListe.forEach {
-                listbarmItem.add(it)
-            }
-        }
-
-        logger.info("Henter ut liste ektefeller/partnere fra PESYS")
-        val listEktefellePartnerFnrlist = mutableListOf<V1EktefellePartnerSamboer>()
-        if (pendata.ektefellePartnerSamboerListe != null) {
-            pendata.ektefellePartnerSamboerListe.ektefellePartnerSamboerListe.forEach {
-                listEktefellePartnerFnrlist.add(it)
-            }
-        }
-
-        dataModel.partnerFnr = listEktefellePartnerFnrlist
-        dataModel.barnlist = listbarmItem
-
-        logger.info("Henter ut avdod relasjoner fra PESYS")
-        dataModel.avdod = pendata.avdod?.avdod ?: ""
-        dataModel.avdodMor = pendata.avdod?.avdodMor ?: ""
-        dataModel.avdodFar = pendata.avdod?.avdodFar ?: ""
-
-        return dataModel
     }
 }
 
