@@ -1,7 +1,8 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.person
 
 import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjon
-import no.nav.eessi.pensjon.fagmodul.prefill.person.PersonDataFromTPS.Companion.generateRandomFnr
+import no.nav.eessi.pensjon.fagmodul.prefill.tps.FodselsnummerMother.generateRandomFnr
+import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModelMother.initialPrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.NavFodselsnummer
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.*
 import org.junit.Before
@@ -67,7 +68,7 @@ class PrefillPersonEnkeTest {
         val prefillNav = PrefillNav(preutfyllingTPS, institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO")
 
         val fnr = personDataFromTPS.getRandomNavFodselsnummer(PersonDataFromTPS.MockTPS.TPSType.PERSON) ?: "02345678901"
-        val prefillData = personDataFromTPS.generatePrefillData("P2000", fnr)
+        val prefillData = initialPrefillDataModel(sedType = "P2000", pinId = fnr, vedtakId = "")
 
         val response = prefillNav.prefill(prefillData)
 
@@ -87,7 +88,7 @@ class PrefillPersonEnkeTest {
         val prefillNav = PrefillNav(preutfyllingTPS, institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO")
 
         val fnr = personDataFromTPS.getRandomNavFodselsnummer(PersonDataFromTPS.MockTPS.TPSType.PERSON) ?: "02345678901"
-        val prefillData = personDataFromTPS.generatePrefillData("P2100", fnr)
+        val prefillData = initialPrefillDataModel(sedType = "P2100", pinId = fnr, vedtakId = "")
         val response = prefillNav.prefill(prefillData)
 
         val sed = prefillData.sed
@@ -125,7 +126,7 @@ class PrefillPersonEnkeTest {
         val prefillNav = PrefillNav(preutfyllingTPS, institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO")
 
         val fnr = personDataFromTPS.getRandomNavFodselsnummer(PersonDataFromTPS.MockTPS.TPSType.PERSON) ?: "02345678901"
-        val prefillData = personDataFromTPS.generatePrefillData("P2200", fnr)
+        val prefillData = initialPrefillDataModel(sedType = "P2200", pinId = fnr, vedtakId = "")
         val response = prefillNav.prefill(prefillData)
 
         val sed = prefillData.sed

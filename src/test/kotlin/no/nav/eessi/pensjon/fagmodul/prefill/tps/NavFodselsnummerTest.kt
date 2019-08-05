@@ -1,6 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.tps
 
-import no.nav.eessi.pensjon.fagmodul.prefill.person.PersonDataFromTPS.Companion.generateRandomFnr
+import no.nav.eessi.pensjon.fagmodul.prefill.tps.FodselsnummerMother.generateRandomFnr
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import java.time.LocalDate

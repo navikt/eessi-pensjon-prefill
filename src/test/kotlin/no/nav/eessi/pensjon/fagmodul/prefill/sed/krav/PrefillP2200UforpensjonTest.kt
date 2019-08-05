@@ -1,12 +1,13 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed.krav
 
-import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
+import no.nav.eessi.pensjon.fagmodul.prefill.tps.FodselsnummerMother.generateRandomFnr
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.setupPersondataFraTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.lesPensjonsdataFraFil
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.readJsonResponse
 import no.nav.eessi.pensjon.fagmodul.prefill.model.Prefill
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
+import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModelMother.initialPrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PersonDataFromTPS
 import no.nav.eessi.pensjon.utils.mapAnyToJson
@@ -19,7 +20,7 @@ import kotlin.test.assertNotNull
 @RunWith(MockitoJUnitRunner::class)
 class PrefillP2200UforpensjonTest {
 
-    private val personFnr = PersonDataFromTPS.generateRandomFnr(67)
+    private val personFnr = generateRandomFnr(67)
 
     lateinit var prefillData: PrefillDataModel
     lateinit var sakHelper: SakHelper
@@ -30,8 +31,8 @@ class PrefillP2200UforpensjonTest {
     fun setup() {
         val persondataFraTPS = setupPersondataFraTPS(setOf(
                 PersonDataFromTPS.MockTPS("Person-20000.json", personFnr, PersonDataFromTPS.MockTPS.TPSType.PERSON),
-                PersonDataFromTPS.MockTPS("Person-21000.json", PersonDataFromTPS.generateRandomFnr(43), PersonDataFromTPS.MockTPS.TPSType.BARN),
-                PersonDataFromTPS.MockTPS("Person-22000.json", PersonDataFromTPS.generateRandomFnr(17), PersonDataFromTPS.MockTPS.TPSType.BARN)
+                PersonDataFromTPS.MockTPS("Person-21000.json", generateRandomFnr(43), PersonDataFromTPS.MockTPS.TPSType.BARN),
+                PersonDataFromTPS.MockTPS("Person-22000.json", generateRandomFnr(17), PersonDataFromTPS.MockTPS.TPSType.BARN)
         ))
         prefillNav = PrefillNav(
                 preutfyllingPersonFraTPS = persondataFraTPS,
@@ -43,15 +44,8 @@ class PrefillP2200UforpensjonTest {
 
         prefill = PrefillP2200(prefillNav, sakHelper)
 
-        prefillData = PrefillDataModel().apply {
-            rinaSubject = "Pensjon"
-            sed = SED("P2200")
+        prefillData = initialPrefillDataModel("P2200", personFnr).apply {
             penSaksnummer = "14069110"
-            vedtakId = "12312312"
-            buc = "P_BUC_99"
-            aktoerID = "123456789"
-            personNr = personFnr
-            institution = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
             partSedAsJson = mutableMapOf("PersonInfo" to readJsonResponse("other/person_informasjon_selvb.json"))
         }
     }

@@ -2,6 +2,7 @@ package no.nav.eessi.pensjon.fagmodul.prefill.sed.krav
 
 import no.nav.eessi.pensjon.fagmodul.prefill.ApiRequest
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
+import no.nav.eessi.pensjon.fagmodul.prefill.tps.FodselsnummerMother.generateRandomFnr
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Nav
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.setupPersondataFraTPS
@@ -9,6 +10,7 @@ import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.lesPensjonsda
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.readJsonResponse
 import no.nav.eessi.pensjon.fagmodul.prefill.model.Prefill
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
+import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModelMother
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PersonDataFromTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.NavFodselsnummer
@@ -23,7 +25,7 @@ import kotlin.test.assertNotNull
 @RunWith(MockitoJUnitRunner::class)
 class PrefillP2000APUtlandInnvTest {
 
-    private val personFnr = PersonDataFromTPS.generateRandomFnr(68)
+    private val personFnr = generateRandomFnr(68)
 
     private val pesysSaksnummer = "14398627"
 
@@ -36,7 +38,7 @@ class PrefillP2000APUtlandInnvTest {
     fun setup() {
         val persondataFraTPS = setupPersondataFraTPS(setOf(
                 PersonDataFromTPS.MockTPS("Person-11000-GIFT.json", personFnr, PersonDataFromTPS.MockTPS.TPSType.PERSON),
-                PersonDataFromTPS.MockTPS("Person-12000-EKTE.json", PersonDataFromTPS.generateRandomFnr(70), PersonDataFromTPS.MockTPS.TPSType.EKTE)
+                PersonDataFromTPS.MockTPS("Person-12000-EKTE.json", generateRandomFnr(70), PersonDataFromTPS.MockTPS.TPSType.EKTE)
         ))
         prefillNav = PrefillNav(
                 preutfyllingPersonFraTPS = persondataFraTPS,
@@ -48,15 +50,8 @@ class PrefillP2000APUtlandInnvTest {
 
         prefill = PrefillP2000(prefillNav, sakHelper)
 
-        prefillData = PrefillDataModel().apply {
-            rinaSubject = "Pensjon"
-            sed = SED("P2000")
+        prefillData = PrefillDataModelMother.initialPrefillDataModel("P2000", personFnr).apply {
             penSaksnummer = pesysSaksnummer
-            vedtakId = "12312312"
-            buc = "P_BUC_99"
-            aktoerID = "123456789"
-            personNr = personFnr
-            institution = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
             partSedAsJson = mutableMapOf(
                     "PersonInfo" to readJsonResponse("other/person_informasjon_selvb.json"),
                     "P4000" to readJsonResponse("other/p4000_trygdetid_part.json"))
