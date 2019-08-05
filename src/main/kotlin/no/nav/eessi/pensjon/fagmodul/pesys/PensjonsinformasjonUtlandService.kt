@@ -77,11 +77,6 @@ class PensjonsinformasjonUtlandService(private val timingService: TimingService)
         return mockmap.keys
     }
 
-    fun hentAlpha3Land(land: String): String? {
-        return landkodeService.finnLandkode3(land)
-    }
-
-
     //TODO: vil trenge en innhentSedFraRinaService..
     //TODO: vil trenge en navSED->PESYS regel.
 
@@ -104,9 +99,7 @@ class PensjonsinformasjonUtlandService(private val timingService: TimingService)
 
         //https://confluence.adeo.no/pages/viewpage.action?pageId=203178268
         //Kode om fra Alpha2 - Alpha3 teng i Avtaleland (eu, eøs og par andre)  og Statborgerskap (alle verdens land)
-        //val statsborgerskapItem = p2000.nav?.bruker?.person?.statsborgerskap?.first()
-        //statsborgerskap = hentAlpha3Land(p2000.nav?.bruker?.person?.statsborgerskap?.first()?.land ?: "N/A") ?: "N/A",
-        val landAlpha3 = hentAlpha3Land(p2000.nav?.bruker?.person?.statsborgerskap?.first()?.land ?: "N/A")
+        val landAlpha3 = landkodeService.finnLandkode3(p2000.nav?.bruker?.person?.statsborgerskap?.first()?.land ?: "N/A")
 
         return KravUtland(
                 //P2000 9.1
@@ -133,13 +126,12 @@ class PensjonsinformasjonUtlandService(private val timingService: TimingService)
                 utland = hentSkjemaUtland(seds),
 
                 //denne må hentes utenfor SED finne orginal avsender-land for BUC/SED..
-                soknadFraLand = hentAlpha3Land("SE"),
+                soknadFraLand = landkodeService.finnLandkode3("SE"),
                 //avtale mellom land? SED sendes kun fra EU/EØS? blir denne alltid true?
                 vurdereTrygdeavtale = true,
 
                 initiertAv = hentInitiertAv(p2000)
         )
-
     }
 
     //finnes verge ktp 7.1 og 7.2 settes VERGE hvis ikke BRUKER
@@ -228,13 +220,11 @@ class PensjonsinformasjonUtlandService(private val timingService: TimingService)
             }
         }
 
-
         filterArbeidUtenNorgeList.forEach {
             val arbeid = it
 
             val landAlpha2 = arbeid.adresseFirma?.land ?: "N/A"
-            val landAlpha3 = hentAlpha3Land(landAlpha2) ?: ""
-
+            val landAlpha3 = landkodeService.finnLandkode3(landAlpha2) ?: ""
 
             val periode = hentFomEllerTomFraPeriode(arbeid.periode)
             var fom: LocalDate? = null
@@ -279,7 +269,7 @@ class PensjonsinformasjonUtlandService(private val timingService: TimingService)
             val bo = it
 
             val landA2 = bo.land ?: "N/A"
-            val landAlpha3 = hentAlpha3Land(bo.land ?: "N/A") ?: ""
+            val landAlpha3 = landkodeService.finnLandkode3(bo.land ?: "N/A") ?: ""
 
             val periode = hentFomEllerTomFraPeriode(bo.periode)
             logger.debug("oppretter bo P4000")
@@ -311,7 +301,6 @@ class PensjonsinformasjonUtlandService(private val timingService: TimingService)
         }
         return list
     }
-
 
     fun hentFomEllerTomFraPeriode(openLukketPeriode: TrygdeTidPeriode?): Periode {
         val open = openLukketPeriode?.openPeriode
@@ -370,7 +359,7 @@ class PensjonsinformasjonUtlandService(private val timingService: TimingService)
             val pin = hentPinIdFraBoArbeidLand(p5000, it.land ?: "N/A")
 
             list.add(Utlandsoppholditem(
-                    land = hentAlpha3Land(it.land ?: "N/A"),
+                    land = landkodeService.finnLandkode3(it.land ?: "N/A"),
                     fom = fom,
                     tom = tom,
                     bodd = true,
@@ -424,7 +413,6 @@ class PensjonsinformasjonUtlandService(private val timingService: TimingService)
             }
         }
     }
-
 
     //pensjon utatksgrad mapping fra P3000 til pesys verdi.
     fun parsePensjonsgrad(pensjonsgrad: String?): String? {
