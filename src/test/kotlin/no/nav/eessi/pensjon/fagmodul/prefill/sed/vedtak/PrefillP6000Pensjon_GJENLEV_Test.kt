@@ -1,7 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak
 
 import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjonMother.standardEessiInfo
-import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModelMother.initialPrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonHjelper
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonServiceMother.fraFil
 import org.junit.Test
@@ -102,9 +101,6 @@ class PrefillP6000Pensjon_GJENLEV_Test {
 
     @Test(expected = IllegalStateException::class)
     fun `preutfylling P6000 feiler ved mangler av vedtakId`() {
-        val prefill = initialPrefillDataModel("P6000", 68).apply {
-            vedtakId = ""
-        }
         val dataFromPESYS = PensjonsinformasjonHjelper(fraFil("P6000-GP-401.xml"))
 
         PrefillP6000Pensjon.createPensjon(dataFromPESYS, "", null)
