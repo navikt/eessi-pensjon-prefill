@@ -317,7 +317,7 @@ class ArchitectureTest {
                 .check(productionClasses)
     }
 
-    @Test @Ignore("Need to fix PrefillPersonEnkeTest first")
+    @Test
     fun `No test classes should use inheritance`() {
         class TestSupportClasses:DescribedPredicate<JavaClass>("test support classes") {
             override fun apply(input: JavaClass?) = input != null &&
@@ -328,7 +328,7 @@ class ArchitectureTest {
 
         noClasses().that().haveSimpleNameEndingWith("Test").or().haveSimpleNameEndingWith("Tests")
                 .should().beAssignableTo(TestSupportClasses())
-                .because("It is hard to understand the logic of tests that inherit from other classes.")
+                .because("it is hard to understand the logic of tests that inherit from other classes.")
                 .check(testClasses)
     }
 }
