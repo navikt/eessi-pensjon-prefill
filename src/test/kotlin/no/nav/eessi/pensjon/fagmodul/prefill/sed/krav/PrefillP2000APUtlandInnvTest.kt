@@ -11,6 +11,7 @@ import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.readJsonRespo
 import no.nav.eessi.pensjon.fagmodul.prefill.model.Prefill
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModelMother
+import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonHjelper
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PersonDataFromTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.NavFodselsnummer
@@ -27,13 +28,13 @@ import kotlin.test.assertNotNull
 class PrefillP2000APUtlandInnvTest {
 
     private val personFnr = generateRandomFnr(68)
-
     private val pesysSaksnummer = "14398627"
 
     lateinit var prefillData: PrefillDataModel
-    lateinit var sakHelper: SakHelper
+
     lateinit var prefill: Prefill<SED>
     lateinit var prefillNav: PrefillNav
+    lateinit var dataFromPEN: PensjonsinformasjonHjelper
 
     @Before
     fun setup() {
@@ -45,11 +46,9 @@ class PrefillP2000APUtlandInnvTest {
                 preutfyllingPersonFraTPS = persondataFraTPS,
                 institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO")
 
-        sakHelper = SakHelper(
-                preutfyllingPersonFraTPS = persondataFraTPS,
-                dataFromPEN = lesPensjonsdataFraFil("P2000-AP-UTL-INNV-24015012345_PlanB.xml"))
+        dataFromPEN = lesPensjonsdataFraFil("P2000-AP-UTL-INNV-24015012345_PlanB.xml")
 
-        prefill = PrefillP2000(prefillNav, sakHelper)
+        prefill = PrefillP2000(prefillNav, dataFromPEN, persondataFraTPS)
 
         prefillData = PrefillDataModelMother.initialPrefillDataModel("P2000", personFnr).apply {
             penSaksnummer = pesysSaksnummer
@@ -61,13 +60,9 @@ class PrefillP2000APUtlandInnvTest {
 
     @Test
     fun `sjekk av kravsøknad alderpensjon P2000`() {
-        val pendata: Pensjonsinformasjon = sakHelper.hentPensjoninformasjonMedAktoerId(prefillData.aktoerID)
+        val pendata: Pensjonsinformasjon = dataFromPEN.hentPersonInformasjonMedAktoerId(prefillData.aktoerID)
 
-        assertNotNull(pendata)
-
-        val list = sakHelper.getPensjonSakTypeList(pendata)
-
-        assertEquals(1, list.size)
+        assertEquals(1, SakHelper.getPensjonSakTypeList(pendata).size)
     }
 
     @Test //(expected = MangelfulleInndataException::class)

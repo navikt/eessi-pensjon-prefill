@@ -7,9 +7,7 @@ import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.KravHistorikkHelper.hentKr
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.KravHistorikkHelper.hentKravHistorikkMedKravStatusTilBehandling
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.KravHistorikkHelper.hentKravHistorikkSisteRevurdering
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.NavFodselsnummer
-import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillPersonDataFromTPS
 import no.nav.eessi.pensjon.fagmodul.sedmodel.*
-import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjoninformasjonException
 import no.nav.eessi.pensjon.utils.simpleFormat
 import no.nav.pensjon.v1.brukersbarn.V1BrukersBarn
 import no.nav.pensjon.v1.ektefellepartnersamboer.V1EktefellePartnerSamboer
@@ -26,8 +24,7 @@ import org.springframework.stereotype.Component
  * Hjelpe klasse for sak som fyller ut NAV-SED-P2000 med pensjondata fra PESYS.
  */
 @Component
-class SakHelper(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS,
-                private val dataFromPEN: PensjonsinformasjonHjelper) {
+object SakHelper {
     private val logger: Logger by lazy { LoggerFactory.getLogger(SakHelper::class.java) }
 
     /**
@@ -48,11 +45,13 @@ class SakHelper(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS,
      *  «Førstegangsbehandling bosatt utland» eller «Mellombehandling».
      *  Obs, krav av typen «Førstegangsbehandling kun utland» eller Sluttbehandling kun utland» gjelder ikke norsk ytelse.
      */
-    fun createInformasjonOmYtelserList(pensak: V1Sak,
-                                       gjenlevende: Bruker? = null,
-                                       personNr: String,
-                                       penSaksnummer: String,
-                                       andreinstitusjonerItem: AndreinstitusjonerItem?): Pensjon {
+    fun createPensjon(personNr: String,
+                      penSaksnummer: String,
+                      gjenlevende: Bruker? = null,
+                      pendata: Pensjonsinformasjon,
+                      andreinstitusjonerItem: AndreinstitusjonerItem?): Pensjon {
+        val pensak: V1Sak = PensjonsinformasjonHjelper.finnSak(penSaksnummer, pendata)
+
         logger.debug("4.1           Informasjon om ytelser")
 
         val spesialStatusList = listOf(Kravstatus.TIL_BEHANDLING.name)
@@ -125,12 +124,7 @@ class SakHelper(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS,
         return ksaklist
     }
 
-    /**
-     *  Henter pensjondata fra PESYS fyller ut sed.pensjon
-     */
-    fun createPensjon(prefillData: PrefillDataModel, gjenlevende: Bruker? = null): Pensjon {
-        val pendata: Pensjonsinformasjon = hentPensjoninformasjonMedAktoerId(prefillData.aktoerID)
-
+    fun addRelasjonerBarnOgAvdod(prefillData: PrefillDataModel, pendata: Pensjonsinformasjon) {
         prefillData.apply {
             partnerFnr = mutableListOf<V1EktefellePartnerSamboer>().apply {
                 if (pendata.ektefellePartnerSamboerListe != null) {
@@ -150,64 +144,6 @@ class SakHelper(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS,
             avdod = pendata.avdod?.avdod ?: ""
             avdodMor = pendata.avdod?.avdodMor ?: ""
             avdodFar = pendata.avdod?.avdodFar ?: ""
-        }
-
-        //hent korrekt sak fra context
-        val pensak: V1Sak = getPensjonSak(pendata, prefillData.penSaksnummer)
-
-        //4.0
-        return createInformasjonOmYtelserList(pensak, gjenlevende, prefillData.personNr, prefillData.penSaksnummer, prefillData.andreInstitusjon)
-    }
-
-    fun hentPensjoninformasjonMedAktoerId(aktoerId: String): Pensjonsinformasjon {
-        return dataFromPEN.hentPersonInformasjonMedAktoerId(aktoerId)
-    }
-
-    /**
-     *  Henter ut v1Sak på brukersSakerListe ut ifra valgt sakid i prefilldatamodel
-     */
-    fun getPensjonSak(pendata: Pensjonsinformasjon, penSaksnummer: String): V1Sak {
-        return PensjonsinformasjonHjelper.finnSak(penSaksnummer, pendata)
-    }
-
-
-    /**
-     *  fylles ut kun når vi har etterlatt etterlattPinID.
-     *  noe vi må få fra PSAK. o.l
-     */
-    fun createGjenlevende(prefillData: PrefillDataModel): Bruker? {
-        var gjenlevende: Bruker? = null
-        if (prefillData.erGyldigEtterlatt()) {
-            logger.debug("          Utfylling gjenlevende (etterlatt)")
-            gjenlevende = preutfyllingPersonFraTPS.prefillBruker(prefillData.personNr)
-        }
-        return gjenlevende
-    }
-
-    fun hentPensjonsdata(prefillData: PrefillDataModel, sed: SED) {
-        try {
-            if (prefillData.kanFeltSkippes("PENSED")) {
-                val pensjon = createPensjon(prefillData)
-                //vi skal ha blank pensjon ved denne toggle
-                //vi må ha med kravdato
-                sed.pensjon = Pensjon(kravDato = pensjon.kravDato)
-
-                //henter opp pensjondata
-            } else {
-
-                //gjenlevende hvis det finnes..
-                val gjenlevende = createGjenlevende(prefillData)
-
-                val pensjon = createPensjon(prefillData, gjenlevende)
-
-                //legger pensjon på sed (få med oss gjenlevende/avdød)
-                sed.pensjon = pensjon
-            }
-        } catch (pen: PensjoninformasjonException) {
-            logger.error(pen.message)
-            sed.pensjon = Pensjon()
-        } catch (ex: Exception) {
-            logger.error(ex.message, ex)
         }
     }
 

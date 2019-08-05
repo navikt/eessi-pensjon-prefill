@@ -7,6 +7,7 @@ import no.nav.eessi.pensjon.fagmodul.sedmodel.Nav
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.fagmodul.prefill.model.Prefill
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
+import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonHjelper
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PersonDataFromTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.setupPersondataFraTPS
@@ -33,6 +34,7 @@ class PrefillP2000_AP_LOP_REVUTest {
     lateinit var sakHelper: SakHelper
     lateinit var prefill: Prefill<SED>
     lateinit var prefillNav: PrefillNav
+    lateinit var dataFromPEN: PensjonsinformasjonHjelper
 
     @Before
     fun setup() {
@@ -45,11 +47,9 @@ class PrefillP2000_AP_LOP_REVUTest {
                 preutfyllingPersonFraTPS = persondataFraTPS,
                 institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO")
 
-        sakHelper = SakHelper(
-                preutfyllingPersonFraTPS = persondataFraTPS,
-                dataFromPEN = lesPensjonsdataFraFil("P2000-AP-LP-RVUR-20541862.xml"))
+        dataFromPEN = lesPensjonsdataFraFil("P2000-AP-LP-RVUR-20541862.xml")
 
-        prefill = PrefillP2000(prefillNav, sakHelper)
+        prefill = PrefillP2000(prefillNav, dataFromPEN, persondataFraTPS)
 
         prefillData = PrefillDataModel().apply {
             rinaSubject = "Pensjon"
@@ -68,13 +68,9 @@ class PrefillP2000_AP_LOP_REVUTest {
 
     @Test
     fun `sjekk av kravsøknad alderpensjon P2000`() {
-        val pendata: Pensjonsinformasjon = sakHelper.hentPensjoninformasjonMedAktoerId(prefillData.aktoerID)
+        val pendata: Pensjonsinformasjon = dataFromPEN.hentPersonInformasjonMedAktoerId(prefillData.aktoerID)
 
-        assertNotNull(pendata)
-
-        val list = sakHelper.getPensjonSakTypeList(pendata)
-
-        assertEquals(1, list.size)
+        assertEquals(1, SakHelper.getPensjonSakTypeList(pendata).size)
     }
 
     @Test

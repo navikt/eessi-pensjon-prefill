@@ -6,6 +6,7 @@ import no.nav.eessi.pensjon.fagmodul.sedmodel.Pensjon
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.model.ValidationException
+import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonHjelper
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillPersonDataFromTPS
 import org.junit.Before
@@ -21,7 +22,13 @@ import org.mockito.junit.MockitoJUnitRunner
     lateinit var prefillNav: PrefillNav
 
     @Mock
-    lateinit var kravdata: SakHelper
+    lateinit var dataFromPEN: PensjonsinformasjonHjelper
+
+    @Mock
+    lateinit var persondataFraTPS: PrefillPersonDataFromTPS
+
+    @Mock
+    lateinit var sakHelper: SakHelper
 
     @Mock
     lateinit var prefillPersonDataFromTPS: PrefillPersonDataFromTPS
@@ -30,7 +37,7 @@ import org.mockito.junit.MockitoJUnitRunner
     fun before() {
         prefillNav = PrefillNav(prefillPersonDataFromTPS,
                 institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO")
-        prefillP2000 = PrefillP2000(prefillNav, kravdata)
+        prefillP2000 = PrefillP2000(prefillNav, dataFromPEN, persondataFraTPS)
     }
 
     @Test(expected = ValidationException::class)

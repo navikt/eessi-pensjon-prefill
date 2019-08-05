@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class PrefillFactory(private val prefillNav: PrefillNav,
-                     dataFromTPS: PrefillPersonDataFromTPS,
+                     private val dataFromTPS: PrefillPersonDataFromTPS,
                      private val eessiInformasjon: EessiInformasjon,
                      private val sakHelper: SakHelper,
                      private val dataFromPEN: PensjonsinformasjonHjelper) {
@@ -37,16 +37,16 @@ class PrefillFactory(private val prefillNav: PrefillNav,
         return when (sedValue) {
             //Status hva gjendstår
             SEDType.P6000 -> {
-                PrefillP6000(prefillNav, sakHelper, eessiInformasjon, dataFromPEN)
+                PrefillP6000(prefillNav, eessiInformasjon, dataFromPEN, dataFromTPS)
             }
             //Status hva gjendstår
             SEDType.P2000 -> {
                 //PrefillDefaultSED(prefillPerson)
-                PrefillP2000(prefillNav, sakHelper)
+                PrefillP2000(prefillNav, dataFromPEN, dataFromTPS)
             }
             //Status hva gjendstår
             SEDType.P2200 -> {
-                PrefillP2200(prefillNav, sakHelper)
+                PrefillP2200(prefillNav, dataFromPEN, dataFromTPS)
             }
             SEDType.P2100 -> {
                 PrefillP2100()

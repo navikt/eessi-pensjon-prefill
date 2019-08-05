@@ -11,6 +11,7 @@ import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.readJsonRespo
 import no.nav.eessi.pensjon.fagmodul.prefill.model.Prefill
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModelMother.initialPrefillDataModel
+import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonHjelper
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PersonDataFromTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.NavFodselsnummer
@@ -31,9 +32,9 @@ class PrefillP2000_AP_LOP_UTLANDTest {
     private val pesysSaksnummer = "21644722"
 
     lateinit var prefillData: PrefillDataModel
-    lateinit var sakHelper: SakHelper
     lateinit var prefill: Prefill<SED>
     lateinit var prefillNav: PrefillNav
+    lateinit var dataFromPEN: PensjonsinformasjonHjelper
 
     @Before
     fun setup() {
@@ -45,11 +46,9 @@ class PrefillP2000_AP_LOP_UTLANDTest {
                 preutfyllingPersonFraTPS = persondataFraTPS,
                 institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO")
 
-        sakHelper = SakHelper(
-                preutfyllingPersonFraTPS = persondataFraTPS,
-                dataFromPEN = lesPensjonsdataFraFil("AP-LOP-21644722.xml"))
+        dataFromPEN = lesPensjonsdataFraFil("AP-LOP-21644722.xml")
 
-        prefill = PrefillP2000(prefillNav, sakHelper)
+        prefill = PrefillP2000(prefillNav, dataFromPEN, persondataFraTPS)
 
         prefillData = initialPrefillDataModel("P2000", personFnr).apply {
             penSaksnummer = pesysSaksnummer
@@ -61,13 +60,9 @@ class PrefillP2000_AP_LOP_UTLANDTest {
 
     @Test
     fun `sjekk av kravsøknad alderpensjon P2000`() {
-        val pendata: Pensjonsinformasjon = sakHelper.hentPensjoninformasjonMedAktoerId(prefillData.aktoerID)
+        val pendata: Pensjonsinformasjon = dataFromPEN.hentPersonInformasjonMedAktoerId(prefillData.aktoerID)
 
-        assertNotNull(pendata)
-
-        val list = sakHelper.getPensjonSakTypeList(pendata)
-
-        assertEquals(1, list.size)
+        assertEquals(1, SakHelper.getPensjonSakTypeList(pendata).size)
     }
 
     @Test

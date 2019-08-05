@@ -16,7 +16,11 @@ class PrefillP6000Pensjon_ALDER_Test {
     fun `forventet korrekt utfylling av Pensjon objekt på Alderpensjon`() {
         val dataFromPESYS = PensjonsinformasjonHjelper(fraFil("P6000-APUtland-301.xml"))
 
-        val result = PrefillP6000Pensjon.createPensjon(dataFromPESYS, "12312312", standardEessiInfo().asAndreinstitusjonerItem())
+        val result = PrefillP6000Pensjon.createPensjon(
+                dataFromPESYS = dataFromPESYS,
+                gjenlevende = null,
+                vedtakId = "12312312",
+                andreinstitusjonerItem = standardEessiInfo().asAndreinstitusjonerItem())
 
         assertNotNull(result.vedtak)
         assertNotNull(result.sak)
@@ -63,14 +67,14 @@ class PrefillP6000Pensjon_ALDER_Test {
     fun `preutfylling P6000 feiler ved mangler av vedtakId`() {
         val dataFromPESYS = PensjonsinformasjonHjelper(fraFil("P6000-APUtland-301.xml"))
 
-        PrefillP6000Pensjon.createPensjon(dataFromPESYS, "", null)
+        PrefillP6000Pensjon.createPensjon(dataFromPESYS, null,"", null)
     }
 
     @Test(expected = java.lang.IllegalStateException::class)
     fun `feiler ved boddArbeidetUtland ikke sann`() {
         val dataFromPESYS = PensjonsinformasjonHjelper(fraFil("P6000-AP-101.xml"))
 
-        PrefillP6000Pensjon.createPensjon(dataFromPESYS, "12312312", null)
+        PrefillP6000Pensjon.createPensjon(dataFromPESYS, null,"12312312", null)
     }
 
 }
