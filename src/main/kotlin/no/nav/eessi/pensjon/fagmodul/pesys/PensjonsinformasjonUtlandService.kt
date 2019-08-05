@@ -2,6 +2,7 @@ package no.nav.eessi.pensjon.fagmodul.pesys
 
 import no.nav.eessi.pensjon.fagmodul.metrics.getCounter
 import no.nav.eessi.pensjon.fagmodul.models.SEDType
+import no.nav.eessi.pensjon.fagmodul.pesys.RinaTilPenMapper.parsePensjonsgrad
 import no.nav.eessi.pensjon.fagmodul.pesys.mockup.MockSED001
 import no.nav.eessi.pensjon.fagmodul.sedmodel.*
 import no.nav.eessi.pensjon.metrics.TimingService
@@ -412,19 +413,6 @@ class PensjonsinformasjonUtlandService(private val timingService: TimingService)
                     else -> SED("ERROR")
                 }
             }
-        }
-    }
-
-    //pensjon utatksgrad mapping fra P3000 til pesys verdi.
-    fun parsePensjonsgrad(pensjonsgrad: String?): String? {
-        return when (pensjonsgrad) {
-            "01" -> "20"
-            "02" -> "40"
-            "03" -> "50"
-            "04" -> "60"
-            "05" -> "80"
-            "06" -> "100"
-            else -> null
         }
     }
 }
