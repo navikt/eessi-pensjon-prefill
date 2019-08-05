@@ -1,4 +1,4 @@
-package no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak
+package no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.hjelper
 
 import com.google.common.base.Preconditions
 import no.nav.pensjon.v1.avdod.V1Avdod
@@ -13,21 +13,9 @@ import org.slf4j.LoggerFactory
 import java.time.ZoneId
 import java.time.temporal.ChronoUnit
 
-abstract class VedtakPensjonData {
+object VedtakPensjonDataHelper {
 
-    private val logger: Logger by lazy { LoggerFactory.getLogger(VedtakPensjonData::class.java) }
-
-    //K_SAK_T Kodeverk fra PESYS
-    enum class KSAK {
-        ALDER,
-        UFOREP,
-        GJENLEV,
-        BARNEP;
-    }
-
-    init {
-        logger.debug("PensjonData")
-    }
+    private val logger: Logger by lazy { LoggerFactory.getLogger(VedtakPensjonDataHelper::class.java) }
 
     fun harBoddArbeidetUtland(pendata: Pensjonsinformasjon): Boolean {
         Preconditions.checkArgument(pendata.vedtak != null, "Vedtak er null")

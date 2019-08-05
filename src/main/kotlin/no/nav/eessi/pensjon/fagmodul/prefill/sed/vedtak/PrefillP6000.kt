@@ -11,11 +11,9 @@ import org.slf4j.LoggerFactory
 
 class PrefillP6000(private val sakHelper: SakHelper,
                    private val eessiInfo: EessiInformasjon,
-                   dataFromPESYS: PensjonsinformasjonHjelper) : Prefill<SED> {
+                   private val dataFromPESYS: PensjonsinformasjonHjelper) : Prefill<SED> {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillP6000::class.java) }
-
-    private var vedtakPensiondata: VedtakDataFromPEN = VedtakDataFromPEN(dataFromPESYS)
 
     override fun prefill(prefillData: PrefillDataModel): SED {
         val sedId = prefillData.getSEDid()
@@ -27,15 +25,14 @@ class PrefillP6000(private val sakHelper: SakHelper,
         val sed = prefillData.sed
 
         logger.info("Henter ut lokal kontakt, institusjon (NAV Utland)")
-        eessiInfo.mapEssiInformasjonTilPrefillDataModel(prefillData)
+        prefillData.andreInstitusjon = eessiInfo.asAndreinstitusjonerItem()
         logger.info("Andreinstitusjoner: ${prefillData.andreInstitusjon} ")
 
         logger.debug("Henter opp Persondata/Gjenlevende fra TPS")
         val gjenlevende = sakHelper.createGjenlevende(prefillData)
 
         logger.debug("Henter opp Pernsjondata fra PESYS")
-        val pensjon = vedtakPensiondata.prefill(prefillData)
-        sed.pensjon = pensjon
+        sed.pensjon = PrefillP6000Pensjon.createPensjon(dataFromPESYS, prefillData.vedtakId, prefillData.andreInstitusjon)
 
         logger.debug("Henter opp Persondata fra TPS")
         sed.nav = sakHelper.createNav(prefillData)

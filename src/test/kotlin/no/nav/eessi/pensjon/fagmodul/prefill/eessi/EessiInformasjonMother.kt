@@ -1,0 +1,13 @@
+package no.nav.eessi.pensjon.fagmodul.prefill.eessi
+
+object EessiInformasjonMother {
+    fun standardEessiInfo() = EessiInformasjon(
+            institutionid = "NO:noinst002",
+            institutionnavn = "NOINST002, NO INST002, NO",
+            institutionGate = "Postboks 6600 Etterstad TEST",
+            institutionBy = "Oslo",
+            institutionPostnr = "0607",
+            institutionLand = "NO"
+    )
+
+}

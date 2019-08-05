@@ -20,3 +20,10 @@ fun createXMLCalendarFromString(dateStr: String): XMLGregorianCalendar {
     gcal.timeInMillis = time.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
     return DatatypeFactory.newInstance().newXMLGregorianCalendar(gcal)
 }
+
+fun convertToXMLocal(time: LocalDate): XMLGregorianCalendar {
+    val gcal = GregorianCalendar()
+    gcal.setTime(Date.from(time.atStartOfDay(ZoneId.systemDefault()).toInstant()))
+    val xgcal = DatatypeFactory.newInstance().newXMLGregorianCalendar(gcal)
+    return xgcal
+}

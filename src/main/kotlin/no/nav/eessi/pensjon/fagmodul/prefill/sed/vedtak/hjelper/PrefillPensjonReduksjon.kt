@@ -1,22 +1,20 @@
-package no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak
+package no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.hjelper
 
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.hjelper.VedtakPensjonDataHelper.hentGrunnPersjon
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.hjelper.VedtakPensjonDataHelper.hentTilleggsPensjon
 import no.nav.eessi.pensjon.fagmodul.sedmodel.ReduksjonItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.VirkningsdatoItem
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-class PrefillPensjonReduksjon : VedtakPensjonData() {
+object PrefillPensjonReduksjon {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillPensjonReduksjon::class.java) }
 
-    init {
-        logger.debug("PrefillPensjonReduksjon")
-    }
-
     //5.1
     fun createReduksjon(pendata: Pensjonsinformasjon): List<ReduksjonItem>? {
-
+        logger.debug("PrefillPensjonReduksjon")
         logger.debug("5.1       Reduksjon")
 
         val reduksjon = ReduksjonItem(

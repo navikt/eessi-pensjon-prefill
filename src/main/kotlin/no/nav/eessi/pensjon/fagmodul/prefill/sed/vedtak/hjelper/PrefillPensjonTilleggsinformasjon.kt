@@ -1,25 +1,23 @@
-package no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak
+package no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.hjelper
 
 import no.nav.eessi.pensjon.fagmodul.sedmodel.AndreinstitusjonerItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Opphoer
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Tilleggsinformasjon
-import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.hjelper.VedtakPensjonDataHelper.hentVilkarsResultatHovedytelse
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.hjelper.VedtakPensjonDataHelper.hentYtelseBelop
 import no.nav.eessi.pensjon.utils.simpleFormat
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-class PrefillPensjonTilleggsinformasjon : VedtakPensjonData() {
+object PrefillPensjonTilleggsinformasjon {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillPensjonTilleggsinformasjon::class.java) }
 
-    init {
-        logger.debug("PrefillPensjonTilleggsinformasjon")
-    }
-
     //6.2
-    fun createTilleggsinformasjon(pendata: Pensjonsinformasjon, prefillData: PrefillDataModel): Tilleggsinformasjon {
+    fun createTilleggsinformasjon(pendata: Pensjonsinformasjon, andreinstitusjonerItem: AndreinstitusjonerItem?): Tilleggsinformasjon {
 
+        logger.debug("PrefillPensjonTilleggsinformasjon")
         logger.debug("6.2           Tilleggsinformasjon")
         return Tilleggsinformasjon(
 
@@ -28,7 +26,7 @@ class PrefillPensjonTilleggsinformasjon : VedtakPensjonData() {
 
                 //6.5.2.1
                 //På logges EnhetID /NAV avsender (PENSJO, UTFORP, ETTERLATP)?
-                andreinstitusjoner = createAndreinstitusjonerItem(pendata, prefillData),
+                andreinstitusjoner = createAndreinstitusjonerItem(andreinstitusjonerItem),
 
                 //6.5.2 - 6.6  $pensjon.tilleggsinformasjon.artikkel48
                 //05.10.2018 -
@@ -88,11 +86,10 @@ class PrefillPensjonTilleggsinformasjon : VedtakPensjonData() {
 
 
     //6.5.2.1
-    private fun createAndreinstitusjonerItem(pendata: Pensjonsinformasjon, prefillData: PrefillDataModel): List<AndreinstitusjonerItem>? {
+    private fun createAndreinstitusjonerItem(andreinstitusjonerItem: AndreinstitusjonerItem?): List<AndreinstitusjonerItem>? {
         logger.debug("6.5.2.1       AndreinstitusjonerItem (review address)")
-        val data = prefillData.andreInstitusjon ?: return null
+        val data = andreinstitusjonerItem ?: return null
         return listOf(data)
-        //return null
     }
 
     //6.6

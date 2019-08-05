@@ -1,4 +1,4 @@
-package no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak
+package no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.hjelper
 
 import no.nav.eessi.pensjon.fagmodul.sedmodel.KravtypeItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Sak
@@ -6,16 +6,13 @@ import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-class PrefillPensjonSak : VedtakPensjonData() {
+object PrefillPensjonSak {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillPensjonSak::class.java) }
 
-    init {
-        logger.debug("PrefillPensjonReduksjon")
-    }
-
     //6.1..
     fun createSak(pendata: Pensjonsinformasjon): Sak {
+        logger.debug("PrefillPensjonReduksjon")
 
         logger.debug("6         Sak")
         return Sak(

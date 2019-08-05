@@ -2,8 +2,12 @@ package no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak
 
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Pensjon
 import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonHjelper
-import no.nav.eessi.pensjon.fagmodul.prefill.model.Prefill
-import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.hjelper.VedtakPensjonDataHelper.harBoddArbeidetUtland
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.hjelper.PrefillPensjonReduksjon
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.hjelper.PrefillPensjonSak
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.hjelper.PrefillPensjonTilleggsinformasjon
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.hjelper.PrefillPensjonVedtak
+import no.nav.eessi.pensjon.fagmodul.sedmodel.AndreinstitusjonerItem
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -15,34 +19,12 @@ import java.lang.IllegalStateException
 /**
  * Hjelpe klasse for utfyller ut NAV-SED-P6000 med pensjondata med vedtak fra PESYS.
  */
-class VedtakDataFromPEN(private val dataFromPESYS: PensjonsinformasjonHjelper) : VedtakPensjonData(), Prefill<Pensjon> {
+object PrefillP6000Pensjon {
 
-    private val logger: Logger by lazy { LoggerFactory.getLogger(VedtakDataFromPEN::class.java) }
+    private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillP6000Pensjon::class.java) }
 
-    private val reduksjon: PrefillPensjonReduksjon
-    val tilleggsinformasjon: PrefillPensjonTilleggsinformasjon
-    private val pensjonSak: PrefillPensjonSak
-    val pensjonVedtak: PrefillPensjonVedtak
-
-    init {
-        logger.debug("\nLaster opp hjelperklasser for preutfylling.")
-
-        reduksjon = PrefillPensjonReduksjon()
-        tilleggsinformasjon = PrefillPensjonTilleggsinformasjon()
-        pensjonSak = PrefillPensjonSak()
-        pensjonVedtak = PrefillPensjonVedtak()
-
-        logger.debug("Ferdig med å laste inn hjelpeklasser\n")
-    }
-
-    //henter ut felles pen-data og kun pensjoninformasjon med vedtak
-    fun getPensjoninformasjonFraVedtak(prefillData: PrefillDataModel): Pensjonsinformasjon {
-        return dataFromPESYS.hentMedVedtak(prefillData)
-    }
-
-    override fun prefill(prefillData: PrefillDataModel): Pensjon {
-        //Kast exception dersom vedtakId mangler
-        val vedtakId = if (prefillData.vedtakId.isNotBlank()) prefillData.vedtakId else throw IkkeGyldigStatusPaaSakException("Mangler vedtakID")
+    fun createPensjon(dataFromPESYS: PensjonsinformasjonHjelper, vedtakId: String, andreinstitusjonerItem: AndreinstitusjonerItem?): Pensjon {
+        if (vedtakId.isBlank()) throw IkkeGyldigStatusPaaSakException("Mangler vedtakID")
 
         logger.debug("----------------------------------------------------------")
         val starttime = System.nanoTime()
@@ -50,7 +32,7 @@ class VedtakDataFromPEN(private val dataFromPESYS: PensjonsinformasjonHjelper) :
         logger.debug("Starter [vedtak] Preutfylling Utfylling Data")
 
         logger.debug("vedtakId: $vedtakId")
-        val pendata: Pensjonsinformasjon = getPensjoninformasjonFraVedtak(prefillData)
+        val pendata: Pensjonsinformasjon = dataFromPESYS.hentMedVedtak(vedtakId)
         logger.debug("Henter pensjondata fra PESYS")
 
         val endtime = System.nanoTime()
@@ -68,15 +50,16 @@ class VedtakDataFromPEN(private val dataFromPESYS: PensjonsinformasjonHjelper) :
         }
 
         //prefill Pensjon obj med data fra PESYS. (pendata)
+        logger.debug("4.1       VedtakItem")
         return Pensjon(
                 //4.1
-                vedtak = listOf(pensjonVedtak.createVedtakItem(pendata)),
+                vedtak = listOf(PrefillPensjonVedtak.createVedtakItem(pendata)),
                 //5.1
-                reduksjon = reduksjon.createReduksjon(pendata),
+                reduksjon = PrefillPensjonReduksjon.createReduksjon(pendata),
                 //6.1
-                sak = pensjonSak.createSak(pendata),
+                sak = PrefillPensjonSak.createSak(pendata),
                 //6.x
-                tilleggsinformasjon = tilleggsinformasjon.createTilleggsinformasjon(pendata, prefillData)
+                tilleggsinformasjon = PrefillPensjonTilleggsinformasjon.createTilleggsinformasjon(pendata, andreinstitusjonerItem)
         )
     }
 }
