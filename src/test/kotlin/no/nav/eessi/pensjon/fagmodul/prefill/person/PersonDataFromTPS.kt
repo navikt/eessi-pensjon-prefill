@@ -23,7 +23,7 @@ import org.mockito.Mock
 import org.springframework.util.ResourceUtils
 import java.time.LocalDate
 
-abstract class PersonDataFromTPS(private val mocktps: Set<MockTPS>, private val eessiInformasjon: EessiInformasjon) {
+class PersonDataFromTPS(private val mocktps: Set<MockTPS>, private val eessiInformasjon: EessiInformasjon) {
 
     private fun initMockHentPersonResponse(mockTPS: MockTPS, mockTPSset: Set<MockTPS>): HentPersonResponse {
         val resource = ResourceUtils.getFile("classpath:personv3/${mockTPS.mockFile}").readText()
