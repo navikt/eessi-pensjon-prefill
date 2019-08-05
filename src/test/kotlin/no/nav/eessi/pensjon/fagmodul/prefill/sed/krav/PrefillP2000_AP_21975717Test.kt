@@ -32,6 +32,7 @@ class PrefillP2000_AP_21975717Test {
     lateinit var prefillData: PrefillDataModel
     lateinit var sakHelper: SakHelper
     lateinit var prefill: Prefill<SED>
+    lateinit var prefillNav: PrefillNav
 
     @Before
     fun setup() {
@@ -39,14 +40,15 @@ class PrefillP2000_AP_21975717Test {
                 PersonDataFromTPS.MockTPS("Person-11000-GIFT.json", giftFnr, PersonDataFromTPS.MockTPS.TPSType.PERSON),
                 PersonDataFromTPS.MockTPS("Person-12000-EKTE.json", ekteFnr, PersonDataFromTPS.MockTPS.TPSType.EKTE)))
 
+        prefillNav = PrefillNav(
+                preutfyllingPersonFraTPS = persondataFraTPS,
+                institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO")
+
         sakHelper = SakHelper(
-                prefillNav = PrefillNav(
-                        preutfyllingPersonFraTPS = persondataFraTPS,
-                        institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO"),
                 preutfyllingPersonFraTPS = persondataFraTPS,
                 dataFromPEN = lesPensjonsdataFraFil("P2000_21975717_AP_UTLAND.xml"))
 
-        prefill = PrefillP2000(sakHelper)
+        prefill = PrefillP2000(prefillNav, sakHelper)
 
         prefillData = PrefillDataModel().apply {
             rinaSubject = "Pensjon"

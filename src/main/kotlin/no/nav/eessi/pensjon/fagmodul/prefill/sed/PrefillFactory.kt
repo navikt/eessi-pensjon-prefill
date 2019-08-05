@@ -37,16 +37,16 @@ class PrefillFactory(private val prefillNav: PrefillNav,
         return when (sedValue) {
             //Status hva gjendstår
             SEDType.P6000 -> {
-                PrefillP6000(sakHelper, eessiInformasjon, dataFromPEN)
+                PrefillP6000(prefillNav, sakHelper, eessiInformasjon, dataFromPEN)
             }
             //Status hva gjendstår
             SEDType.P2000 -> {
                 //PrefillDefaultSED(prefillPerson)
-                PrefillP2000(sakHelper)
+                PrefillP2000(prefillNav, sakHelper)
             }
             //Status hva gjendstår
             SEDType.P2200 -> {
-                PrefillP2200(sakHelper)
+                PrefillP2200(prefillNav, sakHelper)
             }
             SEDType.P2100 -> {
                 PrefillP2100()
