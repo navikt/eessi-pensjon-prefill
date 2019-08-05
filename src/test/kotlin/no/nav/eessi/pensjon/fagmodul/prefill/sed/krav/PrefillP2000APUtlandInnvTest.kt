@@ -58,13 +58,6 @@ class PrefillP2000APUtlandInnvTest {
         }
     }
 
-    @Test
-    fun `sjekk av kravsøknad alderpensjon P2000`() {
-        val pendata: Pensjonsinformasjon = dataFromPEN.hentPersonInformasjonMedAktoerId(prefillData.aktoerID)
-
-        assertEquals(1, SakHelper.getPensjonSakTypeList(pendata).size)
-    }
-
     @Test //(expected = MangelfulleInndataException::class)
     fun `forventet korrekt utfylt P2000 alderpensjon med kap4 og 9`() {
         prefillData.penSaksnummer = pesysSaksnummer

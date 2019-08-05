@@ -59,13 +59,6 @@ class PrefillP2000_AP_LOP_UTLANDTest {
     }
 
     @Test
-    fun `sjekk av kravsøknad alderpensjon P2000`() {
-        val pendata: Pensjonsinformasjon = dataFromPEN.hentPersonInformasjonMedAktoerId(prefillData.aktoerID)
-
-        assertEquals(1, SakHelper.getPensjonSakTypeList(pendata).size)
-    }
-
-    @Test
     fun `forventet korrekt utfylt P2000 alderpensjon med kap4 og 9`() {
         prefillData.penSaksnummer = pesysSaksnummer
         val P2000 = prefill.prefill(prefillData)

@@ -5,6 +5,8 @@ import no.nav.eessi.pensjon.fagmodul.prefill.model.Prefill
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonHjelper
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.PrefillP2xxxPensjon.addRelasjonerBarnOgAvdod
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.PrefillP2xxxPensjon.createPensjon
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillPersonDataFromTPS
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Bruker
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Pensjon
@@ -27,7 +29,7 @@ class PrefillP2200(private val prefillNav: PrefillNav,
         val sedId = prefillData.getSEDid()
 
         logger.debug("----------------------------------------------------------"
-                + "\nPreutfylling Pensjon : ${SakHelper::class.java} "
+                + "\nPreutfylling Pensjon : ${PrefillP2xxxPensjon::class.java} "
                 + "\n------------------| Preutfylling [$sedId] START |------------------ ")
 
         val sed = prefillData.sed
@@ -38,12 +40,12 @@ class PrefillP2200(private val prefillNav: PrefillNav,
         //henter opp pensjondat
         try {
             val pendata: Pensjonsinformasjon? = hentPensjonsdata(prefillData.aktoerID)
-            if (pendata != null) SakHelper.addRelasjonerBarnOgAvdod(prefillData, pendata)
+            if (pendata != null) addRelasjonerBarnOgAvdod(prefillData, pendata)
 
             sed.pensjon =
                     if (pendata == null) Pensjon()
                     else {
-                        val pensjon = SakHelper.createPensjon(
+                        val pensjon = createPensjon(
                                 prefillData.personNr,
                                 prefillData.penSaksnummer,
                                 eventuellGjenlevende(prefillData),

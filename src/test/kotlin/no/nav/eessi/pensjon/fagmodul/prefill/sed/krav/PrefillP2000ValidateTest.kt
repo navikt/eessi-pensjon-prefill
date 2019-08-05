@@ -28,7 +28,7 @@ import org.mockito.junit.MockitoJUnitRunner
     lateinit var persondataFraTPS: PrefillPersonDataFromTPS
 
     @Mock
-    lateinit var sakHelper: SakHelper
+    lateinit var sakHelper: PrefillP2xxxPensjon
 
     @Mock
     lateinit var prefillPersonDataFromTPS: PrefillPersonDataFromTPS

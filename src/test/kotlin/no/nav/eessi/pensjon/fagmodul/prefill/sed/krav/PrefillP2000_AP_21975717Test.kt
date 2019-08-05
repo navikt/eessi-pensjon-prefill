@@ -34,7 +34,7 @@ class PrefillP2000_AP_21975717Test {
     private val ekteFnr = generateRandomFnr(70)
 
     lateinit var prefillData: PrefillDataModel
-    lateinit var sakHelper: SakHelper
+    lateinit var sakHelper: PrefillP2xxxPensjon
     lateinit var prefill: Prefill<SED>
     lateinit var prefillNav: PrefillNav
     lateinit var dataFromPEN: PensjonsinformasjonHjelper
@@ -59,13 +59,6 @@ class PrefillP2000_AP_21975717Test {
                     "PersonInfo" to readJsonResponse("other/person_informasjon_selvb.json"),
                     "P4000" to readJsonResponse("other/p4000_trygdetid_part.json"))
         }
-    }
-
-    @Test
-    fun `sjekk av kravsøknad alderpensjon P2000`() {
-        val pendata: Pensjonsinformasjon = dataFromPEN.hentPersonInformasjonMedAktoerId(prefillData.aktoerID)
-
-        assertEquals(2, SakHelper.getPensjonSakTypeList(pendata).size)
     }
 
     @Test

@@ -18,14 +18,12 @@ import no.nav.pensjon.v1.ytelsepermaaned.V1YtelsePerMaaned
 import no.nav.pensjon.v1.ytelseskomponent.V1Ytelseskomponent
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.stereotype.Component
 
 /**
  * Hjelpe klasse for sak som fyller ut NAV-SED-P2000 med pensjondata fra PESYS.
  */
-@Component
-object SakHelper {
-    private val logger: Logger by lazy { LoggerFactory.getLogger(SakHelper::class.java) }
+object PrefillP2xxxPensjon {
+    private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillP2xxxPensjon::class.java) }
 
     /**
      *
@@ -107,21 +105,6 @@ object SakHelper {
                 kravDato = krav,
                 gjenlevende = gjenlevende
         )
-    }
-
-    /**
-     *  Henter ut liste av gyldige sakkType fra brukerSakListe
-     */
-    fun getPensjonSakTypeList(pendata: Pensjonsinformasjon): List<Saktype> {
-        val ksaklist = mutableListOf<Saktype>()
-
-        pendata.brukersSakerListe.brukersSakerListe.forEach {
-            if (Saktype.isValid(it.sakType)) {
-                val ksakType = Saktype.valueOf(it.sakType)
-                ksaklist.add(ksakType)
-            }
-        }
-        return ksaklist
     }
 
     fun addRelasjonerBarnOgAvdod(prefillData: PrefillDataModel, pendata: Pensjonsinformasjon) {

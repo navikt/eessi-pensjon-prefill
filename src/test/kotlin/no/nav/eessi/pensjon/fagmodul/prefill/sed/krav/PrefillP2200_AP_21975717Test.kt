@@ -58,13 +58,6 @@ class PrefillP2200_AP_21975717Test {
     }
 
     @Test
-    fun `sjekk av kravsøknad alderpensjon P2000`() {
-        val pendata: Pensjonsinformasjon = dataFromPEN.hentPersonInformasjonMedAktoerId(prefillData.aktoerID)
-
-        assertEquals(2, SakHelper.getPensjonSakTypeList(pendata).size)
-    }
-
-    @Test
     fun `forventet korrekt utfylt P2200 uforerpensjon med mockdata fra testfiler`() {
         val p2200 = prefill.prefill(prefillData)
 
