@@ -5,15 +5,15 @@ import io.swagger.annotations.ApiOperation
 import no.nav.security.oidc.api.Protected
 import org.springframework.web.bind.annotation.*
 
-@CrossOrigin
-@RestController
-@RequestMapping("/pesys")
-@Protected
 
 /**
  * tjeneste for opprettelse av automatiske krav ved mottakk av Buc/Krav fra utland.
  * Se PK-55797 , EESSIPEN-68
  */
+@CrossOrigin
+@RestController
+@RequestMapping("/pesys")
+@Protected
 class PensjonsinformasjonUtlandController(private val pensjonsinformasjonUtlandService: PensjonsinformasjonUtlandService) {
 
     @ApiOperation(httpMethod = "PUT", value = "legger mock KravUtland til på map med bucid som key, KravUtland som verdi", response = KravUtland::class)
