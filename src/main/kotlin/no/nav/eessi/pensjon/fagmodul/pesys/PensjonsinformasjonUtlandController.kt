@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*
 class PensjonsinformasjonUtlandController(private val pensjonsinformasjonUtlandService: PensjonsinformasjonUtlandService) {
 
     @ApiOperation(httpMethod = "PUT", value = "legger mock KravUtland til på map med bucid som key, KravUtland som verdi", response = KravUtland::class)
-    @PutMapping("/mockPutKravUtland/{bucId}")
+    @PutMapping("/putKravUtland/{bucId}")
     fun mockPutKravUtland(@PathVariable("bucId", required = true) bucId: Int, @RequestBody kravUtland: KravUtland): KravUtland {
         if (bucId in 1..999) {
             pensjonsinformasjonUtlandService.putKravUtlandMap(bucId, kravUtland)
@@ -27,13 +27,13 @@ class PensjonsinformasjonUtlandController(private val pensjonsinformasjonUtlandS
     }
 
     @ApiOperation(httpMethod = "DELETE", value = "sletter mock KravUtland fra map med buckid som key.", response = KravUtland::class)
-    @DeleteMapping("/mockDeleteKravUtland/{bucId}")
+    @DeleteMapping("/deleteKravUtland/{bucId}")
     fun mockDeleteKravUtland(@PathVariable("bucId", required = true) buckId: Int) {
         pensjonsinformasjonUtlandService.mockDeleteKravUtland(buckId)
     }
 
     @ApiOperation(httpMethod = "GET", value = "henter liste av keys fra mockMap med KravUtland", response = Set::class)
-    @GetMapping("/mockHentKravUtlandKeys")
+    @GetMapping("/hentKravUtlandKeys")
     fun mockGetKravUtlandKeys(): Set<Int> {
         return pensjonsinformasjonUtlandService.mockGetKravUtlandKeys()
     }
