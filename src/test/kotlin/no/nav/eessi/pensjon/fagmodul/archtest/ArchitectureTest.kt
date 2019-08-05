@@ -2,6 +2,7 @@ package no.nav.eessi.pensjon.fagmodul.archtest
 
 import com.tngtech.archunit.base.DescribedPredicate
 import com.tngtech.archunit.core.domain.JavaAnnotation
+import com.tngtech.archunit.core.domain.JavaClass
 import com.tngtech.archunit.core.domain.JavaClasses
 import com.tngtech.archunit.core.importer.ClassFileImporter
 import com.tngtech.archunit.core.importer.ImportOption
@@ -14,6 +15,7 @@ import com.tngtech.archunit.library.dependencies.SlicesRuleDefinition.slices
 import no.nav.eessi.pensjon.EessiFagmodulApplication
 import org.junit.Assert.assertTrue
 import org.junit.BeforeClass
+import org.junit.Ignore
 import org.junit.Test
 import org.springframework.context.annotation.Scope
 import org.springframework.web.bind.annotation.RestController
@@ -313,5 +315,20 @@ class ArchitectureTest {
                 .because("Spring-components (usually singletons) must not have mutable instance fields " +
                         "as they can easily be misused and create 'race conditions'")
                 .check(productionClasses)
+    }
+
+    @Test
+    fun `No test classes should use inheritance`() {
+        class TestSupportClasses:DescribedPredicate<JavaClass>("test support classes") {
+            override fun apply(input: JavaClass?) = input != null &&
+                    (!input.simpleName.endsWith("Test") &&
+                            (!input.simpleName.endsWith("Tests")
+                                    && input.name != "java.lang.Object"))
+        }
+
+        noClasses().that().haveSimpleNameEndingWith("Test").or().haveSimpleNameEndingWith("Tests")
+                .should().beAssignableTo(TestSupportClasses())
+                .because("it is hard to understand the logic of tests that inherit from other classes.")
+                .check(testClasses)
     }
 }

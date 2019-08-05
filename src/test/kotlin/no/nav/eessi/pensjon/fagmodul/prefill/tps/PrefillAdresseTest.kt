@@ -1,0 +1,42 @@
+package no.nav.eessi.pensjon.fagmodul.prefill.tps
+
+import no.nav.eessi.pensjon.services.geo.LandkodeService
+import no.nav.eessi.pensjon.services.geo.PostnummerService
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bostedsadresse
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Gateadresse
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Landkoder
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Person
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Postnummer
+import org.junit.Test
+
+class PrefillAdresseTest{
+
+    @Test
+    fun `create personAdresse`() {
+        val prefillAdresse = PrefillAdresse(PostnummerService(), LandkodeService())
+
+        val landkode = Landkoder()
+        landkode.value = "NOR"
+        val postnr = Postnummer()
+        postnr.value = "0123"
+        val gateadresse = Gateadresse()
+        gateadresse.husnummer = 12
+        gateadresse.kommunenummer = "120"
+        gateadresse.gatenavn = "Kirkeveien"
+        gateadresse.landkode = landkode
+        gateadresse.poststed = postnr
+
+        val bostedadr = Bostedsadresse()
+        bostedadr.strukturertAdresse = gateadresse
+
+        val person = Person()
+        person.bostedsadresse = bostedadr
+
+        val result = prefillAdresse.hentPersonAdresse(person)!!
+
+        kotlin.test.assertNotNull(result)
+
+        kotlin.test.assertEquals("NO", result.land)
+        kotlin.test.assertEquals("Kirkeveien 12", result.gate)
+        kotlin.test.assertEquals("OSLO", result.by)
+    }}
