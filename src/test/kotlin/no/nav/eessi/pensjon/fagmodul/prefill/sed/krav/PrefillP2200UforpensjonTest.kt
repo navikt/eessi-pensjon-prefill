@@ -10,7 +10,6 @@ import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModelMother.initialPrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PersonDataFromTPS
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.SakHelper.Companion.addRelasjonerBarnOgAvdod
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import org.junit.Before
@@ -58,7 +57,7 @@ class PrefillP2200UforpensjonTest {
 
         assertNotNull(pendata)
 
-        val pensak = sakHelper.getPensjonSak(prefillData, pendata)
+        val pensak = sakHelper.getPensjonSak(pendata, prefillData.penSaksnummer)
         assertNotNull(pendata.brukersSakerListe)
 
         val P2200 = prefill.prefill(prefillData)

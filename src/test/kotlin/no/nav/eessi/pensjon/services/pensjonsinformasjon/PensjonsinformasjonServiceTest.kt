@@ -97,7 +97,7 @@ class PensjonsinformasjonServiceTest {
         whenever(mockrestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java))).thenReturn(mockResponseEntity)
         val data = pensjonsinformasjonService.hentAltPaaFnr("1231233")
 
-        val sak = pensjonsinformasjonService.hentAltPaaSak("21975717", data)
+        val sak = PensjonsinformasjonService.finnSak("21975717", data)
 
         sak?.let {
             assertEquals("21975717", it.sakId.toString())
@@ -115,7 +115,7 @@ class PensjonsinformasjonServiceTest {
 
         assertEquals(2, data.brukersSakerListe.brukersSakerListe.size)
 
-        val sak = pensjonsinformasjonService.hentAltPaaSak("21975717", data)
+        val sak = PensjonsinformasjonService.finnSak("21975717", data)
 
         sak?.let {
             assertEquals("21975717", it.sakId.toString())

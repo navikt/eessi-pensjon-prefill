@@ -11,7 +11,6 @@ import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModelMother.initialPrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PersonDataFromTPS
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.SakHelper.Companion.addRelasjonerBarnOgAvdod
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.NavFodselsnummer
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import org.junit.Before
@@ -63,7 +62,7 @@ class PrefillP2000AlderPensjonUtlandForsteGangTest {
 
         assertNotNull(pendata)
 
-        val pensak = sakHelper.getPensjonSak(prefillData, pendata)
+        val pensak = sakHelper.getPensjonSak(pendata, prefillData.penSaksnummer)
         assertNotNull(pensak)
 
         assertNotNull(pendata.brukersSakerListe)

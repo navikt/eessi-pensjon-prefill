@@ -48,9 +48,11 @@ class SakHelper(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS,
      *  «Førstegangsbehandling bosatt utland» eller «Mellombehandling».
      *  Obs, krav av typen «Førstegangsbehandling kun utland» eller Sluttbehandling kun utland» gjelder ikke norsk ytelse.
      */
-    fun createInformasjonOmYtelserList(prefillData: PrefillDataModel,
-                                       pensak: V1Sak,
-                                       gjenlevende: Bruker? = null): Pensjon {
+    fun createInformasjonOmYtelserList(pensak: V1Sak,
+                                       gjenlevende: Bruker? = null,
+                                       personNr: String,
+                                       penSaksnummer: String,
+                                       andreinstitusjonerItem: AndreinstitusjonerItem?): Pensjon {
         logger.debug("4.1           Informasjon om ytelser")
 
         val spesialStatusList = listOf(Kravstatus.TIL_BEHANDLING.name)
@@ -62,7 +64,7 @@ class SakHelper(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS,
         if (spesialStatusList.contains(pensak.status)) {
             logger.debug("Valgtstatus")
             //kjøre ytelselist forkortet
-            ytelselist.add(createYtelseMedManglendeYtelse(prefillData, pensak))
+            ytelselist.add(createYtelseMedManglendeYtelse(pensak, personNr, penSaksnummer, andreinstitusjonerItem))
 
             if (krav == null) {
                 val kravHistorikkMedUtland = hentKravHistorikkMedKravStatusTilBehandling(pensak.kravHistorikkListe)
@@ -81,10 +83,10 @@ class SakHelper(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS,
                         krav = createKravDato(kravHistorikkMedUtland)
                     }
 
-                    ytelselist.add(createYtelserItem(prefillData, ytelseprmnd, pensak))
+                    ytelselist.add(createYtelserItem(ytelseprmnd, pensak, personNr, penSaksnummer, andreinstitusjonerItem))
                 } catch (ex: Exception) {
                     logger.error(ex.message, ex)
-                    ytelselist.add(createYtelseMedManglendeYtelse(prefillData, pensak))
+                    ytelselist.add(createYtelseMedManglendeYtelse(pensak, personNr, penSaksnummer, andreinstitusjonerItem))
                 }
             }
 
@@ -93,10 +95,10 @@ class SakHelper(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS,
                     val kravHistorikk = hentKravHistorikkSisteRevurdering(pensak.kravHistorikkListe)
                     val ytelseprmnd = hentYtelsePerMaanedDenSisteFraKrav(kravHistorikk, pensak)
 
-                    ytelselist.add(createYtelserItem(prefillData, ytelseprmnd, pensak))
+                    ytelselist.add(createYtelserItem(ytelseprmnd, pensak, personNr, penSaksnummer, andreinstitusjonerItem))
                 } catch (ex: Exception) {
                     logger.error(ex.message, ex)
-                    ytelselist.add(createYtelseMedManglendeYtelse(prefillData, pensak))
+                    ytelselist.add(createYtelseMedManglendeYtelse(pensak, personNr, penSaksnummer, andreinstitusjonerItem))
                 }
             }
         }
@@ -106,13 +108,6 @@ class SakHelper(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS,
                 kravDato = krav,
                 gjenlevende = gjenlevende
         )
-    }
-
-    /**
-     *  Henter ut v1Sak på brukersSakerListe ut ifra valgt sakid i prefilldatamodel
-     */
-    fun getPensjonSak(prefillData: PrefillDataModel, pendata: Pensjonsinformasjon): V1Sak {
-        return dataFromPEN.hentMedSak(prefillData.penSaksnummer, pendata)
     }
 
     /**
@@ -136,18 +131,45 @@ class SakHelper(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS,
     fun createPensjon(prefillData: PrefillDataModel, gjenlevende: Bruker? = null): Pensjon {
         val pendata: Pensjonsinformasjon = hentPensjoninformasjonMedAktoerId(prefillData.aktoerID)
 
-        addRelasjonerBarnOgAvdod(prefillData, pendata)
+        prefillData.apply {
+            partnerFnr = mutableListOf<V1EktefellePartnerSamboer>().apply {
+                if (pendata.ektefellePartnerSamboerListe != null) {
+                    pendata.ektefellePartnerSamboerListe.ektefellePartnerSamboerListe.forEach {
+                        add(it)
+                    }
+                }
+
+            }
+            barnlist = mutableListOf<V1BrukersBarn>().apply {
+                if (pendata.brukersBarnListe != null) {
+                    pendata.brukersBarnListe.brukersBarnListe.forEach {
+                        add(it)
+                    }
+                }
+            }
+            avdod = pendata.avdod?.avdod ?: ""
+            avdodMor = pendata.avdod?.avdodMor ?: ""
+            avdodFar = pendata.avdod?.avdodFar ?: ""
+        }
 
         //hent korrekt sak fra context
-        val pensak: V1Sak = getPensjonSak(prefillData, pendata)
+        val pensak: V1Sak = getPensjonSak(pendata, prefillData.penSaksnummer)
 
         //4.0
-        return createInformasjonOmYtelserList(prefillData, pensak, gjenlevende)
+        return createInformasjonOmYtelserList(pensak, gjenlevende, prefillData.personNr, prefillData.penSaksnummer, prefillData.andreInstitusjon)
     }
 
     fun hentPensjoninformasjonMedAktoerId(aktoerId: String): Pensjonsinformasjon {
         return dataFromPEN.hentPersonInformasjonMedAktoerId(aktoerId)
     }
+
+    /**
+     *  Henter ut v1Sak på brukersSakerListe ut ifra valgt sakid i prefilldatamodel
+     */
+    fun getPensjonSak(pendata: Pensjonsinformasjon, penSaksnummer: String): V1Sak {
+        return PensjonsinformasjonHjelper.finnSak(penSaksnummer, pendata)
+    }
+
 
     /**
      *  fylles ut kun når vi har etterlatt etterlattPinID.
@@ -189,45 +211,19 @@ class SakHelper(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS,
         }
     }
 
-    companion object {
-        //henter ut nødvendige familie relasjoner
-        fun addRelasjonerBarnOgAvdod(dataModel: PrefillDataModel, pendata: Pensjonsinformasjon) {
-            val listbarmItem = mutableListOf<V1BrukersBarn>()
-            if (pendata.brukersBarnListe != null) {
-                pendata.brukersBarnListe.brukersBarnListe.forEach {
-                    listbarmItem.add(it)
-                }
-            }
-
-            val listEktefellePartnerFnrlist = mutableListOf<V1EktefellePartnerSamboer>()
-            if (pendata.ektefellePartnerSamboerListe != null) {
-                pendata.ektefellePartnerSamboerListe.ektefellePartnerSamboerListe.forEach {
-                    listEktefellePartnerFnrlist.add(it)
-                }
-            }
-
-            dataModel.partnerFnr = listEktefellePartnerFnrlist
-            dataModel.barnlist = listbarmItem
-
-            dataModel.avdod = pendata.avdod?.avdod ?: ""
-            dataModel.avdodMor = pendata.avdod?.avdodMor ?: ""
-            dataModel.avdodFar = pendata.avdod?.avdodFar ?: ""
-        }
-    }
-
     /**
      *  4.1 (for kun_uland,mangler inngangsvilkår)
      */
-    private fun createYtelseMedManglendeYtelse(prefillData: PrefillDataModel, pensak: V1Sak): YtelserItem {
+    private fun createYtelseMedManglendeYtelse(pensak: V1Sak, personNr: String, penSaksnummer: String, andreinstitusjonerItem: AndreinstitusjonerItem?): YtelserItem {
         return YtelserItem(
                 //4.1.1
                 ytelse = settYtelse(pensak),
                 //4.1.3 - fast satt til søkt
                 status = "01",
                 //4.1.4
-                pin = createInstitusjonPin(prefillData),
+                pin = createInstitusjonPin(personNr),
                 //4.1.4.1.4
-                institusjon = createInstitusjon(prefillData)
+                institusjon = createInstitusjon(penSaksnummer, andreinstitusjonerItem)
         )
     }
 
@@ -246,7 +242,7 @@ class SakHelper(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS,
      *
      *  Informasjon om ytelser den forsikrede mottar
      */
-    private fun createYtelserItem(prefillData: PrefillDataModel, ytelsePrmnd: V1YtelsePerMaaned, pensak: V1Sak): YtelserItem {
+    private fun createYtelserItem(ytelsePrmnd: V1YtelsePerMaaned, pensak: V1Sak, personNr: String, penSaksnummer: String, andreinstitusjonerItem: AndreinstitusjonerItem?): YtelserItem {
         logger.debug("4.1   YtelserItem")
         return YtelserItem(
 
@@ -259,9 +255,9 @@ class SakHelper(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS,
                 //4.1.3 (dekkes av pkt.4.1.1)
                 status = createPensionStatus(pensak),
                 //4.1.4
-                pin = createInstitusjonPin(prefillData),
+                pin = createInstitusjonPin(personNr),
                 //4.1.4.1.4
-                institusjon = createInstitusjon(prefillData),
+                institusjon = createInstitusjon(penSaksnummer, andreinstitusjonerItem),
 
                 //4.1.5
                 startdatoutbetaling = ytelsePrmnd.fom?.simpleFormat(),
@@ -276,7 +272,7 @@ class SakHelper(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS,
                 beloep = createYtelseItemBelop(ytelsePrmnd, ytelsePrmnd.ytelseskomponentListe),
 
                 //4.1.10.1
-                mottasbasertpaa = createPensionBasedOn(prefillData, pensak),
+                mottasbasertpaa = createPensionBasedOn(pensak, personNr),
                 //4.1.10.2 - nei
                 totalbruttobeloepbostedsbasert = null,
                 //4.1.10.3
@@ -313,12 +309,12 @@ class SakHelper(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS,
         return pensak.forsteVirkningstidspunkt?.simpleFormat()
     }
 
-    private fun createInstitusjon(prefillData: PrefillDataModel): Institusjon? {
+    private fun createInstitusjon(penSaksnummer: String, andreinstitusjonerItem: AndreinstitusjonerItem?): Institusjon? {
         logger.debug("4.1.4.1.4     Institusjon")
         return Institusjon(
-                institusjonsid = prefillData.andreInstitusjon?.institusjonsid,
-                institusjonsnavn = prefillData.andreInstitusjon?.institusjonsnavn,
-                saksnummer = prefillData.penSaksnummer
+                institusjonsid = andreinstitusjonerItem?.institusjonsid,
+                institusjonsnavn = andreinstitusjonerItem?.institusjonsnavn,
+                saksnummer = penSaksnummer
         )
     }
 
@@ -404,9 +400,9 @@ class SakHelper(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS,
      *  Hvis AP: Hvis bruker mottar tilleggspensjon, velges både Residence og Working. Ellers velges kun Residence.
      *  Hvis GJP: Hvis bruker mottar tilleggspensjon, velges både Residence og Working. Ellers velges kun Residence.
      */
-    private fun createPensionBasedOn(prefillData: PrefillDataModel, pensak: V1Sak): String? {
+    private fun createPensionBasedOn(pensak: V1Sak, personNr: String): String? {
         logger.debug("4.1.10.1      Pensjon basertpå")
-        val navfnr = NavFodselsnummer(prefillData.personNr)
+        val navfnr = NavFodselsnummer(personNr)
 
         val sakType = Saktype.valueOf(pensak.sakType)
 
@@ -432,13 +428,13 @@ class SakHelper(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS,
      *  4.1.4.1.4.2
      *  preutfylles med NAV Dette kan gjøres av EESSI-pensjon
      */
-    private fun createInstitusjonPin(prefillData: PrefillDataModel): PinItem {
+    private fun createInstitusjonPin(personNr: String): PinItem {
         logger.debug("4.1.4.1       Institusjon Pin")
         return PinItem(
                 //4.1.4.1.1
                 land = "NO",
                 //4.1.4.1.2
-                identifikator = prefillData.personNr,
+                identifikator = personNr,
                 //4.1.4.1.3
                 sektor = "04", //(kun pensjon)
                 institusjon = null

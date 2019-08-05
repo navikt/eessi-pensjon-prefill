@@ -19,6 +19,14 @@ class PensjonsinformasjonHjelper(private val pensjonsinformasjonService: Pensjon
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PensjonsinformasjonHjelper::class.java) }
 
+    companion object {
+        //hjelpe metode for å hente ut valgt V1SAK på vetak/SAK fnr og sakid benyttes
+        fun finnSak(sakId: String, pendata: Pensjonsinformasjon): V1Sak {
+            if (sakId.isBlank()) throw IkkeGyldigKallException("Mangler sakId")
+            return PensjonsinformasjonService.finnSak(sakId, pendata) ?: throw IkkeGyldigKallException("Finner ingen sak, saktype på valgt sakId")
+        }
+    }
+
     //hjelemetode for Vedtak P6000 P5000
     fun hentMedVedtak(vedtakId: String): Pensjonsinformasjon {
         if (vedtakId.isBlank()) throw IkkeGyldigKallException("Mangler vedtakID")
@@ -54,12 +62,6 @@ class PensjonsinformasjonHjelper(private val pensjonsinformasjonService: Pensjon
             throw PensjoninformasjonException("Ingen gyldig brukerSakerListe")
         }
         return pendata
-    }
-
-    //hjelpe metode for å hente ut valgt V1SAK på vetak/SAK fnr og sakid benyttes
-    fun hentMedSak(sakId: String, pendata: Pensjonsinformasjon): V1Sak {
-        if (sakId.isBlank()) throw IkkeGyldigKallException("Mangler sakId")
-        return pensjonsinformasjonService.hentAltPaaSak(sakId, pendata) ?: throw IkkeGyldigKallException("Finner ingen sak, saktype på valgt sakId")
     }
 }
 
