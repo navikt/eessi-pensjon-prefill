@@ -27,16 +27,6 @@ abstract class PersonDataFromTPS(private val mocktps: Set<MockTPS>, private val 
     @Mock
     lateinit var mockPersonV3Service: PersonV3Service
 
-    protected lateinit var preutfyllingTPS: PrefillPersonDataFromTPS
-
-    @Mock
-    protected lateinit var prefillNav: PrefillNav
-
-    private var landkodeService = LandkodeService()
-
-    private var postnummerService = PostnummerService()
-
-    protected var prefillAdresse = PrefillAdresse(postnummerService, landkodeService)
 
 
     private fun initMockHentPersonResponse(mockTPS: MockTPS, mockTPSset: Set<MockTPS>): HentPersonResponse {
@@ -150,6 +140,7 @@ abstract class PersonDataFromTPS(private val mocktps: Set<MockTPS>, private val 
             val result = initMockHentPersonResponse(it, mocktps)
             whenever(mockPersonV3Service.hentPerson(it.replaceMockfnr)).thenReturn(result)
         }
+        val prefillAdresse = PrefillAdresse(PostnummerService(), LandkodeService())
         return PrefillPersonDataFromTPS(mockPersonV3Service, prefillAdresse, eessiInformasjon)
     }
 
