@@ -39,7 +39,6 @@ object PrefillTestHelper {
     fun setupPersondataFraTPS(mockPersonDataFraTPS: Set<PersonDataFromTPS.MockTPS>): PrefillPersonDataFromTPS {
         open class DataFromTPS(mocktps: Set<MockTPS>, eessiInformasjon: EessiInformasjon) : PersonDataFromTPS(mocktps, eessiInformasjon)
         val datatps = DataFromTPS(mockPersonDataFraTPS, mockEessiInformasjon)
-        datatps.mockPersonV3Service = mock()
         return datatps.mockPrefillPersonDataFromTPS()
     }
 

@@ -2,6 +2,7 @@ package no.nav.eessi.pensjon.fagmodul.prefill.person
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
@@ -23,11 +24,6 @@ import org.springframework.util.ResourceUtils
 import java.time.LocalDate
 
 abstract class PersonDataFromTPS(private val mocktps: Set<MockTPS>, private val eessiInformasjon: EessiInformasjon) {
-
-    @Mock
-    lateinit var mockPersonV3Service: PersonV3Service
-
-
 
     private fun initMockHentPersonResponse(mockTPS: MockTPS, mockTPSset: Set<MockTPS>): HentPersonResponse {
         val resource = ResourceUtils.getFile("classpath:personv3/${mockTPS.mockFile}").readText()
@@ -136,6 +132,7 @@ abstract class PersonDataFromTPS(private val mocktps: Set<MockTPS>, private val 
     }
 
     fun mockPrefillPersonDataFromTPS(): PrefillPersonDataFromTPS {
+        val mockPersonV3Service = mock<PersonV3Service>()
         mocktps.forEach {
             val result = initMockHentPersonResponse(it, mocktps)
             whenever(mockPersonV3Service.hentPerson(it.replaceMockfnr)).thenReturn(result)
