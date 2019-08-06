@@ -22,29 +22,30 @@ class PensjonsinformasjonService(
         private val pensjonsinformasjonOidcRestTemplate: RestTemplate,
         private val requestBuilder: RequestBuilder) {
 
-    private val logger = LoggerFactory.getLogger(PensjonsinformasjonService::class.java)
+    companion object {
+        private val logger = LoggerFactory.getLogger(PensjonsinformasjonService::class.java)
 
-    fun hentAltPaaSak(sakId: String, pendata: Pensjonsinformasjon): V1Sak? {
-        logger.debug("Søker brukersSakerListe etter sakId: $sakId")
+        fun finnSak(sakId: String, pendata: Pensjonsinformasjon): V1Sak? {
+            logger.debug("Søker brukersSakerListe etter sakId: $sakId")
 
-        val v1saklist = pendata.brukersSakerListe.brukersSakerListe
+            val v1saklist = pendata.brukersSakerListe.brukersSakerListe
 
-        v1saklist.forEach {
-            logger.debug("Itererer brukersakliste sakType: ${it.sakType} sakid: ${it.sakId}")
-            if (sakId == it.sakId.toString()) {
-                logger.debug("Fant sakid på brukersakliste, returnerer kun V1Sak på sakid: ${it.sakId}\"")
+            v1saklist.forEach {
+                logger.debug("Itererer brukersakliste sakType: ${it.sakType} sakid: ${it.sakId}")
+                if (sakId == it.sakId.toString()) {
+                    logger.debug("Fant sakid på brukersakliste, returnerer kun V1Sak på sakid: ${it.sakId}\"")
                     return it
+                }
             }
+            logger.warn("Fant ingen sakid på brukersakliste, returnerer null")
+            return null
         }
-        logger.warn("Fant ingen sakid på brukersakliste, returnerer null")
-        return null
     }
-
     @Throws(IkkeFunnetException::class)
     fun hentKunSakType(sakId: String, fnr: String): Pensjontype {
 
         try {
-            val sak = hentAltPaaSak(sakId, hentAltPaaFnr(fnr)) ?: throw IkkeFunnetException("Saktype ikke funnet")
+            val sak = finnSak(sakId, hentAltPaaFnr(fnr)) ?: throw IkkeFunnetException("Sak ikke funnet")
 
             return Pensjontype(
                     sakId,

@@ -8,9 +8,11 @@ import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.readJsonRespo
 import no.nav.eessi.pensjon.fagmodul.prefill.model.Prefill
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModelMother.initialPrefillDataModel
+import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonHjelper
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PersonDataFromTPS
 import no.nav.eessi.pensjon.utils.mapAnyToJson
+import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -23,9 +25,9 @@ class PrefillP2200UforpensjonTest {
     private val personFnr = generateRandomFnr(67)
 
     lateinit var prefillData: PrefillDataModel
-    lateinit var sakHelper: SakHelper
     lateinit var prefill: Prefill<SED>
     lateinit var prefillNav: PrefillNav
+    lateinit var dataFromPEN: PensjonsinformasjonHjelper
 
     @Before
     fun setup() {
@@ -38,11 +40,9 @@ class PrefillP2200UforpensjonTest {
                 preutfyllingPersonFraTPS = persondataFraTPS,
                 institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO")
 
-        sakHelper = SakHelper(
-                preutfyllingPersonFraTPS = persondataFraTPS,
-                dataFromPEN = lesPensjonsdataFraFil("P2000-AP-14069110.xml"))
+        dataFromPEN = lesPensjonsdataFraFil("P2000-AP-14069110.xml")
 
-        prefill = PrefillP2200(prefillNav, sakHelper)
+        prefill = PrefillP2000(prefillNav, dataFromPEN, persondataFraTPS)
 
         prefillData = initialPrefillDataModel("P2200", personFnr).apply {
             penSaksnummer = "14069110"
@@ -52,11 +52,8 @@ class PrefillP2200UforpensjonTest {
 
     @Test
     fun `Testing av komplett utfylling kravsøknad uførepensjon P2200`() {
-        val pendata = sakHelper.getPensjoninformasjonFraSak(prefillData)
+        val pendata: Pensjonsinformasjon = dataFromPEN.hentPersonInformasjonMedAktoerId(prefillData.aktoerID)
 
-        assertNotNull(pendata)
-
-        val pensak = sakHelper.getPensjonSak(prefillData, pendata)
         assertNotNull(pendata.brukersSakerListe)
 
         val P2200 = prefill.prefill(prefillData)

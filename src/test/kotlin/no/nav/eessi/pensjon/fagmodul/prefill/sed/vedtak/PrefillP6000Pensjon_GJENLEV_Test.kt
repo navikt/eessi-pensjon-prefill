@@ -16,7 +16,11 @@ class PrefillP6000Pensjon_GJENLEV_Test {
     fun `forventet korrekt utfylling av Pensjon objekt på Gjenlevendepensjon`() {
         val dataFromPESYS = PensjonsinformasjonHjelper(fraFil("P6000-GP-401.xml"))
 
-        val result = PrefillP6000Pensjon.createPensjon(dataFromPESYS, "12312312", standardEessiInfo().asAndreinstitusjonerItem())
+        val result = PrefillP6000Pensjon.createPensjon(
+                dataFromPESYS = dataFromPESYS,
+                gjenlevende = null,
+                vedtakId = "12312312",
+                andreinstitusjonerItem = standardEessiInfo().asAndreinstitusjonerItem())
 
         assertNotNull(result.vedtak)
         assertNotNull(result.sak)
@@ -57,7 +61,7 @@ class PrefillP6000Pensjon_GJENLEV_Test {
     fun `forventet korrekt utfylt P6000 gjenlevende ikke bosat utland (avdød bodd i utland)`() {
         val dataFromPESYS = PensjonsinformasjonHjelper(fraFil("P6000-GP-IkkeUtland.xml"))
 
-        val result = PrefillP6000Pensjon.createPensjon(dataFromPESYS, "12312312", standardEessiInfo().asAndreinstitusjonerItem())
+        val result = PrefillP6000Pensjon.createPensjon(dataFromPESYS, null,"12312312", standardEessiInfo().asAndreinstitusjonerItem())
 
         assertNotNull(result.vedtak)
         assertNotNull(result.sak)
@@ -103,6 +107,6 @@ class PrefillP6000Pensjon_GJENLEV_Test {
     fun `preutfylling P6000 feiler ved mangler av vedtakId`() {
         val dataFromPESYS = PensjonsinformasjonHjelper(fraFil("P6000-GP-401.xml"))
 
-        PrefillP6000Pensjon.createPensjon(dataFromPESYS, "", null)
+        PrefillP6000Pensjon.createPensjon(dataFromPESYS, null,"", null)
     }
 }

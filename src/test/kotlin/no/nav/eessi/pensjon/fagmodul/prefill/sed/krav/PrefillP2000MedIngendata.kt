@@ -12,6 +12,7 @@ import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.readJsonRespo
 import no.nav.eessi.pensjon.fagmodul.prefill.model.Prefill
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModelMother
+import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonHjelper
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PersonDataFromTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.NavFodselsnummer
@@ -33,9 +34,9 @@ class PrefillP2000MedIngendata {
     private val pesysSaksnummer = "21644722"
 
     lateinit var prefillData: PrefillDataModel
-    lateinit var sakHelper: SakHelper
     lateinit var prefill: Prefill<SED>
     lateinit var prefillNav: PrefillNav
+    lateinit var dataFromPEN: PensjonsinformasjonHjelper
 
     @Before
     fun setup() {
@@ -47,11 +48,9 @@ class PrefillP2000MedIngendata {
                 preutfyllingPersonFraTPS = persondataFraTPS,
                 institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO")
 
-        sakHelper = SakHelper(
-                preutfyllingPersonFraTPS = persondataFraTPS,
-                dataFromPEN = lesPensjonsdataFraFil("P2000-TOMT-SVAR-PESYS.xml"))
+        dataFromPEN = lesPensjonsdataFraFil("P2000-TOMT-SVAR-PESYS.xml")
 
-        prefill = PrefillP2000(prefillNav, sakHelper)
+        prefill = PrefillP2000(prefillNav, dataFromPEN, persondataFraTPS)
 
         prefillData = PrefillDataModelMother.initialPrefillDataModel("P2000", personFnr).apply {
             penSaksnummer = pesysSaksnummer
@@ -63,10 +62,7 @@ class PrefillP2000MedIngendata {
 
     @Test(expected = PensjoninformasjonException::class)
     fun `sjekk av kravsøknad alderpensjon P2000`() {
-        sakHelper.getPensjoninformasjonFraSak(prefillData)
-//        assertNotNull(pendata)
-//        val list = sakHelper.getPensjonSakTypeList(pendata)
-//        assertEquals(1, list.size)
+        dataFromPEN.hentPersonInformasjonMedAktoerId(prefillData.aktoerID)
     }
 
     @Test

@@ -7,6 +7,7 @@ import no.nav.eessi.pensjon.fagmodul.sedmodel.Nav
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.fagmodul.prefill.model.Prefill
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
+import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonHjelper
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PersonDataFromTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.setupPersondataFraTPS
@@ -14,6 +15,7 @@ import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.lesPensjonsda
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.readJsonResponse
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.NavFodselsnummer
 import no.nav.eessi.pensjon.utils.mapAnyToJson
+import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -29,9 +31,10 @@ class PrefillP2000_AP_LOP_REVUTest {
     private val pesysSaksnummer = "20541862"
 
     lateinit var prefillData: PrefillDataModel
-    lateinit var sakHelper: SakHelper
+    lateinit var sakHelper: PrefillP2xxxPensjon
     lateinit var prefill: Prefill<SED>
     lateinit var prefillNav: PrefillNav
+    lateinit var dataFromPEN: PensjonsinformasjonHjelper
 
     @Before
     fun setup() {
@@ -44,11 +47,9 @@ class PrefillP2000_AP_LOP_REVUTest {
                 preutfyllingPersonFraTPS = persondataFraTPS,
                 institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO")
 
-        sakHelper = SakHelper(
-                preutfyllingPersonFraTPS = persondataFraTPS,
-                dataFromPEN = lesPensjonsdataFraFil("P2000-AP-LP-RVUR-20541862.xml"))
+        dataFromPEN = lesPensjonsdataFraFil("P2000-AP-LP-RVUR-20541862.xml")
 
-        prefill = PrefillP2000(prefillNav, sakHelper)
+        prefill = PrefillP2000(prefillNav, dataFromPEN, persondataFraTPS)
 
         prefillData = PrefillDataModel().apply {
             rinaSubject = "Pensjon"
@@ -63,17 +64,6 @@ class PrefillP2000_AP_LOP_REVUTest {
                     "PersonInfo" to readJsonResponse("other/person_informasjon_selvb.json"),
                     "P4000" to readJsonResponse("other/p4000_trygdetid_part.json"))
         }
-    }
-
-    @Test
-    fun `sjekk av kravsøknad alderpensjon P2000`() {
-        val pendata = sakHelper.getPensjoninformasjonFraSak(prefillData)
-
-        assertNotNull(pendata)
-
-        val list = sakHelper.getPensjonSakTypeList(pendata)
-
-        assertEquals(1, list.size)
     }
 
     @Test
