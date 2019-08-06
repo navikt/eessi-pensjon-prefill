@@ -53,7 +53,8 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
 
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_JSON
-        val httpEntity = HttpEntity(navSED.toJson(), headers)
+        val httpEntity = HttpEntity(navSED.toJsonSkipEmpty(), headers)
+        //val httpEntity = HttpEntity(navSED.toJson(), headers)
 
         try {
             logger.info("Prøver å kontakte EUX /${builder.toUriString()}")
@@ -96,7 +97,8 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
 
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_JSON
-        val httpEntity = HttpEntity(navSED.toJson(), headers)
+        //legger til navsed som json skipper nonemty felter dvs. null
+        val httpEntity = HttpEntity(navSED.toJsonSkipEmpty(), headers)
 
         val response: ResponseEntity<String>
         try {
