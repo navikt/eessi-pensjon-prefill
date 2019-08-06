@@ -48,6 +48,7 @@ object PrefillP2xxxPensjon {
                       gjenlevende: Bruker? = null,
                       pendata: Pensjonsinformasjon,
                       andreinstitusjonerItem: AndreinstitusjonerItem?): Pensjon {
+
         val pensak: V1Sak = PensjonsinformasjonHjelper.finnSak(penSaksnummer, pendata)
 
         logger.debug("4.1           Informasjon om ytelser")
@@ -89,8 +90,13 @@ object PrefillP2xxxPensjon {
 
             if (pensak.sakType == Saktype.UFOREP.name) {
                 try {
-                    val kravHistorikk = hentKravHistorikkSisteRevurdering(pensak.kravHistorikkListe)
-                    val ytelseprmnd = hentYtelsePerMaanedDenSisteFraKrav(kravHistorikk, pensak)
+                    val kravHistorikkMedUtland = hentKravHistorikkForsteGangsBehandlingUtlandEllerForsteGang(pensak.kravHistorikkListe)
+                    val ytelseprmnd = hentYtelsePerMaanedDenSisteFraKrav(kravHistorikkMedUtland, pensak)
+
+                    //kjøre ytelselist på normal
+                    if (krav == null) {
+                        krav = createKravDato(kravHistorikkMedUtland)
+                    }
 
                     ytelselist.add(createYtelserItem(ytelseprmnd, pensak, personNr, penSaksnummer, andreinstitusjonerItem))
                 } catch (ex: Exception) {
