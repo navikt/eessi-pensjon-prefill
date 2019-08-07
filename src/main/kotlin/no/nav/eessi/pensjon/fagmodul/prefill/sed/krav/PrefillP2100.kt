@@ -1,4 +1,4 @@
-package no.nav.eessi.pensjon.fagmodul.prefill.sed
+package no.nav.eessi.pensjon.fagmodul.prefill.sed.krav
 
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.fagmodul.prefill.model.Prefill

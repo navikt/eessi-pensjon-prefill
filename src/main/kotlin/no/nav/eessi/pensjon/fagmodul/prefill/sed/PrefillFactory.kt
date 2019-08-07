@@ -11,7 +11,7 @@ import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.PrefillP2200
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillPensjon
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillPerson
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.PrefillP2xxxPensjon
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.PrefillP2100
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillPersonDataFromTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.PrefillP6000
 import org.slf4j.Logger
