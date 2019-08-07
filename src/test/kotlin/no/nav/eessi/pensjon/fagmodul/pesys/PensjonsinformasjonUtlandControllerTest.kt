@@ -22,9 +22,12 @@ class PensjonsinformasjonUtlandControllerTest {
     @Mock
     lateinit var timingService: TimingService
 
+    lateinit var pensjonsinformasjonUtlandService : PensjonsinformasjonUtlandService
+
     @Before
     fun bringItOn() {
-        controller = PensjonsinformasjonUtlandController(timingService)
+        pensjonsinformasjonUtlandService = PensjonsinformasjonUtlandService(timingService)
+        controller = PensjonsinformasjonUtlandController(pensjonsinformasjonUtlandService)
     }
 
     @Test(expected = NoSuchElementException::class)
