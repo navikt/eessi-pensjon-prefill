@@ -38,17 +38,15 @@ class PrefillFactory(private val prefillNav: PrefillNav,
             SEDType.P6000 -> {
                 PrefillP6000(prefillNav, eessiInformasjon, dataFromPEN, dataFromTPS)
             }
-            //Status hva gjendstår
             SEDType.P2000 -> {
-                //PrefillDefaultSED(prefillPerson)
                 PrefillP2000(prefillNav, dataFromPEN, dataFromTPS)
             }
-            //Status hva gjendstår
             SEDType.P2200 -> {
                 PrefillP2200(prefillNav, dataFromPEN, dataFromTPS)
             }
+            //Masse gjennstår?
             SEDType.P2100 -> {
-                PrefillP2100()
+                PrefillP2100(prefillNav, dataFromPEN, dataFromTPS)
             }
             //P3000_NO vil aldre gå dennee vei! men fra EU-SED->Nav-SED->PESYS
             //P3000_SE, PL, DK, DE, UK, ol vil gå denne veien.
