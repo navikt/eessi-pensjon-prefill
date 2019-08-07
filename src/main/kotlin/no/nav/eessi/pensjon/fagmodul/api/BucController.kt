@@ -41,7 +41,7 @@ class BucController(private val euxService: EuxService,
         return euxService.getBuc(rinanr)
     }
 
-    @ApiOperation("Henter opp hele BUC på valgt caseid")
+    @ApiOperation("Viser prosessnavnet (f.eks P_BUC_01) på den valgte BUCen")
     @GetMapping("/{rinanr}/name")
     fun getProcessDefinitionName(@PathVariable(value = "rinanr", required = true) rinanr: String): String? {
 
