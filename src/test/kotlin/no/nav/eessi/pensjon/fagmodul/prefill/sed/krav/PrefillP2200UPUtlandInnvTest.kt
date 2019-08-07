@@ -1,22 +1,18 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed.krav
 
-import no.nav.eessi.pensjon.fagmodul.prefill.ApiRequest
-import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
-import no.nav.eessi.pensjon.fagmodul.prefill.tps.FodselsnummerMother.generateRandomFnr
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Nav
-import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.setupPersondataFraTPS
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.lesPensjonsdataFraFil
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.readJsonResponse
 import no.nav.eessi.pensjon.fagmodul.prefill.model.Prefill
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModelMother
 import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonHjelper
-import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PersonDataFromTPS
+import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.lesPensjonsdataFraFil
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.readJsonResponse
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.setupPersondataFraTPS
+import no.nav.eessi.pensjon.fagmodul.prefill.tps.FodselsnummerMother.generateRandomFnr
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.NavFodselsnummer
-import no.nav.eessi.pensjon.utils.mapAnyToJson
-import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Nav
+import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -58,7 +54,7 @@ class PrefillP2200UPUtlandInnvTest {
         }
     }
 
-    @Test //(expected = MangelfulleInndataException::class)
+    @Test
     fun `forventet korrekt utfylt P2200 uforepensjon med kap4 og 9`() {
         prefillData.penSaksnummer = pesysSaksnummer
         val P2200 = prefill.prefill(prefillData)
@@ -114,30 +110,6 @@ class PrefillP2200UPUtlandInnvTest {
         val navfnr = NavFodselsnummer(p2200.nav?.ektefelle?.person?.pin?.get(0)?.identifikator!!)
         assertEquals(70, navfnr.getAge())
 
-    }
-
-    @Test
-    fun `testing av komplett P2200 med utskrift og testing av innsending`() {
-        val P2200 = prefill.prefill(prefillData)
-
-        val json = mapAnyToJson(createMockApiRequest("P2200", "P_BUC_03", P2200.toJson()))
-        assertNotNull(json)
-
-    }
-
-    private fun createMockApiRequest(sedName: String, buc: String, payload: String): ApiRequest {
-        val items = listOf(InstitusjonItem(country = "NO", institution = "NAVT003"))
-        return ApiRequest(
-                institutions = items,
-                sed = sedName,
-                sakId = "22874955",
-                euxCaseId = "99191999911",
-                aktoerId = "1000060964183",
-                buc = buc,
-                subjectArea = "Pensjon",
-                payload = payload,
-                mockSED = true
-        )
     }
 
 }
