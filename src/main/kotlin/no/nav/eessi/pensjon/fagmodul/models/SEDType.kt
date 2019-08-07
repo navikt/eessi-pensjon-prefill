@@ -12,6 +12,7 @@ enum class SEDType {
     P8000,
     P9000,
     P10000,
+    P14000,
     P15000,
     X005,
     H070,
