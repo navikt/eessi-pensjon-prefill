@@ -37,6 +37,7 @@ class PrefillDataModel {
 
     //avdod rellasjon - gjennlevende
     lateinit var avdod: String
+    lateinit var avdodAktorID: String
     lateinit var avdodFar: String
     lateinit var avdodMor: String
 
@@ -77,8 +78,7 @@ class PrefillDataModel {
     fun erGyldigEtterlatt(): Boolean {
         //TODO finne bedre metode?
         return try {
-            val state = checkNotNull(avdod)
-            return state.isNotBlank()
+            return avdod.isNotBlank()
         } catch (ex: Exception) {
             false
         }
