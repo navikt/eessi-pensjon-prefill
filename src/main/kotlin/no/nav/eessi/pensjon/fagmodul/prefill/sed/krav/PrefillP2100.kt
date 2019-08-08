@@ -29,14 +29,9 @@ class PrefillP2100(private val prefillNav: PrefillNav,
         logger.debug("\n\n----------------------------------------------------------"
                 + "\nSaktype                  : ${prefillData.saktype} "
                 + "\nSøker etter SaktId       : ${prefillData.penSaksnummer} "
-
                 + "\nSøker etter avdodaktor   : ${prefillData.avdodAktorID} "
-                + "\nSøker etter avdod        : ${prefillData.avdod} "
-
                 + "\nerGyldigEtterlatt        : ${prefillData.erGyldigEtterlatt()} "
-
                 + "\nSøker etter gjenlaktoer  : ${prefillData.aktoerID} "
-                + "\nSøker etter gjennlevend  : ${prefillData.personNr} "
 
                 + "\n------------------| Preutfylling [$sedId] START |------------------ \n")
 
@@ -85,9 +80,7 @@ class PrefillP2100(private val prefillNav: PrefillNav,
     private fun eventuellGjenlevende(prefillData: PrefillDataModel): Bruker? {
         return if (prefillData.erGyldigEtterlatt()) {
             logger.debug("          Utfylling gjenlevende (etterlatt)")
-            val gjennlevende = preutfyllingPersonFraTPS.prefillBruker(prefillData.personNr)
-            logger.debug("          Utfulling av gjenlevende $gjennlevende")
-            return gjennlevende
+            return preutfyllingPersonFraTPS.prefillBruker(prefillData.personNr)
         } else null
     }
 
@@ -99,14 +92,4 @@ class PrefillP2100(private val prefillNav: PrefillNav,
                 null
             }
 
-
-//    override fun validate(data: SED) {
-//        when {
-//            data.nav?.bruker?.person?.etternavn == null -> throw ValidationException("Etternavn mangler")
-//            data.nav?.bruker?.person?.fornavn == null -> throw ValidationException("Fornavn mangler")
-//            data.nav?.bruker?.person?.foedselsdato == null -> throw ValidationException("Fødseldsdato mangler")
-//            data.nav?.bruker?.person?.kjoenn == null -> throw ValidationException("Kjønn mangler")
-//            data.nav?.krav?.dato == null -> throw ValidationException("Kravdato mangler")
-//        }
-//    }
 }

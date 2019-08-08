@@ -15,12 +15,9 @@ import no.nav.eessi.pensjon.fagmodul.sedmodel.Nav
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.mockito.junit.MockitoJUnitRunner
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
-@RunWith(MockitoJUnitRunner::class)
 class PrefillP2100GLutlandInnvTest {
 
     private val personFnr = generateRandomFnr(65)
@@ -76,44 +73,42 @@ class PrefillP2100GLutlandInnvTest {
 
     @Test
     fun `forventet korrekt utfylt P2200 uforepensjon med mockdata fra testfiler`() {
-        val p2200 = prefill.prefill(prefillData)
+        val p2100 = prefill.prefill(prefillData)
 
-        prefill.validate(p2200)
+        prefill.validate(p2100)
 
-        assertEquals(null, p2200.nav?.barn)
+        assertEquals(null, p2100.nav?.barn)
 
-        println(p2200.toJsonSkipEmpty())
+        assertEquals("", p2100.nav?.bruker?.arbeidsforhold?.get(0)?.yrke)
+        assertEquals("2018-11-12", p2100.nav?.bruker?.arbeidsforhold?.get(0)?.planlagtstartdato)
+        assertEquals("2018-11-14", p2100.nav?.bruker?.arbeidsforhold?.get(0)?.planlagtpensjoneringsdato)
+        assertEquals("07", p2100.nav?.bruker?.arbeidsforhold?.get(0)?.type)
 
-        assertEquals("", p2200.nav?.bruker?.arbeidsforhold?.get(0)?.yrke)
-        assertEquals("2018-11-12", p2200.nav?.bruker?.arbeidsforhold?.get(0)?.planlagtstartdato)
-        assertEquals("2018-11-14", p2200.nav?.bruker?.arbeidsforhold?.get(0)?.planlagtpensjoneringsdato)
-        assertEquals("07", p2200.nav?.bruker?.arbeidsforhold?.get(0)?.type)
+        assertEquals("foo", p2100.nav?.bruker?.bank?.navn)
+        assertEquals("bar", p2100.nav?.bruker?.bank?.konto?.sepa?.iban)
+        assertEquals("baz", p2100.nav?.bruker?.bank?.konto?.sepa?.swift)
 
-        assertEquals("foo", p2200.nav?.bruker?.bank?.navn)
-        assertEquals("bar", p2200.nav?.bruker?.bank?.konto?.sepa?.iban)
-        assertEquals("baz", p2200.nav?.bruker?.bank?.konto?.sepa?.swift)
-
-        assertEquals("BAMSE LUR", p2200.nav?.bruker?.person?.fornavn)
-        assertEquals("MOMBALO", p2200.nav?.bruker?.person?.etternavn)
-        val navfnr1 = NavFodselsnummer(p2200.nav?.bruker?.person?.pin?.get(0)?.identifikator!!)
+        assertEquals("BAMSE LUR", p2100.nav?.bruker?.person?.fornavn)
+        assertEquals("MOMBALO", p2100.nav?.bruker?.person?.etternavn)
+        val navfnr1 = NavFodselsnummer(p2100.nav?.bruker?.person?.pin?.get(0)?.identifikator!!)
         assertEquals(75, navfnr1.getAge())
-        assertEquals("M", p2200.nav?.bruker?.person?.kjoenn)
-        assertEquals("02", p2200.nav?.bruker?.person?.sivilstand?.first()?.status)
+        assertEquals("M", p2100.nav?.bruker?.person?.kjoenn)
+        assertEquals("02", p2100.nav?.bruker?.person?.sivilstand?.first()?.status)
 
-        assertNotNull(p2200.nav?.bruker?.person?.pin)
-        val pinlist = p2200.nav?.bruker?.person?.pin
+        assertNotNull(p2100.nav?.bruker?.person?.pin)
+        val pinlist = p2100.nav?.bruker?.person?.pin
         val pinitem = pinlist?.get(0)
         assertEquals(null, pinitem?.sektor)
         assertEquals("NOINST002, NO INST002, NO", pinitem?.institusjonsnavn)
         assertEquals("NO:noinst002", pinitem?.institusjonsid)
         assertEquals(avdodPersonFnr, pinitem?.identifikator)
 
-        assertEquals("BAMSE ULUR", p2200.pensjon?.gjenlevende?.person?.fornavn)
-        assertEquals("DOLLY", p2200.pensjon?.gjenlevende?.person?.etternavn)
-        val navfnr2 = NavFodselsnummer(p2200.pensjon?.gjenlevende?.person?.pin?.get(0)?.identifikator!!)
+        assertEquals("BAMSE ULUR", p2100.pensjon?.gjenlevende?.person?.fornavn)
+        assertEquals("DOLLY", p2100.pensjon?.gjenlevende?.person?.etternavn)
+        val navfnr2 = NavFodselsnummer(p2100.pensjon?.gjenlevende?.person?.pin?.get(0)?.identifikator!!)
         assertEquals(65, navfnr2.getAge())
-        assertEquals("K", p2200.pensjon?.gjenlevende?.person?.kjoenn)
-        assertEquals("08", p2200.pensjon?.gjenlevende?.person?.sivilstand?.first()?.status)
+        assertEquals("K", p2100.pensjon?.gjenlevende?.person?.kjoenn)
+        assertEquals("08", p2100.pensjon?.gjenlevende?.person?.sivilstand?.first()?.status)
 
     }
 

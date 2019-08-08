@@ -40,7 +40,7 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
     }
 
     fun prefillBruker(ident: String, bank: Bank? = null, ansettelsesforhold: List<ArbeidsforholdItem>? = null): Bruker {
-        logger.debug("              Bruker  , IDENT: $ident")
+        logger.debug("              Bruker")
         return try {
             val brukerTPS = hentBrukerTPS(ident)
             var adresse: Adresse? = null
