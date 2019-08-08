@@ -155,7 +155,7 @@ class SedP4000Test {
         assertNotNull(reqjson)
         validateJson(reqjson)
 
-        val data = ApiRequest.buildPrefillDataModelConfirm(req, "12345")
+        val data = ApiRequest.buildPrefillDataModelConfirm(req, "12345", null)
 
         assertNotNull(data)
         assertNotNull(data.getPartSEDasJson("P4000"))

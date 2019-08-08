@@ -104,6 +104,24 @@ object PrefillP2xxxPensjon {
                     ytelselist.add(createYtelseMedManglendeYtelse(pensak, personNr, penSaksnummer, andreinstitusjonerItem))
                 }
             }
+
+            if (pensak.sakType == Saktype.GJENLEV.name) {
+                try {
+                    val kravHistorikkMedUtland = hentKravHistorikkForsteGangsBehandlingUtlandEllerForsteGang(pensak.kravHistorikkListe)
+                    val ytelseprmnd = hentYtelsePerMaanedDenSisteFraKrav(kravHistorikkMedUtland, pensak)
+
+                    //kjøre ytelselist på normal
+                    if (krav == null) {
+                        krav = createKravDato(kravHistorikkMedUtland)
+                    }
+
+                    ytelselist.add(createYtelserItem(ytelseprmnd, pensak, personNr, penSaksnummer, andreinstitusjonerItem))
+                } catch (ex: Exception) {
+                    logger.error(ex.message, ex)
+                    ytelselist.add(createYtelseMedManglendeYtelse(pensak, personNr, penSaksnummer, andreinstitusjonerItem))
+                }
+            }
+
         }
 
         return Pensjon(

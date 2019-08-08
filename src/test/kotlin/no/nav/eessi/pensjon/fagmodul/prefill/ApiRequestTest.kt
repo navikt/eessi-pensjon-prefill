@@ -86,7 +86,7 @@ class ApiRequestTest {
                 buc = "P_BUC_06",
                 aktoerId = "0105094340092"
         )
-        ApiRequest.buildPrefillDataModelConfirm(mockData, "12345")
+        ApiRequest.buildPrefillDataModelConfirm(mockData, "12345", null)
     }
 
     @Test(expected = MangelfulleInndataException::class)
@@ -99,7 +99,7 @@ class ApiRequestTest {
                 buc = "P_BUC_06",
                 aktoerId = "0105094340092"
         )
-        ApiRequest.buildPrefillDataModelConfirm(mockData, "12345")
+        ApiRequest.buildPrefillDataModelConfirm(mockData, "12345", null)
     }
 
     @Test
@@ -110,7 +110,7 @@ class ApiRequestTest {
                 aktoerId = "0105094340092"
         )
 
-        val model = ApiRequest.buildPrefillDataModelConfirm(mockData, "12345")
+        val model = ApiRequest.buildPrefillDataModelConfirm(mockData, "12345", null)
 
         assertEquals("12345", model.personNr)
         assertEquals("12234", model.penSaksnummer)
@@ -121,6 +121,28 @@ class ApiRequestTest {
 
     }
 
+    @Test
+    fun `check on minimum valid request to model on P2100`() {
+        val mockData = ApiRequest(
+                sakId = "12234",
+                sed = "P2100",
+                aktoerId = "0105094340092",
+                avdodfnr = "010244212312"
+        )
+
+        val model = ApiRequest.buildPrefillDataModelConfirm(mockData, "12345", "2223312")
+
+        assertEquals("12345", model.personNr)
+        assertEquals("12234", model.penSaksnummer)
+        assertEquals("0105094340092", model.aktoerID)
+        assertEquals("P2100", model.getSEDid())
+        assertEquals("2223312", model.avdodAktorID)
+        assertEquals("010244212312", model.avdod)
+        assertEquals(SED::class.java, model.sed::class.java)
+
+    }
+
+
     @Test(expected = IllegalArgumentException::class)
     fun `check on aktoerId is null`() {
         val mockData = ApiRequest(
@@ -128,7 +150,7 @@ class ApiRequestTest {
                 sed = "P6000",
                 aktoerId = null
         )
-        ApiRequest.buildPrefillDataModelConfirm(mockData, "12345")
+        ApiRequest.buildPrefillDataModelConfirm(mockData, "12345", null)
     }
 
 }

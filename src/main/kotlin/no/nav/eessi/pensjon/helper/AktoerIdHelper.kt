@@ -14,6 +14,13 @@ class AktoerIdHelper(private val aktoerregisterService: AktoerregisterService) {
         if (aktorid.isNullOrBlank()) throw ManglerAktoerIdException("Mangler AktorId")
         return aktoerregisterService.hentGjeldendeNorskIdentForAktorId(aktorid)
     }
+
+    @Throws(AktoerregisterException::class, ManglerAktoerIdException::class)
+    fun hentAktoerForPin(fnr: String?): String {
+        if (fnr.isNullOrBlank()) throw ManglerAktoerIdException("Mangler fnr")
+        return aktoerregisterService.hentGjeldendeAktorIdForNorskIdent(fnr)
+    }
+
 }
 
 @ResponseStatus(value = HttpStatus.BAD_REQUEST)

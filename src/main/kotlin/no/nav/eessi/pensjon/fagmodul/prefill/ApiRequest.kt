@@ -1,5 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.prefill
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.fagmodul.models.SEDType
@@ -9,12 +10,14 @@ import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.ResponseStatus
 
 //Samme som SedRequest i frontend-api
+@JsonIgnoreProperties(ignoreUnknown = true)
 data class ApiRequest(
         val sakId: String,
         val vedtakId: String? = null,
         val kravId: String? = null,
         val aktoerId: String? = null,
         val fnr: String? = null,
+        val avdodfnr: String? = null,
         val payload: String? = null,
         val buc: String? = null,
         val sed: String? = null,
@@ -59,7 +62,7 @@ data class ApiRequest(
         }
 
         //validatate request and convert to PrefillDataModel
-        fun buildPrefillDataModelConfirm(request: ApiRequest, fodselsnr: String): PrefillDataModel {
+        fun buildPrefillDataModelConfirm(request: ApiRequest, fodselsnr: String, avdodaktoerID: String?): PrefillDataModel {
             return when {
                 //request.sakId == null -> throw MangelfulleInndataException("Mangler Saksnummer")
                 request.sed == null -> throw MangelfulleInndataException("Mangler SED")
@@ -73,6 +76,10 @@ data class ApiRequest(
                         personNr = fodselsnr
                         vedtakId = request.vedtakId ?: ""
                         partSedAsJson[request.sed] = request.payload ?: "{}"
+                    if (sed.sed == SEDType.P2100.name) {
+                        avdod = request.avdodfnr ?: throw MangelfulleInndataException("Mangler Personnr på Avdød")
+                        avdodAktorID = avdodaktoerID ?: throw MangelfulleInndataException("Mangler AktoerId på Avdød")
+                    }
 //                    if (request.payload != null) {
 //                        partSedAsJson[request.sed] = request.payload
 //                    }

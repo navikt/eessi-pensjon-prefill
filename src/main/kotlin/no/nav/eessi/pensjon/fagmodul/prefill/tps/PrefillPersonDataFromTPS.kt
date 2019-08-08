@@ -44,15 +44,20 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
         return try {
             val brukerTPS = hentBrukerTPS(ident)
             var adresse: Adresse? = null
+            var far: Foreldre? = null
+            var mor: Foreldre? = null
 
-            if(!isPersonAvdod(brukerTPS))
+            if(!isPersonAvdod(brukerTPS)) {
                 adresse = prefillAdresse.hentPersonAdresse(brukerTPS)
+                far = hentRelasjon(RelasjonEnum.FAR, brukerTPS)
+                mor = hentRelasjon(RelasjonEnum.MOR, brukerTPS)
+            }
 
             Bruker(
                     person = personData(brukerTPS),
-                    far = hentRelasjon(RelasjonEnum.FAR, brukerTPS),
-                    mor = hentRelasjon(RelasjonEnum.MOR, brukerTPS),
                     adresse = adresse,
+                    far = far,
+                    mor = mor,
                     bank = bank,
                     arbeidsforhold = ansettelsesforhold
             )

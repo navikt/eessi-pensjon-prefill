@@ -11,6 +11,7 @@ import no.nav.eessi.pensjon.fagmodul.eux.basismodel.BucSedResponse
 import no.nav.eessi.pensjon.fagmodul.eux.BucUtils
 import no.nav.eessi.pensjon.fagmodul.eux.EuxService
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ShortDocumentItem
+import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import no.nav.security.oidc.api.Protected
 import org.slf4j.LoggerFactory
@@ -35,7 +36,15 @@ class SedController(private val euxService: EuxService,
     @JsonInclude(JsonInclude.Include.NON_NULL)
     fun confirmDocument(@RequestBody request: ApiRequest): SED {
         logger.info("kaller /preview med request: $request")
-        return prefillService.prefillSed(ApiRequest.buildPrefillDataModelConfirm(request, aktoerIdHelper.hentPinForAktoer(request.aktoerId))).sed
+
+        val fodselsnr = aktoerIdHelper.hentPinForAktoer(request.aktoerId)
+        var avdodaktorid: String? = null
+        if (request.sed == SEDType.P2100.name) {
+            avdodaktorid = aktoerIdHelper.hentAktoerForPin (request.avdodfnr)
+        }
+        val prefillDatamodel = ApiRequest.buildPrefillDataModelConfirm(request, fodselsnr, avdodaktorid)
+
+        return prefillService.prefillSed(prefillDatamodel).sed
     }
 
 

@@ -171,7 +171,7 @@ class SedControllerTest {
         )
         whenever(mockAktoerIdHelper.hentPinForAktoer(ArgumentMatchers.anyString())).thenReturn("12345")
 
-        val utfyllMock = ApiRequest.buildPrefillDataModelConfirm(mockData, mockAktoerIdHelper.hentPinForAktoer(mockData.aktoerId))
+        val utfyllMock = ApiRequest.buildPrefillDataModelConfirm(mockData, mockAktoerIdHelper.hentPinForAktoer(mockData.aktoerId), null)
 
         utfyllMock.sed.nav = Nav(bruker = Bruker(person = Person(fornavn = "Dummy", etternavn = "Dummy", foedselsdato = "1900-10-11", kjoenn = "K")), krav = Krav("1937-12-11"))
         whenever(mockPrefillSED.prefill(any())).thenReturn(utfyllMock)
