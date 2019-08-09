@@ -2,9 +2,9 @@ package no.nav.eessi.pensjon.fagmodul.prefill
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
-import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
+import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.ResponseStatus
@@ -33,7 +33,7 @@ data class ApiRequest(
         private val logger = LoggerFactory.getLogger(ApiRequest::class.java)
 
         //validatate request and convert to PrefillDataModel
-        fun buildPrefillDataModelOnExisting(request: ApiRequest, fodselsnr: String): PrefillDataModel {
+        fun buildPrefillDataModelOnExisting(request: ApiRequest, fodselsnr: String, avdodaktoerID: String?): PrefillDataModel {
             return when {
                 //request.sakId == null -> throw MangelfulleInndataException("Mangler Saksnummer")
                 request.sed == null -> throw MangelfulleInndataException("Mangler SED")
@@ -52,6 +52,10 @@ data class ApiRequest(
                         euxCaseID = request.euxCaseId
                         institution = request.institutions
                         vedtakId = request.vedtakId ?: ""
+                        if (sed.sed == SEDType.P2100.name) {
+                            avdod = request.avdodfnr ?: throw MangelfulleInndataException("Mangler Personnr på Avdød")
+                            avdodAktorID = avdodaktoerID ?: throw MangelfulleInndataException("Mangler AktoerId på Avdød")
+                        }
                         partSedAsJson[request.sed] = request.payload ?: "{}"
                         skipSedkey = request.skipSEDkey
                                 ?: listOf("PENSED") //skipper all pensjon utfylling untatt kravdato

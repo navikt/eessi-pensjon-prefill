@@ -1,10 +1,10 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.person
 
-import no.nav.eessi.pensjon.fagmodul.sedmodel.*
 import no.nav.eessi.pensjon.fagmodul.prefill.model.BrukerInformasjon
 import no.nav.eessi.pensjon.fagmodul.prefill.model.Prefill
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillPersonDataFromTPS
+import no.nav.eessi.pensjon.fagmodul.sedmodel.*
 import no.nav.eessi.pensjon.utils.simpleFormat
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -100,6 +100,7 @@ class PrefillNav(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS,
                     logger.debug("2.0           Forsikret person")
                     utfyllingData.personNr
                 }
+        logger.debug("Valgt SubjectIdent: $subjektIdent")
         return preutfyllingPersonFraTPS.prefillBruker(
                 subjektIdent,
                 createBankData(utfyllingData),

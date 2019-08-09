@@ -1,15 +1,14 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed.krav
 
-import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.fagmodul.prefill.model.Prefill
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
-import no.nav.eessi.pensjon.fagmodul.prefill.model.ValidationException
 import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonHjelper
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillPersonDataFromTPS
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Bruker
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Nav
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Pensjon
+import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjoninformasjonException
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import org.slf4j.Logger
@@ -32,7 +31,6 @@ class PrefillP2100(private val prefillNav: PrefillNav,
                 + "\nSøker etter avdodaktor   : ${prefillData.avdodAktorID} "
                 + "\nerGyldigEtterlatt        : ${prefillData.erGyldigEtterlatt()} "
                 + "\nSøker etter gjenlaktoer  : ${prefillData.aktoerID} "
-
                 + "\n------------------| Preutfylling [$sedId] START |------------------ \n")
 
         val sed = prefillData.sed

@@ -61,6 +61,9 @@ class PrefillP7000_AP_21975717Test {
 
         assertEquals("OKOULOV", p7000.nav?.ektefelle?.person?.etternavn)
         assertEquals("M", p7000.pensjon?.bruker?.person?.kjoenn)
+
+        //"foedselsdato": "1951-11-07T00:00:00.000+0200",
+        assertEquals("1951-11-07", p7000.nav?.bruker?.person?.foedselsdato)
     }
 
     @Test

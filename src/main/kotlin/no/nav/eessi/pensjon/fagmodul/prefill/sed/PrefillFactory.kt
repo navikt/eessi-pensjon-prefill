@@ -1,19 +1,19 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed
 
-import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjon
 import no.nav.eessi.pensjon.fagmodul.prefill.model.Prefill
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonHjelper
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.PrefillP2000
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.PrefillP2200
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillPensjon
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillPerson
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.PrefillP2000
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.PrefillP2100
-import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillPersonDataFromTPS
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.PrefillP2200
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.PrefillP6000
+import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillPersonDataFromTPS
+import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
@@ -34,7 +34,6 @@ class PrefillFactory(private val prefillNav: PrefillNav,
         logger.info("mapping prefillClass to SED: $sedValue")
 
         return when (sedValue) {
-            //Status hva gjendstår
             SEDType.P6000 -> {
                 PrefillP6000(prefillNav, eessiInformasjon, dataFromPEN, dataFromTPS)
             }
@@ -44,7 +43,6 @@ class PrefillFactory(private val prefillNav: PrefillNav,
             SEDType.P2200 -> {
                 PrefillP2200(prefillNav, dataFromPEN, dataFromTPS)
             }
-            //Masse gjennstår?
             SEDType.P2100 -> {
                 PrefillP2100(prefillNav, dataFromPEN, dataFromTPS)
             }

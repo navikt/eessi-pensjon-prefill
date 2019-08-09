@@ -1,6 +1,7 @@
 package no.nav.eessi.pensjon.utils
 
 import org.junit.Test
+import java.text.ParseException
 import java.time.format.DateTimeParseException
 import javax.xml.datatype.DatatypeFactory
 import kotlin.test.assertEquals
@@ -21,6 +22,47 @@ class DateUtilsTest {
         assertNotNull(toRinaDate)
         assertEquals("2020-05-20", toRinaDate)
     }
+
+    @Test
+    fun `check XML calendar to Rina Date TZ2`() {
+        //<foedselsdato>1962-06-20+02:00</foedselsdato>
+        val xmlcal = DatatypeFactory.newInstance().newXMLGregorianCalendar()
+        xmlcal.month = 6
+        xmlcal.year = 1962
+        xmlcal.day = 20
+        xmlcal.timezone = +2
+        xmlcal.setTime(2, 0,0)
+        println(xmlcal.toString())
+
+        val toRinaDate = xmlcal.simpleFormat()
+
+        assertNotNull(toRinaDate)
+        assertEquals("1962-06-20", toRinaDate)
+    }
+
+    @Test
+    fun `check XML calendar to Rina Date TZ1`() {
+        val xmlcal = DatatypeFactory.newInstance().newXMLGregorianCalendar()
+        xmlcal.month = 6
+        xmlcal.year = 1962
+        xmlcal.day = 20
+        xmlcal.timezone = +1
+        xmlcal.setTime(2, 0,0)
+        println(xmlcal.toString())
+
+        val toRinaDate = xmlcal.simpleFormat()
+
+        assertNotNull(toRinaDate)
+        assertEquals("1962-06-20", toRinaDate)
+    }
+
+    @Test
+    fun checkXMLdatoNotflipWhenTimeZoneSet() {
+        val xmlcal = createXMLCalendarFromString("1962-06-20+02:00")
+        println("SimpleFormat: ${xmlcal.simpleFormat()}")
+        assertEquals("1962-06-20", xmlcal.simpleFormat())
+    }
+
 
     @Test
     fun `verify XML date is still 2016-01-01 to simpleFormat`() {
@@ -47,7 +89,7 @@ class DateUtilsTest {
 
     }
 
-    @Test(expected = DateTimeParseException::class)
+    @Test(expected = ParseException::class)
     fun `Test av konvertere datotekst til xmlkalender feiler`() {
         createXMLCalendarFromString("2016-Ø1-01")
     }
