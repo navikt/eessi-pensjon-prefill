@@ -281,7 +281,7 @@ class ArchitectureTest {
 
     @Test
     fun `tests should assert, not log`() {
-        noClasses()
+        noClasses().that().haveNameNotMatching(".*\\.logging\\..*") // we allow using slf4j in the logging-package
                 .should().dependOnClassesThat().resideInAPackage("org.slf4j..")
                 .because("Test should assert, not log; after you made your test the logs will not be checked")
                 .check(testClasses)
