@@ -43,7 +43,7 @@ class PrefillPersonDataFromTPSTest{
     fun testPaahentSivilstandArr9999BlirBlank() {
         val brukerTps = mockBrukerSivilstandTps("9999-01-01", "SKPQ")
 
-        val actualList = prefillPersonFromTPS.hentSivilstand(brukerTps)
+        val actualList = prefillPersonFromTPS.createSivilstand(brukerTps)
         val actual = actualList[0]
 
         assertEquals("", actual.fradato)
@@ -54,7 +54,7 @@ class PrefillPersonDataFromTPSTest{
     fun testPaahentSivilstandOk() {
         val brukerTps = mockBrukerSivilstandTps("1999-01-01", "UGIF")
 
-        val actualList = prefillPersonFromTPS.hentSivilstand(brukerTps)
+        val actualList = prefillPersonFromTPS.createSivilstand(brukerTps)
         val actual = actualList[0]
 
         assertEquals("1999-01-01", actual.fradato)
@@ -65,7 +65,7 @@ class PrefillPersonDataFromTPSTest{
     fun testPaahentSivilstandAar2099() {
         val brukerTps = mockBrukerSivilstandTps("2499-12-01", "REPA")
 
-        val actualList = prefillPersonFromTPS.hentSivilstand(brukerTps)
+        val actualList = prefillPersonFromTPS.createSivilstand(brukerTps)
         val actual = actualList[0]
 
         assertEquals("2499-12-01", actual.fradato)

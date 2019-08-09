@@ -209,25 +209,17 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
     //persondata - nav-sed format
     private fun personData(brukerTps: no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker): Person {
         logger.debug("2.1           Persondata (forsikret person / gjenlevende person / barn)")
-
-        val navn = brukerTps.personnavn as Personnavn
-        val kjonn = brukerTps.kjoenn
-        var sivilstand: List<SivilstandItem>? = null
-        if(!isPersonAvdod(brukerTps)) {
-            sivilstand = hentSivilstand(brukerTps)
-        }
-
         return Person(
                 //2.1.1     familiy name
-                etternavn = navn.etternavn,
+                etternavn = (brukerTps.personnavn as Personnavn).etternavn,
                 //2.1.2     forname
-                fornavn = navn.fornavn,
+                fornavn = (brukerTps.personnavn as Personnavn).fornavn,
                 //2.1.3
                 foedselsdato = datoFormat(brukerTps),
                 //2.1.4     //sex
-                kjoenn = mapKjonn(kjonn),
+                kjoenn = mapKjonn(brukerTps.kjoenn),
                 //2.1.6
-                fornavnvedfoedsel = navn.fornavn,
+                fornavnvedfoedsel = (brukerTps.personnavn as Personnavn).fornavn,
                 //2.1.7
                 pin = hentPersonPinNorIdent(brukerTps),
                 //2.2.1.1
@@ -235,7 +227,7 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
                 //2.1.8.1           place of birth
                 foedested = hentFodested(brukerTps),
                 //2.2.2
-                sivilstand = sivilstand
+                sivilstand = if (isPersonAvdod(brukerTps)) null else createSivilstand(brukerTps)
         )
     }
 
@@ -264,12 +256,10 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
     }
 
     //Sivilstand ENKE, PENS, SINGLE Familiestatus
-    fun hentSivilstand(brukerTps: no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker): List<SivilstandItem> {
+    fun createSivilstand(brukerTps: no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker): List<SivilstandItem> {
         logger.debug("2.2.2           Sivilstand / Familiestatus (01 Enslig, 02 Gift, 03 Samboer, 04 Partnerskal, 05 Skilt, 06 Skilt partner, 07 Separert, 08 Enke)")
         val sivilstand = brukerTps.sivilstand as Sivilstand
-
         val status = mapOf("GIFT" to "02", "REPA" to "04", "ENKE" to "08", "SAMB" to "03", "SEPA" to "07", "UGIF" to "01", "SKIL" to "05", "SKPA" to "06")
-
         return listOf(SivilstandItem(
                 fradato = sivilstand.fomGyldighetsperiode.simpleFormat(),
                 status = status[sivilstand.sivilstand.value]
