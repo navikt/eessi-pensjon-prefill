@@ -1,6 +1,7 @@
 package no.nav.eessi.pensjon.services.arkiv
 
 import io.micrometer.core.instrument.MeterRegistry
+import no.nav.eessi.pensjon.logging.RequestIdHeaderInterceptor
 import no.nav.eessi.pensjon.logging.RequestResponseLoggerInterceptor
 import no.nav.eessi.pensjon.security.oidc.OidcAuthorizationHeaderInterceptor
 import no.nav.security.oidc.context.OIDCRequestContextHolder
@@ -30,7 +31,9 @@ class SafRestTemplate(private val oidcRequestContextHolder: OIDCRequestContextHo
         return templateBuilder
                 .rootUri(graphQlUrl)
                 .errorHandler(DefaultResponseErrorHandler())
-                .additionalInterceptors(RequestResponseLoggerInterceptor(),
+                .additionalInterceptors(
+                        RequestIdHeaderInterceptor(),
+                        RequestResponseLoggerInterceptor(),
                         OidcAuthorizationHeaderInterceptor(oidcRequestContextHolder))
                 .customizers(MetricsRestTemplateCustomizer(registry, DefaultRestTemplateExchangeTagsProvider(), "eessipensjon_fagmodul_safGraphQL"))
                 .build().apply {
@@ -44,7 +47,9 @@ class SafRestTemplate(private val oidcRequestContextHolder: OIDCRequestContextHo
         return templateBuilder
                 .rootUri(restUrl)
                 .errorHandler(DefaultResponseErrorHandler())
-                .additionalInterceptors(RequestResponseLoggerInterceptor(),
+                .additionalInterceptors(
+                        RequestIdHeaderInterceptor(),
+                        RequestResponseLoggerInterceptor(),
                         OidcAuthorizationHeaderInterceptor(oidcRequestContextHolder))
                 .customizers(MetricsRestTemplateCustomizer(registry, DefaultRestTemplateExchangeTagsProvider(), "eessipensjon_fagmodul_safRest"))
                 .build().apply {

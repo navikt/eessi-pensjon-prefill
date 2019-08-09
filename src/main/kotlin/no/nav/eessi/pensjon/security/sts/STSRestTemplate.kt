@@ -1,6 +1,6 @@
 package no.nav.eessi.pensjon.security.sts
 
-import no.nav.eessi.pensjon.logging.RequestResponseLoggerInterceptor
+import no.nav.eessi.pensjon.logging.RequestIdHeaderInterceptor
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.web.client.RestTemplateBuilder
@@ -34,8 +34,9 @@ class STSRestTemplate {
         logger.info("Oppretter RestTemplate for: $baseUrl")
         return templateBuilder
                 .rootUri(baseUrl)
-                .additionalInterceptors(RequestResponseLoggerInterceptor())
-                .additionalInterceptors(BasicAuthenticationInterceptor(username, password))
+                .additionalInterceptors(
+                        RequestIdHeaderInterceptor(),
+                        BasicAuthenticationInterceptor(username, password))
                 .build().apply {
                     requestFactory = BufferingClientHttpRequestFactory(SimpleClientHttpRequestFactory())
                 }

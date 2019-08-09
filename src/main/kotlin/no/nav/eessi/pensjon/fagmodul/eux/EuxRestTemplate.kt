@@ -1,6 +1,7 @@
 package no.nav.eessi.pensjon.fagmodul.eux
 
 import io.micrometer.core.instrument.MeterRegistry
+import no.nav.eessi.pensjon.logging.RequestIdHeaderInterceptor
 import no.nav.eessi.pensjon.logging.RequestResponseLoggerInterceptor
 import no.nav.eessi.pensjon.security.oidc.OidcAuthorizationHeaderInterceptor
 import no.nav.security.oidc.context.OIDCRequestContextHolder
@@ -26,7 +27,9 @@ class EuxRestTemplate(private val oidcRequestContextHolder: OIDCRequestContextHo
         return templateBuilder
                 .rootUri(url)
                 .errorHandler(DefaultResponseErrorHandler())
-                .additionalInterceptors(RequestResponseLoggerInterceptor(),
+                .additionalInterceptors(
+                        RequestIdHeaderInterceptor(),
+                        RequestResponseLoggerInterceptor(),
                         OidcAuthorizationHeaderInterceptor(oidcRequestContextHolder))
                 .customizers(MetricsRestTemplateCustomizer(registry, DefaultRestTemplateExchangeTagsProvider(), "eessipensjon_fagmodul_eux"))
                 .build().apply {
