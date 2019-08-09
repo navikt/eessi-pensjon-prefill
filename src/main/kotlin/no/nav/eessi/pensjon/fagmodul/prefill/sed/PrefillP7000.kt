@@ -2,30 +2,22 @@ package no.nav.eessi.pensjon.fagmodul.prefill.sed
 
 import no.nav.eessi.pensjon.fagmodul.prefill.model.Prefill
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
-import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Bruker
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Ektefelle
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Institusjon
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Nav
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Pensjon
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Person
-import no.nav.eessi.pensjon.fagmodul.sedmodel.PinItem
-import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
+import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillPerson
+import no.nav.eessi.pensjon.fagmodul.sedmodel.*
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-class PrefillP7000(private val prefillNav: PrefillNav) : Prefill<SED> {
+class PrefillP7000(private val prefillPerson: PrefillPerson) : Prefill<SED> {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillP7000::class.java) }
 
     override fun prefill(prefillData: PrefillDataModel): SED {
 
-
-        val navsed = prefillNav.prefill(prefillData)
-
+        val sed = prefillPerson.prefill(prefillData)
         logger.debug("Tilpasser P7000 forenklet preutfylling")
-        val person = navsed.bruker?.person
-        val perspin = navsed.bruker?.person?.pin?.get(0)
+
+        val person = sed.nav?.bruker?.person
+        val perspin = sed.nav?.bruker?.person?.pin?.get(0)
 
         val p7000 = SED(
                 sed = "P7000",
@@ -49,16 +41,19 @@ class PrefillP7000(private val prefillNav: PrefillNav) : Prefill<SED> {
                                 )
                         ),
                         //mappe om etternavn til mappingfeil
-                        ektefelle = Ektefelle(person = Person(etternavn = navsed.bruker?.person?.etternavn))
+                        ektefelle = Ektefelle(person = Person(etternavn = sed.nav?.bruker?.person?.etternavn))
                 ),
                 //mappe om kjoenn for mappingfeil
-                pensjon = Pensjon(bruker = Bruker(person = Person(kjoenn = navsed.bruker?.person?.kjoenn)))
+                pensjon = Pensjon(
+                        //TODO trenger vi denne lenger? er mapping ok eller fortsatt feil?
+                        bruker = Bruker(person = Person(kjoenn = sed.nav?.bruker?.person?.kjoenn)),
+                        gjenlevende = sed.pensjon?.gjenlevende
+                )
         )
 
         logger.debug("Tilpasser P7000 forenklet preutfylling, Ferdig.")
 
         prefillData.sed = p7000
-
         return prefillData.sed
     }
 }
