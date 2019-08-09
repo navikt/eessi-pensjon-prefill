@@ -7,7 +7,6 @@ import no.nav.eessi.pensjon.fagmodul.eux.EuxService
 import no.nav.eessi.pensjon.fagmodul.eux.PinOgKrav
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.BucSedResponse
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ShortDocumentItem
-import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.prefill.ApiRequest
 import no.nav.eessi.pensjon.fagmodul.prefill.MangelfulleInndataException
 import no.nav.eessi.pensjon.fagmodul.prefill.PrefillService
@@ -179,14 +178,10 @@ class SedController(private val euxService: EuxService,
 
     //Hjelpe funksjon for å validere og hente aktoerid for evt. avdodfnr fra UI (P2100)
     fun getAvdodAktoerId(request: ApiRequest): String? {
-        var avdodaktorid: String? = null
-        if (request.sed == SEDType.P2100.name) {
-            val avdodfnr = request.avdodfnr ?: throw MangelfulleInndataException("Mangler fnr for avdød")
-            avdodaktorid = aktoerIdHelper.hentAktoerForPin (avdodfnr)
-        }
-        return avdodaktorid
+        return if ((request.buc ?: throw MangelfulleInndataException("Mangler Buc")) == "P_BUC_02")
+            aktoerIdHelper.hentAktoerForPin ((request.avdodfnr ?: throw MangelfulleInndataException("Mangler fnr for avdød")))
+        else null
     }
-
 
 }
 

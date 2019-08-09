@@ -107,6 +107,7 @@ class ApiRequestTest {
         val mockData = ApiRequest(
                 sakId = "12234",
                 sed = "P6000",
+                buc = "P_BUC_01",
                 aktoerId = "0105094340092"
         )
 
@@ -126,6 +127,7 @@ class ApiRequestTest {
         val mockData = ApiRequest(
                 sakId = "12234",
                 sed = "P2100",
+                buc = "P_BUC_02",
                 aktoerId = "0105094340092",
                 avdodfnr = "010244212312"
         )

@@ -35,7 +35,7 @@ data class ApiRequest(
         //validatate request and convert to PrefillDataModel
         fun buildPrefillDataModelOnExisting(request: ApiRequest, fodselsnr: String, avdodaktoerID: String?): PrefillDataModel {
             return when {
-                //request.sakId == null -> throw MangelfulleInndataException("Mangler Saksnummer")
+                request.buc == null -> throw MangelfulleInndataException("Mangler BUC")
                 request.sed == null -> throw MangelfulleInndataException("Mangler SED")
                 request.aktoerId == null -> throw MangelfulleInndataException("Mangler AktoerID")
                 request.euxCaseId == null -> throw MangelfulleInndataException("Mangler euxCaseId (RINANR)")
@@ -52,7 +52,7 @@ data class ApiRequest(
                         euxCaseID = request.euxCaseId
                         institution = request.institutions
                         vedtakId = request.vedtakId ?: ""
-                        if (sed.sed == SEDType.P2100.name) {
+                        if (request.buc == "P_BUC_02") {
                             avdod = request.avdodfnr ?: throw MangelfulleInndataException("Mangler Personnr på Avdød")
                             avdodAktorID = avdodaktoerID ?: throw MangelfulleInndataException("Mangler AktoerId på Avdød")
                         }
@@ -68,7 +68,7 @@ data class ApiRequest(
         //validatate request and convert to PrefillDataModel
         fun buildPrefillDataModelConfirm(request: ApiRequest, fodselsnr: String, avdodaktoerID: String?): PrefillDataModel {
             return when {
-                //request.sakId == null -> throw MangelfulleInndataException("Mangler Saksnummer")
+                request.buc == null -> throw MangelfulleInndataException("Mangler BUC")
                 request.sed == null -> throw MangelfulleInndataException("Mangler SED")
                 request.aktoerId == null -> throw MangelfulleInndataException("Mangler AktoerID")
 
@@ -80,7 +80,7 @@ data class ApiRequest(
                         personNr = fodselsnr
                         vedtakId = request.vedtakId ?: ""
                         partSedAsJson[request.sed] = request.payload ?: "{}"
-                    if (sed.sed == SEDType.P2100.name) {
+                    if (request.buc == "P_BUC_02") {
                         avdod = request.avdodfnr ?: throw MangelfulleInndataException("Mangler Personnr på Avdød")
                         avdodAktorID = avdodaktoerID ?: throw MangelfulleInndataException("Mangler AktoerId på Avdød")
                     }
