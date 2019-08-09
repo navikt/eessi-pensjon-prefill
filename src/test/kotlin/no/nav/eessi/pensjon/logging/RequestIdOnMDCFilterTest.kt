@@ -2,6 +2,8 @@ package no.nav.eessi.pensjon.logging
 
 import junit.framework.TestCase.assertNull
 import junit.framework.TestCase.assertTrue
+import no.nav.eessi.pensjon.logging.RequestIdOnMDCFilter.Companion.REQUEST_ID_HEADER
+import no.nav.eessi.pensjon.logging.RequestIdOnMDCFilter.Companion.REQUEST_ID_MDC_KEY
 import org.junit.Test
 import org.slf4j.MDC
 import org.springframework.mock.web.MockFilterChain
