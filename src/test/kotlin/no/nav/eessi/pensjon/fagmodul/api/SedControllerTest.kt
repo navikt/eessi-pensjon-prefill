@@ -1,32 +1,29 @@
 package no.nav.eessi.pensjon.fagmodul.api
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.eq
-import com.nhaarman.mockitokotlin2.never
-import com.nhaarman.mockitokotlin2.times
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
-import no.nav.eessi.pensjon.helper.AktoerIdHelper
-import no.nav.eessi.pensjon.fagmodul.models.*
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Nav
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Person
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Bruker
-import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillSED
-import no.nav.eessi.pensjon.fagmodul.prefill.ApiRequest
-import no.nav.eessi.pensjon.fagmodul.prefill.PrefillService
-import no.nav.eessi.pensjon.fagmodul.eux.basismodel.BucSedResponse
+import com.nhaarman.mockitokotlin2.*
 import no.nav.eessi.pensjon.fagmodul.eux.EuxService
+import no.nav.eessi.pensjon.fagmodul.eux.PinOgKrav
 import no.nav.eessi.pensjon.fagmodul.eux.SedDokumentIkkeOpprettetException
+import no.nav.eessi.pensjon.fagmodul.eux.basismodel.BucSedResponse
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ActionsItem
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Buc
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.DocumentsItem
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ParticipantsItem
+import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
+import no.nav.eessi.pensjon.fagmodul.prefill.ApiRequest
+import no.nav.eessi.pensjon.fagmodul.prefill.MangelfulleInndataException
+import no.nav.eessi.pensjon.fagmodul.prefill.PrefillService
+import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillSED
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Bruker
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Krav
-import no.nav.eessi.pensjon.fagmodul.eux.PinOgKrav
-import no.nav.eessi.pensjon.utils.*
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Nav
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Person
+import no.nav.eessi.pensjon.helper.AktoerIdHelper
+import no.nav.eessi.pensjon.utils.mapAnyToJson
+import no.nav.eessi.pensjon.utils.mapJsonToAny
+import no.nav.eessi.pensjon.utils.typeRefs
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -133,7 +130,7 @@ class SedControllerTest {
         )
 
         whenever(mockAktoerIdHelper.hentPinForAktoer(ArgumentMatchers.anyString())).thenReturn("12345")
-        val utfyllMock = ApiRequest.buildPrefillDataModelOnExisting(requestMock, mockAktoerIdHelper.hentPinForAktoer(requestMock.aktoerId))
+        val utfyllMock = ApiRequest.buildPrefillDataModelOnExisting(requestMock, mockAktoerIdHelper.hentPinForAktoer(requestMock.aktoerId), null)
 
         assertNotNull(utfyllMock.personNr)
         assertEquals("12345", utfyllMock.personNr)
@@ -359,7 +356,7 @@ class SedControllerTest {
         val currentX005 = DocumentsItem(type = "X005")
         whenever(mockBuc.documents).thenReturn(listOf(currentX005))
 
-        val dummyPrefillData = ApiRequest.buildPrefillDataModelOnExisting(apiRequestWith(euxCaseId), mockAktoerIdHelper.hentPinForAktoer(apiRequestWith(euxCaseId).aktoerId))
+        val dummyPrefillData = ApiRequest.buildPrefillDataModelOnExisting(apiRequestWith(euxCaseId), mockAktoerIdHelper.hentPinForAktoer(apiRequestWith(euxCaseId).aktoerId), null)
         whenever(mockPrefillSED.prefill(any())).thenReturn(dummyPrefillData)
 
         whenever(mockEuxService.opprettSedOnBuc(any(), eq(euxCaseId))).thenReturn(BucSedResponse(euxCaseId, "1"))
@@ -386,7 +383,7 @@ class SedControllerTest {
 
         whenever(mockBuc.participants).thenReturn(listOf(ParticipantsItem()))
 
-        val dummyPrefillData = ApiRequest.buildPrefillDataModelOnExisting(apiRequestWith(euxCaseId), mockAktoerIdHelper.hentPinForAktoer(apiRequestWith(euxCaseId).aktoerId))
+        val dummyPrefillData = ApiRequest.buildPrefillDataModelOnExisting(apiRequestWith(euxCaseId), mockAktoerIdHelper.hentPinForAktoer(apiRequestWith(euxCaseId).aktoerId), null)
         whenever(mockPrefillSED.prefill(any())).thenReturn(dummyPrefillData)
 
         whenever(mockEuxService.opprettSedOnBuc(any(), eq(euxCaseId))).thenReturn(BucSedResponse(euxCaseId, "1"))
@@ -411,7 +408,7 @@ class SedControllerTest {
 
         whenever(mockBuc.documents).thenReturn(listOf())
 
-        val dummyPrefillData = ApiRequest.buildPrefillDataModelOnExisting(apiRequestWith(euxCaseId), mockAktoerIdHelper.hentPinForAktoer(apiRequestWith(euxCaseId).aktoerId))
+        val dummyPrefillData = ApiRequest.buildPrefillDataModelOnExisting(apiRequestWith(euxCaseId), mockAktoerIdHelper.hentPinForAktoer(apiRequestWith(euxCaseId).aktoerId), null)
         whenever(mockPrefillSED.prefill(any())).thenReturn(dummyPrefillData)
 
         whenever(mockEuxService.opprettSedOnBuc(any(), eq(euxCaseId))).thenReturn(BucSedResponse(euxCaseId, "1"))
@@ -440,7 +437,7 @@ class SedControllerTest {
         val currentX005 = DocumentsItem()
         whenever(mockBuc.documents).thenReturn(listOf(currentX005))
 
-        val dummyPrefillData = ApiRequest.buildPrefillDataModelOnExisting(apiRequestWith(euxCaseId), mockAktoerIdHelper.hentPinForAktoer(apiRequestWith(euxCaseId).aktoerId))
+        val dummyPrefillData = ApiRequest.buildPrefillDataModelOnExisting(apiRequestWith(euxCaseId), mockAktoerIdHelper.hentPinForAktoer(apiRequestWith(euxCaseId).aktoerId), null)
         whenever(mockPrefillSED.prefill(any())).thenReturn(dummyPrefillData)
 
         whenever(mockEuxService.opprettSedOnBuc(any(), eq(euxCaseId))).thenThrow(SedDokumentIkkeOpprettetException("Expected!"))
@@ -451,6 +448,52 @@ class SedControllerTest {
         )
         sedController.addInstutionAndDocument(apiRequestWith(euxCaseId, newParticipants))
     }
+
+
+    @Test
+    fun `call getAvdodAktoerId| expect valid aktoerId when avdodfnr excist and sed is P2100`() {
+        val apireq = ApiRequest(
+                subjectArea = "Pensjon",
+                sakId = "EESSI-PEN-123",
+                sed = "P2100",
+                buc = "P_BUC_02",
+                aktoerId = "0105094340092",
+                avdodfnr = "12345566"
+
+        )
+        doReturn("12345").whenever(mockAktoerIdHelper).hentPinForAktoer(ArgumentMatchers.anyString())
+        doReturn("1122334455").whenever(mockAktoerIdHelper).hentAktoerForPin (ArgumentMatchers.anyString())
+
+        val result = sedController.getAvdodAktoerId(request = apireq)
+        assertEquals("1122334455", result)
+    }
+
+    @Test(expected = MangelfulleInndataException::class)
+    fun `call getAvdodAktoerId| expect error when avdodfnr is missing and sed is P2100`() {
+        val apireq = ApiRequest(
+                subjectArea = "Pensjon",
+                sakId = "EESSI-PEN-123",
+                sed = "P2100",
+                buc = "P_BUC_02",
+                aktoerId = "0105094340092"
+        )
+        sedController.getAvdodAktoerId(request = apireq)
+    }
+
+    @Test
+    fun `call getAvdodAktoerId| expect null value when sed is P2100`() {
+        val apireq = ApiRequest(
+                subjectArea = "Pensjon",
+                sakId = "EESSI-PEN-123",
+                sed = "P2000",
+                buc = "P_BUC_01",
+                aktoerId = "0105094340092",
+                avdodfnr = "12345566"
+        )
+        val result = sedController.getAvdodAktoerId(request = apireq)
+        assertEquals(null, result)
+    }
+
 
     private fun apiRequestWith(euxCaseId: String, institutions: List<InstitusjonItem> = listOf()): ApiRequest {
         return ApiRequest(

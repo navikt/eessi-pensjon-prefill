@@ -2,16 +2,17 @@ package no.nav.eessi.pensjon.fagmodul.api
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import io.swagger.annotations.ApiOperation
-import no.nav.eessi.pensjon.fagmodul.eux.PinOgKrav
-import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
-import no.nav.eessi.pensjon.helper.AktoerIdHelper
-import no.nav.eessi.pensjon.fagmodul.prefill.ApiRequest
-import no.nav.eessi.pensjon.fagmodul.prefill.PrefillService
-import no.nav.eessi.pensjon.fagmodul.eux.basismodel.BucSedResponse
 import no.nav.eessi.pensjon.fagmodul.eux.BucUtils
 import no.nav.eessi.pensjon.fagmodul.eux.EuxService
+import no.nav.eessi.pensjon.fagmodul.eux.PinOgKrav
+import no.nav.eessi.pensjon.fagmodul.eux.basismodel.BucSedResponse
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ShortDocumentItem
 import no.nav.eessi.pensjon.fagmodul.models.SEDType
+import no.nav.eessi.pensjon.fagmodul.prefill.ApiRequest
+import no.nav.eessi.pensjon.fagmodul.prefill.MangelfulleInndataException
+import no.nav.eessi.pensjon.fagmodul.prefill.PrefillService
+import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
+import no.nav.eessi.pensjon.helper.AktoerIdHelper
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import no.nav.security.oidc.api.Protected
 import org.slf4j.LoggerFactory
@@ -36,17 +37,9 @@ class SedController(private val euxService: EuxService,
     @JsonInclude(JsonInclude.Include.NON_NULL)
     fun confirmDocument(@RequestBody request: ApiRequest): SED {
         logger.info("kaller /preview med request: $request")
-
-        val fodselsnr = aktoerIdHelper.hentPinForAktoer(request.aktoerId)
-        var avdodaktorid: String? = null
-        if (request.sed == SEDType.P2100.name) {
-            avdodaktorid = aktoerIdHelper.hentAktoerForPin (request.avdodfnr)
-        }
-        val prefillDatamodel = ApiRequest.buildPrefillDataModelConfirm(request, fodselsnr, avdodaktorid)
-
-        return prefillService.prefillSed(prefillDatamodel).sed
+        val dataModel = ApiRequest.buildPrefillDataModelConfirm(request, aktoerIdHelper.hentPinForAktoer(request.aktoerId), getAvdodAktoerId(request))
+        return prefillService.prefillSed(dataModel).sed
     }
-
 
     //** oppdatert i api 18.02.2019
     @ApiOperation("Sender valgt NavSed på rina med valgt documentid og bucid, ut til eu/eøs, ny api kall til eux")
@@ -81,14 +74,12 @@ class SedController(private val euxService: EuxService,
     }
 
     //** oppdatert i api 18.02.2019
-    @ApiOperation("legge til SED på et eksisterende Rina document. kjører preutfylling, ny api kall til eux")
+    @ApiOperation("legge til Deltaker(e) og SED på et eksisterende Rina document. kjører preutfylling, ny api kall til eux")
     @PostMapping("/add")
     fun addInstutionAndDocument(@RequestBody request: ApiRequest): ShortDocumentItem {
+        val dataModel = ApiRequest.buildPrefillDataModelOnExisting(request, aktoerIdHelper.hentPinForAktoer(request.aktoerId), getAvdodAktoerId(request))
 
         logger.info("kaller add (institutions and sed)")
-
-        val dataModel = ApiRequest.buildPrefillDataModelOnExisting(request, aktoerIdHelper.hentPinForAktoer(request.aktoerId))
-
         logger.debug("Prøver å legge til Deltaker/Institusions på buc samt prefillSed og sende inn til Rina ")
         val bucUtil = BucUtils(euxService.getBuc(dataModel.euxCaseID))
         val nyeDeltakere = bucUtil.findNewParticipants(dataModel.getInstitutionsList())
@@ -112,23 +103,21 @@ class SedController(private val euxService: EuxService,
     }
 
     //** oppdatert i api 18.02.2019
-    @ApiOperation("legge til SED på et eksisterende Rina document. kjører preutfylling, ny api kall til eux")
+    @ApiOperation("legge til SED på et eksisterende Rina document. kjører preutfylling, (ingen deltaker legges til) ny api kall til eux")
     @PostMapping("/addSed")
     fun addDocument(@RequestBody request: ApiRequest): ShortDocumentItem {
-        val dataModel = ApiRequest.buildPrefillDataModelOnExisting(request, aktoerIdHelper.hentPinForAktoer(request.aktoerId))
+        val dataModel = ApiRequest.buildPrefillDataModelOnExisting(request, aktoerIdHelper.hentPinForAktoer(request.aktoerId),  getAvdodAktoerId(request))
         val data = prefillService.prefillSed(dataModel)
         logger.info("kaller add med request: $request")
         val docresult = euxService.opprettSedOnBuc(data.sed, data.euxCaseID)
         return BucUtils(euxService.getBuc(docresult.caseId)).findDocument(docresult.documentId)
-
     }
 
 
     //** oppdatert i api 18.02.2019
-    @ApiOperation("Kjører prosess OpprettBuCogSED på EUX for å få opprette et RINA dokument med en SED, ny api kall til eux")
+    @ApiOperation("Kjører prosess OpprettBuCogSED på EUX for å få opprette et RINA dokument med en SED, (Utgår?) ny api kall til eux")
     @PostMapping("/buc/create")
     fun createDocument(@RequestBody request: ApiRequest): BucSedResponse {
-
         logger.info("kaller type/create med request: $request")
         val dataModel = ApiRequest.buildPrefillDataModelOnNew(request, aktoerIdHelper.hentPinForAktoer(request.aktoerId))
         val data = prefillService.prefillSed(dataModel)
@@ -147,6 +136,7 @@ class SedController(private val euxService: EuxService,
         return BucUtils(euxService.getBuc(euxcaseid)).getAllDocuments()
     }
 
+    //TODO endre denne til å gå til denne: /cpi/buc/{RinaSakId}/sedtyper  (istede for benytte seg av egen bucutil)
     @ApiOperation("henter ut en liste av SED fra en valgt type, men bruk av sedType. ny api kall til eux")
     @GetMapping("list/{euxcaseid}/{sedtype}")
     fun getDocumentlist(@PathVariable("euxcaseid", required = true) euxcaseid: String,
@@ -186,6 +176,17 @@ class SedController(private val euxService: EuxService,
         return euxService.hentFnrOgYtelseKravtype(rinanr, documentid)
 
     }
+
+    //Hjelpe funksjon for å validere og hente aktoerid for evt. avdodfnr fra UI (P2100)
+    fun getAvdodAktoerId(request: ApiRequest): String? {
+        var avdodaktorid: String? = null
+        if (request.sed == SEDType.P2100.name) {
+            val avdodfnr = request.avdodfnr ?: throw MangelfulleInndataException("Mangler fnr for avdød")
+            avdodaktorid = aktoerIdHelper.hentAktoerForPin (avdodfnr)
+        }
+        return avdodaktorid
+    }
+
 
 }
 

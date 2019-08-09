@@ -31,7 +31,6 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
 
     fun isPersonAvdod(personTPS: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person) : Boolean {
         val personstatus = hentPersonStatus(personTPS)
-
         if (personstatus == "DØD") {
             logger.debug("Person er avdod (ingen adresse å hente).")
             return true
@@ -213,6 +212,10 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
 
         val navn = brukerTps.personnavn as Personnavn
         val kjonn = brukerTps.kjoenn
+        var sivilstand: List<SivilstandItem>? = null
+        if(!isPersonAvdod(brukerTps)) {
+            sivilstand = hentSivilstand(brukerTps)
+        }
 
         return Person(
                 //2.1.1     familiy name
@@ -232,7 +235,7 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
                 //2.1.8.1           place of birth
                 foedested = hentFodested(brukerTps),
                 //2.2.2
-                sivilstand = hentSivilstand(brukerTps)
+                sivilstand = sivilstand
         )
     }
 
