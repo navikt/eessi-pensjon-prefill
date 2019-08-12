@@ -10,8 +10,8 @@ data class Nav(
 
         //X005
         val sak: Navsak? = null,
-        //P10000
-        val annenperson: Bruker? = null,
+        //P10000 hvordan få denne til å bli val?
+        var annenperson: Bruker? = null,
 
         //H120
         val endredeforhold: Endredeforhold? = null,
@@ -233,8 +233,8 @@ data class Person(
         val sivilstand: List<SivilstandItem>? = null,   //familiestatus
         val relasjontilavdod: RelasjonAvdodItem? = null, //5.2.5 P2100
         val nyttEkteskapPartnerskapEtterForsikredeDod: NyttEkteskapPartnerskap? = null, //5.3.4 P2100
-        val rolle: String? = null  //3.1 i P10000
-
+        //noe enkel måte å få denne til å forbli val?
+        var rolle: String? = null  //3.1 i P10000
 )
 
 data class DodsDetalj(
