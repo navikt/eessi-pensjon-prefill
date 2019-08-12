@@ -14,8 +14,6 @@ class PrefillDefaultSED(private val prefillPerson: PrefillPerson) : Prefill<SED>
     override fun prefill(prefillData: PrefillDataModel): SED {
 
         logger.info("Default SED prefill [${prefillData.getSEDid()}]")
-
-        //return prefillData.sed
         return prefillPerson.prefill(prefillData)
     }
 

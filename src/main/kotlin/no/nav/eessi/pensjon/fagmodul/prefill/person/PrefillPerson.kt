@@ -38,12 +38,8 @@ class PrefillPerson(private val prefillNav: PrefillNav, private val prefilliPens
         logger.debug("[${prefillData.getSEDid()}] Preutfylling Utfylling NAV")
 
         try {
+            //henter opp pensjondata (her kun gjennlevende)
             sed.pensjon = prefilliPensjon.prefill(prefillData)
-//            if (prefillData.kanFeltSkippes("PENSED")) {
-//                //vi skal ha blank pensjon ved denne toggle
-//                sed.pensjon = Pensjon(gjenlevende = pensjon.gjenlevende)
-//                //henter opp pensjondata
-//            }
             logger.debug("[${prefillData.getSEDid()}] Preutfylling Utfylling Pensjon")
         } catch (pen: PensjoninformasjonException) {
             logger.error(pen.message)
