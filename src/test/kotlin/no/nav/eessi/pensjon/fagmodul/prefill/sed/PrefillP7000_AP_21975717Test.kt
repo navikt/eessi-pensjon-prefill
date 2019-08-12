@@ -1,13 +1,15 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed
 
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
-import no.nav.eessi.pensjon.fagmodul.prefill.tps.FodselsnummerMother.generateRandomFnr
 import no.nav.eessi.pensjon.fagmodul.prefill.model.Prefill
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
-import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PersonDataFromTPS
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.setupPersondataFraTPS
+import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
+import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillPensjon
+import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillPerson
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.readJsonResponse
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.setupPersondataFraTPS
+import no.nav.eessi.pensjon.fagmodul.prefill.tps.FodselsnummerMother.generateRandomFnr
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.utils.validateJson
 import org.junit.Before
@@ -35,10 +37,12 @@ class PrefillP7000_AP_21975717Test {
                 PersonDataFromTPS.MockTPS("Person-12000-EKTE.json", generateRandomFnr(70), PersonDataFromTPS.MockTPS.TPSType.EKTE)
         ))
 
-        prefill = PrefillP7000(
-                prefillNav = PrefillNav(
-                        preutfyllingPersonFraTPS = persondataFraTPS,
-                        institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO"))
+        val prefillPensjon = PrefillPensjon(persondataFraTPS)
+
+        val prefillNav = PrefillNav(preutfyllingPersonFraTPS = persondataFraTPS,
+                institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO")
+
+        prefill = PrefillP7000(PrefillPerson(prefillNav, prefillPensjon))
 
         prefillData = PrefillDataModel().apply {
             rinaSubject = "Pensjon"

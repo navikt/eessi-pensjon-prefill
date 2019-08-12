@@ -1,10 +1,10 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.person
 
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Pensjon
-import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjoninformasjonException
-import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.fagmodul.prefill.model.Prefill
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Pensjon
+import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
+import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjoninformasjonException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
@@ -38,14 +38,8 @@ class PrefillPerson(private val prefillNav: PrefillNav, private val prefilliPens
         logger.debug("[${prefillData.getSEDid()}] Preutfylling Utfylling NAV")
 
         try {
-            if (prefillData.kanFeltSkippes("PENSED")) {
-                //vi skal ha blank pensjon ved denne toggle
-                sed.pensjon = null
-
-                //henter opp pensjondata
-            } else {
-                sed.pensjon = prefilliPensjon.prefill(prefillData)
-            }
+            //henter opp pensjondata (her kun gjennlevende)
+            sed.pensjon = prefilliPensjon.prefill(prefillData)
             logger.debug("[${prefillData.getSEDid()}] Preutfylling Utfylling Pensjon")
         } catch (pen: PensjoninformasjonException) {
             logger.error(pen.message)
