@@ -4,20 +4,22 @@ import com.google.common.base.Preconditions
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.BucSedResponse
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Rinasak
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Vedlegg
-import no.nav.eessi.pensjon.utils.mapJsonToAny
-import no.nav.eessi.pensjon.utils.typeRef
-import no.nav.eessi.pensjon.utils.typeRefs
+import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Buc
 import no.nav.eessi.pensjon.fagmodul.metrics.getCounter
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
+import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Krav
 import no.nav.eessi.pensjon.fagmodul.sedmodel.PinItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
-import no.nav.eessi.pensjon.fagmodul.models.SEDType
-import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Buc
+import no.nav.eessi.pensjon.utils.mapJsonToAny
+import no.nav.eessi.pensjon.utils.typeRef
+import no.nav.eessi.pensjon.utils.typeRefs
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Description
+import org.springframework.core.io.ByteArrayResource
 import org.springframework.http.*
 import org.springframework.stereotype.Service
+import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.HttpServerErrorException
@@ -26,8 +28,6 @@ import org.springframework.web.client.RestTemplate
 import org.springframework.web.util.UriComponentsBuilder
 import java.io.IOException
 import java.util.*
-import org.springframework.core.io.ByteArrayResource
-import org.springframework.util.LinkedMultiValueMap
 
 
 @Service
@@ -439,26 +439,33 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
         }
     }
 
-    fun putBucDeltager(euxCaseId: String, deltaker: String): Boolean {
-        Preconditions.checkArgument(deltaker.contains(":"), "ikke korrekt formater deltager/Institusjooonner... ")
 
+    fun convertListInstitusjonItemToString(deltakere: List<InstitusjonItem>): String {
+        val encodedList = mutableListOf<String>()
+        deltakere.forEach { item ->
+            Preconditions.checkArgument(item.institution.contains(":"), "ikke korrekt formater deltager/Institusjooonner... ")
+            encodedList.add("&mottakere=${item.institution}")
+        }
+        return encodedList.joinToString(separator = "")
+    }
+    fun putBucMottakere(euxCaseId: String, deltaker: List<InstitusjonItem>): Boolean {
+        //cpi/buc/245580/mottakere?KorrelasjonsId=23424&mottakere=NO%3ANAVT003&mottakere=NO%3ANAVT008"
         val correlationId = UUID.randomUUID().toString()
-
-        val builder = UriComponentsBuilder.fromPath("/buc/$euxCaseId/bucdeltakere")
-                .queryParam("MottakerId", deltaker)
+        val builder = UriComponentsBuilder.fromPath("/buc/$euxCaseId/mottakere")
                 .queryParam("KorrelasjonsId", correlationId)
                 .build()
 
+        val url = builder.toUriString() + convertListInstitusjonItemToString(deltaker)
 
         logger.debug("Kontakter EUX for å legge til deltager: $deltaker med korrelasjonId: $correlationId på type: $euxCaseId")
-         try {
+        try {
             val response = euxOidcRestTemplate.exchange(
-                    builder.toUriString(),
+                    url,
                     HttpMethod.PUT,
                     null,
                     String::class.java)
 
-           return response.statusCode == HttpStatus.OK
+            return response.statusCode == HttpStatus.OK
         } catch (ia: IllegalArgumentException) {
             logger.error("noe feil? exception ${ia.message}", ia)
             throw GenericUnprocessableEntity(ia.message!!)
@@ -475,6 +482,7 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
             logger.error("Annen uspesefikk feil oppstod mellom fagmodul og eux ${ex.message}", ex)
             throw ex
         }
+
     }
 
     fun leggTilVedleggPaaDokument(aktoerId: String,
@@ -512,22 +520,25 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
     //Legger en eller flere deltakere/institusjonItem inn i Rina. (Itererer for hver en)
     fun addDeltagerInstitutions(euxCaseId: String, mottaker: List<InstitusjonItem>) : Boolean {
         logger.debug("Prøver å legge til liste over nye InstitusjonItem til Rina ")
-        try {
-            mottaker.forEach {
-                val mottakerItem = it.checkAndConvertInstituion()
-                logger.debug("putter $mottaker på Rina buc $euxCaseId")
-                putBucDeltager(euxCaseId, mottakerItem)
-                //Kan fjernes: Sjekk opp med EUX når de legger in støtte for å legge til flere Deltakere.
-                if (mottaker.size > 1) {
-                    logger.debug("Prøver å sove litt etter å lagt til Deltaker til Rina: $mottakerItem")
-                    Thread.sleep(3000)
-                }
-            }
-            return true
-        } catch (ex: Exception) {
-            logger.error("Error legge til deltager/instutsjoner ved sed/Buc $euxCaseId", ex)
-            throw ex
-        }
+
+        return putBucMottakere(euxCaseId, mottaker)
+
+//        try {
+//            mottaker.forEach {
+//                val mottakerItem = it.checkAndConvertInstituion()
+//                logger.debug("putter $mottaker på Rina buc $euxCaseId")
+//                putBucDeltager(euxCaseId, mottakerItem)
+//                //Kan fjernes: Sjekk opp med EUX når de legger in støtte for å legge til flere Deltakere.
+//                if (mottaker.size > 1) {
+//                    logger.debug("Prøver å sove litt etter å lagt til Deltaker til Rina: $mottakerItem")
+//                    Thread.sleep(3000)
+//                }
+//            }
+//            return true
+//        } catch (ex: Exception) {
+//            logger.error("Error legge til deltager/instutsjoner ved sed/Buc $euxCaseId", ex)
+//            throw ex
+//        }
     }
 
     //Henter ut Kravtype og Fnr fra P2100 og P15000

@@ -3,11 +3,14 @@ package no.nav.eessi.pensjon.fagmodul.eux
 import com.nhaarman.mockitokotlin2.*
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.BucSedResponse
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Rinasak
+import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.PinItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
-import no.nav.eessi.pensjon.utils.*
+import no.nav.eessi.pensjon.utils.mapAnyToJson
+import no.nav.eessi.pensjon.utils.mapJsonToAny
+import no.nav.eessi.pensjon.utils.typeRefs
+import no.nav.eessi.pensjon.utils.validateJson
 import org.junit.After
-import org.junit.Assert
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
@@ -19,11 +22,13 @@ import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.junit.MockitoJUnitRunner
 import org.skyscreamer.jsonassert.JSONAssert
-import org.springframework.http.*
+import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpMethod
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.web.client.*
 import org.springframework.web.util.UriComponentsBuilder
 import java.io.IOException
-import java.lang.IllegalArgumentException
 import java.nio.charset.Charset
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -426,7 +431,7 @@ class EuxServiceTest {
 
     @Test(expected = IllegalArgumentException::class)
     fun callingEuxServicePutBucDeltager_WrongParticipantInput() {
-        service.putBucDeltager("126552","NO")
+        service.putBucMottakere ("126552", listOf(InstitusjonItem("NO","NAVT","Dummy")))
     }
 
     @Test(expected = HttpClientErrorException::class)
@@ -440,7 +445,7 @@ class EuxServiceTest {
                 eq(String::class.java))
         ).thenThrow(clientError)
 
-        service.putBucDeltager("126552","NO:NAVT007")
+        service.putBucMottakere("126552", listOf(InstitusjonItem("NO","NO:NAVT007","NAV")))
     }
 
     @Test(expected = HttpServerErrorException::class)
@@ -454,7 +459,8 @@ class EuxServiceTest {
                 eq(String::class.java))
         ).thenThrow(serverError)
 
-        service.putBucDeltager("122732","NO:NAVT02")
+        //service.putBucDeltager("122732","NO:NAVT02")
+        service.putBucMottakere("122732", listOf(InstitusjonItem("NO","NO:NAVT02","NAV")))
     }
 
     @Test(expected = IOException::class)
@@ -466,7 +472,7 @@ class EuxServiceTest {
                 eq(String::class.java))
         ).thenThrow(ResourceAccessException("I/O Error"))
 
-        service.putBucDeltager("122732","NO:NAVT02")
+        service.putBucMottakere("122732", listOf(InstitusjonItem("NO","NO:NAVT02","NAV")))
     }
 
 
@@ -482,8 +488,8 @@ class EuxServiceTest {
                 eq(String::class.java))
         ).thenReturn(theResponse)
 
-        val result = service.putBucDeltager("122732","NO:NAVT005")
-        assertEquals(true,result)
+        val result = service.putBucMottakere("122732", listOf(InstitusjonItem("NO","NO:NAVT005","NAV")))
+        assertEquals(true, result)
 
     }
 
@@ -612,12 +618,25 @@ class EuxServiceTest {
         var buc = "P_BUC_01"
         var expectedResponse = listOf("P2000")
         var generatedResponse = EuxService.getAvailableSedOnBuc (buc)
-        Assert.assertEquals(generatedResponse, expectedResponse)
+        assertEquals(generatedResponse, expectedResponse)
 
         buc = "P_BUC_06"
         expectedResponse = listOf("P5000", "P6000", "P7000", "P10000")
         generatedResponse = EuxService.getAvailableSedOnBuc(buc)
-        Assert.assertEquals(generatedResponse, expectedResponse)
+        assertEquals(generatedResponse, expectedResponse)
+    }
+
+    @Test
+    fun UriBuilderForMottakere() {
+        val euxCaseId = "1234"
+        val correlationId = 123456778
+        val deltaker = listOf(InstitusjonItem("NO","NO:NAV02","NAV"), InstitusjonItem("SE", "SE:SE2", "SVER"))
+        val builder = UriComponentsBuilder.fromPath("/buc/$euxCaseId/mottakere")
+                .queryParam("KorrelasjonsId", correlationId)
+                .build()
+        val url = builder.toUriString() + service.convertListInstitusjonItemToString(deltaker)
+        println(url)
+        assertEquals("/buc/1234/mottakere?KorrelasjonsId=123456778&mottakere=NO:NAV02&mottakere=SE:SE2", url)
     }
 
 
