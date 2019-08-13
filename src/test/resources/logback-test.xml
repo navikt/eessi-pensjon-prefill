@@ -4,6 +4,6 @@
     <include resource="org/springframework/boot/logging/logback/base.xml"/>
 
     <logger name="no.nav" level="DEBUG"/>
-    <!--<logger name="no.nav.eessi.eessifagmodul.logging.RequestResponseLoggerInterceptor" level="DEBUG"/>-->
+    <!--<logger name="no.nav.eessi.pensjon.logging.RequestResponseLoggerInterceptor" level="DEBUG"/>-->
 
 </configuration>
