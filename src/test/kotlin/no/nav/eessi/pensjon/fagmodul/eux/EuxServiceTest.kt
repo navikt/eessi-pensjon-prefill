@@ -459,7 +459,6 @@ class EuxServiceTest {
                 eq(String::class.java))
         ).thenThrow(serverError)
 
-        //service.putBucDeltager("122732","NO:NAVT02")
         service.putBucMottakere("122732", listOf(InstitusjonItem("NO","NO:NAVT02","NAV")))
     }
 
@@ -627,7 +626,7 @@ class EuxServiceTest {
     }
 
     @Test
-    fun UriBuilderForMottakere() {
+    fun gittEnGyldigListeAvInstitusjonerNårHttpUrlGenereresSåGenererEnListeAvMottakereSomPathParam() {
         val euxCaseId = "1234"
         val correlationId = 123456778
         val deltaker = listOf(InstitusjonItem("NO","NO:NAV02","NAV"), InstitusjonItem("SE", "SE:SE2", "SVER"))
@@ -638,8 +637,5 @@ class EuxServiceTest {
         println(url)
         assertEquals("/buc/1234/mottakere?KorrelasjonsId=123456778&mottakere=NO:NAV02&mottakere=SE:SE2", url)
     }
-
-
-
 }
 

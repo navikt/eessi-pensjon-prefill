@@ -522,23 +522,6 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
         logger.debug("Prøver å legge til liste over nye InstitusjonItem til Rina ")
 
         return putBucMottakere(euxCaseId, mottaker)
-
-//        try {
-//            mottaker.forEach {
-//                val mottakerItem = it.checkAndConvertInstituion()
-//                logger.debug("putter $mottaker på Rina buc $euxCaseId")
-//                putBucDeltager(euxCaseId, mottakerItem)
-//                //Kan fjernes: Sjekk opp med EUX når de legger in støtte for å legge til flere Deltakere.
-//                if (mottaker.size > 1) {
-//                    logger.debug("Prøver å sove litt etter å lagt til Deltaker til Rina: $mottakerItem")
-//                    Thread.sleep(3000)
-//                }
-//            }
-//            return true
-//        } catch (ex: Exception) {
-//            logger.error("Error legge til deltager/instutsjoner ved sed/Buc $euxCaseId", ex)
-//            throw ex
-//        }
     }
 
     //Henter ut Kravtype og Fnr fra P2100 og P15000
