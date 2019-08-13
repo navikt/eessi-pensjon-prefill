@@ -1,6 +1,7 @@
 package no.nav.eessi.pensjon.services.pensjonsinformasjon
 
 import io.micrometer.core.instrument.MeterRegistry
+import no.nav.eessi.pensjon.logging.RequestIdHeaderInterceptor
 import no.nav.eessi.pensjon.logging.RequestResponseLoggerInterceptor
 import no.nav.eessi.pensjon.security.sts.STSService
 import no.nav.eessi.pensjon.security.sts.UsernameToOidcInterceptor
@@ -25,7 +26,10 @@ class PensjonsinformasjonRestTemplate(private val stsService: STSService, privat
     fun pensjonsinformasjonOidcRestTemplate(templateBuilder: RestTemplateBuilder): RestTemplate {
         return templateBuilder
                 .rootUri(url)
-                .additionalInterceptors(RequestResponseLoggerInterceptor(), UsernameToOidcInterceptor(stsService))
+                .additionalInterceptors(
+                        RequestIdHeaderInterceptor(),
+                        RequestResponseLoggerInterceptor(),
+                        UsernameToOidcInterceptor(stsService))
                 .build().apply {
                     requestFactory = BufferingClientHttpRequestFactory(SimpleClientHttpRequestFactory())
                 }

@@ -11,22 +11,23 @@ import java.io.IOException
 import javax.servlet.ServletException
 import javax.servlet.http.HttpServletRequest
 
-const val REQUEST_ID_MDC_KEY = "x_request_id"
-const val REQUEST_ID_HEADER = "X-Request-Id"
-val REQUEST_ID_HEADER_CANDIDATES = listOf(
-        REQUEST_ID_HEADER,
-        "X-Correlation-Id",
-        "Nav-Callid",
-        "Nav-Call-id",
-        "Callid",
-        "nav-correlation-id")
-
-/**
- * Adds an internal correlation id to the MDC (Mapped Diagnostic Context)
- */
 
 @Component
 class RequestIdOnMDCFilter : Filter {
+
+    companion object {
+        const val REQUEST_ID_MDC_KEY = "x_request_id"
+        const val REQUEST_ID_HEADER = "X-Request-Id"
+        const val NAV_CALL_ID_HEADER = "Nav-Callid"
+
+        private val REQUEST_ID_HEADER_CANDIDATES = listOf(
+                REQUEST_ID_HEADER,
+                NAV_CALL_ID_HEADER,
+                "X-Correlation-Id",
+                "Nav-Call-id",
+                "Callid",
+                "nav-correlation-id")
+    }
 
     @Throws(IOException::class, ServletException::class)
     override fun doFilter(request: ServletRequest, response: ServletResponse, chain: FilterChain) {
