@@ -18,13 +18,13 @@ class RequestIdOnMDCFilter : Filter {
     companion object {
         const val REQUEST_ID_MDC_KEY = "x_request_id"
         const val REQUEST_ID_HEADER = "X-Request-Id"
-        const val NAV_CALL_ID_HEADER = "Nav-Callid"
+        const val NAV_CALL_ID_HEADER = "Nav-Call-Id"
 
         private val REQUEST_ID_HEADER_CANDIDATES = listOf(
                 REQUEST_ID_HEADER,
                 NAV_CALL_ID_HEADER,
                 "X-Correlation-Id",
-                "Nav-Call-id",
+                "Nav-Callid",
                 "Callid",
                 "nav-correlation-id")
     }
