@@ -87,7 +87,8 @@ class SedController(private val euxService: EuxService,
             val bucX005 = bucUtil.findFirstDocumentItemByType("X005")
             if (bucX005 == null) {
                 logger.debug("X005 finnes ikke på buc, legger til Deltakere/Institusjon på vanlig måte")
-                euxService.addDeltagerInstitutions(dataModel.euxCaseID, nyeDeltakere)
+                //kaste Exception dersom legge til deltakerfeiler?
+                euxService.putBucMottakere(dataModel.euxCaseID, nyeDeltakere)
             } else {
                 logger.debug("X005 finnes på buc, Sed X005 prefills og sendes inn")
                 val x005Liste = prefillService.prefillEnX005ForHverInstitusjon(nyeDeltakere, dataModel)

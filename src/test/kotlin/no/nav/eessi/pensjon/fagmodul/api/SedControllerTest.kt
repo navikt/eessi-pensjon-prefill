@@ -419,7 +419,7 @@ class SedControllerTest {
         )
         sedController.addInstutionAndDocument(apiRequestWith(euxCaseId, newParticipants))
 
-        verify(mockEuxService).addDeltagerInstitutions(euxCaseId, newParticipants)
+        verify(mockEuxService).putBucMottakere(euxCaseId, newParticipants)
         verify(mockEuxService, times(1)).opprettSedOnBuc(any(), eq(euxCaseId))
     }
 

@@ -1,16 +1,15 @@
 package no.nav.eessi.pensjon.fagmodul.api
 
 import io.swagger.annotations.ApiOperation
+import no.nav.eessi.pensjon.fagmodul.eux.BucAndSedView
 import no.nav.eessi.pensjon.fagmodul.eux.BucUtils
-import no.nav.eessi.pensjon.helper.AktoerIdHelper
-import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.eux.EuxService
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Rinasak
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Vedlegg
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Buc
-import no.nav.eessi.pensjon.fagmodul.eux.BucAndSedView
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Creator
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ShortDocumentItem
+import no.nav.eessi.pensjon.helper.AktoerIdHelper
 import no.nav.eessi.pensjon.services.arkiv.SafService
 import no.nav.eessi.pensjon.services.arkiv.VariantFormat
 import no.nav.eessi.pensjon.utils.errorBody
@@ -137,15 +136,6 @@ class BucController(private val euxService: EuxService,
         //create bucDetail back from newly created buc call eux-rina-api to get data.
         val buc = euxService.getBuc(euxCaseId)
         return BucAndSedView.from(buc, euxCaseId, "")
-    }
-
-    @ApiOperation("Oppretter nye deltaker(e) på valgt buc. ny api kall til eux")
-    @PutMapping("/deltaker/{euxcaseid}/{deltaker}")
-    fun putBucDeltager(@PathVariable("euxcaseid", required = true) euxCaseId: String,
-                       @PathVariable("deltaker", required = true) deltaker: List<InstitusjonItem>): Boolean {
-
-        logger.debug("Prøver å legger til deltaker på valgt buc")
-        return euxService.addDeltagerInstitutions(euxCaseId, deltaker)
     }
 
     @ApiOperation("Legger til et vedlegg for det gitte dokumentet")
