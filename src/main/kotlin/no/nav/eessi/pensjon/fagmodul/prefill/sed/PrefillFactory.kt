@@ -60,6 +60,9 @@ class PrefillFactory(private val prefillNav: PrefillNav,
             SEDType.P8000 -> {
                 PrefillP8000(prefillPerson)
             }
+            SEDType.P10000 -> {
+                PrefillP10000(prefillPerson)
+            }
             SEDType.X005 -> {
                 PrefillX005(prefillNav)
             }
