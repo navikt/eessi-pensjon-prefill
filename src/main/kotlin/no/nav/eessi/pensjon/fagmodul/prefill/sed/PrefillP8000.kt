@@ -19,7 +19,7 @@ class PrefillP8000(private val prefillPerson: PrefillPerson) : Prefill<SED> {
         val person = navsed.nav?.bruker?.person
         val eessielm = navsed.nav?.eessisak?.get(0)
         val perspin = navsed.nav?.bruker?.person?.pin?.get(0)
-        val gjennlevende = navsed.pensjon?.gjenlevende
+        val gjenlevende = navsed.pensjon?.gjenlevende
 
         val p8000 = SED(
                 sed = "P8000",
@@ -47,9 +47,10 @@ class PrefillP8000(private val prefillPerson: PrefillPerson) : Prefill<SED> {
                                                 )
                                         )
                                 )
-                        )
+                        ),
+                        annenperson = utfyllAnnenperson(gjenlevende)
                 ),
-                pensjon = Pensjon(gjenlevende = gjennlevende)
+                pensjon = null
         )
 
         logger.debug("Tilpasser P8000 forenklet preutfylling, Ferdig.")
@@ -57,5 +58,11 @@ class PrefillP8000(private val prefillPerson: PrefillPerson) : Prefill<SED> {
         prefillData.sed = p8000
 
         return prefillData.sed
+    }
+
+    private fun utfyllAnnenperson(bruker: Bruker?): Bruker? {
+        if (bruker == null) return null
+        bruker?.person?.rolle = "01"
+        return bruker
     }
 }
