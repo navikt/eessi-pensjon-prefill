@@ -48,6 +48,13 @@ class PrefillPerson(private val prefillNav: PrefillNav, private val prefilliPens
             logger.error(ex.message, ex)
         }
 
+        //Spesielle SED som har etterlette men benyttes av flere BUC
+        //Må legge gjenlevende også som nav.annenperson
+        if (prefillData.erGyldigEtterlatt()) {
+            sed.nav?.annenperson = sed.pensjon?.gjenlevende
+            sed.nav?.annenperson?.person?.rolle = "01"  //Claimant
+        }
+
         logger.debug("-------------------| Preutfylling END |------------------- ")
         return prefillData.sed
 
