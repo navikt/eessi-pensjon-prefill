@@ -1,13 +1,12 @@
 package no.nav.eessi.pensjon.fagmodul.eux
 
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.RinaAksjon
+import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.*
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.models.SEDType
-import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.*
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.ResponseStatus
-import java.lang.IllegalStateException
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -29,6 +28,16 @@ class BucUtils(private val buc: Buc ) {
     fun getCreator(): Creator? {
         return getBuc().creator
     }
+
+    fun getCreatorAsInstitusjonItem(): InstitusjonItem? {
+        return InstitusjonItem(
+                country = getCreator()?.organisation?.countryCode ?: "",
+                institution = getCreator()?.organisation?.id ?: "",
+                name = getCreator()?.organisation?.name
+        )
+    }
+
+    fun getSubject() = buc.subject ?: throw NoSuchFieldException("Fant ikke Subject")
 
     fun getCreatorContryCode(): Map<String, String> {
         val countryCode = getCreator()?.organisation?.countryCode ?: "N/A"
@@ -203,19 +212,16 @@ class BucUtils(private val buc: Buc ) {
     fun findNewParticipants(potentialNewParticipants: List<InstitusjonItem>): List<InstitusjonItem> {
         val currentParticipants =
                 getParticipants()
-                        .filter { it.role != "CaseOwner" }
                         .map {
                             InstitusjonItem(
                                     country = it.organisation?.countryCode ?: "",
                                     institution = it.organisation?.id ?: "",  //kan hende må være id?!
-                                    name = "" //
+                                    name = it.organisation?.name ?: "" //name optinal
                             )
                         }
-
         if (currentParticipants.isEmpty() && potentialNewParticipants.isEmpty()) {
             throw ManglerDeltakereException("Ingen deltakere/Institusjon er tom")
         }
-
         return potentialNewParticipants.filter {
             candidate -> currentParticipants.none { current -> candidate.country == current.country && candidate.institution == current.institution }
         }

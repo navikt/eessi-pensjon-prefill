@@ -1,12 +1,11 @@
 package no.nav.eessi.pensjon.fagmodul.eux
 
 import com.google.common.collect.Lists
-import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
-import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Buc
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Organisation
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ParticipantsItem
-import no.nav.eessi.pensjon.utils.mapAnyToJson
+import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
+import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.typeRefs
 import no.nav.eessi.pensjon.utils.validateJson
@@ -43,7 +42,6 @@ class BucUtilsTest {
     @Test
     fun getListofSbdh() {
         val result = bucUtils.getSbdh()
-        val resjson = mapAnyToJson(result)
         assertEquals(1, result.size)
         val sbdh = result.first()
 
@@ -86,7 +84,6 @@ class BucUtilsTest {
     @Test
     fun getListShortDocOnBuc() {
         val result = bucUtils.findAndFilterDocumentItemByType(SEDType.P2000)
-        val json = mapAnyToJson(result)
         assertEquals(1, result.size)
 
         assertEquals(SEDType.P2000.name, result.first().type)
@@ -327,4 +324,52 @@ class BucUtilsTest {
 
         assertEquals(0, bucUtils.findNewParticipants(candidates).size)
     }
+
+    @Test
+    fun findNewParticipantsMockwithExternalCaseOwnerAddEveryoneInBucResultExpectedToBeZero(){
+        val bucjson = getTestJsonFile("buc-254740_v4.1.json")
+        val buc = mapJsonToAny(bucjson, typeRefs<Buc>())
+        val bucUtils = BucUtils(buc)
+
+        assertEquals(3, bucUtils.getParticipants().size)
+
+        val candidates = listOf<InstitusjonItem>(
+                InstitusjonItem(country = "NO", institution = "NO:NAVT003", name = "NAV T003"),
+                InstitusjonItem(country = "NO", institution = "NO:NAVT002", name = "NAV T002"),
+                InstitusjonItem(country = "NO", institution = "NO:NAVT008", name = "NAV T008")
+        )
+        assertEquals(0, bucUtils.findNewParticipants(candidates).size)
+    }
+
+
+    @Test
+    fun findNewParticipantsMockwithExternalCaseOwnerResultExpectedToBeZero(){
+        val bucjson = getTestJsonFile("buc-254740_v4.1.json")
+        val buc = mapJsonToAny(bucjson, typeRefs<Buc>())
+        val bucUtils = BucUtils(buc)
+
+        assertEquals(3, bucUtils.getParticipants().size)
+
+        bucUtils.getCreator()
+
+        val candidates = listOf<InstitusjonItem>(InstitusjonItem(country = "NO", institution = "NO:NAVT003", name = "NAV T003"))
+
+        assertEquals(0, bucUtils.findNewParticipants(candidates).size)
+
+    }
+
+    @Test
+    fun findNewParticipantsMockwithExternalCaseOwnerResultExpectedOne(){
+        val bucjson = getTestJsonFile("buc-254740_v4.1.json")
+        val buc = mapJsonToAny(bucjson, typeRefs<Buc>())
+        val bucUtils = BucUtils(buc)
+
+        assertEquals(3, bucUtils.getParticipants().size)
+
+        val candidates = listOf<InstitusjonItem>(InstitusjonItem(country = "NO", institution = "NO:NAVT007", name = "NAV T007"))
+
+        assertEquals(1, bucUtils.findNewParticipants(candidates).size)
+
+    }
+
 }
