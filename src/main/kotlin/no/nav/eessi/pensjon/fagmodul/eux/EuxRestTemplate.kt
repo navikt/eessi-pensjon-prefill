@@ -15,6 +15,7 @@ import org.springframework.http.client.SimpleClientHttpRequestFactory
 import org.springframework.stereotype.Component
 import org.springframework.web.client.DefaultResponseErrorHandler
 import org.springframework.web.client.RestTemplate
+import java.time.Duration
 
 @Component
 class EuxRestTemplate(private val oidcRequestContextHolder: OIDCRequestContextHolder, private val registry: MeterRegistry) {
@@ -27,6 +28,8 @@ class EuxRestTemplate(private val oidcRequestContextHolder: OIDCRequestContextHo
         return templateBuilder
                 .rootUri(url)
                 .errorHandler(DefaultResponseErrorHandler())
+                .setReadTimeout(Duration.ofSeconds(120))
+                .setConnectTimeout(Duration.ofSeconds(120))
                 .additionalInterceptors(
                         RequestIdHeaderInterceptor(),
                         RequestResponseLoggerInterceptor(),
