@@ -2,9 +2,7 @@ package no.nav.eessi.pensjon.fagmodul.api
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import io.swagger.annotations.ApiOperation
-import no.nav.eessi.pensjon.fagmodul.eux.BucUtils
-import no.nav.eessi.pensjon.fagmodul.eux.EuxService
-import no.nav.eessi.pensjon.fagmodul.eux.PinOgKrav
+import no.nav.eessi.pensjon.fagmodul.eux.*
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.BucSedResponse
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ShortDocumentItem
 import no.nav.eessi.pensjon.fagmodul.prefill.ApiRequest
@@ -12,6 +10,7 @@ import no.nav.eessi.pensjon.fagmodul.prefill.MangelfulleInndataException
 import no.nav.eessi.pensjon.fagmodul.prefill.PrefillService
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.helper.AktoerIdHelper
+import no.nav.eessi.pensjon.utils.errorBody
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import no.nav.security.oidc.api.Protected
 import org.slf4j.LoggerFactory
@@ -158,15 +157,12 @@ class SedController(private val euxService: EuxService,
                 @PathVariable(value = "rinanr", required = false) euxCaseId: String?): ResponseEntity<String?> {
 
         if (euxCaseId == null) return ResponseEntity.ok().body(mapAnyToJson(EuxService.getAvailableSedOnBuc(bucType)))
-
         val resultListe = BucUtils(euxService.getBuc(euxCaseId)).getAksjonListAsString()
-
         if (resultListe.isEmpty()) return ResponseEntity.ok().body(mapAnyToJson(EuxService.getAvailableSedOnBuc(bucType)))
 
         return ResponseEntity.ok().body(mapAnyToJson(resultListe.filterPensionSedAndSort()))
     }
 
-    //ny knall for journalforing app henter ytelsetype ut ifra P15000
     @ApiOperation("Henter ytelsetype fra P15000 på valgt Buc og Documentid")
     @GetMapping("/ytelseKravtype/{rinanr}/sedid/{documentid}")
     fun getPinOgYtelseKravtype(@PathVariable("rinanr", required = true) rinanr: String,
@@ -184,9 +180,21 @@ class SedController(private val euxService: EuxService,
         else null
     }
 
+    @ApiOperation("Henter fodselsdato fra sed for valgt euxcaseid")
+    @GetMapping("/fodselsdato/{rinanr}/buctype/{buctype}")
+    fun getFodselsdato(@PathVariable("rinanr", required = true) rinanr: String,
+                       @PathVariable("buctype", required = true) buctype: String): String? {
+
+        logger.debug("Henter opp fødselsdato fra sed for valgt euxcaseid")
+
+        return euxService.getFDatoFromSed(rinanr, buctype)
+
+    }
+
 }
 
 @ResponseStatus(value = HttpStatus.BAD_REQUEST)
 class ManglendeInstitusjonException(message: String) : IllegalArgumentException(message)
 
 internal fun List<String>.filterPensionSedAndSort() = this.filter { it.startsWith("P").or( it.startsWith("H12").or( it.startsWith("H07"))) }.filterNot { it.startsWith("P3000") }.sorted()
+
