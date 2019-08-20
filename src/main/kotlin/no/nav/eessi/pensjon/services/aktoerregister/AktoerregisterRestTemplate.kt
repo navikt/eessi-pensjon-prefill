@@ -2,6 +2,7 @@ package no.nav.eessi.pensjon.services.aktoerregister
 
 import io.micrometer.core.instrument.MeterRegistry
 import no.nav.eessi.pensjon.logging.RequestIdHeaderInterceptor
+import no.nav.eessi.pensjon.metrics.RequestCountInterceptor
 import no.nav.eessi.pensjon.security.sts.STSService
 import no.nav.eessi.pensjon.security.sts.UsernameToOidcInterceptor
 import org.springframework.beans.factory.annotation.Value
@@ -29,6 +30,7 @@ class AktoerregisterRestTemplate(private val stsService: STSService,
                 .errorHandler(DefaultResponseErrorHandler())
                 .additionalInterceptors(
                         RequestIdHeaderInterceptor(),
+                        RequestCountInterceptor(registry),
                         UsernameToOidcInterceptor(stsService))
                 .customizers(MetricsRestTemplateCustomizer(registry, DefaultRestTemplateExchangeTagsProvider(), "eessipensjon_fagmodul_aktoer"))
                 .build().apply {
