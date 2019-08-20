@@ -110,18 +110,22 @@ class BucController(private val euxService: EuxService,
         return euxService.getRinasaker(fnr)
     }
 
-    //ny view call for bucogsed design pr 01.04-01.05)
     @ApiOperation("Henter ut en json struktur for type og sed menyliste for ui. ny api kall til eux")
     @GetMapping("/detaljer/{aktoerid}", "/detaljer/{aktoerid}/{sakid}", "/detaljer/{aktoerId}/{sakId}/{euxcaseid}")
     fun getBucogSedView(@PathVariable("aktoerid", required = true) aktoerid: String,
                         @PathVariable("sakid", required = false) sakid: String? = "",
                         @PathVariable("euxcaseid", required = false) euxcaseid: String? = ""): List<BucAndSedView> {
-
-
         logger.debug("1 prøver å dekode til fnr fra aktoerid: $aktoerid")
         val fnr = aktoerIdHelper.hentPinForAktoer(aktoerid)
-        return euxService.getBucAndSedView(fnr, aktoerid, sakid, euxcaseid)
+        return euxService.getBucAndSedView(euxService.getRinasaker(fnr), aktoerid)
 
+    }
+
+    @ApiOperation("Henter ut en json struktur for type og sed menyliste for ui. ny api kall til eux")
+    @GetMapping("/enkeldetalj/{euxcaseid}")
+    fun getSingleBucogSedView(@PathVariable("euxcaseid", required = true) euxcaseid: String): BucAndSedView {
+        logger.debug("1 prøver å hente en enkel buc på : $euxcaseid")
+        return euxService.getSingleBucAndSedView(euxcaseid)
     }
 
     @ApiOperation("Oppretter ny tom BUC i RINA via eux-api. ny api kall til eux")

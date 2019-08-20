@@ -330,14 +330,13 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
 
     fun getRinasaker(fnr: String, euxCaseId: String?, bucType: String?, status: String?): List<Rinasak> {
         //https://eux-rina-api.nais.preprod.local/cpi/rinasaker?F%C3%B8dselsnummer=28064843062&Fornavn=a&Etternavn=b&F%C3%B8dsels%C3%A5r=2&RINASaksnummer=as&BuCType=p&Status=o
-
+        //https: //eux-rina-api.nais.preprod.local/cpi/rinasaker?BuCType=P_BUC_06&Etternavn=etter&Fornavn=for&F%C3%B8dselsnummer=fnr&F%C3%B8dsels%C3%A5r=%C3%A5r&RINASaksnummer=saknr&Status=status
         val builder = UriComponentsBuilder.fromPath("/rinasaker")
                 .queryParam("Fødselsnummer", fnr)
                 .queryParam("RINASaksnummer", euxCaseId ?: "")
                 .queryParam("BuCType", bucType ?: "")
                 .queryParam("Status", status ?: "")
                 .build()
-
 
         try {
             val response = euxOidcRestTemplate.exchange(
@@ -368,37 +367,22 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
 
     }
 
-    fun getBucAndSedView(fnr: String, aktoerid: String, sakId: String?, euxCaseId: String?): List<BucAndSedView> {
+    fun getSingleBucAndSedView(euxCaseId: String) = BucAndSedView.from(getBuc(euxCaseId), euxCaseId, "")
+
+    fun getBucAndSedView(rinasaker: List<Rinasak>, aktoerid: String): List<BucAndSedView> {
         val startTime = System.currentTimeMillis()
-
-        logger.debug("2 fant fnr.")
-
-        logger.debug("3 henter rinasaker på valgt aktoerid: $aktoerid")
-
-        val rinasaker = getRinasaker(fnr)
-
-        logger.debug("4 hentet ut rinasaker på valgt borger, antall: ${rinasaker.size}")
-
-        logger.debug("5 starter med å hente ut data for hver BUC i rinasaker")
-
         val list = mutableListOf<BucAndSedView>()
 
         rinasaker.forEach {
             val caseId = it.id ?: throw UgyldigCaseIdException("Feil er ikke gyldig caseId fra Rina(Rinasak)")
             list.add(BucAndSedView.from(getBuc(caseId), caseId, aktoerid))
         }
+
         logger.debug("9 ferdig returnerer list av BucAndSedView. Antall BUC: ${list.size}")
-
         val sortlist = list.asSequence().sortedByDescending { it.startDate }.toList()
-
         logger.debug("10. Sortert listen på startDate nyeste dato først")
-
-        val endTime = System.currentTimeMillis()
-
-        logger.debug("11 tiden tok ${endTime - startTime} ms.")
-
+        logger.debug("11 tiden tok ${System.currentTimeMillis() - startTime} ms.")
         return sortlist
-
     }
 
     fun createBuc(bucType: String): String {
