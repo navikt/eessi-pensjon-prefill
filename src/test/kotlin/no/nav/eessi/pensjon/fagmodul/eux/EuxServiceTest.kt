@@ -344,7 +344,9 @@ class EuxServiceTest {
 
         val orgRinasaker = mapJsonToAny(rinasakStr, typeRefs<List<Rinasak>>())
 
-        val result = service.getBucAndSedView("12345678900", "001122334455", null, null)
+        val rinasakresult = service.getRinasaker("12345678900")
+
+        val result = service.getBucAndSedView(rinasakresult, "001122334455")
 
         assertNotNull(result)
         assertEquals(6, orgRinasaker.size)
@@ -362,10 +364,28 @@ class EuxServiceTest {
         val bucdetaljerpath = "src/test/resources/json/buc/bucdetaljer-158123.json"
         val bucdetaljer = String(Files.readAllBytes(Paths.get(bucdetaljerpath)))
         assertTrue(validateJson(bucdetaljer))
-
         JSONAssert.assertEquals(bucdetaljer, json, true)
     }
 
+    @Test
+    fun callingEuxServiceForSinglemenuUI_AllOK() {
+        val bucjson = "src/test/resources/json/buc/buc-158123_2_v4.1.json"
+        val bucStr = String(Files.readAllBytes(Paths.get(bucjson)))
+        assertTrue(validateJson(bucStr))
+
+        whenever(mockEuxrestTemplate.exchange(
+                not(eq("/rinasaker?Fødselsnummer=12345678900&RINASaksnummer=&BuCType=&Status=")),
+                eq(HttpMethod.GET), eq(null), eq(String::class.java)))
+                .thenReturn(ResponseEntity.ok(bucStr))
+
+        val firstJson = service.getSingleBucAndSedView("158123")
+
+        assertEquals("158123", firstJson.caseId)
+        var lastUpdate: Long = 0
+        firstJson.lastUpdate?.let { lastUpdate = it }
+        assertEquals("2019-05-20T16:35:34",  Instant.ofEpochMilli(lastUpdate).atZone(ZoneId.systemDefault()).toLocalDateTime().toString())
+        assertEquals(18, firstJson.seds.size)
+    }
 
     @Test
     fun callingEuxServiceCreateBuc_Ok() {
