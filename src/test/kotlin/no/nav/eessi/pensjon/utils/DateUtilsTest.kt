@@ -4,8 +4,8 @@ import org.junit.Test
 import java.text.ParseException
 import java.time.format.DateTimeParseException
 import javax.xml.datatype.DatatypeFactory
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
 
 
 class DateUtilsTest {

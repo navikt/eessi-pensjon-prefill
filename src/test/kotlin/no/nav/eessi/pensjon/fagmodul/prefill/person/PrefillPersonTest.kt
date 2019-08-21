@@ -17,8 +17,8 @@ import org.junit.runners.Parameterized
 import org.junit.runners.Parameterized.Parameters
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
 
 @RunWith(Parameterized::class)
 class PrefillPersonTest(val index: Int, val sedid: String) {

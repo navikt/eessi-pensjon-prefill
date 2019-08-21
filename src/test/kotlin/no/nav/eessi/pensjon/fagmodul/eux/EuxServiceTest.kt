@@ -34,8 +34,8 @@ import java.nio.file.Paths
 import java.time.Instant
 import java.time.ZoneId
 import kotlin.String
-import kotlin.test.assertNotNull
-import kotlin.test.assertTrue
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertTrue
 
 
 @RunWith(MockitoJUnitRunner::class)

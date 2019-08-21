@@ -4,6 +4,9 @@ import no.nav.eessi.pensjon.metrics.TimingService
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.typeRefs
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -11,7 +14,6 @@ import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
 import org.springframework.util.ResourceUtils
 import java.time.LocalDate
-import kotlin.test.*
 
 @RunWith(MockitoJUnitRunner::class)
 class PensjonsinformasjonUtlandControllerTest {

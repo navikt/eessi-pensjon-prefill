@@ -7,9 +7,9 @@ import no.nav.eessi.pensjon.utils.validateJson
 import org.junit.Test
 import java.nio.file.Files
 import java.nio.file.Paths
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
-import kotlin.test.assertTrue
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertTrue
 
 class ApiRequestTest {
 

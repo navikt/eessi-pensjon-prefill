@@ -7,6 +7,8 @@ import no.nav.tjeneste.virksomhet.person.v3.informasjon.Gateadresse
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Landkoder
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Person
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Postnummer
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
 import org.junit.Test
 
 class PrefillAdresseTest{
@@ -34,9 +36,9 @@ class PrefillAdresseTest{
 
         val result = prefillAdresse.hentPersonAdresse(person)!!
 
-        kotlin.test.assertNotNull(result)
+        assertNotNull(result)
 
-        kotlin.test.assertEquals("NO", result.land)
-        kotlin.test.assertEquals("Kirkeveien 12", result.gate)
-        kotlin.test.assertEquals("OSLO", result.by)
+        assertEquals("NO", result.land)
+        assertEquals("Kirkeveien 12", result.gate)
+        assertEquals("OSLO", result.by)
     }}

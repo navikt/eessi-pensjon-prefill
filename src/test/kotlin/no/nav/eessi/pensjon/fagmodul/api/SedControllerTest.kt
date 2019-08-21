@@ -16,7 +16,11 @@ import no.nav.eessi.pensjon.fagmodul.prefill.MangelfulleInndataException
 import no.nav.eessi.pensjon.fagmodul.prefill.PrefillService
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillSED
-import no.nav.eessi.pensjon.fagmodul.sedmodel.*
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Bruker
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Krav
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Nav
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Person
+import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.helper.AktoerIdHelper
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import no.nav.eessi.pensjon.utils.mapJsonToAny
@@ -32,10 +36,10 @@ import org.mockito.Spy
 import org.mockito.junit.MockitoJUnitRunner
 import org.springframework.http.ResponseEntity
 import org.springframework.web.util.UriComponentsBuilder
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
 import java.nio.file.Files
 import java.nio.file.Paths
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
 
 @RunWith(MockitoJUnitRunner.Silent::class)
 class SedControllerTest {
@@ -137,7 +141,6 @@ class SedControllerTest {
         assertEquals("12345", utfyllMock.personNr)
 
         utfyllMock.sed.nav = Nav(bruker = Bruker(person = Person(fornavn = "Dummy", etternavn = "Dummy", foedselsdato = "1900-10-11", kjoenn = "K")), krav = Krav("1937-12-11"))
-
 
         doReturn(true).whenever(mockEuxService).addDeltagerInstitutions(any(), any())
         doReturn(utfyllMock).whenever(mockPrefillSED).prefill(any())

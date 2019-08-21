@@ -20,8 +20,8 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
 
 @RunWith(MockitoJUnitRunner::class)
 class PrefillP2200_AP_21975717Test {

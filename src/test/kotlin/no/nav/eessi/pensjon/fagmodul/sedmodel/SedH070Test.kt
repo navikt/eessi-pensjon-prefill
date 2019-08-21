@@ -1,7 +1,7 @@
 package no.nav.eessi.pensjon.fagmodul.sedmodel
 
 import org.junit.Test
-import kotlin.test.assertEquals
+import org.junit.Assert.assertEquals
 
 class SedH070Test {
 

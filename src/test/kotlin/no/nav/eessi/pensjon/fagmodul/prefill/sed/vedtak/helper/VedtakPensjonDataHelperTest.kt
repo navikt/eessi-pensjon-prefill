@@ -13,9 +13,9 @@ import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import no.nav.pensjon.v1.trygdetid.V1Trygdetid
 import no.nav.pensjon.v1.trygdetidliste.V1TrygdetidListe
 import org.junit.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 
 class VedtakPensjonDataHelperTest {
 

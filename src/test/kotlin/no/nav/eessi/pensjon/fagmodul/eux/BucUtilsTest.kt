@@ -15,8 +15,8 @@ import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
 import java.nio.file.Files
 import java.nio.file.Paths
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 
 @RunWith(MockitoJUnitRunner::class)
 class BucUtilsTest {
@@ -376,6 +376,4 @@ class BucUtilsTest {
         val result = bucUtils.getCaseOwner()
         assertEquals("NO:NAVT003", result.institution)
     }
-
-
 }

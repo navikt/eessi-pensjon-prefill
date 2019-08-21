@@ -19,8 +19,8 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.util.ResourceUtils
 import org.springframework.web.client.ResourceAccessException
 import org.springframework.web.client.RestTemplate
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
 
 @ActiveProfiles("test")
 @RunWith(MockitoJUnitRunner.Silent::class)
@@ -43,7 +43,7 @@ class PensjonsinformasjonServiceTest {
         val data = pensjonsinformasjonService.hentAltPaaVedtak("1243")
         // TODO: add asserts
 
-        assertNotNull(data.vedtak, "Vedtak er null")
+        assertNotNull("Vedtak er null", data.vedtak)
 
         println("XML date: ${data.vedtak.virkningstidspunkt}")
 

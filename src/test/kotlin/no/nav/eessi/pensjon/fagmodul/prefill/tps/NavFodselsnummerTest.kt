@@ -4,7 +4,7 @@ import no.nav.eessi.pensjon.fagmodul.prefill.tps.FodselsnummerMother.generateRan
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import java.time.LocalDate
-import kotlin.test.assertFalse
+import org.junit.Assert.assertFalse
 
 
 class NavFodselsnummerTest {

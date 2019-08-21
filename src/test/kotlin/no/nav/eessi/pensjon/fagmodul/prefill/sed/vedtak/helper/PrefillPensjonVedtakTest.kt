@@ -6,7 +6,7 @@ import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.hjelper.PrefillPensjonVe
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonServiceMother.fraFil
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import org.junit.Test
-import kotlin.test.assertEquals
+import org.junit.Assert.assertEquals
 
 class PrefillPensjonVedtakTest {
 

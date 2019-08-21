@@ -1,7 +1,7 @@
 package no.nav.eessi.pensjon.logging
 
-import junit.framework.TestCase.assertNull
-import junit.framework.TestCase.assertTrue
+import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import no.nav.eessi.pensjon.logging.RequestIdOnMDCFilter.Companion.REQUEST_ID_HEADER
 import no.nav.eessi.pensjon.logging.RequestIdOnMDCFilter.Companion.REQUEST_ID_MDC_KEY
 import org.junit.Test
@@ -12,7 +12,7 @@ import org.springframework.mock.web.MockHttpServletResponse
 import javax.servlet.FilterChain
 import javax.servlet.ServletRequest
 import javax.servlet.ServletResponse
-import kotlin.test.assertEquals
+import org.junit.Assert.assertEquals
 
 class RequestIdOnMDCFilterTest {
     private val mockFilterChain = MDCCapturingMockFilterChain()

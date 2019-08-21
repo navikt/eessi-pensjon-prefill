@@ -1,7 +1,7 @@
 package no.nav.eessi.pensjon.fagmodul.models
 
 import org.junit.Test
-import kotlin.test.assertTrue
+import org.junit.Assert.assertTrue
 
 class SEDTypeTest {
     @Test

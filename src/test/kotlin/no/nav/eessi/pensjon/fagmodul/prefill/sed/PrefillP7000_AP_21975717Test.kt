@@ -18,9 +18,9 @@ import org.mockito.junit.MockitoJUnitRunner
 import org.skyscreamer.jsonassert.JSONAssert
 import java.nio.file.Files
 import java.nio.file.Paths
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
+import org.junit.Test
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 
 @RunWith(MockitoJUnitRunner::class)
 class PrefillP7000_AP_21975717Test {

@@ -2,7 +2,7 @@ package no.nav.eessi.pensjon.fagmodul.sedmodel
 
 import org.junit.Test
 import org.skyscreamer.jsonassert.JSONAssert
-import kotlin.test.assertEquals
+import org.junit.Assert.assertEquals
 
 
 class SedP7000Test {

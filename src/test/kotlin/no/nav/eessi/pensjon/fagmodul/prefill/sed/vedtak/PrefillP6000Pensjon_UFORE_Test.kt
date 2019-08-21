@@ -3,11 +3,12 @@ package no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak
 import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjonMother.standardEessiInfo
 import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonHjelper
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonServiceMother.fraFil
+import org.junit.Assert
+import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
+import org.junit.Assert.assertNotNull
 
 @RunWith(MockitoJUnitRunner::class)
 class PrefillP6000Pensjon_UFORE_Test {
@@ -27,12 +28,12 @@ class PrefillP6000Pensjon_UFORE_Test {
         assertNotNull(result.tilleggsinformasjon)
 
         val vedtak = result.vedtak?.get(0)
-        assertEquals("2017-04-11" , vedtak?.virkningsdato, "vedtak.virkningsdato")
+        assertEquals("vedtak.virkningsdato", "2017-04-11", vedtak?.virkningsdato)
         assertEquals("02", vedtak?.type)
         assertEquals("02", vedtak?.basertPaa)
-        assertEquals("03", vedtak?.resultat, "vedtak.resultat")
+        assertEquals("vedtak.resultat", "03", vedtak?.resultat)
         assertEquals("2017-05-21", vedtak?.kjoeringsdato)
-        assertEquals(null, vedtak?.artikkel, "4.1.5 vedtak.artikkel (må fylles ut manuelt nå)")
+        assertEquals("4.1.5 vedtak.artikkel (må fylles ut manuelt nå)", null, vedtak?.artikkel)
 
         assertEquals("01", vedtak?.grunnlag?.opptjening?.forsikredeAnnen)
         assertEquals("0", vedtak?.grunnlag?.framtidigtrygdetid)

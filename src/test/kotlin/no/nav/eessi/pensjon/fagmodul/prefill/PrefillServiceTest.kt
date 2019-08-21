@@ -11,7 +11,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
-import kotlin.test.assertEquals
+import org.junit.Assert.assertEquals
 
 @RunWith(MockitoJUnitRunner::class)
 class PrefillServiceTest {

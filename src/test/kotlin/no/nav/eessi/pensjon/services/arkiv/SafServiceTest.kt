@@ -15,7 +15,7 @@ import org.springframework.web.client.RestClientException
 import org.springframework.web.client.RestTemplate
 import java.nio.file.Files
 import java.nio.file.Paths
-import kotlin.test.assertEquals
+import org.junit.Assert.assertEquals
 
 @RunWith(MockitoJUnitRunner::class)
 class SafServiceTest {

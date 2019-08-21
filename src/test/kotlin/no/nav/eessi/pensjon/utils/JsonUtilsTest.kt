@@ -4,7 +4,7 @@ import org.junit.Test
 import org.skyscreamer.jsonassert.JSONAssert
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import kotlin.test.assertEquals
+import org.junit.Assert.assertEquals
 
 
 class JsonUtilsTest {

@@ -2,7 +2,7 @@ package no.nav.eessi.pensjon.fagmodul.metrics
 
 import io.micrometer.core.instrument.Metrics
 import org.junit.Test
-import kotlin.test.assertEquals
+import org.junit.Assert.assertEquals
 
 
 class MetricsTest {

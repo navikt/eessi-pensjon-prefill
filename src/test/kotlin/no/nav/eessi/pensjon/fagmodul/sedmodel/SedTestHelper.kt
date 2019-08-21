@@ -3,7 +3,7 @@ package no.nav.eessi.pensjon.fagmodul.sedmodel
 import no.nav.eessi.pensjon.utils.validateJson
 import java.nio.file.Files
 import java.nio.file.Paths
-import kotlin.test.assertTrue
+import org.junit.Assert.assertTrue
 
 fun getTestJsonFile(filename: String): String {
     val filepath = "src/test/resources/json/nav/${filename}"

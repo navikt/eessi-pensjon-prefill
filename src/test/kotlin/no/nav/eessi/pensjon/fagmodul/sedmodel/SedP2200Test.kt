@@ -6,8 +6,8 @@ import no.nav.eessi.pensjon.utils.typeRefs
 import org.junit.Before
 import org.junit.Test
 import org.skyscreamer.jsonassert.JSONAssert
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
 
 class SedP2200Test {
 

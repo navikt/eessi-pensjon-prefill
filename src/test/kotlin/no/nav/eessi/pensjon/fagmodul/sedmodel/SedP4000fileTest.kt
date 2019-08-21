@@ -5,7 +5,7 @@ import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.typeRefs
 import org.junit.Test
 import org.skyscreamer.jsonassert.JSONAssert
-import kotlin.test.assertNotNull
+import org.junit.Assert.assertNotNull
 
 class SedP4000fileTest {
 

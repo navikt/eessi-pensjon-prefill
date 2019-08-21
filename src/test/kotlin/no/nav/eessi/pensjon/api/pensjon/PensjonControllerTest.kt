@@ -15,7 +15,7 @@ import org.mockito.Mockito.`when`
 import org.mockito.Mockito.never
 import org.mockito.junit.MockitoJUnitRunner
 import org.springframework.http.HttpStatus
-import kotlin.test.assertEquals
+import org.junit.Assert.assertEquals
 
 @RunWith(MockitoJUnitRunner::class)
 class PensjonControllerTest {

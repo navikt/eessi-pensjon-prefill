@@ -4,7 +4,7 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
-import junit.framework.TestCase.assertTrue
+import org.junit.Assert.assertTrue
 import no.nav.eessi.pensjon.logging.RequestIdOnMDCFilter.Companion.NAV_CALL_ID_HEADER
 import no.nav.eessi.pensjon.logging.RequestIdOnMDCFilter.Companion.REQUEST_ID_HEADER
 import no.nav.eessi.pensjon.logging.RequestIdOnMDCFilter.Companion.REQUEST_ID_MDC_KEY
@@ -14,8 +14,8 @@ import org.junit.Test
 import org.slf4j.MDC
 import org.springframework.http.client.ClientHttpRequestExecution
 import org.springframework.mock.http.client.MockClientHttpRequest
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
 
 class RequestIdHeaderInterceptorTest {
 

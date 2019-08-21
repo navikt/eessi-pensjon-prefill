@@ -2,6 +2,8 @@ package no.nav.eessi.pensjon.api.arkiv
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.nhaarman.mockitokotlin2.whenever
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import no.nav.eessi.pensjon.services.arkiv.HentMetadataResponse
 import no.nav.eessi.pensjon.services.arkiv.HentdokumentInnholdResponse
 import no.nav.eessi.pensjon.services.arkiv.SafException
@@ -15,8 +17,6 @@ import org.mockito.junit.MockitoJUnitRunner
 import org.springframework.http.HttpStatus
 import java.nio.file.Files
 import java.nio.file.Paths
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 @RunWith(MockitoJUnitRunner::class)
 class SafControllerTest {
