@@ -29,7 +29,7 @@ class BucControllerTest {
 
     @Before
     fun before() {
-        this.bucController = BucController(mockEuxService, mockSafService, mockAktoerIdHelper)
+        this.bucController = BucController(mockEuxService, mockSafService, mockAktoerIdHelper, "T")
     }
 
     @Test
