@@ -355,7 +355,6 @@ class BucUtilsTest {
         val candidates = listOf<InstitusjonItem>(InstitusjonItem(country = "NO", institution = "NO:NAVT003", name = "NAV T003"))
 
         assertEquals(0, bucUtils.findNewParticipants(candidates).size)
-
     }
 
     @Test
@@ -371,5 +370,12 @@ class BucUtilsTest {
         assertEquals(1, bucUtils.findNewParticipants(candidates).size)
 
     }
+
+    @Test
+    fun findCaseOwnerOnBucIsNotAllwaysSameAsCreator() {
+        val result = bucUtils.getCaseOwner()
+        assertEquals("NO:NAVT003", result.institution)
+    }
+
 
 }
