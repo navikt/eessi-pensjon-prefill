@@ -36,9 +36,6 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
 
     private val logger = LoggerFactory.getLogger(EuxService::class.java)
 
-    //@Value("\${FASIT_ENVIRONMENT_NAME}")
-    //lateinit var fasitEnvName: String
-
     // Nye API kall er er fra 23.01.19
     // https://eux-app.nais.preprod.local/swagger-ui.html#/eux-cpi-service-controller/
 
