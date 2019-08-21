@@ -109,11 +109,6 @@ dependencies {
     configurations { all*.exclude group: 'commons-logging', module: 'commons-logging' }
     implementation group: 'org.slf4j', name: 'jcl-over-slf4j'
 
-    testImplementation("info.cukes:cucumber-spring:1.2.5")
-    testImplementation("info.cukes:cucumber-java:1.2.5")
-    testImplementation("info.cukes:cucumber-junit:1.2.5")
-    testImplementation('org.apache.httpcomponents:fluent-hc:4.5.9')
-
     // OIDC
     implementation("no.nav.security:oidc-spring-support:${oidcTokenSupportVersion}")
     implementation("no.nav.security:oidc-test-support:${oidcTokenSupportVersion}")
