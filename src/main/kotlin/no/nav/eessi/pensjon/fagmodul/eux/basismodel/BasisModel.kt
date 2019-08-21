@@ -42,6 +42,6 @@ data class Traits(
 )
 
 data class Vedlegg(
-        val Filnavn: String,
+        val filnavn: String,
         val file: String
 )

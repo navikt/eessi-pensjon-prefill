@@ -16,7 +16,7 @@ import no.nav.eessi.pensjon.utils.typeRef
 import no.nav.eessi.pensjon.utils.typeRefs
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Description
-import org.springframework.core.io.ByteArrayResource
+import org.springframework.core.io.FileSystemResource
 import org.springframework.http.*
 import org.springframework.stereotype.Service
 import org.springframework.util.LinkedMultiValueMap
@@ -26,13 +26,19 @@ import org.springframework.web.client.HttpServerErrorException
 import org.springframework.web.client.ResourceAccessException
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.util.UriComponentsBuilder
+import java.io.DataOutputStream
+import java.io.File
 import java.io.IOException
 import java.util.*
-
+import java.io.FileOutputStream
+import java.nio.file.Paths
 
 @Service
 @Description("Service class for EuxBasis - eux-cpi-service-controller")
 class EuxService(private val euxOidcRestTemplate: RestTemplate) {
+
+    // Vi trenger denne no arg konstruktøren for å kunne bruke @Spy med mockito
+    constructor() : this(RestTemplate())
 
     private val logger = LoggerFactory.getLogger(EuxService::class.java)
 
@@ -495,15 +501,22 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
                                   vedlegg: Vedlegg,
                                   filtype: String) {
         try {
-            val body = LinkedMultiValueMap<String, Any>()
-            body.add("file", ByteArrayResource(vedlegg.file.toByteArray()))
-            body.add("Filnavn", vedlegg.Filnavn)
 
+            // Legger til fil i body
+            val os = DataOutputStream(FileOutputStream(Paths.get("").toAbsolutePath().toString() + "/" + vedlegg.filnavn))
+            os.writeUTF(vedlegg.file)
+            os.close()
+            val fsr = FileSystemResource(File(vedlegg.filnavn))
+            val body = LinkedMultiValueMap<String, Any>()
+            body.add("file", fsr)
+            body.add("Filtype", filtype)
+
+            // Legger til headers
             val headers = HttpHeaders()
             headers.contentType = MediaType.MULTIPART_FORM_DATA
-            val httpEntity = HttpEntity(body, headers)
 
-            val path = "/cpi/buc/$rinaSakId/sed/$rinaDokumentId/vedlegg?Filtype=$filtype"
+            val httpEntity = HttpEntity(body, headers)
+            val path = "/cpi/buc/$rinaSakId/sed/$rinaDokumentId/vedlegg"
             logger.info("Legger til vedlegg i rinaSakId: $rinaSakId rinaDokumentId: $rinaDokumentId")
 
             val response = euxOidcRestTemplate.exchange(
@@ -518,6 +531,9 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
         } catch (ex: java.lang.Exception) {
             logger.error("En feil opppstod under tilknytning av vedlegg, $ex")
             throw ex
+        } finally {
+            val file = File(Paths.get("").toAbsolutePath().toString() + "/" + vedlegg.filnavn)
+            file.delete()
         }
     }
 

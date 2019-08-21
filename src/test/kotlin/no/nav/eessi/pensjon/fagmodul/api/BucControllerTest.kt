@@ -1,58 +1,50 @@
 package no.nav.eessi.pensjon.fagmodul.api
 
-//@RunWith(MockitoJUnitRunner.Silent::class)
+import com.nhaarman.mockitokotlin2.*
+import org.mockito.Mock
+import no.nav.eessi.pensjon.fagmodul.eux.EuxService
+import no.nav.eessi.pensjon.helper.AktoerIdHelper
+import no.nav.eessi.pensjon.services.arkiv.HentdokumentInnholdResponse
+import no.nav.eessi.pensjon.services.arkiv.SafService
+import no.nav.eessi.pensjon.services.arkiv.VariantFormat
+import org.junit.Before
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.mockito.Spy
+import org.mockito.junit.MockitoJUnitRunner
+
+@RunWith(MockitoJUnitRunner.Silent::class)
 class BucControllerTest {
-//
-//    @Mock
-//    lateinit var mockEuxService: EuxService
-//
-//    @Mock
-//    lateinit var mockBucUtils: BucUtils
-//
-//    @Mock
-//    lateinit var mockAktoerregisterService: AktoerregisterService
-//
-//    private lateinit var bucController: BucController
-//
-//    @Before
-//    fun GetItOn() {
-//        this.bucController = BucController(mockEuxService, mockAktoerregisterService)
-//        doReturn("12105033302").whenever(mockAktoerregisterService).hentGjeldendeNorskIdentForAktorId(ArgumentMatchers.anyString())
-//    }
-//
-//    @Test
-//    fun getMuligeAksjonerUtenFilter() {
-//        val filepath = "src/test/resources/json/aksjoner/noen_aksjoner.json"
-//        val json = String(Files.readAllBytes(Paths.get(filepath)))
-//        assertTrue(validateJson(json))
-//        val mockaksjoner = mapJsonToAny(json, typeRefs<List<RinaAksjon>>())
-//
-//        doReturn(mockaksjoner).whenever(mockBucUtils).getRinaAksjon()
-//        doReturn(mockBucUtils).whenever(mockEuxService).getBucUtils(
-//                ArgumentMatchers.anyString()
-//        )
-//
-//        val result = bucController.getMuligeAksjoner("12345666777")
-//        assertEquals(4, result.size)
-//
-//
-//    }
-//
-//    @Test
-//    fun getMuligeAksjonerMedFilter() {
-//        val filepath = "src/test/resources/json/aksjoner/noen_aksjoner.json"
-//        val json = String(Files.readAllBytes(Paths.get(filepath)))
-//        assertTrue(validateJson(json))
-//        val mockaksjoner = mapJsonToAny(json, typeRefs<List<RinaAksjon>>())
-//
-//        doReturn(mockaksjoner).whenever(mockBucUtils).getRinaAksjon()
-//        doReturn(mockBucUtils).whenever(mockEuxService).getBucUtils(
-//                ArgumentMatchers.anyString()
-//        )
-//        val result = bucController.getMuligeAksjoner("12345666777", "P")
-//        assertEquals(3, result.size)
-//    }
 
+    @Spy
+    lateinit var mockEuxService: EuxService
 
+    @Mock
+    lateinit var mockSafService: SafService
 
+    @Mock
+    lateinit var mockAktoerIdHelper: AktoerIdHelper
+
+    private lateinit var bucController: BucController
+
+    @Before
+    fun before() {
+        this.bucController = BucController(mockEuxService, mockSafService, mockAktoerIdHelper)
+    }
+
+    @Test
+    fun enTest(){
+
+        doReturn(HentdokumentInnholdResponse("abc",
+                "enfil.pdf",
+                "application/pdf")).whenever(mockSafService).hentDokumentInnhold(any(), any(), any())
+
+        bucController.putVedleggTilDokument("123",
+                "456",
+                "7892",
+                "1",
+                "2",
+                VariantFormat.ARKIV )
+        verify(mockEuxService, times(1)).leggTilVedleggPaaDokument(any(), any(),any(),any(), any())
+    }
 }
