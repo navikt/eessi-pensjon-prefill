@@ -29,7 +29,8 @@ import java.util.*
 @RequestMapping("/buc")
 class BucController(private val euxService: EuxService,
                     private val safService: SafService,
-                    private val aktoerIdHelper: AktoerIdHelper) {
+                    private val aktoerIdHelper: AktoerIdHelper,
+                    private val fasitEnvName: String) {
 
     private val logger = LoggerFactory.getLogger(BucController::class.java)
 
@@ -70,7 +71,7 @@ class BucController(private val euxService: EuxService,
         return BucUtils(euxService.getBuc(rinanr)).getCreator()
     }
 
-    @ApiOperation("Henter opp den opprinelige inststusjon landkode på valgt caseid (type)")
+    @ApiOperation("Henter opp creator countrycode (type)")
     @GetMapping("/{rinanr}/creator/countryCode")
     fun getCreatorCountryCode(@PathVariable(value = "rinanr", required = true) rinanr: String): String? {
 
@@ -107,7 +108,7 @@ class BucController(private val euxService: EuxService,
 
         logger.debug("henter rinasaker på valgt aktoerid: $aktoerId")
         val fnr = aktoerIdHelper.hentPinForAktoer(aktoerId)
-        return euxService.getRinasaker(fnr)
+        return euxService.getRinasaker(fnr, fasitEnvName)
     }
 
     @ApiOperation("Henter ut en json struktur for type og sed menyliste for ui. ny api kall til eux")
@@ -117,8 +118,7 @@ class BucController(private val euxService: EuxService,
                         @PathVariable("euxcaseid", required = false) euxcaseid: String? = ""): List<BucAndSedView> {
         logger.debug("1 prøver å dekode til fnr fra aktoerid: $aktoerid")
         val fnr = aktoerIdHelper.hentPinForAktoer(aktoerid)
-        return euxService.getBucAndSedView(euxService.getRinasaker(fnr), aktoerid)
-
+        return euxService.getBucAndSedView(euxService.getRinasaker(fnr, fasitEnvName), aktoerid)
     }
 
     @ApiOperation("Henter ut en json struktur for type og sed menyliste for ui. ny api kall til eux")

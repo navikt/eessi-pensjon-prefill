@@ -31,14 +31,16 @@ import java.util.*
 
 
 @Service
-@Description("Service class for EuxBasis - EuxCpiServiceController.java")
+@Description("Service class for EuxBasis - eux-cpi-service-controller")
 class EuxService(private val euxOidcRestTemplate: RestTemplate) {
 
     private val logger = LoggerFactory.getLogger(EuxService::class.java)
 
+    //@Value("\${FASIT_ENVIRONMENT_NAME}")
+    //lateinit var fasitEnvName: String
+
     // Nye API kall er er fra 23.01.19
     // https://eux-app.nais.preprod.local/swagger-ui.html#/eux-cpi-service-controller/
-
 
     //Oppretter ny RINA sak(type) og en ny Sed
     @Throws(EuxServerException::class, RinaCasenrIkkeMottattException::class)
@@ -324,8 +326,29 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
      * Lister alle rinasaker på valgt fnr eller euxcaseid, eller bucType...
      * fnr er påkrved resten er fritt
      */
-    fun getRinasaker(fnr: String): List<Rinasak> {
-        return getRinasaker(fnr, null, null, null)
+    fun getRinasaker(fnr: String, fasitEnv: String): List<Rinasak> {
+        logger.debug("Henter opp rinasaker på fnr")
+        val rinasakfnr =  getRinasaker(fnr, null, null, null)
+
+        //Veldig CT denne skal fjernes etter
+        if (rinasakfnr.isEmpty() && "Q2" == fasitEnv.toUpperCase()  ) {
+            logger.debug("Ingen rinasaker på fnr funnet, så henter opp rinasaker på buctype")
+            return getRinasakerPaaBuctype()
+        }
+        return rinasakfnr
+    }
+
+    //For bruk i CT/Q2. Det vil komme en annen løsning for BUC på innkomende personer som må vises for saksbehandler
+    fun getRinasakerPaaBuctype(): List<Rinasak> {
+        val rinasaker = mutableListOf<Rinasak>()
+        EuxService.initSedOnBuc().keys.forEach{ buctype ->
+            logger.debug("Hnter opp rinasaker på buctype: $buctype")
+            val result = getRinasaker("","",buctype, "open")
+            logger.debug("Antall rinasaker : ${result.size}")
+            result.toCollection(rinasaker)
+        }
+        logger.debug("Totalt antall rinasaker på buctyper: ${rinasaker.size}")
+        return rinasaker.asSequence().sortedByDescending{ it.id  }.toList()
     }
 
     fun getRinasaker(fnr: String, euxCaseId: String?, bucType: String?, status: String?): List<Rinasak> {

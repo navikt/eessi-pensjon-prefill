@@ -188,7 +188,7 @@ class EuxServiceTest {
 
 
     @Test
-    fun `Calling EuxService| forventer OK ved sletting av valgt SED på valgt buc`() {
+    fun `Calling EuxService| forventer OK ved sletting av valgt SED paa valgt buc`() {
         val response: ResponseEntity<String> = ResponseEntity(HttpStatus.OK)
         val euxCaseId = "123456"
         val documentId = "213213-123123-123123"
@@ -230,7 +230,7 @@ class EuxServiceTest {
     }
 
     @Test
-    fun `Calling EuxService| forventer korrekt svar tilbake når SED er sendt OK på sendDocumentById`() {
+    fun `Calling EuxService| forventer korrekt svar tilbake naar SED er sendt OK paa sendDocumentById`() {
         val response: ResponseEntity<String> = ResponseEntity(HttpStatus.OK)
         val euxCaseId = "123456"
         val documentId = "213213-123123-123123"
@@ -289,7 +289,7 @@ class EuxServiceTest {
                 eq(String::class.java))
         ).thenReturn(response)
 
-        val result = service.getRinasaker("12345678900")
+        val result = service.getRinasaker("12345678900", "T8")
 
         assertEquals(154, orgRinasaker.size)
         assertEquals(orgRinasaker.size, result.size)
@@ -300,7 +300,7 @@ class EuxServiceTest {
     fun callingEuxServiceListOfRinasaker_IOError() {
 
         whenever(mockEuxrestTemplate.exchange(anyString(), eq(HttpMethod.GET), eq(null), eq(String::class.java))).thenThrow(ResourceAccessException("I/O error"))
-        service.getRinasaker("12345678900")
+        service.getRinasaker("12345678900", "T8")
 
     }
 
@@ -309,7 +309,7 @@ class EuxServiceTest {
 
         val clientError = HttpClientErrorException.create(HttpStatus.UNAUTHORIZED, "Error in Token", HttpHeaders(), "Error in Token".toByteArray(), Charset.defaultCharset())
         whenever(mockEuxrestTemplate.exchange(anyString(), eq(HttpMethod.GET), eq(null), eq(String::class.java))).thenThrow(clientError)
-        service.getRinasaker("12345678900")
+        service.getRinasaker("12345678900", "T8")
 
     }
 
@@ -318,8 +318,56 @@ class EuxServiceTest {
 
         val serverError = HttpServerErrorException.create(HttpStatus.BAD_GATEWAY, "Error in Gate", HttpHeaders(), "Error in Gate".toByteArray(), Charset.defaultCharset())
         whenever(mockEuxrestTemplate.exchange(anyString(), eq(HttpMethod.GET), eq(null), eq(String::class.java))).thenThrow(serverError)
-        service.getRinasaker("12345678900")
+        service.getRinasaker("12345678900", "T8")
 
+    }
+
+    @Test
+    fun callingEuxServiceListOfRinasakerNoFnrFoundBUCInQ2_Ok() {
+        //Kun for CT
+        val filepath = "src/test/resources/json/rinasaker/rinasaker_12345678901.json"
+        val json = String(Files.readAllBytes(Paths.get(filepath)))
+        assertTrue(validateJson(json))
+        val orgRinasaker = mapJsonToAny(json, typeRefs<List<Rinasak>>())
+
+        val responseEmpty: ResponseEntity<String> = ResponseEntity("[]", HttpStatus.OK)
+        val response: ResponseEntity<String> = ResponseEntity(json, HttpStatus.OK)
+        whenever(mockEuxrestTemplate.exchange(
+                anyString(),
+                eq(HttpMethod.GET),
+                eq(null),
+                eq(String::class.java))
+        ).thenReturn(responseEmpty)
+                .thenReturn(response)
+                .thenReturn(responseEmpty)
+                .thenReturn(responseEmpty)
+                .thenReturn(responseEmpty)
+                .thenReturn(responseEmpty)
+                .thenReturn(responseEmpty)
+                .thenReturn(responseEmpty)
+        val result = service.getRinasaker("12345678900", "Q2")
+        assertEquals(154, orgRinasaker.size)
+        assertEquals(orgRinasaker.size, result.size)
+    }
+
+    @Test
+    fun callingEuxServiceListOfRinasakerNoFnrCheckT8() {
+        //Kun for CT
+        //service.fasitEnvName = "T8"
+        val filepath = "src/test/resources/json/rinasaker/rinasaker_12345678901.json"
+        val json = String(Files.readAllBytes(Paths.get(filepath)))
+        assertTrue(validateJson(json))
+
+        val responseEmpty: ResponseEntity<String> = ResponseEntity("[]", HttpStatus.OK)
+        val response: ResponseEntity<String> = ResponseEntity(json, HttpStatus.OK)
+        whenever(mockEuxrestTemplate.exchange(
+                anyString(),
+                eq(HttpMethod.GET),
+                eq(null),
+                eq(String::class.java))
+        ).thenReturn(responseEmpty)
+        val result = service.getRinasaker("12345678900", "T8")
+        assertEquals(0, result.size)
     }
 
     @Test
@@ -344,7 +392,7 @@ class EuxServiceTest {
 
         val orgRinasaker = mapJsonToAny(rinasakStr, typeRefs<List<Rinasak>>())
 
-        val rinasakresult = service.getRinasaker("12345678900")
+        val rinasakresult = service.getRinasaker("12345678900", "T8")
 
         val result = service.getBucAndSedView(rinasakresult, "001122334455")
 
@@ -547,9 +595,6 @@ class EuxServiceTest {
         val filepath = "src/test/resources/json/nav/P15000-NAV.json"
         val json = String(Files.readAllBytes(Paths.get(filepath)))
         assertTrue(validateJson(json))
-
-        val orgsed = mapJsonToAny(json, typeRefs<SED>())
-
         val response: ResponseEntity<String> = ResponseEntity(json, HttpStatus.OK)
 
         whenever(mockEuxrestTemplate.exchange(
@@ -570,9 +615,6 @@ class EuxServiceTest {
         val filepath = "src/test/resources/json/nav/P15000Gjennlevende-NAV.json"
         val json = String(Files.readAllBytes(Paths.get(filepath)))
         assertTrue(validateJson(json))
-
-        val orgsed = mapJsonToAny(json, typeRefs<SED>())
-
         val response: ResponseEntity<String> = ResponseEntity(json, HttpStatus.OK)
 
         whenever(mockEuxrestTemplate.exchange(
@@ -593,8 +635,6 @@ class EuxServiceTest {
         val filepath = "src/test/resources/json/nav/P2100-NAV-unfin.json"
         val json = String(Files.readAllBytes(Paths.get(filepath)))
         assertTrue(validateJson(json))
-
-        val orgsed = mapJsonToAny(json, typeRefs<SED>())
         val response: ResponseEntity<String> = ResponseEntity(json, HttpStatus.OK)
 
         whenever(mockEuxrestTemplate.exchange(
@@ -616,9 +656,6 @@ class EuxServiceTest {
         val filepath = "src/test/resources/json/nav/P9000-NAV.json"
         val json = String(Files.readAllBytes(Paths.get(filepath)))
         assertTrue(validateJson(json))
-
-        val orgsed = mapJsonToAny(json, typeRefs<SED>())
-
         val response: ResponseEntity<String> = ResponseEntity(json, HttpStatus.OK)
 
         whenever(mockEuxrestTemplate.exchange(
