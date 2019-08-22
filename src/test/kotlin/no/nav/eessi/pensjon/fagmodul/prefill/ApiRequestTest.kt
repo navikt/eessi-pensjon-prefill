@@ -4,12 +4,13 @@ import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import no.nav.eessi.pensjon.utils.validateJson
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import java.nio.file.Files
 import java.nio.file.Paths
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
-import org.junit.Assert.assertTrue
 
 class ApiRequestTest {
 
@@ -76,7 +77,7 @@ class ApiRequestTest {
         createMockApiRequest("vedtak", "P_BUC_06", payload)
     }
 
-    @Test(expected = MangelfulleInndataException::class)
+    @Test
     fun `confirm document when sed is not valid`() {
         val mockData = ApiRequest(
                 subjectArea = "Pensjon",
@@ -86,10 +87,12 @@ class ApiRequestTest {
                 buc = "P_BUC_06",
                 aktoerId = "0105094340092"
         )
-        ApiRequest.buildPrefillDataModelConfirm(mockData, "12345", null)
+        assertThrows<MangelfulleInndataException> {
+            ApiRequest.buildPrefillDataModelConfirm(mockData, "12345", null)
+        }
     }
 
-    @Test(expected = MangelfulleInndataException::class)
+    @Test
     fun `confirm document sed is null`() {
         val mockData = ApiRequest(
                 subjectArea = "Pensjon",
@@ -99,7 +102,9 @@ class ApiRequestTest {
                 buc = "P_BUC_06",
                 aktoerId = "0105094340092"
         )
-        ApiRequest.buildPrefillDataModelConfirm(mockData, "12345", null)
+        assertThrows<MangelfulleInndataException> {
+            ApiRequest.buildPrefillDataModelConfirm(mockData, "12345", null)
+        }
     }
 
     @Test
@@ -145,14 +150,16 @@ class ApiRequestTest {
     }
 
 
-    @Test(expected = IllegalArgumentException::class)
+    @Test
     fun `check on aktoerId is null`() {
         val mockData = ApiRequest(
                 sakId = "1213123123",
                 sed = "P6000",
                 aktoerId = null
         )
-        ApiRequest.buildPrefillDataModelConfirm(mockData, "12345", null)
+        assertThrows<IllegalArgumentException> {
+            ApiRequest.buildPrefillDataModelConfirm(mockData, "12345", null)
+        }
     }
 
 }

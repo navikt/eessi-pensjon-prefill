@@ -4,18 +4,18 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
-import org.junit.Assert.assertTrue
 import no.nav.eessi.pensjon.logging.RequestIdOnMDCFilter.Companion.NAV_CALL_ID_HEADER
 import no.nav.eessi.pensjon.logging.RequestIdOnMDCFilter.Companion.REQUEST_ID_HEADER
 import no.nav.eessi.pensjon.logging.RequestIdOnMDCFilter.Companion.REQUEST_ID_MDC_KEY
-import org.junit.After
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import org.slf4j.MDC
 import org.springframework.http.client.ClientHttpRequestExecution
 import org.springframework.mock.http.client.MockClientHttpRequest
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
 
 class RequestIdHeaderInterceptorTest {
 
@@ -28,7 +28,7 @@ class RequestIdHeaderInterceptorTest {
     private val otherRequestId = "ANOTHER REQUEST ID"
     private val otherCallId = "ANOTHER CALL ID"
 
-    @Before
+    @BeforeEach
     fun setup() {
         whenever(mockExecution.execute(any(), any())).thenReturn(mock())
     }
@@ -75,7 +75,7 @@ class RequestIdHeaderInterceptorTest {
         assertTrue(mockRequest.headers[NAV_CALL_ID_HEADER]!!.contains(otherCallId))
     }
 
-    @After
+    @AfterEach
     fun `cleanup MDC`() {
         MDC.remove(REQUEST_ID_MDC_KEY)
     }

@@ -4,18 +4,19 @@ import no.nav.eessi.pensjon.metrics.TimingService
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.typeRefs
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
-import org.junit.Assert.assertNull
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions.assertNull
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mock
-import org.mockito.junit.MockitoJUnitRunner
+import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.util.ResourceUtils
 import java.time.LocalDate
 
-@RunWith(MockitoJUnitRunner::class)
+@ExtendWith(MockitoExtension::class)
 class PensjonsinformasjonUtlandControllerTest {
 
     @Mock
@@ -26,13 +27,13 @@ class PensjonsinformasjonUtlandControllerTest {
 
     lateinit var pensjonsinformasjonUtlandService : PensjonsinformasjonUtlandService
 
-    @Before
+    @BeforeEach
     fun bringItOn() {
         pensjonsinformasjonUtlandService = PensjonsinformasjonUtlandService(timingService)
         controller = PensjonsinformasjonUtlandController(pensjonsinformasjonUtlandService)
     }
 
-    @Test(expected = NoSuchElementException::class)
+    @Test
     fun mockPutKravUtland() {
         val buckey = 999
         val resource = ResourceUtils.getFile("classpath:json/pesys/kravutlandalderpen.json").readText()
@@ -50,7 +51,9 @@ class PensjonsinformasjonUtlandControllerTest {
         controller.mockDeleteKravUtland(buckey)
 
         //prøver å hente ut som skal feile.
-        controller.hentKravUtland(buckey)
+        assertThrows<NoSuchElementException> {
+            controller.hentKravUtland(buckey)
+        }
     }
 
     @Test

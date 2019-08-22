@@ -1,8 +1,8 @@
 package no.nav.eessi.pensjon.fagmodul.sedmodel
 
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
-import org.junit.Assert.assertEquals
 
 
 class SedP8000Test {

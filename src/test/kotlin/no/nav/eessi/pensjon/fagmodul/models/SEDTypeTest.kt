@@ -1,7 +1,7 @@
 package no.nav.eessi.pensjon.fagmodul.models
 
-import org.junit.Test
-import org.junit.Assert.assertTrue
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Test
 
 class SEDTypeTest {
     @Test

@@ -3,18 +3,18 @@ package no.nav.eessi.pensjon.fagmodul.sedmodel
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.typeRefs
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
 
 class SedP2200Test {
 
     lateinit var p2200json: String
     lateinit var p2200sed: SED
 
-    @Before
+    @BeforeEach
     fun bringItOn() {
         p2200json = getTestJsonFile("P2000-NAV.json")
         p2200sed = getSEDfromTestfile(p2200json)

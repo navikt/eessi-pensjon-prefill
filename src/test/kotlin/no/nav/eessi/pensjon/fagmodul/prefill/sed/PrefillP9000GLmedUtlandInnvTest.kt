@@ -11,10 +11,10 @@ import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.setupPersonda
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.FodselsnummerMother.generateRandomFnr
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.NavFodselsnummer
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
-import org.junit.Before
-import org.junit.Test
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 
 class PrefillP9000GLmedUtlandInnvTest {
 
@@ -27,7 +27,7 @@ class PrefillP9000GLmedUtlandInnvTest {
     lateinit var prefill: Prefill<SED>
     lateinit var prefillNav: PrefillNav
 
-    @Before
+    @BeforeEach
     fun setup() {
         val persondataFraTPS = setupPersondataFraTPS(setOf(
                 PersonDataFromTPS.MockTPS("Person-30000.json", personFnr, PersonDataFromTPS.MockTPS.TPSType.PERSON),

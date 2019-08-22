@@ -1,10 +1,10 @@
 package no.nav.eessi.pensjon.fagmodul.sedmodel
 
-import org.junit.runner.RunWith
-import org.junit.runners.Suite
+import org.junit.platform.suite.api.SelectClasses
+import org.junit.platform.suite.api.SuiteDisplayName
 
-@RunWith(Suite::class)
-@Suite.SuiteClasses(
+@SuiteDisplayName("Sed Test Suite")
+@SelectClasses(
         SedTest::class,
         SedP2000Test::class,
         SedP2100Test::class,

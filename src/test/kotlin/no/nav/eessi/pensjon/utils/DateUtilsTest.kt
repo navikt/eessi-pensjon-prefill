@@ -1,11 +1,11 @@
 package no.nav.eessi.pensjon.utils
 
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import java.text.ParseException
-import java.time.format.DateTimeParseException
 import javax.xml.datatype.DatatypeFactory
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
 
 
 class DateUtilsTest {
@@ -89,8 +89,10 @@ class DateUtilsTest {
 
     }
 
-    @Test(expected = ParseException::class)
+    @Test
     fun `Test av konvertere datotekst til xmlkalender feiler`() {
-        createXMLCalendarFromString("2016-Ø1-01")
+        assertThrows<ParseException> {
+            createXMLCalendarFromString("2016-Ø1-01")
+        }
     }
 }

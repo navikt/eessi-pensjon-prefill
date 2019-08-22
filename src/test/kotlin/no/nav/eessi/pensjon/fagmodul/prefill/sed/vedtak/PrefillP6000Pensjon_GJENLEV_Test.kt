@@ -3,14 +3,17 @@ package no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak
 import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjonMother.standardEessiInfo
 import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonHjelper
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonServiceMother.fraFil
-import org.junit.Assert
-import org.junit.Assert.assertEquals
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.mockito.junit.MockitoJUnitRunner
-import org.junit.Assert.assertNotNull
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.junit.jupiter.MockitoExtension
+import org.mockito.junit.jupiter.MockitoSettings
+import org.mockito.quality.Strictness
 
-@RunWith(MockitoJUnitRunner::class)
+@ExtendWith(MockitoExtension::class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 class PrefillP6000Pensjon_GJENLEV_Test {
 
     @Test
@@ -28,12 +31,12 @@ class PrefillP6000Pensjon_GJENLEV_Test {
         assertNotNull(result.tilleggsinformasjon)
 
         val vedtak = result.vedtak?.get(0)
-        assertEquals("vedtak.virkningsdato", "2018-05-01", vedtak?.virkningsdato)
-        assertEquals("vedtak.type", "03", vedtak?.type)
-        assertEquals("vedtak.basertPaa", "02", vedtak?.basertPaa)
-        assertEquals("vedtak.resultat", "03", vedtak?.resultat)
+        assertEquals("2018-05-01", vedtak?.virkningsdato, "vedtak.virkningsdato")
+        assertEquals("03", vedtak?.type, "vedtak.type")
+        assertEquals("02", vedtak?.basertPaa, "vedtak.basertPaa")
+        assertEquals("03", vedtak?.resultat, "vedtak.resultat")
         assertEquals("2018-05-26", vedtak?.kjoeringsdato)
-        assertEquals("4.1.5 vedtak.artikkel (må fylles ut manuelt nå)", null, vedtak?.artikkel)
+        assertEquals(null, vedtak?.artikkel, "4.1.5 vedtak.artikkel (må fylles ut manuelt nå)")
 
         assertEquals("03", vedtak?.grunnlag?.opptjening?.forsikredeAnnen)
         assertEquals("1", vedtak?.grunnlag?.framtidigtrygdetid)
@@ -69,12 +72,12 @@ class PrefillP6000Pensjon_GJENLEV_Test {
         assertNotNull(result.tilleggsinformasjon)
 
         val vedtak = result.vedtak?.get(0)
-        assertEquals("vedtak.virkningsdato", "2018-05-01", vedtak?.virkningsdato)
-        assertEquals("vedtak.type", "03", vedtak?.type)
-        assertEquals("vedtak.basertPaa", "02", vedtak?.basertPaa)
-        assertEquals("vedtak.resultat", "03", vedtak?.resultat)
+        assertEquals("2018-05-01", vedtak?.virkningsdato, "vedtak.virkningsdato")
+        assertEquals("03", vedtak?.type, "vedtak.type")
+        assertEquals("02", vedtak?.basertPaa, "vedtak.basertPaa")
+        assertEquals("03", vedtak?.resultat, "vedtak.resultat")
         assertEquals("2018-05-26", vedtak?.kjoeringsdato)
-        assertEquals("4.1.5 vedtak.artikkel (må fylles ut manuelt nå)", null, vedtak?.artikkel)
+        assertEquals(null, vedtak?.artikkel, "4.1.5 vedtak.artikkel (må fylles ut manuelt nå)")
 
         assertEquals("03", vedtak?.grunnlag?.opptjening?.forsikredeAnnen)
         assertEquals("1", vedtak?.grunnlag?.framtidigtrygdetid)
@@ -104,10 +107,12 @@ class PrefillP6000Pensjon_GJENLEV_Test {
         assertEquals("0607", result.tilleggsinformasjon?.andreinstitusjoner?.get(0)?.postnummer)
     }
 
-    @Test(expected = IllegalStateException::class)
+    @Test
     fun `preutfylling P6000 feiler ved mangler av vedtakId`() {
         val dataFromPESYS = PensjonsinformasjonHjelper(fraFil("P6000-GP-401.xml"))
 
-        PrefillP6000Pensjon.createPensjon(dataFromPESYS, null,"", null)
+        assertThrows<IllegalStateException> {
+            PrefillP6000Pensjon.createPensjon(dataFromPESYS, null, "", null)
+        }
     }
 }

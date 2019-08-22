@@ -3,18 +3,19 @@ package no.nav.eessi.pensjon.security.sts
 import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.whenever
 import no.nav.eessi.pensjon.utils.typeRef
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.ArgumentMatchers
 import org.mockito.Mock
-import org.mockito.junit.MockitoJUnitRunner
+import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.http.HttpMethod
 import org.springframework.http.ResponseEntity
 import org.springframework.web.client.RestTemplate
-import org.junit.Assert.assertEquals
 
-@RunWith(MockitoJUnitRunner::class)
+@ExtendWith(MockitoExtension::class)
 class STSServiceTest {
 
     @Mock
@@ -22,7 +23,7 @@ class STSServiceTest {
 
     private lateinit var stsService: STSService
 
-    @Before
+    @BeforeEach
     fun oppStart() {
 
         stsService = STSService(securityTokenExchangeBasicAuthRestTemplate)
@@ -61,7 +62,7 @@ class STSServiceTest {
 
     }
 
-    @Test(expected = SystembrukerTokenException::class)
+    @Test
     fun getSystemOidcToken_withError() {
 
         val mockSecurityTokenResponse = SecurityTokenResponse(
@@ -78,8 +79,9 @@ class STSServiceTest {
                 eq(null),
                 eq(typeRef<SecurityTokenResponse>()))
         ).thenReturn(response)
-        stsService.getSystemOidcToken()
+
+        assertThrows<SystembrukerTokenException> {
+            stsService.getSystemOidcToken()
+        }
     }
-
-
 }

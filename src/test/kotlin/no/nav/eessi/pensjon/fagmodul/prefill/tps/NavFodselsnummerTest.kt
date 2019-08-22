@@ -1,10 +1,11 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.tps
 
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.FodselsnummerMother.generateRandomFnr
-import org.junit.Assert.assertEquals
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import java.time.LocalDate
-import org.junit.Assert.assertFalse
 
 
 class NavFodselsnummerTest {
@@ -163,10 +164,12 @@ class NavFodselsnummerTest {
         assertEquals(false, navfnr.validate())
     }
 
-    @Test(expected = IllegalArgumentException::class)
+    @Test
     fun `Dette er iallefall ikke et gyldig fodselsnummer da noen taster tegn inn`() {
         val fnrfeil = "201242ABBA2"
-        NavFodselsnummer(fnrfeil)
+        assertThrows<IllegalArgumentException> {
+            NavFodselsnummer(fnrfeil)
+        }
     }
 
 

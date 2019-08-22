@@ -1,10 +1,10 @@
 package no.nav.eessi.pensjon.utils
 
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import org.junit.Assert.assertEquals
 
 
 class JsonUtilsTest {

@@ -1,8 +1,9 @@
 package no.nav.eessi.pensjon.fagmodul.metrics
 
 import io.micrometer.core.instrument.Metrics
-import org.junit.Test
-import org.junit.Assert.assertEquals
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 
 
 class MetricsTest {
@@ -14,8 +15,10 @@ class MetricsTest {
         assertEquals(tst, value)
     }
 
-    @Test(expected = NoSuchElementException::class)
+    @Test
     fun `testing getCounter for key not found in euxservice`() {
-        getCounter("NOKEYISINMAP")
+        assertThrows<NoSuchElementException> {
+            getCounter("NOKEYISINMAP")
+        }
     }
 }

@@ -99,7 +99,7 @@ class AktoerregisterService(private val aktoerregisterOidcRestTemplate: RestTemp
             if (responseEntity.hasBody()) {
                 logger.error(responseEntity.body.toString())
             }
-            throw AktoerregisterException("Received ${responseEntity.statusCode} ${responseEntity.statusCode.reasonPhrase} from aktørregisteret")
+            throw AktoerregisterException("Received ${responseEntity.statusCodeValue} ${responseEntity.statusCode.reasonPhrase} from aktørregisteret")
         }
         aktoerregister_teller_type_vellykkede.increment()
         return jacksonObjectMapper().readValue(responseEntity.body!!)

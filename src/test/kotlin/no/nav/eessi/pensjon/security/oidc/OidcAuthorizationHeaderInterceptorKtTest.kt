@@ -7,14 +7,14 @@ import no.nav.security.oidc.context.OIDCRequestContextHolder
 import no.nav.security.oidc.context.OIDCValidationContext
 import no.nav.security.oidc.context.TokenContext
 import org.apache.commons.io.FileUtils
-import org.junit.Assert.assertEquals
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.mockito.junit.MockitoJUnitRunner
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.junit.jupiter.MockitoExtension
 import java.io.File
 import java.nio.charset.Charset
 
-@RunWith(MockitoJUnitRunner::class)
+@ExtendWith(MockitoExtension::class)
 class OidcAuthorizationHeaderInterceptorKtTest {
 
     private val allRequestContextHolders = generateMockContextHolder(listOf("isso","pesys","oidc"))

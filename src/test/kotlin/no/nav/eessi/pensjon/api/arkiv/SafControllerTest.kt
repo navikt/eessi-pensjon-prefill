@@ -2,23 +2,23 @@ package no.nav.eessi.pensjon.api.arkiv
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.nhaarman.mockitokotlin2.whenever
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
 import no.nav.eessi.pensjon.services.arkiv.HentMetadataResponse
 import no.nav.eessi.pensjon.services.arkiv.HentdokumentInnholdResponse
 import no.nav.eessi.pensjon.services.arkiv.SafException
 import no.nav.eessi.pensjon.services.arkiv.SafService
 import no.nav.eessi.pensjon.services.arkiv.VariantFormat
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mock
-import org.mockito.junit.MockitoJUnitRunner
+import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.http.HttpStatus
 import java.nio.file.Files
 import java.nio.file.Paths
 
-@RunWith(MockitoJUnitRunner::class)
+@ExtendWith(MockitoExtension::class)
 class SafControllerTest {
 
     @Mock
@@ -26,7 +26,7 @@ class SafControllerTest {
 
     lateinit var safController: SafController
 
-    @Before
+    @BeforeEach
     fun setup() {
         safController = SafController(safService)
 

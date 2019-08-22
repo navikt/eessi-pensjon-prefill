@@ -9,16 +9,17 @@ import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.typeRefs
 import no.nav.eessi.pensjon.utils.validateJson
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.mockito.junit.MockitoJUnitRunner
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.junit.jupiter.MockitoExtension
 import java.nio.file.Files
 import java.nio.file.Paths
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
 
-@RunWith(MockitoJUnitRunner::class)
+@ExtendWith(MockitoExtension::class)
 class BucUtilsTest {
 
     lateinit var bucUtils: BucUtils
@@ -32,7 +33,7 @@ class BucUtilsTest {
         return json
     }
 
-    @Before
+    @BeforeEach
     fun bringItOn() {
         bucjson = getTestJsonFile("buc-22909_v4.1.json")
         buc = mapJsonToAny(bucjson, typeRefs<Buc>())
@@ -268,11 +269,13 @@ class BucUtilsTest {
     }
 
 
-    @Test(expected = ManglerDeltakereException::class)
+    @Test
     fun `findNewParticipants | listene er tom forventer exception`(){
         val bucUtils = BucUtils(Buc(participants = listOf()))
         val candidates = listOf<InstitusjonItem>()
-        bucUtils.findNewParticipants(candidates)
+        assertThrows<ManglerDeltakereException> {
+            bucUtils.findNewParticipants(candidates)
+        }
     }
 
     @Test

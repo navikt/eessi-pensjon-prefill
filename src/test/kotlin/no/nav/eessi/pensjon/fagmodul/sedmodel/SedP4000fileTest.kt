@@ -3,9 +3,9 @@ package no.nav.eessi.pensjon.fagmodul.sedmodel
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.typeRefs
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
-import org.junit.Assert.assertNotNull
 
 class SedP4000fileTest {
 
