@@ -33,6 +33,8 @@ import java.util.*
 import java.io.FileOutputStream
 import java.nio.file.Paths
 
+
+
 @Service
 @Description("Service class for EuxBasis - eux-cpi-service-controller")
 class EuxService(private val euxOidcRestTemplate: RestTemplate) {
@@ -432,7 +434,7 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
                 return it
             } ?: throw IkkeFunnetException("Fant ikke noen caseid")
         } catch (ia: IllegalArgumentException) {
-            logger.error("noe feil? exception ${ia.message}", ia)
+            logger.error("noe feil ved opprett buc? exception ${ia.message}", ia)
             throw GenericUnprocessableEntity(ia.message!!)
         } catch (hx: HttpClientErrorException) {
             logger.warn("Buc ClientException ${hx.message}", hx)
@@ -477,7 +479,7 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
 
             return response.statusCode == HttpStatus.OK
         } catch (ia: IllegalArgumentException) {
-            logger.error("noe feil? exception ${ia.message}", ia)
+            logger.error("noe feil ved mottaker? exception ${ia.message}", ia)
             throw GenericUnprocessableEntity(ia.message!!)
         } catch (hx: HttpClientErrorException) {
             logger.warn("Deltager ClientException ${hx.message}", hx)
@@ -548,14 +550,14 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
     fun hentFnrOgYtelseKravtype(euxCaseId: String, documentId: String): PinOgKrav {
         val sed = getSedOnBucByDocumentId(euxCaseId, documentId)
 
-        //validere om SED er vireklig en P2100 eller P15000
+        //validere om SED er virkelig en P2100 eller P15000
         if (SEDType.P2100.name == sed.sed) {
             return PinOgKrav(
                     fnr = getFnrMedLandkodeNO(sed.pensjon?.gjenlevende?.person?.pin),
                     krav = sed.nav?.krav ?: Krav()
             )
         }
-        //P15000 sjekke om det er 02 Gjennlevende eller ikke
+        //P15000 sjekke om det er 02 Gjenlevende eller ikke
         if (SEDType.P15000.name == sed.sed) {
             val krav = sed.nav?.krav ?: Krav()
             return if ("02" == krav.type) {
@@ -603,6 +605,35 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
             logger.debug("Feiler ved ping, eux-rina-api")
             throw EuxServerException(ex.message)
         }
+    }
+
+    fun getFDatoFromSed(euxCaseId: String, bucType: String): String? {
+        val sedOnBuc = initSedOnBuc()
+        if (!sedOnBuc.containsKey(bucType)) throw GenericUnprocessableEntity("Ugyldig buctype, vi støtter ikke denne bucen $bucType")
+
+        val sedType = sedOnBuc[bucType]
+
+        var fdato: String? = null
+
+        sedType?.forEach {
+            val sedDocument = BucUtils(getBuc(euxCaseId)).findFirstDocumentItemByType(it)
+            val sed = getSedOnBucByDocumentId(euxCaseId, sedDocument?.id ?: throw NoSuchFieldException("Fant ikke DocumentsItem"))
+
+            val sedValue = sed.sed?.let { it1 -> SEDType.valueOf(it1) }
+            logger.info("mapping prefillClass to SED: $sedValue")
+
+            //TODO: Må rette mappingen på P8000
+            // "01" er rollen for søker på gjenlevende ytelse
+            fdato = if ("01" == sed.nav?.annenperson?.person?.rolle) {
+                sed.nav?.annenperson?.person?.foedselsdato
+            } else if (sed.pensjon?.gjenlevende?.person?.foedselsdato != null) {
+                sed.pensjon?.gjenlevende?.person?.foedselsdato
+            }  else {
+                sed.nav?.bruker?.person?.foedselsdato
+            }
+            if (fdato != null) return fdato
+        }
+        throw IkkeFunnetException("Ingen fødselsdato funnet")
     }
 
     /**
