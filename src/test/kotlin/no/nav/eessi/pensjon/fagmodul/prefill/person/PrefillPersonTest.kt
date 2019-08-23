@@ -3,25 +3,22 @@ package no.nav.eessi.pensjon.fagmodul.prefill.person
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.whenever
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
-import no.nav.eessi.pensjon.fagmodul.sedmodel.NavMock
-import no.nav.eessi.pensjon.fagmodul.sedmodel.PensjonMock
-import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillDefaultSED
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillFactory
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillSED
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.junit.runners.Parameterized
-import org.junit.runners.Parameterized.Parameters
+import no.nav.eessi.pensjon.fagmodul.sedmodel.NavMock
+import no.nav.eessi.pensjon.fagmodul.sedmodel.PensjonMock
+import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.MethodSource
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
 
-@RunWith(Parameterized::class)
-class PrefillPersonTest(val index: Int, val sedid: String) {
+class PrefillPersonTest {
 
     @Mock
     private lateinit var mockPreutfyllingNav: PrefillNav
@@ -41,7 +38,7 @@ class PrefillPersonTest(val index: Int, val sedid: String) {
 
     private lateinit var prefillDefaultSED: PrefillDefaultSED
 
-    @Before
+    @BeforeEach
     fun setup() {
         MockitoAnnotations.initMocks(this)
 
@@ -54,7 +51,6 @@ class PrefillPersonTest(val index: Int, val sedid: String) {
     }
 
     companion object {
-        @Parameters
         @JvmStatic
         fun `collection data`(): Collection<Array<Any>> {
             return listOf(
@@ -69,8 +65,9 @@ class PrefillPersonTest(val index: Int, val sedid: String) {
         }
     }
 
-    @Test
-    fun `create mock on prefill SED`() {
+    @ParameterizedTest
+    @MethodSource("collection data")
+    fun `create mock on prefill SED`(index: Int, sedid: String) {
         val mockPinResponse = "12345"
 
         val navresponse = NavMock().genererNavMock()

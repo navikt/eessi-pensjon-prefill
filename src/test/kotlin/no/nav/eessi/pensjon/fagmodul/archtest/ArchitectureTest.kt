@@ -13,10 +13,9 @@ import com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noMethods
 import com.tngtech.archunit.library.Architectures.layeredArchitecture
 import com.tngtech.archunit.library.dependencies.SlicesRuleDefinition.slices
 import no.nav.eessi.pensjon.EessiFagmodulApplication
-import org.junit.Assert.assertTrue
-import org.junit.BeforeClass
-import org.junit.Ignore
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.Test
 import org.springframework.context.annotation.Scope
 import org.springframework.web.bind.annotation.RestController
 
@@ -34,26 +33,26 @@ class ArchitectureTest {
         @JvmStatic
         lateinit var testClasses: JavaClasses
 
-        @BeforeClass @JvmStatic
+        @BeforeAll @JvmStatic
         fun `extract classes`() {
             allClasses = ClassFileImporter().importPackages(root)
 
-            assertTrue("Sanity check on no. of classes to analyze", allClasses.size > 200)
-            assertTrue("Sanity check on no. of classes to analyze", allClasses.size < 800)
+            assertTrue(allClasses.size > 200, "Sanity check on no. of classes to analyze")
+            assertTrue(allClasses.size < 800, "Sanity check on no. of classes to analyze")
 
             productionClasses = ClassFileImporter()
                     .withImportOption(ImportOption.DoNotIncludeTests())
                     .importPackages(root)
 
-            assertTrue("Sanity check on no. of classes to analyze", productionClasses.size > 200)
-            assertTrue("Sanity check on no. of classes to analyze", productionClasses.size < 800)
+            assertTrue(productionClasses.size > 200, "Sanity check on no. of classes to analyze")
+            assertTrue(productionClasses.size < 800, "Sanity check on no. of classes to analyze")
 
             testClasses = ClassFileImporter()
                     .withImportOption{ !ImportOption.DoNotIncludeTests().includes(it) }
                     .importPackages(root)
 
-            assertTrue("Sanity check on no. of classes to analyze", testClasses.size > 100)
-            assertTrue("Sanity check on no. of classes to analyze", testClasses.size < 500)
+            assertTrue(testClasses.size > 100, "Sanity check on no. of classes to analyze")
+            assertTrue(testClasses.size < 500, "Sanity check on no. of classes to analyze")
         }
     }
 

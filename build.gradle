@@ -73,7 +73,10 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-actuator")
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.springframework.boot:spring-boot-starter-test") {
+        exclude module: 'junit'
+        exclude module: "mockito-core"
+    }
 
     // Allows for variable expiration-date of each cache-entry
     implementation("net.jodah:expiringmap:0.5.9")
@@ -96,8 +99,9 @@ dependencies {
     implementation("io.springfox:springfox-swagger-ui:${springfoxVersion}")
 
     //mock - test
-    testImplementation("org.jetbrains.kotlin:kotlin-test")
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.5.1")
+    testImplementation('org.junit.platform:junit-platform-suite-api:1.5.1')
+    testImplementation('org.mockito:mockito-junit-jupiter:2.23.0')
     testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:2.1.0")
     testImplementation("org.skyscreamer:jsonassert:1.5.0")
 
@@ -125,6 +129,10 @@ dependencies {
 
     // Micrometer
     implementation("io.micrometer:micrometer-registry-prometheus")
+}
+
+test {
+    useJUnitPlatform()
 }
 
 ext.schemasDir = "${projectDir}/src/main/resources/schemas"

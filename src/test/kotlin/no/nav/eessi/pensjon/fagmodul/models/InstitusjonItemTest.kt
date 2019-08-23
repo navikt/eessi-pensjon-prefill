@@ -1,7 +1,7 @@
 package no.nav.eessi.pensjon.fagmodul.models
 
-import org.junit.Test
-import kotlin.test.assertEquals
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
 
 class InstitusjonItemTest {
 

@@ -3,21 +3,27 @@ package no.nav.eessi.pensjon.services.arkiv
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.whenever
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.ArgumentMatchers
 import org.mockito.Mock
-import org.mockito.junit.MockitoJUnitRunner
+import org.mockito.junit.jupiter.MockitoExtension
 import org.skyscreamer.jsonassert.JSONAssert
-import org.springframework.http.*
+import org.springframework.http.ContentDisposition
+import org.springframework.http.HttpEntity
+import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
 import org.springframework.web.client.RestClientException
 import org.springframework.web.client.RestTemplate
 import java.nio.file.Files
 import java.nio.file.Paths
-import kotlin.test.assertEquals
 
-@RunWith(MockitoJUnitRunner::class)
+@ExtendWith(MockitoExtension::class)
 class SafServiceTest {
 
     @Mock
@@ -28,7 +34,7 @@ class SafServiceTest {
 
     lateinit var safService: SafService
 
-    @Before
+    @BeforeEach
     fun setup() {
         safService = SafService(safGraphQlOidcRestTemplate, safRestOidcRestTemplate)
     }
@@ -45,18 +51,22 @@ class SafServiceTest {
         JSONAssert.assertEquals(mapper.writeValueAsString(resp), responseJson, true)
     }
 
-    @Test(expected = SafException::class)
+    @Test
     fun `gitt noe annet enn 200 httpCopde feil når metadata hentes så kast SafException med tilhørende httpCode`() {
         whenever(safGraphQlOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java)))
                 .thenReturn(ResponseEntity("", HttpStatus.NOT_FOUND))
-        safService.hentDokumentMetadata("1234567891000")
+        assertThrows<SafException> {
+            safService.hentDokumentMetadata("1234567891000")
+        }
     }
 
-    @Test(expected = SafException::class)
+    @Test
     fun `gitt en feil når metadata hentes så kast SafException med tilhørende httpCode`() {
         whenever(safGraphQlOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java)))
                 .thenThrow(RestClientException("some error"))
-        safService.hentDokumentMetadata("1234567891000")
+        assertThrows<SafException> {
+            safService.hentDokumentMetadata("1234567891000")
+        }
     }
 
     @Test
@@ -72,17 +82,21 @@ class SafServiceTest {
         assertEquals("YWJj", resp.base64)
     }
 
-    @Test(expected = SafException::class)
+    @Test
     fun `gitt noe annet enn 200 httpCopde feil når dokumentinnhold hentes så kast SafException med tilhørende httpCode`() {
         whenever(safRestOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java)))
                 .thenReturn(ResponseEntity("", HttpStatus.NOT_FOUND))
-        safService.hentDokumentInnhold("123","456", VariantFormat.ARKIV)
+        assertThrows<SafException> {
+            safService.hentDokumentInnhold("123", "456", VariantFormat.ARKIV)
+        }
     }
 
-    @Test(expected = SafException::class)
+    @Test
     fun `gitt en feil når dokumentinnhold hentes så kast SafException med tilhørende httpCode`() {
         whenever(safRestOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java)))
                 .thenThrow(RestClientException("some error"))
-        safService.hentDokumentInnhold("123","456", VariantFormat.ARKIV)
+        assertThrows<SafException> {
+            safService.hentDokumentInnhold("123", "456", VariantFormat.ARKIV)
+        }
     }
 }

@@ -9,14 +9,14 @@ import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Personnavn
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Sivilstand
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Sivilstander
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mock
-import org.mockito.junit.MockitoJUnitRunner
-import kotlin.test.assertEquals
+import org.mockito.junit.jupiter.MockitoExtension
 
-@RunWith(MockitoJUnitRunner::class)
+@ExtendWith(MockitoExtension::class)
 class PrefillPersonDataFromTPSTest{
 
     @Mock
@@ -32,7 +32,7 @@ class PrefillPersonDataFromTPSTest{
 
     private val prefillAdresse = PrefillAdresse(postnummerService, landkodeService)
 
-    @Before
+    @BeforeEach
     fun bringItOnDude() {
 
         prefillPersonFromTPS = PrefillPersonDataFromTPS(personV3Service, prefillAdresse, eessiInfo)

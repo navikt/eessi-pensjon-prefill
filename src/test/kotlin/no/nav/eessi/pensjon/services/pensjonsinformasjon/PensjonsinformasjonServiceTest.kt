@@ -5,12 +5,15 @@ import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.doThrow
 import com.nhaarman.mockitokotlin2.whenever
 import no.nav.eessi.pensjon.utils.simpleFormat
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.ArgumentMatchers
 import org.mockito.Mock
-import org.mockito.junit.MockitoJUnitRunner
+import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
@@ -19,11 +22,9 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.util.ResourceUtils
 import org.springframework.web.client.ResourceAccessException
 import org.springframework.web.client.RestTemplate
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
 
 @ActiveProfiles("test")
-@RunWith(MockitoJUnitRunner.Silent::class)
+@ExtendWith(MockitoExtension::class) // Silent?
 class PensjonsinformasjonServiceTest {
 
     @Mock
@@ -31,7 +32,7 @@ class PensjonsinformasjonServiceTest {
 
     lateinit var pensjonsinformasjonService: PensjonsinformasjonService
 
-    @Before
+    @BeforeEach
     fun setup() {
         pensjonsinformasjonService = PensjonsinformasjonService(mockrestTemplate, RequestBuilder())
     }
@@ -50,7 +51,7 @@ class PensjonsinformasjonServiceTest {
         assertEquals("2016-09-11", data.vedtak.virkningstidspunkt.simpleFormat())
     }
 
-    @Test(expected = PensjoninformasjonException::class)
+    @Test
     fun `PensjonsinformasjonService| hentAlt paa vedtak feiler`() {
         val mockResponseEntity = createResponseEntityFromJsonFile("classpath:pensjonsinformasjon/full-generated-response.xml")
 
@@ -61,7 +62,9 @@ class PensjonsinformasjonServiceTest {
                 ArgumentMatchers.eq(String::class.java))
         ).thenThrow(ResourceAccessException("IOException"))
 
-        pensjonsinformasjonService.hentAltPaaVedtak("1243")
+        assertThrows<PensjoninformasjonException> {
+            pensjonsinformasjonService.hentAltPaaVedtak("1243")
+        }
     }
 
 
@@ -124,13 +127,12 @@ class PensjonsinformasjonServiceTest {
 
     }
 
-    @Test(expected = IllegalArgumentException::class)
+    @Test
     fun `hentAltpåSak| mock data med tom aktoerid to saktyper en skal komme ut`() {
-        val mockResponseEntity = createResponseEntityFromJsonFile("classpath:pensjonsinformasjon/krav/P2000_21975717_AP_UTLAND.xml")
-        whenever(mockrestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java))).thenReturn(mockResponseEntity)
         val strAktor = ""
-        pensjonsinformasjonService.hentAltPaaAktoerId(strAktor)
-
+        assertThrows<IllegalArgumentException> {
+            pensjonsinformasjonService.hentAltPaaAktoerId(strAktor)
+        }
     }
 
 
@@ -153,7 +155,7 @@ class PensjonsinformasjonServiceTest {
 
     }
 
-    @Test(expected = IkkeFunnetException::class)
+    @Test
     fun `hentPensjonSakType | mock response ingen sak eller data`() {
         val mockResponseEntity = createResponseEntityFromJsonFile("classpath:pensjonsinformasjon/empty-pensjon-response.xml")
 
@@ -163,11 +165,12 @@ class PensjonsinformasjonServiceTest {
                 ArgumentMatchers.any(HttpEntity::class.java),
                 ArgumentMatchers.eq(String::class.java))
 
-        pensjonsinformasjonService.hentKunSakType("22580170", "12345678901")
-
+        assertThrows<IkkeFunnetException> {
+            pensjonsinformasjonService.hentKunSakType("22580170", "12345678901")
+        }
     }
 
-    @Test(expected = IkkeFunnetException::class)
+    @Test
     fun `hentPensjonSakType | mock response feil fra pesys execption kastet`() {
         doThrow(ResourceAccessException("INTERNAL_SERVER_ERROR")).whenever(mockrestTemplate).exchange(
                 ArgumentMatchers.any(String::class.java),
@@ -175,7 +178,9 @@ class PensjonsinformasjonServiceTest {
                 ArgumentMatchers.any(HttpEntity::class.java),
                 ArgumentMatchers.eq(String::class.java))
 
-        pensjonsinformasjonService.hentKunSakType("22580170", "12345678901")
+        assertThrows<IkkeFunnetException> {
+            pensjonsinformasjonService.hentKunSakType("22580170", "12345678901")
+        }
     }
 
 }

@@ -2,18 +2,18 @@ package no.nav.eessi.pensjon.fagmodul.prefill
 
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.whenever
-import no.nav.eessi.pensjon.fagmodul.sedmodel.*
-import no.nav.eessi.pensjon.fagmodul.models.*
+import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillSED
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
+import no.nav.eessi.pensjon.fagmodul.sedmodel.*
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mock
-import org.mockito.junit.MockitoJUnitRunner
-import kotlin.test.assertEquals
+import org.mockito.junit.jupiter.MockitoExtension
 
-@RunWith(MockitoJUnitRunner::class)
+@ExtendWith(MockitoExtension::class)
 class PrefillServiceTest {
 
     @Mock
@@ -21,7 +21,7 @@ class PrefillServiceTest {
 
     private lateinit var prefillService: PrefillService
 
-    @Before
+    @BeforeEach
     fun `startup initilize testing`() {
         prefillService = PrefillService(mockPrefillSED)
     }

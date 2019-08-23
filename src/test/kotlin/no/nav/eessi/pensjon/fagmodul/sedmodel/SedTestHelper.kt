@@ -1,9 +1,9 @@
 package no.nav.eessi.pensjon.fagmodul.sedmodel
 
 import no.nav.eessi.pensjon.utils.validateJson
+import org.junit.jupiter.api.Assertions.assertTrue
 import java.nio.file.Files
 import java.nio.file.Paths
-import kotlin.test.assertTrue
 
 fun getTestJsonFile(filename: String): String {
     val filepath = "src/test/resources/json/nav/${filename}"

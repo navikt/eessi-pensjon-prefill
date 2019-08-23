@@ -2,12 +2,10 @@ package no.nav.eessi.pensjon.fagmodul.prefill.person
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
-import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
-import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjon
-import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.NavFodselsnummer
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillAdresse
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillPersonDataFromTPS
@@ -18,10 +16,7 @@ import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.typeRefs
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.*
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonResponse
-import org.junit.Before
-import org.mockito.Mock
 import org.springframework.util.ResourceUtils
-import java.time.LocalDate
 
 class PersonDataFromTPS(private val mocktps: Set<MockTPS>, private val eessiInformasjon: EessiInformasjon) {
 
@@ -135,7 +130,7 @@ class PersonDataFromTPS(private val mocktps: Set<MockTPS>, private val eessiInfo
         val mockPersonV3Service = mock<PersonV3Service>()
         mocktps.forEach {
             val result = initMockHentPersonResponse(it, mocktps)
-            whenever(mockPersonV3Service.hentPerson(it.replaceMockfnr)).thenReturn(result)
+            doReturn(result).whenever(mockPersonV3Service).hentPerson(it.replaceMockfnr)
         }
         val prefillAdresse = PrefillAdresse(PostnummerService(), LandkodeService())
         return PrefillPersonDataFromTPS(mockPersonV3Service, prefillAdresse, eessiInformasjon)

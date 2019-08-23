@@ -7,13 +7,13 @@ import no.nav.eessi.pensjon.helper.AktoerIdHelper
 import no.nav.eessi.pensjon.services.arkiv.HentdokumentInnholdResponse
 import no.nav.eessi.pensjon.services.arkiv.SafService
 import no.nav.eessi.pensjon.services.arkiv.VariantFormat
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Spy
-import org.mockito.junit.MockitoJUnitRunner
+import org.mockito.junit.jupiter.MockitoExtension
 
-@RunWith(MockitoJUnitRunner.Silent::class)
+@ExtendWith(MockitoExtension::class)
 class BucControllerTest {
 
     @Spy
@@ -27,7 +27,7 @@ class BucControllerTest {
 
     private lateinit var bucController: BucController
 
-    @Before
+    @BeforeEach
     fun before() {
         this.bucController = BucController(mockEuxService, mockSafService, mockAktoerIdHelper, "T")
     }
