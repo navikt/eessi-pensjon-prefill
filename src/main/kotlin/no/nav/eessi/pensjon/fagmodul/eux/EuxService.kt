@@ -524,7 +524,7 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
             val requestEntity = HttpEntity(body, headers)
 
             val queryUrl = UriComponentsBuilder
-                    .fromPath("/cpi/buc/")
+                    .fromPath("/buc/")
                     .path(rinaSakId)
                     .path("/sed/")
                     .path(rinaDokumentId)
