@@ -3,6 +3,7 @@ package no.nav.eessi.pensjon.fagmodul.api
 import com.nhaarman.mockitokotlin2.*
 import org.mockito.Mock
 import no.nav.eessi.pensjon.fagmodul.eux.EuxService
+import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Vedlegg
 import no.nav.eessi.pensjon.helper.AktoerIdHelper
 import no.nav.eessi.pensjon.services.arkiv.HentdokumentInnholdResponse
 import no.nav.eessi.pensjon.services.arkiv.SafService
@@ -12,6 +13,8 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Spy
 import org.mockito.junit.jupiter.MockitoExtension
+import java.nio.file.Files
+import java.nio.file.Paths
 
 @ExtendWith(MockitoExtension::class)
 class BucControllerTest {
@@ -25,6 +28,7 @@ class BucControllerTest {
     @Mock
     lateinit var mockAktoerIdHelper: AktoerIdHelper
 
+
     private lateinit var bucController: BucController
 
     @BeforeEach
@@ -33,9 +37,11 @@ class BucControllerTest {
     }
 
     @Test
-    fun enTest(){
+    fun `gittEtGyldigPutVedleggTilDokumentSaaKKallEuxPutVedleggPaaDokument`() {
 
-        doReturn(HentdokumentInnholdResponse("abc",
+        val etVedlegg = String(Files.readAllBytes(Paths.get("src/test/resources/etbilde.pdf")))
+
+        doReturn(HentdokumentInnholdResponse(etVedlegg,
                 "enfil.pdf",
                 "application/pdf")).whenever(mockSafService).hentDokumentInnhold(any(), any(), any())
 
@@ -45,6 +51,7 @@ class BucControllerTest {
                 "1",
                 "2",
                 VariantFormat.ARKIV )
-        verify(mockEuxService, times(1)).leggTilVedleggPaaDokument(any(), any(),any(),any(), any())
+        val vedlegg = Vedlegg("enfil.pdf", etVedlegg)
+        verify(mockEuxService, times(1)).leggTilVedleggPaaDokument(eq("123"), eq("456"), eq("7892"), eq(vedlegg), eq("pdf"))
     }
 }

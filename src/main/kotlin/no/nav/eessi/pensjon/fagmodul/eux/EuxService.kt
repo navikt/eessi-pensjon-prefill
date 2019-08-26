@@ -506,7 +506,7 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
 
             // Legger til fil i body
             val os = DataOutputStream(FileOutputStream(Paths.get("").toAbsolutePath().toString() + "/" + vedlegg.filnavn))
-            os.writeUTF(vedlegg.file)
+            os.write(vedlegg.file.byteInputStream(charset("UTF-8")).readBytes())
             os.close()
             val fsr = FileSystemResource(File(vedlegg.filnavn))
             val body = LinkedMultiValueMap<String, Any>()
@@ -531,7 +531,7 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
                 throw RuntimeException("En feil opppstod under tilknytning av vedlegg: ${response.statusCode}, ${response.body}")
             }
         } catch (ex: java.lang.Exception) {
-            logger.error("En feil opppstod under tilknytning av vedlegg, $ex")
+            logger.error("En feil opppstod under tilknytning av vedlegg, $ex", ex.printStackTrace())
             throw ex
         } finally {
             val file = File(Paths.get("").toAbsolutePath().toString() + "/" + vedlegg.filnavn)
