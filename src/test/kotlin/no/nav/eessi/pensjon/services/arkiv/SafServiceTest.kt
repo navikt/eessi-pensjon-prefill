@@ -79,7 +79,7 @@ class SafServiceTest {
                 .thenReturn(ResponseEntity("abc", headers, HttpStatus.OK))
         val resp = safService.hentDokumentInnhold("123", "456", VariantFormat.ARKIV)
 
-        assertEquals("YWJj", resp.base64)
+        assertEquals("abc", resp.base64)
     }
 
     @Test

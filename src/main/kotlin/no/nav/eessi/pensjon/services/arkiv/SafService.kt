@@ -69,10 +69,8 @@ class SafService(private val safGraphQlOidcRestTemplate: RestTemplate,
                 hentDokumentMetadata_teller_type_vellykkede.increment()
                 val filnavn = response.headers.contentDisposition.filename
                 val contentType = response.headers.contentType!!.toString()
-                val base64innhold = Base64.getEncoder().encodeToString(response.body!!.toByteArray())
-
                 hentDokumentInnhold_teller_type_vellykkede.increment()
-                return HentdokumentInnholdResponse(base64innhold, filnavn!!, contentType)
+                return HentdokumentInnholdResponse(response.body!!, filnavn!!, contentType)
             } else {
                 throw SafException("En feil oppstod under henting av dokumentinnhold fra SAF: ${response.statusCode}", response.statusCode)
             }
