@@ -7,7 +7,6 @@ import org.slf4j.LoggerFactory
 import org.springframework.http.*
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
-import java.util.*
 
 @Service
 class SafService(private val safGraphQlOidcRestTemplate: RestTemplate,
@@ -70,7 +69,7 @@ class SafService(private val safGraphQlOidcRestTemplate: RestTemplate,
                 val filnavn = response.headers.contentDisposition.filename
                 val contentType = response.headers.contentType!!.toString()
                 hentDokumentInnhold_teller_type_vellykkede.increment()
-                return HentdokumentInnholdResponse(response.body!!, filnavn!!, contentType)
+                return HentdokumentInnholdResponse(response.body!!.toByteArray(), filnavn!!, contentType)
             } else {
                 throw SafException("En feil oppstod under henting av dokumentinnhold fra SAF: ${response.statusCode}", response.statusCode)
             }

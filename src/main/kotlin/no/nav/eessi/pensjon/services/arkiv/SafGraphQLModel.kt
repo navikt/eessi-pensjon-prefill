@@ -91,8 +91,8 @@ data class Dokumentvarianter(
         val variantformat: VariantFormat
 )
 
-data class HentdokumentInnholdResponse (
-        val base64: String,
+class HentdokumentInnholdResponse (
+        val filInnhold: ByteArray,
         val fileName: String,
         val contentType: String
 )

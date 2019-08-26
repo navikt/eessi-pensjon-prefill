@@ -41,7 +41,7 @@ data class Traits(
         val status: String? = null
 )
 
-data class Vedlegg(
+class Vedlegg(
         val filnavn: String,
-        val file: String
+        val filInnhold: ByteArray
 )

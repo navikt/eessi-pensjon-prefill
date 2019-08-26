@@ -3,7 +3,6 @@ package no.nav.eessi.pensjon.fagmodul.api
 import com.nhaarman.mockitokotlin2.*
 import org.mockito.Mock
 import no.nav.eessi.pensjon.fagmodul.eux.EuxService
-import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Vedlegg
 import no.nav.eessi.pensjon.helper.AktoerIdHelper
 import no.nav.eessi.pensjon.services.arkiv.HentdokumentInnholdResponse
 import no.nav.eessi.pensjon.services.arkiv.SafService
@@ -39,7 +38,7 @@ class BucControllerTest {
     @Test
     fun `gittEtGyldigPutVedleggTilDokumentSaaKKallEuxPutVedleggPaaDokument`() {
 
-        val etVedlegg = String(Files.readAllBytes(Paths.get("src/test/resources/etbilde.pdf")))
+        val etVedlegg = String(Files.readAllBytes(Paths.get("src/test/resources/etbilde.pdf"))).toByteArray()
 
         doReturn(HentdokumentInnholdResponse(etVedlegg,
                 "enfil.pdf",
@@ -51,7 +50,6 @@ class BucControllerTest {
                 "1",
                 "2",
                 VariantFormat.ARKIV )
-        val vedlegg = Vedlegg("enfil.pdf", etVedlegg)
-        verify(mockEuxService, times(1)).leggTilVedleggPaaDokument(eq("123"), eq("456"), eq("7892"), eq(vedlegg), eq("pdf"))
+        verify(mockEuxService, times(1)).leggTilVedleggPaaDokument(eq("123"), eq("456"), eq("7892"), any(), eq("pdf"))
     }
 }

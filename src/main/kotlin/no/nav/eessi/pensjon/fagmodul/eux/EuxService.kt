@@ -25,11 +25,9 @@ import org.springframework.web.client.HttpServerErrorException
 import org.springframework.web.client.ResourceAccessException
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.util.UriComponentsBuilder
-import java.io.DataOutputStream
 import java.io.File
 import java.io.IOException
 import java.util.*
-import java.io.FileOutputStream
 import java.nio.file.Paths
 import org.springframework.http.ResponseEntity
 
@@ -516,7 +514,7 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
             val attachmentMeta = LinkedMultiValueMap<String, String>()
             attachmentMeta.add(HttpHeaders.CONTENT_DISPOSITION, disposition)
 
-            val attachmentPart = HttpEntity(vedlegg.file.byteInputStream(charset("UTF-8")).readBytes(), attachmentMeta)
+            val attachmentPart = HttpEntity(vedlegg.filInnhold, attachmentMeta)
 
             val body = LinkedMultiValueMap<String, Any>()
             body.add("multipart", attachmentPart)

@@ -3,7 +3,6 @@ package no.nav.eessi.pensjon.services.arkiv
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.whenever
-import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -12,11 +11,8 @@ import org.mockito.ArgumentMatchers
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
 import org.skyscreamer.jsonassert.JSONAssert
-import org.springframework.http.ContentDisposition
 import org.springframework.http.HttpEntity
-import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
-import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.client.RestClientException
 import org.springframework.web.client.RestTemplate
@@ -67,19 +63,6 @@ class SafServiceTest {
         assertThrows<SafException> {
             safService.hentDokumentMetadata("1234567891000")
         }
-    }
-
-    @Test
-    fun `gitt en gyldig hentDokumentInnhold reponse når dokumentData hentes så map til HentdokumentInnholdResponse`() {
-        val headers = HttpHeaders()
-        headers.contentType = MediaType.APPLICATION_PDF
-        headers.contentDisposition = ContentDisposition.builder("application/pdf").filename("enFil.pdf").build()
-
-        whenever(safRestOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java)))
-                .thenReturn(ResponseEntity("abc", headers, HttpStatus.OK))
-        val resp = safService.hentDokumentInnhold("123", "456", VariantFormat.ARKIV)
-
-        assertEquals("abc", resp.base64)
     }
 
     @Test

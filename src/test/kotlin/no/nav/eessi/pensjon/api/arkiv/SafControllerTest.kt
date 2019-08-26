@@ -73,7 +73,7 @@ class SafControllerTest {
     @Test
     fun `gitt en 200 httpstatuscode fra safService når dokumentinnhold hentes så returnes 200 httpstatuscode`() {
         whenever(safService.hentDokumentInnhold("123", "4567", VariantFormat.ARKIV))
-                .thenReturn(HentdokumentInnholdResponse("abc", "enFil.pdf", "application/pdf"))
+                .thenReturn(HentdokumentInnholdResponse("YWJj".toByteArray(), "enFil.pdf", "application/pdf"))
 
         val resp = safController.getDokumentInnhold("123", "4567", VariantFormat.ARKIV)
         assertEquals(HttpStatus.valueOf(200), resp.statusCode)

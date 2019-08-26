@@ -158,7 +158,7 @@ class BucController(private val euxService: EuxService,
             euxService.leggTilVedleggPaaDokument(aktoerId,
                     rinaSakId,
                     rinaDokumentId,
-                    Vedlegg(file = dokument.base64, filnavn = dokument.fileName),
+                    Vedlegg(filInnhold = dokument.filInnhold, filnavn = dokument.fileName),
                     dokument.contentType.split("/")[1])
             return ResponseEntity.ok().body(successBody())
         } catch(ex: Exception) {
