@@ -42,7 +42,7 @@ class PrefillP2000ValidateTest {
     }
 
     @Test
-    fun `call prefillAndPreview| Exception ved validating SED`() {
+    fun `call prefillAndPreview  Exception ved validating SED`() {
         assertThrows<ValidationException> {
             prefillP2000.validate(generateMockP2000ForValidatorError(generatePrefillModel()))
         }

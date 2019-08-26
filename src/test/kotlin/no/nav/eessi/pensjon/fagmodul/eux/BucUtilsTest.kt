@@ -218,7 +218,7 @@ class BucUtilsTest {
     }
 
     @Test
-    fun `getAksjonListAsString | returns sorted list ok`(){
+    fun `getAksjonListAsString   returns sorted list ok`(){
         val actualOutput = bucUtils.getAksjonListAsString()
 
         assertEquals(14, actualOutput.size)
@@ -227,7 +227,7 @@ class BucUtilsTest {
     }
 
     @Test
-    fun `getAksjonListAsString | returns sorted of one element ok`(){
+    fun `getAksjonListAsString   returns sorted of one element ok`(){
         //mocking data
         val actionitems = buc.actions
         actionitems?.forEach {
@@ -241,7 +241,7 @@ class BucUtilsTest {
     }
 
     @Test
-    fun `getAksjonListAsString | returns no element`(){
+    fun `getAksjonListAsString   returns no element`(){
         //mocking data
         val actionitems = buc.actions
         actionitems?.forEach {
@@ -254,7 +254,7 @@ class BucUtilsTest {
     }
 
     @Test
-    fun `getAksjonListAsString | returns 16 sorted elements`(){
+    fun `getAksjonListAsString   returns 16 sorted elements`(){
         //mocking data
         val actionitems = buc.actions
         actionitems?.forEach {
@@ -270,7 +270,7 @@ class BucUtilsTest {
 
 
     @Test
-    fun `findNewParticipants | listene er tom forventer exception`(){
+    fun `findNewParticipants   listene er tom forventer exception`(){
         val bucUtils = BucUtils(Buc(participants = listOf()))
         val candidates = listOf<InstitusjonItem>()
         assertThrows<ManglerDeltakereException> {
@@ -279,7 +279,7 @@ class BucUtilsTest {
     }
 
     @Test
-    fun `findNewParticipants | bucDeltaker tom og list har data forventer 2 size`(){
+    fun `findNewParticipants   bucDeltaker tom og list har data forventer 2 size`(){
         val bucUtils = BucUtils(Buc(participants = listOf()))
         val candidates = listOf(
                 InstitusjonItem(country = "DK", institution = "DK006"),
@@ -288,7 +288,7 @@ class BucUtilsTest {
     }
 
     @Test
-    fun `findNewParticipants | list er lik forventer 0 size`(){
+    fun `findNewParticipants   list er lik forventer 0 size`(){
         val bucUtils = BucUtils(Buc(participants = listOf(
                 ParticipantsItem(organisation = Organisation(countryCode = "DK", id = "DK006")),
                 ParticipantsItem(organisation = Organisation(countryCode = "PL", id = "PolishAcc")))))
@@ -301,7 +301,7 @@ class BucUtilsTest {
     }
 
     @Test
-    fun `findNewParticipants | buclist er 2 mens list er 3 forventer 1 size`(){
+    fun `findNewParticipants   buclist er 2 mens list er 3 forventer 1 size`(){
         val bucUtils = BucUtils(Buc(participants = listOf(
                 ParticipantsItem(organisation = Organisation(countryCode = "DK", id = "DK006")),
                 ParticipantsItem(organisation = Organisation(countryCode = "PL", id = "PolishAcc")))))
@@ -315,7 +315,7 @@ class BucUtilsTest {
     }
 
     @Test
-    fun `findNewParticipants | buclist er 5 og list er 0 forventer 0 size`(){
+    fun `findNewParticipants   buclist er 5 og list er 0 forventer 0 size`(){
         val bucUtils = BucUtils(Buc(participants = listOf(
                 ParticipantsItem(organisation = Organisation(countryCode = "DK", id = "DK006")),
                 ParticipantsItem(organisation = Organisation(countryCode = "PL", id = "PolishAcc")),

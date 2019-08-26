@@ -1,14 +1,7 @@
 package no.nav.eessi.pensjon.fagmodul.api
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.doThrow
-import com.nhaarman.mockitokotlin2.eq
-import com.nhaarman.mockitokotlin2.never
-import com.nhaarman.mockitokotlin2.times
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
+import com.nhaarman.mockitokotlin2.*
 import no.nav.eessi.pensjon.fagmodul.eux.EuxService
 import no.nav.eessi.pensjon.fagmodul.eux.PinOgKrav
 import no.nav.eessi.pensjon.fagmodul.eux.SedDokumentIkkeOpprettetException
@@ -23,11 +16,7 @@ import no.nav.eessi.pensjon.fagmodul.prefill.MangelfulleInndataException
 import no.nav.eessi.pensjon.fagmodul.prefill.PrefillService
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillSED
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Bruker
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Krav
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Nav
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Person
-import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
+import no.nav.eessi.pensjon.fagmodul.sedmodel.*
 import no.nav.eessi.pensjon.helper.AktoerIdHelper
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import no.nav.eessi.pensjon.utils.mapJsonToAny
@@ -83,7 +72,7 @@ class SedControllerTest {
     }
 
     @Test
-    fun `calling createDocument | forventer BucSedResponse (euxCaseid, documentid) ved mockedResponse`() {
+    fun `calling createDocument   forventer BucSedResponse (euxCaseid, documentid) ved mockedResponse`() {
         val items = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
         val mockResponse = BucSedResponse("1234567890", "123123123-123123123-123131")
 
@@ -233,7 +222,7 @@ class SedControllerTest {
     }
 
     @Test
-    fun `Calling euxController|getSeds on BUC01 returns SEDs for a given BUC`() {
+    fun `Calling euxController getSeds on BUC01 returns SEDs for a given BUC`() {
         val buc = "P_BUC_01"
         val rinanr = null
 
@@ -243,7 +232,7 @@ class SedControllerTest {
     }
 
     @Test
-    fun `Calling euxController|getSeds on BUC02 returns SEDs for a given BUC`() {
+    fun `Calling euxController getSeds on BUC02 returns SEDs for a given BUC`() {
         val buc = "P_BUC_02"
         val rinanr = null
 
@@ -253,7 +242,7 @@ class SedControllerTest {
     }
 
     @Test
-    fun `Calling euxController|getSeds on BUC03 returns SEDs for a given BUC`() {
+    fun `Calling euxController getSeds on BUC03 returns SEDs for a given BUC`() {
         val buc = "P_BUC_03"
         val rinanr = null
 
@@ -264,7 +253,7 @@ class SedControllerTest {
 
 
     @Test
-    fun `Calling euxController|getSeds on BUC05 returns SEDs for a given BUC`() {
+    fun `Calling euxController getSeds on BUC05 returns SEDs for a given BUC`() {
         val buc = "P_BUC_05"
         val rinanr = null
 
@@ -274,7 +263,7 @@ class SedControllerTest {
     }
 
     @Test
-    fun `Calling euxController|getSeds on BUC06 returns SEDs for a given BUC`() {
+    fun `Calling euxController getSeds on BUC06 returns SEDs for a given BUC`() {
         val buc = "P_BUC_06"
         val rinanr = null
 
@@ -284,7 +273,7 @@ class SedControllerTest {
     }
 
     @Test
-    fun `Calling euxController|getSeds on BUC10 returns SEDs for a given BUC`() {
+    fun `Calling euxController getSeds on BUC10 returns SEDs for a given BUC`() {
         val buc = "P_BUC_10"
         val rinanr = null
 
@@ -294,7 +283,7 @@ class SedControllerTest {
     }
 
     @Test
-    fun `Calling euxController|getSeds on blank returns all SEDs`() {
+    fun `Calling euxController getSeds on blank returns all SEDs`() {
         val buc = null
         val rinanr = null
 
@@ -351,7 +340,7 @@ class SedControllerTest {
     }
 
     @Test
-    fun `call addInstutionAndDocument| mock adding two institusjon when X005 exists already`() {
+    fun `call addInstutionAndDocument  mock adding two institusjon when X005 exists already`() {
         val euxCaseId = "1234567890"
 
         doReturn("12345").whenever(mockAktoerIdHelper).hentPinForAktoer(any<String>())
@@ -383,7 +372,7 @@ class SedControllerTest {
     }
 
     @Test
-    fun `call addInstutionAndDocument| ingen ny Deltaker kun hovedsed`() {
+    fun `call addInstutionAndDocument  ingen ny Deltaker kun hovedsed`() {
         val euxCaseId = "1234567890"
 
         doReturn("12345").whenever(mockAktoerIdHelper).hentPinForAktoer(any<String>())
@@ -406,7 +395,7 @@ class SedControllerTest {
     }
 
     @Test
-    fun `call addInstutionAndDocument| to nye deltakere, men ingen X005`() {
+    fun `call addInstutionAndDocument  to nye deltakere, men ingen X005`() {
         val euxCaseId = "1234567890"
 
         doReturn("12345").whenever(mockAktoerIdHelper).hentPinForAktoer(any<String>())
@@ -438,7 +427,7 @@ class SedControllerTest {
     }
 
     @Test
-    fun `call addInstutionAndDocument| Exception eller feiler ved oppretting av SED naar X005 ikke finnes`() {
+    fun `call addInstutionAndDocument  Exception eller feiler ved oppretting av SED naar X005 ikke finnes`() {
         val euxCaseId = "1234567890"
 
         doReturn("12345").whenever(mockAktoerIdHelper).hentPinForAktoer(any<String>())
@@ -469,7 +458,7 @@ class SedControllerTest {
 
 
     @Test
-    fun `call getAvdodAktoerId| expect valid aktoerId when avdodfnr excist and sed is P2100`() {
+    fun `call getAvdodAktoerId  expect valid aktoerId when avdodfnr excist and sed is P2100`() {
         val apireq = ApiRequest(
                 subjectArea = "Pensjon",
                 sakId = "EESSI-PEN-123",
@@ -486,7 +475,7 @@ class SedControllerTest {
     }
 
     @Test
-    fun `call getAvdodAktoerId| expect error when avdodfnr is missing and sed is P2100`() {
+    fun `call getAvdodAktoerId  expect error when avdodfnr is missing and sed is P2100`() {
         val apireq = ApiRequest(
                 subjectArea = "Pensjon",
                 sakId = "EESSI-PEN-123",
@@ -500,7 +489,7 @@ class SedControllerTest {
     }
 
     @Test
-    fun `call getAvdodAktoerId| expect null value when sed is P2100`() {
+    fun `call getAvdodAktoerId  expect null value when sed is P2100`() {
         val apireq = ApiRequest(
                 subjectArea = "Pensjon",
                 sakId = "EESSI-PEN-123",
