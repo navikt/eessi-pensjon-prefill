@@ -52,7 +52,7 @@ class PensjonsinformasjonServiceTest {
     }
 
     @Test
-    fun `PensjonsinformasjonService| hentAlt paa vedtak feiler`() {
+    fun `PensjonsinformasjonService  hentAlt paa vedtak feiler`() {
         val mockResponseEntity = createResponseEntityFromJsonFile("classpath:pensjonsinformasjon/full-generated-response.xml")
 
         whenever(mockrestTemplate.exchange(
@@ -95,7 +95,7 @@ class PensjonsinformasjonServiceTest {
     }
 
     @Test
-    fun `hentAltpåSak| mock data med to saktyper en skal komme ut`() {
+    fun `hentAltpåSak  mock data med to saktyper en skal komme ut`() {
         val mockResponseEntity = createResponseEntityFromJsonFile("classpath:pensjonsinformasjon/krav/P2000_21975717_AP_UTLAND.xml")
         whenever(mockrestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java))).thenReturn(mockResponseEntity)
         val data = pensjonsinformasjonService.hentAltPaaFnr("1231233")
@@ -110,7 +110,7 @@ class PensjonsinformasjonServiceTest {
     }
 
     @Test
-    fun `hentAltpåSak| mock data med aktoerid to saktyper en skal komme ut`() {
+    fun `hentAltpåSak  mock data med aktoerid to saktyper en skal komme ut`() {
         val mockResponseEntity = createResponseEntityFromJsonFile("classpath:pensjonsinformasjon/krav/P2000_21975717_AP_UTLAND.xml")
         whenever(mockrestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java))).thenReturn(mockResponseEntity)
 
@@ -128,7 +128,7 @@ class PensjonsinformasjonServiceTest {
     }
 
     @Test
-    fun `hentAltpåSak| mock data med tom aktoerid to saktyper en skal komme ut`() {
+    fun `hentAltpåSak  mock data med tom aktoerid to saktyper en skal komme ut`() {
         val strAktor = ""
         assertThrows<IllegalArgumentException> {
             pensjonsinformasjonService.hentAltPaaAktoerId(strAktor)
@@ -139,7 +139,7 @@ class PensjonsinformasjonServiceTest {
 
 
     @Test
-    fun `hentPensjonSakType | mock response ok`() {
+    fun `hentPensjonSakType   mock response ok`() {
         val mockResponseEntity = createResponseEntityFromJsonFile("classpath:pensjonsinformasjon/krav/AP_FORSTEG_BH.xml")
 
         doReturn(mockResponseEntity).whenever(mockrestTemplate).exchange(
@@ -156,7 +156,7 @@ class PensjonsinformasjonServiceTest {
     }
 
     @Test
-    fun `hentPensjonSakType | mock response ingen sak eller data`() {
+    fun `hentPensjonSakType   mock response ingen sak eller data`() {
         val mockResponseEntity = createResponseEntityFromJsonFile("classpath:pensjonsinformasjon/empty-pensjon-response.xml")
 
         doReturn(mockResponseEntity).whenever(mockrestTemplate).exchange(
@@ -171,7 +171,7 @@ class PensjonsinformasjonServiceTest {
     }
 
     @Test
-    fun `hentPensjonSakType | mock response feil fra pesys execption kastet`() {
+    fun `hentPensjonSakType   mock response feil fra pesys execption kastet`() {
         doThrow(ResourceAccessException("INTERNAL_SERVER_ERROR")).whenever(mockrestTemplate).exchange(
                 ArgumentMatchers.any(String::class.java),
                 ArgumentMatchers.any(HttpMethod::class.java),
