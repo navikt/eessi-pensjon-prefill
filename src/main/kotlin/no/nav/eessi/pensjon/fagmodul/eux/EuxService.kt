@@ -16,7 +16,6 @@ import no.nav.eessi.pensjon.utils.typeRef
 import no.nav.eessi.pensjon.utils.typeRefs
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Description
-import org.springframework.core.io.FileSystemResource
 import org.springframework.http.*
 import org.springframework.stereotype.Service
 import org.springframework.util.LinkedMultiValueMap
@@ -32,6 +31,7 @@ import java.io.IOException
 import java.util.*
 import java.io.FileOutputStream
 import java.nio.file.Paths
+import org.springframework.http.ResponseEntity
 
 
 
@@ -504,29 +504,40 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
                                   filtype: String) {
         try {
 
-            // Legger til fil i body
-            val os = DataOutputStream(FileOutputStream(Paths.get("").toAbsolutePath().toString() + "/" + vedlegg.filnavn))
-            os.write(vedlegg.file.byteInputStream(charset("UTF-8")).readBytes())
-            os.close()
-            val fsr = FileSystemResource(File(vedlegg.filnavn))
-            val body = LinkedMultiValueMap<String, Any>()
-            body.add("file", fsr)
-            body.add("Filtype", filtype)
-
-            // Legger til headers
             val headers = HttpHeaders()
             headers.contentType = MediaType.MULTIPART_FORM_DATA
 
-            val httpEntity = HttpEntity(body, headers)
-            val path = "/cpi/buc/$rinaSakId/sed/$rinaDokumentId/vedlegg"
-            logger.info("Legger til vedlegg i rinaSakId: $rinaSakId rinaDokumentId: $rinaDokumentId")
+            val disposition = ContentDisposition
+                    .builder("form-data")
+                    .name("file")
+                    .filename("")
+                    .build().toString()
+
+            val attachmentMeta = LinkedMultiValueMap<String, String>()
+            attachmentMeta.add(HttpHeaders.CONTENT_DISPOSITION, disposition)
+
+            val attachmentPart = HttpEntity(vedlegg.file.byteInputStream(charset("UTF-8")).readBytes(), attachmentMeta)
+
+            val body = LinkedMultiValueMap<String, Any>()
+            body.add("multipart", attachmentPart)
+
+            val requestEntity = HttpEntity(body, headers)
+
+            val queryUrl = UriComponentsBuilder
+                    .fromPath("/cpi/buc/")
+                    .path(rinaSakId)
+                    .path("/sed/")
+                    .path(rinaDokumentId)
+                    .path("/vedlegg")
+                    .queryParam("Filnavn", vedlegg.filnavn)
+                    .queryParam("Filtype", filtype)
+                    .build().toUriString()
 
             val response = euxOidcRestTemplate.exchange(
-                    path,
+                    queryUrl,
                     HttpMethod.POST,
-                    httpEntity,
+                    requestEntity,
                     String::class.java)
-
             if (!response.statusCode.is2xxSuccessful) {
                 throw RuntimeException("En feil opppstod under tilknytning av vedlegg: ${response.statusCode}, ${response.body}")
             }
