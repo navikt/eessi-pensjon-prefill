@@ -24,6 +24,7 @@ import no.nav.pensjon.v1.sakalder.V1SakAlder
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import no.nav.pensjon.v1.ytelsepermaaned.V1YtelsePerMaaned
+import kotlin.Exception
 
 object PrefillPensjonVedtak {
 
@@ -124,6 +125,18 @@ object PrefillPensjonVedtak {
         }
     }
 
+    fun sjekkForVilkarsvurderingListeHovedytelseellerAvslag(pendata: Pensjonsinformasjon): Boolean {
+        try {
+            val hovedytelseAvslag =  pendata.vilkarsvurderingListe.vilkarsvurderingListe.first()
+            if (hovedytelseAvslag.resultatHovedytelse == "AVSL"  || hovedytelseAvslag.avslagHovedytelse == "AVSL") {
+                return true
+            }
+        } catch (ex: Exception) {
+            logger.error("Ingen vilkarsvurderingListe, sjekk på AVSL")
+        }
+        return false
+    }
+
     //4.1.2
     /*
         HVIS sakstype er Alderspensjon OG beregnet pensjon utgjør minste pensjonsnivå,
@@ -163,6 +176,8 @@ object PrefillPensjonVedtak {
 
         val sakType = KSAK.valueOf(pendata.sakAlder.sakType)
         logger.debug("              Saktype: $sakType")
+
+        if (sjekkForVilkarsvurderingListeHovedytelseellerAvslag(pendata)) return "99"
 
         return when (sakType) {
             KSAK.ALDER -> {
@@ -483,6 +498,9 @@ object PrefillPensjonVedtak {
     private fun createGrunnlag(pendata: Pensjonsinformasjon): Grunnlag {
 
         logger.debug("4.1.10        Grunnlag")
+
+        if (sjekkForVilkarsvurderingListeHovedytelseellerAvslag(pendata)) return Grunnlag()
+
         return Grunnlag(
 
                 //4.1.10 - Nei
