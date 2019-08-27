@@ -4,9 +4,11 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.micrometer.core.instrument.Counter
 import io.micrometer.core.instrument.Metrics
 import org.slf4j.LoggerFactory
+import org.springframework.core.io.Resource
 import org.springframework.http.*
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
+import java.util.*
 
 @Service
 class SafService(private val safGraphQlOidcRestTemplate: RestTemplate,
@@ -66,13 +68,15 @@ class SafService(private val safGraphQlOidcRestTemplate: RestTemplate,
             val response = safRestOidcRestTemplate.exchange(path,
                     HttpMethod.GET,
                     HttpEntity("/", headers),
-                    String::class.java)
+                    Resource::class.java)
             if (response.statusCode.is2xxSuccessful) {
                 hentDokumentMetadata_teller_type_vellykkede.increment()
                 val filnavn = response.headers.contentDisposition.filename
                 val contentType = response.headers.contentType!!.toString()
                 hentDokumentInnhold_teller_type_vellykkede.increment()
-                return HentdokumentInnholdResponse(response.body!!, filnavn!!, contentType)
+
+                val dokumentInnholdBase64 = String(Base64.getEncoder().encode(      response.body!!.inputStream.readBytes()))
+                return HentdokumentInnholdResponse(dokumentInnholdBase64, filnavn!!, contentType)
             } else {
                 throw SafException("En feil oppstod under henting av dokumentinnhold fra SAF: ${response.statusCode}", response.statusCode)
             }

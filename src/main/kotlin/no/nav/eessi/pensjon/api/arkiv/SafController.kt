@@ -1,7 +1,6 @@
 package no.nav.eessi.pensjon.api.arkiv
 
 import io.swagger.annotations.ApiOperation
-import no.nav.eessi.pensjon.services.arkiv.HentdokumentInnholdResponse
 import no.nav.eessi.pensjon.services.arkiv.SafException
 import no.nav.eessi.pensjon.services.arkiv.SafService
 import no.nav.eessi.pensjon.services.arkiv.VariantFormat
@@ -38,11 +37,7 @@ class SafController(private val safService: SafService) {
         logger.info("Henter dokumentinnhold fra SAF for journalpostId: $journalpostId, dokumentInfoId: $dokumentInfoId")
         return try {
             val hentDokumentInnholdResponse = safService.hentDokumentInnhold(journalpostId, dokumentInfoId, variantFormat)
-            val dokumentInnholdBase64 = Base64.getEncoder().encodeToString(hentDokumentInnholdResponse.filInnhold.toByteArray())
-            logger.debug(dokumentInnholdBase64)
-            val hentDokumentInnholdResponse64 = HentdokumentInnholdResponse(dokumentInnholdBase64, hentDokumentInnholdResponse.fileName, hentDokumentInnholdResponse.contentType)
-
-            ResponseEntity.ok().body(hentDokumentInnholdResponse64.toJson())
+            ResponseEntity.ok().body(hentDokumentInnholdResponse.toJson())
         } catch (ex: SafException) {
             ResponseEntity.status(ex.httpStatus).body(errorBody(ex.message!!, UUID.randomUUID().toString()))
         }

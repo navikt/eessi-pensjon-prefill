@@ -16,8 +16,11 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.client.RestClientException
 import org.springframework.web.client.RestTemplate
+import java.io.File
+import java.io.FileInputStream
 import java.nio.file.Files
 import java.nio.file.Paths
+import java.util.*
 
 @ExtendWith(MockitoExtension::class)
 class SafServiceTest {
@@ -81,5 +84,14 @@ class SafServiceTest {
         assertThrows<SafException> {
             safService.hentDokumentInnhold("123", "456", VariantFormat.ARKIV)
         }
+    }
+
+    @Test
+    fun `base64Test`() {
+      FileInputStream(File("src/test/resources/OversiktBUCogSED.pdf")).readBytes()
+
+        val dokumentInnholdBase64 = String(Base64.getEncoder().encode(      FileInputStream(File("src/test/resources/OversiktBUCogSED.pdf")).readBytes()))
+        println(dokumentInnholdBase64)
+
     }
 }
