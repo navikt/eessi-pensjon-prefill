@@ -39,6 +39,7 @@ class SafController(private val safService: SafService) {
         return try {
             val hentDokumentInnholdResponse = safService.hentDokumentInnhold(journalpostId, dokumentInfoId, variantFormat)
             val dokumentInnholdBase64 = Base64.getEncoder().encodeToString(hentDokumentInnholdResponse.filInnhold.toByteArray())
+            logger.debug(dokumentInnholdBase64)
             val hentDokumentInnholdResponse64 = HentdokumentInnholdResponse(dokumentInnholdBase64, hentDokumentInnholdResponse.fileName, hentDokumentInnholdResponse.contentType)
 
             ResponseEntity.ok().body(hentDokumentInnholdResponse64.toJson())
