@@ -4,9 +4,9 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
-import no.nav.eessi.pensjon.logging.RequestIdOnMDCFilter.Companion.NAV_CALL_ID_HEADER
-import no.nav.eessi.pensjon.logging.RequestIdOnMDCFilter.Companion.REQUEST_ID_HEADER
-import no.nav.eessi.pensjon.logging.RequestIdOnMDCFilter.Companion.REQUEST_ID_MDC_KEY
+import no.nav.eessi.pensjon.logging.RequestIdHeaderInterceptor.Companion.NAV_CALL_ID_HEADER
+import no.nav.eessi.pensjon.logging.RequestIdHeaderInterceptor.Companion.REQUEST_ID_HEADER
+import no.nav.eessi.pensjon.logging.RequestIdHeaderInterceptor.Companion.REQUEST_ID_MDC_KEY
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
