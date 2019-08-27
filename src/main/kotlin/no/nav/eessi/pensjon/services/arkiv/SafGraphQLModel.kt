@@ -22,6 +22,7 @@ data class SafRequest(
                         "dokumentInfoId " +
                         "tittel " +
                         "dokumentvarianter {" +
+                            "filnavn" +
                             "variantformat" +
                         "} " +
                     "} " +
@@ -88,6 +89,7 @@ data class Dokument(
 )
 
 data class Dokumentvarianter(
+        val filnavn: String,
         val variantformat: VariantFormat
 )
 

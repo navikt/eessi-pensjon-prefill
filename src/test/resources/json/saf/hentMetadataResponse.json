@@ -14,6 +14,7 @@
               "tittel": "MASKERT_FELT",
               "dokumentvarianter": [
                 {
+                  "filnavn": "enfil.pdf",
                   "variantformat": "ARKIV"
                 }
               ]
@@ -32,9 +33,11 @@
               "tittel": "MASKERT_FELT",
               "dokumentvarianter": [
                 {
+                  "filnavn": "enfil.pdf",
                   "variantformat": "ARKIV"
                 },
                 {
+                  "filnavn": "enfil.png",
                   "variantformat": "PRODUKSJON"
                 }
               ]
