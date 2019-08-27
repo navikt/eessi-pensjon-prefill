@@ -94,7 +94,7 @@ data class Dokumentvarianter(
 )
 
 class HentdokumentInnholdResponse (
-        val filInnhold: ByteArray,
+        val filInnhold: String,
         val fileName: String,
         val contentType: String
 )

@@ -38,7 +38,7 @@ class BucControllerTest {
     @Test
     fun `gittEtGyldigPutVedleggTilDokumentSaaKKallEuxPutVedleggPaaDokument`() {
 
-        val etVedlegg = String(Files.readAllBytes(Paths.get("src/test/resources/etbilde.pdf"))).toByteArray()
+        val etVedlegg = String(Files.readAllBytes(Paths.get("src/test/resources/etbilde.pdf")))
 
         doReturn(HentdokumentInnholdResponse(etVedlegg,
                 "enfil.pdf",
