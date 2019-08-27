@@ -2,11 +2,7 @@ package no.nav.eessi.pensjon.api.arkiv
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.nhaarman.mockitokotlin2.whenever
-import no.nav.eessi.pensjon.services.arkiv.HentMetadataResponse
-import no.nav.eessi.pensjon.services.arkiv.HentdokumentInnholdResponse
-import no.nav.eessi.pensjon.services.arkiv.SafException
-import no.nav.eessi.pensjon.services.arkiv.SafService
-import no.nav.eessi.pensjon.services.arkiv.VariantFormat
+import no.nav.eessi.pensjon.services.arkiv.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
@@ -73,7 +69,7 @@ class SafControllerTest {
     @Test
     fun `gitt en 200 httpstatuscode fra safService når dokumentinnhold hentes så returnes 200 httpstatuscode`() {
         whenever(safService.hentDokumentInnhold("123", "4567", VariantFormat.ARKIV))
-                .thenReturn(HentdokumentInnholdResponse("YWJj".toByteArray(), "enFil.pdf", "application/pdf"))
+                .thenReturn(HentdokumentInnholdResponse("YWJj", "enFil.pdf", "application/pdf"))
 
         val resp = safController.getDokumentInnhold("123", "4567", VariantFormat.ARKIV)
         assertEquals(HttpStatus.valueOf(200), resp.statusCode)
