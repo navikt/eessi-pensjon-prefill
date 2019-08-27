@@ -29,7 +29,7 @@ class SafService(private val safGraphQlOidcRestTemplate: RestTemplate,
     fun hentDokumentMetadata(aktoerId: String) : HentMetadataResponse {
          try {
              val headers = HttpHeaders()
-             headers.contentType = MediaType.APPLICATION_JSON
+             headers.contentType = MediaType.APPLICATION_PDF
              val httpEntity = HttpEntity(genererQuery(aktoerId), headers)
              val response = safGraphQlOidcRestTemplate.exchange("/",
                      HttpMethod.POST,
@@ -60,9 +60,12 @@ class SafService(private val safGraphQlOidcRestTemplate: RestTemplate,
         try {
             logger.info("Henter dokumentinnhold for journalpostId: $journalpostId, dokumentInfoId: $dokumentInfoId, variantformat: $variantFormat")
             val path = "/$journalpostId/$dokumentInfoId/$variantFormat"
+            val headers = HttpHeaders()
+            headers.contentType = MediaType.APPLICATION_JSON
+
             val response = safRestOidcRestTemplate.exchange(path,
                     HttpMethod.GET,
-                    HttpEntity("/"),
+                    HttpEntity("/", headers),
                     String::class.java)
             if (response.statusCode.is2xxSuccessful) {
                 hentDokumentMetadata_teller_type_vellykkede.increment()
