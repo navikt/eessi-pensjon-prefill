@@ -29,7 +29,7 @@ class SafService(private val safGraphQlOidcRestTemplate: RestTemplate,
     fun hentDokumentMetadata(aktoerId: String) : HentMetadataResponse {
          try {
              val headers = HttpHeaders()
-             headers.contentType = MediaType.APPLICATION_PDF
+             headers.contentType = MediaType.APPLICATION_JSON
              val httpEntity = HttpEntity(genererQuery(aktoerId), headers)
              val response = safGraphQlOidcRestTemplate.exchange("/",
                      HttpMethod.POST,
@@ -61,7 +61,7 @@ class SafService(private val safGraphQlOidcRestTemplate: RestTemplate,
             logger.info("Henter dokumentinnhold for journalpostId: $journalpostId, dokumentInfoId: $dokumentInfoId, variantformat: $variantFormat")
             val path = "/$journalpostId/$dokumentInfoId/$variantFormat"
             val headers = HttpHeaders()
-            headers.contentType = MediaType.APPLICATION_JSON
+            headers.contentType = MediaType.APPLICATION_PDF
 
             val response = safRestOidcRestTemplate.exchange(path,
                     HttpMethod.GET,
