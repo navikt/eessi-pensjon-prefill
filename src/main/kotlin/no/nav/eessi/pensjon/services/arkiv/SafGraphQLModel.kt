@@ -22,7 +22,7 @@ data class SafRequest(
                         "dokumentInfoId " +
                         "tittel " +
                         "dokumentvarianter {" +
-                            "filnavn" +
+                            "filnavn " +
                             "variantformat" +
                         "} " +
                     "} " +
