@@ -69,6 +69,7 @@ class SafService(private val safGraphQlOidcRestTemplate: RestTemplate,
                 val filnavn = response.headers.contentDisposition.filename
                 val contentType = response.headers.contentType!!.toString()
                 hentDokumentInnhold_teller_type_vellykkede.increment()
+                logger.debug("" + response.body!!.toByteArray())
                 return HentdokumentInnholdResponse(response.body!!.toByteArray(), filnavn!!, contentType)
             } else {
                 throw SafException("En feil oppstod under henting av dokumentinnhold fra SAF: ${response.statusCode}", response.statusCode)
