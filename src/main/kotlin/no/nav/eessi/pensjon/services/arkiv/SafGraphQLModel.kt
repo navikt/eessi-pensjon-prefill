@@ -89,7 +89,7 @@ data class Dokument(
 )
 
 data class Dokumentvarianter(
-        val filnavn: String,
+        val filnavn: String?,
         val variantformat: VariantFormat
 )
 
