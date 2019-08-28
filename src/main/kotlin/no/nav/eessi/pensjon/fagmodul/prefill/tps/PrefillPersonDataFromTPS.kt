@@ -226,8 +226,9 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
                 statsborgerskap = listOf(hentStatsborgerskapTps(brukerTps)),
                 //2.1.8.1           place of birth
                 foedested = hentFodested(brukerTps),
-                //2.2.2
-                sivilstand = if (isPersonAvdod(brukerTps)) null else createSivilstand(brukerTps)
+                //2.2.2 -   P2100 = 5.2.2.
+                //TODO skaper feil under P2100 utkommenter intillvidere
+                sivilstand = null // if (isPersonAvdod(brukerTps)) null else createSivilstand(brukerTps)
         )
     }
 
@@ -256,6 +257,7 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
     }
 
     //Sivilstand ENKE, PENS, SINGLE Familiestatus
+    //Dette feilter tilsvarer Familie statius i Rina kap. 2.2.2 eller 5.2.2
     fun createSivilstand(brukerTps: no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker): List<SivilstandItem> {
         logger.debug("2.2.2           Sivilstand / Familiestatus (01 Enslig, 02 Gift, 03 Samboer, 04 Partnerskal, 05 Skilt, 06 Skilt partner, 07 Separert, 08 Enke)")
         val sivilstand = brukerTps.sivilstand as Sivilstand
