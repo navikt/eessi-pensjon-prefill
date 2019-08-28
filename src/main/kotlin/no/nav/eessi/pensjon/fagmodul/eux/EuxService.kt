@@ -513,8 +513,8 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
 
             val attachmentMeta = LinkedMultiValueMap<String, String>()
             attachmentMeta.add(HttpHeaders.CONTENT_DISPOSITION, disposition)
-
-            val attachmentPart = HttpEntity(vedlegg.filInnhold, attachmentMeta)
+            val dokumentInnholdBinary = Base64.getDecoder().decode(vedlegg.filInnhold)
+            val attachmentPart = HttpEntity(dokumentInnholdBinary, attachmentMeta)
 
             val body = LinkedMultiValueMap<String, Any>()
             body.add("multipart", attachmentPart)
