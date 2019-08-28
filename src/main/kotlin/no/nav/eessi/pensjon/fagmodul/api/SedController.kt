@@ -34,7 +34,7 @@ class SedController(private val euxService: EuxService,
     @PostMapping("/preview", consumes = ["application/json"], produces = [MediaType.APPLICATION_JSON_VALUE])
     @JsonInclude(JsonInclude.Include.NON_NULL)
     fun confirmDocument(@RequestBody request: ApiRequest): SED {
-        logger.info("kaller /preview med request: $request")
+        logger.info("kaller /preview med request: *******")
         val dataModel = ApiRequest.buildPrefillDataModelConfirm(request, aktoerIdHelper.hentPinForAktoer(request.aktoerId), getAvdodAktoerId(request))
         return prefillService.prefillSed(dataModel).sed
     }
@@ -42,7 +42,7 @@ class SedController(private val euxService: EuxService,
     @ApiOperation("Genereren en Nav-Sed (SED), viser en oppsumering av SED. Før evt. innsending til EUX/Rina")
     @PostMapping("/previewNONempty", consumes = ["application/json"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun confirmDocumentWithoutnull(@RequestBody request: ApiRequest): String {
-        logger.info("kaller /previewNONempty med request: $request")
+        logger.info("kaller /previewNONempty med request: *******")
         val dataModel = ApiRequest.buildPrefillDataModelConfirm(request, aktoerIdHelper.hentPinForAktoer(request.aktoerId), getAvdodAktoerId(request))
         return prefillService.prefillSed(dataModel).sed.toJsonSkipEmpty()
     }
