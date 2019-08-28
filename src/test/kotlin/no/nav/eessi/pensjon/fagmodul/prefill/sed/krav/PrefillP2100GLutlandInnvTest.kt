@@ -93,7 +93,6 @@ class PrefillP2100GLutlandInnvTest {
         val navfnr1 = NavFodselsnummer(p2100.nav?.bruker?.person?.pin?.get(0)?.identifikator!!)
         assertEquals(75, navfnr1.getAge())
         assertEquals("M", p2100.nav?.bruker?.person?.kjoenn)
-        assertEquals("02", p2100.nav?.bruker?.person?.sivilstand?.first()?.status)
 
         assertNotNull(p2100.nav?.bruker?.person?.pin)
         val pinlist = p2100.nav?.bruker?.person?.pin
@@ -108,7 +107,6 @@ class PrefillP2100GLutlandInnvTest {
         val navfnr2 = NavFodselsnummer(p2100.pensjon?.gjenlevende?.person?.pin?.get(0)?.identifikator!!)
         assertEquals(65, navfnr2.getAge())
         assertEquals("K", p2100.pensjon?.gjenlevende?.person?.kjoenn)
-        assertEquals("08", p2100.pensjon?.gjenlevende?.person?.sivilstand?.first()?.status)
 
     }
 

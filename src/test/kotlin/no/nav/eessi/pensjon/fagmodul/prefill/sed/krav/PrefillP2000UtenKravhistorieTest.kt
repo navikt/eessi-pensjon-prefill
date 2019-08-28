@@ -87,8 +87,6 @@ class PrefillP2000UtenKravhistorieTest {
         val navfnr1 = NavFodselsnummer(p2000.nav?.barn?.get(0)?.person?.pin?.get(0)?.identifikator!!)
         assertEquals(43, navfnr1.getAge())
 
-        assertEquals("01", p2000.nav?.barn?.get(0)?.person?.sivilstand?.get(0)?.status)
-
         assertEquals("BOUWMANS", p2000.nav?.barn?.get(1)?.person?.etternavn)
         assertEquals("EGIDIJS MASKOT", p2000.nav?.barn?.get(1)?.person?.fornavn)
 
@@ -102,8 +100,6 @@ class PrefillP2000UtenKravhistorieTest {
         assertEquals("NOINST002, NO INST002, NO", pinitem?.institusjonsnavn)
         assertEquals("NO:noinst002", pinitem?.institusjonsid)
         assertEquals(personFnr, pinitem?.identifikator)
-
-        assertEquals("01", p2000.nav?.barn?.get(1)?.person?.sivilstand?.get(0)?.status)
 
         assertEquals("", p2000.nav?.bruker?.arbeidsforhold?.get(0)?.yrke)
         assertEquals("2018-11-12", p2000.nav?.bruker?.arbeidsforhold?.get(0)?.planlagtstartdato)
@@ -128,14 +124,11 @@ class PrefillP2000UtenKravhistorieTest {
         val navfnr1 = NavFodselsnummer(P2000.nav?.barn?.get(0)?.person?.pin?.get(0)?.identifikator!!)
         assertEquals(43, navfnr1.getAge())
 
-        assertEquals("01", P2000.nav?.barn?.get(0)?.person?.sivilstand?.get(0)?.status)
-
         assertEquals("BOUWMANS", P2000.nav?.barn?.get(1)?.person?.etternavn)
         assertEquals("EGIDIJS MASKOT", P2000.nav?.barn?.get(1)?.person?.fornavn)
 
         val navfnr2 = NavFodselsnummer(P2000.nav?.barn?.get(1)?.person?.pin?.get(0)?.identifikator!!)
         assertEquals(17, navfnr2.getAge())
-        assertEquals("01", P2000.nav?.barn?.get(1)?.person?.sivilstand?.get(0)?.status)
     }
 
     @Test

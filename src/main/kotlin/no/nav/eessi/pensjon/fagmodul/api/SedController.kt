@@ -34,9 +34,15 @@ class SedController(private val euxService: EuxService,
     @PostMapping("/preview", consumes = ["application/json"], produces = [MediaType.APPLICATION_JSON_VALUE])
     @JsonInclude(JsonInclude.Include.NON_NULL)
     fun confirmDocument(@RequestBody request: ApiRequest): SED {
-        logger.info("kaller /preview med request: $request")
         val dataModel = ApiRequest.buildPrefillDataModelConfirm(request, aktoerIdHelper.hentPinForAktoer(request.aktoerId), getAvdodAktoerId(request))
         return prefillService.prefillSed(dataModel).sed
+    }
+
+    @ApiOperation("Genereren en Nav-Sed (SED), viser en oppsumering av SED. Før evt. innsending til EUX/Rina")
+    @PostMapping("/previewNONempty", consumes = ["application/json"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun confirmDocumentWithoutnull(@RequestBody request: ApiRequest): String {
+        val dataModel = ApiRequest.buildPrefillDataModelConfirm(request, aktoerIdHelper.hentPinForAktoer(request.aktoerId), getAvdodAktoerId(request))
+        return prefillService.prefillSed(dataModel).sed.toJsonSkipEmpty()
     }
 
     //** oppdatert i api 18.02.2019
@@ -45,7 +51,7 @@ class SedController(private val euxService: EuxService,
     fun sendSed(@PathVariable("euxcaseid", required = true) euxCaseId: String,
                 @PathVariable("documentid", required = true) documentid: String): Boolean {
 
-        logger.info("kaller /type/${euxCaseId}/sed/${documentid}/send med request: $euxCaseId / $documentid")
+        logger.info("kaller /cpi/buc/$euxCaseId/sed/$documentid/send")
         return euxService.sendDocumentById(euxCaseId, documentid)
 
     }
