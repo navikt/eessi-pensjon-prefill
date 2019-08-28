@@ -1,8 +1,5 @@
 package no.nav.eessi.pensjon.logging
 
-import no.nav.eessi.pensjon.logging.RequestIdOnMDCFilter.Companion.NAV_CALL_ID_HEADER
-import no.nav.eessi.pensjon.logging.RequestIdOnMDCFilter.Companion.REQUEST_ID_HEADER
-import no.nav.eessi.pensjon.logging.RequestIdOnMDCFilter.Companion.REQUEST_ID_MDC_KEY
 import org.slf4j.MDC
 import org.springframework.http.HttpRequest
 import org.springframework.http.client.ClientHttpRequestExecution
@@ -11,6 +8,12 @@ import org.springframework.http.client.ClientHttpResponse
 import java.util.*
 
 class RequestIdHeaderInterceptor : ClientHttpRequestInterceptor {
+
+    companion object {
+        const val REQUEST_ID_MDC_KEY = "x_request_id"
+        const val REQUEST_ID_HEADER = "X-Request-Id"
+        const val NAV_CALL_ID_HEADER = "Nav-Call-Id"
+    }
 
     override fun intercept(request: HttpRequest, body: ByteArray, execution: ClientHttpRequestExecution): ClientHttpResponse {
         val requestId = MDC.get(REQUEST_ID_MDC_KEY) ?: UUID.randomUUID().toString()
