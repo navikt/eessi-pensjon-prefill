@@ -84,8 +84,6 @@ class PrefillP2000MedIngendata {
         val sed = P2000pensjon
         assertNotNull(sed.pensjon)
         assertNull(sed.nav?.krav)
-        //assertNotNull(sed.nav?.krav)
-        //assertEquals("2018-06-05", sed.nav?.krav?.dato)
 
 
     }
