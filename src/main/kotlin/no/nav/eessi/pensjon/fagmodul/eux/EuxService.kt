@@ -529,6 +529,7 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
                     .path("/vedlegg")
                     .queryParam("Filnavn", vedlegg.filnavn)
                     .queryParam("Filtype", filtype)
+                    .queryParam("synkron", true)
                     .build().toUriString()
 
             val response = euxOidcRestTemplate.exchange(
