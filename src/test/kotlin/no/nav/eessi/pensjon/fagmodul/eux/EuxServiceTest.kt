@@ -55,7 +55,6 @@ class EuxServiceTest {
         Mockito.reset(mockEuxrestTemplate)
     }
 
-
     @Test
     fun opprettUriComponentPath() {
         val path = "/type/{RinaSakId}/sed"
@@ -161,10 +160,36 @@ class EuxServiceTest {
     }
 
     @Test
-    fun `Calling EuxService  feiler med kontakt fra eux med kall til hentbuc`() {
-        whenever(mockEuxrestTemplate.exchange(any<String>(), eq(HttpMethod.GET), eq(null), eq(String::class.java))).thenThrow(RuntimeException::class.java)
-        assertThrows<EuxServerException> {
+    fun `Calling EuxService  feiler diorthgøoirhtgiøuhmed kontakt fra eux med kall til hentbuc`() {
+        val errorresponse = ResponseEntity<String?>("", HttpStatus.NOT_FOUND)
+        whenever(mockEuxrestTemplate.exchange(any<String>(), eq(HttpMethod.GET), eq(null), eq(String::class.java))).thenReturn(errorresponse)
+        assertThrows<BucIkkeMottattException> {
             service.getBuc("P_BUC_99")
+        }
+    }
+
+//    @Test
+//    fun `Calling EUX feiler med svar tilbake fra et kall til getbucbuc`() {
+//        val feilmeldingServiceUnavailable = ResponseEntity<String?>("", HttpStatus.SERVICE_UNAVAILABLE)
+//        whenever(mockEuxrestTemplate.exchange(any<String>(), eq(HttpMethod.GET), eq(null), eq(String::class.java))).thenReturn(feilmeldingServiceUnavailable)
+//        assertThrows<EuxServerException> {
+//            service.getBuc("P_BUC_55")
+//        }
+//    }
+
+
+
+    @Test
+    fun `Calling EuxService  feiler med kontakt fra eux med kall til hentbuc`() {
+        whenever(mockEuxrestTemplate.exchange(any<String>(), eq(HttpMethod.GET), eq(null), eq(String::class.java))).thenThrow(RuntimeException("wtf??"))
+        assertThrows<RuntimeException> {
+            service.getBuc("P_BUC_99")
+        }
+
+        try {
+            service.getBuc("P_BUC_99")
+        } catch (rx: RuntimeException) {
+            assertEquals("wtf??", rx.message)
         }
     }
 

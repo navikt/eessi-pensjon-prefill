@@ -14,7 +14,6 @@ import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.typeRef
 import no.nav.eessi.pensjon.utils.typeRefs
-import org.aspectj.weaver.tools.cache.SimpleCacheFactory.path
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Description
 import org.springframework.http.*
@@ -31,7 +30,6 @@ import java.io.IOException
 import java.util.*
 import java.nio.file.Paths
 import org.springframework.http.ResponseEntity
-import org.springframework.web.util.UriComponents
 
 
 @Service
@@ -222,31 +220,50 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
         val uriParams = mapOf("RinaSakId" to euxCaseId)
         val builder = UriComponentsBuilder.fromUriString(path).buildAndExpand(uriParams)
 
-        try {
-            logger.info("Prøver å kontakte EUX /${builder.toUriString()}")
+        logger.info("Prøver å kontakte EUX /${builder.toUriString()}")
 
-            val response = euxOidcRestTemplate.exchange(
+//        val response = euxOidcRestTemplate.exchange(
+//                builder.toUriString(),
+//                HttpMethod.GET,
+//                null,
+//                String::class.java)
+//        var response = ResponseEntity<String?, HttpStatus> ? = null
+        val response: ResponseEntity<String>?
+        try {
+            response = euxOidcRestTemplate.exchange(
                     builder.toUriString(),
                     HttpMethod.GET,
                     null,
                     String::class.java)
-            if (response.statusCode.is2xxSuccessful) {
-                val jsonbuc = response.body!!
-                getCounter("HENTBUCOK").increment()
-                return mapJsonToAny(jsonbuc, typeRefs())
-            } else {
-                throw BucIkkeMottattException("Ikke mottatt Buc, feiler ved uthenting av Buc")
-            }
-        } catch (rx: BucIkkeMottattException) {
-            logger.error(rx.message)
-            getCounter("HENTBUCFEIL").increment()
-            throw BucIkkeMottattException(rx.message)
-        } catch (ex: Exception) {
-            logger.error(ex.message)
-            getCounter("HENTBUCFEIL").increment()
-            throw EuxServerException("Feiler ved kontakt mot EUX")
+        }  catch (ex: RuntimeException) {
+            //logg
+            throw ex
         }
 
+
+        if(response.statusCode.is2xxSuccessful){
+            val jsonbuc = response.body!!
+            getCounter("HENTBUCOK").increment()
+            return mapJsonToAny(jsonbuc, typeRefs())
+        }else{
+            getCounter("HENTBUCFEIL").increment()
+            logger.error("Henting av BUC feilet for rinanr $euxCaseId ${response.statusCode} + ${response.body}")
+            when (response.statusCode) {
+                HttpStatus.UNAUTHORIZED -> throw RinaIkkeAutorisertBrukerException("Authorization token required for Rina")
+                HttpStatus.FORBIDDEN -> throw ForbiddenException("Forbidden")
+                HttpStatus.NOT_FOUND -> throw BucIkkeMottattException("Authorization token required for Rina")
+                HttpStatus.INTERNAL_SERVER_ERROR -> {
+                    var feilmelding: String? = "Rina serverfeil, kan også skyldes ugyldig input"
+                    if (response.hasBody()) {
+                        logger.error(response.body.toString())
+                        feilmelding = response.body
+                    }
+                    throw RinaCasenrIkkeMottattException(feilmelding)
+                }
+                HttpStatus.GATEWAY_TIMEOUT -> throw GatewayTimeoutException("Venting på respons fra Rina resulterte i en timeout")
+                else -> throw RuntimeException("wtf?!")
+            }
+        }
     }
 
     /**
@@ -722,6 +739,12 @@ class SedIkkeSlettetException(message: String?) : Exception(message)
 @ResponseStatus(value = HttpStatus.NOT_FOUND)
 class BucIkkeMottattException(message: String?) : Exception(message)
 
+@ResponseStatus(value = HttpStatus.UNAUTHORIZED)
+class RinaIkkeAutorisertBrukerException(message: String?) : Exception(message)
+
+@ResponseStatus(value = HttpStatus.FORBIDDEN)
+class ForbiddenException(message: String?) : Exception(message)
+
 @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
 class EuxGenericServerException(message: String?) : Exception(message)
 
@@ -730,6 +753,9 @@ class RinaCasenrIkkeMottattException(message: String?) : Exception(message)
 
 @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
 class SedDokumentIkkeSendtException(message: String?) : Exception(message)
+
+@ResponseStatus(value = HttpStatus.GATEWAY_TIMEOUT)
+class GatewayTimeoutException(message: String?) : Exception(message)
 
 @ResponseStatus(value = HttpStatus.SERVICE_UNAVAILABLE)
 class EuxServerException(message: String?) : Exception(message)
