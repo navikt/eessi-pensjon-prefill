@@ -37,3 +37,8 @@ eessi:
   pensjon_adresse_by:   'Oslo'
   pensjon_adresse_postnummer: '0607'
   pensjon_adresse_land: 'NO'
+
+
+#Embedded tomcat
+server:
+  connection-timeout: 9000
