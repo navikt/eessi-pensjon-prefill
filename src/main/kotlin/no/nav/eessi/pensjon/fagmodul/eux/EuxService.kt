@@ -314,7 +314,7 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
      */
     fun getInstitutions(bucType: String, landkode: String? = ""): List<String> {
         val builder = UriComponentsBuilder.fromPath("/institusjoner")
-                .queryParam("BucType", bucType)
+                .queryParam("BuCType", bucType)
                 .queryParam("LandKode", landkode ?: "")
 
         val httpEntity = HttpEntity("")
@@ -358,10 +358,10 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
         //https://eux-rina-api.nais.preprod.local/cpi/rinasaker?F%C3%B8dselsnummer=28064843062&Fornavn=a&Etternavn=b&F%C3%B8dsels%C3%A5r=2&RINASaksnummer=as&BuCType=p&Status=o
         //https: //eux-rina-api.nais.preprod.local/cpi/rinasaker?BuCType=P_BUC_06&Etternavn=etter&Fornavn=for&F%C3%B8dselsnummer=fnr&F%C3%B8dsels%C3%A5r=%C3%A5r&RINASaksnummer=saknr&Status=status
         val builder = UriComponentsBuilder.fromPath("/rinasaker")
-                .queryParam("Fødselsnummer", fnr)
-                .queryParam("RINASaksnummer", euxCaseId ?: "")
-                .queryParam("BuCType", bucType ?: "")
-                .queryParam("Status", status ?: "")
+                .queryParam("fødselsnummer", fnr)
+                .queryParam("rinasaksnummer", euxCaseId ?: "")
+                .queryParam("buctype", bucType ?: "")
+                .queryParam("status", status ?: "")
                 .build()
 
         try {

@@ -6,6 +6,7 @@ import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Organisation
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ParticipantsItem
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.models.SEDType
+import no.nav.eessi.pensjon.utils.mapAnyToJson
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.typeRefs
 import no.nav.eessi.pensjon.utils.validateJson
@@ -379,4 +380,16 @@ class BucUtilsTest {
         val result = bucUtils.getCaseOwner()
         assertEquals("NO:NAVT003", result.institution)
     }
+
+    @Test
+    fun parseAndTestBucAndSedView() {
+        val bucjson = getTestJsonFile("buc-280670.json")
+        val buc = mapJsonToAny(bucjson, typeRefs<Buc>())
+        //val bucUtils = BucUtils(buc)
+
+        val bucview =  BucAndSedView.from(buc, buc.id!!, "")
+
+        print ( mapAnyToJson (bucview) )
+    }
+
 }
