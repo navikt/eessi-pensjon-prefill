@@ -18,6 +18,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.junit.jupiter.MockitoExtension
 import java.nio.file.Files
 import java.nio.file.Paths
+import org.joda.time.DateTime
 
 @ExtendWith(MockitoExtension::class)
 class BucUtilsTest {
@@ -132,9 +133,41 @@ class BucUtilsTest {
 
         val result10 = bucUtilsLocal.getLastDate()
         assertEquals("2018-11-08", result10.toString())
-
     }
 
+    @Test
+    fun `getStartDateLong parses dates correctly`() {
+        val unixTimeStamp = 1567154257318L
+        val listOfArgs = listOf<Any>(
+            1567154257318L,
+            "2019-08-30T10:37:37.318",
+            "2019-08-30T08:37:37.318+0000",
+            "2019-08-30T08:37:37.318-0000",
+            "2019-08-30T09:37:37.318+0100",
+            "2019-08-30T07:37:37.318-0100",
+            "2019-08-30T08:37:37.318+00:00",
+            "2019-08-30T09:37:37.318+01:00",
+            "2019-08-30T07:37:37.318-01:00"
+        )
+        listOfArgs.forEach { assertEquals(unixTimeStamp, BucUtils(Buc(startDate = it)).getStartDateLong()) }
+    }
+
+    @Test
+    fun `getEndDateLong parses dates correctly`() {
+        val unixTimeStamp = 1567154257318L
+        val listOfArgs = listOf<Any>(
+            1567154257318L,
+            "2019-08-30T10:37:37.318",
+            "2019-08-30T08:37:37.318+0000",
+            "2019-08-30T08:37:37.318-0000",
+            "2019-08-30T09:37:37.318+0100",
+            "2019-08-30T07:37:37.318-0100",
+            "2019-08-30T08:37:37.318+00:00",
+            "2019-08-30T09:37:37.318+01:00",
+            "2019-08-30T07:37:37.318-01:00"
+        )
+        listOfArgs.forEach { assertEquals(unixTimeStamp, BucUtils(Buc(lastUpdate= it)).getLastDateLong()) }
+    }
 
     @Test
     fun getActions() {
