@@ -314,7 +314,7 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
      */
     fun getInstitutions(bucType: String, landkode: String? = ""): List<String> {
         val builder = UriComponentsBuilder.fromPath("/institusjoner")
-                .queryParam("BucType", bucType)
+                .queryParam("BuCType", bucType)
                 .queryParam("LandKode", landkode ?: "")
 
         val httpEntity = HttpEntity("")
@@ -355,15 +355,13 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
     }
 
     fun getRinasaker(fnr: String, euxCaseId: String?, bucType: String?, status: String?): List<Rinasak> {
-        //https://eux-rina-api.nais.preprod.local/cpi/rinasaker?F%C3%B8dselsnummer=28064843062&Fornavn=a&Etternavn=b&F%C3%B8dsels%C3%A5r=2&RINASaksnummer=as&BuCType=p&Status=o
-        //https: //eux-rina-api.nais.preprod.local/cpi/rinasaker?BuCType=P_BUC_06&Etternavn=etter&Fornavn=for&F%C3%B8dselsnummer=fnr&F%C3%B8dsels%C3%A5r=%C3%A5r&RINASaksnummer=saknr&Status=status
-        val builder = UriComponentsBuilder.fromPath("/rinasaker")
-                .queryParam("Fødselsnummer", fnr)
-                .queryParam("RINASaksnummer", euxCaseId ?: "")
-                .queryParam("BuCType", bucType ?: "")
-                .queryParam("Status", status ?: "")
-                .build()
 
+        val builder = UriComponentsBuilder.fromPath("/rinasaker")
+                .queryParam("fødselsnummer", fnr)
+                .queryParam("rinasaksnummer", euxCaseId ?: "")
+                .queryParam("buctype", bucType ?: "")
+                .queryParam("status", status ?: "")
+                .build()
         try {
             val response = euxOidcRestTemplate.exchange(
                     builder.toUriString(),
@@ -371,9 +369,12 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
                     null,
                     String::class.java)
 
-            response.body?.let {
-                return mapJsonToAny(it, typeRefs())
-            } ?: return listOf()
+            return if (response.statusCode.is2xxSuccessful) {
+                logger.debug("parse RinaSaker json ti RinaSak obj")
+                mapJsonToAny(response.body!!, typeRefs())
+            } else {
+                listOf()
+            }
         } catch (ia: IllegalArgumentException) {
             logger.error("mapJsonToAny exception ${ia.message}", ia)
             throw GenericUnprocessableEntity(ia.message!!)
