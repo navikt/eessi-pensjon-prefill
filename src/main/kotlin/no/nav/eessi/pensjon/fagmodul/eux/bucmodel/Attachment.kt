@@ -5,7 +5,7 @@ data class Attachment(
         val fileName: String? = null,
         val medical: Boolean? = null,
         val mimeType: String? = null,
-        val creationDate: Long? = null,
+        val creationDate: Any? = null,
         val internalId: Any? = null,
         val versions: List<VersionsItem?>? = null,
         val hasMultipleVersions: Boolean? = null,
@@ -23,6 +23,6 @@ data class ShortAttachment(
         val fileName: String? = null,
         val mimeType: String? = null,
         val documentId: String? = null,
-        val lastUpdate: Long? = null,
+        val lastUpdate: Any? = null,
         val medical: Boolean? = null
 )
