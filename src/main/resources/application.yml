@@ -41,4 +41,6 @@ eessi:
 
 #Embedded tomcat
 server:
-  connection-timeout: 9000
+  servlet:
+    session:
+      timeout: '120s'
