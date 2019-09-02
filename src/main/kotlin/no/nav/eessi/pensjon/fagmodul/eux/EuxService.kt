@@ -14,6 +14,7 @@ import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.typeRef
 import no.nav.eessi.pensjon.utils.typeRefs
+import org.aspectj.weaver.tools.cache.SimpleCacheFactory.path
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Description
 import org.springframework.http.*
@@ -30,7 +31,7 @@ import java.io.IOException
 import java.util.*
 import java.nio.file.Paths
 import org.springframework.http.ResponseEntity
-
+import org.springframework.web.util.UriComponents
 
 
 @Service
@@ -88,13 +89,27 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
         }
     }
 
+    @Throws(EuxGenericServerException::class, SedDokumentIkkeOpprettetException::class)
+    fun opprettSvarSedOnBuc(navSED: SED, euxCaseId: String, parentDocumentId: String): BucSedResponse {
+        val path = "/buc/{RinaSakId}/sed/{DokuemntId}/svar"
+        logger.debug("prøver å kontakte eux-rina-api : $path")
+        return opprettSed(path, navSED.toJsonSkipEmpty(), euxCaseId,  parentDocumentId)
+    }
+
 
     //ny SED på ekisterende type
     @Throws(EuxGenericServerException::class, SedDokumentIkkeOpprettetException::class)
     fun opprettSedOnBuc(navSED: SED, euxCaseId: String): BucSedResponse {
         val path = "/buc/{RinaSakId}/sed"
+        return opprettSed(path, navSED.toJsonSkipEmpty(), euxCaseId, null)
+    }
 
-        val uriParams = mapOf("RinaSakId" to euxCaseId)
+
+    //ny SED på ekisterende type eller ny svar SED på ekisternede rina
+    @Throws(EuxGenericServerException::class, SedDokumentIkkeOpprettetException::class)
+    fun opprettSed(path: String, navSEDjson: String, euxCaseId: String, parentDocumentId: String?): BucSedResponse {
+
+        val uriParams = mapOf("RinaSakId" to euxCaseId, "DokuemntId" to parentDocumentId).filter { it.value != null }
         val builder = UriComponentsBuilder.fromUriString(path)
                 .queryParam("KorrelasjonsId", UUID.randomUUID().toString())
                 .buildAndExpand(uriParams)
@@ -102,7 +117,7 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_JSON
         //legger til navsed som json skipper nonemty felter dvs. null
-        val httpEntity = HttpEntity(navSED.toJsonSkipEmpty(), headers)
+        val httpEntity = HttpEntity(navSEDjson, headers)
 
         val response: ResponseEntity<String>
         try {
@@ -394,7 +409,7 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
 
     }
 
-    fun getSingleBucAndSedView(euxCaseId: String) = BucAndSedView.from(getBuc(euxCaseId), euxCaseId, "")
+    fun getSingleBucAndSedView(euxCaseId: String) = BucAndSedView.from(getBuc(euxCaseId), "")
 
     fun getBucAndSedView(rinasaker: List<Rinasak>, aktoerid: String): List<BucAndSedView> {
         val startTime = System.currentTimeMillis()
@@ -402,7 +417,7 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
 
         rinasaker.forEach {
             val caseId = it.id ?: throw UgyldigCaseIdException("Feil er ikke gyldig caseId fra Rina(Rinasak)")
-            list.add(BucAndSedView.from(getBuc(caseId), caseId, aktoerid))
+            list.add(BucAndSedView.from(getBuc(caseId), aktoerid))
         }
 
         logger.debug("9 ferdig returnerer list av BucAndSedView. Antall BUC: ${list.size}")
@@ -459,6 +474,7 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
         }
         return encodedList.joinToString(separator = "")
     }
+
     fun putBucMottakere(euxCaseId: String, deltaker: List<InstitusjonItem>): Boolean {
         //cpi/buc/245580/mottakere?KorrelasjonsId=23424&mottakere=NO%3ANAVT003&mottakere=NO%3ANAVT008"
         val correlationId = UUID.randomUUID().toString()

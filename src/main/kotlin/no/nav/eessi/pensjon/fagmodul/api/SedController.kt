@@ -118,6 +118,15 @@ class SedController(private val euxService: EuxService,
         return BucUtils(euxService.getBuc(docresult.caseId)).findDocument(docresult.documentId)
     }
 
+    @ApiOperation("Oppretter en Sed som svar på en forespørsel-Sed")
+    @RequestMapping("/replysed/{parentid}", method = [ RequestMethod.POST ])
+    fun addDocumentToParent(@RequestBody(required = true) request: ApiRequest, @PathVariable("parentid", required = true) parentId: String  ): ShortDocumentItem {
+        val dataModel = ApiRequest.buildPrefillDataModelOnExisting(request, aktoerIdHelper.hentPinForAktoer(request.aktoerId),  getAvdodAktoerId(request))
+        val data = prefillService.prefillSed(dataModel)
+        logger.debug("Prøver å sende SED:${dataModel.getSEDid()} inn på buc: ${dataModel.euxCaseID}")
+        val docresult = euxService.opprettSvarSedOnBuc(data.sed, data.euxCaseID, parentId)
+        return BucUtils(euxService.getBuc(docresult.caseId)).findDocument(docresult.documentId)
+    }
 
     //** oppdatert i api 18.02.2019
     @ApiOperation("Kjører prosess OpprettBuCogSED på EUX for å få opprette et RINA dokument med en SED, (Utgår?) ny api kall til eux")

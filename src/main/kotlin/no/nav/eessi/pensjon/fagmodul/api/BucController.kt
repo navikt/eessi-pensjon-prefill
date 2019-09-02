@@ -36,17 +36,7 @@ class BucController(private val euxService: EuxService,
 
     @ApiOperation("henter liste av alle tilgjengelige BuC-typer")
     @GetMapping("/bucs", produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun getBucs(): List<String> {
-        return listOf(
-                "P_BUC_01",
-                "P_BUC_02",
-                "P_BUC_03",
-                "P_BUC_05",
-                "P_BUC_06",
-                "P_BUC_09",
-                "P_BUC_10"
-        )
-    }
+    fun getBucs() = EuxService.initSedOnBuc().keys.map { it }.toList()
 
     @ApiOperation("Henter opp hele BUC på valgt caseid")
     @GetMapping("/{rinanr}")
@@ -139,7 +129,7 @@ class BucController(private val euxService: EuxService,
 
         //create bucDetail back from newly created buc call eux-rina-api to get data.
         val buc = euxService.getBuc(euxCaseId)
-        return BucAndSedView.from(buc, euxCaseId, "")
+        return BucAndSedView.from(buc, "")
     }
 
     @ApiOperation("Legger til et vedlegg for det gitte dokumentet")

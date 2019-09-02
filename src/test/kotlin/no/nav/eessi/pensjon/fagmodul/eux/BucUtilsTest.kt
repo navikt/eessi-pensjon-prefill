@@ -20,6 +20,7 @@ import org.mockito.junit.jupiter.MockitoExtension
 import java.nio.file.Files
 import java.nio.file.Paths
 import org.joda.time.DateTime
+import kotlin.streams.toList
 
 @ExtendWith(MockitoExtension::class)
 class BucUtilsTest {
@@ -420,7 +421,7 @@ class BucUtilsTest {
         val buc = mapJsonToAny(bucjson, typeRefs<Buc>())
         //val bucUtils = BucUtils(buc)
 
-        val bucview =  BucAndSedView.from(buc, buc.id!!, "")
+        val bucview =  BucAndSedView.from(buc, "")
 
         assertEquals(1567155195638, bucview.startDate)
         assertEquals(1567155212000, bucview.lastUpdate)
@@ -432,10 +433,45 @@ class BucUtilsTest {
         val buc = mapJsonToAny(bucjson, typeRefs<Buc>())
         val bucUtils = BucUtils(buc)
 
-        val bucview =  BucAndSedView.from(buc, buc.id!!, "")
+        val bucview =  BucAndSedView.from(buc, "")
 
         assertEquals(1567088832589, bucview.startDate)
         assertEquals(1567178490000, bucview.lastUpdate)
     }
+
+    @Test
+    fun bucsedandviewDisplaySedsWithParentIdToReply() {
+        val bucjson = getTestJsonFile("buc-285268-answerid.json")
+        val buc = mapJsonToAny(bucjson, typeRefs<Buc>())
+        val bucUtils = BucUtils(buc)
+
+        val result = bucUtils.getAllDocuments()
+        assertEquals(16, result.size)
+
+        val filterParentId = result.stream().filter { it.parentDocumentId != null }.toList()
+        assertEquals(3, filterParentId.size)
+
+    }
+
+    @Test
+    fun bucsedandviewCheck() {
+        val bucjson = getTestJsonFile("buc-285268-answerid.json")
+        val buc = mapJsonToAny(bucjson, typeRefs<Buc>())
+        //val bucUtils = BucUtils(buc)
+
+        val bucAndSedView = BucAndSedView.from(buc, "amatør")
+
+        val seds = bucAndSedView.seds
+        val filterParentId = seds.stream().filter { it.parentDocumentId != null }.toList()
+        assertEquals(3, filterParentId.size)
+
+        assertEquals("NO", bucAndSedView.creator.country)
+        assertEquals("NO:NAVT003", bucAndSedView.creator.institution)
+        assertEquals("NAVT003", bucAndSedView.creator.name)
+
+
+    }
+
+
 
 }

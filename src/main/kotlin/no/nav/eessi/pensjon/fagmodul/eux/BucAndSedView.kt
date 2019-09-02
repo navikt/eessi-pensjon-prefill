@@ -17,16 +17,12 @@ data class BucAndSedView(
         val seds: List<ShortDocumentItem>
 ) {
     companion object {
-        fun from(buc: Buc, euxCaseId: String, aktoerid: String): BucAndSedView {
+        fun from(buc: Buc, aktoerid: String): BucAndSedView {
             val bucUtil = BucUtils(buc)
             return BucAndSedView(
                     type = bucUtil.getProcessDefinitionName()!!,
-                    creator = InstitusjonItem(
-                            country = bucUtil.getCreator()?.organisation?.countryCode ?: "",
-                            institution = bucUtil.getCreator()?.organisation?.id ?: "",
-                            name = bucUtil.getCreator()?.name
-                    ),
-                    caseId = euxCaseId,
+                    creator = bucUtil.getCaseOwner(),
+                    caseId = buc.id?: "n/a",
                     sakType = "",
                     startDate = bucUtil.getStartDateLong(),
                     lastUpdate = bucUtil.getLastDateLong(),

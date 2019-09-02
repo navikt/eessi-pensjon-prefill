@@ -200,6 +200,13 @@ class EuxServiceTest {
         }
     }
 
+    @Test
+    fun testMapsParams() {
+        val uriParams1 = mapOf("RinaSakId" to "121312", "DokuemntId" to null).filter { it.value != null }
+        assertEquals(1, uriParams1.size)
+        val uriParams2 = mapOf("RinaSakId" to "121312", "DokuemntId" to "98d6879827594d1db425dbdfef399ea8").filter { it.value != null }
+        assertEquals(2, uriParams2.size)
+    }
 
     @Test
     fun `Calling EuxService  forventer OK ved sletting av valgt SED paa valgt buc`() {
@@ -423,13 +430,15 @@ class EuxServiceTest {
         assertEquals(6, result.size)
 
         val firstJson = result.first()
-        assertEquals("8877665511", firstJson.caseId)
+        assertEquals("158123", firstJson.caseId)
 
         var lastUpdate: Long = 0
         firstJson.lastUpdate?.let { lastUpdate = it }
         assertEquals("2019-05-20T16:35:34",  Instant.ofEpochMilli(lastUpdate).atZone(ZoneId.systemDefault()).toLocalDateTime().toString())
         assertEquals(18, firstJson.seds.size)
         val json = mapAnyToJson(firstJson)
+
+        println(json)
 
         val bucdetaljerpath = "src/test/resources/json/buc/bucdetaljer-158123.json"
         val bucdetaljer = String(Files.readAllBytes(Paths.get(bucdetaljerpath)))

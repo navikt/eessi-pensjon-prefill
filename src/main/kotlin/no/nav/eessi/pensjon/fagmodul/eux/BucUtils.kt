@@ -47,7 +47,7 @@ class BucUtils(private val buc: Buc ) {
                             institution = it.organisation?.id ?: "",  //kan hende må være id?!
                             name = it.organisation?.name ?: "" //name optinal
                     )
-                }.first()
+                }.first() ?: InstitusjonItem("N/A", "NO:NO")
 
     fun getSubject() = buc.subject ?: throw NoSuchFieldException("Fant ikke Subject")
 
@@ -105,7 +105,6 @@ class BucUtils(private val buc: Buc ) {
     private fun getDateTime(dateTime: Any?): DateTime  {
         val zoneId = DateTimeZone.forID(ZoneId.systemDefault().id)
 
-
             return when (dateTime) {
                 is Long -> DateTime(DateTime(dateTime).toInstant(),zoneId)
                 is String -> DateTime(DateTime.parse(dateTime).toInstant(),zoneId)
@@ -117,15 +116,14 @@ class BucUtils(private val buc: Buc ) {
 
     fun getProcessDefinitionVersion() = getBuc().processDefinitionVersion
 
-    fun findFirstDocumentItemByType(sedType: SEDType) =
-            findFirstDocumentItemByType(sedType.name)
+    fun findFirstDocumentItemByType(sedType: SEDType) = findFirstDocumentItemByType(sedType.name)
 
-    fun findFirstDocumentItemByType(sedType: String) =
-            getDocuments().find { sedType == it.type }?.let { createShortDocument(it) }
+    fun findFirstDocumentItemByType(sedType: String) = getDocuments().find { sedType == it.type }?.let { createShortDocument(it) }
 
     private fun createShortDocument(documentItem: DocumentsItem) =
             ShortDocumentItem(
                 id = documentItem.id,
+                parentDocumentId = documentItem.parentDocumentId,
                 type = documentItem.type,
                 displayName = documentItem.displayName,
                 status = documentItem.status,
@@ -137,14 +135,11 @@ class BucUtils(private val buc: Buc ) {
 
     /* TODO Is this working as expected? */
     private fun createParticipants(conventions: List<ConversationsItem>?): List<ParticipantsItem?>? {
-
         conventions?.forEach {
             return it.participants
         }
-
         return null
     }
-
 
     private fun createShortAttachemnt(attachments: List<Attachment>?) =
             attachments?.map {
