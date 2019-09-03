@@ -3,9 +3,9 @@
   "creator" : {
     "country" : "NO",
     "institution" : "NO:NAVT003",
-    "name" : "Z990638"
+    "name" : "NAVT003"
   },
-  "caseId" : "8877665511",
+  "caseId" : "158123",
   "sakType" : "",
   "aktoerId" : "001122334455",
   "status" : "open",
@@ -22,6 +22,7 @@
   } ],
   "seds" : [ {
     "id" : "f2123ebf16dc4ddaaaf2420d0adb39c7",
+    "parentDocumentId" : null,
     "type" : "H020",
     "status" : "empty",
     "creationDate" : 1557393035000,
@@ -75,6 +76,7 @@
     "attachments" : [ ]
   }, {
     "id" : "0bb1ad15987741f1bbf45eba4f955e80",
+    "parentDocumentId" : null,
     "type" : "P10000",
     "status" : "empty",
     "creationDate" : 1557393035000,
@@ -128,6 +130,7 @@
     "attachments" : [ ]
   }, {
     "id" : "06f698fa890b4046b736e2efe3b25074",
+    "parentDocumentId" : null,
     "type" : "P4000",
     "status" : "sent",
     "creationDate" : 1557393062757,
@@ -181,6 +184,7 @@
     "attachments" : [ ]
   }, {
     "id" : "3b82e3d56f304ca0ac05c1ce626d9472",
+    "parentDocumentId" : null,
     "type" : "P6000",
     "status" : "empty",
     "creationDate" : 1557393101000,
@@ -234,6 +238,7 @@
     "attachments" : [ ]
   }, {
     "id" : "52c08e4129da4120b9b982142c272a61",
+    "parentDocumentId" : null,
     "type" : "P5000",
     "status" : "new",
     "creationDate" : 1557393081308,
@@ -287,6 +292,7 @@
     "attachments" : [ ]
   }, {
     "id" : "cac9db2726d54f2c9b51d1562b7b0a79",
+    "parentDocumentId" : null,
     "type" : "P8000",
     "status" : "new",
     "creationDate" : 1557825747269,
@@ -356,6 +362,7 @@
     } ]
   }, {
     "id" : "3fe845d1142742a5a7a28f339e5d5b30",
+    "parentDocumentId" : null,
     "type" : "P2000",
     "status" : "sent",
     "creationDate" : 1557392992767,
@@ -409,6 +416,7 @@
     "attachments" : [ ]
   }, {
     "id" : "268b8ed450bf4e8a99e6c0057d5ed857",
+    "parentDocumentId" : null,
     "type" : "P3000_NO",
     "status" : "empty",
     "creationDate" : 1557393034000,
@@ -462,6 +470,7 @@
     "attachments" : [ ]
   }, {
     "id" : "a8160dcb66c840a88ef331eed4b193be",
+    "parentDocumentId" : "3fe845d1142742a5a7a28f339e5d5b30",
     "type" : "X008",
     "status" : "empty",
     "creationDate" : 1557393034000,
@@ -515,6 +524,7 @@
     "attachments" : [ ]
   }, {
     "id" : "5d4e5b878a60433a919c833c146401cb",
+    "parentDocumentId" : null,
     "type" : "P7000",
     "status" : "empty",
     "creationDate" : 1557393034000,
@@ -568,6 +578,7 @@
     "attachments" : [ ]
   }, {
     "id" : "836de1a761514b1eab50c88e507e9a1c",
+    "parentDocumentId" : null,
     "type" : "H070",
     "status" : "empty",
     "creationDate" : 1557393035000,
@@ -621,6 +632,7 @@
     "attachments" : [ ]
   }, {
     "id" : "2d305e9ac51f43cf9a4012679ea3036e",
+    "parentDocumentId" : null,
     "type" : "X005",
     "status" : "empty",
     "creationDate" : 1557393034000,
@@ -674,6 +686,7 @@
     "attachments" : [ ]
   }, {
     "id" : "ef5811b43d564539997c9e1e8539a0a5",
+    "parentDocumentId" : "891a8c61651049d6b2e0c0bd32215203",
     "type" : "X008",
     "status" : "empty",
     "creationDate" : 1557393101000,
@@ -727,6 +740,7 @@
     "attachments" : [ ]
   }, {
     "id" : "74cfcccbdb764b768365090152c84892",
+    "parentDocumentId" : "06f698fa890b4046b736e2efe3b25074",
     "type" : "X008",
     "status" : "empty",
     "creationDate" : 1557393078000,
@@ -780,6 +794,7 @@
     "attachments" : [ ]
   }, {
     "id" : "3e29fb69d44f440a81e01aa2199d4b2f",
+    "parentDocumentId" : null,
     "type" : "H120",
     "status" : "empty",
     "creationDate" : 1557393035000,
@@ -833,6 +848,7 @@
     "attachments" : [ ]
   }, {
     "id" : "4ef97838c25c46fba04dcd57a511338d",
+    "parentDocumentId" : null,
     "type" : "X009",
     "status" : "empty",
     "creationDate" : 1557393033000,
@@ -886,6 +902,7 @@
     "attachments" : [ ]
   }, {
     "id" : "6808b56f66b64a24ae94ddad3aeb9290",
+    "parentDocumentId" : null,
     "type" : "X007",
     "status" : "empty",
     "creationDate" : 1557393034000,
@@ -939,6 +956,7 @@
     "attachments" : [ ]
   }, {
     "id" : "891a8c61651049d6b2e0c0bd32215203",
+    "parentDocumentId" : null,
     "type" : "P6000",
     "status" : "sent",
     "creationDate" : 1557393087051,

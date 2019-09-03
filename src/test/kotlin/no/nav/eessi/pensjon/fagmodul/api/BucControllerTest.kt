@@ -7,6 +7,7 @@ import no.nav.eessi.pensjon.helper.AktoerIdHelper
 import no.nav.eessi.pensjon.services.arkiv.HentdokumentInnholdResponse
 import no.nav.eessi.pensjon.services.arkiv.SafService
 import no.nav.eessi.pensjon.services.arkiv.VariantFormat
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -33,6 +34,13 @@ class BucControllerTest {
     @BeforeEach
     fun before() {
         this.bucController = BucController(mockEuxService, mockSafService, mockAktoerIdHelper, "T")
+    }
+
+
+    @Test
+    fun `gets valid bucs fagmodul can handle excpect list`() {
+        val result = bucController.getBucs()
+        Assertions.assertEquals(7, result.size)
     }
 
     @Test
