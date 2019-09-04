@@ -12,7 +12,7 @@ class SedListener {
 
     private val logger = LoggerFactory.getLogger(SedListener::class.java)
 
-    @KafkaListener(topics = ["\${kafka.sedSendt.topic}"], groupId = "\${kafka.sedSendt.groupid}")
+    //@KafkaListener(topics = ["\${kafka.sedSendt.topic}"], groupId = "\${kafka.sedSendt.groupid}")
     fun consumeSedSendt(hendelse: String, acknowledgment: Acknowledgment) {
         MDC.putCloseable("x_request_id", UUID.randomUUID().toString()).use {
             logger.info("Innkommet sedSendt hendelse")
@@ -28,7 +28,7 @@ class SedListener {
         }
     }
 
-    @KafkaListener(topics = ["\${kafka.sedMottatt.topic}"], groupId = "\${kafka.sedMottatt.groupid}")
+    //@KafkaListener(topics = ["\${kafka.sedMottatt.topic}"], groupId = "\${kafka.sedMottatt.groupid}")
     fun consumeSedMottatt(hendelse: String, acknowledgment: Acknowledgment) {
         MDC.putCloseable("x_request_id", UUID.randomUUID().toString()).use {
             logger.info("Innkommet sedMottatt hendelse")
