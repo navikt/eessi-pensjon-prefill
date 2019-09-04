@@ -71,6 +71,8 @@ fasitResources:
     resourceType: RestService
   - alias: appdynamics
     resourceType: ApplicationProperties
+  - alias: kafka_bootstrap_servers
+    resourceType: baseurl
 
   exposed:
   - alias: eessifagmodulservice

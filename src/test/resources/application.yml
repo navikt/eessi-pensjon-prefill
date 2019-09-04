@@ -41,10 +41,30 @@ eessi:
 spring:
   profiles:
     active: 'local-test'
+  kafka:
+    listener:
+      ack-mode: manual
+    consumer:
+      enable-auto-commit: false
+      auto-offset-reset: earliest
+    bootstrap-servers: ${spring.embedded.kafka.brokers}
+    properties:
+      security.protocol: PLAINTEXT
+    main:
+      allow-bean-definition-overriding: true
 
 saf.graphql:
   url: 'http://localhost'
 
 saf.hentdokument:
   url: 'http://localhost'
-  
+
+kafka:
+  sedSendt:
+    topic: eessi-basis-sedSendt-v1
+    groupid: eessi-pensjon-fagmodul-group
+  sedMottatt:
+    topic: eessi-basis-sedMottatt-v1
+    groupid: eessi-pensjon-fagmodul-group
+
+
