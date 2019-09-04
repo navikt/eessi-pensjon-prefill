@@ -544,7 +544,7 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
                     .path("/sed/")
                     .path(rinaDokumentId)
                     .path("/vedlegg")
-                    .queryParam("Filnavn", vedlegg.filnavn)
+                    .queryParam("Filnavn", vedlegg.filnavn.replaceAfterLast(".", "").removeSuffix("."))
                     .queryParam("Filtype", filtype)
                     .queryParam("synkron", true)
                     .build().toUriString()
@@ -661,6 +661,13 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
             if (fdato != null) return fdato
         }
         throw IkkeFunnetException("Ingen fødselsdato funnet")
+    }
+
+    /**
+     * Henter alle PIN ( fnr / dnr )
+     */
+    fun hentAllePinISed() {
+
     }
 
     /**
