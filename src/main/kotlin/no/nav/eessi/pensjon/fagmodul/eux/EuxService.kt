@@ -548,7 +548,7 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
                     .queryParam("Filtype", filtype)
                     .queryParam("synkron", true)
                     .build().toUriString()
-
+            logger.info("Legger til vedlegg i buc: $rinaSakId, sed: $rinaDokumentId")
             val response = euxOidcRestTemplate.exchange(
                     queryUrl,
                     HttpMethod.POST,
