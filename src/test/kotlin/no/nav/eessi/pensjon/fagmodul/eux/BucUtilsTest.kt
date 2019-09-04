@@ -6,7 +6,6 @@ import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Organisation
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ParticipantsItem
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.models.SEDType
-import no.nav.eessi.pensjon.utils.mapAnyToJson
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.typeRefs
 import no.nav.eessi.pensjon.utils.validateJson
@@ -19,7 +18,6 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.junit.jupiter.MockitoExtension
 import java.nio.file.Files
 import java.nio.file.Paths
-import org.joda.time.DateTime
 import kotlin.streams.toList
 
 @ExtendWith(MockitoExtension::class)
@@ -412,14 +410,13 @@ class BucUtilsTest {
     @Test
     fun findCaseOwnerOnBucIsNotAllwaysSameAsCreator() {
         val result = bucUtils.getCaseOwner()
-        assertEquals("NO:NAVT003", result.institution)
+        assertEquals("NO:NAVT003", result?.institution)
     }
 
     @Test
     fun parseAndTestBucAndSedView() {
         val bucjson = getTestJsonFile("buc-280670.json")
         val buc = mapJsonToAny(bucjson, typeRefs<Buc>())
-        //val bucUtils = BucUtils(buc)
 
         val bucview =  BucAndSedView.from(buc, "")
 
@@ -431,10 +428,8 @@ class BucUtilsTest {
     fun parseAndTestBucAttachmentsDate() {
         val bucjson = getTestJsonFile("buc-279020big.json")
         val buc = mapJsonToAny(bucjson, typeRefs<Buc>())
-        val bucUtils = BucUtils(buc)
 
         val bucview =  BucAndSedView.from(buc, "")
-
         assertEquals(1567088832589, bucview.startDate)
         assertEquals(1567178490000, bucview.lastUpdate)
     }
@@ -457,7 +452,6 @@ class BucUtilsTest {
     fun bucsedandviewCheck() {
         val bucjson = getTestJsonFile("buc-285268-answerid.json")
         val buc = mapJsonToAny(bucjson, typeRefs<Buc>())
-        //val bucUtils = BucUtils(buc)
 
         val bucAndSedView = BucAndSedView.from(buc, "amatør")
 
@@ -465,13 +459,40 @@ class BucUtilsTest {
         val filterParentId = seds.stream().filter { it.parentDocumentId != null }.toList()
         assertEquals(3, filterParentId.size)
 
-        assertEquals("NO", bucAndSedView.creator.country)
-        assertEquals("NO:NAVT003", bucAndSedView.creator.institution)
-        assertEquals("NAVT003", bucAndSedView.creator.name)
+        assertEquals("NO", bucAndSedView.creator?.country)
+        assertEquals("NO:NAVT003", bucAndSedView.creator?.institution)
+        assertEquals("NAVT003", bucAndSedView.creator?.name)
 
 
     }
 
+    @Test
+    fun bucsedandviewCheckforCaseOwnerIfmissingUseCreator() {
+        val bucjson = getTestJsonFile("buc-287679short.json")
+        val buc = mapJsonToAny(bucjson, typeRefs<Buc>())
 
+        val bucAndSedView = BucAndSedView.from(buc, "amatør")
+
+        val seds = bucAndSedView.seds
+        assertEquals(1, seds.size)
+
+        assertEquals("NO", bucAndSedView.creator?.country)
+        assertEquals("NO:NAVT002", bucAndSedView.creator?.institution)
+        assertEquals("NAVT002", bucAndSedView.creator?.name)
+
+    }
+
+    @Test
+    fun bucsedandviewCheckforCaseOwner() {
+        val bucAndSedView = BucAndSedView.from(buc, "amatør")
+
+        val seds = bucAndSedView.seds
+        assertEquals(15, seds.size)
+
+        assertEquals("NO", bucAndSedView.creator?.country)
+        assertEquals("NO:NAVT003", bucAndSedView.creator?.institution)
+        assertEquals("NAVT003", bucAndSedView.creator?.name)
+
+    }
 
 }
