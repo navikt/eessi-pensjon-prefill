@@ -38,16 +38,24 @@ class BucUtils(private val buc: Buc ) {
         )
     }
 
-    fun getCaseOwner() = getParticipants()
-                .asSequence()
-                .filter { it.role == "CaseOwner" }
-                .map {
-                    InstitusjonItem(
-                            country = it.organisation?.countryCode ?: "",
-                            institution = it.organisation?.id ?: "",  //kan hende må være id?!
-                            name = it.organisation?.name ?: "" //name optinal
-                    )
-                }.first() ?: InstitusjonItem("N/A", "NO:NO")
+    fun getCaseOwnerOrCreator() = getCaseOwner() ?: getCreatorAsInstitusjonItem()
+
+    fun getCaseOwner() : InstitusjonItem? {
+        return try {
+                getParticipants()
+                    .asSequence()
+                    .filter { it.role == "CaseOwner" }
+                    .map {
+                        InstitusjonItem(
+                                country = it.organisation?.countryCode ?: "",
+                                institution = it.organisation?.id ?: "",  //kan hende må være id?!
+                                name = it.organisation?.name ?: "" //name optinal
+                        )
+                }.first()
+        } catch (ex: Exception) {
+            null
+        }
+    }
 
     fun getSubject() = buc.subject ?: throw NoSuchFieldException("Fant ikke Subject")
 

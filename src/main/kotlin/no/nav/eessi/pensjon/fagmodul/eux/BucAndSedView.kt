@@ -6,8 +6,8 @@ import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 
 data class BucAndSedView(
         val type: String,
-        val creator: InstitusjonItem,
         val caseId: String,
+        val creator: InstitusjonItem? = null,
         val sakType: String? = null,
         val aktoerId: String,
         val status: String? = null,
@@ -21,7 +21,7 @@ data class BucAndSedView(
             val bucUtil = BucUtils(buc)
             return BucAndSedView(
                     type = bucUtil.getProcessDefinitionName()!!,
-                    creator = bucUtil.getCaseOwner(),
+                    creator = bucUtil.getCaseOwnerOrCreator(),
                     caseId = buc.id?: "n/a",
                     sakType = "",
                     startDate = bucUtil.getStartDateLong(),
