@@ -21,8 +21,6 @@ inline fun <reified T : Any> mapJsonToAny(json: String, objec: TypeReference<T>,
     if (validateJson(json)) {
         try {
             return jacksonObjectMapper()
-//                .registerModule(JavaTimeModule())
-//                .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
                     .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, failonunknown)
                     .readValue(json, objec)
         } catch (mex: MismatchedInputException) {
