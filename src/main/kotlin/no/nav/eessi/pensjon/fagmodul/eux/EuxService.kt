@@ -231,7 +231,7 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
                 ,"getbuc"
                 ,"Feiler ved metode GetBuc. "
         )
-        return mapJsonToAny(response.body ?: throw IkkeFunnetException("Ingen Buc funnet på $euxCaseId"), typeRefs())
+        return mapJsonToAny(response.body ?: throw ServerException("Feil med Buc mapping, euxCaseId $euxCaseId"), typeRefs())
     }
 
     /**
@@ -681,47 +681,69 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
     }
 }
 
-inline fun <T> restTemplateErrorhandler(restFunction: () -> T, euxCaseId: String, metricName: String, prefixErrorMessage: String?): T {
-    
+
+//inline fun <T> restTemplateErrorhandler(restFunction: () -> T, euxCaseId: String, metricName: String, prefixErrorMessage: String?): T {
+inline fun <T> restTemplateErrorhandler(restFunction: () -> ResponseEntity<T>, euxCaseId: String, metricName: String, prefixErrorMessage: String?): ResponseEntity<T> {
     val logger = LoggerFactory.getLogger(EuxService::class.java)
-    val name = object{}.javaClass.enclosingMethod.name
-    logger.debug("function Name : $name")
-    try {
+    return try {
         //TODO metric timer start
-        val response = restFunction()
+         restFunction()
         //TODO metric timer end
-        if (response is ResponseEntity<*>) {
-            if (response.statusCode.is2xxSuccessful) {
-                counter("eessipensjon_fagmodul.$metricName", "vellykkede").increment()
-                return response
-            } else {
-                val statusCode = response.statusCode
-                counter("eessipensjon_fagmodul.$metricName", "feilede").increment()
-                logger.error("$prefixErrorMessage, med euxCaseID: $euxCaseId, feilkode $statusCode")
-                when (statusCode) {
-                    HttpStatus.UNAUTHORIZED -> throw RinaIkkeAutorisertBrukerException("Authorization token required for Rina,")
-                    HttpStatus.FORBIDDEN -> throw ForbiddenException("Forbidden, Ikke tilgang")
-                    HttpStatus.NOT_FOUND -> throw IkkeFunnetException("Ikke funnet")
-                    HttpStatus.INTERNAL_SERVER_ERROR -> throw EuxRinaServerException("Rina serverfeil, kan også skyldes ugyldig input, ${response.body}")
-                    HttpStatus.GATEWAY_TIMEOUT -> throw GatewayTimeoutException("Venting på respons fra Rina resulterte i en timeout")
-                    else -> throw GenericUnprocessableEntity("Uoppdaget feil har oppstått!!, ${response.body}")
-                }
-            }
+    } catch (hcee: HttpClientErrorException) {
+        val errorBody = hcee.responseBodyAsString
+        counter("eessipensjon_fagmodul.$metricName", "feilede").increment()
+        logger.error("$prefixErrorMessage, HttpClientError med euxCaseID: $euxCaseId, body: $errorBody")
+        when (hcee.statusCode) {
+            HttpStatus.UNAUTHORIZED -> throw RinaIkkeAutorisertBrukerException("Authorization token required for Rina,")
+            HttpStatus.FORBIDDEN -> throw ForbiddenException("Forbidden, Ikke tilgang")
+            HttpStatus.NOT_FOUND -> throw IkkeFunnetException("Ikke funnet")
+            else -> throw GenericUnprocessableEntity("Uoppdaget feil har oppstått!!, $errorBody")
         }
-        return response
-    } catch (rsex: RestClientException) {
-        logger.error(rsex.message, rsex)
+    } catch (hsee: HttpServerErrorException) {
+        val errorBody = hsee.responseBodyAsString
         counter("eessipensjon_fagmodul.$metricName", "feilede").increment()
-        throw UgyldigCaseIdException("Bad request exception")
-    } catch (ex: RuntimeException) {
-        logger.error("RuntimeException som blir fanget opp ved henting av bucdata fra rinasaksnummeret", ex)
+        logger.error("$prefixErrorMessage, HttpServerError med euxCaseID: $euxCaseId, feilkode body: $errorBody")
+        when (hsee.statusCode) {
+            HttpStatus.INTERNAL_SERVER_ERROR -> throw EuxRinaServerException("Rina serverfeil, kan også skyldes ugyldig input, $errorBody")
+            HttpStatus.GATEWAY_TIMEOUT -> throw GatewayTimeoutException("Venting på respons fra Rina resulterte i en timeout, $errorBody")
+            else -> throw GenericUnprocessableEntity("Uoppdaget feil har oppstått!!, $errorBody")
+        }
+    } catch (uhsce: UnknownHttpStatusCodeException) {
+        val errorBody = uhsce.responseBodyAsString
         counter("eessipensjon_fagmodul.$metricName", "feilede").increment()
-        throw ex
+        logger.error("$prefixErrorMessage, med euxCaseID: $euxCaseId errmessage: $errorBody", uhsce)
+        throw GenericUnprocessableEntity("Ukjent statusefeil, $errorBody")
+    } catch (ex: Exception) {
+        counter("eessipensjon_fagmodul.$metricName", "feilede").increment()
+        logger.error("$prefixErrorMessage, med euxCaseID: $euxCaseId", ex)
+        throw ServerException("Ukjent Feil oppstod euxCaseId: $euxCaseId,  ${ex.message}")
     }
 }
 
 @ResponseStatus(value = HttpStatus.NOT_FOUND)
 class IkkeFunnetException(message: String) : IllegalArgumentException(message)
+
+@ResponseStatus(value = HttpStatus.UNAUTHORIZED)
+class RinaIkkeAutorisertBrukerException(message: String?) : Exception(message)
+
+@ResponseStatus(value = HttpStatus.FORBIDDEN)
+class ForbiddenException(message: String?) : Exception(message)
+
+@ResponseStatus(value = HttpStatus.BAD_REQUEST)
+class UgyldigCaseIdException(message: String) : IllegalArgumentException(message)
+
+@ResponseStatus(value = HttpStatus.NOT_FOUND)
+class EuxRinaServerException(message: String?) : Exception(message)
+
+@ResponseStatus(value = HttpStatus.UNPROCESSABLE_ENTITY)
+open class GenericUnprocessableEntity(message: String) : IllegalArgumentException(message)
+
+@ResponseStatus(value = HttpStatus.GATEWAY_TIMEOUT)
+class GatewayTimeoutException(message: String?) : Exception(message)
+
+@ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
+class ServerException(message: String?): RuntimeException(message)
+
 
 @ResponseStatus(value = HttpStatus.NOT_FOUND)
 class SedDokumentIkkeOpprettetException(message: String) : Exception(message)
@@ -735,32 +757,15 @@ class SedIkkeSlettetException(message: String?) : Exception(message)
 @ResponseStatus(value = HttpStatus.NOT_FOUND)
 class BucIkkeMottattException(message: String?) : Exception(message)
 
-@ResponseStatus(value = HttpStatus.UNAUTHORIZED)
-class RinaIkkeAutorisertBrukerException(message: String?) : Exception(message)
-
-@ResponseStatus(value = HttpStatus.FORBIDDEN)
-class ForbiddenException(message: String?) : Exception(message)
-
 @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
 class EuxGenericServerException(message: String?) : Exception(message)
-
-@ResponseStatus(value = HttpStatus.NOT_FOUND)
-class EuxRinaServerException(message: String?) : Exception(message)
 
 @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
 class SedDokumentIkkeSendtException(message: String?) : Exception(message)
 
-@ResponseStatus(value = HttpStatus.GATEWAY_TIMEOUT)
-class GatewayTimeoutException(message: String?) : Exception(message)
-
 @ResponseStatus(value = HttpStatus.SERVICE_UNAVAILABLE)
 class EuxServerException(message: String?) : Exception(message)
-
-@ResponseStatus(value = HttpStatus.UNPROCESSABLE_ENTITY)
-open class GenericUnprocessableEntity(message: String) : IllegalArgumentException(message)
 
 @ResponseStatus(value = HttpStatus.BAD_REQUEST)
 class SedDokumentIkkeGyldigException(message: String?) : Exception(message)
 
-@ResponseStatus(value = HttpStatus.BAD_REQUEST)
-class UgyldigCaseIdException(message: String) : IllegalArgumentException(message)
