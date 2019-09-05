@@ -411,41 +411,26 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
     }
 
     fun createBuc(bucType: String): String {
-
         val correlationId = UUID.randomUUID().toString()
         val builder = UriComponentsBuilder.fromPath("/buc")
                 .queryParam("BuCType", bucType)
                 .queryParam("KorrelasjonsId", correlationId)
                 .build()
 
-
         logger.debug("Kontakter EUX for å prøve på opprette ny BUC med korrelasjonId: $correlationId")
-        try {
-            val response = euxOidcRestTemplate.exchange(
-                    builder.toUriString(),
-                    HttpMethod.POST,
-                    null,
-                    String::class.java)
-
-            response.body?.let {
-                return it
-            } ?: throw IkkeFunnetException("Fant ikke noen caseid")
-        } catch (ia: IllegalArgumentException) {
-            logger.error("noe feil ved opprett buc? exception ${ia.message}", ia)
-            throw GenericUnprocessableEntity(ia.message!!)
-        } catch (hx: HttpClientErrorException) {
-            logger.warn("Buc ClientException ${hx.message}", hx)
-            throw hx
-        } catch (sx: HttpServerErrorException) {
-            logger.error("Buc ClientException ${sx.message}", sx)
-            throw sx
-        } catch (io: ResourceAccessException) {
-            logger.error("IO error fagmodul  ${io.message}", io)
-            throw IOException(io.message, io)
-        } catch (ex: Exception) {
-            logger.error("Annen uspesefikk feil oppstod mellom fagmodul og eux ${ex.message}", ex)
-            throw ex
-        }
+        val response = restTemplateErrorhandler(
+            {
+                euxOidcRestTemplate.exchange(
+                builder.toUriString(),
+                HttpMethod.POST,
+                null,
+                String::class.java)
+            }
+            ,bucType
+            ,"createBuc"
+            ,"Opprett Buc, "
+        )
+        response.body?.let { return it } ?: throw IkkeFunnetException("Fant ikke noen euxCaseId")
     }
 
 
