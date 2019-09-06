@@ -25,9 +25,8 @@ import org.springframework.web.client.*
 import org.springframework.web.util.UriComponentsBuilder
 import java.io.File
 import java.io.IOException
-import java.util.*
 import java.nio.file.Paths
-import org.springframework.http.ResponseEntity
+import java.util.*
 
 @Service
 @Description("Service class for EuxBasis - eux-cpi-service-controller")
@@ -672,7 +671,9 @@ inline fun <T> restTemplateErrorhandler(restFunction: () -> ResponseEntity<T>, e
     val logger = LoggerFactory.getLogger(EuxService::class.java)
     return try {
         //TODO metric timer start
-         restFunction()
+        val response = restFunction()
+            counter("eessipensjon_fagmodul.$metricName", "vellykkede").increment()
+            response
         //TODO metric timer end
     } catch (hcee: HttpClientErrorException) {
         val errorBody = hcee.responseBodyAsString
