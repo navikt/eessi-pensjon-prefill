@@ -10,10 +10,9 @@ node {
 
         commitHash = sh(script: 'git rev-parse HEAD', returnStdout: true).trim()
     }
-
     stage("build") {
         try {
-            sh "make"
+            sh "build"
         } catch (e) {
             junit('build/test-results/test/**/*.xml')
             publishHTML([
@@ -29,4 +28,23 @@ node {
             throw e
         }
     }
+    stage("test") {
+        try {
+            sh "test"
+        } catch (e) {
+            junit('build/test-results/test/**/*.xml')
+            publishHTML([
+                    allowMissing         : false,
+                    alwaysLinkToLastBuild: false,
+                    keepAll              : true,
+                    reportDir            : 'build/reports/tests/test',
+                    reportFiles          : 'index.html',
+                    reportName           : 'HTML Report',
+                    reportTitles         : ''
+            ])
+
+            throw e
+        }
+    }
+    
 }
