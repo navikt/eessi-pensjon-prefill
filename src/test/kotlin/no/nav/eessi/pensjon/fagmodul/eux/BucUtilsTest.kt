@@ -9,6 +9,8 @@ import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.typeRefs
 import no.nav.eessi.pensjon.utils.validateJson
+import org.joda.time.DateTime
+import org.joda.time.DateTimeZone
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
@@ -18,6 +20,8 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.junit.jupiter.MockitoExtension
 import java.nio.file.Files
 import java.nio.file.Paths
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import kotlin.streams.toList
 
 @ExtendWith(MockitoExtension::class)
@@ -494,5 +498,25 @@ class BucUtilsTest {
         assertEquals("NAVT003", bucAndSedView.creator?.name)
 
     }
+
+    @Test
+    fun hentutBucsedviewmedDato() {
+        val bucjson = getTestJsonFile("buc-279020big.json")
+        val buc = mapJsonToAny(bucjson, typeRefs<Buc>())
+        val bucAndSedView = BucAndSedView.from(buc, "Dummy aktoerid")
+        val seds = bucAndSedView.seds
+        assertEquals(25, seds.size)
+        assertEquals("NO", bucAndSedView.creator?.country)
+        assertEquals("NO:NAVT002", bucAndSedView.creator?.institution)
+        assertEquals("NAVT002", bucAndSedView.creator?.name)
+        assertEquals(1567088832589, bucAndSedView.startDate)
+        assertEquals(1567178490000, bucAndSedView.lastUpdate)
+        val startDate = DateTimeFormatter.ISO_INSTANT.format(java.time.Instant.ofEpochMilli (1567088832589))
+        val startDlen = startDate.length -5
+        assertEquals(startDate.substring(0, startDlen), buc.startDate.toString().substring(0,19))
+        assertEquals("2019-08-29T14:27:12.589+0000", buc.startDate)
+        assertEquals("2019-08-30T15:21:30.000+0000", buc.lastUpdate)
+    }
+
 
 }

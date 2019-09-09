@@ -245,18 +245,30 @@ class EuxServiceTest {
     //opprett sed på en valgt type, feiler ved oppreting
     @Test
     fun `Calling EuxService  feiler med svar tilbake fra et kall til opprettSedOnBuc`() {
-        val errorresponse = ResponseEntity<String?>(HttpStatus.BAD_REQUEST)
-        whenever(mockEuxrestTemplate.exchange(any<String>(), eq(HttpMethod.POST), any(), eq(String::class.java))).thenReturn(errorresponse)
-        assertThrows<SedDokumentIkkeOpprettetException> {
+        doThrow(createDummyClientRestExecption(HttpStatus.BAD_REQUEST, "Dummy clent error"))
+                .whenever(mockEuxrestTemplate).exchange(
+                        any<String>(),
+                        eq(HttpMethod.POST),
+                        any(),
+                        eq(String::class.java)
+                )
+
+        assertThrows<GenericUnprocessableEntity> {
             service.opprettSedOnBuc(SED("P2200"), "1231233")
         }
+
     }
 
-    //opprett sed på en valgt type, feil med eux service
     @Test
-    fun `Calling EuxService  feiler med kontakt fra eux med kall til opprettSedOnBuc`() {
-        whenever(mockEuxrestTemplate.exchange(any<String>(), eq(HttpMethod.POST), any(), eq(String::class.java))).thenThrow(RuntimeException::class.java)
-        assertThrows<EuxGenericServerException> {
+    fun `Calling EuxService  feiler med kontakt fra eux med kall til opprettSedOnBuc forventer GatewayTimeoutException`() {
+        doThrow(createDummyServerRestExecption(HttpStatus.GATEWAY_TIMEOUT,"Dummy body"))
+                .whenever(mockEuxrestTemplate).exchange(
+                        any<String>(),
+                        eq(HttpMethod.POST),
+                        any(),
+                        eq(String::class.java)
+                )
+        assertThrows<GatewayTimeoutException> {
             service.opprettSedOnBuc(SED("P2000"), "213123")
         }
     }
