@@ -12,7 +12,7 @@ node {
     }
     stage("build") {
         try {
-            sh "build"
+            sh "make build"
         } catch (e) {
             junit('build/test-results/test/**/*.xml')
             publishHTML([
@@ -30,7 +30,7 @@ node {
     }
     stage("test") {
         try {
-            sh "test"
+            sh "make test"
         } catch (e) {
             junit('build/test-results/test/**/*.xml')
             publishHTML([
