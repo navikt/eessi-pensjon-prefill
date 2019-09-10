@@ -12,7 +12,6 @@ import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Krav
 import no.nav.eessi.pensjon.fagmodul.sedmodel.PinItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
-import no.nav.eessi.pensjon.metrics.counter
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.typeRef
 import no.nav.eessi.pensjon.utils.typeRefs
@@ -87,26 +86,26 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
 
     @Throws(EuxGenericServerException::class, SedDokumentIkkeOpprettetException::class)
     fun opprettSvarSedOnBuc(navSED: SED, euxCaseId: String, parentDocumentId: String): BucSedResponse {
-        val path = "/buc/{RinaSakId}/sed/{DokuemntId}/svar"
-        logger.debug("prøver å kontakte eux-rina-api : $path")
-        return opprettSed(path, navSED.toJsonSkipEmpty(), euxCaseId,  parentDocumentId)
+        val euxUrlpath = "/buc/{RinaSakId}/sed/{DokuemntId}/svar"
+        logger.debug("prøver å kontakte eux-rina-api : $euxUrlpath")
+        return opprettSed(euxUrlpath, navSED.toJsonSkipEmpty(), euxCaseId,  parentDocumentId)
     }
 
 
     //ny SED på ekisterende type
     @Throws(EuxGenericServerException::class, SedDokumentIkkeOpprettetException::class)
     fun opprettSedOnBuc(navSED: SED, euxCaseId: String): BucSedResponse {
-        val path = "/buc/{RinaSakId}/sed"
-        return opprettSed(path, navSED.toJsonSkipEmpty(), euxCaseId, null)
+        val euxUrlpath = "/buc/{RinaSakId}/sed"
+        return opprettSed(euxUrlpath, navSED.toJsonSkipEmpty(), euxCaseId, null)
     }
 
 
     //ny SED på ekisterende type eller ny svar SED på ekisternede rina
     @Throws(EuxGenericServerException::class, SedDokumentIkkeOpprettetException::class)
-    fun opprettSed(path: String, navSEDjson: String, euxCaseId: String, parentDocumentId: String?): BucSedResponse {
+    fun opprettSed(urlPath: String, navSEDjson: String, euxCaseId: String, parentDocumentId: String?): BucSedResponse {
 
         val uriParams = mapOf("RinaSakId" to euxCaseId, "DokuemntId" to parentDocumentId).filter { it.value != null }
-        val builder = UriComponentsBuilder.fromUriString(path)
+        val builder = UriComponentsBuilder.fromUriString(urlPath)
                 .queryParam("KorrelasjonsId", UUID.randomUUID().toString())
                 .buildAndExpand(uriParams)
 
@@ -127,30 +126,6 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
                 ,"Opprett Sed feil, "
         )
         return BucSedResponse(euxCaseId, response.body!!)
-
-//        val response: ResponseEntity<String>
-//        try {
-//            logger.info("Prøver å kontakte EUX /${builder.toUriString()}")
-//            response = euxOidcRestTemplate.exchange(builder.toUriString(),
-//                    HttpMethod.POST,
-//                    httpEntity,
-//                    String::class.java)
-//        } catch (ax: HttpServerErrorException) {
-//            logger.error(ax.message, ax)
-//            getCounter("OPPRETTBUCOGSEDFEIL").increment()
-//            throw ax
-//        } catch (ex: Exception) {
-//            logger.error(ex.message, ex)
-//            getCounter("OPPRETTBUCOGSEDFEIL").increment()
-//            throw EuxGenericServerException("Feiler ved kontakt mot EUX")
-//        }
-//        if (!response.statusCode.is2xxSuccessful) {
-//            logger.error("${response.statusCode} Feiler med å legge til SED på en ekisterende BUC")
-//            getCounter("OPPRETTBUCOGSEDFEIL").increment()
-//            throw SedDokumentIkkeOpprettetException("Feiler med å legge til SED på en ekisterende BUC")
-//        }
-//        getCounter("OPPRETTBUCOGSEDOK").increment()
-//        return BucSedResponse(euxCaseId, response.body!!)
     }
 
     //henter ut sed fra rina med bucid og documentid
@@ -679,9 +654,7 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
         }
     }
 
-    //inline fun <T> restTemplateErrorhandler(restFunction: () -> T, euxCaseId: String, metricName: String, prefixErrorMessage: String?): T {
     fun <T> restTemplateErrorhandler(restTemplateFunction: () -> ResponseEntity<T>, euxCaseId: String, metricName: String, prefixErrorMessage: String): ResponseEntity<T> {
-        //val logger = LoggerFactory.getLogger(EuxService::class.java)
         return try {
             Metrics.timer("eessipensjon_fagmodul.$metricName", "api","eux-rina-api","service","fagmodul-eux").recordCallable {
                 val response = restTemplateFunction.invoke()
@@ -720,7 +693,6 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
     }
 
 }
-
 
 
 //--- Disse er benyttet av restTemplateErrorhandler  -- start
