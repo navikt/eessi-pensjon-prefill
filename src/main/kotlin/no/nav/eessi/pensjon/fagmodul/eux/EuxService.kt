@@ -1,6 +1,7 @@
 package no.nav.eessi.pensjon.fagmodul.eux
 
 import com.google.common.base.Preconditions
+import io.micrometer.core.instrument.Metrics
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.BucSedResponse
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Rinasak
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Vedlegg
@@ -11,7 +12,6 @@ import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Krav
 import no.nav.eessi.pensjon.fagmodul.sedmodel.PinItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
-import no.nav.eessi.pensjon.metrics.counter
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.typeRef
 import no.nav.eessi.pensjon.utils.typeRefs
@@ -25,9 +25,8 @@ import org.springframework.web.client.*
 import org.springframework.web.util.UriComponentsBuilder
 import java.io.File
 import java.io.IOException
-import java.util.*
 import java.nio.file.Paths
-import org.springframework.http.ResponseEntity
+import java.util.*
 
 @Service
 @Description("Service class for EuxBasis - eux-cpi-service-controller")
@@ -43,6 +42,7 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
 
     //Oppretter ny RINA sak(type) og en ny Sed
     @Throws(EuxServerException::class, EuxRinaServerException::class)
+    //Denne utgår? da vi nå oppretter BUC for så å opprette Sed?
     fun opprettBucSed(navSED: SED, bucType: String, mottakerid: String, fagSaknr: String): BucSedResponse {
         Preconditions.checkArgument(mottakerid.contains(":"), "format for mottaker er NN:ID")
 
@@ -86,26 +86,26 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
 
     @Throws(EuxGenericServerException::class, SedDokumentIkkeOpprettetException::class)
     fun opprettSvarSedOnBuc(navSED: SED, euxCaseId: String, parentDocumentId: String): BucSedResponse {
-        val path = "/buc/{RinaSakId}/sed/{DokuemntId}/svar"
-        logger.debug("prøver å kontakte eux-rina-api : $path")
-        return opprettSed(path, navSED.toJsonSkipEmpty(), euxCaseId,  parentDocumentId)
+        val euxUrlpath = "/buc/{RinaSakId}/sed/{DokuemntId}/svar"
+        logger.debug("prøver å kontakte eux-rina-api : $euxUrlpath")
+        return opprettSed(euxUrlpath, navSED.toJsonSkipEmpty(), euxCaseId,  parentDocumentId)
     }
 
 
     //ny SED på ekisterende type
     @Throws(EuxGenericServerException::class, SedDokumentIkkeOpprettetException::class)
     fun opprettSedOnBuc(navSED: SED, euxCaseId: String): BucSedResponse {
-        val path = "/buc/{RinaSakId}/sed"
-        return opprettSed(path, navSED.toJsonSkipEmpty(), euxCaseId, null)
+        val euxUrlpath = "/buc/{RinaSakId}/sed"
+        return opprettSed(euxUrlpath, navSED.toJsonSkipEmpty(), euxCaseId, null)
     }
 
 
     //ny SED på ekisterende type eller ny svar SED på ekisternede rina
     @Throws(EuxGenericServerException::class, SedDokumentIkkeOpprettetException::class)
-    fun opprettSed(path: String, navSEDjson: String, euxCaseId: String, parentDocumentId: String?): BucSedResponse {
+    fun opprettSed(urlPath: String, navSEDjson: String, euxCaseId: String, parentDocumentId: String?): BucSedResponse {
 
         val uriParams = mapOf("RinaSakId" to euxCaseId, "DokuemntId" to parentDocumentId).filter { it.value != null }
-        val builder = UriComponentsBuilder.fromUriString(path)
+        val builder = UriComponentsBuilder.fromUriString(urlPath)
                 .queryParam("KorrelasjonsId", UUID.randomUUID().toString())
                 .buildAndExpand(uriParams)
 
@@ -114,28 +114,17 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
         //legger til navsed som json skipper nonemty felter dvs. null
         val httpEntity = HttpEntity(navSEDjson, headers)
 
-        val response: ResponseEntity<String>
-        try {
-            logger.info("Prøver å kontakte EUX /${builder.toUriString()}")
-            response = euxOidcRestTemplate.exchange(builder.toUriString(),
+        val response = restTemplateErrorhandler(
+                {
+                    euxOidcRestTemplate.exchange(builder.toUriString(),
                     HttpMethod.POST,
                     httpEntity,
                     String::class.java)
-        } catch (ax: HttpServerErrorException) {
-            logger.error(ax.message, ax)
-            getCounter("OPPRETTBUCOGSEDFEIL").increment()
-            throw ax
-        } catch (ex: Exception) {
-            logger.error(ex.message, ex)
-            getCounter("OPPRETTBUCOGSEDFEIL").increment()
-            throw EuxGenericServerException("Feiler ved kontakt mot EUX")
-        }
-        if (!response.statusCode.is2xxSuccessful) {
-            logger.error("${response.statusCode} Feiler med å legge til SED på en ekisterende BUC")
-            getCounter("OPPRETTBUCOGSEDFEIL").increment()
-            throw SedDokumentIkkeOpprettetException("Feiler med å legge til SED på en ekisterende BUC")
-        }
-        getCounter("OPPRETTBUCOGSEDOK").increment()
+                }
+                ,euxCaseId
+                ,"opprettSed"
+                ,"Opprett Sed feil, "
+        )
         return BucSedResponse(euxCaseId, response.body!!)
     }
 
@@ -411,41 +400,26 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
     }
 
     fun createBuc(bucType: String): String {
-
         val correlationId = UUID.randomUUID().toString()
         val builder = UriComponentsBuilder.fromPath("/buc")
                 .queryParam("BuCType", bucType)
                 .queryParam("KorrelasjonsId", correlationId)
                 .build()
 
-
         logger.debug("Kontakter EUX for å prøve på opprette ny BUC med korrelasjonId: $correlationId")
-        try {
-            val response = euxOidcRestTemplate.exchange(
-                    builder.toUriString(),
-                    HttpMethod.POST,
-                    null,
-                    String::class.java)
-
-            response.body?.let {
-                return it
-            } ?: throw IkkeFunnetException("Fant ikke noen caseid")
-        } catch (ia: IllegalArgumentException) {
-            logger.error("noe feil ved opprett buc? exception ${ia.message}", ia)
-            throw GenericUnprocessableEntity(ia.message!!)
-        } catch (hx: HttpClientErrorException) {
-            logger.warn("Buc ClientException ${hx.message}", hx)
-            throw hx
-        } catch (sx: HttpServerErrorException) {
-            logger.error("Buc ClientException ${sx.message}", sx)
-            throw sx
-        } catch (io: ResourceAccessException) {
-            logger.error("IO error fagmodul  ${io.message}", io)
-            throw IOException(io.message, io)
-        } catch (ex: Exception) {
-            logger.error("Annen uspesefikk feil oppstod mellom fagmodul og eux ${ex.message}", ex)
-            throw ex
-        }
+        val response = restTemplateErrorhandler(
+            {
+                euxOidcRestTemplate.exchange(
+                builder.toUriString(),
+                HttpMethod.POST,
+                null,
+                String::class.java)
+            }
+            ,bucType
+            ,"createBuc"
+            ,"Opprett Buc, "
+        )
+        response.body?.let { return it } ?: throw IkkeFunnetException("Fant ikke noen euxCaseId")
     }
 
 
@@ -521,6 +495,7 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
                     .queryParam("synkron", true)
                     .build().toUriString()
             logger.info("Legger til vedlegg i buc: $rinaSakId, sed: $rinaDokumentId")
+
             val response = euxOidcRestTemplate.exchange(
                     queryUrl,
                     HttpMethod.POST,
@@ -575,7 +550,6 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
     }
 
     fun getFnrMedLandkodeNO(pinlist: List<PinItem>?): String? {
-
         pinlist?.forEach {
             if ("NO" == it.land) {
                 return it.identifikator
@@ -679,70 +653,74 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
             return map[bucType].orEmpty()
         }
     }
-}
 
-
-//inline fun <T> restTemplateErrorhandler(restFunction: () -> T, euxCaseId: String, metricName: String, prefixErrorMessage: String?): T {
-inline fun <T> restTemplateErrorhandler(restFunction: () -> ResponseEntity<T>, euxCaseId: String, metricName: String, prefixErrorMessage: String?): ResponseEntity<T> {
-    val logger = LoggerFactory.getLogger(EuxService::class.java)
-    return try {
-        //TODO metric timer start
-         restFunction()
-        //TODO metric timer end
-    } catch (hcee: HttpClientErrorException) {
-        val errorBody = hcee.responseBodyAsString
-        counter("eessipensjon_fagmodul.$metricName", "feilede").increment()
-        logger.error("$prefixErrorMessage, HttpClientError med euxCaseID: $euxCaseId, body: $errorBody")
-        when (hcee.statusCode) {
-            HttpStatus.UNAUTHORIZED -> throw RinaIkkeAutorisertBrukerException("Authorization token required for Rina,")
-            HttpStatus.FORBIDDEN -> throw ForbiddenException("Forbidden, Ikke tilgang")
-            HttpStatus.NOT_FOUND -> throw IkkeFunnetException("Ikke funnet")
-            else -> throw GenericUnprocessableEntity("Uoppdaget feil har oppstått!!, $errorBody")
+    fun <T> restTemplateErrorhandler(restTemplateFunction: () -> ResponseEntity<T>, euxCaseId: String, metricName: String, prefixErrorMessage: String): ResponseEntity<T> {
+        return try {
+            Metrics.timer("eessipensjon_fagmodul.$metricName", "api","eux-rina-api","service","fagmodul-eux").recordCallable {
+                val response = restTemplateFunction.invoke()
+                Metrics.counter("eessipensjon_fagmodul.$metricName", "type", "vellykkede").increment()
+                response
+            }
+       } catch (hcee: HttpClientErrorException) {
+            val errorBody = hcee.responseBodyAsString
+            Metrics.counter("eessipensjon_fagmodul.$metricName", "type", "feilede").increment()
+            logger.error("$prefixErrorMessage, HttpClientError med euxCaseID: $euxCaseId, body: $errorBody")
+            when (hcee.statusCode) {
+                HttpStatus.UNAUTHORIZED -> throw RinaIkkeAutorisertBrukerException("Authorization token required for Rina,")
+                HttpStatus.FORBIDDEN -> throw ForbiddenException("Forbidden, Ikke tilgang")
+                HttpStatus.NOT_FOUND -> throw IkkeFunnetException("Ikke funnet")
+                else -> throw GenericUnprocessableEntity("Uoppdaget feil har oppstått!!, $errorBody")
+            }
+        } catch (hsee: HttpServerErrorException) {
+            val errorBody = hsee.responseBodyAsString
+            Metrics.counter("eessipensjon_fagmodul.$metricName", "type", "feilede").increment()
+            logger.error("$prefixErrorMessage, HttpServerError med euxCaseID: $euxCaseId, feilkode body: $errorBody", hsee)
+            when (hsee.statusCode) {
+                HttpStatus.INTERNAL_SERVER_ERROR -> throw EuxRinaServerException("Rina serverfeil, kan også skyldes ugyldig input, $errorBody")
+                HttpStatus.GATEWAY_TIMEOUT -> throw GatewayTimeoutException("Venting på respons fra Rina resulterte i en timeout, $errorBody")
+                else -> throw GenericUnprocessableEntity("Uoppdaget feil har oppstått!!, $errorBody")
+            }
+        } catch (uhsce: UnknownHttpStatusCodeException) {
+            val errorBody = uhsce.responseBodyAsString
+            Metrics.counter("eessipensjon_fagmodul.$metricName", "type", "feilede").increment()
+            logger.error("$prefixErrorMessage, med euxCaseID: $euxCaseId errmessage: $errorBody", uhsce)
+            throw GenericUnprocessableEntity("Ukjent statusefeil, $errorBody")
+        } catch (ex: Exception) {
+            Metrics.counter("eessipensjon_fagmodul.$metricName", "type", "feilede").increment()
+            logger.error("$prefixErrorMessage, med euxCaseID: $euxCaseId", ex)
+            throw ServerException("Ukjent Feil oppstod euxCaseId: $euxCaseId,  ${ex.message}")
         }
-    } catch (hsee: HttpServerErrorException) {
-        val errorBody = hsee.responseBodyAsString
-        counter("eessipensjon_fagmodul.$metricName", "feilede").increment()
-        logger.error("$prefixErrorMessage, HttpServerError med euxCaseID: $euxCaseId, feilkode body: $errorBody")
-        when (hsee.statusCode) {
-            HttpStatus.INTERNAL_SERVER_ERROR -> throw EuxRinaServerException("Rina serverfeil, kan også skyldes ugyldig input, $errorBody")
-            HttpStatus.GATEWAY_TIMEOUT -> throw GatewayTimeoutException("Venting på respons fra Rina resulterte i en timeout, $errorBody")
-            else -> throw GenericUnprocessableEntity("Uoppdaget feil har oppstått!!, $errorBody")
-        }
-    } catch (uhsce: UnknownHttpStatusCodeException) {
-        val errorBody = uhsce.responseBodyAsString
-        counter("eessipensjon_fagmodul.$metricName", "feilede").increment()
-        logger.error("$prefixErrorMessage, med euxCaseID: $euxCaseId errmessage: $errorBody", uhsce)
-        throw GenericUnprocessableEntity("Ukjent statusefeil, $errorBody")
-    } catch (ex: Exception) {
-        counter("eessipensjon_fagmodul.$metricName", "feilede").increment()
-        logger.error("$prefixErrorMessage, med euxCaseID: $euxCaseId", ex)
-        throw ServerException("Ukjent Feil oppstod euxCaseId: $euxCaseId,  ${ex.message}")
     }
+
 }
 
+
+//--- Disse er benyttet av restTemplateErrorhandler  -- start
 @ResponseStatus(value = HttpStatus.NOT_FOUND)
-class IkkeFunnetException(message: String) : IllegalArgumentException(message)
+class IkkeFunnetException(message: String) : RuntimeException(message)
 
 @ResponseStatus(value = HttpStatus.UNAUTHORIZED)
-class RinaIkkeAutorisertBrukerException(message: String?) : Exception(message)
+class RinaIkkeAutorisertBrukerException(message: String?) : RuntimeException(message)
 
 @ResponseStatus(value = HttpStatus.FORBIDDEN)
-class ForbiddenException(message: String?) : Exception(message)
+class ForbiddenException(message: String?) : RuntimeException(message)
 
 @ResponseStatus(value = HttpStatus.BAD_REQUEST)
-class UgyldigCaseIdException(message: String) : IllegalArgumentException(message)
+class UgyldigCaseIdException(message: String) : RuntimeException(message)
 
 @ResponseStatus(value = HttpStatus.NOT_FOUND)
-class EuxRinaServerException(message: String?) : Exception(message)
+class EuxRinaServerException(message: String?) : RuntimeException(message)
 
 @ResponseStatus(value = HttpStatus.UNPROCESSABLE_ENTITY)
-open class GenericUnprocessableEntity(message: String) : IllegalArgumentException(message)
+class GenericUnprocessableEntity(message: String) : RuntimeException(message)
 
 @ResponseStatus(value = HttpStatus.GATEWAY_TIMEOUT)
-class GatewayTimeoutException(message: String?) : Exception(message)
+class GatewayTimeoutException(message: String?) : RuntimeException(message)
 
 @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
 class ServerException(message: String?): RuntimeException(message)
+
+//--- Disse er benyttet av restTemplateErrorhandler  -- slutt
 
 
 @ResponseStatus(value = HttpStatus.NOT_FOUND)

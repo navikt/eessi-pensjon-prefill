@@ -128,8 +128,7 @@ class SedController(private val euxService: EuxService,
         return BucUtils(euxService.getBuc(docresult.caseId)).findDocument(docresult.documentId)
     }
 
-    //** oppdatert i api 18.02.2019
-    @ApiOperation("Kjører prosess OpprettBuCogSED på EUX for å få opprette et RINA dokument med en SED, (Utgår?) ny api kall til eux")
+    @ApiOperation("Utgår?")
     @PostMapping("/buc/create")
     fun createDocument(@RequestBody request: ApiRequest): BucSedResponse {
         logger.info("kaller type/create med request: $request")
@@ -141,8 +140,8 @@ class SedController(private val euxService: EuxService,
 
     }
 
-    //** oppdatert i api 18.02.2019 -- går ut da den nå likker i BuController
-    @ApiOperation("Henter ut en liste av documents på valgt type. ny api kall til eux")
+    //** oppdatert i api 18.02.2019 --
+    @ApiOperation("Utgår, benytt /buc/{rinanr}/allDocuments ")
     @GetMapping("/buc/{euxcaseid}/shortdocumentslist")
     fun getShortDocumentList(@PathVariable("euxcaseid", required = true) euxcaseid: String): List<ShortDocumentItem> {
 

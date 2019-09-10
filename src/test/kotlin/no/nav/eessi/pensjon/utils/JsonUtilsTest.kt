@@ -1,7 +1,10 @@
 package no.nav.eessi.pensjon.utils
 
+import no.nav.eessi.pensjon.fagmodul.eux.SedDokumentIkkeOpprettetException
+import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.skyscreamer.jsonassert.JSONAssert
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -86,7 +89,31 @@ class JsonUtilsTest {
                 "} ]"
 
         JSONAssert.assertEquals(actualjson, mapAnyToJson(list), true)
-
     }
+
+    @Test
+    fun `Test mapAnyToJson error unvalid json expect FagmodulJsonIllegalArgumentException`() {
+        val mockUnvalidjson = "[{\"country\":\"NO\",\"institution\": NO:NAVT003} ]"
+        assertThrows<FagmodulJsonIllegalArgumentException> {
+            mapJsonToAny(mockUnvalidjson, typeRefs<List<InstitusjonItem>>())
+        }
+    }
+
+    @Test
+    fun `Test mapAnyToJson error expect parseerror throws FagmodulJsonIllegalArgumentException`() {
+        val mockUnvalidjson = "[{\"country\":\"NO\", \"instszw652tution\": \"NO:NAVT003\", \"Dummy\" : \"Dummy\" } ]"
+        assertThrows<FagmodulJsonIllegalArgumentException> {
+            mapJsonToAny(mockUnvalidjson, typeRefs<List<InstitusjonItem>>())
+        }
+    }
+
+    @Test
+    fun `Test mapAnyToJson failOnUnknows error expect parseerror throws FagmodulJsonIllegalArgumentException`() {
+        val mockUnvalidjson = "[{\"country\":\"NO\", \"institution\": \"NO:NAVT003\", \"dummykeyname\": \"dummyvalue\" } ]"
+        assertThrows<FagmodulJsonIllegalArgumentException> {
+         mapJsonToAny(mockUnvalidjson, typeRefs<List<InstitusjonItem>>(), true)
+        }
+    }
+
 
 }
