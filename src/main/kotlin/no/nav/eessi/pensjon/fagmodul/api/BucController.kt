@@ -98,7 +98,8 @@ class BucController(private val euxService: EuxService,
 
         logger.debug("henter rinasaker på valgt aktoerid: $aktoerId")
         val fnr = aktoerIdHelper.hentPinForAktoer(aktoerId)
-        return euxService.getRinasaker(fnr, fasitEnvName)
+        val rinaSakIderFraDokumentMetadata = safService.hentRinaSakIderFraDokumentMetadata(aktoerId)
+        return euxService.getRinasaker(fnr, rinaSakIderFraDokumentMetadata, fasitEnvName)
     }
 
     @ApiOperation("Henter ut en json struktur for type og sed menyliste for ui. ny api kall til eux")
@@ -108,7 +109,8 @@ class BucController(private val euxService: EuxService,
                         @PathVariable("euxcaseid", required = false) euxcaseid: String? = ""): List<BucAndSedView> {
         logger.debug("1 prøver å dekode til fnr fra aktoerid: $aktoerid")
         val fnr = aktoerIdHelper.hentPinForAktoer(aktoerid)
-        return euxService.getBucAndSedView(euxService.getRinasaker(fnr, fasitEnvName), aktoerid)
+        val rinaSakIderFraDokumentMetadata = safService.hentRinaSakIderFraDokumentMetadata(aktoerid)
+        return euxService.getBucAndSedView(euxService.getRinasaker(fnr, rinaSakIderFraDokumentMetadata, fasitEnvName), aktoerid)
     }
 
     @ApiOperation("Henter ut en json struktur for type og sed menyliste for ui. ny api kall til eux")

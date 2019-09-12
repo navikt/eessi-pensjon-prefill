@@ -3,6 +3,7 @@ package no.nav.eessi.pensjon.services.arkiv
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.whenever
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -93,5 +94,16 @@ class SafServiceTest {
         val dokumentInnholdBase64 = String(Base64.getEncoder().encode(      FileInputStream(File("src/test/resources/OversiktBUCogSED.pdf")).readBytes()))
         println(dokumentInnholdBase64)
 
+    }
+
+    @Test
+    fun `gitt en aktørid med journalposter med EESSI Tilleggsopplysninger når etterspør sakIder fra tilleggsopplysninger så returner liste av sakIder`() {
+        val responseJson = String(Files.readAllBytes(Paths.get("src/test/resources/json/saf/hentMetadataResponse.json")))
+
+        whenever(safGraphQlOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java)))
+                .thenReturn(ResponseEntity(responseJson, HttpStatus.OK))
+        val sakIder = safService.hentRinaSakIderFraDokumentMetadata("1234567891000")
+        assertEquals(sakIder.size, 1)
+        assertEquals(sakIder[0], "1111")
     }
 }
