@@ -29,8 +29,7 @@ import java.util.*
 @RequestMapping("/buc")
 class BucController(private val euxService: EuxService,
                     private val safService: SafService,
-                    private val aktoerIdHelper: AktoerIdHelper,
-                    private val fasitEnvName: String) {
+                    private val aktoerIdHelper: AktoerIdHelper) {
 
     private val logger = LoggerFactory.getLogger(BucController::class.java)
 
@@ -99,18 +98,18 @@ class BucController(private val euxService: EuxService,
         logger.debug("henter rinasaker på valgt aktoerid: $aktoerId")
         val fnr = aktoerIdHelper.hentPinForAktoer(aktoerId)
         val rinaSakIderFraDokumentMetadata = safService.hentRinaSakIderFraDokumentMetadata(aktoerId)
-        return euxService.getRinasaker(fnr, rinaSakIderFraDokumentMetadata, fasitEnvName)
+        return euxService.getRinasaker(fnr, rinaSakIderFraDokumentMetadata)
     }
 
     @ApiOperation("Henter ut en json struktur for type og sed menyliste for ui. ny api kall til eux")
-    @GetMapping("/detaljer/{aktoerid}", "/detaljer/{aktoerid}/{sakid}", "/detaljer/{aktoerId}/{sakId}/{euxcaseid}")
+    @GetMapping("/detaljer/{aktoerid}", "/detaljer/{aktoerid}/{sakid}", "/detaljer/{aktoerid}/{sakid}/{euxcaseid}")
     fun getBucogSedView(@PathVariable("aktoerid", required = true) aktoerid: String,
                         @PathVariable("sakid", required = false) sakid: String? = "",
                         @PathVariable("euxcaseid", required = false) euxcaseid: String? = ""): List<BucAndSedView> {
         logger.debug("1 prøver å dekode til fnr fra aktoerid: $aktoerid")
         val fnr = aktoerIdHelper.hentPinForAktoer(aktoerid)
         val rinaSakIderFraDokumentMetadata = safService.hentRinaSakIderFraDokumentMetadata(aktoerid)
-        return euxService.getBucAndSedView(euxService.getRinasaker(fnr, rinaSakIderFraDokumentMetadata, fasitEnvName), aktoerid)
+        return euxService.getBucAndSedView(euxService.getRinaSakerFilterKunRinaId(fnr, rinaSakIderFraDokumentMetadata), aktoerid)
     }
 
     @ApiOperation("Henter ut en json struktur for type og sed menyliste for ui. ny api kall til eux")

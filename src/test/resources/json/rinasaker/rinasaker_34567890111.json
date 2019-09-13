@@ -95,7 +95,7 @@
     "status": "open"
   },
   {
-    "id": "8877665511",
+    "id": "8877665522",
     "traits": {
       "birthday": "1948-06-28",
       "localPin": "12345678901",
@@ -110,7 +110,7 @@
       "criticality": "1"
     },
     "processDefinitionId": "P_BUC_01",
-    "applicationRoleId": "CP",
+    "applicationRoleId": "CO",
     "status": "open"
   }
 ]

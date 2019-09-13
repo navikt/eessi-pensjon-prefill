@@ -402,7 +402,7 @@ class EuxServiceTest {
                 eq(null),
                 eq(String::class.java))
 
-        val result = service.getRinasaker("12345678900", listOf("123456"), "T8")
+        val result = service.getRinasaker("12345678900", listOf("123456","83637"))
 
         assertEquals(154, orgRinasaker.size)
         assertEquals(orgRinasaker.size + 1, result.size)
@@ -412,7 +412,7 @@ class EuxServiceTest {
     fun callingEuxServiceListOfRinasaker_IOError() {
         whenever(mockEuxrestTemplate.exchange(any<String>(), eq(HttpMethod.GET), eq(null), eq(String::class.java))).thenThrow(ResourceAccessException("I/O error"))
         assertThrows<IOException> {
-            service.getRinasaker("12345678900", listOf("1", "2", "3"), "T8")
+            service.getRinasaker("12345678900", listOf("1", "2", "3"))
         }
     }
 
@@ -421,7 +421,7 @@ class EuxServiceTest {
         val clientError = HttpClientErrorException.create(HttpStatus.UNAUTHORIZED, "Error in Token", HttpHeaders(), "Error in Token".toByteArray(), Charset.defaultCharset())
         whenever(mockEuxrestTemplate.exchange(any<String>(), eq(HttpMethod.GET), eq(null), eq(String::class.java))).thenThrow(clientError)
         assertThrows<HttpClientErrorException> {
-            service.getRinasaker("12345678900", listOf("1", "2", "3"), "T8")
+            service.getRinasaker("12345678900", listOf("1", "2", "3"))
         }
     }
 
@@ -430,66 +430,12 @@ class EuxServiceTest {
         val serverError = HttpServerErrorException.create(HttpStatus.BAD_GATEWAY, "Error in Gate", HttpHeaders(), "Error in Gate".toByteArray(), Charset.defaultCharset())
         whenever(mockEuxrestTemplate.exchange(any<String>(), eq(HttpMethod.GET), eq(null), eq(String::class.java))).thenThrow(serverError)
         assertThrows<HttpServerErrorException> {
-            service.getRinasaker("12345678900", listOf("1", "2", "3"), "T8")
+            service.getRinasaker("12345678900", listOf("1", "2", "3"))
         }
     }
 
     @Test
-    fun callingEuxServiceListOfRinasakerNoFnrFoundBUCInQ2_Ok() {
-        //Kun for CT
-        val filepath = "src/test/resources/json/rinasaker/rinasaker_12345678901.json"
-        val json = String(Files.readAllBytes(Paths.get(filepath)))
-        assertTrue(validateJson(json))
-        val orgRinasaker = mapJsonToAny(json, typeRefs<List<Rinasak>>())
-
-        val response: ResponseEntity<String> = ResponseEntity(json, HttpStatus.OK)
-        whenever(mockEuxrestTemplate.exchange(
-                any<String>(),
-                eq(HttpMethod.GET),
-                eq(null),
-                eq(String::class.java))
-        ).thenReturn(response)
-
-        val filepathEnRinasak = "src/test/resources/json/rinasaker/rinasaker_ensak.json"
-        val jsonEnRinasak = String(Files.readAllBytes(Paths.get(filepathEnRinasak)))
-        assertTrue(validateJson(jsonEnRinasak))
-        val orgEnRinasak = mapJsonToAny(jsonEnRinasak, typeRefs<List<Rinasak>>())
-
-        val responseEnsak: ResponseEntity<String> = ResponseEntity(jsonEnRinasak, HttpStatus.OK)
-
-
-        doReturn(responseEnsak).whenever(mockEuxrestTemplate).exchange(
-                eq("/rinasaker?fødselsnummer=&rinasaksnummer=1&buctype=&status="),
-                eq(HttpMethod.GET),
-                eq(null),
-                eq(String::class.java))
-
-
-        val result = service.getRinasaker("12345678900", listOf("1"), "Q2")
-        assertEquals(154, orgRinasaker.size)
-        assertEquals(orgRinasaker.size + orgEnRinasak.size, result.size)
-    }
-
-    @Test
-    fun callingEuxServiceListOfRinasakerNoFnrCheckT8() {
-        //Kun for CT
-        //service.fasitEnvName = "T8"
-        val filepath = "src/test/resources/json/rinasaker/rinasaker_12345678901.json"
-        val json = String(Files.readAllBytes(Paths.get(filepath)))
-        assertTrue(validateJson(json))
-
-        whenever(mockEuxrestTemplate.exchange(
-                any<String>(),
-                eq(HttpMethod.GET),
-                eq(null),
-                eq(String::class.java))
-        ).thenReturn(ResponseEntity("[]", HttpStatus.OK))
-        val result = service.getRinasaker("12345678900", listOf("1", "2", "3"), "T8")
-        assertEquals(0, result.size)
-    }
-
-    @Test
-    fun callingEuxServiceFormenuUI_AllOK() {
+    fun `Calling eux-rina-api to create BucSedAndView for Frontend all OK excpect valid json`() {
         val rinasakerjson = "src/test/resources/json/rinasaker/rinasaker_34567890111.json"
         val rinasakStr = String(Files.readAllBytes(Paths.get(rinasakerjson)))
         assertTrue(validateJson(rinasakStr))
@@ -499,22 +445,9 @@ class EuxServiceTest {
                     eq("/rinasaker?fødselsnummer=12345678900&rinasaksnummer=&buctype=&status="),
                     eq(HttpMethod.GET), anyOrNull(), eq(String::class.java) )
 
-        val filepathEnRinasak = "src/test/resources/json/rinasaker/rinasaker_ensak.json"
-        val jsonEnRinasak = String(Files.readAllBytes(Paths.get(filepathEnRinasak)))
-        assertTrue(validateJson(jsonEnRinasak))
-        val responseEnsak: ResponseEntity<String> = ResponseEntity(jsonEnRinasak, HttpStatus.OK)
-
-
-        doReturn(responseEnsak).whenever(mockEuxrestTemplate).exchange(
-                eq("/rinasaker?fødselsnummer=&rinasaksnummer=1&buctype=&status="),
-                eq(HttpMethod.GET),
-                eq(null),
-                eq(String::class.java))
-
-        val rinasakresult = service.getRinasaker("12345678900", listOf("1"), "T8")
+        val rinasakresult = service.getRinaSakerFilterKunRinaId("12345678900", listOf("1"))
 
         val orgRinasaker = mapJsonToAny(rinasakStr, typeRefs<List<Rinasak>>())
-        println("rinaSaker size: " + orgRinasaker.size)
 
         val bucjson = "src/test/resources/json/buc/buc-158123_2_v4.1.json"
         val bucStr = String(Files.readAllBytes(Paths.get(bucjson)))
@@ -528,7 +461,7 @@ class EuxServiceTest {
 
         assertNotNull(result)
         assertEquals(6, orgRinasaker.size)
-        assertEquals(7, result.size)
+        assertEquals(3, result.size)
 
         val firstJson = result.first()
         assertEquals("158123", firstJson.caseId)
@@ -539,7 +472,7 @@ class EuxServiceTest {
         assertEquals(18, firstJson.seds.size)
         val json = mapAnyToJson(firstJson)
 
-        println(json)
+        //println(json)
 
         val bucdetaljerpath = "src/test/resources/json/buc/bucdetaljer-158123.json"
         val bucdetaljer = String(Files.readAllBytes(Paths.get(bucdetaljerpath)))

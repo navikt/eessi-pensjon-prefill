@@ -27,6 +27,7 @@ import java.io.File
 import java.io.IOException
 import java.nio.file.Paths
 import java.util.*
+import kotlin.streams.toList
 
 @Service
 @Description("Service class for EuxBasis - eux-cpi-service-controller")
@@ -315,14 +316,10 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
     /**
      * Lister alle rinasaker på valgt fnr eller euxcaseid, eller bucType...
      * fnr er påkrved resten er fritt
-     *
-     * @param fasitEnv kun til CT bruk, fjernes
      * @param fnr fødselsnummer
      * @param rinaSakIder rina sak IDer
      */
-    fun getRinasaker(fnr: String,
-                     rinaSakIder: List<String>,
-                     fasitEnv: String): List<Rinasak> {
+    fun getRinasaker(fnr: String, rinaSakIder: List<String>): List<Rinasak> {
         logger.debug("Henter opp rinasaker på fnr")
 
         // Henter rina saker basert på fnr
@@ -333,28 +330,34 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
         val rinaSakIderUtenFnr = rinaSakIder.minus(rinaSakIderMedFnr)
 
         // Henter rina saker som ikke har fnr
-        val rinaSakerUtenFnr = mutableListOf<Rinasak>()
-        rinaSakIderUtenFnr.forEach { sakId -> rinaSakerUtenFnr.addAll(getRinasaker(null, sakId, null, null)) }
-
-        //Veldig CT denne skal fjernes etter
-        if (rinaSakerMedFnr.isEmpty() && "Q2" == fasitEnv.toUpperCase()) {
-            logger.debug("Ingen rinasaker på fnr funnet, så henter opp rinasaker på buctype")
-            return getRinasakerPaaBuctype()
-        }
+        val rinaSakerUtenFnr = rinaSakIderUtenFnr.stream().map { getRinasaker(null, it, null, null).first() }.distinct().toList()
         return rinaSakerMedFnr.plus(rinaSakerUtenFnr)
+    }
+
+    /**
+     * Lister alle rinasaker på valgt fnr eller euxcaseid, eller bucType...
+     * fnr er påkrved resten er fritt
+     * @param fnr fødselsnummer
+     * @param rinaSakIder rina sak IDer
+     */
+    fun getRinaSakerFilterKunRinaId(fnr: String, rinaSakIder: List<String>): List<String> {
+        logger.debug("Henter opp rinasaker på fnr")
+        // Henter rina saker basert på fnr
+        val rinaSakerMedFnr = getRinasaker(fnr, null, null, null)
+        //filterer kun på ID (euxCaseId)
+        val rinaSakIderMedFnr = hentRinaSakIder(rinaSakerMedFnr)
+        logger.debug("Rinasaker fra rina: $rinaSakIderMedFnr")
+        // Filtrerer vekk saker som allerede er hentet som har fnr
+        return rinaSakIder.plus(rinaSakIderMedFnr).distinct()
     }
 
     /**
      * Returnerer en distinct liste av rinaSakIDer
      *  @param rinaSaker liste av rinasaker fra EUX datamodellen
      */
-    private fun hentRinaSakIder(rinaSaker: List<Rinasak>): List<String> {
-        val rinaSakIder = mutableListOf<String>()
-        rinaSaker.forEach { rinaSakIder.add(it.id!!) }
-        return rinaSakIder.distinct()
-    }
+    private fun hentRinaSakIder(rinaSaker: List<Rinasak>) = rinaSaker.stream().map { it.id!! }.toList()
 
-    //For bruk i CT/Q2. Det vil komme en annen løsning for BUC på innkomende personer som må vises for saksbehandler
+    //TODO utgåår det er ingen gunn å hente alle buc på godkjente pernsjons-buctype?
     fun getRinasakerPaaBuctype(): List<Rinasak> {
         val rinasaker = mutableListOf<Rinasak>()
         initSedOnBuc().keys.forEach { buctype ->
@@ -411,15 +414,11 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
 
     fun getSingleBucAndSedView(euxCaseId: String) = BucAndSedView.from(getBuc(euxCaseId), "")
 
-    fun getBucAndSedView(rinasaker: List<Rinasak>, aktoerid: String): List<BucAndSedView> {
+    fun getBucAndSedView(rinasaker: List<String>, aktoerid: String): List<BucAndSedView> {
         val startTime = System.currentTimeMillis()
-        val list = mutableListOf<BucAndSedView>()
-
-        rinasaker.forEach {
-            val caseId = it.id ?: throw UgyldigCaseIdException("Feil er ikke gyldig caseId fra Rina(Rinasak)")
-            list.add(BucAndSedView.from(getBuc(caseId), aktoerid))
-        }
-
+        val list = rinasaker
+                .map { BucAndSedView.from(getBuc( it ), aktoerid) }
+                .toList()
         logger.debug("9 ferdig returnerer list av BucAndSedView. Antall BUC: ${list.size}")
         val sortlist = list.asSequence().sortedByDescending { it.startDate }.toList()
         logger.debug("10. Sortert listen på startDate nyeste dato først")
@@ -544,7 +543,6 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
     //Legger en eller flere deltakere/institusjonItem inn i Rina. (Itererer for hver en)
     fun addDeltagerInstitutions(euxCaseId: String, mottaker: List<InstitusjonItem>): Boolean {
         logger.debug("Prøver å legge til liste over nye InstitusjonItem til Rina ")
-
         return putBucMottakere(euxCaseId, mottaker)
     }
 
@@ -584,7 +582,6 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
             }
         }
         return null
-
     }
 
     @Throws(EuxServerException::class)

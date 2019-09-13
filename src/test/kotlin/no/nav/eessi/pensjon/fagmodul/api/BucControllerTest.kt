@@ -33,7 +33,7 @@ class BucControllerTest {
 
     @BeforeEach
     fun before() {
-        this.bucController = BucController(mockEuxService, mockSafService, mockAktoerIdHelper, "T")
+        this.bucController = BucController(mockEuxService, mockSafService, mockAktoerIdHelper)
     }
 
 
