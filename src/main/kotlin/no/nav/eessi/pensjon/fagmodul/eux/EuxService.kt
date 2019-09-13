@@ -37,7 +37,6 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
 
     private val logger = LoggerFactory.getLogger(EuxService::class.java)
 
-    // Nye API kall er er fra 23.01.19
     // https://eux-app.nais.preprod.local/swagger-ui.html#/eux-cpi-service-controller/
 
     //Oppretter ny RINA sak(type) og en ny Sed
@@ -88,7 +87,7 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
     fun opprettSvarSedOnBuc(navSED: SED, euxCaseId: String, parentDocumentId: String): BucSedResponse {
         val euxUrlpath = "/buc/{RinaSakId}/sed/{DokuemntId}/svar"
         logger.debug("prøver å kontakte eux-rina-api : $euxUrlpath")
-        return opprettSed(euxUrlpath, navSED.toJsonSkipEmpty(), euxCaseId,  parentDocumentId)
+        return opprettSed(euxUrlpath, navSED.toJsonSkipEmpty(), euxCaseId, "OpprettSvarSed", "Feil ved opprettSvarSed", parentDocumentId)
     }
 
 
@@ -96,13 +95,13 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
     @Throws(EuxGenericServerException::class, SedDokumentIkkeOpprettetException::class)
     fun opprettSedOnBuc(navSED: SED, euxCaseId: String): BucSedResponse {
         val euxUrlpath = "/buc/{RinaSakId}/sed"
-        return opprettSed(euxUrlpath, navSED.toJsonSkipEmpty(), euxCaseId, null)
+        return opprettSed(euxUrlpath, navSED.toJsonSkipEmpty(), euxCaseId, "OpprettSed", "Feil ved opprettSed",null)
     }
 
 
     //ny SED på ekisterende type eller ny svar SED på ekisternede rina
     @Throws(EuxGenericServerException::class, SedDokumentIkkeOpprettetException::class)
-    fun opprettSed(urlPath: String, navSEDjson: String, euxCaseId: String, parentDocumentId: String?): BucSedResponse {
+    fun opprettSed(urlPath: String, navSEDjson: String, euxCaseId: String, metricName: String, errorMessage: String, parentDocumentId: String?): BucSedResponse {
 
         val uriParams = mapOf("RinaSakId" to euxCaseId, "DokuemntId" to parentDocumentId).filter { it.value != null }
         val builder = UriComponentsBuilder.fromUriString(urlPath)
@@ -121,9 +120,9 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
                     httpEntity,
                     String::class.java)
                 }
-                ,euxCaseId
-                ,"opprettSed"
-                ,"Opprett Sed feil, "
+                , euxCaseId
+                , metricName
+                , errorMessage
         )
         return BucSedResponse(euxCaseId, response.body!!)
     }
