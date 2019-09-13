@@ -315,17 +315,43 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
     /**
      * Lister alle rinasaker på valgt fnr eller euxcaseid, eller bucType...
      * fnr er påkrved resten er fritt
+     *
+     * @param fasitEnv kun til CT bruk, fjernes
+     * @param fnr fødselsnummer
+     * @param rinaSakIder rina sak IDer
      */
-    fun getRinasaker(fnr: String, fasitEnv: String): List<Rinasak> {
+    fun getRinasaker(fnr: String,
+                     rinaSakIder: List<String>,
+                     fasitEnv: String): List<Rinasak> {
         logger.debug("Henter opp rinasaker på fnr")
-        val rinasakfnr = getRinasaker(fnr, null, null, null)
+
+        // Henter rina saker basert på fnr
+        val rinaSakerMedFnr = getRinasaker(fnr, null, null, null)
+
+        // Filtrerer vekk saker som allerede er hentet som har fnr
+        val rinaSakIderMedFnr = hentRinaSakIder(rinaSakerMedFnr)
+        val rinaSakIderUtenFnr = rinaSakIder.minus(rinaSakIderMedFnr)
+
+        // Henter rina saker som ikke har fnr
+        val rinaSakerUtenFnr = mutableListOf<Rinasak>()
+        rinaSakIderUtenFnr.forEach { sakId -> rinaSakerUtenFnr.addAll(getRinasaker(null, sakId, null, null)) }
 
         //Veldig CT denne skal fjernes etter
-        if (rinasakfnr.isEmpty() && "Q2" == fasitEnv.toUpperCase()) {
+        if (rinaSakerMedFnr.isEmpty() && "Q2" == fasitEnv.toUpperCase()) {
             logger.debug("Ingen rinasaker på fnr funnet, så henter opp rinasaker på buctype")
             return getRinasakerPaaBuctype()
         }
-        return rinasakfnr
+        return rinaSakerMedFnr.plus(rinaSakerUtenFnr)
+    }
+
+    /**
+     * Returnerer en distinct liste av rinaSakIDer
+     *  @param rinaSaker liste av rinasaker fra EUX datamodellen
+     */
+    private fun hentRinaSakIder(rinaSaker: List<Rinasak>): List<String> {
+        val rinaSakIder = mutableListOf<String>()
+        rinaSaker.forEach { rinaSakIder.add(it.id!!) }
+        return rinaSakIder.distinct()
     }
 
     //For bruk i CT/Q2. Det vil komme en annen løsning for BUC på innkomende personer som må vises for saksbehandler
@@ -341,10 +367,13 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
         return rinasaker.asSequence().sortedByDescending { it.id }.toList()
     }
 
-    fun getRinasaker(fnr: String, euxCaseId: String?, bucType: String?, status: String?): List<Rinasak> {
+    fun getRinasaker(fnr: String?, euxCaseId: String?, bucType: String?, status: String?): List<Rinasak> {
+        if(fnr == null && euxCaseId == null && bucType == null && status == null) {
+            throw java.lang.IllegalArgumentException("Minst et søkekriterie må fylles ut for å få et resultat fra Rinasaker")
+        }
 
         val builder = UriComponentsBuilder.fromPath("/rinasaker")
-                .queryParam("fødselsnummer", fnr)
+                .queryParam("fødselsnummer", fnr ?: "")
                 .queryParam("rinasaksnummer", euxCaseId ?: "")
                 .queryParam("buctype", bucType ?: "")
                 .queryParam("status", status ?: "")
@@ -608,13 +637,6 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
             if (fdato != null) return fdato
         }
         throw IkkeFunnetException("Ingen fødselsdato funnet")
-    }
-
-    /**
-     * Henter alle PIN ( fnr / dnr )
-     */
-    fun hentAllePinISed() {
-
     }
 
     /**

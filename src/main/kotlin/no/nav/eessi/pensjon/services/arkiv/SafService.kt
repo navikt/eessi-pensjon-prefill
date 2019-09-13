@@ -24,9 +24,14 @@ class SafService(private val safGraphQlOidcRestTemplate: RestTemplate,
     private val hentDokumentInnhold_teller_type_feilede = counter(hentDokumentInnhold_teller_navn, "feilede")
     private val mapper = jacksonObjectMapper()
 
+    private final val TILLEGGSOPPLYSNING_RINA_SAK_ID_KEY = "eessi_pensjon_bucid"
+
     private final fun counter(name: String, type: String): Counter {
         return Metrics.counter(name, "type", type)
     }
+
+    // Vi trenger denne konstruktøren for å kunne bruke @Spy med mockito
+    constructor() : this(RestTemplate(), RestTemplate())
 
     fun hentDokumentMetadata(aktoerId: String) : HentMetadataResponse {
          try {
@@ -94,6 +99,23 @@ class SafService(private val safGraphQlOidcRestTemplate: RestTemplate,
     private fun genererQuery(aktoerId: String): String {
         val request = SafRequest(variables = Variables(BrukerId(aktoerId, BrukerIdType.AKTOERID), 10000))
         return request.toJson()
+    }
+
+    /**
+     * Returnerer en distinct liste av rinaSakIDer basert på tilleggsinformasjon i journalposter for en aktør
+     * @param metadata journalpostmetadata fra JOARK datamodellen
+     */
+    fun hentRinaSakIderFraDokumentMetadata(aktoerId: String): List<String> {
+        val metadata = hentDokumentMetadata(aktoerId)
+        val rinaSakIder = mutableListOf<String>()
+        metadata.data.dokumentoversiktBruker.journalposter.forEach { journalpost ->
+            journalpost.tilleggsopplysninger.forEach { tilleggsopplysning ->
+                if(tilleggsopplysning["nokkel"].equals(TILLEGGSOPPLYSNING_RINA_SAK_ID_KEY)) {
+                    rinaSakIder.add(tilleggsopplysning["verdi"].toString())
+                }
+            }
+        }
+        return rinaSakIder.distinct()
     }
 }
 
