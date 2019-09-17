@@ -2,7 +2,9 @@ package no.nav.eessi.pensjon.fagmodul.api
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import io.swagger.annotations.ApiOperation
-import no.nav.eessi.pensjon.fagmodul.eux.*
+import no.nav.eessi.pensjon.fagmodul.eux.BucUtils
+import no.nav.eessi.pensjon.fagmodul.eux.EuxService
+import no.nav.eessi.pensjon.fagmodul.eux.PinOgKrav
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.BucSedResponse
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ShortDocumentItem
 import no.nav.eessi.pensjon.fagmodul.prefill.ApiRequest
@@ -10,8 +12,8 @@ import no.nav.eessi.pensjon.fagmodul.prefill.MangelfulleInndataException
 import no.nav.eessi.pensjon.fagmodul.prefill.PrefillService
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.helper.AktoerIdHelper
-import no.nav.eessi.pensjon.utils.errorBody
 import no.nav.eessi.pensjon.utils.mapAnyToJson
+import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
 import no.nav.security.oidc.api.Protected
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus

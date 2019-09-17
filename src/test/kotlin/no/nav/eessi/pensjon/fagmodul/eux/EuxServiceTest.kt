@@ -6,10 +6,7 @@ import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Rinasak
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.*
 import no.nav.eessi.pensjon.logging.RequestResponseLoggerInterceptor
-import no.nav.eessi.pensjon.utils.mapAnyToJson
-import no.nav.eessi.pensjon.utils.mapJsonToAny
-import no.nav.eessi.pensjon.utils.typeRefs
-import no.nav.eessi.pensjon.utils.validateJson
+import no.nav.eessi.pensjon.utils.*
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
@@ -59,7 +56,7 @@ class EuxServiceTest {
     }
 
     @Test
-    fun opprettUriComponentPath() {
+    fun `Opprett Uri component path`() {
         val path = "/type/{RinaSakId}/sed"
         val uriParams = mapOf("RinaSakId" to "12345")
         val builder = UriComponentsBuilder.fromUriString(path)

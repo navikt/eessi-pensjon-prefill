@@ -13,6 +13,7 @@ import no.nav.eessi.pensjon.fagmodul.sedmodel.Krav
 import no.nav.eessi.pensjon.fagmodul.sedmodel.PinItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.utils.mapJsonToAny
+import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
 import no.nav.eessi.pensjon.utils.typeRef
 import no.nav.eessi.pensjon.utils.typeRefs
 import org.slf4j.LoggerFactory

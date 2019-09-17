@@ -7,10 +7,7 @@ import no.nav.eessi.pensjon.fagmodul.prefill.ApiRequest
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillPerson
 import no.nav.eessi.pensjon.fagmodul.sedmodel.*
-import no.nav.eessi.pensjon.utils.mapAnyToJson
-import no.nav.eessi.pensjon.utils.mapJsonToAny
-import no.nav.eessi.pensjon.utils.typeRefs
-import no.nav.eessi.pensjon.utils.validateJson
+import no.nav.eessi.pensjon.utils.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
@@ -135,7 +132,8 @@ class SedP4000Test {
 
     @Test
     fun `validate and prefill P4000_2 from file`() {
-        val path = Paths.get("src/test/resources/json/nav/other/requestP4000.json")
+
+        val path = Paths.get("src/test/resources/json/nav/other/P4000-from-frontend.json")
         val jsonfile = String(Files.readAllBytes(path))
         assertNotNull(jsonfile)
         validateJson(jsonfile)

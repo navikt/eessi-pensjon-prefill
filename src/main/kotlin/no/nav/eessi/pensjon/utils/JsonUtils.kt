@@ -52,6 +52,9 @@ fun mapAnyToJson(data: Any, nonempty: Boolean = false): String {
     }
 }
 
+fun Any.toJsonSkipEmpty() = mapAnyToJson(this, true)
+fun Any.toJson() = mapAnyToJson(this)
+
 fun validateJson(json: String): Boolean {
     return try {
         jacksonObjectMapper()
