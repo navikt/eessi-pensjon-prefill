@@ -50,7 +50,7 @@ node {
             }
         }
 
-        stage("deploy") {
+        stage("deploy T8") {
             def version = sh(script: 'git describe --abbrev=0', returnStdout: true).trim()
             build([
                     job       : 'nais-deploy-pipeline',
@@ -65,6 +65,23 @@ node {
                     ]
             ])
         }
+
+        stage("deploy Q2") {
+            def version = sh(script: 'git describe --abbrev=0', returnStdout: true).trim()
+            build([
+                    job       : 'nais-deploy-pipeline',
+                    wait      : true,
+                    parameters: [
+                            string(name: 'APP', value: "eessi-fagmodul"),
+                            string(name: 'REPO', value: "navikt/eessi-pensjon-fagmodul"),
+                            string(name: 'VERSION', value: version),
+                            string(name: 'DEPLOY_REF', value: version),
+                            string(name: 'NAMESPACE', value: 'q2'),
+                            string(name: 'DEPLOY_ENV', value: 'q2')
+                    ]
+            ])
+        }
+
        
         github.commitStatus("success", "navikt/eessi-pensjon-fagmodul", appToken, commitHash)
     } catch (err) {
