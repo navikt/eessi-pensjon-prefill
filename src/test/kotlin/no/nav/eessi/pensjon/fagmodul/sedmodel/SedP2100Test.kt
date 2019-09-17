@@ -1,5 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.sedmodel
 
+import no.nav.eessi.pensjon.utils.toJson
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
 

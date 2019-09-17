@@ -1,7 +1,7 @@
 package no.nav.eessi.pensjon.fagmodul.sedmodel
 
-import no.nav.eessi.pensjon.utils.mapAnyToJson
 import no.nav.eessi.pensjon.utils.mapJsonToAny
+import no.nav.eessi.pensjon.utils.toJson
 import no.nav.eessi.pensjon.utils.typeRefs
 
 // SED class main request class to basis
@@ -18,15 +18,6 @@ data class SED(
         //H120
         val horisontal: Horisontal? = null
 ) {
-    fun toJson(): String {
-        return mapAnyToJson(this, false)
-    }
-
-    fun toJsonSkipEmpty(): String {
-        return mapAnyToJson(this, true)
-    }
-
-
     companion object {
         @JvmStatic
         fun fromJson(sed: String): SED {
