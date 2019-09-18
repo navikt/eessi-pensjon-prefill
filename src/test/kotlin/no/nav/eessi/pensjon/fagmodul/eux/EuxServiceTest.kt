@@ -902,4 +902,17 @@ class EuxServiceTest {
         println(url)
         assertEquals("/buc/1234/mottakere?KorrelasjonsId=123456778&mottakere=NO:NAV02&mottakere=SE:SE2", url)
     }
+
+    @Test
+    fun `Tester og evaluerer om require statement blir oppfylt`() {
+        assertThrows<IllegalArgumentException> { dummyRequirement(null, null) }
+        assertTrue( dummyRequirement("grtg", null))
+        assertTrue( dummyRequirement(null, "hhgi"))
+        assertTrue( dummyRequirement("kufghj", "fjhgb"))
+    }
+
+    private fun dummyRequirement(dummyparam1: String?, dummyparam2: String?): Boolean{
+        require(!(dummyparam1 == null && dummyparam2 == null)) { "Minst et søkekriterie må fylles ut for å få et resultat fra Rinasaker" }
+        return true
+    }
 }
