@@ -8,8 +8,7 @@ import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillPerson
 import no.nav.eessi.pensjon.fagmodul.sedmodel.*
 import no.nav.eessi.pensjon.utils.*
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -128,6 +127,24 @@ class SedP4000Test {
         )
         assertNotNull(req)
         JSONAssert.assertEquals(jsonfile, backtojson, false)
+    }
+
+    @Test
+    fun `testing prefill fails and still continues on prefillP4000`() {
+        val items = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
+        val req = ApiRequest(
+                institutions = items,
+                sed = "P4000",
+                sakId = "12231231",
+                euxCaseId = "99191999911",
+                aktoerId = "00000",
+                buc = "P_BUC_01",
+                subjectArea = "Pensjon",
+                payload = "{}"
+        )
+        val data = ApiRequest.buildPrefillDataModelConfirm(req, "12345", null)
+        val sed = pre4000.prefill(data)
+        assertNull(sed.trygdetid)
     }
 
     @Test
