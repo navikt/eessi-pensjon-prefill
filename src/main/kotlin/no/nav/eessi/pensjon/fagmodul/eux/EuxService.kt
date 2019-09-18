@@ -14,7 +14,6 @@ import no.nav.eessi.pensjon.fagmodul.sedmodel.PinItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
-import no.nav.eessi.pensjon.utils.typeRef
 import no.nav.eessi.pensjon.utils.typeRefs
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Description
@@ -22,10 +21,12 @@ import org.springframework.http.*
 import org.springframework.stereotype.Service
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.bind.annotation.ResponseStatus
-import org.springframework.web.client.*
+import org.springframework.web.client.HttpClientErrorException
+import org.springframework.web.client.HttpServerErrorException
+import org.springframework.web.client.RestTemplate
+import org.springframework.web.client.UnknownHttpStatusCodeException
 import org.springframework.web.util.UriComponentsBuilder
 import java.io.File
-import java.io.IOException
 import java.nio.file.Paths
 import java.util.*
 import kotlin.streams.toList
@@ -157,26 +158,21 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
         val builder = UriComponentsBuilder.fromUriString(path).buildAndExpand(uriParams)
 
         logger.info("Prøver å kontakte EUX /${builder.toUriString()}")
-        try {
-            val response = euxOidcRestTemplate.exchange(builder.toUriString(),
-                    HttpMethod.GET,
-                    null,
-                    String::class.java)
-            val jsonsed = response.body
-                    ?: throw SedDokumentIkkeLestException("Feiler ved lesing av navSED, feiler ved uthenting av SED")
-            val navsed = mapJsonToAny(jsonsed, typeRefs<SED>())
-            getCounter("HENTSEDOK").increment()
-            return navsed
-        } catch (rx: SedDokumentIkkeLestException) {
-            logger.error(rx.message)
-            getCounter("HENTSEDFEIL").increment()
-            throw SedDokumentIkkeLestException(rx.message)
-        } catch (ex: Exception) {
-            logger.error(ex.message)
-            getCounter("HENTSEDFEIL").increment()
-            throw EuxServerException("Feiler ved kontakt mot EUX")
-        }
 
+        val response = restTemplateErrorhandler(
+                {
+                    euxOidcRestTemplate.exchange(builder.toUriString(),
+                            HttpMethod.GET,
+                            null,
+                            String::class.java)
+                }
+                , euxCaseId
+                , "SedByDocumentId"
+                , "Feil ved henting av Sed med DocId: $documentId"
+        )
+        val jsonsed = response.body
+                ?: throw SedDokumentIkkeLestException("Feiler ved lesing av navSED, feiler ved uthenting av SED")
+        return mapJsonToAny(jsonsed, typeRefs())
     }
 
     //val benytt denne for å hente ut PESYS sakid (P2000,P2100,P2200,P6000)
@@ -306,20 +302,20 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
                 .queryParam("BuCType", bucType)
                 .queryParam("LandKode", landkode ?: "")
 
-        val httpEntity = HttpEntity("")
-        val response = euxOidcRestTemplate.exchange(builder.toUriString(),
-                HttpMethod.GET,
-                httpEntity,
-                typeRef<List<String>>())
-        return response.body ?: listOf()
+        val responseInstitution = restTemplateErrorhandler(
+                {
+                    euxOidcRestTemplate.exchange(builder.toUriString(),
+                            HttpMethod.GET,
+                            null,
+                            String::class.java)
+                }
+                , ""
+                , "Institusjoner"
+                , "Feil ved innhenting av institusjoner"
+        )
+        return mapJsonToAny(responseInstitution.body!!, typeRefs())
     }
 
-    /**
-     * Lister alle rinasaker på valgt fnr eller euxcaseid, eller bucType...
-     * fnr er påkrved resten er fritt
-     * @param fnr fødselsnummer
-     * @param rinaSakIder rina sak IDer
-     */
     fun getRinasaker(fnr: String, rinaSakIder: List<String>): List<Rinasak> {
         logger.debug("Henter opp rinasaker på fnr")
 
@@ -371,49 +367,39 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
         return rinasaker.asSequence().sortedByDescending { it.id }.toList()
     }
 
+    /**
+     * Lister alle rinasaker på valgt fnr eller euxcaseid, eller bucType...
+     * fnr er påkrved resten er fritt
+     * @param fnr fødselsnummer
+     * @param rinaSakIder rina sak IDer
+     */
     fun getRinasaker(fnr: String?, euxCaseId: String?, bucType: String?, status: String?): List<Rinasak> {
-        if(fnr == null && euxCaseId == null && bucType == null && status == null) {
-            throw java.lang.IllegalArgumentException("Minst et søkekriterie må fylles ut for å få et resultat fra Rinasaker")
-        }
+        require(!(fnr == null && euxCaseId == null && bucType == null && status == null)) { "Minst et søkekriterie må fylles ut for å få et resultat fra Rinasaker" }
 
-        val builder = UriComponentsBuilder.fromPath("/rinasaker")
+        val uriComponent = UriComponentsBuilder.fromPath("/rinasaker")
                 .queryParam("fødselsnummer", fnr ?: "")
                 .queryParam("rinasaksnummer", euxCaseId ?: "")
                 .queryParam("buctype", bucType ?: "")
                 .queryParam("status", status ?: "")
                 .build()
-        try {
-            val response = euxOidcRestTemplate.exchange(
-                    builder.toUriString(),
-                    HttpMethod.GET,
-                    null,
-                    String::class.java)
 
-            return if (response.statusCode.is2xxSuccessful) {
-                logger.debug("parse RinaSaker json ti RinaSak obj")
-                mapJsonToAny(response.body!!, typeRefs())
-            } else {
-                listOf()
-            }
-        } catch (ia: IllegalArgumentException) {
-            logger.error("mapJsonToAny exception ${ia.message}", ia)
-            throw GenericUnprocessableEntity(ia.message!!)
-        } catch (hx: HttpClientErrorException) {
-            logger.warn("Rinasaker ClientException ${hx.message}", hx)
-            throw hx
-        } catch (sx: HttpServerErrorException) {
-            logger.error("Rinasaker ClientException ${sx.message}", sx)
-            throw sx
-        } catch (io: ResourceAccessException) {
-            logger.error("IO error fagmodul  ${io.message}", io)
-            throw IOException(io.message, io)
-        } catch (ex: Exception) {
-            logger.error("Annen uspesefikk feil oppstod mellom fagmodul og eux ${ex.message}", ex)
-            throw ex
-        }
+        val response = restTemplateErrorhandler(
+                {
+                    euxOidcRestTemplate.exchange(uriComponent.toUriString(),
+                            HttpMethod.GET,
+                            null,
+                            String::class.java)
+                }
+                , euxCaseId ?: ""
+                , "hentRinasaker"
+                ,"Feil ved Rinasaker"
+        )
+
+        return mapJsonToAny(response.body!!, typeRefs())
     }
 
     fun getSingleBucAndSedView(euxCaseId: String) = BucAndSedView.from(getBuc(euxCaseId), "")
+
 
     fun getBucAndSedView(rinasaker: List<String>, aktoerid: String): List<BucAndSedView> {
         val startTime = System.currentTimeMillis()
@@ -449,7 +435,6 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
         )
         response.body?.let { return it } ?: throw IkkeFunnetException("Fant ikke noen euxCaseId")
     }
-
 
     fun convertListInstitusjonItemToString(deltakere: List<InstitusjonItem>): String {
         val encodedList = mutableListOf<String>()

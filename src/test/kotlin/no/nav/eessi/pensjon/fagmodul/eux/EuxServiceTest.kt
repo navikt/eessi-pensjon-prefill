@@ -25,7 +25,6 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.client.*
 import org.springframework.web.util.UriComponentsBuilder
-import java.io.IOException
 import java.nio.charset.Charset
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -122,8 +121,10 @@ class EuxServiceTest {
 
     @Test
     fun `Calling EuxService  feiler med kontakt fra eux med kall til getSedOnBucByDocumentId`() {
-        whenever(mockEuxrestTemplate.exchange(any<String>(), eq(HttpMethod.GET), eq(null), eq(String::class.java))).thenThrow(java.lang.RuntimeException::class.java)
-        assertThrows<EuxServerException> {
+        doThrow(createDummyServerRestExecption(HttpStatus.BAD_GATEWAY, "Dummybody"))
+                .whenever(mockEuxrestTemplate).exchange(any<String>(), eq(HttpMethod.GET), eq(null), eq(String::class.java))
+
+        assertThrows<GenericUnprocessableEntity> {
             service.getSedOnBucByDocumentId("12345678900", "P_BUC_99")
         }
     }
@@ -407,26 +408,28 @@ class EuxServiceTest {
 
     @Test
     fun callingEuxServiceListOfRinasaker_IOError() {
-        whenever(mockEuxrestTemplate.exchange(any<String>(), eq(HttpMethod.GET), eq(null), eq(String::class.java))).thenThrow(ResourceAccessException("I/O error"))
-        assertThrows<IOException> {
+        doThrow(createDummyServerRestExecption(HttpStatus.INTERNAL_SERVER_ERROR,"Serverfeil, I/O-feil"))
+                .whenever(mockEuxrestTemplate).exchange(any<String>(), eq(HttpMethod.GET), eq(null), eq(String::class.java))
+        assertThrows<EuxRinaServerException> {
             service.getRinasaker("12345678900", listOf("1", "2", "3"))
         }
     }
 
     @Test
     fun callingEuxServiceListOfRinasaker_ClientError() {
-        val clientError = HttpClientErrorException.create(HttpStatus.UNAUTHORIZED, "Error in Token", HttpHeaders(), "Error in Token".toByteArray(), Charset.defaultCharset())
-        whenever(mockEuxrestTemplate.exchange(any<String>(), eq(HttpMethod.GET), eq(null), eq(String::class.java))).thenThrow(clientError)
-        assertThrows<HttpClientErrorException> {
+        doThrow(createDummyClientRestExecption(HttpStatus.UNAUTHORIZED,"UNAUTHORIZED"))
+                .whenever(mockEuxrestTemplate).exchange(any<String>(), eq(HttpMethod.GET), eq(null), eq(String::class.java))
+                        assertThrows<RinaIkkeAutorisertBrukerException> {
             service.getRinasaker("12345678900", listOf("1", "2", "3"))
         }
     }
 
     @Test
     fun callingEuxServiceListOfRinasaker_ServerError() {
-        val serverError = HttpServerErrorException.create(HttpStatus.BAD_GATEWAY, "Error in Gate", HttpHeaders(), "Error in Gate".toByteArray(), Charset.defaultCharset())
-        whenever(mockEuxrestTemplate.exchange(any<String>(), eq(HttpMethod.GET), eq(null), eq(String::class.java))).thenThrow(serverError)
-        assertThrows<HttpServerErrorException> {
+
+        doThrow(createDummyServerRestExecption(HttpStatus.BAD_GATEWAY, "Dummybody"))
+                .whenever(mockEuxrestTemplate).exchange(any<String>(), eq(HttpMethod.GET), eq(null), eq(String::class.java))
+        assertThrows<GenericUnprocessableEntity> {
             service.getRinasaker("12345678900", listOf("1", "2", "3"))
         }
     }
