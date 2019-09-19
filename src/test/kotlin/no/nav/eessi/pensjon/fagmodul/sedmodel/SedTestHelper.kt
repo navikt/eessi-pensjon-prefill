@@ -15,7 +15,3 @@ fun getTestJsonFile(filename: String): String {
 fun getSEDfromTestfile(json: String): SED {
     return SED.fromJson(json)
 }
-
-fun getHSEDfromTestfile(json: String): HSED {
-    return HSED.fromJson(json)
-}

@@ -66,6 +66,9 @@ class PrefillFactory(private val prefillNav: PrefillNav,
             SEDType.X005 -> {
                 PrefillX005(prefillNav)
             }
+            SEDType.H020, SEDType.H021 -> {
+                PrefillH02X(prefillPerson)
+            }
             else -> {
                 //P5000, P8000, P7000, P8000  - P9000, P14000 og P10000 og andre
                 PrefillDefaultSED(prefillPerson)
