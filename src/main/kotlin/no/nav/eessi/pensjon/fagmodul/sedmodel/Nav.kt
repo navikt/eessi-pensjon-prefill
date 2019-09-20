@@ -214,6 +214,7 @@ data class EmailItem(
 
 data class Person(
         val pin: List<PinItem>? = null,
+        var pinland: PinLandItem? = null, //for H020 og H021
         val pinannen: PinItem? = null, //kan fjernes hvis ikke i bruk
         val statsborgerskap: List<StatsborgerskapItem>? = null, //nasjonalitet
         val etternavn: String? = null,
@@ -235,6 +236,11 @@ data class Person(
         val nyttEkteskapPartnerskapEtterForsikredeDod: NyttEkteskapPartnerskap? = null, //5.3.4 P2100
         //noe enkel måte å få denne til å forbli val?
         var rolle: String? = null  //3.1 i P10000
+)
+
+data class PinLandItem(
+        val oppholdsland: String? = null,
+        val kompetenteuland: String? = null
 )
 
 data class DodsDetalj(

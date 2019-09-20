@@ -1,5 +1,7 @@
 package no.nav.eessi.pensjon.fagmodul.sedmodel
 
+import no.nav.eessi.pensjon.utils.toJson
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
 
@@ -7,9 +9,14 @@ class SedH020Test {
 
     @Test
     fun `compare SED H020 from json datafile`() {
-        val h020json = getTestJsonFile("horisontal/H020-NAV.json")
-        val h020sed = getHSEDfromTestfile(h020json)
+        val h020json = getTestJsonFile("horisontal/H020-A-NAV.json")
+        val h020sed = getSEDfromTestfile(h020json)
 
-        JSONAssert.assertEquals(h020json, h020sed.toString(), false)
+        assertNotNull(h020sed.nav?.bruker?.person?.pinland)
+        assertEquals("01223123123", h020sed.nav?.bruker?.person?.pinland?.kompetenteuland)
+
+        JSONAssert.assertEquals(h020json, h020sed.toJson(), false)
     }
+
+
 }
