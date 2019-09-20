@@ -113,7 +113,7 @@ class SedController(private val euxService: EuxService,
     @ApiOperation("legge til SED på et eksisterende Rina document. kjører preutfylling, (ingen deltaker legges til) ny api kall til eux")
     @PostMapping("/addSed")
     fun addDocument(@RequestBody request: ApiRequest): ShortDocumentItem {
-        val dataModel = ApiRequest.buildPrefillDataModelOnExisting(request, aktoerIdHelper.hentPinForAktoer(request.aktoerId),  getAvdodAktoerId(request))
+        val dataModel = ApiRequest.buildPrefillDataModelOnExisting(request, aktoerIdHelper.hentPinForAktoer(request.aktoerId), getAvdodAktoerId(request))
         val data = prefillService.prefillSed(dataModel)
         logger.info("kaller add med request: $request")
         val docresult = euxService.opprettSedOnBuc(data.sed, data.euxCaseID)
@@ -121,9 +121,9 @@ class SedController(private val euxService: EuxService,
     }
 
     @ApiOperation("Oppretter en Sed som svar på en forespørsel-Sed")
-    @RequestMapping("/replysed/{parentid}", method = [ RequestMethod.POST ])
-    fun addDocumentToParent(@RequestBody(required = true) request: ApiRequest, @PathVariable("parentid", required = true) parentId: String  ): ShortDocumentItem {
-        val dataModel = ApiRequest.buildPrefillDataModelOnExisting(request, aktoerIdHelper.hentPinForAktoer(request.aktoerId),  getAvdodAktoerId(request))
+    @RequestMapping("/replysed/{parentid}", method = [RequestMethod.POST])
+    fun addDocumentToParent(@RequestBody(required = true) request: ApiRequest, @PathVariable("parentid", required = true) parentId: String): ShortDocumentItem {
+        val dataModel = ApiRequest.buildPrefillDataModelOnExisting(request, aktoerIdHelper.hentPinForAktoer(request.aktoerId), getAvdodAktoerId(request))
         val data = prefillService.prefillSed(dataModel)
         logger.debug("Prøver å sende SED:${dataModel.getSEDid()} inn på buc: ${dataModel.euxCaseID}")
         val docresult = euxService.opprettSvarSedOnBuc(data.sed, data.euxCaseID, parentId)
@@ -176,7 +176,15 @@ class SedController(private val euxService: EuxService,
         val resultListe = BucUtils(euxService.getBuc(euxCaseId)).getAksjonListAsString()
         if (resultListe.isEmpty()) return ResponseEntity.ok().body(mapAnyToJson(EuxService.getAvailableSedOnBuc(bucType)))
 
-        return ResponseEntity.ok().body(mapAnyToJson(resultListe.filterPensionSedAndSort()))
+        return ResponseEntity.ok().body(mapAnyToJson(sortAndFilterSeds(resultListe)))
+    }
+
+    fun sortAndFilterSeds(list: List<String>): List<String> {
+        return list.filter { it.startsWith("P")
+                    .or(it.startsWith("H12"))
+                    .or(it.startsWith("H07"))
+                    .or(it.startsWith("H02")) }
+                .filterNot { it.startsWith("P3000") }.sorted()
     }
 
     @ApiOperation("Henter ytelsetype fra P15000 på valgt Buc og Documentid")
@@ -192,7 +200,8 @@ class SedController(private val euxService: EuxService,
     //Hjelpe funksjon for å validere og hente aktoerid for evt. avdodfnr fra UI (P2100)
     fun getAvdodAktoerId(request: ApiRequest): String? {
         return if ((request.buc ?: throw MangelfulleInndataException("Mangler Buc")) == "P_BUC_02")
-            aktoerIdHelper.hentAktoerForPin ((request.avdodfnr ?: throw MangelfulleInndataException("Mangler fnr for avdød")))
+            aktoerIdHelper.hentAktoerForPin((request.avdodfnr
+                    ?: throw MangelfulleInndataException("Mangler fnr for avdød")))
         else null
     }
 
@@ -211,6 +220,4 @@ class SedController(private val euxService: EuxService,
 
 @ResponseStatus(value = HttpStatus.BAD_REQUEST)
 class ManglendeInstitusjonException(message: String) : IllegalArgumentException(message)
-
-internal fun List<String>.filterPensionSedAndSort() = this.filter { it.startsWith("P").or( it.startsWith("H12").or( it.startsWith("H07"))) }.filterNot { it.startsWith("P3000") }.sorted()
 

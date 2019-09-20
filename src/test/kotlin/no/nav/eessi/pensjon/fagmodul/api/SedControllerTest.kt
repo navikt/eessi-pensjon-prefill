@@ -190,35 +190,33 @@ class SedControllerTest {
 
     @Test
     fun `Test liste med SED kun PensjonSED skal returneres`() {
-        val list  = listOf("X005","P2000","P4000","H02","X06","P9000", "")
+        val list  = listOf("X005","P2000","P4000","H021","X06","P9000", "")
 
-        val result = list.filterPensionSedAndSort()
+        val result = sedController.sortAndFilterSeds(list)
 
-        assertEquals(3, result.size)
-        assertEquals("[P2000, P4000, P9000]", result.toString())
+        assertEquals(4, result.size)
+        assertEquals("[H021, P2000, P4000, P9000]", result.toString())
     }
 
     @Test
     fun `Test liste med SED som skal returneres`() {
-        val list  = listOf("X005","P2000","P4000","H02","H070", "X06", "H121","P9000", "")
+        val list  = listOf("X005","P2000","P4000","H020","H070", "X06", "H121","P9000", "XYZ")
 
-        val result = list.filterPensionSedAndSort()
+        val result = sedController.sortAndFilterSeds(list)
 
-        println(result.toString())
-
-        assertEquals(5, result.size)
-        assertEquals("[H070, H121, P2000, P4000, P9000]", result.toString())
+        assertEquals(6, result.size)
+        assertEquals("[H020, H070, H121, P2000, P4000, P9000]", result.toString())
     }
 
 
     @Test
     fun `Test av liste med SEDer der kun PensjonSEDer skal returneres`() {
-        val list  = listOf("X005","P2000","P4000","H02","X06","P9000", "")
+        val list  = listOf("X005","P2000","P4000","H020","X06","P9000", "")
 
-        val result = list.filterPensionSedAndSort()
+        val result = sedController.sortAndFilterSeds(list)
 
-        assertEquals(3, result.size)
-        assertEquals("[ \"P2000\", \"P4000\", \"P9000\" ]", mapAnyToJson(result))
+        assertEquals(4, result.size)
+        assertEquals("[ \"H020\", \"P2000\", \"P4000\", \"P9000\" ]", mapAnyToJson(result))
     }
 
     @Test
@@ -556,28 +554,24 @@ class SedControllerTest {
         }
     }
 
-/*    @Test
-    fun gittAtfDatoIKKEBlirFunnetForEnGittBucMedRinanrSaaReturnererViFdatoMedMeldingOgStatuskodeOK() {
-
-        val rinanr = "12345"
-        val buctype = null
-        val sedPath = "src/test/resources/json/nav/P2000_NAV_SED_v4_1.json"
-
-        val sedJson = String(Files.readAllBytes(Paths.get(sedPath)))
-
-        val map = jacksonObjectMapper()
-        val sed = map.readValue(sedJson, SED::class.java)
-
-        assertTrue(validateJson(sedJson))
-
-
-        doReturn(null).whenever(mockEuxService).getFDatoFromSed(rinanr, buctype)
-
-        var responseEntity = sedController.getFodselsdato(rinanr,buctype)
-
-
-        assertEquals(responseEntity.statusCode, HttpStatus.OK)
-        assertEquals(responseEntity.body, "1989-01-28")
-
-    }*/
+//    @Test
+//    fun testFilterOnKeyvaluesOnwantedSed ()  {
+//
+//        val rinaSeds = listOf("P2100","H120","H070","H021","X005","P3000_NO")
+//        assertEquals(4, sedController.sortAndFilterSeds(rinaSeds).size)
+//
+//
+//        val riktigListe = rinaSeds.map { wsed -> listOfWantedKeys.filter { wsed.startsWith(it) } }
+//        println(riktigListe)
+//
+//    }
+//
+//    fun dummySort(list: List<String>): List<String> {
+//        return list.filter {
+//            it.startsWith("P" )
+//                    .or(it.startsWith("H12")
+//                    .or(it.startsWith("H07")
+//                    .or(it.startsWith("H02"))))
+//        }.filterNot { it.startsWith("P3000") }.sorted()
+//    }
 }

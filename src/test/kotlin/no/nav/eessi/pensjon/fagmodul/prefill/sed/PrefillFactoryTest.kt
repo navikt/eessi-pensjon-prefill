@@ -1,25 +1,16 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed
 
-import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.prefill.ApiRequest
 import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjon
-import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjonMother
-import no.nav.eessi.pensjon.fagmodul.prefill.model.Prefill
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonHjelper
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.PrefillP2000
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.PrefillP2100
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.PrefillP2200
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.PrefillP6000
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillPersonDataFromTPS
-import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
-import org.aspectj.lang.annotation.Before
 import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.MethodSource
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
 
@@ -46,72 +37,33 @@ class PrefillFactoryTest {
             prefillFactory = PrefillFactory(prefillNav, dataFromTPS, eessiInformasjon, dataFromPEN)
     }
 
-    @Test
-    fun getH020() {
-        val prefill = prefillFactory.createPrefillClass(getMockDataModel("H020"))
-        Assertions.assertEquals("PrefillH02X", prefill::class.java.simpleName)
+    companion object {
+        @JvmStatic
+
+        fun `collection data`(): Collection<Array<Any>> {
+            return listOf(
+                    arrayOf(1, "P2000", "PrefillP2000"),
+                    arrayOf(2, "H020", "PrefillH02X"),
+                    arrayOf(2, "H021", "PrefillH02X"),
+                    arrayOf(2, "X005", "PrefillX005"),
+                    arrayOf(2, "P2000", "PrefillP2000"),
+                    arrayOf(2, "P2200", "PrefillP2200"),
+                    arrayOf(2, "P2100", "PrefillP2100"),
+                    arrayOf(2, "P5000", "PrefillDefaultSED"),
+                    arrayOf(2, "P4000", "PrefillP4000"),
+                    arrayOf(2, "P8000", "PrefillP8000"),
+                    arrayOf(2, "P7000", "PrefillP7000"),
+                    arrayOf(2, "P10000", "PrefillP10000")
+            )
+        }
     }
 
-    @Test
-    fun getH021() {
-        val prefill = prefillFactory.createPrefillClass(getMockDataModel("H021"))
-        Assertions.assertEquals("PrefillH02X", prefill::class.java.simpleName)
+    @ParameterizedTest
+    @MethodSource("collection data")
+    fun `create mock and validate prefill class` (index: Int, sedtype: String, prefillClassName: String) {
+        val prefill = prefillFactory.createPrefillClass(getMockDataModel(sedtype))
+        Assertions.assertEquals(prefillClassName, prefill::class.java.simpleName)
     }
-
-    @Test
-    fun getX005() {
-        val prefill = prefillFactory.createPrefillClass(getMockDataModel("X005"))
-        Assertions.assertEquals("PrefillX005", prefill::class.java.simpleName)
-    }
-
-    @Test
-    fun getP2000() {
-        val prefill = prefillFactory.createPrefillClass(getMockDataModel("P2000"))
-        Assertions.assertEquals("PrefillP2000", prefill::class.java.simpleName)
-    }
-
-    @Test
-    fun getP2200() {
-        val prefill = prefillFactory.createPrefillClass(getMockDataModel("P2200"))
-        Assertions.assertEquals("PrefillP2200", prefill::class.java.simpleName)
-    }
-
-    @Test
-    fun getP2100() {
-        val prefill = prefillFactory.createPrefillClass(getMockDataModel("P2100"))
-        Assertions.assertEquals("PrefillP2100", prefill::class.java.simpleName)
-    }
-
-    @Test
-    fun getP5000() {
-        val prefill = prefillFactory.createPrefillClass(getMockDataModel("P5000"))
-        Assertions.assertEquals("PrefillDefaultSED", prefill::class.java.simpleName)
-    }
-
-    @Test
-    fun getP4000() {
-        val prefill = prefillFactory.createPrefillClass(getMockDataModel("P4000"))
-        Assertions.assertEquals("PrefillP4000", prefill::class.java.simpleName)
-    }
-
-    @Test
-    fun getP8000() {
-        val prefill = prefillFactory.createPrefillClass(getMockDataModel("P8000"))
-        Assertions.assertEquals("PrefillP8000", prefill::class.java.simpleName)
-    }
-
-    @Test
-    fun getP7000() {
-        val prefill = prefillFactory.createPrefillClass(getMockDataModel("P7000"))
-        Assertions.assertEquals("PrefillP7000", prefill::class.java.simpleName)
-    }
-
-    @Test
-    fun getP10000() {
-        val prefill = prefillFactory.createPrefillClass(getMockDataModel("P10000"))
-        Assertions.assertEquals("PrefillP10000", prefill::class.java.simpleName)
-    }
-
 
     private fun getMockDataModel(sedType: String): PrefillDataModel {
         val req = ApiRequest(
