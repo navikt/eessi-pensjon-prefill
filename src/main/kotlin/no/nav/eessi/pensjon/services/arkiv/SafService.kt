@@ -34,7 +34,8 @@ class SafService(private val safGraphQlOidcRestTemplate: RestTemplate,
     constructor() : this(RestTemplate(), RestTemplate())
 
     fun hentDokumentMetadata(aktoerId: String) : HentMetadataResponse {
-         try {
+        logger.info("Henter dokument metadata for aktørid: $aktoerId")
+        try {
              val headers = HttpHeaders()
              headers.contentType = MediaType.APPLICATION_JSON
              val httpEntity = HttpEntity(genererQuery(aktoerId), headers)
