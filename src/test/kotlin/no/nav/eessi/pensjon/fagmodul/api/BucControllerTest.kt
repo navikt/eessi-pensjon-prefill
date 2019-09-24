@@ -4,6 +4,7 @@ import com.nhaarman.mockitokotlin2.*
 import org.mockito.Mock
 import no.nav.eessi.pensjon.fagmodul.eux.EuxService
 import no.nav.eessi.pensjon.helper.AktoerIdHelper
+import no.nav.eessi.pensjon.logging.AuditLogger
 import no.nav.eessi.pensjon.services.arkiv.HentdokumentInnholdResponse
 import no.nav.eessi.pensjon.services.arkiv.SafService
 import no.nav.eessi.pensjon.services.arkiv.VariantFormat
@@ -22,18 +23,20 @@ class BucControllerTest {
     @Spy
     lateinit var mockEuxService: EuxService
 
+    @Spy
+    lateinit var auditLogger: AuditLogger
+
     @Mock
     lateinit var mockSafService: SafService
 
     @Mock
     lateinit var mockAktoerIdHelper: AktoerIdHelper
 
-
     private lateinit var bucController: BucController
 
     @BeforeEach
     fun before() {
-        this.bucController = BucController(mockEuxService, mockSafService, mockAktoerIdHelper)
+        this.bucController = BucController(mockEuxService, mockSafService, mockAktoerIdHelper, auditLogger)
     }
 
 

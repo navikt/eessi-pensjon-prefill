@@ -1,6 +1,9 @@
 package no.nav.eessi.pensjon.api.person
 
+import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.doNothing
 import com.nhaarman.mockitokotlin2.whenever
+import no.nav.eessi.pensjon.logging.AuditLogger
 import no.nav.eessi.pensjon.services.aktoerregister.AktoerregisterService
 import no.nav.eessi.pensjon.services.personv3.PersonV3IkkeFunnetException
 import no.nav.eessi.pensjon.services.personv3.PersonV3Service
@@ -8,6 +11,7 @@ import no.nav.tjeneste.virksomhet.person.v3.informasjon.Person
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Personnavn
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonResponse
 import org.junit.jupiter.api.Test
+import org.mockito.Spy
 import org.skyscreamer.jsonassert.JSONAssert
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
@@ -35,8 +39,13 @@ class PersonControllerTest {
     @MockBean
     lateinit var mockPersonV3Service: PersonV3Service
 
+    @MockBean
+    lateinit var auditLogger: AuditLogger
+
     @Test
     fun `getPerson should return Person as json`() {
+
+        doNothing().whenever(auditLogger).log(any(), any())
         whenever(mockAktoerregisterService.hentGjeldendeNorskIdentForAktorId(anAktorId)).thenReturn(anFnr)
         whenever(mockPersonV3Service.hentPerson(anFnr)).thenReturn(hentPersonResponse)
 
@@ -50,6 +59,7 @@ class PersonControllerTest {
 
     @Test
     fun `getNameOnly should return names as json`() {
+        doNothing().whenever(auditLogger).log(any(), any())
         whenever(mockAktoerregisterService.hentGjeldendeNorskIdentForAktorId(anAktorId)).thenReturn(anFnr)
         whenever(mockPersonV3Service.hentPerson(anFnr)).thenReturn(hentPersonResponse)
 
@@ -63,6 +73,7 @@ class PersonControllerTest {
 
     @Test
     fun `should return NOT_FOUND hvis personen ikke finnes i TPS`() {
+        doNothing().whenever(auditLogger).log(any(), any())
         whenever(mockAktoerregisterService.hentGjeldendeNorskIdentForAktorId(anAktorId)).thenReturn(anFnr)
         whenever(mockPersonV3Service.hentPerson(anFnr)).thenThrow(PersonV3IkkeFunnetException("EXPECTED"))
 

@@ -28,6 +28,16 @@ class OidcAuthorizationHeaderInterceptor(private val oidcRequestContextHolder: O
         return execution.execute(request, body)
     }
 
+    fun getTokenContext(tokenKey: String): TokenContext {
+        val context = oidcRequestContextHolder.oidcValidationContext
+        if (context.issuers.isEmpty()) throw RuntimeException("No issuer found in context")
+        val tokenkeys = context.issuers
+        if (tokenkeys.contains(tokenKey)) {
+            return context.getToken(tokenKey)
+        }
+        throw RuntimeException("No issuer found in context")
+    }
+
     fun getIdTokenFromIssuer(oidcRequestContextHolder: OIDCRequestContextHolder): String {
         return getTokenContextFromIssuer(oidcRequestContextHolder).idToken
     }

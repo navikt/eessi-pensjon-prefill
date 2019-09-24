@@ -1,6 +1,7 @@
 package no.nav.eessi.pensjon.api.person
 
 import io.swagger.annotations.ApiOperation
+import no.nav.eessi.pensjon.logging.AuditLogger
 import no.nav.eessi.pensjon.services.aktoerregister.AktoerregisterService
 import no.nav.eessi.pensjon.services.personv3.PersonV3Service
 import no.nav.eessi.pensjon.metrics.counter
@@ -25,27 +26,32 @@ import org.springframework.web.bind.annotation.*
 @Protected
 @RestController
 class PersonController(private val aktoerregisterService: AktoerregisterService,
-                       private val personService: PersonV3Service) {
+                       private val personService: PersonV3Service,
+                       private val auditLogger: AuditLogger) {
 
     private val logger = LoggerFactory.getLogger(PersonController::class.java)
 
     @ApiOperation("henter ut personinformasjon for en aktørId")
     @GetMapping("/person/{aktoerid}", produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun getPerson(@PathVariable("aktoerid", required = true) aktoerid: String) =
-            hentPerson(aktoerid)
+    fun getPerson(@PathVariable("aktoerid", required = true) aktoerid: String): ResponseEntity<Any> {
+            auditLogger.log("/person/{$aktoerid}", "getPerson")
+            return hentPerson(aktoerid)
+    }
 
     @ApiOperation("henter ut navn for en aktørId")
     @GetMapping("/personinfo/{aktoerid}", produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun getNameOnly(@PathVariable("aktoerid", required = true) aktoerid: String)=
-            hentPerson(aktoerid) {
-                Personinformasjon(it.person.personnavn.sammensattNavn,
-                        it.person.personnavn.fornavn,
-                        it.person.personnavn.mellomnavn,
-                        it.person.personnavn.etternavn)
-            }
+    fun getNameOnly(@PathVariable("aktoerid", required = true) aktoerid: String): ResponseEntity<Any> {
+        auditLogger.log("/personinfo/{$aktoerid}", "getNameOnly")
+        return hentPerson(aktoerid) {
+            Personinformasjon(it.person.personnavn.sammensattNavn,
+            it.person.personnavn.fornavn,
+            it.person.personnavn.mellomnavn,
+            it.person.personnavn.etternavn)
+        }
+    }
 
-    private fun hentPerson(aktoerid: String, transform: (HentPersonResponse) -> Any = { it }) =
-            try {
+    private fun hentPerson(aktoerid: String, transform: (HentPersonResponse) -> Any = { it }): ResponseEntity<Any> {
+            return try {
                 logger.info("Henter personinformasjon for aktørId")
                 val norskIdent: String = aktoerregisterService.hentGjeldendeNorskIdentForAktorId(aktoerid)
                 val result = personService.hentPerson(norskIdent)
@@ -69,7 +75,7 @@ class PersonController(private val aktoerregisterService: AktoerregisterService,
                 counter("eessipensjon_fagmodul.personinfo", "feilede").increment()
                 ResponseEntity.status(HttpStatus.NOT_FOUND).body(PersonV3IkkeFunnetException::class.simpleName)
             }
-
+    }
     /**
      * Personinformasjon fra TPS ( PersonV3 )
      */
