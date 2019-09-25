@@ -39,7 +39,7 @@ class SedController(private val euxService: EuxService,
     @JsonInclude(JsonInclude.Include.NON_NULL)
     fun confirmDocument(@RequestBody request: ApiRequest): SED {
         val dataModel = ApiRequest.buildPrefillDataModelConfirm(request, aktoerIdHelper.hentPinForAktoer(request.aktoerId), getAvdodAktoerId(request))
-        auditlogger.log("/sed/preview","confirmDocument", request)
+        auditlogger.log("/sed/preview","confirmDocument", request.toAudit())
         return prefillService.prefillSed(dataModel).sed
     }
 
@@ -47,7 +47,7 @@ class SedController(private val euxService: EuxService,
     @PostMapping("/previewNONempty", consumes = ["application/json"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun confirmDocumentWithoutnull(@RequestBody request: ApiRequest): String {
         val dataModel = ApiRequest.buildPrefillDataModelConfirm(request, aktoerIdHelper.hentPinForAktoer(request.aktoerId), getAvdodAktoerId(request))
-        auditlogger.log("/previewNONempty","confirmDocumentWithoutnull", request)
+        auditlogger.log("/previewNONempty","confirmDocumentWithoutnull", request.toAudit())
         return prefillService.prefillSed(dataModel).sed.toJsonSkipEmpty()
     }
 
@@ -90,7 +90,7 @@ class SedController(private val euxService: EuxService,
     @ApiOperation("legge til Deltaker(e) og SED på et eksisterende Rina document. kjører preutfylling, ny api kall til eux")
     @PostMapping("/add")
     fun addInstutionAndDocument(@RequestBody request: ApiRequest): ShortDocumentItem {
-        auditlogger.log("/sed/add/","addInstutionAndDocument", request)
+        auditlogger.log("/sed/add/","addInstutionAndDocument", request.toAudit())
 
         val dataModel = ApiRequest.buildPrefillDataModelOnExisting(request, aktoerIdHelper.hentPinForAktoer(request.aktoerId), getAvdodAktoerId(request))
 
@@ -121,7 +121,7 @@ class SedController(private val euxService: EuxService,
     @ApiOperation("Oppretter en Sed som svar på en forespørsel-Sed")
     @RequestMapping("/replysed/{parentid}", method = [ RequestMethod.POST ])
     fun addDocumentToParent(@RequestBody(required = true) request: ApiRequest, @PathVariable("parentid", required = true) parentId: String  ): ShortDocumentItem {
-        auditlogger.log("/sed/replysed/{$parentId}","addDocumentToParent", request)
+        auditlogger.log("/sed/replysed/{$parentId}","addDocumentToParent", request.toAudit())
 
         val dataModel = ApiRequest.buildPrefillDataModelOnExisting(request, aktoerIdHelper.hentPinForAktoer(request.aktoerId),  getAvdodAktoerId(request))
         val data = prefillService.prefillSed(dataModel)
@@ -137,7 +137,7 @@ class SedController(private val euxService: EuxService,
     fun addDocument(@RequestBody request: ApiRequest): ShortDocumentItem {
         val dataModel = ApiRequest.buildPrefillDataModelOnExisting(request, aktoerIdHelper.hentPinForAktoer(request.aktoerId),  getAvdodAktoerId(request))
         val data = prefillService.prefillSed(dataModel)
-        auditlogger.log("/sed/addSed","addDocument", request)
+        auditlogger.log("/sed/addSed","addDocument", request.toAudit())
         logger.info("kaller add med request: $request")
         val docresult = euxService.opprettSedOnBuc(data.sed, data.euxCaseID)
         return BucUtils(euxService.getBuc(docresult.caseId)).findDocument(docresult.documentId)
@@ -146,7 +146,7 @@ class SedController(private val euxService: EuxService,
     @ApiOperation("Utgår?")
     @PostMapping("/buc/create")
     fun createDocument(@RequestBody request: ApiRequest): BucSedResponse {
-        auditlogger.log("/sed/buc/create","createDocument", request)
+        auditlogger.log("/sed/buc/create","createDocument", request.toAudit())
         logger.info("kaller type/create med request: $request")
 
         val dataModel = ApiRequest.buildPrefillDataModelOnNew(request, aktoerIdHelper.hentPinForAktoer(request.aktoerId))

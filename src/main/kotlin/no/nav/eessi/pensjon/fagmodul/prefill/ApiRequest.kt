@@ -5,6 +5,7 @@ import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
+import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.ResponseStatus
@@ -28,6 +29,17 @@ data class ApiRequest(
         val skipSEDkey: List<String>? = null,
         val mockSED: Boolean? = null
 ) {
+    fun toAudit() : String {
+        return ApiRequest(
+                sakId = sakId,
+                vedtakId = vedtakId,
+                aktoerId = aktoerId,
+                avdodfnr = avdodfnr,
+                buc = buc,
+                sed = sed,
+                euxCaseId = euxCaseId
+        ).toJsonSkipEmpty()
+     }
 
     companion object {
         private val logger = LoggerFactory.getLogger(ApiRequest::class.java)
@@ -126,6 +138,7 @@ data class ApiRequest(
         }
     }
 }
+
 
 @ResponseStatus(value = HttpStatus.BAD_REQUEST)
 class MangelfulleInndataException(message: String) : IllegalArgumentException(message)

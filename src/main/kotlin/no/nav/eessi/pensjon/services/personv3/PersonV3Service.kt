@@ -68,7 +68,7 @@ class PersonV3Service(private val service: PersonV3, private val auditLogger: Au
             throw PersonV3IkkeFunnetException(personIkkefunnet.message)
         } catch (personSikkerhetsbegrensning: HentPersonSikkerhetsbegrensning) {
             //brukerident {} benyttet tjenesten {}  funksjon {}
-            auditLogger.log("Brukerident {} benyttet {} medfører tilgangbegrensning av type {}", "PersonV3.hentPerson", personSikkerhetsbegrensning.message!!)
+            auditLogger.logErr("Brukerident {} benyttet {} medfører tilgangbegrensning av type {}", "PersonV3.hentPerson", personSikkerhetsbegrensning.message!!)
             logger.error("Kaller PersonV3.hentPerson service Feilet $personSikkerhetsbegrensning")
             hentperson_teller_type_feilede.increment()
             throw PersonV3SikkerhetsbegrensningException(personSikkerhetsbegrensning.message)
