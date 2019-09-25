@@ -331,6 +331,12 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
         return rinaSakerMedFnr.plus(rinaSakerUtenFnr)
     }
 
+    fun getFilteredArchivedaRinasaker(list: List<Rinasak>) =
+            list.filterNot { rinasak -> rinasak.status == "archived" }
+            .sortedBy {  rinasak -> rinasak.id }
+                .map { rinasak -> rinasak.id!! }
+                .toList()
+
     /**
      * Lister alle rinasaker på valgt fnr eller euxcaseid, eller bucType...
      * fnr er påkrved resten er fritt

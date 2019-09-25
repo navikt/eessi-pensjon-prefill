@@ -7,6 +7,7 @@ import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.*
 import no.nav.eessi.pensjon.logging.RequestResponseLoggerInterceptor
 import no.nav.eessi.pensjon.utils.*
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Person
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
@@ -901,6 +902,22 @@ class EuxServiceTest {
         val url = builder.toUriString() + service.convertListInstitusjonItemToString(deltaker)
         println(url)
         assertEquals("/buc/1234/mottakere?KorrelasjonsId=123456778&mottakere=NO:NAV02&mottakere=SE:SE2", url)
+    }
+
+    @Test
+    fun `Test filter list av rinasak ta bort elementer av archived`() {
+        val dummyList = listOf(
+                Rinasak("723",null,null,"PO",null,"open"),
+                Rinasak("2123",null,null,"PO",null,"open"),
+                Rinasak("423",null,null,"PO",null,"archived"),
+                Rinasak("234",null,null,"PO",null,"closed"),
+                Rinasak("8423",null,null,"PO",null,"archived")
+                )
+
+        val result = service.getFilteredArchivedaRinasaker(dummyList)
+        assertEquals(3, result.size)
+        assertEquals("2123", result.first())
+
     }
 
     @Test
