@@ -109,7 +109,8 @@ class BucController(private val euxService: EuxService,
         logger.debug("1 prøver å dekode til fnr fra aktoerid: $aktoerid")
         val fnr = aktoerIdHelper.hentPinForAktoer(aktoerid)
         val rinaSakIderFraDokumentMetadata = safService.hentRinaSakIderFraDokumentMetadata(aktoerid)
-        return euxService.getBucAndSedView(euxService.getRinaSakerFilterKunRinaId(fnr, rinaSakIderFraDokumentMetadata), aktoerid)
+        val rinasakIdList = euxService.getFilteredArchivedaRinasaker(euxService.getRinasaker(fnr, rinaSakIderFraDokumentMetadata))
+        return euxService.getBucAndSedView( rinasakIdList, aktoerid)
     }
 
     @ApiOperation("Henter ut en json struktur for type og sed menyliste for ui. ny api kall til eux")
