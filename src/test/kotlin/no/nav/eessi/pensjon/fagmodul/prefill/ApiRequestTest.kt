@@ -13,7 +13,7 @@ import java.nio.file.Paths
 
 class ApiRequestTest {
 
-    private fun createMockApiRequest(sedName: String, buc: String, payload: String): ApiRequest {
+    private fun createMockApiRequest(sedName: String, buc: String, payload: String?): ApiRequest {
         val items = listOf(InstitusjonItem(country = "NO", institution = "NAVT003"))
         return ApiRequest(
                 institutions = items,
@@ -159,6 +159,16 @@ class ApiRequestTest {
         assertThrows<IllegalArgumentException> {
             ApiRequest.buildPrefillDataModelConfirm(mockData, "12345", null)
         }
+    }
+
+    @Test
+    fun `check on values for toAduit`() {
+        assertEquals("sakId: 01234567890 buc: P_BUC_01 sed: P2000 euxCaseId: 99191999911", createMockApiRequest("P2000", "P_BUC_01", null).toAudit())
+
+        assertEquals("sakId: 01234567890 buc: P_BUC_02 sed: P4000 euxCaseId: 99191999911", createMockApiRequest("P4000", "P_BUC_02", null).toAudit())
+
+        assertEquals("sakId: 01234567890 euxCaseId: 99191999911", createMockApiRequest("", "", null).toAudit())
+
     }
 
 }

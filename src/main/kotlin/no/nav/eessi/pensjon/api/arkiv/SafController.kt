@@ -24,7 +24,7 @@ class SafController(private val safService: SafService, private val auditlogger:
     @ApiOperation("Henter metadata for alle dokumenter i alle journalposter for en gitt aktørid")
     @GetMapping("/metadata/{aktoerId}")
     fun hentDokumentMetadata(@PathVariable("aktoerId", required = true) aktoerId: String): ResponseEntity<String> {
-        auditlogger.log("/saf/metadata/{$aktoerId}", "hentDokumentMetadata")
+        auditlogger.log("hentDokumentMetadata", aktoerId)
         logger.info("Henter metadata for dokumenter i SAF for aktørid: $aktoerId")
         return try {
             ResponseEntity.ok().body(safService.hentDokumentMetadata(aktoerId).toJson())
@@ -38,7 +38,7 @@ class SafController(private val safService: SafService, private val auditlogger:
     fun getDokumentInnhold(@PathVariable("journalpostId", required = true) journalpostId: String,
                            @PathVariable("dokumentInfoId", required = true) dokumentInfoId: String,
                            @PathVariable("variantFormat", required = true) variantFormat: VariantFormat): ResponseEntity<String> {
-        auditlogger.log("/saf/hentdokument/{$journalpostId}/{$dokumentInfoId}/{$variantFormat}", "getDokumentInnhold")
+        auditlogger.log("getDokumentInnhold")
         logger.info("Henter dokumentinnhold fra SAF for journalpostId: $journalpostId, dokumentInfoId: $dokumentInfoId")
         return try {
             val hentDokumentInnholdResponse = safService.hentDokumentInnhold(journalpostId, dokumentInfoId, variantFormat)

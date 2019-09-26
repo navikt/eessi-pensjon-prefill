@@ -9,7 +9,7 @@
                 <includeCallerData>true</includeCallerData>
             </encoder>
         </appender>
-        <appender name="auditLogger" class="com.papertrailapp.logback.Syslog4jAppender">
+        <appender namle="auditLogger" class="com.papertrailapp.logback.Syslog4jAppender">
             <layout class="ch.qos.logback.classic.PatternLayout">
                 <pattern>[%d{"yyyy-MM-dd'T'HH:mm:ss,SSSXXX", UTC} %level] %logger{15} : %mdc - %m%n%xEx</pattern>
             </layout>
@@ -21,8 +21,6 @@
             </syslogConfig>
         </appender>
 
-
-
         <logger name="io" level="ERROR"/>
         <logger name="org" level="ERROR"/>
         <logger name="com" level="ERROR"/>
@@ -30,9 +28,6 @@
         <logger name="no.nav.security" level="ERROR"/>
         <logger name="no.nav.eessi" level="INFO"/>
         <logger name="no.nav.eessi.pensjon.logging.RequestResponseLoggerInterceptor" level="OFF"/>
-        <logger name="auditLogger" level="INFO" additivity="false">
-            <appender-ref ref="auditLogger" />
-        </logger>
         <root level="info">
             <appender-ref ref="stdout_json"/>
         </root>
@@ -42,9 +37,7 @@
     <springProfile name="local">
         <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
             <encoder>
-                <pattern>
-                    %d{dd-MM-yyyy HH:mm:ss.SSS} %magenta([%thread]) %highlight(%-5level) %logger{20} - %msg%n
-                </pattern>
+                <pattern>%magenta(%d{dd-MM-yyyy HH:mm:ss.SSS}) %highlight(%-5level) %logger{20} - %msg%n</pattern>
             </encoder>
         </appender>
         <appender name="auditLogger" class="ch.qos.logback.core.ConsoleAppender">
@@ -53,18 +46,15 @@
             </encoder>
         </appender>
 
-<!--        <logger name="io" level="ERROR"/>-->
-<!--        <logger name="org" level="ERROR"/>-->
-<!--        <logger name="com" level="ERROR"/>-->
-<!--        <logger name="no.nav" level="DEBUG"/>-->
-<!--        <logger name="no.nav.security" level="ERROR"/>-->
-<!--        <logger name="no.nav.eessi" level="DEBUG"/>-->
-        <logger name="io" level="OFF"/>
-        <logger name="org" level="OFF"/>
-        <logger name="com" level="OFF"/>
-        <logger name="no.nav" level="OFF"/>
-        <logger name="no.nav.security" level="OFF"/>
-        <logger name="no.nav.eessi" level="OFF"/>
+        <logger name="io" level="ERROR"/>
+        <logger name="org" level="ERROR"/>
+        <logger name="com" level="ERROR"/>
+        <logger name="no.nav" level="DEBUG"/>
+        <logger name="no.nav.security" level="ERROR"/>
+        <logger name="no.nav.eessi" level="DEBUG"/>
+        <logger name="stdout" level="OFF" additivity="false">
+            <appender-ref ref="stdoutr" />
+        </logger>
         <logger name="auditLogger" level="INFO" additivity="false">
             <appender-ref ref="auditLogger" />
         </logger>

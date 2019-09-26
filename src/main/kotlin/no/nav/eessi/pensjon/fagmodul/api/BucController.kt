@@ -42,7 +42,7 @@ class BucController(private val euxService: EuxService,
     @ApiOperation("Henter opp hele BUC på valgt caseid")
     @GetMapping("/{rinanr}")
     fun getBuc(@PathVariable(value = "rinanr", required = true) rinanr: String): Buc {
-        auditlogger.log("/buc/{$rinanr}", "getBuc")
+        auditlogger.log("getBuc")
         logger.debug("Henter ut hele Buc data fra rina via eux-rina-api")
         return euxService.getBuc(rinanr)
     }
@@ -99,7 +99,7 @@ class BucController(private val euxService: EuxService,
     @ApiOperation("Henter ut en liste over saker på valgt aktoerid. ny api kall til eux")
     @GetMapping("/rinasaker/{aktoerId}")
     fun getRinasaker(@PathVariable("aktoerId", required = true) aktoerId: String): List<Rinasak> {
-        auditlogger.log("/buc/rinasaker/{$aktoerId}", "getRinasaker")
+        auditlogger.log("getRinasaker", aktoerId)
         logger.debug("henter rinasaker på valgt aktoerid: $aktoerId")
 
         val fnr = aktoerIdHelper.hentPinForAktoer(aktoerId)
@@ -112,7 +112,7 @@ class BucController(private val euxService: EuxService,
     fun getBucogSedView(@PathVariable("aktoerid", required = true) aktoerid: String,
                         @PathVariable("sakid", required = false) sakid: String? = "",
                         @PathVariable("euxcaseid", required = false) euxcaseid: String? = ""): List<BucAndSedView> {
-        auditlogger.log("/buc/detaljer/{$aktoerid}/{$sakid}/{$euxcaseid}", "getBucogSedView")
+        auditlogger.log("getBucogSedView", aktoerid)
         logger.debug("1 prøver å dekode til fnr fra aktoerid: $aktoerid")
 
         val fnr = aktoerIdHelper.hentPinForAktoer(aktoerid)
@@ -123,7 +123,7 @@ class BucController(private val euxService: EuxService,
     @ApiOperation("Henter ut en json struktur for type og sed menyliste for ui. ny api kall til eux")
     @GetMapping("/enkeldetalj/{euxcaseid}")
     fun getSingleBucogSedView(@PathVariable("euxcaseid", required = true) euxcaseid: String): BucAndSedView {
-        auditlogger.log("/buc/enkeldetalj/{$euxcaseid}", "getSingleBucogSedView")
+        auditlogger.log("getSingleBucogSedView")
         logger.debug("1 prøver å hente en enkel buc på : $euxcaseid")
 
         return euxService.getSingleBucAndSedView(euxcaseid)
@@ -132,7 +132,7 @@ class BucController(private val euxService: EuxService,
     @ApiOperation("Oppretter ny tom BUC i RINA via eux-api. ny api kall til eux")
     @PostMapping("/{buctype}")
     fun createBuc(@PathVariable("buctype", required = true) buctype: String): BucAndSedView {
-        auditlogger.log("/buc/{$buctype}", "createBuc")
+        auditlogger.log("createBuc")
         logger.debug("Prøver å opprette en ny BUC i RINA av type: $buctype")
 
         //rinaid
@@ -152,7 +152,7 @@ class BucController(private val euxService: EuxService,
                               @PathVariable("joarkJournalpostId", required = true) joarkJournalpostId: String,
                               @PathVariable("joarkDokumentInfoId", required = true) joarkDokumentInfoId : String,
                               @PathVariable("variantFormat", required = true) variantFormat : VariantFormat) : ResponseEntity<String> {
-        auditlogger.log("/buc/vedlegg/{$aktoerId}/{$rinaSakId}/{$rinaDokumentId}/{$joarkJournalpostId}/{$joarkDokumentInfoId}/{$variantFormat}", "putVedleggTilDokument")
+        auditlogger.log("putVedleggTilDokument", aktoerId)
         logger.debug("Legger til vedlegg: joarkJournalpostId: $joarkJournalpostId, joarkDokumentInfoId $joarkDokumentInfoId, variantFormat: $variantFormat til " +
                 "rinaSakId: $rinaSakId, rinaDokumentId: $rinaDokumentId")
 

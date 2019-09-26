@@ -170,8 +170,7 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
                 , "SedByDocumentId"
                 , "Feil ved henting av Sed med DocId: $documentId"
         )
-        val jsonsed = response.body
-                ?: throw SedDokumentIkkeLestException("Feiler ved lesing av navSED, feiler ved uthenting av SED")
+        val jsonsed = response.body ?: throw SedDokumentIkkeLestException("Feiler ved lesing av navSED, feiler ved uthenting av SED")
         return mapJsonToAny(jsonsed, typeRefs())
     }
 

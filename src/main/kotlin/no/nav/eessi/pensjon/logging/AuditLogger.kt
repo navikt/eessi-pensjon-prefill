@@ -10,21 +10,31 @@ import org.springframework.stereotype.Component
 class AuditLogger(private val oidcRequestContextHolder: OIDCRequestContextHolder) {
     private val logger = LoggerFactory.getLogger("auditLogger")
 
-    private val msgkey = "brukerident {} benyttet tjenesten {}  funksjon {}"
-    private val msgkeyApi = "brukerident {} benyttet tjenesten {} med request {}  funksjon {}"
-    private val msgKeyErr = "brukerident {} benyttet tjenesten {} medfører feil av type {}"
-
     // Vi trenger denne no arg konstruktøren for å kunne bruke @Spy med mockito
     constructor() : this(SpringOIDCRequestContextHolder())
 
-    fun log(event: String, function: String, context: String) {
-        logger.info(msgkeyApi, getSubjectfromToken(), event, context, function)
+    //brukerident: Z990638 tjenesten: getBucogSedView
+    fun log(tjenesteFunctionName: String) {
+        logger.info("brukerident: ${getSubjectfromToken()} tjenesten: $tjenesteFunctionName")
     }
-    fun log(event: String, function: String) {
-        logger.info(msgkey, getSubjectfromToken(), event, function)
+    //brukerident: Z990638 tjenesten: getBucogSedView aktoerId: 1955874769814
+    fun log(tjenesteFunctionName: String, aktoerId: String) {
+        logger.info("brukerident: ${getSubjectfromToken()} tjenesten: $tjenesteFunctionName aktoerId: $aktoerId")
     }
-    fun logErr(msg: String, event: String, function: String) {
-        logger.info(msg, getSubjectfromToken(), event,  function)
+    //brukerident: Z990638 tjenesten: confirmDocument aktoerId: 1955874769814 sakId: 22873157 buc: P_BUC_0 sed: P4000 euxCaseId: 557107
+    fun log(tjenesteFunctionName: String, aktoerId: String,  requestContext: String) {
+        logger.info("brukerident: ${getSubjectfromToken()} tjenesten: $tjenesteFunctionName aktoerId: $aktoerId $requestContext")
+    }
+    //brukerident: Z990638 tjenesten: confirmDocument euxCaseId: 557107 documentId: 332342342334
+    fun logBuc(tjenesteFunctionName: String, euxData: String) {
+        logger.info("brukerident: ${getSubjectfromToken()} tjenesten: $tjenesteFunctionName $euxData")
+    }
+
+    fun logBorger(tjenesteFunctionName: String, borgerfnr: String) {
+        logger.info("brukerident: ${getSubjectfromToken()} tjenesten: $tjenesteFunctionName fnr: $borgerfnr")
+    }
+    fun logBorgerErr(tjenesteFunctionName: String, borgerfnr: String, errorMelding: String) {
+        logger.info("brukerident: ${getSubjectfromToken()} tjenesten: $tjenesteFunctionName fnr: $borgerfnr feilmelding: $errorMelding")
     }
 
     private fun getSubjectfromToken() : String {

@@ -44,7 +44,7 @@ class PersonV3Service(private val service: PersonV3, private val auditLogger: Au
 
     @Throws(PersonV3IkkeFunnetException::class, PersonV3SikkerhetsbegrensningException::class)
     fun hentPerson(fnr: String): HentPersonResponse {
-        auditLogger.log("","PersonV3Service.hentPerson")
+        auditLogger.logBorger("PersonV3Service.hentPerson", fnr)
         logger.info("Henter person fra PersonV3Service")
         configureRequestSamlToken(service)
 
@@ -68,7 +68,7 @@ class PersonV3Service(private val service: PersonV3, private val auditLogger: Au
             throw PersonV3IkkeFunnetException(personIkkefunnet.message)
         } catch (personSikkerhetsbegrensning: HentPersonSikkerhetsbegrensning) {
             //brukerident {} benyttet tjenesten {}  funksjon {}
-            auditLogger.logErr("Brukerident {} benyttet {} medfører tilgangbegrensning av type {}", "PersonV3.hentPerson", personSikkerhetsbegrensning.message!!)
+            auditLogger.logBorgerErr("PersonV3.hentPerson", fnr, personSikkerhetsbegrensning.message!!)
             logger.error("Kaller PersonV3.hentPerson service Feilet $personSikkerhetsbegrensning")
             hentperson_teller_type_feilede.increment()
             throw PersonV3SikkerhetsbegrensningException(personSikkerhetsbegrensning.message)

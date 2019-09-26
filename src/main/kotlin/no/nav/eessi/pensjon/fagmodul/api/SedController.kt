@@ -39,7 +39,7 @@ class SedController(private val euxService: EuxService,
     @JsonInclude(JsonInclude.Include.NON_NULL)
     fun confirmDocument(@RequestBody request: ApiRequest): SED {
         val dataModel = ApiRequest.buildPrefillDataModelConfirm(request, aktoerIdHelper.hentPinForAktoer(request.aktoerId), getAvdodAktoerId(request))
-        auditlogger.log("/sed/preview","confirmDocument", request.toAudit())
+        auditlogger.log("confirmDocument", request.aktoerId ?: "" , request.toAudit())
         return prefillService.prefillSed(dataModel).sed
     }
 
@@ -47,7 +47,7 @@ class SedController(private val euxService: EuxService,
     @PostMapping("/previewNONempty", consumes = ["application/json"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun confirmDocumentWithoutnull(@RequestBody request: ApiRequest): String {
         val dataModel = ApiRequest.buildPrefillDataModelConfirm(request, aktoerIdHelper.hentPinForAktoer(request.aktoerId), getAvdodAktoerId(request))
-        auditlogger.log("/previewNONempty","confirmDocumentWithoutnull", request.toAudit())
+        auditlogger.log("confirmDocumentWithoutnull", request.aktoerId ?: "" , request.toAudit())
         return prefillService.prefillSed(dataModel).sed.toJsonSkipEmpty()
     }
 
@@ -56,11 +56,9 @@ class SedController(private val euxService: EuxService,
     @GetMapping("/send/{euxcaseid}/{documentid}")
     fun sendSed(@PathVariable("euxcaseid", required = true) euxCaseId: String,
                 @PathVariable("documentid", required = true) documentid: String): Boolean {
-
-        auditlogger.log("/sed/send/{$euxCaseId}/{$documentid}","sendSed")
+        auditlogger.logBuc("sendSed", " euxCaseId: $euxCaseId documentId: $documentid")
         logger.info("kaller /cpi/buc/$euxCaseId/sed/$documentid/send")
         return euxService.sendDocumentById(euxCaseId, documentid)
-
     }
 
     //** oppdatert i api 18.02.2019
@@ -68,8 +66,8 @@ class SedController(private val euxService: EuxService,
     @GetMapping("/{euxcaseid}/{documentid}")
     fun getDocument(@PathVariable("euxcaseid", required = true) euxcaseid: String,
                     @PathVariable("documentid", required = true) documentid: String): SED {
+        auditlogger.logBuc("getDocument", " euxCaseId: $euxcaseid documentId: $documentid")
 
-        auditlogger.log("/sed/{$euxcaseid}/{$documentid}","getDocument")
         logger.info("kaller /${euxcaseid}/${documentid} ")
         return euxService.getSedOnBucByDocumentId(euxcaseid, documentid)
 
@@ -80,7 +78,7 @@ class SedController(private val euxService: EuxService,
     @DeleteMapping("/{euxcaseid}/{documentid}")
     fun deleteDocument(@PathVariable("euxcaseid", required = true) euxcaseid: String,
                        @PathVariable("documentid", required = true) documentid: String): Boolean {
-        auditlogger.log("/sed/{$euxcaseid}/{$documentid}","deleteDocument")
+        auditlogger.logBuc("deleteDocument", " euxCaseId: $euxcaseid documentId: $documentid")
         logger.info("kaller delete  /${euxcaseid}/${documentid} ")
         return euxService.deleteDocumentById(euxcaseid, documentid)
 
@@ -90,8 +88,7 @@ class SedController(private val euxService: EuxService,
     @ApiOperation("legge til Deltaker(e) og SED på et eksisterende Rina document. kjører preutfylling, ny api kall til eux")
     @PostMapping("/add")
     fun addInstutionAndDocument(@RequestBody request: ApiRequest): ShortDocumentItem {
-        auditlogger.log("/sed/add/","addInstutionAndDocument", request.toAudit())
-
+        auditlogger.log("addInstutionAndDocument", request.aktoerId ?: "", request.toAudit())
         val dataModel = ApiRequest.buildPrefillDataModelOnExisting(request, aktoerIdHelper.hentPinForAktoer(request.aktoerId), getAvdodAktoerId(request))
 
         logger.info("kaller add (institutions and sed)")
@@ -121,7 +118,7 @@ class SedController(private val euxService: EuxService,
     @ApiOperation("Oppretter en Sed som svar på en forespørsel-Sed")
     @RequestMapping("/replysed/{parentid}", method = [ RequestMethod.POST ])
     fun addDocumentToParent(@RequestBody(required = true) request: ApiRequest, @PathVariable("parentid", required = true) parentId: String  ): ShortDocumentItem {
-        auditlogger.log("/sed/replysed/{$parentId}","addDocumentToParent", request.toAudit())
+        auditlogger.log("addDocumentToParent", request.aktoerId ?: "", request.toAudit())
 
         val dataModel = ApiRequest.buildPrefillDataModelOnExisting(request, aktoerIdHelper.hentPinForAktoer(request.aktoerId),  getAvdodAktoerId(request))
         val data = prefillService.prefillSed(dataModel)
@@ -135,9 +132,10 @@ class SedController(private val euxService: EuxService,
     @ApiOperation("Utgår?")
     @PostMapping("/addSed")
     fun addDocument(@RequestBody request: ApiRequest): ShortDocumentItem {
+        auditlogger.log("addDocument", request.aktoerId ?: "", request.toAudit())
         val dataModel = ApiRequest.buildPrefillDataModelOnExisting(request, aktoerIdHelper.hentPinForAktoer(request.aktoerId),  getAvdodAktoerId(request))
         val data = prefillService.prefillSed(dataModel)
-        auditlogger.log("/sed/addSed","addDocument", request.toAudit())
+
         logger.info("kaller add med request: $request")
         val docresult = euxService.opprettSedOnBuc(data.sed, data.euxCaseID)
         return BucUtils(euxService.getBuc(docresult.caseId)).findDocument(docresult.documentId)
@@ -146,7 +144,7 @@ class SedController(private val euxService: EuxService,
     @ApiOperation("Utgår?")
     @PostMapping("/buc/create")
     fun createDocument(@RequestBody request: ApiRequest): BucSedResponse {
-        auditlogger.log("/sed/buc/create","createDocument", request.toAudit())
+        auditlogger.log("createDocument", request.aktoerId ?: "", request.toAudit())
         logger.info("kaller type/create med request: $request")
 
         val dataModel = ApiRequest.buildPrefillDataModelOnNew(request, aktoerIdHelper.hentPinForAktoer(request.aktoerId))
@@ -161,7 +159,7 @@ class SedController(private val euxService: EuxService,
     @ApiOperation("Utgår, benytt /buc/{rinanr}/allDocuments ")
     @GetMapping("/buc/{euxcaseid}/shortdocumentslist")
     fun getShortDocumentList(@PathVariable("euxcaseid", required = true) euxcaseid: String): List<ShortDocumentItem> {
-        auditlogger.log("/sed/buc/{$euxcaseid}/shortdocumentslist","getShortDocumentList")
+        auditlogger.logBuc("getShortDocumentList", " euxCaseId: $euxcaseid")
         logger.info("kaller /type/${euxcaseid}/documents ")
 
         return BucUtils(euxService.getBuc(euxcaseid)).getAllDocuments()
@@ -172,7 +170,7 @@ class SedController(private val euxService: EuxService,
     @GetMapping("list/{euxcaseid}/{sedtype}")
     fun getDocumentlist(@PathVariable("euxcaseid", required = true) euxcaseid: String,
                         @PathVariable("sedtype", required = false) sedType: String?): List<SED> {
-        auditlogger.log("/sed/list/{$euxcaseid}/{$sedType}","getDocumentlist")
+        auditlogger.logBuc("getDocumentlist", " euxCaseId: $euxcaseid")
         logger.info("kaller /${euxcaseid}/${sedType} ")
 
         return euxService.getSedOnBuc(euxcaseid, sedType)
@@ -210,8 +208,7 @@ class SedController(private val euxService: EuxService,
     @GetMapping("/ytelseKravtype/{rinanr}/sedid/{documentid}")
     fun getPinOgYtelseKravtype(@PathVariable("rinanr", required = true) rinanr: String,
                                @PathVariable("documentid", required = false) documentid: String): PinOgKrav {
-
-        auditlogger.log("/sed/ytelseKravtype/{$rinanr}/sedid/{$documentid}", "getPinOgYtelseKravtype")
+        auditlogger.logBuc("getPinOgYtelseKravtype", " euxCaseId: $rinanr  documentId: $documentid")
         logger.debug("Henter opp ytelseKravType fra P2100 eller P15000, feiler hvis ikke rett SED")
         return euxService.hentFnrOgYtelseKravtype(rinanr, documentid)
     }
@@ -228,10 +225,8 @@ class SedController(private val euxService: EuxService,
     @GetMapping("/fodselsdato/{rinanr}/buctype/{buctype}")
     fun getFodselsdato(@PathVariable("rinanr", required = true) rinanr: String,
                        @PathVariable("buctype", required = true) buctype: String): String? {
-
-        auditlogger.log("/sed/fodselsdato/{$rinanr}/buctype/{$buctype}", "getFodselsdato")
+        auditlogger.logBuc("getFodselsdato", " euxCaseId: $rinanr  buctype: $buctype")
         logger.debug("Henter opp fødselsdato fra sed for valgt euxcaseid")
-
         return euxService.getFDatoFromSed(rinanr, buctype)
     }
 }
