@@ -1,7 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.person
 
 import no.nav.eessi.pensjon.fagmodul.prefill.model.BrukerInformasjon
-import no.nav.eessi.pensjon.fagmodul.prefill.model.Prefill
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillPersonDataFromTPS
 import no.nav.eessi.pensjon.fagmodul.sedmodel.*
@@ -15,15 +14,14 @@ import java.util.*
 @Component
 class PrefillNav(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS,
                  @Value("\${eessi.pensjon_lokalid}") private val institutionid: String,
-                 @Value("\${eessi.pensjon_lokalnavn}") private val institutionnavn: String) : Prefill<Nav> {
+                 @Value("\${eessi.pensjon_lokalnavn}") private val institutionnavn: String) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillNav::class.java) }
-    private val barnSEDlist = listOf("P2000", "P2100", "P2200")
 
-    override fun prefill(prefillData: PrefillDataModel): Nav {
+    fun prefill(prefillData: PrefillDataModel, fyllUtBarnListe: Boolean = false): Nav {
         return Nav(
                 //1.0
-                eessisak = createLokaltsaksnummer(prefillData),
+                eessisak = createLokaltsaksnummer(prefillData.penSaksnummer),
 
                 //createBrukerfraTPS død hvis etterlatt (etterlatt aktoerregister fylt ut)
                 //2.0 For levende, eller hvis person er dod (hvis dod flyttes levende til 3.0)
@@ -34,10 +32,12 @@ class PrefillNav(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS,
                 //4.0 Ytelser ligger under pensjon object (P2000)
 
                 //5.0 ektefelle eller partnerskap
-                ektefelle = createEktefelleEllerPartnerfraTPS(prefillData),
+                ektefelle = createEktefelleEllerPartnerfraTPS(prefillData.personNr),
 
                 //6.0 skal denne kjøres hver gang? eller kun under P2000? P2100
-                barn = createBarnlistefraTPS(prefillData),
+                //sjekke om SED er P2x00 for utfylling av BARN
+                //sjekke punkt for barn. pkt. 6.0 for P2000 og P2200 pkt. 8.0 for P2100
+                barn = if (fyllUtBarnListe) createBarnlistefraTPS(prefillData) else null,
 
                 //7.0 verge
                 verge = createVerge(),
@@ -56,11 +56,10 @@ class PrefillNav(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS,
     }
 
     //8.0 Bank detalsjer om bank betalinger.
-    private fun createBankData(prefillData: PrefillDataModel): Bank? {
+    private fun createBankData(personInfo: BrukerInformasjon): Bank {
         logger.debug("8.0           Informasjon om betaling")
         logger.debug("8.1           Informasjon om betaling")
-        return prefillData.getPersonInfo()?.let { personInfo ->
-            Bank(
+        return Bank(
                     navn = personInfo.bankName,
                     konto = Konto(
                             innehaver = Innehaver(
@@ -77,8 +76,7 @@ class PrefillNav(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS,
                             gate = personInfo.bankAddress,
                             land = personInfo.bankCountry?.currencyLabel
                     )
-            )
-        }
+        )
     }
 
     //
@@ -101,21 +99,16 @@ class PrefillNav(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS,
                     utfyllingData.personNr
                 }
         logger.debug("Valgt SubjectIdent: $subjektIdent")
+        val personInfo = utfyllingData.getPersonInfo()
         return preutfyllingPersonFraTPS.prefillBruker(
                 subjektIdent,
-                createBankData(utfyllingData),
-                createInformasjonOmAnsettelsesforhold(utfyllingData)
+                if (personInfo == null) null else createBankData(personInfo),
+                if (personInfo == null) null else createInformasjonOmAnsettelsesforhold(personInfo)
         )
     }
 
     //utfylling av liste av barn under 18år
     private fun createBarnlistefraTPS(utfyllingData: PrefillDataModel): List<BarnItem>? {
-        //sjekke om SED er P2x00 for utfylling av BARN
-        //sjekke punkt for barn. pkt. 6.0 for P2000 og P2200 pkt. 8.0 for P2100
-        if (barnSEDlist.contains(utfyllingData.getSEDid()).not()) {
-            logger.debug("6.0/8.0           SKIP Preutfylling barn, ikke P2x00")
-            return null
-        }
         val barnaspin = preutfyllingPersonFraTPS.hentBarnaPinIdFraBruker(utfyllingData.personNr)
         val barnlist = mutableListOf<BarnItem>()
         logger.debug("6.0/8.0           Preutfylling barn, antall: (${barnaspin.size}")
@@ -137,30 +130,29 @@ class PrefillNav(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS,
     }
 
     //ektefelle / partner
-    private fun createEktefelleEllerPartnerfraTPS(utfyllingData: PrefillDataModel): Ektefelle? {
+    private fun createEktefelleEllerPartnerfraTPS(fnr: String): Ektefelle? {
         logger.debug("5.0           Utfylling av ektefelle")
-        return preutfyllingPersonFraTPS.hentEktefelleEllerPartnerFraBruker(utfyllingData)
+        return preutfyllingPersonFraTPS.hentEktefelleEllerPartnerFraBruker(fnr)
     }
 
     //lokal sak pkt 1.0 i gjelder alle SED
-    private fun createLokaltsaksnummer(prefillData: PrefillDataModel): List<EessisakItem> {
+    private fun createLokaltsaksnummer(penSaksnummer: String): List<EessisakItem> {
         logger.debug("1.1           Lokalt saksnummer (hvor hentes disse verider ifra?")
         return listOf(EessisakItem(
                 institusjonsid = institutionid,
                 institusjonsnavn = institutionnavn,
-                saksnummer = prefillData.penSaksnummer,
+                saksnummer = penSaksnummer,
                 land = "NO"
         ))
     }
 
-    private fun createInformasjonOmAnsettelsesforhold(prefillData: PrefillDataModel): List<ArbeidsforholdItem>? {
+    private fun createInformasjonOmAnsettelsesforhold(personInfo: BrukerInformasjon): List<ArbeidsforholdItem>? {
         logger.debug("3.0           Informasjon om personens ansettelsesforhold og selvstendige næringsvirksomhet")
         logger.debug("3.1           Informasjon om ansettelsesforhold og selvstendig næringsvirksomhet ")
-        val personInfo = prefillData.getPersonInfo() ?: return null
         return listOf(createAnsettelsesforhold(personInfo))
     }
 
-    fun createAnsettelsesforhold(personInfo: BrukerInformasjon): ArbeidsforholdItem {
+    private fun createAnsettelsesforhold(personInfo: BrukerInformasjon): ArbeidsforholdItem {
         logger.debug("3.1           Ansettelseforhold/arbeidsforhold")
         return ArbeidsforholdItem(
                 //3.1.1.

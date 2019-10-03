@@ -73,7 +73,7 @@ class PrefillPersonEnkeTest {
         val fnr = personDataFromTPS.getRandomNavFodselsnummer(PersonDataFromTPS.MockTPS.TPSType.PERSON) ?: "02345678901"
         val prefillData = initialPrefillDataModel(sedType = "P2000", pinId = fnr, vedtakId = "")
 
-        val response = prefillNav.prefill(prefillData)
+        val response = prefillNav.prefill(prefillData, fyllUtBarnListe = true)
 
         val sed = prefillData.sed
         sed.nav = response
@@ -92,7 +92,7 @@ class PrefillPersonEnkeTest {
 
         val fnr = personDataFromTPS.getRandomNavFodselsnummer(PersonDataFromTPS.MockTPS.TPSType.PERSON) ?: "02345678901"
         val prefillData = initialPrefillDataModel(sedType = "P2100", pinId = fnr, vedtakId = "")
-        val response = prefillNav.prefill(prefillData)
+        val response = prefillNav.prefill(prefillData, fyllUtBarnListe = true)
 
         val sed = prefillData.sed
         sed.nav = response
@@ -130,7 +130,7 @@ class PrefillPersonEnkeTest {
 
         val fnr = personDataFromTPS.getRandomNavFodselsnummer(PersonDataFromTPS.MockTPS.TPSType.PERSON) ?: "02345678901"
         val prefillData = initialPrefillDataModel(sedType = "P2200", pinId = fnr, vedtakId = "")
-        val response = prefillNav.prefill(prefillData)
+        val response = prefillNav.prefill(prefillData, fyllUtBarnListe = true)
 
         val sed = prefillData.sed
         sed.nav = response

@@ -19,7 +19,7 @@ class PrefillAdresse ( private val postnummerService: PostnummerService,
     /**
      *  2.2.2 adresse informasjon
      */
-    fun hentPersonAdresse(personTPS: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): Adresse? {
+    fun createPersonAdresse(personTPS: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): Adresse? {
         logger.debug("2.2.2         Adresse")
 
         //Gateadresse eller UstrukturertAdresse

@@ -44,7 +44,7 @@ class PrefillP2000(private val prefillNav: PrefillNav,
             sed.nav = Nav()
         } else {
             //henter opp persondata
-            sed.nav = prefillNav.prefill(prefillData)
+            sed.nav = prefillNav.prefill(prefillData, fyllUtBarnListe = true)
         }
 
         try {

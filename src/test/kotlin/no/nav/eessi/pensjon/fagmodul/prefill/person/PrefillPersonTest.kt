@@ -72,7 +72,7 @@ class PrefillPersonTest {
 
         val navresponse = NavMock().genererNavMock()
 
-        whenever(mockPreutfyllingNav.prefill(any())).thenReturn(navresponse)
+        whenever(mockPreutfyllingNav.prefill(any(), any())).thenReturn(navresponse)
 
         val pensjonresponse = PensjonMock().genererMockData()
         whenever(mockPreutfyllingPensjon.prefill(any())).thenReturn(pensjonresponse)

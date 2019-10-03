@@ -1,7 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.tps
 
 import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjon
-import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.sedmodel.*
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Bruker
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Person
@@ -40,31 +39,32 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
 
     fun prefillBruker(ident: String, bank: Bank? = null, ansettelsesforhold: List<ArbeidsforholdItem>? = null): Bruker {
         logger.debug("              Bruker")
-        return try {
-            val brukerTPS = hentBrukerTPS(ident)
-            var adresse: Adresse? = null
-            var far: Foreldre? = null
-            var mor: Foreldre? = null
 
-            if(!isPersonAvdod(brukerTPS)) {
-                adresse = prefillAdresse.hentPersonAdresse(brukerTPS)
-                far = hentRelasjon(RelasjonEnum.FAR, brukerTPS)
-                mor = hentRelasjon(RelasjonEnum.MOR, brukerTPS)
-            }
-
-            Bruker(
-                    person = personData(brukerTPS),
-                    adresse = adresse,
-                    far = far,
-                    mor = mor,
-                    bank = bank,
-                    arbeidsforhold = ansettelsesforhold
-            )
+        val brukerTPS = try {
+            hentBrukerTPS(ident)
         } catch (ex: Exception) {
             logger.error("Feil ved henting av Bruker fra TPS, sjekk ident?")
-            Bruker()
+            return Bruker()
         }
 
+        var adresse: Adresse? = null
+        var far: Foreldre? = null
+        var mor: Foreldre? = null
+
+        if(!isPersonAvdod(brukerTPS)) {
+            adresse = prefillAdresse.createPersonAdresse(brukerTPS)
+            far = createRelasjon(RelasjonEnum.FAR, brukerTPS)
+            mor = createRelasjon(RelasjonEnum.MOR, brukerTPS)
+        }
+
+        return Bruker(
+                person = createPersonData(brukerTPS),
+                adresse = adresse,
+                far = far,
+                mor = mor,
+                bank = bank,
+                arbeidsforhold = ansettelsesforhold
+        )
     }
 
     //henter kun personnNr (brukerNorIdent/pin) for alle barn under person
@@ -95,8 +95,7 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
         }
     }
 
-    fun hentEktefelleEllerPartnerFraBruker(utfyllingData: PrefillDataModel): Ektefelle? {
-        val fnr = utfyllingData.personNr
+    fun hentEktefelleEllerPartnerFraBruker(fnr: String): Ektefelle? {
         val bruker = hentBrukerTPS(fnr)
 
         var ektepinid = ""
@@ -179,7 +178,7 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
     }
 
     //mor / far
-    private fun hentRelasjon(relasjon: RelasjonEnum, person: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): Foreldre? {
+    private fun createRelasjon(relasjon: RelasjonEnum, person: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): Foreldre? {
         person.harFraRolleI.forEach {
             val tpsvalue = it.tilRolle.value
 
@@ -207,7 +206,7 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
     }
 
     //persondata - nav-sed format
-    private fun personData(brukerTps: no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker): Person {
+    private fun createPersonData(brukerTps: no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker): Person {
         logger.debug("2.1           Persondata (forsikret person / gjenlevende person / barn)")
         return Person(
                 //2.1.1     familiy name

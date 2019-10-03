@@ -40,7 +40,7 @@ class PrefillP2100(private val prefillNav: PrefillNav,
             sed.nav = Nav()
         } else {
             //henter opp persondata
-            sed.nav = prefillNav.prefill(prefillData)
+            sed.nav = prefillNav.prefill(prefillData, fyllUtBarnListe = true)
         }
 
         try {
