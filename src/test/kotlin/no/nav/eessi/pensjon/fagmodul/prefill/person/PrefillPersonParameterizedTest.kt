@@ -18,7 +18,7 @@ import org.junit.jupiter.params.provider.MethodSource
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 
-class PrefillPersonTest {
+class PrefillPersonParameterizedTest {
 
     @Mock
     private lateinit var mockPreutfyllingNav: PrefillNav

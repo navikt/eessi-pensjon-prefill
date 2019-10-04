@@ -22,21 +22,11 @@ class PrefillPersonDataFromTPSTest{
     @Mock
     private lateinit var personV3Service: PersonV3Service
 
-    private val postnummerService = PostnummerService()
-
-    private val landkodeService = LandkodeService()
-
-    private val eessiInfo = EessiInformasjon()
-
     private lateinit var prefillPersonFromTPS: PrefillPersonDataFromTPS
-
-    private val prefillAdresse = PrefillAdresse(postnummerService, landkodeService)
 
     @BeforeEach
     fun bringItOnDude() {
-
-        prefillPersonFromTPS = PrefillPersonDataFromTPS(personV3Service, prefillAdresse, eessiInfo)
-
+        prefillPersonFromTPS = PrefillPersonDataFromTPS(personV3Service)
     }
 
     @Test

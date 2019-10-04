@@ -72,7 +72,7 @@ class SedControllerTest {
     }
 
     @Test
-    fun `calling createDocument   forventer BucSedResponse (euxCaseid, documentid) ved mockedResponse`() {
+    fun `calling createDocument forventer BucSedResponse (euxCaseid, documentid) ved mockedResponse`() {
         val items = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
         val mockResponse = BucSedResponse("1234567890", "123123123-123123123-123131")
 

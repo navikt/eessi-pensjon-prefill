@@ -1,145 +1,30 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.tps
 
-import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjon
 import no.nav.eessi.pensjon.fagmodul.sedmodel.*
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Bruker
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Person
 import no.nav.eessi.pensjon.services.personv3.PersonV3Service
 import no.nav.eessi.pensjon.utils.simpleFormat
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.*
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
 @Component
-class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
-                               private val prefillAdresse: PrefillAdresse,
-                               private val eessiInfo: EessiInformasjon) {
+class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillPersonDataFromTPS::class.java) }
 
-    private enum class RelasjonEnum(val relasjon: String) {
-        FAR("FARA"),
-        MOR("MORA"),
-        BARN("BARN");
-
-        fun erSamme(relasjonTPS: String): Boolean {
-            return relasjon == relasjonTPS
-        }
-    }
-
-    fun isPersonAvdod(personTPS: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person) : Boolean {
-        val personstatus = hentPersonStatus(personTPS)
-        if (personstatus == "DØD") {
-            logger.debug("Person er avdod (ingen adresse å hente).")
-            return true
-        }
-        return false
-    }
-
-    fun prefillBruker(ident: String, bank: Bank? = null, ansettelsesforhold: List<ArbeidsforholdItem>? = null): Bruker {
+    fun hentBrukerFraTPS(ident: String): no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker? {
         logger.debug("              Bruker")
-
         val brukerTPS = try {
             hentBrukerTPS(ident)
         } catch (ex: Exception) {
             logger.error("Feil ved henting av Bruker fra TPS, sjekk ident?")
-            return Bruker()
+            null
         }
-
-        var adresse: Adresse? = null
-        var far: Foreldre? = null
-        var mor: Foreldre? = null
-
-        if(!isPersonAvdod(brukerTPS)) {
-            adresse = prefillAdresse.createPersonAdresse(brukerTPS)
-            far = createRelasjon(RelasjonEnum.FAR, brukerTPS)
-            mor = createRelasjon(RelasjonEnum.MOR, brukerTPS)
-        }
-
-        return Bruker(
-                person = createPersonData(brukerTPS),
-                adresse = adresse,
-                far = far,
-                mor = mor,
-                bank = bank,
-                arbeidsforhold = ansettelsesforhold
-        )
+        return brukerTPS
     }
 
-    //henter kun personnNr (brukerNorIdent/pin) for alle barn under person
-    fun hentBarnaPinIdFraBruker(brukerNorIdent: String): List<String> {
-        //brukerPin henter ut persondetalj fra TPS. med liste over barna
-        try {
-            val brukerTPS = hentBrukerTPS(brukerNorIdent)
-
-            val person = brukerTPS as no.nav.tjeneste.virksomhet.person.v3.informasjon.Person
-            val resultat = mutableListOf<String>()
-
-            person.harFraRolleI.forEach {
-                val tpsvalue = it.tilRolle.value   //mulig nullpoint? kan tilRolle være null?
-                if (RelasjonEnum.BARN.erSamme(tpsvalue)) {
-                    val persontps = it.tilPerson as no.nav.tjeneste.virksomhet.person.v3.informasjon.Person
-                    val norIdent = hentNorIdent(persontps)
-                    if (NavFodselsnummer(norIdent).validate()) {
-                        resultat.add(norIdent)
-                    } else {
-                        logger.error("følgende ident funnet ikke gyldig: $norIdent")
-                    }
-                }
-            }
-            return resultat.toList()
-        } catch (ex: Exception) {
-            logger.error("feiler ved henting av TPS")
-            return listOf()
-        }
-    }
-
-    fun hentEktefelleEllerPartnerFraBruker(fnr: String): Ektefelle? {
-        val bruker = hentBrukerTPS(fnr)
-
-        var ektepinid = ""
-        var ekteTypeValue = ""
-
-        bruker.harFraRolleI.forEach {
-            if (it.tilRolle.value == "EKTE") {
-
-                ekteTypeValue = it.tilRolle.value
-                val tilperson = it.tilPerson
-                val pident = tilperson.aktoer as PersonIdent
-
-                ektepinid = pident.ident.ident
-                if (ektepinid.isNotBlank()) {
-                    return@forEach
-                }
-            }
-        }
-        if (ektepinid.isBlank()) return null
-
-        //hente ut og genere en bruker ut i fra ektefelle/partner fnr
-        val ektefellpartnerbruker = prefillBruker(ektepinid)
-
-        return Ektefelle(
-                //type
-                //5.1   -- 01 - ektefelle, 02, part i partnerskap, 3, samboer
-                type = createEktefelleType(ekteTypeValue),
-                //ektefelle (personobj kjører på nytt)
-                person = ektefellpartnerbruker.person,
-                //foreldre
-                far = ektefellpartnerbruker.far,
-                //foreldre
-                mor = ektefellpartnerbruker.mor
-        )
-    }
-
-    private fun createEktefelleType(typevalue: String): String {
-        logger.debug("5.1           Ektefelle/Partnerskap-type")
-        return when (typevalue) {
-            "EKTE" -> "01"
-            "PART" -> "02"
-            else -> "03"
-        }
-    }
 
     //bruker fra TPS
     private fun hentBrukerTPS(ident: String): no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker {
@@ -147,114 +32,7 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
         return response.person as no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker
     }
 
-    //personnr fnr
-    private fun hentNorIdent(person: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): String {
-        logger.debug("2.1.7.1.2         Personal Identification Number (PIN) personnr")
-        val persident = person.aktoer as PersonIdent
-        val pinid: NorskIdent = persident.ident
-        return pinid.ident
-    }
-
-    //fdato i rinaformat
-    private fun datoFormat(person: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): String? {
-        logger.debug("2.1.3         Date of birth")
-        val fdato = person.foedselsdato
-        logger.debug("              Date of birth: $fdato")
-        return fdato?.foedselsdato?.simpleFormat()
-    }
-
-    fun hentFodested(bruker: no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker): Foedested? {
-        logger.debug("2.1.8.1       Fødested")
-
-        val fsted = Foedested(
-                land = bruker.foedested ?: "Unknown",
-                by = "Unkown",
-                region = ""
-        )
-        if (fsted.land == "Unknown") {
-            return null
-        }
-        return fsted
-    }
-
-    //mor / far
-    private fun createRelasjon(relasjon: RelasjonEnum, person: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): Foreldre? {
-        person.harFraRolleI.forEach {
-            val tpsvalue = it.tilRolle.value
-
-            if (relasjon.erSamme(tpsvalue)) {
-                logger.debug("              Relasjon til : $tpsvalue")
-                val persontps = it.tilPerson as no.nav.tjeneste.virksomhet.person.v3.informasjon.Person
-
-                val navntps = persontps.personnavn as Personnavn
-                val relasjonperson = Person(
-                        pin = listOf(
-                                PinItem(
-                                        institusjonsnavn = eessiInfo.institutionnavn,
-                                        institusjonsid = eessiInfo.institutionid,
-                                        identifikator = hentNorIdent(persontps),
-                                        land = "NO"
-                                )
-                        ),
-                        fornavn = navntps.fornavn,
-                        etternavnvedfoedsel = if (RelasjonEnum.MOR.erSamme(tpsvalue)) null else navntps.etternavn
-                )
-                return Foreldre(person = relasjonperson)
-            }
-        }
-        return null
-    }
-
-    //persondata - nav-sed format
-    private fun createPersonData(brukerTps: no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker): Person {
-        logger.debug("2.1           Persondata (forsikret person / gjenlevende person / barn)")
-        return Person(
-                //2.1.1     familiy name
-                etternavn = (brukerTps.personnavn as Personnavn).etternavn,
-                //2.1.2     forname
-                fornavn = (brukerTps.personnavn as Personnavn).fornavn,
-                //2.1.3
-                foedselsdato = datoFormat(brukerTps),
-                //2.1.4     //sex
-                kjoenn = mapKjonn(brukerTps.kjoenn),
-                //2.1.6
-                fornavnvedfoedsel = (brukerTps.personnavn as Personnavn).fornavn,
-                //2.1.7
-                pin = hentPersonPinNorIdent(brukerTps),
-                //2.2.1.1
-                statsborgerskap = listOf(hentStatsborgerskapTps(brukerTps)),
-                //2.1.8.1           place of birth
-                foedested = hentFodested(brukerTps),
-                //2.2.2 -   P2100 = 5.2.2.
-                //TODO skaper feil under P2100 utkommenter intillvidere
-                sivilstand = null // if (isPersonAvdod(brukerTps)) null else createSivilstand(brukerTps)
-        )
-    }
-
-    private fun hentPersonPinNorIdent(brukerTps: no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker): List<PinItem> {
-        logger.debug("2.1.7         Fodselsnummer/Personnummer")
-        return listOf(
-                PinItem(
-                        //hentet lokal NAV insitusjondata fra applikasjon properties.
-                        institusjonsnavn = eessiInfo.institutionnavn,
-                        institusjonsid = eessiInfo.institutionid,
-
-                        //NAV/Norge benytter ikke seg av sektor, setter denne til null
-
-                        //personnr
-                        identifikator = hentNorIdent(brukerTps),
-
-                        // norsk personnr settes alltid til NO da vi henter NorIdent
-                        land = "NO"
-                )
-        )
-    }
-
-    //hjelpe funkson for personstatus.
-    private fun hentPersonStatus(personTPS: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): String? {
-        return personTPS.personstatus?.personstatus?.value
-    }
-
+    // FIXME TODO Ser ikke ut til å være i bruk??
     //Sivilstand ENKE, PENS, SINGLE Familiestatus
     //Dette feilter tilsvarer Familie statius i Rina kap. 2.2.2 eller 5.2.2
     fun createSivilstand(brukerTps: no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker): List<SivilstandItem> {
@@ -267,22 +45,4 @@ class PrefillPersonDataFromTPS(private val personV3Service: PersonV3Service,
         ))
     }
 
-    //knytes til nasjonalitet for utfylling P2x00
-    private fun hentStatsborgerskapTps(person: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): StatsborgerskapItem {
-        logger.debug("2.2.1.1         Land / Statsborgerskap")
-
-        val statsborgerskap = person.statsborgerskap as Statsborgerskap
-        val land = statsborgerskap.land as Landkoder
-
-        return StatsborgerskapItem(
-                land = prefillAdresse.hentLandkode(land)
-        )
-    }
-
-    //TODO: Mapping av kjønn skal defineres i codemapping i EUX
-    private fun mapKjonn(kjonn: Kjoenn): String {
-        logger.debug("2.1.4         Kjønn")
-        val ktyper = kjonn.kjoenn
-        return ktyper.value
-    }
 }

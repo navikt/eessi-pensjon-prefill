@@ -11,7 +11,8 @@ import org.springframework.stereotype.Component
 
 @Component
 //TODO Vil utgå når SED blir koblet direkte mot PEN/PESYS for uthenting og preutfylling av data
-class PrefillPensjon(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS) : Prefill<Pensjon> {
+class PrefillPensjon(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS,
+                     private val prefillNav: PrefillNav) : Prefill<Pensjon> {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillPensjon::class.java) }
 
@@ -34,7 +35,7 @@ class PrefillPensjon(private val preutfyllingPersonFraTPS: PrefillPersonDataFrom
         var gjenlevende: Bruker? = null
         if (prefillData.erGyldigEtterlatt()) {
             logger.info("Preutfylling Utfylling Pensjon Gjenlevende (etterlatt)")
-            gjenlevende = preutfyllingPersonFraTPS.prefillBruker(pinid)
+            gjenlevende = prefillNav.createBruker(preutfyllingPersonFraTPS.hentBrukerFraTPS(pinid), null, null)
         }
 
         val pensjon = Pensjon(

@@ -26,7 +26,7 @@ class PrefillFactory(private val prefillNav: PrefillNav,
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillFactory::class.java) }
 
-    private val prefillPerson = PrefillPerson(prefillNav, PrefillPensjon(dataFromTPS))
+    private val prefillPerson = PrefillPerson(prefillNav, PrefillPensjon(dataFromTPS, prefillNav))
 
     fun createPrefillClass(prefillData: PrefillDataModel): Prefill<SED> {
         val sedValue = SEDType.valueOf(prefillData.getSEDid())

@@ -79,7 +79,7 @@ class PrefillP2000(private val prefillNav: PrefillNav,
     private fun eventuellGjenlevende(prefillData: PrefillDataModel): Bruker? {
         return if (!prefillData.kanFeltSkippes("PENSED") && prefillData.erGyldigEtterlatt()) {
             logger.debug("          Utfylling gjenlevende (etterlatt)")
-            preutfyllingPersonFraTPS.prefillBruker(prefillData.personNr)
+            prefillNav.createBruker(preutfyllingPersonFraTPS.hentBrukerFraTPS(prefillData.personNr), null, null)
         } else null
     }
 

@@ -65,8 +65,7 @@ class PrefillDataModel {
         return partSedAsJson[key]
     }
 
-    //henter ut PersonInfo payload fra UI
-    fun getPersonInfo(): BrukerInformasjon? {
+    fun getPersonInfoFromRequestData(): BrukerInformasjon? {
         val personInfo = getPartSEDasJson("PersonInfo") ?: return null
         return mapJsonToAny(personInfo, typeRefs())
     }
@@ -83,6 +82,8 @@ class PrefillDataModel {
             false
         }
     }
+
+    fun brukerEllerGjenlevendeHvisDod() = if (erGyldigEtterlatt()) avdod else personNr
 
     fun erForeldreLos(): Boolean {
         //TODO finne bedre metode?

@@ -132,8 +132,7 @@ class PersonDataFromTPS(private val mocktps: Set<MockTPS>, private val eessiInfo
             val result = initMockHentPersonResponse(it, mocktps)
             doReturn(result).whenever(mockPersonV3Service).hentPerson(it.replaceMockfnr)
         }
-        val prefillAdresse = PrefillAdresse(PostnummerService(), LandkodeService())
-        return PrefillPersonDataFromTPS(mockPersonV3Service, prefillAdresse, eessiInformasjon)
+        return PrefillPersonDataFromTPS(mockPersonV3Service)
     }
 
     fun getRandomNavFodselsnummer(value: MockTPS.TPSType): String? {

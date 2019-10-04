@@ -78,7 +78,7 @@ class PrefillP2100(private val prefillNav: PrefillNav,
     private fun eventuellGjenlevende(prefillData: PrefillDataModel): Bruker? {
         return if (prefillData.erGyldigEtterlatt()) {
             logger.debug("          Utfylling gjenlevende (etterlatt)")
-            return preutfyllingPersonFraTPS.prefillBruker(prefillData.personNr)
+            return prefillNav.createBruker(preutfyllingPersonFraTPS.hentBrukerFraTPS(prefillData.personNr), null, null)
         } else null
     }
 
