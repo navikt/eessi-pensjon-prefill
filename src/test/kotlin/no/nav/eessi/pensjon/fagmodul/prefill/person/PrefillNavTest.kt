@@ -17,7 +17,6 @@ import no.nav.tjeneste.virksomhet.person.v3.informasjon.*
 import org.junit.jupiter.api.Test
 
 import org.junit.jupiter.api.Assertions.*
-import org.junit.jupiter.api.Disabled
 import java.time.LocalDate
 
 internal class PrefillNavTest {
@@ -29,10 +28,10 @@ internal class PrefillNavTest {
         val someIntitutionNavn = "instNavn"
         val prefillNav = PrefillNav(mockBrukerFromTPS, PrefillAdresse(PostnummerService(), LandkodeService()), someInstitutionId, someIntitutionNavn)
         val somePenSaksnr = "somePenSaksnr"
-        val somePersonNr = "somePersonNr"
+        val personensPin = "somePersonNr"
         val prefillData = PrefillDataModel().apply {
             penSaksnummer = somePenSaksnr
-            personNr = somePersonNr
+            personNr = personensPin
         }
 
         val actual = prefillNav.prefill(prefillData, true)
@@ -42,62 +41,110 @@ internal class PrefillNavTest {
         assertEquals(expected, actual)
     }
 
-    @Test @Disabled
-    fun `prefill med barn`() {
+    @Test
+    fun `minimal prefill med barn`() {
         val mockBrukerFromTPS = mock<BrukerFromTPS>()
         val someInstitutionId = "enInstId"
         val someIntitutionNavn = "instNavn"
         val prefillNav = PrefillNav(mockBrukerFromTPS, PrefillAdresse(PostnummerService(), LandkodeService()), someInstitutionId, someIntitutionNavn)
         val somePenSaksnr = "somePenSaksnr"
-        val somePersonNr = "somePersonNr"
+        val foreldersPin = "somePersonNr"
         val prefillData = PrefillDataModel().apply {
             penSaksnummer = somePenSaksnr
-            personNr = somePersonNr
-
+            personNr = foreldersPin
         }
-        val someBarnPin = "BarnePin"
+        val barnetsPin = "12345678901"
 
-        val brukerMedBarnSomHarSomeBarnPin = no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker()
-        // FIXME her må vi putte inn relasjon til barn
+        val forelder = no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker()
+                .withPersonnavn(Personnavn()
+                        .withEtternavn("Robin")
+                        .withFornavn("Christopher"))
+                .withKjoenn(Kjoenn().withKjoenn(Kjoennstyper().withValue("M")))
+                .withAktoer(PersonIdent().withIdent(NorskIdent().withIdent(foreldersPin)))
+                .withStatsborgerskap(Statsborgerskap().withLand(Landkoder().withValue("NOR")))
+                .withHarFraRolleI(Familierelasjon()
+                        .withTilRolle(Familierelasjoner()
+                                .withValue("BARN"))
+                        .withTilPerson(no.nav.tjeneste.virksomhet.person.v3.informasjon.Person()
+                                .withAktoer(PersonIdent()
+                                        .withIdent(NorskIdent()
+                                                .withIdent(barnetsPin)))))
 
-        whenever(mockBrukerFromTPS.hentBrukerFraTPS(somePersonNr)).thenReturn(brukerMedBarnSomHarSomeBarnPin)
-        val barnBruker = no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker()
-        // FIXME her må vi putte noe om barnet _ kanskje
+        whenever(mockBrukerFromTPS.hentBrukerFraTPS(foreldersPin)).thenReturn(forelder)
 
-        whenever(mockBrukerFromTPS.hentBrukerFraTPS(someBarnPin)).thenReturn(barnBruker)
+        val barn = no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker()
+                .withPersonnavn(Personnavn()
+                        .withEtternavn("Brum")
+                        .withFornavn("Ole"))
+                .withKjoenn(Kjoenn().withKjoenn(Kjoennstyper().withValue("M")))
+                .withAktoer(PersonIdent().withIdent(NorskIdent().withIdent(barnetsPin)))
+                .withStatsborgerskap(Statsborgerskap().withLand(Landkoder().withValue("NOR")))
+
+        whenever(mockBrukerFromTPS.hentBrukerFraTPS(barnetsPin)).thenReturn(barn)
 
         val actual = prefillNav.prefill(prefillData, true)
+
         val expected = Nav(
                 eessisak = listOf(EessisakItem(someInstitutionId, someIntitutionNavn, somePenSaksnr, "NO")),
                 krav = Krav(LocalDate.now().toString()),
-                barn = listOf(BarnItem(relasjontilbruker = "BARN")))
+                bruker = Bruker(
+                        person = Person(
+                                pin = listOf(PinItem(
+                                        institusjonsnavn = someIntitutionNavn,
+                                        institusjonsid = someInstitutionId,
+                                        identifikator = foreldersPin,
+                                        land = "NO")),
+                                statsborgerskap = listOf(StatsborgerskapItem(land = "NO")),
+                                etternavn = "Robin",
+                                fornavn = "Christopher",
+                                kjoenn = "M",
+                                fornavnvedfoedsel = "Christopher"),
+                        adresse = Adresse(
+                                gate = "",
+                                bygning = "",
+                                by = "",
+                                postnummer = "",
+                                land = "")),
+                barn = listOf(BarnItem(
+                        person = Person(
+                                pin = listOf(PinItem(
+                                        institusjonsnavn = someIntitutionNavn,
+                                        institusjonsid = someInstitutionId,
+                                        identifikator = barnetsPin,
+                                        land = "NO")),
+                                statsborgerskap = listOf(StatsborgerskapItem(land = "NO")),
+                                etternavn = "Brum",
+                                fornavn = "Ole",
+                                kjoenn = "M",
+                                fornavnvedfoedsel = "Ole"),
+                        relasjontilbruker = "BARN")))
 
         assertEquals(expected, actual)
     }
 
     @Test
-    fun `prefill med brukerinfo på request`() {
+    fun `minimal prefill med brukerinfo på request`() {
         val mockBrukerFromTPS = mock<BrukerFromTPS>()
         val someInstitutionId = "enInstId"
         val someIntitutionNavn = "instNavn"
         val prefillNav = PrefillNav(mockBrukerFromTPS, PrefillAdresse(PostnummerService(), LandkodeService()), someInstitutionId, someIntitutionNavn)
         val somePenSaksnr = "somePenSaksnr"
-        val somePersonNr = "somePersonNr"
+        val brukerensPin = "somePersonNr"
         val prefillData = PrefillDataModel().apply {
             penSaksnummer = somePenSaksnr
-            personNr = somePersonNr
+            personNr = brukerensPin
             partSedAsJson["PersonInfo"] = mapAnyToJson(BrukerInformasjon(null,null,null,null,null,"Nordnb",null,null,null,null,null,null,null,null,null,null,null,null))
         }
 
-        val someBruker = no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker()
+        val brukeren = no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker()
                 .withPersonnavn(Personnavn()
                         .withEtternavn("Brum")
                         .withFornavn("Ole"))
                 .withKjoenn(Kjoenn().withKjoenn(Kjoennstyper().withValue("M")))
-                .withAktoer(PersonIdent().withIdent(NorskIdent().withIdent(somePersonNr)))
+                .withAktoer(PersonIdent().withIdent(NorskIdent().withIdent(brukerensPin)))
                 .withStatsborgerskap(Statsborgerskap().withLand(Landkoder().withValue("NOR")))
 
-        whenever(mockBrukerFromTPS.hentBrukerFraTPS(somePersonNr)).thenReturn(someBruker)
+        whenever(mockBrukerFromTPS.hentBrukerFraTPS(brukerensPin)).thenReturn(brukeren)
 
         val actual = prefillNav.prefill(prefillData, true)
         val expected = Nav(
@@ -108,7 +155,7 @@ internal class PrefillNavTest {
                                 pin = listOf(PinItem(
                                         institusjonsnavn = someIntitutionNavn,
                                         institusjonsid = someInstitutionId,
-                                        identifikator = somePersonNr,
+                                        identifikator = brukerensPin,
                                         land = "NO")),
                                 statsborgerskap = listOf(StatsborgerskapItem(land = "NO")),
                                 etternavn = "Brum",

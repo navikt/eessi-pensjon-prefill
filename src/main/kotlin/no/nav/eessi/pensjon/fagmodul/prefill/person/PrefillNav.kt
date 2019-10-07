@@ -251,9 +251,14 @@ class PrefillNav(private val brukerFromTPS: BrukerFromTPS,
 
         val ektefelleBruker = if(ektepinid.isBlank()) null else brukerFromTPS.hentBrukerFraTPS(ektepinid)
 
-        val barn = if (fyllUtBarnListe) hentBarnFraTPS(prefillData.personNr) else listOf()
+        val barnBrukereFraTPS =
+                if (fyllUtBarnListe) {
+                    barnsPinId(brukerFromTPS.hentBrukerFraTPS(prefillData.personNr))
+                            .mapNotNull { barn -> brukerFromTPS.hentBrukerFraTPS(barn) }
+                } else listOf()
 
         val personInfo = prefillData.getPersonInfoFromRequestData()
+
         return Nav(
                 //1.0
                 eessisak = createEssisakItem(prefillData.penSaksnummer, institutionid, institutionnavn),
@@ -277,7 +282,7 @@ class PrefillNav(private val brukerFromTPS: BrukerFromTPS,
                 //6.0 skal denne kjøres hver gang? eller kun under P2000? P2100
                 //sjekke om SED er P2x00 for utfylling av BARN
                 //sjekke punkt for barn. pkt. 6.0 for P2000 og P2200 pkt. 8.0 for P2100
-                barn = createBarnliste(barn),
+                barn = createBarnliste(barnBrukereFraTPS.map { createBruker(it, null, null) }),
 
                 //7.0 verge
                 verge = createVerge(),
@@ -357,15 +362,6 @@ class PrefillNav(private val brukerFromTPS: BrukerFromTPS,
         return null
     }
 
-
-    private fun hentBarnFraTPS(personNr: String): List<Bruker?> {
-        val barnaspin = barnsPinId(brukerFromTPS.hentBrukerFraTPS(personNr))
-        val barn = barnaspin
-                .mapNotNull { brukerFromTPS.hentBrukerFraTPS(it) }
-                .map { createBruker(it, null, null)
-        }
-        return barn
-    }
 
     private fun barnsPinId(brukerTPS: no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker?): List<String> {
         if (brukerTPS == null) return listOf()
