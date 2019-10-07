@@ -38,7 +38,7 @@ object PrefillTestHelper {
 
     fun setupPersondataFraTPS(mockPersonDataFraTPS: Set<PersonDataFromTPS.MockTPS>): BrukerFromTPS {
         val datatps = PersonDataFromTPS(mockPersonDataFraTPS, mockEessiInformasjon)
-        return datatps.mockPrefillPersonDataFromTPS()
+        return datatps.mockBrukerFromTPS()
     }
 
     fun readJsonResponse(file: String): String {

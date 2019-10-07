@@ -39,7 +39,7 @@ class PrefillPersonEnkeTest {
 
     @Test
     fun `forvent utfylling av person data av ENKE fra TPS P2000`() {
-        val preutfyllingTPS = personDataFromTPS.mockPrefillPersonDataFromTPS()
+        val preutfyllingTPS = personDataFromTPS.mockBrukerFromTPS()
         val prefillNav = PrefillNav(preutfyllingTPS, mock<PrefillAdresse>(), institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO")
 
         val fnr = personDataFromTPS.getRandomNavFodselsnummer(PersonDataFromTPS.MockTPS.TPSType.PERSON) ?: "02345678901"
@@ -59,7 +59,7 @@ class PrefillPersonEnkeTest {
 
     @Test
     fun `forvent utfylling av person data av ENKE fra TPS P2100`() {
-        val preutfyllingTPS = personDataFromTPS.mockPrefillPersonDataFromTPS()
+        val preutfyllingTPS = personDataFromTPS.mockBrukerFromTPS()
         val prefillNav = PrefillNav(preutfyllingTPS, mock<PrefillAdresse>(), institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO")
 
         val fnr = personDataFromTPS.getRandomNavFodselsnummer(PersonDataFromTPS.MockTPS.TPSType.PERSON) ?: "02345678901"
@@ -97,7 +97,7 @@ class PrefillPersonEnkeTest {
 
     @Test
     fun `forvent utfylling av person data av ENKE fra TPS P2200`() {
-        val preutfyllingTPS = personDataFromTPS.mockPrefillPersonDataFromTPS()
+        val preutfyllingTPS = personDataFromTPS.mockBrukerFromTPS()
         val prefillNav = PrefillNav(preutfyllingTPS, mock<PrefillAdresse>(), institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO")
 
         val fnr = personDataFromTPS.getRandomNavFodselsnummer(PersonDataFromTPS.MockTPS.TPSType.PERSON) ?: "02345678901"

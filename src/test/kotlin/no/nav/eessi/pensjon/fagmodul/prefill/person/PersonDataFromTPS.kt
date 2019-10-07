@@ -123,7 +123,7 @@ class PersonDataFromTPS(private val mocktps: Set<MockTPS>, private val eessiInfo
         return v3PersonResponse
     }
 
-    fun mockPrefillPersonDataFromTPS(): BrukerFromTPS {
+    fun mockBrukerFromTPS(): BrukerFromTPS {
         val mockPersonV3Service = mock<PersonV3Service>()
         mocktps.forEach {
             val result = initMockHentPersonResponse(it, mocktps)

@@ -24,10 +24,10 @@ internal class PrefillNavTest {
 
     @Test
     fun `prefill med tom respons fra TPS`() {
-        val mockPrefillPersonDataFromTPS = mock<BrukerFromTPS>()
+        val mockBrukerFromTPS = mock<BrukerFromTPS>()
         val someInstitutionId = "enInstId"
         val someIntitutionNavn = "instNavn"
-        val prefillNav = PrefillNav(mockPrefillPersonDataFromTPS, PrefillAdresse(PostnummerService(), LandkodeService()), someInstitutionId, someIntitutionNavn)
+        val prefillNav = PrefillNav(mockBrukerFromTPS, PrefillAdresse(PostnummerService(), LandkodeService()), someInstitutionId, someIntitutionNavn)
         val somePenSaksnr = "somePenSaksnr"
         val somePersonNr = "somePersonNr"
         val prefillData = PrefillDataModel().apply {
@@ -44,10 +44,10 @@ internal class PrefillNavTest {
 
     @Test @Disabled
     fun `prefill med barn`() {
-        val mockPrefillPersonDataFromTPS = mock<BrukerFromTPS>()
+        val mockBrukerFromTPS = mock<BrukerFromTPS>()
         val someInstitutionId = "enInstId"
         val someIntitutionNavn = "instNavn"
-        val prefillNav = PrefillNav(mockPrefillPersonDataFromTPS, PrefillAdresse(PostnummerService(), LandkodeService()), someInstitutionId, someIntitutionNavn)
+        val prefillNav = PrefillNav(mockBrukerFromTPS, PrefillAdresse(PostnummerService(), LandkodeService()), someInstitutionId, someIntitutionNavn)
         val somePenSaksnr = "somePenSaksnr"
         val somePersonNr = "somePersonNr"
         val prefillData = PrefillDataModel().apply {
@@ -60,11 +60,11 @@ internal class PrefillNavTest {
         val brukerMedBarnSomHarSomeBarnPin = no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker()
         // FIXME her må vi putte inn relasjon til barn
 
-        whenever(mockPrefillPersonDataFromTPS.hentBrukerFraTPS(somePersonNr)).thenReturn(brukerMedBarnSomHarSomeBarnPin)
+        whenever(mockBrukerFromTPS.hentBrukerFraTPS(somePersonNr)).thenReturn(brukerMedBarnSomHarSomeBarnPin)
         val barnBruker = no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker()
         // FIXME her må vi putte noe om barnet _ kanskje
 
-        whenever(mockPrefillPersonDataFromTPS.hentBrukerFraTPS(someBarnPin)).thenReturn(barnBruker)
+        whenever(mockBrukerFromTPS.hentBrukerFraTPS(someBarnPin)).thenReturn(barnBruker)
 
         val actual = prefillNav.prefill(prefillData, true)
         val expected = Nav(
@@ -77,10 +77,10 @@ internal class PrefillNavTest {
 
     @Test
     fun `prefill med brukerinfo på request`() {
-        val mockPrefillPersonDataFromTPS = mock<BrukerFromTPS>()
+        val mockBrukerFromTPS = mock<BrukerFromTPS>()
         val someInstitutionId = "enInstId"
         val someIntitutionNavn = "instNavn"
-        val prefillNav = PrefillNav(mockPrefillPersonDataFromTPS, PrefillAdresse(PostnummerService(), LandkodeService()), someInstitutionId, someIntitutionNavn)
+        val prefillNav = PrefillNav(mockBrukerFromTPS, PrefillAdresse(PostnummerService(), LandkodeService()), someInstitutionId, someIntitutionNavn)
         val somePenSaksnr = "somePenSaksnr"
         val somePersonNr = "somePersonNr"
         val prefillData = PrefillDataModel().apply {
@@ -97,7 +97,7 @@ internal class PrefillNavTest {
                 .withAktoer(PersonIdent().withIdent(NorskIdent().withIdent(somePersonNr)))
                 .withStatsborgerskap(Statsborgerskap().withLand(Landkoder().withValue("NOR")))
 
-        whenever(mockPrefillPersonDataFromTPS.hentBrukerFraTPS(somePersonNr)).thenReturn(someBruker)
+        whenever(mockBrukerFromTPS.hentBrukerFraTPS(somePersonNr)).thenReturn(someBruker)
 
         val actual = prefillNav.prefill(prefillData, true)
         val expected = Nav(
