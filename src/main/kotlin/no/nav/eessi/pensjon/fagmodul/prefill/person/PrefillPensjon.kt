@@ -35,7 +35,8 @@ class PrefillPensjon(private val preutfyllingPersonFraTPS: PrefillPersonDataFrom
         var gjenlevende: Bruker? = null
         if (prefillData.erGyldigEtterlatt()) {
             logger.info("Preutfylling Utfylling Pensjon Gjenlevende (etterlatt)")
-            gjenlevende = prefillNav.createBruker(preutfyllingPersonFraTPS.hentBrukerFraTPS(pinid), null, null)
+            val gjenlevendeBruker = preutfyllingPersonFraTPS.hentBrukerFraTPS(pinid)
+            gjenlevende = if (gjenlevendeBruker == null) null else prefillNav.createBruker(gjenlevendeBruker, null, null)
         }
 
         val pensjon = Pensjon(

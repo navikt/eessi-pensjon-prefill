@@ -11,6 +11,7 @@ import no.nav.eessi.pensjon.fagmodul.sedmodel.Bruker
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Person
 import no.nav.eessi.pensjon.services.geo.LandkodeService
 import no.nav.eessi.pensjon.services.geo.PostnummerService
+import no.nav.eessi.pensjon.utils.createXMLCalendarFromString
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.*
 import org.junit.jupiter.api.Test
@@ -137,5 +138,84 @@ internal class PrefillNavTest {
                                 land = "")))
 
         assertEquals(expected, actual)
+    }
+
+    @Test
+    fun testPaahentSivilstandArr9999BlirBlank() {
+        val brukerTps = mockBrukerSivilstandTps("9999-01-01", "SKPQ")
+
+        val actualList = PrefillNav.createSivilstand(brukerTps)
+        val actual = actualList[0]
+
+        assertEquals("", actual.fradato)
+        assertEquals(null, actual.status)
+    }
+
+    @Test
+    fun testPaahentSivilstandOk() {
+        val brukerTps = mockBrukerSivilstandTps("1999-01-01", "UGIF")
+
+        val actualList = PrefillNav.createSivilstand(brukerTps)
+        val actual = actualList[0]
+
+        assertEquals("1999-01-01", actual.fradato)
+        assertEquals("01", actual.status)
+    }
+
+    @Test
+    fun testPaahentSivilstandAar2099() {
+        val brukerTps = mockBrukerSivilstandTps("2499-12-01", "REPA")
+
+        val actualList = PrefillNav.createSivilstand(brukerTps)
+        val actual = actualList[0]
+
+        assertEquals("2499-12-01", actual.fradato)
+        assertEquals("04", actual.status)
+    }
+
+
+    private fun mockBrukerSivilstandTps(gyldigPeriode: String, sivilstandType: String): no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker {
+        val brukerTps = no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker()
+        brukerTps.endretAv = "Test"
+        brukerTps.foedested = "OSLO"
+
+        val personnavnTps = Personnavn()
+        personnavnTps.mellomnavn = "Dummy Absurd"
+        personnavnTps.fornavn = "Dummy"
+        personnavnTps.etternavn = "Absurd"
+        brukerTps.personnavn = personnavnTps
+
+        val sivilstandTps = Sivilstand()
+        sivilstandTps.endretAv = "Test"
+        sivilstandTps.fomGyldighetsperiode = createXMLCalendarFromString(gyldigPeriode)
+
+        val sivilstanderTps = Sivilstander()
+        sivilstanderTps.value = sivilstandType
+
+        sivilstandTps.sivilstand = sivilstanderTps
+        brukerTps.sivilstand = sivilstandTps
+
+        return brukerTps
+    }
+
+    @Test
+    fun `create birthplace as unknown`() {
+        val bruker = no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker()
+        bruker.foedested = null
+
+        val result = PrefillNav.createFodested(bruker)
+
+        assertNull(result)
+    }
+
+    @Test
+    fun `create correct birthplace known`() {
+        val bruker = no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker()
+        bruker.foedested = "NOR"
+
+        val result = PrefillNav.createFodested(bruker)
+
+        assertNotNull(result)
+        assertEquals("NOR", result?.land)
     }
 }

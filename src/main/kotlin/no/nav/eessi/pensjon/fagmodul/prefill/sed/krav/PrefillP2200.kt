@@ -71,7 +71,8 @@ class PrefillP2200(private val prefillNav: PrefillNav,
     private fun eventuellGjenlevende(prefillData: PrefillDataModel): Bruker? {
         return if (!prefillData.kanFeltSkippes("PENSED") && prefillData.erGyldigEtterlatt()) {
             logger.debug("          Utfylling gjenlevende (etterlatt)")
-            prefillNav.createBruker(preutfyllingPersonFraTPS.hentBrukerFraTPS(prefillData.personNr), null, null)
+            val gjenlevendeBruker = preutfyllingPersonFraTPS.hentBrukerFraTPS(prefillData.personNr)
+            if (gjenlevendeBruker == null) null else prefillNav.createBruker(gjenlevendeBruker, null, null)
         } else null
     }
 

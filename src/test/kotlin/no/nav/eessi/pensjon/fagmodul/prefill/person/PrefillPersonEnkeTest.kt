@@ -38,36 +38,6 @@ class PrefillPersonEnkeTest {
     }
 
     @Test
-    fun `create birthplace as unknown`() {
-        val preutfyllingTPS = personDataFromTPS.mockPrefillPersonDataFromTPS()
-
-        //val fnr = getRandomNavFodselsnummer(MockTPS.TPSType.PERSON) ?: "02345678901"
-        //val prefillData = generatePrefillData("P2000", fnr)
-
-        val bruker = Bruker()
-        bruker.foedested = null
-
-        val result = PrefillNav.hentFodested(bruker)
-
-        assertNull(result)
-        //assertEquals(null, result?.land)
-
-    }
-    @Test
-    fun `create correct birthplace known`() {
-        val preutfyllingTPS = personDataFromTPS.mockPrefillPersonDataFromTPS()
-
-        val bruker = Bruker()
-        bruker.foedested = "NOR"
-
-        val result = PrefillNav.hentFodested(bruker)
-
-        assertNotNull(result)
-        assertEquals("NOR", result?.land)
-
-    }
-
-    @Test
     fun `forvent utfylling av person data av ENKE fra TPS P2000`() {
         val preutfyllingTPS = personDataFromTPS.mockPrefillPersonDataFromTPS()
         val prefillNav = PrefillNav(preutfyllingTPS, mock<PrefillAdresse>(), institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO")

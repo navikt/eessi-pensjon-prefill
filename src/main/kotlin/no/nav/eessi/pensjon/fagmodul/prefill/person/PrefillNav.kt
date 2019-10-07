@@ -27,7 +27,7 @@ class PrefillNav(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS,
     companion object {
         private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillNav::class.java) }
 
-        fun hentFodested(bruker: no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker): Foedested? {
+        fun createFodested(bruker: no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker): Foedested? {
             logger.debug("2.1.8.1       Fødested")
 
             val fsted = Foedested(
@@ -41,34 +41,238 @@ class PrefillNav(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS,
             return fsted
         }
 
+        enum class RelasjonEnum(val relasjon: String) {
+            FAR("FARA"),
+            MOR("MORA"),
+            BARN("BARN");
 
+            fun erSamme(relasjonTPS: String): Boolean {
+                return relasjon == relasjonTPS
+            }
+        }
+
+        fun isPersonAvdod(personTPS: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person) : Boolean {
+            val personstatus = hentPersonStatus(personTPS)
+            if (personstatus == "DØD") {
+                logger.debug("Person er avdod (ingen adresse å hente).")
+                return true
+            }
+            return false
+        }
+        //hjelpe funkson for personstatus.
+        private fun hentPersonStatus(personTPS: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): String? {
+            return personTPS.personstatus?.personstatus?.value
+        }
+
+        //knytes til nasjonalitet for utfylling P2x00
+        //TODO: Mapping av kjønn skal defineres i codemapping i EUX
+        private fun mapKjonn(kjonn: Kjoenn): String {
+            logger.debug("2.1.4         Kjønn")
+            val ktyper = kjonn.kjoenn
+            return ktyper.value
+        }
+
+        //personnr fnr
+        private fun hentNorIdent(person: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): String {
+            logger.debug("2.1.7.1.2         Personal Identification Number (PIN) personnr")
+            val persident = person.aktoer as PersonIdent
+            val pinid: NorskIdent = persident.ident
+            return pinid.ident
+        }
+
+        //fdato i rinaformat
+        private fun datoFormat(person: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): String? {
+            logger.debug("2.1.3         Date of birth")
+            val fdato = person.foedselsdato
+            logger.debug("              Date of birth: $fdato")
+            return fdato?.foedselsdato?.simpleFormat()
+        }
+
+        private fun createPersonPinNorIdent(
+                brukerTps: no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker,
+                institusjonId: String,
+                institusjonNavn: String): List<PinItem> {
+            logger.debug("2.1.7         Fodselsnummer/Personnummer")
+            return listOf(
+                    PinItem(
+                            //hentet lokal NAV insitusjondata fra applikasjon properties.
+                            institusjonsnavn = institusjonNavn,
+                            institusjonsid = institusjonId,
+
+                            //NAV/Norge benytter ikke seg av sektor, setter denne til null
+
+                            //personnr
+                            identifikator = hentNorIdent(brukerTps),
+
+                            // norsk personnr settes alltid til NO da vi henter NorIdent
+                            land = "NO"
+                    )
+            )
+        }
+
+        //7.0  TODO: 7. Informasjon om representant/verge hva kan vi hente av informasjon? fra hvor
+        private fun createVerge(): Verge? {
+            logger.debug("7.0           (IKKE NOE HER ENNÅ!!) Informasjon om representant/verge")
+            return null
+        }
+
+        //8.0 Bank detalsjer om bank betalinger.
+        private fun createBankData(personInfo: BrukerInformasjon): Bank {
+            logger.debug("8.0           Informasjon om betaling")
+            logger.debug("8.1           Informasjon om betaling")
+            return Bank(
+                    navn = personInfo.bankName,
+                    konto = Konto(
+                            innehaver = Innehaver(
+                                    rolle = "01", //forsikkret bruker .. avventer med Verge "02",
+                                    navn = personInfo.bankName
+                            ),
+                            sepa = Sepa(
+                                    iban = personInfo.bankIban,
+                                    swift = personInfo.bankBicSwift
+                            )
+
+                    ),
+                    adresse = Adresse(
+                            gate = personInfo.bankAddress,
+                            land = personInfo.bankCountry?.currencyLabel
+                    )
+            )
+        }
+
+        //TODO: Dette må hentes fra sak/krav
+        private fun createDiverseOgKravDato(): Krav {
+            logger.debug("9.1           (FRA V1SAK?) Dato for krav")
+            return Krav(Date().simpleFormat())
+        }
+
+        //utfylling av liste av barn under 18år
+        private fun createBarnliste(barn: List<Bruker?>): List<BarnItem>? {
+            val barnlist = barn
+                    .filterNotNull()
+                    .map {
+                        BarnItem(
+                                person = it.person,
+                                far = it.far,
+                                mor = it.mor,
+                                relasjontilbruker = "BARN"
+                        )
+                    }
+            return if (barnlist.isEmpty()) null else barnlist
+        }
+
+        private fun createEktefelleType(typevalue: String): String {
+            logger.debug("5.1           Ektefelle/Partnerskap-type")
+            return when (typevalue) {
+                "EKTE" -> "01"
+                "PART" -> "02"
+                else -> "03"
+            }
+        }
+
+        private fun filterEktefelleRelasjon(bruker: no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker?): Pair<String, String> {
+            if (bruker == null) return Pair("","")
+            var ektepinid = ""
+            var ekteTypeValue = ""
+
+            bruker.harFraRolleI.forEach {
+                if (it.tilRolle.value == "EKTE") { // FIXME TODO - dette begrenser til kun EKTEFELLE (ikke PARTNER og evt andre)
+
+                    ekteTypeValue = it.tilRolle.value
+                    val tilperson = it.tilPerson
+                    val pident = tilperson.aktoer as PersonIdent
+
+                    ektepinid = pident.ident.ident
+                    if (ektepinid.isNotBlank()) {
+                        return@forEach
+                    }
+                }
+            }
+            return Pair(ektepinid, ekteTypeValue)
+        }
+
+        private fun createAnsettelsesforhold(personInfo: BrukerInformasjon): ArbeidsforholdItem {
+            logger.debug("3.1           Ansettelseforhold/arbeidsforhold")
+            return ArbeidsforholdItem(
+                    //3.1.1.
+                    yrke = "",
+                    //3.1.2
+                    type = personInfo.workType ?: "",
+                    //3.1.3
+                    planlagtstartdato = personInfo.workStartDate?.simpleFormat() ?: "",
+                    //3.1.4
+                    sluttdato = personInfo.workEndDate?.simpleFormat() ?: "",
+                    //3.1.5
+                    planlagtpensjoneringsdato = personInfo.workEstimatedRetirementDate?.simpleFormat() ?: "",
+                    //3.1.6
+                    arbeidstimerperuke = personInfo.workHourPerWeek ?: ""
+            )
+        }
+
+        private fun createInformasjonOmAnsettelsesforhold(personInfo: BrukerInformasjon): List<ArbeidsforholdItem>? {
+            logger.debug("3.0           Informasjon om personens ansettelsesforhold og selvstendige næringsvirksomhet")
+            logger.debug("3.1           Informasjon om ansettelsesforhold og selvstendig næringsvirksomhet ")
+            return listOf(createAnsettelsesforhold(personInfo))
+        }
+
+
+        // FIXME TODO Ser ikke ut til å være i bruk??
+        //Sivilstand ENKE, PENS, SINGLE Familiestatus
+        //Dette feilter tilsvarer Familie statius i Rina kap. 2.2.2 eller 5.2.2
+        fun createSivilstand(brukerTps: no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker): List<SivilstandItem> {
+            logger.debug("2.2.2           Sivilstand / Familiestatus (01 Enslig, 02 Gift, 03 Samboer, 04 Partnerskal, 05 Skilt, 06 Skilt partner, 07 Separert, 08 Enke)")
+            val sivilstand = brukerTps.sivilstand as Sivilstand
+            val status = mapOf("GIFT" to "02", "REPA" to "04", "ENKE" to "08", "SAMB" to "03", "SEPA" to "07", "UGIF" to "01", "SKIL" to "05", "SKPA" to "06")
+            return listOf(SivilstandItem(
+                    fradato = sivilstand.fomGyldighetsperiode.simpleFormat(),
+                    status = status[sivilstand.sivilstand.value]
+            ))
+        }
+
+        //lokal sak pkt 1.0 i gjelder alle SED
+        private fun createEssisakItem(penSaksnummer: String, institusjonId: String, institusjonNavn: String): List<EessisakItem> {
+            logger.debug("1.1           Lokalt saksnummer (hvor hentes disse verider ifra?")
+            return listOf(EessisakItem(
+                    institusjonsid = institusjonId,
+                    institusjonsnavn = institusjonNavn,
+                    saksnummer = penSaksnummer,
+                    land = "NO"
+            ))
+        }
     }
 
     fun prefill(prefillData: PrefillDataModel, fyllUtBarnListe: Boolean = false): Nav {
 
         // FIXME - det veksles mellom gjenlevende og bruker ... usikkert om dette er rett...
         val brukerEllerGjenlevende = preutfyllingPersonFraTPS.hentBrukerFraTPS(prefillData.brukerEllerGjenlevendeHvisDod())
-        val bruker = preutfyllingPersonFraTPS.hentBrukerFraTPS(prefillData.personNr)
 
+        val bruker = preutfyllingPersonFraTPS.hentBrukerFraTPS(prefillData.personNr)
         val (ektepinid, ekteTypeValue) = filterEktefelleRelasjon(bruker)
+
         val ektefelleBruker = if(ektepinid.isBlank()) null else preutfyllingPersonFraTPS.hentBrukerFraTPS(ektepinid)
 
         val barn = if (fyllUtBarnListe) hentBarnFraTPS(prefillData.personNr) else listOf()
 
+        val personInfo = prefillData.getPersonInfoFromRequestData()
         return Nav(
                 //1.0
-                eessisak = createEssisakItem(prefillData.penSaksnummer),
+                eessisak = createEssisakItem(prefillData.penSaksnummer, institutionid, institutionnavn),
 
                 //createBrukerfraTPS død hvis etterlatt (etterlatt aktoerregister fylt ut)
                 //2.0 For levende, eller hvis person er dod (hvis dod flyttes levende til 3.0)
                 //3.0 Anstalleseforhold og
                 //8.0 Bank
-                bruker = createBrukerFraTPSOgRequest(brukerEllerGjenlevende, prefillData.getPersonInfoFromRequestData()),
+                bruker = if (brukerEllerGjenlevende == null) null else
+                            createBruker(
+                                    brukerEllerGjenlevende,
+                                    if (personInfo == null) null else createBankData(personInfo),
+                                    if (personInfo == null) null else createInformasjonOmAnsettelsesforhold(personInfo)),
 
                 //4.0 Ytelser ligger under pensjon object (P2000)
 
                 //5.0 ektefelle eller partnerskap
-                ektefelle = createEktefelle(ektefelleBruker, ekteTypeValue),
+                ektefelle = if (ektefelleBruker == null) null else
+                        createEktefellePartner(createBruker(ektefelleBruker, null, null), ekteTypeValue),
 
                 //6.0 skal denne kjøres hver gang? eller kun under P2000? P2100
                 //sjekke om SED er P2x00 for utfylling av BARN
@@ -85,46 +289,45 @@ class PrefillNav(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS,
         )
     }
 
-    enum class RelasjonEnum(val relasjon: String) {
-        FAR("FARA"),
-        MOR("MORA"),
-        BARN("BARN");
-
-        fun erSamme(relasjonTPS: String): Boolean {
-            return relasjon == relasjonTPS
-        }
+    fun createBruker(brukerTPS: no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker,
+                     bank: Bank?,
+                     ansettelsesforhold: List<ArbeidsforholdItem>?): Bruker? {
+            return Bruker(
+                person = createPersonData(brukerTPS),
+                adresse = if (isPersonAvdod(brukerTPS)) null else prefillAdresse.createPersonAdresse(brukerTPS),
+                far = if (isPersonAvdod(brukerTPS)) null else createRelasjon(RelasjonEnum.FAR, brukerTPS),
+                mor = if (isPersonAvdod(brukerTPS)) null else createRelasjon(RelasjonEnum.MOR, brukerTPS),
+                bank = bank,
+                arbeidsforhold = ansettelsesforhold)
     }
 
-    fun createBruker(brukerTPS: no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker?, bank: Bank?, ansettelsesforhold: List<ArbeidsforholdItem>?): Bruker? {
-        if (brukerTPS == null) return null
-        var adresse: Adresse? = null
-        var far: Foreldre? = null
-        var mor: Foreldre? = null
 
-        if (!isPersonAvdod(brukerTPS)) {
-            adresse = prefillAdresse.createPersonAdresse(brukerTPS)
-            far = createRelasjon(RelasjonEnum.FAR, brukerTPS)
-            mor = createRelasjon(RelasjonEnum.MOR, brukerTPS)
-        }
-
-        return Bruker(
-                person = createPersonData(brukerTPS),
-                adresse = adresse,
-                far = far,
-                mor = mor,
-                bank = bank,
-                arbeidsforhold = ansettelsesforhold
+    //persondata - nav-sed format
+    private fun createPersonData(brukerTps: no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker): Person {
+        logger.debug("2.1           Persondata (forsikret person / gjenlevende person / barn)")
+        return Person(
+                //2.1.1     familiy name
+                etternavn = (brukerTps.personnavn as Personnavn).etternavn,
+                //2.1.2     forname
+                fornavn = (brukerTps.personnavn as Personnavn).fornavn,
+                //2.1.3
+                foedselsdato = datoFormat(brukerTps),
+                //2.1.4     //sex
+                kjoenn = mapKjonn(brukerTps.kjoenn),
+                //2.1.6
+                fornavnvedfoedsel = (brukerTps.personnavn as Personnavn).fornavn,
+                //2.1.7
+                pin = createPersonPinNorIdent(brukerTps, institutionid, institutionnavn),
+                //2.2.1.1
+                statsborgerskap = listOf(createStatsborgerskap(brukerTps)),
+                //2.1.8.1           place of birth
+                foedested = createFodested(brukerTps),
+                //2.2.2 -   P2100 = 5.2.2.
+                //TODO skaper feil under P2100 utkommenter intillvidere
+                sivilstand = null // if (isPersonAvdod(brukerTps)) null else createSivilstand(brukerTps)
         )
     }
 
-    fun isPersonAvdod(personTPS: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person) : Boolean {
-        val personstatus = hentPersonStatus(personTPS)
-        if (personstatus == "DØD") {
-            logger.debug("Person er avdod (ingen adresse å hente).")
-            return true
-        }
-        return false
-    }
 
     //mor / far
     private fun createRelasjon(relasjon: RelasjonEnum, person: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): Foreldre? {
@@ -154,158 +357,12 @@ class PrefillNav(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS,
         return null
     }
 
-    //persondata - nav-sed format
-    private fun createPersonData(brukerTps: no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker): Person {
-        logger.debug("2.1           Persondata (forsikret person / gjenlevende person / barn)")
-        return Person(
-                //2.1.1     familiy name
-                etternavn = (brukerTps.personnavn as Personnavn).etternavn,
-                //2.1.2     forname
-                fornavn = (brukerTps.personnavn as Personnavn).fornavn,
-                //2.1.3
-                foedselsdato = datoFormat(brukerTps),
-                //2.1.4     //sex
-                kjoenn = mapKjonn(brukerTps.kjoenn),
-                //2.1.6
-                fornavnvedfoedsel = (brukerTps.personnavn as Personnavn).fornavn,
-                //2.1.7
-                pin = hentPersonPinNorIdent(brukerTps),
-                //2.2.1.1
-                statsborgerskap = listOf(hentStatsborgerskapTps(brukerTps)),
-                //2.1.8.1           place of birth
-                foedested = hentFodested(brukerTps),
-                //2.2.2 -   P2100 = 5.2.2.
-                //TODO skaper feil under P2100 utkommenter intillvidere
-                sivilstand = null // if (isPersonAvdod(brukerTps)) null else createSivilstand(brukerTps)
-        )
-    }
-
-    //hjelpe funkson for personstatus.
-    private fun hentPersonStatus(personTPS: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): String? {
-        return personTPS.personstatus?.personstatus?.value
-    }
-
-    //knytes til nasjonalitet for utfylling P2x00
-    private fun hentStatsborgerskapTps(person: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): StatsborgerskapItem {
-        logger.debug("2.2.1.1         Land / Statsborgerskap")
-
-        val statsborgerskap = person.statsborgerskap as Statsborgerskap
-        val land = statsborgerskap.land as Landkoder
-
-        return StatsborgerskapItem(
-                land = prefillAdresse.hentLandkode(land)
-        )
-    }
-
-    //TODO: Mapping av kjønn skal defineres i codemapping i EUX
-    private fun mapKjonn(kjonn: Kjoenn): String {
-        logger.debug("2.1.4         Kjønn")
-        val ktyper = kjonn.kjoenn
-        return ktyper.value
-    }
-
-    //personnr fnr
-    private fun hentNorIdent(person: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): String {
-        logger.debug("2.1.7.1.2         Personal Identification Number (PIN) personnr")
-        val persident = person.aktoer as PersonIdent
-        val pinid: NorskIdent = persident.ident
-        return pinid.ident
-    }
-
-    //fdato i rinaformat
-    private fun datoFormat(person: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): String? {
-        logger.debug("2.1.3         Date of birth")
-        val fdato = person.foedselsdato
-        logger.debug("              Date of birth: $fdato")
-        return fdato?.foedselsdato?.simpleFormat()
-    }
-
-    private fun hentPersonPinNorIdent(brukerTps: no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker): List<PinItem> {
-        logger.debug("2.1.7         Fodselsnummer/Personnummer")
-        return listOf(
-                PinItem(
-                        //hentet lokal NAV insitusjondata fra applikasjon properties.
-                        institusjonsnavn = institutionnavn,
-                        institusjonsid = institutionid,
-
-                        //NAV/Norge benytter ikke seg av sektor, setter denne til null
-
-                        //personnr
-                        identifikator = hentNorIdent(brukerTps),
-
-                        // norsk personnr settes alltid til NO da vi henter NorIdent
-                        land = "NO"
-                )
-        )
-    }
-
-    //7.0  TODO: 7. Informasjon om representant/verge hva kan vi hente av informasjon? fra hvor
-    private fun createVerge(): Verge? {
-        logger.debug("7.0           (IKKE NOE HER ENNÅ!!) Informasjon om representant/verge")
-        return null
-    }
-
-    //8.0 Bank detalsjer om bank betalinger.
-    private fun createBankData(personInfo: BrukerInformasjon): Bank {
-        logger.debug("8.0           Informasjon om betaling")
-        logger.debug("8.1           Informasjon om betaling")
-        return Bank(
-                    navn = personInfo.bankName,
-                    konto = Konto(
-                            innehaver = Innehaver(
-                                    rolle = "01", //forsikkret bruker .. avventer med Verge "02",
-                                    navn = personInfo.bankName
-                            ),
-                            sepa = Sepa(
-                                    iban = personInfo.bankIban,
-                                    swift = personInfo.bankBicSwift
-                            )
-
-                    ),
-                    adresse = Adresse(
-                            gate = personInfo.bankAddress,
-                            land = personInfo.bankCountry?.currencyLabel
-                    )
-        )
-    }
-
-    //
-    //TODO: Dette må hentes fra sak/krav
-    private fun createDiverseOgKravDato(): Krav {
-        logger.debug("9.1           (FRA V1SAK?) Dato for krav")
-        return Krav(Date().simpleFormat())
-    }
-
-    // kan denne utfylling benyttes på alle SED?
-    // etterlatt pensjon da er dette den avdøde.(ikke levende)
-    // etterlatt pensjon da er den levende i pk.3 sed (gjenlevende) (pensjon.gjenlevende)
-    private fun createBrukerFraTPSOgRequest(brukerTPS: no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker?, personInfo: BrukerInformasjon?): Bruker? {
-        return createBruker(
-                brukerTPS,
-                if (personInfo == null) null else createBankData(personInfo),
-                if (personInfo == null) null else createInformasjonOmAnsettelsesforhold(personInfo)
-        )
-    }
-
-    //utfylling av liste av barn under 18år
-    private fun createBarnliste(barn: List<Bruker?>): List<BarnItem>? {
-        val barnlist = barn
-                .filterNotNull()
-                .map {
-                    BarnItem(
-                        person = it.person,
-                        far = it.far,
-                        mor = it.mor,
-                        relasjontilbruker = "BARN"
-                    )
-                }
-        return if (barnlist.isEmpty()) null else barnlist
-    }
 
     private fun hentBarnFraTPS(personNr: String): List<Bruker?> {
         val barnaspin = barnsPinId(preutfyllingPersonFraTPS.hentBrukerFraTPS(personNr))
-        val barn = barnaspin.map {
-            createBruker(preutfyllingPersonFraTPS.hentBrukerFraTPS(it), null, null)
+        val barn = barnaspin
+                .mapNotNull { preutfyllingPersonFraTPS.hentBrukerFraTPS(it) }
+                .map { createBruker(it, null, null)
         }
         return barn
     }
@@ -331,47 +388,8 @@ class PrefillNav(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS,
         return resultat.toList()
     }
 
-
-
-    //lokal sak pkt 1.0 i gjelder alle SED
-    private fun createEssisakItem(penSaksnummer: String): List<EessisakItem> {
-        logger.debug("1.1           Lokalt saksnummer (hvor hentes disse verider ifra?")
-        return listOf(EessisakItem(
-                institusjonsid = institutionid,
-                institusjonsnavn = institutionnavn,
-                saksnummer = penSaksnummer,
-                land = "NO"
-        ))
-    }
-
-    private fun createInformasjonOmAnsettelsesforhold(personInfo: BrukerInformasjon): List<ArbeidsforholdItem>? {
-        logger.debug("3.0           Informasjon om personens ansettelsesforhold og selvstendige næringsvirksomhet")
-        logger.debug("3.1           Informasjon om ansettelsesforhold og selvstendig næringsvirksomhet ")
-        return listOf(createAnsettelsesforhold(personInfo))
-    }
-
-    private fun createAnsettelsesforhold(personInfo: BrukerInformasjon): ArbeidsforholdItem {
-        logger.debug("3.1           Ansettelseforhold/arbeidsforhold")
-        return ArbeidsforholdItem(
-                //3.1.1.
-                yrke = "",
-                //3.1.2
-                type = personInfo.workType ?: "",
-                //3.1.3
-                planlagtstartdato = personInfo.workStartDate?.simpleFormat() ?: "",
-                //3.1.4
-                sluttdato = personInfo.workEndDate?.simpleFormat() ?: "",
-                //3.1.5
-                planlagtpensjoneringsdato = personInfo.workEstimatedRetirementDate?.simpleFormat() ?: "",
-                //3.1.6
-                arbeidstimerperuke = personInfo.workHourPerWeek ?: ""
-        )
-    }
-
-    private fun createEktefelle(ektefelleBruker: no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker?, ekteTypeValue: String?): Ektefelle? {
+    private fun createEktefellePartner(ektefellpartnerbruker: Bruker?, ekteTypeValue: String?): Ektefelle? {
         logger.debug("5.0           Utfylling av ektefelle")
-        if (ektefelleBruker == null) return null
-        val ektefellpartnerbruker = createBruker(ektefelleBruker, null, null)
         if (ektefellpartnerbruker == null) return null
         return Ektefelle(
                 //type
@@ -386,34 +404,15 @@ class PrefillNav(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS,
         )
     }
 
-    private fun createEktefelleType(typevalue: String): String {
-        logger.debug("5.1           Ektefelle/Partnerskap-type")
-        return when (typevalue) {
-            "EKTE" -> "01"
-            "PART" -> "02"
-            else -> "03"
-        }
-    }
+    private fun createStatsborgerskap(person: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): StatsborgerskapItem {
+        logger.debug("2.2.1.1         Land / Statsborgerskap")
 
-    private fun filterEktefelleRelasjon(bruker: no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker?): Pair<String, String> {
-        if (bruker == null) return Pair("","")
-        var ektepinid = ""
-        var ekteTypeValue = ""
+        val statsborgerskap = person.statsborgerskap as Statsborgerskap
+        val land = statsborgerskap.land as Landkoder
 
-        bruker.harFraRolleI.forEach {
-            if (it.tilRolle.value == "EKTE") { // FIXME TODO - dette begrenser til kun EKTEFELLE (ikke PARTNER og evt andre)
-
-                ekteTypeValue = it.tilRolle.value
-                val tilperson = it.tilPerson
-                val pident = tilperson.aktoer as PersonIdent
-
-                ektepinid = pident.ident.ident
-                if (ektepinid.isNotBlank()) {
-                    return@forEach
-                }
-            }
-        }
-        return Pair(ektepinid, ekteTypeValue)
+        return StatsborgerskapItem(
+                land = prefillAdresse.hentLandkode(land)
+        )
     }
 }
 
