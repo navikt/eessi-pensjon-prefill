@@ -9,6 +9,17 @@
                 <includeCallerData>true</includeCallerData>
             </encoder>
         </appender>
+        <appender name="auditLogger" class="com.papertrailapp.logback.Syslog4jAppender">
+            <layout class="ch.qos.logback.classic.PatternLayout">
+                <pattern>[%d{"yyyy-MM-dd'T'HH:mm:ss,SSSXXX", UTC} %level] %logger{15} : %mdc - %m%n%xEx</pattern>
+            </layout>
+            <syslogConfig class="org.productivity.java.syslog4j.impl.net.tcp.TCPNetSyslogConfig">
+                <host>audit.nais</host>
+                <port>6514</port>
+                <ident>eessi-pensjon-fagmodul</ident>
+                <maxMessageLength>128000</maxMessageLength>
+            </syslogConfig>
+        </appender>
 
         <logger name="io" level="ERROR"/>
         <logger name="org" level="ERROR"/>
@@ -17,40 +28,21 @@
         <logger name="no.nav.security" level="ERROR"/>
         <logger name="no.nav.eessi" level="INFO"/>
         <logger name="no.nav.eessi.pensjon.logging.RequestResponseLoggerInterceptor" level="OFF"/>
-
         <root level="info">
             <appender-ref ref="stdout_json"/>
         </root>
-    </springProfile>
 
-    <springProfile name="test">
-        <appender name="stdout_json" class="ch.qos.logback.core.ConsoleAppender">
-            <encoder>
-                <pattern>%level %logger %msg %n</pattern>
-            </encoder>
-            <encoder class="net.logstash.logback.encoder.LogstashEncoder">
-                <includeCallerData>true</includeCallerData>
-            </encoder>
-        </appender>
-
-        <logger name="io" level="ERROR"/>
-        <logger name="org" level="ERROR"/>
-        <logger name="com" level="ERROR"/>
-        <logger name="no.nav" level="DEBUG"/>
-        <logger name="no.nav.security" level="ERROR"/>
-        <logger name="no.nav.eessi" level="DEBUG"/>
-
-        <root level="info">
-            <appender-ref ref="stdout_json"/>
-        </root>
     </springProfile>
 
     <springProfile name="local">
         <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
             <encoder>
-                <pattern>
-                    %d{dd-MM-yyyy HH:mm:ss.SSS} %magenta([%thread]) %highlight(%-5level) %logger{20} - %msg%n
-                </pattern>
+                <pattern>%magenta(%d{dd-MM-yyyy HH:mm:ss.SSS}) %highlight(%-5level) %logger{20} - %msg%n</pattern>
+            </encoder>
+        </appender>
+        <appender name="auditLogger" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder>
+                <pattern>[%boldMagenta(%d{"yyyy-MM-dd'T'HH:mm:ss,SSSXXX", UTC}) %highlight(%level)] %red(%logger{15}) : %mdc - %m%n%xEx</pattern>
             </encoder>
         </appender>
 
@@ -60,6 +52,10 @@
         <logger name="no.nav" level="DEBUG"/>
         <logger name="no.nav.security" level="ERROR"/>
         <logger name="no.nav.eessi" level="DEBUG"/>
+  
+        <logger name="auditLogger" level="INFO" additivity="false">
+            <appender-ref ref="auditLogger" />
+        </logger>
 
         <root level="info">
             <appender-ref ref="stdout" />

@@ -2,6 +2,7 @@ package no.nav.eessi.pensjon.services.personv3
 
 import io.micrometer.core.instrument.Counter
 import io.micrometer.core.instrument.Metrics
+import no.nav.eessi.pensjon.logging.AuditLogger
 import no.nav.eessi.pensjon.security.sts.configureRequestSamlToken
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonPersonIkkeFunnet
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonSikkerhetsbegrensning
@@ -18,7 +19,7 @@ import org.springframework.stereotype.Component
 import org.springframework.web.bind.annotation.ResponseStatus
 
 @Component
-class PersonV3Service(private val service: PersonV3) {
+class PersonV3Service(private val service: PersonV3, private val auditLogger: AuditLogger) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PersonV3Service::class.java) }
     private val hentperson_teller_navn = "eessipensjon_fagmodul.hentperson"
@@ -43,6 +44,7 @@ class PersonV3Service(private val service: PersonV3) {
 
     @Throws(PersonV3IkkeFunnetException::class, PersonV3SikkerhetsbegrensningException::class)
     fun hentPerson(fnr: String): HentPersonResponse {
+        auditLogger.logBorger("PersonV3Service.hentPerson", fnr)
         logger.info("Henter person fra PersonV3Service")
         configureRequestSamlToken(service)
 
@@ -65,6 +67,8 @@ class PersonV3Service(private val service: PersonV3) {
             hentperson_teller_type_feilede.increment()
             throw PersonV3IkkeFunnetException(personIkkefunnet.message)
         } catch (personSikkerhetsbegrensning: HentPersonSikkerhetsbegrensning) {
+            //brukerident {} benyttet tjenesten {}  funksjon {}
+            auditLogger.logBorgerErr("PersonV3.hentPerson", fnr, personSikkerhetsbegrensning.message!!)
             logger.error("Kaller PersonV3.hentPerson service Feilet $personSikkerhetsbegrensning")
             hentperson_teller_type_feilede.increment()
             throw PersonV3SikkerhetsbegrensningException(personSikkerhetsbegrensning.message)

@@ -1,6 +1,7 @@
 package no.nav.eessi.pensjon.api.arkiv
 
 import io.swagger.annotations.ApiOperation
+import no.nav.eessi.pensjon.logging.AuditLogger
 import no.nav.eessi.pensjon.services.arkiv.SafException
 import no.nav.eessi.pensjon.services.arkiv.SafService
 import no.nav.eessi.pensjon.services.arkiv.VariantFormat
@@ -14,13 +15,16 @@ import java.util.*
 @Protected
 @RestController
 @RequestMapping("/saf")
-class SafController(private val safService: SafService) {
+class SafController(private val safService: SafService, private val auditlogger: AuditLogger) {
 
     private val logger = LoggerFactory.getLogger(SafController::class.java)
+
+
 
     @ApiOperation("Henter metadata for alle dokumenter i alle journalposter for en gitt aktørid")
     @GetMapping("/metadata/{aktoerId}")
     fun hentDokumentMetadata(@PathVariable("aktoerId", required = true) aktoerId: String): ResponseEntity<String> {
+        auditlogger.log("hentDokumentMetadata", aktoerId)
         logger.info("Henter metadata for dokumenter i SAF for aktørid: $aktoerId")
         return try {
             ResponseEntity.ok().body(safService.hentDokumentMetadata(aktoerId).toJson())
@@ -34,6 +38,7 @@ class SafController(private val safService: SafService) {
     fun getDokumentInnhold(@PathVariable("journalpostId", required = true) journalpostId: String,
                            @PathVariable("dokumentInfoId", required = true) dokumentInfoId: String,
                            @PathVariable("variantFormat", required = true) variantFormat: VariantFormat): ResponseEntity<String> {
+        auditlogger.log("getDokumentInnhold")
         logger.info("Henter dokumentinnhold fra SAF for journalpostId: $journalpostId, dokumentInfoId: $dokumentInfoId")
         return try {
             val hentDokumentInnholdResponse = safService.hentDokumentInnhold(journalpostId, dokumentInfoId, variantFormat)

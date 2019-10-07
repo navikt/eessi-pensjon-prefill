@@ -5,6 +5,7 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import no.nav.eessi.pensjon.helper.AktoerIdHelper
+import no.nav.eessi.pensjon.logging.AuditLogger
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.IkkeFunnetException
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjoninformasjonException
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonService
@@ -24,7 +25,9 @@ class PensjonControllerTest {
 
     private val aktoerIdHelper: AktoerIdHelper = mock()
 
-    private val controller = PensjonController(pensjonsinformasjonService, aktoerIdHelper)
+    private val auditLogger: AuditLogger = mock()
+
+    private val controller = PensjonController(pensjonsinformasjonService, aktoerIdHelper, auditLogger)
 
     private val sakId = "Some sakId"
 

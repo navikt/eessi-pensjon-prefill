@@ -61,7 +61,7 @@ class ArchitectureTest {
 
         // components
         val health = "fagmodul.health"
-        val bucSedApi = "fagmodul.bucSedApi"
+        val bucSedApi = "fagmodul.api"
         val helper = "fagmodul.helper"
         val prefill = "fagmodul.prefill"
         val models = "fagmodul.models"

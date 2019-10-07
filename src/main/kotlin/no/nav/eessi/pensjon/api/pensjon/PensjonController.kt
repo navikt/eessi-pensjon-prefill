@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiOperation
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.IkkeFunnetException
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonService
 import no.nav.eessi.pensjon.helper.AktoerIdHelper
+import no.nav.eessi.pensjon.logging.AuditLogger
 import no.nav.eessi.pensjon.utils.errorBody
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import no.nav.security.oidc.api.Protected
@@ -16,7 +17,7 @@ import no.nav.eessi.pensjon.metrics.counter
 @Protected
 @RestController
 @RequestMapping("/pensjon")
-class PensjonController(private val pensjonsinformasjonService: PensjonsinformasjonService, private val aktoerIdHelper: AktoerIdHelper) {
+class PensjonController(private val pensjonsinformasjonService: PensjonsinformasjonService, private val aktoerIdHelper: AktoerIdHelper, private val auditlogger: AuditLogger) {
     private val logger = LoggerFactory.getLogger(PensjonController::class.java)
     private final val hentSakTypeNavn = "eessipensjon_fagmodul.hentSakType"
     private val hentSakTypeVellykkede = counter(hentSakTypeNavn, "vellykkede")
@@ -25,6 +26,7 @@ class PensjonController(private val pensjonsinformasjonService: Pensjonsinformas
     @ApiOperation("Henter ut saktype knyttet til den valgte sakId og aktoerId")
     @GetMapping("/saktype/{sakId}/{aktoerId}")
     fun hentPensjonSakType(@PathVariable("sakId", required = true) sakId: String, @PathVariable("aktoerId", required = true) aktoerId: String): ResponseEntity<String>? {
+        auditlogger.log("/saktype/{$sakId}/{$aktoerId}", "hentPensjonSakType")
         logger.debug("Henter sakstype på ${sakId}")
         // FIXME This is a hack because Pesys uses the wrong identifier in some cases
         val fnr = if (isProbablyAnFnrSentAsAktoerId(aktoerId)) aktoerId else aktoerIdHelper.hentPinForAktoer(aktoerId)

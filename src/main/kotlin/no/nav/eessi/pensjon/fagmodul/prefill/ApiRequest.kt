@@ -1,13 +1,21 @@
 package no.nav.eessi.pensjon.fagmodul.prefill
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.google.common.base.Joiner
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
+import no.nav.eessi.pensjon.utils.mapJsonToAny
+import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
+import no.nav.eessi.pensjon.utils.typeRefs
+import org.mapstruct.factory.Mappers
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.ResponseStatus
+import java.util.*
 
 //Samme som SedRequest i frontend-api
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -28,6 +36,18 @@ data class ApiRequest(
         val skipSEDkey: List<String>? = null,
         val mockSED: Boolean? = null
 ) {
+    fun toAudit(): String {
+        val json = ApiRequest(
+                sakId = sakId,
+                vedtakId = vedtakId,
+                avdodfnr = avdodfnr,
+                buc = buc,
+                sed = sed,
+                euxCaseId = euxCaseId
+        ).toJsonSkipEmpty()
+        val map = mapJsonToAny(json, typeRefs<Map<String, String>>())
+        return Joiner.on(" ").withKeyValueSeparator(": ").join(map)
+    }
 
     companion object {
         private val logger = LoggerFactory.getLogger(ApiRequest::class.java)
@@ -126,6 +146,7 @@ data class ApiRequest(
         }
     }
 }
+
 
 @ResponseStatus(value = HttpStatus.BAD_REQUEST)
 class MangelfulleInndataException(message: String) : IllegalArgumentException(message)

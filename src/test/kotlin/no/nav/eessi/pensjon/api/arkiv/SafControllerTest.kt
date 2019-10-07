@@ -2,6 +2,7 @@ package no.nav.eessi.pensjon.api.arkiv
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.nhaarman.mockitokotlin2.whenever
+import no.nav.eessi.pensjon.logging.AuditLogger
 import no.nav.eessi.pensjon.services.arkiv.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -20,11 +21,14 @@ class SafControllerTest {
     @Mock
     lateinit var safService: SafService
 
+    @Mock
+    lateinit var auditLogger: AuditLogger
+
     lateinit var safController: SafController
 
     @BeforeEach
     fun setup() {
-        safController = SafController(safService)
+        safController = SafController(safService, auditLogger)
 
     }
 
