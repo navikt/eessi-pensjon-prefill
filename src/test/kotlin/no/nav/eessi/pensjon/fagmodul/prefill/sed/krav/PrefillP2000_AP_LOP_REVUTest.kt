@@ -46,7 +46,7 @@ class PrefillP2000_AP_LOP_REVUTest {
         ))
 
         prefillNav = PrefillNav(
-                preutfyllingPersonFraTPS = persondataFraTPS,
+                brukerFromTPS = persondataFraTPS,
                 prefillAdresse = mock<PrefillAdresse>(),
                 institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO")
 

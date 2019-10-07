@@ -43,7 +43,7 @@ class PrefillP2000KravhistorieUtenvirkningstidspunktTest {
                 PersonDataFromTPS.MockTPS("Person-12000-EKTE.json", generateRandomFnr(69), PersonDataFromTPS.MockTPS.TPSType.EKTE)
         ))
         prefillNav = PrefillNav(
-                preutfyllingPersonFraTPS = persondataFraTPS,
+                brukerFromTPS = persondataFraTPS,
                 prefillAdresse = mock<PrefillAdresse>(),
                 institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO")
 

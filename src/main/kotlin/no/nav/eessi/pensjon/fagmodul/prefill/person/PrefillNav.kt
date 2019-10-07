@@ -4,7 +4,7 @@ import no.nav.eessi.pensjon.fagmodul.prefill.model.BrukerInformasjon
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.NavFodselsnummer
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillAdresse
-import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillPersonDataFromTPS
+import no.nav.eessi.pensjon.fagmodul.prefill.tps.BrukerFromTPS
 import no.nav.eessi.pensjon.fagmodul.sedmodel.*
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Bruker
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Person
@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component
 import java.util.*
 
 @Component
-class PrefillNav(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS,
+class PrefillNav(private val brukerFromTPS: BrukerFromTPS,
                  private val prefillAdresse: PrefillAdresse,
                  @Value("\${eessi.pensjon_lokalid}") private val institutionid: String,
                  @Value("\${eessi.pensjon_lokalnavn}") private val institutionnavn: String) {
@@ -244,12 +244,12 @@ class PrefillNav(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS,
     fun prefill(prefillData: PrefillDataModel, fyllUtBarnListe: Boolean = false): Nav {
 
         // FIXME - det veksles mellom gjenlevende og bruker ... usikkert om dette er rett...
-        val brukerEllerGjenlevende = preutfyllingPersonFraTPS.hentBrukerFraTPS(prefillData.brukerEllerGjenlevendeHvisDod())
+        val brukerEllerGjenlevende = brukerFromTPS.hentBrukerFraTPS(prefillData.brukerEllerGjenlevendeHvisDod())
 
-        val bruker = preutfyllingPersonFraTPS.hentBrukerFraTPS(prefillData.personNr)
+        val bruker = brukerFromTPS.hentBrukerFraTPS(prefillData.personNr)
         val (ektepinid, ekteTypeValue) = filterEktefelleRelasjon(bruker)
 
-        val ektefelleBruker = if(ektepinid.isBlank()) null else preutfyllingPersonFraTPS.hentBrukerFraTPS(ektepinid)
+        val ektefelleBruker = if(ektepinid.isBlank()) null else brukerFromTPS.hentBrukerFraTPS(ektepinid)
 
         val barn = if (fyllUtBarnListe) hentBarnFraTPS(prefillData.personNr) else listOf()
 
@@ -359,9 +359,9 @@ class PrefillNav(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS,
 
 
     private fun hentBarnFraTPS(personNr: String): List<Bruker?> {
-        val barnaspin = barnsPinId(preutfyllingPersonFraTPS.hentBrukerFraTPS(personNr))
+        val barnaspin = barnsPinId(brukerFromTPS.hentBrukerFraTPS(personNr))
         val barn = barnaspin
-                .mapNotNull { preutfyllingPersonFraTPS.hentBrukerFraTPS(it) }
+                .mapNotNull { brukerFromTPS.hentBrukerFraTPS(it) }
                 .map { createBruker(it, null, null)
         }
         return barn

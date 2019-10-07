@@ -36,7 +36,7 @@ class PrefillP8000APUtlandInnvTest {
                 PersonDataFromTPS.MockTPS("Person-12000-EKTE.json", generateRandomFnr(70), PersonDataFromTPS.MockTPS.TPSType.EKTE)
         ))
         prefillNav = PrefillNav(
-                preutfyllingPersonFraTPS = persondataFraTPS,
+                brukerFromTPS = persondataFraTPS,
                 prefillAdresse = mock<PrefillAdresse>(),
                 institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO")
 

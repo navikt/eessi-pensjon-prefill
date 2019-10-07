@@ -36,7 +36,7 @@ class PrefillP9000GLmedUtlandInnvTest {
                 PersonDataFromTPS.MockTPS("Person-31000.json", avdodPersonFnr, PersonDataFromTPS.MockTPS.TPSType.PERSON)
         ))
         prefillNav = PrefillNav(
-                preutfyllingPersonFraTPS = persondataFraTPS,
+                brukerFromTPS = persondataFraTPS,
                 prefillAdresse = mock<PrefillAdresse>(),
                 institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO")
 

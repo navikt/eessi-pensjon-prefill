@@ -7,10 +7,7 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjon
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.NavFodselsnummer
-import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillAdresse
-import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillPersonDataFromTPS
-import no.nav.eessi.pensjon.services.geo.LandkodeService
-import no.nav.eessi.pensjon.services.geo.PostnummerService
+import no.nav.eessi.pensjon.fagmodul.prefill.tps.BrukerFromTPS
 import no.nav.eessi.pensjon.services.personv3.PersonV3Service
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.typeRefs
@@ -126,13 +123,13 @@ class PersonDataFromTPS(private val mocktps: Set<MockTPS>, private val eessiInfo
         return v3PersonResponse
     }
 
-    fun mockPrefillPersonDataFromTPS(): PrefillPersonDataFromTPS {
+    fun mockPrefillPersonDataFromTPS(): BrukerFromTPS {
         val mockPersonV3Service = mock<PersonV3Service>()
         mocktps.forEach {
             val result = initMockHentPersonResponse(it, mocktps)
             doReturn(result).whenever(mockPersonV3Service).hentPerson(it.replaceMockfnr)
         }
-        return PrefillPersonDataFromTPS(mockPersonV3Service)
+        return BrukerFromTPS(mockPersonV3Service)
     }
 
     fun getRandomNavFodselsnummer(value: MockTPS.TPSType): String? {

@@ -5,7 +5,7 @@ import com.nhaarman.mockitokotlin2.whenever
 import no.nav.eessi.pensjon.fagmodul.prefill.model.BrukerInformasjon
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillAdresse
-import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillPersonDataFromTPS
+import no.nav.eessi.pensjon.fagmodul.prefill.tps.BrukerFromTPS
 import no.nav.eessi.pensjon.fagmodul.sedmodel.*
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Bruker
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Person
@@ -24,7 +24,7 @@ internal class PrefillNavTest {
 
     @Test
     fun `prefill med tom respons fra TPS`() {
-        val mockPrefillPersonDataFromTPS = mock<PrefillPersonDataFromTPS>()
+        val mockPrefillPersonDataFromTPS = mock<BrukerFromTPS>()
         val someInstitutionId = "enInstId"
         val someIntitutionNavn = "instNavn"
         val prefillNav = PrefillNav(mockPrefillPersonDataFromTPS, PrefillAdresse(PostnummerService(), LandkodeService()), someInstitutionId, someIntitutionNavn)
@@ -44,7 +44,7 @@ internal class PrefillNavTest {
 
     @Test @Disabled
     fun `prefill med barn`() {
-        val mockPrefillPersonDataFromTPS = mock<PrefillPersonDataFromTPS>()
+        val mockPrefillPersonDataFromTPS = mock<BrukerFromTPS>()
         val someInstitutionId = "enInstId"
         val someIntitutionNavn = "instNavn"
         val prefillNav = PrefillNav(mockPrefillPersonDataFromTPS, PrefillAdresse(PostnummerService(), LandkodeService()), someInstitutionId, someIntitutionNavn)
@@ -77,7 +77,7 @@ internal class PrefillNavTest {
 
     @Test
     fun `prefill med brukerinfo på request`() {
-        val mockPrefillPersonDataFromTPS = mock<PrefillPersonDataFromTPS>()
+        val mockPrefillPersonDataFromTPS = mock<BrukerFromTPS>()
         val someInstitutionId = "enInstId"
         val someIntitutionNavn = "instNavn"
         val prefillNav = PrefillNav(mockPrefillPersonDataFromTPS, PrefillAdresse(PostnummerService(), LandkodeService()), someInstitutionId, someIntitutionNavn)

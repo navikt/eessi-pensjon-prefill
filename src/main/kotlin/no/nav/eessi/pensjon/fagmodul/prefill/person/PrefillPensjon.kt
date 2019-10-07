@@ -2,7 +2,7 @@ package no.nav.eessi.pensjon.fagmodul.prefill.person
 
 import no.nav.eessi.pensjon.fagmodul.prefill.model.Prefill
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
-import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillPersonDataFromTPS
+import no.nav.eessi.pensjon.fagmodul.prefill.tps.BrukerFromTPS
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Bruker
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Pensjon
 import org.slf4j.Logger
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component
 
 @Component
 //TODO Vil utgå når SED blir koblet direkte mot PEN/PESYS for uthenting og preutfylling av data
-class PrefillPensjon(private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS,
+class PrefillPensjon(private val brukerFromTPS: BrukerFromTPS,
                      private val prefillNav: PrefillNav) : Prefill<Pensjon> {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillPensjon::class.java) }
@@ -35,7 +35,7 @@ class PrefillPensjon(private val preutfyllingPersonFraTPS: PrefillPersonDataFrom
         var gjenlevende: Bruker? = null
         if (prefillData.erGyldigEtterlatt()) {
             logger.info("Preutfylling Utfylling Pensjon Gjenlevende (etterlatt)")
-            val gjenlevendeBruker = preutfyllingPersonFraTPS.hentBrukerFraTPS(pinid)
+            val gjenlevendeBruker = brukerFromTPS.hentBrukerFraTPS(pinid)
             gjenlevende = if (gjenlevendeBruker == null) null else prefillNav.createBruker(gjenlevendeBruker, null, null)
         }
 

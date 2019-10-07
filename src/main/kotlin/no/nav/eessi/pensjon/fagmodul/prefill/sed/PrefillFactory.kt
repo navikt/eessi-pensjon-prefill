@@ -12,7 +12,7 @@ import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.PrefillP2000
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.PrefillP2100
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.PrefillP2200
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.PrefillP6000
-import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillPersonDataFromTPS
+import no.nav.eessi.pensjon.fagmodul.prefill.tps.BrukerFromTPS
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class PrefillFactory(private val prefillNav: PrefillNav,
-                     private val dataFromTPS: PrefillPersonDataFromTPS,
+                     private val dataFromTPS: BrukerFromTPS,
                      private val eessiInformasjon: EessiInformasjon,
                      private val dataFromPEN: PensjonsinformasjonHjelper) {
 
