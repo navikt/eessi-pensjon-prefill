@@ -345,4 +345,14 @@ internal class PrefillNavTest {
         assertNotNull(result)
         assertEquals("NOR", result?.land)
     }
+
+    @Test
+    fun `isPersonAvdod gir true`() {
+        val person = no.nav.tjeneste.virksomhet.person.v3.informasjon.Person()
+                .withPersonstatus(Personstatus()
+                        .withPersonstatus(Personstatuser()
+                                .withValue("DØD")))
+
+        assertTrue(PrefillNav.isPersonAvdod(person))
+    }
 }
