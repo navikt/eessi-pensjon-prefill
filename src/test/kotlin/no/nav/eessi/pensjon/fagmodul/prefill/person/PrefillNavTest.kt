@@ -21,13 +21,14 @@ import java.time.LocalDate
 
 internal class PrefillNavTest {
 
+    val mockBrukerFromTPS = mock<BrukerFromTPS>()
+    val someInstitutionId = "enInstId"
+    val someIntitutionNavn = "instNavn"
+    val prefillNav = PrefillNav(mockBrukerFromTPS, PrefillAdresse(PostnummerService(), LandkodeService()), someInstitutionId, someIntitutionNavn)
+    val somePenSaksnr = "somePenSaksnr"
+
     @Test
     fun `prefill med tom respons fra TPS`() {
-        val mockBrukerFromTPS = mock<BrukerFromTPS>()
-        val someInstitutionId = "enInstId"
-        val someIntitutionNavn = "instNavn"
-        val prefillNav = PrefillNav(mockBrukerFromTPS, PrefillAdresse(PostnummerService(), LandkodeService()), someInstitutionId, someIntitutionNavn)
-        val somePenSaksnr = "somePenSaksnr"
         val personensPin = "somePersonNr"
         val prefillData = PrefillDataModel().apply {
             penSaksnummer = somePenSaksnr
@@ -43,11 +44,6 @@ internal class PrefillNavTest {
 
     @Test
     fun `minimal prefill med barn`() {
-        val mockBrukerFromTPS = mock<BrukerFromTPS>()
-        val someInstitutionId = "enInstId"
-        val someIntitutionNavn = "instNavn"
-        val prefillNav = PrefillNav(mockBrukerFromTPS, PrefillAdresse(PostnummerService(), LandkodeService()), someInstitutionId, someIntitutionNavn)
-        val somePenSaksnr = "somePenSaksnr"
         val foreldersPin = "somePersonNr"
         val prefillData = PrefillDataModel().apply {
             penSaksnummer = somePenSaksnr
@@ -55,31 +51,10 @@ internal class PrefillNavTest {
         }
         val barnetsPin = "12345678901"
 
-        val forelder = no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker()
-                .withPersonnavn(Personnavn()
-                        .withEtternavn("Robin")
-                        .withFornavn("Christopher"))
-                .withKjoenn(Kjoenn().withKjoenn(Kjoennstyper().withValue("M")))
-                .withAktoer(PersonIdent().withIdent(NorskIdent().withIdent(foreldersPin)))
-                .withStatsborgerskap(Statsborgerskap().withLand(Landkoder().withValue("NOR")))
-                .withHarFraRolleI(Familierelasjon()
-                        .withTilRolle(Familierelasjoner()
-                                .withValue("BARN"))
-                        .withTilPerson(no.nav.tjeneste.virksomhet.person.v3.informasjon.Person()
-                                .withAktoer(PersonIdent()
-                                        .withIdent(NorskIdent()
-                                                .withIdent(barnetsPin)))))
+        val forelder = lagTPSBruker(foreldersPin, "Christopher", "Robin").medBarn(barnetsPin)
+        val barn = lagTPSBruker(barnetsPin, "Ole", "Brum")
 
         whenever(mockBrukerFromTPS.hentBrukerFraTPS(foreldersPin)).thenReturn(forelder)
-
-        val barn = no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker()
-                .withPersonnavn(Personnavn()
-                        .withEtternavn("Brum")
-                        .withFornavn("Ole"))
-                .withKjoenn(Kjoenn().withKjoenn(Kjoennstyper().withValue("M")))
-                .withAktoer(PersonIdent().withIdent(NorskIdent().withIdent(barnetsPin)))
-                .withStatsborgerskap(Statsborgerskap().withLand(Landkoder().withValue("NOR")))
-
         whenever(mockBrukerFromTPS.hentBrukerFraTPS(barnetsPin)).thenReturn(barn)
 
         val actual = prefillNav.prefill(prefillData, true)
@@ -88,47 +63,18 @@ internal class PrefillNavTest {
                 eessisak = listOf(EessisakItem(someInstitutionId, someIntitutionNavn, somePenSaksnr, "NO")),
                 krav = Krav(LocalDate.now().toString()),
                 bruker = Bruker(
-                        person = Person(
-                                pin = listOf(PinItem(
-                                        institusjonsnavn = someIntitutionNavn,
-                                        institusjonsid = someInstitutionId,
-                                        identifikator = foreldersPin,
-                                        land = "NO")),
-                                statsborgerskap = listOf(StatsborgerskapItem(land = "NO")),
-                                etternavn = "Robin",
-                                fornavn = "Christopher",
-                                kjoenn = "M",
-                                fornavnvedfoedsel = "Christopher"),
-                        adresse = Adresse(
-                                gate = "",
-                                bygning = "",
-                                by = "",
-                                postnummer = "",
-                                land = "")),
+                        person = lagPerson(foreldersPin, "Christopher", "Robin"),
+                        adresse = lagTomAdresse()),
                 barn = listOf(BarnItem(
-                        person = Person(
-                                pin = listOf(PinItem(
-                                        institusjonsnavn = someIntitutionNavn,
-                                        institusjonsid = someInstitutionId,
-                                        identifikator = barnetsPin,
-                                        land = "NO")),
-                                statsborgerskap = listOf(StatsborgerskapItem(land = "NO")),
-                                etternavn = "Brum",
-                                fornavn = "Ole",
-                                kjoenn = "M",
-                                fornavnvedfoedsel = "Ole"),
+                        person = lagPerson(barnetsPin, "Ole", "Brum"),
                         relasjontilbruker = "BARN")))
 
         assertEquals(expected, actual)
     }
 
+
     @Test
     fun `prefill med barn og relasjon Far`() {
-        val mockBrukerFromTPS = mock<BrukerFromTPS>()
-        val someInstitutionId = "enInstId"
-        val someIntitutionNavn = "instNavn"
-        val prefillNav = PrefillNav(mockBrukerFromTPS, PrefillAdresse(PostnummerService(), LandkodeService()), someInstitutionId, someIntitutionNavn)
-        val somePenSaksnr = "somePenSaksnr"
         val somePersonNr = FodselsnummerMother.generateRandomFnr(57).toString()
         val someBarnPersonNr = FodselsnummerMother.generateRandomFnr(17).toString()
 
@@ -137,66 +83,29 @@ internal class PrefillNavTest {
             personNr = somePersonNr
         }
 
-        val barnBruker = no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker()
-                .withPersonnavn(Personnavn()
-                        .withFornavn("Nasse")
-                        .withEtternavn("Nøff"))
-                .withKjoenn(Kjoenn().withKjoenn(Kjoennstyper().withValue("K")))
-                .withAktoer(PersonIdent().withIdent(NorskIdent().withIdent(someBarnPersonNr)))
-                .withStatsborgerskap(Statsborgerskap().withLand(Landkoder().withValue("NOR")))
+        val barn = lagTPSBruker(someBarnPersonNr, "Nasse", "Nøff")
+        val far = lagTPSBruker(somePersonNr, "Ole", "Brum")
+                .withHarFraRolleI(Familierelasjon().withTilRolle(Familierelasjoner().withValue("BARN")).withTilPerson(barn))
 
-        val someBruker = no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker()
-                .withPersonnavn(Personnavn()
-                        .withEtternavn("Brum")
-                        .withFornavn("Ole"))
-                .withKjoenn(Kjoenn().withKjoenn(Kjoennstyper().withValue("M")))
-                .withAktoer(PersonIdent().withIdent(NorskIdent().withIdent(somePersonNr)))
-                .withStatsborgerskap(Statsborgerskap().withLand(Landkoder().withValue("NOR")))
-                .withHarFraRolleI(Familierelasjon().withTilRolle(Familierelasjoner().withValue("BARN")).withTilPerson(barnBruker))
+        barn.withHarFraRolleI(Familierelasjon().withTilRolle(Familierelasjoner().withValue("FARA")).withTilPerson(far))
 
-        barnBruker.withHarFraRolleI(Familierelasjon().withTilRolle(Familierelasjoner().withValue("FARA")).withTilPerson(someBruker)
-        )
-
-
-        whenever(mockBrukerFromTPS.hentBrukerFraTPS(somePersonNr)).thenReturn(someBruker)
-
-        whenever(mockBrukerFromTPS.hentBrukerFraTPS(someBarnPersonNr)).thenReturn(barnBruker)
+        whenever(mockBrukerFromTPS.hentBrukerFraTPS(someBarnPersonNr)).thenReturn(barn)
+        whenever(mockBrukerFromTPS.hentBrukerFraTPS(somePersonNr)).thenReturn(far)
 
         val actual = prefillNav.prefill(prefillData, true)
         val expected = Nav(
                 eessisak = listOf(EessisakItem(someInstitutionId, someIntitutionNavn, somePenSaksnr, "NO")),
                 krav = Krav(LocalDate.now().toString()),
-                bruker = Bruker(person = Person(
-                        etternavn = "Brum",
-                        fornavn = "Ole",
-                        fornavnvedfoedsel = "Ole",
-                        kjoenn = "M",
-                        pin = listOf( PinItem(identifikator = somePersonNr, land = "NO", institusjonsid = "enInstId", institusjonsnavn = "instNavn")),
-                        statsborgerskap = listOf(StatsborgerskapItem(land = "NO"))
-                ),
-                        adresse = Adresse(
-                                gate = "",
-                                bygning = "",
-                                by = "",
-                                postnummer = "",
-                                land = "")
-                ) ,
-                barn = listOf(BarnItem(mor = null, far = Foreldre(
-                 Person(
-                         fornavn = "Ole",
-                         etternavnvedfoedsel = "Brum",
-                         pin = listOf( PinItem(identifikator = somePersonNr, land = "NO", institusjonsid = "enInstId", institusjonsnavn = "instNavn"))
-                 )
-                ), person =
-                Person(
-                        fornavn = "Nasse",
-                        etternavn = "Nøff",
-                        fornavnvedfoedsel = "Nasse",
-                        kjoenn = "K",
-                        pin = listOf( PinItem(identifikator = someBarnPersonNr, land = "NO", institusjonsid = "enInstId", institusjonsnavn = "instNavn")),
-                        statsborgerskap = listOf(StatsborgerskapItem(land = "NO"))
-                ),
-                        relasjontilbruker = "BARN")))
+                bruker = Bruker(
+                        person = lagPerson(somePersonNr, "Ole", "Brum"),
+                        adresse = lagTomAdresse()),
+                barn = listOf(BarnItem(
+                        mor = null,
+                        far = Foreldre(Person(
+                                fornavn = "Ole",
+                                etternavnvedfoedsel = "Brum",
+                                pin = listOf( PinItem(identifikator = somePersonNr, land = "NO", institusjonsid = "enInstId", institusjonsnavn = "instNavn")))),
+                        person = lagPerson(someBarnPersonNr, "Nasse", "Nøff"), relasjontilbruker = "BARN")))
 
         assertEquals(expected, actual)
     }
@@ -204,44 +113,42 @@ internal class PrefillNavTest {
 
     @Test
     fun `minimal prefill med brukerinfo på request`() {
-        val mockBrukerFromTPS = mock<BrukerFromTPS>()
-        val someInstitutionId = "enInstId"
-        val someIntitutionNavn = "instNavn"
-        val prefillNav = PrefillNav(mockBrukerFromTPS, PrefillAdresse(PostnummerService(), LandkodeService()), someInstitutionId, someIntitutionNavn)
-        val somePenSaksnr = "somePenSaksnr"
         val brukerensPin = "somePersonNr"
         val prefillData = PrefillDataModel().apply {
             penSaksnummer = somePenSaksnr
             personNr = brukerensPin
-            partSedAsJson["PersonInfo"] = mapAnyToJson(BrukerInformasjon(null,null,null,null,null,"Nordnb",null,null,null,null,null,null,null,null,null,null,null,null))
+            partSedAsJson["PersonInfo"] = mapAnyToJson(
+                    BrukerInformasjon(
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            "Nordnb",
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null))
         }
 
-        val brukeren = no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker()
-                .withPersonnavn(Personnavn()
-                        .withEtternavn("Brum")
-                        .withFornavn("Ole"))
-                .withKjoenn(Kjoenn().withKjoenn(Kjoennstyper().withValue("M")))
-                .withAktoer(PersonIdent().withIdent(NorskIdent().withIdent(brukerensPin)))
-                .withStatsborgerskap(Statsborgerskap().withLand(Landkoder().withValue("NOR")))
+        val brukeren = lagTPSBruker(brukerensPin, "Ole", "Brum")
 
         whenever(mockBrukerFromTPS.hentBrukerFraTPS(brukerensPin)).thenReturn(brukeren)
 
-        val actual = prefillNav.prefill(prefillData, true)
+        val actual = prefillNav.prefill(prefillData)
+
         val expected = Nav(
                 eessisak = listOf(EessisakItem(someInstitutionId, someIntitutionNavn, somePenSaksnr, "NO")),
                 krav = Krav(LocalDate.now().toString()),
-                bruker = Bruker(
-                        person = Person(
-                                pin = listOf(PinItem(
-                                        institusjonsnavn = someIntitutionNavn,
-                                        institusjonsid = someInstitutionId,
-                                        identifikator = brukerensPin,
-                                        land = "NO")),
-                                statsborgerskap = listOf(StatsborgerskapItem(land = "NO")),
-                                etternavn = "Brum",
-                                fornavn = "Ole",
-                                kjoenn = "M",
-                                fornavnvedfoedsel = "Ole"),
+                bruker = Bruker(person = lagPerson(brukerensPin, "Ole", "Brum"),
                         arbeidsforhold = listOf(ArbeidsforholdItem(
                                 planlagtstartdato = "",
                                 arbeidstimerperuke = "",
@@ -257,14 +164,51 @@ internal class PrefillNavTest {
                                                 rolle = "01",
                                                 navn = "Nordnb")),
                                 adresse = Adresse()),
-                        adresse = Adresse(
-                                gate = "",
-                                bygning = "",
-                                by = "",
-                                postnummer = "",
-                                land = "")))
+                        adresse = lagTomAdresse()))
 
         assertEquals(expected, actual)
+    }
+
+    private fun lagPerson(foreldersPin: String, fornavn: String, etternavn: String) =
+            Person(
+                    pin = listOf(PinItem(
+                            institusjonsnavn = someIntitutionNavn,
+                            institusjonsid = someInstitutionId,
+                            identifikator = foreldersPin,
+                            land = "NO")),
+                    statsborgerskap = listOf(StatsborgerskapItem(land = "NO")),
+                    etternavn = etternavn,
+                    fornavn = fornavn,
+                    kjoenn = "M",
+                    fornavnvedfoedsel = fornavn)
+
+    private fun lagTPSBruker(foreldersPin: String, fornavn: String, etternavn: String) =
+            no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker()
+                    .withPersonnavn(Personnavn()
+                            .withEtternavn(etternavn)
+                            .withFornavn(fornavn))
+                    .withKjoenn(Kjoenn().withKjoenn(Kjoennstyper().withValue("M")))
+                    .withAktoer(PersonIdent().withIdent(NorskIdent().withIdent(foreldersPin)))
+                    .withStatsborgerskap(Statsborgerskap().withLand(Landkoder().withValue("NOR")))
+
+    private fun no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker.medBarn(barnetsPin: String): no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker =
+            this
+                    .withHarFraRolleI(Familierelasjon()
+                            .withTilRolle(Familierelasjoner()
+                                    .withValue("BARN"))
+                            .withTilPerson(no.nav.tjeneste.virksomhet.person.v3.informasjon.Person()
+                                    .withAktoer(PersonIdent()
+                                            .withIdent(NorskIdent()
+                                                    .withIdent(barnetsPin)))))
+
+
+    private fun lagTomAdresse(): Adresse {
+        return Adresse(
+                gate = "",
+                bygning = "",
+                by = "",
+                postnummer = "",
+                land = "")
     }
 
     @Test
