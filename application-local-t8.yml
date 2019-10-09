@@ -7,6 +7,8 @@ FASIT_ENVIRONMENT_NAME: 't8'
 
 eessi-pensjon-active-profiles: ${spring.profiles.active}
 
+eessi-pensjon-institusjon: 'NO:NAVT002'
+
 #eux-rina-api_v1:
 eessipen-eux-rina:
   url: 'https://eux-rina-api.nais.preprod.local/cpi'

@@ -3,6 +3,8 @@ FASIT_ENVIRONMENT_NAME: 'test'
 
 eessi-pensjon-active-profiles: ${spring.profiles.active}
 
+eessi-pensjon-institusjon: 'NO:noinst002'
+
 #eux-rina-api_v1:
 eessipen-eux-rina:
   url: 'http://example.com:8089'
@@ -31,7 +33,6 @@ securitytokenservice:
   url: 'https://example.com/SecurityTokenServiceProvider/'
 
 eessi:
-  pensjon_lokalid: 'NO:noinst002'
   pensjon_lokalnavn: 'NOINST002, NO INST002, NO'
   pensjon_adresse_gate: 'Postboks 6600 Etterstad TEST'
   pensjon_adresse_by:   'Oslo'

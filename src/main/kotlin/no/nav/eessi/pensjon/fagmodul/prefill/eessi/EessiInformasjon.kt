@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class EessiInformasjon(
-        @Value("\${eessi.pensjon_lokalid}") val institutionid: String = "",
+        @Value("\${eessi-pensjon-institusjon}") val institutionid: String = "",
         @Value("\${eessi.pensjon_lokalnavn}") val institutionnavn: String = "",
         @Value("\${eessi.pensjon_adresse_gate}") val institutionGate: String = "",
         @Value("\${eessi.pensjon_adresse_by}") val institutionBy: String = "",

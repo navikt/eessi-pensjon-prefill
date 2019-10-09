@@ -2,9 +2,9 @@ package no.nav.eessi.pensjon.fagmodul.prefill.person
 
 import no.nav.eessi.pensjon.fagmodul.prefill.model.BrukerInformasjon
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
+import no.nav.eessi.pensjon.fagmodul.prefill.tps.BrukerFromTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.NavFodselsnummer
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillAdresse
-import no.nav.eessi.pensjon.fagmodul.prefill.tps.BrukerFromTPS
 import no.nav.eessi.pensjon.fagmodul.sedmodel.*
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Bruker
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Person
@@ -20,9 +20,8 @@ import java.util.*
 @Component
 class PrefillNav(private val brukerFromTPS: BrukerFromTPS,
                  private val prefillAdresse: PrefillAdresse,
-                 @Value("\${eessi.pensjon_lokalid}") private val institutionid: String,
+                 @Value("\${eessi-pensjon-institusjon}") private val institutionid: String,
                  @Value("\${eessi.pensjon_lokalnavn}") private val institutionnavn: String) {
-
 
     companion object {
         private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillNav::class.java) }
