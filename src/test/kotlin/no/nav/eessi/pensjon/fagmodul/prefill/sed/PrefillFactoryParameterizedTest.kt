@@ -5,7 +5,7 @@ import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjon
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonHjelper
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
-import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillPersonDataFromTPS
+import no.nav.eessi.pensjon.fagmodul.prefill.tps.BrukerFromTPS
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.extension.ExtendWith
@@ -16,7 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension
 
 
 @ExtendWith(MockitoExtension::class)
-class PrefillFactoryTest {
+class PrefillFactoryParameterizedTest {
 
     @Mock
     lateinit var prefillNav: PrefillNav
@@ -28,7 +28,7 @@ class PrefillFactoryTest {
     lateinit var dataFromPEN: PensjonsinformasjonHjelper
 
     @Mock
-    lateinit var dataFromTPS: PrefillPersonDataFromTPS
+    lateinit var dataFromTPS: BrukerFromTPS
 
     lateinit var prefillFactory: PrefillFactory
 

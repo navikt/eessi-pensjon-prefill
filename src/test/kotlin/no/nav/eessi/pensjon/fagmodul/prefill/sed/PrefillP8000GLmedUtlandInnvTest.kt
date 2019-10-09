@@ -1,5 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed
 
+import com.nhaarman.mockitokotlin2.mock
 import no.nav.eessi.pensjon.fagmodul.prefill.model.Prefill
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModelMother
@@ -10,6 +11,7 @@ import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillPerson
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.setupPersondataFraTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.FodselsnummerMother.generateRandomFnr
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.NavFodselsnummer
+import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillAdresse
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
@@ -34,10 +36,11 @@ class PrefillP8000GLmedUtlandInnvTest {
                 PersonDataFromTPS.MockTPS("Person-31000.json", avdodPersonFnr, PersonDataFromTPS.MockTPS.TPSType.PERSON)
         ))
         prefillNav = PrefillNav(
-                preutfyllingPersonFraTPS = persondataFraTPS,
+                brukerFromTPS = persondataFraTPS,
+                prefillAdresse = mock<PrefillAdresse>(),
                 institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO")
 
-        val prefillPensjon = PrefillPensjon(persondataFraTPS)
+        val prefillPensjon = PrefillPensjon(persondataFraTPS, prefillNav)
         val prefillPerson = PrefillPerson(prefillNav, prefillPensjon)
 
         prefill = PrefillP8000(prefillPerson)

@@ -4,7 +4,7 @@ import no.nav.eessi.pensjon.fagmodul.prefill.model.Prefill
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonHjelper
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
-import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillPersonDataFromTPS
+import no.nav.eessi.pensjon.fagmodul.prefill.tps.BrukerFromTPS
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Bruker
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Nav
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Pensjon
@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory
 
 class PrefillP2100(private val prefillNav: PrefillNav,
                    private val dataFromPEN: PensjonsinformasjonHjelper,
-                   private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS) : Prefill<SED> {
+                   private val brukerFromTPS: BrukerFromTPS) : Prefill<SED> {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillP2100::class.java) }
 
@@ -40,7 +40,7 @@ class PrefillP2100(private val prefillNav: PrefillNav,
             sed.nav = Nav()
         } else {
             //henter opp persondata
-            sed.nav = prefillNav.prefill(prefillData)
+            sed.nav = prefillNav.prefill(prefillData, fyllUtBarnListe = true)
         }
 
         try {
@@ -78,7 +78,8 @@ class PrefillP2100(private val prefillNav: PrefillNav,
     private fun eventuellGjenlevende(prefillData: PrefillDataModel): Bruker? {
         return if (prefillData.erGyldigEtterlatt()) {
             logger.debug("          Utfylling gjenlevende (etterlatt)")
-            return preutfyllingPersonFraTPS.prefillBruker(prefillData.personNr)
+            val gjenlevendeBruker = brukerFromTPS.hentBrukerFraTPS(prefillData.personNr)
+            return if (gjenlevendeBruker == null) null else prefillNav.createBruker(gjenlevendeBruker, null, null)
         } else null
     }
 

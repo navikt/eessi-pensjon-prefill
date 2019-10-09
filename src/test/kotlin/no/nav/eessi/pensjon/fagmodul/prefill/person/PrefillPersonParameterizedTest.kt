@@ -18,7 +18,7 @@ import org.junit.jupiter.params.provider.MethodSource
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 
-class PrefillPersonTest {
+class PrefillPersonParameterizedTest {
 
     @Mock
     private lateinit var mockPreutfyllingNav: PrefillNav
@@ -72,7 +72,7 @@ class PrefillPersonTest {
 
         val navresponse = NavMock().genererNavMock()
 
-        whenever(mockPreutfyllingNav.prefill(any())).thenReturn(navresponse)
+        whenever(mockPreutfyllingNav.prefill(any(), any())).thenReturn(navresponse)
 
         val pensjonresponse = PensjonMock().genererMockData()
         whenever(mockPreutfyllingPensjon.prefill(any())).thenReturn(pensjonresponse)

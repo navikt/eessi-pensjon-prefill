@@ -9,7 +9,7 @@ import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonHjelper
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.PrefillP2xxxPensjon.addRelasjonerBarnOgAvdod
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.PrefillP2xxxPensjon.createPensjon
-import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillPersonDataFromTPS
+import no.nav.eessi.pensjon.fagmodul.prefill.tps.BrukerFromTPS
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Bruker
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Pensjon
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjoninformasjonException
@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory
  */
 class PrefillP2000(private val prefillNav: PrefillNav,
                    private val dataFromPEN: PensjonsinformasjonHjelper,
-                   private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS) : Prefill<SED> {
+                   private val brukerFromTPS: BrukerFromTPS) : Prefill<SED> {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillP2000::class.java) }
 
@@ -44,7 +44,7 @@ class PrefillP2000(private val prefillNav: PrefillNav,
             sed.nav = Nav()
         } else {
             //henter opp persondata
-            sed.nav = prefillNav.prefill(prefillData)
+            sed.nav = prefillNav.prefill(prefillData, fyllUtBarnListe = true)
         }
 
         try {
@@ -79,7 +79,8 @@ class PrefillP2000(private val prefillNav: PrefillNav,
     private fun eventuellGjenlevende(prefillData: PrefillDataModel): Bruker? {
         return if (!prefillData.kanFeltSkippes("PENSED") && prefillData.erGyldigEtterlatt()) {
             logger.debug("          Utfylling gjenlevende (etterlatt)")
-            preutfyllingPersonFraTPS.prefillBruker(prefillData.personNr)
+            val gjenlevendeBruker = brukerFromTPS.hentBrukerFraTPS(prefillData.personNr)
+            if (gjenlevendeBruker == null) null else prefillNav.createBruker(gjenlevendeBruker, null, null)
         } else null
     }
 

@@ -1,11 +1,13 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed.krav
 
+import com.nhaarman.mockitokotlin2.mock
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.model.ValidationException
 import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonHjelper
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
-import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillPersonDataFromTPS
+import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillAdresse
+import no.nav.eessi.pensjon.fagmodul.prefill.tps.BrukerFromTPS
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Nav
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Pensjon
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
@@ -26,17 +28,18 @@ class PrefillP2000ValidateTest {
     lateinit var dataFromPEN: PensjonsinformasjonHjelper
 
     @Mock
-    lateinit var persondataFraTPS: PrefillPersonDataFromTPS
+    lateinit var persondataFraTPS: BrukerFromTPS
 
     @Mock
     lateinit var sakHelper: PrefillP2xxxPensjon
 
     @Mock
-    lateinit var prefillPersonDataFromTPS: PrefillPersonDataFromTPS
+    lateinit var brukerFromTPS: BrukerFromTPS
 
     @BeforeEach
     fun before() {
-        prefillNav = PrefillNav(prefillPersonDataFromTPS,
+        prefillNav = PrefillNav(brukerFromTPS,
+                prefillAdresse = mock<PrefillAdresse>(),
                 institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO")
         prefillP2000 = PrefillP2000(prefillNav, dataFromPEN, persondataFraTPS)
     }

@@ -34,7 +34,7 @@ class PrefillAdresseTest{
         val person = Person()
         person.bostedsadresse = bostedadr
 
-        val result = prefillAdresse.hentPersonAdresse(person)!!
+        val result = prefillAdresse.createPersonAdresse(person)!!
 
         assertNotNull(result)
 

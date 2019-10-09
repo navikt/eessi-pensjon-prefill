@@ -7,14 +7,14 @@ import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonHjelper
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.PrefillP6000Pensjon.createPensjon
-import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillPersonDataFromTPS
+import no.nav.eessi.pensjon.fagmodul.prefill.tps.BrukerFromTPS
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 class PrefillP6000(private val prefillNav: PrefillNav,
                    private val eessiInfo: EessiInformasjon,
                    private val dataFromPESYS: PensjonsinformasjonHjelper,
-                   private val preutfyllingPersonFraTPS: PrefillPersonDataFromTPS) : Prefill<SED> {
+                   private val brukerFromTPS: BrukerFromTPS) : Prefill<SED> {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillP6000::class.java) }
 
@@ -34,7 +34,8 @@ class PrefillP6000(private val prefillNav: PrefillNav,
         logger.debug("Henter opp Persondata/Gjenlevende fra TPS")
 
         val gjenlevende = if (prefillData.erGyldigEtterlatt()) {
-            preutfyllingPersonFraTPS.prefillBruker(prefillData.personNr)
+            val gjenlevendeBruker = brukerFromTPS.hentBrukerFraTPS(prefillData.personNr)
+            if (gjenlevendeBruker == null) null else prefillNav.createBruker(gjenlevendeBruker, null, null)
         } else null
 
         logger.debug("Henter opp Pernsjondata fra PESYS")
