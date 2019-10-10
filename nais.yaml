@@ -73,6 +73,9 @@ fasitResources:
     resourceType: ApplicationProperties
   - alias: kafka_bootstrap_servers
     resourceType: baseurl
+  #Henter RINA-institusjoner fra Fasit
+  - alias: eessi-pensjon-institusjon
+    resourcetype: ApplicationProperties
 
   exposed:
   - alias: eessifagmodulservice
