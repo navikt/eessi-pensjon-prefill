@@ -16,7 +16,7 @@ class EessiInformasjon(
     fun asAndreinstitusjonerItem() =
             AndreinstitusjonerItem(
                     institusjonsid = institutionid,
-                    institusjonsnavn = institutionnavn,
+                    institusjonsnavn = "",   // institutionnavn,
                     institusjonsadresse = institutionGate,
                     postnummer = institutionPostnr,
                     bygningsnr = null,

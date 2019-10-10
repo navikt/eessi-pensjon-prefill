@@ -31,7 +31,8 @@ management:
   metrics.web.server.auto-time-requests: true
 
 eessi:
-  pensjon_lokalnavn: 'NOINST002, NO INST002, NO'
+#  pensjon_lokalnavn: 'NOINST002, NO INST002, NO'
+  pensjon_lokalnavn: ''
   pensjon_adresse_gate: 'Postboks 6600 Etterstad'
   pensjon_adresse_by:   'Oslo'
   pensjon_adresse_postnummer: '0607'
