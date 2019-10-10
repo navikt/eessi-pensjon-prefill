@@ -21,7 +21,7 @@ import java.util.*
 class PrefillNav(private val brukerFromTPS: BrukerFromTPS,
                  private val prefillAdresse: PrefillAdresse,
                  @Value("\${eessi-pensjon-institusjon}") private val institutionid: String,
-                 @Value("\${eessi.pensjon_lokalnavn}") private val institutionnavn: String) {
+                 @Value("\${eessi-pensjon-institusjon-navn}") private val institutionnavn: String) {
 
     companion object {
         private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillNav::class.java) }
@@ -233,7 +233,7 @@ class PrefillNav(private val brukerFromTPS: BrukerFromTPS,
             logger.debug("1.1           Lokalt saksnummer (hvor hentes disse verider ifra?")
             return listOf(EessisakItem(
                     institusjonsid = institusjonId,
-//                  institusjonsnavn = institusjonNavn,
+                    institusjonsnavn = institusjonNavn,
                     saksnummer = penSaksnummer,
                     land = "NO"
             ))
@@ -346,7 +346,7 @@ class PrefillNav(private val brukerFromTPS: BrukerFromTPS,
                 val relasjonperson = Person(
                         pin = listOf(
                                 PinItem(
-                                        //institusjonsnavn = institutionnavn,
+                                        institusjonsnavn = institutionnavn,
                                         institusjonsid = institutionid,
                                         identifikator = hentNorIdent(persontps),
                                         land = "NO"
