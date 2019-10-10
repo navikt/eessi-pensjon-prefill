@@ -37,7 +37,7 @@ internal class PrefillNavTest {
 
         val actual = prefillNav.prefill(prefillData, true)
         val expected = Nav(
-                eessisak = listOf(EessisakItem(someInstitutionId, someIntitutionNavn, somePenSaksnr, "NO")),
+                eessisak = listOf(EessisakItem(institusjonsid =  someInstitutionId, saksnummer =  somePenSaksnr, land =  "NO")),
                 krav = Krav(LocalDate.now().toString()))
         assertEquals(expected, actual)
     }
@@ -60,7 +60,7 @@ internal class PrefillNavTest {
         val actual = prefillNav.prefill(prefillData, true)
 
         val expected = Nav(
-                eessisak = listOf(EessisakItem(someInstitutionId, someIntitutionNavn, somePenSaksnr, "NO")),
+                eessisak = listOf(EessisakItem(institusjonsid =  someInstitutionId, saksnummer =  somePenSaksnr, land =  "NO")),
                 krav = Krav(LocalDate.now().toString()),
                 bruker = Bruker(
                         person = lagPerson(foreldersPin, "Christopher", "Robin"),
@@ -94,7 +94,7 @@ internal class PrefillNavTest {
 
         val actual = prefillNav.prefill(prefillData, true)
         val expected = Nav(
-                eessisak = listOf(EessisakItem(someInstitutionId, someIntitutionNavn, somePenSaksnr, "NO")),
+                eessisak = listOf(EessisakItem(institusjonsid =  someInstitutionId, saksnummer =  somePenSaksnr, land =  "NO")),
                 krav = Krav(LocalDate.now().toString()),
                 bruker = Bruker(
                         person = lagPerson(somePersonNr, "Ole", "Brum"),
@@ -104,7 +104,7 @@ internal class PrefillNavTest {
                         far = Foreldre(Person(
                                 fornavn = "Ole",
                                 etternavnvedfoedsel = "Brum",
-                                pin = listOf( PinItem(identifikator = somePersonNr, land = "NO", institusjonsid = "enInstId", institusjonsnavn = "instNavn")))),
+                                pin = listOf( PinItem(identifikator = somePersonNr, land = "NO", institusjonsid = "enInstId")))),
                         person = lagPerson(someBarnPersonNr, "Nasse", "Nøff"), relasjontilbruker = "BARN")))
 
         assertEquals(expected, actual)
@@ -146,7 +146,7 @@ internal class PrefillNavTest {
         val actual = prefillNav.prefill(prefillData)
 
         val expected = Nav(
-                eessisak = listOf(EessisakItem(someInstitutionId, someIntitutionNavn, somePenSaksnr, "NO")),
+                eessisak = listOf(EessisakItem(institusjonsid =  someInstitutionId, saksnummer =  somePenSaksnr, land =  "NO")),
                 krav = Krav(LocalDate.now().toString()),
                 bruker = Bruker(person = lagPerson(brukerensPin, "Ole", "Brum"),
                         arbeidsforhold = listOf(ArbeidsforholdItem(

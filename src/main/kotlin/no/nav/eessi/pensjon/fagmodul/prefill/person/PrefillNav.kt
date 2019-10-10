@@ -233,7 +233,7 @@ class PrefillNav(private val brukerFromTPS: BrukerFromTPS,
             logger.debug("1.1           Lokalt saksnummer (hvor hentes disse verider ifra?")
             return listOf(EessisakItem(
                     institusjonsid = institusjonId,
-                    institusjonsnavn = institusjonNavn,
+//                  institusjonsnavn = institusjonNavn,
                     saksnummer = penSaksnummer,
                     land = "NO"
             ))
@@ -346,7 +346,7 @@ class PrefillNav(private val brukerFromTPS: BrukerFromTPS,
                 val relasjonperson = Person(
                         pin = listOf(
                                 PinItem(
-                                        institusjonsnavn = institutionnavn,
+                                        //institusjonsnavn = institutionnavn,
                                         institusjonsid = institutionid,
                                         identifikator = hentNorIdent(persontps),
                                         land = "NO"
