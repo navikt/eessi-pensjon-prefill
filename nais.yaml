@@ -75,7 +75,7 @@ fasitResources:
     resourceType: baseurl
   #Henter RINA-institusjoner fra Fasit
   - alias: eessi-pensjon-institusjon
-    resourcetype: ApplicationProperties
+    resourceType: ApplicationProperties
 
   exposed:
   - alias: eessifagmodulservice
