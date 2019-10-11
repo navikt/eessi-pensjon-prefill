@@ -45,6 +45,14 @@ class PrefillNav(private val brukerFromTPS: BrukerFromTPS,
             MOR("MORA"),
             BARN("BARN");
 
+//            https://kodeverk.nais.preprod.local/api/v1/kodeverk/Familierelasjoner/koder
+//            "BARN",
+//            "EKTE",
+//            "FARA",
+//            "MORA",
+//            "REPA",
+//            "SAMB"
+
             fun erSamme(relasjonTPS: String): Boolean {
                 return relasjon == relasjonTPS
             }
@@ -161,21 +169,38 @@ class PrefillNav(private val brukerFromTPS: BrukerFromTPS,
         }
 
         private fun createEktefelleType(typevalue: String): String {
-            logger.debug("5.1           Ektefelle/Partnerskap-type")
+            logger.debug("5.1           Ektefelle/Partnerskap-type : $typevalue")
             return when (typevalue) {
                 "EKTE" -> "01"
-                "PART" -> "02"
+                "REPA" -> "02"
                 else -> "03"
             }
+//            https://kodeverk.nais.preprod.local/api/v1/kodeverk/Sivilstander/koder
+//            "ENKE",
+//            "GIFT",
+//            "GJPA",
+//            "GLAD",
+//            "NULL",
+//            "REPA",
+//            "SAMB",
+//            "SEPA",
+//            "SEPR",
+//            "SKIL",
+//            "SKPA",
+//            "UGIF"
         }
 
         private fun filterEktefelleRelasjon(bruker: no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker?): Pair<String, String> {
+            val validRelasjoner = listOf("EKTE","SAMB","REPA")
+
             if (bruker == null) return Pair("","")
             var ektepinid = ""
             var ekteTypeValue = ""
 
             bruker.harFraRolleI.forEach {
-                if (it.tilRolle.value == "EKTE") { // FIXME TODO - dette begrenser til kun EKTEFELLE (ikke PARTNER og evt andre)
+                val relasjon = it.tilRolle.value
+
+                if (validRelasjoner.contains(relasjon)) {
 
                     ekteTypeValue = it.tilRolle.value
                     val tilperson = it.tilPerson
@@ -185,7 +210,11 @@ class PrefillNav(private val brukerFromTPS: BrukerFromTPS,
                     if (ektepinid.isNotBlank()) {
                         return@forEach
                     }
+
                 }
+//
+//                if (it.tilRolle.value == "EKTE") { // FIXME TODO - dette begrenser til kun EKTEFELLE (ikke PARTNER og evt andre)
+//                }
             }
             return Pair(ektepinid, ekteTypeValue)
         }

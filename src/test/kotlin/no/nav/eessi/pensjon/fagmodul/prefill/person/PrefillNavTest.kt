@@ -6,14 +6,14 @@ import no.nav.eessi.pensjon.fagmodul.prefill.model.BrukerInformasjon
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.BrukerFromTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.FodselsnummerMother
+import no.nav.eessi.pensjon.fagmodul.prefill.tps.NavFodselsnummer
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillAdresse
 import no.nav.eessi.pensjon.fagmodul.sedmodel.*
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Bruker
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Person
 import no.nav.eessi.pensjon.services.geo.LandkodeService
 import no.nav.eessi.pensjon.services.geo.PostnummerService
-import no.nav.eessi.pensjon.utils.createXMLCalendarFromString
-import no.nav.eessi.pensjon.utils.mapAnyToJson
+import no.nav.eessi.pensjon.utils.*
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.*
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
@@ -110,6 +110,164 @@ internal class PrefillNavTest {
         assertEquals(expected, actual)
     }
 
+    @Test
+    fun `prefill med familie relasjon person og ektefelle`() {
+//
+//        val personfnr = NavFodselsnummer(somePersonNr)
+//        val personFdato = personfnr.getBirthDate().toString()
+//        val ektefnr = NavFodselsnummer(somerEktefellePersonNr)
+//        val ektefellFdato = ektefnr.getBirthDate().toString()
+//
+//        val prefillData = PrefillDataModel().apply {
+//            penSaksnummer = somePenSaksnr
+//            personNr = somePersonNr
+//        }
+//
+//        val ektefelle = lagTPSBruker(somerEktefellePersonNr, "Jonna", "Dolla")
+//        val person    = lagTPSBruker(somePersonNr, "Ola", "Testbruker")
+//
+//        person.withFoedselsdato(Foedselsdato().withFoedselsdato( convertToXMLocal(personfnr.getBirthDate())))
+//        person.withHarFraRolleI(Familierelasjon().withTilRolle(Familierelasjoner().withValue("EKTE")).withTilPerson(ektefelle))
+//        println("Person fdato: $personFdato")
+//
+//        ektefelle.withHarFraRolleI(Familierelasjon().withTilRolle(Familierelasjoner().withValue("EKTE")).withTilPerson(person))
+//        ektefelle.withFoedselsdato(Foedselsdato().withFoedselsdato( convertToXMLocal(ektefnr.getBirthDate())))
+//        println("Ektefelle fdato: $ektefellFdato")
+
+        val somePersonNr = FodselsnummerMother.generateRandomFnr(60).toString()
+        val somerEktefellePersonNr = FodselsnummerMother.generateRandomFnr(50).toString()
+
+        val personfnr = NavFodselsnummer(somePersonNr)
+        val ektefnr = NavFodselsnummer(somerEktefellePersonNr)
+        val personFdato = personfnr.getBirthDate().toString()
+        val ektefellFdato = ektefnr.getBirthDate().toString()
+
+        val pair = createPersonMedEktefellPartnet(somePersonNr, somerEktefellePersonNr, "EKTE")
+        val person = pair.first
+        val ektefelle = pair.second
+
+        val prefillData = PrefillDataModel().apply {
+            penSaksnummer = somePenSaksnr
+            personNr = somePersonNr
+        }
+
+
+        whenever(mockBrukerFromTPS.hentBrukerFraTPS(somePersonNr)).thenReturn(person)
+        whenever(mockBrukerFromTPS.hentBrukerFraTPS(somerEktefellePersonNr)).thenReturn(ektefelle)
+
+        val actual = prefillNav.prefill(prefillData, true)
+
+        val expected = Nav(
+                eessisak = listOf(EessisakItem(institusjonsid =  someInstitutionId, institusjonsnavn = someIntitutionNavn, saksnummer =  somePenSaksnr, land =  "NO")),
+                krav = Krav(LocalDate.now().toString()),
+                bruker = Bruker(
+                        person = lagPerson(somePersonNr, "Ola", "Testbruker", personFdato),
+                        adresse = lagTomAdresse()
+                ),
+                ektefelle = Ektefelle(
+                        person = lagPerson(somerEktefellePersonNr, "Jonna", "Dolla", ektefellFdato),
+                        type = "01"
+                )
+        )
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun `prefill med samboerpar relasjon person og partner`() {
+        val somePersonNr = FodselsnummerMother.generateRandomFnr(60).toString()
+        val somerEktefellePersonNr = FodselsnummerMother.generateRandomFnr(50).toString()
+
+        val personfnr = NavFodselsnummer(somePersonNr)
+        val ektefnr = NavFodselsnummer(somerEktefellePersonNr)
+        val personFdato = personfnr.getBirthDate().toString()
+        val ektefellFdato = ektefnr.getBirthDate().toString()
+
+        val pair = createPersonMedEktefellPartnet(somePersonNr, somerEktefellePersonNr, "REPA")
+        val person = pair.first
+        val ektefelle = pair.second
+
+        val prefillData = PrefillDataModel().apply {
+            penSaksnummer = somePenSaksnr
+            personNr = somePersonNr
+        }
+        whenever(mockBrukerFromTPS.hentBrukerFraTPS(somePersonNr)).thenReturn(person)
+        whenever(mockBrukerFromTPS.hentBrukerFraTPS(somerEktefellePersonNr)).thenReturn(ektefelle)
+
+        val actual = prefillNav.prefill(prefillData, true)
+
+        val expected = Nav(
+                eessisak = listOf(EessisakItem(institusjonsid =  someInstitutionId, institusjonsnavn = someIntitutionNavn, saksnummer =  somePenSaksnr, land =  "NO")),
+                krav = Krav(LocalDate.now().toString()),
+                bruker = Bruker(
+                        person = lagPerson(somePersonNr, "Ola", "Testbruker", personFdato),
+                        adresse = lagTomAdresse()
+                ),
+                ektefelle = Ektefelle(
+                        person = lagPerson(somerEktefellePersonNr, "Jonna", "Dolla", ektefellFdato),
+                        type = "02"
+                )
+        )
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun `prefill med samboer relasjon person og bofellesskap`() {
+        val somePersonNr = FodselsnummerMother.generateRandomFnr(60).toString()
+        val somerEktefellePersonNr = FodselsnummerMother.generateRandomFnr(50).toString()
+
+        val personfnr = NavFodselsnummer(somePersonNr)
+        val ektefnr = NavFodselsnummer(somerEktefellePersonNr)
+        val personFdato = personfnr.getBirthDate().toString()
+        val ektefellFdato = ektefnr.getBirthDate().toString()
+
+        val pair = createPersonMedEktefellPartnet(somePersonNr, somerEktefellePersonNr, "SAMB")
+        val person = pair.first
+        val ektefelle = pair.second
+
+        val prefillData = PrefillDataModel().apply {
+            penSaksnummer = somePenSaksnr
+            personNr = somePersonNr
+        }
+        whenever(mockBrukerFromTPS.hentBrukerFraTPS(somePersonNr)).thenReturn(person)
+        whenever(mockBrukerFromTPS.hentBrukerFraTPS(somerEktefellePersonNr)).thenReturn(ektefelle)
+
+        val actual = prefillNav.prefill(prefillData, true)
+
+        val expected = Nav(
+                eessisak = listOf(EessisakItem(institusjonsid =  someInstitutionId, institusjonsnavn = someIntitutionNavn, saksnummer =  somePenSaksnr, land =  "NO")),
+                krav = Krav(LocalDate.now().toString()),
+                bruker = Bruker(
+                        person = lagPerson(somePersonNr, "Ola", "Testbruker", personFdato),
+                        adresse = lagTomAdresse()
+                ),
+                ektefelle = Ektefelle(
+                        person = lagPerson(somerEktefellePersonNr, "Jonna", "Dolla", ektefellFdato),
+                        type = "03"
+                )
+        )
+        assertEquals(expected, actual)
+    }
+
+
+    private fun createPersonMedEktefellPartnet(personPersonnr: String, ektefellePersonnr: String, relasjonType: String) : Pair<no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker, no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker> {
+        val somePersonNr = personPersonnr
+        val somerEktefellePersonNr = ektefellePersonnr
+
+        val personfnr = NavFodselsnummer(somePersonNr)
+        val ektefnr = NavFodselsnummer(somerEktefellePersonNr)
+
+        val ektefelle = lagTPSBruker(somerEktefellePersonNr, "Jonna", "Dolla")
+        val person    = lagTPSBruker(somePersonNr, "Ola", "Testbruker")
+
+        person.withHarFraRolleI(Familierelasjon().withTilRolle(Familierelasjoner().withValue(relasjonType)).withTilPerson(ektefelle))
+        person.withFoedselsdato(Foedselsdato().withFoedselsdato( convertToXMLocal(personfnr.getBirthDate())))
+
+        ektefelle.withHarFraRolleI(Familierelasjon().withTilRolle(Familierelasjoner().withValue(relasjonType)).withTilPerson(person))
+        ektefelle.withFoedselsdato(Foedselsdato().withFoedselsdato( convertToXMLocal(ektefnr.getBirthDate())))
+
+        return Pair<no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker, no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker>(person, ektefelle)
+    }
+
 
     @Test
     fun `minimal prefill med brukerinfo på request`() {
@@ -169,7 +327,8 @@ internal class PrefillNavTest {
         assertEquals(expected, actual)
     }
 
-    private fun lagPerson(foreldersPin: String, fornavn: String, etternavn: String) =
+    private fun lagPerson(foreldersPin: String, fornavn: String, etternavn: String) = lagPerson(foreldersPin, fornavn, etternavn, null)
+    private fun lagPerson(foreldersPin: String, fornavn: String, etternavn: String, fdato: String?) =
             Person(
                     pin = listOf(PinItem(
                             institusjonsnavn = someIntitutionNavn,
@@ -180,6 +339,7 @@ internal class PrefillNavTest {
                     etternavn = etternavn,
                     fornavn = fornavn,
                     kjoenn = "M",
+                    foedselsdato = fdato,
                     fornavnvedfoedsel = fornavn)
 
     private fun lagTPSBruker(foreldersPin: String, fornavn: String, etternavn: String) =
