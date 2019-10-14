@@ -42,10 +42,9 @@ class PensjonsinformasjonService(
         }
     }
     @Throws(IkkeFunnetException::class)
-    fun hentKunSakType(sakId: String, fnr: String): Pensjontype {
-
+    fun hentKunSakType(sakId: String, aktoerid: String): Pensjontype {
         try {
-            val sak = finnSak(sakId, hentAltPaaFnr(fnr)) ?: throw IkkeFunnetException("Sak ikke funnet")
+            val sak = finnSak(sakId, hentAltPaaAktoerId(aktoerid)) ?: throw IkkeFunnetException("Sak ikke funnet")
 
             return Pensjontype(
                     sakId,
@@ -56,27 +55,6 @@ class PensjonsinformasjonService(
             throw IkkeFunnetException("Saktype ikke funnet")
         }
 
-    }
-
-    @Throws(PensjoninformasjonException::class, HttpServerErrorException::class, HttpClientErrorException::class)
-    fun hentAltPaaFnr(fnr: String): Pensjonsinformasjon {
-        //APIet skal ha urlen {host}:{port}/pensjon-ws/api/pensjonsinformasjon/v1/{ressurs}?sakId=123+fom=2018-01-01+tom=2018-28-02.
-
-        val informationBlocks = listOf(
-                InformasjonsType.BRUKERS_SAKER_LISTE
-        )
-        val document = requestBuilder.getBaseRequestDocument()
-
-        informationBlocks.forEach {
-            requestBuilder.addPensjonsinformasjonElement(document, it)
-        }
-
-        logger.info("Requestbody:\n${document.documentToString()}")
-
-        val response = doRequest("/fnr/", fnr, document.documentToString())
-        validateResponse(informationBlocks, response)
-        logger.info("Response: $response")
-        return response
     }
 
     @Throws(PensjoninformasjonException::class, HttpServerErrorException::class, HttpClientErrorException::class)
@@ -100,7 +78,6 @@ class PensjonsinformasjonService(
         logger.info("Response: $response")
         return response
     }
-
 
 
     @Throws(PensjoninformasjonException::class, HttpServerErrorException::class, HttpClientErrorException::class)

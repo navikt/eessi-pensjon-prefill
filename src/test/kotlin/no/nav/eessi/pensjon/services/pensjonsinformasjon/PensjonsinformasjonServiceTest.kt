@@ -98,8 +98,8 @@ class PensjonsinformasjonServiceTest {
     fun `hentAltpåSak  mock data med to saktyper en skal komme ut`() {
         val mockResponseEntity = createResponseEntityFromJsonFile("classpath:pensjonsinformasjon/krav/P2000_21975717_AP_UTLAND.xml")
         whenever(mockrestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java))).thenReturn(mockResponseEntity)
-        val data = pensjonsinformasjonService.hentAltPaaFnr("1231233")
 
+        val data = pensjonsinformasjonService.hentAltPaaAktoerId("1231233")
         val sak = PensjonsinformasjonService.finnSak("21975717", data)
 
         sak?.let {
