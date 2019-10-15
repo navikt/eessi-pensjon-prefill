@@ -171,27 +171,14 @@ class PrefillNav(private val brukerFromTPS: BrukerFromTPS,
         private fun createEktefelleType(typevalue: String): String {
             logger.debug("5.1           Ektefelle/Partnerskap-type : $typevalue")
             return when (typevalue) {
-                "EKTE" -> "01"
-                "REPA" -> "02"
-                else -> "03"
+                "EKTE" -> "ektefelle"
+                "REPA" -> "part_i_et_registrert_partnerskap"
+                else -> "samboer"
             }
-//            https://kodeverk.nais.preprod.local/api/v1/kodeverk/Sivilstander/koder
-//            "ENKE",
-//            "GIFT",
-//            "GJPA",
-//            "GLAD",
-//            "NULL",
-//            "REPA",
-//            "SAMB",
-//            "SEPA",
-//            "SEPR",
-//            "SKIL",
-//            "SKPA",
-//            "UGIF"
         }
 
         private fun filterEktefelleRelasjon(bruker: no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker?): Pair<String, String> {
-            val validRelasjoner = listOf("EKTE","SAMB","REPA")
+            val validRelasjoner = listOf("EKTE","REPA","SAMB")
 
             if (bruker == null) return Pair("","")
             var ektepinid = ""

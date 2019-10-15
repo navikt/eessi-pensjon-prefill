@@ -166,7 +166,7 @@ internal class PrefillNavTest {
                 ),
                 ektefelle = Ektefelle(
                         person = lagPerson(somerEktefellePersonNr, "Jonna", "Dolla", ektefellFdato),
-                        type = "01"
+                        type = "ektefelle"
                 )
         )
         assertEquals(expected, actual)
@@ -204,7 +204,7 @@ internal class PrefillNavTest {
                 ),
                 ektefelle = Ektefelle(
                         person = lagPerson(somerEktefellePersonNr, "Jonna", "Dolla", ektefellFdato),
-                        type = "02"
+                        type = "part_i_et_registrert_partnerskap"
                 )
         )
         assertEquals(expected, actual)
@@ -242,7 +242,7 @@ internal class PrefillNavTest {
                 ),
                 ektefelle = Ektefelle(
                         person = lagPerson(somerEktefellePersonNr, "Jonna", "Dolla", ektefellFdato),
-                        type = "03"
+                        type = "samboer"
                 )
         )
         assertEquals(expected, actual)
