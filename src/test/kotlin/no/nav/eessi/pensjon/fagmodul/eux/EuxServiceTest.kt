@@ -471,9 +471,8 @@ class EuxServiceTest {
         firstJson.lastUpdate?.let { lastUpdate = it }
         assertEquals("2019-05-20T16:35:34",  Instant.ofEpochMilli(lastUpdate).atZone(ZoneId.systemDefault()).toLocalDateTime().toString())
         assertEquals(18, firstJson.seds.size)
-        val json = mapAnyToJson(firstJson)
 
-        //println(json)
+        val json = firstJson.toJson()
 
         val bucdetaljerpath = "src/test/resources/json/buc/bucdetaljer-158123.json"
         val bucdetaljer = String(Files.readAllBytes(Paths.get(bucdetaljerpath)))
