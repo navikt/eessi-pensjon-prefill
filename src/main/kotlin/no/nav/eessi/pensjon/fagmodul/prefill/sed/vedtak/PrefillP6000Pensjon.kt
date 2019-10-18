@@ -25,6 +25,7 @@ object PrefillP6000Pensjon {
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillP6000Pensjon::class.java) }
 
     fun createPensjon(dataFromPESYS: PensjonsinformasjonHjelper, gjenlevende: Bruker?, vedtakId: String, andreinstitusjonerItem: AndreinstitusjonerItem?): Pensjon {
+
         if (vedtakId.isBlank()) throw IkkeGyldigStatusPaaSakException("Mangler vedtakID")
 
         logger.debug("----------------------------------------------------------")
@@ -34,6 +35,7 @@ object PrefillP6000Pensjon {
 
         logger.debug("vedtakId: $vedtakId")
         val pendata: Pensjonsinformasjon = dataFromPESYS.hentMedVedtak(vedtakId)
+
         logger.debug("Henter pensjondata fra PESYS")
 
         val endtime = System.nanoTime()
@@ -47,7 +49,7 @@ object PrefillP6000Pensjon {
         if (!harBoddArbeidetUtland(pendata)) throw IkkeGyldigStatusPaaSakException("Har ikke bodd eller arbeidet i utlandet. Avslutter vedtak")
         //Sjekk opp om det finnes et dato fattet vedtak. (hvis ikke avslutt)
         if (pendata.vedtak.datoFattetVedtak == null) {
-            throw IkkeGyldigStatusPaaSakException("Vedak mangler dato for fatet vedtak. Avslutter")
+            throw IkkeGyldigStatusPaaSakException("Vedtaket mangler dato for FattetVedtak. Avslutter")
         }
 
         //prefill Pensjon obj med data fra PESYS. (pendata)
