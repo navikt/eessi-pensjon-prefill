@@ -4,7 +4,8 @@ import io.micrometer.core.instrument.Counter
 import no.nav.eessi.pensjon.metrics.counter
 
 fun getCounter(key: String): Counter {
-    val countermap = mapOf("AKSJONOK" to counter("eessipensjon_fagmodul.euxmuligeaksjoner", "vellykkede"),
+    val countermap = mapOf(
+            "AKSJONOK" to counter("eessipensjon_fagmodul.euxmuligeaksjoner", "vellykkede"),
             "SENDSEDOK" to counter("eessipensjon_fagmodul.sendsed", "vellykkede"),
             "SENDSEDFEIL" to counter("eessipensjon_fagmodul.sendsed", "feilede"),
             "HENTSEDOK" to counter("eessipensjon_fagmodul.hentsed", "vellykkede"),

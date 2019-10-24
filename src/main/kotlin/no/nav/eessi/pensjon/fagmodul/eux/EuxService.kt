@@ -194,7 +194,7 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
         return na
     }
 
-    @Throws(BucIkkeMottattException::class, EuxServerException::class)
+    // @ Throws(BucIkkeMottattException::class, EuxServerException::class)
     fun getBuc(euxCaseId: String): Buc {
         logger.info("euxCaseId: $euxCaseId")
 
@@ -344,11 +344,14 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
      */
     fun getRinaSakerFilterKunRinaId(fnr: String, rinaSakIder: List<String>): List<String> {
         logger.debug("Henter opp rinasaker på fnr")
+
         // Henter rina saker basert på fnr
         val rinaSakerMedFnr = getRinasaker(fnr, null, null, null)
+
         //filterer kun på ID (euxCaseId)
         val rinaSakIderMedFnr = hentRinaSakIder(rinaSakerMedFnr)
         logger.debug("Rinasaker fra rina: $rinaSakIderMedFnr")
+
         // Filtrerer vekk saker som allerede er hentet som har fnr
         return rinaSakIder.plus(rinaSakIderMedFnr).distinct()
     }
@@ -403,18 +406,34 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
         return mapJsonToAny(response.body!!, typeRefs())
     }
 
-    fun getSingleBucAndSedView(euxCaseId: String) = BucAndSedView.from(getBuc(euxCaseId), "")
+    fun getSingleBucAndSedView(euxCaseId: String): BucAndSedView {
+        return try {
+            BucAndSedView.from( getBuc(euxCaseId) )
+        } catch (ex: Exception) {
+            logger.error("Feiler ved utlevering av enkel bucandsedview ${ex.message}", ex)
+            BucAndSedView.fromErr( ex.message )
+        }
+    }
 
-
-    fun getBucAndSedView(rinasaker: List<String>, aktoerid: String): List<BucAndSedView> {
+    fun getBucAndSedView(rinasaker: List<String>): List<BucAndSedView> {
         val startTime = System.currentTimeMillis()
         val list = rinasaker
-                .map { BucAndSedView.from(getBuc( it ), aktoerid) }
+                .map { rinaid ->
+                        try {
+                            BucAndSedView.from( getBuc( rinaid ) )
+                        } catch (ex: Exception) {
+                            logger.error(ex.message, ex)
+                            BucAndSedView.fromErr( ex.message )
+                        }
+                    }
                 .toList()
-        logger.debug("9 ferdig returnerer list av BucAndSedView. Antall BUC: ${list.size}")
+
+        logger.debug(" ferdig returnerer list av BucAndSedView. Antall BUC: ${list.size}")
+
+        logger.debug(" sortert listen på startDate nyeste dato først")
         val sortlist = list.asSequence().sortedByDescending { it.startDate }.toList()
-        logger.debug("10. Sortert listen på startDate nyeste dato først")
-        logger.debug("11 tiden tok ${System.currentTimeMillis() - startTime} ms.")
+
+        logger.debug(" tiden tok ${System.currentTimeMillis() - startTime} ms.")
         return sortlist
     }
 
@@ -665,14 +684,14 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
 
     fun <T> restTemplateErrorhandler(restTemplateFunction: () -> ResponseEntity<T>, euxCaseId: String, metricName: String, prefixErrorMessage: String): ResponseEntity<T> {
         return try {
-            Metrics.timer("eessipensjon_fagmodul.$metricName", "api","eux-rina-api","service","fagmodul-eux").recordCallable {
+            Metrics.timer("${metricName}_timer", "api","eux-rina-api", "service", "fagmodul-eux").recordCallable {
                 val response = restTemplateFunction.invoke()
-                Metrics.counter("eessipensjon_fagmodul.$metricName", "type", "vellykkede").increment()
+                Metrics.counter("eessipensjon_fagmodul.$metricName", "type", "vellykkede", "status", response.statusCode.name, "exception", "").increment()
                 response
             }
        } catch (hcee: HttpClientErrorException) {
             val errorBody = hcee.responseBodyAsString
-            Metrics.counter("eessipensjon_fagmodul.$metricName", "type", "feilede").increment()
+            Metrics.counter("eessipensjon_fagmodul.$metricName", "type", "feilede", "status", hcee.statusCode.name,  "exception", hcee.message).increment()
             logger.error("$prefixErrorMessage, HttpClientError med euxCaseID: $euxCaseId, body: $errorBody")
             when (hcee.statusCode) {
                 HttpStatus.UNAUTHORIZED -> throw RinaIkkeAutorisertBrukerException("Authorization token required for Rina,")
@@ -682,7 +701,7 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
             }
         } catch (hsee: HttpServerErrorException) {
             val errorBody = hsee.responseBodyAsString
-            Metrics.counter("eessipensjon_fagmodul.$metricName", "type", "feilede").increment()
+            Metrics.counter("eessipensjon_fagmodul.$metricName", "type", "feilede", "status", hsee.statusCode.name, "exception", hsee.message).increment()
             logger.error("$prefixErrorMessage, HttpServerError med euxCaseID: $euxCaseId, feilkode body: $errorBody", hsee)
             when (hsee.statusCode) {
                 HttpStatus.INTERNAL_SERVER_ERROR -> throw EuxRinaServerException("Rina serverfeil, kan også skyldes ugyldig input, $errorBody")
@@ -691,11 +710,11 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
             }
         } catch (uhsce: UnknownHttpStatusCodeException) {
             val errorBody = uhsce.responseBodyAsString
-            Metrics.counter("eessipensjon_fagmodul.$metricName", "type", "feilede").increment()
+            Metrics.counter("eessipensjon_fagmodul.$metricName", "type", "feilede", "status", "unknown", "exception", uhsce.message).increment()
             logger.error("$prefixErrorMessage, med euxCaseID: $euxCaseId errmessage: $errorBody", uhsce)
             throw GenericUnprocessableEntity("Ukjent statusefeil, $errorBody")
         } catch (ex: Exception) {
-            Metrics.counter("eessipensjon_fagmodul.$metricName", "type", "feilede").increment()
+            Metrics.counter("eessipensjon_fagmodul.$metricName", "type", "feilede", "status", "unknown", "exception", ex.message).increment()
             logger.error("$prefixErrorMessage, med euxCaseID: $euxCaseId", ex)
             throw ServerException("Ukjent Feil oppstod euxCaseId: $euxCaseId,  ${ex.message}")
         }

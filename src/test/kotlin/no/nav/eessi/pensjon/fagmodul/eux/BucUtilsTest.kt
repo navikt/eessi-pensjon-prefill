@@ -422,7 +422,7 @@ class BucUtilsTest {
         val bucjson = getTestJsonFile("buc-280670.json")
         val buc = mapJsonToAny(bucjson, typeRefs<Buc>())
 
-        val bucview =  BucAndSedView.from(buc, "")
+        val bucview =  BucAndSedView.from(buc)
 
         assertEquals(1567155195638, bucview.startDate)
         assertEquals(1567155212000, bucview.lastUpdate)
@@ -433,10 +433,18 @@ class BucUtilsTest {
         val bucjson = getTestJsonFile("buc-279020big.json")
         val buc = mapJsonToAny(bucjson, typeRefs<Buc>())
 
-        val bucview =  BucAndSedView.from(buc, "")
+        val bucview =  BucAndSedView.from(buc)
         assertEquals(1567088832589, bucview.startDate)
         assertEquals(1567178490000, bucview.lastUpdate)
     }
+
+    @Test
+    fun parseAndTestBucMockError() {
+        val error = "Error; no access"
+        val bucview =  BucAndSedView.fromErr(error)
+        assertEquals(error, bucview.error)
+    }
+
 
     @Test
     fun bucsedandviewDisplaySedsWithParentIdToReply() {
@@ -457,11 +465,11 @@ class BucUtilsTest {
         val bucjson = getTestJsonFile("buc-285268-answerid.json")
         val buc = mapJsonToAny(bucjson, typeRefs<Buc>())
 
-        val bucAndSedView = BucAndSedView.from(buc, "amatør")
+        val bucAndSedView = BucAndSedView.from(buc)
 
         val seds = bucAndSedView.seds
-        val filterParentId = seds.stream().filter { it.parentDocumentId != null }.toList()
-        assertEquals(3, filterParentId.size)
+        val filterParentId = seds?.filter { it.parentDocumentId != null }?.toList()
+        assertEquals(3, filterParentId?.size)
 
         assertEquals("NO", bucAndSedView.creator?.country)
         assertEquals("NO:NAVT003", bucAndSedView.creator?.institution)
@@ -475,10 +483,10 @@ class BucUtilsTest {
         val bucjson = getTestJsonFile("buc-287679short.json")
         val buc = mapJsonToAny(bucjson, typeRefs<Buc>())
 
-        val bucAndSedView = BucAndSedView.from(buc, "amatør")
+        val bucAndSedView = BucAndSedView.from(buc)
 
         val seds = bucAndSedView.seds
-        assertEquals(1, seds.size)
+        assertEquals(1, seds?.size)
 
         assertEquals("NO", bucAndSedView.creator?.country)
         assertEquals("NO:NAVT002", bucAndSedView.creator?.institution)
@@ -488,10 +496,10 @@ class BucUtilsTest {
 
     @Test
     fun bucsedandviewCheckforCaseOwner() {
-        val bucAndSedView = BucAndSedView.from(buc, "amatør")
+        val bucAndSedView = BucAndSedView.from(buc)
 
         val seds = bucAndSedView.seds
-        assertEquals(15, seds.size)
+        assertEquals(15, seds?.size)
 
         assertEquals("NO", bucAndSedView.creator?.country)
         assertEquals("NO:NAVT003", bucAndSedView.creator?.institution)
@@ -503,14 +511,17 @@ class BucUtilsTest {
     fun hentutBucsedviewmedDato() {
         val bucjson = getTestJsonFile("buc-279020big.json")
         val buc = mapJsonToAny(bucjson, typeRefs<Buc>())
-        val bucAndSedView = BucAndSedView.from(buc, "Dummy aktoerid")
-        val seds = bucAndSedView.seds
+        val bucAndSedView = BucAndSedView.from(buc)
+
+        val seds = bucAndSedView.seds.orEmpty()
+
         assertEquals(25, seds.size)
         assertEquals("NO", bucAndSedView.creator?.country)
         assertEquals("NO:NAVT002", bucAndSedView.creator?.institution)
         assertEquals("NAVT002", bucAndSedView.creator?.name)
         assertEquals(1567088832589, bucAndSedView.startDate)
         assertEquals(1567178490000, bucAndSedView.lastUpdate)
+
         val startDate = DateTimeFormatter.ISO_INSTANT.format(java.time.Instant.ofEpochMilli (1567088832589))
         val startDlen = startDate.length -5
         assertEquals(startDate.substring(0, startDlen), buc.startDate.toString().substring(0,19))

@@ -113,19 +113,19 @@ class BucController(private val euxService: EuxService,
                         @PathVariable("sakid", required = false) sakid: String? = "",
                         @PathVariable("euxcaseid", required = false) euxcaseid: String? = ""): List<BucAndSedView> {
         auditlogger.log("getBucogSedView", aktoerid)
-        logger.debug("1 prøver å dekode til fnr fra aktoerid: $aktoerid")
+        logger.debug(" prøver å dekode til fnr fra aktoerid: $aktoerid")
 
         val fnr = aktoerIdHelper.hentPinForAktoer(aktoerid)
         val rinaSakIderFraDokumentMetadata = safService.hentRinaSakIderFraDokumentMetadata(aktoerid)
         val rinasakIdList = euxService.getFilteredArchivedaRinasaker(euxService.getRinasaker(fnr, rinaSakIderFraDokumentMetadata))
-        return euxService.getBucAndSedView( rinasakIdList, aktoerid)
+        return euxService.getBucAndSedView( rinasakIdList )
     }
 
     @ApiOperation("Henter ut en json struktur for type og sed menyliste for ui. ny api kall til eux")
     @GetMapping("/enkeldetalj/{euxcaseid}")
     fun getSingleBucogSedView(@PathVariable("euxcaseid", required = true) euxcaseid: String): BucAndSedView {
         auditlogger.log("getSingleBucogSedView")
-        logger.debug("1 prøver å hente en enkel buc på : $euxcaseid")
+        logger.debug(" prøver å hente en enkel buc på : $euxcaseid")
 
         return euxService.getSingleBucAndSedView(euxcaseid)
     }
@@ -142,7 +142,7 @@ class BucController(private val euxService: EuxService,
 
         //create bucDetail back from newly created buc call eux-rina-api to get data.
         val buc = euxService.getBuc(euxCaseId)
-        return BucAndSedView.from(buc, "")
+        return BucAndSedView.from(buc)
     }
 
     @ApiOperation("Legger til et vedlegg for det gitte dokumentet")
