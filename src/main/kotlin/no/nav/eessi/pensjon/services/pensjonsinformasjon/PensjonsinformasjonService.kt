@@ -2,6 +2,7 @@ package no.nav.eessi.pensjon.services.pensjonsinformasjon
 
 
 import com.google.common.base.Preconditions
+import io.micrometer.core.instrument.Metrics
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import no.nav.pensjon.v1.sak.V1Sak
 import org.slf4j.LoggerFactory
@@ -73,7 +74,7 @@ class PensjonsinformasjonService(
 
         logger.info("Requestbody:\n${document.documentToString()}")
 
-        val response = doRequest("/aktor/", aktoerId, document.documentToString())
+        val response = doRequest("/aktor/", aktoerId, document.documentToString(), "hentKrav")
         validateResponse(informationBlocks, response)
         logger.info("Response: $response")
         return response
@@ -105,7 +106,7 @@ class PensjonsinformasjonService(
         }
         logger.info("Requestbody:\n${document.documentToString()}")
 
-        val response = doRequest("/vedtak", vedtaksId, document.documentToString())
+        val response = doRequest("/vedtak", vedtaksId, document.documentToString(),"hentVedtak")
         validateResponse(informationBlocks, response)
         logger.info("Response: $response")
         return response
@@ -116,7 +117,7 @@ class PensjonsinformasjonService(
     }
 
     @Throws(PensjoninformasjonException::class, HttpServerErrorException::class, HttpClientErrorException::class)
-    private fun doRequest(path: String, id: String, requestBody: String): Pensjonsinformasjon {
+    private fun doRequest(path: String, id: String, requestBody: String, metricName: String): Pensjonsinformasjon {
 
         val headers = HttpHeaders()
         headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_XML_VALUE)
@@ -124,39 +125,45 @@ class PensjonsinformasjonService(
 
         val uriBuilder = UriComponentsBuilder.fromPath(path).pathSegment(id)
 
-        try {
-                //val responseEntity = pensjonsinformasjonOidcRestTemplate.exchange(
-            val responseEntity = pensjonsinformasjonOidcRestTemplate.exchange(
-                        uriBuilder.toUriString(),
-                        HttpMethod.POST,
-                        requestEntity,
-                        String::class.java)
+        return Metrics.timer("eessipensjon_fagmodul.$metricName", "api","pensjoninformasjon","service","fagmodul-pesys").recordCallable {
+            try {
+                    //val responseEntity = pensjonsinformasjonOidcRestTemplate.exchange(
+                val responseEntity = pensjonsinformasjonOidcRestTemplate.exchange(
+                            uriBuilder.toUriString(),
+                            HttpMethod.POST,
+                            requestEntity,
+                            String::class.java)
 
-            if (responseEntity.statusCode.isError) {
-                logger.error("Received ${responseEntity.statusCode} from pensjonsinformasjon")
-                if (responseEntity.hasBody()) {
-                    logger.error(responseEntity.body.toString())
+                if (responseEntity.statusCode.isError) {
+                    logger.error("Received ${responseEntity.statusCode} from pensjonsinformasjon")
+                    if (responseEntity.hasBody()) {
+                        logger.error(responseEntity.body.toString())
+                    }
+                    //throw RuntimeException("Received ${responseEntity.statusCode} ${responseEntity.statusCode.reasonPhrase} from pensjonsinformasjon")
+                    throw PensjoninformasjonException("Received ${responseEntity.statusCode} ${responseEntity.statusCode.reasonPhrase} from pensjonsinformasjon")
                 }
-                //throw RuntimeException("Received ${responseEntity.statusCode} ${responseEntity.statusCode.reasonPhrase} from pensjonsinformasjon")
-                throw PensjoninformasjonException("Received ${responseEntity.statusCode} ${responseEntity.statusCode.reasonPhrase} from pensjonsinformasjon")
+
+                val context = JAXBContext.newInstance(Pensjonsinformasjon::class.java)
+                val unmarshaller = context.createUnmarshaller()
+
+                val res = unmarshaller.unmarshal(StreamSource(StringReader(responseEntity.body)), Pensjonsinformasjon::class.java)
+
+                Metrics.counter("eessipensjon_fagmodul.$metricName", "type", "vellykkede").increment()
+                res.value as Pensjonsinformasjon
+
+            } catch (se: HttpServerErrorException) {
+                Metrics.counter("eessipensjon_fagmodul.$metricName", "type", "feilede").increment()
+                logger.error("Feiler ved Serverfeil mot PESYS", se)
+                throw se
+            } catch (ce: HttpClientErrorException) {
+                Metrics.counter("eessipensjon_fagmodul.$metricName", "type", "feilede").increment()
+                logger.error("Feiler ved Clientfeil mot PESYS", ce)
+                throw ce
+            } catch (ex: Exception) {
+                Metrics.counter("eessipensjon_fagmodul.$metricName", "type", "feilede").increment()
+                logger.error("Feil med kontakt til PESYS pensjoninformajson, ${ex.message}")
+                throw PensjoninformasjonException("Feil med kontakt til PESYS pensjoninformajson. melding; ${ex.message}")
             }
-
-            val context = JAXBContext.newInstance(Pensjonsinformasjon::class.java)
-            val unmarshaller = context.createUnmarshaller()
-
-            val res = unmarshaller.unmarshal(StreamSource(StringReader(responseEntity.body)), Pensjonsinformasjon::class.java)
-
-            return res.value as Pensjonsinformasjon
-
-        } catch (se: HttpServerErrorException) {
-            logger.error("Feiler ved Serverfeil mot PESYS", se)
-            throw se
-        } catch (ce: HttpClientErrorException) {
-            logger.error("Feiler ved Clientfeil mot PESYS", ce)
-            throw ce
-        } catch (ex: Exception) {
-            logger.error("Feil med kontakt til PESYS pensjoninformajson, ${ex.message}")
-            throw PensjoninformasjonException("Feil med kontakt til PESYS pensjoninformajson. melding; ${ex.message}")
         }
     }
 
