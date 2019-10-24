@@ -458,7 +458,8 @@ class EuxServiceTest {
                 .exchange( ArgumentMatchers.contains("buc/") ,
                 eq(HttpMethod.GET), eq(null), eq(String::class.java))
 
-        val result = service.getBucAndSedView(rinasakresult, "001122334455")
+        //"001122334455"
+        val result = service.getBucAndSedView(rinasakresult)
 
         assertNotNull(result)
         assertEquals(6, orgRinasaker.size)
@@ -470,9 +471,10 @@ class EuxServiceTest {
         var lastUpdate: Long = 0
         firstJson.lastUpdate?.let { lastUpdate = it }
         assertEquals("2019-05-20T16:35:34",  Instant.ofEpochMilli(lastUpdate).atZone(ZoneId.systemDefault()).toLocalDateTime().toString())
-        assertEquals(18, firstJson.seds.size)
+        assertEquals(18, firstJson.seds?.size)
 
         val json = firstJson.toJson()
+        println(json)
 
         val bucdetaljerpath = "src/test/resources/json/buc/bucdetaljer-158123.json"
         val bucdetaljer = String(Files.readAllBytes(Paths.get(bucdetaljerpath)))
@@ -486,10 +488,14 @@ class EuxServiceTest {
         val bucStr = String(Files.readAllBytes(Paths.get(bucjson)))
         assertTrue(validateJson(bucStr))
 
-        whenever(mockEuxrestTemplate.exchange(
-                not(eq("/rinasaker?Fødselsnummer=12345678900&RINASaksnummer=&BuCType=&Status=")),
-                eq(HttpMethod.GET), eq(null), eq(String::class.java)))
-                .thenReturn(ResponseEntity.ok(bucStr))
+        doReturn(ResponseEntity.ok(bucStr))
+                .whenever(mockEuxrestTemplate)
+                .exchange(
+                        ArgumentMatchers.contains("/buc/158123") ,
+                        eq(HttpMethod.GET),
+                        eq(null),
+                        eq(String::class.java)
+                )
 
         val firstJson = service.getSingleBucAndSedView("158123")
 
@@ -497,7 +503,7 @@ class EuxServiceTest {
         var lastUpdate: Long = 0
         firstJson.lastUpdate?.let { lastUpdate = it }
         assertEquals("2019-05-20T16:35:34",  Instant.ofEpochMilli(lastUpdate).atZone(ZoneId.systemDefault()).toLocalDateTime().toString())
-        assertEquals(18, firstJson.seds.size)
+        assertEquals(18, firstJson.seds?.size)
     }
 
     @Test

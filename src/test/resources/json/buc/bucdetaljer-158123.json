@@ -6,8 +6,7 @@
     "institution" : "NO:NAVT003",
     "name" : "NAVT003"
   },
-  "sakType" : "",
-  "aktoerId" : "001122334455",
+  "sakType" : null,
   "status" : "open",
   "startDate" : 1557392989122,
   "lastUpdate" : 1558362934000,
@@ -1026,5 +1025,6 @@
     } ],
     "attachments" : [ ],
     "version" : "1"
-  } ]
+  } ],
+  "error" : null
 }
