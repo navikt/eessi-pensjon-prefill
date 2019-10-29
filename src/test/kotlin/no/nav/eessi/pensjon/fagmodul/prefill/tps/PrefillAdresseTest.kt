@@ -2,20 +2,24 @@ package no.nav.eessi.pensjon.fagmodul.prefill.tps
 
 import no.nav.eessi.pensjon.services.geo.LandkodeService
 import no.nav.eessi.pensjon.services.geo.PostnummerService
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bostedsadresse
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.Gateadresse
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.Landkoder
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.Person
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.Postnummer
+import no.nav.eessi.pensjon.services.personv3.BrukerMock
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 class PrefillAdresseTest{
 
+    lateinit var prefillAdresse: PrefillAdresse
+
+    @BeforeEach
+    fun beforeStart() {
+        prefillAdresse = PrefillAdresse(PostnummerService(), LandkodeService())
+    }
+
     @Test
     fun `create personAdresse`() {
-        val prefillAdresse = PrefillAdresse(PostnummerService(), LandkodeService())
 
         val landkode = Landkoder()
         landkode.value = "NOR"
@@ -41,4 +45,29 @@ class PrefillAdresseTest{
         assertEquals("NO", result.land)
         assertEquals("Kirkeveien 12", result.gate)
         assertEquals("OSLO", result.by)
-    }}
+    }
+
+    @Test
+    fun adresseFeltDiskresjonFortroligPerson() {
+        val bruker = BrukerMock.createWith()
+        bruker?.diskresjonskode = Diskresjonskoder().withValue("SPFO")
+
+        val acual = prefillAdresse.createPersonAdresse(bruker ?: Bruker())
+
+        assertEquals(null, acual)
+
+    }
+
+    @Test
+    fun adresseFeltDiskresjonStrengtFortoligPerson() {
+        val bruker = BrukerMock.createWith()
+        bruker?.diskresjonskode = Diskresjonskoder().withValue("SPSF")
+
+        val acual = prefillAdresse.createPersonAdresse(bruker ?: Bruker())
+
+        assertEquals(null, acual)
+
+    }
+
+
+}
