@@ -6,6 +6,7 @@ import no.nav.eessi.pensjon.services.geo.PostnummerService
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bostedsadresse
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Gateadresse
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Landkoder
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Person
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
@@ -22,6 +23,10 @@ class PrefillAdresse ( private val postnummerService: PostnummerService,
     fun createPersonAdresse(personTPS: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): Adresse? {
         logger.debug("2.2.2         Adresse")
 
+        if (sjekkForDiskresjonKodeAdresse(personTPS)) {
+            return null
+        }
+
         //Gateadresse eller UstrukturertAdresse
         val bostedsadresse: Bostedsadresse = personTPS.bostedsadresse ?: return hentPersonAdresseUstrukturert()
 
@@ -34,6 +39,17 @@ class PrefillAdresse ( private val postnummerService: PostnummerService,
                 land = hentLandkode(gateAdresse.landkode),
                 by = postnummerService.finnPoststed(gateAdresse.poststed.value)
         )
+    }
+
+    protected fun sjekkForDiskresjonKodeAdresse(personTPS: Person): Boolean {
+        logger.debug("diskresjonskode:  ${personTPS.diskresjonskode}")
+
+        val diskresjons = personTPS.diskresjonskode
+        if (diskresjons != null && (diskresjons.value == "SPFO" || diskresjons.value == "SPSF")) {
+            logger.debug("2.2.2         Adresse, diskresjon ingen adresse")
+            return true
+        }
+        return false
     }
 
     //TODO: Denne metoden gjør ikke det den sier at den skal gjøre
