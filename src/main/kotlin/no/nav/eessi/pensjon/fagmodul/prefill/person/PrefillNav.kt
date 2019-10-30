@@ -329,13 +329,15 @@ class PrefillNav(private val brukerFromTPS: BrukerFromTPS,
                 //2.1.1     familiy name
                 etternavn = (brukerTps.personnavn as Personnavn).etternavn,
                 //2.1.2     forname
-                fornavn = (brukerTps.personnavn as Personnavn).fornavn,
+                fornavn = createFornavnMellomNavn(brukerTps.personnavn),
+                //fornavn = (brukerTps.personnavn as Personnavn).fornavn,
                 //2.1.3
                 foedselsdato = datoFormat(brukerTps),
                 //2.1.4     //sex
                 kjoenn = mapKjonn(brukerTps.kjoenn),
                 //2.1.6
-                fornavnvedfoedsel = (brukerTps.personnavn as Personnavn).fornavn,
+                fornavnvedfoedsel = createFornavnMellomNavn(brukerTps.personnavn),
+                //fornavnvedfoedsel = (brukerTps.personnavn as Personnavn).fornavn,
                 //2.1.7
                 pin = createPersonPinNorIdent(brukerTps, institutionid, institutionnavn),
                 //2.2.1.1
@@ -346,6 +348,14 @@ class PrefillNav(private val brukerFromTPS: BrukerFromTPS,
                 //TODO skaper feil under P2100 utkommenter intillvidere
                 sivilstand = null // if (isPersonAvdod(brukerTps)) null else createSivilstand(brukerTps)
         )
+    }
+
+    private fun createFornavnMellomNavn(personnavn: Personnavn): String {
+        return if (personnavn.mellomnavn != null) {
+            personnavn.fornavn + " " + personnavn.mellomnavn
+        } else {
+            personnavn.fornavn
+        }
     }
 
 

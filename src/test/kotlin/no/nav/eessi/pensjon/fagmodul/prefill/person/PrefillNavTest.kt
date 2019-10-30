@@ -1,5 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.person
 
+import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import no.nav.eessi.pensjon.fagmodul.prefill.model.BrukerInformasjon
@@ -112,28 +113,6 @@ internal class PrefillNavTest {
 
     @Test
     fun `prefill med familie relasjon person og ektefelle`() {
-//
-//        val personfnr = NavFodselsnummer(somePersonNr)
-//        val personFdato = personfnr.getBirthDate().toString()
-//        val ektefnr = NavFodselsnummer(somerEktefellePersonNr)
-//        val ektefellFdato = ektefnr.getBirthDate().toString()
-//
-//        val prefillData = PrefillDataModel().apply {
-//            penSaksnummer = somePenSaksnr
-//            personNr = somePersonNr
-//        }
-//
-//        val ektefelle = lagTPSBruker(somerEktefellePersonNr, "Jonna", "Dolla")
-//        val person    = lagTPSBruker(somePersonNr, "Ola", "Testbruker")
-//
-//        person.withFoedselsdato(Foedselsdato().withFoedselsdato( convertToXMLocal(personfnr.getBirthDate())))
-//        person.withHarFraRolleI(Familierelasjon().withTilRolle(Familierelasjoner().withValue("EKTE")).withTilPerson(ektefelle))
-//        println("Person fdato: $personFdato")
-//
-//        ektefelle.withHarFraRolleI(Familierelasjon().withTilRolle(Familierelasjoner().withValue("EKTE")).withTilPerson(person))
-//        ektefelle.withFoedselsdato(Foedselsdato().withFoedselsdato( convertToXMLocal(ektefnr.getBirthDate())))
-//        println("Ektefelle fdato: $ektefellFdato")
-
         val somePersonNr = FodselsnummerMother.generateRandomFnr(60).toString()
         val somerEktefellePersonNr = FodselsnummerMother.generateRandomFnr(50).toString()
 
@@ -248,25 +227,40 @@ internal class PrefillNavTest {
         assertEquals(expected, actual)
     }
 
-
-    private fun createPersonMedEktefellPartnet(personPersonnr: String, ektefellePersonnr: String, relasjonType: String) : Pair<no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker, no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker> {
-        val somePersonNr = personPersonnr
-        val somerEktefellePersonNr = ektefellePersonnr
+    @Test
+    fun `prefill person singel med mellomnavn`() {
+        val somePersonNr = FodselsnummerMother.generateRandomFnr(60).toString()
 
         val personfnr = NavFodselsnummer(somePersonNr)
-        val ektefnr = NavFodselsnummer(somerEktefellePersonNr)
+        val personFdato = personfnr.getBirthDate().toString()
 
-        val ektefelle = lagTPSBruker(somerEktefellePersonNr, "Jonna", "Dolla")
-        val person    = lagTPSBruker(somePersonNr, "Ola", "Testbruker")
+        val person = lagTPSBruker(somePersonNr, "Ola", "Testbruker")
+        person.personnavn = Personnavn().withEtternavn("Test Bruker").withMellomnavn("Mellomnavn Mellomn").withFornavn("Fornavn Ole").withSammensattNavn("Ole Test Bruker")
+        person.foedselsdato = Foedselsdato().withFoedselsdato( convertToXMLocal(personfnr.getBirthDate()))
 
-        person.withHarFraRolleI(Familierelasjon().withTilRolle(Familierelasjoner().withValue(relasjonType)).withTilPerson(ektefelle))
-        person.withFoedselsdato(Foedselsdato().withFoedselsdato( convertToXMLocal(personfnr.getBirthDate())))
+        val prefillData = PrefillDataModel().apply {
+            penSaksnummer = somePenSaksnr
+            personNr = somePersonNr
+        }
 
-        ektefelle.withHarFraRolleI(Familierelasjon().withTilRolle(Familierelasjoner().withValue(relasjonType)).withTilPerson(person))
-        ektefelle.withFoedselsdato(Foedselsdato().withFoedselsdato( convertToXMLocal(ektefnr.getBirthDate())))
+        doReturn(person)
+                .whenever(mockBrukerFromTPS)
+                .hentBrukerFraTPS(somePersonNr)
 
-        return Pair<no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker, no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker>(person, ektefelle)
+        val actual = prefillNav.prefill(prefillData, false)
+
+        val fornavn = "Fornavn Ole Mellomnavn Mellomn"
+        val expected = Nav(
+                eessisak = listOf(EessisakItem(institusjonsid =  someInstitutionId, institusjonsnavn = someIntitutionNavn, saksnummer =  somePenSaksnr, land =  "NO")),
+                krav = Krav(LocalDate.now().toString()),
+                bruker = Bruker(
+                        person = lagPerson(somePersonNr, fornavn, "Test Bruker", personFdato),
+                        adresse = lagTomAdresse()
+                )
+        )
+        assertEquals(expected, actual)
     }
+
 
 
     @Test
@@ -325,6 +319,25 @@ internal class PrefillNavTest {
                         adresse = lagTomAdresse()))
 
         assertEquals(expected, actual)
+    }
+
+    private fun createPersonMedEktefellPartnet(personPersonnr: String, ektefellePersonnr: String, relasjonType: String) : Pair<no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker, no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker> {
+        val somePersonNr = personPersonnr
+        val somerEktefellePersonNr = ektefellePersonnr
+
+        val personfnr = NavFodselsnummer(somePersonNr)
+        val ektefnr = NavFodselsnummer(somerEktefellePersonNr)
+
+        val ektefelle = lagTPSBruker(somerEktefellePersonNr, "Jonna", "Dolla")
+        val person    = lagTPSBruker(somePersonNr, "Ola", "Testbruker")
+
+        person.withHarFraRolleI(Familierelasjon().withTilRolle(Familierelasjoner().withValue(relasjonType)).withTilPerson(ektefelle))
+        person.withFoedselsdato(Foedselsdato().withFoedselsdato( convertToXMLocal(personfnr.getBirthDate())))
+
+        ektefelle.withHarFraRolleI(Familierelasjon().withTilRolle(Familierelasjoner().withValue(relasjonType)).withTilPerson(person))
+        ektefelle.withFoedselsdato(Foedselsdato().withFoedselsdato( convertToXMLocal(ektefnr.getBirthDate())))
+
+        return Pair<no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker, no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker>(person, ektefelle)
     }
 
     private fun lagPerson(foreldersPin: String, fornavn: String, etternavn: String) = lagPerson(foreldersPin, fornavn, etternavn, null)
