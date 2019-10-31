@@ -18,10 +18,17 @@ class PrefillP7000(private val prefillPerson: PrefillPerson) : Prefill<SED> {
 
         val person = sed.nav?.bruker?.person
         val perspin = sed.nav?.bruker?.person?.pin?.get(0)
+        val eessielm = sed.nav?.eessisak?.get(0)
 
         val p7000 = SED(
                 sed = "P7000",
                 nav = Nav(
+                        eessisak = listOf(EessisakItem(
+                                land = eessielm?.land,
+                                saksnummer = eessielm?.saksnummer,
+                                institusjonsid = eessielm?.institusjonsid,
+                                institusjonsnavn = eessielm?.institusjonsnavn
+                        )),
                         bruker = Bruker(
                                 person = Person(
                                         etternavn = person?.etternavn,

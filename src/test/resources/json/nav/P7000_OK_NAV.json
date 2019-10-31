@@ -3,6 +3,14 @@
   "sedGVer": "4",
   "sedVer": "1",
   "nav": {
+    "eessisak": [
+      {
+        "institusjonsnavn": "NOINST002, NO INST002, NO",
+        "saksnummer": "21975717",
+        "land": "NO",
+        "institusjonsid": "NO:noinst002"
+      }
+    ],
     "bruker": {
       "person": {
         "pin": [
