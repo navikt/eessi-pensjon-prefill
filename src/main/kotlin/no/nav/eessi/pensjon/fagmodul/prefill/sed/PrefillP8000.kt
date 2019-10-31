@@ -26,7 +26,9 @@ class PrefillP8000(private val prefillPerson: PrefillPerson) : Prefill<SED> {
                 nav = Nav(
                         eessisak = listOf(EessisakItem(
                                 land = eessielm?.land,
-                                saksnummer = eessielm?.saksnummer
+                                saksnummer = eessielm?.saksnummer,
+                                institusjonsid = eessielm?.institusjonsid,
+                                institusjonsnavn = eessielm?.institusjonsnavn
                         )),
 
                         bruker = Bruker(
