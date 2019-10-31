@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.core.io.Resource
 import org.springframework.http.*
 import org.springframework.stereotype.Service
+import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.RestTemplate
 import java.util.*
 
@@ -51,11 +52,15 @@ class SafService(private val safGraphQlOidcRestTemplate: RestTemplate,
                  hentDokumentMetadata_teller_type_feilede.increment()
                  throw SafException("En feil oppstod under henting av dokument metadata fra SAF: ${response.statusCode}", response.statusCode)
              }
-         } catch(ex: SafException) {
+        } catch(ex: SafException) {
              logger.error("En feil oppstod under henting av dokument metadata fra SAF: $ex")
              hentDokumentMetadata_teller_type_feilede.increment()
              throw ex
-         } catch(ex: Exception) {
+        } catch(ce: HttpClientErrorException) {
+            logger.error("En feil oppstod under henting av dokument metadata fra SAF: ${ce.responseBodyAsString}")
+            hentDokumentMetadata_teller_type_feilede.increment()
+            throw SafException("En feil oppstod under henting av dokument metadata fra SAF: ${ce.responseBodyAsString}", ce.statusCode)
+        } catch(ex: Exception) {
              logger.error("En feil oppstod under henting av dokument metadata fra SAF: $ex")
              hentDokumentMetadata_teller_type_feilede.increment()
              throw SafException("En feil oppstod under henting av dokument metadata fra SAF: $ex", HttpStatus.INTERNAL_SERVER_ERROR)
@@ -90,6 +95,10 @@ class SafService(private val safGraphQlOidcRestTemplate: RestTemplate,
             logger.error("En feil oppstod under henting av dokumentInnhold fra SAF: $ex")
             hentDokumentInnhold_teller_type_feilede.increment()
             throw ex
+        } catch(ce: HttpClientErrorException) {
+            logger.error("En feil oppstod under henting av dokumentInnhold fra SAF: ${ce.responseBodyAsString}")
+            hentDokumentMetadata_teller_type_feilede.increment()
+            throw SafException("En feil oppstod under henting av dokumentInnhold fra SAF: ${ce.responseBodyAsString}", ce.statusCode)
         } catch(ex: Exception) {
             logger.error("En feil oppstod under henting av dokumentInnhold fra SAF: $ex")
             hentDokumentInnhold_teller_type_feilede.increment()
