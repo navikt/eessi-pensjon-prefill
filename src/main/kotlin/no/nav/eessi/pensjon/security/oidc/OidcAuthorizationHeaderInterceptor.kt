@@ -22,7 +22,6 @@ class OidcAuthorizationHeaderInterceptor(private val oidcRequestContextHolder: O
         logger.info("sjekker reqiest header for AUTH")
         if (request.headers[HttpHeaders.AUTHORIZATION] == null) {
             val oidcToken = getIdTokenFromIssuer(oidcRequestContextHolder)
-            logger.info("Adding Bearer-token to request: $oidcToken")
             request.headers[HttpHeaders.AUTHORIZATION] = "Bearer $oidcToken"
         }
         return execution.execute(request, body)
