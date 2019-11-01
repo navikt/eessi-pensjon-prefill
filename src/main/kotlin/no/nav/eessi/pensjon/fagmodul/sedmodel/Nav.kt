@@ -88,7 +88,8 @@ data class Personendringer(
         val gammeltfornavn: String? = null,
         val utvandret: String? = null,
         val doedsdato: String? = null,
-        val statsborgerskap: String? = null
+        val statsborgerskap: String? = null,
+        val startdato: String? = null
 )
 
 //P14000
