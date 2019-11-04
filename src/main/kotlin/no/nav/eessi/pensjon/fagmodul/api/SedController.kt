@@ -229,6 +229,7 @@ class SedController(private val euxService: EuxService,
         logger.debug("Henter opp fødselsdato fra sed for valgt euxcaseid")
         return euxService.getFDatoFromSed(rinanr, buctype)
     }
+
 }
 
 @ResponseStatus(value = HttpStatus.BAD_REQUEST)

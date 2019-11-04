@@ -4,6 +4,7 @@ import no.nav.eessi.pensjon.utils.mapAnyToJson
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.typeRefs
 
+@Deprecated("Utgår, benytt SED istede", ReplaceWith("SED"),DeprecationLevel.WARNING)
 data class HSED(
         val sed: String? = null,
         val sedGVer: String? = "4",
