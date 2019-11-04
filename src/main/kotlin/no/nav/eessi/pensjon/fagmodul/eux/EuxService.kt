@@ -1,5 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.eux
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.google.common.base.Preconditions
 import io.micrometer.core.instrument.Metrics
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.BucSedResponse
@@ -13,6 +14,7 @@ import no.nav.eessi.pensjon.fagmodul.sedmodel.Krav
 import no.nav.eessi.pensjon.fagmodul.sedmodel.PinItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.utils.mapJsonToAny
+import no.nav.eessi.pensjon.utils.toJson
 import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
 import no.nav.eessi.pensjon.utils.typeRefs
 import org.slf4j.LoggerFactory
@@ -39,6 +41,8 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
     constructor() : this(RestTemplate())
 
     private val logger = LoggerFactory.getLogger(EuxService::class.java)
+
+    private val mapper = jacksonObjectMapper()
 
     // https://eux-app.nais.preprod.local/swagger-ui.html#/eux-cpi-service-controller/
 
@@ -152,7 +156,7 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
 
     //henter ut sed fra rina med bucid og documentid
     @Throws(EuxServerException::class, SedDokumentIkkeLestException::class)
-    fun getSedOnBucByDocumentId(euxCaseId: String, documentId: String): SED {
+    fun getSedOnBucByDocumentIdAsJson(euxCaseId: String, documentId: String): String {
         val path = "/buc/{RinaSakId}/sed/{DokumentId}"
         val uriParams = mapOf("RinaSakId" to euxCaseId, "DokumentId" to documentId)
         val builder = UriComponentsBuilder.fromUriString(path).buildAndExpand(uriParams)
@@ -170,8 +174,14 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
                 , "SedByDocumentId"
                 , "Feil ved henting av Sed med DocId: $documentId"
         )
-        val jsonsed = response.body ?: throw SedDokumentIkkeLestException("Feiler ved lesing av navSED, feiler ved uthenting av SED")
-        return mapJsonToAny(jsonsed, typeRefs())
+        return  response.body ?: throw SedDokumentIkkeLestException("Feiler ved lesing av navSED, feiler ved uthenting av SED")
+    }
+
+    @Throws(EuxServerException::class, SedDokumentIkkeLestException::class)
+    fun getSedOnBucByDocumentId(euxCaseId: String, documentId: String): SED {
+        val json = getSedOnBucByDocumentIdAsJson(euxCaseId, documentId)
+        return SED.fromJson(json)
+        //return mapJsonToAny(json, typeRefs())
     }
 
     //val benytt denne for å hente ut PESYS sakid (P2000,P2100,P2200,P6000)
@@ -626,25 +636,44 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
 
         sedType?.forEach {
             val sedDocument = BucUtils(getBuc(euxCaseId)).findFirstDocumentItemByType(it)
-            val sed = getSedOnBucByDocumentId(euxCaseId, sedDocument?.id
-                    ?: throw NoSuchFieldException("Fant ikke DocumentsItem"))
+            try {
+                val sed = getSedOnBucByDocumentId(euxCaseId, sedDocument?.id ?: throw NoSuchFieldException("Fant ikke DocumentsItem"))
 
-            val sedValue = sed.sed?.let { it1 -> SEDType.valueOf(it1) }
-            logger.info("mapping prefillClass to SED: $sedValue")
+                val sedValue = sed.sed?.let { it1 -> SEDType.valueOf(it1) }
+                logger.debug("mapping prefillClass to SED: $sedValue")
 
-            //TODO: Må rette mappingen på P8000
-            // "01" er rollen for søker på gjenlevende ytelse
-            fdato = if ("01" == sed.nav?.annenperson?.person?.rolle) {
-                sed.nav?.annenperson?.person?.foedselsdato
-            } else if (sed.pensjon?.gjenlevende?.person?.foedselsdato != null) {
-                sed.pensjon?.gjenlevende?.person?.foedselsdato
-            } else {
-                sed.nav?.bruker?.person?.foedselsdato
+                //TODO: Må rette mappingen på P8000
+                // "01" er rollen for søker på gjenlevende ytelse
+                fdato = if ("01" == sed.nav?.annenperson?.person?.rolle) {
+                    sed.nav?.annenperson?.person?.foedselsdato
+                } else if (sed.pensjon?.gjenlevende?.person?.foedselsdato != null) {
+                    sed.pensjon?.gjenlevende?.person?.foedselsdato
+                } else {
+                    sed.nav?.bruker?.person?.foedselsdato
+                }
+                if (fdato != null) return fdato
+
+            } catch (ex: Exception) {
+                logger.error("Feil ved henting av fødseldato", ex.message)
+                throw IkkeFunnetException("Ingen fødselsdato funnet")
             }
-            if (fdato != null) return fdato
         }
         throw IkkeFunnetException("Ingen fødselsdato funnet")
     }
+
+
+    fun filterUtGyldigSedId(sedJson: String?): List<Pair<String, String>> {
+        val validSedtype = listOf("P2000", "P2100","P2200","P1000","P1100",
+                "P5000","P6000","P7000", "P8000","P10000", "P11000", "P12000", "P14000", "P15000")
+        val sedRootNode = mapper.readTree(sedJson)
+        return sedRootNode
+                .filterNot { node -> node.get("status").textValue() =="empty" }
+                .filter { node ->  validSedtype.contains(node.get("type").textValue()) }
+                .map { node -> Pair(node.get("id").textValue(), node.get("type").textValue()) }
+                .sortedBy { (_, sorting) -> sorting }
+                .toList()
+    }
+
 
     /**
      * Own impl. no list from eux that contains list of SED to a speific BUC

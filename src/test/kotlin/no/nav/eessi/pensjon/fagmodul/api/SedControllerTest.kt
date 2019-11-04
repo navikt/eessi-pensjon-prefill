@@ -3,6 +3,7 @@ package no.nav.eessi.pensjon.fagmodul.api
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.nhaarman.mockitokotlin2.*
 import no.nav.eessi.pensjon.fagmodul.eux.EuxService
+import no.nav.eessi.pensjon.fagmodul.eux.IkkeFunnetException
 import no.nav.eessi.pensjon.fagmodul.eux.PinOgKrav
 import no.nav.eessi.pensjon.fagmodul.eux.SedDokumentIkkeOpprettetException
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.BucSedResponse
@@ -542,7 +543,7 @@ class SedControllerTest {
     }
 
     @Test
-    fun GittAtfDatoBlirFunnetForEnGittBucMedRinanrSaaReturnererViFdatoMedMeldingOgStatuskodeFeil() {
+    fun `Gitt At fDato Blir Funnet For En Gitt Buc Med Rinanr Saa Returnerer Vi Fdato Med Melding Og Statuskode Feil`() {
 
         val buctype = "P_BUC_01"
         val euxCaseId = "123456"
@@ -553,7 +554,7 @@ class SedControllerTest {
 
         doReturn(buc).whenever(mockEuxService).getBuc(any())
 
-        assertThrows<NoSuchFieldException> {
+        assertThrows<IkkeFunnetException> {
             sedController.getFodselsdato(euxCaseId, buctype)
         }
     }

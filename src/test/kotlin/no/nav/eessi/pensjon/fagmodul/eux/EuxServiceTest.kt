@@ -728,7 +728,7 @@ class EuxServiceTest {
     }
 
     @Test
-    fun hentYtelseKravtypeTesterPaaP2100OK() {
+    fun feilerVedHentingAvP2100GrunnetManglendeMapping() {
         val filepath = "src/test/resources/json/nav/P2100-NAV-unfin.json"
         val json = String(Files.readAllBytes(Paths.get(filepath)))
         assertTrue(validateJson(json))
@@ -742,11 +742,9 @@ class EuxServiceTest {
                 ArgumentMatchers.eq(String::class.java))
         ).thenReturn(response)
 
-        val result = service.hentFnrOgYtelseKravtype("1234567890","100001000010000")
-
-        assertEquals("123456789012", result.fnr)
-        assertEquals(null, result.krav?.type)
-        assertEquals("2015-12-17", result.krav?.dato)
+        assertThrows<FagmodulJsonIllegalArgumentException> {
+            val result = service.hentFnrOgYtelseKravtype("1234567890","100001000010000")
+        }
     }
 
     @Test
@@ -801,7 +799,7 @@ class EuxServiceTest {
     }
 
     @Test
-    fun `Calling getFDatoFromSed   returns valid resultset on BUC_06` () {
+    fun `Calling getFDatoFromSed returns valid resultset on BUC_06` () {
         val euxCaseId = "123456"
         val bucPath = "src/test/resources/json/buc/buc-175254_noX005_v4.1.json"
         val bucJson = String(Files.readAllBytes(Paths.get(bucPath)))
@@ -818,24 +816,29 @@ class EuxServiceTest {
     }
 
     @Test
-    fun `Calling getFDatoFromSed   returns valid resultset on P2100 in BUC_02` () {
+    fun `Calling getFDatoFromSed finne fdato på P2100 kaster IkkeFunnetException ved manglende mapping` () {
         val euxCaseId = "123456"
         val bucPath = "src/test/resources/json/buc/buc-239200_buc02_v4.1.json"
         val bucJson = String(Files.readAllBytes(Paths.get(bucPath)))
         assertTrue(validateJson(bucJson))
+
         val bucResponse: ResponseEntity<String> = ResponseEntity(bucJson, HttpStatus.OK)
         doReturn(bucResponse)
                 .whenever(mockEuxrestTemplate)
                 .exchange(eq("/buc/$euxCaseId"), eq(HttpMethod.GET), eq(null), eq(String::class.java))
+
         doReturn(mockSedResponse(getTestJsonFile("P2100-NAV-unfin.json")))
                 .whenever(mockEuxrestTemplate)
                 .exchange(ArgumentMatchers.contains("buc/$euxCaseId/sed/"), eq(HttpMethod.GET), eq(null), eq(String::class.java))
 
-        assertEquals("1969-09-11", service.getFDatoFromSed(euxCaseId,"P_BUC_02"))
+        assertThrows<IkkeFunnetException> {
+            service.getFDatoFromSed(euxCaseId,"P_BUC_02")
+        }
     }
 
+
     @Test
-    fun `Calling getFDatoFromSed   returns exception when seddocumentId is not found` () {
+    fun `Calling getFDatoFromSed returns exception when seddocumentId is not found` () {
         val euxCaseId = "123456"
         val bucPath = "src/test/resources/json/buc/buc-158123_v4.1.json"
         val bucJson = String(Files.readAllBytes(Paths.get(bucPath)))
@@ -848,13 +851,13 @@ class EuxServiceTest {
                 .whenever(mockEuxrestTemplate)
                 .exchange(ArgumentMatchers.contains("buc/$euxCaseId/sed/"), eq(HttpMethod.GET), eq(null), eq(String::class.java))
 
-        assertThrows<NoSuchFieldException> {
+        assertThrows<IkkeFunnetException> {
             service.getFDatoFromSed(euxCaseId, "P_BUC_03")
         }
     }
 
     @Test
-    fun `Calling getFDatoFromSed   returns exception when foedselsdato is not found` () {
+    fun `Calling getFDatoFromSed returns exception when foedselsdato is not found` () {
         val euxCaseId = "123456"
         val bucPath = "src/test/resources/json/buc/buc-158123_v4.1.json"
         val bucJson = String(Files.readAllBytes(Paths.get(bucPath)))
@@ -877,7 +880,7 @@ class EuxServiceTest {
     }
 
     @Test
-    fun `Calling getFDatoFromSed   returns Exception when unsupported buctype is entered` () {
+    fun `Calling getFDatoFromSed returns Exception when unsupported buctype is entered` () {
         val euxCaseId = "123456"
         val bucType = "P_BUC_07"
         assertThrows<GenericUnprocessableEntity> {
@@ -932,6 +935,27 @@ class EuxServiceTest {
         assertTrue( dummyRequirement(null, "hhgi"))
         assertTrue( dummyRequirement("kufghj", "fjhgb"))
     }
+
+    @Test
+    fun `filter ut gyldig sed fra json sedDocument`() {
+        val json = String(Files.readAllBytes(Paths.get("src/test/resources/json/buc/buc-279020big.json")))
+        val utils = BucUtils(mapJsonToAny(json, typeRefs()))
+
+        val expected = listOf(Pair("04117b9f8374420e82a4d980a48df6b3","P2200"),
+                Pair("eb938171a4cb4e658b3a6c011962d204","P5000"), Pair("3bc78059030444cda6d18a47ea1f0eec","P6000"),
+                Pair("e418c061a4724f48b23e2191accf0cf6","P7000"), Pair("9fd0c413aa9d4f2f8cf394ea6e42abff","P8000"))
+        val actual = service.filterUtGyldigSedId(utils.getAllDocuments().toJson())
+        assertEquals(expected, actual)
+
+    }
+
+    @Test
+    fun `filter ut gyldig sed fra json sedDocument tom liste`() {
+        val expected = listOf<Pair<String,String>>()
+        val actual = service.filterUtGyldigSedId("[]")
+        assertEquals(expected, actual)
+    }
+
 
     private fun dummyRequirement(dummyparam1: String?, dummyparam2: String?): Boolean{
         require(!(dummyparam1 == null && dummyparam2 == null)) { "Minst et søkekriterie må fylles ut for å få et resultat fra Rinasaker" }
