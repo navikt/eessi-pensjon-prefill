@@ -20,11 +20,9 @@ eessipen-eux-rina:
 virksomhet.person.v3:
   endpointurl: 'https://wasapp-q2.adeo.no/tpsws/ws/Person/v3'
   #  endpointurl: 'https://wasapp-t7.adeo.no/tpsws/ws/Person/v3'  # maskert-data
-  #  endpointurl: 'https://wasapp-t8.adeo.no/tpsws/ws/Person/v3' # prod-data
 
 aktoerregister.api.v1:
   url: 'https://app-q2.adeo.no/aktoerregister/api/v1'
-  #  url: 'https://app-t8.adeo.no/aktoerregister/api/v1'
 
 pensjonsinformasjon:
   url: 'https://wasapp-q2.adeo.no/pensjon-ws/api/pensjonsinformasjon/v1'
