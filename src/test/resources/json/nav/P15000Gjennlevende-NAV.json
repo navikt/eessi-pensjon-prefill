@@ -87,11 +87,18 @@
         },
         "pin" : [ {
           "sektor" : "pensjoner",
+          "land" : "ES",
+          "institusjonsid" : "ES:NVT002",
+          "identifikator" : "2343432712",
+          "institusjonsnavn" : "12347, NVT002, ES"
+        },{
+          "sektor" : "pensjoner",
           "land" : "NO",
           "institusjonsid" : "NO:NAVT002",
           "identifikator" : "32712",
           "institusjonsnavn" : "12347, NAVT002, NO"
-        } ],
+        }
+        ],
         "fornavn" : "322",
         "kjoenn" : "K",
         "relasjontilavdod" : {

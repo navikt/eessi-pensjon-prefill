@@ -10,7 +10,7 @@ class SedP10000Test {
     @Test
     fun `compare SED P10000 to P10000 from json datafile`() {
 
-        val p10000json = getTestJsonFile("P10000-NAV.json")
+        val p10000json = getTestJsonFile("P10000-03Barn-NAV.json")
         val p10000sed = getSEDfromTestfile(p10000json)
 
         val json = p10000sed.toJson()
