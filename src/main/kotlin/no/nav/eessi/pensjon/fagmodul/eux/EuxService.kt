@@ -765,7 +765,10 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
                     "P_BUC_05" to listOf("P5000", "P6000", "P7000", "P8000", "P9000"),
                     "P_BUC_06" to listOf("P5000", "P6000", "P7000", "P10000"),
                     "P_BUC_09" to listOf("P14000"),
-                    "P_BUC_10" to listOf("P15000")
+                    "P_BUC_10" to listOf("P15000"),
+                    "P_BUC_04" to listOf("P1000"),
+                    "P_BUC_07" to listOf("P11000","P12000"),
+                    "P_BUC_08" to listOf("P12000")
             )
         }
 
@@ -782,9 +785,18 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
                 map["P_BUC_06"]?.let { set.addAll(it) }
                 map["P_BUC_09"]?.let { set.addAll(it) }
                 map["P_BUC_10"]?.let { set.addAll(it) }
+//vil forbli utkommentert til datamodel/klasser for preutfylling er klar
+//                map["P_BUC_04"]?.let { set.addAll(it) }
+//                map["P_BUC_07"]?.let { set.addAll(it) }
+//                map["P_BUC_08"]?.let { set.addAll(it) }
                 return set.toList()
             }
             return map[bucType].orEmpty()
+        }
+
+        @JvmStatic
+        fun getValidBucAndSeds(bucType: String?) {
+
         }
     }
 

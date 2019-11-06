@@ -769,7 +769,6 @@ class EuxServiceTest {
 
     @Test
     fun `Calling euxService getAvailableSEDonBuc returns BuC lists`() {
-
         var buc = "P_BUC_01"
         var expectedResponse = listOf("P2000")
         var generatedResponse = EuxService.getAvailableSedOnBuc (buc)
@@ -779,6 +778,14 @@ class EuxServiceTest {
         expectedResponse = listOf("P5000", "P6000", "P7000", "P10000")
         generatedResponse = EuxService.getAvailableSedOnBuc(buc)
         assertEquals(generatedResponse, expectedResponse)
+    }
+
+    @Test
+    fun `Calling euxService getAvailableSedOnBuc no input, return`() {
+        val expected = "[ \"P2000\", \"P2100\", \"P2200\", \"P5000\", \"P6000\", \"P7000\", \"P8000\", \"P9000\", \"P10000\", \"P14000\", \"P15000\" ]"
+        //val expected = "[ \"P2000\", \"P2100\", \"P2200\", \"P5000\", \"P6000\", \"P7000\", \"P8000\", \"P9000\", \"P10000\", \"P14000\", \"P15000\", \"P1000\", \"P11000\", \"P12000\" ]"
+        val actual = EuxService.getAvailableSedOnBuc(null)
+        assertEquals(expected, actual.toJson())
     }
 
     @Test
@@ -883,7 +890,7 @@ class EuxServiceTest {
     @Test
     fun `Calling getFDatoFromSed returns Exception when unsupported buctype is entered` () {
         val euxCaseId = "123456"
-        val bucType = "P_BUC_07"
+        val bucType = "P_BUC_12"
         assertThrows<GenericUnprocessableEntity> {
             service.getFDatoFromSed(euxCaseId, bucType)
         }

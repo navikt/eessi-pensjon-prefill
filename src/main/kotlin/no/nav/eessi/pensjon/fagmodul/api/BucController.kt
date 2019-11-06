@@ -107,7 +107,7 @@ class BucController(private val euxService: EuxService,
         return euxService.getRinasaker(fnr, rinaSakIderFraDokumentMetadata)
     }
 
-    @ApiOperation("Henter ut en json struktur for type og sed menyliste for ui. ny api kall til eux")
+    @ApiOperation("Henter ut liste av Buc meny struktur i json format for UI på valgt aktoerid")
     @GetMapping("/detaljer/{aktoerid}", "/detaljer/{aktoerid}/{sakid}", "/detaljer/{aktoerid}/{sakid}/{euxcaseid}")
     fun getBucogSedView(@PathVariable("aktoerid", required = true) aktoerid: String,
                         @PathVariable("sakid", required = false) sakid: String? = "",
@@ -117,11 +117,12 @@ class BucController(private val euxService: EuxService,
 
         val fnr = aktoerIdHelper.hentPinForAktoer(aktoerid)
         val rinaSakIderFraDokumentMetadata = safService.hentRinaSakIderFraDokumentMetadata(aktoerid)
-        val rinasakIdList = euxService.getFilteredArchivedaRinasaker(euxService.getRinasaker(fnr, rinaSakIderFraDokumentMetadata))
+        val rinasakIdList = euxService.getFilteredArchivedaRinasaker( euxService.getRinasaker(fnr, rinaSakIderFraDokumentMetadata))
+
         return euxService.getBucAndSedView( rinasakIdList )
     }
 
-    @ApiOperation("Henter ut en json struktur for type og sed menyliste for ui. ny api kall til eux")
+    @ApiOperation("Henter ut enkel Buc meny struktur i json format for UI på valgt euxcaseid")
     @GetMapping("/enkeldetalj/{euxcaseid}")
     fun getSingleBucogSedView(@PathVariable("euxcaseid", required = true) euxcaseid: String): BucAndSedView {
         auditlogger.log("getSingleBucogSedView")

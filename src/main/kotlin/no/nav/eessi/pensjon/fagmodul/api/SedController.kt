@@ -152,7 +152,6 @@ class SedController(private val euxService: EuxService,
         val firstInstitution =
                 data.institution.firstOrNull() ?: throw ManglendeInstitusjonException("institusjon kan ikke være tom")
         return euxService.opprettBucSed(data.sed, data.buc, firstInstitution.institution, data.penSaksnummer)
-
     }
 
     //** oppdatert i api 18.02.2019 --
@@ -189,13 +188,17 @@ class SedController(private val euxService: EuxService,
     fun getSeds(@PathVariable(value = "buctype", required = false) bucType: String?,
                 @PathVariable(value = "rinanr", required = false) euxCaseId: String?): ResponseEntity<String?> {
 
-        if (euxCaseId == null) return ResponseEntity.ok().body(mapAnyToJson(EuxService.getAvailableSedOnBuc(bucType)))
+        //Ingen buc oppgitt, vi lister våre seds på valgt buctype.
+        if (euxCaseId == null) return ResponseEntity.ok().body( EuxService.getAvailableSedOnBuc(bucType).toJsonSkipEmpty() )
+        //liste over seds som kan opprettes fra Rina på valgt euxCaseid (rinanr)
         val resultListe = BucUtils(euxService.getBuc(euxCaseId)).getAksjonListAsString()
-        if (resultListe.isEmpty()) return ResponseEntity.ok().body(mapAnyToJson(EuxService.getAvailableSedOnBuc(bucType)))
-
-        return ResponseEntity.ok().body(mapAnyToJson(sortAndFilterSeds(resultListe)))
+        //hvis tom er stort sett buc helt ny. vi lister våre seds på valgt buctype.
+        if (resultListe.isEmpty()) return ResponseEntity.ok().body( EuxService.getAvailableSedOnBuc(bucType).toJsonSkipEmpty() )
+        //hvis liste ikke tom vi filterer listen
+        return ResponseEntity.ok().body( sortAndFilterSeds(resultListe).toJsonSkipEmpty() )
     }
 
+    //fjerner uønskdede seder fra liste og kun filterer inn kun ønskelige og seder vi støtter
     fun sortAndFilterSeds(list: List<String>): List<String> {
         return list.filter { it.startsWith("P")
                     .or(it.startsWith("H12"))
