@@ -924,11 +924,11 @@ class EuxServiceTest {
     @Test
     fun `Test filter list av rinasak ta bort elementer av archived`() {
         val dummyList = listOf(
-                Rinasak("723",null,null,"PO",null,"open"),
-                Rinasak("2123",null,null,"PO",null,"open"),
-                Rinasak("423",null,null,"PO",null,"archived"),
-                Rinasak("234",null,null,"PO",null,"closed"),
-                Rinasak("8423",null,null,"PO",null,"archived")
+                Rinasak("723","P_BUC_01",null,"PO",null,"open"),
+                Rinasak("2123","P_BUC_03",null,"PO",null,"open"),
+                Rinasak("423","H_BUC_01",null,"PO",null,"archived"),
+                Rinasak("234","P_BUC_06",null,"PO",null,"closed"),
+                Rinasak("8423","P_BUC_07",null,"PO",null,"archived")
                 )
 
         val result = service.getFilteredArchivedaRinasaker(dummyList)
@@ -936,6 +936,24 @@ class EuxServiceTest {
         assertEquals("2123", result.first())
 
     }
+
+    @Test
+    fun `Test filter list av rinasak ta bort elementer av archived og ugyldige buc`() {
+        val dummyList = listOf(
+                Rinasak("723","FP_BUC_01",null,"PO",null,"open"),
+                Rinasak("2123","H_BUC_02",null,"PO",null,"open"),
+                Rinasak("423","P_BUC_01",null,"PO",null,"archived"),
+                Rinasak("234","FF_BUC_01",null,"PO",null,"closed"),
+                Rinasak("8423","FF_BUC_01",null,"PO",null,"archived"),
+                Rinasak("8223","H_BUC_07",null,"PO",null,"open")
+        )
+
+        val result = service.getFilteredArchivedaRinasaker(dummyList)
+        assertEquals(1, result.size)
+        assertEquals("8223", result.first())
+
+    }
+
 
     @Test
     fun `Tester og evaluerer om require statement blir oppfylt`() {
