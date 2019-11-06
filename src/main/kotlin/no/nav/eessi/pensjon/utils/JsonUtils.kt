@@ -6,23 +6,17 @@ import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.JsonMappingException
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.ResponseStatus
-import org.springframework.web.client.RestClientException
 
-inline fun <reified T : Any> typeRef(): ParameterizedTypeReference<T> = object : ParameterizedTypeReference<T>() {}
 inline fun <reified T : Any> typeRefs(): TypeReference<T> = object : TypeReference<T>() {}
 
-fun datatClazzToMap(clazz: Any): Map<String, String> {
-    return jacksonObjectMapper().convertValue(clazz, object: TypeReference<Map<String, Any>>() {})
-}
 
-inline fun <reified T : Any> mapJsonToAny(json: String, objekt: TypeReference<T>, failonunknown: Boolean = false): T {
+inline fun <reified T : Any> mapJsonToAny(json: String, typeRef: TypeReference<T>, failonunknown: Boolean = false): T {
     return try {
              jacksonObjectMapper()
                 .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, failonunknown)
-                .readValue(json, objekt)
+                .readValue(json, typeRef)
         } catch (jpe: JsonParseException) {
             jpe.printStackTrace()
             throw FagmodulJsonException("Fagmodul feilet ved konvertering av jsonformat, ${jpe.message}")
@@ -65,10 +59,6 @@ fun validateJson(json: String): Boolean {
         ex.printStackTrace()
         false
     }
-}
-
-fun createErrorMessage(responseBody: String): RestClientException {
-    return mapJsonToAny(responseBody, typeRefs())
 }
 
 fun errorBody(error: String, uuid: String = "no-uuid"): String {
