@@ -2,7 +2,6 @@ package no.nav.eessi.pensjon.security.sts
 
 import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.whenever
-import no.nav.eessi.pensjon.utils.typeRef
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -53,7 +52,7 @@ class STSServiceTest {
                 ArgumentMatchers.anyString(),
                 eq(HttpMethod.GET),
                 eq(null),
-                eq(typeRef<SecurityTokenResponse>()))
+                eq(stsService.typeRef<SecurityTokenResponse>()))
         ).thenReturn(response)
 
         val result = stsService.getSystemOidcToken()
@@ -77,7 +76,7 @@ class STSServiceTest {
                 ArgumentMatchers.anyString(),
                 eq(HttpMethod.GET),
                 eq(null),
-                eq(typeRef<SecurityTokenResponse>()))
+                eq(stsService.typeRef<SecurityTokenResponse>()))
         ).thenReturn(response)
 
         assertThrows<SystembrukerTokenException> {

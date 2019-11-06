@@ -2,8 +2,8 @@ package no.nav.eessi.pensjon.security.sts
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import no.nav.eessi.pensjon.utils.mapAnyToJson
-import no.nav.eessi.pensjon.utils.typeRef
 import org.slf4j.LoggerFactory
+import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -55,6 +55,9 @@ class STSService(private val securityTokenExchangeBasicAuthRestTemplate: RestTem
         if (responseEntity.statusCode.isError)
             throw RuntimeException("SecurityTokenExchange received http-error ${responseEntity.statusCode}:${responseEntity.statusCodeValue}")
     }
+
+    fun <T : Any> typeRef(): ParameterizedTypeReference<T> = object : ParameterizedTypeReference<T>() {}
+
 }
 
 @ResponseStatus(value = HttpStatus.SERVICE_UNAVAILABLE)

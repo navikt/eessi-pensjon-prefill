@@ -27,12 +27,8 @@ class JsonUtilsTest {
                 "    \"01065201794___varsler___23917355___2019-03-06T12:04:58.642.json\"\n" +
                 "]"
         val varsler = mapJsonToAny(json, typeRefs<List<String>>())
-
-
         val aktivesakid = hentSisteSakIdFraVarsel(varsler)
-
         assertEquals("23916815", aktivesakid)
-
     }
 
     fun hentSisteSakIdFraVarsel(list: List<String>): String {
@@ -42,7 +38,6 @@ class JsonUtilsTest {
                 val sakId: String,
                 val timestamp: LocalDateTime
         )
-
         val varsellist = mutableListOf<Varsel>()
         list.forEach { varsler ->
             val data = varsler.dropLast(5).split("___")
@@ -54,26 +49,7 @@ class JsonUtilsTest {
             )
             varsellist.add(varsel)
         }
-        return varsellist.asSequence().sortedBy { (_, _, _, sorting) -> sorting }.toList().last().sakId
-    }
-
-    @Test
-    fun testMapDatatoMap() {
-
-        data class InstitusjonItem(
-                var country: String,
-                var institution: String,
-                var name: String? = null)
-
-        val testData = InstitusjonItem(
-            institution = "Nav",
-            country = "No"
-        )
-
-        val result = datatClazzToMap(testData)
-
-        assertEquals(3, result.size)
-        assertEquals("No", result["country"])
+        return varsellist.sortedBy { (_, _, _, sorting) -> sorting }.toList().last().sakId
     }
 
     @Test
