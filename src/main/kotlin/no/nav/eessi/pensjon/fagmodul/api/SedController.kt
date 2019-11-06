@@ -230,6 +230,15 @@ class SedController(private val euxService: EuxService,
         return euxService.getFDatoFromSed(rinanr, buctype)
     }
 
+    @ApiOperation("Henter fødselsnr/personnr fra første sed for valgt euxcaseid")
+    @GetMapping("/fodselsnr/{rinanr}/buctype/{buctype}")
+    fun getFodselsnrValgtBuc(@PathVariable("rinanr", required = true) rinanr: String,
+                       @PathVariable("buctype", required = true) buctype: String): String? {
+        auditlogger.logBuc("getFodselsdato", " euxCaseId: $rinanr  buctype: $buctype")
+        logger.debug("Henter opp fødselsdato fra sed for valgt euxcaseid")
+        return euxService.getFodselsnrFraSedPaaVagtBuc(rinanr, buctype)
+    }
+
 }
 
 @ResponseStatus(value = HttpStatus.BAD_REQUEST)

@@ -1,5 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.eux
 
+import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.google.common.base.Preconditions
 import io.micrometer.core.instrument.Metrics
@@ -661,10 +662,87 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
         throw IkkeFunnetException("Ingen fødselsdato funnet")
     }
 
+    fun getFodselsnrFraSedPaaVagtBuc(euxCaseId: String, bucType: String): String? {
+        val gyldigeSeds = filterUtGyldigSedId( BucUtils(getBuc(euxCaseId)).getAllDocuments().toJson() )
+        return getFodselsnrFraSed(euxCaseId, gyldigeSeds)
+    }
+
+    fun getFodselsnrFraSed(euxCaseId: String, gyldigeSeds: List<Pair<String, String>>): String? {
+        var fnr: String?
+
+        gyldigeSeds.forEach { pair ->
+            val sedDocumentId =  pair.first
+            val sedType = pair.second
+            logger.debug("leter igjennom sedType: $sedType etter norsk pin fra euxCaseId og sedDocid: $euxCaseId / $sedDocumentId ")
+            try {
+                val sedJson = getSedOnBucByDocumentIdAsJson(euxCaseId, sedDocumentId)
+                val sedRootNode = mapper.readTree(sedJson)
+
+                when (sedType) {
+                    SEDType.P2100.name -> {
+                        fnr = filterGjenlevendePinNode(sedRootNode)
+                    }
+                    SEDType.P15000.name -> {
+                        val krav = sedRootNode.get("nav").get("krav").textValue()
+                        if (krav == "02") {
+                            fnr = filterGjenlevendePinNode(sedRootNode)
+                        } else {
+                            fnr = filterPersonPinNode(sedRootNode)
+                        }
+                    }
+                    else -> {
+                        fnr = filterAnnenpersonPinNode(sedRootNode)
+
+                        if (fnr == null) {
+                            //P2000 - P2200 -- andre..
+                            fnr =  filterPersonPinNode(sedRootNode)
+                        }
+
+                    }
+                }
+            } catch (ex: Exception) {
+                logger.error("Feil ved henting av fødselnr buc: $euxCaseId", ex.message)
+                throw IkkeFunnetException("Feil ved henting av fødselsnr på buc med rinaNr: $euxCaseId")
+            }
+            if (fnr != null) return fnr
+        }
+        throw IkkeFunnetException("Ingen fødselsnr funnet på buc med rinaNr: $euxCaseId")
+    }
+
+    fun filterAnnenpersonPinNode(node: JsonNode): String? {
+        val subNode = node.at("/nav/annenperson") ?: return null
+        if (subNode.at("/person/rolle").textValue() == "01") {
+            return subNode.get("person")
+                    .findValue("pin")
+                    .filter { it.get("land").textValue() == "NO" }
+                    .map { it.get("identifikator").textValue() }
+                    .lastOrNull()
+        }
+        return null
+    }
+
+    private fun filterGjenlevendePinNode(node: JsonNode): String? {
+        return node
+            .at("/pensjon/gjenlevende")
+            .findValue("pin")
+            .filter{ node -> node.get("land").textValue() =="NO" }
+            .map { node -> node.get("identifikator").textValue() }
+            .lastOrNull()
+    }
+
+    private fun filterPersonPinNode(node: JsonNode): String? {
+        return node
+            .at("/nav/bruker")
+            .findValue("pin")
+            .filter{ node -> node.get("land").textValue() =="NO" }
+            .map { node -> node.get("identifikator").textValue() }
+            .lastOrNull()
+    }
 
     fun filterUtGyldigSedId(sedJson: String?): List<Pair<String, String>> {
-        val validSedtype = listOf("P2000", "P2100","P2200","P1000","P1100",
-                "P5000","P6000","P7000", "P8000","P10000", "P11000", "P12000", "P14000", "P15000")
+        val validSedtype = listOf("P2000","P2100","P2200","P1000",
+                "P5000","P6000","P7000", "P8000",
+                "P10000","P1100","P11000","P12000","P14000","P15000")
         val sedRootNode = mapper.readTree(sedJson)
         return sedRootNode
                 .filterNot { node -> node.get("status").textValue() =="empty" }
@@ -673,7 +751,6 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
                 .sortedBy { (_, sorting) -> sorting }
                 .toList()
     }
-
 
     /**
      * Own impl. no list from eux that contains list of SED to a speific BUC
@@ -713,7 +790,7 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
 
     fun <T> restTemplateErrorhandler(restTemplateFunction: () -> ResponseEntity<T>, euxCaseId: String, metricName: String, prefixErrorMessage: String): ResponseEntity<T> {
         return try {
-            Metrics.timer("${metricName}_timer", "api","eux-rina-api", "service", "fagmodul-eux").recordCallable {
+            Metrics.timer("eessipensjon_fagmodul.$metricName", "type", "timer","api","eux-rina-api", "service","fagmodul-eux").recordCallable {
                 val response = restTemplateFunction.invoke()
                 Metrics.counter("eessipensjon_fagmodul.$metricName", "type", "vellykkede", "status", response.statusCode.name, "exception", "").increment()
                 response

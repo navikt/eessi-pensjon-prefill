@@ -77,6 +77,8 @@ dependencies {
         exclude module: 'junit'
         exclude module: "mockito-core"
     }
+    //json path
+    implementation("com.jayway.jsonpath:json-path:2.4.0")
 
     // Allows for variable expiration-date of each cache-entry
     implementation("net.jodah:expiringmap:0.5.9")
