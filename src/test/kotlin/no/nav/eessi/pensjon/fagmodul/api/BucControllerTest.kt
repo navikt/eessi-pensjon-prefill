@@ -43,7 +43,7 @@ class BucControllerTest {
     @Test
     fun `gets valid bucs fagmodul can handle excpect list`() {
         val result = bucController.getBucs()
-        Assertions.assertEquals(7, result.size)
+        Assertions.assertEquals(10, result.size)
     }
 
     @Test

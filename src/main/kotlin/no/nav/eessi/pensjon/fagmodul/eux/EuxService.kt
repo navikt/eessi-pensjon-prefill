@@ -785,10 +785,6 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
                 map["P_BUC_06"]?.let { set.addAll(it) }
                 map["P_BUC_09"]?.let { set.addAll(it) }
                 map["P_BUC_10"]?.let { set.addAll(it) }
-//vil forbli utkommentert til datamodel/klasser for preutfylling er klar
-//                map["P_BUC_04"]?.let { set.addAll(it) }
-//                map["P_BUC_07"]?.let { set.addAll(it) }
-//                map["P_BUC_08"]?.let { set.addAll(it) }
                 return set.toList()
             }
             return map[bucType].orEmpty()
