@@ -35,7 +35,7 @@ class PrefillP6000Pensjon_UFORE_AVSLAG_Test {
         assertEquals("02", vedtak?.type)
         assertEquals("99", vedtak?.basertPaa)
         assertEquals("01", vedtak?.resultat, "vedtak.resultat")
-        assertEquals("2019-08-26", vedtak?.kjoeringsdato)
+        assertEquals(null, vedtak?.kjoeringsdato)
         assertEquals(null, vedtak?.artikkel, "4.1.5 vedtak.artikkel (må fylles ut manuelt nå)")
 
         assertEquals(null, vedtak?.grunnlag?.opptjening?.forsikredeAnnen)
@@ -51,7 +51,6 @@ class PrefillP6000Pensjon_UFORE_AVSLAG_Test {
         assertEquals("2019-08-26", result.tilleggsinformasjon?.dato)
 
         assertEquals("NO:noinst002", result.tilleggsinformasjon?.andreinstitusjoner?.get(0)?.institusjonsid)
-//        assertEquals("NOINST002, NO INST002, NO", result.tilleggsinformasjon?.andreinstitusjoner?.get(0)?.institusjonsnavn)
         assertEquals("Postboks 6600 Etterstad TEST", result.tilleggsinformasjon?.andreinstitusjoner?.get(0)?.institusjonsadresse)
         assertEquals("0607", result.tilleggsinformasjon?.andreinstitusjoner?.get(0)?.postnummer)
 
