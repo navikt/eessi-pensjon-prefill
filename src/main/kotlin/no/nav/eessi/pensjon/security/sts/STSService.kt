@@ -56,9 +56,10 @@ class STSService(private val securityTokenExchangeBasicAuthRestTemplate: RestTem
             throw RuntimeException("SecurityTokenExchange received http-error ${responseEntity.statusCode}:${responseEntity.statusCodeValue}")
     }
 
-    fun <T : Any> typeRef(): ParameterizedTypeReference<T> = object : ParameterizedTypeReference<T>() {}
 
 }
+
+inline fun <reified T : Any> typeRef(): ParameterizedTypeReference<T> = object : ParameterizedTypeReference<T>() {}
 
 @ResponseStatus(value = HttpStatus.SERVICE_UNAVAILABLE)
 class SystembrukerTokenException(message: String) : Exception(message)
