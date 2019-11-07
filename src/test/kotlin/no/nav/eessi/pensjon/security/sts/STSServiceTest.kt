@@ -31,13 +31,6 @@ class STSServiceTest {
 
     }
 
-
-    @Test
-    fun tester() {
-
-
-    }
-
     @Test
     fun getSystemOidcToken_withValidToken() {
 
