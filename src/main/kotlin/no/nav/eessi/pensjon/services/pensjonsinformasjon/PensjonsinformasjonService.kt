@@ -3,6 +3,7 @@ package no.nav.eessi.pensjon.services.pensjonsinformasjon
 
 import com.google.common.base.Preconditions
 import io.micrometer.core.instrument.Metrics
+import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import no.nav.pensjon.v1.sak.V1Sak
 import org.slf4j.LoggerFactory
@@ -72,11 +73,10 @@ class PensjonsinformasjonService(
             requestBuilder.addPensjonsinformasjonElement(document, it)
         }
 
-        logger.info("Requestbody:\n${document.documentToString()}")
+        logger.debug("Requestbody:\n${document.documentToString()}")
 
         val response = doRequest("/aktor/", aktoerId, document.documentToString(), "hentKrav")
         validateResponse(informationBlocks, response)
-        logger.info("Response: $response")
         return response
     }
 
@@ -104,11 +104,9 @@ class PensjonsinformasjonService(
         informationBlocks.forEach {
             requestBuilder.addPensjonsinformasjonElement(document, it)
         }
-        logger.info("Requestbody:\n${document.documentToString()}")
-
+        logger.debug("Requestbody:\n${document.documentToString()}")
         val response = doRequest("/vedtak", vedtaksId, document.documentToString(),"hentVedtak")
         validateResponse(informationBlocks, response)
-        logger.info("Response: $response")
         return response
     }
 
@@ -145,8 +143,10 @@ class PensjonsinformasjonService(
 
                 val context = JAXBContext.newInstance(Pensjonsinformasjon::class.java)
                 val unmarshaller = context.createUnmarshaller()
+                val body = responseEntity.body
 
-                val res = unmarshaller.unmarshal(StreamSource(StringReader(responseEntity.body)), Pensjonsinformasjon::class.java)
+                logger.debug("Pensjonsinformasjon responsebody:\n $body \n")
+                val res = unmarshaller.unmarshal(StreamSource(StringReader(body)), Pensjonsinformasjon::class.java)
 
                 Metrics.counter("eessipensjon_fagmodul.$metricName", "type", "vellykkede").increment()
                 res.value as Pensjonsinformasjon

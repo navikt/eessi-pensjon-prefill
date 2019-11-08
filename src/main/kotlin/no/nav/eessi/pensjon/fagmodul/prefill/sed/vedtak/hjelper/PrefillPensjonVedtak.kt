@@ -59,7 +59,7 @@ object PrefillPensjonVedtak {
                 beregning = createBeregningItemList(pendata),
 
                 //4.1.8  $pensjon.vedtak[x].kjoeringsdato -- datoFattetVedtak?
-                kjoeringsdato = pendata.vedtak?.datoFattetVedtak?.simpleFormat(),
+                kjoeringsdato = null,
 
                 //4.1.9
                 ukjent = createEkstraTilleggPensjon(pendata),
