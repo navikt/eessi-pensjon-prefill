@@ -32,9 +32,7 @@ class AktoerregisterRestTemplate(private val stsService: STSService,
                 .additionalInterceptors(
                         RequestIdHeaderInterceptor(),
                         RequestCountInterceptor(registry),
-                        RequestResponseLoggerInterceptor(),
                         UsernameToOidcInterceptor(stsService))
-                //.customizers(MetricsRestTemplateCustomizer(registry, DefaultRestTemplateExchangeTagsProvider(), "eessipensjon_fagmodul_aktoer"))
                 .build().apply {
                     requestFactory = BufferingClientHttpRequestFactory(SimpleClientHttpRequestFactory())
                 }
