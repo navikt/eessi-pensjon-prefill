@@ -42,7 +42,7 @@ class STSService(private val securityTokenExchangeBasicAuthRestTemplate: RestTem
                     null,
                     typeRef<SecurityTokenResponse>())
 
-            logger.debug("SecurityTokenResponse ${mapAnyToJson(responseEntity)} ")
+//            logger.debug("SecurityTokenResponse ${mapAnyToJson(responseEntity)} ")
             validateResponse(responseEntity)
             return responseEntity.body!!.accessToken
         } catch (ex: Exception) {

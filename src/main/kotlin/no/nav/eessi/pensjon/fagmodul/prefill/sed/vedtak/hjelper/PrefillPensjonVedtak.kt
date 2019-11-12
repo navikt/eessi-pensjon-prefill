@@ -127,8 +127,8 @@ object PrefillPensjonVedtak {
 
     fun sjekkForVilkarsvurderingListeHovedytelseellerAvslag(pendata: Pensjonsinformasjon): Boolean {
         try {
-            val hovedytelseAvslag =  pendata.vilkarsvurderingListe.vilkarsvurderingListe.first()
-            if (hovedytelseAvslag.resultatHovedytelse == "AVSL"  || hovedytelseAvslag.avslagHovedytelse == "AVSL") {
+            val hovedytelseAvslag = pendata.vilkarsvurderingListe.vilkarsvurderingListe.first()
+            if (hovedytelseAvslag.resultatHovedytelse == "AVSL" || hovedytelseAvslag.avslagHovedytelse == "AVSL") {
                 return true
             }
         } catch (ex: Exception) {
@@ -239,7 +239,7 @@ object PrefillPensjonVedtak {
         val vedtaksresultat = hentVilkarsResultatHovedytelse(pendata)
         logger.debug("              vedtaksresultat: $vedtaksresultat")
 
-        val erAvslag = vedtaksresultat == "AVSLAG"
+        val erAvslag = vedtaksresultat == "AVSL"
         val erInnvilgelse = vedtaksresultat == "INNV"
 
         //PESYS kodeverk K_KRAV_SAK_FULL
@@ -541,7 +541,7 @@ object PrefillPensjonVedtak {
         val key = "FOLKETRYGD"
         val sakType = KSAK.valueOf(pendata.sakAlder.sakType)
 
-        return when(sakType) {
+        return when (sakType) {
             KSAK.ALDER -> "0" //nei
             else -> {
                 when (hentVinnendeBergeningsMetode(pendata)) {
@@ -583,7 +583,8 @@ object PrefillPensjonVedtak {
 
         val sakType = KSAK.valueOf(pendata.sakAlder.sakType)
 
-        val resultatGjenlevendetillegg = pendata.vilkarsvurderingListe?.vilkarsvurderingListe?.get(0)?.resultatGjenlevendetillegg ?: ""
+        val resultatGjenlevendetillegg = pendata.vilkarsvurderingListe?.vilkarsvurderingListe?.get(0)?.resultatGjenlevendetillegg
+                ?: ""
         val erUtenGjenlevendetillegg = resultatGjenlevendetillegg == ""
         val erMedGjenlevendetillegg = resultatGjenlevendetillegg != ""
         val vinnendeMetode = hentVinnendeBergeningsMetode(pendata)
@@ -721,7 +722,7 @@ object PrefillPensjonVedtak {
         }
         val sakType = KSAK.valueOf(pendata.sakAlder.sakType)
 
-        val avslagVilkarsproving = hentVilkarsResultatHovedytelse(pendata) == "AVSLAG"
+        val avslagVilkarsproving = hentVilkarsResultatHovedytelse(pendata) == "AVSL"
 
         val harBoddArbeidetUtland = harBoddArbeidetUtland(pendata)
         val erTrygdetidListeTom = pendata.trygdetidListe.trygdetidListe.isEmpty()

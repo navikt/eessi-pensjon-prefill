@@ -118,7 +118,7 @@ class VedtakPensjonDataHelperTest {
     @Test
     fun `forventer "07" på AvlsagsBegrunnelse IKKE_MOTTATT_DOK`() {
         val pendata = pensjoninformasjonForSakstype("ALDER").apply {
-            vilkarsvurderingListe.vilkarsvurderingListe.get(0).resultatHovedytelse = "AVSLAG"
+            vilkarsvurderingListe.vilkarsvurderingListe.get(0).resultatHovedytelse = "AVSL"
             vilkarsvurderingListe.vilkarsvurderingListe.get(0).avslagHovedytelse = "IKKE_MOTTATT_DOK"
         }
 

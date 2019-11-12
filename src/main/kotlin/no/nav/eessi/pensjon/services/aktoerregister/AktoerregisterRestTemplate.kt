@@ -2,6 +2,7 @@ package no.nav.eessi.pensjon.services.aktoerregister
 
 import io.micrometer.core.instrument.MeterRegistry
 import no.nav.eessi.pensjon.logging.RequestIdHeaderInterceptor
+import no.nav.eessi.pensjon.logging.RequestResponseLoggerInterceptor
 import no.nav.eessi.pensjon.metrics.RequestCountInterceptor
 import no.nav.eessi.pensjon.security.sts.STSService
 import no.nav.eessi.pensjon.security.sts.UsernameToOidcInterceptor
@@ -31,8 +32,9 @@ class AktoerregisterRestTemplate(private val stsService: STSService,
                 .additionalInterceptors(
                         RequestIdHeaderInterceptor(),
                         RequestCountInterceptor(registry),
+                        RequestResponseLoggerInterceptor(),
                         UsernameToOidcInterceptor(stsService))
-                .customizers(MetricsRestTemplateCustomizer(registry, DefaultRestTemplateExchangeTagsProvider(), "eessipensjon_fagmodul_aktoer"))
+                //.customizers(MetricsRestTemplateCustomizer(registry, DefaultRestTemplateExchangeTagsProvider(), "eessipensjon_fagmodul_aktoer"))
                 .build().apply {
                     requestFactory = BufferingClientHttpRequestFactory(SimpleClientHttpRequestFactory())
                 }
