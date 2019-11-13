@@ -1,11 +1,13 @@
 package no.nav.eessi.pensjon.fagmodul.sedmodel
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.toJson
 import no.nav.eessi.pensjon.utils.typeRefs
 
 // SED class main request class to basis
 // Strukturerte Elektroniske Dokumenter
+//@JsonIgnoreProperties(ignoreUnknown = true)
 data class SED(
         val sed: String? = null,
         val sedGVer: String? = "4",
