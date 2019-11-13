@@ -216,7 +216,48 @@ class PensjonsinformasjonUtlandService(private val timingService: TimingService)
         //P4000 -- arbeid
         val arbeidList = p4000.trygdetid?.ansattSelvstendigPerioder
         val filterArbeidUtenNorgeList = mutableListOf<AnsattSelvstendigItem>()
-        arbeidList?.forEach {
+        arbeidList?.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                forEach {
             if ("NO" != it.adresseFirma?.land) {
                 filterArbeidUtenNorgeList.add(it)
             }

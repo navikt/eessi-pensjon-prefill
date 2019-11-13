@@ -17,7 +17,10 @@ import no.nav.eessi.pensjon.fagmodul.prefill.MangelfulleInndataException
 import no.nav.eessi.pensjon.fagmodul.prefill.PrefillService
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillSED
-import no.nav.eessi.pensjon.fagmodul.sedmodel.*
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Bruker
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Krav
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Nav
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Person
 import no.nav.eessi.pensjon.helper.AktoerIdHelper
 import no.nav.eessi.pensjon.logging.AuditLogger
 import no.nav.eessi.pensjon.utils.mapAnyToJson
@@ -260,7 +263,7 @@ class SedControllerTest {
         val buc = "P_BUC_05"
         val rinanr = null
 
-        val expectedResponse = ResponseEntity.ok().body(mapAnyToJson(listOf("P5000", "P6000", "P7000", "P8000", "P9000")))
+        val expectedResponse = ResponseEntity.ok().body(mapAnyToJson(listOf("P8000")))
         val generatedResponse = sedController.getSeds(buc, rinanr)
         assertEquals(expectedResponse, generatedResponse)
     }
@@ -290,7 +293,7 @@ class SedControllerTest {
         val buc = null
         val rinanr = null
 
-        val expectedResponse = ResponseEntity.ok().body(mapAnyToJson(listOf("P2000", "P2100", "P2200", "P5000", "P6000", "P7000", "P8000", "P9000", "P10000", "P14000", "P15000")))
+        val expectedResponse = ResponseEntity.ok().body(mapAnyToJson(listOf("P2000", "P2100", "P2200", "P8000", "P5000", "P6000", "P7000", "P10000", "P14000", "P15000")))
         val generatedResponse = sedController.getSeds(buc, rinanr)
         assertEquals(expectedResponse, generatedResponse)
     }
@@ -521,7 +524,7 @@ class SedControllerTest {
 
 
     @Test
-    fun GittAtfDatoBlirFunnetForEnGittBucMedRinanrSaaReturnererViFdatoMedMeldingOgStatuskodeOK() {
+    fun `Gitt At fDato BlirFunnetForEnGittBuc medRinanr saa returnerer vi Fdato med melding og Statuskode OK`() {
 
         val buctype = "P_BUC_01"
         val euxCaseId = "123456"
@@ -532,12 +535,11 @@ class SedControllerTest {
         val bucPath = "src/test/resources/json/buc/buc-158123_2_v4.1.json"
         val bucJson = String(Files.readAllBytes(Paths.get(bucPath)))
         val buc = mapJsonToAny(bucJson, typeRefs<Buc>())
-        val sed = mapJsonToAny(sedJson, typeRefs<SED>())
 
-        doReturn(buc).whenever(mockEuxService).getBuc(any<String>())
-        doReturn(sed).whenever(mockEuxService).getSedOnBucByDocumentId(any<String>(), any<String>())
+        doReturn(buc).whenever(mockEuxService).getBuc(any())
+        doReturn(sedJson).whenever(mockEuxService).getSedOnBucByDocumentIdAsJson(any(), any())
 
-        var response = sedController.getFodselsdato(euxCaseId,buctype)
+        val response = sedController.getFodselsdato(euxCaseId,buctype)
 
         assertEquals(response, "1948-06-28")
     }

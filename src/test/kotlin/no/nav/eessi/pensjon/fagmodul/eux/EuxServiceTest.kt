@@ -1,12 +1,11 @@
 package no.nav.eessi.pensjon.fagmodul.eux
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.nhaarman.mockitokotlin2.*
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.BucSedResponse
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Rinasak
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
-import no.nav.eessi.pensjon.fagmodul.sedmodel.*
+import no.nav.eessi.pensjon.fagmodul.sedmodel.PinItem
+import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.logging.RequestResponseLoggerInterceptor
 import no.nav.eessi.pensjon.utils.*
 import org.junit.jupiter.api.AfterEach
@@ -782,120 +781,10 @@ class EuxServiceTest {
 
     @Test
     fun `Calling euxService getAvailableSedOnBuc no input, return`() {
-        val expected = "[ \"P2000\", \"P2100\", \"P2200\", \"P5000\", \"P6000\", \"P7000\", \"P8000\", \"P9000\", \"P10000\", \"P14000\", \"P15000\" ]"
-        //val expected = "[ \"P2000\", \"P2100\", \"P2200\", \"P5000\", \"P6000\", \"P7000\", \"P8000\", \"P9000\", \"P10000\", \"P14000\", \"P15000\", \"P1000\", \"P11000\", \"P12000\" ]"
+        val expected = "[ \"P2000\", \"P2100\", \"P2200\", \"P8000\", \"P5000\", \"P6000\", \"P7000\", \"P10000\", \"P14000\", \"P15000\" ]"
         val actual = EuxService.getAvailableSedOnBuc(null)
         assertEquals(expected, actual.toJson())
     }
-
-    @Test
-    fun `Calling getFDatoFromSed   returns valid resultset on BUC_01` () {
-        val euxCaseId = "123456"
-        val bucPath = "src/test/resources/json/buc/buc-158123_2_v4.1.json"
-        val bucJson = String(Files.readAllBytes(Paths.get(bucPath)))
-        assertTrue(validateJson(bucJson))
-        val bucResponse: ResponseEntity<String> = ResponseEntity(bucJson, HttpStatus.OK)
-        doReturn(bucResponse)
-                .whenever(mockEuxrestTemplate)
-                .exchange(eq("/buc/$euxCaseId"), eq(HttpMethod.GET), eq(null), eq(String::class.java))
-        doReturn(mockSedResponse(getTestJsonFile("P2000-NAV.json")))
-                .whenever(mockEuxrestTemplate)
-                .exchange(ArgumentMatchers.contains("buc/$euxCaseId/sed/"), eq(HttpMethod.GET), eq(null), eq(String::class.java))
-
-        assertEquals("1980-01-01", service.getFDatoFromSed(euxCaseId,"P_BUC_01"))
-    }
-
-    @Test
-    fun `Calling getFDatoFromSed returns valid resultset on BUC_06` () {
-        val euxCaseId = "123456"
-        val bucPath = "src/test/resources/json/buc/buc-175254_noX005_v4.1.json"
-        val bucJson = String(Files.readAllBytes(Paths.get(bucPath)))
-        assertTrue(validateJson(bucJson))
-        val bucResponse: ResponseEntity<String> = ResponseEntity(bucJson, HttpStatus.OK)
-        doReturn(bucResponse)
-                .whenever(mockEuxrestTemplate)
-                .exchange(eq("/buc/$euxCaseId"), eq(HttpMethod.GET), eq(null), eq(String::class.java))
-        doReturn(mockSedResponse(getTestJsonFile("P10000-03Barn-NAV.json")))
-                .whenever(mockEuxrestTemplate)
-                .exchange(ArgumentMatchers.contains("buc/$euxCaseId/sed/"), eq(HttpMethod.GET), eq(null), eq(String::class.java))
-
-        assertEquals("1948-06-28", service.getFDatoFromSed(euxCaseId,"P_BUC_06"))
-    }
-
-    @Test
-    fun `Calling getFDatoFromSed finne fdato på P2100 kaster IkkeFunnetException ved manglende mapping` () {
-        val euxCaseId = "123456"
-        val bucPath = "src/test/resources/json/buc/buc-239200_buc02_v4.1.json"
-        val bucJson = String(Files.readAllBytes(Paths.get(bucPath)))
-        assertTrue(validateJson(bucJson))
-
-        val bucResponse: ResponseEntity<String> = ResponseEntity(bucJson, HttpStatus.OK)
-        doReturn(bucResponse)
-                .whenever(mockEuxrestTemplate)
-                .exchange(eq("/buc/$euxCaseId"), eq(HttpMethod.GET), eq(null), eq(String::class.java))
-
-        doReturn(mockSedResponse(getTestJsonFile("P2100-NAV-unfin.json")))
-                .whenever(mockEuxrestTemplate)
-                .exchange(ArgumentMatchers.contains("buc/$euxCaseId/sed/"), eq(HttpMethod.GET), eq(null), eq(String::class.java))
-
-        assertThrows<IkkeFunnetException> {
-            service.getFDatoFromSed(euxCaseId,"P_BUC_02")
-        }
-    }
-
-
-    @Test
-    fun `Calling getFDatoFromSed returns exception when seddocumentId is not found` () {
-        val euxCaseId = "123456"
-        val bucPath = "src/test/resources/json/buc/buc-158123_v4.1.json"
-        val bucJson = String(Files.readAllBytes(Paths.get(bucPath)))
-        assertTrue(validateJson(bucJson))
-        val bucResponse: ResponseEntity<String> = ResponseEntity(bucJson, HttpStatus.OK)
-        doReturn(bucResponse)
-                .whenever(mockEuxrestTemplate)
-                .exchange(eq("/buc/$euxCaseId"), eq(HttpMethod.GET), eq(null), eq(String::class.java))
-
-        doReturn(mockSedResponse(getTestJsonFile("P10000-03Barn-NAV.json")))
-                .whenever(mockEuxrestTemplate)
-                .exchange(ArgumentMatchers.contains("buc/$euxCaseId/sed/"), eq(HttpMethod.GET), eq(null), eq(String::class.java))
-
-        assertThrows<IkkeFunnetException> {
-            service.getFDatoFromSed(euxCaseId, "P_BUC_03")
-        }
-    }
-
-    @Test
-    fun `Calling getFDatoFromSed returns exception when foedselsdato is not found` () {
-        val euxCaseId = "123456"
-        val bucPath = "src/test/resources/json/buc/buc-158123_v4.1.json"
-        val bucJson = String(Files.readAllBytes(Paths.get(bucPath)))
-        assertTrue(validateJson(bucJson))
-
-        val sed = SED("P2000")
-        sed.nav = Nav(bruker = Bruker(person = Person(fornavn = "Dummy")))
-
-        val bucResponse: ResponseEntity<String> = ResponseEntity(bucJson, HttpStatus.OK)
-        doReturn(bucResponse)
-                .whenever(mockEuxrestTemplate)
-                .exchange(eq("/buc/$euxCaseId"), eq(HttpMethod.GET), eq(null), eq(String::class.java))
-        doReturn(mockSedResponse(sed.toJson()))
-                .whenever(mockEuxrestTemplate)
-                .exchange(ArgumentMatchers.contains("buc/$euxCaseId/sed/"), eq(HttpMethod.GET), eq(null), eq(String::class.java))
-
-        assertThrows<IkkeFunnetException> {
-            service.getFDatoFromSed(euxCaseId, "P_BUC_01")
-        }
-    }
-
-    @Test
-    fun `Calling getFDatoFromSed returns Exception when unsupported buctype is entered` () {
-        val euxCaseId = "123456"
-        val bucType = "P_BUC_12"
-        assertThrows<GenericUnprocessableEntity> {
-            service.getFDatoFromSed(euxCaseId, bucType)
-        }
-    }
-
 
     fun mockSedResponse(sedJson: String): ResponseEntity<String> {
         return ResponseEntity(sedJson, HttpStatus.OK)
@@ -954,7 +843,6 @@ class EuxServiceTest {
 
     }
 
-
     @Test
     fun `Tester og evaluerer om require statement blir oppfylt`() {
         assertThrows<IllegalArgumentException> { dummyRequirement(null, null) }
@@ -976,145 +864,6 @@ class EuxServiceTest {
 
     }
 
-    @Test
-    fun `letter igjennom beste Sed på valgt buc P2100 også P2000 etter norsk personnr`() {
-        val mockEuxCaseID = "123123"
-        val mock = listOf(Pair("04117b9f8374420e82a4d980a48df6b3","P2100"), Pair("04117b9f8374420e82a4d980a48df6b3","P2000"))
-
-                doReturn(mockSedResponse(getTestJsonFile("P2100-PinDK-NAV.json")))
-                .doReturn(mockSedResponse(getTestJsonFile("P2000-NAV.json")))
-                .whenever(mockEuxrestTemplate)
-                .exchange(ArgumentMatchers.contains(
-                        "buc/$mockEuxCaseID/sed/")
-                        , eq(HttpMethod.GET)
-                        , eq(null)
-                        , eq(String::class.java)
-                )
-
-        val actual = service.getFodselsnrFraSed(mockEuxCaseID, mock)
-        val expected = "970970970"
-        assertEquals(expected, actual)
-    }
-
-    @Test
-    fun `letter igjennom beste Sed på valgt buc etter norsk personnr`() {
-        val mockEuxCaseID = "123123"
-        val mock = listOf(Pair("04117b9f8374420e82a4d980a48df6b3","P2100"),Pair("04117b9f8374420e82a4d980a48df6b3","P2100"),
-                Pair("04117b9f8374420e82a4d980a48df6b3","P2100"), Pair("04117b9f8374420e82a4d980a48df6b3","P2100"),
-                Pair("04117b9f8374420e82a4d980a48df6b3","P2000"),Pair("04117b9f8374420e82a4d980a48df6b3","P15000"))
-
-        doReturn(mockSedResponse(getTestJsonFile("P2100-PinDK-NAV.json")))
-                .doReturn(mockSedResponse(getTestJsonFile("P2100-PinDK-NAV.json")))
-                .doReturn(mockSedResponse(getTestJsonFile("P2100-PinDK-NAV.json")))
-                .doReturn(mockSedResponse(getTestJsonFile("P2100-PinDK-NAV.json")))
-                .doReturn(mockSedResponse(getTestJsonFile("P2000-NAV.json")))
-                .doReturn(mockSedResponse(getTestJsonFile("P15000-NAV.json")))
-                .whenever(mockEuxrestTemplate)
-                .exchange(ArgumentMatchers.contains(
-                        "buc/$mockEuxCaseID/sed/")
-                        , eq(HttpMethod.GET)
-                        , eq(null)
-                        , eq(String::class.java)
-                )
-
-        val actual = service.getFodselsnrFraSed(mockEuxCaseID, mock)
-        val expected = "970970970"
-        assertEquals(expected, actual)
-    }
-
-    @Test
-    fun `letter igjennom beste Sed på valgt buc P15000 alder eller ufor etter norsk personnr`() {
-        val mockEuxCaseID = "123123"
-        val mock = listOf(Pair("04117b9f8374420e82a4d980a48df6b3","P2100"),Pair("04117b9f8374420e82a4d980a48df6b3","P15000"))
-
-        doReturn(mockSedResponse(getTestJsonFile("P2100-PinDK-NAV.json")))
-                .doReturn(mockSedResponse(getTestJsonFile("P15000-NAV.json")))
-                .whenever(mockEuxrestTemplate)
-                .exchange(ArgumentMatchers.contains(
-                        "buc/$mockEuxCaseID/sed/")
-                        , eq(HttpMethod.GET)
-                        , eq(null)
-                        , eq(String::class.java)
-                )
-
-        val actual = service.getFodselsnrFraSed(mockEuxCaseID, mock)
-        val expected = "21712"
-        assertEquals(expected, actual)
-    }
-
-    @Test
-    fun `letter igjennom beste Sed på valgt buc P15000 gjenlevende etter norsk personnr`() {
-        val mockEuxCaseID = "123123"
-        val mock = listOf(Pair("04117b9f8374420e82a4d980a48df6b3","P2100"),Pair("04117b9f8374420e82a4d980a48df6b3","P15000"))
-
-        doReturn(mockSedResponse(getTestJsonFile("P2100-PinDK-NAV.json")))
-                .doReturn(mockSedResponse(getTestJsonFile("P15000Gjennlevende-NAV.json")))
-                .whenever(mockEuxrestTemplate)
-                .exchange(ArgumentMatchers.contains(
-                        "buc/$mockEuxCaseID/sed/")
-                        , eq(HttpMethod.GET)
-                        , eq(null)
-                        , eq(String::class.java)
-                )
-
-        val actual = service.getFodselsnrFraSed(mockEuxCaseID, mock)
-        val expected = "21712"
-        assertEquals(expected, actual)
-    }
-
-
-    @Test
-    fun `letter igjennom beste Sed på valgt buc P10000 annenperson etter norsk personnr`() {
-        val mockEuxCaseID = "123123"
-        val mock = listOf(Pair("04117b9f8374420e82a4d980a48df6b3","P2100"),Pair("04117b9f8374420e82a4d980a48df6b3","P10000"))
-
-        doReturn(mockSedResponse(getTestJsonFile("P2100-PinDK-NAV.json")))
-        .doReturn(mockSedResponse(getTestJsonFile("P10000-01Gjenlevende-NAV.json")))
-        .whenever(mockEuxrestTemplate)
-        .exchange(ArgumentMatchers.contains(
-                "buc/$mockEuxCaseID/sed/")
-                , eq(HttpMethod.GET)
-                , eq(null)
-                , eq(String::class.java)
-        )
-
-        val actual = service.getFodselsnrFraSed(mockEuxCaseID, mock)
-        val expected = "287654321"
-        assertEquals(expected, actual)
-    }
-
-    @Test
-    fun `filtrer norsk pin annenperson med rolle 01`()   {
-        val mapper = jacksonObjectMapper()
-        val p2000json = getTestJsonFile("P2000-NAV.json")
-        assertEquals(null, service.filterAnnenpersonPinNode(mapper.readTree(p2000json)))
-
-        val p10000json = getTestJsonFile("P10000-01Gjenlevende-NAV.json")
-        val expected = "287654321"
-        val actual  = service.filterAnnenpersonPinNode(mapper.readTree(p10000json))
-        assertEquals(expected, actual)
-
-    }
-
-
-    @Test
-    fun `letter igjennom beste Sed på valgt buc P2100 etter norsk personnr feiler kaster exception`() {
-        val mockEuxCaseID = "123123"
-        val mock = listOf(Pair("04117b9f8374420e82a4d980a48df6b3","P2100"))
-
-            doReturn(mockSedResponse(getTestJsonFile("P2100-PinDK-NAV.json")))
-            .whenever(mockEuxrestTemplate)
-            .exchange(ArgumentMatchers.contains(
-                    "buc/$mockEuxCaseID/sed/")
-                    , eq(HttpMethod.GET)
-                    , eq(null)
-                    , eq(String::class.java)
-            )
-
-        assertThrows<IkkeFunnetException> {
-            service.getFodselsnrFraSed(mockEuxCaseID, mock)
-        }
-    }
 
 
     @Test
