@@ -13,7 +13,6 @@ import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.DocumentsItem
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ParticipantsItem
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.prefill.ApiRequest
-import no.nav.eessi.pensjon.fagmodul.prefill.ApiResponse
 import no.nav.eessi.pensjon.fagmodul.prefill.MangelfulleInndataException
 import no.nav.eessi.pensjon.fagmodul.prefill.PrefillService
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
@@ -38,7 +37,6 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.util.UriComponentsBuilder
 import java.nio.file.Files
 import java.nio.file.Paths
-import javax.xml.ws.Response
 
 @ExtendWith(MockitoExtension::class)
 class SedControllerTest {
