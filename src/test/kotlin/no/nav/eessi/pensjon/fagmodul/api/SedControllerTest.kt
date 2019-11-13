@@ -178,13 +178,14 @@ class SedControllerTest {
         utfyllMock.sed.nav = Nav(bruker = Bruker(person = Person(fornavn = "Dummy", etternavn = "Dummy", foedselsdato = "1900-10-11", kjoenn = "K")), krav = Krav("1937-12-11"))
         whenever(mockPrefillSED.prefill(any())).thenReturn(utfyllMock)
 
-        val response = sedController.confirmDocument(mockData)
-        //val response = SED.fromJson(response2)
-
+        val response = sedController.confirmDocument(mockData, "noFilter")
         assertNotNull(response)
-        assertEquals("P6000", response.sed)
-        assertEquals("Dummy", response.nav?.bruker?.person?.fornavn)
-        assertEquals("Dummy", response.nav?.bruker?.person?.etternavn)
+
+        val sed = SED.fromJson(response)
+
+        assertEquals("P6000", sed.sed)
+        assertEquals("Dummy", sed.nav?.bruker?.person?.fornavn)
+        assertEquals("Dummy", sed.nav?.bruker?.person?.etternavn)
     }
 
 

@@ -6,10 +6,7 @@ import io.micrometer.core.instrument.Counter
 import io.micrometer.core.instrument.Metrics
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.http.HttpEntity
-import org.springframework.http.HttpHeaders
-import org.springframework.http.HttpMethod
-import org.springframework.http.HttpStatus
+import org.springframework.http.*
 import org.springframework.stereotype.Service
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.client.RestTemplate
@@ -88,10 +85,16 @@ class AktoerregisterService(private val aktoerregisterOidcRestTemplate: RestTemp
                 .queryParam("gjeldende", gjeldende)
         logger.info("Kaller aktørregisteret: /identer")
 
-        val responseEntity = aktoerregisterOidcRestTemplate.exchange(uriBuilder.toUriString(),
-                HttpMethod.GET,
-                requestEntity,
-                String::class.java)
+        var responseEntity: ResponseEntity<String>?= null
+        try {
+             responseEntity = aktoerregisterOidcRestTemplate.exchange(uriBuilder.toUriString(),
+                    HttpMethod.GET,
+                    requestEntity,
+                    String::class.java)
+        } catch (ex: Exception) {
+            logger.error(ex.message, ex)
+            throw AktoerregisterException(ex.message!!)
+        }
 
         if (responseEntity.statusCode.isError) {
             logger.error("Fikk ${responseEntity.statusCode} feil fra aktørregisteret")

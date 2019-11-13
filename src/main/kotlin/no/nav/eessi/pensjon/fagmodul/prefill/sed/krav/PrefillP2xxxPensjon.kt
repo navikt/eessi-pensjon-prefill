@@ -4,8 +4,8 @@ import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonHjelper
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.KravHistorikkHelper.createKravDato
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.KravHistorikkHelper.hentKravHistorikkForsteGangsBehandlingUtlandEllerForsteGang
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.KravHistorikkHelper.hentKravHistorikkMedKravStatusAvslag
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.KravHistorikkHelper.hentKravHistorikkMedKravStatusTilBehandling
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.KravHistorikkHelper.hentKravHistorikkSisteRevurdering
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.NavFodselsnummer
 import no.nav.eessi.pensjon.fagmodul.sedmodel.*
 import no.nav.eessi.pensjon.utils.simpleFormat
@@ -53,7 +53,7 @@ object PrefillP2xxxPensjon {
 
         logger.debug("4.1           Informasjon om ytelser")
 
-        val spesialStatusList = listOf(Kravstatus.TIL_BEHANDLING.name)
+        val spesialStatusList = listOf(Kravstatus.TIL_BEHANDLING.name, Kravstatus.AVSL.name)
         //INNV
         var krav: Krav? = null
 
@@ -62,12 +62,24 @@ object PrefillP2xxxPensjon {
         if (spesialStatusList.contains(pensak.status)) {
             logger.debug("Valgtstatus")
             //kjøre ytelselist forkortet
+
             ytelselist.add(createYtelseMedManglendeYtelse(pensak, personNr, penSaksnummer, andreinstitusjonerItem))
 
-            if (krav == null) {
-                val kravHistorikkMedUtland = hentKravHistorikkMedKravStatusTilBehandling(pensak.kravHistorikkListe)
-                krav = createKravDato(kravHistorikkMedUtland)
-                logger.warn("9.1        Opprettett P2000 med mulighet for at denne mangler KravDato!")
+            when (pensak.status) {
+                Kravstatus.TIL_BEHANDLING.name -> {
+                    if (krav == null) {
+                        val kravHistorikkMedUtland = hentKravHistorikkMedKravStatusTilBehandling(pensak.kravHistorikkListe)
+                        krav = createKravDato(kravHistorikkMedUtland)
+                        logger.warn("9.1        Opprettett P2000 med mulighet for at denne TIL_BEHANDLING mangler KravDato!")
+                    }
+                }
+                else -> {
+                    if (krav == null) {
+                        val kravHistorikkMedUtland = hentKravHistorikkMedKravStatusAvslag(pensak.kravHistorikkListe)
+                        krav = createKravDato(kravHistorikkMedUtland)
+                        logger.warn("9.1        Opprettett P2000 med mulighet for at denne AVSL mangler  KravDato!")
+                    }
+                }
             }
 
         } else {

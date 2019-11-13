@@ -2,6 +2,8 @@ package no.nav.eessi.pensjon.fagmodul.prefill.sed
 
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
+import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
+import no.nav.eessi.pensjon.fagmodul.prefill.ApiRequest
 import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjon
 import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonHjelper
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.BrukerFromTPS
@@ -49,4 +51,20 @@ object PrefillTestHelper {
         val resource = ResourceUtils.getFile("classpath:pensjonsinformasjon/krav/$file").readText()
         return ResponseEntity(resource, HttpStatus.OK)
     }
+
+    fun createMockApiRequest(sedName: String, buc: String, payload: String, sakNr: String): ApiRequest {
+        val items = listOf(InstitusjonItem(country = "NO", institution = "NAVT003"))
+        return ApiRequest(
+                institutions = items,
+                sed = sedName,
+                sakId = sakNr,
+                euxCaseId = null,
+                aktoerId = "1000060964183",
+                buc = buc,
+                subjectArea = "Pensjon",
+                payload = payload,
+                mockSED = true
+        )
+    }
+
 }

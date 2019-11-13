@@ -13,21 +13,15 @@ eessi-pensjon-institusjon-navn: 'NAVAT 07'
 #eux-rina-api_v1:
 eessipen-eux-rina:
    url: 'https://eux-rina-api-q2.nais.preprod.local/cpi'
-#  url: 'https://eux-rina-api.nais.preprod.local/cpi'
-#  url: 'http://10.33.44.43:9090/cpi'
-#  url: 'https://eux-app.nais.preprod.local/cpi'
 
 virksomhet.person.v3:
   endpointurl: 'https://wasapp-q2.adeo.no/tpsws/ws/Person/v3'
-  #  endpointurl: 'https://wasapp-t7.adeo.no/tpsws/ws/Person/v3'  # maskert-data
 
 aktoerregister.api.v1:
   url: 'https://app-q2.adeo.no/aktoerregister/api/v1'
 
 pensjonsinformasjon:
   url: 'https://wasapp-q2.adeo.no/pensjon-ws/api/pensjonsinformasjon/v1'
-  #  url: 'https://wasapp-t5.adeo.no/pensjon-ws/api/pensjonsinformasjon/v1'
-  #  url: 'https://wasapp-q1.adeo.no/pensjon-ws/api/pensjonsinformasjon/v1'
 
 requestsamlpolicy:
   path: 'classpath:policy/requestSamlPolicyNoTransportBinding.xml'
@@ -42,12 +36,9 @@ app:
 
 security-token-service-token:
   url: 'https://security-token-service.nais.preprod.local/rest/v1/sts/token'
-  #  url: 'https://security-token-service-t10.nais.preprod.local/rest/v1/sts/token'
 
 securityTokenService:
   url: 'https://sts-q2.preprod.local/SecurityTokenServiceProvider/'
-  #  url: 'https://sts-t4.test.local/SecurityTokenServiceProvider/'
-  #  url: 'https://sts-q1.preprod.local/SecurityTokenServiceProvider/'
 
 saf.graphql:
   url: 'https://saf-q2.nais.preprod.local/graphql'
@@ -76,10 +67,16 @@ no.nav.security.oidc:
 
 http.proxy.parametername:
 
+spring:
+  metrics:
+    web:
+      server:
+        auto-time-requests: 'true'
+
 management:
   endpoints:
     enabled-by-default: 'true'
     jmx:
       exposure.include: '*'
     web:
-      exposure.include: '*'
+      exposure.include: 'info, health, metrics, prometheus'

@@ -1,6 +1,5 @@
 package no.nav.eessi.pensjon.fagmodul.api
 
-import com.fasterxml.jackson.annotation.JsonInclude
 import io.swagger.annotations.ApiOperation
 import no.nav.eessi.pensjon.fagmodul.eux.BucUtils
 import no.nav.eessi.pensjon.fagmodul.eux.EuxService
@@ -17,7 +16,6 @@ import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
 import no.nav.security.oidc.api.Protected
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
-import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
@@ -32,22 +30,20 @@ class SedController(private val euxService: EuxService,
 
     private val logger = LoggerFactory.getLogger(SedController::class.java)
 
+
     //** oppdatert i api 18.02.2019
-    @ApiOperation("Genereren en Nav-Sed (SED), viser en oppsumering av SED. Før evt. innsending til EUX/Rina")
-    @PostMapping("/preview", consumes = ["application/json"], produces = [MediaType.APPLICATION_JSON_VALUE])
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    fun confirmDocument(@RequestBody request: ApiRequest): SED {
+    @ApiOperation("Genereren en Nav-Sed (SED), viser en oppsumering av SED (json). Før evt. innsending til EUX/Rina")
+    @PostMapping("/preview", "/preview/{filter}", consumes = ["application/json"], produces = [org.springframework.http.MediaType.APPLICATION_JSON_VALUE])
+    fun confirmDocument(@RequestBody request: ApiRequest, @PathVariable("filter", required = false) filter: String ?= null): String {
         val dataModel = ApiRequest.buildPrefillDataModelConfirm(request, aktoerIdHelper.hentPinForAktoer(request.aktoerId), getAvdodAktoerId(request))
         auditlogger.log("confirmDocument", request.aktoerId ?: "" , request.toAudit())
-        return prefillService.prefillSed(dataModel).sed
-    }
+        val sed = prefillService.prefillSed(dataModel).sed
+        return if (filter==null) {
+            sed.toJsonSkipEmpty()
+        } else {
+            sed.toJson()
+        }
 
-    @ApiOperation("Genereren en Nav-Sed (SED), viser en oppsumering av SED. Før evt. innsending til EUX/Rina")
-    @PostMapping("/previewNONempty", consumes = ["application/json"], produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun confirmDocumentWithoutnull(@RequestBody request: ApiRequest): String {
-        val dataModel = ApiRequest.buildPrefillDataModelConfirm(request, aktoerIdHelper.hentPinForAktoer(request.aktoerId), getAvdodAktoerId(request))
-        auditlogger.log("confirmDocumentWithoutnull", request.aktoerId ?: "" , request.toAudit())
-        return prefillService.prefillSed(dataModel).sed.toJsonSkipEmpty()
     }
 
     //** oppdatert i api 18.02.2019

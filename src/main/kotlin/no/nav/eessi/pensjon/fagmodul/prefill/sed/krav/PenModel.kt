@@ -7,7 +7,8 @@ enum class Kravtype {
 }
 
 enum class Kravstatus {
-    TIL_BEHANDLING
+    TIL_BEHANDLING,
+    AVSL
 }
 
 //K_SAK_T Kodeverk fra PESYS

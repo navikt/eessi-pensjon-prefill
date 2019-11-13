@@ -74,6 +74,20 @@ object KravHistorikkHelper {
         return V1KravHistorikk()
     }
 
+    fun hentKravHistorikkMedKravStatusAvslag(kravHistorikkListe: V1KravHistorikkListe): V1KravHistorikk {
+        val sortList = sortertKravHistorikk(kravHistorikkListe)
+        sortList.forEach {
+            logger.debug("leter etter Krav status med ${Kravstatus.AVSL}, fant ${it.kravType} med virkningstidspunkt dato : ${it.virkningstidspunkt}")
+            if (Kravstatus.AVSL.name == it.status) {
+                logger.debug("Fant Kravhistorikk med ${it.status}")
+                return it
+            }
+        }
+        logger.error("Fant ikke noe Kravhistorikk..${Kravstatus.TIL_BEHANDLING} HVA GJØR VI NÅ?")
+        return V1KravHistorikk()
+    }
+
+
     /**
      * 9.1- 9.2
      *
