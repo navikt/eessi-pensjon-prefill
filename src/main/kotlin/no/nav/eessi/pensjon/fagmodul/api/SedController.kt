@@ -12,6 +12,7 @@ import no.nav.eessi.pensjon.fagmodul.prefill.PrefillService
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.helper.AktoerIdHelper
 import no.nav.eessi.pensjon.logging.AuditLogger
+import no.nav.eessi.pensjon.utils.toJson
 import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
 import no.nav.security.oidc.api.Protected
 import org.slf4j.LoggerFactory
@@ -45,6 +46,8 @@ class SedController(private val euxService: EuxService,
         }
 
     }
+
+
 
     //** oppdatert i api 18.02.2019
     @ApiOperation("Sender valgt NavSed på rina med valgt documentid og bucid, ut til eu/eøs, ny api kall til eux")
@@ -150,7 +153,7 @@ class SedController(private val euxService: EuxService,
     }
 
     //** oppdatert i api 18.02.2019 --
-    @ApiOperation("Utgår, benytt /buc/{rinanr}/allDocuments ")
+    @ApiOperation("Utgår, benytt /buc/rinanr/allDocuments ")
     @GetMapping("/buc/{euxcaseid}/shortdocumentslist")
     fun getShortDocumentList(@PathVariable("euxcaseid", required = true) euxcaseid: String): List<ShortDocumentItem> {
         auditlogger.logBuc("getShortDocumentList", " euxCaseId: $euxcaseid")

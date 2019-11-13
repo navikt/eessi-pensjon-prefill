@@ -17,10 +17,7 @@ import no.nav.eessi.pensjon.fagmodul.prefill.MangelfulleInndataException
 import no.nav.eessi.pensjon.fagmodul.prefill.PrefillService
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillSED
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Bruker
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Krav
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Nav
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Person
+import no.nav.eessi.pensjon.fagmodul.sedmodel.*
 import no.nav.eessi.pensjon.helper.AktoerIdHelper
 import no.nav.eessi.pensjon.logging.AuditLogger
 import no.nav.eessi.pensjon.utils.mapAnyToJson
@@ -122,7 +119,7 @@ class SedControllerTest {
     }
 
     @Test
-    fun `forventer alt ok ved å legge til en ny SED på en ekisternede buc `() {
+    fun `forventer alt ok ved aa legge til en ny SED paa en ekisternede buc `() {
         val bucresponse = BucSedResponse("123444455", "2a427c10325c4b5eaf3c27ba5e8f1877")
 
         val items = listOf(InstitusjonItem(country = "NO", institution = "NO:DUMMY"))
@@ -152,7 +149,7 @@ class SedControllerTest {
 
         doReturn(listOf(DocumentsItem(id = "2a427c10325c4b5eaf3c27ba5e8f1877"))).whenever(mockbuc).documents
 
-        val euxCaseId: String = "123444455"
+        val euxCaseId = "123444455"
         doReturn(mockbuc).whenever(mockEuxService).getBuc(euxCaseId)
 
         val response = sedController.addDocument(requestMock)
