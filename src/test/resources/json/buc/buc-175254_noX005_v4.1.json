@@ -1004,7 +1004,7 @@
       "canBeSentWithoutChild": false,
       "bulk": false,
       "parentDocumentId": null,
-      "status": "empty"
+      "status": "sendt"
     },
     {
       "parendDocumentId": null,
