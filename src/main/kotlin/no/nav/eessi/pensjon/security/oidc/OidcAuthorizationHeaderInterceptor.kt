@@ -19,7 +19,7 @@ class OidcAuthorizationHeaderInterceptor(private val oidcRequestContextHolder: O
     private val logger = LoggerFactory.getLogger(OidcAuthorizationHeaderInterceptor::class.java)
 
     override fun intercept(request: HttpRequest, body: ByteArray, execution: ClientHttpRequestExecution): ClientHttpResponse {
-        logger.info("sjekker reqiest header for AUTH")
+        logger.info("sjekker request header for AUTH")
         if (request.headers[HttpHeaders.AUTHORIZATION] == null) {
             val oidcToken = getIdTokenFromIssuer(oidcRequestContextHolder)
             request.headers[HttpHeaders.AUTHORIZATION] = "Bearer $oidcToken"
@@ -55,7 +55,7 @@ class OidcAuthorizationHeaderInterceptor(private val oidcRequestContextHolder: O
             return tokenContext
         }
 
-        logger.debug("More than one ISSUER found.: ${found.size}")
+        logger.debug("More than one ISSUER found. Number of issuers found: ${found.size}")
         //val foundToken = mutableListOf<>()
         val foundToken = found.asSequence().sortedBy { it.issuer }.toList()
 
@@ -75,7 +75,7 @@ class OidcAuthorizationHeaderInterceptor(private val oidcRequestContextHolder: O
             }
 
         }
-        logger.debug("Returing following issuer: ${longest.issuer}, exp: ${longestExpirationTime},\ntoken: ${longest.idToken}")
+        logger.debug("Returning following issuer: ${longest.issuer}, exp: ${longestExpirationTime},\ntoken: ${longest.idToken}")
         return longest
     }
 

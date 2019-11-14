@@ -66,7 +66,7 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
         val httpEntity = HttpEntity(navSED.toJsonSkipEmpty(), headers)
 
         try {
-            logger.info("Prøver å kontakte EUX /${builder.toUriString()}")
+            logger.info("Prøver å kontakte EUX: /${builder.toUriString()}")
             val response = euxOidcRestTemplate.exchange(builder.toUriString(),
                     HttpMethod.POST,
                     httpEntity,

@@ -1,7 +1,7 @@
 package no.nav.eessi.pensjon.fagmodul.health
 
-import no.nav.eessi.pensjon.fagmodul.metrics.getCounter
 import no.nav.eessi.pensjon.fagmodul.eux.EuxService
+import no.nav.eessi.pensjon.fagmodul.metrics.getCounter
 import no.nav.eessi.pensjon.security.sts.STSService
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonService
 import no.nav.eessi.pensjon.services.personv3.PersonV3Service
@@ -46,7 +46,7 @@ class DiagnosticsController(private val stsService: STSService,
 
         try {
             val fagurl = getLocalProtectedAddr(request)
-            logger.debug("Kall til selftest fra ip: ${fagurl} på sessionid: $sessionId")
+            logger.debug("Kall til selftest fra url: ${fagurl} med sessionid: $sessionId")
 
             val localProtectedUrl = "${fagurl}/internal/protected/selftest"
             logger.debug("Prøver å kontakte Url: $localProtectedUrl")
@@ -65,7 +65,7 @@ class DiagnosticsController(private val stsService: STSService,
 
         } catch (ex: Exception) {
             logger.debug("Selftest failed")
-            logger.error("Feil ved Selftest", ex)
+            logger.error("Feiler ved Selftest", ex)
             throw Exception("Feiler ved selftest, ${ex.message}")
         }
     }

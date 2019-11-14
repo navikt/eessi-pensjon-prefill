@@ -2,20 +2,22 @@ package no.nav.eessi.pensjon.api.person
 
 import io.swagger.annotations.ApiOperation
 import no.nav.eessi.pensjon.logging.AuditLogger
-import no.nav.eessi.pensjon.services.aktoerregister.AktoerregisterService
-import no.nav.eessi.pensjon.services.personv3.PersonV3Service
 import no.nav.eessi.pensjon.metrics.counter
-import no.nav.eessi.pensjon.services.personv3.PersonV3IkkeFunnetException
-import no.nav.eessi.pensjon.services.personv3.PersonV3SikkerhetsbegrensningException
 import no.nav.eessi.pensjon.services.aktoerregister.AktoerregisterException
 import no.nav.eessi.pensjon.services.aktoerregister.AktoerregisterIkkeFunnetException
+import no.nav.eessi.pensjon.services.aktoerregister.AktoerregisterService
+import no.nav.eessi.pensjon.services.personv3.PersonV3IkkeFunnetException
+import no.nav.eessi.pensjon.services.personv3.PersonV3Service
+import no.nav.eessi.pensjon.services.personv3.PersonV3SikkerhetsbegrensningException
 import no.nav.security.oidc.api.Protected
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonResponse
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.RestController
 
 /**
  * Controller for å kalle NAV interne registre
@@ -59,19 +61,19 @@ class PersonController(private val aktoerregisterService: AktoerregisterService,
                 counter("eessipensjon_fagmodul.personinfo", "vellykkede").increment()
                 ResponseEntity.ok(payload)
             } catch (are: AktoerregisterException) {
-                logger.error("Kall til Akørregisteret feilet på grunn av: " + are.message)
+                logger.error("Kall til Aktørregisteret feilet på grunn av: " + are.message)
                 counter("eessipensjon_fagmodul.personinfo", "feilede").increment()
                 ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(AktoerregisterException::class.simpleName)
             } catch (arife: AktoerregisterIkkeFunnetException) {
-                logger.error("Kall til Akørregisteret feilet på grunn av: " + arife.message)
+                logger.error("Kall til Aktørregisteret feilet på grunn av: " + arife.message)
                 counter("eessipensjon_fagmodul.personinfo", "feilede").increment()
                 ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(AktoerregisterIkkeFunnetException::class.simpleName)
             } catch (sbe: PersonV3SikkerhetsbegrensningException) {
-                logger.error("Kall til PersonV3 med feilet på grunn av sikkerhetsbegrensning")
+                logger.error("Kall til PersonV3 feilet på grunn av sikkerhetsbegrensning")
                 counter("eessipensjon_fagmodul.personinfo", "feilede").increment()
                 ResponseEntity.status(HttpStatus.FORBIDDEN).body(PersonV3SikkerhetsbegrensningException::class.simpleName)
             } catch (ife: PersonV3IkkeFunnetException) {
-                logger.error("Kall til PersonV3 feilet på grunn av person ikke funnet")
+                logger.error("Kall til PersonV3 feilet siden personen ikke ble funnet")
                 counter("eessipensjon_fagmodul.personinfo", "feilede").increment()
                 ResponseEntity.status(HttpStatus.NOT_FOUND).body(PersonV3IkkeFunnetException::class.simpleName)
             }
