@@ -39,7 +39,7 @@ class LandkodeService {
 
     fun finnLandkode3(alpha2: String): String? {
         return if (landKodeTable[alpha2] == null) {
-            logger.error("Finner ikke landkode for $alpha2, sjekk om ny landkoder.txt må lastes ned.")
+            logger.error("Finner ikke landkode for $alpha2, sjekk om nye landkoder.txt må lastes ned.")
             null
         } else {
             landKodeTable[alpha2]?.alpha3
@@ -72,7 +72,7 @@ class LandkodeService {
 
     fun finnLandkode2(alpha3: String): String? {
         return if (landKodeTable[alpha3] == null) {
-            logger.error("Finner ikke landkode for $alpha3, sjekk om ny landkoder.txt må lastes ned.")
+            logger.error("Finner ikke landkode for $alpha3, sjekk om nye landkoder.txt må lastes ned.")
             null
         } else {
             landKodeTable[alpha3]?.alpha2

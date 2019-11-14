@@ -67,7 +67,7 @@ class BucController(private val euxService: EuxService,
     @GetMapping("/{rinanr}/creator/countryCode")
     fun getCreatorCountryCode(@PathVariable(value = "rinanr", required = true) rinanr: String): String? {
 
-        logger.debug("Henter ut CountryCode på Creator på valgt Buc")
+        logger.debug("Henter ut CountryCode for Creator på valgt Buc")
         return mapAnyToJson(BucUtils(euxService.getBuc(rinanr)).getCreatorContryCode())
     }
 
@@ -91,7 +91,7 @@ class BucController(private val euxService: EuxService,
     @ApiOperation("Henter opp mulige aksjon(er) som kan utføres på valgt buc")
     @GetMapping("/{rinanr}/aksjoner")
     fun getMuligeAksjoner(@PathVariable(value = "rinanr", required = true) rinanr: String): List<String> {
-        logger.debug("Henter ut muligeaksjoner på valgt buc ${rinanr}")
+        logger.debug("Henter ut muligeaksjoner på valgt buc med rinanummer: $rinanr")
 
         return BucUtils(euxService.getBuc(rinanr)).getAksjonListAsString()
     }
@@ -113,7 +113,7 @@ class BucController(private val euxService: EuxService,
                         @PathVariable("sakid", required = false) sakid: String? = "",
                         @PathVariable("euxcaseid", required = false) euxcaseid: String? = ""): List<BucAndSedView> {
         auditlogger.log("getBucogSedView", aktoerid)
-        logger.debug(" prøver å dekode til fnr fra aktoerid: $aktoerid")
+        logger.debug("Prøver å dekode aktoerid: $aktoerid til fnr.")
 
         val fnr = aktoerIdHelper.hentPinForAktoer(aktoerid)
         val rinaSakIderFraDokumentMetadata = safService.hentRinaSakIderFraDokumentMetadata(aktoerid)
@@ -126,7 +126,7 @@ class BucController(private val euxService: EuxService,
     @GetMapping("/enkeldetalj/{euxcaseid}")
     fun getSingleBucogSedView(@PathVariable("euxcaseid", required = true) euxcaseid: String): BucAndSedView {
         auditlogger.log("getSingleBucogSedView")
-        logger.debug(" prøver å hente en enkel buc på : $euxcaseid")
+        logger.debug(" prøver å hente ut en enkel buc med euxCaseId: $euxcaseid")
 
         return euxService.getSingleBucAndSedView(euxcaseid)
     }

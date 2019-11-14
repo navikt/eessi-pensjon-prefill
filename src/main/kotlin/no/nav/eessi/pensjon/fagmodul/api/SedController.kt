@@ -66,7 +66,7 @@ class SedController(private val euxService: EuxService,
                     @PathVariable("documentid", required = true) documentid: String): SED {
         auditlogger.logBuc("getDocument", " euxCaseId: $euxcaseid documentId: $documentid")
 
-        logger.info("kaller /${euxcaseid}/${documentid} ")
+        logger.info("Kaller /${euxcaseid}/${documentid} ")
         return euxService.getSedOnBucByDocumentId(euxcaseid, documentid)
 
     }
