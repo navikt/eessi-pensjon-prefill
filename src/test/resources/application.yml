@@ -68,4 +68,4 @@ kafka:
     topic: eessi-basis-sedMottatt-v1
     groupid: eessi-pensjon-fagmodul-group
 
-
+requestsamlpolicy.path: "classpath:policy/requestSamlPolicy.xml"
