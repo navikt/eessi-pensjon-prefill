@@ -16,14 +16,12 @@
     <logger name="org" level="INFO"/>
     <logger name="com" level="INFO"/>
     <logger name="no.nav" level="DEBUG"/>
-    <logger name="no.nav.security" level="INFO"/>
-    <logger name="no.nav.eessi" level="DEBUG"/>
+    <logger name="no.nav.security" level="INFO"/>    <logger name="no.nav.eessi" level="DEBUG"/>
     <logger name="auditLogger" level="INFO" additivity="false">
         <appender-ref ref="auditLogger" />
     </logger>
     <root level="DEBUG">
         <appender-ref ref="stdout" />
     </root>
-
 
 </configuration>
