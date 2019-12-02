@@ -344,7 +344,7 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
     }
 
     fun getFilteredArchivedaRinasaker(list: List<Rinasak>): List<String> {
-        val gyldigBucs = mutableListOf("H_BUC_07", "R_BUC_01", "R_BUC_02", "M_BUC_02", "M_BUC_3a","M_BUC_3b")
+        val gyldigBucs = mutableListOf("H_BUC_07", "R_BUC_01", "R_BUC_02", "M_BUC_02", "M_BUC_03a","M_BUC_03b")
         gyldigBucs.addAll(initSedOnBuc().keys.map { it }.toList())
 
         return list.filterNot { rinasak -> rinasak.status == "archived" }
