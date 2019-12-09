@@ -353,7 +353,7 @@ internal class PrefillNavTest {
                     fornavn = fornavn,
                     kjoenn = "M",
                     foedselsdato = fdato,
-                    fornavnvedfoedsel = fornavn)
+                    fornavnvedfoedsel = null)
 
     private fun lagTPSBruker(foreldersPin: String, fornavn: String, etternavn: String) =
             no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker()
