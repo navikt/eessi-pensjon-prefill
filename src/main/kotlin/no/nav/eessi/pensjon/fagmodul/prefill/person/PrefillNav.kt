@@ -336,7 +336,8 @@ class PrefillNav(private val brukerFromTPS: BrukerFromTPS,
                 //2.1.4     //sex
                 kjoenn = mapKjonn(brukerTps.kjoenn),
                 //2.1.6
-                fornavnvedfoedsel = createFornavnMellomNavn(brukerTps.personnavn),
+                fornavnvedfoedsel = null,
+                //fornavnvedfoedsel = createFornavnMellomNavn(brukerTps.personnavn),
                 //fornavnvedfoedsel = (brukerTps.personnavn as Personnavn).fornavn,
                 //2.1.7
                 pin = createPersonPinNorIdent(brukerTps, institutionid, institutionnavn),
