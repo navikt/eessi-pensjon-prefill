@@ -45,7 +45,7 @@ class PrefillP6000Pensjon_GJENLEV_Test {
         assertEquals("2018-05-01", beregning?.periode?.fom)
         assertEquals(null, beregning?.periode?.tom)
         assertEquals("NOK", beregning?.valuta)
-        assertEquals("03", beregning?.utbetalingshyppighet)
+        assertEquals("maaned_12_per_aar", beregning?.utbetalingshyppighet)
 
         assertEquals("5248", beregning?.beloepBrutto?.beloep)
         assertEquals("3519", beregning?.beloepBrutto?.ytelseskomponentGrunnpensjon)
@@ -86,7 +86,7 @@ class PrefillP6000Pensjon_GJENLEV_Test {
         assertEquals("2018-05-01", beregning?.periode?.fom)
         assertEquals(null, beregning?.periode?.tom)
         assertEquals("NOK", beregning?.valuta)
-        assertEquals("03", beregning?.utbetalingshyppighet)
+        assertEquals("maaned_12_per_aar", beregning?.utbetalingshyppighet)
 
         assertEquals("6766", beregning?.beloepBrutto?.beloep)
         assertEquals("4319", beregning?.beloepBrutto?.ytelseskomponentGrunnpensjon)

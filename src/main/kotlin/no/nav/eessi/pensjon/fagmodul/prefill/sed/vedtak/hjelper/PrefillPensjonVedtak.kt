@@ -346,6 +346,7 @@ object PrefillPensjonVedtak {
         logger.debug("4.1.7         BeregningItem (Repeterbart)")
 
         //val belop = ytelsePrMnd.belop.toString()
+        //4.1.[1].7.[2].5
 
         return BeregningItem(
                 //4.1.7.1 -- 4.1.7.2
@@ -372,7 +373,7 @@ object PrefillPensjonVedtak {
                 valuta = "NOK",
 
                 //4.1.7.5              //03 - montly 12/year
-                utbetalingshyppighet = "03", //TODO "03" skal være korrekte!!
+                utbetalingshyppighet = "maaned_12_per_aar",
 
                 //4.1.7.6.1     - Nei
                 utbetalingshyppighetAnnen = null

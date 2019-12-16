@@ -57,7 +57,7 @@ class PrefillP6000Pensjon_ALDER_Test {
         assertEquals(null, beregning?.periode?.tom)
         assertEquals("NOK", beregning?.valuta)
         assertEquals("2017-05-01", beregning?.periode?.fom)
-        assertEquals("03", beregning?.utbetalingshyppighet)
+        assertEquals("maaned_12_per_aar", beregning?.utbetalingshyppighet)
         assertEquals("11831", beregning?.beloepBrutto?.beloep)
         assertEquals("2719", beregning?.beloepBrutto?.ytelseskomponentGrunnpensjon)
         assertEquals("8996", beregning?.beloepBrutto?.ytelseskomponentTilleggspensjon)
