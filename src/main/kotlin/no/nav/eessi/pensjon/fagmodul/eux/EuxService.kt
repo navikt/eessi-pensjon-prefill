@@ -177,14 +177,16 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
                 , "SedByDocumentId"
                 , "Feil ved henting av Sed med DocId: $documentId"
         )
-        return  response.body ?: throw SedDokumentIkkeLestException("Feiler ved lesing av navSED, feiler ved uthenting av SED")
+        return  response.body ?: {
+            logger.error("Feiler ved lasting av navSed: ${builder.toUriString()}")
+            throw SedDokumentIkkeLestException("Feiler ved lesing av navSED, feiler ved uthenting av SED")
+        }()
     }
 
     @Throws(EuxServerException::class, SedDokumentIkkeLestException::class)
     fun getSedOnBucByDocumentId(euxCaseId: String, documentId: String): SED {
         val json = getSedOnBucByDocumentIdAsJson(euxCaseId, documentId)
         return SED.fromJson(json)
-        //return mapJsonToAny(json, typeRefs())
     }
 
     //val benytt denne for å hente ut PESYS sakid (P2000,P2100,P2200,P6000)
@@ -229,7 +231,9 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
                 ,"getbuc"
                 ,"Feiler ved metode GetBuc. "
         )
-        return mapJsonToAny(response.body ?: throw ServerException("Feil med Buc mapping, euxCaseId $euxCaseId"), typeRefs())
+        return mapJsonToAny(response.body ?: {
+            logger.error("Feil med mapping euxCaseId $euxCaseId")
+            throw ServerException("Feil med Buc mapping, euxCaseId $euxCaseId")}(), typeRefs())
     }
 
     /**
@@ -475,7 +479,8 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
             ,"createBuc"
             ,"Opprett Buc, "
         )
-        response.body?.let { return it } ?: throw IkkeFunnetException("Fant ikke noen euxCaseId")
+        response.body?.let { return it } ?: { logger.error("Får ikke opprettet BUC på bucType: $bucType")
+            throw IkkeFunnetException("Fant ikke noen euxCaseId på bucType: $bucType")}()
     }
 
     fun convertListInstitusjonItemToString(deltakere: List<InstitusjonItem>): String {
