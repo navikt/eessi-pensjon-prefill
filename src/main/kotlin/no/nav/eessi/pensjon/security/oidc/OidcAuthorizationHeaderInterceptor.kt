@@ -41,11 +41,11 @@ class OidcAuthorizationHeaderInterceptor(private val oidcRequestContextHolder: O
         logger.debug("Found : ${tokenkeys.size} valid issuers")
 
         val found = mutableListOf<TokenContext>()
-        var token: TokenContext ?= null
+        var token: TokenContext? = null
         tokenkeys.forEach {
             token = context.getToken(it)
             if (token != null) {
-                logger.debug("Found token on issuer: $it with token: ${token}")
+                logger.debug("Found token on issuer: $it")
                 found.add(token!!)
             }
         }
@@ -75,7 +75,7 @@ class OidcAuthorizationHeaderInterceptor(private val oidcRequestContextHolder: O
             }
 
         }
-        logger.debug("Returning following issuer: ${longest.issuer}, exp: ${longestExpirationTime},\ntoken: ${longest.idToken}")
+        logger.debug("Returning following issuer: ${longest.issuer}, exp: ${longestExpirationTime}")
         return longest
     }
 

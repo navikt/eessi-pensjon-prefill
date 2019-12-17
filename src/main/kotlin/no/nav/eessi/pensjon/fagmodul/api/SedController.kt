@@ -89,7 +89,7 @@ class SedController(private val euxService: EuxService,
         auditlogger.log("addInstutionAndDocument", request.aktoerId ?: "", request.toAudit())
         val dataModel = ApiRequest.buildPrefillDataModelOnExisting(request, aktoerIdHelper.hentPinForAktoer(request.aktoerId), getAvdodAktoerId(request))
 
-        logger.info("kaller add (institutions and sed) rinaId: ${request.euxCaseId} bucType: ${request.buc} aktoerId: ${request.aktoerId}")
+        logger.info("kaller add (institutions and sed) rinaId: ${request.euxCaseId} bucType: ${request.buc} sedType: ${request.sed} aktoerId: ${request.aktoerId}")
         logger.debug("Prøver å legge til Deltaker/Institusions på buc samt prefillSed og sende inn til Rina ")
         val bucUtil = BucUtils(euxService.getBuc(dataModel.euxCaseID))
         val nyeDeltakere = bucUtil.findNewParticipants(dataModel.getInstitutionsList())
