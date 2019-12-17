@@ -135,7 +135,7 @@ class BucController(private val euxService: EuxService,
     @PostMapping("/{buctype}")
     fun createBuc(@PathVariable("buctype", required = true) buctype: String): BucAndSedView {
         auditlogger.log("createBuc")
-        logger.debug("Prøver å opprette en ny BUC i RINA av type: $buctype")
+        logger.info("Prøver å opprette en ny BUC i RINA av type: $buctype")
 
         //rinaid
         val euxCaseId = euxService.createBuc(buctype)

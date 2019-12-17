@@ -6,10 +6,7 @@ import com.tngtech.archunit.core.domain.JavaClass
 import com.tngtech.archunit.core.domain.JavaClasses
 import com.tngtech.archunit.core.importer.ClassFileImporter
 import com.tngtech.archunit.core.importer.ImportOption
-import com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes
-import com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses
-import com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noFields
-import com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noMethods
+import com.tngtech.archunit.lang.syntax.ArchRuleDefinition.*
 import com.tngtech.archunit.library.Architectures.layeredArchitecture
 import com.tngtech.archunit.library.dependencies.SlicesRuleDefinition.slices
 import no.nav.eessi.pensjon.EessiFagmodulApplication
@@ -38,14 +35,14 @@ class ArchitectureTest {
             allClasses = ClassFileImporter().importPackages(root)
 
             assertTrue(allClasses.size > 200, "Sanity check on no. of classes to analyze")
-            assertTrue(allClasses.size < 800, "Sanity check on no. of classes to analyze")
+            assertTrue(allClasses.size < 850, "Sanity check on no. of classes to analyze")
 
             productionClasses = ClassFileImporter()
                     .withImportOption(ImportOption.DoNotIncludeTests())
                     .importPackages(root)
 
             assertTrue(productionClasses.size > 200, "Sanity check on no. of classes to analyze")
-            assertTrue(productionClasses.size < 800, "Sanity check on no. of classes to analyze")
+            assertTrue(productionClasses.size < 850, "Sanity check on no. of classes to analyze")
 
             testClasses = ClassFileImporter()
                     .withImportOption{ !ImportOption.DoNotIncludeTests().includes(it) }

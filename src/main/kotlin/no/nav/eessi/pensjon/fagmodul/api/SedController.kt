@@ -66,7 +66,7 @@ class SedController(private val euxService: EuxService,
                     @PathVariable("documentid", required = true) documentid: String): SED {
         auditlogger.logBuc("getDocument", " euxCaseId: $euxcaseid documentId: $documentid")
 
-        logger.info("Kaller /${euxcaseid}/${documentid} ")
+        logger.info("Prøver å kalle getDocument for /${euxcaseid}/${documentid} ")
         return euxService.getSedOnBucByDocumentId(euxcaseid, documentid)
 
     }
@@ -89,7 +89,7 @@ class SedController(private val euxService: EuxService,
         auditlogger.log("addInstutionAndDocument", request.aktoerId ?: "", request.toAudit())
         val dataModel = ApiRequest.buildPrefillDataModelOnExisting(request, aktoerIdHelper.hentPinForAktoer(request.aktoerId), getAvdodAktoerId(request))
 
-        logger.info("kaller add (institutions and sed)")
+        logger.info("kaller add (institutions and sed) rinaId: ${request.euxCaseId} bucType: ${request.buc} aktoerId: ${request.aktoerId}")
         logger.debug("Prøver å legge til Deltaker/Institusions på buc samt prefillSed og sende inn til Rina ")
         val bucUtil = BucUtils(euxService.getBuc(dataModel.euxCaseID))
         val nyeDeltakere = bucUtil.findNewParticipants(dataModel.getInstitutionsList())
@@ -97,11 +97,11 @@ class SedController(private val euxService: EuxService,
             logger.debug("DeltakerListe (InstitusjonItem) size: ${nyeDeltakere.size}")
             val bucX005 = bucUtil.findFirstDocumentItemByType("X005")
             if (bucX005 == null) {
-                logger.debug("X005 finnes ikke på buc, legger til Deltakere/Institusjon på vanlig måte")
+                logger.info("X005 finnes ikke på buc, legger til Deltakere/Institusjon på vanlig måte")
                 //kaste Exception dersom legge til deltakerfeiler?
                 euxService.putBucMottakere(dataModel.euxCaseID, nyeDeltakere)
             } else {
-                logger.debug("X005 finnes på buc, Sed X005 prefills og sendes inn")
+                logger.info("X005 finnes på buc, Sed X005 prefills og sendes inn")
                 val x005Liste = prefillService.prefillEnX005ForHverInstitusjon(nyeDeltakere, dataModel)
                 x005Liste.forEach { x005 -> euxService.opprettSedOnBuc(x005.sed, x005.euxCaseID) }
             }
@@ -109,6 +109,7 @@ class SedController(private val euxService: EuxService,
         val data = prefillService.prefillSed(dataModel)
         logger.debug("Prøver å sende SED:${dataModel.getSEDid()} inn på buc: ${dataModel.euxCaseID}")
         val docresult = euxService.opprettSedOnBuc(data.sed, data.euxCaseID)
+        logger.info("Opprettet ny SED med dokumentId: ${docresult.documentId}")
         return BucUtils(euxService.getBuc(docresult.caseId)).findDocument(docresult.documentId)
 
     }

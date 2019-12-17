@@ -861,7 +861,6 @@ class EuxServiceTest {
 
     }
 
-
     @Test
     fun `Tester og evaluerer om require statement blir oppfylt`() {
         assertThrows<IllegalArgumentException> { dummyRequirement(null, null) }
@@ -883,15 +882,12 @@ class EuxServiceTest {
 
     }
 
-
-
     @Test
     fun `filter ut gyldig sed fra json sedDocument tom liste`() {
         val expected = listOf<Pair<String,String>>()
         val actual = service.filterUtGyldigSedId("[]")
         assertEquals(expected, actual)
     }
-
 
     private fun dummyRequirement(dummyparam1: String?, dummyparam2: String?): Boolean{
         require(!(dummyparam1 == null && dummyparam2 == null)) { "Minst et søkekriterie må fylles ut for å få et resultat fra Rinasaker" }
