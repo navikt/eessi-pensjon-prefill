@@ -153,10 +153,10 @@ class ArchitectureTest {
 
                 .whereLayer(health).mayNotBeAccessedByAnyLayer()
 
-                .whereLayer(arkivApi).mayNotBeAccessedByAnyLayer()
+                .whereLayer(arkivApi).mayOnlyBeAccessedByLayers(metrics)
                 .whereLayer(geoApi).mayNotBeAccessedByAnyLayer()
-                .whereLayer(personApi).mayNotBeAccessedByAnyLayer()
-                .whereLayer(pensjonApi).mayNotBeAccessedByAnyLayer()
+                .whereLayer(personApi).mayOnlyBeAccessedByLayers(metrics)
+                .whereLayer(pensjonApi).mayOnlyBeAccessedByLayers(metrics)
 
                 .whereLayer(pensjonUtlandApi).mayNotBeAccessedByAnyLayer()
                 .whereLayer(bucSedApi).mayNotBeAccessedByAnyLayer()
