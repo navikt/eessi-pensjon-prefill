@@ -380,7 +380,7 @@ class PrefillNav(private val brukerFromTPS: BrukerFromTPS,
                                 )
                         ),
                         fornavn = navntps.fornavn,
-                        etternavnvedfoedsel = if (RelasjonEnum.MOR.erSamme(tpsvalue)) null else navntps.etternavn
+                        etternavnvedfoedsel = null //if (RelasjonEnum.MOR.erSamme(tpsvalue)) null else navntps.etternavn
                 )
                 return Foreldre(person = relasjonperson)
             }

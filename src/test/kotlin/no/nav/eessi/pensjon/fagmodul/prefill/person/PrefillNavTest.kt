@@ -104,7 +104,7 @@ internal class PrefillNavTest {
                         mor = null,
                         far = Foreldre(Person(
                                 fornavn = "Ole",
-                                etternavnvedfoedsel = "Brum",
+                                etternavnvedfoedsel = null,
                                 pin = listOf( PinItem(identifikator = somePersonNr, land = "NO", institusjonsid = "enInstId", institusjonsnavn = "instNavn")))),
                         person = lagPerson(someBarnPersonNr, "Nasse", "Nøff"), relasjontilbruker = "BARN")))
 
