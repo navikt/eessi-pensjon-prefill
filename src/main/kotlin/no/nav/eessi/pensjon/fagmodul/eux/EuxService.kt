@@ -2,7 +2,7 @@ package no.nav.eessi.pensjon.fagmodul.eux
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.google.common.base.Preconditions
-import io.micrometer.core.instrument.Metrics
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.BucSedResponse
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Rinasak
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Vedlegg
@@ -13,10 +13,12 @@ import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Krav
 import no.nav.eessi.pensjon.fagmodul.sedmodel.PinItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
+import no.nav.eessi.pensjon.metrics.MetricsHelper
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
 import no.nav.eessi.pensjon.utils.typeRefs
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Description
 import org.springframework.http.*
 import org.springframework.stereotype.Service
@@ -34,7 +36,8 @@ import kotlin.streams.toList
 
 @Service
 @Description("Service class for EuxBasis - eux-cpi-service-controller")
-class EuxService(private val euxOidcRestTemplate: RestTemplate) {
+class EuxService(private val euxOidcRestTemplate: RestTemplate,
+                 @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper(SimpleMeterRegistry())) {
 
     // Vi trenger denne no arg konstruktøren for å kunne bruke @Spy med mockito
     constructor() : this(RestTemplate())
@@ -42,10 +45,6 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
     private val logger = LoggerFactory.getLogger(EuxService::class.java)
 
     private val mapper = jacksonObjectMapper()
-
-    private val fdatoService = FdatoService(this)
-
-    private val fnrService = FnrService(this)
 
     // https://eux-app.nais.preprod.local/swagger-ui.html#/eux-cpi-service-controller/
 
@@ -639,16 +638,6 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
         return pingResult.statusCode == HttpStatus.OK
     }
 
-    //flyttes til journal
-    fun getFDatoFromSed(euxCaseId: String, bucType: String): String? {
-        return fdatoService.getFDatoFromSed(euxCaseId, bucType)
-    }
-
-    //flyttes til journal
-    fun getFodselsnrFraSedPaaVagtBuc(euxCaseId: String, bucType: String): String? {
-        return fnrService.getFodselsnrFraSedPaaVagtBuc(euxCaseId, bucType)
-    }
-
     fun filterUtGyldigSedId(sedJson: String?): List<Pair<String, String>> {
         val validSedtype = listOf("P2000","P2100","P2200","P1000",
                 "P5000","P6000","P7000", "P8000",
@@ -707,40 +696,35 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate) {
     }
 
     fun <T> restTemplateErrorhandler(restTemplateFunction: () -> ResponseEntity<T>, euxCaseId: String, metricName: String, prefixErrorMessage: String): ResponseEntity<T> {
-        return try {
-            Metrics.timer("eessipensjon_fagmodul.$metricName", "type", "timer","api","eux-rina-api", "service","fagmodul-eux").recordCallable {
-                val response = restTemplateFunction.invoke()
-                Metrics.counter("eessipensjon_fagmodul.$metricName", "type", "vellykkede", "status", response.statusCode.name, "exception", "").increment()
-                response
+        return metricsHelper.measure(metricName) {
+            return@measure try {
+                    val response = restTemplateFunction.invoke()
+                    response
+            } catch (hcee: HttpClientErrorException) {
+                val errorBody = hcee.responseBodyAsString
+                logger.error("$prefixErrorMessage, HttpClientError med euxCaseID: $euxCaseId, body: $errorBody")
+                when (hcee.statusCode) {
+                    HttpStatus.UNAUTHORIZED -> throw RinaIkkeAutorisertBrukerException("Authorization token required for Rina,")
+                    HttpStatus.FORBIDDEN -> throw ForbiddenException("Forbidden, Ikke tilgang")
+                    HttpStatus.NOT_FOUND -> throw IkkeFunnetException("Ikke funnet")
+                    else -> throw GenericUnprocessableEntity("Uoppdaget feil har oppstått!!, $errorBody")
+                }
+            } catch (hsee: HttpServerErrorException) {
+                val errorBody = hsee.responseBodyAsString
+                logger.error("$prefixErrorMessage, HttpServerError med euxCaseID: $euxCaseId, feilkode body: $errorBody", hsee)
+                when (hsee.statusCode) {
+                    HttpStatus.INTERNAL_SERVER_ERROR -> throw EuxRinaServerException("Rina serverfeil, kan også skyldes ugyldig input, $errorBody")
+                    HttpStatus.GATEWAY_TIMEOUT -> throw GatewayTimeoutException("Venting på respons fra Rina resulterte i en timeout, $errorBody")
+                    else -> throw GenericUnprocessableEntity("Uoppdaget feil har oppstått!!, $errorBody")
+                }
+            } catch (uhsce: UnknownHttpStatusCodeException) {
+                val errorBody = uhsce.responseBodyAsString
+                logger.error("$prefixErrorMessage, med euxCaseID: $euxCaseId errmessage: $errorBody", uhsce)
+                throw GenericUnprocessableEntity("Ukjent statusefeil, $errorBody")
+            } catch (ex: Exception) {
+                logger.error("$prefixErrorMessage, med euxCaseID: $euxCaseId", ex)
+                throw ServerException("Ukjent Feil oppstod euxCaseId: $euxCaseId,  ${ex.message}")
             }
-       } catch (hcee: HttpClientErrorException) {
-            val errorBody = hcee.responseBodyAsString
-            Metrics.counter("eessipensjon_fagmodul.$metricName", "type", "feilede", "status", hcee.statusCode.name,  "exception", hcee.message).increment()
-            logger.error("$prefixErrorMessage, HttpClientError med euxCaseID: $euxCaseId, body: $errorBody")
-            when (hcee.statusCode) {
-                HttpStatus.UNAUTHORIZED -> throw RinaIkkeAutorisertBrukerException("Authorization token required for Rina,")
-                HttpStatus.FORBIDDEN -> throw ForbiddenException("Forbidden, Ikke tilgang")
-                HttpStatus.NOT_FOUND -> throw IkkeFunnetException("Ikke funnet")
-                else -> throw GenericUnprocessableEntity("Uoppdaget feil har oppstått!!, $errorBody")
-            }
-        } catch (hsee: HttpServerErrorException) {
-            val errorBody = hsee.responseBodyAsString
-            Metrics.counter("eessipensjon_fagmodul.$metricName", "type", "feilede", "status", hsee.statusCode.name, "exception", hsee.message).increment()
-            logger.error("$prefixErrorMessage, HttpServerError med euxCaseID: $euxCaseId, feilkode body: $errorBody", hsee)
-            when (hsee.statusCode) {
-                HttpStatus.INTERNAL_SERVER_ERROR -> throw EuxRinaServerException("Rina serverfeil, kan også skyldes ugyldig input, $errorBody")
-                HttpStatus.GATEWAY_TIMEOUT -> throw GatewayTimeoutException("Venting på respons fra Rina resulterte i en timeout, $errorBody")
-                else -> throw GenericUnprocessableEntity("Uoppdaget feil har oppstått!!, $errorBody")
-            }
-        } catch (uhsce: UnknownHttpStatusCodeException) {
-            val errorBody = uhsce.responseBodyAsString
-            Metrics.counter("eessipensjon_fagmodul.$metricName", "type", "feilede", "status", "unknown", "exception", uhsce.message).increment()
-            logger.error("$prefixErrorMessage, med euxCaseID: $euxCaseId errmessage: $errorBody", uhsce)
-            throw GenericUnprocessableEntity("Ukjent statusefeil, $errorBody")
-        } catch (ex: Exception) {
-            Metrics.counter("eessipensjon_fagmodul.$metricName", "type", "feilede", "status", "unknown", "exception", ex.message).increment()
-            logger.error("$prefixErrorMessage, med euxCaseID: $euxCaseId", ex)
-            throw ServerException("Ukjent Feil oppstod euxCaseId: $euxCaseId,  ${ex.message}")
         }
     }
 

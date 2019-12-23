@@ -3,7 +3,6 @@ package no.nav.eessi.pensjon.fagmodul.api
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.nhaarman.mockitokotlin2.*
 import no.nav.eessi.pensjon.fagmodul.eux.EuxService
-import no.nav.eessi.pensjon.fagmodul.eux.IkkeFunnetException
 import no.nav.eessi.pensjon.fagmodul.eux.PinOgKrav
 import no.nav.eessi.pensjon.fagmodul.eux.SedDokumentIkkeOpprettetException
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.BucSedResponse
@@ -35,8 +34,6 @@ import org.mockito.Spy
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.http.ResponseEntity
 import org.springframework.web.util.UriComponentsBuilder
-import java.nio.file.Files
-import java.nio.file.Paths
 
 @ExtendWith(MockitoExtension::class)
 class SedControllerTest {
@@ -519,64 +516,4 @@ class SedControllerTest {
                 aktoerId = "0105094340092"
         )
     }
-
-
-    @Test
-    fun `Gitt At fDato BlirFunnetForEnGittBuc medRinanr saa returnerer vi Fdato med melding og Statuskode OK`() {
-
-        val buctype = "P_BUC_01"
-        val euxCaseId = "123456"
-
-        val sedPath = "src/test/resources/json/nav/P2000_NAV_SED_v4_1.json"
-        val sedJson = String(Files.readAllBytes(Paths.get(sedPath)))
-
-        val bucPath = "src/test/resources/json/buc/buc-158123_2_v4.1.json"
-        val bucJson = String(Files.readAllBytes(Paths.get(bucPath)))
-        val buc = mapJsonToAny(bucJson, typeRefs<Buc>())
-
-        doReturn(buc).whenever(mockEuxService).getBuc(any())
-        doReturn(sedJson).whenever(mockEuxService).getSedOnBucByDocumentIdAsJson(any(), any())
-
-        val response = sedController.getFodselsdato(euxCaseId,buctype)
-
-        assertEquals(response, "1948-06-28")
-    }
-
-    @Test
-    fun `Gitt At fDato Blir Funnet For En Gitt Buc Med Rinanr Saa Returnerer Vi Fdato Med Melding Og Statuskode Feil`() {
-
-        val buctype = "P_BUC_01"
-        val euxCaseId = "123456"
-
-        val bucPath = "src/test/resources/json/buc/buc-239200_buc02_v4.1.json"
-        val bucJson = String(Files.readAllBytes(Paths.get(bucPath)))
-        val buc = mapJsonToAny(bucJson, typeRefs<Buc>())
-
-        doReturn(buc).whenever(mockEuxService).getBuc(any())
-
-        assertThrows<IkkeFunnetException> {
-            sedController.getFodselsdato(euxCaseId, buctype)
-        }
-    }
-
-//    @Test
-//    fun testFilterOnKeyvaluesOnwantedSed ()  {
-//
-//        val rinaSeds = listOf("P2100","H120","H070","H021","X005","P3000_NO")
-//        assertEquals(4, sedController.sortAndFilterSeds(rinaSeds).size)
-//
-//
-//        val riktigListe = rinaSeds.map { wsed -> listOfWantedKeys.filter { wsed.startsWith(it) } }
-//        println(riktigListe)
-//
-//    }
-//
-//    fun dummySort(list: List<String>): List<String> {
-//        return list.filter {
-//            it.startsWith("P" )
-//                    .or(it.startsWith("H12")
-//                    .or(it.startsWith("H07")
-//                    .or(it.startsWith("H02"))))
-//        }.filterNot { it.startsWith("P3000") }.sorted()
-//    }
 }
