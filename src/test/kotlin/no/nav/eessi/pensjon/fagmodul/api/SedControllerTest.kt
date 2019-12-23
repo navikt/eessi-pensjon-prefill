@@ -516,26 +516,4 @@ class SedControllerTest {
                 aktoerId = "0105094340092"
         )
     }
-
-
-//    @Test
-//    fun testFilterOnKeyvaluesOnwantedSed ()  {
-//
-//        val rinaSeds = listOf("P2100","H120","H070","H021","X005","P3000_NO")
-//        assertEquals(4, sedController.sortAndFilterSeds(rinaSeds).size)
-//
-//
-//        val riktigListe = rinaSeds.map { wsed -> listOfWantedKeys.filter { wsed.startsWith(it) } }
-//        println(riktigListe)
-//
-//    }
-//
-//    fun dummySort(list: List<String>): List<String> {
-//        return list.filter {
-//            it.startsWith("P" )
-//                    .or(it.startsWith("H12")
-//                    .or(it.startsWith("H07")
-//                    .or(it.startsWith("H02"))))
-//        }.filterNot { it.startsWith("P3000") }.sorted()
-//    }
 }

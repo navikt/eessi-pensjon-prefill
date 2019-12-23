@@ -16,7 +16,6 @@ import no.nav.eessi.pensjon.utils.toJson
 import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
 import no.nav.security.oidc.api.Protected
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -25,7 +24,7 @@ import org.springframework.web.bind.annotation.*
 @Protected
 @RestController
 @RequestMapping("/sed")
-class SedController(@Autowired private val euxService: EuxService,
+class SedController(private val euxService: EuxService,
                     private val prefillService: PrefillService,
                     private val aktoerIdHelper: AktoerIdHelper,
                     private val auditlogger: AuditLogger) {
