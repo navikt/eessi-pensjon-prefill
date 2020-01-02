@@ -306,13 +306,13 @@ class SedControllerTest {
                 ActionsItem(name = "Create", documentType = "X005"),
                 ActionsItem(name = "Create", documentType = "P2200"),
                 ActionsItem(name = "Create", documentType = "P3000_SE"),
-                ActionsItem(name = "Create", documentType = "P3000_NO")
+                ActionsItem(name = "Create", documentType = "P3000_AT")
         )
         doReturn(mockCreateSedType).whenever(mockBuc).actions
 
         doReturn(mockBuc).whenever(mockEuxService).getBuc(rinanr)
 
-        val expectedSedList = ResponseEntity.ok().body(mapAnyToJson( listOf("P2200", "P6000")))
+        val expectedSedList = ResponseEntity.ok().body(mapAnyToJson( listOf("P2200", "P3000_AT", "P3000_SE", "P6000")))
 
         val generatedResponse = sedController.getSeds(buc, rinanr)
 
@@ -320,7 +320,7 @@ class SedControllerTest {
 
         val json = generatedResponse.body!!
         val validSedListforBuc = mapJsonToAny(json, typeRefs<List<String>>())
-        assertEquals(2, validSedListforBuc.size)
+        assertEquals(4, validSedListforBuc.size)
     }
 
     @Test

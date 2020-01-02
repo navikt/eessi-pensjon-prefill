@@ -44,16 +44,21 @@ class PrefillFactoryParameterizedTest {
             return listOf(
                     arrayOf(1, "P2000", "PrefillP2000"),
                     arrayOf(2, "H020", "PrefillH02X"),
-                    arrayOf(2, "H021", "PrefillH02X"),
-                    arrayOf(2, "X005", "PrefillX005"),
-                    arrayOf(2, "P2000", "PrefillP2000"),
-                    arrayOf(2, "P2200", "PrefillP2200"),
-                    arrayOf(2, "P2100", "PrefillP2100"),
-                    arrayOf(2, "P5000", "PrefillDefaultSED"),
-                    arrayOf(2, "P4000", "PrefillP4000"),
-                    arrayOf(2, "P8000", "PrefillP8000"),
-                    arrayOf(2, "P7000", "PrefillP7000"),
-                    arrayOf(2, "P10000", "PrefillP10000")
+                    arrayOf(3, "H021", "PrefillH02X"),
+                    arrayOf(4, "X005", "PrefillX005"),
+                    arrayOf(5, "P2000", "PrefillP2000"),
+                    arrayOf(6, "P2200", "PrefillP2200"),
+                    arrayOf(7, "P2100", "PrefillP2100"),
+                    arrayOf(8, "P5000", "PrefillDefaultSED"),
+                    arrayOf(9, "P4000", "PrefillP4000"),
+                    arrayOf(10, "P8000", "PrefillP8000"),
+                    arrayOf(11, "P7000", "PrefillP7000"),
+                    arrayOf(12, "P10000", "PrefillP10000"),
+                    arrayOf(13, "P3000_UK", "PrefillDefaultSED"),
+                    arrayOf(14, "P3000_SE", "PrefillDefaultSED"),
+                    arrayOf(15, "P1100", "PrefillDefaultSED"),
+                    arrayOf(16, "P13000", "PrefillDefaultSED"),
+                    arrayOf(17, "P12000", "PrefillDefaultSED")
             )
         }
     }
@@ -61,8 +66,8 @@ class PrefillFactoryParameterizedTest {
     @ParameterizedTest
     @MethodSource("collection data")
     fun `create mock and validate prefill class` (index: Int, sedtype: String, prefillClassName: String) {
-        val prefill = prefillFactory.createPrefillClass(getMockDataModel(sedtype))
-        Assertions.assertEquals(prefillClassName, prefill::class.java.simpleName)
+        val prefillClass = prefillFactory.createPrefillClass(getMockDataModel(sedtype))
+        Assertions.assertEquals(prefillClassName, prefillClass::class.java.simpleName)
     }
 
     private fun getMockDataModel(sedType: String): PrefillDataModel {
