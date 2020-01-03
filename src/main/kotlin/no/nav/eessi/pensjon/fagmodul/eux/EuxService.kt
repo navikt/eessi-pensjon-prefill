@@ -40,57 +40,13 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate,
                  @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper(SimpleMeterRegistry())) {
 
     // Vi trenger denne no arg konstruktøren for å kunne bruke @Spy med mockito
-    constructor() : this(RestTemplate())
+    constructor() : this(RestTemplate(), MetricsHelper(SimpleMeterRegistry()))
 
     private val logger = LoggerFactory.getLogger(EuxService::class.java)
 
     private val mapper = jacksonObjectMapper()
 
     // https://eux-app.nais.preprod.local/swagger-ui.html#/eux-cpi-service-controller/
-
-    //Oppretter ny RINA sak(type) og en ny Sed
-    @Throws(EuxServerException::class, EuxRinaServerException::class)
-    //Denne utgår? da vi nå oppretter BUC for så å opprette Sed?
-    fun opprettBucSed(navSED: SED, bucType: String, mottakerid: String, fagSaknr: String): BucSedResponse {
-        Preconditions.checkArgument(mottakerid.contains(":"), "format for mottaker er NN:ID")
-
-        val path = "/buc/sed"
-        val builder = UriComponentsBuilder.fromPath(path)
-                .queryParam("BucType", bucType)
-                .queryParam("MottakerId", mottakerid)
-                .queryParam("FagSakNummer", fagSaknr)
-
-        val headers = HttpHeaders()
-        headers.contentType = MediaType.APPLICATION_JSON
-        val httpEntity = HttpEntity(navSED.toJsonSkipEmpty(), headers)
-
-        try {
-            logger.info("Prøver å kontakte EUX: /${builder.toUriString()}")
-            val response = euxOidcRestTemplate.exchange(builder.toUriString(),
-                    HttpMethod.POST,
-                    httpEntity,
-                    String::class.java)
-
-            if (response.statusCode.is2xxSuccessful) {
-                getCounter("OPPRETTBUCOGSEDOK").increment()
-                return mapJsonToAny(response.body!!, typeRefs())
-            } else {
-                throw EuxRinaServerException("Ikke mottatt RINA casenr, feiler ved opprettelse av BUC og SED")
-            }
-        } catch (rx: EuxRinaServerException) {
-            logger.error(rx.message)
-            getCounter("OPPRETTBUCOGSEDFEIL").increment()
-            throw EuxRinaServerException(rx.message)
-        } catch (sx: HttpServerErrorException) {
-            logger.error(sx.message)
-            getCounter("OPPRETTBUCOGSEDFEIL").increment()
-            throw EuxServerException("Feiler med kontakt med EUX/Rina.")
-        } catch (ex: Exception) {
-            logger.error(ex.message)
-            getCounter("OPPRETTBUCOGSEDFEIL").increment()
-            throw EuxServerException("Feiler ved kontakt mot EUX")
-        }
-    }
 
     @Throws(EuxGenericServerException::class, SedDokumentIkkeOpprettetException::class)
     fun opprettSvarSedOnBuc(navSED: SED, euxCaseId: String, parentDocumentId: String): BucSedResponse {
@@ -287,26 +243,23 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate,
         val builder = UriComponentsBuilder.fromUriString(path).buildAndExpand(uriParams)
 
         return try {
-            val response = euxOidcRestTemplate.exchange(
-                    builder.toUriString(),
-                    HttpMethod.POST,
-                    null,
-                    String::class.java)
-
-            if (response.statusCode.is2xxSuccessful) {
-                getCounter("SENDSEDOK").increment()
-                true
-            } else {
-                throw SedDokumentIkkeSendtException("Feil, SED document ble ikke sendt")
-            }
-        } catch (sx: SedDokumentIkkeSendtException) {
-            getCounter("SENDSEDFEIL").increment()
-            throw sx
+            restTemplateErrorhandler(
+                    {
+                        euxOidcRestTemplate.exchange(
+                                builder.toUriString(),
+                                HttpMethod.POST,
+                                null,
+                                String::class.java)
+                    }
+                    , euxCaseId
+                    ,"sendSED"
+                    ,"sending av Sed, "
+            )
+            true
         } catch (ex: Exception) {
-            getCounter("SENDSEDFEIL").increment()
-            throw EuxServerException(ex.message)
+            logger.error(ex.message, ex)
+            throw SedDokumentIkkeSendtException("Feil, SED document ble ikke sendt")
         }
-
     }
 
     /**
@@ -420,7 +373,7 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate,
                             String::class.java)
                 }
                 , euxCaseId ?: ""
-                , "hentRinasaker"
+                    , "hentRinasaker"
                 ,"Feil ved Rinasaker"
         )
 

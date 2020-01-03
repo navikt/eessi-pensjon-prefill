@@ -1,7 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.eux
 
 import com.nhaarman.mockitokotlin2.*
-import no.nav.eessi.pensjon.fagmodul.eux.basismodel.BucSedResponse
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Rinasak
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.PinItem
@@ -63,41 +62,6 @@ class EuxServiceTest {
                 .buildAndExpand(uriParams)
         val str = builder.toUriString()
         assertEquals("/type/12345/sed?KorrelasjonsId=c0b0c068-4f79-48fe-a640-b9a23bf7c920", str)
-    }
-
-
-    //opprett type og sed ok
-    @Test
-    fun `Calling EuxService  forventer korrekt svar tilbake fra et kall til opprettBucSed`() {
-        val bucresp = BucSedResponse("123456", "2a427c10325c4b5eaf3c27ba5e8f1877")
-        val response: ResponseEntity<String> = ResponseEntity(mapAnyToJson(bucresp), HttpStatus.OK)
-
-        whenever(mockEuxrestTemplate.exchange(any<String>(), eq(HttpMethod.POST), any(), eq(String::class.java))).thenReturn(response)
-        val result = service.opprettBucSed(SED("P2000"), "P_BUC_99", "NO:NAVT003", "1234567")
-
-        assertEquals("123456", result.caseId)
-        assertEquals("2a427c10325c4b5eaf3c27ba5e8f1877", result.documentId)
-
-    }
-
-    //opprett type og sed feiler ved oppreting
-    @Test
-    fun `Calling EuxService  feiler med svar tilbake fra et kall til opprettBucSed`() {
-        val errorresponse = ResponseEntity<String?>(HttpStatus.BAD_REQUEST)
-        whenever(mockEuxrestTemplate.exchange(any<String>(), eq(HttpMethod.POST), any(), eq(String::class.java))).thenReturn(errorresponse)
-
-        assertThrows<EuxRinaServerException> {
-            service.opprettBucSed(SED("P2200"), "P_BUC_99", "NO:NAVT003", "1231233")
-        }
-    }
-
-    //opprett type og sed feil med eux service
-    @Test
-    fun `Calling EuxService  feiler med kontakt fra eux med kall til opprettBucSed`() {
-        whenever(mockEuxrestTemplate.exchange(any<String>(), eq(HttpMethod.POST), any(), eq(String::class.java))).thenThrow(RuntimeException::class.java)
-        assertThrows<EuxServerException> {
-            service.opprettBucSed(SED("P2000"), "P_BUC_99", "NO:NAVT003", "213123")
-        }
     }
 
     @Test
@@ -348,7 +312,7 @@ class EuxServiceTest {
         val documentId = "213213-123123-123123"
         val errorresponse = ResponseEntity.badRequest().body("")
 
-        doReturn(errorresponse).whenever(mockEuxrestTemplate).exchange(
+        doThrow(java.lang.RuntimeException("errorororoorororororo")).whenever(mockEuxrestTemplate).exchange(
                 eq("/buc/${euxCaseId}/sed/${documentId}/send"),
                 any(),
                 eq(null),
@@ -363,13 +327,13 @@ class EuxServiceTest {
     @Test
     fun `Calling EuxService  feiler med kontakt fra eux med kall til sendDocumentById`() {
         doThrow(RuntimeException("error")).whenever(mockEuxrestTemplate).exchange(
-                eq("/type/1234567/sed/3123sfdf23-4324svfsdf324/send"),
+                eq("/buc/123456/sed/3123sfdf23-4324svfsdf324/send"),
                 any(),
                 eq(null),
                 ArgumentMatchers.eq(String::class.java)
         )
-        assertThrows<EuxServerException> {
-            service.sendDocumentById("123456", "213213-123123-123123")
+        assertThrows<SedDokumentIkkeSendtException> {
+            service.sendDocumentById("123456", "3123sfdf23-4324svfsdf324")
         }
     }
 

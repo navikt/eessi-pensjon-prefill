@@ -4,7 +4,6 @@ import io.swagger.annotations.ApiOperation
 import no.nav.eessi.pensjon.fagmodul.eux.BucUtils
 import no.nav.eessi.pensjon.fagmodul.eux.EuxService
 import no.nav.eessi.pensjon.fagmodul.eux.PinOgKrav
-import no.nav.eessi.pensjon.fagmodul.eux.basismodel.BucSedResponse
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ShortDocumentItem
 import no.nav.eessi.pensjon.fagmodul.prefill.ApiRequest
 import no.nav.eessi.pensjon.fagmodul.prefill.MangelfulleInndataException
@@ -31,7 +30,6 @@ class SedController(private val euxService: EuxService,
 
     private val logger = LoggerFactory.getLogger(SedController::class.java)
 
-
     //** oppdatert i api 18.02.2019
     @ApiOperation("Genereren en Nav-Sed (SED), viser en oppsumering av SED (json). Før evt. innsending til EUX/Rina")
     @PostMapping("/preview", "/preview/{filter}", consumes = ["application/json"], produces = [org.springframework.http.MediaType.APPLICATION_JSON_VALUE])
@@ -46,8 +44,6 @@ class SedController(private val euxService: EuxService,
         }
 
     }
-
-
 
     //** oppdatert i api 18.02.2019
     @ApiOperation("Sender valgt NavSed på rina med valgt documentid og bucid, ut til eu/eøs, ny api kall til eux")
@@ -138,29 +134,6 @@ class SedController(private val euxService: EuxService,
         logger.info("kaller add med request: $request")
         val docresult = euxService.opprettSedOnBuc(data.sed, data.euxCaseID)
         return BucUtils(euxService.getBuc(docresult.caseId)).findDocument(docresult.documentId)
-    }
-
-    @ApiOperation("Utgår?")
-    @PostMapping("/buc/create")
-    fun createDocument(@RequestBody request: ApiRequest): BucSedResponse {
-        auditlogger.log("createDocument", request.aktoerId ?: "", request.toAudit())
-        logger.info("kaller type/create med request: $request")
-
-        val dataModel = ApiRequest.buildPrefillDataModelOnNew(request, aktoerIdHelper.hentPinForAktoer(request.aktoerId))
-        val data = prefillService.prefillSed(dataModel)
-        val firstInstitution =
-                data.institution.firstOrNull() ?: throw ManglendeInstitusjonException("institusjon kan ikke være tom")
-        return euxService.opprettBucSed(data.sed, data.buc, firstInstitution.institution, data.penSaksnummer)
-    }
-
-    //** oppdatert i api 18.02.2019 --
-    @ApiOperation("Utgår, benytt /buc/rinanr/allDocuments ")
-    @GetMapping("/buc/{euxcaseid}/shortdocumentslist")
-    fun getShortDocumentList(@PathVariable("euxcaseid", required = true) euxcaseid: String): List<ShortDocumentItem> {
-        auditlogger.logBuc("getShortDocumentList", " euxCaseId: $euxcaseid")
-        logger.info("kaller /type/${euxcaseid}/documents ")
-
-        return BucUtils(euxService.getBuc(euxcaseid)).getAllDocuments()
     }
 
     //TODO endre denne til å gå til denne: /cpi/buc/{RinaSakId}/sedtyper  (istede for benytte seg av egen bucutil)

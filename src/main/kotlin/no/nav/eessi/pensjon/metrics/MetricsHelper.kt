@@ -19,7 +19,16 @@ class MetricsHelper(val registry: MeterRegistry) {
                 "SafControllerMetadata",
                 "SafControllerInnhold",
                 "PersonControllerHentPerson",
-                "PersonControllerHentPersonNavn"
+                "PersonControllerHentPersonNavn",
+                "OpprettSvarSed",
+                "SedByDocumentId",
+                "Institusjoner",
+                "hentRinasaker",
+                "createBuc",
+                "putmottaker",
+                "OpprettSed",
+                "sendSED",
+                "getbuc"
 
                 ).forEach {counterName ->
             Counter.builder(measureMeterName)
