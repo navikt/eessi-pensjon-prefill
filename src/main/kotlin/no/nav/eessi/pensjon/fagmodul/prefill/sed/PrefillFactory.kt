@@ -46,11 +46,6 @@ class PrefillFactory(private val prefillNav: PrefillNav,
             SEDType.P2100 -> {
                 PrefillP2100(prefillNav, dataFromPEN, dataFromTPS)
             }
-            //P3000_NO vil aldre gå dennee vei! men fra EU-SED->Nav-SED->PESYS
-            //P3000_SE, PL, DK, DE, UK, ol vil gå denne veien.
-            SEDType.P3000 -> {
-                PrefillP3000(prefillPerson)
-            }
             SEDType.P4000 -> {
                 PrefillP4000(prefillPerson)
             }
@@ -70,9 +65,12 @@ class PrefillFactory(private val prefillNav: PrefillNav,
                 PrefillH02X(prefillPerson)
             }
             else -> {
-                //P5000, P8000, P7000, P8000  - P9000, P14000 og P10000 og andre
+                //P3000_NO vil aldre gå dennee vei! men fra EU-SED->Nav-SED->PESYS
+                //P3000_SE, PL, DK, DE, UK, ol vil gå denne veien.
+                //P5000, - P9000, P14000 og og andre
                 PrefillDefaultSED(prefillPerson)
             }
         }
     }
+
 }

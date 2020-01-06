@@ -1,60 +1,11 @@
 package no.nav.eessi.pensjon.fagmodul.sedmodel
 
-import no.nav.eessi.pensjon.utils.mapAnyToJson
-import no.nav.eessi.pensjon.utils.mapJsonToAny
-import no.nav.eessi.pensjon.utils.typeRefs
-
-@Deprecated("Utgår, benytt SED istede", ReplaceWith("SED"),DeprecationLevel.WARNING)
-data class HSED(
-        val sed: String? = null,
-        val sedGVer: String? = "4",
-        val sedVer: String? = "1",
-        val nav: HNav? = null,
-        val ignore: Ignore? = null,
-        //H120-H121-H070-H020-H021
-        val horisontal: Horisontal? = null
-) {
-    fun toJson(): String {
-        return mapAnyToJson(this, false)
-    }
-
-    fun toJsonSkipEmpty(): String {
-        return mapAnyToJson(this, true)
-    }
-
-
-    companion object {
-        @JvmStatic
-        fun fromJson(hsed: String): HSED {
-            return mapJsonToAny(hsed, typeRefs(), true)
-        }
-    }
-
-    override fun toString() : String = this.toJson()
-
+class HorisontalModel {
 }
 
-data class HNav(
-    val bruker: HBruker? = null
-)
-
-data class HBruker(
-        val person: HPerson? = null
-)
-
-data class HPerson(
-        val etternavnvedfoedsel: String? = null,
-        val etternavn: String? = null,
-        val pin: HPin? = null,
-        val kjoenn: String? = null,
-        val foedselsdato: String? = null,
-        val fornavn: String? = null,
-        val fornavnvedfoedsel: String? = null
-)
-
-data class HPin(
-       val oppholdsland: String? = null,
-        val kompetenteuland: String? = null
+data class Medisinsk(
+        val undersoekelse: Undersoekelse? = null,
+        val informasjon: Informasjon? = null
 )
 
 data class Horisontal(
@@ -109,8 +60,8 @@ data class Kreditorinstitusjon(
 )
 
 data class KreditorUtbetaling(
-       val valuta: String? = null,
-       val totalbeloep: String? = null
+        val valuta: String? = null,
+        val totalbeloep: String? = null
 )
 
 data class KreditorKrav(
@@ -121,8 +72,8 @@ data class KreditorKrav(
 )
 
 data class Avvist(
-       val valuta: String? = null,
-       val totalbeloep: String? = null
+        val valuta: String? = null,
+        val totalbeloep: String? = null
 )
 
 //H120 - H121
@@ -181,18 +132,13 @@ data class Status(
 
 data class Sykdom(
 
-       val kode: String? = null,
-       val kodingssystem: String? = null
-)
-
-data class Medisinsk(
-        val undersoekelse: Undersoekelse? = null,
-        val informasjon: Informasjon? = null
+        val kode: String? = null,
+        val kodingssystem: String? = null
 )
 
 data class Informasjon(
-       val annen: String? = null,
-       val type: List<String>? = null
+        val annen: String? = null,
+        val type: List<String>? = null
 )
 
 data class Svar(
@@ -213,13 +159,13 @@ data class Undersoekelse(
 )
 
 data class Ikkegjennomfoert(
-       val grunn: Grunn? = null
+        val grunn: Grunn? = null
 )
 
 data class Grunn(
-       val annen: String? = null,
-       val type: String? = null,
-       val annet: String? = null
+        val annen: String? = null,
+        val type: String? = null,
+        val annet: String? = null
 )
 
 data class Estimat(

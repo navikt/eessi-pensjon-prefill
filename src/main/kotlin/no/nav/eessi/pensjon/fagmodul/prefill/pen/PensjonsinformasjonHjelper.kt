@@ -33,7 +33,7 @@ class PensjonsinformasjonHjelper(private val pensjonsinformasjonService: Pensjon
 
         val pendata: Pensjonsinformasjon = pensjonsinformasjonService.hentAltPaaVedtak(vedtakId)
 
-        logger.info("Pensjonsinformasjon: $pendata"
+        logger.debug("Pensjonsinformasjon: $pendata"
                 + "\nPensjonsinformasjon.vedtak: ${pendata.vedtak}"
                 + "\nPensjonsinformasjon.vedtak.virkningstidspunkt: ${pendata.vedtak.virkningstidspunkt}"
                 + "\nPensjonsinformasjon.sak: ${pendata.sakAlder}"
@@ -41,7 +41,6 @@ class PensjonsinformasjonHjelper(private val pensjonsinformasjonService: Pensjon
                 + "\nPensjonsinformasjon.vilkarsvurderingListe: ${pendata.vilkarsvurderingListe}"
                 + "\nPensjonsinformasjon.ytelsePerMaanedListe: ${pendata.ytelsePerMaanedListe}"
                 + "\nPensjonsinformasjon.trygdeavtale: ${pendata.trygdeavtale}"
-                + "\nPensjonsinformasjon.person: ${pendata.person}"
                 + "")
         return pendata
     }

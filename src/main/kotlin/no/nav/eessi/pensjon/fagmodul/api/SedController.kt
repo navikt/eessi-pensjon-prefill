@@ -176,7 +176,8 @@ class SedController(private val euxService: EuxService,
                     .or(it.startsWith("H12"))
                     .or(it.startsWith("H07"))
                     .or(it.startsWith("H02")) }
-                .filterNot { it.startsWith("P3000") }.sorted()
+                .sorted()
+//                .filterNot { it.startsWith("P3000") }.sorted()
     }
 
     @ApiOperation("Henter ytelsetype fra P15000 på valgt Buc og Documentid")
