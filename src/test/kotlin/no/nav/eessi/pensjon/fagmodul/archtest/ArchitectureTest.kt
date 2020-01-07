@@ -59,7 +59,6 @@ class ArchitectureTest {
         // components
         val health = "fagmodul.health"
         val bucSedApi = "fagmodul.api"
-        val helper = "fagmodul.helper"
         val prefill = "fagmodul.prefill"
         val models = "fagmodul.models"
         val sedmodel = "fagmodul.sedmodel"
@@ -88,9 +87,7 @@ class ArchitectureTest {
                 "$root.api.geo.." to geoApi,
                 "$root.api.person.." to personApi,
                 "$root.api.pensjon.." to pensjonApi,
-
                 "$root.fagmodul.api.." to bucSedApi,
-
                 "$root.fagmodul.prefill.." to prefill,
                 "$root.fagmodul.models.." to models,
                 "$root.fagmodul.sedmodel.." to sedmodel,
@@ -98,12 +95,8 @@ class ArchitectureTest {
                 "$root.fagmodul.eux.basismodel.." to euxBasisModel,
                 "$root.fagmodul.eux.bucmodel.." to euxBucModel,
                 "$root.fagmodul.pesys.." to pensjonUtlandApi,
-
                 "$root.fagmodul.config.." to config,
                 "$root.fagmodul.metrics.." to metrics,
-
-                "$root.helper.." to helper, /* TODO This should be removed */
-
                 "$root.services.aktoerregister" to aktoerregisterService,
                 "$root.services.arkiv" to arkivService,
                 "$root.services.geo" to geoService,
@@ -137,9 +130,6 @@ class ArchitectureTest {
                 .layer(euxBucModel).definedBy(*packagesFor(euxBucModel))
                 .layer(models).definedBy(*packagesFor(models))
                 .layer(sedmodel).definedBy(*packagesFor(sedmodel))
-
-                .layer(helper).definedBy(*packagesFor(helper))
-
                 .layer(aktoerregisterService).definedBy(*packagesFor(aktoerregisterService))
                 .layer(arkivService).definedBy(*packagesFor(arkivService))
                 .layer(geoService).definedBy(*packagesFor(geoService))
@@ -168,10 +158,8 @@ class ArchitectureTest {
                 .whereLayer(models).mayOnlyBeAccessedByLayers(prefill, /* TODO consider this list */ euxService, pensjonUtlandApi, bucSedApi)
 
                 .whereLayer(sedmodel).mayOnlyBeAccessedByLayers(prefill, euxService, pensjonUtlandApi, bucSedApi)
+                .whereLayer(aktoerregisterService).mayOnlyBeAccessedByLayers(personApi, bucSedApi, pensjonApi)
 
-                .whereLayer(helper).mayOnlyBeAccessedByLayers(bucSedApi, pensjonApi)
-
-                .whereLayer(aktoerregisterService).mayOnlyBeAccessedByLayers(personApi, helper)
                 .whereLayer(arkivService).mayOnlyBeAccessedByLayers(arkivApi, bucSedApi)
                 .whereLayer(geoService).mayOnlyBeAccessedByLayers(geoApi, pensjonUtlandApi, prefill)
                 .whereLayer(personService).mayOnlyBeAccessedByLayers(health, personApi, prefill)
@@ -188,13 +176,11 @@ class ArchitectureTest {
     fun `main layers check`() {
         val frontendAPI = "Frontend API"
         val fagmodulCore = "Fagmodul Core"
-        val helper = "Helper"
         val services = "Services"
         val support = "Support"
         layeredArchitecture()
                 .layer(frontendAPI).definedBy("$root.api..")
                 .layer(fagmodulCore).definedBy("$root.fagmodul..")
-                .layer(helper).definedBy("$root.helper..")
                 .layer(services).definedBy("$root.services..")
                 .layer(support).definedBy(
                         "$root.metrics..",
@@ -204,17 +190,12 @@ class ArchitectureTest {
                 )
                 .whereLayer(frontendAPI).mayNotBeAccessedByAnyLayer()
                 .whereLayer(fagmodulCore).mayNotBeAccessedByAnyLayer()
-                .whereLayer(helper).mayOnlyBeAccessedByLayers(
-                        frontendAPI,
-                        fagmodulCore)
                 .whereLayer(services).mayOnlyBeAccessedByLayers(
                         frontendAPI,
-                        fagmodulCore,
-                        helper)
+                        fagmodulCore)
                 .whereLayer(support).mayOnlyBeAccessedByLayers(
                         frontendAPI,
                         fagmodulCore,
-                        helper,
                         services)
                 .check(allClasses)
     }

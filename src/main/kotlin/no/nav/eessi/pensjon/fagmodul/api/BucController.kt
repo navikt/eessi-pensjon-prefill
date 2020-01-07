@@ -9,8 +9,8 @@ import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Vedlegg
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Buc
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Creator
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ShortDocumentItem
-import no.nav.eessi.pensjon.helper.AktoerIdHelper
 import no.nav.eessi.pensjon.logging.AuditLogger
+import no.nav.eessi.pensjon.services.aktoerregister.AktoerregisterService
 import no.nav.eessi.pensjon.services.arkiv.SafService
 import no.nav.eessi.pensjon.services.arkiv.VariantFormat
 import no.nav.eessi.pensjon.utils.errorBody
@@ -30,7 +30,7 @@ import java.util.*
 @RequestMapping("/buc")
 class BucController(private val euxService: EuxService,
                     private val safService: SafService,
-                    private val aktoerIdHelper: AktoerIdHelper,
+                    private val aktoerService: AktoerregisterService,
                     private val auditlogger: AuditLogger) {
 
     private val logger = LoggerFactory.getLogger(BucController::class.java)
@@ -102,7 +102,7 @@ class BucController(private val euxService: EuxService,
         auditlogger.log("getRinasaker", aktoerId)
         logger.debug("henter rinasaker på valgt aktoerid: $aktoerId")
 
-        val fnr = aktoerIdHelper.hentPinForAktoer(aktoerId)
+        val fnr = aktoerService.hentPinForAktoer(aktoerId)
         val rinaSakIderFraDokumentMetadata = safService.hentRinaSakIderFraDokumentMetadata(aktoerId)
         return euxService.getRinasaker(fnr, rinaSakIderFraDokumentMetadata)
     }
@@ -115,7 +115,7 @@ class BucController(private val euxService: EuxService,
         auditlogger.log("getBucogSedView", aktoerid)
         logger.debug("Prøver å dekode aktoerid: $aktoerid til fnr.")
 
-        val fnr = aktoerIdHelper.hentPinForAktoer(aktoerid)
+        val fnr = aktoerService.hentPinForAktoer(aktoerid)
         val rinaSakIderFraDokumentMetadata = safService.hentRinaSakIderFraDokumentMetadata(aktoerid)
         val rinasakIdList = euxService.getFilteredArchivedaRinasaker( euxService.getRinasaker(fnr, rinaSakIderFraDokumentMetadata))
 
