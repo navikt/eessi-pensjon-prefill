@@ -164,7 +164,6 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate,
         return na
     }
 
-    // @ Throws(BucIkkeMottattException::class, EuxServerException::class)
     fun getBuc(euxCaseId: String): Buc {
         logger.info("euxCaseId: $euxCaseId")
 
@@ -445,7 +444,7 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate,
     }
 
     fun putBucMottakere(euxCaseId: String, deltaker: List<InstitusjonItem>): Boolean {
-//        //cpi/buc/245580/mottakere?KorrelasjonsId=23424&mottakere=NO%3ANAVT003&mottakere=NO%3ANAVT008"
+        //cpi/buc/245580/mottakere?KorrelasjonsId=23424&mottakere=NO%3ANAVT003&mottakere=NO%3ANAVT008"
         val correlationId = UUID.randomUUID().toString()
         val builder = UriComponentsBuilder.fromPath("/buc/$euxCaseId/mottakere")
                 .queryParam("KorrelasjonsId", correlationId)
@@ -694,9 +693,6 @@ class RinaIkkeAutorisertBrukerException(message: String?) : RuntimeException(mes
 @ResponseStatus(value = HttpStatus.FORBIDDEN)
 class ForbiddenException(message: String?) : RuntimeException(message)
 
-@ResponseStatus(value = HttpStatus.BAD_REQUEST)
-class UgyldigCaseIdException(message: String) : RuntimeException(message)
-
 @ResponseStatus(value = HttpStatus.NOT_FOUND)
 class EuxRinaServerException(message: String?) : RuntimeException(message)
 
@@ -720,9 +716,6 @@ class SedDokumentIkkeLestException(message: String?) : Exception(message)
 
 @ResponseStatus(value = HttpStatus.NOT_FOUND)
 class SedIkkeSlettetException(message: String?) : Exception(message)
-
-@ResponseStatus(value = HttpStatus.NOT_FOUND)
-class BucIkkeMottattException(message: String?) : Exception(message)
 
 @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
 class EuxGenericServerException(message: String?) : Exception(message)

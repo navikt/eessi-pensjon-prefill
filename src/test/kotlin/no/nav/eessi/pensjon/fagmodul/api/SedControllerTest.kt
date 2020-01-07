@@ -17,8 +17,8 @@ import no.nav.eessi.pensjon.fagmodul.prefill.PrefillService
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillSED
 import no.nav.eessi.pensjon.fagmodul.sedmodel.*
-import no.nav.eessi.pensjon.helper.AktoerIdHelper
 import no.nav.eessi.pensjon.logging.AuditLogger
+import no.nav.eessi.pensjon.services.aktoerregister.AktoerregisterService
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.typeRefs
@@ -45,7 +45,7 @@ class SedControllerTest {
     lateinit var auditLogger: AuditLogger
 
     @Mock
-    lateinit var mockAktoerIdHelper: AktoerIdHelper
+    lateinit var mockAktoerIdHelper: AktoerregisterService
 
     @Mock
     lateinit var mockPrefillSED: PrefillSED

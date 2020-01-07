@@ -4,11 +4,16 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import io.micrometer.core.instrument.Counter
 import io.micrometer.core.instrument.Metrics
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry
+import no.nav.eessi.pensjon.metrics.MetricsHelper
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.*
 import org.springframework.stereotype.Service
 import org.springframework.web.bind.annotation.ResponseStatus
+import org.springframework.web.client.HttpClientErrorException
+import org.springframework.web.client.HttpServerErrorException
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.util.UriComponentsBuilder
 import java.util.*
@@ -26,7 +31,8 @@ data class IdentinfoForAktoer(
 
 @Service
 class AktoerregisterService(private val aktoerregisterOidcRestTemplate: RestTemplate,
-                            @Value("\${app.name}") private val appName: String) {
+                            @Value("\${app.name}") private val appName: String,
+                            @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper(SimpleMeterRegistry())) {
 
     private val logger = LoggerFactory.getLogger(AktoerregisterService::class.java)
 
@@ -38,16 +44,33 @@ class AktoerregisterService(private val aktoerregisterOidcRestTemplate: RestTemp
         return Metrics.counter(name, "type", type)
     }
 
-    fun hentGjeldendeNorskIdentForAktorId(aktorid: String): String {
-        val response = doRequest(aktorid, "NorskIdent")
-        validateResponse(aktorid, response)
-        return response[aktorid]!!.identer!![0].ident
+    @Throws(AktoerregisterException::class, ManglerAktoerIdException::class)
+    fun hentPinForAktoer(aktorid: String?) = hentGjeldendeNorskIdentForAktorId(aktorid)
+
+    @Throws(AktoerregisterException::class, ManglerAktoerIdException::class)
+    fun hentAktoerForPin(fnr: String?) = hentGjeldendeAktorIdForNorskIdent(fnr)
+
+
+    fun hentGjeldendeNorskIdentForAktorId(aktorid: String?): String {
+        return metricsHelper.measure("AktoerNorskIdentForAktorId") {
+            if (aktorid.isNullOrBlank()) throw ManglerAktoerIdException("Mangler AktoerId")
+
+            val response = doRequest(aktorid, "NorskIdent")
+            validateResponse(aktorid, response)
+
+            response[aktorid]?.identer!![0].ident
+        }
     }
 
-    fun hentGjeldendeAktorIdForNorskIdent(norskIdent: String): String {
-        val response = doRequest(norskIdent, "AktoerId")
-        validateResponse(norskIdent, response)
-        return response[norskIdent]!!.identer!![0].ident
+    fun hentGjeldendeAktorIdForNorskIdent(norskIdent: String?): String {
+        return metricsHelper.measure("AktoerforNorskIdent") {
+            if (norskIdent.isNullOrBlank()) throw ManglerAktoerIdException("Mangler fnr/ident")
+
+            val response = doRequest(norskIdent, "AktoerId")
+            validateResponse(norskIdent, response)
+
+            response[norskIdent]?.identer!![0].ident
+        }
     }
 
     private fun validateResponse(aktorid: String, response: Map<String, IdentinfoForAktoer>) {
@@ -74,38 +97,41 @@ class AktoerregisterService(private val aktoerregisterOidcRestTemplate: RestTemp
     private fun doRequest(ident: String,
                           identGruppe: String,
                           gjeldende: Boolean = true): Map<String, IdentinfoForAktoer> {
-        val headers = HttpHeaders()
-        headers["Nav-Personidenter"] = ident
-        headers["Nav-Consumer-Id"] = appName
-        headers["Nav-Call-Id"] = UUID.randomUUID().toString()
-        val requestEntity = HttpEntity<String>(headers)
 
-        val uriBuilder = UriComponentsBuilder.fromPath("/identer")
-                .queryParam("identgruppe", identGruppe)
-                .queryParam("gjeldende", gjeldende)
-        logger.info("Kaller aktørregisteret: /identer")
+        return metricsHelper.measure("AktoerRequester") {
+            val headers = HttpHeaders()
+            headers["Nav-Personidenter"] = ident
+            headers["Nav-Consumer-Id"] = appName
+            headers["Nav-Call-Id"] = UUID.randomUUID().toString()
+            val requestEntity = HttpEntity<String>(headers)
 
-        var responseEntity: ResponseEntity<String>?= null
-        try {
-             responseEntity = aktoerregisterOidcRestTemplate.exchange(uriBuilder.toUriString(),
-                    HttpMethod.GET,
-                    requestEntity,
-                    String::class.java)
-        } catch (ex: Exception) {
-            logger.error(ex.message, ex)
-            throw AktoerregisterException(ex.message!!)
-        }
+            val uriBuilder = UriComponentsBuilder.fromPath("/identer")
+                    .queryParam("identgruppe", identGruppe)
+                    .queryParam("gjeldende", gjeldende)
+            logger.info("Kaller aktørregisteret: /identer")
 
-        if (responseEntity.statusCode.isError) {
-            logger.error("Fikk ${responseEntity.statusCode} feil fra aktørregisteret")
-            aktoerregister_teller_type_feilede.increment()
-            if (responseEntity.hasBody()) {
-                logger.error(responseEntity.body.toString())
+            var responseEntity: ResponseEntity<String>? = null
+            return@measure try {
+                responseEntity = aktoerregisterOidcRestTemplate.exchange(uriBuilder.toUriString(),
+                        HttpMethod.GET,
+                        requestEntity,
+                        String::class.java)
+
+                jacksonObjectMapper().readValue(responseEntity.body!!)
+
+            } catch (hcee: HttpClientErrorException) {
+                val errorBody = hcee.responseBodyAsString
+                logger.error("Aktørregister feiler med HttpClientError body: $errorBody", hcee)
+                throw AktoerregisterException("Received ${hcee.statusCode} ${hcee.statusCode.reasonPhrase} from aktørregisteret")
+            } catch (hsee: HttpServerErrorException) {
+                val errorBody = hsee.responseBodyAsString
+                logger.error("Aktørregisteret feiler med HttpServerError body: $errorBody", hsee)
+                throw AktoerregisterException("Received ${hsee.statusCode} ${hsee.statusCode.reasonPhrase} from aktørregisteret")
+            } catch (ex: Exception) {
+                logger.error(ex.message, ex)
+                throw AktoerregisterException(ex.message!!)
             }
-            throw AktoerregisterException("Received ${responseEntity.statusCodeValue} ${responseEntity.statusCode.reasonPhrase} from aktørregisteret")
         }
-        aktoerregister_teller_type_vellykkede.increment()
-        return jacksonObjectMapper().readValue(responseEntity.body!!)
     }
 }
 
@@ -114,3 +140,6 @@ class AktoerregisterIkkeFunnetException(message: String?) : Exception(message)
 
 @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
 class AktoerregisterException(message: String) : Exception(message)
+
+@ResponseStatus(value = HttpStatus.BAD_REQUEST)
+class ManglerAktoerIdException(message: String) : Exception(message)

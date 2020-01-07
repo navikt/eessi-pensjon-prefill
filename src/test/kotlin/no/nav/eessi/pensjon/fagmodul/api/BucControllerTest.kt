@@ -1,10 +1,9 @@
 package no.nav.eessi.pensjon.fagmodul.api
 
 import com.nhaarman.mockitokotlin2.*
-import org.mockito.Mock
 import no.nav.eessi.pensjon.fagmodul.eux.EuxService
-import no.nav.eessi.pensjon.helper.AktoerIdHelper
 import no.nav.eessi.pensjon.logging.AuditLogger
+import no.nav.eessi.pensjon.services.aktoerregister.AktoerregisterService
 import no.nav.eessi.pensjon.services.arkiv.HentdokumentInnholdResponse
 import no.nav.eessi.pensjon.services.arkiv.SafService
 import no.nav.eessi.pensjon.services.arkiv.VariantFormat
@@ -12,6 +11,7 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.Mock
 import org.mockito.Spy
 import org.mockito.junit.jupiter.MockitoExtension
 import java.nio.file.Files
@@ -30,9 +30,10 @@ class BucControllerTest {
     lateinit var mockSafService: SafService
 
     @Mock
-    lateinit var mockAktoerIdHelper: AktoerIdHelper
+    lateinit var mockAktoerIdHelper: AktoerregisterService
 
     private lateinit var bucController: BucController
+
 
     @BeforeEach
     fun before() {

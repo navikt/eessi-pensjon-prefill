@@ -1,6 +1,7 @@
 package no.nav.eessi.pensjon.services.aktoerregister
 
 import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.doThrow
 import com.nhaarman.mockitokotlin2.whenever
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -14,6 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.RestTemplate
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -118,8 +120,9 @@ class AktoerregisterServiceTest {
 
     @Test
     fun `should throw runtimeexception when 403-forbidden is returned`() {
-        val mockResponseEntity = createResponseEntityFromJsonFile("src/test/resources/json/aktoerregister/403-Forbidden.json", HttpStatus.FORBIDDEN)
-        whenever(mockrestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java))).thenReturn(mockResponseEntity)
+
+        doThrow(HttpClientErrorException(HttpStatus.FORBIDDEN))
+                .whenever(mockrestTemplate).exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java))
 
         val testAktoerId = "does-not-matter"
 
@@ -127,7 +130,7 @@ class AktoerregisterServiceTest {
             // the mock returns 403-forbidden
             aktoerregisterService.hentGjeldendeAktorIdForNorskIdent(testAktoerId)
         }
-        assertEquals("Received 403 Forbidden from aktørregisteret", rte.message!!, "RuntimeException skal kastes dersom mer enn 1 ident returneres")
+        assertEquals("Received 403 FORBIDDEN Forbidden from aktørregisteret", rte.message!!, "RuntimeException skal kastes dersom mer enn 1 ident returneres")
     }
 
     private fun createResponseEntityFromJsonFile(filePath: String, httpStatus: HttpStatus = HttpStatus.OK): ResponseEntity<String> {
