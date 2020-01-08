@@ -1,6 +1,5 @@
 package no.nav.eessi.pensjon.fagmodul.pesys
 
-import no.nav.eessi.pensjon.metrics.TimingService
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.typeRefs
@@ -22,14 +21,11 @@ class PensjonsinformasjonUtlandControllerTest {
     @Mock
     lateinit var controller: PensjonsinformasjonUtlandController
 
-    @Mock
-    lateinit var timingService: TimingService
-
     lateinit var pensjonsinformasjonUtlandService : PensjonsinformasjonUtlandService
 
     @BeforeEach
     fun bringItOn() {
-        pensjonsinformasjonUtlandService = PensjonsinformasjonUtlandService(timingService)
+        pensjonsinformasjonUtlandService = PensjonsinformasjonUtlandService()
         controller = PensjonsinformasjonUtlandController(pensjonsinformasjonUtlandService)
     }
 

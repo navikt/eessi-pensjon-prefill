@@ -1,7 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.health
 
 import no.nav.eessi.pensjon.fagmodul.eux.EuxService
-import no.nav.eessi.pensjon.fagmodul.metrics.getCounter
 import no.nav.eessi.pensjon.security.sts.STSService
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonService
 import no.nav.eessi.pensjon.services.personv3.PersonV3Service
@@ -138,10 +137,8 @@ class DiagnosticsControllerProtected(private val personService: PersonV3Service,
     private fun selfTestEux(): Check {
         return try {
             euxService.pingEux()
-            getCounter("SELFTESTEUXOK").increment()
             Check("Eux-Rina-Api","Eux Rina OK","",1)
         } catch (ex: Exception) {
-            getCounter("SELFTESTEUXFEIL").increment()
             Check("Eux-Rina-Api","Eux Rina FAIL", ex.message!!,0)
         }
     }
@@ -149,10 +146,8 @@ class DiagnosticsControllerProtected(private val personService: PersonV3Service,
     private fun selfTestPesys(): Check {
         return try {
             penService.doPing()
-            getCounter("SELFTESTPESYSOK").increment()
             Check("Pesys Personinformasjon","Personinformasjon OK", "",1)
         } catch (ex: Exception) {
-            getCounter("SELFTESTPESYSFEIL").increment()
             Check("Pesys Personinformasjon","Personinformasjon FAIL",ex.message!!,0)
         }
     }
@@ -160,10 +155,8 @@ class DiagnosticsControllerProtected(private val personService: PersonV3Service,
     private fun selfTestTps(): Check {
         return try {
             personService.hentPersonPing()
-            getCounter("SELFTESTTPSOK").increment()
             Check("PersonV3","TPS PersonV3 OK","",1)
         } catch (ex: Exception) {
-            getCounter("SELFTESTTPSFEIL").increment()
             Check("PersonV3","TPS PersonV3 FAIL", ex.message!! , 0)
         }
     }

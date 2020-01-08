@@ -263,9 +263,11 @@ class EuxServiceTest {
 
     @Test
     fun `Calling EuxService  feiler med svar tilbake fra et kall til deleteDocumentById`() {
-        val response: ResponseEntity<String> = ResponseEntity(HttpStatus.NOT_EXTENDED)
-        whenever(mockEuxrestTemplate.exchange(any<String>(), eq(HttpMethod.DELETE), eq(null), eq(String::class.java))).thenReturn(response)
-        assertThrows<SedIkkeSlettetException> {
+        doThrow(createDummyClientRestExecption(HttpStatus.FORBIDDEN,"Dummy body"))
+                .whenever(mockEuxrestTemplate).exchange(any<String>(), eq(HttpMethod.DELETE), eq(null), eq(String::class.java))
+
+//        whenever(mockEuxrestTemplate.exchange(any<String>(), eq(HttpMethod.DELETE), eq(null), eq(String::class.java))).thenReturn(response)
+        assertThrows<ForbiddenException> {
             service.deleteDocumentById("12132131", "12312312-123123123123")
         }
     }
@@ -284,7 +286,7 @@ class EuxServiceTest {
                 ArgumentMatchers.eq(String::class.java)
         )
 
-        assertThrows<EuxServerException> {
+        assertThrows<ServerException> {
             service.deleteDocumentById(euxCaseId, documentId)
         }
     }

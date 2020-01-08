@@ -43,7 +43,7 @@ class AktoerregisterService(private val aktoerregisterOidcRestTemplate: RestTemp
 
 
     fun hentGjeldendeNorskIdentForAktorId(aktorid: String?): String {
-        return metricsHelper.measure("AktoerNorskIdentForAktorId") {
+        return metricsHelper.measure(MetricsHelper.MeterName.AktoerNorskIdentForAktorId) {
             if (aktorid.isNullOrBlank()) throw ManglerAktoerIdException("Mangler AktoerId")
 
             val response = doRequest(aktorid, "NorskIdent")
@@ -54,7 +54,7 @@ class AktoerregisterService(private val aktoerregisterOidcRestTemplate: RestTemp
     }
 
     fun hentGjeldendeAktorIdForNorskIdent(norskIdent: String?): String {
-        return metricsHelper.measure("AktoerforNorskIdent") {
+        return metricsHelper.measure(MetricsHelper.MeterName.AktoerforNorskIdent) {
             if (norskIdent.isNullOrBlank()) throw ManglerAktoerIdException("Mangler fnr/ident")
 
             val response = doRequest(norskIdent, "AktoerId")
@@ -89,7 +89,7 @@ class AktoerregisterService(private val aktoerregisterOidcRestTemplate: RestTemp
                           identGruppe: String,
                           gjeldende: Boolean = true): Map<String, IdentinfoForAktoer> {
 
-        return metricsHelper.measure("AktoerRequester") {
+        return metricsHelper.measure(MetricsHelper.MeterName.AktoerRequester) {
             val headers = HttpHeaders()
             headers["Nav-Personidenter"] = ident
             headers["Nav-Consumer-Id"] = appName

@@ -32,7 +32,7 @@ class SafController(private val safService: SafService,
     @GetMapping("/metadata/{aktoerId}")
     fun hentDokumentMetadata(@PathVariable("aktoerId", required = true) aktoerId: String): ResponseEntity<String> {
         auditlogger.log("hentDokumentMetadata", aktoerId)
-        return metricsHelper.measure("SafControllerMetadata") {
+        return metricsHelper.measure(MetricsHelper.MeterName.SafControllerMetadata) {
             logger.info("Henter metadata for dokumenter i SAF for aktørid: $aktoerId")
             return@measure try {
                 ResponseEntity.ok().body(safService.hentDokumentMetadata(aktoerId).toJson())
@@ -48,7 +48,7 @@ class SafController(private val safService: SafService,
                            @PathVariable("dokumentInfoId", required = true) dokumentInfoId: String,
                            @PathVariable("variantFormat", required = true) variantFormat: VariantFormat): ResponseEntity<String> {
         auditlogger.log("getDokumentInnhold")
-        return metricsHelper.measure("SafControllerInnhold") {
+        return metricsHelper.measure(MetricsHelper.MeterName.SafControllerInnhold) {
             logger.info("Henter dokumentinnhold fra SAF for journalpostId: $journalpostId, dokumentInfoId: $dokumentInfoId")
             return@measure try {
                 val hentDokumentInnholdResponse = safService.hentDokumentInnhold(journalpostId, dokumentInfoId, variantFormat)

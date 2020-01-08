@@ -6,8 +6,37 @@ import io.micrometer.core.instrument.Timer
 import org.springframework.stereotype.Component
 import javax.annotation.PostConstruct
 
+
 @Component
 class MetricsHelper(val registry: MeterRegistry) {
+
+    enum class MeterName {
+        PensjonControllerHentSakType,
+        SafControllerMetadata,
+        SafControllerInnhold,
+        PersonControllerHentPerson,
+        PersonControllerHentPersonNavn,
+        OpprettSvarSED,
+        SEDByDocumentId,
+        Institusjoner,
+        HentRinasaker,
+        CreateBUC,
+        PutMottaker,
+        OpprettSED,
+        SendSED,
+        SlettSED,
+        GetBUC,
+        PensjoninformasjonHentKunSakType,
+        PensjoninformasjonHentAltPaaIdent,
+        PensjoninformasjonHentAltPaaIdentRequester,
+        PensjoninformasjonAltPaaVedtak,
+        PensjoninformasjonAltPaaVedtakRequester,
+        AktoerNorskIdentForAktorId,
+        AktoerforNorskIdent,
+        AktoerRequester,
+        HentPersonV3,
+        PingEux;
+    }
 
     /**
      * Alle counters må legges inn i init listen slik at counteren med konkrete tagger blir initiert med 0.
@@ -15,45 +44,46 @@ class MetricsHelper(val registry: MeterRegistry) {
      */
     @PostConstruct
     fun initCounters() {
-        listOf("PensjonControllerHentSakType",
-                "SafControllerMetadata",
-                "SafControllerInnhold",
-                "PersonControllerHentPerson",
-                "PersonControllerHentPersonNavn",
-                "OpprettSvarSed",
-                "SedByDocumentId",
-                "Institusjoner",
-                "hentRinasaker",
-                "createBuc",
-                "putmottaker",
-                "OpprettSed",
-                "sendSED",
-                "getbuc",
-                "PensjoninformasjonHentKunSakType",
-                "PensjoninformasjonHentAltPaaIdent",
-                "PensjoninformasjonHentAltPaaIdentRequester",
-                "PensjoninformasjonAltPaaVedtak",
-                "PensjoninformasjonAltPaaVedtakRequester",
-                "AktoerNorskIdentForAktorId",
-                "AktoerforNorskIdent",
-                "AktoerRequester",
-                "hentPersonV3"
+//        listOf("PensjonControllerHentSakType",
+//                "SafControllerMetadata",
+//                "SafControllerInnhold",
+//                "PersonControllerHentPerson",
+//                "PersonControllerHentPersonNavn",
+//                "OpprettSvarSed",
+//                "SedByDocumentId",
+//                "Institusjoner",
+//                "hentRinasaker",
+//                "createBuc",
+//                "putmottaker",
+//                "OpprettSed",
+//                "sendSED",
+//                "getbuc",
+//                "PensjoninformasjonHentKunSakType",
+//                "PensjoninformasjonHentAltPaaIdent",
+//                "PensjoninformasjonHentAltPaaIdentRequester",
+//                "PensjoninformasjonAltPaaVedtak",
+//                "PensjoninformasjonAltPaaVedtakRequester",
+//                "AktoerNorskIdentForAktorId",
+//                "AktoerforNorskIdent",
+//                "AktoerRequester",
+//                "hentPersonV3"
+//                ).forEach
 
-                ).forEach {counterName ->
+        MeterName.values().forEach { counterName ->
             Counter.builder(measureMeterName)
                     .tag(typeTag, successTypeTagValue)
-                    .tag(methodTag, counterName)
+                    .tag(methodTag, counterName.name)
                     .register(registry)
 
             Counter.builder(measureMeterName)
                     .tag(typeTag, failureTypeTagValue)
-                    .tag(methodTag, counterName)
+                    .tag(methodTag, counterName.name)
                     .register(registry)
         }
     }
 
     fun <R> measure(
-            method: String,
+            method: MeterName,
             failure: String = failureTypeTagValue,
             success: String = successTypeTagValue,
             meterName: String = measureMeterName,
@@ -63,7 +93,7 @@ class MetricsHelper(val registry: MeterRegistry) {
 
         try {
             return Timer.builder("$meterName.$measureTimerSuffix")
-                    .tag(methodTag, method)
+                    .tag(methodTag, method.name)
                     .register(registry)
                     .recordCallable {
                         block.invoke()
@@ -74,7 +104,7 @@ class MetricsHelper(val registry: MeterRegistry) {
         } finally {
             try {
                 Counter.builder(meterName)
-                        .tag(methodTag, method)
+                        .tag(methodTag, method.name)
                         .tag(typeTag, typeTagValue)
                         .register(registry)
                         .increment()

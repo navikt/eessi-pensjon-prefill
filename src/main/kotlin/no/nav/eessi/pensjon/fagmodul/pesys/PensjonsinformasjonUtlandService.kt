@@ -1,11 +1,9 @@
 package no.nav.eessi.pensjon.fagmodul.pesys
 
-import no.nav.eessi.pensjon.fagmodul.metrics.getCounter
 import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.pesys.RinaTilPenMapper.parsePensjonsgrad
 import no.nav.eessi.pensjon.fagmodul.pesys.mockup.MockSED001
 import no.nav.eessi.pensjon.fagmodul.sedmodel.*
-import no.nav.eessi.pensjon.metrics.TimingService
 import no.nav.eessi.pensjon.services.geo.LandkodeService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -14,7 +12,7 @@ import java.time.LocalDate
 
 //TODO bytt ut Mocks med ekte kode
 @Service
-class PensjonsinformasjonUtlandService(private val timingService: TimingService) {
+class PensjonsinformasjonUtlandService {
 
     private val mockSed = MockSED001()
 
@@ -39,7 +37,6 @@ class PensjonsinformasjonUtlandService(private val timingService: TimingService)
     fun hentKravUtland(bucId: Int): KravUtland {
         logger.debug("Starter prosess for henting av krav fra utloand (P2000...)")
         //henter ut maping til lokal variabel for enkel uthenting.0
-        val pesystime = timingService.timedStart("pesys_hentKravUtland")
 
         return if (bucId < 1000) {
             logger.debug("henter ut type fra mockMap<type, KravUtland> som legges inn i mockPutKravFraUtland(key, KravUtland alt under 1000)")
@@ -53,22 +50,16 @@ class PensjonsinformasjonUtlandService(private val timingService: TimingService)
             when {
                 erAlderpensjon(seds) -> {
                     logger.debug("type er alderpensjon")
-                    timingService.timesStop(pesystime)
-                    getCounter("HENTKRAVUTLANDOK").increment()
                     kravAlderpensjonUtland(seds)
 
                 }
                 erUforpensjon(seds) -> {
                     logger.debug("type er utføre")
-                    timingService.timesStop(pesystime)
-                    getCounter("HENTKRAVUTLANDOK").increment()
                     kravUforepensjonUtland(seds)
 
                 }
                 else -> {
                     logger.debug("type er gjenlevende")
-                    timingService.timesStop(pesystime)
-                    getCounter("HENTKRAVUTLANDOK").increment()
                     kravGjenlevendeUtland(seds)
                 }
             }
