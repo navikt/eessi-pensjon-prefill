@@ -7,7 +7,6 @@ import no.nav.eessi.pensjon.fagmodul.eux.basismodel.BucSedResponse
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Rinasak
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Vedlegg
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Buc
-import no.nav.eessi.pensjon.fagmodul.metrics.getCounter
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Krav
@@ -52,7 +51,7 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate,
     fun opprettSvarSedOnBuc(navSED: SED, euxCaseId: String, parentDocumentId: String): BucSedResponse {
         val euxUrlpath = "/buc/{RinaSakId}/sed/{DokuemntId}/svar"
         logger.debug("prøver å kontakte eux-rina-api : $euxUrlpath")
-        return opprettSed(euxUrlpath, navSED.toJsonSkipEmpty(), euxCaseId, "OpprettSvarSed", "Feil ved opprettSvarSed", parentDocumentId)
+        return opprettSed(euxUrlpath, navSED.toJsonSkipEmpty(), euxCaseId, MetricsHelper.MeterName.OpprettSvarSED, "Feil ved opprettSvarSed", parentDocumentId)
     }
 
 
@@ -60,13 +59,13 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate,
     @Throws(EuxGenericServerException::class, SedDokumentIkkeOpprettetException::class)
     fun opprettSedOnBuc(navSED: SED, euxCaseId: String): BucSedResponse {
         val euxUrlpath = "/buc/{RinaSakId}/sed"
-        return opprettSed(euxUrlpath, navSED.toJsonSkipEmpty(), euxCaseId, "OpprettSed", "Feil ved opprettSed",null)
+        return opprettSed(euxUrlpath, navSED.toJsonSkipEmpty(), euxCaseId, MetricsHelper.MeterName.OpprettSED, "Feil ved opprettSed", null)
     }
 
 
     //ny SED på ekisterende type eller ny svar SED på ekisternede rina
     @Throws(EuxGenericServerException::class, SedDokumentIkkeOpprettetException::class)
-    fun opprettSed(urlPath: String, navSEDjson: String, euxCaseId: String, metricName: String, errorMessage: String, parentDocumentId: String?): BucSedResponse {
+    fun opprettSed(urlPath: String, navSEDjson: String, euxCaseId: String, metricName: MetricsHelper.MeterName, errorMessage: String, parentDocumentId: String?): BucSedResponse {
 
         val uriParams = mapOf("RinaSakId" to euxCaseId, "DokuemntId" to parentDocumentId).filter { it.value != null }
         val builder = UriComponentsBuilder.fromUriString(urlPath)
@@ -81,9 +80,9 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate,
         val response = restTemplateErrorhandler(
                 {
                     euxOidcRestTemplate.exchange(builder.toUriString(),
-                    HttpMethod.POST,
-                    httpEntity,
-                    String::class.java)
+                            HttpMethod.POST,
+                            httpEntity,
+                            String::class.java)
                 }
                 , euxCaseId
                 , metricName
@@ -129,10 +128,10 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate,
                             String::class.java)
                 }
                 , euxCaseId
-                , "SedByDocumentId"
+                , MetricsHelper.MeterName.SEDByDocumentId
                 , "Feil ved henting av Sed med DocId: $documentId"
         )
-        return  response.body ?: {
+        return response.body ?: {
             logger.error("Feiler ved lasting av navSed: ${builder.toUriString()}")
             throw SedDokumentIkkeLestException("Feiler ved lesing av navSED, feiler ved uthenting av SED")
         }()
@@ -174,20 +173,21 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate,
         logger.info("Prøver å kontakte EUX /${builder.toUriString()}")
 
         val response = restTemplateErrorhandler(
-                {
+                restTemplateFunction = {
                     euxOidcRestTemplate.exchange(
-                    builder.toUriString(),
-                    HttpMethod.GET,
-                    null,
-                    String::class.java)
+                            builder.toUriString(),
+                            HttpMethod.GET,
+                            null,
+                            String::class.java)
                 }
-                ,euxCaseId
-                ,"getbuc"
-                ,"Feiler ved metode GetBuc. "
+                , euxCaseId = euxCaseId
+                , metricName = MetricsHelper.MeterName.GetBUC
+                , prefixErrorMessage = "Feiler ved metode GetBuc. "
         )
         return mapJsonToAny(response.body ?: {
             logger.error("Feil med mapping euxCaseId $euxCaseId")
-            throw ServerException("Feil med Buc mapping, euxCaseId $euxCaseId")}(), typeRefs())
+            throw ServerException("Feil med Buc mapping, euxCaseId $euxCaseId")
+        }(), typeRefs())
     }
 
     /**
@@ -196,36 +196,23 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate,
      * @param documentId er iden til det unike dokuement/Sed som skal slettes.
      * true hvis alt ok, og sed slettt. Exception error hvis feil.
      */
-    @Throws(SedIkkeSlettetException::class, EuxServerException::class)
     fun deleteDocumentById(euxCaseId: String, documentId: String): Boolean {
         val path = "/buc/{RinaSakId}/sed/{DokumentId}"
         val uriParams = mapOf("RinaSakId" to euxCaseId, "DokumentId" to documentId)
         val builder = UriComponentsBuilder.fromUriString(path).buildAndExpand(uriParams)
 
-        try {
-            logger.info("Prøver å kontakte EUX /${builder.toUriString()}")
-
-            val response = euxOidcRestTemplate.exchange(builder.toUriString(),
-                    HttpMethod.DELETE,
-                    null,
-                    String::class.java)
-
-            if (response.statusCode.is2xxSuccessful) {
-                logger.info("Slettet SED document OK")
-                getCounter("SLETTSEDOK").increment()
-                return true
-            } else {
-                throw SedIkkeSlettetException("Feil, SED document ble ikke slettet")
-            }
-        } catch (sx: SedIkkeSlettetException) {
-            logger.error(sx.message)
-            getCounter("SLETTSEDFEIL").increment()
-            throw SedIkkeSlettetException(sx.message)
-        } catch (ex: Exception) {
-            logger.error(ex.message)
-            getCounter("SLETTSEDFEIL").increment()
-            throw EuxServerException(ex.message)
-        }
+        restTemplateErrorhandler(
+                {
+                    euxOidcRestTemplate.exchange(builder.toUriString(),
+                            HttpMethod.DELETE,
+                            null,
+                            String::class.java)
+                }
+                , euxCaseId
+                , MetricsHelper.MeterName.SlettSED
+                , "Feil, SED document ble ikke slettet"
+        )
+        return true
     }
 
     /**
@@ -251,8 +238,8 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate,
                                 String::class.java)
                     }
                     , euxCaseId
-                    ,"sendSED"
-                    ,"sending av Sed, "
+                    , MetricsHelper.MeterName.SendSED
+                    , "sending av Sed, "
             )
             true
         } catch (ex: Exception) {
@@ -277,7 +264,7 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate,
                             String::class.java)
                 }
                 , ""
-                , "Institusjoner"
+                , MetricsHelper.MeterName.Institusjoner
                 , "Feil ved innhenting av institusjoner"
         )
         return mapJsonToAny(responseInstitution.body!!, typeRefs())
@@ -299,12 +286,12 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate,
     }
 
     fun getFilteredArchivedaRinasaker(list: List<Rinasak>): List<String> {
-        val gyldigBucs = mutableListOf("H_BUC_07", "R_BUC_01", "R_BUC_02", "M_BUC_02", "M_BUC_03a","M_BUC_03b")
+        val gyldigBucs = mutableListOf("H_BUC_07", "R_BUC_01", "R_BUC_02", "M_BUC_02", "M_BUC_03a", "M_BUC_03b")
         gyldigBucs.addAll(initSedOnBuc().keys.map { it }.toList())
 
         return list.filterNot { rinasak -> rinasak.status == "archived" }
                 .filter { rinasak -> gyldigBucs.contains(rinasak.processDefinitionId) }
-                .sortedBy {  rinasak -> rinasak.id }
+                .sortedBy { rinasak -> rinasak.id }
                 .map { rinasak -> rinasak.id!! }
                 .toList()
     }
@@ -335,19 +322,6 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate,
      */
     private fun hentRinaSakIder(rinaSaker: List<Rinasak>) = rinaSaker.stream().map { it.id!! }.toList()
 
-    //TODO utgåår det er ingen gunn å hente alle buc på godkjente pernsjons-buctype?
-    fun getRinasakerPaaBuctype(): List<Rinasak> {
-        val rinasaker = mutableListOf<Rinasak>()
-        initSedOnBuc().keys.forEach { buctype ->
-            logger.debug("Hnter opp rinasaker på buctype: $buctype")
-            val result = getRinasaker("", "", buctype, "open")
-            logger.debug("Antall rinasaker : ${result.size}")
-            result.toCollection(rinasaker)
-        }
-        logger.debug("Totalt antall rinasaker på buctyper: ${rinasaker.size}")
-        return rinasaker.asSequence().sortedByDescending { it.id }.toList()
-    }
-
     /**
      * Lister alle rinasaker på valgt fnr eller euxcaseid, eller bucType...
      * fnr er påkrved resten er fritt
@@ -372,8 +346,8 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate,
                             String::class.java)
                 }
                 , euxCaseId ?: ""
-                    , "hentRinasaker"
-                ,"Feil ved Rinasaker"
+                , MetricsHelper.MeterName.HentRinasaker
+                , "Feil ved Rinasaker"
         )
 
         return mapJsonToAny(response.body!!, typeRefs())
@@ -381,10 +355,10 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate,
 
     fun getSingleBucAndSedView(euxCaseId: String): BucAndSedView {
         return try {
-            BucAndSedView.from( getBuc(euxCaseId) )
+            BucAndSedView.from(getBuc(euxCaseId))
         } catch (ex: Exception) {
             logger.error("Feiler ved utlevering av enkel bucandsedview ${ex.message}", ex)
-            BucAndSedView.fromErr( ex.message )
+            BucAndSedView.fromErr(ex.message)
         }
     }
 
@@ -392,13 +366,13 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate,
         val startTime = System.currentTimeMillis()
         val list = rinasaker
                 .map { rinaid ->
-                        try {
-                            BucAndSedView.from( getBuc( rinaid ) )
-                        } catch (ex: Exception) {
-                            logger.error(ex.message, ex)
-                            BucAndSedView.fromErr( ex.message )
-                        }
+                    try {
+                        BucAndSedView.from(getBuc(rinaid))
+                    } catch (ex: Exception) {
+                        logger.error(ex.message, ex)
+                        BucAndSedView.fromErr(ex.message)
                     }
+                }
                 .toList()
 
         logger.debug(" ferdig returnerer list av BucAndSedView. Antall BUC: ${list.size}")
@@ -419,19 +393,21 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate,
 
         logger.debug("Kontakter EUX for å prøve på opprette ny BUC med korrelasjonId: $correlationId")
         val response = restTemplateErrorhandler(
-            {
-                euxOidcRestTemplate.exchange(
-                builder.toUriString(),
-                HttpMethod.POST,
-                null,
-                String::class.java)
-            }
-            ,bucType
-            ,"createBuc"
-            ,"Opprett Buc, "
+                {
+                    euxOidcRestTemplate.exchange(
+                            builder.toUriString(),
+                            HttpMethod.POST,
+                            null,
+                            String::class.java)
+                }
+                , bucType
+                , MetricsHelper.MeterName.CreateBUC
+                , "Opprett Buc, "
         )
-        response.body?.let { return it } ?: { logger.error("Får ikke opprettet BUC på bucType: $bucType")
-            throw IkkeFunnetException("Fant ikke noen euxCaseId på bucType: $bucType")}()
+        response.body?.let { return it } ?: {
+            logger.error("Får ikke opprettet BUC på bucType: $bucType")
+            throw IkkeFunnetException("Fant ikke noen euxCaseId på bucType: $bucType")
+        }()
     }
 
     fun convertListInstitusjonItemToString(deltakere: List<InstitusjonItem>): String {
@@ -454,16 +430,16 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate,
         logger.debug("Kontakter EUX for å legge til deltager: $deltaker med korrelasjonId: $correlationId på type: $euxCaseId")
 
         val result = restTemplateErrorhandler(
-            {
-            euxOidcRestTemplate.exchange(
-                    url,
-                    HttpMethod.PUT,
-                    null,
-                    String::class.java)
-            }
-        , euxCaseId
-        , "putmottaker"
-        ,"Feiler ved behandling. Får ikke lagt til mottaker på Buc. "
+                {
+                    euxOidcRestTemplate.exchange(
+                            url,
+                            HttpMethod.PUT,
+                            null,
+                            String::class.java)
+                }
+                , euxCaseId
+                , MetricsHelper.MeterName.PutMottaker
+                , "Feiler ved behandling. Får ikke lagt til mottaker på Buc. "
         )
         return result.statusCode == HttpStatus.OK
 
@@ -575,29 +551,29 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate,
                 .queryParam("Kodeverk", "sedtyper")
                 .build()
 
-        val pingResult = restTemplateErrorhandler (
-            {
+        val pingResult = restTemplateErrorhandler(
+                {
                     euxOidcRestTemplate.exchange(
-                    builder.toUriString(),
-                    HttpMethod.GET,
-                    null,
-                    String::class.java)
-            }
-            ,""
-            ,"euxping"
-            ,""
+                            builder.toUriString(),
+                            HttpMethod.GET,
+                            null,
+                            String::class.java)
+                }
+                , ""
+                , MetricsHelper.MeterName.PingEux
+                , ""
         )
         return pingResult.statusCode == HttpStatus.OK
     }
 
     fun filterUtGyldigSedId(sedJson: String?): List<Pair<String, String>> {
-        val validSedtype = listOf("P2000","P2100","P2200","P1000",
-                "P5000","P6000","P7000", "P8000",
-                "P10000","P1100","P11000","P12000","P14000","P15000")
+        val validSedtype = listOf("P2000", "P2100", "P2200", "P1000",
+                "P5000", "P6000", "P7000", "P8000",
+                "P10000", "P1100", "P11000", "P12000", "P14000", "P15000")
         val sedRootNode = mapper.readTree(sedJson)
         return sedRootNode
-                .filterNot { node -> node.get("status").textValue() =="empty" }
-                .filter { node ->  validSedtype.contains(node.get("type").textValue()) }
+                .filterNot { node -> node.get("status").textValue() == "empty" }
+                .filter { node -> validSedtype.contains(node.get("type").textValue()) }
                 .map { node -> Pair(node.get("id").textValue(), node.get("type").textValue()) }
                 .sortedBy { (_, sorting) -> sorting }
                 .toList()
@@ -647,11 +623,11 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate,
         }
     }
 
-    fun <T> restTemplateErrorhandler(restTemplateFunction: () -> ResponseEntity<T>, euxCaseId: String, metricName: String, prefixErrorMessage: String): ResponseEntity<T> {
+    fun <T> restTemplateErrorhandler(restTemplateFunction: () -> ResponseEntity<T>, euxCaseId: String, metricName: MetricsHelper.MeterName, prefixErrorMessage: String): ResponseEntity<T> {
         return metricsHelper.measure(metricName) {
             return@measure try {
-                    val response = restTemplateFunction.invoke()
-                    response
+                val response = restTemplateFunction.invoke()
+                response
             } catch (hcee: HttpClientErrorException) {
                 val errorBody = hcee.responseBodyAsString
                 logger.error("$prefixErrorMessage, HttpClientError med euxCaseID: $euxCaseId, body: $errorBody")
@@ -703,7 +679,7 @@ class GenericUnprocessableEntity(message: String) : RuntimeException(message)
 class GatewayTimeoutException(message: String?) : RuntimeException(message)
 
 @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
-class ServerException(message: String?): RuntimeException(message)
+class ServerException(message: String?) : RuntimeException(message)
 
 //--- Disse er benyttet av restTemplateErrorhandler  -- slutt
 

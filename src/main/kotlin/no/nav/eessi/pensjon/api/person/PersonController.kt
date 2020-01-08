@@ -41,7 +41,7 @@ class PersonController(private val aktoerregisterService: AktoerregisterService,
     fun getPerson(@PathVariable("aktoerid", required = true) aktoerid: String): ResponseEntity<Any> {
 
         auditLogger.log("/person/{$aktoerid}", "getPerson")
-        return metricsHelper.measure("PersonControllerHentPerson") {
+        return metricsHelper.measure(MetricsHelper.MeterName.PersonControllerHentPerson) {
             hentPerson(aktoerid)
         }
     }
@@ -51,7 +51,7 @@ class PersonController(private val aktoerregisterService: AktoerregisterService,
     fun getNameOnly(@PathVariable("aktoerid", required = true) aktoerid: String): ResponseEntity<Any> {
 
         auditLogger.log("/personinfo/{$aktoerid}", "getNameOnly")
-        return metricsHelper.measure("PersonControllerHentPersonNavn") {
+        return metricsHelper.measure(MetricsHelper.MeterName.PersonControllerHentPersonNavn) {
             hentPerson(aktoerid) {
                 Personinformasjon(it.person.personnavn.sammensattNavn,
                         it.person.personnavn.fornavn,

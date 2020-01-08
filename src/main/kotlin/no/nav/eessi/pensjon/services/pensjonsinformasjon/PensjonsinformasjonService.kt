@@ -48,7 +48,7 @@ class PensjonsinformasjonService(
     }
     @Throws(IkkeFunnetException::class)
     fun hentKunSakType(sakId: String, aktoerid: String): Pensjontype {
-        return metricsHelper.measure("PensjoninformasjonHentKunSakType") {
+        return metricsHelper.measure(MetricsHelper.MeterName.PensjoninformasjonHentKunSakType) {
             return@measure try {
                 val sak = finnSak(sakId, hentAltPaaAktoerId(aktoerid)) ?: throw IkkeFunnetException("Sak ikke funnet")
                 Pensjontype(sakId, sak.sakType)
@@ -65,7 +65,7 @@ class PensjonsinformasjonService(
 
         //APIet skal ha urlen {host}:{port}/pensjon-ws/api/pensjonsinformasjon/v1/{ressurs}?sakId=123+fom=2018-01-01+tom=2018-28-02.
 
-        return metricsHelper.measure("PensjoninformasjonHentAltPaaIdent") {
+        return metricsHelper.measure(MetricsHelper.MeterName.PensjoninformasjonHentAltPaaIdent) {
             val informationBlocks = listOf(
                     InformasjonsType.BRUKERS_SAKER_LISTE
             )
@@ -77,7 +77,7 @@ class PensjonsinformasjonService(
 
             logger.debug("Requestbody:\n${document.documentToString()}")
 
-            val response = doRequest("/aktor/", aktoerId, document.documentToString(), "PensjoninformasjonHentAltPaaIdentRequester")
+            val response = doRequest("/aktor/", aktoerId, document.documentToString(), MetricsHelper.MeterName.PensjoninformasjonHentAltPaaIdentRequester)
             validateResponse(informationBlocks, response)
 
             response
@@ -88,7 +88,7 @@ class PensjonsinformasjonService(
     @Throws(PensjoninformasjonException::class, HttpServerErrorException::class, HttpClientErrorException::class)
     fun hentAltPaaVedtak(vedtaksId: String): Pensjonsinformasjon {
 
-        return metricsHelper.measure("PensjoninformasjonAltPaaVedtak") {
+        return metricsHelper.measure(MetricsHelper.MeterName.PensjoninformasjonAltPaaVedtak) {
 
             val informationBlocks = listOf(
                     InformasjonsType.AVDOD,
@@ -111,7 +111,7 @@ class PensjonsinformasjonService(
                 requestBuilder.addPensjonsinformasjonElement(document, it)
             }
             logger.debug("Requestbody:\n${document.documentToString()}")
-            val response = doRequest("/vedtak", vedtaksId, document.documentToString(), "PensjoninformasjonAltPaaVedtakRequester")
+            val response = doRequest("/vedtak", vedtaksId, document.documentToString(), MetricsHelper.MeterName.PensjoninformasjonAltPaaVedtakRequester)
             validateResponse(informationBlocks, response)
 
             response
@@ -123,7 +123,7 @@ class PensjonsinformasjonService(
     }
 
     @Throws(PensjoninformasjonException::class, HttpServerErrorException::class, HttpClientErrorException::class)
-    private fun doRequest(path: String, id: String, requestBody: String, metricName: String): Pensjonsinformasjon {
+    private fun doRequest(path: String, id: String, requestBody: String, metricName: MetricsHelper.MeterName): Pensjonsinformasjon {
 
         val headers = HttpHeaders()
         headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_XML_VALUE)

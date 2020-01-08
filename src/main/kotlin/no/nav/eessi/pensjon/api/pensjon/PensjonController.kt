@@ -32,7 +32,7 @@ class PensjonController(private val pensjonsinformasjonService: Pensjonsinformas
     fun hentPensjonSakType(@PathVariable("sakId", required = true) sakId: String, @PathVariable("aktoerId", required = true) aktoerId: String): ResponseEntity<String>? {
         auditlogger.log("/saktype/{$sakId}/{$aktoerId}", "hentPensjonSakType")
 
-        return metricsHelper.measure("PensjonControllerHentSakType") {
+        return metricsHelper.measure(MetricsHelper.MeterName.PensjonControllerHentSakType) {
             logger.debug("Henter sakstype på $sakId / $aktoerId")
 
             return@measure try {

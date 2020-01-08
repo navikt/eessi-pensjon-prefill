@@ -60,7 +60,7 @@ class PersonV3Service(private val service: PersonV3,
             ))
         }
 
-        return metricsHelper.measure("hentPersonV3") {
+        return metricsHelper.measure(MetricsHelper.MeterName.HentPersonV3) {
             return@measure try {
                 logger.info("Kaller PersonV3.hentPerson service")
                 val resp = service.hentPerson(request)
