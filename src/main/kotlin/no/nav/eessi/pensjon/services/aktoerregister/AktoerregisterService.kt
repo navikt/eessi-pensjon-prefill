@@ -2,8 +2,6 @@ package no.nav.eessi.pensjon.services.aktoerregister
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import io.micrometer.core.instrument.Counter
-import io.micrometer.core.instrument.Metrics
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import no.nav.eessi.pensjon.metrics.MetricsHelper
 import org.slf4j.LoggerFactory
@@ -36,13 +34,6 @@ class AktoerregisterService(private val aktoerregisterOidcRestTemplate: RestTemp
 
     private val logger = LoggerFactory.getLogger(AktoerregisterService::class.java)
 
-    private val aktoerregister_teller_navn = "eessipensjon_fagmodul.aktoerregister"
-    private val aktoerregister_teller_type_vellykkede = counter(aktoerregister_teller_navn, "vellykkede")
-    private val aktoerregister_teller_type_feilede = counter(aktoerregister_teller_navn, "feilede")
-
-    final fun counter(name: String, type: String): Counter {
-        return Metrics.counter(name, "type", type)
-    }
 
     @Throws(AktoerregisterException::class, ManglerAktoerIdException::class)
     fun hentPinForAktoer(aktorid: String?) = hentGjeldendeNorskIdentForAktorId(aktorid)
@@ -110,7 +101,7 @@ class AktoerregisterService(private val aktoerregisterOidcRestTemplate: RestTemp
                     .queryParam("gjeldende", gjeldende)
             logger.info("Kaller aktørregisteret: /identer")
 
-            var responseEntity: ResponseEntity<String>? = null
+            val responseEntity: ResponseEntity<String>?
             return@measure try {
                 responseEntity = aktoerregisterOidcRestTemplate.exchange(uriBuilder.toUriString(),
                         HttpMethod.GET,

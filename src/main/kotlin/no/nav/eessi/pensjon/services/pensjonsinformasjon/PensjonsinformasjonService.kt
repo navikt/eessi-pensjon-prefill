@@ -2,11 +2,12 @@ package no.nav.eessi.pensjon.services.pensjonsinformasjon
 
 
 import com.google.common.base.Preconditions
-import io.micrometer.core.instrument.Metrics
-import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry
+import no.nav.eessi.pensjon.metrics.MetricsHelper
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import no.nav.pensjon.v1.sak.V1Sak
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.*
 import org.springframework.stereotype.Service
 import org.springframework.web.bind.annotation.ResponseStatus
@@ -22,12 +23,14 @@ import javax.xml.transform.stream.StreamSource
 @Service
 class PensjonsinformasjonService(
         private val pensjonsinformasjonOidcRestTemplate: RestTemplate,
-        private val requestBuilder: RequestBuilder) {
+        private val requestBuilder: RequestBuilder,
+        @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper(SimpleMeterRegistry())) {
 
     companion object {
         private val logger = LoggerFactory.getLogger(PensjonsinformasjonService::class.java)
 
         fun finnSak(sakId: String, pendata: Pensjonsinformasjon): V1Sak? {
+
             logger.debug("Søker brukersSakerListe etter sakId: $sakId")
 
             val v1saklist = pendata.brukersSakerListe.brukersSakerListe
@@ -45,69 +48,74 @@ class PensjonsinformasjonService(
     }
     @Throws(IkkeFunnetException::class)
     fun hentKunSakType(sakId: String, aktoerid: String): Pensjontype {
-        try {
-            val sak = finnSak(sakId, hentAltPaaAktoerId(aktoerid)) ?: throw IkkeFunnetException("Sak ikke funnet")
-
-            return Pensjontype(
-                    sakId,
-                    sak.sakType)
-
-        } catch (ex: Exception) {
-            logger.warn("Saktype ikke funnet, mangler kravhode, ${ex.message}", ex)
-            throw IkkeFunnetException("Saktype ikke funnet")
+        return metricsHelper.measure("PensjoninformasjonHentKunSakType") {
+            return@measure try {
+                val sak = finnSak(sakId, hentAltPaaAktoerId(aktoerid)) ?: throw IkkeFunnetException("Sak ikke funnet")
+                Pensjontype(sakId, sak.sakType)
+            } catch (ex: Exception) {
+                logger.warn("Saktype ikke funnet, mangler kravhode, ${ex.message}", ex)
+                throw IkkeFunnetException("Saktype ikke funnet")
+            }
         }
-
     }
 
     @Throws(PensjoninformasjonException::class, HttpServerErrorException::class, HttpClientErrorException::class)
     fun hentAltPaaAktoerId(aktoerId: String): Pensjonsinformasjon {
         Preconditions.checkArgument(aktoerId.isNotBlank(), "AktoerId kan ikke være blank/tom")
+
         //APIet skal ha urlen {host}:{port}/pensjon-ws/api/pensjonsinformasjon/v1/{ressurs}?sakId=123+fom=2018-01-01+tom=2018-28-02.
 
-        val informationBlocks = listOf(
-                InformasjonsType.BRUKERS_SAKER_LISTE
-        )
-        val document = requestBuilder.getBaseRequestDocument()
+        return metricsHelper.measure("PensjoninformasjonHentAltPaaIdent") {
+            val informationBlocks = listOf(
+                    InformasjonsType.BRUKERS_SAKER_LISTE
+            )
+            val document = requestBuilder.getBaseRequestDocument()
 
-        informationBlocks.forEach {
-            requestBuilder.addPensjonsinformasjonElement(document, it)
+            informationBlocks.forEach {
+                requestBuilder.addPensjonsinformasjonElement(document, it)
+            }
+
+            logger.debug("Requestbody:\n${document.documentToString()}")
+
+            val response = doRequest("/aktor/", aktoerId, document.documentToString(), "PensjoninformasjonHentAltPaaIdentRequester")
+            validateResponse(informationBlocks, response)
+
+            response
         }
-
-        logger.debug("Requestbody:\n${document.documentToString()}")
-
-        val response = doRequest("/aktor/", aktoerId, document.documentToString(), "hentKrav")
-        validateResponse(informationBlocks, response)
-        return response
     }
 
 
     @Throws(PensjoninformasjonException::class, HttpServerErrorException::class, HttpClientErrorException::class)
     fun hentAltPaaVedtak(vedtaksId: String): Pensjonsinformasjon {
 
-        val informationBlocks = listOf(
-                InformasjonsType.AVDOD,
-                InformasjonsType.INNGANG_OG_EXPORT,
-                InformasjonsType.PERSON,
-                InformasjonsType.SAKALDER,
-                InformasjonsType.TRYGDEAVTALE,
-                InformasjonsType.TRYGDETID_AVDOD_FAR_LISTE,
-                InformasjonsType.TRYGDETID_AVDOD_LISTE,
-                InformasjonsType.TRYGDETID_AVDOD_MOR_LISTE,
-                InformasjonsType.TRYGDETID_LISTE,
-                InformasjonsType.VEDTAK,
-                InformasjonsType.VILKARSVURDERING_LISTE,
-                InformasjonsType.YTELSE_PR_MAANED_LISTE
-        )
+        return metricsHelper.measure("PensjoninformasjonAltPaaVedtak") {
 
-        val document = requestBuilder.getBaseRequestDocument()
+            val informationBlocks = listOf(
+                    InformasjonsType.AVDOD,
+                    InformasjonsType.INNGANG_OG_EXPORT,
+                    InformasjonsType.PERSON,
+                    InformasjonsType.SAKALDER,
+                    InformasjonsType.TRYGDEAVTALE,
+                    InformasjonsType.TRYGDETID_AVDOD_FAR_LISTE,
+                    InformasjonsType.TRYGDETID_AVDOD_LISTE,
+                    InformasjonsType.TRYGDETID_AVDOD_MOR_LISTE,
+                    InformasjonsType.TRYGDETID_LISTE,
+                    InformasjonsType.VEDTAK,
+                    InformasjonsType.VILKARSVURDERING_LISTE,
+                    InformasjonsType.YTELSE_PR_MAANED_LISTE
+            )
 
-        informationBlocks.forEach {
-            requestBuilder.addPensjonsinformasjonElement(document, it)
+            val document = requestBuilder.getBaseRequestDocument()
+
+            informationBlocks.forEach {
+                requestBuilder.addPensjonsinformasjonElement(document, it)
+            }
+            logger.debug("Requestbody:\n${document.documentToString()}")
+            val response = doRequest("/vedtak", vedtaksId, document.documentToString(), "PensjoninformasjonAltPaaVedtakRequester")
+            validateResponse(informationBlocks, response)
+
+            response
         }
-        logger.debug("Requestbody:\n${document.documentToString()}")
-        val response = doRequest("/vedtak", vedtaksId, document.documentToString(),"hentVedtak")
-        validateResponse(informationBlocks, response)
-        return response
     }
 
     private fun validateResponse(informationBlocks: List<InformasjonsType>, response: Pensjonsinformasjon) {
@@ -123,50 +131,39 @@ class PensjonsinformasjonService(
 
         val uriBuilder = UriComponentsBuilder.fromPath(path).pathSegment(id)
 
-        return Metrics.timer("eessipensjon_fagmodul.$metricName", "api","pensjoninformasjon","service","fagmodul-pesys").recordCallable {
-            try {
-                    //val responseEntity = pensjonsinformasjonOidcRestTemplate.exchange(
+        return metricsHelper.measure(metricName) {
+             return@measure try {
                 val responseEntity = pensjonsinformasjonOidcRestTemplate.exchange(
                             uriBuilder.toUriString(),
                             HttpMethod.POST,
                             requestEntity,
                             String::class.java)
 
-                if (responseEntity.statusCode.isError) {
-                    logger.error("Received ${responseEntity.statusCode} from pensjonsinformasjon")
-                    if (responseEntity.hasBody()) {
-                        logger.error(responseEntity.body.toString())
-                    }
-                    //throw RuntimeException("Received ${responseEntity.statusCode} ${responseEntity.statusCode.reasonPhrase} from pensjonsinformasjon")
-                    throw PensjoninformasjonException("Received ${responseEntity.statusCode} ${responseEntity.statusCode.reasonPhrase} from pensjonsinformasjon")
-                }
-
                 val context = JAXBContext.newInstance(Pensjonsinformasjon::class.java)
                 val unmarshaller = context.createUnmarshaller()
-                val body = responseEntity.body
+                val body : String = responseEntity.body!!
 
                 logger.debug("Pensjonsinformasjon responsebody:\n $body \n")
                 val res = unmarshaller.unmarshal(StreamSource(StringReader(body)), Pensjonsinformasjon::class.java)
 
-                Metrics.counter("eessipensjon_fagmodul.$metricName", "type", "vellykkede").increment()
                 res.value as Pensjonsinformasjon
 
-            } catch (se: HttpServerErrorException) {
-                Metrics.counter("eessipensjon_fagmodul.$metricName", "type", "feilede").increment()
-                logger.error("Feiler ved Serverfeil mot PESYS", se)
-                throw se
-            } catch (ce: HttpClientErrorException) {
-                Metrics.counter("eessipensjon_fagmodul.$metricName", "type", "feilede").increment()
-                logger.error("Feiler ved Clientfeil mot PESYS", ce)
-                throw ce
+            } catch (hsee: HttpServerErrorException) {
+                val errorBody = hsee.responseBodyAsString
+                logger.error("Feiler med HttpServerError body: $errorBody", hsee)
+                throw hsee
+            } catch (hcee: HttpClientErrorException) {
+                val errorBody = hcee.responseBodyAsString
+                logger.error("Feiler med HttpClientError body: $errorBody", hcee)
+                throw hcee
             } catch (ex: Exception) {
-                Metrics.counter("eessipensjon_fagmodul.$metricName", "type", "feilede").increment()
                 logger.error("Feil med kontakt til PESYS pensjoninformajson, ${ex.message}")
                 throw PensjoninformasjonException("Feil med kontakt til PESYS pensjoninformajson. melding; ${ex.message}")
             }
         }
     }
 
+    //selftest
     @Throws(PensjoninformasjonException::class, HttpServerErrorException::class, HttpClientErrorException::class)
     fun doPing(): Boolean {
         val uriBuilder = UriComponentsBuilder.fromPath("/ping")

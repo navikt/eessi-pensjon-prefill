@@ -28,7 +28,16 @@ class MetricsHelper(val registry: MeterRegistry) {
                 "putmottaker",
                 "OpprettSed",
                 "sendSED",
-                "getbuc"
+                "getbuc",
+                "PensjoninformasjonHentKunSakType",
+                "PensjoninformasjonHentAltPaaIdent",
+                "PensjoninformasjonHentAltPaaIdentRequester",
+                "PensjoninformasjonAltPaaVedtak",
+                "PensjoninformasjonAltPaaVedtakRequester",
+                "AktoerNorskIdentForAktorId",
+                "AktoerforNorskIdent",
+                "AktoerRequester",
+                "hentPersonV3"
 
                 ).forEach {counterName ->
             Counter.builder(measureMeterName)
