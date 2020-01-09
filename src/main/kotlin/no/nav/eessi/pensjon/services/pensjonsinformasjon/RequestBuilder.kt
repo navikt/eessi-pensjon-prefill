@@ -22,7 +22,7 @@ class RequestBuilder {
     private val fullRequestDocument: Document
 
     init {
-        fullRequestDocument = documentBuilder.parse(ResourceUtils.getURL("classpath:schemas/pensjonsinformasjon-xsd/pensjonsinformasjon/v1/v1.Pensjonsinformasjon.xsd").openStream())
+        fullRequestDocument = documentBuilder.parse(ResourceUtils.getURL("classpath:pensjonsinformasjon-xsd/pensjonsinformasjon/v1/v1.Pensjonsinformasjon.xsd").openStream())
     }
 
     fun addPensjonsinformasjonElement(document: Document, informasjonsType: InformasjonsType) {
