@@ -163,13 +163,12 @@ test {
     useJUnitPlatform()
 }
 
-ext.xsdTemp = "${projectDir}/src/main/resources/xsdtemp"
-ext.schemasDir = "${projectDir}/src/main/resources/schemas"
+ext.xsdTemp = "${buildDir}/xsdtemp"
+ext.schemasDir = "${buildDir}/schemas"
 ext.pensjonsinformasjonDir = "${schemasDir}/${configurations.xsd.dependencies[0].name}"
-ext.xsdArtifacrName = "pensjonsinformasjon-xsd-9.4.10.jar"
+ext.xsdArtifactName = "pensjonsinformasjon-xsd-9.4.10.jar"
 
 task copyPensjonsinformasjonXsd(type: Copy) {
-    println("xsdArtifactFolder: " + xsdTemp)
     from {
         configurations.xsd.asFileTree.each { artifact ->
             println("ArtifactName: " + artifact.name)
@@ -181,30 +180,24 @@ task copyPensjonsinformasjonXsd(type: Copy) {
 task copyPensjonsinformasjonXsdsFromArtifacts(type: Copy) {
     with copyPensjonsinformasjonXsd
 
-    println("Artifact: " + xsdArtifacrName)
-    println("XsdTemp folder and ArtifactName: " + xsdTemp +"/"+ xsdArtifacrName)
+    println("XsdTemp folder and ArtifactName: " + xsdTemp +"/"+ xsdArtifactName)
     println("Pensjoninformasjon: " + pensjonsinformasjonDir)
 
     includeEmptyDirs = false
-    from zipTree( xsdTemp + "/" + xsdArtifacrName)
+    from zipTree( xsdTemp + "/" + xsdArtifactName)
     include '**/*.xsd'
     into pensjonsinformasjonDir
-
 }
 
 jaxb {
     xsdDir = pensjonsinformasjonDir
 }
 
-compileKotlin.dependsOn tasks["xjc"]
 copyPensjonsinformasjonXsdsFromArtifacts.dependsOn tasks["copyPensjonsinformasjonXsd"]
 xjc.dependsOn tasks["copyPensjonsinformasjonXsdsFromArtifacts"]
+compileKotlin.dependsOn tasks["xjc"]
 
-clean.doFirst {
-    delete xsdTemp
-    delete pensjonsinformasjonDir
-}
-
+sourceSets["main"].resources.srcDir(schemasDir)
 sourceSets["main"].java.srcDir("${buildDir}/generated-sources/xjc")
 
 wrapper {
