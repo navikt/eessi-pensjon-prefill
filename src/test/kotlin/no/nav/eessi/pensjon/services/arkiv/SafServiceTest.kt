@@ -2,6 +2,7 @@ package no.nav.eessi.pensjon.services.arkiv
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.doThrow
 import com.nhaarman.mockitokotlin2.whenever
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
@@ -13,12 +14,15 @@ import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
 import org.skyscreamer.jsonassert.JSONAssert
 import org.springframework.http.HttpEntity
+import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.RestClientException
 import org.springframework.web.client.RestTemplate
 import java.io.File
 import java.io.FileInputStream
+import java.nio.charset.Charset
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.*
@@ -53,8 +57,10 @@ class SafServiceTest {
 
     @Test
     fun `gitt noe annet enn 200 httpCopde feil når metadata hentes så kast SafException med tilhørende httpCode`() {
-        whenever(safGraphQlOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java)))
-                .thenReturn(ResponseEntity("", HttpStatus.NOT_FOUND))
+
+        doThrow(HttpClientErrorException.create (HttpStatus.NOT_FOUND, HttpStatus.NOT_FOUND.reasonPhrase, HttpHeaders(), "".toByteArray(), Charset.defaultCharset()))
+                .whenever(safGraphQlOidcRestTemplate).exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java))
+
         assertThrows<SafException> {
             safService.hentDokumentMetadata("1234567891000")
         }
@@ -62,6 +68,7 @@ class SafServiceTest {
 
     @Test
     fun `gitt en feil når metadata hentes så kast SafException med tilhørende httpCode`() {
+
         whenever(safGraphQlOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java)))
                 .thenThrow(RestClientException("some error"))
         assertThrows<SafException> {
@@ -71,8 +78,10 @@ class SafServiceTest {
 
     @Test
     fun `gitt noe annet enn 200 httpCopde feil når dokumentinnhold hentes så kast SafException med tilhørende httpCode`() {
-        whenever(safRestOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java)))
-                .thenReturn(ResponseEntity("", HttpStatus.NOT_FOUND))
+
+        doThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, HttpStatus.NOT_FOUND.reasonPhrase, HttpHeaders(), "".toByteArray(), Charset.defaultCharset()))
+                .whenever(safRestOidcRestTemplate).exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java))
+
         assertThrows<SafException> {
             safService.hentDokumentInnhold("123", "456", VariantFormat.ARKIV)
         }
@@ -106,4 +115,5 @@ class SafServiceTest {
         assertEquals(sakIder.size, 1)
         assertEquals(sakIder[0], "1111")
     }
+
 }

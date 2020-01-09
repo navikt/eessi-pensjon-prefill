@@ -1,5 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.api
 
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import io.swagger.annotations.ApiOperation
 import no.nav.eessi.pensjon.fagmodul.eux.BucUtils
 import no.nav.eessi.pensjon.fagmodul.eux.EuxService
@@ -10,15 +11,16 @@ import no.nav.eessi.pensjon.fagmodul.prefill.MangelfulleInndataException
 import no.nav.eessi.pensjon.fagmodul.prefill.PrefillService
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.logging.AuditLogger
+import no.nav.eessi.pensjon.metrics.MetricsHelper
 import no.nav.eessi.pensjon.services.aktoerregister.AktoerregisterService
 import no.nav.eessi.pensjon.utils.toJson
 import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
 import no.nav.security.oidc.api.Protected
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-
 
 @Protected
 @RestController
@@ -26,7 +28,8 @@ import org.springframework.web.bind.annotation.*
 class SedController(private val euxService: EuxService,
                     private val prefillService: PrefillService,
                     private val aktoerService: AktoerregisterService,
-                    private val auditlogger: AuditLogger) {
+                    private val auditlogger: AuditLogger,
+                    @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper(SimpleMeterRegistry())) {
 
     private val logger = LoggerFactory.getLogger(SedController::class.java)
 
@@ -83,31 +86,35 @@ class SedController(private val euxService: EuxService,
     @PostMapping("/add")
     fun addInstutionAndDocument(@RequestBody request: ApiRequest): ShortDocumentItem {
         auditlogger.log("addInstutionAndDocument", request.aktoerId ?: "", request.toAudit())
-        val dataModel = ApiRequest.buildPrefillDataModelOnExisting(request, aktoerService.hentPinForAktoer(request.aktoerId), getAvdodAktoerId(request))
 
-        logger.info("kaller add (institutions and sed) rinaId: ${request.euxCaseId} bucType: ${request.buc} sedType: ${request.sed} aktoerId: ${request.aktoerId}")
-        logger.debug("Prøver å legge til Deltaker/Institusions på buc samt prefillSed og sende inn til Rina ")
-        val bucUtil = BucUtils(euxService.getBuc(dataModel.euxCaseID))
-        val nyeDeltakere = bucUtil.findNewParticipants(dataModel.getInstitutionsList())
-        if (nyeDeltakere.isNotEmpty()) {
-            logger.debug("DeltakerListe (InstitusjonItem) size: ${nyeDeltakere.size}")
-            val bucX005 = bucUtil.findFirstDocumentItemByType("X005")
-            if (bucX005 == null) {
-                logger.info("X005 finnes ikke på buc, legger til Deltakere/Institusjon på vanlig måte")
-                //kaste Exception dersom legge til deltakerfeiler?
-                euxService.putBucMottakere(dataModel.euxCaseID, nyeDeltakere)
-            } else {
-                logger.info("X005 finnes på buc, Sed X005 prefills og sendes inn")
-                val x005Liste = prefillService.prefillEnX005ForHverInstitusjon(nyeDeltakere, dataModel)
-                x005Liste.forEach { x005 -> euxService.opprettSedOnBuc(x005.sed, x005.euxCaseID) }
+        return metricsHelper.measure(MetricsHelper.MeterName.AddInstutionAndDocument) {
+            val dataModel = ApiRequest.buildPrefillDataModelOnExisting(request, aktoerService.hentPinForAktoer(request.aktoerId), getAvdodAktoerId(request))
+
+            logger.info("kaller add (institutions and sed) rinaId: ${request.euxCaseId} bucType: ${request.buc} sedType: ${request.sed} aktoerId: ${request.aktoerId}")
+            logger.debug("Prøver å legge til Deltaker/Institusions på buc samt prefillSed og sende inn til Rina ")
+            val bucUtil = BucUtils(euxService.getBuc(dataModel.euxCaseID))
+            val nyeDeltakere = bucUtil.findNewParticipants(dataModel.getInstitutionsList())
+            if (nyeDeltakere.isNotEmpty()) {
+                logger.debug("DeltakerListe (InstitusjonItem) size: ${nyeDeltakere.size}")
+                val bucX005 = bucUtil.findFirstDocumentItemByType("X005")
+                if (bucX005 == null) {
+                    logger.info("X005 finnes ikke på buc, legger til Deltakere/Institusjon på vanlig måte")
+                    //kaste Exception dersom legge til deltakerfeiler?
+                    euxService.putBucMottakere(dataModel.euxCaseID, nyeDeltakere)
+                } else {
+                    logger.info("X005 finnes på buc, Sed X005 prefills og sendes inn")
+                    val x005Liste = prefillService.prefillEnX005ForHverInstitusjon(nyeDeltakere, dataModel)
+                    x005Liste.forEach { x005 -> euxService.opprettSedOnBuc(x005.sed, x005.euxCaseID) }
+                }
             }
+            val data = prefillService.prefillSed(dataModel)
+            logger.info("Prøver å sende SED: ${dataModel.getSEDid()} inn på BUC: ${dataModel.euxCaseID}")
+            val docresult = euxService.opprettSedOnBuc(data.sed, data.euxCaseID)
+            logger.info("Opprettet ny SED med dokumentId: ${docresult.documentId}")
+            val result = BucUtils(euxService.getBuc(docresult.caseId)).findDocument(docresult.documentId)
+            logger.info("Henter BUC dokumentdata for ny SED")
+            result
         }
-        val data = prefillService.prefillSed(dataModel)
-        logger.debug("Prøver å sende SED:${dataModel.getSEDid()} inn på buc: ${dataModel.euxCaseID}")
-        val docresult = euxService.opprettSedOnBuc(data.sed, data.euxCaseID)
-        logger.info("Opprettet ny SED med dokumentId: ${docresult.documentId}")
-        return BucUtils(euxService.getBuc(docresult.caseId)).findDocument(docresult.documentId)
-
     }
 
     @ApiOperation("Oppretter en Sed som svar på en forespørsel-Sed")
@@ -177,7 +184,6 @@ class SedController(private val euxService: EuxService,
                     .or(it.startsWith("H07"))
                     .or(it.startsWith("H02")) }
                 .sorted()
-//                .filterNot { it.startsWith("P3000") }.sorted()
     }
 
     @ApiOperation("Henter ytelsetype fra P15000 på valgt Buc og Documentid")

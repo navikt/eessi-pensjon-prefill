@@ -11,6 +11,7 @@ import javax.annotation.PostConstruct
 class MetricsHelper(val registry: MeterRegistry) {
 
     enum class MeterName {
+        PrefillSed,
         PensjonControllerHentSakType,
         SafControllerMetadata,
         SafControllerInnhold,
@@ -23,6 +24,7 @@ class MetricsHelper(val registry: MeterRegistry) {
         CreateBUC,
         PutMottaker,
         OpprettSED,
+        AddInstutionAndDocument,
         SendSED,
         SlettSED,
         GetBUC,
@@ -35,7 +37,10 @@ class MetricsHelper(val registry: MeterRegistry) {
         AktoerforNorskIdent,
         AktoerRequester,
         HentPersonV3,
-        PingEux;
+        PingEux,
+        HentDokumentMetadata,
+        HentDokumentInnhold,
+        HentRinaSakIderFraDokumentMetadata;
     }
 
     /**
@@ -44,31 +49,6 @@ class MetricsHelper(val registry: MeterRegistry) {
      */
     @PostConstruct
     fun initCounters() {
-//        listOf("PensjonControllerHentSakType",
-//                "SafControllerMetadata",
-//                "SafControllerInnhold",
-//                "PersonControllerHentPerson",
-//                "PersonControllerHentPersonNavn",
-//                "OpprettSvarSed",
-//                "SedByDocumentId",
-//                "Institusjoner",
-//                "hentRinasaker",
-//                "createBuc",
-//                "putmottaker",
-//                "OpprettSed",
-//                "sendSED",
-//                "getbuc",
-//                "PensjoninformasjonHentKunSakType",
-//                "PensjoninformasjonHentAltPaaIdent",
-//                "PensjoninformasjonHentAltPaaIdentRequester",
-//                "PensjoninformasjonAltPaaVedtak",
-//                "PensjoninformasjonAltPaaVedtakRequester",
-//                "AktoerNorskIdentForAktorId",
-//                "AktoerforNorskIdent",
-//                "AktoerRequester",
-//                "hentPersonV3"
-//                ).forEach
-
         MeterName.values().forEach { counterName ->
             Counter.builder(measureMeterName)
                     .tag(typeTag, successTypeTagValue)
