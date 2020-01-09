@@ -83,6 +83,7 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
         exclude module: 'junit'
         exclude module: "mockito-core"
+        exclude module: 'junit-vintage-engine'
     }
 
     //json path
