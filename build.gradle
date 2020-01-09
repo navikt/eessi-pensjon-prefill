@@ -163,6 +163,12 @@ test {
     useJUnitPlatform()
 }
 
+// Temporary - until these misplaced dirs are cleaned in all builds
+processResources.doFirst {
+    delete "${projectDir}/src/main/resources/schemas"
+    delete "${projectDir}/src/main/resources/xsdtemp"
+}
+
 ext.xsdTemp = "${buildDir}/xsdtemp"
 ext.schemasDir = "${buildDir}/schemas"
 ext.pensjonsinformasjonDir = "${schemasDir}/${configurations.xsd.dependencies[0].name}"
