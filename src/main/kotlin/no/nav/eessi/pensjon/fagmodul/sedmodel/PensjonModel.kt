@@ -41,8 +41,19 @@ data class Pensjon(
 		val samletVedtak: SamletMeldingVedtak? = null,
 
 		//P10000 //P9000
-		val merinformasjon: Merinformasjon? = null
-        )
+		val merinformasjon: Merinformasjon? = null,
+
+		//P110000
+		val requestForPensionAmount: RequestForPensionAmount? = null,
+
+		//P12000
+		val anmodning13000verdi: String? = null,
+		//P13000
+		val pensjoninfo: List<PensjoninfoItem?>? = null,
+		val andrevedlegg: String? = null,
+		val foresporsel: Foresporsel? = null,
+		val pensjoninfotillegg: Pensjoninfotillegg? = null
+		)
 
 //P10000 -- innholder ytteligere informasjon om person (se kp. 5.1) som skal oversendes tilbake
 data class Merinformasjon(
@@ -78,6 +89,79 @@ data class Merinformasjon(
 
 		val ytelser: List<YtelserItem>? = null
 
+)
+
+//P11000
+data class RequestForPensionAmount(
+		val additionalInformation: String? = null,
+		val fixedPeriodEndDate: String? = null,
+		val requestForAmountType: String? = null,
+		val listOfAttachments: String? = null,
+		val fixedPeriodStartDate: String? = null,
+		val referenceToPersonNamedInSection: String? = null
+)
+
+//P12000
+data class Pensjonsavslag(
+		val tekstfelt: String? = null,
+		val pensjonstype: String? = null
+)
+
+data class Betalingsdetaljer(
+		val pensjonstype: String? = null,
+		val arbeidstotal: String? = null,
+		val valuta: String? = null,
+		val fradato: String? = null,
+		val betaldato: String? = null,
+		val effektueringsdato: String? = null,
+		val basertpaa: String? = null,
+		val bosattotal: String? = null,
+		val belop: String? = null,
+		val annenutbetalingshyppighet: String? = null,
+		val utbetalingshyppighet: String? = null
+)
+
+data class Pensjonsopphoring(
+		val pensjonstype: String? = null,
+		val tekstfelt: String? = null
+)
+
+//P12000-P13000
+data class PensjoninfoItem(
+		val pensjonsavslag: Pensjonsavslag? = null,
+		val betalingsdetaljer: Betalingsdetaljer? = null,
+		val pensjonsopphoring: Pensjonsopphoring? = null,
+		val tillegg: Tillegg? = null
+)
+
+data class Foresporsel(
+		val referanseTilPerson: String? = null
+)
+
+data class Pensjoninfotillegg(
+		val endret: List<EndretItem?>? = null,
+		val avslagsgrunn: String? = null,
+		val opphoraarsak: String? = null,
+		val opphorsdato: String? = null,
+		val sluttdato: String? = null
+)
+
+data class EndretItem(
+		val endringsdato: String? = null,
+		val belopetterendring: String? = null,
+		val belopforendring: String? = null
+)
+
+//P13000
+data class Tillegg(
+
+		val betalingsfradato: String? = null,
+		val valuta: String? = null,
+		val betalingstildato: String? = null,
+		val belop: String? = null,
+		val annenutbetalingshyppighet: String? = null,
+		val effektuertfradato: String? = null,
+		val utbetalingshyppighet: String? = null
 )
 
 data class Egenerklaering (

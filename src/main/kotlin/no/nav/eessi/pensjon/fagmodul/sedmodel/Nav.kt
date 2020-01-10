@@ -15,7 +15,10 @@ data class Nav(
 
         //H120
         val endredeforhold: Endredeforhold? = null,
-        val ytterligereinformasjon: String? = null
+        val ytterligereinformasjon: String? = null,
+
+        //P1000
+        val barnoppdragelse: Barnoppdragelse? = null
 )
 
 //H121
@@ -50,6 +53,36 @@ data class LeggtilinstitusjonGrunn(
 data class InstitusjonX005(
         val id: String,
         val navn: String
+)
+
+//P1000
+data class Barnoppdragelse(
+        val art442ECverdi: String? = null,
+        val relasjonperson: Relasjonperson? = null,
+        val merknakder: String? = null,
+        val periode: List<PeriodeItem?>? = null,
+        val svar: BarnoppdragelseSvar? = null,
+        val doedsdato: String? = null
+)
+
+data class BarnoppdragelseSvar(
+       val nasjonalverdi: String? = null,
+       val aktivitetverdi: String? = null,
+       val fradato: String? = null,
+       val merknader: String? = null
+)
+
+//P1000
+data class Relasjonperson(
+        val verdi: String? = null,
+       val merknad: String? = null
+)
+
+//P1000
+data class PeriodeItem(
+        val startdato: String? = null,
+        val land: String? = null,
+        val sluttdato: String? = null
 )
 
 data class Krav(
