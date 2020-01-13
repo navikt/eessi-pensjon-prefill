@@ -25,31 +25,32 @@ enum class SEDType {
     P1000,
     P1100,
     P11000,
-    P3000_FR,
-    P3000_IE,
-    P3000_HU,
-    P3000_LT,
-    P3000_IS,
-    P3000_UK,
-    P3000_NO,
-    P3000_IT,
-    P3000_SI,
-    P3000_MT,
-    P3000_BE,
-    P3000_EE,
-    P3000_AT,
-    P3000_BG,
-    P3000_LI,
-    P3000_DK,
-    P3000_SE,
-    P3000_FI,
-    P3000_PL,
-    P3000_DE,
-    P3000_ES,
-    P3000_PT,
-    P3000_LV,
-    P3000_SK,
-    P3000_NL;
+    P3000_FR, //Frankrike
+    P3000_RO, //Romania
+    P3000_IE, //Irland
+    P3000_HU, //Ungarn
+    P3000_LT, //Litauen
+    P3000_IS, //Island
+    P3000_UK, //Storbritannia
+    P3000_NO, //Norge
+    P3000_IT, //Italia
+    P3000_SI, //Slovenia
+    P3000_MT, //Malta
+    P3000_BE, //Belgia
+    P3000_EE, //Estland
+    P3000_AT, //Østrike
+    P3000_BG, //Bulgaria
+    P3000_LI, //Liechtenstein
+    P3000_DK, //Danmark
+    P3000_SE, //Sverige
+    P3000_FI, //Finland
+    P3000_PL, //Polen
+    P3000_DE, //Tyskland
+    P3000_ES, //Spania
+    P3000_PT, //Portugal
+    P3000_LV, //Latvia
+    P3000_SK, //Slovakia
+    P3000_NL; //Nederland
 
     companion object {
         @JvmStatic
@@ -62,4 +63,5 @@ enum class SEDType {
             }
         }
     }
+
 }
