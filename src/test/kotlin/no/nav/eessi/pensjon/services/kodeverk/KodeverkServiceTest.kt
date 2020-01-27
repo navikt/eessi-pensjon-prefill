@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.ArgumentMatchers
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.http.HttpEntity
@@ -57,6 +56,27 @@ class KodeverkServiceTest {
     fun hentingavIso2landkodevedbrukAvlandkode3() {
         val expected = "BMU"
         val landkode2 = "BM"
+
+        val mockResponseEntityISO3 = createResponseEntityFromJsonFile("src/test/resources/json/kodeverk/landkoderSammensattIso2.json")
+        doReturn(mockResponseEntityISO3)
+                .whenever(mockrestTemplate)
+                .exchange(
+                        eq("api/v1/hierarki/LandkoderSammensattISO2/noder"),
+                        any<HttpMethod>(),
+                        any<HttpEntity<Unit>>(),
+                        eq(String::class.java)
+                )
+
+        val actual = kodeverkService.finnLandkode3(landkode2)
+
+        Assertions.assertEquals(expected, actual)
+
+    }
+
+    @Test
+    fun hentingavIso2landkodevedbrukAvlandkode3part2() {
+        val expected = "ALB"
+        val landkode2 = "AL"
 
         val mockResponseEntityISO3 = createResponseEntityFromJsonFile("src/test/resources/json/kodeverk/landkoderSammensattIso2.json")
         doReturn(mockResponseEntityISO3)

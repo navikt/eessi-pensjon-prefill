@@ -1,3 +1,4 @@
+AL;ALB;Albania;H
 LV;LVA;Latvia;F
 LI;LIE;Liechtenstein;F
 LT;LTU;Litauen;F
