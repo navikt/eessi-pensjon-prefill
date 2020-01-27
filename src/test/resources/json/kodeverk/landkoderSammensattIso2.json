@@ -1,0 +1,2000 @@
+{
+  "hierarkinivaaer": [
+    "LandkoderISO2",
+    "Landkoder"
+  ],
+  "noder": {
+    "PR": {
+      "kode": "PR",
+      "undernoder": {
+        "PRI": {
+          "kode": "PRI"
+        }
+      }
+    },
+    "PS": {
+      "kode": "PS",
+      "undernoder": {
+        "PSE": {
+          "kode": "PSE"
+        }
+      }
+    },
+    "PT": {
+      "kode": "PT",
+      "undernoder": {
+        "PRT": {
+          "kode": "PRT"
+        }
+      }
+    },
+    "PW": {
+      "kode": "PW",
+      "undernoder": {
+        "PLW": {
+          "kode": "PLW"
+        }
+      }
+    },
+    "PY": {
+      "kode": "PY",
+      "undernoder": {
+        "PRY": {
+          "kode": "PRY"
+        }
+      }
+    },
+    "QA": {
+      "kode": "QA",
+      "undernoder": {
+        "QAT": {
+          "kode": "QAT"
+        }
+      }
+    },
+    "AD": {
+      "kode": "AD",
+      "undernoder": {
+        "AND": {
+          "kode": "AND"
+        }
+      }
+    },
+    "AE": {
+      "kode": "AE",
+      "undernoder": {
+        "ARE": {
+          "kode": "ARE"
+        }
+      }
+    },
+    "AF": {
+      "kode": "AF",
+      "undernoder": {
+        "AFG": {
+          "kode": "AFG"
+        }
+      }
+    },
+    "AG": {
+      "kode": "AG",
+      "undernoder": {
+        "ATG": {
+          "kode": "ATG"
+        }
+      }
+    },
+    "AI": {
+      "kode": "AI",
+      "undernoder": {
+        "AIA": {
+          "kode": "AIA"
+        }
+      }
+    },
+    "AL": {
+      "kode": "AL",
+      "undernoder": {
+        "ALB": {
+          "kode": "ALB"
+        }
+      }
+    },
+    "AM": {
+      "kode": "AM",
+      "undernoder": {
+        "ARM": {
+          "kode": "ARM"
+        }
+      }
+    },
+    "AO": {
+      "kode": "AO",
+      "undernoder": {
+        "AGO": {
+          "kode": "AGO"
+        }
+      }
+    },
+    "AR": {
+      "kode": "AR",
+      "undernoder": {
+        "ARG": {
+          "kode": "ARG"
+        }
+      }
+    },
+    "AS": {
+      "kode": "AS",
+      "undernoder": {
+        "ASM": {
+          "kode": "ASM"
+        }
+      }
+    },
+    "RE": {
+      "kode": "RE",
+      "undernoder": {
+        "REU": {
+          "kode": "REU"
+        }
+      }
+    },
+    "AT": {
+      "kode": "AT",
+      "undernoder": {
+        "AUT": {
+          "kode": "AUT"
+        }
+      }
+    },
+    "AU": {
+      "kode": "AU",
+      "undernoder": {
+        "AUS": {
+          "kode": "AUS"
+        }
+      }
+    },
+    "AW": {
+      "kode": "AW",
+      "undernoder": {
+        "ABW": {
+          "kode": "ABW"
+        }
+      }
+    },
+    "AX": {
+      "kode": "AX",
+      "undernoder": {
+        "ALA": {
+          "kode": "ALA"
+        }
+      }
+    },
+    "AZ": {
+      "kode": "AZ",
+      "undernoder": {
+        "AZE": {
+          "kode": "AZE"
+        }
+      }
+    },
+    "RO": {
+      "kode": "RO",
+      "undernoder": {
+        "ROU": {
+          "kode": "ROU"
+        }
+      }
+    },
+    "BA": {
+      "kode": "BA",
+      "undernoder": {
+        "BIH": {
+          "kode": "BIH"
+        }
+      }
+    },
+    "BB": {
+      "kode": "BB",
+      "undernoder": {
+        "BRB": {
+          "kode": "BRB"
+        }
+      }
+    },
+    "RS": {
+      "kode": "RS",
+      "undernoder": {
+        "SRB": {
+          "kode": "SRB"
+        }
+      }
+    },
+    "BD": {
+      "kode": "BD",
+      "undernoder": {
+        "BGD": {
+          "kode": "BGD"
+        }
+      }
+    },
+    "BE": {
+      "kode": "BE",
+      "undernoder": {
+        "BEL": {
+          "kode": "BEL"
+        }
+      }
+    },
+    "RU": {
+      "kode": "RU",
+      "undernoder": {
+        "RUS": {
+          "kode": "RUS"
+        }
+      }
+    },
+    "BF": {
+      "kode": "BF",
+      "undernoder": {
+        "BFA": {
+          "kode": "BFA"
+        }
+      }
+    },
+    "RW": {
+      "kode": "RW",
+      "undernoder": {
+        "RWA": {
+          "kode": "RWA"
+        }
+      }
+    },
+    "BG": {
+      "kode": "BG",
+      "undernoder": {
+        "BGR": {
+          "kode": "BGR"
+        }
+      }
+    },
+    "BH": {
+      "kode": "BH",
+      "undernoder": {
+        "BHR": {
+          "kode": "BHR"
+        }
+      }
+    },
+    "BI": {
+      "kode": "BI",
+      "undernoder": {
+        "BDI": {
+          "kode": "BDI"
+        }
+      }
+    },
+    "BJ": {
+      "kode": "BJ",
+      "undernoder": {
+        "BEN": {
+          "kode": "BEN"
+        }
+      }
+    },
+    "BL": {
+      "kode": "BL",
+      "undernoder": {
+        "BLM": {
+          "kode": "BLM"
+        }
+      }
+    },
+    "BM": {
+      "kode": "BM",
+      "undernoder": {
+        "BMU": {
+          "kode": "BMU"
+        }
+      }
+    },
+    "BN": {
+      "kode": "BN",
+      "undernoder": {
+        "BRN": {
+          "kode": "BRN"
+        }
+      }
+    },
+    "BO": {
+      "kode": "BO",
+      "undernoder": {
+        "BOL": {
+          "kode": "BOL"
+        }
+      }
+    },
+    "SA": {
+      "kode": "SA",
+      "undernoder": {
+        "SAU": {
+          "kode": "SAU"
+        }
+      }
+    },
+    "SB": {
+      "kode": "SB",
+      "undernoder": {
+        "SLB": {
+          "kode": "SLB"
+        }
+      }
+    },
+    "BQ": {
+      "kode": "BQ",
+      "undernoder": {
+        "BES": {
+          "kode": "BES"
+        }
+      }
+    },
+    "BR": {
+      "kode": "BR",
+      "undernoder": {
+        "BRA": {
+          "kode": "BRA"
+        }
+      }
+    },
+    "SC": {
+      "kode": "SC",
+      "undernoder": {
+        "SYC": {
+          "kode": "SYC"
+        }
+      }
+    },
+    "SD": {
+      "kode": "SD",
+      "undernoder": {
+        "SDN": {
+          "kode": "SDN"
+        }
+      }
+    },
+    "BS": {
+      "kode": "BS",
+      "undernoder": {
+        "BHS": {
+          "kode": "BHS"
+        }
+      }
+    },
+    "BT": {
+      "kode": "BT",
+      "undernoder": {
+        "BTN": {
+          "kode": "BTN"
+        }
+      }
+    },
+    "SE": {
+      "kode": "SE",
+      "undernoder": {
+        "SWE": {
+          "kode": "SWE"
+        }
+      }
+    },
+    "SG": {
+      "kode": "SG",
+      "undernoder": {
+        "SGP": {
+          "kode": "SGP"
+        }
+      }
+    },
+    "BV": {
+      "kode": "BV",
+      "undernoder": {
+        "BVT": {
+          "kode": "BVT"
+        }
+      }
+    },
+    "BW": {
+      "kode": "BW",
+      "undernoder": {
+        "BWA": {
+          "kode": "BWA"
+        }
+      }
+    },
+    "SH": {
+      "kode": "SH",
+      "undernoder": {
+        "SHN": {
+          "kode": "SHN"
+        }
+      }
+    },
+    "SI": {
+      "kode": "SI",
+      "undernoder": {
+        "SVN": {
+          "kode": "SVN"
+        }
+      }
+    },
+    "SJ": {
+      "kode": "SJ",
+      "undernoder": {
+        "SJM": {
+          "kode": "SJM"
+        }
+      }
+    },
+    "BY": {
+      "kode": "BY",
+      "undernoder": {
+        "BLR": {
+          "kode": "BLR"
+        }
+      }
+    },
+    "BZ": {
+      "kode": "BZ",
+      "undernoder": {
+        "BLZ": {
+          "kode": "BLZ"
+        }
+      }
+    },
+    "SK": {
+      "kode": "SK",
+      "undernoder": {
+        "SVK": {
+          "kode": "SVK"
+        }
+      }
+    },
+    "SL": {
+      "kode": "SL",
+      "undernoder": {
+        "SLE": {
+          "kode": "SLE"
+        }
+      }
+    },
+    "SM": {
+      "kode": "SM",
+      "undernoder": {
+        "SMR": {
+          "kode": "SMR"
+        }
+      }
+    },
+    "SN": {
+      "kode": "SN",
+      "undernoder": {
+        "SEN": {
+          "kode": "SEN"
+        }
+      }
+    },
+    "SO": {
+      "kode": "SO",
+      "undernoder": {
+        "SOM": {
+          "kode": "SOM"
+        }
+      }
+    },
+    "CA": {
+      "kode": "CA",
+      "undernoder": {
+        "CAN": {
+          "kode": "CAN"
+        }
+      }
+    },
+    "SR": {
+      "kode": "SR",
+      "undernoder": {
+        "SUR": {
+          "kode": "SUR"
+        }
+      }
+    },
+    "SS": {
+      "kode": "SS",
+      "undernoder": {
+        "SSD": {
+          "kode": "SSD"
+        }
+      }
+    },
+    "CC": {
+      "kode": "CC",
+      "undernoder": {
+        "CCK": {
+          "kode": "CCK"
+        }
+      }
+    },
+    "ST": {
+      "kode": "ST",
+      "undernoder": {
+        "STP": {
+          "kode": "STP"
+        }
+      }
+    },
+    "CD": {
+      "kode": "CD",
+      "undernoder": {
+        "COD": {
+          "kode": "COD"
+        }
+      }
+    },
+    "CF": {
+      "kode": "CF",
+      "undernoder": {
+        "CAF": {
+          "kode": "CAF"
+        }
+      }
+    },
+    "SV": {
+      "kode": "SV",
+      "undernoder": {
+        "SLV": {
+          "kode": "SLV"
+        }
+      }
+    },
+    "CG": {
+      "kode": "CG",
+      "undernoder": {
+        "COG": {
+          "kode": "COG"
+        }
+      }
+    },
+    "SX": {
+      "kode": "SX",
+      "undernoder": {
+        "SXM": {
+          "kode": "SXM"
+        }
+      }
+    },
+    "CH": {
+      "kode": "CH",
+      "undernoder": {
+        "CHE": {
+          "kode": "CHE"
+        }
+      }
+    },
+    "SY": {
+      "kode": "SY",
+      "undernoder": {
+        "SYR": {
+          "kode": "SYR"
+        }
+      }
+    },
+    "CI": {
+      "kode": "CI",
+      "undernoder": {
+        "CIV": {
+          "kode": "CIV"
+        }
+      }
+    },
+    "SZ": {
+      "kode": "SZ",
+      "undernoder": {
+        "SWZ": {
+          "kode": "SWZ"
+        }
+      }
+    },
+    "CK": {
+      "kode": "CK",
+      "undernoder": {
+        "COK": {
+          "kode": "COK"
+        }
+      }
+    },
+    "CL": {
+      "kode": "CL",
+      "undernoder": {
+        "CHL": {
+          "kode": "CHL"
+        }
+      }
+    },
+    "CM": {
+      "kode": "CM",
+      "undernoder": {
+        "CMR": {
+          "kode": "CMR"
+        }
+      }
+    },
+    "CN": {
+      "kode": "CN",
+      "undernoder": {
+        "CHN": {
+          "kode": "CHN"
+        }
+      }
+    },
+    "CO": {
+      "kode": "CO",
+      "undernoder": {
+        "COL": {
+          "kode": "COL"
+        }
+      }
+    },
+    "TC": {
+      "kode": "TC",
+      "undernoder": {
+        "TCA": {
+          "kode": "TCA"
+        }
+      }
+    },
+    "CR": {
+      "kode": "CR",
+      "undernoder": {
+        "CRI": {
+          "kode": "CRI"
+        }
+      }
+    },
+    "TD": {
+      "kode": "TD",
+      "undernoder": {
+        "TCD": {
+          "kode": "TCD"
+        }
+      }
+    },
+    "CS": {
+      "kode": "CS",
+      "undernoder": {
+        "SCG": {
+          "kode": "SCG"
+        }
+      }
+    },
+    "CU": {
+      "kode": "CU",
+      "undernoder": {
+        "CUB": {
+          "kode": "CUB"
+        }
+      }
+    },
+    "CV": {
+      "kode": "CV",
+      "undernoder": {
+        "CPV": {
+          "kode": "CPV"
+        }
+      }
+    },
+    "TG": {
+      "kode": "TG",
+      "undernoder": {
+        "TGO": {
+          "kode": "TGO"
+        }
+      }
+    },
+    "TH": {
+      "kode": "TH",
+      "undernoder": {
+        "THA": {
+          "kode": "THA"
+        }
+      }
+    },
+    "CW": {
+      "kode": "CW",
+      "undernoder": {
+        "CUW": {
+          "kode": "CUW"
+        }
+      }
+    },
+    "CX": {
+      "kode": "CX",
+      "undernoder": {
+        "CXR": {
+          "kode": "CXR"
+        }
+      }
+    },
+    "TJ": {
+      "kode": "TJ",
+      "undernoder": {
+        "TJK": {
+          "kode": "TJK"
+        }
+      }
+    },
+    "CY": {
+      "kode": "CY",
+      "undernoder": {
+        "CYP": {
+          "kode": "CYP"
+        }
+      }
+    },
+    "TK": {
+      "kode": "TK",
+      "undernoder": {
+        "TKL": {
+          "kode": "TKL"
+        }
+      }
+    },
+    "CZ": {
+      "kode": "CZ",
+      "undernoder": {
+        "CZE": {
+          "kode": "CZE"
+        }
+      }
+    },
+    "TL": {
+      "kode": "TL",
+      "undernoder": {
+        "TLS": {
+          "kode": "TLS"
+        }
+      }
+    },
+    "TM": {
+      "kode": "TM",
+      "undernoder": {
+        "TKM": {
+          "kode": "TKM"
+        }
+      }
+    },
+    "TN": {
+      "kode": "TN",
+      "undernoder": {
+        "TUN": {
+          "kode": "TUN"
+        }
+      }
+    },
+    "TO": {
+      "kode": "TO",
+      "undernoder": {
+        "TON": {
+          "kode": "TON"
+        }
+      }
+    },
+    "TR": {
+      "kode": "TR",
+      "undernoder": {
+        "TUR": {
+          "kode": "TUR"
+        }
+      }
+    },
+    "TT": {
+      "kode": "TT",
+      "undernoder": {
+        "TTO": {
+          "kode": "TTO"
+        }
+      }
+    },
+    "DE": {
+      "kode": "DE",
+      "undernoder": {
+        "DEU": {
+          "kode": "DEU"
+        }
+      }
+    },
+    "TV": {
+      "kode": "TV",
+      "undernoder": {
+        "TUV": {
+          "kode": "TUV"
+        }
+      }
+    },
+    "TW": {
+      "kode": "TW",
+      "undernoder": {
+        "TWN": {
+          "kode": "TWN"
+        }
+      }
+    },
+    "DJ": {
+      "kode": "DJ",
+      "undernoder": {
+        "DJI": {
+          "kode": "DJI"
+        }
+      }
+    },
+    "TZ": {
+      "kode": "TZ",
+      "undernoder": {
+        "TZA": {
+          "kode": "TZA"
+        }
+      }
+    },
+    "DK": {
+      "kode": "DK",
+      "undernoder": {
+        "DNK": {
+          "kode": "DNK"
+        }
+      }
+    },
+    "DM": {
+      "kode": "DM",
+      "undernoder": {
+        "DMA": {
+          "kode": "DMA"
+        }
+      }
+    },
+    "DO": {
+      "kode": "DO",
+      "undernoder": {
+        "DOM": {
+          "kode": "DOM"
+        }
+      }
+    },
+    "UA": {
+      "kode": "UA",
+      "undernoder": {
+        "UKR": {
+          "kode": "UKR"
+        }
+      }
+    },
+    "UG": {
+      "kode": "UG",
+      "undernoder": {
+        "UGA": {
+          "kode": "UGA"
+        }
+      }
+    },
+    "DZ": {
+      "kode": "DZ",
+      "undernoder": {
+        "DZA": {
+          "kode": "DZA"
+        }
+      }
+    },
+    "UM": {
+      "kode": "UM",
+      "undernoder": {
+        "UMI": {
+          "kode": "UMI"
+        }
+      }
+    },
+    "EC": {
+      "kode": "EC",
+      "undernoder": {
+        "ECU": {
+          "kode": "ECU"
+        }
+      }
+    },
+    "US": {
+      "kode": "US",
+      "undernoder": {
+        "USA": {
+          "kode": "USA"
+        }
+      }
+    },
+    "EE": {
+      "kode": "EE",
+      "undernoder": {
+        "EST": {
+          "kode": "EST"
+        }
+      }
+    },
+    "EG": {
+      "kode": "EG",
+      "undernoder": {
+        "EGY": {
+          "kode": "EGY"
+        }
+      }
+    },
+    "EH": {
+      "kode": "EH",
+      "undernoder": {
+        "ESH": {
+          "kode": "ESH"
+        }
+      }
+    },
+    "UY": {
+      "kode": "UY",
+      "undernoder": {
+        "URY": {
+          "kode": "URY"
+        }
+      }
+    },
+    "UZ": {
+      "kode": "UZ",
+      "undernoder": {
+        "UZB": {
+          "kode": "UZB"
+        }
+      }
+    },
+    "VA": {
+      "kode": "VA",
+      "undernoder": {
+        "VAT": {
+          "kode": "VAT"
+        }
+      }
+    },
+    "VC": {
+      "kode": "VC",
+      "undernoder": {
+        "VCT": {
+          "kode": "VCT"
+        }
+      }
+    },
+    "ER": {
+      "kode": "ER",
+      "undernoder": {
+        "ERI": {
+          "kode": "ERI"
+        }
+      }
+    },
+    "ES": {
+      "kode": "ES",
+      "undernoder": {
+        "ESP": {
+          "kode": "ESP"
+        }
+      }
+    },
+    "VE": {
+      "kode": "VE",
+      "undernoder": {
+        "VEN": {
+          "kode": "VEN"
+        }
+      }
+    },
+    "ET": {
+      "kode": "ET",
+      "undernoder": {
+        "ETH": {
+          "kode": "ETH"
+        }
+      }
+    },
+    "VG": {
+      "kode": "VG",
+      "undernoder": {
+        "VGB": {
+          "kode": "VGB"
+        }
+      }
+    },
+    "VI": {
+      "kode": "VI",
+      "undernoder": {
+        "VIR": {
+          "kode": "VIR"
+        }
+      }
+    },
+    "VN": {
+      "kode": "VN",
+      "undernoder": {
+        "VNM": {
+          "kode": "VNM"
+        }
+      }
+    },
+    "VU": {
+      "kode": "VU",
+      "undernoder": {
+        "VUT": {
+          "kode": "VUT"
+        }
+      }
+    },
+    "FI": {
+      "kode": "FI",
+      "undernoder": {
+        "FIN": {
+          "kode": "FIN"
+        }
+      }
+    },
+    "FJ": {
+      "kode": "FJ",
+      "undernoder": {
+        "FJI": {
+          "kode": "FJI"
+        }
+      }
+    },
+    "FK": {
+      "kode": "FK",
+      "undernoder": {
+        "FLK": {
+          "kode": "FLK"
+        }
+      }
+    },
+    "FM": {
+      "kode": "FM",
+      "undernoder": {
+        "FSM": {
+          "kode": "FSM"
+        }
+      }
+    },
+    "FO": {
+      "kode": "FO",
+      "undernoder": {
+        "FRO": {
+          "kode": "FRO"
+        }
+      }
+    },
+    "FR": {
+      "kode": "FR",
+      "undernoder": {
+        "FRA": {
+          "kode": "FRA"
+        }
+      }
+    },
+    "WF": {
+      "kode": "WF",
+      "undernoder": {
+        "WLF": {
+          "kode": "WLF"
+        }
+      }
+    },
+    "GA": {
+      "kode": "GA",
+      "undernoder": {
+        "GAB": {
+          "kode": "GAB"
+        }
+      }
+    },
+    "GB": {
+      "kode": "GB",
+      "undernoder": {
+        "GBR": {
+          "kode": "GBR"
+        }
+      }
+    },
+    "WS": {
+      "kode": "WS",
+      "undernoder": {
+        "WSM": {
+          "kode": "WSM"
+        }
+      }
+    },
+    "GD": {
+      "kode": "GD",
+      "undernoder": {
+        "GRD": {
+          "kode": "GRD"
+        }
+      }
+    },
+    "GE": {
+      "kode": "GE",
+      "undernoder": {
+        "GEO": {
+          "kode": "GEO"
+        }
+      }
+    },
+    "GF": {
+      "kode": "GF",
+      "undernoder": {
+        "GUF": {
+          "kode": "GUF"
+        }
+      }
+    },
+    "GG": {
+      "kode": "GG",
+      "undernoder": {
+        "GGY": {
+          "kode": "GGY"
+        }
+      }
+    },
+    "GH": {
+      "kode": "GH",
+      "undernoder": {
+        "GHA": {
+          "kode": "GHA"
+        }
+      }
+    },
+    "GI": {
+      "kode": "GI",
+      "undernoder": {
+        "GIB": {
+          "kode": "GIB"
+        }
+      }
+    },
+    "GL": {
+      "kode": "GL",
+      "undernoder": {
+        "GRL": {
+          "kode": "GRL"
+        }
+      }
+    },
+    "GM": {
+      "kode": "GM",
+      "undernoder": {
+        "GMB": {
+          "kode": "GMB"
+        }
+      }
+    },
+    "GN": {
+      "kode": "GN",
+      "undernoder": {
+        "GIN": {
+          "kode": "GIN"
+        }
+      }
+    },
+    "GP": {
+      "kode": "GP",
+      "undernoder": {
+        "GLP": {
+          "kode": "GLP"
+        }
+      }
+    },
+    "GQ": {
+      "kode": "GQ",
+      "undernoder": {
+        "GNQ": {
+          "kode": "GNQ"
+        }
+      }
+    },
+    "GR": {
+      "kode": "GR",
+      "undernoder": {
+        "GRC": {
+          "kode": "GRC"
+        }
+      }
+    },
+    "GS": {
+      "kode": "GS",
+      "undernoder": {
+        "SGS": {
+          "kode": "SGS"
+        }
+      }
+    },
+    "GT": {
+      "kode": "GT",
+      "undernoder": {
+        "GTM": {
+          "kode": "GTM"
+        }
+      }
+    },
+    "GU": {
+      "kode": "GU",
+      "undernoder": {
+        "GUM": {
+          "kode": "GUM"
+        }
+      }
+    },
+    "GW": {
+      "kode": "GW",
+      "undernoder": {
+        "GNB": {
+          "kode": "GNB"
+        }
+      }
+    },
+    "GY": {
+      "kode": "GY",
+      "undernoder": {
+        "GUY": {
+          "kode": "GUY"
+        }
+      }
+    },
+    "XK": {
+      "kode": "XK",
+      "undernoder": {
+        "XXK": {
+          "kode": "XXK"
+        }
+      }
+    },
+    "HK": {
+      "kode": "HK",
+      "undernoder": {
+        "HKG": {
+          "kode": "HKG"
+        }
+      }
+    },
+    "HM": {
+      "kode": "HM",
+      "undernoder": {
+        "HMD": {
+          "kode": "HMD"
+        }
+      }
+    },
+    "HN": {
+      "kode": "HN",
+      "undernoder": {
+        "HND": {
+          "kode": "HND"
+        }
+      }
+    },
+    "HR": {
+      "kode": "HR",
+      "undernoder": {
+        "HRV": {
+          "kode": "HRV"
+        }
+      }
+    },
+    "HT": {
+      "kode": "HT",
+      "undernoder": {
+        "HTI": {
+          "kode": "HTI"
+        }
+      }
+    },
+    "YE": {
+      "kode": "YE",
+      "undernoder": {
+        "YEM": {
+          "kode": "YEM"
+        }
+      }
+    },
+    "HU": {
+      "kode": "HU",
+      "undernoder": {
+        "HUN": {
+          "kode": "HUN"
+        }
+      }
+    },
+    "ID": {
+      "kode": "ID",
+      "undernoder": {
+        "IDN": {
+          "kode": "IDN"
+        }
+      }
+    },
+    "YT": {
+      "kode": "YT",
+      "undernoder": {
+        "MYT": {
+          "kode": "MYT"
+        }
+      }
+    },
+    "IE": {
+      "kode": "IE",
+      "undernoder": {
+        "IRL": {
+          "kode": "IRL"
+        }
+      }
+    },
+    "IL": {
+      "kode": "IL",
+      "undernoder": {
+        "ISR": {
+          "kode": "ISR"
+        }
+      }
+    },
+    "IM": {
+      "kode": "IM",
+      "undernoder": {
+        "IMN": {
+          "kode": "IMN"
+        }
+      }
+    },
+    "IN": {
+      "kode": "IN",
+      "undernoder": {
+        "IND": {
+          "kode": "IND"
+        }
+      }
+    },
+    "IO": {
+      "kode": "IO",
+      "undernoder": {
+        "IOT": {
+          "kode": "IOT"
+        }
+      }
+    },
+    "ZA": {
+      "kode": "ZA",
+      "undernoder": {
+        "ZAF": {
+          "kode": "ZAF"
+        }
+      }
+    },
+    "IQ": {
+      "kode": "IQ",
+      "undernoder": {
+        "IRQ": {
+          "kode": "IRQ"
+        }
+      }
+    },
+    "IR": {
+      "kode": "IR",
+      "undernoder": {
+        "IRN": {
+          "kode": "IRN"
+        }
+      }
+    },
+    "IS": {
+      "kode": "IS",
+      "undernoder": {
+        "ISL": {
+          "kode": "ISL"
+        }
+      }
+    },
+    "IT": {
+      "kode": "IT",
+      "undernoder": {
+        "ITA": {
+          "kode": "ITA"
+        }
+      }
+    },
+    "ZM": {
+      "kode": "ZM",
+      "undernoder": {
+        "ZMB": {
+          "kode": "ZMB"
+        }
+      }
+    },
+    "JE": {
+      "kode": "JE",
+      "undernoder": {
+        "JEY": {
+          "kode": "JEY"
+        }
+      }
+    },
+    "ZW": {
+      "kode": "ZW",
+      "undernoder": {
+        "ZWE": {
+          "kode": "ZWE"
+        }
+      }
+    },
+    "JM": {
+      "kode": "JM",
+      "undernoder": {
+        "JAM": {
+          "kode": "JAM"
+        }
+      }
+    },
+    "JO": {
+      "kode": "JO",
+      "undernoder": {
+        "JOR": {
+          "kode": "JOR"
+        }
+      }
+    },
+    "JP": {
+      "kode": "JP",
+      "undernoder": {
+        "JPN": {
+          "kode": "JPN"
+        }
+      }
+    },
+    "KE": {
+      "kode": "KE",
+      "undernoder": {
+        "KEN": {
+          "kode": "KEN"
+        }
+      }
+    },
+    "KG": {
+      "kode": "KG",
+      "undernoder": {
+        "KGZ": {
+          "kode": "KGZ"
+        }
+      }
+    },
+    "KH": {
+      "kode": "KH",
+      "undernoder": {
+        "KHM": {
+          "kode": "KHM"
+        }
+      }
+    },
+    "KI": {
+      "kode": "KI",
+      "undernoder": {
+        "KIR": {
+          "kode": "KIR"
+        }
+      }
+    },
+    "KM": {
+      "kode": "KM",
+      "undernoder": {
+        "COM": {
+          "kode": "COM"
+        }
+      }
+    },
+    "KN": {
+      "kode": "KN",
+      "undernoder": {
+        "KNA": {
+          "kode": "KNA"
+        }
+      }
+    },
+    "KP": {
+      "kode": "KP",
+      "undernoder": {
+        "PRK": {
+          "kode": "PRK"
+        }
+      }
+    },
+    "KR": {
+      "kode": "KR",
+      "undernoder": {
+        "KOR": {
+          "kode": "KOR"
+        }
+      }
+    },
+    "KW": {
+      "kode": "KW",
+      "undernoder": {
+        "KWT": {
+          "kode": "KWT"
+        }
+      }
+    },
+    "KY": {
+      "kode": "KY",
+      "undernoder": {
+        "CYM": {
+          "kode": "CYM"
+        }
+      }
+    },
+    "KZ": {
+      "kode": "KZ",
+      "undernoder": {
+        "KAZ": {
+          "kode": "KAZ"
+        }
+      }
+    },
+    "LA": {
+      "kode": "LA",
+      "undernoder": {
+        "LAO": {
+          "kode": "LAO"
+        }
+      }
+    },
+    "LB": {
+      "kode": "LB",
+      "undernoder": {
+        "LBN": {
+          "kode": "LBN"
+        }
+      }
+    },
+    "LC": {
+      "kode": "LC",
+      "undernoder": {
+        "LCA": {
+          "kode": "LCA"
+        }
+      }
+    },
+    "LI": {
+      "kode": "LI",
+      "undernoder": {
+        "LIE": {
+          "kode": "LIE"
+        }
+      }
+    },
+    "LK": {
+      "kode": "LK",
+      "undernoder": {
+        "LKA": {
+          "kode": "LKA"
+        }
+      }
+    },
+    "LR": {
+      "kode": "LR",
+      "undernoder": {
+        "LBR": {
+          "kode": "LBR"
+        }
+      }
+    },
+    "LS": {
+      "kode": "LS",
+      "undernoder": {
+        "LSO": {
+          "kode": "LSO"
+        }
+      }
+    },
+    "LT": {
+      "kode": "LT",
+      "undernoder": {
+        "LTU": {
+          "kode": "LTU"
+        }
+      }
+    },
+    "LU": {
+      "kode": "LU",
+      "undernoder": {
+        "LUX": {
+          "kode": "LUX"
+        }
+      }
+    },
+    "LV": {
+      "kode": "LV",
+      "undernoder": {
+        "LVA": {
+          "kode": "LVA"
+        }
+      }
+    },
+    "LY": {
+      "kode": "LY",
+      "undernoder": {
+        "LBY": {
+          "kode": "LBY"
+        }
+      }
+    },
+    "MA": {
+      "kode": "MA",
+      "undernoder": {
+        "MAR": {
+          "kode": "MAR"
+        }
+      }
+    },
+    "MC": {
+      "kode": "MC",
+      "undernoder": {
+        "MCO": {
+          "kode": "MCO"
+        }
+      }
+    },
+    "MD": {
+      "kode": "MD",
+      "undernoder": {
+        "MDA": {
+          "kode": "MDA"
+        }
+      }
+    },
+    "ME": {
+      "kode": "ME",
+      "undernoder": {
+        "MNE": {
+          "kode": "MNE"
+        }
+      }
+    },
+    "MF": {
+      "kode": "MF",
+      "undernoder": {
+        "MAF": {
+          "kode": "MAF"
+        }
+      }
+    },
+    "MG": {
+      "kode": "MG",
+      "undernoder": {
+        "MDG": {
+          "kode": "MDG"
+        }
+      }
+    },
+    "MH": {
+      "kode": "MH",
+      "undernoder": {
+        "MHL": {
+          "kode": "MHL"
+        }
+      }
+    },
+    "MK": {
+      "kode": "MK",
+      "undernoder": {
+        "MKD": {
+          "kode": "MKD"
+        }
+      }
+    },
+    "ML": {
+      "kode": "ML",
+      "undernoder": {
+        "MLI": {
+          "kode": "MLI"
+        }
+      }
+    },
+    "MM": {
+      "kode": "MM",
+      "undernoder": {
+        "MMR": {
+          "kode": "MMR"
+        }
+      }
+    },
+    "MN": {
+      "kode": "MN",
+      "undernoder": {
+        "MNG": {
+          "kode": "MNG"
+        }
+      }
+    },
+    "MO": {
+      "kode": "MO",
+      "undernoder": {
+        "MAC": {
+          "kode": "MAC"
+        }
+      }
+    },
+    "MP": {
+      "kode": "MP",
+      "undernoder": {
+        "MNP": {
+          "kode": "MNP"
+        }
+      }
+    },
+    "MQ": {
+      "kode": "MQ",
+      "undernoder": {
+        "MTQ": {
+          "kode": "MTQ"
+        }
+      }
+    },
+    "MR": {
+      "kode": "MR",
+      "undernoder": {
+        "MRT": {
+          "kode": "MRT"
+        }
+      }
+    },
+    "MS": {
+      "kode": "MS",
+      "undernoder": {
+        "MSR": {
+          "kode": "MSR"
+        }
+      }
+    },
+    "MT": {
+      "kode": "MT",
+      "undernoder": {
+        "MLT": {
+          "kode": "MLT"
+        }
+      }
+    },
+    "MU": {
+      "kode": "MU",
+      "undernoder": {
+        "MUS": {
+          "kode": "MUS"
+        }
+      }
+    },
+    "MV": {
+      "kode": "MV",
+      "undernoder": {
+        "MDV": {
+          "kode": "MDV"
+        }
+      }
+    },
+    "MW": {
+      "kode": "MW",
+      "undernoder": {
+        "MWI": {
+          "kode": "MWI"
+        }
+      }
+    },
+    "MX": {
+      "kode": "MX",
+      "undernoder": {
+        "MEX": {
+          "kode": "MEX"
+        }
+      }
+    },
+    "MY": {
+      "kode": "MY",
+      "undernoder": {
+        "MYS": {
+          "kode": "MYS"
+        }
+      }
+    },
+    "MZ": {
+      "kode": "MZ",
+      "undernoder": {
+        "MOZ": {
+          "kode": "MOZ"
+        }
+      }
+    },
+    "NA": {
+      "kode": "NA",
+      "undernoder": {
+        "NAM": {
+          "kode": "NAM"
+        }
+      }
+    },
+    "NC": {
+      "kode": "NC",
+      "undernoder": {
+        "NCL": {
+          "kode": "NCL"
+        }
+      }
+    },
+    "NE": {
+      "kode": "NE",
+      "undernoder": {
+        "NER": {
+          "kode": "NER"
+        }
+      }
+    },
+    "NF": {
+      "kode": "NF",
+      "undernoder": {
+        "NFK": {
+          "kode": "NFK"
+        }
+      }
+    },
+    "NG": {
+      "kode": "NG",
+      "undernoder": {
+        "NGA": {
+          "kode": "NGA"
+        }
+      }
+    },
+    "NI": {
+      "kode": "NI",
+      "undernoder": {
+        "NIC": {
+          "kode": "NIC"
+        }
+      }
+    },
+    "NL": {
+      "kode": "NL",
+      "undernoder": {
+        "NLD": {
+          "kode": "NLD"
+        }
+      }
+    },
+    "NO": {
+      "kode": "NO",
+      "undernoder": {
+        "NOR": {
+          "kode": "NOR"
+        }
+      }
+    },
+    "NP": {
+      "kode": "NP",
+      "undernoder": {
+        "NPL": {
+          "kode": "NPL"
+        }
+      }
+    },
+    "NR": {
+      "kode": "NR",
+      "undernoder": {
+        "NRU": {
+          "kode": "NRU"
+        }
+      }
+    },
+    "NU": {
+      "kode": "NU",
+      "undernoder": {
+        "NIU": {
+          "kode": "NIU"
+        }
+      }
+    },
+    "NZ": {
+      "kode": "NZ",
+      "undernoder": {
+        "NZL": {
+          "kode": "NZL"
+        }
+      }
+    },
+    "OM": {
+      "kode": "OM",
+      "undernoder": {
+        "OMN": {
+          "kode": "OMN"
+        }
+      }
+    },
+    "PA": {
+      "kode": "PA",
+      "undernoder": {
+        "PAN": {
+          "kode": "PAN"
+        }
+      }
+    },
+    "PE": {
+      "kode": "PE",
+      "undernoder": {
+        "PER": {
+          "kode": "PER"
+        }
+      }
+    },
+    "PF": {
+      "kode": "PF",
+      "undernoder": {
+        "PYF": {
+          "kode": "PYF"
+        }
+      }
+    },
+    "PG": {
+      "kode": "PG",
+      "undernoder": {
+        "PNG": {
+          "kode": "PNG"
+        }
+      }
+    },
+    "PH": {
+      "kode": "PH",
+      "undernoder": {
+        "PHL": {
+          "kode": "PHL"
+        }
+      }
+    },
+    "PK": {
+      "kode": "PK",
+      "undernoder": {
+        "PAK": {
+          "kode": "PAK"
+        }
+      }
+    },
+    "PL": {
+      "kode": "PL",
+      "undernoder": {
+        "POL": {
+          "kode": "POL"
+        }
+      }
+    },
+    "PM": {
+      "kode": "PM",
+      "undernoder": {
+        "SPM": {
+          "kode": "SPM"
+        }
+      }
+    },
+    "PN": {
+      "kode": "PN",
+      "undernoder": {
+        "PCN": {
+          "kode": "PCN"
+        }
+      }
+    }
+  }
+}
