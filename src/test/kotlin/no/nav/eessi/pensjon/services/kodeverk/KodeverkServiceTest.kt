@@ -28,9 +28,7 @@ class KodeverkServiceTest {
 
     @BeforeEach
     fun setup() {
-
-
-        kodeverkService = KodeverkService(mockrestTemplate, "eessi-fagmodul")
+       kodeverkService = KodeverkService(mockrestTemplate, "eessi-fagmodul")
     }
 
     @Test
@@ -42,7 +40,7 @@ class KodeverkServiceTest {
         doReturn(mockResponseEntityISO3)
                 .whenever(mockrestTemplate)
                 .exchange(
-                        eq("api/v1/hierarki/LandkoderSammensattISO2/noder"),
+                        eq("/api/v1/hierarki/LandkoderSammensattISO2/noder"),
                         any<HttpMethod>(),
                         any<HttpEntity<Unit>>(),
                         eq(String::class.java)
@@ -61,7 +59,7 @@ class KodeverkServiceTest {
         doReturn(mockResponseEntityISO3)
                 .whenever(mockrestTemplate)
                 .exchange(
-                        eq("api/v1/hierarki/LandkoderSammensattISO2/noder"),
+                        eq("/api/v1/hierarki/LandkoderSammensattISO2/noder"),
                         any<HttpMethod>(),
                         any<HttpEntity<Unit>>(),
                         eq(String::class.java)
@@ -82,7 +80,7 @@ class KodeverkServiceTest {
         doReturn(mockResponseEntityISO3)
                 .whenever(mockrestTemplate)
                 .exchange(
-                        eq("api/v1/hierarki/LandkoderSammensattISO2/noder"),
+                        eq("/api/v1/hierarki/LandkoderSammensattISO2/noder"),
                         any<HttpMethod>(),
                         any<HttpEntity<Unit>>(),
                         eq(String::class.java)
@@ -104,7 +102,7 @@ class KodeverkServiceTest {
         doReturn(mockResponseEntityISO3)
                 .whenever(mockrestTemplate)
                 .exchange(
-                        eq("api/v1/hierarki/LandkoderSammensattISO2/noder"),
+                        eq("/api/v1/hierarki/LandkoderSammensattISO2/noder"),
                         any<HttpMethod>(),
                         any<HttpEntity<Unit>>(),
                         eq(String::class.java)

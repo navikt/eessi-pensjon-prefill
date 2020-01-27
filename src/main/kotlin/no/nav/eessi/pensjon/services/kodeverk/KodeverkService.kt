@@ -17,7 +17,7 @@ import org.springframework.web.util.UriComponentsBuilder
 import java.util.*
 
 @Service
-class KodeverkService(private val kodeverkOidcRestTemplate: RestTemplate,
+class KodeverkService(private val kodeRestTemplate: RestTemplate,
                       @Value("\${app.name}") private val appName: String) {
 
     private val logger = LoggerFactory.getLogger(KodeverkService::class.java)
@@ -32,7 +32,7 @@ class KodeverkService(private val kodeverkOidcRestTemplate: RestTemplate,
 
     fun hentHierarki(hierarki: String) : String {
         //https://kodeverk.nais.adeo.no/api/v1/hierarki/LandkoderSammensattISO2/noder
-        val path = "api/v1/hierarki/{hierarki}/noder"
+        val path = "/api/v1/hierarki/{hierarki}/noder"
 
         val uriParams = mapOf("hierarki" to hierarki)
         val builder = UriComponentsBuilder.fromUriString(path).buildAndExpand(uriParams)
@@ -52,10 +52,8 @@ class KodeverkService(private val kodeverkOidcRestTemplate: RestTemplate,
             headers["Nav-Consumer-Id"] = appName
             headers["Nav-Call-Id"] = UUID.randomUUID().toString()
             val requestEntity = HttpEntity<String>(headers)
-
             logger.debug("Header: $requestEntity")
-
-            val response = kodeverkOidcRestTemplate.exchange(
+            val response = kodeRestTemplate.exchange(
                     builder.toUriString(),
                     HttpMethod.GET,
                     requestEntity,
@@ -83,6 +81,8 @@ class KodeverkService(private val kodeverkOidcRestTemplate: RestTemplate,
         return  noder.map { node -> Landkode(node.at("/kode").textValue(),
                 node.at("/undernoder").findPath("kode").textValue()) }.toList()
     }
+
+    fun hentAlleLandkoder() = hentLandKode().map { it.landkode2 + ";"+ it.landkode3 }.toString()
 
     fun finnLandkode2(alpha3: String): String? {
         val list = hentLandKode()
