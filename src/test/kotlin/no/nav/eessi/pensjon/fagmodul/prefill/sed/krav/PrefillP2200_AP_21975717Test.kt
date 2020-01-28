@@ -1,6 +1,5 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed.krav
 
-import com.nhaarman.mockitokotlin2.mock
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.prefill.ApiRequest
 import no.nav.eessi.pensjon.fagmodul.prefill.model.Prefill
@@ -16,6 +15,8 @@ import no.nav.eessi.pensjon.fagmodul.prefill.tps.FodselsnummerMother.generateRan
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.NavFodselsnummer
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillAdresse
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
+import no.nav.eessi.pensjon.services.geo.PostnummerService
+import no.nav.eessi.pensjon.services.kodeverk.KodeverkServiceMock
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import no.nav.eessi.pensjon.utils.toJson
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -45,7 +46,8 @@ class PrefillP2200_AP_21975717Test {
         ))
         prefillNav = PrefillNav(
                 brukerFromTPS = persondataFraTPS,
-                prefillAdresse = mock<PrefillAdresse>(),
+                prefillAdresse = PrefillAdresse(PostnummerService(), KodeverkServiceMock()),
+//                prefillAdresse = mock<PrefillAdresse>(),
                 institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO")
 
         dataFromPEN = lesPensjonsdataFraFil("P2000_21975717_AP_UTLAND.xml")
@@ -87,6 +89,10 @@ class PrefillP2200_AP_21975717Test {
         assertEquals("NOINST002, NO INST002, NO", pinitem?.institusjonsnavn)
         assertEquals("NO:noinst002", pinitem?.institusjonsid)
         assertEquals(personFnr, pinitem?.identifikator)
+
+        assertEquals("NO", pinitem?.land)
+
+        assertEquals("NO", p2200.nav?.bruker?.adresse?.land)
 
         assertEquals("RANNAR-MASK", p2200.nav?.ektefelle?.person?.fornavn)
         assertEquals("MIZINTSEV", p2200.nav?.ektefelle?.person?.etternavn)

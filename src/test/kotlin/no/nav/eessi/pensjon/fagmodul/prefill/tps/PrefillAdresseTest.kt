@@ -1,7 +1,7 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.tps
 
-import no.nav.eessi.pensjon.services.geo.LandkodeService
 import no.nav.eessi.pensjon.services.geo.PostnummerService
+import no.nav.eessi.pensjon.services.kodeverk.KodeverkServiceMock
 import no.nav.eessi.pensjon.services.personv3.BrukerMock
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.*
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -15,7 +15,7 @@ class PrefillAdresseTest{
 
     @BeforeEach
     fun beforeStart() {
-        prefillAdresse = PrefillAdresse(PostnummerService(), LandkodeService())
+        prefillAdresse = PrefillAdresse(PostnummerService(), KodeverkServiceMock())
     }
 
     @Test

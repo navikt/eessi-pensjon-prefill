@@ -4,6 +4,8 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.whenever
+import no.nav.eessi.pensjon.utils.mapJsonToAny
+import no.nav.eessi.pensjon.utils.typeRefs
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -92,6 +94,51 @@ class KodeverkServiceTest {
 
     }
 
+
+    @Test
+    fun testerLankodeMed2Siffer() {
+
+        val mockResponseEntityISO3 = createResponseEntityFromJsonFile("src/test/resources/json/kodeverk/landkoderSammensattIso2.json")
+        doReturn(mockResponseEntityISO3)
+                .whenever(mockrestTemplate)
+                .exchange(
+                        eq("/api/v1/hierarki/LandkoderSammensattISO2/noder"),
+                        any<HttpMethod>(),
+                        any<HttpEntity<Unit>>(),
+                        eq(String::class.java)
+                )
+        val actual = kodeverkService.hentLandkoderAlpha2()
+
+        Assertions.assertEquals("ZW", actual.last())
+        Assertions.assertEquals(249, actual.size)
+
+    }
+
+    @Test
+    fun henteAlleLandkoderReturnererAlleLandkoder() {
+
+//   fun hentAlleLandkoder() = hentLandKode().toJson()  // test
+
+        val mockResponseEntityISO3 = createResponseEntityFromJsonFile("src/test/resources/json/kodeverk/landkoderSammensattIso2.json")
+        doReturn(mockResponseEntityISO3)
+                .whenever(mockrestTemplate)
+                .exchange(
+                        eq("/api/v1/hierarki/LandkoderSammensattISO2/noder"),
+                        any<HttpMethod>(),
+                        any<HttpEntity<Unit>>(),
+                        eq(String::class.java)
+                )
+
+        val json = kodeverkService.hentAlleLandkoder()
+
+        val list = mapJsonToAny(json, typeRefs<List<Landkode>>())
+
+        Assertions.assertEquals(249, list.size)
+
+        Assertions.assertEquals("AD", list.first().landkode2)
+        Assertions.assertEquals("AND", list.first().landkode3)
+
+    }
 
     @Test
     fun hentingavIso2landkodevedbrukAvlandkode3FeilerMedNull() {

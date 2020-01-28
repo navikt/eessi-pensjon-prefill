@@ -1,6 +1,7 @@
 package no.nav.eessi.pensjon.services.kodeverk
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import no.nav.eessi.pensjon.utils.toJson
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpEntity
@@ -79,10 +80,12 @@ class KodeverkService(private val kodeRestTemplate: RestTemplate,
         val rootNode = jacksonObjectMapper().readTree(tmpLandkoder)
         val noder = rootNode.at("/noder").toList()
         return  noder.map { node -> Landkode(node.at("/kode").textValue(),
-                node.at("/undernoder").findPath("kode").textValue()) }.toList()
+                node.at("/undernoder").findPath("kode").textValue()) }.sortedBy { (sorting, _) -> sorting }.toList()
     }
 
-    fun hentAlleLandkoder() = hentLandKode().map { it.landkode2 + ";"+ it.landkode3 }.toString()
+    fun hentAlleLandkoder() = hentLandKode().toJson()  // test
+
+    fun hentLandkoderAlpha2() = hentLandKode().map { it.landkode2 }.toList() //test
 
     fun finnLandkode2(alpha3: String): String? {
         val list = hentLandKode()

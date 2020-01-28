@@ -12,9 +12,11 @@ import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillAdresse
 import no.nav.eessi.pensjon.fagmodul.sedmodel.*
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Bruker
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Person
-import no.nav.eessi.pensjon.services.geo.LandkodeService
 import no.nav.eessi.pensjon.services.geo.PostnummerService
-import no.nav.eessi.pensjon.utils.*
+import no.nav.eessi.pensjon.services.kodeverk.KodeverkServiceMock
+import no.nav.eessi.pensjon.utils.convertToXMLocal
+import no.nav.eessi.pensjon.utils.createXMLCalendarFromString
+import no.nav.eessi.pensjon.utils.mapAnyToJson
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.*
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
@@ -25,7 +27,7 @@ internal class PrefillNavTest {
     val mockBrukerFromTPS = mock<BrukerFromTPS>()
     val someInstitutionId = "enInstId"
     val someIntitutionNavn = "instNavn"
-    val prefillNav = PrefillNav(mockBrukerFromTPS, PrefillAdresse(PostnummerService(), LandkodeService()), someInstitutionId, someIntitutionNavn)
+    val prefillNav = PrefillNav(mockBrukerFromTPS, PrefillAdresse(PostnummerService(), KodeverkServiceMock()), someInstitutionId, someIntitutionNavn)
     val somePenSaksnr = "somePenSaksnr"
 
     @Test
