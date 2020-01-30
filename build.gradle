@@ -217,7 +217,7 @@ processResources.doFirst {
 ext.xsdTemp = "${buildDir}/xsdtemp"
 ext.schemasDir = "${buildDir}/schemas"
 
-if (project.hasProperty('github')) {
+if (!project.hasProperty('github')) {
     ext.pensjonsinformasjonDir = "${schemasDir}/${configurations.xsd.dependencies[0].name}"
     ext.xsdArtifactName = "pensjonsinformasjon-xsd-9.4.10.jar"
 
