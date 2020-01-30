@@ -103,7 +103,7 @@ class PrefillP2000MedIngendataTest {
         assertEquals(null, p2000.nav?.barn)
 
         assertEquals("", p2000.nav?.bruker?.arbeidsforhold?.get(0)?.yrke)
-        assertEquals("2018-11-12", p2000.nav?.bruker?.arbeidsforhold?.get(0)?.planlagtstartdato)
+        assertEquals("2018-11-11", p2000.nav?.bruker?.arbeidsforhold?.get(0)?.planlagtstartdato)
         assertEquals("2018-11-14", p2000.nav?.bruker?.arbeidsforhold?.get(0)?.planlagtpensjoneringsdato)
         assertEquals("07", p2000.nav?.bruker?.arbeidsforhold?.get(0)?.type)
 

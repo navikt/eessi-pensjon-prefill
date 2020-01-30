@@ -67,7 +67,7 @@ class PrefillP2200_AP_21975717Test {
         assertEquals(null, p2200.nav?.barn)
 
         assertEquals("", p2200.nav?.bruker?.arbeidsforhold?.get(0)?.yrke)
-        assertEquals("2018-11-12", p2200.nav?.bruker?.arbeidsforhold?.get(0)?.planlagtstartdato)
+        assertEquals("2018-11-11", p2200.nav?.bruker?.arbeidsforhold?.get(0)?.planlagtstartdato)
         assertEquals("2018-11-14", p2200.nav?.bruker?.arbeidsforhold?.get(0)?.planlagtpensjoneringsdato)
         assertEquals("07", p2200.nav?.bruker?.arbeidsforhold?.get(0)?.type)
 
