@@ -84,7 +84,7 @@ class PrefillP2100GLutlandInnvTest {
 
         assertEquals("", p2100.nav?.bruker?.arbeidsforhold?.get(0)?.yrke)
         assertEquals("2018-11-11", p2100.nav?.bruker?.arbeidsforhold?.get(0)?.planlagtstartdato)
-        assertEquals("2018-11-14", p2100.nav?.bruker?.arbeidsforhold?.get(0)?.planlagtpensjoneringsdato)
+        assertEquals("2018-11-13", p2100.nav?.bruker?.arbeidsforhold?.get(0)?.planlagtpensjoneringsdato)
         assertEquals("07", p2100.nav?.bruker?.arbeidsforhold?.get(0)?.type)
 
         assertEquals("foo", p2100.nav?.bruker?.bank?.navn)
