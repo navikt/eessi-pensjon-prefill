@@ -78,3 +78,4 @@ spec:
     paths:
       - kvPath: {{serviceuserkv}}
         mountPath: /var/run/secrets/nais.io/srveessipensjon
+
