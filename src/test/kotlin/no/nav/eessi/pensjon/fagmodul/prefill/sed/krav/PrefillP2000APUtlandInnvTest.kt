@@ -88,7 +88,7 @@ class PrefillP2000APUtlandInnvTest {
 
         assertEquals("", p2000.nav?.bruker?.arbeidsforhold?.get(0)?.yrke)
         assertEquals("2018-11-11", p2000.nav?.bruker?.arbeidsforhold?.get(0)?.planlagtstartdato)
-        assertEquals("2018-11-14", p2000.nav?.bruker?.arbeidsforhold?.get(0)?.planlagtpensjoneringsdato)
+        assertEquals("2018-11-13", p2000.nav?.bruker?.arbeidsforhold?.get(0)?.planlagtpensjoneringsdato)
         assertEquals("07", p2000.nav?.bruker?.arbeidsforhold?.get(0)?.type)
 
         assertEquals("foo", p2000.nav?.bruker?.bank?.navn)
