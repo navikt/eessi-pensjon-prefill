@@ -10,6 +10,7 @@ import no.nav.eessi.pensjon.services.personv3.PersonV3Service
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Person
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Personnavn
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonResponse
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.mockito.Spy
 import org.skyscreamer.jsonassert.JSONAssert
@@ -25,6 +26,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 
+@Disabled
 @WebMvcTest(PersonController::class)
 @ComponentScan(basePackages = ["no.nav.eessi.pensjon.api.person"])
 @ActiveProfiles("unsecured-webmvctest")
