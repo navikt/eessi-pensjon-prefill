@@ -4,7 +4,7 @@ import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.pesys.RinaTilPenMapper.parsePensjonsgrad
 import no.nav.eessi.pensjon.fagmodul.pesys.mockup.MockSED001
 import no.nav.eessi.pensjon.fagmodul.sedmodel.*
-import no.nav.eessi.pensjon.services.geo.LandkodeService
+import no.nav.eessi.pensjon.services.kodeverk.KodeverkService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
@@ -12,11 +12,9 @@ import java.time.LocalDate
 
 //TODO bytt ut Mocks med ekte kode
 @Service
-class PensjonsinformasjonUtlandService {
+class PensjonsinformasjonUtlandService(private val kodeverkService: KodeverkService) {
 
     private val mockSed = MockSED001()
-
-    private val landkodeService = LandkodeService()
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PensjonsinformasjonUtlandService::class.java) }
 
@@ -92,7 +90,8 @@ class PensjonsinformasjonUtlandService {
 
         //https://confluence.adeo.no/pages/viewpage.action?pageId=203178268
         //Kode om fra Alpha2 - Alpha3 teng i Avtaleland (eu, eøs og par andre)  og Statborgerskap (alle verdens land)
-        val landAlpha3 = landkodeService.finnLandkode3(p2000.nav?.bruker?.person?.statsborgerskap?.first()?.land ?: "N/A")
+//        val landAlpha3 = landkodeService.finnLandkode3(p2000.nav?.bruker?.person?.statsborgerskap?.first()?.land ?: "N/A")
+        val landAlpha3 = kodeverkService.finnLandkode3(p2000.nav?.bruker?.person?.statsborgerskap?.first()?.land ?: "N/A")
 
         return KravUtland(
                 //P2000 9.1
@@ -119,7 +118,7 @@ class PensjonsinformasjonUtlandService {
                 utland = hentSkjemaUtland(seds),
 
                 //denne må hentes utenfor SED finne orginal avsender-land for BUC/SED..
-                soknadFraLand = landkodeService.finnLandkode3("SE"),
+                soknadFraLand = kodeverkService.finnLandkode3("SE"),
                 //avtale mellom land? SED sendes kun fra EU/EØS? blir denne alltid true?
                 vurdereTrygdeavtale = true,
 
@@ -209,45 +208,6 @@ class PensjonsinformasjonUtlandService {
         val filterArbeidUtenNorgeList = mutableListOf<AnsattSelvstendigItem>()
         arbeidList?.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
                 forEach {
             if ("NO" != it.adresseFirma?.land) {
                 filterArbeidUtenNorgeList.add(it)
@@ -258,7 +218,7 @@ class PensjonsinformasjonUtlandService {
             val arbeid = it
 
             val landAlpha2 = arbeid.adresseFirma?.land ?: "N/A"
-            val landAlpha3 = landkodeService.finnLandkode3(landAlpha2) ?: ""
+            val landAlpha3 = kodeverkService.finnLandkode3(landAlpha2) ?: ""
 
             val periode = hentFomEllerTomFraPeriode(arbeid.periode)
             var fom: LocalDate? = null
@@ -303,7 +263,7 @@ class PensjonsinformasjonUtlandService {
             val bo = it
 
             val landA2 = bo.land ?: "N/A"
-            val landAlpha3 = landkodeService.finnLandkode3(bo.land ?: "N/A") ?: ""
+            val landAlpha3 = kodeverkService.finnLandkode3(bo.land ?: "N/A") ?: ""
 
             val periode = hentFomEllerTomFraPeriode(bo.periode)
             logger.debug("oppretter bo P4000")
@@ -393,7 +353,7 @@ class PensjonsinformasjonUtlandService {
             val pin = hentPinIdFraBoArbeidLand(p5000, it.land ?: "N/A")
 
             list.add(Utlandsoppholditem(
-                    land = landkodeService.finnLandkode3(it.land ?: "N/A"),
+                    land = kodeverkService.finnLandkode3(it.land ?: "N/A"),
                     fom = fom,
                     tom = tom,
                     bodd = true,

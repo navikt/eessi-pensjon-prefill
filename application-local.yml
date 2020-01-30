@@ -46,6 +46,9 @@ saf.graphql:
 saf.hentdokument:
   url: 'https://saf-q2.nais.preprod.local/rest/hentdokument'
 
+kodeverk.rest-api:
+  url: 'https://kodeverk.nais.adeo.no'
+
 server:
   servlet:
     session:

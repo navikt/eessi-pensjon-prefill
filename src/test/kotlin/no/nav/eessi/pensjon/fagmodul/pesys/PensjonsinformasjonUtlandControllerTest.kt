@@ -1,11 +1,10 @@
 package no.nav.eessi.pensjon.fagmodul.pesys
 
+import no.nav.eessi.pensjon.services.kodeverk.KodeverkServiceMock
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.typeRefs
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNotNull
-import org.junit.jupiter.api.Assertions.assertNull
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -25,7 +24,7 @@ class PensjonsinformasjonUtlandControllerTest {
 
     @BeforeEach
     fun bringItOn() {
-        pensjonsinformasjonUtlandService = PensjonsinformasjonUtlandService()
+        pensjonsinformasjonUtlandService = PensjonsinformasjonUtlandService(KodeverkServiceMock())
         controller = PensjonsinformasjonUtlandController(pensjonsinformasjonUtlandService)
     }
 

@@ -74,6 +74,7 @@ class ArchitectureTest {
         val euxBasisModel = "fagmodul.euxBasisModel"
         val euxBucModel = "fagmodul.euxBucModel"
         val arkivService = "services.arkiv"
+        val kodeverkService = "services.kodeverk"
         val geoService = "services.geo"
         val personService = "services.person"
         val pensjonService = "services.pensjon"
@@ -99,6 +100,7 @@ class ArchitectureTest {
                 "$root.fagmodul.metrics.." to metrics,
                 "$root.services.aktoerregister" to aktoerregisterService,
                 "$root.services.arkiv" to arkivService,
+                "$root.services.kodeverk" to kodeverkService,
                 "$root.services.geo" to geoService,
                 "$root.services.personv3" to personService,
                 "$root.services.pensjonsinformasjon" to pensjonService,
@@ -132,6 +134,7 @@ class ArchitectureTest {
                 .layer(sedmodel).definedBy(*packagesFor(sedmodel))
                 .layer(aktoerregisterService).definedBy(*packagesFor(aktoerregisterService))
                 .layer(arkivService).definedBy(*packagesFor(arkivService))
+                .layer(kodeverkService).definedBy(*packagesFor(kodeverkService))
                 .layer(geoService).definedBy(*packagesFor(geoService))
                 .layer(personService).definedBy(*packagesFor(personService))
                 .layer(pensjonService).definedBy(*packagesFor(pensjonService))
@@ -148,7 +151,7 @@ class ArchitectureTest {
                 .whereLayer(personApi).mayOnlyBeAccessedByLayers(metrics)
                 .whereLayer(pensjonApi).mayOnlyBeAccessedByLayers(metrics)
 
-                .whereLayer(pensjonUtlandApi).mayNotBeAccessedByAnyLayer()
+                .whereLayer(pensjonUtlandApi).mayOnlyBeAccessedByLayers(kodeverkService)
                 .whereLayer(bucSedApi).mayNotBeAccessedByAnyLayer()
                 .whereLayer(prefill).mayOnlyBeAccessedByLayers(bucSedApi)
                 .whereLayer(euxService).mayOnlyBeAccessedByLayers(health, bucSedApi)
@@ -167,7 +170,7 @@ class ArchitectureTest {
 
                 .whereLayer(config).mayNotBeAccessedByAnyLayer()
                 .whereLayer(metrics).mayOnlyBeAccessedByLayers(health, euxService, pensjonUtlandApi)
-                .whereLayer(security).mayOnlyBeAccessedByLayers(health, euxService, aktoerregisterService, arkivService, pensjonService, personService)
+                .whereLayer(security).mayOnlyBeAccessedByLayers(health, euxService, aktoerregisterService, arkivService, pensjonService, personService, kodeverkService)
 
                 .check(allClasses)
     }

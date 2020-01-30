@@ -48,7 +48,8 @@ fasitResources:
     #Sikker arkiv fasade
   - alias: saf.graphql
     resourceType: RestService
-
+  - alias: kodeverk.rest-api
+    resourceType: RestService
   - alias: saf.hentdokument
     resourceType: RestService
     #TPS

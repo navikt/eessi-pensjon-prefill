@@ -1,8 +1,8 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.tps
 
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Adresse
-import no.nav.eessi.pensjon.services.geo.LandkodeService
 import no.nav.eessi.pensjon.services.geo.PostnummerService
+import no.nav.eessi.pensjon.services.kodeverk.KodeverkService
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bostedsadresse
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Gateadresse
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Landkoder
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class PrefillAdresse ( private val postnummerService: PostnummerService,
-                       private val landkodeService: LandkodeService) {
+                       private val kodeverkService: KodeverkService) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillAdresse::class.java) }
 
@@ -70,8 +70,7 @@ class PrefillAdresse ( private val postnummerService: PostnummerService,
         )
     }
 
-    //TODO: Mapping av landkoder skal gjøres i codemapping i EUX
     fun hentLandkode(landkodertps: Landkoder): String? {
-        return landkodeService.finnLandkode2(landkodertps.value)
+        return kodeverkService.finnLandkode2(landkodertps.value)
     }
 }

@@ -35,7 +35,7 @@ class PensjonController(private val pensjonsinformasjonService: Pensjonsinformas
         return metricsHelper.measure(MetricsHelper.MeterName.PensjonControllerHentSakType) {
             logger.debug("Henter sakstype på $sakId / $aktoerId")
 
-            return@measure try {
+            try {
                 val hentKunSakType = pensjonsinformasjonService.hentKunSakType(sakId, aktoerId)
                 ResponseEntity.ok().body(mapAnyToJson(hentKunSakType))
             } catch (ife: IkkeFunnetException) {
