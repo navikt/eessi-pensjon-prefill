@@ -155,7 +155,8 @@ dependencies {
     // Tjenestespesifikasjoner
     if (project.hasProperty('github')) {
         compile("no.nav.tjenestespesifikasjoner:person-v3-tjenestespesifikasjon:1.2020.01.13-12.13-a8a32ba1c072")
-        compile("no.nav.tjenestespesifikasjoner:pensjonsinformasjon-v1-tjenestespesifikasjon:1.2020.01.30-11.39-6a687c777d11")
+        xsd("no.nav.tjenestespesifikasjoner:pensjonsinformasjon-v1-tjenestespesifikasjon:1.2020.01.30-11.39-6a687c777d11")
+        //implementation("no.nav.tjenestespesifikasjoner:pensjonsinformasjon-v1-tjenestespesifikasjon:1.2020.01.30-11.39-6a687c777d11")
     } else {
         implementation("no.nav.tjenester:nav-person-v3-tjenestespesifikasjon:${personV3Version}")
         xsd("no.nav.pensjon:pensjonsinformasjon-xsd:${pensjonInformasjonVersion}")
@@ -217,43 +218,45 @@ processResources.doFirst {
 ext.xsdTemp = "${buildDir}/xsdtemp"
 ext.schemasDir = "${buildDir}/schemas"
 
-if (!project.hasProperty('github')) {
-    ext.pensjonsinformasjonDir = "${schemasDir}/${configurations.xsd.dependencies[0].name}"
+if (project.hasProperty('github')) {
+    ext.xsdArtifactName = "pensjonsinformasjon-v1-tjenestespesifikasjon-1.2020.01.30-11.39-6a687c777d11.jar"
+} else {
     ext.xsdArtifactName = "pensjonsinformasjon-xsd-9.4.10.jar"
-
-    task copyPensjonsinformasjonXsd(type: Copy) {
-        from {
-            configurations.xsd.asFileTree.each { artifact ->
-                println("ArtifactName: " + artifact.name)
-            }
-        }
-        into xsdTemp
-    }
-
-    task copyPensjonsinformasjonXsdsFromArtifacts(type: Copy) {
-        with copyPensjonsinformasjonXsd
-
-        println("XsdTemp folder and ArtifactName: " + xsdTemp +"/"+ xsdArtifactName)
-        println("Pensjoninformasjon: " + pensjonsinformasjonDir)
-
-        includeEmptyDirs = false
-        from zipTree( xsdTemp + "/" + xsdArtifactName)
-        include '**/*.xsd'
-        into pensjonsinformasjonDir
-    }
-
-    jaxb {
-        xsdDir = pensjonsinformasjonDir
-    }
-
-    copyPensjonsinformasjonXsdsFromArtifacts.dependsOn tasks["copyPensjonsinformasjonXsd"]
-    xjc.dependsOn tasks["copyPensjonsinformasjonXsdsFromArtifacts"]
-    compileKotlin.dependsOn tasks["xjc"]
-
-    sourceSets["main"].resources.srcDir(schemasDir)
-    sourceSets["main"].java.srcDir("${buildDir}/generated-sources/xjc")
 }
 
+ext.pensjonsinformasjonDir = "${schemasDir}"
+
+task copyPensjonsinformasjonXsd(type: Copy) {
+    from {
+        configurations.xsd.asFileTree.each { artifact ->
+            println("ArtifactName: " + artifact.name)
+        }
+    }
+    into xsdTemp
+}
+
+task copyPensjonsinformasjonXsdsFromArtifacts(type: Copy) {
+    with copyPensjonsinformasjonXsd
+
+    println("XsdTemp folder and ArtifactName: " + xsdTemp +"/"+ xsdArtifactName)
+    println("Pensjoninformasjon: " + pensjonsinformasjonDir)
+
+    includeEmptyDirs = false
+    from zipTree( xsdTemp + "/" + xsdArtifactName)
+    include '**/*.xsd'
+    into pensjonsinformasjonDir
+}
+
+jaxb {
+    xsdDir = pensjonsinformasjonDir
+}
+
+copyPensjonsinformasjonXsdsFromArtifacts.dependsOn tasks["copyPensjonsinformasjonXsd"]
+xjc.dependsOn tasks["copyPensjonsinformasjonXsdsFromArtifacts"]
+compileKotlin.dependsOn tasks["xjc"]
+
+sourceSets["main"].resources.srcDir(schemasDir)
+sourceSets["main"].java.srcDir("${buildDir}/generated-sources/xjc")
 
 wrapper {
     distributionType = Wrapper.DistributionType.ALL
