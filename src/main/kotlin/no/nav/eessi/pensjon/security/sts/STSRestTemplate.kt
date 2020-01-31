@@ -26,10 +26,10 @@ class STSRestTemplate {
     @Value("\${security-token-service-token.url}")
     lateinit var baseUrl: String
 
-    @Value("\${srvusername}")
+    @Value("\${username}")
     lateinit var username: String
 
-    @Value("\${srvpassword}")
+    @Value("\${password}")
     lateinit var password: String
 
     @Autowired
