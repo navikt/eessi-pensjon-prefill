@@ -25,8 +25,8 @@ import javax.servlet.http.HttpServletRequest
 @RestController
 @Unprotected
 class DiagnosticsController(private val stsService: STSService,
-                            @Value("\${app.name}") private val appName: String,
-                            @Value("\${app.version}") private val appVersion: String
+                            @Value("\${NAIS_APP_NAME}") private val appName: String,
+                            @Value("\${NAIS_APP_IMAGE}") private val appVersion: String
 ) {
 
     private val logger = LoggerFactory.getLogger(DiagnosticsController::class.java)
@@ -93,7 +93,7 @@ class DiagnosticsController(private val stsService: STSService,
 class DiagnosticsControllerProtected(private val personService: PersonV3Service,
                                      private val euxService: EuxService,
                                      private val penService: PensjonsinformasjonService,
-                                     @Value("\${app.name}") val appName: String) {
+                                     @Value("\${NAIS_APP_NAME}") val appName: String) {
 
     private val logger = LoggerFactory.getLogger(DiagnosticsController::class.java)
 
