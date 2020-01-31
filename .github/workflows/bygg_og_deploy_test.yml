@@ -41,8 +41,8 @@ jobs:
       - name: 'Build and publish Docker image'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SYSTEM.TIMEZONE: Europe/Oslo
         run: |
+          export TZ=CET
           ./gradlew -s -i -Pgithub test build
           docker build --tag ${{ env.IMAGE }} .
           docker login docker.pkg.github.com -u ${GITHUB_REPOSITORY} -p ${GITHUB_TOKEN}
