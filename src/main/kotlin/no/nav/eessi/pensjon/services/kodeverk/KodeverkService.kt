@@ -19,7 +19,7 @@ import java.util.*
 
 @Service
 class KodeverkService(private val kodeRestTemplate: RestTemplate,
-                      @Value("\${app.name}") private val appName: String) {
+                      @Value("\${NAIS_APP_NAME}") private val appName: String) {
 
     private val logger = LoggerFactory.getLogger(KodeverkService::class.java)
 
