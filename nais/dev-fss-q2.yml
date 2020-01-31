@@ -45,6 +45,9 @@ spec:
       value: NO:NAVAT07
     - name: EESSI_PENSJON_INSTITUSJON_NAVN
       value: NAV ACCEPTANCE TEST 07
+    - name: ENV USER.TIMEZONE
+      value: Europe/Oslo
+
   image: {{ image }}
   ingresses:
     - https://eessi-pensjon-fagmodul.nais.preprod.local
