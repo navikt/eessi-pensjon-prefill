@@ -29,7 +29,7 @@ data class IdentinfoForAktoer(
 
 @Service
 class AktoerregisterService(private val aktoerregisterOidcRestTemplate: RestTemplate,
-                            @Value("\${app.name}") private val appName: String,
+                            @Value("\${NAIS_APP_NAME}") private val appName: String,
                             @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper(SimpleMeterRegistry())) {
 
     private val logger = LoggerFactory.getLogger(AktoerregisterService::class.java)

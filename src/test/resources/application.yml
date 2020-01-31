@@ -1,5 +1,6 @@
-FASIT_ENVIRONMENT_NAME: 'test'
-
+NAIS_NAMESPACE: 'test'
+NAIS_APP_NAME: 'eessi-pensjon-fagmodul'
+NAIS_APP_IMAGE: 'someimage'
 
 eessi-pensjon-active-profiles: ${spring.profiles.active}
 
@@ -19,12 +20,8 @@ virksomhet.person.v3:
 aktoerregister.api.v1:
   url: 'http://example.com:8090'
 
-kodeverk.rest-api:
-  url: 'http://example.com:8093'
-
-srveessipensjon:
-  username: 'username'
-  password: 'password'
+srvusername: 'username'
+srvpassword: 'password'
 
 app:
   name: 'TEST'
