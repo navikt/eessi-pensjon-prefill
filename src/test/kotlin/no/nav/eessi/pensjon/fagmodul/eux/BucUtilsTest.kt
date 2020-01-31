@@ -145,13 +145,8 @@ class BucUtilsTest {
         val listOfArgs = listOf<Any>(
             1567154257318L,
             "2019-08-30T10:37:37.318",
-            "2019-08-30T08:37:37.318+0000",
-            "2019-08-30T08:37:37.318-0000",
             "2019-08-30T09:37:37.318+0100",
-            "2019-08-30T07:37:37.318-0100",
-            "2019-08-30T08:37:37.318+00:00",
-            "2019-08-30T09:37:37.318+01:00",
-            "2019-08-30T07:37:37.318-01:00"
+            "2019-08-30T09:37:37.318+01:00"
         )
         listOfArgs.forEach { assertEquals(unixTimeStamp, BucUtils(Buc(startDate = it)).getStartDateLong()) }
     }
@@ -159,16 +154,12 @@ class BucUtilsTest {
     @Test
     fun `getEndDateLong parses dates correctly`() {
         val unixTimeStamp = 1567154257318L
-        val listOfArgs = listOf<Any>(
+        val listOfArgs = listOf(
             1567154257318L,
             "2019-08-30T10:37:37.318",
-            "2019-08-30T08:37:37.318+0000",
-            "2019-08-30T08:37:37.318-0000",
             "2019-08-30T09:37:37.318+0100",
-            "2019-08-30T07:37:37.318-0100",
             "2019-08-30T08:37:37.318+00:00",
-            "2019-08-30T09:37:37.318+01:00",
-            "2019-08-30T07:37:37.318-01:00"
+            "2019-08-30T09:37:37.318+01:00"
         )
         listOfArgs.forEach { assertEquals(unixTimeStamp, BucUtils(Buc(lastUpdate= it)).getLastDateLong()) }
     }
