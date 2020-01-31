@@ -23,9 +23,6 @@ aktoerregister.api.v1:
 srvusername: 'username'
 srvpassword: 'password'
 
-kodeverk.rest-api:
-  url: 'http://example.com:8093'
-
 app:
   name: 'TEST'
   version: '0.1'
