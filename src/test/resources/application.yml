@@ -20,8 +20,8 @@ virksomhet.person.v3:
 aktoerregister.api.v1:
   url: 'http://example.com:8090'
 
-srvusername: 'username'
-srvpassword: 'password'
+username: 'username'
+password: 'password'
 
 app:
   name: 'TEST'
