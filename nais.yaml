@@ -1,6 +1,6 @@
 name: eessi-fagmodul
 image: repo.adeo.no:5443/eessi-fagmodul
-team: eessi-pensjon
+team: eessipensjon
 
 replicas:
     min: 1
