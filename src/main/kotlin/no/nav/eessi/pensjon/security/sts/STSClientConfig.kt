@@ -38,12 +38,12 @@ class STSClientConfig {
         STS_URL = url
     }
 
-    @Value("\${username}")
+    @Value("\${srvusername}")
     fun setUsername(username: String) {
         SERVICEUSER_USERNAME = username
     }
 
-    @Value("\${password}")
+    @Value("\${srvpassword}")
     fun setPassword(password: String) {
         SERVICEUSER_PASSWORD = password
     }
