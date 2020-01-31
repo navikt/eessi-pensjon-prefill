@@ -8,10 +8,10 @@ no.nav.security.oidc:
    proxyurl:
    cookiename: 'eessipensjon-idtoken'
    discoveryurl: '${OPENIDCONNECT_URL}/oauth2/.well-known/openid-configuration'
-   accepted_audience: 'eessi-pensjon-frontend-api-fss-${FASIT_ENVIRONMENT_NAME}'
+   accepted_audience: 'eessi-pensjon-frontend-api-fss-${NAIS_NAMESPACE}'
  issuer.oidc:
    discoveryurl: '${OPENIDCONNECT_URL}/oauth2/.well-known/openid-configuration'
-   accepted_audience: 'eessi-fagmodul-${FASIT_ENVIRONMENT_NAME},eessi-pensjon-frontend-api-fss-${FASIT_ENVIRONMENT_NAME},ida-t,ida-q'
+   accepted_audience: 'eessi-fagmodul-${NAIS_NAMESPACE},eessi-pensjon-frontend-api-fss-${NAIS_NAMESPACE},ida-t,ida-q'
  issuer.pesys:
    discoveryurl: '${security-token-service-openid-configuration_url}'
    accepted_audience: 'srvpensjon,srveessipensjon,srveessi-pensjon-j,srveessi-pensjon-b'

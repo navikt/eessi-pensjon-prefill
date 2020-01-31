@@ -3,7 +3,7 @@
 ## - SRVPENSJON_PASSWORD
 ## - OPENAM_SECRET
 
-FASIT_ENVIRONMENT_NAME: 'q1'
+NAIS_NAMESPACE: 'q1'
 
 eessi-pensjon-active-profiles: ${spring.profiles.active}
 
