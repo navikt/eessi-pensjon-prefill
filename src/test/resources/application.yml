@@ -39,6 +39,9 @@ eessi:
   pensjon_adresse_postnummer: '0607'
   pensjon_adresse_land: 'NO'
 
+kodeverk.rest-api:
+  url: 'http://example.com:8093'
+
 spring:
   profiles:
     active: 'local-test'
