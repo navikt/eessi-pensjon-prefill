@@ -1,5 +1,7 @@
 package no.nav.eessi.pensjon.fagmodul.api
 
+import io.micrometer.core.instrument.ImmutableTag
+import io.micrometer.core.instrument.Tag
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import io.swagger.annotations.ApiOperation
 import no.nav.eessi.pensjon.fagmodul.eux.BucUtils
@@ -87,9 +89,13 @@ class SedController(private val euxService: EuxService,
     fun addInstutionAndDocument(@RequestBody request: ApiRequest): ShortDocumentItem {
         auditlogger.log("addInstutionAndDocument", request.aktoerId ?: "", request.toAudit())
 
-        return metricsHelper.measure(MetricsHelper.MeterName.AddInstutionAndDocument) {
-            val dataModel = ApiRequest.buildPrefillDataModelOnExisting(request, aktoerService.hentPinForAktoer(request.aktoerId), getAvdodAktoerId(request))
+        //metrics helper med følgende tagsm metodename, sedtype, buctype og rinaid.
+        //datamodel generering utenfor metricHelper?
 
+        val dataModel = ApiRequest.buildPrefillDataModelOnExisting(request, aktoerService.hentPinForAktoer(request.aktoerId), getAvdodAktoerId(request))
+        val addExtraTags = listOf<Tag>(ImmutableTag("sedType", dataModel.getSEDid()), ImmutableTag("bucType", dataModel.buc), ImmutableTag("rinaId", dataModel.euxCaseID))
+
+        return metricsHelper.measure(MetricsHelper.MeterName.AddInstutionAndDocument, extratags = addExtraTags) {
             logger.info("kaller add (institutions and sed) rinaId: ${request.euxCaseId} bucType: ${request.buc} sedType: ${request.sed} aktoerId: ${request.aktoerId}")
             logger.debug("Prøver å legge til Deltaker/Institusions på buc samt prefillSed og sende inn til Rina ")
             val bucUtil = BucUtils(euxService.getBuc(dataModel.euxCaseID))
