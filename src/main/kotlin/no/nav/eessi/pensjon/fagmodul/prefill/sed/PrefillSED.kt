@@ -17,7 +17,7 @@ class PrefillSED(private val factory: PrefillFactory) : Prefill<PrefillDataModel
     override fun prefill(prefillData: PrefillDataModel): PrefillDataModel {
 
         val prefilling = factory.createPrefillClass(prefillData)
-        logger.info("Mapping prefillClass ${prefilling.javaClass}")
+        logger.info("Mapping prefillClass: ${prefilling.javaClass}")
 
         val starttime = System.currentTimeMillis()
 

@@ -24,18 +24,18 @@ class PrefillService(private val prefillSED: PrefillSED,
     fun prefillSed(dataModel: PrefillDataModel): PrefillDataModel {
         return metricsHelper.measure(MetricsHelper.MeterName.PrefillSed) {
 
-            logger.info("Starter med preutfylling av SED: ${dataModel.getSEDid()} aktoerId: ${dataModel.aktoerID} sakNr: ${dataModel.penSaksnummer}")
+            logger.info("******* Starter med preutfylling *******\nSED: ${dataModel.getSEDid()} aktoerId: ${dataModel.aktoerID} sakNr: ${dataModel.penSaksnummer}")
+
             val startTime = System.currentTimeMillis()
             val data = prefillSED.prefill(dataModel)
             val endTime = System.currentTimeMillis()
-            logger.info("Prefill SED tok ${endTime - startTime} ms.")
-
             prefillSED.validate(data)
+
+            logger.info("******* Prefill SED tok ${endTime - startTime} ms. *******")
 
             data
         }
     }
-
 
     @Throws(ValidationException::class)
     fun prefillEnX005ForHverInstitusjon(nyeDeltakere: List<InstitusjonItem>, data: PrefillDataModel) =

@@ -4,7 +4,8 @@ package no.nav.eessi.pensjon.fagmodul.models
 data class InstitusjonItem(
         var country: String,
         var institution: String,
-        var name: String? = null) {
+        var name: String? = null,
+        var buc: List<String>? = null) {
 
         //sjekker på Instisjon legger ut ID til rina som <XX:ZZZZZ>
         fun checkAndConvertInstituion(): String {
@@ -12,5 +13,7 @@ data class InstitusjonItem(
                 return institution
             }
             return "$country:$institution"
+
         }
+        fun checkBuc(bucItem: String) = buc?.contains(bucItem)
 }

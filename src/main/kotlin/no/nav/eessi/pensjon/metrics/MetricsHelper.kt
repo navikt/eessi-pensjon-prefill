@@ -1,8 +1,6 @@
 package no.nav.eessi.pensjon.metrics
 
-import io.micrometer.core.instrument.Counter
-import io.micrometer.core.instrument.MeterRegistry
-import io.micrometer.core.instrument.Timer
+import io.micrometer.core.instrument.*
 import org.springframework.stereotype.Component
 import javax.annotation.PostConstruct
 
@@ -25,6 +23,7 @@ class MetricsHelper(val registry: MeterRegistry) {
         PutMottaker,
         OpprettSED,
         AddInstutionAndDocument,
+        AddDocumentToParent,
         SendSED,
         SlettSED,
         GetBUC,
@@ -40,7 +39,13 @@ class MetricsHelper(val registry: MeterRegistry) {
         PingEux,
         HentDokumentMetadata,
         HentDokumentInnhold,
-        HentRinaSakIderFraDokumentMetadata;
+        HentRinaSakIderFraDokumentMetadata,
+        KodeverkHentLandKode;
+    }
+
+    enum class MeterNameExtraTag(val tags: Iterable<Tag>) {
+        AddInstutionAndDocument(tags = listOf<Tag>(Tag.of("sedType",""), Tag.of("bucType",""), Tag.of("rinaId",""), Tag.of("land",""), Tag.of("sakNr",""), Tag.of("type","Opprett"), Tag.of("timeStamp",""))),
+        AddDocumentToParent(tags = listOf(Tag.of("sedType",""), Tag.of("bucType",""), Tag.of("rinaId",""), Tag.of("land",""), Tag.of("sakNr",""),  Tag.of("type","Opprett"), Tag.of("timeStamp","")));
     }
 
     /**
@@ -60,6 +65,15 @@ class MetricsHelper(val registry: MeterRegistry) {
                     .tag(methodTag, counterName.name)
                     .register(registry)
         }
+
+        MeterNameExtraTag.values().forEach { counterName ->
+            Counter.builder(measureMeterNameExtra)
+                    .tag(methodTag, counterName.name)
+                    .tags( counterName.tags )
+                    .register(registry)
+        }
+
+
     }
 
     fun <R> measure(
@@ -94,25 +108,22 @@ class MetricsHelper(val registry: MeterRegistry) {
         }
     }
 
-    fun increment(
-            event: String,
-            eventType: String,
-            throwable: Throwable? = null,
-            meterName: String = incrementMeterName) {
-        try {
+    fun measureExtra(
+            method: MeterNameExtraTag,
+            extraTag: Iterable<Tag>,
+            meterName: String = measureMeterNameExtra) {
+
             Counter.builder(meterName)
-                    .tag(eventTag, event)
-                    .tag(typeTag, eventType)
+                    .tag(methodTag, method.name)
+                    .tags(extraTag)
                     .register(registry)
                     .increment()
-        } catch (t: Throwable) {
-            // ignoring on purpose
         }
-    }
 
     companion object Configuration {
         const val incrementMeterName: String = "event"
         const val measureMeterName: String = "method"
+        const val measureMeterNameExtra: String = "methodTags"
         const val measureTimerSuffix: String = "timer"
 
         const val eventTag: String = "event"

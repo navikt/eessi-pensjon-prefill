@@ -17,20 +17,20 @@ import java.nio.charset.Charset
 @ExtendWith(MockitoExtension::class)
 class OidcAuthorizationHeaderInterceptorKtTest {
 
-    private val allRequestContextHolders = generateMockContextHolder(listOf("isso","pesys","oidc"))
+    private val allRequestContextHolders = generateMockContextHolder(listOf("isso","servicebruker","oidc"))
     private lateinit var authInterceptor: OidcAuthorizationHeaderInterceptor
 
     @Test
-    fun `gitt magic mulitple issuers returner pesysIdToken token`() {
+    fun `gitt mulitple issuers returner pesysIdToken token`() {
         authInterceptor = OidcAuthorizationHeaderInterceptor(allRequestContextHolders)
 
         val tokenfromIssuer = authInterceptor.getIdTokenFromIssuer(allRequestContextHolders)
-        assertEquals("pesysIdToken", tokenfromIssuer)
+        assertEquals("servicebrukerIdToken", tokenfromIssuer)
     }
 
     @Test
-    fun `gitt magic mulitple issuers returner issoIdToken token`() {
-        val allMagicRequestContextHoldersIsso = generateMockContextHolder(listOf("isso","pesys","oidc"),true)
+    fun `gitt mulitple issuers returner issoIdToken token`() {
+        val allMagicRequestContextHoldersIsso = generateMockContextHolder(listOf("isso","servicebruker","oidc"),true)
 
         authInterceptor = OidcAuthorizationHeaderInterceptor(allMagicRequestContextHoldersIsso)
 
@@ -39,7 +39,7 @@ class OidcAuthorizationHeaderInterceptorKtTest {
     }
 
     @Test
-    fun `gitt magic mulitple issuers returner pesys`() {
+    fun `gitt mulitple issuers returner pesys`() {
         val allMagicRequestContextHoldersIsso = generateMockContextHolder(listOf("pesys"))
         authInterceptor = OidcAuthorizationHeaderInterceptor(allMagicRequestContextHoldersIsso)
 
@@ -48,7 +48,7 @@ class OidcAuthorizationHeaderInterceptorKtTest {
     }
 
     @Test
-    fun `gitt magic mulitple issuers returner oidc`() {
+    fun `gitt mulitple issuers returner oidc`() {
         val allMagicRequestContextHoldersIsso = generateMockContextHolder(listOf("oidc","isso"))
         authInterceptor = OidcAuthorizationHeaderInterceptor(allMagicRequestContextHoldersIsso)
 
@@ -57,7 +57,7 @@ class OidcAuthorizationHeaderInterceptorKtTest {
     }
 
     @Test
-    fun `gitt magic mulitple issuers returner isso had longest exp`() {
+    fun `gitt mulitple issuers returner isso had longest exp`() {
         val allMagicRequestContextHoldersIsso = generateMockContextHolder(listOf("oidc","isso"), true)
         authInterceptor = OidcAuthorizationHeaderInterceptor(allMagicRequestContextHoldersIsso)
 

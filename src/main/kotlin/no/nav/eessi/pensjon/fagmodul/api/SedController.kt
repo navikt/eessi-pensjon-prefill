@@ -1,14 +1,18 @@
 package no.nav.eessi.pensjon.fagmodul.api
 
+import io.micrometer.core.instrument.ImmutableTag
+import io.micrometer.core.instrument.Tag
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import io.swagger.annotations.ApiOperation
 import no.nav.eessi.pensjon.fagmodul.eux.BucUtils
 import no.nav.eessi.pensjon.fagmodul.eux.EuxService
 import no.nav.eessi.pensjon.fagmodul.eux.PinOgKrav
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ShortDocumentItem
+import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.prefill.ApiRequest
 import no.nav.eessi.pensjon.fagmodul.prefill.MangelfulleInndataException
 import no.nav.eessi.pensjon.fagmodul.prefill.PrefillService
+import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.logging.AuditLogger
 import no.nav.eessi.pensjon.metrics.MetricsHelper
@@ -21,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import java.time.LocalDateTime
 
 @Protected
 @RestController
@@ -89,32 +94,55 @@ class SedController(private val euxService: EuxService,
 
         return metricsHelper.measure(MetricsHelper.MeterName.AddInstutionAndDocument) {
             val dataModel = ApiRequest.buildPrefillDataModelOnExisting(request, aktoerService.hentPinForAktoer(request.aktoerId), getAvdodAktoerId(request))
-
+            logger.info("******* Legge til ny SED - start *******")
             logger.info("kaller add (institutions and sed) rinaId: ${request.euxCaseId} bucType: ${request.buc} sedType: ${request.sed} aktoerId: ${request.aktoerId}")
-            logger.debug("Prøver å legge til Deltaker/Institusions på buc samt prefillSed og sende inn til Rina ")
-            val bucUtil = BucUtils(euxService.getBuc(dataModel.euxCaseID))
-            val nyeDeltakere = bucUtil.findNewParticipants(dataModel.getInstitutionsList())
-            if (nyeDeltakere.isNotEmpty()) {
-                logger.debug("DeltakerListe (InstitusjonItem) size: ${nyeDeltakere.size}")
-                val bucX005 = bucUtil.findFirstDocumentItemByType("X005")
-                if (bucX005 == null) {
-                    logger.info("X005 finnes ikke på buc, legger til Deltakere/Institusjon på vanlig måte")
-                    //kaste Exception dersom legge til deltakerfeiler?
-                    euxService.putBucMottakere(dataModel.euxCaseID, nyeDeltakere)
-                } else {
-                    logger.info("X005 finnes på buc, Sed X005 prefills og sendes inn")
-                    val x005Liste = prefillService.prefillEnX005ForHverInstitusjon(nyeDeltakere, dataModel)
-                    x005Liste.forEach { x005 -> euxService.opprettSedOnBuc(x005.sed, x005.euxCaseID) }
-                }
-            }
+
+            addInstitution(dataModel)
+
+            logger.info("Prøver å prefillSED")
             val data = prefillService.prefillSed(dataModel)
             logger.info("Prøver å sende SED: ${dataModel.getSEDid()} inn på BUC: ${dataModel.euxCaseID}")
             val docresult = euxService.opprettSedOnBuc(data.sed, data.euxCaseID)
             logger.info("Opprettet ny SED med dokumentId: ${docresult.documentId}")
-            val result = BucUtils(euxService.getBuc(docresult.caseId)).findDocument(docresult.documentId)
+            val bucUtil = BucUtils(euxService.getBuc(docresult.caseId))
+            val result = bucUtil.findDocument(docresult.documentId)
+
+            //extra tag metricshelper for sedType, bucType, timeStamp og rinaId.
+            metricsHelper.measureExtra(MetricsHelper.MeterNameExtraTag.AddInstutionAndDocument,  extraTag = extraTag(dataModel, bucUtil))
+
             logger.info("Henter BUC dokumentdata for ny SED")
+            logger.info("******* Legge til ny SED - slutt *******")
             result
         }
+    }
+
+    private fun addInstitution(dataModel: PrefillDataModel) {
+        logger.debug("Prøver å legge til Deltaker/Institusions på buc samt prefillSed og sende inn til Rina ")
+        val bucUtil = BucUtils(euxService.getBuc(dataModel.euxCaseID))
+        val nyeDeltakere = bucUtil.findNewParticipants(dataModel.getInstitutionsList())
+        if (nyeDeltakere.isNotEmpty()) {
+            logger.debug("DeltakerListe (InstitusjonItem) size: ${nyeDeltakere.size}")
+            val bucX005 = bucUtil.findFirstDocumentItemByType("X005")
+            if (bucX005 == null) {
+                logger.info("X005 finnes ikke på buc, legger til Deltakere/Institusjon på vanlig måte")
+                //kaste Exception dersom legge til deltakerfeiler?
+                euxService.putBucMottakere(dataModel.euxCaseID, nyeDeltakere)
+            } else {
+                logger.info("X005 finnes på buc, Sed X005 prefills og sendes inn")
+                val x005Liste = prefillService.prefillEnX005ForHverInstitusjon(nyeDeltakere, dataModel)
+                x005Liste.forEach { x005 -> euxService.opprettSedOnBuc(x005.sed, x005.euxCaseID) }
+            }
+        }
+    }
+
+    private fun extraTag(dataModel: PrefillDataModel, bucUtil: BucUtils): List<Tag> {
+        return listOf(Tag.of("sedType", dataModel.getSEDid()),
+                Tag.of("bucType", dataModel.buc),
+                Tag.of("rinaId", dataModel.euxCaseID),
+                Tag.of("sakNr", dataModel.penSaksnummer),
+                Tag.of("land", bucUtil.getParticipantsLand()),
+                Tag.of("type", "Opprett"),
+                Tag.of("timeStamp", LocalDateTime.now().toString()))
     }
 
     @ApiOperation("Oppretter en Sed som svar på en forespørsel-Sed")
@@ -122,13 +150,26 @@ class SedController(private val euxService: EuxService,
     fun addDocumentToParent(@RequestBody(required = true) request: ApiRequest, @PathVariable("parentid", required = true) parentId: String  ): ShortDocumentItem {
         auditlogger.log("addDocumentToParent", request.aktoerId ?: "", request.toAudit())
 
-        val dataModel = ApiRequest.buildPrefillDataModelOnExisting(request, aktoerService.hentPinForAktoer(request.aktoerId),  getAvdodAktoerId(request))
-        val data = prefillService.prefillSed(dataModel)
+        return metricsHelper.measure(MetricsHelper.MeterName.AddDocumentToParent) {
+            val dataModel = ApiRequest.buildPrefillDataModelOnExisting(request, aktoerService.hentPinForAktoer(request.aktoerId), getAvdodAktoerId(request))
+            logger.info("Prøver å prefillSED (svar)")
+            val data = prefillService.prefillSed(dataModel)
 
-        logger.debug("Prøver å sende SED:${dataModel.getSEDid()} inn på buc: ${dataModel.euxCaseID}")
-        val docresult = euxService.opprettSvarSedOnBuc(data.sed, data.euxCaseID, parentId)
-        return BucUtils(euxService.getBuc(docresult.caseId)).findDocument(docresult.documentId)
+            logger.info("Prøver å sende SED: ${dataModel.getSEDid()} inn på BUC: ${dataModel.euxCaseID}")
+            val docresult = euxService.opprettSvarSedOnBuc(data.sed, data.euxCaseID, parentId)
+
+            val bucUtil = BucUtils(euxService.getBuc(docresult.caseId))
+
+            //extra tag metricshelper for sedType, bucType, timeStamp og rinaId.
+            metricsHelper.measureExtra(MetricsHelper.MeterNameExtraTag.AddDocumentToParent, extraTag = extraTag(dataModel, bucUtil))
+
+            logger.info("Henter BUC dokumentdata for svar SED")
+            val result = bucUtil.findDocument(docresult.documentId)
+            result
+        }
     }
+
+
 
     //** oppdatert i api 18.02.2019
     @ApiOperation("Utgår?")
@@ -156,10 +197,10 @@ class SedController(private val euxService: EuxService,
 
     @ApiOperation("Henter ut en liste over registrerte institusjoner innenfor spesifiserte EU-land. ny api kall til eux")
     @GetMapping("/institusjoner/{buctype}", "/institusjoner/{buctype}/{land}")
-    fun getEuxInstitusjoner(@PathVariable("buctype", required = true) buctype: String, @PathVariable("land", required = false) landkode: String? = ""): List<String> {
+    fun getEuxInstitusjoner(@PathVariable("buctype", required = true) buctype: String, @PathVariable("land", required = false) landkode: String? = ""): List<InstitusjonItem> {
         logger.info("Henter ut liste over alle Institusjoner i Rina")
 
-        return euxService.getInstitutions(buctype, landkode).sorted()
+        return euxService.getInstitutions(buctype, landkode)
     }
 
     @ApiOperation("henter liste over seds, seds til valgt buc eller seds til valgt rinasak")

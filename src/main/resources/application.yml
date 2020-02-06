@@ -12,7 +12,7 @@ no.nav.security.oidc:
  issuer.oidc:
    discoveryurl: '${OPENIDCONNECT_URL}/oauth2/.well-known/openid-configuration'
    accepted_audience: 'eessi-fagmodul-${NAIS_NAMESPACE},eessi-pensjon-frontend-api-fss-${NAIS_NAMESPACE},ida-t,ida-q'
- issuer.pesys:
+ issuer.servicebruker:
    discoveryurl: '${security-token-service-openid-configuration_url}'
    accepted_audience: 'srvpensjon,srveessipensjon,srveessi-pensjon-j,srveessi-pensjon-b'
 
