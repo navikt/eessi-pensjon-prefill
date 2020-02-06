@@ -7,6 +7,7 @@ import no.nav.eessi.pensjon.fagmodul.eux.basismodel.BucSedResponse
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Rinasak
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Vedlegg
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Buc
+import no.nav.eessi.pensjon.fagmodul.models.InstitusjonDetalj
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Krav
@@ -18,6 +19,8 @@ import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
 import no.nav.eessi.pensjon.utils.typeRefs
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.cache.annotation.CacheConfig
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.context.annotation.Description
 import org.springframework.http.*
 import org.springframework.stereotype.Service
@@ -35,6 +38,7 @@ import kotlin.streams.toList
 
 @Service
 @Description("Service class for EuxBasis - eux-cpi-service-controller")
+@CacheConfig(cacheNames = ["euxService"])
 class EuxService(private val euxOidcRestTemplate: RestTemplate,
                  @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper(SimpleMeterRegistry())) {
 
@@ -251,7 +255,8 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate,
     /**
      * List all institutions connected to RINA.
      */
-    fun getInstitutions(bucType: String, landkode: String? = ""): List<String> {
+    @Cacheable
+    fun getInstitutions(bucType: String, landkode: String? = ""): List<InstitusjonItem> {
         val builder = UriComponentsBuilder.fromPath("/institusjoner")
                 .queryParam("BuCType", bucType)
                 .queryParam("LandKode", landkode ?: "")
@@ -267,7 +272,12 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate,
                 , MetricsHelper.MeterName.Institusjoner
                 , "Feil ved innhenting av institusjoner"
         )
-        return mapJsonToAny(responseInstitution.body!!, typeRefs())
+        val detaljList = mapJsonToAny(responseInstitution.body!!, typeRefs<List<InstitusjonDetalj>>())
+        return detaljList.map {  data ->
+            val bucs = data.tilegnetBucs?.filter { it?.institusjonsrolle == "CounterParty" }?.map { it?.bucType ?: "" }?.sortedBy { it }?.toSet()
+            InstitusjonItem(data.landkode!!, data.id!!, data.akronym, bucs!!.toList() )
+        }.sortedBy { sort-> sort.country }.sortedBy { sort -> sort.institution }.toList()
+
     }
 
     fun getRinasaker(fnr: String, rinaSakIder: List<String>): List<Rinasak> {

@@ -439,10 +439,9 @@ class EuxServiceTest {
         assertEquals(18, firstJson.seds?.size)
 
         val json = firstJson.toJson()
-        println(json)
-
         val bucdetaljerpath = "src/test/resources/json/buc/bucdetaljer-158123.json"
         val bucdetaljer = String(Files.readAllBytes(Paths.get(bucdetaljerpath)))
+
         assertTrue(validateJson(bucdetaljer))
         JSONAssert.assertEquals(bucdetaljer, json, true)
     }

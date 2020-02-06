@@ -67,6 +67,7 @@ data class ApiRequest(
                     PrefillDataModel().apply {
                         penSaksnummer = request.sakId
                         sed = SED(request.sed)
+                        buc = request.buc
                         aktoerID = request.aktoerId
                         personNr = pinid
                         euxCaseID = request.euxCaseId

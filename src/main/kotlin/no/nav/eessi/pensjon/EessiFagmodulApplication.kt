@@ -3,10 +3,12 @@ package no.nav.eessi.pensjon
 import no.nav.security.spring.oidc.api.EnableOIDCTokenValidation
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
+import org.springframework.cache.annotation.EnableCaching
 import org.springframework.context.annotation.Profile
 
 @EnableOIDCTokenValidation(ignore = ["org.springframework", "springfox.documentation", "no.nav.eessi.pensjon.fagmodul.health.DiagnosticsController"])
 @SpringBootApplication
+@EnableCaching
 @Profile("!unsecured-webmvctest")
 class EessiFagmodulApplication
 

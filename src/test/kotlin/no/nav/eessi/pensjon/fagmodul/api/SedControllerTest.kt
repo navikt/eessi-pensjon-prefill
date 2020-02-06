@@ -277,6 +277,7 @@ class SedControllerTest {
         doReturn(listOf(currentX005)).whenever(mockBuc).documents
 
         val dummyPrefillData = ApiRequest.buildPrefillDataModelOnExisting(apiRequestWith(euxCaseId), mockAktoerIdHelper.hentPinForAktoer(apiRequestWith(euxCaseId).aktoerId), null)
+
         doReturn(dummyPrefillData).whenever(mockPrefillSED).prefill(any())
 
         doReturn(BucSedResponse(euxCaseId,"1")).whenever(mockEuxService).opprettSedOnBuc(any(),eq(euxCaseId))

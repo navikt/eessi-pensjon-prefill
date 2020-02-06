@@ -196,6 +196,17 @@ class BucUtils(private val buc: Buc ) {
 
     fun getParticipants() = getBuc().participants ?: emptyList()
 
+    fun getParticipantsAsInstitusjonItem() = getParticipants()
+            .map {
+                InstitusjonItem(
+                        country = it.organisation?.countryCode ?: "",
+                        institution = it.organisation?.id ?: "",  //kan hende må være id?!
+                        name = it.organisation?.name ?: "" //name optinal
+                )
+            }.sortedBy { it.country }.toList()
+
+    fun getParticipantsLand() = getParticipantsAsInstitusjonItem().map { it.country }.joinToString(separator = ",")
+
     fun getBucAction() = getBuc().actions
 
     fun getAksjonListAsString() : List<String> {

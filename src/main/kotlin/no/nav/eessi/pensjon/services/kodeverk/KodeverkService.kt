@@ -1,9 +1,14 @@
 package no.nav.eessi.pensjon.services.kodeverk
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry
+import no.nav.eessi.pensjon.metrics.MetricsHelper
 import no.nav.eessi.pensjon.utils.toJson
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.cache.annotation.CacheConfig
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
@@ -17,9 +22,12 @@ import org.springframework.web.util.UriComponents
 import org.springframework.web.util.UriComponentsBuilder
 import java.util.*
 
+
 @Service
+@CacheConfig(cacheNames = ["kodeVerk"])
 class KodeverkService(private val kodeRestTemplate: RestTemplate,
-                      @Value("\${NAIS_APP_NAME}") private val appName: String) {
+                      @Value("\${NAIS_APP_NAME}") private val appName: String,
+                      @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper(SimpleMeterRegistry())) {
 
     private val logger = LoggerFactory.getLogger(KodeverkService::class.java)
 
@@ -32,6 +40,7 @@ class KodeverkService(private val kodeRestTemplate: RestTemplate,
     }
 
     fun hentHierarki(hierarki: String) : String {
+
         //https://kodeverk.nais.adeo.no/api/v1/hierarki/LandkoderSammensattISO2/noder
         val path = "/api/v1/hierarki/{hierarki}/noder"
 
@@ -65,28 +74,38 @@ class KodeverkService(private val kodeRestTemplate: RestTemplate,
             }()
 
         } catch (ce: HttpClientErrorException) {
+            logger.error(ce.message, ce)
             throw KodeverkException(ce.message!!)
         } catch (se: HttpServerErrorException) {
+            logger.error(se.message, se)
             throw KodeverkException(se.message!!)
         } catch (ex: Exception) {
+            logger.error(ex.message, ex)
             throw KodeverkException(ex.message!!)
         }
 
     }
 
-    private fun hentLandKode(): List<Landkode> {
-        val tmpLandkoder = hentHierarki("LandkoderSammensattISO2")
+    @Cacheable
+    fun hentLandKode(): List<Landkode> {
+        return metricsHelper.measure(MetricsHelper.MeterName.KodeverkHentLandKode) {
+            val tmpLandkoder = hentHierarki("LandkoderSammensattISO2")
 
-        val rootNode = jacksonObjectMapper().readTree(tmpLandkoder)
-        val noder = rootNode.at("/noder").toList()
-        return  noder.map { node -> Landkode(node.at("/kode").textValue(),
-                node.at("/undernoder").findPath("kode").textValue()) }.sortedBy { (sorting, _) -> sorting }.toList()
+            val rootNode = jacksonObjectMapper().readTree(tmpLandkoder)
+            val noder = rootNode.at("/noder").toList()
+
+            noder.map { node ->
+                Landkode(node.at("/kode").textValue(),
+                        node.at("/undernoder").findPath("kode").textValue())
+            }.sortedBy { (sorting, _) -> sorting }.toList()
+        }
     }
 
     fun hentAlleLandkoder() = hentLandKode().toJson()  // test
 
     fun hentLandkoderAlpha2() = hentLandKode().map { it.landkode2 }.toList() //test
 
+    @Cacheable("string")
     fun finnLandkode2(alpha3: String): String? {
         val list = hentLandKode()
         list.forEach {
@@ -97,6 +116,7 @@ class KodeverkService(private val kodeRestTemplate: RestTemplate,
         return null
     }
 
+    @Cacheable("string")
     fun finnLandkode3(alpha2: String): String? {
         val list = hentLandKode()
         list.forEach {

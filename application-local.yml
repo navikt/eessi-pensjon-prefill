@@ -3,6 +3,9 @@
 ## - SRVPENSJON_PASSWORD
 ## - OPENAM_SECRET
 
+NAIS_APP_NAME: 'eessi-pensjon-fagmodul'
+NAIS_APP_IMAGE: 'localrun'
+
 NAIS_NAMESPACE: 'q2'
 
 eessi-pensjon-active-profiles: ${spring.profiles.active}
@@ -29,6 +32,9 @@ requestsamlpolicy:
 srveessipensjon:
   username: '${SRVEESSIPENSJON_USERNAME}'
   password: '${SRVEESSIPENSJON_PASSWORD_Q}'
+
+srvusername: ${srveessipensjon.username}
+srvpassword: ${srveessipensjon.password}
 
 app:
   name: 'DEVELOP'
@@ -63,8 +69,8 @@ no.nav.security.oidc:
     accepted_audience: 'eessi-pensjon-frontend-api-fss-q2'
   issuer.oidc:
     discoveryurl: 'https://isso-q.adeo.no:443/isso/oauth2/.well-known/openid-configuration'
-    accepted_audience: 'security-token-service,freg-token-provider-p,freg-token-provider-t0,freg-token-provider-q4,eessi-fagmodul-q2,eessi-pensjon-frontend-api-fss-q2,ida-t,ida-q'
-  issuer.pesys:
+    accepted_audience: 'security-token-service,freg-token-provider-p,freg-token-provider-t0,freg-token-provider-q4,eessi-pensjon-fagmodul-q2,eessi-pensjon-frontend-api-fss-q2,ida-t,ida-q'
+  issuer.servicebruker:
     discoveryurl: 'https://security-token-service.nais.preprod.local/rest/v1/sts/.well-known/openid-configuration'
     accepted_audience: 'preprod.local,srveessipensjon,srvpensjon'
 
