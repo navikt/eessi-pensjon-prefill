@@ -156,7 +156,7 @@ dependencies {
     // Tjenestespesifikasjoner
     if (project.hasProperty('github')) {
         compile("no.nav.tjenestespesifikasjoner:person-v3-tjenestespesifikasjon:1+")
-        xsd("no.nav.tjenestespesifikasjoner:pensjonsinformasjon-v1-tjenestespesifikasjon")
+        xsd("no.nav.tjenestespesifikasjoner:pensjonsinformasjon-v1-tjenestespesifikasjon:1+")
     } else {
         implementation("no.nav.tjenester:nav-person-v3-tjenestespesifikasjon:${personV3Version}")
         xsd("no.nav.pensjon:pensjonsinformasjon-xsd:${pensjonInformasjonVersion}")
