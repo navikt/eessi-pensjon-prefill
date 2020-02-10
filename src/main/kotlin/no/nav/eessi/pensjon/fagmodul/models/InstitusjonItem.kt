@@ -1,6 +1,9 @@
 package no.nav.eessi.pensjon.fagmodul.models
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+
 //Data struktur for bruk av apirequest(frontend) og utfyllingdata (backend)
+@JsonIgnoreProperties(ignoreUnknown = true)
 data class InstitusjonItem(
         var country: String,
         var institution: String,
