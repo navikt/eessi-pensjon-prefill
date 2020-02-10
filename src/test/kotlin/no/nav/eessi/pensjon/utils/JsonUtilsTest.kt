@@ -83,13 +83,5 @@ class JsonUtilsTest {
         }
     }
 
-    @Test
-    fun `Test mapAnyToJson failOnUnknows error expect parseerror throws FagmodulJsonIllegalArgumentException`() {
-        val mockUnvalidjson = "[{\"country\":\"NO\", \"institution\": \"NO:NAVT003\", \"dummykeyname\": \"dummyvalue\" } ]"
-        assertThrows<FagmodulJsonIllegalArgumentException> {
-         mapJsonToAny(mockUnvalidjson, typeRefs<List<InstitusjonItem>>(), true)
-        }
-    }
-
 
 }
