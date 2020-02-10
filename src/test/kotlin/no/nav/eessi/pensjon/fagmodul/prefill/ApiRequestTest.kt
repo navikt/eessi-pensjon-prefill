@@ -2,9 +2,7 @@ package no.nav.eessi.pensjon.fagmodul.prefill
 
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
-import no.nav.eessi.pensjon.utils.mapAnyToJson
-import no.nav.eessi.pensjon.utils.toJson
-import no.nav.eessi.pensjon.utils.validateJson
+import no.nav.eessi.pensjon.utils.*
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -14,9 +12,8 @@ import java.nio.file.Paths
 class ApiRequestTest {
 
     private fun createMockApiRequest(sedName: String, buc: String, payload: String?): ApiRequest {
-        val items = listOf(InstitusjonItem(country = "NO", institution = "NAVT003"))
         return ApiRequest(
-                institutions = items,
+                institutions = listOf(InstitusjonItem(country = "NO", institution = "NAVT003")),
                 sed = sedName,
                 sakId = "01234567890",
                 euxCaseId = "99191999911",
@@ -44,6 +41,37 @@ class ApiRequestTest {
         assertNotNull(sedjson)
         val json = mapAnyToJson(req)
         assertNotNull(json)
+    }
+
+    @Test
+    fun `check og valider request fra ui med institusion uten buc`() {
+
+        val req = "{\n" +
+                "  \"sakId\" : \"01234567890\",\n" +
+                "  \"vedtakId\" : null,\n" +
+                "  \"kravId\" : null,\n" +
+                "  \"aktoerId\" : \"1000060964183\",\n" +
+                "  \"fnr\" : null,\n" +
+                "  \"avdodfnr\" : null,\n" +
+                "  \"payload\" : \"{}\",\n" +
+                "  \"buc\" : \"P_BUC_01\",\n" +
+                "  \"sed\" : \"P2000\",\n" +
+                "  \"documentid\" : null,\n" +
+                "  \"euxCaseId\" : \"99191999911\",\n" +
+                "  \"institutions\" : [ {\n" +
+                "    \"country\" : \"NO\",\n" +
+                "    \"institution\" : \"NAVT003\",\n" +
+                "    \"name\" : null\n" +
+                "  } ],\n" +
+                "  \"subjectArea\" : \"Pensjon\",\n" +
+                "  \"skipSEDkey\" : null,\n" +
+                "  \"mockSED\" : true\n" +
+                "}"
+        println(req)
+        val datamodel = ApiRequest.buildPrefillDataModelConfirm( mapJsonToAny(req, typeRefs<ApiRequest>()), "", "")
+        assertNotNull(datamodel)
+        assertEquals("P2000", datamodel.getSEDid())
+        assertEquals("P_BUC_01", datamodel.buc)
     }
 
     @Test

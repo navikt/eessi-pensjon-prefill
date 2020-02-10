@@ -42,8 +42,10 @@ class SedController(private val euxService: EuxService,
     @ApiOperation("Genereren en Nav-Sed (SED), viser en oppsumering av SED (json). Før evt. innsending til EUX/Rina")
     @PostMapping("/preview", "/preview/{filter}", consumes = ["application/json"], produces = [org.springframework.http.MediaType.APPLICATION_JSON_VALUE])
     fun confirmDocument(@RequestBody request: ApiRequest, @PathVariable("filter", required = false) filter: String ?= null): String {
+
         val dataModel = ApiRequest.buildPrefillDataModelConfirm(request, aktoerService.hentPinForAktoer(request.aktoerId), getAvdodAktoerId(request))
         auditlogger.log("confirmDocument", request.aktoerId ?: "" , request.toAudit())
+
         val sed = prefillService.prefillSed(dataModel).sed
         return if (filter==null) {
             sed.toJsonSkipEmpty()

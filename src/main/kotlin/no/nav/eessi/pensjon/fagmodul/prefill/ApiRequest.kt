@@ -62,7 +62,7 @@ data class ApiRequest(
                 request.institutions == null -> throw MangelfulleInndataException("Mangler Institusjoner")
 
                 SEDType.isValidSEDType(request.sed) -> {
-                    logger.info("ALL SED on existing Rina -> SED: ${request.sed} -> euxCaseId: ${request.sakId}")
+                    logger.info("ALL SED on existing Rina -> SED: ${request.sed} -> euxCaseId: ${request.euxCaseId} -> sakNr: ${request.sakId} ")
                     val pinid = fodselsnr
                     PrefillDataModel().apply {
                         penSaksnummer = request.sakId
@@ -98,6 +98,7 @@ data class ApiRequest(
                         penSaksnummer = request.sakId
                         sed = SED(request.sed)
                         aktoerID = request.aktoerId
+                        buc = request.buc
                         personNr = fodselsnr
                         vedtakId = request.vedtakId ?: ""
                         partSedAsJson[request.sed] = request.payload ?: "{}"
