@@ -156,7 +156,7 @@ dependencies {
     // Tjenestespesifikasjoner
     if (project.hasProperty('github')) {
         compile("no.nav.tjenestespesifikasjoner:person-v3-tjenestespesifikasjon:1+")
-        xsd("no.nav.tjenestespesifikasjoner:pensjonsinformasjon-v1-tjenestespesifikasjon:1.2020.01.30-14.36-cdf257baea96")
+        xsd("no.nav.tjenestespesifikasjoner:pensjonsinformasjon-v1-tjenestespesifikasjon:1+")
     } else {
         implementation("no.nav.tjenester:nav-person-v3-tjenestespesifikasjon:${personV3Version}")
         xsd("no.nav.pensjon:pensjonsinformasjon-xsd:${pensjonInformasjonVersion}")
@@ -214,21 +214,15 @@ processResources.doFirst {
     delete "${projectDir}/src/main/resources/xsdtemp"
 }
 
-
 ext.xsdTemp = "${buildDir}/xsdtemp"
 ext.schemasDir = "${buildDir}/schemas"
+ext.xsdArtifactName = "pensjonsinformasjon-xsd.jar"
 
-println(ext.xsdTemp)
-println(file(ext.xsdTemp))
-
-ext.xsdArtifactName = file(ext.xsdTemp).list()[0]
 ext.pensjonsinformasjonDir = "${schemasDir}"
 
 task copyPensjonsinformasjonXsd(type: Copy) {
-    from {
-        configurations.xsd.asFileTree.each { artifact ->
-            println("ArtifactName: " + artifact.name)
-        }
+    from(configurations.xsd) {
+        rename '^pensjonsinformasjon.*', 'pensjonsinformasjon-xsd.jar'
     }
     into xsdTemp
 }
