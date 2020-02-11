@@ -217,6 +217,10 @@ processResources.doFirst {
 
 ext.xsdTemp = "${buildDir}/xsdtemp"
 ext.schemasDir = "${buildDir}/schemas"
+
+println(ext.xsdTemp)
+println(file(ext.xsdTemp))
+
 ext.xsdArtifactName = file(ext.xsdTemp).list()[0]
 ext.pensjonsinformasjonDir = "${schemasDir}"
 
