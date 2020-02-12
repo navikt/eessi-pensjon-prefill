@@ -7,16 +7,10 @@ metadata:
     team: eessipensjon
 spec:
   env:
-    - name: NAV_TRUSTSTORE_KEYSTOREALIAS
-      value: na
     - name: SPRING_PROFILES_ACTIVE
       value: test
-    - name: PENSJONSINFORMASJON_DESCRIPTION
-      value: En xml-rest-tjeneste som henter pensjonsinformasjon.
     - name: PENSJONSINFORMASJON_URL
       value: https://wasapp-q2.adeo.no/pensjon-ws/api/pensjonsinformasjon/v1
-    - name: AKTOERREGISTER_API_V1_DESCRIPTION
-      value: Versjon 1 av REST-API for aktoerregisteret
     - name: AKTOERREGISTER_API_V1_URL
       value: https://app-q2.adeo.no/aktoerregister/api/v1
     - name: EESSIPEN_EUX_RINA_URL
@@ -25,12 +19,8 @@ spec:
       value: https://saf-q2.nais.preprod.local/graphql
     - name: SAF_HENTDOKUMENT_URL
       value: https://saf-q2.nais.preprod.local/rest/hentdokument
-    - name: VIRKSOMHET_PERSON_V3_SECURITYTOKEN
-      value: SAML
     - name: VIRKSOMHET_PERSON_V3_ENDPOINTURL
       value: https://wasapp-q2.adeo.no/tpsws/ws/Person/v3
-    - name: VIRKSOMHET_PERSON_V3_WSDLURL
-      value: http://maven.adeo.no/nexus/content/groups/public/no/nav/tjenester/nav-person-v3-tjenestespesifikasjon/3.6.1/nav-person-v3-tjenestespesifikasjon-3.6.1.zip
     - name: OPENIDCONNECT_URL
       value: https://isso-q.adeo.no:443/isso
     - name: SECURITY_TOKEN_SERVICE_TOKEN_URL
@@ -54,7 +44,7 @@ spec:
   liveness:
     path: /internal/isalive
     port: 8080
-    initialDelay: 60
+    initialDelay: 40
     failureThreshold: 10
   port: 8080
   prometheus:
@@ -63,7 +53,7 @@ spec:
   readiness:
     path: /internal/isready
     port: 8080
-    initialDelay: 60
+    initialDelay: 40
     failureThreshold: 10
   replicas:
     min: 1
