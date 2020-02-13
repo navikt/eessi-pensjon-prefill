@@ -266,7 +266,6 @@ class EuxServiceTest {
         doThrow(createDummyClientRestExecption(HttpStatus.FORBIDDEN,"Dummy body"))
                 .whenever(mockEuxrestTemplate).exchange(any<String>(), eq(HttpMethod.DELETE), eq(null), eq(String::class.java))
 
-//        whenever(mockEuxrestTemplate.exchange(any<String>(), eq(HttpMethod.DELETE), eq(null), eq(String::class.java))).thenReturn(response)
         assertThrows<ForbiddenException> {
             service.deleteDocumentById("12132131", "12312312-123123123123")
         }
@@ -274,8 +273,6 @@ class EuxServiceTest {
 
     @Test
     fun `Calling EuxService  feiler med kontakt fra eux med kall til deleteDocumentById`() {
-        //whenever(mockEuxrestTemplate.exchange(any<String>(), eq(HttpMethod.DELETE), eq(null), eq(String::class.java))).thenThrow(RuntimeException::class.java)
-
         val euxCaseId = "123456"
         val documentId = "213213-123123-123123"
 
@@ -852,6 +849,28 @@ class EuxServiceTest {
         val expected = listOf<Pair<String,String>>()
         val actual = service.filterUtGyldigSedId("[]")
         assertEquals(expected, actual)
+    }
+
+    @Test
+    fun testHentInstitutionsGyldigDatasetFraEuxVilReturenereEnListeAvInstitution() {
+        val instiutionsMegaJson = String(Files.readAllBytes(Paths.get("src/test/resources/json/institusjoner/deltakere_p_buc_01_all.json")))
+
+        val response: ResponseEntity<String> = ResponseEntity(instiutionsMegaJson, HttpStatus.OK)
+
+        whenever(mockEuxrestTemplate.exchange(
+                any<String>(),
+                eq(HttpMethod.GET),
+                eq(null),
+                ArgumentMatchers.eq(String::class.java))
+        ).thenReturn(response)
+
+        val expected = 248
+        val actual = service.getInstitutions("P_BUC_01")
+
+        assertEquals(expected, actual.size)
+
+        println(actual.toJson())
+
     }
 
     private fun dummyRequirement(dummyparam1: String?, dummyparam2: String?): Boolean{
