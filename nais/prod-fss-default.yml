@@ -47,6 +47,8 @@ spec:
       value: NO:889640782
     - name: EESSI_PENSJON_INSTITUSJON_NAVN
       value: "889640782"
+    - name: ENV
+      value: p
   image: {{ image }}
   ingresses:
     - https://eessi-pensjon-fagmodul.nais.adeo.no
