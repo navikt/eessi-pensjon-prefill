@@ -272,15 +272,29 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate,
                 , MetricsHelper.MeterName.Institusjoner
                 , "Feil ved innhenting av institusjoner"
         )
-        val detaljList = mapJsonToAny(responseInstitution.body!!, typeRefs<List<InstitusjonDetalj>>())
-        return detaljList.map {  data ->
-            val bucs = data.tilegnetBucs?.filter { it?.institusjonsrolle == "CounterParty" }?.map { it?.bucType ?: "" }?.sortedBy { it }?.toSet()
-            InstitusjonItem(data.landkode!!, data.id!!, data.akronym, bucs!!.toList() )
-        }.sortedBy { sort-> sort.country }.sortedBy { sort -> sort.institution }.toList()
+        val starttid = System.currentTimeMillis()
 
+        val detaljList = mapJsonToAny(responseInstitution.body!!, typeRefs<List<InstitusjonDetalj>>())
+        val institusjonListe = detaljList.asSequence()
+                .map {  data ->
+                        val bucs = data.tilegnetBucs?.asSequence()
+                                ?.filter { it?.institusjonsrolle == "CounterParty" }
+                                ?.map { it?.bucType ?: "" }
+                                ?.sortedBy { it }
+                                ?.toSet()
+                    InstitusjonItem(data.landkode!!, data.id!!, data.akronym, bucs!!.toList() )
+                }
+                .sortedBy { sort-> sort.country }
+                .sortedBy { sort -> sort.institution }
+                .toList()
+
+        val slutttid = System.currentTimeMillis()
+        val tidbrukt = slutttid - starttid
+        logger.debug("Tid brukt på institusjonListe map: $tidbrukt ms")
+        return institusjonListe
     }
 
-    fun getRinasaker(fnr: String, rinaSakIder: List<String>): List<Rinasak> {
+    fun getRinasaker(fnr: String, rinaSakIderMetadata: List<String>): List<Rinasak> {
         logger.debug("Henter opp rinasaker på fnr")
 
         // Henter rina saker basert på fnr
@@ -288,10 +302,16 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate,
 
         // Filtrerer vekk saker som allerede er hentet som har fnr
         val rinaSakIderMedFnr = hentRinaSakIder(rinaSakerMedFnr)
-        val rinaSakIderUtenFnr = rinaSakIder.minus(rinaSakIderMedFnr)
+        val rinaSakIderUtenFnr = rinaSakIderMetadata.minus(rinaSakIderMedFnr)
 
         // Henter rina saker som ikke har fnr
-        val rinaSakerUtenFnr = rinaSakIderUtenFnr.stream().map { getRinasaker(null, it, null, null).first() }.distinct().toList()
+        val rinaSakerUtenFnr = rinaSakIderUtenFnr
+                                    .asSequence()
+                                    .map { euxCaseId ->
+                                        getRinasaker(null, euxCaseId , null, null).first() }
+                                    .distinct()
+                                    .toList()
+
         return rinaSakerMedFnr.plus(rinaSakerUtenFnr)
     }
 
@@ -299,7 +319,8 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate,
         val gyldigBucs = mutableListOf("H_BUC_07", "R_BUC_01", "R_BUC_02", "M_BUC_02", "M_BUC_03a", "M_BUC_03b")
         gyldigBucs.addAll(initSedOnBuc().keys.map { it }.toList())
 
-        return list.filterNot { rinasak -> rinasak.status == "archived" }
+        return list.asSequence()
+                .filterNot { rinasak -> rinasak.status == "archived" }
                 .filter { rinasak -> gyldigBucs.contains(rinasak.processDefinitionId) }
                 .sortedBy { rinasak -> rinasak.id }
                 .map { rinasak -> rinasak.id!! }
@@ -330,7 +351,7 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate,
      * Returnerer en distinct liste av rinaSakIDer
      *  @param rinaSaker liste av rinasaker fra EUX datamodellen
      */
-    private fun hentRinaSakIder(rinaSaker: List<Rinasak>) = rinaSaker.stream().map { it.id!! }.toList()
+    private fun hentRinaSakIder(rinaSaker: List<Rinasak>) = rinaSaker.asSequence().map { it.id!! }.toList()
 
     /**
      * Lister alle rinasaker på valgt fnr eller euxcaseid, eller bucType...
@@ -339,7 +360,9 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate,
      * @param rinaSakIder rina sak IDer
      */
     fun getRinasaker(fnr: String?, euxCaseId: String?, bucType: String?, status: String?): List<Rinasak> {
-        require(!(fnr == null && euxCaseId == null && bucType == null && status == null)) { "Minst et søkekriterie må fylles ut for å få et resultat fra Rinasaker" }
+        require(!(fnr == null && euxCaseId == null && bucType == null && status == null)) {
+            "Minst et søkekriterie må fylles ut for å få et resultat fra Rinasaker"
+        }
 
         val uriComponent = UriComponentsBuilder.fromPath("/rinasaker")
                 .queryParam("fødselsnummer", fnr ?: "")
