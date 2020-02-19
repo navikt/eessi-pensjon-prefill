@@ -100,9 +100,10 @@ class SafServiceTest {
     fun `base64Test`() {
       FileInputStream(File("src/test/resources/OversiktBUCogSED.pdf")).readBytes()
 
-        val dokumentInnholdBase64 = String(Base64.getEncoder().encode(      FileInputStream(File("src/test/resources/OversiktBUCogSED.pdf")).readBytes()))
-        println(dokumentInnholdBase64)
-
+        val dokumentInnholdBase64 = String(Base64.getEncoder().encode(FileInputStream(File("src/test/resources/OversiktBUCogSED.pdf")).readBytes()))
+        val sliceActual = dokumentInnholdBase64.slice(IntRange(0, 100))
+        val expected = "JVBERi0xLjUNJeLjz9MNCjg5NSAwIG9iag08PC9MaW5lYXJpemVkIDEvTCAyMTc2MjAvTyA4OTcvRSAxMDU5MzQvTiAxMy9UIDIxN"
+        assertEquals(expected, sliceActual)
     }
 
     @Test

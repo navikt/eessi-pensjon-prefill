@@ -2,6 +2,7 @@ package no.nav.eessi.pensjon.fagmodul.sedmodel
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import no.nav.eessi.pensjon.utils.*
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
@@ -25,17 +26,17 @@ class SedP4000fileTest {
         val p4000json = getTestJsonFile("other/P4000-from-frontend.json")
 
         val map = mapJsonToAny(p4000json, typeRefs<Map<String, Any>>())
-
-
         val periodeInfoJson = mapAnyToJson(map["periodeInfo"] ?: "{}")
 
         val sed = SED("P4000")
         sed.trygdetid = mapJsonToAny( periodeInfoJson, typeRefs())
 
-        println("-------------------------Pensjonsdata----------------------------------------")
-        println(sed.toJsonSkipEmpty())
-        println("---------------------------END-----------------------------------------------")
-  //      JSONAssert.assertEquals(p4000json, json, false)
+        assertEquals("work period 1 workName", sed.trygdetid?.ansattSelvstendigPerioder?.first()?.navnFirma)
+        assertEquals("Ole", sed.trygdetid?.barnepassPerioder?.first()?.informasjonBarn?.fornavn)
+        assertEquals("daily period 1 payingInstitution", sed.trygdetid?.arbeidsledigPerioder?.first()?.navnPaaInstitusjon)
+        assertEquals("EE", sed.trygdetid?.boPerioder?.first()?.land)
+        assertEquals("GG", sed.trygdetid?.opplaeringPerioder?.first()?.land)
+        assertEquals("learn period 1 learnInstitution", sed.trygdetid?.opplaeringPerioder?.first()?.navnPaaInstitusjon)
     }
 
     @Test
@@ -49,13 +50,9 @@ class SedP4000fileTest {
         val sed = SED("P4000")
         sed.trygdetid = mapJsonToAny(personDataJson, typeRefs())
 
-        println("-------------------------Pensjonsdata----------------------------------------")
-        println(sed.toJsonSkipEmpty())
-        println("---------------------------END-----------------------------------------------")
-
         val trygdetidJson = sed.trygdetid?.toJson()
 
-              JSONAssert.assertEquals(personDataJson, trygdetidJson, false)
+       JSONAssert.assertEquals(personDataJson, trygdetidJson, false)
     }
 
 }

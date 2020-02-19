@@ -87,8 +87,6 @@ class PrefillP2000AlderpensjonkravavvistTest {
         val p2000 = prefill.prefill(prefillData)
 
         prefill.validate(p2000)
-        print(p2000.toJsonSkipEmpty())
-
         assertEquals(null, p2000.nav?.barn)
 
         assertEquals("", p2000.nav?.bruker?.arbeidsforhold?.get(0)?.yrke)

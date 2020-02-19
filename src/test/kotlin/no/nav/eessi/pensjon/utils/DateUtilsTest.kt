@@ -32,10 +32,7 @@ class DateUtilsTest {
         xmlcal.day = 20
         xmlcal.timezone = +2
         xmlcal.setTime(2, 0,0)
-        println(xmlcal.toString())
-
         val toRinaDate = xmlcal.simpleFormat()
-
         assertNotNull(toRinaDate)
         assertEquals("1962-06-20", toRinaDate)
     }
@@ -48,7 +45,6 @@ class DateUtilsTest {
         xmlcal.day = 20
         xmlcal.timezone = +1
         xmlcal.setTime(2, 0,0)
-        println(xmlcal.toString())
 
         val toRinaDate = xmlcal.simpleFormat()
 
@@ -59,7 +55,6 @@ class DateUtilsTest {
     @Test
     fun checkXMLdatoNotflipWhenTimeZoneSet() {
         val xmlcal = createXMLCalendarFromString("1962-06-20+02:00")
-        println("SimpleFormat: ${xmlcal.simpleFormat()}")
         assertEquals("1962-06-20", xmlcal.simpleFormat())
     }
 
@@ -73,9 +68,7 @@ class DateUtilsTest {
         xmlcal.hour = 0
         xmlcal.minute = 0
         xmlcal.second = 1
-
         val toRinaDate = xmlcal.simpleFormat()
-
         assertNotNull(toRinaDate)
         assertEquals("2016-01-01", toRinaDate)
     }

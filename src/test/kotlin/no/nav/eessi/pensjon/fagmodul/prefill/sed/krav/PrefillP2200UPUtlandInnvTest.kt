@@ -83,8 +83,6 @@ class PrefillP2200UPUtlandInnvTest {
 
         assertEquals(null, p2200.nav?.barn)
 
-        println(p2200.toJsonSkipEmpty())
-
         assertEquals("", p2200.nav?.bruker?.arbeidsforhold?.get(0)?.yrke)
         assertEquals("2018-11-11", p2200.nav?.bruker?.arbeidsforhold?.get(0)?.planlagtstartdato)
         assertEquals("2018-11-13", p2200.nav?.bruker?.arbeidsforhold?.get(0)?.planlagtpensjoneringsdato)
