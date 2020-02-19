@@ -77,10 +77,8 @@ class PensjonsinformasjonService(
 
             logger.debug("Requestbody:\n${document.documentToString()}")
 
-            val response = doRequest("/aktor/", aktoerId, document.documentToString(), MetricsHelper.MeterName.PensjoninformasjonHentAltPaaIdentRequester)
-            validateResponse(informationBlocks, response)
-
-            response
+            val xmlResponse = doRequest("/aktor/", aktoerId, document.documentToString(), MetricsHelper.MeterName.PensjoninformasjonHentAltPaaIdentRequester)
+            transform(xmlResponse)
         }
     }
 
@@ -111,19 +109,32 @@ class PensjonsinformasjonService(
                 requestBuilder.addPensjonsinformasjonElement(document, it)
             }
             logger.debug("Requestbody:\n${document.documentToString()}")
-            val response = doRequest("/vedtak", vedtaksId, document.documentToString(), MetricsHelper.MeterName.PensjoninformasjonAltPaaVedtakRequester)
-            validateResponse(informationBlocks, response)
 
-            response
+            val xmlResponse = doRequest("/vedtak", vedtaksId, document.documentToString(), MetricsHelper.MeterName.PensjoninformasjonAltPaaVedtakRequester)
+            transform(xmlResponse)
         }
     }
 
-    private fun validateResponse(informationBlocks: List<InformasjonsType>, response: Pensjonsinformasjon) {
-        // TODO: Hva skal vi egentlig validere? Skal vi validere noe mer enn at vi fikk en gyldig xml-response, som skjer ved JAXB-marshalling?
+    private fun transform(xmlString: String) : Pensjonsinformasjon {
+        return try {
+
+            val context = JAXBContext.newInstance(Pensjonsinformasjon::class.java)
+            val unmarshaller = context.createUnmarshaller()
+            val body : String = xmlString
+
+            logger.debug("Pensjonsinformasjon responsebody:\n $body \n")
+            val res = unmarshaller.unmarshal(StreamSource(StringReader(body)), Pensjonsinformasjon::class.java)
+
+            res.value as Pensjonsinformasjon
+
+        } catch (ex: Exception) {
+            logger.error("Feiler med xml transformering til Pensjoninformasjon")
+            throw PensjoninformasjonProcessingException("Feiler med xml transformering til Pensjoninformasjon: ${ex.message}")
+        }
     }
 
     @Throws(PensjoninformasjonException::class, HttpServerErrorException::class, HttpClientErrorException::class)
-    private fun doRequest(path: String, id: String, requestBody: String, metricName: MetricsHelper.MeterName): Pensjonsinformasjon {
+    private fun doRequest(path: String, id: String, requestBody: String, metricName: MetricsHelper.MeterName): String {
 
         val headers = HttpHeaders()
         headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_XML_VALUE)
@@ -139,26 +150,19 @@ class PensjonsinformasjonService(
                             requestEntity,
                             String::class.java)
 
-                val context = JAXBContext.newInstance(Pensjonsinformasjon::class.java)
-                val unmarshaller = context.createUnmarshaller()
-                val body : String = responseEntity.body!!
-
-                logger.debug("Pensjonsinformasjon responsebody:\n $body \n")
-                val res = unmarshaller.unmarshal(StreamSource(StringReader(body)), Pensjonsinformasjon::class.java)
-
-                res.value as Pensjonsinformasjon
+                 responseEntity.body!!
 
             } catch (hsee: HttpServerErrorException) {
                 val errorBody = hsee.responseBodyAsString
-                logger.error("Feiler med HttpServerError body: $errorBody", hsee)
+                logger.error("PensjoninformasjonService feiler med HttpServerError body: $errorBody", hsee)
                 throw hsee
             } catch (hcee: HttpClientErrorException) {
                 val errorBody = hcee.responseBodyAsString
-                logger.error("Feiler med HttpClientError body: $errorBody", hcee)
+                logger.error("PensjoninformasjonService feiler med HttpClientError body: $errorBody", hcee)
                 throw hcee
             } catch (ex: Exception) {
-                logger.error("Feil med kontakt til PESYS pensjoninformajson, ${ex.message}")
-                throw PensjoninformasjonException("Feil med kontakt til PESYS pensjoninformajson. melding; ${ex.message}")
+                logger.error("PensjoninformasjonService feiler med kontakt til PESYS pensjoninformajson, ${ex.message}", ex)
+                throw PensjoninformasjonException("PensjoninformasjonService feiler med ukjent feil mot PESYS. melding: ${ex.message}")
             }
         }
     }
@@ -202,3 +206,6 @@ class IkkeFunnetException(message: String) : IllegalArgumentException(message)
 
 @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
 class PensjoninformasjonException(message: String) : RuntimeException(message)
+
+@ResponseStatus(value = HttpStatus.UNPROCESSABLE_ENTITY)
+class PensjoninformasjonProcessingException(message: String) : RuntimeException(message)
