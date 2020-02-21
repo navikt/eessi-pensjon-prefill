@@ -76,6 +76,7 @@ class PensjonsinformasjonService(
             }
 
             logger.debug("Requestbody:\n${document.documentToString()}")
+            logger.info("Henter pensjonsinformasjon for aktor: $aktoerId")
 
             val xmlResponse = doRequest("/aktor/", aktoerId, document.documentToString(), MetricsHelper.MeterName.PensjoninformasjonHentAltPaaIdentRequester)
             transform(xmlResponse)
@@ -110,6 +111,7 @@ class PensjonsinformasjonService(
             }
             logger.info("Henter pensjonsinformasjon for vedtaksid: $vedtaksId")
             logger.debug("Requestbody:\n${document.documentToString()}")
+
             val xmlResponse = doRequest("/vedtak", vedtaksId, document.documentToString(), MetricsHelper.MeterName.PensjoninformasjonAltPaaVedtakRequester)
             transform(xmlResponse)
         }
