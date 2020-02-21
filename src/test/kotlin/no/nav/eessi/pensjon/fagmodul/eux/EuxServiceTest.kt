@@ -482,7 +482,6 @@ class EuxServiceTest {
 
         val result = service.createBuc("P_BUC_01")
 
-        println("response: $response")
         assertEquals(mockBuc, result)
     }
 
@@ -768,7 +767,6 @@ class EuxServiceTest {
                 .queryParam("KorrelasjonsId", correlationId)
                 .build()
         val url = builder.toUriString() + service.convertListInstitusjonItemToString(deltaker)
-        println(url)
         assertEquals("/buc/1234/mottakere?KorrelasjonsId=123456778&mottakere=NO:NAV02&mottakere=SE:SE2", url)
     }
 
@@ -854,7 +852,6 @@ class EuxServiceTest {
     @Test
     fun testHentInstitutionsGyldigDatasetFraEuxVilReturenereEnListeAvInstitution() {
         val instiutionsMegaJson = String(Files.readAllBytes(Paths.get("src/test/resources/json/institusjoner/deltakere_p_buc_01_all.json")))
-
         val response: ResponseEntity<String> = ResponseEntity(instiutionsMegaJson, HttpStatus.OK)
 
         whenever(mockEuxrestTemplate.exchange(
@@ -868,8 +865,6 @@ class EuxServiceTest {
         val actual = service.getInstitutions("P_BUC_01")
 
         assertEquals(expected, actual.size)
-
-        println(actual.toJson())
 
     }
 

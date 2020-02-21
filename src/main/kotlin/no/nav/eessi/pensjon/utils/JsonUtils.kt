@@ -9,14 +9,15 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.ResponseStatus
 
+
 inline fun <reified T : Any> typeRefs(): TypeReference<T> = object : TypeReference<T>() {}
 
 
 inline fun <reified T : Any> mapJsonToAny(json: String, typeRef: TypeReference<T>, failonunknown: Boolean = false): T {
     return try {
-             jacksonObjectMapper()
-                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, failonunknown)
-                .readValue(json, typeRef)
+         jacksonObjectMapper()
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, failonunknown)
+            .readValue(json, typeRef)
         } catch (jpe: JsonParseException) {
             jpe.printStackTrace()
             throw FagmodulJsonException("Fagmodul feilet ved konvertering av jsonformat, ${jpe.message}")

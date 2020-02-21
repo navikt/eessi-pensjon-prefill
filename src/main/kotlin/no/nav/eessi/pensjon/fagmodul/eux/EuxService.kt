@@ -525,7 +525,7 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate,
                 throw RuntimeException("En feil opppstod under tilknytning av vedlegg: ${response.statusCode}, ${response.body}")
             }
         } catch (ex: java.lang.Exception) {
-            logger.error("En feil opppstod under tilknytning av vedlegg, $ex", ex.printStackTrace())
+            logger.error("En feil opppstod under tilknytning av vedlegg, ${ex.message}", ex)
             throw ex
         } finally {
             val file = File(Paths.get("").toAbsolutePath().toString() + "/" + vedlegg.filnavn)
@@ -648,11 +648,6 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate,
                 return set.toList()
             }
             return map[bucType].orEmpty()
-        }
-
-        @JvmStatic
-        fun getValidBucAndSeds(bucType: String?) {
-
         }
     }
 

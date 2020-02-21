@@ -67,7 +67,6 @@ class ApiRequestTest {
                 "  \"skipSEDkey\" : null,\n" +
                 "  \"mockSED\" : true\n" +
                 "}"
-        println(req)
         val datamodel = ApiRequest.buildPrefillDataModelConfirm( mapJsonToAny(req, typeRefs<ApiRequest>()), "", "")
         assertNotNull(datamodel)
         assertEquals("P2000", datamodel.getSEDid())

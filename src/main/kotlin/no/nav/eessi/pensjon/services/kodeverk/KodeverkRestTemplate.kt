@@ -21,7 +21,6 @@ class KodeverkRestTemplate(private val registry: MeterRegistry) {
 
     @Bean
     fun kodeRestTemplate(templateBuilder: RestTemplateBuilder): RestTemplate {
-        println("kodeverkurl: $kodeverkUrl")
         return templateBuilder
                 .rootUri(kodeverkUrl)
                 .errorHandler(DefaultResponseErrorHandler())
