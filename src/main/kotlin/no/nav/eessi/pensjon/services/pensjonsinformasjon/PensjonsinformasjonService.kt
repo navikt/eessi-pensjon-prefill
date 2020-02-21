@@ -108,8 +108,8 @@ class PensjonsinformasjonService(
             informationBlocks.forEach {
                 requestBuilder.addPensjonsinformasjonElement(document, it)
             }
+            logger.info("Henter pensjonsinformasjon for vedtaksid: $vedtaksId")
             logger.debug("Requestbody:\n${document.documentToString()}")
-
             val xmlResponse = doRequest("/vedtak", vedtaksId, document.documentToString(), MetricsHelper.MeterName.PensjoninformasjonAltPaaVedtakRequester)
             transform(xmlResponse)
         }
