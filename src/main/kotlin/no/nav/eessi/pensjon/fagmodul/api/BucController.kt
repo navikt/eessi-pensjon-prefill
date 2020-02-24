@@ -85,7 +85,9 @@ class BucController(private val euxService: EuxService,
         auditlogger.log("/buc/{$rinanr}/allDocuments", "getAllDocuments")
         logger.debug("Henter ut documentId på alle dokumenter som finnes på valgt type")
 
-        return BucUtils(euxService.getBuc(rinanr)).getAllDocuments()
+        val buc = euxService.getBucMultiRetry(rinanr)
+        return BucUtils(buc).getAllDocuments()
+
     }
 
     @ApiOperation("Henter opp mulige aksjon(er) som kan utføres på valgt buc")
