@@ -2,6 +2,10 @@ name: Build, push, and deploy
 
 on:
   push:
+    branches:
+      - '*'
+      - '*/*'
+      - '!master'
 
 jobs:
   tag_build_and_deploy:
