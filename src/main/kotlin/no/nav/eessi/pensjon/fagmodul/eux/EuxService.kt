@@ -167,7 +167,34 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate,
         return na
     }
 
+    fun getBucMultiRetry(euxCaseId: String, maxTries: Int = 3, waitTimeInms: Long = 5000): Buc {
+        logger.info("prøver å kontakte eux for å hente buc")
+
+        var count = 0
+        var failException : Exception ?= null
+
+        while (count < maxTries) {
+            try {
+                return getBuc(euxCaseId)
+            } catch (ex: Exception) {
+                count++
+                logger.warn("feiled å kontakte eux prøver på nytt. nr.: $count, feilmelding: ${ex.message}")
+                failException = ex
+                Thread.sleep(waitTimeInms)
+            }
+        }
+        logger.error("Feiled å kontakte eux hente BUC, euxCaseid: $euxCaseId, melding: ${failException?.message}", failException)
+        throw EuxServerException(failException!!.message)
+    }
+
     fun getBuc(euxCaseId: String): Buc {
+        val body = getBucJson(euxCaseId)
+        logger.debug("mapper buc om til BUC objekt-model")
+        return mapJsonToAny(body, typeRefs())
+    }
+
+    @Throws(EuxServerException::class, EuxGenericServerException::class)
+    fun getBucJson(euxCaseId: String): String {
         logger.info("euxCaseId: $euxCaseId")
 
         val path = "/buc/{RinaSakId}"
@@ -188,10 +215,7 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate,
                 , metricName = MetricsHelper.MeterName.GetBUC
                 , prefixErrorMessage = "Feiler ved metode GetBuc. "
         )
-        return mapJsonToAny(response.body ?: {
-            logger.error("Feil med mapping euxCaseId $euxCaseId")
-            throw ServerException("Feil med Buc mapping, euxCaseId $euxCaseId")
-        }(), typeRefs())
+        return response.body ?: throw ServerException("Feil ved henting av BUCdata ingen data, euxCaseId $euxCaseId")
     }
 
     /**
@@ -356,8 +380,11 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate,
     /**
      * Lister alle rinasaker på valgt fnr eller euxcaseid, eller bucType...
      * fnr er påkrved resten er fritt
-     * @param fnr fødselsnummer
-     * @param rinaSakIder rina sak IDer
+     * @param fnr String, fødselsnummer
+     * @param euxCaseId String, euxCaseid sak ID
+     * @param bucType String, type buc
+     * @param status String, status
+     * @return List<Rinasak>
      */
     fun getRinasaker(fnr: String?, euxCaseId: String?, bucType: String?, status: String?): List<Rinasak> {
         require(!(fnr == null && euxCaseId == null && bucType == null && status == null)) {
@@ -652,6 +679,7 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate,
     }
 
     fun <T> restTemplateErrorhandler(restTemplateFunction: () -> ResponseEntity<T>, euxCaseId: String, metricName: MetricsHelper.MeterName, prefixErrorMessage: String): ResponseEntity<T> {
+
         return metricsHelper.measure(metricName) {
             return@measure try {
                 val response = restTemplateFunction.invoke()
