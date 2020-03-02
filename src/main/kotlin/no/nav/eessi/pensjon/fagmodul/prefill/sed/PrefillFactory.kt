@@ -29,9 +29,10 @@ class PrefillFactory(private val prefillNav: PrefillNav,
     private val prefillPerson = PrefillPerson(prefillNav, PrefillPensjon(dataFromTPS, prefillNav))
 
     fun createPrefillClass(prefillData: PrefillDataModel): Prefill<SED> {
+
         val sedValue = SEDType.valueOf(prefillData.getSEDid())
 
-        logger.info("mapping prefillClass to SED: $sedValue")
+        logger.debug("mapping prefillClass to SED: $sedValue")
 
         return when (sedValue) {
             SEDType.P6000 -> {

@@ -56,7 +56,6 @@ class PensjonsinformasjonHjelper(private val pensjonsinformasjonService: Pensjon
         //**********************************************
 
         val pendata: Pensjonsinformasjon = pensjonsinformasjonService.hentAltPaaAktoerId(aktoerId)
-        //val pendata: Pensjonsinformasjon = pensjonsinformasjonService.hentAltPaaFnr(fnr)
         if (pendata.brukersSakerListe == null) {
             throw PensjoninformasjonException("Ingen gyldig brukerSakerListe")
         }

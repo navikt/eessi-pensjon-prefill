@@ -17,18 +17,10 @@ class PrefillSED(private val factory: PrefillFactory) : Prefill<PrefillDataModel
     override fun prefill(prefillData: PrefillDataModel): PrefillDataModel {
 
         val prefilling = factory.createPrefillClass(prefillData)
-        logger.info("Mapping prefillClass: ${prefilling.javaClass}")
+        logger.info("Mapping prefillClass: ${prefilling::class.java.simpleName}")
 
-        val starttime = System.currentTimeMillis()
-
-        //magic happens here...
+        //prefill person (tps) og pensjon (pesys) skjer her
         prefilling.prefill(prefillData)
-
-        val endtime = System.currentTimeMillis()
-        val tottime = endtime - starttime
-
-        //Metrics..
-        logger.info("Ferdig med prefillClass, Det tok $tottime ms")
 
         return prefillData
     }
