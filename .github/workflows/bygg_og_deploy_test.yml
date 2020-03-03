@@ -52,7 +52,7 @@ jobs:
 
       - name: 'Deploy to NAIS Q1'
         if: success()
-          uses: nais/deploy/actions/deploy@v1
+        uses: nais/deploy/actions/deploy@v1
           env:
             APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
             CLUSTER: dev-fss
