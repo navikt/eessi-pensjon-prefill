@@ -53,7 +53,9 @@ class PrefillP2100(private val prefillNav: PrefillNav,
                         val pensjon = PrefillP2xxxPensjon.createPensjon(
                                 prefillData.personNr,
                                 prefillData.penSaksnummer,
-                                evtgjennlevende, pendata, prefillData.andreInstitusjon)
+                                evtgjennlevende,
+                                pendata,
+                                prefillData.andreInstitusjon)
                         if (prefillData.kanFeltSkippes("PENSED")) {
                             Pensjon(
                                     kravDato = pensjon.kravDato,

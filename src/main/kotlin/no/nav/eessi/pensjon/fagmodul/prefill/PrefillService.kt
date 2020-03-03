@@ -28,10 +28,10 @@ class PrefillService(private val prefillSED: PrefillSED,
 
             val startTime = System.currentTimeMillis()
             val data = prefillSED.prefill(dataModel)
-            val endTime = System.currentTimeMillis()
+            val endTime = System.currentTimeMillis() - startTime
             prefillSED.validate(data)
 
-            logger.info("******* Prefill SED tok ${endTime - startTime} ms. *******")
+            logger.info("******* Prefill SED tok $endTime ms. *******")
 
             data
         }

@@ -56,12 +56,10 @@ object PrefillP2xxxPensjon {
         val spesialStatusList = listOf(Kravstatus.TIL_BEHANDLING.name, Kravstatus.AVSL.name)
         //INNV
         var krav: Krav? = null
-
         val ytelselist = mutableListOf<YtelserItem>()
 
         if (spesialStatusList.contains(pensak.status)) {
-            logger.debug("Valgtstatus")
-            //kjøre ytelselist forkortet
+            logger.info("forkortet ytelsebehandling status: ${pensak.status}")
 
             ytelselist.add(createYtelseMedManglendeYtelse(pensak, personNr, penSaksnummer, andreinstitusjonerItem))
 
@@ -70,19 +68,20 @@ object PrefillP2xxxPensjon {
                     if (krav == null) {
                         val kravHistorikkMedUtland = hentKravHistorikkMedKravStatusTilBehandling(pensak.kravHistorikkListe)
                         krav = createKravDato(kravHistorikkMedUtland)
-                        logger.warn("9.1        Opprettett P2000 med mulighet for at denne TIL_BEHANDLING mangler KravDato!")
+                        logger.warn("9.1        Opprettett med mulighet for at denne ${Kravstatus.TIL_BEHANDLING} mangler KravDato")
                     }
                 }
                 else -> {
                     if (krav == null) {
                         val kravHistorikkMedUtland = hentKravHistorikkMedKravStatusAvslag(pensak.kravHistorikkListe)
                         krav = createKravDato(kravHistorikkMedUtland)
-                        logger.warn("9.1        Opprettett P2000 med mulighet for at denne AVSL mangler  KravDato!")
+                        logger.warn("9.1        Opprettett med mulighet for at denne ${Kravstatus.AVSL} mangler KravDato")
                     }
                 }
             }
 
         } else {
+            logger.info("sakType: ${pensak.sakType}")
             if (pensak.sakType == Saktype.ALDER.name) {
                 try {
                     val kravHistorikkMedUtland = hentKravHistorikkForsteGangsBehandlingUtlandEllerForsteGang(pensak.kravHistorikkListe)
@@ -111,6 +110,7 @@ object PrefillP2xxxPensjon {
                     }
 
                     ytelselist.add(createYtelserItem(ytelseprmnd, pensak, personNr, penSaksnummer, andreinstitusjonerItem))
+
                 } catch (ex: Exception) {
                     logger.error(ex.message, ex)
                     ytelselist.add(createYtelseMedManglendeYtelse(pensak, personNr, penSaksnummer, andreinstitusjonerItem))

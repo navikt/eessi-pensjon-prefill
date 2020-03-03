@@ -34,11 +34,11 @@ object KravHistorikkHelper {
     fun hentKravHistorikkSisteRevurdering(kravHistorikkListe: V1KravHistorikkListe): V1KravHistorikk {
         val sortList = sortertKravHistorikk(kravHistorikkListe)
 
-        for (i in sortList) {
-            logger.debug("leter etter ${Kravtype.REVURD} i  ${i.kravType} med dato ${i.virkningstidspunkt}")
-            if (i.kravType == Kravtype.REVURD.name) {
-                logger.debug("Fant Kravhistorikk med $i.kravType")
-                return i
+        sortList.forEach { kravHistorikk ->
+            logger.debug("leter etter ${Kravtype.REVURD} i  ${kravHistorikk.kravType} med dato ${kravHistorikk.virkningstidspunkt}")
+            if (kravHistorikk.kravType == Kravtype.REVURD.name) {
+                logger.debug("Fant Kravhistorikk med $kravHistorikk.kravType")
+                return kravHistorikk
             }
         }
         return V1KravHistorikk()
@@ -50,14 +50,14 @@ object KravHistorikkHelper {
 
     private fun hentKravHistorikkMedKravType(kravType: List<String>, kravHistorikkListe: V1KravHistorikkListe): V1KravHistorikk {
         val sortList = sortertKravHistorikk(kravHistorikkListe)
-        sortList.forEach {
-            logger.debug("leter etter Kravtype: $kravType, fant ${it.kravType} med dato i ${it.virkningstidspunkt}")
-            if (kravType.contains(it.kravType)) {
+        sortList.forEach { kravHistorikk ->
+            logger.debug("leter etter Kravtype: $kravType, fant ${kravHistorikk.kravType} med dato i ${kravHistorikk.virkningstidspunkt}")
+            if (kravType.contains(kravHistorikk.kravType)) {
                 logger.debug("Fant Kravhistorikk med $kravType")
-                return it
+                return kravHistorikk
             }
         }
-        logger.error("Fant ikke noe Kravhistorikk. med $kravType HVA GJØR VI NÅ?")
+        logger.warn("Fant ikke noe Kravhistorikk. med $kravType. Grunnet utsending kun utland mangler vilkårprøving/vedtak. følger ikke normal behandling")
         return V1KravHistorikk()
     }
 
@@ -70,7 +70,7 @@ object KravHistorikkHelper {
                 return it
             }
         }
-        logger.error("Fant ikke noe Kravhistorikk..${Kravstatus.TIL_BEHANDLING} HVA GJØR VI NÅ?")
+        logger.error("Fant ikke noe Kravhistorikk..${Kravstatus.TIL_BEHANDLING}. Mangler vilkårsprlving/vedtak. følger ikke normal behandling")
         return V1KravHistorikk()
     }
 
@@ -83,7 +83,7 @@ object KravHistorikkHelper {
                 return it
             }
         }
-        logger.error("Fant ikke noe Kravhistorikk..${Kravstatus.TIL_BEHANDLING} HVA GJØR VI NÅ?")
+        logger.error("Fant ikke noe Kravhistorikk..${Kravstatus.AVSL}. Mangler vilkårsprlving/vedtak. følger ikke normal behandling")
         return V1KravHistorikk()
     }
 
