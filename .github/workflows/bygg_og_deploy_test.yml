@@ -53,9 +53,9 @@ jobs:
       - name: 'Deploy to NAIS Q1'
         if: success()
         uses: nais/deploy/actions/deploy@v1
-          env:
-            APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
-            CLUSTER: dev-fss
-            RESOURCE: nais/dev-fss-q1.yml
-            VARS: nais/dev-fss-q1.json
-            IMAGE: ${{ env.IMAGE }}
+        env:
+          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
+          CLUSTER: dev-fss
+          RESOURCE: nais/dev-fss-q1.yml
+          VARS: nais/dev-fss-q1.json
+          IMAGE: ${{ env.IMAGE }}
