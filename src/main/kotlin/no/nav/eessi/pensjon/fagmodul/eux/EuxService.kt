@@ -23,6 +23,9 @@ import org.springframework.cache.annotation.CacheConfig
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.context.annotation.Description
 import org.springframework.http.*
+import org.springframework.retry.annotation.Backoff
+import org.springframework.retry.annotation.Recover
+import org.springframework.retry.annotation.Retryable
 import org.springframework.stereotype.Service
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.bind.annotation.ResponseStatus
@@ -34,7 +37,6 @@ import org.springframework.web.util.UriComponentsBuilder
 import java.io.File
 import java.nio.file.Paths
 import java.util.*
-import kotlin.streams.toList
 
 @Service
 @Description("Service class for EuxBasis - eux-cpi-service-controller")
@@ -46,7 +48,6 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate,
     constructor() : this(RestTemplate(), MetricsHelper(SimpleMeterRegistry()))
 
     private val logger = LoggerFactory.getLogger(EuxService::class.java)
-
     private val mapper = jacksonObjectMapper()
 
     // https://eux-app.nais.preprod.local/swagger-ui.html#/eux-cpi-service-controller/
@@ -112,6 +113,7 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate,
                 }
             }
         }
+        logger.info("return liste av SED for type: $sedType listSize: ${sedlist.size}")
         return sedlist
     }
 
@@ -167,49 +169,28 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate,
         return na
     }
 
-    fun getBucMultiRetry(euxCaseId: String, maxTries: Int = 3, waitTimeInms: Long = 5000): Buc {
-        logger.info("prøver å kontakte eux for å hente buc")
-
-        var count = 0
-        var failException : Exception ?= null
-
-        while (count < maxTries) {
-            try {
-                return getBuc(euxCaseId)
-            } catch (ex: Exception) {
-                count++
-                logger.warn("feiled å kontakte eux prøver på nytt. nr.: $count, feilmelding: ${ex.message}")
-                failException = ex
-                Thread.sleep(waitTimeInms)
-            }
-        }
-        logger.error("Feiled å kontakte eux hente BUC, euxCaseid: $euxCaseId, melding: ${failException?.message}", failException)
-        throw EuxServerException(failException!!.message)
-    }
-
     fun getBuc(euxCaseId: String): Buc {
         val body = getBucJson(euxCaseId)
         logger.debug("mapper buc om til BUC objekt-model")
         return mapJsonToAny(body, typeRefs())
     }
 
-    @Throws(EuxServerException::class, EuxGenericServerException::class)
+    //@Throws(EuxServerException::class, EuxGenericServerException::class)
     fun getBucJson(euxCaseId: String): String {
         logger.info("euxCaseId: $euxCaseId")
 
         val path = "/buc/{RinaSakId}"
         val uriParams = mapOf("RinaSakId" to euxCaseId)
         val builder = UriComponentsBuilder.fromUriString(path).buildAndExpand(uriParams)
-
         logger.info("Prøver å kontakte EUX /${builder.toUriString()}")
 
         val response = restTemplateErrorhandler(
                 restTemplateFunction = {
                     euxOidcRestTemplate.exchange(
-                            builder.toUriString(),
-                            HttpMethod.GET,
-                            null,
-                            String::class.java)
+                                builder.toUriString(),
+                                HttpMethod.GET,
+                                null,
+                                String::class.java)
                 }
                 , euxCaseId = euxCaseId
                 , metricName = MetricsHelper.MeterName.GetBUC
@@ -543,15 +524,20 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate,
                     .build().toUriString()
             logger.info("Legger til vedlegg i buc: $rinaSakId, sed: $rinaDokumentId")
 
-            val response = euxOidcRestTemplate.exchange(
-                    queryUrl,
-                    HttpMethod.POST,
-                    requestEntity,
-                    String::class.java)
-            if (!response.statusCode.is2xxSuccessful) {
-                throw RuntimeException("En feil opppstod under tilknytning av vedlegg: ${response.statusCode}, ${response.body}")
-            }
-        } catch (ex: java.lang.Exception) {
+            restTemplateErrorhandler(
+                  {
+                      euxOidcRestTemplate.exchange(
+                            queryUrl,
+                            HttpMethod.POST,
+                            requestEntity,
+                            String::class.java)
+                  }
+                  , rinaSakId
+                  , MetricsHelper.MeterName.VedleggPaaDokument
+                  ,"En feil opppstod under tilknytning av vedlegg rinaid: $rinaSakId, sed: $rinaDokumentId"
+            )
+
+        } catch (ex: Exception) {
             logger.error("En feil opppstod under tilknytning av vedlegg, ${ex.message}", ex)
             throw ex
         } finally {
@@ -678,11 +664,29 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate,
         }
     }
 
-    fun <T> restTemplateErrorhandler(restTemplateFunction: () -> ResponseEntity<T>, euxCaseId: String, metricName: MetricsHelper.MeterName, prefixErrorMessage: String): ResponseEntity<T> {
+    @Throws(Throwable::class)
+    fun <T> retryHelper(func: () -> T, maxAttempts: Int = 3, waitTimes: Long = 1000L): T {
+        //throwable: Throwable
+        var failException: Throwable? = null
+        var count = 0
+        while (count < maxAttempts) {
+            try {
+                return func.invoke()
+            } catch (ex: Throwable) {
+                count++
+                logger.warn("feiled å kontakte eux prøver på nytt. nr.: $count, feilmelding: ${ex.message}")
+                failException = ex
+                Thread.sleep(waitTimes)
+            }
+        }
+        logger.error("Feilet å kontakte eux melding: ${failException?.message}", failException)
+        throw failException!!
+    }
 
+    fun <T> restTemplateErrorhandler(restTemplateFunction: () -> ResponseEntity<T>, euxCaseId: String, metricName: MetricsHelper.MeterName, prefixErrorMessage: String): ResponseEntity<T> {
         return metricsHelper.measure(metricName) {
             return@measure try {
-                val response = restTemplateFunction.invoke()
+                val response = retryHelper( func = { restTemplateFunction.invoke() } )
                 response
             } catch (hcee: HttpClientErrorException) {
                 val errorBody = hcee.responseBodyAsString
@@ -760,4 +764,3 @@ class EuxServerException(message: String?) : Exception(message)
 
 @ResponseStatus(value = HttpStatus.BAD_REQUEST)
 class SedDokumentIkkeGyldigException(message: String?) : Exception(message)
-

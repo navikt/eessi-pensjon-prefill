@@ -24,11 +24,22 @@ http.proxy.parametername:
 # TODO: These actuator-endpoints need to be secured before going to production. Also, enable only whats needed.
 management:
   endpoints:
-    metrics.enabled: true
-    web.exposure.include: '*'
-    export.prometheus.enabled: true
-    prometheus.enabled: true
-  metrics.web.server.auto-time-requests: true
+    metrics:
+      enabled: true
+    web:
+      exposure:
+        include: info, health, metrics, prometheus
+    export:
+      prometheus:
+        enabled: true
+    prometheus:
+      enabled: true
+  metrics:
+    web:
+      server:
+        request:
+          autotime:
+            enabled: true
 
 eessi:
 #  pensjon_lokalnavn: 'NOINST002, NO INST002, NO'
