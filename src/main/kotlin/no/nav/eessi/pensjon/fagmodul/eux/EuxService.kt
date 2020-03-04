@@ -18,6 +18,7 @@ import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
 import no.nav.eessi.pensjon.utils.typeRefs
 import org.slf4j.LoggerFactory
+import org.slf4j.MDC
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.cache.annotation.CacheConfig
 import org.springframework.cache.annotation.Cacheable
@@ -445,13 +446,13 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate,
     }
 
     fun createBuc(bucType: String): String {
-        val correlationId = UUID.randomUUID().toString()
+        val correlationId = MDC.get("x_request_id") ?: UUID.randomUUID().toString()
         val builder = UriComponentsBuilder.fromPath("/buc")
                 .queryParam("BuCType", bucType)
                 .queryParam("KorrelasjonsId", correlationId)
                 .build()
 
-        logger.debug("Kontakter EUX for å prøve på opprette ny BUC med korrelasjonId: $correlationId")
+        logger.info("Kontakter EUX for å prøve på opprette ny BUC med korrelasjonId: $correlationId")
         val response = restTemplateErrorhandler(
                 {
                     euxOidcRestTemplate.exchange(
@@ -686,7 +687,7 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate,
                 response
             } catch (hcee: HttpClientErrorException) {
                 val errorBody = hcee.responseBodyAsString
-                logger.error("$prefixErrorMessage, HttpClientError med euxCaseID: $euxCaseId, body: $errorBody")
+                logger.error("$prefixErrorMessage, HttpClientError med euxCaseID: $euxCaseId, body: $errorBody", hcee)
                 when (hcee.statusCode) {
                     HttpStatus.UNAUTHORIZED -> throw RinaIkkeAutorisertBrukerException("Authorization token required for Rina,")
                     HttpStatus.FORBIDDEN -> throw ForbiddenException("Forbidden, Ikke tilgang")
