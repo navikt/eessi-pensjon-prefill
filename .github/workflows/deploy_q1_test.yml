@@ -20,7 +20,6 @@ jobs:
 
       # Set image
       - name: 'Setter Image'
-        id: get_version
         run: echo "::set-env name=IMAGE::docker.pkg.github.com/${{ github.repository }}/eessi-pensjon-fagmodul:${{ env.VERSION }}"
 
       # DEPLOYER TIL NAIS -Q1
