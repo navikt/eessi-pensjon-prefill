@@ -666,7 +666,6 @@ class EuxService(private val euxOidcRestTemplate: RestTemplate,
 
     @Throws(Throwable::class)
     fun <T> retryHelper(func: () -> T, maxAttempts: Int = 3, waitTimes: Long = 1000L): T {
-        //throwable: Throwable
         var failException: Throwable? = null
         var count = 0
         while (count < maxAttempts) {
