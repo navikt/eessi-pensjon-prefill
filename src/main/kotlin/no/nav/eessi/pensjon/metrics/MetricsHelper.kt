@@ -15,6 +15,7 @@ class MetricsHelper(val registry: MeterRegistry) {
         SafControllerInnhold,
         PersonControllerHentPerson,
         PersonControllerHentPersonNavn,
+        VedleggPaaDokument,
         OpprettSvarSED,
         SEDByDocumentId,
         Institusjoner,
