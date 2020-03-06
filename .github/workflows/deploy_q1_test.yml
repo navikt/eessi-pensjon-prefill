@@ -2,9 +2,10 @@ name: Deploy Q1
 
 on:
   push:
+    branches:
+      - master
     tags:
-      - '*'
-
+      - '**'
 jobs:
   tag_deploy_q1:
     name: 'Deploy Q1'
