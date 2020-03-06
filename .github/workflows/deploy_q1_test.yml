@@ -1,0 +1,33 @@
+name: Deploy Q1
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  tag_deploy_q1:
+    name: 'Deploy Q1'
+    runs-on: ubuntu-latest
+    steps:
+      # GET version
+      - name: 'Get the version'
+        id: get_version
+        run: |
+          echo "tag: ${GITHUB_REF#refs/tags/}"
+          echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/}
+        # run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
+
+      # Set image
+      - name: 'Setter Image'
+        run: echo "::set-env name=IMAGE::docker.pkg.github.com/${{ github.repository }}/eessi-pensjon-fagmodul:${{ env.VERSION }}"
+
+      # DEPLOYER TIL NAIS -Q1
+      - name: 'Deploy to NAIS Q1'
+        uses: nais/deploy/actions/deploy@v1
+        env:
+          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
+          CLUSTER: dev-fss
+          RESOURCE: nais/dev-fss-q1.yml
+          VARS: nais/dev-fss-q1.json
+          IMAGE: ${{ env.IMAGE }}
