@@ -51,7 +51,7 @@ jobs:
           curl -v -s -X POST https://api.github.com/repos/navikt/eessi-pensjon-fagmodul/git/refs -H "Authorization: token  ${{ secrets.GITHUB_TOKEN }}" -d '{ "ref": "refs/tags/${{ env.DATE }}---${{ env.COMMIT_HASH }}",  "sha": "${{ env.COMMIT_HASH }}" }'
 
       - name: 'Opprette image env tag for Deploy Q1 job'
-      - shell: bash
+        shell: bash
         run: |
           ${{ env.IMAGE }} > imagedeployq1tag.txt
           cat imagedeployq1tag.txt
@@ -69,7 +69,9 @@ jobs:
         uses: actions/download-artifact@v1
         with:
           name: tagdeployQ1
-      - shell: bash
+      # SETTER IMAGE VARIABEL
+      - name: 'Setter Image'
+        shell: bash
         run: |
           cat tagdeployQ1/imagedeployq1tag.txt
           value=`cat tagdeployQ1/imagedeployq1tag.txt`
