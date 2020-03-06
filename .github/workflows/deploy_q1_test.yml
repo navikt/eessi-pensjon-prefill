@@ -1,8 +1,8 @@
 name: Deploy Q1
 
 on:
-  push:
-    tags:
+  create:
+    release:
       - '**'
 
 jobs:
