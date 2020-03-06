@@ -55,6 +55,7 @@ jobs:
         run: |
           ${{ env.IMAGE }} > imagedeployq1tag.txt
           cat imagedeployq1tag.txt
+      - name: 'Upload value job1'
         uses: actions/upload-artifact@v1
         with:
           name: tagdeployQ1
@@ -65,7 +66,7 @@ jobs:
     name: 'Deploy Q1'
     runs-on: ubuntu-latest
     steps:
-      - name: 'Download env'
+      - name: 'Download env from job1'
         uses: actions/download-artifact@v1
         with:
           name: tagdeployQ1
