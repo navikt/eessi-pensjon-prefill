@@ -53,8 +53,8 @@ jobs:
       - name: 'Opprette image env tag for Deploy Q1 job'
         shell: bash
         run: |
-          ${{ env.IMAGE }} > imagedeployq1tag.txt
-          cat imagedeployq1tag.txt
+          echo "${{ env.IMAGE }}" > imagedeployq1tag.txt
+
       - name: 'Upload value job1'
         uses: actions/upload-artifact@v1
         with:
@@ -70,11 +70,11 @@ jobs:
         uses: actions/download-artifact@v1
         with:
           name: tagdeployQ1
+
       # SETTER IMAGE VARIABEL
       - name: 'Setter Image'
         shell: bash
         run: |
-          cat tagdeployQ1/imagedeployq1tag.txt
           value=`cat tagdeployQ1/imagedeployq1tag.txt`
           echo "::set-env name=IMAGE::$value"
 
