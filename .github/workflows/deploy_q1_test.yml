@@ -15,6 +15,7 @@ jobs:
       - name: 'Get the version'
         id: get_version
         run: |
+          echo "tag: ${GITHUB_REF}"
           echo "tag: ${GITHUB_REF#refs/tags/}"
           echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/}
         # run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
@@ -23,12 +24,16 @@ jobs:
       - name: 'Setter Image'
         run: echo "::set-env name=IMAGE::docker.pkg.github.com/${{ github.repository }}/eessi-pensjon-fagmodul:${{ env.VERSION }}"
 
-      # DEPLOYER TIL NAIS -Q1
-      - name: 'Deploy to NAIS Q1'
-        uses: nais/deploy/actions/deploy@v1
-        env:
-          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
-          CLUSTER: dev-fss
-          RESOURCE: nais/dev-fss-q1.yml
-          VARS: nais/dev-fss-q1.json
-          IMAGE: ${{ env.IMAGE }}
+      - name: 'Vise image'
+        run: |
+          echo "image-tag: ${env.IMAGE}"
+
+#      # DEPLOYER TIL NAIS -Q1
+#      - name: 'Deploy to NAIS Q1'
+#        uses: nais/deploy/actions/deploy@v1
+#        env:
+#          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
+#          CLUSTER: dev-fss
+#          RESOURCE: nais/dev-fss-q1.yml
+#          VARS: nais/dev-fss-q1.json
+#          IMAGE: ${{ env.IMAGE }}
