@@ -67,21 +67,21 @@ class PersonV3Service(private val service: PersonV3,
                 resp
             } catch (personIkkefunnet: HentPersonPersonIkkeFunnet) {
                 logger.error("Kaller PersonV3.hentPerson service Feilet: $personIkkefunnet")
-                throw PersonV3IkkeFunnetException(personIkkefunnet.message)
+                throw PersonV3IkkeFunnetException(personIkkefunnet.message!!)
             } catch (personSikkerhetsbegrensning: HentPersonSikkerhetsbegrensning) {
                 auditLogger.logBorgerErr("PersonV3.hentPerson", fnr, personSikkerhetsbegrensning.message!!)
                 logger.error("Kaller PersonV3.hentPerson service Feilet $personSikkerhetsbegrensning")
-                throw PersonV3SikkerhetsbegrensningException(personSikkerhetsbegrensning.message)
+                throw PersonV3SikkerhetsbegrensningException(personSikkerhetsbegrensning.message!!)
             } catch (ex: Exception) {
                 logger.error("Ukejnt feil i PersonV3, ${ex.message}", ex)
-                throw ex
+                throw PersonV3IkkeFunnetException("Ukent feil ved PersonV3")
             }
         }
     }
 }
 
 @ResponseStatus(value = HttpStatus.NOT_FOUND)
-class PersonV3IkkeFunnetException(message: String?) : Exception(message)
+class PersonV3IkkeFunnetException(message: String) : RuntimeException(message)
 
 @ResponseStatus(value = HttpStatus.FORBIDDEN)
-class PersonV3SikkerhetsbegrensningException(message: String?) : Exception(message)
+class PersonV3SikkerhetsbegrensningException(message: String) : RuntimeException(message)

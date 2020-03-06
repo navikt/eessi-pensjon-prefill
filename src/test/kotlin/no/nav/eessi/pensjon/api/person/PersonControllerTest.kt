@@ -1,8 +1,6 @@
 package no.nav.eessi.pensjon.api.person
 
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.doNothing
-import com.nhaarman.mockitokotlin2.whenever
+import com.nhaarman.mockitokotlin2.*
 import no.nav.eessi.pensjon.logging.AuditLogger
 import no.nav.eessi.pensjon.services.aktoerregister.AktoerregisterService
 import no.nav.eessi.pensjon.services.personv3.PersonV3IkkeFunnetException
@@ -26,7 +24,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 
-@Disabled
 @WebMvcTest(PersonController::class)
 @ComponentScan(basePackages = ["no.nav.eessi.pensjon.api.person"])
 @ActiveProfiles("unsecured-webmvctest")
@@ -75,15 +72,14 @@ class PersonControllerTest {
 
     @Test
     fun `should return NOT_FOUND hvis personen ikke finnes i TPS`() {
+        doThrow(PersonV3IkkeFunnetException("Error is Expected")).whenever(mockPersonV3Service).hentPerson(anFnr)
         doNothing().whenever(auditLogger).log(any(), any())
-        whenever(mockAktoerregisterService.hentGjeldendeNorskIdentForAktorId(anAktorId)).thenReturn(anFnr)
-        whenever(mockPersonV3Service.hentPerson(anFnr)).thenThrow(PersonV3IkkeFunnetException("EXPECTED"))
+        doReturn(anFnr).whenever(mockAktoerregisterService).hentGjeldendeNorskIdentForAktorId(anAktorId)
 
         mvc.perform(
             get("/personinfo/$anAktorId")
                 .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isNotFound)
-            .andExpect(content().string("PersonV3IkkeFunnetException"))
+                .andExpect(status().isNotFound)
     }
 
     private val anAktorId = "012345"

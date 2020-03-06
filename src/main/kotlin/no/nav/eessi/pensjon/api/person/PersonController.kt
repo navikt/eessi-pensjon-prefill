@@ -4,17 +4,12 @@ import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import io.swagger.annotations.ApiOperation
 import no.nav.eessi.pensjon.logging.AuditLogger
 import no.nav.eessi.pensjon.metrics.MetricsHelper
-import no.nav.eessi.pensjon.services.aktoerregister.AktoerregisterException
-import no.nav.eessi.pensjon.services.aktoerregister.AktoerregisterIkkeFunnetException
 import no.nav.eessi.pensjon.services.aktoerregister.AktoerregisterService
-import no.nav.eessi.pensjon.services.personv3.PersonV3IkkeFunnetException
 import no.nav.eessi.pensjon.services.personv3.PersonV3Service
-import no.nav.eessi.pensjon.services.personv3.PersonV3SikkerhetsbegrensningException
 import no.nav.security.oidc.api.Protected
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonResponse
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -39,48 +34,33 @@ class PersonController(private val aktoerregisterService: AktoerregisterService,
     @ApiOperation("henter ut personinformasjon for en aktørId")
     @GetMapping("/person/{aktoerid}", produces = [MediaType.APPLICATION_JSON_VALUE])
     fun getPerson(@PathVariable("aktoerid", required = true) aktoerid: String): ResponseEntity<Any> {
-
         auditLogger.log("/person/{$aktoerid}", "getPerson")
+
         return metricsHelper.measure(MetricsHelper.MeterName.PersonControllerHentPerson) {
-            hentPerson(aktoerid)
+            ResponseEntity.ok(hentPerson(aktoerid))
         }
     }
 
     @ApiOperation("henter ut navn for en aktørId")
     @GetMapping("/personinfo/{aktoerid}", produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun getNameOnly(@PathVariable("aktoerid", required = true) aktoerid: String): ResponseEntity<Any> {
-
+    fun getNameOnly(@PathVariable("aktoerid", required = true) aktoerid: String): ResponseEntity<Personinformasjon> {
         auditLogger.log("/personinfo/{$aktoerid}", "getNameOnly")
+
         return metricsHelper.measure(MetricsHelper.MeterName.PersonControllerHentPersonNavn) {
-            hentPerson(aktoerid) {
-                Personinformasjon(it.person.personnavn.sammensattNavn,
-                        it.person.personnavn.fornavn,
-                        it.person.personnavn.mellomnavn,
-                        it.person.personnavn.etternavn)
+            val response = hentPerson(aktoerid)
+            ResponseEntity.ok(
+            Personinformasjon(response.person.personnavn.sammensattNavn,
+                    response.person.personnavn.fornavn,
+                    response.person.personnavn.mellomnavn,
+                    response.person.personnavn.etternavn)
+                )
             }
-        }
     }
 
-    private fun hentPerson(aktoerid: String, transform: (HentPersonResponse) -> Any = { it }): ResponseEntity<Any> {
-        return try {
-            logger.info("Henter personinformasjon for aktørId")
-            val norskIdent: String = aktoerregisterService.hentGjeldendeNorskIdentForAktorId(aktoerid)
-            val result = personService.hentPerson(norskIdent)
-            val payload = transform(result)
-            ResponseEntity.ok(payload)
-        } catch (are: AktoerregisterException) {
-            logger.error("Kall til Aktørregisteret feilet på grunn av: " + are.message)
-            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(AktoerregisterException::class.simpleName)
-        } catch (arife: AktoerregisterIkkeFunnetException) {
-            logger.error("Kall til Aktørregisteret feilet på grunn av: " + arife.message)
-            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(AktoerregisterIkkeFunnetException::class.simpleName)
-        } catch (sbe: PersonV3SikkerhetsbegrensningException) {
-            logger.error("Kall til PersonV3 feilet på grunn av sikkerhetsbegrensning")
-            ResponseEntity.status(HttpStatus.FORBIDDEN).body(PersonV3SikkerhetsbegrensningException::class.simpleName)
-        } catch (ife: PersonV3IkkeFunnetException) {
-            logger.error("Kall til PersonV3 feilet siden personen ikke ble funnet")
-            ResponseEntity.status(HttpStatus.NOT_FOUND).body(PersonV3IkkeFunnetException::class.simpleName)
-        }
+    private fun hentPerson(aktoerid: String): HentPersonResponse {
+        logger.info("Henter personinformasjon for aktørId")
+        val norskIdent: String = aktoerregisterService.hentGjeldendeNorskIdentForAktorId(aktoerid)
+        return personService.hentPerson(norskIdent)
     }
 
     /**
