@@ -76,7 +76,7 @@ jobs:
           echo "::set-env name=IMAGE::$value"
 
       - name: 'Display Image'
-      run: echo "{{env.IMAGE}}"
+        run: echo "{{env.IMAGE}}"
 
       # SETTER IMAGE VARIABEL
 #      - name: 'Setter Image'
