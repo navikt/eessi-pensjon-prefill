@@ -1,9 +1,9 @@
 name: Deploy Q1
 
 on:
-  create:
-    release:
-      - '**'
+  push:
+    tags:
+      - 2*
 
 jobs:
   tag_deploy_q1:
