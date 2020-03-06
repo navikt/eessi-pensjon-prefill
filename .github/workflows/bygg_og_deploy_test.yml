@@ -54,6 +54,7 @@ jobs:
         shell: bash
         run: |
           echo "${{ env.IMAGE }}" > imagedeployq1tag.txt
+          cat imagedeployq1tag.txt
 
       - name: 'Upload value job1'
         uses: actions/upload-artifact@v1
@@ -76,21 +77,17 @@ jobs:
         shell: bash
         run: |
           value=`cat tagdeployQ1/imagedeployq1tag.txt`
-          echo "::set-env name=IMAGE::$value"
+          echo `::set-env name=IMAGE::$value`
 
       - name: 'Display Image'
-        run: echo "{{env.IMAGE}}"
-
-      # SETTER IMAGE VARIABEL
-#      - name: 'Setter Image'
-#        run: echo "::set-env name=IMAGE::docker.pkg.github.com/${{ github.repository }}/eessi-pensjon-fagmodul:${{ env.TAG }}"
+        run: echo "{{ env.IMAGE }}"
 
       # DEPLOYER TIL NAIS -Q1
-#      - name: 'Deploy to NAIS Q1'
-#        uses: nais/deploy/actions/deploy@v1
-#        env:
-#          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
-#          CLUSTER: dev-fss
-#          RESOURCE: nais/dev-fss-q1.yml
-#          VARS: nais/dev-fss-q1.json
-#          IMAGE: ${{ env.IMAGE }}
+      - name: 'Deploy to NAIS Q1'
+        uses: nais/deploy/actions/deploy@v1
+        env:
+          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
+          CLUSTER: dev-fss
+          RESOURCE: nais/dev-fss-q1.yml
+          VARS: nais/dev-fss-q1.json
+          IMAGE: ${{ env.IMAGE }}
