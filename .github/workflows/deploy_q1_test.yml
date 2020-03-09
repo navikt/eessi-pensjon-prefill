@@ -12,9 +12,9 @@ jobs:
       # GET version
       - name: 'Get the version'
         uses: actions/checkout@v2
-        - run: |
-            echo ${{ github.event.client_payload.image }}
-            echo "::set-env name=IMAGE::${{github.event.client_payload.image}}"
+      - run: |
+          echo ${{ github.event.client_payload.image }}
+          echo "::set-env name=IMAGE::${{github.event.client_payload.image}}"
 
       - name: 'Vise image'
         run: |
