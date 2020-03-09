@@ -77,10 +77,13 @@ jobs:
         shell: bash
         run: |
           cat tagdeployQ1/imagedeployq1tag.txt
-          echo "::set-env name=IMAGE::$(cat `tagdeployQ1/imagedeployq1tag.txt`)"
+          value=`cat homework/math-homework.txt`
+          export IMAGE=$value
 
       - name: 'Display Image'
-        run: echo "{{ env.IMAGE }}"
+        run: |
+          echo "{{ env.IMAGE }}"
+          echo "{{ IMAGE }}"
 
       # DEPLOYER TIL NAIS -Q1
       - name: 'Deploy to NAIS Q1'
