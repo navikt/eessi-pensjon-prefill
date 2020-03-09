@@ -12,8 +12,6 @@ jobs:
       # GET version
       - name: 'Get the version'
         uses: actions/checkout@v2
-        with:
-          ref: ${{ github.event.client_payload.ref }}
         - run: |
             echo ${{ github.event.client_payload.image }}
             echo "::set-env name=IMAGE::${{github.event.client_payload.image}}"
@@ -22,12 +20,12 @@ jobs:
         run: |
           echo "image-tag: ${{env.IMAGE}}"
 
-#      # DEPLOYER TIL NAIS -Q1
-#      - name: 'Deploy to NAIS Q1'
-#        uses: nais/deploy/actions/deploy@v1
-#        env:
-#          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
-#          CLUSTER: dev-fss
-#          RESOURCE: nais/dev-fss-q1.yml
-#          VARS: nais/dev-fss-q1.json
-#          IMAGE: ${{ env.IMAGE }}
+      # DEPLOYER TIL NAIS -Q1
+      - name: 'Deploy to NAIS Q1'
+        uses: nais/deploy/actions/deploy@v1
+        env:
+          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
+          CLUSTER: dev-fss
+          RESOURCE: nais/dev-fss-q1.yml
+          VARS: nais/dev-fss-q1.json
+          IMAGE: ${{ env.IMAGE }}

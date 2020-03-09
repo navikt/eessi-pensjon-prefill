@@ -54,6 +54,6 @@ jobs:
         uses: peter-evans/repository-dispatch@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          repository: ${{ github.repository }}/eessi-pensjon-fagmodul
+          repository: ${{ github.repository }}
           event-type: deploy_q1
-          client-payload: '{"ref": "${{ github.ref }}", "image": "${{ env.IMAGE }}"}'
+          client-payload: '{"image": "${{ env.IMAGE }}"}'
