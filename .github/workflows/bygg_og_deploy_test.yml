@@ -77,7 +77,7 @@ jobs:
         shell: bash
         run: |
           cat tagdeployQ1/imagedeployq1tag.txt
-          value=`cat homework/math-homework.txt`
+          value=`cat tagdeployQ1/imagedeployq1tag.txt`
           export IMAGE=$value
 
       - name: 'Display Image'
