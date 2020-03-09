@@ -1,6 +1,8 @@
 ![](https://github.com/navikt/eessi-pensjon-fagmodul/workflows/Bygg%20og%20deploy%20Q2/badge.svg)
+![](https://github.com/navikt/eessi-pensjon-fagmodul/workflows/Deploy%20Q1/badge.svg)
 ![](https://github.com/navikt/eessi-pensjon-fagmodul/workflows/Manuell%20deploy/badge.svg)
 
+${{ github.event.client_payload.image }}
 
 EESSI Pensjon Fagmodul
 ======================

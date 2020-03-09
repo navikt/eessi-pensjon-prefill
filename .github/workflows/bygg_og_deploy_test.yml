@@ -55,5 +55,5 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           repository: ${{ github.repository }}
-          event-type: deploy_q1
+          event-type: deploy-q1
           client-payload: '{"image": "${{ env.IMAGE }}"}'

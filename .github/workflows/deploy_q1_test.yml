@@ -1,24 +1,19 @@
 name: Deploy Q1
-
 on:
   repository_dispatch:
-    types: [deplpoy-q1]
-
+    types: [deploy-q1]
 jobs:
   tag_deploy_q1:
-    name: 'Deploy Q1'
+    name: 'Deploy til Q1'
     runs-on: ubuntu-latest
     steps:
       # GET version
       - name: 'Get the version'
         uses: actions/checkout@v2
-      - run: |
-          echo ${{ github.event.client_payload.image }}
-          echo "::set-env name=IMAGE::${{github.event.client_payload.image}}"
 
       - name: 'Vise image'
         run: |
-          echo "image-tag: ${{env.IMAGE}}"
+          echo "image-tag: ${{ github.event.client_payload.image }}"
 
       # DEPLOYER TIL NAIS -Q1
       - name: 'Deploy to NAIS Q1'
@@ -28,4 +23,4 @@ jobs:
           CLUSTER: dev-fss
           RESOURCE: nais/dev-fss-q1.yml
           VARS: nais/dev-fss-q1.json
-          IMAGE: ${{ env.IMAGE }}
+          IMAGE: ${{ github.event.client_payload.image }}
