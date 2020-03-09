@@ -50,46 +50,10 @@ jobs:
         run: |
           curl -v -s -X POST https://api.github.com/repos/navikt/eessi-pensjon-fagmodul/git/refs -H "Authorization: token  ${{ secrets.GITHUB_TOKEN }}" -d '{ "ref": "refs/tags/${{ env.DATE }}---${{ env.COMMIT_HASH }}",  "sha": "${{ env.COMMIT_HASH }}" }'
 
-      - name: 'Opprette image env for Deploy Q1 job'
-        shell: bash
-        run: |
-          echo "${{ env.IMAGE }}" > imagedeployq1tag.txt
-          cat imagedeployq1tag.txt
-
-      - name: 'Upload env for Deploy Q1 job'
-        uses: actions/upload-artifact@v1
+      - name: 'Repository Dispatch Q1'
+        uses: peter-evans/repository-dispatch@v1
         with:
-          name: tagdeployQ1
-          path: imagedeployq1tag.txt
-
-  tag_deploy_q1:
-    needs: tag_build_and_deploy
-    name: 'Deploy Q1'
-    runs-on: ubuntu-latest
-    steps:
-      - name: 'Download env from Q2 job'
-        uses: actions/download-artifact@v1
-        with:
-          name: tagdeployQ1
-
-      # SETTER IMAGE VARIABEL
-      - name: 'Setter Image'
-        shell: bash
-        run: |
-          cat tagdeployQ1/imagedeployq1tag.txt
-          export IMAGE `cat tagdeployQ1/imagedeployq1tag.txt`
-
-      - name: 'Display Image'
-        run: |
-          echo "{{ env.IMAGE }}"
-          echo "{{ IMAGE }}"
-
-      # DEPLOYER TIL NAIS -Q1
-      - name: 'Deploy to NAIS Q1'
-        uses: nais/deploy/actions/deploy@v1
-        env:
-          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
-          CLUSTER: dev-fss
-          RESOURCE: nais/dev-fss-q1.yml
-          VARS: nais/dev-fss-q1.json
-          IMAGE: ${{ env.IMAGE }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}/eessi-pensjon-fagmodul
+          event-type: deploy_q1
+          client-payload: '{"ref": "${{ github.ref }}", "image": "${{ env.IMAGE }}"}'

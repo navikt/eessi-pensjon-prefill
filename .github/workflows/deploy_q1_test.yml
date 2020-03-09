@@ -1,9 +1,8 @@
 name: Deploy Q1
 
 on:
-  push:
-    tags:
-      - 2*
+  repository_dispatch:
+    types: [deplpoy-q1]
 
 jobs:
   tag_deploy_q1:
@@ -12,20 +11,16 @@ jobs:
     steps:
       # GET version
       - name: 'Get the version'
-        id: get_version
-        run: |
-          echo "tag: ${GITHUB_REF}"
-          echo "tag: ${GITHUB_REF#refs/tags/}"
-          echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/}
-        # run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
-
-      # Set image
-      - name: 'Setter Image'
-        run: echo "::set-env name=IMAGE::docker.pkg.github.com/${{ github.repository }}/eessi-pensjon-fagmodul:${{ env.VERSION }}"
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.client_payload.ref }}
+        - run: |
+            echo ${{ github.event.client_payload.image }}
+            echo "::set-env name=IMAGE::${{github.event.client_payload.image}}"
 
       - name: 'Vise image'
         run: |
-          echo "image-tag: ${env.IMAGE}"
+          echo "image-tag: ${{env.IMAGE}}"
 
 #      # DEPLOYER TIL NAIS -Q1
 #      - name: 'Deploy to NAIS Q1'
