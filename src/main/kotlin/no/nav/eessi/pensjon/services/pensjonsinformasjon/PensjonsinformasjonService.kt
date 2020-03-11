@@ -117,15 +117,15 @@ class PensjonsinformasjonService(
         }
     }
 
-    private fun transform(xmlString: String) : Pensjonsinformasjon {
+    //transform xmlString til Pensjoninformasjon object
+    fun transform(xmlString: String) : Pensjonsinformasjon {
         return try {
 
             val context = JAXBContext.newInstance(Pensjonsinformasjon::class.java)
             val unmarshaller = context.createUnmarshaller()
-            val body : String = xmlString
 
-            logger.debug("Pensjonsinformasjon responsebody:\n $body \n")
-            val res = unmarshaller.unmarshal(StreamSource(StringReader(body)), Pensjonsinformasjon::class.java)
+            logger.debug("Pensjonsinformasjon xml: $xmlString")
+            val res = unmarshaller.unmarshal(StreamSource(StringReader(xmlString)), Pensjonsinformasjon::class.java)
 
             res.value as Pensjonsinformasjon
 
