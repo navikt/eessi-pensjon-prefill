@@ -64,7 +64,7 @@ class PrefillP8000(private val prefillPerson: PrefillPerson) : Prefill<SED> {
 
     private fun utfyllAnnenperson(bruker: Bruker?): Bruker? {
         if (bruker == null) return null
-        bruker?.person?.rolle = "01"
+        bruker.person?.rolle = "01"
         return bruker
     }
 }
