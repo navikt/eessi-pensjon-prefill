@@ -3,7 +3,6 @@ package no.nav.eessi.pensjon.fagmodul.api
 import com.nhaarman.mockitokotlin2.*
 import no.nav.eessi.pensjon.fagmodul.eux.*
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Vedlegg
-import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.logging.AuditLogger
 import no.nav.eessi.pensjon.logging.RequestResponseLoggerInterceptor
 import no.nav.eessi.pensjon.services.aktoerregister.AktoerregisterService
@@ -66,7 +65,6 @@ class BucControllerTest {
     @Test
     fun `gitt Et Gyldig PutVedleggTilDokument Saa Kall EuxPutVedleggPaaDokument`() {
         val etVedleggBase64 = String(Base64.getEncoder().encode(Files.readAllBytes(Paths.get("src/test/resources/etbilde.pdf"))))
-        val etVedlegg = String(Files.readAllBytes(Paths.get("src/test/resources/etbilde.pdf")))
 
         val rinasakid = "456"
         val rinadocid = "7892"
@@ -108,7 +106,6 @@ class BucControllerTest {
                 .queryParam("Filtype", filtype)
                 .queryParam("synkron", true)
                 .build().toUriString()
-        //        logger.info("Legger til vedlegg i buc: $rinaSakId, sed: $rinaDokumentId")
 
         bucController.putVedleggTilDokument("123",
                 rinasakid,

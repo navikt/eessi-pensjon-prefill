@@ -73,7 +73,6 @@ class EuxServiceTest {
         val orgsed = SED.fromJson(json)
         val response: ResponseEntity<String> = ResponseEntity(json, HttpStatus.OK)
 
-        //val response = euxOidcRestTemplate.exchange(builder.toUriString(), HttpMethod.GET, null, String::class.java)
         whenever(mockEuxrestTemplate.exchange(any<String>(), eq(HttpMethod.GET), eq(null), eq(String::class.java))).thenReturn(response)
 
         val result = service.getSedOnBucByDocumentId("12345678900", "0bb1ad15987741f1bbf45eba4f955e80")
@@ -102,7 +101,6 @@ class EuxServiceTest {
         }
     }
 
-    //Test Hent Buc
     @Test
     fun `Calling EuxService  forventer korrekt svar tilbake fra et kall til hentbuc`() {
         val filepath = "src/test/resources/json/buc/buc-22909_v4.1.json"
@@ -204,7 +202,6 @@ class EuxServiceTest {
         assertEquals("323413415dfvsdfgq343145sdfsdfg34135", result.documentId)
     }
 
-    //opprett sed på en valgt type, feiler ved oppreting
     @Test
     fun `Calling EuxService  feiler med svar tilbake fra et kall til opprettSedOnBuc`() {
         doThrow(createDummyClientRestExecption(HttpStatus.BAD_REQUEST, "Dummy clent error"))
@@ -309,7 +306,7 @@ class EuxServiceTest {
     fun `Calling EuxService  feiler med svar tilbake fra et kall til sendDocumentById`() {
         val euxCaseId = "123456"
         val documentId = "213213-123123-123123"
-        val errorresponse = ResponseEntity.badRequest().body("")
+        ResponseEntity.badRequest().body("")
 
         doThrow(java.lang.RuntimeException("errorororoorororororo")).whenever(mockEuxrestTemplate).exchange(
                 eq("/buc/${euxCaseId}/sed/${documentId}/send"),
@@ -322,7 +319,6 @@ class EuxServiceTest {
         }
     }
 
-    //opprett sed på en valgt type, feil med eux service
     @Test
     fun `Calling EuxService  feiler med kontakt fra eux med kall til sendDocumentById`() {
         doThrow(RuntimeException("error")).whenever(mockEuxrestTemplate).exchange(
@@ -420,7 +416,6 @@ class EuxServiceTest {
                 .exchange( ArgumentMatchers.contains("buc/") ,
                 eq(HttpMethod.GET), eq(null), eq(String::class.java))
 
-        //"001122334455"
         val result = service.getBucAndSedView(rinasakresult)
 
         assertNotNull(result)
@@ -703,7 +698,7 @@ class EuxServiceTest {
         ).thenReturn(response)
 
         assertThrows<FagmodulJsonIllegalArgumentException> {
-            val result = service.hentFnrOgYtelseKravtype("1234567890","100001000010000")
+            service.hentFnrOgYtelseKravtype("1234567890","100001000010000")
         }
     }
 
@@ -745,10 +740,6 @@ class EuxServiceTest {
         val expected = "[ \"P2000\", \"P2100\", \"P2200\", \"P8000\", \"P5000\", \"P6000\", \"P7000\", \"P10000\", \"P14000\", \"P15000\" ]"
         val actual = EuxService.getAvailableSedOnBuc(null)
         assertEquals(expected, actual.toJson())
-    }
-
-    fun mockSedResponse(sedJson: String): ResponseEntity<String> {
-        return ResponseEntity(sedJson, HttpStatus.OK)
     }
 
     fun getTestJsonFile(filename: String): String {
