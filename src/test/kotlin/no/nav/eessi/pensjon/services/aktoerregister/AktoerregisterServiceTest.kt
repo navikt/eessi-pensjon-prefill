@@ -6,7 +6,6 @@ import com.nhaarman.mockitokotlin2.whenever
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
@@ -22,7 +21,6 @@ import java.nio.file.Files
 import java.nio.file.Paths
 
 
-@Disabled
 @ExtendWith(MockitoExtension::class)
 class AktoerregisterServiceTest {
 
