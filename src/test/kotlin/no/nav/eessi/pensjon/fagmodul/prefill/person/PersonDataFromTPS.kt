@@ -5,7 +5,6 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
-import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjon
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.NavFodselsnummer
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.BrukerFromTPS
 import no.nav.eessi.pensjon.services.personv3.PersonV3Service
@@ -15,7 +14,7 @@ import no.nav.tjeneste.virksomhet.person.v3.informasjon.*
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonResponse
 import org.springframework.util.ResourceUtils
 
-class PersonDataFromTPS(private val mocktps: Set<MockTPS>, private val eessiInformasjon: EessiInformasjon) {
+class PersonDataFromTPS(private val mocktps: Set<MockTPS>) {
 
     private fun initMockHentPersonResponse(mockTPS: MockTPS, mockTPSset: Set<MockTPS>): HentPersonResponse {
         val resource = ResourceUtils.getFile("classpath:personv3/${mockTPS.mockFile}").readText()
@@ -79,7 +78,7 @@ class PersonDataFromTPS(private val mocktps: Set<MockTPS>, private val eessiInfo
 
             if (v3familieRelasjon.tilRolle.value == "BARN") {
                 for (i in mockBarnList) {
-                    if (i.mockType == MockTPS.TPSType.BARN && i.used == false) {
+                    if (i.mockType == MockTPS.TPSType.BARN && !i.used) {
                         familieIdent.ident.ident = i.replaceMockfnr
                         i.used = true
                         break
@@ -88,7 +87,7 @@ class PersonDataFromTPS(private val mocktps: Set<MockTPS>, private val eessiInfo
             }
             if (v3familieRelasjon.tilRolle.value == "EKTE") {
                 for (i in mockEkteItem) {
-                    if (i.mockType == MockTPS.TPSType.EKTE && i.used == false)
+                    if (i.mockType == MockTPS.TPSType.EKTE && !i.used)
                         familieIdent.ident.ident = i.replaceMockfnr
                     i.used = true
                     break
@@ -101,11 +100,11 @@ class PersonDataFromTPS(private val mocktps: Set<MockTPS>, private val eessiInfo
         }
 
         v3person.bostedsadresse = Bostedsadresse()
-        v3person.bostedsadresse.strukturertAdresse = v3struktAdr // Gateadresse
+        v3person.bostedsadresse.strukturertAdresse = v3struktAdr
         v3struktAdr.poststed = v3poststed
         v3struktAdr.landkode = v3landkode
-        v3person.sivilstand = v3sivilstand // v3sivilstand
-        v3person.personnavn = v3pernavn // v3pernavn
+        v3person.sivilstand = v3sivilstand
+        v3person.personnavn = v3pernavn
         v3person.personstatus = v3personstatus
         v3person.foedselsdato = v3foedselsdato
         v3person.statsborgerskap = v3statsborgerskap
@@ -115,7 +114,7 @@ class PersonDataFromTPS(private val mocktps: Set<MockTPS>, private val eessiInfo
         val ident = v3person.aktoer as PersonIdent
         ident.ident.ident = mockTPS.replaceMockfnr
 
-        val navfnr = NavFodselsnummer(ident.ident.ident)
+        NavFodselsnummer(ident.ident.ident)
 
         val v3PersonResponse = HentPersonResponse()
         v3PersonResponse.person = v3person
@@ -132,7 +131,7 @@ class PersonDataFromTPS(private val mocktps: Set<MockTPS>, private val eessiInfo
         return BrukerFromTPS(mockPersonV3Service)
     }
 
-    fun getRandomNavFodselsnummer(value: MockTPS.TPSType): String? {
+    fun getRandomNavFodselsnummer(): String? {
         mocktps.forEach {
             if (it.mockType == MockTPS.TPSType.PERSON) {
                 return it.replaceMockfnr

@@ -45,14 +45,5 @@ class SedP6000Test {
         val brukerback = mapJsonToAny(mapAnyToJson(bruker), typeRefs<Bruker>())
         assertNotNull(brukerback)
         assertEquals(bruker, brukerback)
-
-        val navmock = NavMock().genererNavMock()
-        val penmock = PensjonMock().genererMockData()
-
-        val sed = SED(
-                sed = "vedtak",
-                nav = Nav(bruker = navmock.bruker),
-                pensjon = Pensjon(gjenlevende = penmock.gjenlevende)
-        )
     }
 }

@@ -4,7 +4,6 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.prefill.ApiRequest
-import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjon
 import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonHjelper
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.BrukerFromTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PersonDataFromTPS
@@ -29,17 +28,8 @@ object PrefillTestHelper {
         return PensjonsinformasjonHjelper(pensjonsinformasjonService)
     }
 
-    val mockEessiInformasjon = EessiInformasjon(
-            institutionid = "NO:noinst002",
-            institutionnavn = "NOINST002, NO INST002, NO",
-            institutionGate = "Postboks 6600 Etterstad TEST",
-            institutionBy = "Oslo",
-            institutionPostnr = "0607",
-            institutionLand = "NO"
-    )
-
     fun setupPersondataFraTPS(mockPersonDataFraTPS: Set<PersonDataFromTPS.MockTPS>): BrukerFromTPS {
-        val datatps = PersonDataFromTPS(mockPersonDataFraTPS, mockEessiInformasjon)
+        val datatps = PersonDataFromTPS(mockPersonDataFraTPS)
         return datatps.mockBrukerFromTPS()
     }
 

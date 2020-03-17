@@ -8,7 +8,6 @@ import no.nav.eessi.pensjon.fagmodul.sedmodel.PersonArbeidogOppholdUtland
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.typeRefs
-import org.bouncycastle.asn1.x500.style.RFC4519Style.l
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -20,7 +19,7 @@ class PrefillP4000(private val prefillPerson: PrefillPerson) : Prefill<SED> {
     override fun prefill(prefillData: PrefillDataModel): SED {
         return try {
             val sed = prefillPerson.prefill(prefillData)
-            sed.trygdetid = perfillPersonTrygdetid(sed, prefillData)
+            sed.trygdetid = perfillPersonTrygdetid(prefillData)
             prefillData.sed
 
         } catch (ex: Exception) {
@@ -29,7 +28,7 @@ class PrefillP4000(private val prefillPerson: PrefillPerson) : Prefill<SED> {
         }
     }
 
-    private fun perfillPersonTrygdetid(sed: SED, prefillData: PrefillDataModel) : PersonArbeidogOppholdUtland? {
+    private fun perfillPersonTrygdetid(prefillData: PrefillDataModel) : PersonArbeidogOppholdUtland? {
             val p4000json = prefillData.getPartSEDasJson("P4000")
 
             return try {

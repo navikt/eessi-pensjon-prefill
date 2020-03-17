@@ -24,8 +24,8 @@ class SedP9000Test {
 
 
         //annenperson
-        assertEquals("Rausa 322", p9000sed?.nav?.annenperson?.person?.fornavn)
-        assertEquals("ingen@online.no", p9000sed?.nav?.annenperson?.person?.kontakt?.email?.first()?.adresse)
+        assertEquals("Rausa 322", p9000sed.nav?.annenperson?.person?.fornavn)
+        assertEquals("ingen@online.no", p9000sed.nav?.annenperson?.person?.kontakt?.email?.first()?.adresse)
         assertEquals("0101010202022 327112", p9000sed.nav?.annenperson?.person?.pin?.first()?.identifikator)
 
         //tillegginfo
@@ -33,7 +33,6 @@ class SedP9000Test {
         assertEquals("01", p9000sed.pensjon?.tilleggsinformasjon?.p8000?.henvisningperson)
         assertEquals("ytterligere info 21.1.", p9000sed.pensjon?.tilleggsinformasjon?.yrkesaktivitet?.tilleggsopplysning)
 
-        //
         assertEquals("09041984799 91", p9000sed.nav?.annenperson?.person?.pinannen?.identifikator)
     }
 }

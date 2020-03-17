@@ -129,7 +129,7 @@ class PrefillPensjonVedtakTest {
 
         val result = PrefillPensjonVedtak.createBeregningItemList(pendata)
 
-        val json = mapAnyToJson(result, true)
+        mapAnyToJson(result, true)
 
         assertEquals(6, result.size)
 
