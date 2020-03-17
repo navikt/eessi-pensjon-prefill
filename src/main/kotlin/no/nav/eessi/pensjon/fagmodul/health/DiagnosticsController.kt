@@ -1,6 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.health
 
-import no.nav.eessi.pensjon.fagmodul.eux.EuxService
+import no.nav.eessi.pensjon.fagmodul.eux.EuxKlient
 import no.nav.eessi.pensjon.security.sts.STSService
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonService
 import no.nav.eessi.pensjon.services.personv3.PersonV3Service
@@ -91,7 +91,7 @@ class DiagnosticsController(private val stsService: STSService,
 
 @RestController
 class DiagnosticsControllerProtected(private val personService: PersonV3Service,
-                                     private val euxService: EuxService,
+                                     private val euxKlient: EuxKlient,
                                      private val penService: PensjonsinformasjonService,
                                      @Value("\${NAIS_APP_NAME}") val appName: String) {
 
@@ -136,7 +136,7 @@ class DiagnosticsControllerProtected(private val personService: PersonV3Service,
 
     private fun selfTestEux(): Check {
         return try {
-            euxService.pingEux()
+            euxKlient.pingEux()
             Check("Eux-Rina-Api","Eux Rina OK","",1)
         } catch (ex: Exception) {
             Check("Eux-Rina-Api","Eux Rina FAIL", ex.message!!,0)

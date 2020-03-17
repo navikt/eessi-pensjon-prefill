@@ -1,11 +1,10 @@
 package no.nav.eessi.pensjon.fagmodul.api
 
-import io.micrometer.core.instrument.ImmutableTag
 import io.micrometer.core.instrument.Tag
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import io.swagger.annotations.ApiOperation
 import no.nav.eessi.pensjon.fagmodul.eux.BucUtils
-import no.nav.eessi.pensjon.fagmodul.eux.EuxService
+import no.nav.eessi.pensjon.fagmodul.eux.EuxKlient
 import no.nav.eessi.pensjon.fagmodul.eux.PinOgKrav
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ShortDocumentItem
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
@@ -30,7 +29,7 @@ import java.time.LocalDateTime
 @Protected
 @RestController
 @RequestMapping("/sed")
-class SedController(private val euxService: EuxService,
+class SedController(private val euxKlient: EuxKlient,
                     private val prefillService: PrefillService,
                     private val aktoerService: AktoerregisterService,
                     private val auditlogger: AuditLogger,
@@ -62,7 +61,7 @@ class SedController(private val euxService: EuxService,
                 @PathVariable("documentid", required = true) documentid: String): Boolean {
         auditlogger.logBuc("sendSed", " euxCaseId: $euxCaseId documentId: $documentid")
         logger.info("kaller /cpi/buc/$euxCaseId/sed/$documentid/send")
-        return euxService.sendDocumentById(euxCaseId, documentid)
+        return euxKlient.sendDocumentById(euxCaseId, documentid)
     }
 
     //** oppdatert i api 18.02.2019
@@ -73,7 +72,7 @@ class SedController(private val euxService: EuxService,
         auditlogger.logBuc("getDocument", " euxCaseId: $euxcaseid documentId: $documentid")
 
         logger.info("Prøver å kalle getDocument for /${euxcaseid}/${documentid} ")
-        return euxService.getSedOnBucByDocumentId(euxcaseid, documentid)
+        return euxKlient.getSedOnBucByDocumentId(euxcaseid, documentid)
 
     }
 
@@ -84,7 +83,7 @@ class SedController(private val euxService: EuxService,
                        @PathVariable("documentid", required = true) documentid: String): Boolean {
         auditlogger.logBuc("deleteDocument", " euxCaseId: $euxcaseid documentId: $documentid")
         logger.info("kaller delete  /${euxcaseid}/${documentid} ")
-        return euxService.deleteDocumentById(euxcaseid, documentid)
+        return euxKlient.deleteDocumentById(euxcaseid, documentid)
 
     }
 
@@ -104,9 +103,9 @@ class SedController(private val euxService: EuxService,
             logger.info("Prøver å prefillSED")
             val data = prefillService.prefillSed(dataModel)
             logger.info("Prøver å sende SED: ${dataModel.getSEDid()} inn på BUC: ${dataModel.euxCaseID}")
-            val docresult = euxService.opprettSedOnBuc(data.sed, data.euxCaseID)
+            val docresult = euxKlient.opprettSedOnBuc(data.sed, data.euxCaseID)
             logger.info("Opprettet ny SED med dokumentId: ${docresult.documentId}")
-            val bucUtil = BucUtils(euxService.getBuc(docresult.caseId))
+            val bucUtil = BucUtils(euxKlient.getBuc(docresult.caseId))
             val result = bucUtil.findDocument(docresult.documentId)
 
             //extra tag metricshelper for sedType, bucType, timeStamp og rinaId.
@@ -120,7 +119,7 @@ class SedController(private val euxService: EuxService,
 
     private fun addInstitution(dataModel: PrefillDataModel) {
         logger.debug("Prøver å legge til Deltaker/Institusions på buc samt prefillSed og sende inn til Rina ")
-        val bucUtil = BucUtils(euxService.getBuc(dataModel.euxCaseID))
+        val bucUtil = BucUtils(euxKlient.getBuc(dataModel.euxCaseID))
         val nyeDeltakere = bucUtil.findNewParticipants(dataModel.getInstitutionsList())
         if (nyeDeltakere.isNotEmpty()) {
             logger.debug("DeltakerListe (InstitusjonItem) size: ${nyeDeltakere.size}")
@@ -128,11 +127,11 @@ class SedController(private val euxService: EuxService,
             if (bucX005 == null) {
                 logger.info("X005 finnes ikke på buc, legger til Deltakere/Institusjon på vanlig måte")
                 //kaste Exception dersom legge til deltakerfeiler?
-                euxService.putBucMottakere(dataModel.euxCaseID, nyeDeltakere)
+                euxKlient.putBucMottakere(dataModel.euxCaseID, nyeDeltakere)
             } else {
                 logger.info("X005 finnes på buc, Sed X005 prefills og sendes inn")
                 val x005Liste = prefillService.prefillEnX005ForHverInstitusjon(nyeDeltakere, dataModel)
-                x005Liste.forEach { x005 -> euxService.opprettSedOnBuc(x005.sed, x005.euxCaseID) }
+                x005Liste.forEach { x005 -> euxKlient.opprettSedOnBuc(x005.sed, x005.euxCaseID) }
             }
         }
     }
@@ -158,9 +157,9 @@ class SedController(private val euxService: EuxService,
             val data = prefillService.prefillSed(dataModel)
 
             logger.info("Prøver å sende SED: ${dataModel.getSEDid()} inn på BUC: ${dataModel.euxCaseID}")
-            val docresult = euxService.opprettSvarSedOnBuc(data.sed, data.euxCaseID, parentId)
+            val docresult = euxKlient.opprettSvarSedOnBuc(data.sed, data.euxCaseID, parentId)
 
-            val bucUtil = BucUtils(euxService.getBuc(docresult.caseId))
+            val bucUtil = BucUtils(euxKlient.getBuc(docresult.caseId))
 
             //extra tag metricshelper for sedType, bucType, timeStamp og rinaId.
             metricsHelper.measureExtra(MetricsHelper.MeterNameExtraTag.AddDocumentToParent, extraTag = extraTag(dataModel, bucUtil))
@@ -182,8 +181,8 @@ class SedController(private val euxService: EuxService,
         val data = prefillService.prefillSed(dataModel)
 
         logger.info("kaller add med request: $request")
-        val docresult = euxService.opprettSedOnBuc(data.sed, data.euxCaseID)
-        return BucUtils(euxService.getBuc(docresult.caseId)).findDocument(docresult.documentId)
+        val docresult = euxKlient.opprettSedOnBuc(data.sed, data.euxCaseID)
+        return BucUtils(euxKlient.getBuc(docresult.caseId)).findDocument(docresult.documentId)
     }
 
     //TODO endre denne til å gå til denne: /cpi/buc/{RinaSakId}/sedtyper  (istede for benytte seg av egen bucutil)
@@ -194,7 +193,7 @@ class SedController(private val euxService: EuxService,
         auditlogger.logBuc("getDocumentlist", " euxCaseId: $euxcaseid")
         logger.info("kaller /${euxcaseid}/${sedType} ")
 
-        return euxService.getSedOnBuc(euxcaseid, sedType)
+        return euxKlient.getSedOnBuc(euxcaseid, sedType)
     }
 
     @ApiOperation("Henter ut en liste over registrerte institusjoner innenfor spesifiserte EU-land. ny api kall til eux")
@@ -202,7 +201,7 @@ class SedController(private val euxService: EuxService,
     fun getEuxInstitusjoner(@PathVariable("buctype", required = true) buctype: String, @PathVariable("land", required = false) landkode: String? = ""): List<InstitusjonItem> {
         logger.info("Henter ut liste over alle Institusjoner i Rina")
 
-        return euxService.getInstitutions(buctype, landkode)
+        return euxKlient.getInstitutions(buctype, landkode)
     }
 
     @ApiOperation("henter liste over seds, seds til valgt buc eller seds til valgt rinasak")
@@ -211,11 +210,11 @@ class SedController(private val euxService: EuxService,
                 @PathVariable(value = "rinanr", required = false) euxCaseId: String?): ResponseEntity<String?> {
 
         //Ingen buc oppgitt, vi lister våre seds på valgt buctype.
-        if (euxCaseId == null) return ResponseEntity.ok().body( EuxService.getAvailableSedOnBuc(bucType).toJsonSkipEmpty() )
+        if (euxCaseId == null) return ResponseEntity.ok().body( EuxKlient.getAvailableSedOnBuc(bucType).toJsonSkipEmpty() )
         //liste over seds som kan opprettes fra Rina på valgt euxCaseid (rinanr)
-        val resultListe = BucUtils(euxService.getBuc(euxCaseId)).getAksjonListAsString()
+        val resultListe = BucUtils(euxKlient.getBuc(euxCaseId)).getAksjonListAsString()
         //hvis tom er stort sett buc helt ny. vi lister våre seds på valgt buctype.
-        if (resultListe.isEmpty()) return ResponseEntity.ok().body( EuxService.getAvailableSedOnBuc(bucType).toJsonSkipEmpty() )
+        if (resultListe.isEmpty()) return ResponseEntity.ok().body( EuxKlient.getAvailableSedOnBuc(bucType).toJsonSkipEmpty() )
         //hvis liste ikke tom vi filterer listen
         return ResponseEntity.ok().body( sortAndFilterSeds(resultListe).toJsonSkipEmpty() )
     }
@@ -235,7 +234,7 @@ class SedController(private val euxService: EuxService,
                                @PathVariable("documentid", required = false) documentid: String): PinOgKrav {
         auditlogger.logBuc("getPinOgYtelseKravtype", " euxCaseId: $rinanr  documentId: $documentid")
         logger.debug("Henter opp ytelseKravType fra P2100 eller P15000, feiler hvis ikke rett SED")
-        return euxService.hentFnrOgYtelseKravtype(rinanr, documentid)
+        return euxKlient.hentFnrOgYtelseKravtype(rinanr, documentid)
     }
 
     //Hjelpe funksjon for å validere og hente aktoerid for evt. avdodfnr fra UI (P2100)

@@ -2,7 +2,7 @@ package no.nav.eessi.pensjon.fagmodul.api
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.nhaarman.mockitokotlin2.*
-import no.nav.eessi.pensjon.fagmodul.eux.EuxService
+import no.nav.eessi.pensjon.fagmodul.eux.EuxKlient
 import no.nav.eessi.pensjon.fagmodul.eux.PinOgKrav
 import no.nav.eessi.pensjon.fagmodul.eux.SedDokumentIkkeOpprettetException
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.BucSedResponse
@@ -39,7 +39,7 @@ import org.springframework.web.util.UriComponentsBuilder
 class SedControllerTest {
 
     @Spy
-    lateinit var mockEuxService: EuxService
+    lateinit var mockEuxKlient: EuxKlient
 
     @Spy
     lateinit var auditLogger: AuditLogger
@@ -56,7 +56,7 @@ class SedControllerTest {
     @BeforeEach
     fun setUp() {
         prefillDataMock = PrefillDataModel()
-        this.sedController = SedController(mockEuxService, PrefillService(mockPrefillSED), mockAktoerIdHelper, auditLogger)
+        this.sedController = SedController(mockEuxKlient, PrefillService(mockPrefillSED), mockAktoerIdHelper, auditLogger)
     }
 
     @Test
@@ -230,7 +230,7 @@ class SedControllerTest {
         )
         doReturn(mockCreateSedType).whenever(mockBuc).actions
 
-        doReturn(mockBuc).whenever(mockEuxService).getBuc(rinanr)
+        doReturn(mockBuc).whenever(mockEuxKlient).getBuc(rinanr)
 
         val expectedSedList = ResponseEntity.ok().body(mapAnyToJson( listOf("P2200", "P3000_AT", "P3000_SE", "P6000")))
 
@@ -247,7 +247,7 @@ class SedControllerTest {
     fun getYtelseKravtypeOk() {
         val mockKrav = PinOgKrav(fnr = "13212312", krav = Krav(dato = "2019-02-01", type = "01"))
 
-        doReturn(mockKrav).whenever(mockEuxService).
+        doReturn(mockKrav).whenever(mockEuxKlient).
                 hentFnrOgYtelseKravtype(
                         any<String>(),
                         any<String>()
@@ -268,7 +268,7 @@ class SedControllerTest {
 
         val mockBuc = Mockito.mock(Buc::class.java)
 
-        doReturn(mockBuc).whenever(mockEuxService).getBuc(euxCaseId)
+        doReturn(mockBuc).whenever(mockEuxKlient).getBuc(euxCaseId)
 
         doReturn(null).whenever(mockBuc).participants
 
@@ -280,7 +280,7 @@ class SedControllerTest {
 
         doReturn(dummyPrefillData).whenever(mockPrefillSED).prefill(any())
 
-        doReturn(BucSedResponse(euxCaseId,"1")).whenever(mockEuxService).opprettSedOnBuc(any(),eq(euxCaseId))
+        doReturn(BucSedResponse(euxCaseId,"1")).whenever(mockEuxKlient).opprettSedOnBuc(any(),eq(euxCaseId))
 
         val newParticipants = listOf(
                 InstitusjonItem(country = "FI", institution = "Finland", name="Finland test"),
@@ -289,8 +289,8 @@ class SedControllerTest {
 
         sedController.addInstutionAndDocument(apiRequestWith(euxCaseId, newParticipants))
 
-        verify(mockEuxService, times(newParticipants.size + 1)).opprettSedOnBuc(any(), eq(euxCaseId))
-        verify(mockEuxService, never()).addDeltagerInstitutions(any(), any())
+        verify(mockEuxKlient, times(newParticipants.size + 1)).opprettSedOnBuc(any(), eq(euxCaseId))
+        verify(mockEuxKlient, never()).addDeltagerInstitutions(any(), any())
     }
 
     @Test
@@ -300,20 +300,20 @@ class SedControllerTest {
         doReturn("12345").whenever(mockAktoerIdHelper).hentPinForAktoer(any<String>())
 
         val mockBuc = Mockito.mock(Buc::class.java)
-        doReturn(mockBuc).whenever(mockEuxService).getBuc(euxCaseId)
+        doReturn(mockBuc).whenever(mockEuxKlient).getBuc(euxCaseId)
 
         doReturn(listOf(ParticipantsItem())).whenever(mockBuc).participants
 
         val dummyPrefillData = ApiRequest.buildPrefillDataModelOnExisting(apiRequestWith(euxCaseId), mockAktoerIdHelper.hentPinForAktoer(apiRequestWith(euxCaseId).aktoerId), null)
         doReturn(dummyPrefillData).whenever(mockPrefillSED).prefill(any())
 
-        doReturn(BucSedResponse(euxCaseId, "1")).whenever(mockEuxService).opprettSedOnBuc(any(),eq(euxCaseId))
+        doReturn(BucSedResponse(euxCaseId, "1")).whenever(mockEuxKlient).opprettSedOnBuc(any(),eq(euxCaseId))
 
         val noNewParticipants = listOf<InstitusjonItem>()
         sedController.addInstutionAndDocument(apiRequestWith(euxCaseId, noNewParticipants))
 
-        verify(mockEuxService, times(noNewParticipants.size + 1)).opprettSedOnBuc(any(), eq(euxCaseId))
-        verify(mockEuxService, never()).addDeltagerInstitutions(any(), any())
+        verify(mockEuxKlient, times(noNewParticipants.size + 1)).opprettSedOnBuc(any(), eq(euxCaseId))
+        verify(mockEuxKlient, never()).addDeltagerInstitutions(any(), any())
     }
 
     @Test
@@ -324,7 +324,7 @@ class SedControllerTest {
 
         val mockBuc = Mockito.mock(Buc::class.java)
 
-        doReturn(mockBuc).whenever(mockEuxService).getBuc(euxCaseId)
+        doReturn(mockBuc).whenever(mockEuxKlient).getBuc(euxCaseId)
 
         doReturn(listOf<ParticipantsItem>()).whenever(mockBuc).participants
 
@@ -334,9 +334,9 @@ class SedControllerTest {
 
         doReturn(dummyPrefillData).whenever(mockPrefillSED).prefill(any())
 
-        doReturn(true).whenever(mockEuxService).putBucMottakere(eq(euxCaseId), any())
+        doReturn(true).whenever(mockEuxKlient).putBucMottakere(eq(euxCaseId), any())
 
-        doReturn(BucSedResponse(euxCaseId,"1")).whenever(mockEuxService).opprettSedOnBuc(any(), eq(euxCaseId))
+        doReturn(BucSedResponse(euxCaseId,"1")).whenever(mockEuxKlient).opprettSedOnBuc(any(), eq(euxCaseId))
 
         val newParticipants = listOf(
                 InstitusjonItem(country = "FI", institution = "FI:Finland", name="Finland test"),
@@ -344,8 +344,8 @@ class SedControllerTest {
         )
         sedController.addInstutionAndDocument(apiRequestWith(euxCaseId, newParticipants))
 
-        verify(mockEuxService).putBucMottakere(euxCaseId, newParticipants)
-        verify(mockEuxService, times(1)).opprettSedOnBuc(any(), eq(euxCaseId))
+        verify(mockEuxKlient).putBucMottakere(euxCaseId, newParticipants)
+        verify(mockEuxKlient, times(1)).opprettSedOnBuc(any(), eq(euxCaseId))
     }
 
     @Test
@@ -355,19 +355,19 @@ class SedControllerTest {
         doReturn("12345").whenever(mockAktoerIdHelper).hentPinForAktoer(any<String>())
 
         val mockBuc = Mockito.mock(Buc::class.java)
-        doReturn(mockBuc).whenever(mockEuxService).getBuc(euxCaseId)
+        doReturn(mockBuc).whenever(mockEuxKlient).getBuc(euxCaseId)
 
         doReturn(listOf<ParticipantsItem>()).whenever(mockBuc).participants
 
         val currentX005 = DocumentsItem()
 
         doReturn(listOf(currentX005)).whenever(mockBuc).documents
-        doReturn(true).whenever(mockEuxService).putBucMottakere(eq(euxCaseId), any())
+        doReturn(true).whenever(mockEuxKlient).putBucMottakere(eq(euxCaseId), any())
 
         val dummyPrefillData = ApiRequest.buildPrefillDataModelOnExisting(apiRequestWith(euxCaseId), mockAktoerIdHelper.hentPinForAktoer(apiRequestWith(euxCaseId).aktoerId), null)
         doReturn(dummyPrefillData).whenever(mockPrefillSED).prefill(any())
 
-        doThrow(SedDokumentIkkeOpprettetException("Expected!")).whenever(mockEuxService).opprettSedOnBuc(any(), eq(euxCaseId))
+        doThrow(SedDokumentIkkeOpprettetException("Expected!")).whenever(mockEuxKlient).opprettSedOnBuc(any(), eq(euxCaseId))
 
         val newParticipants = listOf(
                 InstitusjonItem(country = "FI", institution = "FI:Finland", name="Finland test"),

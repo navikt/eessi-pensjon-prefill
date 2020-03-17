@@ -34,7 +34,7 @@ class BucControllerTest {
     @Mock
     lateinit var mockEuxrestTemplate: RestTemplate
 
-    lateinit var mockEuxService: EuxService
+    lateinit var mockEuxKlient: EuxKlient
 
     @Spy
     lateinit var auditLogger: AuditLogger
@@ -51,8 +51,8 @@ class BucControllerTest {
     fun before() {
         mockEuxrestTemplate.errorHandler = DefaultResponseErrorHandler()
         mockEuxrestTemplate.interceptors = listOf( RequestResponseLoggerInterceptor() )
-        this.mockEuxService = EuxService(mockEuxrestTemplate)
-        this.bucController = BucController(mockEuxService, mockSafService, mockAktoerIdHelper, auditLogger)
+        this.mockEuxKlient = EuxKlient(mockEuxrestTemplate)
+        this.bucController = BucController(mockEuxKlient, mockSafService, mockAktoerIdHelper, auditLogger)
     }
 
 
