@@ -33,9 +33,9 @@ import kotlin.String
 
 
 @ExtendWith(MockitoExtension::class)
-class EuxServiceTest {
+class EuxKlientTest {
 
-    private lateinit var service: EuxService
+    private lateinit var klient: EuxKlient
 
     @Mock
     private lateinit var mockEuxrestTemplate: RestTemplate
@@ -45,7 +45,7 @@ class EuxServiceTest {
     fun setup() {
         mockEuxrestTemplate.errorHandler = DefaultResponseErrorHandler()
         mockEuxrestTemplate.interceptors = listOf( RequestResponseLoggerInterceptor() )
-        service = EuxService(mockEuxrestTemplate)
+        klient = EuxKlient(mockEuxrestTemplate)
     }
 
     @AfterEach
@@ -75,7 +75,7 @@ class EuxServiceTest {
 
         whenever(mockEuxrestTemplate.exchange(any<String>(), eq(HttpMethod.GET), eq(null), eq(String::class.java))).thenReturn(response)
 
-        val result = service.getSedOnBucByDocumentId("12345678900", "0bb1ad15987741f1bbf45eba4f955e80")
+        val result = klient.getSedOnBucByDocumentId("12345678900", "0bb1ad15987741f1bbf45eba4f955e80")
 
         assertEquals(orgsed, result)
         assertEquals("P6000", result.sed)
@@ -88,7 +88,7 @@ class EuxServiceTest {
                 .whenever(mockEuxrestTemplate).exchange(any<String>(), eq(HttpMethod.GET), eq(null), eq(String::class.java))
 
         assertThrows<GenericUnprocessableEntity> {
-            service.getSedOnBucByDocumentId("12345678900", "P_BUC_99")
+            klient.getSedOnBucByDocumentId("12345678900", "P_BUC_99")
         }
     }
 
@@ -97,7 +97,7 @@ class EuxServiceTest {
         val errorresponse = ResponseEntity<String?>(HttpStatus.UNAUTHORIZED)
         whenever(mockEuxrestTemplate.exchange(any<String>(), eq(HttpMethod.GET), eq(null), eq(String::class.java))).thenReturn(errorresponse)
         assertThrows<SedDokumentIkkeLestException> {
-            service.getSedOnBucByDocumentId("12345678900", "P_BUC_99")
+            klient.getSedOnBucByDocumentId("12345678900", "P_BUC_99")
         }
     }
 
@@ -109,7 +109,7 @@ class EuxServiceTest {
         val response: ResponseEntity<String> = ResponseEntity(json, HttpStatus.OK)
 
         whenever(mockEuxrestTemplate.exchange(any<String>(), eq(HttpMethod.GET), eq(null), eq(String::class.java))).thenReturn(response)
-        val result = service.getBuc("P_BUC_99")
+        val result = klient.getBuc("P_BUC_99")
         assertEquals("22909", result.id)
     }
 
@@ -124,7 +124,7 @@ class EuxServiceTest {
         doThrow(HttpClientErrorException(HttpStatus.BAD_REQUEST))
                 .whenever(mockEuxrestTemplate).exchange( any<String>(), eq(HttpMethod.GET), eq(null), eq(String::class.java))
         assertThrows<GenericUnprocessableEntity> {
-            service.getBuc("P_BUC_99")
+            klient.getBuc("P_BUC_99")
         }
     }
 
@@ -133,7 +133,7 @@ class EuxServiceTest {
         doThrow(HttpClientErrorException(HttpStatus.UNAUTHORIZED))
                 .whenever(mockEuxrestTemplate).exchange( any<String>(), eq(HttpMethod.GET), eq(null), eq(String::class.java))
         assertThrows<RinaIkkeAutorisertBrukerException> {
-            service.getBuc("P_BUC_99")
+            klient.getBuc("P_BUC_99")
         }
     }
 
@@ -142,7 +142,7 @@ class EuxServiceTest {
         doThrow(createDummyClientRestExecption(HttpStatus.FORBIDDEN, "Gateway body dummy timeout"))
                 .whenever(mockEuxrestTemplate).exchange( any<String>(), eq(HttpMethod.GET), eq(null), eq(String::class.java))
         assertThrows<ForbiddenException> {
-            service.getBuc("P_BUC_99")
+            klient.getBuc("P_BUC_99")
         }
     }
 
@@ -151,7 +151,7 @@ class EuxServiceTest {
         doThrow(createDummyClientRestExecption(HttpStatus.NOT_FOUND, "Gateway body dummy timeout"))
                 .whenever(mockEuxrestTemplate).exchange( any<String>(), eq(HttpMethod.GET), eq(null), eq(String::class.java))
         assertThrows<IkkeFunnetException> {
-            service.getBuc("P_BUC_99")
+            klient.getBuc("P_BUC_99")
         }
     }
 
@@ -160,7 +160,7 @@ class EuxServiceTest {
         doThrow(createDummyClientRestExecption(HttpStatus.UNPROCESSABLE_ENTITY, "unprocesable dummy timeout"))
                 .whenever(mockEuxrestTemplate).exchange( any<String>(), eq(HttpMethod.GET), eq(null), eq(String::class.java))
         assertThrows<GenericUnprocessableEntity> {
-            service.getBuc("P_BUC_99")
+            klient.getBuc("P_BUC_99")
         }
     }
 
@@ -169,7 +169,7 @@ class EuxServiceTest {
         doThrow(createDummyServerRestExecption(HttpStatus.GATEWAY_TIMEOUT, "Gateway body dummy timeout"))
                 .whenever(mockEuxrestTemplate).exchange( any<String>(), eq(HttpMethod.GET), eq(null), eq(String::class.java))
         assertThrows<GatewayTimeoutException> {
-            service.getBuc("P_BUC_99")
+            klient.getBuc("P_BUC_99")
         }
     }
 
@@ -178,7 +178,7 @@ class EuxServiceTest {
         doThrow(RuntimeException(HttpStatus.I_AM_A_TEAPOT.name))
                 .whenever(mockEuxrestTemplate).exchange( any<String>(), eq(HttpMethod.GET), eq(null), eq(String::class.java))
                 assertThrows<ServerException> {
-            service.getBuc("P_BUC_99")
+            klient.getBuc("P_BUC_99")
         }
     }
 
@@ -187,7 +187,7 @@ class EuxServiceTest {
         doThrow(createDummyClientRestExecption(HttpStatus.NOT_FOUND,"Dummy body for Not Found exception"))
                 .whenever(mockEuxrestTemplate).exchange( any<String>(), eq(HttpMethod.GET), eq(null), eq(String::class.java))
         assertThrows<IkkeFunnetException> {
-            service.getBuc("P_BUC_99")
+            klient.getBuc("P_BUC_99")
         }
     }
 
@@ -196,7 +196,7 @@ class EuxServiceTest {
         val response: ResponseEntity<String> = ResponseEntity("323413415dfvsdfgq343145sdfsdfg34135", HttpStatus.OK)
         whenever(mockEuxrestTemplate.exchange(any<String>(), eq(HttpMethod.POST), any(), eq(String::class.java))).thenReturn(response)
 
-        val result = service.opprettSedOnBuc(SED("P2000"), "123456")
+        val result = klient.opprettSedOnBuc(SED("P2000"), "123456")
 
         assertEquals("123456", result.caseId)
         assertEquals("323413415dfvsdfgq343145sdfsdfg34135", result.documentId)
@@ -213,7 +213,7 @@ class EuxServiceTest {
                 )
 
         assertThrows<GenericUnprocessableEntity> {
-            service.opprettSedOnBuc(SED("P2200"), "1231233")
+            klient.opprettSedOnBuc(SED("P2200"), "1231233")
         }
 
     }
@@ -228,7 +228,7 @@ class EuxServiceTest {
                         eq(String::class.java)
                 )
         assertThrows<GatewayTimeoutException> {
-            service.opprettSedOnBuc(SED("P2000"), "213123")
+            klient.opprettSedOnBuc(SED("P2000"), "213123")
         }
     }
 
@@ -253,7 +253,7 @@ class EuxServiceTest {
                 ArgumentMatchers.eq(String::class.java)
         )
 
-        val result = service.deleteDocumentById(euxCaseId, documentId)
+        val result = klient.deleteDocumentById(euxCaseId, documentId)
         assertEquals(true, result)
     }
 
@@ -264,7 +264,7 @@ class EuxServiceTest {
                 .whenever(mockEuxrestTemplate).exchange(any<String>(), eq(HttpMethod.DELETE), eq(null), eq(String::class.java))
 
         assertThrows<ForbiddenException> {
-            service.deleteDocumentById("12132131", "12312312-123123123123")
+            klient.deleteDocumentById("12132131", "12312312-123123123123")
         }
     }
 
@@ -281,7 +281,7 @@ class EuxServiceTest {
         )
 
         assertThrows<ServerException> {
-            service.deleteDocumentById(euxCaseId, documentId)
+            klient.deleteDocumentById(euxCaseId, documentId)
         }
     }
 
@@ -298,7 +298,7 @@ class EuxServiceTest {
                 ArgumentMatchers.eq(String::class.java)
         )
 
-        val result = service.sendDocumentById(euxCaseId, documentId)
+        val result = klient.sendDocumentById(euxCaseId, documentId)
         assertEquals(true, result)
     }
 
@@ -315,7 +315,7 @@ class EuxServiceTest {
                 ArgumentMatchers.eq(String::class.java)
         )
         assertThrows<SedDokumentIkkeSendtException> {
-            service.sendDocumentById(euxCaseId, documentId)
+            klient.sendDocumentById(euxCaseId, documentId)
         }
     }
 
@@ -328,7 +328,7 @@ class EuxServiceTest {
                 ArgumentMatchers.eq(String::class.java)
         )
         assertThrows<SedDokumentIkkeSendtException> {
-            service.sendDocumentById("123456", "3123sfdf23-4324svfsdf324")
+            klient.sendDocumentById("123456", "3123sfdf23-4324svfsdf324")
         }
     }
 
@@ -359,7 +359,7 @@ class EuxServiceTest {
                 eq(null),
                 eq(String::class.java))
 
-        val result = service.getRinasaker("12345678900", listOf("123456","83637"))
+        val result = klient.getRinasaker("12345678900", listOf("123456","83637"))
 
         assertEquals(154, orgRinasaker.size)
         assertEquals(orgRinasaker.size + 1, result.size)
@@ -370,7 +370,7 @@ class EuxServiceTest {
         doThrow(createDummyServerRestExecption(HttpStatus.INTERNAL_SERVER_ERROR,"Serverfeil, I/O-feil"))
                 .whenever(mockEuxrestTemplate).exchange(any<String>(), eq(HttpMethod.GET), eq(null), eq(String::class.java))
         assertThrows<EuxRinaServerException> {
-            service.getRinasaker("12345678900", listOf("1", "2", "3"))
+            klient.getRinasaker("12345678900", listOf("1", "2", "3"))
         }
     }
 
@@ -379,7 +379,7 @@ class EuxServiceTest {
         doThrow(createDummyClientRestExecption(HttpStatus.UNAUTHORIZED,"UNAUTHORIZED"))
                 .whenever(mockEuxrestTemplate).exchange(any<String>(), eq(HttpMethod.GET), eq(null), eq(String::class.java))
                         assertThrows<RinaIkkeAutorisertBrukerException> {
-            service.getRinasaker("12345678900", listOf("1", "2", "3"))
+            klient.getRinasaker("12345678900", listOf("1", "2", "3"))
         }
     }
 
@@ -389,7 +389,7 @@ class EuxServiceTest {
         doThrow(createDummyServerRestExecption(HttpStatus.BAD_GATEWAY, "Dummybody"))
                 .whenever(mockEuxrestTemplate).exchange(any<String>(), eq(HttpMethod.GET), eq(null), eq(String::class.java))
         assertThrows<GenericUnprocessableEntity> {
-            service.getRinasaker("12345678900", listOf("1", "2", "3"))
+            klient.getRinasaker("12345678900", listOf("1", "2", "3"))
         }
     }
 
@@ -404,7 +404,7 @@ class EuxServiceTest {
                     eq("/rinasaker?fødselsnummer=12345678900&rinasaksnummer=&buctype=&status="),
                     eq(HttpMethod.GET), anyOrNull(), eq(String::class.java) )
 
-        val rinasakresult = service.getRinaSakerFilterKunRinaId("12345678900", listOf("1"))
+        val rinasakresult = klient.getRinaSakerFilterKunRinaId("12345678900", listOf("1"))
 
         val orgRinasaker = mapJsonToAny(rinasakStr, typeRefs<List<Rinasak>>())
 
@@ -416,7 +416,7 @@ class EuxServiceTest {
                 .exchange( ArgumentMatchers.contains("buc/") ,
                 eq(HttpMethod.GET), eq(null), eq(String::class.java))
 
-        val result = service.getBucAndSedView(rinasakresult)
+        val result = klient.getBucAndSedView(rinasakresult)
 
         assertNotNull(result)
         assertEquals(6, orgRinasaker.size)
@@ -453,7 +453,7 @@ class EuxServiceTest {
                         eq(String::class.java)
                 )
 
-        val firstJson = service.getSingleBucAndSedView("158123")
+        val firstJson = klient.getSingleBucAndSedView("158123")
 
         assertEquals("158123", firstJson.caseId)
         var lastUpdate: Long = 0
@@ -475,7 +475,7 @@ class EuxServiceTest {
                 eq(String::class.java))
         ).thenReturn(response)
 
-        val result = service.createBuc("P_BUC_01")
+        val result = klient.createBuc("P_BUC_01")
 
         assertEquals(mockBuc, result)
     }
@@ -490,7 +490,7 @@ class EuxServiceTest {
         ).thenThrow(ResourceAccessException("I/O error"))
 
         assertThrows<ServerException> {
-            service.createBuc("P_BUC_01")
+            klient.createBuc("P_BUC_01")
         }
     }
 
@@ -505,7 +505,7 @@ class EuxServiceTest {
         ).thenThrow(clientError)
 
         assertThrows<RinaIkkeAutorisertBrukerException> {
-            service.createBuc("P_BUC_01")
+            klient.createBuc("P_BUC_01")
         }
 
     }
@@ -522,14 +522,14 @@ class EuxServiceTest {
         ).thenThrow(serverError)
 
         assertThrows<EuxRinaServerException> {
-            service.createBuc("P_BUC_01")
+            klient.createBuc("P_BUC_01")
         }
     }
 
     @Test
     fun callingEuxServicePutBucDeltager_WrongParticipantInput() {
         assertThrows<IllegalArgumentException> {
-            service.putBucMottakere("126552", listOf(InstitusjonItem("NO", "NAVT", "Dummy")))
+            klient.putBucMottakere("126552", listOf(InstitusjonItem("NO", "NAVT", "Dummy")))
         }
     }
 
@@ -544,7 +544,7 @@ class EuxServiceTest {
         ).thenThrow(clientError)
 
         assertThrows<RinaIkkeAutorisertBrukerException> {
-            service.putBucMottakere("126552", listOf(InstitusjonItem("NO", "NO:NAVT007", "NAV")))
+            klient.putBucMottakere("126552", listOf(InstitusjonItem("NO", "NO:NAVT007", "NAV")))
         }
     }
 
@@ -558,7 +558,7 @@ class EuxServiceTest {
         ).thenThrow(createDummyServerRestExecption(HttpStatus.INTERNAL_SERVER_ERROR,"Dummy Internal Server Error body"))
 
         assertThrows<EuxRinaServerException> {
-            service.putBucMottakere("122732", listOf(InstitusjonItem("NO", "NO:NAVT02", "NAV")))
+            klient.putBucMottakere("122732", listOf(InstitusjonItem("NO", "NO:NAVT02", "NAV")))
         }
     }
 
@@ -573,7 +573,7 @@ class EuxServiceTest {
         ).thenThrow(ResourceAccessException("Other unknown Error"))
 
         assertThrows<ServerException> {
-            service.putBucMottakere("122732", listOf(InstitusjonItem("NO", "NO:NAVT02", "NAV")))
+            klient.putBucMottakere("122732", listOf(InstitusjonItem("NO", "NO:NAVT02", "NAV")))
         }
     }
 
@@ -587,7 +587,7 @@ class EuxServiceTest {
         ).thenThrow(RuntimeException("Error"))
 
         assertThrows<RuntimeException> {
-            service.putBucMottakere("122732", listOf(InstitusjonItem("NO", "NO:NAVT02", "NAV")))
+            klient.putBucMottakere("122732", listOf(InstitusjonItem("NO", "NO:NAVT02", "NAV")))
         }
     }
 
@@ -603,7 +603,7 @@ class EuxServiceTest {
                 ArgumentMatchers.eq(String::class.java))
         ).thenReturn(theResponse)
 
-        val result = service.putBucMottakere("122732", listOf(InstitusjonItem("NO","NO:NAVT005","NAV")))
+        val result = klient.putBucMottakere("122732", listOf(InstitusjonItem("NO","NO:NAVT005","NAV")))
         assertEquals(true, result)
     }
 
@@ -615,13 +615,13 @@ class EuxServiceTest {
                 PinItem(sektor = "02", land = "DK", identifikator = "05467898321", institusjonsnavn = "DK")
             )
 
-        val result = service.getFnrMedLandkodeNO(list)
+        val result = klient.getFnrMedLandkodeNO(list)
         assertEquals("12345678900", result)
     }
 
     @Test
     fun hentNorskFnrPaalisteavPinListeTom() {
-        val result = service.getFnrMedLandkodeNO(listOf())
+        val result = klient.getFnrMedLandkodeNO(listOf())
         assertEquals(null, result)
     }
 
@@ -631,7 +631,7 @@ class EuxServiceTest {
                 PinItem(sektor = "03", land = "SE", identifikator = "00987654321", institusjonsnavn = "SE"),
                 PinItem(sektor = "02", land = "DK", identifikator = "05467898321", institusjonsnavn = "DK")
         )
-        val result = service.getFnrMedLandkodeNO(list)
+        val result = klient.getFnrMedLandkodeNO(list)
         assertEquals(null, result)
     }
 
@@ -651,7 +651,7 @@ class EuxServiceTest {
                 ArgumentMatchers.eq(String::class.java))
         ).thenReturn(response)
 
-        val result = service.hentFnrOgYtelseKravtype("1234567890","100001000010000")
+        val result = klient.hentFnrOgYtelseKravtype("1234567890","100001000010000")
         assertEquals("21712", result.fnr)
         assertEquals("01", result.krav?.type)
         assertEquals("2019-02-01", result.krav?.dato)
@@ -674,7 +674,7 @@ class EuxServiceTest {
                 ArgumentMatchers.eq(String::class.java))
         ).thenReturn(response)
 
-        val result = service.hentFnrOgYtelseKravtype("1234567890","100001000010000")
+        val result = klient.hentFnrOgYtelseKravtype("1234567890","100001000010000")
         assertEquals("32712", result.fnr)
         assertEquals("02", result.krav?.type)
         assertEquals("2019-02-01", result.krav?.dato)
@@ -698,7 +698,7 @@ class EuxServiceTest {
         ).thenReturn(response)
 
         assertThrows<FagmodulJsonIllegalArgumentException> {
-            service.hentFnrOgYtelseKravtype("1234567890","100001000010000")
+            klient.hentFnrOgYtelseKravtype("1234567890","100001000010000")
         }
     }
 
@@ -718,7 +718,7 @@ class EuxServiceTest {
         ).thenReturn(response)
 
         assertThrows<SedDokumentIkkeGyldigException> {
-            service.hentFnrOgYtelseKravtype("1234567890", "100001000010000")
+            klient.hentFnrOgYtelseKravtype("1234567890", "100001000010000")
         }
     }
 
@@ -726,19 +726,19 @@ class EuxServiceTest {
     fun `Calling euxService getAvailableSEDonBuc returns BuC lists`() {
         var buc = "P_BUC_01"
         var expectedResponse = listOf("P2000")
-        var generatedResponse = EuxService.getAvailableSedOnBuc (buc)
+        var generatedResponse = EuxKlient.getAvailableSedOnBuc (buc)
         assertEquals(generatedResponse, expectedResponse)
 
         buc = "P_BUC_06"
         expectedResponse = listOf("P5000", "P6000", "P7000", "P10000")
-        generatedResponse = EuxService.getAvailableSedOnBuc(buc)
+        generatedResponse = EuxKlient.getAvailableSedOnBuc(buc)
         assertEquals(generatedResponse, expectedResponse)
     }
 
     @Test
     fun `Calling euxService getAvailableSedOnBuc no input, return`() {
         val expected = "[ \"P2000\", \"P2100\", \"P2200\", \"P8000\", \"P5000\", \"P6000\", \"P7000\", \"P10000\", \"P14000\", \"P15000\" ]"
-        val actual = EuxService.getAvailableSedOnBuc(null)
+        val actual = EuxKlient.getAvailableSedOnBuc(null)
         assertEquals(expected, actual.toJson())
     }
 
@@ -757,7 +757,7 @@ class EuxServiceTest {
         val builder = UriComponentsBuilder.fromPath("/buc/$euxCaseId/mottakere")
                 .queryParam("KorrelasjonsId", correlationId)
                 .build()
-        val url = builder.toUriString() + service.convertListInstitusjonItemToString(deltaker)
+        val url = builder.toUriString() + klient.convertListInstitusjonItemToString(deltaker)
         assertEquals("/buc/1234/mottakere?KorrelasjonsId=123456778&mottakere=NO:NAV02&mottakere=SE:SE2", url)
     }
 
@@ -771,7 +771,7 @@ class EuxServiceTest {
                 Rinasak("8423","P_BUC_07",null,"PO",null,"archived")
                 )
 
-        val result = service.getFilteredArchivedaRinasaker(dummyList)
+        val result = klient.getFilteredArchivedaRinasaker(dummyList)
         assertEquals(3, result.size)
         assertEquals("2123", result.first())
 
@@ -788,7 +788,7 @@ class EuxServiceTest {
                 Rinasak("8223","H_BUC_07",null,"PO",null,"open")
         )
 
-        val result = service.getFilteredArchivedaRinasaker(dummyList)
+        val result = klient.getFilteredArchivedaRinasaker(dummyList)
         assertEquals(1, result.size)
         assertEquals("8223", result.first())
 
@@ -805,7 +805,7 @@ class EuxServiceTest {
                 Rinasak("8223","M_BUC_03b",null,"PO",null,"open")
         )
 
-        val result = service.getFilteredArchivedaRinasaker(dummyList)
+        val result = klient.getFilteredArchivedaRinasaker(dummyList)
         assertEquals(2, result.size)
         assertEquals("723", result.first())
         assertEquals("8223", result.last())
@@ -828,7 +828,7 @@ class EuxServiceTest {
         val expected = listOf(Pair("04117b9f8374420e82a4d980a48df6b3","P2200"),
                 Pair("eb938171a4cb4e658b3a6c011962d204","P5000"), Pair("3bc78059030444cda6d18a47ea1f0eec","P6000"),
                 Pair("e418c061a4724f48b23e2191accf0cf6","P7000"), Pair("9fd0c413aa9d4f2f8cf394ea6e42abff","P8000"))
-        val actual = service.filterUtGyldigSedId(utils.getAllDocuments().toJson())
+        val actual = klient.filterUtGyldigSedId(utils.getAllDocuments().toJson())
         assertEquals(expected, actual)
 
     }
@@ -836,7 +836,7 @@ class EuxServiceTest {
     @Test
     fun `filter ut gyldig sed fra json sedDocument tom liste`() {
         val expected = listOf<Pair<String,String>>()
-        val actual = service.filterUtGyldigSedId("[]")
+        val actual = klient.filterUtGyldigSedId("[]")
         assertEquals(expected, actual)
     }
 
@@ -853,7 +853,7 @@ class EuxServiceTest {
         ).thenReturn(response)
 
         val expected = 248
-        val actual = service.getInstitutions("P_BUC_01")
+        val actual = klient.getInstitutions("P_BUC_01")
 
         assertEquals(expected, actual.size)
 

@@ -24,9 +24,6 @@ import org.springframework.cache.annotation.CacheConfig
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.context.annotation.Description
 import org.springframework.http.*
-import org.springframework.retry.annotation.Backoff
-import org.springframework.retry.annotation.Recover
-import org.springframework.retry.annotation.Retryable
 import org.springframework.stereotype.Service
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.bind.annotation.ResponseStatus
@@ -42,13 +39,13 @@ import java.util.*
 @Service
 @Description("Service class for EuxBasis - eux-cpi-service-controller")
 @CacheConfig(cacheNames = ["euxService"])
-class EuxService(private val euxOidcRestTemplate: RestTemplate,
-                 @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper(SimpleMeterRegistry())) {
+class EuxKlient(private val euxOidcRestTemplate: RestTemplate,
+                @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper(SimpleMeterRegistry())) {
 
     // Vi trenger denne no arg konstruktøren for å kunne bruke @Spy med mockito
     constructor() : this(RestTemplate(), MetricsHelper(SimpleMeterRegistry()))
 
-    private val logger = LoggerFactory.getLogger(EuxService::class.java)
+    private val logger = LoggerFactory.getLogger(EuxKlient::class.java)
     private val mapper = jacksonObjectMapper()
 
     // https://eux-app.nais.preprod.local/swagger-ui.html#/eux-cpi-service-controller/
