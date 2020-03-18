@@ -2,13 +2,11 @@ package no.nav.eessi.pensjon.fagmodul.eux
 
 import com.nhaarman.mockitokotlin2.*
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Rinasak
-import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Organisation
-import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ParticipantsItem
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.PinItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.logging.RequestResponseLoggerInterceptor
-import no.nav.eessi.pensjon.security.sts.typeRef
+import no.nav.eessi.pensjon.metrics.MetricsHelper
 import no.nav.eessi.pensjon.utils.*
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.*
@@ -65,43 +63,6 @@ class EuxKlientTest {
                 .buildAndExpand(uriParams)
         val str = builder.toUriString()
         assertEquals("/type/12345/sed?KorrelasjonsId=c0b0c068-4f79-48fe-a640-b9a23bf7c920", str)
-    }
-
-    @Test
-    fun `forventer et korrekt navsed P6000 ved kall til getSedOnBucByDocumentId`() {
-        val filepath = "src/test/resources/json/nav/P6000-NAV.json"
-        val json = String(Files.readAllBytes(Paths.get(filepath)))
-        assertTrue(validateJson(json))
-
-        val orgsed = SED.fromJson(json)
-        val response: ResponseEntity<String> = ResponseEntity(json, HttpStatus.OK)
-
-        whenever(mockEuxrestTemplate.exchange(any<String>(), eq(HttpMethod.GET), eq(null), eq(String::class.java))).thenReturn(response)
-
-        val result = klient.getSedOnBucByDocumentId("12345678900", "0bb1ad15987741f1bbf45eba4f955e80")
-
-        assertEquals(orgsed, result)
-        assertEquals("P6000", result.sed)
-
-    }
-
-    @Test
-    fun `Calling EuxService  feiler med kontakt fra eux med kall til getSedOnBucByDocumentId`() {
-        doThrow(createDummyServerRestExecption(HttpStatus.BAD_GATEWAY, "Dummybody"))
-                .whenever(mockEuxrestTemplate).exchange(any<String>(), eq(HttpMethod.GET), eq(null), eq(String::class.java))
-
-        assertThrows<GenericUnprocessableEntity> {
-            klient.getSedOnBucByDocumentId("12345678900", "P_BUC_99")
-        }
-    }
-
-    @Test
-    fun `Calling EuxService  feiler med motta navsed fra eux med kall til getSedOnBucByDocumentId`() {
-        val errorresponse = ResponseEntity<String?>(HttpStatus.UNAUTHORIZED)
-        whenever(mockEuxrestTemplate.exchange(any<String>(), eq(HttpMethod.GET), eq(null), eq(String::class.java))).thenReturn(errorresponse)
-        assertThrows<SedDokumentIkkeLestException> {
-            klient.getSedOnBucByDocumentId("12345678900", "P_BUC_99")
-        }
     }
 
     @Test
@@ -191,47 +152,6 @@ class EuxKlientTest {
                 .whenever(mockEuxrestTemplate).exchange( any<String>(), eq(HttpMethod.GET), eq(null), eq(String::class.java))
         assertThrows<IkkeFunnetException> {
             klient.getBuc("P_BUC_99")
-        }
-    }
-
-    @Test
-    fun `EuxService  forventer korrekt svar tilbake fra et kall til opprettSedOnBuc`() {
-        val response: ResponseEntity<String> = ResponseEntity("323413415dfvsdfgq343145sdfsdfg34135", HttpStatus.OK)
-        whenever(mockEuxrestTemplate.exchange(any<String>(), eq(HttpMethod.POST), any(), eq(String::class.java))).thenReturn(response)
-
-        val result = klient.opprettSedOnBuc(SED("P2000"), "123456")
-
-        assertEquals("123456", result.caseId)
-        assertEquals("323413415dfvsdfgq343145sdfsdfg34135", result.documentId)
-    }
-
-    @Test
-    fun `Calling EuxService  feiler med svar tilbake fra et kall til opprettSedOnBuc`() {
-        doThrow(createDummyClientRestExecption(HttpStatus.BAD_REQUEST, "Dummy clent error"))
-                .whenever(mockEuxrestTemplate).exchange(
-                        any<String>(),
-                        eq(HttpMethod.POST),
-                        any(),
-                        eq(String::class.java)
-                )
-
-        assertThrows<GenericUnprocessableEntity> {
-            klient.opprettSedOnBuc(SED("P2200"), "1231233")
-        }
-
-    }
-
-    @Test
-    fun `Calling EuxService  feiler med kontakt fra eux med kall til opprettSedOnBuc forventer GatewayTimeoutException`() {
-        doThrow(createDummyServerRestExecption(HttpStatus.GATEWAY_TIMEOUT,"Dummy body"))
-                .whenever(mockEuxrestTemplate).exchange(
-                        any<String>(),
-                        eq(HttpMethod.POST),
-                        any(),
-                        eq(String::class.java)
-                )
-        assertThrows<GatewayTimeoutException> {
-            klient.opprettSedOnBuc(SED("P2000"), "213123")
         }
     }
 
@@ -639,93 +559,6 @@ class EuxKlientTest {
     }
 
     @Test
-    fun hentYtelseKravtypeTesterPaaP15000Alderpensjon() {
-        val filepath = "src/test/resources/json/nav/P15000-NAV.json"
-        val json = String(Files.readAllBytes(Paths.get(filepath)))
-
-        assertTrue(validateJson(json))
-
-        val response: ResponseEntity<String> = ResponseEntity(json, HttpStatus.OK)
-
-        whenever(mockEuxrestTemplate.exchange(
-                any<String>(),
-                eq(HttpMethod.GET),
-                eq(null),
-                ArgumentMatchers.eq(String::class.java))
-        ).thenReturn(response)
-
-        val result = klient.hentFnrOgYtelseKravtype("1234567890","100001000010000")
-        assertEquals("21712", result.fnr)
-        assertEquals("01", result.krav?.type)
-        assertEquals("2019-02-01", result.krav?.dato)
-    }
-
-    @Test
-    fun hentYtelseKravtypeTesterPaaP15000Gjennlevende() {
-        val filepath = "src/test/resources/json/nav/P15000Gjennlevende-NAV.json"
-        val json = String(Files.readAllBytes(Paths.get(filepath)))
-        assertTrue(validateJson(json))
-
-        val orgsed = mapJsonToAny(json, typeRefs<SED>())
-
-        val response: ResponseEntity<String> = ResponseEntity(json, HttpStatus.OK)
-
-        whenever(mockEuxrestTemplate.exchange(
-                any<String>(),
-                eq(HttpMethod.GET),
-                eq(null),
-                ArgumentMatchers.eq(String::class.java))
-        ).thenReturn(response)
-
-        val result = klient.hentFnrOgYtelseKravtype("1234567890","100001000010000")
-        assertEquals("32712", result.fnr)
-        assertEquals("02", result.krav?.type)
-        assertEquals("2019-02-01", result.krav?.dato)
-
-        JSONAssert.assertEquals(json, orgsed.toJson(), false)
-    }
-
-    @Test
-    fun feilerVedHentingAvP2100GrunnetManglendeMapping() {
-        val filepath = "src/test/resources/json/nav/P2100-NAV-unfin.json"
-        val json = String(Files.readAllBytes(Paths.get(filepath)))
-        assertTrue(validateJson(json))
-
-        val response: ResponseEntity<String> = ResponseEntity(json, HttpStatus.OK)
-
-        whenever(mockEuxrestTemplate.exchange(
-                any<String>(),
-                eq(HttpMethod.GET),
-                eq(null),
-                ArgumentMatchers.eq(String::class.java))
-        ).thenReturn(response)
-
-        assertThrows<FagmodulJsonIllegalArgumentException> {
-            klient.hentFnrOgYtelseKravtype("1234567890","100001000010000")
-        }
-    }
-
-    @Test
-    fun hentYtelseKravtypeTesterPaaP15000FeilerVedUgyldigSED() {
-        val filepath = "src/test/resources/json/nav/P9000-NAV.json"
-        val json = String(Files.readAllBytes(Paths.get(filepath)))
-        assertTrue(validateJson(json))
-
-        val response: ResponseEntity<String> = ResponseEntity(json, HttpStatus.OK)
-
-        whenever(mockEuxrestTemplate.exchange(
-                any<String>(),
-                eq(HttpMethod.GET),
-                eq(null),
-                ArgumentMatchers.eq(String::class.java))
-        ).thenReturn(response)
-
-        assertThrows<SedDokumentIkkeGyldigException> {
-            klient.hentFnrOgYtelseKravtype("1234567890", "100001000010000")
-        }
-    }
-
-    @Test
     fun `Calling euxService getAvailableSEDonBuc returns BuC lists`() {
         var buc = "P_BUC_01"
         var expectedResponse = listOf("P2000")
@@ -862,28 +695,79 @@ class EuxKlientTest {
 
     }
 
-
     @Test
-    fun getBucDeltakere() {
+    fun `Calling EuxKlient  feiler med kontakt fra eux med kall til getSedOnBucByDocumentId`() {
+        doThrow(createDummyServerRestExecption(HttpStatus.BAD_GATEWAY, "Dummybody"))
+                .whenever(mockEuxrestTemplate).exchange(any<String>(), eq(HttpMethod.GET), eq(null), eq(String::class.java))
 
-        val mockResponse: ResponseEntity<List<ParticipantsItem>> = ResponseEntity.ok().body(
-          listOf(
-             ParticipantsItem(organisation = Organisation(countryCode = "DK", id = "DK006")),
-             ParticipantsItem(organisation = Organisation(countryCode = "PL", id = "PolishAcc"))
-          )
-        )
-
-        whenever(mockEuxrestTemplate.exchange(
-                any<String>(),
-                eq(HttpMethod.GET),
-                eq(null),
-                eq(typeRef<List<ParticipantsItem>>()))
-        ).thenReturn(mockResponse)
-
-        val result = klient.getBucDeltakere("1234567890")
-        assertEquals(2, result.size)
+        assertThrows<GenericUnprocessableEntity> {
+            klient.getSedOnBucByDocumentIdAsJson("12345678900", "P_BUC_99")
+        }
     }
 
+    @Test
+    fun `Calling EuxKlient  feiler med motta navsed fra eux med kall til getSedOnBucByDocumentId`() {
+        val errorresponse = ResponseEntity<String?>(HttpStatus.UNAUTHORIZED)
+        whenever(mockEuxrestTemplate.exchange(any<String>(), eq(HttpMethod.GET), eq(null), eq(String::class.java))).thenReturn(errorresponse)
+        assertThrows<SedDokumentIkkeLestException> {
+            klient.getSedOnBucByDocumentIdAsJson("12345678900", "P_BUC_99")
+        }
+    }
+
+    @Test
+    fun `EuxKlient forventer korrekt svar tilbake fra et kall til opprettSedOnBuc`() {
+        val response: ResponseEntity<String> = ResponseEntity("323413415dfvsdfgq343145sdfsdfg34135", HttpStatus.OK)
+        whenever(mockEuxrestTemplate.exchange(any<String>(), eq(HttpMethod.POST), any(), eq(String::class.java))).thenReturn(response)
+
+        val result = klient.opprettSed("/buc/{RinaSakId}/sed",
+                SED("P2000").toJsonSkipEmpty(),
+                "123456",
+                MetricsHelper.MeterName.OpprettSED,
+                "Feil ved opprettSed",
+                null)
+
+        assertEquals("123456", result.caseId)
+        assertEquals("323413415dfvsdfgq343145sdfsdfg34135", result.documentId)
+    }
+
+    @Test
+    fun `Calling EuxService  feiler med svar tilbake fra et kall til opprettSedOnBuc`() {
+        doThrow(createDummyClientRestExecption(HttpStatus.BAD_REQUEST, "Dummy clent error"))
+                .whenever(mockEuxrestTemplate).exchange(
+                        any<String>(),
+                        eq(HttpMethod.POST),
+                        any(),
+                        eq(String::class.java)
+                )
+
+        assertThrows<GenericUnprocessableEntity> {
+            klient.opprettSed("/buc/{RinaSakId}/sed",
+                    SED("P2200").toJsonSkipEmpty(),
+                    "1231233",
+                    MetricsHelper.MeterName.OpprettSED,
+                    "Feil ved opprettSed",
+                    null)
+        }
+    }
+
+    @Test
+    fun `Calling EuxService  feiler med kontakt fra eux med kall til opprettSedOnBuc forventer GatewayTimeoutException`() {
+        doThrow(createDummyServerRestExecption(HttpStatus.GATEWAY_TIMEOUT,"Dummy body"))
+                .whenever(mockEuxrestTemplate).exchange(
+                        any<String>(),
+                        eq(HttpMethod.POST),
+                        any(),
+                        eq(String::class.java)
+                )
+        assertThrows<GatewayTimeoutException> {
+            klient.opprettSed("/buc/{RinaSakId}/sed",
+                    SED("P2000").toJsonSkipEmpty(),
+                    "213123",
+                    MetricsHelper.MeterName.OpprettSED,
+                    "Feil ved opprettSed",
+                    null)
+        }
+    }
 
     private fun dummyRequirement(dummyparam1: String?, dummyparam2: String?): Boolean{
         require(!(dummyparam1 == null && dummyparam2 == null)) { "Minst et søkekriterie må fylles ut for å få et resultat fra Rinasaker" }
