@@ -6,6 +6,7 @@ import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.PinItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.logging.RequestResponseLoggerInterceptor
+import no.nav.eessi.pensjon.metrics.MetricsHelper
 import no.nav.eessi.pensjon.utils.*
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.*
@@ -692,6 +693,80 @@ class EuxKlientTest {
 
         assertEquals(expected, actual.size)
 
+    }
+
+    @Test
+    fun `Calling EuxKlient  feiler med kontakt fra eux med kall til getSedOnBucByDocumentId`() {
+        doThrow(createDummyServerRestExecption(HttpStatus.BAD_GATEWAY, "Dummybody"))
+                .whenever(mockEuxrestTemplate).exchange(any<String>(), eq(HttpMethod.GET), eq(null), eq(String::class.java))
+
+        assertThrows<GenericUnprocessableEntity> {
+            klient.getSedOnBucByDocumentIdAsJson("12345678900", "P_BUC_99")
+        }
+    }
+
+    @Test
+    fun `Calling EuxKlient  feiler med motta navsed fra eux med kall til getSedOnBucByDocumentId`() {
+        val errorresponse = ResponseEntity<String?>(HttpStatus.UNAUTHORIZED)
+        whenever(mockEuxrestTemplate.exchange(any<String>(), eq(HttpMethod.GET), eq(null), eq(String::class.java))).thenReturn(errorresponse)
+        assertThrows<SedDokumentIkkeLestException> {
+            klient.getSedOnBucByDocumentIdAsJson("12345678900", "P_BUC_99")
+        }
+    }
+
+    @Test
+    fun `EuxKlient forventer korrekt svar tilbake fra et kall til opprettSedOnBuc`() {
+        val response: ResponseEntity<String> = ResponseEntity("323413415dfvsdfgq343145sdfsdfg34135", HttpStatus.OK)
+        whenever(mockEuxrestTemplate.exchange(any<String>(), eq(HttpMethod.POST), any(), eq(String::class.java))).thenReturn(response)
+
+        val result = klient.opprettSed("/buc/{RinaSakId}/sed",
+                SED("P2000").toJsonSkipEmpty(),
+                "123456",
+                MetricsHelper.MeterName.OpprettSED,
+                "Feil ved opprettSed",
+                null)
+
+        assertEquals("123456", result.caseId)
+        assertEquals("323413415dfvsdfgq343145sdfsdfg34135", result.documentId)
+    }
+
+    @Test
+    fun `Calling EuxService  feiler med svar tilbake fra et kall til opprettSedOnBuc`() {
+        doThrow(createDummyClientRestExecption(HttpStatus.BAD_REQUEST, "Dummy clent error"))
+                .whenever(mockEuxrestTemplate).exchange(
+                        any<String>(),
+                        eq(HttpMethod.POST),
+                        any(),
+                        eq(String::class.java)
+                )
+
+        assertThrows<GenericUnprocessableEntity> {
+            klient.opprettSed("/buc/{RinaSakId}/sed",
+                    SED("P2200").toJsonSkipEmpty(),
+                    "1231233",
+                    MetricsHelper.MeterName.OpprettSED,
+                    "Feil ved opprettSed",
+                    null)
+        }
+    }
+
+    @Test
+    fun `Calling EuxService  feiler med kontakt fra eux med kall til opprettSedOnBuc forventer GatewayTimeoutException`() {
+        doThrow(createDummyServerRestExecption(HttpStatus.GATEWAY_TIMEOUT,"Dummy body"))
+                .whenever(mockEuxrestTemplate).exchange(
+                        any<String>(),
+                        eq(HttpMethod.POST),
+                        any(),
+                        eq(String::class.java)
+                )
+        assertThrows<GatewayTimeoutException> {
+            klient.opprettSed("/buc/{RinaSakId}/sed",
+                    SED("P2000").toJsonSkipEmpty(),
+                    "213123",
+                    MetricsHelper.MeterName.OpprettSED,
+                    "Feil ved opprettSed",
+                    null)
+        }
     }
 
     private fun dummyRequirement(dummyparam1: String?, dummyparam2: String?): Boolean{
