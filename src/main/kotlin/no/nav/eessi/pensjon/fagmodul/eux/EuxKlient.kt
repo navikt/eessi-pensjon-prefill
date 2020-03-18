@@ -9,13 +9,9 @@ import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Vedlegg
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Buc
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonDetalj
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
-import no.nav.eessi.pensjon.fagmodul.models.SEDType
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Krav
 import no.nav.eessi.pensjon.fagmodul.sedmodel.PinItem
-import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.metrics.MetricsHelper
 import no.nav.eessi.pensjon.utils.mapJsonToAny
-import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
 import no.nav.eessi.pensjon.utils.typeRefs
 import org.slf4j.LoggerFactory
 import org.slf4j.MDC
@@ -24,7 +20,7 @@ import org.springframework.cache.annotation.CacheConfig
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.context.annotation.Description
 import org.springframework.http.*
-import org.springframework.stereotype.Service
+import org.springframework.stereotype.Component
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.client.HttpClientErrorException
@@ -36,7 +32,10 @@ import java.io.File
 import java.nio.file.Paths
 import java.util.*
 
-@Service
+/**
+ *   https://eux-app.nais.preprod.local/swagger-ui.html#/eux-cpi-service-controller/
+ */
+@Component
 @Description("Service class for EuxBasis - eux-cpi-service-controller")
 @CacheConfig(cacheNames = ["euxService"])
 class EuxKlient(private val euxOidcRestTemplate: RestTemplate,
@@ -47,24 +46,6 @@ class EuxKlient(private val euxOidcRestTemplate: RestTemplate,
 
     private val logger = LoggerFactory.getLogger(EuxKlient::class.java)
     private val mapper = jacksonObjectMapper()
-
-    // https://eux-app.nais.preprod.local/swagger-ui.html#/eux-cpi-service-controller/
-
-    @Throws(EuxGenericServerException::class, SedDokumentIkkeOpprettetException::class)
-    fun opprettSvarSedOnBuc(navSED: SED, euxCaseId: String, parentDocumentId: String): BucSedResponse {
-        val euxUrlpath = "/buc/{RinaSakId}/sed/{DokuemntId}/svar"
-        logger.debug("prøver å kontakte eux-rina-api : $euxUrlpath")
-        return opprettSed(euxUrlpath, navSED.toJsonSkipEmpty(), euxCaseId, MetricsHelper.MeterName.OpprettSvarSED, "Feil ved opprettSvarSed", parentDocumentId)
-    }
-
-
-    //ny SED på ekisterende type
-    @Throws(EuxGenericServerException::class, SedDokumentIkkeOpprettetException::class)
-    fun opprettSedOnBuc(navSED: SED, euxCaseId: String): BucSedResponse {
-        val euxUrlpath = "/buc/{RinaSakId}/sed"
-        return opprettSed(euxUrlpath, navSED.toJsonSkipEmpty(), euxCaseId, MetricsHelper.MeterName.OpprettSED, "Feil ved opprettSed", null)
-    }
-
 
     //ny SED på ekisterende type eller ny svar SED på ekisternede rina
     @Throws(EuxGenericServerException::class, SedDokumentIkkeOpprettetException::class)
@@ -95,27 +76,6 @@ class EuxKlient(private val euxOidcRestTemplate: RestTemplate,
     }
 
     //henter ut sed fra rina med bucid og documentid
-    fun getSedOnBuc(euxCaseId: String, sedType: String?): List<SED> {
-        logger.info("Prøver å hente ut en BucUtils for type $euxCaseId")
-        val docid = getBuc(euxCaseId).documents ?: throw NoSuchFieldException("Fant ikke DocumentsItem")
-
-        val sedlist = mutableListOf<SED>()
-        docid.forEach {
-            if (sedType != null && sedType == it.type) {
-                it.id?.let { id ->
-                    sedlist.add(getSedOnBucByDocumentId(euxCaseId, id))
-                }
-            } else {
-                it.id?.let { id ->
-                    sedlist.add(getSedOnBucByDocumentId(euxCaseId, id))
-                }
-            }
-        }
-        logger.info("return liste av SED for type: $sedType listSize: ${sedlist.size}")
-        return sedlist
-    }
-
-    //henter ut sed fra rina med bucid og documentid
     @Throws(EuxServerException::class, SedDokumentIkkeLestException::class)
     fun getSedOnBucByDocumentIdAsJson(euxCaseId: String, documentId: String): String {
         val path = "/buc/{RinaSakId}/sed/{DokumentId}"
@@ -139,32 +99,6 @@ class EuxKlient(private val euxOidcRestTemplate: RestTemplate,
             logger.error("Feiler ved lasting av navSed: ${builder.toUriString()}")
             throw SedDokumentIkkeLestException("Feiler ved lesing av navSED, feiler ved uthenting av SED")
         }()
-    }
-
-    @Throws(EuxServerException::class, SedDokumentIkkeLestException::class)
-    fun getSedOnBucByDocumentId(euxCaseId: String, documentId: String): SED {
-        val json = getSedOnBucByDocumentIdAsJson(euxCaseId, documentId)
-        return SED.fromJson(json)
-    }
-
-    //val benytt denne for å hente ut PESYS sakid (P2000,P2100,P2200,P6000)
-    fun hentPESYSsakIdFraRinaSED(euxCaseId: String, documentId: String): String {
-        val na = "N/A"
-
-        try {
-            val navsed = getSedOnBucByDocumentId(euxCaseId, documentId)
-
-            val eessisak = navsed.nav?.eessisak?.get(0)
-
-            val instnavn = eessisak?.institusjonsnavn ?: na
-            if (instnavn.contains("NO")) {
-                navsed.nav?.eessisak?.first()?.saksnummer?.let { return it }
-            }
-
-        } catch (ex: Exception) {
-            logger.warn("Klarte ikke å hente inn SED dokumenter for å lese inn saksnr!")
-        }
-        return na
     }
 
     fun getBuc(euxCaseId: String): Buc {
@@ -550,35 +484,6 @@ class EuxKlient(private val euxOidcRestTemplate: RestTemplate,
         return putBucMottakere(euxCaseId, mottaker)
     }
 
-    //Henter ut Kravtype og Fnr fra P2100 og P15000
-    fun hentFnrOgYtelseKravtype(euxCaseId: String, documentId: String): PinOgKrav {
-        val sed = getSedOnBucByDocumentId(euxCaseId, documentId)
-
-        //validere om SED er virkelig en P2100 eller P15000
-        if (SEDType.P2100.name == sed.sed) {
-            return PinOgKrav(
-                    fnr = getFnrMedLandkodeNO(sed.pensjon?.gjenlevende?.person?.pin),
-                    krav = sed.nav?.krav ?: Krav()
-            )
-        }
-        //P15000 sjekke om det er 02 Gjenlevende eller ikke
-        if (SEDType.P15000.name == sed.sed) {
-            val krav = sed.nav?.krav ?: Krav()
-            return if ("02" == krav.type) {
-                PinOgKrav(
-                        fnr = getFnrMedLandkodeNO(sed.pensjon?.gjenlevende?.person?.pin),
-                        krav = krav
-                )
-            } else {
-                PinOgKrav(
-                        fnr = getFnrMedLandkodeNO(sed.nav?.bruker?.person?.pin),
-                        krav = sed.nav?.krav ?: Krav()
-                )
-            }
-        }
-        throw SedDokumentIkkeGyldigException("SED gyldig SED av type P2100 eller P15000")
-    }
-
     fun getFnrMedLandkodeNO(pinlist: List<PinItem>?): String? {
         pinlist?.forEach {
             if ("NO" == it.land) {
@@ -746,9 +651,6 @@ class SedDokumentIkkeOpprettetException(message: String) : Exception(message)
 
 @ResponseStatus(value = HttpStatus.NOT_FOUND)
 class SedDokumentIkkeLestException(message: String?) : Exception(message)
-
-@ResponseStatus(value = HttpStatus.NOT_FOUND)
-class SedIkkeSlettetException(message: String?) : Exception(message)
 
 @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
 class EuxGenericServerException(message: String?) : Exception(message)
