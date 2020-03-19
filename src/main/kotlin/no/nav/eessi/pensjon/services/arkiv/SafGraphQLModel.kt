@@ -77,7 +77,7 @@ data class Journalpost(
         val tilleggsopplysninger: List<Map<String, String>>,
         val journalpostId: String,
         val datoOpprettet: String,
-        val tittel: String,
+        val tittel: String?,
         val tema: String,
         val dokumenter: List<Dokument>
 )

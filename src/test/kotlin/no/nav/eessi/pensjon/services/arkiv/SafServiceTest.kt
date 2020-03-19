@@ -56,6 +56,18 @@ class SafServiceTest {
     }
 
     @Test
+    fun `gitt en gyldig hentMetadata reponse med tom tittel når metadata hentes så map til HentMetadataResponse`() {
+        val responseJson = String(Files.readAllBytes(Paths.get("src/test/resources/json/saf/hentMetadataResponse.json")))
+                .replace("\"JOURNALPOSTTITTEL\"", "null")
+
+        whenever(safGraphQlOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java)))
+                .thenReturn(ResponseEntity(responseJson, HttpStatus.OK))
+        val resp = safService.hentDokumentMetadata("1234567891000")
+
+        assertEquals(null, resp.data.dokumentoversiktBruker.journalposter[0].tittel)
+    }
+
+    @Test
     fun `gitt noe annet enn 200 httpCopde feil når metadata hentes så kast SafException med tilhørende httpCode`() {
 
         doThrow(HttpClientErrorException.create (HttpStatus.NOT_FOUND, HttpStatus.NOT_FOUND.reasonPhrase, HttpHeaders(), "".toByteArray(), Charset.defaultCharset()))
