@@ -181,39 +181,6 @@ class EuxKlient(private val euxOidcRestTemplate: RestTemplate,
     }
 
     /**
-     * prøver å sende et SED doument på RINA ut til eu/mottaker.
-     * @param euxCaseId  er iden til den aktuelle Buc/Rina sak
-     * @param documentId er iden til det unike dokuement/Sed som skal sendes.
-     * true hvis alt ok, og sed sendt. Exception error hvis feil.
-     */
-    @Throws(SedDokumentIkkeSendtException::class, EuxServerException::class)
-    fun sendDocumentById(euxCaseId: String, documentId: String): Boolean {
-
-        val path = "/buc/{RinaSakId}/sed/{DokumentId}/send"
-        val uriParams = mapOf("RinaSakId" to euxCaseId, "DokumentId" to documentId)
-        val builder = UriComponentsBuilder.fromUriString(path).buildAndExpand(uriParams)
-
-        return try {
-            restTemplateErrorhandler(
-                    {
-                        euxOidcRestTemplate.exchange(
-                                builder.toUriString(),
-                                HttpMethod.POST,
-                                null,
-                                String::class.java)
-                    }
-                    , euxCaseId
-                    , MetricsHelper.MeterName.SendSED
-                    , "sending av Sed, "
-            )
-            true
-        } catch (ex: Exception) {
-            logger.error(ex.message, ex)
-            throw SedDokumentIkkeSendtException("Feil, SED document ble ikke sendt")
-        }
-    }
-
-    /**
      * List all institutions connected to RINA.
      */
     @Cacheable
