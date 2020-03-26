@@ -209,54 +209,6 @@ class EuxKlientTest {
     }
 
     @Test
-    fun `Calling EuxService  forventer korrekt svar tilbake naar SED er sendt OK paa sendDocumentById`() {
-        val response: ResponseEntity<String> = ResponseEntity(HttpStatus.OK)
-        val euxCaseId = "123456"
-        val documentId = "213213-123123-123123"
-
-        doReturn(response).whenever(mockEuxrestTemplate).exchange(
-                eq("/buc/${euxCaseId}/sed/${documentId}/send"),
-                any(),
-                eq(null),
-                ArgumentMatchers.eq(String::class.java)
-        )
-
-        val result = klient.sendDocumentById(euxCaseId, documentId)
-        assertEquals(true, result)
-    }
-
-    @Test
-    fun `Calling EuxService  feiler med svar tilbake fra et kall til sendDocumentById`() {
-        val euxCaseId = "123456"
-        val documentId = "213213-123123-123123"
-        ResponseEntity.badRequest().body("")
-
-        doThrow(java.lang.RuntimeException("errorororoorororororo")).whenever(mockEuxrestTemplate).exchange(
-                eq("/buc/${euxCaseId}/sed/${documentId}/send"),
-                any(),
-                eq(null),
-                ArgumentMatchers.eq(String::class.java)
-        )
-        assertThrows<SedDokumentIkkeSendtException> {
-            klient.sendDocumentById(euxCaseId, documentId)
-        }
-    }
-
-    @Test
-    fun `Calling EuxService  feiler med kontakt fra eux med kall til sendDocumentById`() {
-        doThrow(RuntimeException("error")).whenever(mockEuxrestTemplate).exchange(
-                eq("/buc/123456/sed/3123sfdf23-4324svfsdf324/send"),
-                any(),
-                eq(null),
-                ArgumentMatchers.eq(String::class.java)
-        )
-        assertThrows<SedDokumentIkkeSendtException> {
-            klient.sendDocumentById("123456", "3123sfdf23-4324svfsdf324")
-        }
-    }
-
-
-    @Test
     fun callingEuxServiceListOfRinasaker_Ok() {
         val filepathRinasaker = "src/test/resources/json/rinasaker/rinasaker_12345678901.json"
         val jsonRinasaker = String(Files.readAllBytes(Paths.get(filepathRinasaker)))

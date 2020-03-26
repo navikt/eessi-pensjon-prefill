@@ -22,7 +22,6 @@ import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
 import no.nav.security.oidc.api.Protected
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.time.LocalDateTime
@@ -54,16 +53,6 @@ class SedController(private val euxService: EuxService,
             sed.toJson()
         }
 
-    }
-
-    //** oppdatert i api 18.02.2019
-    @ApiOperation("Sender valgt NavSed på rina med valgt documentid og bucid, ut til eu/eøs, ny api kall til eux")
-    @GetMapping("/send/{euxcaseid}/{documentid}")
-    fun sendSed(@PathVariable("euxcaseid", required = true) euxCaseId: String,
-                @PathVariable("documentid", required = true) documentid: String): Boolean {
-        auditlogger.logBuc("sendSed", " euxCaseId: $euxCaseId documentId: $documentid")
-        logger.info("kaller /cpi/buc/$euxCaseId/sed/$documentid/send")
-        return euxKlient.sendDocumentById(euxCaseId, documentid)
     }
 
     //** oppdatert i api 18.02.2019
