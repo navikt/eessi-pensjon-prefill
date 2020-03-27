@@ -6,7 +6,6 @@ import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.BucSedResponse
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Rinasak
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Vedlegg
-import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Buc
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ParticipantsItem
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonDetalj
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
@@ -103,13 +102,6 @@ class EuxKlient(private val euxOidcRestTemplate: RestTemplate,
         }()
     }
 
-    fun getBuc(euxCaseId: String): Buc {
-        val body = getBucJson(euxCaseId)
-        logger.debug("mapper buc om til BUC objekt-model")
-        return mapJsonToAny(body, typeRefs())
-    }
-
-    //@Throws(EuxServerException::class, EuxGenericServerException::class)
     fun getBucJson(euxCaseId: String): String {
         logger.info("euxCaseId: $euxCaseId")
 
@@ -232,26 +224,6 @@ class EuxKlient(private val euxOidcRestTemplate: RestTemplate,
     }
 
     /**
-     * Lister alle rinasaker på valgt fnr eller euxcaseid, eller bucType...
-     * fnr er påkrved resten er fritt
-     * @param fnr fødselsnummer
-     * @param rinaSakIder rina sak IDer
-     */
-    fun getRinaSakerFilterKunRinaId(fnr: String, rinaSakIder: List<String>): List<String> {
-        logger.debug("Henter opp rinasaker på fnr")
-
-        // Henter rina saker basert på fnr
-        val rinaSakerMedFnr = getRinasaker(fnr, null, null, null)
-
-        //filterer kun på ID (euxCaseId)
-        val rinaSakIderMedFnr = hentRinaSakIder(rinaSakerMedFnr)
-        logger.debug("Rinasaker fra rina: $rinaSakIderMedFnr")
-
-        // Filtrerer vekk saker som allerede er hentet som har fnr
-        return rinaSakIder.plus(rinaSakIderMedFnr).distinct()
-    }
-
-    /**
      * Returnerer en distinct liste av rinaSakIDer
      *  @param rinaSaker liste av rinasaker fra EUX datamodellen
      */
@@ -291,37 +263,6 @@ class EuxKlient(private val euxOidcRestTemplate: RestTemplate,
         )
 
         return mapJsonToAny(response.body!!, typeRefs())
-    }
-
-    fun getSingleBucAndSedView(euxCaseId: String): BucAndSedView {
-        return try {
-            BucAndSedView.from(getBuc(euxCaseId))
-        } catch (ex: Exception) {
-            logger.error("Feiler ved utlevering av enkel bucandsedview ${ex.message}", ex)
-            BucAndSedView.fromErr(ex.message)
-        }
-    }
-
-    fun getBucAndSedView(rinasaker: List<String>): List<BucAndSedView> {
-        val startTime = System.currentTimeMillis()
-        val list = rinasaker
-                .map { rinaid ->
-                    try {
-                        BucAndSedView.from(getBuc(rinaid))
-                    } catch (ex: Exception) {
-                        logger.error(ex.message, ex)
-                        BucAndSedView.fromErr(ex.message)
-                    }
-                }
-                .toList()
-
-        logger.debug(" ferdig returnerer list av BucAndSedView. Antall BUC: ${list.size}")
-
-        logger.debug(" sortert listen på startDate nyeste dato først")
-        val sortlist = list.asSequence().sortedByDescending { it.startDate }.toList()
-
-        logger.debug(" tiden tok ${System.currentTimeMillis() - startTime} ms.")
-        return sortlist
     }
 
     fun createBuc(bucType: String): String {
@@ -621,9 +562,6 @@ class SedDokumentIkkeLestException(message: String?) : Exception(message)
 
 @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
 class EuxGenericServerException(message: String?) : Exception(message)
-
-@ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
-class SedDokumentIkkeSendtException(message: String?) : Exception(message)
 
 @ResponseStatus(value = HttpStatus.SERVICE_UNAVAILABLE)
 class EuxServerException(message: String?) : Exception(message)

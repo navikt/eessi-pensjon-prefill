@@ -2,13 +2,18 @@ package no.nav.eessi.pensjon.fagmodul.eux
 
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.BucSedResponse
+import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Buc
 import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Krav
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.metrics.MetricsHelper
+import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
+import no.nav.eessi.pensjon.utils.typeRefs
 import org.slf4j.LoggerFactory
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
+import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.client.RestTemplate
 
 @Service
@@ -44,7 +49,7 @@ class EuxService (private val euxKlient: EuxKlient) {
      */
     fun getSedOnBuc(euxCaseId: String, sedType: String?): List<SED> {
         logger.info("Prøver å hente ut en BucUtils for type $euxCaseId")
-        val docid = euxKlient.getBuc(euxCaseId).documents ?: throw NoSuchFieldException("Fant ikke DocumentsItem")
+        val docid = getBuc(euxCaseId).documents ?: throw NoSuchFieldException("Fant ikke DocumentsItem")
 
         val sedlist = mutableListOf<SED>()
         docid.forEach {
@@ -62,32 +67,16 @@ class EuxService (private val euxKlient: EuxKlient) {
         return sedlist
     }
 
+    fun getBuc(euxCaseId: String): Buc {
+        val body = euxKlient.getBucJson(euxCaseId)
+        logger.debug("mapper buc om til BUC objekt-model")
+        return mapJsonToAny(body, typeRefs())
+    }
+
     @Throws(EuxServerException::class, SedDokumentIkkeLestException::class)
     fun getSedOnBucByDocumentId(euxCaseId: String, documentId: String): SED {
         val json = euxKlient.getSedOnBucByDocumentIdAsJson(euxCaseId, documentId)
         return SED.fromJson(json)
-    }
-
-    /**
-     *   Benytt denne for å hente ut PESYS sakid (P2000,P2100,P2200,P6000)
-     */
-    fun hentPESYSsakIdFraRinaSED(euxCaseId: String, documentId: String): String {
-        val na = "N/A"
-
-        try {
-            val navsed = getSedOnBucByDocumentId(euxCaseId, documentId)
-
-            val eessisak = navsed.nav?.eessisak?.get(0)
-
-            val instnavn = eessisak?.institusjonsnavn ?: na
-            if (instnavn.contains("NO")) {
-                navsed.nav?.eessisak?.first()?.saksnummer?.let { return it }
-            }
-
-        } catch (ex: Exception) {
-            logger.warn("Klarte ikke å hente inn SED dokumenter for å lese inn saksnr!")
-        }
-        return na
     }
 
     /**
@@ -120,5 +109,39 @@ class EuxService (private val euxKlient: EuxKlient) {
         }
         throw SedDokumentIkkeGyldigException("SED gyldig SED av type P2100 eller P15000")
     }
+
+    fun getSingleBucAndSedView(euxCaseId: String): BucAndSedView {
+        return try {
+            BucAndSedView.from(getBuc(euxCaseId))
+        } catch (ex: Exception) {
+            logger.error("Feiler ved utlevering av enkel bucandsedview ${ex.message}", ex)
+            BucAndSedView.fromErr(ex.message)
+        }
+    }
+
+    fun getBucAndSedView(rinasaker: List<String>): List<BucAndSedView> {
+        val startTime = System.currentTimeMillis()
+        val list = rinasaker
+                .map { rinaid ->
+                    try {
+                        BucAndSedView.from(getBuc(rinaid))
+                    } catch (ex: Exception) {
+                        logger.error(ex.message, ex)
+                        BucAndSedView.fromErr(ex.message)
+                    }
+                }
+                .toList()
+
+        logger.debug(" ferdig returnerer list av BucAndSedView. Antall BUC: ${list.size}")
+
+        logger.debug(" sortert listen på startDate nyeste dato først")
+        val sortlist = list.asSequence().sortedByDescending { it.startDate }.toList()
+
+        logger.debug(" tiden tok ${System.currentTimeMillis() - startTime} ms.")
+        return sortlist
+    }
+
+    @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
+    class SedDokumentIkkeSendtException(message: String?) : Exception(message)
 
 }
