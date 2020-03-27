@@ -1,6 +1,7 @@
 package no.nav.eessi.pensjon.fagmodul.eux
 
 import com.nhaarman.mockitokotlin2.*
+import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Rinasak
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.utils.*
 import org.junit.jupiter.api.Assertions.*
@@ -14,6 +15,8 @@ import org.skyscreamer.jsonassert.JSONAssert
 import org.springframework.web.util.UriComponentsBuilder
 import java.nio.file.Files
 import java.nio.file.Paths
+import java.time.Instant
+import java.time.ZoneId
 
 @ExtendWith(MockitoExtension::class)
 class EuxServiceTest {
@@ -118,6 +121,63 @@ class EuxServiceTest {
         assertThrows<SedDokumentIkkeGyldigException> {
             service.hentFnrOgYtelseKravtype("1234567890", "100001000010000")
         }
+    }
+
+    @Test
+    fun `Calling eux-rina-api to create BucSedAndView for Frontend all OK excpect valid json`() {
+        val rinasakerjson = "src/test/resources/json/rinasaker/rinasaker_34567890111.json"
+        val rinasakStr = String(Files.readAllBytes(Paths.get(rinasakerjson)))
+        assertTrue(validateJson(rinasakStr))
+
+        val orgRinasaker = mapJsonToAny(rinasakStr, typeRefs<List<Rinasak>>())
+
+        val bucjson = "src/test/resources/json/buc/buc-158123_2_v4.1.json"
+        val bucStr = String(Files.readAllBytes(Paths.get(bucjson)))
+        assertTrue(validateJson(bucStr))
+
+        doReturn(bucStr)
+                .whenever(euxKlient)
+                .getBucJson(any())
+
+        val result = service.getBucAndSedView(listOf(rinasakStr))
+
+        assertNotNull(result)
+        assertEquals(6, orgRinasaker.size)
+        assertEquals(1, result.size)
+
+        val firstJson = result.first()
+        assertEquals("158123", firstJson.caseId)
+
+        var lastUpdate: Long = 0
+        firstJson.lastUpdate?.let { lastUpdate = it }
+        assertEquals("2019-05-20T16:35:34",  Instant.ofEpochMilli(lastUpdate).atZone(ZoneId.systemDefault()).toLocalDateTime().toString())
+        assertEquals(18, firstJson.seds?.size)
+
+        val json = firstJson.toJson()
+        val bucdetaljerpath = "src/test/resources/json/buc/bucdetaljer-158123.json"
+        val bucdetaljer = String(Files.readAllBytes(Paths.get(bucdetaljerpath)))
+
+        assertTrue(validateJson(bucdetaljer))
+        JSONAssert.assertEquals(bucdetaljer, json, true)
+    }
+
+    @Test
+    fun callingEuxServiceForSinglemenuUI_AllOK() {
+        val bucjson = "src/test/resources/json/buc/buc-158123_2_v4.1.json"
+        val bucStr = String(Files.readAllBytes(Paths.get(bucjson)))
+        assertTrue(validateJson(bucStr))
+
+        doReturn(bucStr)
+                .whenever(euxKlient)
+                .getBucJson(any())
+
+        val firstJson = service.getSingleBucAndSedView("158123")
+
+        assertEquals("158123", firstJson.caseId)
+        var lastUpdate: Long = 0
+        firstJson.lastUpdate?.let { lastUpdate = it }
+        assertEquals("2019-05-20T16:35:34",  Instant.ofEpochMilli(lastUpdate).atZone(ZoneId.systemDefault()).toLocalDateTime().toString())
+        assertEquals(18, firstJson.seds?.size)
     }
 
 }

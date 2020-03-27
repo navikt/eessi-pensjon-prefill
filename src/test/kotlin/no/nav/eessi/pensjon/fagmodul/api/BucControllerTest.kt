@@ -3,9 +3,9 @@ package no.nav.eessi.pensjon.fagmodul.api
 import com.nhaarman.mockitokotlin2.*
 import no.nav.eessi.pensjon.fagmodul.eux.*
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Vedlegg
+import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Buc
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Organisation
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ParticipantsItem
-import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.logging.AuditLogger
 import no.nav.eessi.pensjon.logging.RequestResponseLoggerInterceptor
 import no.nav.eessi.pensjon.security.sts.typeRef
@@ -13,13 +13,11 @@ import no.nav.eessi.pensjon.services.aktoerregister.AktoerregisterService
 import no.nav.eessi.pensjon.services.arkiv.HentdokumentInnholdResponse
 import no.nav.eessi.pensjon.services.arkiv.SafService
 import no.nav.eessi.pensjon.services.arkiv.VariantFormat
-import no.nav.eessi.pensjon.utils.mapAnyToJson
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.typeRefs
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mock
 import org.mockito.Spy
@@ -27,8 +25,6 @@ import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.http.*
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.client.DefaultResponseErrorHandler
-import org.springframework.web.client.HttpClientErrorException
-import org.springframework.web.client.HttpServerErrorException
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.util.UriComponentsBuilder
 import java.nio.file.Files
@@ -50,6 +46,9 @@ class BucControllerTest {
     lateinit var mockSafService: SafService
 
     @Mock
+    lateinit var mockEuxService: EuxService
+
+    @Mock
     lateinit var mockAktoerIdHelper: AktoerregisterService
 
     private lateinit var bucController: BucController
@@ -59,7 +58,7 @@ class BucControllerTest {
         mockEuxrestTemplate.errorHandler = DefaultResponseErrorHandler()
         mockEuxrestTemplate.interceptors = listOf( RequestResponseLoggerInterceptor() )
         this.mockEuxKlient = EuxKlient(mockEuxrestTemplate)
-        this.bucController = BucController(mockEuxKlient, mockSafService, mockAktoerIdHelper, auditLogger)
+        this.bucController = BucController(mockEuxService, mockEuxKlient, mockSafService, mockAktoerIdHelper, auditLogger)
     }
 
 
@@ -129,47 +128,14 @@ class BucControllerTest {
         val gyldigBuc = String(Files.readAllBytes(Paths.get("src/test/resources/json/buc/buc-279020big.json")))
 
         val mockEuxRinaid = "123456"
-        val mockResponse = ResponseEntity.ok().body(gyldigBuc)
+        val buc : Buc =  mapJsonToAny(gyldigBuc, typeRefs())
 
-        doReturn(mockResponse).whenever(mockEuxrestTemplate).exchange(any<String>(), eq(HttpMethod.GET), eq(null), eq(String::class.java))
-
-        val actual = bucController.getAllDocuments(mockEuxRinaid)
-
-        Assertions.assertNotNull(actual)
-        Assertions.assertEquals(25, actual.size)
-    }
-
-    @Test
-    fun `gitt at det finnes en gydlig euxCaseid og Buc, ved feil skal det prøves noen ganger også returneres en liste over sedid`() {
-        val gyldigBuc = String(Files.readAllBytes(Paths.get("src/test/resources/json/buc/buc-279020big.json")))
-
-        val mockEuxRinaid = "123456"
-        val mockResponse = ResponseEntity.ok().body(gyldigBuc)
-
-        doThrow(HttpClientErrorException(HttpStatus.UNAUTHORIZED, "This did not work 1"))
-        .doThrow(HttpClientErrorException(HttpStatus.UNAUTHORIZED, "This did not work 2"))
-                .doReturn(mockResponse)
-        .whenever(mockEuxrestTemplate).exchange(any<String>(), eq(HttpMethod.GET), eq(null), eq(String::class.java))
+        doReturn(buc).whenever(mockEuxService).getBuc(any())
 
         val actual = bucController.getAllDocuments(mockEuxRinaid)
 
         Assertions.assertNotNull(actual)
         Assertions.assertEquals(25, actual.size)
-    }
-
-
-    @Test
-    fun `gitt at det finnes en gydlig euxCaseid og Buc, ved feil skal det prøves noen ganger så exception til slutt`() {
-        val mockEuxRinaid = "123456"
-
-        doThrow(HttpServerErrorException(HttpStatus.BAD_GATEWAY,"This did not work 1"))
-                .doThrow(HttpServerErrorException(HttpStatus.BAD_GATEWAY,"This did not work 2"))
-                .doThrow(HttpServerErrorException(HttpStatus.BAD_GATEWAY,"This did not work 3"))
-                .whenever(mockEuxrestTemplate).exchange(any<String>(), eq(HttpMethod.GET), eq(null), eq(String::class.java))
-
-        assertThrows<GenericUnprocessableEntity> {
-            bucController.getAllDocuments(mockEuxRinaid)
-        }
     }
 
     @Test

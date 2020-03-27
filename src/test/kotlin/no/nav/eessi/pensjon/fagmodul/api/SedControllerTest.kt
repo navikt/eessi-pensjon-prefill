@@ -60,7 +60,11 @@ class SedControllerTest {
     @BeforeEach
     fun setUp() {
         prefillDataMock = PrefillDataModel()
-        this.sedController = SedController(mockEuxService, mockEuxKlient, PrefillService(mockPrefillSED), mockAktoerIdHelper, auditLogger)
+        this.sedController = SedController(mockEuxService,
+                mockEuxKlient,
+                PrefillService(mockPrefillSED),
+                mockAktoerIdHelper,
+                auditLogger)
     }
 
     @Test
@@ -234,7 +238,7 @@ class SedControllerTest {
         )
         doReturn(mockCreateSedType).whenever(mockBuc).actions
 
-        doReturn(mockBuc).whenever(mockEuxKlient).getBuc(rinanr)
+        doReturn(mockBuc).whenever(mockEuxService).getBuc(rinanr)
 
         val expectedSedList = ResponseEntity.ok().body(mapAnyToJson( listOf("P2200", "P3000_AT", "P3000_SE", "P6000")))
 
@@ -272,7 +276,7 @@ class SedControllerTest {
 
         val mockBuc = Mockito.mock(Buc::class.java)
 
-        doReturn(mockBuc).whenever(mockEuxKlient).getBuc(euxCaseId)
+        doReturn(mockBuc).whenever(mockEuxService).getBuc(euxCaseId)
 
         doReturn(null).whenever(mockBuc).participants
 
@@ -304,7 +308,7 @@ class SedControllerTest {
         doReturn("12345").whenever(mockAktoerIdHelper).hentPinForAktoer(any<String>())
 
         val mockBuc = Mockito.mock(Buc::class.java)
-        doReturn(mockBuc).whenever(mockEuxKlient).getBuc(euxCaseId)
+        doReturn(mockBuc).whenever(mockEuxService).getBuc(euxCaseId)
 
         doReturn(listOf(ParticipantsItem())).whenever(mockBuc).participants
 
@@ -328,7 +332,7 @@ class SedControllerTest {
 
         val mockBuc = Mockito.mock(Buc::class.java)
 
-        doReturn(mockBuc).whenever(mockEuxKlient).getBuc(euxCaseId)
+        doReturn(mockBuc).whenever(mockEuxService).getBuc(euxCaseId)
 
         doReturn(listOf<ParticipantsItem>()).whenever(mockBuc).participants
 
@@ -359,7 +363,7 @@ class SedControllerTest {
         doReturn("12345").whenever(mockAktoerIdHelper).hentPinForAktoer(any<String>())
 
         val mockBuc = Mockito.mock(Buc::class.java)
-        doReturn(mockBuc).whenever(mockEuxKlient).getBuc(euxCaseId)
+        doReturn(mockBuc).whenever(mockEuxService).getBuc(euxCaseId)
 
         doReturn(listOf<ParticipantsItem>()).whenever(mockBuc).participants
 

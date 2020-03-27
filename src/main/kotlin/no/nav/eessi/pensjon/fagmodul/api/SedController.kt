@@ -85,7 +85,7 @@ class SedController(private val euxService: EuxService,
             logger.info("Prøver å sende SED: ${dataModel.getSEDid()} inn på BUC: ${dataModel.euxCaseID}")
             val docresult = euxService.opprettSedOnBuc(data.sed, data.euxCaseID)
             logger.info("Opprettet ny SED med dokumentId: ${docresult.documentId}")
-            val bucUtil = BucUtils(euxKlient.getBuc(docresult.caseId))
+            val bucUtil = BucUtils(euxService.getBuc(docresult.caseId))
             val result = bucUtil.findDocument(docresult.documentId)
 
             //extra tag metricshelper for sedType, bucType, timeStamp og rinaId.
@@ -99,7 +99,7 @@ class SedController(private val euxService: EuxService,
 
     private fun addInstitution(dataModel: PrefillDataModel) {
         logger.debug("Prøver å legge til Deltaker/Institusions på buc samt prefillSed og sende inn til Rina ")
-        val bucUtil = BucUtils(euxKlient.getBuc(dataModel.euxCaseID))
+        val bucUtil = BucUtils(euxService.getBuc(dataModel.euxCaseID))
         val nyeDeltakere = bucUtil.findNewParticipants(dataModel.getInstitutionsList())
         if (nyeDeltakere.isNotEmpty()) {
             logger.debug("DeltakerListe (InstitusjonItem) size: ${nyeDeltakere.size}")
@@ -139,7 +139,7 @@ class SedController(private val euxService: EuxService,
             logger.info("Prøver å sende SED: ${dataModel.getSEDid()} inn på BUC: ${dataModel.euxCaseID}")
             val docresult = euxService.opprettSvarSedOnBuc(data.sed, data.euxCaseID, parentId)
 
-            val bucUtil = BucUtils(euxKlient.getBuc(docresult.caseId))
+            val bucUtil = BucUtils(euxService.getBuc(docresult.caseId))
 
             //extra tag metricshelper for sedType, bucType, timeStamp og rinaId.
             metricsHelper.measureExtra(MetricsHelper.MeterNameExtraTag.AddDocumentToParent, extraTag = extraTag(dataModel, bucUtil))
@@ -162,7 +162,7 @@ class SedController(private val euxService: EuxService,
 
         logger.info("kaller add med request: $request")
         val docresult = euxService.opprettSedOnBuc(data.sed, data.euxCaseID)
-        return BucUtils(euxKlient.getBuc(docresult.caseId)).findDocument(docresult.documentId)
+        return BucUtils(euxService.getBuc(docresult.caseId)).findDocument(docresult.documentId)
     }
 
     //TODO endre denne til å gå til denne: /cpi/buc/{RinaSakId}/sedtyper  (istede for benytte seg av egen bucutil)
@@ -192,7 +192,7 @@ class SedController(private val euxService: EuxService,
         //Ingen buc oppgitt, vi lister våre seds på valgt buctype.
         if (euxCaseId == null) return ResponseEntity.ok().body( EuxKlient.getAvailableSedOnBuc(bucType).toJsonSkipEmpty() )
         //liste over seds som kan opprettes fra Rina på valgt euxCaseid (rinanr)
-        val resultListe = BucUtils(euxKlient.getBuc(euxCaseId)).getAksjonListAsString()
+        val resultListe = BucUtils(euxService.getBuc(euxCaseId)).getAksjonListAsString()
         //hvis tom er stort sett buc helt ny. vi lister våre seds på valgt buctype.
         if (resultListe.isEmpty()) return ResponseEntity.ok().body( EuxKlient.getAvailableSedOnBuc(bucType).toJsonSkipEmpty() )
         //hvis liste ikke tom vi filterer listen
