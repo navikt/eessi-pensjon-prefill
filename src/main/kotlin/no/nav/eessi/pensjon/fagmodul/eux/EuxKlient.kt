@@ -222,26 +222,6 @@ class EuxKlient(private val euxOidcRestTemplate: RestTemplate,
                 .map { rinasak -> rinasak.id!! }
                 .toList()
     }
-//
-//    /**
-//     * Lister alle rinasaker på valgt fnr eller euxcaseid, eller bucType...
-//     * fnr er påkrved resten er fritt
-//     * @param fnr fødselsnummer
-//     * @param rinaSakIder rina sak IDer
-//     */
-//    fun getRinaSakerFilterKunRinaId(fnr: String, rinaSakIder: List<String>): List<String> {
-//        logger.debug("Henter opp rinasaker på fnr")
-//
-//        // Henter rina saker basert på fnr
-//        val rinaSakerMedFnr = getRinasaker(fnr, null, null, null)
-//
-//        //filterer kun på ID (euxCaseId)
-//        val rinaSakIderMedFnr = hentRinaSakIder(rinaSakerMedFnr)
-//        logger.debug("Rinasaker fra rina: $rinaSakIderMedFnr")
-//
-//        // Filtrerer vekk saker som allerede er hentet som har fnr
-//        return rinaSakIder.plus(rinaSakIderMedFnr).distinct()
-//    }
 
     /**
      * Returnerer en distinct liste av rinaSakIDer
