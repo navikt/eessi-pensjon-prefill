@@ -79,28 +79,6 @@ class EuxService (private val euxKlient: EuxKlient) {
         return SED.fromJson(json)
     }
 
-//    /**
-//     *   Benytt denne for å hente ut PESYS sakid (P2000,P2100,P2200,P6000)
-//     */
-//    fun hentPESYSsakIdFraRinaSED(euxCaseId: String, documentId: String): String {
-//        val na = "N/A"
-//
-//        try {
-//            val navsed = getSedOnBucByDocumentId(euxCaseId, documentId)
-//
-//            val eessisak = navsed.nav?.eessisak?.get(0)
-//
-//            val instnavn = eessisak?.institusjonsnavn ?: na
-//            if (instnavn.contains("NO")) {
-//                navsed.nav?.eessisak?.first()?.saksnummer?.let { return it }
-//            }
-//
-//        } catch (ex: Exception) {
-//            logger.warn("Klarte ikke å hente inn SED dokumenter for å lese inn saksnr!")
-//        }
-//        return na
-//    }
-
     /**
      * Henter ut Kravtype og Fnr fra P2100 og P15000
      */
