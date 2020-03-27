@@ -77,10 +77,10 @@ class EuxKlientTest {
         assertEquals("22909", result.id)
     }
 
-    fun createDummyServerRestExecption(httpstatus: HttpStatus, dummyBody: String)
+    private fun createDummyServerRestExecption(httpstatus: HttpStatus, dummyBody: String)
             = HttpServerErrorException.create (httpstatus, httpstatus.name, HttpHeaders(), dummyBody.toByteArray(), Charset.defaultCharset())
 
-    fun createDummyClientRestExecption(httpstatus: HttpStatus, dummyBody: String)
+    private fun createDummyClientRestExecption(httpstatus: HttpStatus, dummyBody: String)
             = HttpClientErrorException.create (httpstatus, httpstatus.name, HttpHeaders(), dummyBody.toByteArray(), Charset.defaultCharset())
 
     @Test
@@ -161,51 +161,6 @@ class EuxKlientTest {
         assertEquals(1, uriParams1.size)
         val uriParams2 = mapOf("RinaSakId" to "121312", "DokuemntId" to "98d6879827594d1db425dbdfef399ea8")
         assertEquals(2, uriParams2.size)
-    }
-
-    @Test
-    fun `Calling EuxService  forventer OK ved sletting av valgt SED paa valgt buc`() {
-        val response: ResponseEntity<String> = ResponseEntity(HttpStatus.OK)
-        val euxCaseId = "123456"
-        val documentId = "213213-123123-123123"
-
-        doReturn(response).whenever(mockEuxrestTemplate).exchange(
-                eq("/buc/${euxCaseId}/sed/${documentId}"),
-                any(),
-                eq(null),
-                ArgumentMatchers.eq(String::class.java)
-        )
-
-        val result = klient.deleteDocumentById(euxCaseId, documentId)
-        assertEquals(true, result)
-    }
-
-
-    @Test
-    fun `Calling EuxService  feiler med svar tilbake fra et kall til deleteDocumentById`() {
-        doThrow(createDummyClientRestExecption(HttpStatus.FORBIDDEN,"Dummy body"))
-                .whenever(mockEuxrestTemplate).exchange(any<String>(), eq(HttpMethod.DELETE), eq(null), eq(String::class.java))
-
-        assertThrows<ForbiddenException> {
-            klient.deleteDocumentById("12132131", "12312312-123123123123")
-        }
-    }
-
-    @Test
-    fun `Calling EuxService  feiler med kontakt fra eux med kall til deleteDocumentById`() {
-        val euxCaseId = "123456"
-        val documentId = "213213-123123-123123"
-
-        doThrow(RuntimeException("error")).whenever(mockEuxrestTemplate).exchange(
-                eq("/type/${euxCaseId}/sed/${documentId}/send"),
-                any(),
-                eq(null),
-                ArgumentMatchers.eq(String::class.java)
-        )
-
-        assertThrows<ServerException> {
-            klient.deleteDocumentById(euxCaseId, documentId)
-        }
     }
 
     @Test

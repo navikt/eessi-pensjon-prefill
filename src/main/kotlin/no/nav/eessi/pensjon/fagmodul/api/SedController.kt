@@ -68,17 +68,6 @@ class SedController(private val euxService: EuxService,
     }
 
     //** oppdatert i api 18.02.2019
-    @ApiOperation("sletter SED fra et eksisterende Rina document. krever unik dokumentid fra valgt SED, ny api kall til eux")
-    @DeleteMapping("/{euxcaseid}/{documentid}")
-    fun deleteDocument(@PathVariable("euxcaseid", required = true) euxcaseid: String,
-                       @PathVariable("documentid", required = true) documentid: String): Boolean {
-        auditlogger.logBuc("deleteDocument", " euxCaseId: $euxcaseid documentId: $documentid")
-        logger.info("kaller delete  /${euxcaseid}/${documentid} ")
-        return euxKlient.deleteDocumentById(euxcaseid, documentid)
-
-    }
-
-    //** oppdatert i api 18.02.2019
     @ApiOperation("legge til Deltaker(e) og SED på et eksisterende Rina document. kjører preutfylling, ny api kall til eux")
     @PostMapping("/add")
     fun addInstutionAndDocument(@RequestBody request: ApiRequest): ShortDocumentItem {

@@ -155,30 +155,6 @@ class EuxKlient(private val euxOidcRestTemplate: RestTemplate,
         )
         return  response.body ?: throw ServerException("Feil ved henting av BucDeltakere: ingen data, euxCaseId $euxCaseId")
     }
-    /**
-     * sletter et SED doument på RINA.
-     * @param euxCaseId  er iden til den aktuelle Buc/Rina sak
-     * @param documentId er iden til det unike dokuement/Sed som skal slettes.
-     * true hvis alt ok, og sed slettt. Exception error hvis feil.
-     */
-    fun deleteDocumentById(euxCaseId: String, documentId: String): Boolean {
-        val path = "/buc/{RinaSakId}/sed/{DokumentId}"
-        val uriParams = mapOf("RinaSakId" to euxCaseId, "DokumentId" to documentId)
-        val builder = UriComponentsBuilder.fromUriString(path).buildAndExpand(uriParams)
-
-        restTemplateErrorhandler(
-                {
-                    euxOidcRestTemplate.exchange(builder.toUriString(),
-                            HttpMethod.DELETE,
-                            null,
-                            String::class.java)
-                }
-                , euxCaseId
-                , MetricsHelper.MeterName.SlettSED
-                , "Feil, SED document ble ikke slettet"
-        )
-        return true
-    }
 
     /**
      * List all institutions connected to RINA.
