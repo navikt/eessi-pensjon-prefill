@@ -211,18 +211,6 @@ class EuxKlient(private val euxOidcRestTemplate: RestTemplate,
         return rinaSakerMedFnr.plus(rinaSakerUtenFnr)
     }
 
-    fun getFilteredArchivedaRinasaker(list: List<Rinasak>): List<String> {
-        val gyldigBucs = mutableListOf("H_BUC_07", "R_BUC_01", "R_BUC_02", "M_BUC_02", "M_BUC_03a", "M_BUC_03b")
-        gyldigBucs.addAll(initSedOnBuc().keys.map { it }.toList())
-
-        return list.asSequence()
-                .filterNot { rinasak -> rinasak.status == "archived" }
-                .filter { rinasak -> gyldigBucs.contains(rinasak.processDefinitionId) }
-                .sortedBy { rinasak -> rinasak.id }
-                .map { rinasak -> rinasak.id!! }
-                .toList()
-    }
-
     /**
      * Returnerer en distinct liste av rinaSakIDer
      *  @param rinaSaker liste av rinasaker fra EUX datamodellen
@@ -433,27 +421,6 @@ class EuxKlient(private val euxOidcRestTemplate: RestTemplate,
                 .map { node -> Pair(node.get("id").textValue(), node.get("type").textValue()) }
                 .sortedBy { (_, sorting) -> sorting }
                 .toList()
-    }
-
-    /**
-     * Own impl. no list from eux that contains list of SED to a speific BUC
-     */
-    companion object {
-        @JvmStatic
-        fun initSedOnBuc(): Map<String, List<String>> {
-            return mapOf(
-                    "P_BUC_01" to listOf("P2000"),
-                    "P_BUC_02" to listOf("P2100"),
-                    "P_BUC_03" to listOf("P2200"),
-                    "P_BUC_05" to listOf("P8000"),
-                    "P_BUC_06" to listOf("P5000", "P6000", "P7000", "P10000"),
-                    "P_BUC_09" to listOf("P14000"),
-                    "P_BUC_10" to listOf("P15000"),
-                    "P_BUC_04" to listOf("P1000"),
-                    "P_BUC_07" to listOf("P11000"),
-                    "P_BUC_08" to listOf("P12000")
-            )
-        }
     }
 
     @Throws(Throwable::class)

@@ -45,7 +45,7 @@ class BucControllerTest {
     @Mock
     lateinit var mockSafService: SafService
 
-    @Mock
+    @Spy
     lateinit var mockEuxService: EuxService
 
     @Mock

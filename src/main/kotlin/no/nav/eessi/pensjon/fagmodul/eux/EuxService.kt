@@ -2,6 +2,7 @@ package no.nav.eessi.pensjon.fagmodul.eux
 
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.BucSedResponse
+import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Rinasak
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Buc
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.models.SEDType
@@ -21,7 +22,7 @@ import org.springframework.web.client.RestTemplate
 class EuxService (private val euxKlient: EuxKlient) {
 
     fun getAvailableSedOnBuc(bucType: String?): List<String> {
-        val map = EuxKlient.initSedOnBuc()
+        val map = initSedOnBuc()
 
         if (bucType.isNullOrEmpty()) {
             val set = mutableSetOf<String>()
@@ -35,6 +36,24 @@ class EuxService (private val euxKlient: EuxKlient) {
             return set.toList()
         }
         return map[bucType].orEmpty()
+    }
+
+    /**
+     * Own impl. no list from eux that contains list of SED to a speific BUC
+     */
+    fun initSedOnBuc(): Map<String, List<String>> {
+        return mapOf(
+                "P_BUC_01" to listOf("P2000"),
+                "P_BUC_02" to listOf("P2100"),
+                "P_BUC_03" to listOf("P2200"),
+                "P_BUC_05" to listOf("P8000"),
+                "P_BUC_06" to listOf("P5000", "P6000", "P7000", "P10000"),
+                "P_BUC_09" to listOf("P14000"),
+                "P_BUC_10" to listOf("P15000"),
+                "P_BUC_04" to listOf("P1000"),
+                "P_BUC_07" to listOf("P11000"),
+                "P_BUC_08" to listOf("P12000")
+        )
     }
 
     // Vi trenger denne no arg konstruktøren for å kunne bruke @Spy med mockito
@@ -167,6 +186,18 @@ class EuxService (private val euxKlient: EuxKlient) {
 
     fun getInstitutions(bucType: String, landkode: String? = ""): List<InstitusjonItem> {
         return euxKlient.getInstitutions(bucType, landkode)
+    }
+
+    fun getFilteredArchivedaRinasaker(list: List<Rinasak>): List<String> {
+        val gyldigBucs = mutableListOf("H_BUC_07", "R_BUC_01", "R_BUC_02", "M_BUC_02", "M_BUC_03a", "M_BUC_03b")
+        gyldigBucs.addAll(initSedOnBuc().keys.map { it }.toList())
+
+        return list.asSequence()
+                .filterNot { rinasak -> rinasak.status == "archived" }
+                .filter { rinasak -> gyldigBucs.contains(rinasak.processDefinitionId) }
+                .sortedBy { rinasak -> rinasak.id }
+                .map { rinasak -> rinasak.id!! }
+                .toList()
     }
 
 

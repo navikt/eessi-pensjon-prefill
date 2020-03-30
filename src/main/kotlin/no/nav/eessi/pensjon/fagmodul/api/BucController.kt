@@ -39,7 +39,7 @@ class BucController(private val euxService: EuxService,
 
     @ApiOperation("henter liste av alle tilgjengelige BuC-typer")
     @GetMapping("/bucs", produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun getBucs() = EuxKlient.initSedOnBuc().keys.map { it }.toList()
+    fun getBucs() = euxService.initSedOnBuc().keys.map { it }.toList()
 
     @ApiOperation("Henter opp hele BUC på valgt caseid")
     @GetMapping("/{rinanr}")
@@ -127,7 +127,8 @@ class BucController(private val euxService: EuxService,
 
         val fnr = aktoerService.hentPinForAktoer(aktoerid)
         val rinaSakIderFraDokumentMetadata = safService.hentRinaSakIderFraDokumentMetadata(aktoerid)
-        val rinasakIdList = euxKlient.getFilteredArchivedaRinasaker( euxKlient.getRinasaker(fnr, rinaSakIderFraDokumentMetadata))
+
+        val rinasakIdList = euxService.getFilteredArchivedaRinasaker( euxKlient.getRinasaker(fnr, rinaSakIderFraDokumentMetadata))
 
         return euxService.getBucAndSedView( rinasakIdList )
     }
