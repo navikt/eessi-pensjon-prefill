@@ -454,24 +454,6 @@ class EuxKlient(private val euxOidcRestTemplate: RestTemplate,
                     "P_BUC_08" to listOf("P12000")
             )
         }
-
-        @JvmStatic
-        fun getAvailableSedOnBuc(bucType: String?): List<String> {
-            val map = initSedOnBuc()
-
-            if (bucType.isNullOrEmpty()) {
-                val set = mutableSetOf<String>()
-                map["P_BUC_01"]?.let { set.addAll(it) }
-                map["P_BUC_02"]?.let { set.addAll(it) }
-                map["P_BUC_03"]?.let { set.addAll(it) }
-                map["P_BUC_05"]?.let { set.addAll(it) }
-                map["P_BUC_06"]?.let { set.addAll(it) }
-                map["P_BUC_09"]?.let { set.addAll(it) }
-                map["P_BUC_10"]?.let { set.addAll(it) }
-                return set.toList()
-            }
-            return map[bucType].orEmpty()
-        }
     }
 
     @Throws(Throwable::class)

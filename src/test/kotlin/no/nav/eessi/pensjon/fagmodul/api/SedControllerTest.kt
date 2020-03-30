@@ -2,7 +2,6 @@ package no.nav.eessi.pensjon.fagmodul.api
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.nhaarman.mockitokotlin2.*
-import no.nav.eessi.pensjon.fagmodul.eux.EuxKlient
 import no.nav.eessi.pensjon.fagmodul.eux.EuxService
 import no.nav.eessi.pensjon.fagmodul.eux.PinOgKrav
 import no.nav.eessi.pensjon.fagmodul.eux.SedDokumentIkkeOpprettetException
@@ -43,9 +42,6 @@ class SedControllerTest {
     lateinit var mockEuxService: EuxService
 
     @Spy
-    lateinit var mockEuxKlient: EuxKlient
-
-    @Spy
     lateinit var auditLogger: AuditLogger
 
     @Mock
@@ -61,7 +57,6 @@ class SedControllerTest {
     fun setUp() {
         prefillDataMock = PrefillDataModel()
         this.sedController = SedController(mockEuxService,
-                mockEuxKlient,
                 PrefillService(mockPrefillSED),
                 mockAktoerIdHelper,
                 auditLogger)
@@ -93,7 +88,7 @@ class SedControllerTest {
                 buc = "P_BUC_06",
                 aktoerId = "0105094340092"
         )
-        whenever(mockAktoerIdHelper.hentPinForAktoer(any<String>())).thenReturn("12345")
+        whenever(mockAktoerIdHelper.hentPinForAktoer(any())).thenReturn("12345")
 
         val utfyllMock = ApiRequest.buildPrefillDataModelConfirm(mockData, mockAktoerIdHelper.hentPinForAktoer(mockData.aktoerId), null)
 
@@ -272,7 +267,7 @@ class SedControllerTest {
     fun `call addInstutionAndDocument  mock adding two institusjon when X005 exists already`() {
         val euxCaseId = "1234567890"
 
-        doReturn("12345").whenever(mockAktoerIdHelper).hentPinForAktoer(any<String>())
+        doReturn("12345").whenever(mockAktoerIdHelper).hentPinForAktoer(any())
 
         val mockBuc = Mockito.mock(Buc::class.java)
 
@@ -298,14 +293,13 @@ class SedControllerTest {
         sedController.addInstutionAndDocument(apiRequestWith(euxCaseId, newParticipants))
 
         verify(mockEuxService, times(newParticipants.size + 1)).opprettSedOnBuc(any(), eq(euxCaseId))
-        verify(mockEuxKlient, never()).addDeltagerInstitutions(any(), any())
     }
 
     @Test
     fun `call addInstutionAndDocument  ingen ny Deltaker kun hovedsed`() {
         val euxCaseId = "1234567890"
 
-        doReturn("12345").whenever(mockAktoerIdHelper).hentPinForAktoer(any<String>())
+        doReturn("12345").whenever(mockAktoerIdHelper).hentPinForAktoer(any())
 
         val mockBuc = Mockito.mock(Buc::class.java)
         doReturn(mockBuc).whenever(mockEuxService).getBuc(euxCaseId)
@@ -321,14 +315,13 @@ class SedControllerTest {
         sedController.addInstutionAndDocument(apiRequestWith(euxCaseId, noNewParticipants))
 
         verify(mockEuxService, times(noNewParticipants.size + 1)).opprettSedOnBuc(any(), eq(euxCaseId))
-        verify(mockEuxKlient, never()).addDeltagerInstitutions(any(), any())
     }
 
     @Test
     fun `call addInstutionAndDocument  to nye deltakere, men ingen X005`() {
         val euxCaseId = "1234567890"
 
-        doReturn("12345").whenever(mockAktoerIdHelper).hentPinForAktoer(any<String>())
+        doReturn("12345").whenever(mockAktoerIdHelper).hentPinForAktoer(any())
 
         val mockBuc = Mockito.mock(Buc::class.java)
 

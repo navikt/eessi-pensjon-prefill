@@ -390,33 +390,6 @@ class EuxKlientTest {
     }
 
     @Test
-    fun `Calling euxService getAvailableSEDonBuc returns BuC lists`() {
-        var buc = "P_BUC_01"
-        var expectedResponse = listOf("P2000")
-        var generatedResponse = EuxKlient.getAvailableSedOnBuc (buc)
-        assertEquals(generatedResponse, expectedResponse)
-
-        buc = "P_BUC_06"
-        expectedResponse = listOf("P5000", "P6000", "P7000", "P10000")
-        generatedResponse = EuxKlient.getAvailableSedOnBuc(buc)
-        assertEquals(generatedResponse, expectedResponse)
-    }
-
-    @Test
-    fun `Calling euxService getAvailableSedOnBuc no input, return`() {
-        val expected = "[ \"P2000\", \"P2100\", \"P2200\", \"P8000\", \"P5000\", \"P6000\", \"P7000\", \"P10000\", \"P14000\", \"P15000\" ]"
-        val actual = EuxKlient.getAvailableSedOnBuc(null)
-        assertEquals(expected, actual.toJson())
-    }
-
-    fun getTestJsonFile(filename: String): String {
-        val filepath = "src/test/resources/json/nav/${filename}"
-        val json = String(Files.readAllBytes(Paths.get(filepath)))
-        assertTrue(validateJson(json))
-        return json
-    }
-
-    @Test
     fun `gitt en gyldig liste av Institusjoner naar http url genereres saa generer en liste av mottakere som path param`() {
         val euxCaseId = "1234"
         val correlationId = 123456778
