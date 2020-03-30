@@ -402,57 +402,6 @@ class EuxKlientTest {
     }
 
     @Test
-    fun `Test filter list av rinasak ta bort elementer av archived`() {
-        val dummyList = listOf(
-                Rinasak("723","P_BUC_01",null,"PO",null,"open"),
-                Rinasak("2123","P_BUC_03",null,"PO",null,"open"),
-                Rinasak("423","H_BUC_01",null,"PO",null,"archived"),
-                Rinasak("234","P_BUC_06",null,"PO",null,"closed"),
-                Rinasak("8423","P_BUC_07",null,"PO",null,"archived")
-                )
-
-        val result = klient.getFilteredArchivedaRinasaker(dummyList)
-        assertEquals(3, result.size)
-        assertEquals("2123", result.first())
-
-    }
-
-    @Test
-    fun `Test filter list av rinasak ta bort elementer av archived og ugyldige buc`() {
-        val dummyList = listOf(
-                Rinasak("723","FP_BUC_01",null,"PO",null,"open"),
-                Rinasak("2123","H_BUC_02",null,"PO",null,"open"),
-                Rinasak("423","P_BUC_01",null,"PO",null,"archived"),
-                Rinasak("234","FF_BUC_01",null,"PO",null,"closed"),
-                Rinasak("8423","FF_BUC_01",null,"PO",null,"archived"),
-                Rinasak("8223","H_BUC_07",null,"PO",null,"open")
-        )
-
-        val result = klient.getFilteredArchivedaRinasaker(dummyList)
-        assertEquals(1, result.size)
-        assertEquals("8223", result.first())
-
-    }
-
-    @Test
-    fun `Test filter list av rinasak ta bort elementer av archived og ugyldige buc samt spesielle a og b bucer`() {
-        val dummyList = listOf(
-                Rinasak("723","M_BUC_03a",null,"PO",null,"open"),
-                Rinasak("2123","H_BUC_02",null,"PO",null,"open"),
-                Rinasak("423","P_BUC_01",null,"PO",null,"archived"),
-                Rinasak("234","FF_BUC_01",null,"PO",null,"closed"),
-                Rinasak("8423","M_BUC_02",null,"PO",null,"archived"),
-                Rinasak("8223","M_BUC_03b",null,"PO",null,"open")
-        )
-
-        val result = klient.getFilteredArchivedaRinasaker(dummyList)
-        assertEquals(2, result.size)
-        assertEquals("723", result.first())
-        assertEquals("8223", result.last())
-
-    }
-
-    @Test
     fun `Tester og evaluerer om require statement blir oppfylt`() {
         assertThrows<IllegalArgumentException> { dummyRequirement(null, null) }
         assertTrue( dummyRequirement("grtg", null))
