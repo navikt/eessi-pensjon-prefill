@@ -105,7 +105,7 @@ class EuxServiceTest {
 
         whenever(euxKlient.getSedOnBucByDocumentIdAsJson(any(), any())).thenReturn(json)
 
-        assertThrows<FagmodulJsonIllegalArgumentException> {
+        assertThrows<JsonIllegalArgumentException> {
             service.hentFnrOgYtelseKravtype("1234567890","100001000010000")
         }
     }

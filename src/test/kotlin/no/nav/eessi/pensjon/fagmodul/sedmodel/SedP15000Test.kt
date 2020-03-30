@@ -1,7 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.sedmodel
 
-import no.nav.eessi.pensjon.fagmodul.eux.IkkeFunnetException
-import no.nav.eessi.pensjon.utils.FagmodulJsonIllegalArgumentException
+import no.nav.eessi.pensjon.utils.JsonIllegalArgumentException
 import no.nav.eessi.pensjon.utils.toJson
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -33,7 +32,7 @@ class SedP15000Test {
     @Test
     fun `P15000 med element Sector feiler ved innlesing`() {
         val p15000json = getTestJsonFile("P15000-SectorFeiler-NAV.json")
-        assertThrows<FagmodulJsonIllegalArgumentException> {
+        assertThrows<JsonIllegalArgumentException> {
             getSEDfromTestfile(p15000json)
         }
     }

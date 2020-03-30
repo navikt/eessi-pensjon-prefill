@@ -20,13 +20,13 @@ inline fun <reified T : Any> mapJsonToAny(json: String, typeRef: TypeReference<T
             .readValue(json, typeRef)
         } catch (jpe: JsonParseException) {
             jpe.printStackTrace()
-            throw FagmodulJsonException("Fagmodul feilet ved konvertering av jsonformat, ${jpe.message}")
+            throw JsonException("Feilet ved konvertering av jsonformat, ${jpe.message}", jpe)
         } catch (jme: JsonMappingException) {
             jme.printStackTrace()
-            throw FagmodulJsonIllegalArgumentException("Fagmodul feilet ved mapping av jsonformat, ${jme.message}")
+            throw JsonIllegalArgumentException("Feilet ved mapping av jsonformat, ${jme.message}", jme)
         } catch (ex: Exception) {
             ex.printStackTrace()
-            throw FagmodulJsonException("Fagmodul feilet med en ukjent feil ved jsonformat, ${ex.message}")
+            throw JsonException("Feilet med en ukjent feil ved jsonformat, ${ex.message}", ex)
         }
 }
 
@@ -71,7 +71,7 @@ fun successBody(): String {
 }
 
 @ResponseStatus(value = HttpStatus.UNPROCESSABLE_ENTITY)
-class FagmodulJsonException(message: String?) : RuntimeException(message)
+class JsonException(message: String?, cause: Throwable?) : RuntimeException(message, cause)
 
 @ResponseStatus(value = HttpStatus.BAD_REQUEST)
-class FagmodulJsonIllegalArgumentException(message: String?) : IllegalArgumentException(message)
+class JsonIllegalArgumentException(message: String?, cause: Throwable?) : IllegalArgumentException(message, cause)

@@ -1,6 +1,5 @@
 package no.nav.eessi.pensjon.utils
 
-import no.nav.eessi.pensjon.fagmodul.eux.SedDokumentIkkeOpprettetException
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -70,7 +69,7 @@ class JsonUtilsTest {
     @Test
     fun `Test mapAnyToJson error unvalid json expect FagmodulJsonIllegalArgumentException`() {
         val mockUnvalidjson = "[{\"country\":\"NO\",\"institution\": NO:NAVT003} ]"
-        assertThrows<FagmodulJsonIllegalArgumentException> {
+        assertThrows<JsonIllegalArgumentException> {
             mapJsonToAny(mockUnvalidjson, typeRefs<List<InstitusjonItem>>())
         }
     }
@@ -78,7 +77,7 @@ class JsonUtilsTest {
     @Test
     fun `Test mapAnyToJson error expect parseerror throws FagmodulJsonIllegalArgumentException`() {
         val mockUnvalidjson = "[{\"country\":\"NO\", \"instszw652tution\": \"NO:NAVT003\", \"Dummy\" : \"Dummy\" } ]"
-        assertThrows<FagmodulJsonIllegalArgumentException> {
+        assertThrows<JsonIllegalArgumentException> {
             mapJsonToAny(mockUnvalidjson, typeRefs<List<InstitusjonItem>>())
         }
     }
