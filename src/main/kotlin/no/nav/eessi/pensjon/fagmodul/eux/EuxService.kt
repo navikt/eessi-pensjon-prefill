@@ -3,6 +3,7 @@ package no.nav.eessi.pensjon.fagmodul.eux
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.BucSedResponse
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Buc
+import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Krav
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
@@ -18,6 +19,23 @@ import org.springframework.web.client.RestTemplate
 
 @Service
 class EuxService (private val euxKlient: EuxKlient) {
+
+    fun getAvailableSedOnBuc(bucType: String?): List<String> {
+        val map = EuxKlient.initSedOnBuc()
+
+        if (bucType.isNullOrEmpty()) {
+            val set = mutableSetOf<String>()
+            map["P_BUC_01"]?.let { set.addAll(it) }
+            map["P_BUC_02"]?.let { set.addAll(it) }
+            map["P_BUC_03"]?.let { set.addAll(it) }
+            map["P_BUC_05"]?.let { set.addAll(it) }
+            map["P_BUC_06"]?.let { set.addAll(it) }
+            map["P_BUC_09"]?.let { set.addAll(it) }
+            map["P_BUC_10"]?.let { set.addAll(it) }
+            return set.toList()
+        }
+        return map[bucType].orEmpty()
+    }
 
     // Vi trenger denne no arg konstruktøren for å kunne bruke @Spy med mockito
     constructor() : this(EuxKlient(RestTemplate(), MetricsHelper(SimpleMeterRegistry())))
@@ -146,6 +164,11 @@ class EuxService (private val euxKlient: EuxKlient) {
         logger.info("X005 finnes ikke på buc, legger til Deltakere/Institusjon på vanlig måte")
         euxKlient.putBucMottakere(euxCaseID, nyeInstitusjoner)
     }
+
+    fun getInstitutions(bucType: String, landkode: String? = ""): List<InstitusjonItem> {
+        return euxKlient.getInstitutions(bucType, landkode)
+    }
+
 
     @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
     class SedDokumentIkkeSendtException(message: String?) : Exception(message)

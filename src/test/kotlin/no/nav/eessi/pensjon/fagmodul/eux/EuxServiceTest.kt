@@ -180,4 +180,30 @@ class EuxServiceTest {
         assertEquals(18, firstJson.seds?.size)
     }
 
+    @Test
+    fun `Calling euxService getAvailableSEDonBuc returns BuC lists`() {
+        var buc = "P_BUC_01"
+        var expectedResponse = listOf("P2000")
+        var generatedResponse = service.getAvailableSedOnBuc (buc)
+        assertEquals(generatedResponse, expectedResponse)
+
+        buc = "P_BUC_06"
+        expectedResponse = listOf("P5000", "P6000", "P7000", "P10000")
+        generatedResponse = service.getAvailableSedOnBuc(buc)
+        assertEquals(generatedResponse, expectedResponse)
+    }
+
+    @Test
+    fun `Calling euxService getAvailableSedOnBuc no input, return`() {
+        val expected = "[ \"P2000\", \"P2100\", \"P2200\", \"P8000\", \"P5000\", \"P6000\", \"P7000\", \"P10000\", \"P14000\", \"P15000\" ]"
+        val actual = service.getAvailableSedOnBuc(null)
+        assertEquals(expected, actual.toJson())
+    }
+
+    fun getTestJsonFile(filename: String): String {
+        val filepath = "src/test/resources/json/nav/${filename}"
+        val json = String(Files.readAllBytes(Paths.get(filepath)))
+        assertTrue(validateJson(json))
+        return json
+    }
 }

@@ -4,7 +4,6 @@ import io.micrometer.core.instrument.Tag
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import io.swagger.annotations.ApiOperation
 import no.nav.eessi.pensjon.fagmodul.eux.BucUtils
-import no.nav.eessi.pensjon.fagmodul.eux.EuxKlient
 import no.nav.eessi.pensjon.fagmodul.eux.EuxService
 import no.nav.eessi.pensjon.fagmodul.eux.PinOgKrav
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ShortDocumentItem
@@ -30,7 +29,6 @@ import java.time.LocalDateTime
 @RestController
 @RequestMapping("/sed")
 class SedController(private val euxService: EuxService,
-                    private val euxKlient: EuxKlient,
                     private val prefillService: PrefillService,
                     private val aktoerService: AktoerregisterService,
                     private val auditlogger: AuditLogger,
@@ -176,7 +174,7 @@ class SedController(private val euxService: EuxService,
     fun getEuxInstitusjoner(@PathVariable("buctype", required = true) buctype: String, @PathVariable("land", required = false) landkode: String? = ""): List<InstitusjonItem> {
         logger.info("Henter ut liste over alle Institusjoner i Rina")
 
-        return euxKlient.getInstitutions(buctype, landkode)
+        return euxService.getInstitutions(buctype, landkode)
     }
 
     @ApiOperation("henter liste over seds, seds til valgt buc eller seds til valgt rinasak")
@@ -185,11 +183,11 @@ class SedController(private val euxService: EuxService,
                 @PathVariable(value = "rinanr", required = false) euxCaseId: String?): ResponseEntity<String?> {
 
         //Ingen buc oppgitt, vi lister våre seds på valgt buctype.
-        if (euxCaseId == null) return ResponseEntity.ok().body( EuxKlient.getAvailableSedOnBuc(bucType).toJsonSkipEmpty() )
+        if (euxCaseId == null) return ResponseEntity.ok().body( euxService.getAvailableSedOnBuc(bucType).toJsonSkipEmpty() )
         //liste over seds som kan opprettes fra Rina på valgt euxCaseid (rinanr)
         val resultListe = BucUtils(euxService.getBuc(euxCaseId)).getAksjonListAsString()
         //hvis tom er stort sett buc helt ny. vi lister våre seds på valgt buctype.
-        if (resultListe.isEmpty()) return ResponseEntity.ok().body( EuxKlient.getAvailableSedOnBuc(bucType).toJsonSkipEmpty() )
+        if (resultListe.isEmpty()) return ResponseEntity.ok().body( euxService.getAvailableSedOnBuc(bucType).toJsonSkipEmpty() )
         //hvis liste ikke tom vi filterer listen
         return ResponseEntity.ok().body( sortAndFilterSeds(resultListe).toJsonSkipEmpty() )
     }
