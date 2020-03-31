@@ -3,7 +3,6 @@ package no.nav.eessi.pensjon.fagmodul.api
 import io.swagger.annotations.ApiOperation
 import no.nav.eessi.pensjon.fagmodul.eux.BucAndSedView
 import no.nav.eessi.pensjon.fagmodul.eux.BucUtils
-import no.nav.eessi.pensjon.fagmodul.eux.EuxKlient
 import no.nav.eessi.pensjon.fagmodul.eux.EuxService
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Rinasak
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Vedlegg
@@ -30,7 +29,6 @@ import java.util.*
 @RestController
 @RequestMapping("/buc")
 class BucController(private val euxService: EuxService,
-                    private val euxKlient: EuxKlient,
                     private val safService: SafService,
                     private val aktoerService: AktoerregisterService,
                     private val auditlogger: AuditLogger) {
@@ -149,7 +147,7 @@ class BucController(private val euxService: EuxService,
         logger.info("Prøver å opprette en ny BUC i RINA av type: $buctype")
 
         //rinaid
-        val euxCaseId = euxKlient.createBuc(buctype)
+        val euxCaseId = euxService.createBuc(buctype)
         logger.info("Mottatt følgende euxCaseId(RinaID): $euxCaseId")
 
         //create bucDetail back from newly created buc call eux-rina-api to get data.
@@ -171,7 +169,7 @@ class BucController(private val euxService: EuxService,
 
         return try {
             val dokument = safService.hentDokumentInnhold(joarkJournalpostId, joarkDokumentInfoId, variantFormat)
-            euxKlient.leggTilVedleggPaaDokument(aktoerId,
+            euxService.leggTilVedleggPaaDokument(aktoerId,
                     rinaSakId,
                     rinaDokumentId,
                     Vedlegg(filInnhold = dokument.filInnhold, filnavn = dokument.fileName),

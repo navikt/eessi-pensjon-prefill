@@ -4,11 +4,7 @@ import com.nhaarman.mockitokotlin2.*
 import no.nav.eessi.pensjon.fagmodul.eux.*
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Vedlegg
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Buc
-import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Organisation
-import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ParticipantsItem
 import no.nav.eessi.pensjon.logging.AuditLogger
-import no.nav.eessi.pensjon.logging.RequestResponseLoggerInterceptor
-import no.nav.eessi.pensjon.security.sts.typeRef
 import no.nav.eessi.pensjon.services.aktoerregister.AktoerregisterService
 import no.nav.eessi.pensjon.services.arkiv.HentdokumentInnholdResponse
 import no.nav.eessi.pensjon.services.arkiv.SafService
@@ -24,20 +20,12 @@ import org.mockito.Spy
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.http.*
 import org.springframework.util.LinkedMultiValueMap
-import org.springframework.web.client.DefaultResponseErrorHandler
-import org.springframework.web.client.RestTemplate
-import org.springframework.web.util.UriComponentsBuilder
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.*
 
 @ExtendWith(MockitoExtension::class)
 class BucControllerTest {
-
-    @Mock
-    lateinit var mockEuxrestTemplate: RestTemplate
-
-    lateinit var mockEuxKlient: EuxKlient
 
     @Spy
     lateinit var auditLogger: AuditLogger
@@ -55,10 +43,7 @@ class BucControllerTest {
 
     @BeforeEach
     fun before() {
-        mockEuxrestTemplate.errorHandler = DefaultResponseErrorHandler()
-        mockEuxrestTemplate.interceptors = listOf( RequestResponseLoggerInterceptor() )
-        this.mockEuxKlient = EuxKlient(mockEuxrestTemplate)
-        this.bucController = BucController(mockEuxService, mockEuxKlient, mockSafService, mockAktoerIdHelper, auditLogger)
+        this.bucController = BucController(mockEuxService, mockSafService, mockAktoerIdHelper, auditLogger)
     }
 
 
@@ -66,6 +51,21 @@ class BucControllerTest {
     fun `gets valid bucs fagmodul can handle excpect list`() {
         val result = bucController.getBucs()
         Assertions.assertEquals(10, result.size)
+    }
+
+    @Test
+    fun `gitt at det finnes en gydlig euxCaseid og Buc skal det returneres en liste over sedid`() {
+        val gyldigBuc = String(Files.readAllBytes(Paths.get("src/test/resources/json/buc/buc-279020big.json")))
+
+        val mockEuxRinaid = "123456"
+        val buc : Buc =  mapJsonToAny(gyldigBuc, typeRefs())
+
+        doReturn(buc).whenever(mockEuxService).getBuc(any())
+
+        val actual = bucController.getAllDocuments(mockEuxRinaid)
+
+        Assertions.assertNotNull(actual)
+        Assertions.assertEquals(25, actual.size)
     }
 
     @Test
@@ -81,6 +81,8 @@ class BucControllerTest {
         doReturn(HentdokumentInnholdResponse(vedlegg.filInnhold,
                 vedlegg.filnavn,
                 "application/pdf")).whenever(mockSafService).hentDokumentInnhold(any(), any(), any())
+
+        doNothing().whenever(mockEuxService).leggTilVedleggPaaDokument(any(), any(), any(), any(), any())
 
 
         val headers = HttpHeaders()
@@ -100,19 +102,6 @@ class BucControllerTest {
         val body = LinkedMultiValueMap<String, Any>()
         body.add("multipart", attachmentPart)
 
-        val requestEntity = HttpEntity(body, headers)
-
-        val queryUrl = UriComponentsBuilder
-                .fromPath("/buc/")
-                .path(rinasakid)
-                .path("/sed/")
-                .path(rinadocid)
-                .path("/vedlegg")
-                .queryParam("Filnavn", vedlegg.filnavn.replaceAfterLast(".", "").removeSuffix("."))
-                .queryParam("Filtype", filtype)
-                .queryParam("synkron", true)
-                .build().toUriString()
-
         bucController.putVedleggTilDokument("123",
                 rinasakid,
                 rinadocid,
@@ -120,22 +109,12 @@ class BucControllerTest {
                 "2",
                 VariantFormat.ARKIV )
 
-        verify(mockEuxrestTemplate, times(1)).exchange( queryUrl , HttpMethod.POST, requestEntity, String::class.java)
-    }
-
-    @Test
-    fun `gitt at det finnes en gydlig euxCaseid og Buc skal det returneres en liste over sedid`() {
-        val gyldigBuc = String(Files.readAllBytes(Paths.get("src/test/resources/json/buc/buc-279020big.json")))
-
-        val mockEuxRinaid = "123456"
-        val buc : Buc =  mapJsonToAny(gyldigBuc, typeRefs())
-
-        doReturn(buc).whenever(mockEuxService).getBuc(any())
-
-        val actual = bucController.getAllDocuments(mockEuxRinaid)
-
-        Assertions.assertNotNull(actual)
-        Assertions.assertEquals(25, actual.size)
+        verify(mockEuxService, times(1)).leggTilVedleggPaaDokument(
+                eq("123"),
+                eq(rinasakid),
+                eq(rinadocid),
+                any(),
+                eq(filtype)
+        )
     }
 }
-
