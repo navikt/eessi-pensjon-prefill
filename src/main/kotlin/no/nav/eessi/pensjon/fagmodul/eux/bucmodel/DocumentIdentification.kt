@@ -1,6 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.eux.bucmodel
 
-data class DocumentIdentification(
+class DocumentIdentification(
         val identifier: String? = null,
         val schemaVersion: String? = null,
         val relatedDocumentId: Any? = null,

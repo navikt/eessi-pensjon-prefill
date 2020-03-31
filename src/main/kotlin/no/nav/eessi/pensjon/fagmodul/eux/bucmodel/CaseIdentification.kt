@@ -1,6 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.eux.bucmodel
 
-data class CaseIdentification(
+class CaseIdentification(
         val identifier: String? = null,
         val isProtectedPerson: Boolean? = null,
         val protectedPerson: Boolean? = null,

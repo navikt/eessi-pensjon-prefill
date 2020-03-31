@@ -1,6 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.eux.bucmodel
 
-data class Creator(
+class Creator(
 
         val address: Any? = null,
         val contactMethods: Any? = null,

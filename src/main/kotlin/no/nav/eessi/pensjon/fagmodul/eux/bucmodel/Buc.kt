@@ -3,7 +3,7 @@ package no.nav.eessi.pensjon.fagmodul.eux.bucmodel
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class Buc(
+class Buc(
         var creator: Creator? = null,
         val attachments: List<Attachment>? = null,
         val comments: List<Any>? = null,

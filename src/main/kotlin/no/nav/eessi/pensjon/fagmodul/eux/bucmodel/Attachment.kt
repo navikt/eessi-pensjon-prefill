@@ -1,6 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.eux.bucmodel
 
-data class Attachment(
+class Attachment(
         val creator: Creator? = null,
         val fileName: String? = null,
         val medical: Boolean? = null,
@@ -17,7 +17,7 @@ data class Attachment(
         val parentDocumentId: Any? = null
 )
 
-data class ShortAttachment(
+class ShortAttachment(
         val id: String? = null,
         val name: String? = null,
         val fileName: String? = null,

@@ -1,6 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.eux.bucmodel
 
-data class Properties(
+class Properties(
         val importance: String? = null,
         val criticality: String? = null
 )

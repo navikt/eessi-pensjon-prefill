@@ -1,6 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.eux.bucmodel
 
-data class ConversationsItem(
+class ConversationsItem(
         val date: Any? = null,
         val versionId: Any? = null,
         val userMessages: List<UserMessagesItem>? = null,

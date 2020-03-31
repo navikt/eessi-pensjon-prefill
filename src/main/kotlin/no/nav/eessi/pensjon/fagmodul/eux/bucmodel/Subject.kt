@@ -1,6 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.eux.bucmodel
 
-data class Subject(
+class Subject(
         val birthday: String? = null,
         val address: Address? = null,
         val surname: String? = null,

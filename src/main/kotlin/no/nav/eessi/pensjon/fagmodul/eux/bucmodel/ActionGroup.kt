@@ -1,6 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.eux.bucmodel
 
-data class ActionGroup(
+class ActionGroup(
 
         val type: String? = null,
         val parentDocId: Any? = null,

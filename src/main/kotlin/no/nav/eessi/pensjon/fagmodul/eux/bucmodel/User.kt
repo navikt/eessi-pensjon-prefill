@@ -1,7 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.eux.bucmodel
 
-data class User(
-
+class User(
         val address: Any? = null,
         val contactMethods: Any? = null,
         val name: String? = null,
