@@ -3,6 +3,7 @@ package no.nav.eessi.pensjon.fagmodul.eux
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.BucSedResponse
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Rinasak
+import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Vedlegg
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Buc
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ParticipantsItem
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
@@ -223,6 +224,22 @@ class EuxService (private val euxKlient: EuxKlient) {
                 .toList()
 
         return rinaSakerMedFnr.plus(rinaSakerUtenFnr)
+    }
+
+    fun createBuc(buctype: String): String {
+        return euxKlient.createBuc(buctype)
+    }
+
+    fun leggTilVedleggPaaDokument(aktoerId: String,
+                                  rinaSakId: String,
+                                  rinaDokumentId: String,
+                                  vedlegg: Vedlegg,
+                                  dokumentType: String) {
+        return euxKlient.leggTilVedleggPaaDokument(aktoerId,
+                rinaSakId,
+                rinaDokumentId,
+                vedlegg,
+                dokumentType)
     }
 
     @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
