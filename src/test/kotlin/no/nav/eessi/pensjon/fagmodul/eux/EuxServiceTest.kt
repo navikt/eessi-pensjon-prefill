@@ -254,4 +254,26 @@ class EuxServiceTest {
         assertEquals("723", result.first())
         assertEquals("8223", result.last())
     }
+
+    @Test
+    fun callingEuxServiceListOfRinasaker_Ok() {
+        val filepathRinasaker = "src/test/resources/json/rinasaker/rinasaker_12345678901.json"
+        val jsonRinasaker = String(Files.readAllBytes(Paths.get(filepathRinasaker)))
+        assertTrue(validateJson(jsonRinasaker))
+        val orgRinasaker = mapJsonToAny(jsonRinasaker, typeRefs<List<Rinasak>>())
+
+        doReturn(orgRinasaker).whenever(euxKlient).getRinasaker(eq("12345678900"), eq(null), eq(null), eq(null))
+
+        val filepathEnRinasak = "src/test/resources/json/rinasaker/rinasaker_ensak.json"
+        val jsonEnRinasak = String(Files.readAllBytes(Paths.get(filepathEnRinasak)))
+        assertTrue(validateJson(jsonEnRinasak))
+        val enSak = mapJsonToAny(jsonEnRinasak, typeRefs<List<Rinasak>>())
+
+        doReturn(enSak).whenever(euxKlient).getRinasaker(eq(null), eq("8877665511"), eq(null), eq(null))
+
+        val result = service.getRinasaker("12345678900", listOf("8877665511"))
+
+        assertEquals(154, orgRinasaker.size)
+        assertEquals(orgRinasaker.size + 1, result.size)
+    }
 }

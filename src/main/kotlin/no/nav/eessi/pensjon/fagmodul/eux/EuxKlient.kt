@@ -124,7 +124,7 @@ class EuxKlient(private val euxOidcRestTemplate: RestTemplate,
         )
         return response.body ?: throw ServerException("Feil ved henting av BUCdata ingen data, euxCaseId $euxCaseId")
     }
-    //@Throws(EuxServerException::class, EuxGenericServerException::class)
+
     fun getBucDeltakere(euxCaseId: String): List<ParticipantsItem> {
         logger.info("euxCaseId: $euxCaseId")
 
@@ -190,32 +190,11 @@ class EuxKlient(private val euxOidcRestTemplate: RestTemplate,
         return institusjonListe
     }
 
-    fun getRinasaker(fnr: String, rinaSakIderMetadata: List<String>): List<Rinasak> {
-        logger.debug("Henter opp rinasaker på fnr")
-
-        // Henter rina saker basert på fnr
-        val rinaSakerMedFnr = getRinasaker(fnr, null, null, null)
-
-        // Filtrerer vekk saker som allerede er hentet som har fnr
-        val rinaSakIderMedFnr = hentRinaSakIder(rinaSakerMedFnr)
-        val rinaSakIderUtenFnr = rinaSakIderMetadata.minus(rinaSakIderMedFnr)
-
-        // Henter rina saker som ikke har fnr
-        val rinaSakerUtenFnr = rinaSakIderUtenFnr
-                                    .asSequence()
-                                    .map { euxCaseId ->
-                                        getRinasaker(null, euxCaseId , null, null).first() }
-                                    .distinct()
-                                    .toList()
-
-        return rinaSakerMedFnr.plus(rinaSakerUtenFnr)
-    }
-
     /**
      * Returnerer en distinct liste av rinaSakIDer
      *  @param rinaSaker liste av rinasaker fra EUX datamodellen
      */
-    private fun hentRinaSakIder(rinaSaker: List<Rinasak>) = rinaSaker.asSequence().map { it.id!! }.toList()
+    fun hentRinaSakIder(rinaSaker: List<Rinasak>) = rinaSaker.asSequence().map { it.id!! }.toList()
 
     /**
      * Lister alle rinasaker på valgt fnr eller euxcaseid, eller bucType...

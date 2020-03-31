@@ -70,7 +70,7 @@ class BucController(private val euxService: EuxService,
     fun getBucDeltakere(@PathVariable(value = "rinanr", required = true) rinanr: String): String {
         auditlogger.log("getBucDeltakere")
         logger.debug("Henter ut Buc deltakere data fra rina via eux-rina-api")
-        return mapAnyToJson(euxKlient.getBucDeltakere(rinanr))
+        return mapAnyToJson(euxService.getBucDeltakere(rinanr))
     }
 
     @ApiOperation("Henter opp creator countrycode (type)")
@@ -114,7 +114,7 @@ class BucController(private val euxService: EuxService,
 
         val fnr = aktoerService.hentPinForAktoer(aktoerId)
         val rinaSakIderFraDokumentMetadata = safService.hentRinaSakIderFraDokumentMetadata(aktoerId)
-        return euxKlient.getRinasaker(fnr, rinaSakIderFraDokumentMetadata)
+        return euxService.getRinasaker(fnr, rinaSakIderFraDokumentMetadata)
     }
 
     @ApiOperation("Henter ut liste av Buc meny struktur i json format for UI på valgt aktoerid")
@@ -128,7 +128,7 @@ class BucController(private val euxService: EuxService,
         val fnr = aktoerService.hentPinForAktoer(aktoerid)
         val rinaSakIderFraDokumentMetadata = safService.hentRinaSakIderFraDokumentMetadata(aktoerid)
 
-        val rinasakIdList = euxService.getFilteredArchivedaRinasaker( euxKlient.getRinasaker(fnr, rinaSakIderFraDokumentMetadata))
+        val rinasakIdList = euxService.getFilteredArchivedaRinasaker( euxService.getRinasaker(fnr, rinaSakIderFraDokumentMetadata))
 
         return euxService.getBucAndSedView( rinasakIdList )
     }

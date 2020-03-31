@@ -137,23 +137,5 @@ class BucControllerTest {
         Assertions.assertNotNull(actual)
         Assertions.assertEquals(25, actual.size)
     }
-
-    @Test
-    fun `gitt at det finnes en gydlig euxCaseid skal det returneres en liste av Buc deltakere`() {
-        val mockEuxRinaid = "123456"
-        val mockResponse = ResponseEntity.ok().body(listOf(
-           ParticipantsItem(organisation = Organisation(countryCode = "DK", id = "DK006")),
-           ParticipantsItem(organisation = Organisation(countryCode = "PL", id = "PolishAcc"))
-        ))
-        doReturn(mockResponse).whenever(mockEuxrestTemplate).exchange(
-                any<String>(),
-                eq(HttpMethod.GET),
-                eq(null),
-                eq(typeRef<List<ParticipantsItem>>()))
-
-        val responseJson = bucController.getBucDeltakere(mockEuxRinaid)
-        val response = mapJsonToAny(responseJson, typeRefs<List<ParticipantsItem>>())
-        Assertions.assertEquals(2, response.size)
-    }
 }
 
