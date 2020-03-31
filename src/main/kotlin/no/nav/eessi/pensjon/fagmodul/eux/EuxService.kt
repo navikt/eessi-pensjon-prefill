@@ -4,6 +4,7 @@ import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.BucSedResponse
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Rinasak
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Buc
+import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ParticipantsItem
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Krav
@@ -199,7 +200,30 @@ class EuxService (private val euxKlient: EuxKlient) {
                 .map { rinasak -> rinasak.id!! }
                 .toList()
     }
+    fun getBucDeltakere(euxCaseId: String): List<ParticipantsItem> {
+        return euxKlient.getBucDeltakere(euxCaseId)
+    }
 
+    fun getRinasaker(fnr: String, rinaSakIderMetadata: List<String>): List<Rinasak> {
+        logger.debug("Henter opp rinasaker på fnr")
+
+        // Henter rina saker basert på fnr
+        val rinaSakerMedFnr = euxKlient.getRinasaker(fnr, null, null, null)
+
+        // Filtrerer vekk saker som allerede er hentet som har fnr
+        val rinaSakIderMedFnr = euxKlient.hentRinaSakIder(rinaSakerMedFnr)
+        val rinaSakIderUtenFnr = rinaSakIderMetadata.minus(rinaSakIderMedFnr)
+
+        // Henter rina saker som ikke har fnr
+        val rinaSakerUtenFnr = rinaSakIderUtenFnr
+                .asSequence()
+                .map { euxCaseId ->
+                    euxKlient.getRinasaker(null, euxCaseId , null, null).first() }
+                .distinct()
+                .toList()
+
+        return rinaSakerMedFnr.plus(rinaSakerUtenFnr)
+    }
 
     @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
     class SedDokumentIkkeSendtException(message: String?) : Exception(message)

@@ -1,11 +1,13 @@
 package no.nav.eessi.pensjon.fagmodul.eux
 
 import com.nhaarman.mockitokotlin2.*
-import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Rinasak
+import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Organisation
+import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ParticipantsItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.PinItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.logging.RequestResponseLoggerInterceptor
 import no.nav.eessi.pensjon.metrics.MetricsHelper
+import no.nav.eessi.pensjon.security.sts.typeRef
 import no.nav.eessi.pensjon.utils.*
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.*
@@ -157,43 +159,11 @@ class EuxKlientTest {
     }
 
     @Test
-    fun callingEuxServiceListOfRinasaker_Ok() {
-        val filepathRinasaker = "src/test/resources/json/rinasaker/rinasaker_12345678901.json"
-        val jsonRinasaker = String(Files.readAllBytes(Paths.get(filepathRinasaker)))
-        assertTrue(validateJson(jsonRinasaker))
-        val orgRinasaker = mapJsonToAny(jsonRinasaker, typeRefs<List<Rinasak>>())
-
-        val responseMangeSaker: ResponseEntity<String> = ResponseEntity(jsonRinasaker, HttpStatus.OK)
-        doReturn(responseMangeSaker).whenever(mockEuxrestTemplate).exchange(
-                eq("/rinasaker?fødselsnummer=12345678900&rinasaksnummer=&buctype=&status="),
-                eq(HttpMethod.GET),
-                eq(null),
-                eq(String::class.java))
-
-        val filepathEnRinasak = "src/test/resources/json/rinasaker/rinasaker_ensak.json"
-        val jsonEnRinasak = String(Files.readAllBytes(Paths.get(filepathEnRinasak)))
-        assertTrue(validateJson(jsonEnRinasak))
-        val responseEnsak: ResponseEntity<String> = ResponseEntity(jsonEnRinasak, HttpStatus.OK)
-
-
-        doReturn(responseEnsak).whenever(mockEuxrestTemplate).exchange(
-                eq("/rinasaker?fødselsnummer=&rinasaksnummer=123456&buctype=&status="),
-                eq(HttpMethod.GET),
-                eq(null),
-                eq(String::class.java))
-
-        val result = klient.getRinasaker("12345678900", listOf("123456","83637"))
-
-        assertEquals(154, orgRinasaker.size)
-        assertEquals(orgRinasaker.size + 1, result.size)
-    }
-
-    @Test
     fun callingEuxServiceListOfRinasaker_IOError() {
         doThrow(createDummyServerRestExecption(HttpStatus.INTERNAL_SERVER_ERROR,"Serverfeil, I/O-feil"))
                 .whenever(mockEuxrestTemplate).exchange(any<String>(), eq(HttpMethod.GET), eq(null), eq(String::class.java))
         assertThrows<EuxRinaServerException> {
-            klient.getRinasaker("12345678900", listOf("1", "2", "3"))
+            klient.getRinasaker("12345678900", null, null, null)
         }
     }
 
@@ -201,8 +171,9 @@ class EuxKlientTest {
     fun callingEuxServiceListOfRinasaker_ClientError() {
         doThrow(createDummyClientRestExecption(HttpStatus.UNAUTHORIZED,"UNAUTHORIZED"))
                 .whenever(mockEuxrestTemplate).exchange(any<String>(), eq(HttpMethod.GET), eq(null), eq(String::class.java))
-                        assertThrows<RinaIkkeAutorisertBrukerException> {
-            klient.getRinasaker("12345678900", listOf("1", "2", "3"))
+
+        assertThrows<RinaIkkeAutorisertBrukerException> {
+            klient.getRinasaker("12345678900", null, null, null)
         }
     }
 
@@ -212,7 +183,7 @@ class EuxKlientTest {
         doThrow(createDummyServerRestExecption(HttpStatus.BAD_GATEWAY, "Dummybody"))
                 .whenever(mockEuxrestTemplate).exchange(any<String>(), eq(HttpMethod.GET), eq(null), eq(String::class.java))
         assertThrows<GenericUnprocessableEntity> {
-            klient.getRinasaker("12345678900", listOf("1", "2", "3"))
+            klient.getRinasaker("12345678900", null, null, null)
         }
     }
 
@@ -552,6 +523,23 @@ class EuxKlientTest {
         assertThrows<GenericUnprocessableEntity> {
             klient.getBucJson(mockEuxRinaid)
         }
+    }
+
+    @Test
+    fun `gitt at det finnes en gydlig euxCaseid skal det returneres en liste av Buc deltakere`() {
+        val mockEuxRinaid = "123456"
+        val mockResponse = ResponseEntity.ok().body(listOf(
+                ParticipantsItem(organisation = Organisation(countryCode = "DK", id = "DK006")),
+                ParticipantsItem(organisation = Organisation(countryCode = "PL", id = "PolishAcc"))
+        ))
+        doReturn(mockResponse).whenever(mockEuxrestTemplate).exchange(
+                any<String>(),
+                eq(HttpMethod.GET),
+                eq(null),
+                eq(typeRef<List<ParticipantsItem>>()))
+
+        val deltakere = klient.getBucDeltakere(mockEuxRinaid)
+        assertEquals(2, deltakere.size)
     }
 
     private fun dummyRequirement(dummyparam1: String?, dummyparam2: String?): Boolean{
