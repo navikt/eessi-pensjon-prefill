@@ -1,6 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.eux.bucmodel
 
-data class ActionsItem(
+class ActionsItem(
 
         val template: String? = null,
         val documentType: String? = null,

@@ -1,6 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.eux.bucmodel
 
-data class UserMessagesItem(
+class UserMessagesItem(
         val receiver: Receiver? = null,
         val sender: Sender? = null,
         val sbdh: Sbdh? = null,

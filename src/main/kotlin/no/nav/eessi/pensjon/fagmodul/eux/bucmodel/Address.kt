@@ -1,6 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.eux.bucmodel
 
-data class Address(
+class Address(
 
         val country: String? = null,
         val town: String? = null,

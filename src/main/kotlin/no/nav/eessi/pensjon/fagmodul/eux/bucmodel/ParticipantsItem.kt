@@ -1,7 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.eux.bucmodel
 
-data class ParticipantsItem(
-
+class ParticipantsItem(
         val role: String? = null,
         val organisation: Organisation? = null,
         val selected: Boolean? = null

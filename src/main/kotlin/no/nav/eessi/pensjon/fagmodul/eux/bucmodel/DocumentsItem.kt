@@ -2,7 +2,7 @@ package no.nav.eessi.pensjon.fagmodul.eux.bucmodel
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 
-data class DocumentsItem(
+class DocumentsItem(
         val parendDocumentId: Any? = null,
         val attachments: List<Attachment>? = null,
         val sendExecuted: Boolean? = null,
@@ -54,7 +54,7 @@ data class DocumentsItem(
         val dmprocessId: Any? = null
 )
 
-data class ShortDocumentItem(
+class ShortDocumentItem(
         val id: String? = null,
         val parentDocumentId: String? = null,
         val type: String? = null,

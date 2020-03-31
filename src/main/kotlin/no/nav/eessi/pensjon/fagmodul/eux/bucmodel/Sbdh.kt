@@ -1,6 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.eux.bucmodel
 
-data class Sbdh(
+class Sbdh(
         val attachments: List<Any?>? = null,
         val sender: Sender? = null,
         val receivers: List<ReceiversItem?>? = null,

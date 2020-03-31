@@ -1,6 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.eux.bucmodel
 
-data class PoolGroup(
+class PoolGroup(
         val type: String? = null,
         val parentDocId: Any? = null,
         val DMProcessId: String? = null,

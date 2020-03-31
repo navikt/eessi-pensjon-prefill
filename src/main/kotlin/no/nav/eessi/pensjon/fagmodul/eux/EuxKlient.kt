@@ -352,12 +352,6 @@ class EuxKlient(private val euxOidcRestTemplate: RestTemplate,
         }
     }
 
-    //Legger en eller flere deltakere/institusjonItem inn i Rina. (Itererer for hver en)
-    fun addDeltagerInstitutions(euxCaseId: String, institusjoner: List<String>): Boolean {
-        logger.debug("Prøver å legge til liste over nye InstitusjonItem til Rina ")
-        return putBucMottakere(euxCaseId, institusjoner)
-    }
-
     fun getFnrMedLandkodeNO(pinlist: List<PinItem>?): String? {
         pinlist?.forEach {
             if ("NO" == it.land) {

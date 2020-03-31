@@ -4,7 +4,7 @@ package no.nav.eessi.pensjon.fagmodul.eux.basismodel
  * data class model from EUX Basis
  */
 
-data class RinaAksjon(
+class RinaAksjon(
         val dokumentType: String? = null,
         val navn: String? = null,
         val dokumentId: String? = null,
@@ -12,12 +12,12 @@ data class RinaAksjon(
         val id: String? = null
 )
 
-data class BucSedResponse(
+class BucSedResponse(
         val caseId: String,
         val documentId: String
 )
 
-data class Rinasak(
+class Rinasak(
         val id: String? = null,
         val processDefinitionId: String? = null,
         val traits: Traits? = null,
@@ -26,12 +26,12 @@ data class Rinasak(
         val status: String? = null
 )
 
-data class Properties(
+class Properties(
         val importance: String? = null,
         val criticality: String? = null
 )
 
-data class Traits(
+class Traits(
         val birthday: String? = null,
         val localPin: String? = null,
         val surname: String? = null,
