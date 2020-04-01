@@ -333,34 +333,6 @@ class EuxKlientTest {
     }
 
     @Test
-    fun hentNorskFnrPaalisteavPin() {
-        val list = listOf(
-                PinItem(sektor = "03", land = "SE", identifikator = "00987654321", institusjonsnavn = "SE"),
-                PinItem(sektor = "02", land = "NO", identifikator = "12345678900", institusjonsnavn = "NAV"),
-                PinItem(sektor = "02", land = "DK", identifikator = "05467898321", institusjonsnavn = "DK")
-            )
-
-        val result = klient.getFnrMedLandkodeNO(list)
-        assertEquals("12345678900", result)
-    }
-
-    @Test
-    fun hentNorskFnrPaalisteavPinListeTom() {
-        val result = klient.getFnrMedLandkodeNO(listOf())
-        assertEquals(null, result)
-    }
-
-    @Test
-    fun hentNorskFnrPaalisteavPinListeIngenNorske() {
-        val list = listOf(
-                PinItem(sektor = "03", land = "SE", identifikator = "00987654321", institusjonsnavn = "SE"),
-                PinItem(sektor = "02", land = "DK", identifikator = "05467898321", institusjonsnavn = "DK")
-        )
-        val result = klient.getFnrMedLandkodeNO(list)
-        assertEquals(null, result)
-    }
-
-    @Test
     fun `gitt en gyldig liste av Institusjoner naar http url genereres saa generer en liste av mottakere som path param`() {
         val euxCaseId = "1234"
         val correlationId = 123456778
@@ -378,26 +350,6 @@ class EuxKlientTest {
         assertTrue( dummyRequirement("grtg", null))
         assertTrue( dummyRequirement(null, "hhgi"))
         assertTrue( dummyRequirement("kufghj", "fjhgb"))
-    }
-
-    @Test
-    fun `filter ut gyldig sed fra json sedDocument`() {
-        val json = String(Files.readAllBytes(Paths.get("src/test/resources/json/buc/buc-279020big.json")))
-        val utils = BucUtils(mapJsonToAny(json, typeRefs()))
-
-        val expected = listOf(Pair("04117b9f8374420e82a4d980a48df6b3","P2200"),
-                Pair("eb938171a4cb4e658b3a6c011962d204","P5000"), Pair("3bc78059030444cda6d18a47ea1f0eec","P6000"),
-                Pair("e418c061a4724f48b23e2191accf0cf6","P7000"), Pair("9fd0c413aa9d4f2f8cf394ea6e42abff","P8000"))
-        val actual = klient.filterUtGyldigSedId(utils.getAllDocuments().toJson())
-        assertEquals(expected, actual)
-
-    }
-
-    @Test
-    fun `filter ut gyldig sed fra json sedDocument tom liste`() {
-        val expected = listOf<Pair<String,String>>()
-        val actual = klient.filterUtGyldigSedId("[]")
-        assertEquals(expected, actual)
     }
 
     @Test
