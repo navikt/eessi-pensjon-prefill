@@ -9,7 +9,6 @@ import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Vedlegg
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ParticipantsItem
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonDetalj
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
-import no.nav.eessi.pensjon.fagmodul.sedmodel.PinItem
 import no.nav.eessi.pensjon.metrics.MetricsHelper
 import no.nav.eessi.pensjon.security.sts.typeRef
 import no.nav.eessi.pensjon.utils.mapJsonToAny
@@ -191,12 +190,6 @@ class EuxKlient(private val euxOidcRestTemplate: RestTemplate,
     }
 
     /**
-     * Returnerer en distinct liste av rinaSakIDer
-     *  @param rinaSaker liste av rinasaker fra EUX datamodellen
-     */
-    fun hentRinaSakIder(rinaSaker: List<Rinasak>) = rinaSaker.asSequence().map { it.id!! }.toList()
-
-    /**
      * Lister alle rinasaker på valgt fnr eller euxcaseid, eller bucType...
      * fnr er påkrved resten er fritt
      * @param fnr String, fødselsnummer
@@ -352,15 +345,6 @@ class EuxKlient(private val euxOidcRestTemplate: RestTemplate,
         }
     }
 
-    fun getFnrMedLandkodeNO(pinlist: List<PinItem>?): String? {
-        pinlist?.forEach {
-            if ("NO" == it.land) {
-                return it.identifikator
-            }
-        }
-        return null
-    }
-
     @Throws(EuxServerException::class)
     fun pingEux(): Boolean {
 
@@ -381,19 +365,6 @@ class EuxKlient(private val euxOidcRestTemplate: RestTemplate,
                 , ""
         )
         return pingResult.statusCode == HttpStatus.OK
-    }
-
-    fun filterUtGyldigSedId(sedJson: String?): List<Pair<String, String>> {
-        val validSedtype = listOf("P2000", "P2100", "P2200", "P1000",
-                "P5000", "P6000", "P7000", "P8000",
-                "P10000", "P1100", "P11000", "P12000", "P14000", "P15000")
-        val sedRootNode = mapper.readTree(sedJson)
-        return sedRootNode
-                .filterNot { node -> node.get("status").textValue() == "empty" }
-                .filter { node -> validSedtype.contains(node.get("type").textValue()) }
-                .map { node -> Pair(node.get("id").textValue(), node.get("type").textValue()) }
-                .sortedBy { (_, sorting) -> sorting }
-                .toList()
     }
 
     @Throws(Throwable::class)

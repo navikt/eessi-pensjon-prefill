@@ -2,6 +2,7 @@ package no.nav.eessi.pensjon.fagmodul.eux
 
 import com.nhaarman.mockitokotlin2.*
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Rinasak
+import no.nav.eessi.pensjon.fagmodul.sedmodel.PinItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.utils.*
 import org.junit.jupiter.api.Assertions.*
@@ -69,8 +70,6 @@ class EuxServiceTest {
         assertTrue(validateJson(json))
 
         whenever(euxKlient.getSedOnBucByDocumentIdAsJson(any(), any())).thenReturn(json)
-        whenever(euxKlient.getFnrMedLandkodeNO(any())).thenReturn("21712")
-
 
         val result = service.hentFnrOgYtelseKravtype("1234567890","100001000010000")
         assertEquals("21712", result.fnr)
@@ -85,7 +84,6 @@ class EuxServiceTest {
         assertTrue(validateJson(json))
 
         whenever(euxKlient.getSedOnBucByDocumentIdAsJson(any(), any())).thenReturn(json)
-        whenever(euxKlient.getFnrMedLandkodeNO(any())).thenReturn("32712")
 
         val orgsed = mapJsonToAny(json, typeRefs<SED>())
         JSONAssert.assertEquals(json, orgsed.toJson(), false)
@@ -275,5 +273,33 @@ class EuxServiceTest {
 
         assertEquals(154, orgRinasaker.size)
         assertEquals(orgRinasaker.size + 1, result.size)
+    }
+
+    @Test
+    fun hentNorskFnrPaalisteavPin() {
+        val list = listOf(
+                PinItem(sektor = "03", land = "SE", identifikator = "00987654321", institusjonsnavn = "SE"),
+                PinItem(sektor = "02", land = "NO", identifikator = "12345678900", institusjonsnavn = "NAV"),
+                PinItem(sektor = "02", land = "DK", identifikator = "05467898321", institusjonsnavn = "DK")
+        )
+
+        val result = service.getFnrMedLandkodeNO(list)
+        assertEquals("12345678900", result)
+    }
+
+    @Test
+    fun hentNorskFnrPaalisteavPinListeTom() {
+        val result = service.getFnrMedLandkodeNO(listOf())
+        assertEquals(null, result)
+    }
+
+    @Test
+    fun hentNorskFnrPaalisteavPinListeIngenNorske() {
+        val list = listOf(
+                PinItem(sektor = "03", land = "SE", identifikator = "00987654321", institusjonsnavn = "SE"),
+                PinItem(sektor = "02", land = "DK", identifikator = "05467898321", institusjonsnavn = "DK")
+        )
+        val result = service.getFnrMedLandkodeNO(list)
+        assertEquals(null, result)
     }
 }

@@ -9,6 +9,7 @@ import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ParticipantsItem
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Krav
+import no.nav.eessi.pensjon.fagmodul.sedmodel.PinItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.metrics.MetricsHelper
 import no.nav.eessi.pensjon.utils.mapJsonToAny
@@ -125,7 +126,7 @@ class EuxService (private val euxKlient: EuxKlient) {
         //validere om SED er virkelig en P2100 eller P15000
         if (SEDType.P2100.name == sed.sed) {
             return PinOgKrav(
-                    fnr = euxKlient.getFnrMedLandkodeNO(sed.pensjon?.gjenlevende?.person?.pin),
+                    fnr = getFnrMedLandkodeNO(sed.pensjon?.gjenlevende?.person?.pin),
                     krav = sed.nav?.krav ?: Krav()
             )
         }
@@ -134,17 +135,26 @@ class EuxService (private val euxKlient: EuxKlient) {
             val krav = sed.nav?.krav ?: Krav()
             return if ("02" == krav.type) {
                 PinOgKrav(
-                        fnr = euxKlient.getFnrMedLandkodeNO(sed.pensjon?.gjenlevende?.person?.pin),
+                        fnr = getFnrMedLandkodeNO(sed.pensjon?.gjenlevende?.person?.pin),
                         krav = krav
                 )
             } else {
                 PinOgKrav(
-                        fnr = euxKlient.getFnrMedLandkodeNO(sed.nav?.bruker?.person?.pin),
+                        fnr = getFnrMedLandkodeNO(sed.nav?.bruker?.person?.pin),
                         krav = sed.nav?.krav ?: Krav()
                 )
             }
         }
         throw SedDokumentIkkeGyldigException("SED gyldig SED av type P2100 eller P15000")
+    }
+
+    fun getFnrMedLandkodeNO(pinlist: List<PinItem>?): String? {
+        pinlist?.forEach {
+            if ("NO" == it.land) {
+                return it.identifikator
+            }
+        }
+        return null
     }
 
     fun getSingleBucAndSedView(euxCaseId: String): BucAndSedView {
@@ -210,7 +220,7 @@ class EuxService (private val euxKlient: EuxKlient) {
         val rinaSakerMedFnr = euxKlient.getRinasaker(fnr, null, null, null)
 
         // Filtrerer vekk saker som allerede er hentet som har fnr
-        val rinaSakIderMedFnr = euxKlient.hentRinaSakIder(rinaSakerMedFnr)
+        val rinaSakIderMedFnr = hentRinaSakIder(rinaSakerMedFnr)
         val rinaSakIderUtenFnr = rinaSakIderMetadata.minus(rinaSakIderMedFnr)
 
         // Henter rina saker som ikke har fnr
@@ -239,4 +249,10 @@ class EuxService (private val euxKlient: EuxKlient) {
                 vedlegg,
                 dokumentType)
     }
+
+    /**
+     * Returnerer en distinct liste av rinaSakIDer
+     *  @param rinaSaker liste av rinasaker fra EUX datamodellen
+     */
+    fun hentRinaSakIder(rinaSaker: List<Rinasak>) = rinaSaker.asSequence().map { it.id!! }.toList()
 }
