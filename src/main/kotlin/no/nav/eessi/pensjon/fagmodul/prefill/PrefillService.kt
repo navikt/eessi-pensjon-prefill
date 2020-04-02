@@ -37,6 +37,9 @@ class PrefillService(private val prefillSED: PrefillSED,
         }
     }
 
+    /**
+     * Prefill for X005 - Legg til ny institusjon
+     */
     @Throws(ValidationException::class)
     fun prefillEnX005ForHverInstitusjon(nyeDeltakere: List<InstitusjonItem>, data: PrefillDataModel) =
             nyeDeltakere.map {
