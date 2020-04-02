@@ -1,8 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.prefill
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import com.fasterxml.jackson.annotation.JsonInclude
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.google.common.base.Joiner
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.models.SEDType
@@ -11,11 +9,9 @@ import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
 import no.nav.eessi.pensjon.utils.typeRefs
-import org.mapstruct.factory.Mappers
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.ResponseStatus
-import java.util.*
 
 //Samme som SedRequest i frontend-api
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -33,8 +29,7 @@ data class ApiRequest(
         val euxCaseId: String? = null,
         val institutions: List<InstitusjonItem>? = null,
         val subjectArea: String? = null,
-        val skipSEDkey: List<String>? = null,
-        val mockSED: Boolean? = null
+        val skipSEDkey: List<String>? = null
 ) {
     fun toAudit(): String {
         val json = ApiRequest(
@@ -63,13 +58,12 @@ data class ApiRequest(
 
                 SEDType.isValidSEDType(request.sed) -> {
                     logger.info("ALL SED on existing Rina -> SED: ${request.sed} -> euxCaseId: ${request.euxCaseId} -> sakNr: ${request.sakId} ")
-                    val pinid = fodselsnr
                     PrefillDataModel().apply {
                         penSaksnummer = request.sakId
                         sed = SED(request.sed)
                         buc = request.buc
                         aktoerID = request.aktoerId
-                        personNr = pinid
+                        personNr = fodselsnr
                         euxCaseID = request.euxCaseId
                         institution = request.institutions
                         vedtakId = request.vedtakId ?: ""
@@ -102,44 +96,11 @@ data class ApiRequest(
                         personNr = fodselsnr
                         vedtakId = request.vedtakId ?: ""
                         partSedAsJson[request.sed] = request.payload ?: "{}"
-                    if (request.buc == "P_BUC_02") {
-                        avdod = request.avdodfnr ?: throw MangelfulleInndataException("Mangler Personnr på Avdød")
-                        avdodAktorID = avdodaktoerID ?: throw MangelfulleInndataException("Mangler AktoerId på Avdød")
-                    }
-//                    if (request.payload != null) {
-//                        partSedAsJson[request.sed] = request.payload
-//                    }
-                        skipSedkey = request.skipSEDkey ?: listOf("PENSED")
-                    }
-                }
-                else -> throw MangelfulleInndataException("Mangler SED, eller ugyldig type SED")
-            }
-        }
 
-        //validatate request and convert to PrefillDataModel
-        fun buildPrefillDataModelOnNew(request: ApiRequest, fodselsnr: String): PrefillDataModel {
-            return when {
-                //request.sakId == null -> throw MangelfulleInndataException("Mangler Saksnummer")
-                request.sed == null -> throw MangelfulleInndataException("Mangler SED")
-                request.aktoerId == null -> throw MangelfulleInndataException("Mangler AktoerID")
-                request.buc == null -> throw MangelfulleInndataException("Mangler BUC")
-                request.subjectArea == null -> throw MangelfulleInndataException("Mangler Subjekt/Sektor")
-                request.institutions == null -> throw MangelfulleInndataException("Mangler Institusjoner")
-
-                //Denne validering og utfylling kan benyttes på SED P2000,P2100,P2200
-                SEDType.isValidSEDType(request.sed) -> {
-                    logger.info("ALL SED on new RinaCase -> SED: ${request.sed}")
-                    val pinid = fodselsnr
-                    PrefillDataModel().apply {
-                        penSaksnummer = request.sakId
-                        buc = request.buc
-                        rinaSubject = request.subjectArea
-                        sed = SED(request.sed)
-                        aktoerID = request.aktoerId
-                        personNr = pinid
-                        institution = request.institutions
-                        vedtakId = request.vedtakId ?: ""
-                        partSedAsJson[request.sed] = request.payload ?: "{}"
+                        if (request.buc == "P_BUC_02") {
+                            avdod = request.avdodfnr ?: throw MangelfulleInndataException("Mangler Personnr på Avdød")
+                            avdodAktorID = avdodaktoerID ?: throw MangelfulleInndataException("Mangler AktoerId på Avdød")
+                        }
                         skipSedkey = request.skipSEDkey ?: listOf("PENSED")
                     }
                 }
