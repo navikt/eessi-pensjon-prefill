@@ -428,7 +428,7 @@ data class Dager(
 
 //P5000
 data class TotalSum(
-		val kvaltal: String? = null,
+		val kvartal: String? = null,
 		val aar: String? = null,
 		val uker: String? = null,
 		val dager: Dager? = null,
