@@ -140,8 +140,7 @@ class PrefillP2000_AP_LOP_UTLANDTest {
                 aktoerId = "1000060964183",
                 buc = buc,
                 subjectArea = "Pensjon",
-                payload = payload,
-                mockSED = true
+                payload = payload
         )
     }
 

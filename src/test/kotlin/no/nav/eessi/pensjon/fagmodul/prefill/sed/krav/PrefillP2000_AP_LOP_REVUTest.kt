@@ -144,8 +144,7 @@ class PrefillP2000_AP_LOP_REVUTest {
                 aktoerId = "1000060964183",
                 buc = buc,
                 subjectArea = "Pensjon",
-                payload = payload,
-                mockSED = true
+                payload = payload
         )
     }
 

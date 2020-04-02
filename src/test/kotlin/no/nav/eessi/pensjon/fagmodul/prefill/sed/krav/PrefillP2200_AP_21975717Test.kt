@@ -119,10 +119,8 @@ class PrefillP2200_AP_21975717Test {
                 aktoerId = "1000060964183",
                 buc = buc,
                 subjectArea = "Pensjon",
-                payload = payload,
-                mockSED = true
+                payload = payload
         )
     }
-
 }
 
