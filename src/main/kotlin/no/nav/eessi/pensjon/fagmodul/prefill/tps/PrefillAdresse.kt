@@ -2,7 +2,7 @@ package no.nav.eessi.pensjon.fagmodul.prefill.tps
 
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Adresse
 import no.nav.eessi.pensjon.services.geo.PostnummerService
-import no.nav.eessi.pensjon.services.kodeverk.KodeverkService
+import no.nav.eessi.pensjon.services.kodeverk.KodeverkKlient
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bostedsadresse
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Gateadresse
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Landkoder
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class PrefillAdresse ( private val postnummerService: PostnummerService,
-                       private val kodeverkService: KodeverkService) {
+                       private val kodeverkKlient: KodeverkKlient) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillAdresse::class.java) }
 
@@ -71,6 +71,6 @@ class PrefillAdresse ( private val postnummerService: PostnummerService,
     }
 
     fun hentLandkode(landkodertps: Landkoder): String? {
-        return kodeverkService.finnLandkode2(landkodertps.value)
+        return kodeverkKlient.finnLandkode2(landkodertps.value)
     }
 }

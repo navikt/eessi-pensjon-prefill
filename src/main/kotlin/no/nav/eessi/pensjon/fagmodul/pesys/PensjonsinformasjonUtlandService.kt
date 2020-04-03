@@ -4,7 +4,7 @@ import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.pesys.RinaTilPenMapper.parsePensjonsgrad
 import no.nav.eessi.pensjon.fagmodul.pesys.mockup.MockSED001
 import no.nav.eessi.pensjon.fagmodul.sedmodel.*
-import no.nav.eessi.pensjon.services.kodeverk.KodeverkService
+import no.nav.eessi.pensjon.services.kodeverk.KodeverkKlient
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
@@ -12,7 +12,7 @@ import java.time.LocalDate
 
 //TODO bytt ut Mocks med ekte kode
 @Service
-class PensjonsinformasjonUtlandService(private val kodeverkService: KodeverkService) {
+class PensjonsinformasjonUtlandService(private val kodeverkKlient: KodeverkKlient) {
 
     private val mockSed = MockSED001()
 
@@ -90,8 +90,7 @@ class PensjonsinformasjonUtlandService(private val kodeverkService: KodeverkServ
 
         //https://confluence.adeo.no/pages/viewpage.action?pageId=203178268
         //Kode om fra Alpha2 - Alpha3 teng i Avtaleland (eu, eøs og par andre)  og Statborgerskap (alle verdens land)
-//        val landAlpha3 = landkodeService.finnLandkode3(p2000.nav?.bruker?.person?.statsborgerskap?.first()?.land ?: "N/A")
-        val landAlpha3 = kodeverkService.finnLandkode3(p2000.nav?.bruker?.person?.statsborgerskap?.first()?.land ?: "N/A")
+        val landAlpha3 = finnLandkode3(p2000)
 
         return KravUtland(
                 //P2000 9.1
@@ -118,7 +117,7 @@ class PensjonsinformasjonUtlandService(private val kodeverkService: KodeverkServ
                 utland = hentSkjemaUtland(seds),
 
                 //denne må hentes utenfor SED finne orginal avsender-land for BUC/SED..
-                soknadFraLand = kodeverkService.finnLandkode3("SE"),
+                soknadFraLand = kodeverkKlient.finnLandkode3("SE"),
                 //avtale mellom land? SED sendes kun fra EU/EØS? blir denne alltid true?
                 vurdereTrygdeavtale = true,
 
@@ -222,7 +221,7 @@ class PensjonsinformasjonUtlandService(private val kodeverkService: KodeverkServ
             val arbeid = it
 
             val landAlpha2 = arbeid.adresseFirma?.land ?: "N/A"
-            val landAlpha3 = kodeverkService.finnLandkode3(landAlpha2) ?: ""
+            val landAlpha3 = kodeverkKlient.finnLandkode3(landAlpha2) ?: ""
 
             val periode = hentFomEllerTomFraPeriode(arbeid.periode)
             var fom: LocalDate? = null
@@ -267,7 +266,7 @@ class PensjonsinformasjonUtlandService(private val kodeverkService: KodeverkServ
             val bo = it
 
             val landA2 = bo.land ?: "N/A"
-            val landAlpha3 = kodeverkService.finnLandkode3(bo.land ?: "N/A") ?: ""
+            val landAlpha3 = kodeverkKlient.finnLandkode3(bo.land ?: "N/A") ?: ""
 
             val periode = hentFomEllerTomFraPeriode(bo.periode)
             logger.debug("oppretter bo P4000")
@@ -357,7 +356,7 @@ class PensjonsinformasjonUtlandService(private val kodeverkService: KodeverkServ
             val pin = hentPinIdFraBoArbeidLand(p5000, it.land ?: "N/A")
 
             list.add(Utlandsoppholditem(
-                    land = kodeverkService.finnLandkode3(it.land ?: "N/A"),
+                    land = kodeverkKlient.finnLandkode3(it.land ?: "N/A"),
                     fom = fom,
                     tom = tom,
                     bodd = true,

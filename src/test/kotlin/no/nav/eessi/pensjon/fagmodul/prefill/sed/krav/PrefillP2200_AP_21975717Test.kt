@@ -18,7 +18,7 @@ import no.nav.eessi.pensjon.fagmodul.prefill.tps.NavFodselsnummer
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillAdresse
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.services.geo.PostnummerService
-import no.nav.eessi.pensjon.services.kodeverk.KodeverkServiceMock
+import no.nav.eessi.pensjon.services.kodeverk.KodeverkKlient
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import no.nav.eessi.pensjon.utils.toJson
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -52,8 +52,7 @@ class PrefillP2200_AP_21975717Test {
         ))
         prefillNav = PrefillNav(
                 brukerFromTPS = persondataFraTPS,
-                prefillAdresse = PrefillAdresse(PostnummerService(), KodeverkServiceMock()),
-//                prefillAdresse = mock<PrefillAdresse>(),
+                prefillAdresse = PrefillAdresse(PostnummerService(), kodeverkKlient),
                 institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO")
 
         dataFromPEN = lesPensjonsdataFraFil("P2000_21975717_AP_UTLAND.xml")

@@ -13,7 +13,7 @@ import no.nav.eessi.pensjon.fagmodul.sedmodel.*
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Bruker
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Person
 import no.nav.eessi.pensjon.services.geo.PostnummerService
-import no.nav.eessi.pensjon.services.kodeverk.KodeverkServiceMock
+import no.nav.eessi.pensjon.services.kodeverk.KodeverkKlient
 import no.nav.eessi.pensjon.utils.convertToXMLocal
 import no.nav.eessi.pensjon.utils.createXMLCalendarFromString
 import no.nav.eessi.pensjon.utils.mapAnyToJson
