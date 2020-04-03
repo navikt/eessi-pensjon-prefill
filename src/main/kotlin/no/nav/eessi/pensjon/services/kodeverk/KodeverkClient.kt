@@ -24,11 +24,11 @@ import java.util.*
 
 @Component
 @CacheConfig(cacheNames = ["kodeVerk"])
-class KodeverkKlient(private val kodeRestTemplate: RestTemplate,
+class KodeverkClient(private val kodeRestTemplate: RestTemplate,
                      @Value("\${NAIS_APP_NAME}") private val appName: String,
                      @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper(SimpleMeterRegistry())) {
 
-    private val logger = LoggerFactory.getLogger(KodeverkKlient::class.java)
+    private val logger = LoggerFactory.getLogger(KodeverkClient::class.java)
 
     fun hentAlleLandkoder() = hentLandKoder().toJson()
 

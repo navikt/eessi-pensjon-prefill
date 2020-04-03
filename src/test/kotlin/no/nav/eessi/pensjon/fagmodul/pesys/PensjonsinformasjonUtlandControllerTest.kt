@@ -1,6 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.pesys
 
-import no.nav.eessi.pensjon.services.kodeverk.KodeverkKlient
+import no.nav.eessi.pensjon.services.kodeverk.KodeverkClient
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.typeRefs
@@ -20,13 +20,13 @@ class PensjonsinformasjonUtlandControllerTest {
     lateinit var controller: PensjonsinformasjonUtlandController
 
     @Mock
-    lateinit var kodeverkKlient: KodeverkKlient
+    lateinit var kodeverkClient: KodeverkClient
 
     lateinit var pensjonsinformasjonUtlandService : PensjonsinformasjonUtlandService
 
     @BeforeEach
     fun setup() {
-        pensjonsinformasjonUtlandService = PensjonsinformasjonUtlandService(kodeverkKlient)
+        pensjonsinformasjonUtlandService = PensjonsinformasjonUtlandService(kodeverkClient)
         controller = PensjonsinformasjonUtlandController(pensjonsinformasjonUtlandService)
     }
 

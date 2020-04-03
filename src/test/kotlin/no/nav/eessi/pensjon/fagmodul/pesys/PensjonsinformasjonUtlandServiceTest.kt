@@ -2,7 +2,7 @@ package no.nav.eessi.pensjon.fagmodul.pesys
 
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.whenever
-import no.nav.eessi.pensjon.services.kodeverk.KodeverkKlient
+import no.nav.eessi.pensjon.services.kodeverk.KodeverkClient
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
@@ -15,20 +15,20 @@ import org.mockito.junit.jupiter.MockitoExtension
 class PensjonsinformasjonUtlandServiceTest {
 
     @Mock
-    lateinit var kodeverkKlient: KodeverkKlient
+    lateinit var kodeverkClient: KodeverkClient
 
     lateinit var service : PensjonsinformasjonUtlandService
 
     @BeforeEach
     fun setup() {
-        service = PensjonsinformasjonUtlandService(kodeverkKlient)
+        service = PensjonsinformasjonUtlandService(kodeverkClient)
     }
 
     @Test
     fun hentKravUtlandMockBuc() {
-        doReturn("SWE").whenever(kodeverkKlient).finnLandkode3("SE")
-        doReturn("DEU").whenever(kodeverkKlient).finnLandkode3("DE")
-        doReturn("DNK").whenever(kodeverkKlient).finnLandkode3("DK")
+        doReturn("SWE").whenever(kodeverkClient).finnLandkode3("SE")
+        doReturn("DEU").whenever(kodeverkClient).finnLandkode3("DE")
+        doReturn("DNK").whenever(kodeverkClient).finnLandkode3("DK")
 
 
         val response = service.hentKravUtland(1099)

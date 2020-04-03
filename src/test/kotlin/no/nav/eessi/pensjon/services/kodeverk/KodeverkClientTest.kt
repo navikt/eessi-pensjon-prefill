@@ -20,16 +20,16 @@ import java.nio.file.Files
 import java.nio.file.Paths
 
 @ExtendWith(MockitoExtension::class)
-class KodeverkKlientTest {
+class KodeverkClientTest {
 
     @Mock
     private lateinit var mockrestTemplate: RestTemplate
 
-    private lateinit var kodeverkKlient: KodeverkKlient
+    private lateinit var kodeverkClient: KodeverkClient
 
     @BeforeEach
     fun setup() {
-       kodeverkKlient = KodeverkKlient(mockrestTemplate, "eessi-fagmodul")
+       kodeverkClient = KodeverkClient(mockrestTemplate, "eessi-fagmodul")
     }
 
     @Test
@@ -46,7 +46,7 @@ class KodeverkKlientTest {
                         any<HttpEntity<Unit>>(),
                         eq(String::class.java)
                 )
-        val actual = kodeverkKlient.finnLandkode2(landkode3)
+        val actual = kodeverkClient.finnLandkode2(landkode3)
         Assertions.assertEquals(expected, actual)
     }
 
@@ -65,7 +65,7 @@ class KodeverkKlientTest {
                         eq(String::class.java)
                 )
 
-        val actual = kodeverkKlient.finnLandkode3(landkode2)
+        val actual = kodeverkClient.finnLandkode3(landkode2)
 
         Assertions.assertEquals(expected, actual)
     }
@@ -85,7 +85,7 @@ class KodeverkKlientTest {
                         eq(String::class.java)
                 )
 
-        val actual = kodeverkKlient.finnLandkode3(landkode2)
+        val actual = kodeverkClient.finnLandkode3(landkode2)
 
         Assertions.assertEquals(expected, actual)
     }
@@ -102,7 +102,7 @@ class KodeverkKlientTest {
                         any<HttpEntity<Unit>>(),
                         eq(String::class.java)
                 )
-        val actual = kodeverkKlient.hentLandkoderAlpha2()
+        val actual = kodeverkClient.hentLandkoderAlpha2()
 
         Assertions.assertEquals("ZW", actual.last())
         Assertions.assertEquals(249, actual.size)
@@ -120,7 +120,7 @@ class KodeverkKlientTest {
                         eq(String::class.java)
                 )
 
-        val json = kodeverkKlient.hentAlleLandkoder()
+        val json = kodeverkClient.hentAlleLandkoder()
 
         val list = mapJsonToAny(json, typeRefs<List<Landkode>>())
 
@@ -146,7 +146,7 @@ class KodeverkKlientTest {
                         eq(String::class.java)
                 )
 
-        val actual = kodeverkKlient.finnLandkode3(landkode2)
+        val actual = kodeverkClient.finnLandkode3(landkode2)
 
         Assertions.assertEquals(expected, actual)
 

@@ -13,7 +13,7 @@ import no.nav.eessi.pensjon.fagmodul.sedmodel.*
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Bruker
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Person
 import no.nav.eessi.pensjon.services.geo.PostnummerService
-import no.nav.eessi.pensjon.services.kodeverk.KodeverkKlient
+import no.nav.eessi.pensjon.services.kodeverk.KodeverkClient
 import no.nav.eessi.pensjon.utils.convertToXMLocal
 import no.nav.eessi.pensjon.utils.createXMLCalendarFromString
 import no.nav.eessi.pensjon.utils.mapAnyToJson
@@ -30,7 +30,7 @@ import java.time.LocalDate
 class PrefillNavTest {
 
     @Mock
-    lateinit var kodeverkKlient: KodeverkKlient
+    lateinit var kodeverkClient: KodeverkClient
 
     lateinit var prefillNav: PrefillNav
 
@@ -44,7 +44,7 @@ class PrefillNavTest {
 
         prefillNav = PrefillNav(
                 mockBrukerFromTPS,
-                PrefillAdresse(PostnummerService(), kodeverkKlient),
+                PrefillAdresse(PostnummerService(), kodeverkClient),
                 someInstitutionId,
                 someIntitutionNavn)
     }
@@ -66,7 +66,7 @@ class PrefillNavTest {
 
     @Test
     fun `minimal prefill med barn`() {
-        doReturn("NO").whenever(kodeverkKlient).finnLandkode2("NOR")
+        doReturn("NO").whenever(kodeverkClient).finnLandkode2("NOR")
 
         val foreldersPin = "somePersonNr"
         val prefillData = PrefillDataModel().apply {
@@ -99,7 +99,7 @@ class PrefillNavTest {
 
     @Test
     fun `prefill med barn og relasjon Far`() {
-        doReturn("NO").whenever(kodeverkKlient).finnLandkode2("NOR")
+        doReturn("NO").whenever(kodeverkClient).finnLandkode2("NOR")
 
         val somePersonNr = FodselsnummerMother.generateRandomFnr(57)
         val someBarnPersonNr = FodselsnummerMother.generateRandomFnr(17)
@@ -138,7 +138,7 @@ class PrefillNavTest {
 
     @Test
     fun `prefill med familie relasjon person og ektefelle`() {
-        doReturn("NO").whenever(kodeverkKlient).finnLandkode2("NOR")
+        doReturn("NO").whenever(kodeverkClient).finnLandkode2("NOR")
 
         val somePersonNr = FodselsnummerMother.generateRandomFnr(60)
         val somerEktefellePersonNr = FodselsnummerMother.generateRandomFnr(50)
@@ -180,7 +180,7 @@ class PrefillNavTest {
 
     @Test
     fun `prefill med samboerpar relasjon person og partner`() {
-        doReturn("NO").whenever(kodeverkKlient).finnLandkode2("NOR")
+        doReturn("NO").whenever(kodeverkClient).finnLandkode2("NOR")
 
         val somePersonNr = FodselsnummerMother.generateRandomFnr(60)
         val somerEktefellePersonNr = FodselsnummerMother.generateRandomFnr(50)
@@ -220,7 +220,7 @@ class PrefillNavTest {
 
     @Test
     fun `prefill med samboer relasjon person og bofellesskap`() {
-        doReturn("NO").whenever(kodeverkKlient).finnLandkode2("NOR")
+        doReturn("NO").whenever(kodeverkClient).finnLandkode2("NOR")
 
         val somePersonNr = FodselsnummerMother.generateRandomFnr(60)
         val somerEktefellePersonNr = FodselsnummerMother.generateRandomFnr(50)
@@ -260,7 +260,7 @@ class PrefillNavTest {
 
     @Test
     fun `prefill person singel med mellomnavn`() {
-        doReturn("NO").whenever(kodeverkKlient).finnLandkode2("NOR")
+        doReturn("NO").whenever(kodeverkClient).finnLandkode2("NOR")
 
         val somePersonNr = FodselsnummerMother.generateRandomFnr(60)
 
@@ -327,7 +327,7 @@ class PrefillNavTest {
         val brukeren = lagTPSBruker(brukerensPin, "Ole", "Brum")
 
         whenever(mockBrukerFromTPS.hentBrukerFraTPS(brukerensPin)).thenReturn(brukeren)
-        doReturn("NO").whenever(kodeverkKlient).finnLandkode2("NOR")
+        doReturn("NO").whenever(kodeverkClient).finnLandkode2("NOR")
 
         val actual = prefillNav.prefill(prefillData)
 
