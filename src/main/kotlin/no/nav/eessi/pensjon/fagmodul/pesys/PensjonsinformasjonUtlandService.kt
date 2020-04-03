@@ -126,6 +126,10 @@ class PensjonsinformasjonUtlandService(private val kodeverkService: KodeverkServ
         )
     }
 
+    fun finnLandkode3(p2000: SED): String? {
+        return kodeverkKlient.finnLandkode3(p2000.nav?.bruker?.person?.statsborgerskap?.first()?.land ?: "N/A")
+    }
+
     //finnes verge ktp 7.1 og 7.2 settes VERGE hvis ikke BRUKER
     fun hentInitiertAv(p2000: SED): String {
         val vergeetter = p2000.nav?.verge?.person?.etternavn.orEmpty()

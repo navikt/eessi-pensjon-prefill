@@ -8,10 +8,17 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.Mock
+import org.mockito.junit.jupiter.MockitoExtension
 
+@ExtendWith(MockitoExtension::class)
 class PrefillAdresseTest{
 
     lateinit var prefillAdresse: PrefillAdresse
+
+    @Mock
+    lateinit var kodeverkKlient: KodeverkKlient
 
     @BeforeEach
     fun beforeStart() {
@@ -20,6 +27,7 @@ class PrefillAdresseTest{
 
     @Test
     fun `create personAdresse`() {
+        doReturn("NO").whenever(kodeverkKlient).finnLandkode2("NOR")
 
         val landkode = Landkoder()
         landkode.value = "NOR"
@@ -55,7 +63,6 @@ class PrefillAdresseTest{
         val acual = prefillAdresse.createPersonAdresse(bruker ?: Bruker())
 
         assertEquals(null, acual)
-
     }
 
     @Test
@@ -68,6 +75,4 @@ class PrefillAdresseTest{
         assertEquals(null, acual)
 
     }
-
-
 }
