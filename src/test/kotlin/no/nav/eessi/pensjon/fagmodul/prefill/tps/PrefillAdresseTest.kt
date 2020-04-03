@@ -1,25 +1,35 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.tps
 
+import com.nhaarman.mockitokotlin2.doReturn
+import com.nhaarman.mockitokotlin2.whenever
 import no.nav.eessi.pensjon.services.geo.PostnummerService
-import no.nav.eessi.pensjon.services.kodeverk.KodeverkServiceMock
+import no.nav.eessi.pensjon.services.kodeverk.KodeverkClient
 import no.nav.eessi.pensjon.services.personv3.BrukerMock
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.Mock
+import org.mockito.junit.jupiter.MockitoExtension
 
+@ExtendWith(MockitoExtension::class)
 class PrefillAdresseTest{
 
     lateinit var prefillAdresse: PrefillAdresse
 
+    @Mock
+    lateinit var kodeverkClient: KodeverkClient
+
     @BeforeEach
     fun beforeStart() {
-        prefillAdresse = PrefillAdresse(PostnummerService(), KodeverkServiceMock())
+        prefillAdresse = PrefillAdresse(PostnummerService(), kodeverkClient)
     }
 
     @Test
     fun `create personAdresse`() {
+        doReturn("NO").whenever(kodeverkClient).finnLandkode2("NOR")
 
         val landkode = Landkoder()
         landkode.value = "NOR"
@@ -55,7 +65,6 @@ class PrefillAdresseTest{
         val acual = prefillAdresse.createPersonAdresse(bruker ?: Bruker())
 
         assertEquals(null, acual)
-
     }
 
     @Test
@@ -68,6 +77,4 @@ class PrefillAdresseTest{
         assertEquals(null, acual)
 
     }
-
-
 }

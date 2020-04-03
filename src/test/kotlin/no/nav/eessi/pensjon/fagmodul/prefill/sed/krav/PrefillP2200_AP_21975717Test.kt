@@ -1,5 +1,7 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed.krav
 
+import com.nhaarman.mockitokotlin2.doReturn
+import com.nhaarman.mockitokotlin2.whenever
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.prefill.ApiRequest
 import no.nav.eessi.pensjon.fagmodul.prefill.model.Prefill
@@ -16,7 +18,7 @@ import no.nav.eessi.pensjon.fagmodul.prefill.tps.NavFodselsnummer
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillAdresse
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.services.geo.PostnummerService
-import no.nav.eessi.pensjon.services.kodeverk.KodeverkServiceMock
+import no.nav.eessi.pensjon.services.kodeverk.KodeverkClient
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import no.nav.eessi.pensjon.utils.toJson
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -24,10 +26,14 @@ import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
 
 @ExtendWith(MockitoExtension::class)
 class PrefillP2200_AP_21975717Test {
+
+    @Mock
+    lateinit var kodeverkClient: KodeverkClient
 
     private val personFnr = generateRandomFnr(68)
 
@@ -46,8 +52,7 @@ class PrefillP2200_AP_21975717Test {
         ))
         prefillNav = PrefillNav(
                 brukerFromTPS = persondataFraTPS,
-                prefillAdresse = PrefillAdresse(PostnummerService(), KodeverkServiceMock()),
-//                prefillAdresse = mock<PrefillAdresse>(),
+                prefillAdresse = PrefillAdresse(PostnummerService(), kodeverkClient),
                 institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO")
 
         dataFromPEN = lesPensjonsdataFraFil("P2000_21975717_AP_UTLAND.xml")
@@ -64,6 +69,8 @@ class PrefillP2200_AP_21975717Test {
 
     @Test
     fun `forventet korrekt utfylt P2200 uforerpensjon med mockdata fra testfiler`() {
+        doReturn("NO").whenever(kodeverkClient).finnLandkode2("NOR")
+
         val p2200 = prefill.prefill(prefillData)
 
         assertEquals(null, p2200.nav?.barn)
@@ -99,7 +106,6 @@ class PrefillP2200_AP_21975717Test {
 
         val navfnr = NavFodselsnummer(p2200.nav?.ektefelle?.person?.pin?.get(0)?.identifikator!!)
         assertEquals(70, navfnr.getAge())
-
     }
 
     @Test

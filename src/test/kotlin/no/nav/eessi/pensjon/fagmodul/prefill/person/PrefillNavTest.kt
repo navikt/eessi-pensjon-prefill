@@ -13,22 +13,41 @@ import no.nav.eessi.pensjon.fagmodul.sedmodel.*
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Bruker
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Person
 import no.nav.eessi.pensjon.services.geo.PostnummerService
-import no.nav.eessi.pensjon.services.kodeverk.KodeverkServiceMock
+import no.nav.eessi.pensjon.services.kodeverk.KodeverkClient
 import no.nav.eessi.pensjon.utils.convertToXMLocal
 import no.nav.eessi.pensjon.utils.createXMLCalendarFromString
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.*
 import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.Mock
+import org.mockito.junit.jupiter.MockitoExtension
 import java.time.LocalDate
 
-internal class PrefillNavTest {
+@ExtendWith(MockitoExtension::class)
+class PrefillNavTest {
 
-    val mockBrukerFromTPS = mock<BrukerFromTPS>()
-    val someInstitutionId = "enInstId"
-    val someIntitutionNavn = "instNavn"
-    val prefillNav = PrefillNav(mockBrukerFromTPS, PrefillAdresse(PostnummerService(), KodeverkServiceMock()), someInstitutionId, someIntitutionNavn)
-    val somePenSaksnr = "somePenSaksnr"
+    @Mock
+    lateinit var kodeverkClient: KodeverkClient
+
+    lateinit var prefillNav: PrefillNav
+
+    private val somePenSaksnr = "somePenSaksnr"
+    private val someInstitutionId = "enInstId"
+    private val someIntitutionNavn = "instNavn"
+    private val mockBrukerFromTPS = mock<BrukerFromTPS>()
+
+    @BeforeEach
+    fun beforeStart() {
+
+        prefillNav = PrefillNav(
+                mockBrukerFromTPS,
+                PrefillAdresse(PostnummerService(), kodeverkClient),
+                someInstitutionId,
+                someIntitutionNavn)
+    }
 
     @Test
     fun `prefill med tom respons fra TPS`() {
@@ -47,6 +66,8 @@ internal class PrefillNavTest {
 
     @Test
     fun `minimal prefill med barn`() {
+        doReturn("NO").whenever(kodeverkClient).finnLandkode2("NOR")
+
         val foreldersPin = "somePersonNr"
         val prefillData = PrefillDataModel().apply {
             penSaksnummer = somePenSaksnr
@@ -78,8 +99,10 @@ internal class PrefillNavTest {
 
     @Test
     fun `prefill med barn og relasjon Far`() {
-        val somePersonNr = FodselsnummerMother.generateRandomFnr(57).toString()
-        val someBarnPersonNr = FodselsnummerMother.generateRandomFnr(17).toString()
+        doReturn("NO").whenever(kodeverkClient).finnLandkode2("NOR")
+
+        val somePersonNr = FodselsnummerMother.generateRandomFnr(57)
+        val someBarnPersonNr = FodselsnummerMother.generateRandomFnr(17)
 
         val prefillData = PrefillDataModel().apply {
             penSaksnummer = somePenSaksnr
@@ -115,8 +138,10 @@ internal class PrefillNavTest {
 
     @Test
     fun `prefill med familie relasjon person og ektefelle`() {
-        val somePersonNr = FodselsnummerMother.generateRandomFnr(60).toString()
-        val somerEktefellePersonNr = FodselsnummerMother.generateRandomFnr(50).toString()
+        doReturn("NO").whenever(kodeverkClient).finnLandkode2("NOR")
+
+        val somePersonNr = FodselsnummerMother.generateRandomFnr(60)
+        val somerEktefellePersonNr = FodselsnummerMother.generateRandomFnr(50)
 
         val personfnr = NavFodselsnummer(somePersonNr)
         val ektefnr = NavFodselsnummer(somerEktefellePersonNr)
@@ -155,8 +180,10 @@ internal class PrefillNavTest {
 
     @Test
     fun `prefill med samboerpar relasjon person og partner`() {
-        val somePersonNr = FodselsnummerMother.generateRandomFnr(60).toString()
-        val somerEktefellePersonNr = FodselsnummerMother.generateRandomFnr(50).toString()
+        doReturn("NO").whenever(kodeverkClient).finnLandkode2("NOR")
+
+        val somePersonNr = FodselsnummerMother.generateRandomFnr(60)
+        val somerEktefellePersonNr = FodselsnummerMother.generateRandomFnr(50)
 
         val personfnr = NavFodselsnummer(somePersonNr)
         val ektefnr = NavFodselsnummer(somerEktefellePersonNr)
@@ -193,8 +220,10 @@ internal class PrefillNavTest {
 
     @Test
     fun `prefill med samboer relasjon person og bofellesskap`() {
-        val somePersonNr = FodselsnummerMother.generateRandomFnr(60).toString()
-        val somerEktefellePersonNr = FodselsnummerMother.generateRandomFnr(50).toString()
+        doReturn("NO").whenever(kodeverkClient).finnLandkode2("NOR")
+
+        val somePersonNr = FodselsnummerMother.generateRandomFnr(60)
+        val somerEktefellePersonNr = FodselsnummerMother.generateRandomFnr(50)
 
         val personfnr = NavFodselsnummer(somePersonNr)
         val ektefnr = NavFodselsnummer(somerEktefellePersonNr)
@@ -231,7 +260,9 @@ internal class PrefillNavTest {
 
     @Test
     fun `prefill person singel med mellomnavn`() {
-        val somePersonNr = FodselsnummerMother.generateRandomFnr(60).toString()
+        doReturn("NO").whenever(kodeverkClient).finnLandkode2("NOR")
+
+        val somePersonNr = FodselsnummerMother.generateRandomFnr(60)
 
         val personfnr = NavFodselsnummer(somePersonNr)
         val personFdato = personfnr.getBirthDate().toString()
@@ -296,6 +327,7 @@ internal class PrefillNavTest {
         val brukeren = lagTPSBruker(brukerensPin, "Ole", "Brum")
 
         whenever(mockBrukerFromTPS.hentBrukerFraTPS(brukerensPin)).thenReturn(brukeren)
+        doReturn("NO").whenever(kodeverkClient).finnLandkode2("NOR")
 
         val actual = prefillNav.prefill(prefillData)
 
@@ -324,14 +356,11 @@ internal class PrefillNavTest {
     }
 
     private fun createPersonMedEktefellPartnet(personPersonnr: String, ektefellePersonnr: String, relasjonType: String) : Pair<no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker, no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker> {
-        val somePersonNr = personPersonnr
-        val somerEktefellePersonNr = ektefellePersonnr
+        val personfnr = NavFodselsnummer(personPersonnr)
+        val ektefnr = NavFodselsnummer(ektefellePersonnr)
 
-        val personfnr = NavFodselsnummer(somePersonNr)
-        val ektefnr = NavFodselsnummer(somerEktefellePersonNr)
-
-        val ektefelle = lagTPSBruker(somerEktefellePersonNr, "Jonna", "Dolla")
-        val person    = lagTPSBruker(somePersonNr, "Ola", "Testbruker")
+        val ektefelle = lagTPSBruker(ektefellePersonnr, "Jonna", "Dolla")
+        val person    = lagTPSBruker(personPersonnr, "Ola", "Testbruker")
 
         person.withHarFraRolleI(Familierelasjon().withTilRolle(Familierelasjoner().withValue(relasjonType)).withTilPerson(ektefelle))
         person.withFoedselsdato(Foedselsdato().withFoedselsdato( convertToXMLocal(personfnr.getBirthDate())))
