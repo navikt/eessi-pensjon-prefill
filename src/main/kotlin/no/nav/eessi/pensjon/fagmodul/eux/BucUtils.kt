@@ -16,8 +16,6 @@ import java.time.ZoneId
 
 class BucUtils(private val buc: Buc ) {
 
-    private val logger = LoggerFactory.getLogger(BucUtils::class.java)
-
     private fun getBuc(): Buc {
         return buc
     }
@@ -56,8 +54,6 @@ class BucUtils(private val buc: Buc ) {
             null
         }
     }
-
-    fun getSubject() = buc.subject ?: throw NoSuchFieldException("Fant ikke Subject")
 
     fun getCreatorContryCode(): Map<String, String> {
         val countryCode = getCreator()?.organisation?.countryCode ?: "N/A"
@@ -226,8 +222,6 @@ class BucUtils(private val buc: Buc ) {
 
     fun getParticipantsLand() = getParticipantsAsInstitusjonItem().map { it.country }.joinToString(separator = ",")
 
-    fun getBucAction() = getBuc().actions
-
     fun getCreatableSEDs() =
             (getBuc().actions ?: emptyList())
                     .filter { it.documentType != null }
@@ -236,7 +230,7 @@ class BucUtils(private val buc: Buc ) {
                     .sortedBy { it }
                     .toList()
 
-    fun getRinaAksjon(): List<RinaAksjon> {
+    fun getRinaAksjoner(): List<RinaAksjon> {
         val aksjoner = mutableListOf<RinaAksjon>()
         val actionitems = getBuc().actions
         val buctype = getProcessDefinitionName()

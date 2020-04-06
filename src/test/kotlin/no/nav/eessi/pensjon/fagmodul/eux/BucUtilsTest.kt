@@ -162,14 +162,8 @@ class BucUtilsTest {
     }
 
     @Test
-    fun getActions() {
-        val result = bucUtils.getBucAction()
-        assertEquals(18, result?.size)
-    }
-
-    @Test
     fun getRinaAksjoner() {
-        val result = bucUtils.getRinaAksjon()
+        val result = bucUtils.getRinaAksjoner()
         assertEquals(16, result.size)
         val rinaaksjon = result.get(5)
         assertEquals("P2000", rinaaksjon.dokumentType)
@@ -180,7 +174,7 @@ class BucUtilsTest {
 
     @Test
     fun getRinaAksjonerFilteredOnP() {
-        val result = bucUtils.getRinaAksjon()
+        val result = bucUtils.getRinaAksjoner()
         assertEquals(16, result.size)
         val rinaaksjon = result.get(5)
         assertEquals("P2000", rinaaksjon.dokumentType)
