@@ -16,8 +16,6 @@ import java.time.ZoneId
 
 class BucUtils(private val buc: Buc ) {
 
-    private val logger = LoggerFactory.getLogger(BucUtils::class.java)
-
     private fun getBuc(): Buc {
         return buc
     }
@@ -56,8 +54,6 @@ class BucUtils(private val buc: Buc ) {
             null
         }
     }
-
-    fun getSubject() = buc.subject ?: throw NoSuchFieldException("Fant ikke Subject")
 
     fun getCreatorContryCode(): Map<String, String> {
         val countryCode = getCreator()?.organisation?.countryCode ?: "N/A"
@@ -226,26 +222,15 @@ class BucUtils(private val buc: Buc ) {
 
     fun getParticipantsLand() = getParticipantsAsInstitusjonItem().map { it.country }.joinToString(separator = ",")
 
-    fun getBucAction() = getBuc().actions
+    fun getCreatableSEDs() =
+            (getBuc().actions ?: emptyList())
+                    .filter { it.documentType != null }
+                    .filter { it.name == "Create" }
+                    .map { it.documentType!! }
+                    .sortedBy { it }
+                    .toList()
 
-    fun getAksjonListAsString() : List<String> {
-        val keywordCreate = "Create"
-        val actions = getBuc().actions ?: listOf()
-        val createAkjsonsliste = mutableListOf<String>()
-        for(item in actions) {
-            if (item.documentType != null && item.name == keywordCreate) {
-                createAkjsonsliste.add(item.documentType)
-            }
-        }
-        val aksjonlist = createAkjsonsliste
-                .sortedBy { it }
-                .toList()
-
-        logger.debug("Seds AksjonList size: ${aksjonlist.size}")
-        return aksjonlist
-    }
-
-    fun getRinaAksjon(): List<RinaAksjon> {
+    fun getRinaAksjoner(): List<RinaAksjon> {
         val aksjoner = mutableListOf<RinaAksjon>()
         val actionitems = getBuc().actions
         val buctype = getProcessDefinitionName()

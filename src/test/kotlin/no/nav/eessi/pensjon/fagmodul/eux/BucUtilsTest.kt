@@ -162,14 +162,8 @@ class BucUtilsTest {
     }
 
     @Test
-    fun getActions() {
-        val result = bucUtils.getBucAction()
-        assertEquals(18, result?.size)
-    }
-
-    @Test
     fun getRinaAksjoner() {
-        val result = bucUtils.getRinaAksjon()
+        val result = bucUtils.getRinaAksjoner()
         assertEquals(16, result.size)
         val rinaaksjon = result.get(5)
         assertEquals("P2000", rinaaksjon.dokumentType)
@@ -180,7 +174,7 @@ class BucUtilsTest {
 
     @Test
     fun getRinaAksjonerFilteredOnP() {
-        val result = bucUtils.getRinaAksjon()
+        val result = bucUtils.getRinaAksjoner()
         assertEquals(16, result.size)
         val rinaaksjon = result.get(5)
         assertEquals("P2000", rinaaksjon.dokumentType)
@@ -243,8 +237,8 @@ class BucUtilsTest {
     }
 
     @Test
-    fun `getAksjonListAsString   returns sorted list ok`(){
-        val actualOutput = bucUtils.getAksjonListAsString()
+    fun `getCreatableSEDs   returns sorted list ok`(){
+        val actualOutput = bucUtils.getCreatableSEDs()
 
         assertEquals(14, actualOutput.size)
         assertEquals("P5000", actualOutput[6])
@@ -252,7 +246,7 @@ class BucUtilsTest {
     }
 
     @Test
-    fun `getAksjonListAsString   returns sorted of one element ok`(){
+    fun `getCreatableSEDs   returns sorted of one element ok`(){
         //mocking data
         val actionitems = buc.actions
         actionitems?.forEach {
@@ -261,12 +255,12 @@ class BucUtilsTest {
         actionitems?.get(0)?.name = "Create"
 
         //run impl. for test
-        val actualOutput = bucUtils.getAksjonListAsString()
+        val actualOutput = bucUtils.getCreatableSEDs()
         assertEquals(1, actualOutput.size)
     }
 
     @Test
-    fun `getAksjonListAsString   returns no element`(){
+    fun `getCreatableSEDs   returns no element`(){
         //mocking data
         val actionitems = buc.actions
         actionitems?.forEach {
@@ -274,12 +268,12 @@ class BucUtilsTest {
         }
 
         //run impl. for test
-        val actualOutput = bucUtils.getAksjonListAsString()
+        val actualOutput = bucUtils.getCreatableSEDs()
         assertEquals(0, actualOutput.size)
     }
 
     @Test
-    fun `getAksjonListAsString   returns 16 sorted elements`(){
+    fun `getCreatableSEDs   returns 16 sorted elements`(){
         //mocking data
         val actionitems = buc.actions
         actionitems?.forEach {
@@ -287,7 +281,7 @@ class BucUtilsTest {
         }
 
         //run impl. for test
-        val actualOutput = bucUtils.getAksjonListAsString()
+        val actualOutput = bucUtils.getCreatableSEDs()
         assertEquals(16, actualOutput.size)
         assertEquals("P6000", actualOutput[9])
 

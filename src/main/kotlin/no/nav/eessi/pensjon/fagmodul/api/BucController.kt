@@ -101,7 +101,7 @@ class BucController(private val euxService: EuxService,
     fun getMuligeAksjoner(@PathVariable(value = "rinanr", required = true) rinanr: String): List<String> {
         logger.debug("Henter ut muligeaksjoner på valgt buc med rinanummer: $rinanr")
 
-        return BucUtils(euxService.getBuc(rinanr)).getAksjonListAsString()
+        return BucUtils(euxService.getBuc(rinanr)).getCreatableSEDs()
     }
 
     @ApiOperation("Henter ut en liste over saker på valgt aktoerid. ny api kall til eux")
