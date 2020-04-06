@@ -6,11 +6,11 @@ import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Vedlegg
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Buc
 import no.nav.eessi.pensjon.logging.AuditLogger
 import no.nav.eessi.pensjon.services.aktoerregister.AktoerregisterService
-import no.nav.eessi.pensjon.services.arkiv.HentdokumentInnholdResponse
-import no.nav.eessi.pensjon.services.arkiv.SafService
-import no.nav.eessi.pensjon.services.arkiv.VariantFormat
+import no.nav.eessi.pensjon.vedlegg.client.HentdokumentInnholdResponse
+import no.nav.eessi.pensjon.vedlegg.client.VariantFormat
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.typeRefs
+import no.nav.eessi.pensjon.vedlegg.VedleggService
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -31,7 +31,7 @@ class BucControllerTest {
     lateinit var auditLogger: AuditLogger
 
     @Mock
-    lateinit var mockSafService: SafService
+    lateinit var mockVedleggService: VedleggService
 
     @Spy
     lateinit var mockEuxService: EuxService
@@ -43,7 +43,7 @@ class BucControllerTest {
 
     @BeforeEach
     fun before() {
-        this.bucController = BucController(mockEuxService, mockSafService, mockAktoerIdHelper, auditLogger)
+        this.bucController = BucController(mockEuxService, mockVedleggService, mockAktoerIdHelper, auditLogger)
     }
 
 
@@ -80,7 +80,7 @@ class BucControllerTest {
 
         doReturn(HentdokumentInnholdResponse(vedlegg.filInnhold,
                 vedlegg.filnavn,
-                "application/pdf")).whenever(mockSafService).hentDokumentInnhold(any(), any(), any())
+                "application/pdf")).whenever(mockVedleggService).hentDokumentInnhold(any(), any(), any())
 
         doNothing().whenever(mockEuxService).leggTilVedleggPaaDokument(any(), any(), any(), any(), any())
 
