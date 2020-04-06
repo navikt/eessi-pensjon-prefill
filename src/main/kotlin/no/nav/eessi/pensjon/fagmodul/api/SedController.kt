@@ -185,7 +185,7 @@ class SedController(private val euxService: EuxService,
         return if (resultListe.isEmpty()) {
             getSeds(bucType)
         } else {
-            ResponseEntity.ok().body(sortAndFilterSeds(resultListe).toJsonSkipEmpty())
+            ResponseEntity.ok().body(filterSektorPandRelevantHorizontalSeds(resultListe).toJsonSkipEmpty())
         }
     }
 
@@ -199,16 +199,13 @@ class SedController(private val euxService: EuxService,
             ResponseEntity.ok().body(euxService.getAvailableSedOnBuc(bucType).toJsonSkipEmpty())
 
 
-    //fjerner uønskdede seder fra liste og kun filterer inn kun ønskelige og seder vi støtter
-    fun sortAndFilterSeds(list: List<String>): List<String> {
-        return list.filter {
-            it.startsWith("P")
-                    .or(it.startsWith("H12"))
-                    .or(it.startsWith("H07"))
-                    .or(it.startsWith("H02"))
-        }
-                .sorted()
-    }
+    fun filterSektorPandRelevantHorizontalSeds(list: List<String>) =
+            list.filter {
+                it.startsWith("P")
+                        .or(it.startsWith("H12"))
+                        .or(it.startsWith("H07"))
+                        .or(it.startsWith("H02"))
+            }.sorted()
 
     @ApiOperation("Henter ytelsetype fra P15000 på valgt Buc og Documentid")
     @GetMapping("/ytelseKravtype/{rinanr}/sedid/{documentid}")

@@ -118,7 +118,7 @@ class SedControllerTest {
     fun `Test liste med SED kun PensjonSED skal returneres`() {
         val list  = listOf("X005","P2000","P4000","H021","X06","P9000", "")
 
-        val result = sedController.sortAndFilterSeds(list)
+        val result = sedController.filterSektorPandRelevantHorizontalSeds(list)
 
         assertEquals(4, result.size)
         assertEquals("[H021, P2000, P4000, P9000]", result.toString())
@@ -128,7 +128,7 @@ class SedControllerTest {
     fun `Test liste med SED som skal returneres`() {
         val list  = listOf("X005","P2000","P4000","H020","H070", "X06", "H121","P9000", "XYZ")
 
-        val result = sedController.sortAndFilterSeds(list)
+        val result = sedController.filterSektorPandRelevantHorizontalSeds(list)
 
         assertEquals(6, result.size)
         assertEquals("[H020, H070, H121, P2000, P4000, P9000]", result.toString())
@@ -139,7 +139,7 @@ class SedControllerTest {
     fun `Test av liste med SEDer der kun PensjonSEDer skal returneres`() {
         val list  = listOf("X005","P2000","P4000","H020","X06","P9000", "")
 
-        val result = sedController.sortAndFilterSeds(list)
+        val result = sedController.filterSektorPandRelevantHorizontalSeds(list)
 
         assertEquals(4, result.size)
         assertEquals("[ \"H020\", \"P2000\", \"P4000\", \"P9000\" ]", mapAnyToJson(result))
