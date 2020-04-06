@@ -1,5 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.eux
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.BucSedResponse
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Rinasak
@@ -108,7 +109,30 @@ class EuxService (private val euxKlient: EuxKlient) {
     fun getBuc(euxCaseId: String): Buc {
         val body = euxKlient.getBucJson(euxCaseId)
         logger.debug("mapper buc om til BUC objekt-model")
-        return mapJsonToAny(body, typeRefs())
+        val buc: Buc = mapJsonToAny(body, typeRefs())
+        return buc.also { logBucContent(it) }
+    }
+
+    private fun logBucContent(buc: Buc) {
+        val aksjoner = buc.actions?.map {
+            mapOf(
+                    "displayName" to it.displayName,
+                    "documentType" to it.documentType,
+                    "name" to it.name,
+                    "operation" to it.operation)
+        }
+        val dokumenter = buc.documents?.map {
+            mapOf(
+                    "type" to it.type,
+                    "typeVersion" to it.typeVersion,
+                    "status" to it.status,
+                    "direction" to it.direction,
+                    "isSendExecuted" to it.isSendExecuted.toString()
+            )
+        }
+        logger.info("Buc-inneholder: " +
+                "[{\"actions\": ${aksjoner?.let { jacksonObjectMapper().writeValueAsString(it) }} }, " +
+                "{\"documents\": ${dokumenter?.let { jacksonObjectMapper().writeValueAsString(it) }}}]")
     }
 
     @Throws(EuxServerException::class, SedDokumentIkkeLestException::class)
