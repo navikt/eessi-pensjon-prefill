@@ -9,7 +9,7 @@ import no.nav.pensjon.v1.sak.V1Sak
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.*
-import org.springframework.stereotype.Service
+import org.springframework.stereotype.Component
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.HttpServerErrorException
@@ -20,14 +20,14 @@ import javax.xml.bind.JAXBContext
 import javax.xml.transform.stream.StreamSource
 
 
-@Service
-class PensjonsinformasjonService(
+@Component
+class PensjonsinformasjonClient(
         private val pensjonsinformasjonOidcRestTemplate: RestTemplate,
         private val requestBuilder: RequestBuilder,
         @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper(SimpleMeterRegistry())) {
 
     companion object {
-        private val logger = LoggerFactory.getLogger(PensjonsinformasjonService::class.java)
+        private val logger = LoggerFactory.getLogger(PensjonsinformasjonClient::class.java)
 
         fun finnSak(sakId: String, pendata: Pensjonsinformasjon): V1Sak? {
 
