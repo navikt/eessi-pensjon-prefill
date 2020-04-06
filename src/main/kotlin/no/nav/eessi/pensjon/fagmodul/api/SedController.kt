@@ -181,7 +181,7 @@ class SedController(private val euxService: EuxService,
     fun getSeds(@PathVariable(value = "buctype", required = true) bucType: String,
                 @PathVariable(value = "rinanr", required = true) euxCaseId: String): ResponseEntity<String?> {
 
-        val resultListe = BucUtils(euxService.getBuc(euxCaseId)).getAksjonListAsString()
+        val resultListe = BucUtils(euxService.getBuc(euxCaseId)).getCreatableSEDs()
         return if (resultListe.isEmpty()) {
             getSeds(bucType)
         } else {

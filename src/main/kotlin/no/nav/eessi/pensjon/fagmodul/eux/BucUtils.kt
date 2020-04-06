@@ -228,22 +228,13 @@ class BucUtils(private val buc: Buc ) {
 
     fun getBucAction() = getBuc().actions
 
-    fun getAksjonListAsString() : List<String> {
-        val keywordCreate = "Create"
-        val actions = getBuc().actions ?: listOf()
-        val createAkjsonsliste = mutableListOf<String>()
-        for(item in actions) {
-            if (item.documentType != null && item.name == keywordCreate) {
-                createAkjsonsliste.add(item.documentType)
-            }
-        }
-        val aksjonlist = createAkjsonsliste
-                .sortedBy { it }
-                .toList()
-
-        logger.debug("Seds AksjonList size: ${aksjonlist.size}")
-        return aksjonlist
-    }
+    fun getCreatableSEDs() =
+            (getBuc().actions ?: emptyList())
+                    .filter { it.documentType != null }
+                    .filter { it.name == "Create" }
+                    .map { it.documentType!! }
+                    .sortedBy { it }
+                    .toList()
 
     fun getRinaAksjon(): List<RinaAksjon> {
         val aksjoner = mutableListOf<RinaAksjon>()
