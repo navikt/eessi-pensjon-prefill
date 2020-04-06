@@ -39,13 +39,13 @@ class SedController(private val euxService: EuxService,
     //** oppdatert i api 18.02.2019
     @ApiOperation("Genereren en Nav-Sed (SED), viser en oppsumering av SED (json). Før evt. innsending til EUX/Rina")
     @PostMapping("/preview", "/preview/{filter}", consumes = ["application/json"], produces = [org.springframework.http.MediaType.APPLICATION_JSON_VALUE])
-    fun confirmDocument(@RequestBody request: ApiRequest, @PathVariable("filter", required = false) filter: String ?= null): String {
+    fun confirmDocument(@RequestBody request: ApiRequest, @PathVariable("filter", required = false) filter: String? = null): String {
 
         val dataModel = ApiRequest.buildPrefillDataModelConfirm(request, aktoerService.hentPinForAktoer(request.aktoerId), getAvdodAktoerId(request))
-        auditlogger.log("confirmDocument", request.aktoerId ?: "" , request.toAudit())
+        auditlogger.log("confirmDocument", request.aktoerId ?: "", request.toAudit())
 
         val sed = prefillService.prefillSed(dataModel).sed
-        return if (filter==null) {
+        return if (filter == null) {
             sed.toJsonSkipEmpty()
         } else {
             sed.toJson()
@@ -78,8 +78,8 @@ class SedController(private val euxService: EuxService,
             val nyeInstitusjoner = bucUtil.findNewParticipants(dataModel.getInstitutionsList())
             val x005 = bucUtil.findFirstDocumentItemByType("X005")
 
-            if(nyeInstitusjoner.isNotEmpty()){
-                if(x005 == null) {
+            if (nyeInstitusjoner.isNotEmpty()) {
+                if (x005 == null) {
                     euxService.addInstitution(dataModel.euxCaseID, nyeInstitusjoner.map { it.institution })
                 } else {
                     addInstitutionMedX005(dataModel, nyeInstitusjoner)
@@ -94,7 +94,7 @@ class SedController(private val euxService: EuxService,
             val result = bucUtil.findDocument(docresult.documentId)
 
             //extra tag metricshelper for sedType, bucType, timeStamp og rinaId.
-            metricsHelper.measureExtra(MetricsHelper.MeterNameExtraTag.AddInstutionAndDocument,  extraTag = extraTag(dataModel, bucUtil))
+            metricsHelper.measureExtra(MetricsHelper.MeterNameExtraTag.AddInstutionAndDocument, extraTag = extraTag(dataModel, bucUtil))
 
             logger.info("Henter BUC dokumentdata for ny SED")
             logger.info("******* Legge til ny SED - slutt *******")
@@ -120,8 +120,8 @@ class SedController(private val euxService: EuxService,
     }
 
     @ApiOperation("Oppretter en Sed som svar på en forespørsel-Sed")
-    @RequestMapping("/replysed/{parentid}", method = [ RequestMethod.POST ])
-    fun addDocumentToParent(@RequestBody(required = true) request: ApiRequest, @PathVariable("parentid", required = true) parentId: String  ): ShortDocumentItem {
+    @RequestMapping("/replysed/{parentid}", method = [RequestMethod.POST])
+    fun addDocumentToParent(@RequestBody(required = true) request: ApiRequest, @PathVariable("parentid", required = true) parentId: String): ShortDocumentItem {
         auditlogger.log("addDocumentToParent", request.aktoerId ?: "", request.toAudit())
 
         return metricsHelper.measure(MetricsHelper.MeterName.AddDocumentToParent) {
@@ -144,13 +144,12 @@ class SedController(private val euxService: EuxService,
     }
 
 
-
     //** oppdatert i api 18.02.2019
     @ApiOperation("Utgår?")
     @PostMapping("/addSed")
     fun addDocument(@RequestBody request: ApiRequest): ShortDocumentItem {
         auditlogger.log("addDocument", request.aktoerId ?: "", request.toAudit())
-        val dataModel = ApiRequest.buildPrefillDataModelOnExisting(request, aktoerService.hentPinForAktoer(request.aktoerId),  getAvdodAktoerId(request))
+        val dataModel = ApiRequest.buildPrefillDataModelOnExisting(request, aktoerService.hentPinForAktoer(request.aktoerId), getAvdodAktoerId(request))
         val data = prefillService.prefillSed(dataModel)
 
         logger.info("kaller add med request: $request")
@@ -177,27 +176,37 @@ class SedController(private val euxService: EuxService,
         return euxService.getInstitutions(buctype, landkode)
     }
 
-    @ApiOperation("henter liste over seds, seds til valgt buc eller seds til valgt rinasak")
-    @GetMapping("/seds", "/seds/{buctype}", "/seds/{buctype}/{rinanr}")
-    fun getSeds(@PathVariable(value = "buctype", required = false) bucType: String?,
-                @PathVariable(value = "rinanr", required = false) euxCaseId: String?): ResponseEntity<String?> {
+    @ApiOperation("henter liste over seds til valgt rinasak")
+    @GetMapping("/seds/{buctype}/{rinanr}")
+    fun getSeds(@PathVariable(value = "buctype", required = true) bucType: String,
+                @PathVariable(value = "rinanr", required = true) euxCaseId: String): ResponseEntity<String?> {
 
-        //Ingen buc oppgitt, vi lister våre seds på valgt buctype.
-        if (euxCaseId == null) return ResponseEntity.ok().body( euxService.getAvailableSedOnBuc(bucType).toJsonSkipEmpty() )
-        //liste over seds som kan opprettes fra Rina på valgt euxCaseid (rinanr)
         val resultListe = BucUtils(euxService.getBuc(euxCaseId)).getAksjonListAsString()
-        //hvis tom er stort sett buc helt ny. vi lister våre seds på valgt buctype.
-        if (resultListe.isEmpty()) return ResponseEntity.ok().body( euxService.getAvailableSedOnBuc(bucType).toJsonSkipEmpty() )
-        //hvis liste ikke tom vi filterer listen
-        return ResponseEntity.ok().body( sortAndFilterSeds(resultListe).toJsonSkipEmpty() )
+        return if (resultListe.isEmpty()) {
+            getSeds(bucType)
+        } else {
+            ResponseEntity.ok().body(sortAndFilterSeds(resultListe).toJsonSkipEmpty())
+        }
     }
+
+    @ApiOperation("henter liste over seder")
+    @GetMapping("/seds")
+    fun getSeds() = getSeds(null)
+
+    @ApiOperation("henter liste over seds til valgt buc")
+    @GetMapping("/seds/{buctype}")
+    fun getSeds(@PathVariable(value = "buctype", required = true) bucType: String?) =
+            ResponseEntity.ok().body(euxService.getAvailableSedOnBuc(bucType).toJsonSkipEmpty())
+
 
     //fjerner uønskdede seder fra liste og kun filterer inn kun ønskelige og seder vi støtter
     fun sortAndFilterSeds(list: List<String>): List<String> {
-        return list.filter { it.startsWith("P")
+        return list.filter {
+            it.startsWith("P")
                     .or(it.startsWith("H12"))
                     .or(it.startsWith("H07"))
-                    .or(it.startsWith("H02")) }
+                    .or(it.startsWith("H02"))
+        }
                 .sorted()
     }
 
