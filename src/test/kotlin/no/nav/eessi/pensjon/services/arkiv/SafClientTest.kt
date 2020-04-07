@@ -6,7 +6,6 @@ import com.nhaarman.mockitokotlin2.doThrow
 import com.nhaarman.mockitokotlin2.whenever
 import no.nav.eessi.pensjon.vedlegg.client.SafException
 import no.nav.eessi.pensjon.vedlegg.client.SafClient
-import no.nav.eessi.pensjon.vedlegg.client.VariantFormat
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -98,7 +97,7 @@ class SafClientTest {
                 .whenever(safRestOidcRestTemplate).exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java))
 
         assertThrows<SafException> {
-            safClient.hentDokumentInnhold("123", "456", VariantFormat.ARKIV)
+            safClient.hentDokumentInnhold("123", "456", "ARKIV")
         }
     }
 
@@ -107,7 +106,7 @@ class SafClientTest {
         whenever(safRestOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java)))
                 .thenThrow(RestClientException("some error"))
         assertThrows<SafException> {
-            safClient.hentDokumentInnhold("123", "456", VariantFormat.ARKIV)
+            safClient.hentDokumentInnhold("123", "456", "ARKIV")
         }
     }
 

@@ -1,13 +1,11 @@
 package no.nav.eessi.pensjon.vedlegg
 
-import no.nav.eessi.pensjon.vedlegg.client.HentMetadataResponse
-import no.nav.eessi.pensjon.vedlegg.client.HentdokumentInnholdResponse
-import no.nav.eessi.pensjon.vedlegg.client.SafClient
-import no.nav.eessi.pensjon.vedlegg.client.VariantFormat
+import no.nav.eessi.pensjon.vedlegg.client.*
 import org.springframework.stereotype.Service
 
 @Service
-class VedleggService(private val safClient: SafClient) {
+class VedleggService(private val safClient: SafClient,
+                     private val euxVedleggClient: EuxVedleggClient) {
 
     fun hentDokumentMetadata(aktoerId: String): HentMetadataResponse {
         return safClient.hentDokumentMetadata(aktoerId)
@@ -15,11 +13,16 @@ class VedleggService(private val safClient: SafClient) {
 
     fun hentDokumentInnhold(journalpostId: String,
                            dokumentInfoId: String,
-                           variantFormat: VariantFormat): HentdokumentInnholdResponse {
+                           variantFormat: String): HentdokumentInnholdResponse {
         return safClient.hentDokumentInnhold(journalpostId, dokumentInfoId, variantFormat)
     }
 
-    fun hentRinaSakIderFraDokumentMetadata(aktoerId: String): List<String> {
-        return safClient.hentRinaSakIderFraDokumentMetadata(aktoerId)
+    fun leggTilVedleggPaaDokument(aktoerId: String,
+                                  rinaSakId: String,
+                                  rinaDokumentId: String,
+                                  filInnhold: String,
+                                  fileName: String,
+                                  filtype: String) {
+        euxVedleggClient.leggTilVedleggPaaDokument(aktoerId, rinaSakId, rinaDokumentId, filInnhold, fileName, filtype)
     }
 }

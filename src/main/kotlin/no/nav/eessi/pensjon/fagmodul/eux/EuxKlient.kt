@@ -1,11 +1,9 @@
 package no.nav.eessi.pensjon.fagmodul.eux
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.google.common.base.Preconditions
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.BucSedResponse
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Rinasak
-import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Vedlegg
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ParticipantsItem
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonDetalj
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
@@ -21,15 +19,12 @@ import org.springframework.cache.annotation.Cacheable
 import org.springframework.context.annotation.Description
 import org.springframework.http.*
 import org.springframework.stereotype.Component
-import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.HttpServerErrorException
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.client.UnknownHttpStatusCodeException
 import org.springframework.web.util.UriComponentsBuilder
-import java.io.File
-import java.nio.file.Paths
 import java.util.*
 
 /**
@@ -45,7 +40,6 @@ class EuxKlient(private val euxOidcRestTemplate: RestTemplate,
     constructor() : this(RestTemplate(), MetricsHelper(SimpleMeterRegistry()))
 
     private val logger = LoggerFactory.getLogger(EuxKlient::class.java)
-    private val mapper = jacksonObjectMapper()
 
     //ny SED på ekisterende type eller ny svar SED på ekisternede rina
     @Throws(EuxGenericServerException::class, SedDokumentIkkeOpprettetException::class)
@@ -283,66 +277,6 @@ class EuxKlient(private val euxOidcRestTemplate: RestTemplate,
         )
         return result.statusCode == HttpStatus.OK
 
-    }
-
-    fun leggTilVedleggPaaDokument(aktoerId: String,
-                                  rinaSakId: String,
-                                  rinaDokumentId: String,
-                                  vedlegg: Vedlegg,
-                                  filtype: String) {
-        try {
-
-            val headers = HttpHeaders()
-            headers.contentType = MediaType.MULTIPART_FORM_DATA
-
-            val disposition = ContentDisposition
-                    .builder("form-data")
-                    .name("file")
-                    .filename("")
-                    .build().toString()
-
-            val attachmentMeta = LinkedMultiValueMap<String, String>()
-            attachmentMeta.add(HttpHeaders.CONTENT_DISPOSITION, disposition)
-            val dokumentInnholdBinary = Base64.getDecoder().decode(vedlegg.filInnhold)
-            val attachmentPart = HttpEntity(dokumentInnholdBinary, attachmentMeta)
-
-            val body = LinkedMultiValueMap<String, Any>()
-            body.add("multipart", attachmentPart)
-
-            val requestEntity = HttpEntity(body, headers)
-
-            val queryUrl = UriComponentsBuilder
-                    .fromPath("/buc/")
-                    .path(rinaSakId)
-                    .path("/sed/")
-                    .path(rinaDokumentId)
-                    .path("/vedlegg")
-                    .queryParam("Filnavn", vedlegg.filnavn.replaceAfterLast(".", "").removeSuffix("."))
-                    .queryParam("Filtype", filtype)
-                    .queryParam("synkron", true)
-                    .build().toUriString()
-            logger.info("Legger til vedlegg i buc: $rinaSakId, sed: $rinaDokumentId")
-
-            restTemplateErrorhandler(
-                  {
-                      euxOidcRestTemplate.exchange(
-                            queryUrl,
-                            HttpMethod.POST,
-                            requestEntity,
-                            String::class.java)
-                  }
-                  , rinaSakId
-                  , MetricsHelper.MeterName.VedleggPaaDokument
-                  ,"En feil opppstod under tilknytning av vedlegg rinaid: $rinaSakId, sed: $rinaDokumentId"
-            )
-
-        } catch (ex: Exception) {
-            logger.error("En feil opppstod under tilknytning av vedlegg, ${ex.message}", ex)
-            throw ex
-        } finally {
-            val file = File(Paths.get("").toAbsolutePath().toString() + "/" + vedlegg.filnavn)
-            file.delete()
-        }
     }
 
     @Throws(EuxServerException::class)

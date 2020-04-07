@@ -5,6 +5,7 @@ import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Rinasak
 import no.nav.eessi.pensjon.fagmodul.sedmodel.PinItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.utils.*
+import no.nav.eessi.pensjon.vedlegg.client.SafClient
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -27,10 +28,13 @@ class EuxServiceTest {
     @Mock
     private lateinit var euxKlient: EuxKlient
 
+    @Mock
+    private lateinit var safClient: SafClient
+
 
     @BeforeEach
     fun setup() {
-        service = EuxService(euxKlient)
+        service = EuxService(euxKlient, safClient)
     }
 
     @Test
@@ -268,8 +272,9 @@ class EuxServiceTest {
         val enSak = mapJsonToAny(jsonEnRinasak, typeRefs<List<Rinasak>>())
 
         doReturn(enSak).whenever(euxKlient).getRinasaker(eq(null), eq("8877665511"), eq(null), eq(null))
+        doReturn(listOf("8877665511")).whenever(safClient).hentRinaSakIderFraDokumentMetadata(eq("1111111111111"))
 
-        val result = service.getRinasaker("12345678900", listOf("8877665511"))
+        val result = service.getRinasaker("12345678900", "1111111111111")
 
         assertEquals(154, orgRinasaker.size)
         assertEquals(orgRinasaker.size + 1, result.size)

@@ -40,8 +40,3 @@ class Traits(
         val flowType: String? = null,
         val status: String? = null
 )
-
-class Vedlegg(
-        val filnavn: String,
-        val filInnhold: String
-)
