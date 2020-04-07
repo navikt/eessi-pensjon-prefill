@@ -1,10 +1,8 @@
 package no.nav.eessi.pensjon.fagmodul.eux
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.BucSedResponse
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Rinasak
-import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Vedlegg
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Buc
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ParticipantsItem
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
@@ -16,12 +14,18 @@ import no.nav.eessi.pensjon.metrics.MetricsHelper
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
 import no.nav.eessi.pensjon.utils.typeRefs
+import no.nav.eessi.pensjon.vedlegg.client.SafClient
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
 
 @Service
-class EuxService (private val euxKlient: EuxKlient) {
+class EuxService (private val euxKlient: EuxKlient,
+                  private val safClient: SafClient) {
+    private val logger = LoggerFactory.getLogger(EuxService::class.java)
+
+    // Vi trenger denne no arg konstruktøren for å kunne bruke @Spy med mockito
+    constructor() : this(EuxKlient(RestTemplate()), SafClient(RestTemplate(), RestTemplate()))
 
     fun getAvailableSedOnBuc(bucType: String?): List<String> {
         val map = initSedOnBuc()
@@ -57,11 +61,6 @@ class EuxService (private val euxKlient: EuxKlient) {
                 "P_BUC_08" to listOf("P12000")
         )
     }
-
-    // Vi trenger denne no arg konstruktøren for å kunne bruke @Spy med mockito
-    constructor() : this(EuxKlient(RestTemplate(), MetricsHelper(SimpleMeterRegistry())))
-
-    private val logger = LoggerFactory.getLogger(EuxService::class.java)
 
     @Throws(EuxGenericServerException::class, SedDokumentIkkeOpprettetException::class)
     fun opprettSvarSedOnBuc(navSED: SED, euxCaseId: String, parentDocumentId: String): BucSedResponse {
@@ -237,8 +236,10 @@ class EuxService (private val euxKlient: EuxKlient) {
         return euxKlient.getBucDeltakere(euxCaseId)
     }
 
-    fun getRinasaker(fnr: String, rinaSakIderMetadata: List<String>): List<Rinasak> {
-        logger.debug("Henter opp rinasaker på fnr")
+    fun getRinasaker(fnr: String, aktoerId: String): List<Rinasak> {
+
+        // henter rina saker basert på tilleggsinformasjon i journalposter
+        val rinaSakIderMetadata = safClient.hentRinaSakIderFraDokumentMetadata(aktoerId)
 
         // Henter rina saker basert på fnr
         val rinaSakerMedFnr = euxKlient.getRinasaker(fnr, null, null, null)
@@ -260,18 +261,6 @@ class EuxService (private val euxKlient: EuxKlient) {
 
     fun createBuc(buctype: String): String {
         return euxKlient.createBuc(buctype)
-    }
-
-    fun leggTilVedleggPaaDokument(aktoerId: String,
-                                  rinaSakId: String,
-                                  rinaDokumentId: String,
-                                  vedlegg: Vedlegg,
-                                  dokumentType: String) {
-        return euxKlient.leggTilVedleggPaaDokument(aktoerId,
-                rinaSakId,
-                rinaDokumentId,
-                vedlegg,
-                dokumentType)
     }
 
     /**

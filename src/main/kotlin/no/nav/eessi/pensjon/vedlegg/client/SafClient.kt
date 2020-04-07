@@ -57,12 +57,14 @@ class SafClient(private val safGraphQlOidcRestTemplate: RestTemplate,
 
     fun hentDokumentInnhold(journalpostId: String,
                             dokumentInfoId: String,
-                            variantFormat: VariantFormat) : HentdokumentInnholdResponse {
+                            variantFormat: String) : HentdokumentInnholdResponse {
 
         return metricsHelper.measure(MetricsHelper.MeterName.HentDokumentInnhold) {
             try {
                 logger.info("Henter dokumentinnhold for journalpostId: $journalpostId, dokumentInfoId: $dokumentInfoId, variantformat: $variantFormat")
-                val path = "/$journalpostId/$dokumentInfoId/$variantFormat"
+                val variantFormatEnum = VariantFormat.valueOf(variantFormat)
+
+                val path = "/$journalpostId/$dokumentInfoId/$variantFormatEnum"
                 val headers = HttpHeaders()
                 headers.contentType = MediaType.APPLICATION_PDF
 

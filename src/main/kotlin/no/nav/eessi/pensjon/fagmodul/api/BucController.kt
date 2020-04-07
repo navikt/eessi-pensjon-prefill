@@ -5,31 +5,21 @@ import no.nav.eessi.pensjon.fagmodul.eux.BucAndSedView
 import no.nav.eessi.pensjon.fagmodul.eux.BucUtils
 import no.nav.eessi.pensjon.fagmodul.eux.EuxService
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Rinasak
-import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Vedlegg
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Buc
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Creator
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ShortDocumentItem
 import no.nav.eessi.pensjon.logging.AuditLogger
 import no.nav.eessi.pensjon.services.aktoerregister.AktoerregisterService
-import no.nav.eessi.pensjon.vedlegg.client.VariantFormat
-import no.nav.eessi.pensjon.utils.errorBody
 import no.nav.eessi.pensjon.utils.mapAnyToJson
-import no.nav.eessi.pensjon.utils.successBody
-import no.nav.eessi.pensjon.vedlegg.VedleggService
 import no.nav.security.oidc.api.Protected
 import org.slf4j.LoggerFactory
-import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
-import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import java.util.*
-
 
 @Protected
 @RestController
 @RequestMapping("/buc")
 class BucController(private val euxService: EuxService,
-                    private val vedleggService: VedleggService,
                     private val aktoerService: AktoerregisterService,
                     private val auditlogger: AuditLogger) {
 
@@ -111,8 +101,7 @@ class BucController(private val euxService: EuxService,
         logger.debug("henter rinasaker på valgt aktoerid: $aktoerId")
 
         val fnr = aktoerService.hentPinForAktoer(aktoerId)
-        val rinaSakIderFraDokumentMetadata = vedleggService.hentRinaSakIderFraDokumentMetadata(aktoerId)
-        return euxService.getRinasaker(fnr, rinaSakIderFraDokumentMetadata)
+        return euxService.getRinasaker(fnr, aktoerId)
     }
 
     @ApiOperation("Henter ut liste av Buc meny struktur i json format for UI på valgt aktoerid")
@@ -124,9 +113,8 @@ class BucController(private val euxService: EuxService,
         logger.debug("Prøver å dekode aktoerid: $aktoerid til fnr.")
 
         val fnr = aktoerService.hentPinForAktoer(aktoerid)
-        val rinaSakIderFraDokumentMetadata = vedleggService.hentRinaSakIderFraDokumentMetadata(aktoerid)
-
-        val rinasakIdList = euxService.getFilteredArchivedaRinasaker( euxService.getRinasaker(fnr, rinaSakIderFraDokumentMetadata))
+        val rinasaker = euxService.getRinasaker(fnr, aktoerid)
+        val rinasakIdList = euxService.getFilteredArchivedaRinasaker(rinasaker)
 
         return euxService.getBucAndSedView( rinasakIdList )
     }
@@ -153,31 +141,5 @@ class BucController(private val euxService: EuxService,
         //create bucDetail back from newly created buc call eux-rina-api to get data.
         val buc = euxService.getBuc(euxCaseId)
         return BucAndSedView.from(buc)
-    }
-
-    @ApiOperation("Legger til et vedlegg for det gitte dokumentet")
-    @PutMapping("/vedlegg/{aktoerId}/{rinaSakId}/{rinaDokumentId}/{joarkJournalpostId}/{joarkDokumentInfoId}/{variantFormat}")
-    fun putVedleggTilDokument(@PathVariable("aktoerId", required = true) aktoerId: String,
-                              @PathVariable("rinaSakId", required = true) rinaSakId: String,
-                              @PathVariable("rinaDokumentId", required = true) rinaDokumentId: String,
-                              @PathVariable("joarkJournalpostId", required = true) joarkJournalpostId: String,
-                              @PathVariable("joarkDokumentInfoId", required = true) joarkDokumentInfoId : String,
-                              @PathVariable("variantFormat", required = true) variantFormat : VariantFormat) : ResponseEntity<String> {
-        auditlogger.log("putVedleggTilDokument", aktoerId)
-        logger.debug("Legger til vedlegg: joarkJournalpostId: $joarkJournalpostId, joarkDokumentInfoId $joarkDokumentInfoId, variantFormat: $variantFormat til " +
-                "rinaSakId: $rinaSakId, rinaDokumentId: $rinaDokumentId")
-
-        return try {
-            val dokument = vedleggService.hentDokumentInnhold(joarkJournalpostId, joarkDokumentInfoId, variantFormat)
-            euxService.leggTilVedleggPaaDokument(aktoerId,
-                    rinaSakId,
-                    rinaDokumentId,
-                    Vedlegg(filInnhold = dokument.filInnhold, filnavn = dokument.fileName),
-                    dokument.contentType.split("/")[1])
-            return ResponseEntity.ok().body(successBody())
-        } catch(ex: Exception) {
-            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(errorBody(ex.message!!, UUID.randomUUID().toString()))
-        }
     }
 }
