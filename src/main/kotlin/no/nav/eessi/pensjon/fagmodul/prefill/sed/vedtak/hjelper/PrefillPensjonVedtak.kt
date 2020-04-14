@@ -1,16 +1,10 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.hjelper
 
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.hjelper.VedtakPensjonDataHelper.erTrygdeTid
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.hjelper.VedtakPensjonDataHelper.harBoddArbeidetUtland
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.hjelper.VedtakPensjonDataHelper.hentVilkarsProvingAvslagHovedYtelse
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.hjelper.VedtakPensjonDataHelper.hentVilkarsResultatHovedytelse
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.hjelper.VedtakPensjonDataHelper.hentVilkarsvurderingUforetrygd
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.hjelper.VedtakPensjonDataHelper.hentVinnendeBergeningsMetode
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.hjelper.VedtakPensjonDataHelper.hentYtelseskomponentBelop
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.hjelper.VedtakPensjonDataHelper.isForeldelos
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.hjelper.VedtakPensjonDataHelper.isMottarMinstePensjonsniva
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.hjelper.VedtakPensjonDataHelper.isVilkarsvurderingAvslagHovedytelseSamme
-import no.nav.eessi.pensjon.fagmodul.sedmodel.AvslagbegrunnelseItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.BeloepBrutto
 import no.nav.eessi.pensjon.fagmodul.sedmodel.BeregningItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Grunnlag
@@ -24,11 +18,11 @@ import no.nav.pensjon.v1.sakalder.V1SakAlder
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import no.nav.pensjon.v1.ytelsepermaaned.V1YtelsePerMaaned
-import kotlin.Exception
 
 object PrefillPensjonVedtak {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillPensjonVedtak::class.java) }
+    private val vedtaksavslag = PrefillPensjonVedtaksavslag()
 
     /**
      *  4.1
@@ -77,7 +71,7 @@ object PrefillPensjonVedtak {
                 begrunnelseAnnen = null,
 
                 //4.1.13.1 -- 4.1.13.2.1 - $pensjon.vedtak[x].avslagbegrunnelse[x].begrunnelse
-                avslagbegrunnelse = createAvlsagsBegrunnelseItem(pendata),
+                avslagbegrunnelse = vedtaksavslag.createAvlsagsBegrunnelseItem(pendata),
 
                 //4.1.14.1 // Ikke i bruk
                 delvisstans = null
@@ -121,18 +115,6 @@ object PrefillPensjonVedtak {
         }
     }
 
-    fun sjekkForVilkarsvurderingListeHovedytelseellerAvslag(pendata: Pensjonsinformasjon): Boolean {
-        try {
-            val hovedytelseAvslag = pendata.vilkarsvurderingListe.vilkarsvurderingListe.first()
-            if (hovedytelseAvslag.resultatHovedytelse == "AVSL" || hovedytelseAvslag.avslagHovedytelse == "AVSL") {
-                return true
-            }
-        } catch (ex: Exception) {
-            logger.error("Ingen vilkarsvurderingListe, sjekk på AVSL")
-        }
-        return false
-    }
-
     /**
      * 4.1.2 vedtak
      *
@@ -149,7 +131,7 @@ object PrefillPensjonVedtak {
         val sakType = KSAK.valueOf(pendata.sakAlder.sakType)
         logger.debug("              Saktype: $sakType")
 
-        if (sjekkForVilkarsvurderingListeHovedytelseellerAvslag(pendata)) return "99"
+        if (vedtaksavslag.sjekkForVilkarsvurderingListeHovedytelseellerAvslag(pendata)) return "99"
 
         return when (sakType) {
             KSAK.ALDER -> {
@@ -386,7 +368,7 @@ object PrefillPensjonVedtak {
 
         logger.debug("4.1.10        Grunnlag")
 
-        if (sjekkForVilkarsvurderingListeHovedytelseellerAvslag(pendata)) return Grunnlag()
+        if (vedtaksavslag.sjekkForVilkarsvurderingListeHovedytelseellerAvslag(pendata)) return Grunnlag()
 
         return Grunnlag(
 
@@ -455,99 +437,6 @@ object PrefillPensjonVedtak {
             return "03"
         }
 
-        return null
-    }
-
-    /**
-     * /4.1.13.1 - 4.1.13.2.1
-     */
-    private fun createAvlsagsBegrunnelseItem(pendata: Pensjonsinformasjon): List<AvslagbegrunnelseItem>? {
-
-        logger.debug("4.1.13        AvlsagsBegrunnelseItem")
-
-        val avslagbegrunnelse = createAvlsagsBegrunnelse(pendata)
-
-        val item = listOf(AvslagbegrunnelseItem(
-
-                //4.1.13.1
-                begrunnelse = avslagbegrunnelse,
-
-                //4.1.13.2 Other - Nei
-                annenbegrunnelse = null
-        ))
-
-        if (avslagbegrunnelse == null)
-            return null
-
-        return item
-    }
-
-    /**
-     *  4.1.13.1 - Rejection reasons
-     */
-    fun createAvlsagsBegrunnelse(pendata: Pensjonsinformasjon): String? {
-        logger.debug("4.1.13.1          AvlsagsBegrunnelse")
-
-        if (pendata.vilkarsvurderingListe == null || pendata.vilkarsvurderingListe.vilkarsvurderingListe == null) {
-            return null
-        }
-        val sakType = KSAK.valueOf(pendata.sakAlder.sakType)
-
-        val erAvslagVilkarsproving = hentVilkarsResultatHovedytelse(pendata) == "AVSL"
-
-        val harBoddArbeidetUtland = harBoddArbeidetUtland(pendata)
-        val erTrygdetidListeTom = pendata.trygdetidListe.trygdetidListe.isEmpty()
-
-        val erLavtTidligUttak = isVilkarsvurderingAvslagHovedytelseSamme("LAVT_TIDLIG_UTTAK", pendata)
-        val erUnder62 = isVilkarsvurderingAvslagHovedytelseSamme("UNDER_62", pendata)
-        val erIkkeMottattDok = "IKKE_MOTTATT_DOK" == hentVilkarsProvingAvslagHovedYtelse(pendata)
-
-        //UFOREP
-        val erForutMedlem = "FORUT_MEDL" == hentVilkarsvurderingUforetrygd(pendata).unntakForutgaendeMedlemskap
-        val erHensArbrettTiltak = "HENS_ARBRETT_TILTAK" == hentVilkarsvurderingUforetrygd(pendata).hensiktsmessigArbeidsrettedeTiltak
-        val erHensiktmessigBeh = "HENSIKTSMESSIG_BEH" == hentVilkarsvurderingUforetrygd(pendata).hensiktsmessigBehandling
-        val erNedsattInntEvne = "NEDSATT_INNT_EVNE" == hentVilkarsvurderingUforetrygd(pendata).nedsattInntektsevne
-        val erAlder = "ALDER" == hentVilkarsvurderingUforetrygd(pendata).alder
-
-        if (KSAK.UFOREP != sakType && harBoddArbeidetUtland && erAvslagVilkarsproving) {
-            //pkt1 og pkt.9
-            if (erTrygdetidListeTom)
-                return "01"
-
-            //pkt.2 og pkt.10
-            if (erTrygdeTid(pendata))
-                return "02"
-
-            if (erLavtTidligUttak)
-                return "03"
-
-            if (erUnder62)
-                return "06"
-        }
-
-        if (KSAK.UFOREP == sakType && harBoddArbeidetUtland) {
-            //hentVilkarsvurderingUforetrygd
-            if (erAlder && erAvslagVilkarsproving)
-                return "03"
-
-            if ((erHensiktmessigBeh || erHensArbrettTiltak) && erAvslagVilkarsproving)
-                return "08"
-
-            if (erNedsattInntEvne && erAvslagVilkarsproving)
-                return "04"
-
-            if (erTrygdeTid(pendata) && erForutMedlem && erAvslagVilkarsproving)
-                return "02"
-            //pkt.5
-            if (pendata.trygdetidListe.trygdetidListe.isEmpty() && erForutMedlem && erAvslagVilkarsproving)
-                return "01"
-        }
-
-        //siste..   pendata.sak.sakType alle..
-        if (harBoddArbeidetUtland && erIkkeMottattDok && erAvslagVilkarsproving)
-            return "07"
-
-        logger.debug("              -- Ingen avslagsbegrunnelse")
         return null
     }
 }

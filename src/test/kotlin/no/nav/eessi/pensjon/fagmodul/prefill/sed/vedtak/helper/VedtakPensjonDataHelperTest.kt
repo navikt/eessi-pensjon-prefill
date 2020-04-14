@@ -2,10 +2,8 @@ package no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.helper
 
 import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonHjelper
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.PensjonsinformasjonMother
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.PensjonsinformasjonMother.pensjoninformasjonForSakstype
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.daysAgo
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.daysAhead
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.hjelper.PrefillPensjonVedtak
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.hjelper.VedtakPensjonDataHelper
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonClientMother.fraFil
 import no.nav.eessi.pensjon.utils.simpleFormat
@@ -113,16 +111,6 @@ class VedtakPensjonDataHelperTest {
         val pendata = dataFromPESYS.hentMedVedtak("someVedtakId")
 
         assertTrue( 13400 < VedtakPensjonDataHelper.summerTrygdeTid(pendata.trygdetidListe))
-    }
-
-    @Test
-    fun `forventer "07" på AvlsagsBegrunnelse IKKE_MOTTATT_DOK`() {
-        val pendata = pensjoninformasjonForSakstype("ALDER").apply {
-            vilkarsvurderingListe.vilkarsvurderingListe.get(0).resultatHovedytelse = "AVSL"
-            vilkarsvurderingListe.vilkarsvurderingListe.get(0).avslagHovedytelse = "IKKE_MOTTATT_DOK"
-        }
-
-        assertEquals("07", PrefillPensjonVedtak.createAvlsagsBegrunnelse(pendata))
     }
 
     @Test
