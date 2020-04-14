@@ -16,6 +16,8 @@ import java.time.ZoneId
 
 class BucUtils(private val buc: Buc ) {
 
+    private val logger = LoggerFactory.getLogger(BucUtils::class.java)
+
     private fun getBuc(): Buc {
         return buc
     }
@@ -222,15 +224,20 @@ class BucUtils(private val buc: Buc ) {
 
     fun getParticipantsLand() = getParticipantsAsInstitusjonItem().map { it.country }.joinToString(separator = ",")
 
-    fun getCreatableSEDs() =
-            (getBuc().actions ?: emptyList())
-                    .filter { it.documentType != null }
-                    .filter { it.name == "Create" }
-                    .map { it.documentType!! }
-                    .sortedBy { it }
-                    .toList()
+    fun getBucAction() = getBuc().actions
 
-    fun getRinaAksjoner(): List<RinaAksjon> {
+    fun getAksjonListAsString() : List<String> {
+        val keywordCreate = "Create"
+        val actions = getBuc().actions ?: listOf()
+        return actions.asSequence()
+                .filter { item -> item.name == keywordCreate }
+                .filterNot { item ->  item.documentType == null}
+                .map { item -> item.documentType!!}
+                .sortedBy { it }
+                .toList()
+    }
+
+    fun getRinaAksjon(): List<RinaAksjon> {
         val aksjoner = mutableListOf<RinaAksjon>()
         val actionitems = getBuc().actions
         val buctype = getProcessDefinitionName()

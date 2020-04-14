@@ -181,12 +181,9 @@ class SedController(private val euxService: EuxService,
     fun getSeds(@PathVariable(value = "buctype", required = true) bucType: String,
                 @PathVariable(value = "rinanr", required = true) euxCaseId: String): ResponseEntity<String?> {
 
-        val resultListe = BucUtils(euxService.getBuc(euxCaseId)).getCreatableSEDs()
-        return if (resultListe.isEmpty()) {
-            getSeds(bucType)
-        } else {
-            ResponseEntity.ok().body(filterSektorPandRelevantHorizontalSeds(resultListe).toJsonSkipEmpty())
-        }
+        val resultListe = BucUtils(euxService.getBuc(euxCaseId)).getAksjonListAsString()
+        logger.debug("Tilgjengelige aksjoner $resultListe")
+        return ResponseEntity.ok().body(filterSektorPandRelevantHorizontalSeds(resultListe).toJsonSkipEmpty())
     }
 
     @ApiOperation("henter liste over seder")
