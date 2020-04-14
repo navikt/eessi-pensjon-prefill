@@ -40,7 +40,7 @@ class PrefillPensjonVedtakTest {
         val pendata = PensjonsinformasjonMother.pensjoninformasjonForSakstype("ALDER").apply {
             vedtak.isBoddArbeidetUtland = true
             trygdetidListe.trygdetidListe.clear()
-            vilkarsvurderingListe.vilkarsvurderingListe.get(0).resultatHovedytelse = "AVSL"
+            vilkarsvurderingListe.vilkarsvurderingListe[0].resultatHovedytelse = "AVSL"
         }
 
         assertEquals("01", PrefillPensjonVedtak.createAvlsagsBegrunnelse(pendata))
@@ -51,7 +51,7 @@ class PrefillPensjonVedtakTest {
         val pendata1 = PensjonsinformasjonMother.pensjoninformasjonForSakstype("GJENLEV").apply {
             vedtak.isBoddArbeidetUtland = true
             trygdetidListe.trygdetidListe.clear()
-            vilkarsvurderingListe.vilkarsvurderingListe.get(0).resultatHovedytelse = "AVSL"
+            vilkarsvurderingListe.vilkarsvurderingListe[0].resultatHovedytelse = "AVSL"
 
         }
         assertEquals("01", PrefillPensjonVedtak.createAvlsagsBegrunnelse(pendata1))
@@ -61,8 +61,8 @@ class PrefillPensjonVedtakTest {
     fun `forventer "03" på AvlsagsBegrunnelse for AlderPensjon TrygdleListeTom, LAVT_TIDLIG_UTTAK`() {
         val pendata = PensjonsinformasjonMother.pensjoninformasjonForSakstype("ALDER").apply {
             vedtak.isBoddArbeidetUtland = true
-            vilkarsvurderingListe.vilkarsvurderingListe.get(0).avslagHovedytelse = "LAVT_TIDLIG_UTTAK"
-            vilkarsvurderingListe.vilkarsvurderingListe.get(0).resultatHovedytelse = "AVSL"
+            vilkarsvurderingListe.vilkarsvurderingListe[0].avslagHovedytelse = "LAVT_TIDLIG_UTTAK"
+            vilkarsvurderingListe.vilkarsvurderingListe[0].resultatHovedytelse = "AVSL"
         }
 
         assertEquals("03", PrefillPensjonVedtak.createAvlsagsBegrunnelse(pendata))
@@ -80,8 +80,8 @@ class PrefillPensjonVedtakTest {
     @Test
     fun `forventer "07" på AvlsagsBegrunnelse IKKE_MOTTATT_DOK`() {
         val pendata = PensjonsinformasjonMother.pensjoninformasjonForSakstype("ALDER").apply {
-            vilkarsvurderingListe.vilkarsvurderingListe.get(0).resultatHovedytelse = "AVSL"
-            vilkarsvurderingListe.vilkarsvurderingListe.get(0).avslagHovedytelse = "IKKE_MOTTATT_DOK"
+            vilkarsvurderingListe.vilkarsvurderingListe[0].resultatHovedytelse = "AVSL"
+            vilkarsvurderingListe.vilkarsvurderingListe[0].avslagHovedytelse = "IKKE_MOTTATT_DOK"
         }
 
         assertEquals("07", PrefillPensjonVedtak.createAvlsagsBegrunnelse(pendata))
@@ -92,7 +92,7 @@ class PrefillPensjonVedtakTest {
         val pendata = PensjonsinformasjonMother.pensjoninformasjonForSakstype("GJENLEV").apply {
             vedtak.isBoddArbeidetUtland = true
             trygdetidListe.trygdetidListe.clear()
-            vilkarsvurderingListe.vilkarsvurderingListe.get(0).resultatHovedytelse = "AVSL"
+            vilkarsvurderingListe.vilkarsvurderingListe[0].resultatHovedytelse = "AVSL"
         }
 
         assertEquals("01", PrefillPensjonVedtak.createAvlsagsBegrunnelse(pendata))
@@ -103,7 +103,7 @@ class PrefillPensjonVedtakTest {
         val pendata = PensjonsinformasjonMother.pensjoninformasjonForSakstype("UFOREP").apply {
             vedtak.isBoddArbeidetUtland = true
             trygdetidListe.trygdetidListe.clear()
-            vilkarsvurderingListe.vilkarsvurderingListe.get(0).resultatHovedytelse = "AVSL"
+            vilkarsvurderingListe.vilkarsvurderingListe[0].resultatHovedytelse = "AVSL"
         }
 
         assertEquals("03", PrefillPensjonVedtak.createAvlsagsBegrunnelse(pendata))
@@ -114,9 +114,9 @@ class PrefillPensjonVedtakTest {
         val pendata = PensjonsinformasjonMother.pensjoninformasjonForSakstype("UFOREP").apply {
             vedtak.isBoddArbeidetUtland = true
             trygdetidListe.trygdetidListe.clear()
-            vilkarsvurderingListe.vilkarsvurderingListe.get(0).vilkarsvurderingUforetrygd.hensiktsmessigBehandling = "HENSIKTSMESSIG_BEH"
-            vilkarsvurderingListe.vilkarsvurderingListe.get(0).resultatHovedytelse = "AVSL"
-            vilkarsvurderingListe.vilkarsvurderingListe.get(0).vilkarsvurderingUforetrygd.alder = ""
+            vilkarsvurderingListe.vilkarsvurderingListe[0].vilkarsvurderingUforetrygd.hensiktsmessigBehandling = "HENSIKTSMESSIG_BEH"
+            vilkarsvurderingListe.vilkarsvurderingListe[0].resultatHovedytelse = "AVSL"
+            vilkarsvurderingListe.vilkarsvurderingListe[0].vilkarsvurderingUforetrygd.alder = ""
         }
 
         assertEquals("08", PrefillPensjonVedtak.createAvlsagsBegrunnelse(pendata))
