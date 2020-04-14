@@ -95,12 +95,9 @@ class EuxService (private val euxKlient: EuxKlient,
                 it.id?.let { id ->
                     sedlist.add(getSedOnBucByDocumentId(euxCaseId, id))
                 }
-            } else {
-                it.id?.let { id ->
-                    sedlist.add(getSedOnBucByDocumentId(euxCaseId, id))
-                }
             }
         }
+
         logger.info("return liste av SED for type: $sedType listSize: ${sedlist.size}")
         return sedlist
     }
