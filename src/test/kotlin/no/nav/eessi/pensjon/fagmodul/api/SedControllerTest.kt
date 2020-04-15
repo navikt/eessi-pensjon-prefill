@@ -2,6 +2,7 @@ package no.nav.eessi.pensjon.fagmodul.api
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.nhaarman.mockitokotlin2.*
+import no.nav.eessi.pensjon.fagmodul.eux.BucUtils
 import no.nav.eessi.pensjon.fagmodul.eux.EuxService
 import no.nav.eessi.pensjon.fagmodul.eux.PinOgKrav
 import no.nav.eessi.pensjon.fagmodul.eux.SedDokumentIkkeOpprettetException
@@ -116,68 +117,23 @@ class SedControllerTest {
         assertEquals("/sed/get/123456789/DOC1223213234234", builder.path)
     }
 
+    @Test
+    fun `getFiltrerteGyldigSedAksjonListAsString   buc_06 returns 4 seds`() {
+        val mockBuc = mapJsonToAny(String(Files.readAllBytes(Paths.get("src/test/resources/json/buc/buc_P_BUC_06_4.2_tom.json"))), typeRefs<Buc>())
+        val buc = "P_BUC_06"
+        val rinanr = "1000101"
 
-//    @Test
-//    fun `Calling euxController getSeds on BUC01 returns SEDs for a given BUC`() {
-//        val buc = "P_BUC_01"
-//
-//        val expectedResponse = ResponseEntity.ok().body(mapAnyToJson(listOf("P2000")))
-//        val generatedResponse = sedController.getSeds(buc)
-//        assertEquals(expectedResponse, generatedResponse)
-//    }
-//
-//    @Test
-//    fun `Calling euxController getSeds on BUC02 returns SEDs for a given BUC`() {
-//        val buc = "P_BUC_02"
-//
-//        val expectedResponse = ResponseEntity.ok().body(mapAnyToJson(listOf("P2100")))
-//        val generatedResponse = sedController.getSeds(buc)
-//        assertEquals(expectedResponse, generatedResponse)
-//    }
-//
-//    @Test
-//    fun `Calling euxController getSeds on BUC03 returns SEDs for a given BUC`() {
-//        val buc = "P_BUC_03"
-//
-//        val expectedResponse = ResponseEntity.ok().body(mapAnyToJson(listOf("P2200")))
-//        val generatedResponse = sedController.getSeds(buc)
-//        assertEquals(expectedResponse, generatedResponse)
-//    }
-//
-//
-//    @Test
-//    fun `Calling euxController getSeds on BUC05 returns SEDs for a given BUC`() {
-//        val buc = "P_BUC_05"
-//
-//        val expectedResponse = ResponseEntity.ok().body(mapAnyToJson(listOf("P8000")))
-//        val generatedResponse = sedController.getSeds(buc)
-//        assertEquals(expectedResponse, generatedResponse)
-//    }
-//
-//    @Test
-//    fun `Calling euxController getSeds on BUC06 returns SEDs for a given BUC`() {
-//        val buc = "P_BUC_06"
-//
-//        val expectedResponse = ResponseEntity.ok().body(mapAnyToJson(listOf("P5000", "P6000", "P7000", "P10000")))
-//        val generatedResponse = sedController.getSeds(buc)
-//        assertEquals(expectedResponse, generatedResponse)
-//    }
-//
-//    @Test
-//    fun `Calling euxController getSeds on BUC10 returns SEDs for a given BUC`() {
-//        val buc = "P_BUC_10"
-//
-//        val expectedResponse = ResponseEntity.ok().body(mapAnyToJson(listOf("P15000")))
-//        val generatedResponse = sedController.getSeds(buc)
-//        assertEquals(expectedResponse, generatedResponse)
-//    }
-//
-//    @Test
-//    fun `Calling euxController getSeds on blank returns all SEDs`() {
-//        val expectedResponse = ResponseEntity.ok().body(mapAnyToJson(listOf("P2000", "P2100", "P2200", "P8000", "P5000", "P6000", "P7000", "P10000", "P14000", "P15000")))
-//        val generatedResponse = sedController.getSeds()
-//        assertEquals(expectedResponse, generatedResponse)
-//    }
+        doReturn(mockBuc).whenever(mockEuxService).getBuc(rinanr)
+
+        val actualResponse = sedController.getSeds(buc, rinanr)
+
+        val expectedResponse = ResponseEntity.ok().body(mapAnyToJson( listOf("P5000", "P6000", "P7000", "P10000")))
+
+        assertEquals(expectedResponse, actualResponse)
+
+        val list = mapJsonToAny(actualResponse.body!!, typeRefs<List<String>>())
+        assertEquals(4, list.size)
+    }
 
     @Test
     fun `getSeds returns list valid sedType on buc`() {
