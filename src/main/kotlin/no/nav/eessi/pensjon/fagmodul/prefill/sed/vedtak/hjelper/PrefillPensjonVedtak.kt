@@ -1,5 +1,7 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.hjelper
 
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.hjelper.PrefillPensjonVedtaksavslag.createAvlsagsBegrunnelseItem
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.hjelper.PrefillPensjonVedtaksavslag.sjekkForVilkarsvurderingListeHovedytelseellerAvslag
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.hjelper.VedtakPensjonDataHelper.hentVilkarsResultatHovedytelse
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.hjelper.VedtakPensjonDataHelper.hentVinnendeBergeningsMetode
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.hjelper.VedtakPensjonDataHelper.hentYtelseskomponentBelop
@@ -22,7 +24,6 @@ import no.nav.pensjon.v1.ytelsepermaaned.V1YtelsePerMaaned
 object PrefillPensjonVedtak {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillPensjonVedtak::class.java) }
-    private val vedtaksavslag = PrefillPensjonVedtaksavslag()
 
     /**
      *  4.1
@@ -71,7 +72,7 @@ object PrefillPensjonVedtak {
                 begrunnelseAnnen = null,
 
                 //4.1.13.1 -- 4.1.13.2.1 - $pensjon.vedtak[x].avslagbegrunnelse[x].begrunnelse
-                avslagbegrunnelse = vedtaksavslag.createAvlsagsBegrunnelseItem(pendata),
+                avslagbegrunnelse = createAvlsagsBegrunnelseItem(pendata),
 
                 //4.1.14.1 // Ikke i bruk
                 delvisstans = null
@@ -131,7 +132,7 @@ object PrefillPensjonVedtak {
         val sakType = KSAK.valueOf(pendata.sakAlder.sakType)
         logger.debug("              Saktype: $sakType")
 
-        if (vedtaksavslag.sjekkForVilkarsvurderingListeHovedytelseellerAvslag(pendata)) return "99"
+        if (sjekkForVilkarsvurderingListeHovedytelseellerAvslag(pendata)) return "99"
 
         return when (sakType) {
             KSAK.ALDER -> {
@@ -368,7 +369,7 @@ object PrefillPensjonVedtak {
 
         logger.debug("4.1.10        Grunnlag")
 
-        if (vedtaksavslag.sjekkForVilkarsvurderingListeHovedytelseellerAvslag(pendata)) return Grunnlag()
+        if (sjekkForVilkarsvurderingListeHovedytelseellerAvslag(pendata)) return Grunnlag()
 
         return Grunnlag(
 
