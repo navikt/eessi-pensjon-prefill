@@ -4,6 +4,7 @@ import no.nav.eessi.pensjon.fagmodul.eux.basismodel.RinaAksjon
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.*
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.models.SEDType
+import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
 import org.joda.time.DateTime
 import org.joda.time.DateTimeZone
 import org.slf4j.LoggerFactory
@@ -15,6 +16,8 @@ import java.time.ZoneId
 
 
 class BucUtils(private val buc: Buc ) {
+
+    private val logger = LoggerFactory.getLogger(BucUtils::class.java)
 
     private fun getBuc(): Buc {
         return buc
@@ -222,15 +225,32 @@ class BucUtils(private val buc: Buc ) {
 
     fun getParticipantsLand() = getParticipantsAsInstitusjonItem().map { it.country }.joinToString(separator = ",")
 
-    fun getCreatableSEDs() =
-            (getBuc().actions ?: emptyList())
-                    .filter { it.documentType != null }
-                    .filter { it.name == "Create" }
-                    .map { it.documentType!! }
-                    .sortedBy { it }
-                    .toList()
+    fun getBucAction() = getBuc().actions
 
-    fun getRinaAksjoner(): List<RinaAksjon> {
+    fun getFiltrerteGyldigSedAksjonListAsString() : List<String> {
+        return filterSektorPandRelevantHorizontalSeds(getGyldigSedAksjonListAsString())
+    }
+
+    fun getGyldigSedAksjonListAsString() : List<String> {
+        val keyWord = "empty"
+        val docs = getAllDocuments()
+        return docs.asSequence()
+                .filter { item -> item.status == keyWord }
+                .filterNot { item -> item.type == null }
+                .map { item -> item.type!! }
+                .sortedBy { it }
+                .toList()
+    }
+
+    fun filterSektorPandRelevantHorizontalSeds(list: List<String>) =
+            list.filter {
+                it.startsWith("P")
+                        .or(it.startsWith("H12"))
+                        .or(it.startsWith("H07"))
+                        .or(it.startsWith("H02"))
+            }.sorted()
+
+    fun getRinaAksjon(): List<RinaAksjon> {
         val aksjoner = mutableListOf<RinaAksjon>()
         val actionitems = getBuc().actions
         val buctype = getProcessDefinitionName()

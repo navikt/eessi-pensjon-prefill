@@ -164,7 +164,6 @@ class SedController(private val euxService: EuxService,
                         @PathVariable("sedtype", required = false) sedType: String?): List<SED> {
         auditlogger.logBuc("getDocumentlist", " euxCaseId: $euxcaseid")
         logger.info("kaller /${euxcaseid}/${sedType} ")
-
         return euxService.getSedOnBuc(euxcaseid, sedType)
     }
 
@@ -172,40 +171,17 @@ class SedController(private val euxService: EuxService,
     @GetMapping("/institusjoner/{buctype}", "/institusjoner/{buctype}/{land}")
     fun getEuxInstitusjoner(@PathVariable("buctype", required = true) buctype: String, @PathVariable("land", required = false) landkode: String? = ""): List<InstitusjonItem> {
         logger.info("Henter ut liste over alle Institusjoner i Rina")
-
         return euxService.getInstitutions(buctype, landkode)
     }
 
-    @ApiOperation("henter liste over seds til valgt rinasak")
+    @ApiOperation("henter liste over seds som kan opprettes til valgt rinasak")
     @GetMapping("/seds/{buctype}/{rinanr}")
     fun getSeds(@PathVariable(value = "buctype", required = true) bucType: String,
                 @PathVariable(value = "rinanr", required = true) euxCaseId: String): ResponseEntity<String?> {
-
-        val resultListe = BucUtils(euxService.getBuc(euxCaseId)).getCreatableSEDs()
-        return if (resultListe.isEmpty()) {
-            getSeds(bucType)
-        } else {
-            ResponseEntity.ok().body(filterSektorPandRelevantHorizontalSeds(resultListe).toJsonSkipEmpty())
-        }
+        val resultListe = BucUtils(euxService.getBuc(euxCaseId)).getFiltrerteGyldigSedAksjonListAsString()
+        logger.debug("Tilgjengelige sed som kan opprettes på buctype: $bucType seds: $resultListe")
+        return ResponseEntity.ok().body(resultListe.toJsonSkipEmpty())
     }
-
-    @ApiOperation("henter liste over seder")
-    @GetMapping("/seds")
-    fun getSeds() = getSeds(null)
-
-    @ApiOperation("henter liste over seds til valgt buc")
-    @GetMapping("/seds/{buctype}")
-    fun getSeds(@PathVariable(value = "buctype", required = true) bucType: String?) =
-            ResponseEntity.ok().body(euxService.getAvailableSedOnBuc(bucType).toJsonSkipEmpty())
-
-
-    fun filterSektorPandRelevantHorizontalSeds(list: List<String>) =
-            list.filter {
-                it.startsWith("P")
-                        .or(it.startsWith("H12"))
-                        .or(it.startsWith("H07"))
-                        .or(it.startsWith("H02"))
-            }.sorted()
 
     @ApiOperation("Henter ytelsetype fra P15000 på valgt Buc og Documentid")
     @GetMapping("/ytelseKravtype/{rinanr}/sedid/{documentid}")
