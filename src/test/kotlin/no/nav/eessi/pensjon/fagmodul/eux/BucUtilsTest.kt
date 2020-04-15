@@ -6,9 +6,7 @@ import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Organisation
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ParticipantsItem
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.models.SEDType
-import no.nav.eessi.pensjon.utils.mapJsonToAny
-import no.nav.eessi.pensjon.utils.typeRefs
-import no.nav.eessi.pensjon.utils.validateJson
+import no.nav.eessi.pensjon.utils.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
@@ -220,13 +218,9 @@ class BucUtilsTest {
         bucjson = getTestJsonFile("buc-158123_2_v4.1.json")
         buc = mapJsonToAny(bucjson, typeRefs<Buc>())
         bucUtils = BucUtils(buc)
-
         assertEquals(2, bucUtils.getBucAttachments()?.size)
-
         assertEquals(18, bucUtils.getAllDocuments().size)
-
         val parts = bucUtils.getParticipants()
-
         assertEquals(2, parts.size)
     }
 
@@ -237,54 +231,79 @@ class BucUtilsTest {
     }
 
     @Test
-    fun `getAksjonListAsString   returns sorted list ok`(){
-        val actualOutput = bucUtils.getAksjonListAsString()
-
+    fun `getGyldigSedAksjonListAsString   returns sorted list ok`(){
+        val actualOutput = bucUtils.getGyldigSedAksjonListAsString()
         assertEquals(14, actualOutput.size)
         assertEquals("P5000", actualOutput[6])
-
     }
 
     @Test
-    fun `getAksjonListAsString   returns sorted of one element ok`(){
-        //mocking data
-        val actionitems = buc.actions
-        actionitems?.forEach {
-            it.name = "Update"
-        }
-        actionitems?.get(0)?.name = "Create"
-
-        //run impl. for test
-        val actualOutput = bucUtils.getAksjonListAsString()
+    fun `getFiltrerteGyldigSedAksjonListAsString   returns sorted of one element ok`(){
+        val tmpbuc3 = mapJsonToAny(getTestJsonFile("P_BUC_01_4.2_tom.json"), typeRefs<Buc>())
+        val bucUtil = BucUtils(tmpbuc3)
+        val actualOutput = bucUtil.getFiltrerteGyldigSedAksjonListAsString()
         assertEquals(1, actualOutput.size)
     }
 
     @Test
-    fun `getAksjonListAsString   returns no element`(){
-        //mocking data
-        val actionitems = buc.actions
-        actionitems?.forEach {
-            it.name = "Update"
-        }
+    fun `getGyldigSedAksjonListAsString   returns sorted of one element ok`(){
+        val tmpbuc3 = mapJsonToAny(getTestJsonFile("P_BUC_01_4.2_tom.json"), typeRefs<Buc>())
+        val bucUtil = BucUtils(tmpbuc3)
+        val actualOutput = bucUtil.getGyldigSedAksjonListAsString()
+        assertEquals(1, actualOutput.size)
+    }
 
-        //run impl. for test
-        val actualOutput = bucUtils.getAksjonListAsString()
+    @Test
+    fun `getFiltrerteGyldigSedAksjonListAsString   returns no element`(){
+        val tmpbuc3 = mapJsonToAny(getTestJsonFile("P_BUC_01_4.2_P2000.json"), typeRefs<Buc>())
+        val bucUtil = BucUtils(tmpbuc3)
+        val actualOutput = bucUtil.getFiltrerteGyldigSedAksjonListAsString()
         assertEquals(0, actualOutput.size)
     }
 
     @Test
-    fun `getAksjonListAsString   returns 16 sorted elements`(){
-        //mocking data
-        val actionitems = buc.actions
-        actionitems?.forEach {
-            it.name = "Create"
-        }
+    fun `getFiltrerteGyldigSedAksjonListAsString  returns filtered 10 sorted elements`(){
+        val actualOutput = bucUtils.getFiltrerteGyldigSedAksjonListAsString()
+        assertEquals(10, actualOutput.size)
+        assertEquals("P6000", actualOutput[7])
+    }
 
-        //run impl. for test
-        val actualOutput = bucUtils.getAksjonListAsString()
-        assertEquals(16, actualOutput.size)
-        assertEquals("P6000", actualOutput[9])
+    @Test
+    fun `getGyldigSedAksjonListAsString  returns 14 sorted elements`(){
+        val actualOutput = bucUtils.getGyldigSedAksjonListAsString()
+        assertEquals(14, actualOutput.size)
+        assertEquals("P6000", actualOutput[7])
+    }
 
+    @Test
+    fun `Test liste med SED kun PensjonSED skal returneres`() {
+        val list  = listOf("X005","P2000","P4000","H021","X06","P9000", "")
+
+        val result = bucUtils.filterSektorPandRelevantHorizontalSeds(list)
+
+        assertEquals(4, result.size)
+        assertEquals("[H021, P2000, P4000, P9000]", result.toString())
+    }
+
+    @Test
+    fun `Test liste med SED som skal returneres`() {
+        val list  = listOf("X005","P2000","P4000","H020","H070", "X06", "H121","P9000", "XYZ")
+
+        val result = bucUtils.filterSektorPandRelevantHorizontalSeds(list)
+
+        assertEquals(6, result.size)
+        assertEquals("[H020, H070, H121, P2000, P4000, P9000]", result.toString())
+    }
+
+
+    @Test
+    fun `Test av liste med SEDer der kun PensjonSEDer skal returneres`() {
+        val list  = listOf("X005","P2000","P4000","H020","X06","P9000", "")
+
+        val result = bucUtils.filterSektorPandRelevantHorizontalSeds(list)
+
+        assertEquals(4, result.size)
+        assertEquals("[ \"H020\", \"P2000\", \"P4000\", \"P9000\" ]", mapAnyToJson(result))
     }
 
 

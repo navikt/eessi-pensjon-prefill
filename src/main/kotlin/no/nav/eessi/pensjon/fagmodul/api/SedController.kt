@@ -180,29 +180,20 @@ class SedController(private val euxService: EuxService,
     @GetMapping("/seds/{buctype}/{rinanr}")
     fun getSeds(@PathVariable(value = "buctype", required = true) bucType: String,
                 @PathVariable(value = "rinanr", required = true) euxCaseId: String): ResponseEntity<String?> {
-
-        val resultListe = BucUtils(euxService.getBuc(euxCaseId)).getAksjonListAsString()
+        val resultListe = BucUtils(euxService.getBuc(euxCaseId)).getFiltrerteGyldigSedAksjonListAsString()
         logger.debug("Tilgjengelige aksjoner $resultListe")
-        return ResponseEntity.ok().body(filterSektorPandRelevantHorizontalSeds(resultListe).toJsonSkipEmpty())
+        return ResponseEntity.ok().body(resultListe.toJsonSkipEmpty())
     }
 
-    @ApiOperation("henter liste over seder")
-    @GetMapping("/seds")
-    fun getSeds() = getSeds(null)
+//    @ApiOperation("henter liste over seder")
+//    @GetMapping("/seds")
+//    fun getSeds() = getSeds(null)
+//
+//    @ApiOperation("henter liste over seds til valgt buc")
+//    @GetMapping("/seds/{buctype}")
+//    fun getSeds(@PathVariable(value = "buctype", required = true) bucType: String?) =
+//            ResponseEntity.ok().body(euxService.getAvailableSedOnBuc(bucType).toJsonSkipEmpty())
 
-    @ApiOperation("henter liste over seds til valgt buc")
-    @GetMapping("/seds/{buctype}")
-    fun getSeds(@PathVariable(value = "buctype", required = true) bucType: String?) =
-            ResponseEntity.ok().body(euxService.getAvailableSedOnBuc(bucType).toJsonSkipEmpty())
-
-
-    fun filterSektorPandRelevantHorizontalSeds(list: List<String>) =
-            list.filter {
-                it.startsWith("P")
-                        .or(it.startsWith("H12"))
-                        .or(it.startsWith("H07"))
-                        .or(it.startsWith("H02"))
-            }.sorted()
 
     @ApiOperation("Henter ytelsetype fra P15000 på valgt Buc og Documentid")
     @GetMapping("/ytelseKravtype/{rinanr}/sedid/{documentid}")

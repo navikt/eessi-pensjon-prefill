@@ -4,6 +4,7 @@ import no.nav.eessi.pensjon.fagmodul.eux.basismodel.RinaAksjon
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.*
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.models.SEDType
+import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
 import org.joda.time.DateTime
 import org.joda.time.DateTimeZone
 import org.slf4j.LoggerFactory
@@ -226,16 +227,28 @@ class BucUtils(private val buc: Buc ) {
 
     fun getBucAction() = getBuc().actions
 
-    fun getAksjonListAsString() : List<String> {
-        val keywordCreate = "Create"
-        val actions = getBuc().actions ?: listOf()
-        return actions.asSequence()
-                .filter { item -> item.name == keywordCreate }
-                .filterNot { item ->  item.documentType == null}
-                .map { item -> item.documentType!!}
+    fun getFiltrerteGyldigSedAksjonListAsString() : List<String> {
+        return filterSektorPandRelevantHorizontalSeds(getGyldigSedAksjonListAsString())
+    }
+
+    fun getGyldigSedAksjonListAsString() : List<String> {
+        val keyWord = "empty"
+        val docs = getAllDocuments()
+        return docs.asSequence()
+                .filter { item -> item.status == keyWord }
+                .filterNot { item -> item.type == null }
+                .map { item -> item.type!! }
                 .sortedBy { it }
                 .toList()
     }
+
+    fun filterSektorPandRelevantHorizontalSeds(list: List<String>) =
+            list.filter {
+                it.startsWith("P")
+                        .or(it.startsWith("H12"))
+                        .or(it.startsWith("H07"))
+                        .or(it.startsWith("H02"))
+            }.sorted()
 
     fun getRinaAksjon(): List<RinaAksjon> {
         val aksjoner = mutableListOf<RinaAksjon>()
