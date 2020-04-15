@@ -1,13 +1,12 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.helper
 
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.PensjonsinformasjonMother
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.hjelper.PrefillPensjonVedtaksavslag
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.hjelper.PrefillPensjonVedtaksavslag.createAvlsagsBegrunnelse
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
 class PrefillPensjonVedtaksavslagTest {
 
-    private val vedtaksavslag = PrefillPensjonVedtaksavslag()
 
     @Test
     fun `forventer "01" på AvlsagsBegrunnelse for Alderpensjon TrygdleListeTom `() {
@@ -17,7 +16,7 @@ class PrefillPensjonVedtaksavslagTest {
             vilkarsvurderingListe.vilkarsvurderingListe[0].resultatHovedytelse = "AVSL"
         }
 
-        assertEquals("01", vedtaksavslag.createAvlsagsBegrunnelse(pendata))
+        assertEquals("01", createAvlsagsBegrunnelse(pendata))
     }
 
     @Test
@@ -28,7 +27,7 @@ class PrefillPensjonVedtaksavslagTest {
             vilkarsvurderingListe.vilkarsvurderingListe[0].resultatHovedytelse = "AVSL"
 
         }
-        assertEquals("01", vedtaksavslag.createAvlsagsBegrunnelse(pendata1))
+        assertEquals("01", createAvlsagsBegrunnelse(pendata1))
     }
 
     @Test
@@ -39,7 +38,7 @@ class PrefillPensjonVedtaksavslagTest {
             vilkarsvurderingListe.vilkarsvurderingListe[0].resultatHovedytelse = "AVSL"
         }
 
-        assertEquals("03", vedtaksavslag.createAvlsagsBegrunnelse(pendata))
+        assertEquals("03", createAvlsagsBegrunnelse(pendata))
     }
 
     @Test
@@ -48,7 +47,7 @@ class PrefillPensjonVedtaksavslagTest {
             vilkarsvurderingListe.vilkarsvurderingListe.get(0).avslagHovedytelse = "UNDER_62"
             vilkarsvurderingListe.vilkarsvurderingListe.get(0).resultatHovedytelse = "AVSL"
         }
-        assertEquals("06", vedtaksavslag.createAvlsagsBegrunnelse(pendata))
+        assertEquals("06", createAvlsagsBegrunnelse(pendata))
     }
 
     @Test
@@ -58,7 +57,7 @@ class PrefillPensjonVedtaksavslagTest {
             vilkarsvurderingListe.vilkarsvurderingListe[0].avslagHovedytelse = "IKKE_MOTTATT_DOK"
         }
 
-        assertEquals("07", vedtaksavslag.createAvlsagsBegrunnelse(pendata))
+        assertEquals("07", createAvlsagsBegrunnelse(pendata))
     }
 
     @Test
@@ -69,7 +68,7 @@ class PrefillPensjonVedtaksavslagTest {
             vilkarsvurderingListe.vilkarsvurderingListe[0].resultatHovedytelse = "AVSL"
         }
 
-        assertEquals("01", vedtaksavslag.createAvlsagsBegrunnelse(pendata))
+        assertEquals("01", createAvlsagsBegrunnelse(pendata))
     }
 
     @Test
@@ -80,7 +79,7 @@ class PrefillPensjonVedtaksavslagTest {
             vilkarsvurderingListe.vilkarsvurderingListe[0].resultatHovedytelse = "AVSL"
         }
 
-        assertEquals("03", vedtaksavslag.createAvlsagsBegrunnelse(pendata))
+        assertEquals("03", createAvlsagsBegrunnelse(pendata))
     }
 
     @Test
@@ -93,6 +92,6 @@ class PrefillPensjonVedtaksavslagTest {
             vilkarsvurderingListe.vilkarsvurderingListe[0].vilkarsvurderingUforetrygd.alder = ""
         }
 
-        assertEquals("08", vedtaksavslag.createAvlsagsBegrunnelse(pendata))
+        assertEquals("08", createAvlsagsBegrunnelse(pendata))
     }
 }

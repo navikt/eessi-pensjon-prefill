@@ -5,7 +5,7 @@ import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-class PrefillPensjonVedtaksavslag {
+object PrefillPensjonVedtaksavslag {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillPensjonVedtaksavslag::class.java) }
 
