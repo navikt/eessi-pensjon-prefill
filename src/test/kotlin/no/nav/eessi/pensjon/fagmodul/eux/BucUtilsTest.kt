@@ -261,6 +261,8 @@ class BucUtilsTest {
         assertEquals(0, actualOutput.size)
     }
 
+
+
     @Test
     fun `getFiltrerteGyldigSedAksjonListAsString  returns filtered 10 sorted elements`(){
         val actualOutput = bucUtils.getFiltrerteGyldigSedAksjonListAsString()

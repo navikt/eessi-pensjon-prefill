@@ -234,17 +234,20 @@ class BucUtils(private val buc: Buc ) {
     fun getGyldigSedAksjonListAsString() : List<String> {
         val keyWord = "empty"
         val docs = getAllDocuments()
-        return docs.asSequence()
+        val list = docs.asSequence()
                 .filter { item -> item.status == keyWord }
                 .filterNot { item -> item.type == null }
                 .map { item -> item.type!! }
                 .sortedBy { it }
                 .toList()
+        logger.debug("list: ${list.toJsonSkipEmpty()}")
+        return list
     }
 
     fun filterSektorPandRelevantHorizontalSeds(list: List<String>) =
             list.filter {
                 it.startsWith("P")
+                        .or(it.startsWith("Dummy"))
                         .or(it.startsWith("H12"))
                         .or(it.startsWith("H07"))
                         .or(it.startsWith("H02"))
