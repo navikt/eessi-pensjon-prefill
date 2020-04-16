@@ -227,8 +227,12 @@ class BucUtils(private val buc: Buc ) {
 
     fun getBucAction() = getBuc().actions
 
-    fun getFiltrerteGyldigSedAksjonListAsString() : List<String> {
-        return filterSektorPandRelevantHorizontalSeds(getGyldigSedAksjonListAsString())
+    fun getFiltrerteGyldigSedAksjonListAsString(backupList: List<String>) : List<String> {
+        val gyldigeSedList = getGyldigSedAksjonListAsString()
+        if (gyldigeSedList.contains("DummyChooseParts") && gyldigeSedList.size == 1) {
+            return backupList
+        }
+        return filterSektorPandRelevantHorizontalSeds(gyldigeSedList)
     }
 
     fun getGyldigSedAksjonListAsString() : List<String> {
@@ -238,8 +242,8 @@ class BucUtils(private val buc: Buc ) {
                 .filter { item -> item.status == keyWord }
                 .filterNot { item -> item.type == null }
                 .map { item -> item.type!! }
-                .sortedBy { it }
                 .toList()
+                .sorted()
         logger.debug("list: ${list.toJsonSkipEmpty()}")
         return list
     }
@@ -247,7 +251,6 @@ class BucUtils(private val buc: Buc ) {
     fun filterSektorPandRelevantHorizontalSeds(list: List<String>) =
             list.filter {
                 it.startsWith("P")
-                        .or(it.startsWith("Dummy"))
                         .or(it.startsWith("H12"))
                         .or(it.startsWith("H07"))
                         .or(it.startsWith("H02"))

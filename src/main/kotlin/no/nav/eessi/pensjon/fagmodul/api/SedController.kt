@@ -178,18 +178,9 @@ class SedController(private val euxService: EuxService,
     @GetMapping("/seds/{buctype}/{rinanr}")
     fun getSeds(@PathVariable(value = "buctype", required = true) bucType: String,
                 @PathVariable(value = "rinanr", required = true) euxCaseId: String): ResponseEntity<String?> {
-        val resultListe = BucUtils(euxService.getBuc(euxCaseId)).getFiltrerteGyldigSedAksjonListAsString()
+        val resultListe = BucUtils(euxService.getBuc(euxCaseId)).getFiltrerteGyldigSedAksjonListAsString(euxService.getAvailableSedOnBuc(bucType))
         logger.debug("Tilgjengelige sed som kan opprettes på buctype: $bucType seds: $resultListe")
-        val filterlist = filterOnDummyChooseParts(resultListe, bucType)
-        return ResponseEntity.ok().body(filterlist.toJsonSkipEmpty())
-    }
-
-    //må hente ut hardkodet liste over seder på tom buc hvis vi får DummyChoosParts
-    fun filterOnDummyChooseParts(list: List<String>, bucType: String): List<String> {
-        if (list.contains("DummyChooseParts")) {
-            return euxService.getAvailableSedOnBuc(bucType)
-        }
-        return list
+        return ResponseEntity.ok().body(resultListe.toJsonSkipEmpty())
     }
 
     @ApiOperation("Henter ytelsetype fra P15000 på valgt Buc og Documentid")

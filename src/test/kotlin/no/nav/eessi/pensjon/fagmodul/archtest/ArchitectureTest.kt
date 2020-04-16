@@ -35,7 +35,7 @@ class ArchitectureTest {
             allClasses = ClassFileImporter().importPackages(root)
 
             assertTrue(allClasses.size > 200, "Sanity check on no. of classes to analyze")
-            assertTrue(allClasses.size < 850, "Sanity check on no. of classes to analyze")
+            assertTrue(allClasses.size < 860, "Sanity check on no. of classes to analyze")
 
             productionClasses = ClassFileImporter()
                     .withImportOption(ImportOption.DoNotIncludeTests())

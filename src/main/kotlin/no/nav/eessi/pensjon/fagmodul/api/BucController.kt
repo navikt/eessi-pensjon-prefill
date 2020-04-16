@@ -90,7 +90,8 @@ class BucController(private val euxService: EuxService,
     @GetMapping("/{rinanr}/aksjoner")
     fun getMuligeAksjoner(@PathVariable(value = "rinanr", required = true) rinanr: String): List<String> {
         logger.debug("Henter ut muligeaksjoner på valgt buc med rinanummer: $rinanr")
-        return BucUtils(euxService.getBuc(rinanr)).getFiltrerteGyldigSedAksjonListAsString()
+        val bucUtil = BucUtils(euxService.getBuc(rinanr))
+        return bucUtil.filterSektorPandRelevantHorizontalSeds(bucUtil.getGyldigSedAksjonListAsString())
     }
 
     @ApiOperation("Henter ut en liste over saker på valgt aktoerid. ny api kall til eux")
