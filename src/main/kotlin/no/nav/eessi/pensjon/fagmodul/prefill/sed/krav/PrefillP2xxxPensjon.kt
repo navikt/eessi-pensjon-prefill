@@ -82,7 +82,7 @@ object PrefillP2xxxPensjon {
 
         } else {
             logger.info("sakType: ${pensak.sakType}")
-            if (pensak.sakType == Saktype.ALDER.name) {
+            if (pensak.sakType != Saktype.BARNEP.name) {
                 try {
                     val kravHistorikkMedUtland = hentKravHistorikkForsteGangsBehandlingUtlandEllerForsteGang(pensak.kravHistorikkListe)
                     val ytelseprmnd = hentYtelsePerMaanedDenSisteFraKrav(kravHistorikkMedUtland, pensak)
@@ -98,42 +98,6 @@ object PrefillP2xxxPensjon {
                     ytelselist.add(createYtelseMedManglendeYtelse(pensak, personNr, penSaksnummer, andreinstitusjonerItem))
                 }
             }
-
-            if (pensak.sakType == Saktype.UFOREP.name) {
-                try {
-                    val kravHistorikkMedUtland = hentKravHistorikkForsteGangsBehandlingUtlandEllerForsteGang(pensak.kravHistorikkListe)
-                    val ytelseprmnd = hentYtelsePerMaanedDenSisteFraKrav(kravHistorikkMedUtland, pensak)
-
-                    //kjøre ytelselist på normal
-                    if (krav == null) {
-                        krav = createKravDato(kravHistorikkMedUtland)
-                    }
-
-                    ytelselist.add(createYtelserItem(ytelseprmnd, pensak, personNr, penSaksnummer, andreinstitusjonerItem))
-
-                } catch (ex: Exception) {
-                    logger.error(ex.message, ex)
-                    ytelselist.add(createYtelseMedManglendeYtelse(pensak, personNr, penSaksnummer, andreinstitusjonerItem))
-                }
-            }
-
-            if (pensak.sakType == Saktype.GJENLEV.name) {
-                try {
-                    val kravHistorikkMedUtland = hentKravHistorikkForsteGangsBehandlingUtlandEllerForsteGang(pensak.kravHistorikkListe)
-                    val ytelseprmnd = hentYtelsePerMaanedDenSisteFraKrav(kravHistorikkMedUtland, pensak)
-
-                    //kjøre ytelselist på normal
-                    if (krav == null) {
-                        krav = createKravDato(kravHistorikkMedUtland)
-                    }
-
-                    ytelselist.add(createYtelserItem(ytelseprmnd, pensak, personNr, penSaksnummer, andreinstitusjonerItem))
-                } catch (ex: Exception) {
-                    logger.error(ex.message, ex)
-                    ytelselist.add(createYtelseMedManglendeYtelse(pensak, personNr, penSaksnummer, andreinstitusjonerItem))
-                }
-            }
-
         }
 
         return Pensjon(
@@ -238,7 +202,7 @@ object PrefillP2xxxPensjon {
         )
     }
 
-    fun hentYtelsePerMaanedDenSisteFraKrav(kravHistorikk: V1KravHistorikk, pensak: V1Sak): V1YtelsePerMaaned {
+    private fun hentYtelsePerMaanedDenSisteFraKrav(kravHistorikk: V1KravHistorikk, pensak: V1Sak): V1YtelsePerMaaned {
         val ytelser = pensak.ytelsePerMaanedListe.ytelsePerMaanedListe
         val ytelserSortertPaaFom = ytelser.asSequence().sortedBy { it.fom.toGregorianCalendar() }.toList()
 
