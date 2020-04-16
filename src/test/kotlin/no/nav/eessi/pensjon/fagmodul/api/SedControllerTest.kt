@@ -118,6 +118,24 @@ class SedControllerTest {
     }
 
     @Test
+    fun `getFiltrerteGyldigSedAksjonListAsString   buc_01 returns 1 sed`() {
+        val mockBuc = mapJsonToAny(String(Files.readAllBytes(Paths.get("src/test/resources/json/buc/P_BUC_01_4.2_tom.json"))), typeRefs<Buc>())
+        val buc = "P_BUC_01"
+        val rinanr = "1000101"
+
+        doReturn(mockBuc).whenever(mockEuxService).getBuc(rinanr)
+
+        val actualResponse = sedController.getSeds(buc, rinanr)
+
+        val expectedResponse = ResponseEntity.ok().body(mapAnyToJson( listOf("P2000")))
+
+        assertEquals(expectedResponse, actualResponse)
+
+        val list = mapJsonToAny(actualResponse.body!!, typeRefs<List<String>>())
+        assertEquals(1, list.size)
+    }
+
+    @Test
     fun `getFiltrerteGyldigSedAksjonListAsString   buc_06 returns 4 seds`() {
         val mockBuc = mapJsonToAny(String(Files.readAllBytes(Paths.get("src/test/resources/json/buc/buc_P_BUC_06_4.2_tom.json"))), typeRefs<Buc>())
         val buc = "P_BUC_06"
@@ -133,6 +151,24 @@ class SedControllerTest {
 
         val list = mapJsonToAny(actualResponse.body!!, typeRefs<List<String>>())
         assertEquals(4, list.size)
+    }
+
+    @Test
+    fun `getFiltrerteGyldigSedAksjonListAsString   buc_06 returns 3 seds if a sed already exists`() {
+        val mockBuc = mapJsonToAny(String(Files.readAllBytes(Paths.get("src/test/resources/json/buc/buc-P_BUC_06_4.2_P5000.json"))), typeRefs<Buc>())
+        val buc = "P_BUC_06"
+        val rinanr = "1000101"
+
+        doReturn(mockBuc).whenever(mockEuxService).getBuc(rinanr)
+
+        val actualResponse = sedController.getSeds(buc, rinanr)
+
+        val expectedResponse = ResponseEntity.ok().body(mapAnyToJson( listOf("P10000", "P6000", "P7000")))
+
+        assertEquals(expectedResponse, actualResponse)
+
+        val list = mapJsonToAny(actualResponse.body!!, typeRefs<List<String>>())
+        assertEquals(3, list.size)
     }
 
     @Test

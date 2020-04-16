@@ -241,7 +241,7 @@ class BucUtilsTest {
     fun `getFiltrerteGyldigSedAksjonListAsString   returns sorted of one element ok`(){
         val tmpbuc3 = mapJsonToAny(getTestJsonFile("P_BUC_01_4.2_tom.json"), typeRefs<Buc>())
         val bucUtil = BucUtils(tmpbuc3)
-        val actualOutput = bucUtil.getFiltrerteGyldigSedAksjonListAsString()
+        val actualOutput = bucUtil.getFiltrerteGyldigSedAksjonListAsString(listOf("DummyChooseParts", "P2000"))
         assertEquals(1, actualOutput.size)
     }
 
@@ -257,7 +257,7 @@ class BucUtilsTest {
     fun `getFiltrerteGyldigSedAksjonListAsString   returns no element`(){
         val tmpbuc3 = mapJsonToAny(getTestJsonFile("P_BUC_01_4.2_P2000.json"), typeRefs<Buc>())
         val bucUtil = BucUtils(tmpbuc3)
-        val actualOutput = bucUtil.getFiltrerteGyldigSedAksjonListAsString()
+        val actualOutput = bucUtil.getFiltrerteGyldigSedAksjonListAsString(listOf("P2000"))
         assertEquals(0, actualOutput.size)
     }
 
@@ -265,7 +265,7 @@ class BucUtilsTest {
 
     @Test
     fun `getFiltrerteGyldigSedAksjonListAsString  returns filtered 10 sorted elements`(){
-        val actualOutput = bucUtils.getFiltrerteGyldigSedAksjonListAsString()
+        val actualOutput = bucUtils.getFiltrerteGyldigSedAksjonListAsString(listOf(""))
         assertEquals(10, actualOutput.size)
         assertEquals("P6000", actualOutput[7])
     }
