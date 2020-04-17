@@ -1,7 +1,7 @@
 package no.nav.eessi.pensjon.vedlegg
 
 import com.nhaarman.mockitokotlin2.*
-import no.nav.eessi.pensjon.EessiFagmodulApplicationUnsecureTest
+import no.nav.eessi.pensjon.UnsecuredWebMvcTestLauncher
 import no.nav.eessi.pensjon.vedlegg.client.HentdokumentInnholdResponse
 import org.hamcrest.Matchers.containsString
 import org.junit.jupiter.api.Test
@@ -16,7 +16,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 
-@SpringBootTest(classes = [EessiFagmodulApplicationUnsecureTest::class] ,webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(classes = [UnsecuredWebMvcTestLauncher::class] ,webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles(profiles = ["unsecured-webmvctest"])
 @AutoConfigureMockMvc
 class VedleggControllerSpringTest {
