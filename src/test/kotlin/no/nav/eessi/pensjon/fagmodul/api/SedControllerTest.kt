@@ -190,27 +190,24 @@ class SedControllerTest {
     }
 
     @Test
-    fun `getSeds returns list valid sedType on buc`() {
-        val buc = "P_BUC_01"
+    fun `getFiltrerteGyldigSedAksjonListAsString buc_06 returns 0 seds if a sed is sent`() {
+        val mockBuc = mapJsonToAny(String(Files.readAllBytes(Paths.get("src/test/resources/json/buc/buc-P_BUC_06-P5000_Sendt.json"))), typeRefs<Buc>())
+        val buc = "P_BUC_06"
         val rinanr = "1000101"
 
-        val bucjson = String(Files.readAllBytes(Paths.get("src/test/resources/json/buc/buc-22909_v4.1.json")))
-
-        val mockBuc = mapJsonToAny(bucjson, typeRefs<Buc>())
         doReturn(mockBuc).whenever(mockEuxService).getBuc(rinanr)
 
-        val expectedSedList = ResponseEntity.ok().body(mapAnyToJson( listOf("H020", "H070", "H120", "P10000", "P3000_NO", "P4000", "P5000", "P6000", "P7000", "P8000")))
+        val actualResponse = sedController.getSeds(buc, rinanr)
 
-        val generatedResponse = sedController.getSeds(buc, rinanr)
+        val expectedResponse = ResponseEntity.ok().body(mapAnyToJson( listOf<String>()))
 
-        assertEquals(expectedSedList, generatedResponse)
+        assertEquals(expectedResponse, actualResponse)
 
-        val json = generatedResponse.body!!
-        val validSedListforBuc = mapJsonToAny(json, typeRefs<List<String>>())
-        assertEquals(10, validSedListforBuc.size)
+        val list = mapJsonToAny(actualResponse.body!!, typeRefs<List<String>>())
+        assertEquals(0, list.size)
     }
 
-    @Test
+     @Test
     fun getYtelseKravtypeOk() {
         val mockKrav = PinOgKrav(fnr = "13212312", krav = Krav(dato = "2019-02-01", type = "01"))
 

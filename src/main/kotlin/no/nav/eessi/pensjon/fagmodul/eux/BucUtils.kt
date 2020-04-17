@@ -228,8 +228,21 @@ class BucUtils(private val buc: Buc ) {
 
     fun getBucAction() = getBuc().actions
 
+    fun getGyldigeOpprettSedAksjonList() : List<String> {
+        val actions = getBucAction()!!
+        val keyWord = "Create"
+        return actions.asSequence()
+                .filter { item -> item.name == keyWord }
+                .filterNot { item -> item.documentType == null }
+                .map { item -> item.documentType!! }
+                .toList()
+                .sorted()
+    }
+
     fun getFiltrerteGyldigSedAksjonListAsString(backupList: List<String>) : List<String> {
         val gyldigeSedList = getGyldigSedAksjonListAsString()
+        val aksjonsliste = getGyldigeOpprettSedAksjonList()
+
         if (gyldigeSedList.contains("DummyChooseParts") && gyldigeSedList.size == 1) {
             logger.debug("benytter backupList : ${backupList.toJsonSkipEmpty()}")
             return backupList
