@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ResponseStatus
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
+import kotlin.math.log
 
 
 class BucUtils(private val buc: Buc ) {
@@ -230,22 +231,26 @@ class BucUtils(private val buc: Buc ) {
     fun getFiltrerteGyldigSedAksjonListAsString(backupList: List<String>) : List<String> {
         val gyldigeSedList = getGyldigSedAksjonListAsString()
         if (gyldigeSedList.contains("DummyChooseParts") && gyldigeSedList.size == 1) {
+            logger.debug("benytter backupList : ${backupList.toJsonSkipEmpty()}")
             return backupList
         }
+        if ( aksjonsliste.isNotEmpty()) {
+            logger.debug("benytter seg av aksjonliste: ${aksjonsliste.toJsonSkipEmpty()}")
+            return filterSektorPandRelevantHorizontalSeds(aksjonsliste)
+        }
+        logger.debug("benytter seg av gyldigeSedList : ${gyldigeSedList.toJsonSkipEmpty()}")
         return filterSektorPandRelevantHorizontalSeds(gyldigeSedList)
     }
 
     fun getGyldigSedAksjonListAsString() : List<String> {
         val keyWord = "empty"
         val docs = getAllDocuments()
-        val list = docs.asSequence()
+        return docs.asSequence()
                 .filter { item -> item.status == keyWord }
                 .filterNot { item -> item.type == null }
                 .map { item -> item.type!! }
                 .toList()
                 .sorted()
-        logger.debug("list: ${list.toJsonSkipEmpty()}")
-        return list
     }
 
     fun filterSektorPandRelevantHorizontalSeds(list: List<String>) =

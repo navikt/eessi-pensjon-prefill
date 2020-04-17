@@ -172,6 +172,24 @@ class SedControllerTest {
     }
 
     @Test
+    fun `getFiltrerteGyldigSedAksjonListAsString buc_01 returns lots of seds`() {
+        val mockBuc = mapJsonToAny(String(Files.readAllBytes(Paths.get("src/test/resources/json/buc/buc-22909_v4.1.json"))), typeRefs<Buc>())
+        val buc = "P_BUC_01"
+        val rinanr = "1000101"
+
+        doReturn(mockBuc).whenever(mockEuxService).getBuc(rinanr)
+
+        val actualResponse = sedController.getSeds(buc, rinanr)
+
+        val expectedResponse = ResponseEntity.ok().body(mapAnyToJson( listOf("H020", "H070", "H120", "P10000", "P3000_NO", "P4000", "P5000", "P6000", "P7000", "P8000" )))
+
+        assertEquals(expectedResponse, actualResponse)
+
+        val list = mapJsonToAny(actualResponse.body!!, typeRefs<List<String>>())
+        assertEquals(10, list.size)
+    }
+
+    @Test
     fun `getSeds returns list valid sedType on buc`() {
         val buc = "P_BUC_01"
         val rinanr = "1000101"
