@@ -40,18 +40,10 @@ class PrefillNav(private val brukerFromTPS: BrukerFromTPS,
             return fsted
         }
 
-        enum class RelasjonEnum(val relasjon: String) {
+        enum class RelasjonEnum(private val relasjon: String) {
             FAR("FARA"),
             MOR("MORA"),
             BARN("BARN");
-
-//            https://kodeverk.nais.preprod.local/api/v1/kodeverk/Familierelasjoner/koder
-//            "BARN",
-//            "EKTE",
-//            "FARA",
-//            "MORA",
-//            "REPA",
-//            "SAMB"
 
             fun erSamme(relasjonTPS: String): Boolean {
                 return relasjon == relasjonTPS
@@ -199,9 +191,6 @@ class PrefillNav(private val brukerFromTPS: BrukerFromTPS,
                     }
 
                 }
-//
-//                if (it.tilRolle.value == "EKTE") { // FIXME TODO - dette begrenser til kun EKTEFELLE (ikke PARTNER og evt andre)
-//                }
             }
             return Pair(ektepinid, ekteTypeValue)
         }
