@@ -58,25 +58,21 @@ object PrefillP2xxxPensjon {
         var krav: Krav? = null
         val ytelselist = mutableListOf<YtelserItem>()
 
-        if (spesialStatusList.contains(pensak.status)) {
+        if (spesialStatusList.contains(pensak.status) && krav == null) {
             logger.info("forkortet ytelsebehandling status: ${pensak.status}")
 
             ytelselist.add(createYtelseMedManglendeYtelse(pensak, personNr, penSaksnummer, andreinstitusjonerItem))
 
             when (pensak.status) {
                 Kravstatus.TIL_BEHANDLING.name -> {
-                    if (krav == null) {
-                        val kravHistorikkMedUtland = hentKravHistorikkMedKravStatusTilBehandling(pensak.kravHistorikkListe)
-                        krav = createKravDato(kravHistorikkMedUtland)
-                        logger.warn("9.1        Opprettett med mulighet for at denne ${Kravstatus.TIL_BEHANDLING} mangler KravDato")
-                    }
+                    val kravHistorikkMedUtland = hentKravHistorikkMedKravStatusTilBehandling(pensak.kravHistorikkListe)
+                    krav = createKravDato(kravHistorikkMedUtland)
+                    logger.warn("9.1        Opprettett med mulighet for at denne ${Kravstatus.TIL_BEHANDLING} mangler KravDato")
                 }
                 else -> {
-                    if (krav == null) {
-                        val kravHistorikkMedUtland = hentKravHistorikkMedKravStatusAvslag(pensak.kravHistorikkListe)
-                        krav = createKravDato(kravHistorikkMedUtland)
-                        logger.warn("9.1        Opprettett med mulighet for at denne ${Kravstatus.AVSL} mangler KravDato")
-                    }
+                    val kravHistorikkMedUtland = hentKravHistorikkMedKravStatusAvslag(pensak.kravHistorikkListe)
+                    krav = createKravDato(kravHistorikkMedUtland)
+                    logger.warn("9.1        Opprettett med mulighet for at denne ${Kravstatus.AVSL} mangler KravDato")
                 }
             }
 

@@ -7,28 +7,27 @@ import java.util.*
 import javax.xml.datatype.DatatypeFactory
 import javax.xml.datatype.XMLGregorianCalendar
 
+private const val sdfPattern = "yyyy-MM-dd"
+
 fun XMLGregorianCalendar.simpleFormat(): String {
     if (this.year > 2500) {
         return ""
     }
-    val date = SimpleDateFormat("yyyy-MM-dd").parse(this.toString())
-    return SimpleDateFormat("yyyy-MM-dd").format(date)
+    val date = SimpleDateFormat(sdfPattern).parse(this.toString())
+    return SimpleDateFormat(sdfPattern).format(date)
 }
 
-fun Date.simpleFormat() = SimpleDateFormat("yyyy-MM-dd").format(this)
+fun Date.simpleFormat(): String = SimpleDateFormat(sdfPattern).format(this)
 
 fun createXMLCalendarFromString(dateStr: String): XMLGregorianCalendar {
-    val date = SimpleDateFormat("yyyy-MM-dd").parse(dateStr)
-    //val time = LocalDate.parse(dateStr)
+    val date = SimpleDateFormat(sdfPattern).parse(dateStr)
     val gcal = GregorianCalendar()
-    //gcal.timeInMillis = time.atStartOfDay (ZoneId.systemDefault()).toInstant().toEpochMilli()
     gcal.timeInMillis = date.time
     return DatatypeFactory.newInstance().newXMLGregorianCalendar(gcal)
 }
 
 fun convertToXMLocal(time: LocalDate): XMLGregorianCalendar {
     val gcal = GregorianCalendar()
-    gcal.setTime(Date.from(time.atStartOfDay(ZoneId.systemDefault()).toInstant()))
-    val xgcal = DatatypeFactory.newInstance().newXMLGregorianCalendar(gcal)
-    return xgcal
+    gcal.time = Date.from(time.atStartOfDay(ZoneId.systemDefault()).toInstant())
+    return DatatypeFactory.newInstance().newXMLGregorianCalendar(gcal)
 }

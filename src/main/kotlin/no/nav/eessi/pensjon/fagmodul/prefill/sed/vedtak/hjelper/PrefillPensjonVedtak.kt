@@ -131,30 +131,16 @@ object PrefillPensjonVedtak {
         if (sjekkForVilkarsvurderingListeHovedytelseellerAvslag(pendata)) return "99"
 
         return when (sakType) {
-            KSAK.ALDER -> {
-                when (isMottarMinstePensjonsniva(pendata)) {
-                    true -> "01"
-                    false -> "02"
-                }
-            }
-            KSAK.UFOREP -> {
-                when (isMottarMinstePensjonsniva(pendata)) {
-                    true -> "01"
-                    false -> "02"
-                }
-            }
-            KSAK.GJENLEV -> {
-                when (isMottarMinstePensjonsniva(pendata)) {
-                    true -> "01"
-                    false -> "02"
-                }
-            }
             KSAK.BARNEP -> {
                 when (isForeldelos(pendata)) {
                     false -> "99"
                     true -> "99"
                 }
-            }
+            } else ->
+                when (isMottarMinstePensjonsniva(pendata)) {
+                    true -> "01"
+                    false -> "02"
+                }
         }
     }
 
@@ -200,8 +186,8 @@ object PrefillPensjonVedtak {
         val erMellombehandling = "MELLOMBH" == kravGjelder
         val erRevurdering = kravGjelder == "REVURD"
 
-        if (KSAK.UFOREP != sakType) {
-            if (erInnvilgelse && (erForsteGangBehandlingNorgeUtland || erMellombehandling || erForsteGangBehandlingBosattUtland))
+        if (KSAK.UFOREP != sakType && erInnvilgelse
+                && (erForsteGangBehandlingNorgeUtland || erMellombehandling || erForsteGangBehandlingBosattUtland)) {
                 return "01"
         }
         if (erAvslag)
