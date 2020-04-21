@@ -61,6 +61,7 @@ data class Barnoppdragelse(
         val relasjonperson: Relasjonperson? = null,
         val merknakder: String? = null,
         val periode: List<PeriodeItem?>? = null,
+        val openperiode: List<OpenPeriodeItem>? = null,
         val svar: BarnoppdragelseSvar? = null,
         val doedsdato: String? = null
 )
@@ -85,6 +86,13 @@ data class PeriodeItem(
         val sluttdato: String? = null
 )
 
+//P1000
+data class OpenPeriodeItem(
+        val startdato: String? = null,
+        val type: String? = null
+)
+
+
 data class Krav(
         val dato: String? = null,
         //P15000
@@ -103,11 +111,23 @@ data class Bruker(
         //H070
         val doedsfall: Doedsfall? = null,
 
+        //P2200 - uførhet
+        val uforhet: Uforhet? = null,
+
         //P14000
         val endringer: Personendringer? = null,
 
         val arbeidsforhold: List<ArbeidsforholdItem>? = null,
         val bank: Bank? = null
+)
+
+data class Uforhet(
+        val startdatoLege: String? = null,
+        val startDatoPensjon: String? = null,
+        val arbeidsUlykke: String? = null,
+        val militartjenesteUlykke: String? = null,
+        val bevisstforsaketSoker: String? = null,
+        val ansvarligTredjepart: String? = null
 )
 
 //P14000
