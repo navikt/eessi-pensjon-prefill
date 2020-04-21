@@ -44,7 +44,7 @@ class SedController(private val euxService: EuxService,
         val dataModel = ApiRequest.buildPrefillDataModelConfirm(request, aktoerService.hentPinForAktoer(request.aktoerId), getAvdodAktoerId(request))
         auditlogger.log("confirmDocument", request.aktoerId ?: "", request.toAudit())
 
-        val sed = prefillService.prefillSed(dataModel).sed
+        val sed = prefillService.prefillSed(dataModel)
         return if (filter == null) {
             sed.toJsonSkipEmpty()
         } else {
@@ -87,9 +87,9 @@ class SedController(private val euxService: EuxService,
             }
 
             logger.info("Prøver å prefillSED")
-            val data = prefillService.prefillSed(dataModel)
+            val sed = prefillService.prefillSed(dataModel)
             logger.info("Prøver å sende SED: ${dataModel.getSEDid()} inn på BUC: ${dataModel.euxCaseID}")
-            val docresult = euxService.opprettSedOnBuc(data.sed, data.euxCaseID)
+            val docresult = euxService.opprettSedOnBuc(sed, dataModel.euxCaseID)
             logger.info("Opprettet ny SED med dokumentId: ${docresult.documentId}")
             val result = bucUtil.findDocument(docresult.documentId)
 
@@ -127,10 +127,10 @@ class SedController(private val euxService: EuxService,
         return metricsHelper.measure(MetricsHelper.MeterName.AddDocumentToParent) {
             val dataModel = ApiRequest.buildPrefillDataModelOnExisting(request, aktoerService.hentPinForAktoer(request.aktoerId), getAvdodAktoerId(request))
             logger.info("Prøver å prefillSED (svar)")
-            val data = prefillService.prefillSed(dataModel)
+            val sed = prefillService.prefillSed(dataModel)
 
             logger.info("Prøver å sende SED: ${dataModel.getSEDid()} inn på BUC: ${dataModel.euxCaseID}")
-            val docresult = euxService.opprettSvarSedOnBuc(data.sed, data.euxCaseID, parentId)
+            val docresult = euxService.opprettSvarSedOnBuc(sed, dataModel.euxCaseID, parentId)
 
             val bucUtil = BucUtils(euxService.getBuc(docresult.caseId))
 
@@ -150,10 +150,10 @@ class SedController(private val euxService: EuxService,
     fun addDocument(@RequestBody request: ApiRequest): ShortDocumentItem {
         auditlogger.log("addDocument", request.aktoerId ?: "", request.toAudit())
         val dataModel = ApiRequest.buildPrefillDataModelOnExisting(request, aktoerService.hentPinForAktoer(request.aktoerId), getAvdodAktoerId(request))
-        val data = prefillService.prefillSed(dataModel)
+        val sed = prefillService.prefillSed(dataModel)
 
         logger.info("kaller add med request: $request")
-        val docresult = euxService.opprettSedOnBuc(data.sed, data.euxCaseID)
+        val docresult = euxService.opprettSedOnBuc(sed, dataModel.euxCaseID)
         return BucUtils(euxService.getBuc(docresult.caseId)).findDocument(docresult.documentId)
     }
 
