@@ -21,7 +21,7 @@ class PrefillService(private val prefillSED: PrefillSED,
 
     //preutfylling av sed fra TPS, PESYS, AAREG o.l skjer her..
     @Throws(ValidationException::class)
-    fun prefillSed(dataModel: PrefillDataModel): PrefillDataModel {
+    fun prefillSed(dataModel: PrefillDataModel): SED {
         return metricsHelper.measure(MetricsHelper.MeterName.PrefillSed) {
 
             logger.info("******* Starter med preutfylling *******\nSED: ${dataModel.getSEDid()} aktoerId: ${dataModel.aktoerID} sakNr: ${dataModel.penSaksnummer}")
@@ -33,7 +33,7 @@ class PrefillService(private val prefillSED: PrefillSED,
 
             logger.info("******* Prefill SED tok $endTime ms. *******")
 
-            data
+            data.sed
         }
     }
 
