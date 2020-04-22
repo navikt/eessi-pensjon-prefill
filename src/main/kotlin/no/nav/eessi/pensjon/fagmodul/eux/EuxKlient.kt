@@ -50,7 +50,6 @@ class EuxKlient(private val euxOidcRestTemplate: RestTemplate,
         val builder = UriComponentsBuilder.fromUriString(urlPath)
                 .queryParam("KorrelasjonsId",  correlationId())
                 .queryParam("ventePaAksjon", "false")
-                .queryParam("lalala", "false") //TODO this is a test, remove ASAP
                 .buildAndExpand(uriParams)
 
         val headers = HttpHeaders()
