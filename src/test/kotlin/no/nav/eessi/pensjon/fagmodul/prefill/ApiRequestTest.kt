@@ -143,9 +143,9 @@ class ApiRequestTest {
 
         val model = ApiRequest.buildPrefillDataModelConfirm(mockData, "12345", null)
 
-        assertEquals("12345", model.personNr)
+        assertEquals("12345", model.norskIdent)
         assertEquals("12234", model.penSaksnummer)
-        assertEquals("0105094340092", model.aktoerID)
+        assertEquals("0105094340092", model.aktorId)
         assertEquals("P6000", model.getSEDid())
 
         assertEquals(SED::class.java, model.sed::class.java)
@@ -164,12 +164,12 @@ class ApiRequestTest {
 
         val model = ApiRequest.buildPrefillDataModelConfirm(mockData, "12345", "2223312")
 
-        assertEquals("12345", model.personNr)
+        assertEquals("12345", model.norskIdent)
         assertEquals("12234", model.penSaksnummer)
-        assertEquals("0105094340092", model.aktoerID)
+        assertEquals("0105094340092", model.aktorId)
         assertEquals("P2100", model.getSEDid())
-        assertEquals("2223312", model.avdodAktorID)
-        assertEquals("010244212312", model.avdod)
+        assertEquals("2223312", model.avdodAktorId)
+        assertEquals("010244212312", model.avdodNorskIdent)
         assertEquals(SED::class.java, model.sed::class.java)
 
     }

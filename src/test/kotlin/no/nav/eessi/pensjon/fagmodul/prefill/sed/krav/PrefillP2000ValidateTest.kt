@@ -57,7 +57,7 @@ class PrefillP2000ValidateTest {
             sed = SED("P2000")
             buc = "P_BUC_01"
             institution = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
-            personNr = "12345678901"
+            norskIdent = "12345678901"
         }
     }
 

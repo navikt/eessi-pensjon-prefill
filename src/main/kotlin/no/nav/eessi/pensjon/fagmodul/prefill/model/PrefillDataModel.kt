@@ -22,16 +22,15 @@ class PrefillDataModel(val penSaksnummer: String) {
     //pensjon
     lateinit var vedtakId: String
 
-    //aktoearid og aktoerId for person
-    lateinit var personNr: String
-    lateinit var aktoerID: String
+    lateinit var norskIdent: String
+    lateinit var aktorId: String
 
     //data fra pesys
     lateinit var saktype: String
 
     //avdod rellasjon - gjennlevende
-    lateinit var avdod: String
-    lateinit var avdodAktorID: String
+    lateinit var avdodNorskIdent: String
+    lateinit var avdodAktorId: String
     lateinit var avdodFar: String
     lateinit var avdodMor: String
 
@@ -71,13 +70,13 @@ class PrefillDataModel(val penSaksnummer: String) {
     fun erGyldigEtterlatt(): Boolean {
         //TODO finne bedre metode?
         return try {
-            return avdod.isNotBlank()
+            return avdodNorskIdent.isNotBlank()
         } catch (ex: Exception) {
             false
         }
     }
 
-    fun brukerEllerGjenlevendeHvisDod() = if (erGyldigEtterlatt()) avdod else personNr
+    fun brukerEllerGjenlevendeHvisDod() = if (erGyldigEtterlatt()) avdodNorskIdent else norskIdent
 
     fun erForeldreLos(): Boolean {
         //TODO finne bedre metode?

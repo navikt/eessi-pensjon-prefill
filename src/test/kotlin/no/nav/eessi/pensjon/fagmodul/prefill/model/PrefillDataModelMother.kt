@@ -1,7 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.model
 
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 
 object PrefillDataModelMother {
@@ -11,8 +10,8 @@ object PrefillDataModelMother {
                 sed = SED(sedType)
                 this.vedtakId = vedtakId
                 buc = "P_BUC_99"
-                aktoerID = "123456789"
-                personNr = pinId
+                aktorId = "123456789"
+                norskIdent = pinId
                 institution = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
             }
 }

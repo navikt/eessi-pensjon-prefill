@@ -83,8 +83,8 @@ class PrefillPersonParameterizedTest {
                 rinaSubject = "Pensjon"
                 sed = SED(sedid)
                 buc = "P_BUC_06"
-                aktoerID = "1234"
-                personNr = "12345"
+                aktorId = "1234"
+                norskIdent = "12345"
                 institution = items
         }
         whenever(mockPrefillFactory.createPrefillClass(prefillDataMock)).thenReturn(prefillDefaultSED)
@@ -109,7 +109,7 @@ class PrefillPersonParameterizedTest {
 
         assertEquals(sedid, responseSED.sed)
         assertNotNull(prefillDataMock)
-        assertEquals(mockPinResponse, prefillDataMock.personNr)
+        assertEquals(mockPinResponse, prefillDataMock.norskIdent)
 
     }
 

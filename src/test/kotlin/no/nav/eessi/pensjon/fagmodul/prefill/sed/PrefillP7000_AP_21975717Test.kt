@@ -54,8 +54,8 @@ class PrefillP7000_AP_21975717Test {
 
             vedtakId = "12312312"
             buc = "P_BUC_99"
-            aktoerID = "123456789"
-            personNr = personFnr
+            aktorId = "123456789"
+            norskIdent = personFnr
             institution = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
             partSedAsJson = mutableMapOf(
                     "PersonInfo" to readJsonResponse("other/person_informasjon_selvb.json"),

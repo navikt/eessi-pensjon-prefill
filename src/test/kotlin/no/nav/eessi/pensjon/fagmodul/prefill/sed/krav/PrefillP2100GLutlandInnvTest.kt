@@ -49,8 +49,8 @@ class PrefillP2100GLutlandInnvTest {
 
         prefillData = PrefillDataModelMother.initialPrefillDataModel("P2100", personFnr, penSaksnummer = pesysSaksnummer).apply {
             skipSedkey = listOf("PENSED")
-            avdodAktorID = "112233445566"
-            avdod = avdodPersonFnr
+            avdodAktorId = "112233445566"
+            avdodNorskIdent = avdodPersonFnr
             partSedAsJson = mutableMapOf(
                     "PersonInfo" to readJsonResponse("other/person_informasjon_selvb.json"),
                     "P4000" to readJsonResponse("other/p4000_trygdetid_part.json"))

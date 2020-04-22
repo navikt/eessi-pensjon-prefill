@@ -54,7 +54,7 @@ class PrefillP2200UforpensjonTest {
 
     @Test
     fun `Testing av komplett utfylling kravsøknad uførepensjon P2200`() {
-        val pendata: Pensjonsinformasjon = dataFromPEN.hentPersonInformasjonMedAktoerId(prefillData.aktoerID)
+        val pendata: Pensjonsinformasjon = dataFromPEN.hentPersonInformasjonMedAktoerId(prefillData.aktorId)
 
         assertNotNull(pendata.brukersSakerListe)
 

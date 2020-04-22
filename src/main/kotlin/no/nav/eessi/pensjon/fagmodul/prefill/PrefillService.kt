@@ -24,7 +24,7 @@ class PrefillService(private val prefillSED: PrefillSED,
     fun prefillSed(dataModel: PrefillDataModel): SED {
         return metricsHelper.measure(MetricsHelper.MeterName.PrefillSed) {
 
-            logger.info("******* Starter med preutfylling *******\nSED: ${dataModel.getSEDid()} aktoerId: ${dataModel.aktoerID} sakNr: ${dataModel.penSaksnummer}")
+            logger.info("******* Starter med preutfylling *******\nSED: ${dataModel.getSEDid()} aktoerId: ${dataModel.aktorId} sakNr: ${dataModel.penSaksnummer}")
 
             val startTime = System.currentTimeMillis()
             val data = prefillSED.prefill(dataModel)
@@ -51,7 +51,7 @@ class PrefillService(private val prefillSED: PrefillSED,
                 )
                 val datax005 = PrefillDataModel(penSaksnummer = data.penSaksnummer).apply {
                     sed = SED(SEDType.X005.name)
-                    personNr = data.personNr
+                    norskIdent = data.norskIdent
                     euxCaseID = data.euxCaseID
                     institusjonX005 = institusjon
                 }

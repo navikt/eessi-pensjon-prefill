@@ -4,7 +4,6 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.whenever
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.prefill.ApiRequest
-import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillPerson
 import no.nav.eessi.pensjon.fagmodul.sedmodel.*
 import no.nav.eessi.pensjon.utils.*
@@ -170,7 +169,7 @@ class SedP4000Test {
 
         assertNotNull(data)
         assertNotNull(data.getPartSEDasJson("P4000"))
-        assertEquals("12345", data.personNr)
+        assertEquals("12345", data.norskIdent)
 
         val resultData = data
         whenever(prefillPerson.prefill(any())).thenReturn(data.sed)

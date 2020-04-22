@@ -59,8 +59,8 @@ class PrefillP2000_AP_LOP_REVUTest {
             sed = SED("P2000")
             vedtakId = "12312312"
             buc = "P_BUC_99"
-            aktoerID = "123456789"
-            personNr = personFnr
+            aktorId = "123456789"
+            norskIdent = personFnr
             institution = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
             partSedAsJson = mutableMapOf(
                     "PersonInfo" to readJsonResponse("other/person_informasjon_selvb.json"),

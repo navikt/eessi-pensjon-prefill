@@ -97,7 +97,7 @@ class PrefillServiceTest {
                             institution = "DUMMY"
                     )
             )
-            personNr = "12345678901"
+            norskIdent = "12345678901"
         }
     }
 
@@ -112,7 +112,7 @@ class PrefillServiceTest {
                             institution = "DUMMY"
                     )
             )
-            personNr = "12345678901"
+            norskIdent = "12345678901"
         }
     }
 }

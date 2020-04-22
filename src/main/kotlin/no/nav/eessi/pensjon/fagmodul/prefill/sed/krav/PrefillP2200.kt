@@ -39,14 +39,14 @@ class PrefillP2200(private val prefillNav: PrefillNav,
 
         //henter opp pensjondat
         try {
-            val pendata: Pensjonsinformasjon? = hentPensjonsdata(prefillData.aktoerID)
+            val pendata: Pensjonsinformasjon? = hentPensjonsdata(prefillData.aktorId)
             if (pendata != null) addAvdod(prefillData, pendata)
 
             sed.pensjon =
                     if (pendata == null) Pensjon()
                     else {
                         val pensjon = createPensjon(
-                                prefillData.personNr,
+                                prefillData.norskIdent,
                                 prefillData.penSaksnummer,
                                 eventuellGjenlevende(prefillData),
                                 pendata,
@@ -71,7 +71,7 @@ class PrefillP2200(private val prefillNav: PrefillNav,
     private fun eventuellGjenlevende(prefillData: PrefillDataModel): Bruker? {
         return if (!prefillData.kanFeltSkippes("PENSED") && prefillData.erGyldigEtterlatt()) {
             logger.debug("          Utfylling gjenlevende (etterlatt)")
-            val gjenlevendeBruker = brukerFromTPS.hentBrukerFraTPS(prefillData.personNr)
+            val gjenlevendeBruker = brukerFromTPS.hentBrukerFraTPS(prefillData.norskIdent)
             if (gjenlevendeBruker == null) null else prefillNav.createBruker(gjenlevendeBruker, null, null)
         } else null
     }

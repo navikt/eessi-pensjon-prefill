@@ -28,13 +28,13 @@ class PrefillDataModelTest {
 
     @Test
     fun `check for valid claimant pin and aktorid is blank fail`() {
-        prefill.avdod = ""
+        prefill.avdodNorskIdent = ""
         assertFalse(prefill.erGyldigEtterlatt())
     }
 
     @Test
     fun `check for valid claimant deceased pin and aktorid is filled`() {
-        prefill.avdod = "23123"
+        prefill.avdodNorskIdent = "23123"
         assertTrue(prefill.erGyldigEtterlatt())
     }
 
@@ -53,16 +53,16 @@ class PrefillDataModelTest {
                 rinaSubject = "Pensjon"
                 sed =  SED("vedtak")
                 buc = "P_BUC_06"
-                aktoerID = "567890"
-                personNr = "123456789"
+                aktorId = "567890"
+                norskIdent = "123456789"
                 institution = items
         }
         assertNotNull(prefill)
         assertEquals("vedtak", prefill.getSEDid())
         assertEquals(SED::class, prefill.sed::class)
         assertEquals("12345", prefill.penSaksnummer)
-        assertEquals("567890", prefill.aktoerID)
-        assertEquals("123456789", prefill.personNr)
+        assertEquals("567890", prefill.aktorId)
+        assertEquals("123456789", prefill.norskIdent)
     }
 
 
@@ -73,13 +73,13 @@ class PrefillDataModelTest {
             rinaSubject= "Pensjon"
             sed = SED("vedtak")
             buc = "P_BUC_06"
-            aktoerID = "32"
-            personNr = "1234000001"
+            aktorId = "32"
+            norskIdent = "1234000001"
             institution = items
         }
         assertNotNull(prefill)
-        assertNotNull(prefill.personNr)
-        assertEquals("1234000001", prefill.personNr)
+        assertNotNull(prefill.norskIdent)
+        assertEquals("1234000001", prefill.norskIdent)
     }
 
 }

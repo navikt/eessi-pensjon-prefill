@@ -9,7 +9,6 @@ import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.KravHistorikkHelper.hentKr
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.NavFodselsnummer
 import no.nav.eessi.pensjon.fagmodul.sedmodel.*
 import no.nav.eessi.pensjon.utils.simpleFormat
-import no.nav.pensjon.v1.brukersbarn.V1BrukersBarn
 import no.nav.pensjon.v1.ektefellepartnersamboer.V1EktefellePartnerSamboer
 import no.nav.pensjon.v1.kravhistorikk.V1KravHistorikk
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
@@ -105,7 +104,7 @@ object PrefillP2xxxPensjon {
 
     fun addAvdod(prefillData: PrefillDataModel, pendata: Pensjonsinformasjon) {
         prefillData.apply {
-            avdod = pendata.avdod?.avdod ?: ""
+            avdodNorskIdent = pendata.avdod?.avdod ?: ""
             avdodMor = pendata.avdod?.avdodMor ?: ""
             avdodFar = pendata.avdod?.avdodFar ?: ""
         }

@@ -53,7 +53,7 @@ class PrefillNavTest {
     fun `prefill med tom respons fra TPS`() {
         val personensPin = "somePersonNr"
         val prefillData = PrefillDataModel(penSaksnummer = somePenSaksnr).apply {
-            personNr = personensPin
+            norskIdent = personensPin
         }
 
         val actual = prefillNav.prefill(prefillData, true)
@@ -69,7 +69,7 @@ class PrefillNavTest {
 
         val foreldersPin = "somePersonNr"
         val prefillData = PrefillDataModel(penSaksnummer = somePenSaksnr).apply {
-            personNr = foreldersPin
+            norskIdent = foreldersPin
         }
         val barnetsPin = "12345678901"
 
@@ -103,7 +103,7 @@ class PrefillNavTest {
         val someBarnPersonNr = FodselsnummerMother.generateRandomFnr(17)
 
         val prefillData = PrefillDataModel(penSaksnummer = somePenSaksnr).apply {
-            personNr = somePersonNr
+            norskIdent = somePersonNr
         }
 
         val barn = lagTPSBruker(someBarnPersonNr, "Nasse", "Nøff")
@@ -150,7 +150,7 @@ class PrefillNavTest {
         val ektefelle = pair.second
 
         val prefillData = PrefillDataModel(penSaksnummer = somePenSaksnr).apply {
-            personNr = somePersonNr
+            norskIdent = somePersonNr
         }
 
 
@@ -191,7 +191,7 @@ class PrefillNavTest {
         val ektefelle = pair.second
 
         val prefillData = PrefillDataModel(penSaksnummer = somePenSaksnr).apply {
-            personNr = somePersonNr
+            norskIdent = somePersonNr
         }
         whenever(mockBrukerFromTPS.hentBrukerFraTPS(somePersonNr)).thenReturn(person)
         whenever(mockBrukerFromTPS.hentBrukerFraTPS(somerEktefellePersonNr)).thenReturn(ektefelle)
@@ -230,7 +230,7 @@ class PrefillNavTest {
         val ektefelle = pair.second
 
         val prefillData = PrefillDataModel(penSaksnummer = somePenSaksnr).apply {
-            personNr = somePersonNr
+            norskIdent = somePersonNr
         }
         whenever(mockBrukerFromTPS.hentBrukerFraTPS(somePersonNr)).thenReturn(person)
         whenever(mockBrukerFromTPS.hentBrukerFraTPS(somerEktefellePersonNr)).thenReturn(ektefelle)
@@ -266,7 +266,7 @@ class PrefillNavTest {
         person.foedselsdato = Foedselsdato().withFoedselsdato( convertToXMLocal(personfnr.getBirthDate()))
 
         val prefillData = PrefillDataModel(penSaksnummer = somePenSaksnr).apply {
-            personNr = somePersonNr
+            norskIdent = somePersonNr
         }
 
         doReturn(person)
@@ -293,7 +293,7 @@ class PrefillNavTest {
     fun `minimal prefill med brukerinfo på request`() {
         val brukerensPin = "somePersonNr"
         val prefillData = PrefillDataModel(penSaksnummer = somePenSaksnr).apply {
-            personNr = brukerensPin
+            norskIdent = brukerensPin
             partSedAsJson["PersonInfo"] = mapAnyToJson(
                     BrukerInformasjon(
                             null,

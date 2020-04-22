@@ -56,7 +56,7 @@ class SedP3000XXTest {
     @Test
     fun testP3000_AT() {
         val datamodel = getMockDataModel("P3000_AT")
-        datamodel.personNr = personFnr
+        datamodel.norskIdent = personFnr
 
         val prefillClass = prefillFactory.createPrefillClass(datamodel)
         Assertions.assertEquals("PrefillDefaultSED", prefillClass::class.java.simpleName)
@@ -69,7 +69,7 @@ class SedP3000XXTest {
     fun testP3000_IT() {
 
         val datamodel = getMockDataModel("P3000_IT")
-        datamodel.personNr = personFnr
+        datamodel.norskIdent = personFnr
 
         val prefillClass = prefillFactory.createPrefillClass(datamodel)
         Assertions.assertEquals("PrefillDefaultSED", prefillClass::class.java.simpleName)
@@ -80,7 +80,7 @@ class SedP3000XXTest {
     @Test
     fun testP3000_SE() {
         val datamodel = getMockDataModel("P3000_SE")
-        datamodel.personNr = personFnr
+        datamodel.norskIdent = personFnr
 
         val prefillClass = prefillFactory.createPrefillClass(datamodel)
         Assertions.assertEquals("PrefillDefaultSED", prefillClass::class.java.simpleName)

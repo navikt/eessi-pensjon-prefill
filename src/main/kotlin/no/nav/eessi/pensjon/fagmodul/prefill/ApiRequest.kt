@@ -61,14 +61,14 @@ data class ApiRequest(
                     PrefillDataModel(penSaksnummer = request.sakId).apply {
                         sed = SED(request.sed)
                         buc = request.buc
-                        aktoerID = request.aktoerId
-                        personNr = fodselsnr
+                        aktorId = request.aktoerId
+                        norskIdent = fodselsnr
                         euxCaseID = request.euxCaseId
                         institution = request.institutions
                         vedtakId = request.vedtakId ?: ""
                         if (request.buc == "P_BUC_02") {
-                            avdod = request.avdodfnr ?: throw MangelfulleInndataException("Mangler Personnr på Avdød")
-                            avdodAktorID = avdodaktoerID ?: throw MangelfulleInndataException("Mangler AktoerId på Avdød")
+                            avdodNorskIdent = request.avdodfnr ?: throw MangelfulleInndataException("Mangler Personnr på Avdød")
+                            avdodAktorId = avdodaktoerID ?: throw MangelfulleInndataException("Mangler AktoerId på Avdød")
                         }
                         partSedAsJson[request.sed] = request.payload ?: "{}"
                         skipSedkey = request.skipSEDkey
@@ -89,15 +89,15 @@ data class ApiRequest(
                 SEDType.isValidSEDType(request.sed) -> {
                     PrefillDataModel(penSaksnummer = request.sakId).apply {
                         sed = SED(request.sed)
-                        aktoerID = request.aktoerId
+                        aktorId = request.aktoerId
                         buc = request.buc
-                        personNr = fodselsnr
+                        norskIdent = fodselsnr
                         vedtakId = request.vedtakId ?: ""
                         partSedAsJson[request.sed] = request.payload ?: "{}"
 
                         if (request.buc == "P_BUC_02") {
-                            avdod = request.avdodfnr ?: throw MangelfulleInndataException("Mangler Personnr på Avdød")
-                            avdodAktorID = avdodaktoerID ?: throw MangelfulleInndataException("Mangler AktoerId på Avdød")
+                            avdodNorskIdent = request.avdodfnr ?: throw MangelfulleInndataException("Mangler Personnr på Avdød")
+                            avdodAktorId = avdodaktoerID ?: throw MangelfulleInndataException("Mangler AktoerId på Avdød")
                         }
                         skipSedkey = request.skipSEDkey ?: listOf("PENSED")
                     }

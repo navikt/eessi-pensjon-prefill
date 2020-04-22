@@ -47,8 +47,8 @@ class PrefillP8000GLmedUtlandInnvTest {
 
         prefillData = PrefillDataModelMother.initialPrefillDataModel("P8000", personFnr, penSaksnummer = pesysSaksnummer).apply {
             skipSedkey = listOf("PENSED")
-            avdodAktorID = "112233445566"
-            avdod = avdodPersonFnr
+            avdodAktorId = "112233445566"
+            avdodNorskIdent = avdodPersonFnr
         }
     }
 

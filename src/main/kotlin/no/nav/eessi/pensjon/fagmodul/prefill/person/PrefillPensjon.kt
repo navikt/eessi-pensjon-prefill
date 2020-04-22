@@ -25,7 +25,7 @@ class PrefillPensjon(private val brukerFromTPS: BrukerFromTPS,
         //min krav for vedtak,P2000,P5000,P4000?
         //validere om vi kan preutfylle for angitt SED
         //norskident pnr.
-        val pinid = prefillData.personNr
+        val pinid = prefillData.norskIdent
 
         // er denne person en gjenlevende? hva må da gjøres i nav.bruker.person?
         //
