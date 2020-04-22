@@ -46,7 +46,7 @@ class PrefillP2100(private val prefillNav: PrefillNav,
         try {
             val evtgjennlevende = eventuellGjenlevende(prefillData)
             val pendata: Pensjonsinformasjon? = hentPensjonsdata(prefillData.aktoerID)
-            if (pendata != null) PrefillP2xxxPensjon.addRelasjonerBarnOgAvdod(prefillData, pendata)
+            if (pendata != null) PrefillP2xxxPensjon.addAvdod(prefillData, pendata)
             sed.pensjon =
                     if (pendata == null) Pensjon()
                     else {

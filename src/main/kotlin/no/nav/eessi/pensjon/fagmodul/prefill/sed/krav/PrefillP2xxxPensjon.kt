@@ -103,23 +103,8 @@ object PrefillP2xxxPensjon {
         )
     }
 
-    fun addRelasjonerBarnOgAvdod(prefillData: PrefillDataModel, pendata: Pensjonsinformasjon) {
+    fun addAvdod(prefillData: PrefillDataModel, pendata: Pensjonsinformasjon) {
         prefillData.apply {
-            partnerFnr = mutableListOf<V1EktefellePartnerSamboer>().apply {
-                if (pendata.ektefellePartnerSamboerListe != null) {
-                    pendata.ektefellePartnerSamboerListe.ektefellePartnerSamboerListe.forEach {
-                        add(it)
-                    }
-                }
-
-            }
-            barnlist = mutableListOf<V1BrukersBarn>().apply {
-                if (pendata.brukersBarnListe != null) {
-                    pendata.brukersBarnListe.brukersBarnListe.forEach {
-                        add(it)
-                    }
-                }
-            }
             avdod = pendata.avdod?.avdod ?: ""
             avdodMor = pendata.avdod?.avdodMor ?: ""
             avdodFar = pendata.avdod?.avdodFar ?: ""

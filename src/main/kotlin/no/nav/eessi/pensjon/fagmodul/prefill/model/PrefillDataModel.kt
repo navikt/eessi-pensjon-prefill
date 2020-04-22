@@ -7,8 +7,6 @@ import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.typeRefs
-import no.nav.pensjon.v1.brukersbarn.V1BrukersBarn
-import no.nav.pensjon.v1.ektefellepartnersamboer.V1EktefellePartnerSamboer
 
 /**
  * Data class to store different required data to build any given sed, auto or semiauto.
@@ -31,8 +29,6 @@ class PrefillDataModel {
 
     //data fra pesys
     lateinit var saktype: String
-    lateinit var barnlist: List<V1BrukersBarn>
-    lateinit var partnerFnr: List<V1EktefellePartnerSamboer>
 
     //avdod rellasjon - gjennlevende
     lateinit var avdod: String

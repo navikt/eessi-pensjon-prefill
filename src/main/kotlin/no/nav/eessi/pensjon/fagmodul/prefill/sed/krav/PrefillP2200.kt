@@ -5,7 +5,7 @@ import no.nav.eessi.pensjon.fagmodul.prefill.model.Prefill
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonHjelper
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.PrefillP2xxxPensjon.addRelasjonerBarnOgAvdod
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.PrefillP2xxxPensjon.addAvdod
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.PrefillP2xxxPensjon.createPensjon
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.BrukerFromTPS
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Bruker
@@ -40,7 +40,7 @@ class PrefillP2200(private val prefillNav: PrefillNav,
         //henter opp pensjondat
         try {
             val pendata: Pensjonsinformasjon? = hentPensjonsdata(prefillData.aktoerID)
-            if (pendata != null) addRelasjonerBarnOgAvdod(prefillData, pendata)
+            if (pendata != null) addAvdod(prefillData, pendata)
 
             sed.pensjon =
                     if (pendata == null) Pensjon()

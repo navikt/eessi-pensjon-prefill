@@ -7,7 +7,7 @@ import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.model.ValidationException
 import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonHjelper
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.PrefillP2xxxPensjon.addRelasjonerBarnOgAvdod
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.PrefillP2xxxPensjon.addAvdod
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.PrefillP2xxxPensjon.createPensjon
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.BrukerFromTPS
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Bruker
@@ -49,7 +49,7 @@ class PrefillP2000(private val prefillNav: PrefillNav,
 
         try {
             val pendata: Pensjonsinformasjon? = hentPensjonsdata(prefillData.aktoerID)
-            if (pendata != null) addRelasjonerBarnOgAvdod(prefillData, pendata)
+            if (pendata != null) addAvdod(prefillData, pendata)
             sed.pensjon =
                 if (pendata == null) Pensjon()
                 else {
