@@ -143,20 +143,6 @@ class SedController(private val euxService: EuxService,
         }
     }
 
-
-    //** oppdatert i api 18.02.2019
-    @ApiOperation("Utgår?")
-    @PostMapping("/addSed")
-    fun addDocument(@RequestBody request: ApiRequest): ShortDocumentItem {
-        auditlogger.log("addDocument", request.aktoerId ?: "", request.toAudit())
-        val dataModel = ApiRequest.buildPrefillDataModelOnExisting(request, aktoerService.hentPinForAktoer(request.aktoerId), getAvdodAktoerId(request))
-        val sed = prefillService.prefillSed(dataModel)
-
-        logger.info("kaller add med request: $request")
-        val docresult = euxService.opprettSedOnBuc(sed, dataModel.euxCaseID)
-        return BucUtils(euxService.getBuc(docresult.caseId)).findDocument(docresult.documentId)
-    }
-
     //TODO endre denne til å gå til denne: /cpi/buc/{RinaSakId}/sedtyper  (istede for benytte seg av egen bucutil)
     @ApiOperation("henter ut en liste av SED fra en valgt type, men bruk av sedType. ny api kall til eux")
     @GetMapping("list/{euxcaseid}/{sedtype}")
