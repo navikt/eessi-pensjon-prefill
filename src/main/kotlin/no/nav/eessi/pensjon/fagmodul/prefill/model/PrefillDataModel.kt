@@ -24,7 +24,6 @@ class PrefillDataModel {
     //pensjon
     lateinit var penSaksnummer: String
     lateinit var vedtakId: String
-    lateinit var kravId: String
 
     //aktoearid og aktoerId for person
     lateinit var personNr: String
