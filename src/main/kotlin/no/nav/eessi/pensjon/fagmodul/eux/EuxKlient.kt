@@ -34,7 +34,8 @@ import java.util.*
 @Description("Service class for EuxBasis - eux-cpi-service-controller")
 @CacheConfig(cacheNames = ["euxService"])
 class EuxKlient(private val euxOidcRestTemplate: RestTemplate,
-                @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper(SimpleMeterRegistry())) {
+                @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper(SimpleMeterRegistry()),
+                private val overrideWaitTimes: Long? = null) {
 
     // Vi trenger denne no arg konstruktøren for å kunne bruke @Spy med mockito
     constructor() : this(RestTemplate(), MetricsHelper(SimpleMeterRegistry()))
@@ -47,7 +48,8 @@ class EuxKlient(private val euxOidcRestTemplate: RestTemplate,
 
         val uriParams = mapOf("RinaSakId" to euxCaseId, "DokuemntId" to parentDocumentId).filter { it.value != null }
         val builder = UriComponentsBuilder.fromUriString(urlPath)
-                .queryParam("KorrelasjonsId", UUID.randomUUID().toString())
+                .queryParam("KorrelasjonsId",  correlationId())
+                .queryParam("ventePaAksjon", "false")
                 .buildAndExpand(uriParams)
 
         val headers = HttpHeaders()
@@ -65,6 +67,7 @@ class EuxKlient(private val euxOidcRestTemplate: RestTemplate,
                 , euxCaseId
                 , metricName
                 , errorMessage
+                , waitTimes = 20000L
         )
         return BucSedResponse(euxCaseId, response.body!!)
     }
@@ -220,7 +223,7 @@ class EuxKlient(private val euxOidcRestTemplate: RestTemplate,
     }
 
     fun createBuc(bucType: String): String {
-        val correlationId = MDC.get("x_request_id") ?: UUID.randomUUID().toString()
+        val correlationId = correlationId()
         val builder = UriComponentsBuilder.fromPath("/buc")
                 .queryParam("BuCType", bucType)
                 .queryParam("KorrelasjonsId", correlationId)
@@ -245,6 +248,8 @@ class EuxKlient(private val euxOidcRestTemplate: RestTemplate,
         }()
     }
 
+    private fun correlationId() = MDC.get("x_request_id") ?: UUID.randomUUID().toString()
+
     fun convertListInstitusjonItemToString(deltakere: List<String>): String {
         val encodedList = mutableListOf<String>()
         deltakere.forEach { institusjon ->
@@ -255,7 +260,7 @@ class EuxKlient(private val euxOidcRestTemplate: RestTemplate,
     }
 
     fun putBucMottakere(euxCaseId: String, institusjoner: List<String>): Boolean {
-        val correlationId = UUID.randomUUID().toString()
+        val correlationId = correlationId()
         val builder = UriComponentsBuilder.fromPath("/buc/$euxCaseId/mottakere")
                 .queryParam("KorrelasjonsId", correlationId)
                 .build()
@@ -319,10 +324,14 @@ class EuxKlient(private val euxOidcRestTemplate: RestTemplate,
         throw failException!!
     }
 
-    fun <T> restTemplateErrorhandler(restTemplateFunction: () -> ResponseEntity<T>, euxCaseId: String, metricName: MetricsHelper.MeterName, prefixErrorMessage: String): ResponseEntity<T> {
+    fun <T> restTemplateErrorhandler(restTemplateFunction: () -> ResponseEntity<T>,
+                                     euxCaseId: String,
+                                     metricName: MetricsHelper.MeterName,
+                                     prefixErrorMessage: String,
+                                     waitTimes: Long = 1000L): ResponseEntity<T> {
         return metricsHelper.measure(metricName) {
             return@measure try {
-                val response = retryHelper( func = { restTemplateFunction.invoke() } )
+                val response = retryHelper( func = { restTemplateFunction.invoke() }, waitTimes = overrideWaitTimes ?: waitTimes)
                 response
             } catch (hcee: HttpClientErrorException) {
                 val errorBody = hcee.responseBodyAsString
@@ -331,6 +340,7 @@ class EuxKlient(private val euxOidcRestTemplate: RestTemplate,
                     HttpStatus.UNAUTHORIZED -> throw RinaIkkeAutorisertBrukerException("Authorization token required for Rina,")
                     HttpStatus.FORBIDDEN -> throw ForbiddenException("Forbidden, Ikke tilgang")
                     HttpStatus.NOT_FOUND -> throw IkkeFunnetException("Ikke funnet")
+                    HttpStatus.CONFLICT -> throw EuxConflictException("En konflikt oppstod under kall til Rina")
                     else -> throw GenericUnprocessableEntity("Uoppdaget feil har oppstått!!, $errorBody")
                 }
             } catch (hsee: HttpServerErrorException) {
@@ -376,6 +386,9 @@ class GatewayTimeoutException(message: String?) : RuntimeException(message)
 
 @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
 class ServerException(message: String?) : RuntimeException(message)
+
+@ResponseStatus(value = HttpStatus.CONFLICT)
+class EuxConflictException(message: String?) : RuntimeException(message)
 
 //--- Disse er benyttet av restTemplateErrorhandler  -- slutt
 

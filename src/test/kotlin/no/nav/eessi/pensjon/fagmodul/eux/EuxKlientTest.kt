@@ -3,7 +3,6 @@ package no.nav.eessi.pensjon.fagmodul.eux
 import com.nhaarman.mockitokotlin2.*
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Organisation
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ParticipantsItem
-import no.nav.eessi.pensjon.fagmodul.sedmodel.PinItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.logging.RequestResponseLoggerInterceptor
 import no.nav.eessi.pensjon.metrics.MetricsHelper
@@ -41,7 +40,7 @@ class EuxKlientTest {
     fun setup() {
         mockEuxrestTemplate.errorHandler = DefaultResponseErrorHandler()
         mockEuxrestTemplate.interceptors = listOf( RequestResponseLoggerInterceptor() )
-        klient = EuxKlient(mockEuxrestTemplate)
+        klient = EuxKlient(mockEuxrestTemplate, overrideWaitTimes = 0L)
     }
 
     @AfterEach
