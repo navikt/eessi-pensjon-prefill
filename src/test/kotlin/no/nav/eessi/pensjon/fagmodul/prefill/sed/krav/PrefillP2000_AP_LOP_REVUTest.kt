@@ -54,10 +54,9 @@ class PrefillP2000_AP_LOP_REVUTest {
 
         prefill = PrefillP2000(prefillNav, dataFromPEN, persondataFraTPS)
 
-        prefillData = PrefillDataModel().apply {
+        prefillData = PrefillDataModel(penSaksnummer = pesysSaksnummer).apply {
             rinaSubject = "Pensjon"
             sed = SED("P2000")
-            penSaksnummer = pesysSaksnummer
             vedtakId = "12312312"
             buc = "P_BUC_99"
             aktoerID = "123456789"
@@ -71,7 +70,6 @@ class PrefillP2000_AP_LOP_REVUTest {
 
     @Test
     fun `forventet korrekt utfylt P2000 alderpensjon med kap4 og 9`() {
-        prefillData.penSaksnummer = pesysSaksnummer
         val P2000 = prefill.prefill(prefillData)
 
         val P2000pensjon = SED(

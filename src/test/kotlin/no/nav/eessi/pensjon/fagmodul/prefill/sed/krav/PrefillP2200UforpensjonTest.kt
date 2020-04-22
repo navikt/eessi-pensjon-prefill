@@ -47,8 +47,7 @@ class PrefillP2200UforpensjonTest {
 
         prefill = PrefillP2000(prefillNav, dataFromPEN, persondataFraTPS)
 
-        prefillData = initialPrefillDataModel("P2200", personFnr).apply {
-            penSaksnummer = "14069110"
+        prefillData = initialPrefillDataModel("P2200", personFnr, penSaksnummer = "14069110").apply {
             partSedAsJson = mutableMapOf("PersonInfo" to readJsonResponse("other/person_informasjon_selvb.json"))
         }
     }

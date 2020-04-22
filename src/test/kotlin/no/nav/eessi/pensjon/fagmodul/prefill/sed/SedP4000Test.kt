@@ -27,12 +27,8 @@ class SedP4000Test {
 
     lateinit var pre4000: PrefillP4000
 
-    private lateinit var prefillDataMock: PrefillDataModel
-
     @BeforeEach
     fun setup() {
-        prefillDataMock = PrefillDataModel()
-
         pre4000 = PrefillP4000(prefillPerson)
     }
 

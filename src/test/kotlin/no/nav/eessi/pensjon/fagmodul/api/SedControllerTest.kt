@@ -58,7 +58,7 @@ class SedControllerTest {
 
     @BeforeEach
     fun setUp() {
-        prefillDataMock = PrefillDataModel()
+        prefillDataMock = PrefillDataModel(penSaksnummer = "EESSI-PEN-123")
         this.sedController = SedController(mockEuxService,
                 PrefillService(mockPrefillSED),
                 mockAktoerIdHelper,

@@ -58,8 +58,7 @@ class PrefillP2000AlderpensjonkravavvistTest {
 
         prefill = PrefillP2000(prefillNav, dataFromPEN, persondataFraTPS)
 
-        prefillData = initialPrefillDataModel("P2000", personFnr).apply {
-            penSaksnummer = pesysSaksnummer
+        prefillData = initialPrefillDataModel("P2000", personFnr, penSaksnummer = pesysSaksnummer).apply {
             partSedAsJson = mutableMapOf(
                     "PersonInfo" to readJsonResponse("other/person_informasjon_selvb.json"),
                     "P4000" to readJsonResponse("other/p4000_trygdetid_part.json"))

@@ -47,9 +47,8 @@ class PrefillP2100GLutlandInnvTest {
 
         prefill = PrefillP2100(prefillNav, dataFromPEN, persondataFraTPS)
 
-        prefillData = PrefillDataModelMother.initialPrefillDataModel("P2100", personFnr).apply {
+        prefillData = PrefillDataModelMother.initialPrefillDataModel("P2100", personFnr, penSaksnummer = pesysSaksnummer).apply {
             skipSedkey = listOf("PENSED")
-            penSaksnummer = pesysSaksnummer
             avdodAktorID = "112233445566"
             avdod = avdodPersonFnr
             partSedAsJson = mutableMapOf(

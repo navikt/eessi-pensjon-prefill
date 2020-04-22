@@ -50,8 +50,7 @@ class PrefillP2200UPUtlandInnvTest {
 
         prefill = PrefillP2200(prefillNav, dataFromPEN, persondataFraTPS)
 
-        prefillData = PrefillDataModelMother.initialPrefillDataModel("P2200", personFnr).apply {
-            penSaksnummer = pesysSaksnummer
+        prefillData = PrefillDataModelMother.initialPrefillDataModel("P2200", personFnr, penSaksnummer = pesysSaksnummer).apply {
             partSedAsJson = mutableMapOf(
                     "PersonInfo" to readJsonResponse("other/person_informasjon_selvb.json"),
                     "P4000" to readJsonResponse("other/p4000_trygdetid_part.json"))
@@ -60,7 +59,6 @@ class PrefillP2200UPUtlandInnvTest {
 
     @Test
     fun `forventet korrekt utfylt P2200 uforepensjon med kap4 og 9`() {
-        prefillData.penSaksnummer = pesysSaksnummer
         val P2200 = prefill.prefill(prefillData)
 
         val P2200ufor = SED(

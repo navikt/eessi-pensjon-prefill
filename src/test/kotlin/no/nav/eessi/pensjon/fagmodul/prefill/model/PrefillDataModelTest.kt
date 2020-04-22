@@ -18,7 +18,7 @@ class PrefillDataModelTest {
 
     @BeforeEach
     fun setup() {
-        prefill = PrefillDataModel()
+        prefill = PrefillDataModel(penSaksnummer = "12345")
     }
 
     @Test
@@ -52,7 +52,6 @@ class PrefillDataModelTest {
         prefill.apply {
                 rinaSubject = "Pensjon"
                 sed =  SED("vedtak")
-                penSaksnummer = "12345"
                 buc = "P_BUC_06"
                 aktoerID = "567890"
                 personNr = "123456789"
@@ -73,7 +72,6 @@ class PrefillDataModelTest {
         prefill.apply {
             rinaSubject= "Pensjon"
             sed = SED("vedtak")
-            penSaksnummer = "12345"
             buc = "P_BUC_06"
             aktoerID = "32"
             personNr = "1234000001"

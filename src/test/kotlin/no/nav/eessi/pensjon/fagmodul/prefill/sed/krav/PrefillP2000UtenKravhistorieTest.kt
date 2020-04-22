@@ -54,8 +54,7 @@ class PrefillP2000UtenKravhistorieTest {
 
         prefill = PrefillP2000(prefillNav, dataFromPEN, persondataFraTPS)
 
-        prefillData = PrefillDataModelMother.initialPrefillDataModel("P2000", personFnr).apply {
-            penSaksnummer = "14069110"
+        prefillData = PrefillDataModelMother.initialPrefillDataModel("P2000", personFnr, penSaksnummer = "14069110").apply {
             partSedAsJson = mutableMapOf(
                     "PersonInfo" to readJsonResponse("other/person_informasjon_selvb.json"),
                     "P4000" to readJsonResponse("other/p4000_trygdetid_part.json"))

@@ -87,7 +87,7 @@ class PrefillServiceTest {
     }
 
     fun generatePrefillModel(): PrefillDataModel {
-        return PrefillDataModel().apply {
+        return PrefillDataModel(penSaksnummer = "123456789999").apply {
             euxCaseID = "1000"
             sed = SED("P2000")
             buc  = "P_BUC_01"
@@ -97,13 +97,12 @@ class PrefillServiceTest {
                             institution = "DUMMY"
                     )
             )
-            penSaksnummer = "123456789999"
             personNr = "12345678901"
         }
     }
 
     fun generatePrefillModel(bucType: String, caseID: String, navSed: SED): PrefillDataModel {
-        return PrefillDataModel().apply {
+        return PrefillDataModel(penSaksnummer = "123456789999").apply {
             euxCaseID = caseID
             sed = navSed
             buc  = bucType
@@ -113,7 +112,6 @@ class PrefillServiceTest {
                             institution = "DUMMY"
                     )
             )
-            penSaksnummer = "123456789999"
             personNr = "12345678901"
         }
     }

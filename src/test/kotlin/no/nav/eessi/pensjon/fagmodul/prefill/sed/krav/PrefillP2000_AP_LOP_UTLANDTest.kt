@@ -53,8 +53,7 @@ class PrefillP2000_AP_LOP_UTLANDTest {
 
         prefill = PrefillP2000(prefillNav, dataFromPEN, persondataFraTPS)
 
-        prefillData = initialPrefillDataModel("P2000", personFnr).apply {
-            penSaksnummer = pesysSaksnummer
+        prefillData = initialPrefillDataModel("P2000", personFnr, penSaksnummer = pesysSaksnummer).apply {
             partSedAsJson = mutableMapOf(
                     "PersonInfo" to readJsonResponse("other/person_informasjon_selvb.json"),
                     "P4000" to readJsonResponse("other/p4000_trygdetid_part.json"))
@@ -63,7 +62,6 @@ class PrefillP2000_AP_LOP_UTLANDTest {
 
     @Test
     fun `forventet korrekt utfylt P2000 alderpensjon med kap4 og 9`() {
-        prefillData.penSaksnummer = pesysSaksnummer
         val P2000 = prefill.prefill(prefillData)
 
         val P2000pensjon = SED(

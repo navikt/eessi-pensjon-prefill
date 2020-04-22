@@ -58,8 +58,7 @@ data class ApiRequest(
 
                 SEDType.isValidSEDType(request.sed) -> {
                     logger.info("ALL SED on existing Rina -> SED: ${request.sed} -> euxCaseId: ${request.euxCaseId} -> sakNr: ${request.sakId} ")
-                    PrefillDataModel().apply {
-                        penSaksnummer = request.sakId
+                    PrefillDataModel(penSaksnummer = request.sakId).apply {
                         sed = SED(request.sed)
                         buc = request.buc
                         aktoerID = request.aktoerId
@@ -88,8 +87,7 @@ data class ApiRequest(
                 request.aktoerId == null -> throw MangelfulleInndataException("Mangler AktoerID")
 
                 SEDType.isValidSEDType(request.sed) -> {
-                    PrefillDataModel().apply {
-                        penSaksnummer = request.sakId
+                    PrefillDataModel(penSaksnummer = request.sakId).apply {
                         sed = SED(request.sed)
                         aktoerID = request.aktoerId
                         buc = request.buc

@@ -17,10 +17,9 @@ import no.nav.eessi.pensjon.utils.typeRefs
  *
  */
 
-class PrefillDataModel {
+class PrefillDataModel(val penSaksnummer: String) {
 
     //pensjon
-    lateinit var penSaksnummer: String
     lateinit var vedtakId: String
 
     //aktoearid og aktoerId for person
