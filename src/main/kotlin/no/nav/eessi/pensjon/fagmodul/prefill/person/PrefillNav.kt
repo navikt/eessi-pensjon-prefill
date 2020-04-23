@@ -250,14 +250,14 @@ class PrefillNav(private val brukerFromTPS: BrukerFromTPS,
         // FIXME - det veksles mellom gjenlevende og bruker ... usikkert om dette er rett...
         val brukerEllerGjenlevende = brukerFromTPS.hentBrukerFraTPS(prefillData.brukerEllerGjenlevendeHvisDod())
 
-        val bruker = brukerFromTPS.hentBrukerFraTPS(prefillData.norskIdent)
+        val bruker = brukerFromTPS.hentBrukerFraTPS(prefillData.bruker.norskIdent)
         val (ektepinid, ekteTypeValue) = filterEktefelleRelasjon(bruker)
 
         val ektefelleBruker = if(ektepinid.isBlank()) null else brukerFromTPS.hentBrukerFraTPS(ektepinid)
 
         val barnBrukereFraTPS =
                 if (fyllUtBarnListe) {
-                    barnsPinId(brukerFromTPS.hentBrukerFraTPS(prefillData.norskIdent))
+                    barnsPinId(brukerFromTPS.hentBrukerFraTPS(prefillData.bruker.norskIdent))
                             .mapNotNull { barn -> brukerFromTPS.hentBrukerFraTPS(barn) }
                 } else listOf()
 

@@ -30,7 +30,7 @@ class PrefillP2100(private val prefillNav: PrefillNav,
                 + "\nSøker etter SaktId       : ${prefillData.penSaksnummer} "
                 + "\nSøker etter avdodaktor   : ${prefillData.avdodAktorId} "
                 + "\nerGyldigEtterlatt        : ${prefillData.erGyldigEtterlatt()} "
-                + "\nSøker etter gjenlaktoer  : ${prefillData.aktorId} "
+                + "\nSøker etter gjenlaktoer  : ${prefillData.bruker.aktorId} "
                 + "\n------------------| Preutfylling [$sedId] START |------------------ \n")
 
         val sed = prefillData.sed
@@ -45,13 +45,13 @@ class PrefillP2100(private val prefillNav: PrefillNav,
 
         try {
             val evtgjennlevende = eventuellGjenlevende(prefillData)
-            val pendata: Pensjonsinformasjon? = hentPensjonsdata(prefillData.aktorId)
+            val pendata: Pensjonsinformasjon? = hentPensjonsdata(prefillData.bruker.aktorId)
             if (pendata != null) PrefillP2xxxPensjon.addAvdod(prefillData, pendata)
             sed.pensjon =
                     if (pendata == null) Pensjon()
                     else {
                         val pensjon = PrefillP2xxxPensjon.createPensjon(
-                                prefillData.norskIdent,
+                                prefillData.bruker.norskIdent,
                                 prefillData.penSaksnummer,
                                 evtgjennlevende,
                                 pendata,
@@ -80,7 +80,7 @@ class PrefillP2100(private val prefillNav: PrefillNav,
     private fun eventuellGjenlevende(prefillData: PrefillDataModel): Bruker? {
         return if (prefillData.erGyldigEtterlatt()) {
             logger.debug("          Utfylling gjenlevende (etterlatt)")
-            val gjenlevendeBruker = brukerFromTPS.hentBrukerFraTPS(prefillData.norskIdent)
+            val gjenlevendeBruker = brukerFromTPS.hentBrukerFraTPS(prefillData.bruker.norskIdent)
             return if (gjenlevendeBruker == null) null else prefillNav.createBruker(gjenlevendeBruker, null, null)
         } else null
     }

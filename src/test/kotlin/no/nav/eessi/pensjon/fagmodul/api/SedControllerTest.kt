@@ -2,12 +2,10 @@ package no.nav.eessi.pensjon.fagmodul.api
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.nhaarman.mockitokotlin2.*
-import no.nav.eessi.pensjon.fagmodul.eux.BucUtils
 import no.nav.eessi.pensjon.fagmodul.eux.EuxService
 import no.nav.eessi.pensjon.fagmodul.eux.PinOgKrav
 import no.nav.eessi.pensjon.fagmodul.eux.SedDokumentIkkeOpprettetException
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.BucSedResponse
-import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ActionsItem
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Buc
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.DocumentsItem
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ParticipantsItem
@@ -53,12 +51,10 @@ class SedControllerTest {
     @Mock
     lateinit var mockPrefillSED: PrefillSED
 
-    private lateinit var prefillDataMock: PrefillDataModel
     private lateinit var sedController: SedController
 
     @BeforeEach
     fun setUp() {
-        prefillDataMock = PrefillDataModel(penSaksnummer = "EESSI-PEN-123")
         this.sedController = SedController(mockEuxService,
                 PrefillService(mockPrefillSED),
                 mockAktoerIdHelper,

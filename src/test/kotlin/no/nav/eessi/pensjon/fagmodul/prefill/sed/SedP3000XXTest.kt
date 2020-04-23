@@ -55,8 +55,7 @@ class SedP3000XXTest {
 
     @Test
     fun testP3000_AT() {
-        val datamodel = getMockDataModel("P3000_AT")
-        datamodel.norskIdent = personFnr
+        val datamodel = getMockDataModel("P3000_AT", personFnr)
 
         val prefillClass = prefillFactory.createPrefillClass(datamodel)
         Assertions.assertEquals("PrefillDefaultSED", prefillClass::class.java.simpleName)
@@ -68,8 +67,7 @@ class SedP3000XXTest {
     @Test
     fun testP3000_IT() {
 
-        val datamodel = getMockDataModel("P3000_IT")
-        datamodel.norskIdent = personFnr
+        val datamodel = getMockDataModel("P3000_IT", personFnr)
 
         val prefillClass = prefillFactory.createPrefillClass(datamodel)
         Assertions.assertEquals("PrefillDefaultSED", prefillClass::class.java.simpleName)
@@ -79,8 +77,7 @@ class SedP3000XXTest {
 
     @Test
     fun testP3000_SE() {
-        val datamodel = getMockDataModel("P3000_SE")
-        datamodel.norskIdent = personFnr
+        val datamodel = getMockDataModel("P3000_SE", personFnr)
 
         val prefillClass = prefillFactory.createPrefillClass(datamodel)
         Assertions.assertEquals("PrefillDefaultSED", prefillClass::class.java.simpleName)
@@ -89,13 +86,14 @@ class SedP3000XXTest {
     }
 
 
-    private fun getMockDataModel(sedType: String): PrefillDataModel {
+    private fun getMockDataModel(sedType: String, fnr: String  = "someFnr"): PrefillDataModel {
         val req = ApiRequest(
                 institutions = listOf(),
                 sed = sedType,
                 sakId = "12231231",
                 euxCaseId = "99191999911",
                 aktoerId = "00000",
+                fnr = fnr,
                 buc = "P_BUC_01",
                 subjectArea = "Pensjon",
                 payload = "{}"

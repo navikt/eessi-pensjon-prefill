@@ -3,6 +3,7 @@ package no.nav.eessi.pensjon.fagmodul.prefill
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.models.SEDType
+import no.nav.eessi.pensjon.fagmodul.prefill.model.PersonId
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.model.ValidationException
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillSED
@@ -24,7 +25,7 @@ class PrefillService(private val prefillSED: PrefillSED,
     fun prefillSed(dataModel: PrefillDataModel): SED {
         return metricsHelper.measure(MetricsHelper.MeterName.PrefillSed) {
 
-            logger.info("******* Starter med preutfylling *******\nSED: ${dataModel.getSEDid()} aktoerId: ${dataModel.aktorId} sakNr: ${dataModel.penSaksnummer}")
+            logger.info("******* Starter med preutfylling *******\nSED: ${dataModel.getSEDid()} aktoerId: ${dataModel.bruker.aktorId} sakNr: ${dataModel.penSaksnummer}")
 
             val startTime = System.currentTimeMillis()
             val data = prefillSED.prefill(dataModel)
@@ -49,9 +50,8 @@ class PrefillService(private val prefillSED: PrefillSED,
                         id = it.checkAndConvertInstituion(),
                         navn = it.name ?: it.checkAndConvertInstituion()
                 )
-                val datax005 = PrefillDataModel(penSaksnummer = data.penSaksnummer).apply {
+                val datax005 = PrefillDataModel(penSaksnummer = data.penSaksnummer, bruker = data.bruker).apply {
                     sed = SED(SEDType.X005.name)
-                    norskIdent = data.norskIdent
                     euxCaseID = data.euxCaseID
                     institusjonX005 = institusjon
                 }

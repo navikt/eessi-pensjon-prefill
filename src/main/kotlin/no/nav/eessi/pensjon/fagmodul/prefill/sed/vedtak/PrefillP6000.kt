@@ -34,7 +34,7 @@ class PrefillP6000(private val prefillNav: PrefillNav,
         logger.debug("Henter opp Persondata/Gjenlevende fra TPS")
 
         val gjenlevende = if (prefillData.erGyldigEtterlatt()) {
-            val gjenlevendeBruker = brukerFromTPS.hentBrukerFraTPS(prefillData.norskIdent)
+            val gjenlevendeBruker = brukerFromTPS.hentBrukerFraTPS(prefillData.bruker.norskIdent)
             if (gjenlevendeBruker == null) null else prefillNav.createBruker(gjenlevendeBruker, null, null)
         } else null
 

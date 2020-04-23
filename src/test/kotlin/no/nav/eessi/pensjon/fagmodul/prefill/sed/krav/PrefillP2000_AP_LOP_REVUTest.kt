@@ -3,6 +3,7 @@ package no.nav.eessi.pensjon.fagmodul.prefill.sed.krav
 import com.nhaarman.mockitokotlin2.mock
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.prefill.ApiRequest
+import no.nav.eessi.pensjon.fagmodul.prefill.model.PersonId
 import no.nav.eessi.pensjon.fagmodul.prefill.model.Prefill
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonHjelper
@@ -54,13 +55,11 @@ class PrefillP2000_AP_LOP_REVUTest {
 
         prefill = PrefillP2000(prefillNav, dataFromPEN, persondataFraTPS)
 
-        prefillData = PrefillDataModel(penSaksnummer = pesysSaksnummer).apply {
+        prefillData = PrefillDataModel(penSaksnummer = pesysSaksnummer, bruker = PersonId(personFnr, "123456789")).apply {
             rinaSubject = "Pensjon"
             sed = SED("P2000")
             vedtakId = "12312312"
             buc = "P_BUC_99"
-            aktorId = "123456789"
-            norskIdent = personFnr
             institution = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
             partSedAsJson = mutableMapOf(
                     "PersonInfo" to readJsonResponse("other/person_informasjon_selvb.json"),

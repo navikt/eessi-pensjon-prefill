@@ -169,7 +169,7 @@ class SedP4000Test {
 
         assertNotNull(data)
         assertNotNull(data.getPartSEDasJson("P4000"))
-        assertEquals("12345", data.norskIdent)
+        assertEquals("12345", data.bruker.norskIdent)
 
         val resultData = data
         whenever(prefillPerson.prefill(any())).thenReturn(data.sed)

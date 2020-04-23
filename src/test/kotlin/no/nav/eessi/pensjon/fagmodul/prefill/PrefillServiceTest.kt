@@ -3,6 +3,7 @@ package no.nav.eessi.pensjon.fagmodul.prefill
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.whenever
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
+import no.nav.eessi.pensjon.fagmodul.prefill.model.PersonId
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillSED
 import no.nav.eessi.pensjon.fagmodul.sedmodel.*
@@ -87,7 +88,7 @@ class PrefillServiceTest {
     }
 
     fun generatePrefillModel(): PrefillDataModel {
-        return PrefillDataModel(penSaksnummer = "123456789999").apply {
+        return PrefillDataModel(penSaksnummer = "123456789999", bruker = PersonId("12345678901", "dummy")).apply {
             euxCaseID = "1000"
             sed = SED("P2000")
             buc  = "P_BUC_01"
@@ -97,22 +98,6 @@ class PrefillServiceTest {
                             institution = "DUMMY"
                     )
             )
-            norskIdent = "12345678901"
-        }
-    }
-
-    fun generatePrefillModel(bucType: String, caseID: String, navSed: SED): PrefillDataModel {
-        return PrefillDataModel(penSaksnummer = "123456789999").apply {
-            euxCaseID = caseID
-            sed = navSed
-            buc  = bucType
-            institution = listOf(
-                    InstitusjonItem(
-                            country = "NO",
-                            institution = "DUMMY"
-                    )
-            )
-            norskIdent = "12345678901"
         }
     }
 }

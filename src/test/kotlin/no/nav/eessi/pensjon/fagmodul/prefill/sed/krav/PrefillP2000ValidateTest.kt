@@ -2,6 +2,7 @@ package no.nav.eessi.pensjon.fagmodul.prefill.sed.krav
 
 import com.nhaarman.mockitokotlin2.mock
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
+import no.nav.eessi.pensjon.fagmodul.prefill.model.PersonId
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.model.ValidationException
 import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonHjelper
@@ -52,12 +53,11 @@ class PrefillP2000ValidateTest {
     }
 
     private fun generatePrefillModel(): PrefillDataModel {
-        return PrefillDataModel(penSaksnummer = "123456789999").apply {
+        return PrefillDataModel(penSaksnummer = "123456789999", bruker = PersonId("12345678901", "dummy")).apply {
             euxCaseID = "1000"
             sed = SED("P2000")
             buc = "P_BUC_01"
             institution = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
-            norskIdent = "12345678901"
         }
     }
 

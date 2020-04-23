@@ -17,13 +17,12 @@ import no.nav.eessi.pensjon.utils.typeRefs
  *
  */
 
-class PrefillDataModel(val penSaksnummer: String) {
+class PersonId(val norskIdent: String, val aktorId: String)
+
+class PrefillDataModel(val penSaksnummer: String, val bruker: PersonId) {
 
     //pensjon
     lateinit var vedtakId: String
-
-    lateinit var norskIdent: String
-    lateinit var aktorId: String
 
     //data fra pesys
     lateinit var saktype: String
@@ -76,7 +75,7 @@ class PrefillDataModel(val penSaksnummer: String) {
         }
     }
 
-    fun brukerEllerGjenlevendeHvisDod() = if (erGyldigEtterlatt()) avdodNorskIdent else norskIdent
+    fun brukerEllerGjenlevendeHvisDod() = if (erGyldigEtterlatt()) avdodNorskIdent else bruker.norskIdent
 
     fun erForeldreLos(): Boolean {
         //TODO finne bedre metode?
@@ -109,3 +108,5 @@ class PrefillDataModel(val penSaksnummer: String) {
     }
 
 }
+
+

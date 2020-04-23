@@ -18,7 +18,7 @@ class PrefillDataModelTest {
 
     @BeforeEach
     fun setup() {
-        prefill = PrefillDataModel(penSaksnummer = "12345")
+        prefill = PrefillDataModel(penSaksnummer = "12345", bruker = PersonId("123456789", "567890"))
     }
 
     @Test
@@ -53,33 +53,14 @@ class PrefillDataModelTest {
                 rinaSubject = "Pensjon"
                 sed =  SED("vedtak")
                 buc = "P_BUC_06"
-                aktorId = "567890"
-                norskIdent = "123456789"
                 institution = items
         }
         assertNotNull(prefill)
         assertEquals("vedtak", prefill.getSEDid())
         assertEquals(SED::class, prefill.sed::class)
         assertEquals("12345", prefill.penSaksnummer)
-        assertEquals("567890", prefill.aktorId)
-        assertEquals("123456789", prefill.norskIdent)
-    }
-
-
-    @Test
-    fun `create and test valid pinid for aktoerid`() {
-        val items = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
-        prefill.apply {
-            rinaSubject= "Pensjon"
-            sed = SED("vedtak")
-            buc = "P_BUC_06"
-            aktorId = "32"
-            norskIdent = "1234000001"
-            institution = items
-        }
-        assertNotNull(prefill)
-        assertNotNull(prefill.norskIdent)
-        assertEquals("1234000001", prefill.norskIdent)
+        assertEquals("567890", prefill.bruker.aktorId)
+        assertEquals("123456789", prefill.bruker.norskIdent)
     }
 
 }

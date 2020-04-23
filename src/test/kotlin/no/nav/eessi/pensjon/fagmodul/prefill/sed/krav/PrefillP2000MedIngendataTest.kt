@@ -67,7 +67,7 @@ class PrefillP2000MedIngendataTest {
     @Test
     fun `sjekk av kravsøknad alderpensjon P2000`() {
         assertThrows<PensjoninformasjonException> {
-            dataFromPEN.hentPersonInformasjonMedAktoerId(prefillData.aktorId)
+            dataFromPEN.hentPersonInformasjonMedAktoerId(prefillData.bruker.aktorId)
         }
     }
 

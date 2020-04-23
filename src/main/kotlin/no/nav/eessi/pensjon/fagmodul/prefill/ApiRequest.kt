@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.google.common.base.Joiner
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.models.SEDType
+import no.nav.eessi.pensjon.fagmodul.prefill.model.PersonId
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.utils.mapJsonToAny
@@ -58,11 +59,9 @@ data class ApiRequest(
 
                 SEDType.isValidSEDType(request.sed) -> {
                     logger.info("ALL SED on existing Rina -> SED: ${request.sed} -> euxCaseId: ${request.euxCaseId} -> sakNr: ${request.sakId} ")
-                    PrefillDataModel(penSaksnummer = request.sakId).apply {
+                    PrefillDataModel(penSaksnummer = request.sakId, bruker = PersonId(fodselsnr, request.aktoerId)).apply {
                         sed = SED(request.sed)
                         buc = request.buc
-                        aktorId = request.aktoerId
-                        norskIdent = fodselsnr
                         euxCaseID = request.euxCaseId
                         institution = request.institutions
                         vedtakId = request.vedtakId ?: ""
@@ -87,11 +86,9 @@ data class ApiRequest(
                 request.aktoerId == null -> throw MangelfulleInndataException("Mangler AktoerID")
 
                 SEDType.isValidSEDType(request.sed) -> {
-                    PrefillDataModel(penSaksnummer = request.sakId).apply {
+                    PrefillDataModel(penSaksnummer = request.sakId, bruker = PersonId(fodselsnr, request.aktoerId)).apply {
                         sed = SED(request.sed)
-                        aktorId = request.aktoerId
                         buc = request.buc
-                        norskIdent = fodselsnr
                         vedtakId = request.vedtakId ?: ""
                         partSedAsJson[request.sed] = request.payload ?: "{}"
 

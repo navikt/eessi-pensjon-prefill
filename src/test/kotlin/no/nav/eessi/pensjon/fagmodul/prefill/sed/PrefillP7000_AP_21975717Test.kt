@@ -2,6 +2,7 @@ package no.nav.eessi.pensjon.fagmodul.prefill.sed
 
 import com.nhaarman.mockitokotlin2.mock
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
+import no.nav.eessi.pensjon.fagmodul.prefill.model.PersonId
 import no.nav.eessi.pensjon.fagmodul.prefill.model.Prefill
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PersonDataFromTPS
@@ -48,14 +49,12 @@ class PrefillP7000_AP_21975717Test {
 
         prefill = PrefillP7000(PrefillPerson(prefillNav, prefillPensjon))
 
-        prefillData = PrefillDataModel(penSaksnummer = "21975717").apply {
+        prefillData = PrefillDataModel(penSaksnummer = "21975717", bruker = PersonId(personFnr, "123456789")).apply {
             rinaSubject = "Pensjon"
             sed = SED("P7000")
 
             vedtakId = "12312312"
             buc = "P_BUC_99"
-            aktorId = "123456789"
-            norskIdent = personFnr
             institution = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
             partSedAsJson = mutableMapOf(
                     "PersonInfo" to readJsonResponse("other/person_informasjon_selvb.json"),

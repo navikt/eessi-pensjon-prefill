@@ -3,6 +3,7 @@ package no.nav.eessi.pensjon.fagmodul.prefill.person
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.whenever
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
+import no.nav.eessi.pensjon.fagmodul.prefill.model.PersonId
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillDefaultSED
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillFactory
@@ -42,7 +43,7 @@ class PrefillPersonParameterizedTest {
     fun setup() {
         MockitoAnnotations.initMocks(this)
 
-        prefillDataMock = PrefillDataModel(penSaksnummer = "12345")
+        prefillDataMock = PrefillDataModel(penSaksnummer = "12345", bruker = PersonId("12345", "1234"))
         preutfylling = PrefillPerson(prefillNav = mockPreutfyllingNav, prefilliPensjon = mockPreutfyllingPensjon)
 
         prefillDefaultSED = PrefillDefaultSED(preutfylling)
@@ -83,8 +84,6 @@ class PrefillPersonParameterizedTest {
                 rinaSubject = "Pensjon"
                 sed = SED(sedid)
                 buc = "P_BUC_06"
-                aktorId = "1234"
-                norskIdent = "12345"
                 institution = items
         }
         whenever(mockPrefillFactory.createPrefillClass(prefillDataMock)).thenReturn(prefillDefaultSED)
@@ -109,7 +108,7 @@ class PrefillPersonParameterizedTest {
 
         assertEquals(sedid, responseSED.sed)
         assertNotNull(prefillDataMock)
-        assertEquals(mockPinResponse, prefillDataMock.norskIdent)
+        assertEquals(mockPinResponse, prefillDataMock.bruker.norskIdent)
 
     }
 
