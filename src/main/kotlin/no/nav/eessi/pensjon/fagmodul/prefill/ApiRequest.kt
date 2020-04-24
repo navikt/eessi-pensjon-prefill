@@ -59,16 +59,13 @@ data class ApiRequest(
 
                 SEDType.isValidSEDType(request.sed) -> {
                     logger.info("ALL SED on existing Rina -> SED: ${request.sed} -> euxCaseId: ${request.euxCaseId} -> sakNr: ${request.sakId} ")
-                    PrefillDataModel(penSaksnummer = request.sakId, bruker = PersonId(fodselsnr, request.aktoerId)).apply {
+                    val avdod: PersonId? = populerAvdod(request, avdodaktoerID)
+                    PrefillDataModel(penSaksnummer = request.sakId, bruker = PersonId(fodselsnr, request.aktoerId),avdod = avdod).apply {
                         sed = SED(request.sed)
                         buc = request.buc
                         euxCaseID = request.euxCaseId
                         institution = request.institutions
                         vedtakId = request.vedtakId ?: ""
-                        if (request.buc == "P_BUC_02") {
-                            avdodNorskIdent = request.avdodfnr ?: throw MangelfulleInndataException("Mangler Personnr på Avdød")
-                            avdodAktorId = avdodaktoerID ?: throw MangelfulleInndataException("Mangler AktoerId på Avdød")
-                        }
                         partSedAsJson[request.sed] = request.payload ?: "{}"
                         skipSedkey = request.skipSEDkey
                                 ?: listOf("PENSED") //skipper all pensjon utfylling untatt kravdato
@@ -76,6 +73,18 @@ data class ApiRequest(
                 }
                 else -> throw MangelfulleInndataException("Mangler SED, eller ugyldig type SED")
             }
+        }
+
+        private fun populerAvdod(request: ApiRequest, avdodaktoerID: String?): PersonId? {
+            var avdod: PersonId? = null
+            val avdodNorskIdent: String?
+            val avdodAktorId: String?
+            if (request.buc == "P_BUC_02") {
+                avdodNorskIdent = request.avdodfnr ?: throw MangelfulleInndataException("Mangler Personnr på Avdød")
+                avdodAktorId = avdodaktoerID ?: throw MangelfulleInndataException("Mangler AktoerId på Avdød")
+                avdod = PersonId(avdodNorskIdent, avdodAktorId)
+            }
+            return avdod
         }
 
         //validatate request and convert to PrefillDataModel
@@ -86,16 +95,12 @@ data class ApiRequest(
                 request.aktoerId == null -> throw MangelfulleInndataException("Mangler AktoerID")
 
                 SEDType.isValidSEDType(request.sed) -> {
-                    PrefillDataModel(penSaksnummer = request.sakId, bruker = PersonId(fodselsnr, request.aktoerId)).apply {
+                    val avdod: PersonId? = populerAvdod(request, avdodaktoerID)
+                    PrefillDataModel(penSaksnummer = request.sakId, bruker = PersonId(fodselsnr, request.aktoerId), avdod = avdod).apply {
                         sed = SED(request.sed)
                         buc = request.buc
                         vedtakId = request.vedtakId ?: ""
                         partSedAsJson[request.sed] = request.payload ?: "{}"
-
-                        if (request.buc == "P_BUC_02") {
-                            avdodNorskIdent = request.avdodfnr ?: throw MangelfulleInndataException("Mangler Personnr på Avdød")
-                            avdodAktorId = avdodaktoerID ?: throw MangelfulleInndataException("Mangler AktoerId på Avdød")
-                        }
                         skipSedkey = request.skipSEDkey ?: listOf("PENSED")
                     }
                 }

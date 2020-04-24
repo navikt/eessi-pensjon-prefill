@@ -53,7 +53,7 @@ class PrefillP2000ValidateTest {
     }
 
     private fun generatePrefillModel(): PrefillDataModel {
-        return PrefillDataModel(penSaksnummer = "123456789999", bruker = PersonId("12345678901", "dummy")).apply {
+        return PrefillDataModel(penSaksnummer = "123456789999", bruker = PersonId("12345678901", "dummy"), avdod = null).apply {
             euxCaseID = "1000"
             sed = SED("P2000")
             buc = "P_BUC_01"

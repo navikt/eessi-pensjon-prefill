@@ -168,8 +168,8 @@ class ApiRequestTest {
         assertEquals("12234", model.penSaksnummer)
         assertEquals("0105094340092", model.bruker.aktorId)
         assertEquals("P2100", model.getSEDid())
-        assertEquals("2223312", model.avdodAktorId)
-        assertEquals("010244212312", model.avdodNorskIdent)
+        assertEquals("2223312", model.avdod?.aktorId)
+        assertEquals("010244212312", model.avdod?.norskIdent)
         assertEquals(SED::class.java, model.sed::class.java)
 
     }

@@ -33,7 +33,7 @@ class PrefillPensjon(private val brukerFromTPS: BrukerFromTPS,
         //fylles ut kun når vi har etterlatt aktoerId og etterlattPinID.
         //noe vi må få fra PSAK. o.l
         var gjenlevende: Bruker? = null
-        if (prefillData.erGyldigEtterlatt()) {
+        if (prefillData.avdod != null) {
             logger.info("Preutfylling Utfylling Pensjon Gjenlevende (etterlatt)")
             val gjenlevendeBruker = brukerFromTPS.hentBrukerFraTPS(pinid)
             gjenlevende = if (gjenlevendeBruker == null) null else prefillNav.createBruker(gjenlevendeBruker, null, null)

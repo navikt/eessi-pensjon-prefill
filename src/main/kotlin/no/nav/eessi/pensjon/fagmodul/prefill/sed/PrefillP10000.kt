@@ -16,7 +16,7 @@ class PrefillP10000(private val prefillPerson: PrefillPerson) : Prefill<SED> {
         logger.info("Default SED prefill [${prefillData.getSEDid()}]")
 
         val sed = prefillPerson.prefill(prefillData)
-        if (prefillData.erGyldigEtterlatt()) {
+        if (prefillData.avdod != null) {
             logger.info("Preutfylling Utfylling Pensjon Gjenlevende (etterlatt)")
             sed.nav?.annenperson =  sed.pensjon?.gjenlevende
             sed.nav?.annenperson?.person?.rolle = "01"  //Claimant

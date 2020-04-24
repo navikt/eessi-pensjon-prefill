@@ -17,9 +17,10 @@ import no.nav.eessi.pensjon.utils.typeRefs
  *
  */
 
-class PersonId(val norskIdent: String, val aktorId: String)
+class PersonId(val norskIdent: String,
+               val aktorId: String)
 
-class PrefillDataModel(val penSaksnummer: String, val bruker: PersonId) {
+class PrefillDataModel(val penSaksnummer: String, val bruker: PersonId, val avdod: PersonId?) {
 
     //pensjon
     lateinit var vedtakId: String
@@ -27,9 +28,6 @@ class PrefillDataModel(val penSaksnummer: String, val bruker: PersonId) {
     //data fra pesys
     lateinit var saktype: String
 
-    //avdod rellasjon - gjennlevende
-    lateinit var avdodNorskIdent: String
-    lateinit var avdodAktorId: String
     lateinit var avdodFar: String
     lateinit var avdodMor: String
 
@@ -65,17 +63,6 @@ class PrefillDataModel(val penSaksnummer: String, val bruker: PersonId) {
     fun getInstitutionsList(): List<InstitusjonItem> {
         return institution
     }
-
-    fun erGyldigEtterlatt(): Boolean {
-        //TODO finne bedre metode?
-        return try {
-            return avdodNorskIdent.isNotBlank()
-        } catch (ex: Exception) {
-            false
-        }
-    }
-
-    fun brukerEllerGjenlevendeHvisDod() = if (erGyldigEtterlatt()) avdodNorskIdent else bruker.norskIdent
 
     fun erForeldreLos(): Boolean {
         //TODO finne bedre metode?

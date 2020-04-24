@@ -4,8 +4,12 @@ import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 
 object PrefillDataModelMother {
-    fun initialPrefillDataModel(sedType: String, pinId: String, vedtakId: String = "12312312", penSaksnummer: String = "12345") =
-            PrefillDataModel(penSaksnummer, bruker = PersonId(pinId, "123456789")).apply {
+    fun initialPrefillDataModel(sedType: String,
+                                pinId: String,
+                                vedtakId: String = "12312312",
+                                penSaksnummer: String = "12345",
+                                avdod: PersonId? = null) =
+            PrefillDataModel(penSaksnummer, bruker = PersonId(pinId, "123456789"), avdod = avdod).apply {
                 rinaSubject = "Pensjon"
                 sed = SED(sedType)
                 this.vedtakId = vedtakId

@@ -3,7 +3,6 @@ package no.nav.eessi.pensjon.fagmodul.prefill.model
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
@@ -14,53 +13,46 @@ import org.mockito.junit.jupiter.MockitoExtension
 @ExtendWith(MockitoExtension::class)
 class PrefillDataModelTest {
 
-    private lateinit var prefill: PrefillDataModel
+    private lateinit var prefillDatamodel: PrefillDataModel
 
     @BeforeEach
     fun setup() {
-        prefill = PrefillDataModel(penSaksnummer = "12345", bruker = PersonId("123456789", "567890"))
+        prefillDatamodel = PrefillDataModel(penSaksnummer = "12345", bruker = PersonId("123456789", "567890"), avdod = PersonId("123","4556"))
     }
 
     @Test
     fun `check for valid claimant fail`() {
-        assertFalse(prefill.erGyldigEtterlatt())
+        assertNotNull(prefillDatamodel.avdod)
     }
 
     @Test
     fun `check for valid claimant pin and aktorid is blank fail`() {
-        prefill.avdodNorskIdent = ""
-        assertFalse(prefill.erGyldigEtterlatt())
-    }
-
-    @Test
-    fun `check for valid claimant deceased pin and aktorid is filled`() {
-        prefill.avdodNorskIdent = "23123"
-        assertTrue(prefill.erGyldigEtterlatt())
+        assertEquals(prefillDatamodel.avdod?.norskIdent, "123")
     }
 
     @Test
     fun `check for valid claimant deceased parents filled`() {
-        prefill.avdodFar = "2312354"
-        prefill.avdodMor = "2312376"
-        assertTrue(prefill.erForeldreLos())
+        prefillDatamodel.avdodFar = "2312354"
+        prefillDatamodel.avdodMor = "2312376"
+        assertTrue(prefillDatamodel.erForeldreLos())
     }
 
     @Test
     fun `validate and check model build`() {
 
         val items = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
-        prefill.apply {
+        prefillDatamodel.apply {
                 rinaSubject = "Pensjon"
                 sed =  SED("vedtak")
                 buc = "P_BUC_06"
                 institution = items
         }
-        assertNotNull(prefill)
-        assertEquals("vedtak", prefill.getSEDid())
-        assertEquals(SED::class, prefill.sed::class)
-        assertEquals("12345", prefill.penSaksnummer)
-        assertEquals("567890", prefill.bruker.aktorId)
-        assertEquals("123456789", prefill.bruker.norskIdent)
+        assertNotNull(prefillDatamodel)
+        assertEquals("vedtak", prefillDatamodel.getSEDid())
+        assertEquals(SED::class, prefillDatamodel.sed::class)
+        assertEquals("12345", prefillDatamodel.penSaksnummer)
+        assertEquals("567890", prefillDatamodel.bruker.aktorId)
+        assertEquals("123456789", prefillDatamodel.bruker.norskIdent)
     }
 
 }

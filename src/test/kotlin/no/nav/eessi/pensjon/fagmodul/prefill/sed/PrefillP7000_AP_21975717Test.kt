@@ -49,7 +49,7 @@ class PrefillP7000_AP_21975717Test {
 
         prefill = PrefillP7000(PrefillPerson(prefillNav, prefillPensjon))
 
-        prefillData = PrefillDataModel(penSaksnummer = "21975717", bruker = PersonId(personFnr, "123456789")).apply {
+        prefillData = PrefillDataModel(penSaksnummer = "21975717", bruker = PersonId(personFnr, "123456789"), avdod = null).apply {
             rinaSubject = "Pensjon"
             sed = SED("P7000")
 

@@ -248,7 +248,7 @@ class PrefillNav(private val brukerFromTPS: BrukerFromTPS,
     fun prefill(prefillData: PrefillDataModel, fyllUtBarnListe: Boolean = false): Nav {
 
         // FIXME - det veksles mellom gjenlevende og bruker ... usikkert om dette er rett...
-        val brukerEllerGjenlevende = brukerFromTPS.hentBrukerFraTPS(prefillData.brukerEllerGjenlevendeHvisDod())
+        val brukerEllerGjenlevende = brukerFromTPS.hentBrukerFraTPS(velgAvdodEllerBruker(prefillData))
 
         val bruker = brukerFromTPS.hentBrukerFraTPS(prefillData.bruker.norskIdent)
         val (ektepinid, ekteTypeValue) = filterEktefelleRelasjon(bruker)
@@ -296,6 +296,10 @@ class PrefillNav(private val brukerFromTPS: BrukerFromTPS,
                 //9.0  - Tillgeggsinfo og kravdata. benyttes i P2x000
                 krav = createDiverseOgKravDato()
         )
+    }
+
+    private fun velgAvdodEllerBruker(prefillData: PrefillDataModel): String {
+          return prefillData.avdod?.norskIdent ?: prefillData.bruker.norskIdent
     }
 
     fun createBruker(brukerTPS: no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker,

@@ -102,14 +102,6 @@ object PrefillP2xxxPensjon {
         )
     }
 
-    fun addAvdod(prefillData: PrefillDataModel, pendata: Pensjonsinformasjon) {
-        prefillData.apply {
-            avdodNorskIdent = pendata.avdod?.avdod ?: ""
-            avdodMor = pendata.avdod?.avdodMor ?: ""
-            avdodFar = pendata.avdod?.avdodFar ?: ""
-        }
-    }
-
     /**
      *  4.1 (for kun_uland,mangler inngangsvilkår)
      */

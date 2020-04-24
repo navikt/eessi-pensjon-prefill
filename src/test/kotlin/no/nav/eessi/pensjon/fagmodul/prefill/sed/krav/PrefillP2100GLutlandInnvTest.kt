@@ -1,6 +1,7 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed.krav
 
 import com.nhaarman.mockitokotlin2.mock
+import no.nav.eessi.pensjon.fagmodul.prefill.model.PersonId
 import no.nav.eessi.pensjon.fagmodul.prefill.model.Prefill
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModelMother
@@ -47,15 +48,17 @@ class PrefillP2100GLutlandInnvTest {
 
         prefill = PrefillP2100(prefillNav, dataFromPEN, persondataFraTPS)
 
-        prefillData = PrefillDataModelMother.initialPrefillDataModel("P2100", personFnr, penSaksnummer = pesysSaksnummer).apply {
+        prefillData = PrefillDataModelMother.initialPrefillDataModel("P2100", personFnr, penSaksnummer = pesysSaksnummer, avdod = PersonId(avdodPersonFnr,"112233445566")).apply {
             skipSedkey = listOf("PENSED")
-            avdodAktorId = "112233445566"
-            avdodNorskIdent = avdodPersonFnr
+
             partSedAsJson = mutableMapOf(
                     "PersonInfo" to readJsonResponse("other/person_informasjon_selvb.json"),
                     "P4000" to readJsonResponse("other/p4000_trygdetid_part.json"))
         }
     }
+
+
+
 
     @Test
     fun `forventet korrekt utfylt P2200 uforepensjon med kap4 og 9`() {

@@ -55,7 +55,7 @@ class PrefillP2000_AP_LOP_REVUTest {
 
         prefill = PrefillP2000(prefillNav, dataFromPEN, persondataFraTPS)
 
-        prefillData = PrefillDataModel(penSaksnummer = pesysSaksnummer, bruker = PersonId(personFnr, "123456789")).apply {
+        prefillData = PrefillDataModel(penSaksnummer = pesysSaksnummer, bruker = PersonId(personFnr, "123456789"), avdod = null).apply {
             rinaSubject = "Pensjon"
             sed = SED("P2000")
             vedtakId = "12312312"

@@ -1,6 +1,7 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed
 
 import com.nhaarman.mockitokotlin2.mock
+import no.nav.eessi.pensjon.fagmodul.prefill.model.PersonId
 import no.nav.eessi.pensjon.fagmodul.prefill.model.Prefill
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModelMother
@@ -45,10 +46,8 @@ class PrefillP8000GLmedUtlandInnvTest {
 
         prefill = PrefillP8000(prefillPerson)
 
-        prefillData = PrefillDataModelMother.initialPrefillDataModel("P8000", personFnr, penSaksnummer = pesysSaksnummer).apply {
+        prefillData = PrefillDataModelMother.initialPrefillDataModel("P8000", personFnr, penSaksnummer = pesysSaksnummer, avdod = PersonId(avdodPersonFnr,"112233445566")).apply {
             skipSedkey = listOf("PENSED")
-            avdodAktorId = "112233445566"
-            avdodNorskIdent = avdodPersonFnr
         }
     }
 

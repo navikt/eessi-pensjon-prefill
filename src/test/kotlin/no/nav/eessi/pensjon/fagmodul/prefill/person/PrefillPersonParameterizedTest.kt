@@ -43,7 +43,7 @@ class PrefillPersonParameterizedTest {
     fun setup() {
         MockitoAnnotations.initMocks(this)
 
-        prefillDataMock = PrefillDataModel(penSaksnummer = "12345", bruker = PersonId("12345", "1234"))
+        prefillDataMock = PrefillDataModel(penSaksnummer = "12345", bruker = PersonId("12345", "1234"), avdod = null)
         preutfylling = PrefillPerson(prefillNav = mockPreutfyllingNav, prefilliPensjon = mockPreutfyllingPensjon)
 
         prefillDefaultSED = PrefillDefaultSED(preutfylling)
