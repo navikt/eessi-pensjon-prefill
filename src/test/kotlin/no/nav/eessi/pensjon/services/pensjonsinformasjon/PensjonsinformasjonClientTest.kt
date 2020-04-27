@@ -91,7 +91,7 @@ class PensjonsinformasjonClientTest {
 
     @Test
     fun `hentAltpaaSak  mock data med to saktyper en skal komme ut`() {
-        val mockResponseEntity = createResponseEntityFromJsonFile("classpath:pensjonsinformasjon/krav/P2000_21975717_AP_UTLAND.xml")
+        val mockResponseEntity = createResponseEntityFromJsonFile("classpath:pensjonsinformasjon/krav/KravAlderEllerUfore_AP_UTLAND.xml")
         whenever(mockrestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java))).thenReturn(mockResponseEntity)
 
         val data = pensjonsinformasjonClient.hentAltPaaAktoerId("1231233")
@@ -106,7 +106,7 @@ class PensjonsinformasjonClientTest {
 
     @Test
     fun `hentAltpaaSak  mock data med aktoerid to saktyper en skal komme ut`() {
-        val mockResponseEntity = createResponseEntityFromJsonFile("classpath:pensjonsinformasjon/krav/P2000_21975717_AP_UTLAND.xml")
+        val mockResponseEntity = createResponseEntityFromJsonFile("classpath:pensjonsinformasjon/krav/KravAlderEllerUfore_AP_UTLAND.xml")
         whenever(mockrestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java))).thenReturn(mockResponseEntity)
 
         val data = pensjonsinformasjonClient.hentAltPaaAktoerId("123456789011")

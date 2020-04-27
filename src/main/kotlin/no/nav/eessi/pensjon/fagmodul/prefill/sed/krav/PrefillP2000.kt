@@ -1,20 +1,22 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed.krav
 
-import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Nav
 import no.nav.eessi.pensjon.fagmodul.prefill.model.Prefill
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
-import no.nav.eessi.pensjon.fagmodul.prefill.model.ValidationException
 import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonHjelper
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillSED
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.PrefillP2xxxPensjon.createPensjon
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.BrukerFromTPS
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Bruker
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Nav
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Pensjon
+import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjoninformasjonException
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.http.HttpStatus
+import org.springframework.web.bind.annotation.ResponseStatus
 
 /**
  * preutfylling av NAV-P2000 SED for søknad krav om alderpensjon
@@ -49,20 +51,20 @@ class PrefillP2000(private val prefillNav: PrefillNav,
         try {
             val pendata: Pensjonsinformasjon? = hentPensjonsdata(prefillData.bruker.aktorId)
             sed.pensjon =
-                if (pendata == null) Pensjon()
-                else {
-                    val pensjon = createPensjon(
-                            prefillData.bruker.norskIdent,
-                            prefillData.penSaksnummer,
-                            eventuellGjenlevende(prefillData),
-                            pendata,
-                            prefillData.andreInstitusjon)
-                    if (prefillData.kanFeltSkippes("PENSED")) {
-                        Pensjon(kravDato = pensjon.kravDato) //vi skal ha blank pensjon ved denne toggle, men vi må ha med kravdato
-                    } else {
-                        pensjon
+                    if (pendata == null) Pensjon()
+                    else {
+                        val pensjon = createPensjon(
+                                prefillData.bruker.norskIdent,
+                                prefillData.penSaksnummer,
+                                eventuellGjenlevende(prefillData),
+                                pendata,
+                                prefillData.andreInstitusjon)
+                        if (prefillData.kanFeltSkippes("PENSED")) {
+                            Pensjon(kravDato = pensjon.kravDato) //vi skal ha blank pensjon ved denne toggle, men vi må ha med kravdato
+                        } else {
+                            pensjon
+                        }
                     }
-                }
         } catch (ex: Exception) {
             logger.error(ex.message, ex)
             // TODO Should we really swallow this?
@@ -71,6 +73,7 @@ class PrefillP2000(private val prefillNav: PrefillNav,
         KravHistorikkHelper.settKravdato(prefillData, sed)
 
         logger.debug("-------------------| Preutfylling [$sedId] END |------------------- ")
+        validate(prefillData)
         return prefillData.sed
     }
 
@@ -90,14 +93,16 @@ class PrefillP2000(private val prefillNav: PrefillNav,
                 null
             }
 
-
-    override fun validate(data: SED) {
+    private fun validate(data: PrefillDataModel) {
         when {
-            data.nav?.bruker?.person?.etternavn == null -> throw ValidationException("Etternavn mangler")
-            data.nav?.bruker?.person?.fornavn == null -> throw ValidationException("Fornavn mangler")
-            data.nav?.bruker?.person?.foedselsdato == null -> throw ValidationException("Fødseldsdato mangler")
-            data.nav?.bruker?.person?.kjoenn == null -> throw ValidationException("Kjønn mangler")
-            data.nav?.krav?.dato == null -> throw ValidationException("Kravdato mangler")
+            data.sed.nav?.bruker?.person?.etternavn == null -> throw ValidationException("Etternavn mangler")
+            data.sed.nav?.bruker?.person?.fornavn == null -> throw ValidationException("Fornavn mangler")
+            data.sed.nav?.bruker?.person?.foedselsdato == null -> throw ValidationException("Fødseldsdato mangler")
+            data.sed.nav?.bruker?.person?.kjoenn == null -> throw ValidationException("Kjønn mangler")
+            data.sed.nav?.krav?.dato == null -> throw ValidationException("Kravdato mangler")
         }
     }
 }
+
+@ResponseStatus(value = HttpStatus.UNPROCESSABLE_ENTITY)
+class ValidationException(message: String) : IllegalArgumentException(message)

@@ -89,8 +89,6 @@ class PrefillP2000_AP_LOP_REVUTest {
 
         val p2000 = prefill.prefill(prefillData)
 
-        prefill.validate(p2000)
-
         assertEquals(null, p2000.nav?.barn)
 
         assertEquals("", p2000.nav?.bruker?.arbeidsforhold?.get(0)?.yrke)

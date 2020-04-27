@@ -52,7 +52,7 @@ class PrefillP2000_AP_21975717Test {
                 prefillAdresse = mock<PrefillAdresse>(),
                 institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO")
 
-        dataFromPEN = lesPensjonsdataFraFil("P2000_21975717_AP_UTLAND.xml")
+        dataFromPEN = lesPensjonsdataFraFil("KravAlderEllerUfore_AP_UTLAND.xml")
 
         prefill = PrefillP2000(prefillNav, dataFromPEN, persondataFraTPS)
 
@@ -82,8 +82,6 @@ class PrefillP2000_AP_21975717Test {
     @Test
     fun `forventet korrekt utfylt P2000 alderpersjon med mockdata fra testfiler`() {
         val p2000 = prefill.prefill(prefillData)
-
-        prefill.validate(p2000)
 
         assertEquals(null, p2000.nav?.barn)
 
@@ -128,7 +126,6 @@ class PrefillP2000_AP_21975717Test {
     @Test
     fun `testing av komplett P2000 med utskrift og testing av innsending`() {
         val P2000 = prefill.prefill(prefillData)
-        prefill.validate(P2000)
 
         val json = mapAnyToJson(createMockApiRequest("P2000", "P_BUC_01", P2000.toJson()))
         assertNotNull(json)

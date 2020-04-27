@@ -3,10 +3,9 @@ package no.nav.eessi.pensjon.fagmodul.prefill
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.models.SEDType
-import no.nav.eessi.pensjon.fagmodul.prefill.model.PersonId
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
-import no.nav.eessi.pensjon.fagmodul.prefill.model.ValidationException
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillSED
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.ValidationException
 import no.nav.eessi.pensjon.fagmodul.sedmodel.InstitusjonX005
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.metrics.MetricsHelper
@@ -30,7 +29,6 @@ class PrefillService(private val prefillSED: PrefillSED,
             val startTime = System.currentTimeMillis()
             val data = prefillSED.prefill(dataModel)
             val endTime = System.currentTimeMillis() - startTime
-            prefillSED.validate(data)
 
             logger.info("******* Prefill SED tok $endTime ms. *******")
 

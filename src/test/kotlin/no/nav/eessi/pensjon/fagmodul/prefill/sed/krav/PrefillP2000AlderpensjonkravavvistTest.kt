@@ -1,8 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed.krav
 
 import com.nhaarman.mockitokotlin2.mock
-import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
-import no.nav.eessi.pensjon.fagmodul.prefill.ApiRequest
 import no.nav.eessi.pensjon.fagmodul.prefill.model.Prefill
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModelMother.initialPrefillDataModel
@@ -18,9 +16,7 @@ import no.nav.eessi.pensjon.fagmodul.prefill.tps.NavFodselsnummer
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillAdresse
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Nav
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
-import no.nav.eessi.pensjon.utils.mapAnyToJson
 import no.nav.eessi.pensjon.utils.toJson
-import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
@@ -85,7 +81,6 @@ class PrefillP2000AlderpensjonkravavvistTest {
     fun `forventet korrekt utfylt P2000 alderpersjon med mockdata fra testfiler`() {
         val p2000 = prefill.prefill(prefillData)
 
-        prefill.validate(p2000)
         assertEquals(null, p2000.nav?.barn)
 
         assertEquals("", p2000.nav?.bruker?.arbeidsforhold?.get(0)?.yrke)
@@ -129,7 +124,6 @@ class PrefillP2000AlderpensjonkravavvistTest {
     @Test
     fun `testing av komplett P2000 med utskrift og testing av innsending`() {
         val P2000 = prefill.prefill(prefillData)
-        prefill.validate(P2000)
 
         val json = createMockApiRequest("P2000", "P_BUC_01", P2000.toJson(), pesysSaksnummer).toJson()
         assertNotNull(json)

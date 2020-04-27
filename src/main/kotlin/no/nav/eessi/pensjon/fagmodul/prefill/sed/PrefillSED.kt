@@ -4,7 +4,9 @@ import no.nav.eessi.pensjon.fagmodul.prefill.model.Prefill
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
+import org.springframework.web.bind.annotation.ResponseStatus
 
 @Component
 /**
@@ -21,11 +23,6 @@ class PrefillSED(private val factory: PrefillFactory) : Prefill<PrefillDataModel
 
         //prefill person (tps) og pensjon (pesys) skjer her
         prefilling.prefill(prefillData)
-
         return prefillData
-    }
-
-    override fun validate(data: PrefillDataModel) {
-        factory.createPrefillClass(data).validate(data.sed)
     }
 }

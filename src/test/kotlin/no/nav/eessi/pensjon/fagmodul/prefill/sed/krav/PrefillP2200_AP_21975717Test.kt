@@ -55,9 +55,9 @@ class PrefillP2200_AP_21975717Test {
                 prefillAdresse = PrefillAdresse(PostnummerService(), kodeverkClient),
                 institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO")
 
-        dataFromPEN = lesPensjonsdataFraFil("P2000_21975717_AP_UTLAND.xml")
+        dataFromPEN = lesPensjonsdataFraFil("KravAlderEllerUfore_AP_UTLAND.xml")
 
-        prefill = PrefillP2000(prefillNav, dataFromPEN, persondataFraTPS)
+        prefill = PrefillP2200(prefillNav, dataFromPEN, persondataFraTPS)
 
         prefillData = PrefillDataModelMother.initialPrefillDataModel("P2200", personFnr, penSaksnummer = pesysSaksnummer).apply {
             partSedAsJson = mutableMapOf(

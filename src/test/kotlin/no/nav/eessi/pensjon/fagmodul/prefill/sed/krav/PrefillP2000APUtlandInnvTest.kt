@@ -80,8 +80,6 @@ class PrefillP2000APUtlandInnvTest {
     fun `forventet korrekt utfylt P2000 alderpersjon med mockdata fra testfiler`() {
         val p2000 = prefill.prefill(prefillData)
 
-        prefill.validate(p2000)
-
         assertEquals(null, p2000.nav?.barn)
 
         assertEquals("", p2000.nav?.bruker?.arbeidsforhold?.get(0)?.yrke)

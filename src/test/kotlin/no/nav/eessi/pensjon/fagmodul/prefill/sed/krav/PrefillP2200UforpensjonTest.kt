@@ -13,7 +13,7 @@ import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.setupPersonda
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.FodselsnummerMother.generateRandomFnr
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillAdresse
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
-import no.nav.eessi.pensjon.utils.mapAnyToJson
+import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
@@ -45,7 +45,7 @@ class PrefillP2200UforpensjonTest {
 
         dataFromPEN = lesPensjonsdataFraFil("P2000-AP-14069110.xml")
 
-        prefill = PrefillP2000(prefillNav, dataFromPEN, persondataFraTPS)
+        prefill = PrefillP2200(prefillNav, dataFromPEN, persondataFraTPS)
 
         prefillData = initialPrefillDataModel("P2200", personFnr, penSaksnummer = "14069110").apply {
             partSedAsJson = mutableMapOf("PersonInfo" to readJsonResponse("other/person_informasjon_selvb.json"))
@@ -59,7 +59,8 @@ class PrefillP2200UforpensjonTest {
         assertNotNull(pendata.brukersSakerListe)
 
         val P2200 = prefill.prefill(prefillData)
-        assertNotNull(mapAnyToJson(P2200))
+        val p2200Actual = P2200.toJsonSkipEmpty()
+        assertNotNull(p2200Actual)
     }
 
 }

@@ -80,8 +80,6 @@ class PrefillP2100GLutlandInnvTest {
     fun `forventet korrekt utfylt P2200 uforepensjon med mockdata fra testfiler`() {
         val p2100 = prefill.prefill(prefillData)
 
-        prefill.validate(p2100)
-
         assertEquals(null, p2100.nav?.barn)
 
         assertEquals("", p2100.nav?.bruker?.arbeidsforhold?.get(0)?.yrke)

@@ -59,7 +59,7 @@ data class ApiRequest(
 
                 SEDType.isValidSEDType(request.sed) -> {
                     logger.info("ALL SED on existing Rina -> SED: ${request.sed} -> euxCaseId: ${request.euxCaseId} -> sakNr: ${request.sakId} ")
-                    val avdod: PersonId? = populerAvdod(request, avdodaktoerID)
+                    val avdod: PersonId? = populerAvdodHvisGjenlevendePensjonSak(request, avdodaktoerID)
                     PrefillDataModel(penSaksnummer = request.sakId, bruker = PersonId(fodselsnr, request.aktoerId),avdod = avdod).apply {
                         sed = SED(request.sed)
                         buc = request.buc
@@ -75,7 +75,7 @@ data class ApiRequest(
             }
         }
 
-        private fun populerAvdod(request: ApiRequest, avdodaktoerID: String?): PersonId? {
+        private fun populerAvdodHvisGjenlevendePensjonSak(request: ApiRequest, avdodaktoerID: String?): PersonId? {
             var avdod: PersonId? = null
             val avdodNorskIdent: String?
             val avdodAktorId: String?
@@ -95,7 +95,7 @@ data class ApiRequest(
                 request.aktoerId == null -> throw MangelfulleInndataException("Mangler AktoerID")
 
                 SEDType.isValidSEDType(request.sed) -> {
-                    val avdod: PersonId? = populerAvdod(request, avdodaktoerID)
+                    val avdod: PersonId? = populerAvdodHvisGjenlevendePensjonSak(request, avdodaktoerID)
                     PrefillDataModel(penSaksnummer = request.sakId, bruker = PersonId(fodselsnr, request.aktoerId), avdod = avdod).apply {
                         sed = SED(request.sed)
                         buc = request.buc

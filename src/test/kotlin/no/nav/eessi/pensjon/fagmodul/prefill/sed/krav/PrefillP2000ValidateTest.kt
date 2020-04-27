@@ -4,13 +4,10 @@ import com.nhaarman.mockitokotlin2.mock
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PersonId
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
-import no.nav.eessi.pensjon.fagmodul.prefill.model.ValidationException
 import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonHjelper
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
-import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillAdresse
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.BrukerFromTPS
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Nav
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Pensjon
+import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillAdresse
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -48,7 +45,7 @@ class PrefillP2000ValidateTest {
     @Test
     fun `call prefillAndPreview  Exception ved validating SED`() {
         assertThrows<ValidationException> {
-            prefillP2000.validate(generateMockP2000ForValidatorError(generatePrefillModel()))
+            prefillP2000.prefill(generatePrefillModel())
         }
     }
 
@@ -59,12 +56,5 @@ class PrefillP2000ValidateTest {
             buc = "P_BUC_01"
             institution = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
         }
-    }
-
-    private fun generateMockP2000ForValidatorError(prefillModel: PrefillDataModel): SED {
-        val mocksed = prefillModel.sed
-        mocksed.nav = Nav()
-        mocksed.pensjon = Pensjon()
-        return mocksed
     }
 }

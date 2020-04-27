@@ -15,7 +15,6 @@ import no.nav.eessi.pensjon.fagmodul.prefill.tps.NavFodselsnummer
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillAdresse
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Nav
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
-import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
@@ -76,8 +75,6 @@ class PrefillP2200UPUtlandInnvTest {
     @Test
     fun `forventet korrekt utfylt P2200 uforepensjon med mockdata fra testfiler`() {
         val p2200 = prefill.prefill(prefillData)
-
-        prefill.validate(p2200)
 
         assertEquals(null, p2200.nav?.barn)
 
