@@ -31,13 +31,6 @@ class PrefillDataModelTest {
     }
 
     @Test
-    fun `check for valid claimant deceased parents filled`() {
-        prefillDatamodel.avdodFar = "2312354"
-        prefillDatamodel.avdodMor = "2312376"
-        assertTrue(prefillDatamodel.erForeldreLos())
-    }
-
-    @Test
     fun `validate and check model build`() {
 
         val items = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))

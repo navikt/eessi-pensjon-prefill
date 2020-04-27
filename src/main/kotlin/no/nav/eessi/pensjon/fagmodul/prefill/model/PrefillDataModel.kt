@@ -28,9 +28,6 @@ class PrefillDataModel(val penSaksnummer: String, val bruker: PersonId, val avdo
     //data fra pesys
     lateinit var saktype: String
 
-    lateinit var avdodFar: String
-    lateinit var avdodMor: String
-
     //rina
     lateinit var rinaSubject: String
     lateinit var euxCaseID: String
@@ -62,17 +59,6 @@ class PrefillDataModel(val penSaksnummer: String, val bruker: PersonId, val avdo
 
     fun getInstitutionsList(): List<InstitusjonItem> {
         return institution
-    }
-
-    fun erForeldreLos(): Boolean {
-        //TODO finne bedre metode?
-        return try {
-            val stateOne = checkNotNull(avdodFar)
-            val stateTwo = checkNotNull(avdodMor)
-            stateOne.isNotBlank() && stateTwo.isNotBlank()
-        } catch (ex: Exception) {
-            false
-        }
     }
 
     fun kanFeltSkippes(key: String): Boolean {
