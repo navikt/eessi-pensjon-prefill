@@ -4,8 +4,9 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.whenever
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PersonId
+import no.nav.eessi.pensjon.fagmodul.prefill.model.Prefill
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillSED
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillFactory
 import no.nav.eessi.pensjon.fagmodul.sedmodel.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
@@ -18,13 +19,16 @@ import org.mockito.junit.jupiter.MockitoExtension
 class PrefillServiceTest {
 
     @Mock
-    lateinit var mockPrefillSED: PrefillSED
+    lateinit var mockPrefillSED: Prefill<SED>
+
+    @Mock
+    lateinit var mockPrefillFactory: PrefillFactory
 
     private lateinit var prefillService: PrefillService
 
     @BeforeEach
     fun `startup initilize testing`() {
-        prefillService = PrefillService(mockPrefillSED)
+        prefillService = PrefillService(mockPrefillFactory)
     }
 
     @Test
@@ -40,7 +44,9 @@ class PrefillServiceTest {
                 InstitusjonItem(country = "DE", institution = "Tyskland", name="Tyskland test")
         )
 
-        whenever(mockPrefillSED.prefill(any())).thenReturn(data)
+        whenever(mockPrefillFactory.createPrefillClass(any())).thenReturn(mockPrefillSED)
+        whenever(mockPrefillSED.prefill(any())).thenReturn(data.sed)
+
 
         val x005Liste = prefillService.prefillEnX005ForHverInstitusjon(mockInstitusjonList, data)
 

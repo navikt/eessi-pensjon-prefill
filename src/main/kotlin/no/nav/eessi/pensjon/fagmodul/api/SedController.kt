@@ -106,7 +106,7 @@ class SedController(private val euxService: EuxService,
         logger.debug("Prøver å legge til Deltaker/Institusions på buc samt prefillSed og sende inn til Rina ")
         logger.info("X005 finnes på buc, Sed X005 prefills og sendes inn")
         val x005Liste = prefillService.prefillEnX005ForHverInstitusjon(nyeInstitusjoner, dataModel)
-        x005Liste.forEach { x005 -> euxService.opprettSedOnBuc(x005.sed, x005.euxCaseID) }
+        x005Liste.forEach { x005 -> euxService.opprettSedOnBuc(x005, dataModel.euxCaseID) }
     }
 
     private fun extraTag(dataModel: PrefillDataModel, bucUtil: BucUtils): List<Tag> {

@@ -7,7 +7,6 @@ import no.nav.eessi.pensjon.fagmodul.prefill.model.PersonId
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillDefaultSED
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillFactory
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillSED
 import no.nav.eessi.pensjon.fagmodul.sedmodel.NavMock
 import no.nav.eessi.pensjon.fagmodul.sedmodel.PensjonMock
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
@@ -33,8 +32,6 @@ class PrefillPersonParameterizedTest {
     @Mock
     private lateinit var mockPrefillFactory: PrefillFactory
 
-    private lateinit var mockPrefillSED: PrefillSED
-
     private lateinit var prefillDataMock: PrefillDataModel
 
     private lateinit var prefillDefaultSED: PrefillDefaultSED
@@ -47,8 +44,6 @@ class PrefillPersonParameterizedTest {
         preutfylling = PrefillPerson(prefillNav = mockPreutfyllingNav, prefilliPensjon = mockPreutfyllingPensjon)
 
         prefillDefaultSED = PrefillDefaultSED(preutfylling)
-
-        mockPrefillSED = PrefillSED(mockPrefillFactory)
     }
 
     companion object {
@@ -88,9 +83,7 @@ class PrefillPersonParameterizedTest {
         }
         whenever(mockPrefillFactory.createPrefillClass(prefillDataMock)).thenReturn(prefillDefaultSED)
 
-        val responseData = mockPrefillSED.prefill(prefillDataMock)
-        assertNotNull(responseData)
-        val responseSED = responseData.sed
+        val responseSED = mockPrefillFactory.createPrefillClass(prefillDataMock).prefill(prefillDataMock)
 
         assertNotNull(responseSED)
         assertNotNull(responseSED.nav)

@@ -4,7 +4,7 @@ import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillSED
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillFactory
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.ValidationException
 import no.nav.eessi.pensjon.fagmodul.sedmodel.InstitusjonX005
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
 @Service
-class PrefillService(private val prefillSED: PrefillSED,
+class PrefillService(private val factory: PrefillFactory,
                      @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper(SimpleMeterRegistry())) {
 
     private val logger = LoggerFactory.getLogger(PrefillService::class.java)
@@ -27,12 +27,12 @@ class PrefillService(private val prefillSED: PrefillSED,
             logger.info("******* Starter med preutfylling *******\nSED: ${dataModel.getSEDid()} aktoerId: ${dataModel.bruker.aktorId} sakNr: ${dataModel.penSaksnummer}")
 
             val startTime = System.currentTimeMillis()
-            val data = prefillSED.prefill(dataModel)
+            val sed = factory.createPrefillClass(dataModel).prefill(dataModel)
             val endTime = System.currentTimeMillis() - startTime
 
             logger.info("******* Prefill SED tok $endTime ms. *******")
 
-            data.sed
+            sed
         }
     }
 
@@ -54,7 +54,6 @@ class PrefillService(private val prefillSED: PrefillSED,
                     institusjonX005 = institusjon
                 }
 
-                val x005 = prefillSED.prefill(datax005)
-                x005
+                factory.createPrefillClass(datax005).prefill(datax005)
             }
 }
