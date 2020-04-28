@@ -54,7 +54,7 @@ class PrefillNavTest {
     fun `prefill med tom respons fra TPS`() {
         val prefillData = PrefillDataModel(penSaksnummer = somePenSaksnr, bruker = PersonId("somePersonNr", "dummy"), avdod = null)
 
-        val actual = prefillNav.prefill(prefillData, true)
+        val actual = prefillNav.prefill(prefillData.penSaksnummer, prefillData.bruker, prefillData.avdod, true, prefillData.getPersonInfoFromRequestData())
         val expected = Nav(
                 eessisak = listOf(EessisakItem(institusjonsid =  someInstitutionId, institusjonsnavn = someIntitutionNavn, saksnummer =  somePenSaksnr, land =  "NO")),
                 krav = Krav(LocalDate.now().toString()))
@@ -75,7 +75,7 @@ class PrefillNavTest {
         whenever(mockBrukerFromTPS.hentBrukerFraTPS(foreldersPin)).thenReturn(forelder)
         whenever(mockBrukerFromTPS.hentBrukerFraTPS(barnetsPin)).thenReturn(barn)
 
-        val actual = prefillNav.prefill(prefillData, true)
+        val actual = prefillNav.prefill(prefillData.penSaksnummer, prefillData.bruker, prefillData.avdod, true, prefillData.getPersonInfoFromRequestData())
 
         val expected = Nav(
                 eessisak = listOf(EessisakItem(institusjonsid =  someInstitutionId, institusjonsnavn = someIntitutionNavn, saksnummer =  somePenSaksnr, land =  "NO")),
@@ -109,7 +109,7 @@ class PrefillNavTest {
         whenever(mockBrukerFromTPS.hentBrukerFraTPS(someBarnPersonNr)).thenReturn(barn)
         whenever(mockBrukerFromTPS.hentBrukerFraTPS(somePersonNr)).thenReturn(far)
 
-        val actual = prefillNav.prefill(prefillData, true)
+        val actual = prefillNav.prefill(prefillData.penSaksnummer, prefillData.bruker, prefillData.avdod, true, prefillData.getPersonInfoFromRequestData())
         val expected = Nav(
                 eessisak = listOf(EessisakItem(institusjonsid =  someInstitutionId, institusjonsnavn = someIntitutionNavn, saksnummer =  somePenSaksnr, land =  "NO")),
                 krav = Krav(LocalDate.now().toString()),
@@ -148,7 +148,7 @@ class PrefillNavTest {
         whenever(mockBrukerFromTPS.hentBrukerFraTPS(somePersonNr)).thenReturn(person)
         whenever(mockBrukerFromTPS.hentBrukerFraTPS(somerEktefellePersonNr)).thenReturn(ektefelle)
 
-        val actual = prefillNav.prefill(prefillData, true)
+        val actual = prefillNav.prefill(prefillData.penSaksnummer, prefillData.bruker, prefillData.avdod, true, prefillData.getPersonInfoFromRequestData())
 
         val expected = Nav(
                 eessisak = listOf(EessisakItem(institusjonsid =  someInstitutionId, institusjonsnavn = someIntitutionNavn, saksnummer =  somePenSaksnr, land =  "NO")),
@@ -185,7 +185,7 @@ class PrefillNavTest {
         whenever(mockBrukerFromTPS.hentBrukerFraTPS(somePersonNr)).thenReturn(person)
         whenever(mockBrukerFromTPS.hentBrukerFraTPS(somerEktefellePersonNr)).thenReturn(ektefelle)
 
-        val actual = prefillNav.prefill(prefillData, true)
+        val actual = prefillNav.prefill(prefillData.penSaksnummer, prefillData.bruker, prefillData.avdod, true, prefillData.getPersonInfoFromRequestData())
 
         val expected = Nav(
                 eessisak = listOf(EessisakItem(institusjonsid =  someInstitutionId, institusjonsnavn = someIntitutionNavn, saksnummer =  somePenSaksnr, land =  "NO")),
@@ -222,7 +222,7 @@ class PrefillNavTest {
         whenever(mockBrukerFromTPS.hentBrukerFraTPS(somePersonNr)).thenReturn(person)
         whenever(mockBrukerFromTPS.hentBrukerFraTPS(somerEktefellePersonNr)).thenReturn(ektefelle)
 
-        val actual = prefillNav.prefill(prefillData, true)
+        val actual = prefillNav.prefill(prefillData.penSaksnummer, prefillData.bruker, prefillData.avdod, true, prefillData.getPersonInfoFromRequestData())
 
         val expected = Nav(
                 eessisak = listOf(EessisakItem(institusjonsid =  someInstitutionId, institusjonsnavn = someIntitutionNavn, saksnummer =  somePenSaksnr, land =  "NO")),
@@ -258,7 +258,7 @@ class PrefillNavTest {
                 .whenever(mockBrukerFromTPS)
                 .hentBrukerFraTPS(somePersonNr)
 
-        val actual = prefillNav.prefill(prefillData, false)
+        val actual = prefillNav.prefill(prefillData.penSaksnummer, prefillData.bruker, prefillData.avdod, false, prefillData.getPersonInfoFromRequestData())
 
         val fornavn = "Fornavn Ole Mellomnavn Mellomn"
         val expected = Nav(
@@ -305,7 +305,7 @@ class PrefillNavTest {
         whenever(mockBrukerFromTPS.hentBrukerFraTPS(brukerensPin)).thenReturn(brukeren)
         doReturn("NO").whenever(kodeverkClient).finnLandkode2("NOR")
 
-        val actual = prefillNav.prefill(prefillData)
+        val actual = prefillNav.prefill(penSaksnummer = prefillData.penSaksnummer, bruker = prefillData.bruker, avdod = prefillData.avdod, brukerInformasjon = prefillData.getPersonInfoFromRequestData())
 
         val expected = Nav(
                 eessisak = listOf(EessisakItem(institusjonsid =  someInstitutionId, institusjonsnavn = someIntitutionNavn, saksnummer =  somePenSaksnr, land =  "NO")),

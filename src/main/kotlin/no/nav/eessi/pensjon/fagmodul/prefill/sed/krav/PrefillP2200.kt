@@ -34,7 +34,7 @@ class PrefillP2200(private val prefillNav: PrefillNav,
         val sed = prefillData.sed
 
         //henter opp persondata
-        sed.nav = prefillNav.prefill(prefillData, fyllUtBarnListe = true)
+        sed.nav = prefillNav.prefill(penSaksnummer = prefillData.penSaksnummer, bruker = prefillData.bruker, avdod = prefillData.avdod, fyllUtBarnListe = true, brukerInformasjon = prefillData.getPersonInfoFromRequestData())
 
         //henter opp pensjondat
         try {

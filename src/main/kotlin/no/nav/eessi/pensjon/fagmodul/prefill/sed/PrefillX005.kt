@@ -19,7 +19,7 @@ class PrefillX005(private val prefillNav: PrefillNav) : Prefill<SED> {
 
     override fun prefill(prefillData: PrefillDataModel): SED {
 
-        val navsed = prefillNav.prefill(prefillData)
+        val navsed = prefillNav.prefill(penSaksnummer = prefillData.penSaksnummer, bruker = prefillData.bruker, avdod = prefillData.avdod, brukerInformasjon = prefillData.getPersonInfoFromRequestData())
 
         logger.debug("Tilpasser X005 forenklet preutfylling")
         val person = navsed.bruker?.person

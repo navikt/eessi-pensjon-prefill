@@ -40,7 +40,7 @@ class PrefillP2100(private val prefillNav: PrefillNav,
             sed.nav = Nav()
         } else {
             //henter opp persondata
-            sed.nav = prefillNav.prefill(prefillData, fyllUtBarnListe = true)
+            sed.nav = prefillNav.prefill(penSaksnummer = prefillData.penSaksnummer, bruker = prefillData.bruker, avdod = prefillData.avdod, fyllUtBarnListe = true, brukerInformasjon = prefillData.getPersonInfoFromRequestData())
         }
 
         try {

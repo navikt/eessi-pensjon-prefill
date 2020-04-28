@@ -37,7 +37,7 @@ class PrefillPersonEnkeTest {
         val fnr = personDataFromTPS.getRandomNavFodselsnummer() ?: "02345678901"
         val prefillData = initialPrefillDataModel(sedType = "P2000", pinId = fnr, vedtakId = "")
 
-        val response = prefillNav.prefill(prefillData, fyllUtBarnListe = true)
+        val response = prefillNav.prefill(penSaksnummer = prefillData.penSaksnummer, bruker = prefillData.bruker, avdod = prefillData.avdod, fyllUtBarnListe = true, brukerInformasjon = prefillData.getPersonInfoFromRequestData())
 
         val sed = prefillData.sed
         sed.nav = response
@@ -56,7 +56,7 @@ class PrefillPersonEnkeTest {
 
         val fnr = personDataFromTPS.getRandomNavFodselsnummer() ?: "02345678901"
         val prefillData = initialPrefillDataModel(sedType = "P2100", pinId = fnr, vedtakId = "")
-        val response = prefillNav.prefill(prefillData, fyllUtBarnListe = true)
+        val response = prefillNav.prefill(penSaksnummer = prefillData.penSaksnummer, bruker = prefillData.bruker, avdod = prefillData.avdod, fyllUtBarnListe = true, brukerInformasjon = prefillData.getPersonInfoFromRequestData())
 
         val sed = prefillData.sed
         sed.nav = response
@@ -93,7 +93,7 @@ class PrefillPersonEnkeTest {
 
         val fnr = personDataFromTPS.getRandomNavFodselsnummer() ?: "02345678901"
         val prefillData = initialPrefillDataModel(sedType = "P2200", pinId = fnr, vedtakId = "")
-        val response = prefillNav.prefill(prefillData, fyllUtBarnListe = true)
+        val response = prefillNav.prefill(penSaksnummer = prefillData.penSaksnummer, bruker = prefillData.bruker, avdod = prefillData.avdod, fyllUtBarnListe = true, brukerInformasjon = prefillData.getPersonInfoFromRequestData())
 
         val sed = prefillData.sed
         sed.nav = response

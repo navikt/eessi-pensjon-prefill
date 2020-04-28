@@ -1,7 +1,7 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.person
 
 import no.nav.eessi.pensjon.fagmodul.prefill.model.BrukerInformasjon
-import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
+import no.nav.eessi.pensjon.fagmodul.prefill.model.PersonId
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.BrukerFromTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.NavFodselsnummer
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillAdresse
@@ -245,27 +245,27 @@ class PrefillNav(private val brukerFromTPS: BrukerFromTPS,
         }
     }
 
-    fun prefill(prefillData: PrefillDataModel, fyllUtBarnListe: Boolean = false): Nav {
+    fun prefill(penSaksnummer: String, bruker: PersonId, avdod: PersonId?, fyllUtBarnListe: Boolean = false, brukerInformasjon: BrukerInformasjon?): Nav {
 
         // FIXME - det veksles mellom gjenlevende og bruker ... usikkert om dette er rett...
-        val brukerEllerGjenlevende = brukerFromTPS.hentBrukerFraTPS(velgAvdodEllerBruker(prefillData))
+        val brukerEllerGjenlevende = brukerFromTPS.hentBrukerFraTPS(avdod?.norskIdent ?: bruker.norskIdent)
 
-        val bruker = brukerFromTPS.hentBrukerFraTPS(prefillData.bruker.norskIdent)
-        val (ektepinid, ekteTypeValue) = filterEktefelleRelasjon(bruker)
+        val brukerFraTps = brukerFromTPS.hentBrukerFraTPS(bruker.norskIdent)
+        val (ektepinid, ekteTypeValue) = filterEktefelleRelasjon(brukerFraTps)
 
         val ektefelleBruker = if(ektepinid.isBlank()) null else brukerFromTPS.hentBrukerFraTPS(ektepinid)
 
         val barnBrukereFraTPS =
                 if (fyllUtBarnListe) {
-                    barnsPinId(brukerFromTPS.hentBrukerFraTPS(prefillData.bruker.norskIdent))
+                    barnsPinId(brukerFromTPS.hentBrukerFraTPS(bruker.norskIdent))
                             .mapNotNull { barn -> brukerFromTPS.hentBrukerFraTPS(barn) }
                 } else listOf()
 
-        val personInfo = prefillData.getPersonInfoFromRequestData()
+        val personInfo = brukerInformasjon
 
         return Nav(
                 //1.0
-                eessisak = createEssisakItem(prefillData.penSaksnummer, institutionid, institutionnavn),
+                eessisak = createEssisakItem(penSaksnummer, institutionid, institutionnavn),
 
                 //createBrukerfraTPS død hvis etterlatt (etterlatt aktoerregister fylt ut)
                 //2.0 For levende, eller hvis person er dod (hvis dod flyttes levende til 3.0)
@@ -296,10 +296,6 @@ class PrefillNav(private val brukerFromTPS: BrukerFromTPS,
                 //9.0  - Tillgeggsinfo og kravdata. benyttes i P2x000
                 krav = createDiverseOgKravDato()
         )
-    }
-
-    private fun velgAvdodEllerBruker(prefillData: PrefillDataModel): String {
-          return prefillData.avdod?.norskIdent ?: prefillData.bruker.norskIdent
     }
 
     fun createBruker(brukerTPS: no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker,

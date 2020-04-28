@@ -42,7 +42,7 @@ class PrefillP6000(private val prefillNav: PrefillNav,
         sed.pensjon = createPensjon(dataFromPESYS, gjenlevende, prefillData.vedtakId, prefillData.andreInstitusjon)
 
         logger.debug("Henter opp Persondata fra TPS")
-        sed.nav = prefillNav.prefill(prefillData)
+        sed.nav = prefillNav.prefill(penSaksnummer = prefillData.penSaksnummer, bruker = prefillData.bruker, avdod = prefillData.avdod, brukerInformasjon = prefillData.getPersonInfoFromRequestData())
 
         logger.debug("-------------------| Preutfylling [$sedId] END |------------------- ")
         return prefillData.sed
