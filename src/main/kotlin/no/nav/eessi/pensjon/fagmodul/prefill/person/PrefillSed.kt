@@ -11,16 +11,16 @@ import org.springframework.stereotype.Component
 
 @Component
 //TODO: Denne klasser vil nok utgå når alle SED er klar med egen Preutfylling..
-class PrefillPerson(private val prefillNav: PrefillNav, private val prefilliPensjon: PrefillPensjon) : Prefill<SED> {
+class PrefillSed(private val prefillNav: PrefillNav, private val prefillGjenlevende: PrefillGjenlevende) : Prefill<SED> {
 
-    private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillPerson::class.java) }
+    private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillSed::class.java) }
 
     override fun prefill(prefillData: PrefillDataModel): SED {
 
         logger.debug("----------------------------------------------------------")
 
         logger.debug("Preutfylling NAV     : ${prefillNav::class.java} ")
-        logger.debug("Preutfylling Pensjon : ${prefilliPensjon::class.java} ")
+        logger.debug("Preutfylling Pensjon : ${prefillGjenlevende::class.java} ")
 
         logger.debug("------------------| Preutfylling START |------------------ ")
 
@@ -39,7 +39,7 @@ class PrefillPerson(private val prefillNav: PrefillNav, private val prefilliPens
 
         try {
             //henter opp pensjondata (her kun gjennlevende)
-            sed.pensjon = prefilliPensjon.prefill(prefillData)
+            sed.pensjon = prefillGjenlevende.prefill(prefillData)
             logger.debug("[${prefillData.getSEDid()}] Preutfylling Utfylling Pensjon")
         } catch (pen: PensjoninformasjonException) {
             logger.error(pen.message)

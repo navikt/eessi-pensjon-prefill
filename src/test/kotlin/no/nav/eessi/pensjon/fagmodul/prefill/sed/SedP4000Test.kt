@@ -4,7 +4,7 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.whenever
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.prefill.ApiRequest
-import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillPerson
+import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillSed
 import no.nav.eessi.pensjon.fagmodul.sedmodel.*
 import no.nav.eessi.pensjon.utils.*
 import org.junit.jupiter.api.Assertions.*
@@ -22,13 +22,13 @@ import java.nio.file.Paths
 class SedP4000Test {
 
     @Mock
-    private lateinit var prefillPerson: PrefillPerson
+    private lateinit var prefillSed: PrefillSed
 
     lateinit var pre4000: PrefillP4000
 
     @BeforeEach
     fun setup() {
-        pre4000 = PrefillP4000(prefillPerson)
+        pre4000 = PrefillP4000(prefillSed)
     }
 
     @Test
@@ -172,7 +172,7 @@ class SedP4000Test {
         assertEquals("12345", data.bruker.norskIdent)
 
         val resultData = data
-        whenever(prefillPerson.prefill(any())).thenReturn(data.sed)
+        whenever(prefillSed.prefill(any())).thenReturn(data.sed)
         val sed = pre4000.prefill(resultData)
         assertNotNull(sed)
     }

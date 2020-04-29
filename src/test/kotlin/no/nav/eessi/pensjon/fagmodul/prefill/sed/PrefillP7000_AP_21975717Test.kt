@@ -7,8 +7,8 @@ import no.nav.eessi.pensjon.fagmodul.prefill.model.Prefill
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PersonDataFromTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
-import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillPensjon
-import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillPerson
+import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillGjenlevende
+import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillSed
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.readJsonResponse
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.setupPersondataFraTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.FodselsnummerMother.generateRandomFnr
@@ -45,9 +45,9 @@ class PrefillP7000_AP_21975717Test {
                 prefillAdresse = mock<PrefillAdresse>(),
                 institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO")
 
-        val prefillPensjon = PrefillPensjon(persondataFraTPS, prefillNav)
+        val prefillGjenlevende = PrefillGjenlevende(persondataFraTPS, prefillNav)
 
-        prefill = PrefillP7000(PrefillPerson(prefillNav, prefillPensjon))
+        prefill = PrefillP7000(PrefillSed(prefillNav, prefillGjenlevende))
 
         prefillData = PrefillDataModel(penSaksnummer = "21975717", bruker = PersonId(personFnr, "123456789"), avdod = null).apply {
             rinaSubject = "Pensjon"

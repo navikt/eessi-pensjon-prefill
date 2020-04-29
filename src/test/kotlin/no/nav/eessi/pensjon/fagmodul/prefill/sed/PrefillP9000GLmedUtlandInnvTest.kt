@@ -7,8 +7,8 @@ import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModelMother
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PersonDataFromTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
-import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillPensjon
-import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillPerson
+import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillGjenlevende
+import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillSed
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.setupPersondataFraTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.FodselsnummerMother.generateRandomFnr
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.NavFodselsnummer
@@ -41,8 +41,8 @@ class PrefillP9000GLmedUtlandInnvTest {
                 prefillAdresse = mock<PrefillAdresse>(),
                 institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO")
 
-        val prefillPensjon = PrefillPensjon(persondataFraTPS, prefillNav)
-        val prefillPerson = PrefillPerson(prefillNav, prefillPensjon)
+        val prefillGjenlevende = PrefillGjenlevende(persondataFraTPS, prefillNav)
+        val prefillPerson = PrefillSed(prefillNav, prefillGjenlevende)
 
         prefill = PrefillDefaultSED(prefillPerson)
 

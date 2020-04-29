@@ -7,8 +7,8 @@ import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModelMother
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PersonDataFromTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
-import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillPensjon
-import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillPerson
+import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillGjenlevende
+import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillSed
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.setupPersondataFraTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.FodselsnummerMother.generateRandomFnr
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.NavFodselsnummer
@@ -41,10 +41,10 @@ class PrefillP8000GLmedUtlandInnvTest {
                 prefillAdresse = mock<PrefillAdresse>(),
                 institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO")
 
-        val prefillPensjon = PrefillPensjon(persondataFraTPS, prefillNav)
-        val prefillPerson = PrefillPerson(prefillNav, prefillPensjon)
+        val prefillGjenlevende = PrefillGjenlevende(persondataFraTPS, prefillNav)
+        val prefillSed = PrefillSed(prefillNav, prefillGjenlevende)
 
-        prefill = PrefillP8000(prefillPerson)
+        prefill = PrefillP8000(prefillSed)
 
         prefillData = PrefillDataModelMother.initialPrefillDataModel("P8000", personFnr, penSaksnummer = pesysSaksnummer, avdod = PersonId(avdodPersonFnr,"112233445566")).apply {
             skipSedkey = listOf("PENSED")
@@ -60,7 +60,6 @@ class PrefillP8000GLmedUtlandInnvTest {
         val navfnr1 = NavFodselsnummer(p8000.nav?.bruker?.person?.pin?.get(0)?.identifikator!!)
         assertEquals(75, navfnr1.getAge())
         assertEquals("M", p8000.nav?.bruker?.person?.kjoenn)
-        //assertEquals("02", p8000.nav?.bruker?.person?.sivilstand?.first()?.status)
 
         assertNotNull(p8000.nav?.bruker?.person?.pin)
         val pinlist = p8000.nav?.bruker?.person?.pin

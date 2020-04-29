@@ -15,7 +15,7 @@ import org.mockito.quality.Strictness
 
 @ExtendWith(MockitoExtension::class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-class PrefillPersonEnkeTest {
+class PrefillSedEnkeTest {
 
     private lateinit var personDataFromTPS: PersonDataFromTPS
 

@@ -6,8 +6,8 @@ import no.nav.eessi.pensjon.fagmodul.prefill.model.Prefill
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonHjelper
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
-import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillPensjon
-import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillPerson
+import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillGjenlevende
+import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillSed
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.PrefillP2000
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.PrefillP2100
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.PrefillP2200
@@ -26,7 +26,7 @@ class PrefillFactory(private val prefillNav: PrefillNav,
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillFactory::class.java) }
 
-    private val prefillPerson = PrefillPerson(prefillNav, PrefillPensjon(dataFromTPS, prefillNav))
+    private val prefillSed = PrefillSed(prefillNav, PrefillGjenlevende(dataFromTPS, prefillNav))
 
     fun createPrefillClass(prefillData: PrefillDataModel): Prefill<SED> {
 
@@ -48,28 +48,28 @@ class PrefillFactory(private val prefillNav: PrefillNav,
                 PrefillP2100(prefillNav, dataFromPEN, dataFromTPS)
             }
             SEDType.P4000 -> {
-                PrefillP4000(prefillPerson)
+                PrefillP4000(prefillSed)
             }
             SEDType.P7000 -> {
-                PrefillP7000(prefillPerson)
+                PrefillP7000(prefillSed)
             }
             SEDType.P8000 -> {
-                PrefillP8000(prefillPerson)
+                PrefillP8000(prefillSed)
             }
             SEDType.P10000 -> {
-                PrefillP10000(prefillPerson)
+                PrefillP10000(prefillSed)
             }
             SEDType.X005 -> {
                 PrefillX005(prefillNav)
             }
             SEDType.H020, SEDType.H021 -> {
-                PrefillH02X(prefillPerson)
+                PrefillH02X(prefillSed)
             }
             else -> {
                 //P3000_NO vil aldre gå dennee vei! men fra EU-SED->Nav-SED->PESYS
                 //P3000_SE, PL, DK, DE, UK, ol vil gå denne veien.
                 //P5000, - P9000, P14000 og og andre
-                PrefillDefaultSED(prefillPerson)
+                PrefillDefaultSED(prefillSed)
             }
         }
     }

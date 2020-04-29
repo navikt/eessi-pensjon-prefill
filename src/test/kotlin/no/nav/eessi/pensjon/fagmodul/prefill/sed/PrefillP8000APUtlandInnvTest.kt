@@ -6,12 +6,11 @@ import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModelMother
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PersonDataFromTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
-import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillPensjon
-import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillPerson
+import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillGjenlevende
+import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillSed
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.setupPersondataFraTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.FodselsnummerMother.generateRandomFnr
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.NavFodselsnummer
-import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillAdresse
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
@@ -37,13 +36,13 @@ class PrefillP8000APUtlandInnvTest {
         ))
         prefillNav = PrefillNav(
                 brukerFromTPS = persondataFraTPS,
-                prefillAdresse = mock<PrefillAdresse>(),
+                prefillAdresse = mock(),
                 institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO")
 
-        val prefillPensjon = PrefillPensjon(persondataFraTPS, prefillNav)
-        val prefillPerson = PrefillPerson(prefillNav, prefillPensjon)
+        val prefillGjenlevende = PrefillGjenlevende(persondataFraTPS, prefillNav)
+        val prefillSed = PrefillSed(prefillNav, prefillGjenlevende)
 
-        prefill = PrefillP8000(prefillPerson)
+        prefill = PrefillP8000(prefillSed)
 
         prefillData = PrefillDataModelMother.initialPrefillDataModel("P8000", personFnr, penSaksnummer = pesysSaksnummer).apply {
             skipSedkey = listOf("PENSED")
