@@ -41,14 +41,15 @@ class PrefillP9000GLmedUtlandInnvTest {
                 prefillAdresse = mock<PrefillAdresse>(),
                 institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO")
 
-        val prefillGjenlevende = PrefillGjenlevende(persondataFraTPS, prefillNav)
+        prefillData = PrefillDataModelMother.initialPrefillDataModel("P9000", personFnr, penSaksnummer = pesysSaksnummer, avdod = PersonId(avdodPersonFnr, "112233445566")).apply {
+            skipSedkey = listOf("PENSED")
+        }
+
+        val prefillGjenlevende = PrefillGjenlevende(persondataFraTPS, prefillNav).prefill(prefillData)
         val prefillPerson = PrefillSed(prefillNav, prefillGjenlevende)
 
         prefill = PrefillDefaultSED(prefillPerson)
 
-        prefillData = PrefillDataModelMother.initialPrefillDataModel("P9000", personFnr, penSaksnummer = pesysSaksnummer, avdod = PersonId(avdodPersonFnr, "112233445566")).apply {
-            skipSedkey = listOf("PENSED")
-        }
     }
 
     @Test

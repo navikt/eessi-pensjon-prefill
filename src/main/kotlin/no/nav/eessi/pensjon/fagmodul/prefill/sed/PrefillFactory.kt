@@ -26,8 +26,6 @@ class PrefillFactory(private val prefillNav: PrefillNav,
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillFactory::class.java) }
 
-    private val prefillSed = PrefillSed(prefillNav, PrefillGjenlevende(dataFromTPS, prefillNav))
-
     fun createPrefillClass(prefillData: PrefillDataModel): Prefill<SED> {
 
         val sedValue = SEDType.valueOf(prefillData.getSEDid())
@@ -48,30 +46,36 @@ class PrefillFactory(private val prefillNav: PrefillNav,
                 PrefillP2100(prefillNav, dataFromPEN, dataFromTPS)
             }
             SEDType.P4000 -> {
-                PrefillP4000(prefillSed)
+                PrefillP4000(getPrefillSed(prefillData))
             }
             SEDType.P7000 -> {
-                PrefillP7000(prefillSed)
+                PrefillP7000(getPrefillSed(prefillData))
             }
             SEDType.P8000 -> {
-                PrefillP8000(prefillSed)
+                PrefillP8000(getPrefillSed(prefillData))
             }
             SEDType.P10000 -> {
-                PrefillP10000(prefillSed)
+                PrefillP10000(getPrefillSed(prefillData))
             }
             SEDType.X005 -> {
                 PrefillX005(prefillNav)
             }
             SEDType.H020, SEDType.H021 -> {
-                PrefillH02X(prefillSed)
+                PrefillH02X(getPrefillSed(prefillData))
             }
             else -> {
                 //P3000_NO vil aldre gå dennee vei! men fra EU-SED->Nav-SED->PESYS
                 //P3000_SE, PL, DK, DE, UK, ol vil gå denne veien.
                 //P5000, - P9000, P14000 og og andre
-                PrefillDefaultSED(prefillSed)
+                PrefillDefaultSED(getPrefillSed(prefillData))
             }
         }
     }
+
+    private fun getPrefillSed(prefillData: PrefillDataModel) : PrefillSed {
+        val pensjonGjenlevende = PrefillGjenlevende(dataFromTPS, prefillNav).prefill(prefillData)
+        return PrefillSed(prefillNav, pensjonGjenlevende)
+    }
+
 
 }

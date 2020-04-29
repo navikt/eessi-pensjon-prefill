@@ -6,7 +6,6 @@ import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModelMother
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PersonDataFromTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
-import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillGjenlevende
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillSed
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.setupPersondataFraTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.FodselsnummerMother.generateRandomFnr
@@ -39,8 +38,7 @@ class PrefillP8000APUtlandInnvTest {
                 prefillAdresse = mock(),
                 institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO")
 
-        val prefillGjenlevende = PrefillGjenlevende(persondataFraTPS, prefillNav)
-        val prefillSed = PrefillSed(prefillNav, prefillGjenlevende)
+        val prefillSed = PrefillSed(prefillNav, null)
 
         prefill = PrefillP8000(prefillSed)
 

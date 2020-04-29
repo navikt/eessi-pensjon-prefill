@@ -7,11 +7,9 @@ import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjoninformasjonException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.stereotype.Component
 
-@Component
 //TODO: Denne klasser vil nok utgå når alle SED er klar med egen Preutfylling..
-class PrefillSed(private val prefillNav: PrefillNav, private val prefillGjenlevende: PrefillGjenlevende) : Prefill<SED> {
+class PrefillSed(private val prefillNav: PrefillNav, private val pensjon: Pensjon?) : Prefill<SED> {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillSed::class.java) }
 
@@ -20,7 +18,6 @@ class PrefillSed(private val prefillNav: PrefillNav, private val prefillGjenleve
         logger.debug("----------------------------------------------------------")
 
         logger.debug("Preutfylling NAV     : ${prefillNav::class.java} ")
-        logger.debug("Preutfylling Pensjon : ${prefillGjenlevende::class.java} ")
 
         logger.debug("------------------| Preutfylling START |------------------ ")
 
@@ -33,13 +30,16 @@ class PrefillSed(private val prefillNav: PrefillNav, private val prefillGjenleve
             sed.nav = null
         } else {
             //henter opp persondata
-            sed.nav = prefillNav.prefill(penSaksnummer = prefillData.penSaksnummer, bruker = prefillData.bruker, avdod = prefillData.avdod, brukerInformasjon = prefillData.getPersonInfoFromRequestData())
+            sed.nav = prefillNav.prefill(penSaksnummer = prefillData.penSaksnummer,
+                    bruker = prefillData.bruker,
+                    avdod = prefillData.avdod,
+                    brukerInformasjon = prefillData.getPersonInfoFromRequestData())
         }
         logger.debug("[${prefillData.getSEDid()}] Preutfylling Utfylling NAV")
 
         try {
             //henter opp pensjondata (her kun gjennlevende)
-            sed.pensjon = prefillGjenlevende.prefill(prefillData)
+            sed.pensjon = pensjon
             logger.debug("[${prefillData.getSEDid()}] Preutfylling Utfylling Pensjon")
         } catch (pen: PensjoninformasjonException) {
             logger.error(pen.message)
