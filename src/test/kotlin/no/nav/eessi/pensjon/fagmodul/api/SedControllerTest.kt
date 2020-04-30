@@ -13,8 +13,7 @@ import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.prefill.ApiRequest
 import no.nav.eessi.pensjon.fagmodul.prefill.MangelfulleInndataException
 import no.nav.eessi.pensjon.fagmodul.prefill.PrefillService
-import no.nav.eessi.pensjon.fagmodul.prefill.model.Prefill
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillFactory
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillSEDService
 import no.nav.eessi.pensjon.fagmodul.sedmodel.*
 import no.nav.eessi.pensjon.logging.AuditLogger
 import no.nav.eessi.pensjon.services.aktoerregister.AktoerregisterService
@@ -49,17 +48,14 @@ class SedControllerTest {
     lateinit var mockAktoerIdHelper: AktoerregisterService
 
     @Mock
-    lateinit var mockPrefillSED: Prefill
-
-    @Mock
-    lateinit var mockPrefillFactory: PrefillFactory
+    lateinit var mockPrefillSEDService: PrefillSEDService
 
     private lateinit var sedController: SedController
 
     @BeforeEach
     fun setUp() {
         this.sedController = SedController(mockEuxService,
-                PrefillService(mockPrefillFactory),
+                PrefillService(mockPrefillSEDService),
                 mockAktoerIdHelper,
                 auditLogger)
 
@@ -98,7 +94,7 @@ class SedControllerTest {
 
         utfyllMock.sed.nav = Nav(bruker = Bruker(person = Person(fornavn = "Dummy", etternavn = "Dummy", foedselsdato = "1900-10-11", kjoenn = "K")), krav = Krav("1937-12-11"))
 
-        whenever(mockPrefillFactory.prefill(any())).thenReturn(utfyllMock.sed)
+        whenever(mockPrefillSEDService.prefill(any())).thenReturn(utfyllMock.sed)
 
         val response = sedController.confirmDocument(mockData, "noFilter")
         assertNotNull(response)
@@ -244,7 +240,7 @@ class SedControllerTest {
 
         val dummyPrefillData = ApiRequest.buildPrefillDataModelOnExisting(apiRequestWith(euxCaseId), mockAktoerIdHelper.hentPinForAktoer(apiRequestWith(euxCaseId).aktoerId), null)
 
-        whenever(mockPrefillFactory.prefill(any())).thenReturn(dummyPrefillData.sed)
+        whenever(mockPrefillSEDService.prefill(any())).thenReturn(dummyPrefillData.sed)
 
         doReturn(BucSedResponse(euxCaseId,"1")).whenever(mockEuxService).opprettSedOnBuc(any(),eq(euxCaseId))
 
@@ -272,7 +268,7 @@ class SedControllerTest {
 
         val dummyPrefillData = ApiRequest.buildPrefillDataModelOnExisting(apiRequestWith(euxCaseId), mockAktoerIdHelper.hentPinForAktoer(apiRequestWith(euxCaseId).aktoerId), null)
 
-        whenever(mockPrefillFactory.prefill(any())).thenReturn(dummyPrefillData.sed)
+        whenever(mockPrefillSEDService.prefill(any())).thenReturn(dummyPrefillData.sed)
 
         doReturn(BucSedResponse(euxCaseId, "1")).whenever(mockEuxService).opprettSedOnBuc(any(),eq(euxCaseId))
 
@@ -298,7 +294,7 @@ class SedControllerTest {
 
         val dummyPrefillData = ApiRequest.buildPrefillDataModelOnExisting(apiRequestWith(euxCaseId), mockAktoerIdHelper.hentPinForAktoer(apiRequestWith(euxCaseId).aktoerId), null)
 
-        whenever(mockPrefillFactory.prefill(any())).thenReturn(dummyPrefillData.sed)
+        whenever(mockPrefillSEDService.prefill(any())).thenReturn(dummyPrefillData.sed)
 
         doNothing().whenever(mockEuxService).addInstitution(any(), any())
 
@@ -333,7 +329,7 @@ class SedControllerTest {
 
         val dummyPrefillData = ApiRequest.buildPrefillDataModelOnExisting(apiRequestWith(euxCaseId), mockAktoerIdHelper.hentPinForAktoer(apiRequestWith(euxCaseId).aktoerId), null)
 
-        whenever(mockPrefillFactory.prefill(any())).thenReturn(dummyPrefillData.sed)
+        whenever(mockPrefillSEDService.prefill(any())).thenReturn(dummyPrefillData.sed)
 
         doThrow(SedDokumentIkkeOpprettetException("Expected!")).whenever(mockEuxService).opprettSedOnBuc(any(), eq(euxCaseId))
 

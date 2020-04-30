@@ -32,7 +32,7 @@ class SedP3000XXTest {
     @Mock
     lateinit var dataFromTPS: BrukerFromTPS
 
-    lateinit var prefillFactory: PrefillFactory
+    lateinit var prefillSEDService: PrefillSEDService
 
     private val personFnr = FodselsnummerMother.generateRandomFnr(68)
 
@@ -49,7 +49,7 @@ class SedP3000XXTest {
                 prefillAdresse = mock<PrefillAdresse>(),
                 institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO")
 
-        prefillFactory = PrefillFactory(prefillNav, dataFromTPS, eessiInformasjon, dataFromPEN)
+        prefillSEDService = PrefillSEDService(prefillNav, dataFromTPS, eessiInformasjon, dataFromPEN)
     }
 
 
@@ -57,7 +57,7 @@ class SedP3000XXTest {
     fun testP3000_AT() {
         val datamodel = getMockDataModel("P3000_AT", personFnr)
 
-        val sed = prefillFactory.prefill(datamodel)
+        val sed = prefillSEDService.prefill(datamodel)
         Assertions.assertEquals("P3000_AT", sed.sed)
 
     }
@@ -67,7 +67,7 @@ class SedP3000XXTest {
 
         val datamodel = getMockDataModel("P3000_IT", personFnr)
 
-        val sed = prefillFactory.prefill(datamodel)
+        val sed = prefillSEDService.prefill(datamodel)
         Assertions.assertEquals("P3000_IT", sed.sed)
     }
 
@@ -75,7 +75,7 @@ class SedP3000XXTest {
     fun testP3000_SE() {
         val datamodel = getMockDataModel("P3000_SE", personFnr)
 
-        val sed = prefillFactory.prefill(datamodel)
+        val sed = prefillSEDService.prefill(datamodel)
         Assertions.assertEquals("P3000_SE", sed.sed)
     }
 

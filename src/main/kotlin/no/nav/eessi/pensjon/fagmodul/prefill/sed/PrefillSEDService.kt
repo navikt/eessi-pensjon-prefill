@@ -18,12 +18,12 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
 @Component
-class PrefillFactory(private val prefillNav: PrefillNav,
-                     private val dataFromTPS: BrukerFromTPS,
-                     private val eessiInformasjon: EessiInformasjon,
-                     private val dataFromPEN: PensjonsinformasjonHjelper) {
+class PrefillSEDService(private val prefillNav: PrefillNav,
+                        private val dataFromTPS: BrukerFromTPS,
+                        private val eessiInformasjon: EessiInformasjon,
+                        private val dataFromPEN: PensjonsinformasjonHjelper) {
 
-    private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillFactory::class.java) }
+    private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillSEDService::class.java) }
 
     fun prefill(prefillData: PrefillDataModel): SED {
 

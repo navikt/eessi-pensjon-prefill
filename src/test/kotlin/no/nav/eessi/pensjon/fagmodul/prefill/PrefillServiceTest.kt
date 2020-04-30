@@ -4,9 +4,8 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.whenever
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PersonId
-import no.nav.eessi.pensjon.fagmodul.prefill.model.Prefill
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillFactory
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillSEDService
 import no.nav.eessi.pensjon.fagmodul.sedmodel.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
@@ -19,10 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension
 class PrefillServiceTest {
 
     @Mock
-    lateinit var mockPrefillSED: Prefill
-
-    @Mock
-    lateinit var mockPrefillFactory: PrefillFactory
+    lateinit var mockPrefillFactory: PrefillSEDService
 
     private lateinit var prefillService: PrefillService
 
