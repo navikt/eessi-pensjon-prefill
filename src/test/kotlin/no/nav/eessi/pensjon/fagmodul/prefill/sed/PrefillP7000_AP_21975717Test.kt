@@ -40,7 +40,7 @@ class PrefillP7000_AP_21975717Test {
                 PersonDataFromTPS.MockTPS("Person-12000-EKTE.json", generateRandomFnr(70), PersonDataFromTPS.MockTPS.TPSType.EKTE)
         ))
 
-        val prefillNav = PrefillNav(brukerFromTPS = persondataFraTPS,
+        val prefillNav = PrefillNav(tpsPersonService = persondataFraTPS,
                 prefillAdresse = mock<PrefillAdresse>(),
                 institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO")
 

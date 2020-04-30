@@ -1,7 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed.krav
 
-import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
-import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonHjelper
+import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonService
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.KravHistorikkHelper.createKravDato
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.KravHistorikkHelper.hentKravHistorikkForsteGangsBehandlingUtlandEllerForsteGang
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.KravHistorikkHelper.hentKravHistorikkMedKravStatusAvslag
@@ -9,7 +8,6 @@ import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.KravHistorikkHelper.hentKr
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.NavFodselsnummer
 import no.nav.eessi.pensjon.fagmodul.sedmodel.*
 import no.nav.eessi.pensjon.utils.simpleFormat
-import no.nav.pensjon.v1.ektefellepartnersamboer.V1EktefellePartnerSamboer
 import no.nav.pensjon.v1.kravhistorikk.V1KravHistorikk
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import no.nav.pensjon.v1.sak.V1Sak
@@ -48,7 +46,7 @@ object PrefillP2xxxPensjon {
                       pendata: Pensjonsinformasjon,
                       andreinstitusjonerItem: AndreinstitusjonerItem?): Pensjon {
 
-        val pensak: V1Sak = PensjonsinformasjonHjelper.finnSak(penSaksnummer, pendata)
+        val pensak: V1Sak = PensjonsinformasjonService.finnSak(penSaksnummer, pendata)
 
         logger.debug("4.1           Informasjon om ytelser")
 

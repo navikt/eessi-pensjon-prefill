@@ -6,10 +6,10 @@ import com.nhaarman.mockitokotlin2.whenever
 import no.nav.eessi.pensjon.fagmodul.prefill.model.BrukerInformasjon
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PersonId
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
-import no.nav.eessi.pensjon.fagmodul.prefill.tps.BrukerFromTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.FodselsnummerMother
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.NavFodselsnummer
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillAdresse
+import no.nav.eessi.pensjon.fagmodul.prefill.tps.TpsPersonService
 import no.nav.eessi.pensjon.fagmodul.sedmodel.*
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Bruker
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Person
@@ -38,13 +38,13 @@ class PrefillNavTest {
     private val somePenSaksnr = "somePenSaksnr"
     private val someInstitutionId = "enInstId"
     private val someIntitutionNavn = "instNavn"
-    private val mockBrukerFromTPS = mock<BrukerFromTPS>()
+    private val mockTpsPersonService = mock<TpsPersonService>()
 
     @BeforeEach
     fun beforeStart() {
 
         prefillNav = PrefillNav(
-                mockBrukerFromTPS,
+                mockTpsPersonService,
                 PrefillAdresse(PostnummerService(), kodeverkClient),
                 someInstitutionId,
                 someIntitutionNavn)
@@ -72,8 +72,8 @@ class PrefillNavTest {
         val forelder = lagTPSBruker(foreldersPin, "Christopher", "Robin").medBarn(barnetsPin)
         val barn = lagTPSBruker(barnetsPin, "Ole", "Brum")
 
-        whenever(mockBrukerFromTPS.hentBrukerFraTPS(foreldersPin)).thenReturn(forelder)
-        whenever(mockBrukerFromTPS.hentBrukerFraTPS(barnetsPin)).thenReturn(barn)
+        whenever(mockTpsPersonService.hentBrukerFraTPS(foreldersPin)).thenReturn(forelder)
+        whenever(mockTpsPersonService.hentBrukerFraTPS(barnetsPin)).thenReturn(barn)
 
         val actual = prefillNav.prefill(prefillData.penSaksnummer, prefillData.bruker, prefillData.avdod, true, prefillData.getPersonInfoFromRequestData())
 
@@ -106,8 +106,8 @@ class PrefillNavTest {
 
         barn.withHarFraRolleI(Familierelasjon().withTilRolle(Familierelasjoner().withValue("FARA")).withTilPerson(far))
 
-        whenever(mockBrukerFromTPS.hentBrukerFraTPS(someBarnPersonNr)).thenReturn(barn)
-        whenever(mockBrukerFromTPS.hentBrukerFraTPS(somePersonNr)).thenReturn(far)
+        whenever(mockTpsPersonService.hentBrukerFraTPS(someBarnPersonNr)).thenReturn(barn)
+        whenever(mockTpsPersonService.hentBrukerFraTPS(somePersonNr)).thenReturn(far)
 
         val actual = prefillNav.prefill(prefillData.penSaksnummer, prefillData.bruker, prefillData.avdod, true, prefillData.getPersonInfoFromRequestData())
         val expected = Nav(
@@ -145,8 +145,8 @@ class PrefillNavTest {
 
         val prefillData = PrefillDataModel(penSaksnummer = somePenSaksnr, bruker = PersonId(somePersonNr, "dummy"), avdod = null)
 
-        whenever(mockBrukerFromTPS.hentBrukerFraTPS(somePersonNr)).thenReturn(person)
-        whenever(mockBrukerFromTPS.hentBrukerFraTPS(somerEktefellePersonNr)).thenReturn(ektefelle)
+        whenever(mockTpsPersonService.hentBrukerFraTPS(somePersonNr)).thenReturn(person)
+        whenever(mockTpsPersonService.hentBrukerFraTPS(somerEktefellePersonNr)).thenReturn(ektefelle)
 
         val actual = prefillNav.prefill(prefillData.penSaksnummer, prefillData.bruker, prefillData.avdod, true, prefillData.getPersonInfoFromRequestData())
 
@@ -182,8 +182,8 @@ class PrefillNavTest {
         val ektefelle = pair.second
 
         val prefillData = PrefillDataModel(penSaksnummer = somePenSaksnr, bruker = PersonId(somePersonNr, "dummy"), avdod = null)
-        whenever(mockBrukerFromTPS.hentBrukerFraTPS(somePersonNr)).thenReturn(person)
-        whenever(mockBrukerFromTPS.hentBrukerFraTPS(somerEktefellePersonNr)).thenReturn(ektefelle)
+        whenever(mockTpsPersonService.hentBrukerFraTPS(somePersonNr)).thenReturn(person)
+        whenever(mockTpsPersonService.hentBrukerFraTPS(somerEktefellePersonNr)).thenReturn(ektefelle)
 
         val actual = prefillNav.prefill(prefillData.penSaksnummer, prefillData.bruker, prefillData.avdod, true, prefillData.getPersonInfoFromRequestData())
 
@@ -219,8 +219,8 @@ class PrefillNavTest {
         val ektefelle = pair.second
 
         val prefillData = PrefillDataModel(penSaksnummer = somePenSaksnr, bruker = PersonId(somePersonNr, "dummy"), avdod = null)
-        whenever(mockBrukerFromTPS.hentBrukerFraTPS(somePersonNr)).thenReturn(person)
-        whenever(mockBrukerFromTPS.hentBrukerFraTPS(somerEktefellePersonNr)).thenReturn(ektefelle)
+        whenever(mockTpsPersonService.hentBrukerFraTPS(somePersonNr)).thenReturn(person)
+        whenever(mockTpsPersonService.hentBrukerFraTPS(somerEktefellePersonNr)).thenReturn(ektefelle)
 
         val actual = prefillNav.prefill(prefillData.penSaksnummer, prefillData.bruker, prefillData.avdod, true, prefillData.getPersonInfoFromRequestData())
 
@@ -255,7 +255,7 @@ class PrefillNavTest {
         val prefillData = PrefillDataModel(penSaksnummer = somePenSaksnr, bruker = PersonId(somePersonNr, "dummy"), avdod = null)
 
         doReturn(person)
-                .whenever(mockBrukerFromTPS)
+                .whenever(mockTpsPersonService)
                 .hentBrukerFraTPS(somePersonNr)
 
         val actual = prefillNav.prefill(prefillData.penSaksnummer, prefillData.bruker, prefillData.avdod, false, prefillData.getPersonInfoFromRequestData())
@@ -302,7 +302,7 @@ class PrefillNavTest {
 
         val brukeren = lagTPSBruker(brukerensPin, "Ole", "Brum")
 
-        whenever(mockBrukerFromTPS.hentBrukerFraTPS(brukerensPin)).thenReturn(brukeren)
+        whenever(mockTpsPersonService.hentBrukerFraTPS(brukerensPin)).thenReturn(brukeren)
         doReturn("NO").whenever(kodeverkClient).finnLandkode2("NOR")
 
         val actual = prefillNav.prefill(penSaksnummer = prefillData.penSaksnummer, bruker = prefillData.bruker, avdod = prefillData.avdod, brukerInformasjon = prefillData.getPersonInfoFromRequestData())

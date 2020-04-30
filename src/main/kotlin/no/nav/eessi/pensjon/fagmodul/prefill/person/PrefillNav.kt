@@ -2,9 +2,9 @@ package no.nav.eessi.pensjon.fagmodul.prefill.person
 
 import no.nav.eessi.pensjon.fagmodul.prefill.model.BrukerInformasjon
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PersonId
-import no.nav.eessi.pensjon.fagmodul.prefill.tps.BrukerFromTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.NavFodselsnummer
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillAdresse
+import no.nav.eessi.pensjon.fagmodul.prefill.tps.TpsPersonService
 import no.nav.eessi.pensjon.fagmodul.sedmodel.*
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Bruker
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Person
@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component
 import java.util.*
 
 @Component
-class PrefillNav(private val brukerFromTPS: BrukerFromTPS,
+class PrefillNav(private val tpsPersonService: TpsPersonService,
                  private val prefillAdresse: PrefillAdresse,
                  @Value("\${eessi-pensjon-institusjon}") private val institutionid: String,
                  @Value("\${eessi-pensjon-institusjon-navn}") private val institutionnavn: String) {
@@ -248,17 +248,17 @@ class PrefillNav(private val brukerFromTPS: BrukerFromTPS,
     fun prefill(penSaksnummer: String, bruker: PersonId, avdod: PersonId?, fyllUtBarnListe: Boolean = false, brukerInformasjon: BrukerInformasjon?): Nav {
 
         // FIXME - det veksles mellom gjenlevende og bruker ... usikkert om dette er rett...
-        val brukerEllerGjenlevende = brukerFromTPS.hentBrukerFraTPS(avdod?.norskIdent ?: bruker.norskIdent)
+        val brukerEllerGjenlevende = tpsPersonService.hentBrukerFraTPS(avdod?.norskIdent ?: bruker.norskIdent)
 
-        val brukerFraTps = brukerFromTPS.hentBrukerFraTPS(bruker.norskIdent)
+        val brukerFraTps = tpsPersonService.hentBrukerFraTPS(bruker.norskIdent)
         val (ektepinid, ekteTypeValue) = filterEktefelleRelasjon(brukerFraTps)
 
-        val ektefelleBruker = if(ektepinid.isBlank()) null else brukerFromTPS.hentBrukerFraTPS(ektepinid)
+        val ektefelleBruker = if(ektepinid.isBlank()) null else tpsPersonService.hentBrukerFraTPS(ektepinid)
 
         val barnBrukereFraTPS =
                 if (fyllUtBarnListe) {
-                    barnsPinId(brukerFromTPS.hentBrukerFraTPS(bruker.norskIdent))
-                            .mapNotNull { barn -> brukerFromTPS.hentBrukerFraTPS(barn) }
+                    barnsPinId(tpsPersonService.hentBrukerFraTPS(bruker.norskIdent))
+                            .mapNotNull { barn -> tpsPersonService.hentBrukerFraTPS(barn) }
                 } else listOf()
 
         val personInfo = brukerInformasjon

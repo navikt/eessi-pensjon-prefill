@@ -4,7 +4,7 @@ import com.nhaarman.mockitokotlin2.mock
 import no.nav.eessi.pensjon.fagmodul.prefill.model.Prefill
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModelMother
-import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonHjelper
+import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonService
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PersonDataFromTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.lesPensjonsdataFraFil
@@ -33,7 +33,7 @@ class PrefillP2000UtenKravhistorieTest {
     lateinit var prefillData: PrefillDataModel
     lateinit var prefill: Prefill
     lateinit var prefillNav: PrefillNav
-    lateinit var dataFromPEN: PensjonsinformasjonHjelper
+    lateinit var dataFromPEN: PensjonsinformasjonService
 
     @BeforeEach
     fun setup() {
@@ -43,7 +43,7 @@ class PrefillP2000UtenKravhistorieTest {
                 PersonDataFromTPS.MockTPS("Person-22000.json", generateRandomFnr(17), PersonDataFromTPS.MockTPS.TPSType.BARN)
         ))
         prefillNav = PrefillNav(
-                brukerFromTPS = persondataFraTPS,
+                tpsPersonService = persondataFraTPS,
                 prefillAdresse = mock<PrefillAdresse>(),
                 institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO")
 
@@ -62,10 +62,10 @@ class PrefillP2000UtenKravhistorieTest {
     fun `Sjekk av kravsoknad alderpensjon P2000`() {
         val pendata: Pensjonsinformasjon = dataFromPEN.hentPersonInformasjonMedAktoerId(prefillData.bruker.aktorId)
 
-        assertNotNull(PensjonsinformasjonHjelper.finnSak(prefillData.penSaksnummer, pendata))
+        assertNotNull(PensjonsinformasjonService.finnSak(prefillData.penSaksnummer, pendata))
 
         assertNotNull(pendata.brukersSakerListe)
-        assertEquals("ALDER", PensjonsinformasjonHjelper.finnSak(prefillData.penSaksnummer, pendata).sakType)
+        assertEquals("ALDER", PensjonsinformasjonService.finnSak(prefillData.penSaksnummer, pendata).sakType)
 
     }
 

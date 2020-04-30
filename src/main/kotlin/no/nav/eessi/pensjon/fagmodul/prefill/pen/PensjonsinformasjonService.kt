@@ -15,9 +15,9 @@ import org.springframework.web.bind.annotation.ResponseStatus
  * sakid eller vedtakid.
  */
 @Component
-class PensjonsinformasjonHjelper(private val pensjonsinformasjonClient: PensjonsinformasjonClient) {
+class PensjonsinformasjonService(private val pensjonsinformasjonClient: PensjonsinformasjonClient) {
 
-    private val logger: Logger by lazy { LoggerFactory.getLogger(PensjonsinformasjonHjelper::class.java) }
+    private val logger: Logger by lazy { LoggerFactory.getLogger(PensjonsinformasjonService::class.java) }
 
     companion object {
         //hjelpe metode for å hente ut valgt V1SAK på vetak/SAK fnr og sakid benyttes

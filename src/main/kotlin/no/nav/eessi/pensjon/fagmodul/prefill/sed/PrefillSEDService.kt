@@ -3,7 +3,7 @@ package no.nav.eessi.pensjon.fagmodul.prefill.sed
 import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjon
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
-import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonHjelper
+import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonService
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillGjenlevende
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillSed
@@ -11,7 +11,7 @@ import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.PrefillP2000
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.PrefillP2100
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.PrefillP2200
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.PrefillP6000
-import no.nav.eessi.pensjon.fagmodul.prefill.tps.BrukerFromTPS
+import no.nav.eessi.pensjon.fagmodul.prefill.tps.TpsPersonService
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -19,9 +19,9 @@ import org.springframework.stereotype.Component
 
 @Component
 class PrefillSEDService(private val prefillNav: PrefillNav,
-                        private val dataFromTPS: BrukerFromTPS,
+                        private val tpsPersonService: TpsPersonService,
                         private val eessiInformasjon: EessiInformasjon,
-                        private val dataFromPEN: PensjonsinformasjonHjelper) {
+                        private val pensjonsinformasjonService: PensjonsinformasjonService) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillSEDService::class.java) }
 
@@ -33,16 +33,16 @@ class PrefillSEDService(private val prefillNav: PrefillNav,
 
         return when (sedValue) {
             SEDType.P6000 -> {
-                PrefillP6000(prefillNav, eessiInformasjon, dataFromPEN, dataFromTPS).prefill(prefillData)
+                PrefillP6000(prefillNav, eessiInformasjon, pensjonsinformasjonService, tpsPersonService).prefill(prefillData)
             }
             SEDType.P2000 -> {
-                PrefillP2000(prefillNav, dataFromPEN, dataFromTPS).prefill(prefillData)
+                PrefillP2000(prefillNav, pensjonsinformasjonService, tpsPersonService).prefill(prefillData)
             }
             SEDType.P2200 -> {
-                PrefillP2200(prefillNav, dataFromPEN, dataFromTPS).prefill(prefillData)
+                PrefillP2200(prefillNav, pensjonsinformasjonService, tpsPersonService).prefill(prefillData)
             }
             SEDType.P2100 -> {
-                PrefillP2100(prefillNav, dataFromPEN, dataFromTPS).prefill(prefillData)
+                PrefillP2100(prefillNav, pensjonsinformasjonService, tpsPersonService).prefill(prefillData)
             }
             SEDType.P4000 -> {
                 PrefillP4000(getPrefillSed(prefillData)).prefill(prefillData)
@@ -72,7 +72,7 @@ class PrefillSEDService(private val prefillNav: PrefillNav,
     }
 
     private fun getPrefillSed(prefillData: PrefillDataModel) : PrefillSed {
-        val pensjonGjenlevende = PrefillGjenlevende(dataFromTPS, prefillNav).prefill(prefillData)
+        val pensjonGjenlevende = PrefillGjenlevende(tpsPersonService, prefillNav).prefill(prefillData)
         return PrefillSed(prefillNav, pensjonGjenlevende)
     }
 

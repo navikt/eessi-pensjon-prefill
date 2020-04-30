@@ -4,9 +4,9 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.prefill.ApiRequest
-import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonHjelper
-import no.nav.eessi.pensjon.fagmodul.prefill.tps.BrukerFromTPS
+import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonService
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PersonDataFromTPS
+import no.nav.eessi.pensjon.fagmodul.prefill.tps.TpsPersonService
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonClient
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.RequestBuilder
 import org.mockito.ArgumentMatchers
@@ -19,18 +19,18 @@ import org.springframework.web.client.RestTemplate
 
 object PrefillTestHelper {
 
-    fun lesPensjonsdataFraFil(responseXMLfilename: String): PensjonsinformasjonHjelper {
+    fun lesPensjonsdataFraFil(responseXMLfilename: String): PensjonsinformasjonService {
         val pensjonsinformasjonRestTemplate = mock<RestTemplate>()
         lenient().`when`(pensjonsinformasjonRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java))).thenReturn(readXMLresponse(responseXMLfilename))
 
         val pensjonsinformasjonClient = PensjonsinformasjonClient(pensjonsinformasjonRestTemplate, RequestBuilder())
 
-        return PensjonsinformasjonHjelper(pensjonsinformasjonClient)
+        return PensjonsinformasjonService(pensjonsinformasjonClient)
     }
 
-    fun setupPersondataFraTPS(mockPersonDataFraTPS: Set<PersonDataFromTPS.MockTPS>): BrukerFromTPS {
+    fun setupPersondataFraTPS(mockPersonDataFraTPS: Set<PersonDataFromTPS.MockTPS>): TpsPersonService {
         val datatps = PersonDataFromTPS(mockPersonDataFraTPS)
-        return datatps.mockBrukerFromTPS()
+        return datatps.mockTpsPersonService()
     }
 
     fun readJsonResponse(file: String): String {

@@ -1,6 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.helper
 
-import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonHjelper
+import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonService
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.PensjonsinformasjonMother
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.daysAgo
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.daysAhead
@@ -10,9 +10,7 @@ import no.nav.eessi.pensjon.utils.simpleFormat
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import no.nav.pensjon.v1.trygdetid.V1Trygdetid
 import no.nav.pensjon.v1.trygdetidliste.V1TrygdetidListe
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertFalse
-import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 
 class VedtakPensjonDataHelperTest {
@@ -106,7 +104,7 @@ class VedtakPensjonDataHelperTest {
 
     @Test
     fun `forventer "13482" dager i sum summerTrygdeTid`() {
-        val dataFromPESYS = PensjonsinformasjonHjelper(fraFil("P6000-APUtland-301.xml"))
+        val dataFromPESYS = PensjonsinformasjonService(fraFil("P6000-APUtland-301.xml"))
 
         val pendata = dataFromPESYS.hentMedVedtak("someVedtakId")
 
@@ -115,7 +113,7 @@ class VedtakPensjonDataHelperTest {
 
     @Test
     fun `forventer at ytelseprMaaned er siste i listen`() {
-        val dataFromPESYS = PensjonsinformasjonHjelper(fraFil("P6000-UT-220.xml"))
+        val dataFromPESYS = PensjonsinformasjonService(fraFil("P6000-UT-220.xml"))
         val pendata = dataFromPESYS.hentMedVedtak("someVedtakId")
 
         val sisteprmnd = VedtakPensjonDataHelper.hentSisteYtelsePerMaaned(pendata)

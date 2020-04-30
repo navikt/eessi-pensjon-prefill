@@ -4,12 +4,12 @@ import com.nhaarman.mockitokotlin2.mock
 import no.nav.eessi.pensjon.fagmodul.prefill.ApiRequest
 import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjon
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
-import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonHjelper
+import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonService
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PersonDataFromTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
-import no.nav.eessi.pensjon.fagmodul.prefill.tps.BrukerFromTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.FodselsnummerMother
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillAdresse
+import no.nav.eessi.pensjon.fagmodul.prefill.tps.TpsPersonService
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -27,10 +27,10 @@ class SedP3000XXTest {
     lateinit var eessiInformasjon: EessiInformasjon
 
     @Mock
-    lateinit var dataFromPEN: PensjonsinformasjonHjelper
+    lateinit var dataFromPEN: PensjonsinformasjonService
 
     @Mock
-    lateinit var dataFromTPS: BrukerFromTPS
+    lateinit var dataFromTPS: TpsPersonService
 
     lateinit var prefillSEDService: PrefillSEDService
 
@@ -45,7 +45,7 @@ class SedP3000XXTest {
         ))
 
         prefillNav = PrefillNav(
-                brukerFromTPS = persondataFraTPS,
+                tpsPersonService = persondataFraTPS,
                 prefillAdresse = mock<PrefillAdresse>(),
                 institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO")
 

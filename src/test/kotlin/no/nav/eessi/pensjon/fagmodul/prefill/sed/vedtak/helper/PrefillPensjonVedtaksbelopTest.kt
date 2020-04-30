@@ -1,6 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.helper
 
-import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonHjelper
+import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonService
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.hjelper.PrefillPensjonVedtaksbelop.createBeregningItemList
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonClientMother
 import no.nav.eessi.pensjon.utils.mapAnyToJson
@@ -11,7 +11,7 @@ class PrefillPensjonVedtaksbelopTest {
 
     @Test
     fun `forventet korrekt utregnet ytelsePrMnd på Uforep hvor UT_ORDINER`() {
-        val dataFromPESYS = PensjonsinformasjonHjelper(PensjonsinformasjonClientMother.fraFil("P6000-UT-220.xml"))
+        val dataFromPESYS = PensjonsinformasjonService(PensjonsinformasjonClientMother.fraFil("P6000-UT-220.xml"))
         val pendata = dataFromPESYS.hentMedVedtak("someVedtakId")
 
         val result = createBeregningItemList(pendata)

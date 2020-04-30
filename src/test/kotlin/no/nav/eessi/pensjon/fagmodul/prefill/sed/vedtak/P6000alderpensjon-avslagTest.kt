@@ -1,7 +1,7 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak
 
 import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjonMother.standardEessiInfo
-import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonHjelper
+import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonService
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonClientMother.fraFil
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
@@ -18,7 +18,7 @@ class `P6000alderpensjon-avslagTest` {
 
     @Test
     fun `forventet korrekt utfylling av pensjon objekt på alderpensjon med avslag`() {
-        val dataFromPESYS = PensjonsinformasjonHjelper(fraFil("P6000vedtak-alderpensjon-avslag.xml"))
+        val dataFromPESYS = PensjonsinformasjonService(fraFil("P6000vedtak-alderpensjon-avslag.xml"))
 
         val result = PrefillP6000Pensjon.createPensjon(
                 dataFromPESYS = dataFromPESYS,
@@ -58,7 +58,7 @@ class `P6000alderpensjon-avslagTest` {
 
     @Test
     fun `preutfylling P6000 feiler ved mangler av vedtakId`() {
-        val dataFromPESYS = PensjonsinformasjonHjelper(fraFil("P6000vedtak-alderpensjon-avslag.xml"))
+        val dataFromPESYS = PensjonsinformasjonService(fraFil("P6000vedtak-alderpensjon-avslag.xml"))
 
         assertThrows<IllegalStateException> {
             PrefillP6000Pensjon.createPensjon(dataFromPESYS, null, "", null)

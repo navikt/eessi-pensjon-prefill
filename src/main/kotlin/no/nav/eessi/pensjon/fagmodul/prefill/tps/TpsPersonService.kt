@@ -6,9 +6,9 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
 @Component
-class BrukerFromTPS(private val personV3Service: PersonV3Service) {
+class TpsPersonService(private val personV3Service: PersonV3Service) {
 
-    private val logger: Logger by lazy { LoggerFactory.getLogger(BrukerFromTPS::class.java) }
+    private val logger: Logger by lazy { LoggerFactory.getLogger(TpsPersonService::class.java) }
 
     fun hentBrukerFraTPS(ident: String): no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker? {
         logger.debug("              Bruker")

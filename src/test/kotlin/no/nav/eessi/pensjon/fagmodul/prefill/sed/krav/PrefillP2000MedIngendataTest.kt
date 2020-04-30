@@ -4,7 +4,7 @@ import com.nhaarman.mockitokotlin2.mock
 import no.nav.eessi.pensjon.fagmodul.prefill.model.Prefill
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModelMother
-import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonHjelper
+import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonService
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PersonDataFromTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.lesPensjonsdataFraFil
@@ -33,7 +33,7 @@ class PrefillP2000MedIngendataTest {
     lateinit var prefillData: PrefillDataModel
     lateinit var prefill: Prefill
     lateinit var prefillNav: PrefillNav
-    lateinit var dataFromPEN: PensjonsinformasjonHjelper
+    lateinit var dataFromPEN: PensjonsinformasjonService
 
     @BeforeEach
     fun setup() {
@@ -42,7 +42,7 @@ class PrefillP2000MedIngendataTest {
                 PersonDataFromTPS.MockTPS("Person-12000-EKTE.json", generateRandomFnr(70), PersonDataFromTPS.MockTPS.TPSType.EKTE)
         ))
         prefillNav = PrefillNav(
-                brukerFromTPS = persondataFraTPS,
+                tpsPersonService = persondataFraTPS,
                 prefillAdresse = mock<PrefillAdresse>(),
                 institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO")
 

@@ -1,7 +1,7 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak
 
 import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjonMother.standardEessiInfo
-import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonHjelper
+import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonService
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonClientMother.fraFil
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
@@ -18,7 +18,7 @@ class PrefillP6000Pensjon_ALDER_Test {
 
     @Test
     fun `forventet korrekt utfylling av Pensjon objekt på Alderpensjon`() {
-        val dataFromPESYS = PensjonsinformasjonHjelper(fraFil("P6000-APUtland-301.xml"))
+        val dataFromPESYS = PensjonsinformasjonService(fraFil("P6000-APUtland-301.xml"))
 
         val result = PrefillP6000Pensjon.createPensjon(
                 dataFromPESYS = dataFromPESYS,
@@ -76,7 +76,7 @@ class PrefillP6000Pensjon_ALDER_Test {
 
     @Test
     fun `preutfylling P6000 feiler ved mangler av vedtakId`() {
-        val dataFromPESYS = PensjonsinformasjonHjelper(fraFil("P6000-APUtland-301.xml"))
+        val dataFromPESYS = PensjonsinformasjonService(fraFil("P6000-APUtland-301.xml"))
 
         assertThrows<IllegalStateException> {
             PrefillP6000Pensjon.createPensjon(dataFromPESYS, null, "", null)
@@ -85,7 +85,7 @@ class PrefillP6000Pensjon_ALDER_Test {
 
     @Test
     fun `feiler ved boddArbeidetUtland ikke sann`() {
-        val dataFromPESYS = PensjonsinformasjonHjelper(fraFil("P6000-AP-101.xml"))
+        val dataFromPESYS = PensjonsinformasjonService(fraFil("P6000-AP-101.xml"))
 
         assertThrows<IllegalStateException> {
             PrefillP6000Pensjon.createPensjon(dataFromPESYS, null, "12312312", null)

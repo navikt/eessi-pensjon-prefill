@@ -6,7 +6,7 @@ import no.nav.eessi.pensjon.fagmodul.prefill.ApiRequest
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PersonId
 import no.nav.eessi.pensjon.fagmodul.prefill.model.Prefill
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
-import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonHjelper
+import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonService
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PersonDataFromTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.lesPensjonsdataFraFil
@@ -37,7 +37,7 @@ class PrefillP2000_AP_LOP_REVUTest {
     lateinit var sakHelper: PrefillP2xxxPensjon
     lateinit var prefill: Prefill
     lateinit var prefillNav: PrefillNav
-    lateinit var dataFromPEN: PensjonsinformasjonHjelper
+    lateinit var dataFromPEN: PensjonsinformasjonService
 
     @BeforeEach
     fun setup() {
@@ -47,7 +47,7 @@ class PrefillP2000_AP_LOP_REVUTest {
         ))
 
         prefillNav = PrefillNav(
-                brukerFromTPS = persondataFraTPS,
+                tpsPersonService = persondataFraTPS,
                 prefillAdresse = mock<PrefillAdresse>(),
                 institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO")
 
