@@ -37,7 +37,7 @@ class PrefillP2000_AP_21975717Test {
 
     lateinit var prefillData: PrefillDataModel
     lateinit var sakHelper: PrefillP2xxxPensjon
-    lateinit var prefill: Prefill<SED>
+    lateinit var prefill: Prefill
     lateinit var prefillNav: PrefillNav
     lateinit var dataFromPEN: PensjonsinformasjonHjelper
 

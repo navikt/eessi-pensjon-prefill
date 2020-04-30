@@ -9,7 +9,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 //TODO: Denne klasser vil nok utgå når alle SED er klar med egen Preutfylling..
-class PrefillSed(private val prefillNav: PrefillNav, private val pensjon: Pensjon?) : Prefill<SED> {
+class PrefillSed(private val prefillNav: PrefillNav, private val pensjon: Pensjon?) : Prefill {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillSed::class.java) }
 

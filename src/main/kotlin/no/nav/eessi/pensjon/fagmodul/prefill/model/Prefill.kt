@@ -1,7 +1,9 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.model
 
-interface Prefill<T> {
+import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 
-    fun prefill(prefillData: PrefillDataModel): T
+interface Prefill {
+
+    fun prefill(prefillData: PrefillDataModel): SED
 
 }

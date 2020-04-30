@@ -31,7 +31,7 @@ class PrefillP7000_AP_21975717Test {
     private val personFnr = "01071843352"
 
     lateinit var prefillData: PrefillDataModel
-    lateinit var prefill: Prefill<SED>
+    lateinit var prefill: Prefill
 
     @BeforeEach
     fun setup() {

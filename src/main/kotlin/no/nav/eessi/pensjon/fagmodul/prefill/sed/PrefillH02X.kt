@@ -6,7 +6,7 @@ import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillSed
 import no.nav.eessi.pensjon.fagmodul.sedmodel.PinLandItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 
-class PrefillH02X(private val prefillSed: PrefillSed) : Prefill<SED> {
+class PrefillH02X(private val prefillSed: PrefillSed) : Prefill {
 
     override fun prefill(prefillData: PrefillDataModel): SED {
 

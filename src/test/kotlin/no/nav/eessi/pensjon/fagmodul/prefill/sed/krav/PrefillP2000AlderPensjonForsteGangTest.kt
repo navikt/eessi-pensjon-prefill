@@ -33,7 +33,7 @@ class PrefillP2000AlderPensjonUtlandForsteGangTest {
     private val personFnr = generateRandomFnr(67)
 
     lateinit var prefillData: PrefillDataModel
-    lateinit var prefill: Prefill<SED>
+    lateinit var prefill: Prefill
     lateinit var prefillNav: PrefillNav
     lateinit var dataFromPEN: PensjonsinformasjonHjelper
 

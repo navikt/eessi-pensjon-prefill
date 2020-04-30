@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.ResponseStatus
  */
 class PrefillP2000(private val prefillNav: PrefillNav,
                    private val dataFromPEN: PensjonsinformasjonHjelper,
-                   private val brukerFromTPS: BrukerFromTPS) : Prefill<SED> {
+                   private val brukerFromTPS: BrukerFromTPS) : Prefill {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillP2000::class.java) }
 

@@ -10,10 +10,7 @@ import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillSed
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.setupPersondataFraTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.FodselsnummerMother.generateRandomFnr
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.NavFodselsnummer
-import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNotNull
-import org.junit.jupiter.api.Assertions.assertNull
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
@@ -24,7 +21,7 @@ class PrefillP8000APUtlandInnvTest {
 
     lateinit var prefillData: PrefillDataModel
 
-    lateinit var prefill: Prefill<SED>
+    lateinit var prefill: Prefill
     lateinit var prefillNav: PrefillNav
 
     @BeforeEach

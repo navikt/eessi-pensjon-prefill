@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory
 
 class PrefillP2100(private val prefillNav: PrefillNav,
                    private val dataFromPEN: PensjonsinformasjonHjelper,
-                   private val brukerFromTPS: BrukerFromTPS) : Prefill<SED> {
+                   private val brukerFromTPS: BrukerFromTPS) : Prefill {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillP2100::class.java) }
 

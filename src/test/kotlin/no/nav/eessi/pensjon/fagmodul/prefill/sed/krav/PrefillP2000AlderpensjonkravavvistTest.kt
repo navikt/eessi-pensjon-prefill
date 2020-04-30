@@ -35,7 +35,7 @@ class PrefillP2000AlderpensjonkravavvistTest {
 
     lateinit var prefillData: PrefillDataModel
     lateinit var sakHelper: PrefillP2xxxPensjon
-    lateinit var prefill: Prefill<SED>
+    lateinit var prefill: Prefill
     lateinit var prefillNav: PrefillNav
     lateinit var dataFromPEN: PensjonsinformasjonHjelper
 

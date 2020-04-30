@@ -5,15 +5,14 @@ import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjon
 import no.nav.eessi.pensjon.fagmodul.prefill.model.Prefill
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonHjelper
-import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillGjenlevende
+import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillSed
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.PrefillP2000
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.PrefillP2100
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.PrefillP2200
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.PrefillP6000
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.BrukerFromTPS
-import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
@@ -26,7 +25,7 @@ class PrefillFactory(private val prefillNav: PrefillNav,
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillFactory::class.java) }
 
-    fun createPrefillClass(prefillData: PrefillDataModel): Prefill<SED> {
+    fun createPrefillClass(prefillData: PrefillDataModel): Prefill {
 
         val sedValue = SEDType.valueOf(prefillData.getSEDid())
 

@@ -11,7 +11,7 @@ import no.nav.eessi.pensjon.utils.typeRefs
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-class PrefillP4000(private val prefillSed: PrefillSed) : Prefill<SED> {
+class PrefillP4000(private val prefillSed: PrefillSed) : Prefill {
 
     private val logger: Logger =  LoggerFactory.getLogger(PrefillP4000::class.java)
     private val mapper = jacksonObjectMapper()

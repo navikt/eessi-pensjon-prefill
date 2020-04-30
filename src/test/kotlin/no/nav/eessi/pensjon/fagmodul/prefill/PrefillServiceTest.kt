@@ -19,7 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension
 class PrefillServiceTest {
 
     @Mock
-    lateinit var mockPrefillSED: Prefill<SED>
+    lateinit var mockPrefillSED: Prefill
 
     @Mock
     lateinit var mockPrefillFactory: PrefillFactory

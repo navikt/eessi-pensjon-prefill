@@ -34,7 +34,7 @@ class PrefillP2000APUtlandInnvTest {
 
     lateinit var prefillData: PrefillDataModel
 
-    lateinit var prefill: Prefill<SED>
+    lateinit var prefill: Prefill
     lateinit var prefillNav: PrefillNav
     lateinit var dataFromPEN: PensjonsinformasjonHjelper
 

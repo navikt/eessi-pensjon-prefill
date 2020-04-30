@@ -34,7 +34,7 @@ class PrefillP2000_AP_LOP_UTLANDTest {
     private val pesysSaksnummer = "21644722"
 
     lateinit var prefillData: PrefillDataModel
-    lateinit var prefill: Prefill<SED>
+    lateinit var prefill: Prefill
     lateinit var prefillNav: PrefillNav
     lateinit var dataFromPEN: PensjonsinformasjonHjelper
 

@@ -1,6 +1,5 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.person
 
-import no.nav.eessi.pensjon.fagmodul.prefill.model.Prefill
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.BrukerFromTPS
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Bruker
@@ -12,11 +11,11 @@ import org.springframework.stereotype.Component
 @Component
 //TODO Vil utgå når SED blir koblet direkte mot PEN/PESYS for uthenting og preutfylling av data
 class PrefillGjenlevende(private val brukerFromTPS: BrukerFromTPS,
-                         private val prefillNav: PrefillNav) : Prefill<Pensjon> {
+                         private val prefillNav: PrefillNav)  {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillGjenlevende::class.java) }
 
-    override fun prefill(prefillData: PrefillDataModel): Pensjon {
+    fun prefill(prefillData: PrefillDataModel): Pensjon {
         return pensjon(prefillData)
     }
 

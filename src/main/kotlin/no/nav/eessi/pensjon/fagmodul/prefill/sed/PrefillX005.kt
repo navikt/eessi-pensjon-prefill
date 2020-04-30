@@ -1,19 +1,13 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed
 
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Kontekst
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Leggtilinstitusjon
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Navsak
-import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Nav
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Person
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Bruker
 import no.nav.eessi.pensjon.fagmodul.prefill.model.Prefill
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
+import no.nav.eessi.pensjon.fagmodul.sedmodel.*
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-class PrefillX005(private val prefillNav: PrefillNav) : Prefill<SED> {
+class PrefillX005(private val prefillNav: PrefillNav) : Prefill {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillX005::class.java) }
 

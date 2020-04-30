@@ -7,7 +7,7 @@ import no.nav.eessi.pensjon.fagmodul.sedmodel.*
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-class PrefillP7000(private val prefillSed: PrefillSed) : Prefill<SED> {
+class PrefillP7000(private val prefillSed: PrefillSed) : Prefill {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillP7000::class.java) }
 
