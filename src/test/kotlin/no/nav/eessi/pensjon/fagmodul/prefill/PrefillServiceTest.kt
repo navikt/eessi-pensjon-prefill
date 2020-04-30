@@ -44,8 +44,7 @@ class PrefillServiceTest {
                 InstitusjonItem(country = "DE", institution = "Tyskland", name="Tyskland test")
         )
 
-        whenever(mockPrefillFactory.createPrefillClass(any())).thenReturn(mockPrefillSED)
-        whenever(mockPrefillSED.prefill(any())).thenReturn(data.sed)
+        whenever(mockPrefillFactory.prefill(any())).thenReturn(data.sed)
 
 
         val x005Liste = prefillService.prefillEnX005ForHverInstitusjon(mockInstitusjonList, data)

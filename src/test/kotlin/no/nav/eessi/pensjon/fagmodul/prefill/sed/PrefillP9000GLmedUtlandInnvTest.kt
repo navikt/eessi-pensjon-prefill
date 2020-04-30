@@ -2,7 +2,6 @@ package no.nav.eessi.pensjon.fagmodul.prefill.sed
 
 import com.nhaarman.mockitokotlin2.mock
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PersonId
-import no.nav.eessi.pensjon.fagmodul.prefill.model.Prefill
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModelMother
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PersonDataFromTPS
@@ -13,6 +12,7 @@ import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.setupPersonda
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.FodselsnummerMother.generateRandomFnr
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.NavFodselsnummer
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillAdresse
+import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
@@ -26,8 +26,10 @@ class PrefillP9000GLmedUtlandInnvTest {
 
     lateinit var prefillData: PrefillDataModel
 
-    lateinit var prefill: Prefill
     lateinit var prefillNav: PrefillNav
+
+    lateinit var sed: SED
+
 
     @BeforeEach
     fun setup() {
@@ -46,14 +48,13 @@ class PrefillP9000GLmedUtlandInnvTest {
 
         val prefillGjenlevende = PrefillGjenlevende(persondataFraTPS, prefillNav).prefill(prefillData)
         val prefillPerson = PrefillSed(prefillNav, prefillGjenlevende)
-
-        prefill = PrefillDefaultSED(prefillPerson)
+        sed = prefillPerson.prefill(prefillData)
 
     }
 
     @Test
     fun `forventet korrekt utfylt P9000 med mockdata fra testfiler`() {
-        val p9000 = prefill.prefill(prefillData)
+        val p9000 = sed
 
         assertEquals("BAMSE LUR", p9000.nav?.bruker?.person?.fornavn)
         assertEquals("MOMBALO", p9000.nav?.bruker?.person?.etternavn)

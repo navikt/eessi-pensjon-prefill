@@ -27,7 +27,7 @@ class PrefillService(private val factory: PrefillFactory,
             logger.info("******* Starter med preutfylling *******\nSED: ${dataModel.getSEDid()} aktoerId: ${dataModel.bruker.aktorId} sakNr: ${dataModel.penSaksnummer}")
 
             val startTime = System.currentTimeMillis()
-            val sed = factory.createPrefillClass(dataModel).prefill(dataModel)
+            val sed = factory.prefill(dataModel)
             val endTime = System.currentTimeMillis() - startTime
 
             logger.info("******* Prefill SED tok $endTime ms. *******")
@@ -54,6 +54,6 @@ class PrefillService(private val factory: PrefillFactory,
                     institusjonX005 = institusjon
                 }
 
-                factory.createPrefillClass(datax005).prefill(datax005)
+                factory.prefill(datax005)
             }
 }
