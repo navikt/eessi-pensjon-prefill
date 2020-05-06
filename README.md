@@ -44,14 +44,6 @@ Sjekke om man har utdaterte avhengigheter (forsøker å unngå milestones og bet
 ./gradlew dependencyUpdates
 ```
 
-Enkelte interne artifakter har ikke komplette metadata i repo.adeo.no - noe som gir en advarsel:
-
-```
- Failed to determine the latest version for the following dependencies (use --info for details):
- - no.nav.pensjon:pensjonsinformasjon-xsd
- - no.nav.tjenester:nav-person-v3-tjenestespesifikasjon
-```
-
 Dersom du er supertrygg på testene kan du forsøke en oppdatering av alle avhengighetene:
 
 ```
