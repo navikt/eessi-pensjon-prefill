@@ -1,6 +1,5 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed.krav
 
-import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonService
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.KravHistorikkHelper.createKravDato
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.KravHistorikkHelper.hentKravHistorikkForsteGangsBehandlingUtlandEllerForsteGang
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.KravHistorikkHelper.hentKravHistorikkMedKravStatusAvslag
@@ -9,7 +8,6 @@ import no.nav.eessi.pensjon.fagmodul.prefill.tps.NavFodselsnummer
 import no.nav.eessi.pensjon.fagmodul.sedmodel.*
 import no.nav.eessi.pensjon.utils.simpleFormat
 import no.nav.pensjon.v1.kravhistorikk.V1KravHistorikk
-import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import no.nav.pensjon.v1.sak.V1Sak
 import no.nav.pensjon.v1.ytelsepermaaned.V1YtelsePerMaaned
 import no.nav.pensjon.v1.ytelseskomponent.V1Ytelseskomponent
@@ -45,10 +43,8 @@ object PrefillP2xxxPensjon {
     fun createPensjon(personNr: String,
                       penSaksnummer: String,
                       gjenlevende: Bruker? = null,
-                      pendata: Pensjonsinformasjon,
+                      pensak: V1Sak,
                       andreinstitusjonerItem: AndreinstitusjonerItem?): Pensjon {
-
-        val pensak: V1Sak = PensjonsinformasjonService.finnSak(penSaksnummer, pendata)
 
         logger.debug("4.1           Informasjon om ytelser")
 
@@ -346,4 +342,4 @@ object PrefillP2xxxPensjon {
 }
 
 @ResponseStatus(value = HttpStatus.BAD_REQUEST)
-class FeilSakstypeForSedException : IllegalArgumentException()
+class FeilSakstypeForSedException(override val message: String?) : IllegalArgumentException()

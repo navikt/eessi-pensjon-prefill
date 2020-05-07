@@ -11,6 +11,7 @@ import no.nav.eessi.pensjon.fagmodul.sedmodel.Pensjon
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjoninformasjonException
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
+import no.nav.pensjon.v1.sak.V1Sak
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -37,17 +38,26 @@ class PrefillP2200(private val prefillNav: PrefillNav,
         sed.nav = prefillNav.prefill(penSaksnummer = prefillData.penSaksnummer, bruker = prefillData.bruker, avdod = prefillData.avdod, fyllUtBarnListe = true, brukerInformasjon = prefillData.getPersonInfoFromRequestData())
 
         //henter opp pensjondat
-        try {
-            val pendata: Pensjonsinformasjon? = hentPensjonsdata(prefillData.bruker.aktorId)
 
+        val pensak = hentPensjonsdata(prefillData.bruker.aktorId)?.let {
+            val pensak: V1Sak = PensjonsinformasjonService.finnSak(prefillData.penSaksnummer, it)
+
+            if (pensak.sakType != prefillData.saktype) {
+                throw FeilSakstypeForSedException("Pensaksnummer: ${prefillData.penSaksnummer} har sakstype ${pensak.sakType} , ${this::class.simpleName} krever saktype: ${prefillData.saktype}")
+            }
+            pensak
+        }
+
+
+        try {
             sed.pensjon =
-                    if (pendata == null) Pensjon()
+                    if (pensak == null) Pensjon()
                     else {
                         val pensjon = createPensjon(
                                 prefillData.bruker.norskIdent,
                                 prefillData.penSaksnummer,
                                 eventuellGjenlevende(prefillData),
-                                pendata,
+                                pensak,
                                 prefillData.andreInstitusjon)
                         if (prefillData.kanFeltSkippes("PENSED")) {
                             Pensjon(kravDato = pensjon.kravDato) //vi skal ha blank pensjon ved denne toggle, men vi må ha med kravdato
