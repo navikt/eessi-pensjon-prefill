@@ -234,7 +234,7 @@ tasks.sonarqube.dependsOn tasks["jacocoTestReport"]
 /* https://github.com/ben-manes/gradle-versions-plugin */
 dependencyUpdates {
     rejectVersionIf {
-        ['alpha', 'beta', 'rc', 'cr', 'm', 'preview', 'pr']
+        ['alpha', 'beta', 'b', 'rc', 'cr', 'm', 'preview', 'pr']
                 .any { qualifier -> it.candidate.version ==~ /(?i).*[.-]${qualifier}[.\d-]*/}
     }
     revision = 'release'
