@@ -15,6 +15,8 @@ import no.nav.pensjon.v1.ytelsepermaaned.V1YtelsePerMaaned
 import no.nav.pensjon.v1.ytelseskomponent.V1Ytelseskomponent
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.http.HttpStatus
+import org.springframework.web.bind.annotation.ResponseStatus
 
 /**
  * Hjelpe klasse for sak som fyller ut NAV-SED-P2000 med pensjondata fra PESYS.
@@ -342,3 +344,6 @@ object PrefillP2xxxPensjon {
         return mapSakstatus(pensak.status)
     }
 }
+
+@ResponseStatus(value = HttpStatus.BAD_REQUEST)
+class FeilSakstypeForSedException : IllegalArgumentException()
