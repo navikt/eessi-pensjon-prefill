@@ -42,11 +42,11 @@ class PrefillP2200UforpensjonTest {
                 prefillAdresse = mock<PrefillAdresse>(),
                 institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO")
 
-        dataFromPEN = lesPensjonsdataFraFil("P2000-AP-14069110.xml")
+        dataFromPEN = lesPensjonsdataFraFil("P2200-UP-INNV.xml")
 
         prefill = PrefillP2200(prefillNav, dataFromPEN, persondataFraTPS)
 
-        prefillData = initialPrefillDataModel("P2200", personFnr, penSaksnummer = "14069110").apply {
+        prefillData = initialPrefillDataModel("P2200", personFnr, penSaksnummer = "22874955").apply {
             partSedAsJson = mutableMapOf("PersonInfo" to readJsonResponse("other/person_informasjon_selvb.json"))
         }
     }

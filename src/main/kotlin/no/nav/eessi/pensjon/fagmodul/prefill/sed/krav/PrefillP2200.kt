@@ -27,6 +27,7 @@ class PrefillP2200(private val prefillNav: PrefillNav,
 
     override fun prefill(prefillData: PrefillDataModel): SED {
         val sedId = prefillData.getSEDid()
+        prefillData.saktype = Saktype.UFOREP.name
 
         logger.debug("----------------------------------------------------------"
                 + "\nPreutfylling Pensjon : ${PrefillP2xxxPensjon::class.java} "
