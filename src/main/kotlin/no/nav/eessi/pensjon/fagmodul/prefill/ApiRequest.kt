@@ -71,7 +71,10 @@ data class ApiRequest(
                                 ?: listOf("PENSED") //skipper all pensjon utfylling untatt kravdato
                     }
                 }
-                else -> throw MangelfulleInndataException("Mangler SED, eller ugyldig type SED")
+                else -> {
+                    logger.error("SED: ${request.sed} er ikke støttet")
+                    throw MangelfulleInndataException("SED: ${request.sed} er ikke støttet")
+                }
             }
         }
 
@@ -104,7 +107,10 @@ data class ApiRequest(
                         skipSedkey = request.skipSEDkey ?: listOf("PENSED")
                     }
                 }
-                else -> throw MangelfulleInndataException("Mangler SED, eller ugyldig type SED")
+                else -> {
+                    logger.error("SED: ${request.sed} er ikke støttet")
+                    throw MangelfulleInndataException("SED: ${request.sed} er ikke støttet")
+                }
             }
         }
     }
