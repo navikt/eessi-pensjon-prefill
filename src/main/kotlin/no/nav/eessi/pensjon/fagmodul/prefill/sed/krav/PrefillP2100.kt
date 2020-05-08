@@ -9,13 +9,11 @@ import no.nav.eessi.pensjon.fagmodul.sedmodel.Bruker
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Nav
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Pensjon
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
-import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjoninformasjonException
-import no.nav.pensjon.v1.sak.V1Sak
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 class PrefillP2100(private val prefillNav: PrefillNav,
-                   private val dataFromPEN: PensjonsinformasjonService,
+                   private val pensjonsinformasjonService: PensjonsinformasjonService,
                    private val tpsPersonService: TpsPersonService) : Prefill {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillP2100::class.java) }
@@ -43,15 +41,12 @@ class PrefillP2100(private val prefillNav: PrefillNav,
             sed.nav = prefillNav.prefill(penSaksnummer = prefillData.penSaksnummer, bruker = prefillData.bruker, avdod = prefillData.avdod, fyllUtBarnListe = true, brukerInformasjon = prefillData.getPersonInfoFromRequestData())
         }
 
-        val pensak = hentPensjonsdata(prefillData.bruker.aktorId)?.let {
-            val pensak: V1Sak = PensjonsinformasjonService.finnSak(prefillData.penSaksnummer, it)
-
-            if (pensak.sakType != prefillData.saktype) {
-                throw FeilSakstypeForSedException("Pensaksnummer: ${prefillData.penSaksnummer} har sakstype ${pensak.sakType} , ${this::class.simpleName} krever saktype: ${prefillData.saktype}")
-            }
-            pensak
-        }
-
+        val pensak = PrefillP2xxxPensjon.hentRelevantPensjonSak(
+                pensjonsinformasjonService,
+                prefillData.bruker.aktorId,
+                prefillData.penSaksnummer,
+                prefillData.saktype,
+                this::class.simpleName!!)
 
         try {
             val evtgjennlevende = eventuellGjenlevende(prefillData)
@@ -92,13 +87,5 @@ class PrefillP2100(private val prefillNav: PrefillNav,
             return if (gjenlevendeBruker == null) null else prefillNav.createBruker(gjenlevendeBruker, null, null)
         } else null
     }
-
-    fun hentPensjonsdata(aktoerId: String) =
-            try {
-                dataFromPEN.hentPersonInformasjonMedAktoerId(aktoerId)
-            } catch (pen: PensjoninformasjonException) {
-                logger.error(pen.message)
-                null
-            }
 
 }

@@ -46,7 +46,7 @@ class PensjonsinformasjonService(private val pensjonsinformasjonClient: Pensjons
     }
 
     //hjelpe metode for å hente ut date for SAK/krav P2x00 fnr benyttes
-    fun hentPersonInformasjonMedAktoerId(aktoerId: String): Pensjonsinformasjon {
+    fun hentPensjonInformasjon(aktoerId: String): Pensjonsinformasjon {
         if (aktoerId.isBlank()) throw IkkeGyldigKallException("Mangler AktoerId")
 
         //**********************************************
@@ -61,6 +61,15 @@ class PensjonsinformasjonService(private val pensjonsinformasjonClient: Pensjons
         }
         return pendata
     }
+
+    fun hentPensjonInformasjonNullHvisFeil(aktoerId: String) =
+        try {
+            hentPensjonInformasjon(aktoerId)
+        } catch (pen: PensjoninformasjonException) {
+            logger.error(pen.message)
+            null
+        }
+
 }
 
 @ResponseStatus(value = HttpStatus.BAD_REQUEST)

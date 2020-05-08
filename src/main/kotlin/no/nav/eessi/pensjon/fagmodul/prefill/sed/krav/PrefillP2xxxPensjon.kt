@@ -1,5 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed.krav
 
+import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonService
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.KravHistorikkHelper.createKravDato
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.KravHistorikkHelper.hentKravHistorikkForsteGangsBehandlingUtlandEllerForsteGang
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.KravHistorikkHelper.hentKravHistorikkMedKravStatusAvslag
@@ -97,6 +98,22 @@ object PrefillP2xxxPensjon {
                 gjenlevende = gjenlevende
         )
     }
+
+    fun hentRelevantPensjonSak(pensjonsinformasjonService: PensjonsinformasjonService,
+                               aktorId: String,
+                               penSaksnummer: String,
+                               sakType: String,
+                               sedType: String): V1Sak? {
+        return pensjonsinformasjonService.hentPensjonInformasjonNullHvisFeil(aktorId)?.let {
+            val pensak: V1Sak = PensjonsinformasjonService.finnSak(penSaksnummer, it)
+
+            if (pensak.sakType != sakType) {
+                throw FeilSakstypeForSedException("Pensaksnummer: $penSaksnummer har sakstype ${pensak.sakType} , $sedType krever saktype: $sakType")
+            }
+            pensak
+        }
+    }
+
 
     /**
      *  4.1 (for kun_uland,mangler inngangsvilkår)
