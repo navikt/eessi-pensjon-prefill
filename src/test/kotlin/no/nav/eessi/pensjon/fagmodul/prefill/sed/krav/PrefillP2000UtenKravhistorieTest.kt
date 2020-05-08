@@ -60,7 +60,7 @@ class PrefillP2000UtenKravhistorieTest {
 
     @Test
     fun `Sjekk av kravsoknad alderpensjon P2000`() {
-        val pendata: Pensjonsinformasjon = dataFromPEN.hentPersonInformasjonMedAktoerId(prefillData.bruker.aktorId)
+        val pendata: Pensjonsinformasjon = dataFromPEN.hentPensjonInformasjon(prefillData.bruker.aktorId)
 
         assertNotNull(PensjonsinformasjonService.finnSak(prefillData.penSaksnummer, pendata))
 

@@ -8,29 +8,23 @@ import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonService
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PersonDataFromTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.lesPensjonsdataFraFil
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.readJsonResponse
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.setupPersondataFraTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.FodselsnummerMother.generateRandomFnr
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillAdresse
-import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjoninformasjonException
-import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.junit.jupiter.MockitoExtension
-import org.mockito.junit.jupiter.MockitoSettings
-import org.mockito.quality.Strictness
 
 @ExtendWith(MockitoExtension::class)
-@MockitoSettings(strictness = Strictness.LENIENT)
-class PrefillP2000MedIngendataTest {
+class PrefillP2100MedAlderSakTest {
 
     private val personFnr = generateRandomFnr(68)
-
-    private val pesysSaksnummer = "21644722"
+    private val pesysSaksnummer = "14069110"
 
     lateinit var prefillData: PrefillDataModel
+
     lateinit var prefill: Prefill
     lateinit var prefillNav: PrefillNav
     lateinit var dataFromPEN: PensjonsinformasjonService
@@ -46,33 +40,18 @@ class PrefillP2000MedIngendataTest {
                 prefillAdresse = mock<PrefillAdresse>(),
                 institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO")
 
-        dataFromPEN = lesPensjonsdataFraFil("P2000-TOMT-SVAR-PESYS.xml")
+        dataFromPEN = lesPensjonsdataFraFil("P2000-AP-14069110.xml")
 
-        prefill = PrefillP2000(prefillNav, dataFromPEN, persondataFraTPS)
+        prefill = PrefillP2100(prefillNav, dataFromPEN, persondataFraTPS)
 
-        prefillData = PrefillDataModelMother.initialPrefillDataModel("P2000", personFnr, penSaksnummer = pesysSaksnummer).apply {
-            partSedAsJson = mutableMapOf(
-                    "PersonInfo" to readJsonResponse("other/person_informasjon_selvb.json"),
-                    "P4000" to readJsonResponse("other/p4000_trygdetid_part.json"))
-        }
+        prefillData = PrefillDataModelMother.initialPrefillDataModel("P2100", personFnr, penSaksnummer = pesysSaksnummer)
     }
 
     @Test
-    fun `sjekk av kravsoknad alderpensjon P2000`() {
-        assertThrows<PensjoninformasjonException> {
-            dataFromPEN.hentPensjonInformasjon(prefillData.bruker.aktorId)
-        }
-    }
-
-
-    @Test
-    fun `forventet en validering feil ved mangel av krvadato`() {
-
-        val ex = assertThrows<Exception> {
+    fun `forventer exception - ikke relevant saktype for krav-SED - aldersak ikke relevant for P2100`() {
+        assertThrows<FeilSakstypeForSedException>{
             prefill.prefill(prefillData)
         }
-        assertEquals("Kravdato mangler", ex.message)
     }
-
 }
 

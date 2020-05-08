@@ -4,14 +4,11 @@ import no.nav.eessi.pensjon.fagmodul.prefill.model.Prefill
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonService
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.PrefillP2xxxPensjon.createPensjon
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.TpsPersonService
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Bruker
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Nav
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Pensjon
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
-import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjoninformasjonException
-import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -21,7 +18,7 @@ import org.springframework.web.bind.annotation.ResponseStatus
  * preutfylling av NAV-P2000 SED for søknad krav om alderpensjon
  */
 class PrefillP2000(private val prefillNav: PrefillNav,
-                   private val dataFromPEN: PensjonsinformasjonService,
+                   private val pensjonsinformasjonService: PensjonsinformasjonService,
                    private val tpsPersonService: TpsPersonService) : Prefill {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillP2000::class.java) }
@@ -47,16 +44,22 @@ class PrefillP2000(private val prefillNav: PrefillNav,
             sed.nav = prefillNav.prefill(penSaksnummer = prefillData.penSaksnummer, bruker = prefillData.bruker, avdod = prefillData.avdod, fyllUtBarnListe = true, brukerInformasjon = prefillData.getPersonInfoFromRequestData())
         }
 
+        val pensak = PrefillP2xxxPensjon.hentRelevantPensjonSak(
+                pensjonsinformasjonService,
+                prefillData.bruker.aktorId,
+                prefillData.penSaksnummer,
+                prefillData.saktype,
+                this::class.simpleName!!)
+
         try {
-            val pendata: Pensjonsinformasjon? = hentPensjonsdata(prefillData.bruker.aktorId)
             sed.pensjon =
-                    if (pendata == null) Pensjon()
+                    if (pensak == null) Pensjon()
                     else {
-                        val pensjon = createPensjon(
+                        val pensjon = PrefillP2xxxPensjon.createPensjon(
                                 prefillData.bruker.norskIdent,
                                 prefillData.penSaksnummer,
                                 eventuellGjenlevende(prefillData),
-                                pendata,
+                                pensak,
                                 prefillData.andreInstitusjon)
                         if (prefillData.kanFeltSkippes("PENSED")) {
                             Pensjon(kravDato = pensjon.kravDato) //vi skal ha blank pensjon ved denne toggle, men vi må ha med kravdato
@@ -83,14 +86,6 @@ class PrefillP2000(private val prefillNav: PrefillNav,
             if (gjenlevendeBruker == null) null else prefillNav.createBruker(gjenlevendeBruker, null, null)
         } else null
     }
-
-    fun hentPensjonsdata(aktoerId: String) =
-            try {
-                dataFromPEN.hentPersonInformasjonMedAktoerId(aktoerId)
-            } catch (pen: PensjoninformasjonException) {
-                logger.error(pen.message)
-                null
-            }
 
     private fun validate(data: PrefillDataModel) {
         when {

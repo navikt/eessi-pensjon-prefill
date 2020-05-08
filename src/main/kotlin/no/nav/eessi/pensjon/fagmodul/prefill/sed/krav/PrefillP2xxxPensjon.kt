@@ -9,12 +9,13 @@ import no.nav.eessi.pensjon.fagmodul.prefill.tps.NavFodselsnummer
 import no.nav.eessi.pensjon.fagmodul.sedmodel.*
 import no.nav.eessi.pensjon.utils.simpleFormat
 import no.nav.pensjon.v1.kravhistorikk.V1KravHistorikk
-import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import no.nav.pensjon.v1.sak.V1Sak
 import no.nav.pensjon.v1.ytelsepermaaned.V1YtelsePerMaaned
 import no.nav.pensjon.v1.ytelseskomponent.V1Ytelseskomponent
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.http.HttpStatus
+import org.springframework.web.bind.annotation.ResponseStatus
 
 /**
  * Hjelpe klasse for sak som fyller ut NAV-SED-P2000 med pensjondata fra PESYS.
@@ -43,10 +44,8 @@ object PrefillP2xxxPensjon {
     fun createPensjon(personNr: String,
                       penSaksnummer: String,
                       gjenlevende: Bruker? = null,
-                      pendata: Pensjonsinformasjon,
+                      pensak: V1Sak,
                       andreinstitusjonerItem: AndreinstitusjonerItem?): Pensjon {
-
-        val pensak: V1Sak = PensjonsinformasjonService.finnSak(penSaksnummer, pendata)
 
         logger.debug("4.1           Informasjon om ytelser")
 
@@ -99,6 +98,22 @@ object PrefillP2xxxPensjon {
                 gjenlevende = gjenlevende
         )
     }
+
+    fun hentRelevantPensjonSak(pensjonsinformasjonService: PensjonsinformasjonService,
+                               aktorId: String,
+                               penSaksnummer: String,
+                               sakType: String,
+                               sedType: String): V1Sak? {
+        return pensjonsinformasjonService.hentPensjonInformasjonNullHvisFeil(aktorId)?.let {
+            val pensak: V1Sak = PensjonsinformasjonService.finnSak(penSaksnummer, it)
+
+            if (pensak.sakType != sakType) {
+                throw FeilSakstypeForSedException("Pensaksnummer: $penSaksnummer har sakstype ${pensak.sakType} , $sedType krever saktype: $sakType")
+            }
+            pensak
+        }
+    }
+
 
     /**
      *  4.1 (for kun_uland,mangler inngangsvilkår)
@@ -342,3 +357,6 @@ object PrefillP2xxxPensjon {
         return mapSakstatus(pensak.status)
     }
 }
+
+@ResponseStatus(value = HttpStatus.BAD_REQUEST)
+class FeilSakstypeForSedException(override val message: String?) : IllegalArgumentException()

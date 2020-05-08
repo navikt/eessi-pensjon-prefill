@@ -3,29 +3,28 @@ package no.nav.eessi.pensjon.fagmodul.prefill.sed.krav
 import com.nhaarman.mockitokotlin2.mock
 import no.nav.eessi.pensjon.fagmodul.prefill.model.Prefill
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
-import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModelMother.initialPrefillDataModel
+import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModelMother
 import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonService
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PersonDataFromTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.lesPensjonsdataFraFil
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.readJsonResponse
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.setupPersondataFraTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.FodselsnummerMother.generateRandomFnr
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillAdresse
-import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
-import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
-import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.junit.jupiter.MockitoExtension
 
 @ExtendWith(MockitoExtension::class)
-class PrefillP2200UforpensjonTest {
+class PrefillP2000MedUforeSakTest {
 
-    private val personFnr = generateRandomFnr(67)
+    private val personFnr = generateRandomFnr(68)
+    private val pesysSaksnummer = "22874955"
 
     lateinit var prefillData: PrefillDataModel
+
     lateinit var prefill: Prefill
     lateinit var prefillNav: PrefillNav
     lateinit var dataFromPEN: PensjonsinformasjonService
@@ -33,9 +32,8 @@ class PrefillP2200UforpensjonTest {
     @BeforeEach
     fun setup() {
         val persondataFraTPS = setupPersondataFraTPS(setOf(
-                PersonDataFromTPS.MockTPS("Person-20000.json", personFnr, PersonDataFromTPS.MockTPS.TPSType.PERSON),
-                PersonDataFromTPS.MockTPS("Person-21000.json", generateRandomFnr(43), PersonDataFromTPS.MockTPS.TPSType.BARN),
-                PersonDataFromTPS.MockTPS("Person-22000.json", generateRandomFnr(17), PersonDataFromTPS.MockTPS.TPSType.BARN)
+                PersonDataFromTPS.MockTPS("Person-11000-GIFT.json", personFnr, PersonDataFromTPS.MockTPS.TPSType.PERSON),
+                PersonDataFromTPS.MockTPS("Person-12000-EKTE.json", generateRandomFnr(70), PersonDataFromTPS.MockTPS.TPSType.EKTE)
         ))
         prefillNav = PrefillNav(
                 tpsPersonService = persondataFraTPS,
@@ -44,22 +42,16 @@ class PrefillP2200UforpensjonTest {
 
         dataFromPEN = lesPensjonsdataFraFil("P2200-UP-INNV.xml")
 
-        prefill = PrefillP2200(prefillNav, dataFromPEN, persondataFraTPS)
+        prefill = PrefillP2000(prefillNav, dataFromPEN, persondataFraTPS)
 
-        prefillData = initialPrefillDataModel("P2200", personFnr, penSaksnummer = "22874955").apply {
-            partSedAsJson = mutableMapOf("PersonInfo" to readJsonResponse("other/person_informasjon_selvb.json"))
-        }
+        prefillData = PrefillDataModelMother.initialPrefillDataModel("P2000", personFnr, penSaksnummer = pesysSaksnummer)
     }
 
     @Test
-    fun `Testing av komplett utfylling kravsøknad uførepensjon P2200`() {
-        val pendata: Pensjonsinformasjon = dataFromPEN.hentPensjonInformasjon(prefillData.bruker.aktorId)
-
-        assertNotNull(pendata.brukersSakerListe)
-
-        val P2200 = prefill.prefill(prefillData)
-        val p2200Actual = P2200.toJsonSkipEmpty()
-        assertNotNull(p2200Actual)
+    fun `forventer exception - ikke relevant saktype for krav-SED - uforesak ikke relevant for P2000`() {
+        assertThrows<FeilSakstypeForSedException>{
+            prefill.prefill(prefillData)
+        }
     }
-
 }
+
