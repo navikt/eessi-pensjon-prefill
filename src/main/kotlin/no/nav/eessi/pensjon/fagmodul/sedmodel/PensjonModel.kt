@@ -417,6 +417,7 @@ data class MedlemskapItem(
 		val gyldigperiode: String? = null,
 		val type: String? = null,
 		val beregning: String? = null,
+		val informasjonskalkulering: String? = null,
 		val periode: Periode? = null
 )
 
@@ -443,6 +444,7 @@ data class YtelserItem(
 		val pin: PinItem? = null,
 		val startdatoutbetaling: String? = null,
 		val mottasbasertpaa: String? = null,
+		val mottasbasertpaaitem: List<MottasBasertPaaItem>? = null,
 		val ytelse: String? = null,
 		val totalbruttobeloepbostedsbasert: String? = null,
 		val startdatoretttilytelse: String? = null,
@@ -462,6 +464,11 @@ data class YtelserItem(
 
 )
 
+data class MottasBasertPaaItem(
+		val verdi: String? = null,
+		val totalbruttobeloepbostedsbasert: String? = null,
+		val totalbruttobeloeparbeidsbasert: String? = null
+)
 
 data class BeloepItem(
         val annenbetalingshyppighetytelse: String? = null,
