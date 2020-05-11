@@ -27,7 +27,7 @@ class BucController(private val euxService: EuxService,
 
     @ApiOperation("henter liste av alle tilgjengelige BuC-typer")
     @GetMapping("/bucs/{sakId}", produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun getBucs(@PathVariable(value = "sakId", required = false) sakId: String?) = euxService.initSedOnBuc().keys.map { it }.toList()
+    fun getBucs(@PathVariable(value = "sakId", required = false) sakId: String? = "") = euxService.initSedOnBuc().keys.map { it }.toList()
 
     @ApiOperation("Henter opp hele BUC på valgt caseid")
     @GetMapping("/{rinanr}")
