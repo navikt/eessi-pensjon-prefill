@@ -108,11 +108,29 @@ object PrefillP2xxxPensjon {
             val pensak: V1Sak = PensjonsinformasjonService.finnSak(penSaksnummer, it)
 
             if (pensak.sakType != sakType) {
-                throw FeilSakstypeForSedException("Pensaksnummer: $penSaksnummer har sakstype ${pensak.sakType} , $sedType krever saktype: $sakType")
+                throw FeilSakstypeForSedException("Du kan ikke opprette ${sedTypeAsText(sedType)} i en ${sakTypeAsText(pensak.sakType)} (PESYS-saksnr: $penSaksnummer har sakstype ${pensak.sakType})")
             }
             pensak
         }
     }
+
+    private fun sakTypeAsText(sakType: String?) =
+            when (sakType) {
+                "UFOREP" -> "uføretrygdsak"
+                "ALDER" -> "alderspensjonssak"
+                "GJENLEV" -> "gjenlevendesak"
+                "BARNEP" -> "barnepensjonssak"
+                null -> "[NULL]"
+                else -> "$sakType-sak"
+            }
+
+    private fun sedTypeAsText(sedType: String) =
+            when (sedType) {
+                "P2000" -> "alderspensjonskrav"
+                "P2100" -> "gjenlevende-krav"
+                "P2200" -> "uføretrygdkrav"
+                else -> sedType
+            }
 
 
     /**
@@ -359,4 +377,4 @@ object PrefillP2xxxPensjon {
 }
 
 @ResponseStatus(value = HttpStatus.BAD_REQUEST)
-class FeilSakstypeForSedException(override val message: String?) : IllegalArgumentException()
+class FeilSakstypeForSedException(override val message: String?, override val cause: Throwable? = null) : IllegalArgumentException()
