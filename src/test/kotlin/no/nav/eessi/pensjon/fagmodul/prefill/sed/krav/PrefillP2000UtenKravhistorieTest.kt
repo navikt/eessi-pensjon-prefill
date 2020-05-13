@@ -1,12 +1,13 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed.krav
 
 import com.nhaarman.mockitokotlin2.mock
-import no.nav.eessi.pensjon.fagmodul.prefill.model.Prefill
+import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjon
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModelMother
 import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonService
-import no.nav.eessi.pensjon.fagmodul.prefill.person.PersonDataFromTPS
+import no.nav.eessi.pensjon.fagmodul.prefill.person.MockTpsPersonServiceFactory
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillSEDService
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.lesPensjonsdataFraFil
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.readJsonResponse
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.setupPersondataFraTPS
@@ -30,32 +31,31 @@ class PrefillP2000UtenKravhistorieTest {
 
     private val personFnr = generateRandomFnr(67)
 
-    lateinit var prefillData: PrefillDataModel
-    lateinit var prefill: Prefill
-    lateinit var prefillNav: PrefillNav
-    lateinit var dataFromPEN: PensjonsinformasjonService
+    private lateinit var prefillData: PrefillDataModel
+    private lateinit var dataFromPEN: PensjonsinformasjonService
+    private lateinit var prefillSEDService: PrefillSEDService
+
 
     @BeforeEach
     fun setup() {
         val persondataFraTPS = setupPersondataFraTPS(setOf(
-                PersonDataFromTPS.MockTPS("Person-20000.json", personFnr, PersonDataFromTPS.MockTPS.TPSType.PERSON),
-                PersonDataFromTPS.MockTPS("Person-21000.json", generateRandomFnr(43), PersonDataFromTPS.MockTPS.TPSType.BARN),
-                PersonDataFromTPS.MockTPS("Person-22000.json", generateRandomFnr(17), PersonDataFromTPS.MockTPS.TPSType.BARN)
+                MockTpsPersonServiceFactory.MockTPS("Person-20000.json", personFnr, MockTpsPersonServiceFactory.MockTPS.TPSType.PERSON),
+                MockTpsPersonServiceFactory.MockTPS("Person-21000.json", generateRandomFnr(43), MockTpsPersonServiceFactory.MockTPS.TPSType.BARN),
+                MockTpsPersonServiceFactory.MockTPS("Person-22000.json", generateRandomFnr(17), MockTpsPersonServiceFactory.MockTPS.TPSType.BARN)
         ))
-        prefillNav = PrefillNav(
-                tpsPersonService = persondataFraTPS,
+        val prefillNav = PrefillNav(
                 prefillAdresse = mock<PrefillAdresse>(),
-                institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO")
+                institutionid = "NO:noinst002",
+                institutionnavn = "NOINST002, NO INST002, NO")
 
         dataFromPEN = lesPensjonsdataFraFil("P2000-AP-14069110.xml")
-
-        prefill = PrefillP2000(prefillNav, dataFromPEN, persondataFraTPS)
-
         prefillData = PrefillDataModelMother.initialPrefillDataModel("P2000", personFnr, penSaksnummer = "14069110").apply {
             partSedAsJson = mutableMapOf(
                     "PersonInfo" to readJsonResponse("other/person_informasjon_selvb.json"),
                     "P4000" to readJsonResponse("other/p4000_trygdetid_part.json"))
         }
+        prefillSEDService = PrefillSEDService(prefillNav, persondataFraTPS, EessiInformasjon(), dataFromPEN)
+
     }
 
     @Test
@@ -73,7 +73,7 @@ class PrefillP2000UtenKravhistorieTest {
     fun `Preutfylling P2000 uten kravdato skal feile`() {
 
         val ex = assertThrows<Exception> {
-            prefill.prefill(prefillData)
+            prefillSEDService.prefill(prefillData)
         }
         assertEquals("Kravdato mangler", ex.message)
     }

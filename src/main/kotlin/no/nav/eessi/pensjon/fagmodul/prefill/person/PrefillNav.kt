@@ -1,10 +1,9 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.person
 
 import no.nav.eessi.pensjon.fagmodul.prefill.model.BrukerInformasjon
+import no.nav.eessi.pensjon.fagmodul.prefill.model.PersonData
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PersonId
-import no.nav.eessi.pensjon.fagmodul.prefill.tps.NavFodselsnummer
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillAdresse
-import no.nav.eessi.pensjon.fagmodul.prefill.tps.TpsPersonService
 import no.nav.eessi.pensjon.fagmodul.sedmodel.*
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Bruker
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Person
@@ -18,8 +17,7 @@ import org.springframework.stereotype.Component
 import java.util.*
 
 @Component
-class PrefillNav(private val tpsPersonService: TpsPersonService,
-                 private val prefillAdresse: PrefillAdresse,
+class PrefillNav(private val prefillAdresse: PrefillAdresse,
                  @Value("\${eessi-pensjon-institusjon}") private val institutionid: String,
                  @Value("\${eessi-pensjon-institusjon-navn}") private val institutionnavn: String) {
 
@@ -169,31 +167,7 @@ class PrefillNav(private val tpsPersonService: TpsPersonService,
             }
         }
 
-        private fun filterEktefelleRelasjon(bruker: no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker?): Pair<String, String> {
-            val validRelasjoner = listOf("EKTE","REPA","SAMB")
 
-            if (bruker == null) return Pair("","")
-            var ektepinid = ""
-            var ekteTypeValue = ""
-
-            bruker.harFraRolleI.forEach {
-                val relasjon = it.tilRolle.value
-
-                if (validRelasjoner.contains(relasjon)) {
-
-                    ekteTypeValue = it.tilRolle.value
-                    val tilperson = it.tilPerson
-                    val pident = tilperson.aktoer as PersonIdent
-
-                    ektepinid = pident.ident.ident
-                    if (ektepinid.isNotBlank()) {
-                        return@forEach
-                    }
-
-                }
-            }
-            return Pair(ektepinid, ekteTypeValue)
-        }
 
         private fun createAnsettelsesforhold(personInfo: BrukerInformasjon): ArbeidsforholdItem {
             logger.debug("3.1           Ansettelseforhold/arbeidsforhold")
@@ -245,21 +219,12 @@ class PrefillNav(private val tpsPersonService: TpsPersonService,
         }
     }
 
-    fun prefill(penSaksnummer: String, bruker: PersonId, avdod: PersonId?, fyllUtBarnListe: Boolean = false, brukerInformasjon: BrukerInformasjon?): Nav {
+    fun prefill(penSaksnummer: String, bruker: PersonId, avdod: PersonId?, personData: PersonData, brukerInformasjon: BrukerInformasjon?): Nav {
 
-        // FIXME - det veksles mellom gjenlevende og bruker ... usikkert om dette er rett...
-        val brukerEllerGjenlevende = tpsPersonService.hentBrukerFraTPS(avdod?.norskIdent ?: bruker.norskIdent)
-
-        val brukerFraTps = tpsPersonService.hentBrukerFraTPS(bruker.norskIdent)
-        val (ektepinid, ekteTypeValue) = filterEktefelleRelasjon(brukerFraTps)
-
-        val ektefelleBruker = if(ektepinid.isBlank()) null else tpsPersonService.hentBrukerFraTPS(ektepinid)
-
-        val barnBrukereFraTPS =
-                if (fyllUtBarnListe) {
-                    barnsPinId(tpsPersonService.hentBrukerFraTPS(bruker.norskIdent))
-                            .mapNotNull { barn -> tpsPersonService.hentBrukerFraTPS(barn) }
-                } else listOf()
+        val brukerEllerGjenlevende = personData.brukerEllerGjenlevende
+        val ektefelleBruker = personData.ektefelleBruker
+        val ekteTypeValue= personData.ekteTypeValue
+        val barnBrukereFraTPS = personData.barnBrukereFraTPS
 
         val personInfo = brukerInformasjon
 
@@ -378,26 +343,7 @@ class PrefillNav(private val tpsPersonService: TpsPersonService,
     }
 
 
-    private fun barnsPinId(brukerTPS: no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker?): List<String> {
-        if (brukerTPS == null) return listOf()
 
-        val person = brukerTPS as no.nav.tjeneste.virksomhet.person.v3.informasjon.Person
-
-        val resultat = mutableListOf<String>()
-        person.harFraRolleI.forEach {
-            val tpsvalue = it.tilRolle.value   //mulig nullpoint? kan tilRolle være null?
-            if (RelasjonEnum.BARN.erSamme(tpsvalue)) {
-                val persontps = it.tilPerson as no.nav.tjeneste.virksomhet.person.v3.informasjon.Person
-                val norIdent = hentNorIdent(persontps)
-                if (NavFodselsnummer(norIdent).validate()) {
-                    resultat.add(norIdent)
-                } else {
-                    logger.error("følgende ident funnet ikke gyldig: $norIdent")
-                }
-            }
-        }
-        return resultat.toList()
-    }
 
     private fun createEktefellePartner(ektefellpartnerbruker: Bruker?, ekteTypeValue: String?): Ektefelle? {
         logger.debug("5.0           Utfylling av ektefelle")

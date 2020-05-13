@@ -1,7 +1,7 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak
 
 import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjon
-import no.nav.eessi.pensjon.fagmodul.prefill.model.Prefill
+import no.nav.eessi.pensjon.fagmodul.prefill.model.PersonData
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonService
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
@@ -14,11 +14,11 @@ import org.slf4j.LoggerFactory
 class PrefillP6000(private val prefillNav: PrefillNav,
                    private val eessiInfo: EessiInformasjon,
                    private val dataFromPESYS: PensjonsinformasjonService,
-                   private val tpsPersonService: TpsPersonService) : Prefill {
+                   private val tpsPersonService: TpsPersonService) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillP6000::class.java) }
 
-    override fun prefill(prefillData: PrefillDataModel): SED {
+    fun prefill(prefillData: PrefillDataModel, personData: PersonData): SED {
         val sedId = prefillData.getSEDid()
 
         logger.debug("----------------------------------------------------------"
@@ -42,7 +42,7 @@ class PrefillP6000(private val prefillNav: PrefillNav,
         sed.pensjon = createPensjon(dataFromPESYS, gjenlevende, prefillData.vedtakId, prefillData.andreInstitusjon)
 
         logger.debug("Henter opp Persondata fra TPS")
-        sed.nav = prefillNav.prefill(penSaksnummer = prefillData.penSaksnummer, bruker = prefillData.bruker, avdod = prefillData.avdod, brukerInformasjon = prefillData.getPersonInfoFromRequestData())
+        sed.nav = prefillNav.prefill(penSaksnummer = prefillData.penSaksnummer, bruker = prefillData.bruker, avdod = prefillData.avdod, personData = personData, brukerInformasjon = prefillData.getPersonInfoFromRequestData())
 
         logger.debug("-------------------| Preutfylling [$sedId] END |------------------- ")
         return prefillData.sed

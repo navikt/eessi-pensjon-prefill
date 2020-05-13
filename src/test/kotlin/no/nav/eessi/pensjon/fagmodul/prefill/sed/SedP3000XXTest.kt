@@ -5,7 +5,6 @@ import no.nav.eessi.pensjon.fagmodul.prefill.ApiRequest
 import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjon
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonService
-import no.nav.eessi.pensjon.fagmodul.prefill.person.PersonDataFromTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.FodselsnummerMother
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillAdresse
@@ -39,15 +38,10 @@ class SedP3000XXTest {
     @BeforeEach
     fun setupAndRunAtStart() {
 
-        val persondataFraTPS = PrefillTestHelper.setupPersondataFraTPS(setOf(
-                PersonDataFromTPS.MockTPS("Person-11000-GIFT.json", personFnr, PersonDataFromTPS.MockTPS.TPSType.PERSON),
-                PersonDataFromTPS.MockTPS("Person-12000-EKTE.json", FodselsnummerMother.generateRandomFnr(70), PersonDataFromTPS.MockTPS.TPSType.EKTE)
-        ))
-
         prefillNav = PrefillNav(
-                tpsPersonService = persondataFraTPS,
                 prefillAdresse = mock<PrefillAdresse>(),
-                institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO")
+                institutionid = "NO:noinst002",
+                institutionnavn = "NOINST002, NO INST002, NO")
 
         prefillSEDService = PrefillSEDService(prefillNav, dataFromTPS, eessiInformasjon, dataFromPEN)
     }

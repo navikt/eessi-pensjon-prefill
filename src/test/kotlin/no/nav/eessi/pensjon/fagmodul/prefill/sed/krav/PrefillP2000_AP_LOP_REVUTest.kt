@@ -3,12 +3,13 @@ package no.nav.eessi.pensjon.fagmodul.prefill.sed.krav
 import com.nhaarman.mockitokotlin2.mock
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.prefill.ApiRequest
+import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjon
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PersonId
-import no.nav.eessi.pensjon.fagmodul.prefill.model.Prefill
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonService
-import no.nav.eessi.pensjon.fagmodul.prefill.person.PersonDataFromTPS
+import no.nav.eessi.pensjon.fagmodul.prefill.person.MockTpsPersonServiceFactory
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillSEDService
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.lesPensjonsdataFraFil
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.readJsonResponse
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.setupPersondataFraTPS
@@ -34,26 +35,23 @@ class PrefillP2000_AP_LOP_REVUTest {
     private val pesysSaksnummer = "20541862"
 
     lateinit var prefillData: PrefillDataModel
-    lateinit var sakHelper: PrefillP2xxxPensjon
-    lateinit var prefill: Prefill
     lateinit var prefillNav: PrefillNav
     lateinit var dataFromPEN: PensjonsinformasjonService
+    lateinit var prefillSEDService: PrefillSEDService
 
     @BeforeEach
     fun setup() {
         val persondataFraTPS = setupPersondataFraTPS(setOf(
-                PersonDataFromTPS.MockTPS("Person-11000-GIFT.json", personFnr, PersonDataFromTPS.MockTPS.TPSType.PERSON),
-                PersonDataFromTPS.MockTPS("Person-12000-EKTE.json", generateRandomFnr(70), PersonDataFromTPS.MockTPS.TPSType.EKTE)
+                MockTpsPersonServiceFactory.MockTPS("Person-11000-GIFT.json", personFnr, MockTpsPersonServiceFactory.MockTPS.TPSType.PERSON),
+                MockTpsPersonServiceFactory.MockTPS("Person-12000-EKTE.json", generateRandomFnr(70), MockTpsPersonServiceFactory.MockTPS.TPSType.EKTE)
         ))
 
         prefillNav = PrefillNav(
-                tpsPersonService = persondataFraTPS,
                 prefillAdresse = mock<PrefillAdresse>(),
-                institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO")
+                institutionid = "NO:noinst002",
+                institutionnavn = "NOINST002, NO INST002, NO")
 
         dataFromPEN = lesPensjonsdataFraFil("P2000-AP-LP-RVUR-20541862.xml")
-
-        prefill = PrefillP2000(prefillNav, dataFromPEN, persondataFraTPS)
 
         prefillData = PrefillDataModel(penSaksnummer = pesysSaksnummer, bruker = PersonId(personFnr, "123456789"), avdod = null).apply {
             rinaSubject = "Pensjon"
@@ -65,11 +63,13 @@ class PrefillP2000_AP_LOP_REVUTest {
                     "PersonInfo" to readJsonResponse("other/person_informasjon_selvb.json"),
                     "P4000" to readJsonResponse("other/p4000_trygdetid_part.json"))
         }
+        prefillSEDService = PrefillSEDService(prefillNav, persondataFraTPS, EessiInformasjon(), dataFromPEN)
+
     }
 
     @Test
     fun `forventet korrekt utfylt P2000 alderpensjon med kap4 og 9`() {
-        val P2000 = prefill.prefill(prefillData)
+        val P2000 = prefillSEDService.prefill(prefillData)
 
         val P2000pensjon = SED(
                 sed = "P2000",
@@ -87,7 +87,7 @@ class PrefillP2000_AP_LOP_REVUTest {
     @Test
     fun `forventet korrekt utfylt P2000 alderpersjon med mockdata fra testfiler`() {
 
-        val p2000 = prefill.prefill(prefillData)
+        val p2000 = prefillSEDService.prefill(prefillData)
 
         assertEquals(null, p2000.nav?.barn)
 
@@ -123,7 +123,7 @@ class PrefillP2000_AP_LOP_REVUTest {
 
     @Test
     fun `testing av komplett P2000 med utskrift og testing av innsending`() {
-        val P2000 = prefill.prefill(prefillData)
+        val P2000 = prefillSEDService.prefill(prefillData)
 
         val json = mapAnyToJson(createMockApiRequest("P2000", "P_BUC_01", P2000.toJson()))
         assertNotNull(json)
