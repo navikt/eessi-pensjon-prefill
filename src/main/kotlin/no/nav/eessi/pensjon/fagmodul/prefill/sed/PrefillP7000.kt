@@ -1,19 +1,19 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed
 
-import no.nav.eessi.pensjon.fagmodul.prefill.model.Prefill
+import no.nav.eessi.pensjon.fagmodul.prefill.model.PersonData
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillSed
 import no.nav.eessi.pensjon.fagmodul.sedmodel.*
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-class PrefillP7000(private val prefillSed: PrefillSed) : Prefill {
+class PrefillP7000(private val prefillSed: PrefillSed) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillP7000::class.java) }
 
-    override fun prefill(prefillData: PrefillDataModel): SED {
+    fun prefill(prefillData: PrefillDataModel, personData: PersonData): SED {
 
-        val sed = prefillSed.prefill(prefillData)
+        val sed = prefillSed.prefill(prefillData, personData)
         logger.debug("Tilpasser P7000 forenklet preutfylling")
 
         val person = sed.nav?.bruker?.person

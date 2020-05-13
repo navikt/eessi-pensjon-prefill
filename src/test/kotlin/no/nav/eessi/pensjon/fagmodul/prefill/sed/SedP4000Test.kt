@@ -4,6 +4,7 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.whenever
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.prefill.ApiRequest
+import no.nav.eessi.pensjon.fagmodul.prefill.model.PersonData
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillSed
 import no.nav.eessi.pensjon.fagmodul.sedmodel.*
 import no.nav.eessi.pensjon.utils.*
@@ -138,7 +139,10 @@ class SedP4000Test {
                 payload = "{}"
         )
         val data = ApiRequest.buildPrefillDataModelConfirm(req, "12345", null)
-        val sed = pre4000.prefill(data)
+
+        val personData = PersonData(person = null, ekteTypeValue = "", ektefelleBruker = null, brukerEllerGjenlevende = null, barnBrukereFraTPS = listOf())
+
+        val sed = pre4000.prefill(data, personData)
         assertNull(sed.trygdetid)
     }
 
@@ -171,9 +175,8 @@ class SedP4000Test {
         assertNotNull(data.getPartSEDasJson("P4000"))
         assertEquals("12345", data.bruker.norskIdent)
 
-        val resultData = data
-        whenever(prefillSed.prefill(any())).thenReturn(data.sed)
-        val sed = pre4000.prefill(resultData)
+        whenever(prefillSed.prefill(any(), any())).thenReturn(data.sed)
+        val sed = pre4000.prefill(data, PersonData(person = null, ekteTypeValue = "", brukerEllerGjenlevende = null, ektefelleBruker = null, barnBrukereFraTPS = listOf()))
         assertNotNull(sed)
     }
 }

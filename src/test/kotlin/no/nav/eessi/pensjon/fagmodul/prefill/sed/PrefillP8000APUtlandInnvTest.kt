@@ -1,10 +1,10 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed
 
 import com.nhaarman.mockitokotlin2.mock
-import no.nav.eessi.pensjon.fagmodul.prefill.model.Prefill
+import no.nav.eessi.pensjon.fagmodul.prefill.model.PersonData
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModelMother
-import no.nav.eessi.pensjon.fagmodul.prefill.person.PersonDataFromTPS
+import no.nav.eessi.pensjon.fagmodul.prefill.person.MockTpsPersonServiceFactory
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillSed
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.setupPersondataFraTPS
@@ -21,19 +21,23 @@ class PrefillP8000APUtlandInnvTest {
 
     lateinit var prefillData: PrefillDataModel
 
-    lateinit var prefill: Prefill
+    lateinit var prefill: PrefillP8000
     lateinit var prefillNav: PrefillNav
+    lateinit var personData: PersonData
 
     @BeforeEach
     fun setup() {
         val persondataFraTPS = setupPersondataFraTPS(setOf(
-                PersonDataFromTPS.MockTPS("Person-11000-GIFT.json", personFnr, PersonDataFromTPS.MockTPS.TPSType.PERSON),
-                PersonDataFromTPS.MockTPS("Person-12000-EKTE.json", generateRandomFnr(70), PersonDataFromTPS.MockTPS.TPSType.EKTE)
+                MockTpsPersonServiceFactory.MockTPS("Person-11000-GIFT.json", personFnr, MockTpsPersonServiceFactory.MockTPS.TPSType.PERSON),
+                MockTpsPersonServiceFactory.MockTPS("Person-12000-EKTE.json", generateRandomFnr(70), MockTpsPersonServiceFactory.MockTPS.TPSType.EKTE)
         ))
+
+        val person = persondataFraTPS.hentBrukerFraTPS(personFnr)
+
         prefillNav = PrefillNav(
-                tpsPersonService = persondataFraTPS,
                 prefillAdresse = mock(),
-                institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO")
+                institutionid = "NO:noinst002",
+                institutionnavn = "NOINST002, NO INST002, NO")
 
         val prefillSed = PrefillSed(prefillNav, null)
 
@@ -42,11 +46,13 @@ class PrefillP8000APUtlandInnvTest {
         prefillData = PrefillDataModelMother.initialPrefillDataModel("P8000", personFnr, penSaksnummer = pesysSaksnummer).apply {
             skipSedkey = listOf("PENSED")
         }
+
+        personData = PersonData(person = person, ekteTypeValue = "", ektefelleBruker = null, brukerEllerGjenlevende = person, barnBrukereFraTPS = listOf())
     }
 
     @Test
     fun `forventet korrekt utfylt P8000 alderperson med mockdata fra testfiler`() {
-        val p8000 = prefill.prefill(prefillData)
+        val p8000 = prefill.prefill(prefillData, personData)
 
         assertEquals("HASNAWI-MASK", p8000.nav?.bruker?.person?.fornavn)
         assertEquals("OKOULOV", p8000.nav?.bruker?.person?.etternavn)
