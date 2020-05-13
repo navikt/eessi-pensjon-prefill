@@ -5,7 +5,7 @@ import com.nhaarman.mockitokotlin2.mock
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.prefill.ApiRequest
 import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonService
-import no.nav.eessi.pensjon.fagmodul.prefill.person.PersonDataFromTPS
+import no.nav.eessi.pensjon.fagmodul.prefill.person.MockTpsPersonServiceFactory
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.TpsPersonService
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonClient
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.RequestBuilder
@@ -28,8 +28,8 @@ object PrefillTestHelper {
         return PensjonsinformasjonService(pensjonsinformasjonClient)
     }
 
-    fun setupPersondataFraTPS(mockPersonDataFraTPS: Set<PersonDataFromTPS.MockTPS>): TpsPersonService {
-        val datatps = PersonDataFromTPS(mockPersonDataFraTPS)
+    fun setupPersondataFraTPS(mockPersonDataFraTPS: Set<MockTpsPersonServiceFactory.MockTPS>): TpsPersonService {
+        val datatps = MockTpsPersonServiceFactory(mockPersonDataFraTPS)
         return datatps.mockTpsPersonService()
     }
 

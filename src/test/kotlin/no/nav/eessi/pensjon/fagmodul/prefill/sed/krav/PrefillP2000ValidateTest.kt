@@ -2,10 +2,12 @@ package no.nav.eessi.pensjon.fagmodul.prefill.sed.krav
 
 import com.nhaarman.mockitokotlin2.mock
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
+import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjon
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PersonId
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonService
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillSEDService
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillAdresse
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.TpsPersonService
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
@@ -19,8 +21,7 @@ import org.mockito.junit.jupiter.MockitoExtension
 @ExtendWith(MockitoExtension::class)
 class PrefillP2000ValidateTest {
 
-    private lateinit var prefillP2000: PrefillP2000
-    lateinit var prefillNav: PrefillNav
+    private lateinit var prefillNav: PrefillNav
 
     @Mock
     lateinit var dataFromPEN: PensjonsinformasjonService
@@ -28,24 +29,22 @@ class PrefillP2000ValidateTest {
     @Mock
     lateinit var persondataFraTPS: TpsPersonService
 
-    @Mock
-    lateinit var sakHelper: PrefillP2xxxPensjon
+    private lateinit var prefillSEDService: PrefillSEDService
 
-    @Mock
-    lateinit var tpsPersonService: TpsPersonService
 
     @BeforeEach
     fun before() {
-        prefillNav = PrefillNav(tpsPersonService,
-                prefillAdresse = mock<PrefillAdresse>(),
-                institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO")
-        prefillP2000 = PrefillP2000(prefillNav, dataFromPEN, persondataFraTPS)
+        prefillNav = PrefillNav(prefillAdresse = mock<PrefillAdresse>(),
+                institutionid = "NO:noinst002",
+                institutionnavn = "NOINST002, NO INST002, NO")
+        prefillSEDService = PrefillSEDService(prefillNav, persondataFraTPS, EessiInformasjon(), dataFromPEN)
+
     }
 
     @Test
     fun `call prefillAndPreview  Exception ved validating SED`() {
         assertThrows<ValidationException> {
-            prefillP2000.prefill(generatePrefillModel())
+            prefillSEDService.prefill(generatePrefillModel())
         }
     }
 

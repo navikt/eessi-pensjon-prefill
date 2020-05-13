@@ -1,6 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.person
 
-import no.nav.eessi.pensjon.fagmodul.prefill.model.Prefill
+import no.nav.eessi.pensjon.fagmodul.prefill.model.PersonData
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Pensjon
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
@@ -9,11 +9,11 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 //TODO: Denne klasser vil nok utgå når alle SED er klar med egen Preutfylling..
-class PrefillSed(private val prefillNav: PrefillNav, private val pensjon: Pensjon?) : Prefill {
+class PrefillSed(private val prefillNav: PrefillNav, private val pensjon: Pensjon?) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillSed::class.java) }
 
-    override fun prefill(prefillData: PrefillDataModel): SED {
+    fun prefill(prefillData: PrefillDataModel, personData: PersonData): SED {
 
         logger.debug("----------------------------------------------------------")
 
@@ -30,10 +30,13 @@ class PrefillSed(private val prefillNav: PrefillNav, private val pensjon: Pensjo
             sed.nav = null
         } else {
             //henter opp persondata
-            sed.nav = prefillNav.prefill(penSaksnummer = prefillData.penSaksnummer,
+            sed.nav = prefillNav.prefill(
+                    penSaksnummer = prefillData.penSaksnummer,
                     bruker = prefillData.bruker,
                     avdod = prefillData.avdod,
-                    brukerInformasjon = prefillData.getPersonInfoFromRequestData())
+                    personData = personData,
+                    brukerInformasjon = prefillData.getPersonInfoFromRequestData()
+            )
         }
         logger.debug("[${prefillData.getSEDid()}] Preutfylling Utfylling NAV")
 

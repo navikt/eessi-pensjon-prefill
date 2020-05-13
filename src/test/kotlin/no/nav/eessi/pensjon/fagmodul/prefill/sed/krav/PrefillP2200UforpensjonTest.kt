@@ -1,12 +1,13 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed.krav
 
 import com.nhaarman.mockitokotlin2.mock
-import no.nav.eessi.pensjon.fagmodul.prefill.model.Prefill
+import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjon
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModelMother.initialPrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonService
-import no.nav.eessi.pensjon.fagmodul.prefill.person.PersonDataFromTPS
+import no.nav.eessi.pensjon.fagmodul.prefill.person.MockTpsPersonServiceFactory
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillSEDService
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.lesPensjonsdataFraFil
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.readJsonResponse
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.setupPersondataFraTPS
@@ -26,21 +27,20 @@ class PrefillP2200UforpensjonTest {
     private val personFnr = generateRandomFnr(67)
 
     lateinit var prefillData: PrefillDataModel
-    lateinit var prefill: Prefill
+    lateinit var prefill: PrefillP2200
     lateinit var prefillNav: PrefillNav
     lateinit var dataFromPEN: PensjonsinformasjonService
+    private lateinit var prefillSEDService: PrefillSEDService
 
     @BeforeEach
     fun setup() {
         val persondataFraTPS = setupPersondataFraTPS(setOf(
-                PersonDataFromTPS.MockTPS("Person-20000.json", personFnr, PersonDataFromTPS.MockTPS.TPSType.PERSON),
-                PersonDataFromTPS.MockTPS("Person-21000.json", generateRandomFnr(43), PersonDataFromTPS.MockTPS.TPSType.BARN),
-                PersonDataFromTPS.MockTPS("Person-22000.json", generateRandomFnr(17), PersonDataFromTPS.MockTPS.TPSType.BARN)
+                MockTpsPersonServiceFactory.MockTPS("Person-20000.json", personFnr, MockTpsPersonServiceFactory.MockTPS.TPSType.PERSON)
         ))
         prefillNav = PrefillNav(
-                tpsPersonService = persondataFraTPS,
                 prefillAdresse = mock<PrefillAdresse>(),
-                institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO")
+                institutionid = "NO:noinst002",
+                institutionnavn = "NOINST002, NO INST002, NO")
 
         dataFromPEN = lesPensjonsdataFraFil("P2200-UP-INNV.xml")
 
@@ -49,6 +49,8 @@ class PrefillP2200UforpensjonTest {
         prefillData = initialPrefillDataModel("P2200", personFnr, penSaksnummer = "22874955").apply {
             partSedAsJson = mutableMapOf("PersonInfo" to readJsonResponse("other/person_informasjon_selvb.json"))
         }
+        prefillSEDService = PrefillSEDService(prefillNav, persondataFraTPS, EessiInformasjon(), dataFromPEN)
+
     }
 
     @Test
@@ -57,7 +59,7 @@ class PrefillP2200UforpensjonTest {
 
         assertNotNull(pendata.brukersSakerListe)
 
-        val P2200 = prefill.prefill(prefillData)
+        val P2200 = prefillSEDService.prefill(prefillData)
         val p2200Actual = P2200.toJsonSkipEmpty()
         assertNotNull(p2200Actual)
     }

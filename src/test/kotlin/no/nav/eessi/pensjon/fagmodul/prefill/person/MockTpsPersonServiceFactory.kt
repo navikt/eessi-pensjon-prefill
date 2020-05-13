@@ -14,7 +14,7 @@ import no.nav.tjeneste.virksomhet.person.v3.informasjon.*
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonResponse
 import org.springframework.util.ResourceUtils
 
-class PersonDataFromTPS(private val mocktps: Set<MockTPS>) {
+class MockTpsPersonServiceFactory(private val mocktps: Set<MockTPS>) {
 
     private fun initMockHentPersonResponse(mockTPS: MockTPS, mockTPSset: Set<MockTPS>): HentPersonResponse {
         val resource = ResourceUtils.getFile("classpath:personv3/${mockTPS.mockFile}").readText()

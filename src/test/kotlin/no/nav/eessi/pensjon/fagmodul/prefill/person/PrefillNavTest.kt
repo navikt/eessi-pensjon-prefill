@@ -4,6 +4,7 @@ import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import no.nav.eessi.pensjon.fagmodul.prefill.model.BrukerInformasjon
+import no.nav.eessi.pensjon.fagmodul.prefill.model.PersonData
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PersonId
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.FodselsnummerMother
@@ -18,6 +19,7 @@ import no.nav.eessi.pensjon.services.kodeverk.KodeverkClient
 import no.nav.eessi.pensjon.utils.convertToXMLocal
 import no.nav.eessi.pensjon.utils.createXMLCalendarFromString
 import no.nav.eessi.pensjon.utils.mapAnyToJson
+import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.*
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
@@ -44,7 +46,6 @@ class PrefillNavTest {
     fun beforeStart() {
 
         prefillNav = PrefillNav(
-                mockTpsPersonService,
                 PrefillAdresse(PostnummerService(), kodeverkClient),
                 someInstitutionId,
                 someIntitutionNavn)
@@ -54,7 +55,9 @@ class PrefillNavTest {
     fun `prefill med tom respons fra TPS`() {
         val prefillData = PrefillDataModel(penSaksnummer = somePenSaksnr, bruker = PersonId("somePersonNr", "dummy"), avdod = null)
 
-        val actual = prefillNav.prefill(prefillData.penSaksnummer, prefillData.bruker, prefillData.avdod, true, prefillData.getPersonInfoFromRequestData())
+        val personData = PersonData(person = null, ektefelleBruker = null, ekteTypeValue = "", brukerEllerGjenlevende = null, barnBrukereFraTPS = listOf())
+
+        val actual = prefillNav.prefill(prefillData.penSaksnummer, prefillData.bruker, prefillData.avdod, personData, prefillData.getPersonInfoFromRequestData())
         val expected = Nav(
                 eessisak = listOf(EessisakItem(institusjonsid =  someInstitutionId, institusjonsnavn = someIntitutionNavn, saksnummer =  somePenSaksnr, land =  "NO")),
                 krav = Krav(LocalDate.now().toString()))
@@ -72,10 +75,9 @@ class PrefillNavTest {
         val forelder = lagTPSBruker(foreldersPin, "Christopher", "Robin").medBarn(barnetsPin)
         val barn = lagTPSBruker(barnetsPin, "Ole", "Brum")
 
-        whenever(mockTpsPersonService.hentBrukerFraTPS(foreldersPin)).thenReturn(forelder)
-        whenever(mockTpsPersonService.hentBrukerFraTPS(barnetsPin)).thenReturn(barn)
+        val personData = PersonData(person = forelder, ektefelleBruker = null, ekteTypeValue = "", brukerEllerGjenlevende = forelder, barnBrukereFraTPS = listOf(barn))
 
-        val actual = prefillNav.prefill(prefillData.penSaksnummer, prefillData.bruker, prefillData.avdod, true, prefillData.getPersonInfoFromRequestData())
+        val actual = prefillNav.prefill(prefillData.penSaksnummer, prefillData.bruker, prefillData.avdod, personData, prefillData.getPersonInfoFromRequestData())
 
         val expected = Nav(
                 eessisak = listOf(EessisakItem(institusjonsid =  someInstitutionId, institusjonsnavn = someIntitutionNavn, saksnummer =  somePenSaksnr, land =  "NO")),
@@ -106,10 +108,9 @@ class PrefillNavTest {
 
         barn.withHarFraRolleI(Familierelasjon().withTilRolle(Familierelasjoner().withValue("FARA")).withTilPerson(far))
 
-        whenever(mockTpsPersonService.hentBrukerFraTPS(someBarnPersonNr)).thenReturn(barn)
-        whenever(mockTpsPersonService.hentBrukerFraTPS(somePersonNr)).thenReturn(far)
+        val personData = PersonData(person = far, ektefelleBruker = null, ekteTypeValue = "", brukerEllerGjenlevende = far, barnBrukereFraTPS = listOf(barn))
 
-        val actual = prefillNav.prefill(prefillData.penSaksnummer, prefillData.bruker, prefillData.avdod, true, prefillData.getPersonInfoFromRequestData())
+        val actual = prefillNav.prefill(prefillData.penSaksnummer, prefillData.bruker, prefillData.avdod, personData, prefillData.getPersonInfoFromRequestData())
         val expected = Nav(
                 eessisak = listOf(EessisakItem(institusjonsid =  someInstitutionId, institusjonsnavn = someIntitutionNavn, saksnummer =  somePenSaksnr, land =  "NO")),
                 krav = Krav(LocalDate.now().toString()),
@@ -144,11 +145,9 @@ class PrefillNavTest {
         val ektefelle = pair.second
 
         val prefillData = PrefillDataModel(penSaksnummer = somePenSaksnr, bruker = PersonId(somePersonNr, "dummy"), avdod = null)
+        val personData = PersonData(person = person, ektefelleBruker = ektefelle, ekteTypeValue = "EKTE", brukerEllerGjenlevende = person, barnBrukereFraTPS = listOf())
 
-        whenever(mockTpsPersonService.hentBrukerFraTPS(somePersonNr)).thenReturn(person)
-        whenever(mockTpsPersonService.hentBrukerFraTPS(somerEktefellePersonNr)).thenReturn(ektefelle)
-
-        val actual = prefillNav.prefill(prefillData.penSaksnummer, prefillData.bruker, prefillData.avdod, true, prefillData.getPersonInfoFromRequestData())
+        val actual = prefillNav.prefill(prefillData.penSaksnummer, prefillData.bruker, prefillData.avdod, personData, prefillData.getPersonInfoFromRequestData())
 
         val expected = Nav(
                 eessisak = listOf(EessisakItem(institusjonsid =  someInstitutionId, institusjonsnavn = someIntitutionNavn, saksnummer =  somePenSaksnr, land =  "NO")),
@@ -162,7 +161,7 @@ class PrefillNavTest {
                         type = "ektefelle"
                 )
         )
-        assertEquals(expected, actual)
+        assertEquals(expected.toJsonSkipEmpty(), actual.toJsonSkipEmpty())
     }
 
     @Test
@@ -182,10 +181,10 @@ class PrefillNavTest {
         val ektefelle = pair.second
 
         val prefillData = PrefillDataModel(penSaksnummer = somePenSaksnr, bruker = PersonId(somePersonNr, "dummy"), avdod = null)
-        whenever(mockTpsPersonService.hentBrukerFraTPS(somePersonNr)).thenReturn(person)
-        whenever(mockTpsPersonService.hentBrukerFraTPS(somerEktefellePersonNr)).thenReturn(ektefelle)
 
-        val actual = prefillNav.prefill(prefillData.penSaksnummer, prefillData.bruker, prefillData.avdod, true, prefillData.getPersonInfoFromRequestData())
+        val personData = PersonData(person = person, ektefelleBruker = ektefelle, ekteTypeValue = "REPA", brukerEllerGjenlevende = person, barnBrukereFraTPS = listOf())
+
+        val actual = prefillNav.prefill(prefillData.penSaksnummer, prefillData.bruker, prefillData.avdod, personData, prefillData.getPersonInfoFromRequestData())
 
         val expected = Nav(
                 eessisak = listOf(EessisakItem(institusjonsid =  someInstitutionId, institusjonsnavn = someIntitutionNavn, saksnummer =  somePenSaksnr, land =  "NO")),
@@ -219,10 +218,10 @@ class PrefillNavTest {
         val ektefelle = pair.second
 
         val prefillData = PrefillDataModel(penSaksnummer = somePenSaksnr, bruker = PersonId(somePersonNr, "dummy"), avdod = null)
-        whenever(mockTpsPersonService.hentBrukerFraTPS(somePersonNr)).thenReturn(person)
-        whenever(mockTpsPersonService.hentBrukerFraTPS(somerEktefellePersonNr)).thenReturn(ektefelle)
 
-        val actual = prefillNav.prefill(prefillData.penSaksnummer, prefillData.bruker, prefillData.avdod, true, prefillData.getPersonInfoFromRequestData())
+        val personData = PersonData(person = person, ektefelleBruker = ektefelle, ekteTypeValue = "SAMB", brukerEllerGjenlevende = person, barnBrukereFraTPS = listOf())
+
+        val actual = prefillNav.prefill(prefillData.penSaksnummer, prefillData.bruker, prefillData.avdod, personData, prefillData.getPersonInfoFromRequestData())
 
         val expected = Nav(
                 eessisak = listOf(EessisakItem(institusjonsid =  someInstitutionId, institusjonsnavn = someIntitutionNavn, saksnummer =  somePenSaksnr, land =  "NO")),
@@ -258,7 +257,9 @@ class PrefillNavTest {
                 .whenever(mockTpsPersonService)
                 .hentBrukerFraTPS(somePersonNr)
 
-        val actual = prefillNav.prefill(prefillData.penSaksnummer, prefillData.bruker, prefillData.avdod, false, prefillData.getPersonInfoFromRequestData())
+        val personData = PersonData(person = person, ektefelleBruker = null, ekteTypeValue = "", brukerEllerGjenlevende = person, barnBrukereFraTPS = listOf())
+
+        val actual = prefillNav.prefill(prefillData.penSaksnummer, prefillData.bruker, prefillData.avdod, personData, prefillData.getPersonInfoFromRequestData())
 
         val fornavn = "Fornavn Ole Mellomnavn Mellomn"
         val expected = Nav(
@@ -305,7 +306,9 @@ class PrefillNavTest {
         whenever(mockTpsPersonService.hentBrukerFraTPS(brukerensPin)).thenReturn(brukeren)
         doReturn("NO").whenever(kodeverkClient).finnLandkode2("NOR")
 
-        val actual = prefillNav.prefill(penSaksnummer = prefillData.penSaksnummer, bruker = prefillData.bruker, avdod = prefillData.avdod, brukerInformasjon = prefillData.getPersonInfoFromRequestData())
+        val personData = PersonData(person = brukeren, ektefelleBruker = null, ekteTypeValue = "", brukerEllerGjenlevende = brukeren, barnBrukereFraTPS = listOf())
+
+        val actual = prefillNav.prefill(penSaksnummer = prefillData.penSaksnummer, bruker = prefillData.bruker, avdod = prefillData.avdod, personData = personData, brukerInformasjon = prefillData.getPersonInfoFromRequestData())
 
         val expected = Nav(
                 eessisak = listOf(EessisakItem(institusjonsid =  someInstitutionId, institusjonsnavn = someIntitutionNavn, saksnummer =  somePenSaksnr, land =  "NO")),
