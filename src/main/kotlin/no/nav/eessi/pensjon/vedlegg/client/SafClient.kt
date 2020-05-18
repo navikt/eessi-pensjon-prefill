@@ -1,5 +1,6 @@
 package no.nav.eessi.pensjon.vedlegg.client
 
+import com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import no.nav.eessi.pensjon.metrics.MetricsHelper
@@ -63,9 +64,12 @@ class SafClient(private val safGraphQlOidcRestTemplate: RestTemplate,
             } catch (se: HttpServerErrorException) {
                 logger.error("En feil oppstod under henting av dokument metadata fra SAF: ${se.responseBodyAsString}", se)
                 throw SafException("En feil oppstod under henting av dokument metadata fra SAF: ${se.responseBodyAsString}", se.statusCode)
+            } catch (mke: MissingKotlinParameterException) {
+                logger.error("En feil oppstod ved mapping av metadata fra SAF" , mke)
+                throw SafException("En feil oppstod ved mapping av metadata fra SAF", HttpStatus.INTERNAL_SERVER_ERROR)
             } catch (ex: Exception) {
                 logger.error("En feil oppstod under henting av dokument metadata fra SAF: $ex")
-                throw SafException("En feil oppstod under henting av dokument metadata fra SAF: $ex", HttpStatus.INTERNAL_SERVER_ERROR)
+                throw SafException("En feil oppstod under henting av dokument metadata fra SAF", HttpStatus.INTERNAL_SERVER_ERROR)
             }
         }
     }

@@ -11,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
+import org.junit.jupiter.api.fail
 import org.mockito.ArgumentMatchers
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
@@ -68,6 +69,21 @@ class SafClientTest {
         val resp = safClient.hentDokumentMetadata("1234567891000")
 
         assertEquals(null, resp.data.dokumentoversiktBruker.journalposter[0].tittel)
+    }
+
+    @Test
+    fun `gitt en mappingfeil når metadata hentes så kast en feil`() {
+        val responseJson = String(Files.readAllBytes(Paths.get("src/test/resources/json/saf/hentMetadataResponseMedError.json")))
+
+        whenever(safGraphQlOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java)))
+                .thenReturn(ResponseEntity(responseJson, HttpStatus.OK))
+
+        try {
+            safClient.hentDokumentMetadata("1234567891000")
+            fail("En feil burde ha oppstått her")
+        } catch (ex: SafException) {
+            assertEquals("En feil oppstod ved mapping av metadata fra SAF", ex.message)
+        }
     }
 
     @Test
