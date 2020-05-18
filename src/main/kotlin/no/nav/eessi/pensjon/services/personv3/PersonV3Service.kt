@@ -81,7 +81,7 @@ class PersonV3Service(private val service: PersonV3,
                 logger.error("Kaller PersonV3.hentPerson service Feilet $personSikkerhetsbegrensning")
                 throw PersonV3SikkerhetsbegrensningException(personSikkerhetsbegrensning.message!!)
             } catch (ex: Exception) {
-                logger.error("Ukejnt feil i PersonV3, ${ex.message}", ex)
+                logger.error("Ukjent feil i PersonV3: fnr: $fnr, ${ex.message}", ex)
                 throw PersonV3IkkeFunnetException("Ukent feil ved PersonV3")
             }
         }
