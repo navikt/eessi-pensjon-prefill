@@ -1,6 +1,8 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed.krav
 
+import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.whenever
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjon
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PersonId
@@ -11,6 +13,7 @@ import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillSEDService
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillAdresse
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.TpsPersonService
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -31,14 +34,19 @@ class PrefillP2000ValidateTest {
 
     private lateinit var prefillSEDService: PrefillSEDService
 
+    private lateinit var person: Bruker
+
 
     @BeforeEach
     fun before() {
+        person = lagTPSBruker("12345678901", "Ola", "Testbruker")
+
+        whenever(persondataFraTPS.hentBrukerFraTPS(any())).thenReturn(person)
+
         prefillNav = PrefillNav(prefillAdresse = mock<PrefillAdresse>(),
                 institutionid = "NO:noinst002",
                 institutionnavn = "NOINST002, NO INST002, NO")
         prefillSEDService = PrefillSEDService(prefillNav, persondataFraTPS, EessiInformasjon(), dataFromPEN)
-
     }
 
     @Test
@@ -56,4 +64,13 @@ class PrefillP2000ValidateTest {
             institution = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
         }
     }
+
+    private fun lagTPSBruker(foreldersPin: String, fornavn: String, etternavn: String) =
+            no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker()
+                    .withPersonnavn(Personnavn()
+                            .withEtternavn(etternavn)
+                            .withFornavn(fornavn))
+                    .withKjoenn(Kjoenn().withKjoenn(Kjoennstyper().withValue("M")))
+                    .withAktoer(PersonIdent().withIdent(NorskIdent().withIdent(foreldersPin)))
+                    .withStatsborgerskap(Statsborgerskap().withLand(Landkoder().withValue("NOR")))
 }

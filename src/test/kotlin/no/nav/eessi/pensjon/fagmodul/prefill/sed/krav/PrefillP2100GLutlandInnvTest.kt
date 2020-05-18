@@ -47,9 +47,12 @@ class PrefillP2100GLutlandInnvTest {
         dataFromPEN = lesPensjonsdataFraFil("P2100-GL-UTL-INNV.xml")
 
 
-        prefillData = PrefillDataModelMother.initialPrefillDataModel("P2100", personFnr, penSaksnummer = pesysSaksnummer, avdod = PersonId(avdodPersonFnr,"112233445566")).apply {
+        prefillData = PrefillDataModelMother.initialPrefillDataModel(
+                sedType = "P2100",
+                pinId = personFnr,
+                penSaksnummer = pesysSaksnummer,
+                avdod = PersonId(avdodPersonFnr,"112233445566")).apply {
             skipSedkey = listOf("PENSED")
-
             partSedAsJson = mutableMapOf(
                     "PersonInfo" to readJsonResponse("other/person_informasjon_selvb.json"),
                     "P4000" to readJsonResponse("other/p4000_trygdetid_part.json"))
@@ -76,7 +79,7 @@ class PrefillP2100GLutlandInnvTest {
     }
 
     @Test
-    fun `forventet korrekt utfylt P2200 uforepensjon med mockdata fra testfiler`() {
+    fun `forventet korrekt utfylt P2100 uforepensjon med mockdata fra testfiler`() {
         val p2100 = prefillSEDService.prefill(prefillData)
 
         assertEquals(null, p2100.nav?.barn)

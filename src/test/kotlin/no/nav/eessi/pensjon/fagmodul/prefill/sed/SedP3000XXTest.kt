@@ -1,6 +1,8 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed
 
+import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.whenever
 import no.nav.eessi.pensjon.fagmodul.prefill.ApiRequest
 import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjon
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
@@ -9,6 +11,7 @@ import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.FodselsnummerMother
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillAdresse
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.TpsPersonService
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.*
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -35,8 +38,11 @@ class SedP3000XXTest {
 
     private val personFnr = FodselsnummerMother.generateRandomFnr(68)
 
+    private lateinit var person: Bruker
+
     @BeforeEach
     fun setupAndRunAtStart() {
+        person = lagTPSBruker(personFnr, "Ola", "Testbruker")
 
         prefillNav = PrefillNav(
                 prefillAdresse = mock<PrefillAdresse>(),
@@ -44,11 +50,13 @@ class SedP3000XXTest {
                 institutionnavn = "NOINST002, NO INST002, NO")
 
         prefillSEDService = PrefillSEDService(prefillNav, dataFromTPS, eessiInformasjon, dataFromPEN)
+        whenever(dataFromTPS.hentBrukerFraTPS(any())).thenReturn(person)
     }
 
 
     @Test
     fun testP3000_AT() {
+
         val datamodel = getMockDataModel("P3000_AT", personFnr)
 
         val sed = prefillSEDService.prefill(datamodel)
@@ -88,5 +96,14 @@ class SedP3000XXTest {
         )
         return ApiRequest.buildPrefillDataModelConfirm(req, "12345", null)
     }
+
+    private fun lagTPSBruker(foreldersPin: String, fornavn: String, etternavn: String) =
+            no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker()
+                    .withPersonnavn(Personnavn()
+                            .withEtternavn(etternavn)
+                            .withFornavn(fornavn))
+                    .withKjoenn(Kjoenn().withKjoenn(Kjoennstyper().withValue("M")))
+                    .withAktoer(PersonIdent().withIdent(NorskIdent().withIdent(foreldersPin)))
+                    .withStatsborgerskap(Statsborgerskap().withLand(Landkoder().withValue("NOR")))
 
 }

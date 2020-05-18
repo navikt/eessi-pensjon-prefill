@@ -4,7 +4,6 @@ import no.nav.eessi.pensjon.fagmodul.prefill.model.PersonData
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonService
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
-import no.nav.eessi.pensjon.fagmodul.prefill.tps.TpsPersonService
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Bruker
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Nav
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Pensjon
@@ -18,11 +17,9 @@ import org.springframework.web.bind.annotation.ResponseStatus
  * preutfylling av NAV-P2000 SED for søknad krav om alderpensjon
  */
 class PrefillP2000(private val prefillNav: PrefillNav,
-                   private val pensjonsinformasjonService: PensjonsinformasjonService,
-                   private val tpsPersonService: TpsPersonService)  {
+                   private val pensjonsinformasjonService: PensjonsinformasjonService)  {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillP2000::class.java) }
-
 
     fun prefill(prefillData: PrefillDataModel, personData: PersonData): SED {
         val sedId = prefillData.getSEDid()
@@ -64,7 +61,7 @@ class PrefillP2000(private val prefillNav: PrefillNav,
                         val pensjon = PrefillP2xxxPensjon.createPensjon(
                                 prefillData.bruker.norskIdent,
                                 prefillData.penSaksnummer,
-                                eventuellGjenlevende(prefillData),
+                                eventuellGjenlevende(prefillData, personData.forsikretPerson),
                                 pensak,
                                 prefillData.andreInstitusjon)
                         if (prefillData.kanFeltSkippes("PENSED")) {
@@ -85,11 +82,10 @@ class PrefillP2000(private val prefillNav: PrefillNav,
         return prefillData.sed
     }
 
-    private fun eventuellGjenlevende(prefillData: PrefillDataModel): Bruker? {
-        return if (!prefillData.kanFeltSkippes("PENSED") && prefillData.avdod != null) {
-            logger.debug("          Utfylling gjenlevende (etterlatt)")
-            val gjenlevendeBruker = tpsPersonService.hentBrukerFraTPS(prefillData.bruker.norskIdent)
-            if (gjenlevendeBruker == null) null else prefillNav.createBruker(gjenlevendeBruker, null, null)
+    private fun eventuellGjenlevende(prefillData: PrefillDataModel, gjenlevendeBruker: no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker?): Bruker? {
+        return if (prefillData.avdod != null) {
+            logger.info("          Utfylling gjenlevende (etterlatt persjon.gjenlevende)")
+            prefillNav.createBruker(gjenlevendeBruker!!, null, null)
         } else null
     }
 

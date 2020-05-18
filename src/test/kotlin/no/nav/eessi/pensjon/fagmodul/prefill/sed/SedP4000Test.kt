@@ -8,6 +8,7 @@ import no.nav.eessi.pensjon.fagmodul.prefill.model.PersonData
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillSed
 import no.nav.eessi.pensjon.fagmodul.sedmodel.*
 import no.nav.eessi.pensjon.utils.*
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -140,7 +141,7 @@ class SedP4000Test {
         )
         val data = ApiRequest.buildPrefillDataModelConfirm(req, "12345", null)
 
-        val personData = PersonData(person = null, ekteTypeValue = "", ektefelleBruker = null, brukerEllerGjenlevende = null, barnBrukereFraTPS = listOf())
+        val personData = PersonData(forsikretPerson = Bruker(), ekteTypeValue = "", ektefelleBruker = null, brukerEllerGjenlevende = null, barnBrukereFraTPS = listOf())
 
         val sed = pre4000.prefill(data, personData)
         assertNull(sed.trygdetid)
@@ -176,7 +177,7 @@ class SedP4000Test {
         assertEquals("12345", data.bruker.norskIdent)
 
         whenever(prefillSed.prefill(any(), any())).thenReturn(data.sed)
-        val sed = pre4000.prefill(data, PersonData(person = null, ekteTypeValue = "", brukerEllerGjenlevende = null, ektefelleBruker = null, barnBrukereFraTPS = listOf()))
+        val sed = pre4000.prefill(data, PersonData(forsikretPerson = Bruker(), ekteTypeValue = "", brukerEllerGjenlevende = null, ektefelleBruker = null, barnBrukereFraTPS = listOf()))
         assertNotNull(sed)
     }
 }

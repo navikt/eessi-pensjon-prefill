@@ -49,7 +49,7 @@ class PrefillP2200UPUtlandInnvTest {
 
         dataFromPEN = lesPensjonsdataFraFil("P2200-UP-INNV.xml")
 
-        prefill = PrefillP2200(prefillNav, dataFromPEN, persondataFraTPS)
+        prefill = PrefillP2200(prefillNav, dataFromPEN)
 
         prefillData = PrefillDataModelMother.initialPrefillDataModel("P2200", personFnr, penSaksnummer = pesysSaksnummer).apply {
             partSedAsJson = mutableMapOf(

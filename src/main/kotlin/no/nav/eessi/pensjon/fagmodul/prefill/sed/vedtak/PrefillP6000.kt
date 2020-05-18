@@ -6,15 +6,14 @@ import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonService
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.PrefillP6000Pensjon.createPensjon
-import no.nav.eessi.pensjon.fagmodul.prefill.tps.TpsPersonService
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Bruker
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 class PrefillP6000(private val prefillNav: PrefillNav,
                    private val eessiInfo: EessiInformasjon,
-                   private val dataFromPESYS: PensjonsinformasjonService,
-                   private val tpsPersonService: TpsPersonService) {
+                   private val dataFromPESYS: PensjonsinformasjonService) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillP6000::class.java) }
 
@@ -32,13 +31,9 @@ class PrefillP6000(private val prefillNav: PrefillNav,
         logger.info("Andreinstitusjoner: ${prefillData.andreInstitusjon} ")
 
         logger.debug("Henter opp Persondata/Gjenlevende fra TPS")
+        val gjenlevende = eventuellGjenlevende(prefillData, personData.forsikretPerson)
 
-        val gjenlevende = if (prefillData.avdod != null) {
-            val gjenlevendeBruker = tpsPersonService.hentBrukerFraTPS(prefillData.bruker.norskIdent)
-            if (gjenlevendeBruker == null) null else prefillNav.createBruker(gjenlevendeBruker, null, null)
-        } else null
-
-        logger.debug("Henter opp Pernsjondata fra PESYS")
+        logger.debug("Henter opp Pensjonsdata fra PESYS")
         sed.pensjon = createPensjon(dataFromPESYS, gjenlevende, prefillData.vedtakId, prefillData.andreInstitusjon)
 
         logger.debug("Henter opp Persondata fra TPS")
@@ -46,6 +41,13 @@ class PrefillP6000(private val prefillNav: PrefillNav,
 
         logger.debug("-------------------| Preutfylling [$sedId] END |------------------- ")
         return prefillData.sed
+    }
+
+    private fun eventuellGjenlevende(prefillData: PrefillDataModel, gjenlevendeBruker: no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker?): Bruker? {
+        return if (!prefillData.kanFeltSkippes("PENSED") && prefillData.avdod != null) {
+            logger.info("          Utfylling gjenlevende (etterlatt persjon.gjenlevende)")
+            prefillNav.createBruker(gjenlevendeBruker!!, null, null)
+        } else null
     }
 }
 

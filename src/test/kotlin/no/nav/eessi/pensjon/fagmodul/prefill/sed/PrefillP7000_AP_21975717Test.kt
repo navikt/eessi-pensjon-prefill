@@ -59,7 +59,7 @@ class PrefillP7000_AP_21975717Test {
                     "P4000" to readJsonResponse("other/p4000_trygdetid_part.json"))
         }
 
-        personData = PersonData(person = person, ekteTypeValue = "", ektefelleBruker = null, brukerEllerGjenlevende = person, barnBrukereFraTPS = listOf())
+        personData = PersonData(forsikretPerson = person!!, ekteTypeValue = "", ektefelleBruker = null, brukerEllerGjenlevende = person, barnBrukereFraTPS = listOf())
     }
 
     @Test

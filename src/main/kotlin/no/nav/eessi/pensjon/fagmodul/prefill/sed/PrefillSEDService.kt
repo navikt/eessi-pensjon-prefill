@@ -37,16 +37,16 @@ class PrefillSEDService(private val prefillNav: PrefillNav,
 
         return when (sedValue) {
             SEDType.P6000 -> {
-                PrefillP6000(prefillNav, eessiInformasjon, pensjonsinformasjonService, tpsPersonService).prefill(prefillData, hentPersoner(prefillData, true))
+                PrefillP6000(prefillNav, eessiInformasjon, pensjonsinformasjonService).prefill(prefillData, hentPersoner(prefillData, true))
             }
             SEDType.P2000 -> {
-                PrefillP2000(prefillNav, pensjonsinformasjonService, tpsPersonService).prefill(prefillData, hentPersoner(prefillData, true))
+                PrefillP2000(prefillNav, pensjonsinformasjonService).prefill(prefillData, hentPersoner(prefillData, true))
             }
             SEDType.P2200 -> {
-                PrefillP2200(prefillNav, pensjonsinformasjonService, tpsPersonService).prefill(prefillData, hentPersoner(prefillData, true))
+                PrefillP2200(prefillNav, pensjonsinformasjonService).prefill(prefillData, hentPersoner(prefillData, true))
             }
             SEDType.P2100 -> {
-                PrefillP2100(prefillNav, pensjonsinformasjonService, tpsPersonService).prefill(prefillData, hentPersoner(prefillData, true))
+                PrefillP2100(prefillNav, pensjonsinformasjonService).prefill(prefillData, hentPersoner(prefillData, true))
             }
             SEDType.P4000 -> {
                 PrefillP4000(getPrefillSed(prefillData)).prefill(prefillData, hentPersoner(prefillData))
@@ -82,20 +82,24 @@ class PrefillSEDService(private val prefillNav: PrefillNav,
 
     private fun hentPersoner(prefillData: PrefillDataModel, fyllUtBarnListe: Boolean = false): PersonData {
         // FIXME - det veksles mellom gjenlevende og bruker ... usikkert om dette er rett...
+        logger.info("Henter hovedperson/gjenlevende eller avdød (avdød: ${prefillData.avdod == null})")
         val brukerEllerGjenlevende = tpsPersonService.hentBrukerFraTPS(prefillData.avdod?.norskIdent ?: prefillData.bruker.norskIdent)
 
+        logger.info("Henter hovedperson/forsikret")
         val brukerFraTps = tpsPersonService.hentBrukerFraTPS(prefillData.bruker.norskIdent)
-        val (ektepinid, ekteTypeValue) = filterEktefelleRelasjon(brukerFraTps)
 
+        val (ektepinid, ekteTypeValue) = filterEktefelleRelasjon(brukerFraTps)
+        logger.info("Henter ektefelle/partner (ekteType: $ekteTypeValue)")
         val ektefelleBruker = if(ektepinid.isBlank()) null else tpsPersonService.hentBrukerFraTPS(ektepinid)
 
         val barnBrukereFraTPS =
                 if (fyllUtBarnListe) {
-                    barnsPinId(tpsPersonService.hentBrukerFraTPS(prefillData.bruker.norskIdent))
-                            .mapNotNull { barn -> tpsPersonService.hentBrukerFraTPS(barn) }
+                    barnsPinId(brukerFraTps)
+                            .mapNotNull { barn -> logger.info("Henter barn fra hovedperson")
+                                tpsPersonService.hentBrukerFraTPS(barn) }
                 } else listOf()
 
-        return PersonData(brukerEllerGjenlevende = brukerEllerGjenlevende, person = brukerFraTps, ektefelleBruker = ektefelleBruker, ekteTypeValue = ekteTypeValue, barnBrukereFraTPS = barnBrukereFraTPS)
+        return PersonData(brukerEllerGjenlevende = brukerEllerGjenlevende, forsikretPerson = brukerFraTps!!, ektefelleBruker = ektefelleBruker, ekteTypeValue = ekteTypeValue, barnBrukereFraTPS = barnBrukereFraTPS)
     }
 
     private fun barnsPinId(brukerTPS: no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker?): List<String> {
