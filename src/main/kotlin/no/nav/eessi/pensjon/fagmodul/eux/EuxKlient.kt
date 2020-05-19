@@ -139,6 +139,7 @@ class EuxKlient(private val euxOidcRestTemplate: RestTemplate,
                 , euxCaseId = euxCaseId
                 , metric = GetBUC
                 , prefixErrorMessage = "Feiler ved metode GetBuc. "
+                , waitTimes = 20000L
         )
         return response.body ?: throw ServerException("Feil ved henting av BUCdata ingen data, euxCaseId $euxCaseId")
     }
