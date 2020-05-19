@@ -1,8 +1,6 @@
 package no.nav.eessi.pensjon.services.geo
 
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNotNull
-import org.junit.jupiter.api.Assertions.assertNull
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -43,7 +41,13 @@ class PostnummerServiceTest {
     fun `hente poststed for 9930`() {
         val sted = service.finnPoststed("9930")
         assertNotNull(sted)
-        assertEquals("SØR-VARANGER", sted)
+        assertEquals("NEIDEN", sted)
     }
 
+    @Test
+    fun `hente poststed for 4198`() {
+        val sted = service.finnPoststed("4198")
+        assertNotNull(sted)
+        assertEquals("FOLDØY", sted)
+    }
 }
