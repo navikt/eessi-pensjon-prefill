@@ -4,7 +4,6 @@ import no.nav.eessi.pensjon.fagmodul.prefill.model.PersonData
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonService
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Bruker
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Nav
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Pensjon
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
@@ -61,9 +60,9 @@ class PrefillP2000(private val prefillNav: PrefillNav,
                         val pensjon = PrefillP2xxxPensjon.createPensjon(
                                 prefillData.bruker.norskIdent,
                                 prefillData.penSaksnummer,
-                                eventuellGjenlevende(prefillData, personData.forsikretPerson),
                                 pensak,
-                                prefillData.andreInstitusjon)
+                                prefillData.andreInstitusjon
+                        )
                         if (prefillData.kanFeltSkippes("PENSED")) {
                             Pensjon(kravDato = pensjon.kravDato) //vi skal ha blank pensjon ved denne toggle, men vi må ha med kravdato
                         } else {
@@ -80,13 +79,6 @@ class PrefillP2000(private val prefillNav: PrefillNav,
         logger.debug("-------------------| Preutfylling [$sedId] END |------------------- ")
         validate(prefillData)
         return prefillData.sed
-    }
-
-    private fun eventuellGjenlevende(prefillData: PrefillDataModel, gjenlevendeBruker: no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker?): Bruker? {
-        return if (prefillData.avdod != null) {
-            logger.info("          Utfylling gjenlevende (etterlatt persjon.gjenlevende)")
-            prefillNav.createBruker(gjenlevendeBruker!!, null, null)
-        } else null
     }
 
     private fun validate(data: PrefillDataModel) {

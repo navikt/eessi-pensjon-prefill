@@ -43,9 +43,9 @@ object PrefillP2xxxPensjon {
      */
     fun createPensjon(personNr: String,
                       penSaksnummer: String,
-                      gjenlevende: Bruker? = null,
                       pensak: V1Sak,
-                      andreinstitusjonerItem: AndreinstitusjonerItem?): Pensjon {
+                      andreinstitusjonerItem: AndreinstitusjonerItem?,
+                      gjenlevende: Bruker? = null): Pensjon {
 
         logger.debug("4.1           Informasjon om ytelser")
 

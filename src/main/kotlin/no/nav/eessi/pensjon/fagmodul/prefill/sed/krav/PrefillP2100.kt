@@ -47,16 +47,15 @@ class PrefillP2100(private val prefillNav: PrefillNav,
                 this::class.simpleName!!)
 
         try {
-            val evtgjennlevende = eventuellGjenlevende(prefillData, personData.forsikretPerson)
             sed.pensjon =
                     if (pensak == null) Pensjon()
                     else {
                         val pensjon = PrefillP2xxxPensjon.createPensjon(
                                 prefillData.bruker.norskIdent,
                                 prefillData.penSaksnummer,
-                                evtgjennlevende,
                                 pensak,
-                                prefillData.andreInstitusjon)
+                                prefillData.andreInstitusjon,
+                                eventuellGjenlevende(prefillData, personData.forsikretPerson))
                         if (prefillData.kanFeltSkippes("PENSED")) {
                             Pensjon(
                                     kravDato = pensjon.kravDato,
