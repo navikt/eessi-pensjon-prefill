@@ -31,4 +31,19 @@ class PostnummerServiceTest {
         val sted = service.finnPoststed("1439")
         assertNull(sted)
     }
+
+    @Test
+    fun `hente poststed for 1424`() {
+        val sted = service.finnPoststed("1424")
+        assertNotNull(sted)
+        assertEquals("SKI", sted)
+    }
+
+    @Test
+    fun `hente poststed for 9930`() {
+        val sted = service.finnPoststed("9930")
+        assertNotNull(sted)
+        assertEquals("SØR-VARANGER", sted)
+    }
+
 }
