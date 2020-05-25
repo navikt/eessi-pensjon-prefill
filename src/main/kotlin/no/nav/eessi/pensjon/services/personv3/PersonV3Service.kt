@@ -5,7 +5,7 @@ import io.micrometer.core.instrument.Metrics
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import no.nav.eessi.pensjon.logging.AuditLogger
 import no.nav.eessi.pensjon.metrics.MetricsHelper
-import no.nav.eessi.pensjon.security.sts.configureRequestSamlToken
+import no.nav.eessi.pensjon.security.sts.STSClientConfig
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonPersonIkkeFunnet
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonSikkerhetsbegrensning
 import no.nav.tjeneste.virksomhet.person.v3.binding.PersonV3
@@ -25,6 +25,7 @@ import javax.annotation.PostConstruct
 @Component
 class PersonV3Service(private val service: PersonV3,
                       private val auditLogger: AuditLogger,
+                      private val stsClientConfig: STSClientConfig,
                       @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper(SimpleMeterRegistry())) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PersonV3Service::class.java) }
@@ -42,7 +43,7 @@ class PersonV3Service(private val service: PersonV3,
 
     fun hentPersonPing(): Boolean {
         logger.info("Ping PersonV3Service")
-        configureRequestSamlToken(service)
+        stsClientConfig.configureRequestSamlToken(service)
         return try {
             service.ping()
             true
@@ -56,7 +57,7 @@ class PersonV3Service(private val service: PersonV3,
     fun hentPerson(fnr: String): HentPersonResponse {
         auditLogger.logBorger("PersonV3Service.hentPerson", fnr)
         logger.info("Henter person fra PersonV3Service")
-        configureRequestSamlToken(service)
+        stsClientConfig.configureRequestSamlToken(service)
 
         val request = HentPersonRequest().apply {
             withAktoer(PersonIdent().withIdent(

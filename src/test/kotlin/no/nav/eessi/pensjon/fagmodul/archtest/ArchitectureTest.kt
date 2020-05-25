@@ -79,6 +79,7 @@ class ArchitectureTest {
         val personService = "services.person"
         val pensjonService = "services.pensjon"
         val security = "security"
+        val integrationtest = "integrationtest"
         val utils = "utils"
         val vedlegg = "vedlegg"
 
@@ -106,6 +107,7 @@ class ArchitectureTest {
                 "$root.services.pensjonsinformasjon" to pensjonService,
 
                 "$root.security.." to security,
+                "$root.integrationtest" to integrationtest,
 
                 "$root.metrics.." to utils,
                 "$root.utils.." to utils,
@@ -143,6 +145,7 @@ class ArchitectureTest {
                 .layer(metrics).definedBy(*packagesFor(metrics))
                 .layer(security).definedBy(*packagesFor(security))
                 .layer(utils).definedBy(*packagesFor(utils))
+                .layer(integrationtest).definedBy(*packagesFor(integrationtest))
                 .layer(vedlegg).definedBy(*packagesFor(vedlegg))
 
                 .whereLayer(health).mayNotBeAccessedByAnyLayer()
@@ -170,7 +173,7 @@ class ArchitectureTest {
 
                 .whereLayer(config).mayNotBeAccessedByAnyLayer()
                 .whereLayer(metrics).mayOnlyBeAccessedByLayers(health, euxService, pensjonUtlandApi)
-                .whereLayer(security).mayOnlyBeAccessedByLayers(health, euxService, aktoerregisterService, vedlegg, pensjonService, personService, kodeverkService)
+                .whereLayer(security).mayOnlyBeAccessedByLayers(health, euxService, aktoerregisterService, vedlegg, pensjonService, personService, kodeverkService, integrationtest)
 
                 .check(allClasses)
     }
@@ -179,12 +182,14 @@ class ArchitectureTest {
     fun `main layers check`() {
         val frontendAPI = "Frontend API"
         val fagmodulCore = "Fagmodul Core"
+        val integrationtest = "Integration tests"
         val services = "Services"
         val support = "Support"
         val vedlegg ="Vedlegg"
         layeredArchitecture()
                 .layer(frontendAPI).definedBy("$root.api..")
                 .layer(fagmodulCore).definedBy("$root.fagmodul..")
+                .layer(integrationtest).definedBy("$root.integrationtest..")
                 .layer(services).definedBy("$root.services..")
                 .layer(vedlegg).definedBy("$root.vedlegg..")
                 .layer(support).definedBy(
@@ -202,7 +207,8 @@ class ArchitectureTest {
                         frontendAPI,
                         fagmodulCore,
                         services,
-                        vedlegg)
+                        vedlegg,
+                        integrationtest)
                 .check(allClasses)
     }
 
@@ -285,7 +291,7 @@ class ArchitectureTest {
                 .haveNameMatching("set[A-Z]+.*")
                 .and().doNotHaveRawParameterTypes(MetricsHelper.Metric::class.java)
                 .and().areDeclaredInClassesThat().areNotAnnotatedWith(Scope::class.java) // If scope is not singleton it might be ok
-                .and().areDeclaredInClassesThat().haveNameNotMatching(".*(Template|Config)") // these use setter injection
+                .and().areDeclaredInClassesThat().haveNameNotMatching(".*(STSService|Template|Config)") // these use setter injection
                 .should().beDeclaredInClassesThat().areAnnotatedWith(springStereotype)
                 .because("Spring-components (usually singletons) must not have mutable instance fields " +
                         "as they can easily be misused and create 'race conditions'")
@@ -295,7 +301,7 @@ class ArchitectureTest {
                 .areNotFinal()
                 .and().doNotHaveRawType(MetricsHelper.Metric::class.java)
                 .and().areDeclaredInClassesThat().areNotAnnotatedWith(Scope::class.java)// If scope is not singleton it might be ok
-                .and().areDeclaredInClassesThat().haveNameNotMatching(".*(Template|Config)") // these use setter injection
+                .and().areDeclaredInClassesThat().haveNameNotMatching(".*(STSService|Template|Config)") // these use setter injection
                 .should().beDeclaredInClassesThat().areAnnotatedWith(springStereotype)
                 .because("Spring-components (usually singletons) must not have mutable instance fields " +
                         "as they can easily be misused and create 'race conditions'")

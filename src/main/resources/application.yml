@@ -21,6 +21,9 @@ no.nav.security.oidc:
 # Empty on purpose so that oidc-spring-support doesn't use http.proxy
 http.proxy.parametername:
 
+securityTokenService:
+  discoveryUrl: ${SECURITY_TOKEN_SERVICE_OPENID_CONFIGURATION_URL}
+
 # TODO: These actuator-endpoints need to be secured before going to production. Also, enable only whats needed.
 management:
   endpoints:

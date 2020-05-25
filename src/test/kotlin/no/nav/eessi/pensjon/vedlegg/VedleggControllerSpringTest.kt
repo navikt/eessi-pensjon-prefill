@@ -2,6 +2,7 @@ package no.nav.eessi.pensjon.vedlegg
 
 import com.nhaarman.mockitokotlin2.*
 import no.nav.eessi.pensjon.UnsecuredWebMvcTestLauncher
+import no.nav.eessi.pensjon.security.sts.STSService
 import no.nav.eessi.pensjon.vedlegg.client.HentdokumentInnholdResponse
 import org.hamcrest.Matchers.containsString
 import org.junit.jupiter.api.Test
@@ -23,6 +24,9 @@ class VedleggControllerSpringTest {
 
     @MockBean
     lateinit var vedleggService: VedleggService
+
+    @MockBean
+    lateinit var stsService: STSService
 
     @Autowired
     private val mockMvc: MockMvc? = null

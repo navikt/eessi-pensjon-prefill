@@ -132,6 +132,7 @@ dependencies {
     // OIDC
     implementation("no.nav.security:oidc-spring-support:${oidcTokenSupportVersion}")
     implementation("no.nav.security:oidc-test-support:${oidcTokenSupportVersion}")
+    implementation("no.nav.eessi.pensjon:ep-security-sts:0.0.3")
     testImplementation("org.pac4j:spring-webmvc-pac4j:3.2.0")
 
 

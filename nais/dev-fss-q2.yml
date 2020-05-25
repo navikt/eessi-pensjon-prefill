@@ -23,8 +23,8 @@ spec:
       value: https://wasapp-q2.adeo.no/tpsws/ws/Person/v3
     - name: OPENIDCONNECT_URL
       value: https://isso-q.adeo.no:443/isso
-    - name: SECURITY_TOKEN_SERVICE_TOKEN_URL
-      value: https://security-token-service.nais.preprod.local/rest/v1/sts/token
+    - name: SECURITY_TOKEN_SERVICE_OPENID_CONFIGURATION_URL
+      value: https://security-token-service.nais.preprod.local/rest/v1/sts/.well-known/openid-configuration
     - name: SECURITYTOKENSERVICE_URL
       value: https://sts-q2.preprod.local/SecurityTokenServiceProvider/
     - name: SECURITY_TOKEN_SERVICE_OPENID_CONFIGURATION_URL

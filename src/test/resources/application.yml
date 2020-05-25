@@ -7,6 +7,9 @@ eessi-pensjon-active-profiles: ${spring.profiles.active}
 eessi-pensjon-institusjon: 'NO:noinst002'
 eessi-pensjon-institusjon-navn: 'NOINST002, NO INST002, NO'
 
+securityTokenService:
+  discoveryUrl: 'http://example.com'
+
 #eux-rina-api_v1:
 eessipen-eux-rina:
   url: 'http://example.com:8089'

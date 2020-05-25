@@ -3,9 +3,8 @@ package no.nav.eessi.pensjon.services.personv3
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
-import io.mockk.mockkStatic
 import no.nav.eessi.pensjon.logging.AuditLogger
-import no.nav.eessi.pensjon.security.sts.configureRequestSamlToken
+import no.nav.eessi.pensjon.security.sts.STSClientConfig
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonPersonIkkeFunnet
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonSikkerhetsbegrensning
 import no.nav.tjeneste.virksomhet.person.v3.binding.PersonV3
@@ -18,7 +17,6 @@ import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Spy
 import org.mockito.junit.jupiter.MockitoExtension
-import org.springframework.test.context.ActiveProfiles
 import javax.naming.ServiceUnavailableException
 
 @ExtendWith(MockitoExtension::class)
@@ -26,6 +24,9 @@ class PersonV3ServiceTest {
 
     @MockK
     private lateinit var personV3Mock: PersonV3
+
+    @MockK
+    private lateinit var stsClientConfigMock: STSClientConfig
 
     @Spy
     private lateinit var auditLogger: AuditLogger
@@ -36,9 +37,8 @@ class PersonV3ServiceTest {
     @BeforeEach
     fun setUp() {
         MockKAnnotations.init(this)
-        mockkStatic("no.nav.eessi.pensjon.security.sts.STSClientConfigKt")
-        every { configureRequestSamlToken(personV3Mock) } returns Unit
-        personV3Service = PersonV3Service(personV3Mock, auditLogger)
+        every { stsClientConfigMock.configureRequestSamlToken(personV3Mock)}.returns(Unit)
+        personV3Service = PersonV3Service(personV3Mock, auditLogger, stsClientConfigMock)
         personV3Service.initMetrics()
     }
 
