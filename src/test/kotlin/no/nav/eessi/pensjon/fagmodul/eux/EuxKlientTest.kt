@@ -8,9 +8,13 @@ import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.logging.RequestResponseLoggerInterceptor
 import no.nav.eessi.pensjon.metrics.MetricsHelper
 import no.nav.eessi.pensjon.security.sts.typeRef
-import no.nav.eessi.pensjon.utils.*
-import org.junit.jupiter.api.*
+import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
+import no.nav.eessi.pensjon.utils.validateJson
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.ArgumentMatchers
 import org.mockito.Mock
@@ -365,12 +369,32 @@ class EuxKlientTest {
                 ArgumentMatchers.eq(String::class.java))
         ).thenReturn(response)
 
-        val expected = 248
+        val expected = 239
         val actual = klient.getInstitutions("P_BUC_01")
 
         assertEquals(expected, actual.size)
 
     }
+
+    @Test
+    fun `tester om institusjon er gyldig i en P_BUC_03`() {
+        val instiutionsMegaJson = String(Files.readAllBytes(Paths.get("src/test/resources/json/institusjoner/deltakere_p_buc_01_all.json")))
+        val response: ResponseEntity<String> = ResponseEntity(instiutionsMegaJson, HttpStatus.OK)
+
+        whenever(mockEuxrestTemplate.exchange(
+                any<String>(),
+                eq(HttpMethod.GET),
+                eq(null),
+                ArgumentMatchers.eq(String::class.java))
+        ).thenReturn(response)
+
+        val actual = klient.getInstitutions("P_BUC_03")
+        assertEquals(215, actual.size)
+
+        val result = actual.filter { it.institution == "PL:PL390050ER" }.map { it }
+        assertEquals(0, result.size)
+
+   }
 
     @Test
     fun `Calling EuxKlient  feiler med kontakt fra eux med kall til getSedOnBucByDocumentId`() {

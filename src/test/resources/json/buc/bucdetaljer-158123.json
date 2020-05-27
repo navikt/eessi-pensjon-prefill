@@ -4,8 +4,7 @@
   "creator" : {
     "country" : "NO",
     "institution" : "NO:NAVT003",
-    "name" : "NAVT003",
-    "buc" : null
+    "name" : "NAVT003"
   },
   "sakType" : null,
   "status" : "open",
@@ -14,13 +13,11 @@
   "institusjon" : [ {
     "country" : "NO",
     "institution" : "NO:NAVT003",
-    "name" : "NAVT003",
-    "buc" : null
+    "name" : "NAVT003"
   }, {
     "country" : "NO",
     "institution" : "NO:NAVT002",
-    "name" : "NAVT002",
-    "buc" : null
+    "name" : "NAVT002"
   } ],
   "seds" : [ {
     "id" : "f2123ebf16dc4ddaaaf2420d0adb39c7",

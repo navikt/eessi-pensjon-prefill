@@ -70,7 +70,7 @@ class EuxKlient(private val euxOidcRestTemplate: RestTemplate,
 
         val uriParams = mapOf("RinaSakId" to euxCaseId, "DokuemntId" to parentDocumentId).filter { it.value != null }
         val builder = UriComponentsBuilder.fromUriString(urlPath)
-                .queryParam("KorrelasjonsId",  correlationId())
+                .queryParam("KorrelasjonsId", correlationId())
                 .queryParam("ventePaAksjon", "false")
                 .buildAndExpand(uriParams)
 
@@ -131,10 +131,10 @@ class EuxKlient(private val euxOidcRestTemplate: RestTemplate,
         val response = restTemplateErrorhandler(
                 restTemplateFunction = {
                     euxOidcRestTemplate.exchange(
-                                builder.toUriString(),
-                                HttpMethod.GET,
-                                null,
-                                String::class.java)
+                            builder.toUriString(),
+                            HttpMethod.GET,
+                            null,
+                            String::class.java)
                 }
                 , euxCaseId = euxCaseId
                 , metric = GetBUC
@@ -164,7 +164,8 @@ class EuxKlient(private val euxOidcRestTemplate: RestTemplate,
                 , metric = BUCDeltakere
                 , prefixErrorMessage = "Feiler ved metode getDeltakerer. "
         )
-        return  response.body ?: throw ServerException("Feil ved henting av BucDeltakere: ingen data, euxCaseId $euxCaseId")
+        return response.body
+                ?: throw ServerException("Feil ved henting av BucDeltakere: ingen data, euxCaseId $euxCaseId")
     }
 
     /**
@@ -188,19 +189,21 @@ class EuxKlient(private val euxOidcRestTemplate: RestTemplate,
                 , "Feil ved innhenting av institusjoner"
         )
         val starttid = System.currentTimeMillis()
-
         val detaljList = mapJsonToAny(responseInstitution.body!!, typeRefs<List<InstitusjonDetalj>>())
+
         val institusjonListe = detaljList.asSequence()
-                .map {  data ->
-                        val bucs = data.tilegnetBucs?.asSequence()
-                                ?.filter { it?.institusjonsrolle == "CounterParty" }
-                                ?.map { it?.bucType ?: "" }
-                                ?.sortedBy { it }
-                                ?.toSet()
-                    InstitusjonItem(data.landkode!!, data.id!!, data.akronym, bucs!!.toList() )
+                .filter { institusjon ->
+                    institusjon.tilegnetBucs.any { tilegnetBucsItem ->
+                        tilegnetBucsItem.institusjonsrolle == "CounterParty"
+                                && tilegnetBucsItem.eessiklar
+                                && tilegnetBucsItem.bucType == bucType
+                    }
                 }
-                .sortedBy { sort-> sort.country }
-                .sortedBy { sort -> sort.institution }
+                .map { institusjon ->
+                    InstitusjonItem(institusjon.landkode, institusjon.id, institusjon.akronym)
+                }
+                .sortedBy { it.institution }
+                .sortedBy { it.country }
                 .toList()
 
         val slutttid = System.currentTimeMillis()
@@ -354,7 +357,8 @@ class EuxKlient(private val euxOidcRestTemplate: RestTemplate,
                                      waitTimes: Long = 1000L): ResponseEntity<T> {
         return metric.measure {
             return@measure try {
-                val response = retryHelper( func = { restTemplateFunction.invoke() }, waitTimes = overrideWaitTimes ?: waitTimes)
+                val response = retryHelper(func = { restTemplateFunction.invoke() }, waitTimes = overrideWaitTimes
+                        ?: waitTimes)
                 response
             } catch (hcee: HttpClientErrorException) {
                 val errorBody = hcee.responseBodyAsString

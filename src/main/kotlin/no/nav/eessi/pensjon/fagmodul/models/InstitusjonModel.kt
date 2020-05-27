@@ -1,16 +1,16 @@
 package no.nav.eessi.pensjon.fagmodul.models
 
-data class InstitusjonDetalj (
-        val landkode: String? = null,
-        val akronym: String? = null,
-        val navn: String? = null,
-        val id: String? = null,
-        val tilegnetBucs: List<TilegnetBucsItem?>? = null
+class InstitusjonDetalj (
+        val landkode: String,
+        val akronym: String,
+        val navn: String,
+        val id: String,
+        val tilegnetBucs: List<TilegnetBucsItem>
 )
 
-data class TilegnetBucsItem(
-        val eessiklar: Boolean? = null,
-        val gyldigStartDato: String? = null,
-        val institusjonsrolle: String? = null,
-        val bucType: String? = null
+class TilegnetBucsItem(
+        val eessiklar: Boolean,
+        val gyldigStartDato: String,
+        val institusjonsrolle: String,
+        val bucType: String
 )
