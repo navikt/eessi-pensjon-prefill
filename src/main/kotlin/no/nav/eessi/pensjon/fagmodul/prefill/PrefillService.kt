@@ -31,16 +31,14 @@ class PrefillService(private val factory: PrefillSEDService,
     @Throws(ValidationException::class)
     fun prefillSed(dataModel: PrefillDataModel): SED {
         return PrefillSed.measure {
-
             logger.info("******* Starter med preutfylling *******\nSED: ${dataModel.getSEDid()} aktoerId: ${dataModel.bruker.aktorId} sakNr: ${dataModel.penSaksnummer}")
 
-            val startTime = System.currentTimeMillis()
-            val sed = factory.prefill(dataModel)
-            val endTime = System.currentTimeMillis() - startTime
-
-            logger.info("******* Prefill SED tok $endTime ms. *******")
-
-            sed
+            try {
+                return@measure factory.prefill(dataModel)
+            } catch (ex: Exception) {
+                logger.error("Noe gikk galt under prefill: ", ex)
+                throw ex
+            }
         }
     }
 
