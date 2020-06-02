@@ -110,25 +110,26 @@ class PrefillSEDService(private val prefillNav: PrefillNav,
         } else listOf()
     }
 
-    private fun barnsPinId(brukerTPS: Bruker?): List<String> {
-        if (brukerTPS == null) return listOf()
+    private fun barnsPinId(bruker: Bruker?): List<String> {
+        if (bruker == null) return listOf()
 
-        val person = brukerTPS as no.nav.tjeneste.virksomhet.person.v3.informasjon.Person
-        val resultat = mutableListOf<String>()
-        person.harFraRolleI.forEach {
-            val tpsvalue = it.tilRolle.value   //mulig nullpoint? kan tilRolle være null?
-            if (PrefillNav.Companion.RelasjonEnum.BARN.erSamme(tpsvalue)) {
-                val persident = person.aktoer as PersonIdent
-                val pinid: NorskIdent = persident.ident
-                val norIdent = pinid.ident
-                if (NavFodselsnummer(norIdent).validate()) {
-                    resultat.add(norIdent)
+        val hovedPerson = bruker as no.nav.tjeneste.virksomhet.person.v3.informasjon.Person
+        val barnList = mutableListOf<String>()
+        hovedPerson.harFraRolleI.forEach {
+            val relatertPersonSinRolle = it.tilRolle.value
+            if (PrefillNav.Companion.RelasjonEnum.BARN.erSamme(relatertPersonSinRolle)) {
+                val barn = it.tilPerson
+                val barnPersonIdent = barn.aktoer as PersonIdent
+                val barnNorskIdent: NorskIdent = barnPersonIdent.ident
+                val barnFnr = barnNorskIdent.ident
+                if (NavFodselsnummer(barnFnr).validate()) {
+                    barnList.add(barnFnr)
                 } else {
-                    logger.error("følgende ident funnet ikke gyldig: $norIdent")
+                    logger.error("følgende ident funnet ikke gyldig: $barnFnr")
                 }
             }
         }
-        return resultat.toList()
+        return barnList.toList()
     }
 
     private fun filterEktefelleRelasjon(bruker: Bruker?): Pair<String, String> {
