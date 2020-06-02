@@ -46,6 +46,13 @@ class SedController(private val euxService: EuxService,
     fun initMetrics() {
         AddInstutionAndDocument = metricsHelper.init("AddInstutionAndDocument")
         AddDocumentToParent = metricsHelper.init("AddDocumentToParent")
+
+//        getInstitutionsWithCountry("P_BUC_01")
+//        getInstitutionsWithCountry("P_BUC_03")
+//        getInstitutionsWithCountry("P_BUC_05")
+//        getInstitutionsWithCountry("P_BUC_06")
+//        getInstitutionsWithCountry("P_BUC_10")
+
     }
 
     //** oppdatert i api 18.02.2019
@@ -100,6 +107,9 @@ class SedController(private val euxService: EuxService,
 
             logger.info("Prøver å prefillSED")
             val sed = prefillService.prefillSed(dataModel)
+            //synk sed versjon med buc versjon
+            updateSEDVersion(sed, bucUtil.getProcessDefinitionVersion() )
+
             logger.info("Prøver å sende SED: ${dataModel.getSEDid()} inn på BUC: ${dataModel.euxCaseID}")
             val docresult = euxService.opprettSedOnBuc(sed, dataModel.euxCaseID)
             logger.info("Opprettet ny SED med dokumentId: ${docresult.documentId}")
@@ -113,6 +123,21 @@ class SedController(private val euxService: EuxService,
             result
         }
     }
+
+    fun updateSEDVersion(sed: SED, bucVersion: String) {
+        when(bucVersion) {
+            "v4.2" -> {
+                sed.sedGVer="4"
+                sed.sedVer="2"
+            }
+            else -> {
+                sed.sedGVer="4"
+                sed.sedVer="1"
+            }
+        }
+        logger.debug("SED version: v${sed.sedGVer}.${sed.sedVer} + BUC version: $bucVersion")
+    }
+
 
     private fun addInstitutionMedX005(dataModel: PrefillDataModel, nyeInstitusjoner: List<InstitusjonItem>) {
         logger.debug("Prøver å legge til Deltaker/Institusions på buc samt prefillSed og sende inn til Rina ")
@@ -145,6 +170,9 @@ class SedController(private val euxService: EuxService,
             val docresult = euxService.opprettSvarSedOnBuc(sed, dataModel.euxCaseID, parentId)
 
             val bucUtil = BucUtils(euxService.getBuc(docresult.caseId))
+
+            //synk sed versjon med buc versjon
+            updateSEDVersion(sed,  bucUtil.getProcessDefinitionVersion() )
 
             //extra tag metricshelper for sedType, bucType, timeStamp og rinaId.
             counterHelper.count(CounterHelper.MeterNameExtraTag.AddDocumentToParent, extraTag = extraTag(dataModel, bucUtil))
@@ -196,5 +224,11 @@ class SedController(private val euxService: EuxService,
             aktoerService.hentAktoerForPin((request.avdodfnr
                     ?: throw MangelfulleInndataException("Mangler fnr for avdød")))
         else null
+    }
+
+    @GetMapping("/institutions/{buctype}/{countrycode}")
+    fun getInstitutionsWithCountry(@PathVariable(value = "buctype", required = true) bucType: String,
+                                   @PathVariable(value = "countrycode", required = false) landkode: String = ""): List<InstitusjonItem> {
+        return euxService.getInstitutions(bucType, landkode)
     }
 }

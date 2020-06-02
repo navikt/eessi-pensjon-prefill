@@ -1,6 +1,5 @@
 package no.nav.eessi.pensjon.fagmodul.sedmodel
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.toJson
 import no.nav.eessi.pensjon.utils.typeRefs
@@ -10,8 +9,8 @@ import no.nav.eessi.pensjon.utils.typeRefs
 //@JsonIgnoreProperties(ignoreUnknown = true)
 data class SED(
         val sed: String? = null,
-        val sedGVer: String? = "4",
-        val sedVer: String? = "1",
+        var sedGVer: String? = "4",
+        var sedVer: String? = "1",
         var nav: Nav? = null, // TODO Mutable
         var pensjon: Pensjon? = null, // TODO Mutable
         var trygdetid: PersonArbeidogOppholdUtland? = null, //P4000 // TODO Mutable
