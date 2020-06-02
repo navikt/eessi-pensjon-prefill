@@ -18,13 +18,13 @@ import org.mockito.junit.jupiter.MockitoExtension
 class PrefillServiceTest {
 
     @Mock
-    lateinit var mockPrefillFactory: PrefillSEDService
+    lateinit var mockPrefillSEDService: PrefillSEDService
 
     private lateinit var prefillService: PrefillService
 
     @BeforeEach
     fun `startup initilize testing`() {
-        prefillService = PrefillService(mockPrefillFactory)
+        prefillService = PrefillService(mockPrefillSEDService)
     }
 
     @Test
@@ -40,7 +40,7 @@ class PrefillServiceTest {
                 InstitusjonItem(country = "DE", institution = "Tyskland", name="Tyskland test")
         )
 
-        whenever(mockPrefillFactory.prefill(any())).thenReturn(data.sed)
+        whenever(mockPrefillSEDService.prefill(any())).thenReturn(data.sed)
 
 
         val x005Liste = prefillService.prefillEnX005ForHverInstitusjon(mockInstitusjonList, data)
