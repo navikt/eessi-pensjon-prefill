@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.ResponseStatus
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
-import kotlin.math.log
 
 
 class BucUtils(private val buc: Buc ) {
@@ -120,9 +119,9 @@ class BucUtils(private val buc: Buc ) {
             }
     }
 
-    fun getProcessDefinitionName() = getBuc().processDefinitionName
+    fun getProcessDefinitionName() = getBuc().processDefinitionName!!
 
-    fun getProcessDefinitionVersion() = getBuc().processDefinitionVersion
+    fun getProcessDefinitionVersion() = getBuc().processDefinitionVersion ?: ""
 
     fun findFirstDocumentItemByType(sedType: SEDType) = findFirstDocumentItemByType(sedType.name)
 

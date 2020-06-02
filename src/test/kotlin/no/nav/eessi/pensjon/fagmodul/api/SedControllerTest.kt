@@ -343,6 +343,33 @@ class SedControllerTest {
         }
     }
 
+    @Test
+    fun `update SED Version from old version to new version`() {
+        val sed = SED("P2000")
+        val bucVersion = "v4.2"
+
+        sedController.updateSEDVersion(sed, bucVersion)
+        assertEquals(bucVersion, "v${sed.sedGVer}.${sed.sedVer}")
+    }
+
+    @Test
+    fun `update SED Version from old version to same version`() {
+        val sed = SED("P2000")
+        val bucVersion = "v4.1"
+
+        sedController.updateSEDVersion(sed, bucVersion)
+        assertEquals(bucVersion, "v${sed.sedGVer}.${sed.sedVer}")
+    }
+
+
+    @Test
+    fun `update SED Version from old version to unknown new version`() {
+        val sed = SED("P2000")
+        val bucVersion = "v4.4"
+
+        sedController.updateSEDVersion(sed, bucVersion)
+        assertEquals("v4.1", "v${sed.sedGVer}.${sed.sedVer}")
+    }
 
     @Test
     fun `call getAvdodAktoerId  expect valid aktoerId when avdodfnr excist and sed is P2100`() {
