@@ -15,6 +15,7 @@ import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.PrefillP6000
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.NavFodselsnummer
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.TpsPersonService
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.NorskIdent
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.PersonIdent
 import org.slf4j.Logger
@@ -75,7 +76,7 @@ class PrefillSEDService(private val prefillNav: PrefillNav,
         }
     }
 
-    private fun getPrefillSed(prefillData: PrefillDataModel) : PrefillSed {
+    private fun getPrefillSed(prefillData: PrefillDataModel): PrefillSed {
         val pensjonGjenlevende = PrefillGjenlevende(tpsPersonService, prefillNav).prefill(prefillData)
         return PrefillSed(prefillNav, pensjonGjenlevende)
     }
@@ -92,20 +93,27 @@ class PrefillSEDService(private val prefillNav: PrefillNav,
         logger.info("Henter ektefelle/partner (ekteType: $ekteTypeValue)")
         val ektefelleBruker = if(ektepinid.isBlank()) null else tpsPersonService.hentBrukerFraTPS(ektepinid)
 
-        val barnBrukereFraTPS =
-                if (fyllUtBarnListe) {
-                    barnsPinId(brukerFraTps)
-                            .mapNotNull { barn -> logger.info("Henter barn fra hovedperson")
-                                tpsPersonService.hentBrukerFraTPS(barn) }
-                } else listOf()
+        val barnBrukereFraTPS = hentBarnFraTps(brukerFraTps, fyllUtBarnListe)
 
         return PersonData(brukerEllerGjenlevende = brukerEllerGjenlevende, forsikretPerson = brukerFraTps!!, ektefelleBruker = ektefelleBruker, ekteTypeValue = ekteTypeValue, barnBrukereFraTPS = barnBrukereFraTPS)
     }
 
-    private fun barnsPinId(brukerTPS: no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker?): List<String> {
-        if (brukerTPS == null) return listOf()
-            val person = brukerTPS as no.nav.tjeneste.virksomhet.person.v3.informasjon.Person
+    fun hentBarnFraTps(hovedPerson: Bruker?, fyllUtBarnListe: Boolean): List<Bruker> {
 
+        return if (fyllUtBarnListe) {
+            barnsPinId(hovedPerson)
+                    .map { barn ->
+                        logger.info("Henter barn fra hovedperson")
+                        tpsPersonService.hentBrukerFraTPS(barn)
+                    }
+                    .filterNotNull()
+        } else listOf()
+    }
+
+    private fun barnsPinId(brukerTPS: Bruker?): List<String> {
+        if (brukerTPS == null) return listOf()
+
+        val person = brukerTPS as no.nav.tjeneste.virksomhet.person.v3.informasjon.Person
         val resultat = mutableListOf<String>()
         person.harFraRolleI.forEach {
             val tpsvalue = it.tilRolle.value   //mulig nullpoint? kan tilRolle være null?
@@ -123,10 +131,10 @@ class PrefillSEDService(private val prefillNav: PrefillNav,
         return resultat.toList()
     }
 
-    private fun filterEktefelleRelasjon(bruker: no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker?): Pair<String, String> {
-        val validRelasjoner = listOf("EKTE","REPA","SAMB")
+    private fun filterEktefelleRelasjon(bruker: Bruker?): Pair<String, String> {
+        val validRelasjoner = listOf("EKTE", "REPA", "SAMB")
 
-        if (bruker == null) return Pair("","")
+        if (bruker == null) return Pair("", "")
         var ektepinid = ""
         var ekteTypeValue = ""
 
