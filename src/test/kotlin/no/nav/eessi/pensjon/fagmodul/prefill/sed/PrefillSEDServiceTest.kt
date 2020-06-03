@@ -50,7 +50,7 @@ class PrefillSEDServiceTest {
         doReturn(barn).whenever(tpsPersonService).hentBrukerFraTPS(any())
 
 
-        val actual = prefillSEDService.hentBarnFraTps(forelder,true)
+        val actual = prefillSEDService.hentBarnFraTps(forelder)
 
         Assertions.assertEquals(1,actual.size)
         Assertions.assertEquals(barn,actual.first())
@@ -58,7 +58,7 @@ class PrefillSEDServiceTest {
     }
 
     @Test
-    fun testBarnInnhentingTpsReturnererNull() {
+    fun `gitt en hovedperson uten barn så skal den preutfylte seden ikke inneholde barn`() {
 
         val foreldersPin = "15084535647"
         val barnetsPin = "10107512458"
@@ -67,11 +67,30 @@ class PrefillSEDServiceTest {
         doReturn(null).whenever(tpsPersonService).hentBrukerFraTPS(any())
 
 
-        val actual = prefillSEDService.hentBarnFraTps(forelder,true)
+        val actual = prefillSEDService.hentBarnFraTps(forelder)
 
         Assertions.assertEquals(0,actual.size)
     }
 
+    @Test
+    fun `gitt hovedperson med to barn skal begge barna bli preutfylt`() {
+        val foreldersPin = "15084535647"
+        val eldstebarnetsPin = "10109512458"
+        val yngstebarnetsPin = "11109512459"
+        val forelder = lagTPSBruker(foreldersPin, "Christoffer", "Robin").medBarn(eldstebarnetsPin).medBarn(yngstebarnetsPin)
+        val eldsteBarn = lagTPSBruker(eldstebarnetsPin, "Ole", "Brum")
+        val yngsteBarn = lagTPSBruker(yngstebarnetsPin, "Nasse", "Nuff")
+
+
+        doReturn(eldsteBarn).whenever(tpsPersonService).hentBrukerFraTPS(eldstebarnetsPin)
+        doReturn(yngsteBarn).whenever(tpsPersonService).hentBrukerFraTPS(yngstebarnetsPin)
+
+        val actual = prefillSEDService.hentBarnFraTps(forelder)
+
+        Assertions.assertEquals(2,actual.size)
+        Assertions.assertTrue(actual.contains(eldsteBarn))
+        Assertions.assertTrue(actual.contains(yngsteBarn))
+    }
 
     private fun lagTPSBruker(foreldersPin: String, fornavn: String, etternavn: String) =
             no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker()

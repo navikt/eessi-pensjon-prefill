@@ -12,11 +12,9 @@ import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.PrefillP2000
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.PrefillP2100
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.PrefillP2200
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.PrefillP6000
-import no.nav.eessi.pensjon.fagmodul.prefill.tps.NavFodselsnummer
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.TpsPersonService
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.NorskIdent
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.PersonIdent
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -87,50 +85,25 @@ class PrefillSEDService(private val prefillNav: PrefillNav,
         val brukerEllerGjenlevende = tpsPersonService.hentBrukerFraTPS(prefillData.avdod?.norskIdent ?: prefillData.bruker.norskIdent)
 
         logger.info("Henter hovedperson/forsikret")
-        val brukerFraTps = tpsPersonService.hentBrukerFraTPS(prefillData.bruker.norskIdent)
+        val forsikretPerson = tpsPersonService.hentBrukerFraTPS(prefillData.bruker.norskIdent)
 
-        val (ektepinid, ekteTypeValue) = filterEktefelleRelasjon(brukerFraTps)
+        val (ektepinid, ekteTypeValue) = filterEktefelleRelasjon(forsikretPerson)
         logger.info("Henter ektefelle/partner (ekteType: $ekteTypeValue)")
         val ektefelleBruker = if(ektepinid.isBlank()) null else tpsPersonService.hentBrukerFraTPS(ektepinid)
 
-        val barnBrukereFraTPS = hentBarnFraTps(brukerFraTps, fyllUtBarnListe)
+        val barnBrukereFraTPS = if (forsikretPerson == null || !fyllUtBarnListe ) emptyList() else hentBarnFraTps(forsikretPerson as no.nav.tjeneste.virksomhet.person.v3.informasjon.Person)
 
-        return PersonData(brukerEllerGjenlevende = brukerEllerGjenlevende, forsikretPerson = brukerFraTps!!, ektefelleBruker = ektefelleBruker, ekteTypeValue = ekteTypeValue, barnBrukereFraTPS = barnBrukereFraTPS)
+        return PersonData(brukerEllerGjenlevende = brukerEllerGjenlevende, forsikretPerson = forsikretPerson!!, ektefelleBruker = ektefelleBruker, ekteTypeValue = ekteTypeValue, barnBrukereFraTPS = barnBrukereFraTPS)
     }
 
-    fun hentBarnFraTps(hovedPerson: Bruker?, fyllUtBarnListe: Boolean): List<Bruker> {
-
-        return if (fyllUtBarnListe) {
-            barnsPinId(hovedPerson)
-                    .map { barn ->
-                        logger.info("Henter barn fra hovedperson")
-                        tpsPersonService.hentBrukerFraTPS(barn)
+    fun hentBarnFraTps(hovedPerson: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person) =
+            hovedPerson.harFraRolleI
+                    .filter { relasjon -> PrefillNav.Companion.RelasjonEnum.BARN.erSamme(relasjon.tilRolle.value) }
+                    .map { relasjon -> (relasjon.tilPerson.aktoer as PersonIdent).ident.ident }
+                    .mapNotNull { barnPin ->
+                        logger.info("Henter barn fra TPS")
+                        tpsPersonService.hentBrukerFraTPS(barnPin)
                     }
-                    .filterNotNull()
-        } else listOf()
-    }
-
-    private fun barnsPinId(bruker: Bruker?): List<String> {
-        if (bruker == null) return listOf()
-
-        val hovedPerson = bruker as no.nav.tjeneste.virksomhet.person.v3.informasjon.Person
-        val barnList = mutableListOf<String>()
-        hovedPerson.harFraRolleI.forEach {
-            val relatertPersonSinRolle = it.tilRolle.value
-            if (PrefillNav.Companion.RelasjonEnum.BARN.erSamme(relatertPersonSinRolle)) {
-                val barn = it.tilPerson
-                val barnPersonIdent = barn.aktoer as PersonIdent
-                val barnNorskIdent: NorskIdent = barnPersonIdent.ident
-                val barnFnr = barnNorskIdent.ident
-                if (NavFodselsnummer(barnFnr).validate()) {
-                    barnList.add(barnFnr)
-                } else {
-                    logger.error("følgende ident funnet ikke gyldig: $barnFnr")
-                }
-            }
-        }
-        return barnList.toList()
-    }
 
     private fun filterEktefelleRelasjon(bruker: Bruker?): Pair<String, String> {
         val validRelasjoner = listOf("EKTE", "REPA", "SAMB")
