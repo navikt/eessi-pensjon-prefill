@@ -7,9 +7,11 @@ import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bostedsadresse
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Gateadresse
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Landkoder
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Person
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.PersonIdent
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
+import kotlin.reflect.typeOf
 
 @Component
 class PrefillAdresse ( private val postnummerService: PostnummerService,
@@ -27,18 +29,23 @@ class PrefillAdresse ( private val postnummerService: PostnummerService,
             return null
         }
 
-        //Gateadresse eller UstrukturertAdresse
-        val bostedsadresse: Bostedsadresse = personTPS.bostedsadresse ?: return hentPersonAdresseUstrukturert()
+        val bostedsadresse: Bostedsadresse = personTPS.bostedsadresse ?: return tomAdresse()
 
-        val gateAdresse = bostedsadresse.strukturertAdresse as Gateadresse
-        val gate = gateAdresse.gatenavn
-        val husnr = gateAdresse.husnummer
-        return Adresse(
-                postnummer = gateAdresse.poststed.value,
-                gate = "$gate $husnr",
-                land = hentLandkode(gateAdresse.landkode),
-                by = postnummerService.finnPoststed(gateAdresse.poststed.value)
-        )
+        return if (bostedsadresse.strukturertAdresse !is Gateadresse) {
+            // vi har observert forekomst av Matrikkeladresse men ignorerer den og andre typer adresser for nå
+            logger.warn("Forventet en Gateadresse som bostedsadresse for ${(personTPS.aktoer as PersonIdent).ident.ident}, men fikk en ${bostedsadresse.strukturertAdresse::class.simpleName}")
+            tomAdresse()
+        } else {
+            val gateAdresse = bostedsadresse.strukturertAdresse as Gateadresse
+            val gate = gateAdresse.gatenavn
+            val husnr = gateAdresse.husnummer
+            Adresse(
+                    postnummer = gateAdresse.poststed.value,
+                    gate = "$gate $husnr",
+                    land = hentLandkode(gateAdresse.landkode),
+                    by = postnummerService.finnPoststed(gateAdresse.poststed.value)
+            )
+        }
     }
 
     protected fun sjekkForDiskresjonKodeAdresse(personTPS: Person): Boolean {
@@ -52,15 +59,14 @@ class PrefillAdresse ( private val postnummerService: PostnummerService,
         return false
     }
 
-    //TODO: Denne metoden gjør ikke det den sier at den skal gjøre
     /**
-     *  2.2.2 ustrukturert
+     *  2.2.2 tom
      *
-     *  Returnerer en bank adresse dersom det finnes en ustrukturertAdresse hos borger.
+     *  Returnerer en blank adresse
      *  Dette må så endres/rettes av saksbehendlaer i rina?
      */
-    private fun hentPersonAdresseUstrukturert(): Adresse {
-        logger.debug("             UstrukturertAdresse (utland)")
+    private fun tomAdresse(): Adresse {
+        logger.debug("             Tom adresse")
         return Adresse(
                 gate = "",
                 bygning = "",
