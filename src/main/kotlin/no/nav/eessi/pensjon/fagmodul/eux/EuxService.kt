@@ -261,11 +261,10 @@ class EuxService (private val euxKlient: EuxKlient,
 
         // Henter rina saker som ikke har fnr
         val rinaSakerUtenFnr = rinaSakIderUtenFnr
-                .asSequence()
                 .map { euxCaseId ->
-                    euxKlient.getRinasaker(null, euxCaseId , null, null).first() }
-                .distinct()
-                .toList()
+                    euxKlient.getRinasaker(null, euxCaseId , null, null) }
+                .flatten()
+                .distinctBy { it.id }
 
         return rinaSakerMedFnr.plus(rinaSakerUtenFnr)
     }

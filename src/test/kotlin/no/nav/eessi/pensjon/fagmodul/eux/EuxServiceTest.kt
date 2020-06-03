@@ -1,6 +1,9 @@
 package no.nav.eessi.pensjon.fagmodul.eux
 
-import com.nhaarman.mockitokotlin2.*
+import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.doReturn
+import com.nhaarman.mockitokotlin2.eq
+import com.nhaarman.mockitokotlin2.whenever
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Rinasak
 import no.nav.eessi.pensjon.fagmodul.sedmodel.PinItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
@@ -279,6 +282,19 @@ class EuxServiceTest {
         assertEquals(154, orgRinasaker.size)
         assertEquals(orgRinasaker.size + 1, result.size)
     }
+
+    @Test
+    fun `henter rinaid fra saf og rina hvor begge er tomme`() {
+
+        doReturn( listOf<Rinasak>()) .whenever(euxKlient).getRinasaker(eq("12345678900"), eq(null), eq(null), eq(null))
+
+        doReturn(listOf<String>("")).whenever(safClient).hentRinaSakIderFraDokumentMetadata(eq("1111111111111"))
+
+        val result = service.getRinasaker("12345678900", "1111111111111")
+
+        assertEquals(0, result.size)
+    }
+
 
     @Test
     fun hentNorskFnrPaalisteavPin() {
