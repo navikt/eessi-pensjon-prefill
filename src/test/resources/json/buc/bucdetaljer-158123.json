@@ -81,7 +81,8 @@
     "lastVersion" : {
       "date" : 1557393035000,
       "id" : "1"
-    }
+    },
+    "allowsAttachments" : true
   }, {
     "id" : "0bb1ad15987741f1bbf45eba4f955e80",
     "parentDocumentId" : null,
@@ -144,7 +145,8 @@
     "lastVersion" : {
       "date" : 1557393035000,
       "id" : "1"
-    }
+    },
+    "allowsAttachments" : true
   }, {
     "id" : "06f698fa890b4046b736e2efe3b25074",
     "parentDocumentId" : null,
@@ -207,7 +209,8 @@
     "lastVersion" : {
       "date" : 1557393062757,
       "id" : "1"
-    }
+    },
+    "allowsAttachments" : true
   }, {
     "id" : "3b82e3d56f304ca0ac05c1ce626d9472",
     "parentDocumentId" : null,
@@ -270,7 +273,8 @@
     "lastVersion" : {
       "date" : 1557393101000,
       "id" : "1"
-    }
+    },
+    "allowsAttachments" : true
   }, {
     "id" : "52c08e4129da4120b9b982142c272a61",
     "parentDocumentId" : null,
@@ -333,7 +337,8 @@
     "lastVersion" : {
       "date" : 1558360875571,
       "id" : "2"
-    }
+    },
+    "allowsAttachments" : false
   }, {
     "id" : "cac9db2726d54f2c9b51d1562b7b0a79",
     "parentDocumentId" : null,
@@ -412,7 +417,8 @@
     "lastVersion" : {
       "date" : 1558362934400,
       "id" : "3"
-    }
+    },
+    "allowsAttachments" : true
   }, {
     "id" : "3fe845d1142742a5a7a28f339e5d5b30",
     "parentDocumentId" : null,
@@ -475,7 +481,8 @@
     "lastVersion" : {
       "date" : 1557392992767,
       "id" : "1"
-    }
+    },
+    "allowsAttachments" : true
   }, {
     "id" : "268b8ed450bf4e8a99e6c0057d5ed857",
     "parentDocumentId" : null,
@@ -538,7 +545,8 @@
     "lastVersion" : {
       "date" : 1557393034000,
       "id" : "1"
-    }
+    },
+    "allowsAttachments" : true
   }, {
     "id" : "a8160dcb66c840a88ef331eed4b193be",
     "parentDocumentId" : "3fe845d1142742a5a7a28f339e5d5b30",
@@ -601,7 +609,8 @@
     "lastVersion" : {
       "date" : 1557393034000,
       "id" : "1"
-    }
+    },
+    "allowsAttachments" : false
   }, {
     "id" : "5d4e5b878a60433a919c833c146401cb",
     "parentDocumentId" : null,
@@ -664,7 +673,8 @@
     "lastVersion" : {
       "date" : 1557393034000,
       "id" : "1"
-    }
+    },
+    "allowsAttachments" : false
   }, {
     "id" : "836de1a761514b1eab50c88e507e9a1c",
     "parentDocumentId" : null,
@@ -727,7 +737,8 @@
     "lastVersion" : {
       "date" : 1557393035000,
       "id" : "1"
-    }
+    },
+    "allowsAttachments" : false
   }, {
     "id" : "2d305e9ac51f43cf9a4012679ea3036e",
     "parentDocumentId" : null,
@@ -790,7 +801,8 @@
     "lastVersion" : {
       "date" : 1557393034000,
       "id" : "1"
-    }
+    },
+    "allowsAttachments" : false
   }, {
     "id" : "ef5811b43d564539997c9e1e8539a0a5",
     "parentDocumentId" : "891a8c61651049d6b2e0c0bd32215203",
@@ -853,7 +865,8 @@
     "lastVersion" : {
       "date" : 1557393101000,
       "id" : "1"
-    }
+    },
+    "allowsAttachments" : false
   }, {
     "id" : "74cfcccbdb764b768365090152c84892",
     "parentDocumentId" : "06f698fa890b4046b736e2efe3b25074",
@@ -916,7 +929,8 @@
     "lastVersion" : {
       "date" : 1557393078000,
       "id" : "1"
-    }
+    },
+    "allowsAttachments" : false
   }, {
     "id" : "3e29fb69d44f440a81e01aa2199d4b2f",
     "parentDocumentId" : null,
@@ -979,7 +993,8 @@
     "lastVersion" : {
       "date" : 1557393035000,
       "id" : "1"
-    }
+    },
+    "allowsAttachments" : true
   }, {
     "id" : "4ef97838c25c46fba04dcd57a511338d",
     "parentDocumentId" : null,
@@ -1042,7 +1057,8 @@
     "lastVersion" : {
       "date" : 1557393033000,
       "id" : "1"
-    }
+    },
+    "allowsAttachments" : false
   }, {
     "id" : "6808b56f66b64a24ae94ddad3aeb9290",
     "parentDocumentId" : null,
@@ -1105,7 +1121,8 @@
     "lastVersion" : {
       "date" : 1557393034000,
       "id" : "1"
-    }
+    },
+    "allowsAttachments" : false
   }, {
     "id" : "891a8c61651049d6b2e0c0bd32215203",
     "parentDocumentId" : null,
@@ -1168,7 +1185,8 @@
     "lastVersion" : {
       "date" : 1557393087051,
       "id" : "1"
-    }
+    },
+    "allowsAttachments" : true
   } ],
   "error" : null
 }

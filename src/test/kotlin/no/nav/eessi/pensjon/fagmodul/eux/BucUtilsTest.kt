@@ -6,7 +6,10 @@ import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Organisation
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ParticipantsItem
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.models.SEDType
-import no.nav.eessi.pensjon.utils.*
+import no.nav.eessi.pensjon.utils.mapAnyToJson
+import no.nav.eessi.pensjon.utils.mapJsonToAny
+import no.nav.eessi.pensjon.utils.typeRefs
+import no.nav.eessi.pensjon.utils.validateJson
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
@@ -530,7 +533,26 @@ class BucUtilsTest {
         assertEquals(startDate.substring(0, startDlen), buc.startDate.toString().substring(0,19))
         assertEquals("2019-08-29T14:27:12.589+0000", buc.startDate)
         assertEquals("2019-08-30T15:21:30.000+0000", buc.lastUpdate)
+
+        val exception = mapOf<String, Boolean?>("P7000" to false, "P2200" to true, "P8000" to true, "P9000" to true, "P6000" to true, "H070" to false)
+        val result = seds.distinctBy { it.type }.filter { exception.contains(it.type) }.map { it }
+        //utvalg av sed som støtter eller ikke støtter vedlegg
+        result.forEach {
+            assertEquals(exception[it.type!!], it.allowsAttachments)
+        }
+
     }
 
+    @Test
+    fun `check that document P12000 on buc support attchemnt`() {
+        val bucjson = getTestJsonFile("buc-P_BUC_08-P12000.json")
+        val buc = mapJsonToAny(bucjson, typeRefs<Buc>())
+        val bucAndSedView = BucAndSedView.from(buc)
+        val seds = bucAndSedView.seds
+
+        val single = seds!!.filter { it.type == "P12000" }.map { it }.first()
+        assertEquals(false , single.allowsAttachments)
+
+    }
 
 }

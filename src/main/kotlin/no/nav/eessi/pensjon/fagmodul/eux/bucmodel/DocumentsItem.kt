@@ -66,5 +66,6 @@ class ShortDocumentItem(
         val attachments: List<ShortAttachment>? = null,
         val version: String? = null,
         val firstVersion: VersionsItemNoUser? = null,
-        val lastVersion: VersionsItemNoUser? = null
+        val lastVersion: VersionsItemNoUser? = null,
+        val allowsAttachments: Boolean? = null
 )

@@ -140,7 +140,8 @@ class BucUtils(private val buc: Buc ) {
                 attachments = createShortAttachemnt(documentItem.attachments),
                 version = getLatestDocumentVersion(documentItem.versions),
                 firstVersion = getFirstVersion(documentItem.versions),
-                lastVersion = getLastVersion(documentItem.versions)
+                lastVersion = getLastVersion(documentItem.versions),
+                allowsAttachments = documentItem.allowsAttachments
         )
 
     private fun getLatestDocumentVersion(list: List<VersionsItem>?): String {
