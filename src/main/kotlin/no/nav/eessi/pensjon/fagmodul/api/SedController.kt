@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiOperation
 import no.nav.eessi.pensjon.fagmodul.eux.BucUtils
 import no.nav.eessi.pensjon.fagmodul.eux.EuxService
 import no.nav.eessi.pensjon.fagmodul.eux.PinOgKrav
+import no.nav.eessi.pensjon.fagmodul.eux.SedDokumentIkkeGyldigException
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ShortDocumentItem
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.prefill.ApiRequest
@@ -94,6 +95,12 @@ class SedController(private val euxService: EuxService,
             logger.info("kaller add (institutions and sed) rinaId: ${request.euxCaseId} bucType: ${request.buc} sedType: ${request.sed} aktoerId: ${request.aktoerId}")
 
             val bucUtil = BucUtils(euxService.getBuc(dataModel.euxCaseID))
+
+            if ( bucUtil.getGyldigSedAksjonListAsString().contains(request.sed).not() ) {
+                logger.error("Ugyldig aksjon SED ${request.sed} finnes alt i RinaID: ${request.euxCaseId} avslutter")
+                throw SedDokumentIkkeGyldigException("SED ${request.sed} finnes alt i RINA")
+            }
+
             val nyeInstitusjoner = bucUtil.findNewParticipants(dataModel.getInstitutionsList())
             val x005 = bucUtil.findFirstDocumentItemByType("X005")
 
