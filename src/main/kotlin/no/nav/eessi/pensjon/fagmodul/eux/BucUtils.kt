@@ -240,7 +240,7 @@ class BucUtils(private val buc: Buc ) {
     }
 
     fun getFiltrerteGyldigSedAksjonListAsString(backupList: List<String>) : List<String> {
-        val gyldigeSedList = getGyldigSedAksjonListAsString()
+        val gyldigeSedList = getSedsThatCanBeCreated()
         val aksjonsliste = getGyldigeOpprettSedAksjonList()
 
         if (gyldigeSedList.contains("DummyChooseParts") && gyldigeSedList.size == 1) {
@@ -255,7 +255,7 @@ class BucUtils(private val buc: Buc ) {
         return filterSektorPandRelevantHorizontalSeds(gyldigeSedList)
     }
 
-    fun getGyldigSedAksjonListAsString() : List<String> {
+    fun getSedsThatCanBeCreated() : List<String> {
         val keyWord = "empty"
         val docs = getAllDocuments()
         return docs.asSequence()

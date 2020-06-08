@@ -6,7 +6,6 @@ import io.swagger.annotations.ApiOperation
 import no.nav.eessi.pensjon.fagmodul.eux.BucUtils
 import no.nav.eessi.pensjon.fagmodul.eux.EuxService
 import no.nav.eessi.pensjon.fagmodul.eux.PinOgKrav
-import no.nav.eessi.pensjon.fagmodul.eux.SedDokumentIkkeGyldigException
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ShortDocumentItem
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.prefill.ApiRequest
@@ -23,6 +22,7 @@ import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
 import no.nav.security.oidc.api.Protected
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.time.LocalDateTime
@@ -96,9 +96,8 @@ class SedController(private val euxService: EuxService,
 
             val bucUtil = BucUtils(euxService.getBuc(dataModel.euxCaseID))
 
-            if ( bucUtil.getGyldigSedAksjonListAsString().contains(request.sed).not() ) {
-                logger.error("Ugyldig aksjon SED ${request.sed} finnes alt i RinaID: ${request.euxCaseId} avslutter")
-                throw SedDokumentIkkeGyldigException("SED ${request.sed} finnes alt i RINA")
+            if ( bucUtil.getSedsThatCanBeCreated().none { it == request.sed } ) {
+                throw SedDokumentKanIkkeOpprettesException("SED ${request.sed} kan ikke opprettes i RINA")
             }
 
             val nyeInstitusjoner = bucUtil.findNewParticipants(dataModel.getInstitutionsList())
@@ -239,3 +238,6 @@ class SedController(private val euxService: EuxService,
         return euxService.getInstitutions(bucType, landkode)
     }
 }
+
+@ResponseStatus(value = HttpStatus.BAD_REQUEST)
+class SedDokumentKanIkkeOpprettesException(message: String) : Exception(message)

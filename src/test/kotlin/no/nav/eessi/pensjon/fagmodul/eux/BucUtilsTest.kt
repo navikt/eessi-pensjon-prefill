@@ -235,7 +235,7 @@ class BucUtilsTest {
 
     @Test
     fun `getGyldigSedAksjonListAsString   returns sorted list ok`(){
-        val actualOutput = bucUtils.getGyldigSedAksjonListAsString()
+        val actualOutput = bucUtils.getSedsThatCanBeCreated()
         assertEquals(14, actualOutput.size)
         assertEquals("P5000", actualOutput[6])
     }
@@ -252,7 +252,7 @@ class BucUtilsTest {
     fun `getGyldigSedAksjonListAsString   returns sorted of one element ok`(){
         val tmpbuc3 = mapJsonToAny(getTestJsonFile("P_BUC_01_4.2_tom.json"), typeRefs<Buc>())
         val bucUtil = BucUtils(tmpbuc3)
-        val actualOutput = bucUtil.getGyldigSedAksjonListAsString()
+        val actualOutput = bucUtil.getSedsThatCanBeCreated()
         assertEquals(1, actualOutput.size)
     }
 
@@ -275,7 +275,7 @@ class BucUtilsTest {
 
     @Test
     fun `getGyldigSedAksjonListAsString  returns 14 sorted elements`(){
-        val actualOutput = bucUtils.getGyldigSedAksjonListAsString()
+        val actualOutput = bucUtils.getSedsThatCanBeCreated()
         assertEquals(14, actualOutput.size)
         assertEquals("P6000", actualOutput[7])
     }

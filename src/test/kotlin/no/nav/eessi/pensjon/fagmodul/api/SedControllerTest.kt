@@ -283,7 +283,7 @@ class SedControllerTest {
         doReturn( mapJsonToAny(mockBucJson, typeRefs<Buc>())).whenever(mockEuxService).getBuc(euxCaseId)
 
         val noNewParticipants = listOf<InstitusjonItem>()
-        assertThrows<SedDokumentIkkeGyldigException> {
+        assertThrows<SedDokumentKanIkkeOpprettesException> {
             sedController.addInstutionAndDocument(apiRequestWith(euxCaseId, noNewParticipants))
         }
 
