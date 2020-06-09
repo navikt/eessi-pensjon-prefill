@@ -97,6 +97,7 @@ class SedController(private val euxService: EuxService,
             val bucUtil = BucUtils(euxService.getBuc(dataModel.euxCaseID))
 
             if ( bucUtil.getSedsThatCanBeCreated().none { it == request.sed } ) {
+                logger.warn("SED ${request.sed} kan ikke opprettes i RINA")
                 throw SedDokumentKanIkkeOpprettesException("SED ${request.sed} kan ikke opprettes i RINA")
             }
 
