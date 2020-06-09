@@ -22,6 +22,7 @@ import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
 import no.nav.security.oidc.api.Protected
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.time.LocalDateTime
@@ -94,6 +95,11 @@ class SedController(private val euxService: EuxService,
             logger.info("kaller add (institutions and sed) rinaId: ${request.euxCaseId} bucType: ${request.buc} sedType: ${request.sed} aktoerId: ${request.aktoerId}")
 
             val bucUtil = BucUtils(euxService.getBuc(dataModel.euxCaseID))
+
+            if ( bucUtil.getSedsThatCanBeCreated().none { it == request.sed } ) {
+                throw SedDokumentKanIkkeOpprettesException("SED ${request.sed} kan ikke opprettes i RINA")
+            }
+
             val nyeInstitusjoner = bucUtil.findNewParticipants(dataModel.getInstitutionsList())
             val x005 = bucUtil.findFirstDocumentItemByType("X005")
 
@@ -232,3 +238,6 @@ class SedController(private val euxService: EuxService,
         return euxService.getInstitutions(bucType, landkode)
     }
 }
+
+@ResponseStatus(value = HttpStatus.BAD_REQUEST)
+class SedDokumentKanIkkeOpprettesException(message: String) : Exception(message)
