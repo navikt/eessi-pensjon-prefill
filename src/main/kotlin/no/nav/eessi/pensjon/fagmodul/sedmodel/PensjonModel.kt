@@ -418,7 +418,9 @@ data class MedlemskapItem(
 		val type: String? = null,
 		val beregning: String? = null,
 		val informasjonskalkulering: String? = null,
-		val periode: Periode? = null
+		val periode: Periode? = null,
+		val enkeltkrav: KravtypeItem? = null
+
 )
 
 //P5000
