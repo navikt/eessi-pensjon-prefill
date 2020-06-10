@@ -75,7 +75,11 @@ configurations {
 dependencies {
 
     // Spring-boot
-    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-web") {
+        exclude module: 'tomcat-embed-core'
+    }
+    implementation("org.apache.tomcat.embed:tomcat-embed-core:9.0.35")
+
     implementation("org.springframework.boot:spring-boot-starter-aop")
     implementation("org.springframework.boot:spring-boot-starter-cache")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
@@ -130,7 +134,9 @@ dependencies {
     implementation("org.syslog4j:syslog4j:0.9.30")
 
     // OIDC
-    implementation("no.nav.security:oidc-spring-support:${oidcTokenSupportVersion}")
+    implementation("no.nav.security:oidc-spring-support:${oidcTokenSupportVersion}"){
+        exclude module: 'tomcat-embed-core'
+    }
     implementation("no.nav.security:oidc-test-support:${oidcTokenSupportVersion}")
     implementation("no.nav.eessi.pensjon:ep-security-sts:0.0.3")
     testImplementation("org.pac4j:spring-webmvc-pac4j:3.2.0")
