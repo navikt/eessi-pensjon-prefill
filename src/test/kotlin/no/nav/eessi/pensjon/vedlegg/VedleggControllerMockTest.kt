@@ -105,7 +105,6 @@ class VedleggControllerMockTest {
         val disposition = ContentDisposition
                 .builder("form-data")
                 .name("file")
-                .filename("blah.pdf")
                 .build().toString()
 
         val attachmentMeta = LinkedMultiValueMap<String, String>()

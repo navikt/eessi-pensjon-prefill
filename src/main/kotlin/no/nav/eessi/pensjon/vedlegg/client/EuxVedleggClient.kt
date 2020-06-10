@@ -45,7 +45,6 @@ class EuxVedleggClient(private val euxOidcRestTemplate: RestTemplate,
             val disposition = ContentDisposition
                     .builder("form-data")
                     .name("file")
-                    .filename("")
                     .build().toString()
 
             val attachmentMeta = LinkedMultiValueMap<String, String>()
