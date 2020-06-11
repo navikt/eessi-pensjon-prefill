@@ -266,6 +266,15 @@ class BucUtils(private val buc: Buc ) {
                 .sorted()
     }
 
+    fun checkIfSedCanBeCreated(availableSedsOnBuc: List<String>, sedType: String?): Boolean {
+        if (getFiltrerteGyldigSedAksjonListAsString(availableSedsOnBuc).none { it == sedType }) {
+            logger.warn("SED $sedType kan ikke opprettes i RINA")
+            throw SedDokumentKanIkkeOpprettesException("SED $sedType kan ikke opprettes i RINA")
+        }
+        return true
+    }
+
+
     fun filterSektorPandRelevantHorizontalSeds(list: List<String>) =
             list.filter {
                 it.startsWith("P")
@@ -316,3 +325,6 @@ class BucUtils(private val buc: Buc ) {
 
 @ResponseStatus(value = HttpStatus.BAD_REQUEST)
 class ManglerDeltakereException(message: String) : IllegalStateException(message)
+
+@ResponseStatus(value = HttpStatus.BAD_REQUEST)
+class SedDokumentKanIkkeOpprettesException(message: String) : Exception(message)

@@ -4,12 +4,10 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.nhaarman.mockitokotlin2.*
 import no.nav.eessi.pensjon.fagmodul.eux.EuxService
 import no.nav.eessi.pensjon.fagmodul.eux.PinOgKrav
-import no.nav.eessi.pensjon.fagmodul.eux.SedDokumentIkkeGyldigException
 import no.nav.eessi.pensjon.fagmodul.eux.SedDokumentIkkeOpprettetException
+import no.nav.eessi.pensjon.fagmodul.eux.SedDokumentKanIkkeOpprettesException
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.BucSedResponse
-import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Buc
-import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.DocumentsItem
-import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ParticipantsItem
+import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.*
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.prefill.ApiRequest
 import no.nav.eessi.pensjon.fagmodul.prefill.MangelfulleInndataException
@@ -229,8 +227,10 @@ class SedControllerTest {
 
         doReturn("12345").whenever(mockAktoerIdHelper).hentPinForAktoer(any())
 
+
         val mockBuc = Buc(id = "23123", processDefinitionName = "P_BUC_01", participants = null)
         mockBuc.documents = listOf(createDummyBucDocumentItem(), DocumentsItem(type = "X005"))
+        mockBuc.actions = listOf(ActionsItem(type = "Send", name = "Send"))
 
         doReturn(mockBuc).whenever(mockEuxService).getBuc(euxCaseId)
 
@@ -245,7 +245,6 @@ class SedControllerTest {
                 InstitusjonItem(country = "DE", institution = "Tyskland", name="Tyskland test")
         )
 
-
         sedController.addInstutionAndDocument(apiRequestWith(euxCaseId, newParticipants))
 
         verify(mockEuxService, times(newParticipants.size + 1)).opprettSedOnBuc(any(), eq(euxCaseId))
@@ -259,6 +258,8 @@ class SedControllerTest {
 
         val mockBuc = Buc(id = "23123", processDefinitionName = "P_BUC_01", participants = listOf(ParticipantsItem()))
         mockBuc.documents = listOf(createDummyBucDocumentItem())
+        mockBuc.actions = listOf(ActionsItem(type = "Send", name = "Send"))
+
         doReturn(mockBuc).whenever(mockEuxService).getBuc(euxCaseId)
 
         val dummyPrefillData = ApiRequest.buildPrefillDataModelOnExisting(apiRequestWith(euxCaseId), mockAktoerIdHelper.hentPinForAktoer(apiRequestWith(euxCaseId).aktoerId), null)
@@ -289,6 +290,29 @@ class SedControllerTest {
 
     }
 
+    @Test
+    //    kaller add (institutions and sed) rinaId: 1756996 bucType: P_BUC_06 sedType: P10000 aktoerId: 1000006851327
+    fun `call addInstutionAndDocument validater SED P10000 på en P_BUC_06 new return OK`() {
+        val euxCaseId = "1234567890"
+
+        doReturn("12345").whenever(mockAktoerIdHelper).hentPinForAktoer(any())
+
+        val mockBucJson = String(Files.readAllBytes(Paths.get("src/test/resources/json/buc/buc_P_BUC_06_4.2_tom.json")))
+        doReturn( mapJsonToAny(mockBucJson, typeRefs<Buc>())).whenever(mockEuxService).getBuc(euxCaseId)
+
+        val newParticipants = listOf(
+                InstitusjonItem(country = "FI", institution = "FI:Finland", name="Finland test")
+        )
+
+        doReturn(BucSedResponse(euxCaseId, "1")).whenever(mockEuxService).opprettSedOnBuc(any(),eq(euxCaseId))
+        whenever(mockPrefillSEDService.prefill(any())).thenReturn(SED("P10000"))
+        doNothing().whenever(mockEuxService).addInstitution(any(), any())
+
+        val result =  sedController.addInstutionAndDocument(apiRequestWith(euxCaseId, newParticipants, "P10000"))
+        verify(mockEuxService, times(newParticipants.size)).opprettSedOnBuc(any(), eq(euxCaseId))
+        assertEquals(ShortDocumentItem::class.java, result::class.java)
+
+    }
 
     @Test
     fun `call addInstutionAndDocument  to nye deltakere, men ingen X005`() {
@@ -298,6 +322,7 @@ class SedControllerTest {
 
         val mockBuc = Buc(id = "23123", processDefinitionName = "P_BUC_01", participants = listOf(ParticipantsItem()))
         mockBuc.documents = listOf(createDummyBucDocumentItem())
+        mockBuc.actions = listOf(ActionsItem(type = "Send", name = "Send"))
 
         doReturn(mockBuc).whenever(mockEuxService).getBuc(euxCaseId)
 
@@ -327,6 +352,7 @@ class SedControllerTest {
 
         val mockBuc = Buc(id = "23123", processDefinitionName = "P_BUC_01", participants = listOf(ParticipantsItem()))
         mockBuc.documents = listOf(createDummyBucDocumentItem(), DocumentsItem())
+        mockBuc.actions = listOf(ActionsItem(type = "Send", name = "Send"))
 
         doReturn(mockBuc).whenever(mockEuxService).getBuc(euxCaseId)
         doNothing().whenever(mockEuxService).addInstitution(any(), any())
@@ -420,14 +446,14 @@ class SedControllerTest {
     }
 
 
-    private fun apiRequestWith(euxCaseId: String, institutions: List<InstitusjonItem> = listOf()): ApiRequest {
+    private fun apiRequestWith(euxCaseId: String, institutions: List<InstitusjonItem> = listOf(), sed: String? = "P6000"): ApiRequest {
         return ApiRequest(
                 subjectArea = "Pensjon",
                 sakId = "EESSI-PEN-123",
                 euxCaseId = euxCaseId,
                 vedtakId = "1234567",
                 institutions = institutions,
-                sed = "P6000",
+                sed = sed,
                 buc = "P_BUC_06",
                 aktoerId = "0105094340092"
         )
