@@ -2,9 +2,13 @@ package no.nav.eessi.pensjon.fagmodul.api
 
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
+import com.nhaarman.mockitokotlin2.doThrow
 import com.nhaarman.mockitokotlin2.whenever
 import no.nav.eessi.pensjon.fagmodul.eux.BucAndSedView
 import no.nav.eessi.pensjon.fagmodul.eux.EuxService
+import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Properties
+import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Rinasak
+import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Traits
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Buc
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Organisation
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ParticipantsItem
@@ -13,13 +17,12 @@ import no.nav.eessi.pensjon.services.aktoerregister.AktoerregisterService
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.toJson
 import no.nav.eessi.pensjon.utils.typeRefs
-import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.*
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mock
 import org.mockito.Spy
 import org.mockito.junit.jupiter.MockitoExtension
+import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Paths
 
@@ -116,6 +119,58 @@ class BucControllerTest {
         val actual = bucController.createBuc("P_BUC_03")
 
         Assertions.assertEquals(excpeted.toJson(), actual.toJson())
+    }
+
+    @Test
+    fun `create BucSedAndView returns one valid element`() {
+        val aktoerId = "123456789"
+        val fnr = "10101835868"
+
+        doReturn(fnr).whenever(mockAktoerIdHelper).hentPinForAktoer(aktoerId)
+
+        val rinaSaker = listOf<Rinasak>(Rinasak("1234","P_BUC_01", Traits(), "", Properties(), "open"))
+        doReturn(rinaSaker).whenever(mockEuxService).getRinasaker(fnr, aktoerId)
+
+        doReturn(Buc()).whenever(mockEuxService).getBuc(any())
+
+        val actual = bucController.getBucogSedView(aktoerId)
+        Assertions.assertEquals(1,actual.size)
+    }
+
+    @Test
+    fun `create BucSedAndView fails on rinasaker throw execption`() {
+        val aktoerId = "123456789"
+        val fnr = "10101835868"
+
+        doReturn(fnr).whenever(mockAktoerIdHelper).hentPinForAktoer(aktoerId)
+        doThrow(RuntimeException::class).whenever(mockEuxService).getRinasaker(fnr, aktoerId)
+
+        assertThrows<Exception> {
+            bucController.getBucogSedView(aktoerId)
+        }
+        try {
+            bucController.getBucogSedView(aktoerId)
+            fail("skal ikke komme hit")
+        } catch (ex: Exception) {
+            Assertions.assertEquals("Feil ved henting av rinasaker på borger", ex.message)
+        }
+
+    }
+
+    @Test
+    fun `create BucSedAndView fails on the view and entity with error`() {
+        val aktoerId = "123456789"
+        val fnr = "10101835868"
+
+        doReturn(fnr).whenever(mockAktoerIdHelper).hentPinForAktoer(aktoerId)
+        doThrow(RuntimeException("Feiler ved BUC")).whenever(mockEuxService).getBuc(any())
+
+        val rinaSaker = listOf<Rinasak>(Rinasak("1234","P_BUC_01", Traits(), "", Properties(), "open"))
+        doReturn(rinaSaker).whenever(mockEuxService).getRinasaker(fnr, aktoerId)
+
+        val actual =  bucController.getBucogSedView(aktoerId)
+        Assertions.assertTrue(actual.first().toJson().contains("Feiler ved BUC"))
+
     }
 
 }

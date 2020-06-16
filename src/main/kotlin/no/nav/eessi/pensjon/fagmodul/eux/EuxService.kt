@@ -13,6 +13,7 @@ import no.nav.eessi.pensjon.fagmodul.sedmodel.PinItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.metrics.MetricsHelper
 import no.nav.eessi.pensjon.utils.mapJsonToAny
+import no.nav.eessi.pensjon.utils.toJson
 import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
 import no.nav.eessi.pensjon.utils.typeRefs
 import no.nav.eessi.pensjon.vedlegg.client.SafClient
@@ -202,24 +203,30 @@ class EuxService (private val euxKlient: EuxKlient,
         val gyldigBucs = mutableListOf("H_BUC_07", "R_BUC_01", "R_BUC_02", "M_BUC_02", "M_BUC_03a", "M_BUC_03b")
         gyldigBucs.addAll(validbucsed.initSedOnBuc().keys.map { it }.toList())
 
-        return list.asSequence()
+        val filterdList = list.asSequence()
                 .filterNot { rinasak -> rinasak.status == "archived" }
                 .filter { rinasak -> gyldigBucs.contains(rinasak.processDefinitionId) }
                 .sortedBy { rinasak -> rinasak.id }
                 .map { rinasak -> rinasak.id!! }
                 .toList()
+
+        logger.debug("filtrert liste over gyldige rinasaker : ${filterdList.size}")
+        logger.debug("filtrert list inneholder buc: ${filterdList.toJson()}")
+
+        return filterdList
     }
     fun getBucDeltakere(euxCaseId: String): List<ParticipantsItem> {
         return euxKlient.getBucDeltakere(euxCaseId)
     }
 
     fun getRinasaker(fnr: String, aktoerId: String): List<Rinasak> {
-
         // henter rina saker basert på tilleggsinformasjon i journalposter
         val rinaSakIderMetadata = safClient.hentRinaSakIderFraDokumentMetadata(aktoerId)
+        logger.debug("hentet rinasaker fra documentMetadata")
 
         // Henter rina saker basert på fnr
         val rinaSakerMedFnr = euxKlient.getRinasaker(fnr, null, null, null)
+        logger.debug("hentet rinasaker fra eux-rina-api")
 
         // Filtrerer vekk saker som allerede er hentet som har fnr
         val rinaSakIderMedFnr = hentRinaSakIder(rinaSakerMedFnr)
@@ -231,6 +238,7 @@ class EuxService (private val euxKlient: EuxKlient,
                     euxKlient.getRinasaker(null, euxCaseId , null, null) }
                 .flatten()
                 .distinctBy { it.id }
+        logger.debug("henter rinasaker fra listen fra documentMetadata")
 
         return rinaSakerMedFnr.plus(rinaSakerUtenFnr)
     }
