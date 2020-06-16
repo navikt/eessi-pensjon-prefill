@@ -113,12 +113,24 @@ class BucController(private val euxService: EuxService,
                         @PathVariable("euxcaseid", required = false) euxcaseid: String? = ""): List<BucAndSedView> {
         auditlogger.log("getBucogSedView", aktoerid)
         logger.debug("Prøver å dekode aktoerid: $aktoerid til fnr.")
-
         val fnr = aktoerService.hentPinForAktoer(aktoerid)
-        val rinasaker = euxService.getRinasaker(fnr, aktoerid)
-        val rinasakIdList = euxService.getFilteredArchivedaRinasaker(rinasaker)
 
-        return euxService.getBucAndSedView( rinasakIdList )
+        val rinasakIdList =try {
+            val rinasaker = euxService.getRinasaker(fnr, aktoerid)
+            val rinasakIdList = euxService.getFilteredArchivedaRinasaker(rinasaker)
+            rinasakIdList
+        } catch (ex: Exception) {
+            logger.error("Feil oppstod under henting av rinasaker på aktoer: $aktoerid", ex)
+            throw Exception("Feil ved henting av rinasaker på borger")
+        }
+
+        try {
+            return euxService.getBucAndSedView( rinasakIdList )
+        } catch (ex: Exception) {
+            logger.error("Feil ved henting av visning BucSedAndView på aktoer: $aktoerid", ex)
+            throw Exception("Feil ved oppretting av visning over BUC")
+        }
+
     }
 
     @ApiOperation("Henter ut enkel Buc meny struktur i json format for UI på valgt euxcaseid")
