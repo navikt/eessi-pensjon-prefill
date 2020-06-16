@@ -120,7 +120,7 @@ object PrefillPensjonVedtak {
      * [99] Other
      *
      */
-    private fun createVedtakGrunnlagPentionWithRule(pendata: Pensjonsinformasjon): String {
+    private fun createVedtakGrunnlagPentionWithRule(pendata: Pensjonsinformasjon): String? {
         //TODO Det må lages flere regler for UT og for etterlattepensjon
 
         logger.debug("4.1.2         VedtakGrunnlagPention")
@@ -128,7 +128,8 @@ object PrefillPensjonVedtak {
         val sakType = KSAK.valueOf(pendata.sakAlder.sakType)
         logger.debug("              Saktype: $sakType")
 
-        if (sjekkForVilkarsvurderingListeHovedytelseellerAvslag(pendata)) return "99"
+        //hvis avslag returner vi tomt verdi
+        if (sjekkForVilkarsvurderingListeHovedytelseellerAvslag(pendata)) return null
 
         return when (sakType) {
             KSAK.BARNEP -> {
