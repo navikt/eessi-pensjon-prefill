@@ -79,6 +79,7 @@ class PrefillSEDService(private val prefillNav: PrefillNav,
         return PrefillSed(prefillNav, pensjonGjenlevende)
     }
 
+    //Henter inn alle personer fra ep-personoppslag  først før preutfylling
     private fun hentPersoner(prefillData: PrefillDataModel, fyllUtBarnListe: Boolean = false): PersonData {
         // FIXME - det veksles mellom gjenlevende og bruker ... usikkert om dette er rett...
         logger.info("Henter hovedperson/gjenlevende eller avdød (avdød: ${prefillData.avdod == null})")
@@ -88,6 +89,7 @@ class PrefillSEDService(private val prefillNav: PrefillNav,
         val forsikretPerson = tpsPersonService.hentBrukerFraTPS(prefillData.bruker.norskIdent)
 
         val (ektepinid, ekteTypeValue) = filterEktefelleRelasjon(forsikretPerson)
+
         logger.info("Henter ektefelle/partner (ekteType: $ekteTypeValue)")
         val ektefelleBruker = if(ektepinid.isBlank()) null else tpsPersonService.hentBrukerFraTPS(ektepinid)
 

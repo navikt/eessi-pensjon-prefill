@@ -108,6 +108,7 @@ object PrefillP2xxxPensjon {
             val pensak: V1Sak = PensjonsinformasjonService.finnSak(penSaksnummer, it)
 
             if (pensak.sakType != sakType) {
+                logger.warn("Du kan ikke opprette ${sedTypeAsText(sedType)} i en ${sakTypeAsText(pensak.sakType)} (PESYS-saksnr: $penSaksnummer har sakstype ${pensak.sakType})")
                 throw FeilSakstypeForSedException("Du kan ikke opprette ${sedTypeAsText(sedType)} i en ${sakTypeAsText(pensak.sakType)} (PESYS-saksnr: $penSaksnummer har sakstype ${pensak.sakType})")
             }
             pensak
