@@ -10,19 +10,24 @@ import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Properties
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Rinasak
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Traits
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Buc
+import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.DocumentsItem
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Organisation
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ParticipantsItem
 import no.nav.eessi.pensjon.logging.AuditLogger
 import no.nav.eessi.pensjon.services.aktoerregister.AktoerregisterService
+import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonClient
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.toJson
 import no.nav.eessi.pensjon.utils.typeRefs
+import no.nav.pensjon.v1.avdod.V1Avdod
+import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
+import no.nav.pensjon.v1.person.V1Person
 import org.junit.jupiter.api.*
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mock
 import org.mockito.Spy
 import org.mockito.junit.jupiter.MockitoExtension
-import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Paths
 
@@ -38,11 +43,14 @@ class BucControllerTest {
     @Mock
     lateinit var mockAktoerIdHelper: AktoerregisterService
 
+    @Mock
+    lateinit var mockPensjonClient: PensjonsinformasjonClient
+
     private lateinit var bucController: BucController
 
     @BeforeEach
     fun before() {
-        this.bucController = BucController(mockEuxService, mockAktoerIdHelper, auditLogger)
+        this.bucController = BucController(mockEuxService, mockAktoerIdHelper, auditLogger, mockPensjonClient)
     }
 
 
@@ -60,7 +68,7 @@ class BucControllerTest {
         doReturn(buc).whenever(mockEuxService).getBuc(any())
 
         val result = bucController.getBuc("1213123123")
-        Assertions.assertEquals(buc, result)
+        assertEquals(buc, result)
     }
 
     @Test
@@ -70,7 +78,7 @@ class BucControllerTest {
         doReturn(buc).whenever(mockEuxService).getBuc(any())
 
         val result = bucController.getProcessDefinitionName("1213123123")
-        Assertions.assertEquals("P_BUC_03", result)
+        assertEquals("P_BUC_03", result)
     }
 
     @Test
@@ -80,7 +88,7 @@ class BucControllerTest {
         doReturn(buc).whenever(mockEuxService).getBuc(any())
 
         val result = bucController.getCreator("1213123123")
-        Assertions.assertEquals("Z990787", result?.name)
+        assertEquals("Z990787", result?.name)
     }
 
     @Test
@@ -89,7 +97,7 @@ class BucControllerTest {
         doReturn(expected).whenever(mockEuxService).getBucDeltakere(any())
 
         val result = bucController.getBucDeltakere("1213123123")
-        Assertions.assertEquals(expected.toJson(), result)
+        assertEquals(expected.toJson(), result)
     }
 
     @Test
@@ -104,7 +112,7 @@ class BucControllerTest {
         val actual = bucController.getAllDocuments(mockEuxRinaid)
 
         Assertions.assertNotNull(actual)
-        Assertions.assertEquals(25, actual.size)
+        assertEquals(25, actual.size)
     }
 
     @Test
@@ -118,7 +126,7 @@ class BucControllerTest {
         val excpeted = BucAndSedView.from(buc)
         val actual = bucController.createBuc("P_BUC_03")
 
-        Assertions.assertEquals(excpeted.toJson(), actual.toJson())
+        assertEquals(excpeted.toJson(), actual.toJson())
     }
 
     @Test
@@ -134,7 +142,7 @@ class BucControllerTest {
         doReturn(Buc()).whenever(mockEuxService).getBuc(any())
 
         val actual = bucController.getBucogSedView(aktoerId)
-        Assertions.assertEquals(1,actual.size)
+        assertEquals(1,actual.size)
     }
 
     @Test
@@ -152,7 +160,7 @@ class BucControllerTest {
             bucController.getBucogSedView(aktoerId)
             fail("skal ikke komme hit")
         } catch (ex: Exception) {
-            Assertions.assertEquals("Feil ved henting av rinasaker på borger", ex.message)
+            assertEquals("Feil ved henting av rinasaker på borger", ex.message)
         }
 
     }
@@ -172,5 +180,73 @@ class BucControllerTest {
         Assertions.assertTrue(actual.first().toJson().contains("Feiler ved BUC"))
 
     }
+
+    @Test
+    fun `Gitt en gjenlevende med vedtak som inneholder avdød Når BUC og SED forsøkes å hentes Så returner alle SED og BUC tilhørende gjenlevende`() {
+        val aktoerId = "1234568"
+        val vedtaksId = "22455454"
+        val fnrGjenlevende = "13057065487"
+        val avdodfnr = "12312312312312312312312"
+
+        // pensjonsinformasjonsKLient
+        val mockPensjoninfo = Pensjonsinformasjon()
+        mockPensjoninfo.avdod = V1Avdod()
+        mockPensjoninfo.person = V1Person()
+        mockPensjoninfo.avdod.avdod = avdodfnr
+        mockPensjoninfo.person.aktorId = aktoerId
+
+        doReturn(mockPensjoninfo).whenever(mockPensjonClient).hentAltPaaVedtak(vedtaksId)
+
+        //aktoerService.hentPinForAktoer
+        doReturn(fnrGjenlevende).whenever(mockAktoerIdHelper).hentPinForAktoer(aktoerId)
+
+        //euxService.getrinasakeravdod
+        val rinaSaker = listOf("123422")
+        doReturn(rinaSaker).whenever(mockEuxService).getRinasakerAvdod(avdodfnr, aktoerId, fnrGjenlevende)
+
+        val documentsItem = listOf(DocumentsItem(type = "P2100"))
+        val buc = Buc(processDefinitionName = "P_BUC_02", documents = documentsItem)
+
+
+        doReturn(buc).whenever(mockEuxService).getBuc(any())
+
+        //euxService.getBucAndSedVew()
+        val actual = bucController.getBucogSedViewVedtak(aktoerId, vedtaksId)
+        assertEquals(1, actual.size)
+        assertEquals("P_BUC_02", actual.first().type)
+    }
+
+    @Test
+    fun `Gitt en gjenlevende med vedtak uten avdød Når BUC og SED forsøkes å hentes Så returner alle SED og BUC tilhørende gjenlevende uten P_BUC_02`() {
+        val aktoerId = "1234568"
+        val vedtaksId = "22455454"
+        val fnrGjenlevende = "13057065487"
+
+        // pensjonsinformasjonsKLient
+        val mockPensjoninfo = Pensjonsinformasjon()
+        mockPensjoninfo.person = V1Person()
+        mockPensjoninfo.person.aktorId = aktoerId
+
+        doReturn(mockPensjoninfo).whenever(mockPensjonClient).hentAltPaaVedtak(vedtaksId)
+
+        //aktoerService.hentPinForAktoer
+        doReturn(fnrGjenlevende).whenever(mockAktoerIdHelper).hentPinForAktoer(aktoerId)
+
+        //euxService.getrinasakeravdod
+        val rinaSaker = listOf<Rinasak>(Rinasak("1234","P_BUC_01", Traits(), "", Properties(), "open"))
+        doReturn(rinaSaker).whenever(mockEuxService).getRinasaker(fnrGjenlevende, aktoerId)
+
+        val documentsItem = listOf(DocumentsItem(type = "P2000"))
+        val buc = Buc(processDefinitionName = "P_BUC_01", documents = documentsItem)
+
+        doReturn(buc).whenever(mockEuxService).getBuc(any())
+
+        //euxService.getBucAndSedVew()
+        val actual = bucController.getBucogSedViewVedtak(aktoerId, vedtaksId)
+        assertEquals(1, actual.size)
+        assertEquals("P_BUC_01", actual.first().type)
+    }
+
+
 
 }

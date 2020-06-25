@@ -1,5 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.eux
 
+import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.BucSedResponse
@@ -36,6 +37,7 @@ class EuxService (private val euxKlient: EuxKlient,
     private lateinit var OpprettSvarSED: MetricsHelper.Metric
     private lateinit var OpprettSED: MetricsHelper.Metric
     private val validbucsed = ValidBucAndSed()
+    private val mapper = jacksonObjectMapper()
 
     @PostConstruct
     fun initMetrics() {
@@ -218,6 +220,56 @@ class EuxService (private val euxKlient: EuxKlient,
     fun getBucDeltakere(euxCaseId: String): List<ParticipantsItem> {
         return euxKlient.getBucDeltakere(euxCaseId)
     }
+
+    fun getRinasakerAvdod(avdodFnr: String, aktoerIdGjenlevende: String, fnrGjenlevende: String): List<String> {
+        // Henter rina saker basert på gjenlevendes fnr
+        val rinaSakerMedFnr = euxKlient.getRinasaker(avdodFnr, null, "P_BUC_02", null)
+        logger.debug("hentet rinasaker fra eux-rina-api")
+        val filteredRinaIdAvdod = getFilteredArchivedaRinasaker(rinaSakerMedFnr)
+        logger.debug("filterer ut rinasaker og får kun ider tilbake")
+
+        //henter buc og filtrerer ut documentid på P2100
+        val documents = filteredRinaIdAvdod.map { rinaidavdod ->
+            val bucUtils = BucUtils(getBuc(rinaidavdod))
+            val p2100 = bucUtils.getDocumentByType("P2100")
+            val documentid = p2100.id!!
+            Pair(rinaidavdod, documentid)
+        }
+
+        //henter inn sed fra eux P2100
+        val listeAvSedsPaaAvdod = documents.map { pair ->
+            val sedJson = euxKlient.getSedOnBucByDocumentIdAsJson(pair.first, pair.second)
+            Pair(pair.first, sedJson)
+        }
+
+        val gyldigeRinaIder = listeAvSedsPaaAvdod
+                .filter { pair ->
+                    val sed = pair.second
+                    val sedRootNode = mapper.readTree(sed)
+                    filterGjenlevendePinNode(sedRootNode) == fnrGjenlevende
+                }
+                .map { pair -> pair.first }
+                .sortedBy { it }
+
+        //henter opp alle personer (gjenlevende) bucer lister..
+        val listGjenlevendesSaker = getFilteredArchivedaRinasaker(getRinasaker(fnrGjenlevende, aktoerIdGjenlevende))
+        val totalsaker = gyldigeRinaIder.plus(listGjenlevendesSaker).distinctBy { it }
+
+        return totalsaker
+    }
+
+
+    private fun filterGjenlevendePinNode(sedRootNode: JsonNode): String? {
+        return finnPin(sedRootNode.at("/pensjon/gjenlevende"))
+    }
+
+    private fun finnPin(pinNode: JsonNode): String? {
+        return pinNode.findValue("pin")
+                .filter { pin -> pin.get("land").textValue() == "NO" }
+                .map { pin -> pin.get("identifikator").textValue() }
+                .lastOrNull()
+    }
+
 
     fun getRinasaker(fnr: String, aktoerId: String): List<Rinasak> {
         // henter rina saker basert på tilleggsinformasjon i journalposter

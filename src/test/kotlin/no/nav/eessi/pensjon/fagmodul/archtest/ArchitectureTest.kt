@@ -169,7 +169,7 @@ class ArchitectureTest {
 
                 .whereLayer(geoService).mayOnlyBeAccessedByLayers(geoApi, pensjonUtlandApi, prefill)
                 .whereLayer(personService).mayOnlyBeAccessedByLayers(health, personApi, prefill)
-                .whereLayer(pensjonService).mayOnlyBeAccessedByLayers(health, pensjonApi, prefill)
+                .whereLayer(pensjonService).mayOnlyBeAccessedByLayers(health, pensjonApi, prefill, bucSedApi)
 
                 .whereLayer(config).mayNotBeAccessedByAnyLayer()
                 .whereLayer(metrics).mayOnlyBeAccessedByLayers(health, euxService, pensjonUtlandApi)

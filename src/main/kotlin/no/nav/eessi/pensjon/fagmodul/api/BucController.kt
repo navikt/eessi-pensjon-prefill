@@ -11,6 +11,7 @@ import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Creator
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ShortDocumentItem
 import no.nav.eessi.pensjon.logging.AuditLogger
 import no.nav.eessi.pensjon.services.aktoerregister.AktoerregisterService
+import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonClient
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import no.nav.security.oidc.api.Protected
 import org.slf4j.LoggerFactory
@@ -22,7 +23,8 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/buc")
 class BucController(private val euxService: EuxService,
                     private val aktoerService: AktoerregisterService,
-                    private val auditlogger: AuditLogger) {
+                    private val auditlogger: AuditLogger,
+                    private val pensjonsinformasjonClient: PensjonsinformasjonClient) {
 
     private val logger = LoggerFactory.getLogger(BucController::class.java)
     private val validBucAndSed = ValidBucAndSed()
@@ -79,7 +81,7 @@ class BucController(private val euxService: EuxService,
         return BucUtils(euxService.getBuc(rinanr)).getInternatinalId()
     }
 
-    @ApiOperation("Henter opp den opprinelige inststusjon på valgt caseid (type)")
+    @ApiOperation("Henter alle gyldige sed på valgt rinanr")
     @GetMapping("/{rinanr}/allDocuments")
     fun getAllDocuments(@PathVariable(value = "rinanr", required = true) rinanr: String): List<ShortDocumentItem> {
         auditlogger.log("/buc/{$rinanr}/allDocuments", "getAllDocuments")
@@ -115,7 +117,7 @@ class BucController(private val euxService: EuxService,
         logger.debug("Prøver å dekode aktoerid: $aktoerid til fnr.")
         val fnr = aktoerService.hentPinForAktoer(aktoerid)
 
-        val rinasakIdList =try {
+        val rinasakIdList = try {
             val rinasaker = euxService.getRinasaker(fnr, aktoerid)
             val rinasakIdList = euxService.getFilteredArchivedaRinasaker(rinasaker)
             rinasakIdList
@@ -130,8 +132,53 @@ class BucController(private val euxService: EuxService,
             logger.error("Feil ved henting av visning BucSedAndView på aktoer: $aktoerid", ex)
             throw Exception("Feil ved oppretting av visning over BUC")
         }
-
     }
+
+    @ApiOperation("Henter ut liste av Buc meny struktur i json format for UI")
+    @GetMapping("/detaljer/{aktoerid}/vedtak/{vedtakid}")
+    fun getBucogSedViewVedtak(@PathVariable("aktoerid", required = true) aktoerid: String,
+                                   @PathVariable("vedtakid", required = true) vedtakid: String): List<BucAndSedView> {
+
+        //Hente opp pesysservice. hente inn vedtak pensjoninformasjon..
+        val peninfo = pensjonsinformasjonClient.hentAltPaaVedtak(vedtakid)
+
+        val avdod = peninfo.avdod
+        val person = peninfo.person
+
+        if (avdod != null && avdod.avdod != null && person.aktorId == aktoerid) {
+            val avdodfnr = avdod.avdod
+            return getBucogSedViewGjenlevende(aktoerid, avdodfnr)
+        }
+
+        return getBucogSedView(aktoerid)
+    }
+
+
+    @ApiOperation("Henter ut liste av Buc meny struktur i json format for UI på valgt aktoerid")
+    @GetMapping("/detaljer/{aktoerid}/avdod/{avdodfnr}")
+    fun getBucogSedViewGjenlevende(@PathVariable("aktoerid", required = true) aktoerid: String,
+                                   @PathVariable("avdodfnr", required = true) avdodfnr: String): List<BucAndSedView> {
+
+        logger.debug("Prøver å dekode aktoerid: $aktoerid til gjenlevende fnr.")
+        val fnrGjenlevende = aktoerService.hentPinForAktoer(aktoerid)
+
+        val rinasaker = try {
+            // Henter rina saker basert på fnr
+            logger.debug("hentetr rinasaker fra eux-rina-api")
+            euxService.getRinasakerAvdod(avdodfnr, aktoerid, fnrGjenlevende)
+        } catch (ex: Exception) {
+            logger.error("Feiler ved henting av Rinasaker for gjenlevende og avdod", ex)
+            throw Exception("Feil ved henting av Rinasaker for gjenlevende")
+        }
+
+        try {
+            return euxService.getBucAndSedView( rinasaker )
+        } catch (ex: Exception) {
+            logger.error("Feil ved henting av visning BucSedAndView på aktoer: $aktoerid", ex)
+            throw Exception("Feil ved oppretting av visning over BUC")
+        }
+    }
+
 
     @ApiOperation("Henter ut enkel Buc meny struktur i json format for UI på valgt euxcaseid")
     @GetMapping("/enkeldetalj/{euxcaseid}")

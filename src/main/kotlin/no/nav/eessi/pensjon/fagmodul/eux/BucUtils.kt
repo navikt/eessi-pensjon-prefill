@@ -192,6 +192,10 @@ class BucUtils(private val buc: Buc ) {
 
     fun getAllDocuments() = getDocuments().map { createShortDocument(it) }
 
+    fun getDocumentByType(sedType: String): ShortDocumentItem {
+        return getAllDocuments().filter { sedType == it.type }.get(0)
+    }
+
     fun findAndFilterDocumentItemByType(sedType: SEDType) = findAndFilterDocumentItemByType(sedType.name)
 
     private fun findAndFilterDocumentItemByType(sedType: String) =
