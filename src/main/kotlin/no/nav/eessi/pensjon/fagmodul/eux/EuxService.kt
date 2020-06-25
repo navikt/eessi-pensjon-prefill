@@ -243,7 +243,7 @@ class EuxService (private val euxKlient: EuxKlient,
         }
 
         val gyldigeRinaIder = listeAvSedsPaaAvdod
-                .filter { pair ->
+                .filterNot { pair ->
                     val sed = pair.second
                     val sedRootNode = mapper.readTree(sed)
                     filterGjenlevendePinNode(sedRootNode) == fnrGjenlevende
