@@ -223,7 +223,7 @@ class EuxService (private val euxKlient: EuxKlient,
 
     fun getRinasakerAvdod(avdodFnr: String, aktoerIdGjenlevende: String, fnrGjenlevende: String): List<String> {
         // Henter rina saker basert på gjenlevendes fnr
-        val rinaSakerMedFnr = euxKlient.getRinasaker(avdodFnr, null, "P_BUC_02", "open")
+        val rinaSakerMedFnr = euxKlient.getRinasaker(avdodFnr, null, "P_BUC_02", "\"open\"")
         logger.debug("hentet rinasaker fra eux-rina-api")
         val filteredRinaIdAvdod = getFilteredArchivedaRinasaker(rinaSakerMedFnr)
         logger.debug("filterer ut rinasaker og får kun ider tilbake")
