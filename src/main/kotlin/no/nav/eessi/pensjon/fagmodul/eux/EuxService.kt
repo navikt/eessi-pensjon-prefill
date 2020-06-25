@@ -226,7 +226,7 @@ class EuxService (private val euxKlient: EuxKlient,
         val rinaSakerMedFnr = euxKlient.getRinasaker(avdodFnr, null, "P_BUC_02", "\"open\"")
         logger.debug("hentet rinasaker fra eux-rina-api")
         val filteredRinaIdAvdod = getFilteredArchivedaRinasaker(rinaSakerMedFnr)
-        logger.debug("filterer ut rinasaker og får kun ider tilbake")
+        logger.debug("filterer ut rinasaker og får kun ider tilbake size: ${filteredRinaIdAvdod.size}")
 
         //henter buc og filtrerer ut documentid på P2100
         val documents = filteredRinaIdAvdod.map { rinaidavdod ->
@@ -235,25 +235,31 @@ class EuxService (private val euxKlient: EuxKlient,
             val documentid = p2100.id!!
             Pair(rinaidavdod, documentid)
         }
+        logger.debug("liste med documenter med P2100 rinadocid size: ${documents.size}")
 
         //henter inn sed fra eux P2100
         val listeAvSedsPaaAvdod = documents.map { pair ->
             val sedJson = euxKlient.getSedOnBucByDocumentIdAsJson(pair.first, pair.second)
             Pair(pair.first, sedJson)
         }
+        logger.debug("liste med documenter med P2100 sed/json: ${listeAvSedsPaaAvdod.size}")
+
 
         val gyldigeRinaIder = listeAvSedsPaaAvdod
-                .filterNot { pair ->
+                .filter { pair ->
                     val sed = pair.second
                     val sedRootNode = mapper.readTree(sed)
                     filterGjenlevendePinNode(sedRootNode) == fnrGjenlevende
                 }
                 .map { pair -> pair.first }
                 .sortedBy { it }
+        logger.debug("liste over gyldige rinasaker med avdod og gjenlevende: ${gyldigeRinaIder.size}")
 
         //henter opp alle personer (gjenlevende) bucer lister..
         val listGjenlevendesSaker = getFilteredArchivedaRinasaker(getRinasaker(fnrGjenlevende, aktoerIdGjenlevende))
         val totalsaker = gyldigeRinaIder.plus(listGjenlevendesSaker).distinctBy { it }
+
+        logger.debug("TotalRinasaker med avdod og gjenlevende(rina/saf): ${totalsaker.size}")
 
         return totalsaker
     }
