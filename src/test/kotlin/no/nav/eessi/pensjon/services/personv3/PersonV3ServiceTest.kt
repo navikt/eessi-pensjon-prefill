@@ -62,6 +62,13 @@ class PersonV3ServiceTest {
     }
 
     @Test
+    fun hentPersonUkjentFeil() {
+        val fnr = "18128126178"
+        every { personV3Mock.hentPerson(any()) } throws Exception("Ukjent feil i PersonV3")
+        assertThrows<PersonV3UkjentFeilException> {  personV3Service.hentPerson(fnr) }
+    }
+
+    @Test
     fun hentPersonSikkerhetsbegrensning() {
         val fnr = "18128126178"
         every { personV3Mock.hentPerson(any()) } throws HentPersonSikkerhetsbegrensning("Sikkerhetsbegrensning", Sikkerhetsbegrensning())

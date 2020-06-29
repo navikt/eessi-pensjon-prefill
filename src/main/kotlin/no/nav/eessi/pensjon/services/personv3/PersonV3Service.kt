@@ -1,7 +1,5 @@
 package no.nav.eessi.pensjon.services.personv3
 
-import io.micrometer.core.instrument.Counter
-import io.micrometer.core.instrument.Metrics
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import no.nav.eessi.pensjon.logging.AuditLogger
 import no.nav.eessi.pensjon.metrics.MetricsHelper
@@ -35,10 +33,6 @@ class PersonV3Service(private val service: PersonV3,
     @PostConstruct
     fun initMetrics() {
         HentPersonV3 = metricsHelper.init("HentPersonV3")
-    }
-
-    final fun counter(name: String, type: String): Counter {
-        return Metrics.counter(name, "type", type)
     }
 
     fun hentPersonPing(): Boolean {
@@ -75,7 +69,7 @@ class PersonV3Service(private val service: PersonV3,
                 val resp = service.hentPerson(request)
                 resp
             } catch (personIkkefunnet: HentPersonPersonIkkeFunnet) {
-                logger.error("Kaller PersonV3.hentPerson service Feilet: $personIkkefunnet")
+                logger.warn("Kaller PersonV3.hentPerson service Feilet: $personIkkefunnet")
                 throw PersonV3IkkeFunnetException(personIkkefunnet.message!!)
             } catch (personSikkerhetsbegrensning: HentPersonSikkerhetsbegrensning) {
                 auditLogger.logBorgerErr("PersonV3.hentPerson", fnr, personSikkerhetsbegrensning.message!!)
@@ -83,7 +77,7 @@ class PersonV3Service(private val service: PersonV3,
                 throw PersonV3SikkerhetsbegrensningException(personSikkerhetsbegrensning.message!!)
             } catch (ex: Exception) {
                 logger.error("Ukjent feil i PersonV3: fnr: $fnr, ${ex.message}", ex)
-                throw PersonV3IkkeFunnetException("Ukent feil ved PersonV3")
+                throw PersonV3UkjentFeilException("Ukjent feil ved PersonV3")
             }
         }
     }
@@ -91,6 +85,9 @@ class PersonV3Service(private val service: PersonV3,
 
 @ResponseStatus(value = HttpStatus.NOT_FOUND)
 class PersonV3IkkeFunnetException(message: String) : RuntimeException(message)
+
+@ResponseStatus(value = HttpStatus.NOT_FOUND)
+class PersonV3UkjentFeilException(message: String) : RuntimeException(message)
 
 @ResponseStatus(value = HttpStatus.FORBIDDEN)
 class PersonV3SikkerhetsbegrensningException(message: String) : RuntimeException(message)
