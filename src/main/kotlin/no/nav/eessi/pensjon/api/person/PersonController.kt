@@ -43,7 +43,7 @@ class PersonController(private val aktoerregisterService: AktoerregisterService,
 
     @ApiOperation("henter ut personinformasjon for en aktørId")
     @GetMapping("/person/{aktoerid}", produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun getPerson(@PathVariable("aktoerid", required = true) aktoerid: String): ResponseEntity<Any?> {
+    fun getPerson(@PathVariable("aktoerid", required = true) aktoerid: String): ResponseEntity<Any> {
         auditLogger.log("/person/{$aktoerid}", "getPerson")
 
         return PersonControllerHentPerson.measure {
@@ -60,10 +60,10 @@ class PersonController(private val aktoerregisterService: AktoerregisterService,
         return PersonControllerHentPersonNavn.measure {
             val person = hentPerson(aktoerid).person
             ResponseEntity.ok(
-                    Personinformasjon(person?.personnavn?.sammensattNavn,
-                            person?.personnavn?.fornavn,
-                            person?.personnavn?.mellomnavn,
-                            person?.personnavn?.etternavn)
+                    Personinformasjon(person.personnavn.sammensattNavn,
+                            person.personnavn.fornavn,
+                            person.personnavn.mellomnavn,
+                            person.personnavn.etternavn)
             )
         }
     }

@@ -137,7 +137,6 @@ dependencies {
     implementation("no.nav.security:oidc-test-support:${oidcTokenSupportVersion}")
     implementation("no.nav.eessi.pensjon:ep-security-sts:0.0.3")
     testImplementation("org.pac4j:spring-webmvc-pac4j:3.2.0")
-    implementation("commons-io:commons-io:2.7")
 
     // Tjenestespesifikasjoner
     implementation("no.nav.tjenestespesifikasjoner:person-v3-tjenestespesifikasjon:1.2020.01.30-14.36-cdf257baea96")
