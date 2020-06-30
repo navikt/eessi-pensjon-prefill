@@ -169,6 +169,19 @@ class EuxService (private val euxKlient: EuxKlient,
         }
     }
 
+    fun getBucAndSedViewWithBuc(bucs: List<Buc>): List<BucAndSedView> {
+        return bucs
+                .map { buc ->
+                    try {
+                        BucAndSedView.from(buc)
+                    } catch (ex: Exception) {
+                        logger.error(ex.message, ex)
+                        BucAndSedView.fromErr(ex.message)
+                    }
+                }
+                .toList()
+    }
+
     fun getBucAndSedView(rinasaker: List<String>): List<BucAndSedView> {
         val startTime = System.currentTimeMillis()
         val list = rinasaker
@@ -221,7 +234,7 @@ class EuxService (private val euxKlient: EuxKlient,
         return euxKlient.getBucDeltakere(euxCaseId)
     }
 
-    fun getRinasakerAvdod(avdodFnr: String, aktoerIdGjenlevende: String, fnrGjenlevende: String): List<String> {
+    fun getBucAndSedViewAvdod(avdodFnr: String, fnrGjenlevende: String): List<BucAndSedView> {
         // Henter rina saker basert på gjenlevendes fnr
         val rinaSakerMedFnr = euxKlient.getRinasaker(avdodFnr, null, "P_BUC_02", "\"open\"")
         logger.debug("hentet rinasaker fra eux-rina-api")
@@ -233,17 +246,16 @@ class EuxService (private val euxKlient: EuxKlient,
             val bucUtils = BucUtils(getBuc(rinaidavdod))
             val p2100 = bucUtils.getDocumentByType("P2100")
             val documentid = p2100.id!!
-            Pair(rinaidavdod, documentid)
+            Pair(rinaidavdod, Pair(bucUtils.getBuc(), documentid))
         }
         logger.debug("liste med documenter med P2100 rinadocid size: ${documents.size}")
 
         //henter inn sed fra eux P2100
         val listeAvSedsPaaAvdod = documents.map { pair ->
-            val sedJson = euxKlient.getSedOnBucByDocumentIdAsJson(pair.first, pair.second)
+            val sedJson = euxKlient.getSedOnBucByDocumentIdAsJson(pair.first, pair.second.second)
             Pair(pair.first, sedJson)
         }
         logger.debug("liste med documenter med P2100 sed/json: ${listeAvSedsPaaAvdod.size}")
-
 
         val gyldigeRinaIder = listeAvSedsPaaAvdod
                 .filter { pair ->
@@ -255,13 +267,18 @@ class EuxService (private val euxKlient: EuxKlient,
                 .sortedBy { it }
         logger.debug("liste over gyldige rinasaker med avdod og gjenlevende: ${gyldigeRinaIder.size}")
 
-        //henter opp alle personer (gjenlevende) bucer lister..
-        val listGjenlevendesSaker = getFilteredArchivedaRinasaker(getRinasaker(fnrGjenlevende, aktoerIdGjenlevende))
-        val totalsaker = gyldigeRinaIder.plus(listGjenlevendesSaker).distinctBy { it }
+        val gyldigeBucs = documents
+                .filter { bucs -> gyldigeRinaIder.contains(bucs.first)  }
+                .map {  bucs ->
+                        val buc = bucs.second.first
+                        buc
+                }
+                .sortedBy { it.id }
 
-        logger.debug("TotalRinasaker med avdod og gjenlevende(rina/saf): ${totalsaker.size}")
+        val gjenlevendeBucAndSedView =  getBucAndSedViewWithBuc( gyldigeBucs )
+        logger.debug("TotalRinasaker med avdod og gjenlevende(rina/saf): ${gjenlevendeBucAndSedView.size}")
 
-        return totalsaker
+        return gjenlevendeBucAndSedView
     }
 
 

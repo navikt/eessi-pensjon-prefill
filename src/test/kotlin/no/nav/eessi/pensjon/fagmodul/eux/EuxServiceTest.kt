@@ -1,10 +1,9 @@
 package no.nav.eessi.pensjon.fagmodul.eux
 
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.eq
-import com.nhaarman.mockitokotlin2.whenever
+import com.nhaarman.mockitokotlin2.*
+import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Properties
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Rinasak
+import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Traits
 import no.nav.eessi.pensjon.fagmodul.sedmodel.PinItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.utils.*
@@ -17,6 +16,8 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
 import org.skyscreamer.jsonassert.JSONAssert
+import org.springframework.http.HttpStatus
+import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.util.UriComponentsBuilder
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -295,4 +296,80 @@ class EuxServiceTest {
         val result = service.getFnrMedLandkodeNO(list)
         assertEquals(null, result)
     }
+
+    @Test
+    fun `Gitt at det finnes relasjon til gjenlevende i avdøds SEDer når avdøds SEDer hentes så filtreres den gjenlevendes BUCer in`() {
+        val avdodFnr = "12345678910"
+        val gjenlevendeFnr = "1234567890000"
+        val rinasakid = "3893690"
+
+        val rinaSaker = listOf<Rinasak>(Rinasak(rinasakid,"P_BUC_02", Traits(), "", Properties(), "open"))
+        doReturn(rinaSaker).whenever(euxKlient).getRinasaker(avdodFnr, null, "P_BUC_02", "\"open\"")
+
+        val bucfilepath = "src/test/resources/json/buc/P_BUC_02_4.2_P2100.json"
+        val json = String(Files.readAllBytes(Paths.get(bucfilepath)))
+
+        doReturn(json).whenever(euxKlient).getBucJson(any())
+
+
+        val sedfilepath = "src/test/resources/json/nav/P2100-PinNO-NAV.json"
+        val sedjson = String(Files.readAllBytes(Paths.get(sedfilepath)))
+
+        doReturn(sedjson).whenever(euxKlient).getSedOnBucByDocumentIdAsJson(eq(rinasakid), any())
+
+        val actual = service.getBucAndSedViewAvdod(avdodFnr, gjenlevendeFnr)
+
+        assertEquals(1, actual.size)
+        assertEquals(rinasakid, actual.first().caseId)
+        assertEquals("P_BUC_02", actual.first().type)
+    }
+
+    @Test
+    fun `Gitt at det ikke finnes relasjon til gjenlevende i avdøds SEDer når avdøds SEDer hentes så filtreres den gjenlevendes BUCer bort`() {
+        val avdodFnr = "12345678910"
+        val gjenlevendeFnr = "1345134531234"
+        val rinasakid = "3893690"
+
+        val rinaSaker = listOf<Rinasak>(Rinasak(rinasakid, "P_BUC_02", Traits(), "", Properties(), "open"))
+        doReturn(rinaSaker).whenever(euxKlient).getRinasaker(avdodFnr, null, "P_BUC_02", "\"open\"")
+
+        val bucfilepath = "src/test/resources/json/buc/P_BUC_02_4.2_P2100.json"
+        val json = String(Files.readAllBytes(Paths.get(bucfilepath)))
+
+        doReturn(json).whenever(euxKlient).getBucJson(any())
+
+
+        val sedfilepath = "src/test/resources/json/nav/P2100-PinNO-NAV.json"
+        val sedjson = String(Files.readAllBytes(Paths.get(sedfilepath)))
+
+        doReturn(sedjson).whenever(euxKlient).getSedOnBucByDocumentIdAsJson(eq(rinasakid), any())
+
+        val actual = service.getBucAndSedViewAvdod(avdodFnr, gjenlevendeFnr)
+        assertEquals(0, actual.size)
+    }
+
+    @Test
+    fun `Gitt at det finnes relasjon til gjenlevende i avdøds SEDer når avdøds SEDer hentes så kastes det en error ved henting av seddocument fra eux`() {
+        val avdodFnr = "12345678910"
+        val gjenlevendeFnr = "1234567890000"
+        val rinasakid = "3893690"
+
+        val rinaSaker = listOf<Rinasak>(Rinasak(rinasakid,"P_BUC_02", Traits(), "", Properties(), "open"))
+        doReturn(rinaSaker).whenever(euxKlient).getRinasaker(avdodFnr, null, "P_BUC_02", "\"open\"")
+
+        val bucfilepath = "src/test/resources/json/buc/P_BUC_02_4.2_P2100.json"
+        val json = String(Files.readAllBytes(Paths.get(bucfilepath)))
+
+        doReturn(json).whenever(euxKlient).getBucJson(any())
+
+        doThrow(HttpClientErrorException(HttpStatus.BAD_GATEWAY, "bad error")).whenever(euxKlient).getSedOnBucByDocumentIdAsJson(any(), any())
+
+        assertThrows<Exception> {
+           service.getBucAndSedViewAvdod(avdodFnr, gjenlevendeFnr)
+        }
+
+    }
+
+
+
 }

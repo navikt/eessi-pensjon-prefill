@@ -20,7 +20,7 @@ class BucUtils(private val buc: Buc ) {
     private val logger = LoggerFactory.getLogger(BucUtils::class.java)
     private val validbucsed = ValidBucAndSed()
 
-    private fun getBuc(): Buc {
+    fun getBuc(): Buc {
         return buc
     }
 

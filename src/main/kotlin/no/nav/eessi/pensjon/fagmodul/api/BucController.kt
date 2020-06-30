@@ -162,21 +162,30 @@ class BucController(private val euxService: EuxService,
         logger.debug("Prøver å dekode aktoerid: $aktoerid til gjenlevende fnr.")
         val fnrGjenlevende = aktoerService.hentPinForAktoer(aktoerid)
 
-        val rinasaker = try {
+        //hente BucAndSedView på avdød
+        val avdodBucAndSedView = try {
             // Henter rina saker basert på fnr
-            logger.debug("hentetr rinasaker fra eux-rina-api")
-            euxService.getRinasakerAvdod(avdodfnr, aktoerid, fnrGjenlevende)
+            logger.debug("henter avdod BucAndSedView fra avdød (P_BUC_02)")
+            euxService.getBucAndSedViewAvdod(avdodfnr, fnrGjenlevende)
         } catch (ex: Exception) {
             logger.error("Feiler ved henting av Rinasaker for gjenlevende og avdod", ex)
             throw Exception("Feil ved henting av Rinasaker for gjenlevende")
         }
 
-        try {
-            return euxService.getBucAndSedView( rinasaker )
+        //hente BucAndSedView resterende bucs på gjenlevende (normale bucs)
+        val normalbucAndSedView = try {
+
+            val gjenlevendeRinasaker = euxService.getRinasaker(fnrGjenlevende, aktoerid)
+            val listGjenlevendesSaker = euxService.getFilteredArchivedaRinasaker( gjenlevendeRinasaker )
+
+            euxService.getBucAndSedView( listGjenlevendesSaker )
+
         } catch (ex: Exception) {
             logger.error("Feil ved henting av visning BucSedAndView på aktoer: $aktoerid", ex)
             throw Exception("Feil ved oppretting av visning over BUC")
         }
+
+        return  avdodBucAndSedView.plus(normalbucAndSedView).distinctBy { it.caseId }
     }
 
 

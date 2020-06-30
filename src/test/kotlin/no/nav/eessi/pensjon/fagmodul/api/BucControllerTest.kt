@@ -15,6 +15,7 @@ import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Organisation
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ParticipantsItem
 import no.nav.eessi.pensjon.logging.AuditLogger
 import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerregisterService
+import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjoninformasjonException
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonClient
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.toJson
@@ -24,10 +25,12 @@ import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import no.nav.pensjon.v1.person.V1Person
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mock
 import org.mockito.Spy
 import org.mockito.junit.jupiter.MockitoExtension
+import org.springframework.web.client.HttpClientErrorException
 import java.nio.file.Files
 import java.nio.file.Paths
 
@@ -57,7 +60,7 @@ class BucControllerTest {
     @Test
     fun `gets valid bucs fagmodul can handle excpect list`() {
         val result = bucController.getBucs()
-        Assertions.assertEquals(10, result.size)
+        assertEquals(10, result.size)
     }
 
     @Test
@@ -130,6 +133,18 @@ class BucControllerTest {
     }
 
     @Test
+    fun `hent MuligeAksjoner på en buc`() {
+        val gyldigBuc = String(Files.readAllBytes(Paths.get("src/test/resources/json/buc/buc-279020big.json")))
+        val buc : Buc =  mapJsonToAny(gyldigBuc, typeRefs())
+
+        doReturn(buc).whenever(mockEuxService).getBuc("279029")
+
+        val actual = bucController.getMuligeAksjoner("279029")
+        assertEquals(8, actual.size)
+        assertTrue( actual.containsAll( listOf("H020", "P10000", "P6000")))
+    }
+
+    @Test
     fun `create BucSedAndView returns one valid element`() {
         val aktoerId = "123456789"
         val fnr = "10101835868"
@@ -197,23 +212,26 @@ class BucControllerTest {
 
         doReturn(mockPensjoninfo).whenever(mockPensjonClient).hentAltPaaVedtak(vedtaksId)
 
-        //aktoerService.hentPinForAktoer
         doReturn(fnrGjenlevende).whenever(mockAktoerIdHelper).hentPinForAktoer(aktoerId)
 
-        //euxService.getrinasakeravdod
-        val rinaSaker = listOf("123422")
-        doReturn(rinaSaker).whenever(mockEuxService).getRinasakerAvdod(avdodfnr, aktoerId, fnrGjenlevende)
-
         val documentsItem = listOf(DocumentsItem(type = "P2100"))
-        val buc = Buc(processDefinitionName = "P_BUC_02", documents = documentsItem)
+        val avdodView = listOf(BucAndSedView.from(Buc(id = "123", processDefinitionName = "P_BUC_02", documents = documentsItem)))
+        doReturn(avdodView).whenever(mockEuxService).getBucAndSedViewAvdod(avdodfnr, fnrGjenlevende)
 
+        //euxService.getrinasakeravdod
+        val rinaSaker = listOf(Rinasak(id = "123213", processDefinitionId = "P_BUC_03", status = "open"))
+        doReturn(rinaSaker).whenever(mockEuxService).getRinasaker(any(), any())
 
+        val documentsItemP2200 = listOf(DocumentsItem(type = "P2200"))
+        val buc = Buc(id = "23321", processDefinitionName = "P_BUC_03", documents = documentsItemP2200)
         doReturn(buc).whenever(mockEuxService).getBuc(any())
+
 
         //euxService.getBucAndSedVew()
         val actual = bucController.getBucogSedViewVedtak(aktoerId, vedtaksId)
-        assertEquals(1, actual.size)
-        assertEquals("P_BUC_02", actual.first().type)
+        assertEquals(2, actual.size)
+        assertTrue(actual.contains( avdodView.first() ))
+
     }
 
     @Test
@@ -247,6 +265,32 @@ class BucControllerTest {
         assertEquals("P_BUC_01", actual.first().type)
     }
 
+    @Test
+    fun `Gitt en gjenlevende med feil på vedtak Når BUC og SED forsøkes å hentes Så kastes det en Exception`() {
+        val aktoerId = "1234568"
+        val vedtaksId = "22455454"
 
+        doThrow(PensjoninformasjonException("Error, Error")).whenever(mockPensjonClient).hentAltPaaVedtak(vedtaksId)
+
+        assertThrows<PensjoninformasjonException> {
+            bucController.getBucogSedViewVedtak(aktoerId, vedtaksId)
+        }
+    }
+
+    @Test
+    fun `Gitt en gjenlevende med avdodfnr Når BUC og SED forsøkes å hentes kastes det en Exceptiopn ved getBucAndSedViewAvdod`() {
+        val aktoerId = "1234568"
+        val fnrGjenlevende = "13057065487"
+        val avdodfnr = "12312312312312312312312"
+
+        //aktoerService.hentPinForAktoer
+        doReturn(fnrGjenlevende).whenever(mockAktoerIdHelper).hentPinForAktoer(aktoerId)
+
+        doThrow(HttpClientErrorException::class).whenever(mockEuxService).getBucAndSedViewAvdod(avdodfnr, fnrGjenlevende)
+
+        assertThrows<Exception> {
+            bucController.getBucogSedViewGjenlevende(aktoerId, avdodfnr)
+        }
+    }
 
 }
