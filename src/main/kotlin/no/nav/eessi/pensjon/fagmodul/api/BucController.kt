@@ -173,17 +173,7 @@ class BucController(private val euxService: EuxService,
         }
 
         //hente BucAndSedView resterende bucs på gjenlevende (normale bucs)
-        val normalbucAndSedView = try {
-
-            val gjenlevendeRinasaker = euxService.getRinasaker(fnrGjenlevende, aktoerid)
-            val listGjenlevendesSaker = euxService.getFilteredArchivedaRinasaker( gjenlevendeRinasaker )
-
-            euxService.getBucAndSedView( listGjenlevendesSaker )
-
-        } catch (ex: Exception) {
-            logger.error("Feil ved henting av visning BucSedAndView på aktoer: $aktoerid", ex)
-            throw Exception("Feil ved oppretting av visning over BUC")
-        }
+        val normalbucAndSedView= getBucogSedView(aktoerid)
 
         return  avdodBucAndSedView.plus(normalbucAndSedView).distinctBy { it.caseId }
     }

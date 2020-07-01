@@ -14,7 +14,6 @@ import no.nav.eessi.pensjon.fagmodul.sedmodel.PinItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.metrics.MetricsHelper
 import no.nav.eessi.pensjon.utils.mapJsonToAny
-import no.nav.eessi.pensjon.utils.toJson
 import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
 import no.nav.eessi.pensjon.utils.typeRefs
 import no.nav.eessi.pensjon.vedlegg.client.SafClient
@@ -214,22 +213,20 @@ class EuxService (private val euxKlient: EuxKlient,
         return euxKlient.getInstitutions(bucType, landkode)
     }
 
+    /**
+     * filtert kun gyldige buc-type for visning, returnerer liste av rinaid
+     */
     fun getFilteredArchivedaRinasaker(list: List<Rinasak>): List<String> {
         val gyldigBucs = mutableListOf("H_BUC_07", "R_BUC_01", "R_BUC_02", "M_BUC_02", "M_BUC_03a", "M_BUC_03b")
         gyldigBucs.addAll(validbucsed.initSedOnBuc().keys.map { it }.toList())
-
-        val filterdList = list.asSequence()
+        return list.asSequence()
                 .filterNot { rinasak -> rinasak.status == "archived" }
                 .filter { rinasak -> gyldigBucs.contains(rinasak.processDefinitionId) }
                 .sortedBy { rinasak -> rinasak.id }
                 .map { rinasak -> rinasak.id!! }
                 .toList()
-
-        logger.debug("filtrert liste over gyldige rinasaker : ${filterdList.size}")
-        logger.debug("filtrert list inneholder buc: ${filterdList.toJson()}")
-
-        return filterdList
     }
+
     fun getBucDeltakere(euxCaseId: String): List<ParticipantsItem> {
         return euxKlient.getBucDeltakere(euxCaseId)
     }
@@ -237,26 +234,25 @@ class EuxService (private val euxKlient: EuxKlient,
     fun getBucAndSedViewAvdod(avdodFnr: String, fnrGjenlevende: String): List<BucAndSedView> {
         // Henter rina saker basert på gjenlevendes fnr
         val rinaSakerMedFnr = euxKlient.getRinasaker(avdodFnr, null, "P_BUC_02", "\"open\"")
-        logger.debug("hentet rinasaker fra eux-rina-api")
         val filteredRinaIdAvdod = getFilteredArchivedaRinasaker(rinaSakerMedFnr)
         logger.debug("filterer ut rinasaker og får kun ider tilbake size: ${filteredRinaIdAvdod.size}")
 
-        //henter buc og filtrerer ut documentid på P2100
-        val documents = filteredRinaIdAvdod.map { rinaidavdod ->
-            val bucUtils = BucUtils(getBuc(rinaidavdod))
-            val p2100 = bucUtils.getDocumentByType("P2100")
-            val documentid = p2100.id!!
-            Pair(rinaidavdod, Pair(bucUtils.getBuc(), documentid))
-        }
-        logger.debug("liste med documenter med P2100 rinadocid size: ${documents.size}")
+        val bucdocumentidAvdod = hentBucOgDocumentIdAvdod(filteredRinaIdAvdod)
 
-        //henter inn sed fra eux P2100
-        val listeAvSedsPaaAvdod = documents.map { pair ->
-            val sedJson = euxKlient.getSedOnBucByDocumentIdAsJson(pair.first, pair.second.second)
-            Pair(pair.first, sedJson)
-        }
-        logger.debug("liste med documenter med P2100 sed/json: ${listeAvSedsPaaAvdod.size}")
+        val listeAvSedsPaaAvdod = hentDocumentJsonAvdod(bucdocumentidAvdod)
 
+        val gyldigeBucs = filterGyldigBucGjenlevendeAvdod(listeAvSedsPaaAvdod, fnrGjenlevende, bucdocumentidAvdod)
+
+        val gjenlevendeBucAndSedView =  getBucAndSedViewWithBuc( gyldigeBucs )
+        logger.debug("TotalRinasaker med avdod og gjenlevende(rina/saf): ${gjenlevendeBucAndSedView.size}")
+
+        return gjenlevendeBucAndSedView
+    }
+
+    /**
+     * filtere ut gyldig buc fra gjenlevende og avdød
+     */
+    private fun filterGyldigBucGjenlevendeAvdod(listeAvSedsPaaAvdod: List<Pair<String, String>>, fnrGjenlevende: String, bucdocumentidAvdod: List<BucOgDocumentAvdod>): List<Buc> {
         val gyldigeRinaIder = listeAvSedsPaaAvdod
                 .filter { pair ->
                     val sed = pair.second
@@ -266,33 +262,46 @@ class EuxService (private val euxKlient: EuxKlient,
                 .map { pair -> pair.first }
                 .sortedBy { it }
         logger.debug("liste over gyldige rinasaker med avdod og gjenlevende: ${gyldigeRinaIder.size}")
-
-        val gyldigeBucs = documents
-                .filter { bucs -> gyldigeRinaIder.contains(bucs.first)  }
-                .map {  bucs ->
-                        val buc = bucs.second.first
-                        buc
-                }
+        return bucdocumentidAvdod
+                .filter { docs -> gyldigeRinaIder.contains(docs.rinaidAvdod) }
+                .map { docs -> docs.buc }
                 .sortedBy { it.id }
-
-        val gjenlevendeBucAndSedView =  getBucAndSedViewWithBuc( gyldigeBucs )
-        logger.debug("TotalRinasaker med avdod og gjenlevende(rina/saf): ${gjenlevendeBucAndSedView.size}")
-
-        return gjenlevendeBucAndSedView
     }
 
+    /**
+     * Henter inn sed fra eux fra liste over sedid på avdod
+     */
+    private fun hentDocumentJsonAvdod(bucdocumentidAvdod: List<BucOgDocumentAvdod>): List<Pair<String, String>> {
+        val listeAvSedsPaaAvdod = bucdocumentidAvdod.map { docs ->
+            val sedJson = euxKlient.getSedOnBucByDocumentIdAsJson(docs.rinaidAvdod, docs.documentId)
+            Pair(docs.rinaidAvdod, sedJson)
+        }
+        logger.debug("liste med documenter med P2100 sed/json: ${listeAvSedsPaaAvdod.size}")
+        return listeAvSedsPaaAvdod
+    }
 
+    /**
+     * Henter buc og sedid på p2100 på avdøds fnr
+     */
+    fun hentBucOgDocumentIdAvdod(filteredRinaIdAvdod: List<String>): List<BucOgDocumentAvdod> {
+        return filteredRinaIdAvdod.map { rinaidavdod ->
+            val bucUtils = BucUtils(getBuc(rinaidavdod))
+            val p2100 = bucUtils.getDocumentByType("P2100")
+            val documentid = p2100.id!!
+            BucOgDocumentAvdod(rinaidavdod, bucUtils.getBuc(), documentid)
+        }
+    }
+
+    /**
+     * json filter uthenting av pin på gjenlevende (p2100)
+     */
     private fun filterGjenlevendePinNode(sedRootNode: JsonNode): String? {
-        return finnPin(sedRootNode.at("/pensjon/gjenlevende"))
-    }
-
-    private fun finnPin(pinNode: JsonNode): String? {
+        val pinNode = sedRootNode.at("/pensjon/gjenlevende")
         return pinNode.findValue("pin")
                 .filter { pin -> pin.get("land").textValue() == "NO" }
                 .map { pin -> pin.get("identifikator").textValue() }
                 .lastOrNull()
     }
-
 
     fun getRinasaker(fnr: String, aktoerId: String): List<Rinasak> {
         // henter rina saker basert på tilleggsinformasjon i journalposter
@@ -328,3 +337,9 @@ class EuxService (private val euxKlient: EuxKlient,
      */
     fun hentRinaSakIder(rinaSaker: List<Rinasak>) = rinaSaker.asSequence().map { it.id!! }.toList()
 }
+
+data class BucOgDocumentAvdod(
+        val rinaidAvdod: String,
+        val buc: Buc,
+        val documentId: String
+)

@@ -4,6 +4,7 @@ import com.nhaarman.mockitokotlin2.*
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Properties
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Rinasak
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Traits
+import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Buc
 import no.nav.eessi.pensjon.fagmodul.sedmodel.PinItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.utils.*
@@ -370,6 +371,27 @@ class EuxServiceTest {
 
     }
 
+    @Test
+    fun `Henter buc og dokumentID` () {
+        val bucfilepath = "src/test/resources/json/buc/P_BUC_02_4.2_P2100.json"
+        val json = String(Files.readAllBytes(Paths.get(bucfilepath)))
+        val buc = mapJsonToAny(json, typeRefs<Buc>())
 
+        doReturn(json).whenever(euxKlient).getBucJson(any())
+
+        var actual = service.hentBucOgDocumentIdAvdod(listOf("123"))
+
+        assert(actual[0].rinaidAvdod == "123")
+        assert(actual[0].buc.id == buc.id)
+        assert(actual[0].documentId == "8730627e66364d858af8bee9f30194e5")
+    }
+
+    @Test
+    fun `Henter buc og dokumentID feiler ved henting av buc fra eux` () {
+        doThrow(HttpClientErrorException::class).whenever(euxKlient).getBucJson(any())
+        assertThrows<Exception> {
+            service.hentBucOgDocumentIdAvdod(listOf("123"))
+        }
+  }
 
 }
