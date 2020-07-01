@@ -61,7 +61,8 @@ class EuxService (private val euxKlient: EuxKlient,
     @Throws(EuxGenericServerException::class, SedDokumentIkkeOpprettetException::class)
     fun opprettSedOnBuc(navSED: SED, euxCaseId: String): BucSedResponse {
         val euxUrlpath = "/buc/{RinaSakId}/sed"
-        return euxKlient.opprettSed(euxUrlpath, navSED.toJsonSkipEmpty(), euxCaseId, OpprettSED, "Feil ved opprettSed", null)
+        logger.info("Forsøker å opprette en ${navSED.sed}, rinasakId: $euxCaseId")
+        return euxKlient.opprettSed(euxUrlpath, navSED.toJsonSkipEmpty(), euxCaseId, OpprettSED, "Feil ved opprettSed: ${navSED.sed}, med rinaId: $euxCaseId", null)
     }
 
     /**
