@@ -99,6 +99,7 @@ class ArchitectureTest {
                 "$root.fagmodul.eux.bucmodel.." to euxBucModel,
                 "$root.fagmodul.pesys.." to pensjonUtlandApi,
                 "$root.fagmodul.config.." to config,
+                "$root.config.." to config,
                 "$root.fagmodul.metrics.." to metrics,
                 "$root.personoppslag.aktoerregister" to aktoerregisterService,
                 "$root.services.kodeverk" to kodeverkService,
@@ -175,8 +176,8 @@ class ArchitectureTest {
                 .whereLayer(pensjonService).mayOnlyBeAccessedByLayers(health, pensjonApi, prefill, bucSedApi)
 
                 .whereLayer(config).mayNotBeAccessedByAnyLayer()
-                .whereLayer(metrics).mayOnlyBeAccessedByLayers(health, euxService, pensjonUtlandApi)
-                .whereLayer(security).mayOnlyBeAccessedByLayers(health, euxService, aktoerregisterService, vedlegg, pensjonService, personService, kodeverkService, integrationtest)
+                .whereLayer(metrics).mayOnlyBeAccessedByLayers(config, health, euxService, pensjonUtlandApi)
+                .whereLayer(security).mayOnlyBeAccessedByLayers(config, health, euxService, aktoerregisterService, vedlegg, pensjonService, personService, kodeverkService, integrationtest)
 
                 .check(allClasses)
     }
@@ -201,6 +202,7 @@ class ArchitectureTest {
                 .layer(support).definedBy(
                         "$root.metrics..",
                         "$root.security..",
+                        "$root.config..",
                         "$root.logging..",
                         "$root.utils.."
                 )
