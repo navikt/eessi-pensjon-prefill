@@ -146,8 +146,7 @@ class BucController(private val euxService: EuxService,
         val person = peninfo.person
 
         if (avdod != null && avdod.avdod != null && person.aktorId == aktoerid) {
-            val avdodfnr = avdod.avdod
-            return getBucogSedViewGjenlevende(aktoerid, avdodfnr)
+            return getBucogSedViewGjenlevende(aktoerid, avdod.avdod)
         }
 
         return getBucogSedView(aktoerid)

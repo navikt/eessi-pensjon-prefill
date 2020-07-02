@@ -5,6 +5,7 @@ import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Properties
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Rinasak
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Traits
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Buc
+import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.DocumentsItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.PinItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.utils.*
@@ -383,7 +384,19 @@ class EuxServiceTest {
 
         assert(actual[0].rinaidAvdod == "123")
         assert(actual[0].buc.id == buc.id)
-        assert(actual[0].documentId == "8730627e66364d858af8bee9f30194e5")
+    }
+
+    @Test
+    fun `Henter flere buc og dokumentID fra avdod` () {
+        val bucfilepath = "src/test/resources/json/buc/P_BUC_02_4.2_P2100.json"
+        val json = String(Files.readAllBytes(Paths.get(bucfilepath)))
+
+        doReturn(json)
+        .doReturn(json)
+         .whenever(euxKlient).getBucJson(any())
+
+        var actual = service.hentBucOgDocumentIdAvdod(listOf("123","321"))
+        assertEquals(2, actual.size)
     }
 
     @Test
@@ -392,6 +405,85 @@ class EuxServiceTest {
         assertThrows<Exception> {
             service.hentBucOgDocumentIdAvdod(listOf("123"))
         }
+      }
+
+    @Test
+    fun `Gitt det finnes et json dokument p2100 når avdød buc inneholder en dokumentid så hentes sed p2100 fra eux`() {
+        val rinaid = "12344"
+        val dokumentid = "3423432453255"
+
+        val documentsItem = listOf(DocumentsItem(type = "P2100", id = dokumentid))
+        val buc = Buc(processDefinitionName = "P_BUC_02", documents = documentsItem)
+
+        val docs = listOf(BucOgDocumentAvdod(rinaid, buc, dokumentid))
+
+        doReturn("P2100").whenever(euxKlient).getSedOnBucByDocumentIdAsJson(rinaid, dokumentid)
+
+        val actual = service.hentDocumentJsonAvdod(docs)
+
+        assertEquals(1, actual.size)
+        assertEquals("P2100", actual[0].dokumentJson)
+        assertEquals(rinaid, actual[0].rinaidAvdod)
+
   }
 
+    @Test
+    fun `Gitt det finnes et json dokument p2100 når avdød buc inneholder en dokumentid så feiler det ved hentig fra eux`() {
+        val rinaid = "12344"
+        val dokumentid = "3423432453255"
+
+        val documentsItem = listOf(DocumentsItem(type = "P2100", id = dokumentid))
+        val buc = Buc(processDefinitionName = "P_BUC_02", documents = documentsItem)
+
+        val docs = listOf(BucOgDocumentAvdod(rinaid, buc, dokumentid))
+
+        doThrow(HttpClientErrorException::class).whenever(euxKlient).getSedOnBucByDocumentIdAsJson(rinaid, dokumentid)
+
+        assertThrows<Exception> {
+            service.hentDocumentJsonAvdod(docs)
+        }
+
+    }
+
+    @Test
+    fun `Gitt det finnes en p2100 med gjenlevende Når det filtrers på gjenlevende felt og den gjenlevndefnr Så gis det gyldige buc`() {
+        val rinaid = "123123"
+        val gjenlevendeFnr = "1234567890000"
+        val sedfilepath = "src/test/resources/json/nav/P2100-PinNO-NAV.json"
+        val sedjson = String(Files.readAllBytes(Paths.get(sedfilepath)))
+
+        val docs = listOf(BucOgDocumentAvdod(rinaid, Buc(id = rinaid, processDefinitionName = "P_BUC_02"), sedjson))
+
+        val actual = service.filterGyldigBucGjenlevendeAvdod(docs, gjenlevendeFnr)
+
+        assertEquals(1, actual.size)
+
+    }
+
+    @Test
+    fun `Gitt det ikke finnes en p2100 med gjenlevende Når det filtrers på gjenlevende felt og den gjenlevndefnr Så ingen buc`() {
+        val rinaid = "123123"
+        val gjenlevendeFnr = "12345678123123"
+        val sedfilepath = "src/test/resources/json/nav/P2100-PinNO-NAV.json"
+        val sedjson = String(Files.readAllBytes(Paths.get(sedfilepath)))
+
+        val docs = listOf(BucOgDocumentAvdod(rinaid, Buc(id = rinaid, processDefinitionName = "P_BUC_02"), sedjson))
+
+        val actual = service.filterGyldigBucGjenlevendeAvdod(docs, gjenlevendeFnr)
+
+        assertEquals(0, actual.size)
+    }
+
+    @Test
+    fun `Gitt det er et p2000 Når det filtrers på gjenlevende felt og den gjenlevndefnr Så kastes det en exceptioon`() {
+        val rinaid = "123123"
+        val gjenlevendeFnr = "12345678123123"
+        val sedfilepath = "src/test/resources/json/nav/P2000-NAV.json"
+        val sedjson = String(Files.readAllBytes(Paths.get(sedfilepath)))
+
+        val docs = listOf(BucOgDocumentAvdod(rinaid, Buc(id = rinaid, processDefinitionName = "P_BUC_02"), sedjson))
+        assertThrows<IllegalStateException> {
+            service.filterGyldigBucGjenlevendeAvdod(docs, gjenlevendeFnr)
+        }
+    }
 }

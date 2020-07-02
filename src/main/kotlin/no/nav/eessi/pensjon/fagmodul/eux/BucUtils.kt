@@ -120,7 +120,7 @@ class BucUtils(private val buc: Buc ) {
             }
     }
 
-    fun getProcessDefinitionName() = getBuc().processDefinitionName!!
+    fun getProcessDefinitionName() = getBuc().processDefinitionName
 
     fun getProcessDefinitionVersion() = getBuc().processDefinitionVersion ?: ""
 

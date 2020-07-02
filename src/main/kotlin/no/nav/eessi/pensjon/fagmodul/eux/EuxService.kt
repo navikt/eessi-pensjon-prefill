@@ -241,7 +241,7 @@ class EuxService (private val euxKlient: EuxKlient,
 
         val listeAvSedsPaaAvdod = hentDocumentJsonAvdod(bucdocumentidAvdod)
 
-        val gyldigeBucs = filterGyldigBucGjenlevendeAvdod(listeAvSedsPaaAvdod, fnrGjenlevende, bucdocumentidAvdod)
+        val gyldigeBucs = filterGyldigBucGjenlevendeAvdod(listeAvSedsPaaAvdod, fnrGjenlevende)
 
         val gjenlevendeBucAndSedView =  getBucAndSedViewWithBuc( gyldigeBucs )
         logger.debug("TotalRinasaker med avdod og gjenlevende(rina/saf): ${gjenlevendeBucAndSedView.size}")
@@ -252,32 +252,26 @@ class EuxService (private val euxKlient: EuxKlient,
     /**
      * filtere ut gyldig buc fra gjenlevende og avdød
      */
-    private fun filterGyldigBucGjenlevendeAvdod(listeAvSedsPaaAvdod: List<Pair<String, String>>, fnrGjenlevende: String, bucdocumentidAvdod: List<BucOgDocumentAvdod>): List<Buc> {
-        val gyldigeRinaIder = listeAvSedsPaaAvdod
-                .filter { pair ->
-                    val sed = pair.second
-                    val sedRootNode = mapper.readTree(sed)
-                    filterGjenlevendePinNode(sedRootNode) == fnrGjenlevende
-                }
-                .map { pair -> pair.first }
-                .sortedBy { it }
-        logger.debug("liste over gyldige rinasaker med avdod og gjenlevende: ${gyldigeRinaIder.size}")
-        return bucdocumentidAvdod
-                .filter { docs -> gyldigeRinaIder.contains(docs.rinaidAvdod) }
-                .map { docs -> docs.buc }
-                .sortedBy { it.id }
+    fun filterGyldigBucGjenlevendeAvdod(listeAvSedsPaaAvdod: List<BucOgDocumentAvdod>, fnrGjenlevende: String): List<Buc> {
+        return listeAvSedsPaaAvdod
+            .filter { docs ->
+                val sedRootNode = mapper.readTree(docs.dokumentJson)
+                filterGjenlevendePinNode(sedRootNode) == fnrGjenlevende
+            }
+            .map { docs -> docs.buc }
+            .sortedBy { it.id }
     }
 
     /**
      * Henter inn sed fra eux fra liste over sedid på avdod
      */
-    private fun hentDocumentJsonAvdod(bucdocumentidAvdod: List<BucOgDocumentAvdod>): List<Pair<String, String>> {
-        val listeAvSedsPaaAvdod = bucdocumentidAvdod.map { docs ->
-            val sedJson = euxKlient.getSedOnBucByDocumentIdAsJson(docs.rinaidAvdod, docs.documentId)
-            Pair(docs.rinaidAvdod, sedJson)
+    fun hentDocumentJsonAvdod(bucdocumentidAvdod: List<BucOgDocumentAvdod>): List<BucOgDocumentAvdod> {
+        return bucdocumentidAvdod.map { docs ->
+            val documentid = BucUtils(docs.buc).getDocumentByType("P2100").id!!
+            val sedJson = euxKlient.getSedOnBucByDocumentIdAsJson(docs.rinaidAvdod, documentid)
+            docs.dokumentJson = sedJson
+            docs
         }
-        logger.debug("liste med documenter med P2100 sed/json: ${listeAvSedsPaaAvdod.size}")
-        return listeAvSedsPaaAvdod
     }
 
     /**
@@ -286,9 +280,7 @@ class EuxService (private val euxKlient: EuxKlient,
     fun hentBucOgDocumentIdAvdod(filteredRinaIdAvdod: List<String>): List<BucOgDocumentAvdod> {
         return filteredRinaIdAvdod.map { rinaidavdod ->
             val bucUtils = BucUtils(getBuc(rinaidavdod))
-            val p2100 = bucUtils.getDocumentByType("P2100")
-            val documentid = p2100.id!!
-            BucOgDocumentAvdod(rinaidavdod, bucUtils.getBuc(), documentid)
+            BucOgDocumentAvdod(rinaidavdod, bucUtils.getBuc())
         }
     }
 
@@ -341,5 +333,5 @@ class EuxService (private val euxKlient: EuxKlient,
 data class BucOgDocumentAvdod(
         val rinaidAvdod: String,
         val buc: Buc,
-        val documentId: String
+        var dokumentJson: String = ""
 )

@@ -32,9 +32,9 @@ data class BucAndSedView(
         fun from(buc: Buc): BucAndSedView {
             val bucUtil = BucUtils(buc)
             return BucAndSedView(
-                    type = bucUtil.getProcessDefinitionName()!!,
+                    type = bucUtil.getProcessDefinitionName() ?: "",
                     creator = bucUtil.getCaseOwnerOrCreator(),
-                    caseId = buc.id?: "n/a",
+                    caseId = buc.id ?: "n/a",
                     startDate = bucUtil.getStartDateLong(),
                     lastUpdate = bucUtil.getLastDateLong(),
                     status = bucUtil.getStatus(),
