@@ -15,7 +15,8 @@ data class BucAndSedView(
         val lastUpdate: Long? = null,
         val institusjon: List<InstitusjonItem>? = null,
         val seds: List<ShortDocumentItem>? = null,
-        val error: String? = null
+        val error: String? = null,
+        val readOnly: Boolean? = false
 ) {
     override fun toString(): String {
         return toJson()
@@ -29,9 +30,16 @@ data class BucAndSedView(
                     error = error
             )
         }
+        fun checkForReadOnly(buc: Buc) : Boolean {
+            return when(buc.processDefinitionName) {
+                "R_BUC_02" -> true
+                else -> false
+            }
+        }
         fun from(buc: Buc): BucAndSedView {
             val bucUtil = BucUtils(buc)
             return BucAndSedView(
+                    readOnly =  checkForReadOnly(buc),
                     type = bucUtil.getProcessDefinitionName() ?: "",
                     creator = bucUtil.getCaseOwnerOrCreator(),
                     caseId = buc.id ?: "n/a",
