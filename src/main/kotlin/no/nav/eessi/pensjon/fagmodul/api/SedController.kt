@@ -17,6 +17,7 @@ import no.nav.eessi.pensjon.logging.AuditLogger
 import no.nav.eessi.pensjon.metrics.CounterHelper
 import no.nav.eessi.pensjon.metrics.MetricsHelper
 import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerregisterService
+import no.nav.eessi.pensjon.personoppslag.aktoerregister.ManglerAktoerIdException
 import no.nav.eessi.pensjon.utils.toJson
 import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
 import no.nav.security.oidc.api.Protected
@@ -53,8 +54,9 @@ class SedController(private val euxService: EuxService,
     @PostMapping("/preview", "/preview/{filter}", consumes = ["application/json"], produces = [org.springframework.http.MediaType.APPLICATION_JSON_VALUE])
     fun confirmDocument(@RequestBody request: ApiRequest, @PathVariable("filter", required = false) filter: String? = null): String {
 
+        if (request.aktoerId.isNullOrBlank()) throw ManglerAktoerIdException("Mangler AktoerId")
         val dataModel = ApiRequest.buildPrefillDataModelConfirm(request, aktoerService.hentGjeldendeNorskIdentForAktorId(request.aktoerId), getAvdodAktoerId(request))
-        auditlogger.log("confirmDocument", request.aktoerId ?: "", request.toAudit())
+        auditlogger.log("confirmDocument", request.aktoerId, request.toAudit())
 
         val sed = prefillService.prefillSed(dataModel)
         return if (filter == null) {
@@ -82,6 +84,7 @@ class SedController(private val euxService: EuxService,
         auditlogger.log("addInstutionAndDocument", request.aktoerId ?: "", request.toAudit())
 
         return AddInstutionAndDocument.measure {
+            if (request.aktoerId.isNullOrBlank()) throw ManglerAktoerIdException("Mangler AktoerId")
             val dataModel = ApiRequest.buildPrefillDataModelOnExisting(request, aktoerService.hentGjeldendeNorskIdentForAktorId(request.aktoerId), getAvdodAktoerId(request))
             logger.info("******* Legge til ny SED - start *******")
             logger.info("kaller add (institutions and sed) rinaId: ${request.euxCaseId} bucType: ${request.buc} sedType: ${request.sed} aktoerId: ${request.aktoerId}")
@@ -158,6 +161,7 @@ class SedController(private val euxService: EuxService,
         auditlogger.log("addDocumentToParent", request.aktoerId ?: "", request.toAudit())
 
         return AddDocumentToParent.measure {
+            if (request.aktoerId.isNullOrBlank()) throw ManglerAktoerIdException("Mangler AktoerId")
             val dataModel = ApiRequest.buildPrefillDataModelOnExisting(request, aktoerService.hentGjeldendeNorskIdentForAktorId(request.aktoerId), getAvdodAktoerId(request))
             logger.info("Prøver å prefillSED (svar)")
             val sed = prefillService.prefillSed(dataModel)

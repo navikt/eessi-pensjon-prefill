@@ -89,7 +89,7 @@ class SedControllerTest {
         )
         whenever(mockAktoerIdHelper.hentGjeldendeNorskIdentForAktorId(any())).thenReturn("12345")
 
-        val utfyllMock = ApiRequest.buildPrefillDataModelConfirm(mockData, mockAktoerIdHelper.hentGjeldendeNorskIdentForAktorId(mockData.aktoerId), null)
+        val utfyllMock = ApiRequest.buildPrefillDataModelConfirm(mockData, mockAktoerIdHelper.hentGjeldendeNorskIdentForAktorId(mockData.aktoerId!!), null)
 
         utfyllMock.sed.nav = Nav(bruker = Bruker(person = Person(fornavn = "Dummy", etternavn = "Dummy", foedselsdato = "1900-10-11", kjoenn = "K")), krav = Krav("1937-12-11"))
 
@@ -234,7 +234,7 @@ class SedControllerTest {
 
         doReturn(mockBuc).whenever(mockEuxService).getBuc(euxCaseId)
 
-        val dummyPrefillData = ApiRequest.buildPrefillDataModelOnExisting(apiRequestWith(euxCaseId), mockAktoerIdHelper.hentGjeldendeNorskIdentForAktorId(apiRequestWith(euxCaseId).aktoerId), null)
+        val dummyPrefillData = ApiRequest.buildPrefillDataModelOnExisting(apiRequestWith(euxCaseId), mockAktoerIdHelper.hentGjeldendeNorskIdentForAktorId(apiRequestWith(euxCaseId).aktoerId!!), null)
 
         whenever(mockPrefillSEDService.prefill(any())).thenReturn(dummyPrefillData.sed)
 
@@ -262,7 +262,7 @@ class SedControllerTest {
 
         doReturn(mockBuc).whenever(mockEuxService).getBuc(euxCaseId)
 
-        val dummyPrefillData = ApiRequest.buildPrefillDataModelOnExisting(apiRequestWith(euxCaseId), mockAktoerIdHelper.hentGjeldendeNorskIdentForAktorId(apiRequestWith(euxCaseId).aktoerId), null)
+        val dummyPrefillData = ApiRequest.buildPrefillDataModelOnExisting(apiRequestWith(euxCaseId), mockAktoerIdHelper.hentGjeldendeNorskIdentForAktorId(apiRequestWith(euxCaseId).aktoerId!!), null)
 
         whenever(mockPrefillSEDService.prefill(any())).thenReturn(dummyPrefillData.sed)
 
@@ -326,7 +326,7 @@ class SedControllerTest {
 
         doReturn(mockBuc).whenever(mockEuxService).getBuc(euxCaseId)
 
-        val dummyPrefillData = ApiRequest.buildPrefillDataModelOnExisting(apiRequestWith(euxCaseId), mockAktoerIdHelper.hentGjeldendeNorskIdentForAktorId(apiRequestWith(euxCaseId).aktoerId), null)
+        val dummyPrefillData = ApiRequest.buildPrefillDataModelOnExisting(apiRequestWith(euxCaseId), mockAktoerIdHelper.hentGjeldendeNorskIdentForAktorId(apiRequestWith(euxCaseId).aktoerId!!), null)
 
         whenever(mockPrefillSEDService.prefill(any())).thenReturn(dummyPrefillData.sed)
 
@@ -357,7 +357,7 @@ class SedControllerTest {
         doReturn(mockBuc).whenever(mockEuxService).getBuc(euxCaseId)
         doNothing().whenever(mockEuxService).addInstitution(any(), any())
 
-        val dummyPrefillData = ApiRequest.buildPrefillDataModelOnExisting(apiRequestWith(euxCaseId), mockAktoerIdHelper.hentGjeldendeNorskIdentForAktorId(apiRequestWith(euxCaseId).aktoerId), null)
+        val dummyPrefillData = ApiRequest.buildPrefillDataModelOnExisting(apiRequestWith(euxCaseId), mockAktoerIdHelper.hentGjeldendeNorskIdentForAktorId(apiRequestWith(euxCaseId).aktoerId!!), null)
 
         whenever(mockPrefillSEDService.prefill(any())).thenReturn(dummyPrefillData.sed)
 
