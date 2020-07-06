@@ -53,7 +53,7 @@ class SedController(private val euxService: EuxService,
     @PostMapping("/preview", "/preview/{filter}", consumes = ["application/json"], produces = [org.springframework.http.MediaType.APPLICATION_JSON_VALUE])
     fun confirmDocument(@RequestBody request: ApiRequest, @PathVariable("filter", required = false) filter: String? = null): String {
 
-        val dataModel = ApiRequest.buildPrefillDataModelConfirm(request, aktoerService.hentPinForAktoer(request.aktoerId), getAvdodAktoerId(request))
+        val dataModel = ApiRequest.buildPrefillDataModelConfirm(request, aktoerService.hentGjeldendeNorskIdentForAktorId(request.aktoerId), getAvdodAktoerId(request))
         auditlogger.log("confirmDocument", request.aktoerId ?: "", request.toAudit())
 
         val sed = prefillService.prefillSed(dataModel)
@@ -82,7 +82,7 @@ class SedController(private val euxService: EuxService,
         auditlogger.log("addInstutionAndDocument", request.aktoerId ?: "", request.toAudit())
 
         return AddInstutionAndDocument.measure {
-            val dataModel = ApiRequest.buildPrefillDataModelOnExisting(request, aktoerService.hentPinForAktoer(request.aktoerId), getAvdodAktoerId(request))
+            val dataModel = ApiRequest.buildPrefillDataModelOnExisting(request, aktoerService.hentGjeldendeNorskIdentForAktorId(request.aktoerId), getAvdodAktoerId(request))
             logger.info("******* Legge til ny SED - start *******")
             logger.info("kaller add (institutions and sed) rinaId: ${request.euxCaseId} bucType: ${request.buc} sedType: ${request.sed} aktoerId: ${request.aktoerId}")
 
@@ -158,7 +158,7 @@ class SedController(private val euxService: EuxService,
         auditlogger.log("addDocumentToParent", request.aktoerId ?: "", request.toAudit())
 
         return AddDocumentToParent.measure {
-            val dataModel = ApiRequest.buildPrefillDataModelOnExisting(request, aktoerService.hentPinForAktoer(request.aktoerId), getAvdodAktoerId(request))
+            val dataModel = ApiRequest.buildPrefillDataModelOnExisting(request, aktoerService.hentGjeldendeNorskIdentForAktorId(request.aktoerId), getAvdodAktoerId(request))
             logger.info("Prøver å prefillSED (svar)")
             val sed = prefillService.prefillSed(dataModel)
 
@@ -217,8 +217,8 @@ class SedController(private val euxService: EuxService,
     //Hjelpe funksjon for å validere og hente aktoerid for evt. avdodfnr fra UI (P2100)
     fun getAvdodAktoerId(request: ApiRequest): String? {
         return if ((request.buc ?: throw MangelfulleInndataException("Mangler Buc")) == "P_BUC_02")
-            aktoerService.hentAktoerForPin((request.avdodfnr
-                    ?: throw MangelfulleInndataException("Mangler fnr for avdød")))
+            aktoerService.hentGjeldendeAktorIdForNorskIdent((request.avdodfnr
+                        ?: throw MangelfulleInndataException("Mangler fnr for avdød")))
         else null
     }
 

@@ -149,7 +149,7 @@ class BucControllerTest {
         val aktoerId = "123456789"
         val fnr = "10101835868"
 
-        doReturn(fnr).whenever(mockAktoerIdHelper).hentPinForAktoer(aktoerId)
+        doReturn(fnr).whenever(mockAktoerIdHelper).hentGjeldendeNorskIdentForAktorId(aktoerId)
 
         val rinaSaker = listOf<Rinasak>(Rinasak("1234","P_BUC_01", Traits(), "", Properties(), "open"))
         doReturn(rinaSaker).whenever(mockEuxService).getRinasaker(fnr, aktoerId)
@@ -165,7 +165,7 @@ class BucControllerTest {
         val aktoerId = "123456789"
         val fnr = "10101835868"
 
-        doReturn(fnr).whenever(mockAktoerIdHelper).hentPinForAktoer(aktoerId)
+        doReturn(fnr).whenever(mockAktoerIdHelper).hentGjeldendeNorskIdentForAktorId(aktoerId)
         doThrow(RuntimeException::class).whenever(mockEuxService).getRinasaker(fnr, aktoerId)
 
         assertThrows<Exception> {
@@ -185,7 +185,7 @@ class BucControllerTest {
         val aktoerId = "123456789"
         val fnr = "10101835868"
 
-        doReturn(fnr).whenever(mockAktoerIdHelper).hentPinForAktoer(aktoerId)
+        doReturn(fnr).whenever(mockAktoerIdHelper).hentGjeldendeNorskIdentForAktorId(aktoerId)
         doThrow(RuntimeException("Feiler ved BUC")).whenever(mockEuxService).getBuc(any())
 
         val rinaSaker = listOf<Rinasak>(Rinasak("1234","P_BUC_01", Traits(), "", Properties(), "open"))
@@ -212,7 +212,7 @@ class BucControllerTest {
 
         doReturn(mockPensjoninfo).whenever(mockPensjonClient).hentAltPaaVedtak(vedtaksId)
 
-        doReturn(fnrGjenlevende).whenever(mockAktoerIdHelper).hentPinForAktoer(aktoerId)
+        doReturn(fnrGjenlevende).whenever(mockAktoerIdHelper).hentGjeldendeNorskIdentForAktorId(aktoerId)
 
         val documentsItem = listOf(DocumentsItem(type = "P2100"))
         val avdodView = listOf(BucAndSedView.from(Buc(id = "123", processDefinitionName = "P_BUC_02", documents = documentsItem)))
@@ -248,7 +248,7 @@ class BucControllerTest {
         doReturn(mockPensjoninfo).whenever(mockPensjonClient).hentAltPaaVedtak(vedtaksId)
 
         //aktoerService.hentPinForAktoer
-        doReturn(fnrGjenlevende).whenever(mockAktoerIdHelper).hentPinForAktoer(aktoerId)
+        doReturn(fnrGjenlevende).whenever(mockAktoerIdHelper).hentGjeldendeNorskIdentForAktorId(aktoerId)
 
         //euxService.getrinasakeravdod
         val rinaSaker = listOf<Rinasak>(Rinasak("1234","P_BUC_01", Traits(), "", Properties(), "open"))
@@ -284,7 +284,7 @@ class BucControllerTest {
         val avdodfnr = "12312312312312312312312"
 
         //aktoerService.hentPinForAktoer
-        doReturn(fnrGjenlevende).whenever(mockAktoerIdHelper).hentPinForAktoer(aktoerId)
+        doReturn(fnrGjenlevende).whenever(mockAktoerIdHelper).hentGjeldendeNorskIdentForAktorId(aktoerId)
 
         doThrow(HttpClientErrorException::class).whenever(mockEuxService).getBucAndSedViewAvdod(avdodfnr, fnrGjenlevende)
 

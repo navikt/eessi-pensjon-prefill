@@ -104,7 +104,7 @@ class BucController(private val euxService: EuxService,
         auditlogger.log("getRinasaker", aktoerId)
         logger.debug("henter rinasaker på valgt aktoerid: $aktoerId")
 
-        val fnr = aktoerService.hentPinForAktoer(aktoerId)
+        val fnr = aktoerService.hentGjeldendeNorskIdentForAktorId(aktoerId)
         return euxService.getRinasaker(fnr, aktoerId)
     }
 
@@ -115,7 +115,7 @@ class BucController(private val euxService: EuxService,
                         @PathVariable("euxcaseid", required = false) euxcaseid: String? = ""): List<BucAndSedView> {
         auditlogger.log("getBucogSedView", aktoerid)
         logger.debug("Prøver å dekode aktoerid: $aktoerid til fnr.")
-        val fnr = aktoerService.hentPinForAktoer(aktoerid)
+        val fnr = aktoerService.hentGjeldendeNorskIdentForAktorId(aktoerid)
 
         val rinasakIdList = try {
             val rinasaker = euxService.getRinasaker(fnr, aktoerid)
@@ -159,7 +159,7 @@ class BucController(private val euxService: EuxService,
                                    @PathVariable("avdodfnr", required = true) avdodfnr: String): List<BucAndSedView> {
 
         logger.debug("Prøver å dekode aktoerid: $aktoerid til gjenlevende fnr.")
-        val fnrGjenlevende = aktoerService.hentPinForAktoer(aktoerid)
+        val fnrGjenlevende = aktoerService.hentGjeldendeNorskIdentForAktorId(aktoerid)
 
         //hente BucAndSedView på avdød
         val avdodBucAndSedView = try {
