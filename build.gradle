@@ -155,7 +155,7 @@ dependencies {
     testImplementation ("org.springframework.kafka:spring-kafka-test:2.5.1.RELEASE")
 
     implementation("no.nav.eessi.pensjon:ep-logging:0.0.12")
-    implementation("no.nav.eessi.pensjon:ep-personoppslag:5.0.0")
+    implementation("no.nav.eessi.pensjon:ep-personoppslag:5.0.2")
 }
 
 
