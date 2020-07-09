@@ -771,4 +771,16 @@ class BucUtilsTest {
         val actual = listOf(bucAndSedView).toJson()
         JSONAssert.assertEquals(expected, actual, false)
     }
+
+    @Test
+    fun `compare generated result with expectation - for BUC with X007 - caseid 1410989`() {
+        val input = getTestJsonFile("BucResponseFraEUXMedX007-1410989.json")
+        val expected = getTestJsonFile("BucResponseFraFagmodulenMedX007-1410989.json")
+        val buc = mapJsonToAny(input, typeRefs<Buc>())
+
+        val bucAndSedView = BucAndSedView.from(buc)
+
+        val actual = listOf(bucAndSedView).toJson()
+        JSONAssert.assertEquals(expected, actual, false)
+    }
 }
