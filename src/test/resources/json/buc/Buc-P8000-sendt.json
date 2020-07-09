@@ -1,0 +1,250 @@
+{
+  "id": "86f89d344e4940ee87adc11ff21ea78a",
+  "name": null,
+  "mimeType": "json",
+  "lastUpdate": "2020-07-07T14:25:23.407+0000",
+  "creationDate": "2020-07-07T14:25:23.407+0000",
+  "creator": {
+    "id": "AWrBJub4x5LJa8sUdnfo",
+    "address": null,
+    "contactMethods": null,
+    "type": "User",
+    "name": "Z992342",
+    "organisation": {
+      "id": "NO:NAVAT07",
+      "address": {
+        "street": null,
+        "town": null,
+        "postalCode": null,
+        "region": null,
+        "country": "NO"
+      },
+      "contactMethods": null,
+      "registryNumber": null,
+      "name": "NAV ACCEPTANCE TEST 07",
+      "acronym": "NAV ACCT 07",
+      "countryCode": "NO",
+      "activeSince": "2018-08-26T22:00:00.000+0000",
+      "accessPoint": null,
+      "location": null,
+      "assignedBUCs": null
+    }
+  },
+  "hasMultipleVersions": true,
+  "versions": [
+    {
+      "id": "1",
+      "date": "2020-07-07T14:25:23.407+0000",
+      "user": {
+        "id": "AWrBJub4x5LJa8sUdnfo",
+        "address": null,
+        "contactMethods": null,
+        "type": "User",
+        "name": "Z992342",
+        "organisation": {
+          "id": "NO:NAVAT07",
+          "address": {
+            "street": null,
+            "town": null,
+            "postalCode": null,
+            "region": null,
+            "country": "NO"
+          },
+          "contactMethods": null,
+          "registryNumber": null,
+          "name": "NAV ACCEPTANCE TEST 07",
+          "acronym": "NAV ACCT 07",
+          "countryCode": "NO",
+          "activeSince": "2018-08-26T22:00:00.000+0000",
+          "accessPoint": null,
+          "location": null,
+          "assignedBUCs": null
+        }
+      }
+    }
+  ],
+  "parentDocumentId": null,
+  "createTemplate": null,
+  "toSenderOnly": false,
+  "isAdmin": false,
+  "selectParticipants": true,
+  "hasReplyClarify": false,
+  "hasReject": false,
+  "hasLetter": false,
+  "hasClarify": false,
+  "hasCancel": true,
+  "type": "P8000",
+  "typeVersion": "4.2",
+  "displayName": "Request for additional information",
+  "parendDocumentId": null,
+  "starter": false,
+  "direction": "OUT",
+  "status": "sent",
+  "subProcessId": 1003242,
+  "DMProcessId": null,
+  "tags": null,
+  "comments": [],
+  "attachments": null,
+  "conversations": [
+    {
+      "id": "92ab4f718d694f47a8075ac129cdb90a",
+      "versionId": "1",
+      "participants": [
+        {
+          "role": "Sender",
+          "organisation": {
+            "id": "NO:NAVAT07",
+            "address": {
+              "street": null,
+              "town": null,
+              "postalCode": null,
+              "region": null,
+              "country": "NO"
+            },
+            "contactMethods": null,
+            "registryNumber": null,
+            "name": "NAV ACCEPTANCE TEST 07",
+            "acronym": "NAV ACCT 07",
+            "countryCode": "NO",
+            "activeSince": "2018-08-26T22:00:00.000+0000",
+            "accessPoint": null,
+            "location": null,
+            "assignedBUCs": null
+          },
+          "selected": true
+        },
+        {
+          "role": "Receiver",
+          "organisation": {
+            "id": "NO:NAVAT05",
+            "address": {
+              "street": null,
+              "town": null,
+              "postalCode": null,
+              "region": null,
+              "country": "NO"
+            },
+            "contactMethods": null,
+            "registryNumber": null,
+            "name": "NAV ACCEPTANCE TEST 05",
+            "acronym": "NAV ACCT 05",
+            "countryCode": "NO",
+            "activeSince": "2018-08-26T22:00:00.000+0000",
+            "accessPoint": null,
+            "location": null,
+            "assignedBUCs": null
+          },
+          "selected": true
+        }
+      ],
+      "userMessages": [
+        {
+          "id": "3e188cdf4dff49d1be67fbaeee34fabd",
+          "receiver": {
+            "id": "NO:NAVAT05",
+            "address": {
+              "street": null,
+              "town": null,
+              "postalCode": null,
+              "region": null,
+              "country": "NO"
+            },
+            "contactMethods": null,
+            "registryNumber": null,
+            "name": "NAV ACCEPTANCE TEST 05",
+            "acronym": "NAV ACCT 05",
+            "countryCode": "NO",
+            "activeSince": "2018-08-26T22:00:00.000+0000",
+            "accessPoint": null,
+            "location": null,
+            "assignedBUCs": null
+          },
+          "sender": {
+            "id": "NO:NAVAT07",
+            "address": {
+              "street": null,
+              "town": null,
+              "postalCode": null,
+              "region": null,
+              "country": "NO"
+            },
+            "contactMethods": null,
+            "registryNumber": null,
+            "name": "NAV ACCEPTANCE TEST 07",
+            "acronym": "NAV ACCT 07",
+            "countryCode": "NO",
+            "activeSince": "2018-08-26T22:00:00.000+0000",
+            "accessPoint": null,
+            "location": null,
+            "assignedBUCs": null
+          },
+          "ack": null,
+          "error": null,
+          "status": null,
+          "sbdh": {
+            "headerVersion": "1.1",
+            "sender": {
+              "authority": "urn:eu:europa:ec:dgempl:eessi:ir",
+              "identifier": "NO:NAVAT07",
+              "contactTypeIdentifier": "Counterparty"
+            },
+            "receivers": [
+              {
+                "authority": "urn:eu:europa:ec:dgempl:eessi:ir",
+                "identifier": "NO:NAVAT05",
+                "contactTypeIdentifier": "CaseOwner"
+              }
+            ],
+            "documentIdentification": {
+              "id": null,
+              "relatedDocumentId": null,
+              "version": "1",
+              "contentLocation": null,
+              "creationDate": "2020-07-07T14:25:23.407+0000",
+              "type": "P8000",
+              "schemaVersion": "4.2",
+              "identifier": "57bab43145f54537980e7effa665abe3",
+              "setIdentifier": "86f89d344e4940ee87adc11ff21ea78a",
+              "action": "NEW",
+              "relatedSetIdentifier": null
+            },
+            "attachments": [],
+            "caseIdentification": {
+              "identifier": "428de599e40b4c488867c8e55ec931fb",
+              "type": "P_BUC_03",
+              "version": "4.2",
+              "isProtectedPerson": false,
+              "protectedPerson": false
+            }
+          },
+          "action": null,
+          "isSent": true,
+          "sent": true
+        }
+      ],
+      "date": null,
+      "receiveDate": null
+    }
+  ],
+  "bulk": false,
+  "validation": {
+    "status": "valid",
+    "messages": null
+  },
+  "hasBusinessValidation": false,
+  "allowsAttachments": true,
+  "isDummyDocument": false,
+  "canBeSentWithoutChild": false,
+  "isFirstDocument": false,
+  "isMLC": true,
+  "isSendExecuted": true,
+  "order": 1,
+  "receiveDate": null,
+  "admin": false,
+  "dmprocessId": null,
+  "dummyDocument": false,
+  "firstDocument": false,
+  "sendExecuted": true,
+  "mlc": true,
+  "ParentType": "P8000"
+}

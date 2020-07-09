@@ -169,13 +169,8 @@ class BucUtils(private val buc: Buc ) {
                 ?.firstOrNull()
     }
 
-    /* TODO Is this working as expected? */
-    private fun createParticipants(conventions: List<ConversationsItem>?): List<ParticipantsItem?>? {
-        conventions?.forEach {
-            return it.participants
-        }
-        return null
-    }
+    private fun createParticipants(conversations: List<ConversationsItem>?) =
+            conversations?.lastOrNull()?.participants
 
     private fun createShortAttachemnt(attachments: List<Attachment>?) =
             attachments?.map {
@@ -326,7 +321,6 @@ class BucUtils(private val buc: Buc ) {
             candidate -> currentParticipants.none { current -> candidate.country == current.country && candidate.institution == current.institution }
         }
     }
-
 
 
 }

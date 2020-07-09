@@ -2,21 +2,21 @@ package no.nav.eessi.pensjon.fagmodul.eux
 
 import com.google.common.collect.Lists
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Buc
+import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.DocumentsItem
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Organisation
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ParticipantsItem
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.models.SEDType
-import no.nav.eessi.pensjon.utils.mapAnyToJson
-import no.nav.eessi.pensjon.utils.mapJsonToAny
-import no.nav.eessi.pensjon.utils.typeRefs
-import no.nav.eessi.pensjon.utils.validateJson
+import no.nav.eessi.pensjon.utils.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.junit.jupiter.MockitoExtension
+import org.skyscreamer.jsonassert.JSONAssert
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.time.format.DateTimeFormatter
@@ -654,4 +654,121 @@ class BucUtilsTest {
         }
     }
 
+    @Test
+    fun `a draft SED should have sender and receiver based on the last conversation`() {
+        // filen vi har
+        val bucjson = getTestJsonFile("BucResponseFraEUXMedX007.json")
+        val buc = mapJsonToAny(bucjson, typeRefs<Buc>())
+
+
+        // behandle
+        val view = BucAndSedView.from(buc)
+        val p5000KladdId = "88243596f81f4553a3fe3260d751a6b8"
+
+        val p5000 = view.seds?.filter { it.id == p5000KladdId }
+                ?.map { it }
+                ?.first()
+
+        // sjekk at P5000 har rett mottaker (og avsender)
+        assertEquals(2, p5000?.participants?.size)
+
+        val participants = p5000?.participants
+
+        assertEquals("NO:NAVAT07", participants?.filter { it?.role == "Sender" }?.first()?.organisation?.id)
+        assertEquals("NO:NAVAT05", participants?.filter { it?.role == "Receiver" }?.first()?.organisation?.id)
+
+        // sjekk at P8000 har rett mottaker (og avsender)
+
+        val p8000KladdId = "86f89d344e4940ee87adc11ff21ea78a"
+
+        val p8000 = view.seds?.filter { it.id == p8000KladdId }
+                ?.map { it }
+                ?.first()
+
+        // sjekk at P5000 har rett mottaker (og avsender)
+        assertEquals(2, p8000?.participants?.size)
+
+        val participantsP8000 = p8000?.participants
+
+        assertEquals("NO:NAVAT07", participantsP8000?.filter { it?.role == "Sender" }?.first()?.organisation?.id)
+        assertEquals("NO:NAVAT05", participantsP8000?.filter { it?.role == "Receiver" }?.first()?.organisation?.id)
+    }
+
+    @Test
+    fun `an "empty" sed should have sender and receiver based on the last conversation`() {
+        // filen vi har
+        val bucjson = getTestJsonFile("BucResponseFraEUXMedX007.json")
+        val buc = mapJsonToAny(bucjson, typeRefs<Buc>())
+
+
+        // behandle
+        val view = BucAndSedView.from(buc)
+        val p6000Empty = "53c2a6d9642d4c089284ef5762d64b13"
+
+        val p6000 = view.seds?.filter { it.id == p6000Empty }
+                ?.map { it }
+                ?.first()
+
+        // sjekk at P5000 har rett mottaker (og avsender)
+        assertEquals(2, p6000?.participants?.size)
+
+        val participantsP6000 = p6000?.participants
+
+        assertEquals("NO:NAVAT07", participantsP6000?.filter { it?.role == "Sender" }?.first()?.organisation?.id)
+        assertEquals("NO:NAVAT05", participantsP6000?.filter { it?.role == "Receiver" }?.first()?.organisation?.id)
+    }
+
+
+    @Test
+    fun `a sent SED sent after X007 should have new receiver`() {
+        //Vi velger å ikke benytte oss av usermessages, siden det ser ut til at det holder å bruke conversations.last()
+        // filen vi har
+        val sedjson = getTestJsonFile("Buc-P8000-sendt.json")
+        val documentItem = mapJsonToAny(sedjson, typeRefs<DocumentsItem>())
+        val mockBuc = Buc(documents = listOf(documentItem))
+
+        // behandle
+        val view = BucAndSedView.from(mockBuc)
+
+        assertEquals(1, view.seds?.size)
+        val p8000 = view.seds?.first()
+        val participantsP8000 = p8000?.participants
+
+        assertEquals("NO:NAVAT07", participantsP8000?.filter { it?.role == "Sender" }?.first()?.organisation?.id)
+        assertEquals("NO:NAVAT05", participantsP8000?.filter { it?.role == "Receiver" }?.first()?.organisation?.id)
+    }
+
+    @Test
+    fun `an sed exchanged before X007 should have "old" sender and receiver`() {
+        val sedP2200CancelledId = "49bd11a447db48fc8edace43477781c9"
+        val bucjson = getTestJsonFile("BucResponseFraEUXMedX007.json")
+        val buc = mapJsonToAny(bucjson, typeRefs<Buc>())
+
+        val viewP2200 = BucAndSedView.from(buc)
+
+        assertEquals(14, viewP2200.seds?.size)
+
+        val p22000 = viewP2200.seds?.filter { it.id == sedP2200CancelledId }
+                ?.map { it }
+                ?.first()
+
+        val participantsP22000 = p22000?.participants
+
+        assertEquals(2, participantsP22000?.size)
+
+        assertEquals("NO:NAVAT08", participantsP22000?.filter { it?.role == "Sender" }?.first()?.organisation?.id)
+        assertEquals("NO:NAVAT07", participantsP22000?.filter { it?.role == "Receiver" }?.first()?.organisation?.id)
+    }
+
+    @Test
+    fun `compare generated result with expectation - for BUC with X007`() {
+        val input = getTestJsonFile("BucResponseFraEUXMedX007.json")
+        val expected = getTestJsonFile("BucResponseFraFagmodulenMedX007.json")
+        val buc = mapJsonToAny(input, typeRefs<Buc>())
+
+        val bucAndSedView = BucAndSedView.from(buc)
+
+        val actual = listOf(bucAndSedView).toJson()
+        JSONAssert.assertEquals(expected, actual, false)
+    }
 }
