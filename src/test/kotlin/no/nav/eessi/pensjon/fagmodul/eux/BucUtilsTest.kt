@@ -775,7 +775,7 @@ class BucUtilsTest {
     @Test
     fun `compare generated result with expectation - for BUC with X007 - caseid 1410989`() {
         val input = getTestJsonFile("BucResponseFraEUXMedX007-1410989.json")
-        val expected = getTestJsonFile("BucResponseFraFagmodulenMedX007-1410989.json")
+        val expected = getTestJsonFile("BucResponseFraFagmodulenMedX007_1410989.json")
         val buc = mapJsonToAny(input, typeRefs<Buc>())
 
         val bucAndSedView = BucAndSedView.from(buc)
