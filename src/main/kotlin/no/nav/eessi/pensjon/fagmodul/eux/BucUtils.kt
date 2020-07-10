@@ -172,9 +172,8 @@ class BucUtils(private val buc: Buc ) {
     private fun createParticipants(conversations: List<ConversationsItem>?): List<ParticipantsItem?>? =
             if (conversations != null && conversations.any { it.userMessages != null }) {
                 val conversation = conversations.findLast { it.userMessages != null }!!
-                val userMessages = conversation.userMessages!!.filter { it.error == null }
-
-                val senders = userMessages
+                val userMessagesSent = conversation.userMessages!!
+                val senders = userMessagesSent
                         .map { it.sender }
                         .distinctBy { it!!.id }
                         .map {
@@ -185,10 +184,11 @@ class BucUtils(private val buc: Buc ) {
                             )
                         }
                 if (senders.isEmpty()) {
-                    logger.warn("No " + "Sender" + "s found for conversation: ${conversation.id}")
+                    logger.info("No " + "Sender" + "s found for conversation: ${conversation.id}")
                 }
 
-                val receivers = userMessages
+                val userMessagesReceivedWithoutError = conversation.userMessages.filter { it.error == null }
+                val receivers = userMessagesReceivedWithoutError
                         .map { it.receiver }
                         .distinctBy { it!!.id }
                         .map {
@@ -199,7 +199,7 @@ class BucUtils(private val buc: Buc ) {
                             )
                         }
                 if (receivers.isEmpty()) {
-                    logger.warn("No " + "Receiver" + "s found for conversation: ${conversation.id}")
+                    logger.info("No " + "Receiver" + "s found for conversation: ${conversation.id}")
                 }
                 senders + receivers
             } else {
