@@ -775,28 +775,6 @@
         "accessPoint" : null
       },
       "selected" : false
-    }, {
-      "role" : "Participant",
-      "organisation" : {
-        "address" : {
-          "country" : "NO",
-          "town" : null,
-          "street" : null,
-          "postalCode" : null,
-          "region" : null
-        },
-        "activeSince" : "2018-08-26T22:00:00.000+0000",
-        "registryNumber" : null,
-        "acronym" : "NAV ACCT 05",
-        "countryCode" : "NO",
-        "contactMethods" : null,
-        "name" : "NAV ACCEPTANCE TEST 05",
-        "location" : null,
-        "assignedBUCs" : null,
-        "id" : "NO:NAVAT05",
-        "accessPoint" : null
-      },
-      "selected" : false
     } ],
     "attachments" : [ ],
     "version" : "1",

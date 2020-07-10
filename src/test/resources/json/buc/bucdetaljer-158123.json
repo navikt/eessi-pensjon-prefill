@@ -448,7 +448,7 @@
         "id" : "NO:NAVT003",
         "accessPoint" : null
       },
-      "selected" : true
+      "selected" : false
     }, {
       "role" : "Receiver",
       "organisation" : {

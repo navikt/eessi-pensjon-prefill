@@ -169,8 +169,43 @@ class BucUtils(private val buc: Buc ) {
                 ?.firstOrNull()
     }
 
-    private fun createParticipants(conversations: List<ConversationsItem>?) =
-            conversations?.lastOrNull()?.participants
+    private fun createParticipants(conversations: List<ConversationsItem>?): List<ParticipantsItem?>? =
+            if (conversations != null && conversations.any { it.userMessages != null }) {
+                val conversation = conversations.findLast { it.userMessages != null }!!
+                val userMessages = conversation.userMessages!!.filter { it.error == null }
+
+                val senders = userMessages
+                        .map { it.sender }
+                        .distinctBy { it!!.id }
+                        .map {
+                            ParticipantsItem(
+                                    role = "Sender",
+                                    organisation = it as Sender,
+                                    selected = false
+                            )
+                        }
+                if (senders.isEmpty()) {
+                    logger.warn("No " + "Sender" + "s found for conversation: ${conversation.id}")
+                }
+
+                val receivers = userMessages
+                        .map { it.receiver }
+                        .distinctBy { it!!.id }
+                        .map {
+                            ParticipantsItem(
+                                    role = "Receiver",
+                                    organisation = it as Receiver,
+                                    selected = false
+                            )
+                        }
+                if (receivers.isEmpty()) {
+                    logger.warn("No " + "Receiver" + "s found for conversation: ${conversation.id}")
+                }
+                senders + receivers
+            } else {
+                conversations?.lastOrNull()?.participants
+            }
+
 
     private fun createShortAttachemnt(attachments: List<Attachment>?) =
             attachments?.map {

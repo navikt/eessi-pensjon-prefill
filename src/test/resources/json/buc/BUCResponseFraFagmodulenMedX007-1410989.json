@@ -102,6 +102,32 @@
         "displayName": "Forward Case",
         "participants": [
           {
+            "role": "Sender",
+            "organisation": {
+              "address": {
+                "country": "LT",
+                "town": null,
+                "street": null,
+                "postalCode": null,
+                "region": null
+              },
+              "activeSince": "1990-12-31T23:00:00.000+0000",
+              "registryNumber": null,
+              "acronym": "UIT",
+              "countryCode": "LT",
+              "contactMethods": null,
+              "name": "State Social Insurance Fund Board Foreign Benefits Office",
+              "location": null,
+              "assignedBUCs": null,
+              "id": "LT:188735972",
+              "accessPoint": null,
+              "identifier": null,
+              "contactTypeIdentifier": null,
+              "authority": null
+            },
+            "selected": false
+          },
+          {
             "role": "Receiver",
             "organisation": {
               "address": {
@@ -120,52 +146,6 @@
               "location": null,
               "assignedBUCs": null,
               "id": "NO:889640782",
-              "accessPoint": null
-            },
-            "selected": false
-          },
-          {
-            "role": "Participant",
-            "organisation": {
-              "address": {
-                "country": "LT",
-                "town": null,
-                "street": null,
-                "postalCode": null,
-                "region": null
-              },
-              "activeSince": "1990-12-31T23:00:00.000+0000",
-              "registryNumber": null,
-              "acronym": "Vilniaus skyrius",
-              "countryCode": "LT",
-              "contactMethods": null,
-              "name": "State Social Insurance Fund Board Vilniaus Division",
-              "location": null,
-              "assignedBUCs": null,
-              "id": "LT:191683350",
-              "accessPoint": null
-            },
-            "selected": false
-          },
-          {
-            "role": "Receiver",
-            "organisation": {
-              "address": {
-                "country": "LT",
-                "town": null,
-                "street": null,
-                "postalCode": null,
-                "region": null
-              },
-              "activeSince": "1990-12-31T23:00:00.000+0000",
-              "registryNumber": null,
-              "acronym": "Vilniaus skyrius",
-              "countryCode": "LT",
-              "contactMethods": null,
-              "name": "State Social Insurance Fund Board Vilniaus Division",
-              "location": null,
-              "assignedBUCs": null,
-              "id": "LT:191683350",
               "accessPoint": null
             },
             "selected": false
@@ -397,6 +377,32 @@
         "displayName": "Invalidity pension claim",
         "participants": [
           {
+            "role": "Sender",
+            "organisation": {
+              "address": {
+                "country": "LT",
+                "town": null,
+                "street": null,
+                "postalCode": null,
+                "region": null
+              },
+              "activeSince": "1990-12-31T23:00:00.000+0000",
+              "registryNumber": null,
+              "acronym": "UIT",
+              "countryCode": "LT",
+              "contactMethods": null,
+              "name": "State Social Insurance Fund Board Foreign Benefits Office",
+              "location": null,
+              "assignedBUCs": null,
+              "id": "LT:188735972",
+              "accessPoint": null,
+              "identifier": null,
+              "contactTypeIdentifier": null,
+              "authority": null
+            },
+            "selected": false
+          },
+          {
             "role": "Receiver",
             "organisation": {
               "address": {
@@ -415,29 +421,6 @@
               "location": null,
               "assignedBUCs": null,
               "id": "NO:889640782",
-              "accessPoint": null
-            },
-            "selected": false
-          },
-          {
-            "role": "Receiver",
-            "organisation": {
-              "address": {
-                "country": "LT",
-                "town": null,
-                "street": null,
-                "postalCode": null,
-                "region": null
-              },
-              "activeSince": "1990-12-31T23:00:00.000+0000",
-              "registryNumber": null,
-              "acronym": "Vilniaus skyrius",
-              "countryCode": "LT",
-              "contactMethods": null,
-              "name": "State Social Insurance Fund Board Vilniaus Division",
-              "location": null,
-              "assignedBUCs": null,
-              "id": "LT:191683350",
               "accessPoint": null
             },
             "selected": false
@@ -475,6 +458,32 @@
         "displayName": "Invalidity pension claim",
         "participants": [
           {
+            "role": "Sender",
+            "organisation": {
+              "address": {
+                "country": "LT",
+                "town": null,
+                "street": null,
+                "postalCode": null,
+                "region": null
+              },
+              "activeSince": "1990-12-31T23:00:00.000+0000",
+              "registryNumber": null,
+              "acronym": "UIT",
+              "countryCode": "LT",
+              "contactMethods": null,
+              "name": "State Social Insurance Fund Board Foreign Benefits Office",
+              "location": null,
+              "assignedBUCs": null,
+              "id": "LT:188735972",
+              "accessPoint": null,
+              "identifier": null,
+              "contactTypeIdentifier": null,
+              "authority": null
+            },
+            "selected": false
+          },
+          {
             "role": "Receiver",
             "organisation": {
               "address": {
@@ -493,29 +502,6 @@
               "location": null,
               "assignedBUCs": null,
               "id": "NO:889640782",
-              "accessPoint": null
-            },
-            "selected": false
-          },
-          {
-            "role": "Receiver",
-            "organisation": {
-              "address": {
-                "country": "LT",
-                "town": null,
-                "street": null,
-                "postalCode": null,
-                "region": null
-              },
-              "activeSince": "1990-12-31T23:00:00.000+0000",
-              "registryNumber": null,
-              "acronym": "Vilniaus skyrius",
-              "countryCode": "LT",
-              "contactMethods": null,
-              "name": "State Social Insurance Fund Board Vilniaus Division",
-              "location": null,
-              "assignedBUCs": null,
-              "id": "LT:191683350",
               "accessPoint": null
             },
             "selected": false
@@ -639,9 +625,35 @@
               "location": null,
               "assignedBUCs": null,
               "id": "NO:889640782",
+              "accessPoint": null,
+              "identifier": null,
+              "contactTypeIdentifier": null,
+              "authority": null
+            },
+            "selected": false
+          },
+          {
+            "role": "Receiver",
+            "organisation": {
+              "address": {
+                "country": "LT",
+                "town": null,
+                "street": null,
+                "postalCode": null,
+                "region": null
+              },
+              "activeSince": "1990-12-31T23:00:00.000+0000",
+              "registryNumber": null,
+              "acronym": "UIT",
+              "countryCode": "LT",
+              "contactMethods": null,
+              "name": "State Social Insurance Fund Board Foreign Benefits Office",
+              "location": null,
+              "assignedBUCs": null,
+              "id": "LT:188735972",
               "accessPoint": null
             },
-            "selected": true
+            "selected": false
           },
           {
             "role": "Receiver",
@@ -1029,6 +1041,32 @@
         "displayName": "Invalidate Sed",
         "participants": [
           {
+            "role": "Sender",
+            "organisation": {
+              "address": {
+                "country": "LT",
+                "town": null,
+                "street": null,
+                "postalCode": null,
+                "region": null
+              },
+              "activeSince": "1990-12-31T23:00:00.000+0000",
+              "registryNumber": null,
+              "acronym": "UIT",
+              "countryCode": "LT",
+              "contactMethods": null,
+              "name": "State Social Insurance Fund Board Foreign Benefits Office",
+              "location": null,
+              "assignedBUCs": null,
+              "id": "LT:188735972",
+              "accessPoint": null,
+              "identifier": null,
+              "contactTypeIdentifier": null,
+              "authority": null
+            },
+            "selected": false
+          },
+          {
             "role": "Receiver",
             "organisation": {
               "address": {
@@ -1047,29 +1085,6 @@
               "location": null,
               "assignedBUCs": null,
               "id": "NO:889640782",
-              "accessPoint": null
-            },
-            "selected": false
-          },
-          {
-            "role": "Receiver",
-            "organisation": {
-              "address": {
-                "country": "LT",
-                "town": null,
-                "street": null,
-                "postalCode": null,
-                "region": null
-              },
-              "activeSince": "1990-12-31T23:00:00.000+0000",
-              "registryNumber": null,
-              "acronym": "Vilniaus skyrius",
-              "countryCode": "LT",
-              "contactMethods": null,
-              "name": "State Social Insurance Fund Board Vilniaus Division",
-              "location": null,
-              "assignedBUCs": null,
-              "id": "LT:191683350",
               "accessPoint": null
             },
             "selected": false
@@ -1097,6 +1112,32 @@
         "displayName": "Insurance/residence periods",
         "participants": [
           {
+            "role": "Sender",
+            "organisation": {
+              "address": {
+                "country": "LT",
+                "town": null,
+                "street": null,
+                "postalCode": null,
+                "region": null
+              },
+              "activeSince": "1990-12-31T23:00:00.000+0000",
+              "registryNumber": null,
+              "acronym": "UIT",
+              "countryCode": "LT",
+              "contactMethods": null,
+              "name": "State Social Insurance Fund Board Foreign Benefits Office",
+              "location": null,
+              "assignedBUCs": null,
+              "id": "LT:188735972",
+              "accessPoint": null,
+              "identifier": null,
+              "contactTypeIdentifier": null,
+              "authority": null
+            },
+            "selected": false
+          },
+          {
             "role": "Receiver",
             "organisation": {
               "address": {
@@ -1115,29 +1156,6 @@
               "location": null,
               "assignedBUCs": null,
               "id": "NO:889640782",
-              "accessPoint": null
-            },
-            "selected": false
-          },
-          {
-            "role": "Receiver",
-            "organisation": {
-              "address": {
-                "country": "LT",
-                "town": null,
-                "street": null,
-                "postalCode": null,
-                "region": null
-              },
-              "activeSince": "1990-12-31T23:00:00.000+0000",
-              "registryNumber": null,
-              "acronym": "Vilniaus skyrius",
-              "countryCode": "LT",
-              "contactMethods": null,
-              "name": "State Social Insurance Fund Board Vilniaus Division",
-              "location": null,
-              "assignedBUCs": null,
-              "id": "LT:191683350",
               "accessPoint": null
             },
             "selected": false

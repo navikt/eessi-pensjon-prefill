@@ -1,6 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.eux.bucmodel
 
-class Organisation(
+open class Organisation(
         val address: Address? = null,
         val activeSince: Any? = null,
         val registryNumber: Any? = null,
