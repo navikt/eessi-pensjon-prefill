@@ -206,7 +206,8 @@ class ArchitectureTest {
                         "$root.utils.."
                 )
                 .whereLayer(frontendAPI).mayNotBeAccessedByAnyLayer()
-                //.whereLayer(fagmodulCore).mayNotBeAccessedByAnyLayer()
+                .whereLayer(fagmodulCore).mayOnlyBeAccessedByLayers(
+                        frontendAPI)
                 .whereLayer(services).mayOnlyBeAccessedByLayers(
                         frontendAPI,
                         fagmodulCore)
