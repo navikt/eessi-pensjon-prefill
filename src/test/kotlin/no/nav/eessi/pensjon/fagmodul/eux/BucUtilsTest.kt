@@ -11,7 +11,6 @@ import no.nav.eessi.pensjon.utils.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
@@ -695,7 +694,7 @@ class BucUtilsTest {
     }
 
     @Test
-    fun `an "empty" sed should have sender and receiver based on the last conversation`() {
+    fun `an empty sed should have sender and receiver based on the last conversation`() {
         // filen vi har
         val bucjson = getTestJsonFile("BucResponseFraEUXMedX007.json")
         val buc = mapJsonToAny(bucjson, typeRefs<Buc>())
@@ -739,7 +738,7 @@ class BucUtilsTest {
     }
 
     @Test
-    fun `an sed exchanged before X007 should have "old" sender and receiver`() {
+    fun `an sed exchanged before X007 should have old sender and receiver`() {
         val sedP2200CancelledId = "49bd11a447db48fc8edace43477781c9"
         val bucjson = getTestJsonFile("BucResponseFraEUXMedX007.json")
         val buc = mapJsonToAny(bucjson, typeRefs<Buc>())

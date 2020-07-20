@@ -123,9 +123,11 @@ class PersonControllerTest {
         doReturn(personMor).whenever(mockPersonV3Service).hentPersonResponse(avdodMorFnr)
 
         val response = mvc.perform(
-                get("/person/avdode/$gjenlevBarnAktorId/vedtak/$vedtaksId")
+                get("/person/333333/avdode/vedtak/22455454")
                         .accept(MediaType.APPLICATION_JSON))
                 .andReturn().response
+
+        print("response: " + response.contentAsString)
 
         //then the response should contain json list of mor & far
         Assertions.assertTrue(response.contentAsString.contains("\"fnd\":\"$avdodMorFnr\""))
@@ -160,7 +162,7 @@ class PersonControllerTest {
         doReturn(personMor).whenever(mockPersonV3Service).hentPersonResponse(avdodMorFnr)
 
         val response = mvc.perform(
-                get("/person/avdode/$gjenlevAktorId/vedtak/$vedtaksId")
+                get("/person/$gjenlevAktorId/avdode/vedtak/$vedtaksId")
                         .accept(MediaType.APPLICATION_JSON))
                 .andReturn().response
 
@@ -184,11 +186,11 @@ class PersonControllerTest {
         doReturn(vedtaksInfo).whenever(mockPensjonClient).hentAltPaaVedtak(vedtaksId)
 
         val response = mvc.perform(
-                get("/person/avdode/$gjenlevAktorId/vedtak/$vedtaksId")
+                get("/person/$gjenlevAktorId/avdode/vedtak/$vedtaksId")
                         .accept(MediaType.APPLICATION_JSON))
                 .andReturn().response
-
-        Assertions.assertTrue(response.contentAsString.isEmpty())
+        val list : List<String>  = mapJsonToAny(response.contentAsString, typeRefs())
+        assert(list.isEmpty())
     }
 
 

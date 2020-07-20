@@ -60,11 +60,11 @@ class PersonController(private val aktoerregisterService: AktoerregisterService,
     }
 
     @ApiOperation("henter ut alle avdøde for en aktørId og vedtaksId der aktør er gjenlevende")
-    @GetMapping("/person/avdode/{aktoerId}/vedtak/{vedtaksId}", produces = [MediaType.APPLICATION_JSON_VALUE])
+    @GetMapping("/person/{aktoerId}/avdode/vedtak/{vedtaksId}", produces = [MediaType.APPLICATION_JSON_VALUE])
     fun getDeceased(@PathVariable("aktoerId", required = true) aktoerId: String,
                     @PathVariable("vedtaksId", required = true) vedtaksId: String): ResponseEntity<Any> {
 
-        auditLogger.log("/person/{$aktoerId}/vetak", "getDeceased")
+        auditLogger.log("/person/{$aktoerId}/vedtak", "getDeceased")
 
         val peninfo = pensjonsinformasjonClient.hentAltPaaVedtak(vedtaksId)
 
@@ -92,7 +92,8 @@ class PersonController(private val aktoerregisterService: AktoerregisterService,
             }
         }
         return PersonControllerHentPersonAvdod.measure {
-                ResponseEntity.notFound().build()
+            logger.info("Fant ingen avdøde")
+            ResponseEntity.ok( mutableListOf<String>())
         }
     }
 
