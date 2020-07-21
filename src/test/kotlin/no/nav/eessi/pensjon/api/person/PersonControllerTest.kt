@@ -130,8 +130,8 @@ class PersonControllerTest {
         print("response: " + response.contentAsString)
 
         //then the response should contain json list of mor & far
-        Assertions.assertTrue(response.contentAsString.contains("\"fnd\":\"$avdodMorFnr\""))
-        Assertions.assertTrue(response.contentAsString.contains("\"fnd\":\"$avdodFarFnr\""))
+        Assertions.assertTrue(response.contentAsString.contains("\"fnd\":\"$avdodFarFnr\",\"aktorId\":\"$avdodFarAktorId\""))
+        Assertions.assertTrue(response.contentAsString.contains("\"fnd\":\"$avdodMorFnr\",\"aktorId\":\"$avdodMorAktorId\""))
 
         val emptyList : List<PersonController.PersoninformasjonAvdode> = mapJsonToAny(response.contentAsString, typeRefs())
         assert(emptyList.size == 2)
@@ -167,7 +167,8 @@ class PersonControllerTest {
                 .andReturn().response
 
         //then the response should contain json list of mor & far
-        Assertions.assertTrue(response.contentAsString.contains("\"fnd\":\"$avdodMorFnr\""))
+        Assertions.assertTrue(response.contentAsString.contains("\"fnd\":\"$avdodMorFnr\",\"aktorId\":\"$avdodMorAktorId\""))
+
         val emptyList : List<PersonController.PersoninformasjonAvdode> = mapJsonToAny(response.contentAsString, typeRefs())
         assert(emptyList.size == 1)
     }

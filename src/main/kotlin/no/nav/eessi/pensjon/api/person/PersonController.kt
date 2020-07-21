@@ -8,6 +8,7 @@ import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerregisterService
 import no.nav.eessi.pensjon.personoppslag.personv3.PersonV3Service
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonClient
 import no.nav.security.oidc.api.Protected
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Person
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonResponse
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RestController
 import javax.annotation.PostConstruct
+import kotlin.streams.toList
 
 /**
  * Controller for å kalle NAV interne registre
@@ -66,23 +68,25 @@ class PersonController(private val aktoerregisterService: AktoerregisterService,
 
         auditLogger.log("/person/{$aktoerId}/vedtak", "getDeceased")
 
-        val peninfo = pensjonsinformasjonClient.hentAltPaaVedtak(vedtaksId)
+        val pensjonInfo = pensjonsinformasjonClient.hentAltPaaVedtak(vedtaksId)
 
-        val avdodInfo = peninfo.avdod
-        val person = peninfo.person
+        val avdode = hentAlleAvdode(
+                listOf<String>(
+                        pensjonInfo?.avdod?.avdodFarAktorId.toString(),
+                        pensjonInfo?.avdod?.avdodMorAktorId.toString()
+                )
+        )
 
-        val hentAlleAvdode = hentAlleAvdode(avdodInfo.avdodFarAktorId, avdodInfo.avdodMorAktorId)
+        if (avdode.isNotEmpty()  && pensjonInfo?.person?.aktorId == aktoerId) {
+            logger.info("Det ble funnet {} avdøde for den gjenlevende med aktørID: $aktoerId", avdode.size)
 
-        if (hentAlleAvdode.isNotEmpty() && person.aktorId == aktoerId) {
             return PersonControllerHentPersonAvdod.measure {
 
-                ResponseEntity.ok( hentAlleAvdode.map { it
-                    val fnr = aktoerregisterService.hentGjeldendeNorskIdentForAktorId(it.toString())
-                    val select = hentPerson(it)
-
-                    val person = select.person
+                ResponseEntity.ok( avdode.map { avdodAktorId ->
+                    val (fnr, person) = pairPersonFnr(avdodAktorId)
                     PersoninformasjonAvdode(
                             fnr,
+                            avdodAktorId,
                             person.personnavn.sammensattNavn,
                             person.personnavn.fornavn,
                             person.personnavn.mellomnavn,
@@ -91,25 +95,22 @@ class PersonController(private val aktoerregisterService: AktoerregisterService,
                 }.toList())
             }
         }
+        logger.info("Fant ingen avdøde, eller det manglet informasjon for uthenting av aktør: $aktoerId, på vedtak: $vedtaksId")
+
         return PersonControllerHentPersonAvdod.measure {
-            logger.info("Fant ingen avdøde")
             ResponseEntity.ok( mutableListOf<String>())
         }
     }
 
-    private fun hentAlleAvdode(avdodMor: String?, avdodFar: String?): List<String> {
+    private fun pairPersonFnr(it: String): Pair<String, Person> {
+        val fnr = aktoerregisterService.hentGjeldendeNorskIdentForAktorId(it)
+        val response = hentPerson(it)
 
-        var avdodeAktorIdList = mutableListOf<String>()
+        return Pair(fnr, response?.person)
+    }
 
-        if(isNumber(avdodMor)) {
-            avdodeAktorIdList.add(avdodMor.toString())
-        }
-
-        if(isNumber(avdodFar)) {
-            avdodeAktorIdList.add(avdodFar.toString())
-        }
-
-        return avdodeAktorIdList
+    private fun hentAlleAvdode(avdode: List<String>): List<String> {
+        return avdode.stream().filter { isNumber(it) }.toList()
     }
 
     fun isNumber(s: String?): Boolean {
@@ -147,6 +148,7 @@ class PersonController(private val aktoerregisterService: AktoerregisterService,
                                  var etternavn: String? = null)
 
     data class PersoninformasjonAvdode (var fnd: String? = null,
+                                        var aktorId: String? = null,
                                         var fulltNavn: String? = null,
                                         var fornavn: String? = null,
                                         var mellomnavn: String? = null,
