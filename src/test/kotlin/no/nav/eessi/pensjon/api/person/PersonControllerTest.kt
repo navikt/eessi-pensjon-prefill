@@ -3,7 +3,7 @@ package no.nav.eessi.pensjon.api.person
 import com.nhaarman.mockitokotlin2.*
 import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonService
 import no.nav.eessi.pensjon.logging.AuditLogger
-import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerregisterService
+import no.nav.eessi.pensjon.personoppslag.aktoerregister.*
 import no.nav.eessi.pensjon.personoppslag.personv3.PersonV3IkkeFunnetException
 import no.nav.eessi.pensjon.personoppslag.personv3.PersonV3Service
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonClient
@@ -117,8 +117,10 @@ class PersonControllerTest {
         val avdodFarFnr = "22222222222"
 
         doReturn(vedtaksInfo).whenever(mockPensjonClient).hentAltPaaVedtak(vedtaksId)
-        doReturn(avdodFarFnr).whenever(mockAktoerregisterService).hentGjeldendeNorskIdentForAktorId(avdodFarAktorId)
-        doReturn(avdodMorFnr).whenever(mockAktoerregisterService).hentGjeldendeNorskIdentForAktorId(avdodMorAktorId)
+        doReturn(Result.Found(NorskIdent(avdodMorFnr)))
+                .whenever(mockAktoerregisterService).hentGjeldendeIdentFraGruppe(IdentGruppe.NorskIdent, AktoerId(avdodMorAktorId))
+        doReturn(Result.Found(NorskIdent(avdodFarFnr)))
+                .whenever(mockAktoerregisterService).hentGjeldendeIdentFraGruppe(IdentGruppe.NorskIdent, AktoerId(avdodFarAktorId))
         doReturn(personFar).whenever(mockPersonV3Service).hentPersonResponse(avdodFarFnr)
         doReturn(personMor).whenever(mockPersonV3Service).hentPersonResponse(avdodMorFnr)
 
@@ -158,7 +160,8 @@ class PersonControllerTest {
                                 .withFornavn("MOR")))
 
         doReturn(vedtaksInfo).whenever(mockPensjonClient).hentAltPaaVedtak(vedtaksId)
-        doReturn(avdodMorFnr).whenever(mockAktoerregisterService).hentGjeldendeNorskIdentForAktorId(avdodMorAktorId)
+        doReturn(Result.Found(NorskIdent(avdodMorFnr)))
+                .whenever(mockAktoerregisterService).hentGjeldendeIdentFraGruppe(IdentGruppe.NorskIdent, AktoerId(avdodMorAktorId))
         doReturn(personMor).whenever(mockPersonV3Service).hentPersonResponse(avdodMorFnr)
 
         val response = mvc.perform(
