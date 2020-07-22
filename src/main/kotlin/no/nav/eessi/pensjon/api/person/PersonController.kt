@@ -4,11 +4,10 @@ import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import io.swagger.annotations.ApiOperation
 import no.nav.eessi.pensjon.logging.AuditLogger
 import no.nav.eessi.pensjon.metrics.MetricsHelper
-import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerregisterService
+import no.nav.eessi.pensjon.personoppslag.aktoerregister.*
 import no.nav.eessi.pensjon.personoppslag.personv3.PersonV3Service
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonClient
 import no.nav.security.oidc.api.Protected
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.Person
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonResponse
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -70,50 +69,47 @@ class PersonController(private val aktoerregisterService: AktoerregisterService,
 
         val pensjonInfo = pensjonsinformasjonClient.hentAltPaaVedtak(vedtaksId)
 
-        val avdode = hentAlleAvdode(
-                listOf<String>(
-                        pensjonInfo?.avdod?.avdodFarAktorId.toString(),
-                        pensjonInfo?.avdod?.avdodMorAktorId.toString()
-                )
-        )
+        val avdodeMedFnr = hentAlleAvdode(
+                listOf(
+                        pensjonInfo.avdod?.avdodFarAktorId.toString(),
+                        pensjonInfo.avdod?.avdodMorAktorId.toString()
+                ))
+                .map { avdodAktorId -> pairPersonFnr(avdodAktorId)}.toList()
 
-        if (avdode.isNotEmpty()  && pensjonInfo?.person?.aktorId == aktoerId) {
-            logger.info("Det ble funnet {} avdøde for den gjenlevende med aktørID: $aktoerId", avdode.size)
+        logger.info("Det ble funnet {} avdøde for den gjenlevende med aktørID: $aktoerId", avdodeMedFnr.size)
 
+        with(avdodeMedFnr){
             return PersonControllerHentPersonAvdod.measure {
-
-                ResponseEntity.ok( avdode.map { avdodAktorId ->
-                    val (fnr, person) = pairPersonFnr(avdodAktorId)
-                    PersoninformasjonAvdode(
-                            fnr,
-                            avdodAktorId,
-                            person.personnavn.sammensattNavn,
-                            person.personnavn.fornavn,
-                            person.personnavn.mellomnavn,
-                            person.personnavn.etternavn)
-
-                }.toList())
+                ResponseEntity.ok(this)
             }
-        }
-        logger.info("Fant ingen avdøde, eller det manglet informasjon for uthenting av aktør: $aktoerId, på vedtak: $vedtaksId")
-
-        return PersonControllerHentPersonAvdod.measure {
-            ResponseEntity.ok( mutableListOf<String>())
         }
     }
 
-    private fun pairPersonFnr(it: String): Pair<String, Person> {
-        val fnr = aktoerregisterService.hentGjeldendeNorskIdentForAktorId(it)
-        val response = hentPerson(it)
-
-        return Pair(fnr, response?.person)
+    private fun pairPersonFnr(aktorId: String): PersoninformasjonAvdode {
+        when(val result = aktoerregisterService.hentGjeldendeIdentFraGruppe(IdentGruppe.NorskIdent, AktoerId(aktorId))) {
+            is Result.Found -> {
+                val person = personService.hentPersonResponse(result.value.id)
+                return PersoninformasjonAvdode(
+                        result.value.id,
+                        aktorId,
+                        person.person.personnavn.sammensattNavn,
+                        person.person.personnavn.fornavn,
+                        person.person.personnavn.mellomnavn,
+                        person.person.personnavn.etternavn)
+            }
+            is Result.NotFound -> throw AktoerregisterIkkeFunnetException(result.reason)
+            is Result.Failure -> {
+                logger.error("Henting av ident feiler med ${result.cause} cause: ${result.cause.cause}", result.cause)
+                throw result.cause
+            }
+        }
     }
 
     private fun hentAlleAvdode(avdode: List<String>): List<String> {
         return avdode.stream().filter { isNumber(it) }.toList()
     }
 
-    fun isNumber(s: String?): Boolean {
+    private fun isNumber(s: String?): Boolean {
         return if (s.isNullOrEmpty()) false else s.all { Character.isDigit(it) }
     }
 
