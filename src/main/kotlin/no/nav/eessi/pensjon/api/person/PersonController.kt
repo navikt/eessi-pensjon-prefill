@@ -76,7 +76,7 @@ class PersonController(private val aktoerregisterService: AktoerregisterService,
                 ))
                 .map { avdodAktorId -> pairPersonFnr(avdodAktorId)}.toList()
 
-        logger.info("Det ble funnet {} avdøde for den gjenlevende med aktørID: $aktoerId", avdodeMedFnr.size)
+        logger.info("Det ble funnet ${avdodeMedFnr.size} avdøde for den gjenlevende med aktørID: $aktoerId")
 
         with(avdodeMedFnr){
             return PersonControllerHentPersonAvdod.measure {
