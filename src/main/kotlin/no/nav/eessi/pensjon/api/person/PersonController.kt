@@ -143,7 +143,7 @@ class PersonController(private val aktoerregisterService: AktoerregisterService,
                                  var mellomnavn: String? = null,
                                  var etternavn: String? = null)
 
-    data class PersoninformasjonAvdode (var fnd: String? = null,
+    data class PersoninformasjonAvdode (var fnr: String? = null,
                                         var aktorId: String? = null,
                                         var fulltNavn: String? = null,
                                         var fornavn: String? = null,
