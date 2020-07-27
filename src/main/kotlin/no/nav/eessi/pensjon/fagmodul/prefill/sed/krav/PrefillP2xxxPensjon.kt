@@ -207,11 +207,11 @@ object PrefillP2xxxPensjon {
     }
 
     private fun hentYtelsePerMaanedDenSisteFraKrav(kravHistorikk: V1KravHistorikk, pensak: V1Sak): V1YtelsePerMaaned {
-        val ytelser = pensak.ytelsePerMaanedListe?.ytelsePerMaanedListe
-        val ytelserSortertPaaFom = ytelser?.asSequence()?.sortedBy { it.fom.toGregorianCalendar() }?.toList()
+        val ytelser = pensak.ytelsePerMaanedListe.ytelsePerMaanedListe
+        val ytelserSortertPaaFom = ytelser.asSequence().sortedBy { it.fom.toGregorianCalendar() }.toList()
 
         logger.debug("-----------------------------------------------------")
-        ytelserSortertPaaFom?.forEach {
+        ytelserSortertPaaFom.forEach {
             logger.debug("Sammenligner ytelsePerMaaned: ${it.fom}  Med virkningtidpunkt: ${kravHistorikk.virkningstidspunkt}")
             if (it.fom.toGregorianCalendar() >= kravHistorikk.virkningstidspunkt.toGregorianCalendar()) {
                 logger.debug("Return følgende ytelsePerMaaned: ${it.fom}")
