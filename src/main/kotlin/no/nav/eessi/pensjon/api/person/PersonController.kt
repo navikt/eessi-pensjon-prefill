@@ -71,6 +71,7 @@ class PersonController(private val aktoerregisterService: AktoerregisterService,
 
         val avdodeMedFnr = hentAlleAvdode(
                 listOf(
+                        pensjonInfo.avdod?.avdodAktorId.toString(),
                         pensjonInfo.avdod?.avdodFarAktorId.toString(),
                         pensjonInfo.avdod?.avdodMorAktorId.toString()
                 ))

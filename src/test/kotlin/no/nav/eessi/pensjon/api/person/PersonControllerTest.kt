@@ -93,12 +93,15 @@ class PersonControllerTest {
         //given two deceased (mor & far), with a (living) remaining child
         val avdodMorAktorId = "111111"
         val avdodFarAktorId = "222222"
+        val avdodAktorId = "333333"
 
-        val gjenlevBarnAktorId = "333333"
+        val gjenlevBarnAktorId = "444444"
 
         val vedtaksInfo = PensjonsinformasjonService(PensjonsinformasjonClientMother.fraFil("P6000-GP-401.xml")).hentMedVedtak("any-given-string")
         vedtaksInfo.avdod.avdodMorAktorId = avdodMorAktorId
         vedtaksInfo.avdod.avdodFarAktorId = avdodFarAktorId
+        vedtaksInfo.avdod.avdodAktorId = avdodAktorId
+
         vedtaksInfo.person.aktorId = gjenlevBarnAktorId
 
         //and mor is part of the system (insured)
@@ -112,17 +115,28 @@ class PersonControllerTest {
                         .withPersonnavn(Personnavn()
                                 .withFornavn("FAR")))
 
+        val personPartner = HentPersonResponse()
+                .withPerson(Person()
+                        .withPersonnavn(Personnavn()
+                                .withFornavn("ANNEN")))
+
         val vedtaksId = "22455454"
         val avdodMorFnr = "11111111111"
         val avdodFarFnr = "22222222222"
+        val avdodAktorFnr = "33333333333"
 
         doReturn(vedtaksInfo).whenever(mockPensjonClient).hentAltPaaVedtak(vedtaksId)
+
         doReturn(Result.Found(NorskIdent(avdodMorFnr)))
                 .whenever(mockAktoerregisterService).hentGjeldendeIdentFraGruppe(IdentGruppe.NorskIdent, AktoerId(avdodMorAktorId))
         doReturn(Result.Found(NorskIdent(avdodFarFnr)))
                 .whenever(mockAktoerregisterService).hentGjeldendeIdentFraGruppe(IdentGruppe.NorskIdent, AktoerId(avdodFarAktorId))
+        doReturn(Result.Found(NorskIdent(avdodAktorFnr)))
+                .whenever(mockAktoerregisterService).hentGjeldendeIdentFraGruppe(IdentGruppe.NorskIdent, AktoerId(avdodAktorId))
+
         doReturn(personFar).whenever(mockPersonV3Service).hentPersonResponse(avdodFarFnr)
         doReturn(personMor).whenever(mockPersonV3Service).hentPersonResponse(avdodMorFnr)
+        doReturn(personPartner).whenever(mockPersonV3Service).hentPersonResponse(avdodAktorFnr)
 
         val response = mvc.perform(
                 get("/person/333333/avdode/vedtak/22455454")
@@ -134,9 +148,10 @@ class PersonControllerTest {
         //then the response should contain json list of mor & far
         Assertions.assertTrue(response.contentAsString.contains("\"fnr\":\"$avdodFarFnr\",\"aktorId\":\"$avdodFarAktorId\""))
         Assertions.assertTrue(response.contentAsString.contains("\"fnr\":\"$avdodMorFnr\",\"aktorId\":\"$avdodMorAktorId\""))
+        Assertions.assertTrue(response.contentAsString.contains("\"fnr\":\"$avdodAktorFnr\",\"aktorId\":\"$avdodAktorId\""))
 
         val emptyList : List<PersonController.PersoninformasjonAvdode> = mapJsonToAny(response.contentAsString, typeRefs())
-        assert(emptyList.size == 2)
+        assert(emptyList.size == 3)
     }
 
 
