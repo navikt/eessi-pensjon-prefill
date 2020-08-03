@@ -188,8 +188,9 @@ class BucController(private val euxService: EuxService,
     }
 
     @ApiOperation("Oppretter ny tom BUC i RINA via eux-api. ny api kall til eux")
-    @PostMapping("/{buctype}")
-    fun createBuc(@PathVariable("buctype", required = true) buctype: String): BucAndSedView {
+    @PostMapping("/{buctype}/{ignored}")
+    fun createBuc(@PathVariable("buctype", required = true) buctype: String,
+                  @PathVariable("ignored", required = false) ignored: String? = null): BucAndSedView {
         auditlogger.log("createBuc")
         logger.info("Prøver å opprette en ny BUC i RINA av type: $buctype")
 
