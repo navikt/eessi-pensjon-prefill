@@ -18,16 +18,17 @@ class PrefillP2100(private val prefillNav: PrefillNav,
 
 
     fun prefill(prefillData: PrefillDataModel, personData: PersonData): SED {
-        val sedId = prefillData.getSEDid()
+        require(prefillData.avdod != null ){ "avdod er påkrevet for p2100" }
+        val sedType = prefillData.getSEDid()
 
         prefillData.saktype = EPSaktype.GJENLEV_BARNEP.name
         logger.debug("\n\n----------------------------------------------------------"
                 + "\nSaktype                  : ${prefillData.saktype} "
                 + "\nSøker etter SaktId       : ${prefillData.penSaksnummer} "
-                + "\nSøker etter avdodaktor   : ${prefillData.avdod?.aktorId} "
-                + "\nerGyldigEtterlatt        : ${prefillData.avdod?.aktorId?.isNotEmpty()} "
+                + "\nSøker etter avdodaktor   : ${prefillData.avdod.aktorId} "
+                + "\nerGyldigEtterlatt        : ${prefillData.avdod.aktorId.isNotEmpty()} "
                 + "\nSøker etter gjenlaktoer  : ${prefillData.bruker.aktorId} "
-                + "\n------------------| Preutfylling [$sedId] START |------------------ \n")
+                + "\n------------------| Preutfylling [$sedType] START |------------------ \n")
 
         val sed = prefillData.sed
 
@@ -43,8 +44,8 @@ class PrefillP2100(private val prefillNav: PrefillNav,
                 pensjonsinformasjonService,
                 prefillData.bruker.aktorId,
                 prefillData.penSaksnummer,
-                prefillData.saktype,
-                this::class.simpleName!!)
+                sedType,
+                { pensakType -> listOf("ALDER", "BARNEP", "GJENLEV", "UFOREP").contains(pensakType) } )
 
         try {
             sed.pensjon =
@@ -73,7 +74,7 @@ class PrefillP2100(private val prefillNav: PrefillNav,
 
         KravHistorikkHelper.settKravdato(prefillData, sed)
 
-        logger.debug("-------------------| Preutfylling [$sedId] END |------------------- ")
+        logger.debug("-------------------| Preutfylling [$sedType] END |------------------- ")
         return prefillData.sed
     }
 

@@ -100,12 +100,12 @@ object PrefillP2xxxPensjon {
     fun hentRelevantPensjonSak(pensjonsinformasjonService: PensjonsinformasjonService,
                                aktorId: String,
                                penSaksnummer: String,
-                               sakType: String,
-                               sedType: String): V1Sak? {
+                               sedType: String,
+                               akseptabelSakstypeForSed: (String) -> Boolean): V1Sak? {
         return pensjonsinformasjonService.hentPensjonInformasjonNullHvisFeil(aktorId)?.let {
             val pensak: V1Sak = PensjonsinformasjonService.finnSak(penSaksnummer, it)
 
-            if (!erPensaktypeEpsaktype(pensak, sakType)) {
+            if (!akseptabelSakstypeForSed(pensak.sakType)) {
                 logger.warn("Du kan ikke opprette ${sedTypeAsText(sedType)} i en ${sakTypeAsText(pensak.sakType)} (PESYS-saksnr: $penSaksnummer har sakstype ${pensak.sakType})")
                 throw FeilSakstypeForSedException("Du kan ikke opprette ${sedTypeAsText(sedType)} i en ${sakTypeAsText(pensak.sakType)} (PESYS-saksnr: $penSaksnummer har sakstype ${pensak.sakType})")
             }
@@ -113,16 +113,6 @@ object PrefillP2xxxPensjon {
         }
     }
 
-    private fun erPensaktypeEpsaktype(pensak: V1Sak, sakType: String) =
-            when (pensak.sakType) {
-                "ALDER" -> pensak.sakType == sakType
-                "UFOREP" -> pensak.sakType == sakType
-                "GJENLEV" -> sakType.contains(pensak.sakType)
-                "BARNEP" -> sakType.contains(pensak.sakType)
-                else -> {
-                    false
-                }
-            }
 
     private fun sakTypeAsText(sakType: String?) =
             when (sakType) {

@@ -21,14 +21,14 @@ class PrefillP2000(private val prefillNav: PrefillNav,
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillP2000::class.java) }
 
     fun prefill(prefillData: PrefillDataModel, personData: PersonData): SED {
-        val sedId = prefillData.getSEDid()
+        val sedType = prefillData.getSEDid()
 
         prefillData.saktype = EPSaktype.ALDER.name
         logger.debug("----------------------------------------------------------"
                 + "\nSaktype              : ${prefillData.saktype} "
                 + "\nSøker etter SaktId   : ${prefillData.penSaksnummer} "
                 + "\nPreutfylling Pensjon : ${PrefillP2xxxPensjon::class.java} "
-                + "\n------------------| Preutfylling [$sedId] START |------------------ ")
+                + "\n------------------| Preutfylling [$sedType] START |------------------ ")
 
         val sed = prefillData.sed
 
@@ -50,8 +50,9 @@ class PrefillP2000(private val prefillNav: PrefillNav,
                 pensjonsinformasjonService,
                 prefillData.bruker.aktorId,
                 prefillData.penSaksnummer,
-                prefillData.saktype,
-                this::class.simpleName!!)
+                sedType,
+                { pensakType -> pensakType == prefillData.saktype } )
+
 
         try {
             sed.pensjon =
@@ -76,7 +77,7 @@ class PrefillP2000(private val prefillNav: PrefillNav,
 
         KravHistorikkHelper.settKravdato(prefillData, sed)
 
-        logger.debug("-------------------| Preutfylling [$sedId] END |------------------- ")
+        logger.debug("-------------------| Preutfylling [$sedType] END |------------------- ")
         validate(prefillData)
         return prefillData.sed
     }
