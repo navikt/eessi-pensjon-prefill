@@ -13,6 +13,7 @@ import no.nav.eessi.pensjon.logging.AuditLogger
 import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerregisterService
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonClient
 import no.nav.eessi.pensjon.utils.mapAnyToJson
+import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import no.nav.security.token.support.core.api.Protected
 import org.slf4j.LoggerFactory
 import org.springframework.http.MediaType
@@ -142,14 +143,38 @@ class BucController(private val euxService: EuxService,
         //Hente opp pesysservice. hente inn vedtak pensjoninformasjon..
         val peninfo = pensjonsinformasjonClient.hentAltPaaVedtak(vedtakid)
 
-        val avdod = peninfo.avdod
-        val person = peninfo.person
+        logger.debug("Pensjoninfo vedtak avdod :"
+            + "\nAvod " + peninfo.avdod?.avdod
+            + "\nAvdodMor : " + peninfo.avdod?.avdodMor
+            + "\nAvdodFar : " + peninfo.avdod?.avdodFar
+            + "\n")
 
-        if (avdod != null && avdod.avdod != null && person.aktorId == aktoerid) {
-            return getBucogSedViewGjenlevende(aktoerid, avdod.avdod)
+        val person = peninfo.person
+        val avdod = hentGyldigAvdod(peninfo)
+
+        if (avdod != null && person.aktorId == aktoerid) {
+            return getBucogSedViewGjenlevende(aktoerid, avdod)
         }
 
         return getBucogSedView(aktoerid)
+    }
+
+    fun hentGyldigAvdod(peninfo: Pensjonsinformasjon) : String? {
+        val avdod = peninfo.avdod
+        val avdodMor = avdod?.avdodMor
+        val avdodFar = avdod?.avdodFar
+        val annenAvdod = avdod?.avdod
+
+        return when {
+            annenAvdod != null && avdodFar == null && avdodMor == null -> annenAvdod
+            annenAvdod == null && avdodFar != null && avdodMor == null -> avdodFar
+            annenAvdod == null && avdodFar == null && avdodMor != null -> avdodMor
+            annenAvdod == null && avdodFar == null && avdodMor == null -> null
+            else -> {
+                logger.error("Flere en en avdød funnet")
+                throw Exception("Flere en en avdød funnet")
+            }
+        }
     }
 
 

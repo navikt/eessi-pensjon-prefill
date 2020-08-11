@@ -11,12 +11,10 @@ enum class Kravstatus {
     AVSL
 }
 
-//K_SAK_T Kodeverk fra PESYS
-enum class Saktype {
+enum class EPSaktype {
     ALDER,
     UFOREP,
-    GJENLEV,
-    BARNEP;
+    GJENLEV_BARNEP;
 
     companion object {
         @JvmStatic

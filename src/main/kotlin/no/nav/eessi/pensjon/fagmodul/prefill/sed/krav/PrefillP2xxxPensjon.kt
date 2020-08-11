@@ -74,21 +74,19 @@ object PrefillP2xxxPensjon {
 
         } else {
             logger.info("sakType: ${pensak.sakType}")
-            if (pensak.sakType != Saktype.BARNEP.name) {
-                try {
-                    val kravHistorikkMedUtland = hentKravHistorikkForsteGangsBehandlingUtlandEllerForsteGang(pensak.kravHistorikkListe)
-                    val ytelseprmnd = hentYtelsePerMaanedDenSisteFraKrav(kravHistorikkMedUtland, pensak)
+            try {
+                val kravHistorikkMedUtland = hentKravHistorikkForsteGangsBehandlingUtlandEllerForsteGang(pensak.kravHistorikkListe)
+                val ytelseprmnd = hentYtelsePerMaanedDenSisteFraKrav(kravHistorikkMedUtland, pensak)
 
-                    //kjøre ytelselist på normal
-                    if (krav == null) {
-                        krav = createKravDato(kravHistorikkMedUtland)
-                    }
-
-                    ytelselist.add(createYtelserItem(ytelseprmnd, pensak, personNr, penSaksnummer, andreinstitusjonerItem))
-                } catch (ex: Exception) {
-                    logger.error(ex.message, ex)
-                    ytelselist.add(createYtelseMedManglendeYtelse(pensak, personNr, penSaksnummer, andreinstitusjonerItem))
+                //kjøre ytelselist på normal
+                if (krav == null) {
+                    krav = createKravDato(kravHistorikkMedUtland)
                 }
+
+                ytelselist.add(createYtelserItem(ytelseprmnd, pensak, personNr, penSaksnummer, andreinstitusjonerItem))
+            } catch (ex: Exception) {
+                logger.error(ex.message, ex)
+                ytelselist.add(createYtelseMedManglendeYtelse(pensak, personNr, penSaksnummer, andreinstitusjonerItem))
             }
         }
 
@@ -107,13 +105,24 @@ object PrefillP2xxxPensjon {
         return pensjonsinformasjonService.hentPensjonInformasjonNullHvisFeil(aktorId)?.let {
             val pensak: V1Sak = PensjonsinformasjonService.finnSak(penSaksnummer, it)
 
-            if (pensak.sakType != sakType) {
+            if (!erPensaktypeEpsaktype(pensak, sakType)) {
                 logger.warn("Du kan ikke opprette ${sedTypeAsText(sedType)} i en ${sakTypeAsText(pensak.sakType)} (PESYS-saksnr: $penSaksnummer har sakstype ${pensak.sakType})")
                 throw FeilSakstypeForSedException("Du kan ikke opprette ${sedTypeAsText(sedType)} i en ${sakTypeAsText(pensak.sakType)} (PESYS-saksnr: $penSaksnummer har sakstype ${pensak.sakType})")
             }
             pensak
         }
     }
+
+    private fun erPensaktypeEpsaktype(pensak: V1Sak, sakType: String) =
+            when (pensak.sakType) {
+                "ALDER" -> pensak.sakType == sakType
+                "UFOREP" -> pensak.sakType == sakType
+                "GJENLEV" -> sakType.contains(pensak.sakType)
+                "BARNEP" -> sakType.contains(pensak.sakType)
+                else -> {
+                    false
+                }
+            }
 
     private fun sakTypeAsText(sakType: String?) =
             when (sakType) {
@@ -327,7 +336,7 @@ object PrefillP2xxxPensjon {
         logger.debug("4.1.10.1      Pensjon basertpå")
         val navfnr = NavFodselsnummer(personNr)
 
-        val sakType = Saktype.valueOf(pensak.sakType)
+        val sakType = EPSaktype.valueOf(pensak.sakType)
 
         if (navfnr.isDNumber()) {
             return "01" // Botid
