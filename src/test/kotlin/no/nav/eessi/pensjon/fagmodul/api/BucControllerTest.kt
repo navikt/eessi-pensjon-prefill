@@ -53,7 +53,8 @@ class BucControllerTest {
 
     @BeforeEach
     fun before() {
-        this.bucController = BucController(mockEuxService, mockAktoerIdHelper, auditLogger, mockPensjonClient)
+        bucController = BucController(mockEuxService, mockAktoerIdHelper, auditLogger, mockPensjonClient)
+        bucController.initMetrics()
     }
 
 

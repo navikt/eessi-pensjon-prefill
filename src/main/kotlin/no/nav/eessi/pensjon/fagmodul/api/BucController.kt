@@ -1,5 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.api
 
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import io.swagger.annotations.ApiOperation
 import no.nav.eessi.pensjon.fagmodul.eux.BucAndSedView
 import no.nav.eessi.pensjon.fagmodul.eux.BucUtils
@@ -10,14 +11,17 @@ import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Buc
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Creator
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ShortDocumentItem
 import no.nav.eessi.pensjon.logging.AuditLogger
+import no.nav.eessi.pensjon.metrics.MetricsHelper
 import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerregisterService
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonClient
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import no.nav.security.token.support.core.api.Protected
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.*
+import javax.annotation.PostConstruct
 
 @Protected
 @RestController
@@ -25,10 +29,25 @@ import org.springframework.web.bind.annotation.*
 class BucController(private val euxService: EuxService,
                     private val aktoerService: AktoerregisterService,
                     private val auditlogger: AuditLogger,
-                    private val pensjonsinformasjonClient: PensjonsinformasjonClient) {
+                    private val pensjonsinformasjonClient: PensjonsinformasjonClient,
+                    @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper(SimpleMeterRegistry())) {
 
     private val logger = LoggerFactory.getLogger(BucController::class.java)
     private val validBucAndSed = ValidBucAndSed()
+    private lateinit var BucDetaljer: MetricsHelper.Metric
+    private lateinit var BucDetaljerVedtak: MetricsHelper.Metric
+    private lateinit var BucDetaljerEnkel: MetricsHelper.Metric
+    private lateinit var BucDetaljerGjenlev: MetricsHelper.Metric
+
+    //constructor() : this(EuxService(), AktoerregisterService(RestTemplate(), "Fagmodul"), AuditLogger(), PensjonsinformasjonClient(RestTemplate(), RequestBuilder()), MetricsHelper(SimpleMeterRegistry()))
+
+    @PostConstruct
+    fun initMetrics() {
+        BucDetaljer = metricsHelper.init("BucDetaljer")
+        BucDetaljerVedtak = metricsHelper.init("BucDetaljerVedtak")
+        BucDetaljerEnkel = metricsHelper.init("BucDetaljerEnkel")
+        BucDetaljerGjenlev  = metricsHelper.init("BucDetaljerGjenlev")
+    }
 
     @ApiOperation("henter liste av alle tilgjengelige BuC-typer")
     @GetMapping("/bucs/{sakId}", produces = [MediaType.APPLICATION_JSON_VALUE])
@@ -115,23 +134,27 @@ class BucController(private val euxService: EuxService,
                         @PathVariable("sakid", required = false) sakid: String? = "",
                         @PathVariable("euxcaseid", required = false) euxcaseid: String? = ""): List<BucAndSedView> {
         auditlogger.log("getBucogSedView", aktoerid)
-        logger.debug("Prøver å dekode aktoerid: $aktoerid til fnr.")
-        val fnr = aktoerService.hentGjeldendeNorskIdentForAktorId(aktoerid)
 
-        val rinasakIdList = try {
-            val rinasaker = euxService.getRinasaker(fnr, aktoerid)
-            val rinasakIdList = euxService.getFilteredArchivedaRinasaker(rinasaker)
-            rinasakIdList
-        } catch (ex: Exception) {
-            logger.error("Feil oppstod under henting av rinasaker på aktoer: $aktoerid", ex)
-            throw Exception("Feil ved henting av rinasaker på borger")
-        }
+        return BucDetaljer.measure {
 
-        try {
-            return euxService.getBucAndSedView( rinasakIdList )
-        } catch (ex: Exception) {
-            logger.error("Feil ved henting av visning BucSedAndView på aktoer: $aktoerid", ex)
-            throw Exception("Feil ved oppretting av visning over BUC")
+            logger.debug("Prøver å dekode aktoerid: $aktoerid til fnr.")
+            val fnr = aktoerService.hentGjeldendeNorskIdentForAktorId(aktoerid)
+
+            val rinasakIdList = try {
+                val rinasaker = euxService.getRinasaker(fnr, aktoerid)
+                val rinasakIdList = euxService.getFilteredArchivedaRinasaker(rinasaker)
+                rinasakIdList
+            } catch (ex: Exception) {
+                logger.error("Feil oppstod under henting av rinasaker på aktoer: $aktoerid", ex)
+                throw Exception("Feil ved henting av rinasaker på borger")
+            }
+
+            try {
+                return@measure euxService.getBucAndSedView(rinasakIdList)
+            } catch (ex: Exception) {
+                logger.error("Feil ved henting av visning BucSedAndView på aktoer: $aktoerid", ex)
+                throw Exception("Feil ved oppretting av visning over BUC")
+            }
         }
     }
 
@@ -139,24 +162,25 @@ class BucController(private val euxService: EuxService,
     @GetMapping("/detaljer/{aktoerid}/vedtak/{vedtakid}")
     fun getBucogSedViewVedtak(@PathVariable("aktoerid", required = true) aktoerid: String,
                                    @PathVariable("vedtakid", required = true) vedtakid: String): List<BucAndSedView> {
+        return BucDetaljerVedtak.measure {
+            //Hente opp pesysservice. hente inn vedtak pensjoninformasjon..
+            val peninfo = pensjonsinformasjonClient.hentAltPaaVedtak(vedtakid)
 
-        //Hente opp pesysservice. hente inn vedtak pensjoninformasjon..
-        val peninfo = pensjonsinformasjonClient.hentAltPaaVedtak(vedtakid)
+            logger.debug("Pensjoninfo vedtak avdod :"
+                    + "\nAvod " + peninfo.avdod?.avdod
+                    + "\nAvdodMor : " + peninfo.avdod?.avdodMor
+                    + "\nAvdodFar : " + peninfo.avdod?.avdodFar
+                    + "\n")
 
-        logger.debug("Pensjoninfo vedtak avdod :"
-            + "\nAvod " + peninfo.avdod?.avdod
-            + "\nAvdodMor : " + peninfo.avdod?.avdodMor
-            + "\nAvdodFar : " + peninfo.avdod?.avdodFar
-            + "\n")
+            val person = peninfo.person
+            val avdod = hentGyldigAvdod(peninfo)
 
-        val person = peninfo.person
-        val avdod = hentGyldigAvdod(peninfo)
+            if (avdod != null && person.aktorId == aktoerid) {
+                return@measure getBucogSedViewGjenlevende(aktoerid, avdod)
+            }
 
-        if (avdod != null && person.aktorId == aktoerid) {
-            return getBucogSedViewGjenlevende(aktoerid, avdod)
+            return@measure getBucogSedView(aktoerid)
         }
-
-        return getBucogSedView(aktoerid)
     }
 
     fun hentGyldigAvdod(peninfo: Pensjonsinformasjon) : String? {
@@ -183,23 +207,26 @@ class BucController(private val euxService: EuxService,
     fun getBucogSedViewGjenlevende(@PathVariable("aktoerid", required = true) aktoerid: String,
                                    @PathVariable("avdodfnr", required = true) avdodfnr: String): List<BucAndSedView> {
 
-        logger.debug("Prøver å dekode aktoerid: $aktoerid til gjenlevende fnr.")
-        val fnrGjenlevende = aktoerService.hentGjeldendeNorskIdentForAktorId(aktoerid)
+        return BucDetaljerGjenlev.measure {
 
-        //hente BucAndSedView på avdød
-        val avdodBucAndSedView = try {
-            // Henter rina saker basert på fnr
-            logger.debug("henter avdod BucAndSedView fra avdød (P_BUC_02)")
-            euxService.getBucAndSedViewAvdod(avdodfnr, fnrGjenlevende)
-        } catch (ex: Exception) {
-            logger.error("Feiler ved henting av Rinasaker for gjenlevende og avdod", ex)
-            throw Exception("Feil ved henting av Rinasaker for gjenlevende")
+            logger.debug("Prøver å dekode aktoerid: $aktoerid til gjenlevende fnr.")
+            val fnrGjenlevende = aktoerService.hentGjeldendeNorskIdentForAktorId(aktoerid)
+
+            //hente BucAndSedView på avdød
+            val avdodBucAndSedView = try {
+                // Henter rina saker basert på fnr
+                logger.debug("henter avdod BucAndSedView fra avdød (P_BUC_02)")
+                euxService.getBucAndSedViewAvdod(avdodfnr, fnrGjenlevende)
+            } catch (ex: Exception) {
+                logger.error("Feiler ved henting av Rinasaker for gjenlevende og avdod", ex)
+                throw Exception("Feil ved henting av Rinasaker for gjenlevende")
+            }
+
+            //hente BucAndSedView resterende bucs på gjenlevende (normale bucs)
+            val normalbucAndSedView= getBucogSedView(aktoerid)
+
+            return@measure avdodBucAndSedView.plus(normalbucAndSedView).distinctBy { it.caseId }
         }
-
-        //hente BucAndSedView resterende bucs på gjenlevende (normale bucs)
-        val normalbucAndSedView= getBucogSedView(aktoerid)
-
-        return  avdodBucAndSedView.plus(normalbucAndSedView).distinctBy { it.caseId }
     }
 
 
@@ -207,9 +234,11 @@ class BucController(private val euxService: EuxService,
     @GetMapping("/enkeldetalj/{euxcaseid}")
     fun getSingleBucogSedView(@PathVariable("euxcaseid", required = true) euxcaseid: String): BucAndSedView {
         auditlogger.log("getSingleBucogSedView")
-        logger.debug(" prøver å hente ut en enkel buc med euxCaseId: $euxcaseid")
 
-        return euxService.getSingleBucAndSedView(euxcaseid)
+        return BucDetaljerEnkel.measure {
+            logger.debug(" prøver å hente ut en enkel buc med euxCaseId: $euxcaseid")
+            return@measure euxService.getSingleBucAndSedView(euxcaseid)
+        }
     }
 
     @ApiOperation("Oppretter ny tom BUC i RINA via eux-api. ny api kall til eux")
