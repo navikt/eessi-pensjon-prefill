@@ -321,17 +321,23 @@ object PrefillP2xxxPensjon {
      *  Hvis UT: Hvis bruker har minsteytelse, velges kun Residence. Ellers velges både Residence og Working.
      *  Hvis AP: Hvis bruker mottar tilleggspensjon, velges både Residence og Working. Ellers velges kun Residence.
      *  Hvis GJP: Hvis bruker mottar tilleggspensjon, velges både Residence og Working. Ellers velges kun Residence.
+
+     *  [01] Botid
+     *  [02] I arbeid
      */
     private fun createPensionBasedOn(pensak: V1Sak, personNr: String): String? {
         logger.debug("4.1.10.1      Pensjon basertpå")
         val navfnr = NavFodselsnummer(personNr)
 
-        val sakType = EPSaktype.valueOf(pensak.sakType)
-
         if (navfnr.isDNumber()) {
             return "01" // Botid
         }
-        return mapPensjonBasertPå(sakType.name)
+
+        return when (pensak.sakType) {
+            "ALDER" -> "01"
+            "UFOREP" -> "02"
+            else -> null
+        }
     }
 
     /**
