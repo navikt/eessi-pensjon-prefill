@@ -21,6 +21,7 @@ import org.skyscreamer.jsonassert.JSONAssert
 import org.springframework.http.HttpStatus
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.util.UriComponentsBuilder
+import java.io.File
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.time.Instant
@@ -132,42 +133,43 @@ class EuxServiceTest {
     }
 
     @Test
-    fun `Calling eux-rina-api to create BucSedAndView for Frontend all OK excpect valid json`() {
-        val rinasakerjson = "src/test/resources/json/rinasaker/rinasaker_34567890111.json"
-        val rinasakStr = String(Files.readAllBytes(Paths.get(rinasakerjson)))
-        assertTrue(validateJson(rinasakStr))
+    fun `Calling eux-rina-api to create BucSedAndView gets one BUC per rinaid`() {
+        val rinasakerJson = File("src/test/resources/json/rinasaker/rinasaker_34567890111.json").readText()
+        val rinasaker = mapJsonToAny(rinasakerJson, typeRefs<List<Rinasak>>())
 
-        val orgRinasaker = mapJsonToAny(rinasakStr, typeRefs<List<Rinasak>>())
+        val bucJson = File("src/test/resources/json/buc/buc-158123_2_v4.1.json").readText()
 
-        val bucjson = "src/test/resources/json/buc/buc-158123_2_v4.1.json"
-        val bucStr = String(Files.readAllBytes(Paths.get(bucjson)))
-        assertTrue(validateJson(bucStr))
-
-        doReturn(bucStr)
+        doReturn(bucJson)
                 .whenever(euxKlient)
                 .getBucJson(any())
 
-        val result = service.getBucAndSedView(listOf(rinasakStr))
+        val result = service.getBucAndSedView(rinasaker.map{ it.id!! }.toList())
 
-        assertNotNull(result)
-        assertEquals(6, orgRinasaker.size)
+        assertEquals(rinasaker.size, result.size)
+    }
+
+    @Test
+    fun `Calling eux-rina-api to create BucSedAndView returns a result`() {
+        val rinasakid = "158123"
+
+        val bucJson = File("src/test/resources/json/buc/buc-158123_2_v4.1.json").readText()
+
+        doReturn(bucJson)
+                .whenever(euxKlient)
+                .getBucJson(eq(rinasakid))
+
+        val result = service.getBucAndSedView(listOf(rinasakid))
+
         assertEquals(1, result.size)
 
-        val firstJson = result.first()
-        assertEquals("158123", firstJson.caseId)
+        val firstBucAndSedView = result.first()
+        assertEquals("158123", firstBucAndSedView.caseId)
 
-        var lastUpdate: Long = 0
-        firstJson.lastUpdate?.let { lastUpdate = it }
-        assertEquals("2019-05-20T16:35:34",  Instant.ofEpochMilli(lastUpdate).atZone(ZoneId.systemDefault()).toLocalDateTime().toString())
-        assertEquals(18, firstJson.seds?.size)
+        val actualBucAndSedViewJson = firstBucAndSedView.toJson()
 
-        val json = firstJson.toJson()
+        val expectedBucDetaljer = File("src/test/resources/json/buc/bucdetaljer-158123.json").readText()
 
-        val bucdetaljerpath = "src/test/resources/json/buc/bucdetaljer-158123.json"
-        val bucdetaljer = String(Files.readAllBytes(Paths.get(bucdetaljerpath)))
-        assertTrue(validateJson(bucdetaljer))
-
-        JSONAssert.assertEquals(bucdetaljer, json, false)
+        JSONAssert.assertEquals(expectedBucDetaljer, actualBucAndSedViewJson, false)
     }
 
     @Test
