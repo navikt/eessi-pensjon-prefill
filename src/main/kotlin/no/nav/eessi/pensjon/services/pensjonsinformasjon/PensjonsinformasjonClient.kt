@@ -83,56 +83,31 @@ class PensjonsinformasjonClient(
         //APIet skal ha urlen {host}:{port}/pensjon-ws/api/pensjonsinformasjon/v1/{ressurs}?sakId=123+fom=2018-01-01+tom=2018-28-02.
 
         return PensjoninformasjonHentAltPaaIdent.measure {
-            val informationBlocks = listOf(
-                    InformasjonsType.BRUKERS_SAKER_LISTE
-            )
-            val document = requestBuilder.getBaseRequestDocument()
 
-            informationBlocks.forEach {
-                requestBuilder.addPensjonsinformasjonElement(document, it)
-            }
+            val requestBody = requestBuilder.requestBodyForSakslisteFromAString()
 
-            logger.debug("Requestbody:\n${document.documentToString()}")
+            logger.debug("Requestbody:\n$requestBody")
             logger.info("Henter pensjonsinformasjon for aktor: $aktoerId")
 
-            val xmlResponse = doRequest("/aktor/", aktoerId, document.documentToString(), PensjoninformasjonHentAltPaaIdentRequester)
+            val xmlResponse = doRequest("/aktor/", aktoerId, requestBody, PensjoninformasjonHentAltPaaIdentRequester)
             transform(xmlResponse)
         }
     }
-
 
     @Throws(PensjoninformasjonException::class, HttpServerErrorException::class, HttpClientErrorException::class)
     fun hentAltPaaVedtak(vedtaksId: String): Pensjonsinformasjon {
 
         return PensjoninformasjonAltPaaVedtak.measure {
 
-            val informationBlocks = listOf(
-                    InformasjonsType.AVDOD,
-                    InformasjonsType.INNGANG_OG_EXPORT,
-                    InformasjonsType.PERSON,
-                    InformasjonsType.SAKALDER,
-                    InformasjonsType.TRYGDEAVTALE,
-                    InformasjonsType.TRYGDETID_AVDOD_FAR_LISTE,
-                    InformasjonsType.TRYGDETID_AVDOD_LISTE,
-                    InformasjonsType.TRYGDETID_AVDOD_MOR_LISTE,
-                    InformasjonsType.TRYGDETID_LISTE,
-                    InformasjonsType.VEDTAK,
-                    InformasjonsType.VILKARSVURDERING_LISTE,
-                    InformasjonsType.YTELSE_PR_MAANED_LISTE
-            )
-
-            val document = requestBuilder.getBaseRequestDocument()
-
-            informationBlocks.forEach {
-                requestBuilder.addPensjonsinformasjonElement(document, it)
-            }
+            val requestBody = requestBuilder.requestBodyForVedtakFromAString()
+            logger.debug("Requestbody:\n$requestBody")
             logger.info("Henter pensjonsinformasjon for vedtaksid: $vedtaksId")
-            logger.debug("Requestbody:\n${document.documentToString()}")
 
-            val xmlResponse = doRequest("/vedtak", vedtaksId, document.documentToString(), PensjoninformasjonAltPaaVedtakRequester)
+            val xmlResponse = doRequest("/vedtak", vedtaksId, requestBody, PensjoninformasjonAltPaaVedtakRequester)
             transform(xmlResponse)
         }
     }
+
 
     //transform xmlString til Pensjoninformasjon object
     fun transform(xmlString: String) : Pensjonsinformasjon {
