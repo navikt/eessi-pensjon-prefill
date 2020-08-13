@@ -139,7 +139,8 @@ class EuxKlient(private val euxOidcRestTemplate: RestTemplate,
                 , euxCaseId = euxCaseId
                 , metric = GetBUC
                 , prefixErrorMessage = "Feiler ved metode GetBuc. "
-                , waitTimes = 20000L
+                , maxAttempts = 4
+                , waitTimes = 10000L
         )
         return response.body ?: throw ServerException("Feil ved henting av BUCdata ingen data, euxCaseId $euxCaseId")
     }
@@ -354,11 +355,15 @@ class EuxKlient(private val euxOidcRestTemplate: RestTemplate,
                                      euxCaseId: String,
                                      metric: MetricsHelper.Metric,
                                      prefixErrorMessage: String,
-                                     waitTimes: Long = 1000L): ResponseEntity<T> {
+                                     maxAttempts: Int = 3,
+                                     waitTimes: Long = 1000L
+    ): ResponseEntity<T> {
         return metric.measure {
             return@measure try {
-                val response = retryHelper(func = { restTemplateFunction.invoke() }, waitTimes = overrideWaitTimes
-                        ?: waitTimes)
+                val response = retryHelper(
+                        func = { restTemplateFunction.invoke() },
+                        maxAttempts = maxAttempts,
+                        waitTimes = overrideWaitTimes ?: waitTimes)
                 response
             } catch (hcee: HttpClientErrorException) {
                 val errorBody = hcee.responseBodyAsString
