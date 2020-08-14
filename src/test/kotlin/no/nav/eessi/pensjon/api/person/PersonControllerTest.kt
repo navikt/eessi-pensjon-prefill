@@ -127,12 +127,12 @@ class PersonControllerTest {
 
         doReturn(vedtaksInfo).whenever(mockPensjonClient).hentAltPaaVedtak(vedtaksId)
 
-        doReturn(Result.Found(NorskIdent(avdodMorFnr)))
-                .whenever(mockAktoerregisterService).hentGjeldendeIdentFraGruppe(IdentGruppe.NorskIdent, AktoerId(avdodMorAktorId))
-        doReturn(Result.Found(NorskIdent(avdodFarFnr)))
-                .whenever(mockAktoerregisterService).hentGjeldendeIdentFraGruppe(IdentGruppe.NorskIdent, AktoerId(avdodFarAktorId))
-        doReturn(Result.Found(NorskIdent(avdodAktorFnr)))
-                .whenever(mockAktoerregisterService).hentGjeldendeIdentFraGruppe(IdentGruppe.NorskIdent, AktoerId(avdodAktorId))
+        doReturn(NorskIdent(avdodMorFnr))
+                .whenever(mockAktoerregisterService).hentGjeldendeIdent(IdentGruppe.NorskIdent, AktoerId(avdodMorAktorId))
+        doReturn(NorskIdent(avdodFarFnr))
+                .whenever(mockAktoerregisterService).hentGjeldendeIdent(IdentGruppe.NorskIdent, AktoerId(avdodFarAktorId))
+        doReturn(NorskIdent(avdodAktorFnr))
+                .whenever(mockAktoerregisterService).hentGjeldendeIdent(IdentGruppe.NorskIdent, AktoerId(avdodAktorId))
 
         doReturn(personFar).whenever(mockPersonV3Service).hentPersonResponse(avdodFarFnr)
         doReturn(personMor).whenever(mockPersonV3Service).hentPersonResponse(avdodMorFnr)
@@ -175,8 +175,8 @@ class PersonControllerTest {
                                 .withFornavn("MOR")))
 
         doReturn(vedtaksInfo).whenever(mockPensjonClient).hentAltPaaVedtak(vedtaksId)
-        doReturn(Result.Found(NorskIdent(avdodMorFnr)))
-                .whenever(mockAktoerregisterService).hentGjeldendeIdentFraGruppe(IdentGruppe.NorskIdent, AktoerId(avdodMorAktorId))
+        doReturn(NorskIdent(avdodMorFnr))
+                .whenever(mockAktoerregisterService).hentGjeldendeIdent(IdentGruppe.NorskIdent, AktoerId(avdodMorAktorId))
         doReturn(personMor).whenever(mockPersonV3Service).hentPersonResponse(avdodMorFnr)
 
         val response = mvc.perform(

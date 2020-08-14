@@ -87,23 +87,22 @@ class PersonController(private val aktoerregisterService: AktoerregisterService,
     }
 
     private fun pairPersonFnr(aktorId: String): PersoninformasjonAvdode {
-        when(val result = aktoerregisterService.hentGjeldendeIdentFraGruppe(IdentGruppe.NorskIdent, AktoerId(aktorId))) {
-            is Result.Found -> {
-                val person = personService.hentPersonResponse(result.value.id)
-                return PersoninformasjonAvdode(
-                        result.value.id,
-                        aktorId,
-                        person.person.personnavn.sammensattNavn,
-                        person.person.personnavn.fornavn,
-                        person.person.personnavn.mellomnavn,
-                        person.person.personnavn.etternavn)
-            }
-            is Result.NotFound -> throw AktoerregisterIkkeFunnetException(result.reason)
-            is Result.Failure -> {
-                logger.error("Henting av ident feiler med ${result.cause} cause: ${result.cause.cause}", result.cause)
-                throw result.cause
-            }
+        val ident = try {
+            aktoerregisterService.hentGjeldendeIdent(IdentGruppe.NorskIdent, AktoerId(aktorId))
+                    ?: throw AktoerregisterIkkeFunnetException("AktoerId $aktorId ikke funnet.")
+        } catch (exception: Exception) {
+            logger.error("Henting av ident feiler med ${exception} cause: ${exception.cause}", exception)
+            throw exception
         }
+
+        val person = personService.hentPersonResponse(ident.id)
+        return PersoninformasjonAvdode(
+                ident.id,
+                aktorId,
+                person.person.personnavn.sammensattNavn,
+                person.person.personnavn.fornavn,
+                person.person.personnavn.mellomnavn,
+                person.person.personnavn.etternavn)
     }
 
     private fun hentAlleAvdode(avdode: List<String>): List<String> {
