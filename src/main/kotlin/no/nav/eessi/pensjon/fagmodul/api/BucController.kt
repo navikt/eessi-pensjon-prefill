@@ -12,7 +12,11 @@ import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Creator
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ShortDocumentItem
 import no.nav.eessi.pensjon.logging.AuditLogger
 import no.nav.eessi.pensjon.metrics.MetricsHelper
+import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerId
+import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerregisterIkkeFunnetException
 import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerregisterService
+import no.nav.eessi.pensjon.personoppslag.aktoerregister.IdentGruppe
+import no.nav.eessi.pensjon.personoppslag.aktoerregister.ManglerAktoerIdException
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonClient
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
@@ -124,8 +128,14 @@ class BucController(private val euxService: EuxService,
         auditlogger.log("getRinasaker", aktoerId)
         logger.debug("henter rinasaker på valgt aktoerid: $aktoerId")
 
-        val fnr = aktoerService.hentGjeldendeNorskIdentForAktorId(aktoerId)
-        return euxService.getRinasaker(fnr, aktoerId)
+        if (aktoerId.isBlank()) {
+            throw ManglerAktoerIdException("Tom input-verdi")
+        }
+        val norskIdent =
+                aktoerService.hentGjeldendeIdent(IdentGruppe.NorskIdent, AktoerId(aktoerId))?.id
+                        ?: throw AktoerregisterIkkeFunnetException("NorskIdent for aktoerId $aktoerId ikke funnet.")
+
+        return euxService.getRinasaker(norskIdent, aktoerId)
     }
 
     @ApiOperation("Henter ut liste av Buc meny struktur i json format for UI på valgt aktoerid")
@@ -138,7 +148,11 @@ class BucController(private val euxService: EuxService,
         return BucDetaljer.measure {
 
             logger.debug("Prøver å dekode aktoerid: $aktoerid til fnr.")
-            val fnr = aktoerService.hentGjeldendeNorskIdentForAktorId(aktoerid)
+            if (aktoerid.isBlank()) {
+                throw ManglerAktoerIdException("Tom input-verdi")
+            }
+            val fnr = aktoerService.hentGjeldendeIdent(IdentGruppe.NorskIdent, AktoerId(aktoerid))?.id
+                    ?: throw AktoerregisterIkkeFunnetException("NorskIdent for aktoerId $aktoerid ikke funnet.")
 
             val rinasakIdList = try {
                 val rinasaker = euxService.getRinasaker(fnr, aktoerid)
@@ -210,7 +224,12 @@ class BucController(private val euxService: EuxService,
         return BucDetaljerGjenlev.measure {
 
             logger.debug("Prøver å dekode aktoerid: $aktoerid til gjenlevende fnr.")
-            val fnrGjenlevende = aktoerService.hentGjeldendeNorskIdentForAktorId(aktoerid)
+            if (aktoerid.isBlank()) {
+                throw ManglerAktoerIdException("Tom input-verdi")
+            }
+            val fnrGjenlevende =
+                    aktoerService.hentGjeldendeIdent(IdentGruppe.NorskIdent, AktoerId(aktoerid))?.id
+                            ?: throw AktoerregisterIkkeFunnetException("NorskIdent for aktoerId $aktoerid ikke funnet.")
 
             //hente BucAndSedView på avdød
             val avdodBucAndSedView = try {

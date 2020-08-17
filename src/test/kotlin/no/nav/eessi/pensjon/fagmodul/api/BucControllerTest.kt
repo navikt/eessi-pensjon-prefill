@@ -14,7 +14,10 @@ import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.DocumentsItem
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Organisation
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ParticipantsItem
 import no.nav.eessi.pensjon.logging.AuditLogger
+import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerId
 import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerregisterService
+import no.nav.eessi.pensjon.personoppslag.aktoerregister.IdentGruppe
+import no.nav.eessi.pensjon.personoppslag.aktoerregister.NorskIdent
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjoninformasjonException
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonClient
 import no.nav.eessi.pensjon.utils.mapJsonToAny
@@ -150,7 +153,7 @@ class BucControllerTest {
         val aktoerId = "123456789"
         val fnr = "10101835868"
 
-        doReturn(fnr).whenever(mockAktoerIdHelper).hentGjeldendeNorskIdentForAktorId(aktoerId)
+        whenever(mockAktoerIdHelper.hentGjeldendeIdent(IdentGruppe.NorskIdent, AktoerId(aktoerId))).thenReturn(NorskIdent(fnr))
 
         val rinaSaker = listOf<Rinasak>(Rinasak("1234","P_BUC_01", Traits(), "", Properties(), "open"))
         doReturn(rinaSaker).whenever(mockEuxService).getRinasaker(fnr, aktoerId)
@@ -166,7 +169,7 @@ class BucControllerTest {
         val aktoerId = "123456789"
         val fnr = "10101835868"
 
-        doReturn(fnr).whenever(mockAktoerIdHelper).hentGjeldendeNorskIdentForAktorId(aktoerId)
+        whenever(mockAktoerIdHelper.hentGjeldendeIdent(IdentGruppe.NorskIdent, AktoerId(aktoerId))).thenReturn(NorskIdent(fnr))
         doThrow(RuntimeException::class).whenever(mockEuxService).getRinasaker(fnr, aktoerId)
 
         assertThrows<Exception> {
@@ -186,7 +189,7 @@ class BucControllerTest {
         val aktoerId = "123456789"
         val fnr = "10101835868"
 
-        doReturn(fnr).whenever(mockAktoerIdHelper).hentGjeldendeNorskIdentForAktorId(aktoerId)
+        whenever(mockAktoerIdHelper.hentGjeldendeIdent(IdentGruppe.NorskIdent, AktoerId(aktoerId))).thenReturn(NorskIdent(fnr))
         doThrow(RuntimeException("Feiler ved BUC")).whenever(mockEuxService).getBuc(any())
 
         val rinaSaker = listOf<Rinasak>(Rinasak("1234","P_BUC_01", Traits(), "", Properties(), "open"))
@@ -213,7 +216,7 @@ class BucControllerTest {
 
         doReturn(mockPensjoninfo).whenever(mockPensjonClient).hentAltPaaVedtak(vedtaksId)
 
-        doReturn(fnrGjenlevende).whenever(mockAktoerIdHelper).hentGjeldendeNorskIdentForAktorId(aktoerId)
+        whenever(mockAktoerIdHelper.hentGjeldendeIdent(IdentGruppe.NorskIdent, AktoerId(aktoerId))).thenReturn(NorskIdent(fnrGjenlevende))
 
         val documentsItem = listOf(DocumentsItem(type = "P2100"))
         val avdodView = listOf(BucAndSedView.from(Buc(id = "123", processDefinitionName = "P_BUC_02", documents = documentsItem)))
@@ -249,7 +252,7 @@ class BucControllerTest {
         doReturn(mockPensjoninfo).whenever(mockPensjonClient).hentAltPaaVedtak(vedtaksId)
 
         //aktoerService.hentPinForAktoer
-        doReturn(fnrGjenlevende).whenever(mockAktoerIdHelper).hentGjeldendeNorskIdentForAktorId(aktoerId)
+        whenever(mockAktoerIdHelper.hentGjeldendeIdent(IdentGruppe.NorskIdent, AktoerId(aktoerId))).thenReturn(NorskIdent(fnrGjenlevende))
 
         //euxService.getrinasakeravdod
         val rinaSaker = listOf<Rinasak>(Rinasak("1234","P_BUC_01", Traits(), "", Properties(), "open"))
@@ -285,7 +288,7 @@ class BucControllerTest {
         val avdodfnr = "12312312312312312312312"
 
         //aktoerService.hentPinForAktoer
-        doReturn(fnrGjenlevende).whenever(mockAktoerIdHelper).hentGjeldendeNorskIdentForAktorId(aktoerId)
+        whenever(mockAktoerIdHelper.hentGjeldendeIdent(IdentGruppe.NorskIdent, AktoerId(aktoerId))).thenReturn(NorskIdent(fnrGjenlevende))
 
         doThrow(HttpClientErrorException::class).whenever(mockEuxService).getBucAndSedViewAvdod(avdodfnr, fnrGjenlevende)
 

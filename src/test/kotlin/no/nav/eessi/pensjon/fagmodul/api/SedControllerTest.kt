@@ -15,7 +15,10 @@ import no.nav.eessi.pensjon.fagmodul.prefill.PrefillService
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillSEDService
 import no.nav.eessi.pensjon.fagmodul.sedmodel.*
 import no.nav.eessi.pensjon.logging.AuditLogger
+import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerId
 import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerregisterService
+import no.nav.eessi.pensjon.personoppslag.aktoerregister.IdentGruppe
+import no.nav.eessi.pensjon.personoppslag.aktoerregister.NorskIdent
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.typeRefs
@@ -87,9 +90,9 @@ class SedControllerTest {
                 buc = "P_BUC_06",
                 aktoerId = "0105094340092"
         )
-        whenever(mockAktoerIdHelper.hentGjeldendeNorskIdentForAktorId(any())).thenReturn("12345")
+        doReturn(NorskIdent("12345")).whenever(mockAktoerIdHelper).hentGjeldendeIdent(eq(IdentGruppe.NorskIdent), any<AktoerId>())
 
-        val utfyllMock = ApiRequest.buildPrefillDataModelConfirm(mockData, mockAktoerIdHelper.hentGjeldendeNorskIdentForAktorId(mockData.aktoerId!!), null)
+        val utfyllMock = ApiRequest.buildPrefillDataModelConfirm(mockData, NorskIdent("12345").id, null)
 
         utfyllMock.sed.nav = Nav(bruker = Bruker(person = Person(fornavn = "Dummy", etternavn = "Dummy", foedselsdato = "1900-10-11", kjoenn = "K")), krav = Krav("1937-12-11"))
 
@@ -225,8 +228,7 @@ class SedControllerTest {
     fun `call addInstutionAndDocument  mock adding two institusjon when X005 exists already`() {
         val euxCaseId = "1234567890"
 
-        doReturn("12345").whenever(mockAktoerIdHelper).hentGjeldendeNorskIdentForAktorId(any())
-
+        doReturn(NorskIdent("12345")).whenever(mockAktoerIdHelper).hentGjeldendeIdent(eq(IdentGruppe.NorskIdent), any<AktoerId>())
 
         val mockBuc = Buc(id = "23123", processDefinitionName = "P_BUC_01", participants = null)
         mockBuc.documents = listOf(createDummyBucDocumentItem(), DocumentsItem(type = "X005"))
@@ -234,7 +236,7 @@ class SedControllerTest {
 
         doReturn(mockBuc).whenever(mockEuxService).getBuc(euxCaseId)
 
-        val dummyPrefillData = ApiRequest.buildPrefillDataModelOnExisting(apiRequestWith(euxCaseId), mockAktoerIdHelper.hentGjeldendeNorskIdentForAktorId(apiRequestWith(euxCaseId).aktoerId!!), null)
+        val dummyPrefillData = ApiRequest.buildPrefillDataModelOnExisting(apiRequestWith(euxCaseId), NorskIdent("12345").id, null)
 
         whenever(mockPrefillSEDService.prefill(any())).thenReturn(dummyPrefillData.sed)
 
@@ -254,7 +256,7 @@ class SedControllerTest {
     fun `call addInstutionAndDocument  ingen ny Deltaker kun hovedsed`() {
         val euxCaseId = "1234567890"
 
-        doReturn("12345").whenever(mockAktoerIdHelper).hentGjeldendeNorskIdentForAktorId(any())
+        doReturn(NorskIdent("12345")).whenever(mockAktoerIdHelper).hentGjeldendeIdent(eq(IdentGruppe.NorskIdent), any<AktoerId>())
 
         val mockBuc = Buc(id = "23123", processDefinitionName = "P_BUC_01", participants = listOf(ParticipantsItem()))
         mockBuc.documents = listOf(createDummyBucDocumentItem())
@@ -262,7 +264,7 @@ class SedControllerTest {
 
         doReturn(mockBuc).whenever(mockEuxService).getBuc(euxCaseId)
 
-        val dummyPrefillData = ApiRequest.buildPrefillDataModelOnExisting(apiRequestWith(euxCaseId), mockAktoerIdHelper.hentGjeldendeNorskIdentForAktorId(apiRequestWith(euxCaseId).aktoerId!!), null)
+        val dummyPrefillData = ApiRequest.buildPrefillDataModelOnExisting(apiRequestWith(euxCaseId), NorskIdent("12345").id, null)
 
         whenever(mockPrefillSEDService.prefill(any())).thenReturn(dummyPrefillData.sed)
 
@@ -278,7 +280,7 @@ class SedControllerTest {
     fun `call addInstutionAndDocument valider om SED alt finnes i BUC kaster Exception`() {
         val euxCaseId = "1234567890"
 
-        doReturn("12345").whenever(mockAktoerIdHelper).hentGjeldendeNorskIdentForAktorId(any())
+        doReturn(NorskIdent("12345")).whenever(mockAktoerIdHelper).hentGjeldendeIdent(eq(IdentGruppe.NorskIdent), any<AktoerId>())
 
         val mockBucJson = String(Files.readAllBytes(Paths.get("src/test/resources/json/buc/buc-P_BUC_06-P6000_Sendt.json")))
         doReturn( mapJsonToAny(mockBucJson, typeRefs<Buc>())).whenever(mockEuxService).getBuc(euxCaseId)
@@ -295,7 +297,7 @@ class SedControllerTest {
     fun `call addInstutionAndDocument validater SED P10000 på en P_BUC_06 new return OK`() {
         val euxCaseId = "1234567890"
 
-        doReturn("12345").whenever(mockAktoerIdHelper).hentGjeldendeNorskIdentForAktorId(any())
+        doReturn(NorskIdent("12345")).whenever(mockAktoerIdHelper).hentGjeldendeIdent(eq(IdentGruppe.NorskIdent), any<AktoerId>())
 
         val mockBucJson = String(Files.readAllBytes(Paths.get("src/test/resources/json/buc/buc_P_BUC_06_4.2_tom.json")))
         doReturn( mapJsonToAny(mockBucJson, typeRefs<Buc>())).whenever(mockEuxService).getBuc(euxCaseId)
@@ -318,7 +320,7 @@ class SedControllerTest {
     fun `call addInstutionAndDocument  to nye deltakere, men ingen X005`() {
         val euxCaseId = "1234567890"
 
-        doReturn("12345").whenever(mockAktoerIdHelper).hentGjeldendeNorskIdentForAktorId(any())
+        doReturn(NorskIdent("12345")).whenever(mockAktoerIdHelper).hentGjeldendeIdent(eq(IdentGruppe.NorskIdent), any<AktoerId>())
 
         val mockBuc = Buc(id = "23123", processDefinitionName = "P_BUC_01", participants = listOf(ParticipantsItem()))
         mockBuc.documents = listOf(createDummyBucDocumentItem())
@@ -326,7 +328,7 @@ class SedControllerTest {
 
         doReturn(mockBuc).whenever(mockEuxService).getBuc(euxCaseId)
 
-        val dummyPrefillData = ApiRequest.buildPrefillDataModelOnExisting(apiRequestWith(euxCaseId), mockAktoerIdHelper.hentGjeldendeNorskIdentForAktorId(apiRequestWith(euxCaseId).aktoerId!!), null)
+        val dummyPrefillData = ApiRequest.buildPrefillDataModelOnExisting(apiRequestWith(euxCaseId), NorskIdent("12345").id, null)
 
         whenever(mockPrefillSEDService.prefill(any())).thenReturn(dummyPrefillData.sed)
 
@@ -348,7 +350,7 @@ class SedControllerTest {
     fun `call addInstutionAndDocument  Exception eller feiler ved oppretting av SED naar X005 ikke finnes`() {
         val euxCaseId = "1234567890"
 
-        doReturn("12345").whenever(mockAktoerIdHelper).hentGjeldendeNorskIdentForAktorId(any<String>())
+        doReturn(NorskIdent("12345")).whenever(mockAktoerIdHelper).hentGjeldendeIdent(eq(IdentGruppe.NorskIdent), any<AktoerId>())
 
         val mockBuc = Buc(id = "23123", processDefinitionName = "P_BUC_01", participants = listOf(ParticipantsItem()))
         mockBuc.documents = listOf(createDummyBucDocumentItem(), DocumentsItem())
@@ -357,7 +359,7 @@ class SedControllerTest {
         doReturn(mockBuc).whenever(mockEuxService).getBuc(euxCaseId)
         doNothing().whenever(mockEuxService).addInstitution(any(), any())
 
-        val dummyPrefillData = ApiRequest.buildPrefillDataModelOnExisting(apiRequestWith(euxCaseId), mockAktoerIdHelper.hentGjeldendeNorskIdentForAktorId(apiRequestWith(euxCaseId).aktoerId!!), null)
+        val dummyPrefillData = ApiRequest.buildPrefillDataModelOnExisting(apiRequestWith(euxCaseId), NorskIdent("12345").id, null)
 
         whenever(mockPrefillSEDService.prefill(any())).thenReturn(dummyPrefillData.sed)
 
@@ -411,7 +413,7 @@ class SedControllerTest {
                 avdodfnr = "12345566"
 
         )
-        doReturn("1122334455").whenever(mockAktoerIdHelper).hentGjeldendeAktorIdForNorskIdent(any<String>())
+        whenever(mockAktoerIdHelper.hentGjeldendeIdent(eq(IdentGruppe.AktoerId), any<NorskIdent>())).thenReturn(AktoerId("1122334455"))
 
         val result = sedController.getAvdodAktoerId(request = apireq)
         assertEquals("1122334455", result)

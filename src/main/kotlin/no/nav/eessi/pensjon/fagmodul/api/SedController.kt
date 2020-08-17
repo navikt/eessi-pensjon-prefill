@@ -16,8 +16,12 @@ import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.logging.AuditLogger
 import no.nav.eessi.pensjon.metrics.CounterHelper
 import no.nav.eessi.pensjon.metrics.MetricsHelper
+import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerId
+import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerregisterIkkeFunnetException
 import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerregisterService
+import no.nav.eessi.pensjon.personoppslag.aktoerregister.IdentGruppe
 import no.nav.eessi.pensjon.personoppslag.aktoerregister.ManglerAktoerIdException
+import no.nav.eessi.pensjon.personoppslag.aktoerregister.NorskIdent
 import no.nav.eessi.pensjon.utils.toJson
 import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
 import no.nav.security.token.support.core.api.Protected
@@ -55,7 +59,11 @@ class SedController(private val euxService: EuxService,
     fun confirmDocument(@RequestBody request: ApiRequest, @PathVariable("filter", required = false) filter: String? = null): String {
 
         if (request.aktoerId.isNullOrBlank()) throw ManglerAktoerIdException("Mangler AktoerId")
-        val dataModel = ApiRequest.buildPrefillDataModelConfirm(request, aktoerService.hentGjeldendeNorskIdentForAktorId(request.aktoerId), getAvdodAktoerId(request))
+        val norskIdent =
+            aktoerService.hentGjeldendeIdent(IdentGruppe.NorskIdent, AktoerId(request.aktoerId))?.id
+                    ?: throw AktoerregisterIkkeFunnetException("NorskIdent for aktoerId ${request.aktoerId} ikke funnet.")
+
+        val dataModel = ApiRequest.buildPrefillDataModelConfirm(request, norskIdent, getAvdodAktoerId(request))
         auditlogger.log("confirmDocument", request.aktoerId, request.toAudit())
 
         val sed = prefillService.prefillSed(dataModel)
@@ -85,7 +93,11 @@ class SedController(private val euxService: EuxService,
 
         return AddInstutionAndDocument.measure {
             if (request.aktoerId.isNullOrBlank()) throw ManglerAktoerIdException("Mangler AktoerId")
-            val dataModel = ApiRequest.buildPrefillDataModelOnExisting(request, aktoerService.hentGjeldendeNorskIdentForAktorId(request.aktoerId), getAvdodAktoerId(request))
+            val norskIdent =
+                    aktoerService.hentGjeldendeIdent(IdentGruppe.NorskIdent, AktoerId(request.aktoerId))?.id
+                            ?: throw AktoerregisterIkkeFunnetException("NorskIdent for aktoerId ${request.aktoerId} ikke funnet.")
+
+            val dataModel = ApiRequest.buildPrefillDataModelOnExisting(request, norskIdent, getAvdodAktoerId(request))
             logger.info("******* Legge til ny SED - start *******")
             logger.info("kaller add (institutions and sed) rinaId: ${request.euxCaseId} bucType: ${request.buc} sedType: ${request.sed} aktoerId: ${request.aktoerId}")
 
@@ -162,7 +174,11 @@ class SedController(private val euxService: EuxService,
 
         return AddDocumentToParent.measure {
             if (request.aktoerId.isNullOrBlank()) throw ManglerAktoerIdException("Mangler AktoerId")
-            val dataModel = ApiRequest.buildPrefillDataModelOnExisting(request, aktoerService.hentGjeldendeNorskIdentForAktorId(request.aktoerId), getAvdodAktoerId(request))
+            val norskIdent =
+                    aktoerService.hentGjeldendeIdent(IdentGruppe.NorskIdent, AktoerId(request.aktoerId))?.id
+                            ?: throw AktoerregisterIkkeFunnetException("NorskIdent for aktoerId ${request.aktoerId} ikke funnet.")
+
+            val dataModel = ApiRequest.buildPrefillDataModelOnExisting(request, norskIdent, getAvdodAktoerId(request))
             logger.info("Prøver å prefillSED (svar)")
             val sed = prefillService.prefillSed(dataModel)
 
@@ -220,9 +236,14 @@ class SedController(private val euxService: EuxService,
 
     //Hjelpe funksjon for å validere og hente aktoerid for evt. avdodfnr fra UI (P2100)
     fun getAvdodAktoerId(request: ApiRequest): String? {
-        return if ((request.buc ?: throw MangelfulleInndataException("Mangler Buc")) == "P_BUC_02")
-            aktoerService.hentGjeldendeAktorIdForNorskIdent((request.avdodfnr
-                        ?: throw MangelfulleInndataException("Mangler fnr for avdød")))
+        return if ((request.buc ?: throw MangelfulleInndataException("Mangler Buc")) == "P_BUC_02") {
+            val norskIdent = request.avdodfnr ?: throw MangelfulleInndataException("Mangler fnr for avdød")
+            if (norskIdent.isBlank()) {
+                    throw ManglerAktoerIdException("Tom input-verdi")
+                }
+            aktoerService.hentGjeldendeIdent(IdentGruppe.AktoerId, NorskIdent(norskIdent))?.id
+                            ?: throw AktoerregisterIkkeFunnetException("AktoerId for NorskIdent ikke funnet.")
+        }
         else null
     }
 

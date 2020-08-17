@@ -131,7 +131,13 @@ class PersonController(private val aktoerregisterService: AktoerregisterService,
 
     private fun hentPerson(aktoerid: String): HentPersonResponse {
         logger.info("Henter personinformasjon for aktørId: $aktoerid")
-        val norskIdent: String = aktoerregisterService.hentGjeldendeNorskIdentForAktorId(aktoerid)
+        if (aktoerid.isBlank()) {
+            throw ManglerAktoerIdException("Tom input-verdi")
+        }
+        val norskIdent =
+                aktoerregisterService.hentGjeldendeIdent(IdentGruppe.NorskIdent, AktoerId(aktoerid))?.id
+                        ?: throw AktoerregisterIkkeFunnetException("NorskIdent for aktoerId $aktoerid ikke funnet.")
+
         return personService.hentPersonResponse(norskIdent)
     }
 

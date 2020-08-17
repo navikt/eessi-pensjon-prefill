@@ -51,7 +51,7 @@ class PersonControllerTest {
     fun `getPerson should return Person as json`() {
 
         doNothing().whenever(auditLogger).log(any(), any())
-        whenever(mockAktoerregisterService.hentGjeldendeNorskIdentForAktorId(anAktorId)).thenReturn(anFnr)
+        whenever(mockAktoerregisterService.hentGjeldendeIdent(IdentGruppe.NorskIdent, AktoerId(anAktorId))).thenReturn(NorskIdent(anFnr))
         whenever(mockPersonV3Service.hentPersonResponse(anFnr)).thenReturn(hentPersonResponse)
 
         val response = mvc.perform(
@@ -65,7 +65,7 @@ class PersonControllerTest {
     @Test
     fun `getNameOnly should return names as json`() {
         doNothing().whenever(auditLogger).log(any(), any())
-        whenever(mockAktoerregisterService.hentGjeldendeNorskIdentForAktorId(anAktorId)).thenReturn(anFnr)
+        whenever(mockAktoerregisterService.hentGjeldendeIdent(IdentGruppe.NorskIdent, AktoerId(anAktorId))).thenReturn(NorskIdent(anFnr))
         whenever(mockPersonV3Service.hentPersonResponse(anFnr)).thenReturn(hentPersonResponse)
 
         val response = mvc.perform(
@@ -80,7 +80,7 @@ class PersonControllerTest {
     fun `should return NOT_FOUND hvis personen ikke finnes i TPS`() {
         doThrow(PersonV3IkkeFunnetException("Error is Expected")).whenever(mockPersonV3Service).hentPersonResponse(anFnr)
         doNothing().whenever(auditLogger).log(any(), any())
-        doReturn(anFnr).whenever(mockAktoerregisterService).hentGjeldendeNorskIdentForAktorId(anAktorId)
+        whenever(mockAktoerregisterService.hentGjeldendeIdent(IdentGruppe.NorskIdent, AktoerId(anAktorId))).thenReturn(NorskIdent(anFnr))
 
         mvc.perform(
             get("/personinfo/$anAktorId")
