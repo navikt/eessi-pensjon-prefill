@@ -15,20 +15,17 @@ import org.springframework.web.bind.annotation.ResponseStatus
 /**
  * preutfylling av NAV-P2000 SED for søknad krav om alderpensjon
  */
-class PrefillP2000(private val prefillNav: PrefillNav,
-                   private val sak: V1Sak?)  {
+class PrefillP2000(private val prefillNav: PrefillNav)  {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillP2000::class.java) }
 
-    fun prefill(prefillData: PrefillDataModel, personData: PersonData): SED {
+    fun prefill(prefillData: PrefillDataModel, personData: PersonData, sak: V1Sak?): SED {
         val sedType = prefillData.getSEDType()
 
-        prefillData.saktype = sak?.sakType
-
         logger.debug("----------------------------------------------------------"
-                + "\nSaktype              : ${prefillData.saktype} "
-                + "\nSøker etter SaktId   : ${prefillData.penSaksnummer} "
-                + "\nPreutfylling Pensjon : ${PrefillP2xxxPensjon::class.java} "
+                + "\nSaktype                 : ${sak?.sakType} "
+                + "\nSøker etter SakId       : ${prefillData.penSaksnummer} "
+                + "\nSøker etter aktoerid    : ${prefillData.bruker.aktorId} "
                 + "\n------------------| Preutfylling [$sedType] START |------------------ ")
 
         val sed = prefillData.sed

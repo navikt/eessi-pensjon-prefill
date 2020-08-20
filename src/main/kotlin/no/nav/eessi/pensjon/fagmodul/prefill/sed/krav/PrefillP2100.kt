@@ -11,24 +11,22 @@ import no.nav.pensjon.v1.sak.V1Sak
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-class PrefillP2100(private val prefillNav: PrefillNav,
-                   private val sak: V1Sak?) {
+class PrefillP2100(private val prefillNav: PrefillNav) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillP2100::class.java) }
 
 
-    fun prefill(prefillData: PrefillDataModel, personData: PersonData): SED {
+    fun prefill(prefillData: PrefillDataModel, personData: PersonData, sak: V1Sak?): SED {
         require(prefillData.avdod != null ){ "avdod er påkrevet for p2100" }
+
         val sedType = prefillData.getSEDType()
 
-        prefillData.saktype = sak?.sakType
-
         logger.debug("\n\n----------------------------------------------------------"
-                + "\nSaktype                  : ${prefillData.saktype} "
-                + "\nSøker etter SaktId       : ${prefillData.penSaksnummer} "
-                + "\nSøker etter avdodaktor   : ${prefillData.avdod.aktorId} "
-                + "\nerGyldigEtterlatt        : ${prefillData.avdod.aktorId.isNotEmpty()} "
-                + "\nSøker etter gjenlaktoer  : ${prefillData.bruker.aktorId} "
+                + "\nSaktype                : ${sak?.sakType} "
+                + "\nSøker sakId            : ${prefillData.penSaksnummer} "
+                + "\nSøker avdodaktor       : ${prefillData.avdod.aktorId} "
+                + "\nerGyldigEtterlatt      : ${prefillData.avdod.aktorId.isNotEmpty()} "
+                + "\nSøker gjenlevaktoer    : ${prefillData.bruker.aktorId} "
                 + "\n------------------| Preutfylling [$sedType] START |------------------ \n")
 
         val sed = prefillData.sed
