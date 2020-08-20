@@ -31,7 +31,7 @@ class PrefillService(private val factory: PrefillSEDService,
     @Throws(ValidationException::class)
     fun prefillSed(dataModel: PrefillDataModel): SED {
         return PrefillSed.measure {
-            logger.info("******* Starter med preutfylling *******\nSED: ${dataModel.getSEDid()} aktoerId: ${dataModel.bruker.aktorId} sakNr: ${dataModel.penSaksnummer}")
+            logger.info("******* Starter med preutfylling *******\nSED: ${dataModel.getSEDType()} aktoerId: ${dataModel.bruker.aktorId} sakNr: ${dataModel.penSaksnummer}")
 
             try {
                 return@measure factory.prefill(dataModel)

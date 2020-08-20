@@ -1,6 +1,5 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak
 
-import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonService
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.hjelper.PrefillPensjonReduksjon
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.hjelper.PrefillPensjonSak
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.hjelper.PrefillPensjonTilleggsinformasjon
@@ -23,31 +22,12 @@ object PrefillP6000Pensjon {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillP6000Pensjon::class.java) }
 
-    fun createPensjon(dataFromPESYS: PensjonsinformasjonService, gjenlevende: Bruker?, vedtakId: String, andreinstitusjonerItem: AndreinstitusjonerItem?): Pensjon {
-
-        if (vedtakId.isBlank()) throw IkkeGyldigStatusPaaSakException("Mangler vedtakID")
-
-        logger.debug("----------------------------------------------------------")
-        val starttime = System.nanoTime()
-
-        logger.debug("Starter [vedtak] Preutfylling Utfylling Data")
-
-        logger.debug("vedtakId: $vedtakId")
-        val pendata: Pensjonsinformasjon = dataFromPESYS.hentMedVedtak(vedtakId)
-
-        logger.debug("Henter pensjondata fra PESYS")
-
-        val endtime = System.nanoTime()
-        val tottime = endtime - starttime
-
-        logger.debug("Metrics")
-        logger.debug("Ferdig hentet pensjondata fra PESYS. Det tok ${(tottime / 1.0e9)} sekunder.")
-        logger.debug("----------------------------------------------------------")
+    fun createPensjon(pensjoninformasjon: Pensjonsinformasjon, gjenlevende: Bruker?, vedtakId: String, andreinstitusjonerItem: AndreinstitusjonerItem?): Pensjon {
 
         //Sjekk opp om det er Bodd eller Arbeid utland. (hvis ikke avslutt)
-        if (!harBoddArbeidetUtland(pendata)) throw IkkeGyldigStatusPaaSakException("Har ikke bodd eller arbeidet i utlandet. Avslutter vedtak")
+        if (!harBoddArbeidetUtland(pensjoninformasjon)) throw IkkeGyldigStatusPaaSakException("Har ikke bodd eller arbeidet i utlandet. Avslutter vedtak")
         //Sjekk opp om det finnes et dato fattet vedtak. (hvis ikke avslutt)
-        if (pendata.vedtak.datoFattetVedtak == null) {
+        if (pensjoninformasjon.vedtak.datoFattetVedtak == null) {
             throw IkkeGyldigStatusPaaSakException("Vedtaket mangler dato for FattetVedtak. Avslutter")
         }
 
@@ -56,13 +36,13 @@ object PrefillP6000Pensjon {
         return Pensjon(
                 gjenlevende = gjenlevende,
                 //4.1
-                vedtak = listOf(PrefillPensjonVedtak.createVedtakItem(pendata)),
+                vedtak = listOf(PrefillPensjonVedtak.createVedtakItem(pensjoninformasjon)),
                 //5.1
-                reduksjon = PrefillPensjonReduksjon.createReduksjon(pendata),
+                reduksjon = PrefillPensjonReduksjon.createReduksjon(pensjoninformasjon),
                 //6.1
-                sak = PrefillPensjonSak.createSak(pendata),
+                sak = PrefillPensjonSak.createSak(pensjoninformasjon),
                 //6.x
-                tilleggsinformasjon = PrefillPensjonTilleggsinformasjon.createTilleggsinformasjon(pendata, andreinstitusjonerItem)
+                tilleggsinformasjon = PrefillPensjonTilleggsinformasjon.createTilleggsinformasjon(pensjoninformasjon, andreinstitusjonerItem)
         )
     }
 }

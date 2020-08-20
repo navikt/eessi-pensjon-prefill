@@ -4,7 +4,6 @@ import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
-import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -41,7 +40,7 @@ class PrefillDataModelTest {
                 institution = items
         }
         assertNotNull(prefillDatamodel)
-        assertEquals("vedtak", prefillDatamodel.getSEDid())
+        assertEquals("vedtak", prefillDatamodel.getSEDType())
         assertEquals(SED::class, prefillDatamodel.sed::class)
         assertEquals("12345", prefillDatamodel.penSaksnummer)
         assertEquals("567890", prefillDatamodel.bruker.aktorId)

@@ -1,10 +1,21 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak
 
+import com.nhaarman.mockitokotlin2.mock
+import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjon
 import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjonMother.standardEessiInfo
+import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
+import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModelMother
 import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonService
-import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonClientMother.fraFil
+import no.nav.eessi.pensjon.fagmodul.prefill.person.MockTpsPersonServiceFactory
+import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillSEDService
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper
+import no.nav.eessi.pensjon.fagmodul.prefill.tps.FodselsnummerMother
+import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillAdresse
+import no.nav.eessi.pensjon.personoppslag.personv3.PersonV3Service
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
@@ -16,15 +27,39 @@ import org.mockito.quality.Strictness
 @MockitoSettings(strictness = Strictness.LENIENT)
 class PrefillP6000Pensjon_GJENLEV_Test {
 
+    private val personFnr = FodselsnummerMother.generateRandomFnr(67)
+
+    private lateinit var prefillData: PrefillDataModel
+    private lateinit var prefillSEDService: PrefillSEDService
+    private lateinit var dataFromPEN: PensjonsinformasjonService
+    private lateinit var prefillNav: PrefillNav
+    private lateinit var prefillPersonService: PersonV3Service
+    private lateinit var eessiInformasjon: EessiInformasjon
+
+    @BeforeEach
+    fun setup() {
+        prefillPersonService = PrefillTestHelper.setupPersondataFraTPS(setOf(
+                MockTpsPersonServiceFactory.MockTPS("Person-11000-GIFT.json", personFnr, MockTpsPersonServiceFactory.MockTPS.TPSType.PERSON),
+                MockTpsPersonServiceFactory.MockTPS("Person-12000-EKTE.json", FodselsnummerMother.generateRandomFnr(69), MockTpsPersonServiceFactory.MockTPS.TPSType.EKTE)
+        ))
+
+        prefillNav = PrefillNav(
+                prefillAdresse = mock<PrefillAdresse>(),
+                institutionid = "NO:noinst002",
+                institutionnavn = "NOINST002, NO INST002, NO")
+
+        eessiInformasjon = standardEessiInfo()
+
+    }
+
     @Test
     fun `forventet korrekt utfylling av Pensjon objekt på Gjenlevendepensjon`() {
-        val dataFromPESYS = PensjonsinformasjonService(fraFil("P6000-GP-401.xml"))
+        dataFromPEN = PrefillTestHelper.lesPensjonsdataVedtakFraFil("P6000-GP-401.xml")
+        prefillData = PrefillDataModelMother.initialPrefillDataModel("P6000", personFnr, penSaksnummer = "22580170", vedtakId = "12312312")
+        prefillSEDService = PrefillSEDService(prefillNav, prefillPersonService, eessiInformasjon, dataFromPEN)
 
-        val result = PrefillP6000Pensjon.createPensjon(
-                dataFromPESYS = dataFromPESYS,
-                gjenlevende = null,
-                vedtakId = "12312312",
-                andreinstitusjonerItem = standardEessiInfo().asAndreinstitusjonerItem())
+        val sed = prefillSEDService.prefill(prefillData)
+        val result = sed.pensjon!!
 
         assertNotNull(result.vedtak)
         assertNotNull(result.sak)
@@ -63,9 +98,11 @@ class PrefillP6000Pensjon_GJENLEV_Test {
 
     @Test
     fun `forventet korrekt utfylt P6000 gjenlevende ikke bosat utland (avdød bodd i utland)`() {
-        val dataFromPESYS = PensjonsinformasjonService(fraFil("P6000-GP-IkkeUtland.xml"))
+        dataFromPEN = PrefillTestHelper.lesPensjonsdataVedtakFraFil("P6000-GP-IkkeUtland.xml")
+        prefillData = PrefillDataModelMother.initialPrefillDataModel("P6000", personFnr, penSaksnummer = "22580170", vedtakId = "12312312")
+        prefillSEDService = PrefillSEDService(prefillNav, prefillPersonService, eessiInformasjon, dataFromPEN)
 
-        val result = PrefillP6000Pensjon.createPensjon(dataFromPESYS, null,"12312312", standardEessiInfo().asAndreinstitusjonerItem())
+        val result = prefillSEDService.prefill(prefillData).pensjon!!
 
         assertNotNull(result.vedtak)
         assertNotNull(result.sak)
@@ -109,10 +146,12 @@ class PrefillP6000Pensjon_GJENLEV_Test {
 
     @Test
     fun `preutfylling P6000 feiler ved mangler av vedtakId`() {
-        val dataFromPESYS = PensjonsinformasjonService(fraFil("P6000-GP-401.xml"))
+        dataFromPEN = PrefillTestHelper.lesPensjonsdataVedtakFraFil("P6000-GP-IkkeUtland.xml")
+        prefillData = PrefillDataModelMother.initialPrefillDataModel("6000", personFnr, penSaksnummer = "22580170", vedtakId = "")
+        prefillSEDService = PrefillSEDService(prefillNav, prefillPersonService, eessiInformasjon, dataFromPEN)
 
-        assertThrows<IllegalStateException> {
-            PrefillP6000Pensjon.createPensjon(dataFromPESYS, null, "", null)
+        assertThrows<IllegalArgumentException> {
+            prefillSEDService.prefill(prefillData)
         }
     }
 }

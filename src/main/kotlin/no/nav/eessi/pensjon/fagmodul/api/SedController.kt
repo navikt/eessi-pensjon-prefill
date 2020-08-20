@@ -16,12 +16,7 @@ import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.logging.AuditLogger
 import no.nav.eessi.pensjon.metrics.CounterHelper
 import no.nav.eessi.pensjon.metrics.MetricsHelper
-import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerId
-import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerregisterIkkeFunnetException
-import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerregisterService
-import no.nav.eessi.pensjon.personoppslag.aktoerregister.IdentGruppe
-import no.nav.eessi.pensjon.personoppslag.aktoerregister.ManglerAktoerIdException
-import no.nav.eessi.pensjon.personoppslag.aktoerregister.NorskIdent
+import no.nav.eessi.pensjon.personoppslag.aktoerregister.*
 import no.nav.eessi.pensjon.utils.toJson
 import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
 import no.nav.security.token.support.core.api.Protected
@@ -120,7 +115,7 @@ class SedController(private val euxService: EuxService,
             //synk sed versjon med buc versjon
             updateSEDVersion(sed, bucUtil.getProcessDefinitionVersion() )
 
-            logger.info("Prøver å sende SED: ${dataModel.getSEDid()} inn på BUC: ${dataModel.euxCaseID}")
+            logger.info("Prøver å sende SED: ${dataModel.getSEDType()} inn på BUC: ${dataModel.euxCaseID}")
             val docresult = euxService.opprettSedOnBuc(sed, dataModel.euxCaseID)
             logger.info("Opprettet ny SED med dokumentId: ${docresult.documentId}")
             val result = bucUtil.findDocument(docresult.documentId)
@@ -158,7 +153,7 @@ class SedController(private val euxService: EuxService,
     }
 
     private fun extraTag(dataModel: PrefillDataModel, bucUtil: BucUtils): List<Tag> {
-        return listOf(Tag.of("sedType", dataModel.getSEDid()),
+        return listOf(Tag.of("sedType", dataModel.getSEDType()),
                 Tag.of("bucType", dataModel.buc),
                 Tag.of("rinaId", dataModel.euxCaseID),
                 Tag.of("sakNr", dataModel.penSaksnummer),
@@ -182,7 +177,7 @@ class SedController(private val euxService: EuxService,
             logger.info("Prøver å prefillSED (svar)")
             val sed = prefillService.prefillSed(dataModel)
 
-            logger.info("Prøver å sende SED: ${dataModel.getSEDid()} inn på BUC: ${dataModel.euxCaseID}")
+            logger.info("Prøver å sende SED: ${dataModel.getSEDType()} inn på BUC: ${dataModel.euxCaseID}")
             val docresult = euxService.opprettSvarSedOnBuc(sed, dataModel.euxCaseID, parentId)
 
             val bucUtil = BucUtils(euxService.getBuc(docresult.caseId))

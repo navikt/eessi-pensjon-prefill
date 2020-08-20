@@ -2,11 +2,11 @@ package no.nav.eessi.pensjon.fagmodul.prefill.sed.krav
 
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PersonData
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
-import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonService
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.PrefillP2xxxPensjon.createPensjon
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Pensjon
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
+import no.nav.pensjon.v1.sak.V1Sak
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -15,13 +15,14 @@ import org.slf4j.LoggerFactory
  * preutfylling av NAV-P2200 SED for søknad krav om uforepensjon
  */
 class PrefillP2200(private val prefillNav: PrefillNav,
-                   private val pensjonsinformasjonService: PensjonsinformasjonService) {
+                   private val sak: V1Sak?) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillP2200::class.java) }
 
     fun prefill(prefillData: PrefillDataModel, personData: PersonData): SED {
-        val sedType = prefillData.getSEDid()
-        prefillData.saktype = EPSaktype.UFOREP.name
+        val sedType = prefillData.getSEDType()
+
+        prefillData.saktype = sak?.sakType
 
         logger.debug("----------------------------------------------------------"
                 + "\nPreutfylling Pensjon : ${PrefillP2xxxPensjon::class.java} "
@@ -38,21 +39,14 @@ class PrefillP2200(private val prefillNav: PrefillNav,
                 brukerInformasjon = prefillData.getPersonInfoFromRequestData()
         )
 
-        val pensak = PrefillP2xxxPensjon.hentRelevantPensjonSak(
-                pensjonsinformasjonService,
-                prefillData.bruker.aktorId,
-                prefillData.penSaksnummer,
-                sedType,
-                { pensakType -> pensakType == prefillData.saktype } )
-
         try {
             sed.pensjon =
-                    if (pensak == null) Pensjon()
+                    if (sak == null) Pensjon()
                     else {
                         val pensjon = createPensjon(
                                 prefillData.bruker.norskIdent,
                                 prefillData.penSaksnummer,
-                                pensak,
+                                sak,
                                 prefillData.andreInstitusjon
                         )
                         if (prefillData.kanFeltSkippes("PENSED")) {

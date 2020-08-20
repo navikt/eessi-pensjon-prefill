@@ -13,7 +13,7 @@ class PrefillP10000(private val prefillSed: PrefillSed) {
 
     fun prefill(prefillData: PrefillDataModel, personData: PersonData): SED {
 
-        logger.info("Default SED prefill [${prefillData.getSEDid()}]")
+        logger.info("Default SED prefill [${prefillData.getSEDType()}]")
 
         val sed = prefillSed.prefill(prefillData, personData)
         if (prefillData.avdod != null) {

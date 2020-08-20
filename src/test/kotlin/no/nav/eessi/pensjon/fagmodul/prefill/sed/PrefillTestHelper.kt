@@ -19,6 +19,15 @@ import org.springframework.web.client.RestTemplate
 
 object PrefillTestHelper {
 
+    fun lesPensjonsdataVedtakFraFil(responseXMLfilename: String): PensjonsinformasjonService {
+        val pensjonsinformasjonRestTemplate = mock<RestTemplate>()
+        lenient().`when`(pensjonsinformasjonRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java))).thenReturn(readXMLVedtakresponse(responseXMLfilename))
+
+        val pensjonsinformasjonClient = PensjonsinformasjonClient(pensjonsinformasjonRestTemplate, RequestBuilder())
+        pensjonsinformasjonClient.initMetrics()
+        return PensjonsinformasjonService(pensjonsinformasjonClient)
+    }
+
     fun lesPensjonsdataFraFil(responseXMLfilename: String): PensjonsinformasjonService {
         val pensjonsinformasjonRestTemplate = mock<RestTemplate>()
         lenient().`when`(pensjonsinformasjonRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java))).thenReturn(readXMLresponse(responseXMLfilename))
@@ -41,6 +50,12 @@ object PrefillTestHelper {
         val resource = ResourceUtils.getFile("classpath:pensjonsinformasjon/krav/$file").readText()
         return ResponseEntity(resource, HttpStatus.OK)
     }
+
+    private fun readXMLVedtakresponse(file: String): ResponseEntity<String> {
+        val resource = ResourceUtils.getFile("classpath:pensjonsinformasjon/vedtak/$file").readText()
+        return ResponseEntity(resource, HttpStatus.OK)
+    }
+
 
     fun createMockApiRequest(sedName: String, buc: String, payload: String, sakNr: String): ApiRequest {
         val items = listOf(InstitusjonItem(country = "NO", institution = "NAVT003"))

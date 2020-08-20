@@ -2,26 +2,27 @@ package no.nav.eessi.pensjon.fagmodul.prefill.sed.krav
 
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PersonData
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
-import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonService
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Bruker
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Nav
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Pensjon
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
+import no.nav.pensjon.v1.sak.V1Sak
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 class PrefillP2100(private val prefillNav: PrefillNav,
-                   private val pensjonsinformasjonService: PensjonsinformasjonService) {
+                   private val sak: V1Sak?) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillP2100::class.java) }
 
 
     fun prefill(prefillData: PrefillDataModel, personData: PersonData): SED {
         require(prefillData.avdod != null ){ "avdod er påkrevet for p2100" }
-        val sedType = prefillData.getSEDid()
+        val sedType = prefillData.getSEDType()
 
-        prefillData.saktype = EPSaktype.GJENLEV_BARNEP.name
+        prefillData.saktype = sak?.sakType
+
         logger.debug("\n\n----------------------------------------------------------"
                 + "\nSaktype                  : ${prefillData.saktype} "
                 + "\nSøker etter SaktId       : ${prefillData.penSaksnummer} "
@@ -40,21 +41,14 @@ class PrefillP2100(private val prefillNav: PrefillNav,
             sed.nav = prefillNav.prefill(penSaksnummer = prefillData.penSaksnummer, bruker = prefillData.bruker, avdod = prefillData.avdod, personData = personData , brukerInformasjon = prefillData.getPersonInfoFromRequestData())
         }
 
-        val pensak = PrefillP2xxxPensjon.hentRelevantPensjonSak(
-                pensjonsinformasjonService,
-                prefillData.bruker.aktorId,
-                prefillData.penSaksnummer,
-                sedType,
-                { pensakType -> listOf("ALDER", "BARNEP", "GJENLEV", "UFOREP").contains(pensakType) } )
-
         try {
             sed.pensjon =
-                    if (pensak == null) Pensjon()
+                    if (sak == null) Pensjon()
                     else {
                         val pensjon = PrefillP2xxxPensjon.createPensjon(
                                 prefillData.bruker.norskIdent,
                                 prefillData.penSaksnummer,
-                                pensak,
+                                sak,
                                 prefillData.andreInstitusjon,
                                 eventuellGjenlevende(prefillData, personData.forsikretPerson))
                         if (prefillData.kanFeltSkippes("PENSED")) {

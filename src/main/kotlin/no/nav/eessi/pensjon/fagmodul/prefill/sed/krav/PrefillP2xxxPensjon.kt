@@ -1,6 +1,5 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed.krav
 
-import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonService
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.KravHistorikkHelper.createKravDato
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.KravHistorikkHelper.hentKravHistorikkForsteGangsBehandlingUtlandEllerForsteGang
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.KravHistorikkHelper.hentKravHistorikkMedKravStatusAvslag
@@ -14,8 +13,6 @@ import no.nav.pensjon.v1.ytelsepermaaned.V1YtelsePerMaaned
 import no.nav.pensjon.v1.ytelseskomponent.V1Ytelseskomponent
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.http.HttpStatus
-import org.springframework.web.bind.annotation.ResponseStatus
 
 /**
  * Hjelpe klasse for sak som fyller ut NAV-SED-P2000 med pensjondata fra PESYS.
@@ -96,42 +93,6 @@ object PrefillP2xxxPensjon {
                 gjenlevende = gjenlevende
         )
     }
-
-    fun hentRelevantPensjonSak(pensjonsinformasjonService: PensjonsinformasjonService,
-                               aktorId: String,
-                               penSaksnummer: String,
-                               sedType: String,
-                               akseptabelSakstypeForSed: (String) -> Boolean): V1Sak? {
-        return pensjonsinformasjonService.hentPensjonInformasjonNullHvisFeil(aktorId)?.let {
-            val pensak: V1Sak = PensjonsinformasjonService.finnSak(penSaksnummer, it)
-
-            if (!akseptabelSakstypeForSed(pensak.sakType)) {
-                logger.warn("Du kan ikke opprette ${sedTypeAsText(sedType)} i en ${sakTypeAsText(pensak.sakType)} (PESYS-saksnr: $penSaksnummer har sakstype ${pensak.sakType})")
-                throw FeilSakstypeForSedException("Du kan ikke opprette ${sedTypeAsText(sedType)} i en ${sakTypeAsText(pensak.sakType)} (PESYS-saksnr: $penSaksnummer har sakstype ${pensak.sakType})")
-            }
-            pensak
-        }
-    }
-
-
-    private fun sakTypeAsText(sakType: String?) =
-            when (sakType) {
-                "UFOREP" -> "uføretrygdsak"
-                "ALDER" -> "alderspensjonssak"
-                "GJENLEV" -> "gjenlevendesak"
-                "BARNEP" -> "barnepensjonssak"
-                null -> "[NULL]"
-                else -> "$sakType-sak"
-            }
-
-    private fun sedTypeAsText(sedType: String) =
-            when (sedType) {
-                "P2000" -> "alderspensjonskrav"
-                "P2100" -> "gjenlevende-krav"
-                "P2200" -> "uføretrygdkrav"
-                else -> sedType
-            }
-
 
     /**
      *  4.1 (for kun_uland,mangler inngangsvilkår)
@@ -381,6 +342,3 @@ object PrefillP2xxxPensjon {
         return mapSakstatus(pensak.status)
     }
 }
-
-@ResponseStatus(value = HttpStatus.BAD_REQUEST)
-class FeilSakstypeForSedException(override val message: String?, override val cause: Throwable? = null) : IllegalArgumentException()

@@ -21,7 +21,7 @@ class PrefillSed(private val prefillNav: PrefillNav, private val pensjon: Pensjo
 
         logger.debug("------------------| Preutfylling START |------------------ ")
 
-        logger.debug("[${prefillData.getSEDid()}] Preutfylling Utfylling Data")
+        logger.debug("[${prefillData.getSEDType()}] Preutfylling Utfylling Data")
 
         val sed = prefillData.sed
 
@@ -38,12 +38,12 @@ class PrefillSed(private val prefillNav: PrefillNav, private val pensjon: Pensjo
                     brukerInformasjon = prefillData.getPersonInfoFromRequestData()
             )
         }
-        logger.debug("[${prefillData.getSEDid()}] Preutfylling Utfylling NAV")
+        logger.debug("[${prefillData.getSEDType()}] Preutfylling Utfylling NAV")
 
         try {
             //henter opp pensjondata (her kun gjennlevende)
             sed.pensjon = pensjon
-            logger.debug("[${prefillData.getSEDid()}] Preutfylling Utfylling Pensjon")
+            logger.debug("[${prefillData.getSEDType()}] Preutfylling Utfylling Pensjon")
         } catch (pen: PensjoninformasjonException) {
             logger.error(pen.message)
             sed.pensjon = Pensjon()

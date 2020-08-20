@@ -25,7 +25,7 @@ class PrefillDataModel(val penSaksnummer: String, val bruker: PersonId, val avdo
     //pensjon
     lateinit var vedtakId: String
 
-    lateinit var saktype: String
+    var saktype: String? = ""
 
     //rina
     lateinit var rinaSubject: String
@@ -43,7 +43,7 @@ class PrefillDataModel(val penSaksnummer: String, val bruker: PersonId, val avdo
     //div payload seddata json
     var partSedAsJson: MutableMap<String, String> = mutableMapOf()
 
-    fun getSEDid(): String {
+    fun getSEDType(): String {
         return sed.sed!!
     }
 

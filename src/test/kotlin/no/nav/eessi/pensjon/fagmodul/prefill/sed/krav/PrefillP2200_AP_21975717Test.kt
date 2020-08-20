@@ -40,7 +40,6 @@ class PrefillP2200_AP_21975717Test {
     private val pesysSaksnummer = "14915730"
 
     lateinit var prefillData: PrefillDataModel
-    lateinit var prefill: PrefillP2200
     lateinit var prefillNav: PrefillNav
     lateinit var dataFromPEN: PensjonsinformasjonService
     private lateinit var prefillSEDService: PrefillSEDService
@@ -57,8 +56,6 @@ class PrefillP2200_AP_21975717Test {
                 institutionnavn = "NOINST002, NO INST002, NO")
 
         dataFromPEN = lesPensjonsdataFraFil("KravAlderEllerUfore_AP_UTLAND.xml")
-
-        prefill = PrefillP2200(prefillNav, dataFromPEN)
 
         prefillData = PrefillDataModelMother.initialPrefillDataModel("P2200", personFnr, penSaksnummer = pesysSaksnummer).apply {
             partSedAsJson = mutableMapOf(

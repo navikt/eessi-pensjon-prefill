@@ -27,7 +27,6 @@ class PrefillP2200UforpensjonTest {
     private val personFnr = generateRandomFnr(67)
 
     lateinit var prefillData: PrefillDataModel
-    lateinit var prefill: PrefillP2200
     lateinit var prefillNav: PrefillNav
     lateinit var dataFromPEN: PensjonsinformasjonService
     private lateinit var prefillSEDService: PrefillSEDService
@@ -43,8 +42,6 @@ class PrefillP2200UforpensjonTest {
                 institutionnavn = "NOINST002, NO INST002, NO")
 
         dataFromPEN = lesPensjonsdataFraFil("P2200-UP-INNV.xml")
-
-        prefill = PrefillP2200(prefillNav, dataFromPEN)
 
         prefillData = initialPrefillDataModel("P2200", personFnr, penSaksnummer = "22874955").apply {
             partSedAsJson = mutableMapOf("PersonInfo" to readJsonResponse("other/person_informasjon_selvb.json"))

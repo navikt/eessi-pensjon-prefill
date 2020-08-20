@@ -31,7 +31,6 @@ class PrefillP2200UPUtlandInnvTest {
 
     lateinit var prefillData: PrefillDataModel
 
-    lateinit var prefill: PrefillP2200
     lateinit var prefillNav: PrefillNav
     lateinit var dataFromPEN: PensjonsinformasjonService
     private lateinit var prefillSEDService: PrefillSEDService
@@ -48,8 +47,6 @@ class PrefillP2200UPUtlandInnvTest {
                 institutionnavn = "NOINST002, NO INST002, NO")
 
         dataFromPEN = lesPensjonsdataFraFil("P2200-UP-INNV.xml")
-
-        prefill = PrefillP2200(prefillNav, dataFromPEN)
 
         prefillData = PrefillDataModelMother.initialPrefillDataModel("P2200", personFnr, penSaksnummer = pesysSaksnummer).apply {
             partSedAsJson = mutableMapOf(

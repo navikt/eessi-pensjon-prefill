@@ -68,7 +68,7 @@ class ApiRequestTest {
                 "}"
         val datamodel = ApiRequest.buildPrefillDataModelConfirm( mapJsonToAny(req, typeRefs<ApiRequest>()), "", "")
         assertNotNull(datamodel)
-        assertEquals("P2000", datamodel.getSEDid())
+        assertEquals("P2000", datamodel.getSEDType())
         assertEquals("P_BUC_01", datamodel.buc)
     }
 
@@ -146,7 +146,7 @@ class ApiRequestTest {
         assertEquals("12345", model.bruker.norskIdent)
         assertEquals("12234", model.penSaksnummer)
         assertEquals("0105094340092", model.bruker.aktorId)
-        assertEquals("P6000", model.getSEDid())
+        assertEquals("P6000", model.getSEDType())
 
         assertEquals(SED::class.java, model.sed::class.java)
 
@@ -167,7 +167,7 @@ class ApiRequestTest {
         assertEquals("12345", model.bruker.norskIdent)
         assertEquals("12234", model.penSaksnummer)
         assertEquals("0105094340092", model.bruker.aktorId)
-        assertEquals("P2100", model.getSEDid())
+        assertEquals("P2100", model.getSEDType())
         assertEquals("2223312", model.avdod?.aktorId)
         assertEquals("010244212312", model.avdod?.norskIdent)
         assertEquals(SED::class.java, model.sed::class.java)
