@@ -1,5 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.pen
 
+import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjoninformasjonException
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonClient
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
@@ -70,7 +71,75 @@ class PensjonsinformasjonService(private val pensjonsinformasjonClient: Pensjons
             null
         }
 
+    fun hentVedtak(prefillData: PrefillDataModel): Pensjonsinformasjon {
+        val vedtakId = prefillData.vedtakId
+
+        if (vedtakId.isBlank()) throw ManglendeVedtakIdException("Mangler vedtakID")
+
+        logger.debug("----------------------------------------------------------")
+        val starttime = System.nanoTime()
+
+        logger.debug("Starter [vedtak] Preutfylling Utfylling Data")
+
+        logger.debug("vedtakId: $vedtakId")
+        val pensjonsinformasjon = hentMedVedtak(vedtakId)
+
+        logger.debug("Henter pensjondata fra PESYS")
+
+        val endtime = System.nanoTime()
+        val tottime = endtime - starttime
+
+        logger.debug("Metrics")
+        logger.debug("Ferdig hentet pensjondata fra PESYS. Det tok ${(tottime / 1.0e9)} sekunder.")
+        logger.debug("----------------------------------------------------------")
+
+        return pensjonsinformasjon
+    }
+
+    fun hentRelevantPensjonSak(prefillData: PrefillDataModel, akseptabelSakstypeForSed: (String) -> Boolean): V1Sak? {
+
+        val aktorId = prefillData.bruker.aktorId
+        val penSaksnummer = prefillData.penSaksnummer
+        val sedType = prefillData.getSEDType()
+
+        return hentPensjonInformasjonNullHvisFeil(aktorId)?.let {
+            val sak: V1Sak = PensjonsinformasjonService.finnSak(penSaksnummer, it)
+
+            if (!akseptabelSakstypeForSed(sak.sakType)) {
+                logger.warn("Du kan ikke opprette ${sedTypeAsText(sedType)} i en ${sakTypeAsText(sak.sakType)} (PESYS-saksnr: $penSaksnummer har sakstype ${sak.sakType})")
+                throw FeilSakstypeForSedException("Du kan ikke opprette ${sedTypeAsText(sedType)} i en ${sakTypeAsText(sak.sakType)} (PESYS-saksnr: $penSaksnummer har sakstype ${sak.sakType})")
+            }
+            sak
+        }
+    }
+
+    private fun sakTypeAsText(sakType: String?) =
+            when (sakType) {
+                "UFOREP" -> "uføretrygdsak"
+                "ALDER" -> "alderspensjonssak"
+                "GJENLEV" -> "gjenlevendesak"
+                "BARNEP" -> "barnepensjonssak"
+                null -> "[NULL]"
+                else -> "$sakType-sak"
+            }
+
+    private fun sedTypeAsText(sedType: String) =
+            when (sedType) {
+                "P2000" -> "alderspensjonskrav"
+                "P2100" -> "gjenlevende-krav"
+                "P2200" -> "uføretrygdkrav"
+                else -> sedType
+            }
+
 }
 
 @ResponseStatus(value = HttpStatus.BAD_REQUEST)
 class IkkeGyldigKallException(message: String) : IllegalArgumentException(message)
+
+
+@ResponseStatus(value = HttpStatus.BAD_REQUEST)
+class ManglendeVedtakIdException(message: String) : IllegalArgumentException(message)
+
+@ResponseStatus(value = HttpStatus.BAD_REQUEST)
+class FeilSakstypeForSedException(override val message: String?, override val cause: Throwable? = null) : IllegalArgumentException()
+
