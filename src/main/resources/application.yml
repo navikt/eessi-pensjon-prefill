@@ -56,7 +56,9 @@ server:
   servlet:
     session:
       timeout: '120s'
-      
+  error:
+    include-message: always
+
 kafka:
   sedSendt:
     topic: eessi-basis-sedSendt-v1
