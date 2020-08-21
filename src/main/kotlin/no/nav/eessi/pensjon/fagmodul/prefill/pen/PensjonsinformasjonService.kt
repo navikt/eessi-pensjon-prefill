@@ -9,7 +9,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
-import org.springframework.web.bind.annotation.ResponseStatus
+import org.springframework.web.server.ResponseStatusException
 
 /**
  * hjelpe klass for utfylling av alle SED med pensjondata fra PESYS.
@@ -23,7 +23,7 @@ class PensjonsinformasjonService(private val pensjonsinformasjonClient: Pensjons
     companion object {
         //hjelpe metode for å hente ut valgt V1SAK på vetak/SAK fnr og sakid benyttes
         fun finnSak(sakId: String, pendata: Pensjonsinformasjon): V1Sak {
-            if (sakId.isBlank()) throw IkkeGyldigKallException("Mangler sakId")
+            if (sakId.isBlank()) throw ManglendeSakIdException("Mangler sakId")
             return PensjonsinformasjonClient.finnSak(sakId, pendata) ?: throw IkkeGyldigKallException("Finner ingen sak, saktype på valgt sakId")
         }
     }
@@ -102,8 +102,10 @@ class PensjonsinformasjonService(private val pensjonsinformasjonClient: Pensjons
         val penSaksnummer = prefillData.penSaksnummer
         val sedType = prefillData.getSEDType()
 
+        if (penSaksnummer.isBlank()) throw ManglendeSakIdException("Mangler sakId")
+
         return hentPensjonInformasjonNullHvisFeil(aktorId)?.let {
-            val sak: V1Sak = PensjonsinformasjonService.finnSak(penSaksnummer, it)
+            val sak: V1Sak = finnSak(penSaksnummer, it)
 
             if (!akseptabelSakstypeForSed(sak.sakType)) {
                 logger.warn("Du kan ikke opprette ${sedTypeAsText(sedType)} i en ${sakTypeAsText(sak.sakType)} (PESYS-saksnr: $penSaksnummer har sakstype ${sak.sakType})")
@@ -133,13 +135,11 @@ class PensjonsinformasjonService(private val pensjonsinformasjonClient: Pensjons
 
 }
 
-@ResponseStatus(value = HttpStatus.BAD_REQUEST)
-class IkkeGyldigKallException(message: String) : IllegalArgumentException(message)
+class IkkeGyldigKallException(reason: String): ResponseStatusException(HttpStatus.BAD_REQUEST, reason)
 
+class ManglendeSakIdException(reason: String): ResponseStatusException(HttpStatus.BAD_REQUEST, reason)
 
-@ResponseStatus(value = HttpStatus.BAD_REQUEST)
-class ManglendeVedtakIdException(message: String) : IllegalArgumentException(message)
+class ManglendeVedtakIdException(reason: String): ResponseStatusException(HttpStatus.BAD_REQUEST, reason)
 
-@ResponseStatus(value = HttpStatus.BAD_REQUEST)
-class FeilSakstypeForSedException(override val message: String?, override val cause: Throwable? = null) : IllegalArgumentException()
+class FeilSakstypeForSedException(reason: String): ResponseStatusException(HttpStatus.BAD_REQUEST, reason)
 

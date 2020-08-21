@@ -1,6 +1,7 @@
 package no.nav.eessi.pensjon.fagmodul.personoppslag
 
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.*
+import javax.xml.datatype.DatatypeFactory
 
 object PersonMock {
     internal fun createWith(landkoder: Boolean = true, fornavn: String = "Test", etternavn: String = "Testesen"):
@@ -31,6 +32,8 @@ object BrukerMock {
                     .withSammensattNavn("$fornavn $etternavn"))
             .withKjoenn(Kjoenn().withKjoenn(Kjoennstyper().withValue("M")))
             .withStatsborgerskap(Statsborgerskap().withLand(Landkoder().withValue("NOR")))
+            .withAktoer(PersonIdent().withIdent(NorskIdent().withIdent("3123")))
+            .withFoedselsdato(Foedselsdato().withFoedselsdato(DatatypeFactory.newInstance().newXMLGregorianCalendarDate(1988,7, 12,10)))
             .withBostedsadresse(Bostedsadresse()
                     .withStrukturertAdresse(Gateadresse()
                             .withGatenavn("Oppoverbakken")

@@ -26,8 +26,10 @@ class ArchitectureTest {
 
         @JvmStatic
         lateinit var allClasses: JavaClasses
+
         @JvmStatic
         lateinit var productionClasses: JavaClasses
+
         @JvmStatic
         lateinit var testClasses: JavaClasses
 
@@ -161,7 +163,7 @@ class ArchitectureTest {
 
                 .whereLayer(pensjonUtlandApi).mayOnlyBeAccessedByLayers(kodeverkService)
                 .whereLayer(bucSedApi).mayNotBeAccessedByAnyLayer()
-                .whereLayer(prefill).mayOnlyBeAccessedByLayers(bucSedApi, personApi)
+                .whereLayer(prefill).mayOnlyBeAccessedByLayers(bucSedApi, personApi, integrationtest)
                 .whereLayer(euxService).mayOnlyBeAccessedByLayers(health, bucSedApi)
                 .whereLayer(euxBasisModel).mayOnlyBeAccessedByLayers(euxService, bucSedApi)
                 .whereLayer(euxBucModel).mayOnlyBeAccessedByLayers(euxService, bucSedApi)
@@ -169,11 +171,11 @@ class ArchitectureTest {
                 .whereLayer(models).mayOnlyBeAccessedByLayers(prefill, /* TODO consider this list */ euxService, pensjonUtlandApi, bucSedApi)
 
                 .whereLayer(sedmodel).mayOnlyBeAccessedByLayers(prefill, euxService, pensjonUtlandApi, bucSedApi)
-                .whereLayer(aktoerregisterService).mayOnlyBeAccessedByLayers(personApi, bucSedApi, pensjonApi)
+                .whereLayer(aktoerregisterService).mayOnlyBeAccessedByLayers(personApi, bucSedApi, pensjonApi, integrationtest)
 
                 .whereLayer(geoService).mayOnlyBeAccessedByLayers(geoApi, pensjonUtlandApi, prefill)
-                .whereLayer(personService).mayOnlyBeAccessedByLayers(health, personApi, prefill)
-                .whereLayer(pensjonService).mayOnlyBeAccessedByLayers(health, pensjonApi, prefill, bucSedApi, personApi)
+                .whereLayer(personService).mayOnlyBeAccessedByLayers(health, personApi, prefill, integrationtest)
+                .whereLayer(pensjonService).mayOnlyBeAccessedByLayers(health, pensjonApi, prefill, bucSedApi, personApi, integrationtest)
 
                 .whereLayer(config).mayNotBeAccessedByAnyLayer()
                 .whereLayer(metrics).mayOnlyBeAccessedByLayers(config, health, euxService, pensjonUtlandApi)
@@ -207,10 +209,12 @@ class ArchitectureTest {
                 )
                 .whereLayer(frontendAPI).mayNotBeAccessedByAnyLayer()
                 .whereLayer(fagmodulCore).mayOnlyBeAccessedByLayers(
-                        frontendAPI)
+                        frontendAPI,
+                        integrationtest)
                 .whereLayer(services).mayOnlyBeAccessedByLayers(
                         frontendAPI,
-                        fagmodulCore)
+                        fagmodulCore,
+                        integrationtest)
                 .whereLayer(support).mayOnlyBeAccessedByLayers(
                         frontendAPI,
                         fagmodulCore,
@@ -219,6 +223,7 @@ class ArchitectureTest {
                         vedlegg,
                         integrationtest,
                         personoppslag)
+                .whereLayer(integrationtest).mayNotBeAccessedByAnyLayer()
                 .check(allClasses)
     }
 

@@ -46,12 +46,12 @@ object PrefillTestHelper {
         return ResourceUtils.getFile("classpath:json/nav/$file").readText()
     }
 
-    private fun readXMLresponse(file: String): ResponseEntity<String> {
+    fun readXMLresponse(file: String): ResponseEntity<String> {
         val resource = ResourceUtils.getFile("classpath:pensjonsinformasjon/krav/$file").readText()
         return ResponseEntity(resource, HttpStatus.OK)
     }
 
-    private fun readXMLVedtakresponse(file: String): ResponseEntity<String> {
+    fun readXMLVedtakresponse(file: String): ResponseEntity<String> {
         val resource = ResourceUtils.getFile("classpath:pensjonsinformasjon/vedtak/$file").readText()
         return ResponseEntity(resource, HttpStatus.OK)
     }
