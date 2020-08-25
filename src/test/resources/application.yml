@@ -75,3 +75,7 @@ kafka:
     groupid: eessi-pensjon-fagmodul-group
 
 requestsamlpolicy.path: "classpath:policy/requestSamlPolicy.xml"
+
+server:
+  error:
+    include-message: always

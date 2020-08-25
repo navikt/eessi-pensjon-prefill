@@ -12,19 +12,17 @@ import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Creator
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ShortDocumentItem
 import no.nav.eessi.pensjon.logging.AuditLogger
 import no.nav.eessi.pensjon.metrics.MetricsHelper
-import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerId
-import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerregisterIkkeFunnetException
 import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerregisterService
-import no.nav.eessi.pensjon.personoppslag.aktoerregister.IdentGruppe
-import no.nav.eessi.pensjon.personoppslag.aktoerregister.ManglerAktoerIdException
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonClient
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import no.nav.security.token.support.core.api.Protected
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.server.ResponseStatusException
 import javax.annotation.PostConstruct
 
 @Protected
@@ -42,8 +40,6 @@ class BucController(private val euxService: EuxService,
     private lateinit var BucDetaljerVedtak: MetricsHelper.Metric
     private lateinit var BucDetaljerEnkel: MetricsHelper.Metric
     private lateinit var BucDetaljerGjenlev: MetricsHelper.Metric
-
-    //constructor() : this(EuxService(), AktoerregisterService(RestTemplate(), "Fagmodul"), AuditLogger(), PensjonsinformasjonClient(RestTemplate(), RequestBuilder()), MetricsHelper(SimpleMeterRegistry()))
 
     @PostConstruct
     fun initMetrics() {
@@ -128,12 +124,7 @@ class BucController(private val euxService: EuxService,
         auditlogger.log("getRinasaker", aktoerId)
         logger.debug("henter rinasaker på valgt aktoerid: $aktoerId")
 
-        if (aktoerId.isBlank()) {
-            throw ManglerAktoerIdException("Tom input-verdi")
-        }
-        val norskIdent =
-                aktoerService.hentGjeldendeIdent(IdentGruppe.NorskIdent, AktoerId(aktoerId))?.id
-                        ?: throw AktoerregisterIkkeFunnetException("NorskIdent for aktoerId $aktoerId ikke funnet.")
+        val norskIdent = hentFnrfraAktoerService(aktoerId, aktoerService)
 
         return euxService.getRinasaker(norskIdent, aktoerId)
     }
@@ -146,13 +137,9 @@ class BucController(private val euxService: EuxService,
         auditlogger.log("getBucogSedView", aktoerid)
 
         return BucDetaljer.measure {
-
             logger.debug("Prøver å dekode aktoerid: $aktoerid til fnr.")
-            if (aktoerid.isBlank()) {
-                throw ManglerAktoerIdException("Tom input-verdi")
-            }
-            val fnr = aktoerService.hentGjeldendeIdent(IdentGruppe.NorskIdent, AktoerId(aktoerid))?.id
-                    ?: throw AktoerregisterIkkeFunnetException("NorskIdent for aktoerId $aktoerid ikke funnet.")
+
+            val fnr = hentFnrfraAktoerService(aktoerid, aktoerService)
 
             val rinasakIdList = try {
                 val rinasaker = euxService.getRinasaker(fnr, aktoerid)
@@ -190,28 +177,29 @@ class BucController(private val euxService: EuxService,
             val avdod = hentGyldigAvdod(peninfo)
 
             if (avdod != null && person.aktorId == aktoerid) {
-                return@measure getBucogSedViewGjenlevende(aktoerid, avdod)
+                val gjenlevBucs = avdod.map { getBucogSedViewGjenlevende(aktoerid, it) }.flatten()
+                return@measure gjenlevBucs.plus(getBucogSedView(aktoerid)).distinctBy { it.caseId }
             }
-
             return@measure getBucogSedView(aktoerid)
         }
     }
 
-    fun hentGyldigAvdod(peninfo: Pensjonsinformasjon) : String? {
+    fun hentGyldigAvdod(peninfo: Pensjonsinformasjon) : List<String>? {
         val avdod = peninfo.avdod
         val avdodMor = avdod?.avdodMor
         val avdodFar = avdod?.avdodFar
         val annenAvdod = avdod?.avdod
 
         return when {
-            annenAvdod != null && avdodFar == null && avdodMor == null -> annenAvdod
-            annenAvdod == null && avdodFar != null && avdodMor == null -> avdodFar
-            annenAvdod == null && avdodFar == null && avdodMor != null -> avdodMor
+            annenAvdod != null && avdodFar == null && avdodMor == null -> listOf(annenAvdod)
+            annenAvdod == null && avdodFar != null && avdodMor == null -> listOf(avdodFar)
+            annenAvdod == null && avdodFar == null && avdodMor != null -> listOf(avdodMor)
+            annenAvdod == null && avdodFar != null && avdodMor != null -> listOf(avdodFar, avdodMor)
             annenAvdod == null && avdodFar == null && avdodMor == null -> null
             else -> {
-                logger.error("Flere en en avdød funnet")
-                throw Exception("Flere en en avdød funnet")
-            }
+                logger.error("Ukjent feil ved henting av buc detaljer for gjenlevende")
+                throw ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Ukjent feil ved henting av buc detaljer for gjenlevende")
+           }
         }
     }
 
@@ -224,12 +212,7 @@ class BucController(private val euxService: EuxService,
         return BucDetaljerGjenlev.measure {
 
             logger.debug("Prøver å dekode aktoerid: $aktoerid til gjenlevende fnr.")
-            if (aktoerid.isBlank()) {
-                throw ManglerAktoerIdException("Tom input-verdi")
-            }
-            val fnrGjenlevende =
-                    aktoerService.hentGjeldendeIdent(IdentGruppe.NorskIdent, AktoerId(aktoerid))?.id
-                            ?: throw AktoerregisterIkkeFunnetException("NorskIdent for aktoerId $aktoerid ikke funnet.")
+            val fnrGjenlevende = hentFnrfraAktoerService(aktoerid, aktoerService)
 
             //hente BucAndSedView på avdød
             val avdodBucAndSedView = try {

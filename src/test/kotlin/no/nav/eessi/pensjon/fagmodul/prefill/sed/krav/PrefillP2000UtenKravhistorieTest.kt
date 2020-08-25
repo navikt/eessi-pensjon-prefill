@@ -13,6 +13,7 @@ import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.readJsonRespo
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.setupPersondataFraTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.FodselsnummerMother.generateRandomFnr
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillAdresse
+import no.nav.eessi.pensjon.personoppslag.personv3.PersonV3Service
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
@@ -34,16 +35,17 @@ class PrefillP2000UtenKravhistorieTest {
     private lateinit var prefillData: PrefillDataModel
     private lateinit var dataFromPEN: PensjonsinformasjonService
     private lateinit var prefillSEDService: PrefillSEDService
-
+    private lateinit var prefillNav: PrefillNav
+    private lateinit var personV3Service: PersonV3Service
 
     @BeforeEach
     fun setup() {
-        val persondataFraTPS = setupPersondataFraTPS(setOf(
+        personV3Service = setupPersondataFraTPS(setOf(
                 MockTpsPersonServiceFactory.MockTPS("Person-20000.json", personFnr, MockTpsPersonServiceFactory.MockTPS.TPSType.PERSON),
                 MockTpsPersonServiceFactory.MockTPS("Person-21000.json", generateRandomFnr(43), MockTpsPersonServiceFactory.MockTPS.TPSType.BARN),
                 MockTpsPersonServiceFactory.MockTPS("Person-22000.json", generateRandomFnr(17), MockTpsPersonServiceFactory.MockTPS.TPSType.BARN)
         ))
-        val prefillNav = PrefillNav(
+        prefillNav = PrefillNav(
                 prefillAdresse = mock<PrefillAdresse>(),
                 institutionid = "NO:noinst002",
                 institutionnavn = "NOINST002, NO INST002, NO")
@@ -54,7 +56,7 @@ class PrefillP2000UtenKravhistorieTest {
                     "PersonInfo" to readJsonResponse("other/person_informasjon_selvb.json"),
                     "P4000" to readJsonResponse("other/p4000_trygdetid_part.json"))
         }
-        prefillSEDService = PrefillSEDService(prefillNav, persondataFraTPS, EessiInformasjon(), dataFromPEN)
+        prefillSEDService = PrefillSEDService(prefillNav, personV3Service, EessiInformasjon(), dataFromPEN)
 
     }
 
@@ -77,5 +79,7 @@ class PrefillP2000UtenKravhistorieTest {
         }
         assertEquals("Kravdato mangler", ex.message)
     }
+
+
 
 }

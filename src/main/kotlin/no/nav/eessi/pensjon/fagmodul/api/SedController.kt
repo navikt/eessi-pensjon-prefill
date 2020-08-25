@@ -54,13 +54,10 @@ class SedController(private val euxService: EuxService,
     @PostMapping("/preview", "/preview/{filter}", consumes = ["application/json"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun confirmDocument(@RequestBody request: ApiRequest, @PathVariable("filter", required = false) filter: String? = null): String {
 
-        if (request.aktoerId.isNullOrBlank()) throw ManglerAktoerIdException("Mangler AktoerId")
-        val norskIdent =
-            aktoerService.hentGjeldendeIdent(IdentGruppe.NorskIdent, AktoerId(request.aktoerId))?.id
-                    ?: throw AktoerregisterIkkeFunnetException("NorskIdent for aktoerId ${request.aktoerId} ikke funnet.")
+        val norskIdent = hentFnrfraAktoerService(request.aktoerId, aktoerService)
 
         val dataModel = ApiRequest.buildPrefillDataModelConfirm(request, norskIdent, getAvdodAktoerId(request))
-        auditlogger.log("confirmDocument", request.aktoerId, request.toAudit())
+        auditlogger.log("confirmDocument", request.aktoerId ?: "", request.toAudit())
 
         val sed = prefillService.prefillSed(dataModel)
         return if (filter == null) {
@@ -88,10 +85,7 @@ class SedController(private val euxService: EuxService,
         auditlogger.log("addInstutionAndDocument", request.aktoerId ?: "", request.toAudit())
 
         return AddInstutionAndDocument.measure {
-            if (request.aktoerId.isNullOrBlank()) throw ManglerAktoerIdException("Mangler AktoerId")
-            val norskIdent =
-                    aktoerService.hentGjeldendeIdent(IdentGruppe.NorskIdent, AktoerId(request.aktoerId))?.id
-                            ?: throw AktoerregisterIkkeFunnetException("NorskIdent for aktoerId ${request.aktoerId} ikke funnet.")
+            val norskIdent = hentFnrfraAktoerService(request.aktoerId, aktoerService)
 
             val dataModel = ApiRequest.buildPrefillDataModelOnExisting(request, norskIdent, getAvdodAktoerId(request))
             logger.info("******* Legge til ny SED - start *******")
@@ -130,7 +124,7 @@ class SedController(private val euxService: EuxService,
         }
     }
 
-    //flyttes til prefill?
+    //flyttes til prefill / en eller annen service?
      fun updateSEDVersion(sed: SED, bucVersion: String) {
         when(bucVersion) {
             "v4.2" -> {

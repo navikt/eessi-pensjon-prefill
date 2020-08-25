@@ -4,6 +4,7 @@ import com.nhaarman.mockitokotlin2.mock
 import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjon
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModelMother
+import no.nav.eessi.pensjon.fagmodul.prefill.pen.IkkeGyldigKallException
 import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonService
 import no.nav.eessi.pensjon.fagmodul.prefill.person.MockTpsPersonServiceFactory
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
@@ -13,7 +14,6 @@ import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.readJsonRespo
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.setupPersondataFraTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.FodselsnummerMother.generateRandomFnr
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillAdresse
-import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjoninformasjonException
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -58,20 +58,16 @@ class PrefillP2000MedIngendataTest {
     }
 
     @Test
-    fun `sjekk av kravsoknad alderpensjon P2000`() {
-        assertThrows<PensjoninformasjonException> {
-            dataFromPEN.hentPensjonInformasjon(prefillData.bruker.aktorId)
+    fun `Preutfylling av P2000 med manglende brukersakliste i pensjoninformasjon`() {
+        try {
+            prefillSEDService.prefill(prefillData)
+        } catch (ex: IkkeGyldigKallException) {
+            assertEquals("400 BAD_REQUEST \"Finner ingen sak, saktype på valgt sakId\"", ex.message)
         }
-    }
 
-
-    @Test
-    fun `forventet en validering feil ved mangel av krvadato`() {
-
-        val ex = assertThrows<Exception> {
+        assertThrows<IkkeGyldigKallException> {
             prefillSEDService.prefill(prefillData)
         }
-        assertEquals("Kravdato mangler", ex.message)
     }
 
 }
