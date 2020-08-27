@@ -60,19 +60,19 @@ object PrefillP2xxxPensjon {
                 Kravstatus.TIL_BEHANDLING.name -> {
                     val kravHistorikkMedUtland = hentKravHistorikkMedKravStatusTilBehandling(pensak.kravHistorikkListe)
                     krav = createKravDato(kravHistorikkMedUtland)
-                    logger.warn("9.1        Opprettett med mulighet for at denne ${Kravstatus.TIL_BEHANDLING} mangler KravDato")
+                    logger.warn("9.1/11.1        Opprettett med mulighet for at denne ${Kravstatus.TIL_BEHANDLING} mangler KravDato")
                 }
                 else -> {
                     val kravHistorikkMedUtland = hentKravHistorikkMedKravStatusAvslag(pensak.kravHistorikkListe)
                     krav = createKravDato(kravHistorikkMedUtland)
-                    logger.warn("9.1        Opprettett med mulighet for at denne ${Kravstatus.AVSL} mangler KravDato")
+                    logger.warn("9.1/11.1        Opprettett med mulighet for at denne ${Kravstatus.AVSL} mangler KravDato")
                 }
             }
 
         } else {
             logger.info("sakType: ${pensak.sakType}")
             try {
-                val kravHistorikkMedUtland = hentKravHistorikkForsteGangsBehandlingUtlandEllerForsteGang(pensak.kravHistorikkListe)
+                val kravHistorikkMedUtland = hentKravHistorikkForsteGangsBehandlingUtlandEllerForsteGang(pensak.kravHistorikkListe, pensak.sakType)
                 val ytelseprmnd = hentYtelsePerMaanedDenSisteFraKrav(kravHistorikkMedUtland, pensak)
 
                 //kjøre ytelselist på normal

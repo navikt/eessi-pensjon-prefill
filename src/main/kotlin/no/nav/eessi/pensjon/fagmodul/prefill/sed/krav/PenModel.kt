@@ -3,7 +3,8 @@ package no.nav.eessi.pensjon.fagmodul.prefill.sed.krav
 enum class Kravtype {
     REVURD,
     F_BH_MED_UTL,
-    FORSTEG_BH
+    FORSTEG_BH,
+    F_BH_BO_UTL
 }
 
 enum class Kravstatus {
@@ -14,6 +15,8 @@ enum class Kravstatus {
 enum class EPSaktype {
     ALDER,
     UFOREP,
+    BARNEP,
+    GJENLEV,
     GJENLEV_BARNEP;
 
     companion object {
