@@ -177,7 +177,7 @@ class BucController(private val euxService: EuxService,
             val avdod = hentGyldigAvdod(peninfo)
 
             if (avdod != null && person.aktorId == aktoerid) {
-                val gjenlevBucs = avdod.map { getBucogSedViewGjenlevende(aktoerid, it) }.flatten()
+                val gjenlevBucs = avdod.map { avdod -> getBucogSedViewGjenlevende(aktoerid, avdod) }.flatten()
                 return@measure gjenlevBucs.plus(getBucogSedView(aktoerid)).distinctBy { it.caseId }
             }
             return@measure getBucogSedView(aktoerid)
@@ -203,16 +203,17 @@ class BucController(private val euxService: EuxService,
         }
     }
 
-
     @ApiOperation("Henter ut liste av Buc meny struktur i json format for UI på valgt aktoerid")
     @GetMapping("/detaljer/{aktoerid}/avdod/{avdodfnr}")
     fun getBucogSedViewGjenlevende(@PathVariable("aktoerid", required = true) aktoerid: String,
                                    @PathVariable("avdodfnr", required = true) avdodfnr: String): List<BucAndSedView> {
 
         return BucDetaljerGjenlev.measure {
-
             logger.debug("Prøver å dekode aktoerid: $aktoerid til gjenlevende fnr.")
+
             val fnrGjenlevende = hentFnrfraAktoerService(aktoerid, aktoerService)
+
+            logger.debug("gjenlevendeFnr: $fnrGjenlevende samt avdødfnr: $avdodfnr")
 
             //hente BucAndSedView på avdød
             val avdodBucAndSedView = try {

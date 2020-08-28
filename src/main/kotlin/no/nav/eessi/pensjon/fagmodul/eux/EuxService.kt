@@ -169,11 +169,11 @@ class EuxService (private val euxKlient: EuxKlient,
         }
     }
 
-    fun getBucAndSedViewWithBuc(bucs: List<Buc>): List<BucAndSedView> {
+    fun getBucAndSedViewWithBuc(bucs: List<Buc>, subject: BucAndSedSubject?): List<BucAndSedView> {
         return bucs
                 .map { buc ->
                     try {
-                        BucAndSedView.from(buc)
+                        BucAndSedView.from(buc, subject)
                     } catch (ex: Exception) {
                         logger.error(ex.message, ex)
                         BucAndSedView.fromErr(ex.message)
@@ -185,6 +185,7 @@ class EuxService (private val euxKlient: EuxKlient,
     fun getBucAndSedView(rinasaker: List<String>): List<BucAndSedView> {
         val startTime = System.currentTimeMillis()
         val list = rinasaker
+                .asSequence()
                 .map { rinaid ->
                     try {
                         BucAndSedView.from(getBuc(rinaid))
@@ -193,15 +194,15 @@ class EuxService (private val euxKlient: EuxKlient,
                         BucAndSedView.fromErr(ex.message)
                     }
                 }
+                .sortedByDescending { it.startDate }
                 .toList()
 
-        logger.debug(" ferdig returnerer list av BucAndSedView. Antall BUC: ${list.size}")
-
-        logger.debug(" sortert listen på startDate nyeste dato først")
-        val sortlist = list.asSequence().sortedByDescending { it.startDate }.toList()
-
+//        logger.debug(" ferdig returnerer list av BucAndSedView. Antall BUC: ${list.size}")
+//        logger.debug(" sortert listen på startDate nyeste dato først")
+//        val sortlist = list.asSequence().sortedByDescending { it.startDate }.toList()
         logger.debug(" tiden tok ${System.currentTimeMillis() - startTime} ms.")
-        return sortlist
+
+        return list
     }
 
     fun addInstitution(euxCaseID: String, nyeInstitusjoner: List<String>) {
@@ -244,7 +245,9 @@ class EuxService (private val euxKlient: EuxKlient,
 
         val gyldigeBucs = filterGyldigBucGjenlevendeAvdod(listeAvSedsPaaAvdod, fnrGjenlevende)
 
-        val gjenlevendeBucAndSedView =  getBucAndSedViewWithBuc( gyldigeBucs )
+        val gjenlevendeBucAndSedView =  getBucAndSedViewWithBuc( gyldigeBucs, BucAndSedSubject(fnrGjenlevende, avdodFnr) )
+//        val gjenlevendeBucAndSedView =  getBucAndSedViewWithBuc( gyldigeBucs )
+
         logger.debug("TotalRinasaker med avdod og gjenlevende(rina/saf): ${gjenlevendeBucAndSedView.size}")
 
         return gjenlevendeBucAndSedView
@@ -279,9 +282,8 @@ class EuxService (private val euxKlient: EuxKlient,
      * Henter buc og sedid på p2100 på avdøds fnr
      */
     fun hentBucOgDocumentIdAvdod(filteredRinaIdAvdod: List<String>): List<BucOgDocumentAvdod> {
-        return filteredRinaIdAvdod.map { rinaidavdod ->
-            val bucUtils = BucUtils(getBuc(rinaidavdod))
-            BucOgDocumentAvdod(rinaidavdod, bucUtils.getBuc())
+        return filteredRinaIdAvdod.map {
+            rinaIdAvdod -> BucOgDocumentAvdod(rinaIdAvdod, getBuc(rinaIdAvdod))
         }
     }
 

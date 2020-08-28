@@ -5,6 +5,11 @@ import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ShortDocumentItem
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.utils.toJson
 
+class BucAndSedSubject(
+    val fnr: String? = null,
+    val avdod: String? = null
+)
+
 data class BucAndSedView(
         val type: String,
         val caseId: String,
@@ -16,7 +21,8 @@ data class BucAndSedView(
         val institusjon: List<InstitusjonItem>? = null,
         val seds: List<ShortDocumentItem>? = null,
         val error: String? = null,
-        val readOnly: Boolean? = false
+        val readOnly: Boolean? = false,
+        val subject: BucAndSedSubject? = null
 ) {
     override fun toString(): String {
         return toJson()
@@ -36,8 +42,11 @@ data class BucAndSedView(
                 else -> false
             }
         }
-        fun from(buc: Buc): BucAndSedView {
+        fun from(buc: Buc) = from(buc, null)
+
+        fun from(buc: Buc, subject: BucAndSedSubject?): BucAndSedView {
             val bucUtil = BucUtils(buc)
+            println("setter subject: $subject")
             return BucAndSedView(
                     readOnly =  checkForReadOnly(buc),
                     type = bucUtil.getProcessDefinitionName() ?: "",
@@ -53,7 +62,8 @@ data class BucAndSedView(
                                 name = it.organisation?.name
                         )
                     },
-                    seds = bucUtil.getAllDocuments()
+                    seds = bucUtil.getAllDocuments(),
+                    subject = subject
             )
         }
     }

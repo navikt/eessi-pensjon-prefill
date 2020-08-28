@@ -4,7 +4,9 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.doThrow
 import com.nhaarman.mockitokotlin2.whenever
+import no.nav.eessi.pensjon.fagmodul.eux.BucAndSedSubject
 import no.nav.eessi.pensjon.fagmodul.eux.BucAndSedView
+import no.nav.eessi.pensjon.fagmodul.eux.EuxKlient
 import no.nav.eessi.pensjon.fagmodul.eux.EuxService
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Properties
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Rinasak
@@ -30,6 +32,7 @@ import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.Spy
 import org.mockito.junit.jupiter.MockitoExtension
@@ -42,6 +45,9 @@ class BucControllerTest {
 
     @Spy
     lateinit var auditLogger: AuditLogger
+
+    @InjectMocks
+    lateinit var mockEuxKlient: EuxKlient
 
     @Spy
     lateinit var mockEuxService: EuxService
@@ -205,7 +211,7 @@ class BucControllerTest {
         val aktoerId = "1234568"
         val vedtaksId = "22455454"
         val fnrGjenlevende = "13057065487"
-        val avdodfnr = "12312312312312312312312"
+        val avdodfnr = "12312312312"
 
         // pensjonsinformasjonsKLient
         val mockPensjoninfo = Pensjonsinformasjon()
@@ -219,7 +225,7 @@ class BucControllerTest {
         whenever(mockAktoerIdHelper.hentGjeldendeIdent(IdentGruppe.NorskIdent, AktoerId(aktoerId))).thenReturn(NorskIdent(fnrGjenlevende))
 
         val documentsItem = listOf(DocumentsItem(type = "P2100"))
-        val avdodView = listOf(BucAndSedView.from(Buc(id = "123", processDefinitionName = "P_BUC_02", documents = documentsItem)))
+        val avdodView = listOf(BucAndSedView.from(Buc(id = "123", processDefinitionName = "P_BUC_02", documents = documentsItem), BucAndSedSubject(fnrGjenlevende, avdodfnr)))
         doReturn(avdodView).whenever(mockEuxService).getBucAndSedViewAvdod(avdodfnr, fnrGjenlevende)
 
         //euxService.getrinasakeravdod
@@ -235,8 +241,55 @@ class BucControllerTest {
         val actual = bucController.getBucogSedViewVedtak(aktoerId, vedtaksId)
         assertEquals(2, actual.size)
         assertTrue(actual.contains( avdodView.first() ))
+    }
+
+    @Test
+    fun `Gitt en gjenlevende med vedtak som inneholder avdodfar og avdodmor Når BUC og SED forsøkes å hentes Så returner alle SED og BUC tilhørende gjenlevende`() {
+        val aktoerId = "1234568"
+        val vedtaksId = "22455454"
+        val fnrGjenlevende = "13057065487"
+        val avdodMorfnr = "310233213123"
+        val avdodFarfnr = "101020223123"
+
+        // pensjonsinformasjonsKLient
+        val mockPensjoninfo = Pensjonsinformasjon()
+        mockPensjoninfo.avdod = V1Avdod()
+        mockPensjoninfo.person = V1Person()
+        mockPensjoninfo.avdod.avdodMor = avdodMorfnr
+        mockPensjoninfo.avdod.avdodFar = avdodFarfnr
+        mockPensjoninfo.person.aktorId = aktoerId
+
+        doReturn(mockPensjoninfo).`when`(mockPensjonClient).hentAltPaaVedtak(vedtaksId)
+
+        doReturn(NorskIdent(fnrGjenlevende))
+            .doReturn(NorskIdent(fnrGjenlevende))
+            .`when`(mockAktoerIdHelper).hentGjeldendeIdent(IdentGruppe.NorskIdent, AktoerId(aktoerId))
+
+        val rinaSaker = listOf<Rinasak>()
+        doReturn(rinaSaker).whenever(mockEuxService).getRinasaker(any(), any())
+
+        val documentsItem1 = listOf(DocumentsItem(type = "P2100"))
+
+        val buc1 = Buc(id = "123", processDefinitionName = "P_BUC_02", documents = documentsItem1)
+        val avdodView1 = listOf(BucAndSedView.from(buc1, BucAndSedSubject(fnrGjenlevende, avdodMorfnr)))
+
+        val buc2 = Buc(id = "231", processDefinitionName = "P_BUC_02", documents = documentsItem1)
+        val avdodView2 = listOf(BucAndSedView.from(buc2, BucAndSedSubject(fnrGjenlevende, avdodFarfnr)))
+
+        doReturn(avdodView1).`when`(mockEuxService).getBucAndSedViewAvdod(avdodMorfnr, fnrGjenlevende)
+        doReturn(avdodView2).`when`(mockEuxService).getBucAndSedViewAvdod(avdodFarfnr, fnrGjenlevende)
+
+        val actual = bucController.getBucogSedViewVedtak(aktoerId, vedtaksId)
+        assertEquals(2, actual.size)
+        assertEquals("P_BUC_02", actual.first().type)
+        assertEquals("P_BUC_02", actual.last().type)
+        assertEquals("231", actual.first().caseId)
+        assertEquals("123", actual.last().caseId)
+        assertEquals(avdodMorfnr, actual.last().subject?.avdod)
+        assertEquals(fnrGjenlevende, actual.last().subject?.fnr)
 
     }
+
 
     @Test
     fun `Gitt en gjenlevende med vedtak uten avdød Når BUC og SED forsøkes å hentes Så returner alle SED og BUC tilhørende gjenlevende uten P_BUC_02`() {
@@ -267,6 +320,7 @@ class BucControllerTest {
         val actual = bucController.getBucogSedViewVedtak(aktoerId, vedtaksId)
         assertEquals(1, actual.size)
         assertEquals("P_BUC_01", actual.first().type)
+
     }
 
     @Test
