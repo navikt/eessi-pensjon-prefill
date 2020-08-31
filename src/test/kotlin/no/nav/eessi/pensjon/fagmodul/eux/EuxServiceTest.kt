@@ -10,7 +10,8 @@ import no.nav.eessi.pensjon.fagmodul.sedmodel.PinItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.utils.*
 import no.nav.eessi.pensjon.vedlegg.client.SafClient
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -478,16 +479,58 @@ class EuxServiceTest {
         assertEquals(0, actual.size)
     }
 
+     @Test
+    fun `Sjekk om Pin node ikke finnes i SED logger feil`() {
+        val manglerPinGjenlevende = """
+            {
+              "sed" : "P2000",
+              "sedGVer" : "4",
+              "sedVer" : "1",
+              "nav" : {
+                "bruker" : {
+                  "person" : {
+                    "pin" : [ {
+                      "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                      "institusjonsid" : "NO:noinst002",
+                      "identifikator" : "3123",
+                      "land" : "NO"
+                    } ],
+                    "statsborgerskap" : [ {
+                      "land" : "QX"
+                    } ],
+                    "etternavn" : "Testesen",
+                    "fornavn" : "Test",
+                    "kjoenn" : "M",
+                    "foedselsdato" : "1988-07-12"
+                  }
+                },
+                "krav" : {
+                  "dato" : "2018-06-28"
+                }
+              },
+              "pensjon" : {
+                "kravDato" : {
+                  "dato" : "2018-06-28"
+                }
+              }
+            }
+        """.trimIndent()
+        val data = listOf<BucOgDocumentAvdod>(BucOgDocumentAvdod("2321", Buc(), manglerPinGjenlevende))
+        val result = service.filterGyldigBucGjenlevendeAvdod(data, "23123")
+        assertEquals(0, result.size)
+
+    }
+
     @Test
-    fun `Gitt det er et p2000 Når det filtrers på gjenlevende felt og den gjenlevndefnr Så kastes det en exceptioon`() {
-        val rinaid = "123123"
-        val gjenlevendeFnr = "12345678123123"
-        val sedfilepath = "src/test/resources/json/nav/P2000-NAV.json"
+    fun `Sjekk om Pin node finnes i Sed returnerer BUC`() {
+
+        val sedfilepath = "src/test/resources/json/nav/P2100-PinNO-NAV.json"
         val sedjson = String(Files.readAllBytes(Paths.get(sedfilepath)))
 
-        val docs = listOf(BucOgDocumentAvdod(rinaid, Buc(id = rinaid, processDefinitionName = "P_BUC_02"), sedjson))
-        assertThrows<IllegalStateException> {
-            service.filterGyldigBucGjenlevendeAvdod(docs, gjenlevendeFnr)
-        }
+        val data = listOf<BucOgDocumentAvdod>(BucOgDocumentAvdod("23123", Buc(id = "2131", processDefinitionName = "P_BUC_02"), sedjson))
+        val result = service.filterGyldigBucGjenlevendeAvdod(data, "1234567890000")
+        assertEquals(1, result.size)
+
     }
+
 }

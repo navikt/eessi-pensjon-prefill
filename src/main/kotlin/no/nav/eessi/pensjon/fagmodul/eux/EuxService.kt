@@ -260,7 +260,7 @@ class EuxService (private val euxKlient: EuxKlient,
         return listeAvSedsPaaAvdod
             .filter { docs ->
                 val sedRootNode = mapper.readTree(docs.dokumentJson)
-                filterGjenlevendePinNode(sedRootNode) == fnrGjenlevende
+                filterGjenlevendePinNode(sedRootNode, docs.rinaidAvdod) == fnrGjenlevende
             }
             .map { docs -> docs.buc }
             .sortedBy { it.id }
@@ -290,9 +290,14 @@ class EuxService (private val euxKlient: EuxKlient,
     /**
      * json filter uthenting av pin på gjenlevende (p2100)
      */
-    private fun filterGjenlevendePinNode(sedRootNode: JsonNode): String? {
-        val pinNode = sedRootNode.at("/pensjon/gjenlevende")
-        return pinNode.findValue("pin")
+    fun filterGjenlevendePinNode(sedRootNode: JsonNode, rinaidAvdod: String): String? {
+        val gjenlevendeNode = sedRootNode.at("/pensjon/gjenlevende")
+        val pinNode = gjenlevendeNode.findValue("pin")
+        if (pinNode == null) {
+            logger.warn("Ingen fnr funnet på gjenlevende. P2100 rinaid: $rinaidAvdod")
+            return null
+        }
+        return pinNode
                 .filter { pin -> pin.get("land").textValue() == "NO" }
                 .map { pin -> pin.get("identifikator").textValue() }
                 .lastOrNull()
