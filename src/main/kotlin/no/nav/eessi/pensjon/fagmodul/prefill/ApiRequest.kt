@@ -12,7 +12,12 @@ import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
 import no.nav.eessi.pensjon.utils.typeRefs
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
-import org.springframework.web.bind.annotation.ResponseStatus
+import org.springframework.web.server.ResponseStatusException
+
+class ApiSubject(
+    val fnr: String? = null,
+    val avdod: String? = null
+)
 
 //Samme som SedRequest i frontend-api
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -22,7 +27,6 @@ data class ApiRequest(
         val kravId: String? = null,
         val aktoerId: String? = null,
         val fnr: String? = null,
-        val avdodfnr: String? = null,
         val payload: String? = null,
         val buc: String? = null,
         val sed: String? = null,
@@ -30,7 +34,9 @@ data class ApiRequest(
         val euxCaseId: String? = null,
         val institutions: List<InstitusjonItem>? = null,
         val subjectArea: String? = null,
-        val skipSEDkey: List<String>? = null
+        val skipSEDkey: List<String>? = null,
+        val avdodfnr: String? = null, //kun P2100 på P_BUC_02
+        val subject: ApiSubject? = null //P_BUC_02 alle andre seder etter P2100
 ) {
     fun toAudit(): String {
         val json = ApiRequest(
@@ -43,6 +49,10 @@ data class ApiRequest(
         ).toJsonSkipEmpty()
         val map = mapJsonToAny(json, typeRefs<Map<String, String>>())
         return Joiner.on(" ").withKeyValueSeparator(": ").join(map)
+    }
+
+    fun riktigAvdod(): String? {
+        return subject?.avdod ?: avdodfnr
     }
 
     companion object {
@@ -83,7 +93,7 @@ data class ApiRequest(
             val avdodNorskIdent: String?
             val avdodAktorId: String?
             if (request.buc == "P_BUC_02") {
-                avdodNorskIdent = request.avdodfnr ?: throw MangelfulleInndataException("Mangler Personnr på Avdød")
+                avdodNorskIdent = request.riktigAvdod() ?: throw MangelfulleInndataException("Mangler Personnr på Avdød")
                 avdodAktorId = avdodaktoerID ?: throw MangelfulleInndataException("Mangler AktoerId på Avdød")
                 avdod = PersonId(avdodNorskIdent, avdodAktorId)
             }
@@ -116,6 +126,4 @@ data class ApiRequest(
     }
 }
 
-
-@ResponseStatus(value = HttpStatus.BAD_REQUEST)
-class MangelfulleInndataException(message: String) : IllegalArgumentException(message)
+class MangelfulleInndataException(reason: String) : ResponseStatusException(HttpStatus.BAD_REQUEST, reason)

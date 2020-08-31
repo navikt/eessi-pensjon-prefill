@@ -1,5 +1,7 @@
 package no.nav.eessi.pensjon.integrationtest
 
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import no.nav.eessi.pensjon.UnsecuredWebMvcTestLauncher
@@ -13,6 +15,7 @@ import no.nav.eessi.pensjon.personoppslag.personv3.PersonV3Service
 import no.nav.eessi.pensjon.security.sts.STSService
 import no.nav.eessi.pensjon.services.kodeverk.KodeverkClient
 import org.hamcrest.Matchers
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentMatchers
 import org.skyscreamer.jsonassert.JSONAssert
@@ -169,6 +172,109 @@ class SedPrefillIntegrationSpringTest {
                 .andExpect(status().isBadRequest)
                 .andExpect(status().reason(Matchers.containsString("Du kan ikke opprette alderspensjonskrav i en uføretrygdsak (PESYS-saksnr: 22874955 har sakstype UFOREP)")))
 
+    }
+
+    @Test
+    @Throws(Exception::class)
+    fun `preview sed P5000 with missing avdodfnr and Subject throws error bad request`() {
+
+        doReturn(NorskIdent("12312312312")).`when`(aktoerService).hentGjeldendeIdent(IdentGruppe.NorskIdent, AktoerId("0105094340092"))
+
+        val apijson = """
+            {
+              "sakId" : "EESSI-PEN-123",
+              "vedtakId" : "",
+              "kravId" : null,
+              "aktoerId" : "0105094340092",
+              "fnr" : null,
+              "avdodfnr" : null,
+              "payload" : null,
+              "buc" : "P_BUC_02",
+              "sed" : "P5000",
+              "documentid" : null,
+              "euxCaseId" : "123123",
+              "institutions" : [ {
+                "country" : "FI",
+                "institution" : "FI:Finland",
+                "name" : "Finland test"
+              } ],
+              "subjectArea" : "Pensjon",
+              "skipSEDkey" : null
+            }
+        """.trimIndent()
+
+        mockMvc.perform(post("/sed/preview")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(apijson))
+                .andDo(print())
+                .andExpect(status().isBadRequest)
+                .andExpect(status().reason(Matchers.containsString("Mangler fnr for avdød")))
+
+    }
+
+    @Test
+    @Throws(Exception::class)
+    fun `preview sed P5000 P_BUC_02 Gjenlevende har med avdod skal returnere en gyldig SED`() {
+
+        doReturn(NorskIdent("12312312312")).`when`(aktoerService).hentGjeldendeIdent(IdentGruppe.NorskIdent, AktoerId("0105094340092"))
+        doReturn(AktoerId("3323332333233323")).`when`(aktoerService).hentGjeldendeIdent(IdentGruppe.AktoerId, NorskIdent("9876543210"))
+
+        doReturn(BrukerMock.createWith(true,"Lever", "Gjenlev", "12312312312")).`when`(personV3Service).hentBruker("12312312312")
+        doReturn(BrukerMock.createWith(true, "Avdød", "Død", "9876543210")).`when`(personV3Service).hentBruker("9876543210")
+
+        doReturn(PrefillTestHelper.readXMLresponse("P2100-GL-UTL-INNV.xml")).`when`(restTemplate).exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java))
+
+        doReturn("QX").doReturn("XQ").`when`(kodeverkClient).finnLandkode2(any())
+
+        val apijson = """
+            {
+              "sakId" : "22874955",
+              "vedtakId" : "",
+              "kravId" : null,
+              "aktoerId" : "0105094340092",
+              "fnr" : null,
+              "avdodfnr" : null,
+              "payload" : null,
+              "buc" : "P_BUC_02",
+              "sed" : "P5000",
+              "documentid" : null,
+              "euxCaseId" : "123123",
+              "institutions" : [ {
+                "country" : "FI",
+                "institution" : "FI:Finland",
+                "name" : "Finland test"
+              } ],
+              "subjectArea" : "Pensjon",
+              "skipSEDkey" : null,
+              "subject" : { "fnr" : "12345678901", "avdod" : "9876543210"}
+            }
+        """.trimIndent()
+
+        val result = mockMvc.perform(post("/sed/preview")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(apijson))
+                .andDo(print())
+                .andExpect(status().isOk)
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andReturn()
+
+        val response = result.response.getContentAsString(charset("UTF-8"))
+
+        val mapper = jacksonObjectMapper()
+        val sedRootNode = mapper.readTree(response)
+        val gjenlevendePIN =  finnPin(sedRootNode.at("/pensjon/gjenlevende/person"))
+        val avdodPIN = finnPin(sedRootNode.at("/nav/bruker"))
+
+        Assertions.assertEquals("12312312312", gjenlevendePIN)
+        Assertions.assertEquals("9876543210", avdodPIN)
+
+    }
+
+    private fun finnPin(pinNode: JsonNode): String? {
+        return pinNode.findValue("pin")
+                .filter { pin -> pin.get("land").textValue() == "NO" }
+                .map { pin -> pin.get("identifikator").textValue() }
+                .lastOrNull()
     }
 
     @Test

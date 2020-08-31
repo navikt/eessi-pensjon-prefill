@@ -10,6 +10,7 @@ import no.nav.eessi.pensjon.fagmodul.eux.basismodel.BucSedResponse
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.*
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.prefill.ApiRequest
+import no.nav.eessi.pensjon.fagmodul.prefill.ApiSubject
 import no.nav.eessi.pensjon.fagmodul.prefill.MangelfulleInndataException
 import no.nav.eessi.pensjon.fagmodul.prefill.PrefillService
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillSEDService
@@ -403,7 +404,7 @@ class SedControllerTest {
     }
 
     @Test
-    fun `call getAvdodAktoerId  expect valid aktoerId when avdodfnr excist and sed is P2100`() {
+    fun `call getAvdodAktoerId  expect valid aktoerId when avdodfnr exist and sed is P2100`() {
         val apireq = ApiRequest(
                 subjectArea = "Pensjon",
                 sakId = "EESSI-PEN-123",
@@ -417,6 +418,24 @@ class SedControllerTest {
 
         val result = sedController.getAvdodAktoerId(request = apireq)
         assertEquals("1122334455", result)
+    }
+
+    @Test
+    fun `call getAvdodAktoerId  expect valid aktoerId when avdod exist and sed is P5000`() {
+        val apireq = ApiRequest(
+                subjectArea = "Pensjon",
+                sakId = "EESSI-PEN-123",
+                sed = "P5000",
+                buc = "P_BUC_02",
+                aktoerId = "0105094340092",
+                avdodfnr = "12345566",
+                vedtakId = "23123123",
+                subject = ApiSubject("23123123, ","46784678467")
+        )
+        whenever(mockAktoerIdHelper.hentGjeldendeIdent(eq(IdentGruppe.AktoerId), any<NorskIdent>())).thenReturn(AktoerId("467846784671"))
+
+        val result = sedController.getAvdodAktoerId(request = apireq)
+        assertEquals("467846784671", result)
     }
 
     @Test

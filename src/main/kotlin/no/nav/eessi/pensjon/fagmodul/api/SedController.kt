@@ -22,9 +22,11 @@ import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
 import no.nav.security.token.support.core.api.Protected
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.server.ResponseStatusException
 import java.time.LocalDateTime
 import javax.annotation.PostConstruct
 
@@ -50,7 +52,7 @@ class SedController(private val euxService: EuxService,
     }
 
     //** oppdatert i api 18.02.2019
-    @ApiOperation("Genereren en Nav-Sed (SED), viser en oppsumering av SED (json). Før evt. innsending til EUX/Rina")
+    @ApiOperation("Generer en Nav-Sed (SED), viser en oppsumering av SED (json). Før evt. innsending til EUX/Rina")
     @PostMapping("/preview", "/preview/{filter}", consumes = ["application/json"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun confirmDocument(@RequestBody request: ApiRequest, @PathVariable("filter", required = false) filter: String? = null): String {
 
@@ -85,9 +87,10 @@ class SedController(private val euxService: EuxService,
         auditlogger.log("addInstutionAndDocument", request.aktoerId ?: "", request.toAudit())
 
         return AddInstutionAndDocument.measure {
-            val norskIdent = hentFnrfraAktoerService(request.aktoerId, aktoerService)
 
+            val norskIdent = hentFnrfraAktoerService(request.aktoerId, aktoerService)
             val dataModel = ApiRequest.buildPrefillDataModelOnExisting(request, norskIdent, getAvdodAktoerId(request))
+
             logger.info("******* Legge til ny SED - start *******")
             logger.info("kaller add (institutions and sed) rinaId: ${request.euxCaseId} bucType: ${request.buc} sedType: ${request.sed} aktoerId: ${request.aktoerId}")
 
@@ -227,12 +230,12 @@ class SedController(private val euxService: EuxService,
     //Hjelpe funksjon for å validere og hente aktoerid for evt. avdodfnr fra UI (P2100)
     fun getAvdodAktoerId(request: ApiRequest): String? {
         return if ((request.buc ?: throw MangelfulleInndataException("Mangler Buc")) == "P_BUC_02") {
-            val norskIdent = request.avdodfnr ?: throw MangelfulleInndataException("Mangler fnr for avdød")
+            val norskIdent = request.riktigAvdod() ?: throw MangelfulleInndataException("Mangler fnr for avdød")
             if (norskIdent.isBlank()) {
-                    throw ManglerAktoerIdException("Tom input-verdi")
-                }
+                throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Ident har tom input-verdi")
+            }
             aktoerService.hentGjeldendeIdent(IdentGruppe.AktoerId, NorskIdent(norskIdent))?.id
-                            ?: throw AktoerregisterIkkeFunnetException("AktoerId for NorskIdent ikke funnet.")
+                    ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "AktoerId for NorskIdent ikke funnet.")
         }
         else null
     }

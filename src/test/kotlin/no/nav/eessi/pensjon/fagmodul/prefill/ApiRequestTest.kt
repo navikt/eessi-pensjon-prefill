@@ -174,6 +174,46 @@ class ApiRequestTest {
 
     }
 
+    @Test
+    fun `check valid request to model on P_BUC_02 P5000`() {
+        val mockData = ApiRequest(
+                sakId = "12234",
+                sed = "P5000",
+                buc = "P_BUC_02",
+                aktoerId = "0105094340092",
+                avdodfnr = null,
+                subject = ApiSubject("23123", "576567567567")
+        )
+
+        val model = ApiRequest.buildPrefillDataModelConfirm(mockData, "23123", "576567567567")
+
+        assertEquals("23123", model.bruker.norskIdent)
+        assertEquals("12234", model.penSaksnummer)
+        assertEquals("0105094340092", model.bruker.aktorId)
+        assertEquals("P5000", model.getSEDType())
+        assertEquals("576567567567", model.avdod?.aktorId)
+        assertEquals("576567567567", model.avdod?.norskIdent)
+        assertEquals(SED::class.java, model.sed::class.java)
+
+    }
+
+
+    @Test
+    fun `request to model without avdod on P_BUC_02 P5000 should throw execptin`() {
+        val mockData = ApiRequest(
+                sakId = "12234",
+                sed = "P5000",
+                buc = "P_BUC_02",
+                aktoerId = "0105094340092",
+                avdodfnr = null,
+                subject = null
+        )
+        assertThrows<MangelfulleInndataException> {
+            ApiRequest.buildPrefillDataModelConfirm(mockData, "23123", "576567567567")
+        }
+
+    }
+
 
     @Test
     fun `check on aktoerId is null`() {
@@ -182,7 +222,7 @@ class ApiRequestTest {
                 sed = "P6000",
                 aktoerId = null
         )
-        assertThrows<IllegalArgumentException> {
+        assertThrows<MangelfulleInndataException> {
             ApiRequest.buildPrefillDataModelConfirm(mockData, "12345", null)
         }
     }

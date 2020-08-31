@@ -24,7 +24,7 @@ object PersonMock {
 }
 
 object BrukerMock {
-    internal fun createWith(landkoder: Boolean = true, fornavn: String = "Test", etternavn: String = "Testesen"):
+    internal fun createWith(landkoder: Boolean = true, fornavn: String = "Test", etternavn: String = "Testesen", fnr: String = "3123"):
             Bruker? = Bruker()
             .withPersonnavn(Personnavn()
                     .withEtternavn(etternavn)
@@ -32,7 +32,7 @@ object BrukerMock {
                     .withSammensattNavn("$fornavn $etternavn"))
             .withKjoenn(Kjoenn().withKjoenn(Kjoennstyper().withValue("M")))
             .withStatsborgerskap(Statsborgerskap().withLand(Landkoder().withValue("NOR")))
-            .withAktoer(PersonIdent().withIdent(NorskIdent().withIdent("3123")))
+            .withAktoer(PersonIdent().withIdent(NorskIdent().withIdent(fnr)))
             .withFoedselsdato(Foedselsdato().withFoedselsdato(DatatypeFactory.newInstance().newXMLGregorianCalendarDate(1988,7, 12,10)))
             .withBostedsadresse(Bostedsadresse()
                     .withStrukturertAdresse(Gateadresse()
