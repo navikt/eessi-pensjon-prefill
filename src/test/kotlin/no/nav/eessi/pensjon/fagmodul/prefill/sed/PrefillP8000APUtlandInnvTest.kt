@@ -54,8 +54,8 @@ class PrefillP8000APUtlandInnvTest {
     fun `forventet korrekt utfylt P8000 alderperson med mockdata fra testfiler`() {
         val p8000 = prefill.prefill(prefillData, personData)
 
-        assertEquals("HASNAWI-MASK", p8000.nav?.bruker?.person?.fornavn)
-        assertEquals("OKOULOV", p8000.nav?.bruker?.person?.etternavn)
+        assertEquals("ODIN ETTØYE", p8000.nav?.bruker?.person?.fornavn)
+        assertEquals("BALDER", p8000.nav?.bruker?.person?.etternavn)
         val navfnr1 = NavFodselsnummer(p8000.nav?.bruker?.person?.pin?.get(0)?.identifikator!!)
         assertEquals(68, navfnr1.getAge())
 

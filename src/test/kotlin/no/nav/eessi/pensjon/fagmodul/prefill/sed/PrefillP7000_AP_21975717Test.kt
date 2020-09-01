@@ -66,7 +66,7 @@ class PrefillP7000_AP_21975717Test {
     fun `forventet korrekt utfylt P7000 Melding om vedtakssammendrag med MockData fra testfiler`() {
         val p7000 = prefill.prefill(prefillData, personData)
 
-        assertEquals("OKOULOV", p7000.nav?.ektefelle?.person?.etternavn)
+        assertEquals("BALDER", p7000.nav?.ektefelle?.person?.etternavn)
         assertEquals("M", p7000.pensjon?.bruker?.person?.kjoenn)
 
         //"foedselsdato": "1951-11-07T00:00:00.000+0200",

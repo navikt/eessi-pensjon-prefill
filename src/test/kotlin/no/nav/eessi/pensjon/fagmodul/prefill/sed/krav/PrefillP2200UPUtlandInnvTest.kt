@@ -88,8 +88,8 @@ class PrefillP2200UPUtlandInnvTest {
         assertEquals("bar", p2200.nav?.bruker?.bank?.konto?.sepa?.iban)
         assertEquals("baz", p2200.nav?.bruker?.bank?.konto?.sepa?.swift)
 
-        assertEquals("HASNAWI-MASK", p2200.nav?.bruker?.person?.fornavn)
-        assertEquals("OKOULOV", p2200.nav?.bruker?.person?.etternavn)
+        assertEquals("ODIN ETTØYE", p2200.nav?.bruker?.person?.fornavn)
+        assertEquals("BALDER", p2200.nav?.bruker?.person?.etternavn)
         val navfnr1 = NavFodselsnummer(p2200.nav?.bruker?.person?.pin?.get(0)?.identifikator!!)
         assertEquals(68, navfnr1.getAge())
 
@@ -101,8 +101,8 @@ class PrefillP2200UPUtlandInnvTest {
         assertEquals("NO:noinst002", pinitem?.institusjonsid)
         assertEquals(personFnr, pinitem?.identifikator)
 
-        assertEquals("RANNAR-MASK", p2200.nav?.ektefelle?.person?.fornavn)
-        assertEquals("MIZINTSEV", p2200.nav?.ektefelle?.person?.etternavn)
+        assertEquals("THOR-DOPAPIR", p2200.nav?.ektefelle?.person?.fornavn)
+        assertEquals("RAGNAROK", p2200.nav?.ektefelle?.person?.etternavn)
 
         val navfnr = NavFodselsnummer(p2200.nav?.ektefelle?.person?.pin?.get(0)?.identifikator!!)
         assertEquals(70, navfnr.getAge())

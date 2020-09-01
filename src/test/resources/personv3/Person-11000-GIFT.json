@@ -73,10 +73,10 @@
         },
         "kjoenn": null,
         "personnavn": {
-          "etternavn": "MIZINTSEV",
-          "fornavn": "RANNAR-MASK",
+          "etternavn": "RAGNAROK",
+          "fornavn": "THOR-DOPAPIR",
           "mellomnavn": null,
-          "sammensattNavn": "MIZINTSEV RANNAR-MASK",
+          "sammensattNavn": "THOR-DOPAPIR RAGNAROK",
           "endringstidspunkt": null,
           "endretAv": null,
           "endringstype": null
@@ -109,10 +109,10 @@
     }
   },
   "personnavn": {
-    "etternavn": "OKOULOV",
-    "fornavn": "HASNAWI-MASK",
+    "etternavn": "BALDER",
+    "fornavn": "ODIN ETTØYE",
     "mellomnavn": null,
-    "sammensattNavn": "OKOULOV HASNAWI-MASK",
+    "sammensattNavn": "ODIN ETTØYE BALDER",
     "endringstidspunkt": null,
     "endretAv": null,
     "endringstype": null

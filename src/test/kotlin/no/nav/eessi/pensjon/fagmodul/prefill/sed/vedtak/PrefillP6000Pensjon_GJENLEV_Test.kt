@@ -3,6 +3,7 @@ package no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak
 import com.nhaarman.mockitokotlin2.mock
 import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjon
 import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjonMother.standardEessiInfo
+import no.nav.eessi.pensjon.fagmodul.prefill.model.PersonId
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModelMother
 import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonService
@@ -27,7 +28,8 @@ import org.mockito.quality.Strictness
 @MockitoSettings(strictness = Strictness.LENIENT)
 class PrefillP6000Pensjon_GJENLEV_Test {
 
-    private val personFnr = FodselsnummerMother.generateRandomFnr(67)
+    private val personFnr = FodselsnummerMother.generateRandomFnr(57)
+    private val avdodPersonFnr = FodselsnummerMother.generateRandomFnr(63)
 
     private lateinit var prefillData: PrefillDataModel
     private lateinit var prefillSEDService: PrefillSEDService
@@ -40,7 +42,7 @@ class PrefillP6000Pensjon_GJENLEV_Test {
     fun setup() {
         prefillPersonService = PrefillTestHelper.setupPersondataFraTPS(setOf(
                 MockTpsPersonServiceFactory.MockTPS("Person-11000-GIFT.json", personFnr, MockTpsPersonServiceFactory.MockTPS.TPSType.PERSON),
-                MockTpsPersonServiceFactory.MockTPS("Person-12000-EKTE.json", FodselsnummerMother.generateRandomFnr(69), MockTpsPersonServiceFactory.MockTPS.TPSType.EKTE)
+                MockTpsPersonServiceFactory.MockTPS("Person-12000-EKTE.json", avdodPersonFnr, MockTpsPersonServiceFactory.MockTPS.TPSType.EKTE)
         ))
 
         prefillNav = PrefillNav(
@@ -55,7 +57,7 @@ class PrefillP6000Pensjon_GJENLEV_Test {
     @Test
     fun `forventet korrekt utfylling av Pensjon objekt på Gjenlevendepensjon`() {
         dataFromPEN = PrefillTestHelper.lesPensjonsdataVedtakFraFil("P6000-GP-401.xml")
-        prefillData = PrefillDataModelMother.initialPrefillDataModel("P6000", personFnr, penSaksnummer = "22580170", vedtakId = "12312312")
+        prefillData = PrefillDataModelMother.initialPrefillDataModel("P6000", personFnr, penSaksnummer = "22580170", vedtakId = "12312312", avdod = PersonId(avdodPersonFnr, "1234567891234"))
         prefillSEDService = PrefillSEDService(prefillNav, prefillPersonService, eessiInformasjon, dataFromPEN)
 
         val sed = prefillSEDService.prefill(prefillData)
@@ -64,6 +66,16 @@ class PrefillP6000Pensjon_GJENLEV_Test {
         assertNotNull(result.vedtak)
         assertNotNull(result.sak)
         assertNotNull(result.tilleggsinformasjon)
+
+        val avdod = sed.nav?.bruker?.person
+        val gjenlev = sed.pensjon?.gjenlevende
+
+        assertEquals("THOR-DOPAPIR", avdod?.fornavn)
+        assertEquals("RAGNAROK", avdod?.etternavn)
+
+        assertEquals("ODIN ETTØYE", gjenlev?.person?.fornavn)
+        assertEquals("BALDER", gjenlev?.person?.etternavn)
+
 
         val vedtak = result.vedtak?.get(0)
         assertEquals("2018-05-01", vedtak?.virkningsdato, "vedtak.virkningsdato")

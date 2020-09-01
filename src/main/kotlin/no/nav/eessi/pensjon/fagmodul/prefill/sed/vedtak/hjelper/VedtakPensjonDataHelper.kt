@@ -25,10 +25,11 @@ object VedtakPensjonDataHelper {
     private fun harAvdodBoddArbeidetUtland(pendata: Pensjonsinformasjon): Boolean {
         val avdod: V1Avdod = pendata.avdod ?: V1Avdod()
 
-        if (avdod.avdod != "" && avdod.isAvdodBoddArbeidetUtland != null) {
-            return avdod.isAvdodBoddArbeidetUtland
+        return when {
+            avdod.avdod != "" && avdod.isAvdodBoddArbeidetUtland != null -> true
+            avdod.isAvdodMorBoddArbeidetUtland != null || avdod.isAvdodFarBoddArbeidetUtland != null -> true
+            else -> false
         }
-        return false
     }
 
     fun isVilkarsvurderingAvslagHovedytelseSamme(key: String, pendata: Pensjonsinformasjon): Boolean {

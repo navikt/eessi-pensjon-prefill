@@ -88,8 +88,8 @@ class PrefillP2000_AP_LOP_UTLANDTest {
         assertEquals("bar", p2000.nav?.bruker?.bank?.konto?.sepa?.iban)
         assertEquals("baz", p2000.nav?.bruker?.bank?.konto?.sepa?.swift)
 
-        assertEquals("HASNAWI-MASK", p2000.nav?.bruker?.person?.fornavn)
-        assertEquals("OKOULOV", p2000.nav?.bruker?.person?.etternavn)
+        assertEquals("ODIN ETTØYE", p2000.nav?.bruker?.person?.fornavn)
+        assertEquals("BALDER", p2000.nav?.bruker?.person?.etternavn)
         val navfnr1 = NavFodselsnummer(p2000.nav?.bruker?.person?.pin?.get(0)?.identifikator!!)
         assertEquals(68, navfnr1.getAge())
 
@@ -101,8 +101,8 @@ class PrefillP2000_AP_LOP_UTLANDTest {
         assertEquals("NO:noinst002", pinitem?.institusjonsid)
         assertEquals(personFnr, pinitem?.identifikator)
 
-        assertEquals("RANNAR-MASK", p2000.nav?.ektefelle?.person?.fornavn)
-        assertEquals("MIZINTSEV", p2000.nav?.ektefelle?.person?.etternavn)
+        assertEquals("THOR-DOPAPIR", p2000.nav?.ektefelle?.person?.fornavn)
+        assertEquals("RAGNAROK", p2000.nav?.ektefelle?.person?.etternavn)
 
         val navfnr = NavFodselsnummer(p2000.nav?.ektefelle?.person?.pin?.get(0)?.identifikator!!)
         assertEquals(70, navfnr.getAge())

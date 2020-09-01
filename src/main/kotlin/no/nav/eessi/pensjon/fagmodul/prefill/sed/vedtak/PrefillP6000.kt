@@ -40,7 +40,7 @@ class PrefillP6000(private val prefillNav: PrefillNav,
         sed.nav = prefillNav.prefill(penSaksnummer = prefillData.penSaksnummer, bruker = prefillData.bruker, avdod = prefillData.avdod, personData = personData, brukerInformasjon = prefillData.getPersonInfoFromRequestData())
 
         logger.debug("-------------------| Preutfylling [$sedId] END |------------------- ")
-        return prefillData.sed
+        return sed
     }
 
     private fun eventuellGjenlevende(prefillData: PrefillDataModel, gjenlevendeBruker: no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker?): Bruker? {
