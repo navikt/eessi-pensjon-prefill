@@ -221,7 +221,7 @@ class PrefillNav(private val prefillAdresse: PrefillAdresse,
 
     fun prefill(penSaksnummer: String, bruker: PersonId, avdod: PersonId?, personData: PersonData, brukerInformasjon: BrukerInformasjon?): Nav {
 
-        val brukerEllerGjenlevende = personData.brukerEllerGjenlevende
+        val brukerEllerGjenlevende = personData.gjenlevendeEllerAvdod
         val ektefelleBruker = personData.ektefelleBruker
         val ekteTypeValue= personData.ekteTypeValue
         val barnBrukereFraTPS = personData.barnBrukereFraTPS

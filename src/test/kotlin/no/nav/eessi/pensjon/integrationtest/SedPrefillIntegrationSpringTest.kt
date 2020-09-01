@@ -270,6 +270,64 @@ class SedPrefillIntegrationSpringTest {
 
     }
 
+    @Test
+    @Throws(Exception::class)
+    fun `preview sed P6000 P_BUC_02 Gjenlevende har med avdod skal returnere en gyldig SED`() {
+
+        doReturn(NorskIdent("12312312312")).`when`(aktoerService).hentGjeldendeIdent(IdentGruppe.NorskIdent, AktoerId("0105094340092"))
+        doReturn(AktoerId("3323332333233323")).`when`(aktoerService).hentGjeldendeIdent(IdentGruppe.AktoerId, NorskIdent("9876543210"))
+
+        doReturn(BrukerMock.createWith(true,"Lever", "Gjenlev", "12312312312")).`when`(personV3Service).hentBruker("12312312312")
+        doReturn(BrukerMock.createWith(true, "Avdød", "Død", "9876543210")).`when`(personV3Service).hentBruker("9876543210")
+
+        doReturn(PrefillTestHelper.readXMLVedtakresponse("P6000-BARNEP-GJENLEV.xml")).`when`(restTemplate).exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java))
+
+        doReturn("QX").doReturn("XQ").`when`(kodeverkClient).finnLandkode2(any())
+
+        val apijson = """
+            {
+              "sakId" : "22874955",
+              "vedtakId" : "987654321122355466",
+              "kravId" : null,
+              "aktoerId" : "0105094340092",
+              "fnr" : null,
+              "avdodfnr" : null,
+              "payload" : null,
+              "buc" : "P_BUC_02",
+              "sed" : "P6000",
+              "documentid" : null,
+              "euxCaseId" : "123123",
+              "institutions" : [ {
+                "country" : "FI",
+                "institution" : "FI:Finland",
+                "name" : "Finland test"
+              } ],
+              "subjectArea" : "Pensjon",
+              "skipSEDkey" : null,
+              "subject" : { "fnr" : "12345678901", "avdod" : "9876543210"}
+            }
+        """.trimIndent()
+
+        val result = mockMvc.perform(post("/sed/preview")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(apijson))
+                .andDo(print())
+                .andExpect(status().isOk)
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andReturn()
+
+        val response = result.response.getContentAsString(charset("UTF-8"))
+
+        val mapper = jacksonObjectMapper()
+        val sedRootNode = mapper.readTree(response)
+        val gjenlevendePIN =  finnPin(sedRootNode.at("/pensjon/gjenlevende/person"))
+        val avdodPIN = finnPin(sedRootNode.at("/nav/bruker"))
+
+        Assertions.assertEquals("12312312312", gjenlevendePIN)
+        Assertions.assertEquals("9876543210", avdodPIN)
+
+    }
+
     private fun finnPin(pinNode: JsonNode): String? {
         return pinNode.findValue("pin")
                 .filter { pin -> pin.get("land").textValue() == "NO" }

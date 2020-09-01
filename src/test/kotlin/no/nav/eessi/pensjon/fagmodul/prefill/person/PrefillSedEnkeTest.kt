@@ -11,7 +11,6 @@ import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.FodselsnummerMother.generateRandomFnr
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.NavFodselsnummer
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillAdresse
-import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -66,14 +65,11 @@ class PrefillSedEnkeTest {
         val preutfyllingTPS = personDataFromTPS.mockPersonV3Service()
         val prefillNav = PrefillNav(mock<PrefillAdresse>(), institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO")
         val prefillData = initialPrefillDataModel(sedType = "P2100", pinId = fnr, avdod = PersonId(norskIdent = fnr, aktorId = "212"), vedtakId = "", penSaksnummer = "22875355")
-        val personData = PersonData(forsikretPerson = preutfyllingTPS.hentBruker(fnr)!!, ektefelleBruker = null, ekteTypeValue = "ENKE", brukerEllerGjenlevende = preutfyllingTPS.hentBruker(fnr), barnBrukereFraTPS = listOf(preutfyllingTPS.hentBruker(b1fnr)!!, preutfyllingTPS.hentBruker(b2fnr)!!))
+        val personData = PersonData(forsikretPerson = preutfyllingTPS.hentBruker(fnr)!!, ektefelleBruker = null, ekteTypeValue = "ENKE", gjenlevendeEllerAvdod = preutfyllingTPS.hentBruker(fnr), barnBrukereFraTPS = listOf(preutfyllingTPS.hentBruker(b1fnr)!!, preutfyllingTPS.hentBruker(b2fnr)!!))
         val response = prefillNav.prefill(penSaksnummer = prefillData.penSaksnummer, bruker = prefillData.bruker, avdod = prefillData.avdod, personData = personData, brukerInformasjon = prefillData.getPersonInfoFromRequestData())
         val sed = prefillData.sed
         sed.nav = response
 
-        print("----------------------------------------------------------")
-        println("SED: ${sed.toJsonSkipEmpty()}")
-        print("----------------------------------------------------------")
 
         assertEquals("JESSINE TORDNU", sed.nav?.bruker?.person?.fornavn)
         assertEquals("BOUWMANS", sed.nav?.bruker?.person?.etternavn)

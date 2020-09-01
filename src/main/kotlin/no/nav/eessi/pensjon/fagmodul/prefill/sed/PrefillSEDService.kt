@@ -39,8 +39,8 @@ class PrefillSEDService(private val prefillNav: PrefillNav,
 
         return when (sedType) {
             //krav
-            SEDType.P2000 -> PrefillP2000(prefillNav).prefill( prefillData, hentPersonerMedBarn(prefillData), hentRelevantPensjonSak(prefillData, { pensakType -> pensakType == ALDER.name}))
-            SEDType.P2200 -> PrefillP2200(prefillNav).prefill(prefillData, hentPersonerMedBarn(prefillData), hentRelevantPensjonSak(prefillData, { pensakType -> pensakType == UFOREP.name}))
+            SEDType.P2000 -> PrefillP2000(prefillNav).prefill(prefillData, hentPersonerMedBarn(prefillData), hentRelevantPensjonSak(prefillData, { pensakType -> pensakType == ALDER.name }))
+            SEDType.P2200 -> PrefillP2200(prefillNav).prefill(prefillData, hentPersonerMedBarn(prefillData), hentRelevantPensjonSak(prefillData, { pensakType -> pensakType == UFOREP.name }))
             SEDType.P2100 -> PrefillP2100(prefillNav).prefill(prefillData, hentPersonerMedBarn(prefillData), hentRelevantPensjonSak(prefillData, { pensakType -> listOf("ALDER", "BARNEP", "GJENLEV", "UFOREP").contains(pensakType) }))
 
             //vedtak
@@ -69,7 +69,7 @@ class PrefillSEDService(private val prefillNav: PrefillNav,
     }
 
 
-    fun hentRelevantPensjonSak(prefillData: PrefillDataModel, akseptabelSakstypeForSed: (String) -> Boolean) : V1Sak? {
+    fun hentRelevantPensjonSak(prefillData: PrefillDataModel, akseptabelSakstypeForSed: (String) -> Boolean): V1Sak? {
         return pensjonsinformasjonService.hentRelevantPensjonSak(prefillData, akseptabelSakstypeForSed)
     }
 
@@ -80,21 +80,23 @@ class PrefillSEDService(private val prefillNav: PrefillNav,
 
     //Henter inn alle personer fra ep-personoppslag  først før preutfylling
     private fun hentPersoner(prefillData: PrefillDataModel, fyllUtBarnListe: Boolean = false): PersonData {
-        // FIXME - det veksles mellom gjenlevende og bruker ... usikkert om dette er rett...
-        logger.info("Henter hovedperson/gjenlevende eller avdød (avdød: ${prefillData.avdod == null})")
-        val brukerEllerGjenlevende = personV3Service.hentBruker(prefillData.avdod?.norskIdent ?: prefillData.bruker.norskIdent)
-
         logger.info("Henter hovedperson/forsikret")
         val forsikretPerson = personV3Service.hentBruker(prefillData.bruker.norskIdent)
+
+        val gjenlevendeEllerAvdod = if (prefillData.avdod != null) {
+            personV3Service.hentBruker(prefillData.avdod.norskIdent)
+        } else {
+           forsikretPerson
+        }
 
         val (ektepinid, ekteTypeValue) = filterEktefelleRelasjon(forsikretPerson)
 
         logger.info("Henter ektefelle/partner (ekteType: $ekteTypeValue)")
-        val ektefelleBruker = if(ektepinid.isBlank()) null else personV3Service.hentBruker(ektepinid)
+        val ektefelleBruker = if (ektepinid.isBlank()) null else personV3Service.hentBruker(ektepinid)
 
-        val barnBrukereFraTPS = if (forsikretPerson == null || !fyllUtBarnListe ) emptyList() else hentBarnFraTps(forsikretPerson)
+        val barnBrukereFraTPS = if (forsikretPerson == null || !fyllUtBarnListe) emptyList() else hentBarnFraTps(forsikretPerson)
 
-        return PersonData(brukerEllerGjenlevende = brukerEllerGjenlevende, forsikretPerson = forsikretPerson!!, ektefelleBruker = ektefelleBruker, ekteTypeValue = ekteTypeValue, barnBrukereFraTPS = barnBrukereFraTPS)
+        return PersonData(gjenlevendeEllerAvdod = gjenlevendeEllerAvdod, forsikretPerson = forsikretPerson!!, ektefelleBruker = ektefelleBruker, ekteTypeValue = ekteTypeValue, barnBrukereFraTPS = barnBrukereFraTPS)
     }
 
     fun hentBarnFraTps(hovedPerson: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person) =

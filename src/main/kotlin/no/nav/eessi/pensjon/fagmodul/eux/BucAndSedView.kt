@@ -46,7 +46,6 @@ data class BucAndSedView(
 
         fun from(buc: Buc, subject: BucAndSedSubject?): BucAndSedView {
             val bucUtil = BucUtils(buc)
-            println("setter subject: $subject")
             return BucAndSedView(
                     readOnly =  checkForReadOnly(buc),
                     type = bucUtil.getProcessDefinitionName() ?: "",

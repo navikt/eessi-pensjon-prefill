@@ -44,7 +44,7 @@ class PrefillP6000(private val prefillNav: PrefillNav,
     }
 
     private fun eventuellGjenlevende(prefillData: PrefillDataModel, gjenlevendeBruker: no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker?): Bruker? {
-        return if (!prefillData.kanFeltSkippes("PENSED") && prefillData.avdod != null) {
+        return if (prefillData.avdod != null) {
             logger.info("          Utfylling gjenlevende (etterlatt persjon.gjenlevende)")
             prefillNav.createBruker(gjenlevendeBruker!!, null, null)
         } else null

@@ -39,7 +39,7 @@ class PrefillP2000(private val prefillNav: PrefillNav)  {
                     penSaksnummer = prefillData.penSaksnummer,
                     bruker = prefillData.bruker,
                     avdod = prefillData.avdod,
-                    personData = personData ,
+                    personData = personData,
                     brukerInformasjon = prefillData.getPersonInfoFromRequestData()
             )
         }

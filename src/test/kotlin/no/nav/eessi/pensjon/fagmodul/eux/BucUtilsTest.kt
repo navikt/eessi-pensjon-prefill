@@ -593,10 +593,6 @@ class BucUtilsTest {
         val buc = mapJsonToAny(bucjson, typeRefs<Buc>())
         val bucUtils = BucUtils(buc)
 
-        val docs = bucUtils.getAllDocuments()
-        docs.forEach { doc -> println("type ${doc.type}  status ${doc.status} ") }
-
-
         val allowed = listOf("P5000", "P6000", "P8000", "P10000", "H121", "H020")
 
         allowed.forEach {
@@ -617,10 +613,6 @@ class BucUtilsTest {
         val buc = mapJsonToAny(bucjson, typeRefs<Buc>())
         val bucUtils = BucUtils(buc)
 
-        val docs = bucUtils.getAllDocuments()
-        docs.forEach { doc -> println("type ${doc.type}  status ${doc.status} ") }
-
-
         val notAllowd = listOf("P2000", "P4000", "P3000_NO", "P9000")
         notAllowd.forEach {
             assertThrows<SedDokumentKanIkkeOpprettesException> {
@@ -634,10 +626,6 @@ class BucUtilsTest {
         val bucjson = getTestJsonFile("buc-22909_v4.1.json")
         val buc = mapJsonToAny(bucjson, typeRefs<Buc>())
         val bucUtils = BucUtils(buc)
-
-        val docs = bucUtils.getAllDocuments()
-        docs.forEach { doc -> println("type ${doc.type}  status ${doc.status} ") }
-
 
         val allowed = listOf("P4000", "P5000", "P6000", "P8000", "P7000", "P10000", "H120", "H020")
 

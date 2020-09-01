@@ -47,7 +47,7 @@ class PrefillP8000APUtlandInnvTest {
             skipSedkey = listOf("PENSED")
         }
 
-        personData = PersonData(forsikretPerson = person!!, ekteTypeValue = "", ektefelleBruker = null, brukerEllerGjenlevende = person, barnBrukereFraTPS = listOf())
+        personData = PersonData(forsikretPerson = person!!, ekteTypeValue = "", ektefelleBruker = null, gjenlevendeEllerAvdod = person, barnBrukereFraTPS = listOf())
     }
 
     @Test
