@@ -25,6 +25,7 @@ data class ApiRequest(
         val sakId: String,
         val vedtakId: String? = null,
         val kravId: String? = null,
+        val kravDato: String? = null,
         val aktoerId: String? = null,
         val fnr: String? = null,
         val payload: String? = null,
@@ -76,6 +77,7 @@ data class ApiRequest(
                         euxCaseID = request.euxCaseId
                         institution = request.institutions
                         vedtakId = request.vedtakId ?: ""
+                        kravDato = request.kravDato
                         partSedAsJson[request.sed] = request.payload ?: "{}"
                         skipSedkey = request.skipSEDkey
                                 ?: listOf("PENSED") //skipper all pensjon utfylling untatt kravdato
@@ -113,6 +115,7 @@ data class ApiRequest(
                         sed = SED(request.sed)
                         buc = request.buc
                         vedtakId = request.vedtakId ?: ""
+                        kravDato = request.kravDato
                         partSedAsJson[request.sed] = request.payload ?: "{}"
                         skipSedkey = request.skipSEDkey ?: listOf("PENSED")
                     }

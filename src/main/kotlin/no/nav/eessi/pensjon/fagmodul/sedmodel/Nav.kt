@@ -94,7 +94,7 @@ data class OpenPeriodeItem(
 
 
 data class Krav(
-        val dato: String? = null,
+        var dato: String? = null,
         //P15000
         val type: String? = null
 )

@@ -10,6 +10,8 @@ import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.pensjon.v1.sak.V1Sak
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.http.HttpStatus
+import org.springframework.web.server.ResponseStatusException
 
 class PrefillP2100(private val prefillNav: PrefillNav) {
 
@@ -64,10 +66,24 @@ class PrefillP2100(private val prefillNav: PrefillNav) {
             // TODO What's consequences by removing this? and throw it up to UI?
         }
 
+        kravDatoOverider(prefillData, sak?.sakType)
+
         KravHistorikkHelper.settKravdato(prefillData, sed)
 
         logger.debug("-------------------| Preutfylling [$sedType] END |------------------- ")
         return prefillData.sed
+    }
+
+    //Metode for å overskrive kravdato for REVURD av UFØRE OG ALDER på gjenlevsøknad.
+    fun kravDatoOverider(prefillData: PrefillDataModel, sakType: String?) {
+        if (prefillData.kravDato == null && (sakType == EPSaktype.UFOREP.name || sakType == EPSaktype.ALDER.name))  {
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Mangler kravdato på $sakType for gjenlevende krav")
+        }
+        val kravDato =  prefillData.kravDato
+        val sed = prefillData.sed
+        if (kravDato != null) {
+            sed.pensjon?.kravDato?.dato = kravDato
+        }
     }
 
     private fun eventuellGjenlevende(prefillData: PrefillDataModel, gjenlevendeBruker: no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker?): Bruker? {

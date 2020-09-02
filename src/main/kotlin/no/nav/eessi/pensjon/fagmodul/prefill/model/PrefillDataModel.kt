@@ -24,6 +24,7 @@ class PrefillDataModel(val penSaksnummer: String, val bruker: PersonId, val avdo
 
     //pensjon
     lateinit var vedtakId: String
+    var kravDato: String? = null
 
     //rina
     lateinit var rinaSubject: String
