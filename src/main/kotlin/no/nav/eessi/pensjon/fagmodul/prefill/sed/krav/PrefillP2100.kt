@@ -66,7 +66,7 @@ class PrefillP2100(private val prefillNav: PrefillNav) {
             // TODO What's consequences by removing this? and throw it up to UI?
         }
 
-        kravDatoOverider(prefillData, sak?.sakType)
+        kravDatoOverider(prefillData, sak)
 
         KravHistorikkHelper.settKravdato(prefillData, sed)
 
@@ -75,7 +75,11 @@ class PrefillP2100(private val prefillNav: PrefillNav) {
     }
 
     //Metode for å overskrive kravdato for REVURD av UFØRE OG ALDER på gjenlevsøknad.
-    fun kravDatoOverider(prefillData: PrefillDataModel, sakType: String?) {
+    fun kravDatoOverider(prefillData: PrefillDataModel, sak: V1Sak?) {
+        if(sak?.kravHistorikkListe?.kravHistorikkListe?.size == 1){
+            return
+        }
+        val sakType = sak?.sakType
         if (prefillData.kravDato == null && (sakType == EPSaktype.UFOREP.name || sakType == EPSaktype.ALDER.name))  {
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Mangler kravdato på $sakType for gjenlevende krav")
         }

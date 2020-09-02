@@ -16,6 +16,9 @@ import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillAdresse
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Krav
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Pensjon
 import no.nav.eessi.pensjon.personoppslag.personv3.PersonV3Service
+import no.nav.pensjon.v1.kravhistorikk.V1KravHistorikk
+import no.nav.pensjon.v1.kravhistorikkliste.V1KravHistorikkListe
+import no.nav.pensjon.v1.sak.V1Sak
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -79,13 +82,41 @@ class PrefillP2100MedAlderSakTest {
                 pinId = personFnr,
                 penSaksnummer = pesysSaksnummer,
                 avdod = PersonId(avdodPersonFnr,"112233445566"))
+        val sak  = V1Sak()
+        sak.sakType = EPSaktype.ALDER.name
+        sak.kravHistorikkListe = V1KravHistorikkListe()
+
 
         assertThrows<ResponseStatusException> {
-            PrefillP2100(prefillNav).kravDatoOverider(prefillData, sakType = EPSaktype.ALDER.name)
+            PrefillP2100(prefillNav).kravDatoOverider(prefillData, sak)
         }
+        sak.sakType = EPSaktype.UFOREP.name
         assertThrows<ResponseStatusException> {
-            PrefillP2100(prefillNav).kravDatoOverider(prefillData, sakType = EPSaktype.UFOREP.name)
+            PrefillP2100(prefillNav).kravDatoOverider(prefillData, sak)
         }
+    }
+
+    @Test
+    fun `Gitt en P2100 uten kravdato og uten kravhistrikk utføres xyz`() {
+        prefillData = PrefillDataModelMother.initialPrefillDataModel(
+                sedType = "P2100",
+                pinId = personFnr,
+                penSaksnummer = pesysSaksnummer,
+                avdod = PersonId(avdodPersonFnr,"112233445566"),
+                kravDato = "09-31-2010")
+
+        val sed = prefillData.sed
+        val mockPen = Pensjon(kravDato = Krav("01-07-2018"))
+        sed.pensjon = mockPen
+
+        val sak  = V1Sak()
+        sak.sakType = EPSaktype.ALDER.name
+        sak.kravHistorikkListe = V1KravHistorikkListe()
+        sak.kravHistorikkListe.kravHistorikkListe.add(V1KravHistorikk())
+
+        PrefillP2100(prefillNav).kravDatoOverider(prefillData, sak)
+
+        assertEquals("01-07-2018", prefillData.sed.pensjon?.kravDato?.dato)
     }
 
     @Test
@@ -97,13 +128,17 @@ class PrefillP2100MedAlderSakTest {
                 penSaksnummer = pesysSaksnummer,
                 avdod = PersonId(avdodPersonFnr,"112233445566"))
 
+        val sak  = V1Sak()
+        sak.sakType = EPSaktype.ALDER.name
+        sak.kravHistorikkListe = V1KravHistorikkListe()
+
         val sed = prefillData.sed
         val mockPen = Pensjon(kravDato = Krav())
         sed.pensjon = mockPen
 
-        PrefillP2100(prefillNav).kravDatoOverider(prefillData, sakType = EPSaktype.UFOREP.name)
+        PrefillP2100(prefillNav).kravDatoOverider(prefillData, sak)
 
-        assertEquals("01-01-2020", sed?.pensjon?.kravDato?.dato)
+        assertEquals("01-01-2020", sed.pensjon?.kravDato?.dato)
     }
 }
 
