@@ -11,6 +11,22 @@ class VedleggService(private val safClient: SafClient,
         return safClient.hentDokumentMetadata(aktoerId)
     }
 
+    fun hentDokumentMetadata(aktoerId: String,
+                             journalpostId : String,
+                             dokumentInfoId: String) : Dokument? {
+        val alleMetadataForAktoerId = safClient.hentDokumentMetadata(aktoerId)
+
+        return alleMetadataForAktoerId.data.dokumentoversiktBruker.journalposter
+                .filter { it.journalpostId == journalpostId }
+                .flatMap { it.dokumenter }
+                .filter{ it.dokumentInfoId == dokumentInfoId }
+                .let { dokumentListe ->
+                    if(dokumentListe.isEmpty()) {
+                        return null
+                    } else dokumentListe.first() // Det finnes bare en unik dokumentInfoId i hver journalpost
+                }
+    }
+
     fun hentDokumentInnhold(journalpostId: String,
                            dokumentInfoId: String,
                            variantFormat: String): HentdokumentInnholdResponse {

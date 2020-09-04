@@ -78,12 +78,16 @@ class VedleggController(private val vedleggService: VedleggService,
                 "rinaSakId: $rinaSakId, rinaDokumentId: $rinaDokumentId")
 
         return try {
+            val dokumentMetadata = vedleggService.hentDokumentMetadata(aktoerId, joarkJournalpostId, joarkDokumentInfoId)
             val dokument = vedleggService.hentDokumentInnhold(joarkJournalpostId, joarkDokumentInfoId, variantFormat)
+
+            val documentName = dokumentMetadata?.tittel ?: dokument.fileName
+
             vedleggService.leggTilVedleggPaaDokument(aktoerId,
                     rinaSakId,
                     rinaDokumentId,
                     dokument.filInnhold,
-                    dokument.fileName,
+                    "$documentName.pdf",
                     dokument.contentType.split("/")[1])
             return ResponseEntity.ok().body(successBody())
         } catch(ex: Exception) {

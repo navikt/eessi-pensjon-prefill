@@ -3,6 +3,7 @@ package no.nav.eessi.pensjon.vedlegg
 import com.nhaarman.mockitokotlin2.*
 import no.nav.eessi.pensjon.UnsecuredWebMvcTestLauncher
 import no.nav.eessi.pensjon.security.sts.STSService
+import no.nav.eessi.pensjon.vedlegg.client.Dokument
 import no.nav.eessi.pensjon.vedlegg.client.HentdokumentInnholdResponse
 import org.hamcrest.Matchers.containsString
 import org.junit.jupiter.api.Test
@@ -35,6 +36,7 @@ class VedleggControllerSpringTest {
     @Throws(Exception::class)
     fun shouldReturnDefaultMessage() {
         doNothing().`when`(vedleggService).leggTilVedleggPaaDokument(any(), any(), any(), any(), any(), any())
+        doReturn(Dokument("4444444","P2000 - Krav om alderspensjon", emptyList())).`when`(vedleggService).hentDokumentMetadata(any(), any(), any())
         doReturn(HentdokumentInnholdResponse("WVdKag==","blah.pdf", "application/pdf")).`when`(vedleggService).hentDokumentInnhold(any(), any(), any())
 
         this.mockMvc!!.perform(put("/saf/vedlegg/1231231231231/111111/2222222/3333333/4444444/ARKIV"))

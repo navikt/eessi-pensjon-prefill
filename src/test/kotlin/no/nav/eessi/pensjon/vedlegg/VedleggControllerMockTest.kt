@@ -90,9 +90,10 @@ class VedleggControllerMockTest {
         val rinasakid = "456"
         val rinadocid = "7892"
 
-        val filnavn = "enfil.pdf"
+        val filnavn = "P2000 - Krav om alderspensjon.pdf"
         val filtype = "application/pdf".split("/")[1]
 
+        doReturn(Dokument("4444444","P2000 - Krav om alderspensjon", emptyList())).`when`(vedleggService).hentDokumentMetadata(any(), any(), any())
         doReturn(HentdokumentInnholdResponse(filInnhold, filnavn, "application/pdf"))
                 .whenever(vedleggService).hentDokumentInnhold(any(), any(), any())
 
