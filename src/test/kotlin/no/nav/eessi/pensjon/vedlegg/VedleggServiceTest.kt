@@ -72,7 +72,7 @@ internal class VedleggServiceTest  {
                     {
                       "tilleggsopplysninger": [
                         {
-                        "nokkel":"eessi_pensjon_bucid",x
+                        "nokkel":"eessi_pensjon_bucid",
                         "verdi":"1111"
                         }
                       ],
