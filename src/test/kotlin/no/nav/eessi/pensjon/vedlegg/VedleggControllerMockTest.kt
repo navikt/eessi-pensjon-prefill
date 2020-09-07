@@ -137,14 +137,23 @@ class VedleggControllerMockTest {
     }
 
     @Test
-    fun testHentingAvRinaIdfraMetadata() {
+    fun `Gitt en person med journalposter som inneholder RinaSakIder når SAF metadata blir kallet Så hent RinaSakIDer`() {
         val aktoerId = "1212"
 
         doReturn(listOf("1212")).`when`(vedleggService).hentRinaSakIderFraMetaData(aktoerId)
 
         val resp = vedleggController.hentRinaIderFraMetadata(aktoerId)
         assertEquals(1, resp.size)
+    }
 
+    @Test
+    fun `Gitt en person uten journalposter som inneholder RinaSakIder når SAF metadata blir kallet Så returner tom liste`() {
+        val aktoerId = "1212"
+
+        doReturn(emptyList<String>()).`when`(vedleggService).hentRinaSakIderFraMetaData(aktoerId)
+
+        val resp = vedleggController.hentRinaIderFraMetadata(aktoerId)
+        assertEquals(0, resp.size)
     }
 
 }
