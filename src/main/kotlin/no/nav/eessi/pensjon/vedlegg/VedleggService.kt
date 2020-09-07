@@ -41,4 +41,6 @@ class VedleggService(private val safClient: SafClient,
                                   filtype: String) {
         euxVedleggClient.leggTilVedleggPaaDokument(aktoerId, rinaSakId, rinaDokumentId, filInnhold, fileName, filtype)
     }
+
+    fun hentRinaSakIderFraMetaData(aktoerId: String) =  safClient.hentRinaSakIderFraDokumentMetadata(aktoerId)
 }

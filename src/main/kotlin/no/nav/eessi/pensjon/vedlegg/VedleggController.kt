@@ -48,6 +48,10 @@ class VedleggController(private val vedleggService: VedleggService,
         }
     }
 
+    @ApiOperation("Henter ut rina IDer fra metadata, for alle dokumenter i alle journalposter for en gitt aktørid")
+    @GetMapping("/rinaiderframetadata/{aktoerId}")
+    fun hentRinaIderFraMetadata(@PathVariable("aktoerId", required = true) aktoerId: String) =vedleggService.hentRinaSakIderFraMetaData(aktoerId)
+
     @ApiOperation("Henter dokumentInnhold for et JOARK dokument")
     @GetMapping("/hentdokument/{journalpostId}/{dokumentInfoId}/{variantFormat}")
     fun getDokumentInnhold(@PathVariable("journalpostId", required = true) journalpostId: String,

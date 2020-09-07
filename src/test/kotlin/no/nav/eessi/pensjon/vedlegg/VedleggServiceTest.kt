@@ -2,7 +2,6 @@ package no.nav.eessi.pensjon.vedlegg
 
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.isNull
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.typeRefs
 import no.nav.eessi.pensjon.vedlegg.client.EuxVedleggClient
@@ -109,5 +108,21 @@ internal class VedleggServiceTest  {
         assert(vedleggService.hentDokumentMetadata("12345678910", "439532144", "453708906")?.tittel == "P2000 alderpensjon" )
     }
 
+    @Test
+    fun testHentRinaIderFraMetadata() {
+        val aktoerId = "12345"
+
+        doReturn(listOf("123456", "456789")).`when`(safClient).hentRinaSakIderFraDokumentMetadata(aktoerId)
+
+        val result = vedleggService.hentRinaSakIderFraMetaData(aktoerId)
+        assert(result.size == 2)
+    }
+
+    @Test
+    fun `Skal return en tom liste ved ingen metadata i dokumenter på aktørid`() {
+        val aktoerId = "12345"
+        val result = vedleggService.hentRinaSakIderFraMetaData(aktoerId)
+        assert(result.isEmpty())
+    }
 }
 

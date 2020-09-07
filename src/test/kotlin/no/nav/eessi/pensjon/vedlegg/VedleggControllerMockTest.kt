@@ -3,7 +3,10 @@ package no.nav.eessi.pensjon.vedlegg
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.nhaarman.mockitokotlin2.*
 import no.nav.eessi.pensjon.logging.AuditLogger
-import no.nav.eessi.pensjon.vedlegg.client.*
+import no.nav.eessi.pensjon.vedlegg.client.Dokument
+import no.nav.eessi.pensjon.vedlegg.client.HentMetadataResponse
+import no.nav.eessi.pensjon.vedlegg.client.HentdokumentInnholdResponse
+import no.nav.eessi.pensjon.vedlegg.client.SafException
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
@@ -132,4 +135,16 @@ class VedleggControllerMockTest {
                 eq(filtype)
         )
     }
+
+    @Test
+    fun testHentingAvRinaIdfraMetadata() {
+        val aktoerId = "1212"
+
+        doReturn(listOf("1212")).`when`(vedleggService).hentRinaSakIderFraMetaData(aktoerId)
+
+        val resp = vedleggController.hentRinaIderFraMetadata(aktoerId)
+        assertEquals(1, resp.size)
+
+    }
+
 }
