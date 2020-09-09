@@ -77,7 +77,7 @@ class PrefillP2000UtenKravhistorieTest {
         val ex = assertThrows<Exception> {
             prefillSEDService.prefill(prefillData)
         }
-        assertEquals("Kravdato mangler", ex.message)
+        assertEquals("Kravdato mangler\nGjelder utsendelsen \"Førstegangsbehandling kun utland\", se egen rutine på Navet.", ex.message)
     }
 
 
