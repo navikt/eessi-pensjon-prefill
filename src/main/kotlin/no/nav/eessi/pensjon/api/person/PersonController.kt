@@ -9,6 +9,7 @@ import no.nav.eessi.pensjon.personoppslag.personv3.PersonV3Service
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonClient
 import no.nav.security.token.support.core.api.Protected
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonResponse
+import no.nav.tjeneste.virksomhet.person.v3.metadata.Endringstyper
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
@@ -96,13 +97,22 @@ class PersonController(private val aktoerregisterService: AktoerregisterService,
         }
 
         val person = personService.hentPersonResponse(ident.id)
+
+        var relasjon = person.person?.harFraRolleI?.firstOrNull {
+            it.endringstype != Endringstyper.SLETTET || it.endringstype != Endringstyper.UTGAATT
+        }
+
+        val personName = person.person.personnavn
+        val relasjonValue = relasjon?.tilRolle?.value
+
         return PersoninformasjonAvdode(
-                ident.id,
-                aktorId,
-                person.person.personnavn.sammensattNavn,
-                person.person.personnavn.fornavn,
-                person.person.personnavn.mellomnavn,
-                person.person.personnavn.etternavn)
+                fnr = ident.id,
+                aktorId =  aktorId,
+                fulltNavn = personName.sammensattNavn,
+                fornavn =  personName.fornavn,
+                mellomnavn = personName.mellomnavn,
+                etternavn = personName.etternavn,
+                relasjon = relasjonValue)
     }
 
     private fun hentAlleAvdode(avdode: List<String>): List<String> {
@@ -154,5 +164,6 @@ class PersonController(private val aktoerregisterService: AktoerregisterService,
                                         var fulltNavn: String? = null,
                                         var fornavn: String? = null,
                                         var mellomnavn: String? = null,
-                                        var etternavn: String? = null)
+                                        var etternavn: String? = null,
+                                        var relasjon: String? = null)
 }
