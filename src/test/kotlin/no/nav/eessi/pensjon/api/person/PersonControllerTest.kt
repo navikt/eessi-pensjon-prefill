@@ -1,19 +1,22 @@
 package no.nav.eessi.pensjon.api.person
 
 import com.nhaarman.mockitokotlin2.*
-import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonService
 import no.nav.eessi.pensjon.logging.AuditLogger
-import no.nav.eessi.pensjon.personoppslag.aktoerregister.*
+import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerId
+import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerregisterService
+import no.nav.eessi.pensjon.personoppslag.aktoerregister.IdentGruppe
+import no.nav.eessi.pensjon.personoppslag.aktoerregister.NorskIdent
 import no.nav.eessi.pensjon.personoppslag.personv3.PersonV3IkkeFunnetException
 import no.nav.eessi.pensjon.personoppslag.personv3.PersonV3Service
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonClient
-import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonClientMother
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.typeRefs
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.Person
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.Personnavn
+import no.nav.pensjon.v1.avdod.V1Avdod
+import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
+import no.nav.pensjon.v1.person.V1Person
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.*
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonResponse
-import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
 import org.springframework.beans.factory.annotation.Autowired
@@ -90,122 +93,98 @@ class PersonControllerTest {
 
     @Test
     fun `getDeceased should return a list of deceased parents given a remaining, living child` (){
-        //given two deceased (mor & far), with a (living) remaining child
-        val avdodMorAktorId = "111111"
-        val avdodFarAktorId = "222222"
-        val avdodAktorId = "333333"
-
-        val gjenlevBarnAktorId = "444444"
-
-        val vedtaksInfo = PensjonsinformasjonService(PensjonsinformasjonClientMother.fraFil("P6000-GP-401.xml")).hentMedVedtak("any-given-string")
-        vedtaksInfo.avdod.avdodMorAktorId = avdodMorAktorId
-        vedtaksInfo.avdod.avdodFarAktorId = avdodFarAktorId
-        vedtaksInfo.avdod.avdodAktorId = avdodAktorId
-
-        vedtaksInfo.person.aktorId = gjenlevBarnAktorId
-
-        //and mor is part of the system (insured)
-        val personMor = HentPersonResponse()
-                .withPerson(Person()
-                        .withPersonnavn(Personnavn()
-                                .withFornavn("MOR")))
-        //and far is part of the system (insured)
-        val personFar = HentPersonResponse()
-                .withPerson(Person()
-                        .withPersonnavn(Personnavn()
-                                .withFornavn("FAR")))
-
-        val personPartner = HentPersonResponse()
-                .withPerson(Person()
-                        .withPersonnavn(Personnavn()
-                                .withFornavn("ANNEN")))
-
+        val aktoerId = "1234568"
         val vedtaksId = "22455454"
-        val avdodMorFnr = "11111111111"
-        val avdodFarFnr = "22222222222"
-        val avdodAktorFnr = "33333333333"
+        val fnrGjenlevende = "13057065487"
+        val avdodMorfnr = "310233213123"
+        val avdodFarfnr = "101020223123"
 
-        doReturn(vedtaksInfo).whenever(mockPensjonClient).hentAltPaaVedtak(vedtaksId)
+        val mockPensjoninfo = Pensjonsinformasjon()
+        mockPensjoninfo.avdod = V1Avdod()
+        mockPensjoninfo.person = V1Person()
+        mockPensjoninfo.avdod.avdodMor = avdodMorfnr
+        mockPensjoninfo.avdod.avdodFar = avdodFarfnr
+        mockPensjoninfo.person.aktorId = aktoerId
 
-        doReturn(NorskIdent(avdodMorFnr))
-                .whenever(mockAktoerregisterService).hentGjeldendeIdent(IdentGruppe.NorskIdent, AktoerId(avdodMorAktorId))
-        doReturn(NorskIdent(avdodFarFnr))
-                .whenever(mockAktoerregisterService).hentGjeldendeIdent(IdentGruppe.NorskIdent, AktoerId(avdodFarAktorId))
-        doReturn(NorskIdent(avdodAktorFnr))
-                .whenever(mockAktoerregisterService).hentGjeldendeIdent(IdentGruppe.NorskIdent, AktoerId(avdodAktorId))
+        val avdodMorTPSBruker = lagTPSBruker(avdodMorfnr, "Fru", "Blyant")
+        val avdodFarTPSBruker = lagTPSBruker(avdodFarfnr, "Hr", "Blyant")
+        val gjenlevendeBarnTSPBruker = lagTPSBruker(fnrGjenlevende, "Liten", "Blyant")
+                .medVoksen(avdodMorfnr, "MOR")
+                .medVoksen(avdodFarfnr, "FAR")
 
-        doReturn(personFar).whenever(mockPersonV3Service).hentPersonResponse(avdodFarFnr)
-        doReturn(personMor).whenever(mockPersonV3Service).hentPersonResponse(avdodMorFnr)
-        doReturn(personPartner).whenever(mockPersonV3Service).hentPersonResponse(avdodAktorFnr)
+        doReturn(mockPensjoninfo).whenever(mockPensjonClient).hentAltPaaVedtak(vedtaksId)
+        doReturn(avdodMorTPSBruker).whenever(mockPersonV3Service).hentBruker(avdodMorfnr)
+        doReturn(avdodFarTPSBruker).whenever(mockPersonV3Service).hentBruker(avdodFarfnr)
+
+        doReturn(NorskIdent(fnrGjenlevende)).whenever(mockAktoerregisterService).hentGjeldendeIdent(eq(IdentGruppe.NorskIdent), any<AktoerId>())
+        doReturn(HentPersonResponse().withPerson(gjenlevendeBarnTSPBruker)).whenever(mockPersonV3Service).hentPersonResponse(fnrGjenlevende)
 
         val response = mvc.perform(
-                get("/person/333333/avdode/vedtak/22455454")
+                get("/person/$fnrGjenlevende/avdode/vedtak/$vedtaksId")
                         .accept(MediaType.APPLICATION_JSON))
                 .andReturn().response
 
-        print("response: " + response.contentAsString)
+        val actual = mapJsonToAny(response.contentAsString, typeRefs<List<PersonController.PersoninformasjonAvdode>>())
+        val avdodFarResponse = actual.first()
+        val avdodMorResponse = actual.last()
 
-        //then the response should contain json list of mor & far
-        Assertions.assertTrue(response.contentAsString.contains("\"fnr\":\"$avdodFarFnr\",\"aktorId\":\"$avdodFarAktorId\""))
-        Assertions.assertTrue(response.contentAsString.contains("\"fnr\":\"$avdodMorFnr\",\"aktorId\":\"$avdodMorAktorId\""))
-        Assertions.assertTrue(response.contentAsString.contains("\"fnr\":\"$avdodAktorFnr\",\"aktorId\":\"$avdodAktorId\""))
-
-        val emptyList : List<PersonController.PersoninformasjonAvdode> = mapJsonToAny(response.contentAsString, typeRefs())
-        assert(emptyList.size == 3)
+        assertTrue(avdodMorResponse.fnr == avdodMorfnr)
+        assertTrue(avdodMorResponse.relasjon == "MOR")
+        assertTrue(avdodFarResponse.fnr == avdodFarfnr)
+        assertTrue(avdodFarResponse.relasjon == "FAR")
     }
 
 
     @Test
     fun `getDeceased should return a list of one parent given a remaining, living child` (){
-        //given two deceased (mor & far), with a (living) remaining child
-        val vedtaksInfo = PensjonsinformasjonService(PensjonsinformasjonClientMother.fraFil("P6000-GP-401.xml")).hentMedVedtak("any-given-string")
-        vedtaksInfo.avdod.avdodFarAktorId = null
-        vedtaksInfo.avdod.avdodMorAktorId = "111111"
-
-        val gjenlevAktorId = vedtaksInfo.person.aktorId
-        val avdodMorAktorId = vedtaksInfo.avdod.avdodMorAktorId
-
+        val aktoerId = "1234568"
         val vedtaksId = "22455454"
-        val avdodMorFnr = "11111111111"
+        val fnrGjenlevende = "13057065487"
+        val avdodMorfnr = "310233213123"
 
-        //and mor is part of the system (insured)
-        val personMor = HentPersonResponse()
-                .withPerson(Person()
-                        .withPersonnavn(Personnavn()
-                                .withFornavn("MOR")))
+        val mockPensjoninfo = Pensjonsinformasjon()
+        mockPensjoninfo.avdod = V1Avdod()
+        mockPensjoninfo.person = V1Person()
+        mockPensjoninfo.avdod.avdodMor = avdodMorfnr
+        mockPensjoninfo.person.aktorId = aktoerId
 
-        doReturn(vedtaksInfo).whenever(mockPensjonClient).hentAltPaaVedtak(vedtaksId)
-        doReturn(NorskIdent(avdodMorFnr))
-                .whenever(mockAktoerregisterService).hentGjeldendeIdent(IdentGruppe.NorskIdent, AktoerId(avdodMorAktorId))
-        doReturn(personMor).whenever(mockPersonV3Service).hentPersonResponse(avdodMorFnr)
+        val relasjonMor = "MORA"
+        val avdodMorTPSBruker = lagTPSBruker(avdodMorfnr, "Stor", "Blyant")
+        val gjenlevendeBarnTSPBruker = lagTPSBruker(fnrGjenlevende, "Liten", "Blyant").medVoksen(avdodMorfnr, relasjonMor)
+
+        doReturn(mockPensjoninfo).whenever(mockPensjonClient).hentAltPaaVedtak(vedtaksId)
+        doReturn(avdodMorTPSBruker).whenever(mockPersonV3Service).hentBruker(avdodMorfnr)
+        doReturn(NorskIdent(fnrGjenlevende)).whenever(mockAktoerregisterService).hentGjeldendeIdent(eq(IdentGruppe.NorskIdent), any<AktoerId>())
+        doReturn(HentPersonResponse().withPerson(gjenlevendeBarnTSPBruker)).whenever(mockPersonV3Service).hentPersonResponse(fnrGjenlevende)
 
         val response = mvc.perform(
-                get("/person/$gjenlevAktorId/avdode/vedtak/$vedtaksId")
+                get("/person/$fnrGjenlevende/avdode/vedtak/$vedtaksId")
                         .accept(MediaType.APPLICATION_JSON))
                 .andReturn().response
 
-        //then the response should contain json list of mor & far
-        Assertions.assertTrue(response.contentAsString.contains("\"fnr\":\"$avdodMorFnr\",\"aktorId\":\"$avdodMorAktorId\""))
-
-        val emptyList : List<PersonController.PersoninformasjonAvdode> = mapJsonToAny(response.contentAsString, typeRefs())
-        assert(emptyList.size == 1)
+        val actual = mapJsonToAny(response.contentAsString, typeRefs<List<PersonController.PersoninformasjonAvdode>>()).first()
+        assertTrue(actual.fnr == avdodMorfnr)
+        assertTrue(actual.relasjon == relasjonMor)
     }
 
 
     @Test
     fun `getDeceased should return an empty list when both partents are alive` (){
-        //given two deceased (mor & far), with a (living) remaining child
-        val vedtaksInfo = PensjonsinformasjonService(PensjonsinformasjonClientMother.fraFil("P6000-GP-401.xml")).hentMedVedtak("any-given-string")
-        vedtaksInfo.avdod.avdodFarAktorId = null
-        vedtaksInfo.avdod.avdodMorAktorId = null
-
-        val gjenlevAktorId = vedtaksInfo.person.aktorId
         val vedtaksId = "22455454"
+        val fnrGjenlevende = "13057065487"
+        val avdodMorfnr = "310233213123"
 
-        doReturn(vedtaksInfo).whenever(mockPensjonClient).hentAltPaaVedtak(vedtaksId)
+        val mockPensjoninfo = Pensjonsinformasjon()
+        mockPensjoninfo.avdod = V1Avdod()
+        mockPensjoninfo.person = V1Person()
+
+        val gjenlevendeBarnTSPBruker = lagTPSBruker(fnrGjenlevende, "Liten", "Blyant").medVoksen(avdodMorfnr, "MOR")
+        doReturn(mockPensjoninfo).whenever(mockPensjonClient).hentAltPaaVedtak(vedtaksId)
+        doReturn(NorskIdent(fnrGjenlevende)).whenever(mockAktoerregisterService).hentGjeldendeIdent(eq(IdentGruppe.NorskIdent), any<AktoerId>())
+        doReturn(HentPersonResponse().withPerson(gjenlevendeBarnTSPBruker)).whenever(mockPersonV3Service).hentPersonResponse(fnrGjenlevende)
 
         val response = mvc.perform(
-                get("/person/$gjenlevAktorId/avdode/vedtak/$vedtaksId")
+                get("/person/$fnrGjenlevende/avdode/vedtak/$vedtaksId")
                         .accept(MediaType.APPLICATION_JSON))
                 .andReturn().response
         val list : List<String>  = mapJsonToAny(response.contentAsString, typeRefs())
@@ -242,4 +221,23 @@ class PersonControllerTest {
                 }"""
 
     private val namesAsJson = """{ fornavn: "OLA", etternavn: "NORDMANN", mellomnavn: null, fulltNavn: "NORDMANN OLA"}"""
+
+    private fun lagTPSBruker(fnr: String, fornavn: String, etternavn: String) =
+            Bruker()
+                    .withPersonnavn(Personnavn()
+                            .withEtternavn(etternavn)
+                            .withFornavn(fornavn))
+                    .withKjoenn(Kjoenn().withKjoenn(Kjoennstyper().withValue("M")))
+                    .withAktoer(PersonIdent().withIdent(no.nav.tjeneste.virksomhet.person.v3.informasjon.NorskIdent().withIdent(fnr)))
+                    .withStatsborgerskap(Statsborgerskap().withLand(Landkoder().withValue("NOR")))
+
+    private fun Bruker.medVoksen(barnetsPin: String, foreldreType: String): Bruker =
+            this
+                    .withHarFraRolleI(Familierelasjon()
+                            .withTilRolle(Familierelasjoner()
+                                    .withValue(foreldreType))
+                            .withTilPerson(Person()
+                                    .withAktoer(PersonIdent()
+                                            .withIdent(no.nav.tjeneste.virksomhet.person.v3.informasjon.NorskIdent()
+                                                    .withIdent(barnetsPin)))))
 }
