@@ -8,8 +8,10 @@ import no.nav.eessi.pensjon.personoppslag.aktoerregister.*
 import no.nav.eessi.pensjon.personoppslag.personv3.PersonV3Service
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonClient
 import no.nav.security.token.support.core.api.Protected
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Person
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.PersonIdent
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonResponse
-import no.nav.tjeneste.virksomhet.person.v3.metadata.Endringstyper
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
@@ -63,22 +65,24 @@ class PersonController(private val aktoerregisterService: AktoerregisterService,
 
     @ApiOperation("henter ut alle avdøde for en aktørId og vedtaksId der aktør er gjenlevende")
     @GetMapping("/person/{aktoerId}/avdode/vedtak/{vedtaksId}", produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun getDeceased(@PathVariable("aktoerId", required = true) aktoerId: String,
+    fun getDeceased(@PathVariable("aktoerId", required = true) gjenlevendeAktoerId: String,
                     @PathVariable("vedtaksId", required = true) vedtaksId: String): ResponseEntity<Any> {
 
-        auditLogger.log("/person/{$aktoerId}/vedtak", "getDeceased")
+        auditLogger.log("/person/{$gjenlevendeAktoerId}/vedtak", "getDeceased")
 
         val pensjonInfo = pensjonsinformasjonClient.hentAltPaaVedtak(vedtaksId)
 
+        val gjenlevende = personService.hentBruker(gjenlevendeAktoerId)
+
         val avdodeMedFnr = hentAlleAvdode(
                 listOf(
-                        pensjonInfo.avdod?.avdodAktorId.toString(),
-                        pensjonInfo.avdod?.avdodFarAktorId.toString(),
-                        pensjonInfo.avdod?.avdodMorAktorId.toString()
+                        pensjonInfo.avdod?.avdod.toString(),
+                        pensjonInfo.avdod?.avdodFar.toString(),
+                        pensjonInfo.avdod?.avdodMor.toString()
                 ))
-                .map { avdodAktorId -> pairPersonFnr(avdodAktorId)}.toList()
+                .map { avDodFnr -> pairPersonFnr(avDodFnr, gjenlevende)}.toList()
 
-        logger.info("Det ble funnet ${avdodeMedFnr.size} avdøde for den gjenlevende med aktørID: $aktoerId")
+        logger.info("Det ble funnet ${avdodeMedFnr.size} avdøde for den gjenlevende med aktørID: $gjenlevendeAktoerId")
 
         with(avdodeMedFnr){
             return PersonControllerHentPersonAvdod.measure {
@@ -87,32 +91,24 @@ class PersonController(private val aktoerregisterService: AktoerregisterService,
         }
     }
 
-    private fun pairPersonFnr(aktorId: String): PersoninformasjonAvdode {
-        val ident = try {
-            aktoerregisterService.hentGjeldendeIdent(IdentGruppe.NorskIdent, AktoerId(aktorId))
-                    ?: throw AktoerregisterIkkeFunnetException("AktoerId $aktorId ikke funnet.")
-        } catch (exception: Exception) {
-            logger.error("Henting av ident feiler med ${exception} cause: ${exception.cause}", exception)
-            throw exception
-        }
+    private fun pairPersonFnr(avdodFnr: String, gjenlevende: Bruker?): PersoninformasjonAvdode {
 
-        val person = personService.hentPersonResponse(ident.id)
+        val avdode = personService.hentBruker(avdodFnr)
 
-        var relasjon = person.person?.harFraRolleI?.firstOrNull {
-            it.endringstype != Endringstyper.SLETTET || it.endringstype != Endringstyper.UTGAATT
-        }
+        val gjenlevendePerson = gjenlevende as Person
 
-        val personName = person.person.personnavn
-        val relasjonValue = relasjon?.tilRolle?.value
+        val avdodRolle = gjenlevendePerson.harFraRolleI.filter { (it.tilPerson.aktoer as PersonIdent).ident.ident == avdodFnr}.firstOrNull()
+
+        val avdodNavn = avdode?.personnavn
+        val relasjon = avdodRolle?.tilRolle?.value
 
         return PersoninformasjonAvdode(
-                fnr = ident.id,
-                aktorId =  aktorId,
-                fulltNavn = personName.sammensattNavn,
-                fornavn =  personName.fornavn,
-                mellomnavn = personName.mellomnavn,
-                etternavn = personName.etternavn,
-                relasjon = relasjonValue)
+                fnr = avdodFnr,
+                fulltNavn = avdodNavn?.sammensattNavn,
+                fornavn =  avdodNavn?.fornavn,
+                mellomnavn = avdodNavn?.mellomnavn,
+                etternavn = avdodNavn?.etternavn,
+                relasjon = relasjon)
     }
 
     private fun hentAlleAvdode(avdode: List<String>): List<String> {
