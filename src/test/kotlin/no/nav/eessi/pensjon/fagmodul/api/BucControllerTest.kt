@@ -4,7 +4,6 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.doThrow
 import com.nhaarman.mockitokotlin2.whenever
-import no.nav.eessi.pensjon.fagmodul.eux.BucAndSedSubject
 import no.nav.eessi.pensjon.fagmodul.eux.BucAndSedView
 import no.nav.eessi.pensjon.fagmodul.eux.EuxKlient
 import no.nav.eessi.pensjon.fagmodul.eux.EuxService
@@ -202,7 +201,7 @@ class BucControllerTest {
         doReturn(rinaSaker).whenever(mockEuxService).getRinasaker(fnr, aktoerId)
 
         val actual =  bucController.getBucogSedView(aktoerId)
-        Assertions.assertTrue(actual.first().toJson().contains("Feiler ved BUC"))
+        assertTrue(actual.first().toJson().contains("Feiler ved BUC"))
 
     }
 
@@ -225,8 +224,8 @@ class BucControllerTest {
         whenever(mockAktoerIdHelper.hentGjeldendeIdent(IdentGruppe.NorskIdent, AktoerId(aktoerId))).thenReturn(NorskIdent(fnrGjenlevende))
 
         val documentsItem = listOf(DocumentsItem(type = "P2100"))
-        val avdodView = listOf(BucAndSedView.from(Buc(id = "123", processDefinitionName = "P_BUC_02", documents = documentsItem), BucAndSedSubject(fnrGjenlevende, avdodfnr)))
-        doReturn(avdodView).whenever(mockEuxService).getBucAndSedViewAvdod(avdodfnr, fnrGjenlevende)
+        val avdodView = listOf(BucAndSedView.from(Buc(id = "123", processDefinitionName = "P_BUC_02", documents = documentsItem), fnrGjenlevende, avdodfnr ))
+        doReturn(avdodView).whenever(mockEuxService).getBucAndSedViewAvdod(fnrGjenlevende, avdodfnr)
 
         //euxService.getrinasakeravdod
         val rinaSaker = listOf(Rinasak(id = "123213", processDefinitionId = "P_BUC_03", status = "open"))
@@ -271,13 +270,13 @@ class BucControllerTest {
         val documentsItem1 = listOf(DocumentsItem(type = "P2100"))
 
         val buc1 = Buc(id = "123", processDefinitionName = "P_BUC_02", documents = documentsItem1)
-        val avdodView1 = listOf(BucAndSedView.from(buc1, BucAndSedSubject(fnrGjenlevende, avdodMorfnr)))
+        val avdodView1 = listOf(BucAndSedView.from(buc1, fnrGjenlevende, avdodMorfnr))
 
         val buc2 = Buc(id = "231", processDefinitionName = "P_BUC_02", documents = documentsItem1)
-        val avdodView2 = listOf(BucAndSedView.from(buc2, BucAndSedSubject(fnrGjenlevende, avdodFarfnr)))
+        val avdodView2 = listOf(BucAndSedView.from(buc2, fnrGjenlevende, avdodFarfnr))
 
-        doReturn(avdodView1).`when`(mockEuxService).getBucAndSedViewAvdod(avdodMorfnr, fnrGjenlevende)
-        doReturn(avdodView2).`when`(mockEuxService).getBucAndSedViewAvdod(avdodFarfnr, fnrGjenlevende)
+        doReturn(avdodView1).`when`(mockEuxService).getBucAndSedViewAvdod(fnrGjenlevende, avdodMorfnr)
+        doReturn(avdodView2).`when`(mockEuxService).getBucAndSedViewAvdod(fnrGjenlevende, avdodFarfnr)
 
         val actual = bucController.getBucogSedViewVedtak(aktoerId, vedtaksId)
         assertEquals(2, actual.size)
@@ -285,8 +284,8 @@ class BucControllerTest {
         assertEquals("P_BUC_02", actual.last().type)
         assertEquals("231", actual.first().caseId)
         assertEquals("123", actual.last().caseId)
-        assertEquals(avdodMorfnr, actual.last().subject?.avdod)
-        assertEquals(fnrGjenlevende, actual.last().subject?.fnr)
+        assertEquals(avdodMorfnr, actual.last().subject?.avdod?.fnr)
+        assertEquals(fnrGjenlevende, actual.last().subject?.gjenlevende?.fnr)
 
     }
 
@@ -344,7 +343,7 @@ class BucControllerTest {
         //aktoerService.hentPinForAktoer
         whenever(mockAktoerIdHelper.hentGjeldendeIdent(IdentGruppe.NorskIdent, AktoerId(aktoerId))).thenReturn(NorskIdent(fnrGjenlevende))
 
-        doThrow(HttpClientErrorException::class).whenever(mockEuxService).getBucAndSedViewAvdod(avdodfnr, fnrGjenlevende)
+        doThrow(HttpClientErrorException::class).whenever(mockEuxService).getBucAndSedViewAvdod(fnrGjenlevende, avdodfnr)
 
         assertThrows<Exception> {
             bucController.getBucogSedViewGjenlevende(aktoerId, avdodfnr)

@@ -324,7 +324,7 @@ class EuxServiceTest {
 
         doReturn(sedjson).whenever(euxKlient).getSedOnBucByDocumentIdAsJson(eq(rinasakid), any())
 
-        val actual = service.getBucAndSedViewAvdod(avdodFnr, gjenlevendeFnr)
+        val actual = service.getBucAndSedViewAvdod(gjenlevendeFnr, avdodFnr)
 
         assertEquals(1, actual.size)
         assertEquals(rinasakid, actual.first().caseId)
@@ -351,7 +351,7 @@ class EuxServiceTest {
 
         doReturn(sedjson).whenever(euxKlient).getSedOnBucByDocumentIdAsJson(eq(rinasakid), any())
 
-        val actual = service.getBucAndSedViewAvdod(avdodFnr, gjenlevendeFnr)
+        val actual = service.getBucAndSedViewAvdod(gjenlevendeFnr, avdodFnr)
         assertEquals(0, actual.size)
     }
 
@@ -372,7 +372,7 @@ class EuxServiceTest {
         doThrow(HttpClientErrorException(HttpStatus.BAD_GATEWAY, "bad error")).whenever(euxKlient).getSedOnBucByDocumentIdAsJson(any(), any())
 
         assertThrows<Exception> {
-           service.getBucAndSedViewAvdod(avdodFnr, gjenlevendeFnr)
+           service.getBucAndSedViewAvdod(gjenlevendeFnr, avdodFnr)
         }
 
     }

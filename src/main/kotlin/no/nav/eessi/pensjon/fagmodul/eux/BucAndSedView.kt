@@ -6,8 +6,12 @@ import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.utils.toJson
 
 class BucAndSedSubject(
-    val fnr: String? = null,
-    val avdod: String? = null
+        val gjenlevende: SubjectFnr? = null,
+        val avdod: SubjectFnr? = null
+)
+
+class SubjectFnr(
+        val fnr: String? = null
 )
 
 data class BucAndSedView(
@@ -36,18 +40,24 @@ data class BucAndSedView(
                     error = error
             )
         }
-        fun checkForReadOnly(buc: Buc) : Boolean {
-            return when(buc.processDefinitionName) {
+
+        fun checkForReadOnly(buc: Buc): Boolean {
+            return when (buc.processDefinitionName) {
                 "R_BUC_02" -> true
                 else -> false
             }
         }
+
         fun from(buc: Buc) = from(buc, null)
 
-        fun from(buc: Buc, subject: BucAndSedSubject?): BucAndSedView {
+        fun from(buc: Buc, gjenlevendeFnr: String, avdodFnr: String): BucAndSedView {
+            return from(buc, subject(gjenlevendeFnr, avdodFnr))
+        }
+
+        fun from(buc: Buc, subject: BucAndSedSubject? = null): BucAndSedView {
             val bucUtil = BucUtils(buc)
             return BucAndSedView(
-                    readOnly =  checkForReadOnly(buc),
+                    readOnly = checkForReadOnly(buc),
                     type = bucUtil.getProcessDefinitionName() ?: "",
                     creator = bucUtil.getCaseOwnerOrCreator(),
                     caseId = buc.id ?: "n/a",
@@ -63,6 +73,13 @@ data class BucAndSedView(
                     },
                     seds = bucUtil.getAllDocuments(),
                     subject = subject
+            )
+        }
+
+        fun subject(gjenlevendeFnr: String, avdodFnr: String): BucAndSedSubject? {
+            return BucAndSedSubject(
+                    gjenlevende = SubjectFnr(gjenlevendeFnr),
+                    avdod = SubjectFnr(avdodFnr)
             )
         }
     }

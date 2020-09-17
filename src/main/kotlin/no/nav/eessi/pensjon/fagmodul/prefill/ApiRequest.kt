@@ -15,8 +15,12 @@ import org.springframework.http.HttpStatus
 import org.springframework.web.server.ResponseStatusException
 
 class ApiSubject(
-    val fnr: String? = null,
-    val avdod: String? = null
+    val gjenlevende: SubjectFnr? = null,
+    val avdod: SubjectFnr? = null
+)
+
+class SubjectFnr(
+        val fnr: String? = null
 )
 
 //Samme som SedRequest i frontend-api
@@ -53,7 +57,7 @@ data class ApiRequest(
     }
 
     fun riktigAvdod(): String? {
-        return subject?.avdod ?: avdodfnr
+        return subject?.avdod?.fnr ?: avdodfnr
     }
 
     companion object {

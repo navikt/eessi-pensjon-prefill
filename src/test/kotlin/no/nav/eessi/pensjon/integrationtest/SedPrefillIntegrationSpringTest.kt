@@ -246,8 +246,12 @@ class SedPrefillIntegrationSpringTest {
               } ],
               "subjectArea" : "Pensjon",
               "skipSEDkey" : null,
-              "subject" : { "fnr" : "12345678901", "avdod" : "9876543210"}
-            }
+              "subject" : { 
+                    "gjenlevende" : 
+                            { "fnr" : "12312312312"},
+                    "avdod" : { "fnr": "9876543210"}
+                        }
+                }
         """.trimIndent()
 
         val result = mockMvc.perform(post("/sed/preview")
@@ -304,7 +308,12 @@ class SedPrefillIntegrationSpringTest {
               } ],
               "subjectArea" : "Pensjon",
               "skipSEDkey" : null,
-              "subject" : { "fnr" : "12345678901", "avdod" : "9876543210"}
+              "subject" : { 
+                    "gjenlevende" : 
+                            { "fnr" : "12345678901"}, 
+                    "avdod" : { "fnr": "9876543210"}
+                        }
+
             }
         """.trimIndent()
 

@@ -161,8 +161,8 @@ class BucController(private val euxService: EuxService,
 
     @ApiOperation("Henter ut liste av Buc meny struktur i json format for UI")
     @GetMapping("/detaljer/{aktoerid}/vedtak/{vedtakid}")
-    fun getBucogSedViewVedtak(@PathVariable("aktoerid", required = true) aktoerid: String,
-                                   @PathVariable("vedtakid", required = true) vedtakid: String): List<BucAndSedView> {
+    fun getBucogSedViewVedtak(@PathVariable("aktoerid", required = true) gjenlevendeAktoerid: String,
+                              @PathVariable("vedtakid", required = true) vedtakid: String): List<BucAndSedView> {
         return BucDetaljerVedtak.measure {
             //Hente opp pesysservice. hente inn vedtak pensjoninformasjon..
             val peninfo = pensjonsinformasjonClient.hentAltPaaVedtak(vedtakid)
@@ -176,11 +176,11 @@ class BucController(private val euxService: EuxService,
             val person = peninfo.person
             val avdod = hentGyldigAvdod(peninfo)
 
-            if (avdod != null && person.aktorId == aktoerid) {
-                val gjenlevBucs = avdod.map { avdod -> getBucogSedViewGjenlevende(aktoerid, avdod) }.flatten()
-                return@measure gjenlevBucs.plus(getBucogSedView(aktoerid)).distinctBy { it.caseId }
+            if (avdod != null && person.aktorId == gjenlevendeAktoerid) {
+                val gjenlevBucs = avdod.map { avdodFnr -> getBucogSedViewGjenlevende(gjenlevendeAktoerid, avdodFnr) }.flatten()
+                return@measure gjenlevBucs.plus(getBucogSedView(gjenlevendeAktoerid)).distinctBy { it.caseId }
             }
-            return@measure getBucogSedView(aktoerid)
+            return@measure getBucogSedView(gjenlevendeAktoerid)
         }
     }
 
@@ -219,7 +219,7 @@ class BucController(private val euxService: EuxService,
             val avdodBucAndSedView = try {
                 // Henter rina saker basert på fnr
                 logger.debug("henter avdod BucAndSedView fra avdød (P_BUC_02)")
-                euxService.getBucAndSedViewAvdod(avdodfnr, fnrGjenlevende)
+                euxService.getBucAndSedViewAvdod(fnrGjenlevende, avdodfnr)
             } catch (ex: Exception) {
                 logger.error("Feiler ved henting av Rinasaker for gjenlevende og avdod", ex)
                 throw Exception("Feil ved henting av Rinasaker for gjenlevende")

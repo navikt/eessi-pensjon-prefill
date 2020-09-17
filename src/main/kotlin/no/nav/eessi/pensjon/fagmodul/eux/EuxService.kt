@@ -169,11 +169,11 @@ class EuxService (private val euxKlient: EuxKlient,
         }
     }
 
-    fun getBucAndSedViewWithBuc(bucs: List<Buc>, subject: BucAndSedSubject?): List<BucAndSedView> {
+    fun getBucAndSedViewWithBuc(bucs: List<Buc>, gjenlevndeFnr: String, avdodFnr: String): List<BucAndSedView> {
         return bucs
                 .map { buc ->
                     try {
-                        BucAndSedView.from(buc, subject)
+                        BucAndSedView.from(buc, gjenlevndeFnr, avdodFnr)
                     } catch (ex: Exception) {
                         logger.error(ex.message, ex)
                         BucAndSedView.fromErr(ex.message)
@@ -233,7 +233,7 @@ class EuxService (private val euxKlient: EuxKlient,
         return euxKlient.getBucDeltakere(euxCaseId)
     }
 
-    fun getBucAndSedViewAvdod(avdodFnr: String, fnrGjenlevende: String): List<BucAndSedView> {
+    fun getBucAndSedViewAvdod(gjenlevendeFnr: String, avdodFnr: String): List<BucAndSedView> {
         // Henter rina saker basert på gjenlevendes fnr
         val rinaSakerMedFnr = euxKlient.getRinasaker(avdodFnr, null, "P_BUC_02", "\"open\"")
         val filteredRinaIdAvdod = getFilteredArchivedaRinasaker(rinaSakerMedFnr)
@@ -243,10 +243,9 @@ class EuxService (private val euxKlient: EuxKlient,
 
         val listeAvSedsPaaAvdod = hentDocumentJsonAvdod(bucdocumentidAvdod)
 
-        val gyldigeBucs = filterGyldigBucGjenlevendeAvdod(listeAvSedsPaaAvdod, fnrGjenlevende)
+        val gyldigeBucs = filterGyldigBucGjenlevendeAvdod(listeAvSedsPaaAvdod, gjenlevendeFnr)
 
-        val gjenlevendeBucAndSedView =  getBucAndSedViewWithBuc( gyldigeBucs, BucAndSedSubject(fnrGjenlevende, avdodFnr) )
-//        val gjenlevendeBucAndSedView =  getBucAndSedViewWithBuc( gyldigeBucs )
+        val gjenlevendeBucAndSedView =  getBucAndSedViewWithBuc(gyldigeBucs, gjenlevendeFnr, avdodFnr)
 
         logger.debug("TotalRinasaker med avdod og gjenlevende(rina/saf): ${gjenlevendeBucAndSedView.size}")
 

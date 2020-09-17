@@ -182,16 +182,16 @@ class ApiRequestTest {
                 buc = "P_BUC_02",
                 aktoerId = "0105094340092",
                 avdodfnr = null,
-                subject = ApiSubject("23123", "576567567567")
+                subject = ApiSubject(gjenlevende = SubjectFnr("23123"), avdod = SubjectFnr("576567567567"))
         )
 
-        val model = ApiRequest.buildPrefillDataModelConfirm(mockData, "23123", "576567567567")
+        val model = ApiRequest.buildPrefillDataModelConfirm(mockData, "23123", "113123123123")
 
         assertEquals("23123", model.bruker.norskIdent)
         assertEquals("12234", model.penSaksnummer)
         assertEquals("0105094340092", model.bruker.aktorId)
         assertEquals("P5000", model.getSEDType())
-        assertEquals("576567567567", model.avdod?.aktorId)
+        assertEquals("113123123123", model.avdod?.aktorId)
         assertEquals("576567567567", model.avdod?.norskIdent)
         assertEquals(SED::class.java, model.sed::class.java)
 
