@@ -8,7 +8,6 @@ import no.nav.eessi.pensjon.personoppslag.aktoerregister.*
 import no.nav.eessi.pensjon.personoppslag.personv3.PersonV3Service
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonClient
 import no.nav.security.token.support.core.api.Protected
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Person
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.PersonIdent
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonResponse
@@ -68,11 +67,12 @@ class PersonController(private val aktoerregisterService: AktoerregisterService,
     fun getDeceased(@PathVariable("aktoerId", required = true) gjenlevendeAktoerId: String,
                     @PathVariable("vedtaksId", required = true) vedtaksId: String): ResponseEntity<Any> {
 
+        logger.debug("Henter informasjon om avdøde $gjenlevendeAktoerId fra vedtak $vedtaksId")
         auditLogger.log("/person/{$gjenlevendeAktoerId}/vedtak", "getDeceased")
 
         val pensjonInfo = pensjonsinformasjonClient.hentAltPaaVedtak(vedtaksId)
 
-        val gjenlevende = personService.hentBruker(gjenlevendeAktoerId)
+        val gjenlevende = hentPerson(gjenlevendeAktoerId).person as Person
 
         val avdodeMedFnr = hentAlleAvdode(
                 listOf(
@@ -91,13 +91,11 @@ class PersonController(private val aktoerregisterService: AktoerregisterService,
         }
     }
 
-    private fun pairPersonFnr(avdodFnr: String, gjenlevende: Bruker?): PersoninformasjonAvdode {
+    private fun pairPersonFnr(avdodFnr: String, gjenlevende: Person?): PersoninformasjonAvdode {
 
-        val avdode = personService.hentPerson(avdodFnr)
+        val avdode = personService.hentBruker(avdodFnr)
 
-        val gjenlevendePerson = gjenlevende as Person
-
-        val avdodRolle = gjenlevendePerson.harFraRolleI.filter { (it.tilPerson.aktoer as PersonIdent).ident.ident == avdodFnr}.firstOrNull()
+        val avdodRolle = gjenlevende?.harFraRolleI?.firstOrNull { (it.tilPerson.aktoer as PersonIdent).ident.ident == avdodFnr }
 
         val avdodNavn = avdode?.personnavn
         val relasjon = avdodRolle?.tilRolle?.value
