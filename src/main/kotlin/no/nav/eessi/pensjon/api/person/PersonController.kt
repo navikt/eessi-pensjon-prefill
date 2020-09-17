@@ -93,7 +93,7 @@ class PersonController(private val aktoerregisterService: AktoerregisterService,
 
     private fun pairPersonFnr(avdodFnr: String, gjenlevende: Bruker?): PersoninformasjonAvdode {
 
-        val avdode = personService.hentBruker(avdodFnr)
+        val avdode = personService.hentPerson(avdodFnr)
 
         val gjenlevendePerson = gjenlevende as Person
 
