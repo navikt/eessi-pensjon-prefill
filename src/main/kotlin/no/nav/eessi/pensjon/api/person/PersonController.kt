@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RestController
 import javax.annotation.PostConstruct
-import kotlin.streams.toList
 
 /**
  * Controller for å kalle NAV interne registre
@@ -75,12 +74,12 @@ class PersonController(private val aktoerregisterService: AktoerregisterService,
         val gjenlevende = hentPerson(gjenlevendeAktoerId).person as Person
 
         val avdodeMedFnr = hentAlleAvdode(
-                listOf(
-                        pensjonInfo.avdod?.avdod.toString(),
-                        pensjonInfo.avdod?.avdodFar.toString(),
-                        pensjonInfo.avdod?.avdodMor.toString()
+                mapOf<String, String?>(
+                        pensjonInfo.avdod?.avdod.toString() to null,
+                        pensjonInfo.avdod?.avdodFar.toString() to "far",
+                        pensjonInfo.avdod?.avdodMor.toString() to "mor"
                 ))
-                .map { avDodFnr -> pairPersonFnr(avDodFnr, gjenlevende)}.toList()
+                .map { avDodFnr -> pairPersonFnr(avDodFnr.key, avDodFnr.value, gjenlevende)}.toList()
 
         logger.info("Det ble funnet ${avdodeMedFnr.size} avdøde for den gjenlevende med aktørID: $gjenlevendeAktoerId")
 
@@ -91,14 +90,17 @@ class PersonController(private val aktoerregisterService: AktoerregisterService,
         }
     }
 
-    private fun pairPersonFnr(avdodFnr: String, gjenlevende: Person?): PersoninformasjonAvdode {
+    private fun pairPersonFnr(avdodFnr: String, avdodRolle: String?, gjenlevende: Person?): PersoninformasjonAvdode {
 
         val avdode = personService.hentBruker(avdodFnr)
-
-        val avdodRolle = gjenlevende?.harFraRolleI?.firstOrNull { (it.tilPerson.aktoer as PersonIdent).ident.ident == avdodFnr }
-
         val avdodNavn = avdode?.personnavn
-        val relasjon = avdodRolle?.tilRolle?.value
+
+        val relasjon = if (avdodRolle == null) {
+            val familierelasjon = gjenlevende?.harFraRolleI?.firstOrNull { (it.tilPerson.aktoer as PersonIdent).ident.ident == avdodFnr }
+            familierelasjon?.tilRolle?.value
+        } else {
+            avdodRolle
+        }
 
         return PersoninformasjonAvdode(
                 fnr = avdodFnr,
@@ -109,8 +111,8 @@ class PersonController(private val aktoerregisterService: AktoerregisterService,
                 relasjon = relasjon)
     }
 
-    private fun hentAlleAvdode(avdode: List<String>): List<String> {
-        return avdode.stream().filter { isNumber(it) }.toList()
+    private fun hentAlleAvdode(avdode: Map<String, String?>): Map<String, String?> {
+        return avdode.filter { isNumber(it.key) }.toMap()
     }
 
     private fun isNumber(s: String?): Boolean {

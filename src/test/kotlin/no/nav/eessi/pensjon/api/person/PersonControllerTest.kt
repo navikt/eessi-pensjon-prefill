@@ -129,9 +129,9 @@ class PersonControllerTest {
         val avdodMorResponse = actual.last()
 
         assertTrue(avdodMorResponse.fnr == avdodMorfnr)
-        assertTrue(avdodMorResponse.relasjon == "MOR")
+        assertTrue(avdodMorResponse.relasjon == "mor")
         assertTrue(avdodFarResponse.fnr == avdodFarfnr)
-        assertTrue(avdodFarResponse.relasjon == "FAR")
+        assertTrue(avdodFarResponse.relasjon == "far")
     }
 
 
@@ -164,7 +164,7 @@ class PersonControllerTest {
 
         val actual = mapJsonToAny(response.contentAsString, typeRefs<List<PersonController.PersoninformasjonAvdode>>()).first()
         assertTrue(actual.fnr == avdodMorfnr)
-        assertTrue(actual.relasjon == relasjonMor)
+        assertTrue(actual.relasjon == "mor")
     }
 
 
