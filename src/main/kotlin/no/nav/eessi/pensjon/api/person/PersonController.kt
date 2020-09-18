@@ -2,6 +2,8 @@ package no.nav.eessi.pensjon.api.person
 
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import io.swagger.annotations.ApiOperation
+import no.nav.eessi.pensjon.fagmodul.models.FamilieRelasjonType.FAR
+import no.nav.eessi.pensjon.fagmodul.models.FamilieRelasjonType.MOR
 import no.nav.eessi.pensjon.logging.AuditLogger
 import no.nav.eessi.pensjon.metrics.MetricsHelper
 import no.nav.eessi.pensjon.personoppslag.aktoerregister.*
@@ -76,8 +78,8 @@ class PersonController(private val aktoerregisterService: AktoerregisterService,
         val avdodeMedFnr = hentAlleAvdode(
                 mapOf<String, String?>(
                         pensjonInfo.avdod?.avdod.toString() to null,
-                        pensjonInfo.avdod?.avdodFar.toString() to "far",
-                        pensjonInfo.avdod?.avdodMor.toString() to "mor"
+                        pensjonInfo.avdod?.avdodFar.toString() to FAR.name,
+                        pensjonInfo.avdod?.avdodMor.toString() to MOR.name
                 ))
                 .map { avDodFnr -> pairPersonFnr(avDodFnr.key, avDodFnr.value, gjenlevende)}.toList()
 
@@ -97,7 +99,7 @@ class PersonController(private val aktoerregisterService: AktoerregisterService,
 
         val relasjon = if (avdodRolle == null) {
             val familierelasjon = gjenlevende?.harFraRolleI?.firstOrNull { (it.tilPerson.aktoer as PersonIdent).ident.ident == avdodFnr }
-            familierelasjon?.tilRolle?.value
+            familierelasjon?.tilRolle?.value?.toUpperCase()
         } else {
             avdodRolle
         }

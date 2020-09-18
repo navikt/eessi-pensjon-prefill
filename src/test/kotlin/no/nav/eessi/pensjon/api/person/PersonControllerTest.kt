@@ -1,6 +1,8 @@
 package no.nav.eessi.pensjon.api.person
 
 import com.nhaarman.mockitokotlin2.*
+import no.nav.eessi.pensjon.fagmodul.models.FamilieRelasjonType.FAR
+import no.nav.eessi.pensjon.fagmodul.models.FamilieRelasjonType.MOR
 import no.nav.eessi.pensjon.logging.AuditLogger
 import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerId
 import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerregisterService
@@ -109,8 +111,8 @@ class PersonControllerTest {
         val avdodMorTPSBruker = lagTPSBruker(avdodMorfnr, "Fru", "Blyant")
         val avdodFarTPSBruker = lagTPSBruker(avdodFarfnr, "Hr", "Blyant")
         val gjenlevendeBarnTSPBruker = lagTPSBruker(fnrGjenlevende, "Liten", "Blyant")
-                .medVoksen(avdodMorfnr, "MOR")
-                .medVoksen(avdodFarfnr, "FAR")
+                .medVoksen(avdodMorfnr, MOR.name)
+                .medVoksen(avdodFarfnr, FAR.name)
 
         doReturn(mockPensjoninfo).whenever(mockPensjonClient).hentAltPaaVedtak(vedtaksId)
         doReturn(avdodMorTPSBruker).whenever(mockPersonV3Service).hentBruker(avdodMorfnr)
@@ -129,9 +131,9 @@ class PersonControllerTest {
         val avdodMorResponse = actual.last()
 
         assertTrue(avdodMorResponse.fnr == avdodMorfnr)
-        assertTrue(avdodMorResponse.relasjon == "mor")
+        assertTrue(avdodMorResponse.relasjon == MOR.name)
         assertTrue(avdodFarResponse.fnr == avdodFarfnr)
-        assertTrue(avdodFarResponse.relasjon == "far")
+        assertTrue(avdodFarResponse.relasjon == FAR.name)
     }
 
 
@@ -164,7 +166,7 @@ class PersonControllerTest {
 
         val actual = mapJsonToAny(response.contentAsString, typeRefs<List<PersonController.PersoninformasjonAvdode>>()).first()
         assertTrue(actual.fnr == avdodMorfnr)
-        assertTrue(actual.relasjon == "mor")
+        assertTrue(actual.relasjon == MOR.name)
     }
 
 
