@@ -7,6 +7,7 @@ import no.nav.eessi.pensjon.fagmodul.sedmodel.Bruker
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Nav
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Pensjon
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
+import no.nav.eessi.pensjon.utils.norwergianDateToSdfPattern
 import no.nav.pensjon.v1.sak.V1Sak
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -83,7 +84,7 @@ class PrefillP2100(private val prefillNav: PrefillNav) {
         if (prefillData.kravDato == null && (sakType == EPSaktype.UFOREP.name || sakType == EPSaktype.ALDER.name))  {
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Mangler kravdato på $sakType for gjenlevende krav")
         }
-        val kravDato =  prefillData.kravDato
+        val kravDato = prefillData.kravDato?.let { norwergianDateToSdfPattern(it) }
         val sed = prefillData.sed
         if (kravDato != null) {
             sed.pensjon?.kravDato?.dato = kravDato

@@ -17,6 +17,11 @@ fun XMLGregorianCalendar.simpleFormat(): String {
     return SimpleDateFormat(sdfPattern).format(date)
 }
 
+fun norwergianDateToSdfPattern(date : String) : String{
+    val date = SimpleDateFormat("dd-MM-yyyy").parse(date)
+    return SimpleDateFormat(sdfPattern).format(date)
+}
+
 fun Date.simpleFormat(): String = SimpleDateFormat(sdfPattern).format(this)
 
 fun createXMLCalendarFromString(dateStr: String): XMLGregorianCalendar {

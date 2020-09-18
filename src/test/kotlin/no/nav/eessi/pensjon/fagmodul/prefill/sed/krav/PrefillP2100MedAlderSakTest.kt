@@ -72,7 +72,7 @@ class PrefillP2100MedAlderSakTest {
         assertEquals("P2100", p2100.sed)
         assertEquals("BAMSE ULUR", p2100.pensjon?.gjenlevende?.person?.fornavn)
         assertEquals("BAMSE LUR", p2100.nav?.bruker?.person?.fornavn)
-        assertEquals("01-03-2020", p2100.pensjon?.kravDato?.dato)
+        assertEquals("2020-03-01", p2100.pensjon?.kravDato?.dato)
     }
 
     @Test
@@ -138,7 +138,7 @@ class PrefillP2100MedAlderSakTest {
 
         PrefillP2100(prefillNav).kravDatoOverider(prefillData, sak)
 
-        assertEquals("01-01-2020", sed.pensjon?.kravDato?.dato)
+        assertEquals("2020-01-01", sed.pensjon?.kravDato?.dato)
     }
 }
 
