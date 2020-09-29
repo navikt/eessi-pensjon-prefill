@@ -55,4 +55,17 @@ class PensjonController(private val pensjonsinformasjonClient: Pensjonsinformasj
             }
         }
     }
+
+    @ApiOperation("Henter ut en liste over alle saker på valgt aktoerId")
+    @GetMapping("/sakliste/{aktoerId}")
+    fun hentPensjonSakIder(@PathVariable("aktoerId", required = true) aktoerId: String) : List<PensjonSak> {
+        val pensjonInformasjon = pensjonsinformasjonClient.hentAltPaaAktoerId(aktoerId)
+        return pensjonInformasjon.brukersSakerListe.brukersSakerListe.map { sak -> PensjonSak(sak.sakId, sak.sakType, sak.status) }
+    }
 }
+
+class PensjonSak (
+        val sakid: Long,
+        val sakType: String,
+        val status: String
+)
