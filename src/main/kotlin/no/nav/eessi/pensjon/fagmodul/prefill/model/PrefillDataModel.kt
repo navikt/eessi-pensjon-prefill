@@ -1,6 +1,7 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.model
 
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
+import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.sedmodel.AndreinstitusjonerItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.InstitusjonX005
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
@@ -25,6 +26,9 @@ class PrefillDataModel(val penSaksnummer: String, val bruker: PersonId, val avdo
     //pensjon
     lateinit var vedtakId: String
     var kravDato: String? = null
+    var kravId: String? = null
+
+    var melding: String? = null
 
     //rina
     lateinit var rinaSubject: String
@@ -32,8 +36,6 @@ class PrefillDataModel(val penSaksnummer: String, val bruker: PersonId, val avdo
     lateinit var buc: String
     lateinit var sed: SED
     lateinit var institution: List<InstitusjonItem>
-
-    lateinit var skipSedkey: List<String>
 
     //hjelpe parametere for utfylling av institusjon
     var andreInstitusjon: AndreinstitusjonerItem? = null
@@ -43,7 +45,7 @@ class PrefillDataModel(val penSaksnummer: String, val bruker: PersonId, val avdo
     var partSedAsJson: MutableMap<String, String> = mutableMapOf()
 
     fun getSEDType(): String {
-        return sed.sed!!
+        return sed.sed
     }
 
     fun getPartSEDasJson(key: String): String? {
@@ -59,14 +61,6 @@ class PrefillDataModel(val penSaksnummer: String, val bruker: PersonId, val avdo
         return institution
     }
 
-    fun kanFeltSkippes(key: String): Boolean {
-        return try {
-            skipSedkey.contains(key)
-        } catch (ex: Exception) {
-            false
-        }
-    }
-
     fun clone() : String {
         return mapAnyToJson(this)
     }
@@ -77,6 +71,8 @@ class PrefillDataModel(val penSaksnummer: String, val bruker: PersonId, val avdo
             return mapJsonToAny(prefillData, typeRefs(), true)
         }
     }
+
+    fun isMinimumPrefill() = getSEDType() != SEDType.P6000.name
 
 }
 

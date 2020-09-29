@@ -4,6 +4,7 @@ import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.KravHistorikkHelper.create
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.KravHistorikkHelper.hentKravHistorikkForsteGangsBehandlingUtlandEllerForsteGang
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.KravHistorikkHelper.hentKravHistorikkMedKravStatusAvslag
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.KravHistorikkHelper.hentKravHistorikkMedKravStatusTilBehandling
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.KravHistorikkHelper.hentKravhistorikkForGjenlevende
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.NavFodselsnummer
 import no.nav.eessi.pensjon.fagmodul.sedmodel.*
 import no.nav.eessi.pensjon.utils.simpleFormat
@@ -13,6 +14,8 @@ import no.nav.pensjon.v1.ytelsepermaaned.V1YtelsePerMaaned
 import no.nav.pensjon.v1.ytelseskomponent.V1Ytelseskomponent
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+
+val kravdatoMeldingOmP2100TilSaksbehandler = "Kravdato fra det opprinnelige vedtak med gjenlevenderett er angitt i SED P2100"
 
 /**
  * Hjelpe klasse for sak som fyller ut NAV-SED-P2000 med pensjondata fra PESYS.
@@ -42,44 +45,30 @@ object PrefillP2xxxPensjon {
                       penSaksnummer: String,
                       pensak: V1Sak,
                       andreinstitusjonerItem: AndreinstitusjonerItem?,
-                      gjenlevende: Bruker? = null): Pensjon {
+                      gjenlevende: Bruker? = null,
+                      kravId: String? = null): MeldingOmPensjon {
 
         logger.debug("4.1           Informasjon om ytelser")
 
-        val spesialStatusList = listOf(Kravstatus.TIL_BEHANDLING.name, Kravstatus.AVSL.name)
+        val saksStatusListe = listOf(Kravstatus.TIL_BEHANDLING.name, Kravstatus.AVSL.name)
         //INNV
-        var krav: Krav? = null
         val ytelselist = mutableListOf<YtelserItem>()
 
-        if (spesialStatusList.contains(pensak.status) && krav == null) {
+        val v1KravHistorikk = finnKravHistorikkForDato(pensak)
+        val melding = opprettMeldingBasertPaaSaktype(v1KravHistorikk, kravId, pensak.sakType)
+        val krav = createKravDato(v1KravHistorikk, pensak.status)
+
+        logger.debug("Krav(dato) = $krav")
+
+        if (saksStatusListe.contains(pensak.status) && krav == null) {
             logger.info("forkortet ytelsebehandling status: ${pensak.status}")
-
             ytelselist.add(createYtelseMedManglendeYtelse(pensak, personNr, penSaksnummer, andreinstitusjonerItem))
-
-            when (pensak.status) {
-                Kravstatus.TIL_BEHANDLING.name -> {
-                    val kravHistorikkMedUtland = hentKravHistorikkMedKravStatusTilBehandling(pensak.kravHistorikkListe)
-                    krav = createKravDato(kravHistorikkMedUtland)
-                    logger.warn("9.1/11.1        Opprettett med mulighet for at denne ${Kravstatus.TIL_BEHANDLING} mangler KravDato")
-                }
-                else -> {
-                    val kravHistorikkMedUtland = hentKravHistorikkMedKravStatusAvslag(pensak.kravHistorikkListe)
-                    krav = createKravDato(kravHistorikkMedUtland)
-                    logger.warn("9.1/11.1        Opprettett med mulighet for at denne ${Kravstatus.AVSL} mangler KravDato")
-                }
-            }
 
         } else {
             logger.info("sakType: ${pensak.sakType}")
             try {
                 val kravHistorikkMedUtland = hentKravHistorikkForsteGangsBehandlingUtlandEllerForsteGang(pensak.kravHistorikkListe, pensak.sakType)
                 val ytelseprmnd = hentYtelsePerMaanedDenSisteFraKrav(kravHistorikkMedUtland, pensak)
-
-                //kjøre ytelselist på normal
-                if (krav == null) {
-                    krav = createKravDato(kravHistorikkMedUtland)
-                }
-
                 ytelselist.add(createYtelserItem(ytelseprmnd, pensak, personNr, penSaksnummer, andreinstitusjonerItem))
             } catch (ex: Exception) {
                 logger.error(ex.message, ex)
@@ -87,11 +76,35 @@ object PrefillP2xxxPensjon {
             }
         }
 
-        return Pensjon(
+        return MeldingOmPensjon(
+                melding = melding,
+                pensjon = Pensjon(
                 ytelser = ytelselist,
                 kravDato = krav,
                 gjenlevende = gjenlevende
-        )
+        ))
+    }
+
+    private fun finnKravHistorikkForDato(pensak: V1Sak): V1KravHistorikk {
+        return try {
+            hentKravhistorikkForGjenlevende(pensak.kravHistorikkListe)
+                    ?: when (pensak.status) {
+                        Kravstatus.TIL_BEHANDLING.name -> hentKravHistorikkMedKravStatusTilBehandling(pensak.kravHistorikkListe)
+                        Kravstatus.AVSL.name -> hentKravHistorikkMedKravStatusAvslag(pensak.kravHistorikkListe)
+                        else -> hentKravHistorikkForsteGangsBehandlingUtlandEllerForsteGang(pensak.kravHistorikkListe, pensak.sakType)
+                    }
+        } catch (ex: Exception) {
+            logger.warn("Klarte ikke å hente kravhistorikk for $pensak , fortsetter uten")
+            V1KravHistorikk()
+        }
+    }
+
+    private fun opprettMeldingBasertPaaSaktype(kravHistorikk: V1KravHistorikk, kravId: String?, saktype: String): String? {
+        if (kravHistorikk.kravId == kravId) return ""
+            return when (saktype) {
+                EPSaktype.ALDER.name, EPSaktype.UFOREP.name -> kravdatoMeldingOmP2100TilSaksbehandler
+                else -> ""
+            }
     }
 
     /**

@@ -3,7 +3,6 @@ package no.nav.eessi.pensjon.fagmodul.prefill.sed.krav
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PersonData
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Nav
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Pensjon
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.pensjon.v1.sak.V1Sak
@@ -30,42 +29,36 @@ class PrefillP2000(private val prefillNav: PrefillNav)  {
 
         val sed = prefillData.sed
 
-        //skipper å hente persondata dersom NAVSED finnes
-        if (prefillData.kanFeltSkippes("NAVSED")) {
-            sed.nav = Nav()
-        } else {
-            //henter opp persondata
-            sed.nav = prefillNav.prefill(
-                    penSaksnummer = prefillData.penSaksnummer,
-                    bruker = prefillData.bruker,
-                    avdod = prefillData.avdod,
-                    personData = personData,
-                    brukerInformasjon = prefillData.getPersonInfoFromRequestData()
-            )
-        }
+        //henter opp persondata
+        sed.nav = prefillNav.prefill(
+                penSaksnummer = prefillData.penSaksnummer,
+                bruker = prefillData.bruker,
+                avdod = prefillData.avdod,
+                personData = personData,
+                brukerInformasjon = prefillData.getPersonInfoFromRequestData()
+        )
 
         try {
-            sed.pensjon =
-                    if (sak == null) Pensjon()
-                    else {
-                        val pensjon = PrefillP2xxxPensjon.createPensjon(
-                                prefillData.bruker.norskIdent,
-                                prefillData.penSaksnummer,
-                                sak,
-                                prefillData.andreInstitusjon
-                        )
-                        if (prefillData.kanFeltSkippes("PENSED")) {
-                            Pensjon(kravDato = pensjon.kravDato) //vi skal ha blank pensjon ved denne toggle, men vi må ha med kravdato
-                        } else {
-                            pensjon
-                        }
-                    }
+            sed.pensjon = Pensjon()
+            if (sak != null) {
+                val meldingOmPensjon = PrefillP2xxxPensjon.createPensjon(
+                        prefillData.bruker.norskIdent,
+                        prefillData.penSaksnummer,
+                        sak,
+                        prefillData.andreInstitusjon)
+                sed.pensjon =  meldingOmPensjon.pensjon
+                if (prefillData.isMinimumPrefill()) {
+                    sed.pensjon = Pensjon(
+                            kravDato = meldingOmPensjon.pensjon.kravDato
+                    ) //vi skal ha blank pensjon ved denne toggle, men vi må ha med kravdato
+                }
+            }
         } catch (ex: Exception) {
             logger.error(ex.message, ex)
             // TODO Should we really swallow this?
         }
 
-        KravHistorikkHelper.settKravdato(prefillData, sed)
+        KravHistorikkHelper.settKravdato(sed)
 
         logger.debug("-------------------| Preutfylling [$sedType] END |------------------- ")
         validate(prefillData)

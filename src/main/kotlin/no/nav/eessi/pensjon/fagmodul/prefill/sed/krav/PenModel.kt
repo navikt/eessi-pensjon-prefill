@@ -12,6 +12,11 @@ enum class Kravstatus {
     AVSL
 }
 
+enum class KravArsak {
+    GJNL_SKAL_VURD,
+    TILST_DOD
+}
+
 enum class EPSaktype {
     ALDER,
     UFOREP,

@@ -1,6 +1,5 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed.krav
 
-import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Krav
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.utils.simpleFormat
@@ -17,32 +16,15 @@ object KravHistorikkHelper {
      *
      *  Setter kravdato på sed (denne kommer fra PESYS men opprettes i nav?!)
      */
-    fun settKravdato(prefillData: PrefillDataModel, sed: SED) {
-        if (prefillData.kanFeltSkippes("NAVSED")) {
-            //sed.nav?.krav = Krav("")
-            //pensjon.kravDato = null
-        } else {
-            logger.debug("9.1     legger til nav kravdato fra pensjon kravdato : ${sed.pensjon?.kravDato} ")
-            sed.nav?.krav = sed.pensjon?.kravDato
-        }
+    fun settKravdato(sed: SED) {
+        logger.debug("Kjører settKravdato")
+        logger.debug("9.1     legger til nav kravdato fra pensjon kravdato : ${sed.pensjon?.kravDato} ")
+        sed.nav?.krav = sed.pensjon?.kravDato
     }
 
     private fun sortertKravHistorikk(kravHistorikkListe: V1KravHistorikkListe): List<V1KravHistorikk> {
         val list = kravHistorikkListe.kravHistorikkListe.toList()
         return list.asSequence().sortedBy { it.mottattDato.toGregorianCalendar() }.toList()
-    }
-
-    fun hentKravHistorikkSisteRevurdering(kravHistorikkListe: V1KravHistorikkListe): V1KravHistorikk {
-        val sortList = sortertKravHistorikk(kravHistorikkListe)
-
-        sortList.forEach { kravHistorikk ->
-            logger.debug("leter etter ${Kravtype.REVURD} i  ${kravHistorikk.kravType} med dato ${kravHistorikk.virkningstidspunkt}")
-            if (kravHistorikk.kravType == Kravtype.REVURD.name) {
-                logger.debug("Fant Kravhistorikk med $kravHistorikk.kravType")
-                return kravHistorikk
-            }
-        }
-        return V1KravHistorikk()
     }
 
     fun hentKravHistorikkForsteGangsBehandlingUtlandEllerForsteGang(kravHistorikkListe: V1KravHistorikkListe, saktype: String): V1KravHistorikk {
@@ -63,6 +45,15 @@ object KravHistorikkHelper {
         }
         logger.warn("Fant ikke noe Kravhistorikk. med $kravType. Grunnet utsending kun utland mangler vilkårprøving/vedtak. følger ikke normal behandling")
         return V1KravHistorikk()
+    }
+
+    fun hentKravhistorikkForGjenlevende(kravHistorikkListe: V1KravHistorikkListe): V1KravHistorikk? {
+            val kravHistorikk = kravHistorikkListe.kravHistorikkListe.filter { krav -> krav.kravArsak == KravArsak.GJNL_SKAL_VURD.name || krav.kravArsak == KravArsak.TILST_DOD.name  }
+            if (kravHistorikk.isNotEmpty()) {
+                return kravHistorikk.first()
+            }
+            logger.warn("Fant ikke Kravhistorikk med bruk av kravårsak: ${KravArsak.GJNL_SKAL_VURD.name} eller ${KravArsak.TILST_DOD.name} ")
+            return null
     }
 
     fun hentKravHistorikkMedKravStatusTilBehandling(kravHistorikkListe: V1KravHistorikkListe): V1KravHistorikk {
@@ -100,15 +91,16 @@ object KravHistorikkHelper {
      *  Fyller ut fra hvilket tidspunkt bruker ønsker å motta pensjon fra Norge.
      *  Det er et spørsmål i søknadsdialogen og på manuell kravblankett. Det er ikke nødvendigvis lik virkningstidspunktet på pensjonen.
      */
-    fun createKravDato(valgtKrav: V1KravHistorikk): Krav? {
+    fun createKravDato(valgtKrav: V1KravHistorikk, message: String? = ""): Krav? {
         logger.debug("9.1        Dato Krav (med korrekt data fra PESYS krav.virkningstidspunkt)")
         logger.debug("KravType   :  ${valgtKrav.kravType}")
         logger.debug("mottattDato:  ${valgtKrav.mottattDato}")
         logger.debug("--------------------------------------------------------------")
 
         logger.debug("Prøver å sette kravDato til Virkningstidpunkt: ${valgtKrav.kravType} og dato: ${valgtKrav.mottattDato}")
+        logger.debug("$message")
         return Krav(
-                dato = valgtKrav.mottattDato?.simpleFormat() ?: ""
+                dato = valgtKrav.mottattDato?.simpleFormat()
         )
     }
 
