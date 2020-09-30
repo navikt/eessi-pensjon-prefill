@@ -68,13 +68,10 @@ class BucUtils(private val buc: Buc ) {
         return getBuc().documents ?: throw NoSuchFieldException("Fant ikke DocumentsItem")
     }
 
-    fun findDocument(documentId: String): ShortDocumentItem {
-        getAllDocuments().forEach {
-            if (documentId == it.id) {
-                return it
-            }
-        }
-        return ShortDocumentItem(id = documentId)
+    fun findDocument(documentId: String): ShortDocumentItem? {
+       return getAllDocuments().filter {
+            doc -> doc.id == documentId
+        }.map { it }.firstOrNull()
     }
 
     fun getBucAttachments(): List<Attachment>? {

@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiOperation
 import no.nav.eessi.pensjon.fagmodul.eux.BucUtils
 import no.nav.eessi.pensjon.fagmodul.eux.EuxService
 import no.nav.eessi.pensjon.fagmodul.eux.PinOgKrav
+import no.nav.eessi.pensjon.fagmodul.eux.basismodel.BucSedResponse
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ShortDocumentItem
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.prefill.ApiRequest
@@ -16,7 +17,9 @@ import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.logging.AuditLogger
 import no.nav.eessi.pensjon.metrics.CounterHelper
 import no.nav.eessi.pensjon.metrics.MetricsHelper
-import no.nav.eessi.pensjon.personoppslag.aktoerregister.*
+import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerregisterService
+import no.nav.eessi.pensjon.personoppslag.aktoerregister.IdentGruppe
+import no.nav.eessi.pensjon.personoppslag.aktoerregister.NorskIdent
 import no.nav.eessi.pensjon.utils.toJson
 import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
 import no.nav.security.token.support.core.api.Protected
@@ -83,23 +86,21 @@ class SedController(private val euxService: EuxService,
     //** oppdatert i api 18.02.2019
     @ApiOperation("legge til Deltaker(e) og SED på et eksisterende Rina document. kjører preutfylling, ny api kall til eux")
     @PostMapping("/add")
-    fun addInstutionAndDocument(@RequestBody request: ApiRequest): ShortDocumentItem {
+    fun addInstutionAndDocument(@RequestBody request: ApiRequest): ShortDocumentItem? {
         auditlogger.log("addInstutionAndDocument", request.aktoerId ?: "", request.toAudit())
 
         return AddInstutionAndDocument.measure {
+            logger.info("******* Legge til ny SED - start *******")
+            logger.info("kaller add (institutions and sed) rinaId: ${request.euxCaseId} bucType: ${request.buc} sedType: ${request.sed} aktoerId: ${request.aktoerId}")
 
             val norskIdent = hentFnrfraAktoerService(request.aktoerId, aktoerService)
             val dataModel = ApiRequest.buildPrefillDataModelOnExisting(request, norskIdent, getAvdodAktoerId(request))
-
-            logger.info("******* Legge til ny SED - start *******")
-            logger.info("kaller add (institutions and sed) rinaId: ${request.euxCaseId} bucType: ${request.buc} sedType: ${request.sed} aktoerId: ${request.aktoerId}")
 
             val bucUtil = BucUtils(euxService.getBuc(dataModel.euxCaseID))
             bucUtil.checkIfSedCanBeCreated(request.sed)
 
             val nyeInstitusjoner = bucUtil.findNewParticipants(dataModel.getInstitutionsList())
             val x005 = bucUtil.findFirstDocumentItemByType("X005")
-
             if (nyeInstitusjoner.isNotEmpty()) {
                 if (x005 == null) {
                     euxService.addInstitution(dataModel.euxCaseID, nyeInstitusjoner.map { it.institution })
@@ -110,25 +111,37 @@ class SedController(private val euxService: EuxService,
 
             logger.info("Prøver å prefillSED")
             val sed = prefillService.prefillSed(dataModel)
-            val melding = dataModel.melding
             //synk sed versjon med buc versjon
             updateSEDVersion(sed, bucUtil.getProcessDefinitionVersion() )
 
             logger.info("Prøver å sende SED: ${dataModel.getSEDType()} inn på BUC: ${dataModel.euxCaseID}")
             val docresult = euxService.opprettSedOnBuc(sed, dataModel.euxCaseID)
+
             logger.info("Opprettet ny SED med dokumentId: ${docresult.documentId}")
             val result = bucUtil.findDocument(docresult.documentId)
-
-            if (melding != null || melding != "") {
-                result.message = melding
+            if (dataModel.melding != null || dataModel.melding != "") {
+                result?.message = dataModel.melding
             }
 
             //extra tag metricshelper for sedType, bucType, timeStamp og rinaId.
             counterHelper.count(CounterHelper.MeterNameExtraTag.AddInstutionAndDocument, extraTag = extraTag(dataModel, bucUtil))
 
-            logger.info("Henter BUC dokumentdata for ny SED")
             logger.info("******* Legge til ny SED - slutt *******")
-            result
+            fetchBucAgainBeforeReturnShortDocument(dataModel.buc, docresult, result)
+        }
+
+    }
+
+    fun fetchBucAgainBeforeReturnShortDocument(bucType: String, bucSedResponse: BucSedResponse, orginal: ShortDocumentItem?): ShortDocumentItem? {
+        return if(bucType == "P_BUC_06") {
+            logger.info("Henter buc på nytt for buctype: $bucType")
+            val buc = euxService.getBuc(bucSedResponse.caseId)
+            val bucUtil = BucUtils(buc)
+            logger.debug("Leter etter shortDocument med documentID: ${bucSedResponse.documentId}")
+            bucUtil.findDocument(bucSedResponse.documentId)
+        } else {
+            logger.debug("return orginal shortDocument fra første buc")
+            orginal
         }
     }
 
@@ -167,14 +180,11 @@ class SedController(private val euxService: EuxService,
 
     @ApiOperation("Oppretter en Sed som svar på en forespørsel-Sed")
     @RequestMapping("/replysed/{parentid}", method = [RequestMethod.POST])
-    fun addDocumentToParent(@RequestBody(required = true) request: ApiRequest, @PathVariable("parentid", required = true) parentId: String): ShortDocumentItem {
+    fun addDocumentToParent(@RequestBody(required = true) request: ApiRequest, @PathVariable("parentid", required = true) parentId: String): ShortDocumentItem? {
         auditlogger.log("addDocumentToParent", request.aktoerId ?: "", request.toAudit())
 
         return AddDocumentToParent.measure {
-            if (request.aktoerId.isNullOrBlank()) throw ManglerAktoerIdException("Mangler AktoerId")
-            val norskIdent =
-                    aktoerService.hentGjeldendeIdent(IdentGruppe.NorskIdent, AktoerId(request.aktoerId))?.id
-                            ?: throw AktoerregisterIkkeFunnetException("NorskIdent for aktoerId ${request.aktoerId} ikke funnet.")
+            val norskIdent = hentFnrfraAktoerService(request.aktoerId, aktoerService)
 
             val dataModel = ApiRequest.buildPrefillDataModelOnExisting(request, norskIdent, getAvdodAktoerId(request))
             logger.info("Prøver å prefillSED (svar)")
@@ -184,7 +194,6 @@ class SedController(private val euxService: EuxService,
             val docresult = euxService.opprettSvarSedOnBuc(sed, dataModel.euxCaseID, parentId)
 
             val bucUtil = BucUtils(euxService.getBuc(docresult.caseId))
-
             //synk sed versjon med buc versjon
             updateSEDVersion(sed,  bucUtil.getProcessDefinitionVersion() )
 
@@ -193,7 +202,9 @@ class SedController(private val euxService: EuxService,
 
             logger.info("Henter BUC dokumentdata for svar SED")
             val result = bucUtil.findDocument(docresult.documentId)
-            result
+            //result
+
+            fetchBucAgainBeforeReturnShortDocument(dataModel.buc, docresult, result)
         }
     }
 

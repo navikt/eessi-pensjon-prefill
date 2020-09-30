@@ -19,6 +19,7 @@ import no.nav.eessi.pensjon.personoppslag.aktoerregister.IdentGruppe
 import no.nav.eessi.pensjon.personoppslag.aktoerregister.NorskIdent
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import no.nav.eessi.pensjon.utils.mapJsonToAny
+import no.nav.eessi.pensjon.utils.toJson
 import no.nav.eessi.pensjon.utils.typeRefs
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
@@ -291,26 +292,107 @@ class SedControllerTest {
     }
 
     @Test
-    //    kaller add (institutions and sed) rinaId: 1756996 bucType: P_BUC_06 sedType: P10000 aktoerId: 1000006851327
-    fun `call addInstutionAndDocument validater SED P10000 på en P_BUC_06 new return OK`() {
+    fun `Gitt det opprettes en SED P10000 på tom P_BUC_06 Så skal bucmodel hents på nyt og shortDocument returneres som response`() {
         val euxCaseId = "1234567890"
 
         doReturn(NorskIdent("12345")).whenever(mockAktoerIdHelper).hentGjeldendeIdent(eq(IdentGruppe.NorskIdent), any<AktoerId>())
 
         val mockBucJson = String(Files.readAllBytes(Paths.get("src/test/resources/json/buc/buc_P_BUC_06_4.2_tom.json")))
-        doReturn( mapJsonToAny(mockBucJson, typeRefs<Buc>())).whenever(mockEuxService).getBuc(euxCaseId)
+        val mockBucJson2 = String(Files.readAllBytes(Paths.get("src/test/resources/json/buc/P_BUC_06_P10000.json")))
+        doReturn( mapJsonToAny(mockBucJson, typeRefs<Buc>()))
+                .doReturn( mapJsonToAny(mockBucJson2, typeRefs<Buc>()))
+                .whenever(mockEuxService).getBuc(euxCaseId)
 
         val newParticipants = listOf(
                 InstitusjonItem(country = "FI", institution = "FI:Finland", name="Finland test")
         )
 
-        doReturn(BucSedResponse(euxCaseId, "1")).whenever(mockEuxService).opprettSedOnBuc(any(),eq(euxCaseId))
+        doReturn(BucSedResponse(euxCaseId, "58c26271b21f4feebcc36b949b4865fe")).whenever(mockEuxService).opprettSedOnBuc(any(),eq(euxCaseId))
         whenever(mockPrefillSEDService.prefill(any())).thenReturn(SED("P10000"))
         doNothing().whenever(mockEuxService).addInstitution(any(), any())
 
-        val result =  sedController.addInstutionAndDocument(apiRequestWith(euxCaseId, newParticipants, "P10000"))
-        verify(mockEuxService, times(newParticipants.size)).opprettSedOnBuc(any(), eq(euxCaseId))
-        assertEquals(ShortDocumentItem::class.java, result::class.java)
+        val apiRequest = apiRequestWith(euxCaseId, newParticipants, "P10000")
+        val result =  sedController.addInstutionAndDocument(apiRequest)
+
+        verify(mockEuxService, times(1)).opprettSedOnBuc(any(), eq(euxCaseId))
+        verify(mockEuxService, times(2)).getBuc(eq(euxCaseId))
+
+        assertNotNull(result)
+        assertEquals(ShortDocumentItem::class.java, result?.javaClass)
+
+        val expected = """
+            {
+              "id" : "58c26271b21f4feebcc36b949b4865fe",
+              "parentDocumentId" : null,
+              "type" : "P10000",
+              "status" : "received",
+              "creationDate" : 1593520973389,
+              "lastUpdate" : 1593520973389,
+              "displayName" : "Transfer of additional information",
+              "participants" : [ {
+                "role" : "Sender",
+                "organisation" : {
+                  "address" : {
+                    "country" : "NO",
+                    "town" : null,
+                    "street" : null,
+                    "postalCode" : null,
+                    "region" : null
+                  },
+                  "activeSince" : "2018-08-26T22:00:00.000+0000",
+                  "registryNumber" : null,
+                  "acronym" : "NAV ACCT 08",
+                  "countryCode" : "NO",
+                  "contactMethods" : null,
+                  "name" : "NAV ACCEPTANCE TEST 08",
+                  "location" : null,
+                  "assignedBUCs" : null,
+                  "id" : "NO:NAVAT08",
+                  "accessPoint" : null,
+                  "identifier" : null,
+                  "contactTypeIdentifier" : null,
+                  "authority" : null
+                },
+                "selected" : false
+              }, {
+                "role" : "Receiver",
+                "organisation" : {
+                  "address" : {
+                    "country" : "NO",
+                    "town" : null,
+                    "street" : null,
+                    "postalCode" : null,
+                    "region" : null
+                  },
+                  "activeSince" : "2018-08-26T22:00:00.000+0000",
+                  "registryNumber" : null,
+                  "acronym" : "NAV ACCT 07",
+                  "countryCode" : "NO",
+                  "contactMethods" : null,
+                  "name" : "NAV ACCEPTANCE TEST 07",
+                  "location" : null,
+                  "assignedBUCs" : null,
+                  "id" : "NO:NAVAT07",
+                  "accessPoint" : null
+                },
+                "selected" : false
+              } ],
+              "attachments" : [ ],
+              "version" : "1",
+              "firstVersion" : {
+                "date" : "2020-06-30T12:42:53.389+0000",
+                "id" : "1"
+              },
+              "lastVersion" : {
+                "date" : "2020-06-30T12:42:53.389+0000",
+                "id" : "1"
+              },
+              "allowsAttachments" : true,
+              "message" : null
+            }
+        """.trimIndent()
+
+        assertEquals(expected, result?.toJson())
 
     }
 
