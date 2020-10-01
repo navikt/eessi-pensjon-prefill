@@ -273,15 +273,12 @@ class PrefillNav(private val prefillAdresse: PrefillAdresse,
                 etternavn = (brukerTps.personnavn as Personnavn).etternavn,
                 //2.1.2     forname
                 fornavn = createFornavnMellomNavn(brukerTps.personnavn),
-                //fornavn = (brukerTps.personnavn as Personnavn).fornavn,
                 //2.1.3
                 foedselsdato = datoFormat(brukerTps),
                 //2.1.4     //sex
                 kjoenn = mapKjonn(brukerTps.kjoenn),
                 //2.1.6
                 fornavnvedfoedsel = null,
-                //fornavnvedfoedsel = createFornavnMellomNavn(brukerTps.personnavn),
-                //fornavnvedfoedsel = (brukerTps.personnavn as Personnavn).fornavn,
                 //2.1.7
                 pin = createPersonPinNorIdent(brukerTps, institutionid, institutionnavn),
                 //2.2.1.1
@@ -361,4 +358,3 @@ class PrefillNav(private val prefillAdresse: PrefillAdresse,
         )
     }
 }
-

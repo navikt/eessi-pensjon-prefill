@@ -5,7 +5,6 @@ import no.nav.eessi.pensjon.services.geo.PostnummerService
 import no.nav.eessi.pensjon.services.kodeverk.KodeverkClient
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bostedsadresse
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Gateadresse
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.Landkoder
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Person
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.PersonIdent
 import org.slf4j.Logger
@@ -22,7 +21,7 @@ class PrefillAdresse ( private val postnummerService: PostnummerService,
     /**
      *  2.2.2 adresse informasjon
      */
-    fun createPersonAdresse(personTPS: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): Adresse? {
+    fun createPersonAdresse(personTPS: Person): Adresse? {
         logger.debug("2.2.2         Adresse")
 
         if (sjekkForDiskresjonKodeAdresse(personTPS)) {
