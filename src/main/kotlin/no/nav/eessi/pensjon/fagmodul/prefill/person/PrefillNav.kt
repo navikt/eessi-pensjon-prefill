@@ -188,20 +188,6 @@ class PrefillNav(private val prefillAdresse: PrefillAdresse,
             return listOf(createAnsettelsesforhold(personInfo))
         }
 
-
-        // FIXME TODO Ser ikke ut til å være i bruk??
-        //Sivilstand ENKE, PENS, SINGLE Familiestatus
-        //Dette feilter tilsvarer Familie statius i Rina kap. 2.2.2 eller 5.2.2
-        fun createSivilstand(brukerTps: no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker): List<SivilstandItem> {
-            logger.debug("2.2.2           Sivilstand / Familiestatus (01 Enslig, 02 Gift, 03 Samboer, 04 Partnerskal, 05 Skilt, 06 Skilt partner, 07 Separert, 08 Enke)")
-            val sivilstand = brukerTps.sivilstand as Sivilstand
-            val status = mapOf("GIFT" to "02", "REPA" to "04", "ENKE" to "08", "SAMB" to "03", "SEPA" to "07", "UGIF" to "01", "SKIL" to "05", "SKPA" to "06")
-            return listOf(SivilstandItem(
-                    fradato = sivilstand.fomGyldighetsperiode.simpleFormat(),
-                    status = status[sivilstand.sivilstand.value]
-            ))
-        }
-
         //lokal sak pkt 1.0 i gjelder alle SED
         private fun createEssisakItem(penSaksnummer: String, institusjonId: String, institusjonNavn: String): List<EessisakItem> {
             logger.debug("1.1           Lokalt saksnummer (hvor hentes disse verider ifra?")
@@ -288,8 +274,7 @@ class PrefillNav(private val prefillAdresse: PrefillAdresse,
                 //2.1.8.1           place of birth
                 foedested = createFodested(brukerTps),
                 //2.2.2 -   P2100 = 5.2.2.
-                //TODO skaper feil under P2100 utkommenter intillvidere
-                sivilstand = null // if (isPersonAvdod(brukerTps)) null else createSivilstand(brukerTps)
+                sivilstand = null
         )
     }
 

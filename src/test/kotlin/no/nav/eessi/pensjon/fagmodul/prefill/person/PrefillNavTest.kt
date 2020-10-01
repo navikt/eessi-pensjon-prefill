@@ -407,40 +407,6 @@ class PrefillNavTest {
                 land = "")
     }
 
-    @Test
-    fun testPaahentSivilstandArr9999BlirBlank() {
-        val brukerTps = mockBrukerSivilstandTps("9999-01-01", "SKPQ")
-
-        val actualList = PrefillNav.createSivilstand(brukerTps)
-        val actual = actualList[0]
-
-        assertEquals("", actual.fradato)
-        assertEquals(null, actual.status)
-    }
-
-    @Test
-    fun testPaahentSivilstandOk() {
-        val brukerTps = mockBrukerSivilstandTps("1999-01-01", "UGIF")
-
-        val actualList = PrefillNav.createSivilstand(brukerTps)
-        val actual = actualList[0]
-
-        assertEquals("1999-01-01", actual.fradato)
-        assertEquals("01", actual.status)
-    }
-
-    @Test
-    fun testPaahentSivilstandAar2099() {
-        val brukerTps = mockBrukerSivilstandTps("2499-12-01", "REPA")
-
-        val actualList = PrefillNav.createSivilstand(brukerTps)
-        val actual = actualList[0]
-
-        assertEquals("2499-12-01", actual.fradato)
-        assertEquals("04", actual.status)
-    }
-
-
     private fun mockBrukerSivilstandTps(gyldigPeriode: String, sivilstandType: String): no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker {
         val brukerTps = no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker()
         brukerTps.endretAv = "Test"
