@@ -461,4 +461,34 @@ class PrefillNavTest {
 
         assertTrue(PrefillNav.isPersonAvdod(person))
     }
+
+    @Test
+    fun `Gitt en person med kosovo statsborgerskap Når preutfyller Statsborgerstak Så preutfyll tomt statsborgerskap`() {
+        //Mock
+        val personV3Bruker = lagTPSBruker("123456789124", "Jonna", "Dolla")
+        personV3Bruker.statsborgerskap = Statsborgerskap().withLand(Landkoder().withValue("XXK"))
+
+        //Run
+        val bruker=  prefillNav.createBruker(brukerTPS = personV3Bruker, bank = null, ansettelsesforhold = null)
+
+        //Asssert
+        assertEquals(bruker!!.person!!.statsborgerskap!!.size, 1)
+        assertNull(bruker.person!!.statsborgerskap!![0].land)
+    }
+
+    @Test
+    fun `Gitt en person med noe annet enn kosovo statsborgerskap Når preutfyller Statsborgerstak Så preutfyll statsborgerskap`() {
+        //Mock
+        val personV3Bruker = lagTPSBruker("123456789124", "Jonna", "Dolla")
+        personV3Bruker.statsborgerskap = Statsborgerskap().withLand(Landkoder().withValue("NOR"))
+
+        doReturn("NO").whenever(kodeverkClient).finnLandkode2("NOR")
+
+        //Run
+        val bruker=  prefillNav.createBruker(brukerTPS = personV3Bruker, bank = null, ansettelsesforhold = null)
+
+        //Assert
+        assertEquals(bruker!!.person!!.statsborgerskap!!.size, 1)
+        assertEquals(bruker.person!!.statsborgerskap!![0].land, "NO")
+    }
 }

@@ -10,7 +10,6 @@ import no.nav.tjeneste.virksomhet.person.v3.informasjon.PersonIdent
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
-import kotlin.reflect.typeOf
 
 @Component
 class PrefillAdresse ( private val postnummerService: PostnummerService,
@@ -41,7 +40,7 @@ class PrefillAdresse ( private val postnummerService: PostnummerService,
             Adresse(
                     postnummer = gateAdresse.poststed.value,
                     gate = "$gate $husnr",
-                    land = hentLandkode(gateAdresse.landkode),
+                    land = hentLandkode(gateAdresse.landkode.value),
                     by = postnummerService.finnPoststed(gateAdresse.poststed.value)
             )
         }
@@ -75,7 +74,7 @@ class PrefillAdresse ( private val postnummerService: PostnummerService,
         )
     }
 
-    fun hentLandkode(landkodertps: Landkoder): String? {
-        return kodeverkClient.finnLandkode2(landkodertps.value)
+    fun hentLandkode(landkode: String): String? {
+        return kodeverkClient.finnLandkode2(landkode)
     }
 }

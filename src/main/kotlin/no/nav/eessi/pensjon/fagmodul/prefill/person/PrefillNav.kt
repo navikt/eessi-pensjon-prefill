@@ -14,7 +14,8 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
-import java.util.*
+
+private val UGYLDIGE_LAND_RINA = listOf("XXK")
 
 @Component
 class PrefillNav(private val prefillAdresse: PrefillAdresse,
@@ -268,6 +269,8 @@ class PrefillNav(private val prefillAdresse: PrefillAdresse,
     //persondata - nav-sed format
     private fun createPersonData(brukerTps: no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker): Person {
         logger.debug("2.1           Persondata (forsikret person / gjenlevende person / barn)")
+
+        val landKode = brukerTps.statsborgerskap.land.value
         return Person(
                 //2.1.1     familiy name
                 etternavn = (brukerTps.personnavn as Personnavn).etternavn,
@@ -282,7 +285,7 @@ class PrefillNav(private val prefillAdresse: PrefillAdresse,
                 //2.1.7
                 pin = createPersonPinNorIdent(brukerTps, institutionid, institutionnavn),
                 //2.2.1.1
-                statsborgerskap = listOf(createStatsborgerskap(brukerTps)),
+                statsborgerskap = listOf(createStatsborgerskap(landKode)),
                 //2.1.8.1           place of birth
                 foedested = createFodested(brukerTps),
                 //2.2.2 -   P2100 = 5.2.2.
@@ -347,14 +350,15 @@ class PrefillNav(private val prefillAdresse: PrefillAdresse,
         )
     }
 
-    private fun createStatsborgerskap(person: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): StatsborgerskapItem {
+    /**
+     * Prefiller to-bokstavs statsborgerskap
+     * Hopper over Kosovo (XXK) fordi Rina ikke støttet Kosovo
+     */
+    private fun createStatsborgerskap(landkode: String): StatsborgerskapItem {
         logger.debug("2.2.1.1         Land / Statsborgerskap")
-
-        val statsborgerskap = person.statsborgerskap as Statsborgerskap
-        val land = statsborgerskap.land as Landkoder
-
-        return StatsborgerskapItem(
-                land = prefillAdresse.hentLandkode(land)
-        )
+        if(UGYLDIGE_LAND_RINA.contains(landkode)){
+            return StatsborgerskapItem()
+        }
+        return StatsborgerskapItem(prefillAdresse.hentLandkode(landkode))
     }
 }
