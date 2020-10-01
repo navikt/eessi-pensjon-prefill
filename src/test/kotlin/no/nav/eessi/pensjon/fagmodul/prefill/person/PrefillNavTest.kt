@@ -253,6 +253,40 @@ class PrefillNavTest {
         assertEquals(expected, actual)
     }
 
+    @Test
+    fun `prefill person singel uten fornavn og mellomnavn`() {
+        doReturn("NO").whenever(kodeverkClient).finnLandkode2("NOR")
+
+        val somePersonNr = FodselsnummerMother.generateRandomFnr(60)
+
+        val personfnr = NavFodselsnummer(somePersonNr)
+        val personFdato = personfnr.getBirthDate().toString()
+
+        val person = lagTPSBruker(somePersonNr, null, "Kun etternavn")
+        person.foedselsdato = Foedselsdato().withFoedselsdato( convertToXMLocal(personfnr.getBirthDate()))
+
+        val prefillData = PrefillDataModel(penSaksnummer = somePenSaksnr, bruker = PersonId(somePersonNr, "dummy"), avdod = null)
+
+        doReturn(person)
+                .whenever(mockTpsPersonService)
+                .hentBruker(somePersonNr)
+
+        val personData = PersonData(forsikretPerson = person, ektefelleBruker = null, ekteTypeValue = "", gjenlevendeEllerAvdod = person, barnBrukereFraTPS = listOf())
+
+        val actual = prefillNav.prefill(prefillData.penSaksnummer, prefillData.bruker, prefillData.avdod, personData, prefillData.getPersonInfoFromRequestData())
+
+        val fornavn = null
+        val expected = Nav(
+                eessisak = listOf(EessisakItem(institusjonsid =  someInstitutionId, institusjonsnavn = someIntitutionNavn, saksnummer =  somePenSaksnr, land =  "NO")),
+                bruker = Bruker(
+                        person = lagPerson(somePersonNr, fornavn, "Kun etternavn", personFdato),
+                        adresse = lagTomAdresse()
+                )
+        )
+        assertEquals(expected, actual)
+    }
+
+
 
 
     @Test
@@ -329,8 +363,8 @@ class PrefillNavTest {
         return Pair<no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker, no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker>(person, ektefelle)
     }
 
-    private fun lagPerson(foreldersPin: String, fornavn: String, etternavn: String) = lagPerson(foreldersPin, fornavn, etternavn, null)
-    private fun lagPerson(foreldersPin: String, fornavn: String, etternavn: String, fdato: String?) =
+    private fun lagPerson(foreldersPin: String, fornavn: String?, etternavn: String) = lagPerson(foreldersPin, fornavn, etternavn, null)
+    private fun lagPerson(foreldersPin: String, fornavn: String?, etternavn: String, fdato: String?) =
             Person(
                     pin = listOf(PinItem(
                             institusjonsnavn = someIntitutionNavn,
@@ -344,7 +378,7 @@ class PrefillNavTest {
                     foedselsdato = fdato,
                     fornavnvedfoedsel = null)
 
-    private fun lagTPSBruker(foreldersPin: String, fornavn: String, etternavn: String) =
+    private fun lagTPSBruker(foreldersPin: String, fornavn: String? = null, etternavn: String? = null) =
             no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker()
                     .withPersonnavn(Personnavn()
                             .withEtternavn(etternavn)

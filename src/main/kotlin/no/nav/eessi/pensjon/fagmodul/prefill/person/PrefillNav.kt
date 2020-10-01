@@ -265,7 +265,6 @@ class PrefillNav(private val prefillAdresse: PrefillAdresse,
                 arbeidsforhold = ansettelsesforhold)
     }
 
-
     //persondata - nav-sed format
     private fun createPersonData(brukerTps: no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker): Person {
         logger.debug("2.1           Persondata (forsikret person / gjenlevende person / barn)")
@@ -294,12 +293,8 @@ class PrefillNav(private val prefillAdresse: PrefillAdresse,
         )
     }
 
-    private fun createFornavnMellomNavn(personnavn: Personnavn): String {
-        return if (personnavn.mellomnavn != null) {
-            personnavn.fornavn + " " + personnavn.mellomnavn
-        } else {
-            personnavn.fornavn
-        }
+    fun createFornavnMellomNavn(personnavn: Personnavn): String? {
+       return if (personnavn.mellomnavn != null) personnavn.fornavn + " " + personnavn.mellomnavn else personnavn.fornavn
     }
 
 
