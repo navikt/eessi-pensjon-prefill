@@ -112,6 +112,7 @@ class PrefillSEDService(private val prefillNav: PrefillNav,
     fun hentBarnFraTps(hovedPerson: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person) =
             hovedPerson.harFraRolleI
                     .filter { relasjon -> PrefillNav.Companion.RelasjonEnum.BARN.erSamme(relasjon.tilRolle.value) }
+                    .filter { relasjon -> relasjon.tilPerson.doedsdato == null }
                     .map { relasjon -> (relasjon.tilPerson.aktoer as PersonIdent).ident.ident }
                     .mapNotNull { barnPin ->
                         val aktoerid = aktorRegisterService.hentGjeldendeIdent(IdentGruppe.AktoerId, NorskIdent(barnPin))?.id
