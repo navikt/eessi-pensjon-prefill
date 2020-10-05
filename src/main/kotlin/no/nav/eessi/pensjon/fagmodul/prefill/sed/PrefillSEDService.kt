@@ -15,19 +15,25 @@ import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.PrefillP2100
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.PrefillP2200
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.PrefillP6000
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
+import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerregisterService
+import no.nav.eessi.pensjon.personoppslag.aktoerregister.IdentGruppe
+import no.nav.eessi.pensjon.personoppslag.aktoerregister.NorskIdent
 import no.nav.eessi.pensjon.personoppslag.personv3.PersonV3Service
 import no.nav.pensjon.v1.sak.V1Sak
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.PersonIdent
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
+import org.springframework.web.server.ResponseStatusException
 
 @Component
 class PrefillSEDService(private val prefillNav: PrefillNav,
                         private val personV3Service: PersonV3Service,
                         private val eessiInformasjon: EessiInformasjon,
-                        private val pensjonsinformasjonService: PensjonsinformasjonService) {
+                        private val pensjonsinformasjonService: PensjonsinformasjonService,
+                        private val aktorRegisterService: AktoerregisterService) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillSEDService::class.java) }
 
@@ -108,7 +114,9 @@ class PrefillSEDService(private val prefillNav: PrefillNav,
                     .filter { relasjon -> PrefillNav.Companion.RelasjonEnum.BARN.erSamme(relasjon.tilRolle.value) }
                     .map { relasjon -> (relasjon.tilPerson.aktoer as PersonIdent).ident.ident }
                     .mapNotNull { barnPin ->
-                        logger.info("Henter barn fra TPS")
+                        val aktoerid = aktorRegisterService.hentGjeldendeIdent(IdentGruppe.AktoerId, NorskIdent(barnPin))?.id
+                                ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "AktoerId for NorskIdent ikke funnet.")
+                        logger.info("Henter barn fra TPS med aktoerid: $aktoerid")
                         personV3Service.hentBruker(barnPin)
                     }
 

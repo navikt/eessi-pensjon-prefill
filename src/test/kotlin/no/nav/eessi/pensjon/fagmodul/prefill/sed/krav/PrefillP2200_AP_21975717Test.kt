@@ -17,6 +17,7 @@ import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.setupPersonda
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.FodselsnummerMother.generateRandomFnr
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.NavFodselsnummer
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillAdresse
+import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerregisterService
 import no.nav.eessi.pensjon.services.geo.PostnummerService
 import no.nav.eessi.pensjon.services.kodeverk.KodeverkClient
 import no.nav.eessi.pensjon.utils.mapAnyToJson
@@ -43,6 +44,8 @@ class PrefillP2200_AP_21975717Test {
     lateinit var prefillNav: PrefillNav
     lateinit var dataFromPEN: PensjonsinformasjonService
     private lateinit var prefillSEDService: PrefillSEDService
+    private @Mock
+lateinit var aktorRegisterService: AktoerregisterService
 
     @BeforeEach
     fun setup() {
@@ -62,7 +65,7 @@ class PrefillP2200_AP_21975717Test {
                     "PersonInfo" to readJsonResponse("other/person_informasjon_selvb.json"),
                     "P4000" to readJsonResponse("other/p4000_trygdetid_part.json"))
         }
-        prefillSEDService = PrefillSEDService(prefillNav, persondataFraTPS, EessiInformasjon(), dataFromPEN)
+        prefillSEDService = PrefillSEDService(prefillNav, persondataFraTPS, EessiInformasjon(), dataFromPEN, aktorRegisterService)
 
     }
 

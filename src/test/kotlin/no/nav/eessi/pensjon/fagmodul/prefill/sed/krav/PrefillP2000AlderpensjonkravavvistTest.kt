@@ -17,12 +17,14 @@ import no.nav.eessi.pensjon.fagmodul.prefill.tps.NavFodselsnummer
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillAdresse
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Nav
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
+import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerregisterService
 import no.nav.eessi.pensjon.utils.toJson
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
 
 @ExtendWith(MockitoExtension::class)
@@ -37,6 +39,8 @@ class PrefillP2000AlderpensjonkravavvistTest {
     lateinit var prefillData: PrefillDataModel
     lateinit var dataFromPEN: PensjonsinformasjonService
     private lateinit var prefillSEDService: PrefillSEDService
+    @Mock
+    lateinit var aktorRegisterService: AktoerregisterService
 
 
     @BeforeEach
@@ -57,7 +61,7 @@ class PrefillP2000AlderpensjonkravavvistTest {
                     "PersonInfo" to readJsonResponse("other/person_informasjon_selvb.json"),
                     "P4000" to readJsonResponse("other/p4000_trygdetid_part.json"))
         }
-        prefillSEDService = PrefillSEDService(prefillNav, persondataFraTPS, EessiInformasjon(), dataFromPEN)
+        prefillSEDService = PrefillSEDService(prefillNav, persondataFraTPS, EessiInformasjon(), dataFromPEN, aktorRegisterService)
 
    }
 

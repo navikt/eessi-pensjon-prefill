@@ -12,20 +12,18 @@ import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.lesPensjonsda
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.readJsonResponse
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.setupPersondataFraTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.FodselsnummerMother.generateRandomFnr
-import no.nav.eessi.pensjon.fagmodul.prefill.tps.NavFodselsnummer
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillAdresse
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Nav
-import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
+import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerregisterService
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.junit.jupiter.MockitoSettings
 import org.mockito.quality.Strictness
-import java.time.LocalDate
 
 @ExtendWith(MockitoExtension::class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -36,6 +34,9 @@ class PrefillP2000AlderPensjonUtlandForsteGangTest {
     private lateinit var prefillData: PrefillDataModel
     private lateinit var prefillSEDService: PrefillSEDService
     private lateinit var dataFromPEN: PensjonsinformasjonService
+
+    @Mock
+    lateinit var aktorRegisterService: AktoerregisterService
 
     @BeforeEach
     fun setup() {
@@ -56,7 +57,7 @@ class PrefillP2000AlderPensjonUtlandForsteGangTest {
                     "PersonInfo" to readJsonResponse("other/person_informasjon_selvb.json"),
                     "P4000" to readJsonResponse("other/p4000_trygdetid_part.json"))
         }
-        prefillSEDService = PrefillSEDService(prefillNav, persondataFraTPS, EessiInformasjon(), dataFromPEN)
+        prefillSEDService = PrefillSEDService(prefillNav, persondataFraTPS, EessiInformasjon(), dataFromPEN, aktorRegisterService)
 
     }
 

@@ -12,6 +12,7 @@ import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillSEDService
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillAdresse
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
+import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerregisterService
 import no.nav.eessi.pensjon.personoppslag.personv3.PersonV3Service
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.*
 import org.junit.jupiter.api.BeforeEach
@@ -35,6 +36,8 @@ class PrefillP2000ValidateTest {
     private lateinit var prefillSEDService: PrefillSEDService
 
     private lateinit var person: Bruker
+    @Mock
+lateinit var aktorRegisterService: AktoerregisterService
 
 
     @BeforeEach
@@ -46,7 +49,7 @@ class PrefillP2000ValidateTest {
         prefillNav = PrefillNav(prefillAdresse = mock<PrefillAdresse>(),
                 institutionid = "NO:noinst002",
                 institutionnavn = "NOINST002, NO INST002, NO")
-        prefillSEDService = PrefillSEDService(prefillNav, personV3Service, EessiInformasjon(), dataFromPEN)
+        prefillSEDService = PrefillSEDService(prefillNav, personV3Service, EessiInformasjon(), dataFromPEN, aktorRegisterService)
     }
 
     @Test

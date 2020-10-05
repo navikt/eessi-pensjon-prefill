@@ -12,11 +12,16 @@ import no.nav.eessi.pensjon.fagmodul.prefill.tps.FodselsnummerMother.generateRan
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.NavFodselsnummer
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillAdresse
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
+import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerregisterService
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.Mock
+import org.mockito.junit.jupiter.MockitoExtension
 
+@ExtendWith(MockitoExtension::class)
 class PrefillP9000GLmedUtlandInnvTest {
 
     private val personFnr = generateRandomFnr(65)
@@ -30,6 +35,10 @@ class PrefillP9000GLmedUtlandInnvTest {
     lateinit var sed: SED
 
     lateinit var prefillSEDService: PrefillSEDService
+
+    @Mock
+    lateinit var aktorRegisterService: AktoerregisterService
+
 
 
     @BeforeEach
@@ -48,7 +57,7 @@ class PrefillP9000GLmedUtlandInnvTest {
 
         val pensjonInformasjonService = PrefillTestHelper.lesPensjonsdataFraFil("KravAlderEllerUfore_AP_UTLAND.xml")
 
-        prefillSEDService = PrefillSEDService(prefillNav, persondataFraTPS, EessiInformasjon(), pensjonInformasjonService)
+        prefillSEDService = PrefillSEDService(prefillNav, persondataFraTPS, EessiInformasjon(), pensjonInformasjonService, aktorRegisterService)
         sed = prefillSEDService.prefill(prefillData)
 
     }

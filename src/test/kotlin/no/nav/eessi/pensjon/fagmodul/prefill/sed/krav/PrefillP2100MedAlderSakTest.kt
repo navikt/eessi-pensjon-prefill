@@ -13,11 +13,13 @@ import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.lesPensjonsda
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.setupPersondataFraTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.FodselsnummerMother.generateRandomFnr
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillAdresse
+import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerregisterService
 import no.nav.eessi.pensjon.personoppslag.personv3.PersonV3Service
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
 
 @ExtendWith(MockitoExtension::class)
@@ -31,8 +33,11 @@ class PrefillP2100MedAlderSakTest {
 
     private lateinit var dataFromPEN: PensjonsinformasjonService
     private lateinit var prefillSEDService: PrefillSEDService
-    private lateinit var persondataFraTPS :PersonV3Service
+    private lateinit var persondataFraTPS: PersonV3Service
     private lateinit var prefillNav: PrefillNav
+
+    @Mock
+    lateinit var aktorRegisterService: AktoerregisterService
 
     @BeforeEach
     fun setup() {
@@ -57,9 +62,9 @@ class PrefillP2100MedAlderSakTest {
                 pinId = personFnr,
                 kravId = "3243243",
                 penSaksnummer = pesysSaksnummer,
-                avdod = PersonId(avdodPersonFnr,"112233445566"))
+                avdod = PersonId(avdodPersonFnr, "112233445566"))
 
-        prefillSEDService = PrefillSEDService(prefillNav, persondataFraTPS, EessiInformasjon(), dataFromPEN)
+        prefillSEDService = PrefillSEDService(prefillNav, persondataFraTPS, EessiInformasjon(), dataFromPEN, aktorRegisterService)
         val p2100 = prefillSEDService.prefill(prefillData)
 
         assertEquals("P2100", p2100.sed)

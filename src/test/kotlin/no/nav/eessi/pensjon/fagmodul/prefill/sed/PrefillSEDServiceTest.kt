@@ -6,6 +6,10 @@ import com.nhaarman.mockitokotlin2.whenever
 import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjon
 import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonService
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
+import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerId
+import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerregisterService
+import no.nav.eessi.pensjon.personoppslag.aktoerregister.IdentGruppe
+import no.nav.eessi.pensjon.personoppslag.aktoerregister.NorskIdent
 import no.nav.eessi.pensjon.personoppslag.personv3.PersonV3Service
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.*
 import org.junit.jupiter.api.Assertions
@@ -33,9 +37,12 @@ class PrefillSEDServiceTest {
     @Mock
     lateinit var pensjonsinformasjonService: PensjonsinformasjonService
 
+    @Mock
+    lateinit var aktorRegisterService: AktoerregisterService
+
     @BeforeEach
     fun beforeEach() {
-        prefillSEDService = PrefillSEDService(prefillNav, tpsPersonService, eessiInformasjon, pensjonsinformasjonService)
+        prefillSEDService = PrefillSEDService(prefillNav, tpsPersonService, eessiInformasjon, pensjonsinformasjonService, aktorRegisterService)
     }
 
 
@@ -48,12 +55,12 @@ class PrefillSEDServiceTest {
         val barn = lagTPSBruker(barnetsPin, "Ole", "Brum")
 
         doReturn(barn).whenever(tpsPersonService).hentBruker(any())
-
+        doReturn(AktoerId("3323332333233323")).`when`(aktorRegisterService).hentGjeldendeIdent(IdentGruppe.AktoerId, NorskIdent(barnetsPin))
 
         val actual = prefillSEDService.hentBarnFraTps(forelder)
 
-        Assertions.assertEquals(1,actual.size)
-        Assertions.assertEquals(barn,actual.first())
+        Assertions.assertEquals(1, actual.size)
+        Assertions.assertEquals(barn, actual.first())
 
     }
 
@@ -64,12 +71,12 @@ class PrefillSEDServiceTest {
         val barnetsPin = "10107512458"
         val forelder = lagTPSBruker(foreldersPin, "Christopher", "Robin").medBarn(barnetsPin)
 
+        doReturn(AktoerId("3323332333233323")).`when`(aktorRegisterService).hentGjeldendeIdent(IdentGruppe.AktoerId, NorskIdent(barnetsPin))
         doReturn(null).whenever(tpsPersonService).hentBruker(any())
-
 
         val actual = prefillSEDService.hentBarnFraTps(forelder)
 
-        Assertions.assertEquals(0,actual.size)
+        Assertions.assertEquals(0, actual.size)
     }
 
     @Test
@@ -85,15 +92,19 @@ class PrefillSEDServiceTest {
         doReturn(eldsteBarn).whenever(tpsPersonService).hentBruker(eldstebarnetsPin)
         doReturn(yngsteBarn).whenever(tpsPersonService).hentBruker(yngstebarnetsPin)
 
+        doReturn(AktoerId("3323332333233323")).`when`(aktorRegisterService).hentGjeldendeIdent(IdentGruppe.AktoerId, NorskIdent(eldstebarnetsPin))
+        doReturn(AktoerId("121212123233323")).`when`(aktorRegisterService).hentGjeldendeIdent(IdentGruppe.AktoerId, NorskIdent(yngstebarnetsPin))
+
+
         val actual = prefillSEDService.hentBarnFraTps(forelder)
 
-        Assertions.assertEquals(2,actual.size)
+        Assertions.assertEquals(2, actual.size)
         Assertions.assertTrue(actual.contains(eldsteBarn))
         Assertions.assertTrue(actual.contains(yngsteBarn))
     }
 
     private fun lagTPSBruker(foreldersPin: String, fornavn: String, etternavn: String) =
-            no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker()
+            Bruker()
                     .withPersonnavn(Personnavn()
                             .withEtternavn(etternavn)
                             .withFornavn(fornavn))
@@ -101,12 +112,12 @@ class PrefillSEDServiceTest {
                     .withAktoer(PersonIdent().withIdent(NorskIdent().withIdent(foreldersPin)))
                     .withStatsborgerskap(Statsborgerskap().withLand(Landkoder().withValue("NOR")))
 
-    private fun no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker.medBarn(barnetsPin: String): no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker =
+    private fun Bruker.medBarn(barnetsPin: String): Bruker =
             this
                     .withHarFraRolleI(Familierelasjon()
                             .withTilRolle(Familierelasjoner()
                                     .withValue("BARN"))
-                            .withTilPerson(no.nav.tjeneste.virksomhet.person.v3.informasjon.Person()
+                            .withTilPerson(Person()
                                     .withAktoer(PersonIdent()
                                             .withIdent(NorskIdent()
                                                     .withIdent(barnetsPin)))))

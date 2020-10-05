@@ -1,5 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed.krav
 
+import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjon
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
@@ -13,6 +14,10 @@ import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.readJsonRespo
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.setupPersondataFraTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.FodselsnummerMother.generateRandomFnr
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillAdresse
+import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerId
+import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerregisterService
+import no.nav.eessi.pensjon.personoppslag.aktoerregister.IdentGruppe
+import no.nav.eessi.pensjon.personoppslag.aktoerregister.NorskIdent
 import no.nav.eessi.pensjon.personoppslag.personv3.PersonV3Service
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -21,6 +26,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.junit.jupiter.MockitoSettings
 import org.mockito.quality.Strictness
@@ -37,6 +43,10 @@ class PrefillP2000UtenKravhistorieTest {
     private lateinit var prefillSEDService: PrefillSEDService
     private lateinit var prefillNav: PrefillNav
     private lateinit var personV3Service: PersonV3Service
+
+    @Mock
+    lateinit var aktorRegisterService: AktoerregisterService
+
 
     @BeforeEach
     fun setup() {
@@ -56,7 +66,7 @@ class PrefillP2000UtenKravhistorieTest {
                     "PersonInfo" to readJsonResponse("other/person_informasjon_selvb.json"),
                     "P4000" to readJsonResponse("other/p4000_trygdetid_part.json"))
         }
-        prefillSEDService = PrefillSEDService(prefillNav, personV3Service, EessiInformasjon(), dataFromPEN)
+        prefillSEDService = PrefillSEDService(prefillNav, personV3Service, EessiInformasjon(), dataFromPEN, aktorRegisterService)
 
     }
 
@@ -73,13 +83,14 @@ class PrefillP2000UtenKravhistorieTest {
 
     @Test
     fun `Preutfylling P2000 uten kravdato skal feile`() {
+        doReturn(AktoerId("3323332333233300")).`when`(aktorRegisterService).hentGjeldendeIdent(IdentGruppe.AktoerId, NorskIdent("01100354352"))
+        doReturn(AktoerId("3323332333233311")).`when`(aktorRegisterService).hentGjeldendeIdent(IdentGruppe.AktoerId, NorskIdent("01107743352"))
 
         val ex = assertThrows<Exception> {
             prefillSEDService.prefill(prefillData)
         }
         assertEquals("Kravdato mangler\nGjelder utsendelsen \"Førstegangsbehandling kun utland\", se egen rutine på Navet.", ex.message)
     }
-
 
 
 }

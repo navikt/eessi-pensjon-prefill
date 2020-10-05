@@ -1,5 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.person
 
+import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjon
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PersonData
@@ -11,10 +12,15 @@ import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.FodselsnummerMother.generateRandomFnr
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.NavFodselsnummer
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillAdresse
+import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerId
+import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerregisterService
+import no.nav.eessi.pensjon.personoppslag.aktoerregister.IdentGruppe
+import no.nav.eessi.pensjon.personoppslag.aktoerregister.NorskIdent
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.junit.jupiter.MockitoSettings
 import org.mockito.quality.Strictness
@@ -26,11 +32,15 @@ class PrefillSedEnkeTest {
     private lateinit var personDataFromTPS: MockTpsPersonServiceFactory
     private lateinit var pensjonsinformasjonService: PensjonsinformasjonService
     private lateinit var pensjonsinformasjonServiceGjen: PensjonsinformasjonService
+
+    @Mock
+    lateinit var aktorRegisterService: AktoerregisterService
+
     private val pesysSaksnummer = "21975717"
 
     private val fnr = generateRandomFnr(67)
     private val b1fnr = generateRandomFnr(37)
-    private val b2fnr =  generateRandomFnr(17)
+    private val b2fnr = generateRandomFnr(17)
 
     @BeforeEach
     fun setup() {
@@ -49,9 +59,14 @@ class PrefillSedEnkeTest {
     fun `forvent utfylling av person data av ENKE fra TPS P2000`() {
         val preutfyllingTPS = personDataFromTPS.mockPersonV3Service()
         val prefillNav = PrefillNav(mock<PrefillAdresse>(), institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO")
-        val fnr = personDataFromTPS.getRandomNavFodselsnummer() ?: "02345678901"
-        val prefillData = initialPrefillDataModel(sedType = "P2000", pinId = fnr, vedtakId = "", penSaksnummer = pesysSaksnummer)
-        val sed = PrefillSEDService(prefillNav, preutfyllingTPS, EessiInformasjon(), pensjonsinformasjonService).prefill(prefillData)
+
+        val prefillData = initialPrefillDataModel(sedType = "P2200", pinId = fnr, vedtakId = "", penSaksnummer = "14915730")
+
+        doReturn(AktoerId("3323332333233300")).`when`(aktorRegisterService).hentGjeldendeIdent(IdentGruppe.AktoerId, NorskIdent(b1fnr))
+        doReturn(AktoerId("3323332333233399")).`when`(aktorRegisterService).hentGjeldendeIdent(IdentGruppe.AktoerId, NorskIdent(b2fnr))
+
+
+        val sed = PrefillSEDService(prefillNav, preutfyllingTPS, EessiInformasjon(), pensjonsinformasjonService, aktorRegisterService).prefill(prefillData)
 
         assertEquals("JESSINE TORDNU", sed.nav?.bruker?.person?.fornavn)
         assertEquals("BOUWMANS", sed.nav?.bruker?.person?.etternavn)
@@ -63,6 +78,10 @@ class PrefillSedEnkeTest {
     @Test
     fun `forvent utfylling av person data av ENKE fra TPS P2100`() {
         val preutfyllingTPS = personDataFromTPS.mockPersonV3Service()
+
+        doReturn(AktoerId("3323332333233323")).`when`(aktorRegisterService).hentGjeldendeIdent(IdentGruppe.AktoerId, NorskIdent(b1fnr))
+        doReturn(AktoerId("1212121212121212")).`when`(aktorRegisterService).hentGjeldendeIdent(IdentGruppe.AktoerId, NorskIdent(b2fnr))
+
         val prefillNav = PrefillNav(mock<PrefillAdresse>(), institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO")
         val prefillData = initialPrefillDataModel(sedType = "P2100", pinId = fnr, avdod = PersonId(norskIdent = fnr, aktorId = "212"), vedtakId = "", penSaksnummer = "22875355")
         val personData = PersonData(forsikretPerson = preutfyllingTPS.hentBruker(fnr)!!, ektefelleBruker = null, ekteTypeValue = "ENKE", gjenlevendeEllerAvdod = preutfyllingTPS.hentBruker(fnr), barnBrukereFraTPS = listOf(preutfyllingTPS.hentBruker(b1fnr)!!, preutfyllingTPS.hentBruker(b2fnr)!!))
@@ -101,8 +120,11 @@ class PrefillSedEnkeTest {
         val preutfyllingTPS = personDataFromTPS.mockPersonV3Service()
         val prefillNav = PrefillNav(mock<PrefillAdresse>(), institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO")
 
+        doReturn(AktoerId("3323332333233323")).`when`(aktorRegisterService).hentGjeldendeIdent(IdentGruppe.AktoerId, NorskIdent(b1fnr))
+        doReturn(AktoerId("1212121212121212")).`when`(aktorRegisterService).hentGjeldendeIdent(IdentGruppe.AktoerId, NorskIdent(b2fnr))
+
         val prefillData = initialPrefillDataModel(sedType = "P2200", pinId = fnr, vedtakId = "", penSaksnummer = "14915730")
-        val sed = PrefillSEDService(prefillNav, preutfyllingTPS, EessiInformasjon(), pensjonsinformasjonService).prefill(prefillData)
+        val sed = PrefillSEDService(prefillNav, preutfyllingTPS, EessiInformasjon(), pensjonsinformasjonService, aktorRegisterService).prefill(prefillData)
 
         assertEquals("JESSINE TORDNU", sed.nav?.bruker?.person?.fornavn)
         assertEquals("BOUWMANS", sed.nav?.bruker?.person?.etternavn)

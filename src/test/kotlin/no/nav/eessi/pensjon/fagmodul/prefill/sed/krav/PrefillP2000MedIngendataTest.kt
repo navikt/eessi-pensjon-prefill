@@ -14,11 +14,13 @@ import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.readJsonRespo
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.setupPersondataFraTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.FodselsnummerMother.generateRandomFnr
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillAdresse
+import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerregisterService
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.junit.jupiter.MockitoSettings
 import org.mockito.quality.Strictness
@@ -34,6 +36,9 @@ class PrefillP2000MedIngendataTest {
     private lateinit var prefillData: PrefillDataModel
     private lateinit var dataFromPEN: PensjonsinformasjonService
     private lateinit var prefillSEDService: PrefillSEDService
+
+    @Mock
+    lateinit var aktorRegisterService: AktoerregisterService
 
     @BeforeEach
     fun setup() {
@@ -53,7 +58,7 @@ class PrefillP2000MedIngendataTest {
                     "PersonInfo" to readJsonResponse("other/person_informasjon_selvb.json"),
                     "P4000" to readJsonResponse("other/p4000_trygdetid_part.json"))
         }
-        prefillSEDService = PrefillSEDService(prefillNav, persondataFraTPS, EessiInformasjon(), dataFromPEN)
+        prefillSEDService = PrefillSEDService(prefillNav, persondataFraTPS, EessiInformasjon(), dataFromPEN, aktorRegisterService)
 
     }
 

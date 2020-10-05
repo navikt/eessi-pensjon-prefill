@@ -12,6 +12,7 @@ import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillSEDService
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.FodselsnummerMother
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillAdresse
+import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerregisterService
 import no.nav.eessi.pensjon.personoppslag.personv3.PersonV3Service
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
@@ -19,6 +20,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.junit.jupiter.MockitoSettings
 import org.mockito.quality.Strictness
@@ -35,6 +37,9 @@ class PrefillP6000Pensjon_ALDER_Test {
     private lateinit var prefillNav: PrefillNav
     private lateinit var prefillPersonService: PersonV3Service
     private lateinit var eessiInformasjon: EessiInformasjon
+
+    @Mock
+    private lateinit var aktorRegisterService: AktoerregisterService
 
     @BeforeEach
     fun setup() {
@@ -56,7 +61,7 @@ class PrefillP6000Pensjon_ALDER_Test {
     fun `forventet korrekt utfylling av Pensjon objekt på Alderpensjon`() {
         dataFromPEN = PrefillTestHelper.lesPensjonsdataVedtakFraFil("P6000-APUtland-301.xml")
         prefillData = PrefillDataModelMother.initialPrefillDataModel("P6000", personFnr, penSaksnummer = "22580170", vedtakId = "12312312")
-        prefillSEDService = PrefillSEDService(prefillNav, prefillPersonService, eessiInformasjon, dataFromPEN)
+        prefillSEDService = PrefillSEDService(prefillNav, prefillPersonService, eessiInformasjon, dataFromPEN, aktorRegisterService)
 
         val sed = prefillSEDService.prefill(prefillData)
         val result = sed.pensjon!!
@@ -113,7 +118,7 @@ class PrefillP6000Pensjon_ALDER_Test {
     fun `preutfylling P6000 feiler ved mangler av vedtakId`() {
         dataFromPEN = PrefillTestHelper.lesPensjonsdataVedtakFraFil("P6000-AP-101.xml")
         prefillData = PrefillDataModelMother.initialPrefillDataModel("6000", personFnr, penSaksnummer = "22580170", vedtakId = "")
-        prefillSEDService = PrefillSEDService(prefillNav, prefillPersonService, eessiInformasjon, dataFromPEN)
+        prefillSEDService = PrefillSEDService(prefillNav, prefillPersonService, eessiInformasjon, dataFromPEN, aktorRegisterService)
 
         assertThrows<IllegalArgumentException> {
             prefillSEDService.prefill(prefillData)
@@ -124,7 +129,7 @@ class PrefillP6000Pensjon_ALDER_Test {
     fun `feiler ved boddArbeidetUtland ikke sann`() {
         dataFromPEN = PrefillTestHelper.lesPensjonsdataVedtakFraFil("P6000-AP-101.xml")
         prefillData = PrefillDataModelMother.initialPrefillDataModel("6000", personFnr, penSaksnummer = "22580170", vedtakId = "12312312")
-        prefillSEDService = PrefillSEDService(prefillNav, prefillPersonService, eessiInformasjon, dataFromPEN)
+        prefillSEDService = PrefillSEDService(prefillNav, prefillPersonService, eessiInformasjon, dataFromPEN, aktorRegisterService)
 
         assertThrows<IllegalArgumentException> {
             prefillSEDService.prefill(prefillData)

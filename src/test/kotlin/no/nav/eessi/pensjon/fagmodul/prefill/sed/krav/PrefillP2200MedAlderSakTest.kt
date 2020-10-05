@@ -13,10 +13,12 @@ import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.lesPensjonsdataFraFil
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.FodselsnummerMother.generateRandomFnr
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillAdresse
+import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerregisterService
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
 
 @ExtendWith(MockitoExtension::class)
@@ -28,6 +30,9 @@ class PrefillP2200MedAlderSakTest {
     lateinit var prefillData: PrefillDataModel
     lateinit var dataFromPEN: PensjonsinformasjonService
     private lateinit var prefillSEDService: PrefillSEDService
+
+    @Mock
+    lateinit var aktorRegisterService: AktoerregisterService
 
 
     @BeforeEach
@@ -45,12 +50,12 @@ class PrefillP2200MedAlderSakTest {
 
         prefillData = PrefillDataModelMother.initialPrefillDataModel("P2200", personFnr, penSaksnummer = pesysSaksnummer)
 
-        prefillSEDService = PrefillSEDService(prefillNav, persondataFraTPS, EessiInformasjon(), dataFromPEN)
+        prefillSEDService = PrefillSEDService(prefillNav, persondataFraTPS, EessiInformasjon(), dataFromPEN, aktorRegisterService)
     }
 
     @Test
     fun `forventer exception - ikke relevant saktype for krav-SED - aldersak ikke relevant for P2200`() {
-        assertThrows<FeilSakstypeForSedException>{
+        assertThrows<FeilSakstypeForSedException> {
             prefillSEDService.prefill(prefillData)
         }
     }

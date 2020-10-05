@@ -14,11 +14,16 @@ import no.nav.eessi.pensjon.fagmodul.prefill.tps.FodselsnummerMother.generateRan
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.NavFodselsnummer
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillAdresse
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
+import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerregisterService
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.Mock
+import org.mockito.junit.jupiter.MockitoExtension
 
+@ExtendWith(MockitoExtension::class)
 class PrefillP8000GLmedUtlandInnvTest {
 
     private val personFnr = generateRandomFnr(65)
@@ -34,6 +39,9 @@ class PrefillP8000GLmedUtlandInnvTest {
 
     lateinit var prefillSEDService: PrefillSEDService
 
+    @Mock
+    lateinit var aktorRegisterService: AktoerregisterService
+
     @BeforeEach
     fun setup() {
         val persondataFraTPS = setupPersondataFraTPS(setOf(
@@ -46,7 +54,7 @@ class PrefillP8000GLmedUtlandInnvTest {
                 institutionid = "NO:noinst002",
                 institutionnavn = "NOINST002, NO INST002, NO")
 
-        prefillData = PrefillDataModelMother.initialPrefillDataModel("P8000", personFnr, penSaksnummer = pesysSaksnummer, avdod = PersonId(avdodPersonFnr,"112233445566"))
+        prefillData = PrefillDataModelMother.initialPrefillDataModel("P8000", personFnr, penSaksnummer = pesysSaksnummer, avdod = PersonId(avdodPersonFnr, "112233445566"))
 
         val prefillGjenlevende = PrefillGjenlevende(persondataFraTPS, prefillNav).prefill(prefillData)
         val prefillSed = PrefillSed(prefillNav, prefillGjenlevende)
@@ -55,7 +63,7 @@ class PrefillP8000GLmedUtlandInnvTest {
 
         val pensjonInformasjonService = PrefillTestHelper.lesPensjonsdataFraFil("KravAlderEllerUfore_AP_UTLAND.xml")
 
-        prefillSEDService = PrefillSEDService(prefillNav, persondataFraTPS, EessiInformasjon(), pensjonInformasjonService)
+        prefillSEDService = PrefillSEDService(prefillNav, persondataFraTPS, EessiInformasjon(), pensjonInformasjonService, aktorRegisterService)
         sed = prefillSEDService.prefill(prefillData)
     }
 

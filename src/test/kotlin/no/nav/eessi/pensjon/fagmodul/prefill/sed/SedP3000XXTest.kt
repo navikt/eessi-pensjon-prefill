@@ -10,6 +10,7 @@ import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonService
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.FodselsnummerMother
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillAdresse
+import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerregisterService
 import no.nav.eessi.pensjon.personoppslag.personv3.PersonV3Service
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.*
 import org.junit.jupiter.api.Assertions
@@ -40,6 +41,10 @@ class SedP3000XXTest {
 
     private lateinit var person: Bruker
 
+    @Mock
+lateinit var aktorRegisterService: AktoerregisterService
+
+
     @BeforeEach
     fun setupAndRunAtStart() {
         person = lagTPSBruker(personFnr, "Ola", "Testbruker")
@@ -49,7 +54,7 @@ class SedP3000XXTest {
                 institutionid = "NO:noinst002",
                 institutionnavn = "NOINST002, NO INST002, NO")
 
-        prefillSEDService = PrefillSEDService(prefillNav, dataFromTPS, eessiInformasjon, dataFromPEN)
+        prefillSEDService = PrefillSEDService(prefillNav, dataFromTPS, eessiInformasjon, dataFromPEN, aktorRegisterService)
         whenever(dataFromTPS.hentBruker(any())).thenReturn(person)
     }
 

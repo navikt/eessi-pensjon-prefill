@@ -15,11 +15,13 @@ import no.nav.eessi.pensjon.fagmodul.prefill.tps.FodselsnummerMother.generateRan
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillAdresse
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Nav
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
+import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerregisterService
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
 
 @ExtendWith(MockitoExtension::class)
@@ -35,6 +37,10 @@ class PrefillP2100GjenlevendeRevurdering {
     private lateinit var prefillSEDService: PrefillSEDService
     private lateinit var prefillNav: PrefillNav
 
+    @Mock
+    lateinit var aktorRegisterService: AktoerregisterService
+
+
     @BeforeEach
     fun setup() {
         prefillNav = PrefillNav(
@@ -49,7 +55,7 @@ class PrefillP2100GjenlevendeRevurdering {
                 sedType = "P2100",
                 pinId = personFnr,
                 penSaksnummer = pesysSaksnummer,
-                avdod = PersonId(avdodPersonFnr,"112233445566"),
+                avdod = PersonId(avdodPersonFnr, "112233445566"),
                 kravId = pesysKravid)
         dataFromPEN = lesPensjonsdataFraFil("P2100-GJENLEV-REVURDERING-M-KRAVID-INNV.xml")
 
@@ -57,13 +63,13 @@ class PrefillP2100GjenlevendeRevurdering {
                 MockTpsPersonServiceFactory.MockTPS("Person-30000.json", personFnr, MockTpsPersonServiceFactory.MockTPS.TPSType.PERSON)
         ))
 
-        prefillSEDService = PrefillSEDService(prefillNav, persondataFraTPS, EessiInformasjon(), dataFromPEN)
+        prefillSEDService = PrefillSEDService(prefillNav, persondataFraTPS, EessiInformasjon(), dataFromPEN, aktorRegisterService)
         val p2100 = prefillSEDService.prefill(prefillData)
 
         val p2100gjenlev = SED(
                 sed = "P2100",
                 pensjon = p2100.pensjon,
-                nav = Nav( krav = p2100.nav?.krav )
+                nav = Nav(krav = p2100.nav?.krav)
         )
 
         val sed = p2100gjenlev
