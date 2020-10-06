@@ -59,8 +59,8 @@ class NavFodselsnummer(private val fodselsnummer: String) {
             (individnummerInt >= 500 && birthYear < 40) -> "20"
             (individnummerInt in 500..749 && birthYear > 54) -> "18"
             else -> {
-                logger.info("individNr not found ")
-                logger.info("Fnr: $fodselsnummer   BirthYear: $birthYear    IndividNr: $individnummerInt")
+                logger.warn("individNr not found ")
+                logger.warn("Fnr: $fodselsnummer   BirthYear: $birthYear    IndividNr: $individnummerInt")
                 throw IllegalArgumentException("Ingen gyldig årstall funnet")
             }
         }

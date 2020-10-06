@@ -14,6 +14,7 @@ import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.PrefillP2000
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.PrefillP2100
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.PrefillP2200
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.PrefillP6000
+import no.nav.eessi.pensjon.fagmodul.prefill.tps.NavFodselsnummer
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerregisterService
 import no.nav.eessi.pensjon.personoppslag.aktoerregister.IdentGruppe
@@ -100,7 +101,6 @@ class PrefillSEDService(private val prefillNav: PrefillNav,
         }
 
         val (ektepinid, ekteTypeValue) = filterEktefelleRelasjon(forsikretPerson)
-
         logger.info("Henter ektefelle/partner (ekteType: $ekteTypeValue)")
         val ektefelleBruker = if (ektepinid.isBlank()) null else personV3Service.hentBruker(ektepinid)
 
@@ -109,17 +109,30 @@ class PrefillSEDService(private val prefillNav: PrefillNav,
         return PersonData(gjenlevendeEllerAvdod = gjenlevendeEllerAvdod, forsikretPerson = forsikretPerson!!, ektefelleBruker = ektefelleBruker, ekteTypeValue = ekteTypeValue, barnBrukereFraTPS = barnBrukereFraTPS)
     }
 
-    fun hentBarnFraTps(hovedPerson: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person) =
-            hovedPerson.harFraRolleI
-                    .filter { relasjon -> PrefillNav.Companion.RelasjonEnum.BARN.erSamme(relasjon.tilRolle.value) }
-                    .filter { relasjon -> relasjon.tilPerson.doedsdato == null }
-                    .map { relasjon -> (relasjon.tilPerson.aktoer as PersonIdent).ident.ident }
-                    .mapNotNull { barnPin ->
-                        val aktoerid = aktorRegisterService.hentGjeldendeIdent(IdentGruppe.AktoerId, NorskIdent(barnPin))?.id
-                                ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "AktoerId for NorskIdent ikke funnet.")
-                        logger.info("Henter barn fra TPS med aktoerid: $aktoerid")
-                        personV3Service.hentBruker(barnPin)
-                    }
+    fun hentBarnFraTps(hovedPerson: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): List<Bruker> {
+        logger.info("henter ut relasjon BARN")
+        val barnepinlist = hovedPerson.harFraRolleI
+            .filter { relasjon -> PrefillNav.Companion.RelasjonEnum.BARN.erSamme(relasjon.tilRolle.value) }
+            .filter { relasjon -> relasjon.tilPerson.doedsdato == null }
+            .map { relasjon ->  (relasjon.tilPerson.aktoer as PersonIdent).ident.ident }
+            logger.info("prøver å hente ut alle barn (filtrert) på hovedperson: " + barnepinlist.size )
+
+            try {
+                val barn = barnepinlist.filter { NavFodselsnummer(it).isUnder18Year() }
+                logger.info("Barn under 18år ${barn.size}")
+            } catch (ex: Exception) {
+                logger.warn(ex.message)
+            }
+
+            return barnepinlist.mapNotNull { barnPin ->
+                val aktoerid = aktorRegisterService.hentGjeldendeIdent(IdentGruppe.AktoerId, NorskIdent(barnPin))?.id
+                        ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "AktoerId for NorskIdent ikke funnet.")
+                logger.info("Henter barn fra TPS med aktoerid: $aktoerid")
+                personV3Service.hentBruker(barnPin)
+            }
+
+
+    }
 
     private fun filterEktefelleRelasjon(bruker: Bruker?): Pair<String, String> {
         val validRelasjoner = listOf("EKTE", "REPA", "SAMB")
