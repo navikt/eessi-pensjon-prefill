@@ -25,9 +25,7 @@ import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.PersonIdent
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
-import org.springframework.web.server.ResponseStatusException
 
 @Component
 class PrefillSEDService(private val prefillNav: PrefillNav,
@@ -115,23 +113,24 @@ class PrefillSEDService(private val prefillNav: PrefillNav,
             .filter { relasjon -> PrefillNav.Companion.RelasjonEnum.BARN.erSamme(relasjon.tilRolle.value) }
             .filter { relasjon -> relasjon.tilPerson.doedsdato == null }
             .map { relasjon ->  (relasjon.tilPerson.aktoer as PersonIdent).ident.ident }
+            .filter { barnPin -> NavFodselsnummer(barnPin).validate() }
             logger.info("prøver å hente ut alle barn (filtrert) på hovedperson: " + barnepinlist.size )
 
-            try {
-                val barn = barnepinlist.filter { NavFodselsnummer(it).isUnder18Year() }
-                logger.info("Barn under 18år ${barn.size}")
-            } catch (ex: Exception) {
-                logger.warn(ex.message)
-            }
-
-            return barnepinlist.mapNotNull { barnPin ->
-                val aktoerid = aktorRegisterService.hentGjeldendeIdent(IdentGruppe.AktoerId, NorskIdent(barnPin))?.id
-                        ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "AktoerId for NorskIdent ikke funnet.")
-                logger.info("Henter barn fra TPS med aktoerid: $aktoerid")
+            return barnepinlist
+                    .filter { barnPin -> NavFodselsnummer(barnPin).isUnder18Year() }
+                    .mapNotNull { barnPin ->
+                logger.info("Henter barn fra TPS med aktoerid: ${hentAktoerId(barnPin)}")
                 personV3Service.hentBruker(barnPin)
             }
+    }
 
-
+    private fun hentAktoerId(pin: String): String? {
+        return try {
+            aktorRegisterService.hentGjeldendeIdent(IdentGruppe.AktoerId, NorskIdent(pin))?.id
+        } catch (ex: Exception) {
+            logger.warn("Fant ikke aktoerid")
+            null
+        }
     }
 
     private fun filterEktefelleRelasjon(bruker: Bruker?): Pair<String, String> {

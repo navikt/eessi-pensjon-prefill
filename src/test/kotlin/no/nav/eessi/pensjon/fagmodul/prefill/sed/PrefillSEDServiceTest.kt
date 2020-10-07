@@ -6,6 +6,7 @@ import com.nhaarman.mockitokotlin2.whenever
 import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjon
 import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonService
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
+import no.nav.eessi.pensjon.fagmodul.prefill.tps.FodselsnummerMother
 import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerId
 import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerregisterService
 import no.nav.eessi.pensjon.personoppslag.aktoerregister.IdentGruppe
@@ -47,11 +48,24 @@ class PrefillSEDServiceTest {
 
 
     @Test
-    fun testBarnInnhenting() {
+    fun testBarnInnhentingBarnOver18aar() {
 
         val foreldersPin = "15084535647"
         val barnetsPin = "10107512458"
         val forelder = lagTPSBruker(foreldersPin, "Christopher", "Robin").medBarn(barnetsPin)
+
+        val actual = prefillSEDService.hentBarnFraTps(forelder)
+
+        Assertions.assertEquals(0, actual.size)
+    }
+
+    @Test
+    fun testBarnInnhentingBarnUnder18aar() {
+
+        val foreldersPin = FodselsnummerMother.generateRandomFnr(40)
+        val barnetsPin = FodselsnummerMother.generateRandomFnr(13)
+        val barnets2Pin = "09109000000"
+        val forelder = lagTPSBruker(foreldersPin, "Christopher", "Robin").medBarn(barnetsPin).medBarn(barnets2Pin)
         val barn = lagTPSBruker(barnetsPin, "Ole", "Brum")
 
         doReturn(barn).whenever(tpsPersonService).hentBruker(any())
@@ -71,9 +85,6 @@ class PrefillSEDServiceTest {
         val barnetsPin = "10107512458"
         val forelder = lagTPSBruker(foreldersPin, "Christopher", "Robin").medBarn(barnetsPin)
 
-        doReturn(AktoerId("3323332333233323")).`when`(aktorRegisterService).hentGjeldendeIdent(IdentGruppe.AktoerId, NorskIdent(barnetsPin))
-        doReturn(null).whenever(tpsPersonService).hentBruker(any())
-
         val actual = prefillSEDService.hentBarnFraTps(forelder)
 
         Assertions.assertEquals(0, actual.size)
@@ -81,9 +92,9 @@ class PrefillSEDServiceTest {
 
     @Test
     fun `gitt hovedperson med to barn skal begge barna bli preutfylt`() {
-        val foreldersPin = "15084535647"
-        val eldstebarnetsPin = "10109512458"
-        val yngstebarnetsPin = "11109512459"
+        val foreldersPin = FodselsnummerMother.generateRandomFnr(42)
+        val eldstebarnetsPin = FodselsnummerMother.generateRandomFnr(17)
+        val yngstebarnetsPin = FodselsnummerMother.generateRandomFnr(13)
         val forelder = lagTPSBruker(foreldersPin, "Christoffer", "Robin").medBarn(eldstebarnetsPin).medBarn(yngstebarnetsPin)
         val eldsteBarn = lagTPSBruker(eldstebarnetsPin, "Ole", "Brum")
         val yngsteBarn = lagTPSBruker(yngstebarnetsPin, "Nasse", "Nuff")

@@ -30,7 +30,9 @@ import org.mockito.junit.jupiter.MockitoExtension
 @ExtendWith(MockitoExtension::class)
 class PrefillP2200UforpensjonTest {
 
-    private val personFnr = generateRandomFnr(67)
+    private val personFnr = generateRandomFnr(42)
+    private val barn1Fnr = generateRandomFnr(12)
+    private val barn2Fnr = generateRandomFnr(17)
 
     lateinit var prefillData: PrefillDataModel
     lateinit var prefillNav: PrefillNav
@@ -42,7 +44,9 @@ class PrefillP2200UforpensjonTest {
     @BeforeEach
     fun setup() {
         val persondataFraTPS = setupPersondataFraTPS(setOf(
-                MockTpsPersonServiceFactory.MockTPS("Person-20000.json", personFnr, MockTpsPersonServiceFactory.MockTPS.TPSType.PERSON)
+                MockTpsPersonServiceFactory.MockTPS("Person-20000.json", personFnr, MockTpsPersonServiceFactory.MockTPS.TPSType.PERSON),
+                MockTpsPersonServiceFactory.MockTPS("Person-30000.json", barn1Fnr, MockTpsPersonServiceFactory.MockTPS.TPSType.BARN),
+                MockTpsPersonServiceFactory.MockTPS("Person-30000.json", barn2Fnr, MockTpsPersonServiceFactory.MockTPS.TPSType.BARN)
         ))
         prefillNav = PrefillNav(
                 prefillAdresse = mock<PrefillAdresse>(),
@@ -62,8 +66,8 @@ class PrefillP2200UforpensjonTest {
     fun `Testing av komplett utfylling kravsøknad uførepensjon P2200`() {
         val pendata: Pensjonsinformasjon = dataFromPEN.hentPensjonInformasjon(prefillData.bruker.aktorId)
 
-        doReturn(AktoerId("3323332333233323")).`when`(aktorRegisterService).hentGjeldendeIdent(IdentGruppe.AktoerId, NorskIdent("22345678901"))
-        doReturn(AktoerId("123332333233323")).`when`(aktorRegisterService).hentGjeldendeIdent(IdentGruppe.AktoerId, NorskIdent("12345678901"))
+        doReturn(AktoerId("3323332333233323")).`when`(aktorRegisterService).hentGjeldendeIdent(IdentGruppe.AktoerId, NorskIdent(barn1Fnr))
+        doReturn(AktoerId("123332333233323")).`when`(aktorRegisterService).hentGjeldendeIdent(IdentGruppe.AktoerId, NorskIdent(barn2Fnr))
 
         assertNotNull(pendata.brukersSakerListe)
 

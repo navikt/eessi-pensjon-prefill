@@ -36,8 +36,6 @@ class PrefillSedEnkeTest {
     @Mock
     lateinit var aktorRegisterService: AktoerregisterService
 
-    private val pesysSaksnummer = "21975717"
-
     private val fnr = generateRandomFnr(67)
     private val b1fnr = generateRandomFnr(37)
     private val b2fnr = generateRandomFnr(17)
@@ -71,7 +69,7 @@ class PrefillSedEnkeTest {
         assertEquals("JESSINE TORDNU", sed.nav?.bruker?.person?.fornavn)
         assertEquals("BOUWMANS", sed.nav?.bruker?.person?.etternavn)
         assertEquals("K", sed.nav?.bruker?.person?.kjoenn)
-        assertEquals(2, sed.nav?.barn?.size)
+        assertEquals(1, sed.nav?.barn?.size)
 
     }
 
@@ -129,7 +127,7 @@ class PrefillSedEnkeTest {
         assertEquals("JESSINE TORDNU", sed.nav?.bruker?.person?.fornavn)
         assertEquals("BOUWMANS", sed.nav?.bruker?.person?.etternavn)
         assertEquals("K", sed.nav?.bruker?.person?.kjoenn)
-        assertEquals(2, sed.nav?.barn?.size)
+        assertEquals(1, sed.nav?.barn?.size)
 
         assertEquals("P2200", sed.sed)
 
