@@ -180,6 +180,8 @@ object PrefillP2xxxPensjon {
     }
 
     private fun hentYtelsePerMaanedDenSisteFraKrav(kravHistorikk: V1KravHistorikk, pensak: V1Sak): V1YtelsePerMaaned {
+        if (pensak.ytelsePerMaanedListe == null) return V1YtelsePerMaaned()
+
         val ytelser = pensak.ytelsePerMaanedListe.ytelsePerMaanedListe
         val ytelserSortertPaaFom = ytelser.asSequence().sortedBy { it.fom.toGregorianCalendar() }.toList()
 

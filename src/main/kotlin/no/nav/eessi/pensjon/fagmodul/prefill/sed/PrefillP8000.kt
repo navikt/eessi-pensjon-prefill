@@ -1,5 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed
 
+import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PersonData
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillSed
@@ -17,18 +18,17 @@ class PrefillP8000(private val prefillSed: PrefillSed)  {
 
         logger.debug("Tilpasser P8000 forenklet preutfylling")
         val person = navsed.nav?.bruker?.person
+        val adresse = navsed.nav?.bruker?.adresse
         val eessielm = navsed.nav?.eessisak?.get(0)
         val perspin = navsed.nav?.bruker?.person?.pin?.get(0)
         val gjenlevende = navsed.pensjon?.gjenlevende
 
         val p8000 = SED(
-                sed = "P8000",
+                sed = SEDType.P8000.name,
                 nav = Nav(
                         eessisak = listOf(EessisakItem(
                                 land = eessielm?.land,
-                                saksnummer = eessielm?.saksnummer,
-                                institusjonsid = eessielm?.institusjonsid,
-                                institusjonsnavn = eessielm?.institusjonsnavn
+                                saksnummer = eessielm?.saksnummer
                         )),
 
                         bruker = Bruker(
@@ -40,31 +40,30 @@ class PrefillP8000(private val prefillSed: PrefillSed)  {
                                         pin = listOf(
                                                 PinItem(
                                                         identifikator = perspin?.identifikator,
-                                                        land = perspin?.land,
-                                                        institusjon = Institusjon(
-                                                                institusjonsid = perspin?.institusjon?.institusjonsid,
-                                                                institusjonsnavn = perspin?.institusjon?.institusjonsnavn
-                                                        )
-
+                                                        land = perspin?.land
                                                 )
                                         )
+                                ),
+                                adresse = Adresse(
+                                        gate = adresse?.gate,
+                                        by = adresse?.by,
+                                        land = adresse?.land
                                 )
                         ),
                         annenperson = utfyllAnnenperson(gjenlevende)
                 ),
                 pensjon = null
         )
-
-        logger.debug("Tilpasser P8000 forenklet preutfylling, Ferdig.")
+        logger.info("Prefill P8000 forenklet preutfylling, Ferdig.")
 
         prefillData.sed = p8000
 
         return prefillData.sed
     }
 
-    private fun utfyllAnnenperson(bruker: Bruker?): Bruker? {
-        if (bruker == null) return null
-        bruker.person?.rolle = "01"
-        return bruker
+    private fun utfyllAnnenperson(gjenlevende: Bruker?): Bruker? {
+        if (gjenlevende == null) return null
+        gjenlevende.person?.rolle = "01"
+        return gjenlevende
     }
 }

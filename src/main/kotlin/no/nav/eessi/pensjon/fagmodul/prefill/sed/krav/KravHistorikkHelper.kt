@@ -78,7 +78,7 @@ object KravHistorikkHelper {
                 return it
             }
         }
-        logger.error("Fant ikke noe Kravhistorikk..${Kravstatus.AVSL}. Mangler vilkårsprlving/vedtak. følger ikke normal behandling")
+        logger.error("Fant ikke noe Kravhistorikk..${Kravstatus.AVSL}. Mangler vilkårsprøving. følger ikke normal behandling")
         return V1KravHistorikk()
     }
 
