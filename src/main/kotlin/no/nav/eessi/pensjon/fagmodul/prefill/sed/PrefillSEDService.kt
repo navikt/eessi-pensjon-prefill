@@ -126,6 +126,7 @@ class PrefillSEDService(private val prefillNav: PrefillNav,
     }
 
     private fun hentAktoerId(pin: String): String? {
+        if (!NavFodselsnummer(pin).validate()) return null
         return try {
             aktorRegisterService.hentGjeldendeIdent(IdentGruppe.AktoerId, NorskIdent(pin))?.id
         } catch (ex: Exception) {
@@ -148,7 +149,6 @@ class PrefillSEDService(private val prefillNav: PrefillNav,
 
         val result = bruker.harFraRolleI
                 .filter { relasjon -> relasjon.tilPerson.doedsdato == null }
-                //.filter { relasjon -> relasjon.endringstype == Endringstyper.NY || relasjon.endringstype == Endringstyper.ENDRET  }
                 .filter { relasjon -> validRelasjoner.contains(relasjon.tilRolle.value) }
                 .map {
                     relasjon ->
@@ -156,30 +156,11 @@ class PrefillSEDService(private val prefillNav: PrefillNav,
                     val pident = relasjon.tilPerson.aktoer as PersonIdent
                     val ektepinid = pident.ident.ident
                     Pair(ektepinid, ekteType)
-                }.firstOrNull()
+                }.filter { pair -> NavFodselsnummer(pair.first).validate() }
+                .firstOrNull()
 
-        return if (result != null) {
-            result
-        } else {
-            Pair("", "")
-        }
+        return result ?: Pair("", "")
 
-//        bruker.harFraRolleI.forEach {
-//            val relasjon = it.tilRolle.value
-//
-//            if (validRelasjoner.contains(relasjon)) {
-//
-//                ekteTypeValue = it.tilRolle.value
-//                val tilperson = it.tilPerson
-//                val pident = tilperson.aktoer as PersonIdent
-//
-//                ektepinid = pident.ident.ident
-//                if (ektepinid.isNotBlank()) {
-//                    return@forEach
-//                }
-//            }
-//        }
-//        return Pair(ektepinid, ekteTypeValue)
     }
 
 }
