@@ -20,6 +20,7 @@ import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerregisterService
 import no.nav.eessi.pensjon.personoppslag.aktoerregister.IdentGruppe
 import no.nav.eessi.pensjon.personoppslag.aktoerregister.NorskIdent
 import no.nav.eessi.pensjon.personoppslag.personv3.PersonV3Service
+import no.nav.eessi.pensjon.utils.toJson
 import no.nav.pensjon.v1.sak.V1Sak
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.PersonIdent
@@ -135,27 +136,50 @@ class PrefillSEDService(private val prefillNav: PrefillNav,
 
     private fun filterEktefelleRelasjon(bruker: Bruker?): Pair<String, String> {
         val validRelasjoner = listOf("EKTE", "REPA", "SAMB")
-
         if (bruker == null) return Pair("", "")
-        var ektepinid = ""
-        var ekteTypeValue = ""
 
-        bruker.harFraRolleI.forEach {
-            val relasjon = it.tilRolle.value
-
-            if (validRelasjoner.contains(relasjon)) {
-
-                ekteTypeValue = it.tilRolle.value
-                val tilperson = it.tilPerson
-                val pident = tilperson.aktoer as PersonIdent
-
-                ektepinid = pident.ident.ident
-                if (ektepinid.isNotBlank()) {
-                    return@forEach
-                }
-            }
+        val relasjoner = bruker.harFraRolleI.map {
+            relasjon ->
+            val pident = relasjon.tilPerson.aktoer as PersonIdent
+            val ektepinid = pident.ident.ident
+            "Relasjon: ${relasjon.tilRolle.value} Endring: ${relasjon.endringstype} Aktoer: ${hentAktoerId(ektepinid)}"
         }
-        return Pair(ektepinid, ekteTypeValue)
+        logger.info("hoverperson har følgende relasjoner : ${relasjoner.toJson()}")
+
+        val result = bruker.harFraRolleI
+                .filter { relasjon -> relasjon.tilPerson.doedsdato == null }
+                //.filter { relasjon -> relasjon.endringstype == Endringstyper.NY || relasjon.endringstype == Endringstyper.ENDRET  }
+                .filter { relasjon -> validRelasjoner.contains(relasjon.tilRolle.value) }
+                .map {
+                    relasjon ->
+                    val ekteType = relasjon.tilRolle.value
+                    val pident = relasjon.tilPerson.aktoer as PersonIdent
+                    val ektepinid = pident.ident.ident
+                    Pair(ektepinid, ekteType)
+                }.firstOrNull()
+
+        return if (result != null) {
+            result
+        } else {
+            Pair("", "")
+        }
+
+//        bruker.harFraRolleI.forEach {
+//            val relasjon = it.tilRolle.value
+//
+//            if (validRelasjoner.contains(relasjon)) {
+//
+//                ekteTypeValue = it.tilRolle.value
+//                val tilperson = it.tilPerson
+//                val pident = tilperson.aktoer as PersonIdent
+//
+//                ektepinid = pident.ident.ident
+//                if (ektepinid.isNotBlank()) {
+//                    return@forEach
+//                }
+//            }
+//        }
+//        return Pair(ektepinid, ekteTypeValue)
     }
 
 }
