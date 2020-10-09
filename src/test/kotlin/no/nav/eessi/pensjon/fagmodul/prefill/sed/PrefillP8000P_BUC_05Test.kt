@@ -1,6 +1,8 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed
 
 import com.nhaarman.mockitokotlin2.mock
+import no.nav.eessi.pensjon.fagmodul.prefill.LagTPSPerson.Companion.lagTPSBruker
+import no.nav.eessi.pensjon.fagmodul.prefill.LagTPSPerson.Companion.medBarn
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PersonData
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModelMother
@@ -14,10 +16,13 @@ import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
-class PrefillP8000APUtlandInnvTest {
+class PrefillP8000P_BUC_05Test {
+
     private val personFnr = generateRandomFnr(68)
     private val pesysSaksnummer = "14398627"
+
     lateinit var prefillData: PrefillDataModel
+
     lateinit var prefill: PrefillP8000
     lateinit var prefillNav: PrefillNav
     lateinit var personData: PersonData
@@ -28,15 +33,20 @@ class PrefillP8000APUtlandInnvTest {
                 MockTpsPersonServiceFactory.MockTPS("Person-11000-GIFT.json", personFnr, MockTpsPersonServiceFactory.MockTPS.TPSType.PERSON),
                 MockTpsPersonServiceFactory.MockTPS("Person-12000-EKTE.json", generateRandomFnr(70), MockTpsPersonServiceFactory.MockTPS.TPSType.EKTE)
         ))
+
         val person = personV3Service.hentBruker(personFnr)
+
         prefillNav = PrefillNav(
                 prefillAdresse = mock(),
                 institutionid = "NO:noinst002",
                 institutionnavn = "NOINST002, NO INST002, NO")
 
         val prefillSed = PrefillSed(prefillNav, null)
+
         prefill = PrefillP8000(prefillSed)
+
         prefillData = PrefillDataModelMother.initialPrefillDataModel("P8000", personFnr, penSaksnummer = pesysSaksnummer)
+
         personData = PersonData(forsikretPerson = person!!, ekteTypeValue = "", ektefelleBruker = null, gjenlevendeEllerAvdod = person, barnBrukereFraTPS = listOf())
     }
 
@@ -57,6 +67,17 @@ class PrefillP8000APUtlandInnvTest {
 
         assertNull(p8000.nav?.annenperson)
         assertNull(p8000.pensjon)
+
     }
+
+    @Test
+    fun `Forventer korrekt utfylt P8000 med adresse`() {
+
+        val forelder = lagTPSBruker(generateRandomFnr(68), "Christopher", "Robin").medBarn(generateRandomFnr(5))
+
+
+
+    }
+
 }
 

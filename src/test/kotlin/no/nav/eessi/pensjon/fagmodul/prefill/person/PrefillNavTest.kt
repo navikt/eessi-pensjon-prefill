@@ -3,6 +3,10 @@ package no.nav.eessi.pensjon.fagmodul.prefill.person
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
+import no.nav.eessi.pensjon.fagmodul.prefill.LagTPSPerson.Companion.createPersonMedEktefellePartner
+import no.nav.eessi.pensjon.fagmodul.prefill.LagTPSPerson.Companion.lagPerson
+import no.nav.eessi.pensjon.fagmodul.prefill.LagTPSPerson.Companion.lagTPSBruker
+import no.nav.eessi.pensjon.fagmodul.prefill.LagTPSPerson.Companion.medBarn
 import no.nav.eessi.pensjon.fagmodul.prefill.model.BrukerInformasjon
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PersonData
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PersonId
@@ -43,7 +47,6 @@ class PrefillNavTest {
 
     @BeforeEach
     fun beforeStart() {
-
         prefillNav = PrefillNav(
                 PrefillAdresse(PostnummerService(), kodeverkClient),
                 someInstitutionId,
@@ -66,12 +69,12 @@ class PrefillNavTest {
         val actual = prefillNav.prefill(prefillData.penSaksnummer, prefillData.bruker, prefillData.avdod, personData, prefillData.getPersonInfoFromRequestData())
 
         val expected = Nav(
-                eessisak = listOf(EessisakItem(institusjonsid =  someInstitutionId, institusjonsnavn = someIntitutionNavn, saksnummer =  somePenSaksnr, land =  "NO")),
+                eessisak = listOf(EessisakItem(institusjonsid = someInstitutionId, institusjonsnavn = someIntitutionNavn, saksnummer = somePenSaksnr, land = "NO")),
                 bruker = Bruker(
-                        person = lagPerson(foreldersPin, "Christopher", "Robin"),
+                        person = lagPerson(foreldersPin, "Christopher", "Robin", null, someInstitutionId, someIntitutionNavn),
                         adresse = lagTomAdresse()),
                 barn = listOf(BarnItem(
-                        person = lagPerson(barnetsPin, "Ole", "Brum"),
+                        person = lagPerson(barnetsPin, "Ole", "Brum", null, someInstitutionId, someIntitutionNavn),
                         relasjontilbruker = "BARN")))
 
         assertEquals(expected, actual)
@@ -97,17 +100,17 @@ class PrefillNavTest {
 
         val actual = prefillNav.prefill(prefillData.penSaksnummer, prefillData.bruker, prefillData.avdod, personData, prefillData.getPersonInfoFromRequestData())
         val expected = Nav(
-                eessisak = listOf(EessisakItem(institusjonsid =  someInstitutionId, institusjonsnavn = someIntitutionNavn, saksnummer =  somePenSaksnr, land =  "NO")),
+                eessisak = listOf(EessisakItem(institusjonsid = someInstitutionId, institusjonsnavn = someIntitutionNavn, saksnummer = somePenSaksnr, land = "NO")),
                 bruker = Bruker(
-                        person = lagPerson(somePersonNr, "Ole", "Brum"),
+                        person = lagPerson(somePersonNr, "Ole", "Brum", null, someInstitutionId, someIntitutionNavn),
                         adresse = lagTomAdresse()),
                 barn = listOf(BarnItem(
                         mor = null,
                         far = Foreldre(Person(
                                 fornavn = "Ole",
                                 etternavnvedfoedsel = null,
-                                pin = listOf( PinItem(identifikator = somePersonNr, land = "NO", institusjonsid = "enInstId", institusjonsnavn = "instNavn")))),
-                        person = lagPerson(someBarnPersonNr, "Nasse", "Nøff"), relasjontilbruker = "BARN")))
+                                pin = listOf(PinItem(identifikator = somePersonNr, land = "NO", institusjonsid = "enInstId", institusjonsnavn = "instNavn")))),
+                        person = lagPerson(someBarnPersonNr, "Nasse", "Nøff", null, someInstitutionId, someIntitutionNavn), relasjontilbruker = "BARN")))
 
         assertEquals(expected, actual)
     }
@@ -124,7 +127,7 @@ class PrefillNavTest {
         val personFdato = personfnr.getBirthDate().toString()
         val ektefellFdato = ektefnr.getBirthDate().toString()
 
-        val pair = createPersonMedEktefellPartnet(somePersonNr, somerEktefellePersonNr, "EKTE")
+        val pair = createPersonMedEktefellePartner(somePersonNr, somerEktefellePersonNr, "EKTE")
         val person = pair.first
         val ektefelle = pair.second
 
@@ -134,13 +137,13 @@ class PrefillNavTest {
         val actual = prefillNav.prefill(prefillData.penSaksnummer, prefillData.bruker, prefillData.avdod, personData, prefillData.getPersonInfoFromRequestData())
 
         val expected = Nav(
-                eessisak = listOf(EessisakItem(institusjonsid =  someInstitutionId, institusjonsnavn = someIntitutionNavn, saksnummer =  somePenSaksnr, land =  "NO")),
+                eessisak = listOf(EessisakItem(institusjonsid = someInstitutionId, institusjonsnavn = someIntitutionNavn, saksnummer = somePenSaksnr, land = "NO")),
                 bruker = Bruker(
-                        person = lagPerson(somePersonNr, "Ola", "Testbruker", personFdato),
+                        person = lagPerson(somePersonNr, "Ola", "Testbruker", personFdato, someInstitutionId, someIntitutionNavn),
                         adresse = lagTomAdresse()
                 ),
                 ektefelle = Ektefelle(
-                        person = lagPerson(somerEktefellePersonNr, "Jonna", "Dolla", ektefellFdato),
+                        person = lagPerson(somerEktefellePersonNr, "Jonna", "Dolla", ektefellFdato, someInstitutionId, someIntitutionNavn),
                         type = "ektefelle"
                 )
         )
@@ -159,7 +162,7 @@ class PrefillNavTest {
         val personFdato = personfnr.getBirthDate().toString()
         val ektefellFdato = ektefnr.getBirthDate().toString()
 
-        val pair = createPersonMedEktefellPartnet(somePersonNr, somerEktefellePersonNr, "REPA")
+        val pair = createPersonMedEktefellePartner(somePersonNr, somerEktefellePersonNr, "REPA")
         val person = pair.first
         val ektefelle = pair.second
 
@@ -170,13 +173,13 @@ class PrefillNavTest {
         val actual = prefillNav.prefill(prefillData.penSaksnummer, prefillData.bruker, prefillData.avdod, personData, prefillData.getPersonInfoFromRequestData())
 
         val expected = Nav(
-                eessisak = listOf(EessisakItem(institusjonsid =  someInstitutionId, institusjonsnavn = someIntitutionNavn, saksnummer =  somePenSaksnr, land =  "NO")),
+                eessisak = listOf(EessisakItem(institusjonsid = someInstitutionId, institusjonsnavn = someIntitutionNavn, saksnummer = somePenSaksnr, land = "NO")),
                 bruker = Bruker(
-                        person = lagPerson(somePersonNr, "Ola", "Testbruker", personFdato),
+                        person = lagPerson(somePersonNr, "Ola", "Testbruker", personFdato, someInstitutionId, someIntitutionNavn),
                         adresse = lagTomAdresse()
                 ),
                 ektefelle = Ektefelle(
-                        person = lagPerson(somerEktefellePersonNr, "Jonna", "Dolla", ektefellFdato),
+                        person = lagPerson(somerEktefellePersonNr, "Jonna", "Dolla", ektefellFdato, someInstitutionId, someIntitutionNavn),
                         type = "part_i_et_registrert_partnerskap"
                 )
         )
@@ -195,7 +198,7 @@ class PrefillNavTest {
         val personFdato = personfnr.getBirthDate().toString()
         val ektefellFdato = ektefnr.getBirthDate().toString()
 
-        val pair = createPersonMedEktefellPartnet(somePersonNr, somerEktefellePersonNr, "SAMB")
+        val pair = createPersonMedEktefellePartner(somePersonNr, somerEktefellePersonNr, "SAMB")
         val person = pair.first
         val ektefelle = pair.second
 
@@ -206,13 +209,13 @@ class PrefillNavTest {
         val actual = prefillNav.prefill(prefillData.penSaksnummer, prefillData.bruker, prefillData.avdod, personData, prefillData.getPersonInfoFromRequestData())
 
         val expected = Nav(
-                eessisak = listOf(EessisakItem(institusjonsid =  someInstitutionId, institusjonsnavn = someIntitutionNavn, saksnummer =  somePenSaksnr, land =  "NO")),
+                eessisak = listOf(EessisakItem(institusjonsid = someInstitutionId, institusjonsnavn = someIntitutionNavn, saksnummer = somePenSaksnr, land = "NO")),
                 bruker = Bruker(
-                        person = lagPerson(somePersonNr, "Ola", "Testbruker", personFdato),
+                        person = lagPerson(somePersonNr, "Ola", "Testbruker", personFdato, someInstitutionId, someIntitutionNavn),
                         adresse = lagTomAdresse()
                 ),
                 ektefelle = Ektefelle(
-                        person = lagPerson(somerEktefellePersonNr, "Jonna", "Dolla", ektefellFdato),
+                        person = lagPerson(somerEktefellePersonNr, "Jonna", "Dolla", ektefellFdato, someInstitutionId, someIntitutionNavn),
                         type = "samboer"
                 )
         )
@@ -230,7 +233,7 @@ class PrefillNavTest {
 
         val person = lagTPSBruker(somePersonNr, "Ola", "Testbruker")
         person.personnavn = Personnavn().withEtternavn("Test Bruker").withMellomnavn("Mellomnavn Mellomn").withFornavn("Fornavn Ole").withSammensattNavn("Ole Test Bruker")
-        person.foedselsdato = Foedselsdato().withFoedselsdato( convertToXMLocal(personfnr.getBirthDate()))
+        person.foedselsdato = Foedselsdato().withFoedselsdato(convertToXMLocal(personfnr.getBirthDate()))
 
         val prefillData = PrefillDataModel(penSaksnummer = somePenSaksnr, bruker = PersonId(somePersonNr, "dummy"), avdod = null)
 
@@ -242,11 +245,10 @@ class PrefillNavTest {
 
         val actual = prefillNav.prefill(prefillData.penSaksnummer, prefillData.bruker, prefillData.avdod, personData, prefillData.getPersonInfoFromRequestData())
 
-        val fornavn = "Fornavn Ole Mellomnavn Mellomn"
         val expected = Nav(
-                eessisak = listOf(EessisakItem(institusjonsid =  someInstitutionId, institusjonsnavn = someIntitutionNavn, saksnummer =  somePenSaksnr, land =  "NO")),
+                eessisak = listOf(EessisakItem(institusjonsid = someInstitutionId, institusjonsnavn = someIntitutionNavn, saksnummer = somePenSaksnr, land = "NO")),
                 bruker = Bruker(
-                        person = lagPerson(somePersonNr, fornavn, "Test Bruker", personFdato),
+                        person = lagPerson(somePersonNr, "Fornavn Ole Mellomnavn Mellomn", "Test Bruker", personFdato, someInstitutionId, someIntitutionNavn),
                         adresse = lagTomAdresse()
                 )
         )
@@ -262,8 +264,8 @@ class PrefillNavTest {
         val personfnr = NavFodselsnummer(somePersonNr)
         val personFdato = personfnr.getBirthDate().toString()
 
-        val person = lagTPSBruker(somePersonNr, null, "Kun etternavn")
-        person.foedselsdato = Foedselsdato().withFoedselsdato( convertToXMLocal(personfnr.getBirthDate()))
+        val person = lagTPSBruker(somePersonNr, "Fornavn", "Kun etternavn")
+        person.foedselsdato = Foedselsdato().withFoedselsdato(convertToXMLocal(personfnr.getBirthDate()))
 
         val prefillData = PrefillDataModel(penSaksnummer = somePenSaksnr, bruker = PersonId(somePersonNr, "dummy"), avdod = null)
 
@@ -275,18 +277,15 @@ class PrefillNavTest {
 
         val actual = prefillNav.prefill(prefillData.penSaksnummer, prefillData.bruker, prefillData.avdod, personData, prefillData.getPersonInfoFromRequestData())
 
-        val fornavn = null
         val expected = Nav(
-                eessisak = listOf(EessisakItem(institusjonsid =  someInstitutionId, institusjonsnavn = someIntitutionNavn, saksnummer =  somePenSaksnr, land =  "NO")),
+                eessisak = listOf(EessisakItem(institusjonsid = someInstitutionId, institusjonsnavn = someIntitutionNavn, saksnummer = somePenSaksnr, land = "NO")),
                 bruker = Bruker(
-                        person = lagPerson(somePersonNr, fornavn, "Kun etternavn", personFdato),
+                        person = lagPerson(somePersonNr, "Fornavn", "Kun etternavn", personFdato, someInstitutionId, someIntitutionNavn),
                         adresse = lagTomAdresse()
                 )
         )
         assertEquals(expected, actual)
     }
-
-
 
 
     @Test
@@ -325,8 +324,8 @@ class PrefillNavTest {
         val actual = prefillNav.prefill(penSaksnummer = prefillData.penSaksnummer, bruker = prefillData.bruker, avdod = prefillData.avdod, personData = personData, brukerInformasjon = prefillData.getPersonInfoFromRequestData())
 
         val expected = Nav(
-                eessisak = listOf(EessisakItem(institusjonsid =  someInstitutionId, institusjonsnavn = someIntitutionNavn, saksnummer =  somePenSaksnr, land =  "NO")),
-                bruker = Bruker(person = lagPerson(brukerensPin, "Ole", "Brum"),
+                eessisak = listOf(EessisakItem(institusjonsid = someInstitutionId, institusjonsnavn = someIntitutionNavn, saksnummer = somePenSaksnr, land = "NO")),
+                bruker = Bruker(person = lagPerson(brukerensPin, "Ole", "Brum", null, someInstitutionId, someIntitutionNavn),
                         arbeidsforhold = listOf(ArbeidsforholdItem(
                                 planlagtstartdato = "",
                                 arbeidstimerperuke = "",
@@ -346,56 +345,6 @@ class PrefillNavTest {
 
         assertEquals(expected, actual)
     }
-
-    private fun createPersonMedEktefellPartnet(personPersonnr: String, ektefellePersonnr: String, relasjonType: String) : Pair<no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker, no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker> {
-        val personfnr = NavFodselsnummer(personPersonnr)
-        val ektefnr = NavFodselsnummer(ektefellePersonnr)
-
-        val ektefelle = lagTPSBruker(ektefellePersonnr, "Jonna", "Dolla")
-        val person    = lagTPSBruker(personPersonnr, "Ola", "Testbruker")
-
-        person.withHarFraRolleI(Familierelasjon().withTilRolle(Familierelasjoner().withValue(relasjonType)).withTilPerson(ektefelle))
-        person.withFoedselsdato(Foedselsdato().withFoedselsdato( convertToXMLocal(personfnr.getBirthDate())))
-
-        ektefelle.withHarFraRolleI(Familierelasjon().withTilRolle(Familierelasjoner().withValue(relasjonType)).withTilPerson(person))
-        ektefelle.withFoedselsdato(Foedselsdato().withFoedselsdato( convertToXMLocal(ektefnr.getBirthDate())))
-
-        return Pair<no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker, no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker>(person, ektefelle)
-    }
-
-    private fun lagPerson(foreldersPin: String, fornavn: String?, etternavn: String) = lagPerson(foreldersPin, fornavn, etternavn, null)
-    private fun lagPerson(foreldersPin: String, fornavn: String?, etternavn: String, fdato: String?) =
-            Person(
-                    pin = listOf(PinItem(
-                            institusjonsnavn = someIntitutionNavn,
-                            institusjonsid = someInstitutionId,
-                            identifikator = foreldersPin,
-                            land = "NO")),
-                    statsborgerskap = listOf(StatsborgerskapItem(land = "NO")),
-                    etternavn = etternavn,
-                    fornavn = fornavn,
-                    kjoenn = "M",
-                    foedselsdato = fdato,
-                    fornavnvedfoedsel = null)
-
-    private fun lagTPSBruker(foreldersPin: String, fornavn: String? = null, etternavn: String? = null) =
-            no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker()
-                    .withPersonnavn(Personnavn()
-                            .withEtternavn(etternavn)
-                            .withFornavn(fornavn))
-                    .withKjoenn(Kjoenn().withKjoenn(Kjoennstyper().withValue("M")))
-                    .withAktoer(PersonIdent().withIdent(NorskIdent().withIdent(foreldersPin)))
-                    .withStatsborgerskap(Statsborgerskap().withLand(Landkoder().withValue("NOR")))
-
-    private fun no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker.medBarn(barnetsPin: String): no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker =
-            this
-                    .withHarFraRolleI(Familierelasjon()
-                            .withTilRolle(Familierelasjoner()
-                                    .withValue("BARN"))
-                            .withTilPerson(no.nav.tjeneste.virksomhet.person.v3.informasjon.Person()
-                                    .withAktoer(PersonIdent()
-                                            .withIdent(NorskIdent()
-                                                    .withIdent(barnetsPin)))))
 
 
     private fun lagTomAdresse(): Adresse {
@@ -469,7 +418,7 @@ class PrefillNavTest {
         personV3Bruker.statsborgerskap = Statsborgerskap().withLand(Landkoder().withValue("XXK"))
 
         //Run
-        val bruker=  prefillNav.createBruker(brukerTPS = personV3Bruker, bank = null, ansettelsesforhold = null)
+        val bruker = prefillNav.createBruker(brukerTPS = personV3Bruker, bank = null, ansettelsesforhold = null)
 
         //Asssert
         assertEquals(bruker!!.person!!.statsborgerskap!!.size, 1)
@@ -485,7 +434,7 @@ class PrefillNavTest {
         doReturn("NO").whenever(kodeverkClient).finnLandkode2("NOR")
 
         //Run
-        val bruker=  prefillNav.createBruker(brukerTPS = personV3Bruker, bank = null, ansettelsesforhold = null)
+        val bruker = prefillNav.createBruker(brukerTPS = personV3Bruker, bank = null, ansettelsesforhold = null)
 
         //Assert
         assertEquals(bruker!!.person!!.statsborgerskap!!.size, 1)
