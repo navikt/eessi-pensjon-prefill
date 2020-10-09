@@ -44,6 +44,16 @@ class LagTPSPerson {
                                                 .withIdent(NorskIdent()
                                                         .withIdent(barnetsPin)))))
 
+        fun Bruker.medAdresse(gate: String?, by: String? , land: String?): Bruker {
+            val bosted = Bostedsadresse()
+            val gateadresse = Gateadresse()
+            gateadresse.gatenavn = gate
+
+            bosted.strukturertAdresse = gateadresse
+            return this.withBostedsadresse(bosted)
+
+        }
+
         fun createPersonMedEktefellePartner(personPersonnr: String, ektefellePersonnr: String, relasjonType: String): Pair<Bruker, Bruker> {
             val personfnr = NavFodselsnummer(personPersonnr)
             val ektefnr = NavFodselsnummer(ektefellePersonnr)

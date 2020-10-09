@@ -1,7 +1,9 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed
 
+import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import no.nav.eessi.pensjon.fagmodul.prefill.LagTPSPerson.Companion.lagTPSBruker
+import no.nav.eessi.pensjon.fagmodul.prefill.LagTPSPerson.Companion.medAdresse
 import no.nav.eessi.pensjon.fagmodul.prefill.LagTPSPerson.Companion.medBarn
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PersonData
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
@@ -12,8 +14,10 @@ import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillSed
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.setupPersondataFraTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.FodselsnummerMother.generateRandomFnr
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.NavFodselsnummer
+import no.nav.eessi.pensjon.personoppslag.personv3.PersonV3Service
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
 class PrefillP8000P_BUC_05Test {
@@ -22,14 +26,14 @@ class PrefillP8000P_BUC_05Test {
     private val pesysSaksnummer = "14398627"
 
     lateinit var prefillData: PrefillDataModel
-
+    lateinit var personV3Service: PersonV3Service
     lateinit var prefill: PrefillP8000
     lateinit var prefillNav: PrefillNav
     lateinit var personData: PersonData
 
     @BeforeEach
     fun setup() {
-        val personV3Service = setupPersondataFraTPS(setOf(
+        personV3Service = setupPersondataFraTPS(setOf(
                 MockTpsPersonServiceFactory.MockTPS("Person-11000-GIFT.json", personFnr, MockTpsPersonServiceFactory.MockTPS.TPSType.PERSON),
                 MockTpsPersonServiceFactory.MockTPS("Person-12000-EKTE.json", generateRandomFnr(70), MockTpsPersonServiceFactory.MockTPS.TPSType.EKTE)
         ))
@@ -71,11 +75,19 @@ class PrefillP8000P_BUC_05Test {
     }
 
     @Test
+    @Disabled
     fun `Forventer korrekt utfylt P8000 med adresse`() {
+        val fnr = generateRandomFnr(68)
+        val forsikretPerson = lagTPSBruker(fnr, "Christopher", "Robin")
+                .medAdresse("Gate", null, null)
 
-        val forelder = lagTPSBruker(generateRandomFnr(68), "Christopher", "Robin").medBarn(generateRandomFnr(5))
+        personData = PersonData(forsikretPerson = forsikretPerson!!, ekteTypeValue = "", ektefelleBruker = null, gjenlevendeEllerAvdod = forsikretPerson, barnBrukereFraTPS = listOf())
+
+        val sed = prefill.prefill(prefillData, personData)
 
 
+        assertEquals("Christopher", sed?.nav?.bruker?.person?.fornavn)
+        assertEquals("Gate", sed?.nav?.bruker?.adresse?.gate)
 
     }
 
