@@ -1,25 +1,28 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed
 
 import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.whenever
 import no.nav.eessi.pensjon.fagmodul.prefill.LagTPSPerson.Companion.lagTPSBruker
 import no.nav.eessi.pensjon.fagmodul.prefill.LagTPSPerson.Companion.medAdresse
-import no.nav.eessi.pensjon.fagmodul.prefill.LagTPSPerson.Companion.medBarn
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PersonData
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModelMother
-import no.nav.eessi.pensjon.fagmodul.prefill.person.MockTpsPersonServiceFactory
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillSed
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.setupPersondataFraTPS
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.FodselsnummerMother.generateRandomFnr
-import no.nav.eessi.pensjon.fagmodul.prefill.tps.NavFodselsnummer
+import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillAdresse
 import no.nav.eessi.pensjon.personoppslag.personv3.PersonV3Service
-import org.junit.jupiter.api.Assertions.*
+import no.nav.eessi.pensjon.services.geo.PostnummerService
+import no.nav.eessi.pensjon.services.kodeverk.KodeverkClient
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.Mock
+import org.mockito.junit.jupiter.MockitoExtension
 
+
+@ExtendWith(MockitoExtension::class)
 class PrefillP8000P_BUC_05Test {
 
     private val personFnr = generateRandomFnr(68)
@@ -31,63 +34,45 @@ class PrefillP8000P_BUC_05Test {
     lateinit var prefillNav: PrefillNav
     lateinit var personData: PersonData
 
+    @Mock
+    lateinit var kodeverkClient: KodeverkClient
+
+    lateinit var prefillAdresse: PrefillAdresse
+
     @BeforeEach
     fun setup() {
-        personV3Service = setupPersondataFraTPS(setOf(
-                MockTpsPersonServiceFactory.MockTPS("Person-11000-GIFT.json", personFnr, MockTpsPersonServiceFactory.MockTPS.TPSType.PERSON),
-                MockTpsPersonServiceFactory.MockTPS("Person-12000-EKTE.json", generateRandomFnr(70), MockTpsPersonServiceFactory.MockTPS.TPSType.EKTE)
-        ))
 
-        val person = personV3Service.hentBruker(personFnr)
-
+        prefillAdresse = PrefillAdresse(PostnummerService(), kodeverkClient)
         prefillNav = PrefillNav(
-                prefillAdresse = mock(),
+                prefillAdresse = prefillAdresse,
                 institutionid = "NO:noinst002",
                 institutionnavn = "NOINST002, NO INST002, NO")
 
         val prefillSed = PrefillSed(prefillNav, null)
 
         prefill = PrefillP8000(prefillSed)
-
         prefillData = PrefillDataModelMother.initialPrefillDataModel("P8000", personFnr, penSaksnummer = pesysSaksnummer)
 
-        personData = PersonData(forsikretPerson = person!!, ekteTypeValue = "", ektefelleBruker = null, gjenlevendeEllerAvdod = person, barnBrukereFraTPS = listOf())
     }
 
     @Test
-    fun `forventet korrekt utfylt P8000 alderperson med mockdata fra testfiler`() {
-        val p8000 = prefill.prefill(prefillData, personData)
-
-        assertEquals("ODIN ETTØYE", p8000.nav?.bruker?.person?.fornavn)
-        assertEquals("BALDER", p8000.nav?.bruker?.person?.etternavn)
-        val navfnr1 = NavFodselsnummer(p8000.nav?.bruker?.person?.pin?.get(0)?.identifikator!!)
-        assertEquals(68, navfnr1.getAge())
-
-        assertNotNull(p8000.nav?.bruker?.person?.pin)
-        val pinlist = p8000.nav?.bruker?.person?.pin
-        val pinitem = pinlist?.get(0)
-        assertEquals(null, pinitem?.sektor)
-        assertEquals(personFnr, pinitem?.identifikator)
-
-        assertNull(p8000.nav?.annenperson)
-        assertNull(p8000.pensjon)
-
-    }
-
-    @Test
-    @Disabled
     fun `Forventer korrekt utfylt P8000 med adresse`() {
         val fnr = generateRandomFnr(68)
         val forsikretPerson = lagTPSBruker(fnr, "Christopher", "Robin")
-                .medAdresse("Gate", null, null)
+                .medAdresse("Gate",  "SWE")
 
-        personData = PersonData(forsikretPerson = forsikretPerson!!, ekteTypeValue = "", ektefelleBruker = null, gjenlevendeEllerAvdod = forsikretPerson, barnBrukereFraTPS = listOf())
+        personData = PersonData(forsikretPerson = forsikretPerson, ekteTypeValue = "", ektefelleBruker = null, gjenlevendeEllerAvdod = forsikretPerson, barnBrukereFraTPS = listOf())
 
+        doReturn("NO").whenever(kodeverkClient).finnLandkode2("NOR")
+        doReturn("SE").whenever(kodeverkClient).finnLandkode2("SWE")
         val sed = prefill.prefill(prefillData, personData)
 
-
-        assertEquals("Christopher", sed?.nav?.bruker?.person?.fornavn)
-        assertEquals("Gate", sed?.nav?.bruker?.adresse?.gate)
+        assertEquals("Christopher", sed.nav?.bruker?.person?.fornavn)
+        assertEquals("Gate 12", sed.nav?.bruker?.adresse?.gate)
+        assertEquals("SE", sed.nav?.bruker?.adresse?.land)
+        assertEquals(pesysSaksnummer, sed.nav?.eessisak?.firstOrNull()?.saksnummer)
+        assertEquals("Robin", sed.nav?.bruker?.person?.etternavn)
+        assertEquals(fnr, sed.nav?.bruker?.person?.pin?.firstOrNull()?.identifikator)
 
     }
 

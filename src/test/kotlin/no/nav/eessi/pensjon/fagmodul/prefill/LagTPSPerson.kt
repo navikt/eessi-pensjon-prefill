@@ -25,14 +25,14 @@ class LagTPSPerson {
                         foedselsdato = fdato,
                         fornavnvedfoedsel = null)
 
-        fun lagTPSBruker(foreldersPin: String, fornavn: String? = null, etternavn: String? = null) =
+        fun lagTPSBruker(foreldersPin: String, fornavn: String? = null, etternavn: String? = null, land: String? = "NOR") =
                 Bruker()
                         .withPersonnavn(Personnavn()
                                 .withEtternavn(etternavn)
                                 .withFornavn(fornavn))
                         .withKjoenn(Kjoenn().withKjoenn(Kjoennstyper().withValue("M")))
                         .withAktoer(PersonIdent().withIdent(NorskIdent().withIdent(foreldersPin)))
-                        .withStatsborgerskap(Statsborgerskap().withLand(Landkoder().withValue("NOR")))
+                        .withStatsborgerskap(Statsborgerskap().withLand(Landkoder().withValue(land)))
 
         fun Bruker.medBarn(barnetsPin: String): Bruker =
                 this
@@ -44,13 +44,20 @@ class LagTPSPerson {
                                                 .withIdent(NorskIdent()
                                                         .withIdent(barnetsPin)))))
 
-        fun Bruker.medAdresse(gate: String?, by: String? , land: String?): Bruker {
+        fun Bruker.medAdresse(gate: String?, land: String?): Bruker {
             val bosted = Bostedsadresse()
             val gateadresse = Gateadresse()
-            gateadresse.gatenavn = gate
+            gateadresse.withGatenavn(gate)
+            gateadresse.withPoststed(Postnummer().withValue("101"))
+            gateadresse.withHusnummer(12)
 
+            val landkode = Landkoder()
+            landkode.value = land
+
+            gateadresse.landkode = landkode
             bosted.strukturertAdresse = gateadresse
             return this.withBostedsadresse(bosted)
+
 
         }
 
