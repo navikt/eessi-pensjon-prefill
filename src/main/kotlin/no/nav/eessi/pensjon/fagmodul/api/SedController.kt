@@ -188,7 +188,7 @@ class SedController(private val euxService: EuxService,
             val norskIdent = hentFnrfraAktoerService(request.aktoerId, aktoerService)
 
             val dataModel = ApiRequest.buildPrefillDataModelOnExisting(request, norskIdent, getAvdodAktoerId(request))
-            logger.info("Prøver å prefillSED (svar)")
+            logger.info("Prøver å prefillSED (svar) parentId: $parentId")
             val sed = prefillService.prefillSed(dataModel)
 
             logger.info("Prøver å sende SED: ${dataModel.getSEDType()} inn på BUC: ${dataModel.euxCaseID}")
