@@ -44,6 +44,9 @@ class PrefillDataModel(val penSaksnummer: String, val bruker: PersonId, val avdo
     //div payload seddata json
     var partSedAsJson: MutableMap<String, String> = mutableMapOf()
 
+    //P8000
+    var refTilPerson: ReferanseTilPerson? = null
+
     fun getSEDType(): String {
         return sed.sed
     }
@@ -76,4 +79,8 @@ class PrefillDataModel(val penSaksnummer: String, val bruker: PersonId, val avdo
 
 }
 
+enum class ReferanseTilPerson(val verdi: String) {
+    SOKER("01"),
+    AVDOD("02");
+}
 

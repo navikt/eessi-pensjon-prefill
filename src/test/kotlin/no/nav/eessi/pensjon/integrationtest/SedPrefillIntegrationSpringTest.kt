@@ -436,7 +436,199 @@ class SedPrefillIntegrationSpringTest {
 
         JSONAssert.assertEquals(response, validResponse, false)
 
+    }
+
+    @Test
+    @Throws(Exception::class)
+    fun `preview sed P8000 - Gitt gjenlevendepensjon Og henvendelse gjelder søker SÅ skal det produseres en Gyldig P8000 med referanse til person 01 (soker)`() {
+
+
+        doReturn(NorskIdent("12312312312")).`when`(aktoerService).hentGjeldendeIdent(IdentGruppe.NorskIdent, AktoerId("0105094340092"))
+        doReturn(AktoerId("3323332333233323")).`when`(aktoerService).hentGjeldendeIdent(IdentGruppe.AktoerId, NorskIdent("9876543210"))
+
+        doReturn(BrukerMock.createWith(true,"Lever", "Gjenlev", "12312312312")).`when`(personV3Service).hentBruker("12312312312")
+        doReturn(BrukerMock.createWith(true, "Avdød", "Død", "9876543210")).`when`(personV3Service).hentBruker("9876543210")
+
+        doReturn("QX").doReturn("XQ").`when`(kodeverkClient).finnLandkode2(any())
+
+        val apijson = """
+            {
+              "sakId" : "21337890",
+              "vedtakId" : "",
+              "kravId" : null,
+              "aktoerId" : "0105094340092",
+              "fnr" : null,
+              "avdodfnr" : null,
+              "payload" : null,
+              "buc" : "P_BUC_05",
+              "sed" : "P8000",
+              "documentid" : null,
+              "euxCaseId" : "12345667890",
+              "institutions" : [ {
+                "country" : "FI",
+                "institution" : "FI:Finland",
+                "name" : "Finland test"
+              } ],
+              "referanseTilPerson" : "SOKER",
+              "subject" : { 
+                    "gjenlevende" : null, 
+                    "avdod" : { "fnr": "9876543210"}
+                        }              
+            }
+        """.trimIndent()
+
+        val validResponse = """
+            {
+              "sed" : "P8000",
+              "sedGVer" : "4",
+              "sedVer" : "1",
+              "nav" : {
+                "eessisak" : [ {
+                  "saksnummer" : "21337890",
+                  "land" : "NO"
+                } ],
+                "bruker" : {
+                  "person" : {
+                    "pin" : [ {
+                      "identifikator" : "9876543210",
+                      "land" : "NO"
+                    } ],
+                    "etternavn" : "Død",
+                    "fornavn" : "Avdød",
+                    "kjoenn" : "M",
+                    "foedselsdato" : "1988-07-12"
+                  },
+                  "adresse" : {
+                    "gate" : "Oppoverbakken 66",
+                    "by" : "SØRUMSAND",
+                    "land" : "XQ"
+                  }
+                },
+                "annenperson" : {
+                  "person" : {
+                    "pin" : [ {
+                      "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                      "institusjonsid" : "NO:noinst002",
+                      "identifikator" : "12312312312",
+                      "land" : "NO"
+                    } ],
+                    "statsborgerskap" : [ {
+                      "land" : "QX"
+                    } ],
+                    "etternavn" : "Gjenlev",
+                    "fornavn" : "Lever",
+                    "kjoenn" : "M",
+                    "foedselsdato" : "1988-07-12",
+                    "rolle" : "01"
+                  },
+                  "adresse" : {
+                    "gate" : "Oppoverbakken 66",
+                    "by" : "SØRUMSAND",
+                    "postnummer" : "1920",
+                    "land" : "XQ"
+                  }
+                }
+              },
+              "pensjon" : {
+                "anmodning" : {
+                  "referanseTilPerson" : "01"
+                }
+              }
+            }
+        """.trimIndent()
+
+        val result = mockMvc.perform(post("/sed/preview")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(apijson))
+                .andDo(print())
+                .andExpect(status().isOk)
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andReturn()
+
+        val response = result.response.getContentAsString(charset("UTF-8"))
+
+        JSONAssert.assertEquals(response, validResponse, false)
 
     }
+
+    @Test
+    @Throws(Exception::class)
+    fun `preview sed P8000 - Gitt en alderspensjon så skal det genereres en P8000 uten referanse til person`() {
+
+
+        doReturn(NorskIdent("12312312312")).`when`(aktoerService).hentGjeldendeIdent(IdentGruppe.NorskIdent, AktoerId("0105094340092"))
+        doReturn(BrukerMock.createWith(true,"Alder", "Pensjon", "12312312312")).`when`(personV3Service).hentBruker("12312312312")
+
+        doReturn("QX").doReturn("XQ").`when`(kodeverkClient).finnLandkode2(any())
+
+        val apijson = """
+            {
+              "sakId" : "21337890",
+              "vedtakId" : "",
+              "kravId" : null,
+              "aktoerId" : "0105094340092",
+              "fnr" : null,
+              "avdodfnr" : null,
+              "payload" : null,
+              "buc" : "P_BUC_05",
+              "sed" : "P8000",
+              "documentid" : null,
+              "euxCaseId" : "12345667890",
+              "institutions" : [ {
+                "country" : "FI",
+                "institution" : "FI:Finland",
+                "name" : "Finland test"
+              } ],
+              "referanseTilPerson" : null,
+              "subject" : null             
+            }
+        """.trimIndent()
+
+        val validResponse = """
+            {
+              "sed" : "P8000",
+              "sedGVer" : "4",
+              "sedVer" : "1",
+              "nav" : {
+                "eessisak" : [ {
+                  "saksnummer" : "21337890",
+                  "land" : "NO"
+                } ],
+                "bruker" : {
+                  "person" : {
+                    "pin" : [ {
+                      "identifikator" : "12312312312",
+                      "land" : "NO"
+                    } ],
+                    "etternavn" : "Pensjon",
+                    "fornavn" : "Alder",
+                    "kjoenn" : "M",
+                    "foedselsdato" : "1988-07-12"
+                  },
+                  "adresse" : {
+                    "gate" : "Oppoverbakken 66",
+                    "by" : "SØRUMSAND",
+                    "land" : "XQ"
+                  }
+                }
+              },
+              "pensjon" : { }
+            }
+        """.trimIndent()
+
+        val result = mockMvc.perform(post("/sed/preview")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(apijson))
+                .andDo(print())
+                .andExpect(status().isOk)
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andReturn()
+
+        val response = result.response.getContentAsString(charset("UTF-8"))
+
+        JSONAssert.assertEquals(response, validResponse, false)
+
+    }
+
 
 }

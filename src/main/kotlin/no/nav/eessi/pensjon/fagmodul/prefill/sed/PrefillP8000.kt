@@ -4,12 +4,23 @@ import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PersonData
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillSed
-import no.nav.eessi.pensjon.fagmodul.sedmodel.*
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Adresse
+import no.nav.eessi.pensjon.fagmodul.sedmodel.AnmodningOmTilleggsInfo
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Bruker
+import no.nav.eessi.pensjon.fagmodul.sedmodel.EessisakItem
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Nav
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Pensjon
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Person
+import no.nav.eessi.pensjon.fagmodul.sedmodel.PinItem
+import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 class PrefillP8000(private val prefillSed: PrefillSed)  {
 
+    private enum class PersonenRolle(val value: String) {
+        SOEKER_ETTERRLATTEPENSJON("01")
+    }
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillP8000::class.java) }
 
     fun prefill(prefillData: PrefillDataModel, personData: PersonData): SED {
@@ -49,18 +60,22 @@ class PrefillP8000(private val prefillSed: PrefillSed)  {
                         ),
                         annenperson = utfyllAnnenperson(gjenlevende)
                 ),
-                pensjon = null
+                pensjon = utfyllReferanseTilPerson(prefillData)
         )
         logger.info("Prefill P8000 forenklet preutfylling, Ferdig.")
 
         prefillData.sed = p8000
+        return p8000
+    }
 
-        return prefillData.sed
+    private fun utfyllReferanseTilPerson(prefillData: PrefillDataModel): Pensjon? {
+        val refTilperson = prefillData.refTilPerson ?: return null
+        return Pensjon(anmodning = AnmodningOmTilleggsInfo(referanseTilPerson = refTilperson.verdi ))
     }
 
     private fun utfyllAnnenperson(gjenlevende: Bruker?): Bruker? {
         if (gjenlevende == null) return null
-        gjenlevende.person?.rolle = "01"
+        gjenlevende.person?.rolle = PersonenRolle.SOEKER_ETTERRLATTEPENSJON.value
         return gjenlevende
     }
 }

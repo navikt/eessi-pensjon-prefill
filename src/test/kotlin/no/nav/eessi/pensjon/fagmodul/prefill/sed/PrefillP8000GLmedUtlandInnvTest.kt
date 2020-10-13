@@ -17,6 +17,7 @@ import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerregisterService
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -90,7 +91,7 @@ class PrefillP8000GLmedUtlandInnvTest {
         assertEquals(65, navfnr2.getAge())
         assertEquals("K", p8000.nav?.annenperson?.person?.kjoenn)
 
-        assertEquals(null, p8000.pensjon)
+        assertNull( p8000.pensjon)
     }
 
 }

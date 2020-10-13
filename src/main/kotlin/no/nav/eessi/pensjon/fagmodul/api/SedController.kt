@@ -28,7 +28,13 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestMethod
+import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
 import java.time.LocalDateTime
 import javax.annotation.PostConstruct
@@ -58,11 +64,10 @@ class SedController(private val euxService: EuxService,
     @ApiOperation("Generer en Nav-Sed (SED), viser en oppsumering av SED (json). Før evt. innsending til EUX/Rina")
     @PostMapping("/preview", "/preview/{filter}", consumes = ["application/json"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun confirmDocument(@RequestBody request: ApiRequest, @PathVariable("filter", required = false) filter: String? = null): String {
+        auditlogger.log("confirmDocument", request.aktoerId ?: "", request.toAudit())
 
         val norskIdent = hentFnrfraAktoerService(request.aktoerId, aktoerService)
-
         val dataModel = ApiRequest.buildPrefillDataModelConfirm(request, norskIdent, getAvdodAktoerId(request))
-        auditlogger.log("confirmDocument", request.aktoerId ?: "", request.toAudit())
 
         val sed = prefillService.prefillSed(dataModel)
         return if (filter == null) {
@@ -246,15 +251,24 @@ class SedController(private val euxService: EuxService,
 
     //Hjelpe funksjon for å validere og hente aktoerid for evt. avdodfnr fra UI (P2100)
     fun getAvdodAktoerId(request: ApiRequest): String? {
-        return if ((request.buc ?: throw MangelfulleInndataException("Mangler Buc")) == "P_BUC_02") {
-            val norskIdent = request.riktigAvdod() ?: throw MangelfulleInndataException("Mangler fnr for avdød")
-            if (norskIdent.isBlank()) {
-                throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Ident har tom input-verdi")
+        val buc = request.buc ?: throw MangelfulleInndataException("Mangler Buc")
+        return when(buc) {
+            "P_BUC_02" -> {
+                val norskIdent = request.riktigAvdod() ?: throw MangelfulleInndataException("Mangler fnr for avdød")
+                if (norskIdent.isBlank()) {
+                    throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Ident har tom input-verdi")
+                }
+                aktoerService.hentGjeldendeIdent(IdentGruppe.AktoerId, NorskIdent(norskIdent))?.id ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "AktoerId for NorskIdent ikke funnet.")
             }
-            aktoerService.hentGjeldendeIdent(IdentGruppe.AktoerId, NorskIdent(norskIdent))?.id
-                    ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "AktoerId for NorskIdent ikke funnet.")
+            "P_BUC_05" -> {
+                val norskIdent = request.riktigAvdod() ?: return null
+                if (norskIdent.isBlank()) {
+                    throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Ident har tom input-verdi")
+                }
+                aktoerService.hentGjeldendeIdent(IdentGruppe.AktoerId, NorskIdent(norskIdent))?.id ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "AktoerId for NorskIdent ikke funnet.")
+            }
+            else -> null
         }
-        else null
     }
 
     @GetMapping("/institutions/{buctype}/{countrycode}")

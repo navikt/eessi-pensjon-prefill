@@ -6,6 +6,7 @@ import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PersonId
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
+import no.nav.eessi.pensjon.fagmodul.prefill.model.ReferanseTilPerson
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
@@ -40,7 +41,11 @@ data class ApiRequest(
         val institutions: List<InstitusjonItem>? = null,
         val subjectArea: String? = null,
         val avdodfnr: String? = null, //kun P2100 på P_BUC_02
-        val subject: ApiSubject? = null //P_BUC_02 alle andre seder etter P2100
+        val subject: ApiSubject? = null, //P_BUC_02 alle andre seder etter P2100
+
+        //P8000-P_BUC_05
+        val referanseTilPerson: ReferanseTilPerson? = null
+
 ) {
     fun toAudit(): String {
         val json = ApiRequest(
@@ -82,6 +87,7 @@ data class ApiRequest(
                         vedtakId = request.vedtakId ?: ""
                         kravDato = request.kravDato
                         partSedAsJson[request.sed] = request.payload ?: "{}"
+                        refTilPerson = request.referanseTilPerson
                     }
                 }
                 else -> {
@@ -99,7 +105,12 @@ data class ApiRequest(
                 avdodNorskIdent = request.riktigAvdod() ?: throw MangelfulleInndataException("Mangler Personnr på Avdød")
                 avdodAktorId = avdodaktoerID ?: throw MangelfulleInndataException("Mangler AktoerId på Avdød")
                 avdod = PersonId(avdodNorskIdent, avdodAktorId)
+            } else if (request.buc == "P_BUC_05" && request.riktigAvdod() != null) {
+                avdodNorskIdent = request.riktigAvdod() ?: throw MangelfulleInndataException("Mangler Personnr på Avdød")
+                avdodAktorId = avdodaktoerID ?: throw MangelfulleInndataException("Mangler AktoerId på Avdød")
+                avdod = PersonId(avdodNorskIdent, avdodAktorId)
             }
+
             return avdod
         }
 
@@ -118,6 +129,7 @@ data class ApiRequest(
                         vedtakId = request.vedtakId ?: ""
                         kravDato = request.kravDato
                         partSedAsJson[request.sed] = request.payload ?: "{}"
+                        refTilPerson = request.referanseTilPerson
                     }
                 }
                 else -> {

@@ -10,7 +10,8 @@ object PrefillDataModelMother {
                                 penSaksnummer: String = "12345",
                                 avdod: PersonId? = null,
                                 kravDato: String? = null,
-                                kravId: String? = null) =
+                                kravId: String? = null,
+                                refTilPerson: ReferanseTilPerson? = null) =
             PrefillDataModel(penSaksnummer, bruker = PersonId(pinId, "123456789"), avdod = avdod).apply {
                 rinaSubject = "Pensjon"
                 sed = SED(sedType)
@@ -19,6 +20,7 @@ object PrefillDataModelMother {
                 institution = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
                 this.kravDato = kravDato
                 this.kravId = kravId
+                this.refTilPerson = refTilPerson
             }
 }
 
