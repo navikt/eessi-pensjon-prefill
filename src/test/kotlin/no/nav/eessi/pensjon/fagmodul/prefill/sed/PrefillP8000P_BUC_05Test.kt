@@ -128,7 +128,7 @@ class PrefillP8000P_BUC_05Test {
         assertEquals("Robin", sed.nav?.annenperson?.person?.etternavn)
         assertEquals("01", sed.nav?.annenperson?.person?.rolle)
 
-        assertEquals("02",  sed.pensjon?.anmodning?.referanseTilPerson)
+        assertEquals("01",  sed.pensjon?.anmodning?.referanseTilPerson)
 
     }
 
@@ -162,7 +162,7 @@ class PrefillP8000P_BUC_05Test {
         assertEquals("01", sed.nav?.annenperson?.person?.rolle)
 
         //$pensjon.anmodning.referanseTilPerson"
-        assertEquals("01",  sed.pensjon?.anmodning?.referanseTilPerson)
+        assertEquals("02",  sed.pensjon?.anmodning?.referanseTilPerson)
 
     }
 

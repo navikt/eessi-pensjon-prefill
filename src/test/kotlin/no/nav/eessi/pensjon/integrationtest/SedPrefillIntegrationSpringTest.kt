@@ -440,7 +440,7 @@ class SedPrefillIntegrationSpringTest {
 
     @Test
     @Throws(Exception::class)
-    fun `preview sed P8000 - Gitt gjenlevendepensjon Og henvendelse gjelder søker SÅ skal det produseres en Gyldig P8000 med referanse til person 01 (soker)`() {
+    fun `preview sed P8000 - Gitt gjenlevendepensjon Og henvendelse gjelder søker SÅ skal det produseres en Gyldig P8000 med referanse til person 02 (soker)`() {
 
 
         doReturn(NorskIdent("12312312312")).`when`(aktoerService).hentGjeldendeIdent(IdentGruppe.NorskIdent, AktoerId("0105094340092"))
@@ -531,7 +531,7 @@ class SedPrefillIntegrationSpringTest {
               },
               "pensjon" : {
                 "anmodning" : {
-                  "referanseTilPerson" : "01"
+                  "referanseTilPerson" : "02"
                 }
               }
             }

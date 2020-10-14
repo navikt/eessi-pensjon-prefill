@@ -2,6 +2,7 @@ package no.nav.eessi.pensjon.fagmodul.eux
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.google.common.annotations.VisibleForTesting
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.BucSedResponse
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Rinasak
@@ -197,11 +198,7 @@ class EuxService (private val euxKlient: EuxKlient,
                 .sortedByDescending { it.startDate }
                 .toList()
 
-//        logger.debug(" ferdig returnerer list av BucAndSedView. Antall BUC: ${list.size}")
-//        logger.debug(" sortert listen på startDate nyeste dato først")
-//        val sortlist = list.asSequence().sortedByDescending { it.startDate }.toList()
         logger.debug(" tiden tok ${System.currentTimeMillis() - startTime} ms.")
-
         return list
     }
 
@@ -235,7 +232,9 @@ class EuxService (private val euxKlient: EuxKlient,
 
     fun getBucAndSedViewAvdod(gjenlevendeFnr: String, avdodFnr: String): List<BucAndSedView> {
         // Henter rina saker basert på gjenlevendes fnr
-        val rinaSakerMedFnr = euxKlient.getRinasaker(avdodFnr, null, "P_BUC_02", "\"open\"")
+        val rinaSakerBUC02MedFnr = euxKlient.getRinasaker(avdodFnr, null, "P_BUC_02", "\"open\"")
+        val rinaSakerBUC05MedFnr = euxKlient.getRinasaker(avdodFnr, null, "P_BUC_05", "\"open\"")
+        val rinaSakerMedFnr = rinaSakerBUC02MedFnr + rinaSakerBUC05MedFnr
         val filteredRinaIdAvdod = getFilteredArchivedaRinasaker(rinaSakerMedFnr)
         logger.debug("filterer ut rinasaker og får kun ider tilbake size: ${filteredRinaIdAvdod.size}")
 
@@ -255,14 +254,19 @@ class EuxService (private val euxKlient: EuxKlient,
     /**
      * filtere ut gyldig buc fra gjenlevende og avdød
      */
+    @VisibleForTesting
     fun filterGyldigBucGjenlevendeAvdod(listeAvSedsPaaAvdod: List<BucOgDocumentAvdod>, fnrGjenlevende: String): List<Buc> {
         return listeAvSedsPaaAvdod
-            .filter { docs ->
-                val sedRootNode = mapper.readTree(docs.dokumentJson)
-                filterGjenlevendePinNode(sedRootNode, docs.rinaidAvdod) == fnrGjenlevende
-            }
-            .map { docs -> docs.buc }
-            .sortedBy { it.id }
+                .filter { docs -> filterGjenlevende(docs, fnrGjenlevende) }
+                .map { docs -> docs.buc }
+                .sortedBy { it.id }
+    }
+
+    // TODO: fix fun name
+    private fun filterGjenlevende(docs: BucOgDocumentAvdod, fnrGjenlevende: String): Boolean {
+        val sedRootNode = mapper.readTree(docs.dokumentJson)
+        return filterGjenlevendePinNode(sedRootNode, docs.rinaidAvdod) == fnrGjenlevende ||
+                filterAnnenPersonPinNode(sedRootNode, docs.rinaidAvdod) == fnrGjenlevende
     }
 
     /**
@@ -289,13 +293,30 @@ class EuxService (private val euxKlient: EuxKlient,
     /**
      * json filter uthenting av pin på gjenlevende (p2100)
      */
-    fun filterGjenlevendePinNode(sedRootNode: JsonNode, rinaidAvdod: String): String? {
+    private fun filterGjenlevendePinNode(sedRootNode: JsonNode, rinaidAvdod: String): String? {
         val gjenlevendeNode = sedRootNode.at("/pensjon/gjenlevende")
         val pinNode = gjenlevendeNode.findValue("pin")
         if (pinNode == null) {
             logger.warn("Ingen fnr funnet på gjenlevende. P2100 rinaid: $rinaidAvdod")
             return null
         }
+        return filterPinNode(pinNode)
+    }
+
+    /**
+     * json filter uthenting av pin på annen person (gjenlevende) (p8000)
+     */
+    private fun filterAnnenPersonPinNode(sedRootNode: JsonNode, rinaidAvdod: String): String? {
+        val gjenlevendeNode = sedRootNode.at("/nav/annenperson/person")
+        val pinNode = gjenlevendeNode.findValue("pin")
+        if (pinNode == null) {
+            logger.warn("Ingen fnr funnet på gjenlevende. P8000 rinaid: $rinaidAvdod")
+            return null
+        }
+        return filterPinNode(pinNode)
+    }
+
+    private fun filterPinNode(pinNode: JsonNode): String? {
         return pinNode
                 .filter { pin -> pin.get("land").textValue() == "NO" }
                 .map { pin -> pin.get("identifikator").textValue() }

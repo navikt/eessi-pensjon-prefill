@@ -80,7 +80,7 @@ class PrefillDataModel(val penSaksnummer: String, val bruker: PersonId, val avdo
 }
 
 enum class ReferanseTilPerson(val verdi: String) {
-    SOKER("01"),
-    AVDOD("02");
+    SOKER("02"),
+    AVDOD("01");
 }
 

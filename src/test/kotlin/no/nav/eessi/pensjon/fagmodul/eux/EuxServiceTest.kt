@@ -1,6 +1,10 @@
 package no.nav.eessi.pensjon.fagmodul.eux
 
-import com.nhaarman.mockitokotlin2.*
+import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.doReturn
+import com.nhaarman.mockitokotlin2.doThrow
+import com.nhaarman.mockitokotlin2.eq
+import com.nhaarman.mockitokotlin2.whenever
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Properties
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Rinasak
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Traits
@@ -8,9 +12,14 @@ import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Buc
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.DocumentsItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.PinItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
-import no.nav.eessi.pensjon.utils.*
+import no.nav.eessi.pensjon.utils.JsonIllegalArgumentException
+import no.nav.eessi.pensjon.utils.mapJsonToAny
+import no.nav.eessi.pensjon.utils.toJson
+import no.nav.eessi.pensjon.utils.typeRefs
+import no.nav.eessi.pensjon.utils.validateJson
 import no.nav.eessi.pensjon.vedlegg.client.SafClient
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -531,6 +540,50 @@ class EuxServiceTest {
         val result = service.filterGyldigBucGjenlevendeAvdod(data, "1234567890000")
         assertEquals(1, result.size)
 
+    }
+
+    @Test
+    fun `Sjekk P_BUC_02 etter annen gjenlevende person`() {
+        val sedjson = String(Files.readAllBytes(Paths.get("src/test/resources/json/nav/P2100-PinNO-NAV.json")))
+        val sedDKjson = String(Files.readAllBytes(Paths.get("src/test/resources/json/nav/P2100-PinDK-NAV.json")))
+
+        val gjenlevendeFnr = "1234567890000"
+        val avdodFnr = "01010100001"
+
+        // 02
+        val euxCaseId  = "1"
+        val rinaSakerBuc02 = listOf(dummyRinasak(euxCaseId, "P_BUC_02"), dummyRinasak("10", "P_BUC_02"))
+        doReturn(rinaSakerBuc02).whenever(euxKlient).getRinasaker(avdodFnr, null, "P_BUC_02", "\"open\"")
+
+
+        val docItems = listOf(DocumentsItem(id = "1", type = "P2100"), DocumentsItem(id = "2", type = "P4000"))
+        val buc = Buc(id = "1", processDefinitionName = "P_BUC_02", documents = docItems)
+        doReturn(buc.toJson()).whenever(euxKlient).getBucJson(euxCaseId)
+
+        val docDKItems = listOf(DocumentsItem(id = "20", type = "P2100"), DocumentsItem(id = "40", type = "P4000"))
+        val DKbuc = Buc(id = "10", processDefinitionName = "P_BUC_02", documents = docDKItems)
+        doReturn(DKbuc.toJson()).whenever(euxKlient).getBucJson("10")
+
+
+        doReturn(sedjson).whenever(euxKlient).getSedOnBucByDocumentIdAsJson("1", "1")
+        doReturn(sedDKjson).whenever(euxKlient).getSedOnBucByDocumentIdAsJson("10", "20")
+
+
+        // 05
+        val rinaSakerBuc05 = listOf(dummyRinasak("2", "P_BUC_05"))
+        doReturn(emptyList<Rinasak>()).whenever(euxKlient).getRinasaker(avdodFnr, null, "P_BUC_05", "\"open\"")
+
+
+        val result = service.getBucAndSedViewAvdod(gjenlevendeFnr, avdodFnr)
+
+        assertEquals(1, result.size)
+        assertFalse(result.isEmpty())
+    }
+
+
+
+    private fun dummyRinasak(rinaSakId: String, bucType: String): Rinasak {
+        return Rinasak(rinaSakId, bucType, Traits(), "", Properties(), "open")
     }
 
 }
