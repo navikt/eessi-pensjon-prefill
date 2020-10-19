@@ -79,3 +79,8 @@ Spørsmål knyttet til koden eller prosjektet kan stilles som issues her på Git
 ## For NAV-ansatte
 
 Interne henvendelser kan sendes via Slack i kanalen #eessi-pensj-utviklere.
+
+# For å hente ut info om siste ukes commits
+
+(echo “./.git”; ls -d */.git) | sed ‘s#/.git##’ | xargs -I{} sh -c “git pull --rebase --autostash > /dev/null ; pushd {} > /dev/null ; git log --reverse --format=' (%cr) %h %s’ --since=‘8 days’ | sed ‘s/^/{}:/’ ; popd > /dev/null”
+
