@@ -1,0 +1,57 @@
+{
+  "sed" : "P8000",
+  "sedGVer" : "4",
+  "sedVer" : "1",
+  "nav" : {
+    "eessisak" : [ {
+      "saksnummer" : "21337890",
+      "land" : "NO"
+    } ],
+    "bruker" : {
+      "person" : {
+        "pin" : [ {
+          "identifikator" : "9876543210",
+          "land" : "NO"
+        } ],
+        "etternavn" : "Død",
+        "fornavn" : "Avdød",
+        "kjoenn" : "M",
+        "foedselsdato" : "1988-07-12"
+      },
+      "adresse" : {
+        "gate" : "Oppoverbakken 66",
+        "by" : "SØRUMSAND",
+        "land" : "XQ"
+      }
+    },
+    "annenperson" : {
+      "person" : {
+        "pin" : [ {
+          "institusjonsnavn" : "NOINST002, NO INST002, NO",
+          "institusjonsid" : "NO:noinst002",
+          "identifikator" : "1234567890000",
+          "land" : "NO"
+        } ],
+        "statsborgerskap" : [ {
+          "land" : "QX"
+        } ],
+        "etternavn" : "Gjenlev",
+        "fornavn" : "Lever",
+        "kjoenn" : "M",
+        "foedselsdato" : "1988-07-12",
+        "rolle" : "01"
+      },
+      "adresse" : {
+        "gate" : "Oppoverbakken 66",
+        "by" : "SØRUMSAND",
+        "postnummer" : "1920",
+        "land" : "XQ"
+      }
+    }
+  },
+  "pensjon" : {
+    "anmodning" : {
+      "referanseTilPerson" : "02"
+    }
+  }
+}

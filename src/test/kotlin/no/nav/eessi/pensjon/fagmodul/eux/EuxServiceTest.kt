@@ -543,7 +543,7 @@ class EuxServiceTest {
     }
 
     @Test
-    fun `Sjekk P_BUC_02 etter annen gjenlevende person`() {
+    fun `Sjekk P_BUC_02 etter gjennlevende person kun et resultat skal vises`() {
         val sedjson = String(Files.readAllBytes(Paths.get("src/test/resources/json/nav/P2100-PinNO-NAV.json")))
         val sedDKjson = String(Files.readAllBytes(Paths.get("src/test/resources/json/nav/P2100-PinDK-NAV.json")))
 
@@ -578,7 +578,73 @@ class EuxServiceTest {
 
         assertEquals(1, result.size)
         assertFalse(result.isEmpty())
+        assertEquals("P_BUC_02", result[0].type)
+        assertEquals(gjenlevendeFnr, result[0].subject?.gjenlevende?.fnr)
+        assertEquals(avdodFnr, result[0].subject?.avdod?.fnr)
     }
+
+    @Test
+    fun `Sjekk P_BUC_02 etter gjennlevende og P_BUC_05 liste med 2 resultat skal vises`() {
+        val sedjson = String(Files.readAllBytes(Paths.get("src/test/resources/json/nav/P2100-PinNO-NAV.json")))
+        val sedDKjson = String(Files.readAllBytes(Paths.get("src/test/resources/json/nav/P2100-PinDK-NAV.json")))
+        val sedP8000json = String(Files.readAllBytes(Paths.get("src/test/resources/json/nav/P8000_NO-NAV.json")))
+        val sedP8000DKjson = String(Files.readAllBytes(Paths.get("src/test/resources/json/nav/P8000_DK-NAV.json")))
+
+        val gjenlevendeFnr = "1234567890000"
+        val avdodFnr = "01010100001"
+
+        // 02
+        val euxCaseId  = "1"
+        val rinaSakerBuc02 = listOf(dummyRinasak(euxCaseId, "P_BUC_02"), dummyRinasak("10", "P_BUC_02"))
+        doReturn( rinaSakerBuc02).whenever(euxKlient).getRinasaker(avdodFnr, null, "P_BUC_02", "\"open\"")
+
+
+        val docItems = listOf(DocumentsItem(id = "1", type = "P2100"), DocumentsItem(id = "2", type = "P4000"))
+        val buc = Buc(id = "1", processDefinitionName = "P_BUC_02", documents = docItems)
+        doReturn(buc.toJson()).whenever(euxKlient).getBucJson(euxCaseId)
+
+        val docDKItems = listOf(DocumentsItem(id = "20", type = "P2100"), DocumentsItem(id = "40", type = "P4000"))
+        val DKbuc = Buc(id = "10", processDefinitionName = "P_BUC_02", documents = docDKItems)
+        doReturn(DKbuc.toJson()).whenever(euxKlient).getBucJson("10")
+
+        //sed no P2100
+        doReturn(sedjson).whenever(euxKlient).getSedOnBucByDocumentIdAsJson("1", "1")
+        //sed dk P2100
+        doReturn(sedDKjson).whenever(euxKlient).getSedOnBucByDocumentIdAsJson("10", "20")
+
+
+        // 05
+        val rinaSakerBuc05 = listOf(dummyRinasak("100", "P_BUC_05"),dummyRinasak("200", "P_BUC_05"))
+        doReturn(rinaSakerBuc05).whenever(euxKlient).getRinasaker(avdodFnr, null, "P_BUC_05", "\"open\"")
+
+        //buc05no
+        val docP8000Items = listOf(DocumentsItem(id = "2000", type = "P8000"), DocumentsItem(id = "4000", type = "P6000"))
+        val buc05 = Buc(id = "100", processDefinitionName = "P_BUC_05", documents = docP8000Items)
+
+        //buc05dk
+        val docP8000DKItems = listOf(DocumentsItem(id = "2200", type = "P8000"), DocumentsItem(id = "4200", type = "P6000"))
+        val buc05DK = Buc(id = "200", processDefinitionName = "P_BUC_05", documents = docP8000DKItems)
+
+        doReturn(buc05.toJson()).whenever(euxKlient).getBucJson("100")
+        doReturn(buc05DK.toJson()).whenever(euxKlient).getBucJson("200")
+
+        //sed no P8000
+        doReturn(sedP8000json).whenever(euxKlient).getSedOnBucByDocumentIdAsJson("100", "2000")
+        //sed dk P8000
+        doReturn(sedP8000DKjson).whenever(euxKlient).getSedOnBucByDocumentIdAsJson("200", "2200")
+
+        val result = service.getBucAndSedViewAvdod(gjenlevendeFnr, avdodFnr).sortedBy { it.caseId }
+
+        assertEquals(2, result.size)
+        assertFalse(result.isEmpty())
+        assertEquals("P_BUC_02", result[0].type)
+        assertEquals("P_BUC_05", result[1].type)
+        assertEquals(gjenlevendeFnr, result[0].subject?.gjenlevende?.fnr)
+        assertEquals(gjenlevendeFnr, result[1].subject?.gjenlevende?.fnr)
+        assertEquals(avdodFnr, result[0].subject?.avdod?.fnr)
+        assertEquals(avdodFnr, result[1].subject?.avdod?.fnr)
+    }
+
 
 
 

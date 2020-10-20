@@ -1,6 +1,10 @@
 package no.nav.eessi.pensjon.api.pensjon
 
-import com.nhaarman.mockitokotlin2.*
+import com.nhaarman.mockitokotlin2.doReturn
+import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.times
+import com.nhaarman.mockitokotlin2.verify
+import com.nhaarman.mockitokotlin2.whenever
 import no.nav.eessi.pensjon.logging.AuditLogger
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.IkkeFunnetException
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjoninformasjonException
@@ -98,8 +102,6 @@ class PensjonControllerTest {
         assertEquals(2, result.size)
         val expected = PensjonSak(1010, "ALDER", "INNV")
         assertEquals(expected.toJson(), result.first().toJson())
-
-        println(expected.toJson())
     }
 
     @Test

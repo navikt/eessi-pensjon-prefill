@@ -145,7 +145,7 @@ class PrefillSEDService(private val prefillNav: PrefillNav,
             val ektepinid = pident.ident.ident
             "Relasjon: ${relasjon.tilRolle.value} Endring: ${relasjon.endringstype} Aktoer: ${hentAktoerId(ektepinid)}"
         }
-        logger.info("hoverperson har følgende relasjoner : ${relasjoner.toJson()}")
+        logger.info("Hovedperson har følgende relasjoner : ${relasjoner.toJson()}")
 
         val result = bruker.harFraRolleI
                 .filter { relasjon -> relasjon.tilPerson.doedsdato == null }

@@ -1,11 +1,9 @@
-package no.nav.eessi.pensjon.services.arkiv
+package no.nav.eessi.pensjon.vedlegg.client
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doThrow
 import com.nhaarman.mockitokotlin2.whenever
-import no.nav.eessi.pensjon.vedlegg.client.SafException
-import no.nav.eessi.pensjon.vedlegg.client.SafClient
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test

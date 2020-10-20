@@ -71,7 +71,10 @@ class PrefillP2000(private val prefillNav: PrefillNav)  {
             data.sed.nav?.bruker?.person?.fornavn == null -> throw ValidationException("Fornavn mangler")
             data.sed.nav?.bruker?.person?.foedselsdato == null -> throw ValidationException("Fødseldsdato mangler")
             data.sed.nav?.bruker?.person?.kjoenn == null -> throw ValidationException("Kjønn mangler")
-            data.sed.nav?.krav?.dato == null -> throw ValidationException("Kravdato mangler\nGjelder utsendelsen \"Førstegangsbehandling kun utland\", se egen rutine på Navet.")
+            data.sed.nav?.krav?.dato == null -> {
+                logger.warn("Kravdato mangler! Gjelder utsendelsen 'Førstegangsbehandling kun utland', se egen rutine på Navet.")
+                throw ValidationException("Kravdato mangler\nGjelder utsendelsen \"Førstegangsbehandling kun utland\", se egen rutine på Navet.")
+            }
         }
     }
 }
