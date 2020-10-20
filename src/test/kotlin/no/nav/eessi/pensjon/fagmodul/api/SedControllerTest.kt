@@ -1,17 +1,37 @@
 package no.nav.eessi.pensjon.fagmodul.api
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.nhaarman.mockitokotlin2.*
+import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.doNothing
+import com.nhaarman.mockitokotlin2.doReturn
+import com.nhaarman.mockitokotlin2.doThrow
+import com.nhaarman.mockitokotlin2.eq
+import com.nhaarman.mockitokotlin2.times
+import com.nhaarman.mockitokotlin2.verify
+import com.nhaarman.mockitokotlin2.whenever
 import no.nav.eessi.pensjon.fagmodul.eux.EuxService
 import no.nav.eessi.pensjon.fagmodul.eux.PinOgKrav
 import no.nav.eessi.pensjon.fagmodul.eux.SedDokumentIkkeOpprettetException
 import no.nav.eessi.pensjon.fagmodul.eux.SedDokumentKanIkkeOpprettesException
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.BucSedResponse
-import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.*
+import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ActionsItem
+import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Buc
+import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.DocumentsItem
+import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Organisation
+import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ParticipantsItem
+import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ShortDocumentItem
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
-import no.nav.eessi.pensjon.fagmodul.prefill.*
+import no.nav.eessi.pensjon.fagmodul.prefill.ApiRequest
+import no.nav.eessi.pensjon.fagmodul.prefill.ApiSubject
+import no.nav.eessi.pensjon.fagmodul.prefill.MangelfulleInndataException
+import no.nav.eessi.pensjon.fagmodul.prefill.PrefillService
+import no.nav.eessi.pensjon.fagmodul.prefill.SubjectFnr
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillSEDService
-import no.nav.eessi.pensjon.fagmodul.sedmodel.*
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Bruker
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Krav
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Nav
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Person
+import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.logging.AuditLogger
 import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerId
 import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerregisterService
@@ -31,6 +51,7 @@ import org.mockito.Mock
 import org.mockito.Spy
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.http.ResponseEntity
+import org.springframework.web.server.ResponseStatusException
 import org.springframework.web.util.UriComponentsBuilder
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -107,6 +128,15 @@ class SedControllerTest {
         assertEquals("Dummy", sed.nav?.bruker?.person?.etternavn)
     }
 
+    @Test
+    fun getDocumentfromRina() {
+
+        val sed = SED("P2000")
+        doReturn(sed).`when`(mockEuxService).getSedOnBucByDocumentId("2313", "23123123123")
+
+        val result = sedController.getDocument("2313", "23123123123")
+        assertEquals(sed, result)
+    }
 
     @Test
     fun `check rest api path correct`() {
@@ -224,12 +254,13 @@ class SedControllerTest {
     }
 
     @Test
-    fun `call addInstutionAndDocument  mock adding two institusjon when X005 exists already`() {
+    fun `call addInstutionAndDocument mock adding two institusjon when X005 exists already`() {
         val euxCaseId = "1234567890"
 
         doReturn(NorskIdent("12345")).whenever(mockAktoerIdHelper).hentGjeldendeIdent(eq(IdentGruppe.NorskIdent), any<AktoerId>())
 
-        val mockBuc = Buc(id = "23123", processDefinitionName = "P_BUC_01", participants = null)
+        val mockParticipants = listOf(ParticipantsItem(role = "CaseOwner", organisation = Organisation(countryCode = "NO", name = "NAV", id = "NAV")))
+        val mockBuc = Buc(id = "23123", processDefinitionName = "P_BUC_01", participants = mockParticipants)
         mockBuc.documents = listOf(createDummyBucDocumentItem(), DocumentsItem(type = "X005"))
         mockBuc.actions = listOf(ActionsItem(type = "Send", name = "Send"))
 
@@ -249,6 +280,30 @@ class SedControllerTest {
         sedController.addInstutionAndDocument(apiRequestWith(euxCaseId, newParticipants))
 
         verify(mockEuxService, times(newParticipants.size + 1)).opprettSedOnBuc(any(), eq(euxCaseId))
+    }
+
+    @Test
+    fun `call addInstutionAndDocument mock adding two institusjon when we are not CaseOwner badrequest execption is thrown`() {
+        val euxCaseId = "1234567890"
+
+        doReturn(NorskIdent("12345")).whenever(mockAktoerIdHelper).hentGjeldendeIdent(eq(IdentGruppe.NorskIdent), any<AktoerId>())
+
+        val mockParticipants = listOf(ParticipantsItem(role = "CaseOwner", organisation = Organisation(countryCode = "SE", name = "SE", id = "SE")))
+        val mockBuc = Buc(id = "23123", processDefinitionName = "P_BUC_01", participants = mockParticipants)
+        mockBuc.documents = listOf(createDummyBucDocumentItem(), DocumentsItem(type = "X005"))
+        mockBuc.actions = listOf(ActionsItem(type = "Send", name = "Send"))
+
+        doReturn(mockBuc).whenever(mockEuxService).getBuc(euxCaseId)
+
+        val newParticipants = listOf(
+                InstitusjonItem(country = "FI", institution = "Finland", name="Finland test"),
+                InstitusjonItem(country = "DE", institution = "Tyskland", name="Tyskland test")
+        )
+
+        assertThrows<ResponseStatusException> {
+            sedController.addInstutionAndDocument(apiRequestWith(euxCaseId, newParticipants))
+        }
+
     }
 
     @Test

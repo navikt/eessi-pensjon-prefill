@@ -337,7 +337,7 @@ class EuxService (private val euxKlient: EuxKlient,
         logger.debug("hentet rinasaker fra documentMetadata size: ${rinaSakIderMetadata.size}")
 
         // Henter rina saker basert på fnr
-        val rinaSakerMedFnr = euxKlient.getRinasaker(fnr, null, null, null)
+        val rinaSakerMedFnr = euxKlient.getRinasaker(fnr)
         logger.debug("hentet rinasaker fra eux-rina-api size: ${rinaSakerMedFnr.size}")
 
         // Filtrerer vekk saker som allerede er hentet som har fnr
@@ -347,7 +347,7 @@ class EuxService (private val euxKlient: EuxKlient,
         // Henter rina saker som ikke har fnr
         val rinaSakerUtenFnr = rinaSakIderUtenFnr
                 .map { euxCaseId ->
-                    euxKlient.getRinasaker(null, euxCaseId , null, null) }
+                    euxKlient.getRinasaker( euxCaseId =  euxCaseId ) }
                 .flatten()
                 .distinctBy { it.id }
         logger.debug("henter rinasaker ut i fra saf documentMetadata")

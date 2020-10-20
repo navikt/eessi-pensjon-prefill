@@ -15,7 +15,6 @@ import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerId
 import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerregisterService
 import no.nav.eessi.pensjon.personoppslag.aktoerregister.IdentGruppe
 import no.nav.eessi.pensjon.personoppslag.aktoerregister.NorskIdent
-import no.nav.eessi.pensjon.personoppslag.personv3.PersonV3Service
 import no.nav.eessi.pensjon.security.sts.STSService
 import no.nav.eessi.pensjon.services.kodeverk.KodeverkClient
 import no.nav.eessi.pensjon.utils.toJson
@@ -55,13 +54,7 @@ class BucIntegrationSpringTest {
     lateinit var stsService: STSService
 
     @MockBean
-    lateinit var personV3Service: PersonV3Service
-
-    @MockBean
     lateinit var aktoerService: AktoerregisterService
-
-    @MockBean(name = "pensjonsinformasjonOidcRestTemplate")
-    lateinit var restTemplate: RestTemplate
 
     @MockBean(name = "euxOidcRestTemplate")
     lateinit var restEuxTemplate: RestTemplate
@@ -101,8 +94,10 @@ class BucIntegrationSpringTest {
         val rinaGjenlevUrl = dummyRinasakUrl(gjenlevendeFnr, null, null, null)
         doReturn( ResponseEntity.ok().body( emptyList<Rinasak>().toJson())).whenever(restEuxTemplate).exchange( eq(rinaGjenlevUrl.toUriString()), eq(HttpMethod.GET), eq(null), eq(String::class.java))
 
-        //buc02
+        //dummy date
         val lastupdate = LocalDate.of(2020, Month.AUGUST, 7).toString()
+
+        //buc02
         val docItems = listOf(DocumentsItem(id = "1", creationDate = lastupdate, lastUpdate = lastupdate, status = "sent", type = "P2100"), DocumentsItem(id = "2", creationDate = lastupdate,  lastUpdate = lastupdate, status = "draft", type = "P4000"))
         val buc02 = Buc(id = "1010", processDefinitionName = "P_BUC_02", startDate = lastupdate, lastUpdate = lastupdate,  documents = docItems)
 
@@ -262,7 +257,7 @@ class BucIntegrationSpringTest {
     private fun dummyRinasakAvdodUrl(avod: String, bucType: String? = "P_BUC_02", status: String? =  "\"open\"") = dummyRinasakUrl(avod, bucType, null, status)
     private fun dummyRinasakUrl(fnr: String, bucType: String? = null, euxCaseId: String? = null, status: String? = null) : UriComponents {
         val uriComponent = UriComponentsBuilder.fromPath("/rinasaker")
-                .queryParam("fødselsnummer", fnr ?: "")
+                .queryParam("fødselsnummer", fnr)
                 .queryParam("rinasaksnummer", euxCaseId ?: "")
                 .queryParam("buctype", bucType ?: "")
                 .queryParam("status", status ?: "")

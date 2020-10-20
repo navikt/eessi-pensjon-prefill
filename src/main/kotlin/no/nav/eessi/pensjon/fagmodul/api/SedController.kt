@@ -104,15 +104,8 @@ class SedController(private val euxService: EuxService,
             val bucUtil = BucUtils(euxService.getBuc(dataModel.euxCaseID))
             bucUtil.checkIfSedCanBeCreated(request.sed)
 
-            val nyeInstitusjoner = bucUtil.findNewParticipants(dataModel.getInstitutionsList())
-            val x005 = bucUtil.findFirstDocumentItemByType("X005")
-            if (nyeInstitusjoner.isNotEmpty()) {
-                if (x005 == null) {
-                    euxService.addInstitution(dataModel.euxCaseID, nyeInstitusjoner.map { it.institution })
-                } else {
-                    addInstitutionMedX005(dataModel, nyeInstitusjoner)
-                }
-            }
+            //sjekk og evt legger til deltakere
+            checkAndAddInstitution(dataModel, bucUtil)
 
             logger.info("Prøver å prefillSED")
             val sed = prefillService.prefillSed(dataModel)
@@ -165,6 +158,26 @@ class SedController(private val euxService: EuxService,
         logger.debug("SED version: v${sed.sedGVer}.${sed.sedVer} + BUC version: $bucVersion")
     }
 
+    fun checkAndAddInstitution(dataModel: PrefillDataModel, bucUtil: BucUtils) {
+        logger.info("Hvem er caseOwner: ${bucUtil.getCaseOwner()?.toJson()} på buc: ${bucUtil.getProcessDefinitionName()}")
+        val navCaseOwner = bucUtil.getCaseOwner()?.country == "NO"
+
+        val nyeInstitusjoner = bucUtil.findNewParticipants(dataModel.getInstitutionsList())
+
+        val x005 = bucUtil.findFirstDocumentItemByType("X005")
+        if (nyeInstitusjoner.isNotEmpty()) {
+            if (x005 == null) {
+                euxService.addInstitution(dataModel.euxCaseID, nyeInstitusjoner.map { it.institution })
+            } else {
+                nyeInstitusjoner.forEach {
+                    if (!navCaseOwner && it.country != "NO") {
+                        throw ResponseStatusException(HttpStatus.BAD_REQUEST, "NAV er ikke sakseier. Du kan ikke legge til deltakere utenfor Norge")
+                    }
+                }
+                addInstitutionMedX005(dataModel, nyeInstitusjoner)
+            }
+        }
+    }
 
     private fun addInstitutionMedX005(dataModel: PrefillDataModel, nyeInstitusjoner: List<InstitusjonItem>) {
         logger.debug("Prøver å legge til Deltaker/Institusions på buc samt prefillSed og sende inn til Rina ")

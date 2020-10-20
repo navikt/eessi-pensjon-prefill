@@ -17,7 +17,12 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.cache.annotation.CacheConfig
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.context.annotation.Description
-import org.springframework.http.*
+import org.springframework.http.HttpEntity
+import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpMethod
+import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.client.HttpClientErrorException
@@ -222,7 +227,7 @@ class EuxKlient(private val euxOidcRestTemplate: RestTemplate,
      * @param status String, status
      * @return List<Rinasak>
      */
-    fun getRinasaker(fnr: String?, euxCaseId: String?, bucType: String?, status: String?): List<Rinasak> {
+    fun getRinasaker(fnr: String? = null, euxCaseId: String? = null, bucType: String? = null, status: String? = null): List<Rinasak> {
         require(!(fnr == null && euxCaseId == null && bucType == null && status == null)) {
             "Minst et søkekriterie må fylles ut for å få et resultat fra Rinasaker"
         }
@@ -398,6 +403,8 @@ class EuxKlient(private val euxOidcRestTemplate: RestTemplate,
 
 
 //--- Disse er benyttet av restTemplateErrorhandler  -- start
+//TODO bytt ut RuntimeExcpetion og Anotation responseStatus med ResponseStatusException!
+
 @ResponseStatus(value = HttpStatus.NOT_FOUND)
 class IkkeFunnetException(message: String) : RuntimeException(message)
 
