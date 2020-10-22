@@ -24,11 +24,11 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
-import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.HttpServerErrorException
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.client.UnknownHttpStatusCodeException
+import org.springframework.web.server.ResponseStatusException
 import org.springframework.web.util.UriComponentsBuilder
 import java.util.*
 import javax.annotation.PostConstruct
@@ -403,46 +403,30 @@ class EuxKlient(private val euxOidcRestTemplate: RestTemplate,
 
 
 //--- Disse er benyttet av restTemplateErrorhandler  -- start
-//TODO bytt ut RuntimeExcpetion og Anotation responseStatus med ResponseStatusException!
+class IkkeFunnetException(message: String) : ResponseStatusException(HttpStatus.NOT_FOUND, message)
 
-@ResponseStatus(value = HttpStatus.NOT_FOUND)
-class IkkeFunnetException(message: String) : RuntimeException(message)
+class RinaIkkeAutorisertBrukerException(message: String?) : ResponseStatusException(HttpStatus.UNAUTHORIZED, message)
 
-@ResponseStatus(value = HttpStatus.UNAUTHORIZED)
-class RinaIkkeAutorisertBrukerException(message: String?) : RuntimeException(message)
+class ForbiddenException(message: String?) : ResponseStatusException(HttpStatus.FORBIDDEN, message)
 
-@ResponseStatus(value = HttpStatus.FORBIDDEN)
-class ForbiddenException(message: String?) : RuntimeException(message)
+class EuxRinaServerException(message: String?) : ResponseStatusException(HttpStatus.NOT_FOUND, message)
 
-@ResponseStatus(value = HttpStatus.NOT_FOUND)
-class EuxRinaServerException(message: String?) : RuntimeException(message)
+class GenericUnprocessableEntity(message: String) : ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, message)
 
-@ResponseStatus(value = HttpStatus.UNPROCESSABLE_ENTITY)
-class GenericUnprocessableEntity(message: String) : RuntimeException(message)
+class GatewayTimeoutException(message: String?) : ResponseStatusException(HttpStatus.GATEWAY_TIMEOUT, message)
 
-@ResponseStatus(value = HttpStatus.GATEWAY_TIMEOUT)
-class GatewayTimeoutException(message: String?) : RuntimeException(message)
+class ServerException(message: String?) : ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, message)
 
-@ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
-class ServerException(message: String?) : RuntimeException(message)
-
-@ResponseStatus(value = HttpStatus.CONFLICT)
-class EuxConflictException(message: String?) : RuntimeException(message)
+class EuxConflictException(message: String?) : ResponseStatusException(HttpStatus.CONFLICT, message)
 
 //--- Disse er benyttet av restTemplateErrorhandler  -- slutt
 
+class SedDokumentIkkeOpprettetException(message: String) : ResponseStatusException(HttpStatus.NOT_FOUND, message)
 
-@ResponseStatus(value = HttpStatus.NOT_FOUND)
-class SedDokumentIkkeOpprettetException(message: String) : Exception(message)
+class SedDokumentIkkeLestException(message: String?) : ResponseStatusException(HttpStatus.NOT_FOUND, message)
 
-@ResponseStatus(value = HttpStatus.NOT_FOUND)
-class SedDokumentIkkeLestException(message: String?) : Exception(message)
+class EuxGenericServerException(message: String?) : ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, message)
 
-@ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
-class EuxGenericServerException(message: String?) : Exception(message)
+class EuxServerException(message: String?) : ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, message)
 
-@ResponseStatus(value = HttpStatus.SERVICE_UNAVAILABLE)
-class EuxServerException(message: String?) : Exception(message)
-
-@ResponseStatus(value = HttpStatus.BAD_REQUEST)
-class SedDokumentIkkeGyldigException(message: String?) : Exception(message)
+class SedDokumentIkkeGyldigException(message: String?) : ResponseStatusException(HttpStatus.BAD_REQUEST, message)
