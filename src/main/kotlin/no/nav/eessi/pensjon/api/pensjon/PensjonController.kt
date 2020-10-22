@@ -59,13 +59,34 @@ class PensjonController(private val pensjonsinformasjonClient: Pensjonsinformasj
     @ApiOperation("Henter ut en liste over alle saker på valgt aktoerId")
     @GetMapping("/sakliste/{aktoerId}")
     fun hentPensjonSakIder(@PathVariable("aktoerId", required = true) aktoerId: String) : List<PensjonSak> {
+        logger.info("henter sakliste for aktoer: $aktoerId")
         val pensjonInformasjon = pensjonsinformasjonClient.hentAltPaaAktoerId(aktoerId)
-        return pensjonInformasjon.brukersSakerListe.brukersSakerListe.map { sak -> PensjonSak(sak.sakId, sak.sakType, sak.status) }
+        return pensjonInformasjon.brukersSakerListe.brukersSakerListe.map { sak ->
+            logger.debug("PensjonSak for journalføring: sakid: ${sak.sakId} sakType: ${sak.sakType} status: ${sak.status} ")
+            PensjonSak(sak.sakId, sak.sakType, PensjonSakStatus.from(sak.status)) }
     }
+
 }
+
 
 class PensjonSak (
         val sakid: Long,
         val sakType: String,
-        val status: String
+        val status: PensjonSakStatus
 )
+
+enum class PensjonSakStatus(val status: String) {
+    TIL_BEHANDLING("TIL_BEHANDLING"),
+    AVSLUTTET("AVSL"),
+    LOPENDE("INNV"),
+    OPPHOR("OPPHOR"),
+    UKJENT("");
+
+    companion object {
+        @JvmStatic
+        fun from(s: String): PensjonSakStatus {
+            return values().firstOrNull { it.status == s } ?: UKJENT
+        }
+    }
+
+}

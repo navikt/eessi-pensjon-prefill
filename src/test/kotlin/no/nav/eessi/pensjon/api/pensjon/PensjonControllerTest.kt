@@ -100,8 +100,10 @@ class PensjonControllerTest {
         verify(pensjonsinformasjonClient).hentAltPaaAktoerId(aktoerId)
 
         assertEquals(2, result.size)
-        val expected = PensjonSak(1010, "ALDER", "INNV")
-        assertEquals(expected.toJson(), result.first().toJson())
+        val expected1 = PensjonSak(1010, "ALDER", PensjonSakStatus.LOPENDE)
+        assertEquals(expected1.toJson(), result.first().toJson())
+        val expected2 = PensjonSak(2020, "UFOREP", PensjonSakStatus.AVSLUTTET)
+        assertEquals(expected2.toJson(), result.last().toJson())
     }
 
     @Test
@@ -117,6 +119,24 @@ class PensjonControllerTest {
         verify(pensjonsinformasjonClient, times(1)).hentAltPaaAktoerId(aktoerId)
 
         assertEquals(0, result.size)
+    }
+
+    @Test
+    fun `sjekk på forskjellige verdier av sakstatus fra pensjoninformasjon konvertere de til enum`() {
+        val tilbeh = "TIL_BEHANDLING"
+        val avsl = "AVSL"
+        val lop = "INNV"
+        val opph = "OPPHOR"
+        val ukjent = "CrazyIkkeIbrukTull"
+
+
+        assertEquals(PensjonSakStatus.TIL_BEHANDLING, PensjonSakStatus.from(tilbeh))
+        assertEquals(PensjonSakStatus.AVSLUTTET, PensjonSakStatus.from(avsl))
+        assertEquals(PensjonSakStatus.LOPENDE, PensjonSakStatus.from(lop))
+        assertEquals(PensjonSakStatus.OPPHOR, PensjonSakStatus.from(opph))
+        assertEquals(PensjonSakStatus.UKJENT, PensjonSakStatus.from(ukjent))
+
+
     }
 
 }
