@@ -63,14 +63,14 @@ class PensjonController(private val pensjonsinformasjonClient: Pensjonsinformasj
         val pensjonInformasjon = pensjonsinformasjonClient.hentAltPaaAktoerId(aktoerId)
         return pensjonInformasjon.brukersSakerListe.brukersSakerListe.map { sak ->
             logger.debug("PensjonSak for journalføring: sakid: ${sak.sakId} sakType: ${sak.sakType} status: ${sak.status} ")
-            PensjonSak(sak.sakId, sak.sakType, PensjonSakStatus.from(sak.status)) }
+            PensjonSak(sak.sakId.toString() ,  sak.sakType, PensjonSakStatus.from(sak.status)) }
     }
 
 }
 
 
 class PensjonSak (
-        val sakid: Long,
+        val sakid: String,
         val sakType: String,
         val status: PensjonSakStatus
 )

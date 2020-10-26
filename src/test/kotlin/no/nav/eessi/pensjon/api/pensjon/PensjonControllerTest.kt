@@ -100,9 +100,9 @@ class PensjonControllerTest {
         verify(pensjonsinformasjonClient).hentAltPaaAktoerId(aktoerId)
 
         assertEquals(2, result.size)
-        val expected1 = PensjonSak(1010, "ALDER", PensjonSakStatus.LOPENDE)
+        val expected1 = PensjonSak("1010", "ALDER", PensjonSakStatus.LOPENDE)
         assertEquals(expected1.toJson(), result.first().toJson())
-        val expected2 = PensjonSak(2020, "UFOREP", PensjonSakStatus.AVSLUTTET)
+        val expected2 = PensjonSak("2020", "UFOREP", PensjonSakStatus.AVSLUTTET)
         assertEquals(expected2.toJson(), result.last().toJson())
     }
 
