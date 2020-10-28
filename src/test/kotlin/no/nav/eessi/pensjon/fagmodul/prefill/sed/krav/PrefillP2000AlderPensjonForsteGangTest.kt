@@ -19,15 +19,17 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.junit.jupiter.MockitoSettings
 import org.mockito.quality.Strictness
+import org.springframework.web.server.ResponseStatusException
 
 @ExtendWith(MockitoExtension::class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-class PrefillP2000AlderPensjonUtlandForsteGangTest {
+class PrefillP2000AlderPensjonForsteGangTest {
 
     private val personFnr = generateRandomFnr(67)
 
@@ -66,16 +68,16 @@ class PrefillP2000AlderPensjonUtlandForsteGangTest {
         val pendata: Pensjonsinformasjon = dataFromPEN.hentPensjonInformasjon(prefillData.bruker.aktorId)
 
         assertNotNull(PensjonsinformasjonService.finnSak(prefillData.penSaksnummer, pendata))
-
         assertNotNull(pendata.brukersSakerListe)
         assertEquals("ALDER", PensjonsinformasjonService.finnSak(prefillData.penSaksnummer, pendata).sakType)
     }
 
     @Test
-    fun `Gitt at korrekt kravdato finnes`() {
-        val P2000 = prefillSEDService.prefill(prefillData)
+    fun `Gitt at kravtype er FORSTEG_BH skal det kastes en exception`() {
 
-        assertEquals("2018-05-31", P2000.nav?.krav?.dato)
+        assertThrows<ResponseStatusException> {
+            prefillSEDService.prefill(prefillData)
+        }
     }
 
 }

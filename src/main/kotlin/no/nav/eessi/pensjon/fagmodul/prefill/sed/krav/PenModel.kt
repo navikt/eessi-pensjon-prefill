@@ -12,9 +12,12 @@ enum class Kravstatus {
     AVSL
 }
 
+//https://confluence.adeo.no/pages/viewpage.action?pageId=338181301
 enum class KravArsak {
     GJNL_SKAL_VURD,
     TILST_DOD
+    //GJENLEVENDERETT
+    //GJENLEVENDETILLEGG
 }
 
 enum class EPSaktype {

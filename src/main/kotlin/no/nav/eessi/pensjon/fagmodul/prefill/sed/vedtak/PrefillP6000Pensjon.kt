@@ -12,7 +12,7 @@ import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
-import org.springframework.web.bind.annotation.ResponseStatus
+import org.springframework.web.server.ResponseStatusException
 
 
 /**
@@ -33,6 +33,20 @@ object PrefillP6000Pensjon {
 
         //prefill Pensjon obj med data fra PESYS. (pendata)
         logger.debug("4.1       VedtakItem")
+        return createPensjonEllerTom(pensjoninformasjon, gjenlevende, andreinstitusjonerItem)
+
+    }
+
+    fun createPensjonEllerTom(pensjoninformasjon: Pensjonsinformasjon, gjenlevende: Bruker?, andreinstitusjonerItem: AndreinstitusjonerItem?): Pensjon {
+        return if (pensjoninformasjon.vilkarsvurderingListe == null && pensjoninformasjon.ytelsePerMaanedListe == null) {
+            logger.warn("Ingen vilkarsvurderingListe og ytelsePerMaanedListe oppretter Vedtak SED P6000 uten pensjoninformasjon")
+            Pensjon()
+        } else {
+            createPensjon(pensjoninformasjon, gjenlevende, andreinstitusjonerItem)
+        }
+    }
+
+    fun createPensjon(pensjoninformasjon: Pensjonsinformasjon, gjenlevende: Bruker?, andreinstitusjonerItem: AndreinstitusjonerItem?): Pensjon {
         return Pensjon(
                 gjenlevende = gjenlevende,
                 //4.1
@@ -47,5 +61,4 @@ object PrefillP6000Pensjon {
     }
 }
 
-@ResponseStatus(value = HttpStatus.BAD_REQUEST)
-class IkkeGyldigStatusPaaSakException(message: String) : IllegalStateException(message)
+class IkkeGyldigStatusPaaSakException(message: String) : ResponseStatusException(HttpStatus.BAD_REQUEST, message)

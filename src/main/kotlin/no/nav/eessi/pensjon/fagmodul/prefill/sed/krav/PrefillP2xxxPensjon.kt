@@ -1,12 +1,21 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed.krav
 
+import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.KravHistorikkHelper.createKravDato
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.KravHistorikkHelper.finnKravHistorikk
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.KravHistorikkHelper.hentKravHistorikkForsteGangsBehandlingUtlandEllerForsteGang
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.KravHistorikkHelper.hentKravHistorikkMedKravStatusAvslag
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.KravHistorikkHelper.hentKravHistorikkMedKravStatusTilBehandling
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.KravHistorikkHelper.hentKravhistorikkForGjenlevende
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.NavFodselsnummer
-import no.nav.eessi.pensjon.fagmodul.sedmodel.*
+import no.nav.eessi.pensjon.fagmodul.sedmodel.AndreinstitusjonerItem
+import no.nav.eessi.pensjon.fagmodul.sedmodel.BeloepItem
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Bruker
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Institusjon
+import no.nav.eessi.pensjon.fagmodul.sedmodel.MeldingOmPensjon
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Pensjon
+import no.nav.eessi.pensjon.fagmodul.sedmodel.PinItem
+import no.nav.eessi.pensjon.fagmodul.sedmodel.YtelserItem
 import no.nav.eessi.pensjon.utils.simpleFormat
 import no.nav.pensjon.v1.kravhistorikk.V1KravHistorikk
 import no.nav.pensjon.v1.sak.V1Sak
@@ -14,6 +23,8 @@ import no.nav.pensjon.v1.ytelsepermaaned.V1YtelsePerMaaned
 import no.nav.pensjon.v1.ytelseskomponent.V1Ytelseskomponent
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.http.HttpStatus
+import org.springframework.web.server.ResponseStatusException
 
 val kravdatoMeldingOmP2100TilSaksbehandler = "Kravdato fra det opprinnelige vedtak med gjenlevenderett er angitt i SED P2100"
 
@@ -83,6 +94,71 @@ object PrefillP2xxxPensjon {
                 kravDato = krav,
                 gjenlevende = gjenlevende
         ))
+    }
+
+    /**
+     * Skal validere på kravtype og kravårrsak Krav SED P2000 Alder og P2200 Uførep
+     * https://confluence.adeo.no/pages/viewpage.action?pageId=338181302
+     *
+     * FORSTEG_BH       Førstegangsbehandling (ingen andre) skal vi avslutte
+     * F_BH_KUN_UTL     Førstegangsbehandling utland (ingen andre) skal vi avslutte
+     * F_BH_BO_UTL      Førstegangsbehandling bosatt utland ikke finnes skal vi avslutte
+     * F_BH_MED_UTL     Førstegangsbehandling Norge/utland ikke finnes sakl vi avslutte
+     *
+     */
+    fun validerGyldigKravtypeOgArsak(sak: V1Sak, sedType: String) {
+        logger.info("start på validering av $sedType")
+
+        validerGyldigKravtypeOgArsakFelles(sak , sedType)
+
+        val forsBehanBoUtlanTom = finnKravHistorikk("F_BH_BO_UTL", sak.kravHistorikkListe).isNullOrEmpty()
+        val forsBehanMedUtlanTom = finnKravHistorikk("F_BH_MED_UTL", sak.kravHistorikkListe).isNullOrEmpty()
+        logger.debug("forsBehanBoUtlanTom: $forsBehanBoUtlanTom, forsBehanMedUtlanTom: $forsBehanMedUtlanTom")
+        if (forsBehanBoUtlanTom and forsBehanMedUtlanTom) {
+            logger.warn("Det er ikke markert for bodd/arbeidet i utlandet. Krav SED $sedType blir ikke opprettet")
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Det er ikke markert for bodd/arbeidet i utlandet. Krav SED $sedType blir ikke opprettet")
+        }
+        logger.info("avslutt på validering av $sedType, fortsetter med preutfylling")
+    }
+
+    /**
+     * Skal validere på kravtype og kravårrsak Krav SED P2100 Gjenlev
+     * https://confluence.adeo.no/pages/viewpage.action?pageId=338181302
+     *
+     * FORSTEG_BH       Førstegangsbehandling (ingen andre) skal vi avslutte
+     * F_BH_KUN_UTL     Førstegangsbehandling utland (ingen andre) skal vi avslutte
+     *
+     * Kravårsak:
+     * GJNL_SKAL_VURD  Gjenlevendetillegg skal vurderes     hvis ikke finnes ved P2100 skal vi avslutte
+     * TILST_DOD       Dødsfall tilstøtende                 hvis ikke finnes ved
+     *
+     */
+    fun validerGyldigKravtypeOgArsakGjenlevnde(sak: V1Sak, sedType: String) {
+        logger.info("Start på validering av $sedType")
+        val validSaktype = listOf(EPSaktype.ALDER.name, EPSaktype.UFOREP.name)
+
+        validerGyldigKravtypeOgArsakFelles(sak, sedType)
+
+        if (sedType == SEDType.P2100.name && (hentKravhistorikkForGjenlevende(sak.kravHistorikkListe) == null && validSaktype.contains(sak.sakType))  ) {
+            logger.warn("Ikke korrkt kravårsak for P21000 (alder/uførep")
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Ingen gyldig kravårsak funnet for ALDER eller UFØREP for utfylling av en krav SED P2100")
+        }
+        logger.info("Avslutter på validering av $sedType, fortsetter med preutfylling")
+    }
+
+    //felles kode for validering av P2000, P2100 og P2200
+    private fun validerGyldigKravtypeOgArsakFelles(sak: V1Sak, sedType: String) {
+        val finnesKunUtland = finnKravHistorikk("F_BH_KUN_UTL", sak.kravHistorikkListe)
+        if (finnesKunUtland != null && finnesKunUtland.size == sak.kravHistorikkListe.kravHistorikkListe.size)  {
+            logger.warn("Søknad gjelder Førstegangsbehandling kun utland. Se egen rutine på navet")
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Søknad gjelder Førstegangsbehandling kun utland. Se egen rutine på navet")
+        }
+
+        val fortegBH = finnKravHistorikk("FORSTEG_BH", sak.kravHistorikkListe)
+        if (fortegBH != null && fortegBH.size == sak.kravHistorikkListe.kravHistorikkListe.size)  {
+            logger.warn("Det er ikke markert for bodd/arbeidet i utlandet. Krav SED $sedType blir ikke opprettet")
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Det er ikke markert for bodd/arbeidet i utlandet. Krav SED $sedType blir ikke opprettet")
+        }
     }
 
     private fun finnKravHistorikkForDato(pensak: V1Sak): V1KravHistorikk {

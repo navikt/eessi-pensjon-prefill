@@ -34,6 +34,11 @@ object KravHistorikkHelper {
         return hentKravHistorikkMedKravType(listOf(Kravtype.F_BH_MED_UTL.name, Kravtype.FORSTEG_BH.name), kravHistorikkListe)
     }
 
+    fun finnKravHistorikk(kravType: String, kravHistorikkListe: V1KravHistorikkListe): List<V1KravHistorikk>? {
+        val sortList = sortertKravHistorikk(kravHistorikkListe)
+        return sortList.filter { kravHistorikk -> kravType == kravHistorikk.kravType }
+    }
+
     private fun hentKravHistorikkMedKravType(kravType: List<String>, kravHistorikkListe: V1KravHistorikkListe): V1KravHistorikk {
         val sortList = sortertKravHistorikk(kravHistorikkListe)
         sortList.forEach { kravHistorikk ->

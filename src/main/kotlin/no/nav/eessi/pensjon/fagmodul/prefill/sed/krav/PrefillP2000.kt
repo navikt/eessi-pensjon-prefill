@@ -18,17 +18,16 @@ class PrefillP2000(private val prefillNav: PrefillNav)  {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillP2000::class.java) }
 
-    fun prefill(prefillData: PrefillDataModel, personData: PersonData, sak: V1Sak?): SED {
+    fun prefill(prefillData: PrefillDataModel, personData: PersonData, sak: V1Sak): SED {
         val sedType = prefillData.getSEDType()
 
         logger.debug("----------------------------------------------------------"
-                + "\nSaktype                 : ${sak?.sakType} "
+                + "\nSaktype                 : ${sak.sakType} "
                 + "\nSøker etter SakId       : ${prefillData.penSaksnummer} "
                 + "\nSøker etter aktoerid    : ${prefillData.bruker.aktorId} "
                 + "\n------------------| Preutfylling [$sedType] START |------------------ ")
 
         val sed = prefillData.sed
-
         //henter opp persondata
         sed.nav = prefillNav.prefill(
                 penSaksnummer = prefillData.penSaksnummer,
@@ -38,20 +37,20 @@ class PrefillP2000(private val prefillNav: PrefillNav)  {
                 brukerInformasjon = prefillData.getPersonInfoFromRequestData()
         )
 
+        //valider pensjoninformasjon,
+        PrefillP2xxxPensjon.validerGyldigKravtypeOgArsak(sak, sed.sed)
         try {
             sed.pensjon = Pensjon()
-            if (sak != null) {
-                val meldingOmPensjon = PrefillP2xxxPensjon.createPensjon(
-                        prefillData.bruker.norskIdent,
-                        prefillData.penSaksnummer,
-                        sak,
-                        prefillData.andreInstitusjon)
-                sed.pensjon =  meldingOmPensjon.pensjon
-                if (prefillData.isMinimumPrefill()) {
-                    sed.pensjon = Pensjon(
-                            kravDato = meldingOmPensjon.pensjon.kravDato
-                    ) //vi skal ha blank pensjon ved denne toggle, men vi må ha med kravdato
-                }
+            val meldingOmPensjon = PrefillP2xxxPensjon.createPensjon(
+                    prefillData.bruker.norskIdent,
+                    prefillData.penSaksnummer,
+                    sak,
+                    prefillData.andreInstitusjon)
+            sed.pensjon =  meldingOmPensjon.pensjon
+            if (prefillData.isMinimumPrefill()) {
+                sed.pensjon = Pensjon(
+                        kravDato = meldingOmPensjon.pensjon.kravDato
+                ) //vi skal ha blank pensjon ved denne toggle, men vi må ha med kravdato
             }
         } catch (ex: Exception) {
             logger.error(ex.message, ex)

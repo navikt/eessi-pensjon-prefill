@@ -4,7 +4,7 @@ import com.nhaarman.mockitokotlin2.mock
 import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjon
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModelMother
-import no.nav.eessi.pensjon.fagmodul.prefill.pen.IkkeGyldigKallException
+import no.nav.eessi.pensjon.fagmodul.prefill.pen.IngenSakFunnetException
 import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonService
 import no.nav.eessi.pensjon.fagmodul.prefill.person.MockTpsPersonServiceFactory
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
@@ -18,7 +18,6 @@ import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerregisterService
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
@@ -66,12 +65,8 @@ class PrefillP2000MedIngendataTest {
     fun `Preutfylling av P2000 med manglende brukersakliste i pensjoninformasjon`() {
         try {
             prefillSEDService.prefill(prefillData)
-        } catch (ex: IkkeGyldigKallException) {
-            assertEquals("400 BAD_REQUEST \"Finner ingen sak, saktype på valgt sakId\"", ex.message)
-        }
-
-        assertThrows<IkkeGyldigKallException> {
-            prefillSEDService.prefill(prefillData)
+        } catch (ex: IngenSakFunnetException) {
+            assertEquals("404 NOT_FOUND \"Finner ingen sak, saktype på valgt sakId 21644722\"", ex.message)
         }
     }
 

@@ -15,13 +15,13 @@ class PrefillP2100(private val prefillNav: PrefillNav) {
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillP2100::class.java) }
 
 
-    fun prefill(prefillData: PrefillDataModel, personData: PersonData, sak: V1Sak?): Pair<String?, SED> {
+    fun prefill(prefillData: PrefillDataModel, personData: PersonData, sak: V1Sak): Pair<String?, SED> {
         require(prefillData.avdod != null ) { "avdod er påkrevet for p2100" }
 
         val sedType = prefillData.getSEDType()
 
         logger.debug("\n\n----------------------------------------------------------"
-                + "\nSaktype                : ${sak?.sakType} "
+                + "\nSaktype                : ${sak.sakType} "
                 + "\nSøker sakId            : ${prefillData.penSaksnummer} "
                 + "\nSøker avdodaktor       : ${prefillData.avdod.aktorId} "
                 + "\nerGyldigEtterlatt      : ${prefillData.avdod.aktorId.isNotEmpty()} "
@@ -34,10 +34,10 @@ class PrefillP2100(private val prefillNav: PrefillNav) {
         sed.nav = prefillNav.prefill(penSaksnummer = prefillData.penSaksnummer, bruker = prefillData.bruker, avdod = prefillData.avdod, personData = personData , brukerInformasjon = prefillData.getPersonInfoFromRequestData())
 
 
+        PrefillP2xxxPensjon.validerGyldigKravtypeOgArsakGjenlevnde(sak, sed.sed)
         var melding: String? = ""
         try {
             sed.pensjon = Pensjon()
-            if (sak != null) {
                 val meldingOmPensjon = PrefillP2xxxPensjon.createPensjon(
                         prefillData.bruker.norskIdent,
                         prefillData.penSaksnummer,
@@ -53,7 +53,6 @@ class PrefillP2100(private val prefillNav: PrefillNav) {
                             gjenlevende = meldingOmPensjon.pensjon.gjenlevende
                     ) //vi skal ha blank pensjon ved denne toggle, men vi må ha med kravdato
                 }
-            }
         } catch (ex: Exception) {
             logger.error(ex.message, ex)
         }

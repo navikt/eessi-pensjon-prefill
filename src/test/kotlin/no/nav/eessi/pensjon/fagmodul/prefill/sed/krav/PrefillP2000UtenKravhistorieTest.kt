@@ -89,7 +89,7 @@ class PrefillP2000UtenKravhistorieTest {
         val ex = assertThrows<Exception> {
             prefillSEDService.prefill(prefillData)
         }
-        assertEquals("Kravdato mangler\nGjelder utsendelsen \"Førstegangsbehandling kun utland\", se egen rutine på Navet.", ex.message)
+        assertEquals("400 BAD_REQUEST \"Det er ikke markert for bodd/arbeidet i utlandet. Krav SED P2000 blir ikke opprettet\"", ex.message)
     }
 
 

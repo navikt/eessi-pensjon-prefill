@@ -62,7 +62,7 @@ class SedController(private val euxService: EuxService,
 
     //** oppdatert i api 18.02.2019
     @ApiOperation("Generer en Nav-Sed (SED), viser en oppsumering av SED (json). Før evt. innsending til EUX/Rina")
-    @PostMapping("/preview", "/preview/{filter}", consumes = ["application/json"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @PostMapping("/prefill", "/prefill/{filter}", "/preview", "/preview/{filter}", consumes = ["application/json"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun confirmDocument(@RequestBody request: ApiRequest, @PathVariable("filter", required = false) filter: String? = null): String {
         auditlogger.log("confirmDocument", request.aktoerId ?: "", request.toAudit())
 

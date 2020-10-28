@@ -24,7 +24,7 @@ class PensjonsinformasjonService(private val pensjonsinformasjonClient: Pensjons
         //hjelpe metode for å hente ut valgt V1SAK på vetak/SAK fnr og sakid benyttes
         fun finnSak(sakId: String, pendata: Pensjonsinformasjon): V1Sak {
             if (sakId.isBlank()) throw ManglendeSakIdException("Mangler sakId")
-            return PensjonsinformasjonClient.finnSak(sakId, pendata) ?: throw IkkeGyldigKallException("Finner ingen sak, saktype på valgt sakId")
+            return PensjonsinformasjonClient.finnSak(sakId, pendata) ?: throw IngenSakFunnetException("Finner ingen sak, saktype på valgt sakId $sakId")
         }
     }
 
@@ -89,22 +89,23 @@ class PensjonsinformasjonService(private val pensjonsinformasjonClient: Pensjons
         val endtime = System.nanoTime()
         val tottime = endtime - starttime
 
-        logger.debug("Metrics")
         logger.debug("Ferdig hentet pensjondata fra PESYS. Det tok ${(tottime / 1.0e9)} sekunder.")
         logger.debug("----------------------------------------------------------")
 
         return pensjonsinformasjon
     }
 
-    fun hentRelevantPensjonSak(prefillData: PrefillDataModel, akseptabelSakstypeForSed: (String) -> Boolean): V1Sak? {
-
+    fun hentRelevantPensjonSak(prefillData: PrefillDataModel, akseptabelSakstypeForSed: (String) -> Boolean): V1Sak {
         val aktorId = prefillData.bruker.aktorId
         val penSaksnummer = prefillData.penSaksnummer
         val sedType = prefillData.getSEDType()
 
         if (penSaksnummer.isBlank()) throw ManglendeSakIdException("Mangler sakId")
 
-        return hentPensjonInformasjonNullHvisFeil(aktorId)?.let {
+        val peninfo = hentPensjonInformasjonNullHvisFeil(aktorId) ?:
+            throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Ingen pensjoninformasjon funnet")
+
+        return peninfo.let {
             val sak: V1Sak = finnSak(penSaksnummer, it)
 
             if (!akseptabelSakstypeForSed(sak.sakType)) {
@@ -136,6 +137,8 @@ class PensjonsinformasjonService(private val pensjonsinformasjonClient: Pensjons
 }
 
 class IkkeGyldigKallException(reason: String): ResponseStatusException(HttpStatus.BAD_REQUEST, reason)
+
+class IngenSakFunnetException(reason: String): ResponseStatusException(HttpStatus.NOT_FOUND, reason)
 
 class ManglendeSakIdException(reason: String): ResponseStatusException(HttpStatus.BAD_REQUEST, reason)
 
