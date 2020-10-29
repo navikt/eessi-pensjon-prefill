@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.server.ResponseStatusException
 import javax.annotation.PostConstruct
 
 @Protected
@@ -61,18 +62,21 @@ class PensjonController(private val pensjonsinformasjonClient: Pensjonsinformasj
     fun hentPensjonSakIder(@PathVariable("aktoerId", required = true) aktoerId: String) : List<PensjonSak> {
         logger.info("henter sakliste for aktoer: $aktoerId")
         val pensjonInformasjon = pensjonsinformasjonClient.hentAltPaaAktoerId(aktoerId)
+        if (pensjonInformasjon?.brukersSakerListe == null) {
+            logger.error("Ingen brukerSakerListe i pensjoninformasjon for aktoerid: $aktoerId")
+            throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Ingen brukerSakerListe i pensjoninformasjon")
+        }
         return pensjonInformasjon.brukersSakerListe.brukersSakerListe.map { sak ->
-            logger.debug("PensjonSak for journalføring: sakid: ${sak.sakId} sakType: ${sak.sakType} status: ${sak.status} ")
+            logger.debug("PensjonSak for journalføring: sakId: ${sak.sakId} sakType: ${sak.sakType} sakStatus: ${sak.status} ")
             PensjonSak(sak.sakId.toString() ,  sak.sakType, PensjonSakStatus.from(sak.status)) }
     }
 
 }
 
-
 class PensjonSak (
-        val sakid: String,
+        val sakId: String,
         val sakType: String,
-        val status: PensjonSakStatus
+        val sakStatus: PensjonSakStatus
 )
 
 enum class PensjonSakStatus(val status: String) {
