@@ -171,6 +171,7 @@ class SedController(private val euxService: EuxService,
             } else {
                 nyeInstitusjoner.forEach {
                     if (!navCaseOwner && it.country != "NO") {
+                        logger.error("NAV er ikke sakseier. Du kan ikke legge til deltakere utenfor Norge")
                         throw ResponseStatusException(HttpStatus.BAD_REQUEST, "NAV er ikke sakseier. Du kan ikke legge til deltakere utenfor Norge")
                     }
                 }
