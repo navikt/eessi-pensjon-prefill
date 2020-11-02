@@ -4,7 +4,6 @@ import com.nhaarman.mockitokotlin2.mock
 import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjon
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModelMother
-import no.nav.eessi.pensjon.fagmodul.prefill.pen.IngenSakFunnetException
 import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonService
 import no.nav.eessi.pensjon.fagmodul.prefill.person.MockTpsPersonServiceFactory
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
@@ -23,6 +22,7 @@ import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.junit.jupiter.MockitoSettings
 import org.mockito.quality.Strictness
+import org.springframework.web.server.ResponseStatusException
 
 @ExtendWith(MockitoExtension::class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -65,7 +65,7 @@ class PrefillP2000MedIngendataTest {
     fun `Preutfylling av P2000 med manglende brukersakliste i pensjoninformasjon`() {
         try {
             prefillSEDService.prefill(prefillData)
-        } catch (ex: IngenSakFunnetException) {
+        } catch (ex: ResponseStatusException) {
             assertEquals("404 NOT_FOUND \"Finner ingen sak, saktype på valgt sakId 21644722\"", ex.message)
         }
     }

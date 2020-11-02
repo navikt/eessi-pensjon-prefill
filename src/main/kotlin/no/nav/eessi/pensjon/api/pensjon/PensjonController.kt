@@ -5,6 +5,8 @@ import io.swagger.annotations.ApiOperation
 import no.nav.eessi.pensjon.logging.AuditLogger
 import no.nav.eessi.pensjon.metrics.MetricsHelper
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.IkkeFunnetException
+import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjoninformasjonException
+import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjoninformasjonValiderKrav
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonClient
 import no.nav.eessi.pensjon.utils.errorBody
 import no.nav.eessi.pensjon.utils.mapAnyToJson
@@ -30,10 +32,14 @@ class PensjonController(private val pensjonsinformasjonClient: Pensjonsinformasj
     private val logger = LoggerFactory.getLogger(PensjonController::class.java)
 
     private lateinit var PensjonControllerHentSakType: MetricsHelper.Metric
+    private lateinit var PensjonControllerHentSakListe: MetricsHelper.Metric
+    private lateinit var PensjonControllerValidateSak: MetricsHelper.Metric
 
     @PostConstruct
     fun initMetrics() {
         PensjonControllerHentSakType = metricsHelper.init("PensjonControllerHentSakType")
+        PensjonControllerHentSakListe = metricsHelper.init("PensjonControllerHentSakListe")
+        PensjonControllerValidateSak = metricsHelper.init("PensjonControllerValidateSak")
     }
 
     @ApiOperation("Henter ut saktype knyttet til den valgte sakId og aktoerId")
@@ -49,7 +55,7 @@ class PensjonController(private val pensjonsinformasjonClient: Pensjonsinformasj
                 ResponseEntity.ok().body(mapAnyToJson(hentKunSakType))
             } catch (ife: IkkeFunnetException) {
                 logger.warn("Feil ved henting av sakstype, ingen sak funnet. Sak: ${sakId}")
-                ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorBody(ife.message!!))
+                ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorBody(ife.message))
             } catch (e: Exception) {
                 logger.warn("Feil ved henting av sakstype på saksid: ${sakId}")
                 ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorBody(e.message!!))
@@ -58,19 +64,51 @@ class PensjonController(private val pensjonsinformasjonClient: Pensjonsinformasj
     }
 
     @ApiOperation("Henter ut en liste over alle saker på valgt aktoerId")
-    @GetMapping("/sakliste/{aktoerId}")
-    fun hentPensjonSakIder(@PathVariable("aktoerId", required = true) aktoerId: String) : List<PensjonSak> {
-        logger.info("henter sakliste for aktoer: $aktoerId")
-        val pensjonInformasjon = pensjonsinformasjonClient.hentAltPaaAktoerId(aktoerId)
-        if (pensjonInformasjon?.brukersSakerListe == null) {
-            logger.error("Ingen brukerSakerListe i pensjoninformasjon for aktoerid: $aktoerId")
-            throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Ingen brukerSakerListe i pensjoninformasjon")
+    @GetMapping("/validate/{aktoerId}/sakId/{sakId}/buctype/{buctype}")
+    fun validerKravPensjon(@PathVariable("aktoerId", required = true) aktoerId: String, @PathVariable("sakId", required = true) sakId: String, @PathVariable("buctype", required = true) bucType: String): Boolean {
+        return PensjonControllerValidateSak.measure {
+
+            val pendata = pensjonsinformasjonClient.hentAltPaaAktoerId(aktoerId)
+            if (pendata.brukersSakerListe == null) {
+                logger.warn("Ingen gyldig brukerSakerListe funnet")
+                throw PensjoninformasjonException("Ingen gyldig brukerSakerListe, mangler data fra pesys")
+            }
+
+            val sak = PensjonsinformasjonClient.finnSak(sakId, pendata)
+            return@measure when(bucType) {
+                "P_BUC_01", "P_BUC_03" -> {
+                    PensjoninformasjonValiderKrav.validerGyldigKravtypeOgArsak(sak, bucType)
+                    true
+                }
+                "P_BUC_02" -> {
+                    PensjoninformasjonValiderKrav.validerGyldigKravtypeOgArsakGjenlevnde(sak, bucType)
+                    true
+                }
+                else -> true
+            }
         }
-        return pensjonInformasjon.brukersSakerListe.brukersSakerListe.map { sak ->
-            logger.debug("PensjonSak for journalføring: sakId: ${sak.sakId} sakType: ${sak.sakType} sakStatus: ${sak.status} ")
-            PensjonSak(sak.sakId.toString() ,  sak.sakType, PensjonSakStatus.from(sak.status)) }
     }
 
+
+    @ApiOperation("Henter ut en liste over alle saker på valgt aktoerId")
+    @GetMapping("/sakliste/{aktoerId}")
+    fun hentPensjonSakIder(@PathVariable("aktoerId", required = true) aktoerId: String) : List<PensjonSak> {
+        return PensjonControllerHentSakListe.measure {
+
+            logger.info("henter sakliste for aktoer: $aktoerId")
+            val pensjonInformasjon = pensjonsinformasjonClient.hentAltPaaAktoerId(aktoerId)
+
+            val brukersSakerListe = pensjonInformasjon.brukersSakerListe.brukersSakerListe
+            if (brukersSakerListe == null) {
+                logger.error("Ingen brukersSakerListe funnet i pensjoninformasjon for aktoer: $aktoerId")
+                throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Ingen brukersSakerListe funnet i pensjoninformasjon for aktoer: $aktoerId")
+            }
+            return@measure brukersSakerListe.map { sak ->
+                logger.debug("PensjonSak for journalføring: sakId: ${sak.sakId} sakType: ${sak.sakType} sakStatus: ${sak.status} ")
+                PensjonSak(sak.sakId.toString() ,  sak.sakType, PensjonSakStatus.from(sak.status))
+                }
+            }
+        }
 }
 
 class PensjonSak (

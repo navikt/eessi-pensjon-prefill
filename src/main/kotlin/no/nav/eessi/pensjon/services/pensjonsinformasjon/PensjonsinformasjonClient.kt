@@ -8,12 +8,16 @@ import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import no.nav.pensjon.v1.sak.V1Sak
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.http.*
+import org.springframework.http.HttpEntity
+import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpMethod
+import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
-import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.HttpServerErrorException
 import org.springframework.web.client.RestTemplate
+import org.springframework.web.server.ResponseStatusException
 import org.springframework.web.util.UriComponentsBuilder
 import java.io.StringReader
 import javax.annotation.PostConstruct
@@ -30,21 +34,13 @@ class PensjonsinformasjonClient(
     companion object {
         private val logger = LoggerFactory.getLogger(PensjonsinformasjonClient::class.java)
 
-        fun finnSak(sakId: String, pendata: Pensjonsinformasjon): V1Sak? {
-
-            logger.debug("Søker brukersSakerListe etter sakId: $sakId")
-
+        fun finnSak(sakId: String, pendata: Pensjonsinformasjon): V1Sak {
+            logger.info("Søker brukersSakerListe etter sakId: $sakId")
             val v1saklist = pendata.brukersSakerListe.brukersSakerListe
-
-            v1saklist.forEach {
-                logger.debug("Itererer brukersakliste sakType: ${it.sakType} sakid: ${it.sakId}")
-                if (sakId == it.sakId.toString()) {
-                    logger.debug("Fant sakid på brukersakliste, returnerer kun V1Sak på sakid: ${it.sakId}\"")
-                    return it
-                }
-            }
-            logger.warn("Fant ingen sakid på brukersakliste, returnerer null")
-            return null
+            return v1saklist.filter { sak -> "${sak.sakId}" == sakId  }.firstOrNull() ?: {
+                logger.error("Finner ingen sak, saktype på valgt sakId $sakId")
+                throw IngenSakFunnetException("Finner ingen sak, saktype på valgt sakId $sakId")
+            }()
         }
     }
 
@@ -67,7 +63,7 @@ class PensjonsinformasjonClient(
     fun hentKunSakType(sakId: String, aktoerid: String): Pensjontype {
         return PensjoninformasjonHentKunSakType.measure {
             return@measure try {
-                val sak = finnSak(sakId, hentAltPaaAktoerId(aktoerid)) ?: throw IkkeFunnetException("Sak ikke funnet")
+                val sak = finnSak(sakId, hentAltPaaAktoerId(aktoerid))
                 Pensjontype(sakId, sak.sakType)
             } catch (ex: Exception) {
                 logger.warn("Saktype ikke funnet, mangler kravhode, ${ex.message}", ex)
@@ -195,11 +191,10 @@ class PensjonsinformasjonClient(
 
 }
 
-@ResponseStatus(value = HttpStatus.NOT_FOUND)
-class IkkeFunnetException(message: String) : IllegalArgumentException(message)
+class IngenSakFunnetException(reason: String): ResponseStatusException(HttpStatus.NOT_FOUND, reason)
 
-@ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
-class PensjoninformasjonException(message: String) : RuntimeException(message)
+class IkkeFunnetException(message: String) : ResponseStatusException(HttpStatus.BAD_REQUEST, message)
 
-@ResponseStatus(value = HttpStatus.UNPROCESSABLE_ENTITY)
-class PensjoninformasjonProcessingException(message: String) : RuntimeException(message)
+class PensjoninformasjonException(message: String) : ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, message)
+
+class PensjoninformasjonProcessingException(message: String) : ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, message)

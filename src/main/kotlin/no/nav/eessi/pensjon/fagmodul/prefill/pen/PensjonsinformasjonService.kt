@@ -20,13 +20,18 @@ class PensjonsinformasjonService(private val pensjonsinformasjonClient: Pensjons
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PensjonsinformasjonService::class.java) }
 
+
     companion object {
+        private val logg = LoggerFactory.getLogger(PensjonsinformasjonService::class.java)
+
         //hjelpe metode for å hente ut valgt V1SAK på vetak/SAK fnr og sakid benyttes
         fun finnSak(sakId: String, pendata: Pensjonsinformasjon): V1Sak {
             if (sakId.isBlank()) throw ManglendeSakIdException("Mangler sakId")
-            return PensjonsinformasjonClient.finnSak(sakId, pendata) ?: throw IngenSakFunnetException("Finner ingen sak, saktype på valgt sakId $sakId")
+            return PensjonsinformasjonClient.finnSak(sakId, pendata)
         }
     }
+
+
 
     //hjelemetode for Vedtak P6000 P5000
     fun hentMedVedtak(vedtakId: String): Pensjonsinformasjon {
@@ -137,8 +142,6 @@ class PensjonsinformasjonService(private val pensjonsinformasjonClient: Pensjons
 }
 
 class IkkeGyldigKallException(reason: String): ResponseStatusException(HttpStatus.BAD_REQUEST, reason)
-
-class IngenSakFunnetException(reason: String): ResponseStatusException(HttpStatus.NOT_FOUND, reason)
 
 class ManglendeSakIdException(reason: String): ResponseStatusException(HttpStatus.BAD_REQUEST, reason)
 
