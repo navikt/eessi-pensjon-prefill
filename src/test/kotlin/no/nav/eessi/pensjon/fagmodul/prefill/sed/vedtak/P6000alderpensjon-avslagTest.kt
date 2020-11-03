@@ -15,7 +15,6 @@ import no.nav.eessi.pensjon.fagmodul.prefill.tps.FodselsnummerMother
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillAdresse
 import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerregisterService
 import no.nav.eessi.pensjon.personoppslag.personv3.PersonV3Service
-import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -25,6 +24,7 @@ import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.junit.jupiter.MockitoSettings
 import org.mockito.quality.Strictness
+import kotlin.test.assertNull
 
 @ExtendWith(MockitoExtension::class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -68,34 +68,35 @@ class `P6000alderpensjon-avslagTest` {
         val sed = prefillSEDService.prefill(prefillData)
         val result = sed.pensjon!!
 
-        assertNotNull(result.vedtak)
-        assertNotNull(result.sak)
-        assertNotNull(result.tilleggsinformasjon)
+        assertNotNull(result)
+        assertNull(result.vedtak)
+        assertNull(result.sak)
+        assertNull(result.tilleggsinformasjon)
 
-        val vedtak = result.vedtak?.get(0)
-        assertEquals("2019-06-01", vedtak?.virkningsdato, "vedtak.virkningsdato")
-        assertEquals("01", vedtak?.type)
-        assertEquals(null, vedtak?.basertPaa)
-        assertEquals(null, vedtak?.basertPaaAnnen)
-        assertEquals("02", vedtak?.resultat, "4.1.4 vedtak.resultat")
-        assertEquals(null, vedtak?.kjoeringsdato)
-        assertEquals(null, vedtak?.artikkel, "4.1.5 vedtak.artikkel (må fylles ut manuelt nå)")
-
-        assertEquals(null, vedtak?.grunnlag?.opptjening?.forsikredeAnnen)
-        assertEquals(null, vedtak?.grunnlag?.framtidigtrygdetid)
-
-        assertEquals(null, vedtak?.ukjent?.beloepBrutto?.ytelseskomponentAnnen)
-
-        val avslagBegrunnelse = vedtak?.avslagbegrunnelse?.get(0)
-        assertEquals("03", avslagBegrunnelse?.begrunnelse, "4.1.13.1          AvlsagsBegrunnelse")
-
-        assertEquals("six weeks from the date the decision is received", result.sak?.kravtype?.get(0)?.datoFrist)
-
-        assertEquals("2019-11-11", result.tilleggsinformasjon?.dato)
-
-        assertEquals("NO:noinst002", result.tilleggsinformasjon?.andreinstitusjoner?.get(0)?.institusjonsid)
-        assertEquals("Postboks 6600 Etterstad TEST", result.tilleggsinformasjon?.andreinstitusjoner?.get(0)?.institusjonsadresse)
-        assertEquals("0607", result.tilleggsinformasjon?.andreinstitusjoner?.get(0)?.postnummer)
+//        val vedtak = result.vedtak?.get(0)
+//        assertEquals("2019-06-01", vedtak?.virkningsdato, "vedtak.virkningsdato")
+//        assertEquals("01", vedtak?.type)
+//        assertEquals(null, vedtak?.basertPaa)
+//        assertEquals(null, vedtak?.basertPaaAnnen)
+//        assertEquals("02", vedtak?.resultat, "4.1.4 vedtak.resultat")
+//        assertEquals(null, vedtak?.kjoeringsdato)
+//        assertEquals(null, vedtak?.artikkel, "4.1.5 vedtak.artikkel (må fylles ut manuelt nå)")
+//
+//        assertEquals(null, vedtak?.grunnlag?.opptjening?.forsikredeAnnen)
+//        assertEquals(null, vedtak?.grunnlag?.framtidigtrygdetid)
+//
+//        assertEquals(null, vedtak?.ukjent?.beloepBrutto?.ytelseskomponentAnnen)
+//
+//        val avslagBegrunnelse = vedtak?.avslagbegrunnelse?.get(0)
+//        assertEquals("03", avslagBegrunnelse?.begrunnelse, "4.1.13.1          AvlsagsBegrunnelse")
+//
+//        assertEquals("six weeks from the date the decision is received", result.sak?.kravtype?.get(0)?.datoFrist)
+//
+//        assertEquals("2019-11-11", result.tilleggsinformasjon?.dato)
+//
+//        assertEquals("NO:noinst002", result.tilleggsinformasjon?.andreinstitusjoner?.get(0)?.institusjonsid)
+//        assertEquals("Postboks 6600 Etterstad TEST", result.tilleggsinformasjon?.andreinstitusjoner?.get(0)?.institusjonsadresse)
+//        assertEquals("0607", result.tilleggsinformasjon?.andreinstitusjoner?.get(0)?.postnummer)
 
     }
 

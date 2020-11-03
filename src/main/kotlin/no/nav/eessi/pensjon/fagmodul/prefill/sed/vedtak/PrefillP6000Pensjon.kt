@@ -38,7 +38,10 @@ object PrefillP6000Pensjon {
     }
 
     fun createPensjonEllerTom(pensjoninformasjon: Pensjonsinformasjon, gjenlevende: Bruker?, andreinstitusjonerItem: AndreinstitusjonerItem?): Pensjon {
-        return if (pensjoninformasjon.vilkarsvurderingListe == null && pensjoninformasjon.ytelsePerMaanedListe == null) {
+        //if (pensjoninformasjon.vilkarsvurderingListe == null && pensjoninformasjon.ytelsePerMaanedListe == null)
+        val vilkar = pensjoninformasjon.vilkarsvurderingListe
+        val ytelse = pensjoninformasjon.ytelsePerMaanedListe
+        return if ((vilkar == null && ytelse == null) || (ytelse.ytelsePerMaanedListe == null || ytelse.ytelsePerMaanedListe.isEmpty())) {
             logger.warn("Ingen vilkarsvurderingListe og ytelsePerMaanedListe oppretter Vedtak SED P6000 uten pensjoninformasjon")
             Pensjon()
         } else {
