@@ -10,7 +10,7 @@ spec:
     - name: SPRING_PROFILES_ACTIVE
       value: test
     - name: PENSJONSINFORMASJON_URL
-      value: https://pensjon-pen-q1.nais.preprod.local/pen/api/pensjonsinformasjon/v1
+      value: https://wasapp-q1.adeo.no/pensjon-ws/api/pensjonsinformasjon/v1
     - name: AKTOERREGISTER_API_V1_URL
       value: https://app-q1.adeo.no/aktoerregister/api/v1
     - name: EESSIPEN_EUX_RINA_URL
