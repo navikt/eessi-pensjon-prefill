@@ -1,5 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed
 
+import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.whenever
 import no.nav.eessi.pensjon.fagmodul.prefill.LagTPSPerson.Companion.lagTPSBruker
@@ -13,6 +14,8 @@ import no.nav.eessi.pensjon.fagmodul.prefill.model.ReferanseTilPerson
 import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonService
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillSed
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.EPSaktype
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.KravArsak
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.FodselsnummerMother.generateRandomFnr
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillAdresse
 import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerregisterService
@@ -20,6 +23,9 @@ import no.nav.eessi.pensjon.personoppslag.personv3.PersonV3Service
 import no.nav.eessi.pensjon.services.geo.PostnummerService
 import no.nav.eessi.pensjon.services.kodeverk.KodeverkClient
 import no.nav.eessi.pensjon.utils.convertToXMLocal
+import no.nav.pensjon.v1.kravhistorikk.V1KravHistorikk
+import no.nav.pensjon.v1.kravhistorikkliste.V1KravHistorikkListe
+import no.nav.pensjon.v1.sak.V1Sak
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Doedsdato
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
@@ -87,7 +93,7 @@ class PrefillP8000P_BUC_05Test {
         doReturn("NO").whenever(kodeverkClient).finnLandkode2("NOR")
         doReturn("SE").whenever(kodeverkClient).finnLandkode2("SWE")
 
-        val sed = prefill.prefill(prefillData, personData)
+        val sed = prefill.prefill(prefillData, personData,null)
 
         assertEquals("Christopher", sed.nav?.bruker?.person?.fornavn)
         assertEquals("Gate 12", sed.nav?.bruker?.adresse?.gate)
@@ -127,7 +133,6 @@ class PrefillP8000P_BUC_05Test {
         assertEquals("Christopher", sed.nav?.annenperson?.person?.fornavn)
         assertEquals("Robin", sed.nav?.annenperson?.person?.etternavn)
         assertEquals("01", sed.nav?.annenperson?.person?.rolle)
-
         assertEquals("01",  sed.pensjon?.anmodning?.referanseTilPerson)
 
     }
@@ -142,8 +147,15 @@ class PrefillP8000P_BUC_05Test {
         val avdod = lagTPSBruker(avdodFnr, "Winnie", "Pooh")
         avdod.doedsdato = Doedsdato().withDoedsdato(convertToXMLocal(LocalDate.now()))
 
+        val sak = V1Sak()
+        sak.sakType = EPSaktype.BARNEP.toString()
+        sak.sakId = 100
+        sak.kravHistorikkListe = V1KravHistorikkListe()
+        sak.kravHistorikkListe.kravHistorikkListe.add(V1KravHistorikk())
+
         doReturn(forsikretPerson).`when`(personV3Service).hentBruker(fnr)
         doReturn(avdod).`when`(personV3Service).hentBruker(avdodFnr)
+        whenever((pensjoninformasjonservice).hentRelevantPensjonSak(any(), any())).thenReturn(sak)
 
         doReturn("NO").whenever(kodeverkClient).finnLandkode2("NOR")
         doReturn("SE").whenever(kodeverkClient).finnLandkode2("SWE")
@@ -162,6 +174,45 @@ class PrefillP8000P_BUC_05Test {
         assertEquals("01", sed.nav?.annenperson?.person?.rolle)
 
         //$pensjon.anmodning.referanseTilPerson"
+        assertEquals("02",  sed.pensjon?.anmodning?.referanseTilPerson)
+    }
+
+
+    @Test
+    fun `Forventerkorrekt utfylt P8000 hvor det finnes en sak i Pesys som har alderpensjon og henvendelsen gjelder gjenlevende`() {
+        val fnr = generateRandomFnr(40)
+        val forsikretPerson = lagTPSBruker(fnr, "Christopher", "Robin")
+                .medAdresse("Gate",  "SWE")
+
+        val avdodFnr = generateRandomFnr(93)
+        val avdod = lagTPSBruker(avdodFnr, "Winnie", "Pooh")
+        avdod.doedsdato = Doedsdato().withDoedsdato(convertToXMLocal(LocalDate.now()))
+
+        val v1Kravhistorikk = V1KravHistorikk()
+        v1Kravhistorikk.kravArsak = KravArsak.GJNL_SKAL_VURD.name
+
+        val sak = V1Sak()
+        sak.sakType = EPSaktype.ALDER.toString()
+        sak.sakId = 100
+        sak.kravHistorikkListe = V1KravHistorikkListe()
+        sak.kravHistorikkListe.kravHistorikkListe.add(v1Kravhistorikk)
+
+        whenever((pensjoninformasjonservice).hentRelevantPensjonSak(any(), any())).thenReturn(sak)
+
+
+        doReturn(forsikretPerson).`when`(personV3Service).hentBruker(fnr)
+        doReturn(avdod).`when`(personV3Service).hentBruker(avdodFnr)
+
+        doReturn("NO").whenever(kodeverkClient).finnLandkode2("NOR")
+        doReturn("SE").whenever(kodeverkClient).finnLandkode2("SWE")
+
+        prefillData = PrefillDataModelMother.initialPrefillDataModel("P8000", fnr, penSaksnummer = pesysSaksnummer, avdod = PersonId(norskIdent = avdodFnr, aktorId = "21323"),  refTilPerson = ReferanseTilPerson.SOKER)
+
+        val sed =  prefillSEDService.prefill(prefillData)
+
+        //Gjenlevende/SOKER
+        assertEquals("Christopher", sed.nav?.bruker?.person?.fornavn)
+        assertEquals("Robin", sed.nav?.bruker?.person?.etternavn)
         assertEquals("02",  sed.pensjon?.anmodning?.referanseTilPerson)
 
     }

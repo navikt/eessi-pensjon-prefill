@@ -33,7 +33,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.web.client.RestTemplate
 
-@SpringBootTest(classes = [UnsecuredWebMvcTestLauncher::class] ,webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(classes = [UnsecuredWebMvcTestLauncher::class], webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles(profiles = ["unsecured-webmvctest"])
 @AutoConfigureMockMvc
 class SedPrefillIntegrationSpringTest {
@@ -62,7 +62,7 @@ class SedPrefillIntegrationSpringTest {
 
         doReturn(NorskIdent("12312312312")).`when`(aktoerService).hentGjeldendeIdent(IdentGruppe.NorskIdent, AktoerId("0105094340092"))
 
-        val apijson = dummyApijson(sakid = "EESSI-PEN-123", aktoerId =  "0105094340092", sed = "P6000")
+        val apijson = dummyApijson(sakid = "EESSI-PEN-123", aktoerId = "0105094340092", sed = "P6000")
 
         mockMvc.perform(post("/sed/prefill")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -99,7 +99,7 @@ class SedPrefillIntegrationSpringTest {
         doReturn(BrukerMock.createWith()).`when`(personV3Service).hentBruker(any())
         doReturn(PrefillTestHelper.readXMLresponse("P2200-UP-INNV.xml")).`when`(restTemplate).exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java))
 
-        val apijson = dummyApijson(sakid = "22874955",aktoerId =  "0105094340092")
+        val apijson = dummyApijson(sakid = "22874955", aktoerId = "0105094340092")
 
         mockMvc.perform(post("/sed/prefill")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -115,7 +115,7 @@ class SedPrefillIntegrationSpringTest {
     fun `prefill sed P5000 with missing avdodfnr and Subject throws error bad request`() {
         doReturn(NorskIdent("12312312312")).`when`(aktoerService).hentGjeldendeIdent(IdentGruppe.NorskIdent, AktoerId("0105094340092"))
 
-        val apijson = dummyApijson(sakid = "EESSI-PEN-123", aktoerId =  "0105094340092", sed = "P5000",buc =  "P_BUC_02")
+        val apijson = dummyApijson(sakid = "EESSI-PEN-123", aktoerId = "0105094340092", sed = "P5000", buc = "P_BUC_02")
 
         mockMvc.perform(post("/sed/prefill")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -133,7 +133,7 @@ class SedPrefillIntegrationSpringTest {
         doReturn(NorskIdent("12312312312")).`when`(aktoerService).hentGjeldendeIdent(IdentGruppe.NorskIdent, AktoerId("0105094340092"))
         doReturn(AktoerId("3323332333233323")).`when`(aktoerService).hentGjeldendeIdent(IdentGruppe.AktoerId, NorskIdent("9876543210"))
 
-        doReturn(BrukerMock.createWith(true,"Lever", "Gjenlev", "12312312312")).`when`(personV3Service).hentBruker("12312312312")
+        doReturn(BrukerMock.createWith(true, "Lever", "Gjenlev", "12312312312")).`when`(personV3Service).hentBruker("12312312312")
         doReturn(BrukerMock.createWith(true, "Avdød", "Død", "9876543210")).`when`(personV3Service).hentBruker("9876543210")
 
         doReturn(PrefillTestHelper.readXMLresponse("P2100-GL-UTL-INNV.xml")).`when`(restTemplate).exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java))
@@ -141,7 +141,7 @@ class SedPrefillIntegrationSpringTest {
         doReturn("QX").doReturn("XQ").`when`(kodeverkClient).finnLandkode2(any())
 
         val subject = dummyApiSubjectjson("9876543210")
-        val apijson = dummyApijson(sakid = "22874955", aktoerId = "0105094340092",sed =  "P5000",buc =  "P_BUC_02", subject = subject)
+        val apijson = dummyApijson(sakid = "22874955", aktoerId = "0105094340092", sed = "P5000", buc = "P_BUC_02", subject = subject)
 
         val result = mockMvc.perform(post("/sed/prefill")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -155,7 +155,7 @@ class SedPrefillIntegrationSpringTest {
 
         val mapper = jacksonObjectMapper()
         val sedRootNode = mapper.readTree(response)
-        val gjenlevendePIN =  finnPin(sedRootNode.at("/pensjon/gjenlevende/person"))
+        val gjenlevendePIN = finnPin(sedRootNode.at("/pensjon/gjenlevende/person"))
         val avdodPIN = finnPin(sedRootNode.at("/nav/bruker"))
 
         Assertions.assertEquals("12312312312", gjenlevendePIN)
@@ -170,7 +170,7 @@ class SedPrefillIntegrationSpringTest {
         doReturn(NorskIdent("12312312312")).`when`(aktoerService).hentGjeldendeIdent(IdentGruppe.NorskIdent, AktoerId("0105094340092"))
         doReturn(AktoerId("3323332333233323")).`when`(aktoerService).hentGjeldendeIdent(IdentGruppe.AktoerId, NorskIdent("9876543210"))
 
-        doReturn(BrukerMock.createWith(true,"Lever", "Gjenlev", "12312312312")).`when`(personV3Service).hentBruker("12312312312")
+        doReturn(BrukerMock.createWith(true, "Lever", "Gjenlev", "12312312312")).`when`(personV3Service).hentBruker("12312312312")
         doReturn(BrukerMock.createWith(true, "Avdød", "Død", "9876543210")).`when`(personV3Service).hentBruker("9876543210")
 
         doReturn(PrefillTestHelper.readXMLVedtakresponse("P6000-BARNEP-GJENLEV.xml")).`when`(restTemplate).exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java))
@@ -178,7 +178,7 @@ class SedPrefillIntegrationSpringTest {
         doReturn("QX").doReturn("XQ").`when`(kodeverkClient).finnLandkode2(any())
 
         val subject = dummyApiSubjectjson("9876543210")
-        val apijson = dummyApijson(sakid = "22874955", vedtakid = "987654321122355466", aktoerId = "0105094340092", sed = "P6000", buc = "P_BUC_02", subject = subject )
+        val apijson = dummyApijson(sakid = "22874955", vedtakid = "987654321122355466", aktoerId = "0105094340092", sed = "P6000", buc = "P_BUC_02", subject = subject)
 
         val result = mockMvc.perform(post("/sed/prefill")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -192,7 +192,7 @@ class SedPrefillIntegrationSpringTest {
 
         val mapper = jacksonObjectMapper()
         val sedRootNode = mapper.readTree(response)
-        val gjenlevendePIN =  finnPin(sedRootNode.at("/pensjon/gjenlevende/person"))
+        val gjenlevendePIN = finnPin(sedRootNode.at("/pensjon/gjenlevende/person"))
         val avdodPIN = finnPin(sedRootNode.at("/nav/bruker"))
 
         Assertions.assertEquals("12312312312", gjenlevendePIN)
@@ -273,155 +273,8 @@ class SedPrefillIntegrationSpringTest {
 
     }
 
-    @Test
-    @Throws(Exception::class)
-    fun `prefill sed P8000 - Gitt gjenlevendepensjon Og henvendelse gjelder søker SÅ skal det produseres en Gyldig P8000 med referanse til person 02 (soker)`() {
-
-
-        doReturn(NorskIdent("12312312312")).`when`(aktoerService).hentGjeldendeIdent(IdentGruppe.NorskIdent, AktoerId("0105094340092"))
-        doReturn(AktoerId("3323332333233323")).`when`(aktoerService).hentGjeldendeIdent(IdentGruppe.AktoerId, NorskIdent("9876543210"))
-
-        doReturn(BrukerMock.createWith(true,"Lever", "Gjenlev", "12312312312")).`when`(personV3Service).hentBruker("12312312312")
-        doReturn(BrukerMock.createWith(true, "Avdød", "Død", "9876543210")).`when`(personV3Service).hentBruker("9876543210")
-
-        doReturn("QX").doReturn("XQ").`when`(kodeverkClient).finnLandkode2(any())
-
-        val subject = dummyApiSubjectjson("9876543210")
-        val apijson = dummyApijson(sakid = "21337890", aktoerId = "0105094340092", sed = "P8000", buc = "P_BUC_05", subject = subject, refperson = "\"SOKER\"")
-
-        val validResponse = """
-            {
-              "sed" : "P8000",
-              "sedGVer" : "4",
-              "sedVer" : "1",
-              "nav" : {
-                "eessisak" : [ {
-                  "saksnummer" : "21337890",
-                  "land" : "NO"
-                } ],
-                "bruker" : {
-                  "person" : {
-                    "pin" : [ {
-                      "identifikator" : "9876543210",
-                      "land" : "NO"
-                    } ],
-                    "etternavn" : "Død",
-                    "fornavn" : "Avdød",
-                    "kjoenn" : "M",
-                    "foedselsdato" : "1988-07-12"
-                  },
-                  "adresse" : {
-                    "gate" : "Oppoverbakken 66",
-                    "by" : "SØRUMSAND",
-                    "land" : "XQ"
-                  }
-                },
-                "annenperson" : {
-                  "person" : {
-                    "pin" : [ {
-                      "institusjonsnavn" : "NOINST002, NO INST002, NO",
-                      "institusjonsid" : "NO:noinst002",
-                      "identifikator" : "12312312312",
-                      "land" : "NO"
-                    } ],
-                    "statsborgerskap" : [ {
-                      "land" : "QX"
-                    } ],
-                    "etternavn" : "Gjenlev",
-                    "fornavn" : "Lever",
-                    "kjoenn" : "M",
-                    "foedselsdato" : "1988-07-12",
-                    "rolle" : "01"
-                  },
-                  "adresse" : {
-                    "gate" : "Oppoverbakken 66",
-                    "by" : "SØRUMSAND",
-                    "postnummer" : "1920",
-                    "land" : "XQ"
-                  }
-                }
-              },
-              "pensjon" : {
-                "anmodning" : {
-                  "referanseTilPerson" : "02"
-                }
-              }
-            }
-        """.trimIndent()
-
-        val result = mockMvc.perform(post("/sed/prefill")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(apijson))
-                .andDo(print())
-                .andExpect(status().isOk)
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andReturn()
-
-        val response = result.response.getContentAsString(charset("UTF-8"))
-
-        JSONAssert.assertEquals(response, validResponse, false)
-
-    }
-
-    @Test
-    @Throws(Exception::class)
-    fun `prefill sed P8000 - Gitt en alderspensjon så skal det genereres en P8000 uten referanse til person`() {
-
-
-        doReturn(NorskIdent("12312312312")).`when`(aktoerService).hentGjeldendeIdent(IdentGruppe.NorskIdent, AktoerId("0105094340092"))
-        doReturn(BrukerMock.createWith(true,"Alder", "Pensjon", "12312312312")).`when`(personV3Service).hentBruker("12312312312")
-
-        doReturn("QX").doReturn("XQ").`when`(kodeverkClient).finnLandkode2(any())
-
-        val apijson = dummyApijson(sakid = "21337890", aktoerId = "0105094340092", sed = "P8000", buc = "P_BUC_05")
-
-        val validResponse = """
-            {
-              "sed" : "P8000",
-              "sedGVer" : "4",
-              "sedVer" : "1",
-              "nav" : {
-                "eessisak" : [ {
-                  "saksnummer" : "21337890",
-                  "land" : "NO"
-                } ],
-                "bruker" : {
-                  "person" : {
-                    "pin" : [ {
-                      "identifikator" : "12312312312",
-                      "land" : "NO"
-                    } ],
-                    "etternavn" : "Pensjon",
-                    "fornavn" : "Alder",
-                    "kjoenn" : "M",
-                    "foedselsdato" : "1988-07-12"
-                  },
-                  "adresse" : {
-                    "gate" : "Oppoverbakken 66",
-                    "by" : "SØRUMSAND",
-                    "land" : "XQ"
-                  }
-                }
-              },
-              "pensjon" : { }
-            }
-        """.trimIndent()
-
-        val result = mockMvc.perform(post("/sed/prefill")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(apijson))
-                .andDo(print())
-                .andExpect(status().isOk)
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andReturn()
-
-        val response = result.response.getContentAsString(charset("UTF-8"))
-
-        JSONAssert.assertEquals(response, validResponse, false)
-    }
 
     //test på validering av pensjoninformasjon krav
-
     @Test
     @Throws(Exception::class)
     fun `prefill sed med kravtype kun utland skal kaste en Exception`() {
@@ -469,13 +322,13 @@ class SedPrefillIntegrationSpringTest {
         doReturn(NorskIdent("12312312312")).`when`(aktoerService).hentGjeldendeIdent(IdentGruppe.NorskIdent, AktoerId("0105094340092"))
         doReturn(AktoerId("3323332333233323")).`when`(aktoerService).hentGjeldendeIdent(IdentGruppe.AktoerId, NorskIdent("9876543210"))
 
-        doReturn(BrukerMock.createWith(true,"Lever", "Gjenlev", "12312312312")).`when`(personV3Service).hentBruker("12312312312")
+        doReturn(BrukerMock.createWith(true, "Lever", "Gjenlev", "12312312312")).`when`(personV3Service).hentBruker("12312312312")
         doReturn(BrukerMock.createWith(true, "Avdød", "Død", "9876543210")).`when`(personV3Service).hentBruker("9876543210")
 
         doReturn(PrefillTestHelper.readXMLresponse("P2000-AP-LP-RVUR-20541862.xml")).`when`(restTemplate).exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java))
 
         val subject = dummyApiSubjectjson("9876543210")
-        val apijson = dummyApijson(sakid = "20541862", aktoerId =  "0105094340092", sed = "P2100", buc = "P_BUC_02", subject = subject)
+        val apijson = dummyApijson(sakid = "20541862", aktoerId = "0105094340092", sed = "P2100", buc = "P_BUC_02", subject = subject)
 
         val result = mockMvc.perform(post("/sed/prefill")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -490,10 +343,10 @@ class SedPrefillIntegrationSpringTest {
     @Throws(Exception::class)
     fun `prefill sed med uten korrekt kravtype skal kaste en Exception`() {
         doReturn(NorskIdent("12312312312")).`when`(aktoerService).hentGjeldendeIdent(IdentGruppe.NorskIdent, AktoerId("0105094340092"))
-        doReturn(BrukerMock.createWith(true,"Lever", "Gjenlev", "12312312312")).`when`(personV3Service).hentBruker("12312312312")
+        doReturn(BrukerMock.createWith(true, "Lever", "Gjenlev", "12312312312")).`when`(personV3Service).hentBruker("12312312312")
         doReturn(PrefillTestHelper.readXMLresponse("P2000-AP-MANGLER_BOSATT_UTLAND.xml")).`when`(restTemplate).exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java))
 
-        val apijson = dummyApijson(sakid = "21920707", aktoerId =  "0105094340092", sed = "P2000")
+        val apijson = dummyApijson(sakid = "21920707", aktoerId = "0105094340092", sed = "P2000")
 
         val result = mockMvc.perform(post("/sed/prefill")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -504,7 +357,7 @@ class SedPrefillIntegrationSpringTest {
     }
 
 
-    private fun dummyApijson(sakid: String, vedtakid: String? = "", aktoerId: String, sed: String? = "P2000", buc: String? = "P_BUC_06", subject: String? = null, refperson: String? = null) : String {
+    private fun dummyApijson(sakid: String, vedtakid: String? = "", aktoerId: String, sed: String? = "P2000", buc: String? = "P_BUC_06", subject: String? = null, refperson: String? = null): String {
         return """
             {
               "sakId" : "$sakid",
@@ -526,6 +379,7 @@ class SedPrefillIntegrationSpringTest {
             }
         """.trimIndent()
     }
+
     private fun dummyApiSubjectjson(avdodfnr: String): String {
         return """
             { 

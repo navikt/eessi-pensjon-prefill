@@ -29,7 +29,7 @@ class PrefillP8000GLmedUtlandInnvTest {
 
     private val personFnr = generateRandomFnr(65)
     private val avdodPersonFnr = generateRandomFnr(75)
-    private val pesysSaksnummer = "22875355"
+    private val pesysSaksnummer = "21975717"
 
     lateinit var prefillData: PrefillDataModel
 
@@ -71,6 +71,10 @@ class PrefillP8000GLmedUtlandInnvTest {
     @Test
     fun `forventet korrekt utfylt P8000 gjenlevende med mockdata fra testfiler`() {
         val p8000 = sed
+
+        println("---------------------")
+        println(sed)
+        println("-----------------------")
 
         assertEquals("BAMSE LUR", p8000.nav?.bruker?.person?.fornavn)
         assertEquals("MOMBALO", p8000.nav?.bruker?.person?.etternavn)

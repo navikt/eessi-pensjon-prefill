@@ -8,8 +8,11 @@ import no.nav.eessi.pensjon.fagmodul.prefill.person.MockTpsPersonServiceFactory
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillSed
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.setupPersondataFraTPS
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.EPSaktype
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.FodselsnummerMother.generateRandomFnr
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.NavFodselsnummer
+import no.nav.pensjon.v1.kravhistorikkliste.V1KravHistorikkListe
+import no.nav.pensjon.v1.sak.V1Sak
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertNull
@@ -44,7 +47,13 @@ class PrefillP8000APUtlandInnvTest {
 
     @Test
     fun `forventet korrekt utfylt P8000 alderperson med mockdata fra testfiler`() {
-        val p8000 = prefill.prefill(prefillData, personData)
+
+        val sak = V1Sak()
+        sak.sakType = EPSaktype.GJENLEV.toString()
+        sak.sakId = 100
+        sak.kravHistorikkListe = V1KravHistorikkListe()
+
+        val p8000 = prefill.prefill(prefillData, personData, sak)
 
         assertEquals("ODIN ETTØYE", p8000.nav?.bruker?.person?.fornavn)
         assertEquals("BALDER", p8000.nav?.bruker?.person?.etternavn)

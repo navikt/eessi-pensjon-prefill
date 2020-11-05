@@ -3,7 +3,10 @@ package no.nav.eessi.pensjon.fagmodul.prefill.sed
 import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PersonData
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
+import no.nav.eessi.pensjon.fagmodul.prefill.model.ReferanseTilPerson
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillSed
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.EPSaktype
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.KravHistorikkHelper.hentKravhistorikkForGjenlevende
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Adresse
 import no.nav.eessi.pensjon.fagmodul.sedmodel.AnmodningOmTilleggsInfo
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Bruker
@@ -13,25 +16,37 @@ import no.nav.eessi.pensjon.fagmodul.sedmodel.Pensjon
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Person
 import no.nav.eessi.pensjon.fagmodul.sedmodel.PinItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
+import no.nav.pensjon.v1.sak.V1Sak
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-class PrefillP8000(private val prefillSed: PrefillSed)  {
+class PrefillP8000(private val prefillSed: PrefillSed) {
 
     private enum class PersonenRolle(val value: String) {
         SOEKER_ETTERRLATTEPENSJON("01")
     }
+
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillP8000::class.java) }
 
-    fun prefill(prefillData: PrefillDataModel, personData: PersonData): SED {
+    fun prefill(prefillData: PrefillDataModel, personData: PersonData, sak: V1Sak?): SED {
         val navsed = prefillSed.prefill(prefillData, personData)
-        logger.debug("Tilpasser P8000 forenklet preutfylling")
-        val person = navsed.nav?.bruker?.person
-        val adresse = navsed.nav?.bruker?.adresse
         val eessielm = navsed.nav?.eessisak?.firstOrNull()
         val perspin = navsed.nav?.bruker?.person?.pin?.firstOrNull()
-        val gjenlevende = navsed.pensjon?.gjenlevende
+        val gjenlevendeBruker: Bruker? = navsed.pensjon?.gjenlevende
+        val avDodBruker = navsed.nav?.bruker
+        val kravhistorikkGjenlev = sak?.kravHistorikkListe?.let { hentKravhistorikkForGjenlevende(it) }
 
+        return if (prefillData.refTilPerson == ReferanseTilPerson.SOKER && sak?.sakType in listOf(EPSaktype.ALDER.name, EPSaktype.UFOREP.name) && kravhistorikkGjenlev != null) {
+            logger.info("Prefill P8000 forenklet preutfylling for bruker, Ferdig.")
+            sedP8000(eessielm, gjenlevendeBruker?.person, gjenlevendeBruker?.adresse, perspin, prefillData, null)
+        } else {
+            logger.info("Prefill P8000 forenklet preutfylling med gjenlevende, Ferdig.")
+            sedP8000(eessielm, avDodBruker?.person, avDodBruker?.adresse, perspin, prefillData, utfyllAnnenperson(gjenlevendeBruker))
+        }
+
+    }
+
+    private fun sedP8000(eessielm: EessisakItem?, forsikretPerson: Person?, adresse: Adresse?, perspin: PinItem?, prefillData: PrefillDataModel, annenPerson: Bruker?): SED {
         val p8000 = SED(
                 sed = SEDType.P8000.name,
                 nav = Nav(
@@ -41,10 +56,10 @@ class PrefillP8000(private val prefillSed: PrefillSed)  {
                         )),
                         bruker = Bruker(
                                 person = Person(
-                                        etternavn = person?.etternavn,
-                                        fornavn = person?.fornavn,
-                                        foedselsdato = person?.foedselsdato,
-                                        kjoenn = person?.kjoenn,
+                                        etternavn = forsikretPerson?.etternavn,
+                                        fornavn = forsikretPerson?.fornavn,
+                                        foedselsdato = forsikretPerson?.foedselsdato,
+                                        kjoenn = forsikretPerson?.kjoenn,
                                         pin = listOf(
                                                 PinItem(
                                                         identifikator = perspin?.identifikator,
@@ -58,19 +73,17 @@ class PrefillP8000(private val prefillSed: PrefillSed)  {
                                         land = adresse?.land
                                 )
                         ),
-                        annenperson = utfyllAnnenperson(gjenlevende)
+                        annenperson = utfyllAnnenperson(annenPerson)
                 ),
                 pensjon = utfyllReferanseTilPerson(prefillData)
         )
-        logger.info("Prefill P8000 forenklet preutfylling, Ferdig.")
-
-        prefillData.sed = p8000
         return p8000
+
     }
 
     private fun utfyllReferanseTilPerson(prefillData: PrefillDataModel): Pensjon? {
         val refTilperson = prefillData.refTilPerson ?: return null
-        return Pensjon(anmodning = AnmodningOmTilleggsInfo(referanseTilPerson = refTilperson.verdi ))
+        return Pensjon(anmodning = AnmodningOmTilleggsInfo(referanseTilPerson = refTilperson.verdi))
     }
 
     private fun utfyllAnnenperson(gjenlevende: Bruker?): Bruker? {
