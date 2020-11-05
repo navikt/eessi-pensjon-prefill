@@ -59,7 +59,7 @@ class PrefillSEDService(private val prefillNav: PrefillNav,
             //andre
             SEDType.P4000 -> PrefillP4000(getPrefillSed(prefillData)).prefill(prefillData, hentPersoner(prefillData))
             SEDType.P7000 -> PrefillP7000(getPrefillSed(prefillData)).prefill(prefillData, hentPersoner(prefillData))
-            SEDType.P8000 -> PrefillP8000(getPrefillSed(prefillData)).prefill(prefillData, hentPersoner(prefillData), hentRelevantPensjonSak(prefillData) { pensakType -> (pensakType == ALDER.name || pensakType == UFOREP.name) })
+            SEDType.P8000 -> PrefillP8000(getPrefillSed(prefillData)).prefill(prefillData, hentPersoner(prefillData), hentRelevantPensjonSak(prefillData) { pensakType -> listOf("ALDER", "BARNEP", "GJENLEV", "UFOREP", "GENRL", "OMSORG").contains(pensakType) })
 
             SEDType.P10000 -> PrefillP10000(getPrefillSed(prefillData)).prefill(prefillData, hentPersoner(prefillData))
 
