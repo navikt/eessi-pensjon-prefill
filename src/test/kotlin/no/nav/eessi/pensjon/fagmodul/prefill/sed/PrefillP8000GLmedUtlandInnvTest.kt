@@ -72,10 +72,6 @@ class PrefillP8000GLmedUtlandInnvTest {
     fun `forventet korrekt utfylt P8000 gjenlevende med mockdata fra testfiler`() {
         val p8000 = sed
 
-        println("---------------------")
-        println(sed)
-        println("-----------------------")
-
         assertEquals("BAMSE LUR", p8000.nav?.bruker?.person?.fornavn)
         assertEquals("MOMBALO", p8000.nav?.bruker?.person?.etternavn)
         val navfnr1 = NavFodselsnummer(p8000.nav?.bruker?.person?.pin?.get(0)?.identifikator!!)

@@ -89,6 +89,8 @@ class SedPrefillP8000IntegrationSpringTest {
               "sedVer" : "1",
               "nav" : {
                 "eessisak" : [ {
+                  "institusjonsid" : "NO:noinst002",
+                  "institusjonsnavn" : "NOINST002, NO INST002, NO",
                   "saksnummer" : "21337890",
                   "land" : "NO"
                 } ],
@@ -189,7 +191,9 @@ class SedPrefillP8000IntegrationSpringTest {
               "sedGVer" : "4",
               "sedVer" : "1",
               "nav" : {
-                "eessisak" : [ {
+              "eessisak" : [ {
+                  "institusjonsid" : "NO:noinst002",
+                  "institusjonsnavn" : "NOINST002, NO INST002, NO",
                   "saksnummer" : "21337890",
                   "land" : "NO"
                 } ],
@@ -252,6 +256,8 @@ class SedPrefillP8000IntegrationSpringTest {
               "sedVer" : "1",
               "nav" : {
                 "eessisak" : [ {
+                  "institusjonsid" : "NO:noinst002",
+                  "institusjonsnavn" : "NOINST002, NO INST002, NO",
                   "saksnummer" : "21337890",
                   "land" : "NO"
                 } ],
