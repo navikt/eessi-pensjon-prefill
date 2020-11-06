@@ -36,7 +36,7 @@ spec:
     - name: EESSI_PENSJON_INSTITUSJON
       value: NO:NAVAT07
     - name: EESSI_PENSJON_INSTITUSJON_NAVN
-      value: NAV ACCEPTANCE TEST 07
+      value: NAV ACCEPTANCE TEST 08
     - name: ENV
       value: q1
   image: {{ image }}

@@ -46,7 +46,7 @@ spec:
     - name: EESSI_PENSJON_INSTITUSJON
       value: NO:889640782
     - name: EESSI_PENSJON_INSTITUSJON_NAVN
-      value: "889640782"
+      value: "The Norwegian Labour and Welfare Administration"
     - name: ENV
       value: p
   image: {{ image }}
