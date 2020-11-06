@@ -59,7 +59,15 @@ class PrefillSEDService(private val prefillNav: PrefillNav,
             //andre
             SEDType.P4000 -> PrefillP4000(getPrefillSed(prefillData)).prefill(prefillData, hentPersoner(prefillData))
             SEDType.P7000 -> PrefillP7000(getPrefillSed(prefillData)).prefill(prefillData, hentPersoner(prefillData))
-            SEDType.P8000 -> PrefillP8000(getPrefillSed(prefillData)).prefill(prefillData, hentPersoner(prefillData), hentRelevantPensjonSak(prefillData) { pensakType -> listOf("ALDER", "BARNEP", "GJENLEV", "UFOREP", "GENRL", "OMSORG").contains(pensakType) })
+
+            SEDType.P8000 -> {
+                if (prefillData.buc == "P_BUC_05") {
+                    PrefillP8000(getPrefillSed(prefillData)).prefill(prefillData, hentPersoner(prefillData), hentRelevantPensjonSak(prefillData) { pensakType -> listOf("ALDER", "BARNEP", "GJENLEV", "UFOREP", "GENRL", "OMSORG").contains(pensakType) })
+                } else {
+                    PrefillP8000(getPrefillSed(prefillData)).prefill(prefillData, hentPersoner(prefillData), null)
+                }
+            }
+
 
             SEDType.P10000 -> PrefillP10000(getPrefillSed(prefillData)).prefill(prefillData, hentPersoner(prefillData))
 

@@ -104,6 +104,9 @@ class PensjonControllerTest {
         assertEquals(expected1.toJson(), result.first().toJson())
         val expected2 = PensjonSak("2020", "UFOREP", PensjonSakStatus.AVSLUTTET)
         assertEquals(expected2.toJson(), result.last().toJson())
+
+        println(result.toJson())
+
     }
 
     @Test
