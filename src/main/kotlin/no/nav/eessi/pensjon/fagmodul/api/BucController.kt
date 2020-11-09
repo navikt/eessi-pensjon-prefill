@@ -61,7 +61,7 @@ class BucController(@Value("\${NAIS_NAMESPACE}") val nameSpace : String,
 
     @ApiOperation("henter liste av alle tilgjengelige BuC-typer")
     @GetMapping("/bucs/{sakId}", produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun getBucs(@PathVariable(value = "sakId", required = false) sakId: String? = "") = validBucAndSed.initSedOnBuc().mapKeys { it }
+    fun getBucs(@PathVariable(value = "sakId", required = false) sakId: String? = "") = validBucAndSed.initSedOnBuc().keys.map { it }.toList()
 
     @ApiOperation("Henter opp hele BUC på valgt caseid")
     @GetMapping("/{rinanr}")
@@ -187,7 +187,7 @@ class BucController(@Value("\${NAIS_NAMESPACE}") val nameSpace : String,
             val avdod = hentGyldigAvdod(peninfo)
 
             if (avdod != null && person.aktorId == gjenlevendeAktoerid) {
-                val gjenlevBucs = avdod.flatMap { getBucogSedViewGjenlevende(gjenlevendeAktoerid, it) }
+                val gjenlevBucs = avdod.map { avdodFnr -> getBucogSedViewGjenlevende(gjenlevendeAktoerid, avdodFnr) }.flatten()
                 return@measure gjenlevBucs.plus(getBucogSedView(gjenlevendeAktoerid)).distinctBy { it.caseId }
             }
             return@measure getBucogSedView(gjenlevendeAktoerid)
