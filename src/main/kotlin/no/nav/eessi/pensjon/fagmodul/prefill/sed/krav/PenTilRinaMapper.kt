@@ -6,8 +6,7 @@ package no.nav.eessi.pensjon.fagmodul.prefill.sed.krav
      *  [10] Alderspensjon
      *  [11] Etterlattepensjon
      */
-     fun mapSaktype(saktype: String): String {
-        return try {
+     fun mapSaktype(saktype: String?): String {
             return when (saktype) {
                 "UFOREP" -> "08"
                 "ALDER" -> "10"
@@ -15,9 +14,6 @@ package no.nav.eessi.pensjon.fagmodul.prefill.sed.krav
                 "BARNEP" -> "11"
                 else -> "07"
             }
-        } catch (ex: Exception) {
-            "07"
-        }
     }
 
     /**

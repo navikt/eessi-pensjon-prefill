@@ -14,18 +14,38 @@ import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.FodselsnummerMother
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.NavFodselsnummer
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillAdresse
-import no.nav.eessi.pensjon.fagmodul.sedmodel.*
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Adresse
+import no.nav.eessi.pensjon.fagmodul.sedmodel.ArbeidsforholdItem
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Bank
+import no.nav.eessi.pensjon.fagmodul.sedmodel.BarnItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Bruker
+import no.nav.eessi.pensjon.fagmodul.sedmodel.EessisakItem
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Ektefelle
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Foreldre
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Innehaver
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Konto
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Nav
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Person
+import no.nav.eessi.pensjon.fagmodul.sedmodel.PinItem
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Sepa
 import no.nav.eessi.pensjon.personoppslag.personv3.PersonV3Service
 import no.nav.eessi.pensjon.services.geo.PostnummerService
 import no.nav.eessi.pensjon.services.kodeverk.KodeverkClient
 import no.nav.eessi.pensjon.utils.convertToXMLocal
-import no.nav.eessi.pensjon.utils.createXMLCalendarFromString
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.*
-import org.junit.jupiter.api.Assertions.*
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Familierelasjon
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Familierelasjoner
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Foedselsdato
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Landkoder
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Personnavn
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Personstatus
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Personstatuser
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Statsborgerskap
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions.assertNull
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -354,30 +374,6 @@ class PrefillNavTest {
                 by = "",
                 postnummer = "",
                 land = "")
-    }
-
-    private fun mockBrukerSivilstandTps(gyldigPeriode: String, sivilstandType: String): no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker {
-        val brukerTps = no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker()
-        brukerTps.endretAv = "Test"
-        brukerTps.foedested = "OSLO"
-
-        val personnavnTps = Personnavn()
-        personnavnTps.mellomnavn = "Dummy Absurd"
-        personnavnTps.fornavn = "Dummy"
-        personnavnTps.etternavn = "Absurd"
-        brukerTps.personnavn = personnavnTps
-
-        val sivilstandTps = Sivilstand()
-        sivilstandTps.endretAv = "Test"
-        sivilstandTps.fomGyldighetsperiode = createXMLCalendarFromString(gyldigPeriode)
-
-        val sivilstanderTps = Sivilstander()
-        sivilstanderTps.value = sivilstandType
-
-        sivilstandTps.sivilstand = sivilstanderTps
-        brukerTps.sivilstand = sivilstandTps
-
-        return brukerTps
     }
 
     @Test

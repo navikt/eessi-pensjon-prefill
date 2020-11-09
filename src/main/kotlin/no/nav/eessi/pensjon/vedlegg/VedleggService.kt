@@ -1,6 +1,10 @@
 package no.nav.eessi.pensjon.vedlegg
 
-import no.nav.eessi.pensjon.vedlegg.client.*
+import no.nav.eessi.pensjon.vedlegg.client.Dokument
+import no.nav.eessi.pensjon.vedlegg.client.EuxVedleggClient
+import no.nav.eessi.pensjon.vedlegg.client.HentMetadataResponse
+import no.nav.eessi.pensjon.vedlegg.client.HentdokumentInnholdResponse
+import no.nav.eessi.pensjon.vedlegg.client.SafClient
 import org.springframework.stereotype.Service
 
 @Service
@@ -19,12 +23,7 @@ class VedleggService(private val safClient: SafClient,
         return alleMetadataForAktoerId.data.dokumentoversiktBruker.journalposter
                 .filter { it.journalpostId == journalpostId }
                 .flatMap { it.dokumenter }
-                .filter{ it.dokumentInfoId == dokumentInfoId }
-                .let { dokumentListe ->
-                    if(dokumentListe.isEmpty()) {
-                        return null
-                    } else dokumentListe.first() // Det finnes bare en unik dokumentInfoId i hver journalpost
-                }
+                .firstOrNull { it.dokumentInfoId == dokumentInfoId }
     }
 
     fun hentDokumentInnhold(journalpostId: String,

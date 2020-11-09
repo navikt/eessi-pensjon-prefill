@@ -3,7 +3,13 @@ package no.nav.eessi.pensjon.fagmodul.prefill.sed
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PersonData
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
-import no.nav.eessi.pensjon.fagmodul.sedmodel.*
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Bruker
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Kontekst
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Leggtilinstitusjon
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Nav
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Navsak
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Person
+import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -24,7 +30,7 @@ class PrefillX005(private val prefillNav: PrefillNav)  {
         logger.debug("Tilpasser X005 forenklet preutfylling")
         val person = navsed.bruker?.person
 
-        val x005 = SED(
+        return SED(
                 sed = "X005",
                 nav = Nav(
                         sak = Navsak(
@@ -44,11 +50,9 @@ class PrefillX005(private val prefillNav: PrefillNav)  {
                                 )
                         )
                 )
-        )
-        logger.debug("Tilpasser X005 forenklet preutfylling, Ferdig.")
-
-        prefillData.sed = x005
-        return prefillData.sed
+        ).also {
+            logger.debug("Tilpasser X005 forenklet preutfylling, Ferdig.")
+        }
     }
 
 }

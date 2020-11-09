@@ -74,11 +74,6 @@ class NavFodselsnummer(private val fodselsnummer: String) {
         return (resultAge >= validAge)
     }
 
-    fun getYearWhen16(): LocalDate {
-        val copyBdate = LocalDate.from(getBirthDate())
-        return copyBdate.plusYears(16)
-    }
-
     fun isUnder18Year(): Boolean {
         if (!validate()) return false
         val validAge = 18
@@ -87,7 +82,6 @@ class NavFodselsnummer(private val fodselsnummer: String) {
         val resultAge = ChronoUnit.YEARS.between(copyBdate, nowDate).toInt()
         return resultAge < validAge
     }
-
 
     fun getAge(): Int {
         return ChronoUnit.YEARS.between(getBirthDate(), LocalDate.now()).toInt()

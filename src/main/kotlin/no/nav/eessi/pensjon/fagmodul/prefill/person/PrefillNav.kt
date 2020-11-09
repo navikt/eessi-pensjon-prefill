@@ -4,16 +4,33 @@ import no.nav.eessi.pensjon.fagmodul.prefill.model.BrukerInformasjon
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PersonData
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PersonId
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillAdresse
-import no.nav.eessi.pensjon.fagmodul.sedmodel.*
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Adresse
+import no.nav.eessi.pensjon.fagmodul.sedmodel.ArbeidsforholdItem
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Bank
+import no.nav.eessi.pensjon.fagmodul.sedmodel.BarnItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Bruker
+import no.nav.eessi.pensjon.fagmodul.sedmodel.EessisakItem
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Ektefelle
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Foedested
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Foreldre
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Innehaver
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Konto
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Nav
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Person
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Verge
+import no.nav.eessi.pensjon.fagmodul.sedmodel.PinItem
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Sepa
+import no.nav.eessi.pensjon.fagmodul.sedmodel.StatsborgerskapItem
 import no.nav.eessi.pensjon.utils.simpleFormat
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.*
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Kjoenn
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.NorskIdent
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.PersonIdent
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Personnavn
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker as InformasjonBruker
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Person as InformasjonPerson
 
 private val UGYLDIGE_LAND_RINA = listOf("XXK")
 
@@ -33,10 +50,8 @@ class PrefillNav(private val prefillAdresse: PrefillAdresse,
                     by = "Unkown",
                     region = ""
             )
-            if (fsted.land == "Unknown") {
-                return null
-            }
-            return fsted
+
+            return fsted.takeUnless { it.land == "Unknown" }
         }
 
         enum class RelasjonEnum(private val relasjon: String) {
@@ -49,16 +64,15 @@ class PrefillNav(private val prefillAdresse: PrefillAdresse,
             }
         }
 
-        fun isPersonAvdod(personTPS: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person) : Boolean {
+        fun isPersonAvdod(personTPS: InformasjonPerson) : Boolean {
             val personstatus = hentPersonStatus(personTPS)
-            if (personstatus == "DØD") {
-                logger.debug("Person er avdod (ingen adresse å hente).")
-                return true
-            }
-            return false
+
+            return (personstatus == "DØD")
+                    .also { logger.debug("Person er avdod (ingen adresse å hente).") }
         }
+
         //hjelpe funkson for personstatus.
-        private fun hentPersonStatus(personTPS: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): String? {
+        private fun hentPersonStatus(personTPS: InformasjonPerson): String? {
             return personTPS.personstatus?.personstatus?.value
         }
 
@@ -71,7 +85,7 @@ class PrefillNav(private val prefillAdresse: PrefillAdresse,
         }
 
         //personnr fnr
-        private fun hentNorIdent(person: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): String {
+        private fun hentNorIdent(person: InformasjonPerson): String {
             logger.debug("2.1.7.1.2         Personal Identification Number (PIN) personnr")
             val persident = person.aktoer as PersonIdent
             val pinid: NorskIdent = persident.ident
@@ -79,7 +93,7 @@ class PrefillNav(private val prefillAdresse: PrefillAdresse,
         }
 
         //fdato i rinaformat
-        private fun datoFormat(person: no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker): String? {
+        private fun datoFormat(person: InformasjonBruker): String? {
             logger.debug("2.1.3         Date of birth")
             val fdato = person.foedselsdato
             logger.debug("              Date of birth: $fdato")
@@ -87,7 +101,7 @@ class PrefillNav(private val prefillAdresse: PrefillAdresse,
         }
 
         private fun createPersonPinNorIdent(
-                brukerTps: no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker,
+                brukerTps: InformasjonBruker,
                 institusjonId: String,
                 institusjonNavn: String): List<PinItem> {
             logger.debug("2.1.7         Fodselsnummer/Personnummer")
@@ -108,11 +122,6 @@ class PrefillNav(private val prefillAdresse: PrefillAdresse,
             )
         }
 
-        //7.0  TODO: 7. Informasjon om representant/verge hva kan vi hente av informasjon? fra hvor
-        private fun createVerge(): Verge? {
-            logger.debug("7.0           (IKKE NOE HER ENNÅ!!) Informasjon om representant/verge")
-            return null
-        }
 
         //8.0 Bank detalsjer om bank betalinger.
         private fun createBankData(personInfo: BrukerInformasjon): Bank {
@@ -140,17 +149,10 @@ class PrefillNav(private val prefillAdresse: PrefillAdresse,
 
         //utfylling av liste av barn under 18år
         private fun createBarnliste(barn: List<Bruker?>): List<BarnItem>? {
-            val barnlist = barn
+            return barn
                     .filterNotNull()
-                    .map {
-                        BarnItem(
-                                person = it.person,
-                                far = it.far,
-                                mor = it.mor,
-                                relasjontilbruker = "BARN"
-                        )
-                    }
-            return if (barnlist.isEmpty()) null else barnlist
+                    .map { BarnItem(mor = it.mor, person = it.person, far = it.far, relasjontilbruker = "BARN") }
+                    .takeIf { it.isNotEmpty() }
         }
 
         private fun createEktefelleType(typevalue: String): String {
@@ -232,14 +234,11 @@ class PrefillNav(private val prefillAdresse: PrefillAdresse,
                 //6.0 skal denne kjøres hver gang? eller kun under P2000? P2100
                 //sjekke om SED er P2x00 for utfylling av BARN
                 //sjekke punkt for barn. pkt. 6.0 for P2000 og P2200 pkt. 8.0 for P2100
-                barn = createBarnliste(barnBrukereFraTPS.map { createBruker(it, null, null) }),
-
-                //7.0 verge
-                verge = createVerge()
+                barn = createBarnliste(barnBrukereFraTPS.map { createBruker(it, null, null) })
         )
     }
 
-    fun createBruker(brukerTPS: no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker,
+    fun createBruker(brukerTPS: InformasjonBruker,
                      bank: Bank?,
                      ansettelsesforhold: List<ArbeidsforholdItem>?): Bruker? {
             return Bruker(
@@ -252,7 +251,7 @@ class PrefillNav(private val prefillAdresse: PrefillAdresse,
     }
 
     //persondata - nav-sed format
-    private fun createPersonData(brukerTps: no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker): Person {
+    private fun createPersonData(brukerTps: InformasjonBruker): Person {
         logger.debug("2.1           Persondata (forsikret person / gjenlevende person / barn)")
 
         val landKode = brukerTps.statsborgerskap.land.value
@@ -284,13 +283,13 @@ class PrefillNav(private val prefillAdresse: PrefillAdresse,
 
 
     //mor / far
-    private fun createRelasjon(relasjon: RelasjonEnum, person: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): Foreldre? {
+    private fun createRelasjon(relasjon: RelasjonEnum, person: InformasjonPerson): Foreldre? {
         person.harFraRolleI.forEach {
             val tpsvalue = it.tilRolle.value
 
             if (relasjon.erSamme(tpsvalue)) {
                 logger.debug("              Relasjon til : $tpsvalue")
-                val persontps = it.tilPerson as no.nav.tjeneste.virksomhet.person.v3.informasjon.Person
+                val persontps = it.tilPerson as InformasjonPerson
 
                 val navntps = persontps.personnavn as Personnavn
                 val relasjonperson = Person(

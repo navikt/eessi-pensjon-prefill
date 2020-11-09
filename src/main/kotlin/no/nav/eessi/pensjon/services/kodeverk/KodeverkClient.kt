@@ -40,7 +40,7 @@ class KodeverkClient(private val kodeRestTemplate: RestTemplate,
 
     fun hentAlleLandkoder() = hentLandKoder().toJson()
 
-    fun hentLandkoderAlpha2() = hentLandKoder().map { it.landkode2 }.toList()
+    fun hentLandkoderAlpha2() = hentLandKoder().map { it.landkode2 }
 
     @Cacheable
     fun hentLandKoder(): List<Landkode> {
@@ -58,27 +58,12 @@ class KodeverkClient(private val kodeRestTemplate: RestTemplate,
     }
 
     @Cacheable("string")
-    fun finnLandkode2(alpha3: String): String? {
-        val list = hentLandKoder()
-        list.forEach {
-            if (it.landkode3 == alpha3) {
-                return it.landkode2
-            }
-        }
-        return null
-    }
+    fun finnLandkode2(alpha3: String): String? =
+            hentLandKoder().firstOrNull { it.landkode3 == alpha3 }?.landkode2
 
     @Cacheable("string")
-    fun finnLandkode3(alpha2: String): String? {
-        val list = hentLandKoder()
-        list.forEach {
-            if (it.landkode2 == alpha2) {
-                return it.landkode3
-            }
-        }
-        return null
-
-    }
+    fun finnLandkode3(alpha2: String): String? =
+            hentLandKoder().firstOrNull { it.landkode2 == alpha2 }?.landkode3
 
     private fun doRequest(builder: UriComponents) : String {
         return try {

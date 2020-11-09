@@ -48,20 +48,15 @@ object VedtakPensjonDataHelper {
 
     fun summerTrygdeTid(trygdeListe: V1TrygdetidListe): Int {
         Preconditions.checkArgument(trygdeListe.trygdetidListe != null, "trygdetidListe er Null")
-        val daylist = mutableListOf<Int>()
-        trygdeListe.trygdetidListe.forEach {
+        val daylist = trygdeListe.trygdetidListe.map {
             val fom = it.fom.toGregorianCalendar().time.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
             val tom = it.tom.toGregorianCalendar().time.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
             val nrdays = ChronoUnit.DAYS.between(fom, tom)
             logger.debug("              SummerTrygdeTid: $nrdays  fom: $fom  tom: $tom ")
-            daylist.add(nrdays.toInt())
+            nrdays.toInt()
         }
-        var days = 0
-        daylist.forEach {
-            days += it
-        }
-        logger.debug("              Total SummerTrygdeTid: $days ")
-        return days
+        return daylist.sumBy { it }
+                .also { days -> logger.debug("              Total SummerTrygdeTid: $days ") }
     }
 
     fun hentYtelseskomponentBelop(keys: String, ytelse: V1YtelsePerMaaned): Int {
@@ -104,23 +99,9 @@ object VedtakPensjonDataHelper {
         return hentV1Vilkarsvurdering(pendata)?.resultatHovedytelse ?: return "" // UNDER_62 -- LAVT_TIDLIG_UTTAK osv..
     }
 
-    fun isForeldelos(pendata: Pensjonsinformasjon): Boolean {
-        val avdodpinfar: String? = pendata.avdod.avdodFar ?: "INGEN"
-        val avdodpinmor: String? = pendata.avdod.avdodMor ?: "INGEN"
-        if (avdodpinfar != "INGEN" && avdodpinmor != "INGEN") {
-            return true
-        }
-        return false
-    }
-
     fun hentVinnendeBergeningsMetode(pendata: Pensjonsinformasjon): String {
         logger.debug(" +            hentVinnendeBergeningsMetode")
         return hentSisteYtelsePerMaaned(pendata).vinnendeBeregningsmetode
-    }
-
-    fun hentVurdertBeregningsmetodeNordisk(pendata: Pensjonsinformasjon): Boolean {
-        logger.debug(" +            hentVurdertBeregningsmetodeNordisk")
-        return hentSisteYtelsePerMaaned(pendata).isVurdertBeregningsmetodeNordisk
     }
 
     fun hentYtelseBelop(pendata: Pensjonsinformasjon): String {
@@ -136,8 +117,6 @@ object VedtakPensjonDataHelper {
     fun hentSisteYtelsePerMaaned(pendata: Pensjonsinformasjon): V1YtelsePerMaaned {
         val ytelseprmnd = pendata.ytelsePerMaanedListe
         val liste = ytelseprmnd.ytelsePerMaanedListe as List<V1YtelsePerMaaned>
-        return liste.asSequence().sortedBy { it.fom.toGregorianCalendar() }.toList().last()
+        return liste.maxBy { it.fom.toGregorianCalendar() }!!
     }
-
-
 }

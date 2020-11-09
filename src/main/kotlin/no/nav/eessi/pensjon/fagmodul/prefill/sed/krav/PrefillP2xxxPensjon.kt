@@ -257,7 +257,7 @@ object PrefillP2xxxPensjon {
 
     private fun hentYtelsePerMaanedDenSisteFraKrav(kravHistorikk: V1KravHistorikk, pensak: V1Sak): V1YtelsePerMaaned {
         val ytelser = pensak.ytelsePerMaanedListe.ytelsePerMaanedListe
-        val ytelserSortertPaaFom = ytelser.asSequence().sortedBy { it.fom.toGregorianCalendar() }.toList()
+        val ytelserSortertPaaFom = ytelser.sortedBy { it.fom.toGregorianCalendar() }
 
         logger.debug("-----------------------------------------------------")
         ytelserSortertPaaFom.forEach {
@@ -306,10 +306,8 @@ object PrefillP2xxxPensjon {
      */
     private fun createYtelseItemBelop(ytelsePrMnd: V1YtelsePerMaaned, ytelsekomp: List<V1Ytelseskomponent>): List<BeloepItem> {
         logger.debug("4.1.9         Beløp")
-        val list = mutableListOf<BeloepItem>()
-        ytelsekomp.forEach {
-            list.add(BeloepItem(
-
+        return ytelsekomp.map {
+            BeloepItem(
                     //4.1.9.1
                     beloep = it.belopTilUtbetaling.toString(),
 
@@ -324,10 +322,8 @@ object PrefillP2xxxPensjon {
 
                     //4.1.9.5
                     annenbetalingshyppighetytelse = null
-
-            ))
+            )
         }
-        return list
     }
 
     /**

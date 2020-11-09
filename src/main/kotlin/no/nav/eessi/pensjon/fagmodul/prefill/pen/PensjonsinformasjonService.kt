@@ -20,18 +20,13 @@ class PensjonsinformasjonService(private val pensjonsinformasjonClient: Pensjons
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PensjonsinformasjonService::class.java) }
 
-
     companion object {
-        private val logg = LoggerFactory.getLogger(PensjonsinformasjonService::class.java)
-
         //hjelpe metode for å hente ut valgt V1SAK på vetak/SAK fnr og sakid benyttes
         fun finnSak(sakId: String, pendata: Pensjonsinformasjon): V1Sak {
             if (sakId.isBlank()) throw ManglendeSakIdException("Mangler sakId")
             return PensjonsinformasjonClient.finnSak(sakId, pendata)
         }
     }
-
-
 
     //hjelemetode for Vedtak P6000 P5000
     fun hentMedVedtak(vedtakId: String): Pensjonsinformasjon {

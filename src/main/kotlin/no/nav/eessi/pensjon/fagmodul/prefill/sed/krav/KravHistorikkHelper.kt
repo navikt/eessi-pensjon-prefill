@@ -23,8 +23,8 @@ object KravHistorikkHelper {
     }
 
     private fun sortertKravHistorikk(kravHistorikkListe: V1KravHistorikkListe): List<V1KravHistorikk> {
-        val list = kravHistorikkListe.kravHistorikkListe.toList()
-        return list.asSequence().sortedBy { it.mottattDato.toGregorianCalendar() }.toList()
+        return kravHistorikkListe.kravHistorikkListe
+                .sortedBy { it.mottattDato.toGregorianCalendar() }
     }
 
     fun hentKravHistorikkForsteGangsBehandlingUtlandEllerForsteGang(kravHistorikkListe: V1KravHistorikkListe, saktype: String): V1KravHistorikk {
@@ -35,8 +35,8 @@ object KravHistorikkHelper {
     }
 
     fun finnKravHistorikk(kravType: String, kravHistorikkListe: V1KravHistorikkListe): List<V1KravHistorikk>? {
-        val sortList = sortertKravHistorikk(kravHistorikkListe)
-        return sortList.filter { kravHistorikk -> kravType == kravHistorikk.kravType }
+        return sortertKravHistorikk(kravHistorikkListe)
+                .filter { kravType == it.kravType }
     }
 
     private fun hentKravHistorikkMedKravType(kravType: List<String>, kravHistorikkListe: V1KravHistorikkListe): V1KravHistorikk {

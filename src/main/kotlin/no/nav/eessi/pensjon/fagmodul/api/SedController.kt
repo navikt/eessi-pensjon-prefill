@@ -33,7 +33,6 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
 import java.time.LocalDateTime
@@ -199,7 +198,7 @@ class SedController(private val euxService: EuxService,
     }
 
     @ApiOperation("Oppretter en Sed som svar på en forespørsel-Sed")
-    @RequestMapping("/replysed/{parentid}", method = [RequestMethod.POST])
+    @PostMapping("/replysed/{parentid}")
     fun addDocumentToParent(@RequestBody(required = true) request: ApiRequest, @PathVariable("parentid", required = true) parentId: String): ShortDocumentItem? {
         auditlogger.log("addDocumentToParent", request.aktoerId ?: "", request.toAudit())
 

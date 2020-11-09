@@ -158,17 +158,14 @@ class PrefillSEDService(private val prefillNav: PrefillNav,
         val result = bruker.harFraRolleI
                 .filter { relasjon -> relasjon.tilPerson.doedsdato == null }
                 .filter { relasjon -> validRelasjoner.contains(relasjon.tilRolle.value) }
-                .map {
-                    relasjon ->
+                .map { relasjon ->
                     val ekteType = relasjon.tilRolle.value
                     val pident = relasjon.tilPerson.aktoer as PersonIdent
                     val ektepinid = pident.ident.ident
                     Pair(ektepinid, ekteType)
-                }.filter { pair -> NavFodselsnummer(pair.first).validate() }
-                .firstOrNull()
+                }.firstOrNull { pair -> NavFodselsnummer(pair.first).validate() }
 
         return result ?: Pair("", "")
-
     }
 
 }
