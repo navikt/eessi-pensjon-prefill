@@ -29,6 +29,8 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker as InformasjonBruker
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Person as InformasjonPerson
 
 private val UGYLDIGE_LAND_RINA = listOf("XXK")
 
@@ -48,10 +50,8 @@ class PrefillNav(private val prefillAdresse: PrefillAdresse,
                     by = "Unkown",
                     region = ""
             )
-            if (fsted.land == "Unknown") {
-                return null
-            }
-            return fsted
+
+            return fsted.takeUnless { it.land == "Unknown" }
         }
 
         enum class RelasjonEnum(private val relasjon: String) {
@@ -64,14 +64,15 @@ class PrefillNav(private val prefillAdresse: PrefillAdresse,
             }
         }
 
-        fun isPersonAvdod(personTPS: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person) : Boolean {
+        fun isPersonAvdod(personTPS: InformasjonPerson) : Boolean {
             val personstatus = hentPersonStatus(personTPS)
 
-            return run { personstatus == "DØD" }
+            return (personstatus == "DØD")
                     .also { logger.debug("Person er avdod (ingen adresse å hente).") }
         }
+
         //hjelpe funkson for personstatus.
-        private fun hentPersonStatus(personTPS: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): String? {
+        private fun hentPersonStatus(personTPS: InformasjonPerson): String? {
             return personTPS.personstatus?.personstatus?.value
         }
 
@@ -84,7 +85,7 @@ class PrefillNav(private val prefillAdresse: PrefillAdresse,
         }
 
         //personnr fnr
-        private fun hentNorIdent(person: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): String {
+        private fun hentNorIdent(person: InformasjonPerson): String {
             logger.debug("2.1.7.1.2         Personal Identification Number (PIN) personnr")
             val persident = person.aktoer as PersonIdent
             val pinid: NorskIdent = persident.ident
@@ -92,7 +93,7 @@ class PrefillNav(private val prefillAdresse: PrefillAdresse,
         }
 
         //fdato i rinaformat
-        private fun datoFormat(person: no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker): String? {
+        private fun datoFormat(person: InformasjonBruker): String? {
             logger.debug("2.1.3         Date of birth")
             val fdato = person.foedselsdato
             logger.debug("              Date of birth: $fdato")
@@ -100,7 +101,7 @@ class PrefillNav(private val prefillAdresse: PrefillAdresse,
         }
 
         private fun createPersonPinNorIdent(
-                brukerTps: no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker,
+                brukerTps: InformasjonBruker,
                 institusjonId: String,
                 institusjonNavn: String): List<PinItem> {
             logger.debug("2.1.7         Fodselsnummer/Personnummer")
@@ -237,7 +238,7 @@ class PrefillNav(private val prefillAdresse: PrefillAdresse,
         )
     }
 
-    fun createBruker(brukerTPS: no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker,
+    fun createBruker(brukerTPS: InformasjonBruker,
                      bank: Bank?,
                      ansettelsesforhold: List<ArbeidsforholdItem>?): Bruker? {
             return Bruker(
@@ -250,7 +251,7 @@ class PrefillNav(private val prefillAdresse: PrefillAdresse,
     }
 
     //persondata - nav-sed format
-    private fun createPersonData(brukerTps: no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker): Person {
+    private fun createPersonData(brukerTps: InformasjonBruker): Person {
         logger.debug("2.1           Persondata (forsikret person / gjenlevende person / barn)")
 
         val landKode = brukerTps.statsborgerskap.land.value
@@ -282,13 +283,13 @@ class PrefillNav(private val prefillAdresse: PrefillAdresse,
 
 
     //mor / far
-    private fun createRelasjon(relasjon: RelasjonEnum, person: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): Foreldre? {
+    private fun createRelasjon(relasjon: RelasjonEnum, person: InformasjonPerson): Foreldre? {
         person.harFraRolleI.forEach {
             val tpsvalue = it.tilRolle.value
 
             if (relasjon.erSamme(tpsvalue)) {
                 logger.debug("              Relasjon til : $tpsvalue")
-                val persontps = it.tilPerson as no.nav.tjeneste.virksomhet.person.v3.informasjon.Person
+                val persontps = it.tilPerson as InformasjonPerson
 
                 val navntps = persontps.personnavn as Personnavn
                 val relasjonperson = Person(
