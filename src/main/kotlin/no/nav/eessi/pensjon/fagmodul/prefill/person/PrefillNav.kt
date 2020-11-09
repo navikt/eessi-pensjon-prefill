@@ -4,12 +4,27 @@ import no.nav.eessi.pensjon.fagmodul.prefill.model.BrukerInformasjon
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PersonData
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PersonId
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillAdresse
-import no.nav.eessi.pensjon.fagmodul.sedmodel.*
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Adresse
+import no.nav.eessi.pensjon.fagmodul.sedmodel.ArbeidsforholdItem
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Bank
+import no.nav.eessi.pensjon.fagmodul.sedmodel.BarnItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Bruker
+import no.nav.eessi.pensjon.fagmodul.sedmodel.EessisakItem
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Ektefelle
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Foedested
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Foreldre
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Innehaver
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Konto
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Nav
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Person
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Verge
+import no.nav.eessi.pensjon.fagmodul.sedmodel.PinItem
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Sepa
+import no.nav.eessi.pensjon.fagmodul.sedmodel.StatsborgerskapItem
 import no.nav.eessi.pensjon.utils.simpleFormat
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.*
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Kjoenn
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.NorskIdent
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.PersonIdent
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Personnavn
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
@@ -51,11 +66,9 @@ class PrefillNav(private val prefillAdresse: PrefillAdresse,
 
         fun isPersonAvdod(personTPS: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person) : Boolean {
             val personstatus = hentPersonStatus(personTPS)
-            if (personstatus == "DØD") {
-                logger.debug("Person er avdod (ingen adresse å hente).")
-                return true
-            }
-            return false
+
+            return run { personstatus == "DØD" }
+                    .also { logger.debug("Person er avdod (ingen adresse å hente).") }
         }
         //hjelpe funkson for personstatus.
         private fun hentPersonStatus(personTPS: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): String? {
@@ -108,11 +121,6 @@ class PrefillNav(private val prefillAdresse: PrefillAdresse,
             )
         }
 
-        //7.0  TODO: 7. Informasjon om representant/verge hva kan vi hente av informasjon? fra hvor
-        private fun createVerge(): Verge? {
-            logger.debug("7.0           (IKKE NOE HER ENNÅ!!) Informasjon om representant/verge")
-            return null
-        }
 
         //8.0 Bank detalsjer om bank betalinger.
         private fun createBankData(personInfo: BrukerInformasjon): Bank {
@@ -140,17 +148,10 @@ class PrefillNav(private val prefillAdresse: PrefillAdresse,
 
         //utfylling av liste av barn under 18år
         private fun createBarnliste(barn: List<Bruker?>): List<BarnItem>? {
-            val barnlist = barn
+            return barn
                     .filterNotNull()
-                    .map {
-                        BarnItem(
-                                person = it.person,
-                                far = it.far,
-                                mor = it.mor,
-                                relasjontilbruker = "BARN"
-                        )
-                    }
-            return if (barnlist.isEmpty()) null else barnlist
+                    .map { BarnItem(mor = it.mor, person = it.person, far = it.far, relasjontilbruker = "BARN") }
+                    .takeIf { it.isNotEmpty() }
         }
 
         private fun createEktefelleType(typevalue: String): String {
@@ -232,10 +233,7 @@ class PrefillNav(private val prefillAdresse: PrefillAdresse,
                 //6.0 skal denne kjøres hver gang? eller kun under P2000? P2100
                 //sjekke om SED er P2x00 for utfylling av BARN
                 //sjekke punkt for barn. pkt. 6.0 for P2000 og P2200 pkt. 8.0 for P2100
-                barn = createBarnliste(barnBrukereFraTPS.map { createBruker(it, null, null) }),
-
-                //7.0 verge
-                verge = createVerge()
+                barn = createBarnliste(barnBrukereFraTPS.map { createBruker(it, null, null) })
         )
     }
 

@@ -73,14 +73,10 @@ class EuxService (private val euxKlient: EuxKlient,
         logger.info("Prøver å hente ut en BucUtils for type $euxCaseId")
         val docid = getBuc(euxCaseId).documents ?: throw NoSuchFieldException("Fant ikke DocumentsItem")
 
-        val sedlist = mutableListOf<SED>()
-        docid.forEach {
-            if (sedType != null && sedType == it.type) {
-                it.id?.let { id ->
-                    sedlist.add(getSedOnBucByDocumentId(euxCaseId, id))
-                }
-            }
-        }
+        if (sedType == null) return emptyList()
+
+        val sedlist = docid.filter { it.type == sedType }
+                .mapNotNull { it.id?.let { id ->  getSedOnBucByDocumentId(euxCaseId, id) } }
 
         logger.info("return liste av SED for type: $sedType listSize: ${sedlist.size}")
         return sedlist
@@ -153,14 +149,8 @@ class EuxService (private val euxKlient: EuxKlient,
         throw SedDokumentIkkeGyldigException("SED gyldig SED av type P2100 eller P15000")
     }
 
-    fun getFnrMedLandkodeNO(pinlist: List<PinItem>?): String? {
-        pinlist?.forEach {
-            if ("NO" == it.land) {
-                return it.identifikator
-            }
-        }
-        return null
-    }
+    fun getFnrMedLandkodeNO(pinlist: List<PinItem>?): String? =
+            pinlist?.firstOrNull { it.land == "NO" }?.identifikator
 
     fun getSingleBucAndSedView(euxCaseId: String): BucAndSedView {
         return try {
@@ -181,13 +171,11 @@ class EuxService (private val euxKlient: EuxKlient,
                         BucAndSedView.fromErr(ex.message)
                     }
                 }
-                .toList()
     }
 
     fun getBucAndSedView(rinasaker: List<String>): List<BucAndSedView> {
         val startTime = System.currentTimeMillis()
         val list = rinasaker
-                .asSequence()
                 .map { rinaid ->
                     try {
                         BucAndSedView.from(getBuc(rinaid))
@@ -197,7 +185,6 @@ class EuxService (private val euxKlient: EuxKlient,
                     }
                 }
                 .sortedByDescending { it.startDate }
-                .toList()
 
         logger.debug(" tiden tok ${System.currentTimeMillis() - startTime} ms.")
         return list
@@ -365,7 +352,7 @@ class EuxService (private val euxKlient: EuxKlient,
      * Returnerer en distinct liste av rinaSakIDer
      *  @param rinaSaker liste av rinasaker fra EUX datamodellen
      */
-    fun hentRinaSakIder(rinaSaker: List<Rinasak>) = rinaSaker.asSequence().map { it.id!! }.toList()
+    fun hentRinaSakIder(rinaSaker: List<Rinasak>) = rinaSaker.map { it.id!! }
 }
 
 data class BucOgDocumentAvdod(

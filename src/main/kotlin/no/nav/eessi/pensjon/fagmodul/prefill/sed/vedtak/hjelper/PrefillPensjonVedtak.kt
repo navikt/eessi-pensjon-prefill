@@ -6,7 +6,6 @@ import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.hjelper.PrefillPensjonVe
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.hjelper.PrefillPensjonVedtaksbelop.createEkstraTilleggPensjon
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.hjelper.VedtakPensjonDataHelper.hentVilkarsResultatHovedytelse
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.hjelper.VedtakPensjonDataHelper.hentVinnendeBergeningsMetode
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.hjelper.VedtakPensjonDataHelper.isForeldelos
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.hjelper.VedtakPensjonDataHelper.isMottarMinstePensjonsniva
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Grunnlag
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Opptjening
@@ -131,17 +130,12 @@ object PrefillPensjonVedtak {
         //hvis avslag returner vi tomt verdi
         if (sjekkForVilkarsvurderingListeHovedytelseellerAvslag(pendata)) return null
 
-        return when (sakType) {
-            KSAK.BARNEP -> {
-                when (isForeldelos(pendata)) {
-                    false -> "99"
-                    true -> "99"
-                }
-            } else ->
-                when (isMottarMinstePensjonsniva(pendata)) {
-                    true -> "01"
-                    false -> "02"
-                }
+        return if (sakType == KSAK.BARNEP) "99"
+        else {
+            when (isMottarMinstePensjonsniva(pendata)) {
+                true -> "01"
+                false -> "02"
+            }
         }
     }
 

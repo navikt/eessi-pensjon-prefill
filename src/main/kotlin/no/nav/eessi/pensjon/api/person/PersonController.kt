@@ -6,7 +6,11 @@ import no.nav.eessi.pensjon.fagmodul.models.FamilieRelasjonType.FAR
 import no.nav.eessi.pensjon.fagmodul.models.FamilieRelasjonType.MOR
 import no.nav.eessi.pensjon.logging.AuditLogger
 import no.nav.eessi.pensjon.metrics.MetricsHelper
-import no.nav.eessi.pensjon.personoppslag.aktoerregister.*
+import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerId
+import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerregisterIkkeFunnetException
+import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerregisterService
+import no.nav.eessi.pensjon.personoppslag.aktoerregister.IdentGruppe
+import no.nav.eessi.pensjon.personoppslag.aktoerregister.ManglerAktoerIdException
 import no.nav.eessi.pensjon.personoppslag.personv3.PersonV3Service
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonClient
 import no.nav.security.token.support.core.api.Protected
@@ -85,10 +89,8 @@ class PersonController(private val aktoerregisterService: AktoerregisterService,
 
         logger.info("Det ble funnet ${avdodeMedFnr.size} avdøde for den gjenlevende med aktørID: $gjenlevendeAktoerId")
 
-        with(avdodeMedFnr){
-            return PersonControllerHentPersonAvdod.measure {
-                ResponseEntity.ok(this)
-            }
+        return PersonControllerHentPersonAvdod.measure {
+            ResponseEntity.ok(avdodeMedFnr)
         }
     }
 

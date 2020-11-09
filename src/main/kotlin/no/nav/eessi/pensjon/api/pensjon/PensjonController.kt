@@ -52,7 +52,7 @@ class PensjonController(private val pensjonsinformasjonClient: Pensjonsinformasj
 
             try {
                 val hentKunSakType = pensjonsinformasjonClient.hentKunSakType(sakId, aktoerId)
-                ResponseEntity.ok().body(mapAnyToJson(hentKunSakType))
+                ResponseEntity.ok(mapAnyToJson(hentKunSakType))
             } catch (ife: IkkeFunnetException) {
                 logger.warn("Feil ved henting av sakstype, ingen sak funnet. Sak: ${sakId}")
                 ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorBody(ife.message))
@@ -92,7 +92,7 @@ class PensjonController(private val pensjonsinformasjonClient: Pensjonsinformasj
 
     @ApiOperation("Henter ut en liste over alle saker på valgt aktoerId")
     @GetMapping("/sakliste/{aktoerId}")
-    fun hentPensjonSakIder(@PathVariable("aktoerId", required = true) aktoerId: String) : List<PensjonSak> {
+    fun hentPensjonSakIder(@PathVariable("aktoerId", required = true) aktoerId: String): List<PensjonSak> {
         return PensjonControllerHentSakListe.measure {
 
             logger.info("henter sakliste for aktoer: $aktoerId")
@@ -105,10 +105,10 @@ class PensjonController(private val pensjonsinformasjonClient: Pensjonsinformasj
             }
             return@measure brukersSakerListe.map { sak ->
                 logger.debug("PensjonSak for journalføring: sakId: ${sak.sakId} sakType: ${sak.sakType} sakStatus: ${sak.status} ")
-                PensjonSak(sak.sakId.toString() ,  sak.sakType, PensjonSakStatus.from(sak.status))
-                }
+                PensjonSak(sak.sakId.toString(), sak.sakType, PensjonSakStatus.from(sak.status))
             }
         }
+    }
 }
 
 class PensjonSak (

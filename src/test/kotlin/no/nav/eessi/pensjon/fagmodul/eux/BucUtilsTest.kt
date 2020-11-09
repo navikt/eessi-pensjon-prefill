@@ -19,7 +19,6 @@ import org.skyscreamer.jsonassert.JSONAssert
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.time.format.DateTimeFormatter
-import kotlin.streams.toList
 
 @ExtendWith(MockitoExtension::class)
 class BucUtilsTest {
@@ -181,7 +180,7 @@ class BucUtilsTest {
         assertEquals("P_BUC_01", rinaaksjon.id)
         assertEquals("Update", rinaaksjon.navn)
 
-        val filterlist = result.filter { it.dokumentType?.startsWith("P")!! }.toList()
+        val filterlist = result.filter { it.dokumentType?.startsWith("P")!! }
 
         assertEquals(9, filterlist.size)
         val rinaaksjon2 = filterlist.get(5)
@@ -460,7 +459,7 @@ class BucUtilsTest {
         val result = bucUtils.getAllDocuments()
         assertEquals(16, result.size)
 
-        val filterParentId = result.stream().filter { it.parentDocumentId != null }.toList()
+        val filterParentId = result.filter { it.parentDocumentId != null }
         assertEquals(3, filterParentId.size)
 
     }
@@ -473,7 +472,7 @@ class BucUtilsTest {
         val bucAndSedView = BucAndSedView.from(buc)
 
         val seds = bucAndSedView.seds
-        val filterParentId = seds?.filter { it.parentDocumentId != null }?.toList()
+        val filterParentId = seds?.filter { it.parentDocumentId != null }
         assertEquals(3, filterParentId?.size)
 
         assertEquals("NO", bucAndSedView.creator?.country)
