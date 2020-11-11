@@ -112,31 +112,15 @@ class PensjonsinformasjonClient(
             val context = JAXBContext.newInstance(Pensjonsinformasjon::class.java)
             val unmarshaller = context.createUnmarshaller()
 
-
             logger.debug("Pensjonsinformasjon xml: $xmlString")
             val res = unmarshaller.unmarshal(StreamSource(StringReader(xmlString)), Pensjonsinformasjon::class.java)
 
-            return printLogg(xmlString, res.value as Pensjonsinformasjon)
+            res.value as Pensjonsinformasjon
 
         } catch (ex: Exception) {
             logger.error("Feiler med xml transformering til Pensjoninformasjon")
             throw PensjoninformasjonProcessingException("Feiler med xml transformering til Pensjoninformasjon: ${ex.message}")
         }
-    }
-
-    fun printLogg(xmlString: String, pensjonsinformasjon: Pensjonsinformasjon): Pensjonsinformasjon {
-        val peninfo = pensjonsinformasjon
-
-        try {
-            val saknr =  21434854L
-            if (peninfo.brukersSakerListe.brukersSakerListe.firstOrNull { it.sakId == saknr } != null ) {
-                logger.info("**************Pensjonsinformasjon xml: $xmlString  \n\n**************")
-            }
-        } catch (ex: Exception) {
-            logger.warn("Ingen sak funnet.")
-        }
-
-        return pensjonsinformasjon
     }
 
     @Throws(PensjoninformasjonException::class, HttpServerErrorException::class, HttpClientErrorException::class)
