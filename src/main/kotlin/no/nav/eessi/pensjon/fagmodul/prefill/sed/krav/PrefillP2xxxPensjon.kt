@@ -19,6 +19,7 @@ import no.nav.eessi.pensjon.fagmodul.sedmodel.YtelserItem
 import no.nav.eessi.pensjon.utils.simpleFormat
 import no.nav.pensjon.v1.kravhistorikk.V1KravHistorikk
 import no.nav.pensjon.v1.sak.V1Sak
+import no.nav.pensjon.v1.vedtak.V1Vedtak
 import no.nav.pensjon.v1.ytelsepermaaned.V1YtelsePerMaaned
 import no.nav.pensjon.v1.ytelseskomponent.V1Ytelseskomponent
 import org.slf4j.Logger
@@ -106,7 +107,7 @@ object PrefillP2xxxPensjon {
      * F_BH_MED_UTL     Førstegangsbehandling Norge/utland ikke finnes sakl vi avslutte
      *
      */
-    fun validerGyldigKravtypeOgArsak(sak: V1Sak, sedType: String) {
+    private fun validerGyldigKravtypeOgArsak(sak: V1Sak, sedType: String) {
         logger.info("start på validering av $sedType")
 
         validerGyldigKravtypeOgArsakFelles(sak , sedType)
@@ -119,6 +120,15 @@ object PrefillP2xxxPensjon {
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Det er ikke markert for bodd/arbeidet i utlandet. Krav SED $sedType blir ikke opprettet")
         }
         logger.info("avslutt på validering av $sedType, fortsetter med preutfylling")
+    }
+
+    fun validerGyldigVedtakEllerKravtypeOgArsak(sak:V1Sak, sedType: String, vedtak: V1Vedtak?){
+
+        vedtak?.let {
+            logger.info("Validering på vedtak bosatt utland ${it.isBoddArbeidetUtland}")
+            if (it.isBoddArbeidetUtland) return
+        }
+        validerGyldigKravtypeOgArsak(sak, sedType)
     }
 
     /**

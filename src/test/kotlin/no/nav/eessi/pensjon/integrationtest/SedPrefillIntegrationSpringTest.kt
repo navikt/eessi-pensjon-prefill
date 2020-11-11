@@ -274,6 +274,33 @@ class SedPrefillIntegrationSpringTest {
     }
 
 
+    @Test
+    fun `prefill sed med kravtype førstehangbehandling norge men med vedtak bodsatt utland skal prefylle sed`() {
+
+        doReturn(NorskIdent("12312312312")).`when`(aktoerService).hentGjeldendeIdent(IdentGruppe.NorskIdent, AktoerId("0105094340092"))
+        doReturn(BrukerMock.createWith(true, "Lever", "Gjenlev", "12312312312")).`when`(personV3Service).hentBruker("12312312312")
+
+        doReturn(PrefillTestHelper.readXMLresponse("AP_FORSTEG_BH.xml")).
+        doReturn(PrefillTestHelper.readXMLVedtakresponse("P6000-APUtland-301.xml")).
+        `when`(restTemplate).exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java))
+
+        doReturn("QX").doReturn("XQ").`when`(kodeverkClient).finnLandkode2(any())
+
+        val apijson = dummyApijson(sakid = "22580170", aktoerId = "0105094340092", vedtakid = "5134513451345")
+
+        val result = mockMvc.perform(post("/sed/prefill")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(apijson))
+                .andDo(print())
+                .andExpect(status().isOk)
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andReturn()
+
+        val response = result.response.getContentAsString(charset("UTF-8"))
+
+    }
+
+
     //test på validering av pensjoninformasjon krav
     @Test
     @Throws(Exception::class)

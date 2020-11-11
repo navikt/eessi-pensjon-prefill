@@ -6,6 +6,7 @@ import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Pensjon
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.pensjon.v1.sak.V1Sak
+import no.nav.pensjon.v1.vedtak.V1Vedtak
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -18,7 +19,7 @@ class PrefillP2000(private val prefillNav: PrefillNav)  {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillP2000::class.java) }
 
-    fun prefill(prefillData: PrefillDataModel, personData: PersonData, sak: V1Sak): SED {
+    fun prefill(prefillData: PrefillDataModel, personData: PersonData, sak: V1Sak, vedtak: V1Vedtak? = null): SED {
         val sedType = prefillData.getSEDType()
 
         logger.debug("----------------------------------------------------------"
@@ -38,7 +39,7 @@ class PrefillP2000(private val prefillNav: PrefillNav)  {
         )
 
         //valider pensjoninformasjon,
-        PrefillP2xxxPensjon.validerGyldigKravtypeOgArsak(sak, sed.sed)
+        PrefillP2xxxPensjon.validerGyldigVedtakEllerKravtypeOgArsak(sak, sed.sed, vedtak)
         try {
             sed.pensjon = Pensjon()
             val meldingOmPensjon = PrefillP2xxxPensjon.createPensjon(
@@ -54,7 +55,7 @@ class PrefillP2000(private val prefillNav: PrefillNav)  {
             }
         } catch (ex: Exception) {
             logger.error(ex.message, ex)
-            // TODO Should we really swallow this?
+            //hvis feiler lar vi SB få en SED i RINA
         }
 
         KravHistorikkHelper.settKravdato(sed)

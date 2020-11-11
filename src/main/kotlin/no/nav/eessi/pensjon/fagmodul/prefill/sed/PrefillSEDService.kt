@@ -22,6 +22,7 @@ import no.nav.eessi.pensjon.personoppslag.aktoerregister.NorskIdent
 import no.nav.eessi.pensjon.personoppslag.personv3.PersonV3Service
 import no.nav.eessi.pensjon.utils.toJson
 import no.nav.pensjon.v1.sak.V1Sak
+import no.nav.pensjon.v1.vedtak.V1Vedtak
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.PersonIdent
 import org.slf4j.Logger
@@ -45,8 +46,8 @@ class PrefillSEDService(private val prefillNav: PrefillNav,
 
         return when (sedType) {
             //krav
-            SEDType.P2000 -> PrefillP2000(prefillNav).prefill(prefillData, hentPersonerMedBarn(prefillData), hentRelevantPensjonSak(prefillData, { pensakType -> pensakType == ALDER.name }))
-            SEDType.P2200 -> PrefillP2200(prefillNav).prefill(prefillData, hentPersonerMedBarn(prefillData), hentRelevantPensjonSak(prefillData, { pensakType -> pensakType == UFOREP.name }))
+            SEDType.P2000 -> PrefillP2000(prefillNav).prefill(prefillData, hentPersonerMedBarn(prefillData), hentRelevantPensjonSak(prefillData, { pensakType -> pensakType == ALDER.name }), hentRelevantVedtak(prefillData))
+            SEDType.P2200 -> PrefillP2200(prefillNav).prefill(prefillData, hentPersonerMedBarn(prefillData), hentRelevantPensjonSak(prefillData, { pensakType -> pensakType == UFOREP.name }), hentRelevantVedtak(prefillData))
             SEDType.P2100 -> {
                 val sedpair = PrefillP2100(prefillNav).prefill(prefillData, hentPersonerMedBarn(prefillData), hentRelevantPensjonSak(prefillData, { pensakType -> listOf("ALDER", "BARNEP", "GJENLEV", "UFOREP").contains(pensakType) }))
                 prefillData.melding = sedpair.first
@@ -91,6 +92,11 @@ class PrefillSEDService(private val prefillNav: PrefillNav,
         return pensjonsinformasjonService.hentRelevantPensjonSak(prefillData, akseptabelSakstypeForSed)
     }
 
+    private fun hentRelevantVedtak(prefillData: PrefillDataModel): V1Vedtak? {
+        prefillData.vedtakId.let {
+            return pensjonsinformasjonService.hentRelevantVedtakHvisFunnet(prefillData)
+        }
+    }
 
     fun hentPersonerMedBarn(prefillData: PrefillDataModel): PersonData {
         return hentPersoner(prefillData, true)

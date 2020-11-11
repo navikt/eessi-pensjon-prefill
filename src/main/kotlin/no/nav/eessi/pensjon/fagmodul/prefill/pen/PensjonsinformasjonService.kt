@@ -5,6 +5,7 @@ import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjoninformasjonExcep
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonClient
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import no.nav.pensjon.v1.sak.V1Sak
+import no.nav.pensjon.v1.vedtak.V1Vedtak
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -114,6 +115,16 @@ class PensjonsinformasjonService(private val pensjonsinformasjonClient: Pensjons
             }
             sak
         }
+    }
+
+    fun hentRelevantVedtakHvisFunnet(prefillData: PrefillDataModel): V1Vedtak? {
+        val penVedtaksId = prefillData.vedtakId
+
+        if (penVedtaksId.isNullOrBlank()) return null
+
+        val peninfo = hentMedVedtak(penVedtaksId)
+
+        return peninfo.vedtak
     }
 
     private fun sakTypeAsText(sakType: String?) =

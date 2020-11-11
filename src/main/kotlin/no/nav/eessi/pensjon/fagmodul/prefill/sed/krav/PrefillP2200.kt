@@ -6,6 +6,7 @@ import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Pensjon
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.pensjon.v1.sak.V1Sak
+import no.nav.pensjon.v1.vedtak.V1Vedtak
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -17,7 +18,7 @@ class PrefillP2200(private val prefillNav: PrefillNav) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillP2200::class.java) }
 
-    fun prefill(prefillData: PrefillDataModel, personData: PersonData, sak: V1Sak): SED {
+    fun prefill(prefillData: PrefillDataModel, personData: PersonData, sak: V1Sak, vedtak: V1Vedtak? = null) : SED {
         val sedType = prefillData.getSEDType()
 
         logger.debug("----------------------------------------------------------"
@@ -37,7 +38,7 @@ class PrefillP2200(private val prefillNav: PrefillNav) {
                 brukerInformasjon = prefillData.getPersonInfoFromRequestData()
         )
 
-        PrefillP2xxxPensjon.validerGyldigKravtypeOgArsak(sak, sed.sed)
+        PrefillP2xxxPensjon.validerGyldigVedtakEllerKravtypeOgArsak(sak, sed.sed, vedtak)
         try {
             sed.pensjon = Pensjon()
                 val meldingOmPensjon = PrefillP2xxxPensjon.createPensjon(

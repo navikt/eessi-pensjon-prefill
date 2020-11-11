@@ -61,7 +61,7 @@ class PrefillP2000_AP_LOP_REVUTest {
         prefillData = PrefillDataModel(penSaksnummer = pesysSaksnummer, bruker = PersonId(personFnr, "123456789"), avdod = null).apply {
             rinaSubject = "Pensjon"
             sed = SED("P2000")
-            vedtakId = "12312312"
+            vedtakId = ""
             buc = "P_BUC_99"
             institution = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
             partSedAsJson = mutableMapOf(
