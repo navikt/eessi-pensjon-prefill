@@ -238,8 +238,8 @@ class SedController(private val euxService: EuxService,
     }
 
     @ApiOperation("Henter ut en liste over registrerte institusjoner innenfor spesifiserte EU-land. ny api kall til eux")
-    @GetMapping("/institusjoner/{buctype}", "/institusjoner/{buctype}/{land}")
-    fun getEuxInstitusjoner(@PathVariable("buctype", required = true) buctype: String, @PathVariable("land", required = false) landkode: String? = ""): List<InstitusjonItem> {
+    @GetMapping("/institutions/{buctype}", "/institutions/{buctype}/{countrycode}")
+    fun getEuxInstitusjoner(@PathVariable("buctype", required = true) buctype: String, @PathVariable("countrycode", required = false) landkode: String? = ""): List<InstitusjonItem> {
         logger.info("Henter ut liste over alle Institusjoner i Rina")
         return euxService.getInstitutions(buctype, landkode)
     }
@@ -284,9 +284,4 @@ class SedController(private val euxService: EuxService,
         }
     }
 
-    @GetMapping("/institutions/{buctype}/{countrycode}")
-    fun getInstitutionsWithCountry(@PathVariable(value = "buctype", required = true) bucType: String,
-                                   @PathVariable(value = "countrycode", required = false) landkode: String = ""): List<InstitusjonItem> {
-        return euxService.getInstitutions(bucType, landkode)
-    }
 }
