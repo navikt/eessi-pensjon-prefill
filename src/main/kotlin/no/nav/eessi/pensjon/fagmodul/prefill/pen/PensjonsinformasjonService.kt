@@ -117,14 +117,11 @@ class PensjonsinformasjonService(private val pensjonsinformasjonClient: Pensjons
         }
     }
 
-    fun hentRelevantVedtakHvisFunnet(prefillData: PrefillDataModel): V1Vedtak? {
-        val penVedtaksId = prefillData.vedtakId
+    fun hentRelevantVedtakHvisFunnet(vedtakId : String): V1Vedtak? {
 
-        if (penVedtaksId.isNullOrBlank()) return null
+        if (vedtakId.isBlank()) return null
 
-        val peninfo = hentMedVedtak(penVedtaksId)
-
-        return peninfo.vedtak
+        return  hentMedVedtak(vedtakId).vedtak
     }
 
     private fun sakTypeAsText(sakType: String?) =
