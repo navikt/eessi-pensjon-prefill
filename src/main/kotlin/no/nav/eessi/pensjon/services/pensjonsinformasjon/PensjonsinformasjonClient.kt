@@ -39,6 +39,8 @@ class PensjonsinformasjonClient(
             val v1saklist = pendata.brukersSakerListe.brukersSakerListe
             return v1saklist.filter { sak -> "${sak.sakId}" == sakId  }.firstOrNull() ?: {
                 logger.error("Finner ingen sak, saktype på valgt sakId $sakId")
+
+                //Kravdato mangler
                 throw IngenSakFunnetException("Finner ingen sak, saktype på valgt sakId $sakId")
             }()
         }
