@@ -206,7 +206,7 @@ class EuxKlient(private val euxOidcRestTemplate: RestTemplate,
                     }
                 }
                 .map { institusjon ->
-                    InstitusjonItem(institusjon.landkode, institusjon.id, institusjon.akronym)
+                    InstitusjonItem(institusjon.landkode, institusjon.id, institusjon.navn, institusjon.akronym)
                 }
                 .sortedBy { it.institution }
                 .sortedBy { it.country }

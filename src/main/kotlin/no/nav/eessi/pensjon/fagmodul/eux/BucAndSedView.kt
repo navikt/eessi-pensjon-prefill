@@ -68,7 +68,8 @@ data class BucAndSedView(
                         InstitusjonItem(
                                 country = it.organisation?.countryCode ?: "",
                                 institution = it.organisation?.id ?: "",
-                                name = it.organisation?.name
+                                name = it.organisation?.name,
+                                akronym = it.organisation?.acronym
                         )
                     },
                     seds = bucUtil.getAllDocuments(),

@@ -7,7 +7,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 data class InstitusjonItem(
         val country: String,
         val institution: String,
-        val name: String? = null) {
+        val name: String? = null,
+        val akronym: String? = null) {
 
         //sjekker på Instisjon legger ut ID til rina som <XX:ZZZZZ>
         fun checkAndConvertInstituion(): String {
@@ -15,6 +16,5 @@ data class InstitusjonItem(
                 return institution
             }
             return "$country:$institution"
-
         }
 }

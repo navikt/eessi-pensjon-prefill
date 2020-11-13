@@ -1,6 +1,10 @@
 package no.nav.eessi.pensjon.fagmodul.eux
 
-import com.nhaarman.mockitokotlin2.*
+import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.doReturn
+import com.nhaarman.mockitokotlin2.doThrow
+import com.nhaarman.mockitokotlin2.eq
+import com.nhaarman.mockitokotlin2.whenever
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Organisation
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ParticipantsItem
@@ -11,7 +15,9 @@ import no.nav.eessi.pensjon.security.sts.typeRef
 import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
 import no.nav.eessi.pensjon.utils.validateJson
 import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -24,7 +30,11 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.web.client.*
+import org.springframework.web.client.DefaultResponseErrorHandler
+import org.springframework.web.client.HttpClientErrorException
+import org.springframework.web.client.HttpServerErrorException
+import org.springframework.web.client.ResourceAccessException
+import org.springframework.web.client.RestTemplate
 import org.springframework.web.util.UriComponentsBuilder
 import java.nio.charset.Charset
 import java.nio.file.Files
@@ -373,6 +383,10 @@ class EuxKlientTest {
         val actual = klient.getInstitutions("P_BUC_01")
 
         assertEquals(expected, actual.size)
+
+        val actual2 = klient.getInstitutions("P_BUC_01")
+        assertEquals(expected, actual2.size)
+
 
     }
 
