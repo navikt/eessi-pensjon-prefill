@@ -63,7 +63,12 @@ class PrefillSEDService(private val prefillNav: PrefillNav,
 
             SEDType.P8000 -> {
                 if (prefillData.buc == "P_BUC_05") {
-                    PrefillP8000(getPrefillSed(prefillData)).prefill(prefillData, hentPersoner(prefillData), hentRelevantPensjonSak(prefillData) { pensakType -> listOf("ALDER", "BARNEP", "GJENLEV", "UFOREP", "GENRL", "OMSORG").contains(pensakType) })
+                    try {
+                        PrefillP8000(getPrefillSed(prefillData)).prefill(prefillData, hentPersoner(prefillData), hentRelevantPensjonSak(prefillData) { pensakType -> listOf("ALDER", "BARNEP", "GJENLEV", "UFOREP", "GENRL", "OMSORG").contains(pensakType) })
+                    } catch (ex: Exception) {
+                        logger.error(ex.message)
+                        PrefillP8000(getPrefillSed(prefillData)).prefill(prefillData, hentPersoner(prefillData), null)
+                    }
                 } else {
                     PrefillP8000(getPrefillSed(prefillData)).prefill(prefillData, hentPersoner(prefillData), null)
                 }
