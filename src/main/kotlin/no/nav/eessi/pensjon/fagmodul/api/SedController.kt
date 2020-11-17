@@ -95,7 +95,7 @@ class SedController(private val euxService: EuxService,
 
         return AddInstutionAndDocument.measure {
             logger.info("******* Legge til ny SED - start *******")
-            logger.info("kaller add (institutions and sed) rinaId: ${request.euxCaseId} bucType: ${request.buc} sedType: ${request.sed} aktoerId: ${request.aktoerId}")
+            logger.info("kaller (addInstutionAndDocument) rinaId: ${request.euxCaseId} bucType: ${request.buc} sedType: ${request.sed} aktoerId: ${request.aktoerId} sakId: ${request.sakId} vedtak: ${request.vedtakId}")
 
             val norskIdent = hentFnrfraAktoerService(request.aktoerId, aktoerService)
             val dataModel = ApiRequest.buildPrefillDataModelOnExisting(request, norskIdent, getAvdodAktoerId(request))
