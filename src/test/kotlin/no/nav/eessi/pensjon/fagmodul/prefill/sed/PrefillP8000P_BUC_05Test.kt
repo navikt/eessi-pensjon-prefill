@@ -1,5 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed
 
+import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.whenever
 import no.nav.eessi.pensjon.fagmodul.prefill.LagTPSPerson.Companion.lagTPSBruker
@@ -13,6 +14,7 @@ import no.nav.eessi.pensjon.fagmodul.prefill.model.ReferanseTilPerson
 import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonService
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillSed
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.EPSaktype
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.KravArsak
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.FodselsnummerMother.generateRandomFnr
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillAdresse
@@ -21,7 +23,10 @@ import no.nav.eessi.pensjon.personoppslag.personv3.PersonV3Service
 import no.nav.eessi.pensjon.services.geo.PostnummerService
 import no.nav.eessi.pensjon.services.kodeverk.KodeverkClient
 import no.nav.eessi.pensjon.utils.convertToXMLocal
+import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
 import no.nav.pensjon.v1.kravhistorikk.V1KravHistorikk
+import no.nav.pensjon.v1.kravhistorikkliste.V1KravHistorikkListe
+import no.nav.pensjon.v1.sak.V1Sak
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Doedsdato
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
@@ -29,6 +34,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
+import org.skyscreamer.jsonassert.JSONAssert
 import java.time.LocalDate
 
 
@@ -168,7 +174,7 @@ class PrefillP8000P_BUC_05Test {
 
 
     @Test
-    fun `Forventerkorrekt utfylt P8000 hvor det finnes en sak i Pesys som har alderpensjon og henvendelsen gjelder gjenlevende`() {
+    fun `Forventer korrekt utfylt P8000 hvor det finnes en sak i Pesys som har alderpensjon  med revurdering og henvendelsen gjelder gjenlevende`() {
         val fnr = generateRandomFnr(40)
         val forsikretPerson = lagTPSBruker(fnr, "Christopher", "Robin")
                 .medAdresse("Gate",  "SWE")
@@ -177,25 +183,135 @@ class PrefillP8000P_BUC_05Test {
         val avdod = lagTPSBruker(avdodFnr, "Winnie", "Pooh")
         avdod.doedsdato = Doedsdato().withDoedsdato(convertToXMLocal(LocalDate.now()))
 
+        val sak = V1Sak()
         val v1Kravhistorikk = V1KravHistorikk()
         v1Kravhistorikk.kravArsak = KravArsak.GJNL_SKAL_VURD.name
 
+        sak.sakType = EPSaktype.ALDER.toString()
+        sak.sakId = 100
+        sak.kravHistorikkListe = V1KravHistorikkListe()
+        sak.kravHistorikkListe.kravHistorikkListe.add(v1Kravhistorikk)
+
         doReturn(forsikretPerson).`when`(personV3Service).hentBruker(fnr)
         doReturn(avdod).`when`(personV3Service).hentBruker(avdodFnr)
+        doReturn(sak).`when`(pensjoninformasjonservice).hentRelevantPensjonSak(any(), any())
 
         doReturn("NO").whenever(kodeverkClient).finnLandkode2("NOR")
         doReturn("SE").whenever(kodeverkClient).finnLandkode2("SWE")
 
-        prefillData = PrefillDataModelMother.initialPrefillDataModel("P8000", fnr, penSaksnummer = pesysSaksnummer, avdod = PersonId(norskIdent = avdodFnr, aktorId = "21323"),  refTilPerson = ReferanseTilPerson.SOKER)
+        prefillData = PrefillDataModelMother.initialPrefillDataModel("P8000", fnr, penSaksnummer = "100", avdod = PersonId(norskIdent = avdodFnr, aktorId = "21323"),  refTilPerson = ReferanseTilPerson.SOKER)
+        prefillData.buc = "P_BUC_05"
 
         val sed =  prefillSEDService.prefill(prefillData)
 
-        //Gjenlevende/SOKER
-        assertEquals("Winnie", sed.nav?.bruker?.person?.fornavn)
-        assertEquals("Pooh", sed.nav?.bruker?.person?.etternavn)
-        assertEquals("Robin", sed.nav?.annenperson?.person?.etternavn)
-        assertEquals("02",  sed.pensjon?.anmodning?.referanseTilPerson)
+        val expected = """
+            {
+              "sed" : "P8000",
+              "sedGVer" : "4",
+              "sedVer" : "1",
+              "nav" : {
+                "eessisak" : [ {
+                  "institusjonsid" : "NO:noinst002",
+                  "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                  "saksnummer" : "100",
+                  "land" : "NO"
+                } ],
+                "bruker" : {
+                  "person" : {
+                    "pin" : [ {
+                      "identifikator" : "01112743352",
+                      "land" : "NO"
+                    } ],
+                    "etternavn" : "Robin",
+                    "fornavn" : "Christopher",
+                    "kjoenn" : "M"
+                  },
+                  "adresse" : {
+                    "gate" : "Gate 12",
+                    "land" : "SE"
+                  }
+                }
+              },
+              "pensjon" : {
+                "anmodning" : {
+                  "referanseTilPerson" : "02"
+                }
+              }
+            }
 
+        """.trimIndent()
+
+        JSONAssert.assertEquals(sed.toJsonSkipEmpty(), expected, true)
+    }
+
+    @Test
+    fun `Forventerkorrekt utfylt P8000 hvor det finnes en sak i Pesys som har uføretrygd og henvendelsen gjelder gjenlevende`() {
+        val fnr = generateRandomFnr(40)
+        val forsikretPerson = lagTPSBruker(fnr, "Christopher", "Robin")
+                .medAdresse("Gate",  "SWE")
+
+        val avdodFnr = generateRandomFnr(93)
+        val avdod = lagTPSBruker(avdodFnr, "Winnie", "Pooh")
+        avdod.doedsdato = Doedsdato().withDoedsdato(convertToXMLocal(LocalDate.now()))
+
+        val sak = V1Sak()
+        val v1Kravhistorikk = V1KravHistorikk()
+
+        sak.sakType = EPSaktype.UFOREP.toString()
+        sak.sakId = 100
+        sak.kravHistorikkListe = V1KravHistorikkListe()
+        sak.kravHistorikkListe.kravHistorikkListe.add(v1Kravhistorikk)
+
+        doReturn(forsikretPerson).`when`(personV3Service).hentBruker(fnr)
+        doReturn(avdod).`when`(personV3Service).hentBruker(avdodFnr)
+        doReturn(sak).`when`(pensjoninformasjonservice).hentRelevantPensjonSak(any(), any())
+
+        doReturn("NO").whenever(kodeverkClient).finnLandkode2("NOR")
+        doReturn("SE").whenever(kodeverkClient).finnLandkode2("SWE")
+
+        prefillData = PrefillDataModelMother.initialPrefillDataModel("P8000", fnr, penSaksnummer = "100", avdod = PersonId(norskIdent = avdodFnr, aktorId = "21323"),  refTilPerson = ReferanseTilPerson.SOKER)
+        prefillData.buc = "P_BUC_05"
+
+        val sed =  prefillSEDService.prefill(prefillData)
+
+        val expected = """
+            {
+              "sed" : "P8000",
+              "sedGVer" : "4",
+              "sedVer" : "1",
+              "nav" : {
+                "eessisak" : [ {
+                  "institusjonsid" : "NO:noinst002",
+                  "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                  "saksnummer" : "100",
+                  "land" : "NO"
+                } ],
+                "bruker" : {
+                  "person" : {
+                    "pin" : [ {
+                      "identifikator" : "01112743352",
+                      "land" : "NO"
+                    } ],
+                    "etternavn" : "Robin",
+                    "fornavn" : "Christopher",
+                    "kjoenn" : "M"
+                  },
+                  "adresse" : {
+                    "gate" : "Gate 12",
+                    "land" : "SE"
+                  }
+                }
+              },
+              "pensjon" : {
+                "anmodning" : {
+                  "referanseTilPerson" : "02"
+                }
+              }
+            }
+
+        """.trimIndent()
+
+        JSONAssert.assertEquals(sed.toJsonSkipEmpty(), expected, true)
     }
 
 }
