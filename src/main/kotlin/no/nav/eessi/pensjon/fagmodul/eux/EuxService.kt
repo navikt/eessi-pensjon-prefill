@@ -266,12 +266,15 @@ class EuxService (private val euxKlient: EuxKlient,
             val bucutil = BucUtils(docs.buc)
             val bucType = bucutil.getProcessDefinitionName()
             logger.debug("henter documentid fra buc: ${docs.rinaidAvdod} bucType: $bucType")
-            val documentid = when (bucType) {
-                "P_BUC_02" -> bucutil.getDocumentByType(SEDType.P2100.name).id
-                else -> bucutil.getDocumentByType(SEDType.P8000.name).id
+
+            val shortDoc = when (bucType) {
+                "P_BUC_02" -> bucutil.getDocumentByType(SEDType.P2100.name)
+                else -> bucutil.getDocumentByType(SEDType.P8000.name)
             }
-            val sedJson = euxKlient.getSedOnBucByDocumentIdAsJson(docs.rinaidAvdod, documentid!!)
-            docs.dokumentJson = sedJson
+            val sedJson = shortDoc?.let {
+                euxKlient.getSedOnBucByDocumentIdAsJson(docs.rinaidAvdod, it.id!!)
+            }
+            docs.dokumentJson = sedJson ?: ""
             docs
         }
     }

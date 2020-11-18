@@ -37,6 +37,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
+import org.springframework.util.ResourceUtils
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.util.UriComponents
 import org.springframework.web.util.UriComponentsBuilder
@@ -44,6 +45,7 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import java.time.LocalDate
 import java.time.Month
+import kotlin.test.assertEquals
 
 @SpringBootTest(classes = [UnsecuredWebMvcTestLauncher::class] ,webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles(profiles = ["unsecured-webmvctest"])
@@ -68,6 +70,50 @@ class BucIntegrationSpringTest {
 
     @Autowired
     private lateinit var mockMvc: MockMvc
+
+
+    @Test
+    fun `Gitt det ikke finnes noen SED i en buc med avdød så sksal det vies et tomt resultat`() {
+
+        val gjenlevendeFnr = "1234567890000"
+        val gjenlevendeAktoerId = "1123123123123123"
+        val avdodFnr = "01010100001"
+
+        //gjenlevende aktoerid -> gjenlevendefnr
+        doReturn(NorskIdent(gjenlevendeFnr)).`when`(aktoerService).hentGjeldendeIdent(IdentGruppe.NorskIdent, AktoerId(gjenlevendeAktoerId))
+
+        //buc02 - avdød rinasak
+        val rinaSakerBuc05 = listOf(dummyRinasak("1010", "P_BUC_05"))
+        val rinaBuc02url = dummyRinasakAvdodUrl(avdodFnr, "P_BUC_02")
+        doReturn( ResponseEntity.ok().body(emptyList<Rinasak>().toJson()) ).whenever(restEuxTemplate).exchange( eq(rinaBuc02url.toUriString()), eq(HttpMethod.GET), eq(null), eq(String::class.java))
+
+        //buc05 avdød rinasak
+        val rinaBuc05url = dummyRinasakAvdodUrl(avdodFnr, "P_BUC_05")
+        doReturn( ResponseEntity.ok().body(rinaSakerBuc05.toJson())  ).whenever(restEuxTemplate).exchange( eq(rinaBuc05url.toUriString()), eq(HttpMethod.GET), eq(null), eq(String::class.java))
+
+        //gjenlevende rinasak
+        val rinaGjenlevUrl = dummyRinasakUrl(gjenlevendeFnr, null, null, null)
+        doReturn( ResponseEntity.ok().body( emptyList<Rinasak>().toJson())).whenever(restEuxTemplate).exchange( eq(rinaGjenlevUrl.toUriString()), eq(HttpMethod.GET), eq(null), eq(String::class.java))
+
+        val buc05 = ResourceUtils.getFile("classpath:json/buc/buc-1190072-buc05_deletedP8000.json").readText()
+
+        val rinabucpath = "/buc/1010"
+        doReturn( ResponseEntity.ok().body( buc05 ) ).whenever(restEuxTemplate).exchange( eq(rinabucpath), eq(HttpMethod.GET), eq(null), eq(String::class.java))
+
+        //saf (vedlegg meta) gjenlevende
+        val httpEntity = dummyHeader(dummySafReqeust(gjenlevendeAktoerId))
+        doReturn( ResponseEntity.ok().body(  dummySafMetaResponse() ) ).whenever(restSafTemplate).exchange(eq("/"), eq(HttpMethod.POST), eq(httpEntity), eq(String::class.java))
+
+        val result = mockMvc.perform(get("/buc/detaljer/$gjenlevendeAktoerId/avdod/$avdodFnr")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk)
+                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andReturn()
+
+        val response = result.response.getContentAsString(charset("UTF-8"))
+        assertEquals("[]", response)
+
+    }
 
     @Test
     fun `Gett det finnes gjenlevende og en avdød på buc02 så skal det hentes og lever en liste av buc`() {
