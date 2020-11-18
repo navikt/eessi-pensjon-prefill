@@ -219,7 +219,7 @@ class PrefillP8000P_BUC_05Test {
                 "bruker" : {
                   "person" : {
                     "pin" : [ {
-                      "identifikator" : "01112743352",
+                      "identifikator" : "01118043352",
                       "land" : "NO"
                     } ],
                     "etternavn" : "Robin",
@@ -230,11 +230,6 @@ class PrefillP8000P_BUC_05Test {
                     "gate" : "Gate 12",
                     "land" : "SE"
                   }
-                }
-              },
-              "pensjon" : {
-                "anmodning" : {
-                  "referanseTilPerson" : "02"
                 }
               }
             }
@@ -289,7 +284,7 @@ class PrefillP8000P_BUC_05Test {
                 "bruker" : {
                   "person" : {
                     "pin" : [ {
-                      "identifikator" : "01112743352",
+                      "identifikator" : "01118043352",
                       "land" : "NO"
                     } ],
                     "etternavn" : "Robin",
@@ -300,11 +295,6 @@ class PrefillP8000P_BUC_05Test {
                     "gate" : "Gate 12",
                     "land" : "SE"
                   }
-                }
-              },
-              "pensjon" : {
-                "anmodning" : {
-                  "referanseTilPerson" : "02"
                 }
               }
             }

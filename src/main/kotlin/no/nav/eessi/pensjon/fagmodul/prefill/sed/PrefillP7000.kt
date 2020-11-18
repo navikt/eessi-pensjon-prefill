@@ -3,7 +3,15 @@ package no.nav.eessi.pensjon.fagmodul.prefill.sed
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PersonData
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillSed
-import no.nav.eessi.pensjon.fagmodul.sedmodel.*
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Bruker
+import no.nav.eessi.pensjon.fagmodul.sedmodel.EessisakItem
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Ektefelle
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Institusjon
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Nav
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Pensjon
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Person
+import no.nav.eessi.pensjon.fagmodul.sedmodel.PinItem
+import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -17,8 +25,8 @@ class PrefillP7000(private val prefillSed: PrefillSed) {
         logger.debug("Tilpasser P7000 forenklet preutfylling")
 
         val person = sed.nav?.bruker?.person
-        val perspin = sed.nav?.bruker?.person?.pin?.get(0)
-        val eessielm = sed.nav?.eessisak?.get(0)
+        val perspin = person?.pin?.firstOrNull()
+        val eessielm = sed.nav?.eessisak?.firstOrNull()
 
         val p7000 = SED(
                 sed = "P7000",
@@ -59,8 +67,7 @@ class PrefillP7000(private val prefillSed: PrefillSed) {
         )
 
         logger.debug("Tilpasser P7000 forenklet preutfylling, Ferdig.")
-
-        prefillData.sed = p7000
-        return prefillData.sed
+        return p7000
     }
+
 }
