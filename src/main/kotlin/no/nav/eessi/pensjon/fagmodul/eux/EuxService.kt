@@ -63,7 +63,9 @@ class EuxService (private val euxKlient: EuxKlient,
     fun opprettSedOnBuc(navSED: SED, euxCaseId: String): BucSedResponse {
         val euxUrlpath = "/buc/{RinaSakId}/sed"
         logger.info("Forsøker å opprette en ${navSED.sed}, rinasakId: $euxCaseId")
-        return euxKlient.opprettSed(euxUrlpath, navSED.toJsonSkipEmpty(), euxCaseId, OpprettSED, "Feil ved opprettSed: ${navSED.sed}, med rinaId: $euxCaseId", null)
+        val sedJson = navSED.toJsonSkipEmpty()
+        logger.debug("Logger ut $sedJson")
+        return euxKlient.opprettSed(euxUrlpath, sedJson, euxCaseId, OpprettSED, "Feil ved opprettSed: ${navSED.sed}, med rinaId: $euxCaseId", null)
     }
 
     /**
