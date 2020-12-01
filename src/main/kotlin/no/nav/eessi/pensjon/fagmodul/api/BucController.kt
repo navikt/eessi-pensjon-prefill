@@ -2,9 +2,11 @@ package no.nav.eessi.pensjon.fagmodul.api
 
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import io.swagger.annotations.ApiOperation
+import no.nav.eessi.pensjon.fagmodul.eux.BucAndSedSubject
 import no.nav.eessi.pensjon.fagmodul.eux.BucAndSedView
 import no.nav.eessi.pensjon.fagmodul.eux.BucUtils
 import no.nav.eessi.pensjon.fagmodul.eux.EuxService
+import no.nav.eessi.pensjon.fagmodul.eux.SubjectFnr
 import no.nav.eessi.pensjon.fagmodul.eux.ValidBucAndSed
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Rinasak
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Buc
@@ -186,11 +188,15 @@ class BucController(@Value("\${NAIS_NAMESPACE}") val nameSpace : String,
             val person = peninfo.person
             val avdod = hentGyldigAvdod(peninfo)
 
+            logger.info("vedtak aktoerid: ${person.aktorId}")
             if (avdod != null && person.aktorId == gjenlevendeAktoerid) {
+                logger.info("henter buc for gjenlevende ved vedtakid: $vedtakid")
                 val gjenlevBucs = avdod.map { avdodFnr -> getBucogSedViewGjenlevende(gjenlevendeAktoerid, avdodFnr) }.flatten()
-                return@measure gjenlevBucs.plus(getBucogSedView(gjenlevendeAktoerid)).distinctBy { it.caseId }
+                return@measure gjenlevBucs
+            } else {
+                logger.info("Henter buc for bruker: $gjenlevendeAktoerid")
+                return@measure getBucogSedView(gjenlevendeAktoerid)
             }
-            return@measure getBucogSedView(gjenlevendeAktoerid)
         }
     }
 
@@ -219,10 +225,8 @@ class BucController(@Value("\${NAIS_NAMESPACE}") val nameSpace : String,
                                    @PathVariable("avdodfnr", required = true) avdodfnr: String): List<BucAndSedView> {
 
         return BucDetaljerGjenlev.measure {
-            logger.debug("Prøver å dekode aktoerid: $aktoerid til gjenlevende fnr.")
-
+            logger.info("Prøver å dekode aktoerid: $aktoerid til gjenlevende fnr.")
             val fnrGjenlevende = hentFnrfraAktoerService(aktoerid, aktoerService)
-
             logger.debug("gjenlevendeFnr: $fnrGjenlevende samt avdødfnr: $avdodfnr")
 
             //hente BucAndSedView på avdød
@@ -234,11 +238,24 @@ class BucController(@Value("\${NAIS_NAMESPACE}") val nameSpace : String,
                 logger.error("Feiler ved henting av Rinasaker for gjenlevende og avdod", ex)
                 throw Exception("Feil ved henting av Rinasaker for gjenlevende")
             }
+            val normalBuc = getBucogSedView(aktoerid)
+            val normalbucAndSedView = normalBuc.map { bucview ->
+                if ( bucview.type == "P_BUC_02" || bucview.type == "P_BUC_05") {
+                    bucview.copy(subject = BucAndSedSubject(SubjectFnr(fnrGjenlevende), SubjectFnr(avdodfnr)))
+                } else {
+                    bucview
+                }
+            }.toList()
 
             //hente BucAndSedView resterende bucs på gjenlevende (normale bucs)
-            val normalbucAndSedView= getBucogSedView(aktoerid)
+            //logger.info("henter buc normalt")
+            //val normalbucAndSedView = getBucogSedView(aktoerid)
+            val list = avdodBucAndSedView.plus(normalbucAndSedView).distinctBy { it.caseId }
 
-            return@measure avdodBucAndSedView.plus(normalbucAndSedView).distinctBy { it.caseId }
+            logger.debug("buclist size: ${list.size}")
+            return@measure list
+
+//            return@measure avdodBucAndSedView
         }
     }
 

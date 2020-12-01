@@ -224,7 +224,9 @@ class EuxService (private val euxKlient: EuxKlient,
         // Henter rina saker basert på gjenlevendes fnr
         val rinaSakerBUC02MedFnr = euxKlient.getRinasaker(avdodFnr, null, "P_BUC_02", "\"open\"")
         val rinaSakerBUC05MedFnr = euxKlient.getRinasaker(avdodFnr, null, "P_BUC_05", "\"open\"")
+        logger.info("rinaSaker BUC02: ${rinaSakerBUC02MedFnr.size} BUC05: ${rinaSakerBUC05MedFnr.size}")
         val rinaSakerMedFnr = rinaSakerBUC02MedFnr.plus(rinaSakerBUC05MedFnr)
+        logger.info("rinaSaker total: ${rinaSakerMedFnr.size}")
         val filteredRinaIdAvdod = getFilteredArchivedaRinasaker(rinaSakerMedFnr)
 
         logger.debug("filterer ut rinasaker og får kun ider tilbake size: ${filteredRinaIdAvdod.size}")
@@ -267,7 +269,7 @@ class EuxService (private val euxKlient: EuxKlient,
         return bucdocumentidAvdod.map { docs ->
             val bucutil = BucUtils(docs.buc)
             val bucType = bucutil.getProcessDefinitionName()
-            logger.debug("henter documentid fra buc: ${docs.rinaidAvdod} bucType: $bucType")
+            logger.info("henter documentid fra buc: ${docs.rinaidAvdod} bucType: $bucType")
 
             val shortDoc = when (bucType) {
                 "P_BUC_02" -> bucutil.getDocumentByType(SEDType.P2100.name)
@@ -323,6 +325,7 @@ class EuxService (private val euxKlient: EuxKlient,
                 .lastOrNull()
     }
 
+    //** hente rinasaker fra RINA og SAF
     fun getRinasaker(fnr: String, aktoerId: String): List<Rinasak> {
         // henter rina saker basert på tilleggsinformasjon i journalposter
         val rinaSakIderMetadata = safClient.hentRinaSakIderFraDokumentMetadata(aktoerId)

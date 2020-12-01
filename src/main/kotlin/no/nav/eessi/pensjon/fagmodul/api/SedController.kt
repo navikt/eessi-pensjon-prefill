@@ -267,8 +267,11 @@ class SedController(private val euxService: EuxService,
         val buc = request.buc ?: throw MangelfulleInndataException("Mangler Buc")
         return when(buc) {
             "P_BUC_02" -> {
-                val norskIdent = request.riktigAvdod() ?: throw MangelfulleInndataException("Mangler fnr for avdød")
+                val norskIdent = request.riktigAvdod() ?: run {
+                    logger.error("Mangler fnr for avdød")
+                    throw MangelfulleInndataException("Mangler fnr for avdød") }
                 if (norskIdent.isBlank()) {
+                    logger.debug("Ident har tom input")
                     throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Ident har tom input-verdi")
                 }
                 aktoerService.hentGjeldendeIdent(IdentGruppe.AktoerId, NorskIdent(norskIdent))?.id ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "AktoerId for NorskIdent ikke funnet.")

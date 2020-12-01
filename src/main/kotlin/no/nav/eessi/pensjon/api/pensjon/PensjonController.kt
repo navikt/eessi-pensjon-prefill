@@ -94,18 +94,21 @@ class PensjonController(private val pensjonsinformasjonClient: Pensjonsinformasj
     @GetMapping("/sakliste/{aktoerId}")
     fun hentPensjonSakIder(@PathVariable("aktoerId", required = true) aktoerId: String): List<PensjonSak> {
         return PensjonControllerHentSakListe.measure {
-
             logger.info("henter sakliste for aktoer: $aktoerId")
-            val pensjonInformasjon = pensjonsinformasjonClient.hentAltPaaAktoerId(aktoerId)
-
-            val brukersSakerListe = pensjonInformasjon.brukersSakerListe.brukersSakerListe
-            if (brukersSakerListe == null) {
-                logger.error("Ingen brukersSakerListe funnet i pensjoninformasjon for aktoer: $aktoerId")
-                throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Ingen brukersSakerListe funnet i pensjoninformasjon for aktoer: $aktoerId")
-            }
-            return@measure brukersSakerListe.map { sak ->
-                logger.debug("PensjonSak for journalføring: sakId: ${sak.sakId} sakType: ${sak.sakType} sakStatus: ${sak.status} ")
-                PensjonSak(sak.sakId.toString(), sak.sakType, PensjonSakStatus.from(sak.status))
+            return@measure try {
+                val pensjonInformasjon = pensjonsinformasjonClient.hentAltPaaAktoerId(aktoerId)
+                val brukersSakerListe = pensjonInformasjon.brukersSakerListe.brukersSakerListe
+                if (brukersSakerListe == null) {
+                    logger.error("Ingen brukersSakerListe funnet i pensjoninformasjon for aktoer: $aktoerId")
+                    throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Ingen brukersSakerListe funnet i pensjoninformasjon for aktoer: $aktoerId")
+                }
+                brukersSakerListe.map { sak ->
+                    logger.debug("PensjonSak for journalføring: sakId: ${sak.sakId} sakType: ${sak.sakType} sakStatus: ${sak.status} ")
+                    PensjonSak(sak.sakId.toString(), sak.sakType, PensjonSakStatus.from(sak.status))
+                }
+            } catch (ex: Exception) {
+                logger.warn("Ingen pensjoninformasjon kunne hentes", ex)
+                listOf()
             }
         }
     }

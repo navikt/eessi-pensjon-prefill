@@ -33,7 +33,11 @@ class PrefillP8000(private val prefillSed: PrefillSed) {
         val eessielm = navsed.nav?.eessisak
         val gjenlevendeBruker: Bruker? = navsed.pensjon?.gjenlevende
         val avDodBruker = navsed.nav?.bruker
+        logger.debug("gjenlevendeBruker: ${gjenlevendeBruker?.person?.fornavn} PIN: ${gjenlevendeBruker?.person?.pin?.firstOrNull()?.identifikator} ")
+        logger.debug("avDodBruker: ${avDodBruker?.person?.fornavn} PIN: ${avDodBruker?.person?.pin?.firstOrNull()?.identifikator} ")
+
         val kravhistorikkGjenlev = sak?.kravHistorikkListe?.let { hentKravhistorikkForGjenlevende(it) }
+
 
         return if (prefillData.refTilPerson == ReferanseTilPerson.SOKER && sak?.sakType in listOf(EPSaktype.ALDER.name, EPSaktype.UFOREP.name) && gjenlevendeBruker != null) {
             logger.info("Prefill P8000 forenklet preutfylling for gjenlevende uten avdød, Ferdig.")
@@ -51,6 +55,7 @@ class PrefillP8000(private val prefillSed: PrefillSed) {
     }
 
     private fun sedP8000(eessielm: List<EessisakItem>?, forsikretPerson: Person?, adresse: Adresse?, prefillData: PrefillDataModel, annenPerson: Bruker?): SED {
+        logger.info("forsikretPerson: ${forsikretPerson != null} annenPerson: ${annenPerson != null}"  )
         val forsikretPersonPin = forsikretPerson?.pin?.firstOrNull()
         val p8000 = SED(
                 sed = SEDType.P8000.name,

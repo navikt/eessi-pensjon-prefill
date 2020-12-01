@@ -219,7 +219,7 @@ class PrefillP8000P_BUC_05Test {
                 "bruker" : {
                   "person" : {
                     "pin" : [ {
-                      "identifikator" : "01118043352",
+                      "identifikator" : "$fnr",
                       "land" : "NO"
                     } ],
                     "etternavn" : "Robin",
@@ -251,7 +251,6 @@ class PrefillP8000P_BUC_05Test {
 
         val sak = V1Sak()
         val v1Kravhistorikk = V1KravHistorikk()
-
         sak.sakType = EPSaktype.UFOREP.toString()
         sak.sakId = 100
         sak.kravHistorikkListe = V1KravHistorikkListe()
@@ -284,7 +283,7 @@ class PrefillP8000P_BUC_05Test {
                 "bruker" : {
                   "person" : {
                     "pin" : [ {
-                      "identifikator" : "01118043352",
+                      "identifikator" : "$fnr",
                       "land" : "NO"
                     } ],
                     "etternavn" : "Robin",

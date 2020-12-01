@@ -44,7 +44,7 @@ class BucUtils(private val buc: Buc ) {
         return getBuc().creator
     }
 
-    fun getCreatorAsInstitusjonItem(): InstitusjonItem? {
+    fun getCreatorAsInstitusjonItem(): InstitusjonItem {
         return InstitusjonItem(
                 country = getCreator()?.organisation?.countryCode ?: "",
                 institution = getCreator()?.organisation?.id ?: "",
@@ -228,8 +228,7 @@ class BucUtils(private val buc: Buc ) {
 
     fun getAllDocuments() = getDocuments().map { createShortDocument(it) }
 
-    fun getDocumentByType(sedType: String): ShortDocumentItem? =
-            getAllDocuments().firstOrNull { sedType == it.type && it.status != "empty" }
+    fun getDocumentByType(sedType: String): ShortDocumentItem? = getAllDocuments().firstOrNull { sedType == it.type && it.status != "empty" }
 
     fun findAndFilterDocumentItemByType(sedType: SEDType) = findAndFilterDocumentItemByType(sedType.name)
 
