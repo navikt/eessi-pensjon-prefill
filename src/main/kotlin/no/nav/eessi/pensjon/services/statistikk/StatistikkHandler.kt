@@ -37,7 +37,7 @@ class StatistikkHandler(private val kafkaTemplate: KafkaTemplate<String, String>
 
         val payload = melding.toJson()
 
-        logger.info("Opprette oppgave melding på kafka: ${kafkaTemplate.defaultTopic}  melding: $melding")
+        logger.info("Oppretter statistikk melding på kafka: ${kafkaTemplate.defaultTopic}  melding: $melding")
         kafkaTemplate.sendDefault(key, payload).get()
     }
 
