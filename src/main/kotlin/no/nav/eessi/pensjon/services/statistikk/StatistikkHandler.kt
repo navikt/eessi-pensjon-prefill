@@ -51,7 +51,7 @@ data class StatistikkMelding(
     val timeStamp: Long,
     val saksNummer: String? = null,
     val vetaksId: String? = null,
-    val hendelseVersjon: Int? = null
+    val hendelseVersjon: Int? = 1
 )
 
 enum class HendelseType {
