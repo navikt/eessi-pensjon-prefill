@@ -380,7 +380,7 @@ class SedPrefillIntegrationSpringTest {
                 .content(apijson))
                 .andDo(print())
                 .andExpect(status().isBadRequest)
-                .andExpect(status().reason(Matchers.containsString("Det er ikke markert for bodd/arbeidet i utlandet. Krav SED P2000 blir ikke opprettet")))
+                .andExpect(status().reason(Matchers.containsString("Du kan ikke opprette krav-SED P2000 fra brukerkontekst. Dersom det gjelder Utsendelse til avtaleland, se egen rutine for utsendelse av SED på Navet.")))
     }
 
 

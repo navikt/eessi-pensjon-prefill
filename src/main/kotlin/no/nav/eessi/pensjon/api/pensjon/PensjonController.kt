@@ -48,7 +48,7 @@ class PensjonController(private val pensjonsinformasjonClient: Pensjonsinformasj
         auditlogger.log("/saktype/{$sakId}/{$aktoerId}", "hentPensjonSakType")
 
         return PensjonControllerHentSakType.measure {
-            logger.debug("Henter sakstype på $sakId / $aktoerId")
+            logger.info("Henter sakstype på $sakId / $aktoerId")
 
             try {
                 val hentKunSakType = pensjonsinformasjonClient.hentKunSakType(sakId, aktoerId)

@@ -116,13 +116,13 @@ object PrefillP2xxxPensjon {
         val forsBehanMedUtlanTom = finnKravHistorikk("F_BH_MED_UTL", sak.kravHistorikkListe).isNullOrEmpty()
         logger.debug("forsBehanBoUtlanTom: $forsBehanBoUtlanTom, forsBehanMedUtlanTom: $forsBehanMedUtlanTom")
         if (forsBehanBoUtlanTom and forsBehanMedUtlanTom) {
-            logger.warn("Det er ikke markert for bodd/arbeidet i utlandet. Krav SED $sedType blir ikke opprettet")
-            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Det er ikke markert for bodd/arbeidet i utlandet. Krav SED $sedType blir ikke opprettet")
+            logger.warn("Du kan ikke opprette krav-SED $sedType fra brukerkontekst. Dersom det gjelder Utsendelse til avtaleland, se egen rutine for utsendelse av SED på Navet.")
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Du kan ikke opprette krav-SED $sedType fra brukerkontekst. Dersom det gjelder Utsendelse til avtaleland, se egen rutine for utsendelse av SED på Navet.")
         }
         logger.info("avslutt på validering av $sedType, fortsetter med preutfylling")
     }
 
-    fun validerGyldigVedtakEllerKravtypeOgArsak(sak:V1Sak, sedType: String, vedtak: V1Vedtak?){
+    fun validerGyldigVedtakEllerKravtypeOgArsak(sak:V1Sak, sedType: String, vedtak: V1Vedtak?) {
 
         vedtak?.let {
             logger.info("Validering på vedtak bosatt utland ${it.isBoddArbeidetUtland}")
