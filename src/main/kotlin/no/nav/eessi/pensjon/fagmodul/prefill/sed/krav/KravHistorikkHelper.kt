@@ -103,9 +103,8 @@ object KravHistorikkHelper {
         logger.debug("--------------------------------------------------------------")
 
         logger.debug("Prøver å sette kravDato til Virkningstidpunkt: ${valgtKrav.kravType} og dato: ${valgtKrav.mottattDato}")
-        logger.debug("$message")
-        return Krav(
-                dato = valgtKrav.mottattDato?.simpleFormat()
+        logger.debug("sakstatus: $message")
+        return Krav(dato = valgtKrav.mottattDato?.simpleFormat()
         )
     }
 

@@ -273,6 +273,81 @@ class SedPrefillIntegrationSpringTest {
 
     }
 
+    @Test
+    @Throws(Exception::class)
+    fun `prefill sed P2000 alder med AVSL returnerer en valid sedjson`() {
+
+
+        doReturn(NorskIdent("23123123")).`when`(aktoerService).hentGjeldendeIdent(IdentGruppe.NorskIdent, AktoerId("0105094340092"))
+        doReturn(BrukerMock.createWith()).`when`(personV3Service).hentBruker(any())
+        doReturn(PrefillTestHelper.readXMLresponse("P2000krav-alderpensjon-avslag.xml")).`when`(restTemplate).exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java))
+        doReturn("QX").`when`(kodeverkClient).finnLandkode2(any())
+
+        val apijson = dummyApijson(sakid = "22889955", aktoerId = "0105094340092")
+
+
+        val result = mockMvc.perform(post("/sed/prefill")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(apijson))
+                .andDo(print())
+                .andExpect(status().isOk)
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andReturn()
+
+        val response = result.response.getContentAsString(charset("UTF-8"))
+
+        val validResponse = """
+            {
+              "sed" : "P2000",
+              "sedGVer" : "4",
+              "sedVer" : "1",
+              "nav" : {
+                "eessisak" : [ {
+                  "institusjonsid" : "NO:noinst002",
+                  "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                  "saksnummer" : "22889955",
+                  "land" : "NO"
+                } ],
+                "bruker" : {
+                  "person" : {
+                    "pin" : [ {
+                      "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                      "institusjonsid" : "NO:noinst002",
+                      "identifikator" : "3123",
+                      "land" : "NO"
+                    } ],
+                    "statsborgerskap" : [ {
+                      "land" : "QX"
+                    } ],
+                    "etternavn" : "Testesen",
+                    "fornavn" : "Test",
+                    "kjoenn" : "M",
+                    "foedselsdato" : "1988-07-12"
+                  },
+                  "adresse" : {
+                    "gate" : "Oppoverbakken 66",
+                    "by" : "SØRUMSAND",
+                    "postnummer" : "1920",
+                    "land" : "QX"
+                  }
+                },
+                "krav" : {
+                  "dato" : "2019-04-30"
+                }
+              },
+              "pensjon" : {
+                "kravDato" : {
+                  "dato" : "2019-04-30"
+                }
+              }
+            }
+        """.trimIndent()
+
+        JSONAssert.assertEquals(response, validResponse, true)
+
+    }
+
+
 
     @Test
     fun `prefill sed med kravtype førstehangbehandling norge men med vedtak bodsatt utland skal prefylle sed`() {
@@ -298,10 +373,60 @@ class SedPrefillIntegrationSpringTest {
 
         val response = result.response.getContentAsString(charset("UTF-8"))
 
+        val validResponse = """
+            {
+              "sed" : "P2000",
+              "sedGVer" : "4",
+              "sedVer" : "1",
+              "nav" : {
+                "eessisak" : [ {
+                  "institusjonsid" : "NO:noinst002",
+                  "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                  "saksnummer" : "22580170",
+                  "land" : "NO"
+                } ],
+                "bruker" : {
+                  "person" : {
+                    "pin" : [ {
+                      "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                      "institusjonsid" : "NO:noinst002",
+                      "identifikator" : "12312312312",
+                      "land" : "NO"
+                    } ],
+                    "statsborgerskap" : [ {
+                      "land" : "QX"
+                    } ],
+                    "etternavn" : "Gjenlev",
+                    "fornavn" : "Lever",
+                    "kjoenn" : "M",
+                    "foedselsdato" : "1988-07-12"
+                  },
+                  "adresse" : {
+                    "gate" : "Oppoverbakken 66",
+                    "by" : "SØRUMSAND",
+                    "postnummer" : "1920",
+                    "land" : "XQ"
+                  }
+                },
+                "krav" : {
+                  "dato" : "2018-05-31"
+                }
+              },
+              "pensjon" : {
+                "kravDato" : {
+                  "dato" : "2018-05-31"
+                }
+              }
+            }
+
+        """.trimIndent()
+
+        JSONAssert.assertEquals(response, validResponse, true)
+
     }
 
 
-    //test på validering av pensjoninformasjon krav
+    /** test på validering av pensjoninformasjon krav **/
     @Test
     @Throws(Exception::class)
     fun `prefill sed med kravtype kun utland skal kaste en Exception`() {
@@ -312,7 +437,7 @@ class SedPrefillIntegrationSpringTest {
 
         val apijson = dummyApijson(sakid = "21920707", aktoerId = "0105094340092")
 
-        val result = mockMvc.perform(post("/sed/prefill")
+        mockMvc.perform(post("/sed/prefill")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(apijson))
                 .andDo(print())
@@ -331,7 +456,7 @@ class SedPrefillIntegrationSpringTest {
 
         val apijson = dummyApijson(sakid = "22580170", aktoerId = "0105094340092")
 
-        val result = mockMvc.perform(post("/sed/prefill")
+        mockMvc.perform(post("/sed/prefill")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(apijson))
                 .andDo(print())
@@ -357,7 +482,7 @@ class SedPrefillIntegrationSpringTest {
         val subject = dummyApiSubjectjson("9876543210")
         val apijson = dummyApijson(sakid = "20541862", aktoerId = "0105094340092", sed = "P2100", buc = "P_BUC_02", subject = subject)
 
-        val result = mockMvc.perform(post("/sed/prefill")
+        mockMvc.perform(post("/sed/prefill")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(apijson))
                 .andDo(print())
@@ -375,7 +500,7 @@ class SedPrefillIntegrationSpringTest {
 
         val apijson = dummyApijson(sakid = "21920707", aktoerId = "0105094340092", sed = "P2000")
 
-        val result = mockMvc.perform(post("/sed/prefill")
+        mockMvc.perform(post("/sed/prefill")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(apijson))
                 .andDo(print())
