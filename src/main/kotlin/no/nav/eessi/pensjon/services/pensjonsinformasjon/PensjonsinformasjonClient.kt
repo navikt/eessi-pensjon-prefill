@@ -37,11 +37,10 @@ class PensjonsinformasjonClient(
         fun finnSak(sakId: String, pendata: Pensjonsinformasjon): V1Sak {
             logger.info("Søker brukersSakerListe etter sakId: $sakId")
             val v1saklist = pendata.brukersSakerListe.brukersSakerListe
-            return v1saklist.filter { sak -> "${sak.sakId}" == sakId  }.firstOrNull() ?: {
-                logger.error("Finner ingen sak, saktype på valgt sakId $sakId")
-
-                //Kravdato mangler
-                throw IngenSakFunnetException("Finner ingen sak, saktype på valgt sakId $sakId")
+            return v1saklist.firstOrNull { sak -> "${sak.sakId}" == sakId  } ?: {
+                val errormsg = "Finner ingen sak på sakId: $sakId.\n Dersom kravet gjelder \"Førstegangsbehandling kun utland\" eller \"Utsendelse til avtaleland\",  se egen rutine på Navet."
+                logger.error(errormsg)
+                throw IngenSakFunnetException(errormsg)
             }()
         }
     }

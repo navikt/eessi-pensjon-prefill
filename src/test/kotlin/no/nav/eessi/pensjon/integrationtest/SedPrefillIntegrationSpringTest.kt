@@ -429,6 +429,28 @@ class SedPrefillIntegrationSpringTest {
     /** test på validering av pensjoninformasjon krav **/
     @Test
     @Throws(Exception::class)
+    fun `prefill sed med kun utland, ikke korrekt sakid skal kaste en Exception`() {
+
+        doReturn(NorskIdent("23123123")).`when`(aktoerService).hentGjeldendeIdent(IdentGruppe.NorskIdent, AktoerId("0105094340092"))
+        doReturn(BrukerMock.createWith()).`when`(personV3Service).hentBruker(any())
+        doReturn(PrefillTestHelper.readXMLresponse("P2000-AP-KUNUTL-IKKEVIRKNINGTID.xml")).`when`(restTemplate).exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java))
+
+        val apijson = dummyApijson(sakid = "1232123123", aktoerId = "0105094340092")
+        val expectedError = """Finner ingen sak på sakId: 1232123123.
+ Dersom kravet gjelder "Førstegangsbehandling kun utland" eller "Utsendelse til avtaleland",  se egen rutine på Navet.""".trimIndent()
+
+        mockMvc.perform(post("/sed/prefill")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(apijson))
+                .andDo(print())
+                .andExpect(status().isNotFound)
+                .andExpect(status().reason(Matchers.containsString(expectedError)))
+
+    }
+
+
+    @Test
+    @Throws(Exception::class)
     fun `prefill sed med kravtype kun utland skal kaste en Exception`() {
 
         doReturn(NorskIdent("23123123")).`when`(aktoerService).hentGjeldendeIdent(IdentGruppe.NorskIdent, AktoerId("0105094340092"))
