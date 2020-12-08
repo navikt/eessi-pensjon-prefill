@@ -436,8 +436,7 @@ class SedPrefillIntegrationSpringTest {
         doReturn(PrefillTestHelper.readXMLresponse("P2000-AP-KUNUTL-IKKEVIRKNINGTID.xml")).`when`(restTemplate).exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java))
 
         val apijson = dummyApijson(sakid = "1232123123", aktoerId = "0105094340092")
-        val expectedError = """Finner ingen sak på sakId: 1232123123.
- Dersom kravet gjelder "Førstegangsbehandling kun utland" eller "Utsendelse til avtaleland",  se egen rutine på Navet.""".trimIndent()
+        val expectedError = """Dersom kravet gjelder "Førstegangsbehandling kun utland" eller "Utsendelse til avtaleland", se egen rutine på Navet.""".trimIndent()
 
         mockMvc.perform(post("/sed/prefill")
                 .contentType(MediaType.APPLICATION_JSON)

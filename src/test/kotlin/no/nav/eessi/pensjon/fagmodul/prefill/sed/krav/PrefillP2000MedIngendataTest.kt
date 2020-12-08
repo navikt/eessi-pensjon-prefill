@@ -66,8 +66,7 @@ class PrefillP2000MedIngendataTest {
         try {
             prefillSEDService.prefill(prefillData)
         } catch (ex: ResponseStatusException) {
-            val errormsg = """Finner ingen sak på sakId: 21644722.
- Dersom kravet gjelder "Førstegangsbehandling kun utland" eller "Utsendelse til avtaleland",  se egen rutine på Navet.""".trimIndent()
+            val errormsg = """Dersom kravet gjelder "Førstegangsbehandling kun utland" eller "Utsendelse til avtaleland", se egen rutine på Navet.""".trimIndent()
             assertEquals("404 NOT_FOUND \"$errormsg\"", ex.message)
         }
     }

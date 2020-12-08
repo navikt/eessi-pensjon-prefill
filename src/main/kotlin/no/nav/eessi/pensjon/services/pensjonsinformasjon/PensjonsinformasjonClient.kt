@@ -38,8 +38,8 @@ class PensjonsinformasjonClient(
             logger.info("Søker brukersSakerListe etter sakId: $sakId")
             val v1saklist = pendata.brukersSakerListe.brukersSakerListe
             return v1saklist.firstOrNull { sak -> "${sak.sakId}" == sakId  } ?: {
-                val errormsg = "Finner ingen sak på sakId: $sakId.\n Dersom kravet gjelder \"Førstegangsbehandling kun utland\" eller \"Utsendelse til avtaleland\",  se egen rutine på Navet."
-                logger.error(errormsg)
+                val errormsg = "Dersom kravet gjelder \"Førstegangsbehandling kun utland\" eller \"Utsendelse til avtaleland\", se egen rutine på Navet."
+                logger.error("Finner ingen sak på sakId: $sakId.\n$errormsg")
                 throw IngenSakFunnetException(errormsg)
             }()
         }
