@@ -44,7 +44,7 @@ class StatistikkHandlerTest{
         val record =  ProducerRecord<String, String>("","")
         future.set( SendResult(record, recordMetadata ) )
 
-        statHandler.produserBucOpprettetHendelse(rinaid = "", bucType = "P_BUC_01", timestamp = 10000L)
+        statHandler.produserBucOpprettetHendelse(rinaid = "", dokumentId = null)
 
         verify(template, times(1)).sendDefault(any(), any())
     }

@@ -14,20 +14,23 @@ class StatistikkHandler(private val kafkaTemplate: KafkaTemplate<String, String>
     private val logger = LoggerFactory.getLogger(StatistikkHandler::class.java)
     private val X_REQUEST_ID = "x_request_id"
 
-    fun produserBucOpprettetHendelse(rinaid: String, bucType: String, timestamp: Long) {
+    fun produserBucOpprettetHendelse(rinaid: String, dokumentId: String?) {
 
         val melding = StatistikkMelding(
-                hendelseType = HendelseType.OPPRETTBUC,
-                rinaid = rinaid,
-                bucType = bucType,
-                timeStamp = timestamp
+            hendelseType = HendelseType.OPPRETTBUC,
+            rinaid = rinaid,
+            dokumentId = dokumentId
         )
-        try {
-            produserKafkaMelding(melding)
-        }
-        catch (e : Exception){
-            logger.error(e.message, e)
-        }
+        produserKafkaMelding(melding)
+    }
+
+    fun produserSedOpprettetHendelse(rinaid: String, documentId: String?) {
+        val melding = StatistikkMelding(
+            hendelseType = HendelseType.OPPRETTSED,
+            rinaid = rinaid,
+            dokumentId = documentId
+        )
+        produserKafkaMelding(melding)
     }
 
     private fun produserKafkaMelding(melding: StatistikkMelding) {
@@ -42,16 +45,13 @@ class StatistikkHandler(private val kafkaTemplate: KafkaTemplate<String, String>
     }
 
     fun populerMDC() = MDC.get(X_REQUEST_ID)
+
 }
 
 data class StatistikkMelding(
     val hendelseType: HendelseType,
     val rinaid: String,
-    val bucType: String,
-    val timeStamp: Long,
-    val saksNummer: String? = null,
-    val vetaksId: String? = null,
-    val hendelseVersjon: Int? = 1
+    val dokumentId: String?
 )
 
 enum class HendelseType {

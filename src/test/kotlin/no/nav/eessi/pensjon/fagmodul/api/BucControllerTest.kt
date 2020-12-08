@@ -3,6 +3,7 @@ package no.nav.eessi.pensjon.fagmodul.api
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.doThrow
+import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
@@ -372,7 +373,7 @@ class BucControllerTest {
 
         bucController.createBuc("P_BUC_03")
 
-        verify(statistikkHandler, times(0)).produserBucOpprettetHendelse(any(), any(), any())
+        verify(statistikkHandler, times(0)).produserBucOpprettetHendelse(any(), eq(null))
     }
 
 }

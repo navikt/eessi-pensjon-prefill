@@ -508,9 +508,9 @@ class EuxKlientTest {
         val result = klient.opprettSvarSed(
             SED("P2000").toJsonSkipEmpty(),
             "123456",
-            MetricsHelper(SimpleMeterRegistry()).init("dummy"),
+            "11111",
             "Feil ved opprettSed",
-            "11111"
+            MetricsHelper(SimpleMeterRegistry()).init("dummy")
         )
 
         assertEquals("123456", result.caseId)

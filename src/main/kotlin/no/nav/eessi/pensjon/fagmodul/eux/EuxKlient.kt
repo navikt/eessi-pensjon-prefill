@@ -72,8 +72,12 @@ class EuxKlient(private val euxOidcRestTemplate: RestTemplate,
 
     //ny SED på ekisterende type eller ny svar SED på ekisternede rina
     @Throws(EuxGenericServerException::class, SedDokumentIkkeOpprettetException::class)
-    fun opprettSvarSed(navSEDjson: String, euxCaseId: String, metric: MetricsHelper.Metric, errorMessage: String, parentDocumentId: String): BucSedResponse {
-
+    fun opprettSvarSed(navSEDjson: String,
+                       euxCaseId: String,
+                       parentDocumentId: String,
+                       errorMessage: String,
+                       metric: MetricsHelper.Metric
+    ): BucSedResponse {
         val httpEntity = createHttpHeaders(navSEDjson)
 
         logger.debug("Kaller eux med json: $navSEDjson, euxCaseId: $euxCaseId, parentId: $parentDocumentId")
@@ -92,7 +96,10 @@ class EuxKlient(private val euxOidcRestTemplate: RestTemplate,
 
     //ny SED på ekisterende type eller ny svar SED på ekisternede rina
     @Throws(EuxGenericServerException::class, SedDokumentIkkeOpprettetException::class)
-    fun opprettSed(navSEDjson: String, euxCaseId: String, metric: MetricsHelper.Metric, errorMessage: String): BucSedResponse {
+    fun opprettSed(navSEDjson: String,
+                   euxCaseId: String,
+                   metric: MetricsHelper.Metric,
+                   errorMessage: String): BucSedResponse {
 
         val httpEntity = createHttpHeaders(navSEDjson)
 

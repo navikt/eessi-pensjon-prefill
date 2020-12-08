@@ -48,10 +48,11 @@ class EuxService (private val euxKlient: EuxKlient,
     @Throws(EuxGenericServerException::class, SedDokumentIkkeOpprettetException::class)
     fun opprettSvarSedOnBuc(navSED: SED, euxCaseId: String, parentDocumentId: String): BucSedResponse {
         return euxKlient.opprettSvarSed(
-                navSED.toJsonSkipEmpty(),
-                euxCaseId,
-                OpprettSvarSED,
-                "Feil ved opprettSvarSed", parentDocumentId)
+            navSED.toJsonSkipEmpty(),
+            euxCaseId,
+            parentDocumentId,
+            "Feil ved opprettSvarSed", OpprettSvarSED
+        )
     }
 
     /**

@@ -284,7 +284,7 @@ class BucController(@Value("\${NAIS_NAMESPACE}") val nameSpace : String,
         //create bucDetail back from newly created buc call eux-rina-api to get data.
         val buc = euxService.getBuc(euxCaseId)
         if(nameSpace == "q2") {
-            statistikk.produserBucOpprettetHendelse(euxCaseId, buctype, System.currentTimeMillis())
+            statistikk.produserBucOpprettetHendelse(euxCaseId, null)
         }
         return BucAndSedView.from(buc)
     }
