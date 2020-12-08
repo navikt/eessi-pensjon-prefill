@@ -66,7 +66,9 @@ class PrefillP2000MedIngendataTest {
         try {
             prefillSEDService.prefill(prefillData)
         } catch (ex: ResponseStatusException) {
-            assertEquals("404 NOT_FOUND \"Finner ingen sak, saktype på valgt sakId 21644722\"", ex.message)
+            val errormsg = """Finner ingen sak på sakId: 21644722.
+ Dersom kravet gjelder "Førstegangsbehandling kun utland" eller "Utsendelse til avtaleland",  se egen rutine på Navet.""".trimIndent()
+            assertEquals("404 NOT_FOUND \"$errormsg\"", ex.message)
         }
     }
 
