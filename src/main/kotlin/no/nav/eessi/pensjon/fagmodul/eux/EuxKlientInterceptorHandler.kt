@@ -21,8 +21,7 @@ class EuxKlientInterceptorHandler(private val statistikkHandler: StatistikkHandl
     fun logOpprettSed(point: JoinPoint, retVal: BucSedResponse) {
 
         logger.debug("StatistikkhandlerInterceptor, logger opprettSed fra ${point.args}, med BucResponse: $retVal")
-        statistikkHandler.produserSedOpprettetHendelse(retVal.caseId, null)
-
+        statistikkHandler.produserSedOpprettetHendelse(retVal.caseId, retVal.documentId)
     }
 
     @AfterReturning("execution(* no.nav.eessi.pensjon.fagmodul.eux.EuxKlient.opprettSvarSed(..))",
@@ -31,7 +30,6 @@ class EuxKlientInterceptorHandler(private val statistikkHandler: StatistikkHandl
 
         logger.debug("StatistikkhandlerInterceptor, logger opprettSvarSed, med BucResponse: $retVal")
         statistikkHandler.produserSedOpprettetHendelse(retVal.caseId, retVal.documentId)
-
     }
 }
 
