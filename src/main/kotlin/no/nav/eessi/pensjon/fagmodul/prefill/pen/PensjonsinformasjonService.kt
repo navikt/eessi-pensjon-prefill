@@ -72,11 +72,7 @@ class PensjonsinformasjonService(private val pensjonsinformasjonClient: Pensjons
             null
         }
 
-    fun hentVedtak(prefillData: PrefillDataModel): Pensjonsinformasjon {
-        val vedtakId = prefillData.vedtakId
-
-        if (vedtakId.isBlank()) throw ManglendeVedtakIdException("Mangler vedtakID")
-
+    fun hentVedtak(vedtakId: String): Pensjonsinformasjon {
         logger.debug("----------------------------------------------------------")
         val starttime = System.nanoTime()
 
@@ -147,8 +143,6 @@ class PensjonsinformasjonService(private val pensjonsinformasjonClient: Pensjons
 class IkkeGyldigKallException(reason: String): ResponseStatusException(HttpStatus.BAD_REQUEST, reason)
 
 class ManglendeSakIdException(reason: String): ResponseStatusException(HttpStatus.BAD_REQUEST, reason)
-
-class ManglendeVedtakIdException(reason: String): ResponseStatusException(HttpStatus.BAD_REQUEST, reason)
 
 class FeilSakstypeForSedException(reason: String): ResponseStatusException(HttpStatus.BAD_REQUEST, reason)
 
