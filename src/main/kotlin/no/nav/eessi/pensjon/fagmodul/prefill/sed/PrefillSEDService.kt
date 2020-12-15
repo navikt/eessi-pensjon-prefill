@@ -20,6 +20,7 @@ import no.nav.eessi.pensjon.personoppslag.aktoerregister.IdentGruppe
 import no.nav.eessi.pensjon.personoppslag.aktoerregister.NorskIdent
 import no.nav.eessi.pensjon.personoppslag.personv3.PersonV3Service
 import no.nav.eessi.pensjon.utils.toJson
+import no.nav.pensjon.v1.vedtak.V1Vedtak
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.PersonIdent
 import org.slf4j.Logger
@@ -94,7 +95,12 @@ class PrefillSEDService(private val prefillNav: PrefillNav,
 
     fun hentRelevantPensjonSak(prefillData: PrefillDataModel, akseptabelSakstypeForSed: (String) -> Boolean) = pensjonsinformasjonService.hentRelevantPensjonSak(prefillData, akseptabelSakstypeForSed)
 
-    private fun hentRelevantVedtak(prefillData: PrefillDataModel) = pensjonsinformasjonService.hentRelevantVedtakHvisFunnet(hentVedtak(prefillData))
+    private fun hentRelevantVedtak(prefillData: PrefillDataModel): V1Vedtak? {
+        prefillData.vedtakId.let {
+            return pensjonsinformasjonService.hentRelevantVedtakHvisFunnet(it ?: "")
+        }
+    }
+
 
     fun hentPersonerMedBarn(prefillData: PrefillDataModel) = hentPersoner(prefillData, true)
 

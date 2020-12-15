@@ -114,9 +114,7 @@ class PensjonsinformasjonService(private val pensjonsinformasjonClient: Pensjons
     }
 
     fun hentRelevantVedtakHvisFunnet(vedtakId : String): V1Vedtak? {
-
         if (vedtakId.isBlank()) return null
-
         return  hentMedVedtak(vedtakId).vedtak
     }
 
