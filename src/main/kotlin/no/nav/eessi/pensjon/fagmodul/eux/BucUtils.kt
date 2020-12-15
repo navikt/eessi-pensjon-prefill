@@ -306,9 +306,9 @@ class BucUtils(private val buc: Buc ) {
                 .sorted()
     }
 
-    fun checkIfSedCanBeCreated(sedType: String?): Boolean {
+    fun checkIfSedCanBeCreated(sedType: String?, sakNr: String): Boolean {
         if (getFiltrerteGyldigSedAksjonListAsString().none { it == sedType }) {
-            logger.warn("SED $sedType kan ikke opprettes, sjekk om den allerede finnes")
+            logger.warn("SED $sedType kan ikke opprettes, sjekk om den allerede finnes, sakNr: $sakNr ")
             throw SedDokumentKanIkkeOpprettesException("SED $sedType kan ikke opprettes i RINA (mulig det allerede finnes et utkast)")
         }
         return true

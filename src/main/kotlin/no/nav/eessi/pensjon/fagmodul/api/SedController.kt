@@ -103,7 +103,7 @@ class SedController(private val euxService: EuxService,
         val bucUtil = AddInstutionAndDocumentBucUtils.measure{
             logger.info("******* Hent BUC sjekk om sed kan opprettes *******")
             BucUtils(euxService.getBuc(dataModel.euxCaseID)).also { bucUtil ->
-                bucUtil.checkIfSedCanBeCreated(dataModel.sedType)
+                bucUtil.checkIfSedCanBeCreated(dataModel.sedType, dataModel.penSaksnummer)
             }
         }
 

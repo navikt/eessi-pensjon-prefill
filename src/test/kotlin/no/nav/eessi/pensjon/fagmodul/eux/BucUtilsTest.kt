@@ -7,7 +7,11 @@ import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Organisation
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ParticipantsItem
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.models.SEDType
-import no.nav.eessi.pensjon.utils.*
+import no.nav.eessi.pensjon.utils.mapAnyToJson
+import no.nav.eessi.pensjon.utils.mapJsonToAny
+import no.nav.eessi.pensjon.utils.toJson
+import no.nav.eessi.pensjon.utils.typeRefs
+import no.nav.eessi.pensjon.utils.validateJson
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
@@ -560,7 +564,7 @@ class BucUtilsTest {
         val bucUtils = BucUtils(buc)
 
         assertThrows<SedDokumentKanIkkeOpprettesException> {
-            bucUtils.checkIfSedCanBeCreated("P120000")
+            bucUtils.checkIfSedCanBeCreated("P120000", "123333")
         }
     }
 
@@ -571,7 +575,7 @@ class BucUtilsTest {
         val bucUtils = BucUtils(buc)
 
         assertThrows<SedDokumentKanIkkeOpprettesException> {
-            bucUtils.checkIfSedCanBeCreated("P10000")
+            bucUtils.checkIfSedCanBeCreated("P10000", "123333")
         }
     }
 
@@ -582,7 +586,7 @@ class BucUtilsTest {
         val bucUtils = BucUtils(buc)
 
         assertThrows<SedDokumentKanIkkeOpprettesException> {
-            bucUtils.checkIfSedCanBeCreated("P50000")
+            bucUtils.checkIfSedCanBeCreated("P50000", "123333")
         }
     }
 
@@ -595,13 +599,13 @@ class BucUtilsTest {
         val allowed = listOf("P5000", "P6000", "P8000", "P10000", "H121", "H020")
 
         allowed.forEach {
-            assertEquals(true, bucUtils.checkIfSedCanBeCreated(it) )
+            assertEquals(true, bucUtils.checkIfSedCanBeCreated(it, "123333") )
         }
 
         val notAllowd = listOf("P2200", "P4000", "P3000_NO", "P9000")
         notAllowd.forEach {
             assertThrows<SedDokumentKanIkkeOpprettesException> {
-                bucUtils.checkIfSedCanBeCreated(it)
+                bucUtils.checkIfSedCanBeCreated(it, "123333")
             }
         }
     }
@@ -615,7 +619,7 @@ class BucUtilsTest {
         val notAllowd = listOf("P2000", "P4000", "P3000_NO", "P9000")
         notAllowd.forEach {
             assertThrows<SedDokumentKanIkkeOpprettesException> {
-                bucUtils.checkIfSedCanBeCreated(it)
+                bucUtils.checkIfSedCanBeCreated(it, "123333")
             }
         }
     }
@@ -629,13 +633,13 @@ class BucUtilsTest {
         val allowed = listOf("P4000", "P5000", "P6000", "P8000", "P7000", "P10000", "H120", "H020")
 
         allowed.forEach {
-            assertEquals(true, bucUtils.checkIfSedCanBeCreated(it) )
+            assertEquals(true, bucUtils.checkIfSedCanBeCreated(it, "123333") )
         }
 
         val notAllowd = listOf("P2000")
         notAllowd.forEach {
             assertThrows<SedDokumentKanIkkeOpprettesException> {
-                bucUtils.checkIfSedCanBeCreated(it)
+                bucUtils.checkIfSedCanBeCreated(it, "123333")
             }
         }
     }
