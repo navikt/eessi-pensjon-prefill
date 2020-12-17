@@ -4,7 +4,6 @@ import no.nav.eessi.pensjon.fagmodul.prefill.model.PersonData
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Pensjon
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
-import no.nav.eessi.pensjon.utils.toJson
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -19,16 +18,6 @@ class PrefillSed(private val prefillNav: PrefillNav) {
         logger.debug("Preutfylling NAV     : ${prefillNav::class.java} ")
         logger.debug("------------------| Preutfylling START |------------------ ")
         logger.debug("[${prefillData.getSEDType()}] Preutfylling Utfylling Data")
-
-
-        logger.debug("----------------------------------------------------------")
-        logger.debug("prefillData: ${prefillData.toJson()}")
-        logger.debug("----------------------------------------------------------")
-
-        logger.debug("personData forsikret             : ${personData.forsikretPerson}")
-        logger.debug("personData gjenlevendeEllerAvdod : ${personData.gjenlevendeEllerAvdod}")
-        logger.debug("----------------------------------------------------------")
-
 
         //val sed = prefillData.sed
         val sedType = prefillData.sedType
