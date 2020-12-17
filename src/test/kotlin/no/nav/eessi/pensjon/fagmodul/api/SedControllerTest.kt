@@ -21,10 +21,12 @@ import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Organisation
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ParticipantsItem
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ShortDocumentItem
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
+import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.prefill.ApiRequest
 import no.nav.eessi.pensjon.fagmodul.prefill.ApiSubject
 import no.nav.eessi.pensjon.fagmodul.prefill.MangelfulleInndataException
 import no.nav.eessi.pensjon.fagmodul.prefill.PrefillService
+import no.nav.eessi.pensjon.fagmodul.prefill.SedAndType
 import no.nav.eessi.pensjon.fagmodul.prefill.SubjectFnr
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillSEDService
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Bruker
@@ -40,6 +42,7 @@ import no.nav.eessi.pensjon.personoppslag.aktoerregister.NorskIdent
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.toJson
+import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
 import no.nav.eessi.pensjon.utils.typeRefs
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
@@ -70,6 +73,9 @@ class SedControllerTest {
 
     @Mock
     lateinit var mockPrefillSEDService: PrefillSEDService
+
+    @Mock
+    lateinit var prefillService: PrefillService
 
     private lateinit var sedController: SedController
 
@@ -334,6 +340,33 @@ class SedControllerTest {
 
         verify(mockEuxService, times(noNewParticipants.size + 1)).opprettJsonSedOnBuc(any(), any(), eq(euxCaseId))
     }
+
+    @Test
+    fun `call addDocumentToParent ingen ny Deltaker kun hovedsed`() {
+        val euxCaseId = "1100220033"
+        val parentDocumentId = "1122334455666"
+
+       doReturn(NorskIdent("12345")).whenever(mockAktoerIdHelper).hentGjeldendeIdent(eq(IdentGruppe.NorskIdent), any<AktoerId>())
+
+        val mockBuc = Buc(id = "23123", processDefinitionName = "P_BUC_01", participants = listOf(ParticipantsItem()), processDefinitionVersion = "4.2")
+        mockBuc.documents = listOf(DocumentsItem(id = "3123123", type = "P9000", status = "empty", allowsAttachments = true  ), DocumentsItem(id = parentDocumentId, type = "P8000", status = "received", allowsAttachments = true))
+        mockBuc.actions = listOf(ActionsItem(id = "1000", type = "Received", name = "Received"))
+
+        val api = apiRequestWith(euxCaseId, sed = "P9000", institutions = emptyList())
+
+        val sed = SED("P9000")
+        val sedandtype = SedAndType(SEDType.P9000, sed.toJsonSkipEmpty())
+
+        doReturn(sed).whenever(mockPrefillSEDService).prefill (any())
+        doReturn(mockBuc).whenever(mockEuxService).getBuc(euxCaseId)
+        doReturn(BucSedResponse(euxCaseId, "3123123")).whenever(mockEuxService).opprettSvarJsonSedOnBuc(sedandtype.sed, euxCaseId, parentDocumentId)
+
+        val result = sedController.addDocumentToParent(api, parentDocumentId)
+
+        print(result?.toJson())
+
+    }
+
 
     @Test
     fun `call addInstutionAndDocument valider om SED alt finnes i BUC kaster Exception`() {

@@ -55,6 +55,7 @@ class SedController(
     private lateinit var AddInstutionAndDocument: MetricsHelper.Metric
     private lateinit var AddDocumentToParent: MetricsHelper.Metric
     private lateinit var AddInstutionAndDocumentBucUtils: MetricsHelper.Metric
+    private lateinit var AddDocumentToParentBucUtils: MetricsHelper.Metric
 
 
     @PostConstruct
@@ -62,6 +63,7 @@ class SedController(
         AddInstutionAndDocument = metricsHelper.init("AddInstutionAndDocument")
         AddDocumentToParent = metricsHelper.init("AddDocumentToParent")
         AddInstutionAndDocumentBucUtils = metricsHelper.init("AddInstutionAndDocumentBucUtils")
+        AddDocumentToParentBucUtils = metricsHelper.init("AddDocumentToParentBucUtils")
     }
 
     //** oppdatert i api 18.02.2019
@@ -128,7 +130,6 @@ class SedController(
 
             val sedType = sedAndType.sedType.name
             val sedJson = sedAndType.sed
-
 
             //sjekk og evt legger til deltakere
             checkAndAddInstitution(dataModel, bucUtil)
@@ -229,29 +230,32 @@ class SedController(
         @PathVariable("parentid", required = true) parentId: String
     ): ShortDocumentItem? {
         auditlogger.log("addDocumentToParent", request.aktoerId ?: "", request.toAudit())
+        val norskIdent = hentFnrfraAktoerService(request.aktoerId, aktoerService)
+        val dataModel = ApiRequest.buildPrefillDataModelOnExisting(request, norskIdent, getAvdodAktoerId(request))
+
+        //Hente metadata for valgt BUC
+        val bucUtil = AddDocumentToParentBucUtils.measure {
+            logger.info("******* Hent BUC sjekk om sed kan opprettes *******")
+            BucUtils(euxService.getBuc(dataModel.euxCaseID))
+        }
+
+        logger.info("Prøver å prefillSED (svarSED) parentId: $parentId")
+        //val sed = prefillService.prefillSed(dataModel)
+        val sedAndType = prefillService.prefillSedtoJson(dataModel, bucUtil.getProcessDefinitionVersion())
 
         return AddDocumentToParent.measure {
-            val norskIdent = hentFnrfraAktoerService(request.aktoerId, aktoerService)
-
-            val dataModel = ApiRequest.buildPrefillDataModelOnExisting(request, norskIdent, getAvdodAktoerId(request))
-            logger.info("Prøver å prefillSED (svar) parentId: $parentId")
-            val sed = prefillService.prefillSed(dataModel)
-
             logger.info("Prøver å sende SED: ${dataModel.getSEDType()} inn på BUC: ${dataModel.euxCaseID}")
-            val docresult = euxService.opprettSvarSedOnBuc(sed, dataModel.euxCaseID, parentId)
 
-            val bucUtil = BucUtils(euxService.getBuc(docresult.caseId))
-            //synk sed versjon med buc versjon
-            updateSEDVersion(sed, bucUtil.getProcessDefinitionVersion())
+            val docresult = euxService.opprettSvarJsonSedOnBuc(sedAndType.sed, dataModel.euxCaseID, parentId)
 
-            //extra tag metricshelper for sedType, bucType, timeStamp og rinaId.
-            counterHelper.count(CounterHelper.MeterNameExtraTag.AddDocumentToParent, extraTag = extraTag(dataModel, bucUtil))
-
-            logger.info("Henter BUC dokumentdata for svar SED")
+            val parent = bucUtil.findDocument(parentId)
             val result = bucUtil.findDocument(docresult.documentId)
-            //result
 
-            fetchBucAgainBeforeReturnShortDocument(dataModel.buc, docresult, result)
+            val documentItem = fetchBucAgainBeforeReturnShortDocument(dataModel.buc, docresult, result)
+
+            logger.info("Henter metadata for hovedSED type: ${parent?.type}, documentId: ${parent?.id}, svarSED type: ${documentItem?.type} documentID: ${documentItem?.id}")
+            logger.info("******* Legge til svarSED - slutt *******")
+            documentItem
         }
     }
 

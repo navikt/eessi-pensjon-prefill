@@ -54,6 +54,15 @@ class EuxService (private val euxKlient: EuxKlient,
             "Feil ved opprettSvarSed", OpprettSvarSED
         )
     }
+    @Throws(EuxGenericServerException::class, SedDokumentIkkeOpprettetException::class)
+    fun opprettSvarJsonSedOnBuc(jsonSed: String, euxCaseId: String, parentDocumentId: String): BucSedResponse {
+        return euxKlient.opprettSvarSed(
+            jsonSed,
+            euxCaseId,
+            parentDocumentId,
+            "Feil ved opprettSvarSed", OpprettSvarSED
+        )
+    }
 
     /**
      * Ny SED på ekisterende type
