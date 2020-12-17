@@ -20,8 +20,7 @@ class PrefillP4000(private val prefillSed: PrefillSed) {
         return try {
             val sed = prefillSed.prefill(prefillData, personData)
             sed.trygdetid = perfillPersonTrygdetid(prefillData)
-            prefillData.sed
-
+            sed
         } catch (ex: Exception) {
             logger.error("Feiler ved prefill P4000 person", ex)
             prefillData.sed

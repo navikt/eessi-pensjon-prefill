@@ -234,9 +234,79 @@ class SedPrefillIntegrationSpringTest {
         Assertions.assertEquals("12312312312", annenPersonPIN)
         Assertions.assertEquals("9876543210", avdodPIN)
 
+    }
+
+    @Test
+    @Throws(Exception::class)
+    fun `prefill sed P4000 med forsikret person skal returnere en gyldig SED`() {
+
+        doReturn(NorskIdent("12312312312")).`when`(aktoerService).hentGjeldendeIdent(IdentGruppe.NorskIdent, AktoerId("0105094340092"))
+
+        doReturn(BrukerMock.createWith(true, "Lever", "Gjenlev", "12312312312")).`when`(personV3Service).hentBruker("12312312312")
+        doReturn("QX").doReturn("XQ").`when`(kodeverkClient).finnLandkode2(any())
+
+        val apijson = dummyApijson(sakid = "22874955", vedtakid = "9876543211", aktoerId = "0105094340092", sed = "P4000", buc = "P_BUC_05")
+
+        val result = mockMvc.perform(post("/sed/preview")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(apijson))
+            .andDo(print())
+            .andExpect(status().isOk)
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andReturn()
+
+        val response = result.response.getContentAsString(charset("UTF-8"))
+
+        val validResponse = """
+            {
+              "sed" : "P4000",
+              "sedGVer" : "4",
+              "sedVer" : "1",
+              "nav" : {
+                "eessisak" : [ {
+                  "institusjonsid" : "NO:noinst002",
+                  "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                  "saksnummer" : "22874955",
+                  "land" : "NO"
+                } ],
+                "bruker" : {
+                  "person" : {
+                    "pin" : [ {
+                      "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                      "institusjonsid" : "NO:noinst002",
+                      "identifikator" : "12312312312",
+                      "land" : "NO"
+                    } ],
+                    "statsborgerskap" : [ {
+                      "land" : "QX"
+                    } ],
+                    "etternavn" : "Gjenlev",
+                    "fornavn" : "Lever",
+                    "kjoenn" : "M",
+                    "foedselsdato" : "1988-07-12"
+                  },
+                  "adresse" : {
+                    "gate" : "Oppoverbakken 66",
+                    "by" : "SØRUMSAND",
+                    "postnummer" : "1920",
+                    "land" : "XQ"
+                  }
+                }
+              }
+            }
+        """.trimIndent()
+
+        val mapper = jacksonObjectMapper()
+        val sedRootNode = mapper.readTree(response)
+        val forsikretPin = finnPin(sedRootNode.at("/nav/bruker"))
+
+        Assertions.assertEquals("12312312312", forsikretPin)
+        JSONAssert.assertEquals(response, validResponse, true)
+
 
 
     }
+
 
 
     @Test

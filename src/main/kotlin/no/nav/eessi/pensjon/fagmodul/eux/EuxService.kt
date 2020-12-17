@@ -240,8 +240,15 @@ class EuxService (private val euxKlient: EuxKlient,
         // Henter rina saker basert på gjenlevendes fnr
         val rinaSakerBUC02MedFnr = euxKlient.getRinasaker(avdodFnr, null, "P_BUC_02", "\"open\"")
         val rinaSakerBUC05MedFnr = euxKlient.getRinasaker(avdodFnr, null, "P_BUC_05", "\"open\"")
-        logger.info("rinaSaker BUC02: ${rinaSakerBUC02MedFnr.size} BUC05: ${rinaSakerBUC05MedFnr.size}")
+//        val rinaSakerBUC06MedFnr = euxKlient.getRinasaker(avdodFnr, null, "P_BUC_06", "\"open\"")
+//        val rinaSakerBUC10MedFnr = euxKlient.getRinasaker(avdodFnr, null, "P_BUC_10", "\"open\"")
+
+        logger.info("rinaSaker BUC02: ${rinaSakerBUC02MedFnr.size} BUC05: ${rinaSakerBUC05MedFnr.size} ")
+//                "" +
+//                "rinaSaker BUC06: ${rinaSakerBUC06MedFnr.size} BUC10: ${rinaSakerBUC10MedFnr.size}")
+
         val rinaSakerMedFnr = rinaSakerBUC02MedFnr.plus(rinaSakerBUC05MedFnr)
+            //.plus(rinaSakerBUC06MedFnr).plus(rinaSakerBUC10MedFnr)
         logger.info("rinaSaker total: ${rinaSakerMedFnr.size}")
         val filteredRinaIdAvdod = getFilteredArchivedaRinasaker(rinaSakerMedFnr)
 

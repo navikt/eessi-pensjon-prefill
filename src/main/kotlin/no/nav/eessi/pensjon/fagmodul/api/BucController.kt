@@ -240,7 +240,7 @@ class BucController(@Value("\${NAIS_NAMESPACE}") val nameSpace : String,
             }
             val normalBuc = getBucogSedView(aktoerid)
             val normalbucAndSedView = normalBuc.map { bucview ->
-                if ( bucview.type == "P_BUC_02" || bucview.type == "P_BUC_05") {
+                if ( bucview.type == "P_BUC_02" || bucview.type == "P_BUC_05" || bucview.type == "P_BUC_10" || bucview.type == "P_BUC_06" ) {
                     bucview.copy(subject = BucAndSedSubject(SubjectFnr(fnrGjenlevende), SubjectFnr(avdodfnr)))
                 } else {
                     bucview
