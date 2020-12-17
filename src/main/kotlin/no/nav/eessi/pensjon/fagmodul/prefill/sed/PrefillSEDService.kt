@@ -57,7 +57,6 @@ class PrefillSEDService(private val prefillNav: PrefillNav,
             //vedtak
             SEDType.P6000 -> PrefillP6000(prefillNav, eessiInformasjon, pensjonsinformasjonService.hentVedtak(hentVedtak(prefillData))).prefill(prefillData, hentPersonerMedBarn(prefillData))
 
-            //andre
             SEDType.P4000 -> PrefillP4000(PrefillSed(prefillNav)).prefill(prefillData, hentPersoner(prefillData))
             SEDType.P7000 -> PrefillP7000(PrefillSed(prefillNav)).prefill(prefillData, hentPersoner(prefillData))
 
@@ -78,9 +77,8 @@ class PrefillSEDService(private val prefillNav: PrefillNav,
             SEDType.X005 -> PrefillX005(prefillNav).prefill(prefillData, hentPersoner(prefillData))
             SEDType.H020, SEDType.H021 -> PrefillH02X(PrefillSed(prefillNav)).prefill(prefillData, hentPersoner(prefillData))
             else ->
-                //P3000_NO vil aldre gå dennee vei! men fra EU-SED->Nav-SED->PESYS
-                //P3000_SE, PL, DK, DE, UK, ol vil gå denne veien.
-                //P5000, - P9000, P14000 og og andre
+                //P3000_SE, PL, DK, DE, UK, med flere vil gå denne veien..
+                //P5000, P9000, P14000, P15000.. med flere..
                 PrefillSed(prefillNav).prefill(prefillData, hentPersoner(prefillData))
         }
     }

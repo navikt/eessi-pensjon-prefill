@@ -120,7 +120,7 @@ class SedControllerTest {
 
         whenever(mockPrefillSEDService.prefill(any())).thenReturn(utfyllMock.sed)
 
-        val response = sedController.confirmDocument(mockData, "noFilter")
+        val response = sedController.previewDocument(mockData, "noFilter")
         assertNotNull(response)
 
         val sed = SED.fromJson(response)
@@ -542,7 +542,7 @@ class SedControllerTest {
 
     @Test
     fun `call getAvdodAktoerId  expect valid aktoerId when avdodfnr exist and sed is P2100`() {
-        val apireq = ApiRequest(
+        val apiRequest = ApiRequest(
                 subjectArea = "Pensjon",
                 sakId = "EESSI-PEN-123",
                 sed = "P2100",
@@ -552,14 +552,13 @@ class SedControllerTest {
 
         )
         whenever(mockAktoerIdHelper.hentGjeldendeIdent(eq(IdentGruppe.AktoerId), any<NorskIdent>())).thenReturn(AktoerId("1122334455"))
-
-        val result = sedController.getAvdodAktoerId(request = apireq)
+        val result = sedController.getAvdodAktoerId(apiRequest)
         assertEquals("1122334455", result)
     }
 
     @Test
     fun `call getAvdodAktoerId  expect valid aktoerId when avdod exist and sed is P5000`() {
-        val apireq = ApiRequest(
+        val apiRequest = ApiRequest(
                 subjectArea = "Pensjon",
                 sakId = "EESSI-PEN-123",
                 sed = "P5000",
@@ -571,13 +570,13 @@ class SedControllerTest {
         )
         whenever(mockAktoerIdHelper.hentGjeldendeIdent(eq(IdentGruppe.AktoerId), any<NorskIdent>())).thenReturn(AktoerId("467846784671"))
 
-        val result = sedController.getAvdodAktoerId(request = apireq)
+        val result = sedController.getAvdodAktoerId(apiRequest)
         assertEquals("467846784671", result)
     }
 
     @Test
     fun `call getAvdodAktoerId  expect error when avdodfnr is missing and sed is P2100`() {
-        val apireq = ApiRequest(
+        val apiRequest = ApiRequest(
                 subjectArea = "Pensjon",
                 sakId = "EESSI-PEN-123",
                 sed = "P2100",
@@ -585,12 +584,12 @@ class SedControllerTest {
                 aktoerId = "0105094340092"
         )
         assertThrows<MangelfulleInndataException> {
-            sedController.getAvdodAktoerId(request = apireq)
+            sedController.getAvdodAktoerId(apiRequest)
         }
     }
 
     @Test
-    fun `call getAvdodAktoerId  expect null value when sed is P2100`() {
+    fun `call getAvdodAktoerId  expect null value when sed is P2000`() {
         val apireq = ApiRequest(
                 subjectArea = "Pensjon",
                 sakId = "EESSI-PEN-123",

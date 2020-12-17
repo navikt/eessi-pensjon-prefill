@@ -2,8 +2,14 @@ package no.nav.eessi.pensjon.fagmodul.prefill
 
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
-import no.nav.eessi.pensjon.utils.*
-import org.junit.jupiter.api.Assertions.*
+import no.nav.eessi.pensjon.utils.mapAnyToJson
+import no.nav.eessi.pensjon.utils.mapJsonToAny
+import no.nav.eessi.pensjon.utils.toJson
+import no.nav.eessi.pensjon.utils.typeRefs
+import no.nav.eessi.pensjon.utils.validateJson
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.nio.file.Files
@@ -209,7 +215,7 @@ class ApiRequestTest {
                 subject = null
         )
         assertThrows<MangelfulleInndataException> {
-            ApiRequest.buildPrefillDataModelConfirm(mockData, "23123", "576567567567")
+            ApiRequest.buildPrefillDataModelConfirm(mockData, "23123", null)
         }
 
     }

@@ -4,6 +4,7 @@ import no.nav.eessi.pensjon.fagmodul.prefill.model.PersonData
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Pensjon
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
+import no.nav.eessi.pensjon.utils.toJson
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -19,10 +20,21 @@ class PrefillSed(private val prefillNav: PrefillNav) {
         logger.debug("------------------| Preutfylling START |------------------ ")
         logger.debug("[${prefillData.getSEDType()}] Preutfylling Utfylling Data")
 
-        val sed = prefillData.sed
+
+        logger.debug("----------------------------------------------------------")
+        logger.debug("prefillData: ${prefillData.toJson()}")
+        logger.debug("----------------------------------------------------------")
+
+        logger.debug("personData forsikret             : ${personData.forsikretPerson}")
+        logger.debug("personData gjenlevendeEllerAvdod : ${personData.gjenlevendeEllerAvdod}")
+        logger.debug("----------------------------------------------------------")
+
+
+        //val sed = prefillData.sed
+        val sedType = prefillData.sedType
 
         //henter opp persondata
-        sed.nav = prefillNav.prefill(
+        val navSed = prefillNav.prefill(
                 penSaksnummer = prefillData.penSaksnummer,
                 bruker = prefillData.bruker,
                 avdod = prefillData.avdod,
@@ -31,11 +43,11 @@ class PrefillSed(private val prefillNav: PrefillNav) {
         )
         logger.debug("[${prefillData.getSEDType()}] Preutfylling Utfylling NAV")
 
-        sed.pensjon = try {
+        val prefillPensjon = try {
             val pensjon = prefillData.avdod?.let {
                 logger.info("Preutfylling Utfylling Pensjon Gjenlevende (etterlatt)")
-                val gjenlevendetps = prefillNav.createBruker(personData.forsikretPerson, null, null)
-                Pensjon(gjenlevende = gjenlevendetps)
+                val gjenlevendePerson = prefillNav.createBruker(personData.forsikretPerson, null, null)
+                Pensjon(gjenlevende = gjenlevendePerson)
             }
             logger.debug("[${prefillData.getSEDType()}] Preutfylling Utfylling Pensjon")
             pensjon
@@ -47,12 +59,12 @@ class PrefillSed(private val prefillNav: PrefillNav) {
         //Spesielle SED som har etterlette men benyttes av flere BUC
         //Må legge gjenlevende også som nav.annenperson
         if (prefillData.avdod != null) {
-            sed.nav?.annenperson = sed.pensjon?.gjenlevende
-            sed.nav?.annenperson?.person?.rolle = "01"  //Claimant - etterlatte
+            navSed.annenperson = prefillPensjon?.gjenlevende
+            navSed.annenperson?.person?.rolle = "01"  //Claimant - etterlatte
         }
 
         logger.debug("-------------------| Preutfylling END |------------------- ")
-        return prefillData.sed
+        return SED(sedType, nav = navSed, pensjon = prefillPensjon)
 
     }
 

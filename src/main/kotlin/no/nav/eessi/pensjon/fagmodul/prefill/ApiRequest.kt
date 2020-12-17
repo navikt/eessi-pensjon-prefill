@@ -104,21 +104,24 @@ data class ApiRequest(
         }
 
         private fun populerAvdodHvisGjenlevendePensjonSak(request: ApiRequest, avdodaktoerID: String?): PersonId? {
-            var avdod: PersonId? = null
-            val avdodNorskIdent: String?
-            val avdodAktorId: String?
-            if (request.buc == "P_BUC_02") {
-                avdodNorskIdent = request.riktigAvdod() ?: throw MangelfulleInndataException("Mangler Personnr på Avdød")
-                avdodAktorId = avdodaktoerID ?: throw MangelfulleInndataException("Mangler AktoerId på Avdød")
-                avdod = PersonId(avdodNorskIdent, avdodAktorId)
-            } else if (request.buc == "P_BUC_05" && request.riktigAvdod() != null) {
-                avdodNorskIdent = request.riktigAvdod() ?: throw MangelfulleInndataException("Mangler Personnr på Avdød")
-                avdodAktorId = avdodaktoerID ?: throw MangelfulleInndataException("Mangler AktoerId på Avdød")
-                avdod = PersonId(avdodNorskIdent, avdodAktorId)
+            return when(request.buc) {
+                "P_BUC_02" -> populerAvdodPersonId(request, avdodaktoerID, true)
+                "P_BUC_05","P_BUC_06","P_BUC_10" -> populerAvdodPersonId(request, avdodaktoerID)
+                else -> null
             }
-
-            return avdod
         }
+
+        private fun populerAvdodPersonId(request: ApiRequest, avdodaktoerID: String?, kreverAvdod: Boolean = false): PersonId? {
+            if (kreverAvdod && avdodaktoerID == null) {
+               logger.error("Mangler fnr for avdød")
+               throw MangelfulleInndataException("Mangler fnr for avdød")
+            }
+            request.riktigAvdod() ?: return null
+            val avdodNorskIdent1 = request.riktigAvdod() ?: throw MangelfulleInndataException("Mangler Personnr på Avdød")
+            val avdodAktorId1 = avdodaktoerID ?: throw MangelfulleInndataException("Mangler AktoerId på Avdød")
+            return  PersonId(avdodNorskIdent1, avdodAktorId1)
+        }
+
 
         //validatate request and convert to PrefillDataModel
         fun buildPrefillDataModelConfirm(request: ApiRequest, fodselsnr: String, avdodaktoerID: String?): PrefillDataModel {

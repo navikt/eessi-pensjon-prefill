@@ -50,7 +50,13 @@ enum class SEDType {
     P3000_PT, //Portugal
     P3000_LV, //Latvia
     P3000_SK, //Slovakia
-    P3000_NL; //Nederland
+    P3000_NL, //Nederland
+    P3000_GR, //Hellas
+    P3000_HR, //Kroatia
+    P3000_CY, //Kypros
+    P3000_LU, //Luxembourg
+    P3000_CH, //Sveits
+    P3000_CZ; //Tjekkia
 
     companion object {
         @JvmStatic

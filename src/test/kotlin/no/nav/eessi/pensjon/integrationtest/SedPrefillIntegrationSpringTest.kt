@@ -202,6 +202,45 @@ class SedPrefillIntegrationSpringTest {
 
     @Test
     @Throws(Exception::class)
+    fun `prefill sed P3000_SE Gjenlevende har med avdod skal returnere en gyldig SED`() {
+
+        doReturn(NorskIdent("12312312312")).`when`(aktoerService).hentGjeldendeIdent(IdentGruppe.NorskIdent, AktoerId("0105094340092"))
+        doReturn(AktoerId("3323332333233323")).`when`(aktoerService).hentGjeldendeIdent(IdentGruppe.AktoerId, NorskIdent("9876543210"))
+
+        doReturn(BrukerMock.createWith(true, "Lever", "Gjenlev", "12312312312")).`when`(personV3Service).hentBruker("12312312312")
+        doReturn(BrukerMock.createWith(true, "Avdød", "Død", "9876543210")).`when`(personV3Service).hentBruker("9876543210")
+        doReturn("QX").doReturn("XQ").`when`(kodeverkClient).finnLandkode2(any())
+
+        val subject = dummyApiSubjectjson("9876543210")
+        val apijson = dummyApijson(sakid = "22874955", vedtakid = "9876543211", aktoerId = "0105094340092", sed = "P3000_SE", buc = "P_BUC_10",  subject = subject)
+
+        val result = mockMvc.perform(post("/sed/preview")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(apijson))
+            .andDo(print())
+            .andExpect(status().isOk)
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andReturn()
+
+        val response = result.response.getContentAsString(charset("UTF-8"))
+
+        val mapper = jacksonObjectMapper()
+        val sedRootNode = mapper.readTree(response)
+        val gjenlevendePIN = finnPin(sedRootNode.at("/pensjon/gjenlevende/person"))
+        val annenPersonPIN = finnPin(sedRootNode.at("/nav/annenperson/person"))
+        val avdodPIN = finnPin(sedRootNode.at("/nav/bruker"))
+
+        Assertions.assertEquals("12312312312", gjenlevendePIN)
+        Assertions.assertEquals("12312312312", annenPersonPIN)
+        Assertions.assertEquals("9876543210", avdodPIN)
+
+
+
+    }
+
+
+    @Test
+    @Throws(Exception::class)
     fun `prefill sed P2000 alder return valid sedjson`() {
 
 
