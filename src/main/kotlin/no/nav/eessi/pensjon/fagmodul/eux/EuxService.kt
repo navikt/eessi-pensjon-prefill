@@ -1,6 +1,5 @@
 package no.nav.eessi.pensjon.fagmodul.eux
 
-import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.google.common.annotations.VisibleForTesting
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry
@@ -11,6 +10,7 @@ import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ParticipantsItem
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Krav
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Person
 import no.nav.eessi.pensjon.fagmodul.sedmodel.PinItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.metrics.MetricsHelper
@@ -34,33 +34,34 @@ class EuxService (private val euxKlient: EuxKlient,
     // Vi trenger denne no arg konstruktøren for å kunne bruke @Spy med mockito
     constructor() : this(EuxKlient(RestTemplate()), SafClient(RestTemplate(), RestTemplate()))
 
-    private lateinit var OpprettSvarSED: MetricsHelper.Metric
-    private lateinit var OpprettSED: MetricsHelper.Metric
+    private lateinit var opprettSvarSED: MetricsHelper.Metric
+    private lateinit var opprettSED: MetricsHelper.Metric
     private val validbucsed = ValidBucAndSed()
     private val mapper = jacksonObjectMapper()
 
     @PostConstruct
     fun initMetrics() {
-        OpprettSvarSED = metricsHelper.init("OpprettSvarSED")
-        OpprettSED = metricsHelper.init("OpprettSED")
+        opprettSvarSED = metricsHelper.init("OpprettSvarSED")
+        opprettSED = metricsHelper.init("OpprettSED")
     }
 
-    @Throws(EuxGenericServerException::class, SedDokumentIkkeOpprettetException::class)
-    fun opprettSvarSedOnBuc(navSED: SED, euxCaseId: String, parentDocumentId: String): BucSedResponse {
-        return euxKlient.opprettSvarSed(
-            navSED.toJsonSkipEmpty(),
-            euxCaseId,
-            parentDocumentId,
-            "Feil ved opprettSvarSed", OpprettSvarSED
-        )
-    }
+//    @Throws(EuxGenericServerException::class, SedDokumentIkkeOpprettetException::class)
+//    fun opprettSvarSedOnBuc(navSED: SED, euxCaseId: String, parentDocumentId: String): BucSedResponse {
+//        return euxKlient.opprettSvarSed(
+//            navSED.toJsonSkipEmpty(),
+//            euxCaseId,
+//            parentDocumentId,
+//            "Feil ved opprettSvarSed", OpprettSvarSED
+//        )
+//    }
+
     @Throws(EuxGenericServerException::class, SedDokumentIkkeOpprettetException::class)
     fun opprettSvarJsonSedOnBuc(jsonSed: String, euxCaseId: String, parentDocumentId: String): BucSedResponse {
         return euxKlient.opprettSvarSed(
             jsonSed,
             euxCaseId,
             parentDocumentId,
-            "Feil ved opprettSvarSed", OpprettSvarSED
+            "Feil ved opprettSvarSed", opprettSvarSED
         )
     }
 
@@ -72,14 +73,14 @@ class EuxService (private val euxKlient: EuxKlient,
         logger.info("Forsøker å opprette en ${navSED.sed}, rinasakId: $euxCaseId")
         val sedJson = navSED.toJsonSkipEmpty()
         logger.debug("Logger ut $sedJson")
-        return euxKlient.opprettSed(sedJson, euxCaseId, OpprettSED, "Feil ved opprettSed: ${navSED.sed}, med rinaId: $euxCaseId")
+        return euxKlient.opprettSed(sedJson, euxCaseId, opprettSED, "Feil ved opprettSed: ${navSED.sed}, med rinaId: $euxCaseId")
     }
 
     @Throws(EuxGenericServerException::class, SedDokumentIkkeOpprettetException::class)
     fun opprettJsonSedOnBuc(jsonNavSED: String, sedType: String, euxCaseId: String): BucSedResponse {
         logger.info("Forsøker å opprette en $sedType på rinasakId: $euxCaseId")
         logger.debug("Logger ut $jsonNavSED")
-        return euxKlient.opprettSed(jsonNavSED, euxCaseId, OpprettSED, "Feil ved opprettSed: $sedType, med rinaId: $euxCaseId")
+        return euxKlient.opprettSed(jsonNavSED, euxCaseId, opprettSED, "Feil ved opprettSed: $sedType, med rinaId: $euxCaseId")
     }
 
 
@@ -238,17 +239,10 @@ class EuxService (private val euxKlient: EuxKlient,
 
     fun getBucAndSedViewAvdod(gjenlevendeFnr: String, avdodFnr: String): List<BucAndSedView> {
         // Henter rina saker basert på gjenlevendes fnr
-        val rinaSakerBUC02MedFnr = euxKlient.getRinasaker(avdodFnr, null, "P_BUC_02", "\"open\"")
-        val rinaSakerBUC05MedFnr = euxKlient.getRinasaker(avdodFnr, null, "P_BUC_05", "\"open\"")
-//        val rinaSakerBUC06MedFnr = euxKlient.getRinasaker(avdodFnr, null, "P_BUC_06", "\"open\"")
-//        val rinaSakerBUC10MedFnr = euxKlient.getRinasaker(avdodFnr, null, "P_BUC_10", "\"open\"")
+        val validAvdodBucs = listOf("P_BUC_02","P_BUC_05","P_BUC_06","P_BUC_10")
+        val rinaSakerMedFnr = validAvdodBucs.map { euxKlient.getRinasaker(avdodFnr, null, it, "\"open\"") }
+           .flatten()
 
-        logger.info("rinaSaker BUC02: ${rinaSakerBUC02MedFnr.size} BUC05: ${rinaSakerBUC05MedFnr.size} ")
-//                "" +
-//                "rinaSaker BUC06: ${rinaSakerBUC06MedFnr.size} BUC10: ${rinaSakerBUC10MedFnr.size}")
-
-        val rinaSakerMedFnr = rinaSakerBUC02MedFnr.plus(rinaSakerBUC05MedFnr)
-            //.plus(rinaSakerBUC06MedFnr).plus(rinaSakerBUC10MedFnr)
         logger.info("rinaSaker total: ${rinaSakerMedFnr.size}")
         val filteredRinaIdAvdod = getFilteredArchivedaRinasaker(rinaSakerMedFnr)
 
@@ -257,6 +251,8 @@ class EuxService (private val euxKlient: EuxKlient,
         val bucdocumentidAvdod = hentBucOgDocumentIdAvdod(filteredRinaIdAvdod)
 
         val listeAvSedsPaaAvdod = hentDocumentJsonAvdod(bucdocumentidAvdod)
+
+        //listeAvSedsPaaAvdod.map { logger.debug("avdødrinaid: ${it.rinaidAvdod}, bucType: ${it.buc.processDefinitionName}, sedJson: ${it.dokumentJson} ")}
 
         val gyldigeBucs = filterGyldigBucGjenlevendeAvdod(listeAvSedsPaaAvdod, gjenlevendeFnr)
 
@@ -278,11 +274,12 @@ class EuxService (private val euxKlient: EuxKlient,
                 .sortedBy { it.id }
     }
 
-    // TODO: fix fun name
     private fun filterGjenlevende(docs: BucOgDocumentAvdod, fnrGjenlevende: String): Boolean {
-        val sedRootNode = mapper.readTree(docs.dokumentJson)
-        return filterGjenlevendePinNode(sedRootNode, docs.rinaidAvdod) == fnrGjenlevende ||
-                filterAnnenPersonPinNode(sedRootNode, docs.rinaidAvdod) == fnrGjenlevende
+        val sedjson = docs.dokumentJson
+        if (sedjson.isBlank()) return false
+        val sed = mapJsonToAny(sedjson, typeRefs<SED>())
+        return filterGjenlevendePinNode(sed, docs.rinaidAvdod) == fnrGjenlevende ||
+                filterAnnenPersonPinNode(sed, docs.rinaidAvdod) == fnrGjenlevende
     }
 
     /**
@@ -296,7 +293,9 @@ class EuxService (private val euxKlient: EuxKlient,
 
             val shortDoc = when (bucType) {
                 "P_BUC_02" -> bucutil.getDocumentByType(SEDType.P2100.name)
-                else -> bucutil.getDocumentByType(SEDType.P8000.name)
+                "P_BUC_10" -> bucutil.getDocumentByType(SEDType.P15000.name)
+                "P_BUC_05" -> bucutil.getDocumentByType(SEDType.P8000.name)
+                else -> bucutil.getDocumentByType(SEDType.P6000.name)
             }
             val sedJson = shortDoc?.let {
                 euxKlient.getSedOnBucByDocumentIdAsJson(docs.rinaidAvdod, it.id!!)
@@ -318,34 +317,33 @@ class EuxService (private val euxKlient: EuxKlient,
     /**
      * json filter uthenting av pin på gjenlevende (p2100)
      */
-    private fun filterGjenlevendePinNode(sedRootNode: JsonNode, rinaidAvdod: String): String? {
-        val gjenlevendeNode = sedRootNode.at("/pensjon/gjenlevende")
-        val pinNode = gjenlevendeNode.findValue("pin")
-        if (pinNode == null) {
-            logger.warn("Ingen fnr funnet på gjenlevende. P2100 rinaid: $rinaidAvdod")
-            return null
-        }
-        return filterPinNode(pinNode)
+    private fun filterGjenlevendePinNode(sed: SED, rinaidAvdod: String): String? {
+        val gjenlevende = sed.pensjon?.gjenlevende?.person
+        return filterPinGjenlevendePin(gjenlevende, sed.getType(), rinaidAvdod)
     }
 
     /**
      * json filter uthenting av pin på annen person (gjenlevende) (p8000)
      */
-    private fun filterAnnenPersonPinNode(sedRootNode: JsonNode, rinaidAvdod: String): String? {
-        val gjenlevendeNode = sedRootNode.at("/nav/annenperson/person")
-        val pinNode = gjenlevendeNode.findValue("pin")
-        if (pinNode == null) {
-            logger.warn("Ingen fnr funnet på gjenlevende. P8000 rinaid: $rinaidAvdod")
-            return null
+    private fun filterAnnenPersonPinNode(sed: SED, rinaidAvdod: String): String? {
+        val annenperson = sed.nav?.annenperson?.person
+        val rolle = annenperson?.rolle
+        val type = sed.pensjon?.kravDato?.type
+        return if (type == "02" || rolle == "01") {
+            filterPinGjenlevendePin(annenperson, sed.getType(), rinaidAvdod)
+        } else {
+            null
         }
-        return filterPinNode(pinNode)
     }
 
-    private fun filterPinNode(pinNode: JsonNode): String? {
-        return pinNode
-                .filter { pin -> pin.get("land").textValue() == "NO" }
-                .map { pin -> pin.get("identifikator").textValue() }
-                .lastOrNull()
+    private fun filterPinGjenlevendePin(gjenlevende: Person?, sedType: String, rinaidAvdod: String): String? {
+        val pin = gjenlevende?.pin?.firstOrNull { it.land == "NO" }
+        return if (pin == null) {
+            logger.warn("Ingen fnr funnet på gjenlevende. ${sedType}, rinaid: $rinaidAvdod")
+            null
+        } else {
+            pin.identifikator
+        }
     }
 
     //** hente rinasaker fra RINA og SAF

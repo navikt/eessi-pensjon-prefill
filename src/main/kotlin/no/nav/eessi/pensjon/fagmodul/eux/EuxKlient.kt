@@ -142,7 +142,7 @@ class EuxKlient(private val euxOidcRestTemplate: RestTemplate,
                 , SEDByDocumentId
                 , "Feil ved henting av Sed med DocId: $documentId"
         )
-        return response.body ?: {
+        return response.body ?:  {
             logger.error("Feiler ved lasting av navSed: ${builder.toUriString()}")
             throw SedDokumentIkkeLestException("Feiler ved lesing av navSED, feiler ved uthenting av SED")
         }()

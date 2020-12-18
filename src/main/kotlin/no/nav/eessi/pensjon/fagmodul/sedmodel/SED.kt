@@ -1,5 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.sedmodel
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.toJson
 import no.nav.eessi.pensjon.utils.typeRefs
@@ -26,6 +27,10 @@ data class SED(
         }
     }
 
+    @JsonIgnore
     override fun toString() : String = this.toJson()
+
+    @JsonIgnore
+    fun getType() = sed
 
 }

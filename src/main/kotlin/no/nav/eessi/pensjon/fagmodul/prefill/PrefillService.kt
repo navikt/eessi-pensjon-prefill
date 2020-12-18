@@ -47,14 +47,13 @@ class PrefillService(private val factory: PrefillSEDService,
             logger.info("******* Starter med preutfylling ******* $dataModel")
             try {
                 val sed = factory.prefill(dataModel)
-                logger.debug("sedType: ${sed.sed}")
-
-                val sedType = SEDType.valueOf(sed.sed)
+                logger.debug("sedType: ${sed.getType()}")
+                val sedType = SEDType.valueOf(sed.getType())
 
                 //synk sed versjon med buc versjon
                 updateSEDVersion(sed, version)
-
                 return@measure SedAndType(sedType, sed.toJsonSkipEmpty())
+
             } catch (ex: Exception) {
                 logger.error("Noe gikk galt under prefill: ", ex)
                 throw ex

@@ -52,18 +52,18 @@ class SedController(
 
     private val logger = LoggerFactory.getLogger(SedController::class.java)
 
-    private lateinit var AddInstutionAndDocument: MetricsHelper.Metric
-    private lateinit var AddDocumentToParent: MetricsHelper.Metric
-    private lateinit var AddInstutionAndDocumentBucUtils: MetricsHelper.Metric
-    private lateinit var AddDocumentToParentBucUtils: MetricsHelper.Metric
+    private lateinit var addInstutionAndDocument: MetricsHelper.Metric
+    private lateinit var addDocumentToParent: MetricsHelper.Metric
+    private lateinit var addInstutionAndDocumentBucUtils: MetricsHelper.Metric
+    private lateinit var addDocumentToParentBucUtils: MetricsHelper.Metric
 
 
     @PostConstruct
     fun initMetrics() {
-        AddInstutionAndDocument = metricsHelper.init("AddInstutionAndDocument")
-        AddDocumentToParent = metricsHelper.init("AddDocumentToParent")
-        AddInstutionAndDocumentBucUtils = metricsHelper.init("AddInstutionAndDocumentBucUtils")
-        AddDocumentToParentBucUtils = metricsHelper.init("AddDocumentToParentBucUtils")
+        addInstutionAndDocument = metricsHelper.init("AddInstutionAndDocument")
+        addDocumentToParent = metricsHelper.init("AddDocumentToParent")
+        addInstutionAndDocumentBucUtils = metricsHelper.init("AddInstutionAndDocumentBucUtils")
+        addDocumentToParentBucUtils = metricsHelper.init("AddDocumentToParentBucUtils")
     }
 
     //** oppdatert i api 18.02.2019
@@ -114,7 +114,7 @@ class SedController(
         val dataModel = ApiRequest.buildPrefillDataModelOnExisting(request, norskIdent, getAvdodAktoerId(request))
 
         //Hente metadata for valgt BUC
-        val bucUtil = AddInstutionAndDocumentBucUtils.measure {
+        val bucUtil = addInstutionAndDocumentBucUtils.measure {
             logger.info("******* Hent BUC sjekk om sed kan opprettes *******")
             BucUtils(euxService.getBuc(dataModel.euxCaseID)).also { bucUtil ->
                 bucUtil.checkIfSedCanBeCreated(dataModel.sedType, dataModel.penSaksnummer)
@@ -125,7 +125,7 @@ class SedController(
         val sedAndType = prefillService.prefillSedtoJson(dataModel, bucUtil.getProcessDefinitionVersion())
 
         //Sjekk og opprette deltaker og legge sed på valgt BUC
-        return AddInstutionAndDocument.measure {
+        return addInstutionAndDocument.measure {
             logger.info("******* Legge til ny SED - start *******")
 
             val sedType = sedAndType.sedType.name
@@ -234,7 +234,7 @@ class SedController(
         val dataModel = ApiRequest.buildPrefillDataModelOnExisting(request, norskIdent, getAvdodAktoerId(request))
 
         //Hente metadata for valgt BUC
-        val bucUtil = AddDocumentToParentBucUtils.measure {
+        val bucUtil = addDocumentToParentBucUtils.measure {
             logger.info("******* Hent BUC sjekk om sed kan opprettes *******")
             BucUtils(euxService.getBuc(dataModel.euxCaseID))
         }
@@ -243,7 +243,7 @@ class SedController(
         //val sed = prefillService.prefillSed(dataModel)
         val sedAndType = prefillService.prefillSedtoJson(dataModel, bucUtil.getProcessDefinitionVersion())
 
-        return AddDocumentToParent.measure {
+        return addDocumentToParent.measure {
             logger.info("Prøver å sende SED: ${dataModel.getSEDType()} inn på BUC: ${dataModel.euxCaseID}")
 
             val docresult = euxService.opprettSvarJsonSedOnBuc(sedAndType.sed, dataModel.euxCaseID, parentId)

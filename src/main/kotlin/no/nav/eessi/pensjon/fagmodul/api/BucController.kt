@@ -48,17 +48,17 @@ class BucController(@Value("\${NAIS_NAMESPACE}") val nameSpace : String,
 
     private val logger = LoggerFactory.getLogger(BucController::class.java)
     private val validBucAndSed = ValidBucAndSed()
-    private lateinit var BucDetaljer: MetricsHelper.Metric
-    private lateinit var BucDetaljerVedtak: MetricsHelper.Metric
-    private lateinit var BucDetaljerEnkel: MetricsHelper.Metric
-    private lateinit var BucDetaljerGjenlev: MetricsHelper.Metric
+    private lateinit var bucDetaljer: MetricsHelper.Metric
+    private lateinit var bucDetaljerVedtak: MetricsHelper.Metric
+    private lateinit var bucDetaljerEnkel: MetricsHelper.Metric
+    private lateinit var bucDetaljerGjenlev: MetricsHelper.Metric
 
     @PostConstruct
     fun initMetrics() {
-        BucDetaljer = metricsHelper.init("BucDetaljer")
-        BucDetaljerVedtak = metricsHelper.init("BucDetaljerVedtak")
-        BucDetaljerEnkel = metricsHelper.init("BucDetaljerEnkel")
-        BucDetaljerGjenlev  = metricsHelper.init("BucDetaljerGjenlev")
+        bucDetaljer = metricsHelper.init("BucDetaljer")
+        bucDetaljerVedtak = metricsHelper.init("BucDetaljerVedtak")
+        bucDetaljerEnkel = metricsHelper.init("BucDetaljerEnkel")
+        bucDetaljerGjenlev  = metricsHelper.init("BucDetaljerGjenlev")
     }
 
     @ApiOperation("henter liste av alle tilgjengelige BuC-typer")
@@ -148,7 +148,7 @@ class BucController(@Value("\${NAIS_NAMESPACE}") val nameSpace : String,
                         @PathVariable("euxcaseid", required = false) euxcaseid: String? = ""): List<BucAndSedView> {
         auditlogger.log("getBucogSedView", aktoerid)
 
-        return BucDetaljer.measure {
+        return bucDetaljer.measure {
             logger.debug("Prøver å dekode aktoerid: $aktoerid til fnr.")
 
             val fnr = hentFnrfraAktoerService(aktoerid, aktoerService)
@@ -175,7 +175,7 @@ class BucController(@Value("\${NAIS_NAMESPACE}") val nameSpace : String,
     @GetMapping("/detaljer/{aktoerid}/vedtak/{vedtakid}")
     fun getBucogSedViewVedtak(@PathVariable("aktoerid", required = true) gjenlevendeAktoerid: String,
                               @PathVariable("vedtakid", required = true) vedtakid: String): List<BucAndSedView> {
-        return BucDetaljerVedtak.measure {
+        return bucDetaljerVedtak.measure {
             //Hente opp pesysservice. hente inn vedtak pensjoninformasjon..
             val peninfo = pensjonsinformasjonClient.hentAltPaaVedtak(vedtakid)
 
@@ -224,7 +224,7 @@ class BucController(@Value("\${NAIS_NAMESPACE}") val nameSpace : String,
     fun getBucogSedViewGjenlevende(@PathVariable("aktoerid", required = true) aktoerid: String,
                                    @PathVariable("avdodfnr", required = true) avdodfnr: String): List<BucAndSedView> {
 
-        return BucDetaljerGjenlev.measure {
+        return bucDetaljerGjenlev.measure {
             logger.info("Prøver å dekode aktoerid: $aktoerid til gjenlevende fnr.")
             val fnrGjenlevende = hentFnrfraAktoerService(aktoerid, aktoerService)
             logger.debug("gjenlevendeFnr: $fnrGjenlevende samt avdødfnr: $avdodfnr")
@@ -265,7 +265,7 @@ class BucController(@Value("\${NAIS_NAMESPACE}") val nameSpace : String,
     fun getSingleBucogSedView(@PathVariable("euxcaseid", required = true) euxcaseid: String): BucAndSedView {
         auditlogger.log("getSingleBucogSedView")
 
-        return BucDetaljerEnkel.measure {
+        return bucDetaljerEnkel.measure {
             logger.debug(" prøver å hente ut en enkel buc med euxCaseId: $euxcaseid")
             return@measure euxService.getSingleBucAndSedView(euxcaseid)
         }

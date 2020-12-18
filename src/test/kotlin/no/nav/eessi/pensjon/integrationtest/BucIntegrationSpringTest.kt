@@ -11,6 +11,11 @@ import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Rinasak
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Traits
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Buc
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.DocumentsItem
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Bruker
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Pensjon
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Person
+import no.nav.eessi.pensjon.fagmodul.sedmodel.PinItem
+import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerId
 import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerregisterService
 import no.nav.eessi.pensjon.personoppslag.aktoerregister.IdentGruppe
@@ -19,6 +24,7 @@ import no.nav.eessi.pensjon.security.sts.STSService
 import no.nav.eessi.pensjon.services.kodeverk.KodeverkClient
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonClient
 import no.nav.eessi.pensjon.utils.toJson
+import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
 import no.nav.eessi.pensjon.vedlegg.client.BrukerId
 import no.nav.eessi.pensjon.vedlegg.client.BrukerIdType
 import no.nav.eessi.pensjon.vedlegg.client.SafRequest
@@ -81,7 +87,7 @@ class BucIntegrationSpringTest {
 
 
     @Test
-    fun `Gitt det ikke finnes noen SED i en buc med avdød så sksal det vies et tomt resultat`() {
+    fun `Gitt det ikke finnes noen SED i en buc med avdød så skal det vies et tomt resultat`() {
 
         val gjenlevendeFnr = "1234567890000"
         val gjenlevendeAktoerId = "1123123123123123"
@@ -90,28 +96,33 @@ class BucIntegrationSpringTest {
         //gjenlevende aktoerid -> gjenlevendefnr
         doReturn(NorskIdent(gjenlevendeFnr)).`when`(aktoerService).hentGjeldendeIdent(IdentGruppe.NorskIdent, AktoerId(gjenlevendeAktoerId))
 
-        //buc02 - avdød rinasak
-        val rinaSakerBuc05 = listOf(dummyRinasak("1010", "P_BUC_05"))
         val rinaBuc02url = dummyRinasakAvdodUrl(avdodFnr, "P_BUC_02")
         doReturn( ResponseEntity.ok().body(emptyList<Rinasak>().toJson()) ).whenever(restEuxTemplate).exchange( eq(rinaBuc02url.toUriString()), eq(HttpMethod.GET), eq(null), eq(String::class.java))
 
         //buc05 avdød rinasak
+        val rinaSakerBuc05 = listOf(dummyRinasak("1010", "P_BUC_05"))
         val rinaBuc05url = dummyRinasakAvdodUrl(avdodFnr, "P_BUC_05")
         doReturn( ResponseEntity.ok().body(rinaSakerBuc05.toJson())  ).whenever(restEuxTemplate).exchange( eq(rinaBuc05url.toUriString()), eq(HttpMethod.GET), eq(null), eq(String::class.java))
+
+        //buc06 avdød rinasak
+        val rinaBuc06url = dummyRinasakAvdodUrl(avdodFnr, "P_BUC_06")
+        doReturn( ResponseEntity.ok().body( emptyList<Rinasak>().toJson())  ).whenever(restEuxTemplate).exchange( eq(rinaBuc06url.toUriString()), eq(HttpMethod.GET), eq(null), eq(String::class.java))
+
+        //buc10 avdød rinasak
+        val rinaBuc10url = dummyRinasakAvdodUrl(avdodFnr, "P_BUC_10")
+        doReturn( ResponseEntity.ok().body( emptyList<Rinasak>().toJson())  ).whenever(restEuxTemplate).exchange( eq(rinaBuc10url.toUriString()), eq(HttpMethod.GET), eq(null), eq(String::class.java))
 
         //gjenlevende rinasak
         val rinaGjenlevUrl = dummyRinasakUrl(gjenlevendeFnr, null, null, null)
         doReturn( ResponseEntity.ok().body( emptyList<Rinasak>().toJson())).whenever(restEuxTemplate).exchange( eq(rinaGjenlevUrl.toUriString()), eq(HttpMethod.GET), eq(null), eq(String::class.java))
 
         val buc05 = ResourceUtils.getFile("classpath:json/buc/buc-1190072-buc05_deletedP8000.json").readText()
-
         val rinabucpath = "/buc/1010"
         doReturn( ResponseEntity.ok().body( buc05 ) ).whenever(restEuxTemplate).exchange( eq(rinabucpath), eq(HttpMethod.GET), eq(null), eq(String::class.java))
 
         //saf (vedlegg meta) gjenlevende
         val httpEntity = dummyHeader(dummySafReqeust(gjenlevendeAktoerId))
         doReturn( ResponseEntity.ok().body(  dummySafMetaResponse() ) ).whenever(restSafTemplate).exchange(eq("/"), eq(HttpMethod.POST), eq(httpEntity), eq(String::class.java))
-
         val result = mockMvc.perform(get("/buc/detaljer/$gjenlevendeAktoerId/avdod/$avdodFnr")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk)
@@ -146,6 +157,15 @@ class BucIntegrationSpringTest {
         //buc05 avdød rinasak
         val rinaBuc05url = dummyRinasakAvdodUrl(avdodFnr, "P_BUC_05")
         doReturn( ResponseEntity.ok().body( emptyList<Rinasak>().toJson()) ).whenever(restEuxTemplate).exchange( eq(rinaBuc05url.toUriString()), eq(HttpMethod.GET), eq(null), eq(String::class.java))
+
+        //buc06 avdød rinasak
+        val rinaBuc06url = dummyRinasakAvdodUrl(avdodFnr, "P_BUC_06")
+        doReturn( ResponseEntity.ok().body( emptyList<Rinasak>().toJson())  ).whenever(restEuxTemplate).exchange( eq(rinaBuc06url.toUriString()), eq(HttpMethod.GET), eq(null), eq(String::class.java))
+
+        //buc10 avdød rinasak
+        val rinaBuc10url = dummyRinasakAvdodUrl(avdodFnr, "P_BUC_10")
+        doReturn( ResponseEntity.ok().body( emptyList<Rinasak>().toJson())  ).whenever(restEuxTemplate).exchange( eq(rinaBuc10url.toUriString()), eq(HttpMethod.GET), eq(null), eq(String::class.java))
+
 
         //gjenlevende rinasak
         val rinaGjenlevUrl = dummyRinasakUrl(gjenlevendeFnr, null, null, null)
@@ -210,6 +230,15 @@ class BucIntegrationSpringTest {
         //buc05 avdød rinasak
         val rinaBuc05url = dummyRinasakAvdodUrl(avdodFnr, "P_BUC_05")
         doReturn( ResponseEntity.ok().body( emptyList<Rinasak>().toJson()) ).whenever(restEuxTemplate).exchange( eq(rinaBuc05url.toUriString()), eq(HttpMethod.GET), eq(null), eq(String::class.java))
+
+        //buc06 avdød rinasak
+        val rinaBuc06url = dummyRinasakAvdodUrl(avdodFnr, "P_BUC_06")
+        doReturn( ResponseEntity.ok().body( emptyList<Rinasak>().toJson())  ).whenever(restEuxTemplate).exchange( eq(rinaBuc06url.toUriString()), eq(HttpMethod.GET), eq(null), eq(String::class.java))
+
+        //buc10 avdød rinasak
+        val rinaBuc10url = dummyRinasakAvdodUrl(avdodFnr, "P_BUC_10")
+        doReturn( ResponseEntity.ok().body( emptyList<Rinasak>().toJson())  ).whenever(restEuxTemplate).exchange( eq(rinaBuc10url.toUriString()), eq(HttpMethod.GET), eq(null), eq(String::class.java))
+
 
         //gjenlevende rinasak
         val rinaGjenlevUrl = dummyRinasakUrl(gjenlevendeFnr, null, null, null)
@@ -277,6 +306,15 @@ class BucIntegrationSpringTest {
         //buc05 avdød rinasak
         val rinaBuc05url = dummyRinasakAvdodUrl(avdodFnr, "P_BUC_05")
         doReturn( ResponseEntity.ok().body( emptyList<Rinasak>().toJson()) ).whenever(restEuxTemplate).exchange( eq(rinaBuc05url.toUriString()), eq(HttpMethod.GET), eq(null), eq(String::class.java))
+
+        //buc06 avdød rinasak
+        val rinaBuc06url = dummyRinasakAvdodUrl(avdodFnr, "P_BUC_06")
+        doReturn( ResponseEntity.ok().body( emptyList<Rinasak>().toJson())  ).whenever(restEuxTemplate).exchange( eq(rinaBuc06url.toUriString()), eq(HttpMethod.GET), eq(null), eq(String::class.java))
+
+        //buc10 avdød rinasak
+        val rinaBuc10url = dummyRinasakAvdodUrl(avdodFnr, "P_BUC_10")
+        doReturn( ResponseEntity.ok().body( emptyList<Rinasak>().toJson())  ).whenever(restEuxTemplate).exchange( eq(rinaBuc10url.toUriString()), eq(HttpMethod.GET), eq(null), eq(String::class.java))
+
 
         //gjenlevende rinasak
         val rinaGjenlevUrl = dummyRinasakUrl(gjenlevendeFnr, null, null, null)
@@ -349,6 +387,14 @@ class BucIntegrationSpringTest {
         val rinaBuc05url = dummyRinasakAvdodUrl(avdodFnr, "P_BUC_05")
         doReturn( ResponseEntity.ok().body( rinaSakerBuc05.toJson()) ).whenever(restEuxTemplate).exchange( eq(rinaBuc05url.toUriString()), eq(HttpMethod.GET), eq(null), eq(String::class.java))
 
+        //buc06 avdød rinasak
+        val rinaBuc06url = dummyRinasakAvdodUrl(avdodFnr, "P_BUC_06")
+        doReturn( ResponseEntity.ok().body( emptyList<Rinasak>().toJson())  ).whenever(restEuxTemplate).exchange( eq(rinaBuc06url.toUriString()), eq(HttpMethod.GET), eq(null), eq(String::class.java))
+
+        //buc10 avdød rinasak
+        val rinaBuc10url = dummyRinasakAvdodUrl(avdodFnr, "P_BUC_10")
+        doReturn( ResponseEntity.ok().body( emptyList<Rinasak>().toJson())  ).whenever(restEuxTemplate).exchange( eq(rinaBuc10url.toUriString()), eq(HttpMethod.GET), eq(null), eq(String::class.java))
+
         //gjenlevende rinasak
         val rinaGjenlevUrl = dummyRinasakUrl(gjenlevendeFnr, null, null, null)
         doReturn( ResponseEntity.ok().body( emptyList<Rinasak>().toJson())).whenever(restEuxTemplate).exchange( eq(rinaGjenlevUrl.toUriString()), eq(HttpMethod.GET), eq(null), eq(String::class.java))
@@ -402,6 +448,117 @@ class BucIntegrationSpringTest {
         JSONAssert.assertEquals(response, csseTwoExpected(), false)
 
     }
+
+    @Test
+    fun `Gitt det finnes en gjenlevende og avdød hvor buc05 buc06 og buc10 finnes Så skal det returneres en liste av buc`() {
+
+        val sedP8000json = String(Files.readAllBytes(Paths.get("src/test/resources/json/nav/P8000_NO-NAV.json")))
+
+        val gjenlevendeFnr = "1234567890000"
+        val gjenlevendeAktoerId = "1123123123123123"
+        val avdodFnr = "01010100001"
+
+        val vedtakid = "2312123123123"
+
+        doReturn(mockVedtak(avdodFnr, gjenlevendeAktoerId)).`when`(pensjonsinformasjonClient).hentAltPaaVedtak(vedtakid)
+
+        //gjenlevende aktoerid -> gjenlevendefnr
+        doReturn(NorskIdent(gjenlevendeFnr)).`when`(aktoerService).hentGjeldendeIdent(IdentGruppe.NorskIdent, AktoerId(gjenlevendeAktoerId))
+
+        //buc02 - avdød rinasak
+        val rinaBuc02url = dummyRinasakAvdodUrl(avdodFnr, "P_BUC_02")
+        doReturn( ResponseEntity.ok().body(emptyList<Rinasak>().toJson()) ).whenever(restEuxTemplate).exchange( eq(rinaBuc02url.toUriString()), eq(HttpMethod.GET), eq(null), eq(String::class.java))
+
+        //buc05 avdød rinasak
+        val rinaSakerBuc05 = listOf(dummyRinasak("2020", "P_BUC_05"))
+        val rinaBuc05url = dummyRinasakAvdodUrl(avdodFnr, "P_BUC_05")
+        doReturn( ResponseEntity.ok().body( rinaSakerBuc05.toJson()) ).whenever(restEuxTemplate).exchange( eq(rinaBuc05url.toUriString()), eq(HttpMethod.GET), eq(null), eq(String::class.java))
+
+        //buc06 avdød rinasak
+        val rinaSakerBuc06 = listOf(dummyRinasak("3030", "P_BUC_06"))
+        val rinaBuc06url = dummyRinasakAvdodUrl(avdodFnr, "P_BUC_06")
+        doReturn( ResponseEntity.ok().body( rinaSakerBuc06.toJson())  ).whenever(restEuxTemplate).exchange( eq(rinaBuc06url.toUriString()), eq(HttpMethod.GET), eq(null), eq(String::class.java))
+
+        //buc10 avdød rinasak
+        val rinaSakerBuc10 = listOf(dummyRinasak("4040", "P_BUC_10"))
+        val rinaBuc10url = dummyRinasakAvdodUrl(avdodFnr, "P_BUC_10")
+        doReturn( ResponseEntity.ok().body( rinaSakerBuc10.toJson())  ).whenever(restEuxTemplate).exchange( eq(rinaBuc10url.toUriString()), eq(HttpMethod.GET), eq(null), eq(String::class.java))
+
+        //gjenlevende rinasak
+        val rinaGjenlevUrl = dummyRinasakUrl(gjenlevendeFnr, null, null, null)
+        doReturn( ResponseEntity.ok().body( emptyList<Rinasak>().toJson())).whenever(restEuxTemplate).exchange( eq(rinaGjenlevUrl.toUriString()), eq(HttpMethod.GET), eq(null), eq(String::class.java))
+
+        //dummy date
+        val lastupdate = LocalDate.of(2020, Month.AUGUST, 7).toString()
+
+
+        //buc05
+        val doc05Items = listOf(DocumentsItem(id = "5", creationDate = lastupdate, lastUpdate = lastupdate, status = "sent", type = "P8000"), DocumentsItem(id = "2", creationDate = lastupdate,  lastUpdate = lastupdate, status = "draft", type = "P4000"))
+        val buc05 = Buc(id = "2020", processDefinitionName = "P_BUC_05", startDate = lastupdate, lastUpdate = lastupdate,  documents = doc05Items)
+
+        val rinabuc05path = "/buc/2020"
+        doReturn( ResponseEntity.ok().body( buc05.toJson() ) ).whenever(restEuxTemplate).exchange( eq(rinabuc05path), eq(HttpMethod.GET), eq(null), eq(String::class.java))
+
+        //buc06
+        val doc06Items = listOf(DocumentsItem(id = "6", creationDate = lastupdate, lastUpdate = lastupdate, status = "sent", type = "P6000"), DocumentsItem(id = "2", creationDate = lastupdate,  lastUpdate = lastupdate, status = "draft", type = "P4000"))
+        val buc06 = Buc(id = "3030", processDefinitionName = "P_BUC_06", startDate = lastupdate, lastUpdate = lastupdate,  documents = doc06Items)
+
+        val rinabuc06path = "/buc/3030"
+        doReturn( ResponseEntity.ok().body( buc06.toJson() ) ).whenever(restEuxTemplate).exchange( eq(rinabuc06path), eq(HttpMethod.GET), eq(null), eq(String::class.java))
+
+        //buc10
+        val doc10Items = listOf(DocumentsItem(id = "10", creationDate = lastupdate, lastUpdate = lastupdate, status = "sent", type = "P15000"), DocumentsItem(id = "2", creationDate = lastupdate,  lastUpdate = lastupdate, status = "draft", type = "P4000"))
+        val buc10 = Buc(id = "4040", processDefinitionName = "P_BUC_10", startDate = lastupdate, lastUpdate = lastupdate,  documents = doc10Items)
+
+        val rinabuc10path = "/buc/4040"
+        doReturn( ResponseEntity.ok().body( buc10.toJson() ) ).whenever(restEuxTemplate).exchange( eq(rinabuc10path), eq(HttpMethod.GET), eq(null), eq(String::class.java))
+
+        //saf (vedlegg meta) gjenlevende
+        val httpEntity = dummyHeader(dummySafReqeust(gjenlevendeAktoerId))
+        doReturn( ResponseEntity.ok().body(  dummySafMetaResponse() ) ).whenever(restSafTemplate).exchange(eq("/"), eq(HttpMethod.POST), eq(httpEntity), eq(String::class.java))
+
+        //buc05 sed
+        val rinabuc05documentidpath = "/buc/2020/sed/5"
+        doReturn( ResponseEntity.ok().body( sedP8000json ) ).whenever(restEuxTemplate).exchange( eq(rinabuc05documentidpath), eq(HttpMethod.GET), eq(null), eq(String::class.java))
+
+        //buc06 sed
+        val rinabuc06documentidpath = "/buc/3030/sed/6"
+        doReturn( ResponseEntity.ok().body( SED("P6000", pensjon = Pensjon(gjenlevende = Bruker(person = Person(pin = listOf(PinItem(land = "NO", identifikator = gjenlevendeFnr)), fornavn = "test", etternavn = "etter")))).toJsonSkipEmpty() )).whenever(restEuxTemplate).exchange( eq(rinabuc06documentidpath), eq(HttpMethod.GET), eq(null), eq(String::class.java))
+
+        //buc10 sed
+        val rinabucd10ocumentidpath = "/buc/4040/sed/10"
+        doReturn( ResponseEntity.ok().body( SED("P15000", pensjon = Pensjon(gjenlevende = Bruker(person = Person(pin = listOf(PinItem(land = "NO", identifikator = gjenlevendeFnr)), fornavn = "test", etternavn = "etter")))).toJsonSkipEmpty() )).whenever(restEuxTemplate).exchange( eq(rinabucd10ocumentidpath), eq(HttpMethod.GET), eq(null), eq(String::class.java))
+
+        val result = mockMvc.perform(get("/buc/detaljer/$gjenlevendeAktoerId/vedtak/$vedtakid")
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(MockMvcResultMatchers.status().isOk)
+            .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andReturn()
+
+        val response = result.response.getContentAsString(charset("UTF-8"))
+
+        //println(response)
+
+        verify(restEuxTemplate, times(1)).exchange("/rinasaker?fødselsnummer=01010100001&rinasaksnummer=&buctype=P_BUC_05&status=\"open\"", HttpMethod.GET, null, String::class.java)
+        verify(restEuxTemplate, times(1)).exchange("/rinasaker?fødselsnummer=01010100001&rinasaksnummer=&buctype=P_BUC_06&status=\"open\"", HttpMethod.GET, null, String::class.java)
+        verify(restEuxTemplate, times(1)).exchange("/rinasaker?fødselsnummer=01010100001&rinasaksnummer=&buctype=P_BUC_10&status=\"open\"", HttpMethod.GET, null, String::class.java)
+        verify(restEuxTemplate, times(1)).exchange("/rinasaker?fødselsnummer=1234567890000&rinasaksnummer=&buctype=&status=", HttpMethod.GET, null, String::class.java)
+        verify(restEuxTemplate, times(1)).exchange("/buc/2020", HttpMethod.GET, null, String::class.java)
+        verify(restEuxTemplate, times(1)).exchange("/buc/2020/sed/5", HttpMethod.GET, null, String::class.java)
+        verify(restEuxTemplate, times(1)).exchange("/buc/3030", HttpMethod.GET, null, String::class.java)
+        verify(restEuxTemplate, times(1)).exchange("/buc/3030/sed/6", HttpMethod.GET, null, String::class.java)
+        verify(restEuxTemplate, times(1)).exchange("/buc/4040", HttpMethod.GET, null, String::class.java)
+        verify(restEuxTemplate, times(1)).exchange("/buc/4040/sed/10", HttpMethod.GET, null, String::class.java)
+        verify(restSafTemplate, times(1)).exchange(eq("/"), eq(HttpMethod.POST), eq(httpEntity), eq(String::class.java))
+
+        val validResponse = """
+            [{"type":"P_BUC_05","caseId":"2020","creator":{"country":"","institution":"","name":null,"acronym":null},"sakType":null,"status":null,"startDate":1596751200000,"lastUpdate":1596751200000,"institusjon":[],"seds":[{"id":"5","parentDocumentId":null,"type":"P8000","status":"sent","creationDate":1596751200000,"lastUpdate":1596751200000,"displayName":null,"participants":null,"attachments":[],"version":"1","firstVersion":null,"lastVersion":null,"allowsAttachments":null,"message":null},{"id":"2","parentDocumentId":null,"type":"P4000","status":"draft","creationDate":1596751200000,"lastUpdate":1596751200000,"displayName":null,"participants":null,"attachments":[],"version":"1","firstVersion":null,"lastVersion":null,"allowsAttachments":null,"message":null}],"error":null,"readOnly":false,"subject":{"gjenlevende":{"fnr":"1234567890000"},"avdod":{"fnr":"01010100001"}}},{"type":"P_BUC_06","caseId":"3030","creator":{"country":"","institution":"","name":null,"acronym":null},"sakType":null,"status":null,"startDate":1596751200000,"lastUpdate":1596751200000,"institusjon":[],"seds":[{"id":"6","parentDocumentId":null,"type":"P6000","status":"sent","creationDate":1596751200000,"lastUpdate":1596751200000,"displayName":null,"participants":null,"attachments":[],"version":"1","firstVersion":null,"lastVersion":null,"allowsAttachments":null,"message":null},{"id":"2","parentDocumentId":null,"type":"P4000","status":"draft","creationDate":1596751200000,"lastUpdate":1596751200000,"displayName":null,"participants":null,"attachments":[],"version":"1","firstVersion":null,"lastVersion":null,"allowsAttachments":null,"message":null}],"error":null,"readOnly":false,"subject":{"gjenlevende":{"fnr":"1234567890000"},"avdod":{"fnr":"01010100001"}}},{"type":"P_BUC_10","caseId":"4040","creator":{"country":"","institution":"","name":null,"acronym":null},"sakType":null,"status":null,"startDate":1596751200000,"lastUpdate":1596751200000,"institusjon":[],"seds":[{"id":"10","parentDocumentId":null,"type":"P15000","status":"sent","creationDate":1596751200000,"lastUpdate":1596751200000,"displayName":null,"participants":null,"attachments":[],"version":"1","firstVersion":null,"lastVersion":null,"allowsAttachments":null,"message":null},{"id":"2","parentDocumentId":null,"type":"P4000","status":"draft","creationDate":1596751200000,"lastUpdate":1596751200000,"displayName":null,"participants":null,"attachments":[],"version":"1","firstVersion":null,"lastVersion":null,"allowsAttachments":null,"message":null}],"error":null,"readOnly":false,"subject":{"gjenlevende":{"fnr":"1234567890000"},"avdod":{"fnr":"01010100001"}}}]
+        """.trimIndent()
+
+        JSONAssert.assertEquals(response, validResponse, true)
+
+    }
+
 
     private fun mockVedtak(avdofnr: String, gjenlevAktoerid: String): Pensjonsinformasjon {
         val pen = Pensjonsinformasjon()
