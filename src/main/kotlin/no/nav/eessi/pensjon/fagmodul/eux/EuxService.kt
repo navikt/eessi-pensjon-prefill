@@ -45,16 +45,6 @@ class EuxService (private val euxKlient: EuxKlient,
         opprettSED = metricsHelper.init("OpprettSED")
     }
 
-//    @Throws(EuxGenericServerException::class, SedDokumentIkkeOpprettetException::class)
-//    fun opprettSvarSedOnBuc(navSED: SED, euxCaseId: String, parentDocumentId: String): BucSedResponse {
-//        return euxKlient.opprettSvarSed(
-//            navSED.toJsonSkipEmpty(),
-//            euxCaseId,
-//            parentDocumentId,
-//            "Feil ved opprettSvarSed", OpprettSvarSED
-//        )
-//    }
-
     @Throws(EuxGenericServerException::class, SedDokumentIkkeOpprettetException::class)
     fun opprettSvarJsonSedOnBuc(jsonSed: String, euxCaseId: String, parentDocumentId: String): BucSedResponse {
         return euxKlient.opprettSvarSed(

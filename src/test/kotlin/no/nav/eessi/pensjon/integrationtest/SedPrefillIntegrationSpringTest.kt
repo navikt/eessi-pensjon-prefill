@@ -303,11 +303,7 @@ class SedPrefillIntegrationSpringTest {
         Assertions.assertEquals("12312312312", forsikretPin)
         JSONAssert.assertEquals(response, validResponse, true)
 
-
-
     }
-
-
 
     @Test
     @Throws(Exception::class)

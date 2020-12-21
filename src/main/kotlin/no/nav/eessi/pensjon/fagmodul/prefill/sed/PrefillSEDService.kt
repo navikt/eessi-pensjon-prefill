@@ -95,6 +95,7 @@ class PrefillSEDService(private val prefillNav: PrefillNav,
 
     private fun hentRelevantVedtak(prefillData: PrefillDataModel): V1Vedtak? {
         prefillData.vedtakId.let {
+            logger.debug("vedtakId er: $it, prøver å hente vedtaket")
             return pensjonsinformasjonService.hentRelevantVedtakHvisFunnet(it ?: "")
         }
     }

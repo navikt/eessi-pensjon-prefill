@@ -240,7 +240,6 @@ class SedController(
         }
 
         logger.info("Prøver å prefillSED (svarSED) parentId: $parentId")
-        //val sed = prefillService.prefillSed(dataModel)
         val sedAndType = prefillService.prefillSedtoJson(dataModel, bucUtil.getProcessDefinitionVersion())
 
         return addDocumentToParent.measure {
@@ -253,7 +252,7 @@ class SedController(
 
             val documentItem = fetchBucAgainBeforeReturnShortDocument(dataModel.buc, docresult, result)
 
-            logger.info("Henter metadata for hovedSED type: ${parent?.type}, documentId: ${parent?.id}, svarSED type: ${documentItem?.type} documentID: ${documentItem?.id}")
+            logger.info("Buc: (${dataModel.euxCaseID}, hovedSED type: ${parent?.type}, docId: ${parent?.id}, svarSED type: ${documentItem?.type} docID: ${documentItem?.id}")
             logger.info("******* Legge til svarSED - slutt *******")
             documentItem
         }

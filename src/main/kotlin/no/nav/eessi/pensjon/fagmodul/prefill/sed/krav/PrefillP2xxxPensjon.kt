@@ -111,17 +111,23 @@ object PrefillP2xxxPensjon {
      * F_BH_MED_UTL     Førstegangsbehandling Norge/utland ikke finnes sakl vi avslutte
      *
      */
-    private fun validerGyldigKravtypeOgArsak(sak: V1Sak, sedType: String) {
+    private fun validerGyldigKravtypeOgArsak(sak: V1Sak, sedType: String, vedtak: V1Vedtak?) {
         logger.info("start på validering av $sedType")
 
         validerGyldigKravtypeOgArsakFelles(sak , sedType)
 
         val forsBehanBoUtlanTom = finnKravHistorikk("F_BH_BO_UTL", sak.kravHistorikkListe).isNullOrEmpty()
         val forsBehanMedUtlanTom = finnKravHistorikk("F_BH_MED_UTL", sak.kravHistorikkListe).isNullOrEmpty()
-        logger.debug("forsBehanBoUtlanTom: $forsBehanBoUtlanTom, forsBehanMedUtlanTom: $forsBehanMedUtlanTom")
-        if (forsBehanBoUtlanTom and forsBehanMedUtlanTom) {
+        val vedtakErTom = (vedtak == null)
+
+        if (forsBehanBoUtlanTom and forsBehanMedUtlanTom and vedtakErTom) {
+            logger.debug("forsBehanBoUtlanTom: $forsBehanBoUtlanTom, forsBehanMedUtlanTom: $forsBehanMedUtlanTom")
             logger.warn("Du kan ikke opprette krav-SED $sedType fra brukerkontekst. Dersom det gjelder Utsendelse til avtaleland, se egen rutine for utsendelse av SED på Navet.")
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Du kan ikke opprette krav-SED $sedType fra brukerkontekst. Dersom det gjelder Utsendelse til avtaleland, se egen rutine for utsendelse av SED på Navet.")
+        }
+        if (vedtak != null && vedtak.isBoddArbeidetUtland == false) {
+            logger.warn("Du kan ikke opprette krav-SED $sedType hvis ikke \"bodd/arbeidet i utlandet\" er krysset av")
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Du kan ikke opprette krav-SED $sedType hvis ikke \"bodd/arbeidet i utlandet\" er krysset av")
         }
         logger.info("avslutt på validering av $sedType, fortsetter med preutfylling")
     }
@@ -132,7 +138,7 @@ object PrefillP2xxxPensjon {
             logger.info("Validering på vedtak bosatt utland ${it.isBoddArbeidetUtland}")
             if (it.isBoddArbeidetUtland) return
         }
-        validerGyldigKravtypeOgArsak(sak, sedType)
+        validerGyldigKravtypeOgArsak(sak, sedType, vedtak)
     }
 
     /**
