@@ -89,7 +89,7 @@ class PrefillService(private val factory: PrefillSEDService,
                         navn = it.name ?: it.checkAndConvertInstituion()
                 )
                 val sedtype = SEDType.X005.name
-                val datax005 = data.copy(avdod = null, sedType = sedtype, sed = SED(sedtype))
+                val datax005 = data.copy(avdod = null, sedType = sedtype, sed = SED(sedtype), institution = emptyList(), institusjonX005 = institusjon)
 
                 factory.prefill(datax005)
             }

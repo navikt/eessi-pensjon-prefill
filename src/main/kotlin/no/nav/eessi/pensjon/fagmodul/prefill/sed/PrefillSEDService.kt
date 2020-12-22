@@ -73,6 +73,8 @@ class PrefillSEDService(private val prefillNav: PrefillNav,
                 }
             }
 
+            //SEDType.P15000 -> PrefillP15000(PrefillSed(prefillNav)).prefill(prefillData, hentPersoner(prefillData), hentRelevantPensjonSak(prefillData) { pensakType -> listOf("ALDER", "BARNEP", "GJENLEV", "UFOREP", "GENRL", "OMSORG").contains(pensakType) })
+
             SEDType.P10000 -> PrefillP10000(PrefillSed(prefillNav)).prefill(prefillData, hentPersoner(prefillData))
             SEDType.X005 -> PrefillX005(prefillNav).prefill(prefillData, hentPersoner(prefillData))
             SEDType.H020, SEDType.H021 -> PrefillH02X(PrefillSed(prefillNav)).prefill(prefillData, hentPersoner(prefillData))
@@ -105,12 +107,14 @@ class PrefillSEDService(private val prefillNav: PrefillNav,
 
     //Henter inn alle personer fra ep-personoppslag  først før preutfylling
     private fun hentPersoner(prefillData: PrefillDataModel, fyllUtBarnListe: Boolean = false): PersonData {
-        logger.info("Henter hovedperson/forsikret")
+        logger.info("Henter hovedperson/forsikret/gjenlevende")
         val forsikretPerson = personV3Service.hentBruker(prefillData.bruker.norskIdent)
 
         val gjenlevendeEllerAvdod = if (prefillData.avdod != null) {
+            logger.info("Henter avød person/forsikret")
             personV3Service.hentBruker(prefillData.avdod.norskIdent)
         } else {
+            logger.info("Ingen avdød så settes til forsikretPerson")
            forsikretPerson
         }
 
@@ -118,7 +122,11 @@ class PrefillSEDService(private val prefillNav: PrefillNav,
         logger.info("Henter ektefelle/partner (ekteType: $ekteTypeValue)")
         val ektefelleBruker = if (ektepinid.isBlank()) null else personV3Service.hentBruker(ektepinid)
 
+        logger.info("Henter barn")
         val barnBrukereFraTPS = if (forsikretPerson == null || !fyllUtBarnListe) emptyList() else hentBarnFraTps(forsikretPerson)
+
+        //kan fjernes..
+        logger.debug("gjenlevendeEllerAvdod: ${gjenlevendeEllerAvdod?.personnavn?.sammensattNavn}, forsikretPerson: ${forsikretPerson?.personnavn?.sammensattNavn}")
 
         return PersonData(gjenlevendeEllerAvdod = gjenlevendeEllerAvdod, forsikretPerson = forsikretPerson!!, ektefelleBruker = ektefelleBruker, ekteTypeValue = ekteTypeValue, barnBrukereFraTPS = barnBrukereFraTPS)
     }

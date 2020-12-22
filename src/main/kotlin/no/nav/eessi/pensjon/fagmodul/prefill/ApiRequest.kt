@@ -77,12 +77,11 @@ data class ApiRequest(
                 request.institutions == null -> throw MangelfulleInndataException("Mangler Institusjoner")
 
                 SEDType.isValidSEDType(request.sed) -> {
-                    logger.info("ALL SED on existing Rina -> SED: ${request.sed} -> euxCaseId: ${request.euxCaseId} -> sakNr: ${request.sakId} ")
-                    val avdod: PersonId? = populerAvdodHvisGjenlevendePensjonSak(request, avdodaktoerID)
+                    logger.info("ALL SED on existing Rina SED: ${request.sed} -> euxCaseId: ${request.euxCaseId} -> sakNr: ${request.sakId} ")
                     PrefillDataModel(
                             penSaksnummer = request.sakId,
                             bruker = PersonId(fodselsnr, request.aktoerId),
-                            avdod = avdod,
+                            avdod = populerAvdodHvisGjenlevendePensjonSak(request, avdodaktoerID),
                             sedType = request.sed,
                             buc = request.buc,
                             sed = SED(request.sed),

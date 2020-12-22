@@ -1,8 +1,10 @@
 package no.nav.eessi.pensjon.fagmodul.prefill
 
 import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.whenever
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
+import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PersonId
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillSEDService
@@ -16,12 +18,14 @@ import no.nav.eessi.pensjon.fagmodul.sedmodel.Navsak
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Person
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SedMock
+import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
+import org.skyscreamer.jsonassert.JSONAssert
 
 @ExtendWith(MockitoExtension::class)
 class PrefillServiceTest {
@@ -37,22 +41,73 @@ class PrefillServiceTest {
     }
 
     @Test
-    fun `call prefillEnX005ForHverInstitusjon| mock adding institusjon `() {
-        val euxCaseId = "12131234"
-
+    fun `call prefillEnX005ForHverInstitusjon sjekk paa antall`() {
         val data = generatePrefillModel()
-        val sed = generateMockP2000(data)
 
         val mockInstitusjonList = listOf(
                 InstitusjonItem(country = "FI", institution = "Finland", name="Finland test"),
                 InstitusjonItem(country = "DE", institution = "Tyskland", name="Tyskland test")
         )
-
-        whenever(mockPrefillSEDService.prefill(any())).thenReturn(data.sed)
+        val x005sed = generateMockX005(data)
+        whenever(mockPrefillSEDService.prefill(any())).thenReturn(x005sed)
         val x005Liste = prefillService.prefillEnX005ForHverInstitusjon(mockInstitusjonList, data)
-
         assertEquals(x005Liste.size, 2)
     }
+
+    @Test
+    fun `call prefillEnX005ForHverInstitusjon mock adding institusjon `() {
+        val data = generatePrefillModel()
+
+        val de = InstitusjonItem(country = "DE", institution = "Tyskland", name="Tyskland test")
+
+        val sedtype = SEDType.X005.name
+        val instX005 = InstitusjonX005(
+            id = de.checkAndConvertInstituion(),
+            navn = de.name ?: de.checkAndConvertInstituion()
+        )
+
+        val datax005 = data.copy(avdod = null, sedType = sedtype, sed = SED(sedtype), institution = emptyList(), institusjonX005 = instX005)
+        val x005sed = generateMockX005(datax005)
+
+        doReturn(x005sed).whenever(mockPrefillSEDService).prefill(any())
+
+        val mockInstitusjonList = listOf(de)
+        val x005Liste = prefillService.prefillEnX005ForHverInstitusjon(mockInstitusjonList, data)
+
+        assertEquals(x005Liste.size, 1)
+        val result = x005Liste[0]
+
+        val valid = """
+            {
+              "sed" : "X005",
+              "sedGVer" : "4",
+              "sedVer" : "1",
+              "nav" : {
+                "sak" : {
+                  "kontekst" : {
+                    "bruker" : {
+                      "person" : {
+                        "etternavn" : "Konsoll",
+                        "fornavn" : "Gul",
+                        "foedselsdato" : "1967-12-01"
+                      }
+                    }
+                  },
+                  "leggtilinstitusjon" : {
+                    "institusjon" : {
+                      "id" : "DE:Tyskland",
+                      "navn" : "Tyskland test"
+                    }
+                  }
+                }
+              }
+            }
+        """.trimIndent()
+
+        JSONAssert.assertEquals(result.toJsonSkipEmpty(), valid, true)
+
+    }
+
 
     fun generateMockP2000(prefillModel: PrefillDataModel): SED {
         val mocksed = prefillModel.sed
@@ -81,10 +136,7 @@ class PrefillServiceTest {
                                 )
                         ),
                         leggtilinstitusjon = Leggtilinstitusjon(
-                                institusjon = InstitusjonX005(
-                                        id = "",
-                                        navn = ""
-                                ),
+                                institusjon = prefillModel.institusjonX005,
                                 grunn = null
                         )
                 )

@@ -4,6 +4,7 @@ import io.micrometer.core.instrument.Tag
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import io.swagger.annotations.ApiOperation
 import no.nav.eessi.pensjon.fagmodul.eux.BucUtils
+import no.nav.eessi.pensjon.fagmodul.eux.EuxRinaServerException
 import no.nav.eessi.pensjon.fagmodul.eux.EuxService
 import no.nav.eessi.pensjon.fagmodul.eux.PinOgKrav
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.BucSedResponse
@@ -81,7 +82,17 @@ class SedController(
         logger.info("kaller (previewDocument) rinaId: ${request.euxCaseId} bucType: ${request.buc} sedType: ${request.sed} aktoerId: ${request.aktoerId} sakId: ${request.sakId} vedtak: ${request.vedtakId}")
 
         val norskIdent = hentFnrfraAktoerService(request.aktoerId, aktoerService)
-        val dataModel = ApiRequest.buildPrefillDataModelConfirm(request, norskIdent, getAvdodAktoerId(request))
+//        val dataModel = ApiRequest.buildPrefillDataModelConfirm(request, norskIdent, getAvdodAktoerId(request))
+        val dataModel = ApiRequest.buildPrefillDataModelOnExisting(request, norskIdent, getAvdodAktoerId(request))
+
+
+        logger.debug(
+            """
+            ---------------------------------------------------------------------------
+            har avdød: ${dataModel.avdod != null}, avdød: ${dataModel.avdod?.toJson()}
+            søker    : ${dataModel.bruker?.toJson()}
+            ---------------------------------------------------------------------------
+            """.trimIndent())
 
         val sed = prefillService.prefillSed(dataModel)
         return if (filter == null) {
@@ -112,6 +123,14 @@ class SedController(
         logger.info("kaller (addInstutionAndDocument) rinaId: ${request.euxCaseId} bucType: ${request.buc} sedType: ${request.sed} aktoerId: ${request.aktoerId} sakId: ${request.sakId} vedtak: ${request.vedtakId}")
         val norskIdent = hentFnrfraAktoerService(request.aktoerId, aktoerService)
         val dataModel = ApiRequest.buildPrefillDataModelOnExisting(request, norskIdent, getAvdodAktoerId(request))
+
+        logger.debug(
+            """
+            ---------------------------------------------------------------------------
+            har avdød: ${dataModel.avdod != null}, avdød: ${dataModel.avdod?.toJson()}
+            søker    : ${dataModel.bruker?.toJson()}
+            ---------------------------------------------------------------------------
+            """.trimIndent())
 
         //Hente metadata for valgt BUC
         val bucUtil = addInstutionAndDocumentBucUtils.measure {
@@ -198,17 +217,33 @@ class SedController(
                         throw ResponseStatusException(HttpStatus.BAD_REQUEST, "NAV er ikke sakseier. Du kan ikke legge til deltakere utenfor Norge")
                     }
                 }
-                addInstitutionMedX005(dataModel, nyeInstitusjoner)
+                addInstitutionMedX005(dataModel, nyeInstitusjoner, bucUtil.getProcessDefinitionVersion())
             }
         }
     }
 
-    private fun addInstitutionMedX005(dataModel: PrefillDataModel, nyeInstitusjoner: List<InstitusjonItem>) {
+    private fun addInstitutionMedX005(dataModel: PrefillDataModel, nyeInstitusjoner: List<InstitusjonItem>, bucVersion: String) {
         logger.debug("Prøver å legge til Deltaker/Institusions på buc samt prefillSed og sende inn til Rina ")
         logger.info("X005 finnes på buc, Sed X005 prefills og sendes inn: ${nyeInstitusjoner.toJsonSkipEmpty()}")
 
+        var execptionError: Exception? = null
         val x005Liste = prefillService.prefillEnX005ForHverInstitusjon(nyeInstitusjoner, dataModel)
-        x005Liste.forEach { x005 -> euxService.opprettSedOnBuc(x005, dataModel.euxCaseID) }
+
+            x005Liste.forEach { x005 ->
+                try {
+                    updateSEDVersion(x005, bucVersion)
+                    euxService.opprettJsonSedOnBuc(x005.toJson(), x005.getType(), dataModel.euxCaseID)
+                } catch (eux: EuxRinaServerException) {
+                    execptionError = eux
+                } catch (ex: Exception) {
+                    execptionError = ex
+                }
+            }
+        if (execptionError != null) {
+            logger.error("Feiler ved oppretting av X005  (ny institusjon), euxCaseid: ${dataModel.euxCaseID}, sed: ${dataModel.sedType}", execptionError)
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Feiler ved oppretting av X005 (ny institusjon) for euxCaseId: ${dataModel.euxCaseID}")
+        }
+
     }
 
     private fun extraTag(dataModel: PrefillDataModel, bucUtil: BucUtils): List<Tag> {
