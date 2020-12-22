@@ -37,32 +37,32 @@ class PensjonsinformasjonClient(
         fun finnSak(sakId: String, pendata: Pensjonsinformasjon): V1Sak {
             logger.info("Søker brukersSakerListe etter sakId: $sakId")
             val v1saklist = pendata.brukersSakerListe.brukersSakerListe
-            return v1saklist.firstOrNull { sak -> "${sak.sakId}" == sakId  } ?: {
-                val errormsg = "Dersom kravet gjelder \"Førstegangsbehandling kun utland\" eller \"Utsendelse til avtaleland\", se egen rutine på Navet."
-                logger.error("Finner ingen sak på sakId: $sakId.\n$errormsg")
-                throw IngenSakFunnetException(errormsg)
-            }()
+            return v1saklist.firstOrNull { sak -> "${sak.sakId}" == sakId  } ?: run {
+                val warning = """Dersom kravet gjelder "Førstegangsbehandling kun utland" eller "Utsendelse til avtaleland", se egen rutine på Navet."""
+                logger.warn("Finner ingen sak på sakId: $sakId.\n$warning")
+                throw IngenSakFunnetException(warning)
+            }
         }
     }
 
-    private lateinit var PensjoninformasjonHentKunSakType: MetricsHelper.Metric
-    private lateinit var PensjoninformasjonHentAltPaaIdent: MetricsHelper.Metric
-    private lateinit var PensjoninformasjonAltPaaVedtak: MetricsHelper.Metric
-    private lateinit var PensjoninformasjonHentAltPaaIdentRequester: MetricsHelper.Metric
-    private lateinit var PensjoninformasjonAltPaaVedtakRequester: MetricsHelper.Metric
+    private lateinit var pensjoninformasjonHentKunSakType: MetricsHelper.Metric
+    private lateinit var pensjoninformasjonHentAltPaaIdent: MetricsHelper.Metric
+    private lateinit var pensjoninformasjonAltPaaVedtak: MetricsHelper.Metric
+    private lateinit var pensjoninformasjonHentAltPaaIdentRequester: MetricsHelper.Metric
+    private lateinit var pensjoninformasjonAltPaaVedtakRequester: MetricsHelper.Metric
 
     @PostConstruct
     fun initMetrics() {
-        PensjoninformasjonHentKunSakType = metricsHelper.init("PensjoninformasjonHentKunSakType")
-        PensjoninformasjonHentAltPaaIdent = metricsHelper.init("PensjoninformasjonHentAltPaaIdent")
-        PensjoninformasjonAltPaaVedtak = metricsHelper.init("PensjoninformasjonAltPaaVedtak")
-        PensjoninformasjonHentAltPaaIdentRequester = metricsHelper.init("PensjoninformasjonHentAltPaaIdentRequester")
-        PensjoninformasjonAltPaaVedtakRequester = metricsHelper.init("PensjoninformasjonAltPaaVedtakRequester")
+        pensjoninformasjonHentKunSakType = metricsHelper.init("PensjoninformasjonHentKunSakType")
+        pensjoninformasjonHentAltPaaIdent = metricsHelper.init("PensjoninformasjonHentAltPaaIdent")
+        pensjoninformasjonAltPaaVedtak = metricsHelper.init("PensjoninformasjonAltPaaVedtak")
+        pensjoninformasjonHentAltPaaIdentRequester = metricsHelper.init("PensjoninformasjonHentAltPaaIdentRequester")
+        pensjoninformasjonAltPaaVedtakRequester = metricsHelper.init("PensjoninformasjonAltPaaVedtakRequester")
     }
 
     @Throws(IkkeFunnetException::class)
     fun hentKunSakType(sakId: String, aktoerid: String): Pensjontype {
-        return PensjoninformasjonHentKunSakType.measure {
+        return pensjoninformasjonHentKunSakType.measure {
             return@measure try {
                 val sak = finnSak(sakId, hentAltPaaAktoerId(aktoerid))
                 Pensjontype(sakId, sak.sakType)
@@ -79,14 +79,14 @@ class PensjonsinformasjonClient(
 
         //APIet skal ha urlen {host}:{port}/pensjon-ws/api/pensjonsinformasjon/v1/{ressurs}?sakId=123+fom=2018-01-01+tom=2018-28-02.
 
-        return PensjoninformasjonHentAltPaaIdent.measure {
+        return pensjoninformasjonHentAltPaaIdent.measure {
 
             val requestBody = requestBuilder.requestBodyForSakslisteFromAString()
 
             logger.debug("Requestbody:\n$requestBody")
             logger.info("Henter pensjonsinformasjon for aktor: $aktoerId")
 
-            val xmlResponse = doRequest("/aktor/", aktoerId, requestBody, PensjoninformasjonHentAltPaaIdentRequester)
+            val xmlResponse = doRequest("/aktor/", aktoerId, requestBody, pensjoninformasjonHentAltPaaIdentRequester)
             transform(xmlResponse)
         }
     }
@@ -94,13 +94,13 @@ class PensjonsinformasjonClient(
     @Throws(PensjoninformasjonException::class, HttpServerErrorException::class, HttpClientErrorException::class)
     fun hentAltPaaVedtak(vedtaksId: String): Pensjonsinformasjon {
 
-        return PensjoninformasjonAltPaaVedtak.measure {
+        return pensjoninformasjonAltPaaVedtak.measure {
 
             val requestBody = requestBuilder.requestBodyForVedtakFromAString()
             logger.debug("Requestbody:\n$requestBody")
             logger.info("Henter pensjonsinformasjon for vedtaksid: $vedtaksId")
 
-            val xmlResponse = doRequest("/vedtak", vedtaksId, requestBody, PensjoninformasjonAltPaaVedtakRequester)
+            val xmlResponse = doRequest("/vedtak", vedtaksId, requestBody, pensjoninformasjonAltPaaVedtakRequester)
             transform(xmlResponse)
         }
     }
