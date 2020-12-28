@@ -250,12 +250,13 @@ class BucController(@Value("\${NAIS_NAMESPACE}") val nameSpace : String,
             //hente BucAndSedView resterende bucs på gjenlevende (normale bucs)
             //logger.info("henter buc normalt")
             //val normalbucAndSedView = getBucogSedView(aktoerid)
+            logger.debug("buclist avdød: ${avdodBucAndSedView.size} buclist normal: ${normalbucAndSedView.size}")
             val list = avdodBucAndSedView.plus(normalbucAndSedView).distinctBy { it.caseId }
 
             logger.debug("buclist size: ${list.size}")
+            logger.debug("----------------------- slutt buclist ----------------------")
             return@measure list
 
-//            return@measure avdodBucAndSedView
         }
     }
 
