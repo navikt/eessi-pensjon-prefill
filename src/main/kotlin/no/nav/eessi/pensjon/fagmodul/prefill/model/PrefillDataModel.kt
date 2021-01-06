@@ -18,23 +18,24 @@ class PersonId(val norskIdent: String,
                val aktorId: String)
 
 data class PrefillDataModel(
-        val penSaksnummer: String,
-        val bruker: PersonId,
-        val avdod: PersonId?,
-        val sedType: String,
-        val sed: SED,
-        val buc: String,
-        val vedtakId: String? = null,
-        val kravDato: String? = null,
-        val kravId: String? = null,
-        val euxCaseID: String,
-        val institution: List<InstitusjonItem>,
-        val refTilPerson: ReferanseTilPerson? = null,
-        var melding: String? = null,
-        var andreInstitusjon: AndreinstitusjonerItem? = null,
-        var institusjonX005: InstitusjonX005? = null,
-        val partSedAsJson: MutableMap<String, String> = mutableMapOf()
-        ) {
+    val penSaksnummer: String,
+    val bruker: PersonId,
+    val avdod: PersonId?,
+    val sedType: String,
+    val sed: SED,
+    val buc: String,
+    val vedtakId: String? = null,
+    val kravDato: String? = null,
+    val kravType: KravType? = null,
+    val kravId: String? = null,
+    val euxCaseID: String,
+    val institution: List<InstitusjonItem>,
+    val refTilPerson: ReferanseTilPerson? = null,
+    var melding: String? = null,
+    var andreInstitusjon: AndreinstitusjonerItem? = null,
+    var institusjonX005: InstitusjonX005? = null,
+    val partSedAsJson: MutableMap<String, String> = mutableMapOf()
+    ) {
 
     override fun toString(): String {
         return "DataModel: sedType: $sedType, bucType: $buc, penSakId: $penSaksnummer, vedtakId: $vedtakId, euxCaseId: $euxCaseID"
@@ -66,3 +67,8 @@ enum class ReferanseTilPerson(val verdi: String) {
     AVDOD("01");
 }
 
+enum class KravType(val verdi: String) {
+    ALDER("01"),
+    GJENLEV("02"),
+    UFOREP("03");
+}

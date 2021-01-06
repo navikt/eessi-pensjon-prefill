@@ -20,6 +20,7 @@ import no.nav.eessi.pensjon.personoppslag.aktoerregister.IdentGruppe
 import no.nav.eessi.pensjon.personoppslag.aktoerregister.NorskIdent
 import no.nav.eessi.pensjon.personoppslag.personv3.PersonV3Service
 import no.nav.eessi.pensjon.utils.toJson
+import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import no.nav.pensjon.v1.vedtak.V1Vedtak
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.PersonIdent
@@ -73,7 +74,12 @@ class PrefillSEDService(private val prefillNav: PrefillNav,
                 }
             }
 
-            //SEDType.P15000 -> PrefillP15000(PrefillSed(prefillNav)).prefill(prefillData, hentPersoner(prefillData), hentRelevantPensjonSak(prefillData) { pensakType -> listOf("ALDER", "BARNEP", "GJENLEV", "UFOREP", "GENRL", "OMSORG").contains(pensakType) })
+            SEDType.P15000 -> PrefillP15000(PrefillSed(prefillNav)).prefill(
+                prefillData,
+                hentPersoner(prefillData),
+                hentRelevantPensjonSak(prefillData) { pensakType -> listOf("ALDER", "BARNEP", "GJENLEV", "UFOREP", "GENRL", "OMSORG").contains(pensakType) },
+                hentRelevantPensjonsinformasjon(prefillData)
+            )
 
             SEDType.P10000 -> PrefillP10000(PrefillSed(prefillNav)).prefill(prefillData, hentPersoner(prefillData))
             SEDType.X005 -> PrefillX005(prefillNav).prefill(prefillData, hentPersoner(prefillData))
@@ -99,6 +105,13 @@ class PrefillSEDService(private val prefillNav: PrefillNav,
         prefillData.vedtakId.let {
             logger.debug("vedtakId er: $it, prøver å hente vedtaket")
             return pensjonsinformasjonService.hentRelevantVedtakHvisFunnet(it ?: "")
+        }
+    }
+
+    private fun hentRelevantPensjonsinformasjon(prefillData: PrefillDataModel): Pensjonsinformasjon? {
+        return prefillData.vedtakId?.let {
+            logger.debug("vedtakid er: $it, prøver å hente pensjonsinformasjon for vedtaket")
+            pensjonsinformasjonService.hentMedVedtak(it)
         }
     }
 

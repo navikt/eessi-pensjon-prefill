@@ -15,7 +15,6 @@ import no.nav.eessi.pensjon.fagmodul.sedmodel.PinItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.metrics.MetricsHelper
 import no.nav.eessi.pensjon.utils.mapJsonToAny
-import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
 import no.nav.eessi.pensjon.utils.typeRefs
 import no.nav.eessi.pensjon.vedlegg.client.SafClient
 import org.slf4j.LoggerFactory
@@ -58,14 +57,17 @@ class EuxService (private val euxKlient: EuxKlient,
     /**
      * Ny SED på ekisterende type
      */
-    @Throws(EuxGenericServerException::class, SedDokumentIkkeOpprettetException::class)
-    fun opprettSedOnBuc(navSED: SED, euxCaseId: String): BucSedResponse {
-        logger.info("Forsøker å opprette en ${navSED.sed}, rinasakId: $euxCaseId")
-        val sedJson = navSED.toJsonSkipEmpty()
-        logger.debug("Logger ut $sedJson")
-        return euxKlient.opprettSed(sedJson, euxCaseId, opprettSED, "Feil ved opprettSed: ${navSED.sed}, med rinaId: $euxCaseId")
-    }
+//    @Throws(EuxGenericServerException::class, SedDokumentIkkeOpprettetException::class)
+//    fun opprettSedOnBuc(navSED: SED, euxCaseId: String): BucSedResponse {
+//        logger.info("Forsøker å opprette en ${navSED.sed}, rinasakId: $euxCaseId")
+//        val sedJson = navSED.toJsonSkipEmpty()
+//        logger.debug("Logger ut $sedJson")
+//        return euxKlient.opprettSed(sedJson, euxCaseId, opprettSED, "Feil ved opprettSed: ${navSED.sed}, med rinaId: $euxCaseId")
+//    }
 
+    /**
+     * Ny SED på ekisterende type
+     */
     @Throws(EuxGenericServerException::class, SedDokumentIkkeOpprettetException::class)
     fun opprettJsonSedOnBuc(jsonNavSED: String, sedType: String, euxCaseId: String): BucSedResponse {
         logger.info("Forsøker å opprette en $sedType på rinasakId: $euxCaseId")

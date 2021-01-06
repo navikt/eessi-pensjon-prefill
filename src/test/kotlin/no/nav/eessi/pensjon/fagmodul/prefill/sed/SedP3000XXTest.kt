@@ -12,7 +12,14 @@ import no.nav.eessi.pensjon.fagmodul.prefill.tps.FodselsnummerMother
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.PrefillAdresse
 import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerregisterService
 import no.nav.eessi.pensjon.personoppslag.personv3.PersonV3Service
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.*
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Kjoenn
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Kjoennstyper
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Landkoder
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.NorskIdent
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.PersonIdent
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Personnavn
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Statsborgerskap
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -99,7 +106,7 @@ lateinit var aktorRegisterService: AktoerregisterService
                 subjectArea = "Pensjon",
                 payload = "{}"
         )
-        return ApiRequest.buildPrefillDataModelConfirm(req, "12345", null)
+        return ApiRequest.buildPrefillDataModelOnExisting(req, "12345", null)
     }
 
     private fun lagTPSBruker(foreldersPin: String, fornavn: String, etternavn: String) =

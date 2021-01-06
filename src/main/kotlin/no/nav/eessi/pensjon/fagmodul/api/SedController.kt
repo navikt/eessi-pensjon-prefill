@@ -81,16 +81,16 @@ class SedController(
         auditlogger.log("previewDocument", request.aktoerId ?: "", request.toAudit())
         logger.info("kaller (previewDocument) rinaId: ${request.euxCaseId} bucType: ${request.buc} sedType: ${request.sed} aktoerId: ${request.aktoerId} sakId: ${request.sakId} vedtak: ${request.vedtakId}")
 
-        val norskIdent = hentFnrfraAktoerService(request.aktoerId, aktoerService)
-//        val dataModel = ApiRequest.buildPrefillDataModelConfirm(request, norskIdent, getAvdodAktoerId(request))
-        val dataModel = ApiRequest.buildPrefillDataModelOnExisting(request, norskIdent, getAvdodAktoerId(request))
+        logger.debug("request: ${request.toJson()}")
 
+        val norskIdent = hentFnrfraAktoerService(request.aktoerId, aktoerService)
+        val dataModel = ApiRequest.buildPrefillDataModelOnExisting(request, norskIdent, getAvdodAktoerId(request))
 
         logger.debug(
             """
             ---------------------------------------------------------------------------
             har avdød: ${dataModel.avdod != null}, avdød: ${dataModel.avdod?.toJson()}
-            søker    : ${dataModel.bruker?.toJson()}
+            søker    : ${dataModel.bruker.toJson()}
             ---------------------------------------------------------------------------
             """.trimIndent())
 

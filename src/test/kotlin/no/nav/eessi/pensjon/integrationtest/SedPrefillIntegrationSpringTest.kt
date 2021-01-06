@@ -6,6 +6,10 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import no.nav.eessi.pensjon.UnsecuredWebMvcTestLauncher
 import no.nav.eessi.pensjon.fagmodul.personoppslag.BrukerMock
+import no.nav.eessi.pensjon.fagmodul.prefill.ApiRequest
+import no.nav.eessi.pensjon.fagmodul.prefill.ApiSubject
+import no.nav.eessi.pensjon.fagmodul.prefill.SubjectFnr
+import no.nav.eessi.pensjon.fagmodul.prefill.model.KravType
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper
 import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerId
 import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerregisterService
@@ -14,6 +18,7 @@ import no.nav.eessi.pensjon.personoppslag.aktoerregister.NorskIdent
 import no.nav.eessi.pensjon.personoppslag.personv3.PersonV3Service
 import no.nav.eessi.pensjon.security.sts.STSService
 import no.nav.eessi.pensjon.services.kodeverk.KodeverkClient
+import no.nav.eessi.pensjon.utils.toJson
 import org.hamcrest.Matchers
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
@@ -140,8 +145,7 @@ class SedPrefillIntegrationSpringTest {
 
         doReturn("QX").doReturn("XQ").`when`(kodeverkClient).finnLandkode2(any())
 
-        val subject = dummyApiSubjectjson("9876543210")
-        val apijson = dummyApijson(sakid = "22874955", aktoerId = "0105094340092", sed = "P5000", buc = "P_BUC_02", subject = subject)
+        val apijson = dummyApijson(sakid = "22874955", aktoerId = "0105094340092", sed = "P5000", buc = "P_BUC_02", fnravdod = "9876543210")
 
         val result = mockMvc.perform(post("/sed/prefill")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -163,6 +167,424 @@ class SedPrefillIntegrationSpringTest {
 
     }
 
+//    @Test
+//    @Throws(Exception::class)
+//    fun `prefill sed P6000 P_BUC_02 Gjenlevende har med avdod skal returnere en gyldig SED`() {
+//        val aktoerId = "0105094340092"
+//        val fnr = "12312312312"
+//
+//        val avdodfnr = "9876543210"
+//        val avdodAktoerid = "3323332333233323"
+//
+////        val subject = dummyApiSubjectjson(avdodfnr)
+////        val apijson = dummyApijson(sakid = "22874955", vedtakid = "987654321122355466", aktoerId = aktoerId, sed = "P6000", buc = "P_BUC_02", subject = subject)
+//
+//        val apiRequest = dummyApiRequest("22874955", "987654321122", aktoerId, "P6000", "P_BUC_02", ApiSubject(SubjectFnr(fnr), SubjectFnr(avdodfnr)))
+//
+//        testRunnerGjenlevende(apiRequest, fnr, avdodAktoerid, null, "P6000-BARNEP-GJENLEV.xml")
+//
+//
+//        val mapper = jacksonObjectMapper()
+//        val sedRootNode = mapper.readTree(response)
+//        val gjenlevendePIN = finnPin(sedRootNode.at("/pensjon/gjenlevende/person"))
+//        val avdodPIN = finnPin(sedRootNode.at("/nav/bruker"))
+//
+//        Assertions.assertEquals("12312312312", gjenlevendePIN)
+//        Assertions.assertEquals("9876543210", avdodPIN)
+//
+//    }
+
+    fun testRunnerGjenlevende(apiRequest: ApiRequest, fnr: String, avdodAktoerId: String, pensjonKravXml: String? = null, pensjonVedtakXml: String, block: (String) -> Unit) {
+
+        val avdodfnr = apiRequest.subject?.avdod?.fnr
+
+        if (avdodfnr != null) {
+            doReturn(AktoerId(avdodAktoerId)).`when`(aktoerService).hentGjeldendeIdent(IdentGruppe.AktoerId, NorskIdent(avdodfnr))
+            doReturn(BrukerMock.createWith(true, "Avdød", "Død", "9876543210")).`when`(personV3Service).hentBruker(avdodfnr)
+        }
+
+        doReturn(NorskIdent(fnr)).`when`(aktoerService).hentGjeldendeIdent(IdentGruppe.NorskIdent, AktoerId(apiRequest.aktoerId!!))
+        doReturn(BrukerMock.createWith(true, "Lever", "Gjenlev", "12312312312")).`when`(personV3Service).hentBruker(fnr)
+
+        if (pensjonKravXml != null) {
+            doReturn(PrefillTestHelper.readXMLresponse(pensjonKravXml)).`when`(restTemplate).exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java))
+        }
+        doReturn(PrefillTestHelper.readXMLVedtakresponse(pensjonVedtakXml)).`when`(restTemplate).exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java))
+
+        doReturn("QX").doReturn("XQ").`when`(kodeverkClient).finnLandkode2(any())
+
+        val apijson = apiRequest.toJson()
+        val result = mockMvc.perform(post("/sed/prefill")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(apijson))
+            .andDo(print())
+            .andExpect(status().isOk)
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andReturn()
+
+        val response = result.response.getContentAsString(charset("UTF-8"))
+
+        block(response)
+
+    }
+
+
+    @Test
+    @Throws(Exception::class)
+    fun `prefill P15000 P_BUC_10 hvor saktype er ALDER men data fra pensjonsinformasjon gir UFOREP som resulterer i en bad request`() {
+
+        doReturn(NorskIdent("12312312312")).`when`(aktoerService).hentGjeldendeIdent(IdentGruppe.NorskIdent, AktoerId("0105094340092"))
+        doReturn(BrukerMock.createWith()).`when`(personV3Service).hentBruker(any())
+        doReturn(PrefillTestHelper.readXMLresponse("P2200-UP-INNV.xml")).`when`(restTemplate).exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java))
+
+        val apijson = dummyApijson(sakid = "22874955", aktoerId = "0105094340092", sed = "P15000", buc = "P_BUC_10", kravtype = KravType.ALDER, kravdato = "01-01-2020")
+
+        mockMvc.perform(post("/sed/prefill")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(apijson))
+            .andDo(print())
+            .andExpect(status().isBadRequest)
+            .andExpect(status().reason(Matchers.containsString("Du kan ikke opprette alderspensjonskrav i en uføretrygdsak (PESYS-saksnr: 22874955 har sakstype UFOREP)")))
+
+    }
+
+    @Test
+    @Throws(Exception::class)
+    fun `prefill P15000 P_BUC_10 hvor saktype er UFOREP men data fra pensjonsinformasjon gir ALDER som resulterer i en bad request`() {
+
+        doReturn(NorskIdent("12312312312")).`when`(aktoerService).hentGjeldendeIdent(IdentGruppe.NorskIdent, AktoerId("0105094340092"))
+        doReturn(BrukerMock.createWith()).`when`(personV3Service).hentBruker(any())
+        doReturn(PrefillTestHelper.readXMLresponse("P2000-AP-UP-21337890.xml")).`when`(restTemplate).exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java))
+
+        val apijson = dummyApijson(sakid = "21337890", aktoerId = "0105094340092", sed = "P15000", buc = "P_BUC_10", kravtype = KravType.UFOREP, kravdato = "01-01-2020")
+
+        mockMvc.perform(post("/sed/prefill")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(apijson))
+            .andDo(print())
+            .andExpect(status().isBadRequest)
+            .andExpect(status().reason(Matchers.containsString("Du kan ikke opprette uføretrygdkrav i en alderspensjonssak (PESYS-saksnr: 21337890 har sakstype ALDER)")))
+    }
+
+
+
+    @Test
+    @Throws(Exception::class)
+    fun `prefill P15000 P_BUC_10 hvor saktype er ALDER`() {
+
+        doReturn(NorskIdent("12312312312")).`when`(aktoerService).hentGjeldendeIdent(IdentGruppe.NorskIdent, AktoerId("0105094340092"))
+        doReturn(BrukerMock.createWith(true, "Lever", "Gjenlev", "12312312312")).`when`(personV3Service).hentBruker("12312312312")
+
+        doReturn(PrefillTestHelper.readXMLresponse("P2000-AP-UP-21337890.xml")).`when`(restTemplate).exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java))
+
+        doReturn("QX").doReturn("XQ").`when`(kodeverkClient).finnLandkode2(any())
+
+        val apijson = dummyApijson(sakid = "21337890", aktoerId = "0105094340092", sed = "P15000", buc = "P_BUC_10", kravtype = KravType.ALDER, kravdato = "01-01-2020")
+
+        val result = mockMvc.perform(post("/sed/prefill")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(apijson))
+            .andDo(print())
+            .andExpect(status().isOk)
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andReturn()
+
+        val response = result.response.getContentAsString(charset("UTF-8"))
+
+        val validResponse = """
+            {
+              "sed" : "P15000",
+              "sedGVer" : "4",
+              "sedVer" : "1",
+              "nav" : {
+                "eessisak" : [ {
+                  "institusjonsid" : "NO:noinst002",
+                  "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                  "saksnummer" : "21337890",
+                  "land" : "NO"
+                } ],
+                "bruker" : {
+                  "person" : {
+                    "pin" : [ {
+                      "identifikator" : "12312312312",
+                      "land" : "NO"
+                    } ],
+                    "etternavn" : "Gjenlev",
+                    "fornavn" : "Lever",
+                    "kjoenn" : "M",
+                    "foedselsdato" : "1988-07-12"
+                  },
+                  "adresse" : {
+                    "gate" : "Oppoverbakken 66",
+                    "by" : "SØRUMSAND",
+                    "land" : "XQ"
+                  }
+                },
+                "krav" : {
+                  "dato" : "01-01-2020",
+                  "type" : "01"
+                }
+              }
+            }
+        """.trimIndent()
+
+        JSONAssert.assertEquals(response, validResponse, true)
+
+    }
+
+    @Test
+    @Throws(Exception::class)
+    fun `prefill P15000 P_BUC_10 hvor saktype er UFOREP`() {
+
+        doReturn(NorskIdent("12312312312")).`when`(aktoerService).hentGjeldendeIdent(IdentGruppe.NorskIdent, AktoerId("0105094340092"))
+        doReturn(BrukerMock.createWith(true, "Lever", "Gjenlev", "12312312312")).`when`(personV3Service).hentBruker("12312312312")
+
+        doReturn(PrefillTestHelper.readXMLresponse("P2200-UP-INNV.xml")).`when`(restTemplate).exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java))
+
+        doReturn("QX").doReturn("XQ").`when`(kodeverkClient).finnLandkode2(any())
+
+        val apijson = dummyApijson(sakid = "22874955", aktoerId = "0105094340092", sed = "P15000", buc = "P_BUC_10", kravtype = KravType.UFOREP, kravdato = "01-01-2020")
+
+        val result = mockMvc.perform(post("/sed/prefill")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(apijson))
+            .andDo(print())
+            .andExpect(status().isOk)
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andReturn()
+
+        val response = result.response.getContentAsString(charset("UTF-8"))
+
+        val validResponse = """
+            {
+              "sed" : "P15000",
+              "sedGVer" : "4",
+              "sedVer" : "1",
+              "nav" : {
+                "eessisak" : [ {
+                  "institusjonsid" : "NO:noinst002",
+                  "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                  "saksnummer" : "22874955",
+                  "land" : "NO"
+                } ],
+                "bruker" : {
+                  "person" : {
+                    "pin" : [ {
+                      "identifikator" : "12312312312",
+                      "land" : "NO"
+                    } ],
+                    "etternavn" : "Gjenlev",
+                    "fornavn" : "Lever",
+                    "kjoenn" : "M",
+                    "foedselsdato" : "1988-07-12"
+                  },
+                  "adresse" : {
+                    "gate" : "Oppoverbakken 66",
+                    "by" : "SØRUMSAND",
+                    "land" : "XQ"
+                  }
+                },
+                "krav" : {
+                  "dato" : "01-01-2020",
+                  "type" : "03"
+                }
+              }
+            }
+
+        """.trimIndent()
+
+        JSONAssert.assertEquals(response, validResponse, true)
+
+    }
+
+
+    @Test
+    @Throws(Exception::class)
+    fun `prefill P15000 P_BUC_10 hvor saktype er GJENLEV og pensjoninformasjon gir UFOREP med GJENLEV`() {
+
+        doReturn(NorskIdent("12312312312")).`when`(aktoerService).hentGjeldendeIdent(IdentGruppe.NorskIdent, AktoerId("0105094340092"))
+        doReturn(AktoerId("3323332333233323")).`when`(aktoerService).hentGjeldendeIdent(IdentGruppe.AktoerId, NorskIdent("9876543210"))
+
+        doReturn(BrukerMock.createWith(true, "Lever", "Gjenlev", "12312312312")).`when`(personV3Service).hentBruker("12312312312")
+        doReturn(BrukerMock.createWith(true, "Avdød", "Død", "9876543210")).`when`(personV3Service).hentBruker("9876543210")
+
+        doReturn(PrefillTestHelper.readXMLresponse("P2100-GJENLEV-REVURDERING-M-KRAVID-INNV.xml")).`when`(restTemplate).exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java))
+
+        doReturn("QX").doReturn("XQ").`when`(kodeverkClient).finnLandkode2(any())
+
+        val apijson = dummyApijson(sakid = "22915550", aktoerId = "0105094340092", sed = "P15000", buc = "P_BUC_10", kravtype = KravType.GJENLEV, kravdato = "01-01-2020", fnravdod = "9876543210")
+
+        val result = mockMvc.perform(post("/sed/prefill")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(apijson))
+            .andDo(print())
+            .andExpect(status().isOk)
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andReturn()
+
+        val response = result.response.getContentAsString(charset("UTF-8"))
+
+        val validResponse = """
+            {
+              "sed" : "P15000",
+              "sedGVer" : "4",
+              "sedVer" : "1",
+              "nav" : {
+                "eessisak" : [ {
+                  "institusjonsid" : "NO:noinst002",
+                  "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                  "saksnummer" : "22915550",
+                  "land" : "NO"
+                } ],
+                "bruker" : {
+                  "person" : {
+                    "pin" : [ {
+                      "identifikator" : "9876543210",
+                      "land" : "NO"
+                    } ],
+                    "etternavn" : "Død",
+                    "fornavn" : "Avdød",
+                    "kjoenn" : "M",
+                    "foedselsdato" : "1988-07-12"
+                  },
+                  "adresse" : {
+                    "gate" : "Oppoverbakken 66",
+                    "by" : "SØRUMSAND",
+                    "land" : "XQ"
+                  }
+                },
+                "krav" : {
+                  "dato" : "01-01-2020",
+                  "type" : "02"
+                }
+              },
+              "pensjon" : {
+                "gjenlevende" : {
+                  "person" : {
+                    "pin" : [ {
+                      "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                      "institusjonsid" : "NO:noinst002",
+                      "identifikator" : "12312312312",
+                      "land" : "NO"
+                    } ],
+                    "statsborgerskap" : [ {
+                      "land" : "XQ"
+                    } ],
+                    "etternavn" : "Gjenlev",
+                    "fornavn" : "Lever",
+                    "kjoenn" : "M",
+                    "foedselsdato" : "1988-07-12",
+                    "rolle" : "01"
+                  },
+                  "adresse" : {
+                    "gate" : "Oppoverbakken 66",
+                    "by" : "SØRUMSAND",
+                    "postnummer" : "1920",
+                    "land" : "XQ"
+                  }
+                }
+              }
+            }
+        """.trimIndent()
+
+        JSONAssert.assertEquals(response, validResponse, true)
+
+    }
+
+    @Test
+    @Throws(Exception::class)
+    fun `prefill P15000 P_BUC_10 hvor saktype er GJENLEV og pensjoninformasjon gir BARNEP med GJENLEV`() {
+
+        doReturn(NorskIdent("12312312312")).`when`(aktoerService).hentGjeldendeIdent(IdentGruppe.NorskIdent, AktoerId("0105094340092"))
+        doReturn(AktoerId("3323332333233323")).`when`(aktoerService).hentGjeldendeIdent(IdentGruppe.AktoerId, NorskIdent("9876543210"))
+
+        doReturn(BrukerMock.createWith(true, "Lever", "Gjenlev", "12312312312")).`when`(personV3Service).hentBruker("12312312312")
+        doReturn(BrukerMock.createWith(true, "Avdød", "Død", "9876543210")).`when`(personV3Service).hentBruker("9876543210")
+
+        doReturn(PrefillTestHelper.readXMLresponse("P2100-BARNEP-M-KRAVID-INNV.xml")).`when`(restTemplate).exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java))
+
+        doReturn("QX").doReturn("XQ").`when`(kodeverkClient).finnLandkode2(any())
+
+        val apijson = dummyApijson(sakid = "22915555", aktoerId = "0105094340092", sed = "P15000", buc = "P_BUC_10", kravtype = KravType.GJENLEV, kravdato = "01-01-2020", fnravdod = "9876543210")
+
+        val result = mockMvc.perform(post("/sed/prefill")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(apijson))
+            .andDo(print())
+            .andExpect(status().isOk)
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andReturn()
+
+        val response = result.response.getContentAsString(charset("UTF-8"))
+
+        val validResponse = """
+            {
+              "sed" : "P15000",
+              "sedGVer" : "4",
+              "sedVer" : "1",
+              "nav" : {
+                "eessisak" : [ {
+                  "institusjonsid" : "NO:noinst002",
+                  "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                  "saksnummer" : "22915555",
+                  "land" : "NO"
+                } ],
+                "bruker" : {
+                  "person" : {
+                    "pin" : [ {
+                      "identifikator" : "9876543210",
+                      "land" : "NO"
+                    } ],
+                    "etternavn" : "Død",
+                    "fornavn" : "Avdød",
+                    "kjoenn" : "M",
+                    "foedselsdato" : "1988-07-12"
+                  },
+                  "adresse" : {
+                    "gate" : "Oppoverbakken 66",
+                    "by" : "SØRUMSAND",
+                    "land" : "XQ"
+                  }
+                },
+                "krav" : {
+                  "dato" : "01-01-2020",
+                  "type" : "02"
+                }
+              },
+              "pensjon" : {
+                "gjenlevende" : {
+                  "person" : {
+                    "pin" : [ {
+                      "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                      "institusjonsid" : "NO:noinst002",
+                      "identifikator" : "12312312312",
+                      "land" : "NO"
+                    } ],
+                    "statsborgerskap" : [ {
+                      "land" : "XQ"
+                    } ],
+                    "etternavn" : "Gjenlev",
+                    "fornavn" : "Lever",
+                    "kjoenn" : "M",
+                    "foedselsdato" : "1988-07-12",
+                    "rolle" : "01"
+                  },
+                  "adresse" : {
+                    "gate" : "Oppoverbakken 66",
+                    "by" : "SØRUMSAND",
+                    "postnummer" : "1920",
+                    "land" : "XQ"
+                  }
+                }
+              }
+            }
+        """.trimIndent()
+
+        JSONAssert.assertEquals(response, validResponse, true)
+
+    }
+
+
     @Test
     @Throws(Exception::class)
     fun `prefill sed P6000 P_BUC_02 Gjenlevende har med avdod skal returnere en gyldig SED`() {
@@ -177,8 +599,7 @@ class SedPrefillIntegrationSpringTest {
 
         doReturn("QX").doReturn("XQ").`when`(kodeverkClient).finnLandkode2(any())
 
-        val subject = dummyApiSubjectjson("9876543210")
-        val apijson = dummyApijson(sakid = "22874955", vedtakid = "987654321122355466", aktoerId = "0105094340092", sed = "P6000", buc = "P_BUC_02", subject = subject)
+        val apijson = dummyApijson(sakid = "22874955", vedtakid = "987654321122355466", aktoerId = "0105094340092", sed = "P6000", buc = "P_BUC_02", fnravdod = "9876543210")
 
         val result = mockMvc.perform(post("/sed/prefill")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -211,8 +632,7 @@ class SedPrefillIntegrationSpringTest {
         doReturn(BrukerMock.createWith(true, "Avdød", "Død", "9876543210")).`when`(personV3Service).hentBruker("9876543210")
         doReturn("QX").doReturn("XQ").`when`(kodeverkClient).finnLandkode2(any())
 
-        val subject = dummyApiSubjectjson("9876543210")
-        val apijson = dummyApijson(sakid = "22874955", vedtakid = "9876543211", aktoerId = "0105094340092", sed = "P3000_SE", buc = "P_BUC_10",  subject = subject)
+        val apijson = dummyApijson(sakid = "22874955", vedtakid = "9876543211", aktoerId = "0105094340092", sed = "P3000_SE", buc = "P_BUC_10",  fnravdod = "9876543210")
 
         val result = mockMvc.perform(post("/sed/preview")
             .contentType(MediaType.APPLICATION_JSON)
@@ -605,8 +1025,7 @@ class SedPrefillIntegrationSpringTest {
 
         doReturn(PrefillTestHelper.readXMLresponse("P2000-AP-LP-RVUR-20541862.xml")).`when`(restTemplate).exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java))
 
-        val subject = dummyApiSubjectjson("9876543210")
-        val apijson = dummyApijson(sakid = "20541862", aktoerId = "0105094340092", sed = "P2100", buc = "P_BUC_02", subject = subject)
+        val apijson = dummyApijson(sakid = "20541862", aktoerId = "0105094340092", sed = "P2100", buc = "P_BUC_02", fnravdod = "9876543210")
 
         mockMvc.perform(post("/sed/prefill")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -635,38 +1054,29 @@ class SedPrefillIntegrationSpringTest {
     }
 
 
-    private fun dummyApijson(sakid: String, vedtakid: String? = "", aktoerId: String, sed: String? = "P2000", buc: String? = "P_BUC_06", subject: String? = null, refperson: String? = null): String {
-        return """
-            {
-              "sakId" : "$sakid",
-              "vedtakId" : "$vedtakid",
-              "kravId" : null,
-              "aktoerId" : "$aktoerId",
-              "fnr" : null,
-              "avdodfnr" : null,
-              "payload" : null,
-              "buc" : "$buc",
-              "sed" : "$sed",
-              "documentid" : null,
-              "euxCaseId" : "123123",
-              "institutions" : [],
-              "subjectArea" : "Pensjon",
-              "skipSEDkey" : null,
-              "referanseTilPerson" : $refperson,
-              "subject" : $subject
+    private fun dummyApijson(sakid: String, vedtakid: String? = null, aktoerId: String, sed: String? = "P2000", buc: String? = "P_BUC_06", fnravdod: String? = null, kravtype: KravType? = null, kravdato: String? = null): String {
+
+        val subject = if (fnravdod != null) {
+                ApiSubject(null, SubjectFnr(fnravdod))
+            } else {
+                null
             }
-        """.trimIndent()
-    }
 
-    private fun dummyApiSubjectjson(avdodfnr: String): String {
-        return """
-            { 
-                "gjenlevende" : null, 
-                "avdod" : { "fnr": "$avdodfnr"}
-            }              
-        """.trimIndent()
+        val req = ApiRequest(
+            sakId = sakid,
+            vedtakId = vedtakid,
+            kravId = null,
+            aktoerId = aktoerId,
+            sed = sed,
+            buc = buc,
+            kravType = kravtype,
+            kravDato = kravdato,
+            euxCaseId = "12345",
+            institutions = emptyList(),
+            subject = subject
+        )
+        return req.toJson()
     }
-
 
     private fun finnPin(pinNode: JsonNode): String? {
         return pinNode.findValue("pin")
