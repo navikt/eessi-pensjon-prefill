@@ -5,6 +5,7 @@ import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.whenever
 import no.nav.eessi.pensjon.UnsecuredWebMvcTestLauncher
 import no.nav.eessi.pensjon.fagmodul.personoppslag.BrukerMock
+import no.nav.eessi.pensjon.fagmodul.prefill.model.KravType
 import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonService
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.EPSaktype
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.KravArsak
@@ -15,9 +16,12 @@ import no.nav.eessi.pensjon.personoppslag.aktoerregister.NorskIdent
 import no.nav.eessi.pensjon.personoppslag.personv3.PersonV3Service
 import no.nav.eessi.pensjon.security.sts.STSService
 import no.nav.eessi.pensjon.services.kodeverk.KodeverkClient
+import no.nav.pensjon.v1.avdod.V1Avdod
 import no.nav.pensjon.v1.kravhistorikk.V1KravHistorikk
 import no.nav.pensjon.v1.kravhistorikkliste.V1KravHistorikkListe
+import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import no.nav.pensjon.v1.sak.V1Sak
+import no.nav.pensjon.v1.vedtak.V1Vedtak
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Diskresjonskoder
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
@@ -59,6 +63,123 @@ class SedPrefillP8000IntegrationSpringTest {
 
     @Autowired
     private lateinit var mockMvc: MockMvc
+
+
+    @Test
+    @Throws(Exception::class)
+    fun `prefill P15000 P_BUC_10 fra vedtakskontekst hvor saktype er GJENLEV og pensjoninformasjon gir BARNEP med GJENLEV`() {
+
+        doReturn(NorskIdent("12312312312")).`when`(aktoerService).hentGjeldendeIdent(IdentGruppe.NorskIdent, AktoerId("0105094340092"))
+        doReturn(AktoerId("3323332333233323")).`when`(aktoerService).hentGjeldendeIdent(IdentGruppe.AktoerId, NorskIdent("9876543210"))
+
+        doReturn(BrukerMock.createWith(true, "Lever", "Gjenlev", "12312312312")).`when`(personV3Service).hentBruker("12312312312")
+        doReturn(BrukerMock.createWith(true, "Avdød", "Død", "9876543210", erDod = true)).`when`(personV3Service).hentBruker("9876543210")
+
+        val banrepSak = V1Sak()
+        banrepSak.sakType = "BARNEP"
+        banrepSak.sakId = 22915555L
+        banrepSak.status = "INNV"
+
+        doReturn(banrepSak).`when`(pensjoninformasjonservice).hentRelevantPensjonSak(any(), any())
+
+        val pensjonsinformasjon = Pensjonsinformasjon()
+        val avdod = V1Avdod()
+        avdod.avdodFar = "9876543210"
+        avdod.avdodFarAktorId = "3323332333233323"
+        avdod.avdodMor = "12312312441"
+        avdod.avdodMorAktorId = "123343242034739845719384257134513"
+
+        pensjonsinformasjon.avdod = avdod
+        pensjonsinformasjon.vedtak = V1Vedtak()
+
+        val v1Kravhistorikk = V1KravHistorikk()
+        v1Kravhistorikk.kravArsak = KravArsak.GJNL_SKAL_VURD.name
+
+        val sak = V1Sak()
+        sak.sakType = EPSaktype.BARNEP.toString()
+        sak.sakId = 100
+        sak.kravHistorikkListe = V1KravHistorikkListe()
+        sak.kravHistorikkListe.kravHistorikkListe.add(v1Kravhistorikk)
+
+        doReturn(pensjonsinformasjon).`when`(pensjoninformasjonservice).hentMedVedtak("123123123")
+        doReturn("QX").doReturn("XQ").`when`(kodeverkClient).finnLandkode2(any())
+
+        val apijson =  dummyApijson(sakid = "22915555", vedtakid = "123123123", aktoerId = "0105094340092", sed = "P15000", buc = "P_BUC_10", kravtype = KravType.GJENLEV, kravdato = "01-01-2020", fnravdod = "9876543210")
+
+        val result = mockMvc.perform(post("/sed/prefill")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(apijson))
+            .andDo(print())
+            .andExpect(status().isOk)
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andReturn()
+        val response = result.response.getContentAsString(charset("UTF-8"))
+
+        val validResponse = """
+        {
+          "sed" : "P15000",
+          "sedGVer" : "4",
+          "sedVer" : "1",
+          "nav" : {
+            "eessisak" : [ {
+              "institusjonsid" : "NO:noinst002",
+              "institusjonsnavn" : "NOINST002, NO INST002, NO",
+              "saksnummer" : "22915555",
+              "land" : "NO"
+            } ],
+            "bruker" : {
+              "person" : {
+                "pin" : [ {
+                  "identifikator" : "9876543210",
+                  "land" : "NO"
+                } ],
+                "etternavn" : "Død",
+                "fornavn" : "Avdød",
+                "kjoenn" : "M",
+                "foedselsdato" : "1921-07-12"
+              }
+            },
+            "krav" : {
+              "dato" : "01-01-2020",
+              "type" : "02"
+            }
+          },
+          "pensjon" : {
+            "gjenlevende" : {
+              "person" : {
+                "pin" : [ {
+                  "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                  "institusjonsid" : "NO:noinst002",
+                  "identifikator" : "12312312312",
+                  "land" : "NO"
+                } ],
+                "statsborgerskap" : [ {
+                  "land" : "XQ"
+                } ],
+                "etternavn" : "Gjenlev",
+                "fornavn" : "Lever",
+                "kjoenn" : "M",
+                "foedselsdato" : "1988-07-12",
+                "relasjontilavdod" : {
+                  "relasjon" : "06"
+                },
+                "rolle" : "01"
+              },
+              "adresse" : {
+                "gate" : "Oppoverbakken 66",
+                "by" : "SØRUMSAND",
+                "postnummer" : "1920",
+                "land" : "XQ"
+              }
+            }
+          }
+        }
+        """.trimIndent()
+
+    JSONAssert.assertEquals(response, validResponse, true)
+
+   }
+
 
 
     @Test
@@ -156,7 +277,6 @@ class SedPrefillP8000IntegrationSpringTest {
         val response = result.response.getContentAsString(charset("UTF-8"))
 
         JSONAssert.assertEquals(response, validResponse, false)
-
     }
 
     @Test

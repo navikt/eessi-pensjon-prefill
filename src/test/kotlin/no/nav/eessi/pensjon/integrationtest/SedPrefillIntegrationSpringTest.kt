@@ -291,6 +291,8 @@ class SedPrefillIntegrationSpringTest {
 
         val response = result.response.getContentAsString(charset("UTF-8"))
 
+        print(response)
+
         val validResponse = """
             {
               "sed" : "P15000",
@@ -317,6 +319,7 @@ class SedPrefillIntegrationSpringTest {
                   "adresse" : {
                     "gate" : "Oppoverbakken 66",
                     "by" : "SØRUMSAND",
+                    "postnummer" : "1920",
                     "land" : "XQ"
                   }
                 },
@@ -328,7 +331,7 @@ class SedPrefillIntegrationSpringTest {
             }
         """.trimIndent()
 
-        JSONAssert.assertEquals(response, validResponse, true)
+    JSONAssert.assertEquals(response, validResponse, true)
 
     }
 
@@ -381,6 +384,7 @@ class SedPrefillIntegrationSpringTest {
                   "adresse" : {
                     "gate" : "Oppoverbakken 66",
                     "by" : "SØRUMSAND",
+                    "postnummer" : "1920",
                     "land" : "XQ"
                   }
                 },
@@ -406,7 +410,7 @@ class SedPrefillIntegrationSpringTest {
         doReturn(AktoerId("3323332333233323")).`when`(aktoerService).hentGjeldendeIdent(IdentGruppe.AktoerId, NorskIdent("9876543210"))
 
         doReturn(BrukerMock.createWith(true, "Lever", "Gjenlev", "12312312312")).`when`(personV3Service).hentBruker("12312312312")
-        doReturn(BrukerMock.createWith(true, "Avdød", "Død", "9876543210")).`when`(personV3Service).hentBruker("9876543210")
+        doReturn(BrukerMock.createWith(true, "Avdød", "Død", "9876543210", erDod = true)).`when`(personV3Service).hentBruker("9876543210")
 
         doReturn(PrefillTestHelper.readXMLresponse("P2100-GJENLEV-REVURDERING-M-KRAVID-INNV.xml")).`when`(restTemplate).exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java))
 
@@ -445,12 +449,7 @@ class SedPrefillIntegrationSpringTest {
                     "etternavn" : "Død",
                     "fornavn" : "Avdød",
                     "kjoenn" : "M",
-                    "foedselsdato" : "1988-07-12"
-                  },
-                  "adresse" : {
-                    "gate" : "Oppoverbakken 66",
-                    "by" : "SØRUMSAND",
-                    "land" : "XQ"
+                    "foedselsdato" : "1921-07-12"
                   }
                 },
                 "krav" : {
@@ -499,7 +498,7 @@ class SedPrefillIntegrationSpringTest {
         doReturn(AktoerId("3323332333233323")).`when`(aktoerService).hentGjeldendeIdent(IdentGruppe.AktoerId, NorskIdent("9876543210"))
 
         doReturn(BrukerMock.createWith(true, "Lever", "Gjenlev", "12312312312")).`when`(personV3Service).hentBruker("12312312312")
-        doReturn(BrukerMock.createWith(true, "Avdød", "Død", "9876543210")).`when`(personV3Service).hentBruker("9876543210")
+        doReturn(BrukerMock.createWith(true, "Avdød", "Død", "9876543210", erDod = true)).`when`(personV3Service).hentBruker("9876543210")
 
         doReturn(PrefillTestHelper.readXMLresponse("P2100-BARNEP-M-KRAVID-INNV.xml")).`when`(restTemplate).exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java))
 
@@ -538,12 +537,7 @@ class SedPrefillIntegrationSpringTest {
                     "etternavn" : "Død",
                     "fornavn" : "Avdød",
                     "kjoenn" : "M",
-                    "foedselsdato" : "1988-07-12"
-                  },
-                  "adresse" : {
-                    "gate" : "Oppoverbakken 66",
-                    "by" : "SØRUMSAND",
-                    "land" : "XQ"
+                    "foedselsdato" : "1921-07-12"
                   }
                 },
                 "krav" : {
@@ -1054,29 +1048,7 @@ class SedPrefillIntegrationSpringTest {
     }
 
 
-    private fun dummyApijson(sakid: String, vedtakid: String? = null, aktoerId: String, sed: String? = "P2000", buc: String? = "P_BUC_06", fnravdod: String? = null, kravtype: KravType? = null, kravdato: String? = null): String {
 
-        val subject = if (fnravdod != null) {
-                ApiSubject(null, SubjectFnr(fnravdod))
-            } else {
-                null
-            }
-
-        val req = ApiRequest(
-            sakId = sakid,
-            vedtakId = vedtakid,
-            kravId = null,
-            aktoerId = aktoerId,
-            sed = sed,
-            buc = buc,
-            kravType = kravtype,
-            kravDato = kravdato,
-            euxCaseId = "12345",
-            institutions = emptyList(),
-            subject = subject
-        )
-        return req.toJson()
-    }
 
     private fun finnPin(pinNode: JsonNode): String? {
         return pinNode.findValue("pin")
@@ -1085,4 +1057,28 @@ class SedPrefillIntegrationSpringTest {
                 .lastOrNull()
     }
 
+}
+
+fun dummyApijson(sakid: String, vedtakid: String? = null, aktoerId: String, sed: String? = "P2000", buc: String? = "P_BUC_06", fnravdod: String? = null, kravtype: KravType? = null, kravdato: String? = null): String {
+
+    val subject = if (fnravdod != null) {
+        ApiSubject(null, SubjectFnr(fnravdod))
+    } else {
+        null
+    }
+
+    val req = ApiRequest(
+        sakId = sakid,
+        vedtakId = vedtakid,
+        kravId = null,
+        aktoerId = aktoerId,
+        sed = sed,
+        buc = buc,
+        kravType = kravtype,
+        kravDato = kravdato,
+        euxCaseId = "12345",
+        institutions = emptyList(),
+        subject = subject
+    )
+    return req.toJson()
 }

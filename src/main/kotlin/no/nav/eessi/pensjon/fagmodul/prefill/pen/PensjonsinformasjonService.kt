@@ -34,7 +34,7 @@ class PensjonsinformasjonService(private val pensjonsinformasjonClient: Pensjons
         if (vedtakId.isBlank()) throw IkkeGyldigKallException("Mangler vedtakID")
 
         val pendata: Pensjonsinformasjon = pensjonsinformasjonClient.hentAltPaaVedtak(vedtakId)
-
+        /*
         logger.debug("Pensjonsinformasjon: $pendata"
                 + "\nPensjonsinformasjon.vedtak: ${pendata.vedtak}"
                 + "\nPensjonsinformasjon.vedtak.virkningstidspunkt: ${pendata.vedtak.virkningstidspunkt}"
@@ -44,6 +44,7 @@ class PensjonsinformasjonService(private val pensjonsinformasjonClient: Pensjons
                 + "\nPensjonsinformasjon.ytelsePerMaanedListe: ${pendata.ytelsePerMaanedListe}"
                 + "\nPensjonsinformasjon.trygdeavtale: ${pendata.trygdeavtale}"
                 + "")
+        */
         return pendata
     }
 
@@ -96,6 +97,8 @@ class PensjonsinformasjonService(private val pensjonsinformasjonClient: Pensjons
         val aktorId = prefillData.bruker.aktorId
         val penSaksnummer = prefillData.penSaksnummer
         val sedType = prefillData.getSEDType()
+
+        logger.debug("penSaksnummer: $penSaksnummer")
 
         if (penSaksnummer.isBlank()) throw ManglendeSakIdException("Mangler sakId")
 

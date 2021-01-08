@@ -66,7 +66,6 @@ class PrefillNav(private val prefillAdresse: PrefillAdresse,
 
         fun isPersonAvdod(personTPS: InformasjonPerson) : Boolean {
             val personstatus = hentPersonStatus(personTPS)
-
             return (personstatus == "DØD")
                     .also { logger.debug("Person er avdod (ingen adresse å hente).") }
         }
@@ -96,7 +95,7 @@ class PrefillNav(private val prefillAdresse: PrefillAdresse,
         private fun datoFormat(person: InformasjonBruker): String? {
             logger.debug("2.1.3         Date of birth")
             val fdato = person.foedselsdato
-            logger.debug("              Date of birth: $fdato")
+            logger.debug("              Date of birth: ${fdato?.foedselsdato?.simpleFormat()}")
             return fdato?.foedselsdato?.simpleFormat()
         }
 
