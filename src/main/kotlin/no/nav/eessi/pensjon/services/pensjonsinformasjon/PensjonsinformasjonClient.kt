@@ -35,14 +35,11 @@ class PensjonsinformasjonClient(
     companion object {
         private val logger = LoggerFactory.getLogger(PensjonsinformasjonClient::class.java)
 
-        fun finnSak(sakId: String, pendata: Pensjonsinformasjon): V1Sak {
+        fun finnSak(sakId: String, pendata: Pensjonsinformasjon): V1Sak? {
             logger.info("Søker brukersSakerListe etter sakId: $sakId")
             val v1saklist = pendata.brukersSakerListe.brukersSakerListe
-            return v1saklist.firstOrNull { sak -> "${sak.sakId}" == sakId  } ?: run {
-                val warning = """Dersom kravet gjelder "Førstegangsbehandling kun utland" eller "Utsendelse til avtaleland", se egen rutine på Navet."""
-                logger.warn("Finner ingen sak på sakId: $sakId.\n$warning")
-                throw IngenSakFunnetException(warning)
-            }
+
+            return v1saklist.firstOrNull { sak -> "${sak.sakId}" == sakId  }
         }
     }
 
@@ -64,13 +61,8 @@ class PensjonsinformasjonClient(
     @Throws(IkkeFunnetException::class)
     fun hentKunSakType(sakId: String, aktoerid: String): Pensjontype {
         return pensjoninformasjonHentKunSakType.measure {
-            return@measure try {
-                val sak = finnSak(sakId, hentAltPaaAktoerId(aktoerid))
-                Pensjontype(sakId, sak.sakType)
-            } catch (ex: Exception) {
-                logger.warn("Saktype ikke funnet, mangler kravhode, ${ex.message}", ex)
-                throw IkkeFunnetException("Saktype ikke funnet")
-            }
+            val sak = finnSak(sakId, hentAltPaaAktoerId(aktoerid)) ?: throw IkkeFunnetException("Saktype for $sakId ikke funnet")
+            Pensjontype(sakId, sak.sakType)
         }
     }
 
@@ -116,7 +108,7 @@ class PensjonsinformasjonClient(
             throw PensjoninformasjonException("Ingen gyldig brukerSakerListe, mangler data fra pesys")
         }
 
-        val sak = finnSak(sakId, pendata)
+        val sak = finnSak(sakId, pendata) ?: return null
 
         val v1KravHistorikk = KravHistorikkHelper.hentKravhistorikkForGjenlevende(sak.kravHistorikkListe)
             ?: when (sak.status) {

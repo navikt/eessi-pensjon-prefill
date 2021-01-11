@@ -100,7 +100,7 @@ class PensjonController(private val pensjonsinformasjonClient: Pensjonsinformasj
     }
 
 
-    @ApiOperation("Henter ut en liste over alle saker på valgt aktoerId")
+    @ApiOperation("Validerer pensjonssaker for å forhindre feil under prefill")
     @GetMapping("/validate/{aktoerId}/sakId/{sakId}/buctype/{buctype}")
     fun validerKravPensjon(@PathVariable("aktoerId", required = true) aktoerId: String, @PathVariable("sakId", required = true) sakId: String, @PathVariable("buctype", required = true) bucType: String): Boolean {
         return PensjonControllerValidateSak.measure {
@@ -111,7 +111,8 @@ class PensjonController(private val pensjonsinformasjonClient: Pensjonsinformasj
                 throw PensjoninformasjonException("Ingen gyldig brukerSakerListe, mangler data fra pesys")
             }
 
-            val sak = PensjonsinformasjonClient.finnSak(sakId, pendata)
+            val sak = PensjonsinformasjonClient.finnSak(sakId, pendata) ?: return@measure false
+
             return@measure when(bucType) {
                 "P_BUC_01", "P_BUC_03" -> {
                     PensjoninformasjonValiderKrav.validerGyldigKravtypeOgArsak(sak, bucType)
