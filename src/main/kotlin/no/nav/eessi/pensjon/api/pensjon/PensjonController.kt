@@ -35,12 +35,14 @@ class PensjonController(private val pensjonsinformasjonClient: Pensjonsinformasj
     private lateinit var PensjonControllerHentSakType: MetricsHelper.Metric
     private lateinit var PensjonControllerHentSakListe: MetricsHelper.Metric
     private lateinit var PensjonControllerValidateSak: MetricsHelper.Metric
+    private lateinit var PensjonControllerKravDato: MetricsHelper.Metric
 
     @PostConstruct
     fun initMetrics() {
         PensjonControllerHentSakType = metricsHelper.init("PensjonControllerHentSakType")
         PensjonControllerHentSakListe = metricsHelper.init("PensjonControllerHentSakListe")
         PensjonControllerValidateSak = metricsHelper.init("PensjonControllerValidateSak")
+        PensjonControllerKravDato = metricsHelper.init("PensjonControllerKravDato")
     }
 
     @ApiOperation("Henter ut saktype knyttet til den valgte sakId og aktoerId")
@@ -66,11 +68,13 @@ class PensjonController(private val pensjonsinformasjonClient: Pensjonsinformasj
 
     @ApiOperation("Henter ut kravdato når det eksisterer et vedtak")
     @GetMapping("/kravdato/{vedtaksId}/vedtak")
-    fun hentKravDatoFraVedtak(@PathVariable("vedtaksId", required = true) vedtaksId: String) : Any? {
-        return PensjonControllerValidateSak.measure {
+    fun hentKravDatoFraVedtak(@PathVariable("vedtaksId", required = true) vedtaksId: String) : ResponseEntity<String>? {
+        return PensjonControllerKravDato.measure {
             try {
                 val pensjonSak = pensjonsinformasjonClient.hentAltPaaVedtak(vedtaksId = vedtaksId)
-                pensjonSak.vedtak?.virkningstidspunkt?.simpleFormat()
+                pensjonSak.vedtak?.virkningstidspunkt?.simpleFormat()?.let {
+                    ResponseEntity.ok(it)
+                }
 
             } catch (e: Exception) {
                 logger.warn("Feil ved henting av kravdato på vedtaksId: ${vedtaksId}")
@@ -81,10 +85,13 @@ class PensjonController(private val pensjonsinformasjonClient: Pensjonsinformasj
 
     @ApiOperation("Henter ut kravdato der det ikke eksisterer et vedtak")
     @GetMapping("/kravdato/{sakid}/{aktoer}")
-    fun hentKravDato(@PathVariable("aktoerId", required = true) aktoerId: String, @PathVariable("sakId", required = true) sakId: String) : Any? {
-        return PensjonControllerValidateSak.measure {
+    fun hentKravDato(@PathVariable("aktoerId", required = true) aktoerId: String, @PathVariable("sakId", required = true) sakId: String) : ResponseEntity<String>? {
+        return PensjonControllerKravDato.measure {
             try {
-                pensjonsinformasjonClient.hentKravDato(aktoerId, sakId)
+                val kravDato = pensjonsinformasjonClient.hentKravDato(aktoerId, sakId)
+                kravDato?.let{
+                    ResponseEntity.ok(it)
+                }
             } catch (e: Exception) {
                 logger.warn("Feil ved henting av kravdato på saksid: ${sakId}")
                 ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorBody(e.message!!))

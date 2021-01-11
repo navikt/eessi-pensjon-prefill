@@ -155,7 +155,9 @@ class PensjonControllerTest {
         whenever(pensjonsinformasjonClient.hentAltPaaVedtak(any())).doReturn(pendata)
 
         val kravDato = controller.hentKravDatoFraVedtak("anyThingWillDo")
-        assertEquals(localDate, kravDato)
+
+        assertEquals(HttpStatus.OK, kravDato?.statusCode)
+        assertEquals(localDate, kravDato?.body)
     }
 
 
@@ -165,6 +167,8 @@ class PensjonControllerTest {
         whenever(pensjonsinformasjonClient.hentKravDato(any(), any())).doReturn(localDate)
 
         val kravDato = controller.hentKravDato("123", "123")
-        assertEquals(localDate, kravDato)
+
+        assertEquals(HttpStatus.OK, kravDato?.statusCode)
+        assertEquals(localDate, kravDato?.body)
     }
 }

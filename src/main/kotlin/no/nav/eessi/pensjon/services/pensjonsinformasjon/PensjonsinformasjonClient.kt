@@ -109,7 +109,7 @@ class PensjonsinformasjonClient(
     }
 
 
-    fun hentKravDato(aktorId: String, sakId: String) : Any? {
+    fun hentKravDato(aktorId: String, sakId: String) : String? {
         val pendata = hentAltPaaAktoerId(aktorId)
         if (pendata.brukersSakerListe == null) {
             logger.warn("Ingen gyldig brukerSakerListe funnet")
