@@ -19,6 +19,8 @@ spec:
       value: https://saf.nais.adeo.no/graphql
     - name: SAF_HENTDOKUMENT_URL
       value: https://saf.nais.adeo.no/rest/hentdokument
+    - name: PDL_URL
+      value: https://pdl-api.nais.adeo.no/graphql
     - name: VIRKSOMHET_PERSON_V3_ENDPOINTURL
       value: https://wasapp.adeo.no/tpsws/ws/Person/v3
     - name: OPENIDCONNECT_URL
