@@ -73,7 +73,7 @@ class PensjonController(private val pensjonsinformasjonClient: Pensjonsinformasj
             try {
                 val pensjonSak = pensjonsinformasjonClient.hentAltPaaVedtak(vedtaksId = vedtaksId)
                 pensjonSak.vedtak?.virkningstidspunkt?.simpleFormat()?.let {
-                    ResponseEntity.ok("{ kravDato: '$it'} ")
+                    ResponseEntity.ok("""{ "kravDato": "$it" }""")
                 }
 
             } catch (e: Exception) {
@@ -90,7 +90,7 @@ class PensjonController(private val pensjonsinformasjonClient: Pensjonsinformasj
             try {
                 val kravDato = pensjonsinformasjonClient.hentKravDato(aktoerId, sakId)
                 kravDato?.let{
-                    ResponseEntity.ok("{ kravDato: '$it'} ")
+                    ResponseEntity.ok("""{ "kravDato": "$it" }""")
                 }
             } catch (e: Exception) {
                 logger.warn("Feil ved henting av kravdato på saksid: ${sakId}")

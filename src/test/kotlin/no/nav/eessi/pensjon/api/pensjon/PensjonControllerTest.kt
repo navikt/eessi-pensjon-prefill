@@ -157,7 +157,7 @@ class PensjonControllerTest {
         val kravDato = controller.hentKravDatoFraVedtak("anyThingWillDo")
         println(kravDato?.body)
         assertEquals(HttpStatus.OK, kravDato?.statusCode)
-        assertEquals("{ kravDato: '2020-01-01'} ", kravDato?.body)
+        assertEquals("""{ "kravDato": "2020-01-01" }""", kravDato?.body)
     }
 
 
@@ -169,6 +169,6 @@ class PensjonControllerTest {
         val kravDato = controller.hentKravDato("123", "123")
 
         assertEquals(HttpStatus.OK, kravDato?.statusCode)
-        assertEquals("{ kravDato: '2020-01-01'} ", kravDato?.body)
+        assertEquals("""{ "kravDato": "2020-01-01" }""", kravDato?.body)
     }
 }
