@@ -74,19 +74,38 @@ class PersonController(private val aktoerregisterService: AktoerregisterService,
         }
     }
 
+    @GetMapping("/person/{fnr}/{tpsboolean}", produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun gerPersonFraBegge(@PathVariable("fnr", required = true) fnr: String, @PathVariable("tpsboolean", required = true) tps: Boolean) : Any? {
+
+        val kilde = when(tps) {
+            true -> "TPS"
+            false -> "PDL"
+        }
+
+        logger.debug("henter person fra følgende kilde: $kilde")
+
+        return if (tps) {
+            hentPersonTps(fnr).person
+        } else {
+            hentPersonPDL(fnr)
+        }
+
+    }
+
     @ApiOperation("henter ut personinformasjon fra pdl for en aktørId")
     @GetMapping("/pdl/person/{aktoerid}", produces = [MediaType.APPLICATION_JSON_VALUE])
     fun getPDLPerson(@PathVariable("aktoerid", required = true) aktoerid: String): ResponseEntity<PdlPerson?> {
 
         val fnr = pdlService.hentIdent(IdentType.NorskIdent, AktoerPDLId(aktoerid))?.id ?:  throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Ingen ident funnet")
         try {
-            return ResponseEntity.ok().body(pdlService.hentPerson(fnr))
+            return ResponseEntity.ok().body(hentPersonPDL(fnr))
         } catch (ex: Exception) {
             throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Feil! ${ex.message}")
         }
 
     }
 
+    fun hentPersonPDL(fnr: String) = pdlService.hentPerson(fnr)
 
     @ApiOperation("henter ut alle avdøde for en aktørId og vedtaksId der aktør er gjenlevende")
     @GetMapping("/person/{aktoerId}/avdode/vedtak/{vedtaksId}", produces = [MediaType.APPLICATION_JSON_VALUE])
@@ -160,6 +179,8 @@ class PersonController(private val aktoerregisterService: AktoerregisterService,
         }
     }
 
+    private fun hentPersonTps(norskIdent: String) = personService.hentPersonResponse(norskIdent)
+
     private fun hentPerson(aktoerid: String): HentPersonResponse {
         logger.info("Henter personinformasjon for aktørId: $aktoerid")
         if (aktoerid.isBlank()) {
@@ -169,7 +190,7 @@ class PersonController(private val aktoerregisterService: AktoerregisterService,
                 aktoerregisterService.hentGjeldendeIdent(IdentGruppe.NorskIdent, AktoerId(aktoerid))?.id
                         ?: throw AktoerregisterIkkeFunnetException("NorskIdent for aktoerId $aktoerid ikke funnet.")
 
-        return personService.hentPersonResponse(norskIdent)
+        return hentPersonTps(norskIdent)
     }
 
     /**
