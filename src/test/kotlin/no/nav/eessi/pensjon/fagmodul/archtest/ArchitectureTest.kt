@@ -80,13 +80,14 @@ class ArchitectureTest {
         val kodeverkService = "services.kodeverk"
         val geoService = "services.geo"
         val pensjonService = "services.pensjon"
-        val security = "security"
         val integrationtest = "integrationtest"
         val utils = "utils"
         val vedlegg = "vedlegg"
+        val security = "security"
         val personoppslag = "personoppslag"
         val aktoerregisterService = "personoppslag.aktoerregister"
         val personService = "personoppslag.personv3"
+        val personDataLosning = "personoppslag.pdl"
 
         val packages: Map<String, String> = mapOf(
                 "$root.fagmodul.health.." to health,
@@ -107,7 +108,6 @@ class ArchitectureTest {
                 "$root.personoppslag.aktoerregister" to aktoerregisterService,
                 "$root.services.kodeverk" to kodeverkService,
                 "$root.services.geo" to geoService,
-                "$root.personoppslag.personv3" to personService,
                 "$root.services.pensjonsinformasjon" to pensjonService,
 
                 "$root.security.." to security,
@@ -118,6 +118,8 @@ class ArchitectureTest {
                 "$root.logging.." to utils,
                 "$root.vedlegg.." to vedlegg,
 
+                "$root.personoppslag.personv3" to personService,
+                "$root.personoppslag.pdl" to personDataLosning,
                 "$root.personoppslag.." to personoppslag
         )
 
@@ -140,15 +142,16 @@ class ArchitectureTest {
                 .layer(euxBucModel).definedBy(*packagesFor(euxBucModel))
                 .layer(models).definedBy(*packagesFor(models))
                 .layer(sedmodel).definedBy(*packagesFor(sedmodel))
+
                 .layer(aktoerregisterService).definedBy(*packagesFor(aktoerregisterService))
                 .layer(kodeverkService).definedBy(*packagesFor(kodeverkService))
                 .layer(geoService).definedBy(*packagesFor(geoService))
-                .layer(personService).definedBy(*packagesFor(personService))
                 .layer(pensjonService).definedBy(*packagesFor(pensjonService))
-
+                .layer(personService).definedBy(*packagesFor(personService))
+                .layer(personDataLosning).definedBy(*packagesFor(personDataLosning))
+                .layer(security).definedBy(*packagesFor(security))
                 .layer(config).definedBy(*packagesFor(config))
                 .layer(metrics).definedBy(*packagesFor(metrics))
-                .layer(security).definedBy(*packagesFor(security))
                 .layer(utils).definedBy(*packagesFor(utils))
                 .layer(integrationtest).definedBy(*packagesFor(integrationtest))
                 .layer(vedlegg).definedBy(*packagesFor(vedlegg))
@@ -174,11 +177,12 @@ class ArchitectureTest {
 
                 .whereLayer(geoService).mayOnlyBeAccessedByLayers(geoApi, prefill)
                 .whereLayer(personService).mayOnlyBeAccessedByLayers(health, personApi, prefill, integrationtest)
+                .whereLayer(personDataLosning).mayOnlyBeAccessedByLayers(health, personApi, prefill, integrationtest)
                 .whereLayer(pensjonService).mayOnlyBeAccessedByLayers(health, pensjonApi, prefill, bucSedApi, personApi, integrationtest)
 
                 .whereLayer(config).mayNotBeAccessedByAnyLayer()
                 .whereLayer(metrics).mayOnlyBeAccessedByLayers(config, health, euxService)
-                .whereLayer(security).mayOnlyBeAccessedByLayers(config, health, euxService, aktoerregisterService, vedlegg, pensjonService, personService, kodeverkService, integrationtest)
+                .whereLayer(security).mayOnlyBeAccessedByLayers(config, health, euxService, aktoerregisterService, vedlegg, pensjonService, personService, personDataLosning, kodeverkService, integrationtest)
 
                 .check(allClasses)
     }
@@ -221,8 +225,7 @@ class ArchitectureTest {
                         services,
                         personoppslag,
                         vedlegg,
-                        integrationtest,
-                        personoppslag)
+                        integrationtest)
                 .whereLayer(integrationtest).mayNotBeAccessedByAnyLayer()
                 .check(allClasses)
     }

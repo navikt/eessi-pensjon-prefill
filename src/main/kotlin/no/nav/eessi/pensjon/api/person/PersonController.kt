@@ -11,6 +11,9 @@ import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerregisterIkkeFunne
 import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerregisterService
 import no.nav.eessi.pensjon.personoppslag.aktoerregister.IdentGruppe
 import no.nav.eessi.pensjon.personoppslag.aktoerregister.ManglerAktoerIdException
+import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
+import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentType
+import no.nav.eessi.pensjon.personoppslag.pdl.model.PdlPerson
 import no.nav.eessi.pensjon.personoppslag.personv3.PersonV3Service
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonClient
 import no.nav.security.token.support.core.api.Protected
@@ -19,12 +22,15 @@ import no.nav.tjeneste.virksomhet.person.v3.informasjon.PersonIdent
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonResponse
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.server.ResponseStatusException
 import javax.annotation.PostConstruct
+import no.nav.eessi.pensjon.personoppslag.pdl.model.AktoerId as AktoerPDLId
 
 /**
  * Controller for å kalle NAV interne registre
@@ -37,6 +43,7 @@ import javax.annotation.PostConstruct
 @RestController
 class PersonController(private val aktoerregisterService: AktoerregisterService,
                        private val personService: PersonV3Service,
+                       private val pdlService: PersonService,
                        private val auditLogger: AuditLogger,
                        private val pensjonsinformasjonClient: PensjonsinformasjonClient,
                        @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper(SimpleMeterRegistry())) {
@@ -66,6 +73,20 @@ class PersonController(private val aktoerregisterService: AktoerregisterService,
             ResponseEntity.ok(person)
         }
     }
+
+    @ApiOperation("henter ut personinformasjon fra pdl for en aktørId")
+    @GetMapping("/pdl/person/{aktoerid}", produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun getPDLPerson(@PathVariable("aktoerid", required = true) aktoerid: String): ResponseEntity<PdlPerson?> {
+
+        val fnr = pdlService.hentIdent(IdentType.NorskIdent, AktoerPDLId(aktoerid))?.id ?:  throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Ingen ident funnet")
+        try {
+            return ResponseEntity.ok().body(pdlService.hentPerson(fnr))
+        } catch (ex: Exception) {
+            throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Feil! ${ex.message}")
+        }
+
+    }
+
 
     @ApiOperation("henter ut alle avdøde for en aktørId og vedtaksId der aktør er gjenlevende")
     @GetMapping("/person/{aktoerId}/avdode/vedtak/{vedtaksId}", produces = [MediaType.APPLICATION_JSON_VALUE])

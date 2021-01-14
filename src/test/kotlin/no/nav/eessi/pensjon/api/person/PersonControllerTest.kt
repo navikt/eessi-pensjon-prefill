@@ -1,6 +1,11 @@
 package no.nav.eessi.pensjon.api.person
 
-import com.nhaarman.mockitokotlin2.*
+import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.doNothing
+import com.nhaarman.mockitokotlin2.doReturn
+import com.nhaarman.mockitokotlin2.doThrow
+import com.nhaarman.mockitokotlin2.eq
+import com.nhaarman.mockitokotlin2.whenever
 import no.nav.eessi.pensjon.fagmodul.models.FamilieRelasjonType.FAR
 import no.nav.eessi.pensjon.fagmodul.models.FamilieRelasjonType.MOR
 import no.nav.eessi.pensjon.logging.AuditLogger
@@ -8,6 +13,7 @@ import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerId
 import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerregisterService
 import no.nav.eessi.pensjon.personoppslag.aktoerregister.IdentGruppe
 import no.nav.eessi.pensjon.personoppslag.aktoerregister.NorskIdent
+import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
 import no.nav.eessi.pensjon.personoppslag.personv3.PersonV3IkkeFunnetException
 import no.nav.eessi.pensjon.personoppslag.personv3.PersonV3Service
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonClient
@@ -16,7 +22,16 @@ import no.nav.eessi.pensjon.utils.typeRefs
 import no.nav.pensjon.v1.avdod.V1Avdod
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import no.nav.pensjon.v1.person.V1Person
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.*
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Familierelasjon
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Familierelasjoner
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Kjoenn
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Kjoennstyper
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Landkoder
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Person
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.PersonIdent
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Personnavn
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Statsborgerskap
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonResponse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -51,6 +66,9 @@ class PersonControllerTest {
 
     @MockBean
     lateinit var mockPensjonClient: PensjonsinformasjonClient
+
+    @MockBean
+    lateinit var pdlService: PersonService
 
     @Test
     fun `getPerson should return Person as json`() {
