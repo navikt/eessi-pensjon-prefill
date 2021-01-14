@@ -14,11 +14,14 @@ import no.nav.eessi.pensjon.fagmodul.sedmodel.Person
 import no.nav.eessi.pensjon.fagmodul.sedmodel.PinItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.metrics.MetricsHelper
+import no.nav.eessi.pensjon.services.statistikk.StatistikkHandler
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.typeRefs
 import no.nav.eessi.pensjon.vedlegg.client.SafClient
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.kafka.core.DefaultKafkaProducerFactory
+import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
 import javax.annotation.PostConstruct
@@ -26,17 +29,19 @@ import javax.annotation.PostConstruct
 @Service
 class EuxService (private val euxKlient: EuxKlient,
                   private val safClient: SafClient,
+                  private val statistikk: StatistikkHandler,
                   @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper(SimpleMeterRegistry())) {
 
     private val logger = LoggerFactory.getLogger(EuxService::class.java)
 
     // Vi trenger denne no arg konstruktøren for å kunne bruke @Spy med mockito
-    constructor() : this(EuxKlient(RestTemplate()), SafClient(RestTemplate(), RestTemplate()))
+    constructor() : this(EuxKlient(RestTemplate()),
+        SafClient(RestTemplate(), RestTemplate()),
+        StatistikkHandler("Q2", KafkaTemplate(DefaultKafkaProducerFactory(emptyMap())), ""))
 
     private lateinit var opprettSvarSED: MetricsHelper.Metric
     private lateinit var opprettSED: MetricsHelper.Metric
     private val validbucsed = ValidBucAndSed()
-    private val mapper = jacksonObjectMapper()
 
     @PostConstruct
     fun initMetrics() {
@@ -45,13 +50,16 @@ class EuxService (private val euxKlient: EuxKlient,
     }
 
     @Throws(EuxGenericServerException::class, SedDokumentIkkeOpprettetException::class)
-    fun opprettSvarJsonSedOnBuc(jsonSed: String, euxCaseId: String, parentDocumentId: String): BucSedResponse {
-        return euxKlient.opprettSvarSed(
+    fun opprettSvarJsonSedOnBuc(jsonSed: String, euxCaseId: String, parentDocumentId: String, vedtakId: String?): BucSedResponse {
+        val bucSedResponse = euxKlient.opprettSvarSed(
             jsonSed,
             euxCaseId,
             parentDocumentId,
             "Feil ved opprettSvarSed", opprettSvarSED
         )
+
+        statistikk.produserSedOpprettetHendelse(euxCaseId, bucSedResponse.documentId, vedtakId)
+        return bucSedResponse
     }
 
     /**
@@ -69,10 +77,13 @@ class EuxService (private val euxKlient: EuxKlient,
      * Ny SED på ekisterende type
      */
     @Throws(EuxGenericServerException::class, SedDokumentIkkeOpprettetException::class)
-    fun opprettJsonSedOnBuc(jsonNavSED: String, sedType: String, euxCaseId: String): BucSedResponse {
+    fun opprettJsonSedOnBuc(jsonNavSED: String, sedType: String, euxCaseId: String, vedtakId: String?): BucSedResponse {
         logger.info("Forsøker å opprette en $sedType på rinasakId: $euxCaseId")
         logger.debug("Logger ut $jsonNavSED")
-        return euxKlient.opprettSed(jsonNavSED, euxCaseId, opprettSED, "Feil ved opprettSed: $sedType, med rinaId: $euxCaseId")
+        val bucSedResponse  = euxKlient.opprettSed(jsonNavSED, euxCaseId, opprettSED, "Feil ved opprettSed: $sedType, med rinaId: $euxCaseId")
+        statistikk.produserSedOpprettetHendelse(euxCaseId, bucSedResponse.documentId, vedtakId)
+
+        return bucSedResponse
     }
 
 
@@ -366,7 +377,10 @@ class EuxService (private val euxKlient: EuxKlient,
     }
 
     fun createBuc(buctype: String): String {
-        return euxKlient.createBuc(buctype)
+        val euxCaseId = euxKlient.createBuc(buctype)
+
+        statistikk.produserBucOpprettetHendelse(euxCaseId, null)
+        return euxCaseId
     }
 
     /**

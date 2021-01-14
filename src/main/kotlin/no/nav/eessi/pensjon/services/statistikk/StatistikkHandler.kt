@@ -20,16 +20,18 @@ class StatistikkHandler(@Value("\${NAIS_NAMESPACE}") val nameSpace : String,
         val melding = StatistikkMelding(
             hendelseType = HendelseType.OPPRETTBUC,
             rinaid = rinaid,
-            dokumentId = dokumentId
+            dokumentId = dokumentId,
+            vedtaksId = null
         )
         produserKafkaMelding(melding)
     }
 
-    fun produserSedOpprettetHendelse(rinaid: String, documentId: String?) {
+    fun produserSedOpprettetHendelse(rinaid: String, documentId: String?, vedtaksId: String?) {
         val melding = StatistikkMelding(
             hendelseType = HendelseType.OPPRETTSED,
             rinaid = rinaid,
-            dokumentId = documentId
+            dokumentId = documentId,
+            vedtaksId = vedtaksId
         )
         produserKafkaMelding(melding)
     }
@@ -54,7 +56,8 @@ class StatistikkHandler(@Value("\${NAIS_NAMESPACE}") val nameSpace : String,
 data class StatistikkMelding(
     val hendelseType: HendelseType,
     val rinaid: String,
-    val dokumentId: String?
+    val dokumentId: String?,
+    val vedtaksId: String?
 )
 
 enum class HendelseType {

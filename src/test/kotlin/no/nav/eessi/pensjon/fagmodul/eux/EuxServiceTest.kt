@@ -12,6 +12,7 @@ import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Buc
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.DocumentsItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.PinItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
+import no.nav.eessi.pensjon.services.statistikk.StatistikkHandler
 import no.nav.eessi.pensjon.utils.JsonIllegalArgumentException
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.toJson
@@ -48,10 +49,14 @@ class EuxServiceTest {
     @Mock
     private lateinit var safClient: SafClient
 
+    @Mock
+    private lateinit var statistikkHandler: StatistikkHandler
+
 
     @BeforeEach
     fun setup() {
-        service = EuxService(euxKlient, safClient)
+        service = EuxService(euxKlient, safClient, statistikkHandler)
+
     }
 
     @Test

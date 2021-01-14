@@ -23,7 +23,6 @@ import no.nav.eessi.pensjon.personoppslag.aktoerregister.IdentGruppe
 import no.nav.eessi.pensjon.personoppslag.aktoerregister.NorskIdent
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjoninformasjonException
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonClient
-import no.nav.eessi.pensjon.services.statistikk.StatistikkHandler
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.toJson
 import no.nav.eessi.pensjon.utils.typeRefs
@@ -68,14 +67,11 @@ class BucControllerTest {
     @Mock
     lateinit var kafkaTemplate: KafkaTemplate<String, String>
 
-    lateinit var statistikkHandler: StatistikkHandler
-
     private lateinit var bucController: BucController
 
     @BeforeEach
     fun before() {
-        statistikkHandler = StatistikkHandler("", kafkaTemplate, "")
-        bucController = BucController("default", mockEuxService, mockAktoerIdHelper, auditLogger, mockPensjonClient, statistikkHandler)
+        bucController = BucController("default", mockEuxService, mockAktoerIdHelper, auditLogger, mockPensjonClient)
         bucController.initMetrics()
     }
 

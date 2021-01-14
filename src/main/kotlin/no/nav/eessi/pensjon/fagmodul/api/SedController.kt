@@ -154,7 +154,7 @@ class SedController(
             checkAndAddInstitution(dataModel, bucUtil)
 
             logger.info("Prøver å sende SED: ${dataModel.getSEDType()} inn på BUC: ${dataModel.euxCaseID}")
-            val docresult = euxService.opprettJsonSedOnBuc(sedJson, sedType, dataModel.euxCaseID)
+            val docresult = euxService.opprettJsonSedOnBuc(sedJson, sedType, dataModel.euxCaseID, request.vedtakId)
 
             logger.info("Opprettet ny SED med dokumentId: ${docresult.documentId}")
             val result = bucUtil.findDocument(docresult.documentId)
@@ -232,7 +232,7 @@ class SedController(
             x005Liste.forEach { x005 ->
                 try {
                     updateSEDVersion(x005, bucVersion)
-                    euxService.opprettJsonSedOnBuc(x005.toJson(), x005.getType(), dataModel.euxCaseID)
+                    euxService.opprettJsonSedOnBuc(x005.toJson(), x005.getType(), dataModel.euxCaseID, dataModel.vedtakId)
                 } catch (eux: EuxRinaServerException) {
                     execptionError = eux
                 } catch (ex: Exception) {
@@ -280,7 +280,7 @@ class SedController(
         return addDocumentToParent.measure {
             logger.info("Prøver å sende SED: ${dataModel.getSEDType()} inn på BUC: ${dataModel.euxCaseID}")
 
-            val docresult = euxService.opprettSvarJsonSedOnBuc(sedAndType.sed, dataModel.euxCaseID, parentId)
+            val docresult = euxService.opprettSvarJsonSedOnBuc(sedAndType.sed, dataModel.euxCaseID, parentId, request.vedtakId)
 
             val parent = bucUtil.findDocument(parentId)
             val result = bucUtil.findDocument(docresult.documentId)
