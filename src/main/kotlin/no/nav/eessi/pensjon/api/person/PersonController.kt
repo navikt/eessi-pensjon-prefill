@@ -13,7 +13,7 @@ import no.nav.eessi.pensjon.personoppslag.aktoerregister.IdentGruppe
 import no.nav.eessi.pensjon.personoppslag.aktoerregister.ManglerAktoerIdException
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
 import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentType
-import no.nav.eessi.pensjon.personoppslag.pdl.model.PdlPerson
+import no.nav.eessi.pensjon.personoppslag.pdl.model.NorskIdent
 import no.nav.eessi.pensjon.personoppslag.personv3.PersonV3Service
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonClient
 import no.nav.security.token.support.core.api.Protected
@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
 import javax.annotation.PostConstruct
 import no.nav.eessi.pensjon.personoppslag.pdl.model.AktoerId as AktoerPDLId
+import no.nav.eessi.pensjon.personoppslag.pdl.model.Person as PersonPDL
 
 /**
  * Controller for å kalle NAV interne registre
@@ -94,9 +95,9 @@ class PersonController(private val aktoerregisterService: AktoerregisterService,
 
     @ApiOperation("henter ut personinformasjon fra pdl for en aktørId")
     @GetMapping("/pdl/person/{aktoerid}", produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun getPDLPerson(@PathVariable("aktoerid", required = true) aktoerid: String): ResponseEntity<PdlPerson?> {
+    fun getPDLPerson(@PathVariable("aktoerid", required = true) aktoerid: String): ResponseEntity<PersonPDL?> {
 
-        val fnr = pdlService.hentIdent(IdentType.NorskIdent, AktoerPDLId(aktoerid))?.id ?:  throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Ingen ident funnet")
+        val fnr = pdlService.hentIdent(IdentType.NorskIdent, AktoerPDLId(aktoerid)).id
         try {
             return ResponseEntity.ok().body(hentPersonPDL(fnr))
         } catch (ex: Exception) {
@@ -105,7 +106,9 @@ class PersonController(private val aktoerregisterService: AktoerregisterService,
 
     }
 
-    fun hentPersonPDL(fnr: String) = pdlService.hentPerson(fnr)
+    fun hentPersonPDL(fnr: String): PersonPDL? {
+        return  pdlService.hentPerson(NorskIdent(fnr))
+    }
 
     @ApiOperation("henter ut alle avdøde for en aktørId og vedtaksId der aktør er gjenlevende")
     @GetMapping("/person/{aktoerId}/avdode/vedtak/{vedtaksId}", produces = [MediaType.APPLICATION_JSON_VALUE])
