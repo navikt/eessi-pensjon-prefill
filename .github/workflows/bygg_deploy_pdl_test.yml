@@ -1,4 +1,4 @@
-name: Bygg og deploy Q2
+name: Bygg og deploy PDL Q2
 
 on:
   push:
