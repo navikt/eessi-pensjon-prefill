@@ -111,6 +111,7 @@ class PersonControllerTest {
                 .andExpect(status().isNotFound)
     }
 
+
     @Test
     fun `getDeceased should return a list of deceased parents given a remaining, living child` (){
         val aktoerId = "1234568"
