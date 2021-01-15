@@ -1,27 +1,17 @@
-name: Build, push, and deploy
+name: Bygg og deploy Q2
 
 on:
   push:
     branches:
-      - '*'
-      - '*/*'
-      - '!master'
-      - '!feature/personoppslag-pdl
-
+      - feature/personoppslag-pdl
 jobs:
   tag_build_and_deploy:
-    name: 'Bygg alle brancher'
+    name: 'Build, deploy and tag'
     runs-on: ubuntu-latest
     steps:
       # PULLER REPO
       - name: 'Pull repo'
         uses: actions/checkout@v1
-
-      # JAVA 11
-      - name: 'Java 11'
-        uses: actions/setup-java@v1.4.3
-        with:
-          java-version: 11
 
       # SETTER DATO OG COMMIT VARIABEL
       - name: 'Setter dato og commit variabel'
@@ -34,6 +24,12 @@ jobs:
       - name: 'Setter Image'
         run: echo "IMAGE=docker.pkg.github.com/${{ github.repository }}/eessi-pensjon-fagmodul:${{ env.DATE }}---${{ env.COMMIT_HASH }}" >> $GITHUB_ENV
 
+      # JAVA 11
+      - name: 'Java 11'
+        uses: actions/setup-java@v1.4.3
+        with:
+          java-version: 11
+
       # BYGGER DOCKER CONTAINER
       - name: 'Bygg og publiser docker image'
         env:
@@ -45,3 +41,12 @@ jobs:
           docker login docker.pkg.github.com -u ${GITHUB_REPOSITORY} -p ${{ secrets.GITHUB_TOKEN }}
           docker push ${{ env.IMAGE }}
 
+      # DEPLOYER TIL NAIS -Q2 -Q1
+      - name: 'Deploy to NAIS'
+        uses: nais/deploy/actions/deploy@v1
+        env:
+          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
+          CLUSTER: dev-fss
+          RESOURCE: nais/dev-fss-q2.yml
+          VARS: nais/dev-fss-q2.json
+          IMAGE: ${{ env.IMAGE }}
