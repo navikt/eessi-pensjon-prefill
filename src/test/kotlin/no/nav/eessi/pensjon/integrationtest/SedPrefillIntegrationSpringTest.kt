@@ -628,7 +628,7 @@ class SedPrefillIntegrationSpringTest {
 
         val apijson = dummyApijson(sakid = "22874955", vedtakid = "9876543211", aktoerId = "0105094340092", sed = "P3000_SE", buc = "P_BUC_10",  fnravdod = "9876543210")
 
-        val result = mockMvc.perform(post("/sed/preview")
+        val result = mockMvc.perform(post("/sed/prefill")
             .contentType(MediaType.APPLICATION_JSON)
             .content(apijson))
             .andDo(print())
@@ -661,7 +661,7 @@ class SedPrefillIntegrationSpringTest {
 
         val apijson = dummyApijson(sakid = "22874955", vedtakid = "9876543211", aktoerId = "0105094340092", sed = "P4000", buc = "P_BUC_05")
 
-        val result = mockMvc.perform(post("/sed/preview")
+        val result = mockMvc.perform(post("/sed/prefill")
             .contentType(MediaType.APPLICATION_JSON)
             .content(apijson))
             .andDo(print())

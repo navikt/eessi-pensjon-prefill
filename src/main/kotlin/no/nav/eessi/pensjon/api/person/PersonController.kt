@@ -12,6 +12,7 @@ import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerregisterService
 import no.nav.eessi.pensjon.personoppslag.aktoerregister.IdentGruppe
 import no.nav.eessi.pensjon.personoppslag.aktoerregister.ManglerAktoerIdException
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
+import no.nav.eessi.pensjon.personoppslag.pdl.model.Familierelasjonsrolle
 import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentType
 import no.nav.eessi.pensjon.personoppslag.pdl.model.NorskIdent
 import no.nav.eessi.pensjon.personoppslag.personv3.PersonV3Service
@@ -136,6 +137,53 @@ class PersonController(private val aktoerregisterService: AktoerregisterService,
             ResponseEntity.ok(avdodeMedFnr)
         }
     }
+
+    @ApiOperation("henter ut alle avdøde for en aktørId og vedtaksId der aktør er gjenlevende")
+    @GetMapping("/personpdl/{aktoerId}/avdode/vedtak/{vedtaksId}", produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun getDeceasedPDL(@PathVariable("aktoerId", required = true) gjenlevendeAktoerId: String,
+                    @PathVariable("vedtaksId", required = true) vedtaksId: String): ResponseEntity<Any> {
+
+        logger.debug("Henter informasjon om avdøde $gjenlevendeAktoerId fra vedtak $vedtaksId")
+        auditLogger.log("/person/{$gjenlevendeAktoerId}/vedtak", "getDeceased")
+
+        val pensjonInfo = pensjonsinformasjonClient.hentAltPaaVedtak(vedtaksId)
+        val gjenlevende = pdlService.hentPerson(AktoerPDLId(gjenlevendeAktoerId))
+
+        val avdodeMedFnr = hentAlleAvdode(
+            mapOf<String, String?>(
+                pensjonInfo.avdod?.avdod.toString() to null,
+                pensjonInfo.avdod?.avdodFar.toString() to Familierelasjonsrolle.FAR.name,
+                pensjonInfo.avdod?.avdodMor.toString() to Familierelasjonsrolle.MOR.name
+            ))
+            .map { avDodFnr -> pairPersonPDLFnr(avDodFnr.key, avDodFnr.value, gjenlevende)}.toList()
+
+        logger.info("Det ble funnet ${avdodeMedFnr.size} avdøde for den gjenlevende med aktørID: $gjenlevendeAktoerId")
+
+        return PersonControllerHentPersonAvdod.measure {
+            ResponseEntity.ok(avdodeMedFnr)
+        }
+    }
+
+    private fun pairPersonPDLFnr(avdodFnr: String, avdodRolle: String?, gjenlevende: PersonPDL?): PersoninformasjonAvdode {
+
+        val avdode = pdlService.hentPerson(NorskIdent(avdodFnr))
+        val avdodNavn = avdode?.navn
+
+        val relasjon = if (avdodRolle == null) {
+            gjenlevende?.sivilstand?.firstOrNull{ it.relatertVedSivilstand == avdodFnr }?.type?.name
+        } else {
+            avdodRolle
+        }
+        val fultnavn = "${avdodNavn?.fornavn} ${avdodNavn?.mellomnavn} ${avdodNavn?.etternavn}"
+        return PersoninformasjonAvdode(
+            fnr = avdodFnr,
+            fulltNavn = fultnavn,
+            fornavn =  avdodNavn?.fornavn,
+            mellomnavn = avdodNavn?.mellomnavn,
+            etternavn = avdodNavn?.etternavn,
+            relasjon = relasjon)
+    }
+
 
     private fun pairPersonFnr(avdodFnr: String, avdodRolle: String?, gjenlevende: Person?): PersoninformasjonAvdode {
 

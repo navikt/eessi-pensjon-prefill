@@ -25,6 +25,7 @@ import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.prefill.ApiRequest
 import no.nav.eessi.pensjon.fagmodul.prefill.ApiSubject
 import no.nav.eessi.pensjon.fagmodul.prefill.MangelfulleInndataException
+import no.nav.eessi.pensjon.fagmodul.prefill.PersonDataService
 import no.nav.eessi.pensjon.fagmodul.prefill.PrefillService
 import no.nav.eessi.pensjon.fagmodul.prefill.SedAndType
 import no.nav.eessi.pensjon.fagmodul.prefill.SubjectFnr
@@ -77,6 +78,9 @@ class SedControllerTest {
     @Mock
     lateinit var prefillService: PrefillService
 
+    @Mock
+    lateinit var personService: PersonDataService
+
     private lateinit var sedController: SedController
 
     @BeforeEach
@@ -87,6 +91,7 @@ class SedControllerTest {
 
         this.sedController = SedController(mockEuxService,
                 prefillService,
+                personService,
                 mockAktoerIdHelper,
                 auditLogger)
         sedController.initMetrics()
@@ -126,7 +131,7 @@ class SedControllerTest {
 
         whenever(mockPrefillSEDService.prefill(any())).thenReturn(utfyllMock.sed)
 
-        val response = sedController.previewDocument(mockData, "noFilter")
+        val response = sedController.prefillDocument(mockData)
         assertNotNull(response)
 
         val sed = SED.fromJson(response)
@@ -357,7 +362,7 @@ class SedControllerTest {
         val sed = SED("P9000")
         val sedandtype = SedAndType(SEDType.P9000, sed.toJsonSkipEmpty())
 
-        doReturn(sed).whenever(mockPrefillSEDService).prefill (any())
+        doReturn(sed).whenever(mockPrefillSEDService).prefill(any())
         doReturn(mockBuc).whenever(mockEuxService).getBuc(euxCaseId)
         doReturn(BucSedResponse(euxCaseId, "3123123")).whenever(mockEuxService).opprettSvarJsonSedOnBuc(sedandtype.sed, euxCaseId, parentDocumentId)
 

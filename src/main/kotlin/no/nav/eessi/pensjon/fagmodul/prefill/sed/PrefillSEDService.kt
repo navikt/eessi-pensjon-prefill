@@ -3,6 +3,7 @@ package no.nav.eessi.pensjon.fagmodul.prefill.sed
 import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjon
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PersonData
+import no.nav.eessi.pensjon.fagmodul.prefill.model.PersonDataCollection
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonService
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
@@ -40,7 +41,9 @@ class PrefillSEDService(private val prefillNav: PrefillNav,
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillSEDService::class.java) }
 
-    fun prefill(prefillData: PrefillDataModel): SED {
+    fun prefill(prefillData: PrefillDataModel) = prefill(prefillData, null)
+
+    fun prefill(prefillData: PrefillDataModel, personDataCollection: PersonDataCollection? = null): SED {
 
         val sedType = SEDType.valueOf(prefillData.getSEDType())
 
