@@ -100,29 +100,35 @@ class PensjonsinformasjonClient(
         }
     }
 
+    @Throws(PensjoninformasjonException::class, HttpServerErrorException::class, HttpClientErrorException::class)
+    fun hentKravDatoFraVedtak(saksId: String, kravId: String, vedtaksId: String): String? {
 
-    fun hentKravDato(aktorId: String, sakId: String) : String? {
-        val pendata = hentAltPaaAktoerId(aktorId)
-        if (pendata.brukersSakerListe == null) {
-            logger.warn("Ingen gyldig brukerSakerListe funnet")
-            throw PensjoninformasjonException("Ingen gyldig brukerSakerListe, mangler data fra pesys")
+        val pensjonSak = hentAltPaaVedtak(vedtaksId)
+        return hentKravFraKravHistorikk(saksId, pensjonSak, kravId)
+
+    }
+
+    fun hentKravDatoFraAktor(aktorId: String, saksId: String, kravId: String) : String? {
+        val pensjonSak = hentAltPaaAktoerId(aktorId)
+        return hentKravFraKravHistorikk(saksId, pensjonSak, kravId)
+    }
+
+    private fun hentKravFraKravHistorikk(saksId: String, pensjonSak: Pensjonsinformasjon, kravId: String ): String? {
+        val sak = finnSak(saksId, pensjonSak) ?: return null
+
+        val kravHistorikk = sak.kravHistorikkListe?.kravHistorikkListe?.filter { krav -> "${krav.kravId}" == kravId }
+
+        if (kravHistorikk == null) {
+            logger.warn("Kravhistorikk har ingen krav")
+            throw PensjoninformasjonException("Mangler kravistorikk")
+        } else if (kravHistorikk.size > 1) {
+            logger.warn("Det forventes kun et krav for kravId: $kravId, men Kravhistorikk har ${kravHistorikk.size}  krav")
+            throw PensjoninformasjonException("KravHistorikkListe med har for mange krav")
         }
 
-        val sak = finnSak(sakId, pendata) ?: return null
-
-        val v1KravHistorikk = KravHistorikkHelper.hentKravhistorikkForGjenlevende(sak.kravHistorikkListe)
-            ?: when (sak.status) {
-                Kravstatus.TIL_BEHANDLING.name -> KravHistorikkHelper.hentKravHistorikkMedKravStatusTilBehandling(
-                    sak.kravHistorikkListe
-                )
-                Kravstatus.AVSL.name -> KravHistorikkHelper.hentKravHistorikkMedKravStatusAvslag(sak.kravHistorikkListe)
-                else -> KravHistorikkHelper.hentKravHistorikkForsteGangsBehandlingUtlandEllerForsteGang(
-                    sak.kravHistorikkListe,
-                    sak.sakType
-                )
-            }
-        return v1KravHistorikk.mottattDato?.simpleFormat()
+        return kravHistorikk[0]?.mottattDato!!.simpleFormat()
     }
+
 
     //transform xmlString til Pensjoninformasjon object
     fun transform(xmlString: String) : Pensjonsinformasjon {

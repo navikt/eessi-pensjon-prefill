@@ -2,7 +2,6 @@ package no.nav.eessi.pensjon.services.pensjonsinformasjon
 
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.doThrow
 import com.nhaarman.mockitokotlin2.whenever
 import no.nav.eessi.pensjon.utils.simpleFormat
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
@@ -209,11 +208,38 @@ class PensjonsinformasjonClientTest {
 
     @Test
     fun `hentKravDato henter dato fra brukersSakerListe `() {
-        val aktoerId = "any" // 13 sifre
+        val kravId = "41098601"
+        val saksId = "14915730"
 
-        val mockResponseEntity = createResponseEntityFromJsonFile("classpath:pensjonsinformasjon/krav/KravAlderEllerUfore_AP_UTLAND.xml")
-        whenever(mockrestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java))).thenReturn(mockResponseEntity)
-        assertEquals(pensjonsinformasjonClient.hentKravDato(aktoerId, "21975717"), "2015-06-16")
+        mockAnyRequest("classpath:pensjonsinformasjon/krav/kravalderellerufore_ap_utland.xml")
+        val actual = pensjonsinformasjonClient.hentKravDatoFraAktor("any", saksId, kravId)
+        assertEquals("2018-05-04", actual)
+    }
+
+    @Test
+    fun `hentKravDatoFraVedTak skal gi en enkel dato tilbake gitt gyldig saksid, kravId og vedtaksId  `() {
+        val sakId = "14915730"
+        val kravId = "41098601"
+        val vedtaksId = "any"
+        val kravDato = "2018-05-04"
+
+        mockAnyRequest("classpath:pensjonsinformasjon/krav/kravalderellerufore_ap_utland.xml")
+
+        val actual = pensjonsinformasjonClient.hentKravDatoFraVedtak(sakId, kravId,  vedtaksId )
+        assertEquals(kravDato, actual)
+    }
+
+    private fun mockAnyRequest(kravLokasjon : String) {
+        val mockResponseEntity =
+            createResponseEntityFromJsonFile(kravLokasjon)
+        whenever(
+            mockrestTemplate.exchange(
+                any<String>(),
+                any(),
+                any<HttpEntity<Unit>>(),
+                ArgumentMatchers.eq(String::class.java)
+            )
+        ).thenReturn(mockResponseEntity)
     }
 
 }

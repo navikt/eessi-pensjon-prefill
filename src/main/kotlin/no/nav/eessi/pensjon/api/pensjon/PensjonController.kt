@@ -10,7 +10,6 @@ import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjoninformasjonValid
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonClient
 import no.nav.eessi.pensjon.utils.errorBody
 import no.nav.eessi.pensjon.utils.mapAnyToJson
-import no.nav.eessi.pensjon.utils.simpleFormat
 import no.nav.security.token.support.core.api.Protected
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -67,12 +66,11 @@ class PensjonController(private val pensjonsinformasjonClient: Pensjonsinformasj
     }
 
     @ApiOperation("Henter ut kravdato når det eksisterer et vedtak")
-    @GetMapping("/kravdato/{vedtaksId}/vedtak")
-    fun hentKravDatoFraVedtak(@PathVariable("vedtaksId", required = true) vedtaksId: String) : ResponseEntity<String>? {
+    @GetMapping("/kravdato/saker/{saksId}/krav/{kravId}/vedtak/{vedtaksId}")
+    fun hentKravDatoFraVedtak(@PathVariable("saksId", required = true) saksId: String, @PathVariable("kravId", required = true) kravId: String, @PathVariable("vedtaksId", required = true) vedtaksId: String) : ResponseEntity<String>? {
         return PensjonControllerKravDato.measure {
             try {
-                val pensjonSak = pensjonsinformasjonClient.hentAltPaaVedtak(vedtaksId = vedtaksId)
-                pensjonSak.vedtak?.vedtaksDato?.simpleFormat()?.let {
+                pensjonsinformasjonClient.hentKravDatoFraVedtak(saksId = saksId, kravId = kravId, vedtaksId = vedtaksId)?.let {
                     ResponseEntity.ok("""{ "kravDato": "$it" }""")
                 }
 
@@ -84,12 +82,11 @@ class PensjonController(private val pensjonsinformasjonClient: Pensjonsinformasj
     }
 
     @ApiOperation("Henter ut kravdato der det ikke eksisterer et vedtak")
-    @GetMapping("/kravdato/{sakId}/{aktoerId}")
-    fun hentKravDato(@PathVariable("sakId", required = true) sakId: String, @PathVariable("aktoerId", required = true) aktoerId: String) : ResponseEntity<String>? {
+    @GetMapping("/kravdato/saker/{saksId}/krav/{kravId}/aktor/{aktoerId}")
+    fun hentKravDatoFraAktor(@PathVariable("saksId", required = true) sakId: String, @PathVariable("kravId", required = true) kravId: String, @PathVariable("aktoerId", required = true) aktoerId: String) : ResponseEntity<String>? {
         return PensjonControllerKravDato.measure {
             try {
-                val kravDato = pensjonsinformasjonClient.hentKravDato(aktoerId, sakId)
-                kravDato?.let{
+                pensjonsinformasjonClient.hentKravDatoFraAktor(aktorId = aktoerId, kravId = kravId, saksId = sakId)?.let{
                     ResponseEntity.ok("""{ "kravDato": "$it" }""")
                 }
             } catch (e: Exception) {
