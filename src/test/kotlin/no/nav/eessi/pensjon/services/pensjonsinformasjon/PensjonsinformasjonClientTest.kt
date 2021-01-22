@@ -63,11 +63,6 @@ class PensjonsinformasjonClientTest {
     }
 
 
-    private fun createResponseEntityFromJsonFile(filePath: String, httpStatus: HttpStatus = HttpStatus.OK): ResponseEntity<String?> {
-        val mockResponseString = ResourceUtils.getFile(filePath).readText()
-        return ResponseEntity(mockResponseString, httpStatus)
-    }
-
     @Test
     fun `Sjekker om pensjoninformasjon XmlCalendar kan være satt eller null sette simpleFormat`() {
         val mockResponseEntity = createResponseEntityFromJsonFile("classpath:pensjonsinformasjon/full-generated-response.xml")
@@ -211,7 +206,7 @@ class PensjonsinformasjonClientTest {
         val kravId = "41098601"
         val saksId = "14915730"
 
-        mockAnyRequest("classpath:pensjonsinformasjon/krav/kravalderellerufore_ap_utland.xml")
+        mockAnyRequest("classpath:pensjonsinformasjon/krav/KravAlderEllerUfore_AP_UTLAND.xml")
         val actual = pensjonsinformasjonClient.hentKravDatoFraAktor("any", saksId, kravId)
         assertEquals("2018-05-04", actual)
     }
@@ -223,15 +218,14 @@ class PensjonsinformasjonClientTest {
         val vedtaksId = "any"
         val kravDato = "2018-05-04"
 
-        mockAnyRequest("classpath:pensjonsinformasjon/krav/kravalderellerufore_ap_utland.xml")
+        mockAnyRequest("classpath:pensjonsinformasjon/krav/KravAlderEllerUfore_AP_UTLAND.xml")
 
         val actual = pensjonsinformasjonClient.hentKravDatoFraVedtak(sakId, kravId,  vedtaksId )
         assertEquals(kravDato, actual)
     }
 
     private fun mockAnyRequest(kravLokasjon : String) {
-        val mockResponseEntity =
-            createResponseEntityFromJsonFile(kravLokasjon)
+        val mockResponseEntity = createResponseEntityFromJsonFile(kravLokasjon)
         whenever(
             mockrestTemplate.exchange(
                 any<String>(),
@@ -240,6 +234,11 @@ class PensjonsinformasjonClientTest {
                 ArgumentMatchers.eq(String::class.java)
             )
         ).thenReturn(mockResponseEntity)
+    }
+
+    private fun createResponseEntityFromJsonFile(filePath: String, httpStatus: HttpStatus = HttpStatus.OK): ResponseEntity<String?> {
+        val mockResponseString = ResourceUtils.getFile(filePath).readText()
+        return ResponseEntity(mockResponseString, httpStatus)
     }
 
 }
