@@ -22,7 +22,7 @@ spec:
     - name: PDL_URL
       value: https://pdl-api.nais.preprod.local/graphql
     - name: VIRKSOMHET_PERSON_V3_ENDPOINTURL
-      value: https://wasapp-q2.adeo.no/tpsws/ws/Person/v3
+      value: https://app-q2.adeo.no/tpsws-aura/ws/Person/v3
     - name: OPENIDCONNECT_URL
       value: https://isso-q.adeo.no:443/isso
     - name: SECURITY_TOKEN_SERVICE_OPENID_CONFIGURATION_URL
