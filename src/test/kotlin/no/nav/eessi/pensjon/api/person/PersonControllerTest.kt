@@ -55,6 +55,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.time.LocalDate
 import java.time.LocalDateTime
+import kotlin.test.assertEquals
 import no.nav.eessi.pensjon.personoppslag.pdl.model.AktoerId as AktoerPDLId
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Person as PDLPerson
 
@@ -168,10 +169,10 @@ class PersonControllerTest {
         val avdodFarResponse = actual.first()
         val avdodMorResponse = actual.last()
 
-        assertTrue(avdodMorResponse.fnr == avdodMorfnr)
-        assertTrue(avdodMorResponse.relasjon == MOR.name)
-        assertTrue(avdodFarResponse.fnr == avdodFarfnr)
-        assertTrue(avdodFarResponse.relasjon == FAR.name)
+        assertEquals(avdodMorfnr, avdodMorResponse.fnr)
+        assertEquals(MOR.name, avdodMorResponse.relasjon)
+        assertEquals(avdodFarfnr,avdodFarResponse.fnr)
+        assertEquals(FAR.name, avdodFarResponse.relasjon)
     }
 
     @Test

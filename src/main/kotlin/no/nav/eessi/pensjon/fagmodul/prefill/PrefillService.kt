@@ -29,20 +29,6 @@ class PrefillService(private val factory: PrefillSEDService,
         PrefillSed = metricsHelper.init("PrefillSed")
     }
 
-    //preutfylling av sed fra TPS, PESYS, AAREG o.l skjer her..
-//    @Throws(ValidationException::class)
-//    fun prefillSed(dataModel: PrefillDataModel): SED {
-//        return PrefillSed.measure {
-//            logger.info("******* Starter med preutfylling *******\nSED: ${dataModel.getSEDType()} aktoerId: ${dataModel.bruker.aktorId} sakNr: ${dataModel.penSaksnummer}")
-//            try {
-//                return@measure factory.prefill(dataModel)
-//            } catch (ex: Exception) {
-//                logger.error("Noe gikk galt under prefill: ", ex)
-//                throw ex
-//            }
-//        }
-//    }
-
     fun prefillSedtoJson(dataModel: PrefillDataModel, version: String) = prefillSedtoJson(dataModel, version, null)
 
     fun prefillSedtoJson(dataModel: PrefillDataModel, version: String, personDataCollection: PersonDataCollection? = null): SedAndType {

@@ -2,6 +2,7 @@ package no.nav.eessi.pensjon.api.person
 
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import io.swagger.annotations.ApiOperation
+import no.nav.eessi.pensjon.fagmodul.models.FamilieRelasjonType
 import no.nav.eessi.pensjon.fagmodul.models.FamilieRelasjonType.FAR
 import no.nav.eessi.pensjon.fagmodul.models.FamilieRelasjonType.MOR
 import no.nav.eessi.pensjon.logging.AuditLogger
@@ -44,12 +45,14 @@ import no.nav.eessi.pensjon.personoppslag.pdl.model.Person as PersonPDL
  */
 @Protected
 @RestController
-class PersonController(private val aktoerregisterService: AktoerregisterService,
-                       private val personService: PersonV3Service,
-                       private val pdlService: PersonService,
-                       private val auditLogger: AuditLogger,
-                       private val pensjonsinformasjonClient: PensjonsinformasjonClient,
-                       @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper(SimpleMeterRegistry())) {
+class PersonController(
+    private val aktoerregisterService: AktoerregisterService,
+    private val personService: PersonV3Service,
+    private val pdlService: PersonService,
+    private val auditLogger: AuditLogger,
+    private val pensjonsinformasjonClient: PensjonsinformasjonClient,
+    @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper(SimpleMeterRegistry())
+) {
 
     private val logger = LoggerFactory.getLogger(PersonController::class.java)
 
@@ -79,19 +82,17 @@ class PersonController(private val aktoerregisterService: AktoerregisterService,
 
     @Profile("test")
     @GetMapping("/person/{fnr}/{tpsboolean}", produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun gerPersonFraBegge(@PathVariable("fnr", required = true) fnr: String, @PathVariable("tpsboolean", required = true) tps: Boolean) : Any? {
-
-        val kilde = when(tps) {
-            true -> "TPS"
-            false -> "PDL"
-        }
-
-        logger.debug("henter person fra følgende kilde: $kilde")
+    fun gerPersonFraBegge(
+        @PathVariable("fnr", required = true) fnr: String,
+        @PathVariable("tpsboolean", required = true) tps: Boolean
+    ): Any? {
 
         return if (tps) {
+            logger.debug("henter person fra TPS")
             hentPersonTps(fnr).person
         } else {
-            hentPersonPDL(fnr)
+            logger.debug("henter person fra PDL")
+            pdlService.hentPerson(NorskIdent(fnr))
         }
 
     }
@@ -102,114 +103,122 @@ class PersonController(private val aktoerregisterService: AktoerregisterService,
 
         val fnr = pdlService.hentIdent(IdentType.NorskIdent, AktoerPDLId(aktoerid)).id
         try {
-            return ResponseEntity.ok().body(hentPersonPDL(fnr))
+            return ResponseEntity.ok().body(pdlService.hentPerson(NorskIdent(fnr)))
         } catch (ex: Exception) {
             throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Feil! ${ex.message}")
         }
 
     }
 
-    fun hentPersonPDL(fnr: String): PersonPDL? {
-        return  pdlService.hentPerson(NorskIdent(fnr))
-    }
-
     @ApiOperation("henter ut alle avdøde for en aktørId og vedtaksId der aktør er gjenlevende")
     @GetMapping("/person/{aktoerId}/avdode/vedtak/{vedtaksId}", produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun getDeceased(@PathVariable("aktoerId", required = true) gjenlevendeAktoerId: String,
-                    @PathVariable("vedtaksId", required = true) vedtaksId: String): ResponseEntity<Any> {
+    fun getDeceased(
+        @PathVariable("aktoerId", required = true) gjenlevendeAktoerId: String,
+        @PathVariable("vedtaksId", required = true) vedtaksId: String
+    ): ResponseEntity<Any> {
 
         logger.debug("Henter informasjon om avdøde $gjenlevendeAktoerId fra vedtak $vedtaksId")
         auditLogger.log("/person/{$gjenlevendeAktoerId}/vedtak", "getDeceased")
 
-        val pensjonInfo = pensjonsinformasjonClient.hentAltPaaVedtak(vedtaksId)
-
-        val gjenlevende = hentPerson(gjenlevendeAktoerId).person as Person
-
-        val avdodeMedFnr = hentAlleAvdode(
-                mapOf<String, String?>(
-                        pensjonInfo.avdod?.avdod.toString() to null,
-                        pensjonInfo.avdod?.avdodFar.toString() to FAR.name,
-                        pensjonInfo.avdod?.avdodMor.toString() to MOR.name
-                ))
-                .map { avDodFnr -> pairPersonFnr(avDodFnr.key, avDodFnr.value, gjenlevende)}.toList()
-
-        logger.info("Det ble funnet ${avdodeMedFnr.size} avdøde for den gjenlevende med aktørID: $gjenlevendeAktoerId")
-
         return PersonControllerHentPersonAvdod.measure {
+
+            val pensjonInfo = pensjonsinformasjonClient.hentAltPaaVedtak(vedtaksId)
+
+            val gjenlevende = hentPerson(gjenlevendeAktoerId).person as Person
+
+            val avdode = mapOf(
+                pensjonInfo.avdod?.avdod to null,
+                pensjonInfo.avdod?.avdodFar to FAR,
+                pensjonInfo.avdod?.avdodMor to MOR
+            )
+
+            val avdodeMedFnr = avdode
+                .filter { (fnr, _) -> isNumber(fnr) }
+                .map { (fnr, rolle) -> pairPersonFnr(fnr!!, rolle, gjenlevende)}
+
+            logger.info("Det ble funnet ${avdodeMedFnr.size} avdøde for den gjenlevende med aktørID: $gjenlevendeAktoerId")
+
             ResponseEntity.ok(avdodeMedFnr)
         }
     }
 
     @ApiOperation("henter ut alle avdøde for en aktørId og vedtaksId der aktør er gjenlevende")
     @GetMapping("/personpdl/{aktoerId}/avdode/vedtak/{vedtaksId}", produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun getDeceasedPDL(@PathVariable("aktoerId", required = true) gjenlevendeAktoerId: String,
-                    @PathVariable("vedtaksId", required = true) vedtaksId: String): ResponseEntity<Any> {
+    fun getDeceasedPDL(
+        @PathVariable("aktoerId", required = true) gjenlevendeAktoerId: String,
+        @PathVariable("vedtaksId", required = true) vedtaksId: String
+    ): ResponseEntity<Any> {
 
         logger.debug("Henter informasjon om avdøde $gjenlevendeAktoerId fra vedtak $vedtaksId")
         auditLogger.log("/person/{$gjenlevendeAktoerId}/vedtak", "getDeceased")
 
+        return PersonControllerHentPersonAvdod.measure {
+
         val pensjonInfo = pensjonsinformasjonClient.hentAltPaaVedtak(vedtaksId)
         val gjenlevende = pdlService.hentPerson(AktoerPDLId(gjenlevendeAktoerId))
 
-        val avdodeMedFnr = hentAlleAvdode(
-            mapOf<String, String?>(
-                pensjonInfo.avdod?.avdod.toString() to null,
-                pensjonInfo.avdod?.avdodFar.toString() to Familierelasjonsrolle.FAR.name,
-                pensjonInfo.avdod?.avdodMor.toString() to Familierelasjonsrolle.MOR.name
-            ))
-            .map { avDodFnr -> pairPersonPDLFnr(avDodFnr.key, avDodFnr.value, gjenlevende)}.toList()
+        val avdode = mapOf(
+            pensjonInfo.avdod?.avdod to null,
+            pensjonInfo.avdod?.avdodFar to Familierelasjonsrolle.FAR,
+            pensjonInfo.avdod?.avdodMor to Familierelasjonsrolle.MOR
+        )
+
+        val avdodeMedFnr = avdode
+            .filter { (fnr, _) -> isNumber(fnr) }
+            .map { (fnr, rolle) -> pairPersonPDLFnr(fnr!!, rolle, gjenlevende)}
 
         logger.info("Det ble funnet ${avdodeMedFnr.size} avdøde for den gjenlevende med aktørID: $gjenlevendeAktoerId")
 
-        return PersonControllerHentPersonAvdod.measure {
             ResponseEntity.ok(avdodeMedFnr)
         }
     }
 
-    private fun pairPersonPDLFnr(avdodFnr: String, avdodRolle: String?, gjenlevende: PersonPDL?): PersoninformasjonAvdode {
+    private fun pairPersonPDLFnr(
+        avdodFnr: String,
+        avdodRolle: Familierelasjonsrolle?,
+        gjenlevende: PersonPDL?
+    ): PersoninformasjonAvdode {
 
         val avdode = pdlService.hentPerson(NorskIdent(avdodFnr))
         val avdodNavn = avdode?.navn
 
-        val relasjon = if (avdodRolle == null) {
-            gjenlevende?.sivilstand?.firstOrNull{ it.relatertVedSivilstand == avdodFnr }?.type?.name
-        } else {
-            avdodRolle
-        }
-        val fultnavn = "${avdodNavn?.fornavn} ${avdodNavn?.mellomnavn} ${avdodNavn?.etternavn}"
+        val relasjon = avdodRolle ?: gjenlevende?.sivilstand?.firstOrNull { it.relatertVedSivilstand == avdodFnr }?.type
         return PersoninformasjonAvdode(
             fnr = avdodFnr,
-            fulltNavn = fultnavn,
-            fornavn =  avdodNavn?.fornavn,
+            fulltNavn = avdodNavn?.sammensattNavn(),
+            fornavn = avdodNavn?.fornavn,
             mellomnavn = avdodNavn?.mellomnavn,
             etternavn = avdodNavn?.etternavn,
-            relasjon = relasjon)
+            relasjon = relasjon?.name
+        )
     }
 
 
-    private fun pairPersonFnr(avdodFnr: String, avdodRolle: String?, gjenlevende: Person?): PersoninformasjonAvdode {
+    private fun pairPersonFnr(avdodFnr: String, avdodRolle: FamilieRelasjonType?, gjenlevende: Person?): PersoninformasjonAvdode {
 
         val avdode = personService.hentBruker(avdodFnr)
         val avdodNavn = avdode?.personnavn
 
         val relasjon = if (avdodRolle == null) {
-            val familierelasjon = gjenlevende?.harFraRolleI?.firstOrNull { (it.tilPerson.aktoer as PersonIdent).ident.ident == avdodFnr }
+            val familierelasjon =
+                gjenlevende?.harFraRolleI?.firstOrNull { (it.tilPerson.aktoer as PersonIdent).ident.ident == avdodFnr }
             familierelasjon?.tilRolle?.value?.toUpperCase()
         } else {
-            avdodRolle
+            avdodRolle.name
         }
 
         return PersoninformasjonAvdode(
-                fnr = avdodFnr,
-                fulltNavn = avdodNavn?.sammensattNavn,
-                fornavn =  avdodNavn?.fornavn,
-                mellomnavn = avdodNavn?.mellomnavn,
-                etternavn = avdodNavn?.etternavn,
-                relasjon = relasjon)
+            fnr = avdodFnr,
+            fulltNavn = avdodNavn?.sammensattNavn,
+            fornavn = avdodNavn?.fornavn,
+            mellomnavn = avdodNavn?.mellomnavn,
+            etternavn = avdodNavn?.etternavn,
+            relasjon = relasjon
+        )
     }
 
-    private fun hentAlleAvdode(avdode: Map<String, String?>): Map<String, String?> {
-        return avdode.filter { isNumber(it.key) }.toMap()
+    private fun hentAlleAvdode(avdode: Map<String?, Familierelasjonsrolle?>): Map<String?, Familierelasjonsrolle?> {
+        return avdode.filter { isNumber(it.key) }
     }
 
     private fun isNumber(s: String?): Boolean {
@@ -224,10 +233,12 @@ class PersonController(private val aktoerregisterService: AktoerregisterService,
         return PersonControllerHentPersonNavn.measure {
             val person = hentPerson(aktoerid).person
             ResponseEntity.ok(
-                    Personinformasjon(person.personnavn.sammensattNavn,
-                            person.personnavn.fornavn,
-                            person.personnavn.mellomnavn,
-                            person.personnavn.etternavn)
+                Personinformasjon(
+                    person.personnavn.sammensattNavn,
+                    person.personnavn.fornavn,
+                    person.personnavn.mellomnavn,
+                    person.personnavn.etternavn
+                )
             )
         }
     }
@@ -240,8 +251,8 @@ class PersonController(private val aktoerregisterService: AktoerregisterService,
             throw ManglerAktoerIdException("Tom input-verdi")
         }
         val norskIdent =
-                aktoerregisterService.hentGjeldendeIdent(IdentGruppe.NorskIdent, AktoerId(aktoerid))?.id
-                        ?: throw AktoerregisterIkkeFunnetException("NorskIdent for aktoerId $aktoerid ikke funnet.")
+            aktoerregisterService.hentGjeldendeIdent(IdentGruppe.NorskIdent, AktoerId(aktoerid))?.id
+                ?: throw AktoerregisterIkkeFunnetException("NorskIdent for aktoerId $aktoerid ikke funnet.")
 
         return hentPersonTps(norskIdent)
     }
@@ -249,16 +260,20 @@ class PersonController(private val aktoerregisterService: AktoerregisterService,
     /**
      * Personinformasjon fra TPS ( PersonV3 )
      */
-    data class Personinformasjon(var fulltNavn: String? = null,
-                                 var fornavn: String? = null,
-                                 var mellomnavn: String? = null,
-                                 var etternavn: String? = null)
+    data class Personinformasjon(
+        var fulltNavn: String? = null,
+        var fornavn: String? = null,
+        var mellomnavn: String? = null,
+        var etternavn: String? = null
+    )
 
-    data class PersoninformasjonAvdode (var fnr: String? = null,
-                                        var aktorId: String? = null,
-                                        var fulltNavn: String? = null,
-                                        var fornavn: String? = null,
-                                        var mellomnavn: String? = null,
-                                        var etternavn: String? = null,
-                                        var relasjon: String? = null)
+    data class PersoninformasjonAvdode(
+        var fnr: String? = null,
+        var aktorId: String? = null,
+        var fulltNavn: String? = null,
+        var fornavn: String? = null,
+        var mellomnavn: String? = null,
+        var etternavn: String? = null,
+        var relasjon: String? = null
+    )
 }

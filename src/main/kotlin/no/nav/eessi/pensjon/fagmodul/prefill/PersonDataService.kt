@@ -67,12 +67,12 @@ class PersonDataService(private val personService: PersonService,
             }
 
             val sivilstand = filterEktefelleRelasjon(forsikretPerson)
-            val sivilstandType = sivilstand?.type?.name
+            val sivilstandType = sivilstand?.type
             logger.info("Henter ektefelle/partner (ekteType: ${sivilstand?.type})")
 
 
             val ektefelleBruker = sivilstand?.relatertVedSivilstand?.let { personService.hentPerson(NorskIdent(it)) }
-            val ektefellePerson = ektefelleBruker?.let { if (it.erDoed()) { null } else it }
+            val ektefellePerson = ektefelleBruker?.takeUnless { it.erDoed() }
 
             logger.info("Henter barn")
             val barnPerson = if (forsikretPerson == null || !fyllUtBarnListe) emptyList() else hentBarn(forsikretPerson)
@@ -88,17 +88,14 @@ class PersonDataService(private val personService: PersonService,
         val barnepinListe = hovedPerson.familierelasjoner
             .filter { it.relatertPersonsRolle == Familierelasjonsrolle.BARN }
             .map { it.relatertPersonsIdent }
-            .filter { barnPin -> NavFodselsnummer(barnPin).validate() }
             .filter { barnPin -> NavFodselsnummer(barnPin).isUnder18Year() }
         logger.info("prøver å hente ut alle barn (filtrert) på hovedperson: " + barnepinListe.size )
 
         return barnepinListe
             .mapNotNull { barnPin -> personService.hentPerson(NorskIdent(barnPin)) }
-            .filterNot{ barn -> barn.erDoed() }.also {
-                barnList ->
-                barnList.forEach {
-                    logger.debug("Hentet følgende barn fra PDL aktoerid: ${it.identer.firstOrNull { it.gruppe == IdentGruppe.AKTORID }}")
-                }
+            .filterNot{ barn -> barn.erDoed() }
+            .onEach {barn ->
+                logger.debug("Hentet følgende barn fra PDL aktoerid: ${barn.identer.firstOrNull { it.gruppe == IdentGruppe.AKTORID }}")
             }
     }
 

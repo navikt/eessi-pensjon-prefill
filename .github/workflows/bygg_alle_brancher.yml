@@ -6,7 +6,6 @@ on:
       - '*'
       - '*/*'
       - '!master'
-      - '!feature/personoppslag-pdl'
 
 jobs:
   tag_build_and_deploy:
