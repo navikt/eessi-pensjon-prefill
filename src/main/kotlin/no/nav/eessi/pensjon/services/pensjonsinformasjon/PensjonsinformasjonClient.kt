@@ -100,14 +100,6 @@ class PensjonsinformasjonClient(
         }
     }
 
-    @Throws(PensjoninformasjonException::class, HttpServerErrorException::class, HttpClientErrorException::class)
-    fun hentKravDatoFraVedtak(saksId: String, kravId: String, vedtaksId: String): String? {
-
-        val pensjonSak = hentAltPaaVedtak(vedtaksId)
-        return hentKravFraKravHistorikk(saksId, pensjonSak, kravId)
-
-    }
-
     fun hentKravDatoFraAktor(aktorId: String, saksId: String, kravId: String) : String? {
         val pensjonSak = hentAltPaaAktoerId(aktorId)
         return hentKravFraKravHistorikk(saksId, pensjonSak, kravId)
@@ -116,7 +108,7 @@ class PensjonsinformasjonClient(
     private fun hentKravFraKravHistorikk(saksId: String, pensjonSak: Pensjonsinformasjon, kravId: String ): String? {
         val sak = finnSak(saksId, pensjonSak) ?: return null
 
-        val kravHistorikk = sak.kravHistorikkListe?.kravHistorikkListe?.filter { krav -> "${krav.kravId}" == kravId }
+        val kravHistorikk = sak.kravHistorikkListe?.kravHistorikkListe?.filter { krav -> krav.kravId == kravId }
 
         if (kravHistorikk == null) {
             logger.warn("Kravhistorikk har ingen krav")

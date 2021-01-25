@@ -211,19 +211,6 @@ class PensjonsinformasjonClientTest {
         assertEquals("2018-05-04", actual)
     }
 
-    @Test
-    fun `hentKravDatoFraVedTak skal gi en enkel dato tilbake gitt gyldig saksid, kravId og vedtaksId  `() {
-        val sakId = "14915730"
-        val kravId = "41098601"
-        val vedtaksId = "any"
-        val kravDato = "2018-05-04"
-
-        mockAnyRequest("classpath:pensjonsinformasjon/krav/KravAlderEllerUfore_AP_UTLAND.xml")
-
-        val actual = pensjonsinformasjonClient.hentKravDatoFraVedtak(sakId, kravId,  vedtaksId )
-        assertEquals(kravDato, actual)
-    }
-
     private fun mockAnyRequest(kravLokasjon : String) {
         val mockResponseEntity = createResponseEntityFromJsonFile(kravLokasjon)
         whenever(

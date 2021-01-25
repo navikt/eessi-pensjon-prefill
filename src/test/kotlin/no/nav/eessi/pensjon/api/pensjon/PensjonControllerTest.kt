@@ -1,6 +1,5 @@
 package no.nav.eessi.pensjon.api.pensjon
 
-import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.given
 import com.nhaarman.mockitokotlin2.mock
@@ -141,48 +140,7 @@ class PensjonControllerTest {
         assertEquals(PensjonSakStatus.OPPHOR, PensjonSakStatus.from(opph))
         assertEquals(PensjonSakStatus.UKJENT, PensjonSakStatus.from(ukjent))
 
-
     }
-
-    @Test
-    fun `hentKravDatoFraVedtak skal hente dato fra vedtaket `() {
-        val kravDato = "2020-01-01"
-        val vedtaksId = "any"
-        val saksId = "any"
-        val kravId = "any"
-
-        given(pensjonsinformasjonClient.hentKravDatoFraVedtak(any(), any(), any())).willReturn(kravDato)
-
-        val result = mockMvc.perform(
-            MockMvcRequestBuilders.get("/pensjon/kravdato/saker/$saksId/krav/$kravId/vedtak/$vedtaksId\"")
-                .contentType(MediaType.APPLICATION_JSON))
-            .andReturn()
-
-        val response = result.response.getContentAsString(charset("UTF-8"))
-
-        assertEquals("""{ "kravDato": "$kravDato" }""", response)
-    }
-
-
-    @Test
-    fun `hentKravDatoFraVedtak skal gi en tom returverdi ved manglende data fra pensjonsinformasjon `() {
-        val vedtaksId = "any"
-        val saksId = "any"
-        val kravId = "any"
-
-        given(pensjonsinformasjonClient.hentAltPaaVedtak(vedtaksId = vedtaksId)).willReturn(Pensjonsinformasjon())
-
-        val result = mockMvc.perform(
-            MockMvcRequestBuilders.get("/pensjon/kravdato/saker/$saksId/krav/$kravId/vedtak/$vedtaksId")
-                .contentType(MediaType.APPLICATION_JSON))
-            .andReturn()
-
-        val response = result.response.getContentAsString(charset("UTF-8"))
-
-        assertEquals("""""", response)
-    }
-
-
 
     @Test
     fun `hentKravDato skal gi en data hentet fra aktorid og vedtaksid `() {
