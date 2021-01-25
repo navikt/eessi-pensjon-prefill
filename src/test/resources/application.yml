@@ -2,6 +2,8 @@ NAIS_NAMESPACE: 'test'
 NAIS_APP_NAME: 'eessi-pensjon-fagmodul'
 NAIS_APP_IMAGE: 'someimage'
 
+PDL_URL: 'http://example.com:8090'
+
 eessi-pensjon-active-profiles: ${spring.profiles.active}
 
 eessi-pensjon-institusjon: 'NO:noinst002'

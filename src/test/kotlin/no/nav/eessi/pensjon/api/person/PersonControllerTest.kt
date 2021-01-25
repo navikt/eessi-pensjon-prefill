@@ -1,6 +1,11 @@
 package no.nav.eessi.pensjon.api.person
 
-import com.nhaarman.mockitokotlin2.*
+import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.doNothing
+import com.nhaarman.mockitokotlin2.doReturn
+import com.nhaarman.mockitokotlin2.doThrow
+import com.nhaarman.mockitokotlin2.eq
+import com.nhaarman.mockitokotlin2.whenever
 import no.nav.eessi.pensjon.fagmodul.models.FamilieRelasjonType.FAR
 import no.nav.eessi.pensjon.fagmodul.models.FamilieRelasjonType.MOR
 import no.nav.eessi.pensjon.logging.AuditLogger
@@ -8,6 +13,15 @@ import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerId
 import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerregisterService
 import no.nav.eessi.pensjon.personoppslag.aktoerregister.IdentGruppe
 import no.nav.eessi.pensjon.personoppslag.aktoerregister.NorskIdent
+import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
+import no.nav.eessi.pensjon.personoppslag.pdl.model.Familierelasjonsrolle
+import no.nav.eessi.pensjon.personoppslag.pdl.model.Familierlasjon
+import no.nav.eessi.pensjon.personoppslag.pdl.model.Folkeregistermetadata
+import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentInformasjon
+import no.nav.eessi.pensjon.personoppslag.pdl.model.KjoennType
+import no.nav.eessi.pensjon.personoppslag.pdl.model.Navn
+import no.nav.eessi.pensjon.personoppslag.pdl.model.Sivilstand
+import no.nav.eessi.pensjon.personoppslag.pdl.model.Sivilstandstype
 import no.nav.eessi.pensjon.personoppslag.personv3.PersonV3IkkeFunnetException
 import no.nav.eessi.pensjon.personoppslag.personv3.PersonV3Service
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonClient
@@ -16,7 +30,16 @@ import no.nav.eessi.pensjon.utils.typeRefs
 import no.nav.pensjon.v1.avdod.V1Avdod
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import no.nav.pensjon.v1.person.V1Person
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.*
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bruker
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Familierelasjon
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Familierelasjoner
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Kjoenn
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Kjoennstyper
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Landkoder
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Person
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.PersonIdent
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Personnavn
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Statsborgerskap
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonResponse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -30,6 +53,11 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import java.time.LocalDate
+import java.time.LocalDateTime
+import kotlin.test.assertEquals
+import no.nav.eessi.pensjon.personoppslag.pdl.model.AktoerId as AktoerPDLId
+import no.nav.eessi.pensjon.personoppslag.pdl.model.Person as PDLPerson
 
 
 @WebMvcTest(PersonController::class)
@@ -51,6 +79,9 @@ class PersonControllerTest {
 
     @MockBean
     lateinit var mockPensjonClient: PensjonsinformasjonClient
+
+    @MockBean
+    lateinit var pdlService: PersonService
 
     @Test
     fun `getPerson should return Person as json`() {
@@ -91,6 +122,57 @@ class PersonControllerTest {
             get("/personinfo/$anAktorId")
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound)
+    }
+
+    @Test
+    fun `PDL getDeceased should return a list of deceased parents given a remaining, living child` (){
+        val aktoerId = "1234568"
+        val vedtaksId = "22455454"
+        val fnrGjenlevende = "13057065487"
+        val avdodMorfnr = "310233213123"
+        val avdodFarfnr = "101020223123"
+
+        val mockPensjoninfo = Pensjonsinformasjon()
+        mockPensjoninfo.avdod = V1Avdod()
+        mockPensjoninfo.person = V1Person()
+        mockPensjoninfo.avdod.avdodMor = avdodMorfnr
+        mockPensjoninfo.avdod.avdodFar = avdodFarfnr
+        mockPensjoninfo.person.aktorId = aktoerId
+
+        val avdodMor = lagPerson(avdodMorfnr, "Fru", "Blyant",
+            listOf(Familierlasjon(fnrGjenlevende, Familierelasjonsrolle.BARN, Familierelasjonsrolle.MOR)),
+            listOf(Sivilstand(Sivilstandstype.GIFT, LocalDate.of(2000, 10, 2), avdodFarfnr)))
+        val avdodFar = lagPerson(avdodFarfnr, "Hr", "Blyant",
+            listOf(Familierlasjon(fnrGjenlevende, Familierelasjonsrolle.BARN, Familierelasjonsrolle.FAR)),
+            listOf(Sivilstand(Sivilstandstype.GIFT, LocalDate.of(2000, 10, 2), avdodMorfnr)))
+
+        val barn = lagPerson(fnrGjenlevende, "Listen", "Blyant",
+            listOf(
+                Familierlasjon(avdodFarfnr, Familierelasjonsrolle.FAR, Familierelasjonsrolle.BARN),
+                Familierlasjon(avdodMorfnr, Familierelasjonsrolle.MOR, Familierelasjonsrolle.BARN)
+            )
+        )
+
+        doReturn(mockPensjoninfo).whenever(mockPensjonClient).hentAltPaaVedtak(vedtaksId)
+
+        doReturn(avdodMor).whenever(pdlService).hentPerson(no.nav.eessi.pensjon.personoppslag.pdl.model.NorskIdent(avdodMorfnr))
+        doReturn(avdodFar).whenever(pdlService).hentPerson(no.nav.eessi.pensjon.personoppslag.pdl.model.NorskIdent(avdodFarfnr))
+        doReturn(barn).whenever(pdlService).hentPerson(AktoerPDLId(aktoerId))
+
+        val response = mvc.perform(
+            get("/personpdl/$fnrGjenlevende/avdode/vedtak/$vedtaksId")
+                .accept(MediaType.APPLICATION_JSON))
+            .andReturn().response
+
+        println(response.contentAsString)
+        val actual = mapJsonToAny(response.contentAsString, typeRefs<List<PersonController.PersoninformasjonAvdode>>())
+        val avdodFarResponse = actual.first()
+        val avdodMorResponse = actual.last()
+
+        assertEquals(avdodMorfnr, avdodMorResponse.fnr)
+        assertEquals(MOR.name, avdodMorResponse.relasjon)
+        assertEquals(avdodFarfnr,avdodFarResponse.fnr)
+        assertEquals(FAR.name, avdodFarResponse.relasjon)
     }
 
     @Test
@@ -223,6 +305,25 @@ class PersonControllerTest {
                 }"""
 
     private val namesAsJson = """{ fornavn: "OLA", etternavn: "NORDMANN", mellomnavn: null, fulltNavn: "NORDMANN OLA"}"""
+
+
+    private fun lagPerson(fnr: String, fornavn: String, etternavn: String, familierlasjon: List<Familierlasjon> = emptyList(), sivilstand: List<Sivilstand> = emptyList()): PDLPerson {
+
+        return PDLPerson(
+            listOf(IdentInformasjon(fnr, no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe.FOLKEREGISTERIDENT)),
+            Navn(fornavn, "", etternavn),
+            emptyList(),
+            null,
+            null,
+            listOf(no.nav.eessi.pensjon.personoppslag.pdl.model.Statsborgerskap("NOR", LocalDate.of(2010, 10, 11), LocalDate.of(2020, 10, 2))),
+            null,
+            null,
+            no.nav.eessi.pensjon.personoppslag.pdl.model.Kjoenn(KjoennType.MANN, Folkeregistermetadata(LocalDateTime.of(2000, 10, 1, 12, 10, 31))),
+            null,
+            familierlasjon,
+            sivilstand
+        )
+    }
 
     private fun lagTPSBruker(fnr: String, fornavn: String, etternavn: String) =
             Bruker()

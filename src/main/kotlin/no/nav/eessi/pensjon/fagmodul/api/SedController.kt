@@ -12,6 +12,7 @@ import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ShortDocumentItem
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.prefill.ApiRequest
 import no.nav.eessi.pensjon.fagmodul.prefill.MangelfulleInndataException
+import no.nav.eessi.pensjon.fagmodul.prefill.PersonDataService
 import no.nav.eessi.pensjon.fagmodul.prefill.PrefillService
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
@@ -21,6 +22,8 @@ import no.nav.eessi.pensjon.metrics.MetricsHelper
 import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerregisterService
 import no.nav.eessi.pensjon.personoppslag.aktoerregister.IdentGruppe
 import no.nav.eessi.pensjon.personoppslag.aktoerregister.NorskIdent
+import no.nav.eessi.pensjon.personoppslag.pdl.model.AktoerId
+import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentType
 import no.nav.eessi.pensjon.utils.toJson
 import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
 import no.nav.security.token.support.core.api.Protected
@@ -45,6 +48,7 @@ import javax.annotation.PostConstruct
 class SedController(
     private val euxService: EuxService,
     private val prefillService: PrefillService,
+    private val personService: PersonDataService,
     private val aktoerService: AktoerregisterService,
     private val auditlogger: AuditLogger,
     @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper(SimpleMeterRegistry()),
@@ -69,18 +73,10 @@ class SedController(
 
     //** oppdatert i api 18.02.2019
     @ApiOperation("Generer en Nav-Sed (SED), viser en oppsumering av SED (json). Før evt. innsending til EUX/Rina")
-    @PostMapping(
-        "/prefill",
-        "/prefill/{filter}",
-        "/preview",
-        "/preview/{filter}",
-        consumes = ["application/json"],
-        produces = [MediaType.APPLICATION_JSON_VALUE]
-    )
-    fun previewDocument(@RequestBody request: ApiRequest, @PathVariable("filter", required = false) filter: String? = null): String {
+    @PostMapping( "/prefill",  consumes = ["application/json"],  produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun prefillDocument(@RequestBody request: ApiRequest, @PathVariable("filter", required = false) filter: String? = null): String {
         auditlogger.log("previewDocument", request.aktoerId ?: "", request.toAudit())
         logger.info("kaller (previewDocument) rinaId: ${request.euxCaseId} bucType: ${request.buc} sedType: ${request.sed} aktoerId: ${request.aktoerId} sakId: ${request.sakId} vedtak: ${request.vedtakId}")
-
         logger.debug("request: ${request.toJson()}")
 
         val norskIdent = hentFnrfraAktoerService(request.aktoerId, aktoerService)
@@ -94,12 +90,31 @@ class SedController(
             ---------------------------------------------------------------------------
             """.trimIndent())
 
-        val sed = prefillService.prefillSed(dataModel)
-        return if (filter == null) {
-            sed.toJsonSkipEmpty()
-        } else {
-            sed.toJson()
-        }
+        return prefillService.prefillSedtoJson(dataModel, "4.2").sed
+    }
+
+    //** oppdatert i api 18.02.2019
+    @ApiOperation("Generer en Nav-Sed (SED), viser en oppsumering av SED (json). Før evt. innsending til EUX/Rina")
+    @PostMapping("/pdl/prefill", consumes = ["application/json"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun prefillPdlDocument(@RequestBody request: ApiRequest): String {
+        auditlogger.log("previewDocument", request.aktoerId ?: "", request.toAudit())
+        logger.info("kaller (previewDocument) rinaId: ${request.euxCaseId} bucType: ${request.buc} sedType: ${request.sed} aktoerId: ${request.aktoerId} sakId: ${request.sakId} vedtak: ${request.vedtakId}")
+        logger.debug("request: ${request.toJson()}")
+
+        val norskIdent = personService.hentIdent(IdentType.NorskIdent, AktoerId(request.aktoerId!!)).id
+        val dataModel = ApiRequest.buildPrefillDataModelOnExisting(request, norskIdent, getAvdodAktoerId(request))
+
+        logger.debug(
+            """
+            ---------------------------------------------------------------------------
+            har avdød: ${dataModel.avdod != null}, avdød: ${dataModel.avdod?.toJson()}
+            søker    : ${dataModel.bruker.toJson()}
+            ---------------------------------------------------------------------------
+            """.trimIndent())
+
+        val personcollection = personService.hentPersonData(dataModel)
+        return prefillService.prefillSedtoJson(dataModel, "4.2", personcollection).sed
+
     }
 
     //** oppdatert i api 18.02.2019
@@ -128,7 +143,7 @@ class SedController(
             """
             ---------------------------------------------------------------------------
             har avdød: ${dataModel.avdod != null}, avdød: ${dataModel.avdod?.toJson()}
-            søker    : ${dataModel.bruker?.toJson()}
+            søker    : ${dataModel.bruker.toJson()}
             ---------------------------------------------------------------------------
             """.trimIndent())
 

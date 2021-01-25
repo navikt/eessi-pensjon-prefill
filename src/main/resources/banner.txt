@@ -12,6 +12,7 @@
     Aktoerregister                  : ${aktoerregister.api.v1.url}
     EUXBasis                        : ${eessipen-eux-rina.url}
     Person_v3                       : ${virksomhet.person.v3.endpointurl}
+    PersonDataLøsning(PDL)          : ${PDL_URL}
 
     ISSO Tokensupport OIDC          : ${no.nav.security.jwt.issuer.oidc.discoveryurl}
     ISSO Tokensupport accept        : ${no.nav.security.jwt.issuer.oidc.accepted_audience}

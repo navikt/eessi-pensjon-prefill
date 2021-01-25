@@ -3,6 +3,7 @@ package no.nav.eessi.pensjon.fagmodul.prefill.sed
 import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjon
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PersonData
+import no.nav.eessi.pensjon.fagmodul.prefill.model.PersonDataCollection
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonService
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
@@ -40,7 +41,9 @@ class PrefillSEDService(private val prefillNav: PrefillNav,
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillSEDService::class.java) }
 
-    fun prefill(prefillData: PrefillDataModel): SED {
+    fun prefill(prefillData: PrefillDataModel) = prefill(prefillData, null)
+
+    fun prefill(prefillData: PrefillDataModel, personDataCollection: PersonDataCollection? = null): SED {
 
         val sedType = SEDType.valueOf(prefillData.getSEDType())
 
@@ -127,9 +130,11 @@ class PrefillSEDService(private val prefillNav: PrefillNav,
     }
 
 
+    @Deprecated("Benytt PersonDataService")
     fun hentPersonerMedBarn(prefillData: PrefillDataModel) = hentPersoner(prefillData, true)
 
     //Henter inn alle personer fra ep-personoppslag  først før preutfylling
+    @Deprecated("Benytt PersonDataService")
     private fun hentPersoner(prefillData: PrefillDataModel, fyllUtBarnListe: Boolean = false): PersonData {
         logger.info("Henter hovedperson/forsikret/gjenlevende")
         val forsikretPerson = personV3Service.hentBruker(prefillData.bruker.norskIdent)
@@ -155,6 +160,7 @@ class PrefillSEDService(private val prefillNav: PrefillNav,
         return PersonData(gjenlevendeEllerAvdod = gjenlevendeEllerAvdod, forsikretPerson = forsikretPerson!!, ektefelleBruker = ektefelleBruker, ekteTypeValue = ekteTypeValue, barnBrukereFraTPS = barnBrukereFraTPS)
     }
 
+    @Deprecated("Benytt PersonDataService")
     fun hentBarnFraTps(hovedPerson: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): List<Bruker> {
         logger.info("henter ut relasjon BARN")
         val barnepinlist = hovedPerson.harFraRolleI
@@ -172,6 +178,7 @@ class PrefillSEDService(private val prefillNav: PrefillNav,
             }
     }
 
+    @Deprecated("Benytt PersonDataService")
     private fun hentAktoerId(pin: String): String? {
         if (!NavFodselsnummer(pin).validate()) return null
         return try {
@@ -182,6 +189,7 @@ class PrefillSEDService(private val prefillNav: PrefillNav,
         }
     }
 
+    @Deprecated("Benytt PersonDataService")
     private fun filterEktefelleRelasjon(bruker: Bruker?): Pair<String, String> {
         val validRelasjoner = listOf("EKTE", "REPA", "SAMB")
         if (bruker == null) return Pair("", "")
