@@ -338,7 +338,7 @@
       "date" : "2020-07-03T08:51:59.154+0000",
       "id" : "1"
     },
-    "allowsAttachments" : true
+    "allowsAttachments" : false
   }, {
     "id" : "ab3b301df6904aaaa142ec6737d086e5",
     "parentDocumentId" : null,

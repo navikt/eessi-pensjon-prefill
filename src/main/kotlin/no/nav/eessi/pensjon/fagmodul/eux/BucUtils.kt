@@ -148,8 +148,16 @@ class BucUtils(private val buc: Buc ) {
                 version = getLatestDocumentVersion(documentItem.versions),
                 firstVersion = getFirstVersion(documentItem.versions),
                 lastVersion = getLastVersion(documentItem.versions),
-                allowsAttachments = documentItem.allowsAttachments
+                allowsAttachments = overrideAllowAttachemnts(documentItem)
         )
+
+    private fun overrideAllowAttachemnts(documentItem: DocumentsItem): Boolean? {
+        return if (documentItem.type == "P5000") {
+            false
+        } else {
+            documentItem.allowsAttachments
+        }
+    }
 
     private fun getLatestDocumentVersion(list: List<VersionsItem>?): String {
         return list?.sortedBy { it.id }
