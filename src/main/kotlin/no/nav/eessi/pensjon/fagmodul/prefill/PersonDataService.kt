@@ -31,7 +31,7 @@ class PersonDataService(private val personService: PersonService,
 
     @PostConstruct
     fun initMetrics() {
-        HentPerson = metricsHelper.init("PrefillSed")
+        HentPerson = metricsHelper.init("HentPerson")
     }
 
     fun <T : IdentType, R : IdentType> hentIdent(identTypeWanted: R, ident: Ident<T>): Ident<R> {
@@ -53,32 +53,34 @@ class PersonDataService(private val personService: PersonService,
 
     //Henter inn alle personer fra ep-personoppslag  først før preutfylling
     private fun hentPersoner(prefillData: PrefillDataModel, fyllUtBarnListe: Boolean = false): PersonDataCollection {
-        logger.info("Henter hovedperson/forsikret/gjenlevende")
-        val forsikretPerson = personService.hentPerson(NorskIdent(prefillData.bruker.norskIdent))
+        return HentPerson.measure {
+            logger.info("Henter hovedperson/forsikret/gjenlevende")
+            val forsikretPerson = personService.hentPerson(NorskIdent(prefillData.bruker.norskIdent))
 
-        val gjenlevendeEllerAvdod = if (prefillData.avdod != null) {
-            logger.info("Henter avød person/forsikret")
-            //personV3Service.hentBruker(prefillData.avdod.norskIdent)
-            personService.hentPerson(NorskIdent(prefillData.avdod.norskIdent))
-        } else {
-            logger.info("Ingen avdød så settes til forsikretPerson")
-            forsikretPerson
+            val gjenlevendeEllerAvdod = if (prefillData.avdod != null) {
+                logger.info("Henter avød person/forsikret")
+                //personV3Service.hentBruker(prefillData.avdod.norskIdent)
+                personService.hentPerson(NorskIdent(prefillData.avdod.norskIdent))
+            } else {
+                logger.info("Ingen avdød så settes til forsikretPerson")
+                forsikretPerson
+            }
+
+            val sivilstand = filterEktefelleRelasjon(forsikretPerson)
+            val sivilstandType = sivilstand?.type?.name
+            logger.info("Henter ektefelle/partner (ekteType: ${sivilstand?.type})")
+
+
+            val ektefelleBruker = sivilstand?.relatertVedSivilstand?.let { personService.hentPerson(NorskIdent(it)) }
+            val ektefellePerson = ektefelleBruker?.let { if (it.erDoed()) { null } else it }
+
+            logger.info("Henter barn")
+            val barnPerson = if (forsikretPerson == null || !fyllUtBarnListe) emptyList() else hentBarn(forsikretPerson)
+
+            logger.debug("gjenlevendeEllerAvdod: ${gjenlevendeEllerAvdod?.navn?.sammensattNavn()}, forsikretPerson: ${forsikretPerson?.navn?.sammensattNavn()}")
+
+            PersonDataCollection(gjenlevendeEllerAvdod = gjenlevendeEllerAvdod, forsikretPerson = forsikretPerson!!, ektefelleBruker = ektefellePerson, ekteTypeValue = sivilstandType, barnBrukereFraTPS = barnPerson)
         }
-
-        val sivilstand = filterEktefelleRelasjon(forsikretPerson)
-        val sivilstandType = sivilstand?.type?.name
-        logger.info("Henter ektefelle/partner (ekteType: ${sivilstand?.type})")
-
-
-        val ektefelleBruker = sivilstand?.relatertVedSivilstand?.let { personService.hentPerson(NorskIdent(it)) }
-        val ektefellePerson = ektefelleBruker?.let { if (it.erDoed()) { null } else it }
-
-        logger.info("Henter barn")
-        val barnPerson = if (forsikretPerson == null || !fyllUtBarnListe) emptyList() else hentBarn(forsikretPerson)
-
-        logger.debug("gjenlevendeEllerAvdod: ${gjenlevendeEllerAvdod?.navn?.sammensattNavn()}, forsikretPerson: ${forsikretPerson?.navn?.sammensattNavn()}")
-
-        return PersonDataCollection(gjenlevendeEllerAvdod = gjenlevendeEllerAvdod, forsikretPerson = forsikretPerson!!, ektefelleBruker = ektefellePerson, ekteTypeValue = sivilstandType, barnBrukereFraTPS = barnPerson)
     }
 
     private fun hentBarn(hovedPerson: Person): List<Person> {

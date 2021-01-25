@@ -89,6 +89,7 @@ class SedControllerTest {
         val prefillService = PrefillService(mockPrefillSEDService)
         prefillService.initMetrics()
 
+        personService.initMetrics()
         this.sedController = SedController(mockEuxService,
                 prefillService,
                 personService,

@@ -23,6 +23,7 @@ import no.nav.tjeneste.virksomhet.person.v3.informasjon.PersonIdent
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonResponse
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.annotation.Profile
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -76,6 +77,7 @@ class PersonController(private val aktoerregisterService: AktoerregisterService,
         }
     }
 
+    @Profile("test")
     @GetMapping("/person/{fnr}/{tpsboolean}", produces = [MediaType.APPLICATION_JSON_VALUE])
     fun gerPersonFraBegge(@PathVariable("fnr", required = true) fnr: String, @PathVariable("tpsboolean", required = true) tps: Boolean) : Any? {
 

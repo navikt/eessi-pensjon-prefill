@@ -130,9 +130,11 @@ class PrefillSEDService(private val prefillNav: PrefillNav,
     }
 
 
+    @Deprecated("Benytt PersonDataService")
     fun hentPersonerMedBarn(prefillData: PrefillDataModel) = hentPersoner(prefillData, true)
 
     //Henter inn alle personer fra ep-personoppslag  først før preutfylling
+    @Deprecated("Benytt PersonDataService")
     private fun hentPersoner(prefillData: PrefillDataModel, fyllUtBarnListe: Boolean = false): PersonData {
         logger.info("Henter hovedperson/forsikret/gjenlevende")
         val forsikretPerson = personV3Service.hentBruker(prefillData.bruker.norskIdent)
@@ -158,6 +160,7 @@ class PrefillSEDService(private val prefillNav: PrefillNav,
         return PersonData(gjenlevendeEllerAvdod = gjenlevendeEllerAvdod, forsikretPerson = forsikretPerson!!, ektefelleBruker = ektefelleBruker, ekteTypeValue = ekteTypeValue, barnBrukereFraTPS = barnBrukereFraTPS)
     }
 
+    @Deprecated("Benytt PersonDataService")
     fun hentBarnFraTps(hovedPerson: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person): List<Bruker> {
         logger.info("henter ut relasjon BARN")
         val barnepinlist = hovedPerson.harFraRolleI
@@ -175,6 +178,7 @@ class PrefillSEDService(private val prefillNav: PrefillNav,
             }
     }
 
+    @Deprecated("Benytt PersonDataService")
     private fun hentAktoerId(pin: String): String? {
         if (!NavFodselsnummer(pin).validate()) return null
         return try {
@@ -185,6 +189,7 @@ class PrefillSEDService(private val prefillNav: PrefillNav,
         }
     }
 
+    @Deprecated("Benytt PersonDataService")
     private fun filterEktefelleRelasjon(bruker: Bruker?): Pair<String, String> {
         val validRelasjoner = listOf("EKTE", "REPA", "SAMB")
         if (bruker == null) return Pair("", "")
