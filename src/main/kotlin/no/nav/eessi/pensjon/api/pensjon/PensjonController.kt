@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
+import java.util.*
 import javax.annotation.PostConstruct
 
 @Protected
@@ -69,6 +70,13 @@ class PensjonController(private val pensjonsinformasjonClient: Pensjonsinformasj
     @GetMapping("/kravdato/saker/{saksId}/krav/{kravId}/aktor/{aktoerId}")
     fun hentKravDatoFraAktor(@PathVariable("saksId", required = true) sakId: String, @PathVariable("kravId", required = true) kravId: String, @PathVariable("aktoerId", required = true) aktoerId: String) : ResponseEntity<String>? {
         return PensjonControllerKravDato.measure {
+
+            if (sakId.isNullOrEmpty() || kravId.isNullOrEmpty() || aktoerId.isNullOrEmpty()) {
+                logger.warn("Det mangler verdier: saksId $sakId, kravId: $kravId, aktørId: $aktoerId")
+                ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    errorBody("Mangler gyldige verdier for å hente kravdato, prøv heller fra vedtakskonteks", UUID.randomUUID().toString()))
+            }
+
             try {
                 pensjonsinformasjonClient.hentKravDatoFraAktor(aktorId = aktoerId, kravId = kravId, saksId = sakId)?.let{
                     ResponseEntity.ok("""{ "kravDato": "$it" }""")

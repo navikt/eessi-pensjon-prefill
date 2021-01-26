@@ -23,6 +23,8 @@ import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 
 @ExtendWith(MockitoExtension::class)
@@ -154,10 +156,25 @@ class PensjonControllerTest {
         val result = mockMvc.perform(
             MockMvcRequestBuilders.get("/pensjon/kravdato/saker/$saksId/krav/$kravId/aktor/$aktoerId")
                 .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().is2xxSuccessful)
             .andReturn()
 
         val response = result.response.getContentAsString(charset("UTF-8"))
 
         assertEquals("""{ "kravDato": "$kravDato" }""", response)
+    }
+
+    @Test
+    fun `hentKravDato skal gi 400 og feilmelding ved manglende parameter`() {
+        val aktoerId = "123"
+        val saksId = "10000"
+        val kravId = ""
+
+        mockMvc.perform(
+            MockMvcRequestBuilders.get("/pensjon/kravdato/saker/$saksId/krav/$kravId/aktor/$aktoerId")
+                .contentType(MediaType.APPLICATION_JSON))
+            .andDo(MockMvcResultHandlers.print())
+            .andExpect(status().is4xxClientError)
+            .andReturn()
     }
 }
