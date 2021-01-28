@@ -60,10 +60,8 @@ class PensjonsinformasjonClient(
 
     @Throws(IkkeFunnetException::class)
     fun hentKunSakType(sakId: String, aktoerid: String): Pensjontype {
-        return pensjoninformasjonHentKunSakType.measure {
             val sak = finnSak(sakId, hentAltPaaAktoerId(aktoerid)) ?: throw IkkeFunnetException("Saktype for $sakId ikke funnet")
-            Pensjontype(sakId, sak.sakType)
-        }
+            return Pensjontype(sakId, sak.sakType)
     }
 
     @Throws(PensjoninformasjonException::class, HttpServerErrorException::class, HttpClientErrorException::class)
