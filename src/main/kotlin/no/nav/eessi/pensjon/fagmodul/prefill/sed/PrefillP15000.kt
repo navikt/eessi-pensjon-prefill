@@ -27,9 +27,17 @@ class PrefillP15000(private val prefillSed: PrefillSed) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillP15000::class.java) }
 
-    fun prefill(prefillData: PrefillDataModel, personData: PersonData, sak: V1Sak?, pensjonsinformasjon: Pensjonsinformasjon?): SED {
+    fun prefill(
+        prefillData: PrefillDataModel,
+        personData: PersonData,
+        sak: V1Sak?,
+        pensjonsinformasjon: Pensjonsinformasjon?
+    ): SED {
 
-        val kravType = prefillData.kravType ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST, "For preutfylling av P15000 så kreves det kravtype")
+        val kravType = prefillData.kravType ?: throw ResponseStatusException(
+            HttpStatus.BAD_REQUEST,
+            "For preutfylling av P15000 så kreves det kravtype"
+        )
         val penSaksnummer = prefillData.penSaksnummer
         val sakType = sak?.sakType
         val gjenlevendeAktoerId = prefillData.bruker.aktorId
@@ -40,15 +48,22 @@ class PrefillP15000(private val prefillSed: PrefillSed) {
 
         if (kravType != KravType.GJENLEV && kravType.name != sakType) {
             logger.warn("Du kan ikke opprette ${sedTypeAsText(kravType)} i en ${sakTypeAsText(sakType)} (PESYS-saksnr: $penSaksnummer har sakstype $sakType)")
-            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Du kan ikke opprette ${sedTypeAsText(kravType)} i en ${sakTypeAsText(sakType)} (PESYS-saksnr: $penSaksnummer har sakstype $sakType)")
+            throw ResponseStatusException(
+                HttpStatus.BAD_REQUEST,
+                "Du kan ikke opprette ${sedTypeAsText(kravType)} i en ${sakTypeAsText(sakType)} (PESYS-saksnr: $penSaksnummer har sakstype $sakType)"
+            )
         }
 
-        val relasjon = relasjon(pensjonsinformasjon, gjenlevendeAktoerId, avdodFnr,  personData)
+        val relasjon = relasjon(pensjonsinformasjon, gjenlevendeAktoerId, avdodFnr, personData)
         val navsed = prefillSed.prefill(prefillData, personData)
         val eessielm = navsed.nav?.eessisak
 
         val gjenlevendeBruker: Bruker? = navsed.pensjon?.gjenlevende
-        val forsikretBruker = navsed.nav?.bruker
+        val forsikretBruker = if (kravType != KravType.GJENLEV && gjenlevendeBruker != null) {
+            gjenlevendeBruker
+        } else {
+            navsed.nav?.bruker
+        }
 
         logger.debug("gjenlevendeBruker: ${gjenlevendeBruker?.person?.fornavn} PIN: ${gjenlevendeBruker?.person?.pin?.firstOrNull()?.identifikator} ")
         logger.debug("avDodBruker: ${forsikretBruker?.person?.fornavn} PIN: ${forsikretBruker?.person?.pin?.firstOrNull()?.identifikator} ")
@@ -78,17 +93,26 @@ class PrefillP15000(private val prefillSed: PrefillSed) {
             ),
             krav = krav
         )
-
-        return SED(SEDType.P15000.name, nav = nav, pensjon = pensjonGjenlevende(gjenlevendeBruker, relasjon))
+        val pensjon = if (kravType == KravType.GJENLEV) {
+            pensjonGjenlevende(gjenlevendeBruker, relasjon)
+        } else {
+            null
+        }
+        return SED(SEDType.P15000.name, nav = nav, pensjon = pensjon)
     }
 
 
-    private fun relasjon(pensjonsinformasjon: Pensjonsinformasjon?, gjenlevendeAktoerId: String, avdodFnr: String?, personData: PersonData): String? {
+    private fun relasjon(
+        pensjonsinformasjon: Pensjonsinformasjon?,
+        gjenlevendeAktoerId: String,
+        avdodFnr: String?,
+        personData: PersonData
+    ): String? {
         return if (pensjonsinformasjon != null && avdodFnr != null) {
-            val relasjon = relasjonRolle(gjenlevendeAktoerId, avdodFnr,  personData.forsikretPerson, pensjonsinformasjon)
+            val relasjon = relasjonRolle(gjenlevendeAktoerId, avdodFnr, personData.forsikretPerson, pensjonsinformasjon)
             logger.debug("relsajson: ${relasjon.toJson()}")
-            when(relasjon) {
-                "FAR","MOR" -> "06"
+            when (relasjon) {
+                "FAR", "MOR" -> "06"
                 else -> "01"
             }
         } else {
@@ -126,32 +150,39 @@ class PrefillP15000(private val prefillSed: PrefillSed) {
     private fun sedTypeAsText(kravType: KravType) =
         when (kravType) {
             KravType.ALDER -> "alderspensjonskrav"
-            KravType.GJENLEV-> "gjenlevende-krav"
+            KravType.GJENLEV -> "gjenlevende-krav"
             KravType.UFOREP -> "uføretrygdkrav"
         }
 
-    private fun relasjonRolle(gjenlevendeAktoerId: String, avdodFnr: String?, gjenlevende: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person, pensjonInfo: Pensjonsinformasjon): String {
-        return hentRetteAvdode(avdodFnr,
+    private fun relasjonRolle(
+        gjenlevendeAktoerId: String,
+        avdodFnr: String?,
+        gjenlevende: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person,
+        pensjonInfo: Pensjonsinformasjon
+    ): String {
+        return hentRetteAvdode(
+            avdodFnr,
             mapOf(
                 pensjonInfo.avdod?.avdod.toString() to "EKTE",
                 pensjonInfo.avdod?.avdodFar.toString() to FamilieRelasjonType.FAR.name,
                 pensjonInfo.avdod?.avdodMor.toString() to FamilieRelasjonType.MOR.name
             )
-        ).map { avdod -> pairPersonFnr(avdod.key, avdod.value, gjenlevende ) }
-        .single().also {
-             logger.info("Det ble funnet $it avdøde for den gjenlevende med aktørID: $gjenlevendeAktoerId")
-        }
+        ).map { avdod -> pairPersonFnr(avdod.key, avdod.value, gjenlevende) }
+            .single().also {
+                logger.info("Det ble funnet $it avdøde for den gjenlevende med aktørID: $gjenlevendeAktoerId")
+            }
 
     }
 
     private fun pairPersonFnr(
-            avdodFnr: String,
-            avdodRolle: String?,
-            gjenlevende: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person
-        ): String {
+        avdodFnr: String,
+        avdodRolle: String?,
+        gjenlevende: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person
+    ): String {
 
         return if (avdodRolle == null) {
-            val familierelasjon = gjenlevende.harFraRolleI.first { (it.tilPerson.aktoer as PersonIdent).ident.ident == avdodFnr }
+            val familierelasjon =
+                gjenlevende.harFraRolleI.first { (it.tilPerson.aktoer as PersonIdent).ident.ident == avdodFnr }
             familierelasjon.tilRolle.value.toUpperCase()
         } else {
             avdodRolle
