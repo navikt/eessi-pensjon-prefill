@@ -14,7 +14,6 @@ import no.nav.eessi.pensjon.fagmodul.sedmodel.Person
 import no.nav.eessi.pensjon.fagmodul.sedmodel.PinItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.RelasjonAvdodItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
-import no.nav.eessi.pensjon.utils.toJson
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import no.nav.pensjon.v1.sak.V1Sak
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.PersonIdent
@@ -34,10 +33,9 @@ class PrefillP15000(private val prefillSed: PrefillSed) {
         pensjonsinformasjon: Pensjonsinformasjon?
     ): SED {
 
-        val kravType = prefillData.kravType ?: throw ResponseStatusException(
-            HttpStatus.BAD_REQUEST,
-            "For preutfylling av P15000 så kreves det kravtype"
-        )
+
+        val vedtakid = prefillData.vedtakId ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Vennligst åpne EESSI-Pensjon fra Vedtakskontekst i PESYS for å opprette og bestille P_BUC_10 og SED P15000")
+        val kravType = prefillData.kravType ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST, "For preutfylling av P15000 så kreves det kravtype")
         val penSaksnummer = prefillData.penSaksnummer
         val sakType = sak?.sakType
         val gjenlevendeAktoerId = prefillData.bruker.aktorId
@@ -110,8 +108,9 @@ class PrefillP15000(private val prefillSed: PrefillSed) {
     ): String? {
         return if (pensjonsinformasjon != null && avdodFnr != null) {
             val relasjon = relasjonRolle(gjenlevendeAktoerId, avdodFnr, personData.forsikretPerson, pensjonsinformasjon)
-            logger.debug("relsajson: ${relasjon.toJson()}")
+            logger.debug("relsajson: $relasjon")
             when (relasjon) {
+                null -> null
                 "FAR", "MOR" -> "06"
                 else -> "01"
             }
@@ -159,7 +158,7 @@ class PrefillP15000(private val prefillSed: PrefillSed) {
         avdodFnr: String?,
         gjenlevende: no.nav.tjeneste.virksomhet.person.v3.informasjon.Person,
         pensjonInfo: Pensjonsinformasjon
-    ): String {
+    ): String? {
         return hentRetteAvdode(
             avdodFnr,
             mapOf(
@@ -168,8 +167,8 @@ class PrefillP15000(private val prefillSed: PrefillSed) {
                 pensjonInfo.avdod?.avdodMor.toString() to FamilieRelasjonType.MOR.name
             )
         ).map { avdod -> pairPersonFnr(avdod.key, avdod.value, gjenlevende) }
-            .single().also {
-                logger.info("Det ble funnet $it avdøde for den gjenlevende med aktørID: $gjenlevendeAktoerId")
+            .singleOrNull()
+                .also { logger.info("Det ble funnet $it avdøde for den gjenlevende med aktørID: $gjenlevendeAktoerId")
             }
 
     }
