@@ -8,6 +8,7 @@ import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.hjelper.VedtakPensjonDat
 import no.nav.eessi.pensjon.fagmodul.sedmodel.AndreinstitusjonerItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Bruker
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Pensjon
+import no.nav.eessi.pensjon.fagmodul.sedmodel.ReduksjonItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.VedtakItem
 import no.nav.eessi.pensjon.utils.simpleFormat
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
@@ -52,8 +53,9 @@ object PrefillP6000Pensjon {
 //          Type pensjon
 //          Type vedtak (resulat)
 //          Avslagsgrunner
+            val vedtaklist = if (avslagVedtak == null) null else  listOf(VedtakItem(type = avslagVedtak.type, resultat = avslagVedtak.resultat, avslagbegrunnelse = avslagVedtak.avslagbegrunnelse ))
             Pensjon(
-                vedtak = listOf(VedtakItem(type = avslagVedtak?.type, resultat = avslagVedtak?.resultat, avslagbegrunnelse = avslagVedtak?.avslagbegrunnelse )),
+                vedtak = vedtaklist,
                 sak = avslagPensjon.sak,
                 tilleggsinformasjon = avslagPensjon.tilleggsinformasjon
             )
@@ -64,16 +66,41 @@ object PrefillP6000Pensjon {
     }
 
     private fun createPensjon(pensjoninformasjon: Pensjonsinformasjon, gjenlevende: Bruker?, andreinstitusjonerItem: AndreinstitusjonerItem?): Pensjon {
+        val vedtak = try {
+            listOf(PrefillPensjonVedtak.createVedtakItem(pensjoninformasjon))
+        } catch (ex: Exception) {
+            logger.warn("Feilet ved preutfylling av vedtaksdetaljer, fortsetter uten")
+            emptyList<VedtakItem>()
+        }
+        val redukjson = try {
+            PrefillPensjonReduksjon.createReduksjon(pensjoninformasjon)
+        } catch (ex: Exception) {
+            logger.warn("Feilet ved preutfylling av reduksjoner, fortsetter uten")
+            emptyList<ReduksjonItem>()
+        }
+        val sak = try {
+            PrefillPensjonSak.createSak(pensjoninformasjon)
+        } catch (ex: Exception) {
+            logger.warn("Feilet ved preutfylling av sak, fortsetter uten")
+            null
+        }
+        val tilleggsinformasjon = try {
+            PrefillPensjonTilleggsinformasjon.createTilleggsinformasjon(pensjoninformasjon, andreinstitusjonerItem)
+        } catch (ex: Exception) {
+            logger.warn("Feilet ved preutfylling tilleggsinformasjon, fortsetter uten")
+            null
+        }
+
         return Pensjon(
                 gjenlevende = gjenlevende,
                 //4.1
-                vedtak = listOf(PrefillPensjonVedtak.createVedtakItem(pensjoninformasjon)),
+                vedtak = vedtak,
                 //5.1
-                reduksjon = PrefillPensjonReduksjon.createReduksjon(pensjoninformasjon),
+                reduksjon = redukjson,
                 //6.1
-                sak = PrefillPensjonSak.createSak(pensjoninformasjon),
+                sak = sak,
                 //6.x
-                tilleggsinformasjon = PrefillPensjonTilleggsinformasjon.createTilleggsinformasjon(pensjoninformasjon, andreinstitusjonerItem)
+                tilleggsinformasjon = tilleggsinformasjon
         )
     }
 }
