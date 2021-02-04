@@ -1,6 +1,7 @@
 package no.nav.eessi.pensjon.fagmodul.sedmodel
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.utils.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
@@ -28,7 +29,7 @@ class SedP4000fileTest {
         val map = mapJsonToAny(p4000json, typeRefs<Map<String, Any>>())
         val periodeInfoJson = mapAnyToJson(map["periodeInfo"] ?: "{}")
 
-        val sed = SED("P4000")
+        val sed = SED(SEDType.P4000)
         sed.trygdetid = mapJsonToAny( periodeInfoJson, typeRefs())
 
         assertEquals("work period 1 workName", sed.trygdetid?.ansattSelvstendigPerioder?.first()?.navnFirma)
@@ -47,7 +48,7 @@ class SedP4000fileTest {
         val personDataNode = mapper.readTree(p4000json)
         val personDataJson =  personDataNode["periodeInfo"].toString()
 
-        val sed = SED("P4000")
+        val sed = SED(SEDType.P4000)
         sed.trygdetid = mapJsonToAny(personDataJson, typeRefs())
 
         val trygdetidJson = sed.trygdetid?.toJson()

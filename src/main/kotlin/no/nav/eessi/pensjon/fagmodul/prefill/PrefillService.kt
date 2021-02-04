@@ -34,12 +34,11 @@ class PrefillService(private val prefillSedService: PrefillSEDService,
             logger.info("******* Starter med preutfylling ******* $dataModel")
             try {
                 val sed = prefillSedService.prefill(dataModel, personDataCollection)
-                logger.debug("sedType: ${sed.getType()}")
-                val sedType = SEDType.valueOf(sed.getType())
+                logger.debug("sedType: ${sed.type}")
 
                 //synk sed versjon med buc versjon
                 updateSEDVersion(sed, version)
-                return@measure SedAndType(sedType, sed.toJsonSkipEmpty())
+                return@measure SedAndType(sed.type, sed.toJsonSkipEmpty())
 
             } catch (ex: Exception) {
                 logger.error("Noe gikk galt under prefill: ", ex)
@@ -75,7 +74,7 @@ class PrefillService(private val prefillSedService: PrefillSEDService,
                         id = it.checkAndConvertInstituion(),
                         navn = it.name ?: it.checkAndConvertInstituion()
                 )
-                val sedtype = SEDType.X005.name
+                val sedtype = SEDType.X005
                 val datax005 = data.copy(avdod = null, sedType = sedtype, sed = SED(sedtype), institution = emptyList(), institusjonX005 = institusjon)
 
                 prefillSedService.prefill(datax005)

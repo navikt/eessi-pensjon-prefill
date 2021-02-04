@@ -1,6 +1,7 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed.krav
 
 import com.nhaarman.mockitokotlin2.mock
+import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjon
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModelMother
@@ -57,7 +58,7 @@ class PrefillP2200UPUtlandInnvTest {
 
         dataFromPEN = lesPensjonsdataFraFil("P2200-UP-INNV.xml")
 
-        prefillData = PrefillDataModelMother.initialPrefillDataModel("P2200", personFnr, penSaksnummer = pesysSaksnummer).apply {
+        prefillData = PrefillDataModelMother.initialPrefillDataModel(SEDType.P2200, personFnr, penSaksnummer = pesysSaksnummer).apply {
             partSedAsJson["PersonInfo"] = readJsonResponse("other/person_informasjon_selvb.json")
             partSedAsJson["P4000"] = readJsonResponse("other/p4000_trygdetid_part.json")
         }
@@ -70,7 +71,7 @@ class PrefillP2200UPUtlandInnvTest {
         val P2200 = prefillSEDService.prefill(prefillData)
 
         val P2200ufor = SED(
-                sed = "P2200",
+                type = SEDType.P2200,
                 pensjon = P2200.pensjon,
                 nav = Nav(krav = P2200.nav?.krav)
         )

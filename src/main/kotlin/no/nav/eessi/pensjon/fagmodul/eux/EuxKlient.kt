@@ -202,13 +202,12 @@ class EuxKlient(private val euxOidcRestTemplate: RestTemplate,
      */
     @Cacheable
     fun getInstitutions(bucType: String, landkode: String? = ""): List<InstitusjonItem> {
-        val builder = UriComponentsBuilder.fromPath("/institusjoner")
-                .queryParam("BuCType", bucType)
-                .queryParam("LandKode", landkode ?: "")
+        val url = "/institusjoner?BucType=$bucType&LandKode=${landkode ?: ""}"
 
         val responseInstitution = restTemplateErrorhandler(
                 {
-                    euxOidcRestTemplate.exchange(builder.toUriString(),
+                    euxOidcRestTemplate.exchange(
+                        url,
                             HttpMethod.GET,
                             null,
                             String::class.java)

@@ -1,5 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.model
 
+import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
@@ -15,7 +16,7 @@ class PrefillDataModelTest {
         prefillDatamodel = PrefillDataModelMother.initialPrefillDataModel(
                 penSaksnummer = "123123",
                 pinId = "1231231",
-                sedType = "P2000",
+                sedType = SEDType.P2000,
                 vedtakId = "323232",
                 euxCaseId = "231233213123",
                 avdod = PersonId("12312312", "23123")
@@ -35,7 +36,7 @@ class PrefillDataModelTest {
     @Test
     fun `validate and check model build`() {
         assertNotNull(prefillDatamodel)
-        assertEquals("P2000", prefillDatamodel.getSEDType())
+        assertEquals(SEDType.P2000, prefillDatamodel.sedType)
         assertEquals(SED::class, prefillDatamodel.sed::class)
         assertEquals("123123", prefillDatamodel.penSaksnummer)
         assertEquals("123456789", prefillDatamodel.bruker.aktorId)

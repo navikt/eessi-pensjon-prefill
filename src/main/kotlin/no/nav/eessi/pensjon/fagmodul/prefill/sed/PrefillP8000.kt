@@ -56,7 +56,7 @@ class PrefillP8000(private val prefillSed: PrefillSed) {
         logger.info("forsikretPerson: ${forsikretPerson != null} annenPerson: ${annenPerson != null}"  )
         val forsikretPersonPin = forsikretPerson?.pin?.firstOrNull()
         val p8000 = SED(
-                sed = SEDType.P8000.name,
+                type = SEDType.P8000,
                 nav = Nav(
                         eessisak = eessielm,
                         bruker = Bruker(

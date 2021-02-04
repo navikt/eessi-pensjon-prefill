@@ -1,9 +1,11 @@
 package no.nav.eessi.pensjon.fagmodul.eux.bucmodel
 
+import no.nav.eessi.pensjon.fagmodul.models.SEDType
+
 class ActionsItem(
 
         val template: String? = null,
-        val documentType: String? = null,
+        val documentType: SEDType? = null,
         val isDocumentRelated: Boolean? = null,
         val displayName: String? = null,
         val caseRelated: Boolean? = null,

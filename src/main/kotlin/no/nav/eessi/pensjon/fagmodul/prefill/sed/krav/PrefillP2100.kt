@@ -1,5 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed.krav
 
+import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PersonData
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PersonDataCollection
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
@@ -51,7 +52,7 @@ class PrefillP2100(private val prefillNav: PrefillNav) {
 
 
     private fun prefillPen(prefillData: PrefillDataModel, nav: Nav, gjenlev: Bruker? = null, sak: V1Sak?): Pair<String?, SED> {
-        val sedType = prefillData.getSEDType()
+        val sedType = prefillData.sedType
 
         PrefillP2xxxPensjon.validerGyldigKravtypeOgArsakGjenlevnde(sak, sedType)
         var melding: String? = ""
@@ -77,7 +78,7 @@ class PrefillP2100(private val prefillNav: PrefillNav) {
         }
 
         val sed = SED(
-            "P2100",
+            SEDType.P2100,
             nav = nav,
             pensjon = pensjon
         )

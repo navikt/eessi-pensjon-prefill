@@ -1,5 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.pen
 
+import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjoninformasjonException
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonClient
@@ -96,7 +97,7 @@ class PensjonsinformasjonService(private val pensjonsinformasjonClient: Pensjons
     fun hentRelevantPensjonSak(prefillData: PrefillDataModel, akseptabelSakstypeForSed: (String) -> Boolean): V1Sak? {
         val aktorId = prefillData.bruker.aktorId
         val penSaksnummer = prefillData.penSaksnummer
-        val sedType = prefillData.getSEDType()
+        val sedType = prefillData.sedType
 
         logger.debug("penSaksnummer: $penSaksnummer")
 
@@ -131,12 +132,12 @@ class PensjonsinformasjonService(private val pensjonsinformasjonClient: Pensjons
                 else -> "$sakType-sak"
             }
 
-    private fun sedTypeAsText(sedType: String) =
+    private fun sedTypeAsText(sedType: SEDType) =
             when (sedType) {
-                "P2000" -> "alderspensjonskrav"
-                "P2100" -> "gjenlevende-krav"
-                "P2200" -> "uføretrygdkrav"
-                else -> sedType
+                SEDType.P2000 -> "alderspensjonskrav"
+                SEDType.P2100 -> "gjenlevende-krav"
+                SEDType.P2200 -> "uføretrygdkrav"
+                else -> sedType.name
             }
 
 }

@@ -1,5 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.sedmodel
 
+import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.utils.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
@@ -47,7 +48,7 @@ class SedTest {
         val penmock = PensjonMock().genererMockData()
 
         val sed = SED(
-                sed = "vedtak",
+                type = SEDType.P6000,
                 nav = Nav(bruker = navmock.bruker),
                 pensjon = Pensjon(gjenlevende = penmock.gjenlevende)
         )

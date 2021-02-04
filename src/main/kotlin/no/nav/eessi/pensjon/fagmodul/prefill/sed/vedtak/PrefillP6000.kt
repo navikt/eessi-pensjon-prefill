@@ -18,7 +18,7 @@ class PrefillP6000(private val prefillNav: PrefillNav,
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillP6000::class.java) }
 
     fun prefill(prefillData: PrefillDataModel, personData: PersonData): SED {
-        val sedId = prefillData.getSEDType()
+        val sedId = prefillData.sedType
 
         logger.info("----------------------------------------------------------"
                 + "\nPreutfylling Pensjon : P6000 "

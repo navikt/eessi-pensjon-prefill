@@ -1,6 +1,7 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed.krav
 
 import com.nhaarman.mockitokotlin2.mock
+import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjon
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModelMother.initialPrefillDataModel
@@ -58,7 +59,7 @@ class PrefillP2000AlderPensjonForsteGangTest {
 
         dataFromPEN = lesPensjonsdataFraFil("AP_FORSTEG_BH.xml")
 
-        prefillData = initialPrefillDataModel("P2000", personFnr, penSaksnummer = "22580170").apply {
+        prefillData = initialPrefillDataModel(SEDType.P2000, personFnr, penSaksnummer = "22580170").apply {
             partSedAsJson["PersonInfo"] = readJsonResponse("other/person_informasjon_selvb.json")
             partSedAsJson["P4000"] = readJsonResponse("other/p4000_trygdetid_part.json")
         }

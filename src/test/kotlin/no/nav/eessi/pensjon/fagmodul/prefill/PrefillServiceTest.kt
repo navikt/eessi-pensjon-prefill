@@ -61,7 +61,7 @@ class PrefillServiceTest {
 
         val de = InstitusjonItem(country = "DE", institution = "Tyskland", name="Tyskland test")
 
-        val sedtype = SEDType.X005.name
+        val sedtype = SEDType.X005
         val instX005 = InstitusjonX005(
             id = de.checkAndConvertInstituion(),
             navn = de.name ?: de.checkAndConvertInstituion()
@@ -124,7 +124,7 @@ class PrefillServiceTest {
         val person = mockP2000.nav?.bruker?.person
 
         //val x005Datamodel = PrefillDataModel.fromJson(prefillModel.clone())
-        val x005 = SED("X005")
+        val x005 = SED(SEDType.X005)
         x005.nav = Nav(
                 sak = Navsak(
                         kontekst = Kontekst(
@@ -151,8 +151,8 @@ class PrefillServiceTest {
                 bruker = PersonId("12345678901", "dummy"),
                 avdod = null,
                 euxCaseID = "1000",
-                sedType = "P2000",
-                sed = SED("P2000"),
+                sedType = SEDType.P2000,
+                sed = SED(SEDType.P2000),
                 buc  = "P_BUC_01",
                 institution = listOf(
                 InstitusjonItem(

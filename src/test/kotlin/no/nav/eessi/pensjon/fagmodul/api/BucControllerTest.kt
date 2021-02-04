@@ -16,6 +16,7 @@ import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Buc
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.DocumentsItem
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Organisation
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ParticipantsItem
+import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.logging.AuditLogger
 import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerId
 import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerregisterService
@@ -84,7 +85,7 @@ class BucControllerTest {
 
     @Test
     fun `get valud buc json and convert to object ok`() {
-        val gyldigBuc = String(Files.readAllBytes(Paths.get("src/test/resources/json/buc/buc-279020big.json")))
+        val gyldigBuc = javaClass.getResource("/json/buc/buc-279020big.json").readText()
         val buc : Buc =  mapJsonToAny(gyldigBuc, typeRefs())
 
         doReturn(buc).whenever(mockEuxService).getBuc(any())
@@ -95,7 +96,7 @@ class BucControllerTest {
 
     @Test
     fun getProcessDefinitionName() {
-        val gyldigBuc = String(Files.readAllBytes(Paths.get("src/test/resources/json/buc/buc-279020big.json")))
+        val gyldigBuc = javaClass.getResource("/json/buc/buc-279020big.json").readText()
         val buc : Buc =  mapJsonToAny(gyldigBuc, typeRefs())
         doReturn(buc).whenever(mockEuxService).getBuc(any())
 
@@ -105,7 +106,7 @@ class BucControllerTest {
 
     @Test
     fun getCreator() {
-        val gyldigBuc = String(Files.readAllBytes(Paths.get("src/test/resources/json/buc/buc-279020big.json")))
+        val gyldigBuc = javaClass.getResource("/json/buc/buc-279020big.json").readText()
         val buc : Buc =  mapJsonToAny(gyldigBuc, typeRefs())
         doReturn(buc).whenever(mockEuxService).getBuc(any())
 
@@ -124,7 +125,7 @@ class BucControllerTest {
 
     @Test
     fun `gitt at det finnes en gydlig euxCaseid og Buc skal det returneres en liste over sedid`() {
-        val gyldigBuc = String(Files.readAllBytes(Paths.get("src/test/resources/json/buc/buc-279020big.json")))
+        val gyldigBuc = javaClass.getResource("/json/buc/buc-279020big.json").readText()
 
         val mockEuxRinaid = "123456"
         val buc : Buc =  mapJsonToAny(gyldigBuc, typeRefs())
@@ -139,7 +140,7 @@ class BucControllerTest {
 
     @Test
     fun `createBuc run ok and return id`() {
-        val gyldigBuc = String(Files.readAllBytes(Paths.get("src/test/resources/json/buc/buc-279020big.json")))
+        val gyldigBuc = javaClass.getResource("/json/buc/buc-279020big.json").readText()
         val buc : Buc =  mapJsonToAny(gyldigBuc, typeRefs())
 
         doReturn("1231231").whenever(mockEuxService).createBuc("P_BUC_03")
@@ -153,14 +154,14 @@ class BucControllerTest {
 
     @Test
     fun `hent MuligeAksjoner på en buc`() {
-        val gyldigBuc = String(Files.readAllBytes(Paths.get("src/test/resources/json/buc/buc-279020big.json")))
+        val gyldigBuc = javaClass.getResource("/json/buc/buc-279020big.json").readText()
         val buc : Buc =  mapJsonToAny(gyldigBuc, typeRefs())
 
         doReturn(buc).whenever(mockEuxService).getBuc("279029")
 
         val actual = bucController.getMuligeAksjoner("279029")
         assertEquals(8, actual.size)
-        assertTrue( actual.containsAll( listOf("H020", "P10000", "P6000")))
+        assertTrue(actual.containsAll(listOf(SEDType.H020, SEDType.P10000, SEDType.P6000)))
     }
 
     @Test
@@ -233,7 +234,7 @@ class BucControllerTest {
 
         whenever(mockAktoerIdHelper.hentGjeldendeIdent(IdentGruppe.NorskIdent, AktoerId(aktoerId))).thenReturn(NorskIdent(fnrGjenlevende))
 
-        val documentsItem = listOf(DocumentsItem(type = "P2100"))
+        val documentsItem = listOf(DocumentsItem(type = SEDType.P2100))
         val avdodView = listOf(BucAndSedView.from(Buc(id = "123", processDefinitionName = "P_BUC_02", documents = documentsItem), fnrGjenlevende, avdodfnr ))
         doReturn(avdodView).whenever(mockEuxService).getBucAndSedViewAvdod(fnrGjenlevende, avdodfnr)
 
@@ -241,7 +242,7 @@ class BucControllerTest {
         val rinaSaker = listOf(Rinasak(id = "123213", processDefinitionId = "P_BUC_03", status = "open"))
         doReturn(rinaSaker).whenever(mockEuxService).getRinasaker(any(), any())
 
-        val documentsItemP2200 = listOf(DocumentsItem(type = "P2200"))
+        val documentsItemP2200 = listOf(DocumentsItem(type = SEDType.P2200))
         val buc = Buc(id = "23321", processDefinitionName = "P_BUC_03", documents = documentsItemP2200)
         doReturn(buc).whenever(mockEuxService).getBuc(any())
 
@@ -277,7 +278,7 @@ class BucControllerTest {
         val rinaSaker = listOf<Rinasak>()
         doReturn(rinaSaker).whenever(mockEuxService).getRinasaker(any(), any())
 
-        val documentsItem1 = listOf(DocumentsItem(type = "P2100"))
+        val documentsItem1 = listOf(DocumentsItem(type = SEDType.P2100))
 
         val buc1 = Buc(id = "123", processDefinitionName = "P_BUC_02", documents = documentsItem1)
         val avdodView1 = listOf(BucAndSedView.from(buc1, fnrGjenlevende, avdodMorfnr))
@@ -320,7 +321,7 @@ class BucControllerTest {
         val rinaSaker = listOf<Rinasak>(Rinasak("1234","P_BUC_01", Traits(), "", Properties(), "open"))
         doReturn(rinaSaker).whenever(mockEuxService).getRinasaker(fnrGjenlevende, aktoerId)
 
-        val documentsItem = listOf(DocumentsItem(type = "P2000"))
+        val documentsItem = listOf(DocumentsItem(type = SEDType.P2000))
         val buc = Buc(processDefinitionName = "P_BUC_01", documents = documentsItem)
 
         doReturn(buc).whenever(mockEuxService).getBuc(any())
@@ -362,7 +363,7 @@ class BucControllerTest {
 
     @Test
     fun `createBuc run ok and does not run statistics in default namespace`() {
-        val gyldigBuc = String(Files.readAllBytes(Paths.get("src/test/resources/json/buc/buc-279020big.json")))
+        val gyldigBuc = javaClass.getResource("/json/buc/buc-279020big.json").readText()
         val buc : Buc =  mapJsonToAny(gyldigBuc, typeRefs())
 
         doReturn("1231231").whenever(mockEuxService).createBuc("P_BUC_03")

@@ -1,5 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed
 
+import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PersonData
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillSed
@@ -29,7 +30,7 @@ class PrefillP7000(private val prefillSed: PrefillSed) {
         val eessielm = sed.nav?.eessisak?.firstOrNull()
 
         val p7000 = SED(
-                sed = "P7000",
+                type = SEDType.P7000,
                 nav = Nav(
                         eessisak = listOf(EessisakItem(
                                 land = eessielm?.land,

@@ -70,22 +70,25 @@ data class ApiRequest(
 
         //validatate request and convert to PrefillDataModel
         fun buildPrefillDataModelOnExisting(request: ApiRequest, fodselsnr: String, avdodaktoerID: String? = null): PrefillDataModel {
+            val sedType = if (request.sed.isNullOrBlank())
+                throw MangelfulleInndataException("SedType mangler")
+            else
+                SEDType.from(request.sed) ?: throw UgyldigInndataException("SedType ${request.sed} er ikke gyldig")
+
             return when {
                 request.buc == null -> throw MangelfulleInndataException("Mangler BUC")
-                request.sed == null -> throw MangelfulleInndataException("Mangler SED")
                 request.aktoerId == null -> throw MangelfulleInndataException("Mangler AktoerID")
                 request.euxCaseId == null -> throw MangelfulleInndataException("Mangler euxCaseId (RINANR)")
                 request.institutions == null -> throw MangelfulleInndataException("Mangler Institusjoner")
-
-                SEDType.isValidSEDType(request.sed) -> {
+                else -> {
                     logger.info("ALL SED on existing Rina SED: ${request.sed} -> euxCaseId: ${request.euxCaseId} -> sakNr: ${request.sakId} ")
                     PrefillDataModel(
                             penSaksnummer = request.sakId,
                             bruker = PersonId(fodselsnr, request.aktoerId),
                             avdod = populerAvdodHvisGjenlevendePensjonSak(request, avdodaktoerID),
-                            sedType = request.sed,
+                            sedType = sedType,
                             buc = request.buc,
-                            sed = SED(request.sed),
+                            sed = SED(sedType),
                             euxCaseID = request.euxCaseId,
                             institution = request.institutions,
                             refTilPerson = request.referanseTilPerson,
@@ -94,12 +97,8 @@ data class ApiRequest(
                             kravType = request.kravType,
                             kravId = request.kravId
                           ).apply {
-                        partSedAsJson[request.sed] = request.payload ?: "{}"
+                        partSedAsJson[sedType.name] = request.payload ?: "{}"
                     }
-                }
-                else -> {
-                    logger.error("SED: ${request.sed} er ikke støttet")
-                    throw MangelfulleInndataException("SED: ${request.sed} er ikke støttet")
                 }
             }
         }
@@ -127,3 +126,4 @@ data class ApiRequest(
 }
 
 class MangelfulleInndataException(reason: String) : ResponseStatusException(HttpStatus.BAD_REQUEST, reason)
+class UgyldigInndataException(reason: String) : ResponseStatusException(HttpStatus.BAD_REQUEST, reason)

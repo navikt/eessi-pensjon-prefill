@@ -2,6 +2,7 @@ package no.nav.eessi.pensjon.fagmodul.prefill.person
 
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.whenever
+import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.prefill.LagPDLPerson.Companion.createPersonMedEktefellePartner
 import no.nav.eessi.pensjon.fagmodul.prefill.LagPDLPerson.Companion.lagPerson
 import no.nav.eessi.pensjon.fagmodul.prefill.LagPDLPerson.Companion.medAdresse
@@ -75,7 +76,7 @@ class PrefillPDLNavTest {
     @Test
     fun `minimal prefill med barn`() {
         val foreldersPin = FodselsnummerMother.generateRandomFnr(40)
-        val prefillData = PrefillDataModelMother.initialPrefillDataModel("P2100", pinId = foreldersPin, penSaksnummer = somePenSaksnr, avdod = null)
+        val prefillData = PrefillDataModelMother.initialPrefillDataModel(SEDType.P2100, pinId = foreldersPin, penSaksnummer = somePenSaksnr, avdod = null)
         val barnetsPin = FodselsnummerMother.generateRandomFnr(13)
 
         val forelder = lagPerson(foreldersPin, "Christopher", "Robin").medBarn(barnetsPin)
@@ -121,7 +122,7 @@ class PrefillPDLNavTest {
         val somePersonNr = FodselsnummerMother.generateRandomFnr(57)
         val someBarnPersonNr = FodselsnummerMother.generateRandomFnr(17)
 
-        val prefillData = PrefillDataModelMother.initialPrefillDataModel("P2100", pinId = somePersonNr, avdod = PersonId(someBarnPersonNr, "123232312312"), penSaksnummer = somePenSaksnr)
+        val prefillData = PrefillDataModelMother.initialPrefillDataModel(SEDType.P2100, pinId = somePersonNr, avdod = PersonId(someBarnPersonNr, "123232312312"), penSaksnummer = somePenSaksnr)
 
         val far = lagPerson(somePersonNr, "Ole", "Brum").medBarn(someBarnPersonNr)
         val barn = lagPerson(someBarnPersonNr, "Nasse", "Nøff").medForeldre(far)
@@ -166,7 +167,7 @@ class PrefillPDLNavTest {
         val person = pair.first
         val ektefelle = pair.second
 
-        val prefillData = PrefillDataModelMother.initialPrefillDataModel("P2000", pinId = somePersonNr, penSaksnummer = somePenSaksnr)
+        val prefillData = PrefillDataModelMother.initialPrefillDataModel(SEDType.P2000, pinId = somePersonNr, penSaksnummer = somePenSaksnr)
         val personDataCollection = PersonDataCollection(forsikretPerson = person, ektefellePerson = ektefelle, sivilstandstype = Sivilstandstype.GIFT, gjenlevendeEllerAvdod = person, barnPersonList = emptyList())
         doReturn("NO").`when`(kodeverkClient).finnLandkode2("NOR")
 
@@ -214,7 +215,7 @@ class PrefillPDLNavTest {
         val barnto = lagPerson(barn2, fornavn = "NASSE", etternavn = "NØFF").medForeldre(far).medForeldre(mor)
 
         val personDataCollection = PersonDataCollection(forsikretPerson = far, ektefellePerson = mor, sivilstandstype = Sivilstandstype.GIFT, gjenlevendeEllerAvdod = far, barnPersonList = listOf(barnet, barnto))
-        val prefillData = PrefillDataModelMother.initialPrefillDataModel("P2200", pinId = farfnr, penSaksnummer = somePenSaksnr)
+        val prefillData = PrefillDataModelMother.initialPrefillDataModel(SEDType.P2200, pinId = farfnr, penSaksnummer = somePenSaksnr)
 
         //landkode NO
         doReturn("NO").whenever(kodeverkClient).finnLandkode2("NOR")
@@ -282,7 +283,7 @@ class PrefillPDLNavTest {
         val partner = pair.second
 
 
-        val prefillData = PrefillDataModelMother.initialPrefillDataModel("P2000", pinId = somePersonNr, penSaksnummer = somePenSaksnr)
+        val prefillData = PrefillDataModelMother.initialPrefillDataModel(SEDType.P2000, pinId = somePersonNr, penSaksnummer = somePenSaksnr)
         val personDataCollection = PersonDataCollection(forsikretPerson = person, ektefellePerson = partner, sivilstandstype = Sivilstandstype.PARTNER, gjenlevendeEllerAvdod = person, barnPersonList = emptyList())
 
         doReturn("NO").`when`(kodeverkClient).finnLandkode2("NOR")
@@ -315,7 +316,7 @@ class PrefillPDLNavTest {
 
         val single = lagPerson(somePersonNr, "Ola", "Testbruker").copy(navn = Navn("Fornavn Ole","Mellomnavn Mellomn", "Test Bruker"))
 
-        val prefillData = PrefillDataModelMother.initialPrefillDataModel("P2000", pinId = somePersonNr, penSaksnummer = somePenSaksnr)
+        val prefillData = PrefillDataModelMother.initialPrefillDataModel(SEDType.P2000, pinId = somePersonNr, penSaksnummer = somePenSaksnr)
         val personDataCollection = PersonDataCollection(forsikretPerson = single, ektefellePerson = null,  sivilstandstype = Sivilstandstype.UGIFT, gjenlevendeEllerAvdod = single, barnPersonList = emptyList())
         doReturn("NO").`when`(kodeverkClient).finnLandkode2("NOR")
 
@@ -347,7 +348,7 @@ class PrefillPDLNavTest {
         val personfnr = NavFodselsnummer(somePersonNr)
         val personFdato = personfnr.getBirthDate().toString()
 
-        val prefillData = PrefillDataModelMother.initialPrefillDataModel("P2000", pinId = somePersonNr, penSaksnummer = somePenSaksnr).apply {
+        val prefillData = PrefillDataModelMother.initialPrefillDataModel(SEDType.P2000, pinId = somePersonNr, penSaksnummer = somePenSaksnr).apply {
             partSedAsJson["PersonInfo"] = mapAnyToJson(
                     BrukerInformasjon(
                             null,

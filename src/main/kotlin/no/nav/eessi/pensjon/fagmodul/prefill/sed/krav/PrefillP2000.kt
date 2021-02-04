@@ -1,5 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed.krav
 
+import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PersonData
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PersonDataCollection
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
@@ -61,7 +62,7 @@ class PrefillP2000(private val prefillNav: PrefillNav)  {
     }
 
     private fun postPrefill(prefillData: PrefillDataModel, sak: V1Sak?, vedtak: V1Vedtak?) {
-        val sedType = "P2000"
+        val sedType = SEDType.P2000
         PrefillP2xxxPensjon.validerGyldigVedtakEllerKravtypeOgArsak(sak, sedType, vedtak)
         logger.debug("----------------------------------------------------------"
                 + "\nSaktype                 : ${sak?.sakType} "
@@ -71,7 +72,7 @@ class PrefillP2000(private val prefillNav: PrefillNav)  {
     }
 
     private fun prefillpen(prefillData: PrefillDataModel, nav: Nav, sak: V1Sak?, vedtak: V1Vedtak? = null): SED {
-        val sedType = prefillData.getSEDType()
+        val sedType = prefillData.sedType
 
         //valider pensjoninformasjon,
         var pensjon: Pensjon ? = null
@@ -95,7 +96,7 @@ class PrefillP2000(private val prefillNav: PrefillNav)  {
 
         //opprette en P2000 sed
         val sed = SED(
-            sed = "P2000",
+            type = SEDType.P2000,
             nav = nav,
             pensjon = pensjon
         )

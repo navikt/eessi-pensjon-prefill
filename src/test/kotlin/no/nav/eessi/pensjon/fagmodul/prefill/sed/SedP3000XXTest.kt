@@ -3,6 +3,7 @@ package no.nav.eessi.pensjon.fagmodul.prefill.sed
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
+import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.prefill.ApiRequest
 import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjon
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
@@ -76,7 +77,7 @@ class SedP3000XXTest {
         val datamodel = getMockDataModel("P3000_AT", personFnr)
 
         val sed = prefillSEDService.prefill(datamodel)
-        Assertions.assertEquals("P3000_AT", sed.sed)
+        Assertions.assertEquals(SEDType.P3000_AT, sed.type)
 
     }
 
@@ -86,7 +87,7 @@ class SedP3000XXTest {
         val datamodel = getMockDataModel("P3000_IT", personFnr)
 
         val sed = prefillSEDService.prefill(datamodel)
-        Assertions.assertEquals("P3000_IT", sed.sed)
+        Assertions.assertEquals(SEDType.P3000_IT, sed.type)
     }
 
     @Test
@@ -94,7 +95,7 @@ class SedP3000XXTest {
         val datamodel = getMockDataModel("P3000_SE", personFnr)
 
         val sed = prefillSEDService.prefill(datamodel)
-        Assertions.assertEquals("P3000_SE", sed.sed)
+        Assertions.assertEquals(SEDType.P3000_SE, sed.type)
     }
 
 

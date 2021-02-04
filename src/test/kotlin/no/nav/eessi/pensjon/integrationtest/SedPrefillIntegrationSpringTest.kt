@@ -5,6 +5,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import no.nav.eessi.pensjon.UnsecuredWebMvcTestLauncher
+import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.personoppslag.BrukerMock
 import no.nav.eessi.pensjon.fagmodul.prefill.ApiRequest
 import no.nav.eessi.pensjon.fagmodul.prefill.ApiSubject
@@ -177,9 +178,9 @@ class SedPrefillIntegrationSpringTest {
 //        val avdodAktoerid = "3323332333233323"
 //
 ////        val subject = dummyApiSubjectjson(avdodfnr)
-////        val apijson = dummyApijson(sakid = "22874955", vedtakid = "987654321122355466", aktoerId = aktoerId, sed = "P6000", buc = "P_BUC_02", subject = subject)
+////        val apijson = dummyApijson(sakid = "22874955", vedtakid = "987654321122355466", aktoerId = aktoerId, sed = SEDType.P6000, buc = "P_BUC_02", subject = subject)
 //
-//        val apiRequest = dummyApiRequest("22874955", "987654321122", aktoerId, "P6000", "P_BUC_02", ApiSubject(SubjectFnr(fnr), SubjectFnr(avdodfnr)))
+//        val apiRequest = dummyApiRequest("22874955", "987654321122", aktoerId, SEDType.P6000, "P_BUC_02", ApiSubject(SubjectFnr(fnr), SubjectFnr(avdodfnr)))
 //
 //        testRunnerGjenlevende(apiRequest, fnr, avdodAktoerid, null, "P6000-BARNEP-GJENLEV.xml")
 //

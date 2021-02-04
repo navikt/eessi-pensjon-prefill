@@ -71,7 +71,7 @@ class PensjonController(private val pensjonsinformasjonClient: Pensjonsinformasj
     fun hentKravDatoFraAktor(@PathVariable("saksId", required = true) sakId: String, @PathVariable("kravId", required = true) kravId: String, @PathVariable("aktoerId", required = true) aktoerId: String) : ResponseEntity<String>? {
         return PensjonControllerKravDato.measure {
 
-            if (sakId.isNullOrEmpty() || kravId.isNullOrEmpty() || aktoerId.isNullOrEmpty()) {
+            if (sakId.isEmpty() || kravId.isEmpty() || aktoerId.isEmpty()) {
                 logger.warn("Det mangler verdier: saksId $sakId, kravId: $kravId, aktørId: $aktoerId")
                 ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                     errorBody("Mangler gyldige verdier for å hente kravdato, prøv heller fra vedtakskonteks", UUID.randomUUID().toString()))

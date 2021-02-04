@@ -1,5 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed
 
+import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PersonData
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillNav
@@ -31,7 +32,7 @@ class PrefillX005(private val prefillNav: PrefillNav)  {
         val person = navsed.bruker?.person
 
         return SED(
-                sed = "X005",
+                type = SEDType.X005,
                 nav = Nav(
                         sak = Navsak(
                                 kontekst = Kontekst(

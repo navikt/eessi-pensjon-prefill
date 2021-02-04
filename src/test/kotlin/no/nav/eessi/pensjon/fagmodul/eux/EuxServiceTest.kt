@@ -10,6 +10,7 @@ import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Rinasak
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Traits
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Buc
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.DocumentsItem
+import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.sedmodel.PinItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.services.statistikk.StatistikkHandler
@@ -84,7 +85,7 @@ class EuxServiceTest {
         val result = service.getSedOnBucByDocumentId("12345678900", "0bb1ad15987741f1bbf45eba4f955e80")
 
         assertEquals(orgsed, result)
-        assertEquals("P6000", result.sed)
+        assertEquals(SEDType.P6000, result.type)
 
     }
 
@@ -167,7 +168,7 @@ class EuxServiceTest {
     fun `Calling eux-rina-api to create BucSedAndView returns a result`() {
         val rinasakid = "158123"
 
-        val bucJson = File("src/test/resources/json/buc/buc-158123_2_v4.1.json").readText()
+        val bucJson = javaClass.getResource("/json/buc/buc-158123_2_v4.1.json").readText()
 
         doReturn(bucJson)
                 .whenever(euxKlient)
@@ -182,7 +183,7 @@ class EuxServiceTest {
 
         val actualBucAndSedViewJson = firstBucAndSedView.toJson()
 
-        val expectedBucDetaljer = File("src/test/resources/json/buc/bucdetaljer-158123.json").readText()
+        val expectedBucDetaljer = javaClass.getResource("/json/buc/bucdetaljer-158123.json").readText()
 
         JSONAssert.assertEquals(expectedBucDetaljer, actualBucAndSedViewJson, false)
     }
@@ -431,7 +432,7 @@ class EuxServiceTest {
         val rinaid = "12344"
         val dokumentid = "3423432453255"
 
-        val documentsItem = listOf(DocumentsItem(type = "P2100", id = dokumentid))
+        val documentsItem = listOf(DocumentsItem(type = SEDType.P2100, id = dokumentid))
         val buc = Buc(processDefinitionName = "P_BUC_02", documents = documentsItem)
 
         val docs = listOf(BucOgDocumentAvdod(rinaid, buc, dokumentid))
@@ -441,9 +442,8 @@ class EuxServiceTest {
         val actual = service.hentDocumentJsonAvdod(docs)
 
         assertEquals(1, actual.size)
-        assertEquals("P2100", actual[0].dokumentJson)
-        assertEquals(rinaid, actual[0].rinaidAvdod)
-
+        assertEquals(SEDType.P2100.name, actual.single().dokumentJson)
+        assertEquals(rinaid, actual.single().rinaidAvdod)
   }
 
     @Test
@@ -451,7 +451,7 @@ class EuxServiceTest {
         val rinaid = "12344"
         val dokumentid = "3423432453255"
 
-        val documentsItem = listOf(DocumentsItem(type = "P2100", id = dokumentid))
+        val documentsItem = listOf(DocumentsItem(type = SEDType.P2100, id = dokumentid))
         val buc = Buc(processDefinitionName = "P_BUC_02", documents = documentsItem)
 
         val docs = listOf(BucOgDocumentAvdod(rinaid, buc, dokumentid))
@@ -468,8 +468,7 @@ class EuxServiceTest {
     fun `Gitt det finnes en p2100 med gjenlevende Når det filtrers på gjenlevende felt og den gjenlevndefnr Så gis det gyldige buc`() {
         val rinaid = "123123"
         val gjenlevendeFnr = "1234567890000"
-        val sedfilepath = "src/test/resources/json/nav/P2100-PinNO-NAV.json"
-        val sedjson = String(Files.readAllBytes(Paths.get(sedfilepath)))
+        val sedjson = javaClass.getResource("/json/nav/P2100-PinNO-NAV.json").readText()
 
         val docs = listOf(BucOgDocumentAvdod(rinaid, Buc(id = rinaid, processDefinitionName = "P_BUC_02"), sedjson))
 
@@ -549,8 +548,8 @@ class EuxServiceTest {
 
     @Test
     fun `Sjekk P_BUC_02 etter gjennlevende person kun et resultat skal vises`() {
-        val sedjson = String(Files.readAllBytes(Paths.get("src/test/resources/json/nav/P2100-PinNO-NAV.json")))
-        val sedDKjson = String(Files.readAllBytes(Paths.get("src/test/resources/json/nav/P2100-PinDK-NAV.json")))
+        val sedjson = javaClass.getResource("/json/nav/P2100-PinNO-NAV.json").readText()
+        val sedDKjson = javaClass.getResource("/json/nav/P2100-PinDK-NAV.json").readText()
 
         val gjenlevendeFnr = "1234567890000"
         val avdodFnr = "01010100001"
@@ -561,11 +560,11 @@ class EuxServiceTest {
         doReturn(rinaSakerBuc02).whenever(euxKlient).getRinasaker(avdodFnr, null, "P_BUC_02", "\"open\"")
 
 
-        val docItems = listOf(DocumentsItem(id = "1", type = "P2100"), DocumentsItem(id = "2", type = "P4000"))
+        val docItems = listOf(DocumentsItem(id = "1", type = SEDType.P2100), DocumentsItem(id = "2", type = SEDType.P4000))
         val buc = Buc(id = "1", processDefinitionName = "P_BUC_02", documents = docItems)
         doReturn(buc.toJson()).whenever(euxKlient).getBucJson(euxCaseId)
 
-        val docDKItems = listOf(DocumentsItem(id = "20", type = "P2100"), DocumentsItem(id = "40", type = "P4000"))
+        val docDKItems = listOf(DocumentsItem(id = "20", type = SEDType.P2100), DocumentsItem(id = "40", type = SEDType.P4000))
         val DKbuc = Buc(id = "10", processDefinitionName = "P_BUC_02", documents = docDKItems)
         doReturn(DKbuc.toJson()).whenever(euxKlient).getBucJson("10")
 
@@ -589,10 +588,10 @@ class EuxServiceTest {
 
     @Test
     fun `Sjekk P_BUC_02 etter gjennlevende og P_BUC_05 liste med 2 resultat skal vises`() {
-        val sedjson = String(Files.readAllBytes(Paths.get("src/test/resources/json/nav/P2100-PinNO-NAV.json")))
-        val sedDKjson = String(Files.readAllBytes(Paths.get("src/test/resources/json/nav/P2100-PinDK-NAV.json")))
-        val sedP8000json = String(Files.readAllBytes(Paths.get("src/test/resources/json/nav/P8000_NO-NAV.json")))
-        val sedP8000DKjson = String(Files.readAllBytes(Paths.get("src/test/resources/json/nav/P8000_DK-NAV.json")))
+        val sedjson = javaClass.getResource("/json/nav/P2100-PinNO-NAV.json").readText()
+        val sedDKjson = javaClass.getResource("/json/nav/P2100-PinDK-NAV.json").readText()
+        val sedP8000json = javaClass.getResource("/json/nav/P8000_NO-NAV.json").readText()
+        val sedP8000DKjson = javaClass.getResource("/json/nav/P8000_DK-NAV.json").readText()
 
         val gjenlevendeFnr = "1234567890000"
         val avdodFnr = "01010100001"
@@ -603,11 +602,11 @@ class EuxServiceTest {
         doReturn( rinaSakerBuc02).whenever(euxKlient).getRinasaker(avdodFnr, null, "P_BUC_02", "\"open\"")
 
 
-        val docItems = listOf(DocumentsItem(id = "1", type = "P2100"), DocumentsItem(id = "2", type = "P4000"))
+        val docItems = listOf(DocumentsItem(id = "1", type = SEDType.P2100), DocumentsItem(id = "2", type = SEDType.P4000))
         val buc = Buc(id = "1", processDefinitionName = "P_BUC_02", documents = docItems)
         doReturn(buc.toJson()).whenever(euxKlient).getBucJson(euxCaseId)
 
-        val docDKItems = listOf(DocumentsItem(id = "20", type = "P2100"), DocumentsItem(id = "40", type = "P4000"))
+        val docDKItems = listOf(DocumentsItem(id = "20", type = SEDType.P2100), DocumentsItem(id = "40", type = SEDType.P4000))
         val DKbuc = Buc(id = "10", processDefinitionName = "P_BUC_02", documents = docDKItems)
         doReturn(DKbuc.toJson()).whenever(euxKlient).getBucJson("10")
 
@@ -622,11 +621,11 @@ class EuxServiceTest {
         doReturn(rinaSakerBuc05).whenever(euxKlient).getRinasaker(avdodFnr, null, "P_BUC_05", "\"open\"")
 
         //buc05no
-        val docP8000Items = listOf(DocumentsItem(id = "2000", type = "P8000"), DocumentsItem(id = "4000", type = "P6000"))
+        val docP8000Items = listOf(DocumentsItem(id = "2000", type = SEDType.P8000), DocumentsItem(id = "4000", type = SEDType.P6000))
         val buc05 = Buc(id = "100", processDefinitionName = "P_BUC_05", documents = docP8000Items)
 
         //buc05dk
-        val docP8000DKItems = listOf(DocumentsItem(id = "2200", type = "P8000"), DocumentsItem(id = "4200", type = "P6000"))
+        val docP8000DKItems = listOf(DocumentsItem(id = "2200", type = SEDType.P8000), DocumentsItem(id = "4200", type = SEDType.P6000))
         val buc05DK = Buc(id = "200", processDefinitionName = "P_BUC_05", documents = docP8000DKItems)
 
         doReturn(buc05.toJson()).whenever(euxKlient).getBucJson("100")

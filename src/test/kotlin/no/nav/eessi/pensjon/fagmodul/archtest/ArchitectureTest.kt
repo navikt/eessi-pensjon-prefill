@@ -169,7 +169,7 @@ class ArchitectureTest {
                 .whereLayer(euxBasisModel).mayOnlyBeAccessedByLayers(euxService, bucSedApi, integrationtest)
                 .whereLayer(euxBucModel).mayOnlyBeAccessedByLayers(euxService, bucSedApi, integrationtest)
                 .whereLayer(euxService).mayOnlyBeAccessedByLayers(health, bucSedApi)
-                .whereLayer(models).mayOnlyBeAccessedByLayers(prefill,  /*TODO consider this list*/  euxService, bucSedApi, personApi)
+                .whereLayer(models).mayOnlyBeAccessedByLayers(prefill, euxService, euxBasisModel, euxBucModel, bucSedApi, personApi, sedmodel, integrationtest)
 
                 .whereLayer(sedmodel).mayOnlyBeAccessedByLayers(prefill, euxService, bucSedApi, integrationtest, pensjonService)
                 .whereLayer(aktoerregisterService).mayOnlyBeAccessedByLayers(personApi, bucSedApi, pensjonApi, integrationtest, prefill)

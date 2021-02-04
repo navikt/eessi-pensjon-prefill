@@ -33,7 +33,7 @@ internal class VedleggServiceTest  {
     @Test
     fun `Gitt en liste av journalposter med tilhørende dokumenter Når man filtrer et konkret dokumentInfoId Så returner et dokument med dokumentInfoId`() {
 
-        val metadataJson = String(Files.readAllBytes(Paths.get("src/test/resources/json/saf/hentMetadataResponse.json")))
+        val metadataJson = javaClass.getResource("/json/saf/hentMetadataResponse.json").readText()
         val metadata = mapJsonToAny(metadataJson, typeRefs<HentMetadataResponse>())
 
         doReturn(metadata).`when`(safClient).hentDokumentMetadata(any())
