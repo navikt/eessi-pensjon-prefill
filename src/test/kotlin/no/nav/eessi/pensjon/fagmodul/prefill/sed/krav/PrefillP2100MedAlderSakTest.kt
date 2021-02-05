@@ -1,6 +1,7 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed.krav
 
 import com.nhaarman.mockitokotlin2.mock
+import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjon
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PersonId
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
@@ -62,7 +63,7 @@ class PrefillP2100MedAlderSakTest {
         dataFromPEN = lesPensjonsdataFraFil("KravAlderEllerUfore_AP_UTLAND.xml")
 
         prefillData = PrefillDataModelMother.initialPrefillDataModel(
-                sedType = "P2100",
+                sedType = SEDType.P2100,
                 pinId = personFnr,
                 kravId = "3243243",
                 penSaksnummer = pesysSaksnummer,
@@ -71,7 +72,7 @@ class PrefillP2100MedAlderSakTest {
         prefillSEDService = PrefillSEDService(prefillNav, persondataFraTPS, EessiInformasjon(), dataFromPEN, aktorRegisterService, prefillPDLNav)
         val p2100 = prefillSEDService.prefill(prefillData)
 
-        assertEquals("P2100", p2100.sed)
+        assertEquals(SEDType.P2100, p2100.type)
         assertEquals("BAMSE ULUR", p2100.pensjon?.gjenlevende?.person?.fornavn)
         assertEquals("BAMSE LUR", p2100.nav?.bruker?.person?.fornavn)
         assertEquals("2015-06-16", p2100.pensjon?.kravDato?.dato)

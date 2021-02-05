@@ -1,11 +1,12 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.model
 
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
+import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 
 object PrefillDataModelMother {
 
-    fun initialPrefillDataModel(sedType: String,
+    fun initialPrefillDataModel(sedType: SEDType,
                                 pinId: String,
                                 vedtakId: String? = null,
                                 penSaksnummer: String = "12345",

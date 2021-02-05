@@ -144,7 +144,7 @@ object PrefillP2xxxPensjon {
      * F_BH_MED_UTL     Førstegangsbehandling Norge/utland ikke finnes sakl vi avslutte
      *
      */
-    private fun validerGyldigKravtypeOgArsak(sak: V1Sak?, sedType: String, vedtak: V1Vedtak?) {
+    private fun validerGyldigKravtypeOgArsak(sak: V1Sak?, sedType: SEDType, vedtak: V1Vedtak?) {
         logger.info("start på validering av $sedType")
 
         validerGyldigKravtypeOgArsakFelles(sak , sedType)
@@ -165,7 +165,7 @@ object PrefillP2xxxPensjon {
         logger.info("avslutt på validering av $sedType, fortsetter med preutfylling")
     }
 
-    fun validerGyldigVedtakEllerKravtypeOgArsak(sak:V1Sak?, sedType: String, vedtak: V1Vedtak?) {
+    fun validerGyldigVedtakEllerKravtypeOgArsak(sak:V1Sak?, sedType: SEDType, vedtak: V1Vedtak?) {
 
         vedtak?.let {
             logger.info("Validering på vedtak bosatt utland ${it.isBoddArbeidetUtland}")
@@ -186,13 +186,13 @@ object PrefillP2xxxPensjon {
      * TILST_DOD       Dødsfall tilstøtende                 hvis ikke finnes ved
      *
      */
-    fun validerGyldigKravtypeOgArsakGjenlevnde(sak: V1Sak?, sedType: String) {
+    fun validerGyldigKravtypeOgArsakGjenlevnde(sak: V1Sak?, sedType: SEDType) {
         logger.info("Start på validering av $sedType")
         val validSaktype = listOf(EPSaktype.ALDER.name, EPSaktype.UFOREP.name)
 
         validerGyldigKravtypeOgArsakFelles(sak, sedType)
 
-        if (sedType == SEDType.P2100.name && (hentKravhistorikkForGjenlevende(sak?.kravHistorikkListe) == null && validSaktype.contains(sak?.sakType))  ) {
+        if (sedType == SEDType.P2100 && (hentKravhistorikkForGjenlevende(sak?.kravHistorikkListe) == null && validSaktype.contains(sak?.sakType))  ) {
             logger.warn("Ikke korrkt kravårsak for P21000 (alder/uførep")
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Ingen gyldig kravårsak funnet for ALDER eller UFØREP for utfylling av en krav SED P2100")
         }
@@ -200,7 +200,7 @@ object PrefillP2xxxPensjon {
     }
 
     //felles kode for validering av P2000, P2100 og P2200
-    private fun validerGyldigKravtypeOgArsakFelles(sak: V1Sak?, sedType: String) {
+    private fun validerGyldigKravtypeOgArsakFelles(sak: V1Sak?, sedType: SEDType) {
         val finnesKunUtland = finnKravHistorikk("F_BH_KUN_UTL", sak?.kravHistorikkListe)
         if (finnesKunUtland != null && finnesKunUtland.size == sak?.kravHistorikkListe?.kravHistorikkListe?.size)  {
             logger.warn("Søknad gjelder Førstegangsbehandling kun utland. Se egen rutine på navet")

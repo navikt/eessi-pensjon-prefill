@@ -3,6 +3,7 @@ package no.nav.eessi.pensjon.fagmodul.prefill.sed
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
+import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.personoppslag.BrukerMock
 import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjon
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
@@ -55,7 +56,7 @@ class PrefillP7000_AP_21975717Test {
                 institutionid = "NO:noinst002",
                 institutionnavn = "NOINST002, NO INST002, NO")
 
-        prefillData = PrefillDataModelMother.initialPrefillDataModel("P7000",penSaksnummer = "21975717", pinId = personFnr, vedtakId = "12312312")
+        prefillData = PrefillDataModelMother.initialPrefillDataModel(SEDType.P7000,penSaksnummer = "21975717", pinId = personFnr, vedtakId = "12312312")
     }
 
     @Test

@@ -96,7 +96,7 @@ class PrefillP15000(private val prefillSed: PrefillSed) {
         } else {
             null
         }
-        return SED(SEDType.P15000.name, nav = nav, pensjon = pensjon)
+        return SED(SEDType.P15000, nav = nav, pensjon = pensjon)
     }
 
 

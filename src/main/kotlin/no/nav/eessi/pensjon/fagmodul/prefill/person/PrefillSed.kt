@@ -17,7 +17,7 @@ class PrefillSed(private val prefillNav: PrefillNav) {
         logger.debug("----------------------------------------------------------")
         logger.debug("Preutfylling NAV     : ${prefillNav::class.java} ")
         logger.debug("------------------| Preutfylling START |------------------ ")
-        logger.debug("[${prefillData.getSEDType()}] Preutfylling Utfylling Data")
+        logger.debug("[${prefillData.sedType}] Preutfylling Utfylling Data")
 
         //val sed = prefillData.sed
         val sedType = prefillData.sedType
@@ -30,7 +30,7 @@ class PrefillSed(private val prefillNav: PrefillNav) {
                 personData = personData,
                 brukerInformasjon = prefillData.getPersonInfoFromRequestData()
         )
-        logger.debug("[${prefillData.getSEDType()}] Preutfylling Utfylling NAV")
+        logger.debug("[${prefillData.sedType}] Preutfylling Utfylling NAV")
 
         val prefillPensjon = try {
             val pensjon = prefillData.avdod?.let {
@@ -38,7 +38,7 @@ class PrefillSed(private val prefillNav: PrefillNav) {
                 val gjenlevendePerson = prefillNav.createBruker(personData.forsikretPerson, null, null)
                 Pensjon(gjenlevende = gjenlevendePerson)
             }
-            logger.debug("[${prefillData.getSEDType()}] Preutfylling Utfylling Pensjon")
+            logger.debug("[${prefillData.sedType}] Preutfylling Utfylling Pensjon")
             pensjon
         } catch (ex: Exception) {
             logger.error(ex.message, ex)

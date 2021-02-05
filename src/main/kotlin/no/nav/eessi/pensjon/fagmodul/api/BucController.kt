@@ -12,6 +12,7 @@ import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Rinasak
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Buc
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Creator
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ShortDocumentItem
+import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.logging.AuditLogger
 import no.nav.eessi.pensjon.metrics.MetricsHelper
 import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerregisterService
@@ -122,7 +123,7 @@ class BucController(@Value("\${NAIS_NAMESPACE}") val nameSpace : String,
 
     @ApiOperation("Henter opp mulige aksjon(er) som kan utføres på valgt buc")
     @GetMapping("/{rinanr}/aksjoner")
-    fun getMuligeAksjoner(@PathVariable(value = "rinanr", required = true) rinanr: String): List<String> {
+    fun getMuligeAksjoner(@PathVariable(value = "rinanr", required = true) rinanr: String): List<SEDType> {
         logger.debug("Henter ut muligeaksjoner på valgt buc med rinanummer: $rinanr")
         val bucUtil = BucUtils(euxService.getBuc(rinanr))
         return bucUtil.filterSektorPandRelevantHorizontalSeds(bucUtil.getSedsThatCanBeCreated())

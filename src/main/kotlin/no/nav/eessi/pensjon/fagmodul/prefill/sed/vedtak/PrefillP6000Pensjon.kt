@@ -28,7 +28,9 @@ object PrefillP6000Pensjon {
     fun createPensjon(pensjoninformasjon: Pensjonsinformasjon, gjenlevende: Bruker?, vedtakId: String, andreinstitusjonerItem: AndreinstitusjonerItem?): Pensjon {
 
         //Sjekk opp om det er Bodd eller Arbeid utland. (hvis ikke avslutt)
-        if (!harBoddArbeidetUtland(pensjoninformasjon)) throw IkkeGyldigStatusPaaSakException("Har ikke bodd eller arbeidet i utlandet. Avslutter vedtak")
+        if (!harBoddArbeidetUtland(pensjoninformasjon))
+            throw IkkeGyldigStatusPaaSakException("Har ikke bodd eller arbeidet i utlandet. Avslutter vedtak")
+
         //Sjekk opp om det finnes et dato fattet vedtak. (hvis ikke avslutt)
         if (pensjoninformasjon.vedtak.datoFattetVedtak == null) {
             throw IkkeGyldigStatusPaaSakException("Vedtaket mangler dato for FattetVedtak. Avslutter")

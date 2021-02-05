@@ -3,6 +3,7 @@ package no.nav.eessi.pensjon.fagmodul.prefill.sed
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.whenever
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
+import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.prefill.ApiRequest
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PersonData
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillSed
@@ -57,8 +58,8 @@ class SedP4000Test {
         val nav = NavMock().genererNavMock()
         val pen = PensjonMock().genererMockData()
         val sed = SED(
-                sed = "P4000",
-                nav= nav,
+                type = SEDType.P4000,
+                nav = nav,
                 pensjon = pen,
                 trygdetid = result
         )

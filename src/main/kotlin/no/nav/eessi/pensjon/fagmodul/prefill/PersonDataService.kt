@@ -45,9 +45,7 @@ class PersonDataService(private val personService: PersonService,
     }
 
     fun hentPersonData(prefillData: PrefillDataModel) : PersonDataCollection {
-        val sedType = valueOf(prefillData.sedType)
-
-        return when (sedType) {
+        return when (prefillData.sedType) {
             //alle med barn
             P2001, P2101, P2000, P2200, P2100, P6000 -> hentPersonerMedBarn(prefillData)
             //alle uten barn

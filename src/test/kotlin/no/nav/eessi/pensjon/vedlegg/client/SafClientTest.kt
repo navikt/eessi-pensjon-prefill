@@ -47,7 +47,7 @@ class SafClientTest {
 
     @Test
     fun `gitt en gyldig hentMetadata reponse når metadata hentes så map til HentMetadataResponse`() {
-        val responseJson = String(Files.readAllBytes(Paths.get("src/test/resources/json/saf/hentMetadataResponse.json")))
+        val responseJson = javaClass.getResource("/json/saf/hentMetadataResponse.json").readText()
 
         whenever(safGraphQlOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java)))
                 .thenReturn(ResponseEntity(responseJson, HttpStatus.OK))
@@ -59,7 +59,7 @@ class SafClientTest {
 
     @Test
     fun `gitt en gyldig hentMetadata reponse med tom tittel når metadata hentes så map til HentMetadataResponse`() {
-        val responseJson = String(Files.readAllBytes(Paths.get("src/test/resources/json/saf/hentMetadataResponse.json")))
+        val responseJson = javaClass.getResource("/json/saf/hentMetadataResponse.json").readText()
                 .replace("\"JOURNALPOSTTITTEL\"", "null")
 
         whenever(safGraphQlOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java)))
@@ -71,7 +71,7 @@ class SafClientTest {
 
     @Test
     fun `gitt en mappingfeil når metadata hentes så kast en feil`() {
-        val responseJson = String(Files.readAllBytes(Paths.get("src/test/resources/json/saf/hentMetadataResponseMedError.json")))
+        val responseJson = javaClass.getResource("/json/saf/hentMetadataResponseMedError.json").readText()
 
         whenever(safGraphQlOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java)))
                 .thenReturn(ResponseEntity(responseJson, HttpStatus.OK))
@@ -137,7 +137,7 @@ class SafClientTest {
 
     @Test
     fun `gitt en aktørid med journalposter med EESSI Tilleggsopplysninger når etterspør sakIder fra tilleggsopplysninger så returner liste av sakIder`() {
-        val responseJson = String(Files.readAllBytes(Paths.get("src/test/resources/json/saf/hentMetadataResponse.json")))
+        val responseJson = javaClass.getResource("/json/saf/hentMetadataResponse.json").readText()
 
         whenever(safGraphQlOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java)))
                 .thenReturn(ResponseEntity(responseJson, HttpStatus.OK))

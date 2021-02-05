@@ -1,5 +1,7 @@
 package no.nav.eessi.pensjon.fagmodul.eux.bucmodel
 
+import no.nav.eessi.pensjon.fagmodul.models.SEDType
+
 class DocumentIdentification(
         val identifier: String? = null,
         val schemaVersion: String? = null,
@@ -10,6 +12,6 @@ class DocumentIdentification(
         val contentLocation: Any? = null,
         val relatedSetIdentifier: Any? = null,
         val creationDate: Any? = null,
-        val type: String? = null,
+        val type: SEDType? = null,
         val version: String? = null
 )

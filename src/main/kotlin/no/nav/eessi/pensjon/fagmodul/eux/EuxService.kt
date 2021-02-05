@@ -77,7 +77,7 @@ class EuxService (private val euxKlient: EuxKlient,
      * Ny SED på ekisterende type
      */
     @Throws(EuxGenericServerException::class, SedDokumentIkkeOpprettetException::class)
-    fun opprettJsonSedOnBuc(jsonNavSED: String, sedType: String, euxCaseId: String, vedtakId: String?): BucSedResponse {
+    fun opprettJsonSedOnBuc(jsonNavSED: String, sedType: SEDType, euxCaseId: String, vedtakId: String?): BucSedResponse {
         logger.info("Forsøker å opprette en $sedType på rinasakId: $euxCaseId")
         logger.debug("Logger ut $jsonNavSED")
         val bucSedResponse  = euxKlient.opprettSed(jsonNavSED, euxCaseId, opprettSED, "Feil ved opprettSed: $sedType, med rinaId: $euxCaseId")
@@ -90,7 +90,7 @@ class EuxService (private val euxKlient: EuxKlient,
     /**
      * Henter ut sed fra rina med bucid og documentid
      */
-    fun getSedOnBuc(euxCaseId: String, sedType: String?): List<SED> {
+    fun getSedOnBuc(euxCaseId: String, sedType: SEDType?): List<SED> {
         logger.info("Prøver å hente ut en BucUtils for type $euxCaseId")
         val docid = getBuc(euxCaseId).documents ?: throw NoSuchFieldException("Fant ikke DocumentsItem")
 
@@ -146,14 +146,14 @@ class EuxService (private val euxKlient: EuxKlient,
         val sed = getSedOnBucByDocumentId(euxCaseId, documentId)
 
         //validere om SED er virkelig en P2100 eller P15000
-        if (SEDType.P2100.name == sed.sed) {
+        if (SEDType.P2100 == sed.type) {
             return PinOgKrav(
                     fnr = getFnrMedLandkodeNO(sed.pensjon?.gjenlevende?.person?.pin),
                     krav = sed.nav?.krav ?: Krav()
             )
         }
         //P15000 sjekke om det er 02 Gjenlevende eller ikke
-        if (SEDType.P15000.name == sed.sed) {
+        if (SEDType.P15000 == sed.type) {
             val krav = sed.nav?.krav ?: Krav()
             return if ("02" == krav.type) {
                 PinOgKrav(
@@ -295,10 +295,10 @@ class EuxService (private val euxKlient: EuxKlient,
             logger.info("henter documentid fra buc: ${docs.rinaidAvdod} bucType: $bucType")
 
             val shortDoc = when (bucType) {
-                "P_BUC_02" -> bucutil.getDocumentByType(SEDType.P2100.name)
-                "P_BUC_10" -> bucutil.getDocumentByType(SEDType.P15000.name)
-                "P_BUC_05" -> bucutil.getDocumentByType(SEDType.P8000.name)
-                else -> bucutil.getDocumentByType(SEDType.P6000.name)
+                "P_BUC_02" -> bucutil.getDocumentByType(SEDType.P2100)
+                "P_BUC_10" -> bucutil.getDocumentByType(SEDType.P15000)
+                "P_BUC_05" -> bucutil.getDocumentByType(SEDType.P8000)
+                else -> bucutil.getDocumentByType(SEDType.P6000)
             }
             val sedJson = shortDoc?.let {
                 euxKlient.getSedOnBucByDocumentIdAsJson(docs.rinaidAvdod, it.id!!)
@@ -322,7 +322,7 @@ class EuxService (private val euxKlient: EuxKlient,
      */
     private fun filterGjenlevendePinNode(sed: SED, rinaidAvdod: String): String? {
         val gjenlevende = sed.pensjon?.gjenlevende?.person
-        return filterPinGjenlevendePin(gjenlevende, sed.getType(), rinaidAvdod)
+        return filterPinGjenlevendePin(gjenlevende, sed.type, rinaidAvdod)
     }
 
     /**
@@ -333,13 +333,13 @@ class EuxService (private val euxKlient: EuxKlient,
         val rolle = annenperson?.rolle
         val type = sed.pensjon?.kravDato?.type
         return if (type == "02" || rolle == "01") {
-            filterPinGjenlevendePin(annenperson, sed.getType(), rinaidAvdod)
+            filterPinGjenlevendePin(annenperson, sed.type, rinaidAvdod)
         } else {
             null
         }
     }
 
-    private fun filterPinGjenlevendePin(gjenlevende: Person?, sedType: String, rinaidAvdod: String): String? {
+    private fun filterPinGjenlevendePin(gjenlevende: Person?, sedType: SEDType, rinaidAvdod: String): String? {
         val pin = gjenlevende?.pin?.firstOrNull { it.land == "NO" }
         return if (pin == null) {
             logger.warn("Ingen fnr funnet på gjenlevende. ${sedType}, rinaid: $rinaidAvdod")

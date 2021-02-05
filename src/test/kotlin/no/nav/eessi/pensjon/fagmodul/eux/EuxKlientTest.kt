@@ -8,6 +8,7 @@ import com.nhaarman.mockitokotlin2.whenever
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Organisation
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ParticipantsItem
+import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.logging.RequestResponseLoggerInterceptor
 import no.nav.eessi.pensjon.metrics.MetricsHelper
@@ -372,7 +373,7 @@ class EuxKlientTest {
 
     @Test
     fun testHentInstitutionsGyldigDatasetFraEuxVilReturenereEnListeAvInstitution() {
-        val instiutionsMegaJson = String(Files.readAllBytes(Paths.get("src/test/resources/json/institusjoner/deltakere_p_buc_01_all.json")))
+        val instiutionsMegaJson = javaClass.getResource("/json/institusjoner/deltakere_p_buc_01_all.json").readText()
         val response: ResponseEntity<String> = ResponseEntity(instiutionsMegaJson, HttpStatus.OK)
 
         whenever(mockEuxrestTemplate.exchange(
@@ -395,7 +396,7 @@ class EuxKlientTest {
 
     @Test
     fun `tester om institusjon er gyldig i en P_BUC_03`() {
-        val instiutionsMegaJson = String(Files.readAllBytes(Paths.get("src/test/resources/json/institusjoner/deltakere_p_buc_01_all.json")))
+        val instiutionsMegaJson = javaClass.getResource("/json/institusjoner/deltakere_p_buc_01_all.json").readText()
         val response: ResponseEntity<String> = ResponseEntity(instiutionsMegaJson, HttpStatus.OK)
 
         whenever(mockEuxrestTemplate.exchange(
@@ -445,7 +446,7 @@ class EuxKlientTest {
         ).thenReturn(response)
 
         val result = klient.opprettSed(
-                SED("P2000").toJsonSkipEmpty(),
+                SED(SEDType.P2000).toJsonSkipEmpty(),
                 "123456",
                 MetricsHelper(SimpleMeterRegistry()).init("dummy"),
                 "Feil ved opprettSed")
@@ -468,7 +469,7 @@ class EuxKlientTest {
 
         assertThrows<GenericUnprocessableEntity> {
             klient.opprettSed(
-                SED("P2200").toJsonSkipEmpty(),
+                SED(SEDType.P2200).toJsonSkipEmpty(),
                 "1231233",
                 MetricsHelper(SimpleMeterRegistry()).init("dummy"),
                 "Feil ved opprettSed"
@@ -488,7 +489,7 @@ class EuxKlientTest {
             )
         assertThrows<GatewayTimeoutException> {
             klient.opprettSed(
-                SED("P2000").toJsonSkipEmpty(),
+                SED(SEDType.P2000).toJsonSkipEmpty(),
                 "213123",
                 MetricsHelper(SimpleMeterRegistry()).init("dummy"),
                 "Feil ved opprettSed"
@@ -506,7 +507,7 @@ class EuxKlientTest {
         ).thenReturn(response)
 
         val result = klient.opprettSvarSed(
-            SED("P2000").toJsonSkipEmpty(),
+            SED(SEDType.P2000).toJsonSkipEmpty(),
             "123456",
             "11111",
             "Feil ved opprettSed",
@@ -519,7 +520,7 @@ class EuxKlientTest {
 
     @Test
     fun `gitt at det finnes en gydlig euxCaseid og Buc, ved feil skal det prøves noen ganger også returneres en liste over sedid`() {
-        val gyldigBuc = String(Files.readAllBytes(Paths.get("src/test/resources/json/buc/buc-279020big.json")))
+        val gyldigBuc = javaClass.getResource("/json/buc/buc-279020big.json").readText()
 
         val mockEuxRinaid = "123456"
         val mockResponse = ResponseEntity.ok().body(gyldigBuc)

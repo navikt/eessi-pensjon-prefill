@@ -11,6 +11,7 @@ import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Rinasak
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Traits
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Buc
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.DocumentsItem
+import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Bruker
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Pensjon
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Person
@@ -137,7 +138,7 @@ class BucIntegrationSpringTest {
     @Test
     fun `Gett det finnes gjenlevende og en avdød på buc02 så skal det hentes og lever en liste av buc`() {
 
-        val sedjson = String(Files.readAllBytes(Paths.get("src/test/resources/json/nav/P2100-PinNO-NAV.json")))
+        val sedjson = javaClass.getResource("/json/nav/P2100-PinNO-NAV.json").readText()
 
         val gjenlevendeFnr = "1234567890000"
         val gjenlevendeAktoerId = "1123123123123123"
@@ -175,7 +176,7 @@ class BucIntegrationSpringTest {
         val lastupdate = LocalDate.of(2020, Month.AUGUST, 7).toString()
 
         //buc02
-        val docItems = listOf(DocumentsItem(id = "1", creationDate = lastupdate, lastUpdate = lastupdate, status = "sent", type = "P2100"), DocumentsItem(id = "2", creationDate = lastupdate,  lastUpdate = lastupdate, status = "draft", type = "P4000"))
+        val docItems = listOf(DocumentsItem(id = "1", creationDate = lastupdate, lastUpdate = lastupdate, status = "sent", type = SEDType.P2100), DocumentsItem(id = "2", creationDate = lastupdate,  lastUpdate = lastupdate, status = "draft", type = SEDType.P4000))
         val buc02 = Buc(id = "1010", processDefinitionName = "P_BUC_02", startDate = lastupdate, lastUpdate = lastupdate,  documents = docItems)
 
         val rinabucpath = "/buc/1010"
@@ -210,7 +211,7 @@ class BucIntegrationSpringTest {
 
     @Test
     fun `Gett det finnes gjenlevende og en avdød på buc02 og fra SAF så skal det hentes og lever en liste av buc`() {
-        val sedjson = String(Files.readAllBytes(Paths.get("src/test/resources/json/nav/P2100-PinNO-NAV.json")))
+        val sedjson = javaClass.getResource("/json/nav/P2100-PinNO-NAV.json").readText()
 
         val gjenlevendeFnr = "1234567890000"
         val gjenlevendeAktoerId = "1123123123123123"
@@ -248,7 +249,7 @@ class BucIntegrationSpringTest {
         val lastupdate = LocalDate.of(2020, Month.AUGUST, 7).toString()
 
         //buc02
-        val docItems = listOf(DocumentsItem(id = "1", creationDate = lastupdate, lastUpdate = lastupdate, status = "sent", type = "P2100"), DocumentsItem(id = "2", creationDate = lastupdate,  lastUpdate = lastupdate, status = "draft", type = "P4000"))
+        val docItems = listOf(DocumentsItem(id = "1", creationDate = lastupdate, lastUpdate = lastupdate, status = "sent", type = SEDType.P2100), DocumentsItem(id = "2", creationDate = lastupdate,  lastUpdate = lastupdate, status = "draft", type = SEDType.P4000))
         val buc02 = Buc(id = "1010", processDefinitionName = "P_BUC_02", startDate = lastupdate, lastUpdate = lastupdate,  documents = docItems)
 
         val rinabucpath = "/buc/1010"
@@ -287,7 +288,7 @@ class BucIntegrationSpringTest {
 
     @Test
     fun `Gett det finnes gjenlevende og en avdød kun fra SAF så skal det hentes og lever en liste av buc med subject`() {
-        val sedjson = String(Files.readAllBytes(Paths.get("src/test/resources/json/nav/P2100-PinNO-NAV.json")))
+        val sedjson = javaClass.getResource("/json/nav/P2100-PinNO-NAV.json").readText()
 
         val gjenlevendeFnr = "1234567890000"
         val gjenlevendeAktoerId = "1123123123123123"
@@ -324,7 +325,10 @@ class BucIntegrationSpringTest {
         val lastupdate = LocalDate.of(2020, Month.AUGUST, 7).toString()
 
         //buc02
-        val docItems = listOf(DocumentsItem(id = "1", creationDate = lastupdate, lastUpdate = lastupdate, status = "sent", type = "P2100"), DocumentsItem(id = "2", creationDate = lastupdate,  lastUpdate = lastupdate, status = "draft", type = "P4000"))
+        val docItems = listOf(
+            DocumentsItem(id = "1", creationDate = lastupdate, lastUpdate = lastupdate, status = "sent", type = SEDType.P2100),
+            DocumentsItem(id = "2", creationDate = lastupdate,  lastUpdate = lastupdate, status = "draft", type = SEDType.P4000)
+        )
         val buc02 = Buc(id = "1010", processDefinitionName = "P_BUC_02", startDate = lastupdate, lastUpdate = lastupdate,  documents = docItems)
 
         val rinabucpath = "/buc/1010"
@@ -363,8 +367,8 @@ class BucIntegrationSpringTest {
     @Test
     fun `Gitt det finnes en gjenlevende og avdød hvor buc02 og buc05 finnes skal det returneres en liste av buc`() {
 
-        val sedP2100json = String(Files.readAllBytes(Paths.get("src/test/resources/json/nav/P2100-PinNO-NAV.json")))
-        val sedP8000json = String(Files.readAllBytes(Paths.get("src/test/resources/json/nav/P8000_NO-NAV.json")))
+        val sedP2100json = javaClass.getResource("/json/nav/P2100-PinNO-NAV.json").readText()
+        val sedP8000json = javaClass.getResource("/json/nav/P8000_NO-NAV.json").readText()
 
         val gjenlevendeFnr = "1234567890000"
         val gjenlevendeAktoerId = "1123123123123123"
@@ -403,14 +407,14 @@ class BucIntegrationSpringTest {
         val lastupdate = LocalDate.of(2020, Month.AUGUST, 7).toString()
 
         //buc02
-        val docItems = listOf(DocumentsItem(id = "1", creationDate = lastupdate, lastUpdate = lastupdate, status = "sent", type = "P2100"), DocumentsItem(id = "2", creationDate = lastupdate,  lastUpdate = lastupdate, status = "draft", type = "P4000"))
+        val docItems = listOf(DocumentsItem(id = "1", creationDate = lastupdate, lastUpdate = lastupdate, status = "sent", type = SEDType.P2100), DocumentsItem(id = "2", creationDate = lastupdate,  lastUpdate = lastupdate, status = "draft", type = SEDType.P4000))
         val buc02 = Buc(id = "1010", processDefinitionName = "P_BUC_02", startDate = lastupdate, lastUpdate = lastupdate,  documents = docItems)
 
         val rinabucpath = "/buc/1010"
         doReturn( ResponseEntity.ok().body( buc02.toJson() ) ).whenever(restEuxTemplate).exchange( eq(rinabucpath), eq(HttpMethod.GET), eq(null), eq(String::class.java))
 
         //buc05
-        val doc05Items = listOf(DocumentsItem(id = "1", creationDate = lastupdate, lastUpdate = lastupdate, status = "sent", type = "P8000"), DocumentsItem(id = "2", creationDate = lastupdate,  lastUpdate = lastupdate, status = "draft", type = "P4000"))
+        val doc05Items = listOf(DocumentsItem(id = "1", creationDate = lastupdate, lastUpdate = lastupdate, status = "sent", type = SEDType.P8000), DocumentsItem(id = "2", creationDate = lastupdate,  lastUpdate = lastupdate, status = "draft", type = SEDType.P4000))
         val buc05 = Buc(id = "2020", processDefinitionName = "P_BUC_05", startDate = lastupdate, lastUpdate = lastupdate,  documents = doc05Items)
 
         val rinabuc05path = "/buc/2020"
@@ -452,7 +456,7 @@ class BucIntegrationSpringTest {
     @Test
     fun `Gitt det finnes en gjenlevende og avdød hvor buc05 buc06 og buc10 finnes Så skal det returneres en liste av buc`() {
 
-        val sedP8000json = String(Files.readAllBytes(Paths.get("src/test/resources/json/nav/P8000_NO-NAV.json")))
+        val sedP8000json = javaClass.getResource("/json/nav/P8000_NO-NAV.json").readText()
 
         val gjenlevendeFnr = "1234567890000"
         val gjenlevendeAktoerId = "1123123123123123"
@@ -493,21 +497,21 @@ class BucIntegrationSpringTest {
 
 
         //buc05
-        val doc05Items = listOf(DocumentsItem(id = "5", creationDate = lastupdate, lastUpdate = lastupdate, status = "sent", type = "P8000"), DocumentsItem(id = "2", creationDate = lastupdate,  lastUpdate = lastupdate, status = "draft", type = "P4000"))
+        val doc05Items = listOf(DocumentsItem(id = "5", creationDate = lastupdate, lastUpdate = lastupdate, status = "sent", type = SEDType.P8000), DocumentsItem(id = "2", creationDate = lastupdate,  lastUpdate = lastupdate, status = "draft", type = SEDType.P4000))
         val buc05 = Buc(id = "2020", processDefinitionName = "P_BUC_05", startDate = lastupdate, lastUpdate = lastupdate,  documents = doc05Items)
 
         val rinabuc05path = "/buc/2020"
         doReturn( ResponseEntity.ok().body( buc05.toJson() ) ).whenever(restEuxTemplate).exchange( eq(rinabuc05path), eq(HttpMethod.GET), eq(null), eq(String::class.java))
 
         //buc06
-        val doc06Items = listOf(DocumentsItem(id = "6", creationDate = lastupdate, lastUpdate = lastupdate, status = "sent", type = "P6000"), DocumentsItem(id = "2", creationDate = lastupdate,  lastUpdate = lastupdate, status = "draft", type = "P4000"))
+        val doc06Items = listOf(DocumentsItem(id = "6", creationDate = lastupdate, lastUpdate = lastupdate, status = "sent", type = SEDType.P6000), DocumentsItem(id = "2", creationDate = lastupdate,  lastUpdate = lastupdate, status = "draft", type = SEDType.P4000))
         val buc06 = Buc(id = "3030", processDefinitionName = "P_BUC_06", startDate = lastupdate, lastUpdate = lastupdate,  documents = doc06Items)
 
         val rinabuc06path = "/buc/3030"
         doReturn( ResponseEntity.ok().body( buc06.toJson() ) ).whenever(restEuxTemplate).exchange( eq(rinabuc06path), eq(HttpMethod.GET), eq(null), eq(String::class.java))
 
         //buc10
-        val doc10Items = listOf(DocumentsItem(id = "10", creationDate = lastupdate, lastUpdate = lastupdate, status = "sent", type = "P15000"), DocumentsItem(id = "2", creationDate = lastupdate,  lastUpdate = lastupdate, status = "draft", type = "P4000"))
+        val doc10Items = listOf(DocumentsItem(id = "10", creationDate = lastupdate, lastUpdate = lastupdate, status = "sent", type = SEDType.P15000), DocumentsItem(id = "2", creationDate = lastupdate,  lastUpdate = lastupdate, status = "draft", type = SEDType.P4000))
         val buc10 = Buc(id = "4040", processDefinitionName = "P_BUC_10", startDate = lastupdate, lastUpdate = lastupdate,  documents = doc10Items)
 
         val rinabuc10path = "/buc/4040"
@@ -523,11 +527,11 @@ class BucIntegrationSpringTest {
 
         //buc06 sed
         val rinabuc06documentidpath = "/buc/3030/sed/6"
-        doReturn( ResponseEntity.ok().body( SED("P6000", pensjon = Pensjon(gjenlevende = Bruker(person = Person(pin = listOf(PinItem(land = "NO", identifikator = gjenlevendeFnr)), fornavn = "test", etternavn = "etter")))).toJsonSkipEmpty() )).whenever(restEuxTemplate).exchange( eq(rinabuc06documentidpath), eq(HttpMethod.GET), eq(null), eq(String::class.java))
+        doReturn( ResponseEntity.ok().body( SED(SEDType.P6000, pensjon = Pensjon(gjenlevende = Bruker(person = Person(pin = listOf(PinItem(land = "NO", identifikator = gjenlevendeFnr)), fornavn = "test", etternavn = "etter")))).toJsonSkipEmpty() )).whenever(restEuxTemplate).exchange( eq(rinabuc06documentidpath), eq(HttpMethod.GET), eq(null), eq(String::class.java))
 
         //buc10 sed
         val rinabucd10ocumentidpath = "/buc/4040/sed/10"
-        doReturn( ResponseEntity.ok().body( SED("P15000", pensjon = Pensjon(gjenlevende = Bruker(person = Person(pin = listOf(PinItem(land = "NO", identifikator = gjenlevendeFnr)), fornavn = "test", etternavn = "etter")))).toJsonSkipEmpty() )).whenever(restEuxTemplate).exchange( eq(rinabucd10ocumentidpath), eq(HttpMethod.GET), eq(null), eq(String::class.java))
+        doReturn( ResponseEntity.ok().body( SED(SEDType.P15000, pensjon = Pensjon(gjenlevende = Bruker(person = Person(pin = listOf(PinItem(land = "NO", identifikator = gjenlevendeFnr)), fornavn = "test", etternavn = "etter")))).toJsonSkipEmpty() )).whenever(restEuxTemplate).exchange( eq(rinabucd10ocumentidpath), eq(HttpMethod.GET), eq(null), eq(String::class.java))
 
         val result = mockMvc.perform(get("/buc/detaljer/$gjenlevendeAktoerId/vedtak/$vedtakid")
             .contentType(MediaType.APPLICATION_JSON))

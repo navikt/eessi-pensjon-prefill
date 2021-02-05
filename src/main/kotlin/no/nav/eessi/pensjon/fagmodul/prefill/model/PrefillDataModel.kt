@@ -21,7 +21,7 @@ data class PrefillDataModel(
     val penSaksnummer: String,
     val bruker: PersonId,
     val avdod: PersonId?,
-    val sedType: String,
+    val sedType: SEDType,
     val sed: SED,
     val buc: String,
     val vedtakId: String? = null,
@@ -41,10 +41,6 @@ data class PrefillDataModel(
         return "DataModel: sedType: $sedType, bucType: $buc, penSakId: $penSaksnummer, vedtakId: $vedtakId, euxCaseId: $euxCaseID"
     }
 
-    fun getSEDType(): String {
-        return sedType
-    }
-
     fun getPartSEDasJson(key: String): String? {
         return partSedAsJson[key]
     }
@@ -54,11 +50,9 @@ data class PrefillDataModel(
         return mapJsonToAny(personInfo, typeRefs())
     }
 
-    fun getInstitutionsList(): List<InstitusjonItem> {
-        return institution ?: emptyList()
-    }
+    fun getInstitutionsList(): List<InstitusjonItem> = institution
 
-    fun isMinimumPrefill() = getSEDType() != SEDType.P6000.name
+    fun isMinimumPrefill() = sedType != SEDType.P6000
 
 }
 

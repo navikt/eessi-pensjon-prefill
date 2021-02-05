@@ -19,7 +19,7 @@ class PrefillP2200(private val prefillNav: PrefillNav) {
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillP2200::class.java) }
 
     fun prefill(prefillData: PrefillDataModel, personData: PersonData, sak: V1Sak?, vedtak: V1Vedtak? = null) : SED {
-        val sedType = prefillData.getSEDType()
+        val sedType = prefillData.sedType
 
         logger.debug("----------------------------------------------------------"
                 + "\nSaktype                 : ${sak?.sakType} "
@@ -38,7 +38,7 @@ class PrefillP2200(private val prefillNav: PrefillNav) {
                 brukerInformasjon = prefillData.getPersonInfoFromRequestData()
         )
 
-        PrefillP2xxxPensjon.validerGyldigVedtakEllerKravtypeOgArsak(sak, sed.sed, vedtak)
+        PrefillP2xxxPensjon.validerGyldigVedtakEllerKravtypeOgArsak(sak, sed.type, vedtak)
         try {
             sed.pensjon = Pensjon()
                 val meldingOmPensjon = PrefillP2xxxPensjon.createPensjon(

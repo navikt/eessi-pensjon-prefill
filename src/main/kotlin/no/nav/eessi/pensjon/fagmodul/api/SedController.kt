@@ -10,6 +10,7 @@ import no.nav.eessi.pensjon.fagmodul.eux.PinOgKrav
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.BucSedResponse
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ShortDocumentItem
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
+import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.prefill.ApiRequest
 import no.nav.eessi.pensjon.fagmodul.prefill.MangelfulleInndataException
 import no.nav.eessi.pensjon.fagmodul.prefill.PersonDataService
@@ -41,6 +42,8 @@ import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
 import java.time.LocalDateTime
 import javax.annotation.PostConstruct
+import javax.ws.rs.Consumes
+import javax.ws.rs.Produces
 
 @Protected
 @RestController
@@ -162,13 +165,13 @@ class SedController(
         return addInstutionAndDocument.measure {
             logger.info("******* Legge til ny SED - start *******")
 
-            val sedType = sedAndType.sedType.name
+            val sedType = sedAndType.sedType
             val sedJson = sedAndType.sed
 
             //sjekk og evt legger til deltakere
             checkAndAddInstitution(dataModel, bucUtil)
 
-            logger.info("Prøver å sende SED: ${dataModel.getSEDType()} inn på BUC: ${dataModel.euxCaseID}")
+            logger.info("Prøver å sende SED: ${dataModel.sedType} inn på BUC: ${dataModel.euxCaseID}")
             val docresult = euxService.opprettJsonSedOnBuc(sedJson, sedType, dataModel.euxCaseID, request.vedtakId)
 
             logger.info("Opprettet ny SED med dokumentId: ${docresult.documentId}")
@@ -221,7 +224,7 @@ class SedController(
 
         val nyeInstitusjoner = bucUtil.findNewParticipants(dataModel.getInstitutionsList())
 
-        val x005 = bucUtil.findFirstDocumentItemByType("X005")
+        val x005 = bucUtil.findFirstDocumentItemByType(SEDType.X005)
         if (nyeInstitusjoner.isNotEmpty()) {
             if (x005 == null) {
                 euxService.addInstitution(dataModel.euxCaseID, nyeInstitusjoner.map { it.institution })
@@ -247,7 +250,7 @@ class SedController(
             x005Liste.forEach { x005 ->
                 try {
                     updateSEDVersion(x005, bucVersion)
-                    euxService.opprettJsonSedOnBuc(x005.toJson(), x005.getType(), dataModel.euxCaseID, dataModel.vedtakId)
+                    euxService.opprettJsonSedOnBuc(x005.toJson(), x005.type, dataModel.euxCaseID, dataModel.vedtakId)
                 } catch (eux: EuxRinaServerException) {
                     execptionError = eux
                 } catch (ex: Exception) {
@@ -263,7 +266,7 @@ class SedController(
 
     private fun extraTag(dataModel: PrefillDataModel, bucUtil: BucUtils): List<Tag> {
         return listOf(
-            Tag.of("sedType", dataModel.getSEDType()),
+            Tag.of("sedType", dataModel.sedType.name),
             Tag.of("bucType", dataModel.buc),
             Tag.of("rinaId", dataModel.euxCaseID),
             Tag.of("sakNr", dataModel.penSaksnummer),
@@ -293,7 +296,7 @@ class SedController(
         val sedAndType = prefillService.prefillSedtoJson(dataModel, bucUtil.getProcessDefinitionVersion())
 
         return addDocumentToParent.measure {
-            logger.info("Prøver å sende SED: ${dataModel.getSEDType()} inn på BUC: ${dataModel.euxCaseID}")
+            logger.info("Prøver å sende SED: ${dataModel.sedType} inn på BUC: ${dataModel.euxCaseID}")
 
             val docresult = euxService.opprettSvarJsonSedOnBuc(sedAndType.sed, dataModel.euxCaseID, parentId, request.vedtakId)
 
@@ -313,7 +316,7 @@ class SedController(
     @GetMapping("list/{euxcaseid}/{sedtype}")
     fun getDocumentlist(
         @PathVariable("euxcaseid", required = true) euxcaseid: String,
-        @PathVariable("sedtype", required = false) sedType: String?
+        @PathVariable("sedtype", required = false) sedType: SEDType?
     ): List<SED> {
         auditlogger.logBuc("getDocumentlist", " euxCaseId: $euxcaseid")
         logger.info("kaller /${euxcaseid}/${sedType} ")

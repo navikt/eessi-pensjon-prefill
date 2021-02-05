@@ -1,12 +1,14 @@
 package no.nav.eessi.pensjon.fagmodul.sedmodel
 
+import no.nav.eessi.pensjon.fagmodul.models.SEDType
+
 class SedMock {
 
     fun genererP6000Mock(): SED {
         return SED(
                 nav = NavMock().genererNavMock(),
                 pensjon = PensjonMock().genererMockData(),
-                sed = "vedtak",
+                type = SEDType.P6000,
                 sedVer = "0",
                 sedGVer = "4"
                 //sector = "Sector Components/Pensions/vedtak"
@@ -17,7 +19,7 @@ class SedMock {
         return SED(
                 nav = NavMock().genererNavMock(),
                 pensjon = PensjonMock().genererMockDataMedMeldemskap(),
-                sed = "P5000",
+                type = SEDType.P5000,
                 sedVer = "0",
                 sedGVer = "4"
         )
@@ -27,7 +29,7 @@ class SedMock {
         return SED(
                 nav = NavMock().genererNavMock(),
                 pensjon = PensjonMock().genererMockData(),
-                sed = "P2200",
+                type = SEDType.P2200,
                 sedVer = "0",
                 sedGVer = "4"
         )

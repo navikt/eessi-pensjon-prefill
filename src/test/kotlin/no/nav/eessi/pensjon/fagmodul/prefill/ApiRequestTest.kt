@@ -1,6 +1,7 @@
 package no.nav.eessi.pensjon.fagmodul.prefill
 
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
+import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import no.nav.eessi.pensjon.utils.mapJsonToAny
@@ -31,8 +32,7 @@ class ApiRequestTest {
     }
 
     private fun readJsonAndParseToSed(filename: String): String {
-        val p2200path = Paths.get("src/test/resources/json/nav/$filename")
-        val p2200file = String(Files.readAllBytes(p2200path))
+        val p2200file = javaClass.getResource("/json/nav/$filename").readText()
         assertTrue(validateJson(p2200file))
         return p2200file
     }
@@ -74,7 +74,7 @@ class ApiRequestTest {
                 "}"
         val datamodel = ApiRequest.buildPrefillDataModelOnExisting( mapJsonToAny(req, typeRefs<ApiRequest>()), "", "")
         assertNotNull(datamodel)
-        assertEquals("P2000", datamodel.getSEDType())
+        assertEquals(SEDType.P2000, datamodel.sedType)
         assertEquals("P_BUC_01", datamodel.buc)
     }
 
@@ -118,7 +118,7 @@ class ApiRequestTest {
                 buc = "P_BUC_06",
                 aktoerId = "0105094340092"
         )
-        assertThrows<MangelfulleInndataException> {
+        assertThrows<UgyldigInndataException> {
             ApiRequest.buildPrefillDataModelOnExisting(mockData, "12345", null)
         }
     }
@@ -154,7 +154,7 @@ class ApiRequestTest {
         assertEquals("12345", model.bruker.norskIdent)
         assertEquals("12234", model.penSaksnummer)
         assertEquals("0105094340092", model.bruker.aktorId)
-        assertEquals("P6000", model.getSEDType())
+        assertEquals(SEDType.P6000, model.sedType)
 
         assertEquals(SED::class.java, model.sed::class.java)
 
@@ -177,7 +177,7 @@ class ApiRequestTest {
         assertEquals("12345", model.bruker.norskIdent)
         assertEquals("12234", model.penSaksnummer)
         assertEquals("0105094340092", model.bruker.aktorId)
-        assertEquals("P2100", model.getSEDType())
+        assertEquals(SEDType.P2100, model.sedType)
         assertEquals("2223312", model.avdod?.aktorId)
         assertEquals("010244212312", model.avdod?.norskIdent)
         assertEquals(SED::class.java, model.sed::class.java)
@@ -202,7 +202,7 @@ class ApiRequestTest {
         assertEquals("23123", model.bruker.norskIdent)
         assertEquals("12234", model.penSaksnummer)
         assertEquals("0105094340092", model.bruker.aktorId)
-        assertEquals("P5000", model.getSEDType())
+        assertEquals(SEDType.P5000, model.sedType)
         assertEquals("113123123123", model.avdod?.aktorId)
         assertEquals("576567567567", model.avdod?.norskIdent)
         assertEquals(SED::class.java, model.sed::class.java)
@@ -244,9 +244,6 @@ class ApiRequestTest {
         assertEquals("sakId: 01234567890 buc: P_BUC_01 sed: P2000 euxCaseId: 99191999911", createMockApiRequest("P2000", "P_BUC_01", null).toAudit())
 
         assertEquals("sakId: 01234567890 buc: P_BUC_02 sed: P4000 euxCaseId: 99191999911", createMockApiRequest("P4000", "P_BUC_02", null).toAudit())
-
-        assertEquals("sakId: 01234567890 euxCaseId: 99191999911", createMockApiRequest("", "", null).toAudit())
-
     }
 
 }

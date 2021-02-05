@@ -137,7 +137,7 @@ class SedControllerTest {
 
         val sed = SED.fromJson(response)
 
-        assertEquals("P6000", sed.sed)
+        assertEquals(SEDType.P6000, sed.type)
         assertEquals("Dummy", sed.nav?.bruker?.person?.fornavn)
         assertEquals("Dummy", sed.nav?.bruker?.person?.etternavn)
     }
@@ -145,7 +145,7 @@ class SedControllerTest {
     @Test
     fun getDocumentfromRina() {
 
-        val sed = SED("P2000")
+        val sed = SED(SEDType.P2000)
         doReturn(sed).`when`(mockEuxService).getSedOnBucByDocumentId("2313", "23123123123")
 
         val result = sedController.getDocument("2313", "23123123123")
@@ -162,7 +162,7 @@ class SedControllerTest {
 
     @Test
     fun `getFiltrerteGyldigSedAksjonListAsString   buc_01 returns 1 sed`() {
-        val mockBuc = mapJsonToAny(String(Files.readAllBytes(Paths.get("src/test/resources/json/buc/P_BUC_01_4.2_tom.json"))), typeRefs<Buc>())
+        val mockBuc = mapJsonToAny(javaClass.getResource("/json/buc/P_BUC_01_4.2_tom.json").readText(), typeRefs<Buc>())
         val buc = "P_BUC_01"
         val rinanr = "1000101"
 
@@ -170,7 +170,7 @@ class SedControllerTest {
 
         val actualResponse = sedController.getSeds(buc, rinanr)
 
-        val expectedResponse = ResponseEntity.ok().body(mapAnyToJson( listOf("P2000")))
+        val expectedResponse = ResponseEntity.ok().body(mapAnyToJson( listOf(SEDType.P2000)))
 
         assertEquals(expectedResponse, actualResponse)
 
@@ -180,7 +180,7 @@ class SedControllerTest {
 
     @Test
     fun `getFiltrerteGyldigSedAksjonListAsString   buc_06 returns 4 seds`() {
-        val mockBuc = mapJsonToAny(String(Files.readAllBytes(Paths.get("src/test/resources/json/buc/buc_P_BUC_06_4.2_tom.json"))), typeRefs<Buc>())
+        val mockBuc = mapJsonToAny(javaClass.getResource("/json/buc/buc_P_BUC_06_4.2_tom.json").readText(), typeRefs<Buc>())
         val buc = "P_BUC_06"
         val rinanr = "1000101"
 
@@ -188,7 +188,8 @@ class SedControllerTest {
 
         val actualResponse = sedController.getSeds(buc, rinanr)
 
-        val expectedResponse = ResponseEntity.ok().body(mapAnyToJson( listOf("P5000", "P6000", "P7000", "P10000")))
+        val expectedResponse =
+            ResponseEntity.ok(mapAnyToJson(listOf(SEDType.P5000, SEDType.P6000, SEDType.P7000, SEDType.P10000)))
 
         assertEquals(expectedResponse, actualResponse)
 
@@ -198,7 +199,7 @@ class SedControllerTest {
 
     @Test
     fun `getFiltrerteGyldigSedAksjonListAsString   buc_06 returns 3 seds if a sed already exists`() {
-        val mockBuc = mapJsonToAny(String(Files.readAllBytes(Paths.get("src/test/resources/json/buc/buc-P_BUC_06_4.2_P5000.json"))), typeRefs<Buc>())
+        val mockBuc = mapJsonToAny(javaClass.getResource("/json/buc/buc-P_BUC_06_4.2_P5000.json").readText(), typeRefs<Buc>())
         val buc = "P_BUC_06"
         val rinanr = "1000101"
 
@@ -206,7 +207,7 @@ class SedControllerTest {
 
         val actualResponse = sedController.getSeds(buc, rinanr)
 
-        val expectedResponse = ResponseEntity.ok().body(mapAnyToJson( listOf("P10000", "P6000", "P7000")))
+        val expectedResponse = ResponseEntity.ok().body(mapAnyToJson(listOf(SEDType.P10000, SEDType.P6000, SEDType.P7000)))
 
         assertEquals(expectedResponse, actualResponse)
 
@@ -216,7 +217,7 @@ class SedControllerTest {
 
     @Test
     fun `getFiltrerteGyldigSedAksjonListAsString buc_01 returns lots of seds`() {
-        val mockBuc = mapJsonToAny(String(Files.readAllBytes(Paths.get("src/test/resources/json/buc/buc-22909_v4.1.json"))), typeRefs<Buc>())
+        val mockBuc = mapJsonToAny(javaClass.getResource("/json/buc/buc-22909_v4.1.json").readText(), typeRefs<Buc>())
         val buc = "P_BUC_01"
         val rinanr = "1000101"
 
@@ -224,7 +225,8 @@ class SedControllerTest {
 
         val actualResponse = sedController.getSeds(buc, rinanr)
 
-        val expectedResponse = ResponseEntity.ok().body(mapAnyToJson( listOf("H020", "H070", "H120", "P10000", "P3000_NO", "P4000", "P5000", "P6000", "P7000", "P8000" )))
+        val sedList = listOf(SEDType.H020, SEDType.H070, SEDType.H120, SEDType.P10000, SEDType.P3000_NO, SEDType.P4000, SEDType.P5000, SEDType.P6000, SEDType.P7000, SEDType.P8000 )
+        val expectedResponse = ResponseEntity.ok().body(mapAnyToJson(sedList))
 
         assertEquals(expectedResponse, actualResponse)
 
@@ -234,7 +236,7 @@ class SedControllerTest {
 
     @Test
     fun `getFiltrerteGyldigSedAksjonListAsString buc_06 returns 0 seds if a sed is sent`() {
-        val mockBuc = mapJsonToAny(String(Files.readAllBytes(Paths.get("src/test/resources/json/buc/buc-P_BUC_06-P5000_Sendt.json"))), typeRefs<Buc>())
+        val mockBuc = mapJsonToAny(javaClass.getResource("/json/buc/buc-P_BUC_06-P5000_Sendt.json").readText(), typeRefs<Buc>())
         val buc = "P_BUC_06"
         val rinanr = "1000101"
 
@@ -275,7 +277,7 @@ class SedControllerTest {
 
         val mockParticipants = listOf(ParticipantsItem(role = "CaseOwner", organisation = Organisation(countryCode = "NO", name = "NAV", id = "NAV")))
         val mockBuc = Buc(id = "23123", processDefinitionName = "P_BUC_01", participants = mockParticipants)
-        mockBuc.documents = listOf(createDummyBucDocumentItem(), DocumentsItem(type = "X005"))
+        mockBuc.documents = listOf(createDummyBucDocumentItem(), DocumentsItem(type = SEDType.X005))
         mockBuc.actions = listOf(ActionsItem(type = "Send", name = "Send"))
 
         val dummyPrefillData = ApiRequest.buildPrefillDataModelOnExisting(apiRequestWith(euxCaseId), NorskIdent("12345").id, null)
@@ -300,7 +302,7 @@ class SedControllerTest {
 
         val mockParticipants = listOf(ParticipantsItem(role = "CaseOwner", organisation = Organisation(countryCode = "SE", name = "SE", id = "SE")))
         val mockBuc = Buc(id = "23123", processDefinitionName = "P_BUC_01", participants = mockParticipants)
-        mockBuc.documents = listOf(createDummyBucDocumentItem(), DocumentsItem(type = "X005"))
+        mockBuc.documents = listOf(createDummyBucDocumentItem(), DocumentsItem(type = SEDType.X005))
         mockBuc.actions = listOf(ActionsItem(type = "Send", name = "Send"))
 
         val newParticipants = listOf(
@@ -352,12 +354,12 @@ class SedControllerTest {
        doReturn(NorskIdent("12345")).whenever(mockAktoerIdHelper).hentGjeldendeIdent(eq(IdentGruppe.NorskIdent), any<AktoerId>())
 
         val mockBuc = Buc(id = "23123", processDefinitionName = "P_BUC_01", participants = listOf(ParticipantsItem()), processDefinitionVersion = "4.2")
-        mockBuc.documents = listOf(DocumentsItem(id = "3123123", type = "P9000", status = "empty", allowsAttachments = true  ), DocumentsItem(id = parentDocumentId, type = "P8000", status = "received", allowsAttachments = true))
+        mockBuc.documents = listOf(DocumentsItem(id = "3123123", type = SEDType.P9000, status = "empty", allowsAttachments = true  ), DocumentsItem(id = parentDocumentId, type = SEDType.P8000, status = "received", allowsAttachments = true))
         mockBuc.actions = listOf(ActionsItem(id = "1000", type = "Received", name = "Received"))
 
         val api = apiRequestWith(euxCaseId, sed = "P9000", institutions = emptyList())
 
-        val sed = SED("P9000")
+        val sed = SED(SEDType.P9000)
         val sedandtype = SedAndType(SEDType.P9000, sed.toJsonSkipEmpty())
 
         doReturn(sed).whenever(mockPrefillSEDService).prefill(any(), eq(null))
@@ -382,7 +384,7 @@ class SedControllerTest {
         val euxCaseId = "1234567890"
 
         doReturn(NorskIdent("12345")).whenever(mockAktoerIdHelper).hentGjeldendeIdent(eq(IdentGruppe.NorskIdent), any<AktoerId>())
-        val mockBucJson = String(Files.readAllBytes(Paths.get("src/test/resources/json/buc/buc-P_BUC_06-P6000_Sendt.json")))
+        val mockBucJson = javaClass.getResource("/json/buc/buc-P_BUC_06-P6000_Sendt.json").readText()
         doReturn( mapJsonToAny(mockBucJson, typeRefs<Buc>())).whenever(mockEuxService).getBuc(euxCaseId)
         val apiRequest = apiRequestWith(euxCaseId, emptyList())
 
@@ -396,10 +398,10 @@ class SedControllerTest {
     fun `Gitt det opprettes en SED P10000 på tom P_BUC_06 Så skal bucmodel hents på nyt og shortDocument returneres som response`() {
         val euxCaseId = "1234567890"
         doReturn(NorskIdent("12345")).whenever(mockAktoerIdHelper).hentGjeldendeIdent(eq(IdentGruppe.NorskIdent), any<AktoerId>())
-        doReturn(SED("P10000")).whenever(mockPrefillSEDService).prefill(any(), eq(null))
+        doReturn(SED(SEDType.P10000)).whenever(mockPrefillSEDService).prefill(any(), eq(null))
 
-        val mockBucJson = String(Files.readAllBytes(Paths.get("src/test/resources/json/buc/buc_P_BUC_06_4.2_tom.json")))
-        val mockBucJson2 = String(Files.readAllBytes(Paths.get("src/test/resources/json/buc/P_BUC_06_P10000.json")))
+        val mockBucJson = javaClass.getResource("/json/buc/buc_P_BUC_06_4.2_tom.json").readText()
+        val mockBucJson2 = javaClass.getResource("/json/buc/P_BUC_06_P10000.json").readText()
 
         doReturn( mapJsonToAny(mockBucJson, typeRefs<Buc>()))
                 .doReturn( mapJsonToAny(mockBucJson2, typeRefs<Buc>()))
@@ -554,7 +556,7 @@ class SedControllerTest {
 
     @Test
     fun `update SED Version from old version to new version`() {
-        val sed = SED("P2000")
+        val sed = SED(SEDType.P2000)
         val bucVersion = "v4.2"
 
         sedController.updateSEDVersion(sed, bucVersion)
@@ -563,7 +565,7 @@ class SedControllerTest {
 
     @Test
     fun `update SED Version from old version to same version`() {
-        val sed = SED("P2000")
+        val sed = SED(SEDType.P2000)
         val bucVersion = "v4.1"
 
         sedController.updateSEDVersion(sed, bucVersion)
@@ -573,7 +575,7 @@ class SedControllerTest {
 
     @Test
     fun `update SED Version from old version to unknown new version`() {
-        val sed = SED("P2000")
+        val sed = SED(SEDType.P2000)
         val bucVersion = "v4.4"
 
         sedController.updateSEDVersion(sed, bucVersion)
@@ -659,10 +661,11 @@ class SedControllerTest {
     private fun createDummyBucDocumentItem() : DocumentsItem {
         return DocumentsItem(
                         id = "3123123",
-                        type = "P6000",
+                        type = SEDType.P6000,
                         status = "empty",
                         allowsAttachments = true
               )
     }
 
 }
+

@@ -14,7 +14,6 @@ import no.nav.eessi.pensjon.fagmodul.models.SEDType.P6000
 import no.nav.eessi.pensjon.fagmodul.models.SEDType.P7000
 import no.nav.eessi.pensjon.fagmodul.models.SEDType.P8000
 import no.nav.eessi.pensjon.fagmodul.models.SEDType.X005
-import no.nav.eessi.pensjon.fagmodul.models.SEDType.valueOf
 import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjon
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PersonData
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PersonDataCollection
@@ -33,6 +32,7 @@ import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerregisterService
 import no.nav.eessi.pensjon.personoppslag.aktoerregister.IdentGruppe
 import no.nav.eessi.pensjon.personoppslag.aktoerregister.NorskIdent
 import no.nav.eessi.pensjon.personoppslag.personv3.PersonV3Service
+import no.nav.eessi.pensjon.services.pensjonsinformasjon.EPSaktype
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.EPSaktype.ALDER
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.EPSaktype.UFOREP
 import no.nav.eessi.pensjon.utils.toJson
@@ -61,7 +61,7 @@ class PrefillSEDService(
 
     fun prefill(prefillData: PrefillDataModel, personDataCollection: PersonDataCollection? = null): SED {
 
-        val sedType = valueOf(prefillData.getSEDType())
+        val sedType = prefillData.sedType
 
         logger.debug("mapping prefillClass to SED: $sedType")
 

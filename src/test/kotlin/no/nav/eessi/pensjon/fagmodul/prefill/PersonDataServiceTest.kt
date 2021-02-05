@@ -4,6 +4,7 @@ import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.prefill.LagPDLPerson.Companion.lagPerson
 import no.nav.eessi.pensjon.fagmodul.prefill.LagPDLPerson.Companion.medAdresse
 import no.nav.eessi.pensjon.fagmodul.prefill.LagPDLPerson.Companion.medBarn
@@ -58,7 +59,7 @@ internal class PersonDataServiceTest {
 
         every { personService.hentPerson(any<Ident<*>>()) } returns mockPerson
 
-        val data = PrefillDataModelMother.initialPrefillDataModel("P2001", FNR_VOKSEN, SAK_ID, euxCaseId = EUX_RINA)
+        val data = PrefillDataModelMother.initialPrefillDataModel(SEDType.P2001, FNR_VOKSEN, SAK_ID, euxCaseId = EUX_RINA)
 
         val result = persondataService.hentPersonData(data)
 
@@ -81,7 +82,8 @@ internal class PersonDataServiceTest {
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns gjenlev
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_2)) } returns avdod
 
-        val data = PrefillDataModelMother.initialPrefillDataModel("P2001", FNR_VOKSEN, SAK_ID, euxCaseId = EUX_RINA, avdod = PersonId(FNR_VOKSEN_2, AKTOER_ID_2))
+        val data = PrefillDataModelMother.initialPrefillDataModel(
+            SEDType.P2001, FNR_VOKSEN, SAK_ID, euxCaseId = EUX_RINA, avdod = PersonId(FNR_VOKSEN_2, AKTOER_ID_2))
 
         val result = persondataService.hentPersonData(data)
 
@@ -105,7 +107,7 @@ internal class PersonDataServiceTest {
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns forelder
         every { personService.hentPerson(NorskIdent(FNR_BARN)) } returns barn
 
-        val data = PrefillDataModelMother.initialPrefillDataModel("P2001", FNR_VOKSEN, SAK_ID, euxCaseId = EUX_RINA)
+        val data = PrefillDataModelMother.initialPrefillDataModel(SEDType.P2001, FNR_VOKSEN, SAK_ID, euxCaseId = EUX_RINA)
 
         val result = persondataService.hentPersonData(data)
 
@@ -144,7 +146,7 @@ internal class PersonDataServiceTest {
         every { personService.hentPerson(NorskIdent(barn1)) } returns barnet
         every { personService.hentPerson(NorskIdent(barn2)) } returns barnto
 
-        val data = PrefillDataModelMother.initialPrefillDataModel("P2001", farfnr, SAK_ID, euxCaseId = EUX_RINA)
+        val data = PrefillDataModelMother.initialPrefillDataModel(SEDType.P2001, farfnr, SAK_ID, euxCaseId = EUX_RINA)
 
         val result = persondataService.hentPersonData(data)
 

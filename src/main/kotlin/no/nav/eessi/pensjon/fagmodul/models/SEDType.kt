@@ -1,6 +1,9 @@
 package no.nav.eessi.pensjon.fagmodul.models
 
+import com.fasterxml.jackson.annotation.JsonCreator
+
 enum class SEDType {
+    DummyChooseParts, // I særtilfeller hvor SedType ikke er valgt (P_BUC_06)
     P2001, //PDL P2000
     P2101, //PDL P2100
     P2000,
@@ -27,6 +30,9 @@ enum class SEDType {
     P1000,
     P1100,
     P11000,
+    X007,
+    X008,
+    X009,
     P3000_FR, //Frankrike
     P3000_RO, //Romania
     P3000_IE, //Irland
@@ -61,6 +67,16 @@ enum class SEDType {
     P3000_CZ; //Tjekkia
 
     companion object {
+        @JvmStatic
+        @JsonCreator
+        fun from(s: String): SEDType? {
+            return try {
+                valueOf(s)
+            } catch (e: Exception) {
+                null
+            }
+        }
+
         @JvmStatic
         fun isValidSEDType(input: String): Boolean {
             return try {

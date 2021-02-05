@@ -1,6 +1,7 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed.krav
 
 import com.nhaarman.mockitokotlin2.mock
+import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjon
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModelMother
@@ -54,7 +55,7 @@ class PrefillP2000MedUforeSakTest {
 
         dataFromPEN = lesPensjonsdataFraFil("P2200-UP-INNV.xml")
 
-        prefillData = PrefillDataModelMother.initialPrefillDataModel("P2000", personFnr, penSaksnummer = pesysSaksnummer)
+        prefillData = PrefillDataModelMother.initialPrefillDataModel(SEDType.P2000, personFnr, penSaksnummer = pesysSaksnummer)
 
         prefillSEDService = PrefillSEDService(prefillNav, persondataFraTPS, EessiInformasjon(), dataFromPEN, aktorRegisterService, prefillPDLNav)
     }

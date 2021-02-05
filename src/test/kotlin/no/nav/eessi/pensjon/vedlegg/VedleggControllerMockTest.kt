@@ -50,7 +50,7 @@ class VedleggControllerMockTest {
     @Test
     fun `gitt en 200 httpstatuscode fra safClient når dokument metadata hentes så returnes 200 httpstatuscode`() {
 
-        val responseJson = String(Files.readAllBytes(Paths.get("src/test/resources/json/saf/hentMetadataResponse.json")))
+        val responseJson = javaClass.getResource("/json/saf/hentMetadataResponse.json").readText()
                 .trim()
                 .replace("\r", "")
                 .replace("\n", "")
@@ -82,7 +82,7 @@ class VedleggControllerMockTest {
 
         val resp = vedleggController.getDokumentInnhold("123", "4567", "ARKIV")
         assertEquals(HttpStatus.valueOf(200), resp.statusCode)
-        assertEquals(resp.body?.replace("\r","") , String(Files.readAllBytes(Paths.get("src/test/resources/json/saf/hentDokumentInnholdResponse.json"))).replace("\r","")
+        assertEquals(resp.body?.replace("\r","") , javaClass.getResource("/json/saf/hentDokumentInnholdResponse.json").readText().replace("\r","")
         )
     }
 

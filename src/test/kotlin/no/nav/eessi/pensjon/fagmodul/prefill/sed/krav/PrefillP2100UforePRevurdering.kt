@@ -1,6 +1,7 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed.krav
 
 import com.nhaarman.mockitokotlin2.mock
+import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjon
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PersonId
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModel
@@ -53,7 +54,7 @@ class PrefillP2100UforePRevurdering {
     @Test
     fun `forventet korrekt utfylt P2100 uforepensjon med kap4 og 9`() {
         prefillData = PrefillDataModelMother.initialPrefillDataModel(
-                sedType = "P2100",
+                sedType = SEDType.P2100,
                 pinId = personFnr,
                 penSaksnummer = pesysSaksnummer,
                 avdod = PersonId(avdodPersonFnr, "112233445566"),

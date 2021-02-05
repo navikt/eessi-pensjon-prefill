@@ -2,6 +2,7 @@ package no.nav.eessi.pensjon.fagmodul.prefill.person
 
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
+import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjon
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PersonData
 import no.nav.eessi.pensjon.fagmodul.prefill.model.PersonId
@@ -64,7 +65,7 @@ class PrefillSedEnkeTest {
         doReturn(AktoerId("1212121212121212")).`when`(aktorRegisterService).hentGjeldendeIdent(IdentGruppe.AktoerId, NorskIdent(b2fnr))
 
         val prefillNav = PrefillNav(mock<PrefillAdresse>(), institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO")
-        val prefillData = initialPrefillDataModel(sedType = "P2100", pinId = fnr, avdod = PersonId(norskIdent = fnr, aktorId = "212"), vedtakId = "", penSaksnummer = "22875355")
+        val prefillData = initialPrefillDataModel(sedType = SEDType.P2100, pinId = fnr, avdod = PersonId(norskIdent = fnr, aktorId = "212"), vedtakId = "", penSaksnummer = "22875355")
         val personData = PersonData(forsikretPerson = preutfyllingTPS.hentBruker(fnr)!!, ektefelleBruker = null, ekteTypeValue = "ENKE", gjenlevendeEllerAvdod = preutfyllingTPS.hentBruker(fnr), barnBrukereFraTPS = listOf(preutfyllingTPS.hentBruker(b1fnr)!!, preutfyllingTPS.hentBruker(b2fnr)!!))
         val response = prefillNav.prefill(penSaksnummer = prefillData.penSaksnummer, bruker = prefillData.bruker, avdod = prefillData.avdod, personData = personData, brukerInformasjon = prefillData.getPersonInfoFromRequestData())
         val sed = prefillData.sed
@@ -104,7 +105,7 @@ class PrefillSedEnkeTest {
         doReturn(AktoerId("3323332333233323")).`when`(aktorRegisterService).hentGjeldendeIdent(IdentGruppe.AktoerId, NorskIdent(b1fnr))
         doReturn(AktoerId("1212121212121212")).`when`(aktorRegisterService).hentGjeldendeIdent(IdentGruppe.AktoerId, NorskIdent(b2fnr))
 
-        val prefillData = initialPrefillDataModel(sedType = "P2200", pinId = fnr, vedtakId = "", penSaksnummer = "14915730")
+        val prefillData = initialPrefillDataModel(sedType = SEDType.P2200, pinId = fnr, vedtakId = "", penSaksnummer = "14915730")
         val sed = PrefillSEDService(prefillNav, preutfyllingTPS, EessiInformasjon(), pensjonsinformasjonService, aktorRegisterService, prefillPDLNav).prefill(prefillData)
 
         assertEquals("JESSINE TORDNU", sed.nav?.bruker?.person?.fornavn)
@@ -112,7 +113,7 @@ class PrefillSedEnkeTest {
         assertEquals("K", sed.nav?.bruker?.person?.kjoenn)
         assertEquals(1, sed.nav?.barn?.size)
 
-        assertEquals("P2200", sed.sed)
+        assertEquals(SEDType.P2200, sed.type)
 
     }
 

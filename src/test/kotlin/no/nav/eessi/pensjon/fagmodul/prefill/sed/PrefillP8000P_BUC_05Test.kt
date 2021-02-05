@@ -3,6 +3,7 @@ package no.nav.eessi.pensjon.fagmodul.prefill.sed
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.whenever
+import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.prefill.LagTPSPerson.Companion.lagTPSBruker
 import no.nav.eessi.pensjon.fagmodul.prefill.LagTPSPerson.Companion.medAdresse
 import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjon
@@ -84,7 +85,7 @@ class PrefillP8000P_BUC_05Test {
         prefillSEDService = PrefillSEDService(prefillNav, personV3Service, EessiInformasjon(), pensjoninformasjonservice, aktorRegisterService, prefillPDLNav)
 
         prefill = PrefillP8000(prefillSed)
-        prefillData = PrefillDataModelMother.initialPrefillDataModel("P8000", personFnr, penSaksnummer = pesysSaksnummer)
+        prefillData = PrefillDataModelMother.initialPrefillDataModel(SEDType.P8000, personFnr, penSaksnummer = pesysSaksnummer)
 
     }
 
@@ -127,7 +128,7 @@ class PrefillP8000P_BUC_05Test {
         doReturn("NO").whenever(kodeverkClient).finnLandkode2("NOR")
         doReturn("SE").whenever(kodeverkClient).finnLandkode2("SWE")
 
-        prefillData = PrefillDataModelMother.initialPrefillDataModel("P8000", fnr, penSaksnummer = pesysSaksnummer, avdod = PersonId(norskIdent = avdodFnr, aktorId = "21323"),  refTilPerson = ReferanseTilPerson.AVDOD)
+        prefillData = PrefillDataModelMother.initialPrefillDataModel(SEDType.P8000, fnr, penSaksnummer = pesysSaksnummer, avdod = PersonId(norskIdent = avdodFnr, aktorId = "21323"),  refTilPerson = ReferanseTilPerson.AVDOD)
 
         val sed =  prefillSEDService.prefill(prefillData)
 
@@ -159,7 +160,7 @@ class PrefillP8000P_BUC_05Test {
         doReturn("NO").whenever(kodeverkClient).finnLandkode2("NOR")
         doReturn("SE").whenever(kodeverkClient).finnLandkode2("SWE")
 
-        prefillData = PrefillDataModelMother.initialPrefillDataModel("P8000", fnr, penSaksnummer = pesysSaksnummer, avdod = PersonId(norskIdent = avdodFnr, aktorId = "21323"), refTilPerson = ReferanseTilPerson.SOKER )
+        prefillData = PrefillDataModelMother.initialPrefillDataModel(SEDType.P8000, fnr, penSaksnummer = pesysSaksnummer, avdod = PersonId(norskIdent = avdodFnr, aktorId = "21323"), refTilPerson = ReferanseTilPerson.SOKER )
 
         val sed =  prefillSEDService.prefill(prefillData)
 
@@ -203,7 +204,7 @@ class PrefillP8000P_BUC_05Test {
         doReturn("NO").whenever(kodeverkClient).finnLandkode2("NOR")
         doReturn("SE").whenever(kodeverkClient).finnLandkode2("SWE")
 
-        prefillData = PrefillDataModelMother.initialPrefillDataModel("P8000", fnr, penSaksnummer = "100", avdod = PersonId(norskIdent = avdodFnr, aktorId = "21323"),  refTilPerson = ReferanseTilPerson.SOKER, bucType = "P_BUC_05")
+        prefillData = PrefillDataModelMother.initialPrefillDataModel(SEDType.P8000, fnr, penSaksnummer = "100", avdod = PersonId(norskIdent = avdodFnr, aktorId = "21323"),  refTilPerson = ReferanseTilPerson.SOKER, bucType = "P_BUC_05")
 
         val sed =  prefillSEDService.prefill(prefillData)
 
@@ -271,7 +272,7 @@ class PrefillP8000P_BUC_05Test {
         doReturn("NO").whenever(kodeverkClient).finnLandkode2("NOR")
         doReturn("SE").whenever(kodeverkClient).finnLandkode2("SWE")
 
-        prefillData = PrefillDataModelMother.initialPrefillDataModel("P8000", fnr, penSaksnummer = "100", avdod = PersonId(norskIdent = avdodFnr, aktorId = "21323"),  refTilPerson = ReferanseTilPerson.SOKER, bucType = "P_BUC_05")
+        prefillData = PrefillDataModelMother.initialPrefillDataModel(SEDType.P8000, fnr, penSaksnummer = "100", avdod = PersonId(norskIdent = avdodFnr, aktorId = "21323"),  refTilPerson = ReferanseTilPerson.SOKER, bucType = "P_BUC_05")
 
         val sed =  prefillSEDService.prefill(prefillData)
 

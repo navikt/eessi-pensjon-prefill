@@ -1,6 +1,7 @@
 package no.nav.eessi.pensjon.fagmodul.eux.bucmodel
 
 import com.fasterxml.jackson.annotation.JsonIgnore
+import no.nav.eessi.pensjon.fagmodul.models.SEDType
 
 class DocumentsItem(
         val parendDocumentId: Any? = null,
@@ -11,7 +12,7 @@ class DocumentsItem(
         val isDummyDocument: Boolean? = null,
         val mimeType: String? = null,
         val firstDocument: Boolean? = null,
-        val type: String? = null,
+        val type: SEDType? = null,
         val conversations: List<ConversationsItem>? = null,
         val isSendExecuted: Boolean? = null,
         val hasMultipleVersions: Boolean? = null,
@@ -57,7 +58,7 @@ class DocumentsItem(
 class ShortDocumentItem(
         val id: String? = null,
         val parentDocumentId: String? = null,
-        val type: String? = null,
+        val type: SEDType? = null,
         val status: String? = null,
         val creationDate: Long? = null,
         val lastUpdate: Long? = null,
