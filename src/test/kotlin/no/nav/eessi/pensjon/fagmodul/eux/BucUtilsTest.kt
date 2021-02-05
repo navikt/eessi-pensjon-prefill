@@ -548,7 +548,6 @@ class BucUtilsTest {
 
     }
 
-/* TODO
     @Test
     fun `check that document P12000 is allready on buc throw Exception`() {
         val bucjson = getTestJsonFile("buc-P_BUC_08-P12000.json")
@@ -556,10 +555,9 @@ class BucUtilsTest {
         val bucUtils = BucUtils(buc)
 
         assertThrows<SedDokumentKanIkkeOpprettesException> {
-            bucUtils.checkIfSedCanBeCreated(SEDType.P120000, "123333")
+            bucUtils.checkIfSedCanBeCreated(SEDType.P12000, "123333")
         }
     }
-*/
 
     @Test
     fun `check that document P10000 is allready on buc throw Exception`() {
