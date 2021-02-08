@@ -21,7 +21,7 @@ import org.joda.time.DateTime
 import org.joda.time.DateTimeZone
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
-import org.springframework.web.bind.annotation.ResponseStatus
+import org.springframework.web.server.ResponseStatusException
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -369,8 +369,6 @@ class BucUtils(private val buc: Buc ) {
 
 }
 
-@ResponseStatus(value = HttpStatus.BAD_REQUEST)
-class ManglerDeltakereException(message: String) : IllegalStateException(message)
+class ManglerDeltakereException(message: String) : ResponseStatusException(HttpStatus.BAD_REQUEST, message)
 
-@ResponseStatus(value = HttpStatus.BAD_REQUEST)
-class SedDokumentKanIkkeOpprettesException(message: String) : Exception(message)
+class SedDokumentKanIkkeOpprettesException(message: String) : ResponseStatusException(HttpStatus.BAD_REQUEST, message)
