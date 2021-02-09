@@ -33,6 +33,9 @@ enum class SEDType {
     X007,
     X008,
     X009,
+    R004,
+    R005,
+    R006,
     P3000_FR, //Frankrike
     P3000_RO, //Romania
     P3000_IE, //Irland
