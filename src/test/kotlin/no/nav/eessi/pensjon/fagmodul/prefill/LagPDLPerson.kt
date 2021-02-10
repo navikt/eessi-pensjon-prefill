@@ -4,8 +4,8 @@ import no.nav.eessi.pensjon.fagmodul.prefill.tps.FodselsnummerMother
 import no.nav.eessi.pensjon.fagmodul.prefill.tps.NavFodselsnummer
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Bostedsadresse
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Doedsfall
+import no.nav.eessi.pensjon.personoppslag.pdl.model.Familierelasjon
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Familierelasjonsrolle
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Familierlasjon
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Foedsel
 import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe
 import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentInformasjon
@@ -45,9 +45,9 @@ class LagPDLPerson {
 
         fun Person.medBarn(barnfnr: String): Person {
                 val minRolle = familieRolle(this)
-                val list = mutableListOf<Familierlasjon>()
+                val list = mutableListOf<Familierelasjon>()
                 list.addAll(this.familierelasjoner)
-                list.add(Familierlasjon(
+                list.add(Familierelasjon(
                     relatertPersonsIdent = barnfnr,
                     relatertPersonsRolle = Familierelasjonsrolle.BARN,
                     minRolleForPerson = minRolle)
@@ -58,9 +58,9 @@ class LagPDLPerson {
         fun Person.medForeldre(foreldre: Person): Person {
             val foreldreRolle = familieRolle(foreldre)
             val foreldrefnr = foreldre.identer.firstOrNull { it.gruppe == IdentGruppe.FOLKEREGISTERIDENT }?.ident
-            val list = mutableListOf<Familierlasjon>()
+            val list = mutableListOf<Familierelasjon>()
             list.addAll(this.familierelasjoner)
-            list.add(Familierlasjon(
+            list.add(Familierelasjon(
                 relatertPersonsIdent = foreldrefnr!!,
                 relatertPersonsRolle = foreldreRolle,
                 minRolleForPerson = Familierelasjonsrolle.BARN)

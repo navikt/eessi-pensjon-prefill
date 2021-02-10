@@ -10,8 +10,8 @@ import no.nav.eessi.pensjon.personoppslag.aktoerregister.AktoerregisterService
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonoppslagException
 import no.nav.eessi.pensjon.personoppslag.pdl.model.AktoerId
+import no.nav.eessi.pensjon.personoppslag.pdl.model.Familierelasjon
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Familierelasjonsrolle
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Familierlasjon
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Folkeregistermetadata
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Ident
 import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe
@@ -102,6 +102,7 @@ class PersonPDLControllerTest {
                 .accept(MediaType.APPLICATION_JSON)
         )
             .andReturn().response
+        println(response.contentAsString)
 
         JSONAssert.assertEquals(namesAsJson, response.contentAsString, false)
     }
@@ -135,20 +136,20 @@ class PersonPDLControllerTest {
 
         val avdodMor = lagPerson(
             avdodMorfnr, "Fru", "Blyant",
-            listOf(Familierlasjon(fnrGjenlevende, Familierelasjonsrolle.BARN, Familierelasjonsrolle.MOR)),
+            listOf(Familierelasjon(fnrGjenlevende, Familierelasjonsrolle.BARN, Familierelasjonsrolle.MOR)),
             listOf(Sivilstand(Sivilstandstype.GIFT, LocalDate.of(2000, 10, 2), avdodFarfnr))
         )
         val avdodFar = lagPerson(
             avdodFarfnr, "Hr", "Blyant",
-            listOf(Familierlasjon(fnrGjenlevende, Familierelasjonsrolle.BARN, Familierelasjonsrolle.FAR)),
+            listOf(Familierelasjon(fnrGjenlevende, Familierelasjonsrolle.BARN, Familierelasjonsrolle.FAR)),
             listOf(Sivilstand(Sivilstandstype.GIFT, LocalDate.of(2000, 10, 2), avdodMorfnr))
         )
 
         val barn = lagPerson(
             fnrGjenlevende, "Liten", "Blyant",
             listOf(
-                Familierlasjon(avdodFarfnr, Familierelasjonsrolle.FAR, Familierelasjonsrolle.BARN),
-                Familierlasjon(avdodMorfnr, Familierelasjonsrolle.MOR, Familierelasjonsrolle.BARN)
+                Familierelasjon(avdodFarfnr, Familierelasjonsrolle.FAR, Familierelasjonsrolle.BARN),
+                Familierelasjon(avdodMorfnr, Familierelasjonsrolle.MOR, Familierelasjonsrolle.BARN)
             )
         )
         doReturn(mockPensjoninfo).whenever(mockPensjonClient).hentAltPaaVedtak(vedtaksId)
@@ -187,9 +188,9 @@ class PersonPDLControllerTest {
         mockPensjoninfo.person.aktorId = aktoerId
 
         val avdodmor = lagPerson(avdodMorfnr, "Stor", "Blyant",
-            listOf(Familierlasjon(fnrGjenlevende, Familierelasjonsrolle.BARN, Familierelasjonsrolle.MOR)))
+            listOf(Familierelasjon(fnrGjenlevende, Familierelasjonsrolle.BARN, Familierelasjonsrolle.MOR)))
         val barn = lagPerson(fnrGjenlevende, "Liten", "Blyant",
-            listOf(Familierlasjon(avdodMorfnr, Familierelasjonsrolle.MOR, Familierelasjonsrolle.BARN)))
+            listOf(Familierelasjon(avdodMorfnr, Familierelasjonsrolle.MOR, Familierelasjonsrolle.BARN)))
 
         doReturn(mockPensjoninfo).whenever(mockPensjonClient).hentAltPaaVedtak(vedtaksId)
         doReturn(avdodmor).whenever(pdlService).hentPerson(NorskIdent(avdodMorfnr))
@@ -225,7 +226,7 @@ class PersonPDLControllerTest {
         doReturn(mockPensjoninfo).whenever(mockPensjonClient).hentAltPaaVedtak(vedtaksId)
 
         val barn = lagPerson(fnrGjenlevende, "Liten", "Blyant",
-            listOf(Familierlasjon("231231231231", Familierelasjonsrolle.MOR, Familierelasjonsrolle.BARN)))
+            listOf(Familierelasjon("231231231231", Familierelasjonsrolle.MOR, Familierelasjonsrolle.BARN)))
         doReturn(barn).whenever(pdlService).hentPerson(any<Ident<*>>())
 
         val response = mvc.perform(
@@ -250,7 +251,8 @@ class PersonPDLControllerTest {
             "fornavn": "OLA",
             "mellomnavn": null,
             "etternavn": "NORDMANN",
-            "sammensattNavn": "OLA NORDMANN"
+            "sammensattNavn": "OLA NORDMANN",
+            "sammensattEtterNavn": "NORDMANN OLA"
           },
           "adressebeskyttelse": [],
           "bostedsadresse": null,
@@ -282,7 +284,7 @@ class PersonPDLControllerTest {
         fnr: String = FNR ,
         fornavn: String = "Fornavn",
         etternavn: String = "Etternavn",
-        familierlasjon: List<Familierlasjon> = emptyList(),
+        familierlasjon: List<Familierelasjon> = emptyList(),
         sivilstand: List<Sivilstand> = emptyList()
     ) = Person(
             listOf(IdentInformasjon(fnr, IdentGruppe.FOLKEREGISTERIDENT)),
