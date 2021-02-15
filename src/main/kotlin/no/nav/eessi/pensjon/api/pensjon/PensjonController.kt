@@ -48,7 +48,7 @@ class PensjonController(private val pensjonsinformasjonClient: Pensjonsinformasj
     @ApiOperation("Henter ut saktype knyttet til den valgte sakId og aktoerId")
     @GetMapping("/saktype/{sakId}/{aktoerId}")
     fun hentPensjonSakType(@PathVariable("sakId", required = true) sakId: String, @PathVariable("aktoerId", required = true) aktoerId: String): ResponseEntity<String>? {
-        auditlogger.log("/saktype/{$sakId}/{$aktoerId}", "hentPensjonSakType")
+        auditlogger.log("hentPensjonSakType", aktoerId)
 
         return PensjonControllerHentSakType.measure {
             logger.info("Henter sakstype på $sakId / $aktoerId")

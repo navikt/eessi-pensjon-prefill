@@ -117,7 +117,7 @@ class BucController(
     @ApiOperation("Henter alle gyldige sed på valgt rinanr")
     @GetMapping("/{rinanr}/allDocuments")
     fun getAllDocuments(@PathVariable(value = "rinanr", required = true) rinanr: String): List<ShortDocumentItem> {
-        auditlogger.log("/buc/{$rinanr}/allDocuments", "getAllDocuments")
+        auditlogger.logBuc("getAllDocuments", rinanr)
         logger.debug("Henter ut documentId på alle dokumenter som finnes på valgt type")
         val buc = euxService.getBuc(rinanr)
         return BucUtils(buc).getAllDocuments()

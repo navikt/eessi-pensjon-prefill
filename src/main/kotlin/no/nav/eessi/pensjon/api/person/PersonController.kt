@@ -64,7 +64,7 @@ class PersonController(
     @ApiOperation("henter ut personinformasjon for en aktørId")
     @GetMapping("/person/{aktoerid}", produces = [MediaType.APPLICATION_JSON_VALUE])
     fun getPerson(@PathVariable("aktoerid", required = true) aktoerid: String): ResponseEntity<Any> {
-        auditLogger.log("/person/{$aktoerid}", "getPerson")
+        auditLogger.log("getPerson", aktoerid)
 
         return PersonControllerHentPerson.measure {
             val person = hentPerson(aktoerid)
@@ -80,7 +80,7 @@ class PersonController(
     ): ResponseEntity<Any> {
 
         logger.debug("Henter informasjon om avdøde $gjenlevendeAktoerId fra vedtak $vedtaksId")
-        auditLogger.log("/person/{$gjenlevendeAktoerId}/vedtak", "getDeceased")
+        auditLogger.log("getDeceased", gjenlevendeAktoerId)
 
         return PersonControllerHentPersonAvdod.measure {
 
@@ -134,7 +134,7 @@ class PersonController(
     @ApiOperation("henter ut navn for en aktørId")
     @GetMapping("/personinfo/{aktoerid}", produces = [MediaType.APPLICATION_JSON_VALUE])
     fun getNameOnly(@PathVariable("aktoerid", required = true) aktoerid: String): ResponseEntity<Personinformasjon> {
-        auditLogger.log("/personinfo/{$aktoerid}", "getNameOnly")
+        auditLogger.log("getNameOnly", aktoerid)
 
         return PersonControllerHentPersonNavn.measure {
             val person = hentPerson(aktoerid).person
