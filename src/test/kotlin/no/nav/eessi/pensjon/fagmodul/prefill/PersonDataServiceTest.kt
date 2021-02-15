@@ -4,14 +4,14 @@ import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import no.nav.eessi.pensjon.fagmodul.models.PersonId
+import no.nav.eessi.pensjon.fagmodul.models.PrefillDataModelMother
 import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.prefill.LagPDLPerson.Companion.lagPerson
 import no.nav.eessi.pensjon.fagmodul.prefill.LagPDLPerson.Companion.medAdresse
 import no.nav.eessi.pensjon.fagmodul.prefill.LagPDLPerson.Companion.medBarn
 import no.nav.eessi.pensjon.fagmodul.prefill.LagPDLPerson.Companion.medForeldre
-import no.nav.eessi.pensjon.fagmodul.prefill.model.PersonId
-import no.nav.eessi.pensjon.fagmodul.prefill.model.PrefillDataModelMother
-import no.nav.eessi.pensjon.fagmodul.prefill.tps.FodselsnummerMother
+import no.nav.eessi.pensjon.fagmodul.prefill.pdl.FodselsnummerMother
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Ident
 import no.nav.eessi.pensjon.personoppslag.pdl.model.NorskIdent
@@ -20,6 +20,7 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
 
 internal class PersonDataServiceTest {
 
@@ -59,12 +60,12 @@ internal class PersonDataServiceTest {
 
         every { personService.hentPerson(any<Ident<*>>()) } returns mockPerson
 
-        val data = PrefillDataModelMother.initialPrefillDataModel(SEDType.P2001, FNR_VOKSEN, SAK_ID, euxCaseId = EUX_RINA)
+        val data = PrefillDataModelMother.initialPrefillDataModel(SEDType.P2000, FNR_VOKSEN, SAK_ID, euxCaseId = EUX_RINA)
 
         val result = persondataService.hentPersonData(data)
 
-        assertEquals(null, result.ektefellePerson)
-        assertEquals(null, result.sivilstandstype)
+        assertNull(result.ektefellePerson)
+        assertNull(result.sivilstandstype)
         assertEquals(emptyList(), result.barnPersonList)
         assertEquals(mockPerson, result.gjenlevendeEllerAvdod)
         assertEquals(mockPerson, result.forsikretPerson)
@@ -82,13 +83,12 @@ internal class PersonDataServiceTest {
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns gjenlev
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_2)) } returns avdod
 
-        val data = PrefillDataModelMother.initialPrefillDataModel(
-            SEDType.P2001, FNR_VOKSEN, SAK_ID, euxCaseId = EUX_RINA, avdod = PersonId(FNR_VOKSEN_2, AKTOER_ID_2))
+        val data = PrefillDataModelMother.initialPrefillDataModel(SEDType.P2000, FNR_VOKSEN, SAK_ID, euxCaseId = EUX_RINA, avdod = PersonId(FNR_VOKSEN_2, AKTOER_ID_2))
 
         val result = persondataService.hentPersonData(data)
 
-        assertEquals(null, result.ektefellePerson)
-        assertEquals(null, result.sivilstandstype)
+        assertNull(result.ektefellePerson)
+        assertNull(result.sivilstandstype)
         assertEquals(emptyList(), result.barnPersonList)
         assertEquals(avdod, result.gjenlevendeEllerAvdod)
         assertEquals(gjenlev, result.forsikretPerson)
@@ -107,12 +107,12 @@ internal class PersonDataServiceTest {
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns forelder
         every { personService.hentPerson(NorskIdent(FNR_BARN)) } returns barn
 
-        val data = PrefillDataModelMother.initialPrefillDataModel(SEDType.P2001, FNR_VOKSEN, SAK_ID, euxCaseId = EUX_RINA)
+        val data = PrefillDataModelMother.initialPrefillDataModel(SEDType.P2000, FNR_VOKSEN, SAK_ID, euxCaseId = EUX_RINA)
 
         val result = persondataService.hentPersonData(data)
 
-        assertEquals(null, result.ektefellePerson)
-        assertEquals(null, result.sivilstandstype)
+        assertNull(result.ektefellePerson)
+        assertNull(result.sivilstandstype)
         assertEquals(barn, result.barnPersonList.firstOrNull())
         assertEquals(forelder, result.gjenlevendeEllerAvdod)
         assertEquals(forelder, result.forsikretPerson)
@@ -120,6 +120,65 @@ internal class PersonDataServiceTest {
         verify ( exactly = 2 ) { personService.hentPerson(any<Ident<*>>())  }
 
     }
+
+    @Test
+    fun `test henting av forsikretperson med barn under 18 aar for persondatacollection`() {
+
+        val barn1fnr = FodselsnummerMother.generateRandomFnr(12)
+        val barn2fnr = FodselsnummerMother.generateRandomFnr(19)
+
+        val forelder = lagPerson(FNR_VOKSEN, "Christopher", "Robin").medBarn(barn1fnr).medBarn(barn2fnr)
+        val barn1 = lagPerson(barn2fnr, "Ole", "Brum").medForeldre(forelder)
+        val barn2 = lagPerson(barn1fnr, "Nasse", "Nøff").medForeldre(forelder)
+
+        every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns forelder
+        every { personService.hentPerson(NorskIdent(barn1fnr)) } returns barn1
+        every { personService.hentPerson(NorskIdent(barn2fnr)) } returns barn2
+
+        val data = PrefillDataModelMother.initialPrefillDataModel(SEDType.P2000, FNR_VOKSEN, SAK_ID, euxCaseId = EUX_RINA)
+
+        val result = persondataService.hentPersonData(data)
+
+        assertNull(result.ektefellePerson)
+        assertNull(result.sivilstandstype)
+        assertEquals(barn1, result.barnPersonList.firstOrNull())
+        assertEquals(1, result.barnPersonList.size)
+        assertEquals(forelder, result.gjenlevendeEllerAvdod)
+        assertEquals(forelder, result.forsikretPerson)
+
+        verify ( exactly = 2 ) { personService.hentPerson(any<Ident<*>>())  }
+
+    }
+
+    @Test
+    fun `test henting av forsikretperson med avdod ektefelle for persondatacollection`() {
+
+        val barn1fnr = FodselsnummerMother.generateRandomFnr(12)
+        val barn2fnr = FodselsnummerMother.generateRandomFnr(19)
+
+        val forelder = lagPerson(FNR_VOKSEN, "Christopher", "Robin").medBarn(barn1fnr).medBarn(barn2fnr)
+        val barn1 = lagPerson(barn2fnr, "Ole", "Brum").medForeldre(forelder)
+        val barn2 = lagPerson(barn1fnr, "Nasse", "Nøff").medForeldre(forelder)
+
+        every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns forelder
+        every { personService.hentPerson(NorskIdent(barn1fnr)) } returns barn1
+        every { personService.hentPerson(NorskIdent(barn2fnr)) } returns barn2
+
+        val data = PrefillDataModelMother.initialPrefillDataModel(SEDType.P2000, FNR_VOKSEN, SAK_ID, euxCaseId = EUX_RINA)
+
+        val result = persondataService.hentPersonData(data)
+
+        assertNull( result.ektefellePerson)
+        assertNull( result.sivilstandstype)
+        assertEquals(barn1, result.barnPersonList.firstOrNull())
+        assertEquals(1, result.barnPersonList.size)
+        assertEquals(forelder, result.gjenlevendeEllerAvdod)
+        assertEquals(forelder, result.forsikretPerson)
+
+        verify ( exactly = 2 ) { personService.hentPerson(any<Ident<*>>())  }
+
+    }
+
 
     @Test
     fun `test henting komplett familie med barn for persondatacollection`() {
@@ -146,7 +205,7 @@ internal class PersonDataServiceTest {
         every { personService.hentPerson(NorskIdent(barn1)) } returns barnet
         every { personService.hentPerson(NorskIdent(barn2)) } returns barnto
 
-        val data = PrefillDataModelMother.initialPrefillDataModel(SEDType.P2001, farfnr, SAK_ID, euxCaseId = EUX_RINA)
+        val data = PrefillDataModelMother.initialPrefillDataModel(SEDType.P2000, farfnr, SAK_ID, euxCaseId = EUX_RINA)
 
         val result = persondataService.hentPersonData(data)
 
