@@ -19,13 +19,12 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.client.HttpClientErrorException
+import org.springframework.web.client.HttpServerErrorException
 import org.springframework.web.client.RestClientException
 import org.springframework.web.client.RestTemplate
 import java.io.File
 import java.io.FileInputStream
 import java.nio.charset.Charset
-import java.nio.file.Files
-import java.nio.file.Paths
 import java.util.*
 
 @ExtendWith(MockitoExtension::class)
@@ -79,48 +78,48 @@ class SafClientTest {
         try {
             safClient.hentDokumentMetadata("1234567891000")
             fail("En feil burde ha oppstått her")
-        } catch (ex: SafException) {
-            assertEquals("En feil oppstod ved mapping av metadata fra SAF", ex.message)
+        } catch (ex: HttpServerErrorException) {
+            assertEquals("500 En feil oppstod ved mapping av metadata fra SAF", ex.message)
         }
     }
 
     @Test
-    fun `gitt noe annet enn 200 httpCopde feil når metadata hentes så kast SafException med tilhørende httpCode`() {
+    fun `gitt noe annet enn 200 httpCopde feil når metadata hentes så kast HttpClientErrorException med tilhørende httpCode`() {
 
         doThrow(HttpClientErrorException.create (HttpStatus.NOT_FOUND, HttpStatus.NOT_FOUND.reasonPhrase, HttpHeaders(), "".toByteArray(), Charset.defaultCharset()))
                 .whenever(safGraphQlOidcRestTemplate).exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java))
 
-        assertThrows<SafException> {
+        assertThrows<HttpClientErrorException> {
             safClient.hentDokumentMetadata("1234567891000")
         }
     }
 
     @Test
-    fun `gitt en feil når metadata hentes så kast SafException med tilhørende httpCode`() {
+    fun `gitt en feil når metadata hentes så kast HttpClientErrorException med tilhørende httpCode`() {
 
         whenever(safGraphQlOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java)))
                 .thenThrow(RestClientException("some error"))
-        assertThrows<SafException> {
+        assertThrows<HttpServerErrorException> {
             safClient.hentDokumentMetadata("1234567891000")
         }
     }
 
     @Test
-    fun `gitt noe annet enn 200 httpCopde feil når dokumentinnhold hentes så kast SafException med tilhørende httpCode`() {
+    fun `gitt noe annet enn 200 httpCopde feil når dokumentinnhold hentes så kast HttpServerErrorException med tilhørende httpCode`() {
 
         doThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, HttpStatus.NOT_FOUND.reasonPhrase, HttpHeaders(), "".toByteArray(), Charset.defaultCharset()))
                 .whenever(safRestOidcRestTemplate).exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java))
 
-        assertThrows<SafException> {
+        assertThrows<HttpServerErrorException> {
             safClient.hentDokumentInnhold("123", "456", "ARKIV")
         }
     }
 
     @Test
-    fun `gitt en feil når dokumentinnhold hentes så kast SafException med tilhørende httpCode`() {
+    fun `gitt en feil når dokumentinnhold hentes så kast HttpClientErrorException med tilhørende httpCode`() {
         whenever(safRestOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java)))
                 .thenThrow(RestClientException("some error"))
-        assertThrows<SafException> {
+        assertThrows<HttpServerErrorException> {
             safClient.hentDokumentInnhold("123", "456", "ARKIV")
         }
     }

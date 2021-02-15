@@ -1,21 +1,31 @@
 package no.nav.eessi.pensjon.vedlegg
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.nhaarman.mockitokotlin2.*
+import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.doNothing
+import com.nhaarman.mockitokotlin2.doReturn
+import com.nhaarman.mockitokotlin2.eq
+import com.nhaarman.mockitokotlin2.times
+import com.nhaarman.mockitokotlin2.verify
+import com.nhaarman.mockitokotlin2.whenever
 import no.nav.eessi.pensjon.logging.AuditLogger
 import no.nav.eessi.pensjon.vedlegg.client.Dokument
 import no.nav.eessi.pensjon.vedlegg.client.HentMetadataResponse
 import no.nav.eessi.pensjon.vedlegg.client.HentdokumentInnholdResponse
-import no.nav.eessi.pensjon.vedlegg.client.SafException
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
-import org.springframework.http.*
+import org.springframework.http.ContentDisposition
+import org.springframework.http.HttpEntity
+import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
 import org.springframework.util.LinkedMultiValueMap
+import org.springframework.web.client.HttpClientErrorException
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.*
@@ -29,7 +39,7 @@ class VedleggControllerMockTest {
     @Mock
     lateinit var auditLogger: AuditLogger
 
-    lateinit var vedleggController: VedleggController
+    private lateinit var vedleggController: VedleggController
 
     @BeforeEach
     fun setup() {
@@ -38,13 +48,11 @@ class VedleggControllerMockTest {
     }
 
     @Test
-    fun `gitt en 400 httpstatuscode fra safClient når metadata hentes så returnes 400 httpstatuscode`() {
+    fun `gitt en 400 httpstatuscode fra safClient når metadata hentes så kastes HttpClientErrorException`() {
         whenever(vedleggService.hentDokumentMetadata("123"))
-                .thenThrow(SafException("noe gikk galt", HttpStatus.valueOf(400)))
+                .thenThrow(HttpClientErrorException(HttpStatus.valueOf(400),"noe gikk galt"))
 
-        val resp = vedleggController.hentDokumentMetadata("123")
-        assertEquals(HttpStatus.valueOf(400), resp.statusCode)
-        assertTrue(resp.body!!.contains("noe gikk galt"))
+        assertThrows<HttpClientErrorException> { vedleggController.hentDokumentMetadata("123") }
     }
 
     @Test
@@ -66,13 +74,11 @@ class VedleggControllerMockTest {
     }
 
     @Test
-    fun `gitt en 400 httpstatuscode fra safClient når dokumentinnhold hentes så returnes 400 httpstatuscode`() {
+    fun `gitt en 400 httpstatuscode fra safClient når dokumentinnhold hentes så kastes HttpClientErrorException`() {
         whenever(vedleggService.hentDokumentInnhold("123", "4567", "ARKIV"))
-                .thenThrow(SafException("noe gikk galt", HttpStatus.valueOf(400)))
+                .thenThrow(HttpClientErrorException(HttpStatus.valueOf(400), "noe gikk galt"))
 
-        val resp = vedleggController.getDokumentInnhold("123", "4567", "ARKIV")
-        assertEquals(HttpStatus.valueOf(400), resp.statusCode)
-        assertTrue(resp.body!!.contains("noe gikk galt"))
+        assertThrows<HttpClientErrorException> {vedleggController.getDokumentInnhold("123", "4567", "ARKIV") }
     }
 
     @Test

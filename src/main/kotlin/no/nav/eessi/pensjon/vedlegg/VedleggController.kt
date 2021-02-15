@@ -6,13 +6,16 @@ import no.nav.eessi.pensjon.logging.AuditLogger
 import no.nav.eessi.pensjon.metrics.MetricsHelper
 import no.nav.eessi.pensjon.utils.errorBody
 import no.nav.eessi.pensjon.utils.successBody
-import no.nav.eessi.pensjon.vedlegg.client.SafException
 import no.nav.security.token.support.core.api.Protected
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PutMapping
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
 import java.util.*
 import javax.annotation.PostConstruct
 
@@ -40,11 +43,7 @@ class VedleggController(private val vedleggService: VedleggService,
         auditlogger.log("hentDokumentMetadata", aktoerId)
         return VedleggControllerMetadata.measure {
             logger.info("Henter metadata for dokumenter i SAF for aktørid: $aktoerId")
-            return@measure try {
-                ResponseEntity.ok().body(vedleggService.hentDokumentMetadata(aktoerId).toJson())
-            } catch (ex: SafException) {
-                ResponseEntity.status(ex.httpStatus).body(errorBody(ex.message!!, UUID.randomUUID().toString()))
-            }
+            ResponseEntity.ok().body(vedleggService.hentDokumentMetadata(aktoerId).toJson())
         }
     }
 
@@ -60,12 +59,8 @@ class VedleggController(private val vedleggService: VedleggService,
         auditlogger.log("getDokumentInnhold")
         return VedleggControllerInnhold.measure {
             logger.info("Henter dokumentinnhold fra SAF for journalpostId: $journalpostId, dokumentInfoId: $dokumentInfoId")
-            return@measure try {
-                val hentDokumentInnholdResponse = vedleggService.hentDokumentInnhold(journalpostId, dokumentInfoId, variantFormat)
-                ResponseEntity.ok().body(hentDokumentInnholdResponse.toJson())
-            } catch (ex: SafException) {
-                ResponseEntity.status(ex.httpStatus).body(errorBody(ex.message!!, UUID.randomUUID().toString()))
-            }
+            val hentDokumentInnholdResponse = vedleggService.hentDokumentInnhold(journalpostId, dokumentInfoId, variantFormat)
+            ResponseEntity.ok().body(hentDokumentInnholdResponse.toJson())
         }
     }
 

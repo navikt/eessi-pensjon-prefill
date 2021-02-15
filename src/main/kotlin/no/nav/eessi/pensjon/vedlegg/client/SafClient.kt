@@ -36,7 +36,8 @@ class SafClient(private val safGraphQlOidcRestTemplate: RestTemplate,
     fun initMetrics() {
         HentDokumentMetadata = metricsHelper.init("HentDokumentMetadata")
         HentDokumentInnhold = metricsHelper.init("HentDokumentInnhold")
-        HentRinaSakIderFraDokumentMetadata = metricsHelper.init("HentRinaSakIderFraDokumentMetadata")
+        HentRinaSakIderFraDokumentMetadata = metricsHelper.init("HentRinaSakIderFraDokumentMetadata",
+            ignoreHttpCodes = listOf(HttpStatus.FORBIDDEN))
     }
 
     // Vi trenger denne konstruktøren for å kunne bruke @Spy med mockito
@@ -60,19 +61,19 @@ class SafClient(private val safGraphQlOidcRestTemplate: RestTemplate,
             } catch (ce: HttpClientErrorException) {
                 if(ce.rawStatusCode == 403) {
                     logger.error("En feil oppstod under henting av dokument metadata fra SAF for aktørID $aktoerId, ikke tilgang", ce)
-                    throw SafException("Ikke tilgang", ce.statusCode)
+                    throw HttpClientErrorException(ce.statusCode, "Ikke tilgang")
                 }
                 logger.error("En feil oppstod under henting av dokument metadata fra SAF: ${ce.responseBodyAsString}")
-                throw SafException("En feil oppstod under henting av dokument metadata fra SAF: ${ce.responseBodyAsString}", ce.statusCode)
+                throw HttpClientErrorException( ce.statusCode, "En feil oppstod under henting av dokument metadata fra SAF: ${ce.responseBodyAsString}")
             } catch (se: HttpServerErrorException) {
                 logger.error("En feil oppstod under henting av dokument metadata fra SAF: ${se.responseBodyAsString}", se)
-                throw SafException("En feil oppstod under henting av dokument metadata fra SAF: ${se.responseBodyAsString}", se.statusCode)
+                throw HttpServerErrorException(se.statusCode, "En feil oppstod under henting av dokument metadata fra SAF: ${se.responseBodyAsString}")
             } catch (mke: MissingKotlinParameterException) {
                 logger.error("En feil oppstod ved mapping av metadata fra SAF" , mke)
-                throw SafException("En feil oppstod ved mapping av metadata fra SAF", HttpStatus.INTERNAL_SERVER_ERROR)
+                throw HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "En feil oppstod ved mapping av metadata fra SAF")
             } catch (ex: Exception) {
                 logger.error("En feil oppstod under henting av dokument metadata fra SAF: $ex")
-                throw SafException("En feil oppstod under henting av dokument metadata fra SAF", HttpStatus.INTERNAL_SERVER_ERROR)
+                throw HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "En feil oppstod under henting av dokument metadata fra SAF")
             }
         }
     }
@@ -104,16 +105,16 @@ class SafClient(private val safGraphQlOidcRestTemplate: RestTemplate,
             } catch (ce: HttpClientErrorException) {
                 if(ce.rawStatusCode == 403) {
                     logger.error("En feil oppstod under henting av dokumentInnhold fra SAF: for journalpostId: $journalpostId, dokumentInfoId $dokumentInfoId, ikke tilgang", ce)
-                    throw SafException("Ikke tilgang", ce.statusCode)
+                    throw HttpClientErrorException(ce.statusCode, "Ikke tilgang")
                 }
                 logger.error("En feil oppstod under henting av dokumentInnhold fra SAF: ${ce.responseBodyAsString}", ce)
-                throw SafException("En feil oppstod under henting av dokumentInnhold fra SAF: ${ce.responseBodyAsString}", ce.statusCode)
+                throw HttpClientErrorException( ce.statusCode, "En feil oppstod under henting av dokumentInnhold fra SAF: ${ce.responseBodyAsString}")
             } catch (se: HttpServerErrorException) {
                 logger.error("En feil oppstod under henting av dokumentInnhold fra SAF: ${se.responseBodyAsString}", se)
-                throw SafException("En feil oppstod under henting av dokumentInnhold fra SAF: ${se.responseBodyAsString}", se.statusCode)
+                throw HttpServerErrorException(se.statusCode, "En feil oppstod under henting av dokumentInnhold fra SAF: ${se.responseBodyAsString}")
             } catch (ex: Exception) {
                 logger.error("En feil oppstod under henting av dokumentInnhold fra SAF: $ex")
-                throw SafException("En feil oppstod under henting av dokumentinnhold fra SAF", HttpStatus.INTERNAL_SERVER_ERROR)
+                throw HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "En feil oppstod under henting av dokumentinnhold fra SAF")
             }
         }
     }
