@@ -42,8 +42,6 @@ import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
 import java.time.LocalDateTime
 import javax.annotation.PostConstruct
-import javax.ws.rs.Consumes
-import javax.ws.rs.Produces
 
 @Protected
 @RestController
@@ -65,10 +63,9 @@ class SedController(
     private lateinit var addInstutionAndDocumentBucUtils: MetricsHelper.Metric
     private lateinit var addDocumentToParentBucUtils: MetricsHelper.Metric
 
-
     @PostConstruct
     fun initMetrics() {
-        addInstutionAndDocument = metricsHelper.init("AddInstutionAndDocument")
+        addInstutionAndDocument = metricsHelper.init("AddInstutionAndDocument", ignoreHttpCodes = listOf(HttpStatus.BAD_REQUEST))
         addDocumentToParent = metricsHelper.init("AddDocumentToParent")
         addInstutionAndDocumentBucUtils = metricsHelper.init("AddInstutionAndDocumentBucUtils")
         addDocumentToParentBucUtils = metricsHelper.init("AddDocumentToParentBucUtils")
