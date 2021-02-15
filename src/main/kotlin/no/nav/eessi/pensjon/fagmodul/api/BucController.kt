@@ -56,10 +56,10 @@ class BucController(
 
     @PostConstruct
     fun initMetrics() {
-        bucDetaljer = metricsHelper.init("BucDetaljer")
-        bucDetaljerVedtak = metricsHelper.init("BucDetaljerVedtak")
-        bucDetaljerEnkel = metricsHelper.init("BucDetaljerEnkel")
-        bucDetaljerGjenlev  = metricsHelper.init("BucDetaljerGjenlev")
+        bucDetaljer = metricsHelper.init("BucDetaljer", ignoreHttpCodes = listOf(HttpStatus.FORBIDDEN))
+        bucDetaljerVedtak = metricsHelper.init("BucDetaljerVedtak", ignoreHttpCodes = listOf(HttpStatus.FORBIDDEN))
+        bucDetaljerEnkel = metricsHelper.init("BucDetaljerEnkel", ignoreHttpCodes = listOf(HttpStatus.FORBIDDEN))
+        bucDetaljerGjenlev  = metricsHelper.init("BucDetaljerGjenlev", ignoreHttpCodes = listOf(HttpStatus.FORBIDDEN))
     }
 
     @ApiOperation("henter liste av alle tilgjengelige BuC-typer")
