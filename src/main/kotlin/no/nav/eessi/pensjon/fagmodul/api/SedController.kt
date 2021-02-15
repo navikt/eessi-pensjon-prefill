@@ -66,9 +66,9 @@ class SedController(
     @PostConstruct
     fun initMetrics() {
         addInstutionAndDocument = metricsHelper.init("AddInstutionAndDocument", ignoreHttpCodes = listOf(HttpStatus.BAD_REQUEST))
-        addDocumentToParent = metricsHelper.init("AddDocumentToParent")
-        addInstutionAndDocumentBucUtils = metricsHelper.init("AddInstutionAndDocumentBucUtils")
-        addDocumentToParentBucUtils = metricsHelper.init("AddDocumentToParentBucUtils")
+        addDocumentToParent = metricsHelper.init("AddDocumentToParent", ignoreHttpCodes = listOf(HttpStatus.BAD_REQUEST))
+        addInstutionAndDocumentBucUtils = metricsHelper.init("AddInstutionAndDocumentBucUtils",  ignoreHttpCodes = listOf(HttpStatus.BAD_REQUEST))
+        addDocumentToParentBucUtils = metricsHelper.init("AddDocumentToParentBucUtils",  ignoreHttpCodes = listOf(HttpStatus.BAD_REQUEST))
     }
 
     //** oppdatert i api 18.02.2019
