@@ -3,6 +3,7 @@ package no.nav.eessi.pensjon.fagmodul.prefill.person
 import no.nav.eessi.pensjon.fagmodul.models.BrukerInformasjon
 import no.nav.eessi.pensjon.fagmodul.models.PersonDataCollection
 import no.nav.eessi.pensjon.fagmodul.models.PersonId
+import no.nav.eessi.pensjon.fagmodul.prefill.pdl.NavFodselsnummer
 import no.nav.eessi.pensjon.fagmodul.prefill.pdl.PrefillPDLAdresse
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Adresse
 import no.nav.eessi.pensjon.fagmodul.sedmodel.ArbeidsforholdItem
@@ -49,7 +50,15 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
             KjoennType.KVINNE -> "K"
             else -> "U"
         }
-        private fun PDLPerson.foedseldato() = this.foedsel?.foedselsdato.toString()
+        private fun PDLPerson.foedseldato() : String {
+            val fdato = this.foedsel?.foedselsdato
+
+            if (fdato == null) {
+                val fnr = this.identer.firstOrNull { it.gruppe == IdentGruppe.FOLKEREGISTERIDENT }?.ident
+                return NavFodselsnummer(fnr!!).getBirthDate().toString()
+            }
+            return fdato.toString()
+        }
 
         fun isPersonAvdod(pdlperson: PDLPerson) : Boolean {
             return pdlperson.erDoed()

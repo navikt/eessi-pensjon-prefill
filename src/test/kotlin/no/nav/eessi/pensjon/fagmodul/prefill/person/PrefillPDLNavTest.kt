@@ -425,22 +425,40 @@ class PrefillPDLNavTest {
         assertNull(bruker.person!!.statsborgerskap!![0].land)
     }
 
-        @Test
-        fun `Gitt en person med noe annet enn kosovo statsborgerskap Når preutfyller Statsborgerstak Så preutfyll statsborgerskap`() {
-            val personfnr = FodselsnummerMother.generateRandomFnr(40)
-            val person = lagPerson(personfnr).copy(statsborgerskap = listOf(Statsborgerskap("NOR", LocalDate.of(2000, 10, 1), LocalDate.of(2300, 10, 1))))
+    @Test
+    fun `Gitt en person med noe annet enn kosovo statsborgerskap Når preutfyller Statsborgerstak Så preutfyll statsborgerskap`() {
+        val personfnr = FodselsnummerMother.generateRandomFnr(40)
+        val person = lagPerson(personfnr).copy(statsborgerskap = listOf(Statsborgerskap("NOR", LocalDate.of(2000, 10, 1), LocalDate.of(2300, 10, 1))))
 
-            doReturn("NO")
-                .doReturn("NO")
-                .doReturn("NO")
-                .whenever(kodeverkClient).finnLandkode2("NOR")
+        doReturn("NO")
+            .doReturn("NO")
+            .doReturn("NO")
+            .whenever(kodeverkClient).finnLandkode2("NOR")
 
-            val bruker = prefillPDLNav.createBruker(person, null, null)
+        val bruker = prefillPDLNav.createBruker(person, null, null)
 
-            //Assert
-            assertEquals(bruker!!.person!!.statsborgerskap!!.size, 1)
-            assertEquals(bruker.person!!.statsborgerskap!![0].land, "NO")
-        }
+        //Assert
+        assertEquals(bruker!!.person!!.statsborgerskap!!.size, 1)
+        assertEquals(bruker.person!!.statsborgerskap!![0].land, "NO")
+    }
+
+    @Test
+    fun `Gitt en person uten fdato skal benytte fnr for fdato så SED blir preutfylt`() {
+        val personfnr = "01028143352"
+        val person = lagPerson(personfnr).copy(foedsel = null)
+
+        val bruker = prefillPDLNav.createBruker(person, null, null)
+
+        assertEquals("1981-02-01", bruker?.person?.foedselsdato)
+
+        val dnr = "41028143352"
+        val personDnr = lagPerson(dnr).copy(foedsel = null)
+        val brukerDnr = prefillPDLNav.createBruker(personDnr, null, null)
+
+        assertEquals("1981-02-01", brukerDnr?.person?.foedselsdato)
+
+        println(brukerDnr?.toJsonSkipEmpty())
+    }
 
     companion object {
         private fun lagTomAdresse(): Adresse {
