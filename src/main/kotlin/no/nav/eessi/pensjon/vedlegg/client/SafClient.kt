@@ -61,7 +61,7 @@ class SafClient(private val safGraphQlOidcRestTemplate: RestTemplate,
             } catch (ce: HttpClientErrorException) {
                 if(ce.rawStatusCode == 403) {
                     logger.error("En feil oppstod under henting av dokument metadata fra SAF for aktørID $aktoerId, ikke tilgang", ce)
-                    throw HttpClientErrorException(ce.statusCode, "Ikke tilgang")
+                    throw HttpClientErrorException(ce.statusCode, "Du har ikke tilgang til dette dokument-temaet. Kontakt nærmeste leder for å få tilgang.")
                 }
                 logger.error("En feil oppstod under henting av dokument metadata fra SAF: ${ce.responseBodyAsString}")
                 throw HttpClientErrorException( ce.statusCode, "En feil oppstod under henting av dokument metadata fra SAF: ${ce.responseBodyAsString}")
@@ -105,7 +105,7 @@ class SafClient(private val safGraphQlOidcRestTemplate: RestTemplate,
             } catch (ce: HttpClientErrorException) {
                 if(ce.rawStatusCode == 403) {
                     logger.error("En feil oppstod under henting av dokumentInnhold fra SAF: for journalpostId: $journalpostId, dokumentInfoId $dokumentInfoId, ikke tilgang", ce)
-                    throw HttpClientErrorException(ce.statusCode, "Ikke tilgang")
+                    throw HttpClientErrorException(ce.statusCode, "Du har ikke tilgang til dette dokument-temaet. Kontakt nærmeste leder for å få tilgang.")
                 }
                 logger.error("En feil oppstod under henting av dokumentInnhold fra SAF: ${ce.responseBodyAsString}", ce)
                 throw HttpClientErrorException( ce.statusCode, "En feil oppstod under henting av dokumentInnhold fra SAF: ${ce.responseBodyAsString}")
