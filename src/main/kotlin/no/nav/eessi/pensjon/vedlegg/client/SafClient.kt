@@ -34,10 +34,9 @@ class SafClient(private val safGraphQlOidcRestTemplate: RestTemplate,
 
     @PostConstruct
     fun initMetrics() {
-        HentDokumentMetadata = metricsHelper.init("HentDokumentMetadata")
-        HentDokumentInnhold = metricsHelper.init("HentDokumentInnhold")
-        HentRinaSakIderFraDokumentMetadata = metricsHelper.init("HentRinaSakIderFraDokumentMetadata",
-            ignoreHttpCodes = listOf(HttpStatus.FORBIDDEN))
+        HentDokumentMetadata = metricsHelper.init("HentDokumentMetadata", ignoreHttpCodes = listOf(HttpStatus.FORBIDDEN))
+        HentDokumentInnhold = metricsHelper.init("HentDokumentInnhold", ignoreHttpCodes = listOf(HttpStatus.FORBIDDEN))
+        HentRinaSakIderFraDokumentMetadata = metricsHelper.init("HentRinaSakIderFraDokumentMetadata", ignoreHttpCodes = listOf(HttpStatus.FORBIDDEN))
     }
 
     // Vi trenger denne konstruktøren for å kunne bruke @Spy med mockito
