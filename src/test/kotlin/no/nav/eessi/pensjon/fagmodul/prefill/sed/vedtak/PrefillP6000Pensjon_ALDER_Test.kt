@@ -27,6 +27,7 @@ import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.junit.jupiter.MockitoSettings
 import org.mockito.quality.Strictness
+import org.springframework.web.client.HttpClientErrorException
 
 @ExtendWith(MockitoExtension::class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -137,7 +138,7 @@ class PrefillP6000Pensjon_ALDER_Test {
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SEDType.P6000, personFnr, penSaksnummer = "22580170", vedtakId = "12312312")
         prefillSEDService = PrefillSEDService(prefillNav, prefillPersonService, eessiInformasjon, dataFromPEN, aktorRegisterService, prefillPDLNav)
 
-        assertThrows<IkkeGyldigStatusPaaSakException> {
+        assertThrows<HttpClientErrorException> {
             prefillSEDService.prefill(prefillData)
         }
     }
