@@ -59,13 +59,13 @@ class EuxKlient(private val euxOidcRestTemplate: RestTemplate,
 
     @PostConstruct
     fun initMetrics() {
-        SEDByDocumentId = metricsHelper.init("SEDByDocumentId")
-        GetBUC = metricsHelper.init("GetBUC")
-        BUCDeltakere = metricsHelper.init("BUCDeltakere")
-        Institusjoner = metricsHelper.init("Institusjoner")
-        CreateBUC = metricsHelper.init("CreateBUC")
-        HentRinasaker = metricsHelper.init("HentRinasaker")
-        PutMottaker = metricsHelper.init("PutMottaker")
+        SEDByDocumentId = metricsHelper.init("SEDByDocumentId", ignoreHttpCodes = listOf(HttpStatus.FORBIDDEN))
+        GetBUC = metricsHelper.init("GetBUC", ignoreHttpCodes = listOf(HttpStatus.FORBIDDEN))
+        BUCDeltakere = metricsHelper.init("BUCDeltakere", ignoreHttpCodes = listOf(HttpStatus.FORBIDDEN))
+        Institusjoner = metricsHelper.init("Institusjoner", ignoreHttpCodes = listOf(HttpStatus.FORBIDDEN))
+        CreateBUC = metricsHelper.init("CreateBUC", ignoreHttpCodes = listOf(HttpStatus.FORBIDDEN))
+        HentRinasaker = metricsHelper.init("HentRinasaker", ignoreHttpCodes = listOf(HttpStatus.FORBIDDEN))
+        PutMottaker = metricsHelper.init("PutMottaker", ignoreHttpCodes = listOf(HttpStatus.FORBIDDEN))
         PingEux = metricsHelper.init("PingEux")
     }
 
