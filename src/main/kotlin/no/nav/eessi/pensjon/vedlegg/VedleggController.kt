@@ -33,8 +33,8 @@ class VedleggController(private val vedleggService: VedleggService,
 
     @PostConstruct
     fun initMetrics() {
-        VedleggControllerMetadata = metricsHelper.init("VedleggControllerMetadata")
-        VedleggControllerInnhold = metricsHelper.init("VedleggControllerInnhold")
+        VedleggControllerMetadata = metricsHelper.init("VedleggControllerMetadata", ignoreHttpCodes = listOf(HttpStatus.FORBIDDEN))
+        VedleggControllerInnhold = metricsHelper.init("VedleggControllerInnhold", ignoreHttpCodes = listOf(HttpStatus.FORBIDDEN))
     }
 
     @ApiOperation("Henter metadata for alle dokumenter i alle journalposter for en gitt aktørid")
