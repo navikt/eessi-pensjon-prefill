@@ -7,7 +7,6 @@ import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Organisation
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ParticipantsItem
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.models.SEDType
-import no.nav.eessi.pensjon.utils.mapAnyToJson
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.toJson
 import no.nav.eessi.pensjon.utils.typeRefs
@@ -20,9 +19,8 @@ import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.junit.jupiter.MockitoExtension
 import org.skyscreamer.jsonassert.JSONAssert
-import java.nio.file.Files
-import java.nio.file.Paths
 import java.time.format.DateTimeFormatter
+import kotlin.test.assertNotNull
 
 @ExtendWith(MockitoExtension::class)
 class BucUtilsTest {
@@ -85,6 +83,26 @@ class BucUtilsTest {
         assertEquals("85db6f21f01541899cc80ffc80dff88b", result2?.id)
 
     }
+
+    @Test
+    //TODO utvide støtte og sjekk på svarsed
+    fun `sjekk for om parentId finnes alt med valgt sedtype`() {
+        val sedType = SEDType.P9000
+        val parentId = "fd9fd9ee97ee46d0a3f5c58d1b245268"
+
+        val bucjson = getTestJsonFile("buc-285268-answerid.json")
+        val bucUtil = BucUtils(mapJsonToAny(bucjson, typeRefs()))
+
+        val finnes = bucUtil.getAllDocuments().singleOrNull { it.type == sedType && it.parentDocumentId == parentId }
+        val harEmptyStatus = finnes?.status == "empty"
+
+        assertEquals(false, harEmptyStatus)
+        assertNotNull(finnes)
+        assertEquals(sedType, finnes.type)
+        assertEquals(parentId, finnes.parentDocumentId)
+
+    }
+
 
     @Test
     fun getBucCaseOwnerAndCreatorCountry() {

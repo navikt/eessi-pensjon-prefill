@@ -128,12 +128,12 @@ class SedController(
 
         //Preutfyll av SED, pensjon og personer samt oppdatering av versjon
         val personcollection = personService.hentPersonData(dataModel)
+        val sedAndType = prefillService.prefillSedtoJson(dataModel, bucUtil.getProcessDefinitionVersion(), personcollection)
 
         //Sjekk og opprette deltaker og legge sed på valgt BUC
         return addInstutionAndDocument.measure {
             logger.info("******* Legge til ny SED - start *******")
 
-            val sedAndType = prefillService.prefillSedtoJson(dataModel, bucUtil.getProcessDefinitionVersion(), personcollection)
             val sedType = sedAndType.sedType
             val sedJson = sedAndType.sed
 
@@ -264,6 +264,8 @@ class SedController(
         val bucUtil = addDocumentToParentBucUtils.measure {
             logger.info("******* Hent BUC sjekk om sed kan opprettes *******")
             BucUtils(euxService.getBuc(dataModel.euxCaseID))
+            // finnes det en SED i buc med parentid --!!??
+
         }
 
         logger.info("Prøver å prefillSED (svarSED) parentId: $parentId")

@@ -21,6 +21,7 @@ import no.nav.eessi.pensjon.personoppslag.pdl.model.Sivilstandstype
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import javax.annotation.PostConstruct
 
@@ -34,7 +35,7 @@ class PersonDataService(private val personService: PersonService,
 
     @PostConstruct
     fun initMetrics() {
-        HentPerson = metricsHelper.init("HentPerson")
+        HentPerson = metricsHelper.init("HentPerson", ignoreHttpCodes = listOf(HttpStatus.BAD_REQUEST))
     }
 
     fun <T : IdentType, R : IdentType> hentIdent(identTypeWanted: R, ident: Ident<T>): Ident<R> {
@@ -103,7 +104,7 @@ class PersonDataService(private val personService: PersonService,
         val validRelasjoner = listOf(Sivilstandstype.GIFT, Sivilstandstype.PARTNER)
         return forsikretPerson?.sivilstand
             ?.filter { validRelasjoner.contains(it.type) }
-            ?.maxBy { it.metadata.sisteRegistrertDato() }
+            ?.maxByOrNull { it.metadata.sisteRegistrertDato() }
     }
 
 }

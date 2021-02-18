@@ -12,6 +12,7 @@ import no.nav.eessi.pensjon.metrics.MetricsHelper
 import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import javax.annotation.PostConstruct
 
@@ -25,7 +26,7 @@ class PrefillService(private val prefillSedService: PrefillSEDService,
 
     @PostConstruct
     fun initMetrics() {
-        PrefillSed = metricsHelper.init("PrefillSed")
+        PrefillSed = metricsHelper.init("PrefillSed", ignoreHttpCodes = listOf(HttpStatus.BAD_REQUEST))
     }
 
     fun prefillSedtoJson(dataModel: PrefillDataModel, version: String, personDataCollection: PersonDataCollection): SedAndType {

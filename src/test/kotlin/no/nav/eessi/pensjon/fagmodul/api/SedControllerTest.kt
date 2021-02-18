@@ -410,10 +410,14 @@ class SedControllerTest {
         verify(mockEuxService, times( 2)).getBuc(any())
         verify(mockEuxService, times( 1)).opprettSvarJsonSedOnBuc(any(), any(), any(), any())
         verify(personService, times(1)).hentPersonData(any())
-
-
-
     }
+
+//    @Test
+//    fun `call addDocumentToParent hvor det sjekkes på Gydlig SED finnes alt med parentID`() {
+//
+//
+//        parentDocumentId
+//    }
 
 
     @Test
