@@ -59,6 +59,8 @@ import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.http.ResponseEntity
 import org.springframework.web.server.ResponseStatusException
 import org.springframework.web.util.UriComponentsBuilder
+import java.time.LocalDate
+import java.time.Month
 
 @ExtendWith(MockitoExtension::class)
 class SedControllerTest {
@@ -358,12 +360,15 @@ class SedControllerTest {
     fun `call addDocumentToParent ingen ny Deltaker kun hovedsed`() {
         val euxCaseId = "1100220033"
         val parentDocumentId = "1122334455666"
+        val lastupdate = LocalDate.of(2020, Month.AUGUST, 7).toString()
 
         doReturn(NorskIdent("12345")).whenever(personService).hentIdent(eq(IdentType.NorskIdent), any< Ident<*>>())
         doReturn(PersonDataCollection(PersonPDLMock.createWith(), PersonPDLMock.createWith())).whenever(personService).hentPersonData(any())
 
         val mockBuc = Buc(id = "23123", processDefinitionName = "P_BUC_01", participants = listOf(ParticipantsItem()), processDefinitionVersion = "4.2")
-        mockBuc.documents = listOf(DocumentsItem(id = "3123123", type = SEDType.P9000, status = "empty", allowsAttachments = true  ), DocumentsItem(id = parentDocumentId, type = SEDType.P8000, status = "received", allowsAttachments = true))
+        mockBuc.documents = listOf(
+            DocumentsItem(id = "3123123", type = SEDType.P9000, status = "empty", allowsAttachments = true, lastUpdate = lastupdate, creationDate = lastupdate),
+            DocumentsItem(id = parentDocumentId, type = SEDType.P8000, status = "received", allowsAttachments = true,  lastUpdate = lastupdate, creationDate = lastupdate))
         mockBuc.actions = listOf(ActionsItem(id = "1000", type = "Received", name = "Received"))
 
         val api = apiRequestWith(euxCaseId, sed = "P9000", institutions = emptyList())
@@ -372,7 +377,6 @@ class SedControllerTest {
         val sedandtype = SedAndType(SEDType.P9000, sed.toJsonSkipEmpty())
 
         doReturn(sed).whenever(mockPrefillSEDService).prefill(any(),any())
-
         doReturn(mockBuc).whenever(mockEuxService).getBuc(euxCaseId)
         doReturn(BucSedResponse(euxCaseId, "3123123")).whenever(mockEuxService).opprettSvarJsonSedOnBuc(
             sedandtype.sed,
@@ -382,8 +386,32 @@ class SedControllerTest {
         )
 
         val result = sedController.addDocumentToParent(api, parentDocumentId)
+        val expected = """
+            {
+              "id" : "3123123",
+              "parentDocumentId" : null,
+              "type" : "P9000",
+              "status" : "empty",
+              "creationDate" : 1596751200000,
+              "lastUpdate" : 1596751200000,
+              "displayName" : null,
+              "participants" : null,
+              "attachments" : [ ],
+              "version" : "1",
+              "firstVersion" : null,
+              "lastVersion" : null,
+              "allowsAttachments" : true,
+              "message" : null
+            }
+        """.trimIndent()
 
-        print(result?.toJson())
+        assertEquals(expected, result?.toJson())
+
+        verify(mockEuxService, times( 2)).getBuc(any())
+        verify(mockEuxService, times( 1)).opprettSvarJsonSedOnBuc(any(), any(), any(), any())
+        verify(personService, times(1)).hentPersonData(any())
+
+
 
     }
 

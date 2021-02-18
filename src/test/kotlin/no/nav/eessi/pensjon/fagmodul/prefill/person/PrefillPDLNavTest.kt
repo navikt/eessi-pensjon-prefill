@@ -35,8 +35,10 @@ import no.nav.eessi.pensjon.fagmodul.sedmodel.StatsborgerskapItem
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Doedsfall
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Foedsel
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Navn
+import no.nav.eessi.pensjon.personoppslag.pdl.model.Oppholdsadresse
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Sivilstandstype
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Statsborgerskap
+import no.nav.eessi.pensjon.personoppslag.pdl.model.UtenlandskAdresse
 import no.nav.eessi.pensjon.services.geo.PostnummerService
 import no.nav.eessi.pensjon.services.kodeverk.KodeverkClient
 import no.nav.eessi.pensjon.utils.mapAnyToJson
@@ -51,6 +53,7 @@ import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
 import org.skyscreamer.jsonassert.JSONAssert
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 @ExtendWith(MockitoExtension::class)
 class PrefillPDLNavTest {
@@ -324,6 +327,57 @@ class PrefillPDLNavTest {
     }
 
     @Test
+    fun `prefill person med utlandsadresse fra oppholdsadresse`() {
+        val somePersonNr = FodselsnummerMother.generateRandomFnr(60)
+        val personfnr = NavFodselsnummer(somePersonNr)
+        val personFdato = personfnr.getBirthDate().toString()
+
+        val single = lagPerson(somePersonNr)
+            .copy(bostedsadresse = null, oppholdsadresse = Oppholdsadresse(
+                LocalDateTime.of(2000, 10, 2, 9, 32, 1),
+                null,
+                null,
+                UtenlandskAdresse(
+                    "Storavegsentra 12, Noenhusbygg, 2012 SE, Østaby",
+                    "örasund",
+                    null,
+                    "SWE",
+                    null,
+                    null,
+                    null
+                ),
+                LagPDLPerson.mockMeta()
+            ))
+
+        val prefillData = PrefillDataModelMother.initialPrefillDataModel(SEDType.P2000, pinId = somePersonNr, penSaksnummer = somePenSaksnr)
+        val personDataCollection = PersonDataCollection(forsikretPerson = single, ektefellePerson = null,  sivilstandstype = Sivilstandstype.UGIFT, gjenlevendeEllerAvdod = single, barnPersonList = emptyList())
+        doReturn("NO").`when`(kodeverkClient).finnLandkode2("NOR")
+        doReturn("SE").`when`(kodeverkClient).finnLandkode2("SWE")
+
+        val actual = prefillPDLNav.prefill(prefillData.penSaksnummer, prefillData.bruker, prefillData.avdod, personDataCollection, prefillData.getPersonInfoFromRequestData())
+
+        val expected = Nav(
+            eessisak = listOf(EessisakItem(institusjonsid = someInstitutionId, institusjonsnavn = someIntitutionNavn, saksnummer = somePenSaksnr, land = "NO")),
+            bruker = Bruker(
+                person = lagNavPerson(somePersonNr, "OLE", "OLSEN", personFdato, someInstitutionId, someIntitutionNavn),
+                adresse = Adresse(
+                    "Storavegsentra 12, Noenhusbygg, 2012 SE, Østaby",
+                    null,
+                    "örasund",
+                    null,
+                    null,
+                    "SE"
+                )
+            )
+        )
+
+        assertEquals(expected, actual)
+        JSONAssert.assertEquals(expected.toJsonSkipEmpty(), actual.toJsonSkipEmpty(), true)
+
+    }
+
+
+    @Test
     fun `minimal prefill med brukerinfo på request`() {
         val somePersonNr = FodselsnummerMother.generateRandomFnr(60)
         val personfnr = NavFodselsnummer(somePersonNr)
@@ -419,9 +473,9 @@ class PrefillPDLNavTest {
     fun `Gitt en person med kosovo statsborgerskap Når preutfyller Statsborgerstak Så preutfyll tomt statsborgerskap`() {
         val personfnr = FodselsnummerMother.generateRandomFnr(40)
         val person = lagPerson(personfnr).copy(statsborgerskap = listOf(Statsborgerskap("XXK", LocalDate.of(2000, 10, 1), LocalDate.of(2300, 10, 1), LagPDLPerson.mockMeta())))
-        //Run
+
         val bruker = prefillPDLNav.createBruker(person, bank = null, ansettelsesforhold = null)
-        //Asssert
+
         assertEquals(bruker!!.person!!.statsborgerskap!!.size, 1)
         assertNull(bruker.person!!.statsborgerskap!![0].land)
     }
@@ -438,7 +492,6 @@ class PrefillPDLNavTest {
 
         val bruker = prefillPDLNav.createBruker(person, null, null)
 
-        //Assert
         assertEquals(bruker!!.person!!.statsborgerskap!!.size, 1)
         assertEquals(bruker.person!!.statsborgerskap!![0].land, "NO")
     }
@@ -457,8 +510,6 @@ class PrefillPDLNavTest {
         val brukerDnr = prefillPDLNav.createBruker(personDnr, null, null)
 
         assertEquals("1981-02-01", brukerDnr?.person?.foedselsdato)
-
-        println(brukerDnr?.toJsonSkipEmpty())
     }
 
     companion object {

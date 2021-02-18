@@ -24,9 +24,8 @@ class PrefillPDLAdresse (private val postnummerService: PostnummerService,
         if (sjekkForDiskresjonKodeAdresse(pdlperson)) {
             return null
         }
-        val bostedsadresse = pdlperson.bostedsadresse ?: return tomAdresse()
-
-        val vegadresse = bostedsadresse.vegadresse ?: return utlandsAdresse(pdlperson)
+        val bostedsadresse = pdlperson.bostedsadresse ?: return sjekkForUtlandsadresse(pdlperson)
+        val vegadresse = bostedsadresse.vegadresse ?: return tomAdresse()
 
         val husnr = listOfNotNull(vegadresse.husnummer, vegadresse.husbokstav)
             .joinToString(separator = " ")
@@ -38,18 +37,17 @@ class PrefillPDLAdresse (private val postnummerService: PostnummerService,
         )
     }
 
-    protected fun utlandsAdresse(pdlperson: PDLPerson) : Adresse {
-        val utlandsAdresse = pdlperson.bostedsadresse?.utenlandskAdresse
-        return if (utlandsAdresse == null) {
-            tomAdresse()
-        } else {
-            Adresse(
-                postnummer = utlandsAdresse.postkode,
-                gate = utlandsAdresse.adressenavnNummer,
-                land = hentLandkode(utlandsAdresse.landkode),
-                by = utlandsAdresse.bySted
-            )
-        }
+    private fun sjekkForUtlandsadresse(pdlperson: PDLPerson): Adresse {
+        val opphold = pdlperson.oppholdsadresse ?: return tomAdresse()
+
+        val utlandsAdresse = opphold.utenlandskAdresse ?: return tomAdresse()
+
+        return Adresse(
+            postnummer = utlandsAdresse.postkode,
+            gate = utlandsAdresse.adressenavnNummer,
+            land = hentLandkode(utlandsAdresse.landkode),
+            by = utlandsAdresse.bySted
+        )
 
     }
 

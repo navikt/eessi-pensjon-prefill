@@ -92,7 +92,7 @@ class PersonPDLControllerTest {
         )
             .andReturn().response
 
-        JSONAssert.assertEquals(personResponsAsJson2, response.contentAsString, true)
+        JSONAssert.assertEquals(personResponseAsJson3, response.contentAsString, true)
     }
 
     @Test
@@ -202,8 +202,6 @@ class PersonPDLControllerTest {
                 .accept(MediaType.APPLICATION_JSON)
         ).andReturn().response
 
-
-        print(response.contentAsString)
         val result = mapJsonToAny(response.contentAsString, typeRefs<List<PersonPDLController.PersoninformasjonAvdode?>>())
 
         assertEquals(1, result.size)
@@ -240,9 +238,89 @@ class PersonPDLControllerTest {
         assertEquals(emptyList(), list)
     }
 
-    private val personResponsAsJson2 = """
-        {"identer":[{"ident":"01010123456","gruppe":"FOLKEREGISTERIDENT"}],"navn":{"fornavn":"OLA","mellomnavn":null,"etternavn":"NORDMANN","forkortetNavn":null,"gyldigFraOgMed":null,"folkeregistermetadata":null,"metadata":{"endringer":[{"kilde":"DOLLY","registrert":"2010-04-01","registrertAv":"Dolly","systemkilde":"FREG","type":"OPPRETT"}],"historisk":false,"master":"FREG","opplysningsId":"fdsa234-sdfsf234-sfsdf234"},"sammensattNavn":"OLA NORDMANN","sammensattEtterNavn":"NORDMANN OLA"},"adressebeskyttelse":[],"bostedsadresse":null,"oppholdsadresse":null,"statsborgerskap":[{"land":"NOR","gyldigFraOgMed":"2010-10-11","gyldigTilOgMed":"2020-10-02","metadata":{"endringer":[{"kilde":"DOLLY","registrert":"2010-04-01","registrertAv":"Dolly","systemkilde":"FREG","type":"OPPRETT"}],"historisk":false,"master":"FREG","opplysningsId":"fdsa234-sdfsf234-sfsdf234"}}],"foedsel":null,"geografiskTilknytning":null,"kjoenn":{"kjoenn":"MANN","folkeregistermetadata":{"gyldighetstidspunkt":"2000-10-01T12:10:31"},"metadata":{"endringer":[{"kilde":"DOLLY","registrert":"2010-04-01","registrertAv":"Dolly","systemkilde":"FREG","type":"OPPRETT"}],"historisk":false,"master":"FREG","opplysningsId":"fdsa234-sdfsf234-sfsdf234"}},"doedsfall":null,"familierelasjoner":[],"sivilstand":[]}
-    """.trimIndent()
+    private val personResponseAsJson3 = """
+        {
+          "identer": [
+            {
+              "ident": "01010123456",
+              "gruppe": "FOLKEREGISTERIDENT"
+            }
+          ],
+          "navn": {
+            "fornavn": "OLA",
+            "mellomnavn": null,
+            "etternavn": "NORDMANN",
+            "forkortetNavn": null,
+            "gyldigFraOgMed": null,
+            "folkeregistermetadata": null,
+            "metadata": {
+              "endringer": [
+                {
+                  "kilde": "DOLLY",
+                  "registrert": "2010-04-01T10:12:03",
+                  "registrertAv": "Dolly",
+                  "systemkilde": "FREG",
+                  "type": "OPPRETT"
+                }
+              ],
+              "historisk": false,
+              "master": "FREG",
+              "opplysningsId": "fdsa234-sdfsf234-sfsdf234"
+            },
+            "sammensattNavn": "OLA NORDMANN",
+            "sammensattEtterNavn": "NORDMANN OLA"
+          },
+          "adressebeskyttelse": [],
+          "bostedsadresse": null,
+          "oppholdsadresse": null,
+          "statsborgerskap": [
+            {
+              "land": "NOR",
+              "gyldigFraOgMed": "2010-10-11",
+              "gyldigTilOgMed": "2020-10-02",
+              "metadata": {
+                "endringer": [
+                  {
+                    "kilde": "DOLLY",
+                    "registrert": "2010-04-01T10:12:03",
+                    "registrertAv": "Dolly",
+                    "systemkilde": "FREG",
+                    "type": "OPPRETT"
+                  }
+                ],
+                "historisk": false,
+                "master": "FREG",
+                "opplysningsId": "fdsa234-sdfsf234-sfsdf234"
+              }
+            }
+          ],
+          "foedsel": null,
+          "geografiskTilknytning": null,
+          "kjoenn": {
+            "kjoenn": "MANN",
+            "folkeregistermetadata": {
+              "gyldighetstidspunkt": "2000-10-01T12:10:31"
+            },
+            "metadata": {
+              "endringer": [
+                {
+                  "kilde": "DOLLY",
+                  "registrert": "2010-04-01T10:12:03",
+                  "registrertAv": "Dolly",
+                  "systemkilde": "FREG",
+                  "type": "OPPRETT"
+                }
+              ],
+              "historisk": false,
+              "master": "FREG",
+              "opplysningsId": "fdsa234-sdfsf234-sfsdf234"
+            }
+          },
+          "doedsfall": null,
+          "familierelasjoner": [],
+          "sivilstand": []
+        }
+          """.trimIndent()
 
     private val personResponsAsJson = """
         {
@@ -289,7 +367,7 @@ class PersonPDLControllerTest {
         return PDLMetaData(
             listOf(Endring(
                 "DOLLY",
-                LocalDate.of(2010, 4, 1),
+                LocalDateTime.of(2010, 4, 1, 10, 12, 3),
                 "Dolly",
                 "FREG",
                 Endringstype.OPPRETT

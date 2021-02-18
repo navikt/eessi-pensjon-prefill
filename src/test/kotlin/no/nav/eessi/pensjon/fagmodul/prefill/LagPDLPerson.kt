@@ -46,7 +46,7 @@ class LagPDLPerson {
             )
         }
 
-        internal fun mockMeta(registrert: LocalDate = LocalDate.of(2010, 4, 2)) : Metadata {
+        internal fun mockMeta(registrert: LocalDateTime = LocalDateTime.of(2010, 4, 2, 13, 21, 32)) : Metadata {
             return Metadata(
                 listOf(
                     Endring(

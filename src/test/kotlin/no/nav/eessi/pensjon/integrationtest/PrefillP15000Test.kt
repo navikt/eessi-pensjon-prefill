@@ -376,8 +376,6 @@ class PrefillP15000Test {
 
         val response = result.response.getContentAsString(charset("UTF-8"))
 
-        print(response)
-
         val validResponse = """
             {
               "sed" : "P15000",

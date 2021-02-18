@@ -17,6 +17,7 @@ import no.nav.eessi.pensjon.personoppslag.pdl.model.Kjoenn
 import no.nav.eessi.pensjon.personoppslag.pdl.model.KjoennType
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Metadata
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Navn
+import no.nav.eessi.pensjon.personoppslag.pdl.model.Oppholdsadresse
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Person
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Sivilstand
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Sivilstandstype
@@ -99,7 +100,7 @@ object PersonPDLMock {
                 )
             )
     }
-    internal fun mockMeta(registrert: LocalDate = LocalDate.of(2010, 4, 2)) : Metadata {
+    internal fun mockMeta(registrert: LocalDateTime = LocalDateTime.of(2010, 4, 2, 10, 14, 12)) : Metadata {
         return Metadata(
             listOf(
                 Endring(
@@ -188,7 +189,7 @@ object PersonPDLMock {
         metadata = mockMeta())
     )
 
-    internal fun Person.medUtlandAdresse(gateOgnr: String, postnummer: String, landkode: String) = this.copy(bostedsadresse = Bostedsadresse(
+    internal fun Person.medUtlandAdresse(gateOgnr: String, postnummer: String, landkode: String) = this.copy(bostedsadresse = null, oppholdsadresse = Oppholdsadresse(
         gyldigFraOgMed = LocalDateTime.of(2000, 10, 1, 10, 10, 10),
         gyldigTilOgMed = LocalDateTime.of(2300, 10, 1, 10 , 10, 10),
         vegadresse = null,
