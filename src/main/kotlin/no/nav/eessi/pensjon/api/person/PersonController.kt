@@ -95,7 +95,7 @@ class PersonController(
             )
 
             val avdodeMedFnr = avdode
-                .filter { (fnr, _) -> fnr?.toIntOrNull() != null  }
+                .filter { (fnr, _) -> fnr?.toLongOrNull() != null  }
                 .map { (fnr, rolle) -> pairPersonFnr(fnr!!, rolle, gjenlevende)}
 
             logger.info("Det ble funnet ${avdodeMedFnr.size} avdøde for den gjenlevende med aktørID: $gjenlevendeAktoerId")

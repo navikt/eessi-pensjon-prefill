@@ -152,7 +152,7 @@ class PrefillP15000(private val prefillSed: PrefillSed) {
             pensjonInfo.avdod?.avdodMor to Familierelasjonsrolle.MOR.name
         )
         return avdode
-            .filter { (fnr, _) -> fnr?.toIntOrNull() != null }
+            .filter { (fnr, _) -> fnr?.toLongOrNull() != null }
             .filter { (fnr, _) -> fnr == avdodFnr }
             .map { (_, value) -> value }
             .singleOrNull()
