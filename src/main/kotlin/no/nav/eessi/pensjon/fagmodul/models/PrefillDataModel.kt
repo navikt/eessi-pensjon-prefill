@@ -43,8 +43,6 @@ data class PrefillDataModel(
     }
 
     fun getInstitutionsList(): List<InstitusjonItem> = institution
-
-    //fun isMinimumPrefill() = sedType != SEDType.P6000
 }
 
 enum class ReferanseTilPerson(val verdi: String) {

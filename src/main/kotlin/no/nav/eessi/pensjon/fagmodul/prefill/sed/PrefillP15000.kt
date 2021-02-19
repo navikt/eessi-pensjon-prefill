@@ -36,7 +36,6 @@ class PrefillP15000(private val prefillSed: PrefillSed) {
         val kravType = prefillData.kravType ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST, "For preutfylling av P15000 så kreves det kravtype")
         val penSaksnummer = prefillData.penSaksnummer
         val sakType = sak?.sakType
-        val gjenlevendeAktoerId = prefillData.bruker.aktorId
         val avdodFnr = prefillData.avdod?.norskIdent
 
         logger.debug("Saken er av type: $sakType og kravType request er: $kravType")
@@ -153,14 +152,9 @@ class PrefillP15000(private val prefillSed: PrefillSed) {
             pensjonInfo.avdod?.avdodMor to Familierelasjonsrolle.MOR.name
         )
         return avdode
-            .filter { (fnr, _) -> isNumber(fnr) }
+            .filter { (fnr, _) -> fnr?.toIntOrNull() != null }
             .filter { (fnr, _) -> fnr == avdodFnr }
             .map { (_, value) -> value }
             .singleOrNull()
     }
-
-    private fun isNumber(s: String?): Boolean {
-        return if (s.isNullOrEmpty()) false else s.all { Character.isDigit(it) }
-    }
-
 }

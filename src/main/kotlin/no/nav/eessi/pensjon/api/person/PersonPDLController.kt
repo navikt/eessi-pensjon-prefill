@@ -95,10 +95,10 @@ class PersonPDLController(
                 pensjonInfo.avdod?.avdodMor to Familierelasjonsrolle.MOR
             )
 
-            logger.debug("avdød map : ${avdode}")
+            logger.debug("avdød map : $avdode")
 
             val avdodeMedFnr = avdode
-                .filter { (fnr, _) -> isNumber(fnr) }
+                .filter { (fnr, _) -> fnr?.toIntOrNull() != null }
                 .map { (fnr, rolle) -> pairPersonFnr(fnr!!, rolle, gjenlevende) }
 
             logger.info("Det ble funnet ${avdodeMedFnr.size} avdøde for den gjenlevende med aktørID: $gjenlevendeAktoerId")
@@ -129,10 +129,6 @@ class PersonPDLController(
             etternavn = avdodNavn?.etternavn,
             relasjon = relasjon?.name
         )
-    }
-
-    private fun isNumber(s: String?): Boolean {
-        return if (s.isNullOrEmpty()) false else s.all { Character.isDigit(it) }
     }
 
     private fun Navn.sammensattNavn() = listOfNotNull(etternavn, fornavn, mellomnavn)

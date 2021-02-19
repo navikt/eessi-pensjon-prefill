@@ -95,7 +95,7 @@ class PersonController(
             )
 
             val avdodeMedFnr = avdode
-                .filter { (fnr, _) -> isNumber(fnr) }
+                .filter { (fnr, _) -> fnr?.toIntOrNull() != null  }
                 .map { (fnr, rolle) -> pairPersonFnr(fnr!!, rolle, gjenlevende)}
 
             logger.info("Det ble funnet ${avdodeMedFnr.size} avdøde for den gjenlevende med aktørID: $gjenlevendeAktoerId")
@@ -125,10 +125,6 @@ class PersonController(
             etternavn = avdodNavn?.etternavn,
             relasjon = relasjon
         )
-    }
-
-    private fun isNumber(s: String?): Boolean {
-        return if (s.isNullOrEmpty()) false else s.all { Character.isDigit(it) }
     }
 
     @ApiOperation("henter ut navn for en aktørId")

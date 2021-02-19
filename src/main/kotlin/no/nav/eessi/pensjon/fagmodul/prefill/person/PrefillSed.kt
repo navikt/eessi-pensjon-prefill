@@ -19,7 +19,6 @@ class PrefillSed(private val prefillNav: PrefillPDLNav) {
         logger.debug("------------------| Preutfylling START |------------------ ")
         logger.debug("[${prefillData.sedType}] Preutfylling Utfylling Data")
 
-        //val sed = prefillData.sed
         val sedType = prefillData.sedType
 
         //henter opp persondata

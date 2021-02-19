@@ -151,7 +151,7 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
             )
         }
 
-        private fun createInformasjonOmAnsettelsesforhold(personInfo: BrukerInformasjon): List<ArbeidsforholdItem>? {
+        private fun createInformasjonOmAnsettelsesforhold(personInfo: BrukerInformasjon): List<ArbeidsforholdItem> {
             logger.debug("3.0           Informasjon om personens ansettelsesforhold og selvstendige næringsvirksomhet")
             logger.debug("3.1           Informasjon om ansettelsesforhold og selvstendig næringsvirksomhet ")
             return listOf(createAnsettelsesforhold(personInfo))
@@ -187,9 +187,6 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
 
         )
 
-
-        val personInfo = brukerInformasjon
-
         return Nav(
                 //1.0
                 eessisak = createEssisakItem(penSaksnummer, institutionid, institutionnavn),
@@ -201,8 +198,8 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
                 bruker = if (avdodEllerGjenlevende == null) null else
                             createBruker(
                                     avdodEllerGjenlevende,
-                                    if (personInfo == null) null else createBankData(personInfo),
-                                    if (personInfo == null) null else createInformasjonOmAnsettelsesforhold(personInfo)),
+                                    if (brukerInformasjon == null) null else createBankData(brukerInformasjon),
+                                    if (brukerInformasjon == null) null else createInformasjonOmAnsettelsesforhold(brukerInformasjon)),
 
                 //4.0 Ytelser ligger under pensjon object (P2000)
 
@@ -251,15 +248,17 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
         val ektePerson = personData.ektefellePerson
 
         //hvem er foreldre for denne relasjonen (FAR/MOR)
-        val foreldrePerson = if (ektePerson?.norskIdent() == relasjonIdent) {
-            ektePerson
-        } else if (forsikretPerson?.norskIdent() == relasjonIdent) {
-            forsikretPerson
-        } else {
-            null
-        }
-
-        if (foreldrePerson == null) return null
+        val foreldrePerson = when (relasjonIdent) {
+            ektePerson?.norskIdent() -> {
+                ektePerson
+            }
+            forsikretPerson?.norskIdent() -> {
+                forsikretPerson
+            }
+            else -> {
+                null
+            }
+        } ?: return null
 
         logger.debug("              Relasjon til : ${foreldrePerson.navn?.sammensattNavn}")
         val navn = foreldrePerson.navn
@@ -273,7 +272,7 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
                 )
             ),
             fornavn = navn?.fornavn,
-            etternavnvedfoedsel = null //if (RelasjonEnum.MOR.erSamme(tpsvalue)) null else navntps.etternavn
+            etternavnvedfoedsel = null
         )
         return Foreldre(person = relasjonperson)
     }
@@ -284,7 +283,7 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
 
         val landKode = pdlperson.statsborgerskap
             .filterNot { it.gyldigFraOgMed == null }
-            .maxBy { it.gyldigFraOgMed!! }?.land
+            .maxByOrNull { it.gyldigFraOgMed!! }?.land
 
         return Person(
                 //2.1.1     familiy name
@@ -308,7 +307,7 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
         )
     }
 
-    private fun createFornavnMellomNavn(personnavn: Navn?): String? {
+    private fun createFornavnMellomNavn(personnavn: Navn?): String {
        return listOfNotNull(personnavn?.fornavn, personnavn?.mellomnavn)
            .joinToString(separator = " ")
     }
