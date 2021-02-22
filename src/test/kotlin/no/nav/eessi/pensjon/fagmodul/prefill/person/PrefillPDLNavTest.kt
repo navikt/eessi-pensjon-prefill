@@ -13,6 +13,7 @@ import no.nav.eessi.pensjon.fagmodul.prefill.LagPDLPerson.Companion.lagPerson
 import no.nav.eessi.pensjon.fagmodul.prefill.LagPDLPerson.Companion.medAdresse
 import no.nav.eessi.pensjon.fagmodul.prefill.LagPDLPerson.Companion.medBarn
 import no.nav.eessi.pensjon.fagmodul.prefill.LagPDLPerson.Companion.medForeldre
+import no.nav.eessi.pensjon.fagmodul.prefill.LagPDLPerson.Companion.medKontaktadresseUtland
 import no.nav.eessi.pensjon.fagmodul.prefill.pdl.FodselsnummerMother
 import no.nav.eessi.pensjon.fagmodul.prefill.pdl.NavFodselsnummer
 import no.nav.eessi.pensjon.fagmodul.prefill.pdl.PrefillPDLAdresse
@@ -372,6 +373,61 @@ class PrefillPDLNavTest {
         )
 
         assertEquals(expected, actual)
+        JSONAssert.assertEquals(expected.toJsonSkipEmpty(), actual.toJsonSkipEmpty(), true)
+
+    }
+
+    @Test
+    fun `prefill person med kontaktadresse og utlandsadresse i frittformat`() {
+        val somePersonNr = FodselsnummerMother.generateRandomFnr(60)
+        val personfnr = NavFodselsnummer(somePersonNr)
+        val personFdato = personfnr.getBirthDate().toString()
+
+        val single = lagPerson(somePersonNr)
+            .copy(bostedsadresse = null, oppholdsadresse = Oppholdsadresse(
+                LocalDateTime.of(2000, 10, 2, 9, 32, 1),
+                null,
+                null,
+                UtenlandskAdresse(
+                    "Adresselinje 1, Adresselinje 2, Adresselinje 3",
+                    null,
+                    null,
+                    "SWE",
+                    null,
+                    null,
+                    null
+                ),
+                LagPDLPerson.mockMeta()
+            )).medKontaktadresseUtland()
+
+        val prefillData = PrefillDataModelMother.initialPrefillDataModel(SEDType.P2000, pinId = somePersonNr, penSaksnummer = somePenSaksnr)
+        val personDataCollection = PersonDataCollection(forsikretPerson = single, ektefellePerson = null,  sivilstandstype = Sivilstandstype.UGIFT, gjenlevendeEllerAvdod = single, barnPersonList = emptyList())
+        doReturn("NO").`when`(kodeverkClient).finnLandkode2("NOR")
+        doReturn("SE").`when`(kodeverkClient).finnLandkode2("SWE")
+
+        val actual = prefillPDLNav.prefill(prefillData.penSaksnummer, prefillData.bruker, prefillData.avdod, personDataCollection, prefillData.getPersonInfoFromRequestData())
+
+        val expected = Nav(
+            eessisak = listOf(EessisakItem(institusjonsid = someInstitutionId, institusjonsnavn = someIntitutionNavn, saksnummer = somePenSaksnr, land = "NO")),
+            bruker = Bruker(
+                person = lagNavPerson(somePersonNr, "OLE", "OLSEN", personFdato, someInstitutionId, someIntitutionNavn),
+                adresse = Adresse(
+                    "Adresselinje 1",
+                    "Adresselinje 2",
+                    "Adresselinje 3",
+                    null,
+                    null,
+                    "SE"
+                )
+            )
+        )
+
+        //assertEquals(expected, actual)
+        //println(single.toJsonSkipEmpty())
+
+        println("=".repeat(30))
+        println(actual.toJsonSkipEmpty())
+
         JSONAssert.assertEquals(expected.toJsonSkipEmpty(), actual.toJsonSkipEmpty(), true)
 
     }

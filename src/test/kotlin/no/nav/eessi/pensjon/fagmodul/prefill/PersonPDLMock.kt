@@ -97,9 +97,11 @@ object PersonPDLMock {
                         null,
                         metadata
                     )
-                )
+                ),
+            null
             )
     }
+
     internal fun mockMeta(registrert: LocalDateTime = LocalDateTime.of(2010, 4, 2, 10, 14, 12)) : Metadata {
         return Metadata(
             listOf(

@@ -13,12 +13,15 @@ import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe
 import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentInformasjon
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Kjoenn
 import no.nav.eessi.pensjon.personoppslag.pdl.model.KjoennType
+import no.nav.eessi.pensjon.personoppslag.pdl.model.Kontaktadresse
+import no.nav.eessi.pensjon.personoppslag.pdl.model.KontaktadresseType
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Metadata
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Navn
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Person
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Sivilstand
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Sivilstandstype
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Statsborgerskap
+import no.nav.eessi.pensjon.personoppslag.pdl.model.UtenlandskAdresseIFrittFormat
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Vegadresse
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -42,7 +45,8 @@ class LagPDLPerson {
                 kjoenn = Kjoenn(kjoennType, null, mockMeta()),
                 doedsfall = doeadfall,
                 familierelasjoner = emptyList(),
-                sivilstand = emptyList()
+                sivilstand = emptyList(),
+                kontaktadresse = null
             )
         }
 
@@ -97,6 +101,26 @@ class LagPDLPerson {
                 else -> Familierelasjonsrolle.MEDMOR
             }
         }
+
+        fun Person.medKontaktadresseUtland() = this.copy(kontaktadresse = Kontaktadresse(
+            coAdressenavn = "CoAdressenavn",
+            folkeregistermetadata = null,
+            gyldigFraOgMed = LocalDateTime.of(2000, 10, 1, 10, 10, 10),
+            gyldigTilOgMed = LocalDateTime.of(2300, 10, 1, 10 , 10, 10),
+            metadata = mockMeta(),
+            type = KontaktadresseType.Utland,
+            utenlandskAdresse = null,
+            utenlandskAdresseIFrittFormat = UtenlandskAdresseIFrittFormat(
+                adresselinje1 = "Adresselinje 1",
+                adresselinje2 = "Adresselinje 2",
+                adresselinje3 = "Adresselinje 3",
+                byEllerStedsnavn = null,
+                landkode = "SWE",
+                postkode = null
+            ),
+            vegadresse = null
+        ))
+
 
         fun Person.medAdresse(gate: String?) = this.copy(bostedsadresse = Bostedsadresse(
                 gyldigFraOgMed = LocalDateTime.of(2000, 10, 1, 10, 10, 10),

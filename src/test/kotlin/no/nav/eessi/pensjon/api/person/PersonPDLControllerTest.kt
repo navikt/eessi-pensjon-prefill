@@ -273,6 +273,7 @@ class PersonPDLControllerTest {
           "adressebeskyttelse": [],
           "bostedsadresse": null,
           "oppholdsadresse": null,
+          "kontaktadresse": null,
           "statsborgerskap": [
             {
               "land": "NOR",
@@ -407,7 +408,8 @@ class PersonPDLControllerTest {
         ),
         null,
         familierlasjon,
-        sivilstand
+        sivilstand,
+        null
     )
 
 }
