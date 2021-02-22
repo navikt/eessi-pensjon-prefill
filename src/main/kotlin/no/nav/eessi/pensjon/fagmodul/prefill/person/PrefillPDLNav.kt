@@ -126,7 +126,7 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
             logger.debug("5.1           Ektefelle/Partnerskap-type : $typevalue")
             return when (typevalue) {
                 Sivilstandstype.GIFT -> "ektefelle"
-                Sivilstandstype.PARTNER -> "part_i_et_registrert_partnerskap"
+                Sivilstandstype.REGISTRERT_PARTNER -> "part_i_et_registrert_partnerskap"
                 else -> "" // endring fra TPS istede for SAMBOER så blank hvis ukjent/ikke gift/partner.
             }
         }

@@ -44,7 +44,7 @@ class PensjonControllerTest {
     }
 
     @Test
-    fun `hentPensjonSakType | gitt en aktoerId saa slaa opp fnr og hent deretter sakstype`() {
+    fun `hentPensjonSakType gitt en aktoerId saa slaa opp fnr og hent deretter sakstype`() {
         val aktoerId = "1234567890123" // 13 sifre
         val sakId = "Some sakId"
 
@@ -56,7 +56,7 @@ class PensjonControllerTest {
     }
 
     @Test
-    fun `hentPensjonSakType | gitt at det svar fra PESYS er tom`() {
+    fun `hentPensjonSakType gitt at det svar fra PESYS er tom`() {
         val aktoerId = "1234567890123" // 13 sifre
         val sakId = "Some sakId"
 
@@ -69,7 +69,7 @@ class PensjonControllerTest {
     }
 
     @Test
-    fun `hentPensjonSakType | gitt at det svar feiler fra PESYS`() {
+    fun `hentPensjonSakType gitt at det svar feiler fra PESYS`() {
         val aktoerId = "1234567890123" // 13 sifre
         val sakId = "Some sakId"
 

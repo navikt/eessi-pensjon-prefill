@@ -266,6 +266,8 @@ class SedController(
             BucUtils(euxService.getBuc(dataModel.euxCaseID))
             // finnes det en SED i buc med parentid --!!??
 
+            // <-- P8000 --  id P8000.. status= reviced ,;  P9000 -> out - id, parentid = P8000->id . status = empty
+            // sedType, Buc, parentId. eux-Rinaid...  STATUS = EMPTY OK! HVIS IKKE badreqest
         }
 
         logger.info("Prøver å prefillSED (svarSED) parentId: $parentId")

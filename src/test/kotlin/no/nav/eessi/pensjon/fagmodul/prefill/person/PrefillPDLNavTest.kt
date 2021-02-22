@@ -269,14 +269,14 @@ class PrefillPDLNavTest {
         val personFdato = personfnr.getBirthDate().toString()
         val ektefellFdato = ektefnr.getBirthDate().toString()
 
-        val pair = createPersonMedEktefellePartner(somePersonNr, somerEktefellePersonNr, Sivilstandstype.PARTNER)
+        val pair = createPersonMedEktefellePartner(somePersonNr, somerEktefellePersonNr, Sivilstandstype.REGISTRERT_PARTNER)
 
         val person = pair.first
         val partner = pair.second
 
 
         val prefillData = PrefillDataModelMother.initialPrefillDataModel(SEDType.P2000, pinId = somePersonNr, penSaksnummer = somePenSaksnr)
-        val personDataCollection = PersonDataCollection(forsikretPerson = person, ektefellePerson = partner, sivilstandstype = Sivilstandstype.PARTNER, gjenlevendeEllerAvdod = person, barnPersonList = emptyList())
+        val personDataCollection = PersonDataCollection(forsikretPerson = person, ektefellePerson = partner, sivilstandstype = Sivilstandstype.REGISTRERT_PARTNER, gjenlevendeEllerAvdod = person, barnPersonList = emptyList())
 
         doReturn("NO").`when`(kodeverkClient).finnLandkode2("NOR")
 
