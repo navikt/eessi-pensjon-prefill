@@ -1,6 +1,5 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.hjelper
 
-import com.google.common.base.Preconditions
 import no.nav.pensjon.v1.avdod.V1Avdod
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import no.nav.pensjon.v1.trygdetidliste.V1TrygdetidListe
@@ -18,7 +17,7 @@ object VedtakPensjonDataHelper {
     private val logger: Logger by lazy { LoggerFactory.getLogger(VedtakPensjonDataHelper::class.java) }
 
     fun harBoddArbeidetUtland(pendata: Pensjonsinformasjon): Boolean {
-        Preconditions.checkArgument(pendata.vedtak != null, "Vedtak er null")
+        require(pendata.vedtak != null) {"Vedtak er null"}
         return pendata.vedtak.isBoddArbeidetUtland || harAvdodBoddArbeidetUtland(pendata)
     }
 
@@ -35,8 +34,7 @@ object VedtakPensjonDataHelper {
 
     //TODO - summere opp i ant. dager . trygdetidListe.fom - tom.
     fun erTrygdeTid(pendata: Pensjonsinformasjon, storreEnn: Int = 30, mindreEnn: Int = 360): Boolean {
-        Preconditions.checkArgument(pendata.trygdetidListe != null, "trygdetidListe er Null")
-        Preconditions.checkArgument(pendata.trygdetidListe.trygdetidListe != null, "trygdetidListe er Null")
+        require(pendata.trygdetidListe?.trygdetidListe != null) {"trygdetidListe er Null"}
         val trygdeListe = pendata.trygdetidListe
         val days = summerTrygdeTid(trygdeListe)
 
@@ -44,7 +42,7 @@ object VedtakPensjonDataHelper {
     }
 
     fun summerTrygdeTid(trygdeListe: V1TrygdetidListe): Int {
-        Preconditions.checkArgument(trygdeListe.trygdetidListe != null, "trygdetidListe er Null")
+        require(trygdeListe.trygdetidListe != null) {"trygdetidListe er Null"}
         val daylist = trygdeListe.trygdetidListe.map {
             val fom = it.fom.toGregorianCalendar().time.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
             val tom = it.tom.toGregorianCalendar().time.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
@@ -88,8 +86,8 @@ object VedtakPensjonDataHelper {
     }
 
     private fun hentV1Vilkarsvurdering(pendata: Pensjonsinformasjon): V1Vilkarsvurdering? {
-        val v1VilkarsvurderingListe: V1VilkarsvurderingListe? = pendata.vilkarsvurderingListe ?: V1VilkarsvurderingListe()
-        return v1VilkarsvurderingListe?.vilkarsvurderingListe?.getOrElse(0) { V1Vilkarsvurdering() }
+        val v1VilkarsvurderingListe: V1VilkarsvurderingListe = pendata.vilkarsvurderingListe ?: V1VilkarsvurderingListe()
+        return v1VilkarsvurderingListe.vilkarsvurderingListe?.getOrElse(0) { V1Vilkarsvurdering() }
     }
 
     fun hentVilkarsResultatHovedytelse(pendata: Pensjonsinformasjon): String {
@@ -114,6 +112,6 @@ object VedtakPensjonDataHelper {
     fun hentSisteYtelsePerMaaned(pendata: Pensjonsinformasjon): V1YtelsePerMaaned {
         val ytelseprmnd = pendata.ytelsePerMaanedListe
         val liste = ytelseprmnd.ytelsePerMaanedListe as List<V1YtelsePerMaaned>
-        return liste.maxBy { it.fom.toGregorianCalendar() }!!
+        return liste.maxByOrNull { it.fom.toGregorianCalendar() }!!
     }
 }

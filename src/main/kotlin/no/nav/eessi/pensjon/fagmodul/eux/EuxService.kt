@@ -1,7 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.eux
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.google.common.annotations.VisibleForTesting
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.BucSedResponse
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Rinasak
@@ -256,7 +255,6 @@ class EuxService (private val euxKlient: EuxKlient,
     /**
      * filtere ut gyldig buc fra gjenlevende og avdød
      */
-    @VisibleForTesting
     fun filterGyldigBucGjenlevendeAvdod(listeAvSedsPaaAvdod: List<BucOgDocumentAvdod>, fnrGjenlevende: String): List<Buc> {
         return listeAvSedsPaaAvdod
                 .filter { docs -> filterGjenlevende(docs, fnrGjenlevende) }

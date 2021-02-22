@@ -1,6 +1,5 @@
 package no.nav.eessi.pensjon.fagmodul.eux
 
-import com.google.common.collect.Lists
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Buc
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.DocumentsItem
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Organisation
@@ -66,7 +65,7 @@ class BucUtilsTest {
     @Test
     fun getCreatorCountryCode() {
         val result = bucUtils.getCreatorContryCode()
-        assertEquals("NO", Lists.newArrayList(result.values).get(0))
+        assertEquals("NO", result.values.first())
     }
 
 

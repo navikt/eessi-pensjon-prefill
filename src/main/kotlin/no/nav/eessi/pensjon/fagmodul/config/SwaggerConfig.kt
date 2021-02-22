@@ -1,6 +1,5 @@
 package no.nav.eessi.pensjon.fagmodul.config
 
-import com.google.common.base.Predicates
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import springfox.documentation.builders.ApiInfoBuilder
@@ -21,7 +20,7 @@ class SwaggerConfig {
                 .apiInfo(metaData())
                 .groupName("EESSI-Pensjon - Spring Boot REST API")
                 .select()
-                .apis(Predicates.not(RequestHandlerSelectors.basePackage("org.springframework.boot")))
+                .apis(RequestHandlerSelectors.basePackage("org.springframework.boot"))
                 .paths(PathSelectors.any())
                 .build()
     }

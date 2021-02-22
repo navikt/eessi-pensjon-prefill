@@ -1,16 +1,12 @@
 package no.nav.eessi.pensjon.fagmodul.prefill
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import com.google.common.base.Joiner
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.models.KravType
 import no.nav.eessi.pensjon.fagmodul.models.PersonId
 import no.nav.eessi.pensjon.fagmodul.models.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.models.ReferanseTilPerson
 import no.nav.eessi.pensjon.fagmodul.models.SEDType
-import no.nav.eessi.pensjon.utils.mapJsonToAny
-import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
-import no.nav.eessi.pensjon.utils.typeRefs
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.web.server.ResponseStatusException
@@ -48,16 +44,16 @@ data class ApiRequest(
 
 ) {
     fun toAudit(): String {
-        val json = ApiRequest(
-                sakId = sakId,
-                vedtakId = vedtakId,
-                avdodfnr = avdodfnr,
-                buc = buc,
-                sed = sed,
-                euxCaseId = euxCaseId
-        ).toJsonSkipEmpty()
-        val map = mapJsonToAny(json, typeRefs<Map<String, String>>())
-        return Joiner.on(" ").withKeyValueSeparator(": ").join(map)
+        return listOf(
+            "sakId" to sakId,
+            "vedtakId" to vedtakId,
+            "avdodfnr" to avdodfnr,
+            "buc" to buc,
+            "sed" to sed,
+            "euxCaseId" to euxCaseId
+        )
+            .filterNot { (_, value) -> value.isNullOrBlank() }
+            .joinToString(" ") { (key, value) -> "$key: $value" }
     }
 
     fun riktigAvdod(): String? {

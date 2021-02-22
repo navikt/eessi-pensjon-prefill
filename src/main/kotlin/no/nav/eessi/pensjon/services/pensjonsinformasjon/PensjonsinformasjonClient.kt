@@ -1,7 +1,6 @@
 package no.nav.eessi.pensjon.services.pensjonsinformasjon
 
 
-import com.google.common.base.Preconditions
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import no.nav.eessi.pensjon.metrics.MetricsHelper
 import no.nav.eessi.pensjon.utils.simpleFormat
@@ -66,7 +65,7 @@ class PensjonsinformasjonClient(
 
     @Throws(PensjoninformasjonException::class, HttpServerErrorException::class, HttpClientErrorException::class)
     fun hentAltPaaAktoerId(aktoerId: String): Pensjonsinformasjon {
-        Preconditions.checkArgument(aktoerId.isNotBlank(), "AktoerId kan ikke være blank/tom")
+        require(aktoerId.isNotBlank()) { "AktoerId kan ikke være blank/tom"}
 
         //APIet skal ha urlen {host}:{port}/pensjon-ws/api/pensjonsinformasjon/v1/{ressurs}?sakId=123+fom=2018-01-01+tom=2018-28-02.
 
@@ -205,8 +204,6 @@ class PensjonsinformasjonClient(
 
 
 }
-
-class IngenSakFunnetException(reason: String): ResponseStatusException(HttpStatus.NOT_FOUND, reason)
 
 class IkkeFunnetException(message: String) : ResponseStatusException(HttpStatus.BAD_REQUEST, message)
 

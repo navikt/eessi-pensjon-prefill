@@ -1,6 +1,5 @@
 package no.nav.eessi.pensjon.fagmodul.eux
 
-import com.google.common.base.Preconditions
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.BucSedResponse
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Rinasak
@@ -142,10 +141,10 @@ class EuxKlient(private val euxOidcRestTemplate: RestTemplate,
                 , SEDByDocumentId
                 , "Feil ved henting av Sed med DocId: $documentId"
         )
-        return response.body ?:  {
+        return response.body ?: run {
             logger.error("Feiler ved lasting av navSed: ${builder.toUriString()}")
             throw SedDokumentIkkeLestException("Feiler ved lesing av navSED, feiler ved uthenting av SED")
-        }()
+        }
     }
 
     fun getBucJson(euxCaseId: String): String {
@@ -299,21 +298,19 @@ class EuxKlient(private val euxOidcRestTemplate: RestTemplate,
                 , CreateBUC
                 , "Opprett Buc, "
         )
-        response.body?.let { return it } ?: {
+        response.body?.let { return it } ?: run {
             logger.error("Får ikke opprettet BUC på bucType: $bucType")
             throw IkkeFunnetException("Fant ikke noen euxCaseId på bucType: $bucType")
-        }()
+        }
     }
 
     private fun correlationId() = MDC.get("x_request_id") ?: UUID.randomUUID().toString()
 
     fun convertListInstitusjonItemToString(deltakere: List<String>): String {
-        val encodedList = mutableListOf<String>()
-        deltakere.forEach { institusjon ->
-            Preconditions.checkArgument(institusjon.contains(":"), "Ikke korrekt format på mottaker/institusjon... ")
-            encodedList.add("&mottakere=${institusjon}")
+        return deltakere.joinToString(separator = "") { deltaker ->
+            require(deltaker.contains(":")) { "Ikke korrekt format på mottaker/institusjon... "}
+            "&mottakere=${deltaker}"
         }
-        return encodedList.joinToString(separator = "")
     }
 
     fun putBucMottakere(euxCaseId: String, institusjoner: List<String>): Boolean {

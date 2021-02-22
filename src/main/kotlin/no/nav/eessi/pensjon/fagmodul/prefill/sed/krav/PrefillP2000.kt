@@ -27,7 +27,7 @@ class PrefillP2000(private val prefillNav: PrefillPDLNav)  {
 
         val nav = prefillPDLNav(prefillData, personData)
 
-        return prefillpen(prefillData, nav, sak, vedtak)
+        return prefillpen(prefillData, nav, sak)
     }
 
     private fun prefillPDLNav(prefillData: PrefillDataModel, personData: PersonDataCollection): Nav {
@@ -50,28 +50,27 @@ class PrefillP2000(private val prefillNav: PrefillPDLNav)  {
                 + "\n------------------| Preutfylling [$sedType] START |------------------ ")
     }
 
-    private fun prefillpen(prefillData: PrefillDataModel, nav: Nav, sak: V1Sak?, vedtak: V1Vedtak? = null): SED {
+    private fun prefillpen(prefillData: PrefillDataModel, nav: Nav, sak: V1Sak?): SED {
         val sedType = prefillData.sedType
 
         val andreInstitusjondetaljer = EessiInformasjon().asAndreinstitusjonerItem()
 
         //valider pensjoninformasjon,
-        var pensjon: Pensjon ? = null
-        try {
-            pensjon = Pensjon()
+        var pensjon: Pensjon ? = try {
             val meldingOmPensjon = PrefillP2xxxPensjon.createPensjon(
                     prefillData.bruker.norskIdent,
                     prefillData.penSaksnummer,
                     sak,
                     andreInstitusjondetaljer)
-            pensjon = meldingOmPensjon.pensjon
             if (prefillData.sedType != SEDType.P6000) {
-                pensjon = Pensjon(
-                        kravDato = meldingOmPensjon.pensjon.kravDato
-                ) //vi skal ha blank pensjon ved denne toggle, men vi må ha med kravdato
+                //vi skal ha blank pensjon ved denne toggle, men vi må ha med kravdato
+                Pensjon(kravDato = meldingOmPensjon.pensjon.kravDato)
+            } else {
+                meldingOmPensjon.pensjon
             }
         } catch (ex: Exception) {
             logger.error(ex.message, ex)
+            null
             //hvis feiler lar vi SB få en SED i RINA
         }
 
