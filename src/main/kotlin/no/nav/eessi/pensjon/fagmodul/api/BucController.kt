@@ -160,14 +160,14 @@ class BucController(
                 rinasakIdList
             } catch (ex: Exception) {
                 logger.error("Feil oppstod under henting av rinasaker på aktoer: $aktoerid", ex)
-                throw Exception("Feil ved henting av rinasaker på borger")
+                throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Feil ved henting av rinasaker på borger")
             }
 
             try {
                 return@measure euxService.getBucAndSedView(rinasakIdList)
             } catch (ex: Exception) {
                 logger.error("Feil ved henting av visning BucSedAndView på aktoer: $aktoerid", ex)
-                throw Exception("Feil ved oppretting av visning over BUC")
+                throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Feil ved oppretting av visning over BUC")
             }
         }
     }
@@ -237,7 +237,7 @@ class BucController(
                 euxService.getBucAndSedViewAvdod(fnrGjenlevende, avdodfnr)
             } catch (ex: Exception) {
                 logger.error("Feiler ved henting av Rinasaker for gjenlevende og avdod", ex)
-                throw Exception("Feil ved henting av Rinasaker for gjenlevende")
+                throw ResponseStatusException( HttpStatus.INTERNAL_SERVER_ERROR, "Feil ved henting av Rinasaker for gjenlevende")
             }
             val normalBuc = getBucogSedView(aktoerid)
             val normalbucAndSedView = normalBuc.map { bucview ->

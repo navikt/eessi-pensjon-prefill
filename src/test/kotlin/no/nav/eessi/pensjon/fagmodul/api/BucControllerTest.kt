@@ -16,8 +16,8 @@ import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Buc
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.DocumentsItem
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Organisation
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ParticipantsItem
-import no.nav.eessi.pensjon.fagmodul.prefill.PersonDataService
 import no.nav.eessi.pensjon.fagmodul.models.SEDType
+import no.nav.eessi.pensjon.fagmodul.prefill.PersonDataService
 import no.nav.eessi.pensjon.logging.AuditLogger
 import no.nav.eessi.pensjon.personoppslag.pdl.model.AktoerId
 import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentType
@@ -44,8 +44,7 @@ import org.mockito.Spy
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.web.client.HttpClientErrorException
-import java.nio.file.Files
-import java.nio.file.Paths
+import org.springframework.web.server.ResponseStatusException
 
 @ExtendWith(MockitoExtension::class)
 class BucControllerTest {
@@ -194,14 +193,14 @@ class BucControllerTest {
         doReturn(NorskIdent(fnr)).whenever(personDataService).hentIdent(IdentType.NorskIdent, AktoerId(aktoerId))
         doThrow(RuntimeException::class).whenever(mockEuxService).getRinasaker(fnr, aktoerId)
 
-        assertThrows<Exception> {
+        assertThrows<ResponseStatusException> {
             bucController.getBucogSedView(aktoerId)
         }
         try {
             bucController.getBucogSedView(aktoerId)
             fail("skal ikke komme hit")
         } catch (ex: Exception) {
-            assertEquals("Feil ved henting av rinasaker på borger", ex.message)
+            assertEquals("500 INTERNAL_SERVER_ERROR \"Feil ved henting av rinasaker på borger\"", ex.message)
         }
 
     }
