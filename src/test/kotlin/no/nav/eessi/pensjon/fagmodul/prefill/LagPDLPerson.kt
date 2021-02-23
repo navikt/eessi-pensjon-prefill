@@ -118,7 +118,8 @@ class LagPDLPerson {
                 landkode = "SWE",
                 postkode = null
             ),
-            vegadresse = null
+            vegadresse = null,
+            postadresseIFrittFormat = null
         ))
 
 

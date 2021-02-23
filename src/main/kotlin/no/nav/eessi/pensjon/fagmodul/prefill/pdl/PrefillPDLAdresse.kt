@@ -2,7 +2,10 @@ package no.nav.eessi.pensjon.fagmodul.prefill.pdl
 
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Adresse
 import no.nav.eessi.pensjon.personoppslag.pdl.model.AdressebeskyttelseGradering
+import no.nav.eessi.pensjon.personoppslag.pdl.model.PostadresseIFrittFormat
 import no.nav.eessi.pensjon.personoppslag.pdl.model.UtenlandskAdresse
+import no.nav.eessi.pensjon.personoppslag.pdl.model.UtenlandskAdresseIFrittFormat
+import no.nav.eessi.pensjon.personoppslag.pdl.model.Vegadresse
 import no.nav.eessi.pensjon.services.geo.PostnummerService
 import no.nav.eessi.pensjon.services.kodeverk.KodeverkClient
 import org.slf4j.Logger
@@ -25,29 +28,58 @@ class PrefillPDLAdresse (private val postnummerService: PostnummerService,
         if (sjekkForDiskresjonKodeAdresse(pdlperson)) {
             return null
         }
-        val bostedsadresse = pdlperson.bostedsadresse ?: return sjekkForUtlandsadresse(pdlperson)
-        val vegadresse = bostedsadresse.vegadresse ?: return tomAdresse()
 
+        logger.debug("Sjekk for og preutfyll adresse fra PDL")
+        return sjekkOgPreutfyllAdresse(pdlperson)
+
+    }
+
+    private fun preutfullNorskBostedVegadresse(vegadresse: Vegadresse): Adresse {
+        logger.info("preutfyller bostedadresse land NO")
         val husnr = listOfNotNull(vegadresse.husnummer, vegadresse.husbokstav)
             .joinToString(separator = " ")
-        logger.debug("preutfyller bostedadresse")
         return Adresse(
-                postnummer = vegadresse.postnummer,
-                gate = "${vegadresse.adressenavn} $husnr",
-                by = postnummerService.finnPoststed(vegadresse.postnummer),
-                land = "NO"
+            postnummer = vegadresse.postnummer,
+            gate = "${vegadresse.adressenavn} $husnr",
+            by = postnummerService.finnPoststed(vegadresse.postnummer),
+            land = "NO"
         )
     }
 
-    private fun sjekkForUtlandsadresse(pdlperson: PDLPerson): Adresse {
-        val opphold = pdlperson.oppholdsadresse ?: return kontaktUtlandsadresse(pdlperson)
-        val utlandsAdresse = opphold.utenlandskAdresse ?: return kontaktUtlandsadresse(pdlperson)
+    private fun preutfyllNorskPostadresseIFrittFormat(postadresseIFrittFormat: PostadresseIFrittFormat): Adresse {
+        logger.info("preutfyller postadresseIFrittFormat land NO")
+        return Adresse(
+            gate = postadresseIFrittFormat.adresselinje1,
+            bygning = postadresseIFrittFormat.adresselinje2,
+            by = postadresseIFrittFormat.adresselinje3,
+            land = "NO"
+        )
+    }
 
-        if(sjekkForGydligUtlandAdresse(utlandsAdresse)) {
-            return kontaktUtlandsadresse(pdlperson)
+
+    private fun sjekkOgPreutfyllAdresse(pdlperson: PDLPerson): Adresse {
+        //NOR
+        val vegadresse = pdlperson.bostedsadresse?.vegadresse ?: pdlperson.oppholdsadresse?.vegadresse
+        val postadresseIFrittFormat = pdlperson.kontaktadresse?.postadresseIFrittFormat
+
+        //UTLAND
+        val utenlandskAdresse = pdlperson.oppholdsadresse?.utenlandskAdresse ?: pdlperson.kontaktadresse?.utenlandskAdresse
+        //sjekke vinning på utfylling av utlandskadresse
+        val preutfyllUtenlandskAdresse = sjekkForGydligUtlandAdresse(utenlandskAdresse)
+        val utenlandskAdresseIFrittFormat = pdlperson.kontaktadresse?.utenlandskAdresseIFrittFormat
+
+        return when {
+            vegadresse != null -> preutfullNorskBostedVegadresse(vegadresse)
+            postadresseIFrittFormat != null -> preutfyllNorskPostadresseIFrittFormat(postadresseIFrittFormat)
+            preutfyllUtenlandskAdresse -> preutfyllUtlandsAdresse(utenlandskAdresse)
+            utenlandskAdresseIFrittFormat != null -> preutfyllUtenlandskAdresseIFrittFormat(utenlandskAdresseIFrittFormat)
+            else -> tomAdresse()
         }
 
-        logger.debug("preutfyller strukturert utlandsadresse")
+    }
+    private fun preutfyllUtlandsAdresse(utlandsAdresse: UtenlandskAdresse?): Adresse {
+        logger.info("preutfyller strukturert utlandsAdresse")
+        if (utlandsAdresse == null) return tomAdresse()
         return Adresse(
             postnummer = utlandsAdresse.postkode,
             gate = utlandsAdresse.adressenavnNummer,
@@ -57,22 +89,20 @@ class PrefillPDLAdresse (private val postnummerService: PostnummerService,
 
     }
 
-    private fun sjekkForGydligUtlandAdresse(utlandsAdresse: UtenlandskAdresse): Boolean {
+    private fun sjekkForGydligUtlandAdresse(utlandsAdresse: UtenlandskAdresse?): Boolean {
+        if (utlandsAdresse == null) return false
         var antallAdrlinjer = 0
-        if (utlandsAdresse.adressenavnNummer.isNullOrEmpty())  antallAdrlinjer ++
-        if (utlandsAdresse.bySted.isNullOrEmpty()) antallAdrlinjer ++
-        if (utlandsAdresse.postkode.isNullOrEmpty()) antallAdrlinjer ++
+        if (utlandsAdresse.adressenavnNummer?.isNotBlank() == true) antallAdrlinjer ++
+        if (utlandsAdresse.bySted?.isNotBlank() == true) antallAdrlinjer ++
+        if (utlandsAdresse.postkode?.isNotBlank() == true) antallAdrlinjer ++
         if (antallAdrlinjer >= 2) {
             return true
         }
         return false
     }
 
-    private fun kontaktUtlandsadresse(pdlperson: PDLPerson) : Adresse {
-        val kontaktadresse = pdlperson.kontaktadresse ?: return tomAdresse()
-        val utenlandskAdresseIFrittFormat = kontaktadresse.utenlandskAdresseIFrittFormat ?: return tomAdresse()
-
-        logger.debug("preutfyller ustrukturert utlandsadresse")
+    private fun preutfyllUtenlandskAdresseIFrittFormat(utenlandskAdresseIFrittFormat: UtenlandskAdresseIFrittFormat) : Adresse {
+        logger.info("preutfyller utenlandskAdresseIFrittFormat")
         return Adresse(
             gate = utenlandskAdresseIFrittFormat.adresselinje1,
             bygning = utenlandskAdresseIFrittFormat.adresselinje2,
