@@ -4,6 +4,7 @@ import io.micrometer.core.instrument.Tag
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import io.swagger.annotations.ApiOperation
 import no.nav.eessi.pensjon.fagmodul.eux.BucUtils
+import no.nav.eessi.pensjon.fagmodul.eux.EuxConflictException
 import no.nav.eessi.pensjon.fagmodul.eux.EuxRinaServerException
 import no.nav.eessi.pensjon.fagmodul.eux.EuxService
 import no.nav.eessi.pensjon.fagmodul.eux.PinOgKrav
@@ -227,6 +228,8 @@ class SedController(
                     euxService.opprettJsonSedOnBuc(x005.toJson(), x005.type, dataModel.euxCaseID, dataModel.vedtakId)
                 } catch (eux: EuxRinaServerException) {
                     execptionError = eux
+                } catch (exx: EuxConflictException) {
+                    execptionError = exx
                 } catch (ex: Exception) {
                     execptionError = ex
                 }
