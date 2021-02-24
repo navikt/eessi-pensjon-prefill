@@ -185,7 +185,13 @@ class SedPrefillPDLIntegrationSpringTest {
                     "fornavn" : "Avdød",
                     "kjoenn" : "M",
                     "foedselsdato" : "1921-07-12"
-                  }
+                  },
+                  "adresse" : {
+                    "gate" : "Oppoverbakken 66",
+                    "by" : "SØRUMSAND",
+                    "postnummer" : "1920",
+                    "land" : "NO"
+                  }                  
                 }
               },
               "pensjon" : {

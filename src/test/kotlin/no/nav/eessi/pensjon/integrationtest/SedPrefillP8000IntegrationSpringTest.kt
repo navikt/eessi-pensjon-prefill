@@ -113,7 +113,11 @@ class SedPrefillP8000IntegrationSpringTest {
                     "kjoenn" : "M",
                     "foedselsdato" : "1921-07-12"
                   },
-                  "adresse" : { }
+                  "adresse" : { 
+                          "gate" : "Oppoverbakken 66",
+                          "by" : "SØRUMSAND",
+                          "land" : "NO"
+                  }
                 },
                 "annenperson" : {
                   "person" : {
@@ -207,7 +211,12 @@ class SedPrefillP8000IntegrationSpringTest {
                 "kjoenn" : "M",
                 "foedselsdato" : "1921-07-12"
               },
-              "adresse" : { }
+              "adresse" : {
+                "gate" : "Oppoverbakken 66",
+                "by" : "SØRUMSAND",
+                "postnummer" : "1920",
+                "land" : "NO"
+              }
             },
             "annenperson" : {
               "person" : {
@@ -392,7 +401,11 @@ class SedPrefillP8000IntegrationSpringTest {
                     "kjoenn" : "M",
                     "foedselsdato" : "1921-07-12"
                   },
-                  "adresse" : { }
+                  "adresse" : {
+                    "gate" : "Oppoverbakken 66",
+                    "by" : "SØRUMSAND",
+                    "land" : "NO"
+                  }
                 },
                 "annenperson" : {
                   "person" : {

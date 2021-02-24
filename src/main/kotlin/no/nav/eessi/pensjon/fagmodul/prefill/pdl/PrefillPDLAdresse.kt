@@ -29,13 +29,13 @@ class PrefillPDLAdresse (private val postnummerService: PostnummerService,
             return null
         }
 
-        logger.debug("Sjekk for og preutfyll adresse fra PDL")
+        logger.debug("              Sjekk for og preutfyll adresse")
         return sjekkOgPreutfyllAdresse(pdlperson)
 
     }
 
     private fun preutfullNorskBostedVegadresse(vegadresse: Vegadresse): Adresse {
-        logger.info("preutfyller bostedadresse land NO")
+        logger.info("              preutfyller bostedadresse land NO")
         val husnr = listOfNotNull(vegadresse.husnummer, vegadresse.husbokstav)
             .joinToString(separator = " ")
         return Adresse(
@@ -47,7 +47,7 @@ class PrefillPDLAdresse (private val postnummerService: PostnummerService,
     }
 
     private fun preutfyllNorskPostadresseIFrittFormat(postadresseIFrittFormat: PostadresseIFrittFormat): Adresse {
-        logger.info("preutfyller postadresseIFrittFormat land NO")
+        logger.info("              preutfyller postadresseIFrittFormat land NO")
         return Adresse(
             gate = postadresseIFrittFormat.adresselinje1,
             bygning = postadresseIFrittFormat.adresselinje2,
@@ -68,17 +68,36 @@ class PrefillPDLAdresse (private val postnummerService: PostnummerService,
         val preutfyllUtenlandskAdresse = sjekkForGydligUtlandAdresse(utenlandskAdresse)
         val utenlandskAdresseIFrittFormat = pdlperson.kontaktadresse?.utenlandskAdresseIFrittFormat
 
+        //Doedsbo
+        val doedsboadresse = preutfyllDoedsboAdresseHvisFinnes(pdlperson)
+
         return when {
+            doedsboadresse != null -> doedsboadresse
             vegadresse != null -> preutfullNorskBostedVegadresse(vegadresse)
             postadresseIFrittFormat != null -> preutfyllNorskPostadresseIFrittFormat(postadresseIFrittFormat)
             preutfyllUtenlandskAdresse -> preutfyllUtlandsAdresse(utenlandskAdresse)
             utenlandskAdresseIFrittFormat != null -> preutfyllUtenlandskAdresseIFrittFormat(utenlandskAdresseIFrittFormat)
             else -> tomAdresse()
         }
-
     }
+
+    private fun preutfyllDoedsboAdresseHvisFinnes(pdlperson: PDLPerson): Adresse? {
+        return if (pdlperson.erDoed()) {
+            logger.info("              person er død. sjekker kontaktinformasjonForDoedsbo")
+            val adresse = pdlperson.kontaktinformasjonForDoedsbo?.adresse ?: return null
+            logger.info("              preutfyller kontaktinformasjonForDoedsbo")
+            Adresse(
+                gate = adresse.adresselinje1,
+                bygning = adresse.adresselinje2,
+                by = adresse.poststedsnavn,
+                postnummer = adresse.postnummer,
+                land = hentLandkode(adresse.landkode)
+            )
+        } else null
+    }
+
     private fun preutfyllUtlandsAdresse(utlandsAdresse: UtenlandskAdresse?): Adresse {
-        logger.info("preutfyller strukturert utlandsAdresse")
+        logger.info("              preutfyller strukturert utlandsAdresse")
         if (utlandsAdresse == null) return tomAdresse()
         return Adresse(
             postnummer = utlandsAdresse.postkode,
@@ -102,7 +121,7 @@ class PrefillPDLAdresse (private val postnummerService: PostnummerService,
     }
 
     private fun preutfyllUtenlandskAdresseIFrittFormat(utenlandskAdresseIFrittFormat: UtenlandskAdresseIFrittFormat) : Adresse {
-        logger.info("preutfyller utenlandskAdresseIFrittFormat")
+        logger.info("              preutfyller utenlandskAdresseIFrittFormat")
         return Adresse(
             gate = utenlandskAdresseIFrittFormat.adresselinje1,
             bygning = utenlandskAdresseIFrittFormat.adresselinje2,
@@ -128,7 +147,7 @@ class PrefillPDLAdresse (private val postnummerService: PostnummerService,
      *  Dette må så endres/rettes av saksbehendlaer i rina?
      */
     private fun tomAdresse(): Adresse {
-        logger.debug("             Tom adresse")
+        logger.info("             Tom adresse")
         return Adresse(
                 gate = "",
                 bygning = "",

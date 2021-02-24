@@ -10,7 +10,11 @@ import no.nav.eessi.pensjon.fagmodul.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonService
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
 import no.nav.eessi.pensjon.personoppslag.pdl.model.AktoerId
+import no.nav.eessi.pensjon.personoppslag.pdl.model.Folkeregistermetadata
 import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentType
+import no.nav.eessi.pensjon.personoppslag.pdl.model.KontaktinformasjonForDoedsbo
+import no.nav.eessi.pensjon.personoppslag.pdl.model.KontaktinformasjonForDoedsboAdresse
+import no.nav.eessi.pensjon.personoppslag.pdl.model.KontaktinformasjonForDoedsboSkifteform
 import no.nav.eessi.pensjon.personoppslag.pdl.model.NorskIdent
 import no.nav.eessi.pensjon.security.sts.STSService
 import no.nav.eessi.pensjon.services.kodeverk.KodeverkClient
@@ -37,6 +41,8 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.web.client.RestTemplate
+import java.time.LocalDate
+import java.time.LocalDateTime
 
 @SpringBootTest(classes = [UnsecuredWebMvcTestLauncher::class], webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles(profiles = ["unsecured-webmvctest"])
@@ -146,7 +152,13 @@ class PrefillP15000IntegrationTest {
                 "fornavn" : "Avdød",
                 "kjoenn" : "M",
                 "foedselsdato" : "1921-07-12"
-              }
+              },
+              "adresse" : {
+                "gate" : "Oppoverbakken 66",
+                "by" : "SØRUMSAND",
+                "postnummer" : "1920",
+                "land" : "NO"
+              }              
             },
             "krav" : {
               "dato" : "01-01-2020",
@@ -554,7 +566,13 @@ class PrefillP15000IntegrationTest {
                     "fornavn" : "Avdød",
                     "kjoenn" : "M",
                     "foedselsdato" : "1921-07-12"
-                  }
+                  },
+                  "adresse" : {
+                    "gate" : "Oppoverbakken 66",
+                    "by" : "SØRUMSAND",
+                    "postnummer" : "1920",
+                    "land" : "NO"
+                  }                  
                 },
                 "krav" : {
                   "dato" : "01-01-2020",
@@ -601,7 +619,28 @@ class PrefillP15000IntegrationTest {
         doReturn(AktoerId(AKTOER_ID_2)).whenever(personService).hentIdent(IdentType.AktoerId, NorskIdent(FNR_VOKSEN_2))
 
         doReturn(PersonPDLMock.createWith(true, "Lever", "Gjenlev", FNR_VOKSEN, AKTOER_ID)).whenever(personService).hentPerson(NorskIdent(FNR_VOKSEN))
-        doReturn(PersonPDLMock.createWith(true, "Avdød", "Død", FNR_VOKSEN_2, AKTOER_ID_2, true)).whenever(personService).hentPerson(NorskIdent(FNR_VOKSEN_2))
+
+        val avdodperson = PersonPDLMock.createWith(true, "Avdød", "Død", FNR_VOKSEN_2, AKTOER_ID_2, true)
+            .copy(bostedsadresse = null, oppholdsadresse = null, kontaktadresse = null, kontaktinformasjonForDoedsbo = KontaktinformasjonForDoedsbo(
+                KontaktinformasjonForDoedsboAdresse(
+                    "dødsboadresse1",
+                    "adresselinje2",
+                    "SWE",
+                    "2312",
+                    "Langegatan 121"
+                ),
+                LocalDate.of(2010, 10,1 ),
+                Folkeregistermetadata(LocalDateTime.of(2010, 10, 1, 10, 1, 2)),
+                no.nav.eessi.pensjon.personoppslag.pdl.model.Metadata(
+                    emptyList(),
+                    false,
+                    "DOLLY",
+                    "123123-123123-12--312312-312-31-23-123-1-31-23-123-12-31-23-123-12-3-123"
+                ),
+                KontaktinformasjonForDoedsboSkifteform.ANNET
+            ))
+
+        doReturn(avdodperson).whenever(personService).hentPerson(NorskIdent(FNR_VOKSEN_2))
 
         val aldersak = V1Sak()
         aldersak.sakType = "UFOREP"
@@ -623,6 +662,7 @@ class PrefillP15000IntegrationTest {
 
         doReturn(pensjonsinformasjon).`when`(pensjoninformasjonservice).hentMedVedtak("123123123")
         doReturn("QX").doReturn("XQ").`when`(kodeverkClient).finnLandkode2(any())
+        doReturn("SE").whenever(kodeverkClient).finnLandkode2("SWE")
 
         val apijson = dummyApijson(sakid = "22915555", vedtakid = "123123123", aktoerId = AKTOER_ID, sedType = SEDType.P15000, buc = "P_BUC_10", kravtype = KravType.GJENLEV, kravdato = "01-01-2020", fnravdod = FNR_VOKSEN_2)
 
@@ -658,7 +698,14 @@ class PrefillP15000IntegrationTest {
                     "fornavn" : "Avdød",
                     "kjoenn" : "M",
                     "foedselsdato" : "1921-07-12"
-                  }
+                  },
+                  "adresse" : {
+                    "gate" : "dødsboadresse1",
+                    "bygning" : "adresselinje2",
+                    "by" : "Langegatan 121",
+                    "postnummer" : "2312",
+                    "land": "SE"
+                  }                  
                 },
                 "krav" : {
                   "dato" : "01-01-2020",

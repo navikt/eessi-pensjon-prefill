@@ -183,8 +183,6 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
                 avdød    : ${avdodEllerGjenlevende?.navn?.sammensattNavn}
                 ----------------------------------------------------------------------------------------
             """.trimIndent()
-
-
         )
 
         return Nav(
@@ -221,9 +219,7 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
                      ansettelsesforhold: List<ArbeidsforholdItem>?): Bruker? {
             return Bruker(
                 person = createPersonData(pdlperson),
-                adresse = if (isPersonAvdod(pdlperson)) null else prefillAdresse.createPersonAdresse(pdlperson),
-                //far = if (isPersonAvdod(brukerTPS)) null else createRelasjon(RelasjonEnum.FAR, brukerTPS),
-                //mor = if (isPersonAvdod(brukerTPS)) null else createRelasjon(RelasjonEnum.MOR, brukerTPS),
+                adresse = prefillAdresse.createPersonAdresse(pdlperson),
                 bank = bank,
                 arbeidsforhold = ansettelsesforhold)
     }

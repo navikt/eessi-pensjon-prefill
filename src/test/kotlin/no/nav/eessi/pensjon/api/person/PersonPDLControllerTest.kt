@@ -85,7 +85,6 @@ class PersonPDLControllerTest {
         doNothing().whenever(auditLogger).log(any(), any())
         doReturn(lagPerson(etternavn = "NORDMANN", fornavn = "OLA")).whenever(pdlService).hentPerson(any<Ident<*>>())
 
-
         val response = mvc.perform(
             get("/person/pdl/$AKTOERID")
                 .accept(MediaType.APPLICATION_JSON)
@@ -274,6 +273,7 @@ class PersonPDLControllerTest {
           "bostedsadresse": null,
           "oppholdsadresse": null,
           "kontaktadresse": null,
+          "kontaktinformasjonForDoedsbo": null,
           "statsborgerskap": [
             {
               "land": "NOR",
