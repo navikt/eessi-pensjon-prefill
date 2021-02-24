@@ -266,11 +266,9 @@ class SedController(
         //Hente metadata for valgt BUC
         val bucUtil = addDocumentToParentBucUtils.measure {
             logger.info("******* Hent BUC sjekk om sed kan opprettes *******")
-            BucUtils(euxService.getBuc(dataModel.euxCaseID))
-            // finnes det en SED i buc med parentid --!!??
-
-            // <-- P8000 --  id P8000.. status= reviced ,;  P9000 -> out - id, parentid = P8000->id . status = empty
-            // sedType, Buc, parentId. eux-Rinaid...  STATUS = EMPTY OK! HVIS IKKE badreqest
+            BucUtils(euxService.getBuc(dataModel.euxCaseID)).also { bucUtil ->
+                bucUtil.checkIfSedCanBeCreatedEmptyStatus(dataModel.sedType, parentId)
+            }
         }
 
         logger.info("Prøver å prefillSED (svarSED) parentId: $parentId")

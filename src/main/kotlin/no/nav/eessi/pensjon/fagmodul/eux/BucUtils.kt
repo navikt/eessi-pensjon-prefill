@@ -314,6 +314,12 @@ class BucUtils(private val buc: Buc ) {
         return true
     }
 
+    fun checkIfSedCanBeCreatedEmptyStatus(sedType: SEDType, parentId: String) : Boolean{
+        if(getAllDocuments().any() { it.parentDocumentId == parentId && it.type == sedType && it.status == "empty" }){
+            return true
+        }
+        throw SedDokumentKanIkkeOpprettesException("SvarSED $sedType kan ikke opaprettes i RINA (mulig det allerede finnes et utkast)")
+    }
 
     fun filterSektorPandRelevantHorizontalSeds(list: List<SEDType>): List<SEDType> {
         val gyldigSektorOgHSed: (SEDType) -> Boolean = { type ->

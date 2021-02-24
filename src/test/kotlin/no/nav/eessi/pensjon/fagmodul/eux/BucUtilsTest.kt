@@ -19,7 +19,6 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.junit.jupiter.MockitoExtension
 import org.skyscreamer.jsonassert.JSONAssert
 import java.time.format.DateTimeFormatter
-import kotlin.test.assertFalse
 
 @ExtendWith(MockitoExtension::class)
 class BucUtilsTest {
@@ -84,27 +83,20 @@ class BucUtilsTest {
     }
 
     @Test
-    //TODO utvide støtte og sjekk på svarsed
     fun `sjekk for om parentId finnes alt med valgt sedtype`() {
         val sedType = SEDType.P9000
         val parentId = "a89676b0ea7c4d8684e17f15d2471188"
-        val validStatus = "empty"
 
         val bucjson = getTestJsonFile("buc-285268-answerid.json")
         val bucUtil = BucUtils(mapJsonToAny(bucjson, typeRefs()))
 
-        //sjekk positiv på empty status
-        val kanSvarSedOpprettes = bucUtil.getAllDocuments().any { it.parentDocumentId == parentId && it.type == sedType && it.status == validStatus }
+        assertTrue(bucUtil.checkIfSedCanBeCreatedEmptyStatus(sedType, parentId))
 
-        assertTrue(kanSvarSedOpprettes)
-
-        //sjekk negativ på status sendt
         val parentIdStatusSendt = "fd9fd9ee97ee46d0a3f5c58d1b245268"
-        val kanSvarSedOpprettesFeil = bucUtil.getAllDocuments().any { it.parentDocumentId == parentIdStatusSendt && it.type == sedType && it.status == validStatus }
 
-        assertFalse(kanSvarSedOpprettesFeil)
-
-
+        assertThrows<SedDokumentKanIkkeOpprettesException> {
+            bucUtil.checkIfSedCanBeCreatedEmptyStatus(sedType, parentIdStatusSendt)
+        }
     }
 
 

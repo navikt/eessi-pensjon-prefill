@@ -367,7 +367,7 @@ class SedControllerTest {
 
         val mockBuc = Buc(id = "23123", processDefinitionName = "P_BUC_01", participants = listOf(ParticipantsItem()), processDefinitionVersion = "4.2")
         mockBuc.documents = listOf(
-            DocumentsItem(id = "3123123", type = SEDType.P9000, status = "empty", allowsAttachments = true, lastUpdate = lastupdate, creationDate = lastupdate),
+            DocumentsItem(id = "3123123", type = SEDType.P9000, status = "empty", allowsAttachments = true, lastUpdate = lastupdate, creationDate = lastupdate, parentDocumentId = parentDocumentId),
             DocumentsItem(id = parentDocumentId, type = SEDType.P8000, status = "received", allowsAttachments = true,  lastUpdate = lastupdate, creationDate = lastupdate))
         mockBuc.actions = listOf(ActionsItem(id = "1000", type = "Received", name = "Received"))
 
@@ -389,7 +389,7 @@ class SedControllerTest {
         val expected = """
             {
               "id" : "3123123",
-              "parentDocumentId" : null,
+              "parentDocumentId" : "1122334455666",
               "type" : "P9000",
               "status" : "empty",
               "creationDate" : 1596751200000,
@@ -412,13 +412,26 @@ class SedControllerTest {
         verify(personService, times(1)).hentPersonData(any())
     }
 
-//    @Test
-//    fun `call addDocumentToParent hvor det sjekkes på Gydlig SED finnes alt med parentID`() {
-//
-//
-//        parentDocumentId
-//    }
+    @Test
+    fun `call addDocumentToParent svarsed finnes kaster exception`()  {
+        val euxCaseId = "1100220033"
+        val parentDocumentId = "1122334455666"
+        val lastupdate = LocalDate.of(2020, Month.AUGUST, 7).toString()
 
+        doReturn(NorskIdent("12345")).whenever(personService).hentIdent(eq(IdentType.NorskIdent), any< Ident<*>>())
+
+        val mockBuc = Buc(id = "23123", processDefinitionName = "P_BUC_01", participants = listOf(ParticipantsItem()), processDefinitionVersion = "4.2")
+        mockBuc.documents = listOf(
+            DocumentsItem(id = "3123123", type = SEDType.P9000, status = "draft", allowsAttachments = true, lastUpdate = lastupdate, creationDate = lastupdate, parentDocumentId = parentDocumentId))
+
+        val api = apiRequestWith(euxCaseId, sed = "P9000", institutions = emptyList())
+
+        doReturn(mockBuc).whenever(mockEuxService).getBuc(euxCaseId)
+
+        assertThrows<SedDokumentKanIkkeOpprettesException> {
+            sedController.addDocumentToParent(api, parentDocumentId)
+        }
+    }
 
     @Test
     fun `call addInstutionAndDocument valider om SED alt finnes i BUC kaster Exception`() {
