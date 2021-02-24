@@ -73,7 +73,7 @@ configurations {
 dependencies {
 
     // Spring-boot
-    implementation("org.springframework.boot:spring-boot-starter-web") {
+    implementation("org.springframework.boot:spring-boot-starter-web:$springBootVersion") {
         exclude module: 'tomcat-embed-core'
     }
 
@@ -87,14 +87,6 @@ dependencies {
         exclude module: 'junit-vintage-engine'
     }
 
-    //json path
-    implementation("com.jayway.jsonpath:json-path:2.4.0")
-
-    // Allows for variable expiration-date of each cache-entry
-    implementation("net.jodah:expiringmap:0.5.9")
-
-    // Apache httpcomponents
-    implementation("org.apache.httpcomponents:fluent-hc:4.5.10")
     implementation("joda-time:joda-time:2.10.6")
 
     // Kotlin

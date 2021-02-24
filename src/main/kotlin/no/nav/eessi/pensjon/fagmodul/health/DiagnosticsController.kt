@@ -3,12 +3,8 @@ package no.nav.eessi.pensjon.fagmodul.health
 import no.nav.eessi.pensjon.fagmodul.eux.EuxKlient
 import no.nav.eessi.pensjon.security.sts.STSService
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonClient
-import no.nav.eessi.pensjon.utils.mapJsonToAny
-import no.nav.eessi.pensjon.utils.typeRefs
 import no.nav.security.token.support.core.api.Protected
 import no.nav.security.token.support.core.api.Unprotected
-import org.apache.http.HttpHeaders
-import org.apache.http.client.fluent.Request
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.ResponseEntity
@@ -23,8 +19,7 @@ import javax.servlet.http.HttpServletRequest
 @CrossOrigin
 @RestController
 @Unprotected
-class DiagnosticsController(private val stsService: STSService,
-                            @Value("\${NAIS_APP_NAME}") private val appName: String,
+class DiagnosticsController(@Value("\${NAIS_APP_NAME}") private val appName: String,
                             @Value("\${NAIS_APP_IMAGE}") private val appVersion: String
 ) {
 
@@ -44,22 +39,12 @@ class DiagnosticsController(private val stsService: STSService,
 
         try {
             val fagurl = getLocalProtectedAddr(request)
-            logger.debug("Kall til selftest fra url: ${fagurl} med sessionid: $sessionId")
+            logger.debug("Kall til selftest fra url: $fagurl med sessionid: $sessionId")
 
             val localProtectedUrl = "${fagurl}/internal/protected/selftest"
             logger.debug("Prøver å kontakte Url: $localProtectedUrl")
 
-            val token = stsService.getSystemOidcToken()
-            val response = Request
-                    .Get(localProtectedUrl)
-                    .setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + token)
-                    .execute()
-                    .returnContent()
-                    .asString()
-
-            logger.debug("Selftest passed response: $response")
-            val selfTestlist = mapJsonToAny(response, typeRefs<List<Check>>())
-            return SelftestResult(name = appName, version = appVersion, aggregateResult = selfTestlist.size,checks = selfTestlist)
+            return SelftestResult(name = appName, version = appVersion)
 
         } catch (ex: Exception) {
             logger.debug("Selftest failed")
@@ -150,11 +135,9 @@ class DiagnosticsControllerProtected(private val euxKlient: EuxKlient,
 }
 
 data class SelftestResult(
-        val name: String,
-        val version: String,
-        val timestamp: Instant = Instant.now(),
-        val aggregateResult: Int,
-        val checks: List<Check>?
+    val name: String,
+    val version: String,
+    val timestamp: Instant = Instant.now()
 )
 
 data class Check(
