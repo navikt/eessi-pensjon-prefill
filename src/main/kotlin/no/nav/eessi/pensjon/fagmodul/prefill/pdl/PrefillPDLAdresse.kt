@@ -34,7 +34,8 @@ class PrefillPDLAdresse (private val postnummerService: PostnummerService,
 
     }
 
-    private fun preutfullNorskBostedVegadresse(vegadresse: Vegadresse): Adresse {
+    private fun preutfullNorskBostedVegadresse(vegadresse: Vegadresse?): Adresse {
+        if (vegadresse == null) return tomAdresse()
         logger.info("              preutfyller bostedadresse land NO")
         val husnr = listOfNotNull(vegadresse.husnummer, vegadresse.husbokstav)
             .joinToString(separator = " ")
@@ -46,7 +47,8 @@ class PrefillPDLAdresse (private val postnummerService: PostnummerService,
         )
     }
 
-    private fun preutfyllNorskPostadresseIFrittFormat(postadresseIFrittFormat: PostadresseIFrittFormat): Adresse {
+    private fun preutfyllNorskPostadresseIFrittFormat(postadresseIFrittFormat: PostadresseIFrittFormat?): Adresse {
+        if (postadresseIFrittFormat == null) return tomAdresse()
         logger.info("              preutfyller postadresseIFrittFormat land NO")
         return Adresse(
             gate = postadresseIFrittFormat.adresselinje1,
@@ -58,27 +60,28 @@ class PrefillPDLAdresse (private val postnummerService: PostnummerService,
 
 
     private fun sjekkOgPreutfyllAdresse(pdlperson: PDLPerson): Adresse {
-        //NOR
-        val vegadresse = pdlperson.bostedsadresse?.vegadresse ?: pdlperson.oppholdsadresse?.vegadresse
-        val postadresseIFrittFormat = pdlperson.kontaktadresse?.postadresseIFrittFormat
 
-        //UTLAND
-        val utenlandskAdresse = pdlperson.oppholdsadresse?.utenlandskAdresse ?: pdlperson.kontaktadresse?.utenlandskAdresse
-        //sjekke vinning på utfylling av utlandskadresse
-        val preutfyllUtenlandskAdresse = sjekkForGydligUtlandAdresse(utenlandskAdresse)
-        val utenlandskAdresseIFrittFormat = pdlperson.kontaktadresse?.utenlandskAdresseIFrittFormat
-
-        //Doedsbo
+       //Doedsbo
         val doedsboadresse = preutfyllDoedsboAdresseHvisFinnes(pdlperson)
 
         return when {
             doedsboadresse != null -> doedsboadresse
-            vegadresse != null -> preutfullNorskBostedVegadresse(vegadresse)
-            postadresseIFrittFormat != null -> preutfyllNorskPostadresseIFrittFormat(postadresseIFrittFormat)
-            preutfyllUtenlandskAdresse -> preutfyllUtlandsAdresse(utenlandskAdresse)
-            utenlandskAdresseIFrittFormat != null -> preutfyllUtenlandskAdresseIFrittFormat(utenlandskAdresseIFrittFormat)
-            else -> tomAdresse()
+
+            //utland
+            pdlperson.kontaktadresse?.utenlandskAdresse != null -> preutfyllUtlandsAdresse(pdlperson.kontaktadresse?.utenlandskAdresse)
+            pdlperson.kontaktadresse?.utenlandskAdresseIFrittFormat != null -> preutfyllUtenlandskAdresseIFrittFormat(pdlperson.kontaktadresse?.utenlandskAdresseIFrittFormat)
+            //Norge
+            pdlperson.kontaktadresse?.vegadresse != null -> preutfullNorskBostedVegadresse(pdlperson.kontaktadresse?.vegadresse)
+            pdlperson.kontaktadresse?.postadresseIFrittFormat != null -> preutfyllNorskPostadresseIFrittFormat(pdlperson.kontaktadresse?.postadresseIFrittFormat)
+
+            //Norge
+            pdlperson.bostedsadresse?.vegadresse != null -> preutfullNorskBostedVegadresse(pdlperson.bostedsadresse?.vegadresse)
+            //utland
+            pdlperson.oppholdsadresse?.utenlandskAdresse != null -> preutfyllUtlandsAdresse(pdlperson.oppholdsadresse?.utenlandskAdresse)
+
+          else -> tomAdresse()
         }
+
     }
 
     private fun preutfyllDoedsboAdresseHvisFinnes(pdlperson: PDLPerson): Adresse? {
@@ -120,7 +123,8 @@ class PrefillPDLAdresse (private val postnummerService: PostnummerService,
         return false
     }
 
-    private fun preutfyllUtenlandskAdresseIFrittFormat(utenlandskAdresseIFrittFormat: UtenlandskAdresseIFrittFormat) : Adresse {
+    private fun preutfyllUtenlandskAdresseIFrittFormat(utenlandskAdresseIFrittFormat: UtenlandskAdresseIFrittFormat?) : Adresse {
+        if (utenlandskAdresseIFrittFormat == null) return tomAdresse()
         logger.info("              preutfyller utenlandskAdresseIFrittFormat")
         return Adresse(
             gate = utenlandskAdresseIFrittFormat.adresselinje1,

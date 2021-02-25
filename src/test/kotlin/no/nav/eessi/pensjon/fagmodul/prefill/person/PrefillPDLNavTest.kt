@@ -478,14 +478,55 @@ class PrefillPDLNavTest {
             )
         )
 
-        //assertEquals(expected, actual)
-        //println(single.toJsonSkipEmpty())
+        JSONAssert.assertEquals(expected.toJsonSkipEmpty(), actual.toJsonSkipEmpty(), true)
+    }
 
-        println("=".repeat(30))
-        println(actual.toJsonSkipEmpty())
+    @Test
+    fun `prefill person utland med oppholdsadresse samt kontaktadresse i frittformat`() {
+        val somePersonNr = FodselsnummerMother.generateRandomFnr(60)
+        val personfnr = NavFodselsnummer(somePersonNr)
+        val personFdato = personfnr.getBirthDate().toString()
+
+        val single = lagPerson(somePersonNr)
+            .copy(bostedsadresse = null, oppholdsadresse = Oppholdsadresse(
+                LocalDateTime.of(2000, 10, 2, 9, 32, 1),
+                null,
+                null,
+                UtenlandskAdresse(
+                    "Adresselinje 1, Adresselinje 2, Adresselinje 3",
+                    "utenland by",
+                    null,
+                    "SWE",
+                    null,
+                    "postkoden",
+                    null
+                ),
+                LagPDLPerson.mockMeta()
+            )).medKontaktadresseUtland()
+
+        val prefillData = PrefillDataModelMother.initialPrefillDataModel(SEDType.P2000, pinId = somePersonNr, penSaksnummer = somePenSaksnr)
+        val personDataCollection = PersonDataCollection(forsikretPerson = single, ektefellePerson = null,  sivilstandstype = Sivilstandstype.UGIFT, gjenlevendeEllerAvdod = single, barnPersonList = emptyList())
+        doReturn("NO").`when`(kodeverkClient).finnLandkode2("NOR")
+        doReturn("SE").`when`(kodeverkClient).finnLandkode2("SWE")
+
+        val actual = prefillPDLNav.prefill(prefillData.penSaksnummer, prefillData.bruker, prefillData.avdod, personDataCollection, prefillData.getPersonInfoFromRequestData(), null)
+
+        val expected = Nav(
+            eessisak = listOf(EessisakItem(institusjonsid = someInstitutionId, institusjonsnavn = someIntitutionNavn, saksnummer = somePenSaksnr, land = "NO")),
+            bruker = Bruker(
+                person = lagNavPerson(somePersonNr, "OLE", "OLSEN", personFdato, someInstitutionId, someIntitutionNavn),
+                adresse = Adresse(
+                    "Adresselinje 1",
+                    "Adresselinje 2",
+                    "Adresselinje 3",
+                    null,
+                    null,
+                    "SE"
+                )
+            )
+        )
 
         JSONAssert.assertEquals(expected.toJsonSkipEmpty(), actual.toJsonSkipEmpty(), true)
-
     }
 
 
