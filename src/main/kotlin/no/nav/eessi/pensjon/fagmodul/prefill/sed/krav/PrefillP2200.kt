@@ -21,54 +21,35 @@ class PrefillP2200(private val prefillNav: PrefillPDLNav) {
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillP2200::class.java) }
 
     fun prefill(prefillData: PrefillDataModel, personData: PersonDataCollection, sak: V1Sak?, vedtak: V1Vedtak? = null) : SED {
-        val sedType = prefillData.sedType
-
         logger.debug("----------------------------------------------------------"
                 + "\nSaktype                 : ${sak?.sakType} "
                 + "\nSøker etter SakId       : ${prefillData.penSaksnummer} "
                 + "\nSøker etter aktoerid    : ${prefillData.bruker.aktorId} "
-                + "\n------------------| Preutfylling [$sedType] START |------------------ ")
+                + "\n------------------| Preutfylling [${prefillData.sedType}] START |------------------ ")
 
+        val sedType = prefillData.sedType
+
+        val pensjon = PrefillP2xxxPensjon.populerPensjon(prefillData, sak)
 
         //henter opp persondata
         val nav = prefillNav.prefill(
-                penSaksnummer = prefillData.penSaksnummer,
-                bruker = prefillData.bruker,
-                avdod = prefillData.avdod,
-                personData = personData ,
-                brukerInformasjon = prefillData.getPersonInfoFromRequestData()
+            penSaksnummer = prefillData.penSaksnummer,
+            bruker = prefillData.bruker,
+            avdod = prefillData.avdod,
+            personData = personData,
+            brukerInformasjon = prefillData.getPersonInfoFromRequestData(),
+            pensjon?.kravDato
         )
 
 
         PrefillP2xxxPensjon.validerGyldigVedtakEllerKravtypeOgArsak(sak, sedType, vedtak)
 
-        val andreInstitusjondetaljer = EessiInformasjon().asAndreinstitusjonerItem()
-        var pensjon : Pensjon? = null
-        try {
-            pensjon = Pensjon()
-                val meldingOmPensjon = PrefillP2xxxPensjon.createPensjon(
-                        prefillData.bruker.norskIdent,
-                        prefillData.penSaksnummer,
-                        sak,
-                        andreInstitusjondetaljer)
-                pensjon = meldingOmPensjon.pensjon
-                if (prefillData.sedType != SEDType.P6000) {
-                    pensjon = Pensjon(
-                            kravDato = meldingOmPensjon.pensjon.kravDato
-                    ) //vi skal ha blank pensjon ved denne toggle, men vi må ha med kravdato
-                }
-        } catch (ex: Exception) {
-            logger.error(ex.message, ex)
-            // TODO Should we really swallow this?
-        }
 
         val sed = SED(
             type = sedType,
             nav = nav,
             pensjon = pensjon
         )
-
-        PrefillP2xxxPensjon.settKravdato(sed)
 
         logger.debug("-------------------| Preutfylling [$sedType] END |------------------- ")
         return sed

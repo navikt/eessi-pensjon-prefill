@@ -117,7 +117,6 @@ class PrefillServiceTest {
         val mocksed = SED(type = prefillModel.sedType)
         val mockp2000 = SedMock().genererP2000Mock()
         mocksed.nav = mockp2000.nav
-        mocksed.nav?.krav = Krav("1960-06-12")
         mocksed.pensjon = mockp2000.pensjon
         return mocksed
     }

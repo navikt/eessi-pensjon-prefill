@@ -25,8 +25,6 @@ class PrefillP6000(private val prefillNav: PrefillPDLNav,
                 + "\nPreutfylling Pensjon : P6000 "
                 + "\n------------------| Preutfylling [$sedType] START |------------------ ")
 
-        //val sed = prefillData.sed
-
         logger.info("Henter ut lokal kontakt, institusjon (NAV Utland)")
         //prefillData.andreInstitusjon = eessiInfo.asAndreinstitusjonerItem()
         val andreInstitusjondetaljer = eessiInfo.asAndreinstitusjonerItem()
@@ -39,7 +37,14 @@ class PrefillP6000(private val prefillNav: PrefillPDLNav,
         val pensjon = createPensjon(pensjoninformasjon, gjenlevende, prefillData.vedtakId!!, andreInstitusjondetaljer)
 
         logger.debug("Henter opp Persondata fra TPS")
-        val nav = prefillNav.prefill(penSaksnummer = prefillData.penSaksnummer, bruker = prefillData.bruker, avdod = prefillData.avdod, personData = personData, brukerInformasjon = prefillData.getPersonInfoFromRequestData())
+        val nav = prefillNav.prefill(
+            penSaksnummer = prefillData.penSaksnummer,
+            bruker = prefillData.bruker,
+            avdod = prefillData.avdod,
+            personData = personData,
+            brukerInformasjon = prefillData.getPersonInfoFromRequestData(),
+            pensjon.kravDato
+        )
 
         logger.info("-------------------| Preutfylling [$sedType] END |------------------- ")
 

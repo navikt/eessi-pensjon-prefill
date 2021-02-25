@@ -22,11 +22,12 @@ class PrefillX005(private val prefillNav: PrefillPDLNav)  {
     fun prefill(prefillData: PrefillDataModel, personData: PersonDataCollection): SED {
 
         val navsed = prefillNav.prefill(
-                penSaksnummer = prefillData.penSaksnummer,
-                bruker = prefillData.bruker,
-                avdod = prefillData.avdod,
-                personData = personData,
-                brukerInformasjon = prefillData.getPersonInfoFromRequestData()
+            penSaksnummer = prefillData.penSaksnummer,
+            bruker = prefillData.bruker,
+            avdod = prefillData.avdod,
+            personData = personData,
+            brukerInformasjon = prefillData.getPersonInfoFromRequestData(),
+            null
         )
 
         val singleSelectedInstitustion = prefillData.institution.first()

@@ -16,6 +16,7 @@ import no.nav.eessi.pensjon.fagmodul.sedmodel.Foedested
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Foreldre
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Innehaver
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Konto
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Krav
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Nav
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Person
 import no.nav.eessi.pensjon.fagmodul.sedmodel.PinItem
@@ -169,7 +170,14 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
         }
     }
 
-    fun prefill(penSaksnummer: String, bruker: PersonId, avdod: PersonId?, personData: PersonDataCollection, brukerInformasjon: BrukerInformasjon?): Nav {
+    fun prefill(
+        penSaksnummer: String,
+        bruker: PersonId,
+        avdod: PersonId?,
+        personData: PersonDataCollection,
+        brukerInformasjon: BrukerInformasjon?,
+        krav: Krav?
+    ): Nav {
         val forsikretPerson = personData.forsikretPerson
         val avdodEllerGjenlevende = personData.gjenlevendeEllerAvdod
         val ektefellePerson = personData.ektefellePerson
@@ -208,7 +216,8 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
                 //6.0 skal denne kjøres hver gang? eller kun under P2000? P2100
                 //sjekke om SED er P2x00 for utfylling av BARN
                 //sjekke punkt for barn. pkt. 6.0 for P2000 og P2200 pkt. 8.0 for P2100
-                barn = createBarnliste(barnPersonList.map { createPersonBarn(it, personData) })
+                barn = createBarnliste(barnPersonList.map { createPersonBarn(it, personData) }),
+                krav = krav
         )
     }
 

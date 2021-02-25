@@ -49,7 +49,14 @@ class PrefillSedEnkeTest {
 
         val prefillData = initialPrefillDataModel(sedType = SEDType.P2100, pinId = fnr, avdod = PersonId(norskIdent = fnr, aktorId = "212"), vedtakId = "", penSaksnummer = "22875355")
 
-        val response = prefillPDLNav.prefill(penSaksnummer = prefillData.penSaksnummer, bruker = prefillData.bruker, avdod = prefillData.avdod, personData = persondataCollection, brukerInformasjon = prefillData.getPersonInfoFromRequestData())
+        val response = prefillPDLNav.prefill(
+            penSaksnummer = prefillData.penSaksnummer,
+            bruker = prefillData.bruker,
+            avdod = prefillData.avdod,
+            personData = persondataCollection,
+            brukerInformasjon = prefillData.getPersonInfoFromRequestData(),
+            null
+        )
 
         val sed = SED(
             type = SEDType.P2100,

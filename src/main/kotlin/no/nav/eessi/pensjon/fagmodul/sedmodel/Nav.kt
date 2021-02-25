@@ -6,7 +6,7 @@ data class Nav(
         val ektefelle: Ektefelle? = null,
         val barn: List<BarnItem>? = null, //pkt 6 og 8
         val verge: Verge? = null,
-        var krav: Krav? = null, // TODO fix mutable
+        val krav: Krav? = null,
 
         //X005
         val sak: Navsak? = null,

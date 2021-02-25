@@ -127,7 +127,8 @@ class NavMock {
                                 saksnummer = "retretretert",
                                 land = "HR"
                         )
-                )
+                ),
+                krav = Krav("1960-06-12")
         )
     }
 

@@ -7,7 +7,6 @@ import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-//TODO: Denne klasser vil nok utgå når alle SED er klar med egen Preutfylling..
 class PrefillSed(private val prefillNav: PrefillPDLNav) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillSed::class.java) }
@@ -21,16 +20,6 @@ class PrefillSed(private val prefillNav: PrefillPDLNav) {
 
         val sedType = prefillData.sedType
 
-        //henter opp persondata
-        val navSed = prefillNav.prefill(
-                penSaksnummer = prefillData.penSaksnummer,
-                bruker = prefillData.bruker,
-                avdod = prefillData.avdod,
-                personData = personData,
-                brukerInformasjon = prefillData.getPersonInfoFromRequestData()
-        )
-        logger.debug("[${prefillData.sedType}] Preutfylling Utfylling NAV")
-
         val prefillPensjon = try {
             val pensjon = prefillData.avdod?.let {
                 logger.info("Preutfylling Utfylling Pensjon Gjenlevende (etterlatt)")
@@ -41,8 +30,19 @@ class PrefillSed(private val prefillNav: PrefillPDLNav) {
             pensjon
         } catch (ex: Exception) {
             logger.error(ex.message, ex)
-             Pensjon()
+            Pensjon()
         }
+
+        //henter opp persondata
+        val navSed = prefillNav.prefill(
+            penSaksnummer = prefillData.penSaksnummer,
+            bruker = prefillData.bruker,
+            avdod = prefillData.avdod,
+            personData = personData,
+            brukerInformasjon = prefillData.getPersonInfoFromRequestData(),
+            prefillPensjon?.kravDato
+        )
+        logger.debug("[${prefillData.sedType}] Preutfylling Utfylling NAV")
 
         //Spesielle SED som har etterlette men benyttes av flere BUC
         //Må legge gjenlevende også som nav.annenperson

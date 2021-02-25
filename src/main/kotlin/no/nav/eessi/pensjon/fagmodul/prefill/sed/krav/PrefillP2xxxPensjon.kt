@@ -1,6 +1,8 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed.krav
 
+import no.nav.eessi.pensjon.fagmodul.models.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.models.SEDType
+import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjon
 import no.nav.eessi.pensjon.fagmodul.prefill.pdl.NavFodselsnummer
 import no.nav.eessi.pensjon.fagmodul.sedmodel.AndreinstitusjonerItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.BeloepItem
@@ -10,7 +12,6 @@ import no.nav.eessi.pensjon.fagmodul.sedmodel.Krav
 import no.nav.eessi.pensjon.fagmodul.sedmodel.MeldingOmPensjon
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Pensjon
 import no.nav.eessi.pensjon.fagmodul.sedmodel.PinItem
-import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.fagmodul.sedmodel.YtelserItem
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.EPSaktype
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.KravHistorikkHelper.finnKravHistorikk
@@ -63,17 +64,6 @@ object PrefillP2xxxPensjon {
     }
 
     /**
-     *  9.1
-     *
-     *  Setter kravdato på sed (denne kommer fra PESYS men opprettes i nav?!)
-     */
-    fun settKravdato(sed: SED) {
-        logger.debug("Kjører settKravdato")
-        logger.debug("9.1     legger til nav kravdato fra pensjon kravdato : ${sed.pensjon?.kravDato} ")
-        sed.nav?.krav = sed.pensjon?.kravDato
-    }
-
-    /**
      *
      *  4.1
      *  Vi må hente informasjon fra PSAK:
@@ -91,12 +81,12 @@ object PrefillP2xxxPensjon {
      *  «Førstegangsbehandling bosatt utland» eller «Mellombehandling».
      *  Obs, krav av typen «Førstegangsbehandling kun utland» eller Sluttbehandling kun utland» gjelder ikke norsk ytelse.
      */
-    fun createPensjon(personNr: String,
-                      penSaksnummer: String,
-                      pensak: V1Sak?,
-                      andreinstitusjonerItem: AndreinstitusjonerItem?,
-                      gjenlevende: Bruker? = null,
-                      kravId: String? = null): MeldingOmPensjon {
+    fun populerMeldinOmPensjon(personNr: String,
+                               penSaksnummer: String,
+                               pensak: V1Sak?,
+                               andreinstitusjonerItem: AndreinstitusjonerItem?,
+                               gjenlevende: Bruker? = null,
+                               kravId: String? = null): MeldingOmPensjon {
 
         logger.info("4.1           Informasjon om ytelser")
 
@@ -478,5 +468,32 @@ object PrefillP2xxxPensjon {
     private fun createPensionStatus(pensak: V1Sak): String {
         logger.debug("4.1.3         Status")
         return mapSakstatus(pensak.status)
+    }
+
+    fun populerPensjon(
+        prefillData: PrefillDataModel,
+        sak: V1Sak?
+    ): Pensjon? {
+        val andreInstitusjondetaljer = EessiInformasjon().asAndreinstitusjonerItem()
+
+        //valider pensjoninformasjon,
+        return try {
+            val meldingOmPensjon = populerMeldinOmPensjon(
+                prefillData.bruker.norskIdent,
+                prefillData.penSaksnummer,
+                sak,
+                andreInstitusjondetaljer
+            )
+            if (prefillData.sedType != SEDType.P6000) {
+                //vi skal ha blank pensjon ved denne toggle, men vi må ha med kravdato
+                Pensjon(kravDato = meldingOmPensjon.pensjon.kravDato)
+            } else {
+                meldingOmPensjon.pensjon
+            }
+        } catch (ex: Exception) {
+            logger.error(ex.message, ex)
+            null
+            //hvis feiler lar vi SB få en SED i RINA
+        }
     }
 }

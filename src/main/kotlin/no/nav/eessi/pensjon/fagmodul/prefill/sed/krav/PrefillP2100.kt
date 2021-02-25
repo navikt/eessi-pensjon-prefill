@@ -19,9 +19,18 @@ class PrefillP2100(private val prefillNav: PrefillPDLNav) {
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillP2100::class.java) }
 
     fun prefill(prefillData: PrefillDataModel, personData: PersonDataCollection, sak: V1Sak?): Pair<String?, SED> {
+        val pensjon = PrefillP2xxxPensjon.populerPensjon(prefillData, sak)
+
         //TPS
         postLog(prefillData, sak)
-        val nav = prefillNav.prefill(penSaksnummer = prefillData.penSaksnummer, bruker = prefillData.bruker, avdod = prefillData.avdod, personData = personData , brukerInformasjon = prefillData.getPersonInfoFromRequestData())
+        val nav = prefillNav.prefill(
+            penSaksnummer = prefillData.penSaksnummer,
+            bruker = prefillData.bruker,
+            avdod = prefillData.avdod,
+            personData = personData,
+            brukerInformasjon = prefillData.getPersonInfoFromRequestData(),
+            pensjon?.kravDato
+        )
         val gjenlev = eventuellGjenlevendePDL(prefillData, personData.forsikretPerson)
 
         return prefillPen(prefillData, nav, gjenlev, sak)
@@ -48,7 +57,7 @@ class PrefillP2100(private val prefillNav: PrefillPDLNav) {
         var melding: String? = ""
         var pensjon: Pensjon? = Pensjon()
         try {
-                val meldingOmPensjon = PrefillP2xxxPensjon.createPensjon(
+                val meldingOmPensjon = PrefillP2xxxPensjon.populerMeldinOmPensjon(
                         prefillData.bruker.norskIdent,
                         prefillData.penSaksnummer,
                         sak,
@@ -72,8 +81,6 @@ class PrefillP2100(private val prefillNav: PrefillPDLNav) {
             nav = nav,
             pensjon = pensjon
         )
-
-        PrefillP2xxxPensjon.settKravdato(sed)
 
         logger.debug("-------------------| Preutfylling [$sedType] END |------------------- ")
         return Pair(melding, sed)
