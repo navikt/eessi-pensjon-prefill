@@ -27,10 +27,6 @@ import javax.annotation.PostConstruct
 
 /**
  * Controller for å kalle NAV interne registre
- *
- * @property aktoerregisterService
- * @property personService
- * @property pensjonsinformasjonClient
  */
 @Protected
 @RestController

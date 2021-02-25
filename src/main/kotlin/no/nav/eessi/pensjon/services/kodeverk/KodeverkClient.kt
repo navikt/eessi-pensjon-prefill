@@ -66,7 +66,7 @@ class KodeverkClient(private val kodeRestTemplate: RestTemplate,
             hentLandKoder().firstOrNull { it.landkode2 == alpha2 }?.landkode3
 
     private fun doRequest(builder: UriComponents) : String {
-        return try {
+        try {
             val headers = HttpHeaders()
             headers["Nav-Consumer-Id"] = appName
             headers["Nav-Call-Id"] = UUID.randomUUID().toString()
@@ -78,9 +78,7 @@ class KodeverkClient(private val kodeRestTemplate: RestTemplate,
                     requestEntity,
                     String::class.java)
 
-            response.body?.let { return it } ?: {
-                throw KodeverkException("Feil ved konvetering av jsondata fra kodeverk")
-            }()
+            return response.body ?: throw KodeverkException("Feil ved konvetering av jsondata fra kodeverk")
 
         } catch (ce: HttpClientErrorException) {
             logger.error(ce.message, ce)

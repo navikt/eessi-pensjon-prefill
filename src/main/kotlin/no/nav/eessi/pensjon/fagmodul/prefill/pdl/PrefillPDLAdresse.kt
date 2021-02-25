@@ -111,18 +111,6 @@ class PrefillPDLAdresse (private val postnummerService: PostnummerService,
 
     }
 
-    private fun sjekkForGydligUtlandAdresse(utlandsAdresse: UtenlandskAdresse?): Boolean {
-        if (utlandsAdresse == null) return false
-        var antallAdrlinjer = 0
-        if (utlandsAdresse.adressenavnNummer?.isNotBlank() == true) antallAdrlinjer ++
-        if (utlandsAdresse.bySted?.isNotBlank() == true) antallAdrlinjer ++
-        if (utlandsAdresse.postkode?.isNotBlank() == true) antallAdrlinjer ++
-        if (antallAdrlinjer >= 2) {
-            return true
-        }
-        return false
-    }
-
     private fun preutfyllUtenlandskAdresseIFrittFormat(utenlandskAdresseIFrittFormat: UtenlandskAdresseIFrittFormat?) : Adresse {
         if (utenlandskAdresseIFrittFormat == null) return tomAdresse()
         logger.info("              preutfyller utenlandskAdresseIFrittFormat")

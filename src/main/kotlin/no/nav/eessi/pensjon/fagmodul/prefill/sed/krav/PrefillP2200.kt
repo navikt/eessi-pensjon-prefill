@@ -2,10 +2,7 @@ package no.nav.eessi.pensjon.fagmodul.prefill.sed.krav
 
 import no.nav.eessi.pensjon.fagmodul.models.PersonDataCollection
 import no.nav.eessi.pensjon.fagmodul.models.PrefillDataModel
-import no.nav.eessi.pensjon.fagmodul.models.SEDType
-import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjon
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillPDLNav
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Pensjon
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.pensjon.v1.sak.V1Sak
 import no.nav.pensjon.v1.vedtak.V1Vedtak
@@ -41,17 +38,14 @@ class PrefillP2200(private val prefillNav: PrefillPDLNav) {
             pensjon?.kravDato
         )
 
-
         PrefillP2xxxPensjon.validerGyldigVedtakEllerKravtypeOgArsak(sak, sedType, vedtak)
 
-
-        val sed = SED(
+        return SED(
             type = sedType,
             nav = nav,
             pensjon = pensjon
-        )
-
-        logger.debug("-------------------| Preutfylling [$sedType] END |------------------- ")
-        return sed
+        ).also {
+            logger.debug("-------------------| Preutfylling [$sedType] END |------------------- ")
+        }
     }
 }

@@ -57,10 +57,10 @@ class PensjonController(private val pensjonsinformasjonClient: Pensjonsinformasj
                 val hentKunSakType = pensjonsinformasjonClient.hentKunSakType(sakId, aktoerId)
                 ResponseEntity.ok(mapAnyToJson(hentKunSakType))
             } catch (ife: IkkeFunnetException) {
-                logger.warn("Feil ved henting av sakstype, ingen sak funnet. Sak: ${sakId}")
+                logger.warn("Feil ved henting av sakstype, ingen sak funnet. Sak: $sakId")
                 ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorBody(ife.message))
             } catch (e: Exception) {
-                logger.warn("Feil ved henting av sakstype på saksid: ${sakId}")
+                logger.warn("Feil ved henting av sakstype på saksid: $sakId")
                 ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorBody(e.message!!))
             }
         }

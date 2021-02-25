@@ -55,7 +55,7 @@ class PrefillP8000(private val prefillSed: PrefillSed) {
     private fun sedP8000(eessielm: List<EessisakItem>?, forsikretPerson: Person?, adresse: Adresse?, prefillData: PrefillDataModel, annenPerson: Bruker?): SED {
         logger.info("forsikretPerson: ${forsikretPerson != null} annenPerson: ${annenPerson != null}"  )
         val forsikretPersonPin = forsikretPerson?.pin?.firstOrNull()
-        val p8000 = SED(
+        return SED(
                 type = SEDType.P8000,
                 nav = Nav(
                         eessisak = eessielm,
@@ -82,7 +82,6 @@ class PrefillP8000(private val prefillSed: PrefillSed) {
                 ),
                 pensjon = utfyllReferanseTilPerson(prefillData)
         )
-        return p8000
 
     }
 

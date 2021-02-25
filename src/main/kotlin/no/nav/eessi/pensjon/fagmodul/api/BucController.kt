@@ -192,8 +192,7 @@ class BucController(
             logger.info("vedtak aktoerid: ${person.aktorId}")
             if (avdod != null && person.aktorId == gjenlevendeAktoerid) {
                 logger.info("henter buc for gjenlevende ved vedtakid: $vedtakid")
-                val gjenlevBucs = avdod.map { avdodFnr -> getBucogSedViewGjenlevende(gjenlevendeAktoerid, avdodFnr) }.flatten()
-                return@measure gjenlevBucs
+                return@measure avdod.map { avdodFnr -> getBucogSedViewGjenlevende(gjenlevendeAktoerid, avdodFnr) }.flatten()
             } else {
                 logger.info("Henter buc for bruker: $gjenlevendeAktoerid")
                 return@measure getBucogSedView(gjenlevendeAktoerid)

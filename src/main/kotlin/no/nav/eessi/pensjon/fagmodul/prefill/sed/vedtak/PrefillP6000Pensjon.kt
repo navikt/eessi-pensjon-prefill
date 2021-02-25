@@ -8,7 +8,6 @@ import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.hjelper.VedtakPensjonDat
 import no.nav.eessi.pensjon.fagmodul.sedmodel.AndreinstitusjonerItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Bruker
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Pensjon
-import no.nav.eessi.pensjon.fagmodul.sedmodel.ReduksjonItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.VedtakItem
 import no.nav.eessi.pensjon.utils.simpleFormat
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
@@ -16,7 +15,6 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.web.client.HttpClientErrorException
-import org.springframework.web.server.ResponseStatusException
 
 
 /**
@@ -46,7 +44,7 @@ object PrefillP6000Pensjon {
     private fun createPensjonEllerTom(pensjoninformasjon: Pensjonsinformasjon, gjenlevende: Bruker?, andreinstitusjonerItem: AndreinstitusjonerItem?): Pensjon {
         val vilkar = pensjoninformasjon.vilkarsvurderingListe
         val ytelse = pensjoninformasjon.ytelsePerMaanedListe
-        val erAvslag = "AVSL" == pensjoninformasjon.vilkarsvurderingListe?.vilkarsvurderingListe?.maxBy{ it.fom.simpleFormat() }?.avslagHovedytelse
+        val erAvslag = "AVSL" == pensjoninformasjon.vilkarsvurderingListe?.vilkarsvurderingListe?.maxByOrNull{ it.fom.simpleFormat() }?.avslagHovedytelse
 
         return if (erAvslag || (vilkar == null && ytelse == null) || ytelse.ytelsePerMaanedListe.isNullOrEmpty()) {
             logger.warn("Avslag, Ingen vilkarsvurderingListe og ytelsePerMaanedListe oppretter Vedtak SED P6000 uten pensjoninformasjon")
@@ -73,13 +71,13 @@ object PrefillP6000Pensjon {
             listOf(PrefillPensjonVedtak.createVedtakItem(pensjoninformasjon))
         } catch (ex: Exception) {
             logger.warn("Feilet ved preutfylling av vedtaksdetaljer, fortsetter uten")
-            emptyList<VedtakItem>()
+            emptyList()
         }
         val redukjson = try {
             PrefillPensjonReduksjon.createReduksjon(pensjoninformasjon)
         } catch (ex: Exception) {
             logger.warn("Feilet ved preutfylling av reduksjoner, fortsetter uten")
-            emptyList<ReduksjonItem>()
+            emptyList()
         }
         val sak = try {
             PrefillPensjonSak.createSak(pensjoninformasjon)
@@ -107,5 +105,3 @@ object PrefillP6000Pensjon {
         )
     }
 }
-
-class IkkeGyldigStatusPaaSakException(message: String) : ResponseStatusException(HttpStatus.BAD_REQUEST, message)

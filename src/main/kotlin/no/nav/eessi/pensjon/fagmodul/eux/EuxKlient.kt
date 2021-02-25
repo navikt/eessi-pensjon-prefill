@@ -450,5 +450,3 @@ class SedDokumentIkkeLestException(message: String?) : ResponseStatusException(H
 class EuxGenericServerException(message: String?) : ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, message)
 
 class EuxServerException(message: String?) : ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, message)
-
-class SedDokumentIkkeGyldigException(message: String?) : ResponseStatusException(HttpStatus.BAD_REQUEST, message)

@@ -7,7 +7,6 @@ import no.nav.eessi.pensjon.fagmodul.eux.BucUtils
 import no.nav.eessi.pensjon.fagmodul.eux.EuxConflictException
 import no.nav.eessi.pensjon.fagmodul.eux.EuxRinaServerException
 import no.nav.eessi.pensjon.fagmodul.eux.EuxService
-import no.nav.eessi.pensjon.fagmodul.eux.PinOgKrav
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.BucSedResponse
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ShortDocumentItem
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
