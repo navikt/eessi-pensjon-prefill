@@ -7,8 +7,6 @@ import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import no.nav.eessi.pensjon.logging.AuditLogger
-import no.nav.eessi.pensjon.services.pensjonsinformasjon.IkkeFunnetException
-import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjoninformasjonException
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonClient
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.Pensjontype
 import no.nav.eessi.pensjon.utils.toJson
@@ -20,7 +18,6 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.junit.jupiter.MockitoExtension
-import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers
@@ -60,11 +57,18 @@ class PensjonControllerTest {
         val aktoerId = "1234567890123" // 13 sifre
         val sakId = "Some sakId"
 
-        whenever(pensjonsinformasjonClient.hentKunSakType(sakId, aktoerId)).thenThrow(IkkeFunnetException("Saktype ikke funnet"))
+        whenever(pensjonsinformasjonClient.hentKunSakType(sakId, aktoerId)).thenReturn( Pensjontype(sakId, "") )
         val response = controller.hentPensjonSakType(sakId, aktoerId)
 
         verify(pensjonsinformasjonClient).hentKunSakType(sakId, aktoerId)
-        assertEquals(HttpStatus.NOT_FOUND, response?.statusCode)
+        val expected = """
+            {
+              "sakId" : "Some sakId",
+              "sakType" : ""
+            }
+        """.trimIndent()
+
+        assertEquals(expected , response?.body)
 
     }
 
@@ -73,12 +77,19 @@ class PensjonControllerTest {
         val aktoerId = "1234567890123" // 13 sifre
         val sakId = "Some sakId"
 
-        whenever(pensjonsinformasjonClient.hentKunSakType(sakId, aktoerId)).thenThrow(PensjoninformasjonException("Ingen svar med PESYS"))
+        doReturn(Pensjontype(sakId, "")).whenever(pensjonsinformasjonClient).hentKunSakType(sakId, aktoerId)
+
         val response = controller.hentPensjonSakType(sakId, aktoerId)
 
         verify(pensjonsinformasjonClient).hentKunSakType(sakId, aktoerId)
+        val expected = """
+            {
+              "sakId" : "Some sakId",
+              "sakType" : ""
+            }
+        """.trimIndent()
 
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response?.statusCode)
+        assertEquals(expected, response?.body)
 
     }
 

@@ -4,7 +4,6 @@ import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import io.swagger.annotations.ApiOperation
 import no.nav.eessi.pensjon.logging.AuditLogger
 import no.nav.eessi.pensjon.metrics.MetricsHelper
-import no.nav.eessi.pensjon.services.pensjonsinformasjon.IkkeFunnetException
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjoninformasjonException
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjoninformasjonValiderKrav
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonClient
@@ -53,16 +52,7 @@ class PensjonController(private val pensjonsinformasjonClient: Pensjonsinformasj
         return PensjonControllerHentSakType.measure {
             logger.info("Henter sakstype på $sakId / $aktoerId")
 
-            try {
-                val hentKunSakType = pensjonsinformasjonClient.hentKunSakType(sakId, aktoerId)
-                ResponseEntity.ok(mapAnyToJson(hentKunSakType))
-            } catch (ife: IkkeFunnetException) {
-                logger.warn("Feil ved henting av sakstype, ingen sak funnet. Sak: $sakId")
-                ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorBody(ife.message))
-            } catch (e: Exception) {
-                logger.warn("Feil ved henting av sakstype på saksid: $sakId")
-                ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorBody(e.message!!))
-            }
+            ResponseEntity.ok(mapAnyToJson(pensjonsinformasjonClient.hentKunSakType(sakId, aktoerId)))
         }
     }
 

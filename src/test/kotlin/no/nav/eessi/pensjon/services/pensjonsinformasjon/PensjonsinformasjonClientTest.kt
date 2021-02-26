@@ -148,6 +148,7 @@ class PensjonsinformasjonClientTest {
     @Test
     fun `hentPensjonSakType   mock response ingen sak eller data`() {
         val mockResponseEntity = createResponseEntityFromJsonFile("classpath:pensjonsinformasjon/empty-pensjon-response.xml")
+        val sakid = "22580170"
 
         doReturn(mockResponseEntity).whenever(mockrestTemplate).exchange(
                 ArgumentMatchers.any(String::class.java),
@@ -155,9 +156,9 @@ class PensjonsinformasjonClientTest {
                 ArgumentMatchers.any(HttpEntity::class.java),
                 ArgumentMatchers.eq(String::class.java))
 
-        assertThrows<IkkeFunnetException> {
-            pensjonsinformasjonClient.hentKunSakType("22580170", "12345678901")
-        }
+        val res =  pensjonsinformasjonClient.hentKunSakType(sakid,  "12345678901")
+        assertEquals("", res.sakType)
+        assertEquals(sakid, res.sakId)
     }
 
     @Test

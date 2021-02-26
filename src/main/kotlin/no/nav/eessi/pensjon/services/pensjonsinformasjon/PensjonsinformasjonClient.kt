@@ -57,17 +57,14 @@ class PensjonsinformasjonClient(
         pensjoninformasjonAltPaaVedtakRequester = metricsHelper.init("PensjoninformasjonAltPaaVedtakRequester")
     }
 
-    @Throws(IkkeFunnetException::class)
     fun hentKunSakType(sakId: String, aktoerid: String): Pensjontype {
-            val sak = finnSak(sakId, hentAltPaaAktoerId(aktoerid)) ?: throw IkkeFunnetException("Saktype for $sakId ikke funnet")
+            val sak = finnSak(sakId, hentAltPaaAktoerId(aktoerid)) ?: return Pensjontype(sakId, "")
             return Pensjontype(sakId, sak.sakType)
     }
 
     @Throws(PensjoninformasjonException::class, HttpServerErrorException::class, HttpClientErrorException::class)
     fun hentAltPaaAktoerId(aktoerId: String): Pensjonsinformasjon {
         require(aktoerId.isNotBlank()) { "AktoerId kan ikke være blank/tom"}
-
-        //APIet skal ha urlen {host}:{port}/pensjon-ws/api/pensjonsinformasjon/v1/{ressurs}?sakId=123+fom=2018-01-01+tom=2018-28-02.
 
         return pensjoninformasjonHentAltPaaIdent.measure {
 
