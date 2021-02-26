@@ -17,7 +17,7 @@ object VedtakPensjonDataHelper {
     private val logger: Logger by lazy { LoggerFactory.getLogger(VedtakPensjonDataHelper::class.java) }
 
     fun harBoddArbeidetUtland(pendata: Pensjonsinformasjon): Boolean {
-        require(pendata.vedtak != null) {"Vedtak er null"}
+        require(pendata.vedtak != null) { "Vedtak er null" }
         return pendata.vedtak.isBoddArbeidetUtland || harAvdodBoddArbeidetUtland(pendata)
     }
 
@@ -32,9 +32,8 @@ object VedtakPensjonDataHelper {
         return key == hentVilkarsProvingAvslagHovedYtelse(pendata)
     }
 
-    //TODO - summere opp i ant. dager . trygdetidListe.fom - tom.
     fun erTrygdeTid(pendata: Pensjonsinformasjon, storreEnn: Int = 30, mindreEnn: Int = 360): Boolean {
-        require(pendata.trygdetidListe?.trygdetidListe != null) {"trygdetidListe er Null"}
+        require(pendata.trygdetidListe?.trygdetidListe != null) { "trygdetidListe er Null" }
         val trygdeListe = pendata.trygdetidListe
         val days = summerTrygdeTid(trygdeListe)
 
@@ -42,7 +41,7 @@ object VedtakPensjonDataHelper {
     }
 
     fun summerTrygdeTid(trygdeListe: V1TrygdetidListe): Int {
-        require(trygdeListe.trygdetidListe != null) {"trygdetidListe er Null"}
+        require(trygdeListe.trygdetidListe != null) { "trygdetidListe er Null" }
         val daylist = trygdeListe.trygdetidListe.map {
             val fom = it.fom.toGregorianCalendar().time.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
             val tom = it.tom.toGregorianCalendar().time.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
@@ -51,7 +50,7 @@ object VedtakPensjonDataHelper {
             nrdays.toInt()
         }
         return daylist.sumBy { it }
-                .also { days -> logger.debug("              Total SummerTrygdeTid: $days ") }
+            .also { days -> logger.debug("              Total SummerTrygdeTid: $days ") }
     }
 
     fun hentYtelseskomponentBelop(keys: String, ytelse: V1YtelsePerMaaned): Int {
@@ -59,7 +58,6 @@ object VedtakPensjonDataHelper {
         var summer = 0
         keylist.forEach { keyword ->
             ytelse.ytelseskomponentListe.forEach { it2 ->
-                //logger.debug("keyword: $keyword ==> type: ${it2.ytelsesKomponentType}")
                 if (keyword.trim() == it2.ytelsesKomponentType) {
                     summer += it2.belopTilUtbetaling
                 }
@@ -86,7 +84,8 @@ object VedtakPensjonDataHelper {
     }
 
     private fun hentV1Vilkarsvurdering(pendata: Pensjonsinformasjon): V1Vilkarsvurdering? {
-        val v1VilkarsvurderingListe: V1VilkarsvurderingListe = pendata.vilkarsvurderingListe ?: V1VilkarsvurderingListe()
+        val v1VilkarsvurderingListe: V1VilkarsvurderingListe =
+            pendata.vilkarsvurderingListe ?: V1VilkarsvurderingListe()
         return v1VilkarsvurderingListe.vilkarsvurderingListe?.getOrElse(0) { V1Vilkarsvurdering() }
     }
 

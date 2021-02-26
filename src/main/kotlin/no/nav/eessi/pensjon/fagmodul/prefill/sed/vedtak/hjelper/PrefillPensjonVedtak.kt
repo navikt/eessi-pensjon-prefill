@@ -99,13 +99,6 @@ object PrefillPensjonVedtak {
         val sakType = KSAK.valueOf(type)
         logger.debug("4.1.1         VedtakTypePension")
 
-//        4.1.[1].1. Type pensjon
-//        [01] Alderspensjon
-//        [02] Uførhet
-//        [03]Etterlatte
-//        [04]Delvis uførhet
-//        [05] 100% uførhet
-//        [06] Førtidspensjon
         return when (sakType) {
             KSAK.ALDER -> {
                 when (pensjonUttakTidligereEnn67) {
@@ -127,8 +120,6 @@ object PrefillPensjonVedtak {
      *
      */
     private fun createVedtakGrunnlagPentionWithRule(pendata: Pensjonsinformasjon): String? {
-        //TODO Det må lages flere regler for UT og for etterlattepensjon
-
         logger.debug("4.1.2         VedtakGrunnlagPention")
 
         val sakType = KSAK.valueOf(pendata.sakAlder.sakType)
@@ -153,16 +144,19 @@ object PrefillPensjonVedtak {
 
         logger.debug("4.1.3.1       VedtakAnnenTypePention")
         if (createVedtakGrunnlagPentionWithRule(pendata) == "99") {
-
-            //TODO: Regler for annen bergeningtekst.
             return "Ytelsen er beregnet etter regler for barnepensjon"
-
         }
         return null
     }
 
     /**
      *  4.1.4
+     *
+     *  4.1.[1].4. Type vedtak
+     *  [01] Innvilgelse
+     *  [02] Avslag
+     *  [03] Ny beregning / omregning
+     *  [04] Foreløpig utbetaling eller forskudd
      *
      *  HVIS vedtaksresultat er Innvilgelse, OG sakstype IKKE er uføretrygd og kravtype er Førstegangsbehandling Norge/utland ELLER Mellombehandling SÅ skal det hukes for «[01] Award»
      *  HVIS vedtaksresultat er Avslag,  SÅ skal det automatisk hukes for «[02] Rejection»
@@ -176,7 +170,6 @@ object PrefillPensjonVedtak {
         val sakType = KSAK.valueOf(pendata.sakAlder.sakType)
         val kravGjelder = pendata.vedtak.kravGjelder
 
-        //TODO: finner man vedtaksresultat?
         val vedtaksresultat = hentVilkarsResultatHovedytelse(pendata)
         logger.debug("              vedtaksresultat: $vedtaksresultat")
 
@@ -188,11 +181,6 @@ object PrefillPensjonVedtak {
         val erMellombehandling = "MELLOMBH" == kravGjelder
         val erRevurdering = kravGjelder == "REVURD"
 
-//        4.1.[1].4. Type vedtak
-//        [01] Innvilgelse
-//        [02] Avslag
-//        [03] Ny beregning / omregning
-//        [04] Foreløpig utbetaling eller forskudd
         if (KSAK.UFOREP != sakType && erInnvilgelse
                 && (erForsteGangBehandlingNorgeUtland || erMellombehandling || erForsteGangBehandlingBosattUtland)) {
                 return "01"

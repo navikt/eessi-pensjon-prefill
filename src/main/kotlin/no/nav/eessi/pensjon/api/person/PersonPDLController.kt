@@ -25,6 +25,8 @@ import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
 import javax.annotation.PostConstruct
 
+const val PERSON_IKKE_FUNNET = "Person ikke funnet"
+
 /**
  * Controller for å kalle NAV interne registre
  */
@@ -155,14 +157,14 @@ class PersonPDLController(
         }
         //https://curly-enigma-afc9cd64.pages.github.io/#_feilmeldinger_fra_pdl_api_graphql_response_errors
         return try {
-            pdlService.hentPerson(AktoerId(aktoerid)) ?: throw NullPointerException("Person ikke funnet")
+            pdlService.hentPerson(AktoerId(aktoerid)) ?: throw NullPointerException(PERSON_IKKE_FUNNET)
         } catch (np: NullPointerException) {
             logger.error("PDL Person null")
-            throw ResponseStatusException(HttpStatus.NOT_FOUND, "Person ikke funnet")
+            throw ResponseStatusException(HttpStatus.NOT_FOUND, PERSON_IKKE_FUNNET)
         } catch (pe: PersonoppslagException) {
             logger.error("PersonoppslagExcpetion: ${pe.message}")
             when(pe.message) {
-                "not_found: Fant ikke person" -> throw ResponseStatusException(HttpStatus.NOT_FOUND, "Person ikke funnet")
+                "not_found: Fant ikke person" -> throw ResponseStatusException(HttpStatus.NOT_FOUND, PERSON_IKKE_FUNNET)
                 "unauthorized: Ikke tilgang til å se person" -> throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "Ikke tilgang til å se person")
                 else -> throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, pe.message)
             }

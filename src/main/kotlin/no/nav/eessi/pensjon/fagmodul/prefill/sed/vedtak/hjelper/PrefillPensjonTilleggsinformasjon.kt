@@ -29,8 +29,6 @@ object PrefillPensjonTilleggsinformasjon {
                 andreinstitusjoner = createAndreinstitusjonerItem(andreinstitusjonerItem),
 
                 //6.5.2 - 6.6  $pensjon.tilleggsinformasjon.artikkel48
-                //05.10.2018 -
-                //TODO Må fylles ut manuelt? i EP-11? eller Rina?
                 artikkel48 = createArtikkel48(),
 
                 //6.7.1.4
@@ -89,14 +87,14 @@ object PrefillPensjonTilleggsinformasjon {
         return listOf(data)
     }
 
-    //6.6
-    /*
-        05.10.2018
-        Må fylles ut manuelt
-        TODO Må fylles ut manuelt? i EP-11? eller Rina?
-
-        6.6  $pensjon.tilleggsinformasjon.artikkel48
-        6.6. The decision has been given as a result of the review according to the Art. 48(2) of Regulation 987/2009
+    /**
+     * 6.6
+     *
+     * Må fylles ut manuelt
+     *
+     * 6.6  $pensjon.tilleggsinformasjon.artikkel48
+     * 6.6. The decision has been given as a result of the review according to the Art. 48(2) of Regulation 987/2009
+     *
      */
     private fun createArtikkel48(): String? {
         logger.debug("6.6           Artikkel48  (Må fylles ut manuelt!!)")
@@ -104,13 +102,14 @@ object PrefillPensjonTilleggsinformasjon {
     }
 
     /**
-    HVIS kravtype er Revurdering,
-    OG Resultat er Opphør,
-    OG Resultatbegrunnelse er Annullering,
-    OG vedtak er attestert
-    SÅ skal Antatt virkningsdato vises her.  Datoen skal vises i formatet DD-MM-YYYY
-     **/
-    //6.2
+     * 6.2
+     *
+     * HVIS kravtype er Revurdering,
+     * OG Resultat er Opphør,
+     * OG Resultatbegrunnelse er Annullering,
+     * OG vedtak er attestert
+     * SÅ skal Antatt virkningsdato vises her.  Datoen skal vises i formatet DD-MM-YYYY
+     */
     private fun createOpphorerDato(pendata: Pensjonsinformasjon): String? {
         logger.debug("6.2       OpphorerDato")
 
@@ -123,17 +122,18 @@ object PrefillPensjonTilleggsinformasjon {
     }
 
     /**
-    HVIS kravtype er Førstegangsbehandling,
-    OG status på kravet er endret fra «Til behandling» til «Trukket»,
-    SÅ skal Antatt virkningsdato vises her.
-
-    HVIS kravtype er Endring uttaksgrad,
-    OG uttaksgrad er endret til null,
-    OG vedtak er attestert,
-    SÅ skal Antatt virkningsdato vises her.
-    Datoen skal vises i formatet DD-MM-YYYY
+     * 6.3
+     *
+     * HVIS kravtype er Førstegangsbehandling,
+     * OG status på kravet er endret fra «Til behandling» til «Trukket»,
+     * SÅ skal Antatt virkningsdato vises her.
+     *
+     * HVIS kravtype er Endring uttaksgrad,
+     * OG uttaksgrad er endret til null,
+     * OG vedtak er attestert,
+     * SÅ skal Antatt virkningsdato vises her.
+     * Datoen skal vises i formatet DD-MM-YYYY
      */
-    //6.3
     private fun createAnnulleringDato(pendata: Pensjonsinformasjon): String? {
         logger.debug("6.x       AnnulleringDato")
         val v1Vedtak = pendata.vedtak
@@ -147,6 +147,4 @@ object PrefillPensjonTilleggsinformasjon {
 
         return null
     }
-
-
 }
