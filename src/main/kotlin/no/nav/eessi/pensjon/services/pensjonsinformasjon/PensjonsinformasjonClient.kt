@@ -156,53 +156,18 @@ class PensjonsinformasjonClient(
             } catch (hsee: HttpServerErrorException) {
                 val errorBody = hsee.responseBodyAsString
                 logger.error("PensjoninformasjonService feiler med HttpServerError body: $errorBody", hsee)
-                throw hsee
+                throw PensjoninformasjonException("PensjoninformasjonService feiler med innhenting av pensjoninformasjon fra PESYS, prøv igjen om litt")
             } catch (hcee: HttpClientErrorException) {
                 val errorBody = hcee.responseBodyAsString
                 logger.error("PensjoninformasjonService feiler med HttpClientError body: $errorBody", hcee)
-                throw hcee
+                throw PensjoninformasjonException("PensjoninformasjonService feiler med innhenting av pensjoninformasjon fra PESYS, prøv igjen om litt")
             } catch (ex: Exception) {
                 logger.error("PensjoninformasjonService feiler med kontakt til PESYS pensjoninformajson, ${ex.message}", ex)
                 throw PensjoninformasjonException("PensjoninformasjonService feiler med ukjent feil mot PESYS. melding: ${ex.message}")
             }
         }
     }
-
-    //selftest
-    @Throws(PensjoninformasjonException::class, HttpServerErrorException::class, HttpClientErrorException::class)
-    fun doPing(): Boolean {
-        val uriBuilder = UriComponentsBuilder.fromPath("/ping")
-        try {
-            val responseEntity = pensjonsinformasjonOidcRestTemplate.exchange(
-                    uriBuilder.toUriString(),
-                    HttpMethod.GET,
-                    null,
-                    String::class.java)
-
-            if (responseEntity.statusCode.is2xxSuccessful) {
-                val response = responseEntity.body
-                return response == "Service online!"
-            } else {
-                logger.error("Received ${responseEntity.statusCode} from pensjonsinformasjon")
-                throw PensjoninformasjonException("Received feil-ping from pensjonsinformasjon")
-            }
-        } catch (se: HttpServerErrorException) {
-            logger.error("Feiler ved Serverfeil mot PESYS", se)
-            throw se
-        } catch (ce: HttpClientErrorException) {
-            logger.error("Feiler ved Clientfeil mot PESYS", ce)
-            throw ce
-        } catch (ex: Exception) {
-            logger.error("Feil med kontakt til PESYS pensjoninformajson, ${ex.message}")
-            throw PensjoninformasjonException("Feil med kontakt til PESYS pensjoninformajson. melding; ${ex.message}")
-        }
-
-    }
-
-
 }
-
-class IkkeFunnetException(message: String) : ResponseStatusException(HttpStatus.BAD_REQUEST, message)
 
 class PensjoninformasjonException(message: String) : ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, message)
 

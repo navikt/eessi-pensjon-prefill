@@ -338,28 +338,6 @@ class EuxKlient(private val euxOidcRestTemplate: RestTemplate,
 
     }
 
-    @Throws(EuxServerException::class)
-    fun pingEux(): Boolean {
-
-        val builder = UriComponentsBuilder.fromPath("/kodeverk")
-                .queryParam("Kodeverk", "sedtyper")
-                .build()
-
-        val pingResult = restTemplateErrorhandler(
-                {
-                    euxOidcRestTemplate.exchange(
-                            builder.toUriString(),
-                            HttpMethod.GET,
-                            null,
-                            String::class.java)
-                }
-                , ""
-                , PingEux
-                , ""
-        )
-        return pingResult.statusCode == HttpStatus.OK
-    }
-
     @Throws(Throwable::class)
     fun <T> retryHelper(func: () -> T, maxAttempts: Int = 3, waitTimes: Long = 1000L): T {
         var failException: Throwable? = null
