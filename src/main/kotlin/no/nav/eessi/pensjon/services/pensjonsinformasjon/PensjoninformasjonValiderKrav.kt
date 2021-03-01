@@ -77,12 +77,12 @@ object PensjoninformasjonValiderKrav {
         }
     }
 
-    private  fun finnKravHistorikk(kravType: String, kravHistorikkListe: V1KravHistorikkListe): List<V1KravHistorikk>? {
+    private  fun finnKravHistorikk(kravType: String, kravHistorikkListe: V1KravHistorikkListe): List<V1KravHistorikk> {
         if (kravHistorikkListe.kravHistorikkListe == null) {
             logger.error("KravHistorikkListe er tom")
             throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "KravHistorikkListe er tom")
         }
-        return kravHistorikkListe.kravHistorikkListe.toList()
+        return kravHistorikkListe.kravHistorikkListe
             .sortedBy { kravHistorikk -> kravHistorikk.mottattDato.toGregorianCalendar() }
             .filter { kravHistorikk -> kravType == kravHistorikk.kravType }
     }

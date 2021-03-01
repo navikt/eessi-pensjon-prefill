@@ -361,7 +361,6 @@ data class InntektItem(
         val beloep: String? = null
 )
 
-//TODO må kanskje oppdatere mot andre SED legge institusjonsid rett inn i PinItem..
 data class PinItem(
         val institusjonsnavn: String? = null,
         val institusjonsid: String? = null,

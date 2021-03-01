@@ -4,7 +4,7 @@ import no.nav.eessi.pensjon.utils.mapAnyToJson
 
 /**
  * Request og responsemodell for SAF GraphQL tjeneste
- * @see https://confluence.adeo.no/display/BOA/saf+-+Utviklerveiledning
+ * se https://confluence.adeo.no/display/BOA/saf+-+Utviklerveiledning
  */
 
 data class SafRequest(

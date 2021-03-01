@@ -65,7 +65,7 @@ class NavFodselsnummer(private val fodselsnummer: String) {
         }
     }
 
-    fun getBirthDate() = LocalDate.of(get4DigitBirthYear().toInt(), getMonth().toInt(), getDayInMonth().toInt())
+    fun getBirthDate(): LocalDate = LocalDate.of(get4DigitBirthYear().toInt(), getMonth().toInt(), getDayInMonth().toInt())
 
     fun getBirthDateAsString() = getBirthDate().toString()
 

@@ -72,7 +72,7 @@ class PensjonController(private val pensjonsinformasjonClient: Pensjonsinformasj
                     ResponseEntity.ok("""{ "kravDato": "$it" }""")
                 }
             } catch (e: Exception) {
-                logger.warn("Feil ved henting av kravdato på saksid: ${sakId}")
+                logger.warn("Feil ved henting av kravdato på saksid: $sakId")
                 ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorBody(e.message!!))
             }
         }
@@ -105,7 +105,6 @@ class PensjonController(private val pensjonsinformasjonClient: Pensjonsinformasj
             }
         }
     }
-
 
     @ApiOperation("Henter ut en liste over alle saker på valgt aktoerId")
     @GetMapping("/sakliste/{aktoerId}")

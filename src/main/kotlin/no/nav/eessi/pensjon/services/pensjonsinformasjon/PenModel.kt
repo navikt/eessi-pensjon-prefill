@@ -24,20 +24,7 @@ enum class EPSaktype {
     ALDER,
     UFOREP,
     BARNEP,
-    GJENLEV,
-    GJENLEV_BARNEP;
-
-    companion object {
-        @JvmStatic
-        fun isValid(input: String): Boolean {
-            return try {
-                valueOf(input)
-                true
-            } catch (ia: IllegalArgumentException) {
-                false
-            }
-        }
-    }
+    GJENLEV;
 }
 
 enum class Sakstatus {

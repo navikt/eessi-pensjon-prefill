@@ -24,6 +24,8 @@ import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.PrefillP2200
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.PrefillP6000
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.EPSaktype.ALDER
+import no.nav.eessi.pensjon.services.pensjonsinformasjon.EPSaktype.BARNEP
+import no.nav.eessi.pensjon.services.pensjonsinformasjon.EPSaktype.GJENLEV
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.EPSaktype.UFOREP
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import no.nav.pensjon.v1.sak.V1Sak
@@ -56,10 +58,10 @@ class PrefillSEDService(
             P2100 -> {
                 val sedpair = PrefillP2100(prefillPDLnav).prefillSed(prefillData, personDataCollection, hentRelevantPensjonSak(prefillData) { pensakType ->
                     listOf(
-                        "ALDER",
-                        "BARNEP",
-                        "GJENLEV",
-                        "UFOREP"
+                        ALDER.name,
+                        BARNEP.name,
+                        GJENLEV.name,
+                        UFOREP.name
                     ).contains(pensakType)
                 })
                 prefillData.melding = sedpair.first

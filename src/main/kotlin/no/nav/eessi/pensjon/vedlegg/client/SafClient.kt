@@ -120,7 +120,6 @@ class SafClient(private val safGraphQlOidcRestTemplate: RestTemplate,
 
     /**
      * Returnerer en distinct liste av rinaSakIDer basert på tilleggsinformasjon i journalposter for en aktør
-     * @param metadata journalpostmetadata fra JOARK datamodellen
      */
     fun hentRinaSakIderFraDokumentMetadata(aktoerId: String): List<String> {
         return HentRinaSakIderFraDokumentMetadata.measure {

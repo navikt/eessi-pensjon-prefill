@@ -264,8 +264,6 @@ class BucUtils(private val buc: Buc ) {
                 )
             }.sortedBy { it.country }.toList()
 
-    fun getParticipantsLand() = getParticipantsAsInstitusjonItem().map { it.country }.joinToString(separator = ",")
-
     fun getBucAction() = getBuc().actions
 
     private fun getGyldigeOpprettSedAksjonList() : List<SEDType> {
@@ -315,7 +313,7 @@ class BucUtils(private val buc: Buc ) {
     }
 
     fun checkIfSedCanBeCreatedEmptyStatus(sedType: SEDType, parentId: String) : Boolean{
-        if(getAllDocuments().any() { it.parentDocumentId == parentId && it.type == sedType && it.status == "empty" }){
+        if(getAllDocuments().any { it.parentDocumentId == parentId && it.type == sedType && it.status == "empty" }){
             return true
         }
         throw SedDokumentKanIkkeOpprettesException("SvarSED $sedType kan ikke opaprettes i RINA (mulig det allerede finnes et utkast)")

@@ -77,12 +77,11 @@ data class BucAndSedView(
             )
         }
 
-        fun subject(gjenlevendeFnr: String, avdodFnr: String): BucAndSedSubject? {
-            return BucAndSedSubject(
+        fun subject(gjenlevendeFnr: String, avdodFnr: String): BucAndSedSubject = BucAndSedSubject(
                     gjenlevende = SubjectFnr(gjenlevendeFnr),
                     avdod = SubjectFnr(avdodFnr)
             )
-        }
+
     }
 }
 

@@ -10,7 +10,6 @@ import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import no.nav.eessi.pensjon.fagmodul.eux.EuxService
-import no.nav.eessi.pensjon.fagmodul.eux.PinOgKrav
 import no.nav.eessi.pensjon.fagmodul.eux.SedDokumentIkkeOpprettetException
 import no.nav.eessi.pensjon.fagmodul.eux.SedDokumentKanIkkeOpprettesException
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.BucSedResponse

@@ -12,7 +12,6 @@ class PrefillSed(private val prefillNav: PrefillPDLNav) {
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillSed::class.java) }
 
     fun prefill(prefillData: PrefillDataModel, personData: PersonDataCollection): SED {
-
         logger.debug("----------------------------------------------------------")
         logger.debug("Preutfylling NAV     : ${prefillNav::class.java} ")
         logger.debug("------------------| Preutfylling START |------------------ ")

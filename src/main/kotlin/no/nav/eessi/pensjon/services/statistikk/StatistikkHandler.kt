@@ -49,7 +49,7 @@ class StatistikkHandler(@Value("\${NAIS_NAMESPACE}") val nameSpace : String,
         }
     }
 
-    fun populerMDC() = MDC.get(X_REQUEST_ID)
+    fun populerMDC(): String = MDC.get(X_REQUEST_ID)
 
 }
 
