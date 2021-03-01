@@ -1,6 +1,5 @@
 package no.nav.eessi.pensjon.fagmodul.api
 
-import io.micrometer.core.instrument.Tag
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import io.swagger.annotations.ApiOperation
 import no.nav.eessi.pensjon.fagmodul.eux.BucUtils
@@ -19,7 +18,6 @@ import no.nav.eessi.pensjon.fagmodul.prefill.PersonDataService
 import no.nav.eessi.pensjon.fagmodul.prefill.PrefillService
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.logging.AuditLogger
-import no.nav.eessi.pensjon.metrics.CounterHelper
 import no.nav.eessi.pensjon.metrics.MetricsHelper
 import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentType
 import no.nav.eessi.pensjon.personoppslag.pdl.model.NorskIdent
@@ -38,7 +36,6 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
-import java.time.LocalDateTime
 import javax.annotation.PostConstruct
 
 @Protected
@@ -49,8 +46,7 @@ class SedController(
     private val prefillService: PrefillService,
     private val personService: PersonDataService,
     private val auditlogger: AuditLogger,
-    @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper(SimpleMeterRegistry()),
-    @Autowired(required = false) private val counterHelper: CounterHelper = CounterHelper(SimpleMeterRegistry())
+    @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper(SimpleMeterRegistry())
 ) {
 
     private val logger = LoggerFactory.getLogger(SedController::class.java)
@@ -149,9 +145,6 @@ class SedController(
                 result?.message = dataModel.melding
             }
 
-            //extra tag metricshelper for sedType, bucType, timeStamp og rinaId.
-            counterHelper.count(CounterHelper.MeterNameExtraTag.AddInstutionAndDocument, extraTag = extraTag(dataModel, bucUtil))
-
             val documentItem = fetchBucAgainBeforeReturnShortDocument(dataModel.buc, docresult, result)
             logger.info("******* Legge til ny SED - slutt *******")
             documentItem
@@ -236,18 +229,6 @@ class SedController(
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Feiler ved oppretting av X005 (ny institusjon) for euxCaseId: ${dataModel.euxCaseID}")
         }
 
-    }
-
-    private fun extraTag(dataModel: PrefillDataModel, bucUtil: BucUtils): List<Tag> {
-        return listOf(
-            Tag.of("sedType", dataModel.sedType.name),
-            Tag.of("bucType", dataModel.buc),
-            Tag.of("rinaId", dataModel.euxCaseID),
-            Tag.of("sakNr", dataModel.penSaksnummer),
-            Tag.of("land", bucUtil.getParticipantsLand()),
-            Tag.of("type", "Opprett"),
-            Tag.of("timeStamp", LocalDateTime.now().toString())
-        )
     }
 
     @ApiOperation("Oppretter en Sed som svar på en forespørsel-Sed")
