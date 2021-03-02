@@ -390,8 +390,6 @@ data class Foedested(
         val region: String? = null
 )
 
-//refakt.. slå sammen til Institusjon
-////TODO:
 data class EessisakItem(
         val institusjonsid: String? = null,
         val institusjonsnavn: String? = null,
