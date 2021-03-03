@@ -39,7 +39,6 @@ import org.springframework.web.client.HttpServerErrorException
 import org.springframework.web.client.ResourceAccessException
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.util.UriComponentsBuilder
-import java.net.URI
 import java.nio.charset.Charset
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -438,7 +437,7 @@ class EuxKlientTest {
     fun `EuxKlient forventer korrekt svar tilbake fra et kall til opprettSedOnBuc`() {
         val response: ResponseEntity<String> = ResponseEntity("323413415dfvsdfgq343145sdfsdfg34135", HttpStatus.OK)
         whenever(mockEuxrestTemplate.postForEntity(
-            eq(URI("/buc/123456/sed?ventePaAksjon=false")),
+            eq("/buc/123456/sed?ventePaAksjon=false"),
             any(),
             eq(String::class.java))
         ).thenReturn(response)
@@ -457,7 +456,7 @@ class EuxKlientTest {
     fun `Calling EuxService  feiler med svar tilbake fra et kall til opprettSedOnBuc`() {
         doThrow(createDummyClientRestExecption(HttpStatus.BAD_REQUEST, "Dummy clent error"))
             .whenever(mockEuxrestTemplate).postForEntity(
-                eq(URI("/buc/1231233/sed?ventePaAksjon=false")),
+                eq("/buc/1231233/sed?ventePaAksjon=false"),
                 any(),
                 eq(String::class.java),
             )
@@ -476,7 +475,7 @@ class EuxKlientTest {
     fun `Calling EuxService  feiler med kontakt fra eux med kall til opprettSedOnBuc forventer GatewayTimeoutException`() {
         doThrow(createDummyServerRestExecption(HttpStatus.GATEWAY_TIMEOUT, "Dummy body"))
             .whenever(mockEuxrestTemplate).postForEntity(
-                eq(URI("/buc/213123/sed?ventePaAksjon=false")),
+                eq("/buc/213123/sed?ventePaAksjon=false"),
                 any(),
                 eq(String::class.java)
             )

@@ -108,7 +108,7 @@ class EuxKlient(private val euxOidcRestTemplate: RestTemplate,
         val response = restTemplateErrorhandler(
                 {
                     euxOidcRestTemplate.postForEntity(
-                        URI("/buc/$euxCaseId/sed?ventePaAksjon=$ventePaAksjonVerdi"),
+                        "/buc/$euxCaseId/sed?ventePaAksjon=$ventePaAksjonVerdi",
                             httpEntity,
                             String::class.java)
                 }, euxCaseId, metric, errorMessage, waitTimes = 20000L
