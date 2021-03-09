@@ -1,11 +1,7 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak
 
 import com.nhaarman.mockitokotlin2.mock
-import no.nav.eessi.pensjon.fagmodul.models.PersonDataCollection
-import no.nav.eessi.pensjon.fagmodul.models.PersonId
-import no.nav.eessi.pensjon.fagmodul.models.PrefillDataModel
-import no.nav.eessi.pensjon.fagmodul.models.PrefillDataModelMother
-import no.nav.eessi.pensjon.fagmodul.models.SEDType
+import no.nav.eessi.pensjon.fagmodul.models.*
 import no.nav.eessi.pensjon.fagmodul.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjon
 import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjonMother.standardEessiInfo
@@ -15,6 +11,7 @@ import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonService
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillSEDService
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper
+import no.nav.eessi.pensjon.fagmodul.sedmodel.P6000
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
@@ -58,15 +55,15 @@ class PrefillP6000Pensjon_BARNEP_foreldrelos_Test {
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SEDType.P6000, personFnr, penSaksnummer = "22580170", vedtakId = "12312312", avdod = PersonId(avdodPersonFnr, "112233445566"))
         prefillSEDService = PrefillSEDService(dataFromPEN, eessiInformasjon, prefillNav)
 
-        val sed = prefillSEDService.prefill(prefillData, personDataCollection)
-        val result = sed.pensjon!!
+        val p6000 = prefillSEDService.prefill(prefillData, personDataCollection) as P6000
+        val p6000Pensjon = p6000.p6000Pensjon
 
-        assertNotNull(result.vedtak)
-        assertNotNull(result.sak)
-        assertNotNull(result.tilleggsinformasjon)
+        assertNotNull(p6000Pensjon.vedtak)
+        assertNotNull(p6000Pensjon.sak)
+        assertNotNull(p6000Pensjon.tilleggsinformasjon)
 
-        val avdod = sed.nav?.bruker?.person
-        val gjenlev = sed.pensjon?.gjenlevende
+        val avdod = p6000.nav?.bruker?.person
+        val gjenlev = p6000.p6000Pensjon.gjenlevende
 
         assertEquals("BAMSE LUR", avdod?.fornavn)
         assertEquals("MOMBALO", avdod?.etternavn)
@@ -74,7 +71,7 @@ class PrefillP6000Pensjon_BARNEP_foreldrelos_Test {
         assertEquals("BAMSE ULUR", gjenlev?.person?.fornavn)
         assertEquals("DOLLY", gjenlev?.person?.etternavn)
 
-        val vedtak = result.vedtak?.get(0)
+        val vedtak = p6000Pensjon.vedtak?.get(0)
         assertEquals("2020-08-01", vedtak?.virkningsdato, "vedtak.virkningsdato")
         assertEquals("03", vedtak?.type, "vedtak.type")
         assertEquals("99", vedtak?.basertPaa, "vedtak.basertPaa")
@@ -100,9 +97,9 @@ class PrefillP6000Pensjon_BARNEP_foreldrelos_Test {
         val avslagBegrunnelse = vedtak?.avslagbegrunnelse?.get(0)
         assertEquals(null, avslagBegrunnelse?.begrunnelse)
 
-        assertEquals("six weeks from the date the decision is received", result.sak?.kravtype?.get(0)?.datoFrist)
+        assertEquals("six weeks from the date the decision is received", p6000Pensjon.sak?.kravtype?.get(0)?.datoFrist)
 
-        assertEquals("2020-08-21", result.tilleggsinformasjon?.dato)
+        assertEquals("2020-08-21", p6000Pensjon.tilleggsinformasjon?.dato)
     }
 
 }

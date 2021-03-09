@@ -4,9 +4,9 @@ import no.nav.eessi.pensjon.fagmodul.models.PersonDataCollection
 import no.nav.eessi.pensjon.fagmodul.models.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjon
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillPDLNav
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.PrefillP6000Pensjon.prefillPensjon
+import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.PrefillP6000Pensjon.prefillP6000Pensjon
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Bruker
-import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
+import no.nav.eessi.pensjon.fagmodul.sedmodel.P6000
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Person
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import org.slf4j.Logger
@@ -18,7 +18,7 @@ class PrefillP6000(private val prefillNav: PrefillPDLNav,
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillP6000::class.java) }
 
-    fun prefillSed(prefillData: PrefillDataModel, personData: PersonDataCollection): SED {
+    fun prefillP6000(prefillData: PrefillDataModel, personData: PersonDataCollection): P6000 {
         val sedType = prefillData.sedType
 
         logger.info("----------------------------------------------------------"
@@ -33,7 +33,7 @@ class PrefillP6000(private val prefillNav: PrefillPDLNav,
         val gjenlevende = eventuellGjenlevende(prefillData, personData.forsikretPerson)
 
         logger.debug("Henter opp Pensjonsdata fra PESYS")
-        val pensjon = prefillPensjon(pensjoninformasjon, gjenlevende, andreInstitusjondetaljer)
+        val p6000Pensjon = prefillP6000Pensjon(pensjoninformasjon, gjenlevende, andreInstitusjondetaljer)
 
         logger.debug("Henter opp Persondata fra TPS")
         val nav = prefillNav.prefill(
@@ -42,15 +42,15 @@ class PrefillP6000(private val prefillNav: PrefillPDLNav,
             avdod = prefillData.avdod,
             personData = personData,
             brukerInformasjon = prefillData.getPersonInfoFromRequestData(),
-            pensjon.kravDato
+            p6000Pensjon.kravDato
         )
 
         logger.info("-------------------| Preutfylling [$sedType] END |------------------- ")
 
-        return SED(
+        return P6000(
             type = sedType,
             nav = nav,
-            pensjon = pensjon
+            p6000Pensjon = p6000Pensjon
         )
     }
 

@@ -14,6 +14,7 @@ import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonService
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillSEDService
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper
+import no.nav.eessi.pensjon.fagmodul.sedmodel.P6000
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
@@ -59,13 +60,14 @@ class PrefillP6000Pensjon_UFORE_Test {
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SEDType.P6000, personFnr, penSaksnummer = "22580170", vedtakId = "12312312")
         prefillSEDService = PrefillSEDService(dataFromPEN, eessiInformasjon, prefillNav)
 
-        val result = prefillSEDService.prefill(prefillData, personDataCollection).pensjon!!
+        val p6000 = prefillSEDService.prefill(prefillData, personDataCollection) as P6000
+        val p6000Pensjon = p6000.p6000Pensjon
 
-        assertNotNull(result.vedtak)
-        assertNotNull(result.sak)
-        assertNotNull(result.tilleggsinformasjon)
+        assertNotNull(p6000Pensjon.vedtak)
+        assertNotNull(p6000Pensjon.sak)
+        assertNotNull(p6000Pensjon.tilleggsinformasjon)
 
-        val vedtak = result.vedtak?.get(0)
+        val vedtak = p6000Pensjon.vedtak?.get(0)
         assertEquals("2017-04-11", vedtak?.virkningsdato, "vedtak.virkningsdato")
         assertEquals("02", vedtak?.type)
         assertEquals("02", vedtak?.basertPaa)
@@ -91,13 +93,13 @@ class PrefillP6000Pensjon_UFORE_Test {
         val avslagBegrunnelse = vedtak?.avslagbegrunnelse?.get(0)
         assertEquals(null, avslagBegrunnelse?.begrunnelse)
 
-        assertEquals("six weeks from the date the decision is received", result.sak?.kravtype?.get(0)?.datoFrist)
+        assertEquals("six weeks from the date the decision is received", p6000Pensjon.sak?.kravtype?.get(0)?.datoFrist)
 
-        assertEquals("2017-05-21", result.tilleggsinformasjon?.dato)
+        assertEquals("2017-05-21", p6000Pensjon.tilleggsinformasjon?.dato)
 
-        assertEquals("NO:noinst002", result.tilleggsinformasjon?.andreinstitusjoner?.get(0)?.institusjonsid)
-        assertEquals("Postboks 6600 Etterstad TEST", result.tilleggsinformasjon?.andreinstitusjoner?.get(0)?.institusjonsadresse)
-        assertEquals("0607", result.tilleggsinformasjon?.andreinstitusjoner?.get(0)?.postnummer)
+        assertEquals("NO:noinst002", p6000Pensjon.tilleggsinformasjon?.andreinstitusjoner?.get(0)?.institusjonsid)
+        assertEquals("Postboks 6600 Etterstad TEST", p6000Pensjon.tilleggsinformasjon?.andreinstitusjoner?.get(0)?.institusjonsadresse)
+        assertEquals("0607", p6000Pensjon.tilleggsinformasjon?.andreinstitusjoner?.get(0)?.postnummer)
 
     }
 

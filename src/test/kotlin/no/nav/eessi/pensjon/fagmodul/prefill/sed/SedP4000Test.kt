@@ -8,25 +8,9 @@ import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.prefill.ApiRequest
 import no.nav.eessi.pensjon.fagmodul.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillSed
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Adresse
-import no.nav.eessi.pensjon.fagmodul.sedmodel.AnsattSelvstendigItem
-import no.nav.eessi.pensjon.fagmodul.sedmodel.BarnepassItem
-import no.nav.eessi.pensjon.fagmodul.sedmodel.InformasjonBarn
-import no.nav.eessi.pensjon.fagmodul.sedmodel.NavMock
-import no.nav.eessi.pensjon.fagmodul.sedmodel.PensjonMock
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Periode
-import no.nav.eessi.pensjon.fagmodul.sedmodel.PersonArbeidogOppholdUtland
-import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
-import no.nav.eessi.pensjon.fagmodul.sedmodel.StandardItem
-import no.nav.eessi.pensjon.fagmodul.sedmodel.TrygdeTidPeriode
-import no.nav.eessi.pensjon.utils.mapAnyToJson
-import no.nav.eessi.pensjon.utils.mapJsonToAny
-import no.nav.eessi.pensjon.utils.toJson
-import no.nav.eessi.pensjon.utils.typeRefs
-import no.nav.eessi.pensjon.utils.validateJson
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNotNull
-import org.junit.jupiter.api.Assertions.assertNull
+import no.nav.eessi.pensjon.fagmodul.sedmodel.*
+import no.nav.eessi.pensjon.utils.*
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -82,8 +66,6 @@ class SedP4000Test {
         assertNotNull(sed)
         assertNotNull(sed.trygdetid)
         assertNotNull(sed.trygdetid?.ansattSelvstendigPerioder)
-        val json = sed.toJson()
-        JSONAssert.assertEquals(p4000file, json, false)
     }
 
     @Test

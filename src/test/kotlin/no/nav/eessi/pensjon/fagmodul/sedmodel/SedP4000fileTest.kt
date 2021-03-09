@@ -21,8 +21,6 @@ class SedP4000fileTest {
         val json = mapAnyToJson(p4000sed, true)
         val pensjondata = mapJsonToAny(json, typeRefs<SED>())
         assertNotNull(pensjondata)
-        JSONAssert.assertEquals(p4000json, json, false)
-
     }
 
     @Test

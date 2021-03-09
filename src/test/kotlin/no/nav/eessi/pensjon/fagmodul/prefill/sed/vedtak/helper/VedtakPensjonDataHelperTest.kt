@@ -10,9 +10,7 @@ import no.nav.eessi.pensjon.utils.simpleFormat
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import no.nav.pensjon.v1.trygdetid.V1Trygdetid
 import no.nav.pensjon.v1.trygdetidliste.V1TrygdetidListe
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertFalse
-import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 
 class VedtakPensjonDataHelperTest {
@@ -105,7 +103,7 @@ class VedtakPensjonDataHelperTest {
     }
 
     @Test
-    fun `forventer "13482" dager i sum summerTrygdeTid`() {
+    fun `forventer 13482 dager i sum summerTrygdeTid`() {
         val dataFromPESYS = PensjonsinformasjonService(fraFil("P6000-APUtland-301.xml"))
 
         val pendata = dataFromPESYS.hentMedVedtak("someVedtakId")

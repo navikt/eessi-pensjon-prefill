@@ -21,11 +21,11 @@ object PrefillP6000Pensjon {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillP6000Pensjon::class.java) }
 
-    fun prefillPensjon(
+    fun prefillP6000Pensjon(
         pensjoninformasjon: Pensjonsinformasjon,
         gjenlevende: Bruker?,
         andreinstitusjonerItem: AndreinstitusjonerItem?
-    ): Pensjon {
+    ): P6000Pensjon {
 
         //Sjekk opp om det er Bodd eller Arbeid utland. (hvis ikke avslutt)
         if (!harBoddArbeidetUtland(pensjoninformasjon))
@@ -42,7 +42,7 @@ object PrefillP6000Pensjon {
         return if (erAvslag(pensjoninformasjon)) {
             prefillPensjonMedAvslag(pensjoninformasjon, andreinstitusjonerItem)
         } else {
-            return Pensjon(
+            return P6000Pensjon(
                 gjenlevende = gjenlevende,
                 //4.1
                 vedtak = prefillVedtak(pensjoninformasjon),
@@ -59,7 +59,7 @@ object PrefillP6000Pensjon {
     private fun prefillPensjonMedAvslag(
         pensjoninformasjon: Pensjonsinformasjon,
         andreinstitusjonerItem: AndreinstitusjonerItem?
-    ): Pensjon {
+    ): P6000Pensjon {
         logger.warn("Avslag, Ingen vilkarsvurderingListe og ytelsePerMaanedListe oppretter Vedtak SED P6000 uten pensjoninformasjon")
 
         val vedtak = prefillVedtak(pensjoninformasjon).firstOrNull()
@@ -71,7 +71,7 @@ object PrefillP6000Pensjon {
             )
         )
 
-        return Pensjon(
+        return P6000Pensjon(
             vedtak = vedtaklist,
             sak = prefillSak(pensjoninformasjon),
             tilleggsinformasjon = prefillTilleggsinformasjon(pensjoninformasjon, andreinstitusjonerItem)
