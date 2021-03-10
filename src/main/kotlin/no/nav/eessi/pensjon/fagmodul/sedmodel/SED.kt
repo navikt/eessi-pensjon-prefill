@@ -1,6 +1,7 @@
 package no.nav.eessi.pensjon.fagmodul.sedmodel
 
 import com.fasterxml.jackson.annotation.JsonIgnore
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.utils.mapJsonToAny
@@ -9,18 +10,18 @@ import no.nav.eessi.pensjon.utils.typeRefs
 
 // SED class main request class to basis
 // Strukturerte Elektroniske Dokumenter
-data class SED(
-        @JsonProperty("sed")
-        val type: SEDType,
-        val sedGVer: String? = "4",
-        var sedVer: String? = "1",
-        var nav: Nav? = null, // TODO Mutable
-        var pensjon: Pensjon? = null, // TODO Mutable
-        var trygdetid: PersonArbeidogOppholdUtland? = null, //P4000 // TODO Mutable
-        val ignore: Ignore? = null,
-
-        //H120
-        val horisontal: Horisontal? = null
+@JsonIgnoreProperties(ignoreUnknown = true)
+open class SED(
+    @JsonProperty("sed")
+    open val type: SEDType,
+    open val sedGVer: String? = "4",
+    open var sedVer: String? = "1",
+    open var nav: Nav? = null, // TODO Mutable
+    var pensjon: Pensjon? = null, // TODO Mutable
+    open var trygdetid: PersonArbeidogOppholdUtland? = null, //P4000 // TODO Mutable
+    open val ignore: Ignore? = null,
+    //H120
+    open val horisontal: Horisontal? = null
 ) {
     companion object {
         @JvmStatic

@@ -1,19 +1,15 @@
 package no.nav.eessi.pensjon.fagmodul.sedmodel
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+
 class MeldingOmPensjon(
 		val melding: String?,
 		val pensjon: Pensjon
 )
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 data class Pensjon(
 		val gjenlevende: Bruker? = null, // Brukes fleres steder
-
-		//P6000
-		val reduksjon: List<ReduksjonItem>? = null, // P6000
-		val vedtak: List<VedtakItem>? = null, // P6000
-		val sak: Sak? = null, // P6000
-		val tilleggsinformasjon: Tilleggsinformasjon? = null, //P6000
-		val ytterligeinformasjon: String? = null,
 
 		//P2XXX
 		val ytelser: List<YtelserItem>? = null,

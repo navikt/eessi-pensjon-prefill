@@ -1,9 +1,7 @@
 package no.nav.eessi.pensjon.fagmodul.sedmodel
 
-import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import org.skyscreamer.jsonassert.JSONAssert
 
 class SedP12000Test {
 
@@ -20,8 +18,6 @@ class SedP12000Test {
         Assertions.assertEquals("SEK", p12000sed.pensjon?.pensjoninfo?.get(0)?.betalingsdetaljer?.valuta)
 
         Assertions.assertEquals("1", p12000sed.pensjon?.anmodning13000verdi)
-
-        JSONAssert.assertEquals(sedJson, p12000sed.toJsonSkipEmpty(), false)
     }
 
 

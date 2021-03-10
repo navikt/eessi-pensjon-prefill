@@ -2,18 +2,7 @@ package no.nav.eessi.pensjon.fagmodul.prefill.sed
 
 import no.nav.eessi.pensjon.fagmodul.models.PersonDataCollection
 import no.nav.eessi.pensjon.fagmodul.models.PrefillDataModel
-import no.nav.eessi.pensjon.fagmodul.models.SEDType.H020
-import no.nav.eessi.pensjon.fagmodul.models.SEDType.H021
-import no.nav.eessi.pensjon.fagmodul.models.SEDType.P10000
-import no.nav.eessi.pensjon.fagmodul.models.SEDType.P15000
-import no.nav.eessi.pensjon.fagmodul.models.SEDType.P2000
-import no.nav.eessi.pensjon.fagmodul.models.SEDType.P2100
-import no.nav.eessi.pensjon.fagmodul.models.SEDType.P2200
-import no.nav.eessi.pensjon.fagmodul.models.SEDType.P4000
-import no.nav.eessi.pensjon.fagmodul.models.SEDType.P6000
-import no.nav.eessi.pensjon.fagmodul.models.SEDType.P7000
-import no.nav.eessi.pensjon.fagmodul.models.SEDType.P8000
-import no.nav.eessi.pensjon.fagmodul.models.SEDType.X005
+import no.nav.eessi.pensjon.fagmodul.models.SEDType.*
 import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjon
 import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonService
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillPDLNav
@@ -23,10 +12,7 @@ import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.PrefillP2100
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.PrefillP2200
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.PrefillP6000
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
-import no.nav.eessi.pensjon.services.pensjonsinformasjon.EPSaktype.ALDER
-import no.nav.eessi.pensjon.services.pensjonsinformasjon.EPSaktype.BARNEP
-import no.nav.eessi.pensjon.services.pensjonsinformasjon.EPSaktype.GJENLEV
-import no.nav.eessi.pensjon.services.pensjonsinformasjon.EPSaktype.UFOREP
+import no.nav.eessi.pensjon.services.pensjonsinformasjon.EPSaktype.*
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import no.nav.pensjon.v1.sak.V1Sak
 import no.nav.pensjon.v1.vedtak.V1Vedtak
@@ -69,7 +55,7 @@ class PrefillSEDService(
             }
 
             //vedtak
-            P6000 -> PrefillP6000(prefillPDLnav, eessiInformasjon, pensjonsinformasjonService.hentVedtak(hentVedtak(prefillData))).prefillSed(prefillData, personDataCollection)
+            P6000 -> PrefillP6000(prefillPDLnav, eessiInformasjon, pensjonsinformasjonService.hentVedtak(hentVedtak(prefillData))).prefillP6000(prefillData, personDataCollection)
 
             P4000 -> PrefillP4000(PrefillSed(prefillPDLnav)).prefillSed(prefillData, personDataCollection)
             P7000 -> PrefillP7000(PrefillSed(prefillPDLnav)).prefillSed(prefillData, personDataCollection)

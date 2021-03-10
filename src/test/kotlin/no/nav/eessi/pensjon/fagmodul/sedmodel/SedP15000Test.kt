@@ -1,10 +1,8 @@
 package no.nav.eessi.pensjon.fagmodul.sedmodel
 
-import no.nav.eessi.pensjon.utils.JsonIllegalArgumentException
 import no.nav.eessi.pensjon.utils.toJson
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 import org.skyscreamer.jsonassert.JSONAssert
 
 class SedP15000Test {
@@ -27,13 +25,5 @@ class SedP15000Test {
         //
         assertEquals("2019-02-01", p15000sed.nav?.krav?.dato)
         assertEquals("01", p15000sed.nav?.krav?.type)
-    }
-
-    @Test
-    fun `P15000 med element Sector feiler ved innlesing`() {
-        val p15000json = getTestJsonFile("P15000-SectorFeiler-NAV.json")
-        assertThrows<JsonIllegalArgumentException> {
-            SED.fromJson(p15000json)
-        }
     }
 }
