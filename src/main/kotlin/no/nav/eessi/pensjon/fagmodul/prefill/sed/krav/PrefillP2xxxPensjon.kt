@@ -18,8 +18,10 @@ import no.nav.eessi.pensjon.services.pensjonsinformasjon.KravHistorikkHelper.fin
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.KravHistorikkHelper.hentKravHistorikkForsteGangsBehandlingUtlandEllerForsteGang
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.KravHistorikkHelper.hentKravHistorikkMedKravStatusAvslag
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.KravHistorikkHelper.hentKravHistorikkMedKravStatusTilBehandling
+import no.nav.eessi.pensjon.services.pensjonsinformasjon.KravHistorikkHelper.hentKravHistorikkMedValgtKravType
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.KravHistorikkHelper.hentKravhistorikkForGjenlevende
-import no.nav.eessi.pensjon.services.pensjonsinformasjon.Kravstatus
+import no.nav.eessi.pensjon.services.pensjonsinformasjon.Kravtype
+import no.nav.eessi.pensjon.services.pensjonsinformasjon.Sakstatus
 import no.nav.eessi.pensjon.utils.simpleFormat
 import no.nav.pensjon.v1.kravhistorikk.V1KravHistorikk
 import no.nav.pensjon.v1.sak.V1Sak
@@ -139,12 +141,13 @@ object PrefillP2xxxPensjon {
 
         validerGyldigKravtypeOgArsakFelles(sak , sedType)
 
-        val forsBehanBoUtlanTom = finnKravHistorikk("F_BH_BO_UTL", sak?.kravHistorikkListe).isNullOrEmpty()
-        val forsBehanMedUtlanTom = finnKravHistorikk("F_BH_MED_UTL", sak?.kravHistorikkListe).isNullOrEmpty()
+        val forsBehanBoUtlandTom = finnKravHistorikk("F_BH_BO_UTL", sak?.kravHistorikkListe).isNullOrEmpty()
+        val forsBehanMedUtlandTom = finnKravHistorikk("F_BH_MED_UTL", sak?.kravHistorikkListe).isNullOrEmpty()
+        val behandleKunUtlandTom = finnKravHistorikk("F_BH_KUN_UTL", sak?.kravHistorikkListe).isNullOrEmpty()
         val vedtakErTom = (vedtak == null)
 
-        if (forsBehanBoUtlanTom and forsBehanMedUtlanTom and vedtakErTom) {
-            logger.debug("forsBehanBoUtlanTom: $forsBehanBoUtlanTom, forsBehanMedUtlanTom: $forsBehanMedUtlanTom")
+        if (forsBehanBoUtlandTom and forsBehanMedUtlandTom and behandleKunUtlandTom  and vedtakErTom) {
+            logger.debug("forsBehanBoUtlanTom: $forsBehanBoUtlandTom, forsBehanMedUtlanTom: $forsBehanMedUtlandTom, behandleKunUtlandTom: $behandleKunUtlandTom")
             logger.warn("Kan ikke opprette krav-SED: $sedType da vedtak og førstegangsbehandling utland mangler. Dersom det gjelder utsendelse til avtaleland, se egen rutine for utsendelse av SED på Navet.")
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Kan ikke opprette krav-SED: $sedType da vedtak og førstegangsbehandling utland mangler. Dersom det gjelder utsendelse til avtaleland, se egen rutine for utsendelse av SED på Navet.")
         }
@@ -191,12 +194,6 @@ object PrefillP2xxxPensjon {
 
     //felles kode for validering av P2000, P2100 og P2200
     private fun validerGyldigKravtypeOgArsakFelles(sak: V1Sak?, sedType: SEDType) {
-        val finnesKunUtland = finnKravHistorikk("F_BH_KUN_UTL", sak?.kravHistorikkListe)
-        if (finnesKunUtland != null && finnesKunUtland.size == sak?.kravHistorikkListe?.kravHistorikkListe?.size)  {
-            logger.warn("Søknad gjelder Førstegangsbehandling kun utland. Se egen rutine på navet")
-            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Søknad gjelder Førstegangsbehandling kun utland. Se egen rutine på navet")
-        }
-
         val fortegBH = finnKravHistorikk("FORSTEG_BH", sak?.kravHistorikkListe)
         if (fortegBH != null && fortegBH.size == sak?.kravHistorikkListe?.kravHistorikkListe?.size)  {
             logger.warn("Det er ikke markert for bodd/arbeidet i utlandet. Krav SED $sedType blir ikke opprettet")
@@ -205,16 +202,26 @@ object PrefillP2xxxPensjon {
     }
 
     private fun finnKravHistorikkForDato(pensak: V1Sak?): V1KravHistorikk {
-        return try {
-            hentKravhistorikkForGjenlevende(pensak?.kravHistorikkListe)
-                    ?: when (pensak?.status) {
-                        Kravstatus.TIL_BEHANDLING.name -> hentKravHistorikkMedKravStatusTilBehandling(pensak.kravHistorikkListe)
-                        Kravstatus.AVSL.name -> hentKravHistorikkMedKravStatusAvslag(pensak.kravHistorikkListe)
-                        else -> hentKravHistorikkForsteGangsBehandlingUtlandEllerForsteGang(pensak?.kravHistorikkListe, pensak?.sakType)
+        logger.debug("finnKravHistorikkForDato")
+        logger.debug("status ${pensak?.status}")
+        try {
+
+            val gjenLevKravarsak = hentKravhistorikkForGjenlevende(pensak?.kravHistorikkListe)
+            if (gjenLevKravarsak != null) return gjenLevKravarsak
+
+            val kravKunUtland = hentKravHistorikkMedValgtKravType(pensak?.kravHistorikkListe, Kravtype.F_BH_KUN_UTL)
+            if (kravKunUtland != null) return  kravKunUtland
+
+            val sakstatus = Sakstatus.valueOf(pensak?.status!!)
+            return when (sakstatus) {
+                        Sakstatus.TIL_BEHANDLING -> hentKravHistorikkMedKravStatusTilBehandling(pensak.kravHistorikkListe)
+                        Sakstatus.AVSL -> hentKravHistorikkMedKravStatusAvslag(pensak.kravHistorikkListe)
+                        else -> hentKravHistorikkForsteGangsBehandlingUtlandEllerForsteGang(pensak.kravHistorikkListe, pensak.sakType)
                     }
+
         } catch (ex: Exception) {
             logger.warn("Klarte ikke å hente kravhistorikk for $pensak , fortsetter uten")
-            V1KravHistorikk()
+            return V1KravHistorikk()
         }
     }
 

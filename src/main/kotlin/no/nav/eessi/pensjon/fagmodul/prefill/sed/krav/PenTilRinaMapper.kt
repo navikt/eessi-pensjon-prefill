@@ -28,6 +28,7 @@ import no.nav.eessi.pensjon.services.pensjonsinformasjon.Sakstatus
             when (Sakstatus.valueOf(sakstatus)) {
                 Sakstatus.INNV -> "02"
                 Sakstatus.AVSL -> "03"
+                else -> "01"
             }
         } catch (ex: Exception) {
             "01"
