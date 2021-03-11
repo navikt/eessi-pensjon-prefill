@@ -129,6 +129,26 @@ class SedPrefillIntegrationSpringTest {
 
     @Test
     @Throws(Exception::class)
+    fun `prefill sed P2000 med sak fra GJENLEV feiler`() {
+        doReturn(NorskIdent(FNR_VOKSEN)).whenever(personService).hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID))
+        doReturn(PersonPDLMock.createWith(true, fnr = FNR_VOKSEN, aktoerid = AKTOER_ID)).whenever(personService).hentPerson(NorskIdent(FNR_VOKSEN))
+        doReturn(PrefillTestHelper.readXMLresponse("GJ_P2000_BH_MED_UTL.xml")).whenever(restTemplate).exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java))
+
+        //feil saknr
+        val apijson = dummyApijson(sakid = "22932988", aktoerId = AKTOER_ID)
+
+        mockMvc.perform(post("/sed/prefill")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(apijson))
+            .andDo(print())
+            .andExpect(status().isBadRequest)
+            .andExpect(status().reason(Matchers.containsString("Det finnes ingen iverksatte vedtak for førstegangsbehandling kun utland. Vennligst gå til EESSI-Pensjon fra vedtakskontekst.")))
+
+    }
+
+
+    @Test
+    @Throws(Exception::class)
     fun `prefill sed P6000 P_BUC_02 Gjenlevende har med avdod skal returnere en gyldig SED`() {
         doReturn(NorskIdent(FNR_VOKSEN)).whenever(personService).hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID))
         doReturn(AktoerId(AKTOER_ID_2)).whenever(personService).hentIdent(IdentType.AktoerId, NorskIdent(FNR_VOKSEN_4))
@@ -655,7 +675,7 @@ class SedPrefillIntegrationSpringTest {
         doReturn(PrefillTestHelper.readXMLresponse("P2000-AP-KUNUTL-IKKEVIRKNINGTID.xml")).`when`(restTemplate).exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java))
 
         val apijson = dummyApijson(sakid = "1232123123", aktoerId = AKTOER_ID)
-        val expectedError = """Kan ikke opprette krav-SED: P2000 da vedtak og førstegangsbehandling utland mangler. Dersom det gjelder utsendelse til avtaleland, se egen rutine for utsendelse av SED på Navet.""".trimIndent()
+        val expectedError = """Det finnes ingen iverksatte vedtak for førstegangsbehandling kun utland. Vennligst gå til EESSI-Pensjon fra vedtakskontekst.""".trimIndent()
 
         mockMvc.perform(post("/sed/prefill")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -738,7 +758,8 @@ class SedPrefillIntegrationSpringTest {
                 .content(apijson))
                 .andDo(print())
                 .andExpect(status().isBadRequest)
-                .andExpect(status().reason(Matchers.containsString("Kan ikke opprette krav-SED: P2000 da vedtak og førstegangsbehandling utland mangler. Dersom det gjelder utsendelse til avtaleland, se egen rutine for utsendelse av SED på Navet.")))
+                //.andExpect(status().reason(Matchers.containsString("Kan ikke opprette krav-SED: P2000 da vedtak og førstegangsbehandling utland mangler. Dersom det gjelder utsendelse til avtaleland, se egen rutine for utsendelse av SED på Navet.")))
+                .andExpect(status().reason(Matchers.containsString("Det finnes ingen iverksatte vedtak for førstegangsbehandling kun utland. Vennligst gå til EESSI-Pensjon fra vedtakskontekst.")))
     }
 
     private fun finnPin(pinNode: JsonNode): String? {

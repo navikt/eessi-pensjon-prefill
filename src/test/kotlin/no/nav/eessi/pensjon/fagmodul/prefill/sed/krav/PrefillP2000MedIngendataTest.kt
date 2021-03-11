@@ -58,7 +58,7 @@ class PrefillP2000MedIngendataTest {
         try {
             prefillSEDService.prefill(prefillData, personDataCollection)
         } catch (ex: ResponseStatusException) {
-            val errormsg = """Kan ikke opprette krav-SED: P2000 da vedtak og førstegangsbehandling utland mangler. Dersom det gjelder utsendelse til avtaleland, se egen rutine for utsendelse av SED på Navet.""".trimIndent()
+            val errormsg = """Det finnes ingen iverksatte vedtak for førstegangsbehandling kun utland. Vennligst gå til EESSI-Pensjon fra vedtakskontekst.""".trimIndent()
             assertEquals("400 BAD_REQUEST \"$errormsg\"", ex.message)
         }
     }

@@ -146,15 +146,17 @@ object PrefillP2xxxPensjon {
         val behandleKunUtlandTom = finnKravHistorikk("F_BH_KUN_UTL", sak?.kravHistorikkListe).isNullOrEmpty()
         val vedtakErTom = (vedtak == null)
 
-        if (forsBehanBoUtlandTom and forsBehanMedUtlandTom and behandleKunUtlandTom  and vedtakErTom) {
+        if (forsBehanBoUtlandTom and forsBehanMedUtlandTom and behandleKunUtlandTom and vedtakErTom) {
             logger.debug("forsBehanBoUtlanTom: $forsBehanBoUtlandTom, forsBehanMedUtlanTom: $forsBehanMedUtlandTom, behandleKunUtlandTom: $behandleKunUtlandTom")
             logger.warn("Kan ikke opprette krav-SED: $sedType da vedtak og førstegangsbehandling utland mangler. Dersom det gjelder utsendelse til avtaleland, se egen rutine for utsendelse av SED på Navet.")
-            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Kan ikke opprette krav-SED: $sedType da vedtak og førstegangsbehandling utland mangler. Dersom det gjelder utsendelse til avtaleland, se egen rutine for utsendelse av SED på Navet.")
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Det finnes ingen iverksatte vedtak for førstegangsbehandling kun utland. Vennligst gå til EESSI-Pensjon fra vedtakskontekst.")
         }
+
         if (vedtak != null && vedtak.isBoddArbeidetUtland == false) {
             logger.warn("Du kan ikke opprette krav-SED $sedType hvis ikke \"bodd/arbeidet i utlandet\" er krysset av")
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Du kan ikke opprette krav-SED $sedType hvis ikke \"bodd/arbeidet i utlandet\" er krysset av")
         }
+
         logger.info("avslutt på validering av $sedType, fortsetter med preutfylling")
     }
 

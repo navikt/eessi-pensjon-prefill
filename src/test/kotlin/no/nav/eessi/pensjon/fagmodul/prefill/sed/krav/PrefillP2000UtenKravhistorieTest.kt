@@ -72,7 +72,7 @@ class PrefillP2000UtenKravhistorieTest {
         val ex = assertThrows<Exception> {
             prefillSEDService.prefill(prefillData, personDataCollection)
         }
-        assertEquals("400 BAD_REQUEST \"Kan ikke opprette krav-SED: P2000 da vedtak og førstegangsbehandling utland mangler. Dersom det gjelder utsendelse til avtaleland, se egen rutine for utsendelse av SED på Navet.\"", ex.message)
+        assertEquals("400 BAD_REQUEST \"Det finnes ingen iverksatte vedtak for førstegangsbehandling kun utland. Vennligst gå til EESSI-Pensjon fra vedtakskontekst.\"", ex.message)
     }
 
 
