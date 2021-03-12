@@ -13,6 +13,7 @@ data class Pensjon(
 
 		//P2XXX
 		val ytelser: List<YtelserItem>? = null,
+		val forespurtstartdato: String? = null,
 
         //P3000
 		val landspesifikk: Landspesifikk? = null,
