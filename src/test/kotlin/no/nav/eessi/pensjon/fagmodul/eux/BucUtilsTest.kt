@@ -18,6 +18,7 @@ import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.junit.jupiter.MockitoExtension
 import org.skyscreamer.jsonassert.JSONAssert
+import org.springframework.web.server.ResponseStatusException
 import java.time.format.DateTimeFormatter
 
 @ExtendWith(MockitoExtension::class)
@@ -394,6 +395,21 @@ class BucUtilsTest {
         assertEquals(0, bucUtils.findNewParticipants(candidates).size)
     }
 
+    @Test
+    fun `sjekk deltakere mot buc og om den er fjernet i x007`() {
+        val bucjson = getTestJsonFile("buc-4929378.json")
+        val buc = mapJsonToAny(bucjson, typeRefs<Buc>())
+        val bucUtils = BucUtils(buc)
+
+        val list = listOf(InstitusjonItem("FI", "FI:0200000010", ""), InstitusjonItem("FI", "FI:0200000046", ""))
+        assertThrows<ResponseStatusException> {
+            bucUtils.checkForParticipantsNoLongerActiveFromX007AsInstitusjonItem(list)
+        }
+
+        val result = bucUtils.checkForParticipantsNoLongerActiveFromX007AsInstitusjonItem(listOf(InstitusjonItem("FI", "FI:0200000046", "")))
+        assertEquals(true, result)
+
+    }
 
     @Test
     fun findNewParticipantsMockwithExternalCaseOwnerResultExpectedToBeZero(){
