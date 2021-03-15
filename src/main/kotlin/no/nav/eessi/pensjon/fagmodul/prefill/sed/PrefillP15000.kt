@@ -5,14 +5,7 @@ import no.nav.eessi.pensjon.fagmodul.models.PersonDataCollection
 import no.nav.eessi.pensjon.fagmodul.models.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillSed
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Bruker
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Krav
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Nav
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Pensjon
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Person
-import no.nav.eessi.pensjon.fagmodul.sedmodel.PinItem
-import no.nav.eessi.pensjon.fagmodul.sedmodel.RelasjonAvdodItem
-import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
+import no.nav.eessi.pensjon.fagmodul.sedmodel.*
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Familierelasjonsrolle
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Sivilstandstype
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
@@ -42,7 +35,12 @@ class PrefillP15000(private val prefillSed: PrefillSed) {
         logger.debug("Vedtak har avdød? ${pensjonsinformasjon?.avdod != null}")
 
         if (kravType != KravType.GJENLEV && kravType.name != sakType) {
-            val errorMsg =  "Du kan ikke opprette ${sedTypeAsText(kravType)} i en ${sakTypeAsText(sakType)} (PESYS-saksnr: $penSaksnummer har sakstype ${sakType ?:": MANGLER"})"
+            if(sakType == null) {
+                val errorMsg = "Ved opprettelse av krav SED må saksbehandling være fullført i Pesys ( vilkårsprøving o.l ) og jordklode i brukerkontekst kan ikke benyttes"
+                logger.warn(errorMsg)
+                throw ResponseStatusException(HttpStatus.BAD_REQUEST, errorMsg)
+            }
+            val errorMsg =  "Du kan ikke opprette ${sedTypeAsText(kravType)} i en ${sakTypeAsText(sakType)} (PESYS-saksnr: $penSaksnummer har sakstype ${sakType})"
             logger.warn(errorMsg)
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, errorMsg)
         }
