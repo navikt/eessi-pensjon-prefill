@@ -89,7 +89,7 @@ class PensjonsinformasjonUtlandService(private val kodeverkClient: KodeverkClien
     fun kravAlderpensjonUtland(seds: Map<SEDType, SED>): KravUtland {
 
         val p2000 = getSED(SEDType.P2000, seds) ?: return KravUtland(errorMelding = "Ingen P2000 funnet")
-        val p3000no = getSED(SEDType.P3000, seds) ?: return KravUtland(errorMelding = "Ingen P3000no funnet")
+        val p3000no = getSED(SEDType.P3000_NO, seds) ?: return KravUtland(errorMelding = "Ingen P3000no funnet")
         logger.debug("oppretter KravUtland")
 
         //https://confluence.adeo.no/pages/viewpage.action?pageId=203178268
@@ -385,7 +385,7 @@ class PensjonsinformasjonUtlandService(private val kodeverkClient: KodeverkClien
     fun mapSeds(bucId: Int): Map<SEDType, SED> {
         logger.debug("Henter ut alle nødvendige SED for lettere utfylle tjenesten")
         return mapOf(SEDType.P2000 to fetchDocument(bucId, SEDType.P2000),
-                SEDType.P3000 to fetchDocument(bucId, SEDType.P3000),
+                SEDType.P3000_NO to fetchDocument(bucId, SEDType.P3000_NO),
                 SEDType.P4000 to fetchDocument(bucId, SEDType.P4000))
     }
 
@@ -398,7 +398,7 @@ class PensjonsinformasjonUtlandService(private val kodeverkClient: KodeverkClien
                 logger.debug("henter ut SED data for type: $buc og sedType: $sedType")
                 return when (sedType) {
                     SEDType.P2000 -> mockSed.mockP2000()
-                    SEDType.P3000 -> mockSed.mockP3000NO()
+                    SEDType.P3000_NO -> mockSed.mockP3000NO()
                     SEDType.P4000 -> mockSed.mockP4000()
                     else -> throw RuntimeException("FEIL")
                 }
@@ -407,7 +407,7 @@ class PensjonsinformasjonUtlandService(private val kodeverkClient: KodeverkClien
                 logger.debug("henter ut SED data for type: $buc og sedType: $sedType")
                 return when (sedType) {
                     SEDType.P2000 -> mockSed.mockP2000()
-                    SEDType.P3000 -> mockSed.mockP3000NO("03")
+                    SEDType.P3000_NO -> mockSed.mockP3000NO("03")
                     SEDType.P4000 -> mockSed.mockP4000()
                     else -> throw RuntimeException("FEIL")
                 }

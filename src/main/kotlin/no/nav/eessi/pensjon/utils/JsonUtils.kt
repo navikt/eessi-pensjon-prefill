@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.JsonMappingException
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.ResponseStatus
+import org.springframework.web.server.ResponseStatusException
 
 
 inline fun <reified T : Any> typeRefs(): TypeReference<T> = object : TypeReference<T>() {}
@@ -69,6 +70,14 @@ fun errorBody(error: String, uuid: String = "no-uuid"): String {
 fun successBody(): String {
     return "{\"success\": true}"
 }
+
+inline fun eessiRequire(value: Boolean, status: HttpStatus = HttpStatus.BAD_REQUEST,  lazyMessage: () -> String) {
+    if (!value) {
+        val message = lazyMessage()
+        throw ResponseStatusException(status, message)
+    }
+}
+
 
 @ResponseStatus(value = HttpStatus.UNPROCESSABLE_ENTITY)
 class JsonException(message: String?, cause: Throwable?) : RuntimeException(message, cause)

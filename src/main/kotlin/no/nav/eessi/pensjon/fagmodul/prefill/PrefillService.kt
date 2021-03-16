@@ -9,6 +9,7 @@ import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillSEDService
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.ValidationException
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.metrics.MetricsHelper
+import no.nav.eessi.pensjon.utils.eessiRequire
 import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -33,12 +34,11 @@ class PrefillService(private val prefillSedService: PrefillSEDService,
         return PrefillSed.measure {
             logger.info("******* Starter med preutfylling ******* $dataModel")
             try {
+                eessiRequire(dataModel.sedType.kanPrefilles() ) {"SedType $dataModel.sedType kan ikke prefilles!"}
                 val sed = prefillSedService.prefill(dataModel, personDataCollection)
 
                 val sedType = sed.type
                 logger.debug("SedType: $sedType")
-
-                require(sedType.kanPrefilles()) { "SedType $sedType kan ikke prefilles!" }
 
                 //synk sed versjon med buc versjon
                 updateSEDVersion(sed, version)
