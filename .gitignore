@@ -28,3 +28,4 @@ nbdist/
 
 ### JAXB & XSD generation related files ###
 classes/
+/codemr/*

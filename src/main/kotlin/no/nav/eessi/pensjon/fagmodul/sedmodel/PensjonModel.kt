@@ -11,29 +11,26 @@ class MeldingOmPensjon(
 data class Pensjon(
 		val gjenlevende: Bruker? = null, // Brukes fleres steder
 
+		//P2000
+		val angitidligstdato: String? = null,
+
 		//P2XXX
 		val ytelser: List<YtelserItem>? = null,
 		val forespurtstartdato: String? = null,
+		val kravDato: Krav? = null, //kravDato pkt. 9.1 P2000
 
-        //P3000
+	//P3000
 		val landspesifikk: Landspesifikk? = null,
 
-        //P5000
+
+		//MOCK Pesys
 		val medlemskapAnnen: List<MedlemskapItem>? = null,
 		val medlemskapTotal: List<MedlemskapItem>? = null,
 		val medlemskap: List<MedlemskapItem>? = null,
+
+		//P5000
 		val trygdetid: List<MedlemskapItem>? = null,
 		val institusjonennaaikkesoektompensjon: List<String>? = null,
-		val utsettelse: List<Utsettelse>? = null,
-
-        //P2000, P2100, P2200, P8000?? Noen men ikke alle
-		val vedlegg: List<String>? = null,
-
-		val vedleggandre: String? = null,
-		val angitidligstdato: String? = null,
-
-		val kravDato: Krav? = null, //kravDato pkt. 9.1 P2000
-		val antallSokereKjent: String? = null, //P2100 11.7
 
         //P8000
 		val anmodning: AnmodningOmTilleggsInfo? = null,
@@ -398,15 +395,6 @@ data class PersonAktivitetSomItem(
 
 data class PersonInntektItem(
         val persInntekt: String? = null
-)
-
-//P2000
-data class Utsettelse(
-		val institusjonsnavn: String? = null,
-		val institusjonsid: String? = null,
-		val land: String? = null,
-		val institusjon: Institusjon? = null,
-		val tildato: String? = null
 )
 
 //P5000
