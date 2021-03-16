@@ -1,4 +1,4 @@
-package no.nav.eessi.pensjon.integrationtest
+package no.nav.eessi.pensjon.integrationtest.buc
 
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.eq

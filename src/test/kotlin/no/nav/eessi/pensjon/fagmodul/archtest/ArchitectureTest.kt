@@ -109,7 +109,7 @@ class ArchitectureTest {
                 "$root.services.geo" to geoService,
                 "$root.services.pensjonsinformasjon" to pensjonService,
                 "$root.security.." to security,
-                "$root.integrationtest" to integrationtest,
+                "$root.integrationtest.." to integrationtest,
                 "$root.metrics.." to utils,
                 "$root.utils.." to utils,
                 "$root.logging.." to utils,
@@ -156,13 +156,12 @@ class ArchitectureTest {
                 .whereLayer(personApi).mayOnlyBeAccessedByLayers(metrics)
                 .whereLayer(pensjonApi).mayOnlyBeAccessedByLayers(metrics)
 
-                .whereLayer(pesys).mayOnlyBeAccessedByLayers(sedmodel, models)
+                .whereLayer(pesys).mayOnlyBeAccessedByLayers(health, sedmodel, models, euxService)
                 .whereLayer(bucSedApi).mayNotBeAccessedByAnyLayer()
                 .whereLayer(prefill).mayOnlyBeAccessedByLayers(bucSedApi, integrationtest)
-                .whereLayer(euxService).mayOnlyBeAccessedByLayers(health, bucSedApi, integrationtest)
-                .whereLayer(euxBasisModel).mayOnlyBeAccessedByLayers(euxService, bucSedApi, integrationtest)
-                .whereLayer(euxBucModel).mayOnlyBeAccessedByLayers(euxService, bucSedApi, integrationtest)
-                .whereLayer(euxService).mayOnlyBeAccessedByLayers(health, bucSedApi)
+                .whereLayer(euxService).mayOnlyBeAccessedByLayers(health, bucSedApi, pesys, integrationtest)
+                .whereLayer(euxBasisModel).mayOnlyBeAccessedByLayers(euxService, bucSedApi, pesys, integrationtest)
+                .whereLayer(euxBucModel).mayOnlyBeAccessedByLayers(euxService, bucSedApi, pesys, integrationtest)
                 .whereLayer(models).mayOnlyBeAccessedByLayers(prefill, euxService, euxBasisModel, euxBucModel, sedmodel, bucSedApi, pensjonApi, personApi, pesys, integrationtest)
                 .whereLayer(sedmodel).mayOnlyBeAccessedByLayers(prefill, euxService, bucSedApi, models, integrationtest, pesys, pensjonService)
                 .whereLayer(personDataLosning).mayOnlyBeAccessedByLayers(health, personApi, bucSedApi, pensjonApi, prefill, models, integrationtest)

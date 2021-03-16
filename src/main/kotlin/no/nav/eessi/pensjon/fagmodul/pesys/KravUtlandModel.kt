@@ -11,6 +11,7 @@ import java.time.LocalDate
 //omhandler alle SED?
 data class KravUtland(
         var errorMelding: String? = null,
+
         //P2000 - format pattern yyyy-MM-dd
         @JsonDeserialize(using = LocalDateDeserializer::class)
         @JsonSerialize(using = LocalDateSerializer::class)
@@ -36,7 +37,7 @@ data class KravUtland(
         var soknadFraLand: String? = null,
 
         //p2000
-        var initiertAv: String? = null
+        val initiertAv: String? = "BRUKER"
 )
 
 data class SkjemaPersonopplysninger(

@@ -1,16 +1,17 @@
 package no.nav.eessi.pensjon.fagmodul.pesys
 
 import com.fasterxml.jackson.annotation.JsonInclude
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import io.swagger.annotations.ApiOperation
+import no.nav.eessi.pensjon.metrics.MetricsHelper
 import no.nav.security.token.support.core.api.Protected
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.CrossOrigin
-import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PutMapping
-import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import javax.annotation.PostConstruct
 
 
 /**
@@ -21,34 +22,23 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/pesys")
 @Protected
-class PensjonsinformasjonUtlandController(private val pensjonsinformasjonUtlandService: PensjonsinformasjonUtlandService) {
+class PensjonsinformasjonUtlandController(
+    private val pensjonsinformasjonUtlandService: PensjonsinformasjonUtlandService,
+    @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper(SimpleMeterRegistry())) {
 
-    @ApiOperation(httpMethod = "PUT", value = "legger mock KravUtland til på map med bucid som key, KravUtland som verdi", response = KravUtland::class)
-    @PutMapping("/putKravUtland/{bucId}")
-    fun mockPutKravUtland(@PathVariable("bucId", required = true) bucId: Int, @RequestBody kravUtland: KravUtland): KravUtland {
-        if (bucId in 1..999) {
-            pensjonsinformasjonUtlandService.putKravUtlandMap(bucId, kravUtland)
-            return hentKravUtland(bucId)
-        }
-        return KravUtland(errorMelding = "feil ved opprettelse av mock KravUtland, bucId må være mellom 1 og 999")
-    }
+    private lateinit var pensjonUtland: MetricsHelper.Metric
 
-    @ApiOperation(httpMethod = "DELETE", value = "sletter mock KravUtland fra map med buckid som key.", response = KravUtland::class)
-    @DeleteMapping("/deleteKravUtland/{bucId}")
-    fun mockDeleteKravUtland(@PathVariable("bucId", required = true) buckId: Int) {
-        pensjonsinformasjonUtlandService.mockDeleteKravUtland(buckId)
-    }
-
-    @ApiOperation(httpMethod = "GET", value = "henter liste av keys fra mockMap med KravUtland", response = Set::class)
-    @GetMapping("/hentKravUtlandKeys")
-    fun mockGetKravUtlandKeys(): Set<Int> {
-        return pensjonsinformasjonUtlandService.mockGetKravUtlandKeys()
+    @PostConstruct
+    fun initMetrics() {
+        pensjonUtland = metricsHelper.init("pensjonUtland")
     }
 
     @ApiOperation(httpMethod = "GET", value = "Henter ut kravhode fra innkommende SEDER fra EU/EØS. Nødvendig data for å automatisk opprette et krav i Pesys", response = KravUtland::class)
     @GetMapping("/hentKravUtland/{bucId}")
     @JsonInclude(JsonInclude.Include.NON_NULL)
     fun hentKravUtland(@PathVariable("bucId", required = true) bucId: Int): KravUtland {
-        return pensjonsinformasjonUtlandService.hentKravUtland(bucId)
+        return pensjonUtland.measure {
+            pensjonsinformasjonUtlandService.hentKravUtland(bucId)
+        }
     }
 }

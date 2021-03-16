@@ -1,5 +1,7 @@
 package no.nav.eessi.pensjon.fagmodul.pesys
 
+import no.nav.eessi.pensjon.fagmodul.eux.BucUtils
+import no.nav.eessi.pensjon.fagmodul.eux.EuxService
 import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.pesys.RinaTilPenMapper.parsePensjonsgrad
 import no.nav.eessi.pensjon.fagmodul.pesys.mockup.MockSED001
@@ -9,129 +11,88 @@ import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.fagmodul.sedmodel.StandardItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.TrygdeTidPeriode
 import no.nav.eessi.pensjon.services.kodeverk.KodeverkClient
-import org.slf4j.Logger
+import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
 import org.slf4j.LoggerFactory
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
+import org.springframework.web.server.ResponseStatusException
 import java.time.LocalDate
 
-//TODO bytt ut Mocks med ekte kode
 @Service
-class PensjonsinformasjonUtlandService(private val kodeverkClient: KodeverkClient) {
+class PensjonsinformasjonUtlandService(
+    private val kodeverkClient: KodeverkClient,
+    private val euxService: EuxService
+    ) {
+
+    private val logger = LoggerFactory.getLogger(PensjonsinformasjonUtlandService::class.java)
 
     private val mockSed = MockSED001()
 
-    private val logger: Logger by lazy { LoggerFactory.getLogger(PensjonsinformasjonUtlandService::class.java) }
+    private val validBuc = listOf("P_BUC_01","P_BUC_02","P_BUC_03")
+    private enum class validSED{ P2000, P2200, P2100; }
+    private val kravSedBucmap = mapOf("P_BUC_01" to SEDType.P2000, "P_BUC_02" to SEDType.P2100, "P_BUC_03" to SEDType.P2200)
 
-    companion object {
-        @JvmStatic
-        val mockmap = mutableMapOf<Int, KravUtland>()
-    }
-
-    fun mockDeleteKravUtland(buckId: Int) {
-        try {
-            mockmap.remove(buckId)
-        } catch (ex: Exception) {
-            logger.error(ex.message)
-            throw ex
-        }
-    }
-
+    /**
+     * funksjon for å hente buc-metadata fra RINA (eux-rina-api)
+     * lese inn KRAV-SED P2xxx for så å plukke ut nødvendige data for så
+     * returnere en KravUtland model
+     */
     fun hentKravUtland(bucId: Int): KravUtland {
         logger.debug("Starter prosess for henting av krav fra utloand (P2000...)")
-        //henter ut maping til lokal variabel for enkel uthenting.0
+        logger.debug("henter ut type fra mock SED, p2000, p3000, p4000 og p5000 (alle kall fra type 1000..n.. er lik")
 
-        return if (bucId < 1000) {
-            logger.debug("henter ut type fra mockMap<type, KravUtland> som legges inn i mockPutKravFraUtland(key, KravUtland alt under 1000)")
-            hentKravUtlandFraMap(bucId)
-        } else {
-            logger.debug("henter ut type fra mock SED, p2000, p3000, p4000 og p5000 (alle kall fra type 1000..n.. er lik")
+        //bucUtils
+        val buc = euxService.getBuc(bucId.toString())
+        val bucUtils = BucUtils(buc)
 
-            val seds = mapSeds(bucId)
-            //finner rette hjelep metode for utfylling av KravUtland
-            //ut ifra hvilke SED/saktype det gjelder.
-            when {
-                erAlderpensjon(seds) -> {
-                    logger.debug("type er alderpensjon")
-                    kravAlderpensjonUtland(seds)
+        logger.debug("ProcessName (BucType) : ${bucUtils.getProcessDefinitionName()}")
+        logger.debug("Funnet KravTypeSED i buc: ${kravSedBucmap[bucUtils.getProcessDefinitionName()]}")
 
-                }
-                erUforpensjon(seds) -> {
-                    logger.debug("type er utføre")
-                    kravUforepensjonUtland(seds)
+        if (!validBuc.contains(bucUtils.getProcessDefinitionName())) throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Ulydig BUC, ikke av rett type KRAV-om BUC.")
 
-                }
-                else -> {
-                    logger.debug("type er gjenlevende")
-                    kravGjenlevendeUtland(seds)
-                }
+        val sedDoc = getKravSedDocument(bucUtils, kravSedBucmap[bucUtils.getProcessDefinitionName()]) ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Ingen dokument metadata funnet i BUC med id: $bucId.")
+
+        //fetch KRAVSED--
+        val kravSed = sedDoc.id?.let { sedDocId -> euxService.getSedOnBucByDocumentId(bucId.toString(), sedDocId) } ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Ingen gyldig kravSed i BUC med id: $bucId funnet.")
+
+        logger.debug(
+            "-".repeat(30) +
+            "\n" +
+            """ SED i json format:
+              ${kravSed.toJsonSkipEmpty()}
+        """.trimIndent()+
+        "\n" +
+        "-".repeat(30)
+        )
+
+        val seds = mapSeds(bucId)
+        //finner rette hjelep metode for utfylling av KravUtland
+        //ut ifra hvilke SED/saktype det gjelder.
+        return when {
+            erAlderpensjon(kravSed) -> {
+                logger.debug("type er alderpensjon")
+                kravAlderpensjonUtland(seds)
+            }
+            erUforepensjon(kravSed) -> {
+                logger.debug("type er uførepensjon")
+                kravUforepensjonUtland(kravSed, bucUtils)
+            }
+            else -> {
+                logger.debug("type er gjenlevende")
+                kravGjenlevendeUtland(seds)
             }
         }
     }
 
-    fun mockGetKravUtlandKeys(): Set<Int> {
-        return mockmap.keys
+    fun getKravSedDocument(bucUtils: BucUtils, sedType: SEDType?) = bucUtils.getAllDocuments().firstOrNull { it.status == "received" && it.type == sedType }
+    fun erAlderpensjon(sed: SED) = sed.type == SEDType.P2000
+    fun erUforepensjon(sed: SED) = sed.type == SEDType.P2200
+
+
+    fun finnStatsborgerskapsLandkode3(kravSed: SED): String? {
+        return kodeverkClient.finnLandkode3(kravSed.nav?.bruker?.person?.statsborgerskap?.first()?.land ?: "N/A")
     }
 
-    //TODO: vil trenge en innhentSedFraRinaService..
-    //TODO: vil trenge en navSED->PESYS regel.
-
-    fun hentKravUtlandFraMap(buckey: Int): KravUtland {
-        logger.debug("prøver å hente ut KravUtland fra map med key: $buckey")
-        return mockmap.getValue(buckey)
-    }
-
-    fun putKravUtlandMap(buckey: Int, kravUtland: KravUtland) {
-        logger.debug("legger til kravUtland til map, hvis det ikke finnes fra før. med følgende key: $buckey")
-        mockmap.putIfAbsent(buckey, kravUtland)
-    }
-
-    //funksjon for P2000
-    fun kravAlderpensjonUtland(seds: Map<SEDType, SED>): KravUtland {
-
-        val p2000 = getSED(SEDType.P2000, seds) ?: return KravUtland(errorMelding = "Ingen P2000 funnet")
-        val p3000no = getSED(SEDType.P3000_NO, seds) ?: return KravUtland(errorMelding = "Ingen P3000no funnet")
-        logger.debug("oppretter KravUtland")
-
-        //https://confluence.adeo.no/pages/viewpage.action?pageId=203178268
-        //Kode om fra Alpha2 - Alpha3 teng i Avtaleland (eu, eøs og par andre)  og Statborgerskap (alle verdens land)
-        val landAlpha3 = finnLandkode3(p2000)
-
-        return KravUtland(
-                //P2000 9.1
-                mottattDato = LocalDate.parse(p2000.nav?.krav?.dato) ?: null,
-
-                //P2000 ?? kravdatao?
-                iverksettelsesdato = hentRettIverksettelsesdato(p2000),
-
-                //P3000_NO 4.6.1. Forsikredes anmodede prosentdel av full pensjon
-                uttaksgrad = parsePensjonsgrad(p3000no.pensjon?.landspesifikk?.norge?.alderspensjon?.pensjonsgrad),
-
-                //P2000 2.2.1.1
-                personopplysninger = SkjemaPersonopplysninger(
-                        statsborgerskap = landAlpha3
-                ),
-
-                //P2000 - 2.2.2
-                sivilstand = SkjemaFamilieforhold(
-                        valgtSivilstatus = hentFamilieStatus("01"),
-                        sivilstatusDatoFom = LocalDate.now()
-                ),
-
-                //P4000 - P5000 opphold utland (norge filtrert bort)
-                utland = hentSkjemaUtland(seds),
-
-                //denne må hentes utenfor SED finne orginal avsender-land for BUC/SED..
-                soknadFraLand = kodeverkClient.finnLandkode3("SE"),
-                //avtale mellom land? SED sendes kun fra EU/EØS? blir denne alltid true?
-                vurdereTrygdeavtale = true,
-
-                initiertAv = hentInitiertAv(p2000)
-        )
-    }
-
-    fun finnLandkode3(p2000: SED): String? {
-        return kodeverkClient.finnLandkode3(p2000.nav?.bruker?.person?.statsborgerskap?.first()?.land ?: "N/A")
-    }
 
     //finnes verge ktp 7.1 og 7.2 settes VERGE hvis ikke BRUKER
     fun hentInitiertAv(p2000: SED): String {
@@ -158,6 +119,52 @@ class PensjonsinformasjonUtlandService(private val kodeverkClient: KodeverkClien
         }
     }
 
+    //TODO: vil trenge en innhentSedFraRinaService..
+    //TODO: vil trenge en navSED->PESYS regel.
+    //funksjon for P2000
+    fun kravAlderpensjonUtland(seds: Map<SEDType, SED>): KravUtland {
+
+        val p2000 = getSED(SEDType.P2000, seds) ?: return KravUtland(errorMelding = "Ingen P2000 funnet")
+        val p3000no = getSED(SEDType.P3000_NO, seds) ?: return KravUtland(errorMelding = "Ingen P3000no funnet")
+        logger.debug("oppretter KravUtland")
+
+        //https://confluence.adeo.no/pages/viewpage.action?pageId=203178268
+        //Kode om fra Alpha2 - Alpha3 teng i Avtaleland (eu, eøs og par andre)  og Statborgerskap (alle verdens land)
+        val landAlpha3 = finnStatsborgerskapsLandkode3(p2000)
+
+        return KravUtland(
+            //P2000 9.1
+            mottattDato = LocalDate.parse(p2000.nav?.krav?.dato) ?: null,
+
+            //P2000 ?? kravdatao?
+            iverksettelsesdato = hentRettIverksettelsesdato(p2000),
+
+            //P3000_NO 4.6.1. Forsikredes anmodede prosentdel av full pensjon
+            uttaksgrad = parsePensjonsgrad(p3000no.pensjon?.landspesifikk?.norge?.alderspensjon?.pensjonsgrad),
+
+            //P2000 2.2.1.1
+            personopplysninger = SkjemaPersonopplysninger(
+                statsborgerskap = landAlpha3
+            ),
+
+            //P2000 - 2.2.2
+            sivilstand = SkjemaFamilieforhold(
+                valgtSivilstatus = hentFamilieStatus("01"),
+                sivilstatusDatoFom = LocalDate.now()
+            ),
+
+            //P4000 - P5000 opphold utland (norge filtrert bort)
+            utland = hentSkjemaUtland(seds),
+
+            //denne må hentes utenfor SED finne orginal avsender-land for BUC/SED..
+            soknadFraLand = kodeverkClient.finnLandkode3("SE"),
+            //avtale mellom land? SED sendes kun fra EU/EØS? blir denne alltid true?
+            vurdereTrygdeavtale = true,
+
+            initiertAv = hentInitiertAv(p2000)
+        )
+    }
+
     fun hentFamilieStatus(key: String): String {
         val status = mapOf("01" to "UGIF", "02" to "GIFT", "03" to "SAMB", "04" to "REPA", "05" to "SKIL", "06" to "SKPA", "07" to "SEPA", "08" to "ENKE")
         //Sivilstand for søker. Må være en gyldig verdi fra T_K_SIVILSTATUS_T:
@@ -168,8 +175,40 @@ class PensjonsinformasjonUtlandService(private val kodeverkClient: KodeverkClien
     }
 
     //P2200
-    fun kravUforepensjonUtland(seds: Map<SEDType, SED>): KravUtland {
-        return KravUtland()
+    fun kravUforepensjonUtland(kravSed: SED, bucUtils: BucUtils): KravUtland {
+
+        val caseOwnerCountry = bucUtils.getCaseOwner()?.country?.let { kodeverkClient.finnLandkode3(it) }
+
+        //val sivilstatus = hentFamilieStatus(kravSed.nav?.bruker?.person?.sivilstand?.firstOrNull {  })
+
+        return KravUtland(
+           mottattDato = LocalDate.parse(kravSed.nav?.krav?.dato) ?: null,
+           iverksettelsesdato = LocalDate.parse(kravSed.nav?.krav?.dato) ?: null,
+           uttaksgrad = "0",
+           vurdereTrygdeavtale = true,
+           personopplysninger = SkjemaPersonopplysninger(
+            statsborgerskap = finnStatsborgerskapsLandkode3(kravSed)
+           ),
+           utland = SkjemaUtland(
+               utlandsopphold = listOf(
+                   Utlandsoppholditem(
+                       land = "SWE",
+                       fom = LocalDate.of(2020, 1,2),
+                       tom = LocalDate.of(2021, 1, 1),
+                       bodd = true,
+                       arbeidet = true,
+                       pensjonsordning = "",
+                       utlandPin = "23123123"
+                   )
+               )
+           ),
+           sivilstand = SkjemaFamilieforhold(
+               valgtSivilstatus = "",
+               sivilstatusDatoFom = LocalDate.of(2020, 3, 5)
+           ),
+           soknadFraLand = caseOwnerCountry
+        )
+
     }
 
     //P2100
@@ -213,9 +252,7 @@ class PensjonsinformasjonUtlandService(private val kodeverkClient: KodeverkClien
         //P4000 -- arbeid
         val arbeidList = p4000.trygdetid?.ansattSelvstendigPerioder
         val filterArbeidUtenNorgeList = mutableListOf<AnsattSelvstendigItem>()
-        arbeidList?.
-
-                forEach {
+        arbeidList?.forEach {
             if ("NO" != it.adresseFirma?.land) {
                 filterArbeidUtenNorgeList.add(it)
             }
@@ -375,12 +412,6 @@ class PensjonsinformasjonUtlandService(private val kodeverkClient: KodeverkClien
 
     private fun getSED(sedType: SEDType, maps: Map<SEDType, SED>) = maps[sedType]
 
-    //finne ut som type er for P2000
-    fun erAlderpensjon(maps: Map<SEDType, SED>) = getSED(SEDType.P2000, maps) != null
-
-    //finne ut som type er for P2200
-    fun erUforpensjon(maps: Map<SEDType, SED>) = getSED(SEDType.P2200, maps) != null
-
     //henter de nødvendige SEDer fra Rina, legger de på maps med bucId som Key.
     fun mapSeds(bucId: Int): Map<SEDType, SED> {
         logger.debug("Henter ut alle nødvendige SED for lettere utfylle tjenesten")
@@ -392,26 +423,12 @@ class PensjonsinformasjonUtlandService(private val kodeverkClient: KodeverkClien
     //Henter inn valgt sedType fra Rina og returerer denne
     //returnerer generell ERROR sed hvis feil!
     fun fetchDocument(buc: Int, sedType: SEDType): SED {
-
-        when (buc) {
-            1050 -> {
-                logger.debug("henter ut SED data for type: $buc og sedType: $sedType")
-                return when (sedType) {
-                    SEDType.P2000 -> mockSed.mockP2000()
-                    SEDType.P3000_NO -> mockSed.mockP3000NO()
-                    SEDType.P4000 -> mockSed.mockP4000()
-                    else -> throw RuntimeException("FEIL")
-                }
-            }
-            else -> {
-                logger.debug("henter ut SED data for type: $buc og sedType: $sedType")
-                return when (sedType) {
-                    SEDType.P2000 -> mockSed.mockP2000()
-                    SEDType.P3000_NO -> mockSed.mockP3000NO("03")
-                    SEDType.P4000 -> mockSed.mockP4000()
-                    else -> throw RuntimeException("FEIL")
-                }
-            }
+    logger.debug("henter ut SED data for type: $buc og sedType: $sedType")
+    return when (sedType) {
+        SEDType.P2000 -> mockSed.mockP2000()
+        SEDType.P3000_NO -> mockSed.mockP3000NO("03")
+        SEDType.P4000 -> mockSed.mockP4000()
+        else -> throw RuntimeException("FEIL")
         }
     }
 }

@@ -1,4 +1,4 @@
-package no.nav.eessi.pensjon.integrationtest
+package no.nav.eessi.pensjon.integrationtest.sed
 
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn

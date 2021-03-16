@@ -1,4 +1,4 @@
-package no.nav.eessi.pensjon.integrationtest
+package no.nav.eessi.pensjon.integrationtest.sed
 
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
@@ -358,7 +358,9 @@ class PrefillP15000IntegrationTest {
     fun `prefill P15000 P_BUC_10 hvor saktype er ALDER`() {
 
         doReturn(NorskIdent(FNR_VOKSEN)).whenever(personService).hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID ))
-        doReturn(PersonPDLMock.createWith(true, "Lever", "Gjenlev", fnr = FNR_VOKSEN, aktoerid = AKTOER_ID)).whenever(personService).hentPerson(NorskIdent(FNR_VOKSEN))
+        doReturn(PersonPDLMock.createWith(true, "Lever", "Gjenlev", fnr = FNR_VOKSEN, aktoerid = AKTOER_ID)).whenever(personService).hentPerson(NorskIdent(
+            FNR_VOKSEN
+        ))
 
 
         val aldersak = V1Sak()
@@ -435,7 +437,9 @@ class PrefillP15000IntegrationTest {
     fun `prefill P15000 P_BUC_10 hvor saktype er UFOREP`() {
 
         doReturn(NorskIdent(FNR_VOKSEN)).whenever(personService).hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID ))
-        doReturn(PersonPDLMock.createWith(true, "Lever", "Gjenlev", fnr = FNR_VOKSEN, aktoerid = AKTOER_ID)).whenever(personService).hentPerson(NorskIdent(FNR_VOKSEN))
+        doReturn(PersonPDLMock.createWith(true, "Lever", "Gjenlev", fnr = FNR_VOKSEN, aktoerid = AKTOER_ID)).whenever(personService).hentPerson(NorskIdent(
+            FNR_VOKSEN
+        ))
 
         val aldersak = V1Sak()
         aldersak.sakType = "UFOREP"

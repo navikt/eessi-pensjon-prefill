@@ -94,7 +94,7 @@ class EuxService (private val euxKlient: EuxKlient,
         val body = euxKlient.getBucJson(euxCaseId)
         logger.debug("mapper buc om til BUC objekt-model")
         val buc: Buc = mapJsonToAny(body, typeRefs())
-        return buc.also { logBucContent(it) }
+        return buc //  buc.also { logBucContent(it) }
     }
 
     private fun logBucContent(buc: Buc) {

@@ -29,7 +29,6 @@ import org.springframework.web.client.RestTemplate
 import org.springframework.web.client.UnknownHttpStatusCodeException
 import org.springframework.web.server.ResponseStatusException
 import org.springframework.web.util.UriComponentsBuilder
-import java.net.URI
 import java.util.*
 import javax.annotation.PostConstruct
 
@@ -129,7 +128,7 @@ class EuxKlient(private val euxOidcRestTemplate: RestTemplate,
         val path = "/buc/{RinaSakId}/sed/{DokumentId}"
         val uriParams = mapOf("RinaSakId" to euxCaseId, "DokumentId" to documentId)
         val builder = UriComponentsBuilder.fromUriString(path).buildAndExpand(uriParams)
-        logger.debug("SedDocument prøver å kontakte EUX /${builder.toUriString()}")
+        logger.debug("SedDocument prøver å kontakte EUX ${builder.toUriString()}")
 
         val response = restTemplateErrorhandler(
                 {
@@ -154,7 +153,7 @@ class EuxKlient(private val euxOidcRestTemplate: RestTemplate,
         val path = "/buc/{RinaSakId}"
         val uriParams = mapOf("RinaSakId" to euxCaseId)
         val builder = UriComponentsBuilder.fromUriString(path).buildAndExpand(uriParams)
-        logger.debug("BucJson prøver å kontakte EUX /${builder.toUriString()}")
+        logger.debug("BucJson prøver å kontakte EUX ${builder.toUriString()}")
 
         val response = restTemplateErrorhandler(
                 restTemplateFunction = {
