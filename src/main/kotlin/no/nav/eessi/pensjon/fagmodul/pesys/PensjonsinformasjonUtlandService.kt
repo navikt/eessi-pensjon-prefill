@@ -21,10 +21,9 @@ import java.time.LocalDate
 @Service
 class PensjonsinformasjonUtlandService(
     private val kodeverkClient: KodeverkClient,
-    private val euxService: EuxService) {
-
+    private val euxService: EuxService,
     @Value("\${NAIS_NAMESPACE}")
-    private lateinit var nameSpace: String
+    private val nameSpace: String) {
 
     private val logger = LoggerFactory.getLogger(PensjonsinformasjonUtlandService::class.java)
 
