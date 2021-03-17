@@ -4,73 +4,83 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import java.time.LocalDate
 
+
 //Model for opprettelse av kravhode til pesys.
 //Krever p2x00 og P3000_no, P4000,P5000 før en kan
 //tilby tjeneste med nødvendig informasjon for PESYS til å opprette kravhode automatisk.
 
 //omhandler alle SED?
 data class KravUtland(
-        var errorMelding: String? = null,
+        val errorMelding: String? = null,
 
-        //P2000 - format pattern yyyy-MM-dd
         @JsonDeserialize(using = LocalDateDeserializer::class)
         @JsonSerialize(using = LocalDateSerializer::class)
-        var mottattDato: LocalDate? = null,
-        //virkningsTidspunkt: LocalDate? = null,
+        val mottattDato: LocalDate? = null,  // 9.1 kravsato
+
         @JsonDeserialize(using = LocalDateDeserializer::class)
         @JsonSerialize(using = LocalDateSerializer::class)
-        var iverksettelsesdato: LocalDate? = null,
+        val iverksettelsesdato: LocalDate? = null, // 9.1 kravsato
 
-        //P3000
-        var uttaksgrad: String? = null,
-        //P5000
-        var vurdereTrygdeavtale: Boolean? = null,
+        @JsonDeserialize(using = LocalDateDeserializer::class)
+        @JsonSerialize(using = LocalDateSerializer::class)
+        val fremsattKravdato: LocalDate? = null, // 9.1 kravsato - 3mnd og den 1 den mnd
 
-        var personopplysninger: SkjemaPersonopplysninger? = null,
+        val uttaksgrad: String? = "0",         //P3000
 
-        //P4000
-        val utland: SkjemaUtland? = null,
-        //P2000
-        var sivilstand: SkjemaFamilieforhold? = null,
+        val vurdereTrygdeavtale: Boolean? = null,        //P5000
 
-        //caseowner fra type
-        var soknadFraLand: String? = null,
+        val personopplysninger: SkjemaPersonopplysninger? = null,
 
-        //p2000
-        val initiertAv: String? = "BRUKER"
+        val utland: SkjemaUtland? = null, //utland opphold filtrer bort Norge
+
+        var sivilstand: SkjemaFamilieforhold? = null, // gift, samb..
+
+        val soknadFraLand: String? = null, //hvilket land kommer kravsøknad fra (buc-caseowner)
+
+        val initiertAv: String = "BRUKER" //skal alltid være BRUKER
 )
 
+
+//private val errorMelding: String? = null
+//private val initiertAv: String? = null
+//
+//@JsonProperty("iverksettelsesdato")
+//private val iverksettelsesDato: Date? = null
+//private val mottattDato: Date? = null
+//private val fremsattKravdato: Date? = null
+//private val personopplysninger: Personopplysninger? = null
+//private val sivilstand: Sivilstand? = null
+//private val soknadFraLand: String? = null
+//private val utland: Utland? = null
+//private val uttaksgrad: String? = null
+//private val vurdereTrygdeavtale: Boolean? = null
+
 data class SkjemaPersonopplysninger(
-        //P2000 pkt. 2.2.1.1 land_3 tegn
-        var statsborgerskap: String? = null
-//        //utvandret?
-//        var utvandret: Boolean? = null,
-//        //statsborgeskap
-//        var land: String? = null
+        val statsborgerskap: String? = null   //P2000 pkt. 2.2.1.1 land_3 tegn
 )
 
 //P4000
 data class SkjemaUtland(
-        var utlandsopphold: List<Utlandsoppholditem>? = null
+        val utlandsopphold: List<Utlandsoppholditem>? = null
 )
 
 //P4000 - P5000 (for bosted nå) P4000 kan f.eks inneholde kun norge noe pesys ikke vil ha
 //da må vi også sende med data fra P5000.
 data class Utlandsoppholditem(
-        var land: String? = null,
+        val land: String? = null,
         //2017-05-01T00:00:00+02:00
         @JsonDeserialize(using = LocalDateDeserializer::class)
         @JsonSerialize(using = LocalDateSerializer::class)
         //format pattern yyyy-MM-dd
-        var fom: LocalDate? = null,
+        val fom: LocalDate? = null,
         @JsonDeserialize(using = LocalDateDeserializer::class)
         @JsonSerialize(using = LocalDateSerializer::class)
         //format pattern yyyy-MM-dd
-        var tom: LocalDate? = null,
-        var bodd: Boolean? = null,
-        var arbeidet: Boolean? = null,
-        var pensjonsordning: String? = null,
-        var utlandPin: String? = null
+        val tom: LocalDate? = null,
+        val bodd: Boolean? = null,
+        val arbeidet: Boolean? = null,
+        val pensjonsordning: String? = null,
+        val utlandPin: String? = null
 )
 
 //P2000
@@ -78,9 +88,9 @@ data class SkjemaFamilieforhold(
         //Sivilstand for søker. Må være en gyldig verdi fra T_K_SIVILSTATUS_T:
         //ENKE, GIFT, GJES, GJPA, GJSA, GLAD, PLAD, REPA,SAMB, SEPA, SEPR, SKIL, SKPA, UGIF.
         //Pkt p2000 - 2.2.2.1. Familiestatus
-        var valgtSivilstatus: String? = null,
+        val valgtSivilstatus: String? = null,
         @JsonDeserialize(using = LocalDateDeserializer::class)
         @JsonSerialize(using = LocalDateSerializer::class)
         //format pattern yyyy-MM-dd
-        var sivilstatusDatoFom: LocalDate? = null
+        val sivilstatusDatoFom: LocalDate? = null
 )

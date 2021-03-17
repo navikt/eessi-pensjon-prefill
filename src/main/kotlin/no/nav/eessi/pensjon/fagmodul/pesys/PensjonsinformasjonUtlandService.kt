@@ -11,8 +11,8 @@ import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.fagmodul.sedmodel.StandardItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.TrygdeTidPeriode
 import no.nav.eessi.pensjon.services.kodeverk.KodeverkClient
-import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.server.ResponseStatusException
@@ -21,16 +21,17 @@ import java.time.LocalDate
 @Service
 class PensjonsinformasjonUtlandService(
     private val kodeverkClient: KodeverkClient,
-    private val euxService: EuxService
-    ) {
+    private val euxService: EuxService) {
+
+    @Value("\${NAIS_NAMESPACE}")
+    private lateinit var nameSpace: String
 
     private val logger = LoggerFactory.getLogger(PensjonsinformasjonUtlandService::class.java)
 
     private val mockSed = MockSED001()
 
-    private val validBuc = listOf("P_BUC_01","P_BUC_02","P_BUC_03")
-    private enum class validSED{ P2000, P2200, P2100; }
-    private val kravSedBucmap = mapOf("P_BUC_01" to SEDType.P2000, "P_BUC_02" to SEDType.P2100, "P_BUC_03" to SEDType.P2200)
+    private final val validBuc = listOf("P_BUC_01","P_BUC_02","P_BUC_03")
+    private final val kravSedBucmap = mapOf("P_BUC_01" to SEDType.P2000, "P_BUC_02" to SEDType.P2100, "P_BUC_03" to SEDType.P2200)
 
     /**
      * funksjon for å hente buc-metadata fra RINA (eux-rina-api)
@@ -38,49 +39,32 @@ class PensjonsinformasjonUtlandService(
      * returnere en KravUtland model
      */
     fun hentKravUtland(bucId: Int): KravUtland {
-        logger.debug("Starter prosess for henting av krav fra utloand (P2000...)")
-        logger.debug("henter ut type fra mock SED, p2000, p3000, p4000 og p5000 (alle kall fra type 1000..n.. er lik")
+        logger.debug("Starter prosess for henting av krav fra utland (P2000, P2100?, P2200)")
 
         //bucUtils
         val buc = euxService.getBuc(bucId.toString())
         val bucUtils = BucUtils(buc)
 
-        logger.debug("ProcessName (BucType) : ${bucUtils.getProcessDefinitionName()}")
+        logger.debug("BucType : ${bucUtils.getProcessDefinitionName()}")
         logger.debug("Funnet KravTypeSED i buc: ${kravSedBucmap[bucUtils.getProcessDefinitionName()]}")
 
         if (!validBuc.contains(bucUtils.getProcessDefinitionName())) throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Ulydig BUC, ikke av rett type KRAV-om BUC.")
+        if (bucUtils.getCaseOwner() == null) throw ResponseStatusException(HttpStatus.NOT_FOUND, "Ingen CaseOwner funnet på BUC med id: $bucId")
 
         val sedDoc = getKravSedDocument(bucUtils, kravSedBucmap[bucUtils.getProcessDefinitionName()]) ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Ingen dokument metadata funnet i BUC med id: $bucId.")
-
-        //fetch KRAVSED--
         val kravSed = sedDoc.id?.let { sedDocId -> euxService.getSedOnBucByDocumentId(bucId.toString(), sedDocId) } ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Ingen gyldig kravSed i BUC med id: $bucId funnet.")
 
-        logger.debug(
-            "-".repeat(30) +
-            "\n" +
-            """ SED i json format:
-              ${kravSed.toJsonSkipEmpty()}
-        """.trimIndent()+
-        "\n" +
-        "-".repeat(30)
-        )
-
-        val seds = mapSeds(bucId)
         //finner rette hjelep metode for utfylling av KravUtland
         //ut ifra hvilke SED/saktype det gjelder.
-        return when {
-            erAlderpensjon(kravSed) -> {
-                logger.debug("type er alderpensjon")
-                kravAlderpensjonUtland(seds)
-            }
-            erUforepensjon(kravSed) -> {
-                logger.debug("type er uførepensjon")
-                kravUforepensjonUtland(kravSed, bucUtils)
-            }
-            else -> {
-                logger.debug("type er gjenlevende")
-                kravGjenlevendeUtland(seds)
-            }
+        logger.info("*** Starter kravUtlandpensjon: ${kravSed.type} bucId: $bucId bucType: ${bucUtils.getProcessDefinitionName()} ***")
+
+        return if(erAlderpensjon(kravSed)) {
+            val seds = mapSeds(bucId)
+            logger.debug("type er alderpensjon")
+            kravAlderpensjonUtland(seds)
+        } else {
+            logger.debug("type er uførepensjon")
+            kravUforepensjonUtland(kravSed, bucUtils)
         }
     }
 
@@ -90,7 +74,8 @@ class PensjonsinformasjonUtlandService(
 
 
     fun finnStatsborgerskapsLandkode3(kravSed: SED): String? {
-        return kodeverkClient.finnLandkode3(kravSed.nav?.bruker?.person?.statsborgerskap?.first()?.land ?: "N/A")
+        val statsborgerskap = kravSed.nav?.bruker?.person?.statsborgerskap?.firstOrNull { it.land != null }
+        return statsborgerskap?.let { kodeverkClient.finnLandkode3(it.land!!) } ?: ""
     }
 
 
@@ -165,7 +150,7 @@ class PensjonsinformasjonUtlandService(
         )
     }
 
-    fun hentFamilieStatus(key: String): String {
+    fun hentFamilieStatus(key: String?): String {
         val status = mapOf("01" to "UGIF", "02" to "GIFT", "03" to "SAMB", "04" to "REPA", "05" to "SKIL", "06" to "SKPA", "07" to "SEPA", "08" to "ENKE")
         //Sivilstand for søker. Må være en gyldig verdi fra T_K_SIVILSTATUS_T:
         //ENKE, GIFT, GJES, GJPA, GJSA, GLAD, PLAD, REPA,SAMB, SEPA, SEPR, SKIL, SKPA, UGIF.
@@ -177,38 +162,50 @@ class PensjonsinformasjonUtlandService(
     //P2200
     fun kravUforepensjonUtland(kravSed: SED, bucUtils: BucUtils): KravUtland {
 
-        val caseOwnerCountry = bucUtils.getCaseOwner()?.country?.let { kodeverkClient.finnLandkode3(it) }
+        val caseOwner = bucUtils.getCaseOwner()!!
+        val caseOwnerCountryBuc = if (nameSpace == "q2" || nameSpace == "test") {
+            "SE"
+        } else {
+            caseOwner.country
+        }
+        val caseOwnerCountry = kodeverkClient.finnLandkode3( caseOwnerCountryBuc )
+        logger.debug("CaseOwnerCountry: $caseOwnerCountry")
+        logger.debug("CaseOwnerId     : ${caseOwner.institution}")
+        logger.debug("CaseOwnerName   : ${caseOwner.name}")
 
-        //val sivilstatus = hentFamilieStatus(kravSed.nav?.bruker?.person?.sivilstand?.firstOrNull {  })
+        val sivilstand = kravSed.nav?.bruker?.person?.sivilstand?.maxByOrNull { LocalDate.parse(it.fradato) }
+        logger.debug("Sivilstand: $sivilstand")
+        val sivilstatus = hentFamilieStatus( sivilstand?.status ?: "01" )
+
 
         return KravUtland(
-           mottattDato = LocalDate.parse(kravSed.nav?.krav?.dato) ?: null,
-           iverksettelsesdato = LocalDate.parse(kravSed.nav?.krav?.dato) ?: null,
-           uttaksgrad = "0",
-           vurdereTrygdeavtale = true,
-           personopplysninger = SkjemaPersonopplysninger(
-            statsborgerskap = finnStatsborgerskapsLandkode3(kravSed)
-           ),
-           utland = SkjemaUtland(
-               utlandsopphold = listOf(
-                   Utlandsoppholditem(
-                       land = "SWE",
-                       fom = LocalDate.of(2020, 1,2),
-                       tom = LocalDate.of(2021, 1, 1),
-                       bodd = true,
-                       arbeidet = true,
-                       pensjonsordning = "",
-                       utlandPin = "23123123"
-                   )
-               )
-           ),
-           sivilstand = SkjemaFamilieforhold(
-               valgtSivilstatus = "",
-               sivilstatusDatoFom = LocalDate.of(2020, 3, 5)
-           ),
-           soknadFraLand = caseOwnerCountry
-        )
+            mottattDato = LocalDate.parse(kravSed.nav?.krav?.dato) ?: null,
+            iverksettelsesdato = LocalDate.parse(kravSed.nav?.krav?.dato) ?: null,
+            fremsattKravdato = fremsettKravDato(kravSed),
 
+            uttaksgrad = "0", //P3000_NO //4.6.1 - uttaksgrad alderpensjon
+            vurdereTrygdeavtale = false,
+
+            personopplysninger = SkjemaPersonopplysninger(
+                statsborgerskap = finnStatsborgerskapsLandkode3(kravSed)
+            ),
+
+            //P4000-P5000
+            utland = SkjemaUtland(
+                utlandsopphold = emptyList()
+            ),
+            sivilstand = SkjemaFamilieforhold(
+               valgtSivilstatus = sivilstatus,
+               sivilstatusDatoFom = sivilstand?.fradato?.let { LocalDate.parse(it) }
+            ),
+            soknadFraLand = caseOwnerCountry
+        )
+    }
+
+
+    fun fremsettKravDato(kravSed: SED): LocalDate {
+       val kravdato = LocalDate.parse(kravSed.nav?.krav?.dato) ?: LocalDate.now()
+       return kravdato.withDayOfMonth(1).minusMonths(3)
     }
 
     //P2100

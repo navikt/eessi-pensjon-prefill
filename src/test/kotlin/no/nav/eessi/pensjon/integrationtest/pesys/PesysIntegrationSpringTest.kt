@@ -5,12 +5,10 @@ import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.whenever
 import no.nav.eessi.pensjon.UnsecuredWebMvcTestLauncher
-import no.nav.eessi.pensjon.fagmodul.pesys.KravUtland
 import no.nav.eessi.pensjon.security.sts.STSService
 import no.nav.eessi.pensjon.services.kodeverk.KodeverkClient
-import no.nav.eessi.pensjon.utils.mapJsonToAny
-import no.nav.eessi.pensjon.utils.typeRefs
 import org.junit.jupiter.api.Test
+import org.skyscreamer.jsonassert.JSONAssert
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
@@ -44,7 +42,7 @@ class PesysIntegrationSpringTest {
     private lateinit var mockMvc: MockMvc
 
     @Test
-    fun `henter mockPensjonData fra utland P2200`() {
+    fun `henter kravPensjonutland fra P2200`() {
 
         val bucid = "998777"
         val sedid = "9374f5978c6a46709a3fc1484062d158"
@@ -55,9 +53,10 @@ class PesysIntegrationSpringTest {
         val buc05 = ResourceUtils.getFile("classpath:json/buc/BucResponseFraEUXMedX007.json").readText()
         val rinabucpath = "/buc/$bucid"
         doReturn( ResponseEntity.ok().body( buc05 ) ).whenever(restTemplate).exchange( eq(rinabucpath), eq(HttpMethod.GET), eq(null), eq(String::class.java))
+
         //euxrest kall til p2200
         val sedurl = "/buc/$bucid/sed/$sedid"
-        val sedP2200 = ResourceUtils.getFile("classpath:json/nav/P2200-NAV.json").readText()
+        val sedP2200 = ResourceUtils.getFile("classpath:json/nav/P2200-NAV_FRA_SE.json").readText()
         doReturn( ResponseEntity.ok().body( sedP2200 ) ).whenever(restTemplate).exchange( eq(sedurl), eq(HttpMethod.GET), eq(null), eq(String::class.java))
 
         val result = mockMvc.perform(
@@ -68,14 +67,31 @@ class PesysIntegrationSpringTest {
             .andReturn()
 
         val response = result.response.getContentAsString(charset("UTF-8"))
-        println(response)
-        val kravUtland = mapJsonToAny(response, typeRefs<KravUtland>())
 
-        println(kravUtland)
+        val validResponse = """
+            {
+              "errorMelding": null,
+              "mottattDato": "2019-07-15",
+              "iverksettelsesdato": "2019-07-15",
+              "fremsattKravdato":"2019-04-01",              
+              "uttaksgrad": "0",
+              "vurdereTrygdeavtale": false,
+              "personopplysninger": {
+                "statsborgerskap": "SWE"
+              },
+              "utland": {
+                "utlandsopphold": []
+              },
+              "sivilstand": {
+                "valgtSivilstatus": "UGIF",
+                "sivilstatusDatoFom": null
+              },
+              "soknadFraLand": "SWE",
+              "initiertAv": "BRUKER"
+            }
+        """.trimIndent()
 
-
-
-
+        JSONAssert.assertEquals(response, validResponse, true)
 
     }
 
