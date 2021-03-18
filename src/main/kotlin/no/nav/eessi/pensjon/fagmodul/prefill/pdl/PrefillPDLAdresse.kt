@@ -39,9 +39,10 @@ class PrefillPDLAdresse (private val postnummerService: PostnummerService,
         logger.info("              preutfyller bostedadresse land NO")
         val husnr = listOfNotNull(vegadresse.husnummer, vegadresse.husbokstav)
             .joinToString(separator = " ")
+
         return Adresse(
-            postnummer = vegadresse.postnummer,
             gate = "${vegadresse.adressenavn} $husnr",
+            postnummer = vegadresse.postnummer,
             by = postnummerService.finnPoststed(vegadresse.postnummer),
             land = "NO"
         )
@@ -90,8 +91,8 @@ class PrefillPDLAdresse (private val postnummerService: PostnummerService,
             val adresse = pdlperson.kontaktinformasjonForDoedsbo?.adresse ?: return null
             logger.info("              preutfyller kontaktinformasjonForDoedsbo")
             Adresse(
-                gate = adresse.adresselinje1,
-                bygning = adresse.adresselinje2,
+                gate = adresse.adresselinje1.replace("\n"," "),
+                bygning = adresse.adresselinje2?.replace("\n", " "),
                 by = adresse.poststedsnavn,
                 postnummer = adresse.postnummer,
                 land = hentLandkode(adresse.landkode)
