@@ -25,9 +25,7 @@ data class Pensjon(
 		//P5000
 		val trygdetid: List<MedlemskapItem>? = null,
 
-        //P8000
-		val anmodning: AnmodningOmTilleggsInfo? = null,
-
+		//P7000
 		val bruker: Bruker? = null
 		)
 
@@ -43,12 +41,6 @@ data class Institusjon(
         val innvilgetPensjon: String? = null,  // 4.1.3.
         val utstedelsesDato: String? = null,  //4.1.4.
         val startdatoPensjonsRettighet: String? = null  //4.1.5
-)
-
-//P8000
-@JsonIgnoreProperties(ignoreUnknown = true)
-data class AnmodningOmTilleggsInfo(
-		val referanseTilPerson: String? = null
 )
 
 //P5000
