@@ -19,9 +19,6 @@ open class SED(
     open var nav: Nav? = null, // TODO Mutable
     var pensjon: Pensjon? = null, // TODO Mutable
     open var trygdetid: PersonArbeidogOppholdUtland? = null, //P4000 // TODO Mutable
-    open val ignore: Ignore? = null,
-    //H120
-    open val horisontal: Horisontal? = null
 ) {
     companion object {
         @JvmStatic

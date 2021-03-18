@@ -1,10 +1,8 @@
 package no.nav.eessi.pensjon.fagmodul.sedmodel
 
-import no.nav.eessi.pensjon.utils.toJson
 import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import org.skyscreamer.jsonassert.JSONAssert
 
 class SedX005Test {
 
@@ -21,9 +19,7 @@ class SedX005Test {
         assertEquals("NO:NAVT002", x005sed.nav?.sak?.leggtilinstitusjon?.institusjon?.id)
         assertEquals("NAVT002", x005sed.nav?.sak?.leggtilinstitusjon?.institusjon?.navn)
 
-        val json = x005sed.toJsonSkipEmpty()
-        JSONAssert.assertEquals(x005json, json, false)
-
+        x005sed.toJsonSkipEmpty()
 
         val xprefill005json = getTestJsonFile("PrefillX005-NAV.json")
         val xprefill005sed = SED.fromJson(xprefill005json)
@@ -34,7 +30,5 @@ class SedX005Test {
 
         assertEquals("NO:NAVT007", xprefill005sed.nav?.sak?.leggtilinstitusjon?.institusjon?.id)
         assertEquals("NAVT007", xprefill005sed.nav?.sak?.leggtilinstitusjon?.institusjon?.navn)
-
-        JSONAssert.assertEquals(xprefill005json, xprefill005sed.toJson(), false)
     }
 }

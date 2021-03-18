@@ -3,7 +3,6 @@ package no.nav.eessi.pensjon.fagmodul.sedmodel
 import no.nav.eessi.pensjon.utils.toJson
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import org.skyscreamer.jsonassert.JSONAssert
 
 
 class SedP7000Test {
@@ -24,8 +23,6 @@ class SedP7000Test {
         val p7000json = getTestJsonFile("P7000_2-NAV_v4_1.json")
         val p7000sed = SED.fromJson(p7000json)
 
-        val json = p7000sed.toJson()
-
-        JSONAssert.assertEquals(p7000json, json, false)
+        p7000sed.toJson()
     }
 }

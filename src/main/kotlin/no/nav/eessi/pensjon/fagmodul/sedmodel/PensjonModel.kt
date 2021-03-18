@@ -109,64 +109,10 @@ data class VedtakItem(
 )
 
 data class Tilleggsinformasjon(
-		val annen: Annen? = null,
-		val anneninformation: String? = null,
-		val saksnummer: String? = null,
-		val person: Person? = null,
 		val dato: String? = null,
 		val andreinstitusjoner: List<AndreinstitusjonerItem>? = null,
-		val saksnummerAnnen: String? = null,
 		val artikkel48: String? = null,
 		val opphoer: Opphoer? = null,
-		val tilleggsopplysning: String? = null,
-
-		//P9000
-		val p8000: RefP8000? = null,
-		val bekreftelseSed: List<BekreftelseSedItem>? = null,
-
-		val ikkeyrkesaktiv: String? = null,
-		val arbeidsledig: String? = null,
-		val negativtsvar: Negativtsvar? = null,
-
-		val vedlegginfo: String? = null,
-		val vedlegg: List<VedleggItem>? = null,
-
-		val yrkesaktivitet: Yrkesaktivitet? = null
-)
-
-data class VedleggItem(
-		val dokument: String? = null
-)
-
-data class BekreftelseSedItem(
-		val aarsak: String? = null,
-		val p8000ref: String? = null,
-		val grunn: String? = null,
-		//verder? 01,02 ??
-		val info: String? = null
-)
-
-//P9000
-data class RefP8000(
-		//verdier? 01, 02, 03???
-		val henvisningperson: String? = null,
-		val dato: String? = null
-)
-
-//P9000
-data class Negativtsvar(
-		val aarsakgrunn: String? = null,
-		val aarsakannen: String? = null,
-		val aarsakikkesendsed: String? = null,
-		val dokument: String? = null,
-		val informasjon: String? = null,
-		val bekreftelseinformasjon: String? = null,
-		val sed: String? = null
-)
-
-data class Yrkesaktivitet(
-		val ingenaktivtetinformasjon: String? = null,
-		val tilleggsopplysning: String? = null
 )
 
 data class AndreinstitusjonerItem(
@@ -178,10 +124,6 @@ data class AndreinstitusjonerItem(
         val land: String? = null,
         val region: String? = null,
         val poststed: String? = null
-)
-
-data class Annen(
-        val institusjonsadresse: Institusjonsadresse? = null
 )
 
 data class Ukjent(
@@ -249,10 +191,4 @@ data class Periode(
         val fom: String? = null,
         val tom: String? = null,
         val extra: String? = null
-)
-
-data class Institusjonsadresse(
-		val poststed: String? = null,
-		val postnummer: String? = null,
-		val land: String? = null
 )

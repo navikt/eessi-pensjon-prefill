@@ -10,8 +10,6 @@ class P6000(
     override var sedVer: String? = "1",
     override var nav: Nav? = null,
     override var trygdetid: PersonArbeidogOppholdUtland? = null,
-    override var ignore: Ignore? = null,
-    override var horisontal: Horisontal? = null,
     @JsonProperty("pensjon")
     val p6000Pensjon: P6000Pensjon
-) : SED(type, sedGVer, sedVer, nav,null, trygdetid, ignore, horisontal)
+) : SED(type, sedGVer, sedVer, nav,null, trygdetid)

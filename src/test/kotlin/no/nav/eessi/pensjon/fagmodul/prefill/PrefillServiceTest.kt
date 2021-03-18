@@ -3,22 +3,9 @@ package no.nav.eessi.pensjon.fagmodul.prefill
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.whenever
-import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
-import no.nav.eessi.pensjon.fagmodul.models.PersonDataCollection
-import no.nav.eessi.pensjon.fagmodul.models.PersonId
-import no.nav.eessi.pensjon.fagmodul.models.PrefillDataModel
-import no.nav.eessi.pensjon.fagmodul.models.SEDType
+import no.nav.eessi.pensjon.fagmodul.models.*
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillSEDService
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Bruker
-import no.nav.eessi.pensjon.fagmodul.sedmodel.InstitusjonX005
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Kontekst
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Krav
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Leggtilinstitusjon
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Nav
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Navsak
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Person
-import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
-import no.nav.eessi.pensjon.fagmodul.sedmodel.SedMock
+import no.nav.eessi.pensjon.fagmodul.sedmodel.*
 import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
@@ -145,8 +132,7 @@ class PrefillServiceTest {
                                 )
                         ),
                         leggtilinstitusjon = Leggtilinstitusjon(
-                                institusjon = institusjonX005,
-                                grunn = null
+                                institusjon = institusjonX005
                         )
                 )
         )

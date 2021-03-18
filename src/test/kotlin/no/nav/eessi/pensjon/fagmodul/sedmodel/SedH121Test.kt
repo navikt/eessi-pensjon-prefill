@@ -1,9 +1,7 @@
 package no.nav.eessi.pensjon.fagmodul.sedmodel
 
-import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import org.skyscreamer.jsonassert.JSONAssert
 
 class SedH121Test {
 
@@ -15,12 +13,6 @@ class SedH121Test {
 
         val startskap = h121sed.nav?.bruker?.person?.statsborgerskap
         assertEquals(2, startskap?.size)
-
-        val horisontal = h121sed.horisontal
-        assertEquals("1233", horisontal?.anmodningmedisinskinformasjon?.svar?.undersoekelse?.estimat?.kostnader?.beloep)
-
-        JSONAssert.assertEquals(h121json, h121sed.toJsonSkipEmpty(), false)
-
     }
 
     @Test
@@ -34,15 +26,6 @@ class SedH121Test {
 
         val startskap = h121sed.nav?.bruker?.person?.statsborgerskap
         assertEquals(2, startskap?.size)
-
-        val horisontal = h121sed.horisontal
-        assertEquals("ble_ikke_utført_av_følgende_grunn", horisontal?.anmodningmedisinskinformasjon?.svar?.medisinsk?.undersoekelse?.type)
-
-        assertEquals("annet", horisontal?.anmodningmedisinskinformasjon?.svar?.medisinsk?.undersoekelse?.ikkegjennomfoert?.grunn?.type)
-
-
-        JSONAssert.assertEquals(h121json, h121sed.toJsonSkipEmpty(), false)
-
     }
 
     @Test
@@ -55,13 +38,6 @@ class SedH121Test {
 
         val startskap = h121sed.nav?.bruker?.person?.statsborgerskap
         assertEquals(2, startskap?.size)
-
-        val horisontal = h121sed.horisontal
-        assertEquals("gsfdg fdsgdgsdfgsdfg", horisontal?.anmodningmedisinskinformasjon?.svar?.dokumentasjonikkevedlagt?.grunn )
-        assertEquals("ja", horisontal?.anmodningmedisinskinformasjon?.svar?.erdokumentasjonsvedlagt)
-
-        JSONAssert.assertEquals(h121json, h121sed.toJsonSkipEmpty(), false)
-
     }
 
     @Test
@@ -74,18 +50,5 @@ class SedH121Test {
 
         val startskap = h121sed.nav?.bruker?.person?.statsborgerskap
         assertEquals(2, startskap?.size)
-
-        val horisontal = h121sed.horisontal
-        //assertEquals("null", horisontal?.anmodningmedisinskinformasjon?.svar?.dokumentasjonikkevedlagt?.grunn )
-
-        val typelist = horisontal?.anmodningmedisinskinformasjon?.svar?.medisinsk?.informasjon?.type
-        assertEquals(3, typelist?.size)
-
-        assertEquals("asdd sadsd fsdfs", horisontal?.anmodningmedisinskinformasjon?.svar?.medisinsk?.informasjon?.annen)
-
-        JSONAssert.assertEquals(h121json, h121sed.toJsonSkipEmpty(), false)
-
     }
-
-
 }
