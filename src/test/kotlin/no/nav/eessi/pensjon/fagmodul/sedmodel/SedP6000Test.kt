@@ -118,14 +118,9 @@ class SedP6000Test {
                                     fom = "2023-10-01"
                                 ),
                                 valuta = "HUF",
-                                beloepNetto = BeloepNetto(
-                                    beloep = "344"
-                                ),
-                                utbetalingshyppighetAnnen = "13123",
                                 utbetalingshyppighet = "maaned_12_per_aar"
                             ),
                             BeregningItem(
-                                utbetalingshyppighetAnnen = "werwer",
                                 beloepBrutto = BeloepBrutto(
                                     beloep = "234",
                                     ytelseskomponentTilleggspensjon = "22",
@@ -134,9 +129,6 @@ class SedP6000Test {
                                 periode = Periode(
                                     fom = "2020-10-01",
                                     tom = "2025-10-01"
-                                ),
-                                beloepNetto = BeloepNetto(
-                                    beloep = "344"
                                 ),
                                 utbetalingshyppighet = "annet",
                                 valuta = "ISK"
@@ -166,15 +158,11 @@ class SedP6000Test {
                     VedtakItem(
                         beregning = listOf(
                             BeregningItem(
-                                utbetalingshyppighetAnnen = "gagfdgg",
                                 valuta = "ERN",
                                 beloepBrutto = BeloepBrutto(
                                     ytelseskomponentTilleggspensjon = "12",
                                     ytelseskomponentGrunnpensjon = "122",
                                     beloep = "234"
-                                ),
-                                beloepNetto = BeloepNetto(
-                                    beloep = "23"
                                 ),
                                 periode = Periode(
                                     tom = "2043-10-01",

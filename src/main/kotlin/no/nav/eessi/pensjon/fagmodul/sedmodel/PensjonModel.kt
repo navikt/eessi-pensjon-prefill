@@ -59,25 +59,21 @@ data class MedlemskapItem(
 )
 
 //P2000 - P2200
+@JsonIgnoreProperties(ignoreUnknown = true)
 data class YtelserItem(
-		val annenytelse: String? = null,
 		val totalbruttobeloeparbeidsbasert: String? = null,
 		val institusjon: Institusjon? = null,
 		val pin: PinItem? = null,
 		val startdatoutbetaling: String? = null,
 		val mottasbasertpaa: String? = null,
 		val ytelse: String? = null,
-		val totalbruttobeloepbostedsbasert: String? = null,
 		val startdatoretttilytelse: String? = null,
 		val beloep: List<BeloepItem>? = null,
-		val sluttdatoretttilytelse: String? = null,
-		val sluttdatoutbetaling: String? = null,
 		val status: String? = null,
-		val ytelseVedSykdom: String? = null, //7.2 //P2100
 )
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 data class BeloepItem(
-        val annenbetalingshyppighetytelse: String? = null,
         val betalingshyppighetytelse: String? = null,
         val valuta: String? = null,
         val beloep: String? = null,
@@ -168,16 +164,10 @@ data class AvslagbegrunnelseItem(
 )
 
 data class BeregningItem(
-		val beloepNetto: BeloepNetto? = null,
 		val valuta: String? = null,
 		val beloepBrutto: BeloepBrutto? = null,
-		val utbetalingshyppighetAnnen: String? = null,
 		val periode: Periode? = null,
 		val utbetalingshyppighet: String? = null
-)
-
-data class BeloepNetto(
-        val beloep: String? = null
 )
 
 data class BeloepBrutto(

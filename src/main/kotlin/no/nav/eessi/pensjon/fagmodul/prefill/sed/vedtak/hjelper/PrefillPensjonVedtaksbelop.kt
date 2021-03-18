@@ -126,9 +126,6 @@ object PrefillPensjonVedtaksbelop {
                 //4.1.7.1 -- 4.1.7.2
                 periode = createBeregningItemPeriode(ytelsePrMnd),
 
-                //4.1.7.3.2 - netAmount -- Nei?
-                beloepNetto = null,
-
                 beloepBrutto = BeloepBrutto(
                         //4.1.7.3.1. Gross amount
                         beloep = createBelop(ytelsePrMnd, sakType),
@@ -138,18 +135,13 @@ object PrefillPensjonVedtaksbelop {
 
                         //4.1.7.3.4. Gross amount of supplementary pension
                         ytelseskomponentTilleggspensjon = createYtelseskomponentTilleggspensjon(ytelsePrMnd, sakType),
-
-                        ytelseskomponentAnnen = null
                 ),
 
                 //4.1.7.4 Currency automatisk hukes for "NOK" norway krone.
                 valuta = "NOK",
 
                 //4.1.7.5              //03 - montly 12/year
-                utbetalingshyppighet = "maaned_12_per_aar",
-
-                //4.1.7.6.1     - Nei
-                utbetalingshyppighetAnnen = null
+                utbetalingshyppighet = "maaned_12_per_aar"
         )
     }
 }

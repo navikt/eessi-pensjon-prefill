@@ -18,10 +18,8 @@ object PrefillPensjonSak {
         return Sak(
                 //6.1 --
                 artikkel54 = createArtikkel54(pendata),
-                reduksjon = null,
                 //6.5.1
                 kravtype = createKravBegrensetInnsyn(),
-                enkeltkrav = null
         )
     }
 
@@ -31,7 +29,6 @@ object PrefillPensjonSak {
                 KravtypeItem(
                         //6.5.1 $pensjon.sak.kravtype[x].datoFrist
                         datoFrist = "six weeks from the date the decision is received",
-                        krav = null
                 )
         )
     }

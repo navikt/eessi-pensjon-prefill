@@ -21,15 +21,6 @@ object PrefillPensjonReduksjon {
                 //5.1.1. - $pensjon.reduksjon[x].type
                 type = createReduksjonType(pendata),
 
-                //5.1.3.1 - 5.1.2 - Nei
-                aarsak = null,
-                // Arsak(
-                //5.1.3.1 $pensjon`.reduksjon[x].aarsak.inntektAnnen - Nei
-                //inntektAnnen = null,
-                //5.1.2 - Nei!
-                //annenytelseellerinntekt = null
-                //),
-
                 //5.1.4 -- $pensjon.sak.reduksjon[x].artikkeltype
                 artikkeltype = createReduksjonArtikkelType(pendata),
 
