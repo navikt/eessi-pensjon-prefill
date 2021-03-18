@@ -28,9 +28,6 @@ object PrefillPensjonTilleggsinformasjon {
                 //På logges EnhetID /NAV avsender (PENSJO, UTFORP, ETTERLATP)?
                 andreinstitusjoner = createAndreinstitusjonerItem(andreinstitusjonerItem),
 
-                //6.5.2 - 6.6  $pensjon.tilleggsinformasjon.artikkel48
-                artikkel48 = createArtikkel48(),
-
                 //6.4 //Vedtakets utstedelsesdato (angitt på vedtaket
                 dato = createTilleggsInfoDato(pendata)
         )
@@ -65,20 +62,6 @@ object PrefillPensjonTilleggsinformasjon {
         logger.debug("6.5.2.1       AndreinstitusjonerItem (review address)")
         val data = andreinstitusjonerItem ?: return null
         return listOf(data)
-    }
-
-    /**
-     * 6.6
-     *
-     * Må fylles ut manuelt
-     *
-     * 6.6  $pensjon.tilleggsinformasjon.artikkel48
-     * 6.6. The decision has been given as a result of the review according to the Art. 48(2) of Regulation 987/2009
-     *
-     */
-    private fun createArtikkel48(): String? {
-        logger.debug("6.6           Artikkel48  (Må fylles ut manuelt!!)")
-        return null
     }
 
     /**

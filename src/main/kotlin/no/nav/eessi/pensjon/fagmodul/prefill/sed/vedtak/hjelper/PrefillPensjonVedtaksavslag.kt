@@ -33,9 +33,6 @@ object PrefillPensjonVedtaksavslag {
 
             //4.1.13.1
             begrunnelse = avslagbegrunnelse,
-
-            //4.1.13.2 Other - Nei
-            annenbegrunnelse = null
         ))
 
         if (avslagbegrunnelse == null)

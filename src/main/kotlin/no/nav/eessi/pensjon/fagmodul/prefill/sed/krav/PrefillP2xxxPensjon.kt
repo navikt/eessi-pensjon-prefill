@@ -4,15 +4,7 @@ import no.nav.eessi.pensjon.fagmodul.models.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjon
 import no.nav.eessi.pensjon.fagmodul.prefill.pdl.NavFodselsnummer
-import no.nav.eessi.pensjon.fagmodul.sedmodel.AndreinstitusjonerItem
-import no.nav.eessi.pensjon.fagmodul.sedmodel.BeloepItem
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Bruker
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Institusjon
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Krav
-import no.nav.eessi.pensjon.fagmodul.sedmodel.MeldingOmPensjon
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Pensjon
-import no.nav.eessi.pensjon.fagmodul.sedmodel.PinItem
-import no.nav.eessi.pensjon.fagmodul.sedmodel.YtelserItem
+import no.nav.eessi.pensjon.fagmodul.sedmodel.*
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.EPSaktype
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.KravHistorikkHelper.finnKravHistorikk
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.KravHistorikkHelper.hentKravHistorikkForsteGangsBehandlingUtlandEllerForsteGang
@@ -273,9 +265,6 @@ object PrefillP2xxxPensjon {
                 //4.1.1
                 ytelse = settYtelse(pensak),
 
-                //4.1.2.1 - nei
-                annenytelse = null, //ytelsePrmnd.vinnendeBeregningsmetode,
-
                 //4.1.3 (dekkes av pkt.4.1.1)
                 status = createPensionStatus(pensak),
                 //4.1.4
@@ -285,25 +274,18 @@ object PrefillP2xxxPensjon {
 
                 //4.1.5
                 startdatoutbetaling = ytelsePrmnd.fom?.simpleFormat(),
-                //4.1.6
-                sluttdatoutbetaling = null,
+
                 //4.1.7 (sak - forstevirkningstidspunkt)
                 startdatoretttilytelse = createStartdatoForRettTilYtelse(pensak),
-                //4.1.8 -- NEI
-                sluttdatoretttilytelse = null, // ytelsePrmnd.tom?.let { it.simpleFormat() },
 
                 //4.1.9 - 4.1.9.5.1
                 beloep = createYtelseItemBelop(ytelsePrmnd, ytelsePrmnd.ytelseskomponentListe),
 
                 //4.1.10.1
                 mottasbasertpaa = createPensionBasedOn(pensak, personNr),
-                //4.1.10.2 - nei
-                totalbruttobeloepbostedsbasert = null,
+
                 //4.1.10.3
                 totalbruttobeloeparbeidsbasert = ytelsePrmnd.belop.toString(),
-
-                //N/A
-                ytelseVedSykdom = null //7.2 //P2100
         )
     }
 
@@ -371,9 +353,6 @@ object PrefillP2xxxPensjon {
 
                     //4.1.9.4
                     betalingshyppighetytelse = createBetalingshyppighet(),
-
-                    //4.1.9.5
-                    annenbetalingshyppighetytelse = null
             )
         }
     }
@@ -463,7 +442,6 @@ object PrefillP2xxxPensjon {
                 identifikator = personNr,
                 //4.1.4.1.3
                 sektor = "04", //(kun pensjon)
-                institusjon = null
         )
     }
 
