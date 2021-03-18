@@ -5,28 +5,9 @@ import no.nav.eessi.pensjon.fagmodul.models.PersonDataCollection
 import no.nav.eessi.pensjon.fagmodul.models.PersonId
 import no.nav.eessi.pensjon.fagmodul.prefill.pdl.NavFodselsnummer
 import no.nav.eessi.pensjon.fagmodul.prefill.pdl.PrefillPDLAdresse
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Adresse
-import no.nav.eessi.pensjon.fagmodul.sedmodel.ArbeidsforholdItem
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Bank
-import no.nav.eessi.pensjon.fagmodul.sedmodel.BarnItem
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Bruker
-import no.nav.eessi.pensjon.fagmodul.sedmodel.EessisakItem
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Ektefelle
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Foedested
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Foreldre
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Innehaver
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Konto
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Krav
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Nav
+import no.nav.eessi.pensjon.fagmodul.sedmodel.*
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Person
-import no.nav.eessi.pensjon.fagmodul.sedmodel.PinItem
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Sepa
-import no.nav.eessi.pensjon.fagmodul.sedmodel.StatsborgerskapItem
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Familierelasjonsrolle
-import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe
-import no.nav.eessi.pensjon.personoppslag.pdl.model.KjoennType
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Navn
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Sivilstandstype
+import no.nav.eessi.pensjon.personoppslag.pdl.model.*
 import no.nav.eessi.pensjon.utils.simpleFormat
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -277,7 +258,6 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
                 )
             ),
             fornavn = navn?.fornavn,
-            etternavnvedfoedsel = null
         )
         return Foreldre(person = relasjonperson)
     }
@@ -299,16 +279,12 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
                 foedselsdato = pdlperson.foedseldato(),
                 //2.1.4     //sex
                 kjoenn = pdlperson.kortKjonn(),
-                //2.1.6
-                fornavnvedfoedsel = null,
                 //2.1.7
                 pin = createPersonPinNorIdent(pdlperson, institutionid, institutionnavn),
                 //2.2.1.1
                 statsborgerskap = listOf(createStatsborgerskap(landKode)),
                 //2.1.8.1           place of birth
-                foedested = createFodested(pdlperson),
-                //2.2.2 -   P2100 = 5.2.2.
-                sivilstand = null
+                foedested = createFodested(pdlperson)
         )
     }
 

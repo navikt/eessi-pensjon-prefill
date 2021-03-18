@@ -19,9 +19,6 @@ class SedP9000Test {
 
         //annenperson
         assertEquals("Rausa 322", p9000sed.nav?.annenperson?.person?.fornavn)
-        assertEquals("ingen@online.no", p9000sed.nav?.annenperson?.person?.kontakt?.email?.first()?.adresse)
         assertEquals("0101010202022 327112", p9000sed.nav?.annenperson?.person?.pin?.first()?.identifikator)
-
-        assertEquals("09041984799 91", p9000sed.nav?.annenperson?.person?.pinannen?.identifikator)
     }
 }

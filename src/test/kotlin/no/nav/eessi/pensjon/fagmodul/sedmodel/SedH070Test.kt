@@ -13,11 +13,5 @@ class SedH070Test {
         val startskap = h070sed.nav?.bruker?.person?.statsborgerskap
         assertEquals(1, startskap?.size)
 
-        val doedsfall = h070sed.nav?.bruker?.doedsfall
-
-        assertEquals("1988-02-11", doedsfall?.doedsdato)
-
-        assertEquals(2, doedsfall?.dokumentervedlagt?.annet?.size)
-        assertEquals(3, doedsfall?.dokumentervedlagt?.type?.size)
     }
 }

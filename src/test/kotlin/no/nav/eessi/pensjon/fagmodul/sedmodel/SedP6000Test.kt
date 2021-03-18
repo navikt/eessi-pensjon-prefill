@@ -45,7 +45,7 @@ class SedP6000Test {
         assertEquals(p6000Pensjon.toJson(), p6000PensjonDeserialisert.toJson())
     }
 
-    fun populerP6000(): P6000 {
+    private fun populerP6000(): P6000 {
         return P6000(
             type = SEDType.P6000,
             p6000Pensjon = P6000Pensjon(
@@ -61,18 +61,15 @@ class SedP6000Test {
                     far = Foreldre(
                         person = Person(
                             fornavn = "sdfsdf",
-                            etternavnvedfoedsel = "sdfsd"
                         )
                     ),
                     mor = Foreldre(
                         person = Person(
-                            etternavnvedfoedsel = "asdfsdf",
                             fornavn = "asdfsdafsdf"
                         )
                     ),
                     person = Person(
                         fornavn = "gafgfdga",
-                        fornavnvedfoedsel = "ffsdfgsfgadfg",
                         kjoenn = "m",
                         statsborgerskap = listOf(
                             StatsborgerskapItem("AT"),
@@ -84,9 +81,7 @@ class SedP6000Test {
                             region = "sdfsdfsdf",
                             by = "Testaeveisgiverby2"
                         ),
-                        tidligerefornavn = "sadfsdf",
                         etternavn = "asdffsdaf",
-                        etternavnvedfoedsel = "sdfsd",
                         pin = listOf(
                             PinItem(
                                 sektor = "dagpenger",
@@ -99,7 +94,6 @@ class SedP6000Test {
                                 identifikator = "sdfgsdgh"
                             )
                         ),
-                        tidligereetternavn = "asdfasdf",
                         foedselsdato = "1964-12-01"
                     )
                 ),
@@ -277,26 +271,11 @@ class SedP6000Test {
                             land = "HR"
                         )
                     ),
-                    person = Person(
-                        pinannen = PinItem(
-                            identifikator = "retertret",
-                            sektor = "alle"
-                        )
-
-                    ),
                     dato = "2019-10-01",
-                    anneninformation = "werwer\\nwer\\nwer",
-                    annen = Annen(
-                        institusjonsadresse = Institusjonsadresse(
-                            land = "BE"
-                        )
-                    ),
                     opphoer = Opphoer(
                         dato = "2022-10-01",
                         annulleringdato = "2024-10-01"
                     ),
-                    saksnummerAnnen = "werwer",
-                    saksnummer = "werwer",
                     artikkel48 = "0"
                 )
             )

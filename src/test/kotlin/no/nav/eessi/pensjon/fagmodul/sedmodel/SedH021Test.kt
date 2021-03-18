@@ -1,9 +1,7 @@
 package no.nav.eessi.pensjon.fagmodul.sedmodel
 
-import no.nav.eessi.pensjon.utils.toJson
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import org.skyscreamer.jsonassert.JSONAssert
 
 class SedH021Test {
 
@@ -14,8 +12,6 @@ class SedH021Test {
 
         Assertions.assertNotNull(h021sed.nav?.bruker?.person?.pinland)
         Assertions.assertEquals("213421412414214", h021sed.nav?.bruker?.person?.pinland?.kompetenteuland)
-
-        JSONAssert.assertEquals(h021json, h021sed.toJson(), false)
     }
 
 }

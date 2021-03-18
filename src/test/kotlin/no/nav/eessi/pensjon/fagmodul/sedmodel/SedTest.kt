@@ -73,18 +73,15 @@ class SedTest {
                     far = Foreldre(
                         person = Person(
                             fornavn = "sdfsdf",
-                            etternavnvedfoedsel = "sdfsd"
                         )
                     ),
                     mor = Foreldre(
                         person = Person(
-                            etternavnvedfoedsel = "asdfsdf",
                             fornavn = "asdfsdafsdf"
                         )
                     ),
                     person = Person(
                         fornavn = "gafgfdga",
-                        fornavnvedfoedsel = "ffsdfgsfgadfg",
                         kjoenn = "m",
                         statsborgerskap = listOf(
                             StatsborgerskapItem("AT"),
@@ -96,9 +93,7 @@ class SedTest {
                             region = "sdfsdfsdf",
                             by = "Testaeveisgiverby2"
                         ),
-                        tidligerefornavn = "sadfsdf",
                         etternavn = "asdffsdaf",
-                        etternavnvedfoedsel = "sdfsd",
                         pin = listOf(
                             PinItem(
                                 sektor = "dagpenger",
@@ -111,7 +106,6 @@ class SedTest {
                                 identifikator = "sdfgsdgh"
                             )
                         ),
-                        tidligereetternavn = "asdfasdf",
                         foedselsdato = "1964-12-01"
                     )
                 ),
@@ -290,26 +284,11 @@ class SedTest {
                             land = "HR"
                         )
                     ),
-                    person = Person(
-                        pinannen = PinItem(
-                            identifikator = "retertret",
-                            sektor = "alle"
-                        )
-
-                    ),
                     dato = "2019-10-01",
-                    anneninformation = "werwer\\nwer\\nwer",
-                    annen = Annen(
-                        institusjonsadresse = Institusjonsadresse(
-                            land = "BE"
-                        )
-                    ),
                     opphoer = Opphoer(
                         dato = "2022-10-01",
                         annulleringdato = "2024-10-01"
                     ),
-                    saksnummerAnnen = "werwer",
-                    saksnummer = "werwer",
                     artikkel48 = "0"
                 )
             )

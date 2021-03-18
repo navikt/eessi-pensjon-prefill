@@ -2,11 +2,7 @@ package no.nav.eessi.pensjon.fagmodul.prefill.person
 
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.whenever
-import no.nav.eessi.pensjon.fagmodul.models.BrukerInformasjon
-import no.nav.eessi.pensjon.fagmodul.models.PersonDataCollection
-import no.nav.eessi.pensjon.fagmodul.models.PersonId
-import no.nav.eessi.pensjon.fagmodul.models.PrefillDataModelMother
-import no.nav.eessi.pensjon.fagmodul.models.SEDType
+import no.nav.eessi.pensjon.fagmodul.models.*
 import no.nav.eessi.pensjon.fagmodul.prefill.LagPDLPerson
 import no.nav.eessi.pensjon.fagmodul.prefill.LagPDLPerson.Companion.createPersonMedEktefellePartner
 import no.nav.eessi.pensjon.fagmodul.prefill.LagPDLPerson.Companion.lagPerson
@@ -17,36 +13,14 @@ import no.nav.eessi.pensjon.fagmodul.prefill.LagPDLPerson.Companion.medKontaktad
 import no.nav.eessi.pensjon.fagmodul.prefill.pdl.FodselsnummerMother
 import no.nav.eessi.pensjon.fagmodul.prefill.pdl.NavFodselsnummer
 import no.nav.eessi.pensjon.fagmodul.prefill.pdl.PrefillPDLAdresse
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Adresse
-import no.nav.eessi.pensjon.fagmodul.sedmodel.ArbeidsforholdItem
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Bank
-import no.nav.eessi.pensjon.fagmodul.sedmodel.BarnItem
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Bruker
-import no.nav.eessi.pensjon.fagmodul.sedmodel.EessisakItem
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Ektefelle
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Foedested
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Foreldre
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Innehaver
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Konto
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Nav
+import no.nav.eessi.pensjon.fagmodul.sedmodel.*
 import no.nav.eessi.pensjon.fagmodul.sedmodel.Person
-import no.nav.eessi.pensjon.fagmodul.sedmodel.PinItem
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Sepa
-import no.nav.eessi.pensjon.fagmodul.sedmodel.StatsborgerskapItem
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Doedsfall
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Foedsel
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Navn
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Oppholdsadresse
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Sivilstandstype
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Statsborgerskap
-import no.nav.eessi.pensjon.personoppslag.pdl.model.UtenlandskAdresse
+import no.nav.eessi.pensjon.personoppslag.pdl.model.*
 import no.nav.eessi.pensjon.services.geo.PostnummerService
 import no.nav.eessi.pensjon.services.kodeverk.KodeverkClient
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNotNull
-import org.junit.jupiter.api.Assertions.assertNull
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -113,7 +87,6 @@ class PrefillPDLNavTest {
                         person = lagNavPerson(barnetsPin, "Ole", "Brum", barnFdato!!, someInstitutionId, someIntitutionNavn),
                         far = Foreldre(Person(
                             fornavn = "Christopher",
-                            etternavnvedfoedsel = null,
                             pin = listOf(PinItem(identifikator = foreldersPin, land = "NO", institusjonsid = "enInstId", institusjonsnavn = "instNavn")))),
                         relasjontilbruker = "BARN")))
 
@@ -156,7 +129,6 @@ class PrefillPDLNavTest {
                         mor = null,
                         far = Foreldre(Person(
                                 fornavn = "Ole",
-                                etternavnvedfoedsel = null,
                                 pin = listOf(PinItem(identifikator = somePersonNr, land = "NO", institusjonsid = "enInstId", institusjonsnavn = "instNavn")))),
                         person = lagNavPerson(someBarnPersonNr, "Nasse", "Nøff", barnfdato!!, someInstitutionId, someIntitutionNavn), relasjontilbruker = "BARN")))
 
@@ -262,21 +234,17 @@ class PrefillPDLNavTest {
                 BarnItem(
                     mor = Foreldre(Person(
                         fornavn = "Jonna",
-                        etternavnvedfoedsel = null,
                         pin = listOf(PinItem(identifikator = morfnr, land = "NO", institusjonsid = "enInstId", institusjonsnavn = "instNavn")))),
                     far = Foreldre(Person(
                         fornavn = "Ola",
-                        etternavnvedfoedsel = null,
                         pin = listOf(PinItem(identifikator = farfnr, land = "NO", institusjonsid = "enInstId", institusjonsnavn = "instNavn")))),
                     person = lagNavPerson(barn1, "OLE", "BRUM", barnetfdato, someInstitutionId, someIntitutionNavn), relasjontilbruker = "BARN"),
                 BarnItem(
                     mor = Foreldre(Person(
                         fornavn = "Jonna",
-                        etternavnvedfoedsel = null,
                         pin = listOf(PinItem(identifikator = morfnr, land = "NO", institusjonsid = "enInstId", institusjonsnavn = "instNavn")))),
                     far = Foreldre(Person(
                         fornavn = "Ola",
-                        etternavnvedfoedsel = null,
                         pin = listOf(PinItem(identifikator = farfnr, land = "NO", institusjonsid = "enInstId", institusjonsnavn = "instNavn")))),
                     person = lagNavPerson(barn2, "NASSE", "NØFF", barntofdato, someInstitutionId, someIntitutionNavn), relasjontilbruker = "BARN")
                 ))
@@ -696,7 +664,7 @@ class PrefillPDLNavTest {
                 kjoenn = kjoenn,
                 foedselsdato = fdato,
                 foedested = if (foedsted == null) null else Foedested("Unknown", foedsted, region = ""),
-                fornavnvedfoedsel = null)
+                )
     }
 
 }

@@ -3,11 +3,7 @@ package no.nav.eessi.pensjon.fagmodul.prefill
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
-import no.nav.eessi.pensjon.utils.mapAnyToJson
-import no.nav.eessi.pensjon.utils.mapJsonToAny
-import no.nav.eessi.pensjon.utils.toJson
-import no.nav.eessi.pensjon.utils.typeRefs
-import no.nav.eessi.pensjon.utils.validateJson
+import no.nav.eessi.pensjon.utils.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -38,7 +34,6 @@ class ApiRequestTest {
     @Test
     fun `generate request mock payload of SED P2000`() {
         val payload = readJsonAndParseToSed("P2000-NAV.json")
-        //val payload = readJsonAndParseToSed("P2000-NAV-mockAP.json")
         val req = createMockApiRequest("P2000", "P_BUC_01", payload)
         val sedjson = SED.fromJson(req.payload!!).toJson()
         assertNotNull(sedjson)

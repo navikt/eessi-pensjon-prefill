@@ -31,26 +31,6 @@ object PrefillPensjonTilleggsinformasjon {
                 //6.5.2 - 6.6  $pensjon.tilleggsinformasjon.artikkel48
                 artikkel48 = createArtikkel48(),
 
-                //6.7.1.4
-                //05.10.2018 - Nei
-                annen = null,
-
-                //6.7.2
-                //05.10.2018 Nei
-                saksnummer = null,
-
-                //6.8 $pensjon.tilleggsinformasjon.saksnummerAnnen
-                //05.10.2018 Nei
-                saksnummerAnnen = null,
-
-
-                //6.9 other information
-                //05.10.2018 Nei
-                anneninformation = null,
-
-                //??
-                person = null, //Person()
-
                 //6.4 //Vedtakets utstedelsesdato (angitt på vedtaket
                 dato = createTilleggsInfoDato(pendata)
         )

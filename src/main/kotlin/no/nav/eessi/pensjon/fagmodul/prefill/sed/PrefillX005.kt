@@ -4,14 +4,7 @@ import no.nav.eessi.pensjon.fagmodul.models.PersonDataCollection
 import no.nav.eessi.pensjon.fagmodul.models.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillPDLNav
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Bruker
-import no.nav.eessi.pensjon.fagmodul.sedmodel.InstitusjonX005
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Kontekst
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Leggtilinstitusjon
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Nav
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Navsak
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Person
-import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
+import no.nav.eessi.pensjon.fagmodul.sedmodel.*
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -54,8 +47,7 @@ class PrefillX005(private val prefillNav: PrefillPDLNav)  {
                                         )
                                 ),
                                 leggtilinstitusjon = Leggtilinstitusjon(
-                                        institusjon = institusjonX005,
-                                        grunn = null
+                                        institusjon = institusjonX005
                                 )
                         )
                 )

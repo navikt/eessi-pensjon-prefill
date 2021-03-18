@@ -38,16 +38,12 @@ class NavMock {
     fun genererNavMock(): Nav {
         return Nav(
                 bruker = Bruker(
-                        //mor = Mor(
                         mor = Foreldre(
                                 Person(
-                                        etternavnvedfoedsel = "asdfsdf",
                                         fornavn = "asfsdf")
                         ),
-                        //far = Far(
                         far = Foreldre(
                                 Person(
-                                        etternavnvedfoedsel = "safasfsd",
                                         fornavn = "farfornavn"
                                 )
                         ),
@@ -69,7 +65,6 @@ class NavMock {
                                 kjoenn = "f",
                                 foedselsdato = "1967-12-01",
                                 etternavn = "Konsoll",
-                                tidligereetternavn = "sdfsfasdf",
                                 statsborgerskap = listOf(
                                         StatsborgerskapItem("BE"),
                                         StatsborgerskapItem("BG"),
@@ -81,20 +76,13 @@ class NavMock {
                                         land = "DK",
                                         by = "gafdgsf"
                                 ),
-                                fornavnvedfoedsel = "werwerwe",
-                                tidligerefornavn = "asdfdsffsd",
-                                etternavnvedfoedsel = "werwreq"
                         ),
                         bank = Bank(
                                 konto = Konto(
                                         innehaver = Innehaver(
                                                 rolle = "02",
                                                 navn = "sdfsfsfsdf"
-                                        ),
-                                        ikkesepa = IkkeSepa(
-                                                swift = "AAAADK32323"
-                                        ),
-                                        kontonr = "12323434"
+                                        )
                                 ),
                                 adresse = Adresse(
                                         postnummer = "12344",
@@ -150,18 +138,16 @@ class PensjonMock {
                         ),
                         far = Foreldre(
                                 person = Person(
-                                        fornavn = "sdfsdf",
-                                        etternavnvedfoedsel = "sdfsd")
+                                        fornavn = "sdfsdf"
+                                )
                         ),
                         mor = Foreldre(
                                 person = Person(
-                                        etternavnvedfoedsel = "asdfsdf",
                                         fornavn = "asdfsdafsdf"
                                 )
                         ),
                         person = Person(
                                 fornavn = "gafgfdga",
-                                fornavnvedfoedsel = "ffsdfgsfgadfg",
                                 kjoenn = "m",
                                 statsborgerskap = listOf(
                                         StatsborgerskapItem("AT"),
@@ -172,9 +158,7 @@ class PensjonMock {
                                         land = "BE",
                                         region = "sdfsdfsdf",
                                         by = "Testaeveisgiverby2"),
-                                tidligerefornavn = "sadfsdf",
                                 etternavn = "asdffsdaf",
-                                etternavnvedfoedsel = "sdfsd",
                                 pin = listOf(
                                         PinItem(
                                                 sektor = "dagpenger",
@@ -187,7 +171,6 @@ class PensjonMock {
                                                 identifikator = "sdfgsdgh"
                                         )
                                 ),
-                                tidligereetternavn = "asdfasdf",
                                 foedselsdato = "1964-12-01"
                         )
                 ),
