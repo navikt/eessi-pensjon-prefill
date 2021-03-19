@@ -58,7 +58,7 @@ class PrefillSEDService(
             P6000 -> PrefillP6000(prefillPDLnav, eessiInformasjon, pensjonsinformasjonService.hentVedtak(hentVedtak(prefillData))).prefill(prefillData, personDataCollection)
 
             P4000 -> PrefillP4000(PrefillSed(prefillPDLnav)).prefillSed(prefillData, personDataCollection)
-            P7000 -> PrefillP7000(PrefillSed(prefillPDLnav)).prefillSed(prefillData, personDataCollection)
+            P7000 -> PrefillP7000(PrefillSed(prefillPDLnav)).prefill(prefillData, personDataCollection)
 
             P8000 -> {
                 if (prefillData.buc == "P_BUC_05") {
