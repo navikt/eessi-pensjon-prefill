@@ -192,6 +192,7 @@ class SedController(
             if (x005 == null) {
                 euxService.addInstitution(dataModel.euxCaseID, nyeInstitusjoner.map { it.institution })
             } else {
+                //--gjort noe. ..
                 nyeInstitusjoner.forEach {
                     if (!navCaseOwner && it.country != "NO") {
                         logger.error("NAV er ikke sakseier. Du kan ikke legge til deltakere utenfor Norge")
