@@ -5,12 +5,7 @@ import no.nav.eessi.pensjon.fagmodul.eux.EuxService
 import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.pesys.RinaTilPenMapper.parsePensjonsgrad
 import no.nav.eessi.pensjon.fagmodul.pesys.mockup.MockSED001
-import no.nav.eessi.pensjon.fagmodul.sedmodel.AnsattSelvstendigItem
-import no.nav.eessi.pensjon.fagmodul.sedmodel.P5000
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Periode
-import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
-import no.nav.eessi.pensjon.fagmodul.sedmodel.StandardItem
-import no.nav.eessi.pensjon.fagmodul.sedmodel.TrygdeTidPeriode
+import no.nav.eessi.pensjon.fagmodul.sedmodel.*
 import no.nav.eessi.pensjon.services.kodeverk.KodeverkClient
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
