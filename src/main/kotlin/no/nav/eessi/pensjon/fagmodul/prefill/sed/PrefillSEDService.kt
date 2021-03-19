@@ -55,7 +55,7 @@ class PrefillSEDService(
             }
 
             //vedtak
-            P6000 -> PrefillP6000(prefillPDLnav, eessiInformasjon, pensjonsinformasjonService.hentVedtak(hentVedtak(prefillData))).prefillP6000(prefillData, personDataCollection)
+            P6000 -> PrefillP6000(prefillPDLnav, eessiInformasjon, pensjonsinformasjonService.hentVedtak(hentVedtak(prefillData))).prefill(prefillData, personDataCollection)
 
             P4000 -> PrefillP4000(PrefillSed(prefillPDLnav)).prefillSed(prefillData, personDataCollection)
             P7000 -> PrefillP7000(PrefillSed(prefillPDLnav)).prefillSed(prefillData, personDataCollection)

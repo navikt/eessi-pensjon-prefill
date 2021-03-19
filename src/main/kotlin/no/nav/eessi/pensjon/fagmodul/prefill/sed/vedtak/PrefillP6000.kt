@@ -18,7 +18,7 @@ class PrefillP6000(private val prefillNav: PrefillPDLNav,
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillP6000::class.java) }
 
-    fun prefillP6000(prefillData: PrefillDataModel, personData: PersonDataCollection): P6000 {
+    fun prefill(prefillData: PrefillDataModel, personData: PersonDataCollection): P6000 {
         val sedType = prefillData.sedType
 
         logger.info("----------------------------------------------------------"
