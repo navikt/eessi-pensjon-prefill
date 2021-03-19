@@ -24,9 +24,6 @@ data class Pensjon(
 
 		//P5000
 		val trygdetid: List<MedlemskapItem>? = null,
-
-		//P7000
-		val bruker: Bruker? = null
 		)
 
 //Institusjon

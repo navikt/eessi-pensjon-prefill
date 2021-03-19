@@ -10,6 +10,7 @@ import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjon
 import no.nav.eessi.pensjon.fagmodul.prefill.pdl.PrefillPDLAdresse
 import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonService
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillPDLNav
+import no.nav.eessi.pensjon.fagmodul.sedmodel.P7000
 import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
 import no.nav.eessi.pensjon.utils.validateJson
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -49,10 +50,10 @@ class PrefillP7000_AP_21975717Test {
     @Test
     fun `forventet korrekt utfylt P7000 Melding om vedtakssammendrag med MockData fra testfiler`() {
         val prefillSEDService = PrefillSEDService(pensjonInformasjonService, EessiInformasjon(), prefillPDLNav)
-        val p7000 = prefillSEDService.prefill(prefillData, personCollection)
+        val p7000 = prefillSEDService.prefill(prefillData, personCollection) as P7000
 
         assertEquals("BALDER", p7000.nav?.ektefelle?.person?.etternavn)
-        assertEquals("M", p7000.pensjon?.bruker?.person?.kjoenn)
+        assertEquals("M", p7000.p7000Pensjon.bruker?.person?.kjoenn)
 
         assertEquals("1988-07-12", p7000.nav?.bruker?.person?.foedselsdato)
     }
