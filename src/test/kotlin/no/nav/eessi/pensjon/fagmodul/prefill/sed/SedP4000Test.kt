@@ -27,7 +27,7 @@ class SedP4000Test {
     @Mock
     private lateinit var prefillSed: PrefillSed
 
-    lateinit var pre4000: PrefillP4000
+    private lateinit var pre4000: PrefillP4000
 
     @BeforeEach
     fun setup() {
@@ -40,16 +40,14 @@ class SedP4000Test {
         assertNotNull(result)
 
         val nav = NavMock().genererNavMock()
-        val pen = PensjonMock().genererMockData()
-        val sed = SED(
+        val p4000 = P4000(
                 type = SEDType.P4000,
                 nav = nav,
-                pensjon = pen,
                 trygdetid = result
         )
 
-        val json2 = sed.toJson()
-        val mapSED = SED.fromJson(json2)
+        val p4000Json = p4000.toJson()
+        val mapSED = mapJsonToAny(p4000Json, typeRefs<P4000>())
 
         assertNotNull(mapSED)
         assertEquals(result, mapSED.trygdetid)
@@ -62,10 +60,10 @@ class SedP4000Test {
         val p4000file = String(Files.readAllBytes(path))
         assertNotNull(p4000file)
         validateJson(p4000file)
-        val sed = SED.fromJson(p4000file)
-        assertNotNull(sed)
-        assertNotNull(sed.trygdetid)
-        assertNotNull(sed.trygdetid?.ansattSelvstendigPerioder)
+        val p4000 = mapJsonToAny(p4000file, typeRefs<P4000>())
+        assertNotNull(p4000)
+        assertNotNull(p4000.trygdetid)
+        assertNotNull(p4000.trygdetid?.ansattSelvstendigPerioder)
     }
 
     @Test
@@ -142,7 +140,7 @@ class SedP4000Test {
 
         val personData = PersonDataCollection(forsikretPerson = PersonPDLMock.createWith(), gjenlevendeEllerAvdod = PersonPDLMock.createWith())
 
-        val sed = pre4000.prefillSed(data, personData)
+        val sed = pre4000.prefill(data, personData)
         assertNull(sed.trygdetid)
     }
 
@@ -179,7 +177,7 @@ class SedP4000Test {
 
         whenever(prefillSed.prefill(any(), any())).thenReturn(SED(type = SEDType.P4000))
 
-        val sed = pre4000.prefillSed(data, personData)
+        val sed = pre4000.prefill(data, personData)
         assertNotNull(sed)
     }
 }

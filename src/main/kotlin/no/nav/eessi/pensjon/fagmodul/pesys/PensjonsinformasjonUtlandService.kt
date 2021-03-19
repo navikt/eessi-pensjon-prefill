@@ -221,7 +221,7 @@ class PensjonsinformasjonUtlandService(
     //P4000-P5000 logic
     fun prosessUtlandsOpphold(seds: Map<SEDType, SED>): List<Utlandsoppholditem> {
 
-        val p4000 = getSED(SEDType.P4000, seds)
+        val p4000 = getSED(SEDType.P4000, seds) as P4000
         val p5000 = getSED(SEDType.P5000, seds) as P5000
 
         val list = mutableListOf<Utlandsoppholditem>()
@@ -234,7 +234,7 @@ class PensjonsinformasjonUtlandService(
     }
 
     //oppretter UtlandsOpphold fra P4000 (uten Norge)
-    fun hentUtlandsOppholdFraP4000(p4000: SED?): List<Utlandsoppholditem> {
+    fun hentUtlandsOppholdFraP4000(p4000: P4000?): List<Utlandsoppholditem> {
         val list = mutableListOf<Utlandsoppholditem>()
 
         if (p4000 == null) {

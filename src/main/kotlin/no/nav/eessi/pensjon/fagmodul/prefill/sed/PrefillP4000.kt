@@ -4,8 +4,8 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import no.nav.eessi.pensjon.fagmodul.models.PersonDataCollection
 import no.nav.eessi.pensjon.fagmodul.models.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillSed
+import no.nav.eessi.pensjon.fagmodul.sedmodel.P4000
 import no.nav.eessi.pensjon.fagmodul.sedmodel.PersonArbeidogOppholdUtland
-import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.typeRefs
 import org.slf4j.Logger
@@ -16,14 +16,16 @@ class PrefillP4000(private val prefillSed: PrefillSed) {
     private val logger: Logger =  LoggerFactory.getLogger(PrefillP4000::class.java)
     private val mapper = jacksonObjectMapper()
 
-    fun prefillSed(prefillData: PrefillDataModel, personData: PersonDataCollection): SED {
+    fun prefill(prefillData: PrefillDataModel, personData: PersonDataCollection): P4000 {
         return try {
             val sed = prefillSed.prefill(prefillData, personData)
-            sed.trygdetid = perfillPersonTrygdetid(prefillData)
-            sed
+            P4000(
+                nav = sed.nav,
+                trygdetid = perfillPersonTrygdetid(prefillData)
+            )
         } catch (ex: Exception) {
             logger.error("Feiler ved prefill P4000 person", ex)
-            SED(prefillData.sedType)
+            P4000(prefillData.sedType)
         }
     }
 

@@ -20,11 +20,8 @@ data class Pensjon(
 		val kravDato: Krav? = null, //kravDato pkt. 9.1 P2000
 
 		//P3000
-		val landspesifikk: Landspesifikk? = null,
-
-		//P5000 og P4000
-		val trygdetid: List<MedlemskapItem>? = null,
-		)
+		val landspesifikk: Landspesifikk? = null
+)
 
 //Institusjon
 data class Institusjon(
