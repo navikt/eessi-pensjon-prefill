@@ -4,8 +4,13 @@ import no.nav.eessi.pensjon.fagmodul.eux.BucUtils
 import no.nav.eessi.pensjon.fagmodul.eux.EuxService
 import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.pesys.RinaTilPenMapper.parsePensjonsgrad
-import no.nav.eessi.pensjon.fagmodul.pesys.mockup.MockSED001
-import no.nav.eessi.pensjon.fagmodul.sedmodel.*
+import no.nav.eessi.pensjon.fagmodul.sedmodel.AnsattSelvstendigItem
+import no.nav.eessi.pensjon.fagmodul.sedmodel.P4000
+import no.nav.eessi.pensjon.fagmodul.sedmodel.P5000
+import no.nav.eessi.pensjon.fagmodul.sedmodel.Periode
+import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
+import no.nav.eessi.pensjon.fagmodul.sedmodel.StandardItem
+import no.nav.eessi.pensjon.fagmodul.sedmodel.TrygdeTidPeriode
 import no.nav.eessi.pensjon.services.kodeverk.KodeverkClient
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
@@ -22,8 +27,6 @@ class PensjonsinformasjonUtlandService(
     private val nameSpace: String) {
 
     private val logger = LoggerFactory.getLogger(PensjonsinformasjonUtlandService::class.java)
-
-    private val mockSed = MockSED001()
 
     private final val validBuc = listOf("P_BUC_01","P_BUC_02","P_BUC_03")
     private final val kravSedBucmap = mapOf("P_BUC_01" to SEDType.P2000, "P_BUC_02" to SEDType.P2100, "P_BUC_03" to SEDType.P2200)
@@ -56,9 +59,8 @@ class PensjonsinformasjonUtlandService(
         logger.info("*** Starter kravUtlandpensjon: ${kravSed.type} bucId: $bucId bucType: ${bucUtils.getProcessDefinitionName()} ***")
 
         return if(erAlderpensjon(kravSed)) {
-            val seds = mapSeds(bucId)
             logger.debug("type er alderpensjon")
-            kravAlderpensjonUtland(seds)
+            kravAlderpensjonUtland(kravSed, bucUtils)
         } else {
             logger.debug("type er uførepensjon")
             kravUforepensjonUtland(kravSed, bucUtils)
@@ -104,10 +106,10 @@ class PensjonsinformasjonUtlandService(
     //TODO: vil trenge en innhentSedFraRinaService..
     //TODO: vil trenge en navSED->PESYS regel.
     //funksjon for P2000
-    fun kravAlderpensjonUtland(seds: Map<SEDType, SED>): KravUtland {
+    fun kravAlderpensjonUtland(kravSed: SED, bucUtils: BucUtils): KravUtland {
 
-        val p2000 = getSED(SEDType.P2000, seds) ?: return KravUtland(errorMelding = "Ingen P2000 funnet")
-        val p3000no = getSED(SEDType.P3000_NO, seds) ?: return KravUtland(errorMelding = "Ingen P3000no funnet")
+        val p2000 = kravSed
+        val p3000no: SED? = null
         logger.debug("oppretter KravUtland")
 
         //https://confluence.adeo.no/pages/viewpage.action?pageId=203178268
@@ -122,7 +124,7 @@ class PensjonsinformasjonUtlandService(
             iverksettelsesdato = hentRettIverksettelsesdato(p2000),
 
             //P3000_NO 4.6.1. Forsikredes anmodede prosentdel av full pensjon
-            uttaksgrad = parsePensjonsgrad(p3000no.pensjon?.landspesifikk?.norge?.alderspensjon?.pensjonsgrad),
+            uttaksgrad = parsePensjonsgrad(p3000no?.pensjon?.landspesifikk?.norge?.alderspensjon?.pensjonsgrad),
 
             //P2000 2.2.1.1
             personopplysninger = SkjemaPersonopplysninger(
@@ -136,7 +138,7 @@ class PensjonsinformasjonUtlandService(
             ),
 
             //P4000 - P5000 opphold utland (norge filtrert bort)
-            utland = hentSkjemaUtland(seds),
+            utland = hentSkjemaUtland(null),
 
             //denne må hentes utenfor SED finne orginal avsender-land for BUC/SED..
             soknadFraLand = kodeverkClient.finnLandkode3("SE"),
@@ -211,9 +213,9 @@ class PensjonsinformasjonUtlandService(
     }
 
 
-    fun hentSkjemaUtland(seds: Map<SEDType, SED>): SkjemaUtland {
+    fun hentSkjemaUtland(seds: SED? = null ): SkjemaUtland {
         logger.debug("oppretter SkjemaUtland")
-        val list = prosessUtlandsOpphold(seds)
+        val list = prosessUtlandsOpphold(null)
         logger.debug("liste Utlandsoppholditem er størrelse : ${list.size}")
         return SkjemaUtland(
                 utlandsopphold = list
@@ -221,10 +223,10 @@ class PensjonsinformasjonUtlandService(
     }
 
     //P4000-P5000 logic
-    fun prosessUtlandsOpphold(seds: Map<SEDType, SED>): List<Utlandsoppholditem> {
+    fun prosessUtlandsOpphold(seds: Map<SEDType, SED>? = null): List<Utlandsoppholditem> {
 
-        val p4000 = getSED(SEDType.P4000, seds) as P4000
-        val p5000 = getSED(SEDType.P5000, seds) as P5000
+        val p4000: P4000? = null
+        val p5000: P5000? = null
 
         val list = mutableListOf<Utlandsoppholditem>()
         logger.debug("oppretter utlandopphold P4000")
@@ -404,25 +406,4 @@ class PensjonsinformasjonUtlandService(
         return list
     }
 
-    private fun getSED(sedType: SEDType, maps: Map<SEDType, SED>) = maps[sedType]
-
-    //henter de nødvendige SEDer fra Rina, legger de på maps med bucId som Key.
-    fun mapSeds(bucId: Int): Map<SEDType, SED> {
-        logger.debug("Henter ut alle nødvendige SED for lettere utfylle tjenesten")
-        return mapOf(SEDType.P2000 to fetchDocument(bucId, SEDType.P2000),
-                SEDType.P3000_NO to fetchDocument(bucId, SEDType.P3000_NO),
-                SEDType.P4000 to fetchDocument(bucId, SEDType.P4000))
-    }
-
-    //Henter inn valgt sedType fra Rina og returerer denne
-    //returnerer generell ERROR sed hvis feil!
-    fun fetchDocument(buc: Int, sedType: SEDType): SED {
-    logger.debug("henter ut SED data for type: $buc og sedType: $sedType")
-    return when (sedType) {
-        SEDType.P2000 -> mockSed.mockP2000()
-        SEDType.P3000_NO -> mockSed.mockP3000NO("03")
-        SEDType.P4000 -> mockSed.mockP4000()
-        else -> throw RuntimeException("FEIL")
-        }
-    }
 }
