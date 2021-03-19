@@ -131,7 +131,7 @@ dependencies {
     // Only used for starting up locally
     implementation("no.nav.security:token-validation-test-support:${tokenSupportVersion}")
 
-    implementation("no.nav.eessi.pensjon:ep-security-sts:0.0.12")
+    implementation("no.nav.eessi.pensjon:ep-security-sts:0.0.16")
     testImplementation("org.pac4j:spring-webmvc-pac4j:3.2.0")
 
     // Tjenestespesifikasjoner
