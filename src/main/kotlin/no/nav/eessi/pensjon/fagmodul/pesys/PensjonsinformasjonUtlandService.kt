@@ -5,11 +5,7 @@ import no.nav.eessi.pensjon.fagmodul.eux.EuxService
 import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.pesys.RinaTilPenMapper.parsePensjonsgrad
 import no.nav.eessi.pensjon.fagmodul.pesys.mockup.MockSED001
-import no.nav.eessi.pensjon.fagmodul.sedmodel.AnsattSelvstendigItem
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Periode
-import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
-import no.nav.eessi.pensjon.fagmodul.sedmodel.StandardItem
-import no.nav.eessi.pensjon.fagmodul.sedmodel.TrygdeTidPeriode
+import no.nav.eessi.pensjon.fagmodul.sedmodel.*
 import no.nav.eessi.pensjon.services.kodeverk.KodeverkClient
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
@@ -226,7 +222,7 @@ class PensjonsinformasjonUtlandService(
     fun prosessUtlandsOpphold(seds: Map<SEDType, SED>): List<Utlandsoppholditem> {
 
         val p4000 = getSED(SEDType.P4000, seds)
-        val p5000 = getSED(SEDType.P5000, seds)
+        val p5000 = getSED(SEDType.P5000, seds) as P5000
 
         val list = mutableListOf<Utlandsoppholditem>()
         logger.debug("oppretter utlandopphold P4000")
@@ -371,10 +367,10 @@ class PensjonsinformasjonUtlandService(
     }
 
     //oppretter UtlandsOpphold fra P5000 (trygdeland)
-    fun hentUtlandsOppholdFraP5000(p5000: SED?): List<Utlandsoppholditem> {
+    fun hentUtlandsOppholdFraP5000(p5000: P5000?): List<Utlandsoppholditem> {
         val list = mutableListOf<Utlandsoppholditem>()
         //P5000
-        val trygdetidList = p5000?.pensjon?.trygdetid
+        val trygdetidList = p5000?.p5000Pensjon?.trygdetid
 
         trygdetidList?.forEach {
             var fom: LocalDate? = null

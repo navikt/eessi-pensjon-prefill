@@ -22,7 +22,7 @@ data class Pensjon(
 		//P3000
 		val landspesifikk: Landspesifikk? = null,
 
-		//P5000
+		//P5000 og P4000
 		val trygdetid: List<MedlemskapItem>? = null,
 		)
 
