@@ -123,9 +123,7 @@ class PensjonMock {
         }
 
 
-    fun genererMockData(
-            trygdetid: List<MedlemskapItem>? = null
-    ): Pensjon {
+    fun genererMockData(): Pensjon {
         return Pensjon(
                 gjenlevende = Bruker(
                         adresse = Adresse(
@@ -173,8 +171,7 @@ class PensjonMock {
                                 ),
                                 foedselsdato = "1964-12-01"
                         )
-                ),
-                trygdetid= trygdetid
+                )
         )
     }
 

@@ -1,7 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.sedmodel
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.toJson
@@ -30,15 +29,15 @@ class SedP4000fileTest {
         val map = mapJsonToAny(p4000json, typeRefs<Map<String, Any>>())
         val periodeInfoJson = mapAnyToJson(map["periodeInfo"] ?: "{}")
 
-        val sed = SED(SEDType.P4000)
-        sed.trygdetid = mapJsonToAny( periodeInfoJson, typeRefs())
+        val p4000 = P4000()
+        p4000.trygdetid = mapJsonToAny( periodeInfoJson, typeRefs())
 
-        assertEquals("work period 1 workName", sed.trygdetid?.ansattSelvstendigPerioder?.first()?.navnFirma)
-        assertEquals("Ole", sed.trygdetid?.barnepassPerioder?.first()?.informasjonBarn?.fornavn)
-        assertEquals("daily period 1 payingInstitution", sed.trygdetid?.arbeidsledigPerioder?.first()?.navnPaaInstitusjon)
-        assertEquals("EE", sed.trygdetid?.boPerioder?.first()?.land)
-        assertEquals("GG", sed.trygdetid?.opplaeringPerioder?.first()?.land)
-        assertEquals("learn period 1 learnInstitution", sed.trygdetid?.opplaeringPerioder?.first()?.navnPaaInstitusjon)
+        assertEquals("work period 1 workName", p4000.trygdetid?.ansattSelvstendigPerioder?.first()?.navnFirma)
+        assertEquals("Ole", p4000.trygdetid?.barnepassPerioder?.first()?.informasjonBarn?.fornavn)
+        assertEquals("daily period 1 payingInstitution", p4000.trygdetid?.arbeidsledigPerioder?.first()?.navnPaaInstitusjon)
+        assertEquals("EE", p4000.trygdetid?.boPerioder?.first()?.land)
+        assertEquals("GG", p4000.trygdetid?.opplaeringPerioder?.first()?.land)
+        assertEquals("learn period 1 learnInstitution", p4000.trygdetid?.opplaeringPerioder?.first()?.navnPaaInstitusjon)
     }
 
     @Test
@@ -49,7 +48,7 @@ class SedP4000fileTest {
         val personDataNode = mapper.readTree(p4000json)
         val personDataJson =  personDataNode["periodeInfo"].toString()
 
-        val sed = SED(SEDType.P4000)
+        val sed = P4000()
         sed.trygdetid = mapJsonToAny(personDataJson, typeRefs())
 
         val trygdetidJson = sed.trygdetid?.toJson()

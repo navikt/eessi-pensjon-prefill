@@ -18,7 +18,6 @@ open class SED(
     open var sedVer: String? = "1",
     open var nav: Nav? = null, // TODO Mutable
     var pensjon: Pensjon? = null, // TODO Mutable
-    open var trygdetid: PersonArbeidogOppholdUtland? = null, //P4000 // TODO Mutable
 ) {
     companion object {
         @JvmStatic
