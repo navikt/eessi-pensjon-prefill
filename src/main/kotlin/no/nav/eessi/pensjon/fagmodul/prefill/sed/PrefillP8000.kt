@@ -19,7 +19,7 @@ class PrefillP8000(private val prefillSed: PrefillSed) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillP8000::class.java) }
 
-    fun prefillP8000(prefillData: PrefillDataModel, personData: PersonDataCollection, sak: V1Sak?): P8000 {
+    fun prefill(prefillData: PrefillDataModel, personData: PersonDataCollection, sak: V1Sak?): P8000 {
         val navsed = prefillSed.prefill(prefillData, personData)
         val eessielm = navsed.nav?.eessisak
         val gjenlevendeBruker: Bruker? = navsed.pensjon?.gjenlevende
