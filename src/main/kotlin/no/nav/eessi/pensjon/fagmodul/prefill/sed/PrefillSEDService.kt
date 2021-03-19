@@ -63,13 +63,13 @@ class PrefillSEDService(
             P8000 -> {
                 if (prefillData.buc == "P_BUC_05") {
                     try {
-                        PrefillP8000(PrefillSed(prefillPDLnav)).prefillSed(prefillData, personDataCollection, hentRelevantPensjonSak(prefillData) { pensakType -> listOf("ALDER", "BARNEP", "GJENLEV", "UFOREP", "GENRL", "OMSORG").contains(pensakType) })
+                        PrefillP8000(PrefillSed(prefillPDLnav)).prefill(prefillData, personDataCollection, hentRelevantPensjonSak(prefillData) { pensakType -> listOf("ALDER", "BARNEP", "GJENLEV", "UFOREP", "GENRL", "OMSORG").contains(pensakType) })
                     } catch (ex: Exception) {
                         logger.error(ex.message)
-                        PrefillP8000(PrefillSed(prefillPDLnav)).prefillSed(prefillData, personDataCollection, null)
+                        PrefillP8000(PrefillSed(prefillPDLnav)).prefill(prefillData, personDataCollection, null)
                     }
                 } else {
-                    PrefillP8000(PrefillSed(prefillPDLnav)).prefillSed(prefillData, personDataCollection, null)
+                    PrefillP8000(PrefillSed(prefillPDLnav)).prefill(prefillData, personDataCollection, null)
                 }
             }
 

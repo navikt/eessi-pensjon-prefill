@@ -13,9 +13,7 @@ import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillSed
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.EPSaktype
 import no.nav.pensjon.v1.kravhistorikkliste.V1KravHistorikkListe
 import no.nav.pensjon.v1.sak.V1Sak
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNotNull
-import org.junit.jupiter.api.Assertions.assertNull
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
@@ -51,7 +49,7 @@ class PrefillP8000APUtlandInnvTest {
         sak.sakId = 100
         sak.kravHistorikkListe = V1KravHistorikkListe()
 
-        val p8000 = prefill.prefillSed(prefillData, persondataCollection, sak)
+        val p8000 = prefill.prefill(prefillData, persondataCollection, sak)
 
         assertEquals("ODIN ETTØYE", p8000.nav?.bruker?.person?.fornavn)
         assertEquals("BALDER", p8000.nav?.bruker?.person?.etternavn)

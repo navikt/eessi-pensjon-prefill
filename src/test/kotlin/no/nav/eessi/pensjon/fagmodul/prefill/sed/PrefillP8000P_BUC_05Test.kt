@@ -3,12 +3,7 @@ package no.nav.eessi.pensjon.fagmodul.prefill.sed
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.whenever
-import no.nav.eessi.pensjon.fagmodul.models.PersonDataCollection
-import no.nav.eessi.pensjon.fagmodul.models.PersonId
-import no.nav.eessi.pensjon.fagmodul.models.PrefillDataModel
-import no.nav.eessi.pensjon.fagmodul.models.PrefillDataModelMother
-import no.nav.eessi.pensjon.fagmodul.models.ReferanseTilPerson
-import no.nav.eessi.pensjon.fagmodul.models.SEDType
+import no.nav.eessi.pensjon.fagmodul.models.*
 import no.nav.eessi.pensjon.fagmodul.prefill.LagPDLPerson
 import no.nav.eessi.pensjon.fagmodul.prefill.LagPDLPerson.Companion.medAdresse
 import no.nav.eessi.pensjon.fagmodul.prefill.PersonPDLMock.medUtlandAdresse
@@ -17,6 +12,7 @@ import no.nav.eessi.pensjon.fagmodul.prefill.pdl.FodselsnummerMother.generateRan
 import no.nav.eessi.pensjon.fagmodul.prefill.pdl.PrefillPDLAdresse
 import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonService
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillPDLNav
+import no.nav.eessi.pensjon.fagmodul.sedmodel.P8000
 import no.nav.eessi.pensjon.services.geo.PostnummerService
 import no.nav.eessi.pensjon.services.kodeverk.KodeverkClient
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.EPSaktype
@@ -78,14 +74,14 @@ class PrefillP8000P_BUC_05Test {
         doReturn("NO").whenever(kodeverkClient).finnLandkode2("NOR")
         doReturn("SE").whenever(kodeverkClient).finnLandkode2("SWE")
 
-        val sed = prefillSEDService.prefill(prefillData, personDataCollection)
+        val p8000 = prefillSEDService.prefill(prefillData, personDataCollection)
 
-        assertEquals("Christopher", sed.nav?.bruker?.person?.fornavn)
-        assertEquals("LUNGJTEGATA 12", sed.nav?.bruker?.adresse?.gate)
-        assertEquals("SE", sed.nav?.bruker?.adresse?.land)
-        assertEquals(pesysSaksnummer, sed.nav?.eessisak?.firstOrNull()?.saksnummer)
-        assertEquals("Robin", sed.nav?.bruker?.person?.etternavn)
-        assertEquals(fnr, sed.nav?.bruker?.person?.pin?.firstOrNull()?.identifikator)
+        assertEquals("Christopher", p8000.nav?.bruker?.person?.fornavn)
+        assertEquals("LUNGJTEGATA 12", p8000.nav?.bruker?.adresse?.gate)
+        assertEquals("SE", p8000.nav?.bruker?.adresse?.land)
+        assertEquals(pesysSaksnummer, p8000.nav?.eessisak?.firstOrNull()?.saksnummer)
+        assertEquals("Robin", p8000.nav?.bruker?.person?.etternavn)
+        assertEquals(fnr, p8000.nav?.bruker?.person?.pin?.firstOrNull()?.identifikator)
 
     }
 
@@ -106,17 +102,17 @@ class PrefillP8000P_BUC_05Test {
 
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SEDType.P8000, fnr, penSaksnummer = pesysSaksnummer, avdod = PersonId(norskIdent = avdodFnr, aktorId = "21323"),  refTilPerson = ReferanseTilPerson.AVDOD)
 
-        val sed =  prefillSEDService.prefill(prefillData, personDataCollection)
+        val p8000 =  prefillSEDService.prefill(prefillData, personDataCollection) as P8000
 
         //daua person
-        assertEquals("Winnie", sed.nav?.bruker?.person?.fornavn)
-        assertEquals("Pooh", sed.nav?.bruker?.person?.etternavn)
+        assertEquals("Winnie", p8000.nav?.bruker?.person?.fornavn)
+        assertEquals("Pooh", p8000.nav?.bruker?.person?.etternavn)
 
         //levende person
-        assertEquals("Christopher", sed.nav?.annenperson?.person?.fornavn)
-        assertEquals("Robin", sed.nav?.annenperson?.person?.etternavn)
-        assertEquals("01", sed.nav?.annenperson?.person?.rolle)
-        assertEquals("01",  sed.pensjon?.anmodning?.referanseTilPerson)
+        assertEquals("Christopher", p8000.nav?.annenperson?.person?.fornavn)
+        assertEquals("Robin", p8000.nav?.annenperson?.person?.etternavn)
+        assertEquals("01", p8000.nav?.annenperson?.person?.rolle)
+        assertEquals("01",  p8000.p8000Pensjon?.anmodning?.referanseTilPerson)
 
     }
 
@@ -137,18 +133,18 @@ class PrefillP8000P_BUC_05Test {
 
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SEDType.P8000, fnr, penSaksnummer = pesysSaksnummer, avdod = PersonId(norskIdent = avdodFnr, aktorId = "21323"), refTilPerson = ReferanseTilPerson.SOKER )
 
-        val sed =  prefillSEDService.prefill(prefillData, personDataCollection)
+        val p8000 =  prefillSEDService.prefill(prefillData, personDataCollection) as P8000
 
         //daua person
-        assertEquals("Winnie", sed.nav?.bruker?.person?.fornavn)
-        assertEquals("Pooh", sed.nav?.bruker?.person?.etternavn)
+        assertEquals("Winnie", p8000.nav?.bruker?.person?.fornavn)
+        assertEquals("Pooh", p8000.nav?.bruker?.person?.etternavn)
 
         //levende person
-        assertEquals("Christopher", sed.nav?.annenperson?.person?.fornavn)
-        assertEquals("Robin", sed.nav?.annenperson?.person?.etternavn)
-        assertEquals("01", sed.nav?.annenperson?.person?.rolle)
+        assertEquals("Christopher", p8000.nav?.annenperson?.person?.fornavn)
+        assertEquals("Robin", p8000.nav?.annenperson?.person?.etternavn)
+        assertEquals("01", p8000.nav?.annenperson?.person?.rolle)
 
-        assertEquals("02",  sed.pensjon?.anmodning?.referanseTilPerson)
+        assertEquals("02",  p8000.p8000Pensjon?.anmodning?.referanseTilPerson)
     }
 
 
@@ -182,7 +178,7 @@ class PrefillP8000P_BUC_05Test {
 
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SEDType.P8000, fnr, penSaksnummer = "100", avdod = PersonId(norskIdent = avdodFnr, aktorId = "21323"),  refTilPerson = ReferanseTilPerson.SOKER, bucType = "P_BUC_05")
 
-        val sed =  prefillSEDService.prefill(prefillData, personDataCollection)
+        val p8000 =  prefillSEDService.prefill(prefillData, personDataCollection)
 
         val expected = """
             {
@@ -223,7 +219,7 @@ class PrefillP8000P_BUC_05Test {
 
         """.trimIndent()
 
-       JSONAssert.assertEquals(sed.toJsonSkipEmpty(), expected, true)
+       JSONAssert.assertEquals(p8000.toJsonSkipEmpty(), expected, true)
     }
 
     @Test
@@ -255,7 +251,7 @@ class PrefillP8000P_BUC_05Test {
 
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SEDType.P8000, fnr, penSaksnummer = "100", avdod = PersonId(norskIdent = avdodFnr, aktorId = "21323"),  refTilPerson = ReferanseTilPerson.SOKER, bucType = "P_BUC_05")
 
-        val sed =  prefillSEDService.prefill(prefillData, personDataCollection)
+        val p8000 =  prefillSEDService.prefill(prefillData, personDataCollection)
 
         val expected = """
             {
@@ -296,7 +292,7 @@ class PrefillP8000P_BUC_05Test {
 
         """.trimIndent()
 
-        JSONAssert.assertEquals(sed.toJsonSkipEmpty(), expected, true)
+        JSONAssert.assertEquals(p8000.toJsonSkipEmpty(), expected, true)
     }
 
 }
