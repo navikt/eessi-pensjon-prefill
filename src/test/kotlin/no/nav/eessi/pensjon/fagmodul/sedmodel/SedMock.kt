@@ -5,9 +5,9 @@ import no.nav.eessi.pensjon.fagmodul.models.SEDType
 class SedMock {
 
     fun genererP5000Mock(): SED {
-        return SED(
+        return P5000(
                 nav = NavMock().genererNavMock(),
-                pensjon = PensjonMock().genererMockDataMedMeldemskap(),
+                p5000Pensjon = PensjonMock().genererP5000Pensjon(),
                 type = SEDType.P5000,
                 sedVer = "0",
                 sedGVer = "4"
@@ -114,10 +114,10 @@ class NavMock {
 //Mock prefill av en vedtak
 class PensjonMock {
 
-        fun genererMockDataMedMeldemskap(): Pensjon {
+        fun genererP5000Pensjon(): P5000Pensjon {
                 val pensjonMeldemskap = createMedlemskapMock()
 
-                return genererMockData(
+                return P5000Pensjon(
                         trygdetid = pensjonMeldemskap.trygdetid
                 )
         }
@@ -181,9 +181,9 @@ class PensjonMock {
 }
 
 //P5000 - bekreftforsikred
-fun createMedlemskapMock(): Pensjon {
+fun createMedlemskapMock(): P5000Pensjon {
 
-        return Pensjon(
+        return P5000Pensjon(
                 trygdetid = listOf(
                         MedlemskapItem()
                 )
