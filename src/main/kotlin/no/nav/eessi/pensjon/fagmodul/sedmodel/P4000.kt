@@ -10,7 +10,7 @@ class P4000(
     override var sedVer: String? = "1",
     override var nav: Nav? = null,
     var trygdetid: PersonArbeidogOppholdUtland? = null
-) : SED(type, sedGVer, sedVer, nav, null)
+) : SED(type, sedGVer, sedVer, nav)
 
 
 data class PersonArbeidogOppholdUtland(
