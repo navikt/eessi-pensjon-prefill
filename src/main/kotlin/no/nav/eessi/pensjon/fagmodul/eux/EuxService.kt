@@ -132,7 +132,7 @@ class EuxService (private val euxKlient: EuxKlient,
             SEDType.P6000 -> mapJsonToAny(sedJson, typeRefs<P6000>())
             SEDType.P7000 -> mapJsonToAny(sedJson, typeRefs<P7000>())
             SEDType.P8000 -> mapJsonToAny(sedJson, typeRefs<P8000>())
-            else -> mapJsonToAny(sedJson, typeRefs<SED>())
+            else -> genericSed
         }
     }
 

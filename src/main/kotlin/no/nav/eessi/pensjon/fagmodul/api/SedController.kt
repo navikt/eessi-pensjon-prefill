@@ -16,7 +16,7 @@ import no.nav.eessi.pensjon.fagmodul.prefill.ApiRequest
 import no.nav.eessi.pensjon.fagmodul.prefill.MangelfulleInndataException
 import no.nav.eessi.pensjon.fagmodul.prefill.PersonDataService
 import no.nav.eessi.pensjon.fagmodul.prefill.PrefillService
-import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
+import no.nav.eessi.pensjon.fagmodul.sedmodel.*
 import no.nav.eessi.pensjon.logging.AuditLogger
 import no.nav.eessi.pensjon.metrics.MetricsHelper
 import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentType
@@ -90,7 +90,8 @@ class SedController(
         auditlogger.logBuc("getDocument", " euxCaseId: $euxcaseid documentId: $documentid")
 
         logger.info("Prøver å kalle getDocument for /${euxcaseid}/${documentid} ")
-        return euxService.getSedOnBucByDocumentId(euxcaseid, documentid).toJson()
+        val sed = euxService.getSedOnBucByDocumentId(euxcaseid, documentid)
+        return mapToConcreteSedJson(sed)
     }
 
     @ApiOperation("legge til Deltaker(e) og SED på et eksisterende Rina document. kjører preutfylling, ny api kall til eux")
@@ -327,6 +328,17 @@ class SedController(
                 personService.hentIdent(IdentType.AktoerId, NorskIdent(norskIdent)).id
             }
             else -> null
+        }
+    }
+
+    private fun mapToConcreteSedJson(sedJson: SED): String {
+        return when(sedJson.type) {
+            SEDType.P4000 -> (sedJson as P4000).toJson()
+            SEDType.P5000 -> (sedJson as P5000).toJson()
+            SEDType.P6000 -> (sedJson as P6000).toJson()
+            SEDType.P7000 -> (sedJson as P7000).toJson()
+            SEDType.P8000 -> (sedJson as P8000).toJson()
+            else -> sedJson.toJson()
         }
     }
 
