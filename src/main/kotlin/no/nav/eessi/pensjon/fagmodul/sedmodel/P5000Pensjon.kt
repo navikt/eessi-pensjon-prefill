@@ -5,10 +5,11 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 
 class P5000Pensjon(
     val trygdetid: List<MedlemskapItem>? = null,
+    // Benyttes for visning av "Se annen" siden for P5000 i fontend
+    val medlemskapAnnen: List<MedlemskapItem>? = null,
+    // Benyttes for visning av "Se oversikt" siden for 5000 i frontend
     val medlemskap: List<MedlemskapItem>? = null
-
 )
-
 
 /**
  * Benyttes både ved prefill og ved visning av trygdetidsperioder til frontend
