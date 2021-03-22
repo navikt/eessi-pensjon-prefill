@@ -91,7 +91,9 @@ class SedController(
 
         logger.info("Prøver å kalle getDocument for /${euxcaseid}/${documentid} ")
         val sed = euxService.getSedOnBucByDocumentId(euxcaseid, documentid)
-        return mapToConcreteSedJson(sed)
+        val sedJson = mapToConcreteSedJson(sed)
+        logger.debug("Logger konkret SED json: $sedJson")
+        return sedJson
     }
 
     @ApiOperation("legge til Deltaker(e) og SED på et eksisterende Rina document. kjører preutfylling, ny api kall til eux")
