@@ -7,6 +7,8 @@ class P5000Pensjon(
     val trygdetid: List<MedlemskapItem>? = null,
     // Benyttes for visning av "Se annen" siden for P5000 i fontend
     val medlemskapAnnen: List<MedlemskapItem>? = null,
+    val medlemskapTotal: List<MedlemskapItem>? = null,
+
     // Benyttes for visning av "Se oversikt" siden for 5000 i frontend
     val medlemskap: List<MedlemskapItem>? = null
 )
