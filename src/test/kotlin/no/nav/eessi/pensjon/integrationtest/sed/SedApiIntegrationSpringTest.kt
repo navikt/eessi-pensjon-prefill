@@ -51,6 +51,8 @@ class SedApiIntegrationSpringTest {
         val response  = result.response.getContentAsString(charset("UTF-8"))
         val p5000 = mapJsonToAny(response, typeRefs<P5000>())
         assertNotNull(p5000.p5000Pensjon.trygdetid!!.size == 1)
+        assertNotNull(p5000.p5000Pensjon.medlemskap!!.size == 1)
+
     }
 }
 
