@@ -37,13 +37,6 @@ data class Institusjon(
         val startdatoPensjonsRettighet: String? = null  //4.1.5
 )
 
-//P5000
-@JsonIgnoreProperties(ignoreUnknown = true)
-data class MedlemskapItem(
-		val land: String? = null,
-		val periode: Periode? = null,
-)
-
 //P2000 - P2200
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class YtelserItem(
