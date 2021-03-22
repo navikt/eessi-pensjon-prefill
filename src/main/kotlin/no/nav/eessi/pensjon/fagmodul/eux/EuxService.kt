@@ -8,9 +8,7 @@ import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Buc
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ParticipantsItem
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.models.SEDType
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Person
-import no.nav.eessi.pensjon.fagmodul.sedmodel.PinItem
-import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
+import no.nav.eessi.pensjon.fagmodul.sedmodel.*
 import no.nav.eessi.pensjon.metrics.MetricsHelper
 import no.nav.eessi.pensjon.services.statistikk.StatistikkHandler
 import no.nav.eessi.pensjon.utils.mapJsonToAny
@@ -122,7 +120,20 @@ class EuxService (private val euxKlient: EuxKlient,
     @Throws(EuxServerException::class, SedDokumentIkkeLestException::class)
     fun getSedOnBucByDocumentId(euxCaseId: String, documentId: String): SED {
         val json = euxKlient.getSedOnBucByDocumentIdAsJson(euxCaseId, documentId)
-        return SED.fromJson(json)
+        return mapToConcreteSedClass(json)
+    }
+
+    private fun mapToConcreteSedClass(sedJson: String): SED {
+        val genericSed = SED.fromJson(sedJson)
+
+        return when(genericSed.type) {
+            SEDType.P4000 -> mapJsonToAny(sedJson, typeRefs<P4000>())
+            SEDType.P5000 -> mapJsonToAny(sedJson, typeRefs<P5000>())
+            SEDType.P6000 -> mapJsonToAny(sedJson, typeRefs<P6000>())
+            SEDType.P7000 -> mapJsonToAny(sedJson, typeRefs<P7000>())
+            SEDType.P8000 -> mapJsonToAny(sedJson, typeRefs<P8000>())
+            else -> mapJsonToAny(sedJson, typeRefs<SED>())
+        }
     }
 
     fun getFnrMedLandkodeNO(pinlist: List<PinItem>?): String? =
