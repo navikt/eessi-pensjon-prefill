@@ -13,11 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
-import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -48,10 +46,9 @@ class SedApiIntegrationSpringTest {
 
         val result = mockMvc.perform(get("/sed/get/1234/5678"))
             .andExpect(status().isOk)
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andReturn()
 
-        val response = result.response.getContentAsString(charset("UTF-8"))
+        val response  = result.response.getContentAsString(charset("UTF-8"))
         val p5000 = mapJsonToAny(response, typeRefs<P5000>())
         assertNotNull(p5000.p5000Pensjon.trygdetid!!.size == 1)
     }

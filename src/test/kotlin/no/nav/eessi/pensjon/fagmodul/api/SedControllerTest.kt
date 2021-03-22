@@ -1,54 +1,24 @@
 package no.nav.eessi.pensjon.fagmodul.api
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.doNothing
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.doThrow
-import com.nhaarman.mockitokotlin2.eq
-import com.nhaarman.mockitokotlin2.times
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
+import com.nhaarman.mockitokotlin2.*
 import no.nav.eessi.pensjon.fagmodul.eux.EuxService
 import no.nav.eessi.pensjon.fagmodul.eux.SedDokumentIkkeOpprettetException
 import no.nav.eessi.pensjon.fagmodul.eux.SedDokumentKanIkkeOpprettesException
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.BucSedResponse
-import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ActionsItem
-import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Buc
-import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ConversationsItem
-import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.DocumentsItem
-import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Organisation
-import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ParticipantsItem
-import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Sender
-import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ShortDocumentItem
-import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.UserMessagesItem
+import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.*
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.models.PersonDataCollection
 import no.nav.eessi.pensjon.fagmodul.models.SEDType
-import no.nav.eessi.pensjon.fagmodul.prefill.ApiRequest
-import no.nav.eessi.pensjon.fagmodul.prefill.ApiSubject
-import no.nav.eessi.pensjon.fagmodul.prefill.MangelfulleInndataException
-import no.nav.eessi.pensjon.fagmodul.prefill.PersonDataService
-import no.nav.eessi.pensjon.fagmodul.prefill.PersonPDLMock
-import no.nav.eessi.pensjon.fagmodul.prefill.PrefillService
-import no.nav.eessi.pensjon.fagmodul.prefill.SedAndType
-import no.nav.eessi.pensjon.fagmodul.prefill.SubjectFnr
+import no.nav.eessi.pensjon.fagmodul.prefill.*
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillSEDService
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Bruker
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Krav
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Nav
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Person
-import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
+import no.nav.eessi.pensjon.fagmodul.sedmodel.*
 import no.nav.eessi.pensjon.logging.AuditLogger
 import no.nav.eessi.pensjon.personoppslag.pdl.model.AktoerId
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Ident
 import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentType
 import no.nav.eessi.pensjon.personoppslag.pdl.model.NorskIdent
-import no.nav.eessi.pensjon.utils.mapAnyToJson
-import no.nav.eessi.pensjon.utils.mapJsonToAny
-import no.nav.eessi.pensjon.utils.toJson
-import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
-import no.nav.eessi.pensjon.utils.typeRefs
+import no.nav.eessi.pensjon.utils.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
@@ -157,7 +127,7 @@ class SedControllerTest {
         doReturn(sed).`when`(mockEuxService).getSedOnBucByDocumentId("2313", "23123123123")
 
         val result = sedController.getDocument("2313", "23123123123")
-        assertEquals(sed, result)
+        assertEquals(sed.toJson(), result)
     }
 
     @Test

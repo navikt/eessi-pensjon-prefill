@@ -29,12 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ResponseStatusException
 import javax.annotation.PostConstruct
 
@@ -91,11 +86,11 @@ class SedController(
     fun getDocument(
         @PathVariable("euxcaseid", required = true) euxcaseid: String,
         @PathVariable("documentid", required = true) documentid: String
-    ): SED {
+    ): String {
         auditlogger.logBuc("getDocument", " euxCaseId: $euxcaseid documentId: $documentid")
 
         logger.info("Prøver å kalle getDocument for /${euxcaseid}/${documentid} ")
-        return euxService.getSedOnBucByDocumentId(euxcaseid, documentid)
+        return euxService.getSedOnBucByDocumentId(euxcaseid, documentid).toJson()
     }
 
     @ApiOperation("legge til Deltaker(e) og SED på et eksisterende Rina document. kjører preutfylling, ny api kall til eux")
