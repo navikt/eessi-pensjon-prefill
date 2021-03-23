@@ -2,12 +2,7 @@ package no.nav.eessi.pensjon.fagmodul.api
 
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import io.swagger.annotations.ApiOperation
-import no.nav.eessi.pensjon.fagmodul.eux.BucAndSedSubject
-import no.nav.eessi.pensjon.fagmodul.eux.BucAndSedView
-import no.nav.eessi.pensjon.fagmodul.eux.BucUtils
-import no.nav.eessi.pensjon.fagmodul.eux.EuxService
-import no.nav.eessi.pensjon.fagmodul.eux.SubjectFnr
-import no.nav.eessi.pensjon.fagmodul.eux.ValidBucAndSed
+import no.nav.eessi.pensjon.fagmodul.eux.*
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Rinasak
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Buc
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Creator
@@ -25,11 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ResponseStatusException
 import javax.annotation.PostConstruct
 
@@ -79,7 +70,7 @@ class BucController(
     fun getProcessDefinitionName(@PathVariable(value = "rinanr", required = true) rinanr: String): String? {
 
         logger.debug("Henter ut definisjonsnavn (type type) på valgt Buc")
-        return BucUtils(euxService.getBuc(rinanr)).getProcessDefinitionName()
+        return euxService.getBuc(rinanr).processDefinitionName
     }
 
     @ApiOperation("Henter opp den opprinelige inststusjon på valgt caseid (type)")
@@ -87,7 +78,7 @@ class BucController(
     fun getCreator(@PathVariable(value = "rinanr", required = true) rinanr: String): Creator? {
 
         logger.debug("Henter ut Creator på valgt Buc")
-        return BucUtils(euxService.getBuc(rinanr)).getCreator()
+        return euxService.getBuc(rinanr).creator
     }
 
     @ApiOperation("Henter BUC deltakere")
@@ -111,7 +102,7 @@ class BucController(
     fun getInternationalId(@PathVariable(value = "rinanr", required = true) rinanr: String): String? {
 
         logger.debug("Henter ut InternationalId på valgt Buc")
-        return BucUtils(euxService.getBuc(rinanr)).getInternatinalId()
+        return euxService.getBuc(rinanr).internationalId
     }
 
     @ApiOperation("Henter alle gyldige sed på valgt rinanr")
