@@ -63,7 +63,7 @@ data class BucAndSedView(
                     caseId = buc.id ?: "n/a",
                     startDate = bucUtil.getStartDateLong(),
                     lastUpdate = bucUtil.getLastDateLong(),
-                    status = bucUtil.getStatus(),
+                    status = buc.status,
                     institusjon = bucUtil.getParticipants().map {
                         InstitusjonItem(
                                 country = it.organisation?.countryCode ?: "",

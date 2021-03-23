@@ -10,8 +10,6 @@ import org.joda.time.DateTimeZone
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.web.server.ResponseStatusException
-import java.time.Instant
-import java.time.LocalDate
 import java.time.ZoneId
 
 
@@ -20,23 +18,11 @@ class BucUtils(private val buc: Buc ) {
     private val logger = LoggerFactory.getLogger(BucUtils::class.java)
     private val validbucsed = ValidBucAndSed()
 
-    fun getBuc(): Buc {
-        return buc
-    }
-
-    fun getStatus(): String? {
-        return getBuc().status
-    }
-
-    fun getCreator(): Creator? {
-        return getBuc().creator
-    }
-
-    fun getCreatorAsInstitusjonItem(): InstitusjonItem {
+    private fun getCreatorAsInstitusjonItem(): InstitusjonItem {
         return InstitusjonItem(
-                country = getCreator()?.organisation?.countryCode ?: "",
-                institution = getCreator()?.organisation?.id ?: "",
-                name = getCreator()?.organisation?.name
+                country = buc.creator?.organisation?.countryCode ?: "",
+                institution = buc.creator?.organisation?.id ?: "",
+                name = buc.creator?.organisation?.name
         )
     }
 
@@ -60,45 +46,26 @@ class BucUtils(private val buc: Buc ) {
     }
 
     fun getCreatorContryCode(): Map<String, String> {
-        val countryCode = getCreator()?.organisation?.countryCode ?: "N/A"
+        val countryCode = buc.creator?.organisation?.countryCode ?: "N/A"
         return mapOf(Pair("countrycode", countryCode))
     }
 
     private fun getDocuments(): List<DocumentsItem> {
-        return getBuc().documents ?: throw NoSuchFieldException("Fant ikke DocumentsItem")
+        return buc.documents ?: throw NoSuchFieldException("Fant ikke DocumentsItem")
     }
 
     fun findDocument(documentId: String): ShortDocumentItem? =
             getAllDocuments().firstOrNull { it.id == documentId }
 
-    fun getBucAttachments(): List<Attachment>? {
-        return getBuc().attachments
-    }
-
-    fun getLastDate(): LocalDate {
-        val date = getBuc().lastUpdate
-        return getLocalDate(date)
-    }
-
     fun getStartDateLong(): Long {
-        val date = getBuc().startDate
+        val date = buc.startDate
         return getDateTimeToLong(date)
     }
 
     fun getLastDateLong(): Long {
-        val date = getBuc().lastUpdate
+        val date = buc.lastUpdate
         return getDateTimeToLong(date)
     }
-
-    private fun getLocalDate(date: Any?): LocalDate =
-            when (date) {
-                is Long -> Instant.ofEpochMilli(date).atZone(ZoneId.systemDefault()).toLocalDate()
-                is String -> {
-                    val datestr = date.substring(0, date.indexOf('T'))
-                    LocalDate.parse(datestr)
-                }
-                else -> LocalDate.now().minusYears(1000)
-            }
 
     private fun getDateTimeToLong(dateTime: Any?): Long {
         return getDateTime(dateTime).millis
@@ -114,9 +81,9 @@ class BucUtils(private val buc: Buc ) {
             }
     }
 
-    fun getProcessDefinitionName() = getBuc().processDefinitionName
+    fun getProcessDefinitionName() = buc.processDefinitionName
 
-    fun getProcessDefinitionVersion() = getBuc().processDefinitionVersion ?: ""
+    fun getProcessDefinitionVersion() = buc.processDefinitionVersion ?: ""
 
     fun findFirstDocumentItemByType(sedType: SEDType) = getDocuments().find { sedType == it.type }?.let { createShortDocument(it) }
 
@@ -224,15 +191,13 @@ class BucUtils(private val buc: Buc ) {
 
     fun getDocumentByType(sedType: SEDType): ShortDocumentItem? = getAllDocuments().firstOrNull { sedType == it.type && it.status != "empty" }
 
-    fun getInternatinalId() = getBuc().internationalId
-
-    fun getParticipants() = getBuc().participants ?: emptyList()
+    fun getParticipants() = buc.participants ?: emptyList()
 
     fun checkForParticipantsNoLongerActiveFromX007AsInstitusjonItem(list: List<InstitusjonItem>): Boolean {
         val result = try {
             logger.debug("Sjekk på om newInstitusjonItem er dekativert ved mottatt x007")
             val newlistId = list.map { it.institution }
-            getBuc().documents
+            buc.documents
                 ?.asSequence()
                 ?.filter { doc -> doc.type == SEDType.X007 && doc.status == "received" }
                 ?.mapNotNull { doc -> doc.conversations }?.flatten()
@@ -246,11 +211,9 @@ class BucUtils(private val buc: Buc ) {
         }
         return true
     }
-
-    fun getBucAction() = getBuc().actions
-
+    
     private fun getGyldigeOpprettSedAksjonList() : List<SEDType> {
-        val actions = getBucAction()!!
+        val actions = buc.actions!!
         val keyWord = "Create"
         return actions.asSequence()
                 .filter { item -> item.name == keyWord }
@@ -317,8 +280,7 @@ class BucUtils(private val buc: Buc ) {
 
     fun getRinaAksjon(): List<RinaAksjon> {
         val aksjoner = mutableListOf<RinaAksjon>()
-        val actionitems = getBuc().actions
-        val buctype = getProcessDefinitionName()
+        val actionitems = buc.actions
         actionitems?.forEach {
             if (it.documentType != null) {
                 aksjoner.add(
@@ -327,7 +289,7 @@ class BucUtils(private val buc: Buc ) {
                                 navn = it.name,
                                 dokumentId = it.documentId,
                                 kategori = "Documents",
-                                id = buctype
+                                id = buc.processDefinitionName
                         )
                 )
             }

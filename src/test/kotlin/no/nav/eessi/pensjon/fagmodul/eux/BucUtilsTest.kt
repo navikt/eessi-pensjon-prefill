@@ -41,7 +41,7 @@ class BucUtilsTest {
 
     @Test
     fun getCreator() {
-        val result = bucUtils.getCreator()
+        val result = buc.creator
         assertEquals("NAVT003", result?.organisation?.name)
         assertEquals("NO:NAVT003", result?.organisation?.id)
         assertEquals("NO", result?.organisation?.countryCode)
@@ -111,21 +111,8 @@ class BucUtilsTest {
 
         val result = bucUtilsLocal.getProcessDefinitionVersion()
         assertEquals("v1.0", result)
-        val name = bucUtilsLocal.getProcessDefinitionName()
+        val name = buc.processDefinitionName
         assertEquals("P_BUC_01", name)
-    }
-
-    @Test
-    fun getLastDate() {
-        val result41 = bucUtils.getLastDate()
-        assertEquals("2019-01-23", result41.toString())
-
-        val bucjson = getTestJsonFile("buc-362590_v4.0.json")
-        val buc = mapJsonToAny(bucjson, typeRefs<Buc>())
-        val bucUtilsLocal = BucUtils(buc)
-
-        val result10 = bucUtilsLocal.getLastDate()
-        assertEquals("2018-11-08", result10.toString())
     }
 
     @Test
@@ -157,7 +144,7 @@ class BucUtilsTest {
     fun getRinaAksjoner() {
         val result = bucUtils.getRinaAksjon()
         assertEquals(16, result.size)
-        val rinaaksjon = result.get(5)
+        val rinaaksjon = result[5]
         assertEquals(SEDType.P2000, rinaaksjon.dokumentType)
         assertEquals("P_BUC_01", rinaaksjon.id)
         assertEquals("Update", rinaaksjon.navn)
@@ -167,7 +154,7 @@ class BucUtilsTest {
     fun getRinaAksjonerFilteredOnP() {
         val result = bucUtils.getRinaAksjon()
         assertEquals(16, result.size)
-        val rinaaksjon = result.get(5)
+        val rinaaksjon = result[5]
         assertEquals(SEDType.P2000, rinaaksjon.dokumentType)
         assertEquals("P_BUC_01", rinaaksjon.id)
         assertEquals("Update", rinaaksjon.navn)
@@ -175,7 +162,7 @@ class BucUtilsTest {
         val filterlist = result.filter { it.dokumentType?.name?.startsWith("P")!! }
 
         assertEquals(9, filterlist.size)
-        val rinaaksjon2 = filterlist.get(5)
+        val rinaaksjon2 = filterlist[5]
         assertEquals(SEDType.P5000, rinaaksjon2.dokumentType)
         assertEquals("P_BUC_01", rinaaksjon2.id)
         assertEquals("Create", rinaaksjon2.navn)
@@ -184,10 +171,10 @@ class BucUtilsTest {
     @Test
     fun getBucAndDocumentsWithAttachment() {
         bucjson = getTestJsonFile("buc-158123_2_v4.1.json")
-        buc = mapJsonToAny(bucjson, typeRefs<Buc>())
+        buc = mapJsonToAny(bucjson, typeRefs())
         bucUtils = BucUtils(buc)
 
-        assertEquals(2, bucUtils.getBucAttachments()?.size)
+        assertEquals(2, buc.attachments?.size)
 
         assertEquals(18, bucUtils.getAllDocuments().size)
 
@@ -200,17 +187,14 @@ class BucUtilsTest {
 
             }
         }
-
-        assertEquals("2019-05-20", bucUtils.getLastDate().toString())
-
     }
 
     @Test
     fun getParticipantsTestOnMock_2() {
         bucjson = getTestJsonFile("buc-158123_2_v4.1.json")
-        buc = mapJsonToAny(bucjson, typeRefs<Buc>())
+        buc = mapJsonToAny(bucjson, typeRefs())
         bucUtils = BucUtils(buc)
-        assertEquals(2, bucUtils.getBucAttachments()?.size)
+        assertEquals(2, buc.attachments?.size)
         assertEquals(18, bucUtils.getAllDocuments().size)
         val parts = bucUtils.getParticipants()
         assertEquals(2, parts.size)
@@ -404,9 +388,7 @@ class BucUtilsTest {
 
         assertEquals(3, bucUtils.getParticipants().size)
 
-        bucUtils.getCreator()
-
-        val candidates = listOf<InstitusjonItem>(InstitusjonItem(country = "NO", institution = "NO:NAVT003", name = "NAV T003"))
+        val candidates = listOf(InstitusjonItem(country = "NO", institution = "NO:NAVT003", name = "NAV T003"))
 
         assertEquals(0, bucUtils.findNewParticipants(candidates).size)
     }
@@ -419,7 +401,7 @@ class BucUtilsTest {
 
         assertEquals(3, bucUtils.getParticipants().size)
 
-        val candidates = listOf<InstitusjonItem>(InstitusjonItem(country = "NO", institution = "NO:NAVT007", name = "NAV T007"))
+        val candidates = listOf(InstitusjonItem(country = "NO", institution = "NO:NAVT007", name = "NAV T007"))
 
         assertEquals(1, bucUtils.findNewParticipants(candidates).size)
 
