@@ -136,8 +136,8 @@ class SedController(
         val bucUtil = addInstutionAndDocumentBucUtils.measure {
             logger.info("******* Hent BUC sjekk om sed kan opprettes *******")
             BucUtils(euxService.getBuc(dataModel.euxCaseID)).also { bucUtil ->
-                //sjekk for om deltakere alt er fjernet med x007 sed
-                bucUtil.checkForParticipantsNoLongerActiveFromX007AsInstitusjonItem(dataModel.getInstitutionsList())
+                //sjekk for om deltakere alt er fjernet med x007 eller x100 sed
+                bucUtil.checkForParticipantsNoLongerActiveFromXSEDAsInstitusjonItem(dataModel.getInstitutionsList())
                 //gyldig sed kan opprettes
                 bucUtil.checkIfSedCanBeCreated(dataModel.sedType, dataModel.penSaksnummer)
             }
@@ -214,11 +214,11 @@ class SedController(
 
         val nyeInstitusjoner = bucUtil.findNewParticipants(dataModel.getInstitutionsList())
 
-        val x005 = bucUtil.findFirstDocumentItemByType(SEDType.X005)
         if (nyeInstitusjoner.isNotEmpty()) {
-            if (x005 == null) {
+            if (bucUtil.findFirstDocumentItemByType(SEDType.X005) == null) {
                 euxService.addInstitution(dataModel.euxCaseID, nyeInstitusjoner.map { it.institution })
             } else {
+
                 //--gjort noe. ..
                 nyeInstitusjoner.forEach {
                     if (!navCaseOwner && it.country != "NO") {
@@ -290,8 +290,8 @@ class SedController(
         val bucUtil = addDocumentToParentBucUtils.measure {
             logger.info("******* Hent BUC sjekk om sed kan opprettes *******")
             BucUtils(euxService.getBuc(dataModel.euxCaseID)).also { bucUtil ->
-                //sjekk for om deltakere alt er fjernet med x007 sed
-                bucUtil.checkForParticipantsNoLongerActiveFromX007AsInstitusjonItem(dataModel.getInstitutionsList())
+                //sjekk for om deltakere alt er fjernet med x007 eller x100 sed
+                bucUtil.checkForParticipantsNoLongerActiveFromXSEDAsInstitusjonItem(dataModel.getInstitutionsList())
                 //sjekk om en svarsed kan opprettes eller om den alt finnes
                 bucUtil.checkIfSedCanBeCreatedEmptyStatus(dataModel.sedType, parentId)
             }

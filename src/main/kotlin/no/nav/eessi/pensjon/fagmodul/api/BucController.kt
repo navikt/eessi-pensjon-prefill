@@ -22,7 +22,9 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ResponseStatusException
+import java.util.concurrent.TimeUnit
 import javax.annotation.PostConstruct
+
 
 @Protected
 @RestController
@@ -272,6 +274,13 @@ class BucController(
         //rinaid
         val euxCaseId = euxService.createBuc(buctype)
         logger.info("Mottatt følgende euxCaseId(RinaID): $euxCaseId")
+
+        //wait 5 sec before getBuc metadata to UI
+        try {
+            TimeUnit.SECONDS.sleep(5)
+        } catch (ie: InterruptedException) {
+            Thread.currentThread().interrupt()
+        }
 
         //create bucDetail back from newly created buc call eux-rina-api to get data.
         val buc = euxService.getBuc(euxCaseId)

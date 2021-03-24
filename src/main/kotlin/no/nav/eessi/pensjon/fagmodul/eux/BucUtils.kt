@@ -1,7 +1,17 @@
 package no.nav.eessi.pensjon.fagmodul.eux
 
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.RinaAksjon
-import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.*
+import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Attachment
+import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Buc
+import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ConversationsItem
+import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.DocumentsItem
+import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ParticipantsItem
+import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Receiver
+import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Sender
+import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ShortAttachment
+import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ShortDocumentItem
+import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.VersionsItem
+import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.VersionsItemNoUser
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
@@ -13,7 +23,7 @@ import org.springframework.web.server.ResponseStatusException
 import java.time.ZoneId
 
 
-class BucUtils(private val buc: Buc ) {
+class BucUtils(private val buc: Buc) {
 
     private val logger = LoggerFactory.getLogger(BucUtils::class.java)
     private val validbucsed = ValidBucAndSed()
@@ -193,25 +203,26 @@ class BucUtils(private val buc: Buc ) {
 
     fun getParticipants() = buc.participants ?: emptyList()
 
-    fun checkForParticipantsNoLongerActiveFromX007AsInstitusjonItem(list: List<InstitusjonItem>): Boolean {
+    fun checkForParticipantsNoLongerActiveFromXSEDAsInstitusjonItem(list: List<InstitusjonItem>): Boolean {
         val result = try {
-            logger.debug("Sjekk på om newInstitusjonItem er dekativert ved mottatt x007")
+            logger.debug("Sjekk på om newInstitusjonItem er dekativert ved mottatt x100")
             val newlistId = list.map { it.institution }
             buc.documents
                 ?.asSequence()
-                ?.filter { doc -> doc.type == SEDType.X007 && doc.status == "received" }
+                ?.filter { doc -> doc.type == SEDType.X100 || doc.type == SEDType.X007 && doc.status == "received" }
                 ?.mapNotNull { doc -> doc.conversations }?.flatten()
                 ?.mapNotNull { con -> con.userMessages?.map { um -> um.sender?.id } }?.flatten()
                 ?.firstOrNull { senderId -> newlistId.contains(senderId) }
         } catch (ex: Exception) {
-            logger.error("En feil under sjekk av X007", ex)
+            logger.error("En feil under sjekk av Xsed", ex)
+            return true
         }
         if (result != null) {
-            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Institusjon med id: $result, er ikke lenger i bruk. Da den er byttet ut via SED X007")
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Institusjon med id: $result, er ikke lenger i bruk. Da den er endret via en X-SED")
         }
         return true
     }
-    
+
     private fun getGyldigeOpprettSedAksjonList() : List<SEDType> {
         val actions = buc.actions!!
         val keyWord = "Create"

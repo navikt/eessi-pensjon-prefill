@@ -372,13 +372,31 @@ class BucUtilsTest {
 
         val list = listOf(InstitusjonItem("FI", "FI:0200000010", ""), InstitusjonItem("FI", "FI:0200000046", ""))
         assertThrows<ResponseStatusException> {
-            bucUtils.checkForParticipantsNoLongerActiveFromX007AsInstitusjonItem(list)
+            bucUtils.checkForParticipantsNoLongerActiveFromXSEDAsInstitusjonItem(list)
         }
 
-        val result = bucUtils.checkForParticipantsNoLongerActiveFromX007AsInstitusjonItem(listOf(InstitusjonItem("FI", "FI:0200000046", "")))
+        val result = bucUtils.checkForParticipantsNoLongerActiveFromXSEDAsInstitusjonItem(listOf(InstitusjonItem("FI", "FI:0200000046", "")))
         assertEquals(true, result)
 
     }
+
+    @Test
+    fun `sjekk for om x100 inneholder avsender ikke lenger i bruk`() {
+        val bucjson = getTestJsonFile("buc-3059699-x100.json")
+        val buc = mapJsonToAny(bucjson, typeRefs<Buc>())
+        val bucUtils = BucUtils(buc)
+
+        val lists = listOf(InstitusjonItem("FI", "FI:0200000046", ""), InstitusjonItem("DE", "DE:DRV66001", "German Federal Pension"))
+        assertThrows<ResponseStatusException> {
+            bucUtils.checkForParticipantsNoLongerActiveFromXSEDAsInstitusjonItem(lists)
+        }
+
+        val result = bucUtils.checkForParticipantsNoLongerActiveFromXSEDAsInstitusjonItem(listOf(InstitusjonItem("FI", "FI:0200000046", "")))
+        assertEquals(true, result)
+
+
+    }
+
 
     @Test
     fun findNewParticipantsMockwithExternalCaseOwnerResultExpectedToBeZero(){
