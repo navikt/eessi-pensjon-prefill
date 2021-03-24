@@ -25,12 +25,14 @@ class PensjonsinformasjonUtlandService(
     private val kodeverkClient: KodeverkClient,
     private val euxService: EuxService,
     @Value("\${NAIS_NAMESPACE}")
-    private val nameSpace: String) {
+    private val nameSpace: String
+) {
 
     private val logger = LoggerFactory.getLogger(PensjonsinformasjonUtlandService::class.java)
 
-    private final val validBuc = listOf("P_BUC_01","P_BUC_02","P_BUC_03")
-    private final val kravSedBucmap = mapOf("P_BUC_01" to SEDType.P2000, "P_BUC_02" to SEDType.P2100, "P_BUC_03" to SEDType.P2200)
+    private final val validBuc = listOf("P_BUC_01", "P_BUC_02", "P_BUC_03")
+    private final val kravSedBucmap =
+        mapOf("P_BUC_01" to SEDType.P2000, "P_BUC_02" to SEDType.P2100, "P_BUC_03" to SEDType.P2200)
 
     /**
      * funksjon for å hente buc-metadata fra RINA (eux-rina-api)
@@ -49,17 +51,28 @@ class PensjonsinformasjonUtlandService(
         logger.debug("BucType : ${bucUtils.getProcessDefinitionName()}")
         logger.debug("Funnet KravTypeSED i buc: ${kravSedBucmap[bucUtils.getProcessDefinitionName()]}")
 
-        if (!validBuc.contains(bucUtils.getProcessDefinitionName())) throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Ulydig BUC, ikke av rett type KRAV-om BUC.")
-        if (bucUtils.getCaseOwner() == null) throw ResponseStatusException(HttpStatus.NOT_FOUND, "Ingen CaseOwner funnet på BUC med id: $bucId")
+        if (!validBuc.contains(bucUtils.getProcessDefinitionName())) throw ResponseStatusException(
+            HttpStatus.BAD_REQUEST,
+            "Ulydig BUC, ikke av rett type KRAV-om BUC."
+        )
+        if (bucUtils.getCaseOwner() == null) throw ResponseStatusException(
+            HttpStatus.NOT_FOUND,
+            "Ingen CaseOwner funnet på BUC med id: $bucId"
+        )
 
-        val sedDoc = getKravSedDocument(bucUtils, kravSedBucmap[bucUtils.getProcessDefinitionName()]) ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Ingen dokument metadata funnet i BUC med id: $bucId.")
-        val kravSed = sedDoc.id?.let { sedDocId -> euxService.getSedOnBucByDocumentId(bucId.toString(), sedDocId) } ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Ingen gyldig kravSed i BUC med id: $bucId funnet.")
+        val sedDoc = getKravSedDocument(bucUtils, kravSedBucmap[bucUtils.getProcessDefinitionName()])
+            ?: throw ResponseStatusException(
+                HttpStatus.BAD_REQUEST,
+                "Ingen dokument metadata funnet i BUC med id: $bucId."
+            )
+        val kravSed = sedDoc.id?.let { sedDocId -> euxService.getSedOnBucByDocumentId(bucId.toString(), sedDocId) }
+            ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Ingen gyldig kravSed i BUC med id: $bucId funnet.")
 
         //finner rette hjelep metode for utfylling av KravUtland
         //ut ifra hvilke SED/saktype det gjelder.
         logger.info("*** Starter kravUtlandpensjon: ${kravSed.type} bucId: $bucId bucType: ${bucUtils.getProcessDefinitionName()} ***")
 
-        return if(erAlderpensjon(kravSed)) {
+        return if (erAlderpensjon(kravSed)) {
             logger.debug("type er alderpensjon")
             kravAlderpensjonUtland(kravSed, bucUtils)
         } else {
@@ -68,7 +81,9 @@ class PensjonsinformasjonUtlandService(
         }
     }
 
-    fun getKravSedDocument(bucUtils: BucUtils, sedType: SEDType?) = bucUtils.getAllDocuments().firstOrNull { it.status == "received" && it.type == sedType }
+    fun getKravSedDocument(bucUtils: BucUtils, sedType: SEDType?) =
+        bucUtils.getAllDocuments().firstOrNull { it.status == "received" && it.type == sedType }
+
     fun erAlderpensjon(sed: SED) = sed.type == SEDType.P2000
     fun erUforepensjon(sed: SED) = sed.type == SEDType.P2200
 
@@ -150,13 +165,22 @@ class PensjonsinformasjonUtlandService(
         )
     }
 
-    fun hentFamilieStatus(key: String?): String {
-        val status = mapOf("01" to "UGIF", "02" to "GIFT", "03" to "SAMB", "04" to "REPA", "05" to "SKIL", "06" to "SKPA", "07" to "SEPA", "08" to "ENKE")
+    fun hentFamilieStatus(key: String?): String? {
+        val status = mapOf(
+            "01" to "UGIF",
+            "02" to "GIFT",
+            "03" to "SAMB",
+            "04" to "REPA",
+            "05" to "SKIL",
+            "06" to "SKPA",
+            "07" to "SEPA",
+            "08" to "ENKE"
+        )
         //Sivilstand for søker. Må være en gyldig verdi fra T_K_SIVILSTATUS_T:
         //ENKE, GIFT, GJES, GJPA, GJSA, GLAD, PLAD, REPA,SAMB, SEPA, SEPR, SKIL, SKPA, UGIF.
         //Pkt p2000 - 2.2.2.1. Familiestatus
         //var valgtSivilstatus: String? = null,
-        return status[key].orEmpty()
+        return status[key]
     }
 
     //P2200
@@ -168,15 +192,11 @@ class PensjonsinformasjonUtlandService(
         } else {
             caseOwner.country
         }
-        val caseOwnerCountry = kodeverkClient.finnLandkode3( caseOwnerCountryBuc )
+        val caseOwnerCountry = kodeverkClient.finnLandkode3(caseOwnerCountryBuc)
+
         logger.debug("CaseOwnerCountry: $caseOwnerCountry")
         logger.debug("CaseOwnerId     : ${caseOwner.institution}")
         logger.debug("CaseOwnerName   : ${caseOwner.name}")
-
-        val sivilstand = kravSed.nav?.bruker?.person?.sivilstand?.maxByOrNull { LocalDate.parse(it.fradato) }
-        logger.debug("Sivilstand: $sivilstand")
-        val sivilstatus = hentFamilieStatus( sivilstand?.status ?: "01" )
-
 
         val kravUforeUtland = KravUtland(
             mottattDato = LocalDate.parse(kravSed.nav?.krav?.dato) ?: null,
@@ -191,30 +211,45 @@ class PensjonsinformasjonUtlandService(
             ),
 
             //P4000-P5000
-            utland = SkjemaUtland(
-                utlandsopphold = emptyList()
-            ),
-            sivilstand = SkjemaFamilieforhold(
-               valgtSivilstatus = sivilstatus,
-               sivilstatusDatoFom = sivilstand?.fradato?.let { LocalDate.parse(it) }
-            ),
+            utland = utlandsOpphold(kravSed),
+            sivilstand = sivilstand(kravSed),
             soknadFraLand = caseOwnerCountry
         )
 
-        logger.debug("""
+        logger.debug(
+            """
             
             Følgende krav utland uføre returneres:
             
             ${kravUforeUtland.toJson()}
             
-        """.trimIndent())
+        """.trimIndent()
+        )
         return kravUforeUtland
+    }
+
+    fun utlandsOpphold(kravSed: SED): SkjemaUtland? {
+        return null
+//        SkjemaUtland(
+//            utlandsopphold = emptyList()
+//        )
+    }
+
+    fun sivilstand(kravSed: SED): SkjemaFamilieforhold? {
+        val sivilstand = kravSed.nav?.bruker?.person?.sivilstand?.maxByOrNull { LocalDate.parse(it.fradato) }
+        logger.debug("Sivilstand: $sivilstand")
+        val sivilstatus = hentFamilieStatus(sivilstand?.status)
+        if (sivilstatus == null || sivilstand?.fradato == null) return null
+        return SkjemaFamilieforhold(
+            valgtSivilstatus = sivilstatus,
+            sivilstatusDatoFom = sivilstand.fradato.let { LocalDate.parse(it) }
+        )
     }
 
 
     fun fremsettKravDato(kravSed: SED): LocalDate {
-       val kravdato = LocalDate.parse(kravSed.nav?.krav?.dato) ?: LocalDate.now()
-       return kravdato.withDayOfMonth(1).minusMonths(3)
+        val kravdato = LocalDate.parse(kravSed.nav?.krav?.dato) ?: LocalDate.now()
+        return kravdato.withDayOfMonth(1).minusMonths(3)
     }
 
     //P2100
@@ -223,12 +258,12 @@ class PensjonsinformasjonUtlandService(
     }
 
 
-    fun hentSkjemaUtland(seds: SED? = null ): SkjemaUtland {
+    fun hentSkjemaUtland(seds: SED? = null): SkjemaUtland {
         logger.debug("oppretter SkjemaUtland")
         val list = prosessUtlandsOpphold(null)
         logger.debug("liste Utlandsoppholditem er størrelse : ${list.size}")
         return SkjemaUtland(
-                utlandsopphold = list
+            utlandsopphold = list
         )
     }
 
@@ -287,16 +322,16 @@ class PensjonsinformasjonUtlandService(
 
             logger.debug("oppretter arbeid P4000")
             list.add(
-                    Utlandsoppholditem(
-                            land = landAlpha3,
-                            fom = fom,
-                            tom = tom,
-                            arbeidet = true,
-                            bodd = false,
-                            utlandPin = hentPinIdFraBoArbeidLand(p4000, landAlpha2),
-                            //kommer ut ifa avsenderLand (hvor orginal type kommer ifra)
-                            pensjonsordning = hentPensjonsOrdning(p4000, landAlpha2)
-                    )
+                Utlandsoppholditem(
+                    land = landAlpha3,
+                    fom = fom,
+                    tom = tom,
+                    arbeidet = true,
+                    bodd = false,
+                    utlandPin = hentPinIdFraBoArbeidLand(p4000, landAlpha2),
+                    //kommer ut ifa avsenderLand (hvor orginal type kommer ifra)
+                    pensjonsordning = hentPensjonsOrdning(p4000, landAlpha2)
+                )
             )
 
         }
@@ -332,15 +367,15 @@ class PensjonsinformasjonUtlandService(
             }
 
             list.add(
-                    Utlandsoppholditem(
-                            land = landAlpha3,
-                            fom = fom,
-                            tom = tom,
-                            arbeidet = false,
-                            bodd = true,
-                            utlandPin = hentPinIdFraBoArbeidLand(p4000, landA2),
-                            pensjonsordning = hentPensjonsOrdning(p4000, landA2) // "Hva?"
-                    )
+                Utlandsoppholditem(
+                    land = landAlpha3,
+                    fom = fom,
+                    tom = tom,
+                    arbeidet = false,
+                    bodd = true,
+                    utlandPin = hentPinIdFraBoArbeidLand(p4000, landA2),
+                    pensjonsordning = hentPensjonsOrdning(p4000, landA2) // "Hva?"
+                )
             )
         }
         return list
@@ -402,7 +437,8 @@ class PensjonsinformasjonUtlandService(
 
             val pin = hentPinIdFraBoArbeidLand(p5000, it.land ?: "N/A")
 
-            list.add(Utlandsoppholditem(
+            list.add(
+                Utlandsoppholditem(
                     land = kodeverkClient.finnLandkode3(it.land ?: "N/A"),
                     fom = fom,
                     tom = tom,
@@ -410,7 +446,8 @@ class PensjonsinformasjonUtlandService(
                     arbeidet = false,
                     pensjonsordning = "???",
                     utlandPin = pin
-            ))
+                )
+            )
         }
 
         return list

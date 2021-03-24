@@ -79,13 +79,8 @@ class PesysIntegrationSpringTest {
               "personopplysninger": {
                 "statsborgerskap": "SWE"
               },
-              "utland": {
-                "utlandsopphold": []
-              },
-              "sivilstand": {
-                "valgtSivilstatus": "UGIF",
-                "sivilstatusDatoFom": null
-              },
+              "utland": null,
+              "sivilstand": null,
               "soknadFraLand": "SWE",
               "initiertAv": "BRUKER"
             }
