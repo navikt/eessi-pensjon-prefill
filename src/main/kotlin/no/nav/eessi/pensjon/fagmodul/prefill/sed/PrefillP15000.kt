@@ -3,7 +3,6 @@ package no.nav.eessi.pensjon.fagmodul.prefill.sed
 import no.nav.eessi.pensjon.fagmodul.models.KravType
 import no.nav.eessi.pensjon.fagmodul.models.PersonDataCollection
 import no.nav.eessi.pensjon.fagmodul.models.PrefillDataModel
-import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillSed
 import no.nav.eessi.pensjon.fagmodul.sedmodel.*
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Familierelasjonsrolle
@@ -19,12 +18,12 @@ class PrefillP15000(private val prefillSed: PrefillSed) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillP15000::class.java) }
 
-    fun prefillSed(
+    fun prefill(
         prefillData: PrefillDataModel,
         personData: PersonDataCollection,
         sak: V1Sak?,
         pensjonsinformasjon: Pensjonsinformasjon?
-    ): SED {
+    ): P15000 {
 
         val kravType = prefillData.kravType ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST, "For preutfylling av P15000 så kreves det kravtype")
         val penSaksnummer = prefillData.penSaksnummer
@@ -84,12 +83,9 @@ class PrefillP15000(private val prefillSed: PrefillSed) {
             ),
             krav = krav
         )
-        val pensjon = if (kravType == KravType.GJENLEV) {
-            pensjonGjenlevende(gjenlevendeBruker, relasjon)
-        } else {
-            null
-        }
-        return SED(SEDType.P15000, nav = nav, pensjon = pensjon)
+        val gjenlevende = bestemGjenlevende(gjenlevendeBruker, relasjon, kravType)
+
+        return P15000(nav = nav, p15000Pensjon = P15000Pensjon(gjenlevende))
     }
 
 
@@ -107,21 +103,26 @@ class PrefillP15000(private val prefillSed: PrefillSed) {
         }
     }
 
-    private fun pensjonGjenlevende(gjenlevende: Bruker?, relasjon: String?): Pensjon? {
-        return if (gjenlevende != null) {
+    private fun bestemGjenlevende(gjenlevende: Bruker?,
+                                  relasjon: String?,
+                                  kravType: KravType): Bruker? {
+        if (kravType == KravType.GJENLEV) {
+            return if (gjenlevende != null) {
 
-            val relasjontilAvdod = if (relasjon != null) {
-                RelasjonAvdodItem(relasjon = relasjon)
+                val relasjontilAvdod = if (relasjon != null) {
+                    RelasjonAvdodItem(relasjon = relasjon)
+                } else {
+                    null
+                }
+                val person = gjenlevende.person?.copy(relasjontilavdod = relasjontilAvdod)
+                val gjenlevendeBruker = gjenlevende.copy(person = person)
+
+                gjenlevendeBruker
             } else {
                 null
             }
-            val person = gjenlevende.person?.copy(relasjontilavdod = relasjontilAvdod)
-            val gjenlevendeBruker = gjenlevende.copy(person = person)
-
-            Pensjon(gjenlevende = gjenlevendeBruker)
-        } else {
-            null
-        }
+        } else
+            return null
     }
 
     private fun sakTypeAsText(sakType: String?) =

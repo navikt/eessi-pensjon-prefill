@@ -9,13 +9,7 @@ import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonService
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
-import no.nav.eessi.pensjon.personoppslag.pdl.model.AktoerId
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Folkeregistermetadata
-import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentType
-import no.nav.eessi.pensjon.personoppslag.pdl.model.KontaktinformasjonForDoedsbo
-import no.nav.eessi.pensjon.personoppslag.pdl.model.KontaktinformasjonForDoedsboAdresse
-import no.nav.eessi.pensjon.personoppslag.pdl.model.KontaktinformasjonForDoedsboSkifteform
-import no.nav.eessi.pensjon.personoppslag.pdl.model.NorskIdent
+import no.nav.eessi.pensjon.personoppslag.pdl.model.*
 import no.nav.eessi.pensjon.security.sts.STSService
 import no.nav.eessi.pensjon.services.kodeverk.KodeverkClient
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.EPSaktype
@@ -241,55 +235,13 @@ class PrefillP15000IntegrationTest {
 
         val apijson =  dummyApijson(sakid = "22915555", vedtakid = "123123123", aktoerId = AKTOER_ID, sedType = SEDType.P15000, buc = "P_BUC_10", kravtype = KravType.ALDER, kravdato = "01-01-2020", fnravdod = FNR_VOKSEN_4)
 
-        val result = mockMvc.perform(post("/sed/prefill")
+        mockMvc.perform(post("/sed/prefill")
             .contentType(MediaType.APPLICATION_JSON)
             .content(apijson))
             .andDo(print())
             .andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andReturn()
-        val response = result.response.getContentAsString(charset("UTF-8"))
-
-        val validResponse = """
-        {
-          "sed" : "P15000",
-          "sedGVer" : "4",
-          "sedVer" : "1",
-          "nav" : {
-            "eessisak" : [ {
-              "institusjonsid" : "NO:noinst002",
-              "institusjonsnavn" : "NOINST002, NO INST002, NO",
-              "saksnummer" : "22915555",
-              "land" : "NO"
-            } ],
-            "bruker" : {
-              "person" : {
-                "pin" : [ {
-                  "identifikator" : "12312312312",
-                  "land" : "NO"
-                } ],
-                "etternavn" : "Gjenlev",
-                "fornavn" : "Lever",
-                "kjoenn" : "M",
-                "foedselsdato" : "1988-07-12"
-              },
-              "adresse" : {
-                "gate" : "Oppoverbakken 66",
-                "by" : "SØRUMSAND",
-                "postnummer" : "1920",
-                "land" : "NO"
-              }
-            },
-            "krav" : {
-              "dato" : "01-01-2020",
-              "type" : "01"
-            }
-          }
-        }
-        """.trimIndent()
-
-        JSONAssert.assertEquals(response, validResponse, true)
-
     }
 
     @Test
@@ -380,56 +332,13 @@ class PrefillP15000IntegrationTest {
 
         val apijson = dummyApijson(sakid = "21337890", vedtakid = "123123123" , aktoerId = AKTOER_ID, sedType = SEDType.P15000, buc = "P_BUC_10", kravtype = KravType.ALDER, kravdato = "01-01-2020")
 
-        val result = mockMvc.perform(post("/sed/prefill")
+        mockMvc.perform(post("/sed/prefill")
             .contentType(MediaType.APPLICATION_JSON)
             .content(apijson))
             .andDo(print())
             .andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andReturn()
-
-        val response = result.response.getContentAsString(charset("UTF-8"))
-
-        val validResponse = """
-            {
-              "sed" : "P15000",
-              "sedGVer" : "4",
-              "sedVer" : "1",
-              "nav" : {
-                "eessisak" : [ {
-                  "institusjonsid" : "NO:noinst002",
-                  "institusjonsnavn" : "NOINST002, NO INST002, NO",
-                  "saksnummer" : "21337890",
-                  "land" : "NO"
-                } ],
-                "bruker" : {
-                  "person" : {
-                    "pin" : [ {
-                      "identifikator" : "$FNR_VOKSEN",
-                      "land" : "NO"
-                    } ],
-                    "etternavn" : "Gjenlev",
-                    "fornavn" : "Lever",
-                    "kjoenn" : "M",
-                    "foedselsdato" : "1988-07-12"
-                  },
-                  "adresse" : {
-                    "gate" : "Oppoverbakken 66",
-                    "by" : "SØRUMSAND",
-                    "postnummer" : "1920",
-                    "land" : "NO"
-                  }
-                },
-                "krav" : {
-                  "dato" : "01-01-2020",
-                  "type" : "01"
-                }
-              }
-            }
-        """.trimIndent()
-
-        JSONAssert.assertEquals(response, validResponse, true)
-
     }
 
     @Test
@@ -459,57 +368,13 @@ class PrefillP15000IntegrationTest {
             sakid = "22874955", vedtakid = "123123123" ,
             aktoerId = AKTOER_ID, sedType = SEDType.P15000, buc = "P_BUC_10", kravtype = KravType.UFOREP, kravdato = "01-01-2020")
 
-        val result = mockMvc.perform(post("/sed/prefill")
+        mockMvc.perform(post("/sed/prefill")
             .contentType(MediaType.APPLICATION_JSON)
             .content(apijson))
             .andDo(print())
             .andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andReturn()
-
-        val response = result.response.getContentAsString(charset("UTF-8"))
-
-        val validResponse = """
-            {
-              "sed" : "P15000",
-              "sedGVer" : "4",
-              "sedVer" : "1",
-              "nav" : {
-                "eessisak" : [ {
-                  "institusjonsid" : "NO:noinst002",
-                  "institusjonsnavn" : "NOINST002, NO INST002, NO",
-                  "saksnummer" : "22874955",
-                  "land" : "NO"
-                } ],
-                "bruker" : {
-                  "person" : {
-                    "pin" : [ {
-                      "identifikator" : "$FNR_VOKSEN",
-                      "land" : "NO"
-                    } ],
-                    "etternavn" : "Gjenlev",
-                    "fornavn" : "Lever",
-                    "kjoenn" : "M",
-                    "foedselsdato" : "1988-07-12"
-                  },
-                  "adresse" : {
-                    "gate" : "Oppoverbakken 66",
-                    "by" : "SØRUMSAND",
-                    "postnummer" : "1920",
-                    "land" : "NO"
-                  }
-                },
-                "krav" : {
-                  "dato" : "01-01-2020",
-                  "type" : "03"
-                }
-              }
-            }
-
-        """.trimIndent()
-
-        JSONAssert.assertEquals(response, validResponse, true)
-
     }
 
     @Test
