@@ -73,7 +73,7 @@ class PrefillSEDService(
                 }
             }
 
-            P15000 -> PrefillP15000(PrefillSed(prefillPDLnav)).prefillSed(
+            P15000 -> PrefillP15000(PrefillSed(prefillPDLnav)).prefill(
                 prefillData,
                 personDataCollection,
                 hentRelevantPensjonSak(prefillData) { pensakType -> listOf("ALDER", "BARNEP", "GJENLEV", "UFOREP", "GENRL", "OMSORG").contains(pensakType) },
