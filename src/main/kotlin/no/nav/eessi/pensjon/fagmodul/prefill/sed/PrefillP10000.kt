@@ -5,7 +5,6 @@ import no.nav.eessi.pensjon.fagmodul.models.PersonDataCollection
 import no.nav.eessi.pensjon.fagmodul.models.PersonId
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.fagmodul.sedmodel.P10000
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Pensjon
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -19,16 +18,21 @@ class PrefillP10000(private val prefillNav: PrefillPDLNav) {
                 brukerInformasjon: BrukerInformasjon?,
                 personData: PersonDataCollection): P10000 {
 
-        val prefillPensjon = try {
-            val pensjon = avdod?.let {
+        val gjenlevende = try {
+            val gjenlevende = avdod?.let {
                 logger.info("Preutfylling Utfylling Pensjon Gjenlevende (etterlatt)")
-                val gjenlevendePerson = prefillNav.createBruker(personData.forsikretPerson!!, null, null)
-                Pensjon(gjenlevende = gjenlevendePerson)
+                prefillNav.createBruker(personData.forsikretPerson!!, null, null)
             }
-            pensjon
+            gjenlevende
         } catch (ex: Exception) {
             logger.error(ex.message, ex)
-            Pensjon()
+            null
+        }
+
+        //Spesielle SED som har etterlette men benyttes av flere BUC
+        //Må legge gjenlevende også som nav.annenperson
+        if (avdod != null) {
+            gjenlevende?.person?.rolle = "01" //Claimant - etterlatte
         }
 
         //henter opp persondata
@@ -38,25 +42,11 @@ class PrefillP10000(private val prefillNav: PrefillPDLNav) {
             avdod = avdod,
             personData = personData,
             brukerInformasjon = brukerInformasjon,
-            prefillPensjon?.kravDato
+            annenPerson = gjenlevende
         )
 
-        //Spesielle SED som har etterlette men benyttes av flere BUC
-        //Må legge gjenlevende også som nav.annenperson
-        if (avdod != null) {
-            navSed.annenperson = prefillPensjon?.gjenlevende
-            navSed.annenperson?.person?.rolle = "01"  //Claimant - etterlatte
-        }
-
         logger.debug("-------------------| Preutfylling END |------------------- ")
-        val p10000 = P10000(nav = navSed, pensjon = prefillPensjon)
 
-        if (avdod != null) {
-            logger.info("Preutfylling Utfylling Pensjon Gjenlevende (etterlatt)")
-            p10000.nav?.annenperson =  p10000.pensjon?.gjenlevende
-            p10000.nav?.annenperson?.person?.rolle = "01"  //Claimant
-            p10000.pensjon = null
-        }
-        return p10000
+        return P10000(nav = navSed)
     }
 }
