@@ -75,7 +75,7 @@ class PesysIntegrationSpringTest {
               "iverksettelsesdato": "2019-07-15",
               "fremsattKravdato":"2019-04-01",              
               "uttaksgrad": "0",
-              "vurdereTrygdeavtale": false,
+              "vurdereTrygdeavtale": true,
               "personopplysninger": {
                 "statsborgerskap": "SWE"
               },
