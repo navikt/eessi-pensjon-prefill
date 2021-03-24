@@ -12,6 +12,7 @@ import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.fagmodul.sedmodel.StandardItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.TrygdeTidPeriode
 import no.nav.eessi.pensjon.services.kodeverk.KodeverkClient
+import no.nav.eessi.pensjon.utils.toJson
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
@@ -177,13 +178,13 @@ class PensjonsinformasjonUtlandService(
         val sivilstatus = hentFamilieStatus( sivilstand?.status ?: "01" )
 
 
-        return KravUtland(
+        val kravUforeUtland = KravUtland(
             mottattDato = LocalDate.parse(kravSed.nav?.krav?.dato) ?: null,
             iverksettelsesdato = LocalDate.parse(kravSed.nav?.krav?.dato) ?: null,
             fremsattKravdato = fremsettKravDato(kravSed),
 
             uttaksgrad = "0", //P3000_NO //4.6.1 - uttaksgrad alderpensjon
-            vurdereTrygdeavtale = false,
+            vurdereTrygdeavtale = true,
 
             personopplysninger = SkjemaPersonopplysninger(
                 statsborgerskap = finnStatsborgerskapsLandkode3(kravSed)
@@ -199,6 +200,15 @@ class PensjonsinformasjonUtlandService(
             ),
             soknadFraLand = caseOwnerCountry
         )
+
+        logger.debug("""
+            
+            Følgende krav utland uføre returneres:
+            
+            ${kravUforeUtland.toJson()}
+            
+        """.trimIndent())
+        return kravUforeUtland
     }
 
 
