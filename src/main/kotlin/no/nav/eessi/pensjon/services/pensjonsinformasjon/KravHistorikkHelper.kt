@@ -2,6 +2,7 @@ package no.nav.eessi.pensjon.services.pensjonsinformasjon
 
 import no.nav.pensjon.v1.kravhistorikk.V1KravHistorikk
 import no.nav.pensjon.v1.kravhistorikkliste.V1KravHistorikkListe
+import no.nav.pensjon.v1.sak.V1Sak
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -80,5 +81,25 @@ object KravHistorikkHelper {
 
     }
 
+    fun finnKravHistorikkForDato(pensak: V1Sak?): V1KravHistorikk {
+        try {
+
+            val gjenLevKravarsak = hentKravhistorikkForGjenlevende(pensak?.kravHistorikkListe)
+            if (gjenLevKravarsak != null) return gjenLevKravarsak
+
+            val kravKunUtland = hentKravHistorikkMedValgtKravType(pensak?.kravHistorikkListe, Kravtype.F_BH_KUN_UTL)
+            if (kravKunUtland != null) return  kravKunUtland
+
+            val sakstatus = Sakstatus.valueOf(pensak?.status!!)
+            return when (sakstatus) {
+                Sakstatus.TIL_BEHANDLING -> hentKravHistorikkMedKravStatusTilBehandling(pensak.kravHistorikkListe)
+                Sakstatus.AVSL -> hentKravHistorikkMedKravStatusAvslag(pensak.kravHistorikkListe)
+                else -> hentKravHistorikkForsteGangsBehandlingUtlandEllerForsteGang(pensak.kravHistorikkListe, pensak.sakType)
+            }
+
+        } catch (ex: Exception) {
+            return V1KravHistorikk()
+        }
+    }
 
 }

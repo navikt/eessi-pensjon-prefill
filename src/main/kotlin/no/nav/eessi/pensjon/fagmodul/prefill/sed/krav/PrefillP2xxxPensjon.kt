@@ -7,13 +7,9 @@ import no.nav.eessi.pensjon.fagmodul.prefill.pdl.NavFodselsnummer
 import no.nav.eessi.pensjon.fagmodul.sedmodel.*
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.EPSaktype
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.KravHistorikkHelper.finnKravHistorikk
+import no.nav.eessi.pensjon.services.pensjonsinformasjon.KravHistorikkHelper.finnKravHistorikkForDato
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.KravHistorikkHelper.hentKravHistorikkForsteGangsBehandlingUtlandEllerForsteGang
-import no.nav.eessi.pensjon.services.pensjonsinformasjon.KravHistorikkHelper.hentKravHistorikkMedKravStatusAvslag
-import no.nav.eessi.pensjon.services.pensjonsinformasjon.KravHistorikkHelper.hentKravHistorikkMedKravStatusTilBehandling
-import no.nav.eessi.pensjon.services.pensjonsinformasjon.KravHistorikkHelper.hentKravHistorikkMedValgtKravType
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.KravHistorikkHelper.hentKravhistorikkForGjenlevende
-import no.nav.eessi.pensjon.services.pensjonsinformasjon.Kravtype
-import no.nav.eessi.pensjon.services.pensjonsinformasjon.Sakstatus
 import no.nav.eessi.pensjon.utils.simpleFormat
 import no.nav.pensjon.v1.kravhistorikk.V1KravHistorikk
 import no.nav.pensjon.v1.sak.V1Sak
@@ -42,14 +38,13 @@ object PrefillP2xxxPensjon {
      *  Fyller ut fra hvilket tidspunkt bruker ønsker å motta pensjon fra Norge.
      *  Det er et spørsmål i søknadsdialogen og på manuell kravblankett. Det er ikke nødvendigvis lik virkningstidspunktet på pensjonen.
      */
-    private fun createKravDato(valgtKrav: V1KravHistorikk?, message: String? = ""): Krav? {
+    private fun createKravDato(valgtKrav: V1KravHistorikk?): Krav? {
         logger.debug("9.1        Dato Krav (med korrekt data fra PESYS krav.virkningstidspunkt)")
         logger.debug("KravType   :  ${valgtKrav?.kravType}")
         logger.debug("mottattDato:  ${valgtKrav?.mottattDato}")
         logger.debug("--------------------------------------------------------------")
 
         logger.debug("Prøver å sette kravDato til Virkningstidpunkt: ${valgtKrav?.kravType} og dato: ${valgtKrav?.mottattDato}")
-        logger.debug("sakstatus: $message")
 
         if (valgtKrav != null && valgtKrav.mottattDato != null) {
             return Krav(dato = valgtKrav.mottattDato?.simpleFormat())
@@ -88,7 +83,7 @@ object PrefillP2xxxPensjon {
 
         val v1KravHistorikk = finnKravHistorikkForDato(pensak)
         val melding = opprettMeldingBasertPaaSaktype(v1KravHistorikk, kravId, pensak?.sakType)
-        val krav = createKravDato(v1KravHistorikk, pensak?.status)
+        val krav = createKravDato(v1KravHistorikk)
 
         logger.debug("Krav (dato) = $krav")
 
@@ -110,12 +105,13 @@ object PrefillP2xxxPensjon {
         }
 
         return MeldingOmPensjon(
-                melding = melding,
-                pensjon = Pensjon(
+            melding = melding,
+            pensjon = Pensjon(
                 ytelser = ytelselist,
                 kravDato = krav,
                 gjenlevende = gjenlevende
-        ))
+            )
+        )
     }
 
     /**
@@ -192,30 +188,6 @@ object PrefillP2xxxPensjon {
         if (fortegBH != null && fortegBH.size == sak?.kravHistorikkListe?.kravHistorikkListe?.size)  {
             logger.warn("Det er ikke markert for bodd/arbeidet i utlandet. Krav SED $sedType blir ikke opprettet")
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Det er ikke markert for bodd/arbeidet i utlandet. Krav SED $sedType blir ikke opprettet")
-        }
-    }
-
-    private fun finnKravHistorikkForDato(pensak: V1Sak?): V1KravHistorikk {
-        logger.debug("finnKravHistorikkForDato")
-        logger.debug("status ${pensak?.status}")
-        try {
-
-            val gjenLevKravarsak = hentKravhistorikkForGjenlevende(pensak?.kravHistorikkListe)
-            if (gjenLevKravarsak != null) return gjenLevKravarsak
-
-            val kravKunUtland = hentKravHistorikkMedValgtKravType(pensak?.kravHistorikkListe, Kravtype.F_BH_KUN_UTL)
-            if (kravKunUtland != null) return  kravKunUtland
-
-            val sakstatus = Sakstatus.valueOf(pensak?.status!!)
-            return when (sakstatus) {
-                        Sakstatus.TIL_BEHANDLING -> hentKravHistorikkMedKravStatusTilBehandling(pensak.kravHistorikkListe)
-                        Sakstatus.AVSL -> hentKravHistorikkMedKravStatusAvslag(pensak.kravHistorikkListe)
-                        else -> hentKravHistorikkForsteGangsBehandlingUtlandEllerForsteGang(pensak.kravHistorikkListe, pensak.sakType)
-                    }
-
-        } catch (ex: Exception) {
-            logger.warn("Klarte ikke å hente kravhistorikk for $pensak , fortsetter uten")
-            return V1KravHistorikk()
         }
     }
 
