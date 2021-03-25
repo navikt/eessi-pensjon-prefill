@@ -168,6 +168,8 @@ class EuxKlient(private val euxOidcRestTemplate: RestTemplate,
                 , prefixErrorMessage = "Feiler ved metode GetBuc. "
                 , maxAttempts = 4
                 , waitTimes = 10000L
+                , skipError = listOf(HttpStatus.NOT_FOUND)
+
         )
         return response.body ?: throw ServerException("Feil ved henting av BUCdata ingen data, euxCaseId $euxCaseId")
     }
@@ -339,13 +341,17 @@ class EuxKlient(private val euxOidcRestTemplate: RestTemplate,
     }
 
     @Throws(Throwable::class)
-    fun <T> retryHelper(func: () -> T, maxAttempts: Int = 3, waitTimes: Long = 1000L): T {
+    fun <T> retryHelper(func: () -> T, maxAttempts: Int = 3, waitTimes: Long = 1000L, skipError: List<HttpStatus>): T {
         var failException: Throwable? = null
         var count = 0
         while (count < maxAttempts) {
             try {
                 return func.invoke()
             } catch (ex: Throwable) {
+                //magick sjekk...
+                if (ex is HttpClientErrorException && skipError.isNotEmpty()) {
+                    if (skipError.contains(ex.statusCode)) throw ex
+                }
                 count++
                 logger.warn("feiled å kontakte eux prøver på nytt. nr.: $count, feilmelding: ${ex.message}")
                 failException = ex
@@ -361,14 +367,16 @@ class EuxKlient(private val euxOidcRestTemplate: RestTemplate,
                                      metric: MetricsHelper.Metric,
                                      prefixErrorMessage: String,
                                      maxAttempts: Int = 3,
-                                     waitTimes: Long = 1000L
+                                     waitTimes: Long = 1000L,
+                                     skipError: List<HttpStatus> = emptyList()
     ): ResponseEntity<T> {
         return metric.measure {
             return@measure try {
                 val response = retryHelper(
                         func = { restTemplateFunction.invoke() },
                         maxAttempts = maxAttempts,
-                        waitTimes = overrideWaitTimes ?: waitTimes)
+                        waitTimes = overrideWaitTimes ?: waitTimes,
+                        skipError = skipError)
                 response
             } catch (hcee: HttpClientErrorException) {
                 val errorBody = hcee.responseBodyAsString

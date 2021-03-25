@@ -1,6 +1,11 @@
 package no.nav.eessi.pensjon.fagmodul.api
 
-import com.nhaarman.mockitokotlin2.*
+import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.doReturn
+import com.nhaarman.mockitokotlin2.doThrow
+import com.nhaarman.mockitokotlin2.times
+import com.nhaarman.mockitokotlin2.verify
+import com.nhaarman.mockitokotlin2.whenever
 import no.nav.eessi.pensjon.fagmodul.eux.BucAndSedView
 import no.nav.eessi.pensjon.fagmodul.eux.EuxKlient
 import no.nav.eessi.pensjon.fagmodul.eux.EuxService
@@ -93,6 +98,18 @@ class BucControllerTest {
         val result = bucController.getBuc("1213123123")
         assertEquals(buc, result)
     }
+
+    @Test
+    fun `check for creator of current buc`() {
+        val gyldigBuc = javaClass.getResource("/json/buc/buc-279020big.json").readText()
+        val buc : Buc =  mapJsonToAny(gyldigBuc, typeRefs())
+
+        doReturn(buc).whenever(mockEuxService).getBuc(any())
+
+        val result = bucController.getCreator("1213123123")
+        assertEquals(buc.creator, result)
+    }
+
 
     @Test
     fun getProcessDefinitionName() {

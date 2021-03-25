@@ -4,6 +4,8 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.doThrow
 import com.nhaarman.mockitokotlin2.eq
+import com.nhaarman.mockitokotlin2.times
+import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Organisation
@@ -38,6 +40,7 @@ import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.HttpServerErrorException
 import org.springframework.web.client.ResourceAccessException
 import org.springframework.web.client.RestTemplate
+import org.springframework.web.server.ResponseStatusException
 import org.springframework.web.util.UriComponentsBuilder
 import java.nio.charset.Charset
 import java.nio.file.Files
@@ -99,11 +102,28 @@ class EuxKlientTest {
 
     @Test
     fun `Calling EuxService feiler med BAD_REQUEST fra kall til getBuc`() {
+        val bucid = "123213123"
+
         doThrow(HttpClientErrorException(HttpStatus.BAD_REQUEST))
-                .whenever(mockEuxrestTemplate).exchange( any<String>(), eq(HttpMethod.GET), eq(null), eq(String::class.java))
+            .whenever(mockEuxrestTemplate).exchange( any<String>(), eq(HttpMethod.GET), eq(null), eq(String::class.java))
         assertThrows<GenericUnprocessableEntity> {
-            klient.getBucJson("P_BUC_99")
+            klient.getBucJson(bucid)
         }
+        verify(mockEuxrestTemplate, times(4)).exchange("/buc/$bucid", HttpMethod.GET, null, String::class.java)
+
+    }
+
+    @Test
+    fun `Calling EuxService feiler med NOT FOUND fra kall til getBuc`() {
+        val bucid = "123213123"
+        doThrow(HttpClientErrorException(HttpStatus.NOT_FOUND))
+            .whenever(mockEuxrestTemplate).exchange( any<String>(), eq(HttpMethod.GET), eq(null), eq(String::class.java))
+        assertThrows<ResponseStatusException> {
+            klient.getBucJson(bucid)
+        }
+
+        verify(mockEuxrestTemplate, times(1)).exchange("/buc/$bucid", HttpMethod.GET, null, String::class.java)
+
     }
 
     @Test
