@@ -9,11 +9,10 @@ import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Creator
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ShortDocumentItem
 import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.prefill.PersonDataService
+import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonService
 import no.nav.eessi.pensjon.logging.AuditLogger
 import no.nav.eessi.pensjon.metrics.MetricsHelper
-import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonClient
 import no.nav.eessi.pensjon.utils.mapAnyToJson
-import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import no.nav.security.token.support.core.api.Protected
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -33,7 +32,7 @@ class BucController(
     @Value("\${NAIS_NAMESPACE}") val nameSpace: String,
     private val euxService: EuxService,
     private val auditlogger: AuditLogger,
-    private val pensjonsinformasjonClient: PensjonsinformasjonClient,
+    private val pensjonsinformasjonService: PensjonsinformasjonService,
     private val personDataService: PersonDataService,
     @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper(SimpleMeterRegistry())
 ) {
@@ -171,44 +170,16 @@ class BucController(
                               @PathVariable("vedtakid", required = true) vedtakid: String): List<BucAndSedView> {
         return bucDetaljerVedtak.measure {
             //Hente opp pesysservice. hente inn vedtak pensjoninformasjon..
-            val peninfo = pensjonsinformasjonClient.hentAltPaaVedtak(vedtakid)
+            val pensjonsinformasjon = pensjonsinformasjonService.hentMedVedtak(vedtakid)
+            val avdod = pensjonsinformasjonService.hentGyldigAvdod(pensjonsinformasjon)
 
-            logger.debug("Pensjoninfo vedtak avdod :"
-                    + "\nAvod " + peninfo.avdod?.avdod
-                    + "\nAvdodMor : " + peninfo.avdod?.avdodMor
-                    + "\nAvdodFar : " + peninfo.avdod?.avdodFar
-                    + "\n")
-
-            val person = peninfo.person
-            val avdod = hentGyldigAvdod(peninfo)
-
-            logger.info("vedtak aktoerid: ${person.aktorId}")
-            if (avdod != null && person.aktorId == gjenlevendeAktoerid) {
-                logger.info("henter buc for gjenlevende ved vedtakid: $vedtakid")
+            if (avdod != null && pensjonsinformasjon.person.aktorId == gjenlevendeAktoerid) {
+                logger.info("Henter buc for gjenlevende ved vedtakid: $vedtakid")
                 return@measure avdod.map { avdodFnr -> getBucogSedViewGjenlevende(gjenlevendeAktoerid, avdodFnr) }.flatten()
             } else {
                 logger.info("Henter buc for bruker: $gjenlevendeAktoerid")
                 return@measure getBucogSedView(gjenlevendeAktoerid)
             }
-        }
-    }
-
-    fun hentGyldigAvdod(peninfo: Pensjonsinformasjon) : List<String>? {
-        val avdod = peninfo.avdod
-        val avdodMor = avdod?.avdodMor
-        val avdodFar = avdod?.avdodFar
-        val annenAvdod = avdod?.avdod
-
-        return when {
-            annenAvdod != null && avdodFar == null && avdodMor == null -> listOf(annenAvdod)
-            annenAvdod == null && avdodFar != null && avdodMor == null -> listOf(avdodFar)
-            annenAvdod == null && avdodFar == null && avdodMor != null -> listOf(avdodMor)
-            annenAvdod == null && avdodFar != null && avdodMor != null -> listOf(avdodFar, avdodMor)
-            annenAvdod == null && avdodFar == null && avdodMor == null -> null
-            else -> {
-                logger.error("Ukjent feil ved henting av buc detaljer for gjenlevende")
-                throw ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Ukjent feil ved henting av buc detaljer for gjenlevende")
-           }
         }
     }
 

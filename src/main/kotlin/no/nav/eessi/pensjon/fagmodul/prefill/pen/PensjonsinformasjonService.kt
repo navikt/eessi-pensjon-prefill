@@ -127,6 +127,25 @@ class PensjonsinformasjonService(private val pensjonsinformasjonClient: Pensjons
                 else -> sedType.name
             }
 
+    fun hentGyldigAvdod(peninfo: Pensjonsinformasjon) : List<String>? {
+        val avdod = peninfo.avdod
+        val avdodMor = avdod?.avdodMor
+        val avdodFar = avdod?.avdodFar
+        val annenAvdod = avdod?.avdod
+
+        return when {
+            annenAvdod != null && avdodFar == null && avdodMor == null -> listOf(annenAvdod)
+            annenAvdod == null && avdodFar != null && avdodMor == null -> listOf(avdodFar)
+            annenAvdod == null && avdodFar == null && avdodMor != null -> listOf(avdodMor)
+            annenAvdod == null && avdodFar != null && avdodMor != null -> listOf(avdodFar, avdodMor)
+            annenAvdod == null && avdodFar == null && avdodMor == null -> null
+            else -> {
+                logger.error("Ukjent feil ved henting av buc detaljer for gjenlevende")
+                throw ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Ukjent feil ved henting av buc detaljer for gjenlevende")
+            }
+        }
+    }
+
 }
 
 class IkkeGyldigKallException(reason: String): ResponseStatusException(HttpStatus.BAD_REQUEST, reason)
