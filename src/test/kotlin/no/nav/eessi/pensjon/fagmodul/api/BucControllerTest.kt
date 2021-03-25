@@ -13,12 +13,12 @@ import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Organisation
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ParticipantsItem
 import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.prefill.PersonDataService
+import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonService
 import no.nav.eessi.pensjon.logging.AuditLogger
 import no.nav.eessi.pensjon.personoppslag.pdl.model.AktoerId
 import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentType
 import no.nav.eessi.pensjon.personoppslag.pdl.model.NorskIdent
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjoninformasjonException
-import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonClient
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.toJson
 import no.nav.eessi.pensjon.utils.typeRefs
@@ -54,7 +54,7 @@ class BucControllerTest {
     lateinit var mockEuxService: EuxService
 
     @Mock
-    lateinit var mockPensjonClient: PensjonsinformasjonClient
+    lateinit var mockPensjonsinformasjonService: PensjonsinformasjonService
 
     @Mock
     lateinit var kafkaTemplate: KafkaTemplate<String, String>
@@ -70,7 +70,7 @@ class BucControllerTest {
             "default",
             mockEuxService,
             auditLogger,
-            mockPensjonClient,
+            mockPensjonsinformasjonService,
             personDataService
         )
         bucController.initMetrics()
@@ -209,7 +209,7 @@ class BucControllerTest {
 
     @Test
     fun `Gitt en gjenlevende med vedtak som inneholder avdød Når BUC og SED forsøkes å hentes Så returner alle SED og BUC tilhørende gjenlevende`() {
-        val aktoerId = "1234568"
+        val gjenlevendeAktoerid = "1234568"
         val vedtaksId = "22455454"
         val fnrGjenlevende = "13057065487"
         val avdodfnr = "12312312312"
@@ -219,11 +219,13 @@ class BucControllerTest {
         mockPensjoninfo.avdod = V1Avdod()
         mockPensjoninfo.person = V1Person()
         mockPensjoninfo.avdod.avdod = avdodfnr
-        mockPensjoninfo.person.aktorId = aktoerId
+        mockPensjoninfo.person.aktorId = gjenlevendeAktoerid
 
-        doReturn(mockPensjoninfo).whenever(mockPensjonClient).hentAltPaaVedtak(vedtaksId)
+        doReturn(mockPensjoninfo).whenever(mockPensjonsinformasjonService).hentMedVedtak(vedtaksId)
+        doReturn(listOf(avdodfnr)).whenever(mockPensjonsinformasjonService).hentGyldigAvdod(any())
 
-        doReturn(NorskIdent(fnrGjenlevende)).whenever(personDataService).hentIdent(IdentType.NorskIdent, AktoerId(aktoerId))
+
+        doReturn(NorskIdent(fnrGjenlevende)).whenever(personDataService).hentIdent(IdentType.NorskIdent, AktoerId(gjenlevendeAktoerid))
 
         val documentsItem = listOf(DocumentsItem(type = SEDType.P2100))
         val avdodView = listOf(BucAndSedView.from(Buc(id = "123", processDefinitionName = "P_BUC_02", documents = documentsItem), fnrGjenlevende, avdodfnr ))
@@ -239,7 +241,7 @@ class BucControllerTest {
 
 
         //euxService.getBucAndSedVew()
-        val actual = bucController.getBucogSedViewVedtak(aktoerId, vedtaksId)
+        val actual = bucController.getBucogSedViewVedtak(gjenlevendeAktoerid, vedtaksId)
         assertEquals(2, actual.size)
         assertTrue(actual.contains( avdodView.first() ))
     }
@@ -260,7 +262,8 @@ class BucControllerTest {
         mockPensjoninfo.avdod.avdodFar = avdodFarfnr
         mockPensjoninfo.person.aktorId = aktoerId
 
-        doReturn(mockPensjoninfo).`when`(mockPensjonClient).hentAltPaaVedtak(vedtaksId)
+        doReturn(mockPensjoninfo).`when`(mockPensjonsinformasjonService).hentMedVedtak(vedtaksId)
+        doReturn(listOf(avdodFarfnr, avdodMorfnr)).whenever(mockPensjonsinformasjonService).hentGyldigAvdod(any())
 
         doReturn(NorskIdent(fnrGjenlevende))
             .doReturn(NorskIdent(fnrGjenlevende))
@@ -304,7 +307,8 @@ class BucControllerTest {
         mockPensjoninfo.person = V1Person()
         mockPensjoninfo.person.aktorId = aktoerId
 
-        doReturn(mockPensjoninfo).whenever(mockPensjonClient).hentAltPaaVedtak(vedtaksId)
+        doReturn(mockPensjoninfo).whenever(mockPensjonsinformasjonService).hentMedVedtak(vedtaksId)
+        doReturn(null).whenever(mockPensjonsinformasjonService).hentGyldigAvdod(any())
 
         //aktoerService.hentPinForAktoer
         doReturn(NorskIdent(fnrGjenlevende)).whenever(personDataService).hentIdent(IdentType.NorskIdent, AktoerId(aktoerId))
@@ -330,7 +334,7 @@ class BucControllerTest {
         val aktoerId = "1234568"
         val vedtaksId = "22455454"
 
-        doThrow(PensjoninformasjonException("Error, Error")).whenever(mockPensjonClient).hentAltPaaVedtak(vedtaksId)
+        doThrow(PensjoninformasjonException("Error, Error")).whenever(mockPensjonsinformasjonService).hentMedVedtak(vedtaksId)
 
         assertThrows<PensjoninformasjonException> {
             bucController.getBucogSedViewVedtak(aktoerId, vedtaksId)
