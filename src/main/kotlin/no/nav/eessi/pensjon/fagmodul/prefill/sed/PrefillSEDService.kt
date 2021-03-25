@@ -94,7 +94,7 @@ class PrefillSEDService(
                 prefillData.getPersonInfoFromRequestData(),
                 prefillData.institution.first(),
                 personDataCollection)
-            H020, H021 -> PrefillH02X(PrefillSed(prefillPDLnav)).prefillSed(prefillData, personDataCollection)
+            H020, H021 -> PrefillH02X(prefillPDLnav).prefill(prefillData, personDataCollection)
             else ->
                 //P3000_SE, PL, DK, DE, UK, med flere vil gå denne veien..
                 //P5000, P9000, P14000, P15000.. med flere..

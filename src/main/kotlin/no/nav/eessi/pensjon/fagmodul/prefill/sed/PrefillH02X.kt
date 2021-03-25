@@ -2,30 +2,30 @@ package no.nav.eessi.pensjon.fagmodul.prefill.sed
 
 import no.nav.eessi.pensjon.fagmodul.models.PersonDataCollection
 import no.nav.eessi.pensjon.fagmodul.models.PrefillDataModel
-import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillSed
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Bruker
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Nav
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Person
-import no.nav.eessi.pensjon.fagmodul.sedmodel.PinLandItem
-import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
+import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillPDLNav
+import no.nav.eessi.pensjon.fagmodul.sedmodel.*
 
-class PrefillH02X(private val prefillSed: PrefillSed)  {
+class PrefillH02X(private val prefillNav: PrefillPDLNav)  {
 
-    fun prefillSed(prefillData: PrefillDataModel, personData: PersonDataCollection): SED {
+    fun prefill(prefillData: PrefillDataModel, personData: PersonDataCollection): H02x {
 
-        val personSed = prefillSed.prefill(
-                prefillData = prefillData,
-                personData = personData
+        val navSed = prefillNav.prefill(
+            penSaksnummer = prefillData.penSaksnummer,
+            bruker = prefillData.bruker,
+            avdod = prefillData.avdod,
+            personData = personData,
+            brukerInformasjon = prefillData.getPersonInfoFromRequestData(),
+            annenPerson = null
         )
 
-        val pinitem = personSed.nav?.bruker?.person?.pin?.first()
+        val pinitem = navSed.bruker?.person?.pin?.first()
 
         val pinLand = PinLandItem(
                 oppholdsland = pinitem?.land,
                 kompetenteuland = pinitem?.identifikator
         )
 
-        return SED(
+        return H02x(
             type = prefillData.sedType,
             nav = Nav(
                 bruker = Bruker(
