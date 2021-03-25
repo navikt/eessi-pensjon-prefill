@@ -40,7 +40,7 @@ class PrefillSEDService(
         return when (sedType) {
             //krav
             P2000 -> PrefillP2000(prefillPDLnav).prefillSed(prefillData, personDataCollection, hentRelevantPensjonSak(prefillData) { pensakType -> pensakType == ALDER.name }, hentRelevantVedtak(prefillData))
-            P2200 -> PrefillP2200(prefillPDLnav).prefillSed(prefillData, personDataCollection, hentRelevantPensjonSak(prefillData) { pensakType -> pensakType == UFOREP.name }, hentRelevantVedtak(prefillData))
+            P2200 -> PrefillP2200(prefillPDLnav).prefill(prefillData, personDataCollection, hentRelevantPensjonSak(prefillData) { pensakType -> pensakType == UFOREP.name }, hentRelevantVedtak(prefillData))
             P2100 -> {
                 val sedpair = PrefillP2100(prefillPDLnav).prefillSed(prefillData, personDataCollection, hentRelevantPensjonSak(prefillData) { pensakType ->
                     listOf(

@@ -3,7 +3,7 @@ package no.nav.eessi.pensjon.fagmodul.prefill.sed.krav
 import no.nav.eessi.pensjon.fagmodul.models.PersonDataCollection
 import no.nav.eessi.pensjon.fagmodul.models.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillPDLNav
-import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
+import no.nav.eessi.pensjon.fagmodul.sedmodel.P2200
 import no.nav.pensjon.v1.sak.V1Sak
 import no.nav.pensjon.v1.vedtak.V1Vedtak
 import org.slf4j.Logger
@@ -17,7 +17,7 @@ class PrefillP2200(private val prefillNav: PrefillPDLNav) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillP2200::class.java) }
 
-    fun prefillSed(prefillData: PrefillDataModel, personData: PersonDataCollection, sak: V1Sak?, vedtak: V1Vedtak? = null) : SED {
+    fun prefill(prefillData: PrefillDataModel, personData: PersonDataCollection, sak: V1Sak?, vedtak: V1Vedtak? = null) : P2200 {
         logger.debug("----------------------------------------------------------"
                 + "\nSaktype                 : ${sak?.sakType} "
                 + "\nSøker etter SakId       : ${prefillData.penSaksnummer} "
@@ -41,8 +41,7 @@ class PrefillP2200(private val prefillNav: PrefillPDLNav) {
 
         PrefillP2xxxPensjon.validerGyldigVedtakEllerKravtypeOgArsak(sak, sedType, vedtak)
 
-        return SED(
-            type = sedType,
+        return P2200(
             nav = nav,
             pensjon = pensjon
         ).also {
