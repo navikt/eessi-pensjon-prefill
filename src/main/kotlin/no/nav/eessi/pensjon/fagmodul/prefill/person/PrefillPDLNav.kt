@@ -158,7 +158,7 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
         personData: PersonDataCollection,
         brukerInformasjon: BrukerInformasjon?,
         krav: Krav? = null,
-        annenPerson: Bruker?
+        annenPerson: Bruker? = null
     ): Nav {
         val forsikretPerson = personData.forsikretPerson
         val avdodEllerGjenlevende = personData.gjenlevendeEllerAvdod

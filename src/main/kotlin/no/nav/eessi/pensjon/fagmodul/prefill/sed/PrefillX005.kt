@@ -1,8 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed
 
-import no.nav.eessi.pensjon.fagmodul.models.PersonDataCollection
-import no.nav.eessi.pensjon.fagmodul.models.PrefillDataModel
-import no.nav.eessi.pensjon.fagmodul.models.SEDType
+import no.nav.eessi.pensjon.fagmodul.models.*
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.fagmodul.sedmodel.*
 import org.slf4j.Logger
@@ -12,28 +10,30 @@ class PrefillX005(private val prefillNav: PrefillPDLNav)  {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillX005::class.java) }
 
-    fun prefill(prefillData: PrefillDataModel, personData: PersonDataCollection): SED {
+    fun prefill(penSaksnummer: String,
+                bruker: PersonId,
+                avdod: PersonId?,
+                brukerinformasjon: BrukerInformasjon?,
+                institusjon: InstitusjonItem,
+                personData: PersonDataCollection): X005 {
 
         val navsed = prefillNav.prefill(
-            penSaksnummer = prefillData.penSaksnummer,
-            bruker = prefillData.bruker,
-            avdod = prefillData.avdod,
+            penSaksnummer = penSaksnummer,
+            bruker = bruker,
+            avdod = avdod,
             personData = personData,
-            brukerInformasjon = prefillData.getPersonInfoFromRequestData(),
-            krav = null,
-            annenPerson = null
+            brukerInformasjon = brukerinformasjon,
         )
 
-        val singleSelectedInstitustion = prefillData.institution.first()
         val institusjonX005 = InstitusjonX005(
-                   id = singleSelectedInstitustion.checkAndConvertInstituion(),
-                    navn = singleSelectedInstitustion.name ?: singleSelectedInstitustion.checkAndConvertInstituion()
+                   id = institusjon.checkAndConvertInstituion(),
+                    navn = institusjon.name ?: institusjon.checkAndConvertInstituion()
         )
 
         logger.debug("Tilpasser X005 forenklet preutfylling")
         val person = navsed.bruker?.person
 
-        return SED(
+        return X005(
                 type = SEDType.X005,
                 nav = Nav(
                         sak = Navsak(
