@@ -70,23 +70,6 @@ class EuxService (private val euxKlient: EuxKlient,
         return bucSedResponse
     }
 
-
-    /**
-     * Henter ut sed fra rina med bucid og documentid
-     */
-    fun getSedOnBuc(euxCaseId: String, sedType: SEDType?): List<SED> {
-        logger.info("Prøver å hente ut en BucUtils for type $euxCaseId")
-        val docid = getBuc(euxCaseId).documents ?: throw NoSuchFieldException("Fant ikke DocumentsItem")
-
-        if (sedType == null) return emptyList()
-
-        val sedlist = docid.filter { it.type == sedType }
-                .mapNotNull { it.id?.let { id ->  getSedOnBucByDocumentId(euxCaseId, id) } }
-
-        logger.info("return liste av SED for type: $sedType listSize: ${sedlist.size}")
-        return sedlist
-    }
-
     fun getBuc(euxCaseId: String): Buc {
         val body = euxKlient.getBucJson(euxCaseId)
         logger.debug("mapper buc om til BUC objekt-model")
