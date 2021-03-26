@@ -49,7 +49,7 @@ class BucUtils(private val buc: Buc) {
         return buc.documents ?: throw NoSuchFieldException("Fant ikke DocumentsItem")
     }
 
-    fun findDocument(documentId: String): ShortDocumentItem? =
+    fun findDocument(documentId: String): DocumentsItem? =
             getAllDocuments().firstOrNull { it.id == documentId }
 
     fun getStartDateLong(): Long {
@@ -83,7 +83,7 @@ class BucUtils(private val buc: Buc) {
     fun findFirstDocumentItemByType(sedType: SEDType) = getDocuments().find { sedType == it.type }?.let { createShortDocument(it) }
 
     private fun createShortDocument(documentItem: DocumentsItem) =
-            ShortDocumentItem(
+            DocumentsItem(
                 id = documentItem.id,
                 parentDocumentId = documentItem.parentDocumentId,
                 type = documentItem.type,
@@ -171,7 +171,7 @@ class BucUtils(private val buc: Buc) {
 
     private fun createShortAttachemnt(attachments: List<Attachment>?) =
             attachments?.map {
-                ShortAttachment(
+                Attachment(
                     id = it.id,
                     name = it.name,
                     mimeType = it.mimeType,
@@ -184,7 +184,7 @@ class BucUtils(private val buc: Buc) {
 
     fun getAllDocuments() = getDocuments().map { createShortDocument(it) }
 
-    fun getDocumentByType(sedType: SEDType): ShortDocumentItem? = getAllDocuments().firstOrNull { sedType == it.type && it.status != "empty" }
+    fun getDocumentByType(sedType: SEDType): DocumentsItem? = getAllDocuments().firstOrNull { sedType == it.type && it.status != "empty" }
 
     fun getParticipants() = buc.participants ?: emptyList()
 
