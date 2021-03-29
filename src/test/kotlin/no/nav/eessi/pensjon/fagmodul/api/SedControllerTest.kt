@@ -47,26 +47,25 @@ class SedControllerTest {
     lateinit var mockPrefillSEDService: PrefillSEDService
 
     @Mock
-    lateinit var personService: PersonDataService
+    lateinit var personDataService: PersonDataService
 
     private lateinit var sedController: SedController
 
     @BeforeEach
     fun setUp() {
         mockEuxService.initMetrics()
+        personDataService.initMetrics()
 
         val prefillService = PrefillService(mockPrefillSEDService)
         prefillService.initMetrics()
 
-        val innhentingService = InnhentingService(personService, prefillService, mockEuxService)
+        val innhentingService = InnhentingService(personDataService, prefillService, mockEuxService)
         innhentingService.initMetrics()
 
-        personService.initMetrics()
         this.sedController = SedController(
             innhentingService,
             mockEuxService,
             prefillService,
-            personService,
             auditLogger
         )
 
@@ -100,12 +99,11 @@ class SedControllerTest {
                 aktoerId = "0105094340092"
         )
 
-        doReturn(NorskIdent("12345")).whenever(personService).hentIdent(eq(IdentType.NorskIdent), any< Ident<*>>())
-
+        doReturn("12345").whenever(personDataService).hentFnrfraAktoerService(any())
 
         val utfyllMock = ApiRequest.buildPrefillDataModelOnExisting(mockData, NorskIdent("12345").id, null)
 
-        doReturn(PersonDataCollection(PersonPDLMock.createWith(), PersonPDLMock.createWith())).whenever(personService).hentPersonData(any())
+        doReturn(PersonDataCollection(PersonPDLMock.createWith(), PersonPDLMock.createWith())).whenever(personDataService).hentPersonData(any())
 
         val nav = Nav(bruker = Bruker(person = Person(fornavn = "Dummy", etternavn = "Dummy", foedselsdato = "1900-10-11", kjoenn = "K")), krav = Krav("1937-12-11"))
         val mockSed = SED(
@@ -239,8 +237,8 @@ class SedControllerTest {
     fun `call addInstutionAndDocument mock adding two institusjon when X005 exists already`() {
         val euxCaseId = "1234567890"
 
-        doReturn(NorskIdent("12345")).`when`(personService).hentIdent(eq(IdentType.NorskIdent), any< Ident<*>>())
-        doReturn(PersonDataCollection(PersonPDLMock.createWith(), PersonPDLMock.createWith())).whenever(personService).hentPersonData(any())
+        doReturn("12345").whenever(personDataService).hentFnrfraAktoerService(any())
+        doReturn(PersonDataCollection(PersonPDLMock.createWith(), PersonPDLMock.createWith())).whenever(personDataService).hentPersonData(any())
 
         val mockParticipants = listOf(ParticipantsItem(role = "CaseOwner", organisation = Organisation(countryCode = "NO", name = "NAV", id = "NAV")))
         val mockBuc = Buc(id = "23123", processDefinitionName = "P_BUC_01", participants = mockParticipants)
@@ -277,8 +275,8 @@ class SedControllerTest {
                 InstitusjonItem(country = "DE", institution = "Tyskland", name="Tyskland test")
         )
 
-        doReturn(NorskIdent("12345")).whenever(personService).hentIdent(eq(IdentType.NorskIdent), any< Ident<*>>())
-        doReturn(PersonDataCollection(PersonPDLMock.createWith(), PersonPDLMock.createWith())).whenever(personService).hentPersonData(any())
+        doReturn("12345").whenever(personDataService).hentFnrfraAktoerService(any())
+        doReturn(PersonDataCollection(PersonPDLMock.createWith(), PersonPDLMock.createWith())).whenever(personDataService).hentPersonData(any())
         doReturn(mockBuc).whenever(mockEuxService).getBuc(euxCaseId)
 
         val apirequest = apiRequestWith(euxCaseId, newParticipants)
@@ -323,7 +321,7 @@ class SedControllerTest {
             InstitusjonItem(country = "DK", institution = "DK:213231", name="Tyskland test")
         )
 
-        doReturn(NorskIdent("12345")).whenever(personService).hentIdent(eq(IdentType.NorskIdent), any< Ident<*>>())
+        doReturn("12345").whenever(personDataService).hentFnrfraAktoerService(any())
         doReturn(mockBuc).whenever(mockEuxService).getBuc(euxCaseId)
         val apirequest = apiRequestWith(euxCaseId, newParticipants)
 
@@ -336,8 +334,8 @@ class SedControllerTest {
     fun `call addInstutionAndDocument  ingen ny Deltaker kun hovedsed`() {
         val euxCaseId = "1234567890"
 
-        doReturn(NorskIdent("12345")).whenever(personService).hentIdent(eq(IdentType.NorskIdent), any< Ident<*>>())
-        doReturn(PersonDataCollection(PersonPDLMock.createWith(), PersonPDLMock.createWith())).whenever(personService).hentPersonData(any())
+        doReturn("12345").whenever(personDataService).hentFnrfraAktoerService(any())
+        doReturn(PersonDataCollection(PersonPDLMock.createWith(), PersonPDLMock.createWith())).whenever(personDataService).hentPersonData(any())
 
         val mockBuc = Buc(id = "23123", processDefinitionName = "P_BUC_01", participants = listOf(ParticipantsItem()))
         mockBuc.documents = listOf(createDummyBucDocumentItem())
@@ -362,8 +360,8 @@ class SedControllerTest {
         val parentDocumentId = "1122334455666"
         val lastupdate = LocalDate.of(2020, Month.AUGUST, 7).toString()
 
-        doReturn(NorskIdent("12345")).whenever(personService).hentIdent(eq(IdentType.NorskIdent), any< Ident<*>>())
-        doReturn(PersonDataCollection(PersonPDLMock.createWith(), PersonPDLMock.createWith())).whenever(personService).hentPersonData(any())
+        doReturn("12345").whenever(personDataService).hentFnrfraAktoerService(any())
+        doReturn(PersonDataCollection(PersonPDLMock.createWith(), PersonPDLMock.createWith())).whenever(personDataService).hentPersonData(any())
 
         val mockBuc = Buc(id = "23123", processDefinitionName = "P_BUC_01", participants = listOf(ParticipantsItem()), processDefinitionVersion = "4.2")
         mockBuc.documents = listOf(
@@ -414,7 +412,7 @@ class SedControllerTest {
 
         verify(mockEuxService, times( 2)).getBuc(any())
         verify(mockEuxService, times( 1)).opprettSvarJsonSedOnBuc(any(), any(), any(), any())
-        verify(personService, times(1)).hentPersonData(any())
+        verify(personDataService, times(1)).hentPersonData(any())
     }
 
     @Test
@@ -423,7 +421,7 @@ class SedControllerTest {
         val parentDocumentId = "1122334455666"
         val lastupdate = LocalDate.of(2020, Month.AUGUST, 7).toString()
 
-        doReturn(NorskIdent("12345")).whenever(personService).hentIdent(eq(IdentType.NorskIdent), any< Ident<*>>())
+        doReturn("12345").whenever(personDataService).hentFnrfraAktoerService(any())
 
         val mockBuc = Buc(id = "23123", processDefinitionName = "P_BUC_01", participants = listOf(ParticipantsItem()), processDefinitionVersion = "4.2")
         mockBuc.documents = listOf(
@@ -442,7 +440,7 @@ class SedControllerTest {
     fun `call addInstutionAndDocument valider om SED alt finnes i BUC kaster Exception`() {
         val euxCaseId = "1234567890"
 
-        doReturn(NorskIdent("12345")).whenever(personService).hentIdent(eq(IdentType.NorskIdent), any< Ident<*>>())
+        doReturn("12345").whenever(personDataService).hentFnrfraAktoerService(any())
         val mockBucJson = javaClass.getResource("/json/buc/buc-P_BUC_06-P6000_Sendt.json").readText()
         doReturn( mapJsonToAny(mockBucJson, typeRefs<Buc>())).whenever(mockEuxService).getBuc(euxCaseId)
         val apiRequest = apiRequestWith(euxCaseId, emptyList())
@@ -457,8 +455,8 @@ class SedControllerTest {
     fun `Gitt det opprettes en SED P10000 på tom P_BUC_06 Så skal bucmodel hents på nyt og shortDocument returneres som response`() {
         val euxCaseId = "1234567890"
 
-        doReturn(NorskIdent("12345")).whenever(personService).hentIdent(eq(IdentType.NorskIdent), any< Ident<*>>())
-        doReturn(PersonDataCollection(PersonPDLMock.createWith(), PersonPDLMock.createWith())).whenever(personService).hentPersonData(any())
+        doReturn("12345").whenever(personDataService).hentFnrfraAktoerService(any())
+        doReturn(PersonDataCollection(PersonPDLMock.createWith(), PersonPDLMock.createWith())).whenever(personDataService).hentPersonData(any())
         doReturn(SED(SEDType.P10000)).whenever(mockPrefillSEDService).prefill(any(), any())
 
         val mockBucJson = javaClass.getResource("/json/buc/buc_P_BUC_06_4.2_tom.json").readText()
@@ -488,8 +486,8 @@ class SedControllerTest {
     @Test
     fun `call addInstutionAndDocument  to nye deltakere, men ingen X005`() {
         val euxCaseId = "1234567890"
-        doReturn(NorskIdent("12345")).whenever(personService).hentIdent(eq(IdentType.NorskIdent), any< Ident<*>>())
-        doReturn(PersonDataCollection(PersonPDLMock.createWith(), PersonPDLMock.createWith())).whenever(personService).hentPersonData(any())
+        doReturn("12345").whenever(personDataService).hentFnrfraAktoerService(any())
+        doReturn(PersonDataCollection(PersonPDLMock.createWith(), PersonPDLMock.createWith())).whenever(personDataService).hentPersonData(any())
 
         val mockBuc = Buc(id = "23123", processDefinitionName = "P_BUC_01", participants = listOf(ParticipantsItem()))
         mockBuc.documents = listOf(createDummyBucDocumentItem())
@@ -518,8 +516,8 @@ class SedControllerTest {
     fun `call addInstutionAndDocument  Exception eller feiler ved oppretting av SED naar X005 ikke finnes`() {
         val euxCaseId = "1234567890"
 
-        doReturn(NorskIdent("12345")).whenever(personService).hentIdent(eq(IdentType.NorskIdent), any< Ident<*>>())
-        doReturn(PersonDataCollection(PersonPDLMock.createWith(), PersonPDLMock.createWith())).whenever(personService).hentPersonData(any())
+        doReturn("12345").whenever(personDataService).hentFnrfraAktoerService(any())
+        doReturn(PersonDataCollection(PersonPDLMock.createWith(), PersonPDLMock.createWith())).whenever(personDataService).hentPersonData(any())
 
         val mockBuc = Buc(id = "23123", processDefinitionName = "P_BUC_01", participants = listOf(ParticipantsItem()))
         mockBuc.documents = listOf(createDummyBucDocumentItem(), DocumentsItem())
@@ -553,7 +551,7 @@ class SedControllerTest {
                 avdodfnr = "12345566"
 
         )
-        doReturn(AktoerId("1122334455")).whenever(personService).hentIdent(eq(IdentType.AktoerId), any< Ident<*>>())
+        doReturn(AktoerId("1122334455")).whenever(personDataService).hentIdent(eq(IdentType.AktoerId), any< Ident<*>>())
 
         val result = sedController.getAvdodAktoerIdPDL(apiRequest)
         assertEquals("1122334455", result)
@@ -572,7 +570,7 @@ class SedControllerTest {
                 subject = ApiSubject(gjenlevende = SubjectFnr("23123123"), avdod = SubjectFnr("46784678467"))
         )
 
-        doReturn(AktoerId("467846784671")).whenever(personService).hentIdent(eq(IdentType.AktoerId), any< Ident<*>>())
+        doReturn(AktoerId("467846784671")).whenever(personDataService).hentIdent(eq(IdentType.AktoerId), any< Ident<*>>())
 
         val result = sedController.getAvdodAktoerIdPDL(apiRequest)
         assertEquals("467846784671", result)

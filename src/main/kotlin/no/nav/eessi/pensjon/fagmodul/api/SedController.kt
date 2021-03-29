@@ -34,7 +34,6 @@ class SedController(
     private val innhentingService: InnhentingService,
     private val euxService: EuxService,
     private val prefillService: PrefillService,
-    private val personService: PersonDataService,
     private val auditlogger: AuditLogger,
     @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper(SimpleMeterRegistry())
 ) {
@@ -66,10 +65,10 @@ class SedController(
     ): String {
         auditlogger.log("previewDocument", request.aktoerId ?: "", request.toAudit())
         logger.info("Prefiller : ${request.sed}")
-        val norskIdent = hentFnrfraAktoerService(request.aktoerId, personService)
+        val norskIdent = innhentingService.hentFnrfraAktoerService(request.aktoerId)
         val dataModel = ApiRequest.buildPrefillDataModelOnExisting(request, norskIdent, getAvdodAktoerIdPDL(request))
 
-        val personcollection = personService.hentPersonData(dataModel)
+        val personcollection = innhentingService.hentPersonData(dataModel)
         return prefillService.prefillSedtoJson(dataModel, "4.2", personcollection).sed
     }
 
@@ -90,7 +89,7 @@ class SedController(
     fun addInstutionAndDocument(@RequestBody request: ApiRequest): DocumentsItem? {
         auditlogger.log("addInstutionAndDocument", request.aktoerId ?: "", request.toAudit())
         logger.info("Legger til institusjoner og SED for rinaId: ${request.euxCaseId} bucType: ${request.buc} sedType: ${request.sed} aktoerId: ${request.aktoerId} sakId: ${request.sakId} vedtak: ${request.vedtakId}")
-        val norskIdent = hentFnrfraAktoerService(request.aktoerId, personService)
+        val norskIdent = innhentingService.hentFnrfraAktoerService(request.aktoerId)
         val dataModel = ApiRequest.buildPrefillDataModelOnExisting(request, norskIdent, getAvdodAktoerIdPDL(request))
 
         //Hente metadata for valgt BUC
@@ -137,7 +136,7 @@ class SedController(
         @PathVariable("parentid", required = true) parentId: String
     ): DocumentsItem? {
         auditlogger.log("addDocumentToParent", request.aktoerId ?: "", request.toAudit())
-        val norskIdent = hentFnrfraAktoerService(request.aktoerId, personService)
+        val norskIdent = innhentingService.hentFnrfraAktoerService(request.aktoerId)
         val dataModel = ApiRequest.buildPrefillDataModelOnExisting(request, norskIdent, getAvdodAktoerIdPDL(request))
 
         //Hente metadata for valgt BUC
@@ -152,7 +151,7 @@ class SedController(
         }
 
         logger.info("Prøver å prefillSED (svarSED) parentId: $parentId")
-        val personcollection = personService.hentPersonData(dataModel)
+        val personcollection = innhentingService.hentPersonData(dataModel)
         val sedAndType =
             prefillService.prefillSedtoJson(dataModel, bucUtil.getProcessDefinitionVersion(), personcollection)
 
@@ -206,7 +205,7 @@ class SedController(
                 if (norskIdent.isBlank()) {
                     throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Ident har tom input-verdi")
                 }
-                personService.hentIdent(IdentType.AktoerId, NorskIdent(norskIdent)).id
+                innhentingService.hentIdent(IdentType.AktoerId, NorskIdent(norskIdent))
             }
             "P_BUC_05", "P_BUC_06", "P_BUC_10" -> {
                 val norskIdent = request.riktigAvdod() ?: return null
@@ -216,7 +215,7 @@ class SedController(
 
                 val gyldigNorskIdent = Fodselsnummer.fra(norskIdent)
                 return try {
-                    personService.hentIdent(IdentType.AktoerId, NorskIdent(norskIdent)).id
+                    innhentingService.hentIdent(IdentType.AktoerId, NorskIdent(norskIdent))
                 } catch (ex: Exception) {
                     if (gyldigNorskIdent == null) logger.error("NorskIdent er ikke gyldig")
                     throw ResponseStatusException(HttpStatus.NOT_FOUND, "Korrekt aktoerIdent ikke funnet")

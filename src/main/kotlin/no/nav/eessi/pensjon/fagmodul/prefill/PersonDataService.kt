@@ -3,22 +3,12 @@ package no.nav.eessi.pensjon.fagmodul.prefill
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import no.nav.eessi.pensjon.fagmodul.models.PersonDataCollection
 import no.nav.eessi.pensjon.fagmodul.models.PrefillDataModel
-import no.nav.eessi.pensjon.fagmodul.models.SEDType.P2000
-import no.nav.eessi.pensjon.fagmodul.models.SEDType.P2100
-import no.nav.eessi.pensjon.fagmodul.models.SEDType.P2200
-import no.nav.eessi.pensjon.fagmodul.models.SEDType.P6000
+import no.nav.eessi.pensjon.fagmodul.models.SEDType.*
 import no.nav.eessi.pensjon.fagmodul.prefill.pdl.NavFodselsnummer
 import no.nav.eessi.pensjon.metrics.MetricsHelper
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonoppslagException
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Familierelasjonsrolle
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Ident
-import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe
-import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentType
-import no.nav.eessi.pensjon.personoppslag.pdl.model.NorskIdent
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Person
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Sivilstand
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Sivilstandstype
+import no.nav.eessi.pensjon.personoppslag.pdl.model.*
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -122,6 +112,14 @@ class PersonDataService(private val personService: PersonService,
         return forsikretPerson?.sivilstand
             ?.filter { validRelasjoner.contains(it.type) }
             ?.maxByOrNull { it.metadata.sisteRegistrertDato() }
+    }
+
+    fun hentFnrfraAktoerService(aktoerid: String?): String {
+        if (aktoerid.isNullOrBlank()) {
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Fant ingen aktoerident")
+        }
+        return hentIdent (IdentType.NorskIdent, AktoerId(aktoerid)).id
+
     }
 
 }

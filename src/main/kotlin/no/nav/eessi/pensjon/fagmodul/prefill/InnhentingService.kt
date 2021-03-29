@@ -11,6 +11,8 @@ import no.nav.eessi.pensjon.fagmodul.models.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.metrics.MetricsHelper
+import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentType
+import no.nav.eessi.pensjon.personoppslag.pdl.model.NorskIdent
 import no.nav.eessi.pensjon.utils.toJson
 import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
 import org.slf4j.Logger
@@ -41,10 +43,6 @@ class InnhentingService(private val personDataService: PersonDataService,
             ignoreHttpCodes = listOf(HttpStatus.BAD_REQUEST)
         )
     }
-
-//    fun <T : IdentType, R : IdentType> hentIdent(identTypeWanted: R, ident: Ident<T>): Ident<R> {
-//        return personService.hentIdent(identTypeWanted, ident)
-//    }
 
     fun kanSedOpprettes(dataModel: PrefillDataModel): BucUtils {
         return addInstutionAndDocumentBucUtils.measure {
@@ -92,8 +90,6 @@ class InnhentingService(private val personDataService: PersonDataService,
             }
         }
     }
-
-    fun hentPersonData(prefillData: PrefillDataModel) : PersonDataCollection = personDataService.hentPersonData(prefillData)
 
     private fun addInstitutionMedX005(
         dataModel: PrefillDataModel,
@@ -143,5 +139,10 @@ class InnhentingService(private val personDataService: PersonDataService,
         }
     }
 
+    fun hentPersonData(prefillData: PrefillDataModel) : PersonDataCollection = personDataService.hentPersonData(prefillData)
+
+    fun hentFnrfraAktoerService(aktoerid: String?): String = personDataService.hentFnrfraAktoerService(aktoerid)
+
+    fun hentIdent(aktoerId: IdentType.AktoerId, norskIdent: NorskIdent): String = personDataService.hentIdent(aktoerId, norskIdent).id
 
 }
