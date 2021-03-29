@@ -72,7 +72,7 @@ class BucControllerTest {
     @BeforeEach
     fun before() {
 
-        val innhentingService = InnhentingService(personDataService, prefillService, mockEuxService)
+        val innhentingService = InnhentingService(personDataService, mockEuxService)
         innhentingService.initMetrics()
 
         bucController = BucController(

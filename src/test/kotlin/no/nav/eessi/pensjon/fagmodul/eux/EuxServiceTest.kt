@@ -8,6 +8,7 @@ import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Buc
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.DocumentsItem
 import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.sedmodel.PinItem
+import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.services.statistikk.StatistikkHandler
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.toJson
@@ -577,6 +578,34 @@ class EuxServiceTest {
 
     private fun dummyRinasak(rinaSakId: String, bucType: String): Rinasak {
         return Rinasak(rinaSakId, bucType, Traits(), "", Properties(), "open")
+    }
+
+    @Test
+    fun `update SED Version from old version to new version`() {
+        val sed = SED(SEDType.P2000)
+        val bucVersion = "v4.2"
+
+        service.updateSEDVersion(sed, bucVersion)
+        assertEquals(bucVersion, "v${sed.sedGVer}.${sed.sedVer}")
+    }
+
+    @Test
+    fun `update SED Version from old version to same version`() {
+        val sed = SED(SEDType.P2000)
+        val bucVersion = "v4.1"
+
+        service.updateSEDVersion(sed, bucVersion)
+        assertEquals(bucVersion, "v${sed.sedGVer}.${sed.sedVer}")
+    }
+
+
+    @Test
+    fun `update SED Version from old version to unknown new version`() {
+        val sed = SED(SEDType.P2000)
+        val bucVersion = "v4.4"
+
+        service.updateSEDVersion(sed, bucVersion)
+        assertEquals("v4.1", "v${sed.sedGVer}.${sed.sedVer}")
     }
 
 }

@@ -110,8 +110,11 @@ class SedController(
             val sedType = sedAndType.sedType
             val sedJson = sedAndType.sed
 
+            val nyeInstitusjoner = bucUtil.findNewParticipants(dataModel.getInstitutionsList())
+            val x005Liste = prefillService.prefillEnX005ForHverInstitusjon(nyeInstitusjoner, dataModel, personData)
+
             //sjekk og evt legger til deltakere
-            innhentingService.checkAndAddInstitution(dataModel, bucUtil, personData)
+            euxService.checkAndAddInstitution(dataModel, bucUtil, x005Liste)
 
             logger.info("Prøver å sende SED: ${dataModel.sedType} inn på BUC: ${dataModel.euxCaseID}")
             val docresult = euxService.opprettJsonSedOnBuc(sedJson, sedType, dataModel.euxCaseID, request.vedtakId)
