@@ -8,7 +8,7 @@ import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Buc
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Creator
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.DocumentsItem
 import no.nav.eessi.pensjon.fagmodul.models.SEDType
-import no.nav.eessi.pensjon.fagmodul.prefill.PersonDataService
+import no.nav.eessi.pensjon.fagmodul.prefill.InnhentingService
 import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonService
 import no.nav.eessi.pensjon.logging.AuditLogger
 import no.nav.eessi.pensjon.metrics.MetricsHelper
@@ -33,7 +33,7 @@ class BucController(
     private val euxService: EuxService,
     private val auditlogger: AuditLogger,
     private val pensjonsinformasjonService: PensjonsinformasjonService,
-    private val personDataService: PersonDataService,
+    private val innhentingService: InnhentingService,
     @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper(SimpleMeterRegistry())
 ) {
 
@@ -113,7 +113,7 @@ class BucController(
         auditlogger.log("getRinasaker", aktoerId)
         logger.debug("henter rinasaker på valgt aktoerid: $aktoerId")
 
-        val norskIdent = hentFnrfraAktoerService(aktoerId, personDataService)
+        val norskIdent = innhentingService.hentFnrfraAktoerService(aktoerId)
 
         return euxService.getRinasaker(norskIdent, aktoerId)
     }
@@ -128,7 +128,7 @@ class BucController(
         return bucDetaljer.measure {
             logger.debug("Prøver å dekode aktoerid: $aktoerid til fnr.")
 
-            val fnr = hentFnrfraAktoerService(aktoerid, personDataService)
+            val fnr = innhentingService.hentFnrfraAktoerService(aktoerid)
 
             val rinasakIdList = try {
                 val rinasaker = euxService.getRinasaker(fnr, aktoerid)
@@ -174,7 +174,7 @@ class BucController(
 
         return bucDetaljerGjenlev.measure {
             logger.info("Prøver å dekode aktoerid: $aktoerid til gjenlevende fnr.")
-            val fnrGjenlevende = hentFnrfraAktoerService(aktoerid, personDataService)
+            val fnrGjenlevende = innhentingService.hentFnrfraAktoerService(aktoerid)
             logger.debug("gjenlevendeFnr: $fnrGjenlevende samt avdødfnr: $avdodfnr")
 
             //hente BucAndSedView på avdød

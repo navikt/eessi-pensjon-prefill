@@ -3,19 +3,12 @@ package no.nav.eessi.pensjon.fagmodul.api
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import io.swagger.annotations.ApiOperation
 import no.nav.eessi.pensjon.fagmodul.eux.BucUtils
-import no.nav.eessi.pensjon.fagmodul.eux.EuxConflictException
-import no.nav.eessi.pensjon.fagmodul.eux.EuxRinaServerException
 import no.nav.eessi.pensjon.fagmodul.eux.EuxService
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.BucSedResponse
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.DocumentsItem
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
-import no.nav.eessi.pensjon.fagmodul.models.PersonDataCollection
-import no.nav.eessi.pensjon.fagmodul.models.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.models.SEDType
-import no.nav.eessi.pensjon.fagmodul.prefill.ApiRequest
-import no.nav.eessi.pensjon.fagmodul.prefill.MangelfulleInndataException
-import no.nav.eessi.pensjon.fagmodul.prefill.PersonDataService
-import no.nav.eessi.pensjon.fagmodul.prefill.PrefillService
+import no.nav.eessi.pensjon.fagmodul.prefill.*
 import no.nav.eessi.pensjon.fagmodul.sedmodel.*
 import no.nav.eessi.pensjon.logging.AuditLogger
 import no.nav.eessi.pensjon.metrics.MetricsHelper
@@ -38,9 +31,9 @@ import javax.annotation.PostConstruct
 @RestController
 @RequestMapping("/sed")
 class SedController(
+    private val innhentingService: InnhentingService,
     private val euxService: EuxService,
     private val prefillService: PrefillService,
-    private val personService: PersonDataService,
     private val auditlogger: AuditLogger,
     @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper(SimpleMeterRegistry())
 ) {
@@ -72,10 +65,10 @@ class SedController(
     ): String {
         auditlogger.log("previewDocument", request.aktoerId ?: "", request.toAudit())
         logger.info("Prefiller : ${request.sed}")
-        val norskIdent = hentFnrfraAktoerService(request.aktoerId, personService)
+        val norskIdent = innhentingService.hentFnrfraAktoerService(request.aktoerId)
         val dataModel = ApiRequest.buildPrefillDataModelOnExisting(request, norskIdent, getAvdodAktoerIdPDL(request))
 
-        val personcollection = personService.hentPersonData(dataModel)
+        val personcollection = innhentingService.hentPersonData(dataModel)
         return prefillService.prefillSedtoJson(dataModel, "4.2", personcollection).sed
     }
 
@@ -96,24 +89,19 @@ class SedController(
     fun addInstutionAndDocument(@RequestBody request: ApiRequest): DocumentsItem? {
         auditlogger.log("addInstutionAndDocument", request.aktoerId ?: "", request.toAudit())
         logger.info("Legger til institusjoner og SED for rinaId: ${request.euxCaseId} bucType: ${request.buc} sedType: ${request.sed} aktoerId: ${request.aktoerId} sakId: ${request.sakId} vedtak: ${request.vedtakId}")
-        val norskIdent = hentFnrfraAktoerService(request.aktoerId, personService)
+        val norskIdent = innhentingService.hentFnrfraAktoerService(request.aktoerId)
         val dataModel = ApiRequest.buildPrefillDataModelOnExisting(request, norskIdent, getAvdodAktoerIdPDL(request))
 
         //Hente metadata for valgt BUC
-        val bucUtil = addInstutionAndDocumentBucUtils.measure {
-            logger.info("******* Hent BUC sjekk om sed kan opprettes *******")
-            BucUtils(euxService.getBuc(dataModel.euxCaseID)).also { bucUtil ->
-                //sjekk for om deltakere alt er fjernet med x007 eller x100 sed
-                bucUtil.checkForParticipantsNoLongerActiveFromXSEDAsInstitusjonItem(dataModel.getInstitutionsList())
-                //gyldig sed kan opprettes
-                bucUtil.checkIfSedCanBeCreated(dataModel.sedType, dataModel.penSaksnummer)
-            }
-        }
+        val bucUtil = innhentingService.kanSedOpprettes(dataModel)
+        val personData = innhentingService.hentPersonData(dataModel)
 
         //Preutfyll av SED, pensjon og personer samt oppdatering av versjon
-        val personcollection = personService.hentPersonData(dataModel)
-        val sedAndType =
-            prefillService.prefillSedtoJson(dataModel, bucUtil.getProcessDefinitionVersion(), personcollection)
+        val sedAndType = prefillService.prefillSedtoJson(
+            dataModel,
+            bucUtil.getProcessDefinitionVersion(),
+            personData
+        )
 
         //Sjekk og opprette deltaker og legge sed på valgt BUC
         return addInstutionAndDocument.measure {
@@ -123,7 +111,7 @@ class SedController(
             val sedJson = sedAndType.sed
 
             //sjekk og evt legger til deltakere
-            checkAndAddInstitution(dataModel, bucUtil, personcollection)
+            innhentingService.checkAndAddInstitution(dataModel, bucUtil, personData)
 
             logger.info("Prøver å sende SED: ${dataModel.sedType} inn på BUC: ${dataModel.euxCaseID}")
             val docresult = euxService.opprettJsonSedOnBuc(sedJson, sedType, dataModel.euxCaseID, request.vedtakId)
@@ -148,7 +136,7 @@ class SedController(
         @PathVariable("parentid", required = true) parentId: String
     ): DocumentsItem? {
         auditlogger.log("addDocumentToParent", request.aktoerId ?: "", request.toAudit())
-        val norskIdent = hentFnrfraAktoerService(request.aktoerId, personService)
+        val norskIdent = innhentingService.hentFnrfraAktoerService(request.aktoerId)
         val dataModel = ApiRequest.buildPrefillDataModelOnExisting(request, norskIdent, getAvdodAktoerIdPDL(request))
 
         //Hente metadata for valgt BUC
@@ -163,7 +151,7 @@ class SedController(
         }
 
         logger.info("Prøver å prefillSED (svarSED) parentId: $parentId")
-        val personcollection = personService.hentPersonData(dataModel)
+        val personcollection = innhentingService.hentPersonData(dataModel)
         val sedAndType =
             prefillService.prefillSedtoJson(dataModel, bucUtil.getProcessDefinitionVersion(), personcollection)
 
@@ -217,7 +205,7 @@ class SedController(
                 if (norskIdent.isBlank()) {
                     throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Ident har tom input-verdi")
                 }
-                personService.hentIdent(IdentType.AktoerId, NorskIdent(norskIdent)).id
+                innhentingService.hentIdent(IdentType.AktoerId, NorskIdent(norskIdent))
             }
             "P_BUC_05", "P_BUC_06", "P_BUC_10" -> {
                 val norskIdent = request.riktigAvdod() ?: return null
@@ -227,7 +215,7 @@ class SedController(
 
                 val gyldigNorskIdent = Fodselsnummer.fra(norskIdent)
                 return try {
-                    personService.hentIdent(IdentType.AktoerId, NorskIdent(norskIdent)).id
+                    innhentingService.hentIdent(IdentType.AktoerId, NorskIdent(norskIdent))
                 } catch (ex: Exception) {
                     if (gyldigNorskIdent == null) logger.error("NorskIdent er ikke gyldig")
                     throw ResponseStatusException(HttpStatus.NOT_FOUND, "Korrekt aktoerIdent ikke funnet")
@@ -263,87 +251,5 @@ class SedController(
         }
     }
 
-    //flyttes til prefill / en eller annen service?
-    fun updateSEDVersion(sed: SED, bucVersion: String) {
-        when (bucVersion) {
-            "v4.2" -> {
-                sed.sedVer = "2"
-            }
-            else -> {
-                sed.sedVer = "1"
-            }
-        }
-    }
-
-    fun checkAndAddInstitution(dataModel: PrefillDataModel, bucUtil: BucUtils, personcollection: PersonDataCollection) {
-        logger.info(
-            "Hvem er caseOwner: ${
-                bucUtil.getCaseOwner()?.toJson()
-            } på buc: ${bucUtil.getProcessDefinitionName()}"
-        )
-        val navCaseOwner = bucUtil.getCaseOwner()?.country == "NO"
-
-        val nyeInstitusjoner = bucUtil.findNewParticipants(dataModel.getInstitutionsList())
-
-        if (nyeInstitusjoner.isNotEmpty()) {
-            if (bucUtil.findFirstDocumentItemByType(SEDType.X005) == null) {
-                euxService.addInstitution(dataModel.euxCaseID, nyeInstitusjoner.map { it.institution })
-            } else {
-
-                //--gjort noe. ..
-                nyeInstitusjoner.forEach {
-                    if (!navCaseOwner && it.country != "NO") {
-                        logger.error("NAV er ikke sakseier. Du kan ikke legge til deltakere utenfor Norge")
-                        throw ResponseStatusException(
-                            HttpStatus.BAD_REQUEST,
-                            "NAV er ikke sakseier. Du kan ikke legge til deltakere utenfor Norge"
-                        )
-                    }
-                }
-                addInstitutionMedX005(
-                    dataModel,
-                    nyeInstitusjoner,
-                    bucUtil.getProcessDefinitionVersion(),
-                    personcollection
-                )
-            }
-        }
-    }
-
-    private fun addInstitutionMedX005(
-        dataModel: PrefillDataModel,
-        nyeInstitusjoner: List<InstitusjonItem>,
-        bucVersion: String,
-        personcollection: PersonDataCollection
-    ) {
-        logger.info("X005 finnes på buc, Sed X005 prefills og sendes inn: ${nyeInstitusjoner.toJsonSkipEmpty()}")
-
-        var execptionError: Exception? = null
-        val x005Liste = prefillService.prefillEnX005ForHverInstitusjon(nyeInstitusjoner, dataModel, personcollection)
-
-        x005Liste.forEach { x005 ->
-            try {
-                updateSEDVersion(x005, bucVersion)
-                euxService.opprettJsonSedOnBuc(x005.toJson(), x005.type, dataModel.euxCaseID, dataModel.vedtakId)
-            } catch (eux: EuxRinaServerException) {
-                execptionError = eux
-            } catch (exx: EuxConflictException) {
-                execptionError = exx
-            } catch (ex: Exception) {
-                execptionError = ex
-            }
-        }
-        if (execptionError != null) {
-            logger.error(
-                "Feiler ved oppretting av X005  (ny institusjon), euxCaseid: ${dataModel.euxCaseID}, sed: ${dataModel.sedType}",
-                execptionError
-            )
-            throw ResponseStatusException(
-                HttpStatus.BAD_REQUEST,
-                "Feiler ved oppretting av X005 (ny institusjon) for euxCaseId: ${dataModel.euxCaseID}"
-            )
-        }
-
-    }
 
 }

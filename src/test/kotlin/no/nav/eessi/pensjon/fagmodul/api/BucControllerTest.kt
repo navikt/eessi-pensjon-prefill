@@ -1,11 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.api
 
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.doThrow
-import com.nhaarman.mockitokotlin2.times
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
+import com.nhaarman.mockitokotlin2.*
 import no.nav.eessi.pensjon.fagmodul.eux.BucAndSedView
 import no.nav.eessi.pensjon.fagmodul.eux.EuxKlient
 import no.nav.eessi.pensjon.fagmodul.eux.EuxService
@@ -17,7 +12,9 @@ import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.DocumentsItem
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Organisation
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ParticipantsItem
 import no.nav.eessi.pensjon.fagmodul.models.SEDType
+import no.nav.eessi.pensjon.fagmodul.prefill.InnhentingService
 import no.nav.eessi.pensjon.fagmodul.prefill.PersonDataService
+import no.nav.eessi.pensjon.fagmodul.prefill.PrefillService
 import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonService
 import no.nav.eessi.pensjon.logging.AuditLogger
 import no.nav.eessi.pensjon.personoppslag.pdl.model.AktoerId
@@ -67,16 +64,23 @@ class BucControllerTest {
     @Mock
     private lateinit var personDataService: PersonDataService
 
+    @Mock
+    lateinit var prefillService: PrefillService
+
     private lateinit var bucController: BucController
 
     @BeforeEach
     fun before() {
+
+        val innhentingService = InnhentingService(personDataService, prefillService, mockEuxService)
+        innhentingService.initMetrics()
+
         bucController = BucController(
             "default",
             mockEuxService,
             auditLogger,
             mockPensjonsinformasjonService,
-            personDataService
+            innhentingService
         )
         bucController.initMetrics()
     }
@@ -176,7 +180,7 @@ class BucControllerTest {
         val aktoerId = "123456789"
         val fnr = "10101835868"
 
-        doReturn(NorskIdent(fnr)).whenever(personDataService).hentIdent(IdentType.NorskIdent, AktoerId(aktoerId))
+        doReturn(fnr).whenever(personDataService).hentFnrfraAktoerService(any())
 
         val rinaSaker = listOf<Rinasak>(Rinasak("1234","P_BUC_01", Traits(), "", Properties(), "open"))
         doReturn(rinaSaker).whenever(mockEuxService).getRinasaker(fnr, aktoerId)
@@ -212,7 +216,7 @@ class BucControllerTest {
         val aktoerId = "123456789"
         val fnr = "10101835868"
 
-        doReturn(NorskIdent(fnr)).whenever(personDataService).hentIdent(IdentType.NorskIdent, AktoerId(aktoerId))
+        doReturn(fnr).whenever(personDataService).hentFnrfraAktoerService(any())
 
         doThrow(RuntimeException("Feiler ved BUC")).whenever(mockEuxService).getBuc(any())
 
@@ -241,8 +245,7 @@ class BucControllerTest {
         doReturn(mockPensjoninfo).whenever(mockPensjonsinformasjonService).hentMedVedtak(vedtaksId)
         doReturn(listOf(avdodfnr)).whenever(mockPensjonsinformasjonService).hentGyldigAvdod(any())
 
-
-        doReturn(NorskIdent(fnrGjenlevende)).whenever(personDataService).hentIdent(IdentType.NorskIdent, AktoerId(gjenlevendeAktoerid))
+        doReturn(fnrGjenlevende).whenever(personDataService).hentFnrfraAktoerService(any())
 
         val documentsItem = listOf(DocumentsItem(type = SEDType.P2100))
         val avdodView = listOf(BucAndSedView.from(Buc(id = "123", processDefinitionName = "P_BUC_02", documents = documentsItem), fnrGjenlevende, avdodfnr ))
@@ -282,10 +285,7 @@ class BucControllerTest {
         doReturn(mockPensjoninfo).`when`(mockPensjonsinformasjonService).hentMedVedtak(vedtaksId)
         doReturn(listOf(avdodFarfnr, avdodMorfnr)).whenever(mockPensjonsinformasjonService).hentGyldigAvdod(any())
 
-        doReturn(NorskIdent(fnrGjenlevende))
-            .doReturn(NorskIdent(fnrGjenlevende))
-            .whenever(personDataService).hentIdent(IdentType.NorskIdent, AktoerId(aktoerId))
-
+        doReturn(fnrGjenlevende).whenever(personDataService).hentFnrfraAktoerService(any())
 
         val rinaSaker = listOf<Rinasak>()
         doReturn(rinaSaker).whenever(mockEuxService).getRinasaker(any(), any())
@@ -328,7 +328,7 @@ class BucControllerTest {
         doReturn(null).whenever(mockPensjonsinformasjonService).hentGyldigAvdod(any())
 
         //aktoerService.hentPinForAktoer
-        doReturn(NorskIdent(fnrGjenlevende)).whenever(personDataService).hentIdent(IdentType.NorskIdent, AktoerId(aktoerId))
+        doReturn(fnrGjenlevende).whenever(personDataService).hentFnrfraAktoerService(any())
 
         //euxService.getrinasakeravdod
         val rinaSaker = listOf<Rinasak>(Rinasak("1234","P_BUC_01", Traits(), "", Properties(), "open"))
