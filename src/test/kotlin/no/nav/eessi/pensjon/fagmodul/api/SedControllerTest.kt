@@ -58,13 +58,18 @@ class SedControllerTest {
         val prefillService = PrefillService(mockPrefillSEDService)
         prefillService.initMetrics()
 
+        val innhentingService = InnhentingService(personService, prefillService, mockEuxService)
+        innhentingService.initMetrics()
+
         personService.initMetrics()
         this.sedController = SedController(
+            innhentingService,
             mockEuxService,
             prefillService,
             personService,
             auditLogger
         )
+
         sedController.initMetrics()
     }
 
@@ -535,34 +540,6 @@ class SedControllerTest {
         assertThrows<SedDokumentIkkeOpprettetException> {
             sedController.addInstutionAndDocument(apiRequestWith(euxCaseId, newParticipants))
         }
-    }
-
-    @Test
-    fun `update SED Version from old version to new version`() {
-        val sed = SED(SEDType.P2000)
-        val bucVersion = "v4.2"
-
-        sedController.updateSEDVersion(sed, bucVersion)
-        assertEquals(bucVersion, "v${sed.sedGVer}.${sed.sedVer}")
-    }
-
-    @Test
-    fun `update SED Version from old version to same version`() {
-        val sed = SED(SEDType.P2000)
-        val bucVersion = "v4.1"
-
-        sedController.updateSEDVersion(sed, bucVersion)
-        assertEquals(bucVersion, "v${sed.sedGVer}.${sed.sedVer}")
-    }
-
-
-    @Test
-    fun `update SED Version from old version to unknown new version`() {
-        val sed = SED(SEDType.P2000)
-        val bucVersion = "v4.4"
-
-        sedController.updateSEDVersion(sed, bucVersion)
-        assertEquals("v4.1", "v${sed.sedGVer}.${sed.sedVer}")
     }
 
     @Test

@@ -6,10 +6,7 @@ import com.tngtech.archunit.core.domain.JavaClass
 import com.tngtech.archunit.core.domain.JavaClasses
 import com.tngtech.archunit.core.importer.ClassFileImporter
 import com.tngtech.archunit.core.importer.ImportOption
-import com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes
-import com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses
-import com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noFields
-import com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noMethods
+import com.tngtech.archunit.lang.syntax.ArchRuleDefinition.*
 import com.tngtech.archunit.library.Architectures.layeredArchitecture
 import com.tngtech.archunit.library.dependencies.SlicesRuleDefinition.slices
 import no.nav.eessi.pensjon.EessiFagmodulApplication
@@ -87,6 +84,7 @@ class ArchitectureTest {
         val security = "security"
         val personService = "personoppslag.personv3"
         val personDataLosning = "personoppslag.pdl"
+        val innhentingService = "fagmodul.prefill"
 
         val packages: Map<String, String> = mapOf(
                 "$root.fagmodul.health.." to health,
@@ -115,8 +113,9 @@ class ArchitectureTest {
                 "$root.logging.." to utils,
                 "$root.vedlegg.." to vedlegg,
                 "$root.personoppslag.pdl" to personDataLosning,
-                "$root.personoppslag.personv3" to personService
-        )
+                "$root.personoppslag.personv3" to personService,
+                "$root.fagmodul.prefill.." to innhentingService
+            )
 
         // packages in each component - default is the package with the component name
         fun packagesFor(layer: String) = packages.entries.filter { it.value == layer }.map { it.key }.toTypedArray()
@@ -149,6 +148,7 @@ class ArchitectureTest {
                 .layer(utils).definedBy(*packagesFor(utils))
                 .layer(integrationtest).definedBy(*packagesFor(integrationtest))
                 .layer(vedlegg).definedBy(*packagesFor(vedlegg))
+                 .layer(innhentingService).definedBy(*packagesFor(innhentingService))
 
                 .whereLayer(health).mayNotBeAccessedByAnyLayer()
                 .whereLayer(arkivApi).mayOnlyBeAccessedByLayers(metrics)
@@ -159,12 +159,12 @@ class ArchitectureTest {
                 .whereLayer(pesys).mayOnlyBeAccessedByLayers(health, sedmodel, models, euxService)
                 .whereLayer(bucSedApi).mayNotBeAccessedByAnyLayer()
                 .whereLayer(prefill).mayOnlyBeAccessedByLayers(bucSedApi, integrationtest)
-                .whereLayer(euxService).mayOnlyBeAccessedByLayers(health, bucSedApi, pesys, integrationtest)
+                .whereLayer(euxService).mayOnlyBeAccessedByLayers(health, bucSedApi, pesys, integrationtest, innhentingService)
                 .whereLayer(euxBasisModel).mayOnlyBeAccessedByLayers(euxService, bucSedApi, pesys, integrationtest)
                 .whereLayer(euxBucModel).mayOnlyBeAccessedByLayers(euxService, bucSedApi, pesys, integrationtest)
                 .whereLayer(models).mayOnlyBeAccessedByLayers(prefill, euxService, euxBasisModel, euxBucModel, sedmodel, bucSedApi, pensjonApi, personApi, pesys, integrationtest)
                 .whereLayer(sedmodel).mayOnlyBeAccessedByLayers(prefill, euxService, bucSedApi, models, integrationtest, pesys, pensjonService)
-                .whereLayer(personDataLosning).mayOnlyBeAccessedByLayers(health, personApi, bucSedApi, pensjonApi, prefill, models, integrationtest)
+                .whereLayer(personDataLosning).mayOnlyBeAccessedByLayers(health, personApi, bucSedApi, pensjonApi, prefill, models, integrationtest, innhentingService)
                 .whereLayer(vedlegg).mayOnlyBeAccessedByLayers(euxService, integrationtest)
                 .whereLayer(geoService).mayOnlyBeAccessedByLayers(geoApi, prefill)
                 .whereLayer(pensjonService).mayOnlyBeAccessedByLayers(health, pensjonApi, prefill, bucSedApi, personApi, integrationtest)
