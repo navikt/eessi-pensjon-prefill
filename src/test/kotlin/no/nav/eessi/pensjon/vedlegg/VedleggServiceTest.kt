@@ -4,17 +4,13 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.typeRefs
-import no.nav.eessi.pensjon.vedlegg.client.EuxVedleggClient
-import no.nav.eessi.pensjon.vedlegg.client.HentMetadataResponse
-import no.nav.eessi.pensjon.vedlegg.client.SafClient
+import no.nav.eessi.pensjon.vedlegg.client.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.web.client.RestTemplate
-import java.nio.file.Files
-import java.nio.file.Paths
 
 @ExtendWith(MockitoExtension::class)
 internal class VedleggServiceTest  {
@@ -28,6 +24,7 @@ internal class VedleggServiceTest  {
     fun setup() {
         val euxVedleggClient = EuxVedleggClient(RestTemplate())
         vedleggService = VedleggService(safClient, euxVedleggClient)
+        vedleggService.initMetrics()
     }
 
     @Test
@@ -112,15 +109,21 @@ internal class VedleggServiceTest  {
     fun testHentRinaIderFraMetadata() {
         val aktoerId = "12345"
 
-        doReturn(listOf("123456", "456789")).`when`(safClient).hentRinaSakIderFraDokumentMetadata(aktoerId)
+        val metadataJson = javaClass.getResource("/json/saf/hentMetadataResponse.json").readText()
+        val metadata = mapJsonToAny(metadataJson, typeRefs<HentMetadataResponse>())
+
+        doReturn(metadata).`when`(safClient).hentDokumentMetadata(any())
 
         val result = vedleggService.hentRinaSakIderFraMetaData(aktoerId)
-        assert(result.size == 2)
+        assert(result.size == 1)
     }
 
     @Test
     fun `Skal return en tom liste ved ingen metadata i dokumenter på aktørid`() {
         val aktoerId = "12345"
+        doReturn(HentMetadataResponse(Data(DokumentoversiktBruker(emptyList()))))
+            .`when`(safClient).hentDokumentMetadata(any())
+
         val result = vedleggService.hentRinaSakIderFraMetaData(aktoerId)
         assert(result.isEmpty())
     }

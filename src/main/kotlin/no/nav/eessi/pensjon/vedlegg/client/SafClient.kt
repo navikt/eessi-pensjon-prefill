@@ -7,11 +7,7 @@ import no.nav.eessi.pensjon.metrics.MetricsHelper
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.io.Resource
-import org.springframework.http.HttpEntity
-import org.springframework.http.HttpHeaders
-import org.springframework.http.HttpMethod
-import org.springframework.http.HttpStatus
-import org.springframework.http.MediaType
+import org.springframework.http.*
 import org.springframework.stereotype.Component
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.HttpServerErrorException
@@ -26,7 +22,6 @@ class SafClient(private val safGraphQlOidcRestTemplate: RestTemplate,
 
     private val logger = LoggerFactory.getLogger(SafClient::class.java)
     private val mapper = jacksonObjectMapper()
-    private final val TILLEGGSOPPLYSNING_RINA_SAK_ID_KEY = "eessi_pensjon_bucid"
 
     private lateinit var HentDokumentMetadata: MetricsHelper.Metric
     private lateinit var HentDokumentInnhold: MetricsHelper.Metric
@@ -115,24 +110,6 @@ class SafClient(private val safGraphQlOidcRestTemplate: RestTemplate,
                 logger.error("En feil oppstod under henting av dokumentInnhold fra SAF: $ex")
                 throw HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "En feil oppstod under henting av dokumentinnhold fra SAF")
             }
-        }
-    }
-
-    /**
-     * Returnerer en distinct liste av rinaSakIDer basert på tilleggsinformasjon i journalposter for en aktør
-     */
-    fun hentRinaSakIderFraDokumentMetadata(aktoerId: String): List<String> {
-        return HentRinaSakIderFraDokumentMetadata.measure {
-            val metadata = hentDokumentMetadata(aktoerId)
-            val rinaSakIder = mutableListOf<String>()
-            metadata.data.dokumentoversiktBruker.journalposter.forEach { journalpost ->
-                journalpost.tilleggsopplysninger.forEach { tilleggsopplysning ->
-                    if (tilleggsopplysning["nokkel"].equals(TILLEGGSOPPLYSNING_RINA_SAK_ID_KEY)) {
-                        rinaSakIder.add(tilleggsopplysning["verdi"].toString())
-                    }
-                }
-            }
-            rinaSakIder.distinct()
         }
     }
 

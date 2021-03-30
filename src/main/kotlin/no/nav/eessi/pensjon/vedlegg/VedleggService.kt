@@ -1,15 +1,26 @@
 package no.nav.eessi.pensjon.vedlegg
 
-import no.nav.eessi.pensjon.vedlegg.client.Dokument
-import no.nav.eessi.pensjon.vedlegg.client.EuxVedleggClient
-import no.nav.eessi.pensjon.vedlegg.client.HentMetadataResponse
-import no.nav.eessi.pensjon.vedlegg.client.HentdokumentInnholdResponse
-import no.nav.eessi.pensjon.vedlegg.client.SafClient
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry
+import no.nav.eessi.pensjon.metrics.MetricsHelper
+import no.nav.eessi.pensjon.vedlegg.client.*
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
+import javax.annotation.PostConstruct
 
 @Service
 class VedleggService(private val safClient: SafClient,
-                     private val euxVedleggClient: EuxVedleggClient) {
+                     private val euxVedleggClient: EuxVedleggClient,
+                     @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper(SimpleMeterRegistry())) {
+
+    private final val TILLEGGSOPPLYSNING_RINA_SAK_ID_KEY = "eessi_pensjon_bucid"
+
+    private lateinit var HentRinaSakIderFraDokumentMetadata: MetricsHelper.Metric
+
+    @PostConstruct
+    fun initMetrics() {
+        HentRinaSakIderFraDokumentMetadata = metricsHelper.init("HentRinaSakIderFraDokumentMetadata", ignoreHttpCodes = listOf(HttpStatus.FORBIDDEN))
+    }
 
     fun hentDokumentMetadata(aktoerId: String): HentMetadataResponse {
         return safClient.hentDokumentMetadata(aktoerId)
@@ -41,5 +52,21 @@ class VedleggService(private val safClient: SafClient,
         euxVedleggClient.leggTilVedleggPaaDokument(aktoerId, rinaSakId, rinaDokumentId, filInnhold, fileName, filtype)
     }
 
-    fun hentRinaSakIderFraMetaData(aktoerId: String) =  safClient.hentRinaSakIderFraDokumentMetadata(aktoerId)
+    /**
+     * Returnerer en distinct liste av rinaSakIDer basert på tilleggsinformasjon i journalposter for en aktør
+     */
+    fun hentRinaSakIderFraMetaData(aktoerId: String): List<String> {
+        return HentRinaSakIderFraDokumentMetadata.measure {
+            val metadata = hentDokumentMetadata(aktoerId)
+            val rinaSakIder = mutableListOf<String>()
+            metadata.data.dokumentoversiktBruker.journalposter.forEach { journalpost ->
+                journalpost.tilleggsopplysninger.forEach { tilleggsopplysning ->
+                    if (tilleggsopplysning["nokkel"].equals(TILLEGGSOPPLYSNING_RINA_SAK_ID_KEY)) {
+                        rinaSakIder.add(tilleggsopplysning["verdi"].toString())
+                    }
+                }
+            }
+            rinaSakIder.distinct()
+        }
+    }
 }

@@ -15,7 +15,6 @@ import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.toJson
 import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
 import no.nav.eessi.pensjon.utils.typeRefs
-import no.nav.eessi.pensjon.vedlegg.client.SafClient
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -28,7 +27,6 @@ import javax.annotation.PostConstruct
 
 @Service
 class EuxService (private val euxKlient: EuxKlient,
-                  private val safClient: SafClient,
                   private val statistikk: StatistikkHandler,
                   @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper(SimpleMeterRegistry())) {
 
@@ -36,7 +34,6 @@ class EuxService (private val euxKlient: EuxKlient,
 
     // Vi trenger denne no arg konstruktøren for å kunne bruke @Spy med mockito
     constructor() : this(EuxKlient(RestTemplate()),
-        SafClient(RestTemplate(), RestTemplate()),
         StatistikkHandler("Q2", KafkaTemplate(DefaultKafkaProducerFactory(emptyMap())), ""))
 
     private lateinit var opprettSvarSED: MetricsHelper.Metric
@@ -277,18 +274,16 @@ class EuxService (private val euxKlient: EuxKlient,
     }
 
     //** hente rinasaker fra RINA og SAF
-    fun getRinasaker(fnr: String, aktoerId: String): List<Rinasak> {
-        // henter rina saker basert på tilleggsinformasjon i journalposter
-        val rinaSakIderMetadata = safClient.hentRinaSakIderFraDokumentMetadata(aktoerId)
-        logger.debug("hentet rinasaker fra documentMetadata size: ${rinaSakIderMetadata.size}")
-
+    fun getRinasaker(fnr: String,
+                     aktoerId: String,
+                     rinaSakIderFraJoark: List<String>): List<Rinasak> {
         // Henter rina saker basert på fnr
         val rinaSakerMedFnr = euxKlient.getRinasaker(fnr)
         logger.debug("hentet rinasaker fra eux-rina-api size: ${rinaSakerMedFnr.size}")
 
         // Filtrerer vekk saker som allerede er hentet som har fnr
         val rinaSakIderMedFnr = hentRinaSakIder(rinaSakerMedFnr)
-        val rinaSakIderUtenFnr = rinaSakIderMetadata.minus(rinaSakIderMedFnr)
+        val rinaSakIderUtenFnr = rinaSakIderFraJoark.minus(rinaSakIderMedFnr)
 
         // Henter rina saker som ikke har fnr
         val rinaSakerUtenFnr = rinaSakIderUtenFnr
