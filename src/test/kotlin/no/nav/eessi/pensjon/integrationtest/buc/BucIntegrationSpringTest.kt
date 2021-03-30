@@ -175,13 +175,11 @@ class BucIntegrationSpringTest {
         val rinabucdocumentidpath = "/buc/1010/sed/1"
         doReturn( ResponseEntity.ok().body( sedjson ) ).whenever(restEuxTemplate).exchange( eq(rinabucdocumentidpath), eq(HttpMethod.GET), eq(null), eq(String::class.java))
 
-        val result = mockMvc.perform(get("/buc/detaljer/$gjenlevendeAktoerId/vedtak/$vedtakid")
+        mockMvc.perform(get("/buc/detaljer/$gjenlevendeAktoerId/vedtak/$vedtakid")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk)
                 .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andReturn()
-
-        val response = result.response.getContentAsString(charset("UTF-8"))
 
         verify(restEuxTemplate, times(1)).exchange("/rinasaker?fødselsnummer=01010100001&rinasaksnummer=&buctype=P_BUC_02&status=\"open\"", HttpMethod.GET, null, String::class.java)
         verify(restEuxTemplate, times(1)).exchange("/rinasaker?fødselsnummer=01010100001&rinasaksnummer=&buctype=P_BUC_05&status=\"open\"", HttpMethod.GET, null, String::class.java)

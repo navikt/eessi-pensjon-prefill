@@ -8,12 +8,12 @@ import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Buc
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.DocumentsItem
 import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.sedmodel.PinItem
+import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.services.statistikk.StatistikkHandler
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.toJson
 import no.nav.eessi.pensjon.utils.typeRefs
 import no.nav.eessi.pensjon.utils.validateJson
-import no.nav.eessi.pensjon.vedlegg.client.SafClient
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -41,15 +41,12 @@ class EuxServiceTest {
     private lateinit var euxKlient: EuxKlient
 
     @Mock
-    private lateinit var safClient: SafClient
-
-    @Mock
     private lateinit var statistikkHandler: StatistikkHandler
 
 
     @BeforeEach
     fun setup() {
-        service = EuxService(euxKlient, safClient, statistikkHandler)
+        service = EuxService(euxKlient, statistikkHandler)
 
     }
 
@@ -194,9 +191,8 @@ class EuxServiceTest {
         val enSak = mapJsonToAny(jsonEnRinasak, typeRefs<List<Rinasak>>())
 
         doReturn(enSak).whenever(euxKlient).getRinasaker(eq(null), eq("8877665511"), eq(null), eq(null))
-        doReturn(listOf("8877665511")).whenever(safClient).hentRinaSakIderFraDokumentMetadata(eq("1111111111111"))
 
-        val result = service.getRinasaker("12345678900", "1111111111111")
+        val result = service.getRinasaker("12345678900", "1111111111111", listOf("8877665511"))
 
         assertEquals(154, orgRinasaker.size)
         assertEquals(orgRinasaker.size + 1, result.size)
@@ -207,9 +203,7 @@ class EuxServiceTest {
 
         doReturn( listOf<Rinasak>()) .whenever(euxKlient).getRinasaker(eq("12345678900"), eq(null), eq(null), eq(null))
 
-        doReturn(listOf<String>("")).whenever(safClient).hentRinaSakIderFraDokumentMetadata(eq("1111111111111"))
-
-        val result = service.getRinasaker("12345678900", "1111111111111")
+        val result = service.getRinasaker("12345678900", "1111111111111", emptyList())
 
         assertEquals(0, result.size)
     }
@@ -577,6 +571,34 @@ class EuxServiceTest {
 
     private fun dummyRinasak(rinaSakId: String, bucType: String): Rinasak {
         return Rinasak(rinaSakId, bucType, Traits(), "", Properties(), "open")
+    }
+
+    @Test
+    fun `update SED Version from old version to new version`() {
+        val sed = SED(SEDType.P2000)
+        val bucVersion = "v4.2"
+
+        service.updateSEDVersion(sed, bucVersion)
+        assertEquals(bucVersion, "v${sed.sedGVer}.${sed.sedVer}")
+    }
+
+    @Test
+    fun `update SED Version from old version to same version`() {
+        val sed = SED(SEDType.P2000)
+        val bucVersion = "v4.1"
+
+        service.updateSEDVersion(sed, bucVersion)
+        assertEquals(bucVersion, "v${sed.sedGVer}.${sed.sedVer}")
+    }
+
+
+    @Test
+    fun `update SED Version from old version to unknown new version`() {
+        val sed = SED(SEDType.P2000)
+        val bucVersion = "v4.4"
+
+        service.updateSEDVersion(sed, bucVersion)
+        assertEquals("v4.1", "v${sed.sedGVer}.${sed.sedVer}")
     }
 
 }

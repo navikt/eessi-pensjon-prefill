@@ -19,6 +19,7 @@ import no.nav.eessi.pensjon.personoppslag.pdl.model.Ident
 import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentType
 import no.nav.eessi.pensjon.personoppslag.pdl.model.NorskIdent
 import no.nav.eessi.pensjon.utils.*
+import no.nav.eessi.pensjon.vedlegg.VedleggService
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
@@ -49,6 +50,9 @@ class SedControllerTest {
     @Mock
     lateinit var personDataService: PersonDataService
 
+    @Mock
+    lateinit var vedleggService: VedleggService
+
     private lateinit var sedController: SedController
 
     @BeforeEach
@@ -59,7 +63,7 @@ class SedControllerTest {
         val prefillService = PrefillService(mockPrefillSEDService)
         prefillService.initMetrics()
 
-        val innhentingService = InnhentingService(personDataService, prefillService, mockEuxService)
+        val innhentingService = InnhentingService(personDataService, mockEuxService, vedleggService)
         innhentingService.initMetrics()
 
         this.sedController = SedController(

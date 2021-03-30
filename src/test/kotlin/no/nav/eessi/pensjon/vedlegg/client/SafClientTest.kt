@@ -134,15 +134,4 @@ class SafClientTest {
         assertEquals(expected, sliceActual)
     }
 
-    @Test
-    fun `gitt en aktørid med journalposter med EESSI Tilleggsopplysninger når etterspør sakIder fra tilleggsopplysninger så returner liste av sakIder`() {
-        val responseJson = javaClass.getResource("/json/saf/hentMetadataResponse.json").readText()
-
-        whenever(safGraphQlOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java)))
-                .thenReturn(ResponseEntity(responseJson, HttpStatus.OK))
-        val sakIder = safClient.hentRinaSakIderFraDokumentMetadata("1234567891000")
-        assertEquals(sakIder.size, 1)
-        assertEquals(sakIder[0], "1111")
-    }
-
 }

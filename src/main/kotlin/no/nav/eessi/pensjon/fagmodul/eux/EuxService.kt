@@ -6,24 +6,27 @@ import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Rinasak
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Buc
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ParticipantsItem
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
+import no.nav.eessi.pensjon.fagmodul.models.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.sedmodel.*
 import no.nav.eessi.pensjon.metrics.MetricsHelper
 import no.nav.eessi.pensjon.services.statistikk.StatistikkHandler
 import no.nav.eessi.pensjon.utils.mapJsonToAny
+import no.nav.eessi.pensjon.utils.toJson
+import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
 import no.nav.eessi.pensjon.utils.typeRefs
-import no.nav.eessi.pensjon.vedlegg.client.SafClient
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
 import org.springframework.kafka.core.DefaultKafkaProducerFactory
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
+import org.springframework.web.server.ResponseStatusException
 import javax.annotation.PostConstruct
 
 @Service
 class EuxService (private val euxKlient: EuxKlient,
-                  private val safClient: SafClient,
                   private val statistikk: StatistikkHandler,
                   @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper(SimpleMeterRegistry())) {
 
@@ -31,7 +34,6 @@ class EuxService (private val euxKlient: EuxKlient,
 
     // Vi trenger denne no arg konstruktøren for å kunne bruke @Spy med mockito
     constructor() : this(EuxKlient(RestTemplate()),
-        SafClient(RestTemplate(), RestTemplate()),
         StatistikkHandler("Q2", KafkaTemplate(DefaultKafkaProducerFactory(emptyMap())), ""))
 
     private lateinit var opprettSvarSED: MetricsHelper.Metric
@@ -272,18 +274,16 @@ class EuxService (private val euxKlient: EuxKlient,
     }
 
     //** hente rinasaker fra RINA og SAF
-    fun getRinasaker(fnr: String, aktoerId: String): List<Rinasak> {
-        // henter rina saker basert på tilleggsinformasjon i journalposter
-        val rinaSakIderMetadata = safClient.hentRinaSakIderFraDokumentMetadata(aktoerId)
-        logger.debug("hentet rinasaker fra documentMetadata size: ${rinaSakIderMetadata.size}")
-
+    fun getRinasaker(fnr: String,
+                     aktoerId: String,
+                     rinaSakIderFraJoark: List<String>): List<Rinasak> {
         // Henter rina saker basert på fnr
         val rinaSakerMedFnr = euxKlient.getRinasaker(fnr)
         logger.debug("hentet rinasaker fra eux-rina-api size: ${rinaSakerMedFnr.size}")
 
         // Filtrerer vekk saker som allerede er hentet som har fnr
         val rinaSakIderMedFnr = hentRinaSakIder(rinaSakerMedFnr)
-        val rinaSakIderUtenFnr = rinaSakIderMetadata.minus(rinaSakIderMedFnr)
+        val rinaSakIderUtenFnr = rinaSakIderFraJoark.minus(rinaSakIderMedFnr)
 
         // Henter rina saker som ikke har fnr
         val rinaSakerUtenFnr = rinaSakIderUtenFnr
@@ -310,7 +310,91 @@ class EuxService (private val euxKlient: EuxKlient,
      *  @param rinaSaker liste av rinasaker fra EUX datamodellen
      */
     fun hentRinaSakIder(rinaSaker: List<Rinasak>) = rinaSaker.map { it.id!! }
+
+    fun checkAndAddInstitution(dataModel: PrefillDataModel, bucUtil: BucUtils, x005Liste: List<SED>) {
+        logger.info(
+            "Hvem er caseOwner: ${
+                bucUtil.getCaseOwner()?.toJson()
+            } på buc: ${bucUtil.getProcessDefinitionName()}"
+        )
+        val navCaseOwner = bucUtil.getCaseOwner()?.country == "NO"
+
+        val nyeInstitusjoner = bucUtil.findNewParticipants(dataModel.getInstitutionsList())
+
+        if (nyeInstitusjoner.isNotEmpty()) {
+            if (bucUtil.findFirstDocumentItemByType(SEDType.X005) == null) {
+                addInstitution(dataModel.euxCaseID, nyeInstitusjoner.map { it.institution })
+            } else {
+
+                //--gjort noe. ..
+                nyeInstitusjoner.forEach {
+                    if (!navCaseOwner && it.country != "NO") {
+                        logger.error("NAV er ikke sakseier. Du kan ikke legge til deltakere utenfor Norge")
+                        throw ResponseStatusException(
+                            HttpStatus.BAD_REQUEST,
+                            "NAV er ikke sakseier. Du kan ikke legge til deltakere utenfor Norge"
+                        )
+                    }
+                }
+                addInstitutionMedX005(
+                    dataModel,
+                    nyeInstitusjoner,
+                    bucUtil.getProcessDefinitionVersion(),
+                    x005Liste
+                )
+            }
+        }
+    }
+
+    private fun addInstitutionMedX005(
+        dataModel: PrefillDataModel,
+        nyeInstitusjoner: List<InstitusjonItem>,
+        bucVersion: String,
+        x005Liste: List<SED>
+    ) {
+        logger.info("X005 finnes på buc, Sed X005 prefills og sendes inn: ${nyeInstitusjoner.toJsonSkipEmpty()}")
+
+        var execptionError: Exception? = null
+
+        x005Liste.forEach { x005 ->
+            try {
+                updateSEDVersion(x005, bucVersion)
+                opprettJsonSedOnBuc(x005.toJson(), x005.type, dataModel.euxCaseID, dataModel.vedtakId)
+            } catch (eux: EuxRinaServerException) {
+                execptionError = eux
+            } catch (exx: EuxConflictException) {
+                execptionError = exx
+            } catch (ex: Exception) {
+                execptionError = ex
+            }
+        }
+        if (execptionError != null) {
+            logger.error(
+                "Feiler ved oppretting av X005  (ny institusjon), euxCaseid: ${dataModel.euxCaseID}, sed: ${dataModel.sedType}",
+                execptionError
+            )
+            throw ResponseStatusException(
+                HttpStatus.BAD_REQUEST,
+                "Feiler ved oppretting av X005 (ny institusjon) for euxCaseId: ${dataModel.euxCaseID}"
+            )
+        }
+
+    }
+
+    //flyttes til prefill / en eller annen service?
+    fun updateSEDVersion(sed: SED, bucVersion: String) {
+        when (bucVersion) {
+            "v4.2" -> {
+                sed.sedVer = "2"
+            }
+            else -> {
+                sed.sedVer = "1"
+            }
+        }
+    }
+
 }
+
 
 data class BucOgDocumentAvdod(
         val rinaidAvdod: String,

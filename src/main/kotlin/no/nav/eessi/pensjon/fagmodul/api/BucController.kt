@@ -114,8 +114,9 @@ class BucController(
         logger.debug("henter rinasaker på valgt aktoerid: $aktoerId")
 
         val norskIdent = innhentingService.hentFnrfraAktoerService(aktoerId)
+        val rinaSakIderFraJoark = innhentingService.hentRinaSakIderFraMetaData(aktoerId)
 
-        return euxService.getRinasaker(norskIdent, aktoerId)
+        return euxService.getRinasaker(norskIdent, aktoerId, rinaSakIderFraJoark)
     }
 
     @ApiOperation("Henter ut liste av Buc meny struktur i json format for UI på valgt aktoerid")
@@ -129,9 +130,10 @@ class BucController(
             logger.debug("Prøver å dekode aktoerid: $aktoerid til fnr.")
 
             val fnr = innhentingService.hentFnrfraAktoerService(aktoerid)
+            val rinaSakIderFraJoark = innhentingService.hentRinaSakIderFraMetaData(aktoerid)
 
             val rinasakIdList = try {
-                val rinasaker = euxService.getRinasaker(fnr, aktoerid)
+                val rinasaker = euxService.getRinasaker(fnr, aktoerid, rinaSakIderFraJoark)
                 val rinasakIdList = euxService.getFilteredArchivedaRinasaker(rinasaker)
                 rinasakIdList
             } catch (ex: Exception) {
