@@ -3,6 +3,7 @@ package no.nav.eessi.pensjon.fagmodul.api
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import io.swagger.annotations.ApiOperation
 import no.nav.eessi.pensjon.fagmodul.eux.BucUtils
+import no.nav.eessi.pensjon.fagmodul.eux.EuxInnhentingService
 import no.nav.eessi.pensjon.fagmodul.eux.EuxService
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.BucSedResponse
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.DocumentsItem
@@ -33,6 +34,7 @@ import javax.annotation.PostConstruct
 class SedController(
     private val innhentingService: InnhentingService,
     private val euxService: EuxService,
+    private val euxInnhentingService: EuxInnhentingService,
     private val prefillService: PrefillService,
     private val auditlogger: AuditLogger,
     @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper(SimpleMeterRegistry())
@@ -80,7 +82,7 @@ class SedController(
     ): String {
         auditlogger.logBuc("getDocument", " euxCaseId: $euxcaseid documentId: $documentid")
         logger.info("Hente SED innhold for /${euxcaseid}/${documentid} ")
-        val sed = euxService.getSedOnBucByDocumentId(euxcaseid, documentid)
+        val sed = euxInnhentingService.getSedOnBucByDocumentId(euxcaseid, documentid)
         return mapToConcreteSedJson(sed)
     }
 
@@ -93,7 +95,7 @@ class SedController(
         val dataModel = ApiRequest.buildPrefillDataModelOnExisting(request, norskIdent, getAvdodAktoerIdPDL(request))
 
         //Hente metadata for valgt BUC
-        val bucUtil = innhentingService.kanSedOpprettes(dataModel)
+        val bucUtil = euxInnhentingService.kanSedOpprettes(dataModel)
         val personData = innhentingService.hentPersonData(dataModel)
 
         //Preutfyll av SED, pensjon og personer samt oppdatering av versjon
@@ -145,7 +147,7 @@ class SedController(
         //Hente metadata for valgt BUC
         val bucUtil = addDocumentToParentBucUtils.measure {
             logger.info("******* Hent BUC sjekk om sed kan opprettes *******")
-            BucUtils(euxService.getBuc(dataModel.euxCaseID)).also { bucUtil ->
+            BucUtils(euxInnhentingService.getBuc(dataModel.euxCaseID)).also { bucUtil ->
                 //sjekk for om deltakere alt er fjernet med x007 eller x100 sed
                 bucUtil.checkForParticipantsNoLongerActiveFromXSEDAsInstitusjonItem(dataModel.getInstitutionsList())
                 //sjekk om en svarsed kan opprettes eller om den alt finnes
@@ -182,7 +184,7 @@ class SedController(
         @PathVariable("countrycode", required = false) landkode: String? = ""
     ): List<InstitusjonItem> {
         logger.info("Henter ut liste over alle Institusjoner i Rina")
-        return euxService.getInstitutions(buctype, landkode)
+        return euxInnhentingService.getInstitutions(buctype, landkode)
     }
 
     @ApiOperation("henter liste over seds som kan opprettes til valgt rinasak")
@@ -191,7 +193,7 @@ class SedController(
         @PathVariable(value = "buctype", required = true) bucType: String,
         @PathVariable(value = "rinanr", required = true) euxCaseId: String
     ): ResponseEntity<String?> {
-        val resultListe = BucUtils(euxService.getBuc(euxCaseId)).getFiltrerteGyldigSedAksjonListAsString()
+        val resultListe = BucUtils(euxInnhentingService.getBuc(euxCaseId)).getFiltrerteGyldigSedAksjonListAsString()
         logger.info("Henter lite over SED som kan opprettes på buctype: $bucType seds: $resultListe")
         return ResponseEntity.ok().body(resultListe.toJsonSkipEmpty())
     }
@@ -246,7 +248,7 @@ class SedController(
     ): DocumentsItem? {
         return if (bucType == "P_BUC_06") {
             logger.info("Henter BUC på nytt for buctype: $bucType")
-            val buc = euxService.getBuc(bucSedResponse.caseId)
+            val buc = euxInnhentingService.getBuc(bucSedResponse.caseId)
             val bucUtil = BucUtils(buc)
             bucUtil.findDocument(bucSedResponse.documentId)
         } else {

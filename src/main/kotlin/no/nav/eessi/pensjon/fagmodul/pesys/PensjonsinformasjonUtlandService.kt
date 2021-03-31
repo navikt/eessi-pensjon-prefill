@@ -1,16 +1,10 @@
 package no.nav.eessi.pensjon.fagmodul.pesys
 
 import no.nav.eessi.pensjon.fagmodul.eux.BucUtils
-import no.nav.eessi.pensjon.fagmodul.eux.EuxService
+import no.nav.eessi.pensjon.fagmodul.eux.EuxInnhentingService
 import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.fagmodul.pesys.RinaTilPenMapper.parsePensjonsgrad
-import no.nav.eessi.pensjon.fagmodul.sedmodel.AnsattSelvstendigItem
-import no.nav.eessi.pensjon.fagmodul.sedmodel.P4000
-import no.nav.eessi.pensjon.fagmodul.sedmodel.P5000
-import no.nav.eessi.pensjon.fagmodul.sedmodel.Periode
-import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
-import no.nav.eessi.pensjon.fagmodul.sedmodel.StandardItem
-import no.nav.eessi.pensjon.fagmodul.sedmodel.TrygdeTidPeriode
+import no.nav.eessi.pensjon.fagmodul.sedmodel.*
 import no.nav.eessi.pensjon.services.kodeverk.KodeverkClient
 import no.nav.eessi.pensjon.utils.toJson
 import org.slf4j.LoggerFactory
@@ -23,7 +17,7 @@ import java.time.LocalDate
 @Service
 class PensjonsinformasjonUtlandService(
     private val kodeverkClient: KodeverkClient,
-    private val euxService: EuxService,
+    private val euxInnhentingService: EuxInnhentingService,
     @Value("\${NAIS_NAMESPACE}")
     private val nameSpace: String
 ) {
@@ -45,7 +39,7 @@ class PensjonsinformasjonUtlandService(
         //fra srvpensjon --> til --> srveessipensjon --> for kall til EUX-RINA-API -> RINA
 
         //bucUtils
-        val buc = euxService.getBuc(bucId.toString())
+        val buc = euxInnhentingService.getBuc(bucId.toString())
         val bucUtils = BucUtils(buc)
 
         logger.debug("BucType : ${bucUtils.getProcessDefinitionName()}")
@@ -65,7 +59,7 @@ class PensjonsinformasjonUtlandService(
                 HttpStatus.BAD_REQUEST,
                 "Ingen dokument metadata funnet i BUC med id: $bucId."
             )
-        val kravSed = sedDoc.id?.let { sedDocId -> euxService.getSedOnBucByDocumentId(bucId.toString(), sedDocId) }
+        val kravSed = sedDoc.id?.let { sedDocId -> euxInnhentingService.getSedOnBucByDocumentId(bucId.toString(), sedDocId) }
             ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Ingen gyldig kravSed i BUC med id: $bucId funnet.")
 
         //finner rette hjelep metode for utfylling av KravUtland

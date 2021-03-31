@@ -7,7 +7,6 @@ import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Traits
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Buc
 import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.DocumentsItem
 import no.nav.eessi.pensjon.fagmodul.models.SEDType
-import no.nav.eessi.pensjon.fagmodul.sedmodel.PinItem
 import no.nav.eessi.pensjon.fagmodul.sedmodel.SED
 import no.nav.eessi.pensjon.services.statistikk.StatistikkHandler
 import no.nav.eessi.pensjon.utils.mapJsonToAny
@@ -35,7 +34,8 @@ import java.time.ZoneId
 @ExtendWith(MockitoExtension::class)
 class EuxServiceTest {
 
-    private lateinit var service: EuxService
+    private lateinit var euxService: EuxService
+    private lateinit var euxinnhentingService: EuxInnhentingService
 
     @Mock
     private lateinit var euxKlient: EuxKlient
@@ -46,7 +46,8 @@ class EuxServiceTest {
 
     @BeforeEach
     fun setup() {
-        service = EuxService(euxKlient, statistikkHandler)
+        euxService = EuxService(euxKlient, statistikkHandler)
+        euxinnhentingService = EuxInnhentingService(euxKlient)
 
     }
 
@@ -70,7 +71,7 @@ class EuxServiceTest {
 
         whenever(euxKlient.getSedOnBucByDocumentIdAsJson(any(), any())).thenReturn(json)
 
-        val result = service.getSedOnBucByDocumentId("12345678900", "0bb1ad15987741f1bbf45eba4f955e80")
+        val result = euxinnhentingService.getSedOnBucByDocumentId("12345678900", "0bb1ad15987741f1bbf45eba4f955e80")
 
         assertEquals(SEDType.P6000, result.type)
     }
@@ -86,7 +87,7 @@ class EuxServiceTest {
                 .whenever(euxKlient)
                 .getBucJson(any())
 
-        val result = service.getBucAndSedView(rinasaker.map{ it.id!! }.toList())
+        val result = euxinnhentingService.getBucAndSedView(rinasaker.map{ it.id!! }.toList())
 
         assertEquals(rinasaker.size, result.size)
     }
@@ -101,7 +102,7 @@ class EuxServiceTest {
                 .whenever(euxKlient)
                 .getBucJson(eq(rinasakid))
 
-        val result = service.getBucAndSedView(listOf(rinasakid))
+        val result = euxinnhentingService.getBucAndSedView(listOf(rinasakid))
 
         assertEquals(1, result.size)
 
@@ -119,7 +120,7 @@ class EuxServiceTest {
                 .whenever(euxKlient)
                 .getBucJson(any())
 
-        val firstJson = service.getSingleBucAndSedView("158123")
+        val firstJson = euxinnhentingService.getSingleBucAndSedView("158123")
 
         assertEquals("158123", firstJson.caseId)
         var lastUpdate: Long = 0
@@ -138,7 +139,7 @@ class EuxServiceTest {
                 Rinasak("8423","P_BUC_07",null,"PO",null,"archived")
         )
 
-        val result = service.getFilteredArchivedaRinasaker(dummyList)
+        val result = euxinnhentingService.getFilteredArchivedaRinasaker(dummyList)
         assertEquals(3, result.size)
         assertEquals("2123", result.first())
     }
@@ -154,7 +155,7 @@ class EuxServiceTest {
                 Rinasak("8223","H_BUC_07",null,"PO",null,"open")
         )
 
-        val result = service.getFilteredArchivedaRinasaker(dummyList)
+        val result = euxinnhentingService.getFilteredArchivedaRinasaker(dummyList)
         assertEquals(1, result.size)
         assertEquals("8223", result.first())
     }
@@ -170,7 +171,7 @@ class EuxServiceTest {
                 Rinasak("8223","M_BUC_03b",null,"PO",null,"open")
         )
 
-        val result = service.getFilteredArchivedaRinasaker(dummyList)
+        val result = euxinnhentingService.getFilteredArchivedaRinasaker(dummyList)
         assertEquals(2, result.size)
         assertEquals("723", result.first())
         assertEquals("8223", result.last())
@@ -192,7 +193,7 @@ class EuxServiceTest {
 
         doReturn(enSak).whenever(euxKlient).getRinasaker(eq(null), eq("8877665511"), eq(null), eq(null))
 
-        val result = service.getRinasaker("12345678900", "1111111111111", listOf("8877665511"))
+        val result = euxinnhentingService.getRinasaker("12345678900", "1111111111111", listOf("8877665511"))
 
         assertEquals(154, orgRinasaker.size)
         assertEquals(orgRinasaker.size + 1, result.size)
@@ -203,38 +204,9 @@ class EuxServiceTest {
 
         doReturn( listOf<Rinasak>()) .whenever(euxKlient).getRinasaker(eq("12345678900"), eq(null), eq(null), eq(null))
 
-        val result = service.getRinasaker("12345678900", "1111111111111", emptyList())
+        val result = euxinnhentingService.getRinasaker("12345678900", "1111111111111", emptyList())
 
         assertEquals(0, result.size)
-    }
-
-
-    @Test
-    fun hentNorskFnrPaalisteavPin() {
-        val list = listOf(
-                PinItem(sektor = "03", land = "SE", identifikator = "00987654321", institusjonsnavn = "SE"),
-                PinItem(sektor = "02", land = "NO", identifikator = "12345678900", institusjonsnavn = "NAV"),
-                PinItem(sektor = "02", land = "DK", identifikator = "05467898321", institusjonsnavn = "DK")
-        )
-
-        val result = service.getFnrMedLandkodeNO(list)
-        assertEquals("12345678900", result)
-    }
-
-    @Test
-    fun hentNorskFnrPaalisteavPinListeTom() {
-        val result = service.getFnrMedLandkodeNO(listOf())
-        assertEquals(null, result)
-    }
-
-    @Test
-    fun hentNorskFnrPaalisteavPinListeIngenNorske() {
-        val list = listOf(
-                PinItem(sektor = "03", land = "SE", identifikator = "00987654321", institusjonsnavn = "SE"),
-                PinItem(sektor = "02", land = "DK", identifikator = "05467898321", institusjonsnavn = "DK")
-        )
-        val result = service.getFnrMedLandkodeNO(list)
-        assertEquals(null, result)
     }
 
     @Test
@@ -257,7 +229,7 @@ class EuxServiceTest {
 
         doReturn(sedjson).whenever(euxKlient).getSedOnBucByDocumentIdAsJson(eq(rinasakid), any())
 
-        val actual = service.getBucAndSedViewAvdod(gjenlevendeFnr, avdodFnr)
+        val actual = euxinnhentingService.getBucAndSedViewAvdod(gjenlevendeFnr, avdodFnr)
 
         assertEquals(1, actual.size)
         assertEquals(rinasakid, actual.first().caseId)
@@ -284,7 +256,7 @@ class EuxServiceTest {
 
         doReturn(sedjson).whenever(euxKlient).getSedOnBucByDocumentIdAsJson(eq(rinasakid), any())
 
-        val actual = service.getBucAndSedViewAvdod(gjenlevendeFnr, avdodFnr)
+        val actual = euxinnhentingService.getBucAndSedViewAvdod(gjenlevendeFnr, avdodFnr)
         assertEquals(0, actual.size)
     }
 
@@ -305,7 +277,7 @@ class EuxServiceTest {
         doThrow(HttpClientErrorException(HttpStatus.BAD_GATEWAY, "bad error")).whenever(euxKlient).getSedOnBucByDocumentIdAsJson(any(), any())
 
         assertThrows<Exception> {
-           service.getBucAndSedViewAvdod(gjenlevendeFnr, avdodFnr)
+            euxinnhentingService.getBucAndSedViewAvdod(gjenlevendeFnr, avdodFnr)
         }
 
     }
@@ -318,7 +290,7 @@ class EuxServiceTest {
 
         doReturn(json).whenever(euxKlient).getBucJson(any())
 
-        var actual = service.hentBucOgDocumentIdAvdod(listOf("123"))
+        var actual = euxinnhentingService.hentBucOgDocumentIdAvdod(listOf("123"))
 
         assert(actual[0].rinaidAvdod == "123")
         assert(actual[0].buc.id == buc.id)
@@ -333,7 +305,7 @@ class EuxServiceTest {
         .doReturn(json)
          .whenever(euxKlient).getBucJson(any())
 
-        var actual = service.hentBucOgDocumentIdAvdod(listOf("123","321"))
+        var actual = euxinnhentingService.hentBucOgDocumentIdAvdod(listOf("123","321"))
         assertEquals(2, actual.size)
     }
 
@@ -341,7 +313,7 @@ class EuxServiceTest {
     fun `Henter buc og dokumentID feiler ved henting av buc fra eux` () {
         doThrow(HttpClientErrorException::class).whenever(euxKlient).getBucJson(any())
         assertThrows<Exception> {
-            service.hentBucOgDocumentIdAvdod(listOf("123"))
+            euxinnhentingService.hentBucOgDocumentIdAvdod(listOf("123"))
         }
       }
 
@@ -357,7 +329,7 @@ class EuxServiceTest {
 
         doReturn("P2100").whenever(euxKlient).getSedOnBucByDocumentIdAsJson(rinaid, dokumentid)
 
-        val actual = service.hentDocumentJsonAvdod(docs)
+        val actual = euxinnhentingService.hentDocumentJsonAvdod(docs)
 
         assertEquals(1, actual.size)
         assertEquals(SEDType.P2100.name, actual.single().dokumentJson)
@@ -377,7 +349,7 @@ class EuxServiceTest {
         doThrow(HttpClientErrorException::class).whenever(euxKlient).getSedOnBucByDocumentIdAsJson(rinaid, dokumentid)
 
         assertThrows<Exception> {
-            service.hentDocumentJsonAvdod(docs)
+            euxinnhentingService.hentDocumentJsonAvdod(docs)
         }
 
     }
@@ -390,7 +362,7 @@ class EuxServiceTest {
 
         val docs = listOf(BucOgDocumentAvdod(rinaid, Buc(id = rinaid, processDefinitionName = "P_BUC_02"), sedjson))
 
-        val actual = service.filterGyldigBucGjenlevendeAvdod(docs, gjenlevendeFnr)
+        val actual = euxinnhentingService.filterGyldigBucGjenlevendeAvdod(docs, gjenlevendeFnr)
 
         assertEquals(1, actual.size)
 
@@ -405,7 +377,7 @@ class EuxServiceTest {
 
         val docs = listOf(BucOgDocumentAvdod(rinaid, Buc(id = rinaid, processDefinitionName = "P_BUC_02"), sedjson))
 
-        val actual = service.filterGyldigBucGjenlevendeAvdod(docs, gjenlevendeFnr)
+        val actual = euxinnhentingService.filterGyldigBucGjenlevendeAvdod(docs, gjenlevendeFnr)
 
         assertEquals(0, actual.size)
     }
@@ -447,7 +419,7 @@ class EuxServiceTest {
             }
         """.trimIndent()
         val data = listOf<BucOgDocumentAvdod>(BucOgDocumentAvdod("2321", Buc(), manglerPinGjenlevende))
-        val result = service.filterGyldigBucGjenlevendeAvdod(data, "23123")
+        val result = euxinnhentingService.filterGyldigBucGjenlevendeAvdod(data, "23123")
         assertEquals(0, result.size)
 
     }
@@ -459,7 +431,7 @@ class EuxServiceTest {
         val sedjson = String(Files.readAllBytes(Paths.get(sedfilepath)))
 
         val data = listOf<BucOgDocumentAvdod>(BucOgDocumentAvdod("23123", Buc(id = "2131", processDefinitionName = "P_BUC_02"), sedjson))
-        val result = service.filterGyldigBucGjenlevendeAvdod(data, "1234567890000")
+        val result = euxinnhentingService.filterGyldigBucGjenlevendeAvdod(data, "1234567890000")
         assertEquals(1, result.size)
 
     }
@@ -495,7 +467,7 @@ class EuxServiceTest {
         doReturn(emptyList<Rinasak>()).whenever(euxKlient).getRinasaker(avdodFnr, null, "P_BUC_05", "\"open\"")
 
 
-        val result = service.getBucAndSedViewAvdod(gjenlevendeFnr, avdodFnr)
+        val result = euxinnhentingService.getBucAndSedViewAvdod(gjenlevendeFnr, avdodFnr)
 
         assertEquals(1, result.size)
         assertFalse(result.isEmpty())
@@ -554,7 +526,7 @@ class EuxServiceTest {
         //sed dk P8000
         doReturn(sedP8000DKjson).whenever(euxKlient).getSedOnBucByDocumentIdAsJson("200", "2200")
 
-        val result = service.getBucAndSedViewAvdod(gjenlevendeFnr, avdodFnr).sortedBy { it.caseId }
+        val result = euxinnhentingService.getBucAndSedViewAvdod(gjenlevendeFnr, avdodFnr).sortedBy { it.caseId }
 
         assertEquals(2, result.size)
         assertFalse(result.isEmpty())
@@ -578,7 +550,7 @@ class EuxServiceTest {
         val sed = SED(SEDType.P2000)
         val bucVersion = "v4.2"
 
-        service.updateSEDVersion(sed, bucVersion)
+        euxService.updateSEDVersion(sed, bucVersion)
         assertEquals(bucVersion, "v${sed.sedGVer}.${sed.sedVer}")
     }
 
@@ -587,7 +559,7 @@ class EuxServiceTest {
         val sed = SED(SEDType.P2000)
         val bucVersion = "v4.1"
 
-        service.updateSEDVersion(sed, bucVersion)
+        euxService.updateSEDVersion(sed, bucVersion)
         assertEquals(bucVersion, "v${sed.sedGVer}.${sed.sedVer}")
     }
 
@@ -597,7 +569,7 @@ class EuxServiceTest {
         val sed = SED(SEDType.P2000)
         val bucVersion = "v4.4"
 
-        service.updateSEDVersion(sed, bucVersion)
+        euxService.updateSEDVersion(sed, bucVersion)
         assertEquals("v4.1", "v${sed.sedGVer}.${sed.sedVer}")
     }
 
