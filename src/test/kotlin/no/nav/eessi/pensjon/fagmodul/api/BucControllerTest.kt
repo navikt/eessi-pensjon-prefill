@@ -3,7 +3,7 @@ package no.nav.eessi.pensjon.fagmodul.api
 import com.nhaarman.mockitokotlin2.*
 import no.nav.eessi.pensjon.fagmodul.eux.BucAndSedView
 import no.nav.eessi.pensjon.fagmodul.eux.EuxInnhentingService
-import no.nav.eessi.pensjon.fagmodul.eux.EuxService
+import no.nav.eessi.pensjon.fagmodul.eux.EuxPrefillService
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Properties
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Rinasak
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Traits
@@ -28,14 +28,10 @@ import no.nav.eessi.pensjon.vedlegg.VedleggService
 import no.nav.pensjon.v1.avdod.V1Avdod
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import no.nav.pensjon.v1.person.V1Person
-import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
-import org.junit.jupiter.api.fail
 import org.mockito.Mock
 import org.mockito.Spy
 import org.mockito.junit.jupiter.MockitoExtension
@@ -50,7 +46,7 @@ class BucControllerTest {
     lateinit var auditLogger: AuditLogger
 
     @Spy
-    lateinit var mockEuxService: EuxService
+    lateinit var mockEuxPrefillService: EuxPrefillService
 
     @Spy
     lateinit var mockEuxInnhentingService: EuxInnhentingService
@@ -80,7 +76,7 @@ class BucControllerTest {
 
         bucController = BucController(
             "default",
-            mockEuxService,
+            mockEuxPrefillService,
             mockEuxInnhentingService,
             auditLogger,
             mockPensjonsinformasjonService,
@@ -158,7 +154,7 @@ class BucControllerTest {
         val gyldigBuc = javaClass.getResource("/json/buc/buc-279020big.json").readText()
         val buc : Buc =  mapJsonToAny(gyldigBuc, typeRefs())
 
-        doReturn("1231231").whenever(mockEuxService).createBuc("P_BUC_03")
+        doReturn("1231231").whenever(mockEuxPrefillService).createBuc("P_BUC_03")
         doReturn(buc).whenever(mockEuxInnhentingService).getBuc(any())
 
         val excpeted = BucAndSedView.from(buc)
@@ -376,7 +372,7 @@ class BucControllerTest {
         val gyldigBuc = javaClass.getResource("/json/buc/buc-279020big.json").readText()
         val buc : Buc =  mapJsonToAny(gyldigBuc, typeRefs())
 
-        doReturn("1231231").whenever(mockEuxService).createBuc("P_BUC_03")
+        doReturn("1231231").whenever(mockEuxPrefillService).createBuc("P_BUC_03")
         doReturn(buc).whenever(mockEuxInnhentingService).getBuc(any())
 
         bucController.createBuc("P_BUC_03")

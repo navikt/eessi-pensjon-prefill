@@ -4,7 +4,7 @@ package no.nav.eessi.pensjon.fagmodul.api
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.nhaarman.mockitokotlin2.*
 import no.nav.eessi.pensjon.fagmodul.eux.EuxInnhentingService
-import no.nav.eessi.pensjon.fagmodul.eux.EuxService
+import no.nav.eessi.pensjon.fagmodul.eux.EuxPrefillService
 import no.nav.eessi.pensjon.fagmodul.eux.SedDokumentIkkeOpprettetException
 import no.nav.eessi.pensjon.fagmodul.eux.SedDokumentKanIkkeOpprettesException
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.BucSedResponse
@@ -41,7 +41,7 @@ import java.time.Month
 class SedControllerTest {
 
     @Spy
-    lateinit var mockEuxService: EuxService
+    lateinit var mockEuxPrefillService: EuxPrefillService
 
     @Spy
     lateinit var mockEuxInnhentingService: EuxInnhentingService
@@ -62,7 +62,7 @@ class SedControllerTest {
 
     @BeforeEach
     fun setUp() {
-        mockEuxService.initMetrics()
+        mockEuxPrefillService.initMetrics()
         personDataService.initMetrics()
 
         val prefillService = PrefillService(mockPrefillSEDService)
@@ -73,7 +73,7 @@ class SedControllerTest {
 
         this.sedController = SedController(
             innhentingService,
-            mockEuxService,
+            mockEuxPrefillService,
             mockEuxInnhentingService,
             prefillService,
             auditLogger
@@ -259,7 +259,7 @@ class SedControllerTest {
 
         doReturn(mockBuc).whenever(mockEuxInnhentingService).getBuc(euxCaseId)
         doReturn(SED(type = dummyPrefillData.sedType)).whenever(mockPrefillSEDService).prefill(any(), any())
-        doReturn(BucSedResponse(euxCaseId,"1")).whenever(mockEuxService).opprettJsonSedOnBuc(any(), any(),eq(euxCaseId),eq(dummyPrefillData.vedtakId))
+        doReturn(BucSedResponse(euxCaseId,"1")).whenever(mockEuxPrefillService).opprettJsonSedOnBuc(any(), any(),eq(euxCaseId),eq(dummyPrefillData.vedtakId))
 
         val newParticipants = listOf(
                 InstitusjonItem(country = "FI", institution = "Finland", name="Finland test"),
@@ -268,7 +268,7 @@ class SedControllerTest {
 
         sedController.addInstutionAndDocument(apiRequestWith(euxCaseId, newParticipants))
 
-        verify(mockEuxService, times(newParticipants.size  + 1)).opprettJsonSedOnBuc(any(), any(), eq(euxCaseId),eq(dummyPrefillData.vedtakId))
+        verify(mockEuxPrefillService, times(newParticipants.size  + 1)).opprettJsonSedOnBuc(any(), any(), eq(euxCaseId),eq(dummyPrefillData.vedtakId))
     }
 
     @Test
@@ -356,12 +356,12 @@ class SedControllerTest {
         doReturn(SED(type = dummyPrefillData.sedType)).whenever(mockPrefillSEDService).prefill(any(), any())
         doReturn(mockBuc).whenever(mockEuxInnhentingService).getBuc(euxCaseId)
 
-        doReturn(BucSedResponse(euxCaseId, "1")).whenever(mockEuxService).opprettJsonSedOnBuc(any(), any(),eq(euxCaseId),eq(dummyPrefillData.vedtakId))
+        doReturn(BucSedResponse(euxCaseId, "1")).whenever(mockEuxPrefillService).opprettJsonSedOnBuc(any(), any(),eq(euxCaseId),eq(dummyPrefillData.vedtakId))
 
         val noNewParticipants = listOf<InstitusjonItem>()
         sedController.addInstutionAndDocument(apiRequestWith(euxCaseId, noNewParticipants))
 
-        verify(mockEuxService, times(noNewParticipants.size + 1)).opprettJsonSedOnBuc(any(), any(), eq(euxCaseId),eq(dummyPrefillData.vedtakId))
+        verify(mockEuxPrefillService, times(noNewParticipants.size + 1)).opprettJsonSedOnBuc(any(), any(), eq(euxCaseId),eq(dummyPrefillData.vedtakId))
     }
 
     @Test
@@ -386,7 +386,7 @@ class SedControllerTest {
 
         doReturn(sed).whenever(mockPrefillSEDService).prefill(any(),any())
         doReturn(mockBuc).whenever(mockEuxInnhentingService).getBuc(euxCaseId)
-        doReturn(BucSedResponse(euxCaseId, "3123123")).whenever(mockEuxService).opprettSvarJsonSedOnBuc(
+        doReturn(BucSedResponse(euxCaseId, "3123123")).whenever(mockEuxPrefillService).opprettSvarJsonSedOnBuc(
             sedandtype.sed,
             euxCaseId,
             parentDocumentId,
@@ -421,7 +421,7 @@ class SedControllerTest {
         assertEquals(expected, result?.toJson())
 
         verify(mockEuxInnhentingService, times( 2)).getBuc(any())
-        verify(mockEuxService, times( 1)).opprettSvarJsonSedOnBuc(any(), any(), any(), any())
+        verify(mockEuxPrefillService, times( 1)).opprettSvarJsonSedOnBuc(any(), any(), any(), any())
         verify(personDataService, times(1)).hentPersonData(any())
     }
 
@@ -481,12 +481,12 @@ class SedControllerTest {
         )
         val apiRequest = apiRequestWith(euxCaseId, newParticipants, "P10000")
 
-        doReturn(BucSedResponse(euxCaseId, "58c26271b21f4feebcc36b949b4865fe")).whenever(mockEuxService).opprettJsonSedOnBuc(any(), any(),eq(euxCaseId),eq(apiRequest.vedtakId))
-        doNothing().whenever(mockEuxService).addInstitution(any(), any())
+        doReturn(BucSedResponse(euxCaseId, "58c26271b21f4feebcc36b949b4865fe")).whenever(mockEuxPrefillService).opprettJsonSedOnBuc(any(), any(),eq(euxCaseId),eq(apiRequest.vedtakId))
+        doNothing().whenever(mockEuxPrefillService).addInstitution(any(), any())
 
         val result =  sedController.addInstutionAndDocument(apiRequest)
 
-        verify(mockEuxService, times(1)).opprettJsonSedOnBuc(any(), any(), eq(euxCaseId),eq(apiRequest.vedtakId))
+        verify(mockEuxPrefillService, times(1)).opprettJsonSedOnBuc(any(), any(), eq(euxCaseId),eq(apiRequest.vedtakId))
         verify(mockEuxInnhentingService, times(2)).getBuc(eq(euxCaseId))
 
         assertNotNull(result)
@@ -508,9 +508,9 @@ class SedControllerTest {
         val dummyPrefillData = ApiRequest.buildPrefillDataModelOnExisting(apiRequestWith(euxCaseId), NorskIdent("12345").id, null)
 
         doReturn(SED(type = dummyPrefillData.sedType)).whenever(mockPrefillSEDService).prefill(any(), any() )
-        doNothing().whenever(mockEuxService).addInstitution(any(), any())
+        doNothing().whenever(mockEuxPrefillService).addInstitution(any(), any())
 
-        doReturn(BucSedResponse(euxCaseId,"1")).whenever(mockEuxService).opprettJsonSedOnBuc(any(), any(), eq(euxCaseId),eq(dummyPrefillData.vedtakId))
+        doReturn(BucSedResponse(euxCaseId,"1")).whenever(mockEuxPrefillService).opprettJsonSedOnBuc(any(), any(), eq(euxCaseId),eq(dummyPrefillData.vedtakId))
 
         val newParticipants = listOf(
                 InstitusjonItem(country = "FI", institution = "FI:Finland", name="Finland test"),
@@ -518,8 +518,8 @@ class SedControllerTest {
         )
         sedController.addInstutionAndDocument(apiRequestWith(euxCaseId, newParticipants))
 
-        verify(mockEuxService, times(1)).addInstitution(any(), any())
-        verify(mockEuxService, times(1)).opprettJsonSedOnBuc(any(), any(), eq(euxCaseId),eq(dummyPrefillData.vedtakId))
+        verify(mockEuxPrefillService, times(1)).addInstitution(any(), any())
+        verify(mockEuxPrefillService, times(1)).opprettJsonSedOnBuc(any(), any(), eq(euxCaseId),eq(dummyPrefillData.vedtakId))
     }
 
     @Test
@@ -534,12 +534,12 @@ class SedControllerTest {
         mockBuc.actions = listOf(ActionsItem(name = "Send"))
 
         doReturn(mockBuc).whenever(mockEuxInnhentingService).getBuc(euxCaseId)
-        doNothing().whenever(mockEuxService).addInstitution(any(), any())
+        doNothing().whenever(mockEuxPrefillService).addInstitution(any(), any())
 
         val dummyPrefillData = ApiRequest.buildPrefillDataModelOnExisting(apiRequestWith(euxCaseId), NorskIdent("12345").id, null)
 
         doReturn(SED(type = dummyPrefillData.sedType)).whenever(mockPrefillSEDService).prefill(any(), any())
-        doThrow(SedDokumentIkkeOpprettetException("Expected!")).whenever(mockEuxService).opprettJsonSedOnBuc(any(), any(), eq(euxCaseId),eq(dummyPrefillData.vedtakId))
+        doThrow(SedDokumentIkkeOpprettetException("Expected!")).whenever(mockEuxPrefillService).opprettJsonSedOnBuc(any(), any(), eq(euxCaseId),eq(dummyPrefillData.vedtakId))
 
         val newParticipants = listOf(
                 InstitusjonItem(country = "FI", institution = "FI:Finland", name="Finland test"),

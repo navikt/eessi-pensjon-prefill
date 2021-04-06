@@ -22,11 +22,11 @@ import org.springframework.web.server.ResponseStatusException
 import javax.annotation.PostConstruct
 
 @Service
-class EuxService (private val euxKlient: EuxKlient,
-                  private val statistikk: StatistikkHandler,
-                  @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper(SimpleMeterRegistry())) {
+class EuxPrefillService (private val euxKlient: EuxKlient,
+                         private val statistikk: StatistikkHandler,
+                         @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper(SimpleMeterRegistry())) {
 
-    private val logger = LoggerFactory.getLogger(EuxService::class.java)
+    private val logger = LoggerFactory.getLogger(EuxPrefillService::class.java)
 
     // Vi trenger denne no arg konstruktøren for å kunne bruke @Spy med mockito
     constructor() : this(EuxKlient(RestTemplate()),
