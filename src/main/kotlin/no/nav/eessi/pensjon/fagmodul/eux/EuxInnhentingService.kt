@@ -20,7 +20,7 @@ import org.springframework.web.client.RestTemplate
 class EuxInnhentingService (private val euxKlient: EuxKlient,
                   @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper(SimpleMeterRegistry())) {
 
-    private val logger = LoggerFactory.getLogger(EuxService::class.java)
+    private val logger = LoggerFactory.getLogger(EuxPrefillService::class.java)
 
     private val validbucsed = ValidBucAndSed()
 

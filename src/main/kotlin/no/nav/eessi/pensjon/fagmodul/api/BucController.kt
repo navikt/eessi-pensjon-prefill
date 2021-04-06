@@ -30,7 +30,7 @@ import javax.annotation.PostConstruct
 @RequestMapping("/buc")
 class BucController(
     @Value("\${NAIS_NAMESPACE}") val nameSpace: String,
-    private val euxService: EuxService,
+    private val euxPrefillService: EuxPrefillService,
     private val euxInnhentingService: EuxInnhentingService,
     private val auditlogger: AuditLogger,
     private val pensjonsinformasjonService: PensjonsinformasjonService,
@@ -230,7 +230,7 @@ class BucController(
         logger.info("Prøver å opprette en ny BUC i RINA av type: $buctype")
 
         //rinaid
-        val euxCaseId = euxService.createBuc(buctype)
+        val euxCaseId = euxPrefillService.createBuc(buctype)
         logger.info("Mottatt følgende euxCaseId(RinaID): $euxCaseId")
 
         //wait 5 sec before getBuc metadata to UI

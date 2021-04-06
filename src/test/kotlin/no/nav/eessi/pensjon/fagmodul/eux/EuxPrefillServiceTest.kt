@@ -13,9 +13,7 @@ import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.toJson
 import no.nav.eessi.pensjon.utils.typeRefs
 import no.nav.eessi.pensjon.utils.validateJson
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertFalse
-import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -32,9 +30,9 @@ import java.time.Instant
 import java.time.ZoneId
 
 @ExtendWith(MockitoExtension::class)
-class EuxServiceTest {
+class EuxPrefillServiceTest {
 
-    private lateinit var euxService: EuxService
+    private lateinit var euxPrefillService: EuxPrefillService
     private lateinit var euxinnhentingService: EuxInnhentingService
 
     @Mock
@@ -46,7 +44,7 @@ class EuxServiceTest {
 
     @BeforeEach
     fun setup() {
-        euxService = EuxService(euxKlient, statistikkHandler)
+        euxPrefillService = EuxPrefillService(euxKlient, statistikkHandler)
         euxinnhentingService = EuxInnhentingService(euxKlient)
 
     }
@@ -550,7 +548,7 @@ class EuxServiceTest {
         val sed = SED(SEDType.P2000)
         val bucVersion = "v4.2"
 
-        euxService.updateSEDVersion(sed, bucVersion)
+        euxPrefillService.updateSEDVersion(sed, bucVersion)
         assertEquals(bucVersion, "v${sed.sedGVer}.${sed.sedVer}")
     }
 
@@ -559,7 +557,7 @@ class EuxServiceTest {
         val sed = SED(SEDType.P2000)
         val bucVersion = "v4.1"
 
-        euxService.updateSEDVersion(sed, bucVersion)
+        euxPrefillService.updateSEDVersion(sed, bucVersion)
         assertEquals(bucVersion, "v${sed.sedGVer}.${sed.sedVer}")
     }
 
@@ -569,7 +567,7 @@ class EuxServiceTest {
         val sed = SED(SEDType.P2000)
         val bucVersion = "v4.4"
 
-        euxService.updateSEDVersion(sed, bucVersion)
+        euxPrefillService.updateSEDVersion(sed, bucVersion)
         assertEquals("v4.1", "v${sed.sedGVer}.${sed.sedVer}")
     }
 
