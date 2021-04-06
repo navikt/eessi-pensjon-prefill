@@ -2,7 +2,7 @@ package no.nav.eessi.pensjon.fagmodul.api
 
 import com.nhaarman.mockitokotlin2.*
 import no.nav.eessi.pensjon.fagmodul.eux.BucAndSedView
-import no.nav.eessi.pensjon.fagmodul.eux.EuxKlient
+import no.nav.eessi.pensjon.fagmodul.eux.EuxInnhentingService
 import no.nav.eessi.pensjon.fagmodul.eux.EuxService
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Properties
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Rinasak
@@ -36,7 +36,6 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.api.fail
-import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.Spy
 import org.mockito.junit.jupiter.MockitoExtension
@@ -50,11 +49,11 @@ class BucControllerTest {
     @Spy
     lateinit var auditLogger: AuditLogger
 
-    @InjectMocks
-    lateinit var mockEuxKlient: EuxKlient
-
     @Spy
     lateinit var mockEuxService: EuxService
+
+    @Spy
+    lateinit var mockEuxInnhentingService: EuxInnhentingService
 
     @Mock
     lateinit var mockPensjonsinformasjonService: PensjonsinformasjonService
@@ -76,12 +75,13 @@ class BucControllerTest {
     @BeforeEach
     fun before() {
 
-        val innhentingService = InnhentingService(personDataService, mockEuxService, vedleggService)
+        val innhentingService = InnhentingService(personDataService, vedleggService)
         innhentingService.initMetrics()
 
         bucController = BucController(
             "default",
             mockEuxService,
+            mockEuxInnhentingService,
             auditLogger,
             mockPensjonsinformasjonService,
             innhentingService
@@ -101,7 +101,7 @@ class BucControllerTest {
         val gyldigBuc = javaClass.getResource("/json/buc/buc-279020big.json").readText()
         val buc : Buc =  mapJsonToAny(gyldigBuc, typeRefs())
 
-        doReturn(buc).whenever(mockEuxService).getBuc(any())
+        doReturn(buc).whenever(mockEuxInnhentingService).getBuc(any())
 
         val result = bucController.getBuc("1213123123")
         assertEquals(buc, result)
@@ -112,7 +112,7 @@ class BucControllerTest {
         val gyldigBuc = javaClass.getResource("/json/buc/buc-279020big.json").readText()
         val buc : Buc =  mapJsonToAny(gyldigBuc, typeRefs())
 
-        doReturn(buc).whenever(mockEuxService).getBuc(any())
+        doReturn(buc).whenever(mockEuxInnhentingService).getBuc(any())
 
         val result = bucController.getCreator("1213123123")
         assertEquals(buc.creator, result)
@@ -123,7 +123,7 @@ class BucControllerTest {
     fun getProcessDefinitionName() {
         val gyldigBuc = javaClass.getResource("/json/buc/buc-279020big.json").readText()
         val buc : Buc =  mapJsonToAny(gyldigBuc, typeRefs())
-        doReturn(buc).whenever(mockEuxService).getBuc(any())
+        doReturn(buc).whenever(mockEuxInnhentingService).getBuc(any())
 
         val result = bucController.getProcessDefinitionName("1213123123")
         assertEquals("P_BUC_03", result)
@@ -132,7 +132,7 @@ class BucControllerTest {
     @Test
     fun getBucDeltakere() {
         val expected = listOf(ParticipantsItem("asdas", Organisation(), false))
-        doReturn(expected).whenever(mockEuxService).getBucDeltakere(any())
+        doReturn(expected).whenever(mockEuxInnhentingService).getBucDeltakere(any())
 
         val result = bucController.getBucDeltakere("1213123123")
         assertEquals(expected.toJson(), result)
@@ -145,7 +145,7 @@ class BucControllerTest {
         val mockEuxRinaid = "123456"
         val buc : Buc =  mapJsonToAny(gyldigBuc, typeRefs())
 
-        doReturn(buc).whenever(mockEuxService).getBuc(any())
+        doReturn(buc).whenever(mockEuxInnhentingService).getBuc(any())
 
         val actual = bucController.getAllDocuments(mockEuxRinaid)
 
@@ -159,7 +159,7 @@ class BucControllerTest {
         val buc : Buc =  mapJsonToAny(gyldigBuc, typeRefs())
 
         doReturn("1231231").whenever(mockEuxService).createBuc("P_BUC_03")
-        doReturn(buc).whenever(mockEuxService).getBuc(any())
+        doReturn(buc).whenever(mockEuxInnhentingService).getBuc(any())
 
         val excpeted = BucAndSedView.from(buc)
         val actual = bucController.createBuc("P_BUC_03")
@@ -172,7 +172,7 @@ class BucControllerTest {
         val gyldigBuc = javaClass.getResource("/json/buc/buc-279020big.json").readText()
         val buc : Buc =  mapJsonToAny(gyldigBuc, typeRefs())
 
-        doReturn(buc).whenever(mockEuxService).getBuc("279029")
+        doReturn(buc).whenever(mockEuxInnhentingService).getBuc("279029")
 
         val actual = bucController.getMuligeAksjoner("279029")
         assertEquals(8, actual.size)
@@ -187,8 +187,8 @@ class BucControllerTest {
         doReturn(fnr).whenever(personDataService).hentFnrfraAktoerService(any())
 
         val rinaSaker = listOf(Rinasak("1234","P_BUC_01", Traits(), "", Properties(), "open"))
-        doReturn(rinaSaker).whenever(mockEuxService).getRinasaker(fnr, aktoerId, emptyList())
-        doReturn(Buc()).whenever(mockEuxService).getBuc(any())
+        doReturn(rinaSaker).whenever(mockEuxInnhentingService).getRinasaker(fnr, aktoerId, emptyList())
+        doReturn(Buc()).whenever(mockEuxInnhentingService).getBuc(any())
 
         val actual = bucController.getBucogSedView(aktoerId)
         assertEquals(1,actual.size)
@@ -200,7 +200,7 @@ class BucControllerTest {
         val fnr = "10101835868"
 
         doReturn(NorskIdent(fnr)).whenever(personDataService).hentIdent(IdentType.NorskIdent, AktoerId(aktoerId))
-        doThrow(RuntimeException::class).whenever(mockEuxService).getRinasaker(fnr, aktoerId, emptyList())
+        doThrow(RuntimeException::class).whenever(mockEuxInnhentingService).getRinasaker(fnr, aktoerId, emptyList())
 
         assertThrows<ResponseStatusException> {
             bucController.getBucogSedView(aktoerId)
@@ -221,10 +221,10 @@ class BucControllerTest {
 
         doReturn(fnr).whenever(personDataService).hentFnrfraAktoerService(any())
 
-        doThrow(RuntimeException("Feiler ved BUC")).whenever(mockEuxService).getBuc(any())
+        doThrow(RuntimeException("Feiler ved BUC")).whenever(mockEuxInnhentingService).getBuc(any())
 
         val rinaSaker = listOf(Rinasak("1234","P_BUC_01", Traits(), "", Properties(), "open"))
-        doReturn(rinaSaker).whenever(mockEuxService).getRinasaker(fnr, aktoerId, emptyList())
+        doReturn(rinaSaker).whenever(mockEuxInnhentingService).getRinasaker(fnr, aktoerId, emptyList())
 
         val actual =  bucController.getBucogSedView(aktoerId)
         assertTrue(actual.first().toJson().contains("Feiler ved BUC"))
@@ -252,14 +252,14 @@ class BucControllerTest {
 
         val documentsItem = listOf(DocumentsItem(type = SEDType.P2100))
         val avdodView = listOf(BucAndSedView.from(Buc(id = "123", processDefinitionName = "P_BUC_02", documents = documentsItem), fnrGjenlevende, avdodfnr ))
-        doReturn(avdodView).whenever(mockEuxService).getBucAndSedViewAvdod(fnrGjenlevende, avdodfnr)
+        doReturn(avdodView).whenever(mockEuxInnhentingService).getBucAndSedViewAvdod(fnrGjenlevende, avdodfnr)
 
         val rinaSaker = listOf(Rinasak(id = "123213", processDefinitionId = "P_BUC_03", status = "open"))
-        doReturn(rinaSaker).whenever(mockEuxService).getRinasaker(any(), any(), any())
+        doReturn(rinaSaker).whenever(mockEuxInnhentingService).getRinasaker(any(), any(), any())
 
         val documentsItemP2200 = listOf(DocumentsItem(type = SEDType.P2200))
         val buc = Buc(id = "23321", processDefinitionName = "P_BUC_03", documents = documentsItemP2200)
-        doReturn(buc).whenever(mockEuxService).getBuc(any())
+        doReturn(buc).whenever(mockEuxInnhentingService).getBuc(any())
 
 
         val actual = bucController.getBucogSedViewVedtak(gjenlevendeAktoerid, vedtaksId)
@@ -289,7 +289,7 @@ class BucControllerTest {
         doReturn(fnrGjenlevende).whenever(personDataService).hentFnrfraAktoerService(any())
 
         val rinaSaker = listOf<Rinasak>()
-        doReturn(rinaSaker).whenever(mockEuxService).getRinasaker(any(), any(), any())
+        doReturn(rinaSaker).whenever(mockEuxInnhentingService).getRinasaker(any(), any(), any())
 
         val documentsItem1 = listOf(DocumentsItem(type = SEDType.P2100))
 
@@ -299,8 +299,8 @@ class BucControllerTest {
         val buc2 = Buc(id = "231", processDefinitionName = "P_BUC_02", documents = documentsItem1)
         val avdodView2 = listOf(BucAndSedView.from(buc2, fnrGjenlevende, avdodFarfnr))
 
-        doReturn(avdodView1).`when`(mockEuxService).getBucAndSedViewAvdod(fnrGjenlevende, avdodMorfnr)
-        doReturn(avdodView2).`when`(mockEuxService).getBucAndSedViewAvdod(fnrGjenlevende, avdodFarfnr)
+        doReturn(avdodView1).`when`(mockEuxInnhentingService).getBucAndSedViewAvdod(fnrGjenlevende, avdodMorfnr)
+        doReturn(avdodView2).`when`(mockEuxInnhentingService).getBucAndSedViewAvdod(fnrGjenlevende, avdodFarfnr)
 
         val actual = bucController.getBucogSedViewVedtak(aktoerId, vedtaksId)
         assertEquals(2, actual.size)
@@ -331,12 +331,12 @@ class BucControllerTest {
         doReturn(fnrGjenlevende).whenever(personDataService).hentFnrfraAktoerService(any())
 
         val rinaSaker = listOf<Rinasak>(Rinasak("1234","P_BUC_01", Traits(), "", Properties(), "open"))
-        doReturn(rinaSaker).whenever(mockEuxService).getRinasaker(fnrGjenlevende, aktoerId, emptyList())
+        doReturn(rinaSaker).whenever(mockEuxInnhentingService).getRinasaker(fnrGjenlevende, aktoerId, emptyList())
 
         val documentsItem = listOf(DocumentsItem(type = SEDType.P2000))
         val buc = Buc(processDefinitionName = "P_BUC_01", documents = documentsItem)
 
-        doReturn(buc).whenever(mockEuxService).getBuc(any())
+        doReturn(buc).whenever(mockEuxInnhentingService).getBuc(any())
 
         val actual = bucController.getBucogSedViewVedtak(aktoerId, vedtaksId)
         assertEquals(1, actual.size)
@@ -364,7 +364,7 @@ class BucControllerTest {
 
         //aktoerService.hentPinForAktoer
         doReturn(NorskIdent(fnrGjenlevende)).whenever(personDataService).hentIdent(IdentType.NorskIdent, AktoerId(aktoerId))
-        doThrow(HttpClientErrorException::class).whenever(mockEuxService).getBucAndSedViewAvdod(fnrGjenlevende, avdodfnr)
+        doThrow(HttpClientErrorException::class).whenever(mockEuxInnhentingService).getBucAndSedViewAvdod(fnrGjenlevende, avdodfnr)
 
         assertThrows<Exception> {
             bucController.getBucogSedViewGjenlevende(aktoerId, avdodfnr)
@@ -377,7 +377,7 @@ class BucControllerTest {
         val buc : Buc =  mapJsonToAny(gyldigBuc, typeRefs())
 
         doReturn("1231231").whenever(mockEuxService).createBuc("P_BUC_03")
-        doReturn(buc).whenever(mockEuxService).getBuc(any())
+        doReturn(buc).whenever(mockEuxInnhentingService).getBuc(any())
 
         bucController.createBuc("P_BUC_03")
 

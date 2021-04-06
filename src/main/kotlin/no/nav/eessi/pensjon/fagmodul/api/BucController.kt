@@ -31,6 +31,7 @@ import javax.annotation.PostConstruct
 class BucController(
     @Value("\${NAIS_NAMESPACE}") val nameSpace: String,
     private val euxService: EuxService,
+    private val euxInnhentingService: EuxInnhentingService,
     private val auditlogger: AuditLogger,
     private val pensjonsinformasjonService: PensjonsinformasjonService,
     private val innhentingService: InnhentingService,
@@ -63,7 +64,7 @@ class BucController(
     fun getBuc(@PathVariable(value = "rinanr", required = true) rinanr: String): Buc {
         auditlogger.log("getBuc")
         logger.debug("Henter ut hele Buc data fra rina via eux-rina-api")
-        return euxService.getBuc(rinanr)
+        return euxInnhentingService.getBuc(rinanr)
     }
 
     @ApiOperation("Viser prosessnavnet (f.eks P_BUC_01) på den valgte BUCen")
@@ -71,7 +72,7 @@ class BucController(
     fun getProcessDefinitionName(@PathVariable(value = "rinanr", required = true) rinanr: String): String? {
 
         logger.debug("Henter ut definisjonsnavn (type type) på valgt Buc")
-        return euxService.getBuc(rinanr).processDefinitionName
+        return euxInnhentingService.getBuc(rinanr).processDefinitionName
     }
 
     @ApiOperation("Henter opp den opprinelige inststusjon på valgt caseid (type)")
@@ -79,7 +80,7 @@ class BucController(
     fun getCreator(@PathVariable(value = "rinanr", required = true) rinanr: String): Creator? {
 
         logger.debug("Henter ut Creator på valgt Buc")
-        return euxService.getBuc(rinanr).creator
+        return euxInnhentingService.getBuc(rinanr).creator
     }
 
     @ApiOperation("Henter BUC deltakere")
@@ -87,7 +88,7 @@ class BucController(
     fun getBucDeltakere(@PathVariable(value = "rinanr", required = true) rinanr: String): String {
         auditlogger.log("getBucDeltakere")
         logger.debug("Henter ut Buc deltakere data fra rina via eux-rina-api")
-        return mapAnyToJson(euxService.getBucDeltakere(rinanr))
+        return mapAnyToJson(euxInnhentingService.getBucDeltakere(rinanr))
     }
 
     @ApiOperation("Henter alle gyldige sed på valgt rinanr")
@@ -95,7 +96,7 @@ class BucController(
     fun getAllDocuments(@PathVariable(value = "rinanr", required = true) rinanr: String): List<DocumentsItem> {
         auditlogger.logBuc("getAllDocuments", rinanr)
         logger.debug("Henter ut documentId på alle dokumenter som finnes på valgt type")
-        val buc = euxService.getBuc(rinanr)
+        val buc = euxInnhentingService.getBuc(rinanr)
         return BucUtils(buc).getAllDocuments()
     }
 
@@ -103,7 +104,7 @@ class BucController(
     @GetMapping("/{rinanr}/aksjoner")
     fun getMuligeAksjoner(@PathVariable(value = "rinanr", required = true) rinanr: String): List<SEDType> {
         logger.debug("Henter ut muligeaksjoner på valgt buc med rinanummer: $rinanr")
-        val bucUtil = BucUtils(euxService.getBuc(rinanr))
+        val bucUtil = BucUtils(euxInnhentingService.getBuc(rinanr))
         return bucUtil.filterSektorPandRelevantHorizontalSeds(bucUtil.getSedsThatCanBeCreated())
     }
 
@@ -116,7 +117,7 @@ class BucController(
         val norskIdent = innhentingService.hentFnrfraAktoerService(aktoerId)
         val rinaSakIderFraJoark = innhentingService.hentRinaSakIderFraMetaData(aktoerId)
 
-        return euxService.getRinasaker(norskIdent, aktoerId, rinaSakIderFraJoark)
+        return euxInnhentingService.getRinasaker(norskIdent, aktoerId, rinaSakIderFraJoark)
     }
 
     @ApiOperation("Henter ut liste av Buc meny struktur i json format for UI på valgt aktoerid")
@@ -133,8 +134,8 @@ class BucController(
             val rinaSakIderFraJoark = innhentingService.hentRinaSakIderFraMetaData(aktoerid)
 
             val rinasakIdList = try {
-                val rinasaker = euxService.getRinasaker(fnr, aktoerid, rinaSakIderFraJoark)
-                val rinasakIdList = euxService.getFilteredArchivedaRinasaker(rinasaker)
+                val rinasaker = euxInnhentingService.getRinasaker(fnr, aktoerid, rinaSakIderFraJoark)
+                val rinasakIdList = euxInnhentingService.getFilteredArchivedaRinasaker(rinasaker)
                 rinasakIdList
             } catch (ex: Exception) {
                 logger.error("Feil oppstod under henting av rinasaker på aktoer: $aktoerid", ex)
@@ -142,7 +143,7 @@ class BucController(
             }
 
             try {
-                return@measure euxService.getBucAndSedView(rinasakIdList)
+                return@measure euxInnhentingService.getBucAndSedView(rinasakIdList)
             } catch (ex: Exception) {
                 logger.error("Feil ved henting av visning BucSedAndView på aktoer: $aktoerid", ex)
                 throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Feil ved oppretting av visning over BUC")
@@ -183,7 +184,7 @@ class BucController(
             val avdodBucAndSedView = try {
                 // Henter rina saker basert på fnr
                 logger.debug("henter avdod BucAndSedView fra avdød (P_BUC_02)")
-                euxService.getBucAndSedViewAvdod(fnrGjenlevende, avdodfnr)
+                euxInnhentingService.getBucAndSedViewAvdod(fnrGjenlevende, avdodfnr)
             } catch (ex: Exception) {
                 logger.error("Feiler ved henting av Rinasaker for gjenlevende og avdod", ex)
                 throw ResponseStatusException( HttpStatus.INTERNAL_SERVER_ERROR, "Feil ved henting av Rinasaker for gjenlevende")
@@ -218,7 +219,7 @@ class BucController(
 
         return bucDetaljerEnkel.measure {
             logger.debug(" prøver å hente ut en enkel buc med euxCaseId: $euxcaseid")
-            return@measure euxService.getSingleBucAndSedView(euxcaseid)
+            return@measure euxInnhentingService.getSingleBucAndSedView(euxcaseid)
         }
     }
 
@@ -240,7 +241,7 @@ class BucController(
         }
 
         //create bucDetail back from newly created buc call eux-rina-api to get data.
-        val buc = euxService.getBuc(euxCaseId)
+        val buc = euxInnhentingService.getBuc(euxCaseId)
 
         return BucAndSedView.from(buc)
     }
