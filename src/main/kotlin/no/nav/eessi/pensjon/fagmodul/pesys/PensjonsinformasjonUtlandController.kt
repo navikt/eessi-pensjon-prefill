@@ -33,7 +33,7 @@ class PensjonsinformasjonUtlandController(
         pensjonUtland = metricsHelper.init("pensjonUtland")
     }
 
-    @ApiOperation(httpMethod = "GET", value = "Henter ut kravhode fra innkommende SEDER fra EU/EØS. Nødvendig data for å automatisk opprette et krav i Pesys", response = KravUtland::class)
+    @ApiOperation(httpMethod = "GET", value = "Henter ut kravhode fra innkommende SED fra EU/EØS. Nødvendig data for å automatisk opprette et krav i Pesys", response = KravUtland::class)
     @GetMapping("/hentKravUtland/{bucId}")
     @JsonInclude(JsonInclude.Include.NON_NULL)
     fun hentKravUtland(@PathVariable("bucId", required = true) bucId: Int): KravUtland {

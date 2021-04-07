@@ -4,12 +4,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import java.time.LocalDate
 
-
 //Model for opprettelse av kravhode til pesys.
-//Krever p2x00 og P3000_no, P4000,P5000 før en kan
-//tilby tjeneste med nødvendig informasjon for PESYS til å opprette kravhode automatisk.
-
-//omhandler alle SED?
 data class KravUtland(
         val errorMelding: String? = null,
 
@@ -19,41 +14,20 @@ data class KravUtland(
 
         @JsonDeserialize(using = LocalDateDeserializer::class)
         @JsonSerialize(using = LocalDateSerializer::class)
-        val iverksettelsesdato: LocalDate? = null, // 9.1 kravsato
+        val iverksettelsesdato: LocalDate? = null, // 9.1 + 1dag i mnd - 3mnd
 
         @JsonDeserialize(using = LocalDateDeserializer::class)
         @JsonSerialize(using = LocalDateSerializer::class)
-        val fremsattKravdato: LocalDate? = null, // 9.1 kravsato - 3mnd og den 1 den mnd
+        val fremsattKravdato: LocalDate? = null, //SED metadata dato
 
         val uttaksgrad: String? = "0",         //P3000
-
-        val vurdereTrygdeavtale: Boolean? = null,        //P5000
-
+        val vurdereTrygdeavtale: Boolean? = null,
         val personopplysninger: SkjemaPersonopplysninger? = null,
-
         val utland: SkjemaUtland? = null, //utland opphold filtrer bort Norge
-
         var sivilstand: SkjemaFamilieforhold? = null, // gift, samb..
-
         val soknadFraLand: String? = null, //hvilket land kommer kravsøknad fra (buc-caseowner)
-
         val initiertAv: String = "BRUKER" //skal alltid være BRUKER
 )
-
-
-//private val errorMelding: String? = null
-//private val initiertAv: String? = null
-//
-//@JsonProperty("iverksettelsesdato")
-//private val iverksettelsesDato: Date? = null
-//private val mottattDato: Date? = null
-//private val fremsattKravdato: Date? = null
-//private val personopplysninger: Personopplysninger? = null
-//private val sivilstand: Sivilstand? = null
-//private val soknadFraLand: String? = null
-//private val utland: Utland? = null
-//private val uttaksgrad: String? = null
-//private val vurdereTrygdeavtale: Boolean? = null
 
 data class SkjemaPersonopplysninger(
         val statsborgerskap: String? = null   //P2000 pkt. 2.2.1.1 land_3 tegn

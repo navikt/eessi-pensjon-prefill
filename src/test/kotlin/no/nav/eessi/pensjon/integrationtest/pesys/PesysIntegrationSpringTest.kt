@@ -45,18 +45,18 @@ class PesysIntegrationSpringTest {
     fun `henter kravPensjonutland fra P2200`() {
 
         val bucid = "998777"
-        val sedid = "9374f5978c6a46709a3fc1484062d158"
+        val sedid = "5a61468eb8cb4fd78c5c44d75b9bb890"
 
         doReturn("SWE").whenever(kodeverkClient).finnLandkode3(any())
 
         //euxrest kall buc
-        val buc05 = ResourceUtils.getFile("classpath:json/buc/BucResponseFraEUXMedX007.json").readText()
+        val buc05 = ResourceUtils.getFile("classpath:json/buc/buc-1297512-kravP2200_v4.2.json").readText()
         val rinabucpath = "/buc/$bucid"
         doReturn( ResponseEntity.ok().body( buc05 ) ).whenever(restTemplate).exchange( eq(rinabucpath), eq(HttpMethod.GET), eq(null), eq(String::class.java))
 
         //euxrest kall til p2200
         val sedurl = "/buc/$bucid/sed/$sedid"
-        val sedP2200 = ResourceUtils.getFile("classpath:json/nav/P2200-NAV_FRA_SE.json").readText()
+        val sedP2200 = ResourceUtils.getFile("classpath:json/nav/P2200-NAV-FRA-UTLAND-KRAV.json").readText()
         doReturn( ResponseEntity.ok().body( sedP2200 ) ).whenever(restTemplate).exchange( eq(sedurl), eq(HttpMethod.GET), eq(null), eq(String::class.java))
 
         val result = mockMvc.perform(
@@ -68,21 +68,23 @@ class PesysIntegrationSpringTest {
 
         val response = result.response.getContentAsString(charset("UTF-8"))
 
+        print(response)
+
         val validResponse = """
             {
-              "errorMelding": null,
-              "mottattDato": "2019-07-15",
-              "iverksettelsesdato": "2019-07-15",
-              "fremsattKravdato":"2019-04-01",              
-              "uttaksgrad": "0",
-              "vurdereTrygdeavtale": true,
-              "personopplysninger": {
-                "statsborgerskap": "SWE"
-              },
-              "utland": null,
-              "sivilstand": null,
-              "soknadFraLand": "SWE",
-              "initiertAv": "BRUKER"
+                "errorMelding" : null,
+                "mottattDato" : "2021-03-01",
+                "iverksettelsesdato" : "2020-12-01",
+                "fremsattKravdato" : "2021-03-26",
+                "uttaksgrad" : "0",
+                "vurdereTrygdeavtale" : true,
+                "personopplysninger" : {
+                "statsborgerskap" : ""
+                },
+                "utland" : null,
+                "sivilstand" : null,
+                "soknadFraLand" : "SWE",
+                "initiertAv" : "BRUKER"
             }
         """.trimIndent()
 

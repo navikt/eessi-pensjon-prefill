@@ -1,7 +1,15 @@
 package no.nav.eessi.pensjon.fagmodul.eux
 
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.RinaAksjon
-import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.*
+import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Attachment
+import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Buc
+import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ConversationsItem
+import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.DocumentsItem
+import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ParticipantsItem
+import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Receiver
+import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Sender
+import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.VersionsItem
+import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.VersionsItemNoUser
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.models.SEDType
 import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
@@ -66,7 +74,7 @@ class BucUtils(private val buc: Buc) {
         return getDateTime(dateTime).millis
     }
 
-    private fun getDateTime(dateTime: Any?): DateTime  {
+    fun getDateTime(dateTime: Any?): DateTime  {
         val zoneId = DateTimeZone.forID(ZoneId.systemDefault().id)
 
             return when (dateTime) {
