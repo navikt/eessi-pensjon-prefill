@@ -1,9 +1,12 @@
+
 package no.nav.eessi.pensjon.fagmodul.api
 
-import com.nhaarman.mockitokotlin2.*
+import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.doReturn
+import com.nhaarman.mockitokotlin2.doThrow
+import com.nhaarman.mockitokotlin2.whenever
 import no.nav.eessi.pensjon.fagmodul.eux.BucAndSedView
 import no.nav.eessi.pensjon.fagmodul.eux.EuxInnhentingService
-import no.nav.eessi.pensjon.fagmodul.eux.EuxPrefillService
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Properties
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Rinasak
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Traits
@@ -35,7 +38,6 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mock
 import org.mockito.Spy
 import org.mockito.junit.jupiter.MockitoExtension
-import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.server.ResponseStatusException
 
@@ -46,16 +48,10 @@ class BucControllerTest {
     lateinit var auditLogger: AuditLogger
 
     @Spy
-    lateinit var mockEuxPrefillService: EuxPrefillService
-
-    @Spy
     lateinit var mockEuxInnhentingService: EuxInnhentingService
 
     @Mock
     lateinit var mockPensjonsinformasjonService: PensjonsinformasjonService
-
-    @Mock
-    lateinit var kafkaTemplate: KafkaTemplate<String, String>
 
     @Mock
     private lateinit var personDataService: PersonDataService
@@ -76,7 +72,6 @@ class BucControllerTest {
 
         bucController = BucController(
             "default",
-            mockEuxPrefillService,
             mockEuxInnhentingService,
             auditLogger,
             mockPensjonsinformasjonService,
@@ -147,20 +142,6 @@ class BucControllerTest {
 
         Assertions.assertNotNull(actual)
         assertEquals(25, actual.size)
-    }
-
-    @Test
-    fun `createBuc run ok and return id`() {
-        val gyldigBuc = javaClass.getResource("/json/buc/buc-279020big.json").readText()
-        val buc : Buc =  mapJsonToAny(gyldigBuc, typeRefs())
-
-        doReturn("1231231").whenever(mockEuxPrefillService).createBuc("P_BUC_03")
-        doReturn(buc).whenever(mockEuxInnhentingService).getBuc(any())
-
-        val excpeted = BucAndSedView.from(buc)
-        val actual = bucController.createBuc("P_BUC_03")
-
-        assertEquals(excpeted.toJson(), actual.toJson())
     }
 
     @Test
@@ -367,17 +348,5 @@ class BucControllerTest {
         }
     }
 
-    @Test
-    fun `createBuc run ok and does not run statistics in default namespace`() {
-        val gyldigBuc = javaClass.getResource("/json/buc/buc-279020big.json").readText()
-        val buc : Buc =  mapJsonToAny(gyldigBuc, typeRefs())
-
-        doReturn("1231231").whenever(mockEuxPrefillService).createBuc("P_BUC_03")
-        doReturn(buc).whenever(mockEuxInnhentingService).getBuc(any())
-
-        bucController.createBuc("P_BUC_03")
-
-        verify(kafkaTemplate, times(0)).sendDefault(any(), any())
-    }
-
 }
+
