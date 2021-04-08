@@ -78,7 +78,7 @@ class PrefillController(
 
         //wait 5 sec before getBuc metadata to UI
         try {
-            TimeUnit.SECONDS.sleep(5)
+            TimeUnit.SECONDS.sleep(10)
         } catch (ie: InterruptedException) {
             Thread.currentThread().interrupt()
         }
