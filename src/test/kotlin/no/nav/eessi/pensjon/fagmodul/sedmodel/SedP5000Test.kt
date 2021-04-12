@@ -25,7 +25,7 @@ class SedP5000Test {
         val p5000json = String(Files.readAllBytes(Paths.get("src/test/resources/json/nav/P5000-NAV.json")))
         val p5000 = mapJsonToAny(p5000json, typeRefs<P5000>())
 
-        assertNotNull(p5000.p5000Pensjon.trygdetid)
+        assertNotNull(p5000.p5000Pensjon?.trygdetid)
     }
 
 }
