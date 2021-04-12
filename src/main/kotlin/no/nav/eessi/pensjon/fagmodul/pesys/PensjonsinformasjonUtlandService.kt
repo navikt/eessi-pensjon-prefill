@@ -205,9 +205,9 @@ class PensjonsinformasjonUtlandService(
         logger.debug("CaseOwnerName   : ${caseOwner.name}")
 
         val kravUforeUtland = KravUtland(
-            mottattDato = LocalDate.parse(kravSed.nav?.krav?.dato) ?: null,     //krav kp. 9.1
-            iverksettelsesdato = iverksettDato(kravSed),                        //krav - 3 mnd
-            fremsattKravdato = fremsettKravDato(doc, bucUtils),                 //documentItem lastupdate
+            mottattDato = fremsettKravDato(doc, bucUtils),                       // når SED ble mottatt i NAV-RINA
+            iverksettelsesdato = iverksettDato(kravSed),                         // hentes fra kp. 9.1 kravdato - 3 mnd
+            fremsattKravdato = LocalDate.parse(kravSed.nav?.krav?.dato) ?: null, // hentes fra kp. 9.1 kravdato
 
             vurdereTrygdeavtale = true,
 
@@ -220,11 +220,11 @@ class PensjonsinformasjonUtlandService(
         return kravUforeUtland
     }
 
+    //P2000
     fun utlandsOpphold(kravSed: SED): SkjemaUtland? {
-//        SkjemaUtland(
-//            utlandsopphold = emptyList()
-//        )
-        return null
+        return SkjemaUtland(
+            utlandsopphold = emptyList()
+        )
     }
 
     fun sivilstand(kravSed: SED): SkjemaFamilieforhold? {

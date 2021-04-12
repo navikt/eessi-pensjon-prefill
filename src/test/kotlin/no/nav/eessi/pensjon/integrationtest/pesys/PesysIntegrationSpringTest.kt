@@ -73,9 +73,9 @@ class PesysIntegrationSpringTest {
         val validResponse = """
             {
                 "errorMelding" : null,
-                "mottattDato" : "2021-03-01",
+                "mottattDato" : "2021-03-26",
                 "iverksettelsesdato" : "2020-12-01",
-                "fremsattKravdato" : "2021-03-26",
+                "fremsattKravdato" : "2021-03-01",
                 "uttaksgrad" : "0",
                 "vurdereTrygdeavtale" : true,
                 "personopplysninger" : {

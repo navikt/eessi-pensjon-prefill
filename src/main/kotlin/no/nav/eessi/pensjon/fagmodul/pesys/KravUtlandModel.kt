@@ -8,16 +8,12 @@ import java.time.LocalDate
 data class KravUtland(
         val errorMelding: String? = null,
 
-        @JsonDeserialize(using = LocalDateDeserializer::class)
-        @JsonSerialize(using = LocalDateSerializer::class)
+//        @JsonDeserialize(using = LocalDateDeserializer::class)
+//        @JsonSerialize(using = LocalDateSerializer::class)
         val mottattDato: LocalDate? = null,  // 9.1 kravsato
 
-        @JsonDeserialize(using = LocalDateDeserializer::class)
-        @JsonSerialize(using = LocalDateSerializer::class)
         val iverksettelsesdato: LocalDate? = null, // 9.1 + 1dag i mnd - 3mnd
 
-        @JsonDeserialize(using = LocalDateDeserializer::class)
-        @JsonSerialize(using = LocalDateSerializer::class)
         val fremsattKravdato: LocalDate? = null, //SED metadata dato
 
         val uttaksgrad: String? = "0",         //P3000
