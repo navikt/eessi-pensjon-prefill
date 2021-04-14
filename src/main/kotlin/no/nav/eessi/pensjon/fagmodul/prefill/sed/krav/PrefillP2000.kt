@@ -13,6 +13,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.ResponseStatus
+import org.springframework.web.server.ResponseStatusException
 
 /**
  * preutfylling av NAV-P2000 SED for søknad krav om alderpensjon
@@ -74,5 +75,4 @@ class PrefillP2000(private val prefillNav: PrefillPDLNav)  {
     }
 }
 
-@ResponseStatus(value = HttpStatus.UNPROCESSABLE_ENTITY)
-class ValidationException(message: String) : IllegalArgumentException(message)
+class ValidationException(message: String) : ResponseStatusException(HttpStatus.BAD_REQUEST, message)
