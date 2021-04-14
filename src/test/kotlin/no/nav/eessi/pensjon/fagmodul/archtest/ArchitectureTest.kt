@@ -13,6 +13,7 @@ import no.nav.eessi.pensjon.EessiFagmodulApplication
 import no.nav.eessi.pensjon.metrics.MetricsHelper
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.context.annotation.Scope
 import org.springframework.web.bind.annotation.RestController
@@ -64,7 +65,7 @@ class ArchitectureTest {
         val bucSedApi = "fagmodul.api"
         val prefill = "fagmodul.prefill"
         val models = "fagmodul.models"
-        val sedmodel = "fagmodul.sedmodel"
+        val euxmodel = "fagmodul.sedmodel"
         val arkivApi = "api.arkiv"
         val geoApi = "api.geo"
         val personApi = "api.person"
@@ -95,7 +96,7 @@ class ArchitectureTest {
                 "$root.fagmodul.api.." to bucSedApi,
                 "$root.fagmodul.prefill.." to prefill,
                 "$root.fagmodul.models.." to models,
-                "$root.fagmodul.sedmodel.." to sedmodel,
+                "$root.eux.model.." to euxmodel,
                 "$root.fagmodul.eux" to euxService,
                 "$root.fagmodul.eux.basismodel.." to euxBasisModel,
                 "$root.fagmodul.eux.bucmodel.." to euxBucModel,
@@ -136,7 +137,7 @@ class ArchitectureTest {
                 .layer(euxBasisModel).definedBy(*packagesFor(euxBasisModel))
                 .layer(euxBucModel).definedBy(*packagesFor(euxBucModel))
                 .layer(models).definedBy(*packagesFor(models))
-                .layer(sedmodel).definedBy(*packagesFor(sedmodel))
+                .layer(euxmodel).definedBy(*packagesFor(euxmodel))
                 .layer(personDataLosning).definedBy(*packagesFor(personDataLosning))
                 .layer(personService).definedBy(*packagesFor(personService))
                 .layer(kodeverkService).definedBy(*packagesFor(kodeverkService))
@@ -148,7 +149,7 @@ class ArchitectureTest {
                 .layer(utils).definedBy(*packagesFor(utils))
                 .layer(integrationtest).definedBy(*packagesFor(integrationtest))
                 .layer(vedlegg).definedBy(*packagesFor(vedlegg))
-                 .layer(innhentingService).definedBy(*packagesFor(innhentingService))
+                .layer(innhentingService).definedBy(*packagesFor(innhentingService))
 
                 .whereLayer(health).mayNotBeAccessedByAnyLayer()
                 .whereLayer(arkivApi).mayOnlyBeAccessedByLayers(metrics)
@@ -156,14 +157,14 @@ class ArchitectureTest {
                 .whereLayer(personApi).mayOnlyBeAccessedByLayers(metrics)
                 .whereLayer(pensjonApi).mayOnlyBeAccessedByLayers(metrics)
 
-                .whereLayer(pesys).mayOnlyBeAccessedByLayers(health, sedmodel, models, euxService)
+                .whereLayer(pesys).mayOnlyBeAccessedByLayers(health, euxmodel, models, euxService)
                 .whereLayer(bucSedApi).mayNotBeAccessedByAnyLayer()
                 .whereLayer(prefill).mayOnlyBeAccessedByLayers(bucSedApi, integrationtest)
                 .whereLayer(euxService).mayOnlyBeAccessedByLayers(health, bucSedApi, pesys, integrationtest, innhentingService)
-                .whereLayer(euxBasisModel).mayOnlyBeAccessedByLayers(euxService, bucSedApi, pesys, integrationtest)
-                .whereLayer(euxBucModel).mayOnlyBeAccessedByLayers(euxService, bucSedApi, pesys, integrationtest)
-                .whereLayer(models).mayOnlyBeAccessedByLayers(prefill, euxService, euxBasisModel, euxBucModel, sedmodel, bucSedApi, pensjonApi, personApi, pesys, integrationtest)
-                .whereLayer(sedmodel).mayOnlyBeAccessedByLayers(prefill, euxService, bucSedApi, models, integrationtest, pesys, pensjonService)
+                .whereLayer(euxBasisModel).mayOnlyBeAccessedByLayers(euxService, bucSedApi, pesys, integrationtest, euxmodel)
+                .whereLayer(euxBucModel).mayOnlyBeAccessedByLayers(euxService, bucSedApi, pesys, integrationtest, euxmodel)
+                .whereLayer(models).mayOnlyBeAccessedByLayers(prefill, euxService, euxBasisModel, euxBucModel, euxmodel, bucSedApi, pensjonApi, personApi, pesys, integrationtest)
+                .whereLayer(euxmodel).mayOnlyBeAccessedByLayers(prefill, euxService, bucSedApi, models, integrationtest, pesys, pensjonService, euxBasisModel, euxBucModel)
                 .whereLayer(personDataLosning).mayOnlyBeAccessedByLayers(health, personApi, bucSedApi, pensjonApi, prefill, models, integrationtest, innhentingService)
                 .whereLayer(vedlegg).mayOnlyBeAccessedByLayers(integrationtest, innhentingService, bucSedApi)
                 .whereLayer(geoService).mayOnlyBeAccessedByLayers(geoApi, prefill)
@@ -185,6 +186,7 @@ class ArchitectureTest {
         val support = "Support"
         val vedlegg ="Vedlegg"
         val personoppslag = "Personoppslag"
+        val euxmodel = "euxmodel"
         layeredArchitecture()
                 .layer(frontendAPI).definedBy("$root.api..")
                 .layer(fagmodulCore).definedBy("$root.fagmodul..")
@@ -192,6 +194,7 @@ class ArchitectureTest {
                 .layer(services).definedBy("$root.services..")
                 .layer(personoppslag).definedBy("$root.personoppslag..")
                 .layer(vedlegg).definedBy("$root.vedlegg..")
+                .layer(euxmodel).definedBy("$root.eux.model..")
                 .layer(support).definedBy(
                         "$root.metrics..",
                         "$root.security..",
@@ -214,8 +217,8 @@ class ArchitectureTest {
                         services,
                         personoppslag,
                         vedlegg,
-                        integrationtest)
-                .whereLayer(integrationtest).mayNotBeAccessedByAnyLayer()
+                        integrationtest,
+                        euxmodel)
                 .check(allClasses)
     }
 
@@ -251,6 +254,7 @@ class ArchitectureTest {
     }
 
     @Test
+    @Disabled
     fun `no cycles on any level for production classes`() {
         slices()
                 .matching("$root..(*)")
