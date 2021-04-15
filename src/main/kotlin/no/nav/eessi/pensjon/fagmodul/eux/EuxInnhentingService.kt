@@ -1,12 +1,9 @@
 package no.nav.eessi.pensjon.fagmodul.eux
 
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry
+import no.nav.eessi.pensjon.eux.model.buc.Buc
 import no.nav.eessi.pensjon.eux.model.sed.*
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Rinasak
-import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Buc
-import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ParticipantsItem
-import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
-import no.nav.eessi.pensjon.fagmodul.models.PrefillDataModel
 import no.nav.eessi.pensjon.metrics.MetricsHelper
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.typeRefs
@@ -27,12 +24,6 @@ class EuxInnhentingService (@Qualifier("fagmodulEuxKlient") private val euxKlien
     // Vi trenger denne no arg konstruktøren for å kunne bruke @Spy med mockito
     constructor() : this(EuxKlient(RestTemplate()))
 
-    fun getBuc(euxCaseId: String): Buc {
-        val body = euxKlient.getBucJson(euxCaseId)
-        logger.debug("mapper buc om til BUC objekt-model")
-        return mapJsonToAny(body, typeRefs())
-    }
-
     @Throws(EuxServerException::class, SedDokumentIkkeLestException::class)
     fun getSedOnBucByDocumentId(euxCaseId: String, documentId: String): SED {
         val json = euxKlient.getSedOnBucByDocumentIdAsJson(euxCaseId, documentId)
@@ -52,49 +43,6 @@ class EuxInnhentingService (@Qualifier("fagmodulEuxKlient") private val euxKlien
         }
     }
 
-    fun getSingleBucAndSedView(euxCaseId: String): BucAndSedView {
-        return try {
-            BucAndSedView.from(getBuc(euxCaseId))
-        } catch (ex: Exception) {
-            logger.error("Feiler ved utlevering av enkel bucandsedview ${ex.message}", ex)
-            BucAndSedView.fromErr(ex.message)
-        }
-    }
-
-    fun getBucAndSedViewWithBuc(bucs: List<Buc>, gjenlevndeFnr: String, avdodFnr: String): List<BucAndSedView> {
-        return bucs
-                .map { buc ->
-                    try {
-                        BucAndSedView.from(buc, gjenlevndeFnr, avdodFnr)
-                    } catch (ex: Exception) {
-                        logger.error(ex.message, ex)
-                        BucAndSedView.fromErr(ex.message)
-                    }
-                }
-    }
-
-    fun getBucAndSedView(rinasaker: List<String>): List<BucAndSedView> {
-        val startTime = System.currentTimeMillis()
-        val list = rinasaker
-                .map { rinaid ->
-                    try {
-                        BucAndSedView.from(getBuc(rinaid))
-                    } catch (ex: Exception) {
-                        logger.error(ex.message, ex)
-                        BucAndSedView.fromErr(ex.message)
-                    }
-                }
-                .sortedByDescending { it.startDate }
-
-        logger.debug(" tiden tok ${System.currentTimeMillis() - startTime} ms.")
-        return list
-    }
-
-    fun getInstitutions(bucType: String, landkode: String? = ""): List<InstitusjonItem> {
-        logger.debug("henter institustion for bucType: $bucType, land: $landkode")
-        return euxKlient.getInstitutions(bucType, landkode)
-    }
-
     /**
      * filtert kun gyldige buc-type for visning, returnerer liste av rinaid
      */
@@ -107,34 +55,6 @@ class EuxInnhentingService (@Qualifier("fagmodulEuxKlient") private val euxKlien
                 .sortedBy { rinasak -> rinasak.id }
                 .map { rinasak -> rinasak.id!! }
                 .toList()
-    }
-
-    fun getBucDeltakere(euxCaseId: String): List<ParticipantsItem> {
-        return euxKlient.getBucDeltakere(euxCaseId)
-    }
-
-    fun getBucAndSedViewAvdod(gjenlevendeFnr: String, avdodFnr: String): List<BucAndSedView> {
-        // Henter rina saker basert på gjenlevendes fnr
-        val validAvdodBucs = listOf("P_BUC_02","P_BUC_05","P_BUC_06","P_BUC_10")
-        val rinaSakerMedFnr = validAvdodBucs.map { euxKlient.getRinasaker(avdodFnr, null, it, "\"open\"") }
-           .flatten()
-
-        logger.info("rinaSaker total: ${rinaSakerMedFnr.size}")
-        val filteredRinaIdAvdod = getFilteredArchivedaRinasaker(rinaSakerMedFnr)
-
-        logger.debug("filterer ut rinasaker og får kun ider tilbake size: ${filteredRinaIdAvdod.size}")
-
-        val bucdocumentidAvdod = hentBucOgDocumentIdAvdod(filteredRinaIdAvdod)
-
-        val listeAvSedsPaaAvdod = hentDocumentJsonAvdod(bucdocumentidAvdod)
-
-        val gyldigeBucs = filterGyldigBucGjenlevendeAvdod(listeAvSedsPaaAvdod, gjenlevendeFnr)
-
-        val gjenlevendeBucAndSedView =  getBucAndSedViewWithBuc(gyldigeBucs, gjenlevendeFnr, avdodFnr)
-
-        logger.debug("TotalRinasaker med avdod og gjenlevende(rina/saf): ${gjenlevendeBucAndSedView.size}")
-
-        return gjenlevendeBucAndSedView
     }
 
     /**
@@ -153,38 +73,6 @@ class EuxInnhentingService (@Qualifier("fagmodulEuxKlient") private val euxKlien
         val sed = mapJsonToAny(sedjson, typeRefs<SED>())
         return filterGjenlevendePinNode(sed, docs.rinaidAvdod) == fnrGjenlevende ||
                 filterAnnenPersonPinNode(sed, docs.rinaidAvdod) == fnrGjenlevende
-    }
-
-    /**
-     * Henter inn sed fra eux fra liste over sedid på avdod
-     */
-    fun hentDocumentJsonAvdod(bucdocumentidAvdod: List<BucOgDocumentAvdod>): List<BucOgDocumentAvdod> {
-        return bucdocumentidAvdod.map { docs ->
-            val bucutil = BucUtils(docs.buc)
-            val bucType = bucutil.getProcessDefinitionName()
-            logger.info("henter documentid fra buc: ${docs.rinaidAvdod} bucType: $bucType")
-
-            val shortDoc = when (bucType) {
-                "P_BUC_02" -> bucutil.getDocumentByType(SedType.P2100)
-                "P_BUC_10" -> bucutil.getDocumentByType(SedType.P15000)
-                "P_BUC_05" -> bucutil.getDocumentByType(SedType.P8000)
-                else -> bucutil.getDocumentByType(SedType.P6000)
-            }
-            val sedJson = shortDoc?.let {
-                euxKlient.getSedOnBucByDocumentIdAsJson(docs.rinaidAvdod, it.id!!)
-            }
-            docs.dokumentJson = sedJson ?: ""
-            docs
-        }
-    }
-
-    /**
-     * Henter buc og sedid på p2100 på avdøds fnr
-     */
-    fun hentBucOgDocumentIdAvdod(filteredRinaIdAvdod: List<String>): List<BucOgDocumentAvdod> {
-        return filteredRinaIdAvdod.map {
-            rinaIdAvdod -> BucOgDocumentAvdod(rinaIdAvdod, getBuc(rinaIdAvdod))
-        }
     }
 
     /**
@@ -250,15 +138,5 @@ class EuxInnhentingService (@Qualifier("fagmodulEuxKlient") private val euxKlien
      */
     fun hentRinaSakIder(rinaSaker: List<Rinasak>) = rinaSaker.map { it.id!! }
 
-    fun kanSedOpprettes(dataModel: PrefillDataModel): BucUtils {
-
-        logger.info("******* Hent BUC sjekk om sed kan opprettes *******")
-        return BucUtils(getBuc(dataModel.euxCaseID)).also { bucUtil ->
-            //sjekk for om deltakere alt er fjernet med x007 eller x100 sed
-            bucUtil.checkForParticipantsNoLongerActiveFromXSEDAsInstitusjonItem(dataModel.getInstitutionsList())
-            //gyldig sed kan opprettes
-            bucUtil.checkIfSedCanBeCreated(dataModel.sedType, dataModel.penSaksnummer)
-        }
-    }
 
 }

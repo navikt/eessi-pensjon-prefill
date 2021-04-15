@@ -7,7 +7,6 @@ import com.nhaarman.mockitokotlin2.whenever
 import no.nav.eessi.pensjon.personoppslag.pdl.model.AktoerId
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Ident
 import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentType
-import no.nav.eessi.pensjon.vedlegg.VedleggService
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
@@ -25,14 +24,11 @@ class InnhentingServiceTest {
     @Mock
     private lateinit var personDataService: PersonDataService
 
-    @Mock
-    private lateinit var vedleggService: VedleggService
-
     private lateinit var innhentingService: InnhentingService
 
     @BeforeEach
     fun before() {
-        innhentingService = InnhentingService(personDataService, vedleggService)
+        innhentingService = InnhentingService(personDataService)
         innhentingService.initMetrics()
     }
 

@@ -4,8 +4,6 @@ import com.nhaarman.mockitokotlin2.*
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import no.nav.eessi.pensjon.eux.model.sed.SED
 import no.nav.eessi.pensjon.eux.model.sed.SedType
-import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.Organisation
-import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ParticipantsItem
 import no.nav.eessi.pensjon.logging.RequestResponseLoggerInterceptor
 import no.nav.eessi.pensjon.metrics.MetricsHelper
 import no.nav.eessi.pensjon.security.sts.typeRef
@@ -548,23 +546,6 @@ class EuxKlientTest {
         assertThrows<GenericUnprocessableEntity> {
             klient.getBucJson(mockEuxRinaid)
         }
-    }
-
-    @Test
-    fun `gitt at det finnes en gydlig euxCaseid skal det returneres en liste av Buc deltakere`() {
-        val mockEuxRinaid = "123456"
-        val mockResponse = ResponseEntity.ok().body(listOf(
-                ParticipantsItem(organisation = Organisation(countryCode = "DK", id = "DK006")),
-                ParticipantsItem(organisation = Organisation(countryCode = "PL", id = "PolishAcc"))
-        ))
-        doReturn(mockResponse).whenever(mockEuxrestTemplate).exchange(
-                any<String>(),
-                eq(HttpMethod.GET),
-                eq(null),
-                eq(typeRef<List<ParticipantsItem>>()))
-
-        val deltakere = klient.getBucDeltakere(mockEuxRinaid)
-        assertEquals(2, deltakere.size)
     }
 
     private fun dummyRequirement(dummyparam1: String?, dummyparam2: String?): Boolean{

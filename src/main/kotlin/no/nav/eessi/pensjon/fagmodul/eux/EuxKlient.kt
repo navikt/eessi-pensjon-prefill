@@ -3,11 +3,9 @@ package no.nav.eessi.pensjon.fagmodul.eux
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.BucSedResponse
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Rinasak
-import no.nav.eessi.pensjon.fagmodul.eux.bucmodel.ParticipantsItem
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonDetalj
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.metrics.MetricsHelper
-import no.nav.eessi.pensjon.security.sts.typeRef
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.typeRefs
 import org.slf4j.LoggerFactory
@@ -169,29 +167,6 @@ class EuxKlient(private val euxOidcRestTemplate: RestTemplate,
         return response.body ?: throw ServerException("Feil ved henting av BUCdata ingen data, euxCaseId $euxCaseId")
     }
 
-    fun getBucDeltakere(euxCaseId: String): List<ParticipantsItem> {
-        logger.info("euxCaseId: $euxCaseId")
-
-        val path = "/buc/{RinaSakId}/bucdeltakere"
-        val uriParams = mapOf("RinaSakId" to euxCaseId)
-        val builder = UriComponentsBuilder.fromUriString(path).buildAndExpand(uriParams)
-        logger.debug("BucDeltakere prøver å kontakte EUX /${builder.toUriString()}")
-
-        val response = restTemplateErrorhandler(
-                restTemplateFunction = {
-                    euxOidcRestTemplate.exchange(
-                            builder.toUriString(),
-                            HttpMethod.GET,
-                            null,
-                            typeRef<List<ParticipantsItem>>())
-                }
-                , euxCaseId = euxCaseId
-                , metric = BUCDeltakere
-                , prefixErrorMessage = "Feiler ved metode getDeltakerer. "
-        )
-        return response.body
-                ?: throw ServerException("Feil ved henting av BucDeltakere: ingen data, euxCaseId $euxCaseId")
-    }
 
     /**
      * List all institutions connected to RINA.
