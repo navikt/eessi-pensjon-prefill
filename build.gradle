@@ -65,7 +65,7 @@ compileTestKotlin {
 }
 
 jar {
-    archivesBaseName = 'eessi-fagmodul'
+    archivesBaseName = 'eessi-pensjon-prefill'
 }
 
 configurations {

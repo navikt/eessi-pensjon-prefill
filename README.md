@@ -1,8 +1,8 @@
-![](https://github.com/navikt/eessi-pensjon-fagmodul/workflows/Bygg%20og%20deploy%20Q2/badge.svg)
-![](https://github.com/navikt/eessi-pensjon-fagmodul/workflows/Deploy%20Q1/badge.svg)
-![](https://github.com/navikt/eessi-pensjon-fagmodul/workflows/Manuell%20deploy/badge.svg)
+![](https://github.com/navikt/eessi-pensjon-prefill/workflows/Bygg%20og%20deploy%20Q2/badge.svg)
+![](https://github.com/navikt/eessi-pensjon-prefill/workflows/Deploy%20Q1/badge.svg)
+![](https://github.com/navikt/eessi-pensjon-prefill/workflows/Manuell%20deploy/badge.svg)
 
-EESSI Pensjon Fagmodul
+EESSI Pensjon prefill
 ======================
 
 #### -=<>=- Electronic Exchange of Social Security Information  -=<>=- ####
@@ -59,7 +59,7 @@ Dersom du er supertrygg på testene kan du forsøke en oppdatering av alle avhen
 ---
 
 
-Så er du klar til å starte EessiFagmodulApplication med VM option:
+Så er du klar til å starte EessiprefillApplication med VM option:
 
 ```
 -Dspring.profiles.active=local
