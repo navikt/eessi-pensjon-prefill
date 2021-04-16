@@ -22,7 +22,7 @@ jobs:
 
       # SETTER IMAGE VARIABEL
       - name: 'Setter Image'
-        run: echo "IMAGE=docker.pkg.github.com/${{ github.repository }}/eessi-pensjon-fagmodul:${{ env.DATE }}---${{ env.COMMIT_HASH }}" >> $GITHUB_ENV
+        run: echo "IMAGE=docker.pkg.github.com/${{ github.repository }}/eessi-pensjon-prefill:${{ env.DATE }}---${{ env.COMMIT_HASH }}" >> $GITHUB_ENV
 
       # JAVA 11
       - name: 'Java 11'
@@ -54,7 +54,7 @@ jobs:
       # OPPRETTER GIT TAG
       - name: 'Opprett git tag'
         run: |
-          curl -v -s -X POST https://api.github.com/repos/navikt/eessi-pensjon-fagmodul/git/refs -H "Authorization: token  ${{ secrets.GITHUB_TOKEN }}" -d '{ "ref": "refs/tags/${{ env.DATE }}---${{ env.COMMIT_HASH }}",  "sha": "${{ env.COMMIT_HASH }}" }'
+          curl -v -s -X POST https://api.github.com/repos/navikt/eessi-pensjon-prefill/git/refs -H "Authorization: token  ${{ secrets.GITHUB_TOKEN }}" -d '{ "ref": "refs/tags/${{ env.DATE }}---${{ env.COMMIT_HASH }}",  "sha": "${{ env.COMMIT_HASH }}" }'
 
       - name: 'Repository Dispatch PROD'
         uses: peter-evans/repository-dispatch@v1

@@ -31,7 +31,7 @@ jobs:
 
       # SETTER IMAGE VARIABEL
       - name: 'Setter Image'
-        run: echo "IMAGE=docker.pkg.github.com/${{ github.repository }}/eessi-pensjon-fagmodul:${{ env.DATE }}---${{ env.COMMIT_HASH }}" >> $GITHUB_ENV
+        run: echo "IMAGE=docker.pkg.github.com/${{ github.repository }}/eessi-pensjon-prefill:${{ env.DATE }}---${{ env.COMMIT_HASH }}" >> $GITHUB_ENV
 
       # BYGGER DOCKER CONTAINER
       - name: 'Bygg og publiser docker image'
