@@ -31,12 +31,10 @@ internal class PersonDataServiceTest {
         const val SAK_ID = "12345"
         const val EUX_RINA = "23123"
 
-        const val FNR_OVER_60 = "09035225916"   // SLAPP SKILPADDE
         const val FNR_VOKSEN = "11067122781"    // KRAFTIG VEGGPRYD
         const val FNR_VOKSEN_2 = "22117320034"  // LEALAUS KAKE
         const val FNR_BARN = "12011577847"      // STERK BUSK
 
-        const val AKTOER_ID = "0123456789000"
         const val AKTOER_ID_2 = "0009876543210"
     }
 

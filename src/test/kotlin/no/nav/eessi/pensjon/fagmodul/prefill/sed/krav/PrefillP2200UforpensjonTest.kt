@@ -7,7 +7,6 @@ import no.nav.eessi.pensjon.fagmodul.models.PrefillDataModelMother.initialPrefil
 import no.nav.eessi.pensjon.fagmodul.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjon
 import no.nav.eessi.pensjon.fagmodul.prefill.pdl.FodselsnummerMother.generateRandomFnr
-import no.nav.eessi.pensjon.fagmodul.prefill.pdl.PrefillPDLAdresse
 import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonService
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillSEDService
@@ -37,7 +36,7 @@ class PrefillP2200UforpensjonTest {
     @BeforeEach
     fun setup() {
         prefillNav = PrefillPDLNav(
-                prefillAdresse = mock<PrefillPDLAdresse>(),
+                prefillAdresse = mock(),
                 institutionid = "NO:noinst002",
                 institutionnavn = "NOINST002, NO INST002, NO")
 

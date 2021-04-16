@@ -7,7 +7,6 @@ import com.nhaarman.mockitokotlin2.whenever
 import no.nav.eessi.pensjon.personoppslag.pdl.model.AktoerId
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Ident
 import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentType
-import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -46,7 +45,7 @@ class InnhentingServiceTest {
         doReturn(AktoerId("1122334455")).whenever(personDataService).hentIdent(eq(IdentType.AktoerId), any<Ident<*>>())
 
         val result = innhentingService.getAvdodAktoerIdPDL(apiRequest)
-        Assertions.assertEquals("1122334455", result)
+        assertEquals("1122334455", result)
     }
 
     @Test
@@ -65,7 +64,7 @@ class InnhentingServiceTest {
         doReturn(AktoerId("467846784671")).whenever(personDataService).hentIdent(eq(IdentType.AktoerId), any<Ident<*>>())
 
         val result = innhentingService.getAvdodAktoerIdPDL(apiRequest)
-        Assertions.assertEquals("467846784671", result)
+        assertEquals("467846784671", result)
     }
 
     @Test

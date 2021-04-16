@@ -63,7 +63,7 @@ class ApiRequestTest {
                 "  \"skipSEDkey\" : null,\n" +
                 "  \"mockSED\" : true\n" +
                 "}"
-        val datamodel = ApiRequest.buildPrefillDataModelOnExisting( mapJsonToAny(req, typeRefs<ApiRequest>()), "", "")
+        val datamodel = ApiRequest.buildPrefillDataModelOnExisting( mapJsonToAny(req, typeRefs()), "", "")
         assertNotNull(datamodel)
         assertEquals(SedType.P2000, datamodel.sedType)
         assertEquals("P_BUC_01", datamodel.buc)
@@ -180,7 +180,7 @@ class ApiRequestTest {
                 buc = "P_BUC_02",
                 aktoerId = "0105094340092",
                 avdodfnr = null,
-                institutions = emptyList<InstitusjonItem>(),
+                institutions = emptyList(),
                 subject = ApiSubject(gjenlevende = SubjectFnr("23123"), avdod = SubjectFnr("576567567567"))
         )
 

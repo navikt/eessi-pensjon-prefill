@@ -51,7 +51,6 @@ class PrefillErrorIntegrationTest {
     lateinit var personService: PersonService
 
     private companion object {
-        const val SAK_ID = "12345"
         const val FNR_VOKSEN = "11067122781"    // KRAFTIG VEGGPRYD
         const val AKTOER_ID = "0123456789000"
     }

@@ -8,7 +8,6 @@ import no.nav.eessi.pensjon.eux.model.buc.Buc
 import no.nav.eessi.pensjon.eux.model.sed.SED
 import no.nav.eessi.pensjon.eux.model.sed.SedType
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Rinasak
-import no.nav.eessi.pensjon.services.statistikk.StatistikkHandler
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.typeRefs
 import no.nav.eessi.pensjon.utils.validateJson
@@ -32,13 +31,10 @@ class EuxPrefillServiceTest {
     @Mock
     private lateinit var euxKlient: EuxKlient
 
-    @Mock
-    private lateinit var statistikkHandler: StatistikkHandler
-
 
     @BeforeEach
     fun setup() {
-        euxPrefillService = EuxPrefillService(euxKlient, statistikkHandler)
+        euxPrefillService = EuxPrefillService()
         euxinnhentingService = EuxInnhentingService(euxKlient)
 
     }
@@ -212,7 +208,7 @@ class EuxPrefillServiceTest {
               }
             }
         """.trimIndent()
-        val data = listOf<BucOgDocumentAvdod>(BucOgDocumentAvdod("2321", Buc(), manglerPinGjenlevende))
+        val data = listOf(BucOgDocumentAvdod("2321", Buc(), manglerPinGjenlevende))
         val result = euxinnhentingService.filterGyldigBucGjenlevendeAvdod(data, "23123")
         assertEquals(0, result.size)
 
@@ -224,7 +220,7 @@ class EuxPrefillServiceTest {
         val sedfilepath = "src/test/resources/json/nav/P2100-PinNO-NAV.json"
         val sedjson = String(Files.readAllBytes(Paths.get(sedfilepath)))
 
-        val data = listOf<BucOgDocumentAvdod>(BucOgDocumentAvdod("23123", Buc(id = "2131", processDefinitionName = "P_BUC_02"), sedjson))
+        val data = listOf(BucOgDocumentAvdod("23123", Buc(id = "2131", processDefinitionName = "P_BUC_02"), sedjson))
         val result = euxinnhentingService.filterGyldigBucGjenlevendeAvdod(data, "1234567890000")
         assertEquals(1, result.size)
 

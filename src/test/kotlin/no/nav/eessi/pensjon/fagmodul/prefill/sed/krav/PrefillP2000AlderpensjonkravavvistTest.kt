@@ -11,7 +11,6 @@ import no.nav.eessi.pensjon.fagmodul.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjon
 import no.nav.eessi.pensjon.fagmodul.prefill.pdl.FodselsnummerMother.generateRandomFnr
 import no.nav.eessi.pensjon.fagmodul.prefill.pdl.NavFodselsnummer
-import no.nav.eessi.pensjon.fagmodul.prefill.pdl.PrefillPDLAdresse
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillSEDService
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.createMockApiRequest
@@ -45,7 +44,7 @@ class PrefillP2000AlderpensjonkravavvistTest {
         personDataCollection = PersonPDLMock.createEnkelFamilie(personFnr, ekteFnr)
 
         val prefillNav = PrefillPDLNav(
-                prefillAdresse = mock<PrefillPDLAdresse>(),
+                prefillAdresse = mock(),
                 institutionid = "NO:noinst002",
                 institutionnavn = "NOINST002, NO INST002, NO")
 
@@ -69,9 +68,8 @@ class PrefillP2000AlderpensjonkravavvistTest {
                 pensjon = P2000.pensjon,
                 nav = Nav( krav = P2000.nav?.krav )
         )
-        val sed = P2000pensjon
-        assertNotNull(sed.nav?.krav)
-        assertEquals("2019-04-30", sed.nav?.krav?.dato)
+        assertNotNull(P2000pensjon.nav?.krav)
+        assertEquals("2019-04-30", P2000pensjon.nav?.krav?.dato)
 
 
     }

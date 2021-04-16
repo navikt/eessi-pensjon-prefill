@@ -2,7 +2,6 @@ package no.nav.eessi.pensjon.utils
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonValue
-import java.time.LocalDate
 
 /**
  * Norwegian national identity number
@@ -33,23 +32,6 @@ class Fodselsnummer private constructor(@JsonValue val value: String) {
             }
         }
     }
-
-    /**
-     * @return birthdate as [LocalDate]
-     */
-    fun getBirthDate(): LocalDate {
-        val month = value.slice(2 until 4).toInt()
-
-        val fnrDay = value.slice(0 until 2).toInt()
-        val day = if (isDNumber()) fnrDay - 40 else fnrDay
-
-        return LocalDate.of(getYearOfBirth(), month, day)
-    }
-
-    /**
-     * @return the birthdate as a ISO 8601 [String]
-     */
-    fun getBirthDateAsIso() = getBirthDate().toString()
 
     /**
      * Checks if the identity number is of type D-number.

@@ -8,7 +8,6 @@ import no.nav.eessi.pensjon.fagmodul.models.PrefillDataModelMother
 import no.nav.eessi.pensjon.fagmodul.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjon
 import no.nav.eessi.pensjon.fagmodul.prefill.pdl.FodselsnummerMother.generateRandomFnr
-import no.nav.eessi.pensjon.fagmodul.prefill.pdl.PrefillPDLAdresse
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillSEDService
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper.lesPensjonsdataFraFil
@@ -35,7 +34,7 @@ class PrefillP2100UforePRevurdering {
     fun setup() {
 
         prefillNav = PrefillPDLNav(
-                prefillAdresse = mock<PrefillPDLAdresse>(),
+                prefillAdresse = mock(),
                 institutionid = "NO:NAVAT02",
                 institutionnavn = "NOINST002, NO INST002, NO")
 
@@ -58,9 +57,8 @@ class PrefillP2100UforePRevurdering {
 
         val p2100 = prefillSEDService.prefill(prefillData, personDataCollection)
 
-        val sed = p2100
-        assertNotNull(sed.nav?.krav)
-        assertEquals("2020-08-01", sed.nav?.krav?.dato)
+        assertNotNull(p2100.nav?.krav)
+        assertEquals("2020-08-01", p2100.nav?.krav?.dato)
         assertEquals("Kravdato fra det opprinnelige vedtak med gjenlevenderett er angitt i SED P2100", prefillData.melding)
     }
 

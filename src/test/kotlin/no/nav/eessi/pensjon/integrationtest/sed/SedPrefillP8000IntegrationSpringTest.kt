@@ -58,11 +58,6 @@ class SedPrefillP8000IntegrationSpringTest {
     private lateinit var personService: PersonService
 
     private companion object {
-        const val SAK_ID = "12345"
-
-        const val FNR_OVER_60 = "09035225916"   // SLAPP SKILPADDE
-        const val FNR_VOKSEN = "11067122781"    // KRAFTIG VEGGPRYD
-        const val FNR_VOKSEN_2 = "22117320034"  // LEALAUS KAKE
         const val FNR_VOKSEN_3 = "12312312312"
         const val FNR_VOKSEN_4 = "9876543210"
         const val FNR_BARN = "12011577847"      // STERK BUSK

@@ -43,7 +43,6 @@ data class PrefillDataModel(
         return mapJsonToAny(personInfo, typeRefs())
     }
 
-    fun getInstitutionsList(): List<InstitusjonItem> = institution
 }
 
 enum class ReferanseTilPerson(val verdi: String) {

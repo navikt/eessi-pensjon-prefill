@@ -62,14 +62,10 @@ class PrefillP15000IntegrationTest {
     private lateinit var mockMvc: MockMvc
 
     private companion object {
-        const val SAK_ID = "12345"
-
-        const val FNR_OVER_60 = "09035225916"   // SLAPP SKILPADDE
         const val FNR_VOKSEN = "11067122781"    // KRAFTIG VEGGPRYD
         const val FNR_VOKSEN_2 = "22117320034"  // LEALAUS KAKE
         const val FNR_VOKSEN_3 = "12312312312"
         const val FNR_VOKSEN_4 = "9876543210"
-        const val FNR_BARN = "12011577847"      // STERK BUSK
 
         const val AKTOER_ID = "0123456789000"
         const val AKTOER_ID_2 = "0009876543210"
@@ -500,7 +496,7 @@ class PrefillP15000IntegrationTest {
                 ),
                 LocalDate.of(2010, 10,1 ),
                 Folkeregistermetadata(LocalDateTime.of(2010, 10, 1, 10, 1, 2)),
-                no.nav.eessi.pensjon.personoppslag.pdl.model.Metadata(
+                Metadata(
                     emptyList(),
                     false,
                     "DOLLY",

@@ -1,21 +1,17 @@
 package no.nav.eessi.pensjon.fagmodul.eux
 
-import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import no.nav.eessi.pensjon.eux.model.buc.Buc
 import no.nav.eessi.pensjon.eux.model.sed.*
 import no.nav.eessi.pensjon.fagmodul.eux.basismodel.Rinasak
-import no.nav.eessi.pensjon.metrics.MetricsHelper
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.typeRefs
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
 
 @Service
-class EuxInnhentingService (@Qualifier("fagmodulEuxKlient") private val euxKlient: EuxKlient,
-                            @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper(SimpleMeterRegistry())) {
+class EuxInnhentingService(@Qualifier("fagmodulEuxKlient") private val euxKlient: EuxKlient) {
 
     private val logger = LoggerFactory.getLogger(EuxPrefillService::class.java)
 
