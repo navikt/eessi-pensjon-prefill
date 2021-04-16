@@ -97,8 +97,8 @@ class PensjonsinformasjonService(private val pensjonsinformasjonClient: Pensjons
             val sak = finnSak(penSaksnummer, it) ?: return null
 
             if (!akseptabelSakstypeForSed(sak.sakType)) {
-                logger.warn("Du kan ikke opprette ${SedTypeAsText(sedType)} i en ${sakTypeAsText(sak.sakType)} (PESYS-saksnr: $penSaksnummer har sakstype ${sak.sakType})")
-                throw FeilSakstypeForSedException("Du kan ikke opprette ${SedTypeAsText(sedType)} i en ${sakTypeAsText(sak.sakType)} (PESYS-saksnr: $penSaksnummer har sakstype ${sak.sakType})")
+                logger.warn("Du kan ikke opprette ${sedTypeAsText(sedType)} i en ${sakTypeAsText(sak.sakType)} (PESYS-saksnr: $penSaksnummer har sakstype ${sak.sakType})")
+                throw FeilSakstypeForSedException("Du kan ikke opprette ${sedTypeAsText(sedType)} i en ${sakTypeAsText(sak.sakType)} (PESYS-saksnr: $penSaksnummer har sakstype ${sak.sakType})")
             }
             sak
         }
@@ -119,7 +119,7 @@ class PensjonsinformasjonService(private val pensjonsinformasjonClient: Pensjons
                 else -> "$sakType-sak"
             }
 
-    private fun SedTypeAsText(sedType: SedType) =
+    private fun sedTypeAsText(sedType: SedType) =
             when (sedType) {
                 SedType.P2000 -> "alderspensjonskrav"
                 SedType.P2100 -> "gjenlevende-krav"
