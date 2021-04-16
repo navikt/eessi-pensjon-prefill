@@ -5,8 +5,6 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.whenever
 import no.nav.eessi.pensjon.eux.model.sed.*
-import no.nav.eessi.pensjon.fagmodul.eux.EuxInnhentingService
-import no.nav.eessi.pensjon.fagmodul.eux.EuxPrefillService
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.models.PersonDataCollection
 import no.nav.eessi.pensjon.fagmodul.prefill.*
@@ -29,14 +27,8 @@ class PrefillControllerTest {
     @Spy
     lateinit var auditLogger: AuditLogger
 
-    @Spy
-    lateinit var mockEuxPrefillService: EuxPrefillService
-
     @Mock
     lateinit var mockPrefillSEDService: PrefillSEDService
-
-    @Spy
-    lateinit var mockEuxInnhentingService: EuxInnhentingService
     
     @Mock
     lateinit var kafkaTemplate: KafkaTemplate<String, String>
@@ -60,8 +52,6 @@ class PrefillControllerTest {
             prefillService,
             auditLogger
         )
-
-        prefillController.initMetrics()
     }
 
     @Test

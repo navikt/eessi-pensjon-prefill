@@ -34,35 +34,6 @@ class Fodselsnummer private constructor(@JsonValue val value: String) {
     }
 
     /**
-     * Checks if the identity number is of type D-number.
-     *
-     * A D-number consists of 11 digits, of which the first six digits show the date of birth,
-     * but the first digit is increased by 4.
-     */
-    fun isDNumber(): Boolean = Character.getNumericValue(value[0]) in 4..7
-
-    /**
-     * Calculates year of birth using the individual number.
-     *
-     * @return 4 digit year of birth as [Int]
-     */
-    private fun getYearOfBirth(): Int {
-        val century: String = when (val individnummer = value.slice(6 until 9).toInt()) {
-            in 0..499,
-            in 900..999 -> "19"
-            in 500..749 -> "18"
-            in 500..999 -> "20"
-            else -> {
-                throw IllegalArgumentException("Ingen gyldig årstall funnet for individnummer $individnummer")
-            }
-        }
-
-        val year = value.slice(4 until 6)
-
-        return "$century$year".toInt()
-    }
-
-    /**
      * Sjekker om fødselsnummeret er av typen "Hjelpenummer".
      *
      * H-nummer er et hjelpenummer, en virksomhetsintern, unik identifikasjon av en person som
