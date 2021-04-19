@@ -1,7 +1,11 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.pdl
 
 import no.nav.eessi.pensjon.eux.model.sed.Adresse
-import no.nav.eessi.pensjon.personoppslag.pdl.model.*
+import no.nav.eessi.pensjon.personoppslag.pdl.model.AdressebeskyttelseGradering
+import no.nav.eessi.pensjon.personoppslag.pdl.model.PostadresseIFrittFormat
+import no.nav.eessi.pensjon.personoppslag.pdl.model.UtenlandskAdresse
+import no.nav.eessi.pensjon.personoppslag.pdl.model.UtenlandskAdresseIFrittFormat
+import no.nav.eessi.pensjon.personoppslag.pdl.model.Vegadresse
 import no.nav.eessi.pensjon.services.geo.PostnummerService
 import no.nav.eessi.pensjon.services.kodeverk.KodeverkClient
 import org.slf4j.Logger
@@ -58,27 +62,40 @@ class PrefillPDLAdresse (private val postnummerService: PostnummerService,
 
     private fun sjekkOgPreutfyllAdresse(pdlperson: PDLPerson): Adresse {
 
-       //Doedsbo
+        //Doedsbo
         val doedsboadresse = preutfyllDoedsboAdresseHvisFinnes(pdlperson)
 
         return when {
             doedsboadresse != null -> doedsboadresse
 
             //utland
-            pdlperson.kontaktadresse?.utenlandskAdresse != null -> preutfyllUtlandsAdresse(pdlperson.kontaktadresse?.utenlandskAdresse)
+            kanUtlandsadresseBenyttes(pdlperson.kontaktadresse?.utenlandskAdresse) -> preutfyllUtlandsAdresse(pdlperson.kontaktadresse?.utenlandskAdresse)
             pdlperson.kontaktadresse?.utenlandskAdresseIFrittFormat != null -> preutfyllUtenlandskAdresseIFrittFormat(pdlperson.kontaktadresse?.utenlandskAdresseIFrittFormat)
-            //Norge
-            pdlperson.kontaktadresse?.vegadresse != null -> preutfullNorskBostedVegadresse(pdlperson.kontaktadresse?.vegadresse)
-            pdlperson.kontaktadresse?.postadresseIFrittFormat != null -> preutfyllNorskPostadresseIFrittFormat(pdlperson.kontaktadresse?.postadresseIFrittFormat)
-
-            //Norge
-            pdlperson.bostedsadresse?.vegadresse != null -> preutfullNorskBostedVegadresse(pdlperson.bostedsadresse?.vegadresse)
             //utland
-            pdlperson.oppholdsadresse?.utenlandskAdresse != null -> preutfyllUtlandsAdresse(pdlperson.oppholdsadresse?.utenlandskAdresse)
+            kanUtlandsadresseBenyttes(pdlperson.oppholdsadresse?.utenlandskAdresse) -> preutfyllUtlandsAdresse(pdlperson.oppholdsadresse?.utenlandskAdresse)
 
-          else -> tomAdresse()
+            //Norge
+            kanNorskVegadresseBenyttes(pdlperson.kontaktadresse?.vegadresse) -> preutfullNorskBostedVegadresse(pdlperson.kontaktadresse?.vegadresse)
+            kanNorskPostadresseIFrittFormatBenyttes(pdlperson.kontaktadresse?.postadresseIFrittFormat) -> preutfyllNorskPostadresseIFrittFormat(pdlperson.kontaktadresse?.postadresseIFrittFormat)
+            //Norge
+            kanNorskVegadresseBenyttes(pdlperson.bostedsadresse?.vegadresse) -> preutfullNorskBostedVegadresse(pdlperson.bostedsadresse?.vegadresse)
+
+            else -> tomAdresse()
         }
 
+    }
+
+    fun kanNorskVegadresseBenyttes(vegadresse: Vegadresse?): Boolean {
+        if (vegadresse == null) return false
+        return !vegadresse.adressenavn.isNullOrEmpty() and
+                !vegadresse.postnummer.isNullOrEmpty()
+    }
+
+    fun kanNorskPostadresseIFrittFormatBenyttes(postadresseIFrittFormat: PostadresseIFrittFormat?): Boolean {
+        if (postadresseIFrittFormat == null) return false
+        return  !postadresseIFrittFormat.adresselinje1.isNullOrEmpty() and
+                !postadresseIFrittFormat.adresselinje2.isNullOrEmpty() and
+                !postadresseIFrittFormat.adresselinje3.isNullOrEmpty()
     }
 
     private fun preutfyllDoedsboAdresseHvisFinnes(pdlperson: PDLPerson): Adresse? {
@@ -94,6 +111,16 @@ class PrefillPDLAdresse (private val postnummerService: PostnummerService,
                 land = hentLandkode(adresse.landkode)
             )
         } else null
+    }
+
+    fun kanUtlandsadresseBenyttes(utlandsAdresse: UtenlandskAdresse?): Boolean {
+        if (utlandsAdresse == null) return false
+        return  !utlandsAdresse.adressenavnNummer.isNullOrEmpty() and
+                !utlandsAdresse.bySted.isNullOrEmpty() and
+                !utlandsAdresse.postkode.isNullOrEmpty() and
+                (utlandsAdresse.postkode?.let {
+                    it.length <= 25
+                } == true)
     }
 
     private fun preutfyllUtlandsAdresse(utlandsAdresse: UtenlandskAdresse?): Adresse {
@@ -138,11 +165,11 @@ class PrefillPDLAdresse (private val postnummerService: PostnummerService,
     private fun tomAdresse(): Adresse {
         logger.info("             Tom adresse")
         return Adresse(
-                gate = "",
-                bygning = "",
-                by = "",
-                postnummer = "",
-                land = ""
+            gate = "",
+            bygning = "",
+            by = "",
+            postnummer = "",
+            land = ""
         )
     }
 

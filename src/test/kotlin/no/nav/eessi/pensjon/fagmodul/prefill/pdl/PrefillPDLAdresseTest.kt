@@ -1,13 +1,19 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.pdl
 
+import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.doReturn
 import no.nav.eessi.pensjon.fagmodul.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.fagmodul.prefill.PersonPDLMock.medBeskyttelse
 import no.nav.eessi.pensjon.personoppslag.pdl.model.AdressebeskyttelseGradering
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Bostedsadresse
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Folkeregistermetadata
+import no.nav.eessi.pensjon.personoppslag.pdl.model.Kontaktadresse
+import no.nav.eessi.pensjon.personoppslag.pdl.model.KontaktadresseType
 import no.nav.eessi.pensjon.personoppslag.pdl.model.KontaktinformasjonForDoedsbo
 import no.nav.eessi.pensjon.personoppslag.pdl.model.KontaktinformasjonForDoedsboAdresse
 import no.nav.eessi.pensjon.personoppslag.pdl.model.KontaktinformasjonForDoedsboSkifteform
+import no.nav.eessi.pensjon.personoppslag.pdl.model.PostadresseIFrittFormat
+import no.nav.eessi.pensjon.personoppslag.pdl.model.UtenlandskAdresse
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Vegadresse
 import no.nav.eessi.pensjon.services.geo.PostnummerService
 import no.nav.eessi.pensjon.services.kodeverk.KodeverkClient
@@ -52,7 +58,7 @@ class PrefillPDLAdresseTest{
                 metadata = no.nav.eessi.pensjon.personoppslag.pdl.model.Metadata(emptyList(), false, "DOLLY", "Doll")
             ))
 
-       val result = prefillAdresse.createPersonAdresse(person)!!
+        val result = prefillAdresse.createPersonAdresse(person)!!
 
         assertNotNull(result)
         assertEquals("NO", result.land)
@@ -95,17 +101,17 @@ class PrefillPDLAdresseTest{
             bostedsadresse = null,
             oppholdsadresse = null,
             kontaktinformasjonForDoedsbo = KontaktinformasjonForDoedsbo(
-            adresse = KontaktinformasjonForDoedsboAdresse(
-                adresselinje1 = "testlinej1 123\n23123 osloby",
-                landkode = "NOR",
-                postnummer = "1231",
-                poststedsnavn = "osloby"
-            ),
-            LocalDate.of(2020, 10, 1),
-            Folkeregistermetadata(null),
-            skifteform = KontaktinformasjonForDoedsboSkifteform.ANNET,
-            metadata = doedMeta,
-        ))
+                adresse = KontaktinformasjonForDoedsboAdresse(
+                    adresselinje1 = "testlinej1 123\n23123 osloby",
+                    landkode = "NOR",
+                    postnummer = "1231",
+                    poststedsnavn = "osloby"
+                ),
+                LocalDate.of(2020, 10, 1),
+                Folkeregistermetadata(null),
+                skifteform = KontaktinformasjonForDoedsboSkifteform.ANNET,
+                metadata = doedMeta,
+            ))
 
 
         val actual = prefillAdresse.createPersonAdresse(person)
@@ -117,4 +123,92 @@ class PrefillPDLAdresseTest{
         assertEquals("1231", actual?.postnummer)
 
     }
+
+    @Test
+    fun `create Adresse med BostedAdresse og adresseIFrittFormat`() {
+        val person = PersonPDLMock.createWith()
+            .copy(bostedsadresse = Bostedsadresse(
+                LocalDateTime.of(2000, 9, 2, 4,3),
+                LocalDateTime.of(2300, 9, 2, 4,3),
+                Vegadresse(
+                    "Kirkeveien",
+                    "12",
+                    null,
+                    "0123",
+                    null,
+                    null
+                ),
+                utenlandskAdresse = null,
+                metadata = no.nav.eessi.pensjon.personoppslag.pdl.model.Metadata(emptyList(), false, "DOLLY", "Doll")
+            ), kontaktadresse = Kontaktadresse(
+                coAdressenavn = null,
+                type = KontaktadresseType.Innland,
+                postadresseIFrittFormat = PostadresseIFrittFormat(
+                    adresselinje1 = "Kirkeveien",
+                ),
+                metadata = no.nav.eessi.pensjon.personoppslag.pdl.model.Metadata(emptyList(), false, "DOLLY", "Doll")
+            )
+            )
+
+        val result = prefillAdresse.createPersonAdresse(person)!!
+
+        assertNotNull(result)
+        assertEquals("NO", result.land)
+        assertEquals("Kirkeveien 12", result.gate)
+        assertEquals("0123", result.postnummer)
+        assertEquals("OSLO", result.by)
+    }
+
+    @Test
+    fun `create utenlandsadresse med feil format`() {
+        val person = PersonPDLMock.createWith()
+            .copy(bostedsadresse = null,
+                kontaktadresse = Kontaktadresse(
+                    coAdressenavn = null,
+                    type = KontaktadresseType.Innland,
+                    postadresseIFrittFormat = null,
+                    utenlandskAdresse = UtenlandskAdresse(
+                        adressenavnNummer = "adressenavnummer",
+                        bySted = "bysted",
+                        landkode = "SC",
+                        postkode = "Edinburg bladi bladi bladi bladi bladi"
+                    ),
+                    metadata = no.nav.eessi.pensjon.personoppslag.pdl.model.Metadata(emptyList(), false, "DOLLY", "Doll")
+                ))
+
+        val result = prefillAdresse.createPersonAdresse(person)!!
+
+        assertNotNull(result)
+
+    }
+
+    @Test
+    fun `create utenlandsadresse med riktig format`() {
+        val person = PersonPDLMock.createWith()
+            .copy(bostedsadresse = null,
+                kontaktadresse = Kontaktadresse(
+                    coAdressenavn = null,
+                    type = KontaktadresseType.Innland,
+                    postadresseIFrittFormat = null,
+                    utenlandskAdresse = UtenlandskAdresse(
+                        adressenavnNummer = "adressenavnummer",
+                        bySted = "bysted",
+                        landkode = "SCT",
+                        postkode = "EH99"
+                    ),
+                    metadata = no.nav.eessi.pensjon.personoppslag.pdl.model.Metadata(emptyList(), false, "DOLLY", "Doll")
+                ))
+
+        doReturn("SC").`when`(kodeverkClient).finnLandkode2(any())
+
+        val result = prefillAdresse.createPersonAdresse(person)!!
+
+        assertNotNull(result)
+        assertEquals("SC", result.land)
+        assertEquals("adressenavnummer", result.gate)
+        assertEquals("EH99", result.postnummer)
+        assertEquals("bysted", result.by)
+
+    }
+
 }

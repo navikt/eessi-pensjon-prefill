@@ -2,8 +2,23 @@ package no.nav.eessi.pensjon.fagmodul.prefill.person
 
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.whenever
-import no.nav.eessi.pensjon.eux.model.sed.*
+import no.nav.eessi.pensjon.eux.model.sed.Adresse
+import no.nav.eessi.pensjon.eux.model.sed.ArbeidsforholdItem
+import no.nav.eessi.pensjon.eux.model.sed.Bank
+import no.nav.eessi.pensjon.eux.model.sed.BarnItem
+import no.nav.eessi.pensjon.eux.model.sed.Bruker
+import no.nav.eessi.pensjon.eux.model.sed.EessisakItem
+import no.nav.eessi.pensjon.eux.model.sed.Ektefelle
+import no.nav.eessi.pensjon.eux.model.sed.Foedested
+import no.nav.eessi.pensjon.eux.model.sed.Foreldre
+import no.nav.eessi.pensjon.eux.model.sed.Innehaver
+import no.nav.eessi.pensjon.eux.model.sed.Konto
+import no.nav.eessi.pensjon.eux.model.sed.Nav
 import no.nav.eessi.pensjon.eux.model.sed.Person
+import no.nav.eessi.pensjon.eux.model.sed.PinItem
+import no.nav.eessi.pensjon.eux.model.sed.SedType
+import no.nav.eessi.pensjon.eux.model.sed.Sepa
+import no.nav.eessi.pensjon.eux.model.sed.StatsborgerskapItem
 import no.nav.eessi.pensjon.fagmodul.models.BrukerInformasjon
 import no.nav.eessi.pensjon.fagmodul.models.PersonDataCollection
 import no.nav.eessi.pensjon.fagmodul.models.PersonId
@@ -18,12 +33,20 @@ import no.nav.eessi.pensjon.fagmodul.prefill.LagPDLPerson.Companion.medKontaktad
 import no.nav.eessi.pensjon.fagmodul.prefill.pdl.FodselsnummerMother
 import no.nav.eessi.pensjon.fagmodul.prefill.pdl.NavFodselsnummer
 import no.nav.eessi.pensjon.fagmodul.prefill.pdl.PrefillPDLAdresse
-import no.nav.eessi.pensjon.personoppslag.pdl.model.*
+import no.nav.eessi.pensjon.personoppslag.pdl.model.Doedsfall
+import no.nav.eessi.pensjon.personoppslag.pdl.model.Foedsel
+import no.nav.eessi.pensjon.personoppslag.pdl.model.Navn
+import no.nav.eessi.pensjon.personoppslag.pdl.model.Oppholdsadresse
+import no.nav.eessi.pensjon.personoppslag.pdl.model.Sivilstandstype
+import no.nav.eessi.pensjon.personoppslag.pdl.model.Statsborgerskap
+import no.nav.eessi.pensjon.personoppslag.pdl.model.UtenlandskAdresse
 import no.nav.eessi.pensjon.services.geo.PostnummerService
 import no.nav.eessi.pensjon.services.kodeverk.KodeverkClient
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -48,9 +71,9 @@ class PrefillPDLNavTest {
     @BeforeEach
     fun beforeStart() {
         prefillPDLNav = PrefillPDLNav(
-                PrefillPDLAdresse(PostnummerService(), kodeverkClient),
-                someInstitutionId,
-                someIntitutionNavn)
+            PrefillPDLAdresse(PostnummerService(), kodeverkClient),
+            someInstitutionId,
+            someIntitutionNavn)
 
 
     }
@@ -82,21 +105,21 @@ class PrefillPDLNavTest {
             null
         )
         val expected = Nav(
-                eessisak = listOf(EessisakItem(institusjonsid = someInstitutionId, institusjonsnavn = someIntitutionNavn, saksnummer = somePenSaksnr, land = "NO")),
-                bruker = Bruker(
-                        person = lagNavPerson(foreldersPin, "Christopher", "Robin", foreldreFdato!!, someInstitutionId, someIntitutionNavn),
-                        adresse = lagTomAdresse()
-                ),
-                barn = listOf(
-                    BarnItem(
-                        person = lagNavPerson(barnetsPin, "Ole", "Brum", barnFdato!!, someInstitutionId, someIntitutionNavn),
-                        far = Foreldre(
-                            Person(
+            eessisak = listOf(EessisakItem(institusjonsid = someInstitutionId, institusjonsnavn = someIntitutionNavn, saksnummer = somePenSaksnr, land = "NO")),
+            bruker = Bruker(
+                person = lagNavPerson(foreldersPin, "Christopher", "Robin", foreldreFdato!!, someInstitutionId, someIntitutionNavn),
+                adresse = lagTomAdresse()
+            ),
+            barn = listOf(
+                BarnItem(
+                    person = lagNavPerson(barnetsPin, "Ole", "Brum", barnFdato!!, someInstitutionId, someIntitutionNavn),
+                    far = Foreldre(
+                        Person(
                             fornavn = "Christopher",
                             pin = listOf(PinItem(identifikator = foreldersPin, land = "NO", institusjonsid = "enInstId", institusjonsnavn = "instNavn")))
-                        ),
-                        relasjontilbruker = "BARN")
-                ))
+                    ),
+                    relasjontilbruker = "BARN")
+            ))
 
         assertEquals(expected, actual)
         JSONAssert.assertEquals(expected.toJsonSkipEmpty(), actual.toJsonSkipEmpty(), true)
@@ -130,16 +153,16 @@ class PrefillPDLNavTest {
             null
         )
         val expected = Nav(
-                eessisak = listOf(EessisakItem(institusjonsid = someInstitutionId, institusjonsnavn = someIntitutionNavn, saksnummer = somePenSaksnr, land = "NO")),
-                bruker = Bruker(
-                        person = lagNavPerson(somePersonNr, "Ole", "Brum", farfdato!!, someInstitutionId, someIntitutionNavn),
-                        adresse = lagTomAdresse()),
-                barn = listOf(BarnItem(
-                        mor = null,
-                        far = Foreldre(Person(
-                                fornavn = "Ole",
-                                pin = listOf(PinItem(identifikator = somePersonNr, land = "NO", institusjonsid = "enInstId", institusjonsnavn = "instNavn")))),
-                        person = lagNavPerson(someBarnPersonNr, "Nasse", "Nøff", barnfdato!!, someInstitutionId, someIntitutionNavn), relasjontilbruker = "BARN")))
+            eessisak = listOf(EessisakItem(institusjonsid = someInstitutionId, institusjonsnavn = someIntitutionNavn, saksnummer = somePenSaksnr, land = "NO")),
+            bruker = Bruker(
+                person = lagNavPerson(somePersonNr, "Ole", "Brum", farfdato!!, someInstitutionId, someIntitutionNavn),
+                adresse = lagTomAdresse()),
+            barn = listOf(BarnItem(
+                mor = null,
+                far = Foreldre(Person(
+                    fornavn = "Ole",
+                    pin = listOf(PinItem(identifikator = somePersonNr, land = "NO", institusjonsid = "enInstId", institusjonsnavn = "instNavn")))),
+                person = lagNavPerson(someBarnPersonNr, "Nasse", "Nøff", barnfdato!!, someInstitutionId, someIntitutionNavn), relasjontilbruker = "BARN")))
 
         assertEquals(expected, actual)
         JSONAssert.assertEquals(expected.toJsonSkipEmpty(), actual.toJsonSkipEmpty(), true)
@@ -175,15 +198,15 @@ class PrefillPDLNavTest {
         )
 
         val expected = Nav(
-                eessisak = listOf(EessisakItem(institusjonsid = someInstitutionId, institusjonsnavn = someIntitutionNavn, saksnummer = somePenSaksnr, land = "NO")),
-                bruker = Bruker(
-                        person = lagNavPerson(somePersonNr, "Ola", "Testbruker", personFdato, someInstitutionId, someIntitutionNavn),
-                        adresse = lagTomAdresse()
-                ),
-                ektefelle = Ektefelle(
-                        person = lagNavPerson(somerEktefellePersonNr, "Jonna", "Dolla", ektefellFdato, someInstitutionId, someIntitutionNavn, "K"),
-                        type = "ektefelle"
-                )
+            eessisak = listOf(EessisakItem(institusjonsid = someInstitutionId, institusjonsnavn = someIntitutionNavn, saksnummer = somePenSaksnr, land = "NO")),
+            bruker = Bruker(
+                person = lagNavPerson(somePersonNr, "Ola", "Testbruker", personFdato, someInstitutionId, someIntitutionNavn),
+                adresse = lagTomAdresse()
+            ),
+            ektefelle = Ektefelle(
+                person = lagNavPerson(somerEktefellePersonNr, "Jonna", "Dolla", ektefellFdato, someInstitutionId, someIntitutionNavn, "K"),
+                type = "ektefelle"
+            )
         )
 
         assertEquals(expected, actual)
@@ -258,7 +281,7 @@ class PrefillPDLNavTest {
                         fornavn = "Ola",
                         pin = listOf(PinItem(identifikator = farfnr, land = "NO", institusjonsid = "enInstId", institusjonsnavn = "instNavn")))),
                     person = lagNavPerson(barn2, "NASSE", "NØFF", barntofdato, someInstitutionId, someIntitutionNavn), relasjontilbruker = "BARN")
-                ))
+            ))
 
         assertEquals(expected, actual)
         JSONAssert.assertEquals(expected.toJsonSkipEmpty(), actual.toJsonSkipEmpty(), true)
@@ -298,15 +321,15 @@ class PrefillPDLNavTest {
         )
 
         val expected = Nav(
-                eessisak = listOf(EessisakItem(institusjonsid = someInstitutionId, institusjonsnavn = someIntitutionNavn, saksnummer = somePenSaksnr, land = "NO")),
-                bruker = Bruker(
-                        person = lagNavPerson(somePersonNr, "Ola", "Testbruker", personFdato, someInstitutionId, someIntitutionNavn),
-                        adresse = lagTomAdresse()
-                ),
-                ektefelle = Ektefelle(
-                        person = lagNavPerson(somerEktefellePersonNr, "Jonna", "Dolla", ektefellFdato, someInstitutionId, someIntitutionNavn, "K"),
-                        type = "part_i_et_registrert_partnerskap"
-                )
+            eessisak = listOf(EessisakItem(institusjonsid = someInstitutionId, institusjonsnavn = someIntitutionNavn, saksnummer = somePenSaksnr, land = "NO")),
+            bruker = Bruker(
+                person = lagNavPerson(somePersonNr, "Ola", "Testbruker", personFdato, someInstitutionId, someIntitutionNavn),
+                adresse = lagTomAdresse()
+            ),
+            ektefelle = Ektefelle(
+                person = lagNavPerson(somerEktefellePersonNr, "Jonna", "Dolla", ektefellFdato, someInstitutionId, someIntitutionNavn, "K"),
+                type = "part_i_et_registrert_partnerskap"
+            )
         )
 
         assertEquals(expected, actual)
@@ -338,11 +361,11 @@ class PrefillPDLNavTest {
         )
 
         val expected = Nav(
-                eessisak = listOf(EessisakItem(institusjonsid = someInstitutionId, institusjonsnavn = someIntitutionNavn, saksnummer = somePenSaksnr, land = "NO")),
-                bruker = Bruker(
-                        person = lagNavPerson(somePersonNr, "Fornavn Ole Mellomnavn Mellomn", "Test Bruker", personFdato, someInstitutionId, someIntitutionNavn),
-                        adresse = lagTomAdresse()
-                )
+            eessisak = listOf(EessisakItem(institusjonsid = someInstitutionId, institusjonsnavn = someIntitutionNavn, saksnummer = somePenSaksnr, land = "NO")),
+            bruker = Bruker(
+                person = lagNavPerson(somePersonNr, "Fornavn Ole Mellomnavn Mellomn", "Test Bruker", personFdato, someInstitutionId, someIntitutionNavn),
+                adresse = lagTomAdresse()
+            )
         )
 
         assertEquals(expected, actual)
@@ -376,7 +399,6 @@ class PrefillPDLNavTest {
         val prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P2000, pinId = somePersonNr, penSaksnummer = somePenSaksnr)
         val personDataCollection = PersonDataCollection(forsikretPerson = single, ektefellePerson = null,  sivilstandstype = Sivilstandstype.UGIFT, gjenlevendeEllerAvdod = single, barnPersonList = emptyList())
         doReturn("NO").`when`(kodeverkClient).finnLandkode2("NOR")
-        doReturn("SE").`when`(kodeverkClient).finnLandkode2("SWE")
 
         val actual = prefillPDLNav.prefill(
             prefillData.penSaksnummer,
@@ -393,12 +415,12 @@ class PrefillPDLNavTest {
             bruker = Bruker(
                 person = lagNavPerson(somePersonNr, "OLE", "OLSEN", personFdato, someInstitutionId, someIntitutionNavn),
                 adresse = Adresse(
-                    "Storavegsentra 12, Noenhusbygg, 2012 SE, Østaby",
+                    "",
+                    "",
+                    "",
+                    "",
                     null,
-                    "örasund",
-                    null,
-                    null,
-                    "SE"
+                    ""
                 )
             )
         )
@@ -529,25 +551,25 @@ class PrefillPDLNavTest {
 
         val prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P2000, pinId = somePersonNr, penSaksnummer = somePenSaksnr).apply {
             partSedAsJson["PersonInfo"] = mapAnyToJson(
-                    BrukerInformasjon(
-                            null,
-                            null,
-                            null,
-                            null,
-                            null,
-                            "Nordnb",
-                            null,
-                            null,
-                            null,
-                            null,
-                            null,
-                            null,
-                            null,
-                            null,
-                            null,
-                            null,
-                            null,
-                            null))
+                BrukerInformasjon(
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    "Nordnb",
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null))
         }
 
         val person = lagPerson(somePersonNr, "Ole", "Brum")
@@ -565,24 +587,24 @@ class PrefillPDLNavTest {
         )
 
         val expected = Nav(
-                eessisak = listOf(EessisakItem(institusjonsid = someInstitutionId, institusjonsnavn = someIntitutionNavn, saksnummer = somePenSaksnr, land = "NO")),
-                bruker = Bruker(person = lagNavPerson(somePersonNr, "Ole", "Brum", personFdato, someInstitutionId, someIntitutionNavn),
-                        arbeidsforhold = listOf(ArbeidsforholdItem(
-                                planlagtstartdato = "",
-                                arbeidstimerperuke = "",
-                                planlagtpensjoneringsdato = "",
-                                yrke = "",
-                                type = "",
-                                sluttdato = "")),
-                        bank = Bank(
-                                navn = "Nordnb",
-                                konto = Konto(
-                                        sepa = Sepa(),
-                                        innehaver = Innehaver(
-                                                rolle = "01",
-                                                navn = "Nordnb")),
-                                adresse = Adresse()),
-                        adresse = lagTomAdresse()))
+            eessisak = listOf(EessisakItem(institusjonsid = someInstitutionId, institusjonsnavn = someIntitutionNavn, saksnummer = somePenSaksnr, land = "NO")),
+            bruker = Bruker(person = lagNavPerson(somePersonNr, "Ole", "Brum", personFdato, someInstitutionId, someIntitutionNavn),
+                arbeidsforhold = listOf(ArbeidsforholdItem(
+                    planlagtstartdato = "",
+                    arbeidstimerperuke = "",
+                    planlagtpensjoneringsdato = "",
+                    yrke = "",
+                    type = "",
+                    sluttdato = "")),
+                bank = Bank(
+                    navn = "Nordnb",
+                    konto = Konto(
+                        sepa = Sepa(),
+                        innehaver = Innehaver(
+                            rolle = "01",
+                            navn = "Nordnb")),
+                    adresse = Adresse()),
+                adresse = lagTomAdresse()))
 
         assertEquals(expected, actual)
         JSONAssert.assertEquals(expected.toJsonSkipEmpty(), actual.toJsonSkipEmpty(), true)
@@ -688,7 +710,7 @@ class PrefillPDLNavTest {
                 kjoenn = kjoenn,
                 foedselsdato = fdato,
                 foedested = if (foedsted == null) null else Foedested("Unknown", foedsted, region = ""),
-                )
+            )
     }
 
 }
