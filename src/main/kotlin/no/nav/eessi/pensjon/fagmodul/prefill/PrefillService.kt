@@ -30,7 +30,7 @@ class PrefillService(private val prefillSedService: PrefillSEDService,
         PrefillSed = metricsHelper.init("PrefillSed", ignoreHttpCodes = listOf(HttpStatus.BAD_REQUEST))
     }
 
-    fun prefillSedtoJson(dataModel: PrefillDataModel, version: String, personDataCollection: PersonDataCollection): SedAndType {
+    fun prefillSedtoJson(dataModel: PrefillDataModel, version: String, personDataCollection: PersonDataCollection): String {
         return PrefillSed.measure {
             logger.info("******* Starter med preutfylling ******* $dataModel")
             try {
@@ -38,11 +38,11 @@ class PrefillService(private val prefillSedService: PrefillSEDService,
                 val sed = prefillSedService.prefill(dataModel, personDataCollection)
 
                 val sedType = sed.type
-                logger.debug("SedType: $sedType")
+                logger.debug("SedType: ${sedType.name}")
 
                 //synk sed versjon med buc versjon
                 updateSEDVersion(sed, version)
-                return@measure SedAndType(sedType, sed.toJsonSkipEmpty())
+                return@measure sed.toJsonSkipEmpty()
 
             } catch (ex: Exception) {
                 logger.error("Noe gikk galt under prefill: ", ex)
@@ -81,5 +81,3 @@ class PrefillService(private val prefillSedService: PrefillSEDService,
                 prefillSedService.prefill(datax005, personcollection)
             }
 }
-
-class SedAndType(val sedType: SedType, val sed: String)
