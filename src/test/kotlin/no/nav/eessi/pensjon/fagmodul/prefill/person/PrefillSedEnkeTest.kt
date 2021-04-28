@@ -1,6 +1,7 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.person
 
-import com.nhaarman.mockitokotlin2.mock
+import io.mockk.every
+import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.sed.SED
 import no.nav.eessi.pensjon.eux.model.sed.SedType
 import no.nav.eessi.pensjon.fagmodul.models.PersonId
@@ -15,13 +16,7 @@ import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.junit.jupiter.MockitoExtension
-import org.mockito.junit.jupiter.MockitoSettings
-import org.mockito.quality.Strictness
 
-@ExtendWith(MockitoExtension::class)
-@MockitoSettings(strictness = Strictness.LENIENT)
 class PrefillSedEnkeTest {
 
     private lateinit var pensjonsinformasjonService: PensjonsinformasjonService
@@ -38,12 +33,19 @@ class PrefillSedEnkeTest {
         pensjonsinformasjonService = PrefillTestHelper.lesPensjonsdataFraFil("KravAlderEllerUfore_AP_UTLAND.xml")
         pensjonsinformasjonServiceGjen = PrefillTestHelper.lesPensjonsdataFraFil("P2100-GL-UTL-INNV.xml")
 
-        prefillPDLNav = PrefillPDLNav(mock(), institutionid = "NO:noinst002", institutionnavn = "NOINST002, NO INST002, NO")
-
+        prefillPDLNav = PrefillPDLNav(
+            mockk(){
+                every { hentLandkode(any()) } returns "NO"
+                every { createPersonAdresse(any()) } returns mockk(relaxed = true)
+            },
+            institutionid = "NO:noinst002",
+            institutionnavn = "NOINST002, NO INST002, NO"
+        )
     }
 
     @Test
     fun `forvent utfylling av person data av ENKE fra TPS P2100`() {
+
         val persondataCollection = PersonPDLMock.createEnkeWithBarn(fnr, b1fnr, b2fnr)
 
         val prefillData = initialPrefillDataModel(sedType = SedType.P2100, pinId = fnr, avdod = PersonId(norskIdent = fnr, aktorId = "212"), vedtakId = "", penSaksnummer = "22875355")
@@ -90,6 +92,7 @@ class PrefillSedEnkeTest {
 
     @Test
     fun `forvent utfylling av person data av ENKE fra TPS P2200`() {
+
         val prefillData = initialPrefillDataModel(sedType = SedType.P2200, pinId = fnr, vedtakId = "", penSaksnummer = "14915730")
         val personCollection = PersonPDLMock.createEnkeWithBarn(fnr, b2fnr)
 

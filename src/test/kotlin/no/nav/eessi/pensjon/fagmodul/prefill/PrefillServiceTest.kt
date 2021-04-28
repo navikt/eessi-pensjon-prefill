@@ -1,10 +1,16 @@
 package no.nav.eessi.pensjon.fagmodul.prefill
-
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.whenever
+import io.mockk.every
+import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.SedMock
-import no.nav.eessi.pensjon.eux.model.sed.*
+import no.nav.eessi.pensjon.eux.model.sed.Bruker
+import no.nav.eessi.pensjon.eux.model.sed.InstitusjonX005
+import no.nav.eessi.pensjon.eux.model.sed.Kontekst
+import no.nav.eessi.pensjon.eux.model.sed.Leggtilinstitusjon
+import no.nav.eessi.pensjon.eux.model.sed.Nav
+import no.nav.eessi.pensjon.eux.model.sed.Navsak
+import no.nav.eessi.pensjon.eux.model.sed.Person
+import no.nav.eessi.pensjon.eux.model.sed.SED
+import no.nav.eessi.pensjon.eux.model.sed.SedType
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.models.PersonDataCollection
 import no.nav.eessi.pensjon.fagmodul.models.PersonId
@@ -14,16 +20,12 @@ import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.Mock
-import org.mockito.junit.jupiter.MockitoExtension
 import org.skyscreamer.jsonassert.JSONAssert
 
-@ExtendWith(MockitoExtension::class)
 class PrefillServiceTest {
 
-    @Mock
-    lateinit var mockPrefillSEDService: PrefillSEDService
+/*    @Mock*/
+    var mockPrefillSEDService: PrefillSEDService = mockk()
 
     private lateinit var prefillService: PrefillService
     private lateinit var personcollection: PersonDataCollection
@@ -44,7 +46,7 @@ class PrefillServiceTest {
                 InstitusjonItem(country = "DE", institution = "Tyskland", name="Tyskland test")
         )
         val x005sed = generateMockX005(data)
-        doReturn(x005sed).whenever(mockPrefillSEDService).prefill(any(), any())
+        every { mockPrefillSEDService.prefill(any(), any()) } returns x005sed
         val x005Liste = prefillService.prefillEnX005ForHverInstitusjon(mockInstitusjonList, data, personcollection)
         assertEquals(x005Liste.size, 2)
     }
@@ -56,15 +58,11 @@ class PrefillServiceTest {
         val de = InstitusjonItem(country = "DE", institution = "Tyskland", name="Tyskland test")
 
         val SedType = SedType.X005
-//        val instX005 = InstitusjonX005(
-//            id = de.checkAndConvertInstituion(),
-//            navn = de.name ?: de.checkAndConvertInstituion()
-//        )
 
         val datax005 = data.copy(avdod = null, sedType = SedType, institution = listOf(de))
         val x005sed = generateMockX005(datax005)
 
-        doReturn(x005sed).whenever(mockPrefillSEDService).prefill(any(), any())
+        every{mockPrefillSEDService.prefill(any(), any())} returns x005sed
 
         val mockInstitusjonList = listOf(de)
         val x005Liste = prefillService.prefillEnX005ForHverInstitusjon(mockInstitusjonList, data, personcollection)

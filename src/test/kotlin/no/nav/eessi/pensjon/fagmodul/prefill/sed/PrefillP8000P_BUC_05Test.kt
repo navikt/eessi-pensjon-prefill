@@ -1,11 +1,15 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed
 
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.whenever
+
+import io.mockk.every
+import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.sed.P8000
 import no.nav.eessi.pensjon.eux.model.sed.SedType
-import no.nav.eessi.pensjon.fagmodul.models.*
+import no.nav.eessi.pensjon.fagmodul.models.PersonDataCollection
+import no.nav.eessi.pensjon.fagmodul.models.PersonId
+import no.nav.eessi.pensjon.fagmodul.models.PrefillDataModel
+import no.nav.eessi.pensjon.fagmodul.models.PrefillDataModelMother
+import no.nav.eessi.pensjon.fagmodul.models.ReferanseTilPerson
 import no.nav.eessi.pensjon.fagmodul.prefill.LagPDLPerson
 import no.nav.eessi.pensjon.fagmodul.prefill.LagPDLPerson.Companion.medAdresse
 import no.nav.eessi.pensjon.fagmodul.prefill.PersonPDLMock.medUtlandAdresse
@@ -25,13 +29,9 @@ import no.nav.pensjon.v1.sak.V1Sak
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.Mock
-import org.mockito.junit.jupiter.MockitoExtension
 import org.skyscreamer.jsonassert.JSONAssert
 
 
-@ExtendWith(MockitoExtension::class)
 class PrefillP8000P_BUC_05Test {
 
     private val personFnr = generateRandomFnr(68)
@@ -41,11 +41,9 @@ class PrefillP8000P_BUC_05Test {
     lateinit var prefillNav: PrefillPDLNav
     lateinit var personDataCollection: PersonDataCollection
 
-    @Mock
-    lateinit var pensjoninformasjonservice: PensjonsinformasjonService
+    var pensjoninformasjonservice: PensjonsinformasjonService = mockk()
 
-    @Mock
-    lateinit var kodeverkClient: KodeverkClient
+    var kodeverkClient: KodeverkClient = mockk()
 
     lateinit var prefillAdresse: PrefillPDLAdresse
     lateinit var prefillSEDService: PrefillSEDService
@@ -72,8 +70,8 @@ class PrefillP8000P_BUC_05Test {
 
         personDataCollection = PersonDataCollection(personforsikret,personforsikret)
 
-        doReturn("NO").whenever(kodeverkClient).finnLandkode2("NOR")
-        doReturn("SE").whenever(kodeverkClient).finnLandkode2("SWE")
+        every { kodeverkClient.finnLandkode2("NOR") } returns "NO"
+        every { kodeverkClient.finnLandkode2("SWE") } returns "SE"
 
         val p8000 = prefillSEDService.prefill(prefillData, personDataCollection)
 
@@ -99,7 +97,7 @@ class PrefillP8000P_BUC_05Test {
 
         personDataCollection = PersonDataCollection(avdod, forsikretPerson)
 
-        doReturn("NO").whenever(kodeverkClient).finnLandkode2("NOR")
+        every{kodeverkClient.finnLandkode2("NOR")} returns "NO"
 
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P8000, fnr, penSaksnummer = pesysSaksnummer, avdod = PersonId(norskIdent = avdodFnr, aktorId = "21323"),  refTilPerson = ReferanseTilPerson.AVDOD)
 
@@ -130,7 +128,7 @@ class PrefillP8000P_BUC_05Test {
 
         personDataCollection = PersonDataCollection(avdod, forsikretPerson)
 
-        doReturn("NO").whenever(kodeverkClient).finnLandkode2("NOR")
+        every{kodeverkClient.finnLandkode2("NOR")} returns "NO"
 
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P8000, fnr, penSaksnummer = pesysSaksnummer, avdod = PersonId(norskIdent = avdodFnr, aktorId = "21323"), refTilPerson = ReferanseTilPerson.SOKER )
 
@@ -172,10 +170,10 @@ class PrefillP8000P_BUC_05Test {
         sak.kravHistorikkListe = V1KravHistorikkListe()
         sak.kravHistorikkListe.kravHistorikkListe.add(v1Kravhistorikk)
 
-      doReturn(sak).`when`(pensjoninformasjonservice).hentRelevantPensjonSak(any(), any())
+        every{pensjoninformasjonservice.hentRelevantPensjonSak(any(), any())} returns sak
 
-        doReturn("NO").whenever(kodeverkClient).finnLandkode2("NOR")
-        doReturn("SE").whenever(kodeverkClient).finnLandkode2("SWE")
+        every{kodeverkClient.finnLandkode2("NOR")} returns "NO"
+        every{kodeverkClient.finnLandkode2("SWE")} returns "SE"
 
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P8000, fnr, penSaksnummer = "100", avdod = PersonId(norskIdent = avdodFnr, aktorId = "21323"),  refTilPerson = ReferanseTilPerson.SOKER, bucType = "P_BUC_05")
 
@@ -245,10 +243,10 @@ class PrefillP8000P_BUC_05Test {
         sak.kravHistorikkListe = V1KravHistorikkListe()
         sak.kravHistorikkListe.kravHistorikkListe.add(v1Kravhistorikk)
 
-        doReturn(sak).`when`(pensjoninformasjonservice).hentRelevantPensjonSak(any(), any())
+        every{pensjoninformasjonservice.hentRelevantPensjonSak(any(), any())} returns sak
 
-        doReturn("NO").whenever(kodeverkClient).finnLandkode2("NOR")
-        doReturn("SE").whenever(kodeverkClient).finnLandkode2("SWE")
+        every{kodeverkClient.finnLandkode2("NOR")} returns "NO"
+        every{kodeverkClient.finnLandkode2("SWE")} returns "SE"
 
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P8000, fnr, penSaksnummer = "100", avdod = PersonId(norskIdent = avdodFnr, aktorId = "21323"),  refTilPerson = ReferanseTilPerson.SOKER, bucType = "P_BUC_05")
 

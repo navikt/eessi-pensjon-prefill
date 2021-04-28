@@ -1,14 +1,14 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed
 
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.mock
+
+import io.mockk.every
+import io.mockk.mockk
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.prefill.ApiRequest
 import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonService
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonClient
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.RequestBuilder
-import org.mockito.ArgumentMatchers
-import org.mockito.Mockito.lenient
+
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -18,8 +18,12 @@ import org.springframework.web.client.RestTemplate
 object PrefillTestHelper {
 
     fun lesPensjonsdataVedtakFraFil(responseXMLfilename: String): PensjonsinformasjonService {
-        val pensjonsinformasjonRestTemplate = mock<RestTemplate>()
-        lenient().`when`(pensjonsinformasjonRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java))).thenReturn(readXMLVedtakresponse(responseXMLfilename))
+        val pensjonsinformasjonRestTemplate = mockk<RestTemplate>()
+        every {
+            pensjonsinformasjonRestTemplate.exchange(
+                any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java)
+            )
+        } returns readXMLVedtakresponse(responseXMLfilename)
 
         val pensjonsinformasjonClient = PensjonsinformasjonClient(pensjonsinformasjonRestTemplate, RequestBuilder())
         pensjonsinformasjonClient.initMetrics()
@@ -27,8 +31,12 @@ object PrefillTestHelper {
     }
 
     fun lesPensjonsdataFraFil(responseXMLfilename: String): PensjonsinformasjonService {
-        val pensjonsinformasjonRestTemplate = mock<RestTemplate>()
-        lenient().`when`(pensjonsinformasjonRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java))).thenReturn(readXMLresponse(responseXMLfilename))
+        val pensjonsinformasjonRestTemplate = mockk<RestTemplate>()
+        every {
+            pensjonsinformasjonRestTemplate.exchange(
+                any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java)
+            )
+        } returns readXMLresponse(responseXMLfilename)
 
         val pensjonsinformasjonClient = PensjonsinformasjonClient(pensjonsinformasjonRestTemplate, RequestBuilder())
         pensjonsinformasjonClient.initMetrics()

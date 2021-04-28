@@ -1,9 +1,7 @@
 package no.nav.eessi.pensjon.services.pensjonsinformasjon
 
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.whenever
-import org.mockito.ArgumentMatchers
+import io.mockk.every
+import io.mockk.mockk
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -16,10 +14,12 @@ object PensjonsinformasjonClientMother {
         val resource = ResourceUtils.getFile("classpath:pensjonsinformasjon/vedtak/$responseXMLfilename").readText()
         val readXMLresponse = ResponseEntity(resource, HttpStatus.OK)
 
-        val mockRestTemplate = mock<RestTemplate>()
+        val mockRestTemplate: RestTemplate = mockk()
+/*
         whenever(mockRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java)))
                 .thenReturn(readXMLresponse)
-
+*/
+        every { mockRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns readXMLresponse
         val pensjonsinformasjonClient = PensjonsinformasjonClient(mockRestTemplate, RequestBuilder())
         pensjonsinformasjonClient.initMetrics()
         return pensjonsinformasjonClient

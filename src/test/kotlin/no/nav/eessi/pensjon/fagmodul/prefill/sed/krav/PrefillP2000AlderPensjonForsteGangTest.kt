@@ -1,6 +1,7 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed.krav
 
-import com.nhaarman.mockitokotlin2.mock
+import io.mockk.every
+import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.sed.SedType
 import no.nav.eessi.pensjon.fagmodul.models.PersonDataCollection
 import no.nav.eessi.pensjon.fagmodul.models.PrefillDataModel
@@ -8,6 +9,7 @@ import no.nav.eessi.pensjon.fagmodul.models.PrefillDataModelMother.initialPrefil
 import no.nav.eessi.pensjon.fagmodul.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjon
 import no.nav.eessi.pensjon.fagmodul.prefill.pdl.FodselsnummerMother.generateRandomFnr
+import no.nav.eessi.pensjon.fagmodul.prefill.pdl.PrefillPDLAdresse
 import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonService
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillSEDService
@@ -19,14 +21,8 @@ import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.junit.jupiter.MockitoExtension
-import org.mockito.junit.jupiter.MockitoSettings
-import org.mockito.quality.Strictness
 import org.springframework.web.server.ResponseStatusException
 
-@ExtendWith(MockitoExtension::class)
-@MockitoSettings(strictness = Strictness.LENIENT)
 class PrefillP2000AlderPensjonForsteGangTest {
 
     private val personFnr = generateRandomFnr(67)
@@ -40,7 +36,10 @@ class PrefillP2000AlderPensjonForsteGangTest {
     @BeforeEach
     fun setup() {
         val prefillNav = PrefillPDLNav(
-                prefillAdresse = mock(),
+                prefillAdresse = mockk<PrefillPDLAdresse>{
+                    every { hentLandkode(any()) } returns "NO"
+                    every { createPersonAdresse(any()) } returns mockk()
+                },
                 institutionid = "NO:noinst002",
                 institutionnavn = "NOINST002, NO INST002, NO")
 

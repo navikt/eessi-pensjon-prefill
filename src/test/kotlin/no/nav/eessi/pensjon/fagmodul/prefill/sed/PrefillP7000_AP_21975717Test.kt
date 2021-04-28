@@ -1,6 +1,7 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed
 
-import com.nhaarman.mockitokotlin2.mock
+import io.mockk.every
+import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.sed.P7000
 import no.nav.eessi.pensjon.eux.model.sed.SedType
 import no.nav.eessi.pensjon.fagmodul.models.PersonDataCollection
@@ -8,6 +9,7 @@ import no.nav.eessi.pensjon.fagmodul.models.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.models.PrefillDataModelMother
 import no.nav.eessi.pensjon.fagmodul.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjon
+import no.nav.eessi.pensjon.fagmodul.prefill.pdl.PrefillPDLAdresse
 import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonService
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
@@ -16,18 +18,13 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.Mock
-import org.mockito.junit.jupiter.MockitoExtension
 import org.skyscreamer.jsonassert.JSONAssert
 import java.nio.file.Files
 import java.nio.file.Paths
 
-@ExtendWith(MockitoExtension::class)
 class PrefillP7000_AP_21975717Test {
 
-    @Mock
-    private lateinit var pensjonInformasjonService: PensjonsinformasjonService
+    var pensjonInformasjonService: PensjonsinformasjonService = mockk()
 
     private val personFnr = "01071843352"
     private lateinit var prefillData: PrefillDataModel
@@ -39,9 +36,14 @@ class PrefillP7000_AP_21975717Test {
         val person = PersonPDLMock.createWith(etternavn = "BALDER")
         personCollection = PersonDataCollection(person, person, barnPersonList = emptyList())
 
-    prefillPDLNav = PrefillPDLNav(prefillAdresse = mock(),
-                institutionid = "NO:noinst002",
-                institutionnavn = "NOINST002, NO INST002, NO")
+        prefillPDLNav = PrefillPDLNav(
+            prefillAdresse = mockk<PrefillPDLAdresse> {
+                every { hentLandkode(any()) } returns "NO"
+                every { createPersonAdresse(any()) } returns mockk()
+            },
+            institutionid = "NO:noinst002",
+            institutionnavn = "NOINST002, NO INST002, NO"
+        )
 
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P7000,penSaksnummer = "21975717", pinId = personFnr, vedtakId = "12312312")
     }

@@ -1,8 +1,7 @@
 package no.nav.eessi.pensjon.integrationtest.sed
 
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.whenever
+import com.ninjasquad.springmockk.MockkBean
+import io.mockk.every
 import no.nav.eessi.pensjon.UnsecuredWebMvcTestLauncher
 import no.nav.eessi.pensjon.fagmodul.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonService
@@ -22,7 +21,6 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
@@ -35,20 +33,20 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 @AutoConfigureMockMvc
 class PrefillErrorIntegrationTest {
 
-    @MockBean
+    @MockkBean
     lateinit var stsService: STSService
 
-    @MockBean
+    @MockkBean
     lateinit var kodeverkClient: KodeverkClient
+
+    @MockkBean
+    lateinit var pensjoninformasjonservice: PensjonsinformasjonService
+
+    @MockkBean
+    lateinit var personService: PersonService
 
     @Autowired
     private lateinit var mockMvc: MockMvc
-
-    @MockBean
-    private lateinit var pensjoninformasjonservice: PensjonsinformasjonService
-
-    @MockBean
-    lateinit var personService: PersonService
 
     private companion object {
         const val FNR_VOKSEN = "11067122781"    // KRAFTIG VEGGPRYD
@@ -58,8 +56,9 @@ class PrefillErrorIntegrationTest {
     @Test
     fun `prefill sed P2200 med vedtak, F_BH_BO_UTL og F_BH_MED_UTL mangler samt vedtak isBoddArbeidetUtland er false skal Exception`() {
 
-        doReturn(NorskIdent(FNR_VOKSEN)).`when`(personService).hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID))
-        doReturn(PersonPDLMock.createWith()).whenever(personService).hentPerson(NorskIdent(FNR_VOKSEN))
+        every { kodeverkClient.finnLandkode2(eq("NOR"))} returns "NO"
+        every { personService.hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN)
+        every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith()
 
         val sak = V1Sak()
         sak.sakType = EPSaktype.UFOREP.toString()
@@ -71,13 +70,13 @@ class PrefillErrorIntegrationTest {
         krav.status = "INNV"
         sak.kravHistorikkListe.kravHistorikkListe.add(krav)
 
-        doReturn(sak).whenever(pensjoninformasjonservice).hentRelevantPensjonSak(any(), any())
+        every { pensjoninformasjonservice.hentRelevantPensjonSak(any(), any()) } returns sak
 
         val vedtak = V1Vedtak()
         vedtak.isBoddArbeidetUtland = false
         vedtak.kravGjelder = "REVURD"
 
-        doReturn(vedtak).whenever(pensjoninformasjonservice).hentRelevantVedtakHvisFunnet("231231231")
+        every { pensjoninformasjonservice.hentRelevantVedtakHvisFunnet("231231231") } returns vedtak
 
         val apijson = dummyApijson(sakid = "1232123123", aktoerId = AKTOER_ID, vedtakid = "231231231", sed = "P2200",  buc = "P_BUC_03")
         val expectedError = """Du kan ikke opprette krav-SED P2200 hvis ikke "bodd/arbeidet i utlandet" er krysset av""".trimIndent()

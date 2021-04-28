@@ -1,6 +1,7 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed
 
-import com.nhaarman.mockitokotlin2.mock
+import io.mockk.every
+import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.sed.SedType
 import no.nav.eessi.pensjon.fagmodul.models.PersonDataCollection
 import no.nav.eessi.pensjon.fagmodul.models.PrefillDataModel
@@ -8,29 +9,22 @@ import no.nav.eessi.pensjon.fagmodul.prefill.ApiRequest
 import no.nav.eessi.pensjon.fagmodul.prefill.LagPDLPerson
 import no.nav.eessi.pensjon.fagmodul.prefill.eessi.EessiInformasjon
 import no.nav.eessi.pensjon.fagmodul.prefill.pdl.FodselsnummerMother
+import no.nav.eessi.pensjon.fagmodul.prefill.pdl.PrefillPDLAdresse
 import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonService
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillPDLNav
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.Mock
-import org.mockito.junit.jupiter.MockitoExtension
 
-@ExtendWith(MockitoExtension::class)
 class SedP3000XXTest {
 
-    @Mock
-    lateinit var eessiInformasjon: EessiInformasjon
+    var eessiInformasjon: EessiInformasjon = mockk()
+    var dataFromPEN: PensjonsinformasjonService = mockk()
 
-    @Mock
-    lateinit var dataFromPEN: PensjonsinformasjonService
-
-    lateinit var prefillSEDService: PrefillSEDService
+    private lateinit var prefillSEDService: PrefillSEDService
 
     private val personFnr = FodselsnummerMother.generateRandomFnr(68)
     private lateinit var personDataCollection: PersonDataCollection
-
 
     @BeforeEach
     fun setupAndRunAtStart() {
@@ -38,13 +32,16 @@ class SedP3000XXTest {
         personDataCollection = PersonDataCollection(person, person)
 
         val prefillNav = PrefillPDLNav(
-                prefillAdresse = mock(),
-                institutionid = "NO:noinst002",
-                institutionnavn = "NOINST002, NO INST002, NO")
+            prefillAdresse = mockk<PrefillPDLAdresse> {
+                every { hentLandkode(any()) } returns "NO"
+                every { createPersonAdresse(any()) } returns mockk()
+            },
+            institutionid = "NO:noinst002",
+            institutionnavn = "NOINST002, NO INST002, NO"
+        )
 
         prefillSEDService = PrefillSEDService(dataFromPEN, eessiInformasjon, prefillNav)
     }
-
 
     @Test
     fun testP3000_AT() {
@@ -52,7 +49,6 @@ class SedP3000XXTest {
 
         val sed = prefillSEDService.prefill(datamodel, personDataCollection)
         Assertions.assertEquals(SedType.P3000_AT, sed.type)
-
     }
 
     @Test

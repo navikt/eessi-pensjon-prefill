@@ -1,8 +1,7 @@
 package no.nav.eessi.pensjon.integrationtest.sed
 
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.whenever
+import com.ninjasquad.springmockk.MockkBean
+import io.mockk.every
 import no.nav.eessi.pensjon.UnsecuredWebMvcTestLauncher
 import no.nav.eessi.pensjon.eux.model.sed.SedType
 import no.nav.eessi.pensjon.fagmodul.prefill.PersonPDLMock
@@ -14,12 +13,10 @@ import no.nav.eessi.pensjon.personoppslag.pdl.model.NorskIdent
 import no.nav.eessi.pensjon.security.sts.STSService
 import no.nav.eessi.pensjon.services.kodeverk.KodeverkClient
 import org.junit.jupiter.api.Test
-import org.mockito.ArgumentMatchers
 import org.skyscreamer.jsonassert.JSONAssert
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.HttpEntity
 import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
@@ -35,20 +32,20 @@ import org.springframework.web.client.RestTemplate
 @AutoConfigureMockMvc
 class SedPrefillPDLIntegrationSpringTest {
 
-    @MockBean
+    @MockkBean
     lateinit var stsService: STSService
 
-    @MockBean(name = "pensjonsinformasjonOidcRestTemplate")
+    @MockkBean(name = "pensjonsinformasjonOidcRestTemplate")
     lateinit var restTemplate: RestTemplate
 
-    @MockBean
+    @MockkBean
     lateinit var kodeverkClient: KodeverkClient
+
+    @MockkBean
+    lateinit var personService: PersonService
 
     @Autowired
     private lateinit var mockMvc: MockMvc
-
-    @MockBean
-    lateinit var personService: PersonService
 
     companion object {
         const val FNR_VOKSEN = "11067122781"    // KRAFTIG VEGGPRYD
@@ -62,11 +59,11 @@ class SedPrefillPDLIntegrationSpringTest {
     @Test
     @Throws(Exception::class)
     fun `prefill sed P2000 alder return valid sedjson`() {
-        doReturn(PrefillTestHelper.readXMLresponse("P2000-AP-UP-21337890.xml")).`when`(restTemplate).exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java))
-        doReturn("QX").`when`(kodeverkClient).finnLandkode2(any())
+        every { restTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns PrefillTestHelper.readXMLresponse("P2000-AP-UP-21337890.xml")
+        every { kodeverkClient.finnLandkode2(any()) } returns "QX"
+        every { personService.hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN)
+        every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith(true, fnr = FNR_VOKSEN, aktoerid = AKTOER_ID)
 
-        doReturn(NorskIdent(FNR_VOKSEN)).`when`(personService).hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID))
-        doReturn(PersonPDLMock.createWith(true, fnr = FNR_VOKSEN, aktoerid = AKTOER_ID)).whenever(personService).hentPerson(NorskIdent(FNR_VOKSEN))
         val apijson = dummyApijson(sedType = SedType.P2000, sakid = "21337890", aktoerId = AKTOER_ID)
 
         val result = mockMvc.perform(post("/sed/prefill")
@@ -133,15 +130,15 @@ class SedPrefillPDLIntegrationSpringTest {
     @Throws(Exception::class)
     fun `prefill sed P2100 P_BUC_02 Gjenlevende har med avdod skal returnere en gyldig SED`() {
 
-        doReturn(NorskIdent(FNR_VOKSEN)).whenever(personService).hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID))
-        doReturn(AktoerId(AKTOER_ID_2)).whenever(personService).hentIdent(IdentType.AktoerId, NorskIdent(FNR_VOKSEN_2))
+        every { personService.hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN)
+        every { personService.hentIdent(IdentType.AktoerId, NorskIdent(FNR_VOKSEN_2)) } returns AktoerId(AKTOER_ID_2)
 
-        doReturn(PersonPDLMock.createWith(true, "Lever", "Gjenlev", FNR_VOKSEN, AKTOER_ID)).whenever(personService).hentPerson(NorskIdent(FNR_VOKSEN))
-        doReturn(PersonPDLMock.createWith(true, "Avdød", "Død", FNR_VOKSEN_2, AKTOER_ID_2, true)).whenever(personService).hentPerson(NorskIdent(FNR_VOKSEN_2))
+        every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith(true, "Lever", "Gjenlev", FNR_VOKSEN, AKTOER_ID)
+        every { personService.hentPerson(NorskIdent(FNR_VOKSEN_2)) } returns PersonPDLMock.createWith(true, "Avdød", "Død", FNR_VOKSEN_2, AKTOER_ID_2, true)
 
-        doReturn(PrefillTestHelper.readXMLresponse("P2100-GL-UTL-INNV.xml")).`when`(restTemplate).exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java))
+        every { restTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns PrefillTestHelper.readXMLresponse("P2100-GL-UTL-INNV.xml")
 
-        doReturn("QX").whenever(kodeverkClient).finnLandkode2(any())
+        every { kodeverkClient.finnLandkode2(any()) } returns "QX"
 
         val apijson = dummyApijson(sakid = "22874955", aktoerId = AKTOER_ID, sedType = SedType.P2100, buc = "P_BUC_02", fnravdod = FNR_VOKSEN_2)
 
@@ -225,11 +222,11 @@ class SedPrefillPDLIntegrationSpringTest {
     @Test
     @Throws(Exception::class)
     fun `prefill sed P2000 alder return valid sedjson checkk tps to pdl`() {
-        doReturn(NorskIdent(FNR_VOKSEN)).`when`(personService).hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID))
-        doReturn(PersonPDLMock.createWith()).whenever(personService).hentPerson(NorskIdent(FNR_VOKSEN))
+        every { personService.hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN)
+        every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith()
 
-        doReturn(PrefillTestHelper.readXMLresponse("P2000-AP-UP-21337890.xml")).`when`(restTemplate).exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java))
-        doReturn("QX").`when`(kodeverkClient).finnLandkode2(any())
+        every {restTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java))  } returns PrefillTestHelper.readXMLresponse("P2000-AP-UP-21337890.xml")
+        every { kodeverkClient.finnLandkode2(any()) } returns "QX"
 
         val apijson = dummyApijson(sedType = SedType.P2000, sakid = "21337890", aktoerId = AKTOER_ID)
 

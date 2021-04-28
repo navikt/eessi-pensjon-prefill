@@ -1,6 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed.krav
 
-import com.nhaarman.mockitokotlin2.mock
+import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.sed.SedType
 import no.nav.eessi.pensjon.fagmodul.models.PersonDataCollection
 import no.nav.eessi.pensjon.fagmodul.models.PrefillDataModel
@@ -17,10 +17,7 @@ import no.nav.eessi.pensjon.personoppslag.pdl.model.Sivilstandstype
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.junit.jupiter.MockitoExtension
 
-@ExtendWith(MockitoExtension::class)
 class PrefillP2200MedAlderSakTest {
 
     private val personFnr = generateRandomFnr(68)
@@ -46,7 +43,7 @@ class PrefillP2200MedAlderSakTest {
         )
 
         val prefillNav = PrefillPDLNav(
-                prefillAdresse = mock(),
+                prefillAdresse = mockk(),
                 institutionid = "NO:noinst002",
                 institutionnavn = "NOINST002, NO INST002, NO")
 

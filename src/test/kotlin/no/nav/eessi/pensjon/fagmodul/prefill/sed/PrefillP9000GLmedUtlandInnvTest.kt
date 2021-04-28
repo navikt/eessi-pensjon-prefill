@@ -1,6 +1,7 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed
 
-import com.nhaarman.mockitokotlin2.mock
+import io.mockk.every
+import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.sed.SedType
 import no.nav.eessi.pensjon.fagmodul.models.PersonDataCollection
 import no.nav.eessi.pensjon.fagmodul.models.PersonId
@@ -15,10 +16,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.junit.jupiter.MockitoExtension
 
-@ExtendWith(MockitoExtension::class)
 class PrefillP9000GLmedUtlandInnvTest {
 
     private val personFnr = generateRandomFnr(65)
@@ -35,7 +33,10 @@ class PrefillP9000GLmedUtlandInnvTest {
         personDataCollection = PersonPDLMock.createAvdodFamilie(personFnr, avdodPersonFnr)
 
         prefillNav = PrefillPDLNav(
-                prefillAdresse = mock(),
+                prefillAdresse = mockk(){
+                    every { hentLandkode(any()) } returns "NO"
+                    every { createPersonAdresse(any()) } returns mockk(relaxed = true)
+                },
                 institutionid = "NO:noinst002",
                 institutionnavn = "NOINST002, NO INST002, NO")
 
@@ -72,8 +73,6 @@ class PrefillP9000GLmedUtlandInnvTest {
 
         assertNotNull(p9000.pensjon)
         assertNotNull(p9000.pensjon?.gjenlevende)
-
     }
-
 }
 

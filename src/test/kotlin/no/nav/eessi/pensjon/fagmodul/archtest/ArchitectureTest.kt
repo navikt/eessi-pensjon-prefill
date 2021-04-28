@@ -6,7 +6,10 @@ import com.tngtech.archunit.core.domain.JavaClass
 import com.tngtech.archunit.core.domain.JavaClasses
 import com.tngtech.archunit.core.importer.ClassFileImporter
 import com.tngtech.archunit.core.importer.ImportOption
-import com.tngtech.archunit.lang.syntax.ArchRuleDefinition.*
+import com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes
+import com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses
+import com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noFields
+import com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noMethods
 import com.tngtech.archunit.library.Architectures.layeredArchitecture
 import com.tngtech.archunit.library.dependencies.SlicesRuleDefinition.slices
 import no.nav.eessi.pensjon.EessiFagmodulApplication
@@ -56,6 +59,7 @@ class ArchitectureTest {
             assertTrue(testClasses.size < 500, "Sanity check on no. of classes to analyze")
         }
     }
+
 
     @Test
     fun `check architecture in detail`() {
@@ -225,9 +229,6 @@ class ArchitectureTest {
     @Test
     fun `prefill structure test`() {
         val prefillRoot = "$root.prefill"
-        val sedModel = "$root.sedModel"
-        val prefillClasses = ClassFileImporter()
-                .importPackages(prefillRoot, sedModel)
 
         layeredArchitecture()
                 .layer("service").definedBy(prefillRoot)
@@ -243,7 +244,7 @@ class ArchitectureTest {
                 .whereLayer("pen").mayOnlyBeAccessedByLayers("sed")
                 .whereLayer("pdl").mayOnlyBeAccessedByLayers("sed")
                 .whereLayer("eessi").mayOnlyBeAccessedByLayers("sed", "pdl")
-                .check(prefillClasses)
+                .check(productionClasses)
     }
     @Test
     fun `no cycles on top level`() {
