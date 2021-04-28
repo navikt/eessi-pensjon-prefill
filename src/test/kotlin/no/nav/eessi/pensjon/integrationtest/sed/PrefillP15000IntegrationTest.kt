@@ -9,7 +9,14 @@ import no.nav.eessi.pensjon.fagmodul.models.KravType
 import no.nav.eessi.pensjon.fagmodul.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonService
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
-import no.nav.eessi.pensjon.personoppslag.pdl.model.*
+import no.nav.eessi.pensjon.personoppslag.pdl.model.AktoerId
+import no.nav.eessi.pensjon.personoppslag.pdl.model.Folkeregistermetadata
+import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentType
+import no.nav.eessi.pensjon.personoppslag.pdl.model.KontaktinformasjonForDoedsbo
+import no.nav.eessi.pensjon.personoppslag.pdl.model.KontaktinformasjonForDoedsboAdresse
+import no.nav.eessi.pensjon.personoppslag.pdl.model.KontaktinformasjonForDoedsboSkifteform
+import no.nav.eessi.pensjon.personoppslag.pdl.model.Metadata
+import no.nav.eessi.pensjon.personoppslag.pdl.model.NorskIdent
 import no.nav.eessi.pensjon.security.sts.STSService
 import no.nav.eessi.pensjon.services.kodeverk.KodeverkClient
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.EPSaktype
@@ -32,6 +39,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.web.client.RestTemplate
@@ -151,7 +159,7 @@ class PrefillP15000IntegrationTest {
               }              
             },
             "krav" : {
-              "dato" : "01-01-2020",
+              "dato" : "2020-01-01",
               "type" : "02"
             }
           },
@@ -339,6 +347,41 @@ class PrefillP15000IntegrationTest {
 
     @Test
     @Throws(Exception::class)
+    fun `prefill P15000 P_BUC_10 hvor saktype er ALDER med feil dato`() {
+
+        doReturn(NorskIdent(FNR_VOKSEN)).whenever(personService).hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID ))
+        doReturn(PersonPDLMock.createWith(true, "Lever", "Gjenlev", fnr = FNR_VOKSEN, aktoerid = AKTOER_ID)).whenever(personService).hentPerson(NorskIdent(
+            FNR_VOKSEN
+        ))
+
+
+        val aldersak = V1Sak()
+        aldersak.sakType = "ALDER"
+        aldersak.sakId = 21337890
+        aldersak.status = "INNV"
+
+        doReturn(aldersak).`when`(pensjoninformasjonservice).hentRelevantPensjonSak(any(), any())
+
+        val pensjonsinformasjon = Pensjonsinformasjon()
+        pensjonsinformasjon.vedtak = V1Vedtak()
+        pensjonsinformasjon.vedtak.vedtakStatus = "INNV"
+
+        doReturn(pensjonsinformasjon).`when`(pensjoninformasjonservice).hentMedVedtak("123123123")
+
+        doReturn("QX").doReturn("XQ").`when`(kodeverkClient).finnLandkode2(any())
+
+        val apijson = dummyApijson(sakid = "21337890", vedtakid = "123123123" , aktoerId = AKTOER_ID, sedType = SedType.P15000, buc = "P_BUC_10", kravtype = KravType.ALDER, kravdato = "01-01- 2020")
+        val expectedError = "Ugyldig datoformat"
+
+        mockMvc.perform(post("/sed/prefill")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(apijson))
+            .andExpect(status().isBadRequest)
+            .andExpect(MockMvcResultMatchers.status().reason(Matchers.containsString(expectedError)))
+    }
+
+    @Test
+    @Throws(Exception::class)
     fun `prefill P15000 P_BUC_10 hvor saktype er UFOREP`() {
 
         doReturn(NorskIdent(FNR_VOKSEN)).whenever(personService).hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID ))
@@ -440,7 +483,7 @@ class PrefillP15000IntegrationTest {
                   }                  
                 },
                 "krav" : {
-                  "dato" : "01-01-2020",
+                  "dato" : "2020-01-01",
                   "type" : "02"
                 }
               },
@@ -573,7 +616,7 @@ class PrefillP15000IntegrationTest {
                   }                  
                 },
                 "krav" : {
-                  "dato" : "01-01-2020",
+                  "dato" : "2020-01-01",
                   "type" : "02"
                 }
               },

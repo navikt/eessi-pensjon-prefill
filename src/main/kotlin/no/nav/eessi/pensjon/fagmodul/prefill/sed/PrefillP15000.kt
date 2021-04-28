@@ -1,6 +1,13 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed
 
-import no.nav.eessi.pensjon.eux.model.sed.*
+import no.nav.eessi.pensjon.eux.model.sed.Bruker
+import no.nav.eessi.pensjon.eux.model.sed.Krav
+import no.nav.eessi.pensjon.eux.model.sed.Nav
+import no.nav.eessi.pensjon.eux.model.sed.P15000
+import no.nav.eessi.pensjon.eux.model.sed.P15000Pensjon
+import no.nav.eessi.pensjon.eux.model.sed.Person
+import no.nav.eessi.pensjon.eux.model.sed.PinItem
+import no.nav.eessi.pensjon.eux.model.sed.RelasjonAvdodItem
 import no.nav.eessi.pensjon.fagmodul.models.KravType
 import no.nav.eessi.pensjon.fagmodul.models.PersonDataCollection
 import no.nav.eessi.pensjon.fagmodul.models.PrefillDataModel
@@ -13,6 +20,8 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.web.server.ResponseStatusException
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 class PrefillP15000(private val prefillSed: PrefillSed) {
 
@@ -62,7 +71,7 @@ class PrefillP15000(private val prefillSed: PrefillSed) {
         val forsikretPersonPin = forsikretPerson?.pin?.firstOrNull()
         val adresse = forsikretBruker?.adresse
 
-        val krav = Krav(dato = prefillData.kravDato, type = kravType.verdi)
+        val krav = Krav(dato = validateFrontEndKravDato(prefillData.kravDato).toString(), type = kravType.verdi)
 
         val nav = Nav(
             eessisak = eessielm,
@@ -86,6 +95,15 @@ class PrefillP15000(private val prefillSed: PrefillSed) {
         val gjenlevende = bestemGjenlevende(gjenlevendeBruker, relasjon, kravType)
 
         return P15000(nav = nav, p15000Pensjon = P15000Pensjon(gjenlevende))
+    }
+
+    private fun validateFrontEndKravDato(dato: String?): LocalDate {
+        return try {
+            val formatter = DateTimeFormatter.ofPattern("MM-dd-yyyy")
+            LocalDate.parse(dato, formatter)
+        } catch (ex: Exception) {
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Ugyldig datoformat")
+        }
     }
 
 
