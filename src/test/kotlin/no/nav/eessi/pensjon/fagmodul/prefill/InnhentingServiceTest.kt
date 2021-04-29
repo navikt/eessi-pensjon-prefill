@@ -14,7 +14,6 @@ import org.springframework.web.server.ResponseStatusException
 
 class InnhentingServiceTest {
 
-/*    @Mock*/
     var personDataService: PersonDataService = mockk()
 
     private lateinit var innhentingService: InnhentingService
@@ -55,7 +54,6 @@ class InnhentingServiceTest {
             subject = ApiSubject(gjenlevende = SubjectFnr("23123123"), avdod = SubjectFnr("46784678467"))
         )
 
-        //doReturn(AktoerId("467846784671")).whenever(personDataService).hentIdent(eq(IdentType.AktoerId), any<Ident<*>>())
         every{personDataService.hentIdent(eq(IdentType.AktoerId), any<Ident<*>>())} returns AktoerId("467846784671")
 
         val result = innhentingService.getAvdodAktoerIdPDL(apiRequest)

@@ -65,6 +65,9 @@ class PrefillPDLNavTest {
 
     @BeforeEach
     fun beforeStart() {
+        every { kodeverkClient.finnLandkode2(eq("NOR")) } returns "NO"
+        every { kodeverkClient.finnLandkode2(eq("SWE")) } returns "SE"
+
         prefillPDLNav = PrefillPDLNav(
             PrefillPDLAdresse(PostnummerService(), kodeverkClient),
             someInstitutionId,
@@ -84,9 +87,6 @@ class PrefillPDLNavTest {
         val barnFdato = barn.foedsel?.foedselsdato?.toString()
 
         val personDataCollection = PersonDataCollection(forsikretPerson = forelder, ektefellePerson = null, sivilstandstype = Sivilstandstype.UGIFT, gjenlevendeEllerAvdod = forelder, barnPersonList = listOf(barn))
-
-        every { kodeverkClient.finnLandkode2("NOR") } returns "NO"
-
 
         val actual = prefillPDLNav.prefill(
             prefillData.penSaksnummer,
@@ -134,7 +134,6 @@ class PrefillPDLNavTest {
         val barnfdato = barn.foedsel?.foedselsdato?.toString()
 
         val personDataCollection = PersonDataCollection(forsikretPerson = far, ektefellePerson = null, sivilstandstype = Sivilstandstype.UGIFT, gjenlevendeEllerAvdod = far, barnPersonList = listOf(barn))
-        every { kodeverkClient.finnLandkode2("NOR") } returns "NO"
 
         val actual = prefillPDLNav.prefill(
             prefillData.penSaksnummer,
@@ -178,7 +177,6 @@ class PrefillPDLNavTest {
 
         val prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P2000, pinId = somePersonNr, penSaksnummer = somePenSaksnr)
         val personDataCollection = PersonDataCollection(forsikretPerson = person, ektefellePerson = ektefelle, sivilstandstype = Sivilstandstype.GIFT, gjenlevendeEllerAvdod = person, barnPersonList = emptyList())
-        every { kodeverkClient.finnLandkode2("NOR") } returns "NO"
 
         val actual = prefillPDLNav.prefill(
             prefillData.penSaksnummer,
@@ -233,9 +231,6 @@ class PrefillPDLNavTest {
 
         val personDataCollection = PersonDataCollection(forsikretPerson = far, ektefellePerson = mor, sivilstandstype = Sivilstandstype.GIFT, gjenlevendeEllerAvdod = far, barnPersonList = listOf(barnet, barnto))
         val prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P2200, pinId = farfnr, penSaksnummer = somePenSaksnr)
-
-        //landkode NO
-        every { kodeverkClient.finnLandkode2("NOR") } returns "NO"
 
         val actual = prefillPDLNav.prefill(
             prefillData.penSaksnummer,
@@ -301,8 +296,6 @@ class PrefillPDLNavTest {
         val prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P2000, pinId = somePersonNr, penSaksnummer = somePenSaksnr)
         val personDataCollection = PersonDataCollection(forsikretPerson = person, ektefellePerson = partner, sivilstandstype = Sivilstandstype.REGISTRERT_PARTNER, gjenlevendeEllerAvdod = person, barnPersonList = emptyList())
 
-        every { kodeverkClient.finnLandkode2("NOR") } returns "NO"
-
         val actual = prefillPDLNav.prefill(
             prefillData.penSaksnummer,
             prefillData.bruker,
@@ -341,7 +334,6 @@ class PrefillPDLNavTest {
 
         val prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P2000, pinId = somePersonNr, penSaksnummer = somePenSaksnr)
         val personDataCollection = PersonDataCollection(forsikretPerson = single, ektefellePerson = null,  sivilstandstype = Sivilstandstype.UGIFT, gjenlevendeEllerAvdod = single, barnPersonList = emptyList())
-        every { kodeverkClient.finnLandkode2("NOR") } returns "NO"
 
         val actual = prefillPDLNav.prefill(
             prefillData.penSaksnummer,
@@ -391,7 +383,6 @@ class PrefillPDLNavTest {
 
         val prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P2000, pinId = somePersonNr, penSaksnummer = somePenSaksnr)
         val personDataCollection = PersonDataCollection(forsikretPerson = single, ektefellePerson = null,  sivilstandstype = Sivilstandstype.UGIFT, gjenlevendeEllerAvdod = single, barnPersonList = emptyList())
-        every { kodeverkClient.finnLandkode2("NOR") } returns "NO"
 
         val actual = prefillPDLNav.prefill(
             prefillData.penSaksnummer,
@@ -449,9 +440,6 @@ class PrefillPDLNavTest {
         val prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P2000, pinId = somePersonNr, penSaksnummer = somePenSaksnr)
         val personDataCollection = PersonDataCollection(forsikretPerson = single, ektefellePerson = null,  sivilstandstype = Sivilstandstype.UGIFT, gjenlevendeEllerAvdod = single, barnPersonList = emptyList())
 
-        every { kodeverkClient.finnLandkode2("NOR") } returns "NO"
-        every { kodeverkClient.finnLandkode2("SWE") } returns "SE"
-
         val actual = prefillPDLNav.prefill(
             prefillData.penSaksnummer,
             prefillData.bruker,
@@ -505,9 +493,6 @@ class PrefillPDLNavTest {
 
         val prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P2000, pinId = somePersonNr, penSaksnummer = somePenSaksnr)
         val personDataCollection = PersonDataCollection(forsikretPerson = single, ektefellePerson = null,  sivilstandstype = Sivilstandstype.UGIFT, gjenlevendeEllerAvdod = single, barnPersonList = emptyList())
-
-        every { kodeverkClient.finnLandkode2("NOR") } returns "NO"
-        every { kodeverkClient.finnLandkode2("SWE") } returns "SE"
 
         val actual = prefillPDLNav.prefill(
             prefillData.penSaksnummer,
@@ -570,8 +555,6 @@ class PrefillPDLNavTest {
         val person = lagPerson(somePersonNr, "Ole", "Brum")
         val personDataCollection = PersonDataCollection(forsikretPerson = person, ektefellePerson = null,  sivilstandstype = Sivilstandstype.UGIFT, gjenlevendeEllerAvdod = person, barnPersonList = emptyList())
 
-        every { kodeverkClient.finnLandkode2("NOR") } returns "NO"
-
         val actual = prefillPDLNav.prefill(
             prefillData.penSaksnummer,
             prefillData.bruker,
@@ -619,7 +602,6 @@ class PrefillPDLNavTest {
     fun `create correct birthplace known`() {
         val person = lagPerson()
         val nyPerson = person.copy(foedsel = Foedsel(person.foedsel?.foedselsdato, "NOR", "OSLO", null, null, LagPDLPerson.mockMeta()))
-        every { kodeverkClient.finnLandkode2("NOR") } returns "NO"
 
         val result = prefillPDLNav.createFodested(nyPerson)
 
@@ -640,7 +622,6 @@ class PrefillPDLNavTest {
 
     @Test
     fun `Gitt en person med kosovo statsborgerskap Når preutfyller Statsborgerstak Så preutfyll tomt statsborgerskap`() {
-        every { kodeverkClient.finnLandkode2(any()) } returns "NO"
         val personfnr = FodselsnummerMother.generateRandomFnr(40)
         val person = lagPerson(personfnr).copy(statsborgerskap = listOf(Statsborgerskap("XXK", LocalDate.of(2000, 10, 1), LocalDate.of(2300, 10, 1), LagPDLPerson.mockMeta())))
 
@@ -655,8 +636,6 @@ class PrefillPDLNavTest {
         val personfnr = FodselsnummerMother.generateRandomFnr(40)
         val person = lagPerson(personfnr).copy(statsborgerskap = listOf(Statsborgerskap("NOR", LocalDate.of(2000, 10, 1), LocalDate.of(2300, 10, 1), LagPDLPerson.mockMeta())))
 
-        every { kodeverkClient.finnLandkode2("NOR") } returns "NO"
-
         val bruker = prefillPDLNav.createBruker(person, null, null)
 
         assertEquals(bruker!!.person!!.statsborgerskap!!.size, 1)
@@ -665,7 +644,6 @@ class PrefillPDLNavTest {
 
     @Test
     fun `Gitt en person uten fdato skal benytte fnr for fdato så SED blir preutfylt`() {
-        every { kodeverkClient.finnLandkode2(any()) } returns "NO"
 
         val personfnr = "01028143352"
         val person = lagPerson(personfnr).copy(foedsel = null)

@@ -195,7 +195,6 @@ class PrefillPDLAdresseTest{
                     metadata = no.nav.eessi.pensjon.personoppslag.pdl.model.Metadata(emptyList(), false, "DOLLY", "Doll")
                 ))
 
-        //doReturn("SC").`when`(kodeverkClient).finnLandkode2(any())
         every { kodeverkClient.finnLandkode2(any()) }.returns("SC")
 
         val result = prefillAdresse.createPersonAdresse(person)!!

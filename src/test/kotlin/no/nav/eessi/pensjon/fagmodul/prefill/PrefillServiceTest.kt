@@ -24,7 +24,6 @@ import org.skyscreamer.jsonassert.JSONAssert
 
 class PrefillServiceTest {
 
-/*    @Mock*/
     var mockPrefillSEDService: PrefillSEDService = mockk()
 
     private lateinit var prefillService: PrefillService

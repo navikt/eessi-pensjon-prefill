@@ -44,14 +44,7 @@ class KodeverkClientTest {
         val landkode2 = "BM"
 
         val mockResponseEntityISO3 = createResponseEntityFromJsonFile("src/test/resources/json/kodeverk/landkoderSammensattIso2.json")
-/*        doReturn(mockResponseEntityISO3)
-                .whenever(mockrestTemplate)
-                .exchange(
-                        eq("/api/v1/hierarki/LandkoderSammensattISO2/noder"),
-                        any(),
-                        any<HttpEntity<Unit>>(),
-                        eq(String::class.java)
-                )*/
+
         every { mockrestTemplate.exchange( eq("/api/v1/hierarki/LandkoderSammensattISO2/noder"), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns mockResponseEntityISO3
 
         val actual = kodeverkClient.finnLandkode3(landkode2)
@@ -66,18 +59,6 @@ class KodeverkClientTest {
 
         val mockResponseEntityISO3 = createResponseEntityFromJsonFile("src/test/resources/json/kodeverk/landkoderSammensattIso2.json")
         every { mockrestTemplate.exchange( eq("/api/v1/hierarki/LandkoderSammensattISO2/noder"), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns mockResponseEntityISO3
-
-/*
-        doReturn(mockResponseEntityISO3)
-                .whenever(mockrestTemplate)
-                .exchange(
-                        eq("/api/v1/hierarki/LandkoderSammensattISO2/noder"),
-                        any(),
-                        any<HttpEntity<Unit>>(),
-                        eq(String::class.java)
-                )
-*/
-
         val actual = kodeverkClient.finnLandkode3(landkode2)
 
         Assertions.assertEquals(expected, actual)
@@ -87,14 +68,7 @@ class KodeverkClientTest {
     @Test
     fun testerLankodeMed2Siffer() {
         val mockResponseEntityISO3 = createResponseEntityFromJsonFile("src/test/resources/json/kodeverk/landkoderSammensattIso2.json")
-/*        doReturn(mockResponseEntityISO3)
-                .whenever(mockrestTemplate)
-                .exchange(
-                        eq("/api/v1/hierarki/LandkoderSammensattISO2/noder"),
-                        any(),
-                        any<HttpEntity<Unit>>(),
-                        eq(String::class.java)
-                )*/
+
         every { mockrestTemplate.exchange( eq("/api/v1/hierarki/LandkoderSammensattISO2/noder"), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns mockResponseEntityISO3
 
         val actual = kodeverkClient.hentLandkoderAlpha2()
@@ -107,15 +81,6 @@ class KodeverkClientTest {
     fun henteAlleLandkoderReturnererAlleLandkoder() {
         val mockResponseEntityISO3 = createResponseEntityFromJsonFile("src/test/resources/json/kodeverk/landkoderSammensattIso2.json")
         every { mockrestTemplate.exchange( eq("/api/v1/hierarki/LandkoderSammensattISO2/noder"), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns mockResponseEntityISO3
-
-/*        doReturn(mockResponseEntityISO3)
-                .whenever(mockrestTemplate)
-                .exchange(
-                        eq("/api/v1/hierarki/LandkoderSammensattISO2/noder"),
-                        any(),
-                        any<HttpEntity<Unit>>(),
-                        eq(String::class.java)
-                )*/
 
         val json = kodeverkClient.hentAlleLandkoder()
 
@@ -134,14 +99,6 @@ class KodeverkClientTest {
         val landkode2 = "BMUL"
 
         val mockResponseEntityISO3 = createResponseEntityFromJsonFile("src/test/resources/json/kodeverk/landkoderSammensattIso2.json")
-/*        doReturn(mockResponseEntityISO3)
-                .whenever(mockrestTemplate)
-                .exchange(
-                        eq("/api/v1/hierarki/LandkoderSammensattISO2/noder"),
-                        any(),
-                        any<HttpEntity<Unit>>(),
-                        eq(String::class.java)
-                )*/
         every { mockrestTemplate.exchange( eq("/api/v1/hierarki/LandkoderSammensattISO2/noder"), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns mockResponseEntityISO3
 
         val actual = kodeverkClient.finnLandkode3(landkode2)
