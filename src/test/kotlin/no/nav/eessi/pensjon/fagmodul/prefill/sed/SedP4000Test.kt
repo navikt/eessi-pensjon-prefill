@@ -1,31 +1,42 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed
 
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.whenever
+import io.mockk.every
+import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.NavMock
-import no.nav.eessi.pensjon.eux.model.sed.*
+import no.nav.eessi.pensjon.eux.model.sed.Adresse
+import no.nav.eessi.pensjon.eux.model.sed.AnsattSelvstendigItem
+import no.nav.eessi.pensjon.eux.model.sed.BarnepassItem
+import no.nav.eessi.pensjon.eux.model.sed.InformasjonBarn
+import no.nav.eessi.pensjon.eux.model.sed.P4000
+import no.nav.eessi.pensjon.eux.model.sed.Periode
+import no.nav.eessi.pensjon.eux.model.sed.PersonArbeidogOppholdUtland
+import no.nav.eessi.pensjon.eux.model.sed.SED
+import no.nav.eessi.pensjon.eux.model.sed.SedType
+import no.nav.eessi.pensjon.eux.model.sed.StandardItem
+import no.nav.eessi.pensjon.eux.model.sed.TrygdeTidPeriode
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.models.PersonDataCollection
 import no.nav.eessi.pensjon.fagmodul.prefill.ApiRequest
 import no.nav.eessi.pensjon.fagmodul.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillSed
-import no.nav.eessi.pensjon.utils.*
-import org.junit.jupiter.api.Assertions.*
+import no.nav.eessi.pensjon.utils.mapAnyToJson
+import no.nav.eessi.pensjon.utils.mapJsonToAny
+import no.nav.eessi.pensjon.utils.toJson
+import no.nav.eessi.pensjon.utils.typeRefs
+import no.nav.eessi.pensjon.utils.validateJson
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.Mock
-import org.mockito.junit.jupiter.MockitoExtension
 import org.skyscreamer.jsonassert.JSONAssert
 import java.nio.file.Files
 import java.nio.file.Paths
 
 
-@ExtendWith(MockitoExtension::class)
 class SedP4000Test {
 
-    @Mock
-    private lateinit var prefillSed: PrefillSed
+    var prefillSed: PrefillSed = mockk()
 
     private lateinit var pre4000: PrefillP4000
 
@@ -175,7 +186,7 @@ class SedP4000Test {
 
         val personData = PersonDataCollection(forsikretPerson = PersonPDLMock.createWith(), gjenlevendeEllerAvdod = PersonPDLMock.createWith())
 
-        whenever(prefillSed.prefill(any(), any())).thenReturn(SED(type = SedType.P4000))
+        every { prefillSed.prefill(any(), any()) } returns SED(type = SedType.P4000)
 
         val sed = pre4000.prefill(data, personData)
         assertNotNull(sed)

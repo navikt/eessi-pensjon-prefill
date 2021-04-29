@@ -1,7 +1,7 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.pdl
 
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.doReturn
+import io.mockk.every
+import io.mockk.mockk
 import no.nav.eessi.pensjon.fagmodul.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.fagmodul.prefill.PersonPDLMock.medBeskyttelse
 import no.nav.eessi.pensjon.personoppslag.pdl.model.AdressebeskyttelseGradering
@@ -21,19 +21,14 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.Mock
-import org.mockito.junit.jupiter.MockitoExtension
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-@ExtendWith(MockitoExtension::class)
 class PrefillPDLAdresseTest{
 
     lateinit var prefillAdresse: PrefillPDLAdresse
 
-    @Mock
-    lateinit var kodeverkClient: KodeverkClient
+    var kodeverkClient: KodeverkClient = mockk()
 
     @BeforeEach
     fun beforeStart() {
@@ -89,6 +84,7 @@ class PrefillPDLAdresseTest{
 
     @Test
     fun `utfylling av doedsboAdresseUtenlinjeskift`() {
+        every { kodeverkClient.finnLandkode2(eq("NOR")) } returns "NO"
 
         val doedMeta = PersonPDLMock.mockMeta()
 
@@ -199,7 +195,7 @@ class PrefillPDLAdresseTest{
                     metadata = no.nav.eessi.pensjon.personoppslag.pdl.model.Metadata(emptyList(), false, "DOLLY", "Doll")
                 ))
 
-        doReturn("SC").`when`(kodeverkClient).finnLandkode2(any())
+        every { kodeverkClient.finnLandkode2(any()) }.returns("SC")
 
         val result = prefillAdresse.createPersonAdresse(person)!!
 

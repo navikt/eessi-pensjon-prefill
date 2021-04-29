@@ -1,13 +1,22 @@
 
 package no.nav.eessi.pensjon.fagmodul.api
 
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.whenever
-import no.nav.eessi.pensjon.eux.model.sed.*
+import io.mockk.every
+import io.mockk.impl.annotations.SpyK
+import io.mockk.mockk
+import no.nav.eessi.pensjon.eux.model.sed.Bruker
+import no.nav.eessi.pensjon.eux.model.sed.Krav
+import no.nav.eessi.pensjon.eux.model.sed.Nav
+import no.nav.eessi.pensjon.eux.model.sed.Person
+import no.nav.eessi.pensjon.eux.model.sed.SED
+import no.nav.eessi.pensjon.eux.model.sed.SedType
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.models.PersonDataCollection
-import no.nav.eessi.pensjon.fagmodul.prefill.*
+import no.nav.eessi.pensjon.fagmodul.prefill.ApiRequest
+import no.nav.eessi.pensjon.fagmodul.prefill.InnhentingService
+import no.nav.eessi.pensjon.fagmodul.prefill.PersonDataService
+import no.nav.eessi.pensjon.fagmodul.prefill.PersonPDLMock
+import no.nav.eessi.pensjon.fagmodul.prefill.PrefillService
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillSEDService
 import no.nav.eessi.pensjon.logging.AuditLogger
 import no.nav.eessi.pensjon.personoppslag.pdl.model.NorskIdent
@@ -15,26 +24,15 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.Mock
-import org.mockito.Spy
-import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.kafka.core.KafkaTemplate
 
-@ExtendWith(MockitoExtension::class)
 class PrefillControllerTest {
 
-    @Spy
-    lateinit var auditLogger: AuditLogger
-
-    @Mock
-    lateinit var mockPrefillSEDService: PrefillSEDService
-    
-    @Mock
-    lateinit var kafkaTemplate: KafkaTemplate<String, String>
-
-    @Mock
-    private lateinit var personDataService: PersonDataService
+    @SpyK
+    var auditLogger: AuditLogger = AuditLogger()
+    var mockPrefillSEDService: PrefillSEDService = mockk()
+    var kafkaTemplate: KafkaTemplate<String, String> = mockk()
+    var personDataService: PersonDataService = mockk()
 
     private lateinit var prefillController: PrefillController
 
@@ -67,11 +65,13 @@ class PrefillControllerTest {
             aktoerId = "0105094340092"
         )
 
-        doReturn("12345").whenever(personDataService).hentFnrfraAktoerService(any())
+        every {personDataService.hentFnrfraAktoerService(any())} returns "12345"
 
         val utfyllMock = ApiRequest.buildPrefillDataModelOnExisting(mockData, NorskIdent("12345").id, null)
 
-        doReturn(PersonDataCollection(PersonPDLMock.createWith(), PersonPDLMock.createWith())).whenever(personDataService).hentPersonData(any())
+        every{
+            personDataService.hentPersonData(any())
+        } returns( PersonDataCollection(PersonPDLMock.createWith(), PersonPDLMock.createWith()))
 
         val nav = Nav(bruker = Bruker(person = Person(fornavn = "Dummy", etternavn = "Dummy", foedselsdato = "1900-10-11", kjoenn = "K")), krav = Krav("1937-12-11"))
         val mockSed = SED(
@@ -79,7 +79,7 @@ class PrefillControllerTest {
             nav = nav
         )
 
-        doReturn(mockSed).whenever(mockPrefillSEDService).prefill(any(), any())
+        every{mockPrefillSEDService.prefill(any(), any())} returns mockSed
 
         val response = prefillController.prefillDocument(mockData)
         Assertions.assertNotNull(response)
@@ -91,4 +91,5 @@ class PrefillControllerTest {
         assertEquals("Dummy", sed.nav?.bruker?.person?.etternavn)
     }
 }
+
 

@@ -234,6 +234,4 @@ object PersonPDLMock {
             gjenlevendeEllerAvdod = avdod
         )
     }
-
-
 }

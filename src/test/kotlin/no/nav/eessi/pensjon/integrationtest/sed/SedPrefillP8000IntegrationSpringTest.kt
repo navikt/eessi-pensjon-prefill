@@ -1,8 +1,7 @@
 package no.nav.eessi.pensjon.integrationtest.sed
 
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.whenever
+import com.ninjasquad.springmockk.MockkBean
+import io.mockk.every
 import no.nav.eessi.pensjon.UnsecuredWebMvcTestLauncher
 import no.nav.eessi.pensjon.fagmodul.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.fagmodul.prefill.PersonPDLMock.medBeskyttelse
@@ -24,7 +23,6 @@ import org.skyscreamer.jsonassert.JSONAssert
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
@@ -39,23 +37,24 @@ import org.springframework.web.client.RestTemplate
 @AutoConfigureMockMvc
 class SedPrefillP8000IntegrationSpringTest {
 
-    @MockBean
-    private lateinit var stsService: STSService
+    @MockkBean
+    lateinit var stsService: STSService
 
-    @MockBean(name = "pensjonsinformasjonOidcRestTemplate")
-    private lateinit var restTemplate: RestTemplate
+    @MockkBean(name = "pensjonsinformasjonOidcRestTemplate")
+    lateinit var restTemplate: RestTemplate
 
-    @MockBean
-    private lateinit var kodeverkClient: KodeverkClient
+    @MockkBean
+    lateinit var kodeverkClient: KodeverkClient
 
-    @MockBean
-    private lateinit var pensjoninformasjonservice: PensjonsinformasjonService
+    @MockkBean
+    lateinit var pensjoninformasjonservice: PensjonsinformasjonService
+
+    @MockkBean
+    lateinit var personService: PersonService
 
     @Autowired
-    private lateinit var mockMvc: MockMvc
+    lateinit var mockMvc: MockMvc
 
-    @MockBean
-    private lateinit var personService: PersonService
 
     private companion object {
         const val FNR_VOKSEN_3 = "12312312312"
@@ -69,18 +68,18 @@ class SedPrefillP8000IntegrationSpringTest {
     @Test
     @Throws(Exception::class)
     fun `prefill sed P8000 - Gitt gjenlevendepensjon Og henvendelse gjelder søker SÅ skal det produseres en Gyldig P8000 med referanse til person 02`() {
-        doReturn(NorskIdent(FNR_VOKSEN_3)).whenever(personService).hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID))
-        doReturn(AktoerId(AKTOER_ID_2)).whenever(personService).hentIdent(IdentType.AktoerId, NorskIdent(FNR_VOKSEN_4))
-        doReturn(PersonPDLMock.createWith(true, "Lever", "Gjenlev", FNR_VOKSEN_3, AKTOER_ID)).whenever(personService).hentPerson(NorskIdent(FNR_VOKSEN_3))
-        doReturn(PersonPDLMock.createWith(true, "Avdød", "Død", FNR_VOKSEN_4, AKTOER_ID_2, true)).whenever(personService).hentPerson(NorskIdent(FNR_VOKSEN_4))
+        every { personService.hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID))} returns NorskIdent(FNR_VOKSEN_3)
+        every { personService.hentIdent(IdentType.AktoerId, NorskIdent(FNR_VOKSEN_4)) } returns AktoerId(AKTOER_ID_2)
+        every { personService.hentPerson(NorskIdent(FNR_VOKSEN_3)) } returns PersonPDLMock.createWith(true, "Lever", "Gjenlev", FNR_VOKSEN_3, AKTOER_ID)
+        every { personService.hentPerson(NorskIdent(FNR_VOKSEN_4)) } returns PersonPDLMock.createWith(true, "Avdød", "Død", FNR_VOKSEN_4, AKTOER_ID_2, true)
 
         val sak = V1Sak()
         sak.sakType = EPSaktype.GJENLEV.toString()
         sak.sakId = 100
         sak.kravHistorikkListe = V1KravHistorikkListe()
 
-        doReturn(sak).whenever(pensjoninformasjonservice).hentRelevantPensjonSak(any(), any())
-        doReturn("QX").whenever(kodeverkClient).finnLandkode2(any())
+        every { pensjoninformasjonservice.hentRelevantPensjonSak(any(), any()) } returns sak
+        every { kodeverkClient.finnLandkode2(any()) } returns "QX"
 
         val subject = dummyApiSubjectjson(FNR_VOKSEN_4)
         val apijson = dummyApijson(sakid = "21337890", aktoerId = AKTOER_ID, sed = "P8000", buc = "P_BUC_05", subject = subject, refperson = "\"SOKER\"")
@@ -163,10 +162,11 @@ class SedPrefillP8000IntegrationSpringTest {
     @Test
     @Throws(Exception::class)
     fun `prefill sed P8000 - Gitt alderpensjon Og henvendelse gjelder avdød SÅ skal det produseres en Gyldig P8000 med avdød og gjenlevende`() {
-        doReturn(NorskIdent(FNR_VOKSEN_3)).whenever(personService).hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID))
-        doReturn(AktoerId(AKTOER_ID_2)).whenever(personService).hentIdent(IdentType.AktoerId, NorskIdent(FNR_VOKSEN_4))
-        doReturn(PersonPDLMock.createWith(true, "Lever", "Gjenlev", FNR_VOKSEN_3, AKTOER_ID)).whenever(personService).hentPerson(NorskIdent(FNR_VOKSEN_3))
-        doReturn(PersonPDLMock.createWith(true, "Avdød", "Død", FNR_VOKSEN_4, AKTOER_ID_2, true)).whenever(personService).hentPerson(NorskIdent(FNR_VOKSEN_4))
+
+        every { personService.hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN_3)
+        every { personService.hentIdent(IdentType.AktoerId, NorskIdent(FNR_VOKSEN_4)) } returns AktoerId(AKTOER_ID_2)
+        every { personService.hentPerson(NorskIdent(FNR_VOKSEN_3)) } returns PersonPDLMock.createWith(true, "Lever", "Gjenlev", FNR_VOKSEN_3, AKTOER_ID)
+        every { personService.hentPerson(NorskIdent(FNR_VOKSEN_4)) } returns PersonPDLMock.createWith(true, "Avdød", "Død", FNR_VOKSEN_4, AKTOER_ID_2, true)
 
         val v1Kravhistorikk = V1KravHistorikk()
         v1Kravhistorikk.kravArsak = KravArsak.GJNL_SKAL_VURD.name
@@ -177,8 +177,8 @@ class SedPrefillP8000IntegrationSpringTest {
         sak.kravHistorikkListe = V1KravHistorikkListe()
         sak.kravHistorikkListe.kravHistorikkListe.add(v1Kravhistorikk)
 
-        doReturn(sak).whenever(pensjoninformasjonservice).hentRelevantPensjonSak(any(), any())
-        doReturn("QX").whenever(kodeverkClient).finnLandkode2(any())
+        every {pensjoninformasjonservice.hentRelevantPensjonSak(any(), any()) } returns sak
+        every { kodeverkClient.finnLandkode2(any()) } returns "QX"
 
         val subject = dummyApiSubjectjson(FNR_VOKSEN_4)
         val apijson = dummyApijson(sakid = "21337890", aktoerId = AKTOER_ID, sed = "P8000", buc = "P_BUC_05", subject = subject, refperson = "\"AVDOD\"")
@@ -264,10 +264,10 @@ class SedPrefillP8000IntegrationSpringTest {
     @Test
     @Throws(Exception::class)
     fun `prefill sed P8000 - Gitt alderpensjon Og henvendelse gjelder søker SÅ skal det produseres en Gyldig P8000 med referanse der søker er gjenlevende`() {
-        doReturn(NorskIdent(FNR_VOKSEN_3)).whenever(personService).hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID))
-        doReturn(AktoerId(AKTOER_ID_2)).whenever(personService).hentIdent(IdentType.AktoerId, NorskIdent(FNR_VOKSEN_4))
-        doReturn(PersonPDLMock.createWith(true, "Lever", "Gjenlev", FNR_VOKSEN_3, AKTOER_ID)).whenever(personService).hentPerson(NorskIdent(FNR_VOKSEN_3))
-        doReturn(PersonPDLMock.createWith(true, "Avdød", "Død", FNR_VOKSEN_4, AKTOER_ID_2, true)).whenever(personService).hentPerson(NorskIdent(FNR_VOKSEN_4))
+        every { personService.hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN_3)
+        every { personService.hentIdent(IdentType.AktoerId, NorskIdent(FNR_VOKSEN_4)) } returns AktoerId(AKTOER_ID_2)
+        every { personService.hentPerson(NorskIdent(FNR_VOKSEN_3))  } returns PersonPDLMock.createWith(true, "Lever", "Gjenlev", FNR_VOKSEN_3, AKTOER_ID)
+        every { personService.hentPerson(NorskIdent(FNR_VOKSEN_4)) } returns PersonPDLMock.createWith(true, "Avdød", "Død", FNR_VOKSEN_4, AKTOER_ID_2, true)
 
         val v1Kravhistorikk = V1KravHistorikk()
         v1Kravhistorikk.kravArsak = KravArsak.GJNL_SKAL_VURD.name
@@ -278,8 +278,8 @@ class SedPrefillP8000IntegrationSpringTest {
         sak.kravHistorikkListe = V1KravHistorikkListe()
         sak.kravHistorikkListe.kravHistorikkListe.add(v1Kravhistorikk)
 
-        doReturn(sak).whenever(pensjoninformasjonservice).hentRelevantPensjonSak(any(), any())
-        doReturn("QX").whenever(kodeverkClient).finnLandkode2(any())
+        every { pensjoninformasjonservice.hentRelevantPensjonSak(any(), any()) } returns sak
+        every { kodeverkClient.finnLandkode2(any()) } returns "QX"
 
         val subject = dummyApiSubjectjson(FNR_VOKSEN_4)
         val apijson = dummyApijson(sakid = "21337890", aktoerId = AKTOER_ID, sed = "P8000", buc = "P_BUC_05", subject = subject, refperson = "\"SOKER\"")
@@ -349,16 +349,15 @@ class SedPrefillP8000IntegrationSpringTest {
         sak.kravHistorikkListe = V1KravHistorikkListe()
         sak.kravHistorikkListe.kravHistorikkListe.add(v1Kravhistorikk)
 
-        whenever((pensjoninformasjonservice).hentRelevantPensjonSak(any(), any())).thenReturn(sak)
-
-        doReturn(NorskIdent(FNR_BARN)).whenever(personService).hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID))
-        doReturn(AktoerId(AKTOER_ID_2)).whenever(personService).hentIdent(IdentType.AktoerId, NorskIdent(FNR_VOKSEN_4))
+        every { pensjoninformasjonservice.hentRelevantPensjonSak(any(), any()) } returns sak
+        every { personService.hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_BARN)
+        every { personService.hentIdent(IdentType.AktoerId, NorskIdent(FNR_VOKSEN_4)) } returns AktoerId(AKTOER_ID_2)
 
         val diskeBarn = PersonPDLMock.createWith(true, "Barn", "Diskret", FNR_BARN, AKTOER_ID)
                             .medBeskyttelse(AdressebeskyttelseGradering.STRENGT_FORTROLIG)
-        doReturn(diskeBarn).whenever(personService).hentPerson(NorskIdent(FNR_BARN))
-        doReturn(PersonPDLMock.createWith(true, "Avdød", "Død", FNR_VOKSEN_4, AKTOER_ID_2, true)).whenever(personService).hentPerson(NorskIdent(FNR_VOKSEN_4))
-        doReturn("QX").`when`(kodeverkClient).finnLandkode2(any())
+        every { personService.hentPerson(NorskIdent(FNR_BARN)) } returns diskeBarn
+        every { personService.hentPerson(NorskIdent(FNR_VOKSEN_4)) } returns PersonPDLMock.createWith(true, "Avdød", "Død", FNR_VOKSEN_4, AKTOER_ID_2, true)
+        every { kodeverkClient.finnLandkode2(any()) } returns "QX"
 
         val subject = dummyApiSubjectjson(FNR_VOKSEN_4)
         val apijson = dummyApijson(sakid = "21337890", aktoerId = AKTOER_ID, sed = "P8000", buc = "P_BUC_05", subject = subject, refperson = "\"SOKER\"")
@@ -436,9 +435,9 @@ class SedPrefillP8000IntegrationSpringTest {
     @Test
     @Throws(Exception::class)
     fun `prefill sed P8000 - Gitt en alderspensjon så skal det genereres en P8000 uten referanse til person`() {
-        doReturn(NorskIdent(FNR_VOKSEN_3)).whenever(personService).hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID))
-        doReturn(PersonPDLMock.createWith(true, "Alder", "Pensjon", FNR_VOKSEN_3, AKTOER_ID)).whenever(personService).hentPerson(NorskIdent(FNR_VOKSEN_3))
-        doReturn("QX").doReturn("XQ").whenever(kodeverkClient).finnLandkode2(any())
+        every { personService.hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN_3)
+        every { personService.hentPerson(NorskIdent(FNR_VOKSEN_3)) } returns PersonPDLMock.createWith(true, "Alder", "Pensjon", FNR_VOKSEN_3, AKTOER_ID)
+        every { kodeverkClient.finnLandkode2(any())} returns "QX"
 
         val apijson = dummyApijson(sakid = "21337890", aktoerId = AKTOER_ID, sed = "P8000", buc = "P_BUC_05")
 

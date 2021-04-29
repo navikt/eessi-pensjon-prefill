@@ -1,8 +1,7 @@
 package no.nav.eessi.pensjon.integrationtest.sed
 
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.whenever
+import com.ninjasquad.springmockk.MockkBean
+import io.mockk.every
 import no.nav.eessi.pensjon.UnsecuredWebMvcTestLauncher
 import no.nav.eessi.pensjon.eux.model.sed.SedType
 import no.nav.eessi.pensjon.fagmodul.models.KravType
@@ -33,7 +32,6 @@ import org.skyscreamer.jsonassert.JSONAssert
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
@@ -51,20 +49,20 @@ import java.time.LocalDateTime
 @AutoConfigureMockMvc
 class PrefillP15000IntegrationTest {
 
-    @MockBean
+    @MockkBean
     lateinit var stsService: STSService
 
-    @MockBean(name = "pensjonsinformasjonOidcRestTemplate")
+    @MockkBean(name = "pensjonsinformasjonOidcRestTemplate")
     lateinit var restTemplate: RestTemplate
 
-    @MockBean
+    @MockkBean
     lateinit var kodeverkClient: KodeverkClient
 
-    @MockBean
+    @MockkBean
     lateinit var pensjoninformasjonservice: PensjonsinformasjonService
 
-    @MockBean
-    private lateinit var personService: PersonService
+    @MockkBean
+    lateinit var personService: PersonService
 
     @Autowired
     private lateinit var mockMvc: MockMvc
@@ -82,18 +80,18 @@ class PrefillP15000IntegrationTest {
     @Test
     @Throws(Exception::class)
     fun `prefill P15000 P_BUC_10 fra vedtakskontekst hvor saktype er GJENLEV og pensjoninformasjon gir BARNEP med GJENLEV`() {
-        doReturn(NorskIdent(FNR_VOKSEN_3)).whenever(personService).hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID))
-        doReturn(AktoerId(AKTOER_ID_2)).whenever(personService).hentIdent(IdentType.AktoerId, NorskIdent(FNR_VOKSEN_4))
 
-        doReturn(PersonPDLMock.createWith(true, "Lever", "Gjenlev", FNR_VOKSEN_3, AKTOER_ID)).whenever(personService).hentPerson(NorskIdent(FNR_VOKSEN_3))
-        doReturn(PersonPDLMock.createWith(true, "Avdød", "Død", FNR_VOKSEN_4, AKTOER_ID_2, true)).whenever(personService).hentPerson(NorskIdent(FNR_VOKSEN_4))
+        every { personService.hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN_3)
+        every { personService.hentIdent(IdentType.AktoerId, NorskIdent(FNR_VOKSEN_4)) } returns AktoerId(AKTOER_ID_2)
+        every { personService.hentPerson(NorskIdent(FNR_VOKSEN_3)) } returns PersonPDLMock.createWith(true, "Lever", "Gjenlev", FNR_VOKSEN_3, AKTOER_ID)
+        every { personService.hentPerson(NorskIdent(FNR_VOKSEN_4)) } returns PersonPDLMock.createWith(true, "Avdød", "Død", FNR_VOKSEN_4, AKTOER_ID_2, true)
 
         val banrepSak = V1Sak()
         banrepSak.sakType = "BARNEP"
         banrepSak.sakId = 22915555L
         banrepSak.status = "INNV"
 
-        doReturn(banrepSak).`when`(pensjoninformasjonservice).hentRelevantPensjonSak(any(), any())
+        every { pensjoninformasjonservice.hentRelevantPensjonSak(any(), any()) } returns banrepSak
 
         val pensjonsinformasjon = Pensjonsinformasjon()
         val avdod = V1Avdod()
@@ -114,8 +112,9 @@ class PrefillP15000IntegrationTest {
         sak.kravHistorikkListe = V1KravHistorikkListe()
         sak.kravHistorikkListe.kravHistorikkListe.add(v1Kravhistorikk)
 
-        doReturn(pensjonsinformasjon).`when`(pensjoninformasjonservice).hentMedVedtak("123123123")
-        doReturn("XQ").`when`(kodeverkClient).finnLandkode2(any())
+
+        every { pensjoninformasjonservice.hentMedVedtak("123123123") } returns pensjonsinformasjon
+        every { kodeverkClient.finnLandkode2(any()) } returns "XQ"
 
         val apijson =  dummyApijson(sakid = "22915555", vedtakid = "123123123", aktoerId = AKTOER_ID, sedType = SedType.P15000, buc = "P_BUC_10", kravtype = KravType.GJENLEV, kravdato = "01-01-2020", fnravdod = "9876543210")
 
@@ -203,20 +202,17 @@ class PrefillP15000IntegrationTest {
     @Throws(Exception::class)
     fun `prefill P15000 P_BUC_10 fra vedtakskontekst hvor saktype er ALDER og pensjoninformasjon returnerer ALDER med GJENLEV`() {
 
-        doReturn(NorskIdent(FNR_VOKSEN_3)).whenever(personService).hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID))
-        doReturn(AktoerId(AKTOER_ID_2)).whenever(personService).hentIdent(IdentType.AktoerId, NorskIdent(FNR_VOKSEN_4))
-
-        doReturn(PersonPDLMock.createWith(true, "Lever", "Gjenlev", FNR_VOKSEN_3, AKTOER_ID)).whenever(personService).hentPerson(NorskIdent(FNR_VOKSEN_3))
-        doReturn(PersonPDLMock.createWith(true, "Avdød", "Død", FNR_VOKSEN_4, AKTOER_ID_2, true)).whenever(personService).hentPerson(NorskIdent(FNR_VOKSEN_4))
-
+        every { personService.hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN_3)
+        every { personService.hentIdent(IdentType.AktoerId, NorskIdent(FNR_VOKSEN_4)) } returns AktoerId(AKTOER_ID_2)
+        every { personService.hentPerson(NorskIdent(FNR_VOKSEN_3)) } returns PersonPDLMock.createWith(true, "Lever", "Gjenlev", FNR_VOKSEN_3, AKTOER_ID)
+        every { personService.hentPerson(NorskIdent(FNR_VOKSEN_4)) } returns PersonPDLMock.createWith(true, "Avdød", "Død", FNR_VOKSEN_4, AKTOER_ID_2, true)
 
         val aldersak = V1Sak()
         aldersak.sakType = "ALDER"
         aldersak.sakId = 22915555L
         aldersak.status = "INNV"
 
-        doReturn(aldersak).`when`(pensjoninformasjonservice).hentRelevantPensjonSak(any(), any())
-
+        every { pensjoninformasjonservice.hentRelevantPensjonSak(any(), any()) } returns aldersak
         val pensjonsinformasjon = Pensjonsinformasjon()
         val avdod = V1Avdod()
         avdod.avdod = "9876543210"
@@ -234,8 +230,9 @@ class PrefillP15000IntegrationTest {
         sak.kravHistorikkListe = V1KravHistorikkListe()
         sak.kravHistorikkListe.kravHistorikkListe.add(v1Kravhistorikk)
 
-        doReturn(pensjonsinformasjon).`when`(pensjoninformasjonservice).hentMedVedtak("123123123")
-        doReturn("QX").doReturn("XQ").`when`(kodeverkClient).finnLandkode2(any())
+
+        every { pensjoninformasjonservice.hentMedVedtak("123123123") } returns pensjonsinformasjon
+        every { kodeverkClient.finnLandkode2(any()) } returns "QX"
 
         val apijson =  dummyApijson(sakid = "22915555", vedtakid = "123123123", aktoerId = AKTOER_ID, sedType = SedType.P15000, buc = "P_BUC_10", kravtype = KravType.ALDER, kravdato = "01-01-2020", fnravdod = FNR_VOKSEN_4)
 
@@ -251,22 +248,22 @@ class PrefillP15000IntegrationTest {
     @Test
     @Throws(Exception::class)
     fun `prefill P15000 P_BUC_10 hvor saktype er ALDER men data fra pensjonsinformasjon gir UFOREP som resulterer i en bad request`() {
-        doReturn(NorskIdent(FNR_VOKSEN)).whenever(personService).hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID ))
-        doReturn(PersonPDLMock.createWith(true, fnr = FNR_VOKSEN, aktoerid = AKTOER_ID)).whenever(personService).hentPerson(NorskIdent(FNR_VOKSEN))
 
+        every { personService.hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID )) } returns NorskIdent(FNR_VOKSEN)
+        every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith(true, fnr = FNR_VOKSEN, aktoerid = AKTOER_ID)
 
         val aldersak = V1Sak()
         aldersak.sakType = "UFOREP"
         aldersak.sakId = 22874955
         aldersak.status = "INNV"
 
-        doReturn(aldersak).`when`(pensjoninformasjonservice).hentRelevantPensjonSak(any(), any())
+        every {pensjoninformasjonservice.hentRelevantPensjonSak(any(), any())  } returns aldersak
 
         val pensjonsinformasjon = Pensjonsinformasjon()
         pensjonsinformasjon.vedtak = V1Vedtak()
         pensjonsinformasjon.vedtak.vedtakStatus = "INNV"
 
-        doReturn(pensjonsinformasjon).`when`(pensjoninformasjonservice).hentMedVedtak("123123123")
+        every { pensjoninformasjonservice.hentMedVedtak("123123123") } returns pensjonsinformasjon
 
         val apijson = dummyApijson(sakid = "22874955", vedtakid = "123123123", aktoerId = AKTOER_ID, sedType = SedType.P15000, buc = "P_BUC_10", kravtype = KravType.ALDER, kravdato = "01-01-2020")
 
@@ -282,22 +279,22 @@ class PrefillP15000IntegrationTest {
     @Test
     @Throws(Exception::class)
     fun `prefill P15000 P_BUC_10 hvor saktype er UFOREP men data fra pensjonsinformasjon gir ALDER som resulterer i en bad request`() {
-        doReturn(NorskIdent(FNR_VOKSEN)).whenever(personService).hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID ))
-        doReturn(PersonPDLMock.createWith(true, fnr = FNR_VOKSEN, aktoerid = AKTOER_ID)).whenever(personService).hentPerson(NorskIdent(FNR_VOKSEN))
-
+        every { personService.hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID )) } returns NorskIdent(FNR_VOKSEN)
+        every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith(true, fnr = FNR_VOKSEN, aktoerid = AKTOER_ID)
 
         val aldersak = V1Sak()
         aldersak.sakType = "ALDER"
         aldersak.sakId = 21337890
         aldersak.status = "INNV"
 
-        doReturn(aldersak).`when`(pensjoninformasjonservice).hentRelevantPensjonSak(any(), any())
+        every {pensjoninformasjonservice.hentRelevantPensjonSak(any(), any()) } returns aldersak
 
         val pensjonsinformasjon = Pensjonsinformasjon()
         pensjonsinformasjon.vedtak = V1Vedtak()
         pensjonsinformasjon.vedtak.vedtakStatus = "INNV"
 
-        doReturn(pensjonsinformasjon).`when`(pensjoninformasjonservice).hentMedVedtak("123123123")
+        every { pensjoninformasjonservice.hentMedVedtak("123123123") } returns pensjonsinformasjon
+
 
         val apijson = dummyApijson(sakid = "21337890", vedtakid = "123123123" , aktoerId = AKTOER_ID, sedType = SedType.P15000, buc = "P_BUC_10", kravtype = KravType.UFOREP, kravdato = "01-01-2020")
 
@@ -313,26 +310,22 @@ class PrefillP15000IntegrationTest {
     @Throws(Exception::class)
     fun `prefill P15000 P_BUC_10 hvor saktype er ALDER`() {
 
-        doReturn(NorskIdent(FNR_VOKSEN)).whenever(personService).hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID ))
-        doReturn(PersonPDLMock.createWith(true, "Lever", "Gjenlev", fnr = FNR_VOKSEN, aktoerid = AKTOER_ID)).whenever(personService).hentPerson(NorskIdent(
-            FNR_VOKSEN
-        ))
-
+        every { personService.hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID )) } returns NorskIdent(FNR_VOKSEN)
+        every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith(true, "Lever", "Gjenlev", fnr = FNR_VOKSEN, aktoerid = AKTOER_ID)
 
         val aldersak = V1Sak()
         aldersak.sakType = "ALDER"
         aldersak.sakId = 21337890
         aldersak.status = "INNV"
 
-        doReturn(aldersak).`when`(pensjoninformasjonservice).hentRelevantPensjonSak(any(), any())
+        every { pensjoninformasjonservice.hentRelevantPensjonSak(any(), any()) } returns aldersak
 
         val pensjonsinformasjon = Pensjonsinformasjon()
         pensjonsinformasjon.vedtak = V1Vedtak()
         pensjonsinformasjon.vedtak.vedtakStatus = "INNV"
 
-        doReturn(pensjonsinformasjon).`when`(pensjoninformasjonservice).hentMedVedtak("123123123")
-
-        doReturn("QX").doReturn("XQ").`when`(kodeverkClient).finnLandkode2(any())
+        every { pensjoninformasjonservice.hentMedVedtak("123123123") } returns pensjonsinformasjon
+        every { kodeverkClient.finnLandkode2(any()) } returns "QX"
 
         val apijson = dummyApijson(sakid = "21337890", vedtakid = "123123123" , aktoerId = AKTOER_ID, sedType = SedType.P15000, buc = "P_BUC_10", kravtype = KravType.ALDER, kravdato = "01-01-2020")
 
@@ -384,24 +377,23 @@ class PrefillP15000IntegrationTest {
     @Throws(Exception::class)
     fun `prefill P15000 P_BUC_10 hvor saktype er UFOREP`() {
 
-        doReturn(NorskIdent(FNR_VOKSEN)).whenever(personService).hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID ))
-        doReturn(PersonPDLMock.createWith(true, "Lever", "Gjenlev", fnr = FNR_VOKSEN, aktoerid = AKTOER_ID)).whenever(personService).hentPerson(NorskIdent(
-            FNR_VOKSEN
-        ))
+        every { personService.hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID )) } returns NorskIdent(FNR_VOKSEN)
+        every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith(true, "Lever", "Gjenlev", fnr = FNR_VOKSEN, aktoerid = AKTOER_ID)
+
 
         val aldersak = V1Sak()
         aldersak.sakType = "UFOREP"
         aldersak.sakId = 22874955
         aldersak.status = "INNV"
 
-        doReturn(aldersak).`when`(pensjoninformasjonservice).hentRelevantPensjonSak(any(), any())
+        every { pensjoninformasjonservice.hentRelevantPensjonSak(any(), any()) } returns aldersak
 
         val pensjonsinformasjon = Pensjonsinformasjon()
         pensjonsinformasjon.vedtak = V1Vedtak()
         pensjonsinformasjon.vedtak.vedtakStatus = "INNV"
 
-        doReturn(pensjonsinformasjon).`when`(pensjoninformasjonservice).hentMedVedtak("123123123")
-        doReturn("QX").whenever(kodeverkClient).finnLandkode2(any())
+        every { pensjoninformasjonservice.hentMedVedtak("123123123") } returns pensjonsinformasjon
+        every { kodeverkClient.finnLandkode2(any()) } returns "QX"
 
         val apijson = dummyApijson(
             sakid = "22874955", vedtakid = "123123123" ,
@@ -420,25 +412,23 @@ class PrefillP15000IntegrationTest {
     @Throws(Exception::class)
     fun `prefill P15000 P_BUC_10 hvor saktype er GJENLEV og pensjoninformasjon gir UFOREP med GJENLEV`() {
 
-        doReturn(NorskIdent(FNR_VOKSEN)).whenever(personService).hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID))
-        doReturn(AktoerId(AKTOER_ID_2)).whenever(personService).hentIdent(IdentType.AktoerId, NorskIdent(FNR_VOKSEN_2))
-
-        doReturn(PersonPDLMock.createWith(true, "Lever", "Gjenlev", FNR_VOKSEN, AKTOER_ID)).whenever(personService).hentPerson(NorskIdent(FNR_VOKSEN))
-        doReturn(PersonPDLMock.createWith(true, "Avdød", "Død", FNR_VOKSEN_2, AKTOER_ID_2, true)).whenever(personService).hentPerson(NorskIdent(FNR_VOKSEN_2))
+        every { personService.hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN)
+        every { personService.hentIdent(IdentType.AktoerId, NorskIdent(FNR_VOKSEN_2)) } returns AktoerId(AKTOER_ID_2)
+        every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith(true, "Lever", "Gjenlev", FNR_VOKSEN, AKTOER_ID)
+        every { personService.hentPerson(NorskIdent(FNR_VOKSEN_2)) } returns PersonPDLMock.createWith(true, "Avdød", "Død", FNR_VOKSEN_2, AKTOER_ID_2, true)
 
         val aldersak = V1Sak()
         aldersak.sakType = "UFOREP"
         aldersak.sakId = 22915550
         aldersak.status = "INNV"
 
-        doReturn(aldersak).`when`(pensjoninformasjonservice).hentRelevantPensjonSak(any(), any())
-
+        every { pensjoninformasjonservice.hentRelevantPensjonSak(any(), any()) } returns aldersak
         val pensjonsinformasjon = Pensjonsinformasjon()
         pensjonsinformasjon.vedtak = V1Vedtak()
         pensjonsinformasjon.vedtak.vedtakStatus = "INNV"
 
-        doReturn(pensjonsinformasjon).`when`(pensjoninformasjonservice).hentMedVedtak("123123123")
-        doReturn("QX").doReturn("XQ").`when`(kodeverkClient).finnLandkode2(any())
+        every { pensjoninformasjonservice.hentMedVedtak("123123123") } returns pensjonsinformasjon
+        every { kodeverkClient.finnLandkode2(any()) } returns "XQ"
 
         val apijson = dummyApijson(sakid = "22915550", vedtakid = "123123123", aktoerId = AKTOER_ID, sedType =SedType.P15000, buc = "P_BUC_10", kravtype = KravType.GJENLEV, kravdato = "01-01-2020", fnravdod = FNR_VOKSEN_2)
 
@@ -523,10 +513,10 @@ class PrefillP15000IntegrationTest {
     @Test
     @Throws(Exception::class)
     fun `prefill P15000 P_BUC_10 hvor saktype er GJENLEV og pensjoninformasjon gir BARNEP med GJENLEV`() {
-        doReturn(NorskIdent(FNR_VOKSEN)).whenever(personService).hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID))
-        doReturn(AktoerId(AKTOER_ID_2)).whenever(personService).hentIdent(IdentType.AktoerId, NorskIdent(FNR_VOKSEN_2))
 
-        doReturn(PersonPDLMock.createWith(true, "Lever", "Gjenlev", FNR_VOKSEN, AKTOER_ID)).whenever(personService).hentPerson(NorskIdent(FNR_VOKSEN))
+        every { personService.hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN)
+        every { personService.hentIdent(IdentType.AktoerId, NorskIdent(FNR_VOKSEN_2)) } returns AktoerId(AKTOER_ID_2)
+        every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith(true, "Lever", "Gjenlev", FNR_VOKSEN, AKTOER_ID)
 
         val avdodperson = PersonPDLMock.createWith(true, "Avdød", "Død", FNR_VOKSEN_2, AKTOER_ID_2, true)
             .copy(bostedsadresse = null, oppholdsadresse = null, kontaktadresse = null, kontaktinformasjonForDoedsbo = KontaktinformasjonForDoedsbo(
@@ -547,15 +537,14 @@ class PrefillP15000IntegrationTest {
                 ),
                 KontaktinformasjonForDoedsboSkifteform.ANNET
             ))
-
-        doReturn(avdodperson).whenever(personService).hentPerson(NorskIdent(FNR_VOKSEN_2))
+        every { personService.hentPerson(NorskIdent(FNR_VOKSEN_2)) } returns avdodperson
 
         val aldersak = V1Sak()
         aldersak.sakType = "UFOREP"
         aldersak.sakId = 22915555
         aldersak.status = "INNV"
 
-        doReturn(aldersak).`when`(pensjoninformasjonservice).hentRelevantPensjonSak(any(), any())
+        every { pensjoninformasjonservice.hentRelevantPensjonSak(any(), any()) } returns aldersak
 
         val pensjonsinformasjon = Pensjonsinformasjon()
         pensjonsinformasjon.vedtak = V1Vedtak()
@@ -568,9 +557,9 @@ class PrefillP15000IntegrationTest {
         avdod.avdodMorAktorId = "123343242034739845719384257134513"
         pensjonsinformasjon.avdod = avdod
 
-        doReturn(pensjonsinformasjon).`when`(pensjoninformasjonservice).hentMedVedtak("123123123")
-        doReturn("QX").doReturn("XQ").`when`(kodeverkClient).finnLandkode2(any())
-        doReturn("SE").whenever(kodeverkClient).finnLandkode2("SWE")
+        every { pensjoninformasjonservice.hentMedVedtak("123123123") } returns pensjonsinformasjon
+        every { kodeverkClient.finnLandkode2(any()) } returns "XQ"
+        every { kodeverkClient.finnLandkode2("SWE") } returns "SE"
 
         val apijson = dummyApijson(sakid = "22915555", vedtakid = "123123123", aktoerId = AKTOER_ID, sedType = SedType.P15000, buc = "P_BUC_10", kravtype = KravType.GJENLEV, kravdato = "01-01-2020", fnravdod = FNR_VOKSEN_2)
 
@@ -653,8 +642,6 @@ class PrefillP15000IntegrationTest {
         """.trimIndent()
 
         JSONAssert.assertEquals(response, validResponse, true)
-
     }
-
 }
 

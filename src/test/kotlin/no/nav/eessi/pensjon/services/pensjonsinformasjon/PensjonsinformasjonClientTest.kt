@@ -1,8 +1,7 @@
 package no.nav.eessi.pensjon.services.pensjonsinformasjon
 
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.whenever
+import io.mockk.every
+import io.mockk.mockk
 import no.nav.eessi.pensjon.utils.simpleFormat
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -10,12 +9,7 @@ import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.ArgumentMatchers
-import org.mockito.Mock
-import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.http.HttpEntity
-import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.test.context.ActiveProfiles
@@ -24,11 +18,9 @@ import org.springframework.web.client.ResourceAccessException
 import org.springframework.web.client.RestTemplate
 
 @ActiveProfiles("test")
-@ExtendWith(MockitoExtension::class) // Silent?
 class PensjonsinformasjonClientTest {
 
-    @Mock
-    private lateinit var mockrestTemplate: RestTemplate
+    private var mockrestTemplate: RestTemplate = mockk()
 
     private lateinit var pensjonsinformasjonClient: PensjonsinformasjonClient
 
@@ -41,7 +33,7 @@ class PensjonsinformasjonClientTest {
     @Test
     fun hentAlt() {
         val mockResponseEntity = createResponseEntityFromJsonFile("classpath:pensjonsinformasjon/full-generated-response.xml")
-        whenever(mockrestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java))).thenReturn(mockResponseEntity)
+        every { mockrestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns mockResponseEntity
         val data = pensjonsinformasjonClient.hentAltPaaVedtak("1243")
 
         assertNotNull(data.vedtak, "Vedtak er null")
@@ -50,12 +42,11 @@ class PensjonsinformasjonClientTest {
 
     @Test
     fun `PensjonsinformasjonClient  hentAlt paa vedtak feiler`() {
-        whenever(mockrestTemplate.exchange(
-                any<String>(),
-                any(),
-                any<HttpEntity<Unit>>(),
-                ArgumentMatchers.eq(String::class.java))
-        ).thenThrow(ResourceAccessException("IOException"))
+        every { mockrestTemplate.exchange(
+            any<String>(),
+            any(),
+            any<HttpEntity<Unit>>(),
+            eq(String::class.java)) } throws ResourceAccessException("IOException")
 
         assertThrows<PensjoninformasjonException> {
             pensjonsinformasjonClient.hentAltPaaVedtak("1243")
@@ -66,7 +57,8 @@ class PensjonsinformasjonClientTest {
     @Test
     fun `Sjekker om pensjoninformasjon XmlCalendar kan være satt eller null sette simpleFormat`() {
         val mockResponseEntity = createResponseEntityFromJsonFile("classpath:pensjonsinformasjon/full-generated-response.xml")
-        whenever(mockrestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java))).thenReturn(mockResponseEntity)
+
+        every { mockrestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns mockResponseEntity
         val data = pensjonsinformasjonClient.hentAltPaaVedtak("1243")
 
         var result = data.ytelsePerMaanedListe.ytelsePerMaanedListe.first()
@@ -87,7 +79,7 @@ class PensjonsinformasjonClientTest {
     @Test
     fun `hentAltpaaSak  mock data med to saktyper en skal komme ut`() {
         val mockResponseEntity = createResponseEntityFromJsonFile("classpath:pensjonsinformasjon/krav/KravAlderEllerUfore_AP_UTLAND.xml")
-        whenever(mockrestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java))).thenReturn(mockResponseEntity)
+        every { mockrestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java))} returns  (mockResponseEntity)
 
         val data = pensjonsinformasjonClient.hentAltPaaAktoerId("1231233")
         val sak = PensjonsinformasjonClient.finnSak("21975717", data)
@@ -102,7 +94,7 @@ class PensjonsinformasjonClientTest {
     @Test
     fun `hentAltpaaSak  mock data med aktoerid to saktyper en skal komme ut`() {
         val mockResponseEntity = createResponseEntityFromJsonFile("classpath:pensjonsinformasjon/krav/KravAlderEllerUfore_AP_UTLAND.xml")
-        whenever(mockrestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java))).thenReturn(mockResponseEntity)
+        every { mockrestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns (mockResponseEntity)
 
         val data = pensjonsinformasjonClient.hentAltPaaAktoerId("123456789011")
 
@@ -132,11 +124,7 @@ class PensjonsinformasjonClientTest {
     fun `hentPensjonSakType   mock response ok`() {
         val mockResponseEntity = createResponseEntityFromJsonFile("classpath:pensjonsinformasjon/krav/AP_FORSTEG_BH.xml")
 
-        doReturn(mockResponseEntity).whenever(mockrestTemplate).exchange(
-                ArgumentMatchers.any(String::class.java),
-                ArgumentMatchers.any(HttpMethod::class.java),
-                ArgumentMatchers.any(HttpEntity::class.java),
-                ArgumentMatchers.eq(String::class.java))
+        every { mockrestTemplate.exchange(any<String>(), any(), any(), eq(String::class.java)) } returns mockResponseEntity
 
         val response = pensjonsinformasjonClient.hentKunSakType("22580170", "12345678901")
 
@@ -150,11 +138,7 @@ class PensjonsinformasjonClientTest {
         val mockResponseEntity = createResponseEntityFromJsonFile("classpath:pensjonsinformasjon/empty-pensjon-response.xml")
         val sakid = "22580170"
 
-        doReturn(mockResponseEntity).whenever(mockrestTemplate).exchange(
-                ArgumentMatchers.any(String::class.java),
-                ArgumentMatchers.any(HttpMethod::class.java),
-                ArgumentMatchers.any(HttpEntity::class.java),
-                ArgumentMatchers.eq(String::class.java))
+        every { mockrestTemplate.exchange(any<String>(), any(), any(), eq(String::class.java)) } returns mockResponseEntity
 
         val res =  pensjonsinformasjonClient.hentKunSakType(sakid,  "12345678901")
         assertEquals("", res.sakType)
@@ -214,14 +198,7 @@ class PensjonsinformasjonClientTest {
 
     private fun mockAnyRequest(kravLokasjon : String) {
         val mockResponseEntity = createResponseEntityFromJsonFile(kravLokasjon)
-        whenever(
-            mockrestTemplate.exchange(
-                any<String>(),
-                any(),
-                any<HttpEntity<Unit>>(),
-                ArgumentMatchers.eq(String::class.java)
-            )
-        ).thenReturn(mockResponseEntity)
+        every { mockrestTemplate.exchange(any<String>(), any(), any(), eq(String::class.java)) } returns mockResponseEntity
     }
 
     private fun createResponseEntityFromJsonFile(filePath: String, httpStatus: HttpStatus = HttpStatus.OK): ResponseEntity<String?> {

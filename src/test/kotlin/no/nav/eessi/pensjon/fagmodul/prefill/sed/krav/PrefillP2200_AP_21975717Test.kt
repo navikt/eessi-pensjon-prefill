@@ -1,7 +1,7 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed.krav
 
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.whenever
+import io.mockk.every
+import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.sed.SedType
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.models.PersonDataCollection
@@ -26,15 +26,10 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.Mock
-import org.mockito.junit.jupiter.MockitoExtension
 
-@ExtendWith(MockitoExtension::class)
 class PrefillP2200_AP_21975717Test {
 
-    @Mock
-    lateinit var kodeverkClient: KodeverkClient
+    var kodeverkClient: KodeverkClient = mockk()
 
     private val personFnr = generateRandomFnr(68)
     private val ekteFnr = generateRandomFnr(70)
@@ -67,7 +62,8 @@ class PrefillP2200_AP_21975717Test {
 
     @Test
     fun `forventet korrekt utfylt P2200 uforerpensjon med mockdata fra testfiler`() {
-        doReturn("NO").whenever(kodeverkClient).finnLandkode2("NOR")
+
+        every { kodeverkClient.finnLandkode2("NOR") } returns "NO"
 
         val p2200 = prefillSEDService.prefill(prefillData, personDataCollection)
 
@@ -111,6 +107,8 @@ class PrefillP2200_AP_21975717Test {
 
     @Test
     fun `testing av komplett P2200 med utskrift og testing av innsending`() {
+        every { kodeverkClient.finnLandkode2(any()) } returns "NO"
+
         val P2200 = prefillSEDService.prefill(prefillData, personDataCollection)
         val json = mapAnyToJson(createMockApiRequest("P2200", "P_BUC_01", P2200.toJson()))
         assertNotNull(json)
