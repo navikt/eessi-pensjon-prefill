@@ -194,9 +194,9 @@ class PrefillP15000IntegrationTest {
         }
         """.trimIndent()
 
-    JSONAssert.assertEquals(response, validResponse, true)
+        JSONAssert.assertEquals(response, validResponse, true)
 
-   }
+    }
 
     @Test
     @Throws(Exception::class)
@@ -295,7 +295,6 @@ class PrefillP15000IntegrationTest {
 
         every { pensjoninformasjonservice.hentMedVedtak("123123123") } returns pensjonsinformasjon
 
-
         val apijson = dummyApijson(sakid = "21337890", vedtakid = "123123123" , aktoerId = AKTOER_ID, sedType = SedType.P15000, buc = "P_BUC_10", kravtype = KravType.UFOREP, kravdato = "01-01-2020")
 
         mockMvc.perform(post("/sed/prefill")
@@ -342,26 +341,22 @@ class PrefillP15000IntegrationTest {
     @Throws(Exception::class)
     fun `prefill P15000 P_BUC_10 hvor saktype er ALDER med feil dato`() {
 
-        doReturn(NorskIdent(FNR_VOKSEN)).whenever(personService).hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID ))
-        doReturn(PersonPDLMock.createWith(true, "Lever", "Gjenlev", fnr = FNR_VOKSEN, aktoerid = AKTOER_ID)).whenever(personService).hentPerson(NorskIdent(
-            FNR_VOKSEN
-        ))
-
+        every {personService.hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID ))  } returns (NorskIdent(FNR_VOKSEN))
+        every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith(true, "Lever", "Gjenlev", fnr = FNR_VOKSEN, aktoerid = AKTOER_ID)
 
         val aldersak = V1Sak()
         aldersak.sakType = "ALDER"
         aldersak.sakId = 21337890
         aldersak.status = "INNV"
 
-        doReturn(aldersak).`when`(pensjoninformasjonservice).hentRelevantPensjonSak(any(), any())
+        every { pensjoninformasjonservice.hentRelevantPensjonSak(any(), any()) } returns aldersak
 
         val pensjonsinformasjon = Pensjonsinformasjon()
         pensjonsinformasjon.vedtak = V1Vedtak()
         pensjonsinformasjon.vedtak.vedtakStatus = "INNV"
 
-        doReturn(pensjonsinformasjon).`when`(pensjoninformasjonservice).hentMedVedtak("123123123")
-
-        doReturn("QX").doReturn("XQ").`when`(kodeverkClient).finnLandkode2(any())
+        every { pensjoninformasjonservice.hentMedVedtak("123123123") } returns pensjonsinformasjon
+        every {kodeverkClient.finnLandkode2(any())  } returns "QX"
 
         val apijson = dummyApijson(sakid = "21337890", vedtakid = "123123123" , aktoerId = AKTOER_ID, sedType = SedType.P15000, buc = "P_BUC_10", kravtype = KravType.ALDER, kravdato = "01-01- 2020")
         val expectedError = "Ugyldig datoformat"
