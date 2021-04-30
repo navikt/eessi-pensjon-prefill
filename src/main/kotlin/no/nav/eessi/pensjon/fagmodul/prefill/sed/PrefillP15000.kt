@@ -34,7 +34,10 @@ class PrefillP15000(private val prefillSed: PrefillSed) {
         pensjonsinformasjon: Pensjonsinformasjon?
     ): P15000 {
 
-        val kravType = prefillData.kravType ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST, "For preutfylling av P15000 så kreves det kravtype")
+        val kravType = prefillData.kravType ?: throw ResponseStatusException(
+            HttpStatus.BAD_REQUEST,
+            "For preutfylling av P15000 så kreves det kravtype"
+        )
         val penSaksnummer = prefillData.penSaksnummer
         val sakType = sak?.sakType
         val avdodFnr = prefillData.avdod?.norskIdent
@@ -43,12 +46,14 @@ class PrefillP15000(private val prefillSed: PrefillSed) {
         logger.debug("Vedtak har avdød? ${pensjonsinformasjon?.avdod != null}")
 
         if (kravType != KravType.GJENLEV && kravType.name != sakType) {
-            if(sakType == null) {
-                val errorMsg = "Ved opprettelse av krav SED må saksbehandling være fullført i Pesys ( vilkårsprøving o.l ) og jordklode i brukerkontekst kan ikke benyttes"
+            if (sakType == null) {
+                val errorMsg =
+                    "Ved opprettelse av krav SED må saksbehandling være fullført i Pesys ( vilkårsprøving o.l ) og jordklode i brukerkontekst kan ikke benyttes"
                 logger.warn(errorMsg)
                 throw ResponseStatusException(HttpStatus.BAD_REQUEST, errorMsg)
             }
-            val errorMsg =  "Du kan ikke opprette ${sedTypeAsText(kravType)} i en ${sakTypeAsText(sakType)} (PESYS-saksnr: $penSaksnummer har sakstype ${sakType})"
+            val errorMsg =
+                "Du kan ikke opprette ${sedTypeAsText(kravType)} i en ${sakTypeAsText(sakType)} (PESYS-saksnr: $penSaksnummer har sakstype ${sakType})"
             logger.warn(errorMsg)
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, errorMsg)
         }
@@ -97,9 +102,10 @@ class PrefillP15000(private val prefillSed: PrefillSed) {
         return P15000(nav = nav, p15000Pensjon = P15000Pensjon(gjenlevende))
     }
 
-    private fun validateFrontEndKravDato(dato: String?): LocalDate {
+    fun validateFrontEndKravDato(dato: String?): LocalDate {
+        logger.info("Konverterer uiKravdato fra: $dato")
         return try {
-            val formatter = DateTimeFormatter.ofPattern("MM-dd-yyyy")
+            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
             LocalDate.parse(dato, formatter)
         } catch (ex: Exception) {
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Ugyldig datoformat")
@@ -121,9 +127,11 @@ class PrefillP15000(private val prefillSed: PrefillSed) {
         }
     }
 
-    private fun bestemGjenlevende(gjenlevende: Bruker?,
-                                  relasjon: String?,
-                                  kravType: KravType): Bruker? {
+    private fun bestemGjenlevende(
+        gjenlevende: Bruker?,
+        relasjon: String?,
+        kravType: KravType
+    ): Bruker? {
         if (kravType == KravType.GJENLEV) {
             return if (gjenlevende != null) {
 

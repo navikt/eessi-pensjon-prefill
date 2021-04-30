@@ -20,7 +20,7 @@ data class PrefillDataModel(
     val sedType: SedType,
     val buc: String,
     val vedtakId: String? = null,
-    val kravDato: String? = null, // Brukes bare av P15000
+    val kravDato: String? = null, // Brukes bare av P15000 yyyy-MM-dd
     val kravType: KravType? = null, // Brukes bare av P15000
     val kravId: String? = null,
     val euxCaseID: String,
