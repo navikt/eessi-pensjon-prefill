@@ -199,7 +199,7 @@ class SedPrefillIntegrationSpringTest {
             {
               "sed" : "P6000",
               "sedGVer" : "4",
-              "sedVer" : "1",
+              "sedVer" : "2",
               "nav" : {
                 "eessisak" : [ {
                   "institusjonsid" : "NO:noinst002",
@@ -320,7 +320,7 @@ class SedPrefillIntegrationSpringTest {
             {
               "sed" : "P4000",
               "sedGVer" : "4",
-              "sedVer" : "1",
+              "sedVer" : "2",
               "nav" : {
                 "eessisak" : [ {
                   "institusjonsid" : "NO:noinst002",
@@ -379,7 +379,7 @@ class SedPrefillIntegrationSpringTest {
             {
               "sed" : "P2000",
               "sedGVer" : "4",
-              "sedVer" : "1",
+              "sedVer" : "2",
               "nav" : {
                 "eessisak" : [ {
                   "institusjonsid" : "NO:noinst002",
@@ -451,7 +451,7 @@ class SedPrefillIntegrationSpringTest {
         {
           "sed" : "P2000",
           "sedGVer" : "4",
-          "sedVer" : "1",
+          "sedVer" : "2",
           "nav" : {
             "eessisak" : [ {
               "institusjonsid" : "NO:noinst002",
@@ -531,7 +531,7 @@ class SedPrefillIntegrationSpringTest {
             {
               "sed" : "P2000",
               "sedGVer" : "4",
-              "sedVer" : "1",
+              "sedVer" : "2",
               "nav" : {
                 "eessisak" : [ {
                   "institusjonsid" : "NO:noinst002",
@@ -605,7 +605,7 @@ class SedPrefillIntegrationSpringTest {
             {
               "sed" : "P2000",
               "sedGVer" : "4",
-              "sedVer" : "1",
+              "sedVer" : "2",
               "nav" : {
                 "eessisak" : [ {
                   "institusjonsid" : "NO:noinst002",

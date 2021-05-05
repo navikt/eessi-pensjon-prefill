@@ -131,7 +131,7 @@ class PrefillP15000IntegrationTest {
         {
           "sed" : "P15000",
           "sedGVer" : "4",
-          "sedVer" : "1",
+          "sedVer" : "2",
           "nav" : {
             "eessisak" : [ {
               "institusjonsid" : "NO:noinst002",
@@ -441,7 +441,7 @@ class PrefillP15000IntegrationTest {
             {
               "sed" : "P15000",
               "sedGVer" : "4",
-              "sedVer" : "1",
+              "sedVer" : "2",
               "nav" : {
                 "eessisak" : [ {
                   "institusjonsid" : "NO:noinst002",
@@ -572,7 +572,7 @@ class PrefillP15000IntegrationTest {
             {
               "sed" : "P15000",
               "sedGVer" : "4",
-              "sedVer" : "1",
+              "sedVer" : "2",
               "nav" : {
                 "eessisak" : [ {
                   "institusjonsid" : "NO:noinst002",

@@ -76,7 +76,7 @@ class PrefillUfoereIntegrationTest {
                     {
                       "sed" : "P2200",
                       "sedGVer" : "4",
-                      "sedVer" : "1",
+                      "sedVer" : "2",
                       "nav" : {
                         "eessisak" : [ {
                           "institusjonsid" : "NO:noinst002",
@@ -147,7 +147,7 @@ class PrefillUfoereIntegrationTest {
             {
               "sed" : "P2200",
               "sedGVer" : "4",
-              "sedVer" : "1",
+              "sedVer" : "2",
               "nav" : {
                 "eessisak" : [ {
                   "institusjonsid" : "NO:noinst002",
