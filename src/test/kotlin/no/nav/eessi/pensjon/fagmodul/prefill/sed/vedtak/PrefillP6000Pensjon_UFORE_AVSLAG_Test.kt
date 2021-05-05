@@ -58,7 +58,7 @@ class PrefillP6000Pensjon_UFORE_AVSLAG_Test {
         prefillSEDService = PrefillSEDService(dataFromPEN, eessiInformasjon, prefillNav)
 
         val p6000 = prefillSEDService.prefill(prefillData, personDataCollection) as P6000
-        val p6000Pensjon = p6000.p6000Pensjon
+        val p6000Pensjon = p6000.p6000Pensjon!!
 
         assertNotNull(p6000Pensjon.vedtak)
          assertNotNull(p6000Pensjon.sak)

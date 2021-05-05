@@ -1,7 +1,37 @@
 package no.nav.eessi.pensjon.eux.model
 
-import no.nav.eessi.pensjon.eux.model.sed.*
-import no.nav.eessi.pensjon.utils.*
+import no.nav.eessi.pensjon.eux.model.sed.Adresse
+import no.nav.eessi.pensjon.eux.model.sed.AndreinstitusjonerItem
+import no.nav.eessi.pensjon.eux.model.sed.Arsak
+import no.nav.eessi.pensjon.eux.model.sed.AvslagbegrunnelseItem
+import no.nav.eessi.pensjon.eux.model.sed.BeloepBrutto
+import no.nav.eessi.pensjon.eux.model.sed.BeregningItem
+import no.nav.eessi.pensjon.eux.model.sed.Bruker
+import no.nav.eessi.pensjon.eux.model.sed.Foedested
+import no.nav.eessi.pensjon.eux.model.sed.Foreldre
+import no.nav.eessi.pensjon.eux.model.sed.Grunnlag
+import no.nav.eessi.pensjon.eux.model.sed.KravtypeItem
+import no.nav.eessi.pensjon.eux.model.sed.Nav
+import no.nav.eessi.pensjon.eux.model.sed.Opphoer
+import no.nav.eessi.pensjon.eux.model.sed.Opptjening
+import no.nav.eessi.pensjon.eux.model.sed.P6000
+import no.nav.eessi.pensjon.eux.model.sed.P6000Pensjon
+import no.nav.eessi.pensjon.eux.model.sed.Periode
+import no.nav.eessi.pensjon.eux.model.sed.Person
+import no.nav.eessi.pensjon.eux.model.sed.PinItem
+import no.nav.eessi.pensjon.eux.model.sed.ReduksjonItem
+import no.nav.eessi.pensjon.eux.model.sed.Sak
+import no.nav.eessi.pensjon.eux.model.sed.SedType
+import no.nav.eessi.pensjon.eux.model.sed.StatsborgerskapItem
+import no.nav.eessi.pensjon.eux.model.sed.Tilleggsinformasjon
+import no.nav.eessi.pensjon.eux.model.sed.Ukjent
+import no.nav.eessi.pensjon.eux.model.sed.VedtakItem
+import no.nav.eessi.pensjon.eux.model.sed.VirkningsdatoItem
+import no.nav.eessi.pensjon.utils.mapAnyToJson
+import no.nav.eessi.pensjon.utils.mapJsonToAny
+import no.nav.eessi.pensjon.utils.toJson
+import no.nav.eessi.pensjon.utils.typeRefs
+import no.nav.eessi.pensjon.utils.validateJson
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
@@ -38,7 +68,7 @@ class SedTest {
         assertNotNull(sed6000)
 
         val p6000Pensjon = sed6000.p6000Pensjon
-        val brukerback = mapJsonToAny(mapAnyToJson(p6000Pensjon), typeRefs<P6000Pensjon>())
+        val brukerback = mapJsonToAny(mapAnyToJson(p6000Pensjon!!), typeRefs<P6000Pensjon>())
         assertNotNull(brukerback)
         assertEquals(p6000Pensjon.toJson(), brukerback.toJson())
 

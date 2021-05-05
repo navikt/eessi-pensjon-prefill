@@ -38,6 +38,7 @@ class PrefillP15000(private val prefillSed: PrefillSed) {
             HttpStatus.BAD_REQUEST,
             "For preutfylling av P15000 så kreves det kravtype"
         )
+
         val penSaksnummer = prefillData.penSaksnummer
         val sakType = sak?.sakType
         val avdodFnr = prefillData.avdod?.norskIdent

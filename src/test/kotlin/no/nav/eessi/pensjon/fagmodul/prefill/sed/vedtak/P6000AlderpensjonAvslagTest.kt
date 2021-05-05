@@ -59,19 +59,19 @@ class P6000AlderpensjonAvslagTest {
         val p6000 = prefillSEDService.prefill(prefillData, personDataCollection) as P6000
         val p6000Pensjon = p6000.p6000Pensjon
 
-        val vedtak = p6000Pensjon.vedtak?.get(0)
+        val vedtak = p6000Pensjon?.vedtak?.get(0)
         assertEquals("01", vedtak?.type)
         assertEquals("02", vedtak?.resultat, "4.1.4 vedtak.resultat")
 
         val avslagBegrunnelse = vedtak?.avslagbegrunnelse?.get(0)
         assertEquals("03", avslagBegrunnelse?.begrunnelse, "4.1.13.1          AvlsagsBegrunnelse")
 
-        assertEquals("six weeks from the date the decision is received", p6000Pensjon.sak?.kravtype?.get(0)?.datoFrist)
+        assertEquals("six weeks from the date the decision is received", p6000Pensjon?.sak?.kravtype?.get(0)?.datoFrist)
 
-        assertEquals("2019-11-11", p6000Pensjon.tilleggsinformasjon?.dato)
-        assertEquals("NO:noinst002", p6000Pensjon.tilleggsinformasjon?.andreinstitusjoner?.get(0)?.institusjonsid)
-        assertEquals("Postboks 6600 Etterstad TEST", p6000Pensjon.tilleggsinformasjon?.andreinstitusjoner?.get(0)?.institusjonsadresse)
-        assertEquals("0607", p6000Pensjon.tilleggsinformasjon?.andreinstitusjoner?.get(0)?.postnummer)
+        assertEquals("2019-11-11", p6000Pensjon?.tilleggsinformasjon?.dato)
+        assertEquals("NO:noinst002", p6000Pensjon?.tilleggsinformasjon?.andreinstitusjoner?.get(0)?.institusjonsid)
+        assertEquals("Postboks 6600 Etterstad TEST", p6000Pensjon?.tilleggsinformasjon?.andreinstitusjoner?.get(0)?.institusjonsadresse)
+        assertEquals("0607", p6000Pensjon?.tilleggsinformasjon?.andreinstitusjoner?.get(0)?.postnummer)
 
     }
 
@@ -82,7 +82,7 @@ class P6000AlderpensjonAvslagTest {
         prefillSEDService = PrefillSEDService(dataFromPEN, eessiInformasjon, prefillNav)
 
         val p6000 = prefillSEDService.prefill(prefillData, personDataCollection) as P6000
-        val result = p6000.p6000Pensjon
+        val result = p6000.p6000Pensjon!!
 
         val vedtak = result.vedtak?.get(0)
         assertEquals("01", vedtak?.type)
@@ -107,7 +107,7 @@ class P6000AlderpensjonAvslagTest {
         prefillSEDService = PrefillSEDService(dataFromPEN, eessiInformasjon, prefillNav)
 
         val p6000 = prefillSEDService.prefill(prefillData, personDataCollection) as P6000
-        val result = p6000.p6000Pensjon
+        val result = p6000.p6000Pensjon!!
 
         val vedtak = result.vedtak?.get(0)
         assertEquals("01", vedtak?.type)
