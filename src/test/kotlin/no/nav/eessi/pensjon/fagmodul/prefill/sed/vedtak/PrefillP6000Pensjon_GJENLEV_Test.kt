@@ -61,20 +61,20 @@ class PrefillP6000Pensjon_GJENLEV_Test {
         prefillSEDService = PrefillSEDService(dataFromPEN, eessiInformasjon, prefillNav)
 
         val p6000 = prefillSEDService.prefill(prefillData, personDataCollection) as P6000
-        val p6000Pensjon = p6000.p6000Pensjon
+        val p6000Pensjon = p6000.p6000Pensjon!!
 
         assertNotNull(p6000Pensjon.vedtak)
         assertNotNull(p6000Pensjon.sak)
         assertNotNull(p6000Pensjon.tilleggsinformasjon)
 
         val avdod = p6000.nav?.bruker?.person
-        val gjenlev = p6000.p6000Pensjon.gjenlevende
+        val gjenlev = p6000.p6000Pensjon?.gjenlevende!!
 
         assertEquals("THOR-DOPAPIR", avdod?.fornavn)
         assertEquals("RAGNAROK", avdod?.etternavn)
 
-        assertEquals("ODIN ETTØYE", gjenlev?.person?.fornavn)
-        assertEquals("BALDER", gjenlev?.person?.etternavn)
+        assertEquals("ODIN ETTØYE", gjenlev.person?.fornavn)
+        assertEquals("BALDER", gjenlev.person?.etternavn)
 
 
         val vedtak = p6000Pensjon.vedtak?.get(0)
@@ -113,7 +113,7 @@ class PrefillP6000Pensjon_GJENLEV_Test {
         prefillSEDService = PrefillSEDService(dataFromPEN, eessiInformasjon, prefillNav)
 
         val p6000 = prefillSEDService.prefill(prefillData, personDataCollection) as P6000
-        val p6000Pensjon = p6000.p6000Pensjon
+        val p6000Pensjon = p6000.p6000Pensjon!!
 
         assertNotNull(p6000Pensjon.vedtak)
         assertNotNull(p6000Pensjon.sak)
