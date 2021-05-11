@@ -84,7 +84,7 @@ class PrefillPDLAdresseTest{
 
     @Test
     fun `utfylling av doedsboAdresseUtenlinjeskift`() {
-        every { kodeverkClient.finnLandkode2(eq("NOR")) } returns "NO"
+        every { kodeverkClient.finnLandkode(eq("NOR")) } returns "NO"
 
         val doedMeta = PersonPDLMock.mockMeta()
 
@@ -195,7 +195,7 @@ class PrefillPDLAdresseTest{
                     metadata = no.nav.eessi.pensjon.personoppslag.pdl.model.Metadata(emptyList(), false, "DOLLY", "Doll")
                 ))
 
-        every { kodeverkClient.finnLandkode2(any()) }.returns("SC")
+        every { kodeverkClient.finnLandkode(any()) }.returns("SC")
 
         val result = prefillAdresse.createPersonAdresse(person)!!
 

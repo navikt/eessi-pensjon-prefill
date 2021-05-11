@@ -151,7 +151,7 @@ class SedPrefillIntegrationSpringTest {
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_4)) } returns PersonPDLMock.createWith(true, "Avdød", "Død", FNR_VOKSEN_4, AKTOER_ID_2, true)
 
         every { restTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns PrefillTestHelper.readXMLVedtakresponse("P6000-BARNEP-GJENLEV.xml")
-        every { kodeverkClient.finnLandkode2(any()) } returns "QX"
+        every { kodeverkClient.finnLandkode(any()) } returns "QX"
 
         val apijson = dummyApijson(sakid = "22874955", vedtakid = "987654321122355466", aktoerId = AKTOER_ID, sedType = SedType.P6000, buc = "P_BUC_02", fnravdod = FNR_VOKSEN_4)
 
@@ -182,7 +182,7 @@ class SedPrefillIntegrationSpringTest {
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_3))} returns PersonPDLMock.createWith(true, "Alder", "Pensjonist", FNR_VOKSEN_3)
 
         every { restTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns PrefillTestHelper.readXMLVedtakresponse("P6000-AP-Avslag.xml")
-        every { kodeverkClient.finnLandkode2(any()) } returns "QX"
+        every { kodeverkClient.finnLandkode(any()) } returns "QX"
         val apijson = dummyApijson( sakid = "22874955", vedtakid = "123123423423", aktoerId = AKTOER_ID, sedType = SedType.P6000, buc = "P_BUC_01")
 
         val result = mockMvc.perform(post("/sed/prefill")
@@ -271,7 +271,7 @@ class SedPrefillIntegrationSpringTest {
         every { personService.hentIdent(IdentType.AktoerId, NorskIdent(FNR_VOKSEN_4))} returns AktoerId(AKTOER_ID_2)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith(true, "Lever", "Gjenlev", FNR_VOKSEN, AKTOER_ID)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_4)) } returns PersonPDLMock.createWith(true, "Avdød", "Død", FNR_VOKSEN_4, AKTOER_ID_2, true)
-        every { kodeverkClient.finnLandkode2(any()) } returns "QX"
+        every { kodeverkClient.finnLandkode(any()) } returns "QX"
 
         val apijson = dummyApijson(sakid = "22874955", vedtakid = "9876543211", aktoerId = AKTOER_ID, sedType = SedType.P3000_SE, buc = "P_BUC_10",  fnravdod = FNR_VOKSEN_4)
 
@@ -303,7 +303,7 @@ class SedPrefillIntegrationSpringTest {
 
         every { personService.hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN_3)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_3)) } returns PersonPDLMock.createWith(true, "Lever", "Gjenlev", FNR_VOKSEN_3)
-        every { kodeverkClient.finnLandkode2(any()) } returns "QX"
+        every { kodeverkClient.finnLandkode(any()) } returns "QX"
         val apijson = dummyApijson(sakid = "22874955", vedtakid = "9876543211", aktoerId = AKTOER_ID, sedType = SedType.P4000, buc = "P_BUC_05")
 
         val result = mockMvc.perform(post("/sed/prefill")
@@ -371,7 +371,7 @@ class SedPrefillIntegrationSpringTest {
         every { personService.hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith()
         every { restTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns PrefillTestHelper.readXMLresponse("P2000-AP-UP-21337890.xml")
-        every { kodeverkClient.finnLandkode2(any()) } returns "QX"
+        every { kodeverkClient.finnLandkode(any()) } returns "QX"
 
         val apijson = dummyApijson(sakid = "21337890", aktoerId = AKTOER_ID)
 
@@ -442,7 +442,7 @@ class SedPrefillIntegrationSpringTest {
         every { personService.hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith()
         every { restTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns PrefillTestHelper.readXMLresponse("AP_2000_KUN_UTLAND.xml")
-        every { kodeverkClient.finnLandkode2(any()) } returns "QX"
+        every { kodeverkClient.finnLandkode(any()) } returns "QX"
 
 
         val apijson = dummyApijson(sakid = "22932784", aktoerId = AKTOER_ID)
@@ -514,7 +514,7 @@ class SedPrefillIntegrationSpringTest {
         every { personService.hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith()
         every { restTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns PrefillTestHelper.readXMLresponse("P2000krav-alderpensjon-avslag.xml")
-        every { kodeverkClient.finnLandkode2(any()) } returns "QX"
+        every { kodeverkClient.finnLandkode(any()) } returns "QX"
 
         val apijson = dummyApijson(sakid = "22889955", aktoerId = AKTOER_ID)
         val result = mockMvc.perform(post("/sed/prefill")
@@ -586,7 +586,7 @@ class SedPrefillIntegrationSpringTest {
                 PrefillTestHelper.readXMLresponse("AP_FORSTEG_BH.xml") andThen
                 PrefillTestHelper.readXMLVedtakresponse("P6000-APUtland-301.xml")
 
-        every { kodeverkClient.finnLandkode2(any()) } returns "QX"
+        every { kodeverkClient.finnLandkode(any()) } returns "QX"
 
 
         val apijson = dummyApijson(sakid = "22580170", aktoerId = AKTOER_ID, vedtakid = "5134513451345")
@@ -702,7 +702,7 @@ class SedPrefillIntegrationSpringTest {
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_4)) } returns PersonPDLMock.createWith(true, "Avdød", "Død", FNR_VOKSEN_4, AKTOER_ID_2, true)
         every { restTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns PrefillTestHelper.readXMLresponse("P2000-AP-LP-RVUR-20541862.xml")
 
-        every { kodeverkClient.finnLandkode2(eq("NOR")) } returns "NO"
+        every { kodeverkClient.finnLandkode(eq("NOR")) } returns "NO"
 
         val apijson = dummyApijson(sakid = "20541862", aktoerId = AKTOER_ID, sedType = SedType.P2100, buc = "P_BUC_02", fnravdod = FNR_VOKSEN_4)
 

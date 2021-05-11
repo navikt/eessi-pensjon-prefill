@@ -174,6 +174,6 @@ class PrefillPDLAdresse (private val postnummerService: PostnummerService,
     }
 
     fun hentLandkode(landkode: String?): String? {
-        return landkode?.let { kodeverkClient.finnLandkode2(it) }
+        return landkode?.let { kodeverkClient.finnLandkode(it) }
     }
 }

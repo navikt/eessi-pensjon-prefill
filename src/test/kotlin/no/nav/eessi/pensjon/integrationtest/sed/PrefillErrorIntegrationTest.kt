@@ -56,7 +56,7 @@ class PrefillErrorIntegrationTest {
     @Test
     fun `prefill sed P2200 med vedtak, F_BH_BO_UTL og F_BH_MED_UTL mangler samt vedtak isBoddArbeidetUtland er false skal Exception`() {
 
-        every { kodeverkClient.finnLandkode2(eq("NOR"))} returns "NO"
+        every { kodeverkClient.finnLandkode(eq("NOR"))} returns "NO"
         every { personService.hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith()
 

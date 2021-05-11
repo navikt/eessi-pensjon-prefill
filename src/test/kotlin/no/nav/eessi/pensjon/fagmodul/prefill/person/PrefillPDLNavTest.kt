@@ -65,8 +65,8 @@ class PrefillPDLNavTest {
 
     @BeforeEach
     fun beforeStart() {
-        every { kodeverkClient.finnLandkode2(eq("NOR")) } returns "NO"
-        every { kodeverkClient.finnLandkode2(eq("SWE")) } returns "SE"
+        every { kodeverkClient.finnLandkode(eq("NOR")) } returns "NO"
+        every { kodeverkClient.finnLandkode(eq("SWE")) } returns "SE"
 
         prefillPDLNav = PrefillPDLNav(
             PrefillPDLAdresse(PostnummerService(), kodeverkClient),

@@ -63,7 +63,7 @@ class PrefillP2200_AP_21975717Test {
     @Test
     fun `forventet korrekt utfylt P2200 uforerpensjon med mockdata fra testfiler`() {
 
-        every { kodeverkClient.finnLandkode2("NOR") } returns "NO"
+        every { kodeverkClient.finnLandkode("NOR") } returns "NO"
 
         val p2200 = prefillSEDService.prefill(prefillData, personDataCollection)
 
@@ -107,7 +107,7 @@ class PrefillP2200_AP_21975717Test {
 
     @Test
     fun `testing av komplett P2200 med utskrift og testing av innsending`() {
-        every { kodeverkClient.finnLandkode2(any()) } returns "NO"
+        every { kodeverkClient.finnLandkode(any()) } returns "NO"
 
         val P2200 = prefillSEDService.prefill(prefillData, personDataCollection)
         val json = mapAnyToJson(createMockApiRequest("P2200", "P_BUC_01", P2200.toJson()))

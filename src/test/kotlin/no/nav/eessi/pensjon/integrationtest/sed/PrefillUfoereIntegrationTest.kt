@@ -59,7 +59,7 @@ class PrefillUfoereIntegrationTest {
         every { personService.hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith()
         every { restTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java))} returns PrefillTestHelper.readXMLresponse("P2200-AVSL.xml")
-        every { kodeverkClient.finnLandkode2(any()) } returns "QX"
+        every { kodeverkClient.finnLandkode(any()) } returns "QX"
 
         val apijson = dummyApijson(sakid = "22922563", aktoerId = AKTOER_ID, sed = "P2200")
         val result = mockMvc.perform(post("/sed/prefill")
@@ -129,7 +129,7 @@ class PrefillUfoereIntegrationTest {
         every { restTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns
                 PrefillTestHelper.readXMLresponse("P2200-UP-INNV.xml") andThen
                 PrefillTestHelper.readXMLVedtakresponse("P6000-APUtland-301.xml")
-        every { kodeverkClient.finnLandkode2(any()) } returns "QX"
+        every { kodeverkClient.finnLandkode(any()) } returns "QX"
 
         val apijson = dummyApijson(sakid = "22874955", aktoerId = AKTOER_ID, vedtakid = "5134513451345", sed = "P2200")
 

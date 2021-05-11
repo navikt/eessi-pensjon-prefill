@@ -7,6 +7,7 @@ import no.nav.eessi.pensjon.utils.typeRefs
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -34,7 +35,7 @@ class KodeverkClientTest {
         val mockResponseEntityISO3 = createResponseEntityFromJsonFile("src/test/resources/json/kodeverk/landkoderSammensattIso2.json")
         every { mockrestTemplate.exchange( eq("/api/v1/hierarki/LandkoderSammensattISO2/noder"), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns mockResponseEntityISO3
 
-        val actual = kodeverkClient.finnLandkode2(landkode3)
+        val actual = kodeverkClient.finnLandkode(landkode3)
         Assertions.assertEquals(expected, actual)
     }
 
@@ -47,7 +48,7 @@ class KodeverkClientTest {
 
         every { mockrestTemplate.exchange( eq("/api/v1/hierarki/LandkoderSammensattISO2/noder"), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns mockResponseEntityISO3
 
-        val actual = kodeverkClient.finnLandkode3(landkode2)
+        val actual = kodeverkClient.finnLandkode(landkode2)
 
         Assertions.assertEquals(expected, actual)
     }
@@ -59,7 +60,7 @@ class KodeverkClientTest {
 
         val mockResponseEntityISO3 = createResponseEntityFromJsonFile("src/test/resources/json/kodeverk/landkoderSammensattIso2.json")
         every { mockrestTemplate.exchange( eq("/api/v1/hierarki/LandkoderSammensattISO2/noder"), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns mockResponseEntityISO3
-        val actual = kodeverkClient.finnLandkode3(landkode2)
+        val actual = kodeverkClient.finnLandkode(landkode2)
 
         Assertions.assertEquals(expected, actual)
     }
@@ -95,16 +96,15 @@ class KodeverkClientTest {
 
     @Test
     fun hentingavIso2landkodevedbrukAvlandkode3FeilerMedNull() {
-        val expected = null
         val landkode2 = "BMUL"
 
         val mockResponseEntityISO3 = createResponseEntityFromJsonFile("src/test/resources/json/kodeverk/landkoderSammensattIso2.json")
         every { mockrestTemplate.exchange( eq("/api/v1/hierarki/LandkoderSammensattISO2/noder"), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns mockResponseEntityISO3
 
-        val actual = kodeverkClient.finnLandkode3(landkode2)
-
-        Assertions.assertEquals(expected, actual)
-
+        val exception  = assertThrows<IllegalArgumentException> {
+            kodeverkClient.finnLandkode(landkode2)
+        }
+        Assertions.assertEquals("Ugyldig landkode: BMUL", exception.message)
     }
 
     private fun createResponseEntityFromJsonFile(filePath: String, httpStatus: HttpStatus = HttpStatus.OK): ResponseEntity<String> {

@@ -50,6 +50,8 @@ class PrefillP8000P_BUC_05Test {
 
     @BeforeEach
     fun setup() {
+        every { kodeverkClient.finnLandkode("NOR") } returns "NO"
+        every { kodeverkClient.finnLandkode("SWE") } returns "SE"
 
         prefillAdresse = PrefillPDLAdresse(PostnummerService(), kodeverkClient)
         prefillNav = PrefillPDLNav( prefillAdresse,
@@ -69,9 +71,6 @@ class PrefillP8000P_BUC_05Test {
             .medUtlandAdresse("LUNGJTEGATA 12", "1231" , "SWE")
 
         personDataCollection = PersonDataCollection(personforsikret,personforsikret)
-
-        every { kodeverkClient.finnLandkode2("NOR") } returns "NO"
-        every { kodeverkClient.finnLandkode2("SWE") } returns "SE"
 
         val p8000 = prefillSEDService.prefill(prefillData, personDataCollection)
 
@@ -96,8 +95,6 @@ class PrefillP8000P_BUC_05Test {
             .medAdresse("Gate")
 
         personDataCollection = PersonDataCollection(avdod, forsikretPerson)
-
-        every{kodeverkClient.finnLandkode2("NOR")} returns "NO"
 
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P8000, fnr, penSaksnummer = pesysSaksnummer, avdod = PersonId(norskIdent = avdodFnr, aktorId = "21323"),  refTilPerson = ReferanseTilPerson.AVDOD)
 
@@ -127,8 +124,6 @@ class PrefillP8000P_BUC_05Test {
             .medAdresse("Gate")
 
         personDataCollection = PersonDataCollection(avdod, forsikretPerson)
-
-        every{kodeverkClient.finnLandkode2("NOR")} returns "NO"
 
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P8000, fnr, penSaksnummer = pesysSaksnummer, avdod = PersonId(norskIdent = avdodFnr, aktorId = "21323"), refTilPerson = ReferanseTilPerson.SOKER )
 
@@ -171,9 +166,6 @@ class PrefillP8000P_BUC_05Test {
         sak.kravHistorikkListe.kravHistorikkListe.add(v1Kravhistorikk)
 
         every{pensjoninformasjonservice.hentRelevantPensjonSak(any(), any())} returns sak
-
-        every{kodeverkClient.finnLandkode2("NOR")} returns "NO"
-        every{kodeverkClient.finnLandkode2("SWE")} returns "SE"
 
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P8000, fnr, penSaksnummer = "100", avdod = PersonId(norskIdent = avdodFnr, aktorId = "21323"),  refTilPerson = ReferanseTilPerson.SOKER, bucType = "P_BUC_05")
 
@@ -244,9 +236,6 @@ class PrefillP8000P_BUC_05Test {
         sak.kravHistorikkListe.kravHistorikkListe.add(v1Kravhistorikk)
 
         every{pensjoninformasjonservice.hentRelevantPensjonSak(any(), any())} returns sak
-
-        every{kodeverkClient.finnLandkode2("NOR")} returns "NO"
-        every{kodeverkClient.finnLandkode2("SWE")} returns "SE"
 
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P8000, fnr, penSaksnummer = "100", avdod = PersonId(norskIdent = avdodFnr, aktorId = "21323"),  refTilPerson = ReferanseTilPerson.SOKER, bucType = "P_BUC_05")
 
