@@ -3,8 +3,14 @@ package no.nav.eessi.pensjon.fagmodul.prefill
 import no.nav.eessi.pensjon.eux.model.sed.SED
 import no.nav.eessi.pensjon.eux.model.sed.SedType
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
-import no.nav.eessi.pensjon.utils.*
-import org.junit.jupiter.api.Assertions.*
+import no.nav.eessi.pensjon.utils.mapAnyToJson
+import no.nav.eessi.pensjon.utils.mapJsonToAny
+import no.nav.eessi.pensjon.utils.toJson
+import no.nav.eessi.pensjon.utils.typeRefs
+import no.nav.eessi.pensjon.utils.validateJson
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
@@ -237,7 +243,24 @@ class ApiRequestTest {
         )
 
         assertEquals(
-            "sakId: 01234567890 vedtakId: 123 avdodfnr: 456 buc: P_BUC_01 sed: P2000 euxCaseId: 99191999911",
+            "sakId: 01234567890, vedtakId: 123, avdodfnr: 456, buc: P_BUC_01, sed: P2000, euxCaseId: 99191999911",
+            request.toAudit()
+        )
+    }
+
+    @Test
+    fun `check on values for toAduit when one of the value is null`() {
+        val request = ApiRequest(
+            sakId = "01234567890",
+            vedtakId = "123",
+            avdodfnr = null,
+            buc = "P_BUC_01",
+            sed = "P2000",
+            euxCaseId = "99191999911"
+        )
+
+        assertEquals(
+            "sakId: 01234567890, vedtakId: 123, buc: P_BUC_01, sed: P2000, euxCaseId: 99191999911",
             request.toAudit()
         )
     }
