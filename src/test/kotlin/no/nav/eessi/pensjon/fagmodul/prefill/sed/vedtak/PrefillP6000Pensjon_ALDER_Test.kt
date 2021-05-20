@@ -22,7 +22,7 @@ import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import org.springframework.web.client.HttpClientErrorException
+import org.springframework.web.server.ResponseStatusException
 
 class PrefillP6000Pensjon_ALDER_Test {
 
@@ -122,7 +122,7 @@ class PrefillP6000Pensjon_ALDER_Test {
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P6000, personFnr, penSaksnummer = "22580170", vedtakId = "12312312")
         prefillSEDService = PrefillSEDService(dataFromPEN, eessiInformasjon, prefillNav)
 
-        assertThrows<HttpClientErrorException> {
+        assertThrows<ResponseStatusException> {
             prefillSEDService.prefill(prefillData, personDataCollection)
         }
     }

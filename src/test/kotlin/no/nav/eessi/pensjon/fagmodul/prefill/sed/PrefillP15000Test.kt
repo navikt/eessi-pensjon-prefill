@@ -40,7 +40,7 @@ internal class PrefillP15000Test {
 
     @Test
     fun `Validerer av gyldig KravDato`() {
-        val result = prfillP15000.validateFrontEndKravDato("2020-03-29")
+        val result = prfillP15000.validateFrontEndKravDato("2020-03-29 ")
         assertEquals(LocalDate.of(2020,3, 29), result)
     }
 

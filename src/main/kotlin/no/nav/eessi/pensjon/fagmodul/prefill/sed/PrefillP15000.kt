@@ -107,7 +107,7 @@ class PrefillP15000(private val prefillSed: PrefillSed) {
         logger.info("Konverterer uiKravdato fra: $dato")
         return try {
             val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-            LocalDate.parse(dato, formatter)
+            LocalDate.parse(dato?.trim(), formatter)
         } catch (ex: Exception) {
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Ugyldig datoformat")
         }

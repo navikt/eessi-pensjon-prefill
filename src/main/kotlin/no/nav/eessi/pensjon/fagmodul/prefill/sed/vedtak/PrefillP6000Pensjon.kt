@@ -1,6 +1,12 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak
 
-import no.nav.eessi.pensjon.eux.model.sed.*
+import no.nav.eessi.pensjon.eux.model.sed.AndreinstitusjonerItem
+import no.nav.eessi.pensjon.eux.model.sed.Bruker
+import no.nav.eessi.pensjon.eux.model.sed.P6000Pensjon
+import no.nav.eessi.pensjon.eux.model.sed.ReduksjonItem
+import no.nav.eessi.pensjon.eux.model.sed.Sak
+import no.nav.eessi.pensjon.eux.model.sed.Tilleggsinformasjon
+import no.nav.eessi.pensjon.eux.model.sed.VedtakItem
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.hjelper.PrefillPensjonReduksjon
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.hjelper.PrefillPensjonSak
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.hjelper.PrefillPensjonTilleggsinformasjon
@@ -11,7 +17,7 @@ import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
-import org.springframework.web.client.HttpClientErrorException
+import org.springframework.web.server.ResponseStatusException
 
 
 /**
@@ -29,11 +35,11 @@ object PrefillP6000Pensjon {
 
         //Sjekk opp om det er Bodd eller Arbeid utland. (hvis ikke avslutt)
         if (!harBoddArbeidetUtland(pensjoninformasjon))
-            throw HttpClientErrorException(HttpStatus.BAD_REQUEST, "Har ikke bodd eller arbeidet i utlandet. Avbryter oppretelse av SED")
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Har ikke bodd eller arbeidet i utlandet. Avbryter oppretelse av SED")
 
         //Sjekk opp om det finnes et dato fattet vedtak. (hvis ikke avslutt)
         if (pensjoninformasjon.vedtak.datoFattetVedtak == null) {
-            throw HttpClientErrorException(HttpStatus.BAD_REQUEST, "Vedtaket mangler dato for FattetVedtak. Avbryter oppretelse av SED")
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Vedtaket mangler dato for FattetVedtak. Avbryter oppretelse av SED")
         }
 
         //prefill Pensjon obj med data fra PESYS. (pendata)
