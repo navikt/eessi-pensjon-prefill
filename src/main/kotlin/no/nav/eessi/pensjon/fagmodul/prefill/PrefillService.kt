@@ -27,7 +27,8 @@ class PrefillService(private val prefillSedService: PrefillSEDService,
 
     @PostConstruct
     fun initMetrics() {
-        PrefillSed = metricsHelper.init("PrefillSed", ignoreHttpCodes = listOf(HttpStatus.BAD_REQUEST))
+        PrefillSed = metricsHelper.init("PrefillSed",
+            ignoreHttpCodes = listOf(HttpStatus.BAD_REQUEST, HttpStatus.FORBIDDEN))
     }
 
     fun prefillSedtoJson(dataModel: PrefillDataModel, version: String, personDataCollection: PersonDataCollection): String {
