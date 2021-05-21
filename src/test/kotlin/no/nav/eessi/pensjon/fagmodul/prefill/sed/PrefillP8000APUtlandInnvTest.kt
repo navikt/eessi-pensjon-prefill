@@ -38,7 +38,7 @@ class PrefillP8000APUtlandInnvTest {
     fun setup() {
         persondataCollection = PersonPDLMock.createEnkelFamilie(personFnr, ekteFnr)
 
-        every { kodeverkClient.finnLandkode2(any()) } returns "NO"
+        every { kodeverkClient.finnLandkode(any()) } returns "NO"
 
         val prefillAdresse = PrefillPDLAdresse(PostnummerService(),kodeverkClient)
 
