@@ -38,8 +38,7 @@ class PrefillService(private val prefillSedService: PrefillSEDService,
                 eessiRequire(dataModel.sedType.kanPrefilles() ) {"SedType ${dataModel.sedType} kan ikke prefilles!"}
                 val sed = prefillSedService.prefill(dataModel, personDataCollection)
 
-                val sedType = sed.type
-                logger.debug("SedType: ${sedType.name}")
+                logger.debug("SedType: ${sed.type.name}")
 
                 //synk sed versjon med buc versjon
                 updateSEDVersion(sed, version)
@@ -55,12 +54,8 @@ class PrefillService(private val prefillSedService: PrefillSEDService,
     //flyttes til prefill / en eller annen service?
     private fun updateSEDVersion(sed: SED, bucVersion: String) {
         when(bucVersion) {
-            "v4.2" -> {
-                sed.sedVer="2"
-            }
-            else -> {
-                sed.sedVer="1"
-            }
+            "v4.2" -> sed.sedVer="2"
+            else -> sed.sedVer="1"
         }
         logger.debug("SED version: v${sed.sedGVer}.${sed.sedVer} + BUC version: $bucVersion")
     }

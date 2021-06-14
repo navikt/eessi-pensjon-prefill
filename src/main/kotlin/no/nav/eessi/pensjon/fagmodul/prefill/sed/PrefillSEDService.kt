@@ -12,7 +12,10 @@ import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.PrefillP2000
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.PrefillP2100
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.krav.PrefillP2200
 import no.nav.eessi.pensjon.fagmodul.prefill.sed.vedtak.PrefillP6000
-import no.nav.eessi.pensjon.services.pensjonsinformasjon.EPSaktype.*
+import no.nav.eessi.pensjon.services.pensjonsinformasjon.EPSaktype.ALDER
+import no.nav.eessi.pensjon.services.pensjonsinformasjon.EPSaktype.BARNEP
+import no.nav.eessi.pensjon.services.pensjonsinformasjon.EPSaktype.GJENLEV
+import no.nav.eessi.pensjon.services.pensjonsinformasjon.EPSaktype.UFOREP
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import no.nav.pensjon.v1.sak.V1Sak
 import no.nav.pensjon.v1.vedtak.V1Vedtak
@@ -56,7 +59,7 @@ class PrefillSEDService(
 
             //vedtak
             SedType.P6000 -> PrefillP6000(prefillPDLnav, eessiInformasjon, pensjonsinformasjonService.hentVedtak(hentVedtak(prefillData))).prefill(prefillData, personDataCollection)
-
+            SedType.P5000 -> PrefillP5000(PrefillSed(prefillPDLnav)).prefill(prefillData, personDataCollection)
             SedType.P4000 -> PrefillP4000(PrefillSed(prefillPDLnav)).prefill(prefillData, personDataCollection)
             SedType.P7000 -> PrefillP7000(PrefillSed(prefillPDLnav)).prefill(prefillData, personDataCollection)
 
@@ -97,7 +100,7 @@ class PrefillSEDService(
             SedType.H020, SedType.H021 -> PrefillH02X(prefillPDLnav).prefill(prefillData, personDataCollection)
             else ->
                 //P3000_SE, PL, DK, DE, UK, med flere vil gå denne veien..
-                //P5000, P9000, P14000, P15000.. med flere..
+                //P9000, P14000, P15000.. med flere..
                 PrefillSed(prefillPDLnav).prefill(prefillData, personDataCollection)
         }
     }

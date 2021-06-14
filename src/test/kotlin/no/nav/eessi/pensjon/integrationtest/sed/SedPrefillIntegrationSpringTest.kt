@@ -299,6 +299,39 @@ class SedPrefillIntegrationSpringTest {
 
     @Test
     @Throws(Exception::class)
+    fun `prefill sed P5000 med Gjenlevende og avdod skal returnere en gyldig SED`() {
+
+        every { personService.hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN)
+        every { personService.hentIdent(IdentType.AktoerId, NorskIdent(FNR_VOKSEN_4))} returns AktoerId(AKTOER_ID_2)
+        every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith(true, "Lever", "Gjenlev", FNR_VOKSEN, AKTOER_ID)
+        every { personService.hentPerson(NorskIdent(FNR_VOKSEN_4)) } returns PersonPDLMock.createWith(true, "Avdød", "Død", FNR_VOKSEN_4, AKTOER_ID_2, true)
+        every { kodeverkClient.finnLandkode(any()) } returns "QX"
+
+        val apijson = dummyApijson(sakid = "22874955", vedtakid = "9876543211", aktoerId = AKTOER_ID, sedType = SedType.P5000, buc = "P_BUC_10",  fnravdod = FNR_VOKSEN_4)
+
+        val result = mockMvc.perform(post("/sed/prefill")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(apijson))
+            .andDo(print())
+            .andExpect(status().isOk)
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andReturn()
+
+        val response = result.response.getContentAsString(charset("UTF-8"))
+
+        val mapper = jacksonObjectMapper()
+        val sedRootNode = mapper.readTree(response)
+        val gjenlevendePIN = finnPin(sedRootNode.at("/pensjon/gjenlevende/person"))
+        val avdodPIN = finnPin(sedRootNode.at("/nav/bruker"))
+
+        Assertions.assertEquals(FNR_VOKSEN, gjenlevendePIN)
+        Assertions.assertEquals(FNR_VOKSEN_4, avdodPIN)
+
+    }
+
+
+    @Test
+    @Throws(Exception::class)
     fun `prefill sed P4000 med forsikret person skal returnere en gyldig SED`() {
 
         every { personService.hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN_3)
