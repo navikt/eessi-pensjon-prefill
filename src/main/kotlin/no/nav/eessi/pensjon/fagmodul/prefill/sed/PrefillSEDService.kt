@@ -90,6 +90,7 @@ class PrefillSEDService(
                 prefillData.getPersonInfoFromRequestData(),
                 personDataCollection
             )
+
             SedType.X005 -> PrefillX005(prefillPDLnav).prefill(
                 prefillData.penSaksnummer,
                 prefillData.bruker,
@@ -97,7 +98,18 @@ class PrefillSEDService(
                 prefillData.getPersonInfoFromRequestData(),
                 prefillData.institution.first(),
                 personDataCollection)
+
+            SedType.X010 -> PrefillX010(prefillPDLnav).prefill(
+                prefillData.penSaksnummer,
+                prefillData.bruker,
+                prefillData.avdod,
+                prefillData.getPersonInfoFromRequestData(),
+                personDataCollection
+            )
+
+
             SedType.H020, SedType.H021 -> PrefillH02X(prefillPDLnav).prefill(prefillData, personDataCollection)
+
             else ->
                 //P3000_SE, PL, DK, DE, UK, med flere vil gå denne veien..
                 //P9000, P14000, P15000.. med flere..

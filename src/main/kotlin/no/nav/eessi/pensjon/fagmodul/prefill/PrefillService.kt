@@ -1,5 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.prefill
 
+import io.micrometer.core.instrument.Metrics
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import no.nav.eessi.pensjon.eux.model.sed.SED
 import no.nav.eessi.pensjon.eux.model.sed.SedType
@@ -42,6 +43,12 @@ class PrefillService(private val prefillSedService: PrefillSEDService,
 
                 //synk sed versjon med buc versjon
                 updateSEDVersion(sed, version)
+
+                try {
+                    Metrics.counter("Sed_Prefill","type", sed.type.name).increment()
+                } catch (e: Exception) {
+                    logger.warn("Metrics feilet på Sed_Prefill")
+                }
                 return@measure sed.toJsonSkipEmpty()
 
             } catch (ex: Exception) {

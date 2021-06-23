@@ -20,8 +20,8 @@ eessipen-eux-rina:
 pensjonsinformasjon:
   url: 'https://wasapp-q2.adeo.no/pensjon-ws/api/pensjonsinformasjon/v1'
 
-requestsamlpolicy:
-  path: 'classpath:policy/requestSamlPolicyNoTransportBinding.xml'
+#requestsamlpolicy:
+#  path: 'classpath:policy/requestSamlPolicyNoTransportBinding.xml'
 
 srveessipensjon:
   username: '${SRVEESSIPENSJON_USERNAME}'

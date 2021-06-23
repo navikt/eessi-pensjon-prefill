@@ -36,7 +36,6 @@ import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
@@ -121,7 +120,6 @@ class PrefillP15000IntegrationTest {
         val result = mockMvc.perform(post("/sed/prefill")
             .contentType(MediaType.APPLICATION_JSON)
             .content(apijson))
-            .andDo(print())
             .andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andReturn()
@@ -239,7 +237,6 @@ class PrefillP15000IntegrationTest {
         mockMvc.perform(post("/sed/prefill")
             .contentType(MediaType.APPLICATION_JSON)
             .content(apijson))
-            .andDo(print())
             .andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andReturn()
@@ -270,7 +267,6 @@ class PrefillP15000IntegrationTest {
         mockMvc.perform(post("/sed/prefill")
             .contentType(MediaType.APPLICATION_JSON)
             .content(apijson))
-            .andDo(print())
             .andExpect(status().isBadRequest)
             .andExpect(status().reason(Matchers.containsString("Du kan ikke opprette alderspensjonskrav i en uføretrygdsak (PESYS-saksnr: 22874955 har sakstype UFOREP)")))
 
@@ -300,7 +296,6 @@ class PrefillP15000IntegrationTest {
         mockMvc.perform(post("/sed/prefill")
             .contentType(MediaType.APPLICATION_JSON)
             .content(apijson))
-            .andDo(print())
             .andExpect(status().isBadRequest)
             .andExpect(status().reason(Matchers.containsString("Du kan ikke opprette uføretrygdkrav i en alderspensjonssak (PESYS-saksnr: 21337890 har sakstype ALDER)")))
     }
@@ -331,7 +326,6 @@ class PrefillP15000IntegrationTest {
         mockMvc.perform(post("/sed/prefill")
             .contentType(MediaType.APPLICATION_JSON)
             .content(apijson))
-            .andDo(print())
             .andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andReturn()
@@ -397,7 +391,6 @@ class PrefillP15000IntegrationTest {
         mockMvc.perform(post("/sed/prefill")
             .contentType(MediaType.APPLICATION_JSON)
             .content(apijson))
-            .andDo(print())
             .andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andReturn()
@@ -430,7 +423,6 @@ class PrefillP15000IntegrationTest {
         val result = mockMvc.perform(post("/sed/prefill")
             .contentType(MediaType.APPLICATION_JSON)
             .content(apijson))
-            .andDo(print())
             .andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andReturn()
@@ -561,7 +553,6 @@ class PrefillP15000IntegrationTest {
         val result = mockMvc.perform(post("/sed/prefill")
             .contentType(MediaType.APPLICATION_JSON)
             .content(apijson))
-            .andDo(print())
             .andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andReturn()
