@@ -48,7 +48,7 @@ class PrefillX010Test {
 
 
     @Test
-    fun somethingWithX010() {
+    fun prefillWorkingX010asValidJson() {
         val x010sed = prefill.prefill(
             prefillData.penSaksnummer,
             prefillData.bruker,
@@ -84,10 +84,7 @@ class PrefillX010Test {
                   "paaminnelse" : {
                     "svar" : {
                       "informasjon" : {
-                        "kommersenere" : [ {
-                          "type" : " ",
-                          "opplysninger" : " "
-                        } ]
+                        "kommersenere" : [ {} ]
                       }
                     }
                   }

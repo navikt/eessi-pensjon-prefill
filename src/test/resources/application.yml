@@ -72,7 +72,7 @@ kafka:
   statistikk:
     topic: eessi-pensjon-statistikk
 
-requestsamlpolicy.path: "classpath:policy/requestSamlPolicy.xml"
+#requestsamlpolicy.path: "classpath:policy/requestSamlPolicy.xml"
 
 server:
   error:
