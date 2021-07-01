@@ -761,7 +761,10 @@ class SedPrefillIntegrationSpringTest {
                       "paaminnelse" : {
                         "svar" : {
                           "informasjon" : {
-                            "kommersenere" : [ { } ]
+                            "kommersenere" : [ { 
+                                "type": "01",
+                                "opplysninger": "må_endres"
+                            } ]
                           }
                         }
                       }
