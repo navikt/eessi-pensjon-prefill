@@ -80,16 +80,6 @@ class PrefillX010Test {
                         "foedselsdato" : "1988-07-12"
                       }
                     }
-                  },
-                  "paaminnelse" : {
-                    "svar" : {
-                      "informasjon" : {
-                        "kommersenere" : [ { 
-                            "type": "dokument",
-                            "opplysninger": "må_endres"
-                        } ]
-                      }
-                    }
                   }
                 }
               }
