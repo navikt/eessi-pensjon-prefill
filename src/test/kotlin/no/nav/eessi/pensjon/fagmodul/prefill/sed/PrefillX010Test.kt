@@ -85,7 +85,7 @@ class PrefillX010Test {
                     "svar" : {
                       "informasjon" : {
                         "kommersenere" : [ { 
-                            "type": "01",
+                            "type": "dokument",
                             "opplysninger": "må_endres"
                         } ]
                       }

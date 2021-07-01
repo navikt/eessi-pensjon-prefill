@@ -762,7 +762,7 @@ class SedPrefillIntegrationSpringTest {
                         "svar" : {
                           "informasjon" : {
                             "kommersenere" : [ { 
-                                "type": "01",
+                                "type": "dokument",
                                 "opplysninger": "må_endres"
                             } ]
                           }

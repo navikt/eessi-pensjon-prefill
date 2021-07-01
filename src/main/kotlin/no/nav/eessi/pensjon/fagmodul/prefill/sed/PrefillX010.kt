@@ -56,7 +56,7 @@ class PrefillX010(private val prefillNav: PrefillPDLNav)  {
                                         informasjon = Informasjon(
                                             kommersenere = listOf(
                                                 KommersenereItem(
-                                                    type = "01",
+                                                    type = "dokument",
                                                     opplysninger = "må_endres"
                                             ))
                                         )
