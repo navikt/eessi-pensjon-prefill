@@ -763,7 +763,7 @@ class SedPrefillIntegrationSpringTest {
                           "informasjon" : {
                             "kommersenere" : [ { 
                                 "type": "dokument",
-                                "opplysninger": null
+                                "opplysninger": "."
                             } ]
                           }
                         }
