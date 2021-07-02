@@ -59,6 +59,8 @@ class PrefillX010Test {
 
         val json = x010sed.toJsonSkipEmpty()
 
+        println(expectedSed())
+
         JSONAssert.assertEquals(expectedSed(), json , true)
 
     }
@@ -78,6 +80,15 @@ class PrefillX010Test {
                         "fornavn" : "ODIN ETTØYE",
                         "kjoenn" : "M",
                         "foedselsdato" : "1988-07-12"
+                      }
+                    }
+                  },
+                  "paaminnelse" : {
+                    "svar" : {
+                      "informasjon" : {
+                        "kommersenere" : [ { 
+                            "type": "dokument"
+                        } ]
                       }
                     }
                   }
