@@ -1,16 +1,32 @@
 package no.nav.eessi.pensjon.eux.model
 
-import no.nav.eessi.pensjon.eux.model.sed.*
+import no.nav.eessi.pensjon.eux.model.sed.Adresse
+import no.nav.eessi.pensjon.eux.model.sed.Bank
+import no.nav.eessi.pensjon.eux.model.sed.Bruker
+import no.nav.eessi.pensjon.eux.model.sed.EessisakItem
+import no.nav.eessi.pensjon.eux.model.sed.Foedested
+import no.nav.eessi.pensjon.eux.model.sed.Foreldre
+import no.nav.eessi.pensjon.eux.model.sed.Innehaver
+import no.nav.eessi.pensjon.eux.model.sed.Konto
+import no.nav.eessi.pensjon.eux.model.sed.Krav
+import no.nav.eessi.pensjon.eux.model.sed.MedlemskapItem
+import no.nav.eessi.pensjon.eux.model.sed.Nav
+import no.nav.eessi.pensjon.eux.model.sed.P5000
+import no.nav.eessi.pensjon.eux.model.sed.P5000Pensjon
+import no.nav.eessi.pensjon.eux.model.sed.Pensjon
+import no.nav.eessi.pensjon.eux.model.sed.Person
+import no.nav.eessi.pensjon.eux.model.sed.PinItem
+import no.nav.eessi.pensjon.eux.model.sed.SED
+import no.nav.eessi.pensjon.eux.model.sed.SedType
+import no.nav.eessi.pensjon.eux.model.sed.StatsborgerskapItem
 
 class SedMock {
 
-    fun genererP5000Mock(): SED {
+    fun genererP5000Mock(): P5000 {
         return P5000(
                 nav = NavMock().genererNavMock(),
                 p5000Pensjon = PensjonMock().genererP5000Pensjon(),
-                type = SedType.P5000,
-                sedVer = "0",
-                sedGVer = "4"
+                type = SedType.P5000
         )
     }
 

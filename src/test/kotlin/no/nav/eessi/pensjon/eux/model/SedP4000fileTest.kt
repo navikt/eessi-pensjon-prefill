@@ -31,8 +31,9 @@ class SedP4000fileTest {
         val map = mapJsonToAny(p4000json, typeRefs<Map<String, Any>>())
         val periodeInfoJson = mapAnyToJson(map["periodeInfo"] ?: "{}")
 
-        val p4000 = P4000()
-        p4000.trygdetid = mapJsonToAny( periodeInfoJson, typeRefs())
+        val p4000 = P4000(
+            trygdetid = mapJsonToAny( periodeInfoJson, typeRefs())
+        )
 
         assertEquals("work period 1 workName", p4000.trygdetid?.ansattSelvstendigPerioder?.first()?.navnFirma)
         assertEquals("Ole", p4000.trygdetid?.barnepassPerioder?.first()?.informasjonBarn?.fornavn)
@@ -50,8 +51,9 @@ class SedP4000fileTest {
         val personDataNode = mapper.readTree(p4000json)
         val personDataJson =  personDataNode["periodeInfo"].toString()
 
-        val sed = P4000()
-        sed.trygdetid = mapJsonToAny(personDataJson, typeRefs())
+        val sed = P4000(
+            trygdetid = mapJsonToAny(personDataJson, typeRefs())
+        )
 
         val trygdetidJson = sed.trygdetid?.toJson()
 

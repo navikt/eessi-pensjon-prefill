@@ -4,12 +4,12 @@ import no.nav.eessi.pensjon.eux.model.sed.Bruker
 import no.nav.eessi.pensjon.eux.model.sed.Informasjon
 import no.nav.eessi.pensjon.eux.model.sed.KommersenereItem
 import no.nav.eessi.pensjon.eux.model.sed.Kontekst
-import no.nav.eessi.pensjon.eux.model.sed.Nav
 import no.nav.eessi.pensjon.eux.model.sed.Navsak
 import no.nav.eessi.pensjon.eux.model.sed.Paaminnelse
 import no.nav.eessi.pensjon.eux.model.sed.Person
 import no.nav.eessi.pensjon.eux.model.sed.Svar
 import no.nav.eessi.pensjon.eux.model.sed.X010
+import no.nav.eessi.pensjon.eux.model.sed.XNav
 import no.nav.eessi.pensjon.fagmodul.models.BrukerInformasjon
 import no.nav.eessi.pensjon.fagmodul.models.PersonDataCollection
 import no.nav.eessi.pensjon.fagmodul.models.PersonId
@@ -39,7 +39,7 @@ class PrefillX010(private val prefillNav: PrefillPDLNav)  {
         val person = navsed.bruker?.person
 
         return X010 (
-                nav = Nav(
+                xnav = XNav(
                         sak = Navsak(
                                 kontekst = Kontekst(
                                         bruker = Bruker(
