@@ -2,7 +2,6 @@ package no.nav.eessi.pensjon.fagmodul.prefill.sed
 
 import no.nav.eessi.pensjon.eux.model.sed.Bruker
 import no.nav.eessi.pensjon.eux.model.sed.Informasjon
-import no.nav.eessi.pensjon.eux.model.sed.KommersenereItem
 import no.nav.eessi.pensjon.eux.model.sed.Kontekst
 import no.nav.eessi.pensjon.eux.model.sed.Navsak
 import no.nav.eessi.pensjon.eux.model.sed.Paaminnelse
@@ -54,12 +53,7 @@ class PrefillX010(private val prefillNav: PrefillPDLNav)  {
                                 paaminnelse = Paaminnelse(
                                     svar = Svar(
                                         informasjon = Informasjon(
-                                            kommersenere = listOf(
-                                                KommersenereItem(
-                                                    type = "dokument",
-                                                    opplysninger = "."
-                                            )
-                                            )
+                                            kommersenere = null
                                         )
                                     )
                                 )
