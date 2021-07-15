@@ -58,11 +58,9 @@ class PrefillX010Test {
         )
 
         val json = x010sed.toJsonSkipEmpty()
-
-        println(expectedSed())
+        println(json)
 
         JSONAssert.assertEquals(expectedSed(), json , true)
-
     }
 
     private fun expectedSed(): String {
@@ -70,7 +68,7 @@ class PrefillX010Test {
             {
               "sed" : "X010",
               "sedGVer" : "4",
-              "sedVer" : "1",
+              "sedVer" : "2",
               "nav" : {
                 "sak" : {
                   "kontekst" : {
@@ -85,12 +83,7 @@ class PrefillX010Test {
                   },
                   "paaminnelse" : {
                     "svar" : {
-                      "informasjon" : {
-                        "kommersenere" : [ { 
-                            "type": "dokument",
-                            "opplysninger": "."
-                        } ]
-                      }
+                      "informasjon" : { }
                     }
                   }
                 }

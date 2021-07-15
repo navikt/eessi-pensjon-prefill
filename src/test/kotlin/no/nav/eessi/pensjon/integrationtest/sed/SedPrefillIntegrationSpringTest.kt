@@ -167,6 +167,8 @@ class SedPrefillIntegrationSpringTest {
         Assertions.assertEquals(FNR_VOKSEN, gjenlevendePIN)
         Assertions.assertEquals(FNR_VOKSEN_4, avdodPIN)
 
+        println(response)
+
     }
 
     @Test

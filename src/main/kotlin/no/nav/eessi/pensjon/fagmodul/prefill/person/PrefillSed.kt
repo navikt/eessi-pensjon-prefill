@@ -1,5 +1,6 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.person
 
+import no.nav.eessi.pensjon.eux.model.sed.Bruker
 import no.nav.eessi.pensjon.eux.model.sed.Pensjon
 import no.nav.eessi.pensjon.eux.model.sed.SED
 import no.nav.eessi.pensjon.fagmodul.models.PersonDataCollection
@@ -40,20 +41,24 @@ class PrefillSed(private val prefillNav: PrefillPDLNav) {
             personData = personData,
             brukerInformasjon = prefillData.getPersonInfoFromRequestData(),
             krav = prefillPensjon?.kravDato,
-            annenPerson = null
+            annenPerson = annenPersonHvisGjenlevende(prefillData, prefillPensjon?.gjenlevende)
         )
         logger.debug("[${prefillData.sedType}] Preutfylling Utfylling NAV")
 
-        //Spesielle SED som har etterlette men benyttes av flere BUC
-        //Må legge gjenlevende også som nav.annenperson
-        if (prefillData.avdod != null) {
-            navSed.annenperson = prefillPensjon?.gjenlevende
-            navSed.annenperson?.person?.rolle = "01"  //Claimant - etterlatte
-        }
 
         logger.debug("-------------------| Preutfylling END |------------------- ")
         return SED(sedType, nav = navSed, pensjon = prefillPensjon)
 
+    }
+
+    //Spesielle SED som har etterlette men benyttes av flere BUC
+    //Må legge gjenlevende også som nav.annenperson
+    private fun annenPersonHvisGjenlevende(prefillData: PrefillDataModel, gjenlevende: Bruker?): Bruker? {
+        return if (prefillData.avdod != null) {
+            val annenperson = gjenlevende
+             annenperson?.person?.rolle = "01"  //Claimant - etterlatte
+            annenperson
+        } else null
     }
 
 }

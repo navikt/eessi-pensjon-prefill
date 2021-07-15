@@ -6,11 +6,13 @@ import no.nav.eessi.pensjon.eux.model.sed.Bruker
 import no.nav.eessi.pensjon.eux.model.sed.InstitusjonX005
 import no.nav.eessi.pensjon.eux.model.sed.Kontekst
 import no.nav.eessi.pensjon.eux.model.sed.Leggtilinstitusjon
-import no.nav.eessi.pensjon.eux.model.sed.Nav
 import no.nav.eessi.pensjon.eux.model.sed.Navsak
+import no.nav.eessi.pensjon.eux.model.sed.P2000
 import no.nav.eessi.pensjon.eux.model.sed.Person
 import no.nav.eessi.pensjon.eux.model.sed.SED
 import no.nav.eessi.pensjon.eux.model.sed.SedType
+import no.nav.eessi.pensjon.eux.model.sed.X005
+import no.nav.eessi.pensjon.eux.model.sed.XNav
 import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
 import no.nav.eessi.pensjon.fagmodul.models.PersonDataCollection
 import no.nav.eessi.pensjon.fagmodul.models.PersonId
@@ -73,7 +75,7 @@ class PrefillServiceTest {
             {
               "sed" : "X005",
               "sedGVer" : "4",
-              "sedVer" : "1",
+              "sedVer" : "2",
               "nav" : {
                 "sak" : {
                   "kontekst" : {
@@ -102,10 +104,12 @@ class PrefillServiceTest {
 
 
     fun generateMockP2000(prefillModel: PrefillDataModel): SED {
-        val mocksed = SED(type = prefillModel.sedType)
-        val mockp2000 = SedMock().genererP2000Mock()
-        mocksed.nav = mockp2000.nav
-        mocksed.pensjon = mockp2000.pensjon
+        val gensed = SedMock().genererP2000Mock()
+        val mocksed = P2000(
+            type = prefillModel.sedType,
+            nav = gensed.nav,
+            pensjon = gensed.pensjon
+        )
         return mocksed
     }
 
@@ -120,22 +124,24 @@ class PrefillServiceTest {
         )
 
         //val x005Datamodel = PrefillDataModel.fromJson(prefillModel.clone())
-        val x005 = SED(SedType.X005)
-        x005.nav = Nav(
-                sak = Navsak(
-                        kontekst = Kontekst(
-                                bruker = Bruker(
-                                        person = Person(
-                                                fornavn = person?.fornavn,
-                                                etternavn = person?.etternavn,
-                                                foedselsdato = person?.foedselsdato
-                                        )
-                                )
-                        ),
-                        leggtilinstitusjon = Leggtilinstitusjon(
-                                institusjon = institusjonX005
-                        )
-                )
+            val x005 = X005(
+                SedType.X005,
+                xnav = XNav(
+                    sak = Navsak(
+                            kontekst = Kontekst(
+                                    bruker = Bruker(
+                                            person = Person(
+                                                    fornavn = person?.fornavn,
+                                                    etternavn = person?.etternavn,
+                                                    foedselsdato = person?.foedselsdato
+                                            )
+                                    )
+                            ),
+                            leggtilinstitusjon = Leggtilinstitusjon(
+                                    institusjon = institusjonX005
+                            )
+                    )
+            )
         )
         return x005
     }

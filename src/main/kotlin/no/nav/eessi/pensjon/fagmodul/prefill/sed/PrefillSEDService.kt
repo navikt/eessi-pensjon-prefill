@@ -31,6 +31,7 @@ class PrefillSEDService(
     private val eessiInformasjon: EessiInformasjon,
     private val prefillPDLnav: PrefillPDLNav
 ) {
+    //@Value("\${ENV}") val environment: String = "q2"
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillSEDService::class.java) }
 
@@ -42,15 +43,22 @@ class PrefillSEDService(
 
         return when (sedType) {
             //krav
-            SedType.P2000 -> PrefillP2000(prefillPDLnav).prefillSed(prefillData, personDataCollection, hentRelevantPensjonSak(prefillData) { pensakType -> pensakType == ALDER.name }, hentRelevantVedtak(prefillData))
-            SedType.P2200 -> PrefillP2200(prefillPDLnav).prefill(prefillData, personDataCollection, hentRelevantPensjonSak(prefillData) { pensakType -> pensakType == UFOREP.name }, hentRelevantVedtak(prefillData))
+            SedType.P2000 -> PrefillP2000(prefillPDLnav).prefillSed(
+                prefillData,
+                personDataCollection,
+                hentRelevantPensjonSak(prefillData) { pensakType -> pensakType == ALDER.name },
+                hentRelevantVedtak(prefillData)
+            )
+            SedType.P2200 -> PrefillP2200(prefillPDLnav).prefill(
+                prefillData,
+                personDataCollection,
+                hentRelevantPensjonSak(prefillData) { pensakType -> pensakType == UFOREP.name },
+                hentRelevantVedtak(prefillData)
+            )
             SedType.P2100 -> {
                 val sedpair = PrefillP2100(prefillPDLnav).prefillSed(prefillData, personDataCollection, hentRelevantPensjonSak(prefillData) { pensakType ->
                     listOf(
-                        ALDER.name,
-                        BARNEP.name,
-                        GJENLEV.name,
-                        UFOREP.name
+                        ALDER.name, BARNEP.name, GJENLEV.name, UFOREP.name
                     ).contains(pensakType)
                 })
                 prefillData.melding = sedpair.first
@@ -58,10 +66,21 @@ class PrefillSEDService(
             }
 
             //vedtak
-            SedType.P6000 -> PrefillP6000(prefillPDLnav, eessiInformasjon, pensjonsinformasjonService.hentVedtak(hentVedtak(prefillData))).prefill(prefillData, personDataCollection)
+            SedType.P6000 -> PrefillP6000(prefillPDLnav, eessiInformasjon, pensjonsinformasjonService.hentVedtak(hentVedtak(prefillData))).prefill(
+                prefillData,
+                personDataCollection
+            )
             SedType.P5000 -> PrefillP5000(PrefillSed(prefillPDLnav)).prefill(prefillData, personDataCollection)
             SedType.P4000 -> PrefillP4000(PrefillSed(prefillPDLnav)).prefill(prefillData, personDataCollection)
-            SedType.P7000 -> PrefillP7000(PrefillSed(prefillPDLnav)).prefill(prefillData, personDataCollection)
+            SedType.P7000 -> {
+                if (prefillData.partSedAsJson[SedType.P7000.name] != null && prefillData.partSedAsJson[SedType.P7000.name] != "{}") {
+                    logger.info("P7000mk2 preutfylling med data fra P6000..")
+                    PrefillP7000Mk2Turbo(PrefillSed(prefillPDLnav)).prefill(prefillData, personDataCollection)
+                } else {
+                    logger.info("P7000 med forenklet preutfylling")
+                    PrefillP7000(PrefillSed(prefillPDLnav)).prefill(prefillData, personDataCollection)
+                }
+            }
 
             SedType.P8000 -> {
                 if (prefillData.buc == "P_BUC_05") {
