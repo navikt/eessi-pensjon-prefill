@@ -6,9 +6,9 @@ import no.nav.eessi.pensjon.personoppslag.pdl.model.Bostedsadresse
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Doedsfall
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Endring
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Endringstype
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Familierelasjon
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Familierelasjonsrolle
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Foedsel
+import no.nav.eessi.pensjon.personoppslag.pdl.model.ForelderBarnRelasjon
 import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe
 import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentInformasjon
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Kjoenn
@@ -44,7 +44,7 @@ class LagPDLPerson {
                 geografiskTilknytning = null,
                 kjoenn = Kjoenn(kjoennType, null, mockMeta()),
                 doedsfall = doeadfall,
-                familierelasjoner = emptyList(),
+                forelderBarnRelasjon = emptyList(),
                 sivilstand = emptyList(),
                 kontaktadresse = null
             )
@@ -69,29 +69,29 @@ class LagPDLPerson {
 
         fun Person.medBarn(barnfnr: String): Person {
                 val minRolle = familieRolle(this)
-                val list = mutableListOf<Familierelasjon>()
-                list.addAll(this.familierelasjoner)
-                list.add(Familierelasjon(
+                val list = mutableListOf<ForelderBarnRelasjon>()
+                list.addAll(this.forelderBarnRelasjon)
+                list.add(ForelderBarnRelasjon(
                     relatertPersonsIdent = barnfnr,
                     relatertPersonsRolle = Familierelasjonsrolle.BARN,
                     minRolleForPerson = minRolle,
                     metadata = mockMeta())
                 )
-                return this.copy(familierelasjoner = list)
+                return this.copy(forelderBarnRelasjon = list)
         }
 
         fun Person.medForeldre(foreldre: Person): Person {
             val foreldreRolle = familieRolle(foreldre)
             val foreldrefnr = foreldre.identer.firstOrNull { it.gruppe == IdentGruppe.FOLKEREGISTERIDENT }?.ident
-            val list = mutableListOf<Familierelasjon>()
-            list.addAll(this.familierelasjoner)
-            list.add(Familierelasjon(
+            val list = mutableListOf<ForelderBarnRelasjon>()
+            list.addAll(this.forelderBarnRelasjon)
+            list.add(ForelderBarnRelasjon(
                 relatertPersonsIdent = foreldrefnr!!,
                 relatertPersonsRolle = foreldreRolle,
                 minRolleForPerson = Familierelasjonsrolle.BARN,
                 metadata = mockMeta())
             )
-            return this.copy(familierelasjoner = list)
+            return this.copy(forelderBarnRelasjon = list)
         }
 
         private fun familieRolle(person: Person) : Familierelasjonsrolle {

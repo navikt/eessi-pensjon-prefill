@@ -74,3 +74,5 @@ spring:
       sasl:
         mechanism: PLAIN
         jaas.config: org.apache.kafka.common.security.plain.PlainLoginModule required username="${srvusername}" password="${srvpassword}";
+  main:
+    allow-bean-definition-overriding: true
