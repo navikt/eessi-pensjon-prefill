@@ -6,7 +6,11 @@ import no.nav.eessi.pensjon.fagmodul.models.PersonDataCollection
 import no.nav.eessi.pensjon.fagmodul.models.PersonId
 import no.nav.eessi.pensjon.fagmodul.prefill.pdl.NavFodselsnummer
 import no.nav.eessi.pensjon.fagmodul.prefill.pdl.PrefillPDLAdresse
-import no.nav.eessi.pensjon.personoppslag.pdl.model.*
+import no.nav.eessi.pensjon.personoppslag.pdl.model.Familierelasjonsrolle
+import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe
+import no.nav.eessi.pensjon.personoppslag.pdl.model.KjoennType
+import no.nav.eessi.pensjon.personoppslag.pdl.model.Navn
+import no.nav.eessi.pensjon.personoppslag.pdl.model.Sivilstandstype
 import no.nav.eessi.pensjon.utils.simpleFormat
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -229,7 +233,7 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
     private fun createFamilieRelasjon(relasjon: Familierelasjonsrolle, barnpdlperson: PDLPerson, personData: PersonDataCollection): Foreldre? {
 
         //ident til relasjon (FAR/MOR)
-        val relasjonIdent = barnpdlperson.familierelasjoner.firstOrNull { it.relatertPersonsRolle == relasjon }?.relatertPersonsIdent
+        val relasjonIdent = barnpdlperson.forelderBarnRelasjon.firstOrNull { it.relatertPersonsRolle == relasjon }?.relatertPersonsIdent
 
         val forsikretPerson = personData.forsikretPerson
         val ektePerson = personData.ektefellePerson

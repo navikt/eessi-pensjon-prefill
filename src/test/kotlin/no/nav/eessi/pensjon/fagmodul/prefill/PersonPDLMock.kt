@@ -6,9 +6,9 @@ import no.nav.eessi.pensjon.personoppslag.pdl.model.Bostedsadresse
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Doedsfall
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Endring
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Endringstype
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Familierelasjon
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Familierelasjonsrolle
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Foedsel
+import no.nav.eessi.pensjon.personoppslag.pdl.model.ForelderBarnRelasjon
 import no.nav.eessi.pensjon.personoppslag.pdl.model.GeografiskTilknytning
 import no.nav.eessi.pensjon.personoppslag.pdl.model.GtType
 import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe
@@ -128,16 +128,16 @@ object PersonPDLMock {
     internal fun Person.medForeldre(foreldre: Person): Person {
         val foreldreRolle = familieRolle(foreldre)
         val foreldrefnr = foreldre.identer.firstOrNull { it.gruppe == IdentGruppe.FOLKEREGISTERIDENT }?.ident
-        val list = mutableListOf<Familierelasjon>()
-        list.addAll(this.familierelasjoner)
+        val list = mutableListOf<ForelderBarnRelasjon>()
+        list.addAll(this.forelderBarnRelasjon)
         list.add(
-            Familierelasjon(
+            ForelderBarnRelasjon(
             relatertPersonsIdent = foreldrefnr!!,
             relatertPersonsRolle = foreldreRolle,
             minRolleForPerson = Familierelasjonsrolle.BARN,
             metadata = mockMeta())
         )
-        return this.copy(familierelasjoner = list)
+        return this.copy(forelderBarnRelasjon = list)
     }
     //subsitutt for tps testfiler Person-20000.json... .enke med barn
     internal fun createEnkeWithBarn(enkefnr: String, barn1fnr: String, barn2fnr: String? = null): PersonDataCollection {
