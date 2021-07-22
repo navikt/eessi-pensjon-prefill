@@ -160,8 +160,8 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
           "personNr" : "01126712345"
         },
         "reduksjonsGrunn" : "02",
-        "startdatoPensjonsRettighet" : "2019-10-01",
-        "dato" : "2020-10-01"
+        "startdatoPensjonsRettighet" : "2020-10-01",
+        "dato" : "2019-10-01"
       } ]
     }
   },
