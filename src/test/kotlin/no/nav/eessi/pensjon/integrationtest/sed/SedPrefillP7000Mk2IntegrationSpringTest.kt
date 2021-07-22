@@ -72,6 +72,119 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
     }
 
     @Test
+    fun `prefill sed P7000 - Gitt en alderspensjon med flere P6000 med invilgelse og avslag skal det preutfylles gyldig SED`() {
+        every { personService.hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN_3)
+        every { personService.hentPerson(NorskIdent(FNR_VOKSEN_3)) } returns PersonPDLMock.createWith(true, "Alder", "Pensjon", FNR_VOKSEN_3, AKTOER_ID)
+        every { kodeverkClient.finnLandkode(any())} returns "QX"
+
+        //mock p6000 fra RINA med data som skal benyttes i P7000
+        val p6000fraRequest = listOf(mockP6000requestdata("SE"), mockP6000KomplettRequestdata("NO"))
+        val payload = mapAnyToJson(p6000fraRequest)
+
+        //mock apiRequest
+        val apijson = dummyApiRequest(sakid = "21337890", aktoerId = AKTOER_ID, sed = "P7000", buc = "P_BUC_01", payload = payload ).toJson()
+
+        val validResponse = """ 
+{
+  "sed" : "P7000",
+  "nav" : {
+    "eessisak" : [ {
+      "institusjonsid" : "NO:noinst002",
+      "institusjonsnavn" : "NOINST002, NO INST002, NO",
+      "saksnummer" : "21337890",
+      "land" : "NO"
+    }, {
+      "institusjonsid" : "2342145134",
+      "institusjonsnavn" : "NOINST002, NO INST002, NO",
+      "saksnummer" : "22874955",
+      "land" : "SE"
+    } ],
+    "bruker" : {
+      "person" : {
+        "pin" : [ {
+          "identifikator" : "12312312312",
+          "land" : "NO",
+          "institusjon" : { }
+        } ],
+        "etternavn" : "Pensjon",
+        "fornavn" : "Alder",
+        "kjoenn" : "M",
+        "foedselsdato" : "1988-07-12"
+      }
+    },
+    "ektefelle" : {
+      "person" : {
+        "etternavn" : "Pensjon"
+      }
+    }
+  },
+  "pensjon" : {
+    "samletVedtak" : {
+      "avslag" : [ {
+        "pensjonType" : "01",
+        "begrunnelse" : "03",
+        "dato" : "2020-12-16",
+        "pin" : {
+          "institusjonsnavn" : "NOINST002, NO INST002, NO",
+          "institusjonsid" : "NO:noinst002",
+          "identifikator" : "12312312312",
+          "land" : "SE"
+        },
+        "adresse" : "Oppoverbakken 66, SØRUMSAND, SE"
+      } ],
+      "tildeltepensjoner" : [ {
+        "pensjonType" : "01",
+        "ytelser" : [ {
+          "startdatoretttilytelse" : "2020-10-01",
+          "sluttdatoretttilytelse" : "2030-10-01",
+          "beloep" : [ {
+            "betalingshyppighetytelse" : "maaned_12_per_aar",
+            "valuta" : "HUF",
+            "beloep" : "523"
+          } ]
+        }, {
+          "startdatoretttilytelse" : "2020-10-01",
+          "sluttdatoretttilytelse" : "2025-10-01",
+          "beloep" : [ {
+            "betalingshyppighetytelse" : "annet",
+            "valuta" : "ISK",
+            "beloep" : "234"
+          } ]
+        } ],
+        "vedtakPensjonType" : "01",
+        "tildeltePensjonerLand" : "NO",
+        "addressatForRevurdering" : "Adresse for revurdering: Docid: 123123",
+        "institusjon" : {
+          "saksnummer" : "24234sdsd-4",
+          "land" : "NO",
+          "personNr" : "01126712345"
+        },
+        "reduksjonsGrunn" : "02",
+        "startdatoPensjonsRettighet" : "2019-10-01",
+        "dato" : "2020-10-01"
+      } ]
+    }
+  },
+  "sedGVer" : "4",
+  "sedVer" : "2"
+}
+
+        """.trimIndent()
+
+        val result = mockMvc.perform(post("/sed/prefill")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(apijson))
+            .andExpect(status().isOk)
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andReturn()
+
+        val response = result.response.getContentAsString(charset("UTF-8"))
+        JSONAssert.assertEquals(response, validResponse, false)
+    }
+
+
+
+    @Test
     @Throws(Exception::class)
     fun `prefill sed P7000 - Gitt gjenlevendepensjon med flere P6000 med avslag skal det preutfylles gyldig SED`() {
         every { personService.hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID))} returns NorskIdent(FNR_VOKSEN_3)
@@ -160,7 +273,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
         "pensjonType" : "03",
         "begrunnelse" : "03",
         "dato" : "2020-12-16",
-        "adresse" : "Adresse(gate=Oppoverbakken 66, bygning=null, by=SØRUMSAND, postnummer=1920, region=null, land=NO, kontaktpersonadresse=null, datoforadresseendring=null, postadresse=null, startdato=null)"
+        "adresse" : "Oppoverbakken 66, SØRUMSAND, NO"
       }, {
         "pensjonType" : "03",
         "begrunnelse" : "03",
@@ -171,7 +284,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
           "identifikator" : "11067122781",
           "land" : "NO"
         },
-        "adresse" : "Adresse(gate=Oppoverbakken 66, bygning=null, by=SØRUMSAND, postnummer=1920, region=null, land=NO, kontaktpersonadresse=null, datoforadresseendring=null, postadresse=null, startdato=null)"
+        "adresse" : "Oppoverbakken 66, SØRUMSAND, NO"
       } ]
     }
   },
@@ -250,7 +363,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
           "identifikator" : "12312312312",
           "land" : "SE"
         },
-        "adresse" : "Adresse(gate=Oppoverbakken 66, bygning=null, by=SØRUMSAND, postnummer=1920, region=null, land=SE, kontaktpersonadresse=null, datoforadresseendring=null, postadresse=null, startdato=null)"
+        "adresse" : "Oppoverbakken 66, SØRUMSAND, SE"
       }, {
         "pensjonType" : "01",
         "begrunnelse" : "03",
@@ -261,13 +374,13 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
           "identifikator" : "12312312312",
           "land" : "NO"
         },
-        "adresse" : "Adresse(gate=Oppoverbakken 66, bygning=null, by=SØRUMSAND, postnummer=1920, region=null, land=NO, kontaktpersonadresse=null, datoforadresseendring=null, postadresse=null, startdato=null)"
+        "adresse" : "Oppoverbakken 66, SØRUMSAND, NO"
       } ]
     }
   },
   "sedGVer" : "4",
   "sedVer" : "2"
-}        
+}      
         """.trimIndent()
 
         val result = mockMvc.perform(post("/sed/prefill")
@@ -367,7 +480,10 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
     }
 
 
-    private fun mockP6000requestdata(land: String, type: String? = "01") =  Pair(P6000Dokument(SedType.P6000, "123123", "23423asdasd3243423", land, "1"), mapJsonToAny(mockP6000Data(land, type), typeRefs<P6000>()))
+
+    private fun mockP6000KomplettRequestdata(land: String, type: String? = "01") =  Pair(P6000Dokument(SedType.P6000, "123123", "23423asdasd3243423", land, "1", "url"), mapJsonToAny(mockKomplettP6000(land, type), typeRefs<P6000>()))
+
+    private fun mockP6000requestdata(land: String, type: String? = "01") =  Pair(P6000Dokument(SedType.P6000, "123123", "23423asdasd3243423", land, "1", "url"), mapJsonToAny(mockP6000Data(land, type), typeRefs<P6000>()))
 
     private fun mockP6000Data(land: String = "SE", type: String? = "01"): String {
        return """
@@ -465,6 +581,311 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
         """.trimIndent()
     }
 
+    private fun mockKomplettP6000(land: String = "SE", type: String? = "01") : String {
+        return """
+{
+  "nav": {
+    "bruker": {
+      "mor": {
+        "person": {
+          "etternavnvedfoedsel": "asdfsdf",
+          "fornavn": "asfsdf"
+        }
+      },
+      "person": {
+        "fornavn": "Gul",
+        "pin": [
+          {
+            "sektor": "pensjoner",
+            "identifikator": "weqrwerwqe",
+            "land": "BG"
+          },
+          {
+            "sektor": "alle",
+            "land": "$land",
+            "identifikator": "01126712345"
+          }
+        ],
+        "kjoenn": "f",
+        "etternavn": "Konsoll",
+        "foedselsdato": "1967-12-01",
+        "tidligereetternavn": "sdfsfasdf",
+        "statsborgerskap": [
+          {
+            "land": "BE"
+          },
+          {
+            "land": "BG"
+          },
+          {
+            "land": "GR"
+          },
+          {
+            "land": "GB"
+          }
+        ],
+        "foedested": {
+          "region": "sfgdfdgs",
+          "land": "DK",
+          "by": "gafdgsf"
+        },
+        "fornavnvedfoedsel": "werwerwe",
+        "tidligerefornavn": "asdfdsffsd",
+        "etternavnvedfoedsel": "werwreq"
+      },
+      "adresse": {
+        "region": "sadfsd",
+        "land": "BG",
+        "gate": "dsfasdf",
+        "bygning": "asdfsfd",
+        "postnummer": "safdsdf",
+        "by": "sfdsdaf"
+      },
+      "far": {
+        "person": {
+          "fornavn": "safasfsd",
+          "etternavnvedfoedsel": "sadfsfd"
+        }
+      }
+    },
+    "eessisak": [
+      {
+        "saksnummer": "24234sdsd-4",
+        "land": "$land"
+      },
+      {
+        "saksnummer": "retretretert",
+        "land": "HR"
+      }
+    ]
+  },
+  "pensjon": {
+   ${mockP6000gjenlev(type)}
+   "vedtak": [
+      {
+        "grunnlag": {
+          "framtidigtrygdetid": "0",
+          "medlemskap": "02",
+          "opptjening": {
+            "forsikredeAnnen": "01"
+          }
+        },
+        "beregning": [
+          {
+            "beloepBrutto": {
+              "ytelseskomponentGrunnpensjon": "2344",
+              "beloep": "523",
+              "ytelseskomponentTilleggspensjon": "234"
+            },
+            "periode": {
+              "tom": "2030-10-01",
+              "fom": "2020-10-01"
+            },
+            "valuta": "HUF",
+            "beloepNetto": {
+              "beloep": "344"
+            },
+            "utbetalingshyppighetAnnen": "13213",
+            "utbetalingshyppighet": "maaned_12_per_aar"
+          },
+          {
+            "utbetalingshyppighetAnnen": "werwer",
+            "beloepBrutto": {
+              "beloep": "234",
+              "ytelseskomponentTilleggspensjon": "22",
+              "ytelseskomponentGrunnpensjon": "342"
+            },
+            "periode": {
+              "fom": "2020-10-01",
+              "tom": "2025-10-01"
+            },
+            "beloepNetto": {
+              "beloep": "12"
+            },
+            "utbetalingshyppighet": "annet",
+            "valuta": "ISK"
+          }
+        ],
+        "basertPaa": "02",
+        "delvisstans": {
+          "utbetaling": {
+            "begrunnelse": "sfdgsdf\nfdg\ns",
+            "beloepBrutto": "24234",
+            "valuta": "SEK"
+          },
+          "indikator": "1"
+        },
+        "virkningsdato": "2020-10-01",
+        "artikkel": "02",
+        "kjoeringsdato": "2020-12-01",
+        "type": "$type",
+        "basertPaaAnnen": "sadfsdf",
+        "ukjent": {
+          "beloepBrutto": {
+            "ytelseskomponentAnnen": "sdfsfd\nsdf\nsfd"
+          }
+        },
+        "resultat": "01",
+        "avslagbegrunnelse": [
+          {
+            "begrunnelse": "03",
+            "annenbegrunnelse": "fsafasfd\nasd\nfsda"
+          },
+          {
+            "begrunnelse": "02",
+            "annenbegrunnelse": "tet\nertert\nretret"
+          }
+        ],
+        "begrunnelseAnnen": "afsdaf\nsdafsfasd\nsadfsd"
+      },
+      {
+        "beregning": [
+          {
+            "utbetalingshyppighetAnnen": "gagfdgg",
+            "valuta": "ERN",
+            "beloepBrutto": {
+              "ytelseskomponentTilleggspensjon": "12",
+              "ytelseskomponentGrunnpensjon": "122",
+              "beloep": "234"
+            },
+            "beloepNetto": {
+              "beloep": "23"
+            },
+            "periode": {
+              "tom": "2043-10-01",
+              "fom": "2032-10-01"
+            },
+            "utbetalingshyppighet": "kvartalsvis"
+          }
+        ],
+        "avslagbegrunnelse": [
+          {
+            "annenbegrunnelse": "324234\n234\n234\n4",
+            "begrunnelse": "04"
+          },
+          {
+            "annenbegrunnelse": "sdfafs\nsdfsdf\nfsadfsdf",
+            "begrunnelse": "04"
+          }
+        ],
+        "grunnlag": {
+          "framtidigtrygdetid": "0",
+          "medlemskap": "03",
+          "opptjening": {
+            "forsikredeAnnen": "03"
+          }
+        },
+        "artikkel": "03",
+        "basertPaaAnnen": "wertwertwert",
+        "delvisstans": {
+          "utbetaling": {
+            "begrunnelse": "sdfsdf\nsdfsdf\nsdf\nfsd",
+            "beloepBrutto": "234",
+            "valuta": "NZD"
+          },
+          "indikator": "0"
+        },
+        "type": "03",
+        "begrunnelseAnnen": "sdfsdf\nsd\nfsd",
+        "resultat": "03",
+        "kjoeringsdato": "2022-10-01",
+        "ukjent": {
+          "beloepBrutto": {
+            "ytelseskomponentAnnen": "dsfsdf\ns\ndf\nsdf"
+          }
+        },
+        "virkningsdato": "2030-10-01",
+        "basertPaa": "01"
+      }
+    ],
+    "tilleggsinformasjon": {
+      "person": {
+        "pinannen": {
+          "identifikator": "retertret",
+          "sektor": "alle"
+        }
+      },
+      "andreinstitusjoner": [
+        {
+          "institusjonsadresse": "asdfsdf",
+          "region": "sadfasdf",
+          "postnummer": "asdfsdf",
+          "bygningsnr": "sdafsadf",
+          "poststed": "safsd",
+          "land": "HR"
+        }
+      ],
+      "dato": "2019-10-01",
+      "anneninformation": "werwer\nwer\nwer",
+      "annen": {
+        "institusjonsadresse": {
+          "land": "BE"
+        }
+      },
+      "opphoer": {
+        "dato": "2022-10-01",
+        "annulleringdato": "2024-10-01"
+      },
+      "saksnummerAnnen": "werwer",
+      "saksnummer": "werwer",
+      "artikkel48": "0"
+    },
+    "sak": {
+      "artikkel54": "0",
+      "kravtype": [
+        {
+          "datoFrist": "fasfsda"
+        }
+      ],
+      "reduksjon": [
+        {
+          "artikkeltype": "02"
+        },
+        {
+          "artikkeltype": "03"
+        }
+      ]
+    },
+    "reduksjon": [
+      {
+        "type": "02",
+        "virkningsdato": [
+          {
+            "sluttdato": "2021-09-01",
+            "startdato": "2020-12-01"
+          },
+          {
+            "sluttdato": "2022-10-01",
+            "startdato": "2034-10-01"
+          }
+        ],
+        "aarsak": {
+          "annenytelseellerinntekt": "06",
+          "inntektAnnen": "adfasfsd"
+        }
+      },
+      {
+        "virkningsdato": [
+          {
+            "sluttdato": "2034-10-01",
+            "startdato": "2033-10-01"
+          }
+        ],
+        "aarsak": {
+          "annenytelseellerinntekt": "02",
+          "inntektAnnen": "ewrwer"
+        },
+        "type": "02"
+      }
+    ]
+  },
+  "sedVer": "0",
+  "sedGVer": "4",
+  "sed": "P6000"
+}
+            
+        """.trimIndent()
+    }
 
 }
 

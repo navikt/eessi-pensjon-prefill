@@ -1,6 +1,9 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed
 
 import no.nav.eessi.pensjon.eux.model.document.P6000Dokument
+import no.nav.eessi.pensjon.eux.model.sed.Adresse
+import no.nav.eessi.pensjon.eux.model.sed.BeloepItem
+import no.nav.eessi.pensjon.eux.model.sed.BeregningItem
 import no.nav.eessi.pensjon.eux.model.sed.Bruker
 import no.nav.eessi.pensjon.eux.model.sed.EessisakItem
 import no.nav.eessi.pensjon.eux.model.sed.Ektefelle
@@ -14,6 +17,8 @@ import no.nav.eessi.pensjon.eux.model.sed.Person
 import no.nav.eessi.pensjon.eux.model.sed.PinItem
 import no.nav.eessi.pensjon.eux.model.sed.SamletMeldingVedtak
 import no.nav.eessi.pensjon.eux.model.sed.SedType
+import no.nav.eessi.pensjon.eux.model.sed.TildeltePensjoneItem
+import no.nav.eessi.pensjon.eux.model.sed.YtelserItem
 import no.nav.eessi.pensjon.fagmodul.models.PersonDataCollection
 import no.nav.eessi.pensjon.fagmodul.models.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillSed
@@ -102,15 +107,76 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
         if (document == null || document.isEmpty()) {
             return null
         }
+
         return SamletMeldingVedtak(
             avslag = pensjonsAvslag(document), //kap 5
             vedtaksammendrag = null, // kap. 6 dato
-            tildeltepensjoner = null, //kap 4
-            startdatoPensjonsRettighet = null, // hva ?
-
+            tildeltepensjoner = pensjonTildelt(document) , //kap 4
         )
     }
 
+    //tildelt pensjon fra P6000
+    fun pensjonTildelt(document: List<Pair<P6000Dokument, P6000>>?): List<TildeltePensjoneItem>? {
+        return document?.mapNotNull { doc ->
+            val fraLand = doc.first.fraLand
+            val p6000 = doc.second
+            val p6000pensjon = p6000.p6000Pensjon
+
+            val eessisak = p6000.nav?.eessisak?.firstOrNull { it.land == fraLand }
+            val tildelt = p6000pensjon?.vedtak?.firstOrNull { it.resultat != "02" } //ikke avslag
+            val p6000bruker = finnKorrektBruker(p6000)
+
+            val tileltPen = TildeltePensjoneItem(
+                pensjonType = tildelt?.type,
+                vedtakPensjonType = tildelt?.resultat,
+                addressatForRevurdering = "Adresse for revurdering: Docid: ${doc.first.bucid}",
+                tildeltePensjonerLand = fraLand,
+                dato = tildelt?.virkningsdato,
+                startdatoPensjonsRettighet = p6000pensjon?.tilleggsinformasjon?.dato,
+                ytelser = mapYtelserP6000(tildelt?.beregning),
+                institusjon = mapInstusjonP6000(eessisak, p6000bruker, fraLand),
+                reduksjonsGrunn = p6000pensjon?.reduksjon?.firstOrNull { it.type != null }?.type,
+            )
+            if (tildelt != null) {
+                tileltPen
+            } else
+                null
+            }
+    }
+
+    fun mapYtelserP6000(beregniger: List<BeregningItem>?): List<YtelserItem>? {
+        return beregniger?.mapNotNull {  beregn ->
+            YtelserItem(
+                startdatoretttilytelse = beregn.periode?.fom ,
+                sluttdatoretttilytelse =  beregn.periode?.tom,
+                beloep = listOf(
+                    BeloepItem(
+                        valuta = beregn?.valuta,
+                        betalingshyppighetytelse = beregn?.utbetalingshyppighet,
+                        beloep = beregn?.beloepBrutto?.beloep,
+                    )
+                )
+            )
+        }
+    }
+
+
+    fun finnKorrektBruker(p6000: P6000): Bruker? {
+        return p6000.p6000Pensjon?.gjenlevende ?: p6000.nav?.bruker
+    }
+
+    fun mapInstusjonP6000(eessiSak: EessisakItem?, p6000bruker: Bruker?, fraLand: String?): Institusjon? {
+        return Institusjon(
+            saksnummer = eessiSak?.saksnummer,
+            personNr = p6000bruker?.person?.pin?.firstOrNull { it.land == fraLand }?.identifikator,
+            land = fraLand,
+            institusjonsid = eessiSak?.institusjonsid,
+            institusjonsnavn = eessiSak?.institusjonsnavn
+        )
+
+    }
+
+    //avslag på pensjon fra P6000
     fun pensjonsAvslag(document: List<Pair<P6000Dokument, P6000>>?): List<PensjonAvslagItem>? {
         val res = document?.mapNotNull { doc ->
 
@@ -118,20 +184,22 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
             val p6000 = doc.second
             //resultat = "02" er avslag
             val avslag = p6000.p6000Pensjon?.vedtak?.firstOrNull { it.resultat == "02" }
+            val adresse: Adresse? = finnKorrektBruker(p6000)?.adresse
 
-            PensjonAvslagItem(
+            val penAvslag = PensjonAvslagItem(
                     pensjonType = avslag?.type,
                     begrunnelse = avslag?.avslagbegrunnelse?.first()?.begrunnelse,
                     dato = p6000.p6000Pensjon?.tilleggsinformasjon?.dato,
                     pin = finnKorrektBruker(p6000)?.person?.pin?.firstOrNull { it.land == fraLand },
-                    adresse = finnKorrektBruker(p6000)?.adresse?.toString()
+                    adresse = "${adresse?.gate}, ${adresse?.by}, ${adresse?.land}"
                 )
+            if (avslag != null) {
+                penAvslag
+            } else
+                null
             }
         return res
     }
 
-    fun finnKorrektBruker(p6000: P6000): Bruker? {
-        return p6000?.p6000Pensjon?.gjenlevende ?: p6000.nav?.bruker
-    }
 
 }

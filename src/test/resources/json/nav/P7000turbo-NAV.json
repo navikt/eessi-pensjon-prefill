@@ -1,0 +1,113 @@
+{
+  "pensjon" : {
+    "samletVedtak" : {
+      "tildeltepensjoner" : [ {
+        "addressatForRevurdering" : "4.1.8.2 revjrflkasdfjasdf asdfasd fadfg",
+        "dato" : "2021-07-20",
+        "pensjonType" : "01",
+        "ytelser" : [ {
+          "beloep" : [ {
+            "valuta" : "NOK",
+            "betalingshyppighetytelse" : "03",
+            "beloepBrutto" : "123123123123"
+          } ],
+          "annenbetalingshyppighetytelse" : "4.1.6.6.1 annen",
+          "startdatoutbetaling" : "2021-07-20",
+          "sluttdatoretttilytelse" : "2021-07-20"
+        } ],
+        "startdatoPensjonsRettighet" : "2020-05-01",
+        "reduksjonsGrunn" : "02",
+        "institusjon" : {
+          "saksnummer" : "23123",
+          "sektor" : "alle",
+          "personNr" : "29065325959",
+          "land" : "NO",
+          "institusjonsid" : "NO:NAVAT01",
+          "institusjonsnavn" : "NAV ACCEPTANCE TEST 01"
+        },
+        "vedtakPensjonType" : "01",
+        "datoFrist" : "4.1.8.1"
+      }, {
+        "institusjon" : {
+          "institusjonsid" : "SE:ACC2001",
+          "sektor" : "alle",
+          "institusjonsnavn" : "The Swedish Pensions Agency",
+          "personNr" : "21317212",
+          "saksnummer" : "32142342134234234234234",
+          "land" : "SE"
+        },
+        "vedtakPensjonType" : "01",
+        "ytelser" : [ {
+          "annenbetalingshyppighetytelse" : "4.1.6.6.1",
+          "startdatoutbetaling" : "2021-07-20",
+          "beloep" : [ {
+            "beloepBrutto" : "41",
+            "betalingshyppighetytelse" : "03",
+            "valuta" : "SEK"
+          } ],
+          "sluttdatoretttilytelse" : "2021-07-20"
+        } ],
+        "dato" : "2021-07-20",
+        "pensjonType" : "01",
+        "addressatForRevurdering" : "4.1.8.2.1",
+        "datoFrist" : "4.1.8.1 tid",
+        "startdatoPensjonsRettighet" : "2021-07-20",
+        "reduksjonsGrunn" : "01"
+      } ],
+      "avslag" : [ {
+        "pin" : {
+          "identifikator" : "34234'1234",
+          "land" : "DK",
+          "institusjon" : {
+            "institusjonsnavn" : "ACC_The Danish Debt Collection Agency",
+            "institusjonsid" : "DK:10429",
+            "saksnummer" : "2342341234513452456"
+          },
+          "sektor" : "alle"
+        },
+        "dato" : "2021-07-20",
+        "adresse" : "5.1.5.2.1 adressa revud",
+        "begrunnelse" : "06",
+        "datoFrist" : "5.1.5.1 tid",
+        "pensjonType" : "01"
+      } ],
+      "vedtaksammendrag" : "2021-07-20"
+    },
+    "gjenlevende" : {
+      "person" : {
+        "fornavn" : "LUGUBER",
+        "kjoenn" : "M",
+        "pin" : [ {
+          "land" : "NO",
+          "identifikator" : "14115224590"
+        } ],
+        "foedselsdato" : "1952-11-14",
+        "etternavn" : "VEGGPRYD"
+      }
+    }
+  },
+  "sedVer" : "1",
+  "nav" : {
+    "bruker" : {
+      "person" : {
+        "fornavn" : "æøå",
+        "kjoenn" : "K",
+        "etternavn" : "æøå",
+        "etternavnvedfoedsel" : "Avdød",
+        "foedselsdato" : "1952-12-07",
+        "pin" : [ {
+          "identifikator" : "07125224002",
+          "land" : "NO"
+        } ]
+      }
+    },
+    "eessisak" : [ {
+      "institusjonsnavn" : "NAV ACCEPTANCE TEST 07",
+      "saksnummer" : "22919987",
+      "land" : "NO",
+      "institusjonsid" : "NO:NAVAT07"
+    } ]
+  },
+  "sedGVer" : "4",
+  "sed" : "P7000"
+}
