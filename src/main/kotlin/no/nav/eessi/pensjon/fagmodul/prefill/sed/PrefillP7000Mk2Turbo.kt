@@ -152,13 +152,19 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
                 beloep = listOf(
                     BeloepItem(
                         valuta = beregn?.valuta,
-                        betalingshyppighetytelse = beregn?.utbetalingshyppighet,
+                        betalingshyppighetytelse = mapUtbetalingHyppighet(beregn?.utbetalingshyppighet),
                         beloep = beregn?.beloepBrutto?.beloep,
                     )
                 )
             )
         }
     }
+
+    private fun mapUtbetalingHyppighet(utberhyp: String?) : String? {
+        val sjekkformap = mapOf( "aarlig" to "01", "kvartalsvis" to "02", "maaned_12_per_aar" to  "03", "maaned_13_per_aar" to "04", "maaned_14_per_aar" to "05",
+            "ukentlig" to "06", "annet" to "99")
+        return sjekkformap[utberhyp] ?: utberhyp
+   }
 
 
     fun finnKorrektBruker(p6000: P6000): Bruker? {

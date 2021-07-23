@@ -138,7 +138,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
           "startdatoretttilytelse" : "2020-10-01",
           "sluttdatoretttilytelse" : "2030-10-01",
           "beloep" : [ {
-            "betalingshyppighetytelse" : "maaned_12_per_aar",
+            "betalingshyppighetytelse" : "03",
             "valuta" : "HUF",
             "beloep" : "523"
           } ]
@@ -146,7 +146,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
           "startdatoretttilytelse" : "2020-10-01",
           "sluttdatoretttilytelse" : "2025-10-01",
           "beloep" : [ {
-            "betalingshyppighetytelse" : "annet",
+            "betalingshyppighetytelse" : "99",
             "valuta" : "ISK",
             "beloep" : "234"
           } ]
