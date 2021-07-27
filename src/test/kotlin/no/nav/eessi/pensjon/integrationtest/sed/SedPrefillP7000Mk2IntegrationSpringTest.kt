@@ -37,6 +37,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.web.client.RestTemplate
+import java.time.LocalDate
 
 @SpringBootTest(classes = [UnsecuredWebMvcTestLauncher::class], webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles(profiles = ["unsecured-webmvctest"])
@@ -481,9 +482,9 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
 
 
 
-    private fun mockP6000KomplettRequestdata(land: String, type: String? = "01") =  Pair(P6000Dokument(SedType.P6000, "123123", "23423asdasd3243423", land, "1", "url"), mapJsonToAny(mockKomplettP6000(land, type), typeRefs<P6000>()))
+    private fun mockP6000KomplettRequestdata(land: String, type: String? = "01") =  Pair(P6000Dokument(SedType.P6000, "123123", "23423asdasd3243423", land, "1", "url", LocalDate.of(2020, 10, 12)), mapJsonToAny(mockKomplettP6000(land, type), typeRefs<P6000>()))
 
-    private fun mockP6000requestdata(land: String, type: String? = "01") =  Pair(P6000Dokument(SedType.P6000, "123123", "23423asdasd3243423", land, "1", "url"), mapJsonToAny(mockP6000Data(land, type), typeRefs<P6000>()))
+    private fun mockP6000requestdata(land: String, type: String? = "01") =  Pair(P6000Dokument(SedType.P6000, "123123", "23423asdasd3243423", land, "1", "url", LocalDate.of(2021, 11,13)), mapJsonToAny(mockP6000Data(land, type), typeRefs<P6000>()))
 
     private fun mockP6000Data(land: String = "SE", type: String? = "01"): String {
        return """

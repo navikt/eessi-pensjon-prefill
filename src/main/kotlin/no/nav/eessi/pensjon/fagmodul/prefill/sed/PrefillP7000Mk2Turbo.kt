@@ -26,6 +26,7 @@ import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.typeRefs
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import java.time.LocalDate
 
 class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
 
@@ -44,7 +45,6 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
         //dekode liste av P6000 for preutfylling av P7000
         val partpayload = prefillData.partSedAsJson[SedType.P7000.name]
         val listP6000 = partpayload?.let { payload -> mapJsonToAny(payload, typeRefs<List<Pair<P6000Dokument, P6000>>>() ) }
-
 
         val eessisakerall = eessisaker(listP6000, eessielm)
 
@@ -119,6 +119,8 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
     fun pensjonTildelt(document: List<Pair<P6000Dokument, P6000>>?): List<TildeltePensjoneItem>? {
         return document?.mapNotNull { doc ->
             val fraLand = doc.first.fraLand
+            val sistMottattDato = doc.first.sistMottatt
+
             val p6000 = doc.second
             val p6000pensjon = p6000.p6000Pensjon
 
@@ -131,7 +133,7 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
                 vedtakPensjonType = tildelt?.resultat,
                 addressatForRevurdering = "Adresse for revurdering: Docid: ${doc.first.bucid}",
                 tildeltePensjonerLand = fraLand,
-                dato = p6000pensjon?.tilleggsinformasjon?.dato,
+                dato = mapVedtakDatoEllerSistMottattdato(p6000pensjon?.tilleggsinformasjon?.dato, sistMottattDato),
                 startdatoPensjonsRettighet = tildelt?.virkningsdato,
                 ytelser = mapYtelserP6000(tildelt?.beregning),
                 institusjon = mapInstusjonP6000(eessisak, p6000bruker, fraLand),
@@ -142,6 +144,11 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
             } else
                 null
             }
+    }
+
+    // mottattdato dersom dato ikke finnes.!
+    fun mapVedtakDatoEllerSistMottattdato(vedtakDato: String?, sistMottatt: LocalDate): String {
+        return vedtakDato ?: sistMottatt.toString()
     }
 
     fun mapYtelserP6000(beregniger: List<BeregningItem>?): List<YtelserItem>? {
@@ -187,6 +194,8 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
         val res = document?.mapNotNull { doc ->
 
             val fraLand = doc.first.fraLand
+            val sistMottattDato = doc.first.sistMottatt
+
             val p6000 = doc.second
             //resultat = "02" er avslag
             val avslag = p6000.p6000Pensjon?.vedtak?.firstOrNull { it.resultat == "02" }
@@ -195,7 +204,7 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
             val penAvslag = PensjonAvslagItem(
                     pensjonType = avslag?.type,
                     begrunnelse = avslag?.avslagbegrunnelse?.first()?.begrunnelse,
-                    dato = p6000.p6000Pensjon?.tilleggsinformasjon?.dato,
+                    dato = mapVedtakDatoEllerSistMottattdato(p6000.p6000Pensjon?.tilleggsinformasjon?.dato, sistMottattDato),  //dato mottatt dato ikke finnes
                     pin = finnKorrektBruker(p6000)?.person?.pin?.firstOrNull { it.land == fraLand },
                     adresse = "${adresse?.gate}, ${adresse?.by}, ${adresse?.land}"
                 )

@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service
 import org.springframework.web.server.ResponseStatusException
 import javax.annotation.PostConstruct
 
+@Suppress("SpringJavaInjectionPointsAutowiringInspection")
 @Service
 class PersonDataService(private val personService: PersonService,
                         @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper(SimpleMeterRegistry())) {
@@ -85,17 +86,38 @@ class PersonDataService(private val personService: PersonService,
 
             val sivilstand = filterEktefelleRelasjon(forsikretPerson)
             val sivilstandType = sivilstand?.type
-            logger.info("Henter ektefelle/partner (ekteType: ${sivilstand?.type})")
 
-            val ektefelleBruker = sivilstand?.relatertVedSivilstand?.let { personService.hentPerson(NorskIdent(it)) }
-            val ektefellePerson = ektefelleBruker?.takeUnless { it.erDoed() }
+            val ektefellePerson = hentHovedpersonEktefelle(sivilstand)
 
-            logger.info("Henter barn")
-            val barnPerson = if (forsikretPerson == null || !fyllUtBarnListe) emptyList() else hentBarn(forsikretPerson)
+            val barnPerson = hentHovedpersonBarn(forsikretPerson, fyllUtBarnListe)
 
             logger.debug("gjenlevendeEllerAvdod: ${gjenlevendeEllerAvdod?.navn?.sammensattNavn }, forsikretPerson: ${forsikretPerson?.navn?.sammensattNavn }")
 
             PersonDataCollection(gjenlevendeEllerAvdod = gjenlevendeEllerAvdod, forsikretPerson = forsikretPerson!!, ektefellePerson = ektefellePerson,  sivilstandstype =  sivilstandType, barnPersonList = barnPerson)
+        }
+    }
+
+    //sjekk for om sb har tilgang til person, null hvis ikke tilgang
+    private fun hentHovedpersonEktefelle(sivilstand: Sivilstand?): Person? {
+        return try {
+            logger.info("Henter ektefelle/partner (ekteType: ${sivilstand?.type})")
+
+            val ektefelleBruker = sivilstand?.relatertVedSivilstand?.let { personService.hentPerson(NorskIdent(it)) }
+            ektefelleBruker?.takeUnless { it.erDoed() }
+        } catch (ex: Exception) {
+            logger.warn(ex.message)
+            null
+        }
+    }
+
+    //sjekk for om sb har tilgang til person, null hvis ikke tilgang
+    private fun hentHovedpersonBarn(hovedPerson: Person?, fyllUtBarnListe: Boolean): List<Person> {
+        return try {
+            logger.info("Henter barn")
+            if (hovedPerson == null || !fyllUtBarnListe) emptyList() else hentBarn(hovedPerson)
+        } catch (ex: Exception) {
+            logger.warn(ex.message)
+            emptyList()
         }
     }
 
