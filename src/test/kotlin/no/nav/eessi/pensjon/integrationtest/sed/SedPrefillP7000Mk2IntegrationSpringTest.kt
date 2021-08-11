@@ -66,7 +66,6 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
     private companion object {
         const val FNR_VOKSEN_3 = "12312312312"
         const val FNR_VOKSEN_4 = "9876543210"
-        const val FNR_BARN = "12011577847"      // STERK BUSK
 
         const val AKTOER_ID = "0123456789000"
         const val AKTOER_ID_2 = "0009876543210"
@@ -86,89 +85,91 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
         val apijson = dummyApiRequest(sakid = "21337890", aktoerId = AKTOER_ID, sed = "P7000", buc = "P_BUC_01", payload = payload ).toJson()
 
         val validResponse = """ 
-{
-  "sed" : "P7000",
-  "nav" : {
-    "eessisak" : [ {
-      "institusjonsid" : "NO:noinst002",
-      "institusjonsnavn" : "NOINST002, NO INST002, NO",
-      "saksnummer" : "21337890",
-      "land" : "NO"
-    }, {
-      "institusjonsid" : "2342145134",
-      "institusjonsnavn" : "NOINST002, NO INST002, NO",
-      "saksnummer" : "22874955",
-      "land" : "SE"
-    } ],
-    "bruker" : {
-      "person" : {
-        "pin" : [ {
-          "identifikator" : "12312312312",
-          "land" : "NO",
-          "institusjon" : { }
-        } ],
-        "etternavn" : "Pensjon",
-        "fornavn" : "Alder",
-        "kjoenn" : "M",
-        "foedselsdato" : "1988-07-12"
-      }
-    },
-    "ektefelle" : {
-      "person" : {
-        "etternavn" : "Pensjon"
-      }
-    }
-  },
-  "pensjon" : {
-    "samletVedtak" : {
-      "avslag" : [ {
-        "pensjonType" : "01",
-        "begrunnelse" : "03",
-        "dato" : "2020-12-16",
-        "pin" : {
-          "institusjonsnavn" : "NOINST002, NO INST002, NO",
-          "institusjonsid" : "NO:noinst002",
-          "identifikator" : "12312312312",
-          "land" : "SE"
-        },
-        "adresse" : "Oppoverbakken 66, SØRUMSAND, SE"
-      } ],
-      "tildeltepensjoner" : [ {
-        "pensjonType" : "01",
-        "ytelser" : [ {
-          "startdatoretttilytelse" : "2020-10-01",
-          "sluttdatoretttilytelse" : "2030-10-01",
-          "beloep" : [ {
-            "betalingshyppighetytelse" : "03",
-            "valuta" : "HUF",
-            "beloep" : "523"
-          } ]
-        }, {
-          "startdatoretttilytelse" : "2020-10-01",
-          "sluttdatoretttilytelse" : "2025-10-01",
-          "beloep" : [ {
-            "betalingshyppighetytelse" : "99",
-            "valuta" : "ISK",
-            "beloep" : "234"
-          } ]
-        } ],
-        "vedtakPensjonType" : "01",
-        "tildeltePensjonerLand" : "NO",
-        "addressatForRevurdering" : "Adresse for revurdering: Docid: 123123",
-        "institusjon" : {
-          "saksnummer" : "24234sdsd-4",
-          "land" : "NO",
-          "personNr" : "01126712345"
-        },
-        "reduksjonsGrunn" : "02",
-        "startdatoPensjonsRettighet" : "2020-10-01",
-        "dato" : "2019-10-01"
-      } ]
-    }
-  },
-  "sedGVer" : "4",
-  "sedVer" : "2"
-}
+        {
+          "sed" : "P7000",
+          "nav" : {
+            "eessisak" : [ {
+              "institusjonsid" : "NO:noinst002",
+              "institusjonsnavn" : "NOINST002, NO INST002, NO",
+              "saksnummer" : "21337890",
+              "land" : "NO"
+            }, {
+              "institusjonsid" : "2342145134",
+              "institusjonsnavn" : "NOINST002, NO INST002, NO",
+              "saksnummer" : "22874955",
+              "land" : "SE"
+            } ],
+            "bruker" : {
+              "person" : {
+                "pin" : [ {
+                  "identifikator" : "12312312312",
+                  "land" : "NO",
+                  "institusjon" : { }
+                } ],
+                "etternavn" : "Pensjon",
+                "fornavn" : "Alder",
+                "kjoenn" : "M",
+                "foedselsdato" : "1988-07-12"
+              }
+            },
+            "ektefelle" : {
+              "person" : {
+                "etternavn" : "Pensjon"
+              }
+            }
+          },
+          "pensjon" : {
+            "samletVedtak" : {
+              "avslag" : [ {
+                "pensjonType" : "01",
+                "begrunnelse" : "03",
+                "dato" : "2020-12-16",
+                "pin" : {
+                  "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                  "institusjonsid" : "NO:noinst002",
+                  "identifikator" : "12312312312",
+                  "land" : "SE"
+                },
+                "adresse" : "Oppoverbakken 66, SØRUMSAND, SE"
+              } ],
+              "tildeltepensjoner" : [ {
+                "pensjonType" : "01",
+                "ytelser" : [ {
+                  "startdatoretttilytelse" : "2020-10-01",
+                  "sluttdatoretttilytelse" : "2030-10-01",
+                  "beloep" : [ {
+                    "betalingshyppighetytelse" : "03",
+                    "valuta" : "HUF",
+                    "beloep" : "523"
+                  } ]
+                }, {
+                  "startdatoretttilytelse" : "2020-10-01",
+                  "sluttdatoretttilytelse" : "2025-10-01",
+                  "beloep" : [ {
+                    "betalingshyppighetytelse" : "99",
+                    "valuta" : "ISK",
+                    "beloep" : "234"
+                  } ]
+                } ],
+                "vedtakPensjonType" : "01",
+                "tildeltePensjonerLand" : "NO",
+                "adressatForRevurdering" : [ {
+                  "adressatforrevurdering" : "null\nasdfsdf \nnull \nsafsd \nasdfsdf \nsadfasdf \nHR "
+                } ],
+                "institusjon" : {
+                  "saksnummer" : "24234sdsd-4",
+                  "land" : "NO",
+                  "personNr" : "01126712345"
+                },
+                "reduksjonsGrunn" : "02",
+                "startdatoPensjonsRettighet" : "2020-10-01",
+                "revurderingtidsfrist" : "2019-10-01"
+              } ]
+            }
+          },
+          "sedGVer" : "4",
+          "sedVer" : "2"
+        }
 
         """.trimIndent()
 
@@ -180,6 +181,9 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
             .andReturn()
 
         val response = result.response.getContentAsString(charset("UTF-8"))
+        println("*************  response ******************")
+        println(response)
+        println("**********  response END ******************")
         JSONAssert.assertEquals(response, validResponse, false)
     }
 

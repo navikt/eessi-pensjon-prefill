@@ -287,7 +287,7 @@ class SedP6000Test {
                             institusjonsadresse = "asdfsdf",
                             region = "sadfasdf",
                             postnummer = "asdfsdf",
-                            bygningsnr = "sdafsadf",
+                            bygningsnavn = "sdafsadf",
                             poststed = "safsd",
                             land = "HR"
                         )

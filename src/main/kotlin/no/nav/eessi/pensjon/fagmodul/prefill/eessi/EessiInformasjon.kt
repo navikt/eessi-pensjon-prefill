@@ -19,7 +19,7 @@ class EessiInformasjon(
                     institusjonsnavn = institutionnavn,
                     institusjonsadresse = institutionGate,
                     postnummer = institutionPostnr,
-                    bygningsnr = null,
+                    bygningsnavn = null,
                     land = institutionLand,
                     region = null,
                     poststed = institutionBy

@@ -297,7 +297,7 @@ class SedTest {
                             institusjonsadresse = "asdfsdf",
                             region = "sadfasdf",
                             postnummer = "asdfsdf",
-                            bygningsnr = "sdafsadf",
+                            bygningsnavn = "sdafsadf",
                             poststed = "safsd",
                             land = "HR"
                         )
