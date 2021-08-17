@@ -17,6 +17,7 @@ import no.nav.eessi.pensjon.eux.model.sed.P7000Pensjon
 import no.nav.eessi.pensjon.eux.model.sed.PensjonAvslagItem
 import no.nav.eessi.pensjon.eux.model.sed.Person
 import no.nav.eessi.pensjon.eux.model.sed.PinItem
+import no.nav.eessi.pensjon.eux.model.sed.ReduksjonItem
 import no.nav.eessi.pensjon.eux.model.sed.SamletMeldingVedtak
 import no.nav.eessi.pensjon.eux.model.sed.SedType
 import no.nav.eessi.pensjon.eux.model.sed.TildeltPensjonItem
@@ -135,14 +136,13 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
 
                 TildeltPensjonItem(
                     pensjonType = p6000vedtak.type,
-                    vedtakPensjonType = p6000vedtak.type,
                     adressatForRevurdering = preutfyllAdressatForRevurdering(p6000pensjon),
                     tildeltePensjonerLand = fraLand,
-                    dato = mapVedtakDatoEllerSistMottattdato(p6000pensjon.tilleggsinformasjon?.dato, sistMottattDato),
+                    vedtaksDato = mapVedtakDatoEllerSistMottattdato(p6000pensjon.tilleggsinformasjon?.dato, sistMottattDato),
                     startdatoPensjonsRettighet = p6000vedtak.virkningsdato,
                     ytelser = mapYtelserP6000(p6000vedtak.beregning),
                     institusjon = mapInstusjonP6000(eessisak, p6000bruker, fraLand),
-                    reduksjonsGrunn = p6000pensjon.reduksjon?.firstOrNull { it.type != null }?.type,
+                    reduksjonsGrunn = finnReduksjonsGrunn(p6000pensjon.reduksjon?.firstOrNull()),
                     revurderingtidsfrist = p6000pensjon.sak?.kravtype?.firstOrNull { it.datoFrist != null }?.datoFrist,
                     innvilgetPensjon = p6000pensjon.gjenlevende?.person?.pin?.firstOrNull { it.institusjonsid != null }?.institusjon?.innvilgetPensjon
                 )
@@ -152,27 +152,20 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
         }
     }
 
+    private fun finnReduksjonsGrunn(reduksjonItem: ReduksjonItem?): String {
+        if(reduksjonItem?.aarsak != null) {
+            return "03"
+        }
+        else if (reduksjonItem != null) {
+            return reduksjonItem.type.toString()
+        }
+        return ""
+    }
+
     fun preutfyllAdressatForRevurdering(pensjon: P6000Pensjon?): List<AdressatForRevurderingItem>? {
         return pensjon?.tilleggsinformasjon?.andreinstitusjoner?.map {
             andreinst ->
             AdressatForRevurderingItem(
-                """
-                ${andreinst.institusjonsnavn}
-                ${andreinst.institusjonsadresse} 
-                ${andreinst.bygningsnavn} 
-                ${andreinst.poststed} 
-                ${andreinst.postnummer} 
-                ${andreinst.region} 
-                ${andreinst.land} 
-                """.trimIndent().replace("\n \n", "\n")
-            )
-        }
-    }
-
-    fun preutfyllAdressatForRevurderingAvslag(pensjon: P6000Pensjon?): List<String>? { // TODO, denne må fikses, skal hentes fra kap 5 fra P6000
-
-        return pensjon?.tilleggsinformasjon?.andreinstitusjoner?.map {
-                andreinst -> (
                 """
                 ${andreinst.institusjonsnavn}
                 ${andreinst.institusjonsadresse} 

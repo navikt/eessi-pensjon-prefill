@@ -154,7 +154,7 @@ dependencies {
 
     implementation("no.nav.eessi.pensjon:ep-logging:1.0.10")
     implementation("no.nav.eessi.pensjon:ep-personoppslag:8.0.12")
-    implementation("no.nav.eessi.pensjon:ep-eux:1.1.21")
+    implementation("no.nav.eessi.pensjon:ep-eux:1.1.23")
 
 }
 
