@@ -167,14 +167,14 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
             andreinst ->
             AdressatForRevurderingItem(
                 """
-                ${andreinst.institusjonsnavn}
-                ${andreinst.institusjonsadresse} 
-                ${andreinst.bygningsnavn} 
-                ${andreinst.poststed} 
-                ${andreinst.postnummer} 
-                ${andreinst.region} 
-                ${andreinst.land} 
-                """.trimIndent().replace("\n \n", "\n")
+                ${andreinst.institusjonsnavn ?: ""}
+                ${andreinst.institusjonsadresse ?: ""}
+                ${andreinst.bygningsnavn ?: ""}
+                ${andreinst.poststed ?: ""}
+                ${andreinst.postnummer ?: ""}
+                ${andreinst.region ?: ""}
+                ${andreinst.land ?: ""}
+                """.trimIndent()
             )
         }
     }

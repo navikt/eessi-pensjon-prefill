@@ -739,9 +739,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
       "andreinstitusjoner": [
         {
           "institusjonsadresse": "Olesgate 15",
-          "region": "Oslo",
           "postnummer": "0130",
-          "bygningsnr": "134",
           "poststed": "Oslo",
           "land": "NO"
         }
