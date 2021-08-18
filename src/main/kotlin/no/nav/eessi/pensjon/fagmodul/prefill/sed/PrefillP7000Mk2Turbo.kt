@@ -114,7 +114,7 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
 
         return SamletMeldingVedtak(
             avslag = pensjonsAvslag(document), //kap 5
-            vedtaksammendrag = null, // kap. 6 dato
+            utsendtDato = null, // kap. 6 dato
             tildeltepensjoner = pensjonTildelt(document) , //kap 4
         )
     }
