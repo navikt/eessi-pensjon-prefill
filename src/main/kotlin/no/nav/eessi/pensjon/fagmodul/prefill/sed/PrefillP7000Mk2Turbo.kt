@@ -17,6 +17,7 @@ import no.nav.eessi.pensjon.eux.model.sed.P7000Pensjon
 import no.nav.eessi.pensjon.eux.model.sed.PensjonAvslagItem
 import no.nav.eessi.pensjon.eux.model.sed.Person
 import no.nav.eessi.pensjon.eux.model.sed.PinItem
+import no.nav.eessi.pensjon.eux.model.sed.ReduksjonItem
 import no.nav.eessi.pensjon.eux.model.sed.SamletMeldingVedtak
 import no.nav.eessi.pensjon.eux.model.sed.SedType
 import no.nav.eessi.pensjon.eux.model.sed.TildeltPensjonItem
@@ -25,6 +26,7 @@ import no.nav.eessi.pensjon.fagmodul.models.PersonDataCollection
 import no.nav.eessi.pensjon.fagmodul.models.PrefillDataModel
 import no.nav.eessi.pensjon.fagmodul.prefill.person.PrefillSed
 import no.nav.eessi.pensjon.utils.mapJsonToAny
+import no.nav.eessi.pensjon.utils.toJson
 import no.nav.eessi.pensjon.utils.typeRefs
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -112,7 +114,7 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
 
         return SamletMeldingVedtak(
             avslag = pensjonsAvslag(document), //kap 5
-            vedtaksammendrag = null, // kap. 6 dato
+            utsendtDato = null, // kap. 6 dato
             tildeltepensjoner = pensjonTildelt(document) , //kap 4
         )
     }
@@ -121,32 +123,43 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
     fun pensjonTildelt(document: List<Pair<P6000Dokument, P6000>>?): List<TildeltPensjonItem>? {
         return document?.mapNotNull { doc ->
             val fraLand = doc.first.fraLand //documentItem
-            val sistMottattDato = doc.first.sistMottatt
 
-            val p6000 = doc.second //seden
+            val p6000 = doc.second //P6000 seden
             val p6000pensjon = p6000.p6000Pensjon
 
             val eessisak = p6000.nav?.eessisak?.firstOrNull { it.land == fraLand }
-            val tildelt = p6000pensjon?.vedtak?.firstOrNull { it.resultat != "02" } //ikke avslag
-            val p6000bruker = finnKorrektBruker(p6000)
+            val p6000vedtak = p6000pensjon?.vedtak?.firstOrNull { it.resultat != "02" } // 02 = avslag
 
-            val tileltPen = TildeltPensjonItem(
-                pensjonType = tildelt?.type,
-                vedtakPensjonType = tildelt?.type,
-                adressatForRevurdering = preutfyllAdressatForRevurdering(p6000pensjon),
-                tildeltePensjonerLand = fraLand,
-                revurderingtidsfrist = mapVedtakDatoEllerSistMottattdato(p6000pensjon?.tilleggsinformasjon?.dato, sistMottattDato),
-                startdatoPensjonsRettighet = tildelt?.virkningsdato,
-                ytelser = mapYtelserP6000(tildelt?.beregning),
-                institusjon = mapInstusjonP6000(eessisak, p6000bruker, fraLand),
-                reduksjonsGrunn = p6000pensjon?.reduksjon?.firstOrNull { it.type != null }?.type,
-//                revurderingtidsfrist = p6000pensjon?.tilleggsinformasjon?.revurderingtidsfrist
-            )
-            if (tildelt != null) {
-                tileltPen
-            } else
+            if (p6000vedtak != null) {
+                val sistMottattDato = doc.first.sistMottatt
+                val p6000bruker = finnKorrektBruker(p6000)
+
+                TildeltPensjonItem(
+                    pensjonType = p6000vedtak.type,
+                    adressatForRevurdering = preutfyllAdressatForRevurdering(p6000pensjon),
+                    tildeltePensjonerLand = fraLand,
+                    vedtaksDato = mapVedtakDatoEllerSistMottattdato(p6000pensjon.tilleggsinformasjon?.dato, sistMottattDato),
+                    startdatoPensjonsRettighet = p6000vedtak.virkningsdato,
+                    ytelser = mapYtelserP6000(p6000vedtak.beregning),
+                    institusjon = mapInstusjonP6000(eessisak, p6000bruker, fraLand),
+                    reduksjonsGrunn = finnReduksjonsGrunn(p6000pensjon.reduksjon?.firstOrNull()),
+                    revurderingtidsfrist = p6000pensjon.sak?.kravtype?.firstOrNull { it.datoFrist != null }?.datoFrist,
+                    innvilgetPensjon = p6000pensjon.gjenlevende?.person?.pin?.firstOrNull { it.institusjonsid != null }?.institusjon?.innvilgetPensjon
+                )
+            } else {
                 null
             }
+        }
+    }
+
+    private fun finnReduksjonsGrunn(reduksjonItem: ReduksjonItem?): String {
+        if(reduksjonItem?.aarsak != null) {
+            return "03"
+        }
+        else if (reduksjonItem != null) {
+            return reduksjonItem.type.toString()
+        }
+        return ""
     }
 
     fun preutfyllAdressatForRevurdering(pensjon: P6000Pensjon?): List<AdressatForRevurderingItem>? {
@@ -161,18 +174,18 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
                 ${andreinst.postnummer} 
                 ${andreinst.region} 
                 ${andreinst.land} 
-                """.trimIndent()
+                """.trimIndent().replace("\n \n", "\n")
             )
         }
-
-
     }
+
     // mottattdato dersom dato ikke finnes.!
     fun mapVedtakDatoEllerSistMottattdato(vedtakDato: String?, sistMottatt: LocalDate): String {
         return vedtakDato ?: sistMottatt.toString()
     }
 
     fun mapYtelserP6000(beregniger: List<BeregningItem>?): List<YtelserItem>? {
+        logger.debug("beregning: ${beregniger?.toJson()}")
         return beregniger?.mapNotNull {  beregn ->
             YtelserItem(
                 startdatoretttilytelse = beregn.periode?.fom ,
@@ -181,17 +194,17 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
                     BeloepItem(
                         valuta = beregn.valuta,
                         betalingshyppighetytelse = mapUtbetalingHyppighet(beregn.utbetalingshyppighet),
-                        beloep = beregn.beloepBrutto?.beloep,
+                        beloepBrutto = beregn.beloepBrutto?.beloep
                     )
                 )
             )
         }
     }
 
-    private fun mapUtbetalingHyppighet(utberhyp: String?) : String? {
+    private fun mapUtbetalingHyppighet(utbetalingshyppighet: String?) : String? {
         val sjekkformap = mapOf( "aarlig" to "01", "kvartalsvis" to "02", "maaned_12_per_aar" to  "03", "maaned_13_per_aar" to "04", "maaned_14_per_aar" to "05",
             "ukentlig" to "06", "annet" to "99")
-        return sjekkformap[utberhyp] ?: utberhyp
+        return sjekkformap[utbetalingshyppighet] ?: utbetalingshyppighet
    }
 
 
@@ -206,7 +219,7 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
             land = fraLand,
             institusjonsid = eessiSak?.institusjonsid,
             institusjonsnavn = eessiSak?.institusjonsnavn,
-//            innvilgetPensjon = p6000bruker?.person?.pin?.firstOrNull { it.land == "NO" }?.institusjon?.innvilgetPensjon
+            innvilgetPensjon = p6000bruker?.person?.pin?.firstOrNull { it.institusjonsid != null }?.institusjon?.innvilgetPensjon
         )
 
     }
@@ -219,8 +232,9 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
             val sistMottattDato = doc.first.sistMottatt
 
             val p6000 = doc.second
+            val p6000pensjon = p6000.p6000Pensjon
             //resultat = "02" er avslag
-            val avslag = p6000.p6000Pensjon?.vedtak?.firstOrNull { it.resultat == "02" }
+            val avslag = p6000pensjon?.vedtak?.firstOrNull { it.resultat == "02" }
             val adresse: Adresse? = finnKorrektBruker(p6000)?.adresse
 
             val penAvslag = PensjonAvslagItem(
@@ -228,7 +242,8 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
                     begrunnelse = avslag?.avslagbegrunnelse?.first()?.begrunnelse,
                     dato = mapVedtakDatoEllerSistMottattdato(p6000.p6000Pensjon?.tilleggsinformasjon?.dato, sistMottattDato),  //dato mottatt dato ikke finnes
                     pin = finnKorrektBruker(p6000)?.person?.pin?.firstOrNull { it.land == fraLand },
-                    adresse = "${adresse?.gate}, ${adresse?.by}, ${adresse?.land}"
+                    adresse = ""
+//                    adresse = "${adresse?.gate}, ${adresse?.by}, ${adresse?.land}"
                 )
             if (avslag != null) {
                 penAvslag
@@ -237,6 +252,8 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
             }
         return res
     }
+
+
 
 
 }

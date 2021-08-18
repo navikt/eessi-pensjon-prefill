@@ -1,0 +1,129 @@
+{
+  "sed": "P6000",
+  "sedGVer": "4",
+  "sedVer": "2",
+  "nav": {
+    "eessisak": [
+      {
+        "institusjonsid": "2342145134",
+        "institusjonsnavn": "NOINST002, NO INST002, NO",
+        "saksnummer": "22874955",
+        "land": "SE"
+      }
+    ],
+    "bruker": {
+      "person": {
+        "pin": [
+          {
+            "institusjonsnavn": "NOINST002, NO INST002, NO",
+            "institusjonsid": "NO:noinst002",
+            "identifikator": "12312312312",
+            "land": "SE"
+          }
+        ],
+        "statsborgerskap": [
+          {
+            "land": "QX"
+          }
+        ],
+        "etternavn": "Pensjonist",
+        "fornavn": "Alder",
+        "kjoenn": "M",
+        "foedselsdato": "1988-07-12"
+      },
+      "adresse": {
+        "gate": "Oppoverbakken 66",
+        "by": "SØRUMSAND",
+        "postnummer": "1920",
+        "land": "SE"
+      }
+    }
+  },
+  "pensjon": {
+    "gjenlevende": {
+      "person": {
+        "pin": [
+          {
+            "institusjonsnavn": "NOINST002, NO INST002, NO",
+            "institusjonsid": "NO:noinst002",
+            "identifikator": "11067122781",
+            "land": "NO"
+          }
+        ],
+        "statsborgerskap": [
+          {
+            "land": "QX"
+          }
+        ],
+        "etternavn": "Gjenlev",
+        "fornavn": "Lever",
+        "kjoenn": "M",
+        "foedselsdato": "1988-07-12"
+      },
+      "adresse": {
+        "gate": "Oppoverbakken 66",
+        "by": "SØRUMSAND",
+        "postnummer": "1920",
+        "land": "NO"
+      }
+    },
+    "vedtak" : [ {
+      "type" : "01",
+      "resultat" : "02",
+      "avslagbegrunnelse" : [ {
+        "begrunnelse" : "03"
+      } ]
+    } ],
+    "sak": {
+      "kravtype": [
+        {
+          "datoFrist": "six weeks from the date the decision is received"
+        }
+      ]
+    }
+  },
+  "vedtak": [
+    {
+      "type": "01",
+      "resultat": "03",
+      "beregning": [
+        {
+          "valuta": "NOK",
+          "beloepBrutto": {
+            "ytelseskomponentTilleggspensjon": null,
+            "beloep": "18328",
+            "ytelseskomponentGrunnpensjon": null,
+            "ytelseskomponentAnnen": null
+          },
+          "periode": {
+            "fom": "2020-09-01",
+            "tom": null,
+            "extra": null
+          },
+          "utbetalingshyppighet": "maaned_12_per_aar"
+        }
+      ]
+    }
+  ],
+  "sak": {
+    "artikkel54": "0",
+    "kravtype": [
+      {
+        "datoFrist": "six weeks from the date the decision is received"
+      }
+    ]
+  },
+  "tilleggsinformasjon": {
+    "dato": "2020-12-16",
+    "andreinstitusjoner": [
+      {
+        "institusjonsid": "32423423",
+        "institusjonsnavn": "NOINST002, NO INST002, NO",
+        "institusjonsadresse": "Postboks 6600 Etterstad TEST",
+        "postnummer": "0607",
+        "land": "SE",
+        "poststed": "Oslo"
+      }
+    ]
+  }
+}

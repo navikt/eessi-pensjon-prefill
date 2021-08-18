@@ -166,7 +166,7 @@
         "startdatoretttilytelse": "2019-03-13",
         "institusjon": {
           "land": "NO",
-          "pin": "123123123123",
+          "personNr": "123123123123",
           "institusjonsnavn": "12346, NAV Test1, NO",
           "saksnummer": "123123123",
           "sektor": "pensjoner",

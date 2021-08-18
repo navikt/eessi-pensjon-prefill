@@ -5,6 +5,7 @@ import io.mockk.every
 import no.nav.eessi.pensjon.UnsecuredWebMvcTestLauncher
 import no.nav.eessi.pensjon.eux.model.document.P6000Dokument
 import no.nav.eessi.pensjon.eux.model.sed.P6000
+import no.nav.eessi.pensjon.eux.model.sed.P7000
 import no.nav.eessi.pensjon.eux.model.sed.SedType
 import no.nav.eessi.pensjon.fagmodul.models.ReferanseTilPerson
 import no.nav.eessi.pensjon.fagmodul.prefill.ApiRequest
@@ -36,8 +37,11 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import org.springframework.util.ResourceUtils
 import org.springframework.web.client.RestTemplate
 import java.time.LocalDate
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 @SpringBootTest(classes = [UnsecuredWebMvcTestLauncher::class], webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles(profiles = ["unsecured-webmvctest"])
@@ -84,95 +88,6 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
         //mock apiRequest
         val apijson = dummyApiRequest(sakid = "21337890", aktoerId = AKTOER_ID, sed = "P7000", buc = "P_BUC_01", payload = payload ).toJson()
 
-        val validResponse = """ 
-        {
-          "sed" : "P7000",
-          "nav" : {
-            "eessisak" : [ {
-              "institusjonsid" : "NO:noinst002",
-              "institusjonsnavn" : "NOINST002, NO INST002, NO",
-              "saksnummer" : "21337890",
-              "land" : "NO"
-            }, {
-              "institusjonsid" : "2342145134",
-              "institusjonsnavn" : "NOINST002, NO INST002, NO",
-              "saksnummer" : "22874955",
-              "land" : "SE"
-            } ],
-            "bruker" : {
-              "person" : {
-                "pin" : [ {
-                  "identifikator" : "12312312312",
-                  "land" : "NO",
-                  "institusjon" : { }
-                } ],
-                "etternavn" : "Pensjon",
-                "fornavn" : "Alder",
-                "kjoenn" : "M",
-                "foedselsdato" : "1988-07-12"
-              }
-            },
-            "ektefelle" : {
-              "person" : {
-                "etternavn" : "Pensjon"
-              }
-            }
-          },
-          "pensjon" : {
-            "samletVedtak" : {
-              "avslag" : [ {
-                "pensjonType" : "01",
-                "begrunnelse" : "03",
-                "dato" : "2020-12-16",
-                "pin" : {
-                  "institusjonsnavn" : "NOINST002, NO INST002, NO",
-                  "institusjonsid" : "NO:noinst002",
-                  "identifikator" : "12312312312",
-                  "land" : "SE"
-                },
-                "adresse" : "Oppoverbakken 66, SØRUMSAND, SE"
-              } ],
-              "tildeltepensjoner" : [ {
-                "pensjonType" : "01",
-                "ytelser" : [ {
-                  "startdatoretttilytelse" : "2020-10-01",
-                  "sluttdatoretttilytelse" : "2030-10-01",
-                  "beloep" : [ {
-                    "betalingshyppighetytelse" : "03",
-                    "valuta" : "HUF",
-                    "beloep" : "523"
-                  } ]
-                }, {
-                  "startdatoretttilytelse" : "2020-10-01",
-                  "sluttdatoretttilytelse" : "2025-10-01",
-                  "beloep" : [ {
-                    "betalingshyppighetytelse" : "99",
-                    "valuta" : "ISK",
-                    "beloep" : "234"
-                  } ]
-                } ],
-                "vedtakPensjonType" : "01",
-                "tildeltePensjonerLand" : "NO",
-                "adressatForRevurdering" : [ {
-                  "adressatforrevurdering" : "null\nasdfsdf \nnull \nsafsd \nasdfsdf \nsadfasdf \nHR "
-                } ],
-                "institusjon" : {
-                  "saksnummer" : "24234sdsd-4",
-                  "land" : "NO",
-                  "personNr" : "01126712345"
-                },
-                "reduksjonsGrunn" : "02",
-                "startdatoPensjonsRettighet" : "2020-10-01",
-                "revurderingtidsfrist" : "2019-10-01"
-              } ]
-            }
-          },
-          "sedGVer" : "4",
-          "sedVer" : "2"
-        }
-
-        """.trimIndent()
-
         val result = mockMvc.perform(post("/sed/prefill")
             .contentType(MediaType.APPLICATION_JSON)
             .content(apijson))
@@ -181,13 +96,85 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
             .andReturn()
 
         val response = result.response.getContentAsString(charset("UTF-8"))
-        println("*************  response ******************")
+        println("********************************************")
         println(response)
-        println("**********  response END ******************")
-        JSONAssert.assertEquals(response, validResponse, false)
+        println("********************************************")
+
+        val p7000Actual = mapJsonToAny<P7000>(response, typeRefs())
+
+        //eessisak
+        val eessisak1 = p7000Actual.nav?.eessisak?.get(0)
+        val eessisak2 = p7000Actual.nav?.eessisak?.get(1)
+
+        assertEquals(eessisak1?.land, "NO")
+        assertEquals(eessisak2?.land, "SE")
+        assertEquals(eessisak1?.saksnummer, "21337890")
+        assertEquals(eessisak2?.saksnummer, "22874955")
+        assertEquals(eessisak1?.institusjonsid, "NO:noinst002")
+        assertEquals(eessisak2?.institusjonsid, "2342145134")
+        assertEquals(eessisak1?.institusjonsnavn, "NOINST002, NO INST002, NO")
+        assertEquals(eessisak2?.institusjonsnavn, "NOINST002, NO INST002, NO")
+
+        //pin
+        assertEquals(p7000Actual.nav?.bruker?.person?.pin?.firstOrNull()?.identifikator, "12312312312")
+        assertEquals(p7000Actual.nav?.bruker?.person?.pin?.firstOrNull()?.land, "NO")
+
+        //pensjon
+        val p700SamletVedtak = p7000Actual.p7000Pensjon?.samletVedtak
+        val tildeltepensjoner = p700SamletVedtak?.tildeltepensjoner?.firstOrNull()
+
+        assertEquals("01", tildeltepensjoner?.pensjonType)
+
+        //4.1.[1].2.1.1.Land*
+        assertEquals("NO", eessisak1?.land)
+        assertEquals("SE", eessisak2?.land)
+
+        //4.1.[1].2.1.2.Personnummer
+        assertEquals(p7000Actual.nav?.bruker?.person?.pin?.firstOrNull()?.identifikator, "12312312312")
+
+        //4.1.[1].2.2.Saksnummer
+        assertEquals(eessisak1?.saksnummer, "21337890")
+        assertEquals(eessisak2?.saksnummer, "22874955")
+        //4.1.[1].3.Innvilget pensjon
+        assertEquals("01", tildeltepensjoner!!.innvilgetPensjon)
+        //4.1.[1].4.Vedtakets utstedelsesdato
+        assertEquals("2019-10-01", tildeltepensjoner.vedtaksDato)
+        //4.1.[1].5.Startdato for pensjonsrettighet
+        assertEquals("2020-10-01", tildeltepensjoner.startdatoPensjonsRettighet)
+        //4.1.[1].6.[1].1.Utbetales fra
+        assertEquals("2020-10-01", tildeltepensjoner.ytelser?.firstOrNull()?.startdatoretttilytelse )
+        //4.1.[1].6.[1].1.Utbetales til
+        assertEquals("2030-10-01", tildeltepensjoner.ytelser?.firstOrNull()?.sluttdatoretttilytelse )
+        val belop = tildeltepensjoner.ytelser?.firstOrNull()?.beloep!![0]
+        //4.1.[1].6.[1].3.Bruttopensjon
+        assertEquals("523", belop.beloepBrutto)
+        //4.1.[1].6.[1].4.Valuta
+        assertEquals("HUF", belop.valuta)
+        //4.1.[1].6.[1].5.Betalingshyppighet
+        assertEquals("Annet", belop.betalingshyppighetytelse)
+        //4.1.[1].7.Pensjonen er redusertgrunnet
+        assertEquals("03", tildeltepensjoner.reduksjonsGrunn)
+        //4.1.[1].8.1.Tidsfrister for krav om revurdering
+        assertEquals("2026-01-23", tildeltepensjoner.revurderingtidsfrist)
+        //4.1.[1].8.2.[1].1.Adressat for revurderingen
+        assertTrue {  tildeltepensjoner.adressatForRevurdering!![0].adressatforrevurdering!!.contains("Olesgate 15")}
+        //5.1.[1].1.Type pensjon
+        assertEquals("01", tildeltepensjoner.pensjonType)
+        //5.1.[1].2.1.1.Land*
+        assertEquals("NO", tildeltepensjoner.institusjon?.land)
+        //5.1.[1].2.2.Saksnummer
+        assertEquals("24234sdsd-4", tildeltepensjoner.institusjon?.saksnummer)
+        //5.1.[1].3.Vedtakets utstedelsesdato (angitt på vedtaket)*
+        assertEquals("2019-10-01",  tildeltepensjoner.vedtaksDato)
+        //5.1.[1].4.Avslagsgrunner
+        assertEquals("03", p700SamletVedtak.avslag?.get(0)?.begrunnelse)
+        //5.1.[1].5.1.Tidsfrister for krav om revurdering
+        assertEquals("2026-01-23", tildeltepensjoner.revurderingtidsfrist)
+        //5.1.[1].5.2.[1].1.Adressat for revurderingen
+        assertTrue {  tildeltepensjoner.adressatForRevurdering!![0].adressatforrevurdering!!.contains("Olesgate 15")}
+        //6.1.Dato
+        assertEquals("2019-10-01",  tildeltepensjoner.vedtaksDato)
     }
-
-
 
     @Test
     @Throws(Exception::class)
@@ -275,21 +262,21 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
     },
     "samletVedtak" : {
       "avslag" : [ {
-        "pensjonType" : "03",
+        "pensjonType" : "01",
         "begrunnelse" : "03",
-        "dato" : "2020-12-16",
+        "dato" : "2021-11-13",
         "adresse" : "Oppoverbakken 66, SØRUMSAND, NO"
       }, {
-        "pensjonType" : "03",
+        "pensjonType" : "01",
         "begrunnelse" : "03",
-        "dato" : "2020-12-16",
+        "dato" : "2021-11-13",
         "pin" : {
           "institusjonsnavn" : "NOINST002, NO INST002, NO",
           "institusjonsid" : "NO:noinst002",
           "identifikator" : "11067122781",
           "land" : "NO"
         },
-        "adresse" : "Oppoverbakken 66, SØRUMSAND, NO"
+        "adresse" : ""
       } ]
     }
   },
@@ -361,7 +348,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
       "avslag" : [ {
         "pensjonType" : "01",
         "begrunnelse" : "03",
-        "dato" : "2020-12-16",
+        "dato" : "2021-11-13",
         "pin" : {
           "institusjonsnavn" : "NOINST002, NO INST002, NO",
           "institusjonsid" : "NO:noinst002",
@@ -372,11 +359,11 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
       }, {
         "pensjonType" : "01",
         "begrunnelse" : "03",
-        "dato" : "2020-12-16",
+        "dato" : "2021-11-13",
         "pin" : {
           "institusjonsnavn" : "NOINST002, NO INST002, NO",
           "institusjonsid" : "NO:noinst002",
-          "identifikator" : "12312312312",
+          "identifikator" : "11067122781",
           "land" : "NO"
         },
         "adresse" : "Oppoverbakken 66, SØRUMSAND, NO"
@@ -486,79 +473,13 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
 
 
 
-    private fun mockP6000KomplettRequestdata(land: String, type: String? = "01") =  Pair(P6000Dokument(SedType.P6000, "123123", "23423asdasd3243423", land, "1", "url", LocalDate.of(2020, 10, 12)), mapJsonToAny(mockKomplettP6000(land, type), typeRefs<P6000>()))
+    private fun mockP6000KomplettRequestdata(land: String, type: String? = "01") =  Pair(P6000Dokument(SedType.P6000, "123123", "23423asdasd3243423", land, "1", "url", LocalDate.of(2020, 10, 12)),
+        mapJsonToAny(mockKomplettP6000(land, type), typeRefs<P6000>()))
 
-    private fun mockP6000requestdata(land: String, type: String? = "01") =  Pair(P6000Dokument(SedType.P6000, "123123", "23423asdasd3243423", land, "1", "url", LocalDate.of(2021, 11,13)), mapJsonToAny(mockP6000Data(land, type), typeRefs<P6000>()))
-
-    private fun mockP6000Data(land: String = "SE", type: String? = "01"): String {
-       return """
-            {
-              "sed" : "P6000",
-              "sedGVer" : "4",
-              "sedVer" : "2",
-              "nav" : {
-                "eessisak" : [ {
-                  "institusjonsid" : "2342145134",
-                  "institusjonsnavn" : "NOINST002, NO INST002, NO",
-                  "saksnummer" : "22874955",
-                  "land" : "$land"
-                } ],
-                "bruker" : {
-                  "person" : {
-                    "pin" : [ {
-                      "institusjonsnavn" : "NOINST002, NO INST002, NO",
-                      "institusjonsid" : "NO:noinst002",
-                      "identifikator" : "12312312312",
-                      "land" : "$land"
-                    } ],
-                    "statsborgerskap" : [ {
-                      "land" : "QX"
-                    } ],
-                    "etternavn" : "Pensjonist",
-                    "fornavn" : "Alder",
-                    "kjoenn" : "M",
-                    "foedselsdato" : "1988-07-12"
-                  },
-                  "adresse" : {
-                    "gate" : "Oppoverbakken 66",
-                    "by" : "SØRUMSAND",
-                    "postnummer" : "1920",
-                    "land" : "$land"
-                  }
-                }
-              },
-              "pensjon" : {
-               ${mockP6000gjenlev(type)}
-                "vedtak" : [ {
-                  "type" : "$type",
-                  "resultat" : "02",
-                  "avslagbegrunnelse" : [ {
-                    "begrunnelse" : "03"
-                  } ]
-                } ],
-                "sak" : {
-                  "kravtype" : [ {
-                    "datoFrist" : "six weeks from the date the decision is received"
-                  } ]
-                },
-                "tilleggsinformasjon" : {
-                  "dato" : "2020-12-16",
-                  "andreinstitusjoner" : [ {
-                    "institusjonsid" : "32423423",
-                    "institusjonsnavn" : "NOINST002, NO INST002, NO",
-                    "institusjonsadresse" : "Postboks 6600 Etterstad TEST",
-                    "postnummer" : "0607",
-                    "land" : "$land",
-                    "poststed" : "Oslo"
-                  } ]
-                }
-              }
-            }            
-        """.trimIndent()
-    }
+    private fun mockP6000requestdata(land: String, type: String? = "01") =  Pair(P6000Dokument(SedType.P6000, "123123", "23423asdasd3243423", land, "1", "url", LocalDate.of(2021, 11,13)),
+        mapJsonToAny(ResourceUtils.getFile("classpath:json/nav/P6000SE-INNV.json").readText(), typeRefs<P6000>()))}
 
     private fun mockP6000gjenlev(type: String?) : String? {
-        if (type != "03") return ""
         return """
     "gjenlevende" : {
       "person" : {
@@ -566,7 +487,13 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
           "institusjonsnavn" : "NOINST002, NO INST002, NO",
           "institusjonsid" : "NO:noinst002",
           "identifikator" : "11067122781",
-          "land" : "NO"
+          "land" : "NO",
+          "institusjon" : {
+            "saksnummer" : "24234sdsd-4",
+            "land" : "NO",
+            "personNr" : "01126712345",
+            "innvilgetPensjon" : "01"
+          }
         } ],
         "statsborgerskap" : [ {
           "land" : "QX"
@@ -691,7 +618,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
               "beloep": "344"
             },
             "utbetalingshyppighetAnnen": "13213",
-            "utbetalingshyppighet": "maaned_12_per_aar"
+            "utbetalingshyppighet": "Annet"
           },
           {
             "utbetalingshyppighetAnnen": "werwer",
@@ -812,12 +739,12 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
       },
       "andreinstitusjoner": [
         {
-          "institusjonsadresse": "asdfsdf",
-          "region": "sadfasdf",
-          "postnummer": "asdfsdf",
-          "bygningsnr": "sdafsadf",
-          "poststed": "safsd",
-          "land": "HR"
+          "institusjonsadresse": "Olesgate 15",
+          "region": "Oslo",
+          "postnummer": "0130",
+          "bygningsnr": "134",
+          "poststed": "Oslo",
+          "land": "NO"
         }
       ],
       "dato": "2019-10-01",
@@ -839,7 +766,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
       "artikkel54": "0",
       "kravtype": [
         {
-          "datoFrist": "fasfsda"
+          "datoFrist": "2026-01-23"
         }
       ],
       "reduksjon": [
@@ -870,6 +797,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
         }
       },
       {
+        "type": "02",
         "virkningsdato": [
           {
             "sluttdato": "2034-10-01",
@@ -879,8 +807,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
         "aarsak": {
           "annenytelseellerinntekt": "02",
           "inntektAnnen": "ewrwer"
-        },
-        "type": "02"
+        }
       }
     ]
   },
@@ -892,5 +819,4 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
         """.trimIndent()
     }
 
-}
 
