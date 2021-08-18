@@ -96,47 +96,47 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
             .andReturn()
 
         val response = result.response.getContentAsString(charset("UTF-8"))
-        println("********************************************")
-        println(response)
-        println("********************************************")
 
         val p7000Actual = mapJsonToAny<P7000>(response, typeRefs())
+        val p7000Person = p7000Actual.nav?.bruker?.person!!
 
         //eessisak
         val eessisak1 = p7000Actual.nav?.eessisak?.get(0)
         val eessisak2 = p7000Actual.nav?.eessisak?.get(1)
 
-        assertEquals(eessisak1?.land, "NO")
-        assertEquals(eessisak2?.land, "SE")
-        assertEquals(eessisak1?.saksnummer, "21337890")
-        assertEquals(eessisak2?.saksnummer, "22874955")
-        assertEquals(eessisak1?.institusjonsid, "NO:noinst002")
-        assertEquals(eessisak2?.institusjonsid, "2342145134")
-        assertEquals(eessisak1?.institusjonsnavn, "NOINST002, NO INST002, NO")
-        assertEquals(eessisak2?.institusjonsnavn, "NOINST002, NO INST002, NO")
-
-        //pin
-        assertEquals(p7000Actual.nav?.bruker?.person?.pin?.firstOrNull()?.identifikator, "12312312312")
-        assertEquals(p7000Actual.nav?.bruker?.person?.pin?.firstOrNull()?.land, "NO")
+        //1.1.[1].1. Land *
+        assertEquals("NO", eessisak1?.land)
+        assertEquals("SE", eessisak2?.land)
+        //1.1.[1].2. Saksnummer *
+        assertEquals("21337890", eessisak1?.saksnummer)
+        assertEquals("22874955", eessisak2?.saksnummer)
+        //1.1.[1].3.1. Institusjonens ID *
+        assertEquals("NO:noinst002", eessisak1?.institusjonsid)
+        assertEquals("2342145134", eessisak2?.institusjonsid)
+        //1.1.[1].3.2. Institusjonens navn *
+        assertEquals("NOINST002, NO INST002, NO", eessisak1?.institusjonsnavn)
+        assertEquals("NOINST002, NO INST002, NO", eessisak2?.institusjonsnavn)
+        //2.1.7.1.[1].2.Personnummer (PIN)*
+        assertEquals("12312312312", p7000Person.pin?.firstOrNull()?.identifikator)
+        assertEquals("NO", p7000Person.pin?.firstOrNull()?.land)
 
         //pensjon
         val p700SamletVedtak = p7000Actual.p7000Pensjon?.samletVedtak
-        val tildeltepensjoner = p700SamletVedtak?.tildeltepensjoner?.firstOrNull()
+        val tildeltepensjoner = p700SamletVedtak?.tildeltepensjoner?.firstOrNull()!!
+        val belop = tildeltepensjoner.ytelser?.firstOrNull()?.beloep?.firstOrNull()!!
 
-        assertEquals("01", tildeltepensjoner?.pensjonType)
-
+        //4.1.[1].1.Type pensjon
+        assertEquals("01", tildeltepensjoner.pensjonType)
         //4.1.[1].2.1.1.Land*
         assertEquals("NO", eessisak1?.land)
         assertEquals("SE", eessisak2?.land)
-
         //4.1.[1].2.1.2.Personnummer
-        assertEquals(p7000Actual.nav?.bruker?.person?.pin?.firstOrNull()?.identifikator, "12312312312")
-
+        assertEquals("12312312312", p7000Person.pin?.firstOrNull()?.identifikator)
         //4.1.[1].2.2.Saksnummer
-        assertEquals(eessisak1?.saksnummer, "21337890")
-        assertEquals(eessisak2?.saksnummer, "22874955")
+        assertEquals("21337890", eessisak1?.saksnummer)
+        assertEquals("22874955", eessisak2?.saksnummer)
         //4.1.[1].3.Innvilget pensjon
-        assertEquals("01", tildeltepensjoner!!.innvilgetPensjon)
+        assertEquals("01", tildeltepensjoner.innvilgetPensjon)
         //4.1.[1].4.Vedtakets utstedelsesdato
         assertEquals("2019-10-01", tildeltepensjoner.vedtaksDato)
         //4.1.[1].5.Startdato for pensjonsrettighet
@@ -145,7 +145,6 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
         assertEquals("2020-10-01", tildeltepensjoner.ytelser?.firstOrNull()?.startdatoretttilytelse )
         //4.1.[1].6.[1].1.Utbetales til
         assertEquals("2030-10-01", tildeltepensjoner.ytelser?.firstOrNull()?.sluttdatoretttilytelse )
-        val belop = tildeltepensjoner.ytelser?.firstOrNull()?.beloep!![0]
         //4.1.[1].6.[1].3.Bruttopensjon
         assertEquals("523", belop.beloepBrutto)
         //4.1.[1].6.[1].4.Valuta
