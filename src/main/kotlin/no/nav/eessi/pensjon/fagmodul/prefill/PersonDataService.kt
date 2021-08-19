@@ -59,6 +59,7 @@ class PersonDataService(private val personService: PersonService,
             logger.error("PDL Person null")
             throw ResponseStatusException(HttpStatus.NOT_FOUND, "Person ikke funnet")
         } catch (pe: PersonoppslagException) {
+            logger.error("PersonoppslagExcpetion sanity check")
             logger.error("PersonoppslagExcpetion: ${pe.message}")
             when(pe.message) {
                 "not_found: Fant ikke person" -> throw ResponseStatusException(HttpStatus.NOT_FOUND, "Person ikke funnet")
