@@ -214,8 +214,7 @@ fun createPersonTrygdeTidMock(): PersonArbeidogOppholdUtland {
                             annenInformasjon = "fødselperm i frankrike",
                             periode = TrygdeTidPeriode(
                                     openPeriode = Periode(
-                                            fom = "2002-01-01",
-                                            extra = "98"
+                                            fom = "2002-01-01"
                                     )
                             )
 
@@ -265,8 +264,7 @@ fun createPersonTrygdeTidMock(): PersonArbeidogOppholdUtland {
                             typePeriode = "Leve og ha det gøy",
                             periode = TrygdeTidPeriode(
                                     openPeriode = Periode(
-                                            fom = "2000-01-01",
-                                            extra = "01"
+                                            fom = "2000-01-01"
                                     )
                             )
                     )

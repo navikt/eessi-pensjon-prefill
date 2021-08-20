@@ -36,8 +36,7 @@
         "annenInformasjon": "other period 2 comment",
         "periode": {
           "openPeriode": {
-            "fom": "1972-01-01",
-            "extra": "01"
+            "fom": "1972-01-01"
           }
         },
         "usikkerDatoIndikator": "1",
@@ -254,8 +253,7 @@
         "annenInformasjon": "birth period 1 comment",
         "periode": {
           "openPeriode": {
-            "fom": "2001-01-01",
-            "extra": "98"
+            "fom": "2001-01-01"
           }
         },
         "usikkerDatoIndikator": "0"

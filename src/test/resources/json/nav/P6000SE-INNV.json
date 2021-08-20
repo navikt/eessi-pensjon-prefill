@@ -74,6 +74,36 @@
         "begrunnelse" : "03"
       } ]
     } ],
+    "tilleggsinformasjon": {
+      "person": {
+        "pinannen": {
+          "identifikator": "retertret",
+          "sektor": "alle"
+        }
+      },
+      "andreinstitusjoner": [
+        {
+          "institusjonsadresse": "Olesgate 15",
+          "postnummer": "0130",
+          "poststed": "Oslo",
+          "land": "NO"
+        }
+      ],
+      "dato": "2019-10-01",
+      "anneninformation": "werwer\nwer\nwer",
+      "annen": {
+        "institusjonsadresse": {
+          "land": "BE"
+        }
+      },
+      "opphoer": {
+        "dato": "2022-10-01",
+        "annulleringdato": "2024-10-01"
+      },
+      "saksnummerAnnen": "werwer",
+      "saksnummer": "werwer",
+      "artikkel48": "0"
+    },
     "sak": {
       "kravtype": [
         {
@@ -97,8 +127,7 @@
           },
           "periode": {
             "fom": "2020-09-01",
-            "tom": null,
-            "extra": null
+            "tom": null
           },
           "utbetalingshyppighet": "maaned_12_per_aar"
         }

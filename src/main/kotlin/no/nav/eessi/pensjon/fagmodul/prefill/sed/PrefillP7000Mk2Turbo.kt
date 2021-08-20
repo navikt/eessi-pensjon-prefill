@@ -2,7 +2,6 @@ package no.nav.eessi.pensjon.fagmodul.prefill.sed
 
 import no.nav.eessi.pensjon.eux.model.document.P6000Dokument
 import no.nav.eessi.pensjon.eux.model.sed.AdressatForRevurderingItem
-import no.nav.eessi.pensjon.eux.model.sed.Adresse
 import no.nav.eessi.pensjon.eux.model.sed.BeloepItem
 import no.nav.eessi.pensjon.eux.model.sed.BeregningItem
 import no.nav.eessi.pensjon.eux.model.sed.Bruker
@@ -48,41 +47,42 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
 
         //dekode liste av P6000 for preutfylling av P7000
         val partpayload = prefillData.partSedAsJson[SedType.P7000.name]
-        val listP6000 = partpayload?.let { payload -> mapJsonToAny(payload, typeRefs<List<Pair<P6000Dokument, P6000>>>() ) }
+        val listP6000 =
+            partpayload?.let { payload -> mapJsonToAny(payload, typeRefs<List<Pair<P6000Dokument, P6000>>>()) }
 
         val eessisakerall = eessisaker(listP6000, eessielm)
 
         val p7000 = P7000(
-                nav = Nav(
-                        eessisak = eessisakerall,
-                        bruker = Bruker(
-                                person = Person(
-                                        etternavn = person?.etternavn,
-                                        fornavn = person?.fornavn,
-                                        foedselsdato = person?.foedselsdato,
-                                        kjoenn = person?.kjoenn,
-                                        pin = listOf(
-                                                PinItem(
-                                                        identifikator = perspin?.identifikator,
-                                                        land = perspin?.land,
-                                                        institusjon = Institusjon(
-                                                                institusjonsid = perspin?.institusjon?.institusjonsid,
-                                                                institusjonsnavn = perspin?.institusjon?.institusjonsnavn
-                                                        )
-                                                )
-                                        )
+            nav = Nav(
+                eessisak = eessisakerall,
+                bruker = Bruker(
+                    person = Person(
+                        etternavn = person?.etternavn,
+                        fornavn = person?.fornavn,
+                        foedselsdato = person?.foedselsdato,
+                        kjoenn = person?.kjoenn,
+                        pin = listOf(
+                            PinItem(
+                                identifikator = perspin?.identifikator,
+                                land = perspin?.land,
+                                institusjon = Institusjon(
+                                    institusjonsid = perspin?.institusjon?.institusjonsid,
+                                    institusjonsnavn = perspin?.institusjon?.institusjonsnavn
                                 )
-                        ),
-                        //mappe om etternavn til mappingfeil
-                        ektefelle = Ektefelle(person = Person(etternavn = sed.nav?.bruker?.person?.etternavn))
+                            )
+                        )
+                    )
                 ),
-                //mappe om kjoenn for mappingfeil
-                p7000Pensjon = P7000Pensjon(
-                        //TODO Tar bort bruker mapping for mk2 sjekk mot mapping til
-                        //bruker = Bruker(person = Person(kjoenn = sed.nav?.bruker?.person?.kjoenn)),
-                        gjenlevende = sed.pensjon?.gjenlevende,
-                        samletVedtak = prefilSamletMeldingVedtak(listP6000)
-                )
+                //mappe om etternavn til mappingfeil
+                ektefelle = Ektefelle(person = Person(etternavn = sed.nav?.bruker?.person?.etternavn))
+            ),
+            //mappe om kjoenn for mappingfeil
+            p7000Pensjon = P7000Pensjon(
+                //TODO Tar bort bruker mapping for mk2 sjekk mot mapping til
+                //bruker = Bruker(person = Person(kjoenn = sed.nav?.bruker?.person?.kjoenn)),
+                gjenlevende = sed.pensjon?.gjenlevende,
+                samletVedtak = prefilSamletMeldingVedtak(listP6000)
+            )
         )
 
         logger.debug("Tilpasser P7000 forenklet preutfylling, Ferdig.")
@@ -115,7 +115,7 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
         return SamletMeldingVedtak(
             avslag = pensjonsAvslag(document), //kap 5
             utsendtDato = null, // kap. 6 dato
-            tildeltepensjoner = pensjonTildelt(document) , //kap 4
+            tildeltepensjoner = pensjonTildelt(document), //kap 4
         )
     }
 
@@ -138,7 +138,10 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
                     pensjonType = p6000vedtak.type,
                     adressatForRevurdering = preutfyllAdressatForRevurdering(p6000pensjon),
                     tildeltePensjonerLand = fraLand,
-                    vedtaksDato = mapVedtakDatoEllerSistMottattdato(p6000pensjon.tilleggsinformasjon?.dato, sistMottattDato),
+                    vedtaksDato = mapVedtakDatoEllerSistMottattdato(
+                        p6000pensjon.tilleggsinformasjon?.dato,
+                        sistMottattDato
+                    ),
                     startdatoPensjonsRettighet = p6000vedtak.virkningsdato,
                     ytelser = mapYtelserP6000(p6000vedtak.beregning),
                     institusjon = mapInstusjonP6000(eessisak, p6000bruker, fraLand),
@@ -153,31 +156,31 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
     }
 
     private fun finnReduksjonsGrunn(reduksjonItem: ReduksjonItem?): String {
-        if(reduksjonItem?.aarsak != null) {
+        if (reduksjonItem?.aarsak != null) {
             return "03"
-        }
-        else if (reduksjonItem != null) {
+        } else if (reduksjonItem != null) {
             return reduksjonItem.type.toString()
         }
         return ""
     }
 
     fun preutfyllAdressatForRevurdering(pensjon: P6000Pensjon?): List<AdressatForRevurderingItem>? {
-        return pensjon?.tilleggsinformasjon?.andreinstitusjoner?.map {
-            andreinst ->
+        return pensjon?.tilleggsinformasjon?.andreinstitusjoner?.map { andreinst ->
 
-            val nonEmptyAdressItems  = listOf(
-                andreinst.institusjonsnavn?: "",
-                andreinst.institusjonsadresse?: "",
-                andreinst.bygningsnavn?: "",
-                andreinst.bygningsnavn?: "",
-                andreinst.poststed?: "",
-                andreinst.region?: "",
+            val nonEmptyAdressItems = listOf(
+                andreinst.institusjonsnavn ?: "",
+                andreinst.institusjonsadresse ?: "",
+                andreinst.bygningsnavn ?: "",
+                andreinst.bygningsnavn ?: "",
+                andreinst.poststed ?: "",
+                andreinst.region ?: "",
             ).filter { it != "" }
 
-            AdressatForRevurderingItem("""
+            AdressatForRevurderingItem(
+                """
                 ${nonEmptyAdressItems.toJson()}
-            """.trimIndent())
+            """.trimIndent()
+            )
         }
     }
 
@@ -188,10 +191,10 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
 
     fun mapYtelserP6000(beregniger: List<BeregningItem>?): List<YtelserItem>? {
         logger.debug("beregning: ${beregniger?.toJson()}")
-        return beregniger?.mapNotNull {  beregn ->
+        return beregniger?.mapNotNull { beregn ->
             YtelserItem(
-                startdatoretttilytelse = beregn.periode?.fom ,
-                sluttdatoretttilytelse =  beregn.periode?.tom,
+                startdatoretttilytelse = beregn.periode?.fom,
+                sluttdatoUtbetaling = beregn.periode?.tom,
                 beloep = listOf(
                     BeloepItem(
                         valuta = beregn.valuta,
@@ -203,11 +206,18 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
         }
     }
 
-    private fun mapUtbetalingHyppighet(utbetalingshyppighet: String?) : String? {
-        val sjekkformap = mapOf( "aarlig" to "01", "kvartalsvis" to "02", "maaned_12_per_aar" to  "03", "maaned_13_per_aar" to "04", "maaned_14_per_aar" to "05",
-            "ukentlig" to "06", "annet" to "99")
+    private fun mapUtbetalingHyppighet(utbetalingshyppighet: String?): String? {
+        val sjekkformap = mapOf(
+            "aarlig" to "01",
+            "kvartalsvis" to "02",
+            "maaned_12_per_aar" to "03",
+            "maaned_13_per_aar" to "04",
+            "maaned_14_per_aar" to "05",
+            "ukentlig" to "06",
+            "annet" to "99"
+        )
         return sjekkformap[utbetalingshyppighet] ?: utbetalingshyppighet
-   }
+    }
 
 
     fun finnKorrektBruker(p6000: P6000): Bruker? {
@@ -237,25 +247,29 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
             val p6000pensjon = p6000.p6000Pensjon
             //resultat = "02" er avslag
             val avslag = p6000pensjon?.vedtak?.firstOrNull { it.resultat == "02" }
-            val adresse: Adresse? = finnKorrektBruker(p6000)?.adresse
 
-            val penAvslag = PensjonAvslagItem(
-                    pensjonType = avslag?.type,
-                    begrunnelse = avslag?.avslagbegrunnelse?.first()?.begrunnelse,
-                    dato = mapVedtakDatoEllerSistMottattdato(p6000.p6000Pensjon?.tilleggsinformasjon?.dato, sistMottattDato),  //dato mottatt dato ikke finnes
-                    pin = finnKorrektBruker(p6000)?.person?.pin?.firstOrNull { it.land == fraLand },
-                    adresse = ""
-//                    adresse = "${adresse?.gate}, ${adresse?.by}, ${adresse?.land}"
-                )
-            if (avslag != null) {
-                penAvslag
-            } else
+            if (avslag == null) {
                 null
             }
+            else{
+                PensjonAvslagItem(
+                    pensjonType = avslag.type,
+                    begrunnelse = avslag.avslagbegrunnelse?.first()?.begrunnelse,
+                    dato = mapVedtakDatoEllerSistMottattdato(
+                        p6000.p6000Pensjon?.tilleggsinformasjon?.dato,
+                        sistMottattDato
+                    ),  //dato mottatt dato ikke finnes
+                    pin = finnKorrektBruker(p6000)?.person?.pin?.firstOrNull { it.land == fraLand },
+                    tidsfristForRevurdering = p6000pensjon.sak?.kravtype?.firstOrNull { it.datoFrist != null }?.datoFrist,
+                    adressatforRevurderingAvslag = preutfyllAdressatForRevurdering(p6000pensjon)
+                )
+            }
+        }
         return res
     }
-
-
-
-
 }
+
+
+
+
+

@@ -123,6 +123,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
         //pensjon
         val p700SamletVedtak = p7000Actual.p7000Pensjon?.samletVedtak
         val tildeltepensjoner = p700SamletVedtak?.tildeltepensjoner?.firstOrNull()!!
+        val avslag = p700SamletVedtak.avslag?.firstOrNull()
         val belop = tildeltepensjoner.ytelser?.firstOrNull()?.beloep?.firstOrNull()!!
 
         //4.1.[1].1.Type pensjon
@@ -144,7 +145,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
         //4.1.[1].6.[1].1.Utbetales fra
         assertEquals("2020-10-01", tildeltepensjoner.ytelser?.firstOrNull()?.startdatoretttilytelse )
         //4.1.[1].6.[1].1.Utbetales til
-        assertEquals("2030-10-01", tildeltepensjoner.ytelser?.firstOrNull()?.sluttdatoretttilytelse )
+        assertEquals("2030-10-01", tildeltepensjoner.ytelser?.firstOrNull()?.sluttdatoUtbetaling )
         //4.1.[1].6.[1].3.Bruttopensjon
         assertEquals("523", belop.beloepBrutto)
         //4.1.[1].6.[1].4.Valuta
@@ -168,7 +169,9 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
         //5.1.[1].4.Avslagsgrunner
         assertEquals("03", p700SamletVedtak.avslag?.get(0)?.begrunnelse)
         //5.1.[1].5.1.Tidsfrister for krav om revurdering
-        assertEquals("2026-01-23", tildeltepensjoner.revurderingtidsfrist)
+        assertEquals("six weeks from the date the decision is received", avslag?.tidsfristForRevurdering)
+        //5.1.[1].5.2.[1].1. Adressat for revurderingen
+        assertEquals("[ \"Olesgate 15\", \"Oslo\" ]", avslag?.adressatforRevurderingAvslag?.firstOrNull()?.adressatforrevurdering)
         //5.1.[1].5.2.[1].1.Adressat for revurderingen
         assertTrue {  tildeltepensjoner.adressatForRevurdering!![0].adressatforrevurdering!!.contains("Olesgate 15")}
         //6.1.Dato
@@ -201,87 +204,87 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
         val apijson = dummyApiRequest(sakid = "21337890", aktoerId = AKTOER_ID, sed = "P7000", buc = "P_BUC_02", subject = subject, payload = payload ).toJson()
 
         val validResponse = """
-{
-  "sed" : "P7000",
-  "nav" : {
-    "eessisak" : [ {
-      "institusjonsid" : "NO:noinst002",
-      "institusjonsnavn" : "NOINST002, NO INST002, NO",
-      "saksnummer" : "21337890",
-      "land" : "NO"
-    }, {
-      "institusjonsid" : "2342145134",
-      "institusjonsnavn" : "NOINST002, NO INST002, NO",
-      "saksnummer" : "22874955",
-      "land" : "SE"
-    } ],
-    "bruker" : {
-      "person" : {
-        "pin" : [ {
-          "identifikator" : "9876543210",
-          "land" : "NO",
-          "institusjon" : { }
-        } ],
-        "etternavn" : "Død",
-        "fornavn" : "Avdød",
-        "kjoenn" : "M",
-        "foedselsdato" : "1921-07-12"
-      }
-    },
-    "ektefelle" : {
-      "person" : {
-        "etternavn" : "Død"
-      }
-    }
-  },
-  "pensjon" : {
-    "gjenlevende" : {
-      "person" : {
-        "pin" : [ {
-          "institusjonsnavn" : "NOINST002, NO INST002, NO",
-          "institusjonsid" : "NO:noinst002",
-          "identifikator" : "12312312312",
-          "land" : "NO"
-        } ],
-        "statsborgerskap" : [ {
-          "land" : "QX"
-        } ],
-        "etternavn" : "Gjenlev",
-        "fornavn" : "Lever",
-        "kjoenn" : "M",
-        "foedselsdato" : "1988-07-12",
-        "rolle" : "01"
-      },
-      "adresse" : {
-        "gate" : "Oppoverbakken 66",
-        "by" : "SØRUMSAND",
-        "postnummer" : "1920",
-        "land" : "NO"
-      }
-    },
-    "samletVedtak" : {
-      "avslag" : [ {
-        "pensjonType" : "01",
-        "begrunnelse" : "03",
-        "dato" : "2021-11-13",
-        "adresse" : "Oppoverbakken 66, SØRUMSAND, NO"
-      }, {
-        "pensjonType" : "01",
-        "begrunnelse" : "03",
-        "dato" : "2021-11-13",
-        "pin" : {
-          "institusjonsnavn" : "NOINST002, NO INST002, NO",
-          "institusjonsid" : "NO:noinst002",
-          "identifikator" : "11067122781",
-          "land" : "NO"
-        },
-        "adresse" : ""
-      } ]
-    }
-  },
-  "sedGVer" : "4",
-  "sedVer" : "2"
-}
+        {
+          "sed" : "P7000",
+          "nav" : {
+            "eessisak" : [ {
+              "institusjonsid" : "NO:noinst002",
+              "institusjonsnavn" : "NOINST002, NO INST002, NO",
+              "saksnummer" : "21337890",
+              "land" : "NO"
+            }, {
+              "institusjonsid" : "2342145134",
+              "institusjonsnavn" : "NOINST002, NO INST002, NO",
+              "saksnummer" : "22874955",
+              "land" : "SE"
+            } ],
+            "bruker" : {
+              "person" : {
+                "pin" : [ {
+                  "identifikator" : "9876543210",
+                  "land" : "NO",
+                  "institusjon" : { }
+                } ],
+                "etternavn" : "Død",
+                "fornavn" : "Avdød",
+                "kjoenn" : "M",
+                "foedselsdato" : "1921-07-12"
+              }
+            },
+            "ektefelle" : {
+              "person" : {
+                "etternavn" : "Død"
+              }
+            }
+          },
+          "pensjon" : {
+            "gjenlevende" : {
+              "person" : {
+                "pin" : [ {
+                  "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                  "institusjonsid" : "NO:noinst002",
+                  "identifikator" : "12312312312",
+                  "land" : "NO"
+                } ],
+                "statsborgerskap" : [ {
+                  "land" : "QX"
+                } ],
+                "etternavn" : "Gjenlev",
+                "fornavn" : "Lever",
+                "kjoenn" : "M",
+                "foedselsdato" : "1988-07-12",
+                "rolle" : "01"
+              },
+              "adresse" : {
+                "gate" : "Oppoverbakken 66",
+                "by" : "SØRUMSAND",
+                "postnummer" : "1920",
+                "land" : "NO"
+              }
+            },
+            "samletVedtak" : {
+              "avslag" : [ {
+                "pensjonType" : "01",
+                "begrunnelse" : "03",
+                "dato" : "2021-11-13",
+                "adresse" : "Oppoverbakken 66, SØRUMSAND, NO"
+              }, {
+                "pensjonType" : "01",
+                "begrunnelse" : "03",
+                "dato" : "2021-11-13",
+                "pin" : {
+                  "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                  "institusjonsid" : "NO:noinst002",
+                  "identifikator" : "11067122781",
+                  "land" : "NO"
+                },
+                "adresse" : ""
+              } ]
+            }
+          },
+          "sedGVer" : "4",
+          "sedVer" : "2"
+        }
         """.trimIndent()
 
         val result = mockMvc.perform(post("/sed/prefill")
@@ -309,69 +312,69 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
         val apijson = dummyApiRequest(sakid = "21337890", aktoerId = AKTOER_ID, sed = "P7000", buc = "P_BUC_01", payload = payload ).toJson()
 
         val validResponse = """ 
-{
-  "sed" : "P7000",
-  "nav" : {
-    "eessisak" : [ {
-      "institusjonsid" : "NO:noinst002",
-      "institusjonsnavn" : "NOINST002, NO INST002, NO",
-      "saksnummer" : "21337890",
-      "land" : "NO"
-    }, {
-      "institusjonsid" : "2342145134",
-      "institusjonsnavn" : "NOINST002, NO INST002, NO",
-      "saksnummer" : "22874955",
-      "land" : "SE"
-    } ],
-    "bruker" : {
-      "person" : {
-        "pin" : [ {
-          "identifikator" : "12312312312",
-          "land" : "NO",
-          "institusjon" : { }
-        } ],
-        "etternavn" : "Pensjon",
-        "fornavn" : "Alder",
-        "kjoenn" : "M",
-        "foedselsdato" : "1988-07-12"
-      }
-    },
-    "ektefelle" : {
-      "person" : {
-        "etternavn" : "Pensjon"
-      }
-    }
-  },
-  "pensjon" : {
-    "samletVedtak" : {
-      "avslag" : [ {
-        "pensjonType" : "01",
-        "begrunnelse" : "03",
-        "dato" : "2021-11-13",
-        "pin" : {
-          "institusjonsnavn" : "NOINST002, NO INST002, NO",
-          "institusjonsid" : "NO:noinst002",
-          "identifikator" : "12312312312",
-          "land" : "SE"
-        },
-        "adresse" : "Oppoverbakken 66, SØRUMSAND, SE"
-      }, {
-        "pensjonType" : "01",
-        "begrunnelse" : "03",
-        "dato" : "2021-11-13",
-        "pin" : {
-          "institusjonsnavn" : "NOINST002, NO INST002, NO",
-          "institusjonsid" : "NO:noinst002",
-          "identifikator" : "11067122781",
-          "land" : "NO"
-        },
-        "adresse" : "Oppoverbakken 66, SØRUMSAND, NO"
-      } ]
-    }
-  },
-  "sedGVer" : "4",
-  "sedVer" : "2"
-}      
+        {
+          "sed" : "P7000",
+          "nav" : {
+            "eessisak" : [ {
+              "institusjonsid" : "NO:noinst002",
+              "institusjonsnavn" : "NOINST002, NO INST002, NO",
+              "saksnummer" : "21337890",
+              "land" : "NO"
+            }, {
+              "institusjonsid" : "2342145134",
+              "institusjonsnavn" : "NOINST002, NO INST002, NO",
+              "saksnummer" : "22874955",
+              "land" : "SE"
+            } ],
+            "bruker" : {
+              "person" : {
+                "pin" : [ {
+                  "identifikator" : "12312312312",
+                  "land" : "NO",
+                  "institusjon" : { }
+                } ],
+                "etternavn" : "Pensjon",
+                "fornavn" : "Alder",
+                "kjoenn" : "M",
+                "foedselsdato" : "1988-07-12"
+              }
+            },
+            "ektefelle" : {
+              "person" : {
+                "etternavn" : "Pensjon"
+              }
+            }
+          },
+          "pensjon" : {
+            "samletVedtak" : {
+              "avslag" : [ {
+                "pensjonType" : "01",
+                "begrunnelse" : "03",
+                "dato" : "2021-11-13",
+                "pin" : {
+                  "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                  "institusjonsid" : "NO:noinst002",
+                  "identifikator" : "12312312312",
+                  "land" : "SE"
+                },
+                "adresse" : "Oppoverbakken 66, SØRUMSAND, SE"
+              }, {
+                "pensjonType" : "01",
+                "begrunnelse" : "03",
+                "dato" : "2021-11-13",
+                "pin" : {
+                  "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                  "institusjonsid" : "NO:noinst002",
+                  "identifikator" : "11067122781",
+                  "land" : "NO"
+                },
+                "adresse" : "Oppoverbakken 66, SØRUMSAND, NO"
+              } ]
+            }
+          },
+          "sedGVer" : "4",
+          "sedVer" : "2"
+        }      
         """.trimIndent()
 
         val result = mockMvc.perform(post("/sed/prefill")
@@ -737,7 +740,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
         }
       },
       "andreinstitusjoner": [
-        {
+        {          
           "institusjonsadresse": "Olesgate 15",
           "postnummer": "0130",
           "poststed": "Oslo",

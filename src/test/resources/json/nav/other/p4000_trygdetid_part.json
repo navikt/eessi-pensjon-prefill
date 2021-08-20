@@ -15,7 +15,6 @@
     {
       "periode": {
         "openPeriode": {
-          "extra": "01",
           "fom": "2018-01-01"
         }
       },
@@ -86,7 +85,6 @@
       },
       "periode": {
         "openPeriode": {
-          "extra": "01",
           "fom": "2018-01-01"
         }
       },
@@ -98,7 +96,6 @@
     {
       "periode": {
         "openPeriode": {
-          "extra": "98",
           "fom": "2002-01-01"
         }
       },
@@ -125,7 +122,6 @@
     {
       "periode": {
         "openPeriode": {
-          "extra": "01",
           "fom": "1993-01-01"
         }
       },
