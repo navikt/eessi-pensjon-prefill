@@ -169,7 +169,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
         //5.1.[1].4.Avslagsgrunner
         assertEquals("03", p700SamletVedtak.avslag?.get(0)?.begrunnelse)
         //5.1.[1].5.1.Tidsfrister for krav om revurdering
-        assertEquals("six weeks from the date the decision is received", avslag?.tidsfristForRevurdering)
+        assertEquals("seven weeks from the date the decision is received", avslag?.tidsfristForRevurdering)
         //5.1.[1].5.2.[1].1. Adressat for revurderingen
         assertEquals("[ \"Olesgate 15\", \"Oslo\" ]", avslag?.adressatforRevurderingAvslag?.firstOrNull()?.adressatforrevurdering)
         //5.1.[1].5.2.[1].1.Adressat for revurderingen
@@ -266,19 +266,25 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
               "avslag" : [ {
                 "pensjonType" : "01",
                 "begrunnelse" : "03",
-                "dato" : "2021-11-13",
-                "adresse" : "Oppoverbakken 66, SØRUMSAND, NO"
+                "dato" : "2019-10-01",
+                "tidsfristForRevurdering" : "seven weeks from the date the decision is received",
+                "adressatforRevurderingAvslag" : [ {
+                  "adressatforrevurdering" : "[ \"Olesgate 15\", \"Oslo\" ]"
+                } ]
               }, {
                 "pensjonType" : "01",
                 "begrunnelse" : "03",
-                "dato" : "2021-11-13",
+                "dato" : "2019-10-01",
+                "tidsfristForRevurdering" : "seven weeks from the date the decision is received",
                 "pin" : {
                   "institusjonsnavn" : "NOINST002, NO INST002, NO",
                   "institusjonsid" : "NO:noinst002",
                   "identifikator" : "11067122781",
                   "land" : "NO"
                 },
-                "adresse" : ""
+                "adressatforRevurderingAvslag" : [ {
+                  "adressatforrevurdering" : "[ \"Olesgate 15\", \"Oslo\" ]"
+                } ]
               } ]
             }
           },
@@ -350,31 +356,31 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
               "avslag" : [ {
                 "pensjonType" : "01",
                 "begrunnelse" : "03",
-                "dato" : "2021-11-13",
-                "pin" : {
-                  "institusjonsnavn" : "NOINST002, NO INST002, NO",
-                  "institusjonsid" : "NO:noinst002",
-                  "identifikator" : "12312312312",
-                  "land" : "SE"
-                },
-                "adresse" : "Oppoverbakken 66, SØRUMSAND, SE"
+                "dato" : "2019-10-01",
+                "tidsfristForRevurdering" : "seven weeks from the date the decision is received",
+                "adressatforRevurderingAvslag" : [ {
+                  "adressatforrevurdering" : "[ \"Olesgate 15\", \"Oslo\" ]"
+                } ]
               }, {
                 "pensjonType" : "01",
                 "begrunnelse" : "03",
-                "dato" : "2021-11-13",
+                "dato" : "2019-10-01",
+                "tidsfristForRevurdering" : "seven weeks from the date the decision is received",
                 "pin" : {
                   "institusjonsnavn" : "NOINST002, NO INST002, NO",
                   "institusjonsid" : "NO:noinst002",
                   "identifikator" : "11067122781",
                   "land" : "NO"
                 },
-                "adresse" : "Oppoverbakken 66, SØRUMSAND, NO"
+                "adressatforRevurderingAvslag" : [ {
+                  "adressatforrevurdering" : "[ \"Olesgate 15\", \"Oslo\" ]"
+                } ]
               } ]
             }
           },
           "sedGVer" : "4",
           "sedVer" : "2"
-        }      
+        }     
         """.trimIndent()
 
         val result = mockMvc.perform(post("/sed/prefill")
