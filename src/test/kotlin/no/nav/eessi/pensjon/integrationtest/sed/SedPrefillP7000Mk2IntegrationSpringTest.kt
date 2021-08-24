@@ -41,7 +41,6 @@ import org.springframework.util.ResourceUtils
 import org.springframework.web.client.RestTemplate
 import java.time.LocalDate
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 @SpringBootTest(classes = [UnsecuredWebMvcTestLauncher::class], webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles(profiles = ["unsecured-webmvctest"])
@@ -157,7 +156,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
         //4.1.[1].8.1.Tidsfrister for krav om revurdering
         assertEquals("2026-01-23", tildeltepensjoner.revurderingtidsfrist)
         //4.1.[1].8.2.[1].1.Adressat for revurderingen
-        assertTrue {  tildeltepensjoner.adressatForRevurdering!![0].adressatforrevurdering!!.contains("Olesgate 15")}
+        assertEquals("Olesgate 15,Oslo", tildeltepensjoner.adressatForRevurdering?.firstOrNull()?.adressatforrevurdering)
         //5.1.[1].1.Type pensjon
         assertEquals("01", tildeltepensjoner.pensjonType)
         //5.1.[1].2.1.1.Land*
@@ -171,9 +170,9 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
         //5.1.[1].5.1.Tidsfrister for krav om revurdering
         assertEquals("seven weeks from the date the decision is received", avslag?.tidsfristForRevurdering)
         //5.1.[1].5.2.[1].1. Adressat for revurderingen
-        assertEquals("[ \"Olesgate 15\", \"Oslo\" ]", avslag?.adressatforRevurderingAvslag?.firstOrNull()?.adressatforrevurdering)
+        assertEquals("Olesgate 15,Oslo", avslag?.adressatforRevurderingAvslag?.firstOrNull()?.adressatforrevurdering)
         //5.1.[1].5.2.[1].1.Adressat for revurderingen
-        assertTrue {  tildeltepensjoner.adressatForRevurdering!![0].adressatforrevurdering!!.contains("Olesgate 15")}
+        assertEquals("Olesgate 15,Oslo", tildeltepensjoner.adressatForRevurdering?.firstOrNull()?.adressatforrevurdering)
         //6.1.Dato
         assertEquals("2019-10-01",  tildeltepensjoner.vedtaksDato)
     }
@@ -269,7 +268,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
                 "dato" : "2019-10-01",
                 "tidsfristForRevurdering" : "seven weeks from the date the decision is received",
                 "adressatforRevurderingAvslag" : [ {
-                  "adressatforrevurdering" : "[ \"Olesgate 15\", \"Oslo\" ]"
+                  "adressatforrevurdering" : "Olesgate 15,Oslo"
                 } ]
               }, {
                 "pensjonType" : "01",
@@ -283,7 +282,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
                   "land" : "NO"
                 },
                 "adressatforRevurderingAvslag" : [ {
-                  "adressatforrevurdering" : "[ \"Olesgate 15\", \"Oslo\" ]"
+                  "adressatforrevurdering" : "Olesgate 15,Oslo"
                 } ]
               } ]
             }
@@ -359,7 +358,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
                 "dato" : "2019-10-01",
                 "tidsfristForRevurdering" : "seven weeks from the date the decision is received",
                 "adressatforRevurderingAvslag" : [ {
-                  "adressatforrevurdering" : "[ \"Olesgate 15\", \"Oslo\" ]"
+                  "adressatforrevurdering" : "Olesgate 15,Oslo"
                 } ]
               }, {
                 "pensjonType" : "01",
@@ -373,7 +372,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
                   "land" : "NO"
                 },
                 "adressatforRevurderingAvslag" : [ {
-                  "adressatforrevurdering" : "[ \"Olesgate 15\", \"Oslo\" ]"
+                  "adressatforrevurdering" : "Olesgate 15,Oslo"
                 } ]
               } ]
             }

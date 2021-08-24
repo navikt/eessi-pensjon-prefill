@@ -168,19 +168,14 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
         return pensjon?.tilleggsinformasjon?.andreinstitusjoner?.map { andreinst ->
 
             val nonEmptyAdressItems = listOf(
-                andreinst.institusjonsnavn ?: "",
-                andreinst.institusjonsadresse ?: "",
-                andreinst.bygningsnavn ?: "",
-                andreinst.bygningsnavn ?: "",
-                andreinst.poststed ?: "",
-                andreinst.region ?: "",
-            ).filter { it != "" }
-
-            AdressatForRevurderingItem(
-                """
-                ${nonEmptyAdressItems.toJson()}
-            """.trimIndent()
-            )
+                andreinst.institusjonsnavn,
+                andreinst.institusjonsadresse,
+                andreinst.bygningsnavn,
+                andreinst.bygningsnavn,
+                andreinst.poststed,
+                andreinst.region
+            ).filterNotNull()
+            AdressatForRevurderingItem(nonEmptyAdressItems.joinToString(","))
         }
     }
 
