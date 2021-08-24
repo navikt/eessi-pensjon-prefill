@@ -1,0 +1,79 @@
+{
+  "pensjon": {
+    "tilleggsinformasjon": {
+      "andreinstitusjoner": [
+        {
+          "institusjonsadresse": "gate",
+          "bygningsnavn": "bygning",
+          "poststed": "by",
+          "region": "region",
+          "postnummer": "4587",
+          "land": "AT"
+        }
+      ],
+      "dato": "2020-01-02"
+    },
+    "vedtak": [
+      {
+        "artikkel": "02",
+        "kjoeringsdato": "2020-01-01",
+        "type": "01",
+        "beregning": [
+          {
+            "utbetalingshyppighetAnnen": "biannual",
+            "periode": {
+              "fom": "2020-02-05"
+            },
+            "valuta": "EUR",
+            "beloepBrutto": {
+              "beloep": "1254"
+            },
+            "utbetalingshyppighet": "annet"
+          }
+        ],
+        "basertPaa": "01",
+        "virkningsdato": "2017-02-01",
+        "resultat": "01"
+      }
+    ],
+    "reduksjon": [
+      {
+        "type": "02"
+      }
+    ],
+    "sak": {
+      "reduksjon": [
+        {
+          "artikkeltype": "01"
+        }
+      ]
+    }
+  },
+  "sedGVer": "4",
+  "nav": {
+    "bruker": {
+      "adresse": {
+        "land": "NO",
+        "gate": "Nygårdsheia 5 B",
+        "postnummer": "4640",
+        "by": "SØGNE"
+      },
+      "person": {
+        "fornavn": "STERK",
+        "pin": [
+          {
+            "land": "NO",
+            "institusjonsid": "NO:NAVAT07",
+            "institusjonsnavn": "NAV ACCEPTANCE TEST 07",
+            "identifikator": "14115327578"
+          }
+        ],
+        "kjoenn": "M",
+        "etternavn": "TØFFELDYR",
+        "foedselsdato": "1953-11-14"
+      }
+    }
+  },
+  "sedVer": "2",
+  "sed": "P6000"
+}

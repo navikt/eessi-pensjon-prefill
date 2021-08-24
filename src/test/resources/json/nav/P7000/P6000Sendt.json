@@ -1,0 +1,100 @@
+{
+  "pensjon": {
+    "tilleggsinformasjon": {
+      "andreinstitusjoner": [
+        {
+          "institusjonsadresse": "Postboks 6600 Etterstad",
+          "poststed": "Oslo",
+          "institusjonsnavn": "NAV ACCEPTANCE TEST 07",
+          "postnummer": "0607",
+          "institusjonsid": "NO:NAVAT07",
+          "land": "NO"
+        }
+      ],
+      "dato": "2021-08-12"
+    },
+    "vedtak": [
+      {
+        "grunnlag": {
+          "framtidigtrygdetid": "0",
+          "opptjening": {
+            "forsikredeAnnen": "01"
+          }
+        },
+        "beregning": [
+          {
+            "beloepBrutto": {
+              "ytelseskomponentGrunnpensjon": "2084",
+              "ytelseskomponentTilleggspensjon": "0",
+              "beloep": "4441"
+            },
+            "periode": {
+              "fom": "2021-09-01"
+            },
+            "valuta": "NOK",
+            "utbetalingshyppighet": "maaned_12_per_aar"
+          }
+        ],
+        "artikkel": "01",
+        "type": "01",
+        "basertPaa": "02",
+        "virkningsdato": "2021-09-01",
+        "resultat": "01"
+      }
+    ],
+    "reduksjon": [
+      {
+        "aarsak": {
+          "annenytelseellerinntekt": "01"
+        }
+      }
+    ],
+    "sak": {
+      "kravtype": [
+        {
+          "datoFrist": "six weeks from the date the decision is received"
+        }
+      ]
+    }
+  },
+  "sedGVer": "4",
+  "nav": {
+    "bruker": {
+      "adresse": {
+        "land": "NO",
+        "gate": "Nygårdsheia 5 B",
+        "postnummer": "4640",
+        "by": "SØGNE"
+      },
+      "person": {
+        "fornavn": "STERK",
+        "pin": [
+          {
+            "land": "NO",
+            "institusjonsid": "NO:NAVAT07",
+            "institusjonsnavn": "NAV ACCEPTANCE TEST 07",
+            "identifikator": "14115327578"
+          }
+        ],
+        "kjoenn": "M",
+        "etternavn": "TØFFELDYR",
+        "foedselsdato": "1953-11-14",
+        "statsborgerskap": [
+          {
+            "land": "NO"
+          }
+        ]
+      }
+    },
+    "eessisak": [
+      {
+        "institusjonsnavn": "NAV ACCEPTANCE TEST 07",
+        "saksnummer": "22947392",
+        "institusjonsid": "NO:NAVAT07",
+        "land": "NO"
+      }
+    ]
+  },
+  "sedVer": "2",
+  "sed": "P6000"
+}
