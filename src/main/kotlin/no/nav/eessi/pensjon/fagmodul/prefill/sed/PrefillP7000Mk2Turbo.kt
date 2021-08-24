@@ -147,7 +147,7 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
                     institusjon = mapInstusjonP6000(eessisak, p6000bruker, fraLand),
                     reduksjonsGrunn = finnReduksjonsGrunn(p6000pensjon.reduksjon?.firstOrNull()),
                     revurderingtidsfrist = p6000pensjon.sak?.kravtype?.firstOrNull { it.datoFrist != null }?.datoFrist,
-                    innvilgetPensjon = p6000pensjon.gjenlevende?.person?.pin?.firstOrNull { it.institusjonsid != null }?.institusjon?.innvilgetPensjon
+                    innvilgetPensjon = p6000pensjon.vedtak?.firstOrNull { it.artikkel != null }?.artikkel
                 )
             } else {
                 null
@@ -194,6 +194,7 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
                     BeloepItem(
                         valuta = beregn.valuta,
                         betalingshyppighetytelse = mapUtbetalingHyppighet(beregn.utbetalingshyppighet),
+                        utbetalingshyppighetAnnen = beregn.utbetalingshyppighetAnnen,
                         beloepBrutto = beregn.beloepBrutto?.beloep
                     )
                 )
@@ -226,7 +227,6 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
             land = fraLand,
             institusjonsid = eessiSak?.institusjonsid,
             institusjonsnavn = eessiSak?.institusjonsnavn,
-            innvilgetPensjon = p6000bruker?.person?.pin?.firstOrNull { it.institusjonsid != null }?.institusjon?.innvilgetPensjon
         )
 
     }

@@ -136,7 +136,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
         assertEquals("21337890", eessisak1?.saksnummer)
         assertEquals("22874955", eessisak2?.saksnummer)
         //4.1.[1].3.Innvilget pensjon
-        assertEquals("01", tildeltepensjoner.innvilgetPensjon)
+        assertEquals("02", tildeltepensjoner.innvilgetPensjon)
         //4.1.[1].4.Vedtakets utstedelsesdato
         assertEquals("2019-10-01", tildeltepensjoner.vedtaksDato)
         //4.1.[1].5.Startdato for pensjonsrettighet
