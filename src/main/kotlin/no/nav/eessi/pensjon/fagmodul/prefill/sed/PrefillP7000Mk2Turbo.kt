@@ -171,11 +171,12 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
                 andreinst.institusjonsnavn,
                 andreinst.institusjonsadresse,
                 andreinst.bygningsnavn,
-                andreinst.bygningsnavn,
                 andreinst.poststed,
-                andreinst.region
+                andreinst.postnummer,
+                andreinst.region,
+                andreinst.land,
             ).filterNotNull()
-            AdressatForRevurderingItem(nonEmptyAdressItems.joinToString(","))
+            AdressatForRevurderingItem(nonEmptyAdressItems.joinToString("\n"))
         }
     }
 
