@@ -81,7 +81,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
         every { kodeverkClient.finnLandkode(any())} returns "QX"
 
         //mock p6000 fra RINA med data som skal benyttes i P7000
-        val p6000fraRequest = listOf(mockP6000requestdata("SE"), mockP6000KomplettRequestdata("NO"))
+        val p6000fraRequest = listOf(mockP6000requestdata("SE", "P6000SE-INNV.json"), mockP6000KomplettRequestdata("NO"))
         val payload = mapAnyToJson(p6000fraRequest)
 
         //mock apiRequest
@@ -195,7 +195,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
 
 
         //mock p6000 fra RINA med data som skal benyttes i P7000
-        val p6000fraRequest = listOf(mockP6000requestdata("SE", "03"), mockP6000requestdata("NO", "03"))
+        val p6000fraRequest = listOf(mockP6000requestdata("SE","P6000SE-INNV.json"), mockP6000requestdata("NO", "P6000SE-INNV.json"))
         val payload = mapAnyToJson(p6000fraRequest)
 
         //mock apiRequest
@@ -304,13 +304,145 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
     }
 
     @Test
+    fun `prefill sed P7000 - Gitt gjenlevendepensjon med to P6000 med godkjent pensjon skal det preutfylles gyldig SED`() {
+        every { personService.hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID))} returns NorskIdent(FNR_VOKSEN_3)
+        every { personService.hentPerson(NorskIdent(FNR_VOKSEN_3)) } returns PersonPDLMock.createWith(true, "Lever", "Gjenlev", FNR_VOKSEN_3, AKTOER_ID)
+
+        val sak = V1Sak()
+        sak.sakType = EPSaktype.ALDER.toString()
+        sak.sakId = 100
+        sak.kravHistorikkListe = V1KravHistorikkListe()
+
+        every { pensjoninformasjonservice.hentRelevantPensjonSak(any(), any()) } returns sak
+        every { kodeverkClient.finnLandkode(any()) } returns "QX"
+
+        //mock p6000 fra RINA med data som skal benyttes i P7000
+
+        val p6000fraRequest = listOf(mockP6000requestdata("NO", "P7000/P6000Sendt.json"), mockP6000requestdata("SE", "P7000/P6000Mottatt.json"))
+        val payload = mapAnyToJson(p6000fraRequest)
+
+        //mock apiRequest
+        val apijson = dummyApiRequest(sakid = "21337890", aktoerId = AKTOER_ID, sed = "P7000", buc = "P_BUC_01", subject = null, payload = payload ).toJson()
+
+        val validResponse = """
+        {
+          "sed" : "P7000",
+          "nav" : {
+            "eessisak" : [ {
+              "institusjonsid" : "NO:noinst002",
+              "institusjonsnavn" : "NOINST002, NO INST002, NO",
+              "saksnummer" : "21337890",
+              "land" : "NO"
+            }, {
+              "institusjonsid" : "SE:NAVAT07",
+              "institusjonsnavn" : "NAV ACCEPTANCE TEST JYZ",
+              "saksnummer" : "134513452",
+              "land" : "SE"
+            } ],
+            "bruker" : {
+              "person" : {
+                "pin" : [ {
+                  "identifikator" : "12312312312",
+                  "land" : "NO",
+                  "institusjon" : { }
+                } ],
+                "etternavn" : "Gjenlev",
+                "fornavn" : "Lever",
+                "kjoenn" : "M",
+                "foedselsdato" : "1988-07-12"
+              }
+            },
+            "ektefelle" : {
+              "person" : {
+                "etternavn" : "Gjenlev"
+              }
+            }
+          },
+          "pensjon" : {
+            "samletVedtak" : {
+              "tildeltepensjoner" : [ {
+                "ytelser" : [ {
+                  "startdatoretttilytelse" : "2021-09-01",
+                  "beloep" : [ {
+                    "betalingshyppighetytelse" : "03",
+                    "valuta" : "NOK",
+                    "beloepBrutto" : "4441"
+                  } ]
+                } ],
+                "pensjonType" : "01",
+                "tildeltePensjonerLand" : "NO",
+                "adressatForRevurdering" : [ {
+                  "adressatforrevurdering" : "NAV ACCEPTANCE TEST 07\nPostboks 6600 Etterstad\nOslo\n0607\nNO"
+                } ],
+                "institusjon" : {
+                  "institusjonsid" : "NO:NAVAT07",
+                  "institusjonsnavn" : "NAV ACCEPTANCE TEST 07",
+                  "saksnummer" : "22947392",
+                  "land" : "NO",
+                  "personNr" : "14115327578"
+                },
+                "reduksjonsGrunn" : "03",
+                "startdatoPensjonsRettighet" : "2021-09-01",
+                "revurderingtidsfrist" : "six weeks from the date the decision is received",
+                "vedtaksDato" : "2021-08-12",
+                "innvilgetPensjon" : "01"
+              }, {
+                "ytelser" : [ {
+                  "startdatoretttilytelse" : "2020-02-05",
+                  "beloep" : [ {
+                    "betalingshyppighetytelse" : "99",
+                    "valuta" : "EUR",
+                    "beloepBrutto" : "1254",
+                    "utbetalingshyppighetAnnen" : "biannual"
+                  } ]
+                } ],
+                "pensjonType" : "01",
+                "tildeltePensjonerLand" : "SE",
+                "adressatForRevurdering" : [ {
+                  "adressatforrevurdering" : "gate\nbygning\nby\n4587\nregion\nAT"
+                } ],
+                "institusjon" : {
+                  "institusjonsid" : "SE:NAVAT07",
+                  "institusjonsnavn" : "NAV ACCEPTANCE TEST JYZ",
+                  "saksnummer" : "134513452",
+                  "land" : "SE",
+                  "personNr" : "345315327578"
+                },
+                "reduksjonsGrunn" : "02",
+                "startdatoPensjonsRettighet" : "2017-02-01",
+                "vedtaksDato" : "2020-01-02",
+                "innvilgetPensjon" : "02"
+              } ]
+            }
+          },
+          "sedGVer" : "4",
+          "sedVer" : "2"
+        }
+        """.trimIndent()
+
+        val result = mockMvc.perform(post("/sed/prefill")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(apijson))
+            .andExpect(status().isOk)
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andReturn()
+
+        val response = result.response.getContentAsString(charset("UTF-8"))
+
+        println(response)
+
+        JSONAssert.assertEquals(response, validResponse, false)
+    }
+
+
+    @Test
     fun `prefill sed P7000 - Gitt en alderspensjon med flere P6000 med avslag skal det preutfylles gyldig SED`() {
         every { personService.hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN_3)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_3)) } returns PersonPDLMock.createWith(true, "Alder", "Pensjon", FNR_VOKSEN_3, AKTOER_ID)
         every { kodeverkClient.finnLandkode(any())} returns "QX"
 
         //mock p6000 fra RINA med data som skal benyttes i P7000
-        val p6000fraRequest = listOf(mockP6000requestdata("SE"), mockP6000requestdata("NO"))
+        val p6000fraRequest = listOf(mockP6000requestdata("SE", "P6000SE-INNV.json"), mockP6000requestdata("NO", "P6000SE-INNV.json"))
         val payload = mapAnyToJson(p6000fraRequest)
 
         //mock apiRequest
@@ -483,10 +615,12 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
     private fun mockP6000KomplettRequestdata(land: String, type: String? = "01") =  Pair(P6000Dokument(SedType.P6000, "123123", "23423asdasd3243423", land, "1", "url", LocalDate.of(2020, 10, 12)),
         mapJsonToAny(mockKomplettP6000(land, type), typeRefs<P6000>()))
 
-    private fun mockP6000requestdata(land: String, type: String? = "01") =  Pair(P6000Dokument(SedType.P6000, "123123", "23423asdasd3243423", land, "1", "url", LocalDate.of(2021, 11,13)),
-        mapJsonToAny(ResourceUtils.getFile("classpath:json/nav/P6000SE-INNV.json").readText(), typeRefs<P6000>()))}
+    private fun mockP6000requestdata(land: String, filnavn: String) =  Pair(P6000Dokument(SedType.P6000, "123123", "23423asdasd3243423", land, "1", "url", LocalDate.of(2021, 11,13)),
+        getP6000ekternfil(filnavn) ) }
 
-    private fun mockP6000gjenlev(type: String?) : String? {
+    private fun getP6000ekternfil(filnavn: String): P6000 = mapJsonToAny(ResourceUtils.getFile("classpath:json/nav/$filnavn").readText(), typeRefs<P6000>())
+
+    private fun mockP6000gjenlev() : String {
         return """
     "gjenlevende" : {
       "person" : {
@@ -599,7 +733,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
     ]
   },
   "pensjon": {
-   ${mockP6000gjenlev(type)}
+   ${mockP6000gjenlev()}
    "vedtak": [
       {
         "grunnlag": {

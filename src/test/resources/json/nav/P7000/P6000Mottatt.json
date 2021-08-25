@@ -66,13 +66,26 @@
             "institusjonsid": "NO:NAVAT07",
             "institusjonsnavn": "NAV ACCEPTANCE TEST 07",
             "identifikator": "14115327578"
+          },          {
+            "land": "SE",
+            "institusjonsid": "SE:NAVAT07",
+            "institusjonsnavn": "SE ASCCEPTANCE TEST JAP",
+            "identifikator": "345315327578"
           }
         ],
         "kjoenn": "M",
         "etternavn": "TØFFELDYR",
         "foedselsdato": "1953-11-14"
       }
-    }
+    },
+    "eessisak": [
+      {
+        "institusjonsnavn": "NAV ACCEPTANCE TEST JYZ",
+        "saksnummer": "134513452",
+        "institusjonsid": "SE:NAVAT07",
+        "land": "SE"
+      }
+    ]
   },
   "sedVer": "2",
   "sed": "P6000"

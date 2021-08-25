@@ -78,8 +78,6 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
             ),
             //mappe om kjoenn for mappingfeil
             p7000Pensjon = P7000Pensjon(
-                //TODO Tar bort bruker mapping for mk2 sjekk mot mapping til
-                //bruker = Bruker(person = Person(kjoenn = sed.nav?.bruker?.person?.kjoenn)),
                 gjenlevende = sed.pensjon?.gjenlevende,
                 samletVedtak = prefilSamletMeldingVedtak(listP6000)
             )
@@ -114,8 +112,8 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
 
         return SamletMeldingVedtak(
             avslag = pensjonsAvslag(document), //kap 5
-            utsendtDato = null, // kap. 6 dato
             tildeltepensjoner = pensjonTildelt(document), //kap 4
+            utsendtDato = null // kap. 6 dato
         )
     }
 
@@ -128,9 +126,10 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
             val p6000pensjon = p6000.p6000Pensjon
 
             val eessisak = p6000.nav?.eessisak?.firstOrNull { it.land == fraLand }
-            val p6000vedtak = p6000pensjon?.vedtak?.firstOrNull { it.resultat != "02" } // 02 = avslag
+            val p6000vedtak = p6000pensjon?.vedtak?.firstOrNull { it.resultat != "02" } //P6000; 01 = invilgelse, 02 = avslag, 03, 04..
 
             if (p6000vedtak != null) {
+
                 val sistMottattDato = doc.first.sistMottatt
                 val p6000bruker = finnKorrektBruker(p6000)
 
@@ -147,8 +146,11 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
                     institusjon = mapInstusjonP6000(eessisak, p6000bruker, fraLand),
                     reduksjonsGrunn = finnReduksjonsGrunn(p6000pensjon.reduksjon?.firstOrNull()),
                     revurderingtidsfrist = p6000pensjon.sak?.kravtype?.firstOrNull { it.datoFrist != null }?.datoFrist,
+
                     innvilgetPensjon = p6000pensjon.vedtak?.firstOrNull { it.artikkel != null }?.artikkel
+
                 )
+
             } else {
                 null
             }
@@ -187,7 +189,7 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
 
     fun mapYtelserP6000(beregniger: List<BeregningItem>?): List<YtelserItem>? {
         logger.debug("beregning: ${beregniger?.toJson()}")
-        return beregniger?.mapNotNull { beregn ->
+        return beregniger?.map { beregn ->
             YtelserItem(
                 startdatoretttilytelse = beregn.periode?.fom,
                 sluttdatoUtbetaling = beregn.periode?.tom,
@@ -221,11 +223,11 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
         return p6000.p6000Pensjon?.gjenlevende ?: p6000.nav?.bruker
     }
 
-    fun mapInstusjonP6000(eessiSak: EessisakItem?, p6000bruker: Bruker?, fraLand: String?): Institusjon? {
+    fun mapInstusjonP6000(eessiSak: EessisakItem?, p6000bruker: Bruker?, fraLand: String?): Institusjon {
         return Institusjon(
             saksnummer = eessiSak?.saksnummer,
             personNr = p6000bruker?.person?.pin?.firstOrNull { it.land == fraLand }?.identifikator,
-            land = fraLand,
+            land = eessiSak?.land,
             institusjonsid = eessiSak?.institusjonsid,
             institusjonsnavn = eessiSak?.institusjonsnavn,
         )

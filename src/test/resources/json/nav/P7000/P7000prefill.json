@@ -1,0 +1,89 @@
+{
+  "sed" : "P7000",
+  "nav" : {
+    "eessisak" : [ {
+      "institusjonsid" : "NO:noinst002",
+      "institusjonsnavn" : "NOINST002, NO INST002, NO",
+      "saksnummer" : "21337890",
+      "land" : "NO"
+    }, {
+      "institusjonsid" : "SE:NAVAT07",
+      "institusjonsnavn" : "NAV ACCEPTANCE TEST JYZ",
+      "saksnummer" : "134513452",
+      "land" : "SE"
+    } ],
+    "bruker" : {
+      "person" : {
+        "pin" : [ {
+          "identifikator" : "12312312312",
+          "land" : "NO",
+          "institusjon" : { }
+        } ],
+        "etternavn" : "Gjenlev",
+        "fornavn" : "Lever",
+        "kjoenn" : "M",
+        "foedselsdato" : "1988-07-12"
+      }
+    },
+    "ektefelle" : {
+      "person" : {
+        "etternavn" : "Gjenlev"
+      }
+    }
+  },
+  "pensjon" : {
+    "samletVedtak" : {
+      "tildeltepensjoner" : [ {
+        "ytelser" : [ {
+          "startdatoretttilytelse" : "2021-09-01",
+          "beloep" : [ {
+            "betalingshyppighetytelse" : "03",
+            "valuta" : "NOK",
+            "beloepBrutto" : "4441"
+          } ]
+        } ],
+        "pensjonType" : "01",
+        "tildeltePensjonerLand" : "NO",
+        "adressatForRevurdering" : [ {
+          "adressatforrevurdering" : "NAV ACCEPTANCE TEST 07\nPostboks 6600 Etterstad\nOslo\n0607\nNO"
+        } ],
+        "institusjon" : {
+          "institusjonsid" : "NO:NAVAT07",
+          "institusjonsnavn" : "NAV ACCEPTANCE TEST 07",
+          "saksnummer" : "22947392",
+          "land" : "NO",
+          "personNr" : "14115327578"
+        },
+        "reduksjonsGrunn" : "03",
+        "startdatoPensjonsRettighet" : "2021-09-01",
+        "revurderingtidsfrist" : "six weeks from the date the decision is received",
+        "vedtaksDato" : "2021-08-12",
+        "innvilgetPensjon" : "01"
+      }, {
+        "ytelser" : [ {
+          "startdatoretttilytelse" : "2020-02-05",
+          "beloep" : [ {
+            "betalingshyppighetytelse" : "99",
+            "valuta" : "EUR",
+            "beloepBrutto" : "1254",
+            "utbetalingshyppighetAnnen" : "biannual"
+          } ]
+        } ],
+        "pensjonType" : "01",
+        "tildeltePensjonerLand" : "SE",
+        "adressatForRevurdering" : [ {
+          "adressatforrevurdering" : "gate\nbygning\nby\n4587\nregion\nAT"
+        } ],
+        "institusjon" : {
+          "land" : "SE"
+        },
+        "reduksjonsGrunn" : "02",
+        "startdatoPensjonsRettighet" : "2017-02-01",
+        "vedtaksDato" : "2020-01-02",
+        "innvilgetPensjon" : "02"
+      } ]
+    }
+  },
+  "sedGVer" : "4",
+  "sedVer" : "2"
+}
