@@ -33,6 +33,8 @@ securitytokenservice:
   url: 'https://example.com/SecurityTokenServiceProvider/'
 
 eessi:
+  pensjon_institusjon: '2342342-NAVAT 009'
+  pensjon_lokalnavn: 'NAV TEST TESTING LOCAL'
   pensjon_adresse_gate: 'Postboks 6600 Etterstad TEST'
   pensjon_adresse_by:   'Oslo'
   pensjon_adresse_postnummer: '0607'

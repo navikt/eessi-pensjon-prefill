@@ -20,6 +20,7 @@ import no.nav.eessi.pensjon.eux.model.sed.ReduksjonItem
 import no.nav.eessi.pensjon.eux.model.sed.SamletMeldingVedtak
 import no.nav.eessi.pensjon.eux.model.sed.SedType
 import no.nav.eessi.pensjon.eux.model.sed.TildeltPensjonItem
+import no.nav.eessi.pensjon.eux.model.sed.Tilleggsinformasjon
 import no.nav.eessi.pensjon.eux.model.sed.YtelserItem
 import no.nav.eessi.pensjon.fagmodul.models.PersonDataCollection
 import no.nav.eessi.pensjon.fagmodul.models.PrefillDataModel
@@ -41,9 +42,11 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
         logger.debug("Prefill ***P7000 Mk2 Turbo*** med preutfylling med data fra en eller flere P6000")
 
         val person = sed.nav?.bruker?.person
-        val perspin = person?.pin?.firstOrNull()
+        val perspin =  person?.pin
         val eessielm = sed.nav?.eessisak?.firstOrNull()
 
+        val gjenlevendePerson = sed.pensjon?.gjenlevende?.person
+        val gjenlevendePin = sed.pensjon?.gjenlevende?.person?.pin
 
         //dekode liste av P6000 for preutfylling av P7000
         val partpayload = prefillData.partSedAsJson[SedType.P7000.name]
@@ -61,16 +64,7 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
                         fornavn = person?.fornavn,
                         foedselsdato = person?.foedselsdato,
                         kjoenn = person?.kjoenn,
-                        pin = listOf(
-                            PinItem(
-                                identifikator = perspin?.identifikator,
-                                land = perspin?.land,
-                                institusjon = Institusjon(
-                                    institusjonsid = perspin?.institusjon?.institusjonsid,
-                                    institusjonsnavn = perspin?.institusjon?.institusjonsnavn
-                                )
-                            )
-                        )
+                        pin = hentAllePinFraP6000(listP6000, perspin!!)
                     )
                 ),
                 //mappe om etternavn til mappingfeil
@@ -78,13 +72,39 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
             ),
             //mappe om kjoenn for mappingfeil
             p7000Pensjon = P7000Pensjon(
-                gjenlevende = sed.pensjon?.gjenlevende,
+                gjenlevende = prefillGjenlevende(gjenlevendePerson, gjenlevendePin, listP6000),
                 samletVedtak = prefilSamletMeldingVedtak(listP6000)
             )
         )
 
         logger.debug("Tilpasser P7000 forenklet preutfylling, Ferdig.")
         return p7000
+    }
+
+    fun prefillGjenlevende(gjenlevendePerson: Person?, gjenlevendePin: List<PinItem>?, p6000list: List<Pair<P6000Dokument, P6000>>?): Bruker? {
+        if (gjenlevendePerson == null) return null
+        return Bruker(
+            person = Person (
+                etternavn = gjenlevendePerson.etternavn,
+                fornavn = gjenlevendePerson.fornavn,
+                foedselsdato = gjenlevendePerson.foedselsdato,
+                kjoenn = gjenlevendePerson.kjoenn,
+                pin = gjenlevendePin?.let { hentAllePinFraP6000(p6000list, it ) }
+            )
+        )
+    }
+
+    fun hentAllePinFraP6000(p6000List: List<Pair<P6000Dokument, P6000>>?, localPin: List<PinItem>): List<PinItem>? {
+
+        val allePins = p6000List?.mapNotNull {
+            val p6000 = it.second
+            val korrektbruker = finnKorrektBruker(p6000)
+            korrektbruker?.person?.pin
+        }?.flatten()
+            ?.filterNot { it.land == "NO" }
+
+        return allePins?.plus(localPin)
+
     }
 
     fun eessisaker(document: List<Pair<P6000Dokument, P6000>>?, eessiSakNo: EessisakItem?): List<EessisakItem> {
@@ -143,11 +163,11 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
                     ),
                     startdatoPensjonsRettighet = p6000vedtak.virkningsdato,
                     ytelser = mapYtelserP6000(p6000vedtak.beregning),
-                    institusjon = mapInstusjonP6000(eessisak, p6000bruker, fraLand),
+                    institusjon = mapInstusjonP6000(eessisak, p6000bruker, p6000pensjon.tilleggsinformasjon,  fraLand),
                     reduksjonsGrunn = finnReduksjonsGrunn(p6000pensjon.reduksjon?.firstOrNull()),
                     revurderingtidsfrist = p6000pensjon.sak?.kravtype?.firstOrNull { it.datoFrist != null }?.datoFrist,
+                    innvilgetPensjon = mapP6000artikkelTilInnvilgetPensjon(p6000vedtak.artikkel)
 
-                    innvilgetPensjon = p6000pensjon.vedtak?.firstOrNull { it.artikkel != null }?.artikkel
 
                 )
 
@@ -156,6 +176,17 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
             }
         }
     }
+
+    private fun mapP6000artikkelTilInnvilgetPensjon(artikkel: String?): String? {
+        return when (artikkel) {
+            "01" -> "01"
+            "02" -> "02"
+            "03", "04" -> "03"
+            "05" -> "04"
+            else -> null
+        }
+    }
+
 
     private fun finnReduksjonsGrunn(reduksjonItem: ReduksjonItem?): String {
         if (reduksjonItem?.aarsak != null) {
@@ -223,13 +254,15 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
         return p6000.p6000Pensjon?.gjenlevende ?: p6000.nav?.bruker
     }
 
-    fun mapInstusjonP6000(eessiSak: EessisakItem?, p6000bruker: Bruker?, fraLand: String?): Institusjon {
+    fun mapInstusjonP6000(eessiSak: EessisakItem?, p6000bruker: Bruker?, tilleggsinformasjon: Tilleggsinformasjon?, fraLand: String?): Institusjon {
+        val andreinst = tilleggsinformasjon?.andreinstitusjoner?.firstOrNull{ it.land == fraLand }
         return Institusjon(
-            saksnummer = eessiSak?.saksnummer,
+            saksnummer = eessiSak?.saksnummer, // 1.1.2 hentes fra P6000
             personNr = p6000bruker?.person?.pin?.firstOrNull { it.land == fraLand }?.identifikator,
             land = eessiSak?.land,
-            institusjonsid = eessiSak?.institusjonsid,
-            institusjonsnavn = eessiSak?.institusjonsnavn,
+
+            institusjonsid = andreinst?.institusjonsid, //eessiSak?.institusjonsid,
+            institusjonsnavn = andreinst?.institusjonsnavn  //eessiSak?.institusjonsnavn,
         )
 
     }

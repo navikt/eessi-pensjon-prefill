@@ -136,7 +136,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
         assertEquals("21337890", eessisak1?.saksnummer)
         assertEquals("22874955", eessisak2?.saksnummer)
         //4.1.[1].3.Innvilget pensjon
-        assertEquals("02", tildeltepensjoner.innvilgetPensjon)
+        assertEquals("04", tildeltepensjoner.innvilgetPensjon)
         //4.1.[1].4.Vedtakets utstedelsesdato
         assertEquals("2019-10-01", tildeltepensjoner.vedtaksDato)
         //4.1.[1].5.Startdato for pensjonsrettighet
@@ -220,10 +220,11 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
             "bruker" : {
               "person" : {
                 "pin" : [ {
-                  "identifikator" : "9876543210",
-                  "land" : "NO",
-                  "institusjon" : { }
-                } ],
+                      "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                      "institusjonsid" : "NO:noinst002",
+                      "identifikator" : "9876543210",
+                      "land" : "NO"
+                    } ],
                 "etternavn" : "Død",
                 "fornavn" : "Avdød",
                 "kjoenn" : "M",
@@ -341,11 +342,17 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
             } ],
             "bruker" : {
               "person" : {
-                "pin" : [ {
-                  "identifikator" : "12312312312",
-                  "land" : "NO",
-                  "institusjon" : { }
-                } ],
+                    "pin" : [ {
+                          "institusjonsnavn" : "SE ASCCEPTANCE TEST JAP",
+                          "institusjonsid" : "SE:NAVAT07",
+                          "identifikator" : "345315327578",
+                          "land" : "SE"
+                        }, {
+                          "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                          "institusjonsid" : "NO:noinst002",
+                          "identifikator" : "12312312312",
+                          "land" : "NO"
+                        } ],
                 "etternavn" : "Gjenlev",
                 "fornavn" : "Lever",
                 "kjoenn" : "M",
@@ -399,7 +406,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
                 "pensjonType" : "01",
                 "tildeltePensjonerLand" : "SE",
                 "adressatForRevurdering" : [ {
-                  "adressatforrevurdering" : "gate\nbygning\nby\n4587\nregion\nAT"
+                  "adressatforrevurdering" : "gate\nbygning\nby\n4587\nregion\nSE"
                 } ],
                 "institusjon" : {
                   "institusjonsid" : "SE:NAVAT07",
@@ -466,10 +473,11 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
             "bruker" : {
               "person" : {
                 "pin" : [ {
-                  "identifikator" : "12312312312",
-                  "land" : "NO",
-                  "institusjon" : { }
-                } ],
+                      "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                      "institusjonsid" : "NO:noinst002",
+                      "identifikator" : "12312312312",
+                      "land" : "NO"
+                    } ],
                 "etternavn" : "Pensjon",
                 "fornavn" : "Alder",
                 "kjoenn" : "M",
@@ -789,7 +797,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
           "indikator": "1"
         },
         "virkningsdato": "2020-10-01",
-        "artikkel": "02",
+        "artikkel": "05",
         "kjoeringsdato": "2020-12-01",
         "type": "$type",
         "basertPaaAnnen": "sadfsdf",
