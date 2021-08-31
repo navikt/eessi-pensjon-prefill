@@ -53,7 +53,7 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
         val listP6000 =
             partpayload?.let { payload -> mapJsonToAny(payload, typeRefs<List<Pair<P6000Dokument, P6000>>>()) }
 
-        val eessisakerall = eessisaker(listP6000, eessielm)
+        val eessisakerall = mapGyldigeEessisakerFraP6000(listP6000, eessielm)
 
         val p7000 = P7000(
             nav = Nav(
@@ -107,10 +107,10 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
 
     }
 
-    fun eessisaker(document: List<Pair<P6000Dokument, P6000>>?, eessiSakNo: EessisakItem?): List<EessisakItem> {
-        //fylle opp eessisaker kap. 1.0
-        val eessisakerutland = document?.filterNot { p6 -> p6.first.fraLand == "NO" }
-            ?.mapNotNull { p6 -> p6.second.nav?.eessisak?.firstOrNull { it.land == p6.first.fraLand } }
+    fun mapGyldigeEessisakerFraP6000(document: List<Pair<P6000Dokument, P6000>>?, eessiSakNo: EessisakItem?): List<EessisakItem> {
+        //fylle opp eessisaker kap. 1.0 P6000
+        val eessisakerutland = document?.filterNot { p6000 -> p6000.first.fraLand == "NO" }
+            ?.mapNotNull { p6000 -> p6000.second.nav?.eessisak?.firstOrNull { it.land == p6000.first.fraLand } }
             ?.toList() ?: emptyList()
 
         val eessisakno = listOf<EessisakItem>(
