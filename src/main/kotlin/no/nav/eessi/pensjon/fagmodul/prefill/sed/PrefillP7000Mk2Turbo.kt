@@ -1,6 +1,7 @@
 package no.nav.eessi.pensjon.fagmodul.prefill.sed
 
 import no.nav.eessi.pensjon.eux.model.document.P6000Dokument
+import no.nav.eessi.pensjon.eux.model.document.Retning
 import no.nav.eessi.pensjon.eux.model.sed.AdressatForRevurderingItem
 import no.nav.eessi.pensjon.eux.model.sed.BeloepItem
 import no.nav.eessi.pensjon.eux.model.sed.BeregningItem
@@ -50,8 +51,10 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
 
         //dekode liste av P6000 for preutfylling av P7000
         val partpayload = prefillData.partSedAsJson[SedType.P7000.name]
-        val listP6000 =
-            partpayload?.let { payload -> mapJsonToAny(payload, typeRefs<List<Pair<P6000Dokument, P6000>>>()) }
+        val listP6000 =  partpayload?.let { payload -> mapJsonToAny(payload, typeRefs<List<Pair<P6000Dokument, P6000>>>()) }
+
+        logger.info("Prefill med antall P6000: ${listP6000?.size}, land: ${listP6000?.map { it.first.fraLand }} ")
+
 
         val eessisakerall = mapGyldigeEessisakerFraP6000(listP6000, eessielm)
 
@@ -109,9 +112,11 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
 
     fun mapGyldigeEessisakerFraP6000(document: List<Pair<P6000Dokument, P6000>>?, eessiSakNo: EessisakItem?): List<EessisakItem> {
         //fylle opp eessisaker kap. 1.0 P6000
-        val eessisakerutland = document?.filterNot { p6000 -> p6000.first.fraLand == "NO" }
-            ?.mapNotNull { p6000 -> p6000.second.nav?.eessisak?.firstOrNull { it.land == p6000.first.fraLand } }
-            ?.toList() ?: emptyList()
+        val eessisakerutland = document?.filter { p6000 -> p6000.first.retning == Retning.IN }
+            ?.mapNotNull { p6000 -> p6000.second.nav?.eessisak }
+            ?.flatten()
+            ?.filter { it.land != "NO" }
+            ?: emptyList()
 
         val eessisakno = listOf<EessisakItem>(
             EessisakItem(
@@ -140,17 +145,17 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
     //tildelt pensjon fra P6000
     fun pensjonTildelt(document: List<Pair<P6000Dokument, P6000>>?): List<TildeltPensjonItem>? {
         return document?.mapNotNull { doc ->
-            val fraLand = doc.first.fraLand //documentItem
+            val fraLand = doc.first.fraLand //documentItem participant (hvilket land P6000 kommer ifra)
+            val sistMottattDato = doc.first.sistMottatt
 
             val p6000 = doc.second //P6000 seden
             val p6000pensjon = p6000.p6000Pensjon
 
             val eessisak = p6000.nav?.eessisak?.firstOrNull { it.land == fraLand }
+
             val p6000vedtak = p6000pensjon?.vedtak?.firstOrNull { it.resultat != "02" } //P6000; 01 = invilgelse, 02 = avslag, 03, 04..
 
             if (p6000vedtak != null) {
-
-                val sistMottattDato = doc.first.sistMottatt
                 val p6000bruker = finnKorrektBruker(p6000)
 
                 TildeltPensjonItem(
@@ -167,7 +172,6 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
                     reduksjonsGrunn = finnReduksjonsGrunn(p6000pensjon.reduksjon?.firstOrNull()),
                     revurderingtidsfrist = p6000pensjon.sak?.kravtype?.firstOrNull { it.datoFrist != null }?.datoFrist,
                     innvilgetPensjon = mapP6000artikkelTilInnvilgetPensjon(p6000vedtak.artikkel)
-
 
                 )
 
@@ -256,10 +260,14 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
 
     fun mapInstusjonP6000(eessiSak: EessisakItem?, p6000bruker: Bruker?, tilleggsinformasjon: Tilleggsinformasjon?, fraLand: String?): Institusjon {
         val andreinst = tilleggsinformasjon?.andreinstitusjoner?.firstOrNull{ it.land == fraLand }
+
+        // P7000Institusjon -> Pinitem, eessisak,  institusjon
+
+
         return Institusjon(
             saksnummer = eessiSak?.saksnummer, // 1.1.2 hentes fra P6000
+            land = eessiSak?.land, //1.1.2 (P6000)
             personNr = p6000bruker?.person?.pin?.firstOrNull { it.land == fraLand }?.identifikator,
-            land = eessiSak?.land,
 
             institusjonsid = andreinst?.institusjonsid, //eessiSak?.institusjonsid,
             institusjonsnavn = andreinst?.institusjonsnavn  //eessiSak?.institusjonsnavn,

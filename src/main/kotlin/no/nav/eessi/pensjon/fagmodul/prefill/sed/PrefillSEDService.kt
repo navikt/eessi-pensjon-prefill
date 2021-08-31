@@ -16,7 +16,6 @@ import no.nav.eessi.pensjon.services.pensjonsinformasjon.EPSaktype.ALDER
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.EPSaktype.BARNEP
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.EPSaktype.GJENLEV
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.EPSaktype.UFOREP
-import no.nav.eessi.pensjon.utils.toJson
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import no.nav.pensjon.v1.sak.V1Sak
 import no.nav.pensjon.v1.vedtak.V1Vedtak
@@ -76,7 +75,6 @@ class PrefillSEDService(
             SedType.P7000 -> {
                 if (prefillData.partSedAsJson[SedType.P7000.name] != null && prefillData.partSedAsJson[SedType.P7000.name] != "{}") {
                     logger.info("P7000mk2 preutfylling med data fra P6000..")
-                    logger.debug(prefillData.partSedAsJson.toJson())
                     PrefillP7000Mk2Turbo(PrefillSed(prefillPDLnav)).prefill(prefillData, personDataCollection)
                 } else {
                     logger.info("P7000 med forenklet preutfylling")

@@ -4,6 +4,7 @@ import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
 import no.nav.eessi.pensjon.UnsecuredWebMvcTestLauncher
 import no.nav.eessi.pensjon.eux.model.document.P6000Dokument
+import no.nav.eessi.pensjon.eux.model.document.Retning
 import no.nav.eessi.pensjon.eux.model.sed.P6000
 import no.nav.eessi.pensjon.eux.model.sed.P7000
 import no.nav.eessi.pensjon.eux.model.sed.SedType
@@ -620,10 +621,10 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
 
 
 
-    private fun mockP6000KomplettRequestdata(land: String, type: String? = "01") =  Pair(P6000Dokument(SedType.P6000, "123123", "23423asdasd3243423", land, "1", "url", LocalDate.of(2020, 10, 12)),
+    private fun mockP6000KomplettRequestdata(land: String, type: String? = "01") =  Pair(P6000Dokument(SedType.P6000, "123123", "23423asdasd3243423", land, "1", "url", LocalDate.of(2020, 10, 12), if (land == "NO") Retning.OUT else Retning.IN),
         mapJsonToAny(mockKomplettP6000(land, type), typeRefs<P6000>()))
 
-    private fun mockP6000requestdata(land: String, filnavn: String) =  Pair(P6000Dokument(SedType.P6000, "123123", "23423asdasd3243423", land, "1", "url", LocalDate.of(2021, 11,13)),
+    private fun mockP6000requestdata(land: String, filnavn: String) =  Pair(P6000Dokument(SedType.P6000, "123123", "23423asdasd3243423", land, "1", "url", LocalDate.of(2021, 11,13), if (land == "NO") Retning.OUT else Retning.IN),
         getP6000ekternfil(filnavn) ) }
 
     private fun getP6000ekternfil(filnavn: String): P6000 = mapJsonToAny(ResourceUtils.getFile("classpath:json/nav/$filnavn").readText(), typeRefs<P6000>())
