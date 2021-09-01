@@ -53,21 +53,5 @@
   },
   "sedGVer": "4",
   "sedVer": "1",
-  "horisontal": {
-    "anmodningmedisinskinformasjon": {
-      "svar": {
-        "medisinsk": {
-          "informasjon": {
-            "type": [
-              "medisinsk_dokumentasjon",
-              "medisinsk_undersøkelse_rapport",
-              "andre_medisinske_opplysninger"
-            ],
-            "annen": "asdd sadsd fsdfs"
-          }
-        }
-      }
-    }
-  },
   "sed": "H121"
 }

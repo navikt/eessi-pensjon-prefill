@@ -53,15 +53,5 @@
   },
   "sedGVer": "4",
   "sedVer": "1",
-  "horisontal": {
-    "anmodningmedisinskinformasjon": {
-      "svar": {
-        "dokumentasjonikkevedlagt": {
-          "grunn": "gsfdg fdsgdgsdfgsdfg"
-        },
-        "erdokumentasjonsvedlagt": "ja"
-      }
-    }
-  },
   "sed": "H121"
 }

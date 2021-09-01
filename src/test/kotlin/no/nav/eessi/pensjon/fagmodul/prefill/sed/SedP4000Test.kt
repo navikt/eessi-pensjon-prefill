@@ -73,8 +73,6 @@ class SedP4000Test {
         validateJson(p4000file)
         val p4000 = mapJsonToAny(p4000file, typeRefs<P4000>())
         assertNotNull(p4000)
-        assertNotNull(p4000.trygdetid)
-        assertNotNull(p4000.trygdetid?.ansattSelvstendigPerioder)
     }
 
     @Test

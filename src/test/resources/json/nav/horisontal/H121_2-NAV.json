@@ -52,23 +52,6 @@
     "ytterligereinformasjon": "asdfsadfsdaf sdfasdfasfd"
   },
   "sedGVer": "4",
-  "horisontal": {
-    "anmodningmedisinskinformasjon": {
-      "svar": {
-        "medisinsk": {
-          "undersoekelse": {
-            "type": "ble_ikke_utført_av_følgende_grunn",
-            "ikkegjennomfoert": {
-              "grunn": {
-                "type": "annet",
-                "annen": "gdgsdfgfdgsdfg"
-              }
-            }
-          }
-        }
-      }
-    }
-  },
   "sedVer": "1",
   "sed": "H121"
 }

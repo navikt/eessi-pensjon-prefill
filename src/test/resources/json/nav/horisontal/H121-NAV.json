@@ -53,19 +53,5 @@
   },
   "sedGVer": "4",
   "sedVer": "1",
-  "horisontal": {
-    "anmodningmedisinskinformasjon": {
-      "svar": {
-        "undersoekelse": {
-          "estimat": {
-            "kostnader": {
-              "beloep": "1233",
-              "valuta": "BGN"
-            }
-          }
-        }
-      }
-    }
-  },
   "sed": "H121"
 }
