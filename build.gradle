@@ -9,6 +9,7 @@ buildscript {
         tokenSupportVersion = '1.1.6'
         logstashLogbackVersion = '6.6'
         pensjonInformasjonVersion = '9.4.10'
+        epeuxVersion = '1.1.39'
     }
 
     repositories {
@@ -155,7 +156,7 @@ dependencies {
 
     implementation("no.nav.eessi.pensjon:ep-logging:1.0.10")
     implementation("no.nav.eessi.pensjon:ep-personoppslag:8.0.16")
-    implementation("no.nav.eessi.pensjon:ep-eux:1.1.38")
+    implementation("no.nav.eessi.pensjon:ep-eux:${epeuxVersion}")
 
 }
 
