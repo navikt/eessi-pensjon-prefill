@@ -14,6 +14,7 @@ import no.nav.eessi.pensjon.logging.AuditLogger
 import no.nav.eessi.pensjon.personoppslag.pdl.model.NorskIdent
 import no.nav.eessi.pensjon.prefill.ApiRequest
 import no.nav.eessi.pensjon.prefill.InnhentingService
+import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.PersonDataService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.PrefillService
@@ -33,13 +34,14 @@ class PrefillControllerTest {
     var mockPrefillSEDService: PrefillSEDService = mockk()
     var kafkaTemplate: KafkaTemplate<String, String> = mockk()
     var personDataService: PersonDataService = mockk()
+    var pensjonsinformasjonService: PensjonsinformasjonService = mockk()
 
     private lateinit var prefillController: PrefillController
 
     @BeforeEach
     fun before() {
 
-        val innhentingService = InnhentingService(personDataService)
+        val innhentingService = InnhentingService(personDataService,pensjonsinformasjonService = pensjonsinformasjonService)
         innhentingService.initMetrics()
 
         val prefillService = PrefillService(mockPrefillSEDService)

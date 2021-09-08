@@ -2,6 +2,7 @@ package no.nav.eessi.pensjon.prefill
 
 import io.mockk.every
 import io.mockk.mockk
+import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonService
 import no.nav.eessi.pensjon.personoppslag.pdl.model.AktoerId
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Ident
 import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentType
@@ -15,12 +16,13 @@ import org.springframework.web.server.ResponseStatusException
 class InnhentingServiceTest {
 
     var personDataService: PersonDataService = mockk()
+    var pensjonsinformasjonService: PensjonsinformasjonService = mockk()
 
     private lateinit var innhentingService: InnhentingService
 
     @BeforeEach
     fun before() {
-        innhentingService = InnhentingService(personDataService)
+        innhentingService = InnhentingService(personDataService, pensjonsinformasjonService = pensjonsinformasjonService)
         innhentingService.initMetrics()
     }
 
