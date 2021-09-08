@@ -365,21 +365,25 @@ class PrefillPDLNavTest {
         val personFdato = personfnr.getBirthDate().toString()
 
         val single = lagPerson(somePersonNr)
-            .copy(bostedsadresse = null, oppholdsadresse = Oppholdsadresse(
-                LocalDateTime.of(2000, 10, 2, 9, 32, 1),
-                null,
-                null,
-                UtenlandskAdresse(
-                    "Storavegsentra 12, Noenhusbygg, 2012 SE, Østaby",
-                    "örasund",
-                    null,
-                    "SWE",
+            .copy(
+                bostedsadresse = null,
+                oppholdsadresse =
+                Oppholdsadresse(
+                    LocalDateTime.of(2000, 10, 2, 9, 32, 1),
                     null,
                     null,
-                    null
-                ),
-                LagPDLPerson.mockMeta()
-            ))
+                    UtenlandskAdresse(
+                        "Storavegsentra 12, Noenhusbygg, 2012 SE, Østaby",
+                        "örasund",
+                        null,
+                        "SWE",
+                        null,
+                        null,
+                        null
+                    ),
+                    LagPDLPerson.mockMeta()
+                )
+            )
 
         val prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P2000, pinId = somePersonNr, penSaksnummer = somePenSaksnr)
         val personDataCollection = PersonDataCollection(forsikretPerson = single, ektefellePerson = null,  sivilstandstype = Sivilstandstype.UGIFT, gjenlevendeEllerAvdod = single, barnPersonList = emptyList())
@@ -403,13 +407,12 @@ class PrefillPDLNavTest {
                     "",
                     "",
                     "",
-                    null,
-                    ""
+                    land = ""
                 )
             )
         )
 
-        assertEquals(expected, actual)
+        assertEquals(expected.bruker?.adresse, actual.bruker?.adresse)
         JSONAssert.assertEquals(expected.toJsonSkipEmpty(), actual.toJsonSkipEmpty(), true)
 
     }
@@ -460,7 +463,7 @@ class PrefillPDLNavTest {
                     "Adresselinje 3",
                     null,
                     null,
-                    "SE"
+                    land = "SE"
                 )
             )
         )
@@ -514,7 +517,7 @@ class PrefillPDLNavTest {
                     "Adresselinje 3",
                     null,
                     null,
-                    "SE"
+                    land = "SE"
                 )
             )
         )

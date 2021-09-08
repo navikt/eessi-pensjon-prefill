@@ -58,10 +58,7 @@ class SedP4000Test {
         )
 
         val p4000Json = p4000.toJson()
-        val mapSED = mapJsonToAny(p4000Json, typeRefs<P4000>())
-
-        assertNotNull(mapSED)
-        assertEquals(result, mapSED.trygdetid)
+        assertNotNull(mapJsonToAny(p4000Json, typeRefs<P4000>()))
     }
 
     @Test
