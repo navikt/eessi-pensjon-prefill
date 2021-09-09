@@ -44,7 +44,6 @@ apply plugin: "org.springframework.boot"
 assert JavaVersion.current().isJava11Compatible(): "Java 11 or newer is required"
 
 group = 'no.nav.eessi'
-version = '0.0.1'
 
 java {
     sourceCompatibility = JavaVersion.VERSION_11
