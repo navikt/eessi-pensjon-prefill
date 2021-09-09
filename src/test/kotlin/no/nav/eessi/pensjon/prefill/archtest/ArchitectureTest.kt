@@ -60,7 +60,6 @@ class ArchitectureTest {
         }
     }
 
-
     @Test
     fun `check architecture in detail`() {
 
@@ -69,17 +68,11 @@ class ArchitectureTest {
         val bucSedApi = "prefill.api"
         val prefill = "prefill"
         val models = "prefill.models"
-        val euxmodel = "fagmodul.sedmodel"
         val arkivApi = "api.arkiv"
         val geoApi = "api.geo"
         val personApi = "api.person"
         val pensjonApi = "api.pensjon"
-        val pesys = "fagmodul.pesys"
-        val config = "fagmodul.config"
-        val metrics = "fagmodul.metrics"
-        val euxService = "fagmodul.euxservice"
-        val euxBasisModel = "fagmodul.euxBasisModel"
-        val euxBucModel = "fagmodul.euxBucModel"
+        val config = "config"
         val kodeverkService = "services.kodeverk"
         val geoService = "services.geo"
         val pensjonService = "services.pensjon"
@@ -100,14 +93,8 @@ class ArchitectureTest {
                 "$root.prefill.api.." to bucSedApi,
                 "$root.prefill.." to prefill,
                 "$root.prefill.models.." to models,
-                "$root.eux.model.." to euxmodel,
-                "$root.fagmodul.eux" to euxService,
-                "$root.fagmodul.eux.basismodel.." to euxBasisModel,
-                "$root.fagmodul.eux.bucmodel.." to euxBucModel,
                 "$root.fagmodul.config.." to config,
-                "$root.fagmodul.pesys.." to pesys,
                 "$root.config.." to config,
-                "$root.fagmodul.metrics.." to metrics,
                 "$root.services.kodeverk" to kodeverkService,
                 "$root.services.geo" to geoService,
                 "$root.services.pensjonsinformasjon" to pensjonService,
@@ -135,13 +122,8 @@ class ArchitectureTest {
                 .layer(pensjonApi).definedBy(*packagesFor(pensjonApi))
 
                 .layer(bucSedApi).definedBy(*packagesFor(bucSedApi))
-                .layer(pesys).definedBy(*packagesFor(pesys))
                 .layer(prefill).definedBy(*packagesFor(prefill))
-                .layer(euxService).definedBy(*packagesFor(euxService))
-                .layer(euxBasisModel).definedBy(*packagesFor(euxBasisModel))
-                .layer(euxBucModel).definedBy(*packagesFor(euxBucModel))
                 .layer(models).definedBy(*packagesFor(models))
-                .layer(euxmodel).definedBy(*packagesFor(euxmodel))
                 .layer(personDataLosning).definedBy(*packagesFor(personDataLosning))
                 .layer(personService).definedBy(*packagesFor(personService))
                 .layer(kodeverkService).definedBy(*packagesFor(kodeverkService))
@@ -149,34 +131,23 @@ class ArchitectureTest {
                 .layer(pensjonService).definedBy(*packagesFor(pensjonService))
                 .layer(security).definedBy(*packagesFor(security))
                 .layer(config).definedBy(*packagesFor(config))
-                .layer(metrics).definedBy(*packagesFor(metrics))
                 .layer(utils).definedBy(*packagesFor(utils))
                 .layer(integrationtest).definedBy(*packagesFor(integrationtest))
                 .layer(vedlegg).definedBy(*packagesFor(vedlegg))
                 .layer(innhentingService).definedBy(*packagesFor(innhentingService))
 
                 .whereLayer(health).mayNotBeAccessedByAnyLayer()
-                .whereLayer(arkivApi).mayOnlyBeAccessedByLayers(metrics)
                 .whereLayer(geoApi).mayNotBeAccessedByAnyLayer()
-                .whereLayer(personApi).mayOnlyBeAccessedByLayers(metrics)
-                .whereLayer(pensjonApi).mayOnlyBeAccessedByLayers(metrics)
-
-                .whereLayer(pesys).mayOnlyBeAccessedByLayers(health, euxmodel, models, euxService)
                 .whereLayer(bucSedApi).mayNotBeAccessedByAnyLayer()
                 .whereLayer(prefill).mayOnlyBeAccessedByLayers(bucSedApi, integrationtest)
-                .whereLayer(euxService).mayOnlyBeAccessedByLayers(health, bucSedApi, pesys, integrationtest, innhentingService)
-                .whereLayer(euxBasisModel).mayOnlyBeAccessedByLayers(euxService, bucSedApi, pesys, integrationtest, euxmodel)
-                .whereLayer(euxBucModel).mayOnlyBeAccessedByLayers(euxService, bucSedApi, pesys, integrationtest, euxmodel)
-                .whereLayer(models).mayOnlyBeAccessedByLayers(prefill, euxService, euxBasisModel, euxBucModel, euxmodel, bucSedApi, pensjonApi, personApi, pesys, integrationtest)
-                .whereLayer(euxmodel).mayOnlyBeAccessedByLayers(prefill, euxService, bucSedApi, models, integrationtest, pesys, pensjonService, euxBasisModel, euxBucModel)
+                .whereLayer(models).mayOnlyBeAccessedByLayers(prefill, bucSedApi, pensjonApi, personApi, integrationtest)
                 .whereLayer(personDataLosning).mayOnlyBeAccessedByLayers(config, health, personApi, bucSedApi, pensjonApi, prefill, models, integrationtest, innhentingService)
                 .whereLayer(vedlegg).mayOnlyBeAccessedByLayers(integrationtest, innhentingService, bucSedApi)
                 .whereLayer(geoService).mayOnlyBeAccessedByLayers(geoApi, prefill)
                 .whereLayer(pensjonService).mayOnlyBeAccessedByLayers(health, pensjonApi, prefill, bucSedApi, personApi, integrationtest)
 
                 .whereLayer(config).mayOnlyBeAccessedByLayers(personDataLosning)
-                .whereLayer(metrics).mayOnlyBeAccessedByLayers(config, health, euxService, vedlegg)
-                .whereLayer(security).mayOnlyBeAccessedByLayers(config, health, euxService, vedlegg, pensjonService, personDataLosning, personService, kodeverkService, pesys, integrationtest)
+                .whereLayer(security).mayOnlyBeAccessedByLayers(config, health, vedlegg, pensjonService, personDataLosning, personService, kodeverkService, integrationtest)
 
                 .check(allClasses)
     }
