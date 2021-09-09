@@ -1,0 +1,32 @@
+package no.nav.eessi.pensjon.config
+
+import no.nav.eessi.pensjon.personoppslag.pdl.PdlToken
+import no.nav.eessi.pensjon.personoppslag.pdl.PdlTokenCallBack
+import no.nav.eessi.pensjon.personoppslag.pdl.PdlTokenImp
+import no.nav.eessi.pensjon.security.sts.STSService
+import no.nav.eessi.pensjon.security.token.TokenAuthorizationHeaderInterceptor
+import no.nav.security.token.support.core.context.TokenValidationContextHolder
+import org.springframework.context.annotation.Primary
+import org.springframework.core.Ordered
+import org.springframework.core.annotation.Order
+import org.springframework.stereotype.Component
+
+
+@Component("PdlTokenComponent")
+@Primary
+@Order(Ordered.HIGHEST_PRECEDENCE)
+class PdlPrefillTokenComponent(private val token: TokenValidationContextHolder, private val securityTokenExchangeService: STSService): PdlTokenCallBack {
+
+    override fun callBack(): PdlToken {
+        return PdlUserToken(token, securityTokenExchangeService).callBack()
+    }
+}
+
+internal class PdlUserToken(private val token: TokenValidationContextHolder, private val securityTokenExchangeService: STSService): PdlTokenCallBack {
+    override fun callBack(): PdlToken {
+        val systemToken = securityTokenExchangeService.getSystemOidcToken()
+        val userToken =  TokenAuthorizationHeaderInterceptor(token).getIdTokenFromIssuer(token)
+        return PdlTokenImp(systemToken = systemToken, userToken = userToken, isUserToken = true)
+    }
+}
+

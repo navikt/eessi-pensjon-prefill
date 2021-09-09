@@ -1,6 +1,6 @@
 package no.nav.eessi.pensjon.utils
 
-import no.nav.eessi.pensjon.fagmodul.models.InstitusjonItem
+import no.nav.eessi.pensjon.prefill.models.InstitusjonItem
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
