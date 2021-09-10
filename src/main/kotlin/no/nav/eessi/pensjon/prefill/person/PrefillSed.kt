@@ -1,4 +1,4 @@
-package no.nav.eessi.pensjon.prefill.models.person
+package no.nav.eessi.pensjon.prefill.person
 
 import no.nav.eessi.pensjon.eux.model.sed.Bruker
 import no.nav.eessi.pensjon.eux.model.sed.Pensjon

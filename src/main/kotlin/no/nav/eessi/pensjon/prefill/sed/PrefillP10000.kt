@@ -4,7 +4,7 @@ import no.nav.eessi.pensjon.eux.model.sed.P10000
 import no.nav.eessi.pensjon.prefill.models.BrukerInformasjon
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PersonId
-import no.nav.eessi.pensjon.prefill.models.person.PrefillPDLNav
+import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 

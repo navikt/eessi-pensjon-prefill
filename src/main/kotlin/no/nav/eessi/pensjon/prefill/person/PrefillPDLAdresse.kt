@@ -1,4 +1,4 @@
-package no.nav.eessi.pensjon.prefill.models.pdl
+package no.nav.eessi.pensjon.prefill.person
 
 import no.nav.eessi.pensjon.eux.model.sed.Adresse
 import no.nav.eessi.pensjon.personoppslag.pdl.model.AdressebeskyttelseGradering

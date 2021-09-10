@@ -5,8 +5,8 @@ import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import no.nav.eessi.pensjon.eux.model.sed.SED
 import no.nav.eessi.pensjon.eux.model.sed.SedType
 import no.nav.eessi.pensjon.metrics.MetricsHelper
-import no.nav.eessi.pensjon.models.PensjonCollection
 import no.nav.eessi.pensjon.prefill.models.InstitusjonItem
+import no.nav.eessi.pensjon.prefill.models.PensjonCollection
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModel
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
@@ -20,12 +20,17 @@ import org.springframework.stereotype.Service
 import javax.annotation.PostConstruct
 
 @Service
-class PrefillService(private val prefillSedService: PrefillSEDService,
-                     @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper(SimpleMeterRegistry())) {
+class PrefillService(
+    private val prefillSedService: PrefillSEDService,
+    private val innhentingService: InnhentingService,
+    @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper(SimpleMeterRegistry())
+) {
 
     private val logger = LoggerFactory.getLogger(PrefillService::class.java)
 
     private lateinit var PrefillSed: MetricsHelper.Metric
+
+    private val LATEST_RINA_SED_VERSION = "v4.2"
 
     @PostConstruct
     fun initMetrics() {
@@ -33,26 +38,31 @@ class PrefillService(private val prefillSedService: PrefillSEDService,
             ignoreHttpCodes = listOf(HttpStatus.BAD_REQUEST, HttpStatus.FORBIDDEN))
     }
 
-    fun prefillSedtoJson(dataModel: PrefillDataModel, version: String, personDataCollection: PersonDataCollection, pensjonCollection: PensjonCollection): String {
+    fun prefillSedtoJson(request: ApiRequest): String {
         return PrefillSed.measure {
-            logger.info("******* Starter med preutfylling ******* $dataModel")
+            logger.info(" ******* Starter med preutfylling ******* ")
             try {
-                eessiRequire(dataModel.sedType.kanPrefilles() ) {"SedType ${dataModel.sedType} kan ikke prefilles!"}
+                val norskIdent = innhentingService.hentFnrfraAktoerService(request.aktoerId)
+                val prefillData = ApiRequest.buildPrefillDataModelOnExisting(request, norskIdent, innhentingService.getAvdodAktoerIdPDL(request))
 
- //               innhent
+                eessiRequire(prefillData.sedType.kanPrefilles() ) {"SedType ${prefillData.sedType} kan ikke prefilles!"}
 
-                val sed = prefillSedService.prefill(dataModel, personDataCollection,pensjonCollection)
+                val personcollection = innhentingService.hentPersonData(prefillData)
+                val pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
+
+                val sed = prefillSedService.prefill(prefillData, personcollection, pensjonCollection)
 
                 logger.debug("SedType: ${sed.type.name}")
 
                 //synk sed versjon med buc versjon
-                updateSEDVersion(sed, version)
+                updateSEDVersion(sed, LATEST_RINA_SED_VERSION)
 
                 try {
                     Metrics.counter("Sed_Prefill","type", sed.type.name).increment()
                 } catch (e: Exception) {
                     logger.warn("Metrics feilet på Sed_Prefill")
                 }
+
                 return@measure sed.toJsonSkipEmpty()
 
             } catch (ex: Exception) {

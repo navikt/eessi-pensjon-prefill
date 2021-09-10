@@ -1,4 +1,4 @@
-package no.nav.eessi.pensjon.models
+package no.nav.eessi.pensjon.prefill.models
 
 import no.nav.eessi.pensjon.eux.model.sed.SedType
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon

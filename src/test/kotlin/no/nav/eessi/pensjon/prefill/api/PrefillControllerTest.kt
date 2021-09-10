@@ -42,16 +42,14 @@ class PrefillControllerTest {
     @BeforeEach
     fun before() {
 
-        val innhentingService = InnhentingService(personDataService,pensjonsinformasjonService = pensjonsinformasjonService)
+        val innhentingService = InnhentingService(personDataService, pensjonsinformasjonService = pensjonsinformasjonService)
         innhentingService.initMetrics()
 
-        val prefillService = PrefillService(mockPrefillSEDService)
+        val prefillService = PrefillService(mockPrefillSEDService, innhentingService)
         prefillService.initMetrics()
 
         prefillController = PrefillController(
-            innhentingService,
-            prefillService,
-            auditLogger
+            prefillService, auditLogger
         )
     }
 

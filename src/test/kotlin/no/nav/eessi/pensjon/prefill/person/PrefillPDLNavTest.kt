@@ -1,4 +1,4 @@
-package no.nav.eessi.pensjon.prefill.models.person
+package no.nav.eessi.pensjon.prefill.person
 
 import io.mockk.every
 import io.mockk.mockk
@@ -37,9 +37,6 @@ import no.nav.eessi.pensjon.prefill.models.BrukerInformasjon
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PersonId
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
-import no.nav.eessi.pensjon.prefill.models.pdl.FodselsnummerMother
-import no.nav.eessi.pensjon.prefill.models.pdl.NavFodselsnummer
-import no.nav.eessi.pensjon.prefill.models.pdl.PrefillPDLAdresse
 import no.nav.eessi.pensjon.services.geo.PostnummerService
 import no.nav.eessi.pensjon.services.kodeverk.KodeverkClient
 import no.nav.eessi.pensjon.utils.mapAnyToJson

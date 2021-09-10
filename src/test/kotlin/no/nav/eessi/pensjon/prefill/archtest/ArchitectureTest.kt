@@ -201,18 +201,17 @@ class ArchitectureTest {
     fun `prefill structure test`() {
         val prefillRoot = "$root.prefill"
 
+        println("root->$prefillRoot")
+
         layeredArchitecture()
-                .layer("service").definedBy(prefillRoot)
-                .layer("sed").definedBy("$prefillRoot.sed..")
-                .layer("person").definedBy("$prefillRoot.person..")
-                .layer("pdl").definedBy("$prefillRoot.pdl..")
-                .layer("eessi").definedBy("$prefillRoot.eessi..")
-                .layer("model").definedBy("$prefillRoot.model..")
-                .whereLayer("sed").mayOnlyBeAccessedByLayers("service")
-                .whereLayer("person").mayOnlyBeAccessedByLayers("sed")
-                .whereLayer("pdl").mayOnlyBeAccessedByLayers("sed")
-                .whereLayer("eessi").mayOnlyBeAccessedByLayers("sed", "pdl")
-                .check(productionClasses)
+            .layer("prefill").definedBy("$prefillRoot..")
+            .layer("sed").definedBy("$prefillRoot.sed..")
+            .layer("person").definedBy("$prefillRoot.person..")
+            .layer("models").definedBy("$prefillRoot.models..")
+            .whereLayer("sed").mayOnlyBeAccessedByLayers("prefill")
+            .whereLayer("person").mayOnlyBeAccessedByLayers("sed", "prefill")
+            .whereLayer("models").mayOnlyBeAccessedByLayers("sed", "person", "prefill")
+            .check(productionClasses)
     }
     @Test
     fun `no cycles on top level`() {

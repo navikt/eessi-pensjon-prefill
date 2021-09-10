@@ -21,8 +21,8 @@ import no.nav.eessi.pensjon.personoppslag.pdl.model.Sivilstandstype
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Statsborgerskap
 import no.nav.eessi.pensjon.personoppslag.pdl.model.UtenlandskAdresseIFrittFormat
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Vegadresse
-import no.nav.eessi.pensjon.prefill.models.pdl.FodselsnummerMother
-import no.nav.eessi.pensjon.prefill.models.pdl.NavFodselsnummer
+import no.nav.eessi.pensjon.prefill.person.FodselsnummerMother
+import no.nav.eessi.pensjon.prefill.person.NavFodselsnummer
 import java.time.LocalDate
 import java.time.LocalDateTime
 
