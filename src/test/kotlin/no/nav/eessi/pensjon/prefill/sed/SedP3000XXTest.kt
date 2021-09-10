@@ -3,6 +3,7 @@ package no.nav.eessi.pensjon.prefill.sed
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.sed.SedType
+import no.nav.eessi.pensjon.models.PensjonCollection
 import no.nav.eessi.pensjon.prefill.ApiRequest
 import no.nav.eessi.pensjon.prefill.LagPDLPerson
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService

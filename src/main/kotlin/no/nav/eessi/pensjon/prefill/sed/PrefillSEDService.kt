@@ -2,7 +2,7 @@ package no.nav.eessi.pensjon.prefill.sed
 
 import no.nav.eessi.pensjon.eux.model.sed.SED
 import no.nav.eessi.pensjon.eux.model.sed.SedType
-import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
+import no.nav.eessi.pensjon.models.PensjonCollection
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModel
 import no.nav.eessi.pensjon.prefill.models.eessi.EessiInformasjon
@@ -12,13 +12,6 @@ import no.nav.eessi.pensjon.prefill.sed.krav.PrefillP2000
 import no.nav.eessi.pensjon.prefill.sed.krav.PrefillP2100
 import no.nav.eessi.pensjon.prefill.sed.krav.PrefillP2200
 import no.nav.eessi.pensjon.prefill.sed.vedtak.PrefillP6000
-import no.nav.eessi.pensjon.services.pensjonsinformasjon.EPSaktype.ALDER
-import no.nav.eessi.pensjon.services.pensjonsinformasjon.EPSaktype.BARNEP
-import no.nav.eessi.pensjon.services.pensjonsinformasjon.EPSaktype.GJENLEV
-import no.nav.eessi.pensjon.services.pensjonsinformasjon.EPSaktype.UFOREP
-import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
-import no.nav.pensjon.v1.sak.V1Sak
-import no.nav.pensjon.v1.vedtak.V1Vedtak
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
