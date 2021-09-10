@@ -50,6 +50,7 @@ class PrefillSedEnkeTest {
 
         val prefillData = initialPrefillDataModel(sedType = SedType.P2100, pinId = fnr, avdod = PersonId(norskIdent = fnr, aktorId = "212"), vedtakId = "", penSaksnummer = "22875355")
 
+
         val response = prefillPDLNav.prefill(
             penSaksnummer = prefillData.penSaksnummer,
             bruker = prefillData.bruker,
@@ -91,12 +92,15 @@ class PrefillSedEnkeTest {
     }
 
     @Test
-    fun `forvent utfylling av person data av ENKE fra TPS P2200`() {
+    fun `forvent utfylling av person data av ENKE fra PDL P2200`() {
 
         val prefillData = initialPrefillDataModel(sedType = SedType.P2200, pinId = fnr, vedtakId = "", penSaksnummer = "14915730")
         val personCollection = PersonPDLMock.createEnkeWithBarn(fnr, b2fnr)
 
-        val sed = PrefillSEDService(pensjonsinformasjonService, EessiInformasjon(), prefillPDLNav).prefill(prefillData, personCollection)
+        val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = pensjonsinformasjonService)
+        val pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
+
+        val sed = PrefillSEDService(EessiInformasjon(), prefillPDLNav).prefill(prefillData, personCollection, pensjonCollection)
 
         assertEquals(SedType.P2200, sed.type)
 

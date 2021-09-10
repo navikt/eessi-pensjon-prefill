@@ -31,6 +31,7 @@ class PrefillP2200UforpensjonTest {
     lateinit var prefillNav: PrefillPDLNav
     lateinit var dataFromPEN: PensjonsinformasjonService
     private lateinit var prefillSEDService: PrefillSEDService
+    private lateinit var pensjonCollection: PensjonCollection
 
     @BeforeEach
     fun setup() {
@@ -48,7 +49,11 @@ class PrefillP2200UforpensjonTest {
         prefillData = initialPrefillDataModel(SedType.P2200, personFnr, penSaksnummer = "22874955").apply {
             partSedAsJson["PersonInfo"] = readJsonResponse("other/person_informasjon_selvb.json")
         }
-        prefillSEDService = PrefillSEDService(dataFromPEN, EessiInformasjon(), prefillNav)
+        prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav)
+
+        val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
+        pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
+
 
     }
 
@@ -59,7 +64,7 @@ class PrefillP2200UforpensjonTest {
 
         assertNotNull(pendata.brukersSakerListe)
 
-        val P2200 = prefillSEDService.prefill(prefillData, persondataCollection)
+        val P2200 = prefillSEDService.prefill(prefillData, persondataCollection,pensjonCollection)
         val p2200Actual = P2200.toJsonSkipEmpty()
         assertNotNull(p2200Actual)
         assertEquals(SedType.P2200, P2200.type)

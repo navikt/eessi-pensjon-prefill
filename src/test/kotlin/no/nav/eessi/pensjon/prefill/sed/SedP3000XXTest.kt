@@ -25,6 +25,7 @@ class SedP3000XXTest {
 
     private val personFnr = FodselsnummerMother.generateRandomFnr(68)
     private lateinit var personDataCollection: PersonDataCollection
+    private lateinit var pensjonCollection: PensjonCollection
 
     @BeforeEach
     fun setupAndRunAtStart() {
@@ -40,31 +41,33 @@ class SedP3000XXTest {
             institutionnavn = "NOINST002, NO INST002, NO"
         )
 
-        prefillSEDService = PrefillSEDService(dataFromPEN, eessiInformasjon, prefillNav)
+        prefillSEDService = PrefillSEDService(eessiInformasjon, prefillNav)
     }
 
     @Test
     fun testP3000_AT() {
         val datamodel = getMockDataModel("P3000_AT", personFnr)
+        pensjonCollection = PensjonCollection(sedType = SedType.P3000_AT)
 
-        val sed = prefillSEDService.prefill(datamodel, personDataCollection)
+        val sed = prefillSEDService.prefill(datamodel, personDataCollection,pensjonCollection)
         Assertions.assertEquals(SedType.P3000_AT, sed.type)
     }
 
     @Test
     fun testP3000_IT() {
-
         val datamodel = getMockDataModel("P3000_IT", personFnr)
+        pensjonCollection = PensjonCollection(sedType = SedType.P3000_IT)
 
-        val sed = prefillSEDService.prefill(datamodel, personDataCollection)
+        val sed = prefillSEDService.prefill(datamodel, personDataCollection,pensjonCollection)
         Assertions.assertEquals(SedType.P3000_IT, sed.type)
     }
 
     @Test
     fun testP3000_SE() {
         val datamodel = getMockDataModel("P3000_SE", personFnr)
+        pensjonCollection = PensjonCollection(sedType = SedType.P3000_SE)
 
-        val sed = prefillSEDService.prefill(datamodel, personDataCollection)
+        val sed = prefillSEDService.prefill(datamodel, personDataCollection,pensjonCollection)
         Assertions.assertEquals(SedType.P3000_SE, sed.type)
     }
 

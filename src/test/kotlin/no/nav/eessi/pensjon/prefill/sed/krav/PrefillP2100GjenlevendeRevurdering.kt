@@ -32,6 +32,7 @@ class PrefillP2100GjenlevendeRevurdering {
     private lateinit var dataFromPEN: PensjonsinformasjonService
     private lateinit var prefillSEDService: PrefillSEDService
     private lateinit var prefillNav: PrefillPDLNav
+    private lateinit var pensjonCollection: PensjonCollection
 
     @BeforeEach
     fun setup() {
@@ -51,6 +52,9 @@ class PrefillP2100GjenlevendeRevurdering {
                 kravId = pesysKravid)
         dataFromPEN = lesPensjonsdataFraFil("P2100-GJENLEV-REVURDERING-M-KRAVID-INNV.xml")
 
+        val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
+        pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
+
         val person = PersonPDLMock.createWith(fornavn = "BAMSE ULUR", fnr = personFnr)
         val avdod = PersonPDLMock.createWith(fornavn = "BAMSE LUR", fnr = avdodPersonFnr, erDod = true)
         val persondataCollection = PersonDataCollection(
@@ -59,8 +63,8 @@ class PrefillP2100GjenlevendeRevurdering {
             gjenlevendeEllerAvdod = avdod
         )
 
-        prefillSEDService = PrefillSEDService(dataFromPEN, EessiInformasjon(), prefillNav)
-        val p2100 = prefillSEDService.prefill(prefillData, persondataCollection)
+        prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav)
+        val p2100 = prefillSEDService.prefill(prefillData, persondataCollection, pensjonCollection)
 
         val p2100gjenlev = SED(
                 type = SedType.P2100,

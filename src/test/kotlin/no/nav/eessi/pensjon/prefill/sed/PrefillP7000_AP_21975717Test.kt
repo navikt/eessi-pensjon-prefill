@@ -30,6 +30,7 @@ class PrefillP7000_AP_21975717Test {
     private lateinit var prefillData: PrefillDataModel
     private lateinit var prefillPDLNav: PrefillPDLNav
     private lateinit var personCollection: PersonDataCollection
+    private lateinit var pensjonCollection: PensjonCollection
 
     @BeforeEach
     fun setup() {
@@ -44,14 +45,15 @@ class PrefillP7000_AP_21975717Test {
             institutionid = "NO:noinst002",
             institutionnavn = "NOINST002, NO INST002, NO"
         )
-
+        pensjonCollection = PensjonCollection(sedType = SedType.P7000)
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P7000,penSaksnummer = "21975717", pinId = personFnr, vedtakId = "12312312")
     }
 
     @Test
     fun `forventet korrekt utfylt P7000 Melding om vedtakssammendrag med MockData fra testfiler`() {
-        val prefillSEDService = PrefillSEDService(pensjonInformasjonService, EessiInformasjon(), prefillPDLNav)
-        val p7000 = prefillSEDService.prefill(prefillData, personCollection) as P7000
+        val prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillPDLNav)
+
+        val p7000 = prefillSEDService.prefill(prefillData, personCollection, pensjonCollection) as P7000
 
         assertEquals("BALDER", p7000.nav?.ektefelle?.person?.etternavn)
         assertEquals("M", p7000.p7000Pensjon?.bruker?.person?.kjoenn)
@@ -65,8 +67,8 @@ class PrefillP7000_AP_21975717Test {
         val json = String(Files.readAllBytes(Paths.get(filepath)))
         assertTrue(validateJson(json))
 
-        val prefillSEDService = PrefillSEDService(pensjonInformasjonService, EessiInformasjon(), prefillPDLNav)
-        val p7000 = prefillSEDService.prefill(prefillData, personCollection)
+        val prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillPDLNav)
+        val p7000 = prefillSEDService.prefill(prefillData, personCollection, pensjonCollection)
 
         val sed = p7000.toJsonSkipEmpty()
 

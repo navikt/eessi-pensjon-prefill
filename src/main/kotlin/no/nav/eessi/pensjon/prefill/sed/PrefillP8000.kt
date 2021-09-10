@@ -37,7 +37,7 @@ class PrefillP8000(private val prefillSed: PrefillSed) {
 
         val kravhistorikkGjenlev = sak?.kravHistorikkListe?.let { hentKravhistorikkForGjenlevende(it) }
 
-
+        logger.debug("*** SAK: ${sak?.sakType}, referanseTilPerson: ${prefillData.refTilPerson}, gjenlevende: ${gjenlevendeBruker!= null} ***")
         return if (prefillData.refTilPerson == ReferanseTilPerson.SOKER && sak?.sakType in listOf(EPSaktype.ALDER.name, EPSaktype.UFOREP.name) && gjenlevendeBruker != null) {
             logger.info("Prefill P8000 forenklet preutfylling for gjenlevende uten avdød, Ferdig.")
             sedP8000(eessielm, gjenlevendeBruker.person, gjenlevendeBruker.adresse, prefillData, null)

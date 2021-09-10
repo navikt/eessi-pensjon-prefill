@@ -57,9 +57,11 @@ class PrefillP6000Pensjon_ALDER_Test {
     fun `forventet korrekt utfylling av Pensjon objekt på Alderpensjon`() {
         dataFromPEN = PrefillTestHelper.lesPensjonsdataVedtakFraFil("P6000-APUtland-301.xml")
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P6000, personFnr, penSaksnummer = "22580170", vedtakId = "12312312")
-        prefillSEDService = PrefillSEDService(dataFromPEN, eessiInformasjon, prefillNav)
+        prefillSEDService = PrefillSEDService(eessiInformasjon, prefillNav)
+        val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
+        val pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
 
-        val p6000 = prefillSEDService.prefill(prefillData, personDataCollection) as P6000
+        val p6000 = prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection) as P6000
         val p6000Pensjon = p6000.p6000Pensjon!!
 
         assertNotNull(p6000Pensjon.vedtak)
@@ -109,10 +111,12 @@ class PrefillP6000Pensjon_ALDER_Test {
     fun `preutfylling P6000 feiler ved mangler av vedtakId`() {
         dataFromPEN = PrefillTestHelper.lesPensjonsdataVedtakFraFil("P6000-AP-101.xml")
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P6000, personFnr, penSaksnummer = "22580170", vedtakId = "")
-        prefillSEDService = PrefillSEDService(dataFromPEN, eessiInformasjon, prefillNav)
+        prefillSEDService = PrefillSEDService(eessiInformasjon, prefillNav)
+        val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
 
         assertThrows<IkkeGyldigKallException> {
-            prefillSEDService.prefill(prefillData, personDataCollection)
+            innhentingService.hentPensjoninformasjonCollection(prefillData)
+//            prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection)
         }
     }
 
@@ -120,10 +124,13 @@ class PrefillP6000Pensjon_ALDER_Test {
     fun `feiler ved boddArbeidetUtland ikke sann`() {
         dataFromPEN = PrefillTestHelper.lesPensjonsdataVedtakFraFil("P6000-AP-101.xml")
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P6000, personFnr, penSaksnummer = "22580170", vedtakId = "12312312")
-        prefillSEDService = PrefillSEDService(dataFromPEN, eessiInformasjon, prefillNav)
+        prefillSEDService = PrefillSEDService(eessiInformasjon, prefillNav)
+        val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
+        val pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
+
 
         assertThrows<ResponseStatusException> {
-            prefillSEDService.prefill(prefillData, personDataCollection)
+            prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection)
         }
     }
 }

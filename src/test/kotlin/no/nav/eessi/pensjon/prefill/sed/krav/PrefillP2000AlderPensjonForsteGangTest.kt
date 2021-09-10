@@ -52,7 +52,7 @@ class PrefillP2000AlderPensjonForsteGangTest {
             partSedAsJson["PersonInfo"] = readJsonResponse("other/person_informasjon_selvb.json")
             partSedAsJson["P4000"] = readJsonResponse("other/p4000_trygdetid_part.json")
         }
-        prefillSEDService = PrefillSEDService(dataFromPEN, EessiInformasjon(), prefillNav)
+        prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav)
 
     }
 
@@ -69,7 +69,7 @@ class PrefillP2000AlderPensjonForsteGangTest {
     fun `Gitt at kravtype er FORSTEG_BH skal det kastes en exception`() {
 
         assertThrows<ResponseStatusException> {
-            prefillSEDService.prefill(prefillData, persondataCollection)
+            prefillSEDService.prefill(prefillData, persondataCollection, PensjonCollection(sedType = SedType.P2000))
         }
     }
 

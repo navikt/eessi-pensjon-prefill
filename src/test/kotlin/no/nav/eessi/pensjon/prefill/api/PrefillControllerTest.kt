@@ -21,6 +21,7 @@ import no.nav.eessi.pensjon.prefill.PrefillService
 import no.nav.eessi.pensjon.prefill.models.InstitusjonItem
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
+import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
@@ -81,7 +82,9 @@ class PrefillControllerTest {
             nav = nav
         )
 
-        every{mockPrefillSEDService.prefill(any(), any())} returns mockSed
+        every { pensjonsinformasjonService.hentVedtak(any()) } returns Pensjonsinformasjon()
+
+        every{ mockPrefillSEDService.prefill(any(), any(), any())} returns mockSed
 
         val response = prefillController.prefillDocument(mockData)
         Assertions.assertNotNull(response)

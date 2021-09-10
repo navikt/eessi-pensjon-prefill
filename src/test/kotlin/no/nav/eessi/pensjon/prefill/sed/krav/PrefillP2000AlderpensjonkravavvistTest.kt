@@ -35,6 +35,7 @@ class PrefillP2000AlderpensjonkravavvistTest {
     lateinit var prefillData: PrefillDataModel
     private lateinit var prefillSEDService: PrefillSEDService
     private lateinit var personDataCollection: PersonDataCollection
+    private lateinit var pensjonCollection: PensjonCollection
 
     @BeforeEach
     fun setup() {
@@ -51,18 +52,22 @@ class PrefillP2000AlderpensjonkravavvistTest {
 
 
         val dataFromPEN = lesPensjonsdataFraFil("P2000krav-alderpensjon-avslag.xml")
+        val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
 
         prefillData = initialPrefillDataModel(SedType.P2000, personFnr, penSaksnummer = pesysSaksnummer).apply {
             partSedAsJson["PersonInfo"] = readJsonResponse("other/person_informasjon_selvb.json")
             partSedAsJson["P4000"] = readJsonResponse("other/p4000_trygdetid_part.json")
         }
-        prefillSEDService = PrefillSEDService(dataFromPEN, EessiInformasjon(), prefillNav)
+
+        pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
+
+        prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav)
 
    }
 
     @Test
     fun `forventet korrekt utfylt P2000 alderpensjon med kap4 og 9`() {
-        val P2000 = prefillSEDService.prefill(prefillData, personDataCollection)
+        val P2000 = prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection)
 
         val P2000pensjon = SED(
                 type = SedType.P2000,
@@ -77,7 +82,7 @@ class PrefillP2000AlderpensjonkravavvistTest {
 
     @Test
     fun `forventet korrekt utfylt P2000 alderpersjon med mockdata fra testfiler`() {
-        val p2000 = prefillSEDService.prefill(prefillData, personDataCollection)
+        val p2000 = prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection)
 
         assertEquals(null, p2000.nav?.barn)
 
@@ -121,7 +126,7 @@ class PrefillP2000AlderpensjonkravavvistTest {
 
     @Test
     fun `testing av komplett P2000 med utskrift og testing av innsending`() {
-        val P2000 = prefillSEDService.prefill(prefillData, personDataCollection)
+        val P2000 = prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection)
 
         val json = createMockApiRequest("P2000", "P_BUC_01", P2000.toJson(), pesysSaksnummer).toJson()
         assertNotNull(json)

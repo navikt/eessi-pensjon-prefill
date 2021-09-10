@@ -54,9 +54,12 @@ class PrefillP2100UforePRevurdering {
         val personDataCollection = PersonPDLMock.createAvdodFamilie(personFnr, avdodPersonFnr)
         val dataFromPEN = lesPensjonsdataFraFil("P2100-UP-GJ-REVURD-M-KRAVID.xml")
 
-        prefillSEDService = PrefillSEDService(dataFromPEN, EessiInformasjon(), prefillNav)
+        val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
+        val pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
 
-        val p2100 = prefillSEDService.prefill(prefillData, personDataCollection)
+        prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav)
+
+        val p2100 = prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection)
 
         assertNotNull(p2100.nav?.krav)
         assertEquals("2020-08-01", p2100.nav?.krav?.dato)

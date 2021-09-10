@@ -142,6 +142,7 @@ class PensjonsinformasjonClient(
         val requestEntity = HttpEntity(requestBody, headers)
 
         val uriBuilder = UriComponentsBuilder.fromPath(path).pathSegment(id)
+        logger.debug("Pensjoninformasjon Uri: ${uriBuilder.toUriString()}")
 
         return metric.measure {
             return@measure try {

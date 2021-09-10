@@ -27,6 +27,7 @@ class PrefillP9000GLmedUtlandInnvTest {
     lateinit var prefillNav: PrefillPDLNav
     lateinit var prefillSEDService: PrefillSEDService
     private lateinit var personDataCollection: PersonDataCollection
+    private lateinit var pensjonCollection: PensjonCollection
 
     @BeforeEach
     fun setup() {
@@ -43,14 +44,16 @@ class PrefillP9000GLmedUtlandInnvTest {
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P9000, personFnr, penSaksnummer = pesysSaksnummer, avdod = PersonId(avdodPersonFnr, "112233445566"))
 
         val pensjonInformasjonService = PrefillTestHelper.lesPensjonsdataFraFil("KravAlderEllerUfore_AP_UTLAND.xml")
+        val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = pensjonInformasjonService)
 
-        prefillSEDService = PrefillSEDService(pensjonInformasjonService, EessiInformasjon(), prefillNav)
+        pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
+        prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav)
 
     }
 
     @Test
     fun `forventet korrekt utfylt P9000 med mockdata fra testfiler`() {
-        val p9000 = prefillSEDService.prefill(prefillData, personDataCollection)
+        val p9000 = prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection)
 
         assertEquals("BAMSE LUR", p9000.nav?.bruker?.person?.fornavn)
         assertEquals("MOMBALO", p9000.nav?.bruker?.person?.etternavn)

@@ -27,8 +27,10 @@ class PrefillP2200MedAlderSakTest {
     private lateinit var prefillData: PrefillDataModel
     private lateinit var dataFromPEN: PensjonsinformasjonService
     private lateinit var prefillSEDService: PrefillSEDService
+    private lateinit var innhentingService: InnhentingService
 
     private lateinit var personDataCollection: PersonDataCollection
+
 
     @BeforeEach
     fun setup() {
@@ -51,14 +53,20 @@ class PrefillP2200MedAlderSakTest {
 
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P2200, personFnr, penSaksnummer = pesysSaksnummer)
 
-        prefillSEDService = PrefillSEDService(dataFromPEN, EessiInformasjon(), prefillNav)
+        prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav)
+
+        innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
+        //val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
+        //pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
+
     }
 
     @Test
     fun `forventer exception - ikke relevant saktype for krav-SED - aldersak ikke relevant for P2200`() {
         assertThrows<FeilSakstypeForSedException> {
-            prefillSEDService.prefill(prefillData, personDataCollection)
+            innhentingService.hentPensjoninformasjonCollection(prefillData)
         }
     }
+
 }
 

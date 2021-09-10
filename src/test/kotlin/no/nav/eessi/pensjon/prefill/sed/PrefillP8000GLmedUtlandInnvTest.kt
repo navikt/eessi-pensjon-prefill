@@ -30,6 +30,7 @@ class PrefillP8000GLmedUtlandInnvTest {
     lateinit var prefill: PrefillP8000
     lateinit var prefillNav: PrefillPDLNav
     lateinit var personDataCollection: PersonDataCollection
+    lateinit var pensjonCollection: PensjonCollection
 
     lateinit var sed: SED
     lateinit var prefillSEDService: PrefillSEDService
@@ -49,9 +50,11 @@ class PrefillP8000GLmedUtlandInnvTest {
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P8000, personFnr, penSaksnummer = pesysSaksnummer, avdod = PersonId(avdodPersonFnr, "112233445566"))
 
         val pensjonInformasjonService = PrefillTestHelper.lesPensjonsdataFraFil("KravAlderEllerUfore_AP_UTLAND.xml")
+        val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = pensjonInformasjonService)
+        val pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
 
-        prefillSEDService = PrefillSEDService(pensjonInformasjonService, EessiInformasjon(), prefillNav)
-        sed = prefillSEDService.prefill(prefillData, personDataCollection)
+        prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav)
+        sed = prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection)
     }
 
     @Test

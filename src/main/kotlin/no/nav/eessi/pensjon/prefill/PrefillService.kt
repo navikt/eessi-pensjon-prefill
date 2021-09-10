@@ -32,12 +32,15 @@ class PrefillService(private val prefillSedService: PrefillSEDService,
             ignoreHttpCodes = listOf(HttpStatus.BAD_REQUEST, HttpStatus.FORBIDDEN))
     }
 
-    fun prefillSedtoJson(dataModel: PrefillDataModel, version: String, personDataCollection: PersonDataCollection): String {
+    fun prefillSedtoJson(dataModel: PrefillDataModel, version: String, personDataCollection: PersonDataCollection, pensjonCollection: PensjonCollection): String {
         return PrefillSed.measure {
             logger.info("******* Starter med preutfylling ******* $dataModel")
             try {
                 eessiRequire(dataModel.sedType.kanPrefilles() ) {"SedType ${dataModel.sedType} kan ikke prefilles!"}
-                val sed = prefillSedService.prefill(dataModel, personDataCollection)
+
+ //               innhent
+
+                val sed = prefillSedService.prefill(dataModel, personDataCollection,pensjonCollection)
 
                 logger.debug("SedType: ${sed.type.name}")
 
@@ -81,6 +84,6 @@ class PrefillService(private val prefillSedService: PrefillSEDService,
                 // ID og Navn på X005 er påkrevd må hente innn navn fra UI.
                 val datax005 = data.copy(avdod = null, sedType = SedType.X005, institution = listOf(it))
 
-                prefillSedService.prefill(datax005, personcollection)
+                prefillSedService.prefill(datax005, personcollection, PensjonCollection(sedType = SedType.X005))
             }
 }

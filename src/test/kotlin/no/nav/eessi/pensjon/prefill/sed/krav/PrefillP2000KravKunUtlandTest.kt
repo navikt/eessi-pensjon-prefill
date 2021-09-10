@@ -32,6 +32,7 @@ class PrefillP2000KravKunUtlandTest {
     lateinit var prefillSEDService: PrefillSEDService
 
     private lateinit var persondataCollection: PersonDataCollection
+    private lateinit var pensjonCollection: PensjonCollection
 
     @BeforeEach
     fun setup() {
@@ -51,7 +52,11 @@ class PrefillP2000KravKunUtlandTest {
             partSedAsJson["PersonInfo"] = readJsonResponse("other/person_informasjon_selvb.json")
             partSedAsJson["P4000"] = readJsonResponse("other/p4000_trygdetid_part.json")
         }
-        prefillSEDService = PrefillSEDService(dataFromPEN, EessiInformasjon(), prefillNav)
+
+        val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
+
+        pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
+        prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav)
 
     }
 
@@ -70,7 +75,7 @@ class PrefillP2000KravKunUtlandTest {
 
         val expected = "Søknad gjelder Førstegangsbehandling kun utland. Se egen rutine på navet"
         try {
-            prefillSEDService.prefill(prefillData, persondataCollection)
+            prefillSEDService.prefill(prefillData, persondataCollection, pensjonCollection)
         } catch (ex: ResponseStatusException) {
             assertEquals(expected, ex.reason)
         }

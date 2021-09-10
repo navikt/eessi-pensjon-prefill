@@ -77,39 +77,77 @@ class InnhentingService(
 
     fun hentIdent(aktoerId: IdentType.AktoerId, norskIdent: NorskIdent): String = personDataService.hentIdent(aktoerId, norskIdent).id
 
-    fun hentPensjoninformasjon(prefillData: PrefillDataModel): PensjonCollection {
-        return PensjonCollection(
-            vedtak = hentVedtak(prefillData),
-            sak = hentSak(prefillData)
-        )
-    }
+    fun hentPensjoninformasjonCollection(prefillData: PrefillDataModel): PensjonCollection {
+        val sedType = prefillData.sedType
+        return when (sedType) {
 
-    fun hentVedtak(prefillData: PrefillDataModel): Pensjonsinformasjon? {
-        return try { prefillData.vedtakId?.let { vedtakid -> pensjonsinformasjonService.hentVedtak(vedtakid) }
-            } catch (ex: Exception) {
-                logger.error("Error henting av vedtak", ex)
-                throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Mangler vedtakID")
+            SedType.P2000 -> {
+                PensjonCollection(sak = hentRelevantPensjonSak(prefillData) { pensakType -> pensakType == EPSaktype.ALDER.name }, vedtak = hentRelevantVedtak(prefillData), sedType = sedType)
             }
-    }
 
-    fun hentSak(prefillData: PrefillDataModel): V1Sak? {
-        val aktorId = prefillData.bruker.aktorId
-        val penSaksnummer = prefillData.penSaksnummer
+            SedType.P2200 -> {
+                PensjonCollection(sak = hentRelevantPensjonSak(prefillData) { pensakType -> pensakType == EPSaktype.UFOREP.name }, vedtak = hentRelevantVedtak(prefillData), sedType = sedType)
+            }
 
-        val pensjoninformasjon = try {
-            pensjonsinformasjonService.hentPensjonInformasjon(aktorId)
-        } catch (ex: Exception) {
-            logger.error("Error henting av pensjoninformasjon aktoerid", ex)
-            throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Ingen pensjoninformasjon funnet")
+            SedType.P2100 -> {
+                PensjonCollection(sak = hentRelevantPensjonSak(prefillData) { pensakType ->
+                    listOf(
+                        EPSaktype.ALDER.name, EPSaktype.BARNEP.name, EPSaktype.GJENLEV.name, EPSaktype.UFOREP.name
+                    ).contains(pensakType)
+                }, vedtak = hentRelevantVedtak(prefillData), sedType = sedType)
+            }
+
+            SedType.P6000 ->  PensjonCollection(pensjoninformasjon = pensjonsinformasjonService.hentVedtak(hentVedtak(prefillData)), sedType = sedType)
+
+            SedType.P8000 -> {
+                if (prefillData.buc == "P_BUC_05") {
+                        try {
+                            val sak = hentRelevantPensjonSak(prefillData) { pensakType -> listOf("ALDER", "BARNEP", "GJENLEV", "UFOREP", "GENRL", "OMSORG").contains(pensakType) }
+                            PensjonCollection(sak = sak , sedType = sedType)
+                        } catch (ex: Exception) {
+                            logger.warn("Ingen pensjon!", ex)
+                            PensjonCollection(sedType = sedType)
+                        }
+                } else {
+                    PensjonCollection(sedType = sedType)
+                }
+            }
+
+            SedType.P15000 -> {
+                PensjonCollection(pensjoninformasjon = hentRelevantPensjonsinformasjon(prefillData), sak = hentRelevantPensjonSak(prefillData) { pensakType ->
+                    listOf("ALDER", "BARNEP", "GJENLEV", "UFOREP", "GENRL", "OMSORG").contains(pensakType) }, sedType = sedType)
+            }
+
+
+            else -> PensjonCollection(sedType = prefillData.sedType)
         }
-
-        logger.info("Søker brukersSakerListe etter sakId: $penSaksnummer")
-        val v1saklist = pensjoninformasjon.brukersSakerListe.brukersSakerListe
-        return v1saklist.firstOrNull { sak -> "${sak.sakId}" == penSaksnummer  }
     }
 
+    fun hentVedtak(prefillData: PrefillDataModel): String {
+        val vedtakId = prefillData.vedtakId
+        vedtakId?.let {
+            return it
+        }
+        throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Mangler vedtakID")
+    }
 
+    fun hentRelevantPensjonSak(prefillData: PrefillDataModel, akseptabelSakstypeForSed: (String) -> Boolean): V1Sak? {
+        logger.debug("sakNr er: ${prefillData.penSaksnummer} aktoerId er: ${prefillData.bruker.aktorId} prøver å hente Sak")
+        return pensjonsinformasjonService.hentRelevantPensjonSak(prefillData, akseptabelSakstypeForSed)
+    }
 
+    private fun hentRelevantVedtak(prefillData: PrefillDataModel): V1Vedtak? {
+        prefillData.vedtakId.let {
+            logger.debug("vedtakId er: $it, prøver å hente vedtaket")
+            return pensjonsinformasjonService.hentRelevantVedtakHvisFunnet(it ?: "")
+        }
+    }
 
+    private fun hentRelevantPensjonsinformasjon(prefillData: PrefillDataModel): Pensjonsinformasjon? {
+        return prefillData.vedtakId?.let {
+            logger.debug("vedtakid er: $it, prøver å hente pensjonsinformasjon for vedtaket")
+            pensjonsinformasjonService.hentMedVedtak(it)
+        }
+    }
 
 }

@@ -40,8 +40,7 @@ class PrefillP8000P_BUC_05Test {
     lateinit var prefillData: PrefillDataModel
     lateinit var prefillNav: PrefillPDLNav
     lateinit var personDataCollection: PersonDataCollection
-
-    var pensjoninformasjonservice: PensjonsinformasjonService = mockk()
+    lateinit var pensjonCollection: PensjonCollection
 
     var kodeverkClient: KodeverkClient = mockk()
 
@@ -58,7 +57,8 @@ class PrefillP8000P_BUC_05Test {
                 institutionid = "NO:noinst002",
                 institutionnavn = "NOINST002, NO INST002, NO")
 
-        prefillSEDService = PrefillSEDService(pensjoninformasjonservice, EessiInformasjon(), prefillNav)
+
+        prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav)
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P8000, personFnr, penSaksnummer = pesysSaksnummer)
 
     }
@@ -69,10 +69,11 @@ class PrefillP8000P_BUC_05Test {
 
         val personforsikret = LagPDLPerson.lagPerson(fnr, "Christopher", "Robin")
             .medUtlandAdresse("LUNGJTEGATA 12", "1231" , "SWE")
-
         personDataCollection = PersonDataCollection(personforsikret,personforsikret)
 
-        val p8000 = prefillSEDService.prefill(prefillData, personDataCollection)
+        val pensjonCollection = PensjonCollection(sedType = SedType.P8000)
+
+        val p8000 = prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection)
 
         assertEquals("Christopher", p8000.nav?.bruker?.person?.fornavn)
         assertEquals("LUNGJTEGATA 12", p8000.nav?.bruker?.adresse?.gate)
@@ -95,10 +96,11 @@ class PrefillP8000P_BUC_05Test {
             .medAdresse("Gate")
 
         personDataCollection = PersonDataCollection(avdod, forsikretPerson)
+        pensjonCollection = PensjonCollection(sedType = SedType.P8000)
 
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P8000, fnr, penSaksnummer = pesysSaksnummer, avdod = PersonId(norskIdent = avdodFnr, aktorId = "21323"),  refTilPerson = ReferanseTilPerson.AVDOD)
 
-        val p8000 =  prefillSEDService.prefill(prefillData, personDataCollection) as P8000
+        val p8000 =  prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection) as P8000
 
         //daua person
         assertEquals("Winnie", p8000.nav?.bruker?.person?.fornavn)
@@ -126,8 +128,9 @@ class PrefillP8000P_BUC_05Test {
         personDataCollection = PersonDataCollection(avdod, forsikretPerson)
 
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P8000, fnr, penSaksnummer = pesysSaksnummer, avdod = PersonId(norskIdent = avdodFnr, aktorId = "21323"), refTilPerson = ReferanseTilPerson.SOKER )
+        pensjonCollection = PensjonCollection(sedType = SedType.P8000)
 
-        val p8000 =  prefillSEDService.prefill(prefillData, personDataCollection) as P8000
+        val p8000 =  prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection) as P8000
 
         //daua person
         assertEquals("Winnie", p8000.nav?.bruker?.person?.fornavn)
@@ -165,11 +168,11 @@ class PrefillP8000P_BUC_05Test {
         sak.kravHistorikkListe = V1KravHistorikkListe()
         sak.kravHistorikkListe.kravHistorikkListe.add(v1Kravhistorikk)
 
-        every{pensjoninformasjonservice.hentRelevantPensjonSak(any(), any())} returns sak
+        val pensjonCollection = PensjonCollection(sak = sak, sedType = SedType.P8000)
 
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P8000, fnr, penSaksnummer = "100", avdod = PersonId(norskIdent = avdodFnr, aktorId = "21323"),  refTilPerson = ReferanseTilPerson.SOKER, bucType = "P_BUC_05")
 
-        val p8000 =  prefillSEDService.prefill(prefillData, personDataCollection)
+        val p8000 =  prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection)
 
         val expected = """
             {
@@ -235,11 +238,11 @@ class PrefillP8000P_BUC_05Test {
         sak.kravHistorikkListe = V1KravHistorikkListe()
         sak.kravHistorikkListe.kravHistorikkListe.add(v1Kravhistorikk)
 
-        every{pensjoninformasjonservice.hentRelevantPensjonSak(any(), any())} returns sak
+        val pensjonCollection = PensjonCollection(sak = sak, sedType = SedType.P8000)
 
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P8000, fnr, penSaksnummer = "100", avdod = PersonId(norskIdent = avdodFnr, aktorId = "21323"),  refTilPerson = ReferanseTilPerson.SOKER, bucType = "P_BUC_05")
 
-        val p8000 =  prefillSEDService.prefill(prefillData, personDataCollection)
+        val p8000 =  prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection)
 
         val expected = """
             {

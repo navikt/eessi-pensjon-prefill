@@ -47,7 +47,7 @@ class PrefillServiceTest {
                 InstitusjonItem(country = "DE", institution = "Tyskland", name="Tyskland test")
         )
         val x005sed = generateMockX005(data)
-        every { mockPrefillSEDService.prefill(any(), any()) } returns x005sed
+        every { mockPrefillSEDService.prefill(any(), any(), any()) } returns x005sed
         val x005Liste = prefillService.prefillEnX005ForHverInstitusjon(mockInstitusjonList, data, personcollection)
         assertEquals(x005Liste.size, 2)
     }
@@ -63,7 +63,7 @@ class PrefillServiceTest {
         val datax005 = data.copy(avdod = null, sedType = SedType, institution = listOf(de))
         val x005sed = generateMockX005(datax005)
 
-        every{mockPrefillSEDService.prefill(any(), any())} returns x005sed
+        every{mockPrefillSEDService.prefill(any(), any(), any())} returns x005sed
 
         val mockInstitusjonList = listOf(de)
         val x005Liste = prefillService.prefillEnX005ForHverInstitusjon(mockInstitusjonList, data, personcollection)

@@ -36,6 +36,7 @@ class PrefillP2000_AP_LOP_REVUTest {
     lateinit var dataFromPEN: PensjonsinformasjonService
     lateinit var prefillSEDService: PrefillSEDService
     lateinit var persondataCollection: PersonDataCollection
+    lateinit var pensjonCollection: PensjonCollection
 
     @BeforeEach
     fun setup() {
@@ -57,13 +58,15 @@ class PrefillP2000_AP_LOP_REVUTest {
             partSedAsJson["P4000"] = readJsonResponse("other/p4000_trygdetid_part.json")
 
         }
-        prefillSEDService = PrefillSEDService(dataFromPEN, EessiInformasjon(), prefillNav)
+        val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
+        pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
+        prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav)
 
     }
 
     @Test
     fun `forventet korrekt utfylt P2000 alderpensjon med kap4 og 9`() {
-        val sed = prefillSEDService.prefill(prefillData, persondataCollection)
+        val sed = prefillSEDService.prefill(prefillData, persondataCollection,pensjonCollection)
         assertNotNull(sed.nav?.krav)
         assertEquals("2018-06-05", sed.nav?.krav?.dato)
 
@@ -72,7 +75,7 @@ class PrefillP2000_AP_LOP_REVUTest {
 
     @Test
     fun `forventet korrekt utfylt P2000 alderpersjon med mockdata fra testfiler`() {
-        val p2000 = prefillSEDService.prefill(prefillData, persondataCollection)
+        val p2000 = prefillSEDService.prefill(prefillData, persondataCollection,pensjonCollection)
 
         assertEquals(null, p2000.nav?.barn)
 
@@ -108,7 +111,7 @@ class PrefillP2000_AP_LOP_REVUTest {
 
     @Test
     fun `testing av komplett P2000 med utskrift og testing av innsending`() {
-        val P2000 = prefillSEDService.prefill(prefillData, persondataCollection)
+        val P2000 = prefillSEDService.prefill(prefillData, persondataCollection,pensjonCollection)
 
         val json = mapAnyToJson(createMockApiRequest("P2000", "P_BUC_01", P2000.toJson()))
         assertNotNull(json)

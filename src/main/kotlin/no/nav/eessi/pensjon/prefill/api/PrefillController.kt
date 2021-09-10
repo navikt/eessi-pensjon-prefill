@@ -31,8 +31,8 @@ class PrefillController(
         val dataModel = ApiRequest.buildPrefillDataModelOnExisting(request, norskIdent, innhentingService.getAvdodAktoerIdPDL(request))
 
         val personcollection = innhentingService.hentPersonData(dataModel)
-        val pensjonCollection = innhentingService.hentPensjoninformasjon(dataModel)
+        val pensjonCollection = innhentingService.hentPensjoninformasjonCollection(dataModel)
 
-        return prefillService.prefillSedtoJson(dataModel, "v4.2", personcollection)
+        return prefillService.prefillSedtoJson(dataModel, "v4.2", personcollection, pensjonCollection)
     }
 }

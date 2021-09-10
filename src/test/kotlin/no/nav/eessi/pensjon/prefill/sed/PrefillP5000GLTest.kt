@@ -49,9 +49,12 @@ class PrefillP5000GLTest {
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P5000, personFnr, penSaksnummer = pesysSaksnummer, avdod = PersonId(avdodPersonFnr, "112233445566"))
 
         val pensjonInformasjonService = PrefillTestHelper.lesPensjonsdataFraFil("KravAlderEllerUfore_AP_UTLAND.xml")
+        val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = pensjonInformasjonService)
 
-        prefillSEDService = PrefillSEDService(pensjonInformasjonService, EessiInformasjon(), prefillNav)
-        p5000 = prefillSEDService.prefill(prefillData, personDataCollection) as P5000
+        val pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
+
+        prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav)
+        p5000 = prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection) as P5000
     }
 
     @Test

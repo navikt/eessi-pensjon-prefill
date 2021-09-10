@@ -32,6 +32,7 @@ class PrefillP2000UtenKravhistorieTest {
     private lateinit var dataFromPEN: PensjonsinformasjonService
     private lateinit var prefillSEDService: PrefillSEDService
     private lateinit var personDataCollection: PersonDataCollection
+    private lateinit var pensjonCollection: PensjonCollection
 
     @BeforeEach
     fun setup() {
@@ -51,7 +52,10 @@ class PrefillP2000UtenKravhistorieTest {
             partSedAsJson["PersonInfo"] = readJsonResponse("other/person_informasjon_selvb.json")
             partSedAsJson["P4000"] = readJsonResponse("other/p4000_trygdetid_part.json")
         }
-        prefillSEDService = PrefillSEDService(dataFromPEN, EessiInformasjon(), prefillNav)
+        val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
+        pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
+
+        prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav)
     }
 
     @Test
@@ -68,7 +72,7 @@ class PrefillP2000UtenKravhistorieTest {
     @Test
     fun `Preutfylling P2000 uten kravdato skal feile`() {
         val ex = assertThrows<Exception> {
-            prefillSEDService.prefill(prefillData, personDataCollection)
+            prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection)
         }
         assertEquals("400 BAD_REQUEST \"Det finnes ingen iverksatte vedtak for førstegangsbehandling kun utland. Vennligst gå til EESSI-Pensjon fra vedtakskontekst.\"", ex.message)
     }

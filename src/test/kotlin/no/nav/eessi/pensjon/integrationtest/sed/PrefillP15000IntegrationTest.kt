@@ -90,6 +90,7 @@ class PrefillP15000IntegrationTest {
         banrepSak.sakId = 22915555L
         banrepSak.status = "INNV"
 
+        every { pensjoninformasjonservice.hentRelevantVedtakHvisFunnet(any()) } returns null
         every { pensjoninformasjonservice.hentRelevantPensjonSak(any(), any()) } returns banrepSak
 
         val pensjonsinformasjon = Pensjonsinformasjon()

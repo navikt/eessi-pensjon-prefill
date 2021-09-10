@@ -54,9 +54,11 @@ class P6000AlderpensjonAvslagTest {
     fun `forventet korrekt utfylling av pensjon objekt på alderpensjon med avslag`() {
         dataFromPEN = PrefillTestHelper.lesPensjonsdataVedtakFraFil("P6000vedtak-alderpensjon-avslag.xml")
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P6000, personFnr, penSaksnummer = "22580170", vedtakId = "12312312")
-        prefillSEDService = PrefillSEDService(dataFromPEN, eessiInformasjon, prefillNav)
+        prefillSEDService = PrefillSEDService(eessiInformasjon, prefillNav)
+        val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
+        val pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
 
-        val p6000 = prefillSEDService.prefill(prefillData, personDataCollection) as P6000
+        val p6000 = prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection) as P6000
         val p6000Pensjon = p6000.p6000Pensjon
 
         val vedtak = p6000Pensjon?.vedtak?.get(0)
@@ -79,9 +81,11 @@ class P6000AlderpensjonAvslagTest {
     fun `forventet korrekt utfylling av pensjon objekt på alderpensjon med avslag under 1 arr`() {
         dataFromPEN = PrefillTestHelper.lesPensjonsdataVedtakFraFil("P6000-AP-Under1aar-Avslag.xml")
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P6000, personFnr, penSaksnummer = "22580170", vedtakId = "12312312")
-        prefillSEDService = PrefillSEDService(dataFromPEN, eessiInformasjon, prefillNav)
+        prefillSEDService = PrefillSEDService(eessiInformasjon, prefillNav)
+        val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
+        val pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
 
-        val p6000 = prefillSEDService.prefill(prefillData, personDataCollection) as P6000
+        val p6000 = prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection) as P6000
         val result = p6000.p6000Pensjon!!
 
         val vedtak = result.vedtak?.get(0)
@@ -104,9 +108,11 @@ class P6000AlderpensjonAvslagTest {
     fun `forventet korrekt utfylling av pensjon objekt på alderpensjon med avslag under 3 arr`() {
         dataFromPEN = PrefillTestHelper.lesPensjonsdataVedtakFraFil("P6000-AP-Avslag.xml")
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P6000, personFnr, penSaksnummer = "22580170", vedtakId = "12312312")
-        prefillSEDService = PrefillSEDService(dataFromPEN, eessiInformasjon, prefillNav)
+        prefillSEDService = PrefillSEDService(eessiInformasjon, prefillNav)
+        val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
+        val pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
 
-        val p6000 = prefillSEDService.prefill(prefillData, personDataCollection) as P6000
+        val p6000 = prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection) as P6000
         val result = p6000.p6000Pensjon!!
 
         val vedtak = result.vedtak?.get(0)
@@ -130,10 +136,12 @@ class P6000AlderpensjonAvslagTest {
     fun `preutfylling P6000 feiler ved mangler av vedtakId`() {
         dataFromPEN = PrefillTestHelper.lesPensjonsdataVedtakFraFil("P6000vedtak-alderpensjon-avslag.xml")
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P6000, personFnr, penSaksnummer = "22580170", vedtakId = "")
-        prefillSEDService = PrefillSEDService(dataFromPEN, eessiInformasjon, prefillNav)
+        prefillSEDService = PrefillSEDService(eessiInformasjon, prefillNav)
+        val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
+        //val pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
 
         assertThrows<ResponseStatusException> {
-            prefillSEDService.prefill(prefillData, personDataCollection)
+            innhentingService.hentPensjoninformasjonCollection(prefillData)
         }
     }
 }

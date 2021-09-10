@@ -30,6 +30,7 @@ class PrefillP2000MedUforeSakTest {
     lateinit var dataFromPEN: PensjonsinformasjonService
     lateinit var prefillSEDService: PrefillSEDService
     private lateinit var personDataCollection: PersonDataCollection
+    private lateinit var pensjonCollection: PensjonCollection
 
     @BeforeEach
     fun setup() {
@@ -48,13 +49,16 @@ class PrefillP2000MedUforeSakTest {
 
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P2000, personFnr, penSaksnummer = pesysSaksnummer)
 
-        prefillSEDService = PrefillSEDService(dataFromPEN, EessiInformasjon(), prefillNav)
+
+        prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav)
     }
 
     @Test
     fun `forventer exception - ikke relevant saktype for krav-SED - uforesak ikke relevant for P2000`() {
+        val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
+
         assertThrows<FeilSakstypeForSedException> {
-            prefillSEDService.prefill(prefillData, personDataCollection)
+              innhentingService.hentPensjoninformasjonCollection(prefillData)
         }
     }
 }

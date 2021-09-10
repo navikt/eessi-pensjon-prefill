@@ -271,11 +271,12 @@ class SedPrefillP8000IntegrationSpringTest {
 
         val sak = V1Sak()
         sak.sakType = EPSaktype.ALDER.toString()
-        sak.sakId = 100
+        sak.sakId = 21337890
         sak.kravHistorikkListe = V1KravHistorikkListe()
         sak.kravHistorikkListe.kravHistorikkListe.add(v1Kravhistorikk)
 
         every { pensjoninformasjonservice.hentRelevantPensjonSak(any(), any()) } returns sak
+
         every { kodeverkClient.finnLandkode(any()) } returns "QX"
 
         val subject = dummyApiSubjectjson(FNR_VOKSEN_4)
@@ -344,7 +345,6 @@ class SedPrefillP8000IntegrationSpringTest {
         sak.sakId = 100
         sak.kravHistorikkListe = V1KravHistorikkListe()
         sak.kravHistorikkListe.kravHistorikkListe.add(v1Kravhistorikk)
-
         every { pensjoninformasjonservice.hentRelevantPensjonSak(any(), any()) } returns sak
         every { personService.hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_BARN)
         every { personService.hentIdent(IdentType.AktoerId, NorskIdent(FNR_VOKSEN_4)) } returns AktoerId(AKTOER_ID_2)
