@@ -4,12 +4,12 @@ import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
 import no.nav.eessi.pensjon.UnsecuredWebMvcTestLauncher
 import no.nav.eessi.pensjon.eux.model.sed.SedType
-import no.nav.eessi.pensjon.fagmodul.prefill.PersonPDLMock
-import no.nav.eessi.pensjon.fagmodul.prefill.sed.PrefillTestHelper
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
 import no.nav.eessi.pensjon.personoppslag.pdl.model.AktoerId
 import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentType
 import no.nav.eessi.pensjon.personoppslag.pdl.model.NorskIdent
+import no.nav.eessi.pensjon.prefill.PersonPDLMock
+import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper
 import no.nav.eessi.pensjon.security.sts.STSService
 import no.nav.eessi.pensjon.services.kodeverk.KodeverkClient
 import org.junit.jupiter.api.Test

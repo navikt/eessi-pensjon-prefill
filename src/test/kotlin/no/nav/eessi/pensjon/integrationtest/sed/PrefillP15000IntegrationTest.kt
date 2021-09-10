@@ -4,9 +4,6 @@ import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
 import no.nav.eessi.pensjon.UnsecuredWebMvcTestLauncher
 import no.nav.eessi.pensjon.eux.model.sed.SedType
-import no.nav.eessi.pensjon.fagmodul.models.KravType
-import no.nav.eessi.pensjon.fagmodul.prefill.PersonPDLMock
-import no.nav.eessi.pensjon.fagmodul.prefill.pen.PensjonsinformasjonService
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
 import no.nav.eessi.pensjon.personoppslag.pdl.model.AktoerId
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Folkeregistermetadata
@@ -16,6 +13,9 @@ import no.nav.eessi.pensjon.personoppslag.pdl.model.KontaktinformasjonForDoedsbo
 import no.nav.eessi.pensjon.personoppslag.pdl.model.KontaktinformasjonForDoedsboSkifteform
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Metadata
 import no.nav.eessi.pensjon.personoppslag.pdl.model.NorskIdent
+import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
+import no.nav.eessi.pensjon.prefill.PersonPDLMock
+import no.nav.eessi.pensjon.prefill.models.KravType
 import no.nav.eessi.pensjon.security.sts.STSService
 import no.nav.eessi.pensjon.services.kodeverk.KodeverkClient
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.EPSaktype
