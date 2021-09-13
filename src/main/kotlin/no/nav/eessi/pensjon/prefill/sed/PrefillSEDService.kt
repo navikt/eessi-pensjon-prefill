@@ -2,23 +2,16 @@ package no.nav.eessi.pensjon.prefill.sed
 
 import no.nav.eessi.pensjon.eux.model.sed.SED
 import no.nav.eessi.pensjon.eux.model.sed.SedType
-import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
+import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
+import no.nav.eessi.pensjon.prefill.models.PensjonCollection
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModel
-import no.nav.eessi.pensjon.prefill.models.eessi.EessiInformasjon
-import no.nav.eessi.pensjon.prefill.models.person.PrefillPDLNav
-import no.nav.eessi.pensjon.prefill.models.person.PrefillSed
+import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
+import no.nav.eessi.pensjon.prefill.person.PrefillSed
 import no.nav.eessi.pensjon.prefill.sed.krav.PrefillP2000
 import no.nav.eessi.pensjon.prefill.sed.krav.PrefillP2100
 import no.nav.eessi.pensjon.prefill.sed.krav.PrefillP2200
 import no.nav.eessi.pensjon.prefill.sed.vedtak.PrefillP6000
-import no.nav.eessi.pensjon.services.pensjonsinformasjon.EPSaktype.ALDER
-import no.nav.eessi.pensjon.services.pensjonsinformasjon.EPSaktype.BARNEP
-import no.nav.eessi.pensjon.services.pensjonsinformasjon.EPSaktype.GJENLEV
-import no.nav.eessi.pensjon.services.pensjonsinformasjon.EPSaktype.UFOREP
-import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
-import no.nav.pensjon.v1.sak.V1Sak
-import no.nav.pensjon.v1.vedtak.V1Vedtak
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -26,16 +19,11 @@ import org.springframework.stereotype.Component
 import org.springframework.web.server.ResponseStatusException
 
 @Component
-class PrefillSEDService(
-    private val pensjonsinformasjonService: PensjonsinformasjonService,
-    private val eessiInformasjon: EessiInformasjon,
-    private val prefillPDLnav: PrefillPDLNav
-) {
-    //@Value("\${ENV}") val environment: String = "q2"
+class PrefillSEDService(private val eessiInformasjon: EessiInformasjon, private val prefillPDLnav: PrefillPDLNav) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillSEDService::class.java) }
 
-    fun prefill(prefillData: PrefillDataModel, personDataCollection: PersonDataCollection): SED {
+    fun prefill(prefillData: PrefillDataModel, personDataCollection: PersonDataCollection, pensjonCollection: PensjonCollection): SED {
 
         val sedType = prefillData.sedType
 
@@ -43,35 +31,43 @@ class PrefillSEDService(
 
         return when (sedType) {
             //krav
-            SedType.P2000 -> PrefillP2000(prefillPDLnav).prefillSed(
-                prefillData,
-                personDataCollection,
-                hentRelevantPensjonSak(prefillData) { pensakType -> pensakType == ALDER.name },
-                hentRelevantVedtak(prefillData)
-            )
+            SedType.P2000 -> {
+                PrefillP2000(prefillPDLnav).prefillSed(
+                    prefillData,
+                    personDataCollection,
+                    pensjonCollection.sak,
+                    pensjonCollection.vedtak
+                )
+            }
+
             SedType.P2200 -> PrefillP2200(prefillPDLnav).prefill(
                 prefillData,
                 personDataCollection,
-                hentRelevantPensjonSak(prefillData) { pensakType -> pensakType == UFOREP.name },
-                hentRelevantVedtak(prefillData)
+                pensjonCollection.sak,
+                pensjonCollection.vedtak
             )
             SedType.P2100 -> {
-                val sedpair = PrefillP2100(prefillPDLnav).prefillSed(prefillData, personDataCollection, hentRelevantPensjonSak(prefillData) { pensakType ->
-                    listOf(
-                        ALDER.name, BARNEP.name, GJENLEV.name, UFOREP.name
-                    ).contains(pensakType)
-                })
+                val sedpair = PrefillP2100(prefillPDLnav).prefillSed(
+                    prefillData,
+                    personDataCollection,
+                    pensjonCollection.sak
+                    )
                 prefillData.melding = sedpair.first
                 sedpair.second
             }
 
             //vedtak
-            SedType.P6000 -> PrefillP6000(prefillPDLnav, eessiInformasjon, pensjonsinformasjonService.hentVedtak(hentVedtak(prefillData))).prefill(
+            SedType.P6000 -> PrefillP6000(
+                    prefillPDLnav,
+                    eessiInformasjon,
+                    pensjonCollection.pensjoninformasjon ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Ingen vedtak")
+                ).prefill(
                 prefillData,
                 personDataCollection
             )
             SedType.P5000 -> PrefillP5000(PrefillSed(prefillPDLnav)).prefill(prefillData, personDataCollection)
             SedType.P4000 -> PrefillP4000(PrefillSed(prefillPDLnav)).prefill(prefillData, personDataCollection)
+
             SedType.P7000 -> {
                 if (prefillData.partSedAsJson[SedType.P7000.name] != null && prefillData.partSedAsJson[SedType.P7000.name] != "{}") {
                     logger.info("P7000mk2 preutfylling med data fra P6000..")
@@ -84,12 +80,12 @@ class PrefillSEDService(
 
             SedType.P8000 -> {
                 if (prefillData.buc == "P_BUC_05") {
-                    try {
-                        PrefillP8000(PrefillSed(prefillPDLnav)).prefill(prefillData, personDataCollection, hentRelevantPensjonSak(prefillData) { pensakType -> listOf("ALDER", "BARNEP", "GJENLEV", "UFOREP", "GENRL", "OMSORG").contains(pensakType) })
-                    } catch (ex: Exception) {
-                        logger.error(ex.message)
-                        PrefillP8000(PrefillSed(prefillPDLnav)).prefill(prefillData, personDataCollection, null)
-                    }
+                    PrefillP8000(PrefillSed(prefillPDLnav)).prefill(prefillData, personDataCollection, pensjonCollection.sak)
+//                    try {
+//                    } catch (ex: Exception) {
+//                        logger.error(ex.message)
+//                        PrefillP8000(PrefillSed(prefillPDLnav)).prefill(prefillData, personDataCollection, null)
+//                    }
                 } else {
                     PrefillP8000(PrefillSed(prefillPDLnav)).prefill(prefillData, personDataCollection, null)
                 }
@@ -98,8 +94,8 @@ class PrefillSEDService(
             SedType.P15000 -> PrefillP15000(PrefillSed(prefillPDLnav)).prefill(
                 prefillData,
                 personDataCollection,
-                hentRelevantPensjonSak(prefillData) { pensakType -> listOf("ALDER", "BARNEP", "GJENLEV", "UFOREP", "GENRL", "OMSORG").contains(pensakType) },
-                hentRelevantPensjonsinformasjon(prefillData)
+                pensjonCollection.sak,
+                pensjonCollection.pensjoninformasjon
             )
 
             SedType.P10000 -> PrefillP10000(prefillPDLnav).prefill(
@@ -126,40 +122,12 @@ class PrefillSEDService(
                 personDataCollection
             )
 
-
             SedType.H020, SedType.H021 -> PrefillH02X(prefillPDLnav).prefill(prefillData, personDataCollection)
 
             else ->
                 //P3000_SE, PL, DK, DE, UK, med flere vil gå denne veien..
                 //P9000, P14000, P15000.. med flere..
                 PrefillSed(prefillPDLnav).prefill(prefillData, personDataCollection)
-        }
-    }
-
-    fun hentVedtak(prefillData: PrefillDataModel): String {
-        val vedtakId = prefillData.vedtakId
-        vedtakId?.let {
-            return it
-        }
-        throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Mangler vedtakID")
-    }
-
-    fun hentRelevantPensjonSak(prefillData: PrefillDataModel, akseptabelSakstypeForSed: (String) -> Boolean): V1Sak? {
-        logger.debug("sakNr er: ${prefillData.penSaksnummer} aktoerId er: ${prefillData.bruker.aktorId} prøver å hente Sak")
-        return pensjonsinformasjonService.hentRelevantPensjonSak(prefillData, akseptabelSakstypeForSed)
-    }
-
-    private fun hentRelevantVedtak(prefillData: PrefillDataModel): V1Vedtak? {
-        prefillData.vedtakId.let {
-            logger.debug("vedtakId er: $it, prøver å hente vedtaket")
-            return pensjonsinformasjonService.hentRelevantVedtakHvisFunnet(it ?: "")
-        }
-    }
-
-    private fun hentRelevantPensjonsinformasjon(prefillData: PrefillDataModel): Pensjonsinformasjon? {
-        return prefillData.vedtakId?.let {
-            logger.debug("vedtakid er: $it, prøver å hente pensjonsinformasjon for vedtaket")
-            pensjonsinformasjonService.hentMedVedtak(it)
         }
     }
 

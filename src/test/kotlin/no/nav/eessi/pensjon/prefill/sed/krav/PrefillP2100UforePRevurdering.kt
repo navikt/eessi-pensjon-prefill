@@ -3,13 +3,14 @@ package no.nav.eessi.pensjon.prefill.sed.krav
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.sed.SedType
+import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
+import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.prefill.models.PersonId
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModel
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
-import no.nav.eessi.pensjon.prefill.models.eessi.EessiInformasjon
-import no.nav.eessi.pensjon.prefill.models.pdl.FodselsnummerMother.generateRandomFnr
-import no.nav.eessi.pensjon.prefill.models.person.PrefillPDLNav
+import no.nav.eessi.pensjon.prefill.person.FodselsnummerMother.generateRandomFnr
+import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
 import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper.lesPensjonsdataFraFil
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -54,9 +55,12 @@ class PrefillP2100UforePRevurdering {
         val personDataCollection = PersonPDLMock.createAvdodFamilie(personFnr, avdodPersonFnr)
         val dataFromPEN = lesPensjonsdataFraFil("P2100-UP-GJ-REVURD-M-KRAVID.xml")
 
-        prefillSEDService = PrefillSEDService(dataFromPEN, EessiInformasjon(), prefillNav)
+        val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
+        val pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
 
-        val p2100 = prefillSEDService.prefill(prefillData, personDataCollection)
+        prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav)
+
+        val p2100 = prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection)
 
         assertNotNull(p2100.nav?.krav)
         assertEquals("2020-08-01", p2100.nav?.krav?.dato)

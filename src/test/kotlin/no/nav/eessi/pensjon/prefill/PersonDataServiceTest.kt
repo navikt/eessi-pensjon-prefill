@@ -16,7 +16,7 @@ import no.nav.eessi.pensjon.prefill.LagPDLPerson.Companion.medBarn
 import no.nav.eessi.pensjon.prefill.LagPDLPerson.Companion.medForeldre
 import no.nav.eessi.pensjon.prefill.models.PersonId
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
-import no.nav.eessi.pensjon.prefill.models.pdl.FodselsnummerMother
+import no.nav.eessi.pensjon.prefill.person.FodselsnummerMother
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test

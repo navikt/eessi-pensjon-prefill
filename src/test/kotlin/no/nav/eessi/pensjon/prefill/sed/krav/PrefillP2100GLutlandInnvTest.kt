@@ -5,16 +5,18 @@ import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.sed.Nav
 import no.nav.eessi.pensjon.eux.model.sed.SED
 import no.nav.eessi.pensjon.eux.model.sed.SedType
+import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
+import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
+import no.nav.eessi.pensjon.prefill.models.PensjonCollection
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PersonId
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModel
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
-import no.nav.eessi.pensjon.prefill.models.eessi.EessiInformasjon
-import no.nav.eessi.pensjon.prefill.models.pdl.FodselsnummerMother.generateRandomFnr
-import no.nav.eessi.pensjon.prefill.models.pdl.NavFodselsnummer
-import no.nav.eessi.pensjon.prefill.models.person.PrefillPDLNav
+import no.nav.eessi.pensjon.prefill.person.FodselsnummerMother.generateRandomFnr
+import no.nav.eessi.pensjon.prefill.person.NavFodselsnummer
+import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
 import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper.lesPensjonsdataFraFil
 import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper.readJsonResponse
@@ -33,6 +35,7 @@ class PrefillP2100GLutlandInnvTest {
     private lateinit var dataFromPEN: PensjonsinformasjonService
     private lateinit var prefillSEDService: PrefillSEDService
     private lateinit var persondataCollection: PersonDataCollection
+    private lateinit var pensjonCollection: PensjonCollection
 
     @BeforeEach
     fun setup() {
@@ -48,7 +51,6 @@ class PrefillP2100GLutlandInnvTest {
 
         dataFromPEN = lesPensjonsdataFraFil("P2100-GL-UTL-INNV.xml")
 
-
         prefillData = PrefillDataModelMother.initialPrefillDataModel(
                 sedType = SedType.P2100,
                 pinId = personFnr,
@@ -58,13 +60,16 @@ class PrefillP2100GLutlandInnvTest {
             partSedAsJson["P4000"] = readJsonResponse("other/p4000_trygdetid_part.json")
 
         }
-        prefillSEDService = PrefillSEDService(dataFromPEN, EessiInformasjon(), prefillNav)
+        val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
+        pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
+
+        prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav)
 
     }
 
     @Test
     fun `forventet korrekt utfylt P2100 uforepensjon med kap4 og 9`() {
-        val p2100 = prefillSEDService.prefill(prefillData, persondataCollection)
+        val p2100 = prefillSEDService.prefill(prefillData, persondataCollection, pensjonCollection)
 
         val p2100gjenlev = SED(
                 type = SedType.P2100,
@@ -79,7 +84,7 @@ class PrefillP2100GLutlandInnvTest {
 
     @Test
     fun `forventet korrekt utfylt P2100 uforepensjon med mockdata fra testfiler`() {
-        val p2100 = prefillSEDService.prefill(prefillData, persondataCollection)
+        val p2100 = prefillSEDService.prefill(prefillData, persondataCollection,pensjonCollection)
 
         assertEquals(null, p2100.nav?.barn)
 

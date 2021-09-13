@@ -4,15 +4,16 @@ import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.sed.P5000
 import no.nav.eessi.pensjon.eux.model.sed.SedType
+import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
+import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PersonId
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModel
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
-import no.nav.eessi.pensjon.prefill.models.eessi.EessiInformasjon
-import no.nav.eessi.pensjon.prefill.models.pdl.FodselsnummerMother.generateRandomFnr
-import no.nav.eessi.pensjon.prefill.models.pdl.NavFodselsnummer
-import no.nav.eessi.pensjon.prefill.models.person.PrefillPDLNav
+import no.nav.eessi.pensjon.prefill.person.FodselsnummerMother.generateRandomFnr
+import no.nav.eessi.pensjon.prefill.person.NavFodselsnummer
+import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertNull
@@ -49,9 +50,12 @@ class PrefillP5000GLTest {
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P5000, personFnr, penSaksnummer = pesysSaksnummer, avdod = PersonId(avdodPersonFnr, "112233445566"))
 
         val pensjonInformasjonService = PrefillTestHelper.lesPensjonsdataFraFil("KravAlderEllerUfore_AP_UTLAND.xml")
+        val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = pensjonInformasjonService)
 
-        prefillSEDService = PrefillSEDService(pensjonInformasjonService, EessiInformasjon(), prefillNav)
-        p5000 = prefillSEDService.prefill(prefillData, personDataCollection) as P5000
+        val pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
+
+        prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav)
+        p5000 = prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection) as P5000
     }
 
     @Test

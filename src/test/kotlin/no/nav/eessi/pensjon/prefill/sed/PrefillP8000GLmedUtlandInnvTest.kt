@@ -4,15 +4,17 @@ import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.sed.SED
 import no.nav.eessi.pensjon.eux.model.sed.SedType
+import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
+import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
+import no.nav.eessi.pensjon.prefill.models.PensjonCollection
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PersonId
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModel
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
-import no.nav.eessi.pensjon.prefill.models.eessi.EessiInformasjon
-import no.nav.eessi.pensjon.prefill.models.pdl.FodselsnummerMother.generateRandomFnr
-import no.nav.eessi.pensjon.prefill.models.pdl.NavFodselsnummer
-import no.nav.eessi.pensjon.prefill.models.person.PrefillPDLNav
+import no.nav.eessi.pensjon.prefill.person.FodselsnummerMother.generateRandomFnr
+import no.nav.eessi.pensjon.prefill.person.NavFodselsnummer
+import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertNull
@@ -30,6 +32,7 @@ class PrefillP8000GLmedUtlandInnvTest {
     lateinit var prefill: PrefillP8000
     lateinit var prefillNav: PrefillPDLNav
     lateinit var personDataCollection: PersonDataCollection
+    lateinit var pensjonCollection: PensjonCollection
 
     lateinit var sed: SED
     lateinit var prefillSEDService: PrefillSEDService
@@ -49,9 +52,11 @@ class PrefillP8000GLmedUtlandInnvTest {
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P8000, personFnr, penSaksnummer = pesysSaksnummer, avdod = PersonId(avdodPersonFnr, "112233445566"))
 
         val pensjonInformasjonService = PrefillTestHelper.lesPensjonsdataFraFil("KravAlderEllerUfore_AP_UTLAND.xml")
+        val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = pensjonInformasjonService)
+        val pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
 
-        prefillSEDService = PrefillSEDService(pensjonInformasjonService, EessiInformasjon(), prefillNav)
-        sed = prefillSEDService.prefill(prefillData, personDataCollection)
+        prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav)
+        sed = prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection)
     }
 
     @Test

@@ -1,16 +1,16 @@
-package no.nav.eessi.pensjon.prefill.models.person
+package no.nav.eessi.pensjon.prefill.person
 
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.sed.SED
 import no.nav.eessi.pensjon.eux.model.sed.SedType
+import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
+import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.prefill.models.PersonId
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother.initialPrefillDataModel
-import no.nav.eessi.pensjon.prefill.models.eessi.EessiInformasjon
-import no.nav.eessi.pensjon.prefill.models.pdl.FodselsnummerMother.generateRandomFnr
-import no.nav.eessi.pensjon.prefill.models.pdl.NavFodselsnummer
+import no.nav.eessi.pensjon.prefill.person.FodselsnummerMother.generateRandomFnr
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
 import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -49,6 +49,7 @@ class PrefillSedEnkeTest {
         val persondataCollection = PersonPDLMock.createEnkeWithBarn(fnr, b1fnr, b2fnr)
 
         val prefillData = initialPrefillDataModel(sedType = SedType.P2100, pinId = fnr, avdod = PersonId(norskIdent = fnr, aktorId = "212"), vedtakId = "", penSaksnummer = "22875355")
+
 
         val response = prefillPDLNav.prefill(
             penSaksnummer = prefillData.penSaksnummer,
@@ -91,12 +92,15 @@ class PrefillSedEnkeTest {
     }
 
     @Test
-    fun `forvent utfylling av person data av ENKE fra TPS P2200`() {
+    fun `forvent utfylling av person data av ENKE fra PDL P2200`() {
 
         val prefillData = initialPrefillDataModel(sedType = SedType.P2200, pinId = fnr, vedtakId = "", penSaksnummer = "14915730")
         val personCollection = PersonPDLMock.createEnkeWithBarn(fnr, b2fnr)
 
-        val sed = PrefillSEDService(pensjonsinformasjonService, EessiInformasjon(), prefillPDLNav).prefill(prefillData, personCollection)
+        val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = pensjonsinformasjonService)
+        val pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
+
+        val sed = PrefillSEDService(EessiInformasjon(), prefillPDLNav).prefill(prefillData, personCollection, pensjonCollection)
 
         assertEquals(SedType.P2200, sed.type)
 

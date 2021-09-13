@@ -124,9 +124,12 @@ class PrefillUfoereIntegrationTest {
 
         every { personService.hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN_2)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_2)) } returns PersonPDLMock.createWith(true, "Lever", "Gjenlev", FNR_VOKSEN_2)
-        every { restTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns
-                PrefillTestHelper.readXMLresponse("P2200-UP-INNV.xml") andThen
+
+        every { restTemplate.exchange(eq("/aktor/$AKTOER_ID"), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns
+                PrefillTestHelper.readXMLresponse("P2200-UP-INNV.xml")
+        every { restTemplate.exchange(eq("/vedtak/5134513451345"), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns
                 PrefillTestHelper.readXMLVedtakresponse("P6000-APUtland-301.xml")
+
         every { kodeverkClient.finnLandkode(any()) } returns "QX"
 
         val apijson = dummyApijson(sakid = "22874955", aktoerId = AKTOER_ID, vedtakid = "5134513451345", sed = "P2200")

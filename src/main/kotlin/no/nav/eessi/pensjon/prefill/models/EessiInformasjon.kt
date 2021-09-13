@@ -1,4 +1,4 @@
-package no.nav.eessi.pensjon.prefill.models.eessi
+package no.nav.eessi.pensjon.prefill.models
 
 import no.nav.eessi.pensjon.eux.model.sed.AndreinstitusjonerItem
 import org.springframework.beans.factory.annotation.Value

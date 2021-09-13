@@ -1,4 +1,4 @@
-package no.nav.eessi.pensjon.prefill.models.person
+package no.nav.eessi.pensjon.prefill.person
 
 import no.nav.eessi.pensjon.eux.model.sed.*
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Familierelasjonsrolle
@@ -9,8 +9,6 @@ import no.nav.eessi.pensjon.personoppslag.pdl.model.Sivilstandstype
 import no.nav.eessi.pensjon.prefill.models.BrukerInformasjon
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PersonId
-import no.nav.eessi.pensjon.prefill.models.pdl.NavFodselsnummer
-import no.nav.eessi.pensjon.prefill.models.pdl.PrefillPDLAdresse
 import no.nav.eessi.pensjon.utils.simpleFormat
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory

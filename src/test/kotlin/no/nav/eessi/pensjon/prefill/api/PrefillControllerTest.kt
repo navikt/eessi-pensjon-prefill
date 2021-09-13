@@ -14,12 +14,14 @@ import no.nav.eessi.pensjon.logging.AuditLogger
 import no.nav.eessi.pensjon.personoppslag.pdl.model.NorskIdent
 import no.nav.eessi.pensjon.prefill.ApiRequest
 import no.nav.eessi.pensjon.prefill.InnhentingService
+import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.PersonDataService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.PrefillService
 import no.nav.eessi.pensjon.prefill.models.InstitusjonItem
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
+import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
@@ -33,22 +35,21 @@ class PrefillControllerTest {
     var mockPrefillSEDService: PrefillSEDService = mockk()
     var kafkaTemplate: KafkaTemplate<String, String> = mockk()
     var personDataService: PersonDataService = mockk()
+    var pensjonsinformasjonService: PensjonsinformasjonService = mockk()
 
     private lateinit var prefillController: PrefillController
 
     @BeforeEach
     fun before() {
 
-        val innhentingService = InnhentingService(personDataService)
+        val innhentingService = InnhentingService(personDataService, pensjonsinformasjonService = pensjonsinformasjonService)
         innhentingService.initMetrics()
 
-        val prefillService = PrefillService(mockPrefillSEDService)
+        val prefillService = PrefillService(mockPrefillSEDService, innhentingService)
         prefillService.initMetrics()
 
         prefillController = PrefillController(
-            innhentingService,
-            prefillService,
-            auditLogger
+            prefillService, auditLogger
         )
     }
 
@@ -79,7 +80,9 @@ class PrefillControllerTest {
             nav = nav
         )
 
-        every{mockPrefillSEDService.prefill(any(), any())} returns mockSed
+        every { pensjonsinformasjonService.hentVedtak(any()) } returns Pensjonsinformasjon()
+
+        every{ mockPrefillSEDService.prefill(any(), any(), any())} returns mockSed
 
         val response = prefillController.prefillDocument(mockData)
         Assertions.assertNotNull(response)

@@ -1,12 +1,18 @@
 package no.nav.eessi.pensjon.prefill
 
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry
+import no.nav.eessi.pensjon.eux.model.sed.SedType
 import no.nav.eessi.pensjon.metrics.MetricsHelper
 import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentType
 import no.nav.eessi.pensjon.personoppslag.pdl.model.NorskIdent
+import no.nav.eessi.pensjon.prefill.models.PensjonCollection
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModel
+import no.nav.eessi.pensjon.services.pensjonsinformasjon.EPSaktype
 import no.nav.eessi.pensjon.utils.Fodselsnummer
+import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
+import no.nav.pensjon.v1.sak.V1Sak
+import no.nav.pensjon.v1.vedtak.V1Vedtak
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -15,8 +21,11 @@ import org.springframework.web.server.ResponseStatusException
 import javax.annotation.PostConstruct
 
 @Service
-class InnhentingService(private val personDataService: PersonDataService,
-                        @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper(SimpleMeterRegistry())) {
+class InnhentingService(
+    private val personDataService: PersonDataService,
+    @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper(SimpleMeterRegistry()),
+    private val pensjonsinformasjonService: PensjonsinformasjonService
+) {
 
     private lateinit var HentPerson: MetricsHelper.Metric
     private lateinit var addInstutionAndDocumentBucUtils: MetricsHelper.Metric
@@ -70,5 +79,78 @@ class InnhentingService(private val personDataService: PersonDataService,
     fun hentFnrfraAktoerService(aktoerid: String?): String = personDataService.hentFnrfraAktoerService(aktoerid)
 
     fun hentIdent(aktoerId: IdentType.AktoerId, norskIdent: NorskIdent): String = personDataService.hentIdent(aktoerId, norskIdent).id
+
+    fun hentPensjoninformasjonCollection(prefillData: PrefillDataModel): PensjonCollection {
+        val sedType = prefillData.sedType
+        return when (sedType) {
+
+            SedType.P2000 -> {
+                PensjonCollection(sak = hentRelevantPensjonSak(prefillData) { pensakType -> pensakType == EPSaktype.ALDER.name }, vedtak = hentRelevantVedtak(prefillData), sedType = sedType)
+            }
+
+            SedType.P2200 -> {
+                PensjonCollection(sak = hentRelevantPensjonSak(prefillData) { pensakType -> pensakType == EPSaktype.UFOREP.name }, vedtak = hentRelevantVedtak(prefillData), sedType = sedType)
+            }
+
+            SedType.P2100 -> {
+                PensjonCollection(sak = hentRelevantPensjonSak(prefillData) { pensakType ->
+                    listOf(
+                        EPSaktype.ALDER.name, EPSaktype.BARNEP.name, EPSaktype.GJENLEV.name, EPSaktype.UFOREP.name
+                    ).contains(pensakType)
+                }, vedtak = hentRelevantVedtak(prefillData), sedType = sedType)
+            }
+
+            SedType.P6000 ->  PensjonCollection(pensjoninformasjon = pensjonsinformasjonService.hentVedtak(hentVedtak(prefillData)), sedType = sedType)
+
+            SedType.P8000 -> {
+                if (prefillData.buc == "P_BUC_05") {
+                        try {
+                            val sak = hentRelevantPensjonSak(prefillData) { pensakType -> listOf("ALDER", "BARNEP", "GJENLEV", "UFOREP", "GENRL", "OMSORG").contains(pensakType) }
+                            PensjonCollection(sak = sak , sedType = sedType)
+                        } catch (ex: Exception) {
+                            logger.warn("Ingen pensjon!", ex)
+                            PensjonCollection(sedType = sedType)
+                        }
+                } else {
+                    PensjonCollection(sedType = sedType)
+                }
+            }
+
+            SedType.P15000 -> {
+                PensjonCollection(pensjoninformasjon = hentRelevantPensjonsinformasjon(prefillData), sak = hentRelevantPensjonSak(prefillData) { pensakType ->
+                    listOf("ALDER", "BARNEP", "GJENLEV", "UFOREP", "GENRL", "OMSORG").contains(pensakType) }, sedType = sedType)
+            }
+
+
+            else -> PensjonCollection(sedType = prefillData.sedType)
+        }
+    }
+
+    fun hentVedtak(prefillData: PrefillDataModel): String {
+        val vedtakId = prefillData.vedtakId
+        vedtakId?.let {
+            return it
+        }
+        throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Mangler vedtakID")
+    }
+
+    fun hentRelevantPensjonSak(prefillData: PrefillDataModel, akseptabelSakstypeForSed: (String) -> Boolean): V1Sak? {
+        logger.debug("sakNr er: ${prefillData.penSaksnummer} aktoerId er: ${prefillData.bruker.aktorId} prøver å hente Sak")
+        return pensjonsinformasjonService.hentRelevantPensjonSak(prefillData, akseptabelSakstypeForSed)
+    }
+
+    private fun hentRelevantVedtak(prefillData: PrefillDataModel): V1Vedtak? {
+        prefillData.vedtakId.let {
+            logger.debug("vedtakId er: $it, prøver å hente vedtaket")
+            return pensjonsinformasjonService.hentRelevantVedtakHvisFunnet(it ?: "")
+        }
+    }
+
+    private fun hentRelevantPensjonsinformasjon(prefillData: PrefillDataModel): Pensjonsinformasjon? {
+        return prefillData.vedtakId?.let {
+            logger.debug("vedtakid er: $it, prøver å hente pensjonsinformasjon for vedtaket")
+            pensjonsinformasjonService.hentMedVedtak(it)
+        }
+    }
 
 }

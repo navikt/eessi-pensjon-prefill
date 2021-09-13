@@ -6,12 +6,13 @@ import no.nav.eessi.pensjon.eux.model.sed.SedType
 import no.nav.eessi.pensjon.prefill.ApiRequest
 import no.nav.eessi.pensjon.prefill.LagPDLPerson
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
+import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
+import no.nav.eessi.pensjon.prefill.models.PensjonCollection
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModel
-import no.nav.eessi.pensjon.prefill.models.eessi.EessiInformasjon
-import no.nav.eessi.pensjon.prefill.models.pdl.FodselsnummerMother
-import no.nav.eessi.pensjon.prefill.models.pdl.PrefillPDLAdresse
-import no.nav.eessi.pensjon.prefill.models.person.PrefillPDLNav
+import no.nav.eessi.pensjon.prefill.person.FodselsnummerMother
+import no.nav.eessi.pensjon.prefill.person.PrefillPDLAdresse
+import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -25,6 +26,7 @@ class SedP3000XXTest {
 
     private val personFnr = FodselsnummerMother.generateRandomFnr(68)
     private lateinit var personDataCollection: PersonDataCollection
+    private lateinit var pensjonCollection: PensjonCollection
 
     @BeforeEach
     fun setupAndRunAtStart() {
@@ -40,31 +42,33 @@ class SedP3000XXTest {
             institutionnavn = "NOINST002, NO INST002, NO"
         )
 
-        prefillSEDService = PrefillSEDService(dataFromPEN, eessiInformasjon, prefillNav)
+        prefillSEDService = PrefillSEDService(eessiInformasjon, prefillNav)
     }
 
     @Test
     fun testP3000_AT() {
         val datamodel = getMockDataModel("P3000_AT", personFnr)
+        pensjonCollection = PensjonCollection(sedType = SedType.P3000_AT)
 
-        val sed = prefillSEDService.prefill(datamodel, personDataCollection)
+        val sed = prefillSEDService.prefill(datamodel, personDataCollection,pensjonCollection)
         Assertions.assertEquals(SedType.P3000_AT, sed.type)
     }
 
     @Test
     fun testP3000_IT() {
-
         val datamodel = getMockDataModel("P3000_IT", personFnr)
+        pensjonCollection = PensjonCollection(sedType = SedType.P3000_IT)
 
-        val sed = prefillSEDService.prefill(datamodel, personDataCollection)
+        val sed = prefillSEDService.prefill(datamodel, personDataCollection,pensjonCollection)
         Assertions.assertEquals(SedType.P3000_IT, sed.type)
     }
 
     @Test
     fun testP3000_SE() {
         val datamodel = getMockDataModel("P3000_SE", personFnr)
+        pensjonCollection = PensjonCollection(sedType = SedType.P3000_SE)
 
-        val sed = prefillSEDService.prefill(datamodel, personDataCollection)
+        val sed = prefillSEDService.prefill(datamodel, personDataCollection,pensjonCollection)
         Assertions.assertEquals(SedType.P3000_SE, sed.type)
     }
 

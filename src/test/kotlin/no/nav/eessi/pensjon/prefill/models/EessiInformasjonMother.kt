@@ -1,4 +1,4 @@
-package no.nav.eessi.pensjon.prefill.models.eessi
+package no.nav.eessi.pensjon.prefill.models
 
 object EessiInformasjonMother {
     fun standardEessiInfo() = EessiInformasjon(

@@ -12,7 +12,7 @@ import no.nav.eessi.pensjon.eux.model.sed.PinItem
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModel
 import no.nav.eessi.pensjon.prefill.models.ReferanseTilPerson
-import no.nav.eessi.pensjon.prefill.models.person.PrefillSed
+import no.nav.eessi.pensjon.prefill.person.PrefillSed
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.EPSaktype
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.KravHistorikkHelper.hentKravhistorikkForGjenlevende
 import no.nav.pensjon.v1.sak.V1Sak
@@ -37,7 +37,7 @@ class PrefillP8000(private val prefillSed: PrefillSed) {
 
         val kravhistorikkGjenlev = sak?.kravHistorikkListe?.let { hentKravhistorikkForGjenlevende(it) }
 
-
+        logger.debug("*** SAK: ${sak?.sakType}, referanseTilPerson: ${prefillData.refTilPerson}, gjenlevende: ${gjenlevendeBruker!= null} ***")
         return if (prefillData.refTilPerson == ReferanseTilPerson.SOKER && sak?.sakType in listOf(EPSaktype.ALDER.name, EPSaktype.UFOREP.name) && gjenlevendeBruker != null) {
             logger.info("Prefill P8000 forenklet preutfylling for gjenlevende uten avdød, Ferdig.")
             sedP8000(eessielm, gjenlevendeBruker.person, gjenlevendeBruker.adresse, prefillData, null)

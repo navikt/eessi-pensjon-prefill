@@ -15,12 +15,13 @@ import org.springframework.web.server.ResponseStatusException
 class InnhentingServiceTest {
 
     var personDataService: PersonDataService = mockk()
+    var pensjonsinformasjonService: PensjonsinformasjonService = mockk()
 
     private lateinit var innhentingService: InnhentingService
 
     @BeforeEach
     fun before() {
-        innhentingService = InnhentingService(personDataService)
+        innhentingService = InnhentingService(personDataService, pensjonsinformasjonService = pensjonsinformasjonService)
         innhentingService.initMetrics()
     }
 
