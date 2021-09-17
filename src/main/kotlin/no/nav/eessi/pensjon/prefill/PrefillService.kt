@@ -1,7 +1,10 @@
 package no.nav.eessi.pensjon.prefill
 
+import com.github.wnameless.json.flattener.JsonFlattener
 import io.micrometer.core.instrument.Metrics
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry
+import net.minidev.json.JSONObject
+import net.minidev.json.parser.JSONParser
 import no.nav.eessi.pensjon.eux.model.sed.SED
 import no.nav.eessi.pensjon.eux.model.sed.SedType
 import no.nav.eessi.pensjon.metrics.MetricsHelper
@@ -12,6 +15,7 @@ import no.nav.eessi.pensjon.prefill.models.PrefillDataModel
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
 import no.nav.eessi.pensjon.prefill.sed.krav.ValidationException
 import no.nav.eessi.pensjon.utils.eessiRequire
+import no.nav.eessi.pensjon.utils.toJson
 import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -63,6 +67,8 @@ class PrefillService(
                     logger.warn("Metrics feilet på Sed_Prefill")
                 }
 
+                flattenAndCount(prefillData, sed.toJson())
+
                 return@measure sed.toJsonSkipEmpty()
 
             } catch (ex: Exception) {
@@ -79,6 +85,34 @@ class PrefillService(
             else -> sed.sedVer="1"
         }
         logger.debug("SED version: v${sed.sedGVer}.${sed.sedVer} + BUC version: $bucVersion")
+    }
+
+    private fun flattenAndCount(data: PrefillDataModel, json: String) {
+        val doprint = false
+        val parser = JSONParser(JSONParser.DEFAULT_PERMISSIVE_MODE)
+
+        val obj = parser.parse(json)
+        val jsonObject = obj as JSONObject
+        val flattenedJson = JsonFlattener.flatten(jsonObject.toString())
+        val flattenedJsonMap = JsonFlattener.flattenAsMap(jsonObject.toString())
+
+        if (doprint) {
+            logger.debug("\n=====Flatten As Map=====\n$flattenedJson")
+            flattenedJsonMap.forEach { (k: String, v: Any) -> logger.debug("$k : $v") }
+            logger.debug("==".repeat(80))
+        }
+
+        val listOfValues = flattenedJsonMap.filter { it.value != null }
+        val listOfEmptyValues = flattenedJsonMap.filter { it.value == null }
+
+        val total = flattenedJsonMap.size
+        val prefylt = listOfValues.size
+        val tomme = listOfEmptyValues.size
+        val prosentprefylt = ((prefylt.toDouble() / total.toDouble()) * 100).toInt()
+
+
+        logger.info("Buctype: ${data.buc}, SedType: ${data.sedType}, antall utfylt felt: $prefylt, prosent utfylt: $prosentprefylt, antall tomme felt: $tomme, Total: $total")
+        logger.debug("==".repeat(80))
     }
 
     /**

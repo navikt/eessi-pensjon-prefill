@@ -12,6 +12,7 @@ import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
+
 class PrefillP6000(private val prefillNav: PrefillPDLNav,
                    private val eessiInfo: EessiInformasjon,
                    private val pensjoninformasjon: Pensjonsinformasjon) {
@@ -48,11 +49,13 @@ class PrefillP6000(private val prefillNav: PrefillPDLNav,
 
         logger.info("-------------------| Preutfylling [$sedType] END |------------------- ")
 
-        return P6000(
+        val p6000 = P6000(
             type = sedType,
             nav = nav,
             p6000Pensjon = p6000Pensjon
         )
+
+        return p6000
     }
 
     private fun eventuellGjenlevende(prefillData: PrefillDataModel, gjenlevendeBruker: Person?): Bruker? {
