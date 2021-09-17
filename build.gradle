@@ -97,6 +97,10 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib:${kotlinVersion}")
     implementation("org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}")
 
+    //flattenmap
+    implementation("com.github.wnameless:json-flattener:0.2.2")
+    implementation("com.github.wnameless.json:json-flattener:0.12.0")
+
     // Swagger
     implementation("io.springfox:springfox-swagger2:${springfoxVersion}")
     implementation("io.springfox:springfox-swagger-ui:${springfoxVersion}")
