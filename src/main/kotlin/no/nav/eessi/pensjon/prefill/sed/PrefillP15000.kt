@@ -14,6 +14,7 @@ import no.nav.eessi.pensjon.prefill.models.KravType
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModel
 import no.nav.eessi.pensjon.prefill.person.PrefillSed
+import no.nav.eessi.pensjon.utils.toLocalDate
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import no.nav.pensjon.v1.sak.V1Sak
 import org.slf4j.Logger
@@ -21,7 +22,6 @@ import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.web.server.ResponseStatusException
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 
 class PrefillP15000(private val prefillSed: PrefillSed) {
 
@@ -77,7 +77,7 @@ class PrefillP15000(private val prefillSed: PrefillSed) {
         val forsikretPersonPin = forsikretPerson?.pin?.firstOrNull()
         val adresse = forsikretBruker?.adresse
 
-        val krav = Krav(dato = validateFrontEndKravDato(prefillData.kravDato).toString(), type = kravType.verdi)
+        val krav = Krav(dato = prefillData.kravDato?.let { validateFrontEndKravDato(it).toString() }, type = kravType.verdi)
 
         val nav = Nav(
             eessisak = eessielm,
@@ -103,11 +103,10 @@ class PrefillP15000(private val prefillSed: PrefillSed) {
         return P15000(nav = nav, p15000Pensjon = P15000Pensjon(gjenlevende))
     }
 
-    fun validateFrontEndKravDato(dato: String?): LocalDate {
+    fun validateFrontEndKravDato(dato: String): LocalDate {
         logger.info("Konverterer uiKravdato fra: $dato")
         return try {
-            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-            LocalDate.parse(dato?.trim(), formatter)
+            toLocalDate(dato)
         } catch (ex: Exception) {
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Ugyldig datoformat")
         }
