@@ -4,38 +4,29 @@ package no.nav.eessi.pensjon.prefill.api
 import io.mockk.every
 import io.mockk.impl.annotations.SpyK
 import io.mockk.mockk
-import no.nav.eessi.pensjon.eux.model.sed.Bruker
-import no.nav.eessi.pensjon.eux.model.sed.Krav
-import no.nav.eessi.pensjon.eux.model.sed.Nav
-import no.nav.eessi.pensjon.eux.model.sed.Person
-import no.nav.eessi.pensjon.eux.model.sed.SED
-import no.nav.eessi.pensjon.eux.model.sed.SedType
+import no.nav.eessi.pensjon.eux.model.sed.*
 import no.nav.eessi.pensjon.logging.AuditLogger
 import no.nav.eessi.pensjon.personoppslag.pdl.model.NorskIdent
-import no.nav.eessi.pensjon.prefill.ApiRequest
-import no.nav.eessi.pensjon.prefill.InnhentingService
-import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
-import no.nav.eessi.pensjon.prefill.PersonDataService
-import no.nav.eessi.pensjon.prefill.PersonPDLMock
-import no.nav.eessi.pensjon.prefill.PrefillService
+import no.nav.eessi.pensjon.prefill.*
 import no.nav.eessi.pensjon.prefill.models.InstitusjonItem
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
+import no.nav.eessi.pensjon.statistikk.AutomatiseringStatistikkService
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.springframework.kafka.core.KafkaTemplate
 
 class PrefillControllerTest {
 
     @SpyK
     var auditLogger: AuditLogger = AuditLogger()
     var mockPrefillSEDService: PrefillSEDService = mockk()
-    var kafkaTemplate: KafkaTemplate<String, String> = mockk()
     var personDataService: PersonDataService = mockk()
     var pensjonsinformasjonService: PensjonsinformasjonService = mockk()
+    val automatiseringStatistikkService: AutomatiseringStatistikkService = mockk(relaxed = true)
+
 
     private lateinit var prefillController: PrefillController
 
@@ -45,7 +36,7 @@ class PrefillControllerTest {
         val innhentingService = InnhentingService(personDataService, pensjonsinformasjonService = pensjonsinformasjonService)
         innhentingService.initMetrics()
 
-        val prefillService = PrefillService(mockPrefillSEDService, innhentingService)
+        val prefillService = PrefillService(mockPrefillSEDService, innhentingService, automatiseringStatistikkService)
         prefillService.initMetrics()
 
         prefillController = PrefillController(
