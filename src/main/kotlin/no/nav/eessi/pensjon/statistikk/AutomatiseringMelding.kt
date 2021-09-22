@@ -1,4 +1,4 @@
-package no.nav.eessi.pensjon.automatisering
+package no.nav.eessi.pensjon.statistikk
 
 import no.nav.eessi.pensjon.eux.model.buc.BucType
 import no.nav.eessi.pensjon.eux.model.sed.SedType
@@ -11,15 +11,15 @@ data class PrefillAutomatiseringMelding (
     val sedVersjon: String,
     val bucType: BucType,
     val sedType: SedType,
-    val prefiltfelt: Int,
-    val tommefelt: Int,
-    val totalfelt: Int
+    val antallPreutfylteFelter: Int,
+    val antallTommeFelter: Int,
+    val antallFelter: Int
 )
 
 class KafkaAutomatiseringMessage(
     private val payload: PrefillAutomatiseringMelding
 ): Message<PrefillAutomatiseringMelding> {
     override fun getPayload(): PrefillAutomatiseringMelding = payload
-    override fun getHeaders(): MessageHeaders = MessageHeaders(mapOf("hendelsetype" to "PREFILL", "opprettetTidspunkt" to LocalDateTime.now()))
+    override fun getHeaders(): MessageHeaders = MessageHeaders(mapOf("hendelsetype" to "PREUTFYLLINGSTATISTIKK"))
 }
 

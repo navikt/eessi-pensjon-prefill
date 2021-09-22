@@ -6,10 +6,7 @@ import com.tngtech.archunit.core.domain.JavaClass
 import com.tngtech.archunit.core.domain.JavaClasses
 import com.tngtech.archunit.core.importer.ClassFileImporter
 import com.tngtech.archunit.core.importer.ImportOption
-import com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes
-import com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses
-import com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noFields
-import com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noMethods
+import com.tngtech.archunit.lang.syntax.ArchRuleDefinition.*
 import com.tngtech.archunit.library.Architectures.layeredArchitecture
 import com.tngtech.archunit.library.dependencies.SlicesRuleDefinition.slices
 import no.nav.eessi.pensjon.EessiFagmodulApplication
@@ -162,6 +159,7 @@ class ArchitectureTest {
         val vedlegg ="Vedlegg"
         val personoppslag = "Personoppslag"
         val euxmodel = "euxmodel"
+        val statistikk = "statistikk"
         layeredArchitecture()
                 .layer(frontendAPI).definedBy("$root.api..")
                 .layer(prefillCore).definedBy("$root.prefill..")
@@ -170,6 +168,7 @@ class ArchitectureTest {
                 .layer(personoppslag).definedBy("$root.personoppslag..")
                 .layer(vedlegg).definedBy("$root.vedlegg..")
                 .layer(euxmodel).definedBy("$root.eux.model..")
+                .layer(statistikk).definedBy("$root.statistikk..")
                 .layer(support).definedBy(
                         "$root.metrics..",
                         "$root.security..",
@@ -193,7 +192,8 @@ class ArchitectureTest {
                         personoppslag,
                         vedlegg,
                         integrationtest,
-                        euxmodel)
+                        euxmodel,
+                        statistikk)
                 .check(allClasses)
     }
 
