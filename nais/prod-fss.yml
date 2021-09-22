@@ -6,6 +6,8 @@ metadata:
   labels:
     team: eessipensjon
 spec:
+  kafka:
+    pool: nav-prod
   env:
     - name: SPRING_PROFILES_ACTIVE
       value: prod
@@ -35,10 +37,12 @@ spec:
       value: a2aa3452-c3af-4436-9871-d7d203a8f79f
     - name: APPDYNAMICS_CONTROLLER_HOST_NAME
       value: appdynamics.adeo.no
-    - name: KAFKA_BOOTSTRAP_SERVERS_URL
+    - name: ONPREM_KAFKA_BOOTSTRAP_SERVERS_URL
       value: SASL_SSL://a01apvl00145.adeo.no:8443,SASL_SSL://a01apvl00146.adeo.no:8443,SASL_SSL://a01apvl00147.adeo.no:8443,SASL_SSL://a01apvl00149.adeo.no:8443
     - name: KAFKA_STATISTIKK_TOPICNAME
       value: privat-eessipensjon-statistikk
+    - name: KAFKA_AUTOMATISERING_TOPIC
+      value: eessipensjon.public-automatisering
     - name: KODEVERK_REST_API_URL
       value: https://kodeverk.nais.adeo.no
     - name: EESSI_PENSJON_INSTITUSJON

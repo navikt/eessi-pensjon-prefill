@@ -110,7 +110,6 @@ class PrefillService(
         val tomme = listOfEmptyValues.size
         val prosentprefylt = ((prefylt.toDouble() / total.toDouble()) * 100).toInt()
 
-
         logger.info("Buctype: ${data.buc}, SedType: ${data.sedType}, antall utfylt felt: $prefylt, prosent utfylt: $prosentprefylt, antall tomme felt: $tomme, Total: $total")
         logger.debug("==".repeat(80))
     }
