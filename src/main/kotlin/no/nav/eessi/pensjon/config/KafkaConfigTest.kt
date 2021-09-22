@@ -13,11 +13,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Profile
 import org.springframework.kafka.annotation.EnableKafka
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory
-import org.springframework.kafka.core.ConsumerFactory
-import org.springframework.kafka.core.DefaultKafkaConsumerFactory
-import org.springframework.kafka.core.DefaultKafkaProducerFactory
-import org.springframework.kafka.core.KafkaTemplate
-import org.springframework.kafka.core.ProducerFactory
+import org.springframework.kafka.core.*
 import org.springframework.kafka.listener.ContainerProperties
 import org.springframework.kafka.support.serializer.JsonDeserializer
 import org.springframework.kafka.support.serializer.JsonSerializer
@@ -42,7 +38,7 @@ class KafkaConfigTest(
     fun aivenProducerFactory(): ProducerFactory<String, String> {
         val configMap: MutableMap<String, Any> = HashMap()
         populerAivenCommonConfig(configMap)
-        configMap[ProducerConfig.CLIENT_ID_CONFIG] = "eessi-pensjon-journalforing"
+        configMap[ProducerConfig.CLIENT_ID_CONFIG] = "eessi-pensjon-prefill"
         configMap[ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG] = StringSerializer::class.java
         configMap[ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG] = JsonSerializer::class.java
         configMap[ProducerConfig.BOOTSTRAP_SERVERS_CONFIG] = aivenBootstrapServers
@@ -61,7 +57,7 @@ class KafkaConfigTest(
     fun onpremProducerFactory(): ProducerFactory<String, String> {
         val configMap: MutableMap<String, Any> = HashMap()
         populerOnpremCommonConfig(configMap)
-        configMap[ProducerConfig.CLIENT_ID_CONFIG] = "eessi-pensjon-journalforing"
+        configMap[ProducerConfig.CLIENT_ID_CONFIG] = "eessi-pensjon-prefill"
         configMap[ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG] = StringSerializer::class.java
         configMap[ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG] = JsonSerializer::class.java
         configMap[ProducerConfig.BOOTSTRAP_SERVERS_CONFIG] = onpremBootstrapServers
@@ -83,7 +79,7 @@ class KafkaConfigTest(
 
         val configMap: MutableMap<String, Any> = HashMap()
         populerAivenCommonConfig(configMap)
-        configMap[ConsumerConfig.CLIENT_ID_CONFIG] = "eessi-pensjon-journalforing"
+        configMap[ConsumerConfig.CLIENT_ID_CONFIG] = "eessi-pensjon-prefill"
         configMap[ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG] = aivenBootstrapServers
         configMap[ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG] = false
 
@@ -97,7 +93,7 @@ class KafkaConfigTest(
 
         val configMap: MutableMap<String, Any> = HashMap()
         populerOnpremCommonConfig(configMap)
-        configMap[ConsumerConfig.CLIENT_ID_CONFIG] = "eessi-pensjon-journalforing"
+        configMap[ConsumerConfig.CLIENT_ID_CONFIG] = "eessi-pensjon-prefill"
         configMap[ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG] = onpremBootstrapServers
         configMap[ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG] = false
         configMap[ConsumerConfig.AUTO_OFFSET_RESET_CONFIG] = "earliest"
