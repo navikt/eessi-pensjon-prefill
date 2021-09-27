@@ -35,7 +35,7 @@ class AutomatiseringStatistikkService(private val aivenKafkaTemplate: KafkaTempl
         val antallFelter = flattenedJsonMap.size
         val antallPreutfylteFelter = listOfValues.size
         val antallTommeFelter = listOfEmptyValues.size
-        logger.info("Buctype: $bucType}, SedType: ${sed.type}, antall utfylt felt: $antallPreutfylteFelter, antall tomme felt: $antallTommeFelter, Total: $antallFelter")
+        logger.info("Buctype: $bucType, SedType: ${sed.type}, antall utfylt felt: $antallPreutfylteFelter, antall tomme felt: $antallTommeFelter, Total: $antallFelter")
 
         publiserAutomatiseringStatistikk(
             PrefillAutomatiseringMelding(
