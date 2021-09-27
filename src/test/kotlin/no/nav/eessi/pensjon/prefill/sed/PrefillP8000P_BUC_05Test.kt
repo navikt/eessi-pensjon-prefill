@@ -5,6 +5,7 @@ import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.sed.P8000
 import no.nav.eessi.pensjon.eux.model.sed.SedType
+import no.nav.eessi.pensjon.personoppslag.FodselsnummerGenerator
 import no.nav.eessi.pensjon.prefill.LagPDLPerson
 import no.nav.eessi.pensjon.prefill.LagPDLPerson.Companion.medAdresse
 import no.nav.eessi.pensjon.prefill.PersonPDLMock.medUtlandAdresse
@@ -15,7 +16,6 @@ import no.nav.eessi.pensjon.prefill.models.PersonId
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModel
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
 import no.nav.eessi.pensjon.prefill.models.ReferanseTilPerson
-import no.nav.eessi.pensjon.prefill.person.FodselsnummerMother.generateRandomFnr
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLAdresse
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.services.geo.PostnummerService
@@ -34,7 +34,7 @@ import org.skyscreamer.jsonassert.JSONAssert
 
 class PrefillP8000P_BUC_05Test {
 
-    private val personFnr = generateRandomFnr(68)
+    private val personFnr = FodselsnummerGenerator.generateFnrForTest(68)
     private val pesysSaksnummer = "14398627"
 
     lateinit var prefillData: PrefillDataModel
@@ -65,7 +65,7 @@ class PrefillP8000P_BUC_05Test {
 
     @Test
     fun `Forventer korrekt utfylt P8000 med adresse`() {
-        val fnr = generateRandomFnr(68)
+        val fnr = FodselsnummerGenerator.generateFnrForTest(68)
 
         val personforsikret = LagPDLPerson.lagPerson(fnr, "Christopher", "Robin")
             .medUtlandAdresse("LUNGJTEGATA 12", "1231" , "SWE")
@@ -86,8 +86,8 @@ class PrefillP8000P_BUC_05Test {
 
     @Test
     fun `Forventerkorrekt utfylt P8000 hvor det finnes en sak i Pesys som er gjenlevendepensjon eller barnepensjon - henvendelse gjelder avdøde`() {
-        val fnr = generateRandomFnr(40)
-        val avdodFnr = generateRandomFnr(93)
+        val fnr = FodselsnummerGenerator.generateFnrForTest(40)
+        val avdodFnr = FodselsnummerGenerator.generateFnrForTest(93)
 
         val forsikretPerson = LagPDLPerson.lagPerson(fnr, "Christopher", "Robin")
             .medAdresse("Gate")
@@ -116,8 +116,8 @@ class PrefillP8000P_BUC_05Test {
 
     @Test
     fun `Forventer korrekt utfylt P8000 hvor det finnes en sak i Pesys som er gjenlevendepensjon eller barnepensjon - henvendelse gjelder gjenlevende-søker`() {
-        val fnr = generateRandomFnr(40)
-        val avdodFnr = generateRandomFnr(93)
+        val fnr = FodselsnummerGenerator.generateFnrForTest(40)
+        val avdodFnr = FodselsnummerGenerator.generateFnrForTest(93)
 
         val forsikretPerson = LagPDLPerson.lagPerson(fnr, "Christopher", "Robin")
             .medAdresse("Gate")
@@ -147,8 +147,8 @@ class PrefillP8000P_BUC_05Test {
 
     @Test
     fun `Forventer korrekt utfylt P8000 hvor det finnes en sak i Pesys som har alderpensjon  med revurdering og henvendelsen gjelder gjenlevende`() {
-        val fnr = generateRandomFnr(40)
-        val avdodFnr = generateRandomFnr(93)
+        val fnr = FodselsnummerGenerator.generateFnrForTest(40)
+        val avdodFnr = FodselsnummerGenerator.generateFnrForTest(93)
 
         val forsikretPerson = LagPDLPerson.lagPerson(fnr, "Christopher", "Robin")
             .medUtlandAdresse("LUNGJTEGATA 12", "1231" , "SWE")
@@ -218,8 +218,8 @@ class PrefillP8000P_BUC_05Test {
 
     @Test
     fun `Forventerkorrekt utfylt P8000 hvor det finnes en sak i Pesys som har uføretrygd og henvendelsen gjelder gjenlevende`() {
-        val fnr = generateRandomFnr(40)
-        val avdodFnr = generateRandomFnr(93)
+        val fnr = FodselsnummerGenerator.generateFnrForTest(40)
+        val avdodFnr = FodselsnummerGenerator.generateFnrForTest(93)
 
         val forsikretPerson = LagPDLPerson.lagPerson(fnr, "Christopher", "Robin")
             .medUtlandAdresse("LUNGJTÖEGATA 12", "1231" , "SWE")

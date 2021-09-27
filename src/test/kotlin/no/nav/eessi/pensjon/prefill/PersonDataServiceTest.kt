@@ -5,6 +5,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import no.nav.eessi.pensjon.eux.model.sed.SedType
+import no.nav.eessi.pensjon.personoppslag.FodselsnummerGenerator
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonoppslagException
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Ident
@@ -16,7 +17,6 @@ import no.nav.eessi.pensjon.prefill.LagPDLPerson.Companion.medBarn
 import no.nav.eessi.pensjon.prefill.LagPDLPerson.Companion.medForeldre
 import no.nav.eessi.pensjon.prefill.models.PersonId
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
-import no.nav.eessi.pensjon.prefill.person.FodselsnummerMother
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -137,8 +137,8 @@ internal class PersonDataServiceTest {
     @Test
     fun `test henting av forsikretperson med barn under 18 aar for persondatacollection`() {
 
-        val barn1fnr = FodselsnummerMother.generateRandomFnr(12)
-        val barn2fnr = FodselsnummerMother.generateRandomFnr(19)
+        val barn1fnr = FodselsnummerGenerator.generateFnrForTest(12)
+        val barn2fnr = FodselsnummerGenerator.generateFnrForTest(19)
 
         val forelder = lagPerson(FNR_VOKSEN, "Christopher", "Robin").medBarn(barn1fnr).medBarn(barn2fnr)
         val barn1 = lagPerson(barn2fnr, "Ole", "Brum").medForeldre(forelder)
@@ -166,8 +166,8 @@ internal class PersonDataServiceTest {
     @Test
     fun `test henting av forsikretperson med avdod ektefelle for persondatacollection`() {
 
-        val barn1fnr = FodselsnummerMother.generateRandomFnr(12)
-        val barn2fnr = FodselsnummerMother.generateRandomFnr(19)
+        val barn1fnr = FodselsnummerGenerator.generateFnrForTest(12)
+        val barn2fnr = FodselsnummerGenerator.generateFnrForTest(19)
 
         val forelder = lagPerson(FNR_VOKSEN, "Christopher", "Robin").medBarn(barn1fnr).medBarn(barn2fnr)
         val barn1 = lagPerson(barn2fnr, "Ole", "Brum").medForeldre(forelder)
@@ -197,10 +197,10 @@ internal class PersonDataServiceTest {
     fun `test henting komplett familie med barn for persondatacollection`() {
 
         //generer fnr
-        val farfnr = FodselsnummerMother.generateRandomFnr(42)
-        val morfnr = FodselsnummerMother.generateRandomFnr(41)
-        val barn1 = FodselsnummerMother.generateRandomFnr(11)
-        val barn2 = FodselsnummerMother.generateRandomFnr(13)
+        val farfnr = FodselsnummerGenerator.generateFnrForTest(42)
+        val morfnr = FodselsnummerGenerator.generateFnrForTest(41)
+        val barn1 = FodselsnummerGenerator.generateFnrForTest(11)
+        val barn2 = FodselsnummerGenerator.generateFnrForTest(13)
 
         //far og mor i pair
         val pair = LagPDLPerson.createPersonMedEktefellePartner(farfnr, morfnr, Sivilstandstype.GIFT)

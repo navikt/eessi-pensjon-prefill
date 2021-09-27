@@ -10,9 +10,9 @@ import no.nav.eessi.pensjon.eux.model.sed.Pensjon
 import no.nav.eessi.pensjon.eux.model.sed.PinItem
 import no.nav.eessi.pensjon.eux.model.sed.SedType
 import no.nav.eessi.pensjon.eux.model.sed.YtelserItem
+import no.nav.eessi.pensjon.personoppslag.Fodselsnummer
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModel
-import no.nav.eessi.pensjon.prefill.person.NavFodselsnummer
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.EPSaktype
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.KravHistorikkHelper.finnKravHistorikk
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.KravHistorikkHelper.finnKravHistorikkForDato
@@ -384,10 +384,10 @@ object PrefillP2xxxPensjon {
      */
     private fun createPensionBasedOn(pensak: V1Sak, personNr: String): String? {
         logger.debug("4.1.10.1      Pensjon basertpå")
-        val navfnr = NavFodselsnummer(personNr)
+        val navfnr = Fodselsnummer.fra(personNr)
 
-        if (navfnr.isDNumber()) {
-            return "01" // Botid
+        if (navfnr != null && navfnr.isDNumber()) {
+                return "01" // Botid
         }
 
         return when (pensak.sakType) {

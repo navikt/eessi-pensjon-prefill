@@ -3,6 +3,7 @@ package no.nav.eessi.pensjon.prefill.sed.krav
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.sed.SedType
+import no.nav.eessi.pensjon.personoppslag.FodselsnummerGenerator
 import no.nav.eessi.pensjon.prefill.FeilSakstypeForSedException
 import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
@@ -12,7 +13,6 @@ import no.nav.eessi.pensjon.prefill.models.PensjonCollection
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModel
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
-import no.nav.eessi.pensjon.prefill.person.FodselsnummerMother.generateRandomFnr
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLAdresse
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
@@ -23,8 +23,8 @@ import org.junit.jupiter.api.assertThrows
 
 class PrefillP2000MedUforeSakTest {
 
-    private val personFnr = generateRandomFnr(68)
-    private val ekteFnr = generateRandomFnr(70)
+    private val personFnr = FodselsnummerGenerator.generateFnrForTest(68)
+    private val ekteFnr = FodselsnummerGenerator.generateFnrForTest(70)
     private val pesysSaksnummer = "22874955"
 
     lateinit var prefillData: PrefillDataModel

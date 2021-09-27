@@ -3,12 +3,12 @@ package no.nav.eessi.pensjon.prefill.sed
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.sed.SedType
+import no.nav.eessi.pensjon.personoppslag.Fodselsnummer
+import no.nav.eessi.pensjon.personoppslag.FodselsnummerGenerator
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModel
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
-import no.nav.eessi.pensjon.prefill.person.FodselsnummerMother.generateRandomFnr
-import no.nav.eessi.pensjon.prefill.person.NavFodselsnummer
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLAdresse
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.prefill.person.PrefillSed
@@ -24,8 +24,8 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 class PrefillP8000APUtlandInnvTest {
-    private val personFnr = generateRandomFnr(68)
-    private val ekteFnr = generateRandomFnr(70)
+    private val personFnr = FodselsnummerGenerator.generateFnrForTest(68)
+    private val ekteFnr = FodselsnummerGenerator.generateFnrForTest(70)
     private val pesysSaksnummer = "14398627"
     lateinit var prefillData: PrefillDataModel
     lateinit var prefill: PrefillP8000
@@ -65,8 +65,8 @@ class PrefillP8000APUtlandInnvTest {
 
         assertEquals("ODIN ETTØYE", p8000.nav?.bruker?.person?.fornavn)
         assertEquals("BALDER", p8000.nav?.bruker?.person?.etternavn)
-        val navfnr1 = NavFodselsnummer(p8000.nav?.bruker?.person?.pin?.get(0)?.identifikator!!)
-        assertEquals(68, navfnr1.getAge())
+        val navfnr1 = Fodselsnummer.fra(p8000.nav?.bruker?.person?.pin?.get(0)?.identifikator!!)
+        assertEquals(68, navfnr1?.getAge())
 
         assertNotNull(p8000.nav?.bruker?.person?.pin)
         val pinlist = p8000.nav?.bruker?.person?.pin

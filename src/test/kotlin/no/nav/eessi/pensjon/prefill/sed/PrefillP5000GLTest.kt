@@ -4,6 +4,8 @@ import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.sed.P5000
 import no.nav.eessi.pensjon.eux.model.sed.SedType
+import no.nav.eessi.pensjon.personoppslag.Fodselsnummer
+import no.nav.eessi.pensjon.personoppslag.FodselsnummerGenerator
 import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
@@ -11,8 +13,6 @@ import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PersonId
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModel
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
-import no.nav.eessi.pensjon.prefill.person.FodselsnummerMother.generateRandomFnr
-import no.nav.eessi.pensjon.prefill.person.NavFodselsnummer
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
@@ -22,8 +22,8 @@ import org.junit.jupiter.api.Test
 
 class PrefillP5000GLTest {
 
-    private val personFnr = generateRandomFnr(65)
-    private val avdodPersonFnr = generateRandomFnr(75)
+    private val personFnr = FodselsnummerGenerator.generateFnrForTest(65)
+    private val avdodPersonFnr = FodselsnummerGenerator.generateFnrForTest(75)
     private val pesysSaksnummer = "21975717"
 
     lateinit var prefillData: PrefillDataModel
@@ -63,8 +63,8 @@ class PrefillP5000GLTest {
 
         assertEquals("BAMSE LUR", p5000.nav?.bruker?.person?.fornavn)
         assertEquals("MOMBALO", p5000.nav?.bruker?.person?.etternavn)
-        val navfnr1 = NavFodselsnummer(p5000.nav?.bruker?.person?.pin?.get(0)?.identifikator!!)
-        assertEquals(75, navfnr1.getAge())
+        val navfnr1 = Fodselsnummer.fra(p5000.nav?.bruker?.person?.pin?.get(0)?.identifikator!!)
+        assertEquals(75, navfnr1?.getAge())
         assertEquals("M", p5000.nav?.bruker?.person?.kjoenn)
 
         assertNotNull(p5000.nav?.bruker?.person?.pin)
@@ -75,8 +75,8 @@ class PrefillP5000GLTest {
 
         assertEquals("BAMSE ULUR", p5000.p5000Pensjon?.gjenlevende?.person?.fornavn)
         assertEquals("DOLLY", p5000.p5000Pensjon?.gjenlevende?.person?.etternavn)
-        val navfnr2 = NavFodselsnummer(p5000.p5000Pensjon?.gjenlevende?.person?.pin?.get(0)?.identifikator!!)
-        assertEquals(65, navfnr2.getAge())
+        val navfnr2 = Fodselsnummer.fra(p5000.p5000Pensjon?.gjenlevende?.person?.pin?.get(0)?.identifikator!!)
+        assertEquals(65, navfnr2?.getAge())
         assertEquals("K", p5000.p5000Pensjon?.gjenlevende?.person?.kjoenn)
 
         assertNull( p5000.pensjon)

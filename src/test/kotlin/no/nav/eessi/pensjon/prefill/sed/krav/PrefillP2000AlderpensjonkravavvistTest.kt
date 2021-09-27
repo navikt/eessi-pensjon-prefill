@@ -5,6 +5,8 @@ import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.sed.Nav
 import no.nav.eessi.pensjon.eux.model.sed.SED
 import no.nav.eessi.pensjon.eux.model.sed.SedType
+import no.nav.eessi.pensjon.personoppslag.Fodselsnummer
+import no.nav.eessi.pensjon.personoppslag.FodselsnummerGenerator
 import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
@@ -12,8 +14,6 @@ import no.nav.eessi.pensjon.prefill.models.PensjonCollection
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModel
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother.initialPrefillDataModel
-import no.nav.eessi.pensjon.prefill.person.FodselsnummerMother.generateRandomFnr
-import no.nav.eessi.pensjon.prefill.person.NavFodselsnummer
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLAdresse
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
@@ -28,11 +28,11 @@ import org.junit.jupiter.api.Test
 
 class PrefillP2000AlderpensjonkravavvistTest {
 
-    private val personFnr = generateRandomFnr(67)
+    private val personFnr = FodselsnummerGenerator.generateFnrForTest(67)
     private val pesysSaksnummer = "22889955"
 
     private val giftFnr = personFnr
-    private val ekteFnr = generateRandomFnr(70)
+    private val ekteFnr = FodselsnummerGenerator.generateFnrForTest(70)
 
     lateinit var prefillData: PrefillDataModel
     private lateinit var prefillSEDService: PrefillSEDService
@@ -99,8 +99,8 @@ class PrefillP2000AlderpensjonkravavvistTest {
 
         assertEquals("ODIN ETTØYE", p2000.nav?.bruker?.person?.fornavn)
         assertEquals("BALDER", p2000.nav?.bruker?.person?.etternavn)
-        val navfnr1 = NavFodselsnummer(p2000.nav?.bruker?.person?.pin?.get(0)?.identifikator!!)
-        assertEquals(67, navfnr1.getAge())
+        val navfnr1 = Fodselsnummer.fra(p2000.nav?.bruker?.person?.pin?.get(0)?.identifikator!!)
+        assertEquals(67, navfnr1?.getAge())
 
         assertNotNull(p2000.nav?.bruker?.person?.pin)
         val pinlist = p2000.nav?.bruker?.person?.pin
@@ -118,8 +118,8 @@ class PrefillP2000AlderpensjonkravavvistTest {
 
         assertEquals("NO", p2000.nav?.ektefelle?.person?.pin?.get(0)?.land)
 
-        val navfnr = NavFodselsnummer(p2000.nav?.ektefelle?.person?.pin?.get(0)?.identifikator!!)
-        assertEquals(70, navfnr.getAge())
+        val navfnr = Fodselsnummer.fra(p2000.nav?.ektefelle?.person?.pin?.get(0)?.identifikator!!)
+        assertEquals(70, navfnr?.getAge())
 
         assertNotNull(p2000.nav?.krav)
         assertEquals("2019-04-30", p2000.nav?.krav?.dato)

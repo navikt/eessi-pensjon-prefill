@@ -3,6 +3,7 @@ package no.nav.eessi.pensjon.prefill
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import no.nav.eessi.pensjon.eux.model.sed.SedType
 import no.nav.eessi.pensjon.metrics.MetricsHelper
+import no.nav.eessi.pensjon.personoppslag.Fodselsnummer
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonoppslagException
 import no.nav.eessi.pensjon.personoppslag.pdl.model.AktoerId
@@ -16,7 +17,6 @@ import no.nav.eessi.pensjon.personoppslag.pdl.model.Sivilstand
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Sivilstandstype
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModel
-import no.nav.eessi.pensjon.prefill.person.NavFodselsnummer
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -127,7 +127,7 @@ class PersonDataService(private val personService: PersonService,
         val barnepinListe = hovedPerson.forelderBarnRelasjon
             .filter { it.relatertPersonsRolle == Familierelasjonsrolle.BARN }
             .map { it.relatertPersonsIdent }
-            .filter { barnPin -> NavFodselsnummer(barnPin).isUnder18Year() }
+            .filter { barnPin -> Fodselsnummer.fra(barnPin)?.isUnder18Year() ?: false }
         logger.info("prøver å hente ut alle barn (filtrert) på hovedperson: " + barnepinListe.size )
 
         return barnepinListe

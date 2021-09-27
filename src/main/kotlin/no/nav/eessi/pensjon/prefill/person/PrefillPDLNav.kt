@@ -1,6 +1,7 @@
 package no.nav.eessi.pensjon.prefill.person
 
 import no.nav.eessi.pensjon.eux.model.sed.*
+import no.nav.eessi.pensjon.personoppslag.Fodselsnummer
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Familierelasjonsrolle
 import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe
 import no.nav.eessi.pensjon.personoppslag.pdl.model.KjoennType
@@ -38,7 +39,7 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
 
             if (fdato == null) {
                 val fnr = this.identer.firstOrNull { it.gruppe == IdentGruppe.FOLKEREGISTERIDENT }?.ident
-                return NavFodselsnummer(fnr!!).getBirthDate().toString()
+                return Fodselsnummer.fra(fnr!!)?.getBirthDate().toString()
             }
             return fdato.toString()
         }

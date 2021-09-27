@@ -3,6 +3,7 @@ package no.nav.eessi.pensjon.prefill.sed.krav
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.sed.SedType
+import no.nav.eessi.pensjon.personoppslag.FodselsnummerGenerator
 import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
@@ -11,7 +12,6 @@ import no.nav.eessi.pensjon.prefill.models.PensjonCollection
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModel
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
-import no.nav.eessi.pensjon.prefill.person.FodselsnummerMother.generateRandomFnr
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
 import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper.lesPensjonsdataFraFil
@@ -26,8 +26,8 @@ import org.springframework.web.server.ResponseStatusException
 
 class PrefillP2000KravKunUtlandTest {
 
-    private val personFnr = generateRandomFnr(67)
-    private val ekteFnr = generateRandomFnr(70)
+    private val personFnr = FodselsnummerGenerator.generateFnrForTest(67)
+    private val ekteFnr = FodselsnummerGenerator.generateFnrForTest(70)
 
     lateinit var prefillData: PrefillDataModel
     lateinit var dataFromPEN: PensjonsinformasjonService

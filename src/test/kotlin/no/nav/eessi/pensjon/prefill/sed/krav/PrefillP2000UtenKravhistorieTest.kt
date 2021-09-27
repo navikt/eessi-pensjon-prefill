@@ -3,6 +3,7 @@ package no.nav.eessi.pensjon.prefill.sed.krav
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.sed.SedType
+import no.nav.eessi.pensjon.personoppslag.FodselsnummerGenerator
 import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
@@ -11,7 +12,6 @@ import no.nav.eessi.pensjon.prefill.models.PensjonCollection
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModel
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
-import no.nav.eessi.pensjon.prefill.person.FodselsnummerMother.generateRandomFnr
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLAdresse
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
@@ -26,9 +26,9 @@ import org.junit.jupiter.api.assertThrows
 
 class PrefillP2000UtenKravhistorieTest {
 
-    private val personFnr = generateRandomFnr(47)
-    private val barn1Fnr = generateRandomFnr(12)
-    private val barn2Fnr = generateRandomFnr(14)
+    private val personFnr = FodselsnummerGenerator.generateFnrForTest(47)
+    private val barn1Fnr = FodselsnummerGenerator.generateFnrForTest(12)
+    private val barn2Fnr = FodselsnummerGenerator.generateFnrForTest(14)
 
     private lateinit var prefillData: PrefillDataModel
     private lateinit var dataFromPEN: PensjonsinformasjonService

@@ -5,6 +5,8 @@ import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.sed.Nav
 import no.nav.eessi.pensjon.eux.model.sed.SED
 import no.nav.eessi.pensjon.eux.model.sed.SedType
+import no.nav.eessi.pensjon.personoppslag.Fodselsnummer
+import no.nav.eessi.pensjon.personoppslag.FodselsnummerGenerator
 import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
@@ -13,8 +15,6 @@ import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PersonId
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModel
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
-import no.nav.eessi.pensjon.prefill.person.FodselsnummerMother.generateRandomFnr
-import no.nav.eessi.pensjon.prefill.person.NavFodselsnummer
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLAdresse
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
@@ -27,8 +27,8 @@ import org.junit.jupiter.api.Test
 
 class PrefillP2100BarnepensjonUtlandInnv {
 
-    private val personFnr = generateRandomFnr(12)
-    private val avdodPersonFnr = generateRandomFnr(40)
+    private val personFnr = FodselsnummerGenerator.generateFnrForTest(12)
+    private val avdodPersonFnr = FodselsnummerGenerator.generateFnrForTest(40)
     private val pesysSaksnummer = "22915555"
 
     private lateinit var prefillData: PrefillDataModel
@@ -95,8 +95,8 @@ class PrefillP2100BarnepensjonUtlandInnv {
 
         assertEquals("BAMSE LUR", p2100.nav?.bruker?.person?.fornavn)
         assertEquals("MOMBALO", p2100.nav?.bruker?.person?.etternavn)
-        val navfnr1 = NavFodselsnummer(p2100.nav?.bruker?.person?.pin?.get(0)?.identifikator!!)
-        assertEquals(40, navfnr1.getAge())
+        val navfnr1 = Fodselsnummer.fra(p2100.nav?.bruker?.person?.pin?.get(0)?.identifikator!!)
+        assertEquals(40, navfnr1?.getAge())
         assertEquals("M", p2100.nav?.bruker?.person?.kjoenn)
 
         assertNotNull(p2100.nav?.bruker?.person?.pin)
@@ -109,8 +109,8 @@ class PrefillP2100BarnepensjonUtlandInnv {
 
         assertEquals("BAMSE ULUR", p2100.pensjon?.gjenlevende?.person?.fornavn)
         assertEquals("DOLLY", p2100.pensjon?.gjenlevende?.person?.etternavn)
-        val navfnr2 = NavFodselsnummer(p2100.pensjon?.gjenlevende?.person?.pin?.get(0)?.identifikator!!)
-        assertEquals(12, navfnr2.getAge())
+        val navfnr2 = Fodselsnummer.fra(p2100.pensjon?.gjenlevende?.person?.pin?.get(0)?.identifikator!!)
+        assertEquals(12, navfnr2?.getAge())
         assertEquals("K", p2100.pensjon?.gjenlevende?.person?.kjoenn)
 
     }

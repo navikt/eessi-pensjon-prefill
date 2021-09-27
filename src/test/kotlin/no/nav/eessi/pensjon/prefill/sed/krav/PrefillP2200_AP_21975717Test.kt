@@ -3,6 +3,8 @@ package no.nav.eessi.pensjon.prefill.sed.krav
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.sed.SedType
+import no.nav.eessi.pensjon.personoppslag.Fodselsnummer
+import no.nav.eessi.pensjon.personoppslag.FodselsnummerGenerator
 import no.nav.eessi.pensjon.prefill.ApiRequest
 import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
@@ -13,8 +15,6 @@ import no.nav.eessi.pensjon.prefill.models.PensjonCollection
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModel
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
-import no.nav.eessi.pensjon.prefill.person.FodselsnummerMother.generateRandomFnr
-import no.nav.eessi.pensjon.prefill.person.NavFodselsnummer
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLAdresse
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
@@ -33,8 +33,8 @@ class PrefillP2200_AP_21975717Test {
 
     var kodeverkClient: KodeverkClient = mockk()
 
-    private val personFnr = generateRandomFnr(68)
-    private val ekteFnr = generateRandomFnr(70)
+    private val personFnr = FodselsnummerGenerator.generateFnrForTest(68)
+    private val ekteFnr = FodselsnummerGenerator.generateFnrForTest(70)
 
     private val pesysSaksnummer = "14915730"
 
@@ -88,8 +88,8 @@ class PrefillP2200_AP_21975717Test {
 
         assertEquals("ODIN ETTØYE", p2200.nav?.bruker?.person?.fornavn)
         assertEquals("BALDER", p2200.nav?.bruker?.person?.etternavn)
-        val navfnr1 = NavFodselsnummer(p2200.nav?.bruker?.person?.pin?.get(0)?.identifikator!!)
-        assertEquals(68, navfnr1.getAge())
+        val navfnr1 = Fodselsnummer.fra(p2200.nav?.bruker?.person?.pin?.get(0)?.identifikator!!)
+        assertEquals(68, navfnr1?.getAge())
 
         assertNotNull(p2200.nav?.bruker?.person?.pin)
         val pinlist = p2200.nav?.bruker?.person?.pin
@@ -109,8 +109,8 @@ class PrefillP2200_AP_21975717Test {
         assertEquals("THOR-DOPAPIR", p2200.nav?.ektefelle?.person?.fornavn)
         assertEquals("RAGNAROK", p2200.nav?.ektefelle?.person?.etternavn)
 
-        val navfnr = NavFodselsnummer(p2200.nav?.ektefelle?.person?.pin?.get(0)?.identifikator!!)
-        assertEquals(70, navfnr.getAge())
+        val navfnr = Fodselsnummer.fra(p2200.nav?.ektefelle?.person?.pin?.get(0)?.identifikator!!)
+        assertEquals(70, navfnr?.getAge())
     }
 
     @Test

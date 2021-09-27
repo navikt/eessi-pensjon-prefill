@@ -3,6 +3,7 @@ package no.nav.eessi.pensjon.prefill.sed.krav
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.sed.SedType
+import no.nav.eessi.pensjon.personoppslag.FodselsnummerGenerator
 import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
@@ -10,7 +11,6 @@ import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.prefill.models.PensjonCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModel
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother.initialPrefillDataModel
-import no.nav.eessi.pensjon.prefill.person.FodselsnummerMother.generateRandomFnr
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLAdresse
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
@@ -25,9 +25,9 @@ import org.junit.jupiter.api.Test
 
 class PrefillP2200UforpensjonTest {
 
-    private val personFnr = generateRandomFnr(42)
-    private val barn1Fnr = generateRandomFnr(12)
-    private val barn2Fnr = generateRandomFnr(17)
+    private val personFnr = FodselsnummerGenerator.generateFnrForTest(42)
+    private val barn1Fnr = FodselsnummerGenerator.generateFnrForTest(12)
+    private val barn2Fnr = FodselsnummerGenerator.generateFnrForTest(17)
 
     lateinit var prefillData: PrefillDataModel
     lateinit var prefillNav: PrefillPDLNav

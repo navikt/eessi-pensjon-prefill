@@ -4,6 +4,7 @@ import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.sed.Nav
 import no.nav.eessi.pensjon.eux.model.sed.SED
 import no.nav.eessi.pensjon.eux.model.sed.SedType
+import no.nav.eessi.pensjon.personoppslag.FodselsnummerGenerator
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Sivilstandstype
 import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
@@ -14,7 +15,6 @@ import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PersonId
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModel
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
-import no.nav.eessi.pensjon.prefill.person.FodselsnummerMother.generateRandomFnr
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
 import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper.lesPensjonsdataFraFil
@@ -25,8 +25,8 @@ import org.junit.jupiter.api.Test
 
 class PrefillP2100GjenlevendeRevurdering {
 
-    private val personFnr = generateRandomFnr(45)
-    private val avdodPersonFnr = generateRandomFnr(45)
+    private val personFnr = FodselsnummerGenerator.generateFnrForTest(45)
+    private val avdodPersonFnr = FodselsnummerGenerator.generateFnrForTest(45)
     private val pesysSaksnummer = "22915550"
     private val pesysKravid = "41098605"
 

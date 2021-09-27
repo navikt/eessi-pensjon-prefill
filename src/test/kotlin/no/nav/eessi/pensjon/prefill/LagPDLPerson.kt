@@ -1,5 +1,7 @@
 package no.nav.eessi.pensjon.prefill
 
+import no.nav.eessi.pensjon.personoppslag.Fodselsnummer
+import no.nav.eessi.pensjon.personoppslag.FodselsnummerGenerator
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Bostedsadresse
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Doedsfall
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Endring
@@ -21,17 +23,15 @@ import no.nav.eessi.pensjon.personoppslag.pdl.model.Sivilstandstype
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Statsborgerskap
 import no.nav.eessi.pensjon.personoppslag.pdl.model.UtenlandskAdresseIFrittFormat
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Vegadresse
-import no.nav.eessi.pensjon.prefill.person.FodselsnummerMother
-import no.nav.eessi.pensjon.prefill.person.NavFodselsnummer
 import java.time.LocalDate
 import java.time.LocalDateTime
 
 
 class LagPDLPerson {
     companion object {
-        fun lagPerson(norskIdent: String = FodselsnummerMother.generateRandomFnr(60), fornavn: String = "OLE", etternavn: String = "OLSEN", land: String = "NOR", kjoennType: KjoennType = KjoennType.MANN, erDod: Boolean? = false): Person {
-            val personfnr = NavFodselsnummer(norskIdent)
-            val fdatoaar =  if (erDod != null && erDod == true) LocalDate.of(1921, 7, 12) else personfnr.getBirthDate()
+        fun lagPerson(norskIdent: String = FodselsnummerGenerator.generateFnrForTest(60), fornavn: String = "OLE", etternavn: String = "OLSEN", land: String = "NOR", kjoennType: KjoennType = KjoennType.MANN, erDod: Boolean? = false): Person {
+            val personfnr = Fodselsnummer.fra(norskIdent)
+            val fdatoaar =  if (erDod != null && erDod == true) LocalDate.of(1921, 7, 12) else personfnr?.getBirthDate()
             val doeadfall = if (erDod != null && erDod == true) Doedsfall(LocalDate.of(2020, 10, 1), null, mockMeta()) else null
             return Person(
                 identer = listOf(IdentInformasjon(norskIdent, IdentGruppe.FOLKEREGISTERIDENT)),

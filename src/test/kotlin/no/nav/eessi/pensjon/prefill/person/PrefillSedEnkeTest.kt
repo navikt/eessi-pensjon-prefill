@@ -4,13 +4,14 @@ import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.sed.SED
 import no.nav.eessi.pensjon.eux.model.sed.SedType
+import no.nav.eessi.pensjon.personoppslag.Fodselsnummer
+import no.nav.eessi.pensjon.personoppslag.FodselsnummerGenerator
 import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.prefill.models.PersonId
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother.initialPrefillDataModel
-import no.nav.eessi.pensjon.prefill.person.FodselsnummerMother.generateRandomFnr
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
 import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -24,9 +25,9 @@ class PrefillSedEnkeTest {
 
     private lateinit var prefillPDLNav: PrefillPDLNav
 
-    private val fnr = generateRandomFnr(67)
-    private val b1fnr = generateRandomFnr(37)
-    private val b2fnr = generateRandomFnr(17)
+    private val fnr = FodselsnummerGenerator.generateFnrForTest(67)
+    private val b1fnr = FodselsnummerGenerator.generateFnrForTest(37)
+    private val b2fnr = FodselsnummerGenerator.generateFnrForTest(17)
 
     @BeforeEach
     fun setup() {
@@ -78,17 +79,17 @@ class PrefillSedEnkeTest {
         assertEquals("BOUWMANS", item1.person?.etternavn)
         assertEquals("TOPPI DOTTO", item1.person?.fornavn)
         val ident1 = item1.person?.pin?.get(0)?.identifikator
-        val navfnr1 = NavFodselsnummer(ident1!!)
-        assertEquals(false, navfnr1.isUnder18Year())
-        assertEquals(37, navfnr1.getAge())
+        val navfnr1 = Fodselsnummer.fra(ident1!!)
+        assertEquals(false, navfnr1?.isUnder18Year())
+        assertEquals(37, navfnr1?.getAge())
 
 
         val item2 = resultBarn.last()
         assertEquals("BOUWMANS", item2.person?.etternavn)
         assertEquals("EGIDIJS MASKOT", item2.person?.fornavn)
         val ident = item2.person?.pin?.get(0)?.identifikator
-        val navfnr = NavFodselsnummer(ident!!)
-        assertEquals(true, navfnr.isUnder18Year())
+        val navfnr = Fodselsnummer.fra(ident!!)
+        assertEquals(true, navfnr?.isUnder18Year())
     }
 
     @Test
@@ -111,11 +112,11 @@ class PrefillSedEnkeTest {
 
         val barn = sed.nav?.barn?.last()!!
         val ident = barn.person?.pin?.get(0)?.identifikator
-        val navfnr = NavFodselsnummer(ident!!)
+        val navfnr = Fodselsnummer.fra(ident!!)
 
         assertEquals("BOUWMANS", barn.person?.etternavn)
         assertEquals("TOPPI DOTTO", barn.person?.fornavn)
-        assertEquals(true, navfnr.isUnder18Year())
+        assertEquals(true, navfnr?.isUnder18Year())
 
     }
 
