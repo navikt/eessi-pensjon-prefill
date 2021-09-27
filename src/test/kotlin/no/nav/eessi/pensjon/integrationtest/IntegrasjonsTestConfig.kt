@@ -20,9 +20,10 @@ import org.springframework.kafka.test.EmbeddedKafkaBroker
 import java.time.Duration
 
 @TestConfiguration
-class IntegrasjonsTestConfig {
-    @Value("\${" + EmbeddedKafkaBroker.SPRING_EMBEDDED_KAFKA_BROKERS + "}")
-    private lateinit var brokerAddresses: String
+class IntegrasjonsTestConfig(
+    @Value("\${" + EmbeddedKafkaBroker.SPRING_EMBEDDED_KAFKA_BROKERS + "}")  private val brokerAddresses: String,
+    @Value("\${KAFKA_AUTOMATISERING_TOPIC}") private val automatiseringTopic: String
+) {
 
     @Bean
     fun producerFactory(): ProducerFactory<String, String> {
@@ -31,6 +32,13 @@ class IntegrasjonsTestConfig {
         configs[ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG] = StringSerializer::class.java
         configs[ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG] = StringSerializer::class.java
         return DefaultKafkaProducerFactory(configs)
+    }
+
+    @Bean
+    fun aivenKafkaTemplate(): KafkaTemplate<String, String> {
+        val kafkaTemplate = KafkaTemplate(producerFactory())
+        kafkaTemplate.defaultTopic = automatiseringTopic
+        return kafkaTemplate
     }
 
     @Bean

@@ -54,7 +54,6 @@ class SedPrefillP8000IntegrationSpringTest {
     @Autowired
     lateinit var mockMvc: MockMvc
 
-
     private companion object {
         const val FNR_VOKSEN_3 = "12312312312"
         const val FNR_VOKSEN_4 = "9876543210"
