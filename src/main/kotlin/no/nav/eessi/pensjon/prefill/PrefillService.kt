@@ -65,7 +65,7 @@ class PrefillService(
                     logger.warn("Metrics feilet på Sed_Prefill")
                 }
 
-                automatiseringStatistikkService.genererAutomatiseringStatistikk(sed,  prefillData.buc)
+                automatiseringStatistikkService.genererAutomatiseringStatistikk(sed, prefillData.buc)
 
                 return@measure sed.toJsonSkipEmpty()
 

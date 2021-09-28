@@ -7,7 +7,7 @@ import org.springframework.messaging.MessageHeaders
 import java.time.LocalDateTime
 
 data class PrefillAutomatiseringMelding (
-    val opprettetTidspunkt: LocalDateTime = LocalDateTime.now(),
+    val opprettetTidspunkt: LocalDateTime,
     val sedVersjon: String,
     val bucType: BucType,
     val sedType: SedType,
@@ -20,6 +20,6 @@ class KafkaAutomatiseringMessage(
     private val payload: PrefillAutomatiseringMelding
 ): Message<PrefillAutomatiseringMelding> {
     override fun getPayload(): PrefillAutomatiseringMelding = payload
-    override fun getHeaders(): MessageHeaders = MessageHeaders(mapOf("hendelsetype" to "PREUTFYLLINGSTATISTIKK", "opprettetTidspunkt" to LocalDateTime.now()))
+    override fun getHeaders(): MessageHeaders = MessageHeaders(mapOf("hendelsetype" to "PREUTFYLLINGSTATISTIKK"))
 }
 
