@@ -43,21 +43,6 @@ eessi:
 kodeverk.rest-api:
   url: 'http://example.com:8093'
 
-spring:
-  profiles:
-    active: 'local-test'
-  kafka:
-    listener:
-      ack-mode: manual
-    consumer:
-      enable-auto-commit: false
-      auto-offset-reset: earliest
-    bootstrap-servers: ${spring.embedded.kafka.brokers}
-    properties:
-      security.protocol: PLAINTEXT
-    main:
-      allow-bean-definition-overriding: true
-
 saf.graphql:
   url: 'http://localhost'
 
