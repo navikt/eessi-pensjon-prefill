@@ -12,21 +12,28 @@ import org.springframework.context.annotation.Primary
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory
 import org.springframework.kafka.core.*
 import org.springframework.kafka.listener.ContainerProperties
+import org.springframework.kafka.support.serializer.JsonSerializer
 import org.springframework.kafka.test.EmbeddedKafkaBroker
 import java.time.Duration
 
 @TestConfiguration
-class IntegrasjonsTestConfig {
-    @Value("\${" + EmbeddedKafkaBroker.SPRING_EMBEDDED_KAFKA_BROKERS + "}")
-    private lateinit var brokerAddresses: String
+class IntegrasjonsTestConfig(
+    @Value("\${" + EmbeddedKafkaBroker.SPRING_EMBEDDED_KAFKA_BROKERS + "}")  private val brokerAddresses: String) {
 
     @Bean
     fun producerFactory(): ProducerFactory<String, String> {
         val configs = HashMap<String, Any>()
         configs[ProducerConfig.BOOTSTRAP_SERVERS_CONFIG] = this.brokerAddresses
         configs[ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG] = StringSerializer::class.java
-        configs[ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG] = StringSerializer::class.java
+        configs[ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG] = JsonSerializer::class.java
         return DefaultKafkaProducerFactory(configs)
+    }
+
+    @Bean
+    fun aivenKafkaTemplate(): KafkaTemplate<String, String> {
+        val kafkaTemplate = KafkaTemplate(producerFactory())
+        kafkaTemplate.defaultTopic = "automatiseringTopic"
+        return kafkaTemplate
     }
 
     @Bean
@@ -34,7 +41,7 @@ class IntegrasjonsTestConfig {
         val configs = HashMap<String, Any>()
         configs[ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG] = this.brokerAddresses
         configs[ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG] = StringDeserializer::class.java
-        configs[ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG] = StringDeserializer::class.java
+        configs[ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG] = JsonSerializer::class.java
         configs[ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG] = false
         configs[ConsumerConfig.AUTO_OFFSET_RESET_CONFIG] = "earliest"
         configs[ConsumerConfig.GROUP_ID_CONFIG] = "eessi-pensjon-group-test"
@@ -70,6 +77,8 @@ class IntegrasjonsTestConfig {
     @Bean
     @Primary
     fun kafkaTemplate(): KafkaTemplate<String, String> {
-        return KafkaTemplate(producerFactory())
+        return KafkaTemplate(producerFactory()).apply {
+            defaultTopic = "test"
+        }
     }
 }
