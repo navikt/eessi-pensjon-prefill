@@ -139,7 +139,7 @@ class PersonDataService(private val personService: PersonService,
     }
 
     private fun filterEktefelleRelasjon(forsikretPerson: Person?): Sivilstand? {
-        val validRelasjoner = listOf(Sivilstandstype.GIFT, Sivilstandstype.REGISTRERT_PARTNER)
+        val validRelasjoner = listOf(Sivilstandstype.GIFT, Sivilstandstype.REGISTRERT_PARTNER, Sivilstandstype.SEPARERT, Sivilstandstype.SEPARERT_PARTNER)
         return forsikretPerson?.sivilstand
             ?.filter { validRelasjoner.contains(it.type) }
             ?.maxByOrNull { it.metadata.sisteRegistrertDato() }
