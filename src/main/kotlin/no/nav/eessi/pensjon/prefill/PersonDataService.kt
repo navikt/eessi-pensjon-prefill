@@ -139,7 +139,9 @@ class PersonDataService(private val personService: PersonService,
     }
 
     private fun filterEktefelleRelasjon(forsikretPerson: Person?): Sivilstand? {
-        val validRelasjoner = listOf(Sivilstandstype.GIFT, Sivilstandstype.REGISTRERT_PARTNER, Sivilstandstype.SEPARERT, Sivilstandstype.SEPARERT_PARTNER)
+        //Det støttes kun EKTEFELLE, REGISTERT_PARTNER og SAMBOER er de eneste sivilstand som støttes i RINA-SED
+        //Vi aventer med støtte for SAMBOER fra pensjon-pdl lager en ny løsning for samboere
+        val validRelasjoner = listOf(Sivilstandstype.GIFT, Sivilstandstype.REGISTRERT_PARTNER)
         return forsikretPerson?.sivilstand
             ?.filter { validRelasjoner.contains(it.type) }
             ?.maxByOrNull { it.metadata.sisteRegistrertDato() }
