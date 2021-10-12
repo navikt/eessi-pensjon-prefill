@@ -21,7 +21,6 @@ import no.nav.eessi.pensjon.eux.model.sed.Person
 import no.nav.eessi.pensjon.eux.model.sed.PinItem
 import no.nav.eessi.pensjon.eux.model.sed.ReduksjonItem
 import no.nav.eessi.pensjon.eux.model.sed.Sak
-import no.nav.eessi.pensjon.eux.model.sed.SedType
 import no.nav.eessi.pensjon.eux.model.sed.StatsborgerskapItem
 import no.nav.eessi.pensjon.eux.model.sed.Tilleggsinformasjon
 import no.nav.eessi.pensjon.eux.model.sed.Ukjent

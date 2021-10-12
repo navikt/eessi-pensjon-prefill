@@ -3,6 +3,7 @@ package no.nav.eessi.pensjon.prefill.sed
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.NavMock
+import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.sed.Adresse
 import no.nav.eessi.pensjon.eux.model.sed.AnsattSelvstendigItem
 import no.nav.eessi.pensjon.eux.model.sed.BarnepassItem
@@ -11,7 +12,6 @@ import no.nav.eessi.pensjon.eux.model.sed.P4000
 import no.nav.eessi.pensjon.eux.model.sed.Periode
 import no.nav.eessi.pensjon.eux.model.sed.PersonArbeidogOppholdUtland
 import no.nav.eessi.pensjon.eux.model.sed.SED
-import no.nav.eessi.pensjon.eux.model.sed.SedType
 import no.nav.eessi.pensjon.eux.model.sed.StandardItem
 import no.nav.eessi.pensjon.eux.model.sed.TrygdeTidPeriode
 import no.nav.eessi.pensjon.prefill.ApiRequest

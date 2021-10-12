@@ -1,6 +1,6 @@
 package no.nav.eessi.pensjon.prefill
 
-import no.nav.eessi.pensjon.eux.model.sed.SedType
+import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModel
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjoninformasjonException
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonClient
