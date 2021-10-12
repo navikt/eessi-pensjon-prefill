@@ -2,6 +2,7 @@ package no.nav.eessi.pensjon.prefill.sed
 
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.sed.SED
+import no.nav.eessi.pensjon.eux.model.sed.X009
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.prefill.models.PensjonCollection
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
@@ -12,6 +13,8 @@ import no.nav.eessi.pensjon.prefill.sed.krav.PrefillP2000
 import no.nav.eessi.pensjon.prefill.sed.krav.PrefillP2100
 import no.nav.eessi.pensjon.prefill.sed.krav.PrefillP2200
 import no.nav.eessi.pensjon.prefill.sed.vedtak.PrefillP6000
+import no.nav.eessi.pensjon.utils.mapJsonToAny
+import no.nav.eessi.pensjon.utils.typeRefs
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -119,7 +122,8 @@ class PrefillSEDService(private val eessiInformasjon: EessiInformasjon, private 
                 prefillData.bruker,
                 prefillData.avdod,
                 prefillData.getPersonInfoFromRequestData(),
-                personDataCollection
+                personDataCollection,
+                prefillData.partSedAsJson[SedType.X010.name]?.let { payload ->  mapJsonToAny(payload, typeRefs<X009>()) }
             )
 
             SedType.H020, SedType.H021 -> PrefillH02X(prefillPDLnav).prefill(prefillData, personDataCollection)

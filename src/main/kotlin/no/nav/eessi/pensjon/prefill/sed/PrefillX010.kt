@@ -6,6 +6,7 @@ import no.nav.eessi.pensjon.eux.model.sed.Kontekst
 import no.nav.eessi.pensjon.eux.model.sed.Navsak
 import no.nav.eessi.pensjon.eux.model.sed.Paaminnelse
 import no.nav.eessi.pensjon.eux.model.sed.Person
+import no.nav.eessi.pensjon.eux.model.sed.SED
 import no.nav.eessi.pensjon.eux.model.sed.Svar
 import no.nav.eessi.pensjon.eux.model.sed.X010
 import no.nav.eessi.pensjon.eux.model.sed.XNav
@@ -24,7 +25,8 @@ class PrefillX010(private val prefillNav: PrefillPDLNav)  {
                 bruker: PersonId,
                 avdod: PersonId?,
                 brukerinformasjon: BrukerInformasjon?,
-                personData: PersonDataCollection): X010 {
+                personData: PersonDataCollection,
+                parentSed: SED? = null): X010 {
 
         val navsed = prefillNav.prefill(
             penSaksnummer = penSaksnummer,
