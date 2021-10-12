@@ -1,8 +1,6 @@
 package no.nav.eessi.pensjon.prefill.sed.vedtak
 
-import no.nav.eessi.pensjon.eux.model.sed.Bruker
 import no.nav.eessi.pensjon.eux.model.sed.P6000
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Person
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModel
@@ -31,7 +29,7 @@ class PrefillP6000(private val prefillNav: PrefillPDLNav,
         logger.info("Andreinstitusjoner: $andreInstitusjondetaljer ")
 
         logger.debug("Henter opp Persondata/Gjenlevende fra TPS")
-        val gjenlevende = eventuellGjenlevende(prefillData, personData.forsikretPerson)
+        val gjenlevende = prefillNav.eventuellGjenlevendePDL(prefillData.avdod, personData.forsikretPerson)
 
         logger.debug("Henter opp Pensjonsdata fra PESYS")
         val p6000Pensjon = prefillP6000Pensjon(pensjoninformasjon, gjenlevende, andreInstitusjondetaljer)
@@ -49,20 +47,13 @@ class PrefillP6000(private val prefillNav: PrefillPDLNav,
 
         logger.info("-------------------| Preutfylling [$sedType] END |------------------- ")
 
-        val p6000 = P6000(
+        return P6000(
             type = sedType,
             nav = nav,
             p6000Pensjon = p6000Pensjon
         )
 
-        return p6000
     }
 
-    private fun eventuellGjenlevende(prefillData: PrefillDataModel, gjenlevendeBruker: Person?): Bruker? {
-        return if (prefillData.avdod != null) {
-            logger.info("          Utfylling gjenlevende (etterlatt persjon.gjenlevende)")
-            prefillNav.createBruker(gjenlevendeBruker!!, null, null)
-        } else null
-    }
 }
 

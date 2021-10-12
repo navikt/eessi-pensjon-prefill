@@ -3,6 +3,8 @@ package no.nav.eessi.pensjon.prefill.sed
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.SedType
+import no.nav.eessi.pensjon.eux.model.sed.SED
+import no.nav.eessi.pensjon.eux.model.sed.X009
 import no.nav.eessi.pensjon.personoppslag.FodselsnummerGenerator
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
@@ -14,6 +16,7 @@ import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
+import org.springframework.util.ResourceUtils
 
 class PrefillX010Test {
     private val personFnr = FodselsnummerGenerator.generateFnrForTest(68)
@@ -23,10 +26,13 @@ class PrefillX010Test {
     lateinit var prefill: PrefillX010
     lateinit var prefillNav: PrefillPDLNav
     lateinit var persondataCollection: PersonDataCollection
+    lateinit var x009: X009
 
     @BeforeEach
     fun setup() {
         persondataCollection = PersonPDLMock.createEnkelFamilie(personFnr, ekteFnr)
+
+        x009 = SED.fromJsonToConcrete(ResourceUtils.getFile("classpath:json/nav/X009-NAV.json").readText()) as X009
 
         prefillNav = PrefillPDLNav(
             prefillAdresse = mockk(){
@@ -37,6 +43,7 @@ class PrefillX010Test {
             institutionnavn = "NOINST002, NO INST002, NO")
 
         prefill = PrefillX010(prefillNav)
+
         prefillData = PrefillDataModelMother.initialPrefillDataModel(
             SedType.X010,
             personFnr,
@@ -54,7 +61,8 @@ class PrefillX010Test {
             prefillData.bruker,
             null,
             prefillData.getPersonInfoFromRequestData(),
-            persondataCollection
+            persondataCollection,
+            x009
         )
 
         val json = x010sed.toJsonSkipEmpty()
@@ -65,30 +73,38 @@ class PrefillX010Test {
 
     private fun expectedSed(): String {
         return """
-            {
-              "sed" : "X010",
-              "sedGVer" : "4",
-              "sedVer" : "2",
-              "nav" : {
-                "sak" : {
-                  "kontekst" : {
-                    "bruker" : {
-                      "person" : {
-                        "etternavn" : "BALDER",
-                        "fornavn" : "ODIN ETTØYE",
-                        "kjoenn" : "M",
-                        "foedselsdato" : "1988-07-12"
-                      }
-                    }
-                  },
-                  "paaminnelse" : {
-                    "svar" : {
-                      "informasjon" : { }
-                    }
-                  }
-                }
-              }
-            }
+{
+  "sed" : "X010",
+  "nav" : {
+    "sak" : {
+      "kontekst" : {
+        "bruker" : {
+          "person" : {
+            "etternavn" : "BALDER",
+            "fornavn" : "ODIN ETTØYE",
+            "kjoenn" : "M",
+            "foedselsdato" : "1988-07-12"
+          }
+        }
+      },
+      "paaminnelse" : {
+        "svar" : {
+          "informasjon" : {
+            "kommersenere" : [ {
+              "type" : "dokument",
+              "opplysninger" : "æøå"
+            }, {
+              "type" : "sed",
+              "opplysninger" : "P5000"
+            } ]
+          }
+        }
+      }
+    }
+  },
+  "sedGVer" : "4",
+  "sedVer" : "2"
+}
         """.trimIndent()
     }
 

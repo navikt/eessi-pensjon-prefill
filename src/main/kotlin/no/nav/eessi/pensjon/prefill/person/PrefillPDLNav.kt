@@ -206,6 +206,13 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
         )
     }
 
+    fun eventuellGjenlevendePDL(avdod: PersonId?, gjenlevendeBruker: no.nav.eessi.pensjon.personoppslag.pdl.model.Person?): Bruker? {
+        return if (avdod != null) {
+            logger.info("          Utfylling gjenlevende (etterlatt persjon.gjenlevende)")
+            createBruker(gjenlevendeBruker!!)
+        } else null
+    }
+
     fun createBruker(pdlperson: PDLPerson) = createBruker(pdlperson, null, null)
 
     fun createBruker(pdlperson: PDLPerson,

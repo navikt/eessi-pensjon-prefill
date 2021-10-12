@@ -3,9 +3,9 @@ package no.nav.eessi.pensjon.prefill.sed.krav
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.sed.Bruker
 import no.nav.eessi.pensjon.eux.model.sed.Nav
+import no.nav.eessi.pensjon.eux.model.sed.P2100
 import no.nav.eessi.pensjon.eux.model.sed.Pensjon
 import no.nav.eessi.pensjon.eux.model.sed.SED
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Person
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModel
@@ -32,7 +32,7 @@ class PrefillP2100(private val prefillNav: PrefillPDLNav) {
             krav = pensjon?.kravDato,
             annenPerson = null
         )
-        val gjenlev = eventuellGjenlevendePDL(prefillData, personData.forsikretPerson)
+        val gjenlev = prefillNav.eventuellGjenlevendePDL(prefillData.avdod, personData.forsikretPerson)
 
         return prefillPen(prefillData, nav, gjenlev, sak)
     }
@@ -77,7 +77,7 @@ class PrefillP2100(private val prefillNav: PrefillPDLNav) {
             logger.error(ex.message, ex)
         }
 
-        val sed = SED(
+        val sed = P2100(
             SedType.P2100,
             nav = nav,
             pensjon = pensjon
@@ -85,13 +85,6 @@ class PrefillP2100(private val prefillNav: PrefillPDLNav) {
 
         logger.debug("-------------------| Preutfylling [$SedType] END |------------------- ")
         return Pair(melding, sed)
-    }
-
-    private fun eventuellGjenlevendePDL(prefillData: PrefillDataModel, gjenlevendeBruker: Person?): Bruker? {
-        return if (prefillData.avdod != null) {
-            logger.info("          Utfylling gjenlevende (etterlatt persjon.gjenlevende)")
-            prefillNav.createBruker(gjenlevendeBruker!!)
-        } else null
     }
 
 }

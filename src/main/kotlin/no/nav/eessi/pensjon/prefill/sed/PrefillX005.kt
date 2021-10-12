@@ -28,6 +28,8 @@ class PrefillX005(private val prefillNav: PrefillPDLNav)  {
                 institusjon: InstitusjonItem,
                 personData: PersonDataCollection): X005 {
 
+        logger.debug("Tilpasser X005 forenklet preutfylling")
+
         val navsed = prefillNav.prefill(
             penSaksnummer = penSaksnummer,
             bruker = bruker,
@@ -35,14 +37,13 @@ class PrefillX005(private val prefillNav: PrefillPDLNav)  {
             personData = personData,
             brukerInformasjon = brukerinformasjon,
         )
+        val gjenlevende = avdod?.let {  prefillNav.eventuellGjenlevendePDL(it, personData.forsikretPerson) }
+        val person =  gjenlevende?.person ?: navsed.bruker?.person
 
         val institusjonX005 = InstitusjonX005(
                    id = institusjon.checkAndConvertInstituion(),
                     navn = institusjon.name ?: institusjon.checkAndConvertInstituion()
         )
-
-        logger.debug("Tilpasser X005 forenklet preutfylling")
-        val person = navsed.bruker?.person
 
         return X005(
                 type = SedType.X005,
