@@ -15,6 +15,7 @@ import no.nav.eessi.pensjon.prefill.models.BrukerInformasjon
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PersonId
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
+import no.nav.eessi.pensjon.utils.toJson
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -30,6 +31,10 @@ class PrefillX010(private val prefillNav: PrefillPDLNav)  {
                 x009: X009? = null): X010 {
 
         logger.info("Tilpasser X010 preutfylling med data fra X009")
+
+        logger.debug("*".repeat(26))
+        logger.debug("X009: " + x009?.toJson())
+        logger.debug("*".repeat(26))
 
         val navsed = prefillNav.prefill(
             penSaksnummer = penSaksnummer,
@@ -66,13 +71,14 @@ class PrefillX010(private val prefillNav: PrefillPDLNav)  {
                         )
                 )
         ).also {
-            logger.debug("Tilpasser X010 forenklet preutfylling, Ferdig.")
+            logger.debug("Tilpasser X010 forenklet preutfylling, Ferdig.: " + it.toJson())
         }
     }
 
     private fun populerKommersenereFraX009(x009: X009?): List<KommersenereItem>? {
+        logger.debug("Hva finnes av x009 paaminnelse: ${x009?.xnav?.sak?.paaminnelse?.sende?.onEach { it }}")
         return x009?.xnav?.sak?.paaminnelse?.sende?.mapNotNull { sendtItem ->
-            KommersenereItem(type =  sendtItem?.type, opplysninger = sendtItem?.detaljer)
+            KommersenereItem(type = sendtItem?.type, opplysninger = sendtItem?.detaljer)
         }
     }
 
