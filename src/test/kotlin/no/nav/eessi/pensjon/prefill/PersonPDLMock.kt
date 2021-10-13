@@ -119,7 +119,14 @@ object PersonPDLMock {
         )
     }
 
-    internal fun Person.medFodsel(date: LocalDate, land: String? = "NORR")  = this.copy(foedsel = Foedsel(date,land,null, null, null, mockMeta()))
+    internal fun Person.medSivilstand(person: Person): Person {
+        val ident = person.identer.firstOrNull { it.gruppe == IdentGruppe.FOLKEREGISTERIDENT }?.ident
+        return this.copy(sivilstand = listOf(
+            Sivilstand(Sivilstandstype.GIFT, LocalDate.of (2010, 1,10), ident, mockMeta())
+        ))
+    }
+
+    internal fun Person.medFodsel(date: LocalDate, land: String? = "NOR")  = this.copy(foedsel = Foedsel(date, land,null, null, null, mockMeta()))
 
     internal fun Person.medKjoenn(type: KjoennType) = this.copy(kjoenn = Kjoenn(type, null, mockMeta()))
 
@@ -140,6 +147,24 @@ object PersonPDLMock {
         )
         return this.copy(forelderBarnRelasjon = list)
     }
+
+    internal fun Person.medBarn(barn: Person): Person {
+        val minRolle  = familieRolle(this)
+        val barnfnr = barn.identer.firstOrNull { it.gruppe == IdentGruppe.FOLKEREGISTERIDENT }?.ident
+        val list = mutableListOf<ForelderBarnRelasjon>()
+        list.addAll(this.forelderBarnRelasjon)
+        list.add(
+            ForelderBarnRelasjon(
+                relatertPersonsIdent = barnfnr!!,
+                relatertPersonsRolle = Familierelasjonsrolle.BARN,
+                minRolleForPerson = minRolle,
+                metadata = mockMeta()
+            )
+        )
+        println("Relasjonlist : " + list)
+        return this.copy(forelderBarnRelasjon = list)
+    }
+
     //subsitutt for tps testfiler Person-20000.json... .enke med barn
     internal fun createEnkeWithBarn(enkefnr: String, barn1fnr: String, barn2fnr: String? = null): PersonDataCollection {
         val enkePerson = createWith(true, "JESSINE TORDNU", "BOUWMANS", enkefnr, "212")
