@@ -127,8 +127,9 @@ class PersonDataService(private val personService: PersonService,
         val barnepinListe = hovedPerson.forelderBarnRelasjon
             .filter { it.relatertPersonsRolle == Familierelasjonsrolle.BARN }
             .map { it.relatertPersonsIdent }
+                .also { logger.info("prøver å hente ut alle barn på hovedperson: " + it.size) }
             .filter { barnPin -> Fodselsnummer.fra(barnPin)?.isUnder18Year() ?: false }
-        logger.info("prøver å hente ut alle barn (filtrert) på hovedperson: " + barnepinListe.size )
+        logger.info("prøver å hente ut alle barn (filtrert under 18) på hovedperson: " + barnepinListe.size)
 
         return barnepinListe
             .mapNotNull { barnPin -> personServiceHentPerson(NorskIdent(barnPin)) }

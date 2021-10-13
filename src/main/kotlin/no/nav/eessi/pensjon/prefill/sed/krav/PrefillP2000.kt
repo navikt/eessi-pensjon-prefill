@@ -3,6 +3,7 @@ package no.nav.eessi.pensjon.prefill.sed.krav
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.sed.Krav
 import no.nav.eessi.pensjon.eux.model.sed.Nav
+import no.nav.eessi.pensjon.eux.model.sed.P2000
 import no.nav.eessi.pensjon.eux.model.sed.SED
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModel
@@ -28,7 +29,7 @@ class PrefillP2000(private val prefillNav: PrefillPDLNav)  {
 
         val nav = prefillPDLNav(prefillData, personData, pensjon?.kravDato)
 
-        val sed = SED(
+        val sed = P2000(
             type = SedType.P2000,
             nav = nav,
             pensjon = pensjon
