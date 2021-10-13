@@ -140,7 +140,6 @@ class PrefillUfoereIntegrationTest {
         val pinBarn2 = FodselsnummerGenerator.generateFnrForTest(18)
         val pinBarn3 = FodselsnummerGenerator.generateFnrForTest(19)
 
-
         val hovedPerson = PersonPDLMock.createWith(landkoder = true, "HOVED PERSON", "TESTER", fnr = pinHovedperson, aktoerid = aktoerHovedperson)
             .medFodsel(Fodselsnummer.fra(pinHovedperson)?.getBirthDate()!!)
             .medKjoenn(KjoennType.MANN)

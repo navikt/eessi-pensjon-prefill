@@ -128,7 +128,15 @@ class PersonDataService(private val personService: PersonService,
             .filter { it.relatertPersonsRolle == Familierelasjonsrolle.BARN }
             .map { it.relatertPersonsIdent }
                 .also { logger.info("prøver å hente ut alle barn på hovedperson: " + it.size) }
-            .filter { barnPin -> Fodselsnummer.fra(barnPin)?.isUnder18Year() ?: false }
+            .onEach { barnPin ->  logger.info("Er under 18: " + Fodselsnummer.fra(barnPin)?.isUnder18Year() ) }
+            .filter { barnPin ->
+                    try {
+                        Fodselsnummer.fraMedValidation (barnPin)?.isUnder18Year()!!
+                    } catch (ex: Exception) {
+                        logger.warn("Feiler ved validering av fnr for barn ${ex.message}")
+                        false
+                    }
+            }
         logger.info("prøver å hente ut alle barn (filtrert under 18) på hovedperson: " + barnepinListe.size)
 
         return barnepinListe
