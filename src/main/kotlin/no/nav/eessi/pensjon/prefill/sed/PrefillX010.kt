@@ -86,7 +86,7 @@ class PrefillX010(private val prefillNav: PrefillPDLNav)  {
                 IkkeTilgjengelig(
                     type = sendtItem?.type,
                     opplysninger = "Mangler detaljer",
-                    grunn = Grunn("99","Det mangler opplysninger i purring")
+                    grunn = Grunn("annet","Det mangler opplysninger i purring")
                 )
             }
     }
@@ -100,5 +100,12 @@ class PrefillX010(private val prefillNav: PrefillPDLNav)  {
                 KommersenereItem(type = sendtItem?.type, opplysninger = sendtItem?.detaljer)
             }
     }
+
+//    private fun grunnVerdier(): String {
+//        kan_ikke_fremlegge_etterspurt_informasjon=01
+//        kan_ikke_fremlegge_etterspurte_dokumenter=02
+//        personen_samarbeidet_ikke=03
+//        annet=99
+//    }
 
 }

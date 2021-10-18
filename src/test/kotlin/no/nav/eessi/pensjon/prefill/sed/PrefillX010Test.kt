@@ -114,7 +114,7 @@ class PrefillX010Test {
                           "type" : "sed",
                           "opplysninger" : "Mangler detaljer",
                           "grunn" : {
-                            "type" : "99",
+                            "type" : "annet",
                             "annet" : "Det mangler opplysninger i purring"
                           }
                         } ]
@@ -153,7 +153,7 @@ class PrefillX010Test {
                       "type" : "sed",
                       "opplysninger" : "Mangler detaljer",
                       "grunn" : {
-                        "type" : "99",
+                        "type" : "annet",
                         "annet" : "Det mangler opplysninger i purring"
                       }
                     } ],
