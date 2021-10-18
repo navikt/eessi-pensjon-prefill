@@ -26,13 +26,10 @@ class PrefillX010Test {
     lateinit var prefill: PrefillX010
     lateinit var prefillNav: PrefillPDLNav
     lateinit var persondataCollection: PersonDataCollection
-    lateinit var x009: X009
 
     @BeforeEach
     fun setup() {
         persondataCollection = PersonPDLMock.createEnkelFamilie(personFnr, ekteFnr)
-
-        x009 = SED.fromJsonToConcrete(ResourceUtils.getFile("classpath:json/nav/X009-NAV.json").readText()) as X009
 
         prefillNav = PrefillPDLNav(
             prefillAdresse = mockk(){
@@ -55,7 +52,9 @@ class PrefillX010Test {
 
 
     @Test
-    fun prefillWorkingX010asValidJson() {
+    fun `Prefill X010 med data fra X009 med flere detaljer også mangelfull`() {
+        val x009 = SED.fromJsonToConcrete(ResourceUtils.getFile("classpath:json/nav/X009-NAV.json").readText()) as X009
+
         val x010sed = prefill.prefill(
             prefillData.penSaksnummer,
             prefillData.bruker,
@@ -68,44 +67,113 @@ class PrefillX010Test {
         val json = x010sed.toJsonSkipEmpty()
         println(json)
 
-        JSONAssert.assertEquals(expectedSed(), json , true)
+        JSONAssert.assertEquals(expectedX010medfleredetaljer(), json , true)
     }
 
-    private fun expectedSed(): String {
-        return """
-{
-  "sed" : "X010",
-  "nav" : {
-    "sak" : {
-      "kontekst" : {
-        "bruker" : {
-          "person" : {
-            "etternavn" : "BALDER",
-            "fornavn" : "ODIN ETTØYE",
-            "kjoenn" : "M",
-            "foedselsdato" : "1988-07-12"
-          }
-        }
-      },
-      "paaminnelse" : {
-        "svar" : {
-          "informasjon" : {
-            "kommersenere" : [ {
-              "type" : "dokument",
-              "opplysninger" : "æøå"
-            }, {
-              "type" : "sed",
-              "opplysninger" : "P5000"
-            } ]
-          }
-        }
-      }
+
+
+    @Test
+    fun `Prefill X010 med data fra X009 hvor det er mangelfull detaljer`() {
+        val x009 = SED.fromJsonToConcrete(ResourceUtils.getFile("classpath:json/nav/X009-TOM-NAV.json").readText()) as X009
+
+        val x010sed = prefill.prefill(
+            prefillData.penSaksnummer,
+            prefillData.bruker,
+            null,
+            prefillData.getPersonInfoFromRequestData(),
+            persondataCollection,
+            x009
+        )
+
+        val json = x010sed.toJsonSkipEmpty()
+        println(json)
+
+        JSONAssert.assertEquals(expectedX010MedmangelfullX009(), json , true)
     }
-  },
-  "sedGVer" : "4",
-  "sedVer" : "2"
-}
+
+    private fun expectedX010MedmangelfullX009(): String {
+        return """
+            {
+              "sed" : "X010",
+              "nav" : {
+                "sak" : {
+                  "kontekst" : {
+                    "bruker" : {
+                      "person" : {
+                        "etternavn" : "BALDER",
+                        "fornavn" : "ODIN ETTØYE",
+                        "kjoenn" : "M",
+                        "foedselsdato" : "1988-07-12"
+                      }
+                    }
+                  },
+                  "paaminnelse" : {
+                    "svar" : {
+                      "informasjon" : {
+                        "ikketilgjengelig" : [ {
+                          "type" : "sed",
+                          "opplysninger" : "Mangler detaljer",
+                          "grunn" : {
+                            "type" : "99",
+                            "annet" : "Det mangler opplysninger i purring"
+                          }
+                        } ]
+                      }
+                    }
+                  }
+                }
+              },
+              "sedGVer" : "4",
+              "sedVer" : "2"
+            }
         """.trimIndent()
     }
 
+
+    private fun expectedX010medfleredetaljer(): String {
+    return """
+        {
+          "sed" : "X010",
+          "nav" : {
+            "sak" : {
+              "kontekst" : {
+                "bruker" : {
+                  "person" : {
+                    "etternavn" : "BALDER",
+                    "fornavn" : "ODIN ETTØYE",
+                    "kjoenn" : "M",
+                    "foedselsdato" : "1988-07-12"
+                  }
+                }
+              },
+              "paaminnelse" : {
+                "svar" : {
+                  "informasjon" : {
+                    "ikketilgjengelig" : [ {
+                      "type" : "sed",
+                      "opplysninger" : "Mangler detaljer",
+                      "grunn" : {
+                        "type" : "99",
+                        "annet" : "Det mangler opplysninger i purring"
+                      }
+                    } ],
+                    "kommersenere" : [ {
+                      "type" : "dokument",
+                      "opplysninger" : "æøå"
+                    }, {
+                      "type" : "sed",
+                      "opplysninger" : "P5000"
+                    } ]
+                  }
+                }
+              }
+            }
+          },
+          "sedGVer" : "4",
+          "sedVer" : "2"
+        }
+            """.trimIndent()
+    }
+
 }
+

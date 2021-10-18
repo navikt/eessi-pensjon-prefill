@@ -1,6 +1,8 @@
 package no.nav.eessi.pensjon.prefill.sed
 
 import no.nav.eessi.pensjon.eux.model.sed.Bruker
+import no.nav.eessi.pensjon.eux.model.sed.Grunn
+import no.nav.eessi.pensjon.eux.model.sed.IkkeTilgjengelig
 import no.nav.eessi.pensjon.eux.model.sed.Informasjon
 import no.nav.eessi.pensjon.eux.model.sed.KommersenereItem
 import no.nav.eessi.pensjon.eux.model.sed.Kontekst
@@ -63,7 +65,7 @@ class PrefillX010(private val prefillNav: PrefillPDLNav)  {
                                     svar = Svar(
                                         informasjon = Informasjon(
                                             kommersenere = populerKommersenereFraX009(x009) ,
-                                            ikketilgjengelig = null
+                                            ikketilgjengelig = populerIkkeTilgjengelig(x009)
                                         )
                                     )
 
@@ -75,11 +77,28 @@ class PrefillX010(private val prefillNav: PrefillPDLNav)  {
         }
     }
 
+
+    //autogenerering av svar med data fra X009 (dersom detaljer 2.1.2) men at opplysninger mangler
+    private fun populerIkkeTilgjengelig(x009: X009?): List<IkkeTilgjengelig>? {
+        return x009?.xnav?.sak?.paaminnelse?.sende
+            ?.filter{ item -> item?.detaljer == null }
+            ?.mapNotNull { sendtItem ->
+                IkkeTilgjengelig(
+                    type = sendtItem?.type,
+                    opplysninger = "Mangler detaljer",
+                    grunn = Grunn("99","Det mangler opplysninger i purring")
+                )
+            }
+    }
+
+    //autogenerering av svar med data fra X009
     private fun populerKommersenereFraX009(x009: X009?): List<KommersenereItem>? {
-        logger.debug("Hva finnes av x009 paaminnelse: ${x009?.xnav?.sak?.paaminnelse?.sende?.onEach { it }}")
-        return x009?.xnav?.sak?.paaminnelse?.sende?.mapNotNull { sendtItem ->
-            KommersenereItem(type = sendtItem?.type, opplysninger = sendtItem?.detaljer)
-        }
+        logger.debug("Hva finnes av x009 paaminnelse: ${x009?.xnav?.sak?.paaminnelse?.sende?.onEach{}}")
+        return x009?.xnav?.sak?.paaminnelse?.sende
+            ?.filterNot{ item -> item?.detaljer == null }
+            ?.mapNotNull { sendtItem ->
+                KommersenereItem(type = sendtItem?.type, opplysninger = sendtItem?.detaljer)
+            }
     }
 
 }

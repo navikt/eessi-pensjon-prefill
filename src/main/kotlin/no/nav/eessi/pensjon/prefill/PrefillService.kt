@@ -67,6 +67,7 @@ class PrefillService(
 
                 automatiseringStatistikkService.genererAutomatiseringStatistikk(sed,  prefillData.buc)
 
+
                 return@measure sed.toJsonSkipEmpty()
 
             } catch (ex: Exception) {

@@ -35,14 +35,6 @@
       "paaminnelse": {
         "sende": [
           {
-            "type": "dokument",
-            "detaljer": "æøå"
-          },
-          {
-            "type": "sed",
-            "detaljer": "P5000"
-          },
-          {
             "type": "sed",
             "detaljer": null
           }
