@@ -18,6 +18,7 @@ import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PersonId
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.utils.toJson
+import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -73,25 +74,27 @@ class PrefillX010(private val prefillNav: PrefillPDLNav)  {
                         )
                 )
         ).also {
-            logger.debug("Tilpasser X010 forenklet preutfylling, Ferdig.: " + it.toJson())
+            logger.debug("Tilpasser X010 forenklet preutfylling, Ferdig.: ${it.toJsonSkipEmpty()}")
         }
     }
 
 
     //autogenerering av svar med data fra X009 (dersom detaljer 2.1.2) men at opplysninger mangler
+    //filterer inn kun tomme detaljer
     private fun populerIkkeTilgjengelig(x009: X009?): List<IkkeTilgjengelig>? {
         return x009?.xnav?.sak?.paaminnelse?.sende
             ?.filter{ item -> item?.detaljer == null }
             ?.mapNotNull { sendtItem ->
                 IkkeTilgjengelig(
                     type = sendtItem?.type,
-                    opplysninger = "Mangler detaljer",
-                    grunn = Grunn("annet","Det mangler opplysninger i purring")
+                    opplysninger = "Missing details",
+                    grunn = Grunn("annet","Missing details")
                 )
             }
     }
 
     //autogenerering av svar med data fra X009
+    //filterer bort tomme detaljer
     private fun populerKommersenereFraX009(x009: X009?): List<KommersenereItem>? {
         logger.debug("Hva finnes av x009 paaminnelse: ${x009?.xnav?.sak?.paaminnelse?.sende?.onEach{}}")
         return x009?.xnav?.sak?.paaminnelse?.sende
@@ -100,12 +103,5 @@ class PrefillX010(private val prefillNav: PrefillPDLNav)  {
                 KommersenereItem(type = sendtItem?.type, opplysninger = sendtItem?.detaljer)
             }
     }
-
-//    private fun grunnVerdier(): String {
-//        kan_ikke_fremlegge_etterspurt_informasjon=01
-//        kan_ikke_fremlegge_etterspurte_dokumenter=02
-//        personen_samarbeidet_ikke=03
-//        annet=99
-//    }
 
 }

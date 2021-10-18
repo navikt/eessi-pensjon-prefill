@@ -63,9 +63,8 @@ class PrefillX010Test {
             persondataCollection,
             x009
         )
-
         val json = x010sed.toJsonSkipEmpty()
-        println(json)
+//        println(json)
 
         JSONAssert.assertEquals(expectedX010medfleredetaljer(), json , true)
     }
@@ -86,7 +85,7 @@ class PrefillX010Test {
         )
 
         val json = x010sed.toJsonSkipEmpty()
-        println(json)
+//        println(json)
 
         JSONAssert.assertEquals(expectedX010MedmangelfullX009(), json , true)
     }
@@ -112,10 +111,10 @@ class PrefillX010Test {
                       "informasjon" : {
                         "ikketilgjengelig" : [ {
                           "type" : "sed",
-                          "opplysninger" : "Mangler detaljer",
+                          "opplysninger" : "Missing details",
                           "grunn" : {
                             "type" : "annet",
-                            "annet" : "Det mangler opplysninger i purring"
+                            "annet" : "Missing details"
                           }
                         } ]
                       }
@@ -151,10 +150,10 @@ class PrefillX010Test {
                   "informasjon" : {
                     "ikketilgjengelig" : [ {
                       "type" : "sed",
-                      "opplysninger" : "Mangler detaljer",
+                      "opplysninger" : "Missing details",
                       "grunn" : {
                         "type" : "annet",
-                        "annet" : "Det mangler opplysninger i purring"
+                        "annet" : "Missing details"
                       }
                     } ],
                     "kommersenere" : [ {
