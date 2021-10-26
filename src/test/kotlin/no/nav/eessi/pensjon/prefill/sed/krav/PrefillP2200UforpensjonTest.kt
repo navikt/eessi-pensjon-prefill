@@ -46,10 +46,10 @@ class PrefillP2200UforpensjonTest {
             institutionnavn = "NOINST002, NO INST002, NO"
         )
 
-        dataFromPEN = lesPensjonsdataFraFil("P2200-UP-INNV.xml")
+        dataFromPEN = lesPensjonsdataFraFil("/pensjonsinformasjon/krav/P2200-UP-INNV.xml")
 
         prefillData = initialPrefillDataModel(SedType.P2200, personFnr, penSaksnummer = "22874955").apply {
-            partSedAsJson["PersonInfo"] = readJsonResponse("other/person_informasjon_selvb.json")
+            partSedAsJson["PersonInfo"] = readJsonResponse("/json/nav/other/person_informasjon_selvb.json")
         }
         prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav)
 

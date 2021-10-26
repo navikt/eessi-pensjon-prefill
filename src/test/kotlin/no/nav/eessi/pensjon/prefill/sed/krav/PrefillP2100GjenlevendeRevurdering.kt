@@ -52,7 +52,7 @@ class PrefillP2100GjenlevendeRevurdering {
                 penSaksnummer = pesysSaksnummer,
                 avdod = PersonId(avdodPersonFnr, "112233445566"),
                 kravId = pesysKravid)
-        dataFromPEN = lesPensjonsdataFraFil("P2100-GJENLEV-REVURDERING-M-KRAVID-INNV.xml")
+        dataFromPEN = lesPensjonsdataFraFil("/pensjonsinformasjon/krav/P2100-GJENLEV-REVURDERING-M-KRAVID-INNV.xml")
 
         val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
         pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)

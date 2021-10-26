@@ -49,15 +49,15 @@ class PrefillP2100GLutlandInnvTest {
                 institutionid = "NO:noinst002",
                 institutionnavn = "NOINST002, NO INST002, NO")
 
-        dataFromPEN = lesPensjonsdataFraFil("P2100-GL-UTL-INNV.xml")
+        dataFromPEN = lesPensjonsdataFraFil("/pensjonsinformasjon/krav/P2100-GL-UTL-INNV.xml")
 
         prefillData = PrefillDataModelMother.initialPrefillDataModel(
                 sedType = SedType.P2100,
                 pinId = personFnr,
                 penSaksnummer = pesysSaksnummer,
                 avdod = PersonId(avdodPersonFnr, "112233445566")).apply {
-            partSedAsJson["PersonInfo"] = readJsonResponse("other/person_informasjon_selvb.json")
-            partSedAsJson["P4000"] = readJsonResponse("other/p4000_trygdetid_part.json")
+            partSedAsJson["PersonInfo"] = readJsonResponse("/json/nav/other/person_informasjon_selvb.json")
+            partSedAsJson["P4000"] = readJsonResponse("/json/nav/other/p4000_trygdetid_part.json")
 
         }
         val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)

@@ -51,12 +51,12 @@ class PrefillP2000APUtlandInnvTest {
             institutionnavn = "NOINST002, NO INST002, NO"
         )
 
-        val dataFromPEN = lesPensjonsdataFraFil("P2000-AP-UTL-INNV-24015012345_PlanB.xml")
+        val dataFromPEN = lesPensjonsdataFraFil("/pensjonsinformasjon/krav/P2000-AP-UTL-INNV-24015012345_PlanB.xml")
         val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
 
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P2000, personFnr, penSaksnummer = pesysSaksnummer).apply {
-            partSedAsJson["PersonInfo"] = readJsonResponse("other/person_informasjon_selvb.json")
-            partSedAsJson["P4000"] = readJsonResponse("other/p4000_trygdetid_part.json")
+            partSedAsJson["PersonInfo"] = readJsonResponse("/json/nav/other/person_informasjon_selvb.json")
+            partSedAsJson["P4000"] = readJsonResponse("/json/nav/other/p4000_trygdetid_part.json")
         }
 
         pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)

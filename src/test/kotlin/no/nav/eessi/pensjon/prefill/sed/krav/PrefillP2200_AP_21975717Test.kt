@@ -55,11 +55,11 @@ class PrefillP2200_AP_21975717Test {
             institutionnavn = "NOINST002, NO INST002, NO"
         )
 
-        dataFromPEN = lesPensjonsdataFraFil("KravAlderEllerUfore_AP_UTLAND.xml")
+        dataFromPEN = lesPensjonsdataFraFil("/pensjonsinformasjon/krav/KravAlderEllerUfore_AP_UTLAND.xml")
 
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P2200, personFnr, penSaksnummer = pesysSaksnummer).apply {
-            partSedAsJson["PersonInfo"] = readJsonResponse("other/person_informasjon_selvb.json")
-            partSedAsJson["P4000"] = readJsonResponse("other/p4000_trygdetid_part.json")
+            partSedAsJson["PersonInfo"] = readJsonResponse("/json/nav/other/person_informasjon_selvb.json")
+            partSedAsJson["P4000"] = readJsonResponse("/json/nav/other/p4000_trygdetid_part.json")
         }
         prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav)
 
