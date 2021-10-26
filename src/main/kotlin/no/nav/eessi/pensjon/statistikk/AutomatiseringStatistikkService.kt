@@ -39,14 +39,19 @@ class AutomatiseringStatistikkService(private val aivenKafkaTemplate: KafkaTempl
         val antallTommeFelter = listOfEmptyValues.size
         logger.info("Buctype: $bucType, SedType: ${sed.type}, antall utfylt felt: $antallPreutfylteFelter, antall tomme felt: $antallTommeFelter, Total: $antallFelter")
 
-        publiserAutomatiseringStatistikk(
-            PrefillAutomatiseringMelding(
-                sedVersjon = "1",
-                bucType = BucType.valueOf(bucType),
-                sedType = sed.type,
-                antallPreutfylteFelter = antallPreutfylteFelter,
-                antallTommeFelter = antallTommeFelter,
-                antallFelter = antallFelter)
-        )
+        try {
+            publiserAutomatiseringStatistikk(
+                PrefillAutomatiseringMelding(
+                    sedVersjon = "1",
+                    bucType = BucType.valueOf(bucType),
+                    sedType = sed.type,
+                    antallPreutfylteFelter = antallPreutfylteFelter,
+                    antallTommeFelter = antallTommeFelter,
+                    antallFelter = antallFelter)
+            )
+        } catch (ex: Exception) {
+            logger.warn("Klarte ikke å legge automatisering på kafka")
+        }
+
     }
 }
