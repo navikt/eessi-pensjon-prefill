@@ -11,7 +11,6 @@ import no.nav.eessi.pensjon.services.pensjonsinformasjon.RequestBuilder
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.util.ResourceUtils
 import org.springframework.web.client.RestTemplate
 
 object PrefillTestHelper {
@@ -52,7 +51,8 @@ object PrefillTestHelper {
     }
 
     fun readXMLVedtakresponse(file: String): ResponseEntity<String> {
-        val resource = ResourceUtils.getFile("classpath:pensjonsinformasjon/vedtak/$file").readText()
+        val resource = javaClass.getResource(file).readText()
+//        val resource = ResourceUtils.getFile("classpath:pensjonsinformasjon/vedtak/$file").readText()
         return ResponseEntity(resource, HttpStatus.OK)
     }
 

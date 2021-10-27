@@ -56,7 +56,7 @@ class PrefillP6000Pensjon_UFORE_Test {
     @Test
     fun `forventet korrekt utfylling av Pensjon objekt på Uførepensjon`() {
 
-        dataFromPEN = PrefillTestHelper.lesPensjonsdataVedtakFraFil("P6000-UT-201.xml")
+        dataFromPEN = PrefillTestHelper.lesPensjonsdataVedtakFraFil("/pensjonsinformasjon/vedtak/P6000-UT-201.xml")
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P6000, personFnr, penSaksnummer = "22580170", vedtakId = "12312312")
         prefillSEDService = PrefillSEDService(eessiInformasjon, prefillNav)
         val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
@@ -105,7 +105,7 @@ class PrefillP6000Pensjon_UFORE_Test {
 
     @Test
     fun `preutfylling P6000 feiler ved mangler av vedtakId`() {
-        dataFromPEN = PrefillTestHelper.lesPensjonsdataVedtakFraFil("P6000-UT-201.xml")
+        dataFromPEN = PrefillTestHelper.lesPensjonsdataVedtakFraFil("/pensjonsinformasjon/vedtak/P6000-UT-201.xml")
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P6000, personFnr, penSaksnummer = "22580170", vedtakId = "")
         prefillSEDService = PrefillSEDService(eessiInformasjon, prefillNav)
         val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
