@@ -38,5 +38,7 @@ enum class Sakstatus {
     AVSL,
     @JsonProperty("Ingen status")
     INGEN_STATUS,
+    @JsonProperty("Ukjent")
+    UKJENT,
     TIL_BEHANDLING;
 }
