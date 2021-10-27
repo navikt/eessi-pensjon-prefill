@@ -47,7 +47,7 @@ class PrefillP2000MedUforeSakTest {
             institutionnavn = "NOINST002, NO INST002, NO"
         )
 
-        dataFromPEN = lesPensjonsdataFraFil("P2200-UP-INNV.xml")
+        dataFromPEN = lesPensjonsdataFraFil("/pensjonsinformasjon/krav/P2200-UP-INNV.xml")
 
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P2000, personFnr, penSaksnummer = pesysSaksnummer)
 

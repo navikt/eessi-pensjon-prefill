@@ -50,7 +50,7 @@ class PrefillP2100BarnepensjonUtlandInnv {
             institutionnavn = "NOINST002, NO INST002, NO"
         )
 
-        val dataFromPEN = lesPensjonsdataFraFil("BARNEP_KravUtland_ForeldreAvdod.xml")
+        val dataFromPEN = lesPensjonsdataFraFil("/pensjonsinformasjon/krav/BARNEP_KravUtland_ForeldreAvdod.xml")
 
 
         prefillData = PrefillDataModelMother.initialPrefillDataModel(
@@ -58,8 +58,8 @@ class PrefillP2100BarnepensjonUtlandInnv {
                 pinId = personFnr,
                 penSaksnummer = pesysSaksnummer,
                 avdod = PersonId(avdodPersonFnr, "112233445566")).apply {
-            partSedAsJson["PersonInfo"] = PrefillTestHelper.readJsonResponse("other/person_informasjon_selvb.json")
-            partSedAsJson["P4000"] = PrefillTestHelper.readJsonResponse("other/p4000_trygdetid_part.json")
+            partSedAsJson["PersonInfo"] = PrefillTestHelper.readJsonResponse("/json/nav/other/person_informasjon_selvb.json")
+            partSedAsJson["P4000"] = PrefillTestHelper.readJsonResponse("/json/nav/other/p4000_trygdetid_part.json")
         }
         val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
         pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)

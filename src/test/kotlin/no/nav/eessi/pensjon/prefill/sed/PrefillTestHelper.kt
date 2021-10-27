@@ -43,11 +43,11 @@ object PrefillTestHelper {
     }
 
     fun readJsonResponse(file: String): String {
-        return ResourceUtils.getFile("classpath:json/nav/$file").readText()
+        return javaClass.getResource(file).readText()
     }
 
     fun readXMLresponse(file: String): ResponseEntity<String> {
-        val resource = ResourceUtils.getFile("classpath:pensjonsinformasjon/krav/$file").readText()
+        val resource = javaClass.getResource(file).readText()
         return ResponseEntity(resource, HttpStatus.OK)
     }
 

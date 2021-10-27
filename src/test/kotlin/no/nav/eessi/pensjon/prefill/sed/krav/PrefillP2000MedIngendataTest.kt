@@ -46,11 +46,11 @@ class PrefillP2000MedIngendataTest {
             institutionnavn = "NOINST002, NO INST002, NO"
         )
 
-        val dataFromPEN = lesPensjonsdataFraFil("P2000-TOMT-SVAR-PESYS.xml")
+        val dataFromPEN = lesPensjonsdataFraFil("/pensjonsinformasjon/krav/P2000-TOMT-SVAR-PESYS.xml")
 
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P2000, personFnr, penSaksnummer = pesysSaksnummer).apply {
-            partSedAsJson["PersonInfo"] = readJsonResponse("other/person_informasjon_selvb.json")
-            partSedAsJson["P4000"] = readJsonResponse("other/p4000_trygdetid_part.json")
+            partSedAsJson["PersonInfo"] = readJsonResponse("/json/nav/other/person_informasjon_selvb.json")
+            partSedAsJson["P4000"] = readJsonResponse("/json/nav/other/p4000_trygdetid_part.json")
         }
         val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
         pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
