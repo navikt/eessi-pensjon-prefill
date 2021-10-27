@@ -91,7 +91,6 @@ object KravHistorikkHelper {
             if (kravKunUtland != null) return  kravKunUtland
 
             val sakstatus = Sakstatus.valueOf(pensak?.status!!)
-            logger.info("Sakstatus: ${pensak.status},sakstype: ${pensak.sakType}")
             return when (sakstatus) {
                 Sakstatus.TIL_BEHANDLING -> hentKravHistorikkMedKravStatusTilBehandling(pensak.kravHistorikkListe)
                 Sakstatus.AVSL -> hentKravHistorikkMedKravStatusAvslag(pensak.kravHistorikkListe)

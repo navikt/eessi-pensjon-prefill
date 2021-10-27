@@ -29,8 +29,6 @@ class PrefillP2000(private val prefillNav: PrefillPDLNav)  {
 
         val nav = prefillPDLNav(prefillData, personData, pensjon?.kravDato)
 
-        logger.info("kravdato : ${pensjon?.kravDato}")
-
         val sed = P2000(
             type = SedType.P2000,
             nav = nav,
