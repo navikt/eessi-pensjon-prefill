@@ -83,12 +83,13 @@ object KravHistorikkHelper {
 
     fun finnKravHistorikkForDato(pensak: V1Sak?): V1KravHistorikk {
         try {
-
             val gjenLevKravarsak = hentKravhistorikkForGjenlevende(pensak?.kravHistorikkListe)
             if (gjenLevKravarsak != null) return gjenLevKravarsak
 
             val kravKunUtland = hentKravHistorikkMedValgtKravType(pensak?.kravHistorikkListe, Kravtype.F_BH_KUN_UTL)
             if (kravKunUtland != null) return  kravKunUtland
+
+            logger.info("Sakstatus: ${pensak?.status},sakstype: ${pensak?.sakType}")
 
             val sakstatus = Sakstatus.valueOf(pensak?.status!!)
             return when (sakstatus) {
@@ -98,6 +99,7 @@ object KravHistorikkHelper {
             }
 
         } catch (ex: Exception) {
+            logger.warn("Fant ingen gyldig kravdato: $ex")
             return V1KravHistorikk()
         }
     }
