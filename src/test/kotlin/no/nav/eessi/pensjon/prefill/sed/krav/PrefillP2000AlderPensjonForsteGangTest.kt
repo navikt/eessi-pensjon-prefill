@@ -47,11 +47,11 @@ class PrefillP2000AlderPensjonForsteGangTest {
         persondataCollection = PersonPDLMock.createEnkelFamilie(personFnr, ekteFnr)
 
 
-        dataFromPEN = lesPensjonsdataFraFil("AP_FORSTEG_BH.xml")
+        dataFromPEN = lesPensjonsdataFraFil("/pensjonsinformasjon/krav/AP_FORSTEG_BH.xml")
 
         prefillData = initialPrefillDataModel(SedType.P2000, personFnr, penSaksnummer = "22580170").apply {
-            partSedAsJson["PersonInfo"] = readJsonResponse("other/person_informasjon_selvb.json")
-            partSedAsJson["P4000"] = readJsonResponse("other/p4000_trygdetid_part.json")
+            partSedAsJson["PersonInfo"] = readJsonResponse("/json/nav/other/person_informasjon_selvb.json")
+            partSedAsJson["P4000"] = readJsonResponse("/json/nav/other/p4000_trygdetid_part.json")
         }
         prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav)
 

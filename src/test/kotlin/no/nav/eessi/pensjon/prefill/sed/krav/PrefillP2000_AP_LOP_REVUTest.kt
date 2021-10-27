@@ -53,11 +53,11 @@ class PrefillP2000_AP_LOP_REVUTest {
             institutionnavn = "NOINST002, NO INST002, NO"
         )
 
-        dataFromPEN = lesPensjonsdataFraFil("P2000-AP-LP-RVUR-20541862.xml")
+        dataFromPEN = lesPensjonsdataFraFil("/pensjonsinformasjon/krav/P2000-AP-LP-RVUR-20541862.xml")
 
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P2000, pinId = personFnr, penSaksnummer = pesysSaksnummer).apply {
-            partSedAsJson["PersonInfo"] = readJsonResponse("other/person_informasjon_selvb.json")
-            partSedAsJson["P4000"] = readJsonResponse("other/p4000_trygdetid_part.json")
+            partSedAsJson["PersonInfo"] = readJsonResponse("/json/nav/other/person_informasjon_selvb.json")
+            partSedAsJson["P4000"] = readJsonResponse("/json/nav/other/p4000_trygdetid_part.json")
 
         }
         val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)

@@ -53,7 +53,7 @@ class PrefillP2100UforePRevurdering {
     @Test
     fun `forventet korrekt utfylt P2100 uforepensjon med kap4 og 9`() {
         val personDataCollection = PersonPDLMock.createAvdodFamilie(personFnr, avdodPersonFnr)
-        val dataFromPEN = lesPensjonsdataFraFil("P2100-UP-GJ-REVURD-M-KRAVID.xml")
+        val dataFromPEN = lesPensjonsdataFraFil("/pensjonsinformasjon/krav/P2100-UP-GJ-REVURD-M-KRAVID.xml")
 
         val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
         val pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)

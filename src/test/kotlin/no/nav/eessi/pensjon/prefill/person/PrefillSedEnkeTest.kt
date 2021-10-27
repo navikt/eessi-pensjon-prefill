@@ -31,8 +31,8 @@ class PrefillSedEnkeTest {
 
     @BeforeEach
     fun setup() {
-        pensjonsinformasjonService = PrefillTestHelper.lesPensjonsdataFraFil("KravAlderEllerUfore_AP_UTLAND.xml")
-        pensjonsinformasjonServiceGjen = PrefillTestHelper.lesPensjonsdataFraFil("P2100-GL-UTL-INNV.xml")
+        pensjonsinformasjonService = PrefillTestHelper.lesPensjonsdataFraFil("/pensjonsinformasjon/krav/KravAlderEllerUfore_AP_UTLAND.xml")
+        pensjonsinformasjonServiceGjen = PrefillTestHelper.lesPensjonsdataFraFil("/pensjonsinformasjon/krav/P2100-GL-UTL-INNV.xml")
 
         prefillPDLNav = PrefillPDLNav(
             mockk(){
