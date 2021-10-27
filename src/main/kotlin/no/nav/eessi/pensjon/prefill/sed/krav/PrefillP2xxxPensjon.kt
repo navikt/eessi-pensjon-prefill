@@ -93,7 +93,7 @@ object PrefillP2xxxPensjon {
         val melding = opprettMeldingBasertPaaSaktype(v1KravHistorikk, kravId, pensak?.sakType)
         val krav = createKravDato(v1KravHistorikk)
 
-        logger.debug("Krav (dato) = $krav")
+        logger.info("Krav (dato) = $krav")
 
         when (pensak?.ytelsePerMaanedListe) {
             null -> {

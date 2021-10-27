@@ -7,7 +7,8 @@ enum class Kravtype {
     F_BH_MED_UTL,
     FORSTEG_BH,
     F_BH_BO_UTL,
-    F_BH_KUN_UTL
+    F_BH_KUN_UTL,
+
 }
 
 enum class Kravstatus {
