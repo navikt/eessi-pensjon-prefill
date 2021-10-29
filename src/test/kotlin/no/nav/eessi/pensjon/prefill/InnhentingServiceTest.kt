@@ -70,7 +70,7 @@ class InnhentingServiceTest {
             buc = "P_BUC_02",
             aktoerId = "0105094340092"
         )
-        assertThrows<MangelfulleInndataException> {
+        assertThrows<ResponseStatusException> {
             innhentingService.getAvdodAktoerIdPDL(apiRequest)
         }
     }

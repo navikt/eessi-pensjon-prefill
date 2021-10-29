@@ -44,12 +44,12 @@ class InnhentingService(
 
     //Hjelpe funksjon for å validere og hente aktoerid for evt. avdodfnr fra UI (P2100) - PDL
     fun getAvdodAktoerIdPDL(request: ApiRequest): String? {
-        val buc = request.buc ?: throw MangelfulleInndataException("Mangler Buc")
+        val buc = request.buc ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST,"Mangler Buc")
         return when (buc) {
             "P_BUC_02" -> {
                 val norskIdent = request.riktigAvdod() ?: run {
                     logger.error("Mangler fnr for avdød")
-                    throw MangelfulleInndataException("Mangler fnr for avdød")
+                    throw ResponseStatusException(HttpStatus.BAD_REQUEST,"Mangler fnr for avdød")
                 }
                 if (norskIdent.isBlank()) {
                     throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Ident har tom input-verdi")
