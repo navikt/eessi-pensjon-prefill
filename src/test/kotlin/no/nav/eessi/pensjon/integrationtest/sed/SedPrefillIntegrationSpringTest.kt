@@ -6,6 +6,8 @@ import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
 import no.nav.eessi.pensjon.UnsecuredWebMvcTestLauncher
 import no.nav.eessi.pensjon.eux.model.SedType
+import no.nav.eessi.pensjon.eux.model.sed.SED
+import no.nav.eessi.pensjon.eux.model.sed.X009
 import no.nav.eessi.pensjon.integrationtest.IntegrasjonsTestConfig
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
 import no.nav.eessi.pensjon.personoppslag.pdl.model.AktoerId
@@ -752,7 +754,6 @@ class SedPrefillIntegrationSpringTest {
 
     /** test på validering av pensjoninformasjon krav **/
     @Test
-    @Throws(Exception::class)
     fun `prefill sed med kun utland, ikke korrekt sakid skal kaste en Exception`() {
         every { personService.hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith()
@@ -770,7 +771,6 @@ class SedPrefillIntegrationSpringTest {
     }
 
     @Test
-    @Throws(Exception::class)
     fun `prefill sed med kravtype førstehangbehandling skal kaste en Exception`() {
 
         every { personService.hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN)
@@ -788,7 +788,6 @@ class SedPrefillIntegrationSpringTest {
     }
 
     @Test
-    @Throws(Exception::class)
     fun `prefill sed med ALDERP uten korrekt kravårsak skal kaste en Exception`() {
         every { personService.hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN_3)
         every { personService.hentIdent(IdentType.AktoerId, NorskIdent(FNR_VOKSEN_4)) } returns AktoerId(AKTOER_ID_2)
@@ -808,7 +807,6 @@ class SedPrefillIntegrationSpringTest {
     }
 
     @Test
-    @Throws(Exception::class)
     fun `prefill sed X010 valid sedjson`() {
 
         every { personService.hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN)
@@ -863,6 +861,75 @@ class SedPrefillIntegrationSpringTest {
     }
 
     @Test
+    fun `prefill sed X010 med json data fra X009 gir en valid X010`() {
+
+        every { personService.hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN)
+        every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith()
+        every { restTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns PrefillTestHelper.readXMLresponse("/pensjonsinformasjon/krav/P2000-AP-UP-21337890.xml")
+        every { kodeverkClient.finnLandkode(any()) } returns "QX"
+
+        val x009 = SED.fromJsonToConcrete(PrefillTestHelper.readJsonResponse("/json/nav/X009-NAV.json")) as X009
+
+        val apijson = dummyApijson(sakid = "21337890", aktoerId = AKTOER_ID, sedType = SedType.X010, payload = x009.toJson())
+
+        val validResponse = """
+            {
+              "sed" : "X010",
+              "nav" : {
+                "sak" : {
+                  "kontekst" : {
+                    "bruker" : {
+                      "person" : {
+                        "etternavn" : "Testesen",
+                        "fornavn" : "Test",
+                        "kjoenn" : "M",
+                        "foedselsdato" : "1988-07-12"
+                      }
+                    }
+                  },
+                  "paaminnelse" : {
+                    "svar" : {
+                      "informasjon" : {
+                        "ikketilgjengelig" : [ {
+                          "type" : "sed",
+                          "opplysninger" : "Missing details",
+                          "grunn" : {
+                            "type" : "annet",
+                            "annet" : "Missing details"
+                          }
+                        } ],
+                        "kommersenere" : [ {
+                          "type" : "dokument",
+                          "opplysninger" : "æøå"
+                        }, {
+                          "type" : "sed",
+                          "opplysninger" : "P5000"
+                        } ]
+                      }
+                    }
+                  }
+                }
+              },
+              "sedGVer" : "4",
+              "sedVer" : "2"
+            }
+        """.trimIndent()
+
+        val result = mockMvc.perform(post("/sed/prefill")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(apijson))
+            .andExpect(status().isOk)
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andReturn()
+
+        val response = result.response.getContentAsString(charset("UTF-8"))
+        JSONAssert.assertEquals(response, validResponse, false)
+
+    }
+
+
+
+    @Test
     @Throws(Exception::class)
     fun `prefill sed med uten korrekt kravtype skal kaste en Exception`() {
         every { personService.hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID )) } returns NorskIdent(FNR_VOKSEN)
@@ -887,14 +954,12 @@ class SedPrefillIntegrationSpringTest {
 
 }
 
-fun dummyApijson(sakid: String, vedtakid: String? = null, aktoerId: String, sedType: SedType = SedType.P2000, buc: String? = "P_BUC_06", fnravdod: String? = null, kravtype: KravType? = null, kravdato: String? = null): String {
-
+fun dummyApi(sakid: String, vedtakid: String? = null, aktoerId: String, sedType: SedType = SedType.P2000, buc: String? = "P_BUC_06", fnravdod: String? = null, kravtype: KravType? = null, kravdato: String? = null, payload: String? = null): ApiRequest {
     val subject = if (fnravdod != null) {
         ApiSubject(null, SubjectFnr(fnravdod))
     } else {
         null
     }
-
     val req = ApiRequest(
         sakId = sakid,
         vedtakId = vedtakid,
@@ -906,7 +971,12 @@ fun dummyApijson(sakid: String, vedtakid: String? = null, aktoerId: String, sedT
         kravDato = kravdato,
         euxCaseId = "12345",
         institutions = emptyList(),
-        subject = subject
+        subject = subject,
+        payload = payload
     )
-    return req.toJson()
+    return req
+}
+
+fun dummyApijson(sakid: String, vedtakid: String? = null, aktoerId: String, sedType: SedType = SedType.P2000, buc: String? = "P_BUC_06", fnravdod: String? = null, kravtype: KravType? = null, kravdato: String? = null, payload: String? = null): String {
+    return dummyApi(sakid, vedtakid, aktoerId, sedType, buc, fnravdod, kravtype, kravdato, payload).toJson()
 }

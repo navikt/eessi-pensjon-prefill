@@ -4,6 +4,7 @@ import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
 import io.mockk.verify
 import no.nav.eessi.pensjon.UnsecuredWebMvcTestLauncher
+import no.nav.eessi.pensjon.eux.model.sed.SED
 import no.nav.eessi.pensjon.integrationtest.IntegrasjonsTestConfig
 import no.nav.eessi.pensjon.personoppslag.Fodselsnummer
 import no.nav.eessi.pensjon.personoppslag.FodselsnummerGenerator
@@ -35,6 +36,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.web.client.RestTemplate
+import kotlin.test.assertEquals
 
 @SpringBootTest(classes = [IntegrasjonsTestConfig::class, UnsecuredWebMvcTestLauncher::class], webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles(profiles = ["unsecured-webmvctest"])
@@ -137,7 +139,7 @@ class PrefillUfoereIntegrationTest {
         val pinEktefelledperson = FodselsnummerGenerator.generateFnrForTest(36)
 
         val pinBarn1 = FodselsnummerGenerator.generateFnrForTest(12)
-        val pinBarn2 = FodselsnummerGenerator.generateFnrForTest(18)
+        val pinBarn2 = FodselsnummerGenerator.generateFnrForTest(17)
         val pinBarn3 = FodselsnummerGenerator.generateFnrForTest(19)
 
         val hovedPerson = PersonPDLMock.createWith(landkoder = true, "HOVED PERSON", "TESTER", fnr = pinHovedperson, aktoerid = aktoerHovedperson)
@@ -155,13 +157,13 @@ class PrefillUfoereIntegrationTest {
             .medFodsel(Fodselsnummer.fra(pinBarn1)?.getBirthDate()!!)
             .medKjoenn(KjoennType.MANN)
 
-        val barn2 = PersonPDLMock.createWith(true, "EGIDIJS ER", "MED?", fnr = pinBarn2, aktoerid = pinBarn2+18)
+        val barn2 = PersonPDLMock.createWith(true, "EGIDIJS ER", "MED", fnr = pinBarn2, aktoerid = pinBarn2+18)
             .medForeldre(hovedPerson)
             .medForeldre(ektefellePerson)
             .medKjoenn(KjoennType.KVINNE)
             .medFodsel(Fodselsnummer.fra(pinBarn2)?.getBirthDate()!!)
 
-        val barn3 = PersonPDLMock.createWith(true, "BARN ALT", "GAMMELT", fnr = pinBarn3, aktoerid = pinBarn3+19)
+        val barn3 = PersonPDLMock.createWith(true, "BARN VOKSEN", "GAMMELT", fnr = pinBarn3, aktoerid = pinBarn3+19)
             .medForeldre(hovedPerson)
             .medForeldre(ektefellePerson)
             .medKjoenn(KjoennType.KVINNE)
@@ -184,7 +186,8 @@ class PrefillUfoereIntegrationTest {
         //barn
         every { personService.hentPerson(NorskIdent(pinBarn1)) } returns barn1
 
-        //every { personService.hentPerson(NorskIdent(pinBarn2)) } returns barn2
+        every { personService.hentPerson(NorskIdent(pinBarn2)) } returns barn2
+
         //every { personService.hentPerson(NorskIdent(pinBarn3)) } returns barn3
 
         //pensjoninformasjon avsl.
@@ -208,6 +211,17 @@ class PrefillUfoereIntegrationTest {
         verify (exactly = 1) { personService.hentPerson(NorskIdent(pinEktefelledperson)) }
         verify (exactly = 1) { personService.hentPerson(NorskIdent(pinBarn1)) }
 
+        println("*".repeat(60))
+        println(response)
+        println("*".repeat(60))
+
+        val barn1fdato = Fodselsnummer.fra(pinBarn1)?.getBirthDate()
+        val barn2fdato = Fodselsnummer.fra(pinBarn2)?.getBirthDate()
+
+        val xP2200 = SED.fromJsonToConcrete(response)
+
+        assertEquals(2, xP2200.nav?.barn?.size)
+
         val validResponse = """
 {
   "sed" : "P2200",
@@ -223,7 +237,7 @@ class PrefillUfoereIntegrationTest {
         "pin" : [ {
           "institusjonsnavn" : "NOINST002, NO INST002, NO",
           "institusjonsid" : "NO:noinst002",
-          "identifikator" : "20098143379",
+          "identifikator" : "$pinHovedperson",
           "land" : "NO"
         } ],
         "statsborgerskap" : [ {
@@ -236,7 +250,7 @@ class PrefillUfoereIntegrationTest {
           "by" : "Unknown",
           "land" : "QX"
         },
-        "foedselsdato" : "1981-09-20"
+        "foedselsdato" : "1981-10-16"
       },
       "adresse" : {
         "gate" : "Oppoverbakken 66",
@@ -250,7 +264,7 @@ class PrefillUfoereIntegrationTest {
         "pin" : [ {
           "institusjonsnavn" : "NOINST002, NO INST002, NO",
           "institusjonsid" : "NO:noinst002",
-          "identifikator" : "24098543399",
+          "identifikator" : "$pinEktefelledperson",
           "land" : "NO"
         } ],
         "statsborgerskap" : [ {
@@ -263,7 +277,7 @@ class PrefillUfoereIntegrationTest {
           "by" : "Unknown",
           "land" : "QX"
         },
-        "foedselsdato" : "1985-09-24"
+        "foedselsdato" : "1985-10-14"
       },
       "type" : "ektefelle"
     },
@@ -273,7 +287,7 @@ class PrefillUfoereIntegrationTest {
           "pin" : [ {
             "institusjonsnavn" : "NOINST002, NO INST002, NO",
             "institusjonsid" : "NO:noinst002",
-            "identifikator" : "24098543399",
+            "identifikator" : "$pinEktefelledperson",
             "land" : "NO"
           } ],
           "fornavn" : "JESSINE TORDNU"
@@ -283,7 +297,7 @@ class PrefillUfoereIntegrationTest {
         "pin" : [ {
           "institusjonsnavn" : "NOINST002, NO INST002, NO",
           "institusjonsid" : "NO:noinst002",
-          "identifikator" : "22090954397",
+          "identifikator" : "$pinBarn1",
           "land" : "NO"
         } ],
         "statsborgerskap" : [ {
@@ -296,14 +310,57 @@ class PrefillUfoereIntegrationTest {
           "by" : "Unknown",
           "land" : "QX"
         },
-        "foedselsdato" : "2009-09-22"
+        "foedselsdato" : "${barn1fdato.toString()}"
       },
       "far" : {
         "person" : {
           "pin" : [ {
             "institusjonsnavn" : "NOINST002, NO INST002, NO",
             "institusjonsid" : "NO:noinst002",
-            "identifikator" : "20098143379",
+            "identifikator" : "$pinHovedperson",
+            "land" : "NO"
+          } ],
+          "fornavn" : "HOVED PERSON"
+        }
+      },
+      "relasjontilbruker" : "BARN"
+    }, {
+      "mor" : {
+        "person" : {
+          "pin" : [ {
+            "institusjonsnavn" : "NOINST002, NO INST002, NO",
+            "institusjonsid" : "NO:noinst002",
+            "identifikator" : "$pinEktefelledperson",
+            "land" : "NO"
+          } ],
+          "fornavn" : "JESSINE TORDNU"
+        }
+      },
+      "person" : {
+        "pin" : [ {
+          "institusjonsnavn" : "NOINST002, NO INST002, NO",
+          "institusjonsid" : "NO:noinst002",
+          "identifikator" : "$pinBarn2",
+          "land" : "NO"
+        } ],
+        "statsborgerskap" : [ {
+          "land" : "QX"
+        } ],
+        "etternavn" : "MED",
+        "fornavn" : "EGIDIJS ER",
+        "kjoenn" : "K",
+        "foedested" : {
+          "by" : "Unknown",
+          "land" : "QX"
+        },
+        "foedselsdato" : "${barn2fdato.toString()}"
+      },
+      "far" : {
+        "person" : {
+          "pin" : [ {
+            "institusjonsnavn" : "NOINST002, NO INST002, NO",
+            "institusjonsid" : "NO:noinst002",
+            "identifikator" : "$pinHovedperson",
             "land" : "NO"
           } ],
           "fornavn" : "HOVED PERSON"
@@ -322,7 +379,7 @@ class PrefillUfoereIntegrationTest {
   },
   "sedGVer" : "4",
   "sedVer" : "2"
-}            
+}
         """.trimIndent()
         JSONAssert.assertEquals(response, validResponse, false)
 

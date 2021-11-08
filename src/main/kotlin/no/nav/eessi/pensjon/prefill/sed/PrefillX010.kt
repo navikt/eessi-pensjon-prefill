@@ -35,9 +35,9 @@ class PrefillX010(private val prefillNav: PrefillPDLNav)  {
 
         logger.info("Tilpasser X010 preutfylling med data fra X009")
 
-        logger.debug("*".repeat(26))
-        logger.debug("X009: " + x009?.toJson())
-        logger.debug("*".repeat(26))
+        logger.info("*".repeat(26))
+        logger.info("X009 paaminnelse: ${x009?.xnav?.sak?.paaminnelse?.toJson()}")
+        logger.info("*".repeat(26))
 
         val navsed = prefillNav.prefill(
             penSaksnummer = penSaksnummer,
@@ -65,7 +65,7 @@ class PrefillX010(private val prefillNav: PrefillPDLNav)  {
                                 paaminnelse = Paaminnelse(
                                     svar = Svar(
                                         informasjon = Informasjon(
-                                            kommersenere = populerKommersenereFraX009(x009) ,
+                                            kommersenere = populerKommersenereFraX009(x009),
                                             ikketilgjengelig = populerIkkeTilgjengelig(x009)
                                         )
                                     )
@@ -77,7 +77,6 @@ class PrefillX010(private val prefillNav: PrefillPDLNav)  {
             logger.debug("Tilpasser X010 forenklet preutfylling, Ferdig.: ${it.toJsonSkipEmpty()}")
         }
     }
-
 
     //autogenerering av svar med data fra X009 (dersom detaljer 2.1.2) men at opplysninger mangler
     //filterer inn kun tomme detaljer
@@ -103,5 +102,4 @@ class PrefillX010(private val prefillNav: PrefillPDLNav)  {
                 KommersenereItem(type = sendtItem?.type, opplysninger = sendtItem?.detaljer)
             }
     }
-
 }
