@@ -266,7 +266,7 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
 
         return Institusjon(
             saksnummer = eessiSak?.saksnummer, // 1.1.2 hentes fra P6000
-            land = eessiSak?.land, //1.1.2 (P6000)
+            land =  fraLand, //buc sender countrycode , // eessiSak?.land, //1.1.2 (P6000)
             personNr = p6000bruker?.person?.pin?.firstOrNull { it.land == fraLand }?.identifikator,
 
             institusjonsid = andreinst?.institusjonsid, //eessiSak?.institusjonsid,
