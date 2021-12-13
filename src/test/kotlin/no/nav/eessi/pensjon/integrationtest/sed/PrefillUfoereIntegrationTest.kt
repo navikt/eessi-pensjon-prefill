@@ -22,6 +22,7 @@ import no.nav.eessi.pensjon.prefill.PersonPDLMock.medSivilstand
 import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper
 import no.nav.eessi.pensjon.security.sts.STSService
 import no.nav.eessi.pensjon.services.kodeverk.KodeverkClient
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
 import org.springframework.beans.factory.annotation.Autowired
@@ -132,6 +133,7 @@ class PrefillUfoereIntegrationTest {
         JSONAssert.assertEquals(response, validResponse, false)
     }
 
+    @Disabled
     @Test
     fun `prefill sed P2200 ufoere med Barn og sak er AVSL skal returnere valid sedjson med barn`() {
         val pinHovedperson = FodselsnummerGenerator.generateFnrForTest(40)
