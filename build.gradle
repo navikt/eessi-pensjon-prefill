@@ -10,6 +10,7 @@ buildscript {
         logstashLogbackVersion = '6.6'
         pensjonInformasjonVersion = '9.4.10'
         epeuxVersion = '1.1.55'
+        epMetricsVersion = "0.4.12"
     }
 
     repositories {
@@ -149,7 +150,7 @@ dependencies {
 
     // Micrometer
     implementation("io.micrometer:micrometer-registry-prometheus:1.5.1")
-    implementation("no.nav.eessi.pensjon:ep-metrics:0.4.9")
+    implementation("no.nav.eessi.pensjon:ep-metrics:$epMetricsVersion")
 
     implementation ("org.springframework.kafka:spring-kafka")
     testImplementation ("org.springframework.kafka:spring-kafka-test")
