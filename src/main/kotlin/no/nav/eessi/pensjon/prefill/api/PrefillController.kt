@@ -1,6 +1,5 @@
 package no.nav.eessi.pensjon.prefill.api
 
-import io.swagger.annotations.ApiOperation
 import no.nav.eessi.pensjon.logging.AuditLogger
 import no.nav.eessi.pensjon.prefill.ApiRequest
 import no.nav.eessi.pensjon.prefill.PrefillService
@@ -17,11 +16,10 @@ class PrefillController(private val prefillService: PrefillService, private val 
 
     private val logger = LoggerFactory.getLogger(PrefillController::class.java)
 
-    @ApiOperation("Generer en Nav-Sed (SED), viser en oppsumering av SED (json). Før evt. innsending til EUX/Rina")
     @PostMapping("sed/prefill", consumes = ["application/json"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun prefillDocument(  @RequestBody request: ApiRequest): String {
-
         auditlogger.log("previewDocument", request.aktoerId ?: "", request.toAudit())
+
         logger.info("Prefiller : ${request.sed}")
 
         return prefillService.prefillSedtoJson(request)
