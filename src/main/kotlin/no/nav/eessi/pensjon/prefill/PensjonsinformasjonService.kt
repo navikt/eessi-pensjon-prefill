@@ -98,7 +98,7 @@ class PensjonsinformasjonService(private val pensjonsinformasjonClient: Pensjons
 
             if (!akseptabelSakstypeForSed(sak.sakType)) {
                 logger.warn("Du kan ikke opprette ${sedTypeAsText(sedType)} i en ${sakTypeAsText(sak.sakType)} (PESYS-saksnr: $penSaksnummer har sakstype ${sak.sakType})")
-                throw FeilSakstypeForSedException("Du kan ikke opprette ${sedTypeAsText(sedType)} i en ${sakTypeAsText(sak.sakType)} (PESYS-saksnr: $penSaksnummer har sakstype ${sak.sakType})")
+                throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Du kan ikke opprette ${sedTypeAsText(sedType)} i en ${sakTypeAsText(sak.sakType)} (PESYS-saksnr: $penSaksnummer har sakstype ${sak.sakType})")
             }
             sak
         }
@@ -132,6 +132,4 @@ class PensjonsinformasjonService(private val pensjonsinformasjonClient: Pensjons
 class IkkeGyldigKallException(reason: String): ResponseStatusException(HttpStatus.BAD_REQUEST, reason)
 
 class ManglendeSakIdException(reason: String): ResponseStatusException(HttpStatus.BAD_REQUEST, reason)
-
-class FeilSakstypeForSedException(reason: String): ResponseStatusException(HttpStatus.BAD_REQUEST, reason)
 

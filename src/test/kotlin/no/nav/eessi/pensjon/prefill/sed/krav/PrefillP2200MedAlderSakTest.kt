@@ -4,7 +4,6 @@ import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.personoppslag.FodselsnummerGenerator
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Sivilstandstype
-import no.nav.eessi.pensjon.prefill.FeilSakstypeForSedException
 import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
@@ -18,6 +17,7 @@ import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper.lesPensjonsdataFraFil
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.springframework.web.server.ResponseStatusException
 
 class PrefillP2200MedAlderSakTest {
 
@@ -64,7 +64,7 @@ class PrefillP2200MedAlderSakTest {
 
     @Test
     fun `forventer exception - ikke relevant saktype for krav-SED - aldersak ikke relevant for P2200`() {
-        assertThrows<FeilSakstypeForSedException> {
+        assertThrows<ResponseStatusException> {
             innhentingService.hentPensjoninformasjonCollection(prefillData)
         }
     }

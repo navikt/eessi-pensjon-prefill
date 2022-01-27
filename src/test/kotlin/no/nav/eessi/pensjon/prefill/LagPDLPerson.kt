@@ -46,7 +46,8 @@ class LagPDLPerson {
                 doedsfall = doeadfall,
                 forelderBarnRelasjon = emptyList(),
                 sivilstand = emptyList(),
-                kontaktadresse = null
+                kontaktadresse = null,
+                utenlandskIdentifikasjonsnummer = emptyList()
             )
         }
 

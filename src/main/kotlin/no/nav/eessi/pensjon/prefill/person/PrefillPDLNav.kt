@@ -328,13 +328,14 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
         logger.debug("2.1.8.1       Fødested")
         logger.debug("              foedsel : ${pdlperson.foedsel}")
 
+        val foedested = pdlperson.foedsel?.foedested
         val landkode = validateUgyldigeLand(pdlperson.foedsel?.foedeland)
         val fsted = Foedested(
             land = landkode ?: "Unknown",
-            by = "Unknown",
+            by =  foedested ?: "Unknown",
             region = ""
         )
-
+        logger.info("foedsel land: ${fsted.land != "Unknown"}, by: ${fsted.by != "Unknown"}")
         return fsted.takeUnless { it.land == "Unknown" }
     }
 

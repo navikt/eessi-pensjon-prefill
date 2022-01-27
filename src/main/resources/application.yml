@@ -21,6 +21,8 @@ http.proxy.parametername:
 securityTokenService:
   discoveryUrl: ${SECURITY_TOKEN_SERVICE_OPENID_CONFIGURATION_URL}
 
+METRICS_REQUESTFILTER_ENABLE: false
+
 # TODO: These actuator-endpoints need to be secured before going to production. Also, enable only whats needed.
 management:
   endpoints:
