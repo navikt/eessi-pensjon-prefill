@@ -27,9 +27,9 @@ object KravHistorikkHelper {
     private fun hentKravHistorikkMedKravType(kravType: List<String>, kravHistorikkListe: V1KravHistorikkListe?): V1KravHistorikk {
         val sortList = sortertKravHistorikk(kravHistorikkListe)
         sortList?.forEach { kravHistorikk ->
-            logger.debug("leter etter Kravtype: $kravType, fant ${kravHistorikk.kravType} med dato i ${kravHistorikk.virkningstidspunkt}")
+            logger.info("leter etter Kravtype: $kravType, fant ${kravHistorikk.kravType} med dato i ${kravHistorikk.virkningstidspunkt}")
             if (kravType.contains(kravHistorikk.kravType)) {
-                logger.debug("Fant Kravhistorikk med $kravType")
+                logger.info("Fant Kravhistorikk med $kravType")
                 return kravHistorikk
             }
         }

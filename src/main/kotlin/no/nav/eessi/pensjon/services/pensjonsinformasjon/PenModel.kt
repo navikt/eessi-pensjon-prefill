@@ -36,7 +36,7 @@ enum class EPSaktype {
 enum class Sakstatus {
     INNV,
     AVSL,
-    @JsonProperty("Ingen status")
+    @JsonProperty("INGEN STATUS")
     INGEN_STATUS,
     @JsonProperty("Ukjent")
     UKJENT,
