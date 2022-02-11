@@ -36,7 +36,7 @@ enum class EPSaktype {
 enum class Sakstatus(val value: String) {
     INNV("INNV"),
     AVSL("AVSL"),
-    INGEN_STATUS("Ingen Status"),
+    INGEN_STATUS("Ingen status"),
     UKJENT("Ukjent"),
     TIL_BEHANDLING("TIL_BEHANDLING");
 
