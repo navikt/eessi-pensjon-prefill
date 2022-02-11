@@ -33,12 +33,16 @@ enum class EPSaktype {
     GJENLEV;
 }
 
-enum class Sakstatus {
-    INNV,
-    AVSL,
-    @JsonProperty("INGEN STATUS")
-    INGEN_STATUS,
-    @JsonProperty("Ukjent")
-    UKJENT,
-    TIL_BEHANDLING;
+enum class Sakstatus(val value: String) {
+    INNV("INNV"),
+    AVSL("AVSL"),
+    INGEN_STATUS("Ingen Status"),
+    UKJENT("Ukjent"),
+    TIL_BEHANDLING("TIL_BEHANDLING");
+
+    companion object {
+        fun byValue(value: String): Sakstatus {
+            return values().first { sakstatus -> sakstatus.value == value }
+        }
+    }
 }
