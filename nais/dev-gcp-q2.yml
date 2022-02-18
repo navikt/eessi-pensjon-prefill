@@ -27,8 +27,8 @@ spec:
       value: test
     - name: PENSJONSINFORMASJON_URL
       value: https://pensjon-pen-q2.nais.preprod.local/pen/api/pensjonsinformasjon/v1
-    - name: EESSIPEN_EUX_RINA_URL
-      value: https://eux-rina-api-eessibasis.dev-fss-pub.nais.io/cpi
+    - name: AZURE_APP_PEN_CLIENT_ID
+      value: dev-fss.teampensjon.pensjon-pen-q2
     - name: PDL_URL
       value: https://pdl-api.dev-fss-pub.nais.io/graphql
     - name: AZURE_APP_PDL_CLIENT_ID
