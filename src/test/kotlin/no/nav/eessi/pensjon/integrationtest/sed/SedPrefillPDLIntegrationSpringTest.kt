@@ -11,7 +11,6 @@ import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentType
 import no.nav.eessi.pensjon.personoppslag.pdl.model.NorskIdent
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper
-import no.nav.eessi.pensjon.security.sts.STSService
 import no.nav.eessi.pensjon.services.kodeverk.KodeverkClient
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
@@ -33,9 +32,6 @@ import org.springframework.web.client.RestTemplate
 @AutoConfigureMockMvc
 @EmbeddedKafka
 class SedPrefillPDLIntegrationSpringTest {
-
-    @MockkBean
-    lateinit var stsService: STSService
 
     @MockkBean(name = "pensjonsinformasjonOidcRestTemplate")
     lateinit var restTemplate: RestTemplate

@@ -19,7 +19,6 @@ import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.SubjectFnr
 import no.nav.eessi.pensjon.prefill.models.ReferanseTilPerson
-import no.nav.eessi.pensjon.security.sts.STSService
 import no.nav.eessi.pensjon.services.kodeverk.KodeverkClient
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.EPSaktype
 import no.nav.eessi.pensjon.utils.mapAnyToJson
@@ -50,9 +49,6 @@ import kotlin.test.assertEquals
 @AutoConfigureMockMvc
 @EmbeddedKafka
 class SedPrefillP7000Mk2IntegrationSpringTest {
-
-    @MockkBean
-    lateinit var stsService: STSService
 
     @MockkBean(name = "pensjonsinformasjonOidcRestTemplate")
     lateinit var restTemplate: RestTemplate

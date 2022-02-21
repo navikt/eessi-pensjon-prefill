@@ -20,7 +20,6 @@ import no.nav.eessi.pensjon.prefill.PersonPDLMock.medForeldre
 import no.nav.eessi.pensjon.prefill.PersonPDLMock.medKjoenn
 import no.nav.eessi.pensjon.prefill.PersonPDLMock.medSivilstand
 import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper
-import no.nav.eessi.pensjon.security.sts.STSService
 import no.nav.eessi.pensjon.services.kodeverk.KodeverkClient
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
@@ -44,9 +43,6 @@ import kotlin.test.assertEquals
 @AutoConfigureMockMvc
 @EmbeddedKafka
 class PrefillUfoereIntegrationTest {
-
-    @MockkBean
-    lateinit var stsService: STSService
 
     @MockkBean(name = "pensjonsinformasjonOidcRestTemplate")
     lateinit var restTemplate: RestTemplate

@@ -12,7 +12,6 @@ import no.nav.eessi.pensjon.personoppslag.pdl.model.NorskIdent
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.PersonPDLMock.medBeskyttelse
-import no.nav.eessi.pensjon.security.sts.STSService
 import no.nav.eessi.pensjon.services.kodeverk.KodeverkClient
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.EPSaktype
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.KravArsak
@@ -38,9 +37,6 @@ import org.springframework.web.client.RestTemplate
 @AutoConfigureMockMvc
 @EmbeddedKafka
 class SedPrefillP8000IntegrationSpringTest {
-
-    @MockkBean
-    lateinit var stsService: STSService
 
     @MockkBean(name = "pensjonsinformasjonOidcRestTemplate")
     lateinit var restTemplate: RestTemplate
