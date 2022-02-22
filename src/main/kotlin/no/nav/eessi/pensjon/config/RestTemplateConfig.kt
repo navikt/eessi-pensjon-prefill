@@ -41,7 +41,7 @@ class RestTemplateConfig(
 
     @Bean
     fun pensjonInformasjonRestTemplate(): RestTemplate {
-        return opprettRestTemplate(pensjonUrl, "pen-credentials")
+        return opprettRestTemplate(pensjonUrl, "proxy-credentials")
     }
 
     private fun opprettRestTemplate(url: String, oAuthKey: String) : RestTemplate {
