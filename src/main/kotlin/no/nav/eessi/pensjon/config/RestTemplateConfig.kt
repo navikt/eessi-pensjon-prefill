@@ -26,11 +26,10 @@ import java.util.*
 class RestTemplateConfig(
     private val clientConfigurationProperties: ClientConfigurationProperties,
     private val oAuth2AccessTokenService: OAuth2AccessTokenService?) {
-
     private val logger = LoggerFactory.getLogger(RestTemplateConfig::class.java)
 
-    @Value("\${BESTEMSAK_URL}")
-    lateinit var bestemSakUrl: String
+    @Value("\${PENSJONSINFORMASJON_URL}")
+    lateinit var pensjonUrl: String
 
     @Value("\${EESSI_PEN_ONPREM_PROXY_URL}")
     lateinit var proxyUrl: String
@@ -42,7 +41,7 @@ class RestTemplateConfig(
 
     @Bean
     fun pensjonInformasjonRestTemplate(): RestTemplate {
-        return opprettRestTemplate(bestemSakUrl, "pen-credentials")
+        return opprettRestTemplate(pensjonUrl, "pen-credentials")
     }
 
     private fun opprettRestTemplate(url: String, oAuthKey: String) : RestTemplate {
@@ -59,13 +58,8 @@ class RestTemplateConfig(
             }
     }
 
-
-    private fun clientProperties(oAuthKey: String): ClientProperties {
-        val clientProperties =
-            Optional.ofNullable(clientConfigurationProperties.registration[oAuthKey])
-                .orElseThrow { RuntimeException("could not find oauth2 client config for example-onbehalfof") }
-        return clientProperties
-    }
+    private fun clientProperties(oAuthKey: String): ClientProperties = clientConfigurationProperties.registration[oAuthKey]
+        ?: throw RuntimeException("could not find oauth2 client config for $oAuthKey")
 
     private fun bearerTokenInterceptor(
         clientProperties: ClientProperties,
