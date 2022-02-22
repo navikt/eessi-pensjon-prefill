@@ -50,8 +50,10 @@ import java.time.LocalDateTime
 @EmbeddedKafka
 class PrefillP15000IntegrationTest {
 
-    @MockkBean(name = "pensjonsinformasjonOidcRestTemplate")
-    lateinit var restTemplate: RestTemplate
+//    (name = "pensjonsinformasjonOidcRestTemplate")
+
+    @MockkBean
+    lateinit var pensjonsinformasjonOidcRestTemplate: RestTemplate
 
     @MockkBean
     lateinit var kodeverkClient: KodeverkClient

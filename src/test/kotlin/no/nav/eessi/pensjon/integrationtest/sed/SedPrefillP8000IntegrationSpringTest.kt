@@ -38,20 +38,20 @@ import org.springframework.web.client.RestTemplate
 @EmbeddedKafka
 class SedPrefillP8000IntegrationSpringTest {
 
-    @MockkBean(name = "pensjonsinformasjonOidcRestTemplate")
-    lateinit var restTemplate: RestTemplate
+    @MockkBean
+    private lateinit var pensjonsinformasjonOidcRestTemplate: RestTemplate
 
     @MockkBean
-    lateinit var kodeverkClient: KodeverkClient
+    private lateinit var kodeverkClient: KodeverkClient
 
     @MockkBean
-    lateinit var pensjoninformasjonservice: PensjonsinformasjonService
+    private lateinit var pensjoninformasjonservice: PensjonsinformasjonService
 
     @MockkBean
-    lateinit var personService: PersonService
+    private lateinit var personService: PersonService
 
     @Autowired
-    lateinit var mockMvc: MockMvc
+    private lateinit var mockMvc: MockMvc
 
     private companion object {
         const val FNR_VOKSEN_3 = "12312312312"
