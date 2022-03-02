@@ -14,11 +14,6 @@ spec:
     application:
       enabled: true
   accessPolicy:
-    outbound:
-      rules:
-        - application: eessi-pensjon-prefill-q2
-          namespace: eessipensjon
-          cluster: dev-gcp
     inbound:
       rules:
         - application: eessi-pensjon-fagmodul-q2

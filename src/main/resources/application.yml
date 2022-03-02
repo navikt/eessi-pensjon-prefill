@@ -1,5 +1,8 @@
 
 no.nav.security.jwt:
+ issuer.aad:
+   discoveryurl: ${AZURE_APP_WELL_KNOWN_URL}
+   accepted_audience: ${AZURE_APP_CLIENT_ID}
  client:
    registration:
      pdl-credentials:
