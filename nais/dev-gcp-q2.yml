@@ -8,27 +8,25 @@ metadata:
 spec:
   kafka:
     pool: nav-dev
+  envFrom:
+    - secret: prefill-dev #secret name in Google Secret Manager
   azure:
     application:
       enabled: true
-    accessPolicy:
-      outbound:
-        rules:
-          - application: eessi-pensjon-prefill-q2
-            namespace: eessipensjon
-            cluster: dev-gcp
-      inbound:
-        rules:
-          - application: eessi-pensjon-fagmodul-q2
-            namespace: eessipensjon
-            cluster: dev-fss
+  accessPolicy:
+    inbound:
+      rules:
+        - application: eessi-pensjon-fagmodul-q2
+          namespace: eessipensjon
+          cluster: dev-fss
+  webproxy: true
   env:
     - name: SPRING_PROFILES_ACTIVE
       value: test
     - name: PENSJONSINFORMASJON_URL
-      value: https://pensjon-pen-q2.nais.preprod.local/pen/api/pensjonsinformasjon/v1
-    - name: EESSIPEN_EUX_RINA_URL
-      value: https://eux-rina-api-eessibasis.dev-fss-pub.nais.io/cpi
+      value: https://eessi-pensjon-onprem-proxy-q2.dev-fss-pub.nais.io/pen/api/pensjonsinformasjon/v1
+    - name: AZURE_APP_PEN_CLIENT_ID
+      value: dev-fss.teampensjon.pensjon-pen-q2
     - name: PDL_URL
       value: https://pdl-api.dev-fss-pub.nais.io/graphql
     - name: AZURE_APP_PDL_CLIENT_ID
@@ -43,17 +41,26 @@ spec:
       value: eessipensjon.public-automatisering-q2
     - name: KODEVERK_REST_API_URL
       value: https://eessi-pensjon-onprem-proxy-q2.dev-fss-pub.nais.io
+    - name: EESSI_PEN_ONPREM_PROXY_URL
+      value: https://eessi-pensjon-onprem-proxy-q2.dev-fss-pub.nais.io
     - name: EESSI_PENSJON_INSTITUSJON
       value: NO:NAVAT07
     - name: EESSI_PENSJON_INSTITUSJON_NAVN
       value: NAV ACCEPTANCE TEST 07
+    - name: AZURE_APP_PROXY_CLIENT_ID
+      value: dev-fss.eessipensjon.eessi-pensjon-onprem-proxy-q2
     - name: ENV
       value: q2
   image: {{ image }}
   ingresses:
-    - https://eessi-pensjon-prefill-q2.internal.nav.no
+    - https://eessi-pensjon-prefill-q2.dev.intern.nav.no
   liveness:
     path: /internal/isalive
+    port: 8080
+    initialDelay: 40
+    failureThreshold: 10
+  readiness:
+    path: /internal/isready
     port: 8080
     initialDelay: 40
     failureThreshold: 10
@@ -61,19 +68,14 @@ spec:
   prometheus:
     enabled: true
     path: /actuator/prometheus
-  readiness:
-    path: /internal/isready
-    port: 8080
-    initialDelay: 40
-    failureThreshold: 10
   replicas:
     min: 1
-    max: 1
-    cpuThresholdPercentage: 80
+    max: 2
+    cpuThresholdPercentage: 60
   resources:
     limits:
       cpu: "4"
-      memory: 8096Mi
+      memory: "8192Mi"
     requests:
-      cpu: 400m
-      memory: 4024Mi
+      cpu: "2"
+      memory: "4096Mi"

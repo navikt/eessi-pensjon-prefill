@@ -10,7 +10,6 @@ import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentType
 import no.nav.eessi.pensjon.personoppslag.pdl.model.NorskIdent
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
-import no.nav.eessi.pensjon.security.sts.STSService
 import no.nav.eessi.pensjon.services.kodeverk.KodeverkClient
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.EPSaktype
 import no.nav.pensjon.v1.kravhistorikk.V1KravHistorikk
@@ -34,9 +33,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 @AutoConfigureMockMvc
 @EmbeddedKafka
 class PrefillErrorIntegrationTest {
-
-    @MockkBean
-    lateinit var stsService: STSService
 
     @MockkBean
     lateinit var kodeverkClient: KodeverkClient
