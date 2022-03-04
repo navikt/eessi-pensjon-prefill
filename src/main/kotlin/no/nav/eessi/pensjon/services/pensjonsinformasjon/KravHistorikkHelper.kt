@@ -14,7 +14,6 @@ object KravHistorikkHelper {
     }
 
     fun hentKravHistorikkForsteGangsBehandlingUtlandEllerForsteGang(kravHistorikkListe: V1KravHistorikkListe?, saktype: String?): V1KravHistorikk {
-        //F_BH_MED_UTL
         if (EPSaktype.BARNEP.name == saktype) {
             return hentKravHistorikkMedKravType(listOf(Kravtype.F_BH_MED_UTL.name, Kravtype.FORSTEG_BH.name, Kravtype.F_BH_BO_UTL.name), kravHistorikkListe)
         }

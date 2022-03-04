@@ -11,10 +11,8 @@ import org.springframework.test.annotation.DirtiesContext
 @SpringBootApplication
 @Profile("unsecured-webmvctest")
 @DirtiesContext
-class UnsecuredWebMvcTestLauncher : SpringBootServletInitializer() {
+class UnsecuredWebMvcTestLauncher : SpringBootServletInitializer()
 
-    fun main(args: Array<String>) {
-        runApplication<UnsecuredWebMvcTestLauncher>(*args)
-    }
-
+fun main(args: Array<String>) {
+    runApplication<UnsecuredWebMvcTestLauncher>(*args)
 }
