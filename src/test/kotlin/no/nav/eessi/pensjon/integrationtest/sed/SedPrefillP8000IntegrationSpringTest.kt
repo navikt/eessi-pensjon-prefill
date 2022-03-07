@@ -12,7 +12,6 @@ import no.nav.eessi.pensjon.personoppslag.pdl.model.NorskIdent
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.PersonPDLMock.medBeskyttelse
-import no.nav.eessi.pensjon.security.sts.STSService
 import no.nav.eessi.pensjon.services.kodeverk.KodeverkClient
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.EPSaktype
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.KravArsak
@@ -40,22 +39,19 @@ import org.springframework.web.client.RestTemplate
 class SedPrefillP8000IntegrationSpringTest {
 
     @MockkBean
-    lateinit var stsService: STSService
-
-    @MockkBean(name = "pensjonsinformasjonOidcRestTemplate")
-    lateinit var restTemplate: RestTemplate
+    private lateinit var pensjonsinformasjonOidcRestTemplate: RestTemplate
 
     @MockkBean
-    lateinit var kodeverkClient: KodeverkClient
+    private lateinit var kodeverkClient: KodeverkClient
 
     @MockkBean
-    lateinit var pensjoninformasjonservice: PensjonsinformasjonService
+    private lateinit var pensjoninformasjonservice: PensjonsinformasjonService
 
     @MockkBean
-    lateinit var personService: PersonService
+    private lateinit var personService: PersonService
 
     @Autowired
-    lateinit var mockMvc: MockMvc
+    private lateinit var mockMvc: MockMvc
 
     private companion object {
         const val FNR_VOKSEN_3 = "12312312312"

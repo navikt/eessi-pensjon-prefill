@@ -25,7 +25,7 @@ import javax.annotation.PostConstruct
 
 @Component
 @CacheConfig(cacheNames = ["kodeVerk"])
-class KodeverkClient(private val kodeRestTemplate: RestTemplate,
+class KodeverkClient(private val proxyOAuthRestTemplate: RestTemplate,
                      @Value("\${NAIS_APP_NAME}") private val appName: String,
                      @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper(SimpleMeterRegistry())) {
 
@@ -77,7 +77,7 @@ class KodeverkClient(private val kodeRestTemplate: RestTemplate,
             headers["Nav-Call-Id"] = UUID.randomUUID().toString()
             val requestEntity = HttpEntity<String>(headers)
             logger.debug("Header: $requestEntity")
-            val response = kodeRestTemplate.exchange(
+            val response = proxyOAuthRestTemplate.exchange(
                     builder.toUriString(),
                     HttpMethod.GET,
                     requestEntity,

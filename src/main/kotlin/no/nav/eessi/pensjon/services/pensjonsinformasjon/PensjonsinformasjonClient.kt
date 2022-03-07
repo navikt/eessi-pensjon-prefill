@@ -27,7 +27,7 @@ import javax.xml.transform.stream.StreamSource
 
 @Component
 class PensjonsinformasjonClient(
-        private val pensjonsinformasjonOidcRestTemplate: RestTemplate,
+        private val pensjonInformasjonRestTemplate: RestTemplate,
         private val requestBuilder: RequestBuilder,
         @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper(SimpleMeterRegistry())) {
 
@@ -146,7 +146,7 @@ class PensjonsinformasjonClient(
 
         return metric.measure {
             return@measure try {
-                val responseEntity = pensjonsinformasjonOidcRestTemplate.exchange(
+                val responseEntity = pensjonInformasjonRestTemplate.exchange(
                         uriBuilder.toUriString(),
                         HttpMethod.POST,
                         requestEntity,

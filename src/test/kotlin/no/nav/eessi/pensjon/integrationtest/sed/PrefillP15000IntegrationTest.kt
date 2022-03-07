@@ -17,7 +17,6 @@ import no.nav.eessi.pensjon.personoppslag.pdl.model.NorskIdent
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.models.KravType
-import no.nav.eessi.pensjon.security.sts.STSService
 import no.nav.eessi.pensjon.services.kodeverk.KodeverkClient
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.EPSaktype
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.KravArsak
@@ -51,11 +50,10 @@ import java.time.LocalDateTime
 @EmbeddedKafka
 class PrefillP15000IntegrationTest {
 
-    @MockkBean
-    lateinit var stsService: STSService
+//    (name = "pensjonsinformasjonOidcRestTemplate")
 
-    @MockkBean(name = "pensjonsinformasjonOidcRestTemplate")
-    lateinit var restTemplate: RestTemplate
+    @MockkBean
+    lateinit var pensjonsinformasjonOidcRestTemplate: RestTemplate
 
     @MockkBean
     lateinit var kodeverkClient: KodeverkClient
