@@ -480,6 +480,63 @@ class SedPrefillP8000IntegrationSpringTest {
     }
 
 
+    @Test
+    fun `prefill sed P8000 - Med Bruk av Syntetisk fnr Gitt en alderspensjon så skal det genereres en P8000 uten referanse til person`() {
+        val syntFnr = "54496214261"
+
+        every { pensjoninformasjonservice.hentRelevantPensjonSak(any(), any()) } returns V1Sak()
+        every { personService.hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID)) } returns NorskIdent(syntFnr)
+        every { personService.hentPerson(NorskIdent(syntFnr)) } returns PersonPDLMock.createWith(true, "Alder", "Pensjon", syntFnr, AKTOER_ID)
+        every { kodeverkClient.finnLandkode(any())} returns "QX"
+
+        val apijson = dummyApijson(sakid = "21337890", aktoerId = AKTOER_ID, sed = "P8000", buc = "P_BUC_05")
+
+        val validResponse = """
+            {
+              "sed" : "P8000",
+              "sedGVer" : "4",
+              "sedVer" : "2",
+              "nav" : {
+                "eessisak" : [ {
+                  "institusjonsid" : "NO:noinst002",
+                  "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                  "saksnummer" : "21337890",
+                  "land" : "NO"
+                } ],
+                "bruker" : {
+                  "person" : {
+                    "pin" : [ {
+                      "identifikator" : "$syntFnr",
+                      "land" : "NO"
+                    } ],
+                    "etternavn" : "Pensjon",
+                    "fornavn" : "Alder",
+                    "kjoenn" : "M",
+                    "foedselsdato" : "1988-07-12"
+                  },
+                  "adresse" : {
+                    "gate" : "Oppoverbakken 66",
+                    "by" : "SØRUMSAND",
+                    "land" : "NO"
+                  }
+                }
+              },
+              "pensjon" : { }
+            }
+        """.trimIndent()
+
+        val result = mockMvc.perform(post("/sed/prefill")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(apijson))
+            .andExpect(status().isOk)
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andReturn()
+
+        val response = result.response.getContentAsString(charset("UTF-8"))
+        JSONAssert.assertEquals(response, validResponse, false)
+    }
+
+
     private fun dummyApijson(sakid: String, vedtakid: String? = "", aktoerId: String, sed: String? = "P2000", buc: String? = "P_BUC_06", subject: String? = null, refperson: String? = null): String {
         return """
             {
