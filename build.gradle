@@ -2,7 +2,7 @@ buildscript {
 
     ext {
         kotlinVersion = '1.6.10'
-        springBootVersion = '2.6.5'
+        springBootVersion = '2.6.6'
         jacksonModuleKotlinVersion = '2.13.2'
         cxfVersion = '3.3.4'
         tokenSupportVersion = '1.3.9'
@@ -141,11 +141,11 @@ dependencies {
 
     // Micrometer
     implementation('io.micrometer:micrometer-registry-prometheus:1.8.3')
-    implementation("no.nav.eessi.pensjon:ep-metrics:$epMetricsVersion")
 
     implementation ('org.springframework.kafka:spring-kafka:2.8.4')
     testImplementation ('org.springframework.kafka:spring-kafka-test:2.8.4')
 
+    implementation("no.nav.eessi.pensjon:ep-metrics:$epMetricsVersion")
     implementation("no.nav.eessi.pensjon:ep-logging:${epLoggingersion}")
     implementation("no.nav.eessi.pensjon:ep-personoppslag:${epPersonoppslagVersion}")
     implementation("no.nav.eessi.pensjon:ep-eux:${epeuxVersion}")
