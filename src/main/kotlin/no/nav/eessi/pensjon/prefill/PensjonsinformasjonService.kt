@@ -26,7 +26,8 @@ class PensjonsinformasjonService(private val pensjonsinformasjonClient: Pensjons
         //hjelpe metode for å hente ut valgt V1SAK på vetak/SAK fnr og sakid benyttes
         fun finnSak(sakId: String, pendata: Pensjonsinformasjon): V1Sak? {
             if (sakId.isBlank()) throw ManglendeSakIdException("Mangler sakId")
-            return PensjonsinformasjonClient.finnSak(sakId, pendata)
+            val v1saklist = pendata.brukersSakerListe.brukersSakerListe
+            return v1saklist.firstOrNull { sak -> "${sak.sakId}" == sakId  }
         }
     }
 
@@ -37,8 +38,9 @@ class PensjonsinformasjonService(private val pensjonsinformasjonClient: Pensjons
     }
 
     //hjelpe metode for å hente ut date for SAK/krav P2x00 fnr benyttes
-    fun hentPensjonInformasjon(aktoerId: String): Pensjonsinformasjon {
-        if (aktoerId.isBlank()) throw IkkeGyldigKallException("Mangler AktoerId")
+    fun hentPensjonInformasjon(fnr: String, aktoerId: String): Pensjonsinformasjon {
+        if (aktoerId.isBlank()) throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Mangler AktoerId")
+        if (fnr.isBlank()) throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Mangler FNR")
 
         //**********************************************
         //skal det gjøre en sjekk med en gang på tilgang av data? sjekke person? sjekke pensjon?
@@ -46,20 +48,22 @@ class PensjonsinformasjonService(private val pensjonsinformasjonClient: Pensjons
         //hvis det inne inneholder noe data så feiler vi!
         //**********************************************
 
-        val pendata: Pensjonsinformasjon = pensjonsinformasjonClient.hentAltPaaAktoerId(aktoerId)
+        //val pendata: Pensjonsinformasjon = pensjonsinformasjonClient.hentAltPaaAktoerId(aktoerId)
+        val pendata: Pensjonsinformasjon = pensjonsinformasjonClient.hentAltPaaFNR(fnr, aktoerId)
+
         if (pendata.brukersSakerListe == null) {
             throw PensjoninformasjonException("Ingen gyldig brukerSakerListe")
         }
         return pendata
     }
 
-    fun hentPensjonInformasjonNullHvisFeil(aktoerId: String) =
-        try {
-            hentPensjonInformasjon(aktoerId)
-        } catch (pen: PensjoninformasjonException) {
-            logger.error(pen.message)
-            null
-        }
+//    fun hentPensjonInformasjonNullHvisFeil(fnr: String, aktoerId: String) =
+//        try {
+//            hentPensjonInformasjon(fnr, aktoerId)
+//        } catch (pen: Exception) {
+//            logger.error(pen.message)
+//            null
+//        }
 
     fun hentVedtak(vedtakId: String): Pensjonsinformasjon {
         logger.debug("----------------------------------------------------------")
@@ -82,6 +86,7 @@ class PensjonsinformasjonService(private val pensjonsinformasjonClient: Pensjons
     }
 
     fun hentRelevantPensjonSak(prefillData: PrefillDataModel, akseptabelSakstypeForSed: (String) -> Boolean): V1Sak? {
+        val fnr = prefillData.bruker.norskIdent
         val aktorId = prefillData.bruker.aktorId
         val penSaksnummer = prefillData.penSaksnummer
         val sedType = prefillData.sedType
@@ -89,9 +94,10 @@ class PensjonsinformasjonService(private val pensjonsinformasjonClient: Pensjons
         logger.debug("penSaksnummer: $penSaksnummer")
 
         if (penSaksnummer.isBlank()) throw ManglendeSakIdException("Mangler sakId")
+        if (fnr.isBlank()) throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Mangler norskident")
 
-        val peninfo = hentPensjonInformasjonNullHvisFeil(aktorId) ?:
-            throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Ingen pensjoninformasjon funnet")
+        val peninfo = hentPensjonInformasjon(fnr, aktorId)
+        // ?: throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Ingen pensjoninformasjon funnet")
 
         return peninfo.let {
             val sak = finnSak(penSaksnummer, it) ?: return null

@@ -61,7 +61,7 @@ class PrefillP2200UforpensjonTest {
 
     @Test
     fun `Testing av komplett utfylling kravsøknad uførepensjon P2200`() {
-        val pendata: Pensjonsinformasjon = dataFromPEN.hentPensjonInformasjon(prefillData.bruker.aktorId)
+        val pendata: Pensjonsinformasjon = dataFromPEN.hentPensjonInformasjon(prefillData.bruker.norskIdent, prefillData.bruker.aktorId)
         val persondataCollection = PersonPDLMock.createEnkeWithBarn(personFnr, barn1Fnr, barn2Fnr)
 
         assertNotNull(pendata.brukersSakerListe)

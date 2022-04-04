@@ -31,6 +31,13 @@ class PensjonsinformasjonClient(
         private val requestBuilder: RequestBuilder,
         @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper(SimpleMeterRegistry())) {
 
+
+    private enum class REQUESTPATH(val path: String) {
+        FNR("/fnr"),
+        VEDTAK("/vedtak"),
+        AKTOR("/aktor");
+    }
+
     companion object {
         private val logger = LoggerFactory.getLogger(PensjonsinformasjonClient::class.java)
 
@@ -57,12 +64,13 @@ class PensjonsinformasjonClient(
         pensjoninformasjonAltPaaVedtakRequester = metricsHelper.init("PensjoninformasjonAltPaaVedtakRequester")
     }
 
-    fun hentKunSakType(sakId: String, aktoerid: String): Pensjontype {
-            val sak = finnSak(sakId, hentAltPaaAktoerId(aktoerid)) ?: return Pensjontype(sakId, "")
-            return Pensjontype(sakId, sak.sakType)
-    }
+//    fun hentKunSakType(sakId: String, aktoerid: String): Pensjontype {
+//            val sak = finnSak(sakId, hentAltPaaAktoerId(aktoerid)) ?: return Pensjontype(sakId, "")
+//            return Pensjontype(sakId, sak.sakType)
+//    }
 
-    @Throws(PensjoninformasjonException::class, HttpServerErrorException::class, HttpClientErrorException::class)
+
+    @Deprecated("Replace with hentAltPaaFNR")
     fun hentAltPaaAktoerId(aktoerId: String): Pensjonsinformasjon {
         require(aktoerId.isNotBlank()) { "AktoerId kan ikke være blank/tom"}
 
@@ -73,14 +81,27 @@ class PensjonsinformasjonClient(
             logger.debug("Requestbody:\n$requestBody")
             logger.info("Henter pensjonsinformasjon for aktor: $aktoerId")
 
-            val xmlResponse = doRequest("/aktor/", aktoerId, requestBody, pensjoninformasjonHentAltPaaIdentRequester)
+            val xmlResponse = doRequest(REQUESTPATH.AKTOR, aktoerId, requestBody, pensjoninformasjonHentAltPaaIdentRequester)
+            transform(xmlResponse)
+        }
+    }
+
+    fun hentAltPaaFNR(fnr: String, aktoerId: String): Pensjonsinformasjon {
+        require(fnr.isNotBlank()) { "AktoerId kan ikke være blank/tom"}
+
+        return pensjoninformasjonHentAltPaaIdent.measure {
+
+            val requestBody = requestBuilder.requestBodyForSakslisteFromAString()
+
+            logger.debug("Requestbody:\n$requestBody")
+            logger.info("Henter pensjonsinformasjon for fnr med aktørid: $aktoerId")
+
+            val xmlResponse = doRequest(REQUESTPATH.FNR, fnr,  requestBody, pensjoninformasjonHentAltPaaIdentRequester)
             transform(xmlResponse)
         }
     }
 
 
-
-    @Throws(PensjoninformasjonException::class, HttpServerErrorException::class, HttpClientErrorException::class)
     fun hentAltPaaVedtak(vedtaksId: String): Pensjonsinformasjon {
 
         return pensjoninformasjonAltPaaVedtak.measure {
@@ -89,15 +110,16 @@ class PensjonsinformasjonClient(
             logger.debug("Requestbody:\n$requestBody")
             logger.info("Henter pensjonsinformasjon for vedtaksid: $vedtaksId")
 
-            val xmlResponse = doRequest("/vedtak", vedtaksId, requestBody, pensjoninformasjonAltPaaVedtakRequester)
+            val xmlResponse = doRequest(REQUESTPATH.VEDTAK, vedtaksId, requestBody, pensjoninformasjonAltPaaVedtakRequester)
             transform(xmlResponse)
         }
     }
 
-    fun hentKravDatoFraAktor(aktorId: String, saksId: String, kravId: String) : String? {
-        val pensjonSak = hentAltPaaAktoerId(aktorId)
-        return hentKravFraKravHistorikk(saksId, pensjonSak, kravId)
-    }
+//
+//    fun hentKravDatoFraAktor(aktorId: String, saksId: String, kravId: String) : String? {
+//        val pensjonSak = hentAltPaaAktoerId(aktorId)
+//        return hentKravFraKravHistorikk(saksId, pensjonSak, kravId)
+//    }
 
     private fun hentKravFraKravHistorikk(saksId: String, pensjonSak: Pensjonsinformasjon, kravId: String ): String? {
         val sak = finnSak(saksId, pensjonSak) ?: return null
@@ -135,13 +157,16 @@ class PensjonsinformasjonClient(
     }
 
     @Throws(PensjoninformasjonException::class, HttpServerErrorException::class, HttpClientErrorException::class)
-    private fun doRequest(path: String, id: String, requestBody: String, metric: MetricsHelper.Metric): String {
+    private fun doRequest(path: REQUESTPATH, id: String, requestBody: String, metric: MetricsHelper.Metric): String {
 
         val headers = HttpHeaders()
         headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_XML_VALUE)
+        if (path == REQUESTPATH.FNR) {
+            headers.add("fnr", id)
+        }
         val requestEntity = HttpEntity(requestBody, headers)
 
-        val uriBuilder = UriComponentsBuilder.fromPath(path).pathSegment(id)
+        val uriBuilder = UriComponentsBuilder.fromPath(path.path).pathSegment(id)
         logger.debug("Pensjoninformasjon Uri: ${uriBuilder.toUriString()}")
 
         return metric.measure {

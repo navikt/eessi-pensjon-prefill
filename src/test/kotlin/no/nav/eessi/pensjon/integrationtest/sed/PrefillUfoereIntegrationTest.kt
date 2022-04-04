@@ -392,8 +392,9 @@ class PrefillUfoereIntegrationTest {
         every { personService.hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN_2)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_2)) } returns PersonPDLMock.createWith(true, "Lever", "Gjenlev", FNR_VOKSEN_2)
 
-        every { pensjonsinformasjonOidcRestTemplate.exchange(eq("/aktor/$AKTOER_ID"), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns
+        every { pensjonsinformasjonOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java))} returns
                 PrefillTestHelper.readXMLresponse("/pensjonsinformasjon/krav/P2200-UP-INNV.xml")
+
         every { pensjonsinformasjonOidcRestTemplate.exchange(eq("/vedtak/5134513451345"), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns
                 PrefillTestHelper.readXMLresponse("/pensjonsinformasjon/vedtak/P6000-APUtland-301.xml")
 
