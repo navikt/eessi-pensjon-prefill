@@ -67,6 +67,7 @@ class PrefillService(
 
                 automatiseringStatistikkService.genererAutomatiseringStatistikk(sed,  prefillData.buc)
 
+                logger.info(" ******* Prefutfylling ferdig ******* ")
 
                 return@measure sed.toJsonSkipEmpty()
 
