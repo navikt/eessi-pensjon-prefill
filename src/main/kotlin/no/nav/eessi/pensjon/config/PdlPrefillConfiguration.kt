@@ -31,6 +31,7 @@ class PdlPrefillTokenComponent(private val tokenValidationContextHolder: TokenVa
     override fun callBack(): PdlToken {
         val navidentTokenFromFagmodul = getToken(tokenValidationContextHolder).tokenAsString
 
+        logger.debug("NavIdent fra fagmodul: $navidentTokenFromFagmodul")
         val tokenClient: AzureAdOnBehalfOfTokenClient = AzureAdTokenClientBuilder.builder()
             .withNaisDefaults()
             .buildOnBehalfOfTokenClient()
