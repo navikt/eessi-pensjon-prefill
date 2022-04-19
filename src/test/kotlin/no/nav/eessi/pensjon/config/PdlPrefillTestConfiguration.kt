@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component
 class PdlPrefillTokenComponent: PdlTokenCallBack {
 
     override fun callBack(): PdlToken {
-        return PdlTokenImp( accessToken = "token")
+        return PdlTokenImp(systemToken = "token", userToken = "token", isUserToken = false)
     }
 }
 
