@@ -68,6 +68,10 @@ Så er du klar til å starte EessiprefillApplication med VM option:
 da benyttes application-local.yml ønskes det å debugge i Q2 må 
 application-local_Q2.yml enres til application-local.yml. 
 
+## SonarQube m/JaCoCo
+
+Prosjektet er satt opp med støtte for å kunne kjøre SonarQube, med JaCoCo for å fange test coverage, men du trenger å ha en SonarQube-instans (lokal?) å kjøre dataene inn i - [les mer her](https://github.com/navikt/eessi-pensjon/blob/master/docs/dev/sonarqube.md).
+
 ---
 
 # Henvendelser
