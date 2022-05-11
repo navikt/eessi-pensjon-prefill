@@ -21,7 +21,7 @@ spec:
       rules:
         - application: eessi-pensjon-fagmodul
           namespace: eessipensjon
-          cluster: prod-fss
+          cluster: prod-gcp
   webproxy: true
   env:
     - name: SPRING_PROFILES_ACTIVE
