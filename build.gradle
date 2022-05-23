@@ -12,6 +12,7 @@ buildscript {
         epMetricsVersion = '0.4.+'
         epPersonoppslagVersion = '9.+'
         epLoggingersion='1.+'
+        epPensjonInformasjonVersjon='2.+'
     }
 
     repositories {
@@ -47,21 +48,21 @@ assert JavaVersion.current().isJava11Compatible(): "Java 11 or newer is required
 group = 'no.nav.eessi'
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
 
 compileKotlin {
     kotlinOptions {
         freeCompilerArgs = ["-Xjsr305=strict"]
-        jvmTarget = "11"
+        jvmTarget = "17"
     }
 }
 
 compileTestKotlin {
     kotlinOptions {
         freeCompilerArgs = ["-Xjsr305=strict"]
-        jvmTarget = "11"
+        jvmTarget = "17"
     }
 }
 
@@ -69,9 +70,9 @@ jar {
     archivesBaseName = 'eessi-pensjon-prefill'
 }
 
-configurations {
-    xsd
-}
+//configurations {
+//    xsd
+//}
 
 dependencies {
 
@@ -135,11 +136,11 @@ dependencies {
     testImplementation("org.pac4j:spring-webmvc-pac4j:5.1.0")
 
     // Tjenestespesifikasjoner
-    xsd("no.nav.tjenestespesifikasjoner:pensjonsinformasjon-v1-tjenestespesifikasjon:1.2021.01.21-11.34-02f5eb27bb76")
-
-    implementation("com.sun.xml.ws:jaxws-ri:2.3.5")
-    jaxb ('org.glassfish.jaxb:jaxb-xjc:2.3.5')
-    jaxb ('org.glassfish.jaxb:jaxb-runtime:2.3.5')
+//    xsd("no.nav.tjenestespesifikasjoner:pensjonsinformasjon-v1-tjenestespesifikasjon:1.2021.01.21-11.34-02f5eb27bb76")
+//
+//    implementation("com.sun.xml.ws:jaxws-ri:2.3.5")
+//    jaxb ('org.glassfish.jaxb:jaxb-xjc:2.3.5')
+//    jaxb ('org.glassfish.jaxb:jaxb-runtime:2.3.5')
 
     // Micrometer
     implementation('io.micrometer:micrometer-registry-prometheus:1.8.3')
@@ -151,6 +152,11 @@ dependencies {
     implementation("no.nav.eessi.pensjon:ep-logging:${epLoggingersion}")
     implementation("no.nav.eessi.pensjon:ep-personoppslag:${epPersonoppslagVersion}")
     implementation("no.nav.eessi.pensjon:ep-eux:${epeuxVersion}")
+    implementation("no.nav.eessi.pensjon:ep-pensjonsinformasjon:${epPensjonInformasjonVersjon}")
+
+    implementation("no.nav.tjenestespesifikasjoner:pensjonsinformasjon-v1-tjenestespesifikasjon:1.2021.01.21-11.34-02f5eb27bb76")
+    //implementation("no.nav.tjenestespesifikasjoner:pensjonsinformasjon-v1-tjenestespesifikasjon:1.2021.01.21-11.34-02f5eb27bb76")
+
 
 }
 
@@ -160,42 +166,42 @@ test {
 }
 
 // Temporary - until these misplaced dirs are cleaned in all builds
-processResources.doFirst {
-    delete "${projectDir}/src/main/resources/schemas"
-    delete "${projectDir}/src/main/resources/xsdtemp"
-}
-
-ext.xsdTemp = "${buildDir}/xsdtemp"
-ext.schemasDir = "${buildDir}/schemas"
-ext.xsdArtifactName = "pensjonsinformasjon-xsd.jar"
-
-ext.pensjonsinformasjonDir = "${schemasDir}"
-
-task copyPensjonsinformasjonXsd(type: Copy) {
-    from(configurations.xsd) {
-        rename '^pensjonsinformasjon.*', 'pensjonsinformasjon-xsd.jar'
-    }
-    into xsdTemp
-}
-
-task copyPensjonsinformasjonXsdsFromArtifacts(type: Copy) {
-    with copyPensjonsinformasjonXsd
-    includeEmptyDirs = false
-    from zipTree( xsdTemp + "/" + xsdArtifactName)
-    include '**/*.xsd'
-    into pensjonsinformasjonDir
-}
-
-jaxb {
-    xsdDir = pensjonsinformasjonDir
-}
-
-copyPensjonsinformasjonXsdsFromArtifacts.dependsOn tasks["copyPensjonsinformasjonXsd"]
-xjc.dependsOn tasks["copyPensjonsinformasjonXsdsFromArtifacts"]
-compileKotlin.dependsOn tasks["xjc"]
-
-sourceSets["main"].resources.srcDir(schemasDir)
-sourceSets["main"].java.srcDir("${buildDir}/generated-sources/xjc")
+//processResources.doFirst {
+//    delete "${projectDir}/src/main/resources/schemas"
+//    delete "${projectDir}/src/main/resources/xsdtemp"
+//}
+//
+//ext.xsdTemp = "${buildDir}/xsdtemp"
+//ext.schemasDir = "${buildDir}/schemas"
+//ext.xsdArtifactName = "pensjonsinformasjon-xsd.jar"
+//
+//ext.pensjonsinformasjonDir = "${schemasDir}"
+//
+//task copyPensjonsinformasjonXsd(type: Copy) {
+//    from(configurations.xsd) {
+//        rename '^pensjonsinformasjon.*', 'pensjonsinformasjon-xsd.jar'
+//    }
+//    into xsdTemp
+//}
+//
+//task copyPensjonsinformasjonXsdsFromArtifacts(type: Copy) {
+//    with copyPensjonsinformasjonXsd
+//    includeEmptyDirs = false
+//    from zipTree( xsdTemp + "/" + xsdArtifactName)
+//    include '**/*.xsd'
+//    into pensjonsinformasjonDir
+//}
+//
+//jaxb {
+//    xsdDir = pensjonsinformasjonDir
+//}
+//
+//copyPensjonsinformasjonXsdsFromArtifacts.dependsOn tasks["copyPensjonsinformasjonXsd"]
+//xjc.dependsOn tasks["copyPensjonsinformasjonXsdsFromArtifacts"]
+//compileKotlin.dependsOn tasks["xjc"]
+//
+//sourceSets["main"].resources.srcDir(schemasDir)
+//sourceSets["main"].java.srcDir("${buildDir}/generated-sources/xjc")
 
 wrapper {
     distributionType = Wrapper.DistributionType.ALL

@@ -9,6 +9,7 @@ import no.nav.eessi.pensjon.eux.model.document.Retning
 import no.nav.eessi.pensjon.eux.model.sed.P6000
 import no.nav.eessi.pensjon.eux.model.sed.P7000
 import no.nav.eessi.pensjon.integrationtest.IntegrasjonsTestConfig
+import no.nav.eessi.pensjon.pensjonsinformasjon.EPSaktype
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
 import no.nav.eessi.pensjon.personoppslag.pdl.model.AktoerId
 import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentType
@@ -20,7 +21,6 @@ import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.SubjectFnr
 import no.nav.eessi.pensjon.prefill.models.ReferanseTilPerson
 import no.nav.eessi.pensjon.services.kodeverk.KodeverkClient
-import no.nav.eessi.pensjon.services.pensjonsinformasjon.EPSaktype
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.toJson

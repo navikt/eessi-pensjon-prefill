@@ -1,9 +1,10 @@
 package no.nav.eessi.pensjon.prefill
 
 import no.nav.eessi.pensjon.eux.model.SedType
+import no.nav.eessi.pensjon.pensjonsinformasjon.FinnSak
+import no.nav.eessi.pensjon.pensjonsinformasjon.PensjoninformasjonException
+import no.nav.eessi.pensjon.pensjonsinformasjon.PensjonsinformasjonClient
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModel
-import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjoninformasjonException
-import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonClient
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import no.nav.pensjon.v1.sak.V1Sak
 import no.nav.pensjon.v1.vedtak.V1Vedtak
@@ -26,8 +27,7 @@ class PensjonsinformasjonService(private val pensjonsinformasjonClient: Pensjons
         //hjelpe metode for å hente ut valgt V1SAK på vetak/SAK fnr og sakid benyttes
         fun finnSak(sakId: String, pendata: Pensjonsinformasjon): V1Sak? {
             if (sakId.isBlank()) throw ManglendeSakIdException("Mangler sakId")
-            val v1saklist = pendata.brukersSakerListe.brukersSakerListe
-            return v1saklist.firstOrNull { sak -> "${sak.sakId}" == sakId  }
+            return FinnSak.finnSak(sakId, pendata)
         }
     }
 

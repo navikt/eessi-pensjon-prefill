@@ -1,6 +1,6 @@
 package no.nav.eessi.pensjon.services.pensjonsinformasjon
 
-
+/*
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import no.nav.eessi.pensjon.metrics.MetricsHelper
 import no.nav.eessi.pensjon.utils.simpleFormat
@@ -202,4 +202,4 @@ class PensjonsinformasjonClient(
 
 class PensjoninformasjonException(message: String) : ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, message)
 
-class PensjoninformasjonProcessingException(message: String) : ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, message)
+class PensjoninformasjonProcessingException(message: String) : ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, message)*/

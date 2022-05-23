@@ -2,6 +2,10 @@ package no.nav.eessi.pensjon.services.pensjonsinformasjon
 
 import io.mockk.every
 import io.mockk.mockk
+import no.nav.eessi.pensjon.pensjonsinformasjon.FinnSak
+import no.nav.eessi.pensjon.pensjonsinformasjon.PensjoninformasjonException
+import no.nav.eessi.pensjon.pensjonsinformasjon.PensjoninformasjonProcessingException
+import no.nav.eessi.pensjon.pensjonsinformasjon.PensjonsinformasjonClient
 import no.nav.eessi.pensjon.utils.simpleFormat
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -26,7 +30,7 @@ class PensjonsinformasjonClientTest {
 
     @BeforeEach
     fun setup() {
-        pensjonsinformasjonClient = PensjonsinformasjonClient(mockrestTemplate, RequestBuilder())
+        pensjonsinformasjonClient = PensjonsinformasjonClient(mockrestTemplate)
         pensjonsinformasjonClient.initMetrics()
     }
 
@@ -83,7 +87,7 @@ class PensjonsinformasjonClientTest {
 
         //val data = pensjonsinformasjonClient.hentAltPaaAktoerId("1231233")
         val data = pensjonsinformasjonClient.hentAltPaaFNR("4234234", "1231233")
-        val sak = PensjonsinformasjonClient.finnSak("21975717", data)
+        val sak = FinnSak.finnSak("21975717", data)
 
         sak?.let {
             assertEquals("21975717", it.sakId.toString())
@@ -101,13 +105,12 @@ class PensjonsinformasjonClientTest {
 
         assertEquals(2, data.brukersSakerListe.brukersSakerListe.size)
 
-        val sak = PensjonsinformasjonClient.finnSak("21975717", data)
+        val sak = FinnSak.finnSak("21975717", data)
 
         sak?.let {
             assertEquals("21975717", it.sakId.toString())
             assertEquals("ALDER", it.sakType)
         }
-
     }
 
     @Test

@@ -5,6 +5,8 @@ import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.sed.P8000
+import no.nav.eessi.pensjon.pensjonsinformasjon.EPSaktype
+import no.nav.eessi.pensjon.pensjonsinformasjon.KravArsak
 import no.nav.eessi.pensjon.personoppslag.FodselsnummerGenerator
 import no.nav.eessi.pensjon.prefill.LagPDLPerson
 import no.nav.eessi.pensjon.prefill.LagPDLPerson.Companion.medAdresse
@@ -20,8 +22,6 @@ import no.nav.eessi.pensjon.prefill.person.PrefillPDLAdresse
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.services.geo.PostnummerService
 import no.nav.eessi.pensjon.services.kodeverk.KodeverkClient
-import no.nav.eessi.pensjon.services.pensjonsinformasjon.EPSaktype
-import no.nav.eessi.pensjon.services.pensjonsinformasjon.KravArsak
 import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
 import no.nav.pensjon.v1.kravhistorikk.V1KravHistorikk
 import no.nav.pensjon.v1.kravhistorikkliste.V1KravHistorikkListe
