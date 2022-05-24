@@ -118,6 +118,3 @@ data class ApiRequest(
 
     }
 }
-
-//class MangelfulleInndataException(reason: String) : ResponseStatusException(HttpStatus.BAD_REQUEST, reason)
-//class UgyldigInndataException(reason: String) : ResponseStatusException(HttpStatus.BAD_REQUEST, reason)

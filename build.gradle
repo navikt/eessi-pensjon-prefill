@@ -12,6 +12,7 @@ buildscript {
         epMetricsVersion = '0.4.+'
         epPersonoppslagVersion = '9.+'
         epLoggingersion='1.+'
+        epPensjonInformasjonVersjon='2.+'
     }
 
     repositories {
@@ -23,7 +24,6 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-allopen:$kotlinVersion"
         classpath "org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion"
     }
-
 }
 
 plugins {
@@ -42,35 +42,30 @@ plugins {
     id 'jacoco'
 }
 
-assert JavaVersion.current().isJava11Compatible(): "Java 11 or newer is required"
+assert JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_17): "Java 17 or newer is required"
 
 group = 'no.nav.eessi'
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
 
 compileKotlin {
     kotlinOptions {
         freeCompilerArgs = ["-Xjsr305=strict"]
-        jvmTarget = "11"
+        jvmTarget = "17"
     }
 }
-
 compileTestKotlin {
     kotlinOptions {
         freeCompilerArgs = ["-Xjsr305=strict"]
-        jvmTarget = "11"
+        jvmTarget = "17"
     }
 }
 
 jar {
     archivesBaseName = 'eessi-pensjon-prefill'
-}
-
-configurations {
-    xsd
 }
 
 dependencies {
@@ -81,11 +76,6 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-cache:$springBootVersion")
     implementation("org.springframework.boot:spring-boot-starter-actuator:$springBootVersion")
     implementation("org.springframework.boot:spring-boot-actuator:$springBootVersion")
-    testImplementation("org.springframework.boot:spring-boot-starter-test:$springBootVersion") {
-        exclude module: 'junit'
-        exclude module: "mockito-core"
-        exclude module: 'junit-vintage-engine'
-    }
 
     // Kotlin
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:${jacksonModuleKotlinVersion}")
@@ -96,22 +86,6 @@ dependencies {
     //flattenmap
     implementation("com.github.wnameless:json-flattener:0.7.1")
     implementation("com.github.wnameless.json:json-flattener:0.13.0")
-
-    //mock - test
-    testImplementation("org.junit.platform:junit-platform-suite-api:1.8.2")
-
-    testImplementation("org.skyscreamer:jsonassert:1.5.0")
-    testImplementation("org.jetbrains.kotlin:kotlin-test:${kotlinVersion}") {
-        exclude module: 'kotlin-test-js'
-        exclude module: 'kotlin-test-testng'
-    }
-    testImplementation('io.mockk:mockk:1.12.3')
-
-    // Architecture tests la stå som 0.11.0
-    testImplementation ("com.tngtech.archunit:archunit:0.11.0")
-
-    // Forenklere mocking av beans, benyttes som mockito mockbean
-    testImplementation('com.ninja-squad:springmockk:3.1.1')
 
     // Logging
     implementation("net.logstash.logback:logstash-logback-encoder:${logstashLogbackVersion}")
@@ -131,27 +105,42 @@ dependencies {
 
     implementation ("no.nav.common:token-client:2.2022.04.01_08.27-cbfeb0be0ee0")
 
-    // implementation("no.nav.eessi.pensjon:ep-security-sts:0.0.21")
-    testImplementation("org.pac4j:spring-webmvc-pac4j:5.1.0")
-
-    // Tjenestespesifikasjoner
-    xsd("no.nav.tjenestespesifikasjoner:pensjonsinformasjon-v1-tjenestespesifikasjon:1.2021.01.21-11.34-02f5eb27bb76")
-
-    implementation("com.sun.xml.ws:jaxws-ri:2.3.5")
-    jaxb ('org.glassfish.jaxb:jaxb-xjc:2.3.5')
-    jaxb ('org.glassfish.jaxb:jaxb-runtime:2.3.5')
-
     // Micrometer
     implementation('io.micrometer:micrometer-registry-prometheus:1.8.3')
 
     implementation ('org.springframework.kafka:spring-kafka:2.8.4')
-    testImplementation ('org.springframework.kafka:spring-kafka-test:2.8.4')
 
+    implementation("no.nav.eessi.pensjon:ep-eux:${epeuxVersion}")
     implementation("no.nav.eessi.pensjon:ep-metrics:$epMetricsVersion")
     implementation("no.nav.eessi.pensjon:ep-logging:${epLoggingersion}")
     implementation("no.nav.eessi.pensjon:ep-personoppslag:${epPersonoppslagVersion}")
-    implementation("no.nav.eessi.pensjon:ep-eux:${epeuxVersion}")
+    implementation("no.nav.eessi.pensjon:ep-pensjonsinformasjon:${epPensjonInformasjonVersjon}")
 
+    implementation("no.nav.tjenestespesifikasjoner:pensjonsinformasjon-v1-tjenestespesifikasjon:1.2021.01.21-11.34-02f5eb27bb76")
+
+    //mock - test
+    testImplementation("org.springframework.boot:spring-boot-starter-test:$springBootVersion") {
+        exclude module: 'junit'
+        exclude module: "mockito-core"
+        exclude module: 'junit-vintage-engine'
+    }
+    testImplementation ('org.springframework.kafka:spring-kafka-test:2.8.4')
+    testImplementation("org.pac4j:spring-webmvc-pac4j:5.1.0")
+
+    testImplementation("org.junit.platform:junit-platform-suite-api:1.8.2")
+
+    testImplementation("org.skyscreamer:jsonassert:1.5.0")
+    testImplementation("org.jetbrains.kotlin:kotlin-test:${kotlinVersion}") {
+        exclude module: 'kotlin-test-js'
+        exclude module: 'kotlin-test-testng'
+    }
+    testImplementation('io.mockk:mockk:1.12.3')
+
+    // Architecture tests la stå som 0.11.0
+    testImplementation ("com.tngtech.archunit:archunit:0.11.0")
+
+    // Forenklere mocking av beans, benyttes som mockito mockbean
+    testImplementation('com.ninja-squad:springmockk:3.1.1')
 }
 
 
@@ -159,43 +148,6 @@ test {
     useJUnitPlatform()
 }
 
-// Temporary - until these misplaced dirs are cleaned in all builds
-processResources.doFirst {
-    delete "${projectDir}/src/main/resources/schemas"
-    delete "${projectDir}/src/main/resources/xsdtemp"
-}
-
-ext.xsdTemp = "${buildDir}/xsdtemp"
-ext.schemasDir = "${buildDir}/schemas"
-ext.xsdArtifactName = "pensjonsinformasjon-xsd.jar"
-
-ext.pensjonsinformasjonDir = "${schemasDir}"
-
-task copyPensjonsinformasjonXsd(type: Copy) {
-    from(configurations.xsd) {
-        rename '^pensjonsinformasjon.*', 'pensjonsinformasjon-xsd.jar'
-    }
-    into xsdTemp
-}
-
-task copyPensjonsinformasjonXsdsFromArtifacts(type: Copy) {
-    with copyPensjonsinformasjonXsd
-    includeEmptyDirs = false
-    from zipTree( xsdTemp + "/" + xsdArtifactName)
-    include '**/*.xsd'
-    into pensjonsinformasjonDir
-}
-
-jaxb {
-    xsdDir = pensjonsinformasjonDir
-}
-
-copyPensjonsinformasjonXsdsFromArtifacts.dependsOn tasks["copyPensjonsinformasjonXsd"]
-xjc.dependsOn tasks["copyPensjonsinformasjonXsdsFromArtifacts"]
-compileKotlin.dependsOn tasks["xjc"]
-
-sourceSets["main"].resources.srcDir(schemasDir)
-sourceSets["main"].java.srcDir("${buildDir}/generated-sources/xjc")
 
 wrapper {
     distributionType = Wrapper.DistributionType.ALL
@@ -217,7 +169,7 @@ tasks.sonarqube.dependsOn tasks["jacocoTestReport"]
 repositories {
     mavenCentral()
 
-    ["maven-release","ep-personoppslag","tjenestespesifikasjoner","ep-metrics"].each { repo ->
+    ["maven-release","ep-personoppslag","tjenestespesifikasjoner","ep-metrics", "ep-pensjonsinformasjon"].each { repo ->
         String token = System.getenv("GITHUB_TOKEN") ?: project.findProperty("gpr.key")
         if (!token) throw new NullPointerException("Missing token, you have to set GITHUB_TOKEN or gpr.key, see README")
         maven {

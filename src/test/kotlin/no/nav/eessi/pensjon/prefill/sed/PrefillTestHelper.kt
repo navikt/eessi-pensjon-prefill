@@ -3,11 +3,10 @@ package no.nav.eessi.pensjon.prefill.sed
 
 import io.mockk.every
 import io.mockk.mockk
+import no.nav.eessi.pensjon.pensjonsinformasjon.PensjonsinformasjonClient
 import no.nav.eessi.pensjon.prefill.ApiRequest
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.models.InstitusjonItem
-import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonClient
-import no.nav.eessi.pensjon.services.pensjonsinformasjon.RequestBuilder
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -23,7 +22,7 @@ object PrefillTestHelper {
             )
         } returns readXMLVedtakresponse(responseXMLfilename)
 
-        val pensjonsinformasjonClient = PensjonsinformasjonClient(pensjonsinformasjonRestTemplate, RequestBuilder())
+        val pensjonsinformasjonClient = PensjonsinformasjonClient(pensjonsinformasjonRestTemplate)
         pensjonsinformasjonClient.initMetrics()
         return PensjonsinformasjonService(pensjonsinformasjonClient)
     }
@@ -36,7 +35,7 @@ object PrefillTestHelper {
             )
         } returns readXMLresponse(responseXMLfilename)
 
-        val pensjonsinformasjonClient = PensjonsinformasjonClient(pensjonsinformasjonRestTemplate, RequestBuilder())
+        val pensjonsinformasjonClient = PensjonsinformasjonClient(pensjonsinformasjonRestTemplate)
         pensjonsinformasjonClient.initMetrics()
         return PensjonsinformasjonService(pensjonsinformasjonClient)
     }
