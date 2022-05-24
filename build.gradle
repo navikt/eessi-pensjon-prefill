@@ -53,12 +53,13 @@ java {
 
 compileKotlin {
     kotlinOptions {
+        freeCompilerArgs = ["-Xjsr305=strict"]
         jvmTarget = "17"
     }
 }
-
 compileTestKotlin {
     kotlinOptions {
+        freeCompilerArgs = ["-Xjsr305=strict"]
         jvmTarget = "17"
     }
 }
@@ -168,7 +169,7 @@ tasks.sonarqube.dependsOn tasks["jacocoTestReport"]
 repositories {
     mavenCentral()
 
-    ["maven-release","ep-personoppslag","tjenestespesifikasjoner","ep-metrics"].each { repo ->
+    ["maven-release","ep-personoppslag","tjenestespesifikasjoner","ep-metrics", "ep-pensjonsinformasjon"].each { repo ->
         String token = System.getenv("GITHUB_TOKEN") ?: project.findProperty("gpr.key")
         if (!token) throw new NullPointerException("Missing token, you have to set GITHUB_TOKEN or gpr.key, see README")
         maven {
