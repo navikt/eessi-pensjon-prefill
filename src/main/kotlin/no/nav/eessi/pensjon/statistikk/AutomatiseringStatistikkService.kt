@@ -26,14 +26,8 @@ class AutomatiseringStatistikkService(private val aivenKafkaTemplate: KafkaTempl
         val obj = parser.parse(sed.toJson())
         val jsonObject = obj as JSONObject
         val flattenedJsonMap = JsonFlattener.flattenAsMap(jsonObject.toString())
-
-//        if (logger.isDebugEnabled) {
-//            flattenedJsonMap.forEach { (k: String, v: Any) -> logger.debug("$k : $v") }
-//        }
-
         val listOfValues = flattenedJsonMap.filter { it.value != null }
         val listOfEmptyValues = flattenedJsonMap.filter { it.value == null }
-
         val antallFelter = flattenedJsonMap.size
         val antallPreutfylteFelter = listOfValues.size
         val antallTommeFelter = listOfEmptyValues.size

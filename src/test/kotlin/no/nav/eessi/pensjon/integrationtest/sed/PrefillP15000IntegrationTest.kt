@@ -20,7 +20,6 @@ import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.models.KravType
 import no.nav.eessi.pensjon.services.kodeverk.KodeverkClient
-
 import no.nav.pensjon.v1.avdod.V1Avdod
 import no.nav.pensjon.v1.kravhistorikk.V1KravHistorikk
 import no.nav.pensjon.v1.kravhistorikkliste.V1KravHistorikkListe
@@ -41,7 +40,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
-import org.springframework.web.client.RestTemplate
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -50,11 +48,6 @@ import java.time.LocalDateTime
 @AutoConfigureMockMvc
 @EmbeddedKafka
 class PrefillP15000IntegrationTest {
-
-//    (name = "pensjonsinformasjonOidcRestTemplate")
-
-    @MockkBean
-    lateinit var pensjonsinformasjonOidcRestTemplate: RestTemplate
 
     @MockkBean
     lateinit var kodeverkClient: KodeverkClient

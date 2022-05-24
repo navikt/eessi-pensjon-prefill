@@ -40,7 +40,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.util.ResourceUtils
-import org.springframework.web.client.RestTemplate
 import java.time.LocalDate
 import kotlin.test.assertEquals
 
@@ -49,9 +48,6 @@ import kotlin.test.assertEquals
 @AutoConfigureMockMvc
 @EmbeddedKafka
 class SedPrefillP7000Mk2IntegrationSpringTest {
-
-    @MockkBean
-    private lateinit var pensjonsinformasjonOidcRestTemplate: RestTemplate
 
     @MockkBean
     private lateinit var kodeverkClient: KodeverkClient

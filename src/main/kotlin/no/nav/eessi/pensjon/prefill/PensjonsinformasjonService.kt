@@ -57,14 +57,6 @@ class PensjonsinformasjonService(private val pensjonsinformasjonClient: Pensjons
         return pendata
     }
 
-//    fun hentPensjonInformasjonNullHvisFeil(fnr: String, aktoerId: String) =
-//        try {
-//            hentPensjonInformasjon(fnr, aktoerId)
-//        } catch (pen: Exception) {
-//            logger.error(pen.message)
-//            null
-//        }
-
     fun hentVedtak(vedtakId: String): Pensjonsinformasjon {
         logger.debug("----------------------------------------------------------")
         val starttime = System.nanoTime()

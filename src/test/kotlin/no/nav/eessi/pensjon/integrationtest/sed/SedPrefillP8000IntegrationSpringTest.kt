@@ -30,16 +30,12 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
-import org.springframework.web.client.RestTemplate
 
 @SpringBootTest(classes = [IntegrasjonsTestConfig::class, UnsecuredWebMvcTestLauncher::class], webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles(profiles = ["unsecured-webmvctest"])
 @AutoConfigureMockMvc
 @EmbeddedKafka
 class SedPrefillP8000IntegrationSpringTest {
-
-    @MockkBean
-    private lateinit var pensjonsinformasjonOidcRestTemplate: RestTemplate
 
     @MockkBean
     private lateinit var kodeverkClient: KodeverkClient

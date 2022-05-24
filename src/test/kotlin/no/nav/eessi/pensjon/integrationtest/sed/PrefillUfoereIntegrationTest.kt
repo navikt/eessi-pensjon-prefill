@@ -2,6 +2,7 @@ package no.nav.eessi.pensjon.integrationtest.sed
 
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
+import io.mockk.mockk
 import io.mockk.verify
 import no.nav.eessi.pensjon.UnsecuredWebMvcTestLauncher
 import no.nav.eessi.pensjon.eux.model.sed.SED
@@ -26,6 +27,9 @@ import org.skyscreamer.jsonassert.JSONAssert
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.context.TestConfiguration
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Primary
 import org.springframework.http.HttpEntity
 import org.springframework.http.MediaType
 import org.springframework.kafka.test.context.EmbeddedKafka
@@ -37,7 +41,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.web.client.RestTemplate
 import kotlin.test.assertEquals
 
-@SpringBootTest(classes = [IntegrasjonsTestConfig::class, UnsecuredWebMvcTestLauncher::class], webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(classes = [IntegrasjonsTestConfig::class, UnsecuredWebMvcTestLauncher::class, PrefillUfoereIntegrationTest.TestConfig::class], webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles(profiles = ["unsecured-webmvctest"])
 @AutoConfigureMockMvc
 @EmbeddedKafka
@@ -59,6 +63,13 @@ class PrefillUfoereIntegrationTest {
         const val FNR_VOKSEN = "11067122781"    // KRAFTIG VEGGPRYD
         const val FNR_VOKSEN_2 = "12312312312"  //
         const val AKTOER_ID = "0123456789000"
+    }
+
+    @TestConfiguration
+    internal class TestConfig{
+        @Bean
+        @Primary
+        fun restTemplate(): RestTemplate = mockk()
     }
 
     @Test

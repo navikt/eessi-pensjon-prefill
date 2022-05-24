@@ -3,7 +3,6 @@ package no.nav.eessi.pensjon.services.pensjonsinformasjon
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.pensjonsinformasjon.FinnSak
-import no.nav.eessi.pensjon.pensjonsinformasjon.PensjoninformasjonException
 import no.nav.eessi.pensjon.pensjonsinformasjon.PensjoninformasjonProcessingException
 import no.nav.eessi.pensjon.pensjonsinformasjon.PensjonsinformasjonClient
 import no.nav.eessi.pensjon.utils.simpleFormat
@@ -20,6 +19,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.util.ResourceUtils
 import org.springframework.web.client.ResourceAccessException
 import org.springframework.web.client.RestTemplate
+import org.springframework.web.server.ResponseStatusException
 
 @ActiveProfiles("test")
 class PensjonsinformasjonClientTest {
@@ -52,7 +52,7 @@ class PensjonsinformasjonClientTest {
             any<HttpEntity<Unit>>(),
             eq(String::class.java)) } throws ResourceAccessException("IOException")
 
-        assertThrows<PensjoninformasjonException> {
+        assertThrows<ResponseStatusException> {
             pensjonsinformasjonClient.hentAltPaaVedtak("1243")
         }
     }
