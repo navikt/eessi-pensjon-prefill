@@ -6,6 +6,7 @@ import no.nav.eessi.pensjon.pensjonsinformasjon.FinnSak
 import no.nav.eessi.pensjon.pensjonsinformasjon.PensjoninformasjonException
 import no.nav.eessi.pensjon.pensjonsinformasjon.PensjoninformasjonProcessingException
 import no.nav.eessi.pensjon.pensjonsinformasjon.PensjonsinformasjonClient
+import no.nav.eessi.pensjon.pensjonsinformasjon.clients.PensjonRequestBuilder
 import no.nav.eessi.pensjon.utils.simpleFormat
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -30,7 +31,7 @@ class PensjonsinformasjonClientTest {
 
     @BeforeEach
     fun setup() {
-        pensjonsinformasjonClient = PensjonsinformasjonClient(mockrestTemplate)
+        pensjonsinformasjonClient = PensjonsinformasjonClient(mockrestTemplate, PensjonRequestBuilder())
         pensjonsinformasjonClient.initMetrics()
     }
 

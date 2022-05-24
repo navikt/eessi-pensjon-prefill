@@ -3,6 +3,7 @@ package no.nav.eessi.pensjon.services.pensjonsinformasjon
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.pensjonsinformasjon.PensjonsinformasjonClient
+import no.nav.eessi.pensjon.pensjonsinformasjon.clients.PensjonRequestBuilder
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -21,7 +22,7 @@ object PensjonsinformasjonClientMother {
                 .thenReturn(readXMLresponse)
 */
         every { mockRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns readXMLresponse
-        val pensjonsinformasjonClient = PensjonsinformasjonClient(mockRestTemplate)
+        val pensjonsinformasjonClient = PensjonsinformasjonClient(mockRestTemplate, PensjonRequestBuilder())
         pensjonsinformasjonClient.initMetrics()
         return pensjonsinformasjonClient
     }
