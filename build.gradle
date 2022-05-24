@@ -77,11 +77,6 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-cache:$springBootVersion")
     implementation("org.springframework.boot:spring-boot-starter-actuator:$springBootVersion")
     implementation("org.springframework.boot:spring-boot-actuator:$springBootVersion")
-    testImplementation("org.springframework.boot:spring-boot-starter-test:$springBootVersion") {
-        exclude module: 'junit'
-        exclude module: "mockito-core"
-        exclude module: 'junit-vintage-engine'
-    }
 
     // Kotlin
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:${jacksonModuleKotlinVersion}")
@@ -92,22 +87,6 @@ dependencies {
     //flattenmap
     implementation("com.github.wnameless:json-flattener:0.7.1")
     implementation("com.github.wnameless.json:json-flattener:0.13.0")
-
-    //mock - test
-    testImplementation("org.junit.platform:junit-platform-suite-api:1.8.2")
-
-    testImplementation("org.skyscreamer:jsonassert:1.5.0")
-    testImplementation("org.jetbrains.kotlin:kotlin-test:${kotlinVersion}") {
-        exclude module: 'kotlin-test-js'
-        exclude module: 'kotlin-test-testng'
-    }
-    testImplementation('io.mockk:mockk:1.12.3')
-
-    // Architecture tests la stå som 0.11.0
-    testImplementation ("com.tngtech.archunit:archunit:0.11.0")
-
-    // Forenklere mocking av beans, benyttes som mockito mockbean
-    testImplementation('com.ninja-squad:springmockk:3.1.1')
 
     // Logging
     implementation("net.logstash.logback:logstash-logback-encoder:${logstashLogbackVersion}")
@@ -127,24 +106,42 @@ dependencies {
 
     implementation ("no.nav.common:token-client:2.2022.04.01_08.27-cbfeb0be0ee0")
 
-    // implementation("no.nav.eessi.pensjon:ep-security-sts:0.0.21")
-    testImplementation("org.pac4j:spring-webmvc-pac4j:5.1.0")
-
     // Micrometer
     implementation('io.micrometer:micrometer-registry-prometheus:1.8.3')
 
     implementation ('org.springframework.kafka:spring-kafka:2.8.4')
-    testImplementation ('org.springframework.kafka:spring-kafka-test:2.8.4')
 
+    implementation("no.nav.eessi.pensjon:ep-eux:${epeuxVersion}")
     implementation("no.nav.eessi.pensjon:ep-metrics:$epMetricsVersion")
     implementation("no.nav.eessi.pensjon:ep-logging:${epLoggingersion}")
     implementation("no.nav.eessi.pensjon:ep-personoppslag:${epPersonoppslagVersion}")
-    implementation("no.nav.eessi.pensjon:ep-eux:${epeuxVersion}")
     implementation("no.nav.eessi.pensjon:ep-pensjonsinformasjon:${epPensjonInformasjonVersjon}")
 
     implementation("no.nav.tjenestespesifikasjoner:pensjonsinformasjon-v1-tjenestespesifikasjon:1.2021.01.21-11.34-02f5eb27bb76")
 
+    //mock - test
+    testImplementation("org.springframework.boot:spring-boot-starter-test:$springBootVersion") {
+        exclude module: 'junit'
+        exclude module: "mockito-core"
+        exclude module: 'junit-vintage-engine'
+    }
+    testImplementation ('org.springframework.kafka:spring-kafka-test:2.8.4')
+    testImplementation("org.pac4j:spring-webmvc-pac4j:5.1.0")
 
+    testImplementation("org.junit.platform:junit-platform-suite-api:1.8.2")
+
+    testImplementation("org.skyscreamer:jsonassert:1.5.0")
+    testImplementation("org.jetbrains.kotlin:kotlin-test:${kotlinVersion}") {
+        exclude module: 'kotlin-test-js'
+        exclude module: 'kotlin-test-testng'
+    }
+    testImplementation('io.mockk:mockk:1.12.3')
+
+    // Architecture tests la stå som 0.11.0
+    testImplementation ("com.tngtech.archunit:archunit:0.11.0")
+
+    // Forenklere mocking av beans, benyttes som mockito mockbean
+    testImplementation('com.ninja-squad:springmockk:3.1.1')
 }
 
 
