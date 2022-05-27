@@ -16,13 +16,11 @@ import no.nav.eessi.pensjon.EessiFagmodulApplication
 import no.nav.eessi.pensjon.metrics.MetricsHelper
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeAll
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.context.annotation.Scope
 import org.springframework.web.bind.annotation.RestController
 
 
-@Disabled
 class ArchitectureTest {
 
     companion object {
@@ -72,10 +70,6 @@ class ArchitectureTest {
         val bucSedApi = "prefill.api"
         val prefill = "prefill"
         val models = "prefill.models"
-        val arkivApi = "api.arkiv"
-        val geoApi = "api.geo"
-        val personApi = "api.person"
-        val pensjonApi = "api.pensjon"
         val config = "config"
         val kodeverkService = "services.kodeverk"
         val geoService = "services.geo"
@@ -90,10 +84,6 @@ class ArchitectureTest {
 
         val packages: Map<String, String> = mapOf(
             "$root.health.." to health,
-            "$root.api.arkiv.." to arkivApi,
-            "$root.api.geo.." to geoApi,
-            "$root.api.person.." to personApi,
-            "$root.api.pensjon.." to pensjonApi,
             "$root.prefill.api.." to bucSedApi,
             "$root.prefill.." to prefill,
             "$root.prefill.models.." to models,
@@ -120,11 +110,6 @@ class ArchitectureTest {
         layeredArchitecture()
             .layer(health).definedBy(*packagesFor(health))
 
-            .layer(arkivApi).definedBy(*packagesFor(arkivApi))
-            .layer(geoApi).definedBy(*packagesFor(geoApi))
-            .layer(personApi).definedBy(*packagesFor(personApi))
-            .layer(pensjonApi).definedBy(*packagesFor(pensjonApi))
-
             .layer(bucSedApi).definedBy(*packagesFor(bucSedApi))
             .layer(prefill).definedBy(*packagesFor(prefill))
             .layer(models).definedBy(*packagesFor(models))
@@ -141,19 +126,18 @@ class ArchitectureTest {
             .layer(innhentingService).definedBy(*packagesFor(innhentingService))
 
             .whereLayer(health).mayNotBeAccessedByAnyLayer()
-            .whereLayer(geoApi).mayNotBeAccessedByAnyLayer()
             .whereLayer(bucSedApi).mayNotBeAccessedByAnyLayer()
             .whereLayer(prefill).mayOnlyBeAccessedByLayers(bucSedApi, integrationtest)
-            .whereLayer(models).mayOnlyBeAccessedByLayers(prefill, bucSedApi, pensjonApi, personApi, integrationtest)
-            .whereLayer(personDataLosning).mayOnlyBeAccessedByLayers(config, health, personApi, bucSedApi, pensjonApi, prefill, models, integrationtest, innhentingService)
+            .whereLayer(models).mayOnlyBeAccessedByLayers(prefill, bucSedApi, integrationtest)
+            .whereLayer(personDataLosning).mayOnlyBeAccessedByLayers(config, health, bucSedApi, prefill, models, integrationtest, innhentingService)
             .whereLayer(vedlegg).mayOnlyBeAccessedByLayers(integrationtest, innhentingService, bucSedApi)
-            .whereLayer(geoService).mayOnlyBeAccessedByLayers(geoApi, prefill)
-            .whereLayer(pensjonService).mayOnlyBeAccessedByLayers(health, pensjonApi, prefill, bucSedApi, personApi, integrationtest)
+            .whereLayer(geoService).mayOnlyBeAccessedByLayers(prefill)
+            .whereLayer(pensjonService).mayOnlyBeAccessedByLayers(health, prefill, bucSedApi, integrationtest)
 
             .whereLayer(config).mayOnlyBeAccessedByLayers(personDataLosning)
             .whereLayer(security).mayOnlyBeAccessedByLayers(config, health, vedlegg, pensjonService, personDataLosning, personService, kodeverkService, integrationtest)
-
-            .check(allClasses)
+            .withOptionalLayers(true)
+            .check(productionClasses)
     }
 
     @Test
@@ -201,7 +185,8 @@ class ArchitectureTest {
                 integrationtest,
                 euxmodel,
                 statistikk)
-            .check(allClasses)
+            .withOptionalLayers(true)
+            .check(productionClasses)
     }
 
     @Test
@@ -219,13 +204,6 @@ class ArchitectureTest {
             .whereLayer("person").mayOnlyBeAccessedByLayers("sed", "prefill")
             .whereLayer("models").mayOnlyBeAccessedByLayers("sed", "person", "prefill")
             .check(productionClasses)
-    }
-    @Test
-    fun `no cycles on top level`() {
-        slices()
-            .matching("$root.(*)..")
-            .should().beFreeOfCycles()
-            .check(allClasses)
     }
 
     @Test
@@ -245,11 +223,10 @@ class ArchitectureTest {
     }
 
     @Test
-    fun `controllers should not call each other`() {
-        classes().that()
-            .areAnnotatedWith(RestController::class.java)
-            .should().onlyBeAccessed().byClassesThat().areNotAnnotatedWith(RestController::class.java)
-            .because("Controllers should not call each other")
+    fun `Restcontrollers should not call each other`() {
+        classes()
+            .that().areAnnotatedWith(RestController::class.java)
+            .should().onlyHaveDependentClassesThat().areNotAnnotatedWith(RestController::class.java)
             .check(allClasses)
     }
 
@@ -264,8 +241,8 @@ class ArchitectureTest {
     @Test
     fun `Spring singleton components should not have mutable instance fields`() {
 
-        class SpringStereotypeAnnotation:DescribedPredicate<JavaAnnotation>("Spring component annotation") {
-            override fun apply(input: JavaAnnotation?) = input != null &&
+        class SpringStereotypeAnnotation:DescribedPredicate<JavaAnnotation<*>>("Spring component annotation") {
+            override fun apply(input: JavaAnnotation<*>?) = input != null &&
                     (input.rawType.packageName.startsWith("org.springframework.stereotype") ||
                             input.rawType.isEquivalentTo(RestController::class.java))
         }
