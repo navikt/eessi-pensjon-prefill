@@ -40,7 +40,7 @@ class RestTemplateConfig(
     }
 
     @Bean
-    fun pensjonInformasjonRestTemplate(): RestTemplate {
+    fun pensjoninformasjonRestTemplate(): RestTemplate {
         return opprettRestTemplate(pensjonUrl, "proxy-credentials")
     }
 
