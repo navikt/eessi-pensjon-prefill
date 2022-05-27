@@ -12,7 +12,7 @@ buildscript {
         epMetricsVersion = '0.4.+'
         epPersonoppslagVersion = '9.+'
         epLoggingersion='1.+'
-        epPensjonInformasjonVersjon='2.0.9'
+        epPensjonInformasjonVersjon='2.0.12'
     }
 
     repositories {
@@ -143,11 +143,9 @@ dependencies {
     testImplementation('com.ninja-squad:springmockk:3.1.1')
 }
 
-
 test {
     useJUnitPlatform()
 }
-
 
 wrapper {
     distributionType = Wrapper.DistributionType.ALL
