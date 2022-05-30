@@ -18,10 +18,9 @@ import org.springframework.stereotype.Component
 @Profile("prod", "test")
 @Primary
 @Order(Ordered.HIGHEST_PRECEDENCE)
-class PdlPrefillTokenComponent(private val tokenValidationContextHolder: TokenValidationContextHolder): PdlTokenCallBack {
-
-    @Value("\${AZURE_APP_PDL_CLIENT_ID}")
-    private lateinit var pdlClientId: String
+class PdlPrefillTokenComponent(
+    private val tokenValidationContextHolder: TokenValidationContextHolder,
+    @Value("\${AZURE_APP_PDL_CLIENT_ID}") private val pdlClientId: String): PdlTokenCallBack {
 
     override fun callBack(): PdlToken {
 
