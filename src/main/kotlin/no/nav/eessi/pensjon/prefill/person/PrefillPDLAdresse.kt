@@ -70,7 +70,7 @@ class PrefillPDLAdresse (private val postnummerService: PostnummerService,
 
             //utland
             kanUtlandsadresseBenyttes(pdlperson.kontaktadresse?.utenlandskAdresse) -> preutfyllUtlandsAdresse(pdlperson.kontaktadresse?.utenlandskAdresse)
-            pdlperson.kontaktadresse?.utenlandskAdresseIFrittFormat != null -> preutfyllUtenlandskAdresseIFrittFormat(pdlperson.kontaktadresse?.utenlandskAdresseIFrittFormat)
+            kanUtlandsadresseIFrittFormatBenyttes(pdlperson.kontaktadresse?.utenlandskAdresseIFrittFormat) -> preutfyllUtenlandskAdresseIFrittFormat(pdlperson.kontaktadresse?.utenlandskAdresseIFrittFormat)
             //utland
             kanUtlandsadresseBenyttes(pdlperson.oppholdsadresse?.utenlandskAdresse) -> preutfyllUtlandsAdresse(pdlperson.oppholdsadresse?.utenlandskAdresse)
 
@@ -123,6 +123,16 @@ class PrefillPDLAdresse (private val postnummerService: PostnummerService,
                 } == true)
     }
 
+    fun kanUtlandsadresseIFrittFormatBenyttes(utenlandskAdresseIFrittFormat: UtenlandskAdresseIFrittFormat?): Boolean {
+        if (utenlandskAdresseIFrittFormat == null) return false
+        return  !utenlandskAdresseIFrittFormat.adresselinje1.isNullOrEmpty() and
+                !utenlandskAdresseIFrittFormat.adresselinje2.isNullOrEmpty() and
+                !utenlandskAdresseIFrittFormat.adresselinje3.isNullOrEmpty() and
+                !utenlandskAdresseIFrittFormat.byEllerStedsnavn.isNullOrEmpty() and
+                !utenlandskAdresseIFrittFormat.landkode.isNullOrEmpty() and
+                !utenlandskAdresseIFrittFormat.postkode.isNullOrEmpty()
+    }
+
     private fun preutfyllUtlandsAdresse(utlandsAdresse: UtenlandskAdresse?): Adresse {
         logger.info("              preutfyller strukturert utlandsAdresse")
         if (utlandsAdresse == null) return tomAdresse()
@@ -136,13 +146,12 @@ class PrefillPDLAdresse (private val postnummerService: PostnummerService,
     }
 
     private fun preutfyllUtenlandskAdresseIFrittFormat(utenlandskAdresseIFrittFormat: UtenlandskAdresseIFrittFormat?) : Adresse {
-        if (utenlandskAdresseIFrittFormat == null) return tomAdresse()
         logger.info("              preutfyller utenlandskAdresseIFrittFormat")
         return Adresse(
-            gate = utenlandskAdresseIFrittFormat.adresselinje1,
-            bygning = utenlandskAdresseIFrittFormat.adresselinje2,
-            by = utenlandskAdresseIFrittFormat.adresselinje3,
-            land = hentLandkode(utenlandskAdresseIFrittFormat.landkode)
+            gate = utenlandskAdresseIFrittFormat?.adresselinje1,
+            bygning = utenlandskAdresseIFrittFormat?.adresselinje2,
+            by = utenlandskAdresseIFrittFormat?.adresselinje3,
+            land = hentLandkode(utenlandskAdresseIFrittFormat?.landkode)
         )
 
 

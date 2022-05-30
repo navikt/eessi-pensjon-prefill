@@ -12,15 +12,18 @@ import no.nav.eessi.pensjon.personoppslag.pdl.model.KontaktinformasjonForDoedsbo
 import no.nav.eessi.pensjon.personoppslag.pdl.model.KontaktinformasjonForDoedsboSkifteform
 import no.nav.eessi.pensjon.personoppslag.pdl.model.PostadresseIFrittFormat
 import no.nav.eessi.pensjon.personoppslag.pdl.model.UtenlandskAdresse
+import no.nav.eessi.pensjon.personoppslag.pdl.model.UtenlandskAdresseIFrittFormat
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Vegadresse
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.PersonPDLMock.medBeskyttelse
 import no.nav.eessi.pensjon.services.geo.PostnummerService
 import no.nav.eessi.pensjon.services.kodeverk.KodeverkClient
+import no.nav.eessi.pensjon.utils.toJson
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.skyscreamer.jsonassert.JSONAssert
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -206,5 +209,108 @@ class PrefillPDLAdresseTest{
         assertEquals("bysted", result.by)
 
     }
+
+    @Test
+    fun `create tom utenlandsadresse der utenlandsadresse i fritt format er tom eller mangler`() {
+        val person = PersonPDLMock.createWith()
+            .copy(bostedsadresse = null,
+                kontaktadresse = Kontaktadresse(
+                    coAdressenavn = null,
+                    type = KontaktadresseType.Innland,
+                    postadresseIFrittFormat = null,
+                    utenlandskAdresseIFrittFormat = UtenlandskAdresseIFrittFormat(),
+                    metadata = no.nav.eessi.pensjon.personoppslag.pdl.model.Metadata(emptyList(), false, "DOLLY", "Doll")
+                ))
+
+        every { kodeverkClient.finnLandkode(any()) }.returns("SC")
+
+        val result = prefillAdresse.createPersonAdresse(person)!!
+
+        val expected = """
+            {
+              "gate" : "",
+              "bygning" : "",
+              "by" : "",
+              "postnummer" : "",
+              "postkode" : null,
+              "region" : null,
+              "land" : "",
+              "kontaktpersonadresse" : null,
+              "datoforadresseendring" : null,
+              "postadresse" : null,
+              "startdato" : null,
+              "type" : null,
+              "annen" : null
+            }
+        """.trimIndent()
+
+        JSONAssert.assertEquals(expected, result.toJson(), true)
+
+    }
+
+    @Test
+    fun `Når utenlandskadresseIFrittFormat er null og utenlandskadresse finnes saa skal vi preutfylle med utenlandskadresse`() {
+        val person = PersonPDLMock.createWith()
+            .copy(
+                bostedsadresse = null,
+                kontaktadresse = Kontaktadresse(
+                    coAdressenavn = null,
+                    type = KontaktadresseType.Innland,
+                    postadresseIFrittFormat = null,
+                    utenlandskAdresse = UtenlandskAdresse(
+                        adressenavnNummer = "adressenavnummer",
+                        bySted = "bysted",
+                        landkode = "SCT",
+                        postkode = "EH99"
+                    ),
+                    utenlandskAdresseIFrittFormat = null,
+                    metadata = no.nav.eessi.pensjon.personoppslag.pdl.model.Metadata(
+                        emptyList(),
+                        false,
+                        "DOLLY",
+                        "Doll"
+                    )
+                )
+            )
+
+        every { kodeverkClient.finnLandkode(any()) }.returns("SC")
+
+        val result = prefillAdresse.createPersonAdresse(person)!!
+
+        assertEquals("EH99", result.postnummer)
+    }
+
+    @Test
+    fun `Når utenlandskadresseIFrittFormat er tom og utenlandskadresse finnes saa skal vi preutfylle med utenlandskadresse`() {
+        val person = PersonPDLMock.createWith()
+            .copy(
+                bostedsadresse = null,
+                kontaktadresse = Kontaktadresse(
+                    coAdressenavn = null,
+                    type = KontaktadresseType.Innland,
+                    postadresseIFrittFormat = null,
+                    utenlandskAdresse = UtenlandskAdresse(
+                        adressenavnNummer = "adressenavnummer",
+                        bySted = "bysted",
+                        landkode = "SCT",
+                        postkode = "EH99"
+                    ),
+                    utenlandskAdresseIFrittFormat = UtenlandskAdresseIFrittFormat(),
+                    metadata = no.nav.eessi.pensjon.personoppslag.pdl.model.Metadata(
+                        emptyList(),
+                        false,
+                        "DOLLY",
+                        "Doll"
+                    )
+                )
+            )
+
+        every { kodeverkClient.finnLandkode(any()) }.returns("SC")
+
+        val result = prefillAdresse.createPersonAdresse(person)!!
+
+        assertEquals("EH99", result.postnummer)
+    }
+
 
 }
