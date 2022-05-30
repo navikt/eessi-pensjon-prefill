@@ -125,12 +125,12 @@ class PrefillPDLAdresse (private val postnummerService: PostnummerService,
 
     fun kanUtlandsadresseIFrittFormatBenyttes(utenlandskAdresseIFrittFormat: UtenlandskAdresseIFrittFormat?): Boolean {
         if (utenlandskAdresseIFrittFormat == null) return false
-        return  !utenlandskAdresseIFrittFormat.adresselinje1.isNullOrEmpty() and
-                !utenlandskAdresseIFrittFormat.adresselinje2.isNullOrEmpty() and
-                !utenlandskAdresseIFrittFormat.adresselinje3.isNullOrEmpty() and
-                !utenlandskAdresseIFrittFormat.byEllerStedsnavn.isNullOrEmpty() and
-                !utenlandskAdresseIFrittFormat.landkode.isNullOrEmpty() and
-                !utenlandskAdresseIFrittFormat.postkode.isNullOrEmpty()
+        return !(utenlandskAdresseIFrittFormat.adresselinje1.isNullOrEmpty() and
+                utenlandskAdresseIFrittFormat.adresselinje2.isNullOrEmpty() and
+                utenlandskAdresseIFrittFormat.adresselinje3.isNullOrEmpty() and
+                utenlandskAdresseIFrittFormat.byEllerStedsnavn.isNullOrEmpty() and
+                utenlandskAdresseIFrittFormat.landkode.isNullOrEmpty() and
+                utenlandskAdresseIFrittFormat.postkode.isNullOrEmpty())
     }
 
     private fun preutfyllUtlandsAdresse(utlandsAdresse: UtenlandskAdresse?): Adresse {

@@ -506,6 +506,10 @@ class PrefillPDLNavTest {
             null
         )
 
+        println("*".repeat(20))
+        println(actual.toJsonSkipEmpty())
+        println("*".repeat(20))
+
         val expected = Nav(
             eessisak = listOf(EessisakItem(institusjonsid = someInstitutionId, institusjonsnavn = someIntitutionNavn, saksnummer = somePenSaksnr, land = "NO")),
             bruker = Bruker(
@@ -520,6 +524,7 @@ class PrefillPDLNavTest {
                 )
             )
         )
+        println(expected.toJsonSkipEmpty())
 
         JSONAssert.assertEquals(expected.toJsonSkipEmpty(), actual.toJsonSkipEmpty(), true)
     }
