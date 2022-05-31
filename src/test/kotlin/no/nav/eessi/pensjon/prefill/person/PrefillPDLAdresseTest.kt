@@ -1,5 +1,8 @@
 package no.nav.eessi.pensjon.prefill.person
 
+import ch.qos.logback.classic.Logger
+import ch.qos.logback.classic.spi.ILoggingEvent
+import ch.qos.logback.core.read.ListAppender
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.personoppslag.pdl.model.AdressebeskyttelseGradering
@@ -10,6 +13,7 @@ import no.nav.eessi.pensjon.personoppslag.pdl.model.KontaktadresseType
 import no.nav.eessi.pensjon.personoppslag.pdl.model.KontaktinformasjonForDoedsbo
 import no.nav.eessi.pensjon.personoppslag.pdl.model.KontaktinformasjonForDoedsboAdresse
 import no.nav.eessi.pensjon.personoppslag.pdl.model.KontaktinformasjonForDoedsboSkifteform
+import no.nav.eessi.pensjon.personoppslag.pdl.model.Person
 import no.nav.eessi.pensjon.personoppslag.pdl.model.PostadresseIFrittFormat
 import no.nav.eessi.pensjon.personoppslag.pdl.model.UtenlandskAdresse
 import no.nav.eessi.pensjon.personoppslag.pdl.model.UtenlandskAdresseIFrittFormat
@@ -21,24 +25,36 @@ import no.nav.eessi.pensjon.services.kodeverk.KodeverkClient
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.toJson
 import no.nav.eessi.pensjon.utils.typeRefs
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
+import org.slf4j.LoggerFactory
 import java.time.LocalDate
 import java.time.LocalDateTime
 
 class PrefillPDLAdresseTest{
 
-    lateinit var prefillAdresse: PrefillPDLAdresse
+    private lateinit var prefillAdresse: PrefillPDLAdresse
+    private var kodeverkClient: KodeverkClient = mockk()
 
-    var kodeverkClient: KodeverkClient = mockk()
+    private val deugLogger: Logger = LoggerFactory.getLogger("no.nav.eessi.pensjon") as Logger
+    private val listAppender = ListAppender<ILoggingEvent>()
 
     @BeforeEach
     fun beforeStart() {
+        deugLogger.addAppender(listAppender)
+        listAppender.start()
         prefillAdresse = PrefillPDLAdresse(PostnummerService(), kodeverkClient)
     }
+
+    @AfterEach
+    fun after() {
+        listAppender.stop()
+    }
+
 
     @Test
     fun `create personAdresse`() {
@@ -386,4 +402,19 @@ class PrefillPDLAdresseTest{
     }
 
 
+    @Test
+    fun `Det skal logges en error om pdlPerson gir flere enn gyldige adresser`() {
+        val mockPerson = mockk<Person>(relaxed = true)
+        val bostedsadresse = mockk<Bostedsadresse>(relaxed = true)
+        every { mockPerson.bostedsadresse } returns bostedsadresse
+
+        prefillAdresse.createPersonAdresse(mockPerson)!!
+
+        assertNotNull(getLogMsg("Fant flere gyldig adresser: "))
+    }
+
+    private fun getLogMsg(logMsg: String) : String? {
+        val logsList: List<ILoggingEvent> = listAppender.list
+        return  logsList.find { message -> message.formattedMessage.contains(logMsg)}?.message
+    }
 }
