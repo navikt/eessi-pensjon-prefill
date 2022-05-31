@@ -363,6 +363,7 @@ class PrefillPDLNavTest {
         val personfnr = Fodselsnummer.fra(somePersonNr)
         val personFdato = personfnr?.getBirthDate().toString()
 
+        val gateadresse = "Storavegsentra 12, Noenhusbygg, 2012 SE, Østaby"
         val single = lagPerson(somePersonNr)
             .copy(
                 bostedsadresse = null,
@@ -372,7 +373,7 @@ class PrefillPDLNavTest {
                     null,
                     null,
                     UtenlandskAdresse(
-                        "Storavegsentra 12, Noenhusbygg, 2012 SE, Østaby",
+                        gateadresse,
                         "örasund",
                         null,
                         "SWE",
@@ -397,23 +398,7 @@ class PrefillPDLNavTest {
             null
         )
 
-        val expected = Nav(
-            eessisak = listOf(EessisakItem(institusjonsid = someInstitutionId, institusjonsnavn = someIntitutionNavn, saksnummer = somePenSaksnr, land = "NO")),
-            bruker = Bruker(
-                person = lagNavPerson(somePersonNr, "OLE", "OLSEN", personFdato, someInstitutionId, someIntitutionNavn),
-                adresse = Adresse(
-                    "",
-                    "",
-                    "",
-                    "",
-                    land = ""
-                )
-            )
-        )
-
-        assertEquals(expected.bruker?.adresse, actual.bruker?.adresse)
-        JSONAssert.assertEquals(expected.toJsonSkipEmpty(), actual.toJsonSkipEmpty(), true)
-
+        assertEquals(gateadresse, actual.bruker?.adresse?.gate)
     }
 
     @Test
@@ -506,6 +491,10 @@ class PrefillPDLNavTest {
             null
         )
 
+        println("*".repeat(20))
+        println(actual.toJsonSkipEmpty())
+        println("*".repeat(20))
+
         val expected = Nav(
             eessisak = listOf(EessisakItem(institusjonsid = someInstitutionId, institusjonsnavn = someIntitutionNavn, saksnummer = somePenSaksnr, land = "NO")),
             bruker = Bruker(
@@ -520,6 +509,7 @@ class PrefillPDLNavTest {
                 )
             )
         )
+        println(expected.toJsonSkipEmpty())
 
         JSONAssert.assertEquals(expected.toJsonSkipEmpty(), actual.toJsonSkipEmpty(), true)
     }
