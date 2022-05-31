@@ -65,6 +65,8 @@ class PrefillPDLAdresse (private val postnummerService: PostnummerService,
         //Doedsbo
         val doedsboadresse = preutfyllDoedsboAdresseHvisFinnes(pdlperson)
 
+        loggErrorVedFlereGyldigeAdresser(pdlperson)
+
         return when {
             doedsboadresse != null -> doedsboadresse
 
@@ -81,6 +83,27 @@ class PrefillPDLAdresse (private val postnummerService: PostnummerService,
             kanUtlandsadresseBenyttes(pdlperson.oppholdsadresse?.utenlandskAdresse) -> preutfyllUtlandsAdresse(pdlperson.oppholdsadresse?.utenlandskAdresse)
 
             else -> tomAdresse()
+        }
+    }
+
+
+    fun loggErrorVedFlereGyldigeAdresser(pdlperson: PDLPerson) {
+        val adresseListe = listOf(
+            Pair("kontaktadresse.vegadresse", pdlperson.kontaktadresse?.vegadresse),
+            Pair("kontaktadresse.utenlandskAdresse", pdlperson.kontaktadresse?.utenlandskAdresse),
+            Pair("kontaktadresse.utenlandskAdresseIFrittFormat", pdlperson.kontaktadresse?.utenlandskAdresseIFrittFormat),
+            Pair("kontaktadresse.postadresseIFrittFormat", pdlperson.kontaktadresse?.postadresseIFrittFormat),
+
+            Pair("bostedsadresse.vegadresse", pdlperson.bostedsadresse?.vegadresse),
+            Pair("bostedsadresse.utenlandskAdresse", pdlperson.bostedsadresse?.utenlandskAdresse),
+
+            Pair("oppholdsadresse.vegadresse", pdlperson.oppholdsadresse?.vegadresse),
+            Pair("oppholdsadresse.utenlandskAdresse", pdlperson.oppholdsadresse?.utenlandskAdresse),
+        ).mapNotNull {
+            if (it.second != null) it else null
+        }.toMap()
+        if(adresseListe.size > 1){
+            logger.warn("Fant flere gyldig adresser: ${adresseListe.entries.map { "\n" + it.key }}")
         }
     }
 
