@@ -103,7 +103,7 @@ class PrefillPDLAdresse (private val postnummerService: PostnummerService,
             if (it.second != null) it else null
         }.toMap()
         if(adresseListe.size > 1){
-            logger.error("Fant flere gyldig adresser: ${adresseListe.entries.map { "\n" + it.key }}")
+            logger.warn("Fant flere gyldig adresser: ${adresseListe.entries.map { "\n" + it.key }}")
         }
     }
 
