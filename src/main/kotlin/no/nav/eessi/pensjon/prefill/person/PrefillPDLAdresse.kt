@@ -139,7 +139,9 @@ class PrefillPDLAdresse (private val postnummerService: PostnummerService,
             postnummer = utlandsAdresse.postkode,
             gate = utlandsAdresse.adressenavnNummer,
             by = utlandsAdresse.bySted,
-            land = hentLandkode(utlandsAdresse.landkode)
+            land = hentLandkode(utlandsAdresse.landkode),
+            region = utlandsAdresse.regionDistriktOmraade,
+            bygning = utlandsAdresse.bygningEtasjeLeilighet
         )
 
     }

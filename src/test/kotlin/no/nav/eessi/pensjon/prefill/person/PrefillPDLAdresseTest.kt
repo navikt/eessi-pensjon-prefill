@@ -291,8 +291,8 @@ class PrefillPDLAdresseTest{
             {
                "vegadresse":null,
                "utenlandskAdresse":{
-                  "adressenavnNummer":"CAPITAL WEST",
-                  "bygningEtasjeLeilighet":"",
+                  "adressenavnNummer":"1KOLEJOWA 6/5",
+                  "bygningEtasjeLeilighet":"Londonshire",
                   "postboksNummerNavn":null,
                   "postkode":"3000",
                   "bySted":"CAPITAL WEST",
@@ -333,6 +333,8 @@ class PrefillPDLAdresseTest{
         assertEquals("CAPITAL WEST", result.by)
         assertEquals("3000", result.postnummer)
         assertEquals("SC", result.land)
+        assertEquals("18-500 KOLNO", result.region)
+        assertEquals("Londonshire", result.bygning)
     }
 
     @Test
