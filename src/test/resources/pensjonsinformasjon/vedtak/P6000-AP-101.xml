@@ -92,6 +92,16 @@
                 <ns4:belopTilUtbetaling>7191</ns4:belopTilUtbetaling>
                 <ns4:belopUtenAvkorting>7191</ns4:belopUtenAvkorting>
             </ns3:ytelseskomponentListe>
+            <ns3:ytelseskomponentListe>
+                <ns4:ytelsesKomponentType>GAP</ns4:ytelsesKomponentType>
+                <ns4:belopTilUtbetaling>200</ns4:belopTilUtbetaling>
+                <ns4:belopUtenAvkorting>200</ns4:belopUtenAvkorting>
+            </ns3:ytelseskomponentListe>
+            <ns3:ytelseskomponentListe>
+                <ns4:ytelsesKomponentType>GAT</ns4:ytelsesKomponentType>
+                <ns4:belopTilUtbetaling>100</ns4:belopTilUtbetaling>
+                <ns4:belopUtenAvkorting>100</ns4:belopUtenAvkorting>
+            </ns3:ytelseskomponentListe>
         </ns5:ytelsePerMaanedListe>
     </ns19:ytelsePerMaanedListe>
     <ns7:sakAlder xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns7:v1.SakAlder">

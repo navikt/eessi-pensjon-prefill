@@ -134,4 +134,22 @@ class PrefillP6000Pensjon_ALDER_Test {
             prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection)
         }
     }
+
+    @Test
+    fun `henting av bruttobelop skal hente verdier fra garantipensjon, grunnpensjon, pensjontillegg, inntektspensjon, saertillegg `() {
+        dataFromPEN = PrefillTestHelper.lesPensjonsdataVedtakFraFil("/pensjonsinformasjon/vedtak/P6000-APUtland-301.xml")
+        prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P6000, personFnr, penSaksnummer = "22580170", vedtakId = "12312312")
+        prefillSEDService = PrefillSEDService(eessiInformasjon, prefillNav)
+        val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
+        val pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
+
+        val p6000 = prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection) as P6000
+        val p6000Pensjon = p6000.p6000Pensjon!!
+
+        assertNotNull(p6000Pensjon.vedtak)
+        assertNotNull(p6000Pensjon.sak)
+        assertNotNull(p6000Pensjon.tilleggsinformasjon)
+
+        assertEquals(1, p6000Pensjon.vedtak?.size, "4.1  pensjon.vedtak")
+    }
 }
