@@ -143,7 +143,8 @@ class SedP6000Test {
                                 beloepBrutto = BeloepBrutto(
                                     ytelseskomponentGrunnpensjon = "2344",
                                     beloep = "523",
-                                    ytelseskomponentTilleggspensjon = "234"
+                                    ytelseskomponentTilleggspensjon = "234",
+                                    ytelseskomponentAnnen = "1000"
                                 ),
                                 periode = Periode(
                                     tom = "2030-10-01",

@@ -5,6 +5,7 @@ import no.nav.eessi.pensjon.eux.model.sed.BeloepBrutto
 import no.nav.eessi.pensjon.eux.model.sed.BeregningItem
 import no.nav.eessi.pensjon.eux.model.sed.Periode
 import no.nav.eessi.pensjon.eux.model.sed.Ukjent
+import no.nav.eessi.pensjon.prefill.models.YtelseskomponentType
 import no.nav.eessi.pensjon.utils.simpleFormat
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import no.nav.pensjon.v1.ytelsepermaaned.V1YtelsePerMaaned
@@ -36,12 +37,15 @@ object PrefillPensjonVedtaksbelop {
      *  4.1.7.3.3
      *
      *  Her skal det automatisk vises brutto grunnpensjon for de ulike beregningsperioder  Brutto garantipensjon for alderspensjon beregnet etter kapittel 20.
+     *  Hentet ytelseskomponentType fra YtelseKomponentTypeCode.java (PESYS)
+     *      GAP =Garantitillegg
      */
     fun createYtelseskomponentGrunnpensjon(ytelsePrMnd: V1YtelsePerMaaned, sakType: KSAK): String? {
         logger.debug("4.1.7.3.3         Grunnpensjon")
 
         if (KSAK.UFOREP != sakType) {
-            return VedtakPensjonDataHelper.hentYtelseskomponentBelop("GP,GT,ST", ytelsePrMnd).toString()
+            return VedtakPensjonDataHelper.hentYtelseskomponentBelop(
+                "${YtelseskomponentType.GAP}, ${YtelseskomponentType.GP}, ${YtelseskomponentType.GAT}, ${YtelseskomponentType.PT}, ${YtelseskomponentType.ST}", ytelsePrMnd).toString()
         }
         return null
     }
@@ -55,7 +59,7 @@ object PrefillPensjonVedtaksbelop {
         logger.debug("4.1.7.3.4         Tilleggspensjon")
 
         if (KSAK.UFOREP != sakType) {
-            return VedtakPensjonDataHelper.hentYtelseskomponentBelop("TP,IP", ytelsePrMnd).toString()
+            return VedtakPensjonDataHelper.hentYtelseskomponentBelop("${YtelseskomponentType.TP},${YtelseskomponentType.IP}", ytelsePrMnd).toString()
         }
         return null
     }

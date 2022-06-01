@@ -1,10 +1,14 @@
 <ns19:pensjonsinformasjon xmlns:ns10="http://nav.no/pensjon/v1/inngangOgEksport"
                           xmlns:ns12="http://nav.no/pensjon/v1/trygdeavtale"
-                          xmlns:ns18="http://nav.no/pensjon/v1/avdod" xmlns:ns19="http://nav.no/pensjon/v1/pensjonsinformasjon"
-                          xmlns:ns2="http://nav.no/pensjon/v1/person" xmlns:ns3="http://nav.no/pensjon/v1/ytelsePerMaaned"
+                          xmlns:ns18="http://nav.no/pensjon/v1/avdod"
+                          xmlns:ns19="http://nav.no/pensjon/v1/pensjonsinformasjon"
+                          xmlns:ns2="http://nav.no/pensjon/v1/person"
+                          xmlns:ns3="http://nav.no/pensjon/v1/ytelsePerMaaned"
                           xmlns:ns4="http://nav.no/pensjon/v1/ytelseskomponent"
-                          xmlns:ns5="http://nav.no/pensjon/v1/ytelsePerMaanedListe" xmlns:ns6="http://nav.no/pensjon/v1/vedtak"
-                          xmlns:ns7="http://nav.no/pensjon/v1/sak"
+                          xmlns:ns5="http://nav.no/pensjon/v1/ytelsePerMaanedListe"
+                          xmlns:ns6="http://nav.no/pensjon/v1/vedtak"
+                          xmlns:ns7="http://nav.no/pensjon/v1/sakAlder"
+
 >
     <ns19:trygdeavtale xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns12:v1.Trygdeavtale"></ns19:trygdeavtale>
     <ns19:vedtak xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns6:v1.Vedtak">
@@ -58,11 +62,42 @@
                 <ns4:belopUtenAvkorting>300</ns4:belopUtenAvkorting>
             </ns3:ytelseskomponentListe>
         </ns5:ytelsePerMaanedListe>
+        <ns5:ytelsePerMaanedListe>
+            <ns3:fom>2017-01-01T00:00:00+01:00</ns3:fom>
+            <ns3:tom>2017-04-30T00:00:00+02:00</ns3:tom>
+            <ns3:mottarMinstePensjonsniva>false</ns3:mottarMinstePensjonsniva>
+            <ns3:vinnendeBeregningsmetode>EOS</ns3:vinnendeBeregningsmetode>
+            <ns3:vurdertBeregningsmetodeFolketrygd>false</ns3:vurdertBeregningsmetodeFolketrygd>
+            <ns3:vurdertBeregningsmetodeEOS>false</ns3:vurdertBeregningsmetodeEOS>
+            <ns3:vurdertBeregningsmetodeNordisk>false</ns3:vurdertBeregningsmetodeNordisk>
+            <ns3:belop>7110</ns3:belop>
+            <ns3:belopUtenAvkorting>7110</ns3:belopUtenAvkorting>
+            <ns3:ytelseskomponentListe>
+                <ns4:ytelsesKomponentType>UT_ORDINER</ns4:ytelsesKomponentType>
+                <ns4:belopTilUtbetaling>7110</ns4:belopTilUtbetaling>
+                <ns4:belopUtenAvkorting>7110</ns4:belopUtenAvkorting>
+            </ns3:ytelseskomponentListe>
+        </ns5:ytelsePerMaanedListe>
+        <ns5:ytelsePerMaanedListe>
+            <ns3:fom>2017-05-01T00:00:00+02:00</ns3:fom>
+            <ns3:mottarMinstePensjonsniva>false</ns3:mottarMinstePensjonsniva>
+            <ns3:vinnendeBeregningsmetode>EOS</ns3:vinnendeBeregningsmetode>
+            <ns3:vurdertBeregningsmetodeFolketrygd>false</ns3:vurdertBeregningsmetodeFolketrygd>
+            <ns3:vurdertBeregningsmetodeEOS>false</ns3:vurdertBeregningsmetodeEOS>
+            <ns3:vurdertBeregningsmetodeNordisk>false</ns3:vurdertBeregningsmetodeNordisk>
+            <ns3:belop>7191</ns3:belop>
+            <ns3:belopUtenAvkorting>7191</ns3:belopUtenAvkorting>
+            <ns3:ytelseskomponentListe>
+                <ns4:ytelsesKomponentType>UT_ORDINER</ns4:ytelsesKomponentType>
+                <ns4:belopTilUtbetaling>7191</ns4:belopTilUtbetaling>
+                <ns4:belopUtenAvkorting>7191</ns4:belopUtenAvkorting>
+            </ns3:ytelseskomponentListe>
+        </ns5:ytelsePerMaanedListe>
     </ns19:ytelsePerMaanedListe>
-    <ns19:sak xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns7:v1.Sak">
+    <ns7:sakAlder xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns7:v1.SakAlder">
         <ns7:sakType>ALDER</ns7:sakType>
         <ns7:uttakFor67>false</ns7:uttakFor67>
-    </ns19:sak>
-    <ns19:inngangOgEksport xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                           xsi:type="ns10:v1.InngangOgEksport"></ns19:inngangOgEksport>
+    </ns7:sakAlder>
+    <ns7:inngangOgEksport xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                           xsi:type="ns10:v1.InngangOgEksport"></ns7:inngangOgEksport>
 </ns19:pensjonsinformasjon>
