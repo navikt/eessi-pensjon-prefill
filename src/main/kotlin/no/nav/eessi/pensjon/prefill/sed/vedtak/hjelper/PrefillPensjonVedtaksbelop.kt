@@ -9,6 +9,8 @@ import no.nav.eessi.pensjon.prefill.models.YtelseskomponentType.GAP
 import no.nav.eessi.pensjon.prefill.models.YtelseskomponentType.GAT
 import no.nav.eessi.pensjon.prefill.models.YtelseskomponentType.GP
 import no.nav.eessi.pensjon.prefill.models.YtelseskomponentType.IP
+import no.nav.eessi.pensjon.prefill.models.YtelseskomponentType.MIN_NIVA_TILL_INDV
+import no.nav.eessi.pensjon.prefill.models.YtelseskomponentType.MIN_NIVA_TILL_PPAR
 import no.nav.eessi.pensjon.prefill.models.YtelseskomponentType.PT
 import no.nav.eessi.pensjon.prefill.models.YtelseskomponentType.ST
 import no.nav.eessi.pensjon.prefill.models.YtelseskomponentType.TP
@@ -51,7 +53,7 @@ object PrefillPensjonVedtaksbelop {
 
         if (KSAK.UFOREP != sakType) {
             return VedtakPensjonDataHelper.hentYtelseskomponentBelop(
-                "$GAP, $GP, $GAT, $PT, $ST", ytelsePrMnd).toString()
+                "$GAP, $GP, $GAT, $PT, $ST, $MIN_NIVA_TILL_INDV, $MIN_NIVA_TILL_PPAR", ytelsePrMnd).toString()
         }
         return null
     }
