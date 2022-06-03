@@ -36,4 +36,32 @@ class PrefillPensjonVedtaksbelopTest {
         assertEquals("2016-08-31", ytelsePerMaaned3.periode?.tom)
     }
 
+//    @Test
+//    fun `ved preutfylling av en P6000 forventes korrekt utregnet ytelsePrMnd på alderPensjon`() {
+//        val dataFromPESYS = PensjonsinformasjonService(PensjonsinformasjonClientMother.fraFil("P6000-AP-101.xml"))
+//        val pendata = dataFromPESYS.hentMedVedtak("someVedtakId")
+//
+//        val result = createBeregningItemList(pendata)
+//
+//        mapAnyToJson(result, true)
+//        println(result)
+//
+////        assert/Equals(6, result.size)
+//
+//        val ytelsePerMaaned1 = result[0]
+//        assertEquals("6917", ytelsePerMaaned1.beloepBrutto?.beloep)
+////        assertEquals("2015-12-01", ytelsePerMaaned1.periode?.fom)
+////        assertEquals("2015-12-31", ytelsePerMaaned1.periode?.tom)
+//
+//        val ytelsePerMaaned2 = result[1]
+////        assertEquals("6917", ytelsePerMaaned2.beloepBrutto?.beloep)
+////        assertEquals("2016-01-01", ytelsePerMaaned2.periode?.fom)
+////        assertEquals("2016-04-30", ytelsePerMaaned2.periode?.tom)
+//
+//        val ytelsePerMaaned3 = result[2]
+////        assertEquals("7110", ytelsePerMaaned3.beloepBrutto?.beloep)
+////        assertEquals("2016-05-01", ytelsePerMaaned3.periode?.fom)
+////        assertEquals("2016-08-31", ytelsePerMaaned3.periode?.tom)
+//    }
+
 }
