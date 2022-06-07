@@ -140,7 +140,7 @@ class PersonDataService(private val personService: PersonService,
         logger.info("prøver å hente ut alle barn (filtrert under 18) på hovedperson: " + barnepinListe.size)
 
         return barnepinListe
-            .mapNotNull { barnPin -> personServiceHentPerson(NorskIdent(barnPin)) }
+            .mapNotNull { barnPin -> barnPin?.let { NorskIdent(it) }?.let { personServiceHentPerson(it) } }
             .filterNot{ barn -> barn.erDoed() }
             .onEach {barn ->
                 logger.debug("Hentet følgende barn fra PDL aktoerid: ${barn.identer.firstOrNull { it.gruppe == IdentGruppe.AKTORID }}")
