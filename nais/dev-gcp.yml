@@ -32,10 +32,6 @@ spec:
       value: https://pdl-api.dev-fss-pub.nais.io/graphql
     - name: AZURE_APP_PDL_CLIENT_ID
       value: dev-fss.pdl.pdl-api
-    - name: ONPREM_KAFKA_BOOTSTRAP_SERVERS_URL
-      value: SSL://b27apvl00045.preprod.local:8443,SSL://b27apvl00046.preprod.local:8443,SSL://b27apvl00047.preprod.local:8443
-    - name: KAFKA_STATISTIKK_TOPICNAME
-      value: privat-eessipensjon-statistikk-q2
     - name: KAFKA_AUTOMATISERING_TOPIC
       value: eessipensjon.public-automatisering-q2
     - name: KODEVERK_REST_API_URL
@@ -48,8 +44,6 @@ spec:
       value: NAV ACCEPTANCE TEST 07
     - name: AZURE_APP_PROXY_CLIENT_ID
       value: dev-fss.eessipensjon.eessi-pensjon-onprem-proxy-q2
-    - name: AZURE_APP_PEN_CLIENT_ID
-      value: dev-fss.teampensjon.pensjon-pen-q2
     - name: ENV
       value: q2
   image: {{ image }}

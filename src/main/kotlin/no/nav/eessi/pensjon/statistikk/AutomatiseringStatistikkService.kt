@@ -11,14 +11,14 @@ import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Service
 
 @Service
-class AutomatiseringStatistikkService(private val aivenKafkaTemplate: KafkaTemplate<String, String>) {
+class AutomatiseringStatistikkService(private val kafkaTemplate: KafkaTemplate<String, String>) {
 
     private val logger = LoggerFactory.getLogger(AutomatiseringStatistikkService::class.java)
 
     private fun publiserAutomatiseringStatistikk(automatiseringMelding: PrefillAutomatiseringMelding) {
-        logger.info("Produserer melding på kafka: ${aivenKafkaTemplate.defaultTopic}  melding: $automatiseringMelding")
+        logger.info("Produserer melding på kafka: ${kafkaTemplate.defaultTopic}  melding: $automatiseringMelding")
 
-        aivenKafkaTemplate.send(KafkaAutomatiseringMessage(automatiseringMelding)).get()
+        kafkaTemplate.send(KafkaAutomatiseringMessage(automatiseringMelding)).get()
     }
 
     fun genererAutomatiseringStatistikk(sed: SED, bucType: String) {

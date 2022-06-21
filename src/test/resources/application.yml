@@ -12,9 +12,6 @@ eessi-pensjon-institusjon-navn: 'NOINST002, NO INST002, NO'
 
 METRICS_REQUESTFILTER_ENABLE: false
 
-securityTokenService:
-  discoveryUrl: 'http://example.com'
-
 #eux-rina-api_v1:
 eessipen-eux-rina:
   url: 'http://example.com:8089'
@@ -28,12 +25,6 @@ srvpassword: 'password'
 app:
   name: 'TEST'
   version: '0.1'
-
-security-token-service-token:
-  url: 'https://example.com/SecurityTokenServiceProvider/'
-
-securitytokenservice:
-  url: 'https://example.com/SecurityTokenServiceProvider/'
 
 eessi:
   pensjon_institusjon: '2342342-NAVAT 009'
@@ -55,8 +46,6 @@ saf.hentdokument:
 kafka:
   automatisering:
     topic: eessi-pensjon-automatisering
-  statistikk:
-    topic: eessi-pensjon-statistikk
   security.protocol: SSL
 
 server:
