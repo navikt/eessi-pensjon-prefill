@@ -28,8 +28,6 @@ spec:
       value: test
     - name: PENSJONSINFORMASJON_URL
       value: https://eessi-pensjon-onprem-proxy-q2.dev-fss-pub.nais.io/pen/api/pensjonsinformasjon/v1
-    - name: AZURE_APP_PEN_CLIENT_ID
-      value: dev-fss.teampensjon.pensjon-pen-q2
     - name: PDL_URL
       value: https://pdl-api.dev-fss-pub.nais.io/graphql
     - name: AZURE_APP_PDL_CLIENT_ID
@@ -50,6 +48,8 @@ spec:
       value: NAV ACCEPTANCE TEST 07
     - name: AZURE_APP_PROXY_CLIENT_ID
       value: dev-fss.eessipensjon.eessi-pensjon-onprem-proxy-q2
+    - name: AZURE_APP_PEN_CLIENT_ID
+      value: dev-fss.teampensjon.pensjon-pen-q2
     - name: ENV
       value: q2
   image: {{ image }}
@@ -60,15 +60,15 @@ spec:
     port: 8080
     initialDelay: 40
     failureThreshold: 10
+  port: 8080
+  prometheus:
+    enabled: true
+    path: /actuator/prometheus
   readiness:
     path: /internal/isready
     port: 8080
     initialDelay: 40
     failureThreshold: 10
-  port: 8080
-  prometheus:
-    enabled: true
-    path: /actuator/prometheus
   replicas:
     min: 1
     max: 2
