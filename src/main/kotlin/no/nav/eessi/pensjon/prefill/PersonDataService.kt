@@ -78,7 +78,7 @@ class PersonDataService(private val personService: PersonService,
             val forsikretPerson = personServiceHentPerson(NorskIdent(prefillData.bruker.norskIdent))
 
             val gjenlevendeEllerAvdod = if (prefillData.avdod != null) {
-                logger.info("Henter avød person/forsikret")
+                logger.info("Henter avød person")
                 personService.hentPerson(NorskIdent(prefillData.avdod.norskIdent))
             } else {
                 logger.info("Ingen avdød så settes til forsikretPerson")

@@ -256,6 +256,7 @@ object PersonPDLMock {
             .medAdresse("FORUSBEEN", "0010", "2294")
             .medKjoenn(KjoennType.KVINNE)
         val avdod = createWith(fornavn = "BAMSE LUR", etternavn = "MOMBALO", fnr = avdodEktefelleFnr, erDod =  true)
+            .medAdresse("Avdødadresse", "1111", "2222")
 
         return PersonDataCollection(
             forsikretPerson = person,
