@@ -35,7 +35,7 @@ import no.nav.eessi.pensjon.prefill.LagPDLPerson.Companion.medAdresse
 import no.nav.eessi.pensjon.prefill.LagPDLPerson.Companion.medBarn
 import no.nav.eessi.pensjon.prefill.LagPDLPerson.Companion.medForeldre
 import no.nav.eessi.pensjon.prefill.LagPDLPerson.Companion.medKontaktadresseUtland
-import no.nav.eessi.pensjon.prefill.models.BrukerInformasjon
+import no.nav.eessi.pensjon.prefill.models.BankOgArbeid
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PersonId
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
@@ -523,7 +523,7 @@ class PrefillPDLNavTest {
 
         val prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P2000, pinId = somePersonNr, penSaksnummer = somePenSaksnr).apply {
             partSedAsJson["PersonInfo"] = mapAnyToJson(
-                BrukerInformasjon(
+                BankOgArbeid(
                     null,
                     null,
                     null,

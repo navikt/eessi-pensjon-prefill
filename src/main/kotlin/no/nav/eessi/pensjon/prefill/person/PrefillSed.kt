@@ -39,7 +39,7 @@ class PrefillSed(private val prefillNav: PrefillPDLNav) {
             bruker = prefillData.bruker,
             avdod = prefillData.avdod,
             personData = personData,
-            brukerInformasjon = prefillData.getPersonInfoFromRequestData(),
+            bankOgArbeid = prefillData.getPersonInfoFromRequestData(),
             krav = prefillPensjon?.kravDato,
             annenPerson = annenPersonHvisGjenlevende(prefillData, prefillPensjon?.gjenlevende)
         )

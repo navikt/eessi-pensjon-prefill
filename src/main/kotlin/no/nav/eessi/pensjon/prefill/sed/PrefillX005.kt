@@ -9,7 +9,7 @@ import no.nav.eessi.pensjon.eux.model.sed.Navsak
 import no.nav.eessi.pensjon.eux.model.sed.Person
 import no.nav.eessi.pensjon.eux.model.sed.X005
 import no.nav.eessi.pensjon.eux.model.sed.XNav
-import no.nav.eessi.pensjon.prefill.models.BrukerInformasjon
+import no.nav.eessi.pensjon.prefill.models.BankOgArbeid
 import no.nav.eessi.pensjon.prefill.models.InstitusjonItem
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PersonId
@@ -24,7 +24,7 @@ class PrefillX005(private val prefillNav: PrefillPDLNav)  {
     fun prefill(penSaksnummer: String,
                 bruker: PersonId,
                 avdod: PersonId?,
-                brukerinformasjon: BrukerInformasjon?,
+                brukerinformasjon: BankOgArbeid?,
                 institusjon: InstitusjonItem,
                 personData: PersonDataCollection): X005 {
 
@@ -35,7 +35,7 @@ class PrefillX005(private val prefillNav: PrefillPDLNav)  {
             bruker = bruker,
             avdod = avdod,
             personData = personData,
-            brukerInformasjon = brukerinformasjon,
+            bankOgArbeid = brukerinformasjon,
         )
         val gjenlevende = avdod?.let {  prefillNav.eventuellGjenlevendePDL(it, personData.forsikretPerson) }
         val person =  gjenlevende?.person ?: navsed.bruker?.person

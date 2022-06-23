@@ -57,7 +57,7 @@ class PrefillSedEnkeTest {
             bruker = prefillData.bruker,
             avdod = prefillData.avdod,
             personData = persondataCollection,
-            brukerInformasjon = prefillData.getPersonInfoFromRequestData(),
+            bankOgArbeid = prefillData.getPersonInfoFromRequestData(),
             krav = null,
             annenPerson = null
         )

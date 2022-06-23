@@ -3,7 +3,7 @@ package no.nav.eessi.pensjon.prefill.models
 import java.util.*
 
 //fra UI til Fagmodul (person info)
-data class BrukerInformasjon(
+data class BankOgArbeid(
         //bank
         val bankAddress: String?,
         val bankBicSwift: String?,

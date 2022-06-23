@@ -18,7 +18,7 @@ class PrefillH02X(private val prefillNav: PrefillPDLNav)  {
             bruker = prefillData.bruker,
             avdod = prefillData.avdod,
             personData = personData,
-            brukerInformasjon = prefillData.getPersonInfoFromRequestData(),
+            bankOgArbeid = prefillData.getPersonInfoFromRequestData(),
             annenPerson = null
         )
 

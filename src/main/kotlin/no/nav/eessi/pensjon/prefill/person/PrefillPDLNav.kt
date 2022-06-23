@@ -7,7 +7,7 @@ import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe
 import no.nav.eessi.pensjon.personoppslag.pdl.model.KjoennType
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Navn
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Sivilstandstype
-import no.nav.eessi.pensjon.prefill.models.BrukerInformasjon
+import no.nav.eessi.pensjon.prefill.models.BankOgArbeid
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PersonId
 import no.nav.eessi.pensjon.utils.simpleFormat
@@ -75,7 +75,7 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
 
 
         //8.0 Bank detalsjer om bank betalinger.
-        private fun createBankData(personInfo: BrukerInformasjon): Bank {
+        private fun createBankData(personInfo: BankOgArbeid): Bank {
             logger.debug("8.0           Informasjon om betaling")
             logger.debug("8.1           Informasjon om betaling")
             return Bank(
@@ -117,7 +117,7 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
 
 
 
-        private fun createAnsettelsesforhold(personInfo: BrukerInformasjon): ArbeidsforholdItem {
+        private fun createAnsettelsesforhold(personInfo: BankOgArbeid): ArbeidsforholdItem {
             logger.debug("3.1           Ansettelseforhold/arbeidsforhold")
             return ArbeidsforholdItem(
                     //3.1.1.
@@ -135,7 +135,7 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
             )
         }
 
-        private fun createInformasjonOmAnsettelsesforhold(personInfo: BrukerInformasjon): List<ArbeidsforholdItem> {
+        private fun createInformasjonOmAnsettelsesforhold(personInfo: BankOgArbeid): List<ArbeidsforholdItem> {
             logger.debug("3.0           Informasjon om personens ansettelsesforhold og selvstendige næringsvirksomhet")
             logger.debug("3.1           Informasjon om ansettelsesforhold og selvstendig næringsvirksomhet ")
             return listOf(createAnsettelsesforhold(personInfo))
@@ -158,7 +158,7 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
         bruker: PersonId,
         avdod: PersonId?,
         personData: PersonDataCollection,
-        brukerInformasjon: BrukerInformasjon?,
+        bankOgArbeid: BankOgArbeid?,
         krav: Krav? = null,
         annenPerson: Bruker? = null
     ): Nav {
@@ -188,8 +188,8 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
                 bruker = avdodEllerGjenlevende?.let { avdodEllerGjenlevende ->
                     createBruker(
                                     avdodEllerGjenlevende,
-                                    brukerInformasjon?.let { createBankData(it) },
-                                    brukerInformasjon?.let { createInformasjonOmAnsettelsesforhold(it) }
+                                    bankOgArbeid?.let { createBankData(it) },
+                                    bankOgArbeid?.let { createInformasjonOmAnsettelsesforhold(it) }
                             )
                 },
 

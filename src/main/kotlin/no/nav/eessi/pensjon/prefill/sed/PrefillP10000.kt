@@ -1,7 +1,7 @@
 package no.nav.eessi.pensjon.prefill.sed
 
 import no.nav.eessi.pensjon.eux.model.sed.P10000
-import no.nav.eessi.pensjon.prefill.models.BrukerInformasjon
+import no.nav.eessi.pensjon.prefill.models.BankOgArbeid
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PersonId
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
@@ -15,7 +15,7 @@ class PrefillP10000(private val prefillNav: PrefillPDLNav) {
     fun prefill(penSaksnummer: String,
                 bruker: PersonId,
                 avdod: PersonId?,
-                brukerInformasjon: BrukerInformasjon?,
+                bankOgArbeid: BankOgArbeid?,
                 personData: PersonDataCollection): P10000 {
 
         val gjenlevende = try {
@@ -41,7 +41,7 @@ class PrefillP10000(private val prefillNav: PrefillPDLNav) {
             bruker = bruker,
             avdod = avdod,
             personData = personData,
-            brukerInformasjon = brukerInformasjon,
+            bankOgArbeid = bankOgArbeid,
             annenPerson = gjenlevende
         )
 

@@ -40,7 +40,7 @@ class PrefillP6000(private val prefillNav: PrefillPDLNav,
             bruker = prefillData.bruker,
             avdod = prefillData.avdod,
             personData = personData,
-            brukerInformasjon = prefillData.getPersonInfoFromRequestData(),
+            bankOgArbeid = prefillData.getPersonInfoFromRequestData(),
             krav = p6000Pensjon.kravDato,
             annenPerson = null
         )
