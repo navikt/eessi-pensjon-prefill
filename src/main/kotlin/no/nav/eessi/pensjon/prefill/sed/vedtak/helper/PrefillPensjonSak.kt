@@ -1,4 +1,4 @@
-package no.nav.eessi.pensjon.prefill.sed.vedtak.hjelper
+package no.nav.eessi.pensjon.prefill.sed.vedtak.helper
 
 import no.nav.eessi.pensjon.eux.model.sed.KravtypeItem
 import no.nav.eessi.pensjon.eux.model.sed.Sak

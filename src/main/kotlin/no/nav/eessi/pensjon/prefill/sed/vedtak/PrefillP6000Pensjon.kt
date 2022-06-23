@@ -7,11 +7,11 @@ import no.nav.eessi.pensjon.eux.model.sed.ReduksjonItem
 import no.nav.eessi.pensjon.eux.model.sed.Sak
 import no.nav.eessi.pensjon.eux.model.sed.Tilleggsinformasjon
 import no.nav.eessi.pensjon.eux.model.sed.VedtakItem
-import no.nav.eessi.pensjon.prefill.sed.vedtak.hjelper.PrefillPensjonReduksjon
-import no.nav.eessi.pensjon.prefill.sed.vedtak.hjelper.PrefillPensjonSak
-import no.nav.eessi.pensjon.prefill.sed.vedtak.hjelper.PrefillPensjonTilleggsinformasjon
-import no.nav.eessi.pensjon.prefill.sed.vedtak.hjelper.PrefillPensjonVedtak
-import no.nav.eessi.pensjon.prefill.sed.vedtak.hjelper.VedtakPensjonDataHelper.harBoddArbeidetUtland
+import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.PrefillPensjonReduksjon
+import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.PrefillPensjonSak
+import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.PrefillPensjonTilleggsinformasjon
+import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.PrefillPensjonVedtak
+import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.VedtakPensjonDataHelper.harBoddArbeidetUtland
 import no.nav.eessi.pensjon.utils.simpleFormat
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import org.slf4j.Logger

@@ -1,15 +1,15 @@
-package no.nav.eessi.pensjon.prefill.sed.vedtak.hjelper
+package no.nav.eessi.pensjon.prefill.sed.vedtak.helper
 
 import no.nav.eessi.pensjon.eux.model.sed.Grunnlag
 import no.nav.eessi.pensjon.eux.model.sed.Opptjening
 import no.nav.eessi.pensjon.eux.model.sed.VedtakItem
-import no.nav.eessi.pensjon.prefill.sed.vedtak.hjelper.PrefillPensjonVedtaksavslag.createAvlsagsBegrunnelseItem
-import no.nav.eessi.pensjon.prefill.sed.vedtak.hjelper.PrefillPensjonVedtaksavslag.sjekkForVilkarsvurderingListeHovedytelseellerAvslag
-import no.nav.eessi.pensjon.prefill.sed.vedtak.hjelper.PrefillPensjonVedtaksbelop.createBeregningItemList
-import no.nav.eessi.pensjon.prefill.sed.vedtak.hjelper.PrefillPensjonVedtaksbelop.createEkstraTilleggPensjon
-import no.nav.eessi.pensjon.prefill.sed.vedtak.hjelper.VedtakPensjonDataHelper.hentVilkarsResultatHovedytelse
-import no.nav.eessi.pensjon.prefill.sed.vedtak.hjelper.VedtakPensjonDataHelper.hentVinnendeBergeningsMetode
-import no.nav.eessi.pensjon.prefill.sed.vedtak.hjelper.VedtakPensjonDataHelper.isMottarMinstePensjonsniva
+import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.PrefillPensjonVedtaksavslag.createAvlsagsBegrunnelseItem
+import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.PrefillPensjonVedtaksavslag.sjekkForVilkarsvurderingListeHovedytelseellerAvslag
+import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.PrefillPensjonVedtaksbelop.createBeregningItemList
+import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.PrefillPensjonVedtaksbelop.createEkstraTilleggPensjon
+import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.VedtakPensjonDataHelper.hentVilkarsResultatHovedytelse
+import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.VedtakPensjonDataHelper.hentVinnendeBergeningsMetode
+import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.VedtakPensjonDataHelper.isMottarMinstePensjonsniva
 import no.nav.eessi.pensjon.utils.simpleFormat
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import no.nav.pensjon.v1.sakalder.V1SakAlder

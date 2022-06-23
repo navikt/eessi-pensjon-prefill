@@ -1,7 +1,6 @@
 package no.nav.eessi.pensjon.prefill.sed.vedtak.helper
 
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
-import no.nav.eessi.pensjon.prefill.sed.vedtak.hjelper.PrefillPensjonVedtak
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonClientMother.fraFil
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test

@@ -4,7 +4,6 @@ import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.sed.vedtak.PensjonsinformasjonMother
 import no.nav.eessi.pensjon.prefill.sed.vedtak.daysAgo
 import no.nav.eessi.pensjon.prefill.sed.vedtak.daysAhead
-import no.nav.eessi.pensjon.prefill.sed.vedtak.hjelper.VedtakPensjonDataHelper
 import no.nav.eessi.pensjon.services.pensjonsinformasjon.PensjonsinformasjonClientMother.fraFil
 import no.nav.eessi.pensjon.utils.simpleFormat
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon

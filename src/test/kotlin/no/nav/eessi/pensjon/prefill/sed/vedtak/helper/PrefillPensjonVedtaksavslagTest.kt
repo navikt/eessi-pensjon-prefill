@@ -1,7 +1,7 @@
 package no.nav.eessi.pensjon.prefill.sed.vedtak.helper
 
 import no.nav.eessi.pensjon.prefill.sed.vedtak.PensjonsinformasjonMother
-import no.nav.eessi.pensjon.prefill.sed.vedtak.hjelper.PrefillPensjonVedtaksavslag.createAvlsagsBegrunnelse
+import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.PrefillPensjonVedtaksavslag.createAvlsagsBegrunnelse
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 

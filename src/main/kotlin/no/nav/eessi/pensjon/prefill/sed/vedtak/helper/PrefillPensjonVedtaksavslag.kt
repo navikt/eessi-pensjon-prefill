@@ -1,4 +1,4 @@
-package no.nav.eessi.pensjon.prefill.sed.vedtak.hjelper
+package no.nav.eessi.pensjon.prefill.sed.vedtak.helper
 
 import no.nav.eessi.pensjon.eux.model.sed.AvslagbegrunnelseItem
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon

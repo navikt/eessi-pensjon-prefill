@@ -1,6 +1,5 @@
 package no.nav.eessi.pensjon.prefill.sed.vedtak.helper
 
-import no.nav.eessi.pensjon.prefill.sed.vedtak.hjelper.KSAK
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
