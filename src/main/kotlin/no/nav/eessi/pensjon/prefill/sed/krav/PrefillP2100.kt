@@ -6,6 +6,8 @@ import no.nav.eessi.pensjon.eux.model.sed.Nav
 import no.nav.eessi.pensjon.eux.model.sed.P2100
 import no.nav.eessi.pensjon.eux.model.sed.Pensjon
 import no.nav.eessi.pensjon.eux.model.sed.SED
+import no.nav.eessi.pensjon.pensjonsinformasjon.EPSaktype
+import no.nav.eessi.pensjon.pensjonsinformasjon.KravHistorikkHelper
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModel
@@ -13,6 +15,8 @@ import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
 import no.nav.pensjon.v1.sak.V1Sak
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.http.HttpStatus
+import org.springframework.web.server.ResponseStatusException
 
 class PrefillP2100(private val prefillNav: PrefillPDLNav) {
 
@@ -54,7 +58,7 @@ class PrefillP2100(private val prefillNav: PrefillPDLNav) {
 
         val andreInstitusjondetaljer = EessiInformasjon().asAndreinstitusjonerItem()
 
-        PrefillP2xxxPensjon.validerGyldigKravtypeOgArsakGjenlevnde(sak, sedType)
+        validerGyldigKravtypeOgArsak(sak, sedType)
         var melding: String? = ""
         var pensjon: Pensjon? = Pensjon()
         try {
@@ -85,6 +89,31 @@ class PrefillP2100(private val prefillNav: PrefillPDLNav) {
 
         logger.debug("-------------------| Preutfylling [$SedType] END |------------------- ")
         return Pair(melding, sed)
+    }
+
+    /**
+     * Skal validere på kravtype og kravårrsak Krav SED P2100 Gjenlev
+     * https://confluence.adeo.no/pages/viewpage.action?pageId=338181302
+     *
+     * FORSTEG_BH       Førstegangsbehandling (ingen andre) skal vi avslutte
+     * F_BH_KUN_UTL     Førstegangsbehandling utland (ingen andre) skal vi avslutte
+     *
+     * Kravårsak:
+     * GJNL_SKAL_VURD  Gjenlevendetillegg skal vurderes     hvis ikke finnes ved P2100 skal vi avslutte
+     * TILST_DOD       Dødsfall tilstøtende                 hvis ikke finnes ved
+     *
+     */
+    private fun validerGyldigKravtypeOgArsak(sak: V1Sak?, sedType: SedType) {
+        logger.info("Start på validering av $sedType")
+
+        PrefillP2xxxPensjon.validerGyldigKravtypeOgArsakFelles(sak, sedType)
+
+        if (KravHistorikkHelper.hentKravhistorikkForGjenlevende(sak?.kravHistorikkListe) == null
+                    && listOf(EPSaktype.ALDER.name, EPSaktype.UFOREP.name).contains(sak?.sakType)  ) {
+            logger.warn("Ikke korrekt kravårsak for P2100 (alder/uførep")
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Ingen gyldig kravårsak funnet for ALDER eller UFØREP for utfylling av en krav SED P2100")
+        }
+        logger.info("Avslutter på validering av $sedType, fortsetter med preutfylling")
     }
 
 }

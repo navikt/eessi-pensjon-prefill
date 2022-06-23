@@ -165,34 +165,9 @@ object PrefillP2xxxPensjon {
         validerGyldigKravtypeOgArsak(sak, sedType, vedtak)
     }
 
-    /**
-     * Skal validere på kravtype og kravårrsak Krav SED P2100 Gjenlev
-     * https://confluence.adeo.no/pages/viewpage.action?pageId=338181302
-     *
-     * FORSTEG_BH       Førstegangsbehandling (ingen andre) skal vi avslutte
-     * F_BH_KUN_UTL     Førstegangsbehandling utland (ingen andre) skal vi avslutte
-     *
-     * Kravårsak:
-     * GJNL_SKAL_VURD  Gjenlevendetillegg skal vurderes     hvis ikke finnes ved P2100 skal vi avslutte
-     * TILST_DOD       Dødsfall tilstøtende                 hvis ikke finnes ved
-     *
-     */
-    fun validerGyldigKravtypeOgArsakGjenlevnde(sak: V1Sak?, sedType: SedType) {
-        logger.info("Start på validering av $sedType")
-
-        validerGyldigKravtypeOgArsakFelles(sak, sedType)
-
-        if (sedType == SedType.P2100
-            && (hentKravhistorikkForGjenlevende(sak?.kravHistorikkListe) == null
-                    && listOf(EPSaktype.ALDER.name, EPSaktype.UFOREP.name).contains(sak?.sakType))  ) {
-            logger.warn("Ikke korrekt kravårsak for P2100 (alder/uførep")
-            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Ingen gyldig kravårsak funnet for ALDER eller UFØREP for utfylling av en krav SED P2100")
-        }
-        logger.info("Avslutter på validering av $sedType, fortsetter med preutfylling")
-    }
 
     //felles kode for validering av P2000, P2100 og P2200
-    private fun validerGyldigKravtypeOgArsakFelles(sak: V1Sak?, sedType: SedType) {
+    fun validerGyldigKravtypeOgArsakFelles(sak: V1Sak?, sedType: SedType) {
         val fortegBH = finnKravHistorikk("FORSTEG_BH", sak?.kravHistorikkListe)
         if (fortegBH != null && fortegBH.size == sak?.kravHistorikkListe?.kravHistorikkListe?.size)  {
             logger.warn("Det er ikke markert for bodd/arbeidet i utlandet. Krav SED $sedType blir ikke opprettet")
