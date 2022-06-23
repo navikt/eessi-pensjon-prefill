@@ -50,7 +50,7 @@ class PrefillP10000Test {
             prefillData.penSaksnummer,
             prefillData.bruker,
             prefillData.avdod,
-            prefillData.getPersonInfoFromRequestData(),
+            prefillData.getBankOgArbeidFromRequest(),
             persondataCollection)
 
         assertNotNull(p10000.nav!!.annenperson)

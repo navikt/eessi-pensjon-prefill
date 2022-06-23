@@ -38,7 +38,7 @@ data class PrefillDataModel(
         return partSedAsJson[key]
     }
 
-    fun getPersonInfoFromRequestData(): BankOgArbeid? {
+    fun getBankOgArbeidFromRequest(): BankOgArbeid? {
         val personInfo = getPartSEDasJson("PersonInfo") ?: return null
         return mapJsonToAny(personInfo, typeRefs())
     }

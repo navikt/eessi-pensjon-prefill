@@ -92,7 +92,7 @@ class PrefillPDLNavTest {
             prefillData.bruker,
             prefillData.avdod,
             personDataCollection,
-            prefillData.getPersonInfoFromRequestData(),
+            prefillData.getBankOgArbeidFromRequest(),
             null,
             null
         )
@@ -139,7 +139,7 @@ class PrefillPDLNavTest {
             prefillData.bruker,
             prefillData.avdod,
             personDataCollection,
-            prefillData.getPersonInfoFromRequestData(),
+            prefillData.getBankOgArbeidFromRequest(),
             null,
             null
         )
@@ -182,7 +182,7 @@ class PrefillPDLNavTest {
             prefillData.bruker,
             prefillData.avdod,
             personDataCollection,
-            prefillData.getPersonInfoFromRequestData(),
+            prefillData.getBankOgArbeidFromRequest(),
             null,
             null
         )
@@ -236,7 +236,7 @@ class PrefillPDLNavTest {
             prefillData.bruker,
             prefillData.avdod,
             personDataCollection,
-            prefillData.getPersonInfoFromRequestData(),
+            prefillData.getBankOgArbeidFromRequest(),
             null,
             null
         )
@@ -300,7 +300,7 @@ class PrefillPDLNavTest {
             prefillData.bruker,
             prefillData.avdod,
             personDataCollection,
-            prefillData.getPersonInfoFromRequestData(),
+            prefillData.getBankOgArbeidFromRequest(),
             null,
             null
         )
@@ -339,7 +339,7 @@ class PrefillPDLNavTest {
             prefillData.bruker,
             prefillData.avdod,
             personDataCollection,
-            prefillData.getPersonInfoFromRequestData(),
+            prefillData.getBankOgArbeidFromRequest(),
             null,
             null
         )
@@ -393,7 +393,7 @@ class PrefillPDLNavTest {
             prefillData.bruker,
             prefillData.avdod,
             personDataCollection,
-            prefillData.getPersonInfoFromRequestData(),
+            prefillData.getBankOgArbeidFromRequest(),
             null,
             null
         )
@@ -432,7 +432,7 @@ class PrefillPDLNavTest {
             prefillData.bruker,
             prefillData.avdod,
             personDataCollection,
-            prefillData.getPersonInfoFromRequestData(),
+            prefillData.getBankOgArbeidFromRequest(),
             null,
             null
         )
@@ -486,7 +486,7 @@ class PrefillPDLNavTest {
             prefillData.bruker,
             prefillData.avdod,
             personDataCollection,
-            prefillData.getPersonInfoFromRequestData(),
+            prefillData.getBankOgArbeidFromRequest(),
             null,
             null
         )
@@ -552,7 +552,7 @@ class PrefillPDLNavTest {
             prefillData.bruker,
             prefillData.avdod,
             personDataCollection,
-            prefillData.getPersonInfoFromRequestData(),
+            prefillData.getBankOgArbeidFromRequest(),
             null,
             null
         )

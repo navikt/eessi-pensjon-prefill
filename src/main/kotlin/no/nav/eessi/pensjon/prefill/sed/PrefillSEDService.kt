@@ -110,7 +110,7 @@ class PrefillSEDService(private val eessiInformasjon: EessiInformasjon, private 
                 prefillData.penSaksnummer,
                 prefillData.bruker,
                 prefillData.avdod,
-                prefillData.getPersonInfoFromRequestData(),
+                prefillData.getBankOgArbeidFromRequest(),
                 personDataCollection
             )
 
@@ -118,7 +118,7 @@ class PrefillSEDService(private val eessiInformasjon: EessiInformasjon, private 
                 prefillData.penSaksnummer,
                 prefillData.bruker,
                 prefillData.avdod,
-                prefillData.getPersonInfoFromRequestData(),
+                prefillData.getBankOgArbeidFromRequest(),
                 prefillData.institution.first(),
                 personDataCollection
             )
@@ -127,7 +127,7 @@ class PrefillSEDService(private val eessiInformasjon: EessiInformasjon, private 
                 prefillData.penSaksnummer,
                 prefillData.bruker,
                 prefillData.avdod,
-                prefillData.getPersonInfoFromRequestData(),
+                prefillData.getBankOgArbeidFromRequest(),
                 personDataCollection,
                 prefillData.partSedAsJson[SedType.X010.name]?.let { payload -> mapJsonToAny(payload, typeRefs<X009>()) }
             )

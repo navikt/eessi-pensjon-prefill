@@ -47,7 +47,7 @@ class PrefillP2000(private val prefillNav: PrefillPDLNav)  {
             bruker = prefillData.bruker,
             avdod = prefillData.avdod,
             personData = personData,
-            bankOgArbeid = prefillData.getPersonInfoFromRequestData(),
+            bankOgArbeid = prefillData.getBankOgArbeidFromRequest(),
             krav = krav,
             annenPerson = null
         )

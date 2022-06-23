@@ -58,7 +58,7 @@ class PrefillX010Test {
             prefillData.penSaksnummer,
             prefillData.bruker,
             null,
-            prefillData.getPersonInfoFromRequestData(),
+            prefillData.getBankOgArbeidFromRequest(),
             persondataCollection,
             x009
         )
@@ -77,7 +77,7 @@ class PrefillX010Test {
             prefillData.penSaksnummer,
             prefillData.bruker,
             null,
-            prefillData.getPersonInfoFromRequestData(),
+            prefillData.getBankOgArbeidFromRequest(),
             persondataCollection,
             x009
         )
