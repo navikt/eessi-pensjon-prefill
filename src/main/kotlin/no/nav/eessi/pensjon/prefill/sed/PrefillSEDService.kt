@@ -28,11 +28,9 @@ class PrefillSEDService(private val eessiInformasjon: EessiInformasjon, private 
 
     fun prefill(prefillData: PrefillDataModel, personDataCollection: PersonDataCollection, pensjonCollection: PensjonCollection): SED {
 
-        val sedType = prefillData.sedType
+        logger.debug("mapping prefillClass to SED: ${prefillData.sedType}")
 
-        logger.debug("mapping prefillClass to SED: $sedType")
-
-        return when (sedType) {
+        return when (prefillData.sedType) {
             //krav
             SedType.P2000 -> {
                 PrefillP2000(prefillPDLnav).prefillSed(
@@ -54,17 +52,20 @@ class PrefillSEDService(private val eessiInformasjon: EessiInformasjon, private 
                     prefillData,
                     personDataCollection,
                     pensjonCollection.sak
-                    )
+                )
                 prefillData.melding = sedpair.first
                 sedpair.second
             }
 
             //vedtak
             SedType.P6000 -> PrefillP6000(
-                    prefillPDLnav,
-                    eessiInformasjon,
-                    pensjonCollection.pensjoninformasjon ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Ingen vedtak")
-                ).prefill(
+                prefillPDLnav,
+                eessiInformasjon,
+                pensjonCollection.pensjoninformasjon ?: throw ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Ingen vedtak"
+                )
+            ).prefill(
                 prefillData,
                 personDataCollection
             )
@@ -83,7 +84,11 @@ class PrefillSEDService(private val eessiInformasjon: EessiInformasjon, private 
 
             SedType.P8000 -> {
                 if (prefillData.buc == "P_BUC_05") {
-                    PrefillP8000(PrefillSed(prefillPDLnav)).prefill(prefillData, personDataCollection, pensjonCollection.sak)
+                    PrefillP8000(PrefillSed(prefillPDLnav)).prefill(
+                        prefillData,
+                        personDataCollection,
+                        pensjonCollection.sak
+                    )
 //                    try {
 //                    } catch (ex: Exception) {
 //                        logger.error(ex.message)
@@ -115,7 +120,8 @@ class PrefillSEDService(private val eessiInformasjon: EessiInformasjon, private 
                 prefillData.avdod,
                 prefillData.getPersonInfoFromRequestData(),
                 prefillData.institution.first(),
-                personDataCollection)
+                personDataCollection
+            )
 
             SedType.X010 -> PrefillX010(prefillPDLnav).prefill(
                 prefillData.penSaksnummer,
@@ -123,7 +129,7 @@ class PrefillSEDService(private val eessiInformasjon: EessiInformasjon, private 
                 prefillData.avdod,
                 prefillData.getPersonInfoFromRequestData(),
                 personDataCollection,
-                prefillData.partSedAsJson[SedType.X010.name]?.let { payload ->  mapJsonToAny(payload, typeRefs<X009>()) }
+                prefillData.partSedAsJson[SedType.X010.name]?.let { payload -> mapJsonToAny(payload, typeRefs<X009>()) }
             )
 
             SedType.H020, SedType.H021 -> PrefillH02X(prefillPDLnav).prefill(prefillData, personDataCollection)
