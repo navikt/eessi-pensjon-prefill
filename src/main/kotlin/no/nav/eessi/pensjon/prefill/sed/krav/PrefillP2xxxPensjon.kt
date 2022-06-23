@@ -179,12 +179,13 @@ object PrefillP2xxxPensjon {
      */
     fun validerGyldigKravtypeOgArsakGjenlevnde(sak: V1Sak?, sedType: SedType) {
         logger.info("Start på validering av $sedType")
-        val validSaktype = listOf(EPSaktype.ALDER.name, EPSaktype.UFOREP.name)
 
         validerGyldigKravtypeOgArsakFelles(sak, sedType)
 
-        if (sedType == SedType.P2100 && (hentKravhistorikkForGjenlevende(sak?.kravHistorikkListe) == null && validSaktype.contains(sak?.sakType))  ) {
-            logger.warn("Ikke korrkt kravårsak for P21000 (alder/uførep")
+        if (sedType == SedType.P2100
+            && (hentKravhistorikkForGjenlevende(sak?.kravHistorikkListe) == null
+                    && listOf(EPSaktype.ALDER.name, EPSaktype.UFOREP.name).contains(sak?.sakType))  ) {
+            logger.warn("Ikke korrekt kravårsak for P2100 (alder/uførep")
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Ingen gyldig kravårsak funnet for ALDER eller UFØREP for utfylling av en krav SED P2100")
         }
         logger.info("Avslutter på validering av $sedType, fortsetter med preutfylling")
