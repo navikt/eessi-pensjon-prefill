@@ -20,16 +20,18 @@ class PrefillP6000(private val prefillNav: PrefillPDLNav,
     fun prefill(prefillData: PrefillDataModel, personData: PersonDataCollection): P6000 {
         val sedType = prefillData.sedType
 
-        logger.info("----------------------------------------------------------"
-                + "\nPreutfylling Pensjon : P6000 "
-                + "\n------------------| Preutfylling [$sedType] START |------------------ ")
+        logger.info(
+            "----------------------------------------------------------"
+                    + "\nPreutfylling Pensjon : P6000 "
+                    + "\n------------------| Preutfylling [$sedType] START |------------------ "
+        )
 
         logger.info("Henter ut lokal kontakt, institusjon (NAV Utland)")
         val andreInstitusjondetaljer = eessiInfo.asAndreinstitusjonerItem()
         logger.info("Andreinstitusjoner: $andreInstitusjondetaljer ")
 
         logger.debug("Henter opp Persondata/Gjenlevende fra TPS")
-        val gjenlevende = prefillNav.eventuellGjenlevendePDL(prefillData.avdod, personData.forsikretPerson)
+        val gjenlevende = prefillData.avdod?.let { prefillNav.createGjenlevende(personData.forsikretPerson) }
 
         logger.debug("Henter opp Pensjonsdata fra PESYS")
         val p6000Pensjon = prefillP6000Pensjon(pensjoninformasjon, gjenlevende, andreInstitusjondetaljer)

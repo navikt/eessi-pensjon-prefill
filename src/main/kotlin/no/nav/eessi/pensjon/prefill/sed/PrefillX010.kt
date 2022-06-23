@@ -46,7 +46,8 @@ class PrefillX010(private val prefillNav: PrefillPDLNav)  {
             personData = personData,
             bankOgArbeid = brukerinformasjon,
         )
-        val gjenlevende = avdod?.let {  prefillNav.eventuellGjenlevendePDL(it, personData.forsikretPerson) }
+        val gjenlevende = avdod?.let { prefillNav.createGjenlevende(personData.forsikretPerson) }
+
         val person =  gjenlevende?.person ?:  navsed.bruker?.person
 
         return X010 (

@@ -32,9 +32,9 @@ class PrefillP2100(private val prefillNav: PrefillPDLNav) {
             krav = pensjon?.kravDato,
             annenPerson = null
         )
-        val gjenlev = prefillNav.eventuellGjenlevendePDL(prefillData.avdod, personData.forsikretPerson)
+        val gjenlevende = prefillData.avdod?.let { prefillNav.createGjenlevende(personData.forsikretPerson) }
 
-        return prefillPen(prefillData, nav, gjenlev, sak)
+        return prefillPen(prefillData, nav, gjenlevende, sak)
     }
 
     private fun postLog(prefillData: PrefillDataModel, sak: V1Sak?) {
