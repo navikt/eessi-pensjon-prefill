@@ -54,11 +54,10 @@ class PrefillP2100(private val prefillNav: PrefillPDLNav) {
 
 
     private fun prefillPen(prefillData: PrefillDataModel, nav: Nav, gjenlev: Bruker? = null, sak: V1Sak?): Pair<String?, SED> {
-        val sedType = prefillData.sedType
 
         val andreInstitusjondetaljer = EessiInformasjon().asAndreinstitusjonerItem()
 
-        validerGyldigKravtypeOgArsak(sak, sedType)
+        validerGyldigKravtypeOgArsak(sak, prefillData.sedType)
         var melding: String? = ""
         var pensjon: Pensjon? = Pensjon()
         try {
@@ -106,7 +105,7 @@ class PrefillP2100(private val prefillNav: PrefillPDLNav) {
     private fun validerGyldigKravtypeOgArsak(sak: V1Sak?, sedType: SedType) {
         logger.info("Start på validering av $sedType")
 
-        PrefillP2xxxPensjon.validerGyldigKravtypeOgArsakFelles(sak, sedType)
+        PrefillP2xxxPensjon.avsluttHvisKunForstegangsbehandlingIKravhistorikk(sak, sedType)
 
         if (KravHistorikkHelper.hentKravhistorikkForGjenlevende(sak?.kravHistorikkListe) == null
                     && listOf(EPSaktype.ALDER.name, EPSaktype.UFOREP.name).contains(sak?.sakType)  ) {

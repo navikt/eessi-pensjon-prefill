@@ -14,7 +14,6 @@ import no.nav.eessi.pensjon.pensjonsinformasjon.EPSaktype
 import no.nav.eessi.pensjon.pensjonsinformasjon.KravHistorikkHelper.finnKravHistorikk
 import no.nav.eessi.pensjon.pensjonsinformasjon.KravHistorikkHelper.finnKravHistorikkForDato
 import no.nav.eessi.pensjon.pensjonsinformasjon.KravHistorikkHelper.hentKravHistorikkForsteGangsBehandlingUtlandEllerForsteGang
-import no.nav.eessi.pensjon.pensjonsinformasjon.KravHistorikkHelper.hentKravhistorikkForGjenlevende
 import no.nav.eessi.pensjon.personoppslag.Fodselsnummer
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModel
@@ -135,7 +134,7 @@ object PrefillP2xxxPensjon {
     private fun validerGyldigKravtypeOgArsak(sak: V1Sak?, sedType: SedType, vedtak: V1Vedtak?) {
         logger.info("start på validering av $sedType")
 
-        validerGyldigKravtypeOgArsakFelles(sak , sedType)
+        avsluttHvisKunForstegangsbehandlingIKravhistorikk(sak , sedType)
 
         val forsBehanBoUtlandTom = finnKravHistorikk("F_BH_BO_UTL", sak?.kravHistorikkListe).isNullOrEmpty()
         val forsBehanMedUtlandTom = finnKravHistorikk("F_BH_MED_UTL", sak?.kravHistorikkListe).isNullOrEmpty()
@@ -167,12 +166,17 @@ object PrefillP2xxxPensjon {
 
 
     //felles kode for validering av P2000, P2100 og P2200
-    fun validerGyldigKravtypeOgArsakFelles(sak: V1Sak?, sedType: SedType) {
-        val fortegBH = finnKravHistorikk("FORSTEG_BH", sak?.kravHistorikkListe)
-        if (fortegBH != null && fortegBH.size == sak?.kravHistorikkListe?.kravHistorikkListe?.size)  {
+    fun avsluttHvisKunForstegangsbehandlingIKravhistorikk(sak: V1Sak?, sedType: SedType) {
+        if (kunForstegangsbehandlingIKravhistorikk(sak))  {
             logger.warn("Det er ikke markert for bodd/arbeidet i utlandet. Krav SED $sedType blir ikke opprettet")
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Det er ikke markert for bodd/arbeidet i utlandet. Krav SED $sedType blir ikke opprettet")
         }
+    }
+
+    private fun kunForstegangsbehandlingIKravhistorikk(sak: V1Sak?): Boolean {
+        val forstegangsbehandlingHistorikk = finnKravHistorikk("FORSTEG_BH", sak?.kravHistorikkListe)
+        return (forstegangsbehandlingHistorikk != null
+                && forstegangsbehandlingHistorikk.size == sak?.kravHistorikkListe?.kravHistorikkListe?.size)
     }
 
     private fun opprettMeldingBasertPaaSaktype(kravHistorikk: V1KravHistorikk?, kravId: String?, saktype: String?): String {
