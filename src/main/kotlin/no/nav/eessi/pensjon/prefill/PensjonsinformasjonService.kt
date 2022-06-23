@@ -48,8 +48,7 @@ class PensjonsinformasjonService(private val pensjonsinformasjonClient: Pensjons
         //hvis det inne inneholder noe data så feiler vi!
         //**********************************************
 
-        //val pendata: Pensjonsinformasjon = pensjonsinformasjonClient.hentAltPaaAktoerId(aktoerId)
-        val pendata: Pensjonsinformasjon = pensjonsinformasjonClient.hentAltPaaFNR(fnr, aktoerId)
+        val pendata: Pensjonsinformasjon = pensjonsinformasjonClient.hentAltPaaFNR(fnr)
 
         if (pendata.brukersSakerListe == null) {
             throw PensjoninformasjonException("Ingen gyldig brukerSakerListe")

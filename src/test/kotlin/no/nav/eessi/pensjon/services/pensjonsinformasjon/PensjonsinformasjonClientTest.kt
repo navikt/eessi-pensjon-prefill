@@ -86,15 +86,11 @@ class PensjonsinformasjonClientTest {
         val mockResponseEntity = createResponseEntityFromJsonFile("classpath:pensjonsinformasjon/krav/KravAlderEllerUfore_AP_UTLAND.xml")
         every { mockrestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java))} returns  (mockResponseEntity)
 
-        //val data = pensjonsinformasjonClient.hentAltPaaAktoerId("1231233")
-        val data = pensjonsinformasjonClient.hentAltPaaFNR("4234234", "1231233")
-        val sak = FinnSak.finnSak("21975717", data)
+        val data = pensjonsinformasjonClient.hentAltPaaFNR("4234234")
+        val sak = FinnSak.finnSak("21975717", data)!!
 
-        sak?.let {
-            assertEquals("21975717", it.sakId.toString())
-            assertEquals("ALDER", it.sakType)
-        }
-
+        assertEquals("21975717", sak.sakId.toString())
+        assertEquals("ALDER", sak.sakType)
     }
 
     @Test
