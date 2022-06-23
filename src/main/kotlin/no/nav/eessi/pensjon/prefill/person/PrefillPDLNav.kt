@@ -196,8 +196,9 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
                 //4.0 Ytelser ligger under pensjon object (P2000)
 
                 //5.0 ektefelle eller partnerskap
-                ektefelle = if (ektefellePerson == null) null else
-                        createEktefellePartner(createBruker(ektefellePerson, null, null), sivilstandstype),
+                ektefelle = ektefellePerson?.let {
+                        createEktefellePartner(createBruker(it, null, null), sivilstandstype)
+                },
 
                 //6.0 skal denne kjøres hver gang? eller kun under P2000? P2100
                 //sjekke om SED er P2x00 for utfylling av BARN
