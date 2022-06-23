@@ -105,7 +105,7 @@ class PrefillP2100(private val prefillNav: PrefillPDLNav) {
     private fun validerGyldigKravtypeOgArsak(sak: V1Sak?, sedType: SedType) {
         logger.info("Start på validering av $sedType")
 
-        PrefillP2xxxPensjon.avsluttHvisKunForstegangsbehandlingIKravhistorikk(sak, sedType)
+        PrefillP2xxxPensjon.avsluttHvisKunDenneKravTypeIHistorikk(sak, sedType, "FORSTEG_BH")
 
         if (KravHistorikkHelper.hentKravhistorikkForGjenlevende(sak?.kravHistorikkListe) == null
                     && listOf(EPSaktype.ALDER.name, EPSaktype.UFOREP.name).contains(sak?.sakType)  ) {

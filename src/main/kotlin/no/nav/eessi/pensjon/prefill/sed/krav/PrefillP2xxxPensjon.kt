@@ -134,7 +134,7 @@ object PrefillP2xxxPensjon {
     private fun validerGyldigKravtypeOgArsak(sak: V1Sak?, sedType: SedType, vedtak: V1Vedtak?) {
         logger.info("start på validering av $sedType")
 
-        avsluttHvisKunForstegangsbehandlingIKravhistorikk(sak , sedType)
+        avsluttHvisKunDenneKravTypeIHistorikk(sak, sedType, "FORSTEG_BH")
 
         val forsBehanBoUtlandTom = finnKravHistorikk("F_BH_BO_UTL", sak?.kravHistorikkListe).isNullOrEmpty()
         val forsBehanMedUtlandTom = finnKravHistorikk("F_BH_MED_UTL", sak?.kravHistorikkListe).isNullOrEmpty()
@@ -166,17 +166,17 @@ object PrefillP2xxxPensjon {
 
 
     //felles kode for validering av P2000, P2100 og P2200
-    fun avsluttHvisKunForstegangsbehandlingIKravhistorikk(sak: V1Sak?, sedType: SedType) {
-        if (kunForstegangsbehandlingIKravhistorikk(sak))  {
+    fun avsluttHvisKunDenneKravTypeIHistorikk(sak: V1Sak?, sedType: SedType, kravType: String) {
+        if (kunDenneKravTypeIHistorikk(sak, kravType))  {
             logger.warn("Det er ikke markert for bodd/arbeidet i utlandet. Krav SED $sedType blir ikke opprettet")
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Det er ikke markert for bodd/arbeidet i utlandet. Krav SED $sedType blir ikke opprettet")
         }
     }
 
-    private fun kunForstegangsbehandlingIKravhistorikk(sak: V1Sak?): Boolean {
-        val forstegangsbehandlingHistorikk = finnKravHistorikk("FORSTEG_BH", sak?.kravHistorikkListe)
-        return (forstegangsbehandlingHistorikk != null
-                && forstegangsbehandlingHistorikk.size == sak?.kravHistorikkListe?.kravHistorikkListe?.size)
+    private fun kunDenneKravTypeIHistorikk(sak: V1Sak?, kravType: String): Boolean {
+        val historikkForKravtype = finnKravHistorikk(kravType, sak?.kravHistorikkListe)
+        return (historikkForKravtype != null
+                && historikkForKravtype.size == sak?.kravHistorikkListe?.kravHistorikkListe?.size)
     }
 
     private fun opprettMeldingBasertPaaSaktype(kravHistorikk: V1KravHistorikk?, kravId: String?, saktype: String?): String {
