@@ -7,6 +7,7 @@ import no.nav.eessi.pensjon.personoppslag.pdl.model.Endring
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Endringstype
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Familierelasjonsrolle
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Foedsel
+import no.nav.eessi.pensjon.personoppslag.pdl.model.Folkeregistermetadata
 import no.nav.eessi.pensjon.personoppslag.pdl.model.ForelderBarnRelasjon
 import no.nav.eessi.pensjon.personoppslag.pdl.model.GeografiskTilknytning
 import no.nav.eessi.pensjon.personoppslag.pdl.model.GtType
@@ -14,6 +15,9 @@ import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe
 import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentInformasjon
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Kjoenn
 import no.nav.eessi.pensjon.personoppslag.pdl.model.KjoennType
+import no.nav.eessi.pensjon.personoppslag.pdl.model.KontaktinformasjonForDoedsbo
+import no.nav.eessi.pensjon.personoppslag.pdl.model.KontaktinformasjonForDoedsboAdresse
+import no.nav.eessi.pensjon.personoppslag.pdl.model.KontaktinformasjonForDoedsboSkifteform
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Metadata
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Navn
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Oppholdsadresse
@@ -204,21 +208,39 @@ object PersonPDLMock {
         }
     }
 
-    internal fun Person.medAdresse(gate: String, postnummer: String, husnr: String? = "") = this.copy(bostedsadresse = Bostedsadresse(
-        gyldigFraOgMed = LocalDateTime.of(2000, 10, 1, 10, 10, 10),
-        gyldigTilOgMed = LocalDateTime.of(2300, 10, 1, 10 , 10, 10),
-        vegadresse = Vegadresse(
-            adressenavn = gate,
-            husnummer = husnr,
-            husbokstav = null,
-            postnummer = postnummer,
-            kommunenummer = null,
-            bydelsnummer = null
-        ),
-        utenlandskAdresse = null,
-        metadata = mockMeta()
+    internal fun Person.medAdresse(gate: String, postnummer: String, husnr: String? = "") = this.copy(
+        bostedsadresse = Bostedsadresse(
+            gyldigFraOgMed = LocalDateTime.of(2000, 10, 1, 10, 10, 10),
+            gyldigTilOgMed = LocalDateTime.of(2300, 10, 1, 10, 10, 10),
+            vegadresse = Vegadresse(
+                adressenavn = gate,
+                husnummer = husnr,
+                husbokstav = null,
+                postnummer = postnummer,
+                kommunenummer = null,
+                bydelsnummer = null
+            ),
+            utenlandskAdresse = null,
+            metadata = mockMeta()
+        )
     )
+
+    internal fun Person.medDodsboAdresse(adresse1: String, bygning: String, postnummer: String, poststednavn: String = "", landkode: String) = this.copy(
+        kontaktinformasjonForDoedsbo = KontaktinformasjonForDoedsbo(
+            adresse = KontaktinformasjonForDoedsboAdresse(
+                adresselinje1 = adresse1,
+                adresselinje2 = bygning,
+                landkode = landkode,
+                postnummer = postnummer,
+                poststedsnavn = poststednavn
+            ),
+            LocalDate.of(2020, 10, 1),
+            Folkeregistermetadata(null),
+            skifteform = KontaktinformasjonForDoedsboSkifteform.ANNET,
+            metadata = mockMeta(),
+        )
     )
+
 
     internal fun Person.medUtlandAdresse(gateOgnr: String, postnummer: String, landkode: String) = this.copy(bostedsadresse = null, oppholdsadresse = Oppholdsadresse(
         gyldigFraOgMed = LocalDateTime.of(2000, 10, 1, 10, 10, 10),
@@ -257,6 +279,20 @@ object PersonPDLMock {
             .medKjoenn(KjoennType.KVINNE)
         val avdod = createWith(fornavn = "BAMSE LUR", etternavn = "MOMBALO", fnr = avdodEktefelleFnr, erDod =  true)
             .medAdresse("Avdødadresse", "1111", "2222")
+
+        return PersonDataCollection(
+            forsikretPerson = person,
+            sivilstandstype = Sivilstandstype.ENKE_ELLER_ENKEMANN,
+            gjenlevendeEllerAvdod = avdod
+        )
+    }
+
+    internal fun createAvdodFamilieMedDødsboadresse(gjenlevFnr: String, avdodEktefelleFnr: String) : PersonDataCollection {
+        val person = createWith(fornavn = "BAMSE ULUR", etternavn = "DOLLY", fnr = gjenlevFnr)
+            .medAdresse("FORUSBEEN", "0010", "2294")
+            .medKjoenn(KjoennType.KVINNE)
+        val avdod = createWith(fornavn = "BAMSE LUR", etternavn = "MOMBALO", fnr = avdodEktefelleFnr, erDod =  true)
+            .medDodsboAdresse("Avdødadresse", "adresse 2", "1111", "2222", "NOR")
 
         return PersonDataCollection(
             forsikretPerson = person,

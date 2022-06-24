@@ -3,8 +3,6 @@ package no.nav.eessi.pensjon.prefill.sed.krav
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.SedType
-import no.nav.eessi.pensjon.eux.model.sed.Nav
-import no.nav.eessi.pensjon.eux.model.sed.SED
 import no.nav.eessi.pensjon.personoppslag.FodselsnummerGenerator
 import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
@@ -20,6 +18,7 @@ import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
 import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper.lesPensjonsdataFraFil
 import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper.readJsonResponse
+import no.nav.eessi.pensjon.services.kodeverk.KodeverkClient
 import no.nav.eessi.pensjon.utils.toJson
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
@@ -37,23 +36,18 @@ class PrefillP2100AdresseTest {
     private lateinit var prefillSEDService: PrefillSEDService
     private lateinit var persondataCollection: PersonDataCollection
     private lateinit var pensjonCollection: PensjonCollection
+    private lateinit var kodeverkClient: KodeverkClient
+
 
     @BeforeEach
     fun setup() {
-        persondataCollection = PersonPDLMock.createAvdodFamilie(personFnr, avdodPersonFnr)
+        kodeverkClient  = mockk(relaxed = true)
+        every { kodeverkClient.finnLandkode(eq("NOR")) } returns "NO"
+        prefillPDLAdresse = PrefillPDLAdresse(mockk(relaxed = true), kodeverkClient)
 
-        val avdod = persondataCollection.gjenlevendeEllerAvdod
-        val forsikret = persondataCollection.forsikretPerson
+        persondataCollection = PersonPDLMock.createAvdodFamilieMedDødsboadresse(personFnr, avdodPersonFnr)
 
-        val avdodAdresse = PrefillPDLAdresse(mockk(relaxed = true), mockk(relaxed = true)).createPersonAdresse(avdod!!)
-        val gjenlevAdresse = PrefillPDLAdresse(mockk(relaxed = true), mockk(relaxed = true)).createPersonAdresse(forsikret!!)
-
-        val prefillNav = PrefillPDLNav(
-                prefillAdresse = mockk(){
-                    every { hentLandkode(any()) } returns "NO"
-                    every { createPersonAdresse(eq(avdod)) } returns avdodAdresse
-                    every { createPersonAdresse(eq(forsikret)) } returns gjenlevAdresse
-                },
+        val prefillNav = PrefillPDLNav(prefillPDLAdresse,
                 institutionid = "NO:noinst002",
                 institutionnavn = "NOINST002, NO INST002, NO")
 
@@ -72,7 +66,6 @@ class PrefillP2100AdresseTest {
         pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
 
         prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav)
-        prefillPDLAdresse = PrefillPDLAdresse(mockk(relaxed = true), mockk(relaxed = true))
 
     }
 
@@ -81,22 +74,11 @@ class PrefillP2100AdresseTest {
 
         val p2100 = prefillSEDService.prefill(prefillData, persondataCollection, pensjonCollection)
 
-        val p2100gjenlev = SED(
-            type = SedType.P2100,
-            pensjon = p2100.pensjon,
-            nav = Nav(bruker = p2100.nav?.bruker)
-        )
-
-
-        println("***".repeat(20))
-        println(p2100gjenlev)
-        println("***".repeat(20))
-
         val expectedAvdodAdresse = """
             {
-              "gate" : "Avdødadresse 2222",
-              "bygning" : null,
-              "by" : "",
+              "gate" : "Avdødadresse",
+              "bygning" : "adresse 2",
+              "by" : "2222",
               "postnummer" : "1111",
               "postkode" : null,
               "region" : null,
@@ -128,8 +110,8 @@ class PrefillP2100AdresseTest {
             }
         """.trimIndent()
 
-        assertEquals(expectedAvdodAdresse, p2100gjenlev.nav?.bruker?.adresse?.toJson())
-        assertEquals(expectedGjenlevAdresse, p2100gjenlev.pensjon?.gjenlevende?.adresse?.toJson())
+        assertEquals(expectedAvdodAdresse, p2100.nav?.bruker?.adresse?.toJson())
+        assertEquals(expectedGjenlevAdresse, p2100.pensjon?.gjenlevende?.adresse?.toJson())
 
     }
 
