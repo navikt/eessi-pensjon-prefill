@@ -59,7 +59,7 @@ class PrefillP2100(private val prefillNav: PrefillPDLNav) {
 
         validerGyldigKravtypeOgArsak(sak, prefillData.sedType)
         var melding: String? = ""
-        var pensjon: Pensjon? = Pensjon()
+        var pensjon = Pensjon()
         try {
                 val meldingOmPensjon = PrefillP2xxxPensjon.populerMeldinOmPensjon(
                         prefillData.bruker.norskIdent,
@@ -69,13 +69,10 @@ class PrefillP2100(private val prefillNav: PrefillPDLNav) {
                         gjenlev,
                     prefillData.kravId)
                 melding = meldingOmPensjon.melding
-                pensjon = meldingOmPensjon.pensjon
-                if (prefillData.sedType != SedType.P6000) {
-                    pensjon = Pensjon(
-                            kravDato = meldingOmPensjon.pensjon.kravDato,
-                            gjenlevende = meldingOmPensjon.pensjon.gjenlevende
-                    ) //vi skal ha blank pensjon ved denne toggle, men vi må ha med kravdato
-                }
+                pensjon = Pensjon(
+                        kravDato = meldingOmPensjon.pensjon.kravDato,
+                        gjenlevende = meldingOmPensjon.pensjon.gjenlevende
+                ) //vi skal ha blank pensjon, men vi må ha med kravdato
         } catch (ex: Exception) {
             logger.error(ex.message, ex)
         }
