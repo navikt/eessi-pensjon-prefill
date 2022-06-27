@@ -1,11 +1,7 @@
 package no.nav.eessi.pensjon.prefill.person
 
 import no.nav.eessi.pensjon.eux.model.sed.Adresse
-import no.nav.eessi.pensjon.personoppslag.pdl.model.AdressebeskyttelseGradering
-import no.nav.eessi.pensjon.personoppslag.pdl.model.PostadresseIFrittFormat
-import no.nav.eessi.pensjon.personoppslag.pdl.model.UtenlandskAdresse
-import no.nav.eessi.pensjon.personoppslag.pdl.model.UtenlandskAdresseIFrittFormat
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Vegadresse
+import no.nav.eessi.pensjon.personoppslag.pdl.model.*
 import no.nav.eessi.pensjon.services.geo.PostnummerService
 import no.nav.eessi.pensjon.services.kodeverk.KodeverkClient
 import org.slf4j.Logger
@@ -62,14 +58,19 @@ class PrefillPDLAdresse (private val postnummerService: PostnummerService,
 
     private fun sjekkOgPreutfyllAdresse(pdlperson: PDLPerson): Adresse {
 
-        //Doedsbo
-        val doedsboadresse = preutfyllDoedsboAdresseHvisFinnes(pdlperson)
+        if (pdlperson.erDoed()) {
+            logger.info("              person er død. sjekker kontaktinformasjonForDoedsbo")
+            val doedsboadresse = if (pdlperson.kontaktinformasjonForDoedsbo != null) {
+                logger.info("              preutfyller kontaktinformasjonForDoedsbo")
+
+                preutfyllDodsboAdresse(pdlperson.kontaktinformasjonForDoedsbo!!)
+            } else null
+            if (doedsboadresse != null) return doedsboadresse
+        }
 
         loggErrorVedFlereGyldigeAdresser(pdlperson)
 
         return when {
-            doedsboadresse != null -> doedsboadresse
-
             // En Kontaktadresse kan nå være av typen Postboksadresse, Vegadresse, UtenlandskAdresse, PostadresseIFrittFormat, UtenlandskAdresseIFrittFormat og bare en av disse vil være utfylt
             kanNorskVegadresseBenyttes(pdlperson.kontaktadresse?.vegadresse) -> preutfullNorskBostedVegadresse(pdlperson.kontaktadresse?.vegadresse)
             kanUtlandsadresseBenyttes(pdlperson.kontaktadresse?.utenlandskAdresse) -> preutfyllUtlandsAdresse(pdlperson.kontaktadresse?.utenlandskAdresse)
@@ -84,6 +85,17 @@ class PrefillPDLAdresse (private val postnummerService: PostnummerService,
 
             else -> tomAdresse()
         }
+    }
+
+    private fun preutfyllDodsboAdresse(kontaktinformasjonForDoedsbo: KontaktinformasjonForDoedsbo): Adresse {
+        val adresse = kontaktinformasjonForDoedsbo.adresse
+        return Adresse(
+            gate = adresse.adresselinje1.replace("\n", " "),
+            bygning = adresse.adresselinje2?.replace("\n", " "),
+            by = adresse.poststedsnavn,
+            postnummer = adresse.postnummer,
+            land = hentLandkode(adresse.landkode)
+        )
     }
 
 
@@ -118,21 +130,6 @@ class PrefillPDLAdresse (private val postnummerService: PostnummerService,
         return  !postadresseIFrittFormat.adresselinje1.isNullOrEmpty() and
                 !postadresseIFrittFormat.adresselinje2.isNullOrEmpty() and
                 !postadresseIFrittFormat.adresselinje3.isNullOrEmpty()
-    }
-
-    private fun preutfyllDoedsboAdresseHvisFinnes(pdlperson: PDLPerson): Adresse? {
-        return if (pdlperson.erDoed()) {
-            logger.info("              person er død. sjekker kontaktinformasjonForDoedsbo")
-            val adresse = pdlperson.kontaktinformasjonForDoedsbo?.adresse ?: return null
-            logger.info("              preutfyller kontaktinformasjonForDoedsbo")
-            Adresse(
-                gate = adresse.adresselinje1.replace("\n"," "),
-                bygning = adresse.adresselinje2?.replace("\n", " "),
-                by = adresse.poststedsnavn,
-                postnummer = adresse.postnummer,
-                land = hentLandkode(adresse.landkode)
-            )
-        } else null
     }
 
     fun kanUtlandsadresseBenyttes(utlandsAdresse: UtenlandskAdresse?): Boolean {
