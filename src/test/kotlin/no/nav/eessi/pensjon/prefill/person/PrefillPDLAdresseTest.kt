@@ -124,8 +124,8 @@ class PrefillPDLAdresseTest{
                     postnummer = "1231",
                     poststedsnavn = "osloby"
                 ),
-                LocalDate.of(2020, 10, 1),
-                Folkeregistermetadata(null),
+                attestutstedelsesdato = LocalDate.of(2020, 10, 1),
+                folkeregistermetadata = Folkeregistermetadata(null),
                 skifteform = KontaktinformasjonForDoedsboSkifteform.ANNET,
                 metadata = doedMeta,
             ))

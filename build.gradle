@@ -10,7 +10,7 @@ buildscript {
         pensjonInformasjonVersion = '9.4.10'
         epeuxVersion = '1.1.72'
         epMetricsVersion = '0.4.25'
-        epPersonoppslagVersion = '10.0.0'
+        epPersonoppslagVersion = '10.1.1'
         epLoggingersion='1.0.22'
         epPensjonInformasjonVersjon='2.0.14'
     }

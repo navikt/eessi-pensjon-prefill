@@ -503,22 +503,22 @@ class PrefillP15000IntegrationTest {
 
         val avdodperson = PersonPDLMock.createWith(true, "Avdød", "Død", FNR_VOKSEN_2, AKTOER_ID_2, true)
             .copy(bostedsadresse = null, oppholdsadresse = null, kontaktadresse = null, kontaktinformasjonForDoedsbo = KontaktinformasjonForDoedsbo(
-                KontaktinformasjonForDoedsboAdresse(
+                adresse = KontaktinformasjonForDoedsboAdresse(
                     "dødsboadresse1",
                     "adresselinje2",
                     "SWE",
                     "2312",
                     "Langegatan 121"
                 ),
-                LocalDate.of(2010, 10,1 ),
-                Folkeregistermetadata(LocalDateTime.of(2010, 10, 1, 10, 1, 2)),
-                Metadata(
+                attestutstedelsesdato = LocalDate.of(2010, 10,1 ),
+                folkeregistermetadata = Folkeregistermetadata(LocalDateTime.of(2010, 10, 1, 10, 1, 2)),
+                metadata = Metadata(
                     emptyList(),
                     false,
                     "DOLLY",
                     "123123-123123-12--312312-312-31-23-123-1-31-23-123-12-31-23-123-12-3-123"
                 ),
-                KontaktinformasjonForDoedsboSkifteform.ANNET
+                skifteform = KontaktinformasjonForDoedsboSkifteform.ANNET
             ))
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_2)) } returns avdodperson
 
