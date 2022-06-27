@@ -60,12 +60,9 @@ class PrefillPDLAdresse (private val postnummerService: PostnummerService,
 
         if (pdlperson.erDoed()) {
             logger.info("              person er død. sjekker kontaktinformasjonForDoedsbo")
-            val doedsboadresse = if (pdlperson.kontaktinformasjonForDoedsbo != null) {
-                logger.info("              preutfyller kontaktinformasjonForDoedsbo")
-
-                preutfyllDodsboAdresse(pdlperson.kontaktinformasjonForDoedsbo!!)
-            } else null
-            if (doedsboadresse != null) return doedsboadresse
+            if (pdlperson.kontaktinformasjonForDoedsbo != null) {
+                return preutfyllDodsboAdresse(pdlperson.kontaktinformasjonForDoedsbo!!)
+            }
         }
 
         loggErrorVedFlereGyldigeAdresser(pdlperson)
@@ -88,6 +85,7 @@ class PrefillPDLAdresse (private val postnummerService: PostnummerService,
     }
 
     private fun preutfyllDodsboAdresse(kontaktinformasjonForDoedsbo: KontaktinformasjonForDoedsbo): Adresse {
+        logger.info("              preutfyller kontaktinformasjonForDoedsbo i adressefelt")
         val adresse = kontaktinformasjonForDoedsbo.adresse
         return Adresse(
             gate = adresse.adresselinje1.replace("\n", " "),
