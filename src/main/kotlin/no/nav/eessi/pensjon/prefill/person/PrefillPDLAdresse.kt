@@ -66,7 +66,7 @@ class PrefillPDLAdresse (private val postnummerService: PostnummerService,
             logger.info("              person er død. sjekker kontaktinformasjonForDoedsbo")
             if (pdlperson.kontaktinformasjonForDoedsbo != null) {
                 logger.info("              preutfyller kontaktinformasjonForDoedsbo i adressefelt")
-                return preutfyllDodsboAdresse(this, pdlperson.kontaktinformasjonForDoedsbo!!)
+                return preutfyllDodsboAdresse(pdlperson.kontaktinformasjonForDoedsbo!!, hentLandkode(pdlperson.kontaktinformasjonForDoedsbo!!.adresse.landkode))
             }
         }
 
