@@ -1,7 +1,11 @@
 package no.nav.eessi.pensjon.prefill.person
 
 import no.nav.eessi.pensjon.eux.model.sed.Adresse
-import no.nav.eessi.pensjon.personoppslag.pdl.model.*
+import no.nav.eessi.pensjon.personoppslag.pdl.model.AdressebeskyttelseGradering
+import no.nav.eessi.pensjon.personoppslag.pdl.model.PostadresseIFrittFormat
+import no.nav.eessi.pensjon.personoppslag.pdl.model.UtenlandskAdresse
+import no.nav.eessi.pensjon.personoppslag.pdl.model.UtenlandskAdresseIFrittFormat
+import no.nav.eessi.pensjon.personoppslag.pdl.model.Vegadresse
 import no.nav.eessi.pensjon.services.geo.PostnummerService
 import no.nav.eessi.pensjon.services.kodeverk.KodeverkClient
 import org.slf4j.Logger
@@ -61,7 +65,8 @@ class PrefillPDLAdresse (private val postnummerService: PostnummerService,
         if (pdlperson.erDoed()) {
             logger.info("              person er død. sjekker kontaktinformasjonForDoedsbo")
             if (pdlperson.kontaktinformasjonForDoedsbo != null) {
-                return preutfyllDodsboAdresse(pdlperson.kontaktinformasjonForDoedsbo!!)
+                logger.info("              preutfyller kontaktinformasjonForDoedsbo i adressefelt")
+                return preutfyllDodsboAdresse(this, pdlperson.kontaktinformasjonForDoedsbo!!)
             }
         }
 
@@ -82,18 +87,6 @@ class PrefillPDLAdresse (private val postnummerService: PostnummerService,
 
             else -> tomAdresse()
         }
-    }
-
-    private fun preutfyllDodsboAdresse(kontaktinformasjonForDoedsbo: KontaktinformasjonForDoedsbo): Adresse {
-        logger.info("              preutfyller kontaktinformasjonForDoedsbo i adressefelt")
-        val adresse = kontaktinformasjonForDoedsbo.adresse
-        return Adresse(
-            gate = adresse.adresselinje1.replace("\n", " "),
-            bygning = adresse.adresselinje2?.replace("\n", " "),
-            by = adresse.poststedsnavn,
-            postnummer = adresse.postnummer,
-            land = hentLandkode(adresse.landkode)
-        )
     }
 
 
@@ -204,4 +197,6 @@ class PrefillPDLAdresse (private val postnummerService: PostnummerService,
     fun hentLandkode(landkode: String?): String? {
         return landkode?.let { kodeverkClient.finnLandkode(it) }
     }
+
 }
+
