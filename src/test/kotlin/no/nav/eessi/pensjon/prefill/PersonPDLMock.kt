@@ -17,11 +17,13 @@ import no.nav.eessi.pensjon.personoppslag.pdl.model.Kjoenn
 import no.nav.eessi.pensjon.personoppslag.pdl.model.KjoennType
 import no.nav.eessi.pensjon.personoppslag.pdl.model.KontaktinformasjonForDoedsbo
 import no.nav.eessi.pensjon.personoppslag.pdl.model.KontaktinformasjonForDoedsboAdresse
+import no.nav.eessi.pensjon.personoppslag.pdl.model.KontaktinformasjonForDoedsboPersonSomKontakt
 import no.nav.eessi.pensjon.personoppslag.pdl.model.KontaktinformasjonForDoedsboSkifteform
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Metadata
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Navn
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Oppholdsadresse
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Person
+import no.nav.eessi.pensjon.personoppslag.pdl.model.Personnavn
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Sivilstand
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Sivilstandstype
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Statsborgerskap
@@ -225,8 +227,19 @@ object PersonPDLMock {
         )
     )
 
-    internal fun Person.medDodsboAdresse(adresse1: String, bygning: String, postnummer: String, poststednavn: String = "", landkode: String) = this.copy(
+    internal fun Person.medDodsboAdresse(
+        kontaktpersonFornavn: String,
+        kontaktpersonEtternavn: String,
+        adresse1: String,
+        bygning: String,
+        postnummer: String,
+        poststednavn: String = "",
+        landkode: String
+    ) = this.copy(
         kontaktinformasjonForDoedsbo = KontaktinformasjonForDoedsbo(
+            personSomKontakt = KontaktinformasjonForDoedsboPersonSomKontakt(
+                personnavn = Personnavn(fornavn = kontaktpersonFornavn, etternavn = kontaktpersonEtternavn)
+            ),
             adresse = KontaktinformasjonForDoedsboAdresse(
                 adresselinje1 = adresse1,
                 adresselinje2 = bygning,
@@ -292,7 +305,7 @@ object PersonPDLMock {
             .medAdresse("FORUSBEEN", "0010", "2294")
             .medKjoenn(KjoennType.KVINNE)
         val avdod = createWith(fornavn = "BAMSE LUR", etternavn = "MOMBALO", fnr = avdodEktefelleFnr, erDod =  true)
-            .medDodsboAdresse("Avdødadresse", "adresse 2", "1111", "2222", "NOR")
+            .medDodsboAdresse("Michelle", "Etternavn", "Avdødadresse", "adresse 2", "1111", "2222", "NOR")
 
         return PersonDataCollection(
             forsikretPerson = person,

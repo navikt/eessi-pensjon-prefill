@@ -12,8 +12,10 @@ import no.nav.eessi.pensjon.personoppslag.pdl.model.Kontaktadresse
 import no.nav.eessi.pensjon.personoppslag.pdl.model.KontaktadresseType
 import no.nav.eessi.pensjon.personoppslag.pdl.model.KontaktinformasjonForDoedsbo
 import no.nav.eessi.pensjon.personoppslag.pdl.model.KontaktinformasjonForDoedsboAdresse
+import no.nav.eessi.pensjon.personoppslag.pdl.model.KontaktinformasjonForDoedsboPersonSomKontakt
 import no.nav.eessi.pensjon.personoppslag.pdl.model.KontaktinformasjonForDoedsboSkifteform
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Person
+import no.nav.eessi.pensjon.personoppslag.pdl.model.Personnavn
 import no.nav.eessi.pensjon.personoppslag.pdl.model.PostadresseIFrittFormat
 import no.nav.eessi.pensjon.personoppslag.pdl.model.UtenlandskAdresse
 import no.nav.eessi.pensjon.personoppslag.pdl.model.UtenlandskAdresseIFrittFormat
@@ -118,6 +120,9 @@ class PrefillPDLAdresseTest{
             bostedsadresse = null,
             oppholdsadresse = null,
             kontaktinformasjonForDoedsbo = KontaktinformasjonForDoedsbo(
+                personSomKontakt = KontaktinformasjonForDoedsboPersonSomKontakt(
+                  personnavn = Personnavn(fornavn = "Lett", etternavn = "Frustrert")
+                ),
                 adresse = KontaktinformasjonForDoedsboAdresse(
                     adresselinje1 = "testlinej1 123\n23123 osloby",
                     landkode = "NOR",
@@ -134,7 +139,7 @@ class PrefillPDLAdresseTest{
         val actual = prefillAdresse.createPersonAdresse(person)
 
         assertNotNull(actual)
-        assertEquals("testlinej1 123 23123 osloby", actual?.gate)
+        assertEquals("Dødsbo v/Lett Frustrert, testlinej1 123 23123 osloby", actual?.gate)
         assertEquals(null, actual?.bygning)
         assertEquals("osloby", actual?.by)
         assertEquals("1231", actual?.postnummer)

@@ -68,7 +68,7 @@ class PrefillP2100AdresseTest {
 
         val expectedAvdodAdresse = """
             {
-              "gate" : "Avdødadresse",
+              "gate" : "Dødsbo v/Michelle Etternavn, Avdødadresse",
               "bygning" : "adresse 2",
               "by" : "2222",
               "postnummer" : "1111",
