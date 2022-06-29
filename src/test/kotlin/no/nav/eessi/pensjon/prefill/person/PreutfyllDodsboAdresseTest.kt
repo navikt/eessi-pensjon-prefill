@@ -17,10 +17,60 @@ internal class PreutfyllDodsboAdresseTest {
             poststedsnavn = "Gokk"
         ).medPersonSomKontakt(fornavn = "Solsikke", mellomnavn = "Gaselle", etternavn = "Soltilbeder")
 
-        val actual = preutfyllDodsboAdresse(kontaktinformasjonForDoedsbo, null)
+        val actual = preutfyllDodsboAdresse(kontaktinformasjonForDoedsbo, null, dummyProvider)
 
         val expected = Adresse(
             gate = "Dødsbo v/Solsikke Gaselle Soltilbeder, Morgenstjerne Bakkemakker gate 351",
+            bygning = "Leilighet 4, oppgang 5",
+            by = "Gokk",
+            postnummer = "6870",
+            land = null
+        )
+        assertEquals(expected, actual)
+    }
+    @Test
+    fun `person som kontakt med navn med for lang adresse skal logge error og kjøre videre med 155 tegn adresse`() {
+        val kontaktinformasjonForDoedsbo = createKontaktinformasjonForDoedsbo(
+            adresselinje1 = "Morgenstjerne Bakkemakker gate 351 her kommer det en veldig lang adresse som er over 155 tegn og som skal avsluttes på 155 eller noe sånt",
+            adresselinje2 = "Leilighet 4, oppgang 5",
+            postnummer = "6870",
+            poststedsnavn = "Gokk"
+        ).medPersonSomKontakt(fornavn = "Solsikke", mellomnavn = "Gaselle", etternavn = "Soltilbeder")
+
+        val actual = preutfyllDodsboAdresse(kontaktinformasjonForDoedsbo, null, dummyProvider)
+
+        val expected = Adresse(
+            gate = "Dødsbo v/Solsikke Gaselle Soltilbeder, Morgenstjerne Bakkemakker gate 351 her kommer det en veldig lang adresse som er over 155 tegn og som skal avsluttes ",
+            bygning = "Leilighet 4, oppgang 5",
+            by = "Gokk",
+            postnummer = "6870",
+            land = null
+        )
+        assertEquals(expected, actual)
+    }
+
+    private val dummyProvider: (identifikasjonsnummer: String) -> Personnavn =
+        { throw AssertionError("Denne skal ikke kalles i testen") }
+
+    @Test
+    fun `person som kontakt med identifikasjonsnummer`() {
+        val kontaktinformasjonForDoedsbo = createKontaktinformasjonForDoedsbo(
+            adresselinje1 = "Morgenstjerne Bakkemakker gate 351",
+            adresselinje2 = "Leilighet 4, oppgang 5",
+            postnummer = "6870",
+            poststedsnavn = "Gokk"
+        ).medPersonSomKontakt(identifikasjonsnummer = "29118599999")
+
+        val actual = preutfyllDodsboAdresse(kontaktinformasjonForDoedsbo, null, { identifikasjonsnummer ->
+            if (identifikasjonsnummer == "29118599999") {
+                Personnavn("Navn", "Fra", "Pdl")
+            } else {
+                throw AssertionError("Fikk feil identifikasjonsnummer")
+            }
+        })
+
+        val expected = Adresse(
+            gate = "Dødsbo v/Navn Fra Pdl, Morgenstjerne Bakkemakker gate 351",
             bygning = "Leilighet 4, oppgang 5",
             by = "Gokk",
             postnummer = "6870",
@@ -41,7 +91,7 @@ internal class PreutfyllDodsboAdresseTest {
             etternavn = "Fantestreker",
             organisasjon = "Bakke, Motbakke, Vannfall, Tørketid Advokater ANS"
         )
-        val actual = preutfyllDodsboAdresse(kontaktinformasjonForDoedsbo, null)
+        val actual = preutfyllDodsboAdresse(kontaktinformasjonForDoedsbo, null, dummyProvider)
 
         val expected = Adresse(
             gate = "Dødsbo v/Lurendreier Fantestreker, Bakke, Motbakke, Vannfall, Tørketid Advokater ANS, Tobben Tiedemanns gate 2",
@@ -66,7 +116,7 @@ internal class PreutfyllDodsboAdresseTest {
             etternavn = "Mortensen"
         )
 
-        val actual = preutfyllDodsboAdresse(kontaktinformasjonForDoedsbo, null)
+        val actual = preutfyllDodsboAdresse(kontaktinformasjonForDoedsbo, null, dummyProvider)
 
         val expected = Adresse(
             gate = "Dødsbo v/Nestor Mentor Mortensen, c/o Mentor Nestor Arnesen",
@@ -84,11 +134,11 @@ internal class PreutfyllDodsboAdresseTest {
             adresselinje1 = "Ærlighetvarerlengstveien 65",
             postnummer = "7080",
             poststedsnavn = "Leikanger"
-        ).medOrganisasjonSomKontaktUtenKontaktperson(
+        ).medOrganisasjonSomKontakt(
             organisasjonsnavn = "Vi Tar Ikke Arven Fra Noen AS"
         )
 
-        val actual = preutfyllDodsboAdresse(kontaktinformasjonForDoedsbo, null)
+        val actual = preutfyllDodsboAdresse(kontaktinformasjonForDoedsbo, null, dummyProvider)
 
         val expected = Adresse(
             gate = "Dødsbo v/Vi Tar Ikke Arven Fra Noen AS, Ærlighetvarerlengstveien 65",
@@ -106,14 +156,14 @@ internal class PreutfyllDodsboAdresseTest {
             adresselinje2 = "Bokstaver Blirtilordveien 14A",
             postnummer = "7080",
             poststedsnavn = "Leikanger"
-        ).medOrganisasjonSomKontaktOgKontaktperson(
+        ).medOrganisasjonSomKontakt(
             organisasjonsnavn = "Bare Ren og Skjær Veldedighet",
             fornavn = "Fetter",
             mellomnavn = "Anton",
             etternavn = "Værsågo-Takkskaruha"
         )
 
-        val actual = preutfyllDodsboAdresse(kontaktinformasjonForDoedsbo, null)
+        val actual = preutfyllDodsboAdresse(kontaktinformasjonForDoedsbo, null, dummyProvider)
 
         val expected = Adresse(
             gate = "Dødsbo v/Fetter Anton Værsågo-Takkskaruha, Bare Ren og Skjær Veldedighet, c/o Vi Lager Selskap For Alt AS",
@@ -162,6 +212,12 @@ internal class PreutfyllDodsboAdresseTest {
                 )
             )
         )
+    fun KontaktinformasjonForDoedsbo.medPersonSomKontakt(identifikasjonsnummer: String) =
+        this.copy(
+            personSomKontakt = KontaktinformasjonForDoedsboPersonSomKontakt(
+                identifikasjonsnummer = identifikasjonsnummer
+            )
+        )
 
     fun KontaktinformasjonForDoedsbo.medAdvokatSomKontakt(
         fornavn: String,
@@ -180,7 +236,7 @@ internal class PreutfyllDodsboAdresseTest {
         )
 
 
-    private fun KontaktinformasjonForDoedsbo.medOrganisasjonSomKontaktUtenKontaktperson(
+    private fun KontaktinformasjonForDoedsbo.medOrganisasjonSomKontakt(
         organisasjonsnavn: String
     ) = this.copy(
      organisasjonSomKontakt = KontaktinformasjonForDoedsboOrganisasjonSomKontakt(
@@ -188,7 +244,7 @@ internal class PreutfyllDodsboAdresseTest {
         )
     )
 
-    private fun KontaktinformasjonForDoedsbo.medOrganisasjonSomKontaktOgKontaktperson(
+    private fun KontaktinformasjonForDoedsbo.medOrganisasjonSomKontakt(
         organisasjonsnavn: String,
         fornavn: String,
         mellomnavn: String? = null,

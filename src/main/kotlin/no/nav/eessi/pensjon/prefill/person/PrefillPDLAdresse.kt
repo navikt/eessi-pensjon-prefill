@@ -66,7 +66,11 @@ class PrefillPDLAdresse (private val postnummerService: PostnummerService,
             logger.info("              person er død. sjekker kontaktinformasjonForDoedsbo")
             if (pdlperson.kontaktinformasjonForDoedsbo != null) {
                 logger.info("              preutfyller kontaktinformasjonForDoedsbo i adressefelt")
-                return preutfyllDodsboAdresse(pdlperson.kontaktinformasjonForDoedsbo!!, hentLandkode(pdlperson.kontaktinformasjonForDoedsbo!!.adresse.landkode))
+                return preutfyllDodsboAdresse(
+                    pdlperson.kontaktinformasjonForDoedsbo!!,
+                    hentLandkode(pdlperson.kontaktinformasjonForDoedsbo!!.adresse.landkode),
+                    { throw RuntimeException("Someone merged this before it was done!") } // FIXME!!!!!!
+                )
             }
         }
 
