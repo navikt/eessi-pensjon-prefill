@@ -7,14 +7,23 @@ import no.nav.eessi.pensjon.personoppslag.pdl.model.Personnavn
 internal fun preutfyllDodsboAdresse( kontaktinformasjonForDoedsbo: KontaktinformasjonForDoedsbo, landkode: String?): Adresse {
     val adresse = kontaktinformasjonForDoedsbo.adresse
     val sammensattInfoForKontakt =
-        if (kontaktinformasjonForDoedsbo.personSomKontakt != null) {
-            (joinNavn(kontaktinformasjonForDoedsbo.personSomKontakt!!.personnavn!!)
-                + ", " + adresse.adresselinje1.replace("\n", " "))
-        } else {
-            val advokat = kontaktinformasjonForDoedsbo.advokatSomKontakt!!
-            (joinNavn(advokat.personnavn)
-                    + if (!advokat.organisasjonsnavn.isNullOrBlank()) ", " + advokat.organisasjonsnavn else { "" }
-                    + ", " + adresse.adresselinje1.replace("\n", " "))
+        when {
+            kontaktinformasjonForDoedsbo.personSomKontakt != null -> {
+                (joinNavn(kontaktinformasjonForDoedsbo.personSomKontakt!!.personnavn!!)
+                        + ", " + adresse.adresselinje1.replace("\n", " "))
+            }
+            kontaktinformasjonForDoedsbo.advokatSomKontakt != null -> {
+                val advokat = kontaktinformasjonForDoedsbo.advokatSomKontakt!!
+                (joinNavn(advokat.personnavn)
+                        + if (!advokat.organisasjonsnavn.isNullOrBlank()) ", " + advokat.organisasjonsnavn else { "" }
+                        + ", " + adresse.adresselinje1.replace("\n", " "))
+            }
+            else -> {
+                val organisasjon = kontaktinformasjonForDoedsbo.organisasjonSomKontakt!!
+                (if (organisasjon.kontaktperson != null) joinNavn(organisasjon.kontaktperson!!) + ", " else { "" }
+                        + organisasjon.organisasjonsnavn
+                        + ", " + adresse.adresselinje1.replace("\n", " "))
+            }
         }
     return Adresse(
         gate = "Dødsbo v/$sammensattInfoForKontakt",

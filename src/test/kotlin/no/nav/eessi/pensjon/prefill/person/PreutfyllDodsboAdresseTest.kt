@@ -1,14 +1,7 @@
 package no.nav.eessi.pensjon.prefill.person
 
 import no.nav.eessi.pensjon.eux.model.sed.Adresse
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Folkeregistermetadata
-import no.nav.eessi.pensjon.personoppslag.pdl.model.KontaktinformasjonForDoedsbo
-import no.nav.eessi.pensjon.personoppslag.pdl.model.KontaktinformasjonForDoedsboAdresse
-import no.nav.eessi.pensjon.personoppslag.pdl.model.KontaktinformasjonForDoedsboAdvokatSomKontakt
-import no.nav.eessi.pensjon.personoppslag.pdl.model.KontaktinformasjonForDoedsboPersonSomKontakt
-import no.nav.eessi.pensjon.personoppslag.pdl.model.KontaktinformasjonForDoedsboSkifteform
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Metadata
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Personnavn
+import no.nav.eessi.pensjon.personoppslag.pdl.model.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
@@ -85,6 +78,54 @@ internal class PreutfyllDodsboAdresseTest {
         assertEquals(expected, actual)
     }
 
+    @Test
+    fun `organisasjon som kontakt uten kontaktperson`() {
+        val kontaktinformasjonForDoedsbo = createKontaktinformasjonForDoedsbo(
+            adresselinje1 = "Ærlighetvarerlengstveien 65",
+            postnummer = "7080",
+            poststedsnavn = "Leikanger"
+        ).medOrganisasjonSomKontaktUtenKontaktperson(
+            organisasjonsnavn = "Vi Tar Ikke Arven Fra Noen AS"
+        )
+
+        val actual = preutfyllDodsboAdresse(kontaktinformasjonForDoedsbo, null)
+
+        val expected = Adresse(
+            gate = "Dødsbo v/Vi Tar Ikke Arven Fra Noen AS, Ærlighetvarerlengstveien 65",
+            by = "Leikanger",
+            postnummer = "7080",
+            land = null
+        )
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun `organisasjon som kontakt med kontaktperson`() {
+        val kontaktinformasjonForDoedsbo = createKontaktinformasjonForDoedsbo(
+            adresselinje1 = "c/o Vi Lager Selskap For Alt AS",
+            adresselinje2 = "Bokstaver Blirtilordveien 14A",
+            postnummer = "7080",
+            poststedsnavn = "Leikanger"
+        ).medOrganisasjonSomKontaktOgKontaktperson(
+            organisasjonsnavn = "Bare Ren og Skjær Veldedighet",
+            fornavn = "Fetter",
+            mellomnavn = "Anton",
+            etternavn = "Værsågo-Takkskaruha"
+        )
+
+        val actual = preutfyllDodsboAdresse(kontaktinformasjonForDoedsbo, null)
+
+        val expected = Adresse(
+            gate = "Dødsbo v/Fetter Anton Værsågo-Takkskaruha, Bare Ren og Skjær Veldedighet, c/o Vi Lager Selskap For Alt AS",
+            bygning = "Bokstaver Blirtilordveien 14A",
+            by = "Leikanger",
+            postnummer = "7080",
+            land = null
+        )
+        assertEquals(expected, actual)
+    }
+
+
     fun createKontaktinformasjonForDoedsbo(
         adresselinje1: String,
         adresselinje2: String? = null,
@@ -137,5 +178,30 @@ internal class PreutfyllDodsboAdresseTest {
                 organisasjonsnavn = organisasjon
             )
         )
+
+
+    private fun KontaktinformasjonForDoedsbo.medOrganisasjonSomKontaktUtenKontaktperson(
+        organisasjonsnavn: String
+    ) = this.copy(
+     organisasjonSomKontakt = KontaktinformasjonForDoedsboOrganisasjonSomKontakt(
+         organisasjonsnavn = organisasjonsnavn
+        )
+    )
+
+    private fun KontaktinformasjonForDoedsbo.medOrganisasjonSomKontaktOgKontaktperson(
+        organisasjonsnavn: String,
+        fornavn: String,
+        mellomnavn: String? = null,
+        etternavn: String
+    ) = this.copy(
+     organisasjonSomKontakt = KontaktinformasjonForDoedsboOrganisasjonSomKontakt(
+         kontaktperson = Personnavn(
+             fornavn = fornavn,
+             mellomnavn = mellomnavn,
+             etternavn = etternavn
+         ),
+         organisasjonsnavn = organisasjonsnavn
+        )
+    )
 
 }
