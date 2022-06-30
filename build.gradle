@@ -11,7 +11,7 @@ buildscript {
         epeuxVersion = '1.1.72'
         epMetricsVersion = '0.4.25'
         epPersonoppslagVersion = '10.1.1'
-        epLoggingVersion='1.0.22'
+        epLoggingVersion='1.0.23'
         epPensjonInformasjonVersjon='2.0.14'
     }
 
