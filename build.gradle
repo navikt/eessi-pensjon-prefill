@@ -11,7 +11,7 @@ buildscript {
         epeuxVersion = '1.1.72'
         epMetricsVersion = '0.4.25'
         epPersonoppslagVersion = '10.1.1'
-        epLoggingersion='1.0.22'
+        epLoggingVersion='1.0.22'
         epPensjonInformasjonVersjon='2.0.14'
     }
 
@@ -112,7 +112,7 @@ dependencies {
 
     implementation("no.nav.eessi.pensjon:ep-eux:${epeuxVersion}")
     implementation("no.nav.eessi.pensjon:ep-metrics:$epMetricsVersion")
-    implementation("no.nav.eessi.pensjon:ep-logging:${epLoggingersion}")
+    implementation("no.nav.eessi.pensjon:ep-logging:${epLoggingVersion}")
     implementation("no.nav.eessi.pensjon:ep-personoppslag:${epPersonoppslagVersion}")
     implementation("no.nav.eessi.pensjon:ep-pensjonsinformasjon:${epPensjonInformasjonVersjon}")
 
