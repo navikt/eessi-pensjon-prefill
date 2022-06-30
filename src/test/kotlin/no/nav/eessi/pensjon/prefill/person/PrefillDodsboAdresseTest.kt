@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 
-internal class PreutfyllDodsboAdresseTest {
+internal class PrefillDodsboAdresseTest {
 
     @Test
     fun `person som kontakt med navn`() {
