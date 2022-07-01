@@ -4,6 +4,7 @@ import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.personoppslag.FodselsnummerGenerator
+import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
 import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
@@ -24,6 +25,7 @@ import org.junit.jupiter.api.Test
 
 class PrefillP2100AdresseTest {
 
+    private val personService: PersonService = mockk()
     private val personFnr = FodselsnummerGenerator.generateFnrForTest(65)
     private val avdodPersonFnr = FodselsnummerGenerator.generateFnrForTest(75)
     private val pesysSaksnummer = "22875355"
@@ -39,7 +41,7 @@ class PrefillP2100AdresseTest {
     fun setup() {
         prefillPDLAdresse = PrefillPDLAdresse(mockk(relaxed = true), mockk(relaxed = true){
             every { finnLandkode(eq("NOR")) } returns "NO"
-        })
+        }, personService)
 
         val prefillNav = PrefillPDLNav(prefillPDLAdresse,
                 institutionid = "NO:noinst002",

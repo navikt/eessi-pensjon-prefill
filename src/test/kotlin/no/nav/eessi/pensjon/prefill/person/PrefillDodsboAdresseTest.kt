@@ -1,7 +1,16 @@
 package no.nav.eessi.pensjon.prefill.person
 
 import no.nav.eessi.pensjon.eux.model.sed.Adresse
-import no.nav.eessi.pensjon.personoppslag.pdl.model.*
+import no.nav.eessi.pensjon.personoppslag.pdl.model.Folkeregistermetadata
+import no.nav.eessi.pensjon.personoppslag.pdl.model.KontaktinformasjonForDoedsbo
+import no.nav.eessi.pensjon.personoppslag.pdl.model.KontaktinformasjonForDoedsboAdresse
+import no.nav.eessi.pensjon.personoppslag.pdl.model.KontaktinformasjonForDoedsboAdvokatSomKontakt
+import no.nav.eessi.pensjon.personoppslag.pdl.model.KontaktinformasjonForDoedsboOrganisasjonSomKontakt
+import no.nav.eessi.pensjon.personoppslag.pdl.model.KontaktinformasjonForDoedsboPersonSomKontakt
+import no.nav.eessi.pensjon.personoppslag.pdl.model.KontaktinformasjonForDoedsboSkifteform
+import no.nav.eessi.pensjon.personoppslag.pdl.model.Metadata
+import no.nav.eessi.pensjon.personoppslag.pdl.model.Navn
+import no.nav.eessi.pensjon.personoppslag.pdl.model.Personnavn
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
@@ -17,7 +26,7 @@ internal class PrefillDodsboAdresseTest {
             poststedsnavn = "Gokk"
         ).medPersonSomKontakt(fornavn = "Solsikke", mellomnavn = "Gaselle", etternavn = "Soltilbeder")
 
-        val actual = preutfyllDodsboAdresse(kontaktinformasjonForDoedsbo, null, dummyProvider)
+        val actual = PrefillDodsboAdresse().preutfyllDodsboAdresse(kontaktinformasjonForDoedsbo, null, dummyProvider)
 
         val expected = Adresse(
             gate = "Dødsbo v/Solsikke Gaselle Soltilbeder, Morgenstjerne Bakkemakker gate 351",
@@ -37,7 +46,7 @@ internal class PrefillDodsboAdresseTest {
             poststedsnavn = "Gokk"
         ).medPersonSomKontakt(fornavn = "Solsikke", mellomnavn = "Gaselle", etternavn = "Soltilbeder")
 
-        val actual = preutfyllDodsboAdresse(kontaktinformasjonForDoedsbo, null, dummyProvider)
+        val actual = PrefillDodsboAdresse().preutfyllDodsboAdresse(kontaktinformasjonForDoedsbo, null, dummyProvider)
 
         val expected = Adresse(
             gate = "Dødsbo v/Solsikke Gaselle Soltilbeder, Morgenstjerne Bakkemakker gate 351 her kommer det en veldig lang adresse som er over 155 tegn og som skal avsluttes ",
@@ -49,7 +58,7 @@ internal class PrefillDodsboAdresseTest {
         assertEquals(expected, actual)
     }
 
-    private val dummyProvider: (identifikasjonsnummer: String) -> Personnavn =
+    private val dummyProvider: (identifikasjonsnummer: String) -> Navn =
         { throw AssertionError("Denne skal ikke kalles i testen") }
 
     @Test
@@ -61,9 +70,14 @@ internal class PrefillDodsboAdresseTest {
             poststedsnavn = "Gokk"
         ).medPersonSomKontakt(identifikasjonsnummer = "29118599999")
 
-        val actual = preutfyllDodsboAdresse(kontaktinformasjonForDoedsbo, null, { identifikasjonsnummer ->
+        val actual = PrefillDodsboAdresse().preutfyllDodsboAdresse(kontaktinformasjonForDoedsbo, null, { identifikasjonsnummer ->
             if (identifikasjonsnummer == "29118599999") {
-                Personnavn("Navn", "Fra", "Pdl")
+                Navn(fornavn = "Navn", mellomnavn = "Fra", etternavn = "Pdl", metadata = Metadata(
+                    endringer = emptyList(),
+                    historisk = false,
+                    master = "FREG",
+                    opplysningsId = "Blabla"
+                ))
             } else {
                 throw AssertionError("Fikk feil identifikasjonsnummer")
             }
@@ -91,7 +105,7 @@ internal class PrefillDodsboAdresseTest {
             etternavn = "Fantestreker",
             organisasjon = "Bakke, Motbakke, Vannfall, Tørketid Advokater ANS"
         )
-        val actual = preutfyllDodsboAdresse(kontaktinformasjonForDoedsbo, null, dummyProvider)
+        val actual = PrefillDodsboAdresse().preutfyllDodsboAdresse(kontaktinformasjonForDoedsbo, null, dummyProvider)
 
         val expected = Adresse(
             gate = "Dødsbo v/Lurendreier Fantestreker, Bakke, Motbakke, Vannfall, Tørketid Advokater ANS, Tobben Tiedemanns gate 2",
@@ -116,7 +130,7 @@ internal class PrefillDodsboAdresseTest {
             etternavn = "Mortensen"
         )
 
-        val actual = preutfyllDodsboAdresse(kontaktinformasjonForDoedsbo, null, dummyProvider)
+        val actual = PrefillDodsboAdresse().preutfyllDodsboAdresse(kontaktinformasjonForDoedsbo, null, dummyProvider)
 
         val expected = Adresse(
             gate = "Dødsbo v/Nestor Mentor Mortensen, c/o Mentor Nestor Arnesen",
@@ -138,7 +152,7 @@ internal class PrefillDodsboAdresseTest {
             organisasjonsnavn = "Vi Tar Ikke Arven Fra Noen AS"
         )
 
-        val actual = preutfyllDodsboAdresse(kontaktinformasjonForDoedsbo, null, dummyProvider)
+        val actual = PrefillDodsboAdresse().preutfyllDodsboAdresse(kontaktinformasjonForDoedsbo, null, dummyProvider)
 
         val expected = Adresse(
             gate = "Dødsbo v/Vi Tar Ikke Arven Fra Noen AS, Ærlighetvarerlengstveien 65",
@@ -163,7 +177,7 @@ internal class PrefillDodsboAdresseTest {
             etternavn = "Værsågo-Takkskaruha"
         )
 
-        val actual = preutfyllDodsboAdresse(kontaktinformasjonForDoedsbo, null, dummyProvider)
+        val actual = PrefillDodsboAdresse().preutfyllDodsboAdresse(kontaktinformasjonForDoedsbo, null, dummyProvider)
 
         val expected = Adresse(
             gate = "Dødsbo v/Fetter Anton Værsågo-Takkskaruha, Bare Ren og Skjær Veldedighet, c/o Vi Lager Selskap For Alt AS",
@@ -199,65 +213,66 @@ internal class PrefillDodsboAdresseTest {
             skifteform = KontaktinformasjonForDoedsboSkifteform.OFFENTLIG
         )
 
-    fun KontaktinformasjonForDoedsbo.medPersonSomKontakt(
-        fornavn: String,
-        mellomnavn: String? = null,
-        etternavn: String
-    ) = this.copy(
-            personSomKontakt = KontaktinformasjonForDoedsboPersonSomKontakt(
-                personnavn = Personnavn(
-                    fornavn = fornavn,
-                    mellomnavn = mellomnavn,
-                    etternavn = etternavn
-                )
-            )
-        )
-    fun KontaktinformasjonForDoedsbo.medPersonSomKontakt(identifikasjonsnummer: String) =
-        this.copy(
-            personSomKontakt = KontaktinformasjonForDoedsboPersonSomKontakt(
-                identifikasjonsnummer = identifikasjonsnummer
-            )
-        )
-
-    fun KontaktinformasjonForDoedsbo.medAdvokatSomKontakt(
-        fornavn: String,
-        mellomnavn: String? = null,
-        etternavn: String,
-        organisasjon: String? = null
-    ) = this.copy(
-            advokatSomKontakt = KontaktinformasjonForDoedsboAdvokatSomKontakt(
-                personnavn = Personnavn(
-                    fornavn = fornavn,
-                    mellomnavn = mellomnavn,
-                    etternavn = etternavn
-                ),
-                organisasjonsnavn = organisasjon
-            )
-        )
-
-
-    private fun KontaktinformasjonForDoedsbo.medOrganisasjonSomKontakt(
-        organisasjonsnavn: String
-    ) = this.copy(
-     organisasjonSomKontakt = KontaktinformasjonForDoedsboOrganisasjonSomKontakt(
-         organisasjonsnavn = organisasjonsnavn
-        )
-    )
-
-    private fun KontaktinformasjonForDoedsbo.medOrganisasjonSomKontakt(
-        organisasjonsnavn: String,
-        fornavn: String,
-        mellomnavn: String? = null,
-        etternavn: String
-    ) = this.copy(
-     organisasjonSomKontakt = KontaktinformasjonForDoedsboOrganisasjonSomKontakt(
-         kontaktperson = Personnavn(
-             fornavn = fornavn,
-             mellomnavn = mellomnavn,
-             etternavn = etternavn
-         ),
-         organisasjonsnavn = organisasjonsnavn
-        )
-    )
 
 }
+
+fun KontaktinformasjonForDoedsbo.medPersonSomKontakt(
+    fornavn: String,
+    mellomnavn: String? = null,
+    etternavn: String
+) = this.copy(
+        personSomKontakt = KontaktinformasjonForDoedsboPersonSomKontakt(
+            personnavn = Personnavn(
+                fornavn = fornavn,
+                mellomnavn = mellomnavn,
+                etternavn = etternavn
+            )
+        )
+    )
+fun KontaktinformasjonForDoedsbo.medPersonSomKontakt(identifikasjonsnummer: String) =
+    this.copy(
+        personSomKontakt = KontaktinformasjonForDoedsboPersonSomKontakt(
+            identifikasjonsnummer = identifikasjonsnummer
+        )
+    )
+
+fun KontaktinformasjonForDoedsbo.medAdvokatSomKontakt(
+    fornavn: String,
+    mellomnavn: String? = null,
+    etternavn: String,
+    organisasjon: String? = null
+) = this.copy(
+        advokatSomKontakt = KontaktinformasjonForDoedsboAdvokatSomKontakt(
+            personnavn = Personnavn(
+                fornavn = fornavn,
+                mellomnavn = mellomnavn,
+                etternavn = etternavn
+            ),
+            organisasjonsnavn = organisasjon
+        )
+    )
+
+
+fun KontaktinformasjonForDoedsbo.medOrganisasjonSomKontakt(
+    organisasjonsnavn: String
+) = this.copy(
+ organisasjonSomKontakt = KontaktinformasjonForDoedsboOrganisasjonSomKontakt(
+     organisasjonsnavn = organisasjonsnavn
+    )
+)
+
+fun KontaktinformasjonForDoedsbo.medOrganisasjonSomKontakt(
+    organisasjonsnavn: String,
+    fornavn: String,
+    mellomnavn: String? = null,
+    etternavn: String
+) = this.copy(
+ organisasjonSomKontakt = KontaktinformasjonForDoedsboOrganisasjonSomKontakt(
+     kontaktperson = Personnavn(
+         fornavn = fornavn,
+         mellomnavn = mellomnavn,
+         etternavn = etternavn
+     ),
+     organisasjonsnavn = organisasjonsnavn
+    )
+)

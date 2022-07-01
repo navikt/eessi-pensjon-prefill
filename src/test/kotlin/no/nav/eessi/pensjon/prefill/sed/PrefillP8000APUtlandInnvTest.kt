@@ -6,6 +6,7 @@ import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.pensjonsinformasjon.EPSaktype
 import no.nav.eessi.pensjon.personoppslag.Fodselsnummer
 import no.nav.eessi.pensjon.personoppslag.FodselsnummerGenerator
+import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModel
@@ -24,6 +25,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 class PrefillP8000APUtlandInnvTest {
+    private val personService: PersonService = mockk()
     private val personFnr = FodselsnummerGenerator.generateFnrForTest(68)
     private val ekteFnr = FodselsnummerGenerator.generateFnrForTest(70)
     private val pesysSaksnummer = "14398627"
@@ -40,7 +42,7 @@ class PrefillP8000APUtlandInnvTest {
 
         every { kodeverkClient.finnLandkode(any()) } returns "NO"
 
-        val prefillAdresse = PrefillPDLAdresse(PostnummerService(),kodeverkClient)
+        val prefillAdresse = PrefillPDLAdresse(PostnummerService(),kodeverkClient, personService)
 
         prefillNav = PrefillPDLNav(
                 prefillAdresse = prefillAdresse,

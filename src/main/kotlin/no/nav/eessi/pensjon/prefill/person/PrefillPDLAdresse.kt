@@ -1,7 +1,9 @@
 package no.nav.eessi.pensjon.prefill.person
 
 import no.nav.eessi.pensjon.eux.model.sed.Adresse
+import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
 import no.nav.eessi.pensjon.personoppslag.pdl.model.AdressebeskyttelseGradering
+import no.nav.eessi.pensjon.personoppslag.pdl.model.NorskIdent
 import no.nav.eessi.pensjon.personoppslag.pdl.model.PostadresseIFrittFormat
 import no.nav.eessi.pensjon.personoppslag.pdl.model.UtenlandskAdresse
 import no.nav.eessi.pensjon.personoppslag.pdl.model.UtenlandskAdresseIFrittFormat
@@ -15,7 +17,8 @@ import no.nav.eessi.pensjon.personoppslag.pdl.model.Person as PDLPerson
 
 @Component
 class PrefillPDLAdresse (private val postnummerService: PostnummerService,
-                         private val kodeverkClient: KodeverkClient) {
+                         private val kodeverkClient: KodeverkClient,
+                         private val personService: PersonService) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillPDLAdresse::class.java) }
 
@@ -66,11 +69,7 @@ class PrefillPDLAdresse (private val postnummerService: PostnummerService,
             logger.info("              person er død. sjekker kontaktinformasjonForDoedsbo")
             if (pdlperson.kontaktinformasjonForDoedsbo != null) {
                 logger.info("              preutfyller kontaktinformasjonForDoedsbo i adressefelt")
-                return preutfyllDodsboAdresse(
-                    pdlperson.kontaktinformasjonForDoedsbo!!,
-                    hentLandkode(pdlperson.kontaktinformasjonForDoedsbo!!.adresse.landkode),
-                    { throw RuntimeException("Someone merged this before it was done!") } // FIXME!!!!!!
-                )
+                return preutfyllDoedsboAdresse(pdlperson)
             }
         }
 
@@ -92,6 +91,15 @@ class PrefillPDLAdresse (private val postnummerService: PostnummerService,
             else -> tomAdresse()
         }
     }
+
+    private fun preutfyllDoedsboAdresse(pdlperson: no.nav.eessi.pensjon.personoppslag.pdl.model.Person) =
+        PrefillDodsboAdresse().preutfyllDodsboAdresse(
+            pdlperson.kontaktinformasjonForDoedsbo!!,
+            hentLandkode(pdlperson.kontaktinformasjonForDoedsbo!!.adresse.landkode)
+        ) { idenfikasjonsnummer: String ->
+            personService.hentPersonnavn(NorskIdent(idenfikasjonsnummer))
+                ?: throw NullPointerException("Uventet nullverdi på oppslag mot PDL på personnavn for $idenfikasjonsnummer")
+        }
 
 
     fun loggErrorVedFlereGyldigeAdresser(pdlperson: PDLPerson) {
