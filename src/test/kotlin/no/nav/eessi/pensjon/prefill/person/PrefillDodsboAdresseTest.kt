@@ -194,13 +194,15 @@ internal class PrefillDodsboAdresseTest {
         adresselinje1: String,
         adresselinje2: String? = null,
         postnummer: String,
-        poststedsnavn: String
+        poststedsnavn: String,
+        landkode: String? = null
     ) = KontaktinformasjonForDoedsbo(
             adresse = KontaktinformasjonForDoedsboAdresse(
                 adresselinje1 = adresselinje1,
                 adresselinje2 = adresselinje2,
                 postnummer = postnummer,
-                poststedsnavn = poststedsnavn
+                poststedsnavn = poststedsnavn,
+                landkode = landkode
             ),
             attestutstedelsesdato = LocalDate.now(),
             folkeregistermetadata = Folkeregistermetadata(null),

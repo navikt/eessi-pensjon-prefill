@@ -92,14 +92,18 @@ class PrefillPDLAdresse (private val postnummerService: PostnummerService,
         }
     }
 
-    private fun preutfyllDoedsboAdresse(pdlperson: no.nav.eessi.pensjon.personoppslag.pdl.model.Person) =
-        PrefillDodsboAdresse().preutfyllDodsboAdresse(
+    private fun preutfyllDoedsboAdresse(pdlperson: no.nav.eessi.pensjon.personoppslag.pdl.model.Person): Adresse {
+        val landkode = pdlperson.kontaktinformasjonForDoedsbo!!.adresse.landkode
+        val landKode2Tegn = if (landkode == null || landkode.length == 2) landkode else hentLandkode(landkode)
+
+        return PrefillDodsboAdresse().preutfyllDodsboAdresse(
             pdlperson.kontaktinformasjonForDoedsbo!!,
-            hentLandkode(pdlperson.kontaktinformasjonForDoedsbo!!.adresse.landkode)
+            landKode2Tegn
         ) { idenfikasjonsnummer: String ->
             personService.hentPersonnavn(NorskIdent(idenfikasjonsnummer))
-                ?: throw NullPointerException("Uventet nullverdi på oppslag mot PDL på personnavn for $idenfikasjonsnummer")
+                ?: throw NullPointerException("Uventet nullverdi etter oppslag mot PDL på personnavn for $idenfikasjonsnummer")
         }
+    }
 
 
     fun loggErrorVedFlereGyldigeAdresser(pdlperson: PDLPerson) {

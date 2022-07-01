@@ -105,8 +105,7 @@ class PrefillPDLAdresseTest{
 
 
     @Test
-    fun `utfylling av doedsboAdresseUtenlinjeskift`() {
-        every { kodeverkClient.finnLandkode(eq("NOR")) } returns "NO"
+    fun `utfylling av doedsboAdresseMedLinjeskiftOgToTegnsLandkode`() {
 
         val person = PersonPDLMock.createWith(
             landkoder = true,
@@ -119,7 +118,8 @@ class PrefillPDLAdresseTest{
             kontaktinformasjonForDoedsbo = PrefillDodsboAdresseTest().createKontaktinformasjonForDoedsbo(
                 adresselinje1 = "testlinej1 123\n23123 osloby",
                 postnummer = "1231",
-                poststedsnavn = "osloby"
+                poststedsnavn = "osloby",
+                landkode = "SE"
             ).medPersonSomKontakt(
                 fornavn = "Lett", etternavn = "Frustrert"
             )
@@ -132,10 +132,11 @@ class PrefillPDLAdresseTest{
         assertEquals(null, actual?.bygning)
         assertEquals("osloby", actual?.by)
         assertEquals("1231", actual?.postnummer)
+        assertEquals("SE", actual?.land)
 
     }
     @Test
-    fun `utfylling av doedsboAdresse med personkontakt med identifikasjonsnummer`() {
+    fun `utfylling av doedsboAdresse med personkontakt med identifikasjonsnummer og 3 tegn i landkode`() {
         val identifikasjonsnummer = "123553543543"
         every { kodeverkClient.finnLandkode(eq("NOR")) } returns "NO"
         every { personService.hentPersonnavn(eq(NorskIdent(identifikasjonsnummer))) } returns Navn(fornavn = "Trippel", etternavn = "Køyeseng", metadata = Metadata(
@@ -155,7 +156,8 @@ class PrefillPDLAdresseTest{
             kontaktinformasjonForDoedsbo = PrefillDodsboAdresseTest().createKontaktinformasjonForDoedsbo(
                 adresselinje1 = "testlinej1 123\n23123 osloby",
                 postnummer = "1231",
-                poststedsnavn = "osloby"
+                poststedsnavn = "osloby",
+                landkode = "NOR"
             ).medPersonSomKontakt(identifikasjonsnummer = identifikasjonsnummer)
         )
 
@@ -167,6 +169,7 @@ class PrefillPDLAdresseTest{
         assertEquals(null, actual?.bygning)
         assertEquals("osloby", actual?.by)
         assertEquals("1231", actual?.postnummer)
+        assertEquals("NO", actual?.land)
 
     }
 
