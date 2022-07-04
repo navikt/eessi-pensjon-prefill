@@ -5,6 +5,7 @@ import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.personoppslag.Fodselsnummer
 import no.nav.eessi.pensjon.personoppslag.FodselsnummerGenerator
+import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
 import no.nav.eessi.pensjon.prefill.ApiRequest
 import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
@@ -31,6 +32,7 @@ import org.junit.jupiter.api.Test
 
 class PrefillP2200_AP_21975717Test {
 
+    private val personService: PersonService = mockk()
     var kodeverkClient: KodeverkClient = mockk()
 
     private val personFnr = FodselsnummerGenerator.generateFnrForTest(68)
@@ -50,7 +52,7 @@ class PrefillP2200_AP_21975717Test {
         personDataCollection = PersonPDLMock.createEnkelFamilie(personFnr, ekteFnr)
 
         prefillNav = PrefillPDLNav(
-            prefillAdresse = PrefillPDLAdresse(PostnummerService(), kodeverkClient),
+            prefillAdresse = PrefillPDLAdresse(PostnummerService(), kodeverkClient, personService),
             institutionid = "NO:noinst002",
             institutionnavn = "NOINST002, NO INST002, NO"
         )

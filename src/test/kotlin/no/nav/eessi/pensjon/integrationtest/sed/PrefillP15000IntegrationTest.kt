@@ -13,9 +13,11 @@ import no.nav.eessi.pensjon.personoppslag.pdl.model.Folkeregistermetadata
 import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentType
 import no.nav.eessi.pensjon.personoppslag.pdl.model.KontaktinformasjonForDoedsbo
 import no.nav.eessi.pensjon.personoppslag.pdl.model.KontaktinformasjonForDoedsboAdresse
+import no.nav.eessi.pensjon.personoppslag.pdl.model.KontaktinformasjonForDoedsboPersonSomKontakt
 import no.nav.eessi.pensjon.personoppslag.pdl.model.KontaktinformasjonForDoedsboSkifteform
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Metadata
 import no.nav.eessi.pensjon.personoppslag.pdl.model.NorskIdent
+import no.nav.eessi.pensjon.personoppslag.pdl.model.Personnavn
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.models.KravType
@@ -503,6 +505,9 @@ class PrefillP15000IntegrationTest {
 
         val avdodperson = PersonPDLMock.createWith(true, "Avdød", "Død", FNR_VOKSEN_2, AKTOER_ID_2, true)
             .copy(bostedsadresse = null, oppholdsadresse = null, kontaktadresse = null, kontaktinformasjonForDoedsbo = KontaktinformasjonForDoedsbo(
+                personSomKontakt = KontaktinformasjonForDoedsboPersonSomKontakt(
+                    personnavn = Personnavn(fornavn = "Fru", etternavn = "Pettimeter")
+                ),
                 adresse = KontaktinformasjonForDoedsboAdresse(
                     "dødsboadresse1",
                     "adresselinje2",
@@ -579,7 +584,7 @@ class PrefillP15000IntegrationTest {
                     "foedselsdato" : "1921-07-12"
                   },
                   "adresse" : {
-                    "gate" : "dødsboadresse1",
+                    "gate" : "Dødsbo v/Fru Pettimeter, dødsboadresse1",
                     "bygning" : "adresselinje2",
                     "by" : "Langegatan 121",
                     "postnummer" : "2312",

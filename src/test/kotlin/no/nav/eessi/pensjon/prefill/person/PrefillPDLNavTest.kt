@@ -21,6 +21,7 @@ import no.nav.eessi.pensjon.eux.model.sed.Sepa
 import no.nav.eessi.pensjon.eux.model.sed.StatsborgerskapItem
 import no.nav.eessi.pensjon.personoppslag.Fodselsnummer
 import no.nav.eessi.pensjon.personoppslag.FodselsnummerGenerator
+import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Doedsfall
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Foedsel
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Navn
@@ -54,7 +55,8 @@ import java.time.LocalDateTime
 
 class PrefillPDLNavTest {
 
-    var kodeverkClient: KodeverkClient = mockk()
+    private val personService: PersonService = mockk()
+    private val kodeverkClient: KodeverkClient = mockk()
 
     lateinit var prefillPDLNav: PrefillPDLNav
 
@@ -68,7 +70,7 @@ class PrefillPDLNavTest {
         every { kodeverkClient.finnLandkode(eq("SWE")) } returns "SE"
 
         prefillPDLNav = PrefillPDLNav(
-            PrefillPDLAdresse(PostnummerService(), kodeverkClient),
+            PrefillPDLAdresse(PostnummerService(), kodeverkClient, personService),
             someInstitutionId,
             someIntitutionNavn)
     }

@@ -8,6 +8,7 @@ import no.nav.eessi.pensjon.eux.model.sed.P8000
 import no.nav.eessi.pensjon.pensjonsinformasjon.EPSaktype
 import no.nav.eessi.pensjon.pensjonsinformasjon.KravArsak
 import no.nav.eessi.pensjon.personoppslag.FodselsnummerGenerator
+import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
 import no.nav.eessi.pensjon.prefill.LagPDLPerson
 import no.nav.eessi.pensjon.prefill.LagPDLPerson.Companion.medAdresse
 import no.nav.eessi.pensjon.prefill.PersonPDLMock.medUtlandAdresse
@@ -36,6 +37,7 @@ class PrefillP8000P_BUC_05Test {
 
     private val personFnr = FodselsnummerGenerator.generateFnrForTest(68)
     private val pesysSaksnummer = "14398627"
+    private val personService: PersonService = mockk()
 
     lateinit var prefillData: PrefillDataModel
     lateinit var prefillNav: PrefillPDLNav
@@ -52,7 +54,7 @@ class PrefillP8000P_BUC_05Test {
         every { kodeverkClient.finnLandkode("NOR") } returns "NO"
         every { kodeverkClient.finnLandkode("SWE") } returns "SE"
 
-        prefillAdresse = PrefillPDLAdresse(PostnummerService(), kodeverkClient)
+        prefillAdresse = PrefillPDLAdresse(PostnummerService(), kodeverkClient, personService)
         prefillNav = PrefillPDLNav( prefillAdresse,
                 institutionid = "NO:noinst002",
                 institutionnavn = "NOINST002, NO INST002, NO")

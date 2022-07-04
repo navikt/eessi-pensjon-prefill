@@ -5,14 +5,14 @@ import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.core.read.ListAppender
 import io.mockk.every
 import io.mockk.mockk
+import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
 import no.nav.eessi.pensjon.personoppslag.pdl.model.AdressebeskyttelseGradering
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Bostedsadresse
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Folkeregistermetadata
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Kontaktadresse
 import no.nav.eessi.pensjon.personoppslag.pdl.model.KontaktadresseType
-import no.nav.eessi.pensjon.personoppslag.pdl.model.KontaktinformasjonForDoedsbo
-import no.nav.eessi.pensjon.personoppslag.pdl.model.KontaktinformasjonForDoedsboAdresse
-import no.nav.eessi.pensjon.personoppslag.pdl.model.KontaktinformasjonForDoedsboSkifteform
+import no.nav.eessi.pensjon.personoppslag.pdl.model.Metadata
+import no.nav.eessi.pensjon.personoppslag.pdl.model.Navn
+import no.nav.eessi.pensjon.personoppslag.pdl.model.NorskIdent
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Person
 import no.nav.eessi.pensjon.personoppslag.pdl.model.PostadresseIFrittFormat
 import no.nav.eessi.pensjon.personoppslag.pdl.model.UtenlandskAdresse
@@ -30,15 +30,16 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.skyscreamer.jsonassert.JSONAssert
 import org.slf4j.LoggerFactory
-import java.time.LocalDate
 import java.time.LocalDateTime
 
 class PrefillPDLAdresseTest{
 
-    private lateinit var prefillAdresse: PrefillPDLAdresse
+    private val personService: PersonService = mockk()
     private var kodeverkClient: KodeverkClient = mockk()
+    private lateinit var prefillAdresse: PrefillPDLAdresse
 
     private val deugLogger: Logger = LoggerFactory.getLogger("no.nav.eessi.pensjon") as Logger
     private val listAppender = ListAppender<ILoggingEvent>()
@@ -47,7 +48,7 @@ class PrefillPDLAdresseTest{
     fun beforeStart() {
         deugLogger.addAppender(listAppender)
         listAppender.start()
-        prefillAdresse = PrefillPDLAdresse(PostnummerService(), kodeverkClient)
+        prefillAdresse = PrefillPDLAdresse(PostnummerService(), kodeverkClient, personService)
     }
 
     @AfterEach
@@ -104,10 +105,7 @@ class PrefillPDLAdresseTest{
 
 
     @Test
-    fun `utfylling av doedsboAdresseUtenlinjeskift`() {
-        every { kodeverkClient.finnLandkode(eq("NOR")) } returns "NO"
-
-        val doedMeta = PersonPDLMock.mockMeta()
+    fun `utfylling av doedsboAdresseMedLinjeskiftOgToTegnsLandkode`() {
 
         val person = PersonPDLMock.createWith(
             landkoder = true,
@@ -117,28 +115,88 @@ class PrefillPDLAdresseTest{
         ).copy(
             bostedsadresse = null,
             oppholdsadresse = null,
-            kontaktinformasjonForDoedsbo = KontaktinformasjonForDoedsbo(
-                adresse = KontaktinformasjonForDoedsboAdresse(
-                    adresselinje1 = "testlinej1 123\n23123 osloby",
-                    landkode = "NOR",
-                    postnummer = "1231",
-                    poststedsnavn = "osloby"
-                ),
-                attestutstedelsesdato = LocalDate.of(2020, 10, 1),
-                folkeregistermetadata = Folkeregistermetadata(null),
-                skifteform = KontaktinformasjonForDoedsboSkifteform.ANNET,
-                metadata = doedMeta,
-            ))
+            kontaktinformasjonForDoedsbo = PrefillDodsboAdresseTest().createKontaktinformasjonForDoedsbo(
+                adresselinje1 = "testlinej1 123\n23123 osloby",
+                postnummer = "1231",
+                poststedsnavn = "osloby",
+                landkode = "SE"
+            ).medPersonSomKontakt(
+                fornavn = "Lett", etternavn = "Frustrert"
+            )
+        )
+
+        val actual = prefillAdresse.createPersonAdresse(person)
+
+        assertNotNull(actual)
+        assertEquals("Dødsbo v/Lett Frustrert, testlinej1 123 23123 osloby", actual?.gate)
+        assertEquals(null, actual?.bygning)
+        assertEquals("osloby", actual?.by)
+        assertEquals("1231", actual?.postnummer)
+        assertEquals("SE", actual?.land)
+
+    }
+    @Test
+    fun `utfylling av doedsboAdresse med personkontakt med identifikasjonsnummer og 3 tegn i landkode`() {
+        val identifikasjonsnummer = "123553543543"
+        every { kodeverkClient.finnLandkode(eq("NOR")) } returns "NO"
+        every { personService.hentPersonnavn(eq(NorskIdent(identifikasjonsnummer))) } returns Navn(fornavn = "Trippel", etternavn = "Køyeseng", metadata = Metadata(
+            endringer = emptyList(),
+            historisk = false,
+            master = "FREG",
+            opplysningsId = "Blabla"))
+
+        val person = PersonPDLMock.createWith(
+            landkoder = true,
+            fnr = "123123123",
+            aktoerid = "2312312",
+            erDod = true
+        ).copy(
+            bostedsadresse = null,
+            oppholdsadresse = null,
+            kontaktinformasjonForDoedsbo = PrefillDodsboAdresseTest().createKontaktinformasjonForDoedsbo(
+                adresselinje1 = "testlinej1 123\n23123 osloby",
+                postnummer = "1231",
+                poststedsnavn = "osloby",
+                landkode = "NOR"
+            ).medPersonSomKontakt(identifikasjonsnummer = identifikasjonsnummer)
+        )
 
 
         val actual = prefillAdresse.createPersonAdresse(person)
 
         assertNotNull(actual)
-        assertEquals("testlinej1 123 23123 osloby", actual?.gate)
+        assertEquals("Dødsbo v/Trippel Køyeseng, testlinej1 123 23123 osloby", actual?.gate)
         assertEquals(null, actual?.bygning)
         assertEquals("osloby", actual?.by)
         assertEquals("1231", actual?.postnummer)
+        assertEquals("NO", actual?.land)
 
+    }
+
+    @Test
+    fun `utfylling av doedsboAdresse med personkontakt med identifikasjonsnummer som ikke finnes i PDL (sykt!)`() {
+        val identifikasjonsnummerSomIkkeFinnesIPdl = "123553543543"
+        every { kodeverkClient.finnLandkode(eq("NOR")) } returns "NO"
+        every { personService.hentPersonnavn(eq(NorskIdent(identifikasjonsnummerSomIkkeFinnesIPdl))) } returns null
+
+        val person = PersonPDLMock.createWith(
+            landkoder = true,
+            fnr = "123123123",
+            aktoerid = "2312312",
+            erDod = true
+        ).copy(
+            bostedsadresse = null,
+            oppholdsadresse = null,
+            kontaktinformasjonForDoedsbo = PrefillDodsboAdresseTest().createKontaktinformasjonForDoedsbo(
+                adresselinje1 = "testlinej1 123\n23123 osloby",
+                postnummer = "1231",
+                poststedsnavn = "osloby"
+            ).medPersonSomKontakt(identifikasjonsnummer = identifikasjonsnummerSomIkkeFinnesIPdl)
+        )
+
+        assertThrows<NullPointerException> {
+            prefillAdresse.createPersonAdresse(person)
+        }
     }
 
     @Test
