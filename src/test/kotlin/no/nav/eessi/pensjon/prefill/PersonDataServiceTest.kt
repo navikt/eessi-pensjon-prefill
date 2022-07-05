@@ -10,6 +10,7 @@ import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonoppslagException
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Ident
 import no.nav.eessi.pensjon.personoppslag.pdl.model.NorskIdent
+import no.nav.eessi.pensjon.personoppslag.pdl.model.Person
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Sivilstandstype
 import no.nav.eessi.pensjon.prefill.LagPDLPerson.Companion.lagPerson
 import no.nav.eessi.pensjon.prefill.LagPDLPerson.Companion.medAdresse
@@ -22,8 +23,8 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.web.server.ResponseStatusException
-import kotlin.test.assertEquals
-import kotlin.test.assertNull
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNull
 
 internal class PersonDataServiceTest {
 
@@ -81,7 +82,7 @@ internal class PersonDataServiceTest {
 
         assertNull(result.ektefellePerson)
         assertNull(result.sivilstandstype)
-        assertEquals(emptyList(), result.barnPersonList)
+        assertEquals(emptyList<Person>(), result.barnPersonList)
         assertEquals(mockPerson, result.gjenlevendeEllerAvdod)
         assertEquals(mockPerson, result.forsikretPerson)
 
@@ -105,7 +106,7 @@ internal class PersonDataServiceTest {
 
         assertNull(result.ektefellePerson)
         assertNull(result.sivilstandstype)
-        assertEquals(emptyList(), result.barnPersonList)
+        assertEquals(emptyList<Person>(), result.barnPersonList)
         assertEquals(avdod, result.gjenlevendeEllerAvdod)
         assertEquals(gjenlev, result.forsikretPerson)
 

@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.web.server.ResponseStatusException
 import java.time.LocalDate
-import kotlin.test.assertFailsWith
 
 
 internal class PrefillP15000Test {
@@ -26,7 +25,7 @@ internal class PrefillP15000Test {
         every { mockedPrefill.kravType } returns KravType.ALDER
         every { mockedPrefill.avdod } returns PersonId("1234", "5678")
 
-        val exception = assertFailsWith<ResponseStatusException> {
+        val exception = assertThrows<ResponseStatusException> {
             prfillP15000.prefill(
                 mockedPrefill, mockk(), mockk(){
                     every { sakType} returns null
