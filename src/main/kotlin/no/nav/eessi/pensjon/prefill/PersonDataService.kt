@@ -1,6 +1,5 @@
 package no.nav.eessi.pensjon.prefill
 
-import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.metrics.MetricsHelper
 import no.nav.eessi.pensjon.personoppslag.Fodselsnummer
@@ -28,7 +27,7 @@ import javax.annotation.PostConstruct
 @Suppress("SpringJavaInjectionPointsAutowiringInspection")
 @Service
 class PersonDataService(private val personService: PersonService,
-                        @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper(SimpleMeterRegistry())) {
+                        @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper.ForTest()) {
 
     private val logger: Logger = LoggerFactory.getLogger(PersonDataService::class.java)
 

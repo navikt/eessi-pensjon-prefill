@@ -1,6 +1,5 @@
 package no.nav.eessi.pensjon.prefill
 
-import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.metrics.MetricsHelper
 import no.nav.eessi.pensjon.pensjonsinformasjon.EPSaktype
@@ -23,7 +22,7 @@ import javax.annotation.PostConstruct
 @Service
 class InnhentingService(
     private val personDataService: PersonDataService,
-    @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper(SimpleMeterRegistry()),
+    @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper.ForTest(),
     private val pensjonsinformasjonService: PensjonsinformasjonService
 ) {
 
