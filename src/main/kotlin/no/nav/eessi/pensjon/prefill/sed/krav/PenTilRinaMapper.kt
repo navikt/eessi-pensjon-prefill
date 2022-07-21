@@ -1,6 +1,6 @@
 package no.nav.eessi.pensjon.prefill.sed.krav
 
-import no.nav.eessi.pensjon.pensjonsinformasjon.Sakstatus
+import no.nav.eessi.pensjon.pensjonsinformasjon.models.Sakstatus
 
 /**
      *  [07] Førtidspensjon

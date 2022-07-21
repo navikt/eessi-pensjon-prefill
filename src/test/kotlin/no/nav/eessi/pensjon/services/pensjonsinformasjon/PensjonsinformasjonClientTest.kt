@@ -3,10 +3,10 @@ package no.nav.eessi.pensjon.services.pensjonsinformasjon
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.pensjonsinformasjon.FinnSak
-import no.nav.eessi.pensjon.pensjonsinformasjon.PensjoninformasjonException
-import no.nav.eessi.pensjon.pensjonsinformasjon.PensjoninformasjonProcessingException
-import no.nav.eessi.pensjon.pensjonsinformasjon.PensjonsinformasjonClient
 import no.nav.eessi.pensjon.pensjonsinformasjon.clients.PensjonRequestBuilder
+import no.nav.eessi.pensjon.pensjonsinformasjon.clients.PensjoninformasjonException
+import no.nav.eessi.pensjon.pensjonsinformasjon.clients.PensjoninformasjonProcessingException
+import no.nav.eessi.pensjon.pensjonsinformasjon.clients.PensjonsinformasjonClient
 import no.nav.eessi.pensjon.utils.simpleFormat
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import org.junit.jupiter.api.Assertions.assertEquals

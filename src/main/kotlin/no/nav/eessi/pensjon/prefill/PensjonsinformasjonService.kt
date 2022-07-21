@@ -2,8 +2,8 @@ package no.nav.eessi.pensjon.prefill
 
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.pensjonsinformasjon.FinnSak
-import no.nav.eessi.pensjon.pensjonsinformasjon.PensjoninformasjonException
-import no.nav.eessi.pensjon.pensjonsinformasjon.PensjonsinformasjonClient
+import no.nav.eessi.pensjon.pensjonsinformasjon.clients.PensjoninformasjonException
+import no.nav.eessi.pensjon.pensjonsinformasjon.clients.PensjonsinformasjonClient
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModel
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import no.nav.pensjon.v1.sak.V1Sak
