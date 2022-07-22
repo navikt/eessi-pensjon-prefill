@@ -72,7 +72,7 @@ class PrefillPDLAdresseTest{
                     null
                 ),
                 utenlandskAdresse = null,
-                metadata = no.nav.eessi.pensjon.personoppslag.pdl.model.Metadata(emptyList(), false, "DOLLY", "Doll")
+                metadata = Metadata(emptyList(), false, "DOLLY", "Doll")
             ))
 
         val result = prefillAdresse.createPersonAdresse(person)!!
@@ -214,14 +214,14 @@ class PrefillPDLAdresseTest{
                     null
                 ),
                 utenlandskAdresse = null,
-                metadata = no.nav.eessi.pensjon.personoppslag.pdl.model.Metadata(emptyList(), false, "DOLLY", "Doll")
+                metadata = Metadata(emptyList(), false, "DOLLY", "Doll")
             ), kontaktadresse = Kontaktadresse(
                 coAdressenavn = null,
                 type = KontaktadresseType.Innland,
                 postadresseIFrittFormat = PostadresseIFrittFormat(
                     adresselinje1 = "Kirkeveien",
                 ),
-                metadata = no.nav.eessi.pensjon.personoppslag.pdl.model.Metadata(emptyList(), false, "DOLLY", "Doll")
+                metadata = Metadata(emptyList(), false, "DOLLY", "Doll")
             )
             )
 
@@ -249,7 +249,7 @@ class PrefillPDLAdresseTest{
                         landkode = "SC",
                         postkode = "Edinburg bladi bladi bladi bladi bladi"
                     ),
-                    metadata = no.nav.eessi.pensjon.personoppslag.pdl.model.Metadata(emptyList(), false, "DOLLY", "Doll")
+                    metadata = Metadata(emptyList(), false, "DOLLY", "Doll")
                 ))
 
         val result = prefillAdresse.createPersonAdresse(person)!!
@@ -274,7 +274,7 @@ class PrefillPDLAdresseTest{
                         landkode = "SCT",
                         postkode = "EH99"
                     ),
-                    metadata = no.nav.eessi.pensjon.personoppslag.pdl.model.Metadata(emptyList(), false, "DOLLY", "Doll")
+                    metadata = Metadata(emptyList(), false, "DOLLY", "Doll")
                 ))
 
         every { kodeverkClient.finnLandkode(any()) }.returns("SC")
@@ -297,7 +297,7 @@ class PrefillPDLAdresseTest{
                     type = KontaktadresseType.Innland,
                     postadresseIFrittFormat = null,
                     utenlandskAdresseIFrittFormat = UtenlandskAdresseIFrittFormat(),
-                    metadata = no.nav.eessi.pensjon.personoppslag.pdl.model.Metadata(emptyList(), false, "DOLLY", "Doll")
+                    metadata = Metadata(emptyList(), false, "DOLLY", "Doll")
                 ))
 
         every { kodeverkClient.finnLandkode(any()) }.returns("SC")
@@ -342,7 +342,7 @@ class PrefillPDLAdresseTest{
                         postkode = "EH99"
                     ),
                     utenlandskAdresseIFrittFormat = null,
-                    metadata = no.nav.eessi.pensjon.personoppslag.pdl.model.Metadata(
+                    metadata = Metadata(
                         emptyList(),
                         false,
                         "DOLLY",

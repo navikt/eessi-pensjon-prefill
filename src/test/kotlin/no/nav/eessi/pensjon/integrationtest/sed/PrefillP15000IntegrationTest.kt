@@ -39,7 +39,6 @@ import org.springframework.kafka.test.context.EmbeddedKafka
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.time.LocalDate
@@ -357,7 +356,7 @@ class PrefillP15000IntegrationTest {
             .contentType(MediaType.APPLICATION_JSON)
             .content(apijson))
             .andExpect(status().isBadRequest)
-            .andExpect(MockMvcResultMatchers.status().reason(Matchers.containsString(expectedError)))
+            .andExpect(status().reason(Matchers.containsString(expectedError)))
     }
 
     @Test
