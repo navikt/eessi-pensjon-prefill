@@ -49,7 +49,7 @@ object VedtakPensjonDataHelper {
             logger.debug("              SummerTrygdeTid: $nrdays  fom: $fom  tom: $tom ")
             nrdays.toInt()
         }
-        return daylist.sumBy { it }
+        return daylist.sumOf { it }
             .also { days -> logger.debug("              Total SummerTrygdeTid: $days ") }
     }
 
