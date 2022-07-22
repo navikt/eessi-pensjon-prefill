@@ -960,13 +960,23 @@ class SedPrefillIntegrationSpringTest {
 
 }
 
-fun dummyApi(sakid: String, vedtakid: String? = null, aktoerId: String, sedType: SedType = SedType.P2000, buc: String? = "P_BUC_06", fnravdod: String? = null, kravtype: KravType? = null, kravdato: String? = null, payload: String? = null): ApiRequest {
+fun dummyApi(
+    sakid: String,
+    vedtakid: String? = null,
+    aktoerId: String,
+    sedType: SedType = SedType.P2000,
+    buc: String? = "P_BUC_06",
+    fnravdod: String? = null,
+    kravtype: KravType? = null,
+    kravdato: String? = null,
+    payload: String? = null
+): ApiRequest {
     val subject = if (fnravdod != null) {
         ApiSubject(null, SubjectFnr(fnravdod))
     } else {
         null
     }
-    val req = ApiRequest(
+    return ApiRequest(
         sakId = sakid,
         vedtakId = vedtakid,
         kravId = null,
@@ -980,7 +990,6 @@ fun dummyApi(sakid: String, vedtakid: String? = null, aktoerId: String, sedType:
         subject = subject,
         payload = payload
     )
-    return req
 }
 
 fun dummyApijson(sakid: String, vedtakid: String? = null, aktoerId: String, sedType: SedType = SedType.P2000, buc: String? = "P_BUC_06", fnravdod: String? = null, kravtype: KravType? = null, kravdato: String? = null, payload: String? = null): String {

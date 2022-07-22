@@ -109,12 +109,11 @@ class PrefillServiceTest {
 
     fun generateMockP2000(prefillModel: PrefillDataModel): SED {
         val gensed = SedMock().genererP2000Mock()
-        val mocksed = P2000(
+        return P2000(
             type = prefillModel.sedType,
             nav = gensed.nav,
             pensjon = gensed.pensjon
         )
-        return mocksed
     }
 
     fun generateMockX005(prefillModel: PrefillDataModel): SED {
@@ -128,26 +127,25 @@ class PrefillServiceTest {
         )
 
         //val x005Datamodel = PrefillDataModel.fromJson(prefillModel.clone())
-            val x005 = X005(
-                SedType.X005,
-                xnav = XNav(
-                    sak = Navsak(
-                            kontekst = Kontekst(
-                                    bruker = Bruker(
-                                            person = Person(
-                                                    fornavn = person?.fornavn,
-                                                    etternavn = person?.etternavn,
-                                                    foedselsdato = person?.foedselsdato
-                                            )
-                                    )
-                            ),
-                            leggtilinstitusjon = Leggtilinstitusjon(
-                                    institusjon = institusjonX005
+        return X005(
+            SedType.X005,
+            xnav = XNav(
+                sak = Navsak(
+                    kontekst = Kontekst(
+                        bruker = Bruker(
+                            person = Person(
+                                fornavn = person?.fornavn,
+                                etternavn = person?.etternavn,
+                                foedselsdato = person?.foedselsdato
                             )
+                        )
+                    ),
+                    leggtilinstitusjon = Leggtilinstitusjon(
+                        institusjon = institusjonX005
                     )
-            )
+                )
         )
-        return x005
+    )
     }
 
     fun generatePrefillModel(): PrefillDataModel {

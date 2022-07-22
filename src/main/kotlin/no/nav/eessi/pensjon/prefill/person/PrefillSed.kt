@@ -55,9 +55,8 @@ class PrefillSed(private val prefillNav: PrefillPDLNav) {
     //Må legge gjenlevende også som nav.annenperson
     private fun annenPersonHvisGjenlevende(prefillData: PrefillDataModel, gjenlevende: Bruker?): Bruker? {
         return if (prefillData.avdod != null) {
-            val annenperson = gjenlevende
-             annenperson?.person?.rolle = "01"  //Claimant - etterlatte
-            annenperson
+            gjenlevende?.person?.rolle = "01"  //Claimant - etterlatte
+            gjenlevende
         } else null
     }
 
