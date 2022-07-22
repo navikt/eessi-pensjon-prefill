@@ -80,8 +80,7 @@ class InnhentingService(
     fun hentIdent(aktoerId: IdentType.AktoerId, norskIdent: NorskIdent): String = personDataService.hentIdent(aktoerId, norskIdent).id
 
     fun hentPensjoninformasjonCollection(prefillData: PrefillDataModel): PensjonCollection {
-        val sedType = prefillData.sedType
-        return when (sedType) {
+        return when (val sedType = prefillData.sedType) {
 
             SedType.P2000 -> {
                 PensjonCollection(sak = hentRelevantPensjonSak(prefillData) { pensakType -> pensakType == EPSaktype.ALDER.name }, vedtak = hentRelevantVedtak(prefillData), sedType = sedType)
