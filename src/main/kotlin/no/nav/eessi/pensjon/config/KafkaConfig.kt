@@ -32,7 +32,6 @@ class KafkaConfig(
     @param:Value("\${kafka.truststore.path}") private val truststorePath: String,
     @param:Value("\${kafka.brokers}") private val bootstrapServers: String,
     @param:Value("\${kafka.security.protocol}") private val securityProtocol: String,
-    @Autowired private val kafkaErrorHandler: KafkaStoppingErrorHandler?,
     @Value("\${KAFKA_AUTOMATISERING_TOPIC}") private val automatiseringTopic: String
 ) {
 
@@ -53,36 +52,6 @@ class KafkaConfig(
         val kafkaTemplate = KafkaTemplate(producerFactory())
         kafkaTemplate.defaultTopic = automatiseringTopic
         return kafkaTemplate
-    }
-
-    fun kafkaConsumerFactory(): ConsumerFactory<String, String> {
-        val keyDeserializer: JsonDeserializer<String> = JsonDeserializer(String::class.java)
-        keyDeserializer.setRemoveTypeHeaders(true)
-        keyDeserializer.addTrustedPackages("*")
-        keyDeserializer.setUseTypeHeaders(false)
-
-        val valueDeserializer = StringDeserializer()
-
-        val configMap: MutableMap<String, Any> = HashMap()
-        populerCommonConfig(configMap)
-        configMap[ConsumerConfig.CLIENT_ID_CONFIG] = "eessi-pensjon-prefill"
-        configMap[ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG] = bootstrapServers
-        configMap[ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG] = false
-
-
-        return DefaultKafkaConsumerFactory(configMap, keyDeserializer, valueDeserializer)
-    }
-
-    @Bean
-    fun kafkaListenerContainerFactory(): ConcurrentKafkaListenerContainerFactory<String, String>? {
-        val factory = ConcurrentKafkaListenerContainerFactory<String, String>()
-        factory.consumerFactory = kafkaConsumerFactory()
-        factory.containerProperties.ackMode = ContainerProperties.AckMode.MANUAL
-        factory.containerProperties.setAuthExceptionRetryInterval( Duration.ofSeconds(4L) )
-        if (kafkaErrorHandler != null) {
-            factory.setCommonErrorHandler(kafkaErrorHandler)
-        }
-        return factory
     }
 
     private fun populerCommonConfig(configMap: MutableMap<String, Any>) {
