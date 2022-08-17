@@ -168,7 +168,7 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
         val sivilstandstype = personData.sivilstandstype
         val barnPersonList = personData.barnPersonList
 
-        logger.info(
+        logger.debug(
             """
                 ----------------------------------------------------------------------------------------
                 forsikret: ${forsikretPerson?.navn?.sammensattNavn}
