@@ -98,6 +98,7 @@ class PensjonsinformasjonClientTest {
         val mockResponseEntity = createResponseEntityFromJsonFile("classpath:pensjonsinformasjon/krav/KravAlderEllerUfore_AP_UTLAND.xml")
         every { mockrestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns (mockResponseEntity)
 
+        @Suppress("DEPRECATION")
         val data = pensjonsinformasjonClient.hentAltPaaAktoerId("123456789011")
 
         assertEquals(2, data.brukersSakerListe.brukersSakerListe.size)
@@ -114,6 +115,7 @@ class PensjonsinformasjonClientTest {
     fun `hentAltpåSak  mock data med tom aktoerid to saktyper en skal komme ut`() {
         val strAktor = ""
         assertThrows<IllegalArgumentException> {
+            @Suppress("DEPRECATION")
             pensjonsinformasjonClient.hentAltPaaAktoerId(strAktor)
         }
     }

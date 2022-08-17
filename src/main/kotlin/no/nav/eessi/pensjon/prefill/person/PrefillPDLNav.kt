@@ -185,9 +185,9 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
                 //2.0 For levende, eller hvis person er dod (hvis dod flyttes levende til 3.0)
                 //3.0 Anstalleseforhold og
                 //8.0 Bank
-                bruker = avdodEllerGjenlevende?.let { avdodEllerGjenlevende ->
+                bruker = avdodEllerGjenlevende?.let { it ->
                     createBruker(
-                                    avdodEllerGjenlevende,
+                                    it,
                                     bankOgArbeid?.let { createBankData(it) },
                                     bankOgArbeid?.let { createInformasjonOmAnsettelsesforhold(it) }
                             )

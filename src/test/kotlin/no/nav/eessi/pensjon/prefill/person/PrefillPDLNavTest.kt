@@ -362,8 +362,6 @@ class PrefillPDLNavTest {
     @Test
     fun `prefill person med utlandsadresse fra oppholdsadresse`() {
         val somePersonNr = FodselsnummerGenerator.generateFnrForTest(60)
-        val personfnr = Fodselsnummer.fra(somePersonNr)
-        val personFdato = personfnr?.getBirthDate().toString()
 
         val gateadresse = "Storavegsentra 12, Noenhusbygg, 2012 SE, Østaby"
         val single = lagPerson(somePersonNr)
