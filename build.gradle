@@ -6,7 +6,7 @@ buildscript {
         springKafkaVersion = '2.9.0'
         jacksonModuleKotlinVersion = '2.13.3'
         cxfVersion = '3.3.4'
-        tokenSupportVersion = '1.3.19'
+        tokenSupportVersion = '2.1.3'
         logstashLogbackVersion = '7.2'
         pensjonInformasjonVersion = '9.4.10'
         epeuxVersion = '1.3.3'
@@ -97,11 +97,10 @@ dependencies {
     implementation("org.syslog4j:syslog4j:0.9.30")
 
     // OIDC
+    implementation("no.nav.security:token-client-spring:${tokenSupportVersion}")
     implementation("no.nav.security:token-validation-spring:${tokenSupportVersion}")
     implementation("no.nav.security:token-validation-jaxrs:${tokenSupportVersion}")
-    implementation("no.nav.security:token-client-spring:${tokenSupportVersion}")
-    // Only used for starting up locally
-    implementation("no.nav.security:token-validation-test-support:${tokenSupportVersion}")
+    implementation("no.nav.security:token-validation-test-support:2.0.5")
 
     implementation ("no.nav.common:token-client:2.2022.04.01_08.27-cbfeb0be0ee0")
 
