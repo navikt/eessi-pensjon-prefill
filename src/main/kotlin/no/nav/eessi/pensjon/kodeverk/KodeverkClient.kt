@@ -24,9 +24,10 @@ import javax.annotation.PostConstruct
 
 @Component
 @CacheConfig(cacheNames = ["kodeVerk"])
-class KodeverkClient(private val proxyOAuthRestTemplate: RestTemplate,
-                     @Value("\${NAIS_APP_NAME}") private val appName: String,
-                     @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper.ForTest()
+class KodeverkClient(
+    private val proxyOAuthRestTemplate: RestTemplate,
+    @Value("\${NAIS_APP_NAME}") private val appName: String,
+    @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper.ForTest()
 ) {
 
     private val logger = LoggerFactory.getLogger(KodeverkClient::class.java)
@@ -62,17 +63,17 @@ class KodeverkClient(private val proxyOAuthRestTemplate: RestTemplate,
     @Cacheable("landkoder")
     fun finnLandkode(landkode: String): String? {
 
-        if(landkode.isEmpty() || landkode.length !in 2..3){
+        if (landkode.isEmpty() || landkode.length !in 2..3) {
             throw IllegalArgumentException("Ugyldig landkode: $landkode")
         }
-        return when(landkode.length){
-            2 -> hentLandKoder().firstOrNull { it.landkode2 ==  landkode }?.landkode3
-            3 -> hentLandKoder().firstOrNull { it.landkode3 ==  landkode }?.landkode2
+        return when (landkode.length) {
+            2 -> hentLandKoder().firstOrNull { it.landkode2 == landkode }?.landkode3
+            3 -> hentLandKoder().firstOrNull { it.landkode3 == landkode }?.landkode2
             else -> throw IllegalArgumentException("Ugyldig landkode: $landkode")
         }
     }
 
-    private fun doRequest(builder: UriComponents) : String {
+    private fun doRequest(builder: UriComponents): String {
         try {
             val headers = HttpHeaders()
             headers["Nav-Consumer-Id"] = appName
@@ -80,10 +81,11 @@ class KodeverkClient(private val proxyOAuthRestTemplate: RestTemplate,
             val requestEntity = HttpEntity<String>(headers)
             logger.debug("Header: $requestEntity")
             val response = proxyOAuthRestTemplate.exchange(
-                    builder.toUriString(),
+                builder.toUriString(),
                 HttpMethod.GET,
-                    requestEntity,
-                    String::class.java)
+                requestEntity,
+                String::class.java
+            )
 
             return response.body ?: throw KodeverkException("Feil ved konvetering av jsondata fra kodeverk")
 
@@ -102,7 +104,7 @@ class KodeverkClient(private val proxyOAuthRestTemplate: RestTemplate,
     /**
      *  https://kodeverk.nais.adeo.no/api/v1/hierarki/LandkoderSammensattISO2/noder
      */
-    private fun hentHierarki(hierarki: String) : String {
+    private fun hentHierarki(hierarki: String): String {
         val path = "/api/v1/hierarki/{hierarki}/noder"
 
         val uriParams = mapOf("hierarki" to hierarki)
@@ -112,7 +114,7 @@ class KodeverkClient(private val proxyOAuthRestTemplate: RestTemplate,
     }
 }
 
-data class Landkode (
+data class Landkode(
     val landkode2: String, // SE
     val landkode3: String // SWE
 )
