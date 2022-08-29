@@ -65,42 +65,22 @@ class ArchitectureTest {
     @Test
     fun `check architecture in detail`() {
 
-        // components
+        val config = "config"
         val health = "health"
-        val bucSedApi = "prefill.api"
+        val prefillApi = "prefill.api"
         val prefill = "prefill"
         val models = "prefill.models"
-        val config = "config"
-        val kodeverkService = "services.kodeverk"
-        val geoService = "services.geo"
-        val pensjonService = "services.pensjon"
-        val integrationtest = "integrationtest"
         val utils = "utils"
-        val vedlegg = "vedlegg"
-        val security = "security"
-        val personService = "personoppslag.personv3"
-        val personDataLosning = "personoppslag.pdl"
-        val innhentingService = "fagmodul.prefill"
+        val statistikk = "statistikk"
 
         val packages: Map<String, String> = mapOf(
             "$root.health.." to health,
-            "$root.prefill.api.." to bucSedApi,
+            "$root.prefill.api.." to prefillApi,
             "$root.prefill.." to prefill,
             "$root.prefill.models.." to models,
-            "$root.fagmodul.config.." to config,
             "$root.config.." to config,
-            "$root.services.kodeverk" to kodeverkService,
-            "$root.services.geo" to geoService,
-            "$root.services.pensjonsinformasjon" to pensjonService,
-            "$root.security.." to security,
-            "$root.integrationtest.." to integrationtest,
-            "$root.metrics.." to utils,
-            "$root.utils.." to utils,
-            "$root.logging.." to utils,
-            "$root.vedlegg.." to vedlegg,
-            "$root.personoppslag.pdl" to personDataLosning,
-            "$root.personoppslag.personv3" to personService,
-            "$root.fagmodul.prefill.." to innhentingService
+            "$root.statistikk.." to statistikk,
+            "$root.utils.." to utils
         )
 
         // packages in each component - default is the package with the component name
@@ -110,82 +90,39 @@ class ArchitectureTest {
         layeredArchitecture()
             .layer(health).definedBy(*packagesFor(health))
 
-            .layer(bucSedApi).definedBy(*packagesFor(bucSedApi))
+            .layer(prefillApi).definedBy(*packagesFor(prefillApi))
             .layer(prefill).definedBy(*packagesFor(prefill))
             .layer(models).definedBy(*packagesFor(models))
-            .layer(personDataLosning).definedBy(*packagesFor(personDataLosning))
-            .layer(personService).definedBy(*packagesFor(personService))
-            .layer(kodeverkService).definedBy(*packagesFor(kodeverkService))
-            .layer(geoService).definedBy(*packagesFor(geoService))
-            .layer(pensjonService).definedBy(*packagesFor(pensjonService))
-            .layer(security).definedBy(*packagesFor(security))
             .layer(config).definedBy(*packagesFor(config))
             .layer(utils).definedBy(*packagesFor(utils))
-            .layer(integrationtest).definedBy(*packagesFor(integrationtest))
-            .layer(vedlegg).definedBy(*packagesFor(vedlegg))
-            .layer(innhentingService).definedBy(*packagesFor(innhentingService))
 
             .whereLayer(health).mayNotBeAccessedByAnyLayer()
-            .whereLayer(bucSedApi).mayNotBeAccessedByAnyLayer()
-            .whereLayer(prefill).mayOnlyBeAccessedByLayers(bucSedApi, integrationtest)
-            .whereLayer(models).mayOnlyBeAccessedByLayers(prefill, bucSedApi, integrationtest)
-            .whereLayer(personDataLosning).mayOnlyBeAccessedByLayers(config, health, bucSedApi, prefill, models, integrationtest, innhentingService)
-            .whereLayer(vedlegg).mayOnlyBeAccessedByLayers(integrationtest, innhentingService, bucSedApi)
-            .whereLayer(geoService).mayOnlyBeAccessedByLayers(prefill)
-            .whereLayer(pensjonService).mayOnlyBeAccessedByLayers(health, prefill, bucSedApi, integrationtest)
+            .whereLayer(prefillApi).mayNotBeAccessedByAnyLayer()
+            .whereLayer(prefill).mayOnlyBeAccessedByLayers(prefillApi)
+            .whereLayer(models).mayOnlyBeAccessedByLayers(prefill, prefillApi)
 
-            .whereLayer(config).mayOnlyBeAccessedByLayers(personDataLosning)
-            .whereLayer(security).mayOnlyBeAccessedByLayers(config, health, vedlegg, pensjonService, personDataLosning, personService, kodeverkService, integrationtest)
-            .withOptionalLayers(true)
+            .whereLayer(config).mayNotBeAccessedByAnyLayer()
+            .withOptionalLayers(false)
             .check(productionClasses)
     }
 
     @Test
     fun `main layers check`() {
-        val frontendAPI = "Frontend API"
         val prefillCore = "Prefill"
-        val integrationtest = "Integration tests"
         val services = "Services"
         val support = "Support"
-        val vedlegg ="Vedlegg"
-        val personoppslag = "Personoppslag"
-        val euxmodel = "euxmodel"
         val statistikk = "statistikk"
         layeredArchitecture()
-            .layer(frontendAPI).definedBy("$root.api..")
             .layer(prefillCore).definedBy("$root.prefill..")
-            .layer(integrationtest).definedBy("$root.integrationtest..")
-            .layer(services).definedBy("$root.services..")
-            .layer(personoppslag).definedBy("$root.personoppslag..")
-            .layer(vedlegg).definedBy("$root.vedlegg..")
-            .layer(euxmodel).definedBy("$root.eux.model..")
+            .layer(services).definedBy("$root.kodeverk..")
             .layer(statistikk).definedBy("$root.statistikk..")
             .layer(support).definedBy(
-                "$root.metrics..",
-                "$root.security..",
                 "$root.config..",
-                "$root.logging..",
                 "$root.utils.."
             )
-            .whereLayer(frontendAPI).mayNotBeAccessedByAnyLayer()
-            .whereLayer(prefillCore).mayOnlyBeAccessedByLayers(
-                frontendAPI,
-                integrationtest,
-                services)
-            .whereLayer(services).mayOnlyBeAccessedByLayers(
-                frontendAPI,
-                prefillCore,
-                integrationtest)
-            .whereLayer(support).mayOnlyBeAccessedByLayers(
-                frontendAPI,
-                prefillCore,
-                services,
-                personoppslag,
-                vedlegg,
-                integrationtest,
-                euxmodel,
-                statistikk)
-            .withOptionalLayers(true)
+            .whereLayer(prefillCore).mayOnlyBeAccessedByLayers(services)
+            .whereLayer(services).mayOnlyBeAccessedByLayers(prefillCore)
+            .withOptionalLayers(false)
             .check(productionClasses)
     }
 

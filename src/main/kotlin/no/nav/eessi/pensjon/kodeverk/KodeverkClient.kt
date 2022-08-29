@@ -1,4 +1,4 @@
-package no.nav.eessi.pensjon.services.kodeverk
+package no.nav.eessi.pensjon.kodeverk
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import no.nav.eessi.pensjon.metrics.MetricsHelper
@@ -26,7 +26,8 @@ import javax.annotation.PostConstruct
 @CacheConfig(cacheNames = ["kodeVerk"])
 class KodeverkClient(private val proxyOAuthRestTemplate: RestTemplate,
                      @Value("\${NAIS_APP_NAME}") private val appName: String,
-                     @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper.ForTest()) {
+                     @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper.ForTest()
+) {
 
     private val logger = LoggerFactory.getLogger(KodeverkClient::class.java)
 
@@ -50,8 +51,10 @@ class KodeverkClient(private val proxyOAuthRestTemplate: RestTemplate,
             val noder = rootNode.at("/noder").toList()
 
             noder.map { node ->
-                Landkode(node.at("/kode").textValue(),
-                        node.at("/undernoder").findPath("kode").textValue())
+                Landkode(
+                    node.at("/kode").textValue(),
+                    node.at("/undernoder").findPath("kode").textValue()
+                )
             }.sortedBy { (sorting, _) -> sorting }.toList()
         }
     }
@@ -78,7 +81,7 @@ class KodeverkClient(private val proxyOAuthRestTemplate: RestTemplate,
             logger.debug("Header: $requestEntity")
             val response = proxyOAuthRestTemplate.exchange(
                     builder.toUriString(),
-                    HttpMethod.GET,
+                HttpMethod.GET,
                     requestEntity,
                     String::class.java)
 
@@ -110,8 +113,8 @@ class KodeverkClient(private val proxyOAuthRestTemplate: RestTemplate,
 }
 
 data class Landkode (
-        val landkode2: String, // SE
-        val landkode3: String // SWE
+    val landkode2: String, // SE
+    val landkode3: String // SWE
 )
 
 @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
