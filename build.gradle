@@ -13,7 +13,7 @@ buildscript {
         epMetricsVersion = '0.5.10'
         epPersonoppslagVersion = '11.2.17'
         epLoggingVersion='1.0.37'
-        epPensjonInformasjonVersjon='2.0.36'
+        epPensjonInformasjonVersjon='2.0.39'
     }
 
     repositories {
