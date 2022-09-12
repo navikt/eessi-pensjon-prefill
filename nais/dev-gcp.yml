@@ -32,10 +32,14 @@ spec:
       value: https://pdl-api.dev-fss-pub.nais.io/graphql
     - name: AZURE_APP_PDL_CLIENT_ID
       value: dev-fss.pdl.pdl-api
+    - name: AZURE_APP_KODEVERK_CLIENT_ID
+      value: dev-fss.org.kodeverk
     - name: KAFKA_AUTOMATISERING_TOPIC
       value: eessipensjon.public-automatisering-q2
     - name: KODEVERK_REST_API_URL
       value: https://eessi-pensjon-onprem-proxy-q2.dev-fss-pub.nais.io
+    - name: KODEVERK_URL
+      value: https://kodeverk.dev-fss-pub.nais.io
     - name: EESSI_PEN_ONPREM_PROXY_URL
       value: https://eessi-pensjon-onprem-proxy-q2.dev-fss-pub.nais.io
     - name: EESSI_PENSJON_INSTITUSJON
