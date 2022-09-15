@@ -1,9 +1,12 @@
 package no.nav.eessi.pensjon.prefill
 
+import com.ninjasquad.springmockk.MockkBean
+import io.mockk.MockKCancellation
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.UnsecuredWebMvcTestLauncher
 import no.nav.eessi.pensjon.integrationtest.IntegrasjonsTestConfig
+import no.nav.eessi.pensjon.kodeverk.KodeverkClient
 import no.nav.eessi.pensjon.pensjonsinformasjon.clients.PensjoninformasjonException
 import no.nav.eessi.pensjon.pensjonsinformasjon.clients.PensjonsinformasjonClient
 import org.junit.jupiter.api.Test
@@ -22,16 +25,16 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.web.client.RestTemplate
 
 @SpringBootTest(classes = [IntegrasjonsTestConfig::class, UnsecuredWebMvcTestLauncher::class, PensjonsinformasjonServiceIT.TestConfig::class], webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles(profiles = ["unsecured-webmvctest"])
+@ActiveProfiles(profiles = ["unsecured-webmvctest", "excludeKodeverk"])
 @AutoConfigureMockMvc
 @EmbeddedKafka
 class PensjonsinformasjonServiceIT {
 
-    @Autowired
-    private lateinit var pensjoninformasjonRestTemplate : RestTemplate
+    @MockkBean
+    private lateinit var kodeverkClient: KodeverkClient
 
     @Autowired
-    private lateinit var pensjonsinformasjonClient: PensjonsinformasjonClient
+    private lateinit var pensjoninformasjonRestTemplate : RestTemplate
 
     @Autowired
     private lateinit var pensjonsinformasjonService: PensjonsinformasjonService

@@ -15,6 +15,9 @@
     <logger name="io" level="INFO"/>
     <logger name="org" level="INFO"/>
     <logger name="com" level="INFO"/>
+    <logger name="kafka" level="WARN"/>
+    <logger name="org.apache.kafka" level="WARN"/>
+    <logger name="org.apache.zookeeper" level="WARN"/>
     <logger name="no.nav" level="DEBUG"/>
     <logger name="no.nav.security" level="INFO"/>
     <logger name="no.nav.eessi" level="DEBUG"/>
