@@ -14,7 +14,7 @@ import org.springframework.retry.annotation.EnableRetry
 @EnableCaching
 @EnableRetry
 @Profile("!unsecured-webmvctest")
-class EessiFagmodulApplication
+class EessiPrefillApplication
 
 /**
  * under development (Intellij) må hva med under Vm option:
@@ -22,5 +22,5 @@ class EessiFagmodulApplication
  *
  */
 fun main(args: Array<String>) {
-    runApplication<EessiFagmodulApplication>(*args)
+    runApplication<EessiPrefillApplication>(*args)
 }

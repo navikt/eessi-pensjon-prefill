@@ -12,7 +12,7 @@ import com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noFields
 import com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noMethods
 import com.tngtech.archunit.library.Architectures.layeredArchitecture
 import com.tngtech.archunit.library.dependencies.SlicesRuleDefinition.slices
-import no.nav.eessi.pensjon.EessiFagmodulApplication
+import no.nav.eessi.pensjon.EessiPrefillApplication
 import no.nav.eessi.pensjon.metrics.MetricsHelper
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeAll
@@ -26,7 +26,7 @@ class ArchitectureTest {
     companion object {
 
         @JvmStatic
-        private val root = EessiFagmodulApplication::class.qualifiedName!!.replace("." + EessiFagmodulApplication::class.simpleName, "")
+        private val root = EessiPrefillApplication::class.qualifiedName!!.replace("." + EessiPrefillApplication::class.simpleName, "")
 
         @JvmStatic
         lateinit var allClasses: JavaClasses
