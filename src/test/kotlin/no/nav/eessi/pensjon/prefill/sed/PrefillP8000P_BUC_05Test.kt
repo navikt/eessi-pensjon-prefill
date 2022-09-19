@@ -70,7 +70,7 @@ class PrefillP8000P_BUC_05Test {
         val fnr = FodselsnummerGenerator.generateFnrForTest(68)
 
         val personforsikret = LagPDLPerson.lagPerson(fnr, "Christopher", "Robin")
-            .medUtlandAdresse("LUNGJTEGATA 12", "1231" , "SWE")
+            .medUtlandAdresse("LUNGJTEGATA 12", "postboks", "SWE", "bygning", "region", bySted = "UTLANDBY")
         personDataCollection = PersonDataCollection(personforsikret,personforsikret)
 
         val pensjonCollection = PensjonCollection(sedType = SedType.P8000)
@@ -79,6 +79,10 @@ class PrefillP8000P_BUC_05Test {
 
         assertEquals("Christopher", p8000.nav?.bruker?.person?.fornavn)
         assertEquals("LUNGJTEGATA 12", p8000.nav?.bruker?.adresse?.gate)
+        assertEquals("UTLANDBY", p8000.nav?.bruker?.adresse?.by)
+        assertEquals("bygning", p8000.nav?.bruker?.adresse?.bygning)
+        assertEquals("postboks", p8000.nav?.bruker?.adresse?.postnummer)
+        assertEquals("region", p8000.nav?.bruker?.adresse?.region)
         assertEquals("SE", p8000.nav?.bruker?.adresse?.land)
         assertEquals(pesysSaksnummer, p8000.nav?.eessisak?.firstOrNull()?.saksnummer)
         assertEquals("Robin", p8000.nav?.bruker?.person?.etternavn)
@@ -153,11 +157,11 @@ class PrefillP8000P_BUC_05Test {
         val avdodFnr = FodselsnummerGenerator.generateFnrForTest(93)
 
         val forsikretPerson = LagPDLPerson.lagPerson(fnr, "Christopher", "Robin")
-            .medUtlandAdresse("LUNGJTEGATA 12", "1231" , "SWE")
+            .medUtlandAdresse("LUNGJTEGATA 12", "1231", "SWE", "bygning", "region", bySted = "UTLANDBY")
         val fdato = forsikretPerson.foedsel?.foedselsdato
 
         val avdod = LagPDLPerson.lagPerson(avdodFnr, "Winnie", "Pooh", erDod = true)
-            .medUtlandAdresse("LUNGJTEGATA 12", "1231" , "SWE")
+            .medUtlandAdresse("LUNGJTEGATA 12", "1231", "SWE", "bygning", "region", bySted = "UTLANDBY")
 
         personDataCollection = PersonDataCollection(avdod, forsikretPerson)
 
@@ -202,6 +206,9 @@ class PrefillP8000P_BUC_05Test {
                   "adresse" : {
                     "gate" : "LUNGJTEGATA 12",
                     "by" : "UTLANDBY",
+                    "region" : "region",
+                    "postnummer" : "1231",
+                    "bygning" : "bygning",
                     "land" : "SE"
                   }
                 }
@@ -224,12 +231,12 @@ class PrefillP8000P_BUC_05Test {
         val avdodFnr = FodselsnummerGenerator.generateFnrForTest(93)
 
         val forsikretPerson = LagPDLPerson.lagPerson(fnr, "Christopher", "Robin")
-            .medUtlandAdresse("LUNGJTÖEGATA 12", "1231" , "SWE")
+            .medUtlandAdresse("LUNGJTÖEGATA 12", "1231", "SWE", "bygning", "region", bySted = "UTLANDBY")
 
         val fdato = forsikretPerson.foedsel?.foedselsdato
 
         val avdod = LagPDLPerson.lagPerson(avdodFnr, "Winnie", "Pooh", erDod = true)
-            .medUtlandAdresse("LUNGJTÖEGATA 12", "1231" , "SWE")
+            .medUtlandAdresse("LUNGJTÖEGATA 12", "1231", "SWE", "bygning", "region", bySted = "UTLANDBY")
 
         personDataCollection = PersonDataCollection(avdod, forsikretPerson)
 
@@ -272,6 +279,9 @@ class PrefillP8000P_BUC_05Test {
                   "adresse" : {
                     "gate" : "LUNGJTÖEGATA 12",
                     "by" : "UTLANDBY",
+                    "bygning" : "bygning",
+                    "postnummer" : "1231",
+                    "region" : "region",
                     "land" : "SE"
                   }
                 }

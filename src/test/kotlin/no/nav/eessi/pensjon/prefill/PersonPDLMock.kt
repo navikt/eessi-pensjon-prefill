@@ -255,7 +255,15 @@ object PersonPDLMock {
     )
 
 
-    internal fun Person.medUtlandAdresse(gateOgnr: String, postnummer: String, landkode: String) = this.copy(bostedsadresse = null, oppholdsadresse = Oppholdsadresse(
+    internal fun Person.medUtlandAdresse(
+        gateOgnr: String,
+        postnummer: String,
+        landkode: String,
+        bygning: String? = "bygning",
+        region: String? = "region",
+        postboks: String? = "po.box",
+        bySted: String? = "UTLANDBY"
+    ) = this.copy(bostedsadresse = null, oppholdsadresse = Oppholdsadresse(
         gyldigFraOgMed = LocalDateTime.of(2000, 10, 1, 10, 10, 10),
         gyldigTilOgMed = LocalDateTime.of(2300, 10, 1, 10 , 10, 10),
         vegadresse = null,
@@ -263,10 +271,11 @@ object PersonPDLMock {
             landkode = landkode,
             adressenavnNummer = gateOgnr,
             postkode = postnummer,
-            bySted = "UTLANDBY",
-            bygningEtasjeLeilighet = null,
-            postboksNummerNavn = null,
-            regionDistriktOmraade = null),
+            bySted = bySted,
+            bygningEtasjeLeilighet = bygning,
+            postboksNummerNavn = postboks,
+            regionDistriktOmraade = region
+        ),
         metadata = mockMeta()
         )
     )

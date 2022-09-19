@@ -15,6 +15,7 @@ import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.PersonPDLMock.medBeskyttelse
 import no.nav.eessi.pensjon.kodeverk.KodeverkClient
+import no.nav.eessi.pensjon.prefill.PersonPDLMock.medUtlandAdresse
 import no.nav.pensjon.v1.kravhistorikk.V1KravHistorikk
 import no.nav.pensjon.v1.kravhistorikkliste.V1KravHistorikkListe
 import no.nav.pensjon.v1.sak.V1Sak
@@ -63,13 +64,23 @@ class SedPrefillP8000IntegrationSpringTest {
     fun `prefill sed P8000 - Gitt gjenlevendepensjon Og henvendelse gjelder søker SÅ skal det produseres en Gyldig P8000 med referanse til person 02`() {
         every { personService.hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID))} returns NorskIdent(FNR_VOKSEN_3)
         every { personService.hentIdent(IdentType.AktoerId, NorskIdent(FNR_VOKSEN_4)) } returns AktoerId(AKTOER_ID_2)
-        every { personService.hentPerson(NorskIdent(FNR_VOKSEN_3)) } returns PersonPDLMock.createWith(true, "Lever", "Gjenlev", FNR_VOKSEN_3, AKTOER_ID)
+        every { personService.hentPerson(NorskIdent(FNR_VOKSEN_3)) } returns PersonPDLMock
+            .createWith(true, "Lever", "Gjenlev", FNR_VOKSEN_3, AKTOER_ID)
+            .medUtlandAdresse(
+                gateOgnr = "OlssenGate",
+                postnummer = "9898",
+                landkode = "SE",
+                bygning = "bygning",
+                region = "Akershus",
+                bySted = "UTLANDBY"
+            )
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_4)) } returns PersonPDLMock.createWith(true, "Avdød", "Død", FNR_VOKSEN_4, AKTOER_ID_2, true)
 
-        val sak = V1Sak()
-        sak.sakType = EPSaktype.GJENLEV.toString()
-        sak.sakId = 100
-        sak.kravHistorikkListe = V1KravHistorikkListe()
+        val sak = V1Sak().apply {
+            sakType = EPSaktype.GJENLEV.toString()
+            sakId  = 100
+            kravHistorikkListe = V1KravHistorikkListe()
+        }
 
         every { pensjoninformasjonservice.hentRelevantPensjonSak(any(), any()) } returns sak
         every { kodeverkClient.finnLandkode(any()) } returns "QX"
@@ -103,6 +114,9 @@ class SedPrefillP8000IntegrationSpringTest {
                   "adresse" : { 
                           "gate" : "Oppoverbakken 66",
                           "by" : "SØRUMSAND",
+                          "bygning" : "bygning",
+                          "postnummer" : "1920",
+                          "region" : "region",
                           "land" : "NO"
                   }
                 },
@@ -124,10 +138,12 @@ class SedPrefillP8000IntegrationSpringTest {
                     "rolle" : "01"
                   },
                   "adresse" : {
-                    "gate" : "Oppoverbakken 66",
-                    "by" : "SØRUMSAND",
-                    "postnummer" : "1920",
-                    "land" : "NO"
+                    "gate" : "OlssenGate",
+                    "by" : "UTLANDBY",
+                    "postnummer" : "9898",
+                    "land" : "QX",
+                    "region" : "Akershus",
+                    "bygning" : "bygning"
                   }
                 }
               },
@@ -158,16 +174,16 @@ class SedPrefillP8000IntegrationSpringTest {
         every { personService.hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN_3)
         every { personService.hentIdent(IdentType.AktoerId, NorskIdent(FNR_VOKSEN_4)) } returns AktoerId(AKTOER_ID_2)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_3)) } returns PersonPDLMock.createWith(true, "Lever", "Gjenlev", FNR_VOKSEN_3, AKTOER_ID)
+
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_4)) } returns PersonPDLMock.createWith(true, "Avdød", "Død", FNR_VOKSEN_4, AKTOER_ID_2, true)
 
-        val v1Kravhistorikk = V1KravHistorikk()
-        v1Kravhistorikk.kravArsak = KravArsak.GJNL_SKAL_VURD.name
 
-        val sak = V1Sak()
-        sak.sakType = EPSaktype.ALDER.toString()
-        sak.sakId = 100
-        sak.kravHistorikkListe = V1KravHistorikkListe()
-        sak.kravHistorikkListe.kravHistorikkListe.add(v1Kravhistorikk)
+        val sak = V1Sak().apply {
+            sakType = EPSaktype.ALDER.toString()
+            sakId  = 100
+            kravHistorikkListe = V1KravHistorikkListe()
+            kravHistorikkListe.kravHistorikkListe.add(V1KravHistorikk().apply { kravArsak = KravArsak.GJNL_SKAL_VURD.name })
+        }
 
         every {pensjoninformasjonservice.hentRelevantPensjonSak(any(), any()) } returns sak
         every { kodeverkClient.finnLandkode(any()) } returns "QX"
@@ -263,14 +279,14 @@ class SedPrefillP8000IntegrationSpringTest {
         val v1Kravhistorikk = V1KravHistorikk()
         v1Kravhistorikk.kravArsak = KravArsak.GJNL_SKAL_VURD.name
 
-        val sak = V1Sak()
-        sak.sakType = EPSaktype.ALDER.toString()
-        sak.sakId = 21337890
-        sak.kravHistorikkListe = V1KravHistorikkListe()
-        sak.kravHistorikkListe.kravHistorikkListe.add(v1Kravhistorikk)
+        val sak = V1Sak().apply {
+            sakType = EPSaktype.ALDER.toString()
+            sakId  = 21337890
+            kravHistorikkListe = V1KravHistorikkListe()
+            kravHistorikkListe.kravHistorikkListe.add(V1KravHistorikk().apply { kravArsak = KravArsak.GJNL_SKAL_VURD.name })
+        }
 
         every { pensjoninformasjonservice.hentRelevantPensjonSak(any(), any()) } returns sak
-
         every { kodeverkClient.finnLandkode(any()) } returns "QX"
 
         val subject = dummyApiSubjectjson(FNR_VOKSEN_4)
@@ -302,6 +318,9 @@ class SedPrefillP8000IntegrationSpringTest {
                   "adresse" : {
                     "gate" : "Oppoverbakken 66",
                     "by" : "SØRUMSAND",
+                    "bygning" : "bygning",
+                    "postnummer" : "1920",
+                    "region" : "region",
                     "land" : "NO"
                   }
                 }
@@ -331,14 +350,13 @@ class SedPrefillP8000IntegrationSpringTest {
     @Throws(Exception::class)
     fun `prefill sed P8000 - Gitt barnepensjon og henvendelse gjelder søker som er barn med kode 6 SÅ skal det produseres en Gyldig P8000 med referanse der søker er gjenlevende og adresse ikke blir preutfylt `() {
 
-        val v1Kravhistorikk = V1KravHistorikk()
-        v1Kravhistorikk.kravArsak = KravArsak.GJNL_SKAL_VURD.name
+        val sak = V1Sak().apply {
+            sakType = EPSaktype.BARNEP.toString()
+            sakId  = 100
+            kravHistorikkListe = V1KravHistorikkListe()
+            kravHistorikkListe.kravHistorikkListe.add(V1KravHistorikk().apply { kravArsak = KravArsak.GJNL_SKAL_VURD.name })
+        }
 
-        val sak = V1Sak()
-        sak.sakType = EPSaktype.BARNEP.toString()
-        sak.sakId = 100
-        sak.kravHistorikkListe = V1KravHistorikkListe()
-        sak.kravHistorikkListe.kravHistorikkListe.add(v1Kravhistorikk)
         every { pensjoninformasjonservice.hentRelevantPensjonSak(any(), any()) } returns sak
         every { personService.hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_BARN)
         every { personService.hentIdent(IdentType.AktoerId, NorskIdent(FNR_VOKSEN_4)) } returns AktoerId(AKTOER_ID_2)
@@ -387,7 +405,8 @@ class SedPrefillP8000IntegrationSpringTest {
                   "adresse" : {
                     "gate" : "Oppoverbakken 66",
                     "by" : "SØRUMSAND",
-                    "land" : "NO"
+                    "land" : "NO",
+                    "postnummer" : "1920"
                   }
                 },
                 "annenperson" : {
@@ -456,6 +475,9 @@ class SedPrefillP8000IntegrationSpringTest {
                   "adresse" : {
                     "gate" : "Oppoverbakken 66",
                     "by" : "SØRUMSAND",
+                    "bygning" : "bygning",
+                    "postnummer" : "1920",
+                    "region" : "region",
                     "land" : "NO"
                   }
                 }
@@ -513,6 +535,9 @@ class SedPrefillP8000IntegrationSpringTest {
                   "adresse" : {
                     "gate" : "Oppoverbakken 66",
                     "by" : "SØRUMSAND",
+                    "bygning" : "bygning",
+                    "postnummer" : "1920",
+                    "region" : "region",
                     "land" : "NO"
                   }
                 }

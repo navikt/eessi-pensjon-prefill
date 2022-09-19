@@ -71,9 +71,12 @@ class PrefillP8000(private val prefillSed: PrefillSed) {
                                         )
                                 ),
                                 adresse = Adresse(
-                                        gate = adresse?.gate,
-                                        by = adresse?.by,
-                                        land = adresse?.land
+                                    postnummer = adresse?.postnummer,
+                                    gate = adresse?.gate,
+                                    by = adresse?.by,
+                                    land = adresse?.land,
+                                    region = adresse?.region,
+                                    bygning = adresse?.bygning
                                 )
                         ),
                         annenperson = utfyllAnnenperson(annenPerson)
