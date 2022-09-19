@@ -5,6 +5,8 @@ NAIS_APP_IMAGE: 'someimage'
 PDL_URL: 'http://example.com:8090'
 EESSI_PEN_ONPREM_PROXY_URL: 'http://example.com:8090'
 
+KODEVERK_URL: 'http://example.com:8093'
+
 eessi-pensjon-active-profiles: ${spring.profiles.active}
 
 eessi-pensjon-institusjon: 'NO:noinst002'
@@ -33,9 +35,6 @@ eessi:
   pensjon_adresse_by:   'Oslo'
   pensjon_adresse_postnummer: '0607'
   pensjon_adresse_land: 'NO'
-
-kodeverk.rest-api:
-  url: 'http://example.com:8093'
 
 saf.graphql:
   url: 'http://localhost'

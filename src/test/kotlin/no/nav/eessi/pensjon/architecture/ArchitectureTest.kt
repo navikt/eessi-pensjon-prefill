@@ -109,19 +109,15 @@ class ArchitectureTest {
     @Test
     fun `main layers check`() {
         val prefillCore = "Prefill"
-        val services = "Services"
         val support = "Support"
         val statistikk = "statistikk"
         layeredArchitecture()
             .layer(prefillCore).definedBy("$root.prefill..")
-            .layer(services).definedBy("$root.kodeverk..")
             .layer(statistikk).definedBy("$root.statistikk..")
             .layer(support).definedBy(
                 "$root.config..",
                 "$root.utils.."
             )
-            .whereLayer(prefillCore).mayOnlyBeAccessedByLayers(services)
-            .whereLayer(services).mayOnlyBeAccessedByLayers(prefillCore)
             .withOptionalLayers(false)
             .check(productionClasses)
     }

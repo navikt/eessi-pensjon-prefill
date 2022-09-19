@@ -32,7 +32,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 @SpringBootTest(classes = [IntegrasjonsTestConfig::class, UnsecuredWebMvcTestLauncher::class], webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles(profiles = ["unsecured-webmvctest"])
+@ActiveProfiles(profiles = ["unsecured-webmvctest", "excludeKodeverk"])
 @AutoConfigureMockMvc
 @EmbeddedKafka
 class SedPrefillP8000IntegrationSpringTest {
