@@ -10,6 +10,7 @@ import no.nav.eessi.pensjon.personoppslag.pdl.model.UtenlandskAdresseIFrittForma
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Vegadresse
 import no.nav.eessi.pensjon.kodeverk.PostnummerService
 import no.nav.eessi.pensjon.kodeverk.KodeverkClient
+import no.nav.eessi.pensjon.utils.toJson
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
@@ -169,7 +170,7 @@ class PrefillPDLAdresse (private val postnummerService: PostnummerService,
             land = hentLandkode(utlandsAdresse.landkode),
             region = utlandsAdresse.regionDistriktOmraade,
             bygning = utlandsAdresse.bygningEtasjeLeilighet
-        )
+        ).also { logger.debug("*** Utenlandskadresse inn: ${utlandsAdresse.toJson()} \n preutfyltadresse: ${it.toJson()}*****")}
 
     }
 
