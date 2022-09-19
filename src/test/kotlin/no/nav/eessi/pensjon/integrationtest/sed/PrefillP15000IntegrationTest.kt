@@ -45,7 +45,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 @SpringBootTest(classes = [IntegrasjonsTestConfig::class, UnsecuredWebMvcTestLauncher::class], webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles(profiles = ["unsecured-webmvctest", "excludeKodeverk"])
+@ActiveProfiles("unsecured-webmvctest", "excludeKodeverk")
 @AutoConfigureMockMvc
 @EmbeddedKafka
 class PrefillP15000IntegrationTest {

@@ -44,7 +44,7 @@ import org.springframework.util.ResourceUtils
 import java.time.LocalDate
 
 @SpringBootTest(classes = [IntegrasjonsTestConfig::class, UnsecuredWebMvcTestLauncher::class], webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles(profiles = ["unsecured-webmvctest", "excludeKodeverk"])
+@ActiveProfiles("unsecured-webmvctest", "excludeKodeverk")
 @AutoConfigureMockMvc
 @EmbeddedKafka
 class SedPrefillP7000Mk2IntegrationSpringTest {

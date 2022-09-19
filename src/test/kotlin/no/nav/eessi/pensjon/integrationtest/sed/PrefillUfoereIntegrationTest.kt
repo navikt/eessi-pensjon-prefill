@@ -42,7 +42,7 @@ import org.springframework.web.client.RestTemplate
 import org.junit.jupiter.api.Assertions.assertEquals
 
 @SpringBootTest(classes = [IntegrasjonsTestConfig::class, UnsecuredWebMvcTestLauncher::class, PrefillUfoereIntegrationTest.TestConfig::class], webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles(profiles = ["unsecured-webmvctest", "excludeKodeverk"])
+@ActiveProfiles("unsecured-webmvctest", "excludeKodeverk")
 @AutoConfigureMockMvc
 @EmbeddedKafka
 class PrefillUfoereIntegrationTest {

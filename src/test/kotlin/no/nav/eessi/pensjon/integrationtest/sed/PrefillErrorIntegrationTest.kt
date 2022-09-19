@@ -29,7 +29,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 
 @SpringBootTest(classes = [IntegrasjonsTestConfig::class, UnsecuredWebMvcTestLauncher::class], webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles(profiles = ["unsecured-webmvctest", "excludeKodeverk"])
+@ActiveProfiles("unsecured-webmvctest", "excludeKodeverk")
 @AutoConfigureMockMvc
 @EmbeddedKafka
 class PrefillErrorIntegrationTest {
