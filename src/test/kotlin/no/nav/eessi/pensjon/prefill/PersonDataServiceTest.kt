@@ -58,7 +58,7 @@ internal class PersonDataServiceTest {
     @Test
     fun `test henting av forsikretperson som feiler`() {
 
-        every { personService.hentPerson(any<Ident<*>>()) } throws PersonoppslagException("not_found: Fant ikke person")
+        every { personService.hentPerson(any<Ident<*>>()) } throws PersonoppslagException("Fant ikke person", "not_found")
 
         val data = PrefillDataModelMother.initialPrefillDataModel(SedType.P2000, FNR_VOKSEN, SAK_ID, euxCaseId = EUX_RINA)
 
