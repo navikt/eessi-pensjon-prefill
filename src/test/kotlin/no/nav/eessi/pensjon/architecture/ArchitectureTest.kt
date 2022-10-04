@@ -41,24 +41,20 @@ class ArchitectureTest {
         fun `extract classes`() {
             allClasses = ClassFileImporter().importPackages(root)
 
-            assertTrue(allClasses.size > 250, "Sanity check on no. of classes to analyze")
-            assertTrue(allClasses.size < 1100, "Sanity check on no. of classes to analyze")
+            assertTrue(allClasses.size in 250..1100, "Sanity check on no. of classes to analyze (is ${allClasses.size})")
 
             productionClasses = ClassFileImporter()
                 .withImportOption(ImportOption.DoNotIncludeTests())
                 .withImportOption(ImportOption.DoNotIncludeJars()) //eux skaper problemer, vurderer om denne skal fjernes på et senere tidspunkt
                 .importPackages(root)
 
-            println("Validating size of productionClass, currently: ${productionClasses.size}")
-            assertTrue(productionClasses.size > 100, "Sanity check on no. of classes to analyze")
-            assertTrue(productionClasses.size < 850, "Sanity check on no. of classes to analyze")
+            assertTrue(productionClasses.size in 100..850, "Sanity check on no. of classes to analyze (is ${productionClasses.size})")
 
             testClasses = ClassFileImporter()
                 .withImportOption{ !ImportOption.DoNotIncludeTests().includes(it) }
                 .importPackages(root)
 
-            assertTrue(testClasses.size > 100, "Sanity check on no. of classes to analyze")
-            assertTrue(testClasses.size < 600, "Sanity check on no. of classes to analyze")
+            assertTrue(testClasses.size in 100..600, "Sanity check on no. of classes to analyze (is ${testClasses.size})")
         }
     }
 
@@ -88,6 +84,7 @@ class ArchitectureTest {
 
         // mentally replace the word "layer" with "component":
         layeredArchitecture()
+            .consideringOnlyDependenciesInAnyPackage(root)
             .layer(health).definedBy(*packagesFor(health))
 
             .layer(prefillApi).definedBy(*packagesFor(prefillApi))
@@ -112,6 +109,7 @@ class ArchitectureTest {
         val support = "Support"
         val statistikk = "statistikk"
         layeredArchitecture()
+            .consideringOnlyDependenciesInAnyPackage(root)
             .layer(prefillCore).definedBy("$root.prefill..")
             .layer(statistikk).definedBy("$root.statistikk..")
             .layer(support).definedBy(
@@ -129,6 +127,7 @@ class ArchitectureTest {
         println("root->$prefillRoot")
 
         layeredArchitecture()
+            .consideringOnlyDependenciesInAnyPackage(root)
             .layer("prefill").definedBy("$prefillRoot..")
             .layer("sed").definedBy("$prefillRoot.sed..")
             .layer("person").definedBy("$prefillRoot.person..")
@@ -167,7 +166,7 @@ class ArchitectureTest {
     fun `Spring singleton components should not have mutable instance fields`() {
 
         class SpringStereotypeAnnotation:DescribedPredicate<JavaAnnotation<*>>("Spring component annotation") {
-            override fun apply(input: JavaAnnotation<*>?) = input != null &&
+            override fun test(input: JavaAnnotation<*>?) = input != null &&
                     (input.rawType.packageName.startsWith("org.springframework.stereotype") ||
                             input.rawType.isEquivalentTo(RestController::class.java))
         }
@@ -198,7 +197,7 @@ class ArchitectureTest {
     @Test
     fun `No test classes should use inheritance`() {
         class TestSupportClasses:DescribedPredicate<JavaClass>("test support classes") {
-            override fun apply(input: JavaClass?) = input != null &&
+            override fun test(input: JavaClass?) = input != null &&
                     (!input.simpleName.endsWith("Test") &&
                             (!input.simpleName.endsWith("Tests")
                                     && input.name != "java.lang.Object"))
