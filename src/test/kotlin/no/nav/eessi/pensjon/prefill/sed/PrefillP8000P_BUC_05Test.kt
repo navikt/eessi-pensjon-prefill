@@ -62,7 +62,6 @@ class PrefillP8000P_BUC_05Test {
 
         prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav)
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P8000, personFnr, penSaksnummer = pesysSaksnummer)
-        prefillAdresse.initMetrics()
 
     }
 

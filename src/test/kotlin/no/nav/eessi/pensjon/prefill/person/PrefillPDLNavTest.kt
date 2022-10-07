@@ -69,15 +69,10 @@ class PrefillPDLNavTest {
         every { kodeverkClient.finnLandkode(eq("NOR")) } returns "NO"
         every { kodeverkClient.finnLandkode(eq("SWE")) } returns "SE"
 
-        val prefillAdresse = PrefillPDLAdresse(PostnummerService(), kodeverkClient, personService)
-
         prefillPDLNav = PrefillPDLNav(
-            prefillAdresse,
+            PrefillPDLAdresse(PostnummerService(), kodeverkClient, personService),
             someInstitutionId,
-            someIntitutionNavn,
-        )
-        prefillAdresse.initMetrics()
-
+            someIntitutionNavn)
     }
 
     @Test

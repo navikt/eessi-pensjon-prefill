@@ -52,7 +52,6 @@ class PrefillP8000APUtlandInnvTest {
         val prefillSed = PrefillSed(prefillNav)
         prefill = PrefillP8000(prefillSed)
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P8000, personFnr, penSaksnummer = pesysSaksnummer)
-        prefillAdresse.initMetrics()
 
     }
 
