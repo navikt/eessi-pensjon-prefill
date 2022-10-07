@@ -51,11 +51,13 @@ class PrefillP2200_AP_21975717Test {
     fun setup() {
         personDataCollection = PersonPDLMock.createEnkelFamilie(personFnr, ekteFnr)
 
+        val prefillAdresse = PrefillPDLAdresse(PostnummerService(), kodeverkClient, personService)
         prefillNav = PrefillPDLNav(
-            prefillAdresse = PrefillPDLAdresse(PostnummerService(), kodeverkClient, personService),
+            prefillAdresse = prefillAdresse,
             institutionid = "NO:noinst002",
             institutionnavn = "NOINST002, NO INST002, NO"
         )
+        prefillAdresse.initMetrics()
 
         dataFromPEN = lesPensjonsdataFraFil("/pensjonsinformasjon/krav/KravAlderEllerUfore_AP_UTLAND.xml")
 

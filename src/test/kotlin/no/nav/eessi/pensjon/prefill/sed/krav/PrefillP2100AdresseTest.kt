@@ -60,6 +60,7 @@ class PrefillP2100AdresseTest {
         pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
 
         prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav)
+        prefillPDLAdresse.initMetrics()
 
     }
 
