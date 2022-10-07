@@ -43,7 +43,7 @@ management:
       enabled: true
     web:
       exposure:
-        include: info, health, metrics, prometheus, cache
+        include: info, health, metrics, prometheus, caches
     export:
       prometheus:
         enabled: true
