@@ -1,9 +1,6 @@
 package no.nav.eessi.pensjon.prefill.person
 
 import no.nav.eessi.pensjon.eux.model.sed.Adresse
-import no.nav.eessi.pensjon.kodeverk.KodeverkClient
-import no.nav.eessi.pensjon.kodeverk.PostnummerService
-import no.nav.eessi.pensjon.metrics.MetricsHelper
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
 import no.nav.eessi.pensjon.personoppslag.pdl.model.AdressebeskyttelseGradering
 import no.nav.eessi.pensjon.personoppslag.pdl.model.NorskIdent
@@ -11,30 +8,21 @@ import no.nav.eessi.pensjon.personoppslag.pdl.model.PostadresseIFrittFormat
 import no.nav.eessi.pensjon.personoppslag.pdl.model.UtenlandskAdresse
 import no.nav.eessi.pensjon.personoppslag.pdl.model.UtenlandskAdresseIFrittFormat
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Vegadresse
+import no.nav.eessi.pensjon.kodeverk.PostnummerService
+import no.nav.eessi.pensjon.kodeverk.KodeverkClient
 import no.nav.eessi.pensjon.utils.toJson
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.cache.annotation.Cacheable
-import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
-import javax.annotation.PostConstruct
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Person as PDLPerson
 
 @Component
 class PrefillPDLAdresse (private val postnummerService: PostnummerService,
                          private val kodeverkClient: KodeverkClient,
-                         private val personService: PersonService,
-                         @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper.ForTest()) {
+                         private val personService: PersonService) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillPDLAdresse::class.java) }
 
-    private lateinit var hentLandKodeMetric: MetricsHelper.Metric
-
-    @PostConstruct
-    fun initMetrics() {
-        hentLandKodeMetric = metricsHelper.init("hentLandKodeMetric", ignoreHttpCodes = listOf(HttpStatus.FORBIDDEN))
-    }
     /**
      *  2.2.2 adresse informasjon
      */
@@ -223,11 +211,9 @@ class PrefillPDLAdresse (private val postnummerService: PostnummerService,
         )
     }
 
-    @Cacheable("landkode")
     fun hentLandkode(landkode: String?): String? {
-        return hentLandKodeMetric.measure {
-            landkode?.let { kodeverkClient.finnLandkode(it) }
-        }
+        return landkode?.let { kodeverkClient.finnLandkode(it) }
     }
+
 }
 

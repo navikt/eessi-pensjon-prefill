@@ -5,8 +5,6 @@ import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.core.read.ListAppender
 import io.mockk.every
 import io.mockk.mockk
-import no.nav.eessi.pensjon.kodeverk.KodeverkClient
-import no.nav.eessi.pensjon.kodeverk.PostnummerService
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
 import no.nav.eessi.pensjon.personoppslag.pdl.model.AdressebeskyttelseGradering
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Bostedsadresse
@@ -22,6 +20,8 @@ import no.nav.eessi.pensjon.personoppslag.pdl.model.UtenlandskAdresseIFrittForma
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Vegadresse
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.PersonPDLMock.medBeskyttelse
+import no.nav.eessi.pensjon.kodeverk.PostnummerService
+import no.nav.eessi.pensjon.kodeverk.KodeverkClient
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.toJson
 import no.nav.eessi.pensjon.utils.typeRefs
@@ -49,7 +49,6 @@ class PrefillPDLAdresseTest{
         deugLogger.addAppender(listAppender)
         listAppender.start()
         prefillAdresse = PrefillPDLAdresse(PostnummerService(), kodeverkClient, personService)
-        prefillAdresse.initMetrics()
     }
 
     @AfterEach
