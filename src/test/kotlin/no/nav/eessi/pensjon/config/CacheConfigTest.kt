@@ -3,89 +3,65 @@ package no.nav.eessi.pensjon.config
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import no.nav.eessi.pensjon.UnsecuredWebMvcTestLauncher
 import no.nav.eessi.pensjon.kodeverk.KodeverkClient
-import no.nav.eessi.pensjon.logging.RequestIdHeaderInterceptor
-import no.nav.eessi.pensjon.logging.RequestResponseLoggerInterceptor
-import no.nav.eessi.pensjon.pensjonsinformasjon.clients.PensjonsinformasjonClient
+import no.nav.eessi.pensjon.kodeverk.PostnummerService
 import no.nav.eessi.pensjon.prefill.InnhentingService
-import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLAdresse
-import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
-import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.TestConfiguration
-import org.springframework.boot.web.client.RestTemplateBuilder
 import org.springframework.cache.CacheManager
 import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Primary
-import org.springframework.http.client.BufferingClientHttpRequestFactory
-import org.springframework.http.client.SimpleClientHttpRequestFactory
-import org.springframework.test.context.ActiveProfiles
-import org.springframework.web.client.DefaultResponseErrorHandler
-import org.springframework.web.client.RestTemplate
 
-
-@SpringBootTest(classes = [UnsecuredWebMvcTestLauncher::class, CacheConfig::class] )
-@ActiveProfiles("excludeKodeverk")
+@SpringBootTest(classes = [UnsecuredWebMvcTestLauncher::class, CacheConfig::class, CacheConfigTest.Config::class])
 class CacheConfigTest {
 
-        @Autowired
-        lateinit var cacheManager: CacheManager
+    @Autowired
+    lateinit var cacheManager: CacheManager
 
-        @MockkBean
-        lateinit var innhentingService: InnhentingService
+    @MockkBean
+    lateinit var innhentingService: InnhentingService
 
-        @MockkBean
-        lateinit var prefillSedService: PrefillSEDService
+    @Autowired
+    lateinit var kodeverkClient: KodeverkClient
 
-//        @MockkBean
-//        lateinit var prefillPDLAdresse: PrefillPDLAdresse
+    @Autowired
+    lateinit var prefillPDLAdresse: PrefillPDLAdresse
 
-        @MockkBean
-        lateinit var pensjoninformasjonService: PensjonsinformasjonService
+    @BeforeEach
+    fun beforeStart() {
+    }
 
-        @MockkBean
-        lateinit var pensjonsinformasjonsClient: PensjonsinformasjonClient
+    @Test
+    fun `Gitt et kall til finnLandkode saa skal den kun hente fra kodeverkClient en gang, og deretter fra cache`() {
+        every { kodeverkClient.finnLandkode("NO") } returns "NOR"
+
+        prefillPDLAdresse.hentLandkode("NO")
+        prefillPDLAdresse.hentLandkode("NO")
+
+        verify (exactly = 1) { kodeverkClient.finnLandkode(eq("NO"))  }
+
+        val cachedLandkode = cacheManager.getCache("landkoder")?.get("NO")?.get()
+        assertEquals("NOR", cachedLandkode)
+    }
 
 
-        val kodeverkClient: KodeverkClient = mockk(relaxed = true)
-        val prefillPDLAdresse = PrefillPDLAdresse(mockk(), kodeverkClient, mockk())
+    @TestConfiguration
+    class Config() {
 
-        @Test
-        fun `Sjekker cache`() {
-                every { kodeverkClient.finnLandkode("NO") } returns "NOR"
-
-                prefillPDLAdresse.hentLandkode("NO")
-                val resultcache = cacheManager.getCache("landkoder")
-                println(cacheManager.cacheNames)
-
-                Assertions.assertEquals("NOR", resultcache?.get("NO")!!)
-
+        @Bean
+        fun kodeverkClient(): KodeverkClient {
+            return mockk(relaxed = true)
         }
 
-
-        @TestConfiguration
-        class Config() {
-
-                @Primary
-                @Bean
-                fun restTemplate(): RestTemplate {
-                        return RestTemplateBuilder()
-                                .rootUri("localhost")
-                                .errorHandler(DefaultResponseErrorHandler())
-                                .additionalInterceptors(
-                                        RequestIdHeaderInterceptor(),
-                                        RequestResponseLoggerInterceptor(),
-                                )
-                                .build().apply {
-                                        requestFactory =
-                                                BufferingClientHttpRequestFactory(SimpleClientHttpRequestFactory())
-                                }
-                }
+        @Bean
+        fun prefillPDLAdresse(): PrefillPDLAdresse {
+            return PrefillPDLAdresse(PostnummerService(), kodeverkClient(), mockk())
         }
-
-
+    }
 }
