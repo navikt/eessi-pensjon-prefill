@@ -33,7 +33,7 @@ import org.junit.jupiter.api.Test
 class PrefillP2200_AP_21975717Test {
 
     private val personService: PersonService = mockk()
-    var kodeverkClient: KodeverkClient = mockk()
+    var kodeverkClient: KodeverkClient = mockk(relaxed = true)
 
     private val personFnr = FodselsnummerGenerator.generateFnrForTest(68)
     private val ekteFnr = FodselsnummerGenerator.generateFnrForTest(70)

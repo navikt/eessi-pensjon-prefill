@@ -44,7 +44,7 @@ class PrefillP8000P_BUC_05Test {
     lateinit var personDataCollection: PersonDataCollection
     lateinit var pensjonCollection: PensjonCollection
 
-    var kodeverkClient: KodeverkClient = mockk()
+    var kodeverkClient: KodeverkClient = mockk(relaxed = true)
 
     lateinit var prefillAdresse: PrefillPDLAdresse
     lateinit var prefillSEDService: PrefillSEDService

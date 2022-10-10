@@ -13,6 +13,7 @@ import no.nav.eessi.pensjon.kodeverk.KodeverkClient
 import no.nav.eessi.pensjon.utils.toJson
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Component
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Person as PDLPerson
 
@@ -211,6 +212,7 @@ class PrefillPDLAdresse (private val postnummerService: PostnummerService,
         )
     }
 
+    @Cacheable("landkoder")
     fun hentLandkode(landkode: String?): String? {
         return landkode?.let { kodeverkClient.finnLandkode(it) }
     }

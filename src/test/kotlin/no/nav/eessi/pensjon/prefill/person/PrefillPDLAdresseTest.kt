@@ -38,7 +38,7 @@ import java.time.LocalDateTime
 class PrefillPDLAdresseTest{
 
     private val personService: PersonService = mockk()
-    private var kodeverkClient: KodeverkClient = mockk()
+    private var kodeverkClient: KodeverkClient = mockk(relaxed = true)
     private lateinit var prefillAdresse: PrefillPDLAdresse
 
     private val deugLogger: Logger = LoggerFactory.getLogger("no.nav.eessi.pensjon") as Logger

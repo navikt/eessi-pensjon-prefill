@@ -627,7 +627,7 @@ class PrefillP15000IntegrationTest {
             }
         """.trimIndent()
 
-        JSONAssert.assertEquals(response, validResponse, true)
+        JSONAssert.assertEquals(validResponse,response, true)
     }
 }
 

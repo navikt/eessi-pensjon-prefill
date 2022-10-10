@@ -56,7 +56,7 @@ import java.time.LocalDateTime
 class PrefillPDLNavTest {
 
     private val personService: PersonService = mockk()
-    private val kodeverkClient: KodeverkClient = mockk()
+    private val kodeverkClient: KodeverkClient = mockk(relaxed = true)
 
     lateinit var prefillPDLNav: PrefillPDLNav
 
