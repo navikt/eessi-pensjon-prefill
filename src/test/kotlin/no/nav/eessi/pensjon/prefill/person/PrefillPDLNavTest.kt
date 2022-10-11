@@ -19,6 +19,8 @@ import no.nav.eessi.pensjon.eux.model.sed.Person
 import no.nav.eessi.pensjon.eux.model.sed.PinItem
 import no.nav.eessi.pensjon.eux.model.sed.Sepa
 import no.nav.eessi.pensjon.eux.model.sed.StatsborgerskapItem
+import no.nav.eessi.pensjon.kodeverk.KodeverkClient
+import no.nav.eessi.pensjon.kodeverk.PostnummerService
 import no.nav.eessi.pensjon.personoppslag.Fodselsnummer
 import no.nav.eessi.pensjon.personoppslag.FodselsnummerGenerator
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
@@ -40,8 +42,6 @@ import no.nav.eessi.pensjon.prefill.models.BankOgArbeid
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PersonId
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
-import no.nav.eessi.pensjon.kodeverk.PostnummerService
-import no.nav.eessi.pensjon.kodeverk.KodeverkClient
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -56,7 +56,7 @@ import java.time.LocalDateTime
 class PrefillPDLNavTest {
 
     private val personService: PersonService = mockk()
-    private val kodeverkClient: KodeverkClient = mockk()
+    private val kodeverkClient: KodeverkClient = mockk(relaxed = true)
 
     lateinit var prefillPDLNav: PrefillPDLNav
 
@@ -70,7 +70,7 @@ class PrefillPDLNavTest {
         every { kodeverkClient.finnLandkode(eq("SWE")) } returns "SE"
 
         prefillPDLNav = PrefillPDLNav(
-            PrefillPDLAdresse(PostnummerService(), kodeverkClient, personService),
+            PrefillPDLAdresse(PostnummerService(), kodeverkClient, personService).apply { initMetrics() },
             someInstitutionId,
             someIntitutionNavn)
     }

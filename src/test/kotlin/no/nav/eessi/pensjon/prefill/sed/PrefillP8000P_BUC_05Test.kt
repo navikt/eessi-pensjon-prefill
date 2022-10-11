@@ -5,6 +5,8 @@ import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.sed.P8000
+import no.nav.eessi.pensjon.kodeverk.KodeverkClient
+import no.nav.eessi.pensjon.kodeverk.PostnummerService
 import no.nav.eessi.pensjon.pensjonsinformasjon.models.EPSaktype
 import no.nav.eessi.pensjon.pensjonsinformasjon.models.KravArsak
 import no.nav.eessi.pensjon.personoppslag.FodselsnummerGenerator
@@ -21,8 +23,6 @@ import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
 import no.nav.eessi.pensjon.prefill.models.ReferanseTilPerson
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLAdresse
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
-import no.nav.eessi.pensjon.kodeverk.PostnummerService
-import no.nav.eessi.pensjon.kodeverk.KodeverkClient
 import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
 import no.nav.pensjon.v1.kravhistorikk.V1KravHistorikk
 import no.nav.pensjon.v1.kravhistorikkliste.V1KravHistorikkListe
@@ -44,7 +44,7 @@ class PrefillP8000P_BUC_05Test {
     lateinit var personDataCollection: PersonDataCollection
     lateinit var pensjonCollection: PensjonCollection
 
-    var kodeverkClient: KodeverkClient = mockk()
+    var kodeverkClient: KodeverkClient = mockk(relaxed = true)
 
     lateinit var prefillAdresse: PrefillPDLAdresse
     lateinit var prefillSEDService: PrefillSEDService
@@ -54,7 +54,7 @@ class PrefillP8000P_BUC_05Test {
         every { kodeverkClient.finnLandkode("NOR") } returns "NO"
         every { kodeverkClient.finnLandkode("SWE") } returns "SE"
 
-        prefillAdresse = PrefillPDLAdresse(PostnummerService(), kodeverkClient, personService)
+        prefillAdresse = PrefillPDLAdresse(PostnummerService(), kodeverkClient, personService).apply { initMetrics() }
         prefillNav = PrefillPDLNav( prefillAdresse,
                 institutionid = "NO:noinst002",
                 institutionnavn = "NOINST002, NO INST002, NO")
