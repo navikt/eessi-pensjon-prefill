@@ -10,7 +10,6 @@ import no.nav.eessi.pensjon.kodeverk.PostnummerService
 import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLAdresse
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -32,10 +31,6 @@ class CacheConfigTest {
 
     @Autowired
     lateinit var prefillPDLAdresse: PrefillPDLAdresse
-
-    @BeforeEach
-    fun beforeStart() {
-    }
 
     @Test
     fun `Gitt et kall til finnLandkode saa skal den kun hente fra kodeverkClient en gang, og deretter fra cache`() {
@@ -61,7 +56,7 @@ class CacheConfigTest {
 
         @Bean
         fun prefillPDLAdresse(): PrefillPDLAdresse {
-            return PrefillPDLAdresse(PostnummerService(), kodeverkClient(), mockk())
+            return PrefillPDLAdresse(PostnummerService(), kodeverkClient(), mockk()).apply { initMetrics() }
         }
     }
 }

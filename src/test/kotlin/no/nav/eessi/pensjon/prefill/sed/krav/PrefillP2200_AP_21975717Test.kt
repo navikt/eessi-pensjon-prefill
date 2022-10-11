@@ -3,6 +3,8 @@ package no.nav.eessi.pensjon.prefill.sed.krav
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.SedType
+import no.nav.eessi.pensjon.kodeverk.KodeverkClient
+import no.nav.eessi.pensjon.kodeverk.PostnummerService
 import no.nav.eessi.pensjon.personoppslag.Fodselsnummer
 import no.nav.eessi.pensjon.personoppslag.FodselsnummerGenerator
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
@@ -21,8 +23,6 @@ import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
 import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper.lesPensjonsdataFraFil
 import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper.readJsonResponse
-import no.nav.eessi.pensjon.kodeverk.PostnummerService
-import no.nav.eessi.pensjon.kodeverk.KodeverkClient
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import no.nav.eessi.pensjon.utils.toJson
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -52,7 +52,7 @@ class PrefillP2200_AP_21975717Test {
         personDataCollection = PersonPDLMock.createEnkelFamilie(personFnr, ekteFnr)
 
         prefillNav = PrefillPDLNav(
-            prefillAdresse = PrefillPDLAdresse(PostnummerService(), kodeverkClient, personService),
+            prefillAdresse = PrefillPDLAdresse(PostnummerService(), kodeverkClient, personService).apply { initMetrics() },
             institutionid = "NO:noinst002",
             institutionnavn = "NOINST002, NO INST002, NO"
         )
