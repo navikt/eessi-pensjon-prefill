@@ -4,17 +4,17 @@ import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import no.nav.eessi.pensjon.UnsecuredWebMvcTestLauncher
+import no.nav.eessi.pensjon.kodeverk.KodeVerkHentLandkoder
 import no.nav.eessi.pensjon.kodeverk.KodeverkCacheConfig
 import no.nav.eessi.pensjon.kodeverk.KodeverkClient
 import no.nav.eessi.pensjon.kodeverk.PostnummerService
+import no.nav.eessi.pensjon.metrics.MetricsHelper
 import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLAdresse
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.cache.concurrent.ConcurrentMapCache
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager
@@ -22,10 +22,11 @@ import org.springframework.context.annotation.Bean
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig
 import org.springframework.web.client.RestTemplate
 
-@SpringBootTest(classes = [UnsecuredWebMvcTestLauncher::class, CacheConfigTest.Config::class, KodeverkCacheConfig::class])
-class CacheConfigTest {
+@SpringJUnitConfig(classes = [PrefillAdresseKodeverkTest.Config::class, KodeverkCacheConfig::class])
+class PrefillAdresseKodeverkTest {
 
     @Autowired
     lateinit var cacheManager: ConcurrentMapCacheManager
@@ -50,17 +51,17 @@ class CacheConfigTest {
     }
 
     @Test
-    fun `Gitt et kall til finnLandkode saa skal den kun hente fra kodeverkClient kun en gang pr land, og deretter fra cache`() {
+    fun `henting av en landkode fra kodeverk skal hente alle land fra kodeverkClient og neste kall fra cache`() {
         prefillPDLAdresse.hentLandkode("SE")
         prefillPDLAdresse.hentLandkode("NO")
         prefillPDLAdresse.hentLandkode("SE")
         prefillPDLAdresse.hentLandkode("NO")
 
         val cache = cacheManager.getCache("kodeverk") as ConcurrentMapCache
-        assertEquals("[SE=SWE, NO=NOR]", cache.nativeCache.entries.toString())
+        assertEquals("[hentLandKoder=[Landkode(landkode2=NO, landkode3=NOR), Landkode(landkode2=SE, landkode3=SWE)]]", cache.nativeCache.entries.toString())
 
-        //et kall for NO, ett for SE
-        verify (exactly = 2) { restTemplate
+        //kun ett kall til utsiden
+        verify (exactly = 1) { restTemplate
             .exchange(
                 eq("/api/v1/hierarki/LandkoderSammensattISO2/noder"),
                 any(),
@@ -72,14 +73,17 @@ class CacheConfigTest {
 
     companion object {
         var restTemplate: RestTemplate = mockk()
-        var kodeverkClient = KodeverkClient(restTemplate, "testApp")
     }
 
     @TestConfiguration
     class Config {
         @Bean
+        fun kodeVerkHentLandkoder(): KodeVerkHentLandkoder {
+            return KodeVerkHentLandkoder("testApp", restTemplate, MetricsHelper.ForTest()).apply { initMetrics() }
+        }
+        @Bean
         fun kodeverkClient(): KodeverkClient {
-            return KodeverkClient(restTemplate, "testApp")
+            return KodeverkClient(kodeVerkHentLandkoder())
         }
 
         @Bean
