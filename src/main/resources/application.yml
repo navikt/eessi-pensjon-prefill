@@ -34,7 +34,7 @@ no.nav.security.jwt:
 # Empty on purpose so that oidc-spring-support doesn't use http.proxy
 http.proxy.parametername:
 
-METRICS_REQUESTFILTER_ENABLE: false
+METRICS_REQUESTFILTER_ENABLE: true
 
 # TODO: These actuator-endpoints need to be secured before going to production. Also, enable only whats needed.
 management:
