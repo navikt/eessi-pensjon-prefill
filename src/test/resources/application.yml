@@ -12,7 +12,7 @@ eessi-pensjon-active-profiles: ${spring.profiles.active}
 eessi-pensjon-institusjon: 'NO:noinst002'
 eessi-pensjon-institusjon-navn: 'NOINST002, NO INST002, NO'
 
-METRICS_REQUESTFILTER_ENABLE: false
+METRICS_REQUESTFILTER_ENABLE: true
 
 #eux-rina-api_v1:
 eessipen-eux-rina:
