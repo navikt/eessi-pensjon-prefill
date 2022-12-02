@@ -2,6 +2,8 @@ package no.nav.eessi.pensjon.prefill
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import no.nav.eessi.pensjon.eux.model.SedType
+import no.nav.eessi.pensjon.eux.model.buc.BucType
+import no.nav.eessi.pensjon.eux.model.buc.BucType.*
 import no.nav.eessi.pensjon.prefill.models.InstitusjonItem
 import no.nav.eessi.pensjon.prefill.models.KravType
 import no.nav.eessi.pensjon.prefill.models.PersonId
@@ -99,8 +101,8 @@ data class ApiRequest(
 
         private fun populerAvdodHvisGjenlevendePensjonSak(request: ApiRequest, avdodaktoerID: String?): PersonId? {
             return when(request.buc) {
-                "P_BUC_02" -> populerAvdodPersonId(request, avdodaktoerID, true)
-                "P_BUC_05","P_BUC_06","P_BUC_10" -> populerAvdodPersonId(request, avdodaktoerID)
+                P_BUC_02.name -> populerAvdodPersonId(request, avdodaktoerID, true)
+                P_BUC_05.name, P_BUC_06.name, P_BUC_10.name -> populerAvdodPersonId(request, avdodaktoerID)
                 else -> null
             }
         }

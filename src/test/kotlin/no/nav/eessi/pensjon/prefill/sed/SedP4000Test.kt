@@ -4,6 +4,8 @@ import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.NavMock
 import no.nav.eessi.pensjon.eux.model.SedType
+import no.nav.eessi.pensjon.eux.model.buc.BucType
+import no.nav.eessi.pensjon.eux.model.buc.BucType.*
 import no.nav.eessi.pensjon.eux.model.sed.Adresse
 import no.nav.eessi.pensjon.eux.model.sed.AnsattSelvstendigItem
 import no.nav.eessi.pensjon.eux.model.sed.BarnepassItem
@@ -83,7 +85,7 @@ class SedP4000Test {
                 sakId = "12231231",
                 euxCaseId = "99191999911",
                 aktoerId = "00000",
-                buc = "P_BUC_01",
+                buc = P_BUC_01.name,
                 subjectArea = "Pensjon",
                 payload = payload
         )
@@ -121,7 +123,7 @@ class SedP4000Test {
                 sakId = "12231231",
                 euxCaseId = "99191999911",
                 aktoerId = "00000",
-                buc = "P_BUC_01",
+                buc = P_BUC_01.name,
                 subjectArea = "Pensjon",
                 payload = payload
         )
@@ -138,7 +140,7 @@ class SedP4000Test {
                 sakId = "12231231",
                 euxCaseId = "99191999911",
                 aktoerId = "00000",
-                buc = "P_BUC_01",
+                buc = P_BUC_01.name,
                 subjectArea = "Pensjon",
                 payload = "{}"
         )
@@ -165,7 +167,7 @@ class SedP4000Test {
                 sakId = "12231231",
                 euxCaseId = "99191999911",
                 aktoerId = "1000060964183",
-                buc = "P_BUC_01",
+                buc = P_BUC_01.name,
                 subjectArea = "Pensjon",
                 payload = jsonfile
         )

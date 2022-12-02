@@ -5,7 +5,6 @@ import io.micrometer.core.instrument.MeterRegistry
 import no.nav.eessi.pensjon.logging.RequestIdHeaderInterceptor
 import no.nav.eessi.pensjon.logging.RequestResponseLoggerInterceptor
 import no.nav.eessi.pensjon.metrics.RequestCountInterceptor
-import no.nav.eessi.pensjon.shared.retry.IOExceptionRetryInterceptor
 import no.nav.security.token.support.client.core.ClientProperties
 import no.nav.security.token.support.client.core.oauth2.OAuth2AccessTokenService
 import no.nav.security.token.support.client.spring.ClientConfigurationProperties
@@ -55,7 +54,6 @@ class RestTemplateConfig(
             .errorHandler(DefaultResponseErrorHandler())
             .additionalInterceptors(
                 RequestIdHeaderInterceptor(),
-                IOExceptionRetryInterceptor(),
                 RequestCountInterceptor(meterRegistry),
                 RequestResponseLoggerInterceptor(),
                 bearerTokenInterceptor(clientProperties(oAuthKey), oAuth2AccessTokenService!!)

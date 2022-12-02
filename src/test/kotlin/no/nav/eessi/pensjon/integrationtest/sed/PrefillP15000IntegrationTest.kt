@@ -4,6 +4,9 @@ import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
 import no.nav.eessi.pensjon.UnsecuredWebMvcTestLauncher
 import no.nav.eessi.pensjon.eux.model.SedType
+import no.nav.eessi.pensjon.eux.model.SedType.*
+import no.nav.eessi.pensjon.eux.model.buc.BucType
+import no.nav.eessi.pensjon.eux.model.buc.BucType.*
 import no.nav.eessi.pensjon.integrationtest.IntegrasjonsTestConfig
 import no.nav.eessi.pensjon.pensjonsinformasjon.models.EPSaktype
 import no.nav.eessi.pensjon.pensjonsinformasjon.models.KravArsak
@@ -22,6 +25,7 @@ import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.models.KravType
 import no.nav.eessi.pensjon.kodeverk.KodeverkClient
+import no.nav.eessi.pensjon.pensjonsinformasjon.models.EPSaktype.*
 import no.nav.pensjon.v1.avdod.V1Avdod
 import no.nav.pensjon.v1.kravhistorikk.V1KravHistorikk
 import no.nav.pensjon.v1.kravhistorikkliste.V1KravHistorikkListe
@@ -103,7 +107,7 @@ class PrefillP15000IntegrationTest {
         v1Kravhistorikk.kravArsak = KravArsak.GJNL_SKAL_VURD.name
 
         val sak = V1Sak()
-        sak.sakType = EPSaktype.BARNEP.toString()
+        sak.sakType = BARNEP.toString()
         sak.sakId = 100
         sak.kravHistorikkListe = V1KravHistorikkListe()
         sak.kravHistorikkListe.kravHistorikkListe.add(v1Kravhistorikk)
@@ -112,7 +116,7 @@ class PrefillP15000IntegrationTest {
         every { pensjoninformasjonservice.hentMedVedtak("123123123") } returns pensjonsinformasjon
         every { kodeverkClient.finnLandkode(any()) } returns "XQ"
 
-        val apijson =  dummyApijson(sakid = "22915555", vedtakid = "123123123", aktoerId = AKTOER_ID, sedType = SedType.P15000, buc = "P_BUC_10", kravtype = KravType.GJENLEV, kravdato = "2020-01-01", fnravdod = "9876543210")
+        val apijson =  dummyApijson(sakid = "22915555", vedtakid = "123123123", aktoerId = AKTOER_ID, sedType = P15000, buc = P_BUC_10.name, kravtype = KravType.GJENLEV, kravdato = "2020-01-01", fnravdod = "9876543210")
 
         val result = mockMvc.perform(post("/sed/prefill")
             .contentType(MediaType.APPLICATION_JSON)
@@ -203,7 +207,7 @@ class PrefillP15000IntegrationTest {
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_4)) } returns PersonPDLMock.createWith(true, "Avdød", "Død", FNR_VOKSEN_4, AKTOER_ID_2, true)
 
         val aldersak = V1Sak()
-        aldersak.sakType = "ALDER"
+        aldersak.sakType = ALDER.name
         aldersak.sakId = 22915555L
         aldersak.status = "INNV"
 
@@ -220,7 +224,7 @@ class PrefillP15000IntegrationTest {
         v1Kravhistorikk.kravArsak = KravArsak.GJNL_SKAL_VURD.name
 
         val sak = V1Sak()
-        sak.sakType = EPSaktype.ALDER.toString()
+        sak.sakType = ALDER.toString()
         sak.sakId = 100
         sak.kravHistorikkListe = V1KravHistorikkListe()
         sak.kravHistorikkListe.kravHistorikkListe.add(v1Kravhistorikk)
@@ -229,7 +233,7 @@ class PrefillP15000IntegrationTest {
         every { pensjoninformasjonservice.hentMedVedtak("123123123") } returns pensjonsinformasjon
         every { kodeverkClient.finnLandkode(any()) } returns "QX"
 
-        val apijson =  dummyApijson(sakid = "22915555", vedtakid = "123123123", aktoerId = AKTOER_ID, sedType = SedType.P15000, buc = "P_BUC_10", kravtype = KravType.ALDER, kravdato = "2020-01-01", fnravdod = FNR_VOKSEN_4)
+        val apijson =  dummyApijson(sakid = "22915555", vedtakid = "123123123", aktoerId = AKTOER_ID, sedType = P15000, buc = BucType.P_BUC_10.name, kravtype = KravType.ALDER, kravdato = "2020-01-01", fnravdod = FNR_VOKSEN_4)
 
         mockMvc.perform(post("/sed/prefill")
             .contentType(MediaType.APPLICATION_JSON)
@@ -247,7 +251,7 @@ class PrefillP15000IntegrationTest {
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith(true, fnr = FNR_VOKSEN, aktoerid = AKTOER_ID)
 
         val aldersak = V1Sak()
-        aldersak.sakType = "UFOREP"
+        aldersak.sakType = UFOREP.name
         aldersak.sakId = 22874955
         aldersak.status = "INNV"
 
@@ -259,7 +263,7 @@ class PrefillP15000IntegrationTest {
 
         every { pensjoninformasjonservice.hentMedVedtak("123123123") } returns pensjonsinformasjon
 
-        val apijson = dummyApijson(sakid = "22874955", vedtakid = "123123123", aktoerId = AKTOER_ID, sedType = SedType.P15000, buc = "P_BUC_10", kravtype = KravType.ALDER, kravdato = "2020 -01-01")
+        val apijson = dummyApijson(sakid = "22874955", vedtakid = "123123123", aktoerId = AKTOER_ID, sedType = P15000, buc = P_BUC_10.name, kravtype = KravType.ALDER, kravdato = "2020 -01-01")
 
         mockMvc.perform(post("/sed/prefill")
             .contentType(MediaType.APPLICATION_JSON)
@@ -276,7 +280,7 @@ class PrefillP15000IntegrationTest {
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith(true, fnr = FNR_VOKSEN, aktoerid = AKTOER_ID)
 
         val aldersak = V1Sak()
-        aldersak.sakType = "ALDER"
+        aldersak.sakType = ALDER.name
         aldersak.sakId = 21337890
         aldersak.status = "INNV"
 
@@ -288,7 +292,7 @@ class PrefillP15000IntegrationTest {
 
         every { pensjoninformasjonservice.hentMedVedtak("123123123") } returns pensjonsinformasjon
 
-        val apijson = dummyApijson(sakid = "21337890", vedtakid = "123123123" , aktoerId = AKTOER_ID, sedType = SedType.P15000, buc = "P_BUC_10", kravtype = KravType.UFOREP, kravdato = "01-01-2020")
+        val apijson = dummyApijson(sakid = "21337890", vedtakid = "123123123" , aktoerId = AKTOER_ID, sedType = P15000, buc = BucType.P_BUC_10.name, kravtype = KravType.UFOREP, kravdato = "01-01-2020")
 
         mockMvc.perform(post("/sed/prefill")
             .contentType(MediaType.APPLICATION_JSON)
@@ -305,7 +309,7 @@ class PrefillP15000IntegrationTest {
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith(true, "Lever", "Gjenlev", fnr = FNR_VOKSEN, aktoerid = AKTOER_ID)
 
         val aldersak = V1Sak()
-        aldersak.sakType = "ALDER"
+        aldersak.sakType = ALDER.name
         aldersak.sakId = 21337890
         aldersak.status = "INNV"
 
@@ -318,7 +322,7 @@ class PrefillP15000IntegrationTest {
         every { pensjoninformasjonservice.hentMedVedtak("123123123") } returns pensjonsinformasjon
         every { kodeverkClient.finnLandkode(any()) } returns "QX"
 
-        val apijson = dummyApijson(sakid = "21337890", vedtakid = "123123123" , aktoerId = AKTOER_ID, sedType = SedType.P15000, buc = "P_BUC_10", kravtype = KravType.ALDER, kravdato = "2020-01-01")
+        val apijson = dummyApijson(sakid = "21337890", vedtakid = "123123123" , aktoerId = AKTOER_ID, sedType = P15000, buc = BucType.P_BUC_10.name, kravtype = KravType.ALDER, kravdato = "2020-01-01")
 
         mockMvc.perform(post("/sed/prefill")
             .contentType(MediaType.APPLICATION_JSON)
@@ -336,7 +340,7 @@ class PrefillP15000IntegrationTest {
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith(true, "Lever", "Gjenlev", fnr = FNR_VOKSEN, aktoerid = AKTOER_ID)
 
         val aldersak = V1Sak()
-        aldersak.sakType = "ALDER"
+        aldersak.sakType = ALDER.name
         aldersak.sakId = 21337890
         aldersak.status = "INNV"
 
@@ -349,7 +353,7 @@ class PrefillP15000IntegrationTest {
         every { pensjoninformasjonservice.hentMedVedtak("123123123") } returns pensjonsinformasjon
         every {kodeverkClient.finnLandkode(any())  } returns "QX"
 
-        val apijson = dummyApijson(sakid = "21337890", vedtakid = "123123123" , aktoerId = AKTOER_ID, sedType = SedType.P15000, buc = "P_BUC_10", kravtype = KravType.ALDER, kravdato = "01-01- 2020")
+        val apijson = dummyApijson(sakid = "21337890", vedtakid = "123123123" , aktoerId = AKTOER_ID, sedType = P15000, buc = P_BUC_10.name, kravtype = KravType.ALDER, kravdato = "01-01- 2020")
         val expectedError = "Ugyldig datoformat"
 
         mockMvc.perform(post("/sed/prefill")
@@ -368,7 +372,7 @@ class PrefillP15000IntegrationTest {
 
 
         val aldersak = V1Sak()
-        aldersak.sakType = "UFOREP"
+        aldersak.sakType = UFOREP.name
         aldersak.sakId = 22874955
         aldersak.status = "INNV"
 
@@ -383,7 +387,7 @@ class PrefillP15000IntegrationTest {
 
         val apijson = dummyApijson(
             sakid = "22874955", vedtakid = "123123123" ,
-            aktoerId = AKTOER_ID, sedType = SedType.P15000, buc = "P_BUC_10", kravtype = KravType.UFOREP, kravdato = "2020-01-01")
+            aktoerId = AKTOER_ID, sedType = P15000, buc = P_BUC_10.name, kravtype = KravType.UFOREP, kravdato = "2020-01-01")
 
         mockMvc.perform(post("/sed/prefill")
             .contentType(MediaType.APPLICATION_JSON)
@@ -403,7 +407,7 @@ class PrefillP15000IntegrationTest {
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_2)) } returns PersonPDLMock.createWith(true, "Avdød", "Død", FNR_VOKSEN_2, AKTOER_ID_2, true)
 
         val aldersak = V1Sak()
-        aldersak.sakType = "UFOREP"
+        aldersak.sakType = UFOREP.name
         aldersak.sakId = 22915550
         aldersak.status = "INNV"
 
@@ -415,7 +419,7 @@ class PrefillP15000IntegrationTest {
         every { pensjoninformasjonservice.hentMedVedtak("123123123") } returns pensjonsinformasjon
         every { kodeverkClient.finnLandkode(any()) } returns "XQ"
 
-        val apijson = dummyApijson(sakid = "22915550", vedtakid = "123123123", aktoerId = AKTOER_ID, sedType =SedType.P15000, buc = "P_BUC_10", kravtype = KravType.GJENLEV, kravdato = "2020-01-01", fnravdod = FNR_VOKSEN_2)
+        val apijson = dummyApijson(sakid = "22915550", vedtakid = "123123123", aktoerId = AKTOER_ID, sedType = P15000, buc = P_BUC_10.name, kravtype = KravType.GJENLEV, kravdato = "2020-01-01", fnravdod = FNR_VOKSEN_2)
 
         val result = mockMvc.perform(post("/sed/prefill")
             .contentType(MediaType.APPLICATION_JSON)
@@ -527,7 +531,7 @@ class PrefillP15000IntegrationTest {
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_2)) } returns avdodperson
 
         val aldersak = V1Sak()
-        aldersak.sakType = "UFOREP"
+        aldersak.sakType = UFOREP.name
         aldersak.sakId = 22915555
         aldersak.status = "INNV"
 
@@ -548,7 +552,7 @@ class PrefillP15000IntegrationTest {
         every { kodeverkClient.finnLandkode(any()) } returns "XQ"
         every { kodeverkClient.finnLandkode("SWE") } returns "SE"
 
-        val apijson = dummyApijson(sakid = "22915555", vedtakid = "123123123", aktoerId = AKTOER_ID, sedType = SedType.P15000, buc = "P_BUC_10", kravtype = KravType.GJENLEV, kravdato = "2020-01-01", fnravdod = FNR_VOKSEN_2)
+        val apijson = dummyApijson(sakid = "22915555", vedtakid = "123123123", aktoerId = AKTOER_ID, sedType = P15000, buc = P_BUC_10.name, kravtype = KravType.GJENLEV, kravdato = "2020-01-01", fnravdod = FNR_VOKSEN_2)
 
         val result = mockMvc.perform(post("/sed/prefill")
             .contentType(MediaType.APPLICATION_JSON)

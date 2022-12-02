@@ -3,6 +3,8 @@ package no.nav.eessi.pensjon.integrationtest.sed
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
 import no.nav.eessi.pensjon.UnsecuredWebMvcTestLauncher
+import no.nav.eessi.pensjon.eux.model.buc.BucType
+import no.nav.eessi.pensjon.eux.model.buc.BucType.*
 import no.nav.eessi.pensjon.integrationtest.IntegrasjonsTestConfig
 import no.nav.eessi.pensjon.pensjonsinformasjon.models.EPSaktype
 import no.nav.eessi.pensjon.pensjonsinformasjon.models.KravArsak
@@ -87,7 +89,7 @@ class SedPrefillP8000IntegrationSpringTest {
         every { kodeverkClient.finnLandkode(any()) } returns "QX"
 
         val subject = dummyApiSubjectjson(FNR_VOKSEN_4)
-        val apijson = dummyApijson(sakid = "21337890", aktoerId = AKTOER_ID, sed = "P8000", buc = "P_BUC_05", subject = subject, refperson = "\"SOKER\"")
+        val apijson = dummyApijson(sakid = "21337890", aktoerId = AKTOER_ID, sed = "P8000", buc = P_BUC_05.name, subject = subject, refperson = "\"SOKER\"")
 
         val validResponse = """
             {
@@ -190,7 +192,7 @@ class SedPrefillP8000IntegrationSpringTest {
         every { kodeverkClient.finnLandkode(any()) } returns "QX"
 
         val subject = dummyApiSubjectjson(FNR_VOKSEN_4)
-        val apijson = dummyApijson(sakid = "21337890", aktoerId = AKTOER_ID, sed = "P8000", buc = "P_BUC_05", subject = subject, refperson = "\"AVDOD\"")
+        val apijson = dummyApijson(sakid = "21337890", aktoerId = AKTOER_ID, sed = "P8000", buc = P_BUC_05.name, subject = subject, refperson = "\"AVDOD\"")
 
         val validResponse = """
         {
@@ -291,7 +293,7 @@ class SedPrefillP8000IntegrationSpringTest {
         every { kodeverkClient.finnLandkode(any()) } returns "QX"
 
         val subject = dummyApiSubjectjson(FNR_VOKSEN_4)
-        val apijson = dummyApijson(sakid = "21337890", aktoerId = AKTOER_ID, sed = "P8000", buc = "P_BUC_05", subject = subject, refperson = "\"SOKER\"")
+        val apijson = dummyApijson(sakid = "21337890", aktoerId = AKTOER_ID, sed = "P8000", buc = P_BUC_05.name, subject = subject, refperson = "\"SOKER\"")
 
         val validResponse = """
             {
@@ -369,7 +371,7 @@ class SedPrefillP8000IntegrationSpringTest {
         every { kodeverkClient.finnLandkode(any()) } returns "QX"
 
         val subject = dummyApiSubjectjson(FNR_VOKSEN_4)
-        val apijson = dummyApijson(sakid = "21337890", aktoerId = AKTOER_ID, sed = "P8000", buc = "P_BUC_05", subject = subject, refperson = "\"SOKER\"")
+        val apijson = dummyApijson(sakid = "21337890", aktoerId = AKTOER_ID, sed = "P8000", buc = P_BUC_05.name, subject = subject, refperson = "\"SOKER\"")
 
         val result = mockMvc.perform(post("/sed/prefill")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -448,7 +450,7 @@ class SedPrefillP8000IntegrationSpringTest {
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_3)) } returns PersonPDLMock.createWith(true, "Alder", "Pensjon", FNR_VOKSEN_3, AKTOER_ID)
         every { kodeverkClient.finnLandkode(any())} returns "QX"
 
-        val apijson = dummyApijson(sakid = "21337890", aktoerId = AKTOER_ID, sed = "P8000", buc = "P_BUC_05")
+        val apijson = dummyApijson(sakid = "21337890", aktoerId = AKTOER_ID, sed = "P8000", buc = P_BUC_05.name)
 
         val validResponse = """
             {
@@ -508,7 +510,7 @@ class SedPrefillP8000IntegrationSpringTest {
         every { personService.hentPerson(NorskIdent(syntFnr)) } returns PersonPDLMock.createWith(true, "Alder", "Pensjon", syntFnr, AKTOER_ID)
         every { kodeverkClient.finnLandkode(any())} returns "QX"
 
-        val apijson = dummyApijson(sakid = "21337890", aktoerId = AKTOER_ID, sed = "P8000", buc = "P_BUC_05")
+        val apijson = dummyApijson(sakid = "21337890", aktoerId = AKTOER_ID, sed = "P8000", buc = P_BUC_05.name)
 
         val validResponse = """
             {
@@ -559,7 +561,7 @@ class SedPrefillP8000IntegrationSpringTest {
     }
 
 
-    private fun dummyApijson(sakid: String, vedtakid: String? = "", aktoerId: String, sed: String? = "P2000", buc: String? = "P_BUC_06", subject: String? = null, refperson: String? = null): String {
+    private fun dummyApijson(sakid: String, vedtakid: String? = "", aktoerId: String, sed: String? = "P2000", buc: String? = BucType.P_BUC_06.name, subject: String? = null, refperson: String? = null): String {
         return """
             {
               "sakId" : "$sakid",

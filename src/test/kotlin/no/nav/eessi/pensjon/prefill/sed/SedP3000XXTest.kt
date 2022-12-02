@@ -3,6 +3,9 @@ package no.nav.eessi.pensjon.prefill.sed
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.SedType
+import no.nav.eessi.pensjon.eux.model.SedType.*
+import no.nav.eessi.pensjon.eux.model.buc.BucType
+import no.nav.eessi.pensjon.eux.model.buc.BucType.*
 import no.nav.eessi.pensjon.personoppslag.FodselsnummerGenerator
 import no.nav.eessi.pensjon.prefill.ApiRequest
 import no.nav.eessi.pensjon.prefill.LagPDLPerson
@@ -47,29 +50,29 @@ class SedP3000XXTest {
 
     @Test
     fun testP3000_AT() {
-        val datamodel = getMockDataModel("P3000_AT", personFnr)
-        pensjonCollection = PensjonCollection(sedType = SedType.P3000_AT)
+        val datamodel = getMockDataModel(P3000_AT.name, personFnr)
+        pensjonCollection = PensjonCollection(sedType = P3000_AT)
 
         val sed = prefillSEDService.prefill(datamodel, personDataCollection,pensjonCollection)
-        Assertions.assertEquals(SedType.P3000_AT, sed.type)
+        Assertions.assertEquals(P3000_AT, sed.type)
     }
 
     @Test
     fun testP3000_IT() {
-        val datamodel = getMockDataModel("P3000_IT", personFnr)
-        pensjonCollection = PensjonCollection(sedType = SedType.P3000_IT)
+        val datamodel = getMockDataModel(P3000_IT.name, personFnr)
+        pensjonCollection = PensjonCollection(sedType = P3000_IT)
 
         val sed = prefillSEDService.prefill(datamodel, personDataCollection,pensjonCollection)
-        Assertions.assertEquals(SedType.P3000_IT, sed.type)
+        Assertions.assertEquals(P3000_IT, sed.type)
     }
 
     @Test
     fun testP3000_SE() {
-        val datamodel = getMockDataModel("P3000_SE", personFnr)
-        pensjonCollection = PensjonCollection(sedType = SedType.P3000_SE)
+        val datamodel = getMockDataModel(P3000_SE.name, personFnr)
+        pensjonCollection = PensjonCollection(sedType = P3000_SE)
 
         val sed = prefillSEDService.prefill(datamodel, personDataCollection,pensjonCollection)
-        Assertions.assertEquals(SedType.P3000_SE, sed.type)
+        Assertions.assertEquals(P3000_SE, sed.type)
     }
 
 
@@ -81,7 +84,7 @@ class SedP3000XXTest {
                 euxCaseId = "99191999911",
                 aktoerId = "00000",
                 fnr = fnr,
-                buc = "P_BUC_01",
+                buc = P_BUC_01.name,
                 subjectArea = "Pensjon",
                 payload = "{}"
         )

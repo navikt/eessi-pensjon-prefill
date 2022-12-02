@@ -4,6 +4,8 @@ import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
 import no.nav.eessi.pensjon.UnsecuredWebMvcTestLauncher
 import no.nav.eessi.pensjon.eux.model.SedType
+import no.nav.eessi.pensjon.eux.model.buc.BucType
+import no.nav.eessi.pensjon.eux.model.buc.BucType.*
 import no.nav.eessi.pensjon.eux.model.document.P6000Dokument
 import no.nav.eessi.pensjon.eux.model.document.Retning
 import no.nav.eessi.pensjon.eux.model.sed.P6000
@@ -82,7 +84,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
         val payload = mapAnyToJson(p6000fraRequest)
 
         //mock apiRequest
-        val apijson = dummyApiRequest(sakid = "21337890", aktoerId = AKTOER_ID, sed = "P7000", buc = "P_BUC_01", payload = payload ).toJson()
+        val apijson = dummyApiRequest(sakid = "21337890", aktoerId = AKTOER_ID, sed = "P7000", buc = P_BUC_01.name, payload = payload ).toJson()
 
         val result = mockMvc.perform(post("/sed/prefill")
             .contentType(MediaType.APPLICATION_JSON)
@@ -197,7 +199,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
 
         //mock apiRequest
         val subject = dummyApiSubject(FNR_VOKSEN_4)
-        val apijson = dummyApiRequest(sakid = "21337890", aktoerId = AKTOER_ID, sed = "P7000", buc = "P_BUC_02", subject = subject, payload = payload ).toJson()
+        val apijson = dummyApiRequest(sakid = "21337890", aktoerId = AKTOER_ID, sed = "P7000", buc = P_BUC_02.name, subject = subject, payload = payload ).toJson()
 
         val validResponse = """
         {
@@ -320,7 +322,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
         val payload = mapAnyToJson(p6000fraRequest)
 
         //mock apiRequest
-        val apijson = dummyApiRequest(sakid = "21337890", aktoerId = AKTOER_ID, sed = "P7000", buc = "P_BUC_01", subject = null, payload = payload ).toJson()
+        val apijson = dummyApiRequest(sakid = "21337890", aktoerId = AKTOER_ID, sed = "P7000", buc = P_BUC_01.name, subject = null, payload = payload ).toJson()
 
         val validResponse = """
         {
@@ -450,7 +452,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
         val payload = mapAnyToJson(p6000fraRequest)
 
         //mock apiRequest
-        val apijson = dummyApiRequest(sakid = "21337890", aktoerId = AKTOER_ID, sed = "P7000", buc = "P_BUC_01", payload = payload ).toJson()
+        val apijson = dummyApiRequest(sakid = "21337890", aktoerId = AKTOER_ID, sed = "P7000", buc = P_BUC_01.name, payload = payload ).toJson()
 
         val validResponse = """ 
         {
@@ -537,7 +539,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
         every { kodeverkClient.finnLandkode(any())} returns "QX"
 
         //mock apiRequest
-        val apijson = dummyApiRequest(sakid = "21337890", aktoerId = AKTOER_ID, sed = "P7000", buc = "P_BUC_01").toJson()
+        val apijson = dummyApiRequest(sakid = "21337890", aktoerId = AKTOER_ID, sed = "P7000", buc = P_BUC_01.name).toJson()
         val validResponse = """ 
             {
               "sed" : "P7000",
@@ -591,7 +593,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
     }
 
 
-    private fun dummyApiRequest(sakid: String, vedtakid: String? = "", aktoerId: String, sed: String? = "P2000", buc: String? = "P_BUC_06", subject: ApiSubject? = null, refperson: ReferanseTilPerson? = null, payload: String? = null): ApiRequest {
+    private fun dummyApiRequest(sakid: String, vedtakid: String? = "", aktoerId: String, sed: String? = "P2000", buc: String? = P_BUC_06.name, subject: ApiSubject? = null, refperson: ReferanseTilPerson? = null, payload: String? = null): ApiRequest {
         return ApiRequest(
             sakId = sakid,
             vedtakId = vedtakid,

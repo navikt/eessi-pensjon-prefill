@@ -1,6 +1,9 @@
 package no.nav.eessi.pensjon.prefill
 
 import no.nav.eessi.pensjon.eux.model.SedType
+import no.nav.eessi.pensjon.eux.model.SedType.*
+import no.nav.eessi.pensjon.eux.model.buc.BucType
+import no.nav.eessi.pensjon.eux.model.buc.BucType.*
 import no.nav.eessi.pensjon.metrics.MetricsHelper
 import no.nav.eessi.pensjon.pensjonsinformasjon.models.EPSaktype
 import no.nav.eessi.pensjon.personoppslag.Fodselsnummer
@@ -45,7 +48,7 @@ class InnhentingService(
     fun getAvdodAktoerIdPDL(request: ApiRequest): String? {
         val buc = request.buc ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST,"Mangler Buc")
         return when (buc) {
-            "P_BUC_02" -> {
+            P_BUC_02.name -> {
                 val norskIdent = request.riktigAvdod() ?: run {
                     logger.error("Mangler fnr for avdød")
                     throw ResponseStatusException(HttpStatus.BAD_REQUEST,"Mangler fnr for avdød")
@@ -55,7 +58,7 @@ class InnhentingService(
                 }
                 hentIdent(IdentType.AktoerId, NorskIdent(norskIdent))
             }
-            "P_BUC_05", "P_BUC_06", "P_BUC_10" -> {
+            P_BUC_05.name, P_BUC_06.name,P_BUC_10.name -> {
                 val norskIdent = request.riktigAvdod() ?: return null
                 if (norskIdent.isBlank()) {
                     throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Ident har tom input-verdi")
@@ -82,15 +85,15 @@ class InnhentingService(
     fun hentPensjoninformasjonCollection(prefillData: PrefillDataModel): PensjonCollection {
         return when (val sedType = prefillData.sedType) {
 
-            SedType.P2000 -> {
+            P2000 -> {
                 PensjonCollection(sak = hentRelevantPensjonSak(prefillData) { pensakType -> pensakType == EPSaktype.ALDER.name }, vedtak = hentRelevantVedtak(prefillData), sedType = sedType)
             }
 
-            SedType.P2200 -> {
+            P2200 -> {
                 PensjonCollection(sak = hentRelevantPensjonSak(prefillData) { pensakType -> pensakType == EPSaktype.UFOREP.name }, vedtak = hentRelevantVedtak(prefillData), sedType = sedType)
             }
 
-            SedType.P2100 -> {
+            P2100 -> {
                 PensjonCollection(sak = hentRelevantPensjonSak(prefillData) { pensakType ->
                     listOf(
                         EPSaktype.ALDER.name, EPSaktype.BARNEP.name, EPSaktype.GJENLEV.name, EPSaktype.UFOREP.name
@@ -98,10 +101,10 @@ class InnhentingService(
                 }, vedtak = hentRelevantVedtak(prefillData), sedType = sedType)
             }
 
-            SedType.P6000 ->  PensjonCollection(pensjoninformasjon = pensjonsinformasjonService.hentVedtak(hentVedtak(prefillData)), sedType = sedType)
+            P6000 ->  PensjonCollection(pensjoninformasjon = pensjonsinformasjonService.hentVedtak(hentVedtak(prefillData)), sedType = sedType)
 
-            SedType.P8000 -> {
-                if (prefillData.buc == "P_BUC_05") {
+            P8000 -> {
+                if (prefillData.buc == P_BUC_05.name) {
                         try {
                             val sak = hentRelevantPensjonSak(prefillData) { pensakType -> listOf("ALDER", "BARNEP", "GJENLEV", "UFOREP", "GENRL", "OMSORG").contains(pensakType) }
                             PensjonCollection(sak = sak , sedType = sedType)
@@ -114,7 +117,7 @@ class InnhentingService(
                 }
             }
 
-            SedType.P15000 -> {
+            P15000 -> {
                 PensjonCollection(pensjoninformasjon = hentRelevantPensjonsinformasjon(prefillData), sak = hentRelevantPensjonSak(prefillData) { pensakType ->
                     listOf("ALDER", "BARNEP", "GJENLEV", "UFOREP", "GENRL", "OMSORG").contains(pensakType) }, sedType = sedType)
             }

@@ -3,6 +3,8 @@ package no.nav.eessi.pensjon.prefill.sed.krav
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.SedType
+import no.nav.eessi.pensjon.eux.model.buc.BucType
+import no.nav.eessi.pensjon.eux.model.buc.BucType.*
 import no.nav.eessi.pensjon.eux.model.sed.Nav
 import no.nav.eessi.pensjon.eux.model.sed.SED
 import no.nav.eessi.pensjon.personoppslag.Fodselsnummer
@@ -121,7 +123,7 @@ class PrefillP2000_AP_LOP_UTLANDTest {
     fun `testing av komplett P2000 med utskrift og testing av innsending`() {
         val P2000 = prefillSEDService.prefill(prefillData, persondataCollection,pensjonCollection)
 
-        val json = mapAnyToJson(createMockApiRequest("P2000", "P_BUC_01", P2000.toJson()))
+        val json = mapAnyToJson(createMockApiRequest("P2000", P_BUC_01.name, P2000.toJson()))
         assertNotNull(json)
 
     }

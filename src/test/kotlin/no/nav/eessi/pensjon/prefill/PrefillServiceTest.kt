@@ -3,6 +3,8 @@ import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.SedMock
 import no.nav.eessi.pensjon.eux.model.SedType
+import no.nav.eessi.pensjon.eux.model.buc.BucType
+import no.nav.eessi.pensjon.eux.model.buc.BucType.*
 import no.nav.eessi.pensjon.eux.model.sed.Bruker
 import no.nav.eessi.pensjon.eux.model.sed.InstitusjonX005
 import no.nav.eessi.pensjon.eux.model.sed.Kontekst
@@ -155,7 +157,7 @@ class PrefillServiceTest {
                 avdod = null,
                 euxCaseID = "1000",
                 sedType = SedType.P2000,
-                buc  = "P_BUC_01",
+                buc  = P_BUC_01.name,
                 institution = listOf(
                 InstitusjonItem(
                         country = "NO",

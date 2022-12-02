@@ -1,6 +1,8 @@
 package no.nav.eessi.pensjon.prefill
 
 import no.nav.eessi.pensjon.eux.model.SedType
+import no.nav.eessi.pensjon.eux.model.buc.BucType
+import no.nav.eessi.pensjon.eux.model.buc.BucType.*
 import no.nav.eessi.pensjon.eux.model.sed.SED
 import no.nav.eessi.pensjon.prefill.models.InstitusjonItem
 import no.nav.eessi.pensjon.utils.mapAnyToJson
@@ -39,7 +41,7 @@ class ApiRequestTest {
     @Test
     fun `generate request mock payload of SED P2000`() {
         val payload = readJsonAndParseToSed("P2000-NAV.json")
-        val req = createMockApiRequest("P2000", "P_BUC_01", payload)
+        val req = createMockApiRequest("P2000", P_BUC_01.name, payload)
         val sedjson = SED.fromJson(req.payload!!).toJson()
         assertNotNull(sedjson)
         val json = mapAnyToJson(req)
@@ -73,37 +75,37 @@ class ApiRequestTest {
         val datamodel = ApiRequest.buildPrefillDataModelOnExisting( mapJsonToAny(req, typeRefs()), "", "")
         assertNotNull(datamodel)
         assertEquals(SedType.P2000, datamodel.sedType)
-        assertEquals("P_BUC_01", datamodel.buc)
+        assertEquals(P_BUC_01.name, datamodel.buc)
     }
 
     @Test
     fun `generate request mock payload of SED P2100`() {
         val payload = readJsonAndParseToSed("P2100-NAV-unfin.json")
-        createMockApiRequest("P2100", "P_BUC_02", payload)
+        createMockApiRequest("P2100", P_BUC_02.name, payload)
     }
 
     @Test
     fun `generate request mock payload of SED P2200`() {
         val payload = readJsonAndParseToSed("P2200-NAV.json")
-        createMockApiRequest("P2200", "P_BUC_03", payload)
+        createMockApiRequest("P2200", P_BUC_03.name, payload)
     }
 
     @Test
     fun `generate request mock payload of SED P4000`() {
         val payload = readJsonAndParseToSed("P4000-NAV.json")
-        createMockApiRequest("P4000", "P_BUC_05", payload)
+        createMockApiRequest("P4000", P_BUC_05.name, payload)
     }
 
     @Test
     fun `generate request mock payload of SED P5000`() {
         val payload = readJsonAndParseToSed("P5000-NAV.json")
-        createMockApiRequest("P5000", "P_BUC_05", payload)
+        createMockApiRequest("P5000", P_BUC_05.name, payload)
     }
 
     @Test
     fun `generate request mock payload of SED P6000`() {
         val payload = readJsonAndParseToSed("P6000-NAV.json")
-        createMockApiRequest("vedtak", "P_BUC_06", payload)
+        createMockApiRequest("vedtak", P_BUC_06.name, payload)
     }
 
     @Test
@@ -113,7 +115,7 @@ class ApiRequestTest {
                 sakId = "EESSI-PEN-123",
                 institutions = listOf(InstitusjonItem("NO", "DUMMY")),
                 sed = "Q3300",
-                buc = "P_BUC_06",
+                buc = P_BUC_06.name,
                 aktoerId = "0105094340092"
         )
         assertThrows<ResponseStatusException> {
@@ -128,7 +130,7 @@ class ApiRequestTest {
                 sakId = "EESSI-PEN-123",
                 institutions = listOf(InstitusjonItem("NO", "DUMMY")),
                 sed = null,
-                buc = "P_BUC_06",
+                buc = P_BUC_06.name,
                 aktoerId = "0105094340092"
         )
         assertThrows<ResponseStatusException> {
@@ -141,7 +143,7 @@ class ApiRequestTest {
         val mockData = ApiRequest(
                 sakId = "12234",
                 sed = "P6000",
-                buc = "P_BUC_01",
+                buc = P_BUC_01.name,
                 euxCaseId = "1231",
                 aktoerId = "0105094340092",
                 institutions = emptyList()
@@ -160,7 +162,7 @@ class ApiRequestTest {
         val mockData = ApiRequest(
                 sakId = "12234",
                 sed = "P2100",
-                buc = "P_BUC_02",
+                buc = P_BUC_02.name,
                 aktoerId = "0105094340092",
                 avdodfnr = "010244212312",
                 euxCaseId = "1234",
@@ -184,7 +186,7 @@ class ApiRequestTest {
                 sakId = "12234",
                 euxCaseId = "2345",
                 sed = "P5000",
-                buc = "P_BUC_02",
+                buc = P_BUC_02.name,
                 aktoerId = "0105094340092",
                 avdodfnr = null,
                 institutions = emptyList(),
@@ -208,7 +210,7 @@ class ApiRequestTest {
         val mockData = ApiRequest(
                 sakId = "12234",
                 sed = "P5000",
-                buc = "P_BUC_02",
+                buc = P_BUC_02.name,
                 aktoerId = "0105094340092",
                 avdodfnr = null,
                 subject = null
@@ -238,7 +240,7 @@ class ApiRequestTest {
             sakId = "01234567890",
             vedtakId = "123",
             avdodfnr = "456",
-            buc = "P_BUC_01",
+            buc = P_BUC_01.name,
             sed = "P2000",
             euxCaseId = "99191999911"
         )
@@ -255,7 +257,7 @@ class ApiRequestTest {
             sakId = "01234567890",
             vedtakId = "123",
             avdodfnr = null,
-            buc = "P_BUC_01",
+            buc = P_BUC_01.name,
             sed = "P2000",
             euxCaseId = "99191999911"
         )

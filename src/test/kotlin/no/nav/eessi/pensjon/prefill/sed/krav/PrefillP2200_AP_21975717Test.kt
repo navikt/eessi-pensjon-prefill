@@ -3,6 +3,8 @@ package no.nav.eessi.pensjon.prefill.sed.krav
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.SedType
+import no.nav.eessi.pensjon.eux.model.buc.BucType
+import no.nav.eessi.pensjon.eux.model.buc.BucType.*
 import no.nav.eessi.pensjon.kodeverk.KodeverkClient
 import no.nav.eessi.pensjon.kodeverk.PostnummerService
 import no.nav.eessi.pensjon.personoppslag.Fodselsnummer
@@ -120,7 +122,7 @@ class PrefillP2200_AP_21975717Test {
         every { kodeverkClient.finnLandkode(any()) } returns "NO"
 
         val P2200 = prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection)
-        val json = mapAnyToJson(createMockApiRequest("P2200", "P_BUC_01", P2200.toJson()))
+        val json = mapAnyToJson(createMockApiRequest("P2200", P_BUC_01.name, P2200.toJson()))
         assertNotNull(json)
     }
 

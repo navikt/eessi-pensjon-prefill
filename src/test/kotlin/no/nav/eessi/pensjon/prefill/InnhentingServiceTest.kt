@@ -2,6 +2,8 @@ package no.nav.eessi.pensjon.prefill
 
 import io.mockk.every
 import io.mockk.mockk
+import no.nav.eessi.pensjon.eux.model.buc.BucType
+import no.nav.eessi.pensjon.eux.model.buc.BucType.*
 import no.nav.eessi.pensjon.personoppslag.pdl.model.AktoerId
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Ident
 import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentType
@@ -31,7 +33,7 @@ class InnhentingServiceTest {
             subjectArea = "Pensjon",
             sakId = "EESSI-PEN-123",
             sed = "P2100",
-            buc = "P_BUC_02",
+            buc = P_BUC_02.name,
             aktoerId = "0105094340092",
             avdodfnr = "12345566"
 
@@ -48,7 +50,7 @@ class InnhentingServiceTest {
             subjectArea = "Pensjon",
             sakId = "EESSI-PEN-123",
             sed = "P5000",
-            buc = "P_BUC_02",
+            buc = P_BUC_02.name,
             aktoerId = "0105094340092",
             avdodfnr = "12345566",
             vedtakId = "23123123",
@@ -67,7 +69,7 @@ class InnhentingServiceTest {
             subjectArea = "Pensjon",
             sakId = "EESSI-PEN-123",
             sed = "P2100",
-            buc = "P_BUC_02",
+            buc = P_BUC_02.name,
             aktoerId = "0105094340092"
         )
         assertThrows<ResponseStatusException> {
@@ -81,7 +83,7 @@ class InnhentingServiceTest {
             subjectArea = "Pensjon",
             sakId = "EESSI-PEN-123",
             sed = "P15000",
-            buc = "P_BUC_10",
+            buc = P_BUC_10.name,
             aktoerId = "0105094340092",
             avdodfnr = "12345566"
         )
@@ -96,7 +98,7 @@ class InnhentingServiceTest {
             subjectArea = "Pensjon",
             sakId = "EESSI-PEN-123",
             sed = "P2000",
-            buc = "P_BUC_01",
+            buc = P_BUC_01.name,
             aktoerId = "0105094340092",
             avdodfnr = "12345566"
         )

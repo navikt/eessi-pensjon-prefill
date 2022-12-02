@@ -5,6 +5,8 @@ import io.mockk.every
 import io.mockk.impl.annotations.SpyK
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.SedType
+import no.nav.eessi.pensjon.eux.model.buc.BucType
+import no.nav.eessi.pensjon.eux.model.buc.BucType.*
 import no.nav.eessi.pensjon.eux.model.sed.Bruker
 import no.nav.eessi.pensjon.eux.model.sed.Krav
 import no.nav.eessi.pensjon.eux.model.sed.Nav
@@ -63,7 +65,7 @@ class PrefillControllerTest {
             institutions = listOf(InstitusjonItem("NO", "DUMMY")),
             euxCaseId = "1234567890",
             sed = "P6000",
-            buc = "P_BUC_06",
+            buc = P_BUC_06.name,
             aktoerId = "0105094340092"
         )
 
