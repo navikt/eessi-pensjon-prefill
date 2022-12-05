@@ -2,13 +2,8 @@ package no.nav.eessi.pensjon.prefill
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import no.nav.eessi.pensjon.eux.model.SedType
-import no.nav.eessi.pensjon.eux.model.buc.BucType
 import no.nav.eessi.pensjon.eux.model.buc.BucType.*
-import no.nav.eessi.pensjon.prefill.models.InstitusjonItem
-import no.nav.eessi.pensjon.prefill.models.KravType
-import no.nav.eessi.pensjon.prefill.models.PersonId
-import no.nav.eessi.pensjon.prefill.models.PrefillDataModel
-import no.nav.eessi.pensjon.prefill.models.ReferanseTilPerson
+import no.nav.eessi.pensjon.prefill.models.*
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.web.server.ResponseStatusException
