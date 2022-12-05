@@ -16,6 +16,7 @@ import no.nav.eessi.pensjon.personoppslag.pdl.model.NorskIdent
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.kodeverk.KodeverkClient
+import no.nav.eessi.pensjon.pensjonsinformasjon.models.EPSaktype.*
 import no.nav.pensjon.v1.kravhistorikk.V1KravHistorikk
 import no.nav.pensjon.v1.kravhistorikkliste.V1KravHistorikkListe
 import no.nav.pensjon.v1.sak.V1Sak
@@ -65,7 +66,7 @@ class PrefillErrorIntegrationTest {
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith()
 
         val sak = V1Sak()
-        sak.sakType = EPSaktype.UFOREP.toString()
+        sak.sakType = UFOREP.toString()
         sak.sakId = 100
         sak.kravHistorikkListe = V1KravHistorikkListe()
         val krav = V1KravHistorikk()
