@@ -4,13 +4,9 @@ package no.nav.eessi.pensjon.prefill.api
 import io.mockk.every
 import io.mockk.impl.annotations.SpyK
 import io.mockk.mockk
-import no.nav.eessi.pensjon.eux.model.SedType
-import no.nav.eessi.pensjon.eux.model.buc.BucType.*
-import no.nav.eessi.pensjon.eux.model.sed.Bruker
-import no.nav.eessi.pensjon.eux.model.sed.Krav
-import no.nav.eessi.pensjon.eux.model.sed.Nav
-import no.nav.eessi.pensjon.eux.model.sed.Person
-import no.nav.eessi.pensjon.eux.model.sed.SED
+import no.nav.eessi.pensjon.eux.model.SedType.P6000
+import no.nav.eessi.pensjon.eux.model.buc.BucType.P_BUC_06
+import no.nav.eessi.pensjon.eux.model.sed.*
 import no.nav.eessi.pensjon.logging.AuditLogger
 import no.nav.eessi.pensjon.personoppslag.pdl.model.NorskIdent
 import no.nav.eessi.pensjon.prefill.*
@@ -58,7 +54,7 @@ class PrefillControllerTest {
             vedtakId = "1234567",
             institutions = listOf(InstitusjonItem("NO", "DUMMY")),
             euxCaseId = "1234567890",
-            sed = "P6000",
+            sed = P6000.name,
             buc = P_BUC_06.name,
             aktoerId = "0105094340092"
         )
@@ -86,7 +82,7 @@ class PrefillControllerTest {
 
         val sed = SED.fromJson(response)
 
-        assertEquals(SedType.P6000, sed.type)
+        assertEquals(P6000, sed.type)
         assertEquals("Dummy", sed.nav?.bruker?.person?.fornavn)
         assertEquals("Dummy", sed.nav?.bruker?.person?.etternavn)
     }

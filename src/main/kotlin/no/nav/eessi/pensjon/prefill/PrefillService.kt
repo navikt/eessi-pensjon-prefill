@@ -19,6 +19,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import javax.annotation.PostConstruct
 
+const val LATEST_RINA_SED_VERSION = "v4.2"
 @Service
 class PrefillService(
     private val prefillSedService: PrefillSEDService,
@@ -28,10 +29,7 @@ class PrefillService(
 ) {
 
     private val logger = LoggerFactory.getLogger(PrefillService::class.java)
-
     private lateinit var PrefillSed: MetricsHelper.Metric
-
-    private val LATEST_RINA_SED_VERSION = "v4.2"
 
     @PostConstruct
     fun initMetrics() {
@@ -78,6 +76,7 @@ class PrefillService(
     }
 
     //flyttes til prefill / en eller annen service?
+    //TODO: Ser ut til at bucVersion alltid er v4.2, stemmer dette??
     private fun updateSEDVersion(sed: SED, bucVersion: String) {
         when(bucVersion) {
             "v4.2" -> sed.sedVer="2"
