@@ -3,6 +3,7 @@ package no.nav.eessi.pensjon.integrationtest.sed
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
 import no.nav.eessi.pensjon.UnsecuredWebMvcTestLauncher
+import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.buc.BucType
 import no.nav.eessi.pensjon.eux.model.buc.BucType.*
 import no.nav.eessi.pensjon.integrationtest.IntegrasjonsTestConfig
@@ -561,7 +562,7 @@ class SedPrefillP8000IntegrationSpringTest {
     }
 
 
-    private fun dummyApijson(sakid: String, vedtakid: String? = "", aktoerId: String, sed: String? = "P2000", buc: String? = BucType.P_BUC_06.name, subject: String? = null, refperson: String? = null): String {
+    private fun dummyApijson(sakid: String, vedtakid: String? = "", aktoerId: String, sed: String? = SedType.P2000.name, buc: String? = BucType.P_BUC_06.name, subject: String? = null, refperson: String? = null): String {
         return """
             {
               "sakId" : "$sakid",

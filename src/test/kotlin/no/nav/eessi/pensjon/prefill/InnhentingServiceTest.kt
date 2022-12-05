@@ -2,6 +2,8 @@ package no.nav.eessi.pensjon.prefill
 
 import io.mockk.every
 import io.mockk.mockk
+import no.nav.eessi.pensjon.eux.model.SedType
+import no.nav.eessi.pensjon.eux.model.SedType.*
 import no.nav.eessi.pensjon.eux.model.buc.BucType
 import no.nav.eessi.pensjon.eux.model.buc.BucType.*
 import no.nav.eessi.pensjon.personoppslag.pdl.model.AktoerId
@@ -32,7 +34,7 @@ class InnhentingServiceTest {
         val apiRequest = ApiRequest(
             subjectArea = "Pensjon",
             sakId = "EESSI-PEN-123",
-            sed = "P2100",
+            sed = P2100.name,
             buc = P_BUC_02.name,
             aktoerId = "0105094340092",
             avdodfnr = "12345566"
@@ -49,7 +51,7 @@ class InnhentingServiceTest {
         val apiRequest = ApiRequest(
             subjectArea = "Pensjon",
             sakId = "EESSI-PEN-123",
-            sed = "P5000",
+            sed = P5000.name,
             buc = P_BUC_02.name,
             aktoerId = "0105094340092",
             avdodfnr = "12345566",
@@ -68,7 +70,7 @@ class InnhentingServiceTest {
         val apiRequest = ApiRequest(
             subjectArea = "Pensjon",
             sakId = "EESSI-PEN-123",
-            sed = "P2100",
+            sed = P2100.name,
             buc = P_BUC_02.name,
             aktoerId = "0105094340092"
         )
@@ -82,7 +84,7 @@ class InnhentingServiceTest {
         val apiRequest = ApiRequest(
             subjectArea = "Pensjon",
             sakId = "EESSI-PEN-123",
-            sed = "P15000",
+            sed = P15000.name,
             buc = P_BUC_10.name,
             aktoerId = "0105094340092",
             avdodfnr = "12345566"
@@ -97,7 +99,7 @@ class InnhentingServiceTest {
         val apireq = ApiRequest(
             subjectArea = "Pensjon",
             sakId = "EESSI-PEN-123",
-            sed = "P2000",
+            sed = P2000.name,
             buc = P_BUC_01.name,
             aktoerId = "0105094340092",
             avdodfnr = "12345566"

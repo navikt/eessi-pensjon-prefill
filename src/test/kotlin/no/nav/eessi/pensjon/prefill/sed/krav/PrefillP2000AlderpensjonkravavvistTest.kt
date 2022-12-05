@@ -132,7 +132,7 @@ class PrefillP2000AlderpensjonkravavvistTest {
     fun `testing av komplett P2000 med utskrift og testing av innsending`() {
         val P2000 = prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection)
 
-        val json = createMockApiRequest("P2000", P_BUC_01.name, P2000.toJson(), pesysSaksnummer).toJson()
+        val json = createMockApiRequest(SedType.P2000.name, P_BUC_01.name, P2000.toJson(), pesysSaksnummer).toJson()
         assertNotNull(json)
     }
 

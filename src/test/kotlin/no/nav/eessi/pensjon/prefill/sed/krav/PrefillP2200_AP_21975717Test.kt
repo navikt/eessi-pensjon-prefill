@@ -122,7 +122,7 @@ class PrefillP2200_AP_21975717Test {
         every { kodeverkClient.finnLandkode(any()) } returns "NO"
 
         val P2200 = prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection)
-        val json = mapAnyToJson(createMockApiRequest("P2200", P_BUC_01.name, P2200.toJson()))
+        val json = mapAnyToJson(createMockApiRequest(SedType.P2200.name, P_BUC_01.name, P2200.toJson()))
         assertNotNull(json)
     }
 

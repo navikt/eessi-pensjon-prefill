@@ -593,7 +593,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
     }
 
 
-    private fun dummyApiRequest(sakid: String, vedtakid: String? = "", aktoerId: String, sed: String? = "P2000", buc: String? = P_BUC_06.name, subject: ApiSubject? = null, refperson: ReferanseTilPerson? = null, payload: String? = null): ApiRequest {
+    private fun dummyApiRequest(sakid: String, vedtakid: String? = "", aktoerId: String, sed: String? = SedType.P2000.name, buc: String? = P_BUC_06.name, subject: ApiSubject? = null, refperson: ReferanseTilPerson? = null, payload: String? = null): ApiRequest {
         return ApiRequest(
             sakId = sakid,
             vedtakId = vedtakid,

@@ -123,7 +123,7 @@ class PrefillP2000_AP_LOP_UTLANDTest {
     fun `testing av komplett P2000 med utskrift og testing av innsending`() {
         val P2000 = prefillSEDService.prefill(prefillData, persondataCollection,pensjonCollection)
 
-        val json = mapAnyToJson(createMockApiRequest("P2000", P_BUC_01.name, P2000.toJson()))
+        val json = mapAnyToJson(createMockApiRequest(SedType.P2000.name, P_BUC_01.name, P2000.toJson()))
         assertNotNull(json)
 
     }

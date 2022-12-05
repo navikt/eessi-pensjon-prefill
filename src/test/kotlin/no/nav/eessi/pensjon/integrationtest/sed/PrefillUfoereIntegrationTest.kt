@@ -5,6 +5,8 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import no.nav.eessi.pensjon.UnsecuredWebMvcTestLauncher
+import no.nav.eessi.pensjon.eux.model.SedType
+import no.nav.eessi.pensjon.eux.model.SedType.*
 import no.nav.eessi.pensjon.eux.model.buc.BucType
 import no.nav.eessi.pensjon.eux.model.buc.BucType.*
 import no.nav.eessi.pensjon.eux.model.sed.SED
@@ -82,7 +84,7 @@ class PrefillUfoereIntegrationTest {
         every { pensjonsinformasjonOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java))} returns PrefillTestHelper.readXMLresponse("/pensjonsinformasjon/krav/P2200-AVSL.xml")
         every { kodeverkClient.finnLandkode(any()) } returns "QX"
 
-        val apijson = dummyApijson(sakid = "22922563", aktoerId = AKTOER_ID, sed = "P2200")
+        val apijson = dummyApijson(sakid = "22922563", aktoerId = AKTOER_ID, sed = P2200.name)
         val result = mockMvc.perform(post("/sed/prefill")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(apijson))
@@ -204,7 +206,7 @@ class PrefillUfoereIntegrationTest {
 
         every { kodeverkClient.finnLandkode(any()) } returns "QX"
 
-        val apijson = dummyApijson(sakid = "22922563", aktoerId = aktoerHovedperson, sed = "P2200")
+        val apijson = dummyApijson(sakid = "22922563", aktoerId = aktoerHovedperson, sed = P2200.name)
 
         val result = mockMvc.perform(post("/sed/prefill")
             .contentType(MediaType.APPLICATION_JSON)
@@ -413,7 +415,7 @@ class PrefillUfoereIntegrationTest {
 
         every { kodeverkClient.finnLandkode(any()) } returns "QX"
 
-        val apijson = dummyApijson(sakid = "22874955", aktoerId = AKTOER_ID, vedtakid = "5134513451345", sed = "P2200")
+        val apijson = dummyApijson(sakid = "22874955", aktoerId = AKTOER_ID, vedtakid = "5134513451345", sed = P2200.name)
 
         val result = mockMvc.perform(post("/sed/prefill")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -474,7 +476,7 @@ class PrefillUfoereIntegrationTest {
     }
 
 
-    private fun dummyApijson(sakid: String, vedtakid: String? = "", aktoerId: String, sed: String? = "P2000", buc: String? = P_BUC_06.name, subject: String? = null, refperson: String? = null): String {
+    private fun dummyApijson(sakid: String, vedtakid: String? = "", aktoerId: String, sed: String? = P2200.name, buc: String? = P_BUC_06.name, subject: String? = null, refperson: String? = null): String {
         return """
             {
               "sakId" : "$sakid",
