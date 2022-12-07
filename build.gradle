@@ -50,7 +50,7 @@ dependencies {
     implementation 'org.jetbrains.kotlin:kotlin-reflect'
 
     //flattenmap
-    implementation("com.github.wnameless.json:json-flattener:0.14.2")
+    implementation("com.github.wnameless.json:json-flattener:0.16.0")
 
     // Logging
     implementation("net.logstash.logback:logstash-logback-encoder:${logstashLogbackVersion}")
