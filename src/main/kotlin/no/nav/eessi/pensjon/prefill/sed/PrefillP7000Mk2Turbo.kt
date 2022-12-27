@@ -28,7 +28,6 @@ import no.nav.eessi.pensjon.prefill.models.PrefillDataModel
 import no.nav.eessi.pensjon.prefill.person.PrefillSed
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.toJson
-import no.nav.eessi.pensjon.utils.typeRefs
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.time.LocalDate
@@ -51,7 +50,7 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
 
         //dekode liste av P6000 for preutfylling av P7000
         val partpayload = prefillData.partSedAsJson[SedType.P7000.name]
-        val listP6000 =  partpayload?.let { payload -> mapJsonToAny(payload, typeRefs<List<Pair<P6000Dokument, P6000>>>()) }
+        val listP6000 =  partpayload?.let { payload -> mapJsonToAny<List<Pair<P6000Dokument, P6000>>>(payload) }
 
         logger.info("Prefill med antall P6000: ${listP6000?.size}, land: ${listP6000?.map { it.first.fraLand }} ")
 

@@ -1,11 +1,21 @@
 package no.nav.eessi.pensjon.prefill.sed
 
-import no.nav.eessi.pensjon.eux.model.SedType
-import no.nav.eessi.pensjon.eux.model.SedType.*
-import no.nav.eessi.pensjon.eux.model.buc.BucType
-import no.nav.eessi.pensjon.eux.model.buc.BucType.*
+import no.nav.eessi.pensjon.eux.model.SedType.H020
+import no.nav.eessi.pensjon.eux.model.SedType.H021
+import no.nav.eessi.pensjon.eux.model.SedType.P10000
+import no.nav.eessi.pensjon.eux.model.SedType.P15000
+import no.nav.eessi.pensjon.eux.model.SedType.P2000
+import no.nav.eessi.pensjon.eux.model.SedType.P2100
+import no.nav.eessi.pensjon.eux.model.SedType.P2200
+import no.nav.eessi.pensjon.eux.model.SedType.P4000
+import no.nav.eessi.pensjon.eux.model.SedType.P5000
+import no.nav.eessi.pensjon.eux.model.SedType.P6000
+import no.nav.eessi.pensjon.eux.model.SedType.P7000
+import no.nav.eessi.pensjon.eux.model.SedType.P8000
+import no.nav.eessi.pensjon.eux.model.SedType.X005
+import no.nav.eessi.pensjon.eux.model.SedType.X010
+import no.nav.eessi.pensjon.eux.model.buc.BucType.P_BUC_05
 import no.nav.eessi.pensjon.eux.model.sed.SED
-import no.nav.eessi.pensjon.eux.model.sed.X009
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.prefill.models.PensjonCollection
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
@@ -17,7 +27,6 @@ import no.nav.eessi.pensjon.prefill.sed.krav.PrefillP2100
 import no.nav.eessi.pensjon.prefill.sed.krav.PrefillP2200
 import no.nav.eessi.pensjon.prefill.sed.vedtak.PrefillP6000
 import no.nav.eessi.pensjon.utils.mapJsonToAny
-import no.nav.eessi.pensjon.utils.typeRefs
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -132,7 +141,7 @@ class PrefillSEDService(private val eessiInformasjon: EessiInformasjon, private 
                 prefillData.avdod,
                 prefillData.getBankOgArbeidFromRequest(),
                 personDataCollection,
-                prefillData.partSedAsJson[X010.name]?.let { payload -> mapJsonToAny(payload, typeRefs<X009>()) }
+                prefillData.partSedAsJson[X010.name]?.let { payload -> mapJsonToAny(payload) }
             )
 
             H020, H021 -> PrefillH02X(prefillPDLnav).prefill(prefillData, personDataCollection)

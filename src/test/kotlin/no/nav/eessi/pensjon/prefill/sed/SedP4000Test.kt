@@ -4,8 +4,7 @@ import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.NavMock
 import no.nav.eessi.pensjon.eux.model.SedType
-import no.nav.eessi.pensjon.eux.model.buc.BucType
-import no.nav.eessi.pensjon.eux.model.buc.BucType.*
+import no.nav.eessi.pensjon.eux.model.buc.BucType.P_BUC_01
 import no.nav.eessi.pensjon.eux.model.sed.Adresse
 import no.nav.eessi.pensjon.eux.model.sed.AnsattSelvstendigItem
 import no.nav.eessi.pensjon.eux.model.sed.BarnepassItem
@@ -24,7 +23,6 @@ import no.nav.eessi.pensjon.prefill.person.PrefillSed
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.toJson
-import no.nav.eessi.pensjon.utils.typeRefs
 import no.nav.eessi.pensjon.utils.validateJson
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
@@ -60,7 +58,7 @@ class SedP4000Test {
         )
 
         val p4000Json = p4000.toJson()
-        assertNotNull(mapJsonToAny(p4000Json, typeRefs<P4000>()))
+        assertNotNull(mapJsonToAny<P4000>(p4000Json))
     }
 
     @Test
@@ -70,7 +68,7 @@ class SedP4000Test {
         val p4000file = String(Files.readAllBytes(path))
         assertNotNull(p4000file)
         validateJson(p4000file)
-        val p4000 = mapJsonToAny(p4000file, typeRefs<P4000>())
+        val p4000 = mapJsonToAny<P4000>(p4000file)
         assertNotNull(p4000)
     }
 
@@ -91,12 +89,12 @@ class SedP4000Test {
         )
         val json = mapAnyToJson(req)
         assertNotNull(json)
-        val apireq = mapJsonToAny(json, typeRefs<ApiRequest>())
+        val apireq = mapJsonToAny<ApiRequest>(json)
         val payjson = apireq.payload ?: ""
         assertNotNull(payjson)
         assertEquals(payload, payjson)
 
-        val check = mapJsonToAny(payjson, typeRefs<PersonArbeidogOppholdUtland>())
+        val check = mapJsonToAny<PersonArbeidogOppholdUtland>(payjson)
         assertNotNull(check)
         assertEquals("DK", check.boPerioder!![0].land)
     }
@@ -109,7 +107,7 @@ class SedP4000Test {
         assertNotNull(jsonfile)
         validateJson(jsonfile)
 
-        val obj = mapJsonToAny(jsonfile, typeRefs<PersonArbeidogOppholdUtland>(), true)
+        val obj = mapJsonToAny<PersonArbeidogOppholdUtland>(jsonfile, true)
         assertNotNull(obj)
 
         val backtojson = mapAnyToJson(obj, true)

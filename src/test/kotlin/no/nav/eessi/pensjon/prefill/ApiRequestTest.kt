@@ -1,15 +1,21 @@
 package no.nav.eessi.pensjon.prefill
 
-import no.nav.eessi.pensjon.eux.model.SedType
-import no.nav.eessi.pensjon.eux.model.SedType.*
-import no.nav.eessi.pensjon.eux.model.buc.BucType
-import no.nav.eessi.pensjon.eux.model.buc.BucType.*
+import no.nav.eessi.pensjon.eux.model.SedType.P2000
+import no.nav.eessi.pensjon.eux.model.SedType.P2100
+import no.nav.eessi.pensjon.eux.model.SedType.P2200
+import no.nav.eessi.pensjon.eux.model.SedType.P4000
+import no.nav.eessi.pensjon.eux.model.SedType.P5000
+import no.nav.eessi.pensjon.eux.model.SedType.P6000
+import no.nav.eessi.pensjon.eux.model.buc.BucType.P_BUC_01
+import no.nav.eessi.pensjon.eux.model.buc.BucType.P_BUC_02
+import no.nav.eessi.pensjon.eux.model.buc.BucType.P_BUC_03
+import no.nav.eessi.pensjon.eux.model.buc.BucType.P_BUC_05
+import no.nav.eessi.pensjon.eux.model.buc.BucType.P_BUC_06
 import no.nav.eessi.pensjon.eux.model.sed.SED
 import no.nav.eessi.pensjon.prefill.models.InstitusjonItem
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.toJson
-import no.nav.eessi.pensjon.utils.typeRefs
 import no.nav.eessi.pensjon.utils.validateJson
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
@@ -73,7 +79,7 @@ class ApiRequestTest {
                 "  \"skipSEDkey\" : null,\n" +
                 "  \"mockSED\" : true\n" +
                 "}"
-        val datamodel = ApiRequest.buildPrefillDataModelOnExisting( mapJsonToAny(req, typeRefs()), "", "")
+        val datamodel = ApiRequest.buildPrefillDataModelOnExisting( mapJsonToAny(req), "", "")
         assertNotNull(datamodel)
         assertEquals(P2000, datamodel.sedType)
         assertEquals(P_BUC_01.name, datamodel.buc)

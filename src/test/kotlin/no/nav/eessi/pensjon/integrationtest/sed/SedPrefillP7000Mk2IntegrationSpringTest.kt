@@ -4,13 +4,13 @@ import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
 import no.nav.eessi.pensjon.UnsecuredWebMvcTestLauncher
 import no.nav.eessi.pensjon.eux.model.SedType
-import no.nav.eessi.pensjon.eux.model.buc.BucType
 import no.nav.eessi.pensjon.eux.model.buc.BucType.*
 import no.nav.eessi.pensjon.eux.model.document.P6000Dokument
 import no.nav.eessi.pensjon.eux.model.document.Retning
 import no.nav.eessi.pensjon.eux.model.sed.P6000
 import no.nav.eessi.pensjon.eux.model.sed.P7000
 import no.nav.eessi.pensjon.integrationtest.IntegrasjonsTestConfig
+import no.nav.eessi.pensjon.kodeverk.KodeverkClient
 import no.nav.eessi.pensjon.pensjonsinformasjon.models.EPSaktype
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
 import no.nav.eessi.pensjon.personoppslag.pdl.model.AktoerId
@@ -22,11 +22,9 @@ import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.SubjectFnr
 import no.nav.eessi.pensjon.prefill.models.ReferanseTilPerson
-import no.nav.eessi.pensjon.kodeverk.KodeverkClient
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.toJson
-import no.nav.eessi.pensjon.utils.typeRefs
 import no.nav.pensjon.v1.kravhistorikkliste.V1KravHistorikkListe
 import no.nav.pensjon.v1.sak.V1Sak
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -95,7 +93,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
 
         val response = result.response.getContentAsString(charset("UTF-8"))
 
-        val p7000Actual = mapJsonToAny<P7000>(response, typeRefs())
+        val p7000Actual = mapJsonToAny<P7000>(response)
         val p7000Person = p7000Actual.nav?.bruker?.person!!
 
         //eessisak
@@ -620,12 +618,12 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
 
 
     private fun mockP6000KomplettRequestdata(land: String, type: String? = "01") =  Pair(P6000Dokument(SedType.P6000, "123123", "23423asdasd3243423", land, "1", "url", LocalDate.of(2020, 10, 12), if (land == "NO") Retning.OUT else Retning.IN),
-        mapJsonToAny(mockKomplettP6000(land, type), typeRefs<P6000>()))
+        mapJsonToAny<P6000>(mockKomplettP6000(land, type)))
 
     private fun mockP6000requestdata(land: String, filnavn: String) =  Pair(P6000Dokument(SedType.P6000, "123123", "23423asdasd3243423", land, "1", "url", LocalDate.of(2021, 11,13), if (land == "NO") Retning.OUT else Retning.IN),
         getP6000ekternfil(filnavn) ) }
 
-    private fun getP6000ekternfil(filnavn: String): P6000 = mapJsonToAny(ResourceUtils.getFile("classpath:json/nav/$filnavn").readText(), typeRefs<P6000>())
+    private fun getP6000ekternfil(filnavn: String): P6000 = mapJsonToAny<P6000>(ResourceUtils.getFile("classpath:json/nav/$filnavn").readText())
 
     private fun mockP6000gjenlev() : String {
         return """

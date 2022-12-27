@@ -24,7 +24,6 @@ import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.PersonPDLMock.medBeskyttelse
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.toJson
-import no.nav.eessi.pensjon.utils.typeRefs
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
@@ -394,7 +393,7 @@ class PrefillPDLAdresseTest{
             }
         """.trimIndent()
 
-        val bostedsadresse = mapJsonToAny(bostedsadresseJson, typeRefs<Bostedsadresse>())
+        val bostedsadresse = mapJsonToAny<Bostedsadresse>(bostedsadresseJson)
 
         val person = PersonPDLMock.createWith()
             .copy(
@@ -445,7 +444,7 @@ class PrefillPDLAdresseTest{
             }
         """.trimIndent()
 
-        val bostedsadresse = mapJsonToAny(bostedsadresseJson, typeRefs<Bostedsadresse>())
+        val bostedsadresse = mapJsonToAny<Bostedsadresse>(bostedsadresseJson)
 
         val person = PersonPDLMock.createWith()
             .copy(

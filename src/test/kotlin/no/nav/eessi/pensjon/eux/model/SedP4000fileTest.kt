@@ -6,7 +6,6 @@ import no.nav.eessi.pensjon.eux.model.sed.SED
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.toJson
-import no.nav.eessi.pensjon.utils.typeRefs
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
@@ -20,7 +19,7 @@ class SedP4000fileTest {
         val p4000sed = SED.fromJson(p4000json)
 
         val json = mapAnyToJson(p4000sed, true)
-        val pensjondata = mapJsonToAny(json, typeRefs<SED>())
+        val pensjondata = mapJsonToAny<SED>(json)
         assertNotNull(pensjondata)
     }
 
@@ -28,11 +27,11 @@ class SedP4000fileTest {
     fun `valider P4000 til json og tilbake`() {
         val p4000json = getTestJsonFile("other/P4000-from-frontend.json")
 
-        val map = mapJsonToAny(p4000json, typeRefs<Map<String, Any>>())
+        val map = mapJsonToAny<Map<String, Any>>(p4000json)
         val periodeInfoJson = mapAnyToJson(map["periodeInfo"] ?: "{}")
 
         val p4000 = P4000(
-            trygdetid = mapJsonToAny( periodeInfoJson, typeRefs())
+            trygdetid = mapJsonToAny( periodeInfoJson)
         )
 
         assertEquals("work period 1 workName", p4000.trygdetid?.ansattSelvstendigPerioder?.first()?.navnFirma)
@@ -52,7 +51,7 @@ class SedP4000fileTest {
         val personDataJson =  personDataNode["periodeInfo"].toString()
 
         val sed = P4000(
-            trygdetid = mapJsonToAny(personDataJson, typeRefs())
+            trygdetid = mapJsonToAny(personDataJson)
         )
 
         val trygdetidJson = sed.trygdetid?.toJson()

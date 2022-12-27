@@ -7,7 +7,6 @@ import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModel
 import no.nav.eessi.pensjon.prefill.person.PrefillSed
 import no.nav.eessi.pensjon.utils.mapJsonToAny
-import no.nav.eessi.pensjon.utils.typeRefs
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -37,7 +36,7 @@ class PrefillP4000(private val prefillSed: PrefillSed) {
 
                 logger.debug("Prøver å preutfylle mappe om en p4000-innseningdata til P4000")
                 val personDataJson =  personDataNode["periodeInfo"].toString()
-                mapJsonToAny(personDataJson, typeRefs())
+                mapJsonToAny(personDataJson)
 
             } catch (ex: Exception) {
                 logger.debug("Feiler ved mapping av P4000, fortsetter")

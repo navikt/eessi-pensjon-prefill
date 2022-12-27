@@ -1,3 +1,4 @@
+/*
 package no.nav.eessi.pensjon.utils
 
 import com.fasterxml.jackson.annotation.JsonInclude
@@ -81,3 +82,4 @@ class JsonException(message: String?, cause: Throwable?) : RuntimeException(mess
 
 @ResponseStatus(value = HttpStatus.BAD_REQUEST)
 class JsonIllegalArgumentException(message: String?, cause: Throwable?) : IllegalArgumentException(message, cause)
+*/

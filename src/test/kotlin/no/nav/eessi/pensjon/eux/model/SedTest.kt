@@ -29,7 +29,6 @@ import no.nav.eessi.pensjon.eux.model.sed.VirkningsdatoItem
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.toJson
-import no.nav.eessi.pensjon.utils.typeRefs
 import no.nav.eessi.pensjon.utils.validateJson
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
@@ -46,7 +45,7 @@ class SedTest {
 
         val json = sed6000.toJson()
         //map json back to vedtak obj
-        val pensjondata = mapJsonToAny(json, typeRefs<P6000>())
+        val pensjondata = mapJsonToAny<P6000>(json)
         assertNotNull(pensjondata)
 
         //map load vedtak-NAV refrence
@@ -56,7 +55,7 @@ class SedTest {
         validateJson(p6000file)
 
         //map vedtak-NAV back to vedtak object.
-        val p6000FraJson =mapJsonToAny(p6000file, typeRefs<P6000>())
+        val p6000FraJson =mapJsonToAny<P6000>((p6000file))
 
         assertNotNull(p6000FraJson)
     }
@@ -67,7 +66,7 @@ class SedTest {
         assertNotNull(sed6000)
 
         val p6000Pensjon = sed6000.p6000Pensjon
-        val brukerback = mapJsonToAny(mapAnyToJson(p6000Pensjon!!), typeRefs<P6000Pensjon>())
+        val brukerback = mapJsonToAny<P6000Pensjon>(mapAnyToJson(p6000Pensjon!!))
         assertNotNull(brukerback)
         assertEquals(p6000Pensjon.toJson(), brukerback.toJson())
 

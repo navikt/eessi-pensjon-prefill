@@ -2,7 +2,6 @@ package no.nav.eessi.pensjon.prefill.models
 
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.utils.mapJsonToAny
-import no.nav.eessi.pensjon.utils.typeRefs
 
 /**
  * Data class to store different required data to build any given sed, auto or semiauto.
@@ -40,7 +39,7 @@ data class PrefillDataModel(
 
     fun getBankOgArbeidFromRequest(): BankOgArbeid? {
         val personInfo = getPartSEDasJson("PersonInfo") ?: return null
-        return mapJsonToAny(personInfo, typeRefs())
+        return mapJsonToAny(personInfo)
     }
 
 }
