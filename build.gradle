@@ -83,7 +83,7 @@ dependencies {
     implementation("no.nav.eessi.pensjon:ep-personoppslag:${epPersonoppslagVersion}")
     implementation("no.nav.eessi.pensjon:ep-pensjonsinformasjon:${epPensjonInformasjonVersjon}")
 
-    implementation("no.nav.tjenestespesifikasjoner:pensjonsinformasjon-v1-tjenestespesifikasjon:2606.1f6354e")
+    implementation("no.nav.tjenestespesifikasjoner:pensjonsinformasjon-v1-tjenestespesifikasjon:2610.9b6de22")
 
     //mock - test
     testImplementation("org.springframework.boot:spring-boot-starter-test:$springBootVersion") {
