@@ -1,7 +1,7 @@
 package no.nav.eessi.pensjon.prefill.models
 
+import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_09
 import no.nav.eessi.pensjon.eux.model.SedType
-import no.nav.eessi.pensjon.eux.model.buc.BucType
 
 object PrefillDataModelMother {
 
@@ -14,7 +14,7 @@ object PrefillDataModelMother {
                                 kravId: String? = null,
                                 refTilPerson: ReferanseTilPerson? = null,
                                 euxCaseId: String = "123456",
-                                bucType: String = BucType.P_BUC_09.name,
+                                bucType: String = P_BUC_09.name,
                                 institution: List<InstitusjonItem> = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))) =
             PrefillDataModel(
                     penSaksnummer,

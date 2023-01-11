@@ -1,15 +1,12 @@
 package no.nav.eessi.pensjon.prefill
 
+import no.nav.eessi.pensjon.eux.model.BucType.*
 import no.nav.eessi.pensjon.eux.model.SedType.P15000
 import no.nav.eessi.pensjon.eux.model.SedType.P2000
 import no.nav.eessi.pensjon.eux.model.SedType.P2100
 import no.nav.eessi.pensjon.eux.model.SedType.P2200
 import no.nav.eessi.pensjon.eux.model.SedType.P6000
 import no.nav.eessi.pensjon.eux.model.SedType.P8000
-import no.nav.eessi.pensjon.eux.model.buc.BucType.P_BUC_02
-import no.nav.eessi.pensjon.eux.model.buc.BucType.P_BUC_05
-import no.nav.eessi.pensjon.eux.model.buc.BucType.P_BUC_06
-import no.nav.eessi.pensjon.eux.model.buc.BucType.P_BUC_10
 import no.nav.eessi.pensjon.metrics.MetricsHelper
 import no.nav.eessi.pensjon.pensjonsinformasjon.models.EPSaktype.ALDER
 import no.nav.eessi.pensjon.pensjonsinformasjon.models.EPSaktype.BARNEP

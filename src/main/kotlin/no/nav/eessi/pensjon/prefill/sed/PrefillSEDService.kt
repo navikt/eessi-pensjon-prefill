@@ -1,5 +1,7 @@
 package no.nav.eessi.pensjon.prefill.sed
 
+import no.nav.eessi.pensjon.eux.model.BucType
+import no.nav.eessi.pensjon.eux.model.BucType.*
 import no.nav.eessi.pensjon.eux.model.SedType.H020
 import no.nav.eessi.pensjon.eux.model.SedType.H021
 import no.nav.eessi.pensjon.eux.model.SedType.P10000
@@ -14,7 +16,6 @@ import no.nav.eessi.pensjon.eux.model.SedType.P7000
 import no.nav.eessi.pensjon.eux.model.SedType.P8000
 import no.nav.eessi.pensjon.eux.model.SedType.X005
 import no.nav.eessi.pensjon.eux.model.SedType.X010
-import no.nav.eessi.pensjon.eux.model.buc.BucType.P_BUC_05
 import no.nav.eessi.pensjon.eux.model.sed.SED
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.prefill.models.PensjonCollection

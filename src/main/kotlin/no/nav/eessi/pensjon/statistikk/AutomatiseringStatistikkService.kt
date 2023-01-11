@@ -3,7 +3,7 @@ package no.nav.eessi.pensjon.statistikk
 import com.github.wnameless.json.flattener.JsonFlattener
 import net.minidev.json.JSONObject
 import net.minidev.json.parser.JSONParser
-import no.nav.eessi.pensjon.eux.model.buc.BucType
+import no.nav.eessi.pensjon.eux.model.BucType
 import no.nav.eessi.pensjon.eux.model.sed.SED
 import no.nav.eessi.pensjon.utils.toJson
 import org.slf4j.LoggerFactory

@@ -2,10 +2,10 @@ package no.nav.eessi.pensjon.prefill.sed
 
 import io.mockk.every
 import io.mockk.mockk
-import no.nav.eessi.pensjon.eux.model.SedType
-import no.nav.eessi.pensjon.eux.model.SedType.*
-import no.nav.eessi.pensjon.eux.model.buc.BucType
-import no.nav.eessi.pensjon.eux.model.buc.BucType.*
+import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_01
+import no.nav.eessi.pensjon.eux.model.SedType.P3000_AT
+import no.nav.eessi.pensjon.eux.model.SedType.P3000_IT
+import no.nav.eessi.pensjon.eux.model.SedType.P3000_SE
 import no.nav.eessi.pensjon.personoppslag.FodselsnummerGenerator
 import no.nav.eessi.pensjon.prefill.ApiRequest
 import no.nav.eessi.pensjon.prefill.LagPDLPerson

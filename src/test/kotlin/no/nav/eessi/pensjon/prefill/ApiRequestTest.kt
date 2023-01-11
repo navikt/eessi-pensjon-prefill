@@ -1,16 +1,16 @@
 package no.nav.eessi.pensjon.prefill
 
+import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_01
+import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_02
+import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_03
+import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_05
+import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_06
 import no.nav.eessi.pensjon.eux.model.SedType.P2000
 import no.nav.eessi.pensjon.eux.model.SedType.P2100
 import no.nav.eessi.pensjon.eux.model.SedType.P2200
 import no.nav.eessi.pensjon.eux.model.SedType.P4000
 import no.nav.eessi.pensjon.eux.model.SedType.P5000
 import no.nav.eessi.pensjon.eux.model.SedType.P6000
-import no.nav.eessi.pensjon.eux.model.buc.BucType.P_BUC_01
-import no.nav.eessi.pensjon.eux.model.buc.BucType.P_BUC_02
-import no.nav.eessi.pensjon.eux.model.buc.BucType.P_BUC_03
-import no.nav.eessi.pensjon.eux.model.buc.BucType.P_BUC_05
-import no.nav.eessi.pensjon.eux.model.buc.BucType.P_BUC_06
 import no.nav.eessi.pensjon.eux.model.sed.SED
 import no.nav.eessi.pensjon.prefill.models.InstitusjonItem
 import no.nav.eessi.pensjon.utils.mapAnyToJson

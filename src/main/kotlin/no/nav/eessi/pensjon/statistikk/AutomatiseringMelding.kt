@@ -1,7 +1,7 @@
 package no.nav.eessi.pensjon.statistikk
 
+import no.nav.eessi.pensjon.eux.model.BucType
 import no.nav.eessi.pensjon.eux.model.SedType
-import no.nav.eessi.pensjon.eux.model.buc.BucType
 import org.springframework.messaging.Message
 import org.springframework.messaging.MessageHeaders
 import java.time.LocalDateTime

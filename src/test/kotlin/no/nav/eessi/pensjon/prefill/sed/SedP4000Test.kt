@@ -2,9 +2,9 @@ package no.nav.eessi.pensjon.prefill.sed
 
 import io.mockk.every
 import io.mockk.mockk
+import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_01
 import no.nav.eessi.pensjon.eux.model.NavMock
 import no.nav.eessi.pensjon.eux.model.SedType
-import no.nav.eessi.pensjon.eux.model.buc.BucType.P_BUC_01
 import no.nav.eessi.pensjon.eux.model.sed.Adresse
 import no.nav.eessi.pensjon.eux.model.sed.AnsattSelvstendigItem
 import no.nav.eessi.pensjon.eux.model.sed.BarnepassItem
