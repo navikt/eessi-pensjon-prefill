@@ -1,6 +1,7 @@
 package no.nav.eessi.pensjon.prefill.models
 
 import no.nav.eessi.pensjon.eux.model.SedType
+import no.nav.eessi.pensjon.eux.model.sed.KravType
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 
 /**
@@ -47,10 +48,4 @@ data class PrefillDataModel(
 enum class ReferanseTilPerson(val verdi: String) {
     SOKER("02"),
     AVDOD("01");
-}
-
-enum class KravType(val verdi: String) {
-    ALDER("01"),
-    GJENLEV("02"),
-    UFOREP("03");
 }

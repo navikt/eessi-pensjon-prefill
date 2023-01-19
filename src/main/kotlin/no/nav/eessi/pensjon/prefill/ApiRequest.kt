@@ -3,6 +3,7 @@ package no.nav.eessi.pensjon.prefill
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import no.nav.eessi.pensjon.eux.model.BucType.*
 import no.nav.eessi.pensjon.eux.model.SedType
+import no.nav.eessi.pensjon.eux.model.sed.KravType
 import no.nav.eessi.pensjon.prefill.models.*
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus

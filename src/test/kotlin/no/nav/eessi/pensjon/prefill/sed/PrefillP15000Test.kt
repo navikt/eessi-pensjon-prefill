@@ -3,7 +3,7 @@ package no.nav.eessi.pensjon.prefill.sed
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkClass
-import no.nav.eessi.pensjon.prefill.models.KravType
+import no.nav.eessi.pensjon.eux.model.sed.KravType
 import no.nav.eessi.pensjon.prefill.models.PersonId
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModel
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
