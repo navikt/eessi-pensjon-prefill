@@ -1,6 +1,7 @@
 package no.nav.eessi.pensjon.prefill.sed
 
 import no.nav.eessi.pensjon.eux.model.sed.*
+import no.nav.eessi.pensjon.eux.model.sed.KravType.*
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Familierelasjonsrolle
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Sivilstandstype
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
@@ -38,7 +39,7 @@ class PrefillP15000(private val prefillSed: PrefillSed) {
         logger.debug("Saken er av type: $sakType og kravType request er: $kravType")
         logger.debug("Vedtak har avdød? ${pensjonsinformasjon?.avdod != null}")
 
-        if (kravType != KravType.GJENLEV && kravType.name != sakType) {
+        if (kravType != GJENLEV && kravType.name != sakType) {
             if (sakType == null) {
                 val errorMsg =
                     "Ved opprettelse av krav SED må saksbehandling være fullført i Pesys ( vilkårsprøving o.l ) og jordklode i brukerkontekst kan ikke benyttes"
@@ -56,7 +57,7 @@ class PrefillP15000(private val prefillSed: PrefillSed) {
         val eessielm = navsed.nav?.eessisak
 
         val gjenlevendeBruker: Bruker? = navsed.pensjon?.gjenlevende
-        val forsikretBruker = if (kravType != KravType.GJENLEV && gjenlevendeBruker != null) {
+        val forsikretBruker = if (kravType != GJENLEV && gjenlevendeBruker != null) {
             gjenlevendeBruker
         } else {
             navsed.nav?.bruker
@@ -108,7 +109,7 @@ class PrefillP15000(private val prefillSed: PrefillSed) {
     private fun relasjon(pensjonsinformasjon: Pensjonsinformasjon?, avdodFnr: String?): String? {
         return if (pensjonsinformasjon != null && avdodFnr != null) {
             val relasjon = relasjonRolle(pensjonsinformasjon, avdodFnr)
-            logger.debug("relsajson: $relasjon")
+            logger.debug("relasjon: $relasjon")
             when (relasjon) {
                 null -> null
                 "FAR", "MOR" -> "06"
@@ -124,7 +125,7 @@ class PrefillP15000(private val prefillSed: PrefillSed) {
         relasjon: String?,
         kravType: KravType
     ): Bruker? {
-        if (kravType == KravType.GJENLEV) {
+        if (kravType == GJENLEV) {
             return if (gjenlevende != null) {
 
                 val relasjontilAvdod = if (relasjon != null) {
@@ -155,9 +156,9 @@ class PrefillP15000(private val prefillSed: PrefillSed) {
 
     private fun sedTypeAsText(kravType: KravType) =
         when (kravType) {
-            KravType.ALDER -> "alderspensjonskrav"
-            KravType.GJENLEV -> "gjenlevende-krav"
-            KravType.UFOREP -> "uføretrygdkrav"
+            ALDER -> "alderspensjonskrav"
+            GJENLEV -> "gjenlevende-krav"
+            UFOREP -> "uføretrygdkrav"
         }
 
     private fun relasjonRolle(pensjonInfo: Pensjonsinformasjon, avdodFnr: String): String? {

@@ -1,13 +1,11 @@
 package no.nav.eessi.pensjon.prefill.sed.krav
 
 import no.nav.eessi.pensjon.eux.model.SedType
-import no.nav.eessi.pensjon.eux.model.sed.Bruker
-import no.nav.eessi.pensjon.eux.model.sed.Nav
-import no.nav.eessi.pensjon.eux.model.sed.P2100
-import no.nav.eessi.pensjon.eux.model.sed.Pensjon
-import no.nav.eessi.pensjon.eux.model.sed.SED
+import no.nav.eessi.pensjon.eux.model.sed.*
 import no.nav.eessi.pensjon.pensjonsinformasjon.KravHistorikkHelper
-import no.nav.eessi.pensjon.pensjonsinformasjon.models.EPSaktype
+import no.nav.eessi.pensjon.pensjonsinformasjon.models.EPSaktype.ALDER
+import no.nav.eessi.pensjon.pensjonsinformasjon.models.EPSaktype.UFOREP
+import no.nav.eessi.pensjon.pensjonsinformasjon.models.PenKravtype.FORSTEG_BH
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModel
@@ -102,10 +100,10 @@ class PrefillP2100(private val prefillNav: PrefillPDLNav) {
     private fun validerGyldigKravtypeOgArsak(sak: V1Sak?, sedType: SedType) {
         logger.info("Start på validering av $sedType")
 
-        PrefillP2xxxPensjon.avsluttHvisKunDenneKravTypeIHistorikk(sak, sedType, "FORSTEG_BH")
+        PrefillP2xxxPensjon.avsluttHvisKunDenneKravTypeIHistorikk(sak, sedType, FORSTEG_BH)
 
         if (KravHistorikkHelper.hentKravhistorikkForGjenlevende(sak?.kravHistorikkListe) == null
-                    && listOf(EPSaktype.ALDER.name, EPSaktype.UFOREP.name).contains(sak?.sakType)  ) {
+                    && listOf(ALDER.name, UFOREP.name).contains(sak?.sakType)  ) {
             logger.warn("Ikke korrekt kravårsak for P2100 (alder/uførep")
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Ingen gyldig kravårsak funnet for ALDER eller UFØREP for utfylling av en krav SED P2100")
         }

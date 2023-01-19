@@ -1,19 +1,13 @@
 package no.nav.eessi.pensjon.prefill.sed.krav
 
 import no.nav.eessi.pensjon.eux.model.SedType
-import no.nav.eessi.pensjon.eux.model.sed.AndreinstitusjonerItem
-import no.nav.eessi.pensjon.eux.model.sed.BeloepItem
-import no.nav.eessi.pensjon.eux.model.sed.Bruker
-import no.nav.eessi.pensjon.eux.model.sed.Institusjon
-import no.nav.eessi.pensjon.eux.model.sed.Krav
-import no.nav.eessi.pensjon.eux.model.sed.MeldingOmPensjon
-import no.nav.eessi.pensjon.eux.model.sed.Pensjon
-import no.nav.eessi.pensjon.eux.model.sed.PinItem
-import no.nav.eessi.pensjon.eux.model.sed.YtelserItem
+import no.nav.eessi.pensjon.eux.model.sed.*
 import no.nav.eessi.pensjon.pensjonsinformasjon.KravHistorikkHelper.finnKravHistorikk
 import no.nav.eessi.pensjon.pensjonsinformasjon.KravHistorikkHelper.finnKravHistorikkForDato
 import no.nav.eessi.pensjon.pensjonsinformasjon.KravHistorikkHelper.hentKravHistorikkForsteGangsBehandlingUtlandEllerForsteGang
 import no.nav.eessi.pensjon.pensjonsinformasjon.models.EPSaktype
+import no.nav.eessi.pensjon.pensjonsinformasjon.models.PenKravtype
+import no.nav.eessi.pensjon.pensjonsinformasjon.models.PenKravtype.*
 import no.nav.eessi.pensjon.personoppslag.Fodselsnummer
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModel
@@ -134,11 +128,11 @@ object PrefillP2xxxPensjon {
     private fun validerGyldigKravtypeOgArsak(sak: V1Sak?, sedType: SedType, vedtak: V1Vedtak?) {
         logger.info("start på validering av $sedType")
 
-        avsluttHvisKunDenneKravTypeIHistorikk(sak, sedType, "FORSTEG_BH")
+        avsluttHvisKunDenneKravTypeIHistorikk(sak, sedType, FORSTEG_BH)
 
-        val forsBehanBoUtlandTom = finnKravHistorikk("F_BH_BO_UTL", sak?.kravHistorikkListe).isNullOrEmpty()
-        val forsBehanMedUtlandTom = finnKravHistorikk("F_BH_MED_UTL", sak?.kravHistorikkListe).isNullOrEmpty()
-        val behandleKunUtlandTom = finnKravHistorikk("F_BH_KUN_UTL", sak?.kravHistorikkListe).isNullOrEmpty()
+        val forsBehanBoUtlandTom = finnKravHistorikk(F_BH_BO_UTL, sak?.kravHistorikkListe).isNullOrEmpty()
+        val forsBehanMedUtlandTom = finnKravHistorikk(F_BH_MED_UTL, sak?.kravHistorikkListe).isNullOrEmpty()
+        val behandleKunUtlandTom = finnKravHistorikk(F_BH_KUN_UTL, sak?.kravHistorikkListe).isNullOrEmpty()
         val vedtakErTom = (vedtak == null)
 
         if (forsBehanBoUtlandTom and forsBehanMedUtlandTom and behandleKunUtlandTom and vedtakErTom) {
@@ -166,14 +160,14 @@ object PrefillP2xxxPensjon {
 
 
     //felles kode for validering av P2000, P2100 og P2200
-    fun avsluttHvisKunDenneKravTypeIHistorikk(sak: V1Sak?, sedType: SedType, kravType: String) {
+    fun avsluttHvisKunDenneKravTypeIHistorikk(sak: V1Sak?, sedType: SedType, kravType: PenKravtype) {
         if (kunDenneKravTypeIHistorikk(sak, kravType))  {
             logger.warn("Det er ikke markert for bodd/arbeidet i utlandet. Krav SED $sedType blir ikke opprettet")
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Det er ikke markert for bodd/arbeidet i utlandet. Krav SED $sedType blir ikke opprettet")
         }
     }
 
-    private fun kunDenneKravTypeIHistorikk(sak: V1Sak?, kravType: String): Boolean {
+    private fun kunDenneKravTypeIHistorikk(sak: V1Sak?, kravType: PenKravtype): Boolean {
         val historikkForKravtype = finnKravHistorikk(kravType, sak?.kravHistorikkListe)
         return (historikkForKravtype != null
                 && historikkForKravtype.size == sak?.kravHistorikkListe?.kravHistorikkListe?.size)

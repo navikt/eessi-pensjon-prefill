@@ -9,7 +9,7 @@ buildscript {
         pensjonInformasjonVersion = '9.4.10'
         epMetricsVersion = '1.0.10'
         epLoggingVersion='1.1.13'
-        epPensjonInformasjonVersjon='2.0.80'
+        epPensjonInformasjonVersjon='2.0.81'
     }
 }
 
@@ -74,7 +74,7 @@ dependencies {
 
     implementation ("org.springframework.kafka:spring-kafka:$springKafkaVersion")
 
-    implementation("no.nav.eessi.pensjon:ep-eux:1.4.11")
+    implementation("no.nav.eessi.pensjon:ep-eux:1.4.12")
     implementation("no.nav.eessi.pensjon:ep-metrics:$epMetricsVersion")
     implementation("no.nav.eessi.pensjon:ep-logging:${epLoggingVersion}")
     implementation("no.nav.eessi.pensjon:ep-kodeverk:3.1.53")
