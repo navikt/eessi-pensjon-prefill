@@ -1,10 +1,14 @@
 package no.nav.eessi.pensjon.prefill
 
 import no.nav.eessi.pensjon.eux.model.SedType
+import no.nav.eessi.pensjon.eux.model.buc.SakType
 import no.nav.eessi.pensjon.pensjonsinformasjon.FinnSak
 import no.nav.eessi.pensjon.pensjonsinformasjon.clients.PensjoninformasjonException
 import no.nav.eessi.pensjon.pensjonsinformasjon.clients.PensjonsinformasjonClient
+import no.nav.eessi.pensjon.pensjonsinformasjon.models.EPSaktype
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModel
+import no.nav.eessi.pensjon.utils.mapJsonToAny
+import no.nav.eessi.pensjon.utils.toJson
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import no.nav.pensjon.v1.sak.V1Sak
 import no.nav.pensjon.v1.vedtak.V1Vedtak
@@ -88,12 +92,11 @@ class PensjonsinformasjonService(private val pensjonsinformasjonClient: Pensjons
         if (fnr.isBlank()) throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Mangler norskident")
 
         val peninfo = hentPensjonInformasjon(fnr, aktorId)
-        // ?: throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Ingen pensjoninformasjon funnet")
 
         return peninfo.let {
             val sak = finnSak(penSaksnummer, it) ?: return null
 
-            if (!akseptabelSakstypeForSed(sak.sakType)) {
+            if (!akseptabelSakstypeForSed(sak.sakType.toJson())) {
                 logger.warn("Du kan ikke opprette ${sedTypeAsText(sedType)} i en ${sakTypeAsText(sak.sakType)} (PESYS-saksnr: $penSaksnummer har sakstype ${sak.sakType})")
                 throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Du kan ikke opprette ${sedTypeAsText(sedType)} i en ${sakTypeAsText(sak.sakType)} (PESYS-saksnr: $penSaksnummer har sakstype ${sak.sakType})")
             }

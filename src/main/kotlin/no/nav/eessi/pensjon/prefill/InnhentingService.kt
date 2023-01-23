@@ -8,16 +8,16 @@ import no.nav.eessi.pensjon.eux.model.SedType.P2200
 import no.nav.eessi.pensjon.eux.model.SedType.P6000
 import no.nav.eessi.pensjon.eux.model.SedType.P8000
 import no.nav.eessi.pensjon.metrics.MetricsHelper
-import no.nav.eessi.pensjon.pensjonsinformasjon.models.EPSaktype.ALDER
-import no.nav.eessi.pensjon.pensjonsinformasjon.models.EPSaktype.BARNEP
-import no.nav.eessi.pensjon.pensjonsinformasjon.models.EPSaktype.GJENLEV
-import no.nav.eessi.pensjon.pensjonsinformasjon.models.EPSaktype.UFOREP
+import no.nav.eessi.pensjon.pensjonsinformasjon.models.EPSaktype.*
 import no.nav.eessi.pensjon.personoppslag.Fodselsnummer
 import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentType
 import no.nav.eessi.pensjon.personoppslag.pdl.model.NorskIdent
 import no.nav.eessi.pensjon.prefill.models.PensjonCollection
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModel
+import no.nav.eessi.pensjon.utils.eessiRequire
+import no.nav.eessi.pensjon.utils.mapJsonToAny
+import no.nav.eessi.pensjon.utils.toJson
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import no.nav.pensjon.v1.sak.V1Sak
 import no.nav.pensjon.v1.vedtak.V1Vedtak
@@ -88,7 +88,8 @@ class InnhentingService(
     fun hentIdent(aktoerId: IdentType.AktoerId, norskIdent: NorskIdent): String = personDataService.hentIdent(aktoerId, norskIdent).id
 
     fun hentPensjoninformasjonCollection(prefillData: PrefillDataModel): PensjonCollection {
-        val pensakTyper = listOf("ALDER", "BARNEP", "GJENLEV", "UFOREP", "GENRL", "OMSORG")
+        val eessipensjonSakTyper = listOf(ALDER, BARNEP, GJENLEV, UFOREP)
+        val pensakTyper = listOf(eessipensjonSakTyper, GENRL, OMSORG)
         return when (val sedType = prefillData.sedType) {
 
             P2000 -> {
@@ -99,7 +100,7 @@ class InnhentingService(
             }
             P2100 -> {
                 PensjonCollection(
-                    sak = hentRelevantPensjonSak(prefillData) { pensakType -> listOf(ALDER.name, BARNEP.name, GJENLEV.name, UFOREP.name).contains(pensakType) },
+                    sak = hentRelevantPensjonSak(prefillData) { pensakType -> mapJsonToAny(pensakType) in eessipensjonSakTyper },
                     vedtak = hentRelevantVedtak(prefillData),
                     sedType = sedType
                 )
@@ -108,7 +109,7 @@ class InnhentingService(
             P8000 -> {
                 if (prefillData.buc == P_BUC_05.name) {
                         try {
-                            val sak = hentRelevantPensjonSak(prefillData) { pensakType -> pensakTyper.contains(pensakType) }
+                            val sak = hentRelevantPensjonSak(prefillData) { pensakType -> mapJsonToAny(pensakType) in pensakTyper }
                             PensjonCollection(sak = sak , sedType = sedType)
                         } catch (ex: Exception) {
                             logger.warn("Ingen pensjon!", ex)
@@ -121,7 +122,7 @@ class InnhentingService(
             P15000 -> {
                 PensjonCollection(
                     pensjoninformasjon = hentRelevantPensjonsinformasjon(prefillData),
-                    sak = hentRelevantPensjonSak(prefillData) { pensakType -> pensakTyper.contains(pensakType) },
+                    sak = hentRelevantPensjonSak(prefillData) { pensakType -> mapJsonToAny(pensakType) in pensakTyper },
                     sedType = sedType
                 )
             }
