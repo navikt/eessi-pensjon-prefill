@@ -3,6 +3,7 @@ package no.nav.eessi.pensjon.prefill
 import no.nav.eessi.pensjon.eux.model.BucType.*
 import no.nav.eessi.pensjon.eux.model.SedType.*
 import no.nav.eessi.pensjon.metrics.MetricsHelper
+import no.nav.eessi.pensjon.pensjonsinformasjon.models.EPSaktype
 import no.nav.eessi.pensjon.pensjonsinformasjon.models.EPSaktype.*
 import no.nav.eessi.pensjon.personoppslag.Fodselsnummer
 import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentType
@@ -10,7 +11,6 @@ import no.nav.eessi.pensjon.personoppslag.pdl.model.NorskIdent
 import no.nav.eessi.pensjon.prefill.models.PensjonCollection
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModel
-import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import no.nav.pensjon.v1.sak.V1Sak
 import no.nav.pensjon.v1.vedtak.V1Vedtak
@@ -86,14 +86,14 @@ class InnhentingService(
         return when (val sedType = prefillData.sedType) {
 
             P2000 -> {
-                PensjonCollection(sak = hentRelevantPensjonSak(prefillData) { pensakType -> pensakType == ALDER.name }, vedtak = hentRelevantVedtak(prefillData), sedType = sedType)
+                PensjonCollection(sak = hentRelevantPensjonSak(prefillData) { pensakType -> EPSaktype.valueOf(pensakType) == ALDER }, vedtak = hentRelevantVedtak(prefillData), sedType = sedType)
             }
             P2200 -> {
-                PensjonCollection(sak = hentRelevantPensjonSak(prefillData) { pensakType -> pensakType == UFOREP.name }, vedtak = hentRelevantVedtak(prefillData), sedType = sedType)
+                PensjonCollection(sak = hentRelevantPensjonSak(prefillData) { pensakType -> EPSaktype.valueOf(pensakType) == UFOREP }, vedtak = hentRelevantVedtak(prefillData), sedType = sedType)
             }
             P2100 -> {
                 PensjonCollection(
-                    sak = hentRelevantPensjonSak(prefillData) { pensakType -> (mapJsonToAny(pensakType) in eessipensjonSakTyper) },
+                    sak = hentRelevantPensjonSak(prefillData) { pensakType -> (EPSaktype.valueOf(pensakType) in eessipensjonSakTyper) },
                     vedtak = hentRelevantVedtak(prefillData),
                     sedType = sedType
                 )
@@ -102,7 +102,7 @@ class InnhentingService(
             P8000 -> {
                 if (prefillData.buc == P_BUC_05.name) {
                         try {
-                            val sak = hentRelevantPensjonSak(prefillData) { pensakType -> mapJsonToAny(pensakType) in pensakTyper }
+                            val sak = hentRelevantPensjonSak(prefillData) { pensakType -> EPSaktype.valueOf(pensakType) in pensakTyper }
                             PensjonCollection(sak = sak , sedType = sedType)
                         } catch (ex: Exception) {
                             logger.warn("Ingen pensjon!", ex)
@@ -115,7 +115,7 @@ class InnhentingService(
             P15000 -> {
                 PensjonCollection(
                     pensjoninformasjon = hentRelevantPensjonsinformasjon(prefillData),
-                    sak = hentRelevantPensjonSak(prefillData) { pensakType -> mapJsonToAny(pensakType) in pensakTyper },
+                    sak = hentRelevantPensjonSak(prefillData) { pensakType -> EPSaktype.valueOf(pensakType) in pensakTyper },
                     sedType = sedType
                 )
             }
