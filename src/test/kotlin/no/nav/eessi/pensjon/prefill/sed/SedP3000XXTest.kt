@@ -3,11 +3,11 @@ package no.nav.eessi.pensjon.prefill.sed
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_01
+import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.SedType.P3000_AT
 import no.nav.eessi.pensjon.eux.model.SedType.P3000_IT
 import no.nav.eessi.pensjon.eux.model.SedType.P3000_SE
 import no.nav.eessi.pensjon.personoppslag.FodselsnummerGenerator
-import no.nav.eessi.pensjon.prefill.ApiRequest
 import no.nav.eessi.pensjon.prefill.LagPDLPerson
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
@@ -16,6 +16,7 @@ import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModel
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLAdresse
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
+import no.nav.eessi.pensjon.shared.api.ApiRequest
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -50,7 +51,7 @@ class SedP3000XXTest {
 
     @Test
     fun testP3000_AT() {
-        val datamodel = getMockDataModel(P3000_AT.name, personFnr)
+        val datamodel = getMockDataModel(P3000_AT, personFnr)
         pensjonCollection = PensjonCollection(sedType = P3000_AT)
 
         val sed = prefillSEDService.prefill(datamodel, personDataCollection,pensjonCollection)
@@ -59,7 +60,7 @@ class SedP3000XXTest {
 
     @Test
     fun testP3000_IT() {
-        val datamodel = getMockDataModel(P3000_IT.name, personFnr)
+        val datamodel = getMockDataModel(P3000_IT, personFnr)
         pensjonCollection = PensjonCollection(sedType = P3000_IT)
 
         val sed = prefillSEDService.prefill(datamodel, personDataCollection,pensjonCollection)
@@ -68,7 +69,7 @@ class SedP3000XXTest {
 
     @Test
     fun testP3000_SE() {
-        val datamodel = getMockDataModel(P3000_SE.name, personFnr)
+        val datamodel = getMockDataModel(P3000_SE, personFnr)
         pensjonCollection = PensjonCollection(sedType = P3000_SE)
 
         val sed = prefillSEDService.prefill(datamodel, personDataCollection,pensjonCollection)
@@ -76,15 +77,15 @@ class SedP3000XXTest {
     }
 
 
-    private fun getMockDataModel(SedType: String, fnr: String  = "someFnr"): PrefillDataModel {
+    private fun getMockDataModel(sed: SedType, fnr: String  = "someFnr"): PrefillDataModel {
         val req = ApiRequest(
                 institutions = listOf(),
-                sed = SedType,
+                sed = sed,
                 sakId = "12231231",
                 euxCaseId = "99191999911",
                 aktoerId = "00000",
                 fnr = fnr,
-                buc = P_BUC_01.name,
+                buc = P_BUC_01,
                 subjectArea = "Pensjon",
                 payload = "{}"
         )

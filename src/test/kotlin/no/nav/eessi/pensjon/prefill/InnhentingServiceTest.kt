@@ -2,6 +2,7 @@ package no.nav.eessi.pensjon.prefill
 
 import io.mockk.every
 import io.mockk.mockk
+import no.nav.eessi.pensjon.eux.model.BucType
 import no.nav.eessi.pensjon.eux.model.BucType.*
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.SedType.*
@@ -11,6 +12,9 @@ import no.nav.eessi.pensjon.personoppslag.pdl.model.Ident
 import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentType
 import no.nav.eessi.pensjon.prefill.models.PersonId
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModel
+import no.nav.eessi.pensjon.shared.api.ApiRequest
+import no.nav.eessi.pensjon.shared.api.ApiSubject
+import no.nav.eessi.pensjon.shared.api.SubjectFnr
 import no.nav.pensjon.v1.brukerssakerliste.V1BrukersSakerListe
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import no.nav.pensjon.v1.sak.V1Sak
@@ -47,8 +51,8 @@ class InnhentingServiceTest {
         val apiRequest = ApiRequest(
             subjectArea = "Pensjon",
             sakId = "EESSI-PEN-123",
-            sed = P2100.name,
-            buc = P_BUC_02.name,
+            sed = P2100,
+            buc = P_BUC_02,
             aktoerId = "0105094340092",
             avdodfnr = "12345566"
 
@@ -64,8 +68,8 @@ class InnhentingServiceTest {
         val apiRequest = ApiRequest(
             subjectArea = "Pensjon",
             sakId = "EESSI-PEN-123",
-            sed = P5000.name,
-            buc = P_BUC_02.name,
+            sed = P5000,
+            buc = P_BUC_02,
             aktoerId = "0105094340092",
             avdodfnr = "12345566",
             vedtakId = "23123123",
@@ -83,8 +87,8 @@ class InnhentingServiceTest {
         val apiRequest = ApiRequest(
             subjectArea = "Pensjon",
             sakId = "EESSI-PEN-123",
-            sed = P2100.name,
-            buc = P_BUC_02.name,
+            sed = P2100,
+            buc = P_BUC_02,
             aktoerId = "0105094340092"
         )
         assertThrows<ResponseStatusException> {
@@ -97,8 +101,8 @@ class InnhentingServiceTest {
         val apiRequest = ApiRequest(
             subjectArea = "Pensjon",
             sakId = "EESSI-PEN-123",
-            sed = P15000.name,
-            buc = P_BUC_10,
+            sed = P15000,
+            buc = BucType.P_BUC_10,
             aktoerId = "0105094340092",
             avdodfnr = "12345566"
         )
@@ -112,8 +116,8 @@ class InnhentingServiceTest {
         val apireq = ApiRequest(
             subjectArea = "Pensjon",
             sakId = "EESSI-PEN-123",
-            sed = P2000.name,
-            buc = P_BUC_01.name,
+            sed = P2000,
+            buc = P_BUC_01,
             aktoerId = "0105094340092",
             avdodfnr = "12345566"
         )
@@ -170,7 +174,7 @@ class InnhentingServiceTest {
 
         @Test
         fun `Gitt en P8000 med på en P_BUC_05 med saktype ALDER saa skal hentPensjoninformasjonCollection sitt resultat paa saktype returnere ALDER`() {
-            val prefillData = prefillDataModel(sedType = P8000, bucType = P_BUC_05.name)
+            val prefillData = prefillDataModel(sedType = P8000, bucType = P_BUC_05)
             val peninfo = pensjonsinformasjon(SAKTYPE_ALDER)
 
             every { pensjonsinformasjonClient.hentAltPaaFNR(FNR) } returns peninfo
@@ -195,7 +199,7 @@ class InnhentingServiceTest {
             fnr: String = FNR,
             aktorId: String = AKTOERID,
             sedType: SedType,
-            bucType: String = P_BUC_10
+            bucType: BucType = BucType.P_BUC_10
         ) = PrefillDataModel(
             penSaksnummer = "1010",
             bruker = PersonId(fnr, aktorId),

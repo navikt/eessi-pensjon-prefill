@@ -1,21 +1,23 @@
 package no.nav.eessi.pensjon.prefill.models
 
+import no.nav.eessi.pensjon.eux.model.BucType
 import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_09
 import no.nav.eessi.pensjon.eux.model.SedType
 
 object PrefillDataModelMother {
 
-    fun initialPrefillDataModel(sedType: SedType,
-                                pinId: String,
-                                vedtakId: String? = null,
-                                penSaksnummer: String = "12345",
-                                avdod: PersonId? = null,
-                                kravDato: String? = null,
-                                kravId: String? = null,
-                                refTilPerson: ReferanseTilPerson? = null,
-                                euxCaseId: String = "123456",
-                                bucType: String = P_BUC_09.name,
-                                institution: List<InstitusjonItem> = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))) =
+    fun initialPrefillDataModel(
+        sedType: SedType,
+        pinId: String,
+        vedtakId: String? = null,
+        penSaksnummer: String = "12345",
+        avdod: PersonId? = null,
+        kravDato: String? = null,
+        kravId: String? = null,
+        refTilPerson: ReferanseTilPerson? = null,
+        euxCaseId: String = "123456",
+        bucType: BucType = P_BUC_09,
+        institution: List<InstitusjonItem> = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))) =
             PrefillDataModel(
                     penSaksnummer,
                     bruker = PersonId(pinId, "123456789"),

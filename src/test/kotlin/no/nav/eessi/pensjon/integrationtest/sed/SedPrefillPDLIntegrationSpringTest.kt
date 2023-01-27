@@ -149,7 +149,7 @@ class SedPrefillPDLIntegrationSpringTest {
 
         every { kodeverkClient.finnLandkode(any()) } returns "QX"
 
-        val apijson = dummyApijson(sakid = "22874955", aktoerId = AKTOER_ID, sedType = SedType.P2100, buc = P_BUC_02.name, fnravdod = FNR_VOKSEN_2)
+        val apijson = dummyApijson(sakid = "22874955", aktoerId = AKTOER_ID, sedType = SedType.P2100, buc = P_BUC_02, fnravdod = FNR_VOKSEN_2)
 
         val result = mockMvc.perform(post("/sed/prefill")
             .contentType(MediaType.APPLICATION_JSON)

@@ -4,7 +4,7 @@ import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_01
 import no.nav.eessi.pensjon.eux.model.NavMock
-import no.nav.eessi.pensjon.eux.model.SedType
+import no.nav.eessi.pensjon.eux.model.SedType.*
 import no.nav.eessi.pensjon.eux.model.sed.Adresse
 import no.nav.eessi.pensjon.eux.model.sed.AnsattSelvstendigItem
 import no.nav.eessi.pensjon.eux.model.sed.BarnepassItem
@@ -15,11 +15,11 @@ import no.nav.eessi.pensjon.eux.model.sed.PersonArbeidogOppholdUtland
 import no.nav.eessi.pensjon.eux.model.sed.SED
 import no.nav.eessi.pensjon.eux.model.sed.StandardItem
 import no.nav.eessi.pensjon.eux.model.sed.TrygdeTidPeriode
-import no.nav.eessi.pensjon.prefill.ApiRequest
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.models.InstitusjonItem
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.person.PrefillSed
+import no.nav.eessi.pensjon.shared.api.ApiRequest
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.toJson
@@ -52,7 +52,7 @@ class SedP4000Test {
 
         val nav = NavMock().genererNavMock()
         val p4000 = P4000(
-                type = SedType.P4000,
+                type = P4000,
                 nav = nav,
                 trygdetid = result
         )
@@ -79,11 +79,11 @@ class SedP4000Test {
         val payload = mapAnyToJson(trygdetid)
 
         val req = ApiRequest(
-                sed = "P4000",
+                sed = P4000,
                 sakId = "12231231",
                 euxCaseId = "99191999911",
                 aktoerId = "00000",
-                buc = P_BUC_01.name,
+                buc = P_BUC_01,
                 subjectArea = "Pensjon",
                 payload = payload
         )
@@ -117,11 +117,11 @@ class SedP4000Test {
         val items = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
         val req = ApiRequest(
                 institutions = items,
-                sed = "P4000",
+                sed = P4000,
                 sakId = "12231231",
                 euxCaseId = "99191999911",
                 aktoerId = "00000",
-                buc = P_BUC_01.name,
+                buc = P_BUC_01,
                 subjectArea = "Pensjon",
                 payload = payload
         )
@@ -134,11 +134,11 @@ class SedP4000Test {
         val items = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
         val req = ApiRequest(
                 institutions = items,
-                sed = "P4000",
+                sed = P4000,
                 sakId = "12231231",
                 euxCaseId = "99191999911",
                 aktoerId = "00000",
-                buc = P_BUC_01.name,
+                buc = P_BUC_01,
                 subjectArea = "Pensjon",
                 payload = "{}"
         )
@@ -161,11 +161,11 @@ class SedP4000Test {
         val items = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
         val req = ApiRequest(
                 institutions = items,
-                sed = "P4000",
+                sed = P4000,
                 sakId = "12231231",
                 euxCaseId = "99191999911",
                 aktoerId = "1000060964183",
-                buc = P_BUC_01.name,
+                buc = P_BUC_01,
                 subjectArea = "Pensjon",
                 payload = jsonfile
         )
@@ -181,7 +181,7 @@ class SedP4000Test {
 
         val personData = PersonDataCollection(forsikretPerson = PersonPDLMock.createWith(), gjenlevendeEllerAvdod = PersonPDLMock.createWith())
 
-        every { prefillSed.prefill(any(), any()) } returns SED(type = SedType.P4000)
+        every { prefillSed.prefill(any(), any()) } returns SED(type = P4000)
 
         val sed = pre4000.prefill(data, personData)
         assertNotNull(sed)

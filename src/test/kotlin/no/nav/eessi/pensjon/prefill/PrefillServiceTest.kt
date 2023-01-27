@@ -156,7 +156,7 @@ class PrefillServiceTest {
                 avdod = null,
                 euxCaseID = "1000",
                 sedType = SedType.P2000,
-                buc  = P_BUC_01.name,
+                buc = P_BUC_01,
                 institution = listOf(
                 InstitusjonItem(
                         country = "NO",

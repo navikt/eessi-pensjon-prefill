@@ -3,11 +3,13 @@ package no.nav.eessi.pensjon.prefill.sed
 
 import io.mockk.every
 import io.mockk.mockk
+import no.nav.eessi.pensjon.eux.model.BucType
+import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.pensjonsinformasjon.clients.PensjonRequestBuilder
 import no.nav.eessi.pensjon.pensjonsinformasjon.clients.PensjonsinformasjonClient
-import no.nav.eessi.pensjon.prefill.ApiRequest
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.models.InstitusjonItem
+import no.nav.eessi.pensjon.shared.api.ApiRequest
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -57,11 +59,11 @@ object PrefillTestHelper {
     }
 
 
-    fun createMockApiRequest(sedName: String, buc: String, payload: String, sakNr: String): ApiRequest {
+    fun createMockApiRequest(sed: SedType, buc: BucType, payload: String, sakNr: String): ApiRequest {
         val items = listOf(InstitusjonItem(country = "NO", institution = "NAVT003"))
         return ApiRequest(
                 institutions = items,
-                sed = sedName,
+                sed = sed,
                 sakId = sakNr,
                 euxCaseId = null,
                 aktoerId = "1000060964183",

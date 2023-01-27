@@ -4,6 +4,7 @@ import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_01
 import no.nav.eessi.pensjon.eux.model.SedType
+import no.nav.eessi.pensjon.eux.model.SedType.*
 import no.nav.eessi.pensjon.eux.model.sed.Nav
 import no.nav.eessi.pensjon.eux.model.sed.SED
 import no.nav.eessi.pensjon.personoppslag.Fodselsnummer
@@ -57,7 +58,7 @@ class PrefillP2000AlderpensjonkravavvistTest {
         val dataFromPEN = lesPensjonsdataFraFil("/pensjonsinformasjon/krav/P2000krav-alderpensjon-avslag.xml")
         val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
 
-        prefillData = initialPrefillDataModel(SedType.P2000, personFnr, penSaksnummer = pesysSaksnummer).apply {
+        prefillData = initialPrefillDataModel(P2000, personFnr, penSaksnummer = pesysSaksnummer).apply {
             partSedAsJson["PersonInfo"] = readJsonResponse("/json/nav/other/person_informasjon_selvb.json")
             partSedAsJson["P4000"] = readJsonResponse("/json/nav/other/p4000_trygdetid_part.json")
         }
@@ -131,7 +132,7 @@ class PrefillP2000AlderpensjonkravavvistTest {
     fun `testing av komplett P2000 med utskrift og testing av innsending`() {
         val P2000 = prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection)
 
-        val json = createMockApiRequest(SedType.P2000.name, P_BUC_01.name, P2000.toJson(), pesysSaksnummer).toJson()
+        val json = createMockApiRequest(SedType.P2000, P_BUC_01, P2000.toJson(), pesysSaksnummer).toJson()
         assertNotNull(json)
     }
 

@@ -96,7 +96,7 @@ class PrefillSEDService(private val eessiInformasjon: EessiInformasjon, private 
             }
 
             P8000 -> {
-                if (prefillData.buc == P_BUC_05.name) {
+                if (prefillData.buc == P_BUC_05) {
                     PrefillP8000(PrefillSed(prefillPDLnav)).prefill(
                         prefillData,
                         personDataCollection,

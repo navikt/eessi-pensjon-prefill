@@ -21,7 +21,7 @@ class AutomatiseringStatistikkService(private val kafkaTemplate: KafkaTemplate<S
         kafkaTemplate.send(KafkaAutomatiseringMessage(automatiseringMelding)).get()
     }
 
-    fun genererAutomatiseringStatistikk(sed: SED, bucType: String) {
+    fun genererAutomatiseringStatistikk(sed: SED, bucType: BucType) {
         val parser = JSONParser(JSONParser.DEFAULT_PERMISSIVE_MODE)
         val obj = parser.parse(sed.toJson())
         val jsonObject = obj as JSONObject
@@ -37,7 +37,7 @@ class AutomatiseringStatistikkService(private val kafkaTemplate: KafkaTemplate<S
             publiserAutomatiseringStatistikk(
                 PrefillAutomatiseringMelding(
                     sedVersjon = "1",
-                    bucType = BucType.valueOf(bucType),
+                    bucType = bucType,
                     sedType = sed.type,
                     antallPreutfylteFelter = antallPreutfylteFelter,
                     antallTommeFelter = antallTommeFelter,

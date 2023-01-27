@@ -1,5 +1,6 @@
 package no.nav.eessi.pensjon.prefill.models
 
+import no.nav.eessi.pensjon.eux.model.BucType
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.sed.KravType
 import no.nav.eessi.pensjon.utils.mapJsonToAny
@@ -18,7 +19,7 @@ data class PrefillDataModel(
     val bruker: PersonId,
     val avdod: PersonId?,
     val sedType: SedType,
-    val buc: String,
+    val buc: BucType,
     val vedtakId: String? = null,
     val kravDato: String? = null, // Brukes bare av P15000 yyyy-MM-dd
     val kravType: KravType? = null, // Brukes bare av P15000

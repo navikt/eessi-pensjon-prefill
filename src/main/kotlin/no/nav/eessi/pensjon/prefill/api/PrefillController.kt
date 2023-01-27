@@ -1,8 +1,8 @@
 package no.nav.eessi.pensjon.prefill.api
 
 import no.nav.eessi.pensjon.logging.AuditLogger
-import no.nav.eessi.pensjon.prefill.ApiRequest
 import no.nav.eessi.pensjon.prefill.PrefillService
+import no.nav.eessi.pensjon.shared.api.ApiRequest
 import no.nav.security.token.support.core.api.Protected
 import org.slf4j.LoggerFactory
 import org.springframework.http.MediaType

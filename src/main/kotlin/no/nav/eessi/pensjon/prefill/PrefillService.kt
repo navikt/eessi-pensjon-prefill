@@ -10,6 +10,7 @@ import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModel
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
 import no.nav.eessi.pensjon.prefill.sed.krav.ValidationException
+import no.nav.eessi.pensjon.shared.api.ApiRequest
 import no.nav.eessi.pensjon.statistikk.AutomatiseringStatistikkService
 import no.nav.eessi.pensjon.utils.eessiRequire
 import no.nav.eessi.pensjon.utils.toJsonSkipEmpty

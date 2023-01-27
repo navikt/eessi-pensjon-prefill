@@ -47,7 +47,8 @@ class PrefillP7000_AP_21975717Test {
             institutionnavn = "NOINST002, NO INST002, NO"
         )
         pensjonCollection = PensjonCollection(sedType = SedType.P7000)
-        prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P7000,penSaksnummer = "21975717", pinId = personFnr, vedtakId = "12312312")
+        prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P7000,
+            penSaksnummer = "21975717", pinId = personFnr, vedtakId = "12312312")
     }
 
     @Test

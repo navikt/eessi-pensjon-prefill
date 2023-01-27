@@ -11,6 +11,7 @@ import no.nav.eessi.pensjon.personoppslag.pdl.model.NorskIdent
 import no.nav.eessi.pensjon.prefill.models.PensjonCollection
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModel
+import no.nav.eessi.pensjon.shared.api.ApiRequest
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import no.nav.pensjon.v1.sak.V1Sak
 import no.nav.pensjon.v1.vedtak.V1Vedtak
@@ -47,7 +48,7 @@ class InnhentingService(
     fun getAvdodAktoerIdPDL(request: ApiRequest): String? {
         val buc = request.buc ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST,"Mangler Buc")
         return when (buc) {
-            P_BUC_02.name -> {
+            P_BUC_02 -> {
                 val norskIdent = request.riktigAvdod() ?: run {
                     logger.error("Mangler fnr for avdød")
                     throw ResponseStatusException(HttpStatus.BAD_REQUEST,"Mangler fnr for avdød")
@@ -57,7 +58,7 @@ class InnhentingService(
                 }
                 hentIdent(IdentType.AktoerId, NorskIdent(norskIdent))
             }
-            P_BUC_05.name, P_BUC_06.name,P_BUC_10.name -> {
+            P_BUC_05, P_BUC_06,P_BUC_10 -> {
                 val norskIdent = request.riktigAvdod() ?: return null
                 if (norskIdent.isBlank()) {
                     throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Ident har tom input-verdi")
@@ -100,7 +101,7 @@ class InnhentingService(
             }
             P6000 ->  PensjonCollection(pensjoninformasjon = pensjonsinformasjonService.hentVedtak(hentVedtak(prefillData)), sedType = sedType)
             P8000 -> {
-                if (prefillData.buc == P_BUC_05.name) {
+                if (prefillData.buc == P_BUC_05) {
                         try {
                             val sak = hentRelevantPensjonSak(prefillData) { pensakType -> EPSaktype.valueOf(pensakType) in pensakTyper }
                             PensjonCollection(sak = sak , sedType = sedType)

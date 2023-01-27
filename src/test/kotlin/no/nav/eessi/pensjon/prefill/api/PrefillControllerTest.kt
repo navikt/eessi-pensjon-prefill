@@ -5,7 +5,7 @@ import io.mockk.every
 import io.mockk.impl.annotations.SpyK
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_06
-import no.nav.eessi.pensjon.eux.model.SedType
+import no.nav.eessi.pensjon.eux.model.SedType.*
 import no.nav.eessi.pensjon.eux.model.sed.Bruker
 import no.nav.eessi.pensjon.eux.model.sed.Krav
 import no.nav.eessi.pensjon.eux.model.sed.Nav
@@ -13,7 +13,6 @@ import no.nav.eessi.pensjon.eux.model.sed.Person
 import no.nav.eessi.pensjon.eux.model.sed.SED
 import no.nav.eessi.pensjon.logging.AuditLogger
 import no.nav.eessi.pensjon.personoppslag.pdl.model.NorskIdent
-import no.nav.eessi.pensjon.prefill.ApiRequest
 import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.PersonDataService
@@ -22,6 +21,7 @@ import no.nav.eessi.pensjon.prefill.PrefillService
 import no.nav.eessi.pensjon.prefill.models.InstitusjonItem
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
+import no.nav.eessi.pensjon.shared.api.ApiRequest
 import no.nav.eessi.pensjon.statistikk.AutomatiseringStatistikkService
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import org.junit.jupiter.api.Assertions
@@ -63,8 +63,8 @@ class PrefillControllerTest {
             vedtakId = "1234567",
             institutions = listOf(InstitusjonItem("NO", "DUMMY")),
             euxCaseId = "1234567890",
-            sed = "P6000",
-            buc = P_BUC_06.name,
+            sed = P6000,
+            buc = P_BUC_06,
             aktoerId = "0105094340092"
         )
 
@@ -91,7 +91,7 @@ class PrefillControllerTest {
 
         val sed = SED.fromJson(response)
 
-        assertEquals(SedType.P6000, sed.type)
+        assertEquals(P6000, sed.type)
         assertEquals("Dummy", sed.nav?.bruker?.person?.fornavn)
         assertEquals("Dummy", sed.nav?.bruker?.person?.etternavn)
     }

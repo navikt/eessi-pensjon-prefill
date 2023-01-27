@@ -2,11 +2,10 @@ package no.nav.eessi.pensjon.prefill.sed.krav
 
 import io.mockk.every
 import io.mockk.mockk
-import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_01
-import no.nav.eessi.pensjon.eux.model.SedType
+import no.nav.eessi.pensjon.eux.model.BucType.*
+import no.nav.eessi.pensjon.eux.model.SedType.*
 import no.nav.eessi.pensjon.personoppslag.Fodselsnummer
 import no.nav.eessi.pensjon.personoppslag.FodselsnummerGenerator
-import no.nav.eessi.pensjon.prefill.ApiRequest
 import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
@@ -21,6 +20,7 @@ import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
 import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper.lesPensjonsdataFraFil
 import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper.readJsonResponse
+import no.nav.eessi.pensjon.shared.api.ApiRequest
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import no.nav.eessi.pensjon.utils.toJson
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -56,7 +56,7 @@ class PrefillP2000_AP_LOP_REVUTest {
 
         dataFromPEN = lesPensjonsdataFraFil("/pensjonsinformasjon/krav/P2000-AP-LP-RVUR-20541862.xml")
 
-        prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P2000, pinId = personFnr, penSaksnummer = pesysSaksnummer).apply {
+        prefillData = PrefillDataModelMother.initialPrefillDataModel(P2000, pinId = personFnr, penSaksnummer = pesysSaksnummer).apply {
             partSedAsJson["PersonInfo"] = readJsonResponse("/json/nav/other/person_informasjon_selvb.json")
             partSedAsJson["P4000"] = readJsonResponse("/json/nav/other/p4000_trygdetid_part.json")
 
@@ -114,21 +114,21 @@ class PrefillP2000_AP_LOP_REVUTest {
 
     @Test
     fun `testing av komplett P2000 med utskrift og testing av innsending`() {
-        val P2000 = prefillSEDService.prefill(prefillData, persondataCollection,pensjonCollection)
+        val p2000 = prefillSEDService.prefill(prefillData, persondataCollection,pensjonCollection)
 
-        val json = mapAnyToJson(createMockApiRequest(SedType.P2000.name, P_BUC_01.name, P2000.toJson()))
+        val json = mapAnyToJson(createMockApiRequest(p2000.toJson()))
         assertNotNull(json)
     }
 
-    private fun createMockApiRequest(sedName: String, buc: String, payload: String): ApiRequest {
+    private fun createMockApiRequest(payload: String): ApiRequest {
         val items = listOf(InstitusjonItem(country = "NO", institution = "NAVT003"))
         return ApiRequest(
                 institutions = items,
-                sed = sedName,
+                sed = P2000,
                 sakId = "01234567890",
                 euxCaseId = "99191999911",
                 aktoerId = "1000060964183",
-                buc = buc,
+                buc = P_BUC_01,
                 subjectArea = "Pensjon",
                 payload = payload
         )

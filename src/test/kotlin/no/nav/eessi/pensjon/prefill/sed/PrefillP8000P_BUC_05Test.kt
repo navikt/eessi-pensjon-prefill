@@ -177,7 +177,7 @@ class PrefillP8000P_BUC_05Test {
 
         val pensjonCollection = PensjonCollection(sak = sak, sedType = SedType.P8000)
 
-        prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P8000, fnr, penSaksnummer = "100", avdod = PersonId(norskIdent = avdodFnr, aktorId = "21323"),  refTilPerson = ReferanseTilPerson.SOKER, bucType = P_BUC_05.name)
+        prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P8000, fnr, penSaksnummer = "100", avdod = PersonId(norskIdent = avdodFnr, aktorId = "21323"),  refTilPerson = ReferanseTilPerson.SOKER, bucType = P_BUC_05)
 
         val p8000 =  prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection)
 
@@ -250,7 +250,7 @@ class PrefillP8000P_BUC_05Test {
 
         val pensjonCollection = PensjonCollection(sak = sak, sedType = SedType.P8000)
 
-        prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P8000, fnr, penSaksnummer = "100", avdod = PersonId(norskIdent = avdodFnr, aktorId = "21323"),  refTilPerson = ReferanseTilPerson.SOKER, bucType = P_BUC_05.name)
+        prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P8000, fnr, penSaksnummer = "100", avdod = PersonId(norskIdent = avdodFnr, aktorId = "21323"),  refTilPerson = ReferanseTilPerson.SOKER, bucType = P_BUC_05)
 
         val p8000 =  prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection)
 
