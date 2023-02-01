@@ -7,7 +7,7 @@ buildscript {
         tokenSupportVersion = '2.1.8'
         logstashLogbackVersion = '7.2'
         pensjonInformasjonVersion = '9.4.10'
-        epMetricsVersion = '1.0.10'
+        epMetricsVersion = '1.0.11'
         epLoggingVersion='1.1.16'
         epPensjonInformasjonVersjon='2.0.82'
     }
