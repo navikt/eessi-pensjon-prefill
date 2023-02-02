@@ -6,10 +6,14 @@
  import no.nav.eessi.pensjon.eux.model.BucType.*
  import no.nav.eessi.pensjon.eux.model.SedType
  import no.nav.eessi.pensjon.eux.model.sed.KravType
- import no.nav.eessi.pensjon.prefill.models.*
+ import no.nav.eessi.pensjon.prefill.models.InstitusjonItem
+ import no.nav.eessi.pensjon.prefill.models.PersonId
+ import no.nav.eessi.pensjon.prefill.models.PrefillDataModel
+ import no.nav.eessi.pensjon.prefill.models.ReferanseTilPerson
  import org.slf4j.LoggerFactory
  import org.springframework.http.HttpStatus
  import org.springframework.web.server.ResponseStatusException
+
  class ApiSubject(
      val gjenlevende: SubjectFnr? = null,
      val avdod: SubjectFnr? = null
@@ -64,6 +68,7 @@
 
          //validatate request and convert to PrefillDataModel
          fun buildPrefillDataModelOnExisting(request: ApiRequest, fodselsnr: String, avdodaktoerID: String? = null): PrefillDataModel {
+             logger.debug("*** $request ***")
              val sedType = if (request.sed == null)
                  throw ResponseStatusException(HttpStatus.BAD_REQUEST,"SedType mangler")
              else
