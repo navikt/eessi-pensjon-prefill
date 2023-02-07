@@ -16,8 +16,8 @@ import no.nav.eessi.pensjon.prefill.LagPDLPerson.Companion.lagPerson
 import no.nav.eessi.pensjon.prefill.LagPDLPerson.Companion.medAdresse
 import no.nav.eessi.pensjon.prefill.LagPDLPerson.Companion.medBarn
 import no.nav.eessi.pensjon.prefill.LagPDLPerson.Companion.medForeldre
-import no.nav.eessi.pensjon.prefill.models.PersonId
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
+import no.nav.eessi.pensjon.shared.api.PersonId
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -100,7 +100,8 @@ internal class PersonDataServiceTest {
 
         val data = PrefillDataModelMother.initialPrefillDataModel(SedType.P2000, FNR_VOKSEN, SAK_ID, euxCaseId = EUX_RINA, avdod = PersonId(
             FNR_VOKSEN_2, AKTOER_ID_2
-        ))
+        )
+        )
 
         val result = persondataService.hentPersonData(data)
 

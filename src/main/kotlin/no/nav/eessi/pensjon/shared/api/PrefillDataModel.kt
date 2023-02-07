@@ -1,4 +1,4 @@
-package no.nav.eessi.pensjon.prefill.models
+package no.nav.eessi.pensjon.shared.api
 
 import no.nav.eessi.pensjon.eux.model.BucType
 import no.nav.eessi.pensjon.eux.model.SedType
@@ -43,6 +43,8 @@ data class PrefillDataModel(
         val personInfo = getPartSEDasJson("PersonInfo") ?: return null
         return mapJsonToAny(personInfo)
     }
+
+    fun getInstitutionsList(): List<InstitusjonItem> = institution
 
 }
 

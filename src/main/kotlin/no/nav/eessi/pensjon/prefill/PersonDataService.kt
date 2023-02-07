@@ -1,6 +1,7 @@
 package no.nav.eessi.pensjon.prefill
 
 import no.nav.eessi.pensjon.eux.model.SedType
+import no.nav.eessi.pensjon.eux.model.SedType.*
 import no.nav.eessi.pensjon.metrics.MetricsHelper
 import no.nav.eessi.pensjon.personoppslag.Fodselsnummer
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
@@ -15,7 +16,8 @@ import no.nav.eessi.pensjon.personoppslag.pdl.model.Person
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Sivilstand
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Sivilstandstype
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
-import no.nav.eessi.pensjon.prefill.models.PrefillDataModel
+import no.nav.eessi.pensjon.shared.api.PrefillDataModel
+
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -45,7 +47,7 @@ class PersonDataService(private val personService: PersonService,
     fun hentPersonData(prefillData: PrefillDataModel) : PersonDataCollection {
         return when (prefillData.sedType) {
             //alle med barn
-            SedType.P2000, SedType.P2200, SedType.P2100, SedType.P6000 -> hentPersonerMedBarn(prefillData)
+            P2000, P2200, P2100, P6000 -> hentPersonerMedBarn(prefillData)
             //alle uten barn
             else -> hentPersoner(prefillData)
         }

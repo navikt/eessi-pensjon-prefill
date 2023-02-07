@@ -1,10 +1,10 @@
 package no.nav.eessi.pensjon.prefill.sed
 
 import no.nav.eessi.pensjon.eux.model.sed.P10000
-import no.nav.eessi.pensjon.prefill.models.BankOgArbeid
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
-import no.nav.eessi.pensjon.prefill.models.PersonId
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
+import no.nav.eessi.pensjon.shared.api.BankOgArbeid
+import no.nav.eessi.pensjon.shared.api.PersonId
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 

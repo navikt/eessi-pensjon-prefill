@@ -20,13 +20,14 @@ import no.nav.eessi.pensjon.eux.model.sed.SED
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.prefill.models.PensjonCollection
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
-import no.nav.eessi.pensjon.prefill.models.PrefillDataModel
+
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.prefill.person.PrefillSed
 import no.nav.eessi.pensjon.prefill.sed.krav.PrefillP2000
 import no.nav.eessi.pensjon.prefill.sed.krav.PrefillP2100
 import no.nav.eessi.pensjon.prefill.sed.krav.PrefillP2200
 import no.nav.eessi.pensjon.prefill.sed.vedtak.PrefillP6000
+import no.nav.eessi.pensjon.shared.api.PrefillDataModel
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory

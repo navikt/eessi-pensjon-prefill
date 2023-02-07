@@ -4,8 +4,9 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import no.nav.eessi.pensjon.eux.model.sed.P4000
 import no.nav.eessi.pensjon.eux.model.sed.PersonArbeidogOppholdUtland
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
-import no.nav.eessi.pensjon.prefill.models.PrefillDataModel
+
 import no.nav.eessi.pensjon.prefill.person.PrefillSed
+import no.nav.eessi.pensjon.shared.api.PrefillDataModel
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory

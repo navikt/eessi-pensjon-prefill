@@ -8,8 +8,9 @@ import no.nav.eessi.pensjon.pensjonsinformasjon.models.EPSaktype.UFOREP
 import no.nav.eessi.pensjon.pensjonsinformasjon.models.PenKravtype.FORSTEG_BH
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
-import no.nav.eessi.pensjon.prefill.models.PrefillDataModel
+
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
+import no.nav.eessi.pensjon.shared.api.PrefillDataModel
 import no.nav.pensjon.v1.sak.V1Sak
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory

@@ -8,8 +8,8 @@ import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.pensjonsinformasjon.clients.PensjonRequestBuilder
 import no.nav.eessi.pensjon.pensjonsinformasjon.clients.PensjonsinformasjonClient
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
-import no.nav.eessi.pensjon.prefill.models.InstitusjonItem
 import no.nav.eessi.pensjon.shared.api.ApiRequest
+import no.nav.eessi.pensjon.shared.api.InstitusjonItem
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity

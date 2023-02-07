@@ -1,15 +1,10 @@
  package no.nav.eessi.pensjon.shared.api
 
-
  import com.fasterxml.jackson.annotation.JsonIgnoreProperties
  import no.nav.eessi.pensjon.eux.model.BucType
  import no.nav.eessi.pensjon.eux.model.BucType.*
  import no.nav.eessi.pensjon.eux.model.SedType
  import no.nav.eessi.pensjon.eux.model.sed.KravType
- import no.nav.eessi.pensjon.prefill.models.InstitusjonItem
- import no.nav.eessi.pensjon.prefill.models.PersonId
- import no.nav.eessi.pensjon.prefill.models.PrefillDataModel
- import no.nav.eessi.pensjon.prefill.models.ReferanseTilPerson
  import org.slf4j.LoggerFactory
  import org.springframework.http.HttpStatus
  import org.springframework.web.server.ResponseStatusException
@@ -43,7 +38,8 @@
      val avdodfnr: String? = null, //kun P2100 på P_BUC_02
      val subject: ApiSubject? = null, //P_BUC_02 alle andre seder etter P2100
      //P8000-P_BUC_05
-     val referanseTilPerson: ReferanseTilPerson? = null
+     val referanseTilPerson: ReferanseTilPerson? = null,
+
      ) {
 
      fun toAudit(): String {
@@ -68,7 +64,7 @@
 
          //validatate request and convert to PrefillDataModel
          fun buildPrefillDataModelOnExisting(request: ApiRequest, fodselsnr: String, avdodaktoerID: String? = null): PrefillDataModel {
-             logger.debug("*** $request ***")
+             logger.debug("*** apirequest: $request ***")
              val sedType = if (request.sed == null)
                  throw ResponseStatusException(HttpStatus.BAD_REQUEST,"SedType mangler")
              else

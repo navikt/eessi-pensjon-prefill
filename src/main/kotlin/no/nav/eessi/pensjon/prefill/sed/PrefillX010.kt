@@ -13,10 +13,10 @@ import no.nav.eessi.pensjon.eux.model.sed.Svar
 import no.nav.eessi.pensjon.eux.model.sed.X009
 import no.nav.eessi.pensjon.eux.model.sed.X010
 import no.nav.eessi.pensjon.eux.model.sed.XNav
-import no.nav.eessi.pensjon.prefill.models.BankOgArbeid
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
-import no.nav.eessi.pensjon.prefill.models.PersonId
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
+import no.nav.eessi.pensjon.shared.api.BankOgArbeid
+import no.nav.eessi.pensjon.shared.api.PersonId
 import no.nav.eessi.pensjon.utils.toJson
 import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
 import org.slf4j.Logger

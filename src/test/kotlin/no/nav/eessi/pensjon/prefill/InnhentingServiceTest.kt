@@ -10,11 +10,7 @@ import no.nav.eessi.pensjon.pensjonsinformasjon.clients.PensjonsinformasjonClien
 import no.nav.eessi.pensjon.personoppslag.pdl.model.AktoerId
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Ident
 import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentType
-import no.nav.eessi.pensjon.prefill.models.PersonId
-import no.nav.eessi.pensjon.prefill.models.PrefillDataModel
-import no.nav.eessi.pensjon.shared.api.ApiRequest
-import no.nav.eessi.pensjon.shared.api.ApiSubject
-import no.nav.eessi.pensjon.shared.api.SubjectFnr
+import no.nav.eessi.pensjon.shared.api.*
 import no.nav.pensjon.v1.brukerssakerliste.V1BrukersSakerListe
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import no.nav.pensjon.v1.sak.V1Sak

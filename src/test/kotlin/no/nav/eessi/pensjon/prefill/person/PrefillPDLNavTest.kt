@@ -38,10 +38,10 @@ import no.nav.eessi.pensjon.prefill.LagPDLPerson.Companion.medAdresse
 import no.nav.eessi.pensjon.prefill.LagPDLPerson.Companion.medBarn
 import no.nav.eessi.pensjon.prefill.LagPDLPerson.Companion.medForeldre
 import no.nav.eessi.pensjon.prefill.LagPDLPerson.Companion.medKontaktadresseUtland
-import no.nav.eessi.pensjon.prefill.models.BankOgArbeid
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
-import no.nav.eessi.pensjon.prefill.models.PersonId
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
+import no.nav.eessi.pensjon.shared.api.BankOgArbeid
+import no.nav.eessi.pensjon.shared.api.PersonId
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -541,7 +541,8 @@ class PrefillPDLNavTest {
                     null,
                     null,
                     null,
-                    null))
+                    null)
+            )
         }
 
         val person = lagPerson(somePersonNr, "Ole", "Brum")

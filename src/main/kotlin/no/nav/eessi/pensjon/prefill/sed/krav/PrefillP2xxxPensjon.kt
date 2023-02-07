@@ -10,7 +10,7 @@ import no.nav.eessi.pensjon.pensjonsinformasjon.models.PenKravtype
 import no.nav.eessi.pensjon.pensjonsinformasjon.models.PenKravtype.*
 import no.nav.eessi.pensjon.personoppslag.Fodselsnummer
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
-import no.nav.eessi.pensjon.prefill.models.PrefillDataModel
+import no.nav.eessi.pensjon.shared.api.PrefillDataModel
 import no.nav.eessi.pensjon.utils.simpleFormat
 import no.nav.pensjon.v1.kravhistorikk.V1KravHistorikk
 import no.nav.pensjon.v1.sak.V1Sak

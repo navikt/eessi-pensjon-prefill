@@ -1,4 +1,4 @@
-package no.nav.eessi.pensjon.prefill.models
+package no.nav.eessi.pensjon.shared.api
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 

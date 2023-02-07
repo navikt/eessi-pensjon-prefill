@@ -1,4 +1,4 @@
-package no.nav.eessi.pensjon.prefill.models
+package no.nav.eessi.pensjon.shared.api
 
 import java.util.*
 
