@@ -1,5 +1,6 @@
 package no.nav.eessi.pensjon.prefill.person
 
+import jakarta.annotation.PostConstruct
 import no.nav.eessi.pensjon.eux.model.sed.Adresse
 import no.nav.eessi.pensjon.kodeverk.KodeverkClient
 import no.nav.eessi.pensjon.kodeverk.PostnummerService
@@ -16,7 +17,6 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
-import javax.annotation.PostConstruct
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Person as PDLPerson
 
 @Component
