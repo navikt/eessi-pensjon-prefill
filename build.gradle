@@ -67,7 +67,7 @@ dependencies {
     implementation("no.nav.security:token-validation-jaxrs:${tokenSupportVersion}")
     implementation("no.nav.security:token-validation-test-support:2.0.5")
 
-    implementation ("no.nav.common:token-client:2.2022.10.28_08.02-d7d341cf26ba")
+    implementation ("no.nav.common:token-client:2.2023.01.10_13.49-81ddc732df3a")
 
     // Micrometer
     implementation("io.micrometer:micrometer-registry-prometheus:1.10.4")
