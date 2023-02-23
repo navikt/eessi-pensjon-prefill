@@ -5,7 +5,6 @@ buildscript {
         jacksonModuleKotlinVersion = '2.14.2'
         cxfVersion = '3.3.4'
         tokenSupportVersion = '3.0.3'
-        logstashLogbackVersion = '7.2'
     }
 }
 
@@ -53,7 +52,7 @@ dependencies {
     implementation("com.github.wnameless.json:json-flattener:0.16.4")
 
     // Logging
-    implementation("net.logstash.logback:logstash-logback-encoder:${logstashLogbackVersion}")
+    implementation("net.logstash.logback:logstash-logback-encoder:7.3")
     configurations { all*.exclude group: 'commons-logging', module: 'commons-logging' }
     implementation group: 'org.slf4j', name: 'jcl-over-slf4j'
 
