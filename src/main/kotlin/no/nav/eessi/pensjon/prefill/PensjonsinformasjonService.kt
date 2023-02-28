@@ -5,13 +5,18 @@ import no.nav.eessi.pensjon.pensjonsinformasjon.FinnSak
 import no.nav.eessi.pensjon.pensjonsinformasjon.clients.PensjoninformasjonException
 import no.nav.eessi.pensjon.pensjonsinformasjon.clients.PensjonsinformasjonClient
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
-
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import no.nav.pensjon.v1.sak.V1Sak
 import no.nav.pensjon.v1.vedtak.V1Vedtak
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.context.annotation.Profile
 import org.springframework.http.HttpStatus
+import org.springframework.retry.RetryCallback
+import org.springframework.retry.RetryContext
+import org.springframework.retry.annotation.Backoff
+import org.springframework.retry.annotation.Retryable
+import org.springframework.retry.listener.RetryListenerSupport
 import org.springframework.stereotype.Component
 import org.springframework.web.server.ResponseStatusException
 
@@ -39,6 +44,10 @@ class PensjonsinformasjonService(private val pensjonsinformasjonClient: Pensjons
     }
 
     //hjelpe metode for å hente ut date for SAK/krav P2x00 fnr benyttes
+
+    @Retryable(
+        backoff = Backoff(delayExpression = "@pensjonsInfoRetryConfig.initialRetryMillis", maxDelay = 200000L, multiplier = 3.0),
+        listeners  = ["pensjonsInfoRetryLogger"])
     fun hentPensjonInformasjon(fnr: String, aktoerId: String): Pensjonsinformasjon {
         if (aktoerId.isBlank()) throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Mangler AktoerId")
         if (fnr.isBlank()) throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Mangler FNR")
@@ -129,4 +138,17 @@ class PensjonsinformasjonService(private val pensjonsinformasjonClient: Pensjons
 class IkkeGyldigKallException(reason: String): ResponseStatusException(HttpStatus.BAD_REQUEST, reason)
 
 class ManglendeSakIdException(reason: String): ResponseStatusException(HttpStatus.BAD_REQUEST, reason)
+
+
+@Profile("!retryConfigOverride")
+@Component
+data class PensjonsInfoRetryConfig(val initialRetryMillis: Long = 20000L)
+
+@Component
+class PensjonsInfoRetryLogger : RetryListenerSupport() {
+    private val logger = LoggerFactory.getLogger(PensjonsInfoRetryLogger::class.java)
+    override fun <T : Any?, E : Throwable?> onError(context: RetryContext?, callback: RetryCallback<T, E>?, throwable: Throwable?) {
+        logger.info("Feil under henting fra EUX - try #${context?.retryCount } - ${throwable?.toString()}", throwable)
+    }
+}
 
