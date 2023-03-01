@@ -26,7 +26,6 @@ class PrefillPDLAdresse (private val postnummerService: PostnummerService,
                          @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper.ForTest()) {
 
     private lateinit var hentLandkodeMetric: MetricsHelper.Metric
-
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillPDLAdresse::class.java) }
 
     @PostConstruct
@@ -46,7 +45,6 @@ class PrefillPDLAdresse (private val postnummerService: PostnummerService,
 
         logger.debug("              Sjekk for og preutfyll adresse")
         return sjekkOgPreutfyllAdresse(pdlperson)
-
     }
 
     private fun preutfullNorskBostedVegadresse(vegadresse: Vegadresse?): Adresse {
@@ -74,9 +72,7 @@ class PrefillPDLAdresse (private val postnummerService: PostnummerService,
         )
     }
 
-
     private fun sjekkOgPreutfyllAdresse(pdlperson: PDLPerson): Adresse {
-
         if (pdlperson.erDoed()) {
             logger.info("              person er død. sjekker kontaktinformasjonForDoedsbo")
             if (pdlperson.kontaktinformasjonForDoedsbo != null) {
@@ -87,29 +83,35 @@ class PrefillPDLAdresse (private val postnummerService: PostnummerService,
 
         loggErrorVedFlereGyldigeAdresser(pdlperson)
 
+        val kontaktAdresse = pdlperson.kontaktadresse
+        val bostedAdresse = pdlperson.bostedsadresse
+        val oppholdsAdresse = pdlperson.oppholdsadresse
+
         return when {
             // En Kontaktadresse kan nå være av typen Postboksadresse, Vegadresse, UtenlandskAdresse, PostadresseIFrittFormat, UtenlandskAdresseIFrittFormat og bare en av disse vil være utfylt
-            kanNorskVegadresseBenyttes(pdlperson.kontaktadresse?.vegadresse) -> preutfullNorskBostedVegadresse(pdlperson.kontaktadresse?.vegadresse)
-            kanUtlandsadresseBenyttes(pdlperson.kontaktadresse?.utenlandskAdresse) -> preutfyllUtlandsAdresse(pdlperson.kontaktadresse?.utenlandskAdresse)
-            kanUtlandsadresseIFrittFormatBenyttes(pdlperson.kontaktadresse?.utenlandskAdresseIFrittFormat) -> preutfyllUtenlandskAdresseIFrittFormat(pdlperson.kontaktadresse?.utenlandskAdresseIFrittFormat)
-            kanNorskPostadresseIFrittFormatBenyttes(pdlperson.kontaktadresse?.postadresseIFrittFormat) -> preutfyllNorskPostadresseIFrittFormat(pdlperson.kontaktadresse?.postadresseIFrittFormat)
+            kanNorskVegadresseBenyttes(kontaktAdresse?.vegadresse) -> preutfullNorskBostedVegadresse(kontaktAdresse?.vegadresse)
+            kanUtlandsadresseBenyttes(kontaktAdresse?.utenlandskAdresse) -> preutfyllUtlandsAdresse(kontaktAdresse?.utenlandskAdresse)
 
-            kanNorskVegadresseBenyttes(pdlperson.bostedsadresse?.vegadresse) -> preutfullNorskBostedVegadresse(pdlperson.bostedsadresse?.vegadresse)
-            kanUtlandsadresseBenyttes(pdlperson.bostedsadresse?.utenlandskAdresse) -> preutfyllUtlandsAdresse(pdlperson.bostedsadresse?.utenlandskAdresse)
+            kanUtlandsadresseIFrittFormatBenyttes(kontaktAdresse?.utenlandskAdresseIFrittFormat) -> preutfyllUtenlandskAdresseIFrittFormat(kontaktAdresse?.utenlandskAdresseIFrittFormat)
+            kanNorskPostadresseIFrittFormatBenyttes(kontaktAdresse?.postadresseIFrittFormat) -> preutfyllNorskPostadresseIFrittFormat(kontaktAdresse?.postadresseIFrittFormat)
 
-            kanNorskVegadresseBenyttes(pdlperson.oppholdsadresse?.vegadresse) -> preutfullNorskBostedVegadresse(pdlperson.oppholdsadresse?.vegadresse)
-            kanUtlandsadresseBenyttes(pdlperson.oppholdsadresse?.utenlandskAdresse) -> preutfyllUtlandsAdresse(pdlperson.oppholdsadresse?.utenlandskAdresse)
+            kanNorskVegadresseBenyttes(bostedAdresse?.vegadresse) -> preutfullNorskBostedVegadresse(bostedAdresse?.vegadresse)
+            kanUtlandsadresseBenyttes(bostedAdresse?.utenlandskAdresse) -> preutfyllUtlandsAdresse(bostedAdresse?.utenlandskAdresse)
+
+            kanNorskVegadresseBenyttes(oppholdsAdresse?.vegadresse) -> preutfullNorskBostedVegadresse(oppholdsAdresse?.vegadresse)
+            kanUtlandsadresseBenyttes(oppholdsAdresse?.utenlandskAdresse) -> preutfyllUtlandsAdresse(oppholdsAdresse?.utenlandskAdresse)
 
             else -> tomAdresse()
         }
     }
 
     private fun preutfyllDoedsboAdresse(pdlperson: no.nav.eessi.pensjon.personoppslag.pdl.model.Person): Adresse {
-        val landkode = pdlperson.kontaktinformasjonForDoedsbo!!.adresse.landkode
+        val kontaktinformasjonForDoedsbo = pdlperson.kontaktinformasjonForDoedsbo
+        val landkode = kontaktinformasjonForDoedsbo!!.adresse.landkode
         val landKode2Tegn = if (landkode == null || landkode.length == 2) landkode else hentLandkode(landkode)
 
         return PrefillDodsboAdresse().preutfyllDodsboAdresse(
-            pdlperson.kontaktinformasjonForDoedsbo!!,
+            kontaktinformasjonForDoedsbo,
             landKode2Tegn
         ) { idenfikasjonsnummer: String ->
             personService.hentPersonnavn(NorskIdent(idenfikasjonsnummer))
@@ -117,19 +119,22 @@ class PrefillPDLAdresse (private val postnummerService: PostnummerService,
         }
     }
 
-
     fun loggErrorVedFlereGyldigeAdresser(pdlperson: PDLPerson) {
+        val kontaktadresse = pdlperson.kontaktadresse
+        val bostedsadresse = pdlperson.bostedsadresse
+        val oppholdsadresse = pdlperson.oppholdsadresse
+
         val adresseListe = listOf(
-            Pair("kontaktadresse.vegadresse", pdlperson.kontaktadresse?.vegadresse),
-            Pair("kontaktadresse.utenlandskAdresse", pdlperson.kontaktadresse?.utenlandskAdresse),
-            Pair("kontaktadresse.utenlandskAdresseIFrittFormat", pdlperson.kontaktadresse?.utenlandskAdresseIFrittFormat),
-            Pair("kontaktadresse.postadresseIFrittFormat", pdlperson.kontaktadresse?.postadresseIFrittFormat),
+            Pair("kontaktadresse.vegadresse", kontaktadresse?.vegadresse),
+            Pair("kontaktadresse.utenlandskAdresse", kontaktadresse?.utenlandskAdresse),
+            Pair("kontaktadresse.utenlandskAdresseIFrittFormat", kontaktadresse?.utenlandskAdresseIFrittFormat),
+            Pair("kontaktadresse.postadresseIFrittFormat", kontaktadresse?.postadresseIFrittFormat),
 
-            Pair("bostedsadresse.vegadresse", pdlperson.bostedsadresse?.vegadresse),
-            Pair("bostedsadresse.utenlandskAdresse", pdlperson.bostedsadresse?.utenlandskAdresse),
+            Pair("bostedsadresse.vegadresse", bostedsadresse?.vegadresse),
+            Pair("bostedsadresse.utenlandskAdresse", bostedsadresse?.utenlandskAdresse),
 
-            Pair("oppholdsadresse.vegadresse", pdlperson.oppholdsadresse?.vegadresse),
-            Pair("oppholdsadresse.utenlandskAdresse", pdlperson.oppholdsadresse?.utenlandskAdresse),
+            Pair("oppholdsadresse.vegadresse", oppholdsadresse?.vegadresse),
+            Pair("oppholdsadresse.utenlandskAdresse", oppholdsadresse?.utenlandskAdresse),
         ).mapNotNull {
             if (it.second != null) it else null
         }.toMap()
@@ -193,7 +198,6 @@ class PrefillPDLAdresse (private val postnummerService: PostnummerService,
             by = utenlandskAdresseIFrittFormat?.adresselinje3,
             land = hentLandkode(utenlandskAdresseIFrittFormat?.landkode)
         )
-
 
     }
 
