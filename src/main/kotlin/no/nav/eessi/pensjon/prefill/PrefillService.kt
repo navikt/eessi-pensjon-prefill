@@ -54,7 +54,7 @@ class PrefillService(
 
                 val sed = prefillSedService.prefill(prefillData, personcollection, pensjonCollection)
 
-                logger.debug("SedType: ${sed.type.name}")
+                logger.debug("Sed ferdig utfylt: $sed")
 
                 //synk sed versjon med buc versjon
                 updateSEDVersion(sed, LATEST_RINA_SED_VERSION)
