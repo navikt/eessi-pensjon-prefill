@@ -1,14 +1,6 @@
 package no.nav.eessi.pensjon.prefill.sed
 
-import no.nav.eessi.pensjon.eux.model.sed.Adresse
-import no.nav.eessi.pensjon.eux.model.sed.AnmodningOmTilleggsInfo
-import no.nav.eessi.pensjon.eux.model.sed.Bruker
-import no.nav.eessi.pensjon.eux.model.sed.EessisakItem
-import no.nav.eessi.pensjon.eux.model.sed.Nav
-import no.nav.eessi.pensjon.eux.model.sed.P8000
-import no.nav.eessi.pensjon.eux.model.sed.P8000Pensjon
-import no.nav.eessi.pensjon.eux.model.sed.Person
-import no.nav.eessi.pensjon.eux.model.sed.PinItem
+import no.nav.eessi.pensjon.eux.model.sed.*
 import no.nav.eessi.pensjon.pensjonsinformasjon.KravHistorikkHelper.hentKravhistorikkForGjenlevende
 import no.nav.eessi.pensjon.pensjonsinformasjon.models.EPSaktype
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
@@ -29,6 +21,7 @@ class PrefillP8000(private val prefillSed: PrefillSed) {
 
     fun prefill(prefillData: PrefillDataModel, personData: PersonDataCollection, sak: V1Sak?): P8000 {
         val navsed = prefillSed.prefill(prefillData, personData)
+        logger.info("Institusjoner på seden: ${prefillData.institution}")
         val eessielm = navsed.nav?.eessisak
         val gjenlevendeBruker: Bruker? = navsed.pensjon?.gjenlevende
         val avDodBruker = navsed.nav?.bruker
