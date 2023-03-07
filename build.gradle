@@ -101,5 +101,5 @@ dependencies {
     testImplementation ('com.tngtech.archunit:archunit:1.0.1')
 
     // Forenklere mocking av beans, benyttes som mockito mockbean
-    testImplementation('com.ninja-squad:springmockk:4.0.0')
+    testImplementation('com.ninja-squad:springmockk:4.0.1')
 }
