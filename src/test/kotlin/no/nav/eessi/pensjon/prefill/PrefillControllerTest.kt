@@ -1,5 +1,5 @@
 
-package no.nav.eessi.pensjon.prefill.api
+package no.nav.eessi.pensjon.prefill
 
 import io.mockk.every
 import io.mockk.impl.annotations.SpyK
@@ -17,6 +17,7 @@ import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.PersonDataService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
+import no.nav.eessi.pensjon.prefill.PrefillController
 import no.nav.eessi.pensjon.prefill.PrefillService
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService

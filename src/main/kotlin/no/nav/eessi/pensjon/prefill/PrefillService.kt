@@ -86,21 +86,4 @@ class PrefillService(
         }
         logger.debug("SED version: v${sed.sedGVer}.${sed.sedVer} + BUC version: $bucVersion")
     }
-
-    /**
-     * Prefill for X005 - Legg til ny institusjon
-     */
-    @Throws(ValidationException::class)
-    fun prefillEnX005ForHverInstitusjon(
-        nyeDeltakere: List<InstitusjonItem>,
-        data: PrefillDataModel,
-        personcollection: PersonDataCollection
-    ) =
-            nyeDeltakere.map {
-                logger.debug("Legger til Institusjon på X005 ${it.institution}")
-                // ID og Navn på X005 er påkrevd må hente innn navn fra UI.
-                val datax005 = data.copy(avdod = null, sedType = SedType.X005, institution = listOf(it))
-
-                prefillSedService.prefill(datax005, personcollection, PensjonCollection(sedType = SedType.X005))
-            }
 }

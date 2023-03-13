@@ -60,7 +60,6 @@ class ArchitectureTest {
 
         val config = "config"
         val health = "health"
-        val prefillApi = "prefill.api"
         val prefill = "prefill"
         val models = "prefill.models"
         val utils = "utils"
@@ -68,7 +67,6 @@ class ArchitectureTest {
 
         val packages: Map<String, String> = mapOf(
             "$root.health.." to health,
-            "$root.prefill.api.." to prefillApi,
             "$root.prefill.." to prefill,
             "$root.prefill.models.." to models,
             "$root.config.." to config,
@@ -84,16 +82,13 @@ class ArchitectureTest {
             .consideringOnlyDependenciesInAnyPackage(root)
             .layer(health).definedBy(*packagesFor(health))
 
-            .layer(prefillApi).definedBy(*packagesFor(prefillApi))
             .layer(prefill).definedBy(*packagesFor(prefill))
             .layer(models).definedBy(*packagesFor(models))
             .layer(config).definedBy(*packagesFor(config))
             .layer(utils).definedBy(*packagesFor(utils))
 
             .whereLayer(health).mayNotBeAccessedByAnyLayer()
-            .whereLayer(prefillApi).mayNotBeAccessedByAnyLayer()
-            .whereLayer(prefill).mayOnlyBeAccessedByLayers(prefillApi)
-            .whereLayer(models).mayOnlyBeAccessedByLayers(prefill, prefillApi)
+            .whereLayer(models).mayOnlyBeAccessedByLayers(prefill)
 
             .whereLayer(config).mayNotBeAccessedByAnyLayer()
             .withOptionalLayers(false)
@@ -135,7 +130,6 @@ class ArchitectureTest {
             .check(productionClasses)
     }
 
-    @Disabled
     @Test
     fun `no cycles on any level for production classes`() {
         slices()
