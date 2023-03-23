@@ -1,7 +1,5 @@
 package no.nav.eessi.pensjon.prefill
 
-import no.nav.eessi.pensjon.personoppslag.Fodselsnummer
-import no.nav.eessi.pensjon.personoppslag.FodselsnummerGenerator
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Bostedsadresse
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Doedsfall
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Endring
@@ -23,6 +21,8 @@ import no.nav.eessi.pensjon.personoppslag.pdl.model.Sivilstandstype
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Statsborgerskap
 import no.nav.eessi.pensjon.personoppslag.pdl.model.UtenlandskAdresseIFrittFormat
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Vegadresse
+import no.nav.eessi.pensjon.shared.person.Fodselsnummer
+import no.nav.eessi.pensjon.shared.person.FodselsnummerGenerator
 import java.time.LocalDate
 import java.time.LocalDateTime
 

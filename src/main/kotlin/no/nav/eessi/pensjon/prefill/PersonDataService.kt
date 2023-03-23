@@ -3,12 +3,12 @@ package no.nav.eessi.pensjon.prefill
 import jakarta.annotation.PostConstruct
 import no.nav.eessi.pensjon.eux.model.SedType.*
 import no.nav.eessi.pensjon.metrics.MetricsHelper
-import no.nav.eessi.pensjon.personoppslag.Fodselsnummer
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonoppslagException
 import no.nav.eessi.pensjon.personoppslag.pdl.model.*
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
+import no.nav.eessi.pensjon.shared.person.Fodselsnummer
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired

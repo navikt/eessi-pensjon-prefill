@@ -1,7 +1,6 @@
 package no.nav.eessi.pensjon.prefill.person
 
 import no.nav.eessi.pensjon.eux.model.sed.*
-import no.nav.eessi.pensjon.personoppslag.Fodselsnummer
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Familierelasjonsrolle
 import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe
 import no.nav.eessi.pensjon.personoppslag.pdl.model.KjoennType
@@ -10,6 +9,7 @@ import no.nav.eessi.pensjon.personoppslag.pdl.model.Sivilstandstype
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.shared.api.BankOgArbeid
 import no.nav.eessi.pensjon.shared.api.PersonId
+import no.nav.eessi.pensjon.shared.person.Fodselsnummer
 import no.nav.eessi.pensjon.utils.simpleFormat
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
