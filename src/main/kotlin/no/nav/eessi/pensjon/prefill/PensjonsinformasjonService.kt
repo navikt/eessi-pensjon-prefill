@@ -14,9 +14,9 @@ import org.springframework.context.annotation.Profile
 import org.springframework.http.HttpStatus
 import org.springframework.retry.RetryCallback
 import org.springframework.retry.RetryContext
+import org.springframework.retry.RetryListener
 import org.springframework.retry.annotation.Backoff
 import org.springframework.retry.annotation.Retryable
-import org.springframework.retry.listener.RetryListenerSupport
 import org.springframework.stereotype.Component
 import org.springframework.web.server.ResponseStatusException
 
@@ -145,7 +145,7 @@ class ManglendeSakIdException(reason: String): ResponseStatusException(HttpStatu
 data class PensjonsInfoRetryConfig(val initialRetryMillis: Long = 20000L)
 
 @Component
-class PensjonsInfoRetryLogger : RetryListenerSupport() {
+class PensjonsInfoRetryLogger :  RetryListener {
     private val logger = LoggerFactory.getLogger(PensjonsInfoRetryLogger::class.java)
     override fun <T : Any?, E : Throwable?> onError(context: RetryContext?, callback: RetryCallback<T, E>?, throwable: Throwable?) {
         logger.info("Feil under henting fra EUX - try #${context?.retryCount } - ${throwable?.toString()}", throwable)
