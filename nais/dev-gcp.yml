@@ -25,6 +25,11 @@ spec:
         - application: eessi-pensjon-fagmodul-q2
           namespace: eessipensjon
           cluster: dev-gcp
+    outbound:
+      external:
+        - host: eessi-pensjon-onprem-proxy-q2.dev-fss-pub.nais.io
+        - host: pdl-api.dev-fss-pub.nais.io
+        - host: dev-fss.org.kodeverk
   webproxy: true
   env:
     - name: SPRING_PROFILES_ACTIVE
