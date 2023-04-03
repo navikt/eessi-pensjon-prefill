@@ -49,6 +49,8 @@ spec:
       value: NO:889640782
     - name: EESSI_PENSJON_INSTITUSJON_NAVN
       value: "The Norwegian Labour and Welfare Administration"
+    - name: AZURE_APP_PROXY_CLIENT_ID
+      value: prod-fss.eessipensjon.eessi-pensjon-onprem-proxy
     - name: ENV
       value: p
   image: {{ image }}
