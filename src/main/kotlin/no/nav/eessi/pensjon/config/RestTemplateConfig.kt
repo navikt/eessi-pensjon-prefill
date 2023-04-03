@@ -36,29 +36,17 @@ class RestTemplateConfig(
     @Value("\${PENSJONSINFORMASJON_URL}")
     lateinit var pensjonUrl: String
 
-    @Value("\${EESSI_PEN_ONPREM_PROXY_URL}")
-    lateinit var proxyUrl: String
-
     @Bean
-    fun proxyOAuthRestTemplate(restTemplateBuilder: RestTemplateBuilder): RestTemplate? {
-        return opprettRestTemplate(proxyUrl, "proxy-credentials")
-    }
-
-    @Bean
-    fun pensjoninformasjonRestTemplate(): RestTemplate {
-        return opprettRestTemplate(pensjonUrl, "proxy-credentials")
-    }
-
-    private fun opprettRestTemplate(url: String, oAuthKey: String) : RestTemplate {
+    fun pensjoninformasjonRestTemplate() : RestTemplate {
         return RestTemplateBuilder()
-            .rootUri(url)
+            .rootUri(pensjonUrl)
             .errorHandler(DefaultResponseErrorHandler())
             .additionalInterceptors(
                 RequestIdHeaderInterceptor(),
                 IOExceptionRetryInterceptor(),
                 RequestCountInterceptor(meterRegistry),
                 RequestResponseLoggerInterceptor(),
-                bearerTokenInterceptor(clientProperties(oAuthKey), oAuth2AccessTokenService!!)
+                bearerTokenInterceptor(clientProperties("proxy-credentials"), oAuth2AccessTokenService!!)
             )
             .build().apply {
                 requestFactory = BufferingClientHttpRequestFactory(SimpleClientHttpRequestFactory())

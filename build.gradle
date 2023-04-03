@@ -82,6 +82,8 @@ dependencies {
 
     implementation("no.nav.tjenestespesifikasjoner:pensjonsinformasjon-v1-tjenestespesifikasjon:2612.db4dc68")
 
+    testImplementation("no.nav.security:token-validation-spring-test:${tokenSupportVersion}")
+
     //mock - test
     testImplementation("org.springframework.boot:spring-boot-starter-test:$springBootVersion") {
         exclude module: 'junit'
