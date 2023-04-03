@@ -27,7 +27,6 @@ spec:
           cluster: dev-gcp
     outbound:
       external:
-        - host: eessi-pensjon-onprem-proxy-q2.dev-fss-pub.nais.io
         - host: pdl-api.dev-fss-pub.nais.io
         - host: dev-fss.org.kodeverk
   webproxy: true
@@ -46,14 +45,10 @@ spec:
       value: eessipensjon.public-automatisering-q2
     - name: KODEVERK_URL
       value: https://kodeverk.dev-fss-pub.nais.io
-    - name: EESSI_PEN_ONPREM_PROXY_URL
-      value: https://eessi-pensjon-onprem-proxy-q2.dev-fss-pub.nais.io
     - name: EESSI_PENSJON_INSTITUSJON
       value: NO:NAVAT07
     - name: EESSI_PENSJON_INSTITUSJON_NAVN
       value: NAV ACCEPTANCE TEST 07
-    - name: AZURE_APP_PROXY_CLIENT_ID
-      value: dev-fss.eessipensjon.eessi-pensjon-onprem-proxy-q2
     - name: ENV
       value: q2
   image: {{ image }}

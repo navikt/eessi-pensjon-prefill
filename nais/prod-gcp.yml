@@ -27,7 +27,6 @@ spec:
           cluster: prod-gcp
     outbound:
       external:
-        - host: eessi-pensjon-onprem-proxy.prod-fss-pub.nais.io
         - host: pdl-api.prod-fss-pub.nais.io
         - host: kodeverk.prod-fss-pub.nais.io
   webproxy: true
@@ -46,14 +45,10 @@ spec:
       value: eessipensjon.public-automatisering
     - name: KODEVERK_URL
       value: https://kodeverk.prod-fss-pub.nais.io
-    - name: EESSI_PEN_ONPREM_PROXY_URL
-      value: https://eessi-pensjon-onprem-proxy.prod-fss-pub.nais.io
     - name: EESSI_PENSJON_INSTITUSJON
       value: NO:889640782
     - name: EESSI_PENSJON_INSTITUSJON_NAVN
       value: "The Norwegian Labour and Welfare Administration"
-    - name: AZURE_APP_PROXY_CLIENT_ID
-      value: prod-fss.eessipensjon.eessi-pensjon-onprem-proxy
     - name: ENV
       value: p
   image: {{ image }}
