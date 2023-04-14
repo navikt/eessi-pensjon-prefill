@@ -29,6 +29,8 @@ spec:
       external:
         - host: pdl-api.dev-fss-pub.nais.io
         - host: dev-fss.org.kodeverk
+        - host: eessi-pensjon-fagmodul-q2.dev.intern.nav.no
+        - host: eessi-pensjon-onprem-proxy-q2.dev.intern.nav.no
   webproxy: true
   env:
     - name: SPRING_PROFILES_ACTIVE
