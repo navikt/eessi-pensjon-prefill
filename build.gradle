@@ -4,7 +4,7 @@ buildscript {
         springKafkaVersion = '3.0.6'
         jacksonModuleKotlinVersion = '2.14.2'
         cxfVersion = '3.3.4'
-        tokenSupportVersion = '3.0.9'
+        tokenSupportVersion = '3.0.10'
     }
 }
 
