@@ -93,7 +93,7 @@ dependencies {
     testImplementation ("org.springframework.kafka:spring-kafka-test:$springKafkaVersion")
     testImplementation("org.pac4j:spring-webmvc-pac4j:7.0.0")
 
-    testImplementation(platform("org.junit:junit-bom:5.9.2"))
+    testImplementation(platform("org.junit:junit-bom:5.9.3"))
     testImplementation("org.junit.jupiter:junit-jupiter")
 
     testImplementation("org.skyscreamer:jsonassert:1.5.1")
