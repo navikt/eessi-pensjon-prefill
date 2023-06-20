@@ -78,7 +78,7 @@ dependencies {
     implementation("no.nav.eessi.pensjon:ep-logging:2.1.18")
     implementation("no.nav.eessi.pensjon:ep-kodeverk:4.0.48")
     implementation("no.nav.eessi.pensjon:ep-personoppslag:13.0.69")
-    implementation("no.nav.eessi.pensjon:ep-pensjonsinformasjon:3.0.40")
+    implementation("no.nav.eessi.pensjon:ep-pensjonsinformasjon:3.0.46")
 
     implementation("no.nav.tjenestespesifikasjoner:pensjonsinformasjon-v1-tjenestespesifikasjon:2616.df1f47c")
 
