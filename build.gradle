@@ -52,7 +52,7 @@ dependencies {
     implementation("com.github.wnameless.json:json-flattener:0.16.4")
 
     // Logging
-    implementation("net.logstash.logback:logstash-logback-encoder:7.3")
+    implementation("net.logstash.logback:logstash-logback-encoder:7.4")
     configurations { all*.exclude group: 'commons-logging', module: 'commons-logging' }
     implementation group: 'org.slf4j', name: 'jcl-over-slf4j'
 
