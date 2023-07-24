@@ -80,7 +80,7 @@ dependencies {
     implementation("no.nav.eessi.pensjon:ep-personoppslag:13.0.79")
     implementation("no.nav.eessi.pensjon:ep-pensjonsinformasjon:3.0.46")
 
-    implementation("no.nav.tjenestespesifikasjoner:pensjonsinformasjon-v1-tjenestespesifikasjon:2616.df1f47c")
+    implementation("no.nav.tjenestespesifikasjoner:pensjonsinformasjon-v1-tjenestespesifikasjon:2618.0448179")
 
     testImplementation("no.nav.security:token-validation-spring-test:${tokenSupportVersion}")
 
