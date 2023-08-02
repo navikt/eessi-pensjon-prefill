@@ -1,7 +1,6 @@
 package no.nav.eessi.pensjon.prefill.sed
 
-import no.nav.eessi.pensjon.eux.model.BucType
-import no.nav.eessi.pensjon.eux.model.BucType.*
+import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_05
 import no.nav.eessi.pensjon.eux.model.SedType.H020
 import no.nav.eessi.pensjon.eux.model.SedType.H021
 import no.nav.eessi.pensjon.eux.model.SedType.P10000
@@ -20,7 +19,6 @@ import no.nav.eessi.pensjon.eux.model.sed.SED
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.prefill.models.PensjonCollection
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
-
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.prefill.person.PrefillSed
 import no.nav.eessi.pensjon.prefill.sed.krav.PrefillP2000
@@ -103,11 +101,6 @@ class PrefillSEDService(private val eessiInformasjon: EessiInformasjon, private 
                         personDataCollection,
                         pensjonCollection.sak
                     )
-//                    try {
-//                    } catch (ex: Exception) {
-//                        logger.error(ex.message)
-//                        PrefillP8000(PrefillSed(prefillPDLnav)).prefill(prefillData, personDataCollection, null)
-//                    }
                 } else {
                     PrefillP8000(PrefillSed(prefillPDLnav)).prefill(prefillData, personDataCollection, null)
                 }
