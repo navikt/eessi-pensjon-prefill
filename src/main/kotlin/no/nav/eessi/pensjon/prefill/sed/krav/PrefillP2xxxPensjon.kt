@@ -173,7 +173,7 @@ object PrefillP2xxxPensjon {
                 && historikkForKravtype.size == sak?.kravHistorikkListe?.kravHistorikkListe?.size)
     }
 
-    internal fun opprettMeldingBasertPaaSaktype(kravHistorikk: V1KravHistorikk?, kravId: String?, saktype: String?): String {
+    private fun opprettMeldingBasertPaaSaktype(kravHistorikk: V1KravHistorikk?, kravId: String?, saktype: String?): String {
         if (kravHistorikk?.kravId == kravId) return ""
             return when (saktype) {
                 EPSaktype.ALDER.name, EPSaktype.UFOREP.name -> kravdatoMeldingOmP2100TilSaksbehandler
@@ -184,7 +184,7 @@ object PrefillP2xxxPensjon {
     /**
      *  4.1 (for kun_uland,mangler inngangsvilkår)
      */
-    internal fun opprettForkortetYtelsesItem(pensak: V1Sak?, personNr: String, penSaksnummer: String, andreinstitusjonerItem: AndreinstitusjonerItem?): YtelserItem {
+    private fun opprettForkortetYtelsesItem(pensak: V1Sak?, personNr: String, penSaksnummer: String, andreinstitusjonerItem: AndreinstitusjonerItem?): YtelserItem {
         return YtelserItem(
                 //4.1.1
                 ytelse = settYtelse(pensak),
@@ -212,7 +212,7 @@ object PrefillP2xxxPensjon {
      *
      *  Informasjon om ytelser den forsikrede mottar
      */
-    internal fun createYtelserItem(ytelsePrmnd: V1YtelsePerMaaned, pensak: V1Sak, personNr: String, penSaksnummer: String, andreinstitusjonerItem: AndreinstitusjonerItem?): YtelserItem {
+    private fun createYtelserItem(ytelsePrmnd: V1YtelsePerMaaned, pensak: V1Sak, personNr: String, penSaksnummer: String, andreinstitusjonerItem: AndreinstitusjonerItem?): YtelserItem {
         logger.debug("4.1   YtelserItem")
         return YtelserItem(
 
@@ -243,7 +243,7 @@ object PrefillP2xxxPensjon {
         )
     }
 
-    internal fun hentYtelsePerMaanedDenSisteFraKrav(kravHistorikk: V1KravHistorikk, pensak: V1Sak): V1YtelsePerMaaned {
+    private fun hentYtelsePerMaanedDenSisteFraKrav(kravHistorikk: V1KravHistorikk, pensak: V1Sak): V1YtelsePerMaaned {
         val ytelser = pensak.ytelsePerMaanedListe.ytelsePerMaanedListe
         val ytelserSortertPaaFom = ytelser.sortedBy { it.fom.toGregorianCalendar() }
 

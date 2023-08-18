@@ -26,7 +26,7 @@ class PrefillP2000(private val prefillNav: PrefillPDLNav)  {
     fun prefillSed(prefillData: PrefillDataModel, personData: PersonDataCollection, sak: V1Sak?, vedtak: V1Vedtak? = null): SED {
         postPrefill(prefillData, sak, vedtak)
 
-        val pensjon = PrefillP2000Pensjon.populerPensjon(prefillData, sak)
+        val pensjon = PrefillP2xxxPensjon.populerPensjon(prefillData, sak)
 
         val nav = prefillPDLNav(prefillData, personData, pensjon?.kravDato)
 
@@ -35,7 +35,7 @@ class PrefillP2000(private val prefillNav: PrefillPDLNav)  {
         val sed = P2000(
             type = SedType.P2000,
             nav = nav,
-            p2000pensjon = pensjon
+            pensjon = pensjon
         )
 
         validate(sed)
