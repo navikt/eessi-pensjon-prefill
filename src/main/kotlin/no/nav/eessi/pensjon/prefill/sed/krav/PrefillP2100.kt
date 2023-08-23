@@ -71,9 +71,10 @@ class PrefillP2100(private val prefillNav: PrefillPDLNav) {
                         gjenlev,
                     prefillData.kravId)
                 melding = meldingOmPensjon.melding
-                pensjon = Pensjon(
-                        kravDato = meldingOmPensjon.pensjon.kravDato,
-                        gjenlevende = meldingOmPensjon.pensjon.gjenlevende
+            val meldingOmpensjon = meldingOmPensjon.pensjon as Pensjon
+            pensjon = Pensjon(
+                        kravDato = meldingOmpensjon.kravDato,
+                        gjenlevende = meldingOmpensjon.gjenlevende
                 ) //vi skal ha blank pensjon, men vi må ha med kravdato
         } catch (ex: Exception) {
             logger.error(ex.message, ex)

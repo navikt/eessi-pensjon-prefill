@@ -1,10 +1,9 @@
 package no.nav.eessi.pensjon.prefill.sed.krav
 
 import no.nav.eessi.pensjon.eux.model.SedType
-import no.nav.eessi.pensjon.eux.model.sed.Krav
-import no.nav.eessi.pensjon.eux.model.sed.Nav
-import no.nav.eessi.pensjon.eux.model.sed.P2000
-import no.nav.eessi.pensjon.eux.model.sed.SED
+import no.nav.eessi.pensjon.eux.model.sed.*
+import no.nav.eessi.pensjon.pensjonsinformasjon.KravHistorikkHelper
+import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
@@ -19,14 +18,14 @@ import org.springframework.web.server.ResponseStatusException
 /**
  * preutfylling av NAV-P2000 SED for søknad krav om alderpensjon
  */
-class PrefillP2000(private val prefillNav: PrefillPDLNav)  {
+class PrefillP2000(private val prefillNav: PrefillPDLNav) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillP2000::class.java) }
 
     fun prefillSed(prefillData: PrefillDataModel, personData: PersonDataCollection, sak: V1Sak?, vedtak: V1Vedtak? = null): SED {
         postPrefill(prefillData, sak, vedtak)
 
-        val pensjon = PrefillP2xxxPensjon.populerPensjon(prefillData, sak)
+        val pensjon = populerPensjon(prefillData, sak)
 
         val nav = prefillPDLNav(prefillData, personData, pensjon?.kravDato)
 
@@ -35,7 +34,7 @@ class PrefillP2000(private val prefillNav: PrefillPDLNav)  {
         val sed = P2000(
             type = SedType.P2000,
             nav = nav,
-            pensjon = pensjon
+            p2000pensjon  = pensjon
         )
 
         validate(sed)
@@ -62,6 +61,97 @@ class PrefillP2000(private val prefillNav: PrefillPDLNav)  {
                 + "\nSøker etter SakId       : ${prefillData.penSaksnummer} "
                 + "\nSøker etter aktoerid    : ${prefillData.bruker.aktorId} "
                 + "\n------------------| Preutfylling [$SedType] START |------------------ ")
+    }
+
+    fun populerPensjon(
+        prefillData: PrefillDataModel,
+        sak: V1Sak?
+    ): P2000Pensjon? {
+        val andreInstitusjondetaljer = EessiInformasjon().asAndreinstitusjonerItem()
+
+        //valider pensjoninformasjon,
+        try {
+            val meldingOmPensjon = populerMeldinOmPensjonP2000(
+                prefillData.bruker.norskIdent,
+                prefillData.penSaksnummer,
+                sak,
+                andreInstitusjondetaljer
+            )
+                return meldingOmPensjon.pensjon as P2000Pensjon
+        } catch (ex: Exception) {
+            logger.error(ex.message, ex)
+            return null
+            //hvis feiler lar vi SB få en SED i RINA
+        }
+    }
+
+    fun populerMeldinOmPensjonP2000(personNr: String,
+                               penSaksnummer: String,
+                               pensak: V1Sak?,
+                               andreinstitusjonerItem: AndreinstitusjonerItem?,
+                               kravId: String? = null): MeldingOmPensjon {
+
+        logger.info("4.1           Informasjon om ytelser")
+
+        val ytelselist = mutableListOf<YtelserItem>()
+
+        val v1KravHistorikk = KravHistorikkHelper.finnKravHistorikkForDato(pensak)
+        val melding = PrefillP2xxxPensjon.opprettMeldingBasertPaaSaktype(v1KravHistorikk, kravId, pensak?.sakType)
+        val krav = PrefillP2xxxPensjon.createKravDato(v1KravHistorikk)
+
+        logger.info("Krav (dato) = $krav")
+
+        when (pensak?.ytelsePerMaanedListe) {
+            null -> {
+                logger.info("forkortet ytelsebehandling ved ytelsePerMaanedListe = null, status: ${pensak?.status}")
+                ytelselist.add(
+                    PrefillP2xxxPensjon.opprettForkortetYtelsesItem(
+                        pensak,
+                        personNr,
+                        penSaksnummer,
+                        andreinstitusjonerItem
+                    )
+                )
+            }
+            else -> {
+                try {
+                    logger.info("sakType: ${pensak.sakType}")
+                    val ytelseprmnd = PrefillP2xxxPensjon.hentYtelsePerMaanedDenSisteFraKrav(
+                        KravHistorikkHelper.hentKravHistorikkForsteGangsBehandlingUtlandEllerForsteGang(
+                            pensak.kravHistorikkListe,
+                            pensak.sakType
+                        ), pensak
+                    )
+                    ytelselist.add(
+                        PrefillP2xxxPensjon.createYtelserItem(
+                            ytelseprmnd,
+                            pensak,
+                            personNr,
+                            penSaksnummer,
+                            andreinstitusjonerItem
+                        )
+                    )
+                } catch (ex: Exception) {
+                    logger.warn(ex.message, ex)
+                    ytelselist.add(
+                        PrefillP2xxxPensjon.opprettForkortetYtelsesItem(
+                            pensak,
+                            personNr,
+                            penSaksnummer,
+                            andreinstitusjonerItem
+                        )
+                    )
+                }
+            }
+        }
+
+        return MeldingOmPensjon(
+            melding = melding,
+            pensjon = P2000Pensjon(
+                ytelser = ytelselist,
+                kravDato = krav
+            )
+        )
     }
 
     private fun validate(sed: SED) {
