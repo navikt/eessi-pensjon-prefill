@@ -1,13 +1,24 @@
 package no.nav.eessi.pensjon.prefill.sed.krav
 
 import no.nav.eessi.pensjon.eux.model.SedType
-import no.nav.eessi.pensjon.eux.model.sed.*
+import no.nav.eessi.pensjon.eux.model.sed.AndreinstitusjonerItem
+import no.nav.eessi.pensjon.eux.model.sed.BeloepItem
+import no.nav.eessi.pensjon.eux.model.sed.Bruker
+import no.nav.eessi.pensjon.eux.model.sed.Institusjon
+import no.nav.eessi.pensjon.eux.model.sed.Krav
+import no.nav.eessi.pensjon.eux.model.sed.MeldingOmPensjon
+import no.nav.eessi.pensjon.eux.model.sed.Pensjon
+import no.nav.eessi.pensjon.eux.model.sed.PinItem
+import no.nav.eessi.pensjon.eux.model.sed.YtelserItem
 import no.nav.eessi.pensjon.pensjonsinformasjon.KravHistorikkHelper.finnKravHistorikk
 import no.nav.eessi.pensjon.pensjonsinformasjon.KravHistorikkHelper.finnKravHistorikkForDato
 import no.nav.eessi.pensjon.pensjonsinformasjon.KravHistorikkHelper.hentKravHistorikkForsteGangsBehandlingUtlandEllerForsteGang
 import no.nav.eessi.pensjon.pensjonsinformasjon.models.EPSaktype
 import no.nav.eessi.pensjon.pensjonsinformasjon.models.PenKravtype
-import no.nav.eessi.pensjon.pensjonsinformasjon.models.PenKravtype.*
+import no.nav.eessi.pensjon.pensjonsinformasjon.models.PenKravtype.FORSTEG_BH
+import no.nav.eessi.pensjon.pensjonsinformasjon.models.PenKravtype.F_BH_BO_UTL
+import no.nav.eessi.pensjon.pensjonsinformasjon.models.PenKravtype.F_BH_KUN_UTL
+import no.nav.eessi.pensjon.pensjonsinformasjon.models.PenKravtype.F_BH_MED_UTL
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
 import no.nav.eessi.pensjon.shared.person.Fodselsnummer
@@ -173,7 +184,7 @@ object PrefillP2xxxPensjon {
                 && historikkForKravtype.size == sak?.kravHistorikkListe?.kravHistorikkListe?.size)
     }
 
-    internal fun opprettMeldingBasertPaaSaktype(kravHistorikk: V1KravHistorikk?, kravId: String?, saktype: String?): String {
+    private fun opprettMeldingBasertPaaSaktype(kravHistorikk: V1KravHistorikk?, kravId: String?, saktype: String?): String {
         if (kravHistorikk?.kravId == kravId) return ""
             return when (saktype) {
                 EPSaktype.ALDER.name, EPSaktype.UFOREP.name -> kravdatoMeldingOmP2100TilSaksbehandler
@@ -184,7 +195,7 @@ object PrefillP2xxxPensjon {
     /**
      *  4.1 (for kun_uland,mangler inngangsvilkår)
      */
-    internal fun opprettForkortetYtelsesItem(pensak: V1Sak?, personNr: String, penSaksnummer: String, andreinstitusjonerItem: AndreinstitusjonerItem?): YtelserItem {
+    private fun opprettForkortetYtelsesItem(pensak: V1Sak?, personNr: String, penSaksnummer: String, andreinstitusjonerItem: AndreinstitusjonerItem?): YtelserItem {
         return YtelserItem(
                 //4.1.1
                 ytelse = settYtelse(pensak),
@@ -212,7 +223,7 @@ object PrefillP2xxxPensjon {
      *
      *  Informasjon om ytelser den forsikrede mottar
      */
-    internal fun createYtelserItem(ytelsePrmnd: V1YtelsePerMaaned, pensak: V1Sak, personNr: String, penSaksnummer: String, andreinstitusjonerItem: AndreinstitusjonerItem?): YtelserItem {
+    private fun createYtelserItem(ytelsePrmnd: V1YtelsePerMaaned, pensak: V1Sak, personNr: String, penSaksnummer: String, andreinstitusjonerItem: AndreinstitusjonerItem?): YtelserItem {
         logger.debug("4.1   YtelserItem")
         return YtelserItem(
 
@@ -243,7 +254,7 @@ object PrefillP2xxxPensjon {
         )
     }
 
-    internal fun hentYtelsePerMaanedDenSisteFraKrav(kravHistorikk: V1KravHistorikk, pensak: V1Sak): V1YtelsePerMaaned {
+    private fun hentYtelsePerMaanedDenSisteFraKrav(kravHistorikk: V1KravHistorikk, pensak: V1Sak): V1YtelsePerMaaned {
         val ytelser = pensak.ytelsePerMaanedListe.ytelsePerMaanedListe
         val ytelserSortertPaaFom = ytelser.sortedBy { it.fom.toGregorianCalendar() }
 
