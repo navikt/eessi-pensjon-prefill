@@ -73,7 +73,7 @@ dependencies {
 
     implementation ("org.springframework.kafka:spring-kafka:$springKafkaVersion")
 
-    implementation(files("../ep-eux/build/libs/ep-eux-2.1.46.jar"))
+    implementation("no.nav.eessi.pensjon:ep-eux:2.1.46")
     implementation("no.nav.eessi.pensjon:ep-metrics:2.0.24")
     implementation("no.nav.eessi.pensjon:ep-logging:2.1.19")
     implementation("no.nav.eessi.pensjon:ep-kodeverk:4.0.63")
