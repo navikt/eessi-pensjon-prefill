@@ -50,7 +50,7 @@ object PrefillP2xxxPensjon {
      *  Fyller ut fra hvilket tidspunkt bruker ønsker å motta pensjon fra Norge.
      *  Det er et spørsmål i søknadsdialogen og på manuell kravblankett. Det er ikke nødvendigvis lik virkningstidspunktet på pensjonen.
      */
-    private fun createKravDato(valgtKrav: V1KravHistorikk?): Krav? {
+    fun createKravDato(valgtKrav: V1KravHistorikk?): Krav? {
         logger.debug("9.1        Dato Krav (med korrekt data fra PESYS krav.virkningstidspunkt)")
         logger.debug("KravType   :  ${valgtKrav?.kravType}")
         logger.debug("mottattDato:  ${valgtKrav?.mottattDato}")
@@ -184,7 +184,7 @@ object PrefillP2xxxPensjon {
                 && historikkForKravtype.size == sak?.kravHistorikkListe?.kravHistorikkListe?.size)
     }
 
-    private fun opprettMeldingBasertPaaSaktype(kravHistorikk: V1KravHistorikk?, kravId: String?, saktype: String?): String {
+    fun opprettMeldingBasertPaaSaktype(kravHistorikk: V1KravHistorikk?, kravId: String?, saktype: String?): String {
         if (kravHistorikk?.kravId == kravId) return ""
             return when (saktype) {
                 EPSaktype.ALDER.name, EPSaktype.UFOREP.name -> kravdatoMeldingOmP2100TilSaksbehandler
@@ -195,7 +195,7 @@ object PrefillP2xxxPensjon {
     /**
      *  4.1 (for kun_uland,mangler inngangsvilkår)
      */
-    private fun opprettForkortetYtelsesItem(pensak: V1Sak?, personNr: String, penSaksnummer: String, andreinstitusjonerItem: AndreinstitusjonerItem?): YtelserItem {
+    fun opprettForkortetYtelsesItem(pensak: V1Sak?, personNr: String, penSaksnummer: String, andreinstitusjonerItem: AndreinstitusjonerItem?): YtelserItem {
         return YtelserItem(
                 //4.1.1
                 ytelse = settYtelse(pensak),
@@ -223,7 +223,7 @@ object PrefillP2xxxPensjon {
      *
      *  Informasjon om ytelser den forsikrede mottar
      */
-    private fun createYtelserItem(ytelsePrmnd: V1YtelsePerMaaned, pensak: V1Sak, personNr: String, penSaksnummer: String, andreinstitusjonerItem: AndreinstitusjonerItem?): YtelserItem {
+    fun createYtelserItem(ytelsePrmnd: V1YtelsePerMaaned, pensak: V1Sak, personNr: String, penSaksnummer: String, andreinstitusjonerItem: AndreinstitusjonerItem?): YtelserItem {
         logger.debug("4.1   YtelserItem")
         return YtelserItem(
 
@@ -254,7 +254,7 @@ object PrefillP2xxxPensjon {
         )
     }
 
-    private fun hentYtelsePerMaanedDenSisteFraKrav(kravHistorikk: V1KravHistorikk, pensak: V1Sak): V1YtelsePerMaaned {
+    fun hentYtelsePerMaanedDenSisteFraKrav(kravHistorikk: V1KravHistorikk, pensak: V1Sak): V1YtelsePerMaaned {
         val ytelser = pensak.ytelsePerMaanedListe.ytelsePerMaanedListe
         val ytelserSortertPaaFom = ytelser.sortedBy { it.fom.toGregorianCalendar() }
 
