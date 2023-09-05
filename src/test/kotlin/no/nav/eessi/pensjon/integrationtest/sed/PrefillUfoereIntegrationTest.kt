@@ -12,7 +12,8 @@ import no.nav.eessi.pensjon.integrationtest.IntegrasjonsTestConfig
 import no.nav.eessi.pensjon.kodeverk.KodeverkClient
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
 import no.nav.eessi.pensjon.personoppslag.pdl.model.AktoerId
-import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentType
+import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe
+import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe.*
 import no.nav.eessi.pensjon.personoppslag.pdl.model.KjoennType
 import no.nav.eessi.pensjon.personoppslag.pdl.model.NorskIdent
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
@@ -77,7 +78,7 @@ class PrefillUfoereIntegrationTest {
     @Test
     fun `prefill sed P2200 ufoere med AVSL skal returnere valid sedjson`() {
 
-        every { personService.hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN)
+        every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith()
         every { pensjonsinformasjonOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java))} returns PrefillTestHelper.readXMLresponse("/pensjonsinformasjon/krav/P2200-AVSL.xml")
         every { kodeverkClient.finnLandkode(any()) } returns "QX"
@@ -186,7 +187,7 @@ class PrefillUfoereIntegrationTest {
 
 
         //mock hent av aktoer/fnr for innkommende hovedperson
-        every { personService.hentIdent(IdentType.NorskIdent, AktoerId(aktoerHovedperson)) } returns NorskIdent(pinHovedperson)
+        every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(aktoerHovedperson)) } returns NorskIdent(pinHovedperson)
 
         every { personService.hentPerson(NorskIdent(pinHovedperson)) } returns hovedPersonMedbarn
 
@@ -215,7 +216,7 @@ class PrefillUfoereIntegrationTest {
 
         val response = result.response.getContentAsString(charset("UTF-8"))
 
-        verify (exactly = 1) { personService.hentIdent(IdentType.NorskIdent, AktoerId(aktoerHovedperson)) }
+        verify (exactly = 1) { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(aktoerHovedperson)) }
         verify (exactly = 1) { personService.hentPerson(NorskIdent(pinHovedperson)) }
         verify (exactly = 1) { personService.hentPerson(NorskIdent(pinEktefelledperson)) }
         verify (exactly = 1) { personService.hentPerson(NorskIdent(pinBarn1)) }
@@ -402,7 +403,7 @@ class PrefillUfoereIntegrationTest {
     @Test
     fun `prefill sed med kravtype førstehangbehandling norge men med vedtak bodsatt utland skal prefylle sed`() {
 
-        every { personService.hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN_2)
+        every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN_2)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_2)) } returns PersonPDLMock.createWith(true, "Lever", "Gjenlev", FNR_VOKSEN_2)
 
         every { pensjonsinformasjonOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java))} returns

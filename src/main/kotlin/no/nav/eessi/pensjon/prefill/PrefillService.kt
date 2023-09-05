@@ -38,7 +38,7 @@ class PrefillService(
         return PrefillSed.measure {
             logger.info(" ******* Starter med preutfylling ******* ")
             try {
-                val norskIdent = innhentingService.hentFnrfraAktoerService(request.aktoerId)
+                val norskIdent = innhentingService.hentFnrfraAktoerService(request.aktoerId)!!
                 val prefillData = ApiRequest.buildPrefillDataModelOnExisting(request, norskIdent, innhentingService.getAvdodAktoerIdPDL(request))
 
                 eessiRequire(prefillData.sedType.kanPrefilles() ) {"SedType ${prefillData.sedType} kan ikke prefilles!"}

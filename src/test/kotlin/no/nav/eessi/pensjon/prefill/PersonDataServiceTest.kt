@@ -58,7 +58,7 @@ internal class PersonDataServiceTest {
     @Test
     fun `test henting av forsikretperson som feiler`() {
 
-        every { personService.hentPerson(any<Ident<*>>()) } throws PersonoppslagException("Fant ikke person", "not_found")
+        every { personService.hentPerson(any()) } throws PersonoppslagException("Fant ikke person", "not_found")
 
         val data = PrefillDataModelMother.initialPrefillDataModel(SedType.P2000, FNR_VOKSEN, SAK_ID, euxCaseId = EUX_RINA)
 
@@ -66,7 +66,7 @@ internal class PersonDataServiceTest {
             persondataService.hentPersonData(data)
         }
 
-        verify ( exactly = 1 ) { personService.hentPerson(any<Ident<*>>())  }
+        verify ( exactly = 1 ) { personService.hentPerson(any())  }
 
     }
 
@@ -74,7 +74,7 @@ internal class PersonDataServiceTest {
     fun `test henting av forsikretperson for persondatacollection`() {
         val mockPerson = lagPerson(FNR_VOKSEN)
 
-        every { personService.hentPerson(any<Ident<*>>()) } returns mockPerson
+        every { personService.hentPerson(any()) } returns mockPerson
 
         val data = PrefillDataModelMother.initialPrefillDataModel(SedType.P2000, FNR_VOKSEN, SAK_ID, euxCaseId = EUX_RINA)
 
@@ -86,7 +86,7 @@ internal class PersonDataServiceTest {
         assertEquals(mockPerson, result.gjenlevendeEllerAvdod)
         assertEquals(mockPerson, result.forsikretPerson)
 
-        verify ( exactly = 1 ) { personService.hentPerson(any<Ident<*>>())  }
+        verify ( exactly = 1 ) { personService.hentPerson(any())  }
 
     }
 
@@ -111,7 +111,7 @@ internal class PersonDataServiceTest {
         assertEquals(avdod, result.gjenlevendeEllerAvdod)
         assertEquals(gjenlev, result.forsikretPerson)
 
-        verify ( exactly = 2 ) { personService.hentPerson(any<Ident<*>>())  }
+        verify ( exactly = 2 ) { personService.hentPerson(any())  }
     }
 
     @Test
@@ -132,7 +132,7 @@ internal class PersonDataServiceTest {
         assertEquals(forelder, result.gjenlevendeEllerAvdod)
         assertEquals(forelder, result.forsikretPerson)
 
-        verify ( exactly = 2 ) { personService.hentPerson(any<Ident<*>>())  }
+        verify ( exactly = 2 ) { personService.hentPerson(any())  }
 
     }
 
@@ -161,7 +161,7 @@ internal class PersonDataServiceTest {
         assertEquals(forelder, result.gjenlevendeEllerAvdod)
         assertEquals(forelder, result.forsikretPerson)
 
-        verify ( exactly = 2 ) { personService.hentPerson(any<Ident<*>>())  }
+        verify ( exactly = 2 ) { personService.hentPerson(any())  }
 
     }
 
@@ -190,7 +190,7 @@ internal class PersonDataServiceTest {
         assertEquals(forelder, result.gjenlevendeEllerAvdod)
         assertEquals(forelder, result.forsikretPerson)
 
-        verify ( exactly = 2 ) { personService.hentPerson(any<Ident<*>>())  }
+        verify ( exactly = 2 ) { personService.hentPerson(any())  }
 
     }
 
@@ -230,7 +230,7 @@ internal class PersonDataServiceTest {
         assertEquals(far, result.gjenlevendeEllerAvdod)
         assertEquals(far, result.forsikretPerson)
 
-        verify ( exactly = 4 ) { personService.hentPerson(any<Ident<*>>())  }
+        verify ( exactly = 4 ) { personService.hentPerson(any())  }
 
     }
 
