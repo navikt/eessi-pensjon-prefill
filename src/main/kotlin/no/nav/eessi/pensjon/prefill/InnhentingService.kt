@@ -90,7 +90,7 @@ class InnhentingService(
 
     fun hentPersonData(prefillData: PrefillDataModel) : PersonDataCollection = personDataService.hentPersonData(prefillData)
 
-    fun hentFnrfraAktoerService(aktoerid: String?): String? = personDataService.hentFnrfraAktoerService(aktoerid)
+    fun hentFnrEllerNpidFraAktoerService(aktoerid: String?): String? = aktoerid?.let { personDataService.hentFnrEllerNpidFraAktoerService(it) }
 
     fun hentIdent(norskIdent: NorskIdent): String? = personDataService.hentIdent(IdentGruppe.AKTORID, norskIdent)?.id
 

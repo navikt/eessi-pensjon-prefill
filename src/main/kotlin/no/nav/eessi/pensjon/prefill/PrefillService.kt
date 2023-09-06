@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
+import org.springframework.web.client.HttpClientErrorException
 
 @Service
 class PrefillService(
@@ -37,8 +38,10 @@ class PrefillService(
     fun prefillSedtoJson(request: ApiRequest): String {
         return PrefillSed.measure {
             logger.info(" ******* Starter med preutfylling ******* ")
+            if (request.aktoerId.isNullOrEmpty()) throw HttpClientErrorException(HttpStatus.NOT_FOUND)
+
             try {
-                val norskIdent = innhentingService.hentFnrfraAktoerService(request.aktoerId)!!
+                val norskIdent = innhentingService.hentFnrEllerNpidFraAktoerService(request.aktoerId)!!
                 val prefillData = ApiRequest.buildPrefillDataModelOnExisting(request, norskIdent, innhentingService.getAvdodAktoerIdPDL(request))
 
                 eessiRequire(prefillData.sedType.kanPrefilles() ) {"SedType ${prefillData.sedType} kan ikke prefilles!"}

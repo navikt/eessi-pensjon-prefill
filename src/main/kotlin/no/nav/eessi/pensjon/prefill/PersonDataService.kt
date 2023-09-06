@@ -156,11 +156,13 @@ class PersonDataService(private val personService: PersonService,
             ?.maxByOrNull { it.metadata.sisteRegistrertDato() }
     }
 
-    fun hentFnrfraAktoerService(aktoerid: String?): String? {
-        if (aktoerid.isNullOrBlank()) {
-            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Fant ingen aktoerident")
-        }
-        return hentIdent(IdentGruppe.FOLKEREGISTERIDENT, AktoerId(aktoerid))?.id
+    fun hentFnrEllerNpidFraAktoerService(aktoerid: String): String? {
+        val fnr = hentIdent(IdentGruppe.FOLKEREGISTERIDENT, AktoerId(aktoerid))?.id
+        if (fnr.isNullOrEmpty().not()) return fnr
+
+        val npid = hentIdent(IdentGruppe.NPID, AktoerId(aktoerid))?.id
+        if (npid.isNullOrEmpty().not()) return npid
+        return null
     }
 
 }

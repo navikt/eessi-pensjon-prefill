@@ -7,10 +7,7 @@ import io.mockk.verify
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonoppslagException
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Ident
-import no.nav.eessi.pensjon.personoppslag.pdl.model.NorskIdent
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Person
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Sivilstandstype
+import no.nav.eessi.pensjon.personoppslag.pdl.model.*
 import no.nav.eessi.pensjon.prefill.LagPDLPerson.Companion.lagPerson
 import no.nav.eessi.pensjon.prefill.LagPDLPerson.Companion.medAdresse
 import no.nav.eessi.pensjon.prefill.LagPDLPerson.Companion.medBarn
@@ -234,5 +231,23 @@ internal class PersonDataServiceTest {
 
     }
 
+    @Test
+    fun `Gitt at fnr for bruker ikke finnes men npid finnes så forsøker vi å hente npid for aktoerId`() {
+        val aktoerIdForFnr = "321654897"
+        val aktoerIdForNpid = "123456789"
+        every { personService.hentIdent(eq(IdentGruppe.FOLKEREGISTERIDENT), AktoerId(aktoerIdForFnr)) } returns null
+        every { personService.hentIdent(eq(IdentGruppe.NPID), AktoerId(aktoerIdForFnr)) } returns null
+        every { personService.hentIdent(eq(IdentGruppe.FOLKEREGISTERIDENT), AktoerId(aktoerIdForNpid)) } returns null
+        every { personService.hentIdent(eq(IdentGruppe.NPID), AktoerId(aktoerIdForNpid)) } returns Npid("077080111")
+
+        val fnr = persondataService.hentFnrEllerNpidFraAktoerService(aktoerIdForFnr)
+        val npid = persondataService.hentFnrEllerNpidFraAktoerService(aktoerIdForNpid)
+
+        //fnr og npid finnes ikke for denne aktoerIden returnerer null
+        assertEquals(null, fnr)
+        //fnr finnes ikke, men npid finnes aktoerIden dermed returneres npiden
+        assertEquals("077080111", npid)
+
+    }
 
 }
