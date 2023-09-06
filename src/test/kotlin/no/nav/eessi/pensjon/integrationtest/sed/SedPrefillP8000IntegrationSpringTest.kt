@@ -10,10 +10,8 @@ import no.nav.eessi.pensjon.kodeverk.KodeverkClient
 import no.nav.eessi.pensjon.pensjonsinformasjon.models.EPSaktype
 import no.nav.eessi.pensjon.pensjonsinformasjon.models.KravArsak
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
-import no.nav.eessi.pensjon.personoppslag.pdl.model.AdressebeskyttelseGradering
-import no.nav.eessi.pensjon.personoppslag.pdl.model.AktoerId
-import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentType
-import no.nav.eessi.pensjon.personoppslag.pdl.model.NorskIdent
+import no.nav.eessi.pensjon.personoppslag.pdl.model.*
+import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe.*
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.PersonPDLMock.medBeskyttelse
@@ -68,8 +66,8 @@ class SedPrefillP8000IntegrationSpringTest {
     @Test
     @Throws(Exception::class)
     fun `prefill sed P8000 - Gitt gjenlevendepensjon Og henvendelse gjelder søker SÅ skal det produseres en Gyldig P8000 med referanse til person 02`() {
-        every { personService.hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID))} returns NorskIdent(FNR_VOKSEN_3)
-        every { personService.hentIdent(IdentType.AktoerId, NorskIdent(FNR_VOKSEN_4)) } returns AktoerId(AKTOER_ID_2)
+        every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID))} returns NorskIdent(FNR_VOKSEN_3)
+        every { personService.hentIdent(AKTORID, NorskIdent(FNR_VOKSEN_4)) } returns AktoerId(AKTOER_ID_2)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_3)) } returns PersonPDLMock
             .createWith(true, "Lever", "Gjenlev", FNR_VOKSEN_3, AKTOER_ID)
             .medUtlandAdresse(
@@ -177,8 +175,8 @@ class SedPrefillP8000IntegrationSpringTest {
     @Throws(Exception::class)
     fun `prefill sed P8000 - Gitt alderpensjon Og henvendelse gjelder avdød SÅ skal det produseres en Gyldig P8000 med avdød og gjenlevende`() {
 
-        every { personService.hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN_3)
-        every { personService.hentIdent(IdentType.AktoerId, NorskIdent(FNR_VOKSEN_4)) } returns AktoerId(AKTOER_ID_2)
+        every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN_3)
+        every { personService.hentIdent(AKTORID, NorskIdent(FNR_VOKSEN_4)) } returns AktoerId(AKTOER_ID_2)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_3)) } returns PersonPDLMock.createWith(true, "Lever", "Gjenlev", FNR_VOKSEN_3, AKTOER_ID)
 
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_4)) } returns PersonPDLMock.createWith(true, "Avdød", "Død", FNR_VOKSEN_4, AKTOER_ID_2, true)
@@ -277,8 +275,8 @@ class SedPrefillP8000IntegrationSpringTest {
     @Test
     @Throws(Exception::class)
     fun `prefill sed P8000 - Gitt alderpensjon Og henvendelse gjelder søker SÅ skal det produseres en Gyldig P8000 med referanse der søker er gjenlevende`() {
-        every { personService.hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN_3)
-        every { personService.hentIdent(IdentType.AktoerId, NorskIdent(FNR_VOKSEN_4)) } returns AktoerId(AKTOER_ID_2)
+        every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN_3)
+        every { personService.hentIdent(AKTORID, NorskIdent(FNR_VOKSEN_4)) } returns AktoerId(AKTOER_ID_2)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_3))  } returns PersonPDLMock.createWith(true, "Lever", "Gjenlev", FNR_VOKSEN_3, AKTOER_ID)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_4)) } returns PersonPDLMock.createWith(true, "Avdød", "Død", FNR_VOKSEN_4, AKTOER_ID_2, true)
 
@@ -364,8 +362,8 @@ class SedPrefillP8000IntegrationSpringTest {
         }
 
         every { pensjoninformasjonservice.hentRelevantPensjonSak(any(), any()) } returns sak
-        every { personService.hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_BARN)
-        every { personService.hentIdent(IdentType.AktoerId, NorskIdent(FNR_VOKSEN_4)) } returns AktoerId(AKTOER_ID_2)
+        every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_BARN)
+        every { personService.hentIdent(AKTORID, NorskIdent(FNR_VOKSEN_4)) } returns AktoerId(AKTOER_ID_2)
 
         val diskeBarn = PersonPDLMock.createWith(true, "Barn", "Diskret", FNR_BARN, AKTOER_ID)
                             .medBeskyttelse(AdressebeskyttelseGradering.STRENGT_FORTROLIG)
@@ -449,7 +447,7 @@ class SedPrefillP8000IntegrationSpringTest {
     @Test
     @Throws(Exception::class)
     fun `prefill sed P8000 - Gitt en alderspensjon så skal det genereres en P8000 uten referanse til person`() {
-        every { personService.hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN_3)
+        every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN_3)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_3)) } returns PersonPDLMock.createWith(true, "Alder", "Pensjon", FNR_VOKSEN_3, AKTOER_ID)
         every { kodeverkClient.finnLandkode(any())} returns "QX"
 
@@ -509,7 +507,7 @@ class SedPrefillP8000IntegrationSpringTest {
         val syntFnr = "54496214261"
 
         every { pensjoninformasjonservice.hentRelevantPensjonSak(any(), any()) } returns V1Sak()
-        every { personService.hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID)) } returns NorskIdent(syntFnr)
+        every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(syntFnr)
         every { personService.hentPerson(NorskIdent(syntFnr)) } returns PersonPDLMock.createWith(true, "Alder", "Pensjon", syntFnr, AKTOER_ID)
         every { kodeverkClient.finnLandkode(any())} returns "QX"
 

@@ -12,7 +12,6 @@ import no.nav.eessi.pensjon.personoppslag.pdl.model.AktoerId
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Familierelasjonsrolle
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Ident
 import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe
-import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentType
 import no.nav.eessi.pensjon.personoppslag.pdl.model.NorskIdent
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Person
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Sivilstand
@@ -41,7 +40,7 @@ class PersonDataService(private val personService: PersonService,
         HentPerson = metricsHelper.init("HentPerson", ignoreHttpCodes = listOf(HttpStatus.BAD_REQUEST))
     }
 
-    fun <T : IdentType, R : IdentType> hentIdent(identTypeWanted: R, ident: Ident<T>): Ident<R> {
+    fun <R : IdentGruppe> hentIdent(identTypeWanted: R, ident: Ident): Ident? {
         return personService.hentIdent(identTypeWanted, ident)
     }
 
@@ -157,12 +156,13 @@ class PersonDataService(private val personService: PersonService,
             ?.maxByOrNull { it.metadata.sisteRegistrertDato() }
     }
 
-    fun hentFnrfraAktoerService(aktoerid: String?): String {
-        if (aktoerid.isNullOrBlank()) {
-            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Fant ingen aktoerident")
-        }
-        return hentIdent (IdentType.NorskIdent, AktoerId(aktoerid)).id
+    fun hentFnrEllerNpidFraAktoerService(aktoerid: String): String? {
+        val fnr = hentIdent(IdentGruppe.FOLKEREGISTERIDENT, AktoerId(aktoerid))?.id
+        if (fnr.isNullOrEmpty().not()) return fnr
 
+        val npid = hentIdent(IdentGruppe.NPID, AktoerId(aktoerid))?.id
+        if (npid.isNullOrEmpty().not()) return npid
+        return null
     }
 
 }

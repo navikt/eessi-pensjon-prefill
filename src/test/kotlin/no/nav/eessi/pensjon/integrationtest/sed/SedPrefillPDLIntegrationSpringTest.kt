@@ -10,7 +10,8 @@ import no.nav.eessi.pensjon.integrationtest.IntegrasjonsTestConfig
 import no.nav.eessi.pensjon.kodeverk.KodeverkClient
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
 import no.nav.eessi.pensjon.personoppslag.pdl.model.AktoerId
-import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentType
+import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe
+import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe.*
 import no.nav.eessi.pensjon.personoppslag.pdl.model.NorskIdent
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper
@@ -71,7 +72,7 @@ class SedPrefillPDLIntegrationSpringTest {
     fun `prefill sed P2000 alder return valid sedjson`() {
         every { pensjonsinformasjonOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns PrefillTestHelper.readXMLresponse("/pensjonsinformasjon/krav/P2000-AP-UP-21337890.xml")
         every { kodeverkClient.finnLandkode(any()) } returns "QX"
-        every { personService.hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN)
+        every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith(true, fnr = FNR_VOKSEN, aktoerid = AKTOER_ID)
 
         val apijson = dummyApijson(sedType = SedType.P2000, sakid = "21337890", aktoerId = AKTOER_ID)
@@ -139,8 +140,8 @@ class SedPrefillPDLIntegrationSpringTest {
     @Throws(Exception::class)
     fun `prefill sed P2100 P_BUC_02 Gjenlevende har med avdod skal returnere en gyldig SED`() {
 
-        every { personService.hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN)
-        every { personService.hentIdent(IdentType.AktoerId, NorskIdent(FNR_VOKSEN_2)) } returns AktoerId(AKTOER_ID_2)
+        every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN)
+        every { personService.hentIdent(AKTORID, NorskIdent(FNR_VOKSEN_2)) } returns AktoerId(AKTOER_ID_2)
 
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith(true, "Lever", "Gjenlev", FNR_VOKSEN, AKTOER_ID)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_2)) } returns PersonPDLMock.createWith(true, "Avdød", "Død", FNR_VOKSEN_2, AKTOER_ID_2, true)
@@ -231,7 +232,7 @@ class SedPrefillPDLIntegrationSpringTest {
     @Test
     @Throws(Exception::class)
     fun `prefill sed P2000 alder return valid sedjson checkk tps to pdl`() {
-        every { personService.hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN)
+        every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith()
 
         every {pensjonsinformasjonOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java))  } returns PrefillTestHelper.readXMLresponse("/pensjonsinformasjon/krav/P2000-AP-UP-21337890.xml")

@@ -63,7 +63,7 @@ class PrefillControllerTest {
             aktoerId = "0105094340092"
         )
 
-        every {personDataService.hentFnrfraAktoerService(any())} returns "12345"
+        every {personDataService.hentFnrEllerNpidFraAktoerService(any())} returns "12345"
 
         val utfyllMock = ApiRequest.buildPrefillDataModelOnExisting(mockData, NorskIdent("12345").id, null)
 

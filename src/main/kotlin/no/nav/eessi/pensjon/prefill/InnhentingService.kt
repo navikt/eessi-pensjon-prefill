@@ -19,7 +19,7 @@ import no.nav.eessi.pensjon.pensjonsinformasjon.models.EPSaktype.GENRL
 import no.nav.eessi.pensjon.pensjonsinformasjon.models.EPSaktype.GJENLEV
 import no.nav.eessi.pensjon.pensjonsinformasjon.models.EPSaktype.OMSORG
 import no.nav.eessi.pensjon.pensjonsinformasjon.models.EPSaktype.UFOREP
-import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentType
+import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe
 import no.nav.eessi.pensjon.personoppslag.pdl.model.NorskIdent
 import no.nav.eessi.pensjon.prefill.models.PensjonCollection
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
@@ -69,7 +69,7 @@ class InnhentingService(
                 if (norskIdent.isBlank()) {
                     throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Ident har tom input-verdi")
                 }
-                hentIdent(IdentType.AktoerId, NorskIdent(norskIdent))
+                hentIdent(NorskIdent(norskIdent))
             }
             P_BUC_05, P_BUC_06,P_BUC_10 -> {
                 val norskIdent = request.riktigAvdod() ?: return null
@@ -78,7 +78,7 @@ class InnhentingService(
                 }
                 val gyldigNorskIdent = Fodselsnummer.fra(norskIdent)
                 return try {
-                    hentIdent(IdentType.AktoerId, NorskIdent(norskIdent))
+                    hentIdent(NorskIdent(norskIdent))
                 } catch (ex: Exception) {
                     if (gyldigNorskIdent == null) logger.error("NorskIdent er ikke gyldig")
                     throw ResponseStatusException(HttpStatus.NOT_FOUND, "Korrekt aktoerIdent ikke funnet")
@@ -90,9 +90,9 @@ class InnhentingService(
 
     fun hentPersonData(prefillData: PrefillDataModel) : PersonDataCollection = personDataService.hentPersonData(prefillData)
 
-    fun hentFnrfraAktoerService(aktoerid: String?): String = personDataService.hentFnrfraAktoerService(aktoerid)
+    fun hentFnrEllerNpidFraAktoerService(aktoerid: String?): String? = aktoerid?.let { personDataService.hentFnrEllerNpidFraAktoerService(it) }
 
-    fun hentIdent(aktoerId: IdentType.AktoerId, norskIdent: NorskIdent): String = personDataService.hentIdent(aktoerId, norskIdent).id
+    fun hentIdent(norskIdent: NorskIdent): String? = personDataService.hentIdent(IdentGruppe.AKTORID, norskIdent)?.id
 
     fun hentPensjoninformasjonCollection(prefillData: PrefillDataModel): PensjonCollection {
         val eessipensjonSakTyper = listOf(ALDER, BARNEP, GJENLEV, UFOREP)

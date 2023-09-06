@@ -15,7 +15,8 @@ import no.nav.eessi.pensjon.eux.model.SedType.P8000
 import no.nav.eessi.pensjon.pensjonsinformasjon.clients.PensjonsinformasjonClient
 import no.nav.eessi.pensjon.personoppslag.pdl.model.AktoerId
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Ident
-import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentType
+import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe
+import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe.*
 import no.nav.eessi.pensjon.shared.api.ApiRequest
 import no.nav.eessi.pensjon.shared.api.ApiSubject
 import no.nav.eessi.pensjon.shared.api.PersonId
@@ -63,7 +64,7 @@ class InnhentingServiceTest {
             avdodfnr = "12345566"
 
         )
-        every { personDataService.hentIdent(eq(IdentType.AktoerId), any<Ident<*>>()) } returns AktoerId(AKTOERID)
+        every { personDataService.hentIdent(eq(AKTORID), any()) } returns AktoerId(AKTOERID)
 
         val result = innhentingService.getAvdodAktoerIdPDL(apiRequest)
         assertEquals(AKTOERID, result)
@@ -82,7 +83,7 @@ class InnhentingServiceTest {
             subject = ApiSubject(gjenlevende = SubjectFnr("23123123"), avdod = SubjectFnr(FNR))
         )
 
-        every { personDataService.hentIdent(eq(IdentType.AktoerId), any<Ident<*>>()) } returns AktoerId(AKTOERID)
+        every { personDataService.hentIdent(eq(AKTORID), any()) } returns AktoerId(AKTOERID)
 
         val result = innhentingService.getAvdodAktoerIdPDL(apiRequest)
         assertEquals(AKTOERID, result)

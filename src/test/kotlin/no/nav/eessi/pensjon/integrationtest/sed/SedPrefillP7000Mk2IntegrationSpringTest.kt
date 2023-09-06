@@ -16,7 +16,8 @@ import no.nav.eessi.pensjon.kodeverk.KodeverkClient
 import no.nav.eessi.pensjon.pensjonsinformasjon.models.EPSaktype
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
 import no.nav.eessi.pensjon.personoppslag.pdl.model.AktoerId
-import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentType
+import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe
+import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe.*
 import no.nav.eessi.pensjon.personoppslag.pdl.model.NorskIdent
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
@@ -79,7 +80,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
 
     @Test
     fun `prefill sed P7000 - Gitt en alderspensjon med flere P6000 med invilgelse og avslag skal det preutfylles gyldig SED`() {
-        every { personService.hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN_3)
+        every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN_3)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_3)) } returns PersonPDLMock.createWith(true, "Alder", "Pensjon", FNR_VOKSEN_3, AKTOER_ID)
         every { kodeverkClient.finnLandkode(any())} returns "QX"
 
@@ -183,8 +184,8 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
     @Test
     @Throws(Exception::class)
     fun `prefill sed P7000 - Gitt gjenlevendepensjon med flere P6000 med avslag skal det preutfylles gyldig SED`() {
-        every { personService.hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID))} returns NorskIdent(FNR_VOKSEN_3)
-        every { personService.hentIdent(IdentType.AktoerId, NorskIdent(FNR_VOKSEN_4)) } returns AktoerId(AKTOER_ID_2)
+        every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID))} returns NorskIdent(FNR_VOKSEN_3)
+        every { personService.hentIdent(IdentGruppe.AKTORID, NorskIdent(FNR_VOKSEN_4)) } returns AktoerId(AKTOER_ID_2)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_3)) } returns PersonPDLMock.createWith(true, "Lever", "Gjenlev", FNR_VOKSEN_3, AKTOER_ID)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_4)) } returns PersonPDLMock.createWith(true, "Avdød", "Død", FNR_VOKSEN_4, AKTOER_ID_2, true)
 
@@ -309,7 +310,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
 
     @Test
     fun `prefill sed P7000 - Gitt gjenlevendepensjon med to P6000 med godkjent pensjon skal det preutfylles gyldig SED`() {
-        every { personService.hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID))} returns NorskIdent(FNR_VOKSEN_3)
+        every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID))} returns NorskIdent(FNR_VOKSEN_3)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_3)) } returns PersonPDLMock.createWith(true, "Lever", "Gjenlev", FNR_VOKSEN_3, AKTOER_ID)
 
         val sak = V1Sak()
@@ -447,7 +448,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
 
     @Test
     fun `prefill sed P7000 - Gitt en alderspensjon med flere P6000 med avslag skal det preutfylles gyldig SED`() {
-        every { personService.hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN_3)
+        every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN_3)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_3)) } returns PersonPDLMock.createWith(true, "Alder", "Pensjon", FNR_VOKSEN_3, AKTOER_ID)
         every { kodeverkClient.finnLandkode(any())} returns "QX"
 
@@ -538,7 +539,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
 
     @Test
     fun `prefill sed P7000 - Gitt en alderspensjon uten noen P6000 - gyldig SED`() {
-        every { personService.hentIdent(IdentType.NorskIdent, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN_3)
+        every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN_3)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_3)) } returns PersonPDLMock.createWith(true, "Alder", "Pensjon", FNR_VOKSEN_3, AKTOER_ID)
         every { kodeverkClient.finnLandkode(any())} returns "QX"
 
