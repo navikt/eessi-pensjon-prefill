@@ -66,7 +66,7 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
 
                             //NAV/Norge benytter ikke seg av sektor, setter denne til null
                             //personnr
-                            identifikator =  identer.firstOrNull { it.gruppe == IdentGruppe.FOLKEREGISTERIDENT }?.ident ?: identer.firstOrNull{ it.gruppe == IdentGruppe.NPID}?.ident,
+                            identifikator = identer.firstOrNull { it.gruppe == IdentGruppe.FOLKEREGISTERIDENT }?.ident ?: identer.firstOrNull{ it.gruppe == IdentGruppe.NPID}?.ident,
 
                             // norsk personnr settes alltid til NO da vi henter NorIdent+
                             land = "NO"

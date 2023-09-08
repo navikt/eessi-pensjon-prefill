@@ -22,13 +22,7 @@ import no.nav.eessi.pensjon.eux.model.sed.StatsborgerskapItem
 import no.nav.eessi.pensjon.kodeverk.KodeverkClient
 import no.nav.eessi.pensjon.kodeverk.PostnummerService
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Doedsfall
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Foedsel
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Navn
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Oppholdsadresse
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Sivilstandstype
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Statsborgerskap
-import no.nav.eessi.pensjon.personoppslag.pdl.model.UtenlandskAdresse
+import no.nav.eessi.pensjon.personoppslag.pdl.model.*
 import no.nav.eessi.pensjon.prefill.LagPDLPerson
 import no.nav.eessi.pensjon.prefill.LagPDLPerson.Companion.createPersonMedEktefellePartner
 import no.nav.eessi.pensjon.prefill.LagPDLPerson.Companion.lagPerson
@@ -73,6 +67,54 @@ class PrefillPDLNavTest {
             PrefillPDLAdresse(PostnummerService(), kodeverkClient, personService).apply { initMetrics() },
             someInstitutionId,
             someIntitutionNavn)
+    }
+
+    @Test
+    fun `minimal prefill med forsikret som har en NPID i stedet for fnr`() {
+        val forsikretSinNpid = "01220049651"
+        val prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P2100, pinId = forsikretSinNpid, penSaksnummer = somePenSaksnr, avdod = null)
+
+        val forsikret = Person(
+            identer = listOf(IdentInformasjon("01220049651", IdentGruppe.NPID)),
+            navn = Navn("OLE", null, "OLSEN", null, null, null, LagPDLPerson.mockMeta()),
+            adressebeskyttelse = emptyList(),
+            bostedsadresse = null,
+            oppholdsadresse = null,
+            statsborgerskap = listOf(Statsborgerskap("NOR", LocalDate.of(2000, 10, 1), LocalDate.of(2300, 10, 1), LagPDLPerson.mockMeta())),
+            foedsel = Foedsel(LocalDate.of(80, 12, 1),"NOR", null, null, null, LagPDLPerson.mockMeta()),
+            geografiskTilknytning = null,
+            kjoenn = Kjoenn(KjoennType.MANN, null, LagPDLPerson.mockMeta()),
+            doedsfall = Doedsfall(metadata = LagPDLPerson.mockMeta()),
+            forelderBarnRelasjon = emptyList(),
+            sivilstand = emptyList(),
+            kontaktadresse = null,
+            utenlandskIdentifikasjonsnummer = emptyList()
+        )
+
+        val foreldreFdato = forsikret.foedsel?.foedselsdato?.toString()
+
+        val personDataCollection = PersonDataCollection(forsikretPerson = forsikret, ektefellePerson = null, sivilstandstype = Sivilstandstype.UGIFT, gjenlevendeEllerAvdod = forsikret)
+
+        val actual = prefillPDLNav.prefill(
+            prefillData.penSaksnummer,
+            prefillData.bruker,
+            prefillData.avdod,
+            personDataCollection,
+            prefillData.getBankOgArbeidFromRequest(),
+            null,
+            null
+        )
+        val expected = Nav(
+            eessisak = listOf(EessisakItem(institusjonsid = someInstitutionId, institusjonsnavn = someIntitutionNavn, saksnummer = somePenSaksnr, land = "NO")),
+            bruker = Bruker(
+                person = lagNavPerson(forsikretSinNpid, "OLE", "OLSEN", foreldreFdato!!, someInstitutionId, someIntitutionNavn),
+                adresse = lagTomAdresse()
+            ),
+        )
+
+        assertEquals(expected, actual)
+        JSONAssert.assertEquals(expected.toJsonSkipEmpty(), actual.toJsonSkipEmpty(), true)
+
     }
 
     @Test
