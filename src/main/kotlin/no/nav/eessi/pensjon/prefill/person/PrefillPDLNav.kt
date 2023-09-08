@@ -57,6 +57,7 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
                 institusjonId: String,
                 institusjonNavn: String): List<PinItem> {
             logger.debug("2.1.7         Fodselsnummer/Personnummer")
+            val identer = personpdl.identer
             return listOf(
                     PinItem(
                             //hentet lokal NAV insitusjondata fra applikasjon properties.
@@ -65,9 +66,9 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
 
                             //NAV/Norge benytter ikke seg av sektor, setter denne til null
                             //personnr
-                            identifikator = personpdl.identer.firstOrNull { it.gruppe == IdentGruppe.FOLKEREGISTERIDENT }?.ident,
+                            identifikator =  identer.firstOrNull { it.gruppe == IdentGruppe.FOLKEREGISTERIDENT }?.ident ?: identer.firstOrNull{ it.gruppe == IdentGruppe.NPID}?.ident,
 
-                            // norsk personnr settes alltid til NO da vi henter NorIdent
+                            // norsk personnr settes alltid til NO da vi henter NorIdent+
                             land = "NO"
                     )
             )
