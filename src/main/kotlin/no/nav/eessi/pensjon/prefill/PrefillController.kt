@@ -18,6 +18,7 @@ class PrefillController(private val prefillService: PrefillService, private val 
         auditlogger.log("previewDocument", request.aktoerId ?: "", request.toAudit())
 
         logger.info("Prefiller : ${request.sed}")
+        logger.debug("Prefiller : $request")
 
         return prefillService.prefillSedtoJson(request)
     }

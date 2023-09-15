@@ -8,6 +8,7 @@ import no.nav.eessi.pensjon.personoppslag.pdl.model.Familierelasjonsrolle
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Foedsel
 import no.nav.eessi.pensjon.personoppslag.pdl.model.ForelderBarnRelasjon
 import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe
+import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe.*
 import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentInformasjon
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Kjoenn
 import no.nav.eessi.pensjon.personoppslag.pdl.model.KjoennType
@@ -29,12 +30,13 @@ import java.time.LocalDateTime
 
 class LagPDLPerson {
     companion object {
-        fun lagPerson(norskIdent: String = FodselsnummerGenerator.generateFnrForTest(60), fornavn: String = "OLE", etternavn: String = "OLSEN", land: String = "NOR", kjoennType: KjoennType = KjoennType.MANN, erDod: Boolean? = false): Person {
-            val personfnr = Fodselsnummer.fra(norskIdent)
-            val fdatoaar =  if (erDod != null && erDod == true) LocalDate.of(1921, 7, 12) else personfnr?.getBirthDate()
-            val doeadfall = if (erDod != null && erDod == true) Doedsfall(LocalDate.of(2020, 10, 1), null, mockMeta()) else null
+        fun lagPerson(fnrEllerNpid: String = FodselsnummerGenerator.generateFnrForTest(60), fornavn: String = "OLE", etternavn: String = "OLSEN", land: String = "NOR", kjoennType: KjoennType = KjoennType.MANN, erDod: Boolean? = false): Person {
+            val personfnr = Fodselsnummer.fra(fnrEllerNpid)
+            val fdatoaar =  if (erDod != null && erDod == true || personfnr?.erNpid == true) LocalDate.of(1921, 7, 12) else personfnr?.getBirthDate()
+            val doeadfall = if (erDod != null && erDod == true || personfnr?.erNpid == true) Doedsfall(LocalDate.of(2020, 10, 1), null, mockMeta()) else null
             return Person(
-                identer = listOf(IdentInformasjon(norskIdent, IdentGruppe.FOLKEREGISTERIDENT)),
+                identer = if(personfnr?.erNpid == true) listOf(IdentInformasjon(fnrEllerNpid, NPID))
+                else listOf(IdentInformasjon(fnrEllerNpid, FOLKEREGISTERIDENT)),
                 navn = Navn(fornavn, null, etternavn, null, null, null, mockMeta()),
                 adressebeskyttelse = emptyList(),
                 bostedsadresse = null,
@@ -84,7 +86,7 @@ class LagPDLPerson {
 
         fun Person.medForeldre(foreldre: Person): Person {
             val foreldreRolle = familieRolle(foreldre)
-            val foreldrefnr = foreldre.identer.firstOrNull { it.gruppe == IdentGruppe.FOLKEREGISTERIDENT }?.ident
+            val foreldrefnr = foreldre.identer.firstOrNull { it.gruppe == FOLKEREGISTERIDENT || it.gruppe == NPID }?.ident
             val list = mutableListOf<ForelderBarnRelasjon>()
             list.addAll(this.forelderBarnRelasjon)
             list.add(ForelderBarnRelasjon(
