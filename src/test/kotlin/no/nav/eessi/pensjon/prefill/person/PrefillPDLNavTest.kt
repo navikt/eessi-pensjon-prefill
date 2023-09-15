@@ -204,6 +204,47 @@ class PrefillPDLNavTest {
     }
 
     @Test
+    fun `prefill med barn og relasjon Far npid`() {
+        val somePersonNr = "01220049651"
+        val someBarnPersonNr = FodselsnummerGenerator.generateFnrForTest(17)
+
+        val prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P2100, pinId = somePersonNr, avdod = PersonId(someBarnPersonNr, "123232312312"), penSaksnummer = somePenSaksnr)
+
+        val far = lagPerson(somePersonNr, "Ole", "Brum").medBarn(someBarnPersonNr)
+        val barn = lagPerson(someBarnPersonNr, "Nasse", "Nøff").medForeldre(far)
+
+        //fdato
+        val farfdato = far.foedsel?.foedselsdato?.toString()
+        val barnfdato = barn.foedsel?.foedselsdato?.toString()
+
+        val personDataCollection = PersonDataCollection(forsikretPerson = far, ektefellePerson = null, sivilstandstype = Sivilstandstype.UGIFT, gjenlevendeEllerAvdod = far, barnPersonList = listOf(barn))
+
+        val actual = prefillPDLNav.prefill(
+            prefillData.penSaksnummer,
+            prefillData.bruker,
+            prefillData.avdod,
+            personDataCollection,
+            prefillData.getBankOgArbeidFromRequest(),
+            null,
+            null
+        )
+        val expected = Nav(
+            eessisak = listOf(EessisakItem(institusjonsid = someInstitutionId, institusjonsnavn = someIntitutionNavn, saksnummer = somePenSaksnr, land = "NO")),
+            bruker = Bruker(
+                person = lagNavPerson(somePersonNr, "Ole", "Brum", farfdato!!, someInstitutionId, someIntitutionNavn),
+                adresse = lagTomAdresse()),
+            barn = listOf(BarnItem(
+                mor = null,
+                far = Foreldre(Person(
+                    fornavn = "Ole",
+                    pin = listOf(PinItem(identifikator = somePersonNr, land = "NO", institusjonsid = "enInstId", institusjonsnavn = "instNavn")))),
+                person = lagNavPerson(someBarnPersonNr, "Nasse", "Nøff", barnfdato!!, someInstitutionId, someIntitutionNavn), relasjontilbruker = "BARN")))
+
+        assertEquals(expected, actual)
+        JSONAssert.assertEquals(expected.toJsonSkipEmpty(), actual.toJsonSkipEmpty(), true)
+    }
+
+    @Test
     fun `prefill med familie relasjon person og ektefelle`() {
 
         val somePersonNr = FodselsnummerGenerator.generateFnrForTest(60)

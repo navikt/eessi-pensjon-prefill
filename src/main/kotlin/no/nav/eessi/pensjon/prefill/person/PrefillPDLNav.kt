@@ -3,6 +3,7 @@ package no.nav.eessi.pensjon.prefill.person
 import no.nav.eessi.pensjon.eux.model.sed.*
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Familierelasjonsrolle
 import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe
+import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe.*
 import no.nav.eessi.pensjon.personoppslag.pdl.model.KjoennType
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Navn
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Sivilstandstype
@@ -27,7 +28,8 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
     companion object {
         private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillPDLNav::class.java) }
 
-        private fun PDLPerson.norskIdent() = this.identer.firstOrNull { it.gruppe == IdentGruppe.FOLKEREGISTERIDENT }?.ident
+        private fun PDLPerson.norskIdent() = this.identer.firstOrNull { it.gruppe == FOLKEREGISTERIDENT }?.ident
+        private fun PDLPerson.npidIdent() = this.identer.firstOrNull { it.gruppe == NPID }?.ident
 
         private fun PDLPerson.kortKjonn() = when(this.kjoenn?.kjoenn) {
             KjoennType.MANN -> "M"
@@ -38,7 +40,7 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
             val fdato = this.foedsel?.foedselsdato
 
             if (fdato == null) {
-                val fnr = this.identer.firstOrNull { it.gruppe == IdentGruppe.FOLKEREGISTERIDENT }?.ident
+                val fnr = this.identer.firstOrNull { it.gruppe == FOLKEREGISTERIDENT || it.gruppe == NPID }?.ident
                 return Fodselsnummer.fra(fnr!!)?.getBirthDate().toString()
             }
             return fdato.toString()
@@ -66,7 +68,7 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
 
                             //NAV/Norge benytter ikke seg av sektor, setter denne til null
                             //personnr
-                            identifikator = identer.firstOrNull { it.gruppe == IdentGruppe.FOLKEREGISTERIDENT }?.ident ?: identer.firstOrNull{ it.gruppe == IdentGruppe.NPID}?.ident,
+                            identifikator = identer.firstOrNull { it.gruppe == FOLKEREGISTERIDENT || it.gruppe == NPID }?.ident,
 
                             // norsk personnr settes alltid til NO da vi henter NorIdent+
                             land = "NO"
@@ -248,12 +250,10 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
 
         //hvem er foreldre for denne relasjonen (FAR/MOR)
         val foreldrePerson = when (relasjonIdent) {
-            ektePerson?.norskIdent() -> {
-                ektePerson
-            }
-            forsikretPerson?.norskIdent() -> {
-                forsikretPerson
-            }
+            ektePerson?.norskIdent() -> ektePerson
+            ektePerson?.npidIdent() -> ektePerson
+            forsikretPerson?.norskIdent() -> forsikretPerson
+            forsikretPerson?.npidIdent() -> forsikretPerson
             else -> {
                 null
             }
@@ -266,7 +266,7 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
                 PinItem(
                     institusjonsnavn = institutionnavn,
                     institusjonsid = institutionid,
-                    identifikator = foreldrePerson.norskIdent(),
+                    identifikator = foreldrePerson.norskIdent() ?: foreldrePerson.npidIdent(),
                     land = "NO"
                 )
             ),
