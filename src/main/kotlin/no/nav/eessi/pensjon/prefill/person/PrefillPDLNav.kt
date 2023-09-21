@@ -2,7 +2,6 @@ package no.nav.eessi.pensjon.prefill.person
 
 import no.nav.eessi.pensjon.eux.model.sed.*
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Familierelasjonsrolle
-import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe
 import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe.*
 import no.nav.eessi.pensjon.personoppslag.pdl.model.KjoennType
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Navn
@@ -36,12 +35,12 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
             KjoennType.KVINNE -> "K"
             else -> "U"
         }
-        private fun PDLPerson.foedseldato() : String {
+        private fun PDLPerson.foedseldato(): String {
             val fdato = this.foedsel?.foedselsdato
 
             if (fdato == null) {
-                val fnr = this.identer.firstOrNull { it.gruppe == FOLKEREGISTERIDENT || it.gruppe == NPID }?.ident
-                return Fodselsnummer.fra(fnr!!)?.getBirthDate().toString()
+                val fnr = this.identer.firstOrNull { it.gruppe == FOLKEREGISTERIDENT }?.ident
+                return Fodselsnummer.fra(fnr)?.getBirthDate().toString()
             }
             return fdato.toString()
         }
