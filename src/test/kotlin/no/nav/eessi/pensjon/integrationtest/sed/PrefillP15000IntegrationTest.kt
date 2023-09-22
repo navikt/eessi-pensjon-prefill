@@ -64,9 +64,131 @@ class PrefillP15000IntegrationTest {
         const val FNR_VOKSEN_2 = "22117320034"  // LEALAUS KAKE
         const val FNR_VOKSEN_3 = "12312312312"
         const val FNR_VOKSEN_4 = "9876543210"
+        const val NPID = "01220049651"
 
         const val AKTOER_ID = "0123456789000"
         const val AKTOER_ID_2 = "0009876543210"
+    }
+
+    @Test
+    @Throws(Exception::class)
+    fun `prefill P15000 for bruker med npid i P_BUC_10 fra vedtakskontekst hvor saktype er GJENLEV og pensjoninformasjon gir BARNEP med GJENLEV`() {
+
+        every { personService.hentIdent(IdentGruppe.FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN_3)
+        every { personService.hentIdent(IdentGruppe.AKTORID, Npid(NPID)) } returns AktoerId(AKTOER_ID_2)
+        every { personService.hentPerson(NorskIdent(FNR_VOKSEN_3)) } returns PersonPDLMock.createWith(true, "Lever", "Gjenlev", FNR_VOKSEN_3, AKTOER_ID)
+        every { personService.hentPerson(Npid(NPID)) } returns PersonPDLMock.createWith(true, "Avdød", "Død", NPID, AKTOER_ID_2, true)
+
+        val banrepSak = V1Sak()
+        banrepSak.sakType = "BARNEP"
+        banrepSak.sakId = 22915555L
+        banrepSak.status = "INNV"
+
+        every { pensjoninformasjonservice.hentRelevantVedtakHvisFunnet(any()) } returns null
+        every { pensjoninformasjonservice.hentRelevantPensjonSak(any(), any()) } returns banrepSak
+
+        val pensjonsinformasjon = Pensjonsinformasjon()
+        val avdod = V1Avdod()
+        avdod.avdodFar = NPID
+        avdod.avdodFarAktorId = "3323332333233323"
+        avdod.avdodMor = "12312312441"
+        avdod.avdodMorAktorId = "123343242034739845719384257134513"
+
+        pensjonsinformasjon.avdod = avdod
+        pensjonsinformasjon.vedtak = V1Vedtak()
+
+        val v1Kravhistorikk = V1KravHistorikk()
+        v1Kravhistorikk.kravArsak = KravArsak.GJNL_SKAL_VURD.name
+
+        val sak = V1Sak()
+        sak.sakType = BARNEP.toString()
+        sak.sakId = 100
+        sak.kravHistorikkListe = V1KravHistorikkListe()
+        sak.kravHistorikkListe.kravHistorikkListe.add(v1Kravhistorikk)
+
+
+        every { pensjoninformasjonservice.hentMedVedtak("123123123") } returns pensjonsinformasjon
+        every { kodeverkClient.finnLandkode(any()) } returns "XQ"
+
+        val apijson =  dummyApijson(sakid = "22915555", vedtakid = "123123123", aktoerId = AKTOER_ID, sedType = P15000, buc = P_BUC_10, kravtype = KravType.GJENLEV, kravdato = "2020-01-01", fnravdod = NPID)
+
+        val result = mockMvc.perform(post("/sed/prefill")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(apijson))
+            .andExpect(status().isOk)
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andReturn()
+        val response = result.response.getContentAsString(charset("UTF-8"))
+
+        val validResponse = """
+        {
+          "sed" : "P15000",
+          "sedGVer" : "4",
+          "sedVer" : "2",
+          "nav" : {
+            "eessisak" : [ {
+              "institusjonsid" : "NO:noinst002",
+              "institusjonsnavn" : "NOINST002, NO INST002, NO",
+              "saksnummer" : "22915555",
+              "land" : "NO"
+            } ],
+            "bruker" : {
+              "person" : {
+                "pin" : [ {
+                  "identifikator" : "$NPID",
+                  "land" : "NO"
+                } ],
+                "etternavn" : "Død",
+                "fornavn" : "Avdød",
+                "kjoenn" : "M",
+                "foedselsdato" : "1921-07-12"
+              },
+              "adresse" : {
+                "gate" : "Oppoverbakken 66",
+                "by" : "SØRUMSAND",
+                "postnummer" : "1920",
+                "land" : "NO"
+              }              
+            },
+            "krav" : {
+              "dato" : "2020-01-01",
+              "type" : "02"
+            }
+          },
+          "pensjon" : {
+            "gjenlevende" : {
+              "person" : {
+                "pin" : [ {
+                  "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                  "institusjonsid" : "NO:noinst002",
+                  "identifikator" : "12312312312",
+                  "land" : "NO"
+                } ],
+                "statsborgerskap" : [ {
+                  "land" : "XQ"
+                } ],
+                "etternavn" : "Gjenlev",
+                "fornavn" : "Lever",
+                "kjoenn" : "M",
+                "foedselsdato" : "1988-07-12",
+                "relasjontilavdod" : {
+                  "relasjon" : "06"
+                },
+                "rolle" : "01"
+              },
+              "adresse" : {
+                "gate" : "Oppoverbakken 66",
+                "by" : "SØRUMSAND",
+                "postnummer" : "1920",
+                "land" : "NO"
+              }
+            }
+          }
+        }
+        """.trimIndent()
+
+        JSONAssert.assertEquals(response, validResponse, true)
+
     }
 
     @Test
@@ -109,7 +231,7 @@ class PrefillP15000IntegrationTest {
         every { pensjoninformasjonservice.hentMedVedtak("123123123") } returns pensjonsinformasjon
         every { kodeverkClient.finnLandkode(any()) } returns "XQ"
 
-        val apijson =  dummyApijson(sakid = "22915555", vedtakid = "123123123", aktoerId = AKTOER_ID, sedType = P15000, buc = BucType.P_BUC_10, kravtype = KravType.GJENLEV, kravdato = "2020-01-01", fnravdod = "9876543210")
+        val apijson =  dummyApijson(sakid = "22915555", vedtakid = "123123123", aktoerId = AKTOER_ID, sedType = P15000, buc = P_BUC_10, kravtype = KravType.GJENLEV, kravdato = "2020-01-01", fnravdod = "9876543210")
 
         val result = mockMvc.perform(post("/sed/prefill")
             .contentType(MediaType.APPLICATION_JSON)

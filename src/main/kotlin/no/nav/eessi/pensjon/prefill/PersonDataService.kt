@@ -8,14 +8,7 @@ import no.nav.eessi.pensjon.eux.model.SedType.P6000
 import no.nav.eessi.pensjon.metrics.MetricsHelper
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonoppslagException
-import no.nav.eessi.pensjon.personoppslag.pdl.model.AktoerId
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Familierelasjonsrolle
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Ident
-import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe
-import no.nav.eessi.pensjon.personoppslag.pdl.model.NorskIdent
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Person
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Sivilstand
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Sivilstandstype
+import no.nav.eessi.pensjon.personoppslag.pdl.model.*
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
 import no.nav.eessi.pensjon.shared.person.Fodselsnummer
@@ -79,7 +72,10 @@ class PersonDataService(private val personService: PersonService,
 
             val gjenlevendeEllerAvdod = if (prefillData.avdod != null) {
                 logger.info("Henter avød person")
-                personService.hentPerson(NorskIdent(prefillData.avdod.norskIdent))
+                val avdodIdent = prefillData.avdod.norskIdent
+                val ident = if(Fodselsnummer.fra(avdodIdent)?.erNpid == true) Npid(avdodIdent)
+                else NorskIdent(avdodIdent)
+                personService.hentPerson(ident)
             } else {
                 logger.info("Ingen avdød så settes til forsikretPerson")
                 forsikretPerson

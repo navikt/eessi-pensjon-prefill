@@ -19,8 +19,10 @@ import no.nav.eessi.pensjon.pensjonsinformasjon.models.EPSaktype.GENRL
 import no.nav.eessi.pensjon.pensjonsinformasjon.models.EPSaktype.GJENLEV
 import no.nav.eessi.pensjon.pensjonsinformasjon.models.EPSaktype.OMSORG
 import no.nav.eessi.pensjon.pensjonsinformasjon.models.EPSaktype.UFOREP
+import no.nav.eessi.pensjon.personoppslag.pdl.model.Ident
 import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe
 import no.nav.eessi.pensjon.personoppslag.pdl.model.NorskIdent
+import no.nav.eessi.pensjon.personoppslag.pdl.model.Npid
 import no.nav.eessi.pensjon.prefill.models.PensjonCollection
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.shared.api.ApiRequest
@@ -63,24 +65,26 @@ class InnhentingService(
         return when (buc) {
             P_BUC_02 -> {
                 val norskIdent = request.riktigAvdod() ?: run {
-                    logger.error("Mangler fnr for avdød")
+                    logger.error("Mangler fnr eller npid for avdød")
                     throw ResponseStatusException(HttpStatus.BAD_REQUEST,"Mangler fnr for avdød")
                 }
                 if (norskIdent.isBlank()) {
-                    throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Ident har tom input-verdi")
+                    throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Bruker mangler fnr/dnr/npid.")
                 }
-                hentIdent(NorskIdent(norskIdent))
+                val ident = if (Fodselsnummer.fra(norskIdent)?.erNpid == true) Npid(norskIdent)
+                else NorskIdent(norskIdent)
+                hentIdent(ident)
             }
             P_BUC_05, P_BUC_06,P_BUC_10 -> {
                 val norskIdent = request.riktigAvdod() ?: return null
                 if (norskIdent.isBlank()) {
                     throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Ident har tom input-verdi")
                 }
-                val gyldigNorskIdent = Fodselsnummer.fra(norskIdent)
+                val ident = if (Fodselsnummer.fra(norskIdent)?.erNpid == true) Npid(norskIdent)
+                else NorskIdent(norskIdent)
                 return try {
-                    hentIdent(NorskIdent(norskIdent))
+                    hentIdent(ident)
                 } catch (ex: Exception) {
-                    if (gyldigNorskIdent == null) logger.error("NorskIdent er ikke gyldig")
                     throw ResponseStatusException(HttpStatus.NOT_FOUND, "Korrekt aktoerIdent ikke funnet")
                 }
             }
@@ -92,7 +96,7 @@ class InnhentingService(
 
     fun hentFnrEllerNpidFraAktoerService(aktoerid: String?): String? = aktoerid?.let { personDataService.hentFnrEllerNpidFraAktoerService(it) }
 
-    fun hentIdent(norskIdent: NorskIdent): String? = personDataService.hentIdent(IdentGruppe.AKTORID, norskIdent)?.id
+    fun hentIdent(norskIdent: Ident): String? = personDataService.hentIdent(IdentGruppe.AKTORID, norskIdent)?.id
 
     fun hentPensjoninformasjonCollection(prefillData: PrefillDataModel): PensjonCollection {
         val eessipensjonSakTyper = listOf(ALDER, BARNEP, GJENLEV, UFOREP)
