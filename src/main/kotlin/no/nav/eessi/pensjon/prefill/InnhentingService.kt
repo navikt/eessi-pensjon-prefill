@@ -1,34 +1,17 @@
 package no.nav.eessi.pensjon.prefill
 
 import jakarta.annotation.PostConstruct
-import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_02
-import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_05
-import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_06
-import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_10
-import no.nav.eessi.pensjon.eux.model.SedType.P15000
-import no.nav.eessi.pensjon.eux.model.SedType.P2000
-import no.nav.eessi.pensjon.eux.model.SedType.P2100
-import no.nav.eessi.pensjon.eux.model.SedType.P2200
-import no.nav.eessi.pensjon.eux.model.SedType.P6000
-import no.nav.eessi.pensjon.eux.model.SedType.P8000
+import no.nav.eessi.pensjon.eux.model.BucType.*
+import no.nav.eessi.pensjon.eux.model.SedType.*
 import no.nav.eessi.pensjon.metrics.MetricsHelper
 import no.nav.eessi.pensjon.pensjonsinformasjon.models.EPSaktype
-import no.nav.eessi.pensjon.pensjonsinformasjon.models.EPSaktype.ALDER
-import no.nav.eessi.pensjon.pensjonsinformasjon.models.EPSaktype.BARNEP
-import no.nav.eessi.pensjon.pensjonsinformasjon.models.EPSaktype.GENRL
-import no.nav.eessi.pensjon.pensjonsinformasjon.models.EPSaktype.GJENLEV
-import no.nav.eessi.pensjon.pensjonsinformasjon.models.EPSaktype.OMSORG
-import no.nav.eessi.pensjon.pensjonsinformasjon.models.EPSaktype.UFOREP
+import no.nav.eessi.pensjon.pensjonsinformasjon.models.EPSaktype.*
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Ident
 import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe
-import no.nav.eessi.pensjon.personoppslag.pdl.model.NorskIdent
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Npid
 import no.nav.eessi.pensjon.prefill.models.PensjonCollection
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.shared.api.ApiRequest
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
-import no.nav.eessi.pensjon.shared.person.Fodselsnummer
-import no.nav.eessi.pensjon.shared.person.Fodselsnummer.Companion.bestemIdent
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import no.nav.pensjon.v1.sak.V1Sak
 import no.nav.pensjon.v1.vedtak.V1Vedtak
@@ -73,7 +56,7 @@ class InnhentingService(
                     throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Bruker mangler fnr/dnr/npid.")
                 }
                 return try {
-                    hentIdent(bestemIdent(norskIdent))
+                    hentIdent(Ident.bestemIdent(norskIdent))
                 } catch (ex: Exception) {
                     throw ResponseStatusException(HttpStatus.NOT_FOUND, "Korrekt aktoerIdent ikke funnet")
                 }
@@ -84,7 +67,7 @@ class InnhentingService(
                     throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Ident har tom input-verdi")
                 }
                 return try {
-                    hentIdent(bestemIdent(norskIdent))
+                    hentIdent(Ident.bestemIdent(norskIdent))
                 } catch (ex: Exception) {
                     throw ResponseStatusException(HttpStatus.NOT_FOUND, "Korrekt aktoerIdent ikke funnet")
                 }

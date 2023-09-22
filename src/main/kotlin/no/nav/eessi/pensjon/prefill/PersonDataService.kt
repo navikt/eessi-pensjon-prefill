@@ -12,7 +12,6 @@ import no.nav.eessi.pensjon.personoppslag.pdl.model.*
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
 import no.nav.eessi.pensjon.shared.person.Fodselsnummer
-import no.nav.eessi.pensjon.shared.person.Fodselsnummer.Companion.bestemIdent
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -72,7 +71,7 @@ class PersonDataService(private val personService: PersonService,
 
             val gjenlevendeEllerAvdod = if (prefillData.avdod != null) {
                 logger.info("Henter avød person")
-                personService.hentPerson(bestemIdent(prefillData.avdod.norskIdent))
+                personService.hentPerson(Ident.bestemIdent(prefillData.avdod.norskIdent))
             } else {
                 logger.info("Ingen avdød så settes til forsikretPerson")
                 forsikretPerson
