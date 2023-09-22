@@ -2,6 +2,9 @@ package no.nav.eessi.pensjon.shared.person
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonValue
+import no.nav.eessi.pensjon.personoppslag.pdl.model.Ident
+import no.nav.eessi.pensjon.personoppslag.pdl.model.NorskIdent
+import no.nav.eessi.pensjon.personoppslag.pdl.model.Npid
 import no.nav.eessi.pensjon.shared.person.Fodselsnummer.Companion.tabeller.kontrollsiffer1
 import no.nav.eessi.pensjon.shared.person.Fodselsnummer.Companion.tabeller.kontrollsiffer2
 import java.time.LocalDate
@@ -161,6 +164,10 @@ class Fodselsnummer private constructor(@JsonValue val value: String) {
             val res = 11 - (sum % 11)
             return if (res == 11) 0 else res
         }
+
+        fun bestemIdent(fnrEllerNpid: String): Ident =
+            if (Fodselsnummer.fra(fnrEllerNpid)?.erNpid == true) Npid(fnrEllerNpid)
+            else NorskIdent(fnrEllerNpid)
     }
 
     enum class Kjoenn {
