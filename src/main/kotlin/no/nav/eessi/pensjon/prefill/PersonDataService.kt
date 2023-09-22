@@ -12,13 +12,13 @@ import no.nav.eessi.pensjon.personoppslag.pdl.model.*
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
 import no.nav.eessi.pensjon.shared.person.Fodselsnummer
+import no.nav.eessi.pensjon.shared.person.Fodselsnummer.Companion.bestemIdent
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.server.ResponseStatusException
-
 @Suppress("SpringJavaInjectionPointsAutowiringInspection")
 @Service
 class PersonDataService(private val personService: PersonService,
@@ -72,10 +72,7 @@ class PersonDataService(private val personService: PersonService,
 
             val gjenlevendeEllerAvdod = if (prefillData.avdod != null) {
                 logger.info("Henter avød person")
-                val avdodIdent = prefillData.avdod.norskIdent
-                val ident = if(Fodselsnummer.fra(avdodIdent)?.erNpid == true) Npid(avdodIdent)
-                else NorskIdent(avdodIdent)
-                personService.hentPerson(ident)
+                personService.hentPerson(bestemIdent(prefillData.avdod.norskIdent))
             } else {
                 logger.info("Ingen avdød så settes til forsikretPerson")
                 forsikretPerson
@@ -85,7 +82,6 @@ class PersonDataService(private val personService: PersonService,
             val sivilstandType = sivilstand?.type
 
             val ektefellePerson = hentHovedpersonEktefelle(sivilstand)
-
             val barnPerson = hentHovedpersonBarn(forsikretPerson, fyllUtBarnListe)
 
             logger.debug("gjenlevendeEllerAvdod: ${gjenlevendeEllerAvdod?.navn?.sammensattNavn }, forsikretPerson: ${forsikretPerson?.navn?.sammensattNavn }")

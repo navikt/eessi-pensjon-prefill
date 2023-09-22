@@ -28,6 +28,7 @@ import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.shared.api.ApiRequest
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
 import no.nav.eessi.pensjon.shared.person.Fodselsnummer
+import no.nav.eessi.pensjon.shared.person.Fodselsnummer.Companion.bestemIdent
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import no.nav.pensjon.v1.sak.V1Sak
 import no.nav.pensjon.v1.vedtak.V1Vedtak
@@ -59,7 +60,7 @@ class InnhentingService(
         )
     }
 
-    //Hjelpe funksjon for å validere og hente aktoerid for evt. avdodfnr fra UI (P2100) - PDL
+    //Hjelpe funksjon for å validere og hente aktoerid for evt. avdodfnr eller avdødNpid fra UI (P2100) - PDL
     fun getAvdodAktoerIdPDL(request: ApiRequest): String? {
         val buc = request.buc ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST,"Mangler Buc")
         return when (buc) {
@@ -71,19 +72,19 @@ class InnhentingService(
                 if (norskIdent.isBlank()) {
                     throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Bruker mangler fnr/dnr/npid.")
                 }
-                val ident = if (Fodselsnummer.fra(norskIdent)?.erNpid == true) Npid(norskIdent)
-                else NorskIdent(norskIdent)
-                hentIdent(ident)
+                return try {
+                    hentIdent(bestemIdent(norskIdent))
+                } catch (ex: Exception) {
+                    throw ResponseStatusException(HttpStatus.NOT_FOUND, "Korrekt aktoerIdent ikke funnet")
+                }
             }
             P_BUC_05, P_BUC_06,P_BUC_10 -> {
                 val norskIdent = request.riktigAvdod() ?: return null
                 if (norskIdent.isBlank()) {
                     throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Ident har tom input-verdi")
                 }
-                val ident = if (Fodselsnummer.fra(norskIdent)?.erNpid == true) Npid(norskIdent)
-                else NorskIdent(norskIdent)
                 return try {
-                    hentIdent(ident)
+                    hentIdent(bestemIdent(norskIdent))
                 } catch (ex: Exception) {
                     throw ResponseStatusException(HttpStatus.NOT_FOUND, "Korrekt aktoerIdent ikke funnet")
                 }
