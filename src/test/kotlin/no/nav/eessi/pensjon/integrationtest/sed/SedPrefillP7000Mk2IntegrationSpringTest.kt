@@ -19,6 +19,7 @@ import no.nav.eessi.pensjon.personoppslag.pdl.model.AktoerId
 import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe
 import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe.*
 import no.nav.eessi.pensjon.personoppslag.pdl.model.NorskIdent
+import no.nav.eessi.pensjon.personoppslag.pdl.model.Npid
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.shared.api.ApiRequest
@@ -47,6 +48,8 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.util.ResourceUtils
 import org.springframework.web.client.RestTemplate
 import java.time.LocalDate
+
+private const val NPID_VOKSEN = "01220049651"
 
 @SpringBootTest(classes = [IntegrasjonsTestConfig::class, UnsecuredWebMvcTestLauncher::class], webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("unsecured-webmvctest", "excludeKodeverk")
@@ -185,7 +188,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
     @Throws(Exception::class)
     fun `prefill sed P7000 - Gitt gjenlevendepensjon med flere P6000 med avslag skal det preutfylles gyldig SED`() {
         every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID))} returns NorskIdent(FNR_VOKSEN_3)
-        every { personService.hentIdent(IdentGruppe.AKTORID, NorskIdent(FNR_VOKSEN_4)) } returns AktoerId(AKTOER_ID_2)
+        every { personService.hentIdent(AKTORID, NorskIdent(FNR_VOKSEN_4)) } returns AktoerId(AKTOER_ID_2)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_3)) } returns PersonPDLMock.createWith(true, "Lever", "Gjenlev", FNR_VOKSEN_3, AKTOER_ID)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_4)) } returns PersonPDLMock.createWith(true, "Avdød", "Død", FNR_VOKSEN_4, AKTOER_ID_2, true)
 
@@ -303,6 +306,133 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
                 .andExpect(status().isOk)
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andReturn()
+
+        val response = result.response.getContentAsString(charset("UTF-8"))
+        JSONAssert.assertEquals(response, validResponse, false)
+    }
+
+    @Test
+    @Throws(Exception::class)
+    fun `prefill sed P7000 for Npid bruker - Gitt gjenlevendepensjon med flere P6000 med avslag skal det preutfylles gyldig SED`() {
+        every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID))} returns Npid(NPID_VOKSEN)
+        every { personService.hentIdent(AKTORID, NorskIdent(FNR_VOKSEN_4)) } returns AktoerId(AKTOER_ID_2)
+        every { personService.hentPerson(Npid(NPID_VOKSEN)) } returns PersonPDLMock.createWith(true, "Lever", "Gjenlev", NPID_VOKSEN, AKTOER_ID)
+        every { personService.hentPerson(NorskIdent(FNR_VOKSEN_4)) } returns PersonPDLMock.createWith(true, "Avdød", "Død", FNR_VOKSEN_4, AKTOER_ID_2, true)
+
+        val sak = V1Sak()
+        sak.sakType = EPSaktype.GJENLEV.toString()
+        sak.sakId = 100
+        sak.kravHistorikkListe = V1KravHistorikkListe()
+
+        every { pensjoninformasjonservice.hentRelevantPensjonSak(any(), any()) } returns sak
+        every { kodeverkClient.finnLandkode(any()) } returns "QX"
+
+
+        //mock p6000 fra RINA med data som skal benyttes i P7000
+        val p6000fraRequest = listOf(mockP6000requestdata("SE","P6000SE-INNV.json"), mockP6000requestdata("NO", "P6000SE-INNV.json"))
+        val payload = mapAnyToJson(p6000fraRequest)
+
+        //mock apiRequest
+        val subject = dummyApiSubject(FNR_VOKSEN_4)
+        val apijson = dummyApiRequest(sakid = "21337890", aktoerId = AKTOER_ID, sed = P7000, buc = P_BUC_02, subject = subject, payload = payload ).toJson()
+
+        val validResponse = """
+        {
+          "sed" : "P7000",
+          "nav" : {
+            "eessisak" : [ {
+              "institusjonsid" : "NO:noinst002",
+              "institusjonsnavn" : "NOINST002, NO INST002, NO",
+              "saksnummer" : "21337890",
+              "land" : "NO"
+            }, {
+              "institusjonsid" : "2342145134",
+              "institusjonsnavn" : "NOINST002, NO INST002, NO",
+              "saksnummer" : "22874955",
+              "land" : "SE"
+            } ],
+            "bruker" : {
+              "person" : {
+                "pin" : [ {
+                      "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                      "institusjonsid" : "NO:noinst002",
+                      "identifikator" : "9876543210",
+                      "land" : "NO"
+                    } ],
+                "etternavn" : "Død",
+                "fornavn" : "Avdød",
+                "kjoenn" : "M",
+                "foedselsdato" : "1921-07-12"
+              }
+            },
+            "ektefelle" : {
+              "person" : {
+                "etternavn" : "Død"
+              }
+            }
+          },
+          "pensjon" : {
+            "gjenlevende" : {
+              "person" : {
+                "pin" : [ {
+                  "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                  "institusjonsid" : "NO:noinst002",
+                  "identifikator" : "$NPID_VOKSEN",
+                  "land" : "NO"
+                } ],
+                "statsborgerskap" : [ {
+                  "land" : "QX"
+                } ],
+                "etternavn" : "Gjenlev",
+                "fornavn" : "Lever",
+                "kjoenn" : "M",
+                "foedselsdato" : "1988-07-12",
+                "rolle" : "01"
+              },
+              "adresse" : {
+                "gate" : "Oppoverbakken 66",
+                "by" : "SØRUMSAND",
+                "postnummer" : "1920",
+                "land" : "NO"
+              }
+            },
+            "samletVedtak" : {
+              "avslag" : [ {
+                "pensjonType" : "01",
+                "begrunnelse" : "03",
+                "dato" : "2019-10-01",
+                "tidsfristForRevurdering" : "seven weeks from the date the decision is received",
+                "adressatforRevurderingAvslag" : [ {
+                  "adressatforrevurdering" : "Olesgate 15\nOslo\n0130\nNO"
+                } ]
+              }, {
+                "pensjonType" : "01",
+                "begrunnelse" : "03",
+                "dato" : "2019-10-01",
+                "tidsfristForRevurdering" : "seven weeks from the date the decision is received",
+                "pin" : {
+                  "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                  "institusjonsid" : "NO:noinst002",
+                  "identifikator" : "11067122781",
+                  "land" : "NO"
+                },
+                "adressatforRevurderingAvslag" : [ {
+                  "adressatforrevurdering" : "Olesgate 15\nOslo\n0130\nNO"
+                } ]
+              } ]
+            }
+          },
+          "sedGVer" : "4",
+          "sedVer" : "2"
+        }
+        """.trimIndent()
+
+        val result = mockMvc.perform(post("/sed/prefill")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(apijson))
+            .andExpect(status().isOk)
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andReturn()
 
         val response = result.response.getContentAsString(charset("UTF-8"))
         JSONAssert.assertEquals(response, validResponse, false)

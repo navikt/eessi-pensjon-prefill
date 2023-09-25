@@ -45,7 +45,7 @@ class PersonDataService(private val personService: PersonService,
         }
     }
 
-    private fun personServiceHentPerson(ident: NorskIdent): Person? {
+    private fun personServiceHentPerson(ident: Ident): Person? {
         return try {
             personService.hentPerson(ident) ?: throw NullPointerException()
         } catch (np: NullPointerException) {
@@ -67,7 +67,7 @@ class PersonDataService(private val personService: PersonService,
     private fun hentPersoner(prefillData: PrefillDataModel, fyllUtBarnListe: Boolean = false): PersonDataCollection {
         return HentPerson.measure {
             logger.info("Henter hovedperson/forsikret/gjenlevende")
-            val forsikretPerson = personServiceHentPerson(NorskIdent(prefillData.bruker.norskIdent))
+            val forsikretPerson = personServiceHentPerson(Npid(prefillData.bruker.norskIdent))
 
             val gjenlevendeEllerAvdod = if (prefillData.avdod != null) {
                 logger.info("Henter avød person")
