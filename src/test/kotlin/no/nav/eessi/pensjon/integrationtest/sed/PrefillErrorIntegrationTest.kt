@@ -14,6 +14,7 @@ import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
 import no.nav.eessi.pensjon.personoppslag.pdl.model.AktoerId
 import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe.FOLKEREGISTERIDENT
 import no.nav.eessi.pensjon.personoppslag.pdl.model.NorskIdent
+import no.nav.eessi.pensjon.personoppslag.pdl.model.Npid
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.pensjon.v1.kravhistorikk.V1KravHistorikk
@@ -58,6 +59,7 @@ class PrefillErrorIntegrationTest {
 
     private companion object {
         const val FNR_VOKSEN = "11067122781"    // KRAFTIG VEGGPRYD
+        const val NPID_VOKSEN = "01220049651"    // KRAFTIG VEGGPRYD
         const val AKTOER_ID = "0123456789000"
     }
 
@@ -93,6 +95,43 @@ class PrefillErrorIntegrationTest {
             MockMvcRequestBuilders.post("/sed/prefill")
             .contentType(MediaType.APPLICATION_JSON)
             .content(apijson))
+            .andExpect(MockMvcResultMatchers.status().isBadRequest)
+            .andExpect(MockMvcResultMatchers.status().reason(Matchers.containsString(expectedError)))
+
+    }
+
+    @Test
+    fun `Prefill P2200 for bruker med npid som har vedtak med F_BH_BO_UTL men F_BH_MED_UTL mangler i tillegg til at vedtak isBoddArbeidetUtland er false så skal det kastes en Exception`() {
+
+        every { kodeverkClient.finnLandkode(eq("NOR"))} returns "NO"
+        every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns Npid(NPID_VOKSEN)
+        every { personService.hentPerson(Npid(NPID_VOKSEN)) } returns PersonPDLMock.createWith()
+
+        val sak = V1Sak()
+        sak.sakType = UFOREP.toString()
+        sak.sakId = 100
+        sak.kravHistorikkListe = V1KravHistorikkListe()
+        val krav = V1KravHistorikk()
+        krav.kravType = "REVURD"
+        krav.kravId = "1"
+        krav.status = "INNV"
+        sak.kravHistorikkListe.kravHistorikkListe.add(krav)
+
+        every { pensjoninformasjonservice.hentRelevantPensjonSak(any(), any()) } returns sak
+
+        val vedtak = V1Vedtak()
+        vedtak.isBoddArbeidetUtland = false
+        vedtak.kravGjelder = "REVURD"
+
+        every { pensjoninformasjonservice.hentRelevantVedtakHvisFunnet("231231231") } returns vedtak
+
+        val apijson = dummyApijson(sakid = "1232123123", aktoerId = AKTOER_ID, vedtakid = "231231231", sed = P2200.name,  buc = P_BUC_03.name)
+        val expectedError = """Du kan ikke opprette krav-SED P2200 hvis ikke "bodd/arbeidet i utlandet" er krysset av""".trimIndent()
+
+        mockMvc.perform(
+            MockMvcRequestBuilders.post("/sed/prefill")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(apijson))
             .andExpect(MockMvcResultMatchers.status().isBadRequest)
             .andExpect(MockMvcResultMatchers.status().reason(Matchers.containsString(expectedError)))
 
