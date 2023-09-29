@@ -23,6 +23,8 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.web.server.ResponseStatusException
 
+private const val NPID_VOKSEN = "01220049651"
+
 internal class PersonDataServiceTest {
 
     companion object {
@@ -162,6 +164,33 @@ internal class PersonDataServiceTest {
 
     }
 
+    @Test
+    fun `Innhenting av forsikret person med barn under 18 aar returnerer persondatacollection`() {
+        val barn1fnr = FodselsnummerGenerator.generateFnrForTest(12)
+        val barn2fnr = FodselsnummerGenerator.generateFnrForTest(19)
+
+        val forelder = lagPerson(NPID_VOKSEN, "Christopher", "Robin").medBarn(barn1fnr).medBarn(barn2fnr)
+        val barn1 = lagPerson(barn2fnr, "Ole", "Brum").medForeldre(forelder)
+        val barn2 = lagPerson(barn1fnr, "Nasse", "Nøff").medForeldre(forelder)
+
+        every { personService.hentPerson(Npid(NPID_VOKSEN)) } returns forelder
+        every { personService.hentPerson(NorskIdent(barn1fnr)) } returns barn1
+        every { personService.hentPerson(NorskIdent(barn2fnr)) } returns barn2
+
+        val data = PrefillDataModelMother.initialPrefillDataModel(SedType.P2000, NPID_VOKSEN, SAK_ID, euxCaseId = EUX_RINA)
+
+        val result = persondataService.hentPersonData(data)
+
+        assertNull(result.ektefellePerson)
+        assertNull(result.sivilstandstype)
+        assertEquals(barn1, result.barnPersonList.firstOrNull())
+        assertEquals(1, result.barnPersonList.size)
+        assertEquals(forelder, result.gjenlevendeEllerAvdod)
+        assertEquals(forelder, result.forsikretPerson)
+
+        verify ( exactly = 2 ) { personService.hentPerson(any())  }
+
+    }
     @Test
     fun `test henting av forsikretperson med avdod ektefelle for persondatacollection`() {
 
