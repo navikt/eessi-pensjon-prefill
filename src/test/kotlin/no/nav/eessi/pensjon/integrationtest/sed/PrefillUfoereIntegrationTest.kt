@@ -11,11 +11,8 @@ import no.nav.eessi.pensjon.eux.model.sed.SED
 import no.nav.eessi.pensjon.integrationtest.IntegrasjonsTestConfig
 import no.nav.eessi.pensjon.kodeverk.KodeverkClient
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
-import no.nav.eessi.pensjon.personoppslag.pdl.model.AktoerId
-import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe
+import no.nav.eessi.pensjon.personoppslag.pdl.model.*
 import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe.*
-import no.nav.eessi.pensjon.personoppslag.pdl.model.KjoennType
-import no.nav.eessi.pensjon.personoppslag.pdl.model.NorskIdent
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.PersonPDLMock.medBarn
 import no.nav.eessi.pensjon.prefill.PersonPDLMock.medFodsel
@@ -44,6 +41,9 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.web.client.RestTemplate
 
+private const val NPID_VOKSEN = "01220049651"
+private const val RINA_SAK = "22874955"
+
 @SpringBootTest(classes = [IntegrasjonsTestConfig::class, UnsecuredWebMvcTestLauncher::class, PrefillUfoereIntegrationTest.TestConfig::class], webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("unsecured-webmvctest", "excludeKodeverk")
 @AutoConfigureMockMvc
@@ -64,7 +64,7 @@ class PrefillUfoereIntegrationTest {
 
     private companion object {
         const val FNR_VOKSEN = "11067122781"    // KRAFTIG VEGGPRYD
-        const val FNR_VOKSEN_2 = "12312312312"  //
+        const val FNR_VOKSEN_2 = "12312312312"
         const val AKTOER_ID = "0123456789000"
     }
 
@@ -188,17 +188,13 @@ class PrefillUfoereIntegrationTest {
 
         //mock hent av aktoer/fnr for innkommende hovedperson
         every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(aktoerHovedperson)) } returns NorskIdent(pinHovedperson)
-
         every { personService.hentPerson(NorskIdent(pinHovedperson)) } returns hovedPersonMedbarn
 
         //ektefelle
         every { personService.hentPerson(NorskIdent(pinEktefelledperson)) } returns ektefellePerson
         //barn
         every { personService.hentPerson(NorskIdent(pinBarn1)) } returns barn1
-
         every { personService.hentPerson(NorskIdent(pinBarn2)) } returns barn2
-
-        //every { personService.hentPerson(NorskIdent(pinBarn3)) } returns barn3
 
         //pensjoninformasjon avsl.
         every { pensjonsinformasjonOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java))} returns PrefillTestHelper.readXMLresponse("/pensjonsinformasjon/krav/P2200-AVSL.xml")
@@ -414,7 +410,7 @@ class PrefillUfoereIntegrationTest {
 
         every { kodeverkClient.finnLandkode(any()) } returns "QX"
 
-        val apijson = dummyApijson(sakid = "22874955", aktoerId = AKTOER_ID, vedtakid = "5134513451345", sed = P2200.name)
+        val apijson = dummyApijson(sakid = RINA_SAK, aktoerId = AKTOER_ID, vedtakid = "5134513451345", sed = P2200.name)
 
         val result = mockMvc.perform(post("/sed/prefill")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -425,54 +421,85 @@ class PrefillUfoereIntegrationTest {
 
         val response = result.response.getContentAsString(charset("UTF-8"))
 
-        val validResponse = """
-            {
-              "sed" : "P2200",
-              "sedGVer" : "4",
-              "sedVer" : "2",
-              "nav" : {
-                "eessisak" : [ {
-                  "institusjonsid" : "NO:noinst002",
-                  "institusjonsnavn" : "NOINST002, NO INST002, NO",
-                  "saksnummer" : "22874955",
-                  "land" : "NO"
-                } ],
-                "bruker" : {
-                  "person" : {
-                    "pin" : [ {
-                      "institusjonsnavn" : "NOINST002, NO INST002, NO",
-                      "institusjonsid" : "NO:noinst002",
-                      "identifikator" : "$FNR_VOKSEN_2",
-                      "land" : "NO"
-                    } ],
-                    "statsborgerskap" : [ {
-                      "land" : "QX"
-                    } ],
-                    "etternavn" : "Gjenlev",
-                    "fornavn" : "Lever",
-                    "kjoenn" : "M",
-                    "foedselsdato" : "1988-07-12"
-                  },
-                  "adresse" : {
-                    "gate" : "Oppoverbakken 66",
-                    "by" : "SØRUMSAND",
-                    "postnummer" : "1920",
-                    "land" : "NO"
-                  }
-                },
-                "krav" : {
-                  "dato" : "2019-07-15"
-                }
-              },
-              "pensjon" : {
-                "kravDato" : {
-                  "dato" : "2019-07-15"
-                }
-              }
-            }
-        """.trimIndent()
+        val validResponse = validResponse(FNR_VOKSEN_2)
         JSONAssert.assertEquals(response, validResponse, true)
     }
+
+    @Test
+    fun `Gitt en SED med bruker som har NPID, kravtype førstegangsbehandling Norge og vedtak bosatt utland så skal SEDen preutfylles`() {
+
+        every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns Npid(NPID_VOKSEN)
+        every { personService.hentPerson(Npid(NPID_VOKSEN)) } returns PersonPDLMock.createWith(true, "Lever", "Gjenlev", NPID_VOKSEN)
+
+        every { pensjonsinformasjonOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java))} returns
+                PrefillTestHelper.readXMLresponse("/pensjonsinformasjon/krav/P2200-UP-INNV.xml")
+
+        every { pensjonsinformasjonOidcRestTemplate.exchange(eq("/vedtak/5134513451345"), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns
+                PrefillTestHelper.readXMLresponse("/pensjonsinformasjon/vedtak/P6000-APUtland-301.xml")
+
+        every { kodeverkClient.finnLandkode(any()) } returns "QX"
+
+        val apijson = dummyApijson(sakid = RINA_SAK, aktoerId = AKTOER_ID, vedtakid = "5134513451345", sed = P2200.name)
+
+        val result = mockMvc.perform(post("/sed/prefill")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(apijson))
+            .andExpect(status().isOk)
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andReturn()
+
+        val response = result.response.getContentAsString(charset("UTF-8"))
+
+        val validResponse = validResponse(NPID_VOKSEN)
+        JSONAssert.assertEquals(response, validResponse, true)
+    }
+
+    private fun validResponse(ident: String) = """
+                {
+                  "sed" : "P2200",
+                  "sedGVer" : "4",
+                  "sedVer" : "2",
+                  "nav" : {
+                    "eessisak" : [ {
+                      "institusjonsid" : "NO:noinst002",
+                      "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                      "saksnummer" : "22874955",
+                      "land" : "NO"
+                    } ],
+                    "bruker" : {
+                      "person" : {
+                        "pin" : [ {
+                          "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                          "institusjonsid" : "NO:noinst002",
+                          "identifikator" : "$ident",
+                          "land" : "NO"
+                        } ],
+                        "statsborgerskap" : [ {
+                          "land" : "QX"
+                        } ],
+                        "etternavn" : "Gjenlev",
+                        "fornavn" : "Lever",
+                        "kjoenn" : "M",
+                        "foedselsdato" : "1988-07-12"
+                      },
+                      "adresse" : {
+                        "gate" : "Oppoverbakken 66",
+                        "by" : "SØRUMSAND",
+                        "postnummer" : "1920",
+                        "land" : "NO"
+                      }
+                    },
+                    "krav" : {
+                      "dato" : "2019-07-15"
+                    }
+                  },
+                  "pensjon" : {
+                    "kravDato" : {
+                      "dato" : "2019-07-15"
+                    }
+                  }
+                }
+            """.trimIndent()
 
 
     private fun dummyApijson(sakid: String, vedtakid: String? = "", aktoerId: String, sed: String? = P2200.name, buc: String? = P_BUC_06.name, subject: String? = null, refperson: String? = null): String {

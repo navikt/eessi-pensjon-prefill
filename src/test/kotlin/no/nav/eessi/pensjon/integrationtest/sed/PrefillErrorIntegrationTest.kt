@@ -59,12 +59,12 @@ class PrefillErrorIntegrationTest {
 
     private companion object {
         const val FNR_VOKSEN = "11067122781"    // KRAFTIG VEGGPRYD
-        const val NPID_VOKSEN = "01220049651"    // KRAFTIG VEGGPRYD
+        const val NPID_VOKSEN = "01220049651"
         const val AKTOER_ID = "0123456789000"
     }
 
     @Test
-    fun `prefill sed P2200 med vedtak, F_BH_BO_UTL og F_BH_MED_UTL mangler samt vedtak isBoddArbeidetUtland er false skal Exception`() {
+    fun `prefill sed P2200 som har vedtak, F_BH_BO_UTL men mangler F_BH_MED_UTL i tillegg til at isBoddArbeidetUtland er false så skal det kastes en Exception`() {
 
         every { kodeverkClient.finnLandkode(eq("NOR"))} returns "NO"
         every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN)
@@ -101,7 +101,7 @@ class PrefillErrorIntegrationTest {
     }
 
     @Test
-    fun `Prefill P2200 for bruker med npid som har vedtak med F_BH_BO_UTL men F_BH_MED_UTL mangler i tillegg til at vedtak isBoddArbeidetUtland er false så skal det kastes en Exception`() {
+    fun `Prefill P2200 som har vedtak med F_BH_BO_UTL men F_BH_MED_UTL mangler i tillegg til at vedtak isBoddArbeidetUtland er false så skal det kastes en Exception`() {
 
         every { kodeverkClient.finnLandkode(eq("NOR"))} returns "NO"
         every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns Npid(NPID_VOKSEN)

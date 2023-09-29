@@ -9,6 +9,7 @@ import no.nav.eessi.pensjon.metrics.MetricsHelper
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonoppslagException
 import no.nav.eessi.pensjon.personoppslag.pdl.model.*
+import no.nav.eessi.pensjon.personoppslag.pdl.model.Ident.Companion.bestemIdent
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
 import no.nav.eessi.pensjon.shared.person.Fodselsnummer
@@ -67,7 +68,7 @@ class PersonDataService(private val personService: PersonService,
     private fun hentPersoner(prefillData: PrefillDataModel, fyllUtBarnListe: Boolean = false): PersonDataCollection {
         return HentPerson.measure {
             logger.info("Henter hovedperson/forsikret/gjenlevende")
-            val forsikretPerson = personServiceHentPerson(Npid(prefillData.bruker.norskIdent))
+            val forsikretPerson = personServiceHentPerson(bestemIdent(prefillData.bruker.norskIdent))
 
             val gjenlevendeEllerAvdod = if (prefillData.avdod != null) {
                 logger.info("Henter avød person")
@@ -94,7 +95,7 @@ class PersonDataService(private val personService: PersonService,
         return try {
             logger.info("Henter ektefelle/partner (ekteType: ${sivilstand?.type})")
 
-            val ektefelleBruker = sivilstand?.relatertVedSivilstand?.let { personService.hentPerson(NorskIdent(it)) }
+            val ektefelleBruker = sivilstand?.relatertVedSivilstand?.let { personService.hentPerson(bestemIdent(it)) }
             ektefelleBruker?.takeUnless { it.erDoed() }
         } catch (ex: Exception) {
             logger.warn(ex.message)
