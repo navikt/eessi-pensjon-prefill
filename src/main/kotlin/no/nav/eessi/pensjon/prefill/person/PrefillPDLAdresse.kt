@@ -6,12 +6,8 @@ import no.nav.eessi.pensjon.kodeverk.KodeverkClient
 import no.nav.eessi.pensjon.kodeverk.PostnummerService
 import no.nav.eessi.pensjon.metrics.MetricsHelper
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
-import no.nav.eessi.pensjon.personoppslag.pdl.model.AdressebeskyttelseGradering
-import no.nav.eessi.pensjon.personoppslag.pdl.model.NorskIdent
-import no.nav.eessi.pensjon.personoppslag.pdl.model.PostadresseIFrittFormat
-import no.nav.eessi.pensjon.personoppslag.pdl.model.UtenlandskAdresse
-import no.nav.eessi.pensjon.personoppslag.pdl.model.UtenlandskAdresseIFrittFormat
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Vegadresse
+import no.nav.eessi.pensjon.personoppslag.pdl.model.*
+import no.nav.eessi.pensjon.personoppslag.pdl.model.Ident.Companion.bestemIdent
 import no.nav.eessi.pensjon.utils.toJson
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -114,7 +110,7 @@ class PrefillPDLAdresse (private val postnummerService: PostnummerService,
             kontaktinformasjonForDoedsbo,
             landKode2Tegn
         ) { idenfikasjonsnummer: String ->
-            personService.hentPersonnavn(NorskIdent(idenfikasjonsnummer))
+            personService.hentPersonnavn(bestemIdent(idenfikasjonsnummer))
                 ?: throw NullPointerException("Uventet nullverdi etter oppslag mot PDL på personnavn for $idenfikasjonsnummer")
         }
     }
