@@ -1,10 +1,7 @@
 package no.nav.eessi.pensjon.prefill
 
 import jakarta.annotation.PostConstruct
-import no.nav.eessi.pensjon.eux.model.SedType.P2000
-import no.nav.eessi.pensjon.eux.model.SedType.P2100
-import no.nav.eessi.pensjon.eux.model.SedType.P2200
-import no.nav.eessi.pensjon.eux.model.SedType.P6000
+import no.nav.eessi.pensjon.eux.model.SedType.*
 import no.nav.eessi.pensjon.metrics.MetricsHelper
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonoppslagException
@@ -19,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.server.ResponseStatusException
+
 @Suppress("SpringJavaInjectionPointsAutowiringInspection")
 @Service
 class PersonDataService(private val personService: PersonService,
@@ -72,7 +70,7 @@ class PersonDataService(private val personService: PersonService,
 
             val gjenlevendeEllerAvdod = if (prefillData.avdod != null) {
                 logger.info("Henter avød person")
-                personService.hentPerson(Ident.bestemIdent(prefillData.avdod.norskIdent))
+                personService.hentPerson(bestemIdent(prefillData.avdod.norskIdent))
             } else {
                 logger.info("Ingen avdød så settes til forsikretPerson")
                 forsikretPerson
