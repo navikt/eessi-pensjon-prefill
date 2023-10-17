@@ -2,10 +2,7 @@
 
  import com.fasterxml.jackson.annotation.JsonIgnoreProperties
  import no.nav.eessi.pensjon.eux.model.BucType
- import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_02
- import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_05
- import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_06
- import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_10
+ import no.nav.eessi.pensjon.eux.model.BucType.*
  import no.nav.eessi.pensjon.eux.model.SedType
  import no.nav.eessi.pensjon.eux.model.sed.KravType
  import org.slf4j.LoggerFactory
@@ -114,9 +111,9 @@
                  throw ResponseStatusException(HttpStatus.BAD_REQUEST,"Mangler fnr for avdød")
              }
              request.riktigAvdod() ?: return null
-             val avdodNorskIdent1 = request.riktigAvdod() ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST,"Mangler Personnr på Avdød")
-             val avdodAktorId1 = avdodaktoerID ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST,"Mangler AktoerId på Avdød")
-             return  PersonId(avdodNorskIdent1, avdodAktorId1)
+             val avdodNorskIdent = request.riktigAvdod() ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST,"Mangler Personnr på Avdød")
+             val avdodAktorId = avdodaktoerID ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST,"Mangler AktoerId på Avdød")
+             return  PersonId(avdodNorskIdent, avdodAktorId)
          }
 
      }

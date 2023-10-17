@@ -118,19 +118,20 @@ class PersonDataService(private val personService: PersonService,
             .filter { it.relatertPersonsRolle == Familierelasjonsrolle.BARN }
             .map { it.relatertPersonsIdent }
                 .also { logger.info("prøver å hente ut alle barn på hovedperson: " + it.size) }
+            .filterNotNull()
             .onEach { barnPin ->  logger.info("Er under 18: " + Fodselsnummer.fra(barnPin)?.isUnder18Year() ) }
             .filter { barnPin ->
                     try {
-                        Fodselsnummer.fraMedValidation (barnPin)?.isUnder18Year()!!
+                        Fodselsnummer.fraMedValidation(barnPin)?.isUnder18Year()!!
                     } catch (ex: Exception) {
-                        logger.warn("Feiler ved validering av fnr for barn ${ex.message}")
+                        logger.warn("Feiler ved validering av fnr for barn ${ex.message} med identtype: ${bestemIdent(barnPin)::class.simpleName}")
                         false
                     }
             }
         logger.info("prøver å hente ut alle barn (filtrert under 18) på hovedperson: " + barnepinListe.size)
 
         return barnepinListe
-            .mapNotNull { barnPin -> barnPin?.let { NorskIdent(it) }?.let { personServiceHentPerson(it) } }
+            .mapNotNull { barnPin -> personServiceHentPerson(bestemIdent(barnPin)) }
             .filterNot{ barn -> barn.erDoed() }
             .onEach {barn ->
                 logger.debug("Hentet følgende barn fra PDL aktoerid: ${barn.identer.firstOrNull { it.gruppe == IdentGruppe.AKTORID }}")
