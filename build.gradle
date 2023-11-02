@@ -82,7 +82,10 @@ dependencies {
         exclude module: 'ep-metrics'
         exclude module: 'ep-logging'
     }
-    implementation("no.nav.eessi.pensjon:ep-pensjonsinformasjon:3.0.68")
+    implementation("no.nav.eessi.pensjon:ep-pensjonsinformasjon:3.0.68"){
+        exclude module: 'ep-metrics'
+        exclude module: 'ep-logging'
+    }
 
     implementation 'javax.xml.bind:jaxb-api:2.3.1'
     implementation('org.glassfish.jaxb:jaxb-runtime:2.3.3')
