@@ -26,7 +26,6 @@ object PrefillTestHelper {
         } returns readXMLVedtakresponse(responseXMLfilename)
 
         val pensjonsinformasjonClient = PensjonsinformasjonClient(pensjonsinformasjonRestTemplate, PensjonRequestBuilder())
-        pensjonsinformasjonClient.initMetrics()
         return PensjonsinformasjonService(pensjonsinformasjonClient)
     }
 
@@ -39,7 +38,6 @@ object PrefillTestHelper {
         } returns readXMLresponse(responseXMLfilename)
 
         val pensjonsinformasjonClient = PensjonsinformasjonClient(pensjonsinformasjonRestTemplate, PensjonRequestBuilder())
-        pensjonsinformasjonClient.initMetrics()
         return PensjonsinformasjonService(pensjonsinformasjonClient)
     }
 

@@ -3,22 +3,8 @@ package no.nav.eessi.pensjon.prefill.person
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.SedType
-import no.nav.eessi.pensjon.eux.model.sed.Adresse
-import no.nav.eessi.pensjon.eux.model.sed.ArbeidsforholdItem
-import no.nav.eessi.pensjon.eux.model.sed.Bank
-import no.nav.eessi.pensjon.eux.model.sed.BarnItem
-import no.nav.eessi.pensjon.eux.model.sed.Bruker
-import no.nav.eessi.pensjon.eux.model.sed.EessisakItem
-import no.nav.eessi.pensjon.eux.model.sed.Ektefelle
-import no.nav.eessi.pensjon.eux.model.sed.Foedested
-import no.nav.eessi.pensjon.eux.model.sed.Foreldre
-import no.nav.eessi.pensjon.eux.model.sed.Innehaver
-import no.nav.eessi.pensjon.eux.model.sed.Konto
-import no.nav.eessi.pensjon.eux.model.sed.Nav
+import no.nav.eessi.pensjon.eux.model.sed.*
 import no.nav.eessi.pensjon.eux.model.sed.Person
-import no.nav.eessi.pensjon.eux.model.sed.PinItem
-import no.nav.eessi.pensjon.eux.model.sed.Sepa
-import no.nav.eessi.pensjon.eux.model.sed.StatsborgerskapItem
 import no.nav.eessi.pensjon.kodeverk.KodeverkClient
 import no.nav.eessi.pensjon.kodeverk.PostnummerService
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
@@ -38,9 +24,7 @@ import no.nav.eessi.pensjon.shared.person.Fodselsnummer
 import no.nav.eessi.pensjon.shared.person.FodselsnummerGenerator
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNotNull
-import org.junit.jupiter.api.Assertions.assertNull
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
@@ -64,7 +48,7 @@ class PrefillPDLNavTest {
         every { kodeverkClient.finnLandkode(eq("SWE")) } returns "SE"
 
         prefillPDLNav = PrefillPDLNav(
-            PrefillPDLAdresse(PostnummerService(), kodeverkClient, personService).apply { initMetrics() },
+            PrefillPDLAdresse(PostnummerService(), kodeverkClient, personService),
             someInstitutionId,
             someIntitutionNavn)
     }

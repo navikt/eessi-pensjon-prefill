@@ -1,6 +1,5 @@
 package no.nav.eessi.pensjon.prefill
 
-import jakarta.annotation.PostConstruct
 import no.nav.eessi.pensjon.eux.model.BucType.*
 import no.nav.eessi.pensjon.eux.model.SedType.*
 import no.nav.eessi.pensjon.metrics.MetricsHelper
@@ -34,8 +33,7 @@ class InnhentingService(
     private val logger = LoggerFactory.getLogger(InnhentingService::class.java)
 
 
-    @PostConstruct
-    fun initMetrics() {
+    init {
         HentPerson = metricsHelper.init("HentPerson", ignoreHttpCodes = listOf(HttpStatus.BAD_REQUEST))
         addInstutionAndDocumentBucUtils = metricsHelper.init(
             "AddInstutionAndDocumentBucUtils",

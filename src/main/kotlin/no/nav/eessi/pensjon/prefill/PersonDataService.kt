@@ -1,6 +1,5 @@
 package no.nav.eessi.pensjon.prefill
 
-import jakarta.annotation.PostConstruct
 import no.nav.eessi.pensjon.eux.model.SedType.*
 import no.nav.eessi.pensjon.metrics.MetricsHelper
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
@@ -26,8 +25,7 @@ class PersonDataService(private val personService: PersonService,
 
     private lateinit var HentPerson: MetricsHelper.Metric
 
-    @PostConstruct
-    fun initMetrics() {
+    init {
         HentPerson = metricsHelper.init("HentPerson", ignoreHttpCodes = listOf(HttpStatus.BAD_REQUEST))
     }
 

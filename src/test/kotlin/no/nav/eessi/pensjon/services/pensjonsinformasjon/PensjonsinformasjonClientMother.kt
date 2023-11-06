@@ -17,14 +17,7 @@ object PensjonsinformasjonClientMother {
         val readXMLresponse = ResponseEntity(resource, HttpStatus.OK)
 
         val mockRestTemplate: RestTemplate = mockk()
-/*
-        whenever(mockRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), ArgumentMatchers.eq(String::class.java)))
-                .thenReturn(readXMLresponse)
-*/
         every { mockRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns readXMLresponse
-        val pensjonsinformasjonClient = PensjonsinformasjonClient(mockRestTemplate, PensjonRequestBuilder())
-        pensjonsinformasjonClient.initMetrics()
-        return pensjonsinformasjonClient
+        return PensjonsinformasjonClient(mockRestTemplate, PensjonRequestBuilder())
     }
-
 }

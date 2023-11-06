@@ -1,6 +1,5 @@
 package no.nav.eessi.pensjon.prefill.person
 
-import jakarta.annotation.PostConstruct
 import no.nav.eessi.pensjon.eux.model.sed.Adresse
 import no.nav.eessi.pensjon.kodeverk.KodeverkClient
 import no.nav.eessi.pensjon.kodeverk.PostnummerService
@@ -24,8 +23,7 @@ class PrefillPDLAdresse (private val postnummerService: PostnummerService,
     private lateinit var hentLandkodeMetric: MetricsHelper.Metric
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillPDLAdresse::class.java) }
 
-    @PostConstruct
-    fun initMetrics() {
+    init {
         hentLandkodeMetric = metricsHelper.init("hentLandkodeMetric")
     }
 

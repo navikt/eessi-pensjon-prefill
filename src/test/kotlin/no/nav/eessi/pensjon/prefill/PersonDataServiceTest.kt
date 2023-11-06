@@ -18,7 +18,6 @@ import no.nav.eessi.pensjon.shared.person.FodselsnummerGenerator
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.web.server.ResponseStatusException
@@ -43,11 +42,6 @@ internal class PersonDataServiceTest {
     private val persondataService: PersonDataService = PersonDataService(
         personService = personService
     )
-
-    @BeforeEach
-    fun setup() {
-         persondataService.initMetrics()
-    }
 
     @AfterEach
     fun after() {

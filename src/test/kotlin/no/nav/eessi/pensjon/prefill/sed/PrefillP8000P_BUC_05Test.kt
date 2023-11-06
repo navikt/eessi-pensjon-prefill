@@ -55,7 +55,7 @@ class PrefillP8000P_BUC_05Test {
         every { kodeverkClient.finnLandkode("NOR") } returns "NO"
         every { kodeverkClient.finnLandkode("SWE") } returns "SE"
 
-        prefillAdresse = PrefillPDLAdresse(PostnummerService(), kodeverkClient, personService).apply { initMetrics() }
+        prefillAdresse = PrefillPDLAdresse(PostnummerService(), kodeverkClient, personService)
         prefillNav = PrefillPDLNav( prefillAdresse,
                 institutionid = "NO:noinst002",
                 institutionnavn = "NOINST002, NO INST002, NO")

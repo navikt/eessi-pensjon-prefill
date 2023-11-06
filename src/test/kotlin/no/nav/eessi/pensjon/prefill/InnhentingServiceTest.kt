@@ -3,25 +3,13 @@ package no.nav.eessi.pensjon.prefill
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.BucType
-import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_01
-import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_02
-import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_05
+import no.nav.eessi.pensjon.eux.model.BucType.*
 import no.nav.eessi.pensjon.eux.model.SedType
-import no.nav.eessi.pensjon.eux.model.SedType.P15000
-import no.nav.eessi.pensjon.eux.model.SedType.P2000
-import no.nav.eessi.pensjon.eux.model.SedType.P2100
-import no.nav.eessi.pensjon.eux.model.SedType.P5000
-import no.nav.eessi.pensjon.eux.model.SedType.P8000
+import no.nav.eessi.pensjon.eux.model.SedType.*
 import no.nav.eessi.pensjon.pensjonsinformasjon.clients.PensjonsinformasjonClient
 import no.nav.eessi.pensjon.personoppslag.pdl.model.AktoerId
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Ident
-import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe
-import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe.*
-import no.nav.eessi.pensjon.shared.api.ApiRequest
-import no.nav.eessi.pensjon.shared.api.ApiSubject
-import no.nav.eessi.pensjon.shared.api.PersonId
-import no.nav.eessi.pensjon.shared.api.PrefillDataModel
-import no.nav.eessi.pensjon.shared.api.SubjectFnr
+import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe.AKTORID
+import no.nav.eessi.pensjon.shared.api.*
 import no.nav.pensjon.v1.brukerssakerliste.V1BrukersSakerListe
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import no.nav.pensjon.v1.sak.V1Sak
@@ -48,9 +36,7 @@ class InnhentingServiceTest {
 
     @BeforeEach
     fun before() {
-        innhentingService =
-            InnhentingService(personDataService, pensjonsinformasjonService = pensjonsinformasjonService)
-        innhentingService.initMetrics()
+        innhentingService = InnhentingService(personDataService, pensjonsinformasjonService = pensjonsinformasjonService)
     }
 
     @Test
@@ -138,11 +124,6 @@ class InnhentingServiceTest {
 
         val pensjonsinformasjonService = PensjonsinformasjonService(pensjonsinformasjonClient)
         val innhentingsservice = InnhentingService(personDataService, pensjonsinformasjonService = pensjonsinformasjonService)
-
-        @BeforeEach
-        fun setUp() {
-            innhentingsservice.initMetrics()
-        }
 
         @Test
         fun `Gitt en P2100 med saktype ALDER saa skal hentPensjoninformasjonCollection sitt resultat paa saktype gi ut ALDER`() {

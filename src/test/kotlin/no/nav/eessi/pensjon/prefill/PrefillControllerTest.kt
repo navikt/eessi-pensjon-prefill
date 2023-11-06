@@ -6,11 +6,7 @@ import io.mockk.impl.annotations.SpyK
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_06
 import no.nav.eessi.pensjon.eux.model.SedType.P6000
-import no.nav.eessi.pensjon.eux.model.sed.Bruker
-import no.nav.eessi.pensjon.eux.model.sed.Krav
-import no.nav.eessi.pensjon.eux.model.sed.Nav
-import no.nav.eessi.pensjon.eux.model.sed.Person
-import no.nav.eessi.pensjon.eux.model.sed.SED
+import no.nav.eessi.pensjon.eux.model.sed.*
 import no.nav.eessi.pensjon.logging.AuditLogger
 import no.nav.eessi.pensjon.personoppslag.pdl.model.NorskIdent
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
@@ -40,10 +36,7 @@ class PrefillControllerTest {
     fun before() {
 
         val innhentingService = InnhentingService(personDataService, pensjonsinformasjonService = pensjonsinformasjonService)
-        innhentingService.initMetrics()
-
         val prefillService = PrefillService(mockPrefillSEDService, innhentingService, automatiseringStatistikkService)
-        prefillService.initMetrics()
 
         prefillController = PrefillController(
             prefillService, auditLogger

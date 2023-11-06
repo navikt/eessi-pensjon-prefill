@@ -79,7 +79,7 @@ class PrefillAdresseKodeverkTest {
     class Config {
         @Bean
         fun kodeVerkHentLandkoder(): KodeVerkHentLandkoder {
-            return KodeVerkHentLandkoder("testApp", restTemplate, MetricsHelper.ForTest()).apply { initMetrics() }
+            return KodeVerkHentLandkoder("testApp", restTemplate, MetricsHelper.ForTest())
         }
         @Bean
         fun kodeverkClient(): KodeverkClient {
@@ -88,7 +88,7 @@ class PrefillAdresseKodeverkTest {
 
         @Bean
         fun prefillPDLAdresse(): PrefillPDLAdresse {
-            return PrefillPDLAdresse(PostnummerService(), kodeverkClient(), mockk()).apply { initMetrics() }
+            return PrefillPDLAdresse(PostnummerService(), kodeverkClient(), mockk())
         }
     }
 

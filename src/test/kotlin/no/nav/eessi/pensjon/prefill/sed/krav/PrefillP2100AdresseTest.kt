@@ -42,7 +42,6 @@ class PrefillP2100AdresseTest {
         prefillPDLAdresse = PrefillPDLAdresse(mockk(relaxed = true), mockk(relaxed = true){
             every { finnLandkode(eq("NOR")) } returns "NO"
         }, personService)
-        prefillPDLAdresse.initMetrics()
 
         val prefillNav = PrefillPDLNav(prefillPDLAdresse,
                 institutionid = "NO:noinst002",

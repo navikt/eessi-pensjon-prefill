@@ -54,7 +54,7 @@ class PrefillP2200_AP_21975717Test {
         personDataCollection = PersonPDLMock.createEnkelFamilie(personFnr, ekteFnr)
 
         prefillNav = PrefillPDLNav(
-            prefillAdresse = PrefillPDLAdresse(PostnummerService(), kodeverkClient, personService).apply { initMetrics() },
+            prefillAdresse = PrefillPDLAdresse(PostnummerService(), kodeverkClient, personService),
             institutionid = "NO:noinst002",
             institutionnavn = "NOINST002, NO INST002, NO"
         )

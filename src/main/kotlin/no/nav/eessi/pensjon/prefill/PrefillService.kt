@@ -1,7 +1,6 @@
 package no.nav.eessi.pensjon.prefill
 
 import io.micrometer.core.instrument.Metrics
-import jakarta.annotation.PostConstruct
 import no.nav.eessi.pensjon.eux.model.sed.SED
 import no.nav.eessi.pensjon.metrics.MetricsHelper
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
@@ -29,8 +28,7 @@ class PrefillService(
 
     private val LATEST_RINA_SED_VERSION = "v4.2"
 
-    @PostConstruct
-    fun initMetrics() {
+    init {
         PrefillSed = metricsHelper.init("PrefillSed",
             ignoreHttpCodes = listOf(HttpStatus.BAD_REQUEST, HttpStatus.FORBIDDEN))
     }

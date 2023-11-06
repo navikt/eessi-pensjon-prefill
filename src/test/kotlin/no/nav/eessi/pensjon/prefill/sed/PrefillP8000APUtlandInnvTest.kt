@@ -18,9 +18,7 @@ import no.nav.eessi.pensjon.shared.person.Fodselsnummer
 import no.nav.eessi.pensjon.shared.person.FodselsnummerGenerator
 import no.nav.pensjon.v1.kravhistorikkliste.V1KravHistorikkListe
 import no.nav.pensjon.v1.sak.V1Sak
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNotNull
-import org.junit.jupiter.api.Assertions.assertNull
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
@@ -42,7 +40,7 @@ class PrefillP8000APUtlandInnvTest {
 
         every { kodeverkClient.finnLandkode(any()) } returns "NO"
 
-        val prefillAdresse = PrefillPDLAdresse(PostnummerService(),kodeverkClient, personService).apply { initMetrics() }
+        val prefillAdresse = PrefillPDLAdresse(PostnummerService(),kodeverkClient, personService)
 
         prefillNav = PrefillPDLNav(
                 prefillAdresse = prefillAdresse,
