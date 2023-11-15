@@ -2,7 +2,8 @@ package no.nav.eessi.pensjon.prefill.person
 
 import no.nav.eessi.pensjon.eux.model.sed.*
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Familierelasjonsrolle
-import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe.*
+import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe.FOLKEREGISTERIDENT
+import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe.NPID
 import no.nav.eessi.pensjon.personoppslag.pdl.model.KjoennType
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Navn
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Sivilstandstype
@@ -149,8 +150,8 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
             return listOf(EessisakItem(
                     institusjonsid = institusjonId,
                     institusjonsnavn = institusjonNavn,
-                    saksnummer = penSaksnummer,
-                    land = "NO"
+                    saksnummer = if (penSaksnummer.isNullOrBlank()) null else penSaksnummer,
+                    land = if (penSaksnummer.isNullOrBlank()) null else "NO"
             ))
         }
     }
