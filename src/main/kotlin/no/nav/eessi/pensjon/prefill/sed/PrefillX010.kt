@@ -26,7 +26,7 @@ class PrefillX010(private val prefillNav: PrefillPDLNav)  {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillX010::class.java) }
 
-    fun prefill(penSaksnummer: String,
+    fun prefill(penSaksnummer: String?,
                 bruker: PersonId,
                 avdod: PersonId?,
                 brukerinformasjon: BankOgArbeid?,

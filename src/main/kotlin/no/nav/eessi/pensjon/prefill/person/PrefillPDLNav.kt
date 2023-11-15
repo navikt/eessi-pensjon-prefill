@@ -144,7 +144,7 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
         }
 
         //lokal sak pkt 1.0 i gjelder alle SED
-        private fun createEssisakItem(penSaksnummer: String, institusjonId: String, institusjonNavn: String): List<EessisakItem> {
+        private fun createEssisakItem(penSaksnummer: String?, institusjonId: String, institusjonNavn: String): List<EessisakItem> {
             logger.debug("1.1           Lokalt saksnummer (hvor hentes disse verider ifra?")
             return listOf(EessisakItem(
                     institusjonsid = institusjonId,
@@ -156,7 +156,7 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
     }
 
     fun prefill(
-        penSaksnummer: String,
+        penSaksnummer: String?,
         bruker: PersonId,
         avdod: PersonId?,
         personData: PersonDataCollection,
