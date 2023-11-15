@@ -21,7 +21,7 @@
  //Samme som SedRequest i frontend-api
  @JsonIgnoreProperties(ignoreUnknown = true)
  data class ApiRequest(
-     val sakId: String,
+     val sakId: String? = null,
      val vedtakId: String? = null,
      val kravId: String? = null,
      val kravDato: String? = null,
@@ -111,9 +111,9 @@
                  throw ResponseStatusException(HttpStatus.BAD_REQUEST,"Mangler fnr for avdød")
              }
              request.riktigAvdod() ?: return null
-             val avdodNorskIdent = request.riktigAvdod() ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST,"Mangler Personnr på Avdød")
-             val avdodAktorId = avdodaktoerID ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST,"Mangler AktoerId på Avdød")
-             return  PersonId(avdodNorskIdent, avdodAktorId)
+             val avdodNorskIdent1 = request.riktigAvdod() ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST,"Mangler Personnr på Avdød")
+             val avdodAktorId1 = avdodaktoerID ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST,"Mangler AktoerId på Avdød")
+             return  PersonId(avdodNorskIdent1, avdodAktorId1)
          }
 
      }
