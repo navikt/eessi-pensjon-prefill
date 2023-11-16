@@ -2,7 +2,8 @@ package no.nav.eessi.pensjon.prefill.person
 
 import no.nav.eessi.pensjon.eux.model.sed.*
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Familierelasjonsrolle
-import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe.*
+import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe.FOLKEREGISTERIDENT
+import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe.NPID
 import no.nav.eessi.pensjon.personoppslag.pdl.model.KjoennType
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Navn
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Sivilstandstype
@@ -144,19 +145,19 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
         }
 
         //lokal sak pkt 1.0 i gjelder alle SED
-        private fun createEssisakItem(penSaksnummer: String, institusjonId: String, institusjonNavn: String): List<EessisakItem> {
+        private fun createEssisakItem(penSaksnummer: String?, institusjonId: String, institusjonNavn: String): List<EessisakItem> {
             logger.debug("1.1           Lokalt saksnummer (hvor hentes disse verider ifra?")
             return listOf(EessisakItem(
                     institusjonsid = institusjonId,
                     institusjonsnavn = institusjonNavn,
-                    saksnummer = penSaksnummer,
-                    land = "NO"
+                    saksnummer = if (penSaksnummer.isNullOrBlank()) null else penSaksnummer,
+                    land = if (penSaksnummer.isNullOrBlank()) null else "NO"
             ))
         }
     }
 
     fun prefill(
-        penSaksnummer: String,
+        penSaksnummer: String?,
         bruker: PersonId,
         avdod: PersonId?,
         personData: PersonDataCollection,

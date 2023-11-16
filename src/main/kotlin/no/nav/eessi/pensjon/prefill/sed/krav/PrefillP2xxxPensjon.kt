@@ -83,7 +83,7 @@ object PrefillP2xxxPensjon {
      *  Obs, krav av typen «Førstegangsbehandling kun utland» eller Sluttbehandling kun utland» gjelder ikke norsk ytelse.
      */
     fun populerMeldinOmPensjon(personNr: String,
-                               penSaksnummer: String,
+                               penSaksnummer: String? = null,
                                pensak: V1Sak?,
                                andreinstitusjonerItem: AndreinstitusjonerItem?,
                                gjenlevende: Bruker? = null,
@@ -195,7 +195,7 @@ object PrefillP2xxxPensjon {
     /**
      *  4.1 (for kun_uland,mangler inngangsvilkår)
      */
-    fun opprettForkortetYtelsesItem(pensak: V1Sak?, personNr: String, penSaksnummer: String, andreinstitusjonerItem: AndreinstitusjonerItem?): YtelserItem {
+    fun opprettForkortetYtelsesItem(pensak: V1Sak?, personNr: String, penSaksnummer: String?, andreinstitusjonerItem: AndreinstitusjonerItem?): YtelserItem {
         return YtelserItem(
                 //4.1.1
                 ytelse = settYtelse(pensak),
@@ -204,7 +204,7 @@ object PrefillP2xxxPensjon {
                 //4.1.4
                 pin = createInstitusjonPin(personNr),
                 //4.1.4.1.4
-                institusjon = createInstitusjon(penSaksnummer, andreinstitusjonerItem)
+                institusjon = penSaksnummer?.let { createInstitusjon(it, andreinstitusjonerItem) }
         )
     }
 
@@ -223,7 +223,7 @@ object PrefillP2xxxPensjon {
      *
      *  Informasjon om ytelser den forsikrede mottar
      */
-    fun createYtelserItem(ytelsePrmnd: V1YtelsePerMaaned, pensak: V1Sak, personNr: String, penSaksnummer: String, andreinstitusjonerItem: AndreinstitusjonerItem?): YtelserItem {
+    fun createYtelserItem(ytelsePrmnd: V1YtelsePerMaaned, pensak: V1Sak, personNr: String, penSaksnummer: String?, andreinstitusjonerItem: AndreinstitusjonerItem?): YtelserItem {
         logger.debug("4.1   YtelserItem")
         return YtelserItem(
 
@@ -280,7 +280,7 @@ object PrefillP2xxxPensjon {
         return pensak.forsteVirkningstidspunkt?.simpleFormat()
     }
 
-    private fun createInstitusjon(penSaksnummer: String, andreinstitusjonerItem: AndreinstitusjonerItem?): Institusjon {
+    private fun createInstitusjon(penSaksnummer: String?, andreinstitusjonerItem: AndreinstitusjonerItem?): Institusjon {
         logger.debug("4.1.4.1.4     Institusjon")
         return Institusjon(
                 institusjonsid = andreinstitusjonerItem?.institusjonsid,

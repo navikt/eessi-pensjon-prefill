@@ -31,8 +31,8 @@ class PensjonsinformasjonService(private val pensjonsinformasjonClient: Pensjons
 
     companion object {
         //hjelpe metode for å hente ut valgt V1SAK på vetak/SAK fnr og sakid benyttes
-        fun finnSak(sakId: String, pendata: Pensjonsinformasjon): V1Sak? {
-            if (sakId.isBlank()) throw ManglendeSakIdException("Mangler sakId")
+        fun finnSak(sakId: String?, pendata: Pensjonsinformasjon): V1Sak? {
+            if (sakId.isNullOrBlank()) throw ManglendeSakIdException("Mangler sakId")
             return FinnSak.finnSak(sakId, pendata)
         }
     }
@@ -94,7 +94,7 @@ class PensjonsinformasjonService(private val pensjonsinformasjonClient: Pensjons
 
         logger.debug("penSaksnummer: $penSaksnummer")
 
-        if (penSaksnummer.isBlank()) throw ManglendeSakIdException("Mangler sakId")
+        if (penSaksnummer.isNullOrBlank()) throw ManglendeSakIdException("Mangler sakId")
         if (fnr.isBlank()) throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Mangler norskident")
 
         val peninfo = hentPensjonInformasjon(fnr, aktorId)
