@@ -132,7 +132,13 @@ class Fodselsnummer private constructor(@JsonValue val value: String) {
             }
         }
 
-        fun vask11sifre(tekst: String) = tekst.replace(Regex("""\b\d{11}\b"""), "***")
+        fun vask11sifre(nummer: String?): String {
+            return if(nummer.isNullOrBlank() || nummer.length != 11) ""
+            else {
+                nummer.replace(Regex("""\b\d{11}\b"""), "***")
+            }
+        }
+
         fun fraMedValidation(fnr: String?): Fodselsnummer? {
             return try {
                 Fodselsnummer(fnr!!.replace(Regex("[^0-9]"), ""))
