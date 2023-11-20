@@ -83,7 +83,7 @@ class PrefillP2000(private val prefillNav: PrefillPDLNav)  {
         }
     }
     fun populerMeldinOmPensjon(personNr: String,
-                               penSaksnummer: String,
+                               penSaksnummer: String?,
                                pensak: V1Sak?,
                                andreinstitusjonerItem: AndreinstitusjonerItem?,
                                gjenlevende: Bruker? = null,

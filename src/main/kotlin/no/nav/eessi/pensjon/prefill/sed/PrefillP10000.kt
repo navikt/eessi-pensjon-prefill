@@ -12,7 +12,7 @@ class PrefillP10000(private val prefillNav: PrefillPDLNav) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillP10000::class.java) }
 
-    fun prefill(penSaksnummer: String,
+    fun prefill(penSaksnummer: String?,
                 bruker: PersonId,
                 avdod: PersonId?,
                 bankOgArbeid: BankOgArbeid?,
