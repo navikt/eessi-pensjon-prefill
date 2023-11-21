@@ -14,5 +14,6 @@ enum class YtelseskomponentType {
         TP,                     //Tilleggspensjon
         MIN_NIVA_TILL_INDV,     // Minstenivåtillegg individuelt
         MIN_NIVA_TILL_PPAR,     // Minstenivåtillegg pensjonistpar
+        AP_GJT_KAP19,           // Gjenlevendetillegg kapittel 19 (P6000)
         ;
 }

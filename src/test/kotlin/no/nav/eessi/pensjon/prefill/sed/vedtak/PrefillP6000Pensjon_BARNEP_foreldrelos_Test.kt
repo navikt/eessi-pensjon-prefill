@@ -107,4 +107,26 @@ class PrefillP6000Pensjon_BARNEP_foreldrelos_Test {
         assertEquals("2020-08-21", p6000Pensjon.tilleggsinformasjon?.dato)
     }
 
+    @Test
+    fun `forventet korrekt utfylling av Pensjon objekt på Gjenlevendepensjon med AP_GJT_KAP19`() {
+        dataFromPEN = PrefillTestHelper.lesPensjonsdataVedtakFraFil("/pensjonsinformasjon/vedtak/P6000-BARNEP-GJENLEV-Med-GJT_KAP19.xml")
+        prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P6000, personFnr, penSaksnummer = "22580170", vedtakId = "12312312", avdod = PersonId(avdodPersonFnr, "112233445566"))
+        prefillSEDService = PrefillSEDService(eessiInformasjon, prefillNav)
+        val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
+        val pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
+
+
+        val p6000 = prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection) as P6000
+        val p6000Pensjon = p6000.p6000Pensjon!!
+
+        val vedtak = p6000Pensjon.vedtak?.get(0)
+        val beregning = vedtak?.beregning?.get(0)
+        assertEquals("24921", beregning?.beloepBrutto?.beloep)
+        assertEquals("15215", beregning?.beloepBrutto?.ytelseskomponentGrunnpensjon)
+        assertEquals("9706", beregning?.beloepBrutto?.ytelseskomponentTilleggspensjon)
+
+//        assertEquals(null, vedtak?.ukjent?.beloepBrutto?.ytelseskomponentAnnen)
+
+    }
+
 }
