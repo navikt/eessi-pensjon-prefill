@@ -1,11 +1,7 @@
 package no.nav.eessi.pensjon.prefill.sed.krav
 
 import no.nav.eessi.pensjon.eux.model.SedType
-import no.nav.eessi.pensjon.eux.model.sed.Bruker
-import no.nav.eessi.pensjon.eux.model.sed.Nav
-import no.nav.eessi.pensjon.eux.model.sed.P2100
-import no.nav.eessi.pensjon.eux.model.sed.Pensjon
-import no.nav.eessi.pensjon.eux.model.sed.SED
+import no.nav.eessi.pensjon.eux.model.sed.*
 import no.nav.eessi.pensjon.pensjonsinformasjon.KravHistorikkHelper
 import no.nav.eessi.pensjon.pensjonsinformasjon.models.EPSaktype.ALDER
 import no.nav.eessi.pensjon.pensjonsinformasjon.models.EPSaktype.UFOREP
@@ -72,7 +68,7 @@ class PrefillP2100(private val prefillNav: PrefillPDLNav) {
                     prefillData.kravId)
                 melding = meldingOmPensjon.melding
                 pensjon = Pensjon(
-                        kravDato = meldingOmPensjon.pensjon.kravDato,
+                        kravDato =  meldingOmPensjon.pensjon.kravDato ?: prefillData.kravDato?.let { Krav(it) },
                         gjenlevende = meldingOmPensjon.pensjon.gjenlevende
                 ) //vi skal ha blank pensjon, men vi må ha med kravdato
         } catch (ex: Exception) {
