@@ -44,6 +44,7 @@ class PrefillP2100(private val prefillNav: PrefillPDLNav) {
         logger.debug("\n\n----------------------------------------------------------"
                 + "\nSaktype                : ${sak?.sakType} "
                 + "\nSøker sakId            : ${prefillData.penSaksnummer} "
+                + "\nKravdato, kravtype     : ${prefillData.kravDato}, ${prefillData.kravType} "
                 + "\nSøker avdodaktor       : ${prefillData.avdod.aktorId} "
                 + "\nerGyldigEtterlatt      : ${prefillData.avdod.aktorId.isNotEmpty()} "
                 + "\nSøker gjenlevaktoer    : ${prefillData.bruker.aktorId} "
@@ -68,7 +69,7 @@ class PrefillP2100(private val prefillNav: PrefillPDLNav) {
                     prefillData.kravId)
                 melding = meldingOmPensjon.melding
                 pensjon = Pensjon(
-                        kravDato =  meldingOmPensjon.pensjon.kravDato ?: prefillData.kravDato?.let { Krav(it) },
+                        kravDato =  meldingOmPensjon.pensjon.kravDato ?: prefillData.kravDato?.let { Krav(it, prefillData.kravType?.verdi) },
                         gjenlevende = meldingOmPensjon.pensjon.gjenlevende
                 ) //vi skal ha blank pensjon, men vi må ha med kravdato
         } catch (ex: Exception) {
