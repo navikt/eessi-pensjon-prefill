@@ -3,13 +3,10 @@ package no.nav.eessi.pensjon.prefill.sed.krav
 import io.mockk.every
 import io.mockk.justRun
 import io.mockk.mockk
-import no.nav.eessi.pensjon.eux.model.sed.AndreinstitusjonerItem
-import no.nav.eessi.pensjon.eux.model.sed.Bruker
 import no.nav.eessi.pensjon.eux.model.sed.Krav
 import no.nav.eessi.pensjon.eux.model.sed.KravType
 import no.nav.eessi.pensjon.pensjonsinformasjon.models.KravArsak
 import no.nav.eessi.pensjon.pensjonsinformasjon.models.PenKravtype
-import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
 import no.nav.eessi.pensjon.utils.createXMLCalendarFromString
@@ -18,50 +15,39 @@ import no.nav.pensjon.v1.kravhistorikkliste.V1KravHistorikkListe
 import no.nav.pensjon.v1.sak.V1Sak
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 class PrefillP2100GjenlevendeKravDatoTest {
 
     @Test
-    fun midlertidigTestForKrav() {
-        val prefillData = mockk<PrefillDataModel>(relaxed = true)
-        val sak = mockk<V1Sak>(relaxed = true)
-        val andreInstitusjondetaljer = mockk<AndreinstitusjonerItem>()
-        val gjenlev = mockk<Bruker>()
-        val prefillNav = PrefillPDLNav(mockk(relaxed = true), "inst1", "instnavn")
-        val personData = mockk<PersonDataCollection>(relaxed = true)
+    fun `En ferdig utfylt p2100 skal inkluderer kravdato`() {
+        val sak = mockk<V1Sak>(relaxed = true).apply {
+            every { forsteVirkningstidspunkt } returns createXMLCalendarFromString("2020-05-20")
+            every { kravHistorikkListe } returns mockkKravListe(listOf(KravArsak.GJNL_SKAL_VURD))
+        }
+        val prefillData = mockk<PrefillDataModel>(relaxed = true).apply {
+            every { kravType } returns KravType.GJENLEV
+            every { kravDato } returns LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)
+        }
 
-        every { sak.forsteVirkningstidspunkt } returns createXMLCalendarFromString("2020-05-20")
-        every { prefillData.kravDato } returns "2020-01-01"
-        every { prefillData.kravType } returns KravType.GJENLEV
-
-        val kravHistorikkListe = mockkKravListe()
-
-        every { sak.kravHistorikkListe } returns kravHistorikkListe
-        val prefilledPensjon = mockk<PrefillP2xxxPensjon>(relaxed = true)
-        justRun { prefilledPensjon.avsluttHvisKunDenneKravTypeIHistorikk(any(), any(), PenKravtype.FORSTEG_BH) }
-        every {
-            prefilledPensjon.populerMeldinOmPensjon(
-                prefillData.bruker.norskIdent,
-                prefillData.penSaksnummer,
-                sak,
-                andreInstitusjondetaljer,
-                gjenlev,
-                prefillData.kravId
+        justRun {
+            mockk<PrefillP2xxxPensjon>(relaxed = true).avsluttHvisKunDenneKravTypeIHistorikk(
+                any(),
+                any(),
+                PenKravtype.FORSTEG_BH
             )
-        } returns mockk()
+        }
 
-        val result = PrefillP2100(prefillNav).prefillSed(prefillData, personData, sak)
-        assertEquals(Krav("2020-01-01", "02"), result.second.nav?.krav)
-        assertEquals(Krav("2020-01-01", "02"), result.second.pensjon?.kravDato)
+        val prefillNav = PrefillPDLNav(mockk(relaxed = true), "inst1", "instnavn")
+        assertEquals(
+            Krav(prefillData.kravDato, prefillData.kravType?.verdi),
+            PrefillP2100(prefillNav).prefillSed(prefillData, mockk(relaxed = true), sak).second.nav?.krav
+        )
     }
 
-    private fun mockkKravListe(): V1KravHistorikkListe {
-        val gjenlevendHistorikk = V1KravHistorikk()
-        gjenlevendHistorikk.kravArsak = KravArsak.GJNL_SKAL_VURD.name
-
-        val kravListe = mutableListOf(gjenlevendHistorikk)
-        val kravHistorikkListe = V1KravHistorikkListe()
-        kravHistorikkListe.kravHistorikkListe.addAll(kravListe)
-        return kravHistorikkListe
-    }
+    private fun mockkKravListe(listOf: List<KravArsak>): V1KravHistorikkListe =
+        V1KravHistorikkListe().apply {
+            kravHistorikkListe.addAll(listOf.map { V1KravHistorikk().apply { kravArsak = it.name } })
+        }
 }
