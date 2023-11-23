@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory
 
 class PrefillP6000(private val prefillNav: PrefillPDLNav,
                    private val eessiInfo: EessiInformasjon,
-                   private val pensjoninformasjon: Pensjonsinformasjon) {
+                   private val pensjoninformasjon: Pensjonsinformasjon?) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillP6000::class.java) }
 
@@ -35,7 +35,7 @@ class PrefillP6000(private val prefillNav: PrefillPDLNav,
         val gjenlevende = prefillData.avdod?.let { prefillNav.createGjenlevende(personData.forsikretPerson) }
 
         logger.debug("Henter opp Pensjonsdata fra PESYS")
-        val p6000Pensjon = prefillP6000Pensjon(pensjoninformasjon, gjenlevende, andreInstitusjondetaljer)
+        val p6000Pensjon = if(pensjoninformasjon != null) prefillP6000Pensjon(pensjoninformasjon, gjenlevende, andreInstitusjondetaljer) else null
 
         logger.debug("Henter opp Persondata fra TPS")
         val nav = prefillNav.prefill(
@@ -44,7 +44,7 @@ class PrefillP6000(private val prefillNav: PrefillPDLNav,
             avdod = prefillData.avdod,
             personData = personData,
             bankOgArbeid = prefillData.getBankOgArbeidFromRequest(),
-            krav = p6000Pensjon.kravDato,
+            krav = p6000Pensjon?.kravDato,
             annenPerson = null
         )
 

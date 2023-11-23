@@ -3,6 +3,7 @@ package no.nav.eessi.pensjon.prefill.sed.vedtak
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.SedType
+import no.nav.eessi.pensjon.eux.model.sed.Nav
 import no.nav.eessi.pensjon.eux.model.sed.P6000
 import no.nav.eessi.pensjon.prefill.IkkeGyldigKallException
 import no.nav.eessi.pensjon.prefill.InnhentingService
@@ -19,6 +20,9 @@ import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper
 import no.nav.eessi.pensjon.shared.api.PersonId
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
 import no.nav.eessi.pensjon.shared.person.FodselsnummerGenerator
+import no.nav.eessi.pensjon.utils.mapJsonToAny
+import no.nav.eessi.pensjon.utils.toJson
+import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
@@ -108,6 +112,24 @@ class PrefillP6000Pensjon_GJENLEV_Test {
         assertEquals("six weeks from the date the decision is received", p6000Pensjon.sak?.kravtype?.get(0)?.datoFrist)
 
         assertEquals("2018-05-26", p6000Pensjon.tilleggsinformasjon?.dato)
+    }
+
+    @Test
+    fun `forventet en delvis utfylt p6000 selv om det mangler vedtak`() {
+        prefillData = PrefillDataModelMother.initialPrefillDataModel(
+            SedType.P6000,
+            personFnr,
+            penSaksnummer = "22580170",
+            vedtakId = "12312312",
+            avdod = PersonId(avdodPersonFnr, "1234567891234"),
+            kravDato = "2018-05-01"
+        )
+        prefillSEDService = PrefillSEDService(eessiInformasjon, prefillNav)
+
+        val p6000 = prefillSEDService.prefill(prefillData, personDataCollection) as P6000
+        assertEquals(avdodPersonFnr, p6000.nav?.bruker?.person?.pin?.firstOrNull()?.identifikator)
+        assertEquals("RAGNAROK", p6000.nav?.bruker?.person?.etternavn)
+        assertEquals("THOR-DOPAPIR", p6000.nav?.bruker?.person?.fornavn)
     }
 
     @Test

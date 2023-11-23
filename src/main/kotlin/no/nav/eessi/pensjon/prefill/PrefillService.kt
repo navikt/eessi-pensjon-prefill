@@ -1,8 +1,10 @@
 package no.nav.eessi.pensjon.prefill
 
 import io.micrometer.core.instrument.Metrics
+import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.sed.SED
 import no.nav.eessi.pensjon.metrics.MetricsHelper
+import no.nav.eessi.pensjon.prefill.models.PensjonCollection
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
 import no.nav.eessi.pensjon.shared.api.ApiRequest
 import no.nav.eessi.pensjon.statistikk.AutomatiseringStatistikkService
@@ -45,9 +47,15 @@ class PrefillService(
                 eessiRequire(prefillData.sedType.kanPrefilles() ) {"SedType ${prefillData.sedType} kan ikke prefilles!"}
 
                 val personcollection = innhentingService.hentPersonData(prefillData)
-                val pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
 
-                val sed = prefillSedService.prefill(prefillData, personcollection, pensjonCollection)
+                //TODO: midlertidig løsning
+                val sed = if(request.gjenny && request.sed == SedType.P6000){
+                    prefillSedService.prefill(prefillData, personcollection)
+                }
+                else {
+                    val pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
+                    prefillSedService.prefill(prefillData, personcollection, pensjonCollection)
+                }
 
                 logger.debug("Sed ferdig utfylt: $sed")
 
