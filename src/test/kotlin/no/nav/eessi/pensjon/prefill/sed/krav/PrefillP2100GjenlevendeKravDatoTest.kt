@@ -51,7 +51,7 @@ class PrefillP2100GjenlevendeKravDatoTest {
         } returns mockk()
 
         val result = PrefillP2100(prefillNav).prefillSed(prefillData, personData, sak)
-
+        assertEquals(Krav("2020-01-01", "02"), result.second.nav?.krav)
         assertEquals(Krav("2020-01-01", "02"), result.second.pensjon?.kravDato)
     }
 
