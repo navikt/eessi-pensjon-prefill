@@ -31,7 +31,7 @@ class PrefillP2100(private val prefillNav: PrefillPDLNav) {
             avdod = prefillData.avdod,
             personData = personData,
             bankOgArbeid = prefillData.getBankOgArbeidFromRequest(),
-            krav = pensjon?.kravDato,
+            krav = pensjon?.kravDato ?: prefillData.kravDato?.let { Krav(it, prefillData.kravType?.verdi) },
             annenPerson = null
         )
         val gjenlevende = prefillData.avdod?.let { prefillNav.createGjenlevende(personData.forsikretPerson) }
@@ -59,6 +59,7 @@ class PrefillP2100(private val prefillNav: PrefillPDLNav) {
         validerGyldigKravtypeOgArsak(sak, prefillData.sedType)
         var melding: String? = ""
         var pensjon = Pensjon()
+
         try {
                 val meldingOmPensjon = PrefillP2xxxPensjon.populerMeldinOmPensjon(
                         prefillData.bruker.norskIdent,
@@ -75,7 +76,6 @@ class PrefillP2100(private val prefillNav: PrefillPDLNav) {
         } catch (ex: Exception) {
             logger.error(ex.message, ex)
         }
-
         val sed = P2100(
             SedType.P2100,
             nav = nav,
