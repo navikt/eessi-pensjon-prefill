@@ -38,6 +38,16 @@ class PrefillSEDService(private val eessiInformasjon: EessiInformasjon, private 
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillSEDService::class.java) }
 
+    fun prefill(prefillData: PrefillDataModel, personDataCollection: PersonDataCollection): SED {
+        return PrefillP6000(
+            prefillPDLnav,
+            eessiInformasjon,
+            null
+        ).prefill(
+            prefillData,
+            personDataCollection
+        )
+    }
     fun prefill(prefillData: PrefillDataModel, personDataCollection: PersonDataCollection, pensjonCollection: PensjonCollection): SED {
 
         logger.debug("mapping prefillClass to SED: ${prefillData.sedType}")
