@@ -1,9 +1,9 @@
 package no.nav.eessi.pensjon.prefill.sed.vedtak
 
 import no.nav.eessi.pensjon.eux.model.sed.P6000
+import no.nav.eessi.pensjon.eux.model.sed.P6000Pensjon
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
-
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.prefill.sed.vedtak.PrefillP6000Pensjon.prefillP6000Pensjon
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
@@ -35,7 +35,7 @@ class PrefillP6000(private val prefillNav: PrefillPDLNav,
         val gjenlevende = prefillData.avdod?.let { prefillNav.createGjenlevende(personData.forsikretPerson) }
 
         logger.debug("Henter opp Pensjonsdata fra PESYS")
-        val p6000Pensjon = if(pensjoninformasjon != null) prefillP6000Pensjon(pensjoninformasjon, gjenlevende, andreInstitusjondetaljer) else null
+        val p6000Pensjon = if(pensjoninformasjon != null) prefillP6000Pensjon(pensjoninformasjon, gjenlevende, andreInstitusjondetaljer) else P6000Pensjon(gjenlevende)
 
         logger.debug("Henter opp Persondata fra TPS")
         val nav = prefillNav.prefill(
@@ -44,7 +44,7 @@ class PrefillP6000(private val prefillNav: PrefillPDLNav,
             avdod = prefillData.avdod,
             personData = personData,
             bankOgArbeid = prefillData.getBankOgArbeidFromRequest(),
-            krav = p6000Pensjon?.kravDato,
+            krav = p6000Pensjon.kravDato,
             annenPerson = null
         )
 
