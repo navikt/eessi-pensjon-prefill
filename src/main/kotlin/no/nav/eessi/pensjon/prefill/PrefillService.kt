@@ -49,7 +49,8 @@ class PrefillService(
                 val personcollection = innhentingService.hentPersonData(prefillData)
 
                 //TODO: midlertidig løsning
-                val sed = if(request.gjenny && request.sed == SedType.P6000){
+                val sed = if(request.gjenny){
+                    logger.info("Begynner preutfylling for gjenny")
                     prefillSedService.prefill(prefillData, personcollection)
                 }
                 else {

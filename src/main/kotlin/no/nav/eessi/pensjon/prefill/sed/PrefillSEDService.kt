@@ -39,14 +39,31 @@ class PrefillSEDService(private val eessiInformasjon: EessiInformasjon, private 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillSEDService::class.java) }
 
     fun prefill(prefillData: PrefillDataModel, personDataCollection: PersonDataCollection): SED {
-        return PrefillP6000(
-            prefillPDLnav,
-            eessiInformasjon,
-            null
-        ).prefill(
-            prefillData,
-            personDataCollection
-        )
+        return when (prefillData.sedType) {
+            P6000 -> {
+                PrefillP6000(
+                    prefillPDLnav,
+                    eessiInformasjon,
+                    null
+                ).prefill(
+                    prefillData,
+                    personDataCollection
+                )
+            }
+            P2100 -> {
+                val sedpair = PrefillP2100(prefillPDLnav).prefillSed(
+                    prefillData,
+                    personDataCollection,
+                    null
+                )
+                prefillData.melding = sedpair.first
+                sedpair.second
+            }
+            else -> {
+                logger.error("Forenklet preutfylling for Gjenny feiler")
+                throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Det er kun mulig med preutfylling for P2100 & P6000")
+            }
+        }
     }
     fun prefill(prefillData: PrefillDataModel, personDataCollection: PersonDataCollection, pensjonCollection: PensjonCollection): SED {
 
