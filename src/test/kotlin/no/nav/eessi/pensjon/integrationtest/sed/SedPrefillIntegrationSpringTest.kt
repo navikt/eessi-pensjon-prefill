@@ -363,6 +363,7 @@ class SedPrefillIntegrationSpringTest {
               "sed" : "P4000",
               "sedGVer" : "4",
               "sedVer" : "2",
+                "pensjon" : { },
               "nav" : {
                 "eessisak" : [ {
                   "institusjonsid" : "NO:noinst002",
