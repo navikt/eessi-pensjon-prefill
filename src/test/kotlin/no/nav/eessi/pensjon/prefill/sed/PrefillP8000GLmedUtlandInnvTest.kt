@@ -42,7 +42,7 @@ class PrefillP8000GLmedUtlandInnvTest {
         personDataCollection = PersonPDLMock.createAvdodFamilie(personFnr, avdodPersonFnr)
 
         prefillNav = PrefillPDLNav(
-                prefillAdresse = mockk(){
+                prefillAdresse = mockk {
                     every { hentLandkode(any()) } returns "NO"
                     every { createPersonAdresse(any()) } returns mockk(relaxed = true)
                 },

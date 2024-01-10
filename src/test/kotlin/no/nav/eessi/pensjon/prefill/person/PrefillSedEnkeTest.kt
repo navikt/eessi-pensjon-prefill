@@ -35,7 +35,7 @@ class PrefillSedEnkeTest {
         pensjonsinformasjonServiceGjen = PrefillTestHelper.lesPensjonsdataFraFil("/pensjonsinformasjon/krav/P2100-GL-UTL-INNV.xml")
 
         prefillPDLNav = PrefillPDLNav(
-            mockk(){
+            mockk {
                 every { hentLandkode(any()) } returns "NO"
                 every { createPersonAdresse(any()) } returns mockk(relaxed = true)
             },

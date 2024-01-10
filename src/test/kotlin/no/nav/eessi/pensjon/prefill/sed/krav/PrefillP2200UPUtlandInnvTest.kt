@@ -44,7 +44,7 @@ class PrefillP2200UPUtlandInnvTest {
         personDataCollection = PersonPDLMock.createEnkelFamilie(personFnr, ekteFnr)
 
         prefillNav = PrefillPDLNav(
-                prefillAdresse = mockk(){
+                prefillAdresse = mockk {
                     every { hentLandkode(any()) } returns "NO"
                     every { createPersonAdresse(any()) } returns mockk(relaxed = true)
                 },

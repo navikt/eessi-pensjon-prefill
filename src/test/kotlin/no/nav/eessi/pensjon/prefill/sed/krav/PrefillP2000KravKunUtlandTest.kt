@@ -41,7 +41,7 @@ class PrefillP2000KravKunUtlandTest {
         persondataCollection = PersonPDLMock.createEnkelFamilie(personFnr, ekteFnr)
 
         val prefillNav = PrefillPDLNav(
-                prefillAdresse = mockk(){
+                prefillAdresse = mockk {
                     every { hentLandkode(any()) } returns "NO"
                     every { createPersonAdresse(any())} returns mockk(relaxed = true)
                 },

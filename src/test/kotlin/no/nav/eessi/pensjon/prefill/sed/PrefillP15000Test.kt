@@ -27,7 +27,7 @@ internal class PrefillP15000Test {
 
         val exception = assertThrows<ResponseStatusException> {
             prfillP15000.prefill(
-                mockedPrefill, mockk(), mockk(){
+                mockedPrefill, mockk(), mockk {
                     every { sakType} returns null
                 }, mockk<Pensjonsinformasjon>{
                     every { avdod } returns mockk()

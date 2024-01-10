@@ -33,7 +33,7 @@ class PrefillP2100UforePRevurdering {
     fun setup() {
 
         prefillNav = PrefillPDLNav(
-                prefillAdresse = mockk(){
+                prefillAdresse = mockk {
                     every { hentLandkode(any()) } returns "NO"
                     every { createPersonAdresse(any()) } returns mockk(relaxed = true)
                 },
