@@ -62,8 +62,8 @@ class RestTemplateConfig(
     ): ClientHttpRequestInterceptor {
         return ClientHttpRequestInterceptor { request: HttpRequest, body: ByteArray?, execution: ClientHttpRequestExecution ->
             val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
-            request.headers.setBearerAuth(response.accessToken)
-            val tokenChunks = response.accessToken.split(".")
+            request.headers.setBearerAuth(response?.accessToken!!)
+            val tokenChunks = response.accessToken!!.split(".")
             val tokenBody =  tokenChunks[1]
             logger.info("subject: " + JWTClaimsSet.parse(Base64.getDecoder().decode(tokenBody).decodeToString()).subject)
             execution.execute(request, body!!)
