@@ -46,15 +46,16 @@ class RestTemplateConfig(
                 IOExceptionRetryInterceptor(),
                 RequestCountInterceptor(meterRegistry),
                 RequestResponseLoggerInterceptor(),
-                bearerTokenInterceptor(clientProperties("proxy-credentials"), oAuth2AccessTokenService!!)
+                bearerTokenInterceptor(
+                    clientConfigurationProperties.registration["proxy-credentials"]
+                        ?: throw RuntimeException("could not find oauth2 client config for ${"proxy-credentials"}"),
+                    oAuth2AccessTokenService!!
+                )
             )
             .build().apply {
                 requestFactory = BufferingClientHttpRequestFactory(SimpleClientHttpRequestFactory())
             }
     }
-
-    private fun clientProperties(oAuthKey: String): ClientProperties = clientConfigurationProperties.registration[oAuthKey]
-        ?: throw RuntimeException("could not find oauth2 client config for $oAuthKey")
 
     private fun bearerTokenInterceptor(
         clientProperties: ClientProperties,
