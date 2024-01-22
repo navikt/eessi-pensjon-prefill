@@ -30,13 +30,13 @@ spec:
         - host: pdl-api.dev-fss-pub.nais.io
         - host: dev-fss.org.kodeverk
         - host: eessi-pensjon-fagmodul-q1.intern.dev.nav.no
-        - host: eessi-pensjon-onprem-proxy-q2.intern.dev.nav.no
+        - host: eessi-pensjon-onprem-proxy-q1.intern.dev.nav.no
   webproxy: true
   env:
     - name: SPRING_PROFILES_ACTIVE
       value: test
     - name: PENSJONSINFORMASJON_URL
-      value: https://eessi-pensjon-onprem-proxy-q2.dev-fss-pub.nais.io/pen/api/pensjonsinformasjon/v1
+      value: https://eessi-pensjon-onprem-proxy-q1.dev-fss-pub.nais.io/pen/api/pensjonsinformasjon/v1
     - name: PDL_URL
       value: https://pdl-api.dev-fss-pub.nais.io/graphql
     - name: AZURE_APP_PDL_CLIENT_ID
