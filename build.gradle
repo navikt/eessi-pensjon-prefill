@@ -107,7 +107,7 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter")
 
     testImplementation("org.skyscreamer:jsonassert:1.5.1")
-    testImplementation('io.mockk:mockk:1.13.8')
+    testImplementation('io.mockk:mockk:1.13.9')
 
     // Architecture tests la stå som 0.11.0
     testImplementation ('com.tngtech.archunit:archunit:1.2.1')
