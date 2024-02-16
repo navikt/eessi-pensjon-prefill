@@ -94,8 +94,9 @@ object VedtakPensjonDataHelper {
     }
 
     fun hentVinnendeBergeningsMetode(pendata: Pensjonsinformasjon): String {
-        logger.debug(" +            hentVinnendeBergeningsMetode")
-        return hentSisteYtelsePerMaaned(pendata).vinnendeBeregningsmetode
+        return hentSisteYtelsePerMaaned(pendata).vinnendeBeregningsmetode.also {
+            logger.debug(" +            hentVinnendeBergeningsMetode: $it")
+        }
     }
 
     fun hentYtelseBelop(pendata: Pensjonsinformasjon): String {
