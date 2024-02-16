@@ -76,7 +76,7 @@ class PrefillP6000Pensjon_UFORE_Test {
         assertEquals("03", vedtak?.resultat, "vedtak.resultat")
 
         assertEquals("01", vedtak?.grunnlag?.opptjening?.forsikredeAnnen)
-        assertEquals("0", vedtak?.grunnlag?.framtidigtrygdetid)
+        assertEquals("1", vedtak?.grunnlag?.framtidigtrygdetid)
 
         val beregning = vedtak?.beregning?.get(0)
         assertEquals("2017-05-01", beregning?.periode?.fom)
