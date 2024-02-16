@@ -210,16 +210,12 @@ object PrefillPensjonVedtak {
      *  [0] No
      */
     private fun createFramtidigtrygdetid(pendata: Pensjonsinformasjon): String {
-        logger.debug("4.1.12        Framtidigtrygdetid")
+        logger.debug("4.1.12        Framtidigtrygdetid ${pendata.sakAlder.sakType}")
 
         return when (KSAK.valueOf(pendata.sakAlder.sakType)) {
             KSAK.ALDER -> "0"
             else -> {
-                when (hentVinnendeBergeningsMetode(pendata)) {
-                    "FOLKETRYGD" -> "1"
-
-                    else -> "0"
-                }
+                "1"
             }
         }
     }
