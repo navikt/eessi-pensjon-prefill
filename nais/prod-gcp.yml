@@ -28,7 +28,7 @@ spec:
     outbound:
       external:
         - host: pdl-api.prod-fss-pub.nais.io
-        - host: kodeverk.prod-fss-pub.nais.io
+        - host: kodeverk-api.nav.no
         - host: eessi-pensjon-fagmodul.intern.nav.no
         - host: eessi-pensjon-onprem-proxy.intern.nav.no
   webproxy: true
@@ -46,7 +46,7 @@ spec:
     - name: KAFKA_AUTOMATISERING_TOPIC
       value: eessipensjon.public-automatisering
     - name: KODEVERK_URL
-      value: https://kodeverk.prod-fss-pub.nais.io
+      value: https://kodeverk-api.nav.no
     - name: EESSI_PENSJON_INSTITUSJON
       value: NO:889640782
     - name: EESSI_PENSJON_INSTITUSJON_NAVN
