@@ -46,7 +46,7 @@ spec:
     - name: KAFKA_AUTOMATISERING_TOPIC
       value: eessipensjon.public-automatisering-q2
     - name: KODEVERK_URL
-      value: https://kodeverk.dev-fss-pub.nais.io
+      value: https://kodeverk-api.nav.no
     - name: EESSI_PENSJON_INSTITUSJON
       value: NO:NAVAT07
     - name: EESSI_PENSJON_INSTITUSJON_NAVN
