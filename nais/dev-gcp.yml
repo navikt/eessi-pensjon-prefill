@@ -28,7 +28,7 @@ spec:
     outbound:
       external:
         - host: pdl-api.dev-fss-pub.nais.io
-        - host: dev-fss.org.kodeverk
+        - host: kodeverk-api.nav.no
         - host: eessi-pensjon-fagmodul-q2.intern.dev.nav.no
         - host: eessi-pensjon-onprem-proxy-q2.intern.dev.nav.no
   webproxy: true
@@ -42,7 +42,7 @@ spec:
     - name: AZURE_APP_PDL_CLIENT_ID
       value: dev-fss.pdl.pdl-api
     - name: AZURE_APP_KODEVERK_CLIENT_ID
-      value: dev-fss.org.kodeverk
+      value: kodeverk-api.nav.no
     - name: KAFKA_AUTOMATISERING_TOPIC
       value: eessipensjon.public-automatisering-q2
     - name: KODEVERK_URL
