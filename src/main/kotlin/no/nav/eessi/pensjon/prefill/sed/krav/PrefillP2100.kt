@@ -96,6 +96,7 @@ class PrefillP2100(private val prefillNav: PrefillPDLNav) {
      * Kravårsak:
      * GJNL_SKAL_VURD  Gjenlevendetillegg skal vurderes     hvis ikke finnes ved P2100 skal vi avslutte
      * TILST_DOD       Dødsfall tilstøtende                 hvis ikke finnes ved
+     * NY_SOKNAD       Ny søknad
      *
      */
     private fun validerGyldigKravtypeOgArsak(sak: V1Sak?, sedType: SedType) {
@@ -103,8 +104,7 @@ class PrefillP2100(private val prefillNav: PrefillPDLNav) {
 
         PrefillP2xxxPensjon.avsluttHvisKunDenneKravTypeIHistorikk(sak, sedType, FORSTEG_BH)
 
-        if (KravHistorikkHelper.hentKravhistorikkForGjenlevende(sak?.kravHistorikkListe) == null
-                    && listOf(ALDER.name, UFOREP.name).contains(sak?.sakType)  ) {
+        if (KravHistorikkHelper.hentKravhistorikkForGjenlevendeOgNySoknad(sak?.kravHistorikkListe) == null && listOf(ALDER.name, UFOREP.name).contains(sak?.sakType)  ) {
             logger.warn("Ikke korrekt kravårsak for P2100 (alder/uførep")
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Ingen gyldig kravårsak funnet for ALDER eller UFØREP for utfylling av en krav SED P2100")
         }
