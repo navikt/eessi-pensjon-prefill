@@ -102,6 +102,27 @@ class PrefillP2000_AP_21975717Test {
         val navfnr1 = Fodselsnummer.fra(p2000.nav?.bruker?.person?.pin?.get(0)?.identifikator!!)
         assertEquals(68, navfnr1?.getAge())
 
+        assertNotNull(p2000.nav?.bruker?.person?.pin)
+        val pinlist = p2000.nav?.bruker?.person?.pin
+        val pinitem = pinlist?.get(0)
+        assertEquals(null, pinitem?.sektor)
+        assertEquals("NOINST002, NO INST002, NO", pinitem?.institusjonsnavn)
+        assertEquals("NO:noinst002", pinitem?.institusjonsid)
+        assertEquals(giftFnr, pinitem?.identifikator)
+
+        assertEquals("THOR-DOPAPIR", p2000.nav?.ektefelle?.person?.fornavn)
+        assertEquals("RAGNAROK", p2000.nav?.ektefelle?.person?.etternavn)
+
+        assertEquals(ekteFnr, p2000.nav?.ektefelle?.person?.pin?.get(0)?.identifikator)
+        assertEquals(giftFnr, p2000.nav?.bruker?.person?.pin?.get(0)?.identifikator)
+
+        assertEquals("NO", p2000.nav?.ektefelle?.person?.pin?.get(0)?.land)
+
+        val navfnr = Fodselsnummer.fra(p2000.nav?.ektefelle?.person?.pin?.get(0)?.identifikator!!)
+        assertEquals(70, navfnr?.getAge())
+
+        assertNotNull(p2000.nav?.krav)
+        assertEquals("2015-06-16", p2000.nav?.krav?.dato)
     }
 
     @Test
