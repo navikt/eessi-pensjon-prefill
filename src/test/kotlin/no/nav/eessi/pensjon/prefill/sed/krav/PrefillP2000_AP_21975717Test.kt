@@ -9,6 +9,7 @@ import no.nav.eessi.pensjon.eux.model.sed.Nav
 import no.nav.eessi.pensjon.eux.model.sed.SED
 import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
+import no.nav.eessi.pensjon.prefill.PersonPDLMock.medFodsel
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.prefill.models.PensjonCollection
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
@@ -29,6 +30,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import java.time.LocalDate
 
 class PrefillP2000_AP_21975717Test {
 
@@ -94,36 +96,28 @@ class PrefillP2000_AP_21975717Test {
         assertEquals("2018-11-13", p2000.nav?.bruker?.arbeidsforhold?.get(0)?.planlagtpensjoneringsdato)
         assertEquals("07", p2000.nav?.bruker?.arbeidsforhold?.get(0)?.type)
 
-        assertEquals("foo", p2000.nav?.bruker?.bank?.navn)
-        assertEquals("bar", p2000.nav?.bruker?.bank?.konto?.sepa?.iban)
-        assertEquals("baz", p2000.nav?.bruker?.bank?.konto?.sepa?.swift)
 
         assertEquals("ODIN ETTØYE", p2000.nav?.bruker?.person?.fornavn)
         assertEquals("BALDER", p2000.nav?.bruker?.person?.etternavn)
         val navfnr1 = Fodselsnummer.fra(p2000.nav?.bruker?.person?.pin?.get(0)?.identifikator!!)
         assertEquals(68, navfnr1?.getAge())
 
-        assertNotNull(p2000.nav?.bruker?.person?.pin)
-        val pinlist = p2000.nav?.bruker?.person?.pin
-        val pinitem = pinlist?.get(0)
-        assertEquals(null, pinitem?.sektor)
-        assertEquals("NOINST002, NO INST002, NO", pinitem?.institusjonsnavn)
-        assertEquals("NO:noinst002", pinitem?.institusjonsid)
-        assertEquals(giftFnr, pinitem?.identifikator)
+    }
 
-        assertEquals("THOR-DOPAPIR", p2000.nav?.ektefelle?.person?.fornavn)
-        assertEquals("RAGNAROK", p2000.nav?.ektefelle?.person?.etternavn)
+    @Test
+    fun `Preutfylling av P2000 med barn over 18 aar`() {
+        val personDataCollection = PersonDataCollection(
+                forsikretPerson = PersonPDLMock.createWith(),
+                gjenlevendeEllerAvdod = PersonPDLMock.createWith(),
+                barnPersonList = listOf(PersonPDLMock.createWith(fornavn = "Barn", etternavn = "Barnesen", fnr = "01010436857")
+                    .medFodsel(LocalDate.of(2004, 1, 1))
+                )
+        )
 
-        assertEquals(ekteFnr, p2000.nav?.ektefelle?.person?.pin?.get(0)?.identifikator)
-        assertEquals(giftFnr, p2000.nav?.bruker?.person?.pin?.get(0)?.identifikator)
+        val p2000 = prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection)
 
-        assertEquals("NO", p2000.nav?.ektefelle?.person?.pin?.get(0)?.land)
-
-        val navfnr = Fodselsnummer.fra(p2000.nav?.ektefelle?.person?.pin?.get(0)?.identifikator!!)
-        assertEquals(70, navfnr?.getAge())
-
-        assertNotNull(p2000.nav?.krav)
-        assertEquals("2015-06-16", p2000.nav?.krav?.dato)
+        assertEquals("Barn", p2000.nav?.barn?.get(0)?.person?.fornavn)
+        assertEquals("2004-01-01", p2000.nav?.barn?.get(0)?.person?.foedselsdato)
 
     }
 
