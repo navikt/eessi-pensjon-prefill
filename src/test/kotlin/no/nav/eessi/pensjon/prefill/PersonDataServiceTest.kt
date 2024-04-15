@@ -130,7 +130,7 @@ internal class PersonDataServiceTest {
     }
 
     @Test
-    fun `test henting av forsikretperson med barn under 18 aar for persondatacollection`() {
+    fun `test henting av forsikretperson med barn med persondatacollection`() {
 
         val barn1fnr = FodselsnummerGenerator.generateFnrForTest(12)
         val barn2fnr = FodselsnummerGenerator.generateFnrForTest(19)
@@ -150,11 +150,11 @@ internal class PersonDataServiceTest {
         assertNull(result.ektefellePerson)
         assertNull(result.sivilstandstype)
         assertEquals(barn1, result.barnPersonList.firstOrNull())
-        assertEquals(1, result.barnPersonList.size)
+        assertEquals(2, result.barnPersonList.size)
         assertEquals(forelder, result.gjenlevendeEllerAvdod)
         assertEquals(forelder, result.forsikretPerson)
 
-        verify ( exactly = 2 ) { personService.hentPerson(any())  }
+        verify ( exactly = 3 ) { personService.hentPerson(any())  }
 
     }
 
@@ -178,11 +178,11 @@ internal class PersonDataServiceTest {
         assertNull(result.ektefellePerson)
         assertNull(result.sivilstandstype)
         assertEquals(barn1, result.barnPersonList.firstOrNull())
-        assertEquals(1, result.barnPersonList.size)
+        assertEquals(2, result.barnPersonList.size)
         assertEquals(forelder, result.gjenlevendeEllerAvdod)
         assertEquals(forelder, result.forsikretPerson)
 
-        verify ( exactly = 2 ) { personService.hentPerson(any())  }
+        verify ( exactly = 3 ) { personService.hentPerson(any())  }
 
     }
     @Test
@@ -206,11 +206,11 @@ internal class PersonDataServiceTest {
         assertNull( result.ektefellePerson)
         assertNull( result.sivilstandstype)
         assertEquals(barn1, result.barnPersonList.firstOrNull())
-        assertEquals(1, result.barnPersonList.size)
+        assertEquals(2, result.barnPersonList.size)
         assertEquals(forelder, result.gjenlevendeEllerAvdod)
         assertEquals(forelder, result.forsikretPerson)
 
-        verify ( exactly = 2 ) { personService.hentPerson(any())  }
+        verify ( exactly = 3 ) { personService.hentPerson(any())  }
 
     }
 

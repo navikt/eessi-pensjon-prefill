@@ -134,6 +134,7 @@ class InnhentingServiceTest {
 
             val resultat = innhentingsservice.hentPensjoninformasjonCollection(prefillData)
             assertEquals(SAKTYPE_ALDER, resultat.sak?.sakType)
+            assertEquals(SAKTYPE_ALDER, resultat.sak?.sakType)
         }
 
         @Test

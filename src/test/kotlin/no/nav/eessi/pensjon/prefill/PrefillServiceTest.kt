@@ -14,6 +14,7 @@ import no.nav.eessi.pensjon.shared.api.PersonId
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
 import no.nav.eessi.pensjon.shared.person.FodselsnummerGenerator
 import no.nav.eessi.pensjon.statistikk.AutomatiseringStatistikkService
+import org.junit.Before
 import org.junit.Test
 import org.junit.jupiter.api.BeforeEach
 
@@ -33,8 +34,8 @@ class PrefillServiceTest {
     private lateinit var prefillNav: PrefillPDLNav
     private lateinit var eessiInformasjon: EessiInformasjon
 
-    @BeforeEach
-    fun `startup initilize testing`() {
+    @Before
+    fun setup() {
         prefillService = PrefillService(mockPrefillSEDService, innhentingService, automatiseringStatistikkService)
         personcollection = PersonDataCollection(null, null)
         val personDataCollectionFamilie = PersonPDLMock.createEnkelFamilie(personFnr, avdodPersonFnr)
@@ -58,5 +59,4 @@ class PrefillServiceTest {
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P6000, personFnr, penSaksnummer = "22580170", vedtakId = "12312312", avdod = PersonId(avdodPersonFnr, "1234567891234"))
         prefillSEDService = PrefillSEDService(eessiInformasjon, prefillNav)
     }
-
 }
