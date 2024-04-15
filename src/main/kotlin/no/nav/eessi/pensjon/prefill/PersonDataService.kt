@@ -117,15 +117,7 @@ class PersonDataService(private val personService: PersonService,
             .map { it.relatertPersonsIdent }
                 .also { logger.info("prøver å hente ut alle barn på hovedperson: " + it.size) }
             .filterNotNull()
-            .onEach { barnPin ->  logger.info("Er under 18: " + Fodselsnummer.fra(barnPin)?.isUnder18Year() ) }
-            .filter { barnPin ->
-                    try {
-                        Fodselsnummer.fraMedValidation(barnPin)?.isUnder18Year()!!
-                    } catch (ex: Exception) {
-                        logger.warn("Feiler ved validering av fnr for barn ${ex.message} med identtype: ${bestemIdent(barnPin)::class.simpleName}")
-                        false
-                    }
-            }
+            .onEach { barnPin ->  logger.info("Barn: ${Fodselsnummer.fra(barnPin)}") }
         logger.info("prøver å hente ut alle barn (filtrert under 18) på hovedperson: " + barnepinListe.size)
 
         return barnepinListe
