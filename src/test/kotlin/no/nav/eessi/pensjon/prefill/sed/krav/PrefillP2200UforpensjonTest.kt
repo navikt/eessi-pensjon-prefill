@@ -3,11 +3,16 @@ package no.nav.eessi.pensjon.prefill.sed.krav
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.SedType
+import no.nav.eessi.pensjon.personoppslag.pdl.model.KjoennType
 import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
+import no.nav.eessi.pensjon.prefill.PersonPDLMock.medFodsel
+import no.nav.eessi.pensjon.prefill.PersonPDLMock.medForeldre
+import no.nav.eessi.pensjon.prefill.PersonPDLMock.medKjoenn
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.prefill.models.PensjonCollection
+import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother.initialPrefillDataModel
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLAdresse
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
@@ -22,6 +27,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import java.time.LocalDate
 
 class PrefillP2200UforpensjonTest {
 
@@ -81,6 +87,30 @@ class PrefillP2200UforpensjonTest {
         assertEquals("TOPPI DOTTO", barn1?.person?.fornavn)
         assertEquals("BOUWMANS", barn2?.person?.etternavn)
         assertEquals("EGIDIJS MASKOT", barn2?.person?.fornavn)
+
+    }
+
+    @Test
+    fun `Komplett utfylling P2200 med barn over 18 aar`() {
+        val pendata: Pensjonsinformasjon = dataFromPEN.hentPensjonInformasjon(prefillData.bruker.norskIdent, prefillData.bruker.aktorId)
+
+        val personDataCollection = PersonDataCollection(
+            forsikretPerson = PersonPDLMock.createWith(),
+            gjenlevendeEllerAvdod = PersonPDLMock.createWith(),
+            barnPersonList = listOf(PersonPDLMock.createWith(fornavn = "Barn", etternavn = "Barnesen", fnr = "01010436857")
+                .medFodsel(LocalDate.of(2004, 1, 1))
+            )
+        )
+
+        assertNotNull(pendata.brukersSakerListe)
+
+        val p2200 = prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection)
+        assertEquals(SedType.P2200, p2200.type)
+
+        val barn1 = p2200.nav?.barn?.first()
+
+        println("*********$p2200 *********")
+        assertEquals("2004-01-01", barn1?.person?.foedselsdato)
 
     }
 
