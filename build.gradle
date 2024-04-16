@@ -110,7 +110,7 @@ dependencies {
     testImplementation('io.mockk:mockk:1.13.10')
 
     // Architecture tests la stå som 0.11.0
-    testImplementation ('com.tngtech.archunit:archunit:1.2.1')
+    testImplementation ('com.tngtech.archunit:archunit:1.3.0')
 
     // Forenklere mocking av beans, benyttes som mockito mockbean
     testImplementation('com.ninja-squad:springmockk:4.0.2')
