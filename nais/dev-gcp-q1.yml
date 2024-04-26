@@ -31,6 +31,7 @@ spec:
         - host: kodeverk-api.nav.no
         - host: eessi-pensjon-fagmodul-q1.intern.dev.nav.no
         - host: eessi-pensjon-onprem-proxy-q1.intern.dev.nav.no
+        - host: saf-q1.dev-fss-pub.nais.io
   webproxy: true
   env:
     - name: SPRING_PROFILES_ACTIVE
@@ -53,6 +54,8 @@ spec:
       value: NAV ACCEPTANCE TEST 07
     - name: AZURE_APP_PROXY_CLIENT_ID
       value: dev-fss.eessipensjon.eessi-pensjon-onprem-proxy-q2
+    - name: AZURE_APP_SAF_CLIENT_ID
+      value: dev-fss.teamdokumenthandtering.saf
     - name: ENV
       value: q1
   image: {{ image }}
