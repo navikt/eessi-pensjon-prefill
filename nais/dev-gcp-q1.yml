@@ -6,13 +6,6 @@ metadata:
   labels:
     team: eessipensjon
 spec:
-  observability:
-    logging:
-      destinations:
-        - id: elastic
-        - id: loki
-  secureLogs:
-    enabled: true
   kafka:
     pool: nav-dev
   envFrom:
@@ -37,31 +30,32 @@ spec:
         - host: pdl-api.dev-fss-pub.nais.io
         - host: kodeverk-api.nav.no
         - host: eessi-pensjon-fagmodul-q1.intern.dev.nav.no
-
+        - host: eessi-pensjon-onprem-proxy-q1.intern.dev.nav.no
+        - host: saf-q1.dev-fss-pub.nais.io
   webproxy: true
   env:
     - name: SPRING_PROFILES_ACTIVE
       value: test
     - name: PENSJONSINFORMASJON_URL
-      value: https://pensjon-pen.dev-fss-pub.nais.io/pen/api/pensjonsinformasjon/v1
-    - name: KODEVERK_URL
-      value: https://kodeverk-api.nav.no
+      value: https://eessi-pensjon-onprem-proxy-q1.dev-fss-pub.nais.io/pen/api/pensjonsinformasjon/v1
     - name: PDL_URL
       value: https://pdl-api.dev-fss-pub.nais.io/graphql
-
     - name: AZURE_APP_PDL_CLIENT_ID
       value: dev-fss.pdl.pdl-api
     - name: AZURE_APP_KODEVERK_CLIENT_ID
-      value: dev-gcp.team-rocket.kodeverk-api
-
+      value: kodeverk-api.nav.no
     - name: KAFKA_AUTOMATISERING_TOPIC
       value: eessipensjon.public-automatisering-q1
-
+    - name: KODEVERK_URL
+      value: https://kodeverk-api.nav.no
     - name: EESSI_PENSJON_INSTITUSJON
       value: NO:NAVAT07
     - name: EESSI_PENSJON_INSTITUSJON_NAVN
       value: NAV ACCEPTANCE TEST 07
-
+    - name: AZURE_APP_PROXY_CLIENT_ID
+      value: dev-fss.eessipensjon.eessi-pensjon-onprem-proxy-q2
+    - name: AZURE_APP_SAF_CLIENT_ID
+      value: dev-fss.teamdokumenthandtering.saf
     - name: ENV
       value: q1
   image: {{ image }}
