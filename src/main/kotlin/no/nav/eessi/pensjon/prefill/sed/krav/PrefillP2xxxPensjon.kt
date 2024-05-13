@@ -107,7 +107,7 @@ object PrefillP2xxxPensjon {
             else -> {
                 try {
                     logger.info("sakType: ${pensak.sakType}")
-                    val ytelseprmnd = hentYtelsePerMaanedDenSisteFraKrav(hentKravHistorikkForsteGangsBehandlingUtlandEllerForsteGang(pensak.kravHistorikkListe, pensak.sakType), pensak)
+                    val ytelseprmnd = hentYtelsePerMaanedDenSisteFraKrav(hentKravHistorikkForsteGangsBehandlingUtlandEllerForsteGang(pensak.kravHistorikkListe), pensak)
                     ytelselist.add(createYtelserItem(ytelseprmnd, pensak, personNr, penSaksnummer, andreinstitusjonerItem))
                 } catch (ex: Exception) {
                     logger.warn(ex.message, ex)

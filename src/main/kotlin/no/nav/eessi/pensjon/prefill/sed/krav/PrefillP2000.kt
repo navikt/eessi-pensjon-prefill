@@ -110,8 +110,7 @@ class PrefillP2000(private val prefillNav: PrefillPDLNav)  {
                 try {
                     val ytelseprmnd = PrefillP2xxxPensjon.hentYtelsePerMaanedDenSisteFraKrav(
                         KravHistorikkHelper.hentKravHistorikkForsteGangsBehandlingUtlandEllerForsteGang(
-                            pensak.kravHistorikkListe,
-                            pensak.sakType
+                            pensak.kravHistorikkListe
                         ), pensak
                     )
                     ytelselist.add(
