@@ -691,13 +691,12 @@ class SedPrefillIntegrationSpringTest {
     }
 
     @Test
-    @Disabled
     fun `prefill sed med kravtype førstehangbehandling norge men med vedtak bodsatt utland skal prefylle sed`() {
 
         every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN_3)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_3)) } returns PersonPDLMock.createWith(true, "Lever", "Gjenlev", FNR_VOKSEN_3)
         every { pensjonsinformasjonOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns
-                PrefillTestHelper.readXMLresponse("/pensjonsinformasjon/krav/AP_FORSTEG_BH.xml") andThen
+                PrefillTestHelper.readXMLresponse("/pensjonsinformasjon/krav/F_BH_MED_UTL.xml") andThen
                 PrefillTestHelper.readXMLresponse("/pensjonsinformasjon/vedtak/P6000-APUtland-301.xml")
 
         every { kodeverkClient.finnLandkode(any()) } returns "QX"
