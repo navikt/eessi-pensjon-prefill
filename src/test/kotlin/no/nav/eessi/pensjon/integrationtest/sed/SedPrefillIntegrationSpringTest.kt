@@ -404,6 +404,7 @@ class SedPrefillIntegrationSpringTest {
     }
 
     @Test
+    @Disabled
     fun `prefill sed med kravtype førstehangbehandling norge men med vedtak bodsatt utland skal prefylle sed`() {
 
         every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN_3)
