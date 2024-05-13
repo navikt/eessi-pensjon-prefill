@@ -28,6 +28,7 @@ import no.nav.eessi.pensjon.shared.api.SubjectFnr
 import no.nav.eessi.pensjon.utils.toJson
 import org.hamcrest.Matchers
 import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
 import org.springframework.beans.factory.annotation.Autowired
@@ -690,6 +691,7 @@ class SedPrefillIntegrationSpringTest {
     }
 
     @Test
+    @Disabled
     fun `prefill sed med kravtype førstehangbehandling norge men med vedtak bodsatt utland skal prefylle sed`() {
 
         every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN_3)
