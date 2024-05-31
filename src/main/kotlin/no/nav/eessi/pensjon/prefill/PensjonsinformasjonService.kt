@@ -10,6 +10,7 @@ import no.nav.pensjon.v1.sak.V1Sak
 import no.nav.pensjon.v1.vedtak.V1Vedtak
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Profile
 import org.springframework.http.HttpStatus
 import org.springframework.retry.RetryCallback
@@ -25,7 +26,9 @@ import org.springframework.web.server.ResponseStatusException
  * sakid eller vedtakid.
  */
 @Component
-class PensjonsinformasjonService(private val pensjonsinformasjonClient: PensjonsinformasjonClient) {
+class PensjonsinformasjonService(private val pensjonsinformasjonClient: PensjonsinformasjonClient,
+                                 @Value("\${ENV}") private val environment: String
+) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PensjonsinformasjonService::class.java) }
 
@@ -71,10 +74,14 @@ class PensjonsinformasjonService(private val pensjonsinformasjonClient: Pensjons
         val starttime = System.nanoTime()
 
         logger.debug("Starter [vedtak] Preutfylling Utfylling Data")
-
         logger.debug("vedtakId: $vedtakId")
-        val pensjonsinformasjon = hentMedVedtak(vedtakId)
 
+        val pensjonsinformasjon = if( environment == "q1") {
+            logger.debug("Henter ikke vedtak i q1")
+            return Pensjonsinformasjon()
+        } else {
+            hentMedVedtak(vedtakId)
+        }
         logger.debug("Henter pensjondata fra PESYS")
 
         val endtime = System.nanoTime()
