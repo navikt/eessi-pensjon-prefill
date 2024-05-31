@@ -11,7 +11,7 @@ class PrefillPensjonVedtaksbelopTest {
 
     @Test
     fun `forventet korrekt utregnet ytelsePrMnd på Uforep hvor UT_ORDINER`() {
-        val dataFromPESYS = PensjonsinformasjonService(PensjonsinformasjonClientMother.fraFil("P6000-UT-220.xml"))
+        val dataFromPESYS = PensjonsinformasjonService(PensjonsinformasjonClientMother.fraFil("P6000-UT-220.xml"), "q")
         val pendata = dataFromPESYS.hentMedVedtak("someVedtakId")
 
         val result = createBeregningItemList(pendata)
