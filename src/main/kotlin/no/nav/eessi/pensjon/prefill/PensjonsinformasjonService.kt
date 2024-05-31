@@ -76,7 +76,7 @@ class PensjonsinformasjonService(private val pensjonsinformasjonClient: Pensjons
         logger.debug("Starter [vedtak] Preutfylling Utfylling Data")
         logger.debug("vedtakId: $vedtakId")
 
-        val pensjonsinformasjon = if( environment == "q1") {
+        val pensjonsinformasjon = if( environment == "test") {
             logger.debug("Henter ikke vedtak i q1")
             return Pensjonsinformasjon()
         } else {
