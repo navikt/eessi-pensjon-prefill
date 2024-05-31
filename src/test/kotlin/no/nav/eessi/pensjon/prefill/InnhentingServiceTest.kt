@@ -15,6 +15,7 @@ import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import no.nav.pensjon.v1.sak.V1Sak
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.web.server.ResponseStatusException
@@ -117,11 +118,12 @@ class InnhentingServiceTest {
         assertEquals(null, result)
     }
 
-    class InnhentingSaktyperTest {
+    @Nested
+    inner class InnhentingSaktyperTest {
         val personDataService: PersonDataService = mockk()
         val pensjonsinformasjonClient: PensjonsinformasjonClient = mockk(relaxed = true)
 
-        val pensjonsinformasjonService = PensjonsinformasjonService(pensjonsinformasjonClient)
+        val pensjonsinformasjonService = PensjonsinformasjonService(pensjonsinformasjonClient, "q")
         val innhentingsservice = InnhentingService(personDataService, pensjonsinformasjonService = pensjonsinformasjonService)
 
         @Test

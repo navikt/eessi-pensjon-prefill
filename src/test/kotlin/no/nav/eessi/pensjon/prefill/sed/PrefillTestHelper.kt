@@ -26,7 +26,7 @@ object PrefillTestHelper {
         } returns readXMLVedtakresponse(responseXMLfilename)
 
         val pensjonsinformasjonClient = PensjonsinformasjonClient(pensjonsinformasjonRestTemplate, PensjonRequestBuilder())
-        return PensjonsinformasjonService(pensjonsinformasjonClient)
+        return PensjonsinformasjonService(pensjonsinformasjonClient, "q")
     }
 
     fun lesPensjonsdataFraFil(responseXMLfilename: String): PensjonsinformasjonService {
@@ -38,7 +38,7 @@ object PrefillTestHelper {
         } returns readXMLresponse(responseXMLfilename)
 
         val pensjonsinformasjonClient = PensjonsinformasjonClient(pensjonsinformasjonRestTemplate, PensjonRequestBuilder())
-        return PensjonsinformasjonService(pensjonsinformasjonClient)
+        return PensjonsinformasjonService(pensjonsinformasjonClient, "q")
     }
 
     fun readJsonResponse(file: String): String {
