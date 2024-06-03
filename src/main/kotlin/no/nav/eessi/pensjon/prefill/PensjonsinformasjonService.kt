@@ -73,10 +73,10 @@ class PensjonsinformasjonService(private val pensjonsinformasjonClient: Pensjons
         logger.debug("----------------------------------------------------------")
         val starttime = System.nanoTime()
 
-        logger.debug("Starter [vedtak] Preutfylling Utfylling Data")
+        logger.debug("Starter [vedtak] Preutfylling Utfylling Data for $environment")
         logger.debug("vedtakId: $vedtakId")
 
-        val pensjonsinformasjon = if( environment == "test") {
+        val pensjonsinformasjon = if( environment in listOf("test", "q1")) {
             logger.debug("Henter ikke vedtak i q1")
             return Pensjonsinformasjon()
         } else {
