@@ -60,6 +60,8 @@ class PensjonsinformasjonService(private val pensjonsinformasjonClient: Pensjons
         //Nå er vi dypt inne i prefill SED også sjekker vi om vi får hentet ut noe Pensjonsinformasjon
         //hvis det inne inneholder noe data så feiler vi!
         //**********************************************
+        logger.info("Hent pensjonInformasjon $environment")
+
         val pendata = if( environment in listOf("test", "q1")) {
             logger.debug("Henter ikke vedtak i q1")
             return Pensjonsinformasjon()
