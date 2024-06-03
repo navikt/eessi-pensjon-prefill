@@ -27,7 +27,7 @@ import org.springframework.web.server.ResponseStatusException
  */
 @Component
 class PensjonsinformasjonService(private val pensjonsinformasjonClient: PensjonsinformasjonClient,
-                                 @Value("\${SPRING_PROFILES_ACTIVE}") private val environment: String
+                                 @Value("\${ENV}") private val environment: String
 ) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PensjonsinformasjonService::class.java) }
@@ -76,7 +76,7 @@ class PensjonsinformasjonService(private val pensjonsinformasjonClient: Pensjons
         logger.debug("Starter [vedtak] Preutfylling Utfylling Data")
         logger.debug("vedtakId: $vedtakId")
 
-        val pensjonsinformasjon = if( environment.contains("test") || environment.contains("q1") ) {
+        val pensjonsinformasjon = if( environment == "test") {
             logger.debug("Henter ikke vedtak i q1")
             return Pensjonsinformasjon()
         } else {
