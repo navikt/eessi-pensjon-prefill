@@ -41,7 +41,7 @@ class PrefillP2100GjenlevendeKravDatoTest {
 
         val prefillNav = PrefillPDLNav(mockk(relaxed = true), "inst1", "instnavn")
         assertEquals(
-            Krav(prefillData.kravDato, prefillData.kravType?.verdi),
+            Krav(prefillData.kravDato, prefillData.kravType),
             PrefillP2100(prefillNav).prefillSed(prefillData, mockk(relaxed = true), sak).second.nav?.krav
         )
     }
