@@ -70,7 +70,7 @@ class PensjonsinformasjonService(private val pensjonsinformasjonClient: Pensjons
         }
 
         if (pendata.brukersSakerListe == null) {
-            throw PensjoninformasjonException("Ingen gyldig brukerSakerListe")
+            return Pensjonsinformasjon()
         }
         return pendata
     }
