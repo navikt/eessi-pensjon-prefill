@@ -80,7 +80,7 @@ class PrefillP15000(private val prefillSed: PrefillSed) {
         val forsikretPersonPin = forsikretPerson?.pin?.firstOrNull()
         val adresse = forsikretBruker?.adresse
 
-        val krav = Krav(dato = prefillData.kravDato?.let { validateFrontEndKravDato(it).toString() }, type = kravType.verdi)
+        val krav = Krav(dato = prefillData.kravDato?.let { validateFrontEndKravDato(it).toString() }, type = kravType)
 
         val nav = Nav(
             eessisak = eessielm,
