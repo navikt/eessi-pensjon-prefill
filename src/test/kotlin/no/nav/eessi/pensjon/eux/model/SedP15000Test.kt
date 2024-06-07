@@ -1,5 +1,6 @@
 package no.nav.eessi.pensjon.eux.model
 
+import no.nav.eessi.pensjon.eux.model.sed.KravType
 import no.nav.eessi.pensjon.eux.model.sed.SED
 import no.nav.eessi.pensjon.utils.toJson
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -20,6 +21,6 @@ class SedP15000Test {
         assertEquals(null, p15000sed.nav?.bruker?.bank?.konto?.sepa?.iban)
         assertEquals("21811", p15000sed.nav?.bruker?.person?.foedested?.by)
         assertEquals("2019-02-01", p15000sed.nav?.krav?.dato)
-        assertEquals("01", p15000sed.nav?.krav?.type)
+        assertEquals(KravType.ALDER, p15000sed.nav?.krav?.type)
     }
 }
