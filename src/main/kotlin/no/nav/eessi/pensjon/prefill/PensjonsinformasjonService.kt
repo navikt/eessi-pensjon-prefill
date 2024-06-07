@@ -64,9 +64,9 @@ class PensjonsinformasjonService(private val pensjonsinformasjonClient: Pensjons
 
         val pendata = if( environment in listOf("test", "q1")) {
             logger.debug("Henter ikke vedtak i q1")
-            return Pensjonsinformasjon()
+            Pensjonsinformasjon()
         } else {
-            val pendata: Pensjonsinformasjon = pensjonsinformasjonClient.hentAltPaaFNR(fnr)
+            pensjonsinformasjonClient.hentAltPaaFNR(fnr)
         }
 
         if (pendata.brukersSakerListe == null) {
