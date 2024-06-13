@@ -35,23 +35,19 @@ class PensjonsinformasjonService(private val pensjonsinformasjonClient: Pensjons
     companion object {
         //hjelpe metode for å hente ut valgt V1SAK på vetak/SAK fnr og sakid benyttes
         fun finnSak(sakId: String?, pendata: Pensjonsinformasjon): V1Sak? {
-            try {
-                if (sakId.isNullOrBlank()) return null
-                return FinnSak.finnSak(sakId, pendata)
-            } catch (_: Exception) {
-            }
-            return null
+            if (sakId.isNullOrBlank()) throw ManglendeSakIdException("Mangler sakId")
+            return FinnSak.finnSak(sakId, pendata)
         }
     }
 
     //hjelemetode for Vedtak P6000 P5000
     fun hentMedVedtak(vedtakId: String): Pensjonsinformasjon {
-        try {
-            if (vedtakId.isBlank()) throw IkkeGyldigKallException("Mangler vedtakID")
-            return pensjonsinformasjonClient.hentAltPaaVedtak(vedtakId)
-        } catch (e: Exception) {
+        if( environment in listOf("q1")) {
             return Pensjonsinformasjon()
         }
+
+        if (vedtakId.isBlank()) throw IkkeGyldigKallException("Mangler vedtakID")
+        return pensjonsinformasjonClient.hentAltPaaVedtak(vedtakId)
     }
 
     //hjelpe metode for å hente ut date for SAK/krav P2x00 fnr benyttes
@@ -70,7 +66,7 @@ class PensjonsinformasjonService(private val pensjonsinformasjonClient: Pensjons
         //**********************************************
         logger.info("Hent pensjonInformasjon $environment")
 
-        val pendata = if( environment in listOf("test", "q1")) {
+        val pendata = if( environment in listOf("q1")) {
             logger.debug("Henter ikke vedtak i q1")
             return Pensjonsinformasjon()
         } else {
@@ -90,7 +86,7 @@ class PensjonsinformasjonService(private val pensjonsinformasjonClient: Pensjons
         logger.info("Starter [vedtak] Preutfylling Utfylling Data for $environment")
         logger.debug("vedtakId: $vedtakId")
 
-        val pensjonsinformasjon = if( environment in listOf("test", "q1")) {
+        val pensjonsinformasjon = if( environment in listOf("q1")) {
             logger.debug("Henter ikke vedtak i q1")
             return Pensjonsinformasjon()
         } else {
@@ -108,6 +104,11 @@ class PensjonsinformasjonService(private val pensjonsinformasjonClient: Pensjons
     }
 
     fun hentRelevantPensjonSak(prefillData: PrefillDataModel, akseptabelSakstypeForSed: (String) -> Boolean): V1Sak? {
+
+        if( environment in listOf("q1")) {
+            return V1Sak()
+        }
+
         val fnr = prefillData.bruker.norskIdent
         val aktorId = prefillData.bruker.aktorId
         val penSaksnummer = prefillData.penSaksnummer
