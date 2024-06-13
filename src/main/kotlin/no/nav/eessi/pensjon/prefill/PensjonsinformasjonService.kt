@@ -46,8 +46,12 @@ class PensjonsinformasjonService(private val pensjonsinformasjonClient: Pensjons
 
     //hjelemetode for Vedtak P6000 P5000
     fun hentMedVedtak(vedtakId: String): Pensjonsinformasjon {
-        if (vedtakId.isBlank()) throw IkkeGyldigKallException("Mangler vedtakID")
-        return pensjonsinformasjonClient.hentAltPaaVedtak(vedtakId)
+        try {
+            if (vedtakId.isBlank()) throw IkkeGyldigKallException("Mangler vedtakID")
+            return pensjonsinformasjonClient.hentAltPaaVedtak(vedtakId)
+        } catch (e: Exception) {
+            return Pensjonsinformasjon()
+        }
     }
 
     //hjelpe metode for å hente ut date for SAK/krav P2x00 fnr benyttes
