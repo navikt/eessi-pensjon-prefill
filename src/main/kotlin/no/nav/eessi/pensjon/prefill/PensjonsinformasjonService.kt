@@ -35,8 +35,12 @@ class PensjonsinformasjonService(private val pensjonsinformasjonClient: Pensjons
     companion object {
         //hjelpe metode for å hente ut valgt V1SAK på vetak/SAK fnr og sakid benyttes
         fun finnSak(sakId: String?, pendata: Pensjonsinformasjon): V1Sak? {
-            if (sakId.isNullOrBlank()) throw ManglendeSakIdException("Mangler sakId")
-            return FinnSak.finnSak(sakId, pendata)
+            try {
+                if (sakId.isNullOrBlank()) return null
+                return FinnSak.finnSak(sakId, pendata)
+            } catch (_: Exception) {
+            }
+            return null
         }
     }
 
