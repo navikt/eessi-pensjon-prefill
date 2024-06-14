@@ -77,7 +77,7 @@ class PrefillP2000(private val prefillNav: PrefillPDLNav) {
             sed.nav?.bruker?.person?.kjoenn == null -> throw ValidationException("Kjønn mangler")
             sed.nav?.krav?.dato == null -> {
                 logger.warn("Kravdato mangler! Gjelder utsendelsen 'Førstegangsbehandling kun utland', se egen rutine på Navet.")
-                throw ValidationException("Kravdato mangler\nGjelder utsendelsen \"Førstegangsbehandling kun utland\", se egen rutine på Navet.")
+                //throw ValidationException("Kravdato mangler\nGjelder utsendelsen \"Førstegangsbehandling kun utland\", se egen rutine på Navet.")
             }
         }
     }
