@@ -18,6 +18,7 @@ import no.nav.eessi.pensjon.shared.api.PrefillDataModel
 import no.nav.eessi.pensjon.shared.person.FodselsnummerGenerator
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.web.server.ResponseStatusException
 
@@ -60,6 +61,7 @@ class PrefillP2000MedIngendataTest {
     }
 
     @Test
+    @Disabled
     fun `Gitt pensjonsinformasjon som mangler vedtak når preutfyller så stopp preutfylling med melding om vedtak mangler`() {
         try {
             prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection)

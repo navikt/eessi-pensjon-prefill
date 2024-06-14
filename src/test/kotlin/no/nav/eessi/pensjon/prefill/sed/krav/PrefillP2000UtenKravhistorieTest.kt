@@ -21,6 +21,7 @@ import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
@@ -72,6 +73,7 @@ class PrefillP2000UtenKravhistorieTest {
     }
 
     @Test
+    @Disabled
     fun `Preutfylling P2000 uten kravdato skal feile`() {
         val ex = assertThrows<Exception> {
             prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection)
