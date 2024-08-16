@@ -93,7 +93,7 @@ class PrefillP15000(private val prefillSed: PrefillSed) {
         )
         val gjenlevende = bestemGjenlevende(gjenlevendeBruker, relasjon, kravType)
 
-        return P15000(nav = nav, pensjon = P15000Pensjon(gjenlevende))
+        return P15000(nav = nav, p15000Pensjon = P15000Pensjon(gjenlevende))
     }
 
     fun validateFrontEndKravDato(dato: String): LocalDate {

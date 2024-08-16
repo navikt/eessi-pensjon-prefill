@@ -47,6 +47,6 @@ class PrefillP10000(private val prefillNav: PrefillPDLNav) {
 
         logger.debug("-------------------| Preutfylling END |------------------- ")
 
-        return P10000(nav = navSed, pensjon = null)
+        return P10000(nav = navSed)
     }
 }
