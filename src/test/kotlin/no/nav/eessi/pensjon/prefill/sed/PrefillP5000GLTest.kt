@@ -16,6 +16,7 @@ import no.nav.eessi.pensjon.shared.person.Fodselsnummer
 import no.nav.eessi.pensjon.shared.person.FodselsnummerGenerator
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
@@ -72,13 +73,13 @@ class PrefillP5000GLTest {
         assertEquals(null, pinitem?.sektor)
         assertEquals(avdodPersonFnr, pinitem?.identifikator)
 
-        assertEquals("BAMSE ULUR", p5000.pensjon?.gjenlevende?.person?.fornavn)
-        assertEquals("DOLLY", p5000.pensjon?.gjenlevende?.person?.etternavn)
-        val navfnr2 = Fodselsnummer.fra(p5000.pensjon?.gjenlevende?.person?.pin?.get(0)?.identifikator!!)
+        assertEquals("BAMSE ULUR", p5000.p5000Pensjon?.gjenlevende?.person?.fornavn)
+        assertEquals("DOLLY", p5000.p5000Pensjon?.gjenlevende?.person?.etternavn)
+        val navfnr2 = Fodselsnummer.fra(p5000.p5000Pensjon?.gjenlevende?.person?.pin?.get(0)?.identifikator!!)
         assertEquals(65, navfnr2?.getAge())
-        assertEquals("K", p5000.pensjon?.gjenlevende?.person?.kjoenn)
+        assertEquals("K", p5000.p5000Pensjon?.gjenlevende?.person?.kjoenn)
 
-        assertNotNull(p5000.pensjon)
+        assertNull( p5000.pensjon)
     }
 
 }
