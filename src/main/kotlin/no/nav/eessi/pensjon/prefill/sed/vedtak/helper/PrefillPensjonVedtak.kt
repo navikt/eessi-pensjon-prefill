@@ -66,12 +66,16 @@ object PrefillPensjonVedtak {
      * 01 - Old age
      * 02 - Invalidity
      * 03 - Survivors
+     * 06 - Early Old age
      *
-     * 04, 05 og 06 benyttes ikke
+     * 04 og 05 benyttes ikke
      */
     fun createVedtakTypePensionWithRule(pendata: Pensjonsinformasjon): String {
         //v1sak fra PESYS
         val v1sak = pendata.sakAlder as V1SakAlder
+
+        //Er pensjon før 67 ?
+        val pensjonUttakTidligereEnn67 = v1sak.isUttakFor67
 
         //type fra K_SAK_T
         val type = v1sak.sakType
@@ -80,7 +84,12 @@ object PrefillPensjonVedtak {
         logger.debug("4.1.1         VedtakTypePension")
 
         return when (sakType) {
-            KSAK.ALDER ->  "01"
+            KSAK.ALDER -> {
+                when (pensjonUttakTidligereEnn67) {
+                    true -> "06"
+                    else -> "01"
+                }
+            }
             KSAK.UFOREP -> "02"
             KSAK.BARNEP, KSAK.GJENLEV -> "03"
         }
