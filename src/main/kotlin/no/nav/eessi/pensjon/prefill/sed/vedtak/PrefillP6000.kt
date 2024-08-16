@@ -53,7 +53,7 @@ class PrefillP6000(private val prefillNav: PrefillPDLNav,
         return P6000(
             type = sedType,
             nav = nav,
-            p6000Pensjon = p6000Pensjon
+            pensjon = p6000Pensjon
         )
 
     }

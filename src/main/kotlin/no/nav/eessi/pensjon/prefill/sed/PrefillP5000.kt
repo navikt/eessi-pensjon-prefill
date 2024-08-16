@@ -20,7 +20,7 @@ class PrefillP5000(private val prefillSed: PrefillSed) {
 
         return P5000(
             nav = sed.nav,
-            p5000Pensjon = P5000Pensjon(
+            pensjon = P5000Pensjon(
                 gjenlevende = sed.pensjon?.gjenlevende
             )
         )
