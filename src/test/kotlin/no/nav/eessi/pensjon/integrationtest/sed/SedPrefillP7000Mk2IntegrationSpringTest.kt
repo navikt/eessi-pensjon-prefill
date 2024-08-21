@@ -127,7 +127,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
         assertEquals("NO", p7000Person.pin?.firstOrNull()?.land)
 
         //pensjon
-        val p700SamletVedtak = p7000Actual.p7000Pensjon?.samletVedtak
+        val p700SamletVedtak = p7000Actual.pensjon?.samletVedtak
         val tildeltepensjoner = p700SamletVedtak?.tildeltepensjoner?.firstOrNull()!!
         val avslag = p700SamletVedtak.avslag?.firstOrNull()
         val belop = tildeltepensjoner.ytelser?.firstOrNull()?.beloep?.firstOrNull()!!

@@ -61,7 +61,7 @@ class PrefillP7000(private val prefillSed: PrefillSed) {
                         ektefelle = Ektefelle(person = Person(etternavn = sed.nav?.bruker?.person?.etternavn))
                 ),
                 //mappe om kjoenn for mappingfeil
-                p7000Pensjon = P7000Pensjon(
+                pensjon = P7000Pensjon(
                         //TODO trenger vi denne lenger? er mapping ok eller fortsatt feil?
                         bruker = Bruker(person = Person(kjoenn = sed.nav?.bruker?.person?.kjoenn)),
                         gjenlevende = sed.pensjon?.gjenlevende

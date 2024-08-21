@@ -65,7 +65,7 @@ class SedTest {
         val sed6000 = populerP6000Pensjon()
         assertNotNull(sed6000)
 
-        val p6000Pensjon = sed6000.p6000Pensjon
+        val p6000Pensjon = sed6000.pensjon
         val brukerback = mapJsonToAny<P6000Pensjon>(mapAnyToJson(p6000Pensjon!!))
         assertNotNull(brukerback)
         assertEquals(p6000Pensjon.toJson(), brukerback.toJson())
@@ -77,7 +77,7 @@ class SedTest {
         val sed = P6000(
             type = SedType.P6000,
             nav = Nav(bruker = navmock.bruker),
-            p6000Pensjon = P6000Pensjon(gjenlevende = penmock.gjenlevende)
+            pensjon = P6000Pensjon(gjenlevende = penmock.gjenlevende)
         )
 
         val testPersjson = mapAnyToJson(sed, true)
@@ -88,7 +88,7 @@ class SedTest {
     fun populerP6000Pensjon(): P6000 {
         return P6000(
             type = SedType.P6000,
-            p6000Pensjon = P6000Pensjon(
+            pensjon = P6000Pensjon(
                 gjenlevende = Bruker(
                     adresse = Adresse(
                         postnummer = "sdfsdf",

@@ -67,7 +67,7 @@ class SedP6000Test {
         val sed6000 = populerP6000()
         assertNotNull(sed6000)
 
-        val p6000Pensjon = sed6000.p6000Pensjon
+        val p6000Pensjon = sed6000.pensjon
 
         val p6000PensjonJson = mapAnyToJson(p6000Pensjon!!)
         val p6000PensjonDeserialisert = mapJsonToAny<P6000Pensjon>(p6000PensjonJson)
@@ -79,7 +79,7 @@ class SedP6000Test {
     private fun populerP6000(): P6000 {
         return P6000(
             type = SedType.P6000,
-            p6000Pensjon = P6000Pensjon(
+            pensjon = P6000Pensjon(
                 gjenlevende = Bruker(
                     adresse = Adresse(
                         postnummer = "sdfsdf",

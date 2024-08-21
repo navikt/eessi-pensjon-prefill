@@ -58,7 +58,7 @@ class PrefillP7000_AP_21975717Test {
         val p7000 = prefillSEDService.prefill(prefillData, personCollection, pensjonCollection) as P7000
 
         assertEquals("BALDER", p7000.nav?.ektefelle?.person?.etternavn)
-        assertEquals("M", p7000.p7000Pensjon?.bruker?.person?.kjoenn)
+        assertEquals("M", p7000.pensjon?.bruker?.person?.kjoenn)
 
         assertEquals("1988-07-12", p7000.nav?.bruker?.person?.foedselsdato)
     }

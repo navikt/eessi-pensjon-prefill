@@ -74,7 +74,7 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
                 ektefelle = Ektefelle(person = Person(etternavn = sed.nav?.bruker?.person?.etternavn))
             ),
             //mappe om kjoenn for mappingfeil
-            p7000Pensjon = P7000Pensjon(
+            pensjon = P7000Pensjon(
                 gjenlevende = prefillGjenlevende(gjenlevendePerson, gjenlevendePin, listP6000),
                 samletVedtak = prefilSamletMeldingVedtak(listP6000)
             )
@@ -149,7 +149,7 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
             val sistMottattDato = doc.first.sistMottatt
 
             val p6000 = doc.second //P6000 seden
-            val p6000pensjon = p6000.p6000Pensjon
+            val p6000pensjon = p6000.pensjon
 
             val eessisak = p6000.nav?.eessisak?.firstOrNull { it.land == fraLand }
 
@@ -255,7 +255,7 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
 
 
     fun finnKorrektBruker(p6000: P6000): Bruker? {
-        return p6000.p6000Pensjon?.gjenlevende ?: p6000.nav?.bruker
+        return p6000.pensjon?.gjenlevende ?: p6000.nav?.bruker
     }
 
     fun mapInstusjonP6000(eessiSak: EessisakItem?, p6000bruker: Bruker?, tilleggsinformasjon: Tilleggsinformasjon?, fraLand: String?): Institusjon {
@@ -283,7 +283,7 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
             val sistMottattDato = doc.first.sistMottatt
 
             val p6000 = doc.second
-            val p6000pensjon = p6000.p6000Pensjon
+            val p6000pensjon = p6000.pensjon
             //resultat = "02" er avslag
             val avslag = p6000pensjon?.vedtak?.firstOrNull { it.resultat == "02" }
 
@@ -295,7 +295,7 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
                     pensjonType = avslag.type,
                     begrunnelse = avslag.avslagbegrunnelse?.first()?.begrunnelse,
                     dato = mapVedtakDatoEllerSistMottattdato(
-                        p6000.p6000Pensjon?.tilleggsinformasjon?.dato,
+                        p6000.pensjon?.tilleggsinformasjon?.dato,
                         sistMottattDato
                     ),  //dato mottatt dato ikke finnes
                     pin = finnKorrektBruker(p6000)?.person?.pin?.firstOrNull { it.land == fraLand },

@@ -24,7 +24,7 @@ class SedMock {
     fun genererP5000Mock(): P5000 {
         return P5000(
                 nav = NavMock().genererNavMock(),
-                p5000Pensjon = PensjonMock().genererP5000Pensjon(),
+                pensjon = PensjonMock().genererP5000Pensjon(),
                 type = SedType.P5000
         )
     }
