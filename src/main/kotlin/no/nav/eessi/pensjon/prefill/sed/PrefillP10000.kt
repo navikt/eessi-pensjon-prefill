@@ -1,5 +1,6 @@
 package no.nav.eessi.pensjon.prefill.sed
 
+import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.sed.P10000
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
