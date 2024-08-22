@@ -1,10 +1,8 @@
 package no.nav.eessi.pensjon.prefill
 
 import io.micrometer.core.instrument.Metrics
-import no.nav.eessi.pensjon.eux.model.SedType
-import no.nav.eessi.pensjon.eux.model.sed.SED
+import no.nav.eessi.pensjon.eux.model.sed.SED.Companion.setSEDVersion
 import no.nav.eessi.pensjon.metrics.MetricsHelper
-import no.nav.eessi.pensjon.prefill.models.PensjonCollection
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
 import no.nav.eessi.pensjon.shared.api.ApiRequest
 import no.nav.eessi.pensjon.statistikk.AutomatiseringStatistikkService
@@ -23,12 +21,8 @@ class PrefillService(
     private val automatiseringStatistikkService: AutomatiseringStatistikkService,
     @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper.ForTest()
 ) {
-
     private val logger = LoggerFactory.getLogger(PrefillService::class.java)
-
     private lateinit var PrefillSed: MetricsHelper.Metric
-
-    private val LATEST_RINA_SED_VERSION = "v4.2"
 
     init {
         PrefillSed = metricsHelper.init("PrefillSed",
@@ -61,7 +55,7 @@ class PrefillService(
                 logger.debug("Sed ferdig utfylt: $sed")
 
                 //synk sed versjon med buc versjon
-                updateSEDVersion(sed, LATEST_RINA_SED_VERSION)
+                setSEDVersion(sed.sedVer)
 
                 try {
                     Metrics.counter("Sed_Prefill","type", sed.type.name).increment()
@@ -82,12 +76,4 @@ class PrefillService(
         }
     }
 
-    //flyttes til prefill / en eller annen service?
-    private fun updateSEDVersion(sed: SED, bucVersion: String) {
-        when(bucVersion) {
-            "v4.2" -> sed.sedVer="2"
-            else -> sed.sedVer="1"
-        }
-        logger.debug("SED version: v${sed.sedGVer}.${sed.sedVer} + BUC version: $bucVersion")
-    }
 }
