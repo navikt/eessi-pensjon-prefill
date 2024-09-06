@@ -67,7 +67,7 @@ class ArchitectureTest {
         val statistikk = "statistikk"
 
         val packages: Map<String, String> = mapOf(
-            "$root.health.." to health,
+            "$root.shared.api.health.." to health,
             "$root.prefill.." to prefill,
             "$root.prefill.models.." to models,
             "$root.config.." to config,
