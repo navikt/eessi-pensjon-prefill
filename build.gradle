@@ -6,6 +6,9 @@ buildscript {
         jacksonModuleKotlinVersion = '2.17.2'
         cxfVersion = '3.3.4'
         tokenSupportVersion = '5.0.5'
+
+        //test
+        jupiterVersion = '5.11.2'
     }
 }
 
@@ -103,8 +106,8 @@ dependencies {
     testImplementation ("org.springframework.kafka:spring-kafka-test:$springKafkaVersion")
     testImplementation("org.pac4j:spring-webmvc-pac4j:8.0.0")
 
-    testImplementation(platform("org.junit:junit-bom:5.11.2"))
-    testImplementation("org.junit.jupiter:junit-jupiter")
+    testImplementation(platform("org.junit:junit-bom:$jupiterVersion"))
+    testImplementation("org.junit.jupiter:junit-jupiter:$jupiterVersion")
 
     testImplementation("org.skyscreamer:jsonassert:1.5.3")
     testImplementation("io.mockk:mockk:1.13.13")
