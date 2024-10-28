@@ -375,6 +375,7 @@ class SedPrefillP8000IntegrationSpringTest {
         every { pensjoninformasjonservice.hentRelevantPensjonSak(any(), any()) } returns sak
         every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_BARN)
         every { personService.hentIdent(AKTORID, NorskIdent(FNR_VOKSEN_4)) } returns AktoerId(AKTOER_ID_2)
+        every { krrService.hentPersonFraKrr(any()) } returns KrrPerson("melleby11@melby.no", "11111111")
 
         val diskeBarn = PersonPDLMock.createWith(true, "Barn", "Diskret", FNR_BARN, AKTOER_ID)
                             .medBeskyttelse(AdressebeskyttelseGradering.STRENGT_FORTROLIG)
