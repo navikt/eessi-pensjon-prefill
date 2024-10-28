@@ -11,14 +11,19 @@ import no.nav.eessi.pensjon.eux.model.sed.SED
 import no.nav.eessi.pensjon.integrationtest.IntegrasjonsTestConfig
 import no.nav.eessi.pensjon.kodeverk.KodeverkClient
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
-import no.nav.eessi.pensjon.personoppslag.pdl.model.*
-import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe.*
+import no.nav.eessi.pensjon.personoppslag.pdl.model.AktoerId
+import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe.FOLKEREGISTERIDENT
+import no.nav.eessi.pensjon.personoppslag.pdl.model.KjoennType
+import no.nav.eessi.pensjon.personoppslag.pdl.model.NorskIdent
+import no.nav.eessi.pensjon.personoppslag.pdl.model.Npid
+import no.nav.eessi.pensjon.prefill.KrrService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.PersonPDLMock.medBarn
 import no.nav.eessi.pensjon.prefill.PersonPDLMock.medFodsel
 import no.nav.eessi.pensjon.prefill.PersonPDLMock.medForeldre
 import no.nav.eessi.pensjon.prefill.PersonPDLMock.medKjoenn
 import no.nav.eessi.pensjon.prefill.PersonPDLMock.medSivilstand
+import no.nav.eessi.pensjon.prefill.models.KrrPerson
 import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper
 import no.nav.eessi.pensjon.shared.person.Fodselsnummer
 import no.nav.eessi.pensjon.shared.person.FodselsnummerGenerator
@@ -57,6 +62,9 @@ class PrefillUfoereIntegrationTest {
     private lateinit var personService: PersonService
 
     @MockkBean
+    private lateinit var krrService: KrrService
+
+    @MockkBean
     private lateinit var kodeverkClient: KodeverkClient
 
     @Autowired
@@ -80,6 +88,7 @@ class PrefillUfoereIntegrationTest {
 
         every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith()
+        every { krrService.hentPersonFraKrr(any()) } returns KrrPerson("melleby11@melby.no", "11111111")
         every { pensjonsinformasjonOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java))} returns PrefillTestHelper.readXMLresponse("/pensjonsinformasjon/krav/P2200-AVSL.xml")
         every { kodeverkClient.finnLandkode(any()) } returns "QX"
 
@@ -189,6 +198,7 @@ class PrefillUfoereIntegrationTest {
         //mock hent av aktoer/fnr for innkommende hovedperson
         every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(aktoerHovedperson)) } returns NorskIdent(pinHovedperson)
         every { personService.hentPerson(NorskIdent(pinHovedperson)) } returns hovedPersonMedbarn
+        every { krrService.hentPersonFraKrr(any()) } returns KrrPerson("melleby11@melby.no", "11111111")
 
         //ektefelle
         every { personService.hentPerson(NorskIdent(pinEktefelleperson)) } returns ektefellePerson
@@ -445,6 +455,7 @@ class PrefillUfoereIntegrationTest {
 
         every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN_2)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_2)) } returns PersonPDLMock.createWith(true, "Lever", "Gjenlev", FNR_VOKSEN_2)
+        every { krrService.hentPersonFraKrr(any()) } returns KrrPerson("melleby11@melby.no", "11111111")
 
         every { pensjonsinformasjonOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java))} returns
                 PrefillTestHelper.readXMLresponse("/pensjonsinformasjon/krav/P2200-UP-INNV.xml")
@@ -474,6 +485,7 @@ class PrefillUfoereIntegrationTest {
 
         every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns Npid(NPID_VOKSEN)
         every { personService.hentPerson(Npid(NPID_VOKSEN)) } returns PersonPDLMock.createWith(true, "Lever", "Gjenlev", NPID_VOKSEN)
+        every { krrService.hentPersonFraKrr(any()) } returns KrrPerson("melleby11@melby.no", "11111111")
 
         every { pensjonsinformasjonOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java))} returns
                 PrefillTestHelper.readXMLresponse("/pensjonsinformasjon/krav/P2200-UP-INNV.xml")

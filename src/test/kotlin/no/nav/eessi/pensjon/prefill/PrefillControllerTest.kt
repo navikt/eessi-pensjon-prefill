@@ -9,6 +9,7 @@ import no.nav.eessi.pensjon.eux.model.SedType.P6000
 import no.nav.eessi.pensjon.eux.model.sed.*
 import no.nav.eessi.pensjon.logging.AuditLogger
 import no.nav.eessi.pensjon.personoppslag.pdl.model.NorskIdent
+import no.nav.eessi.pensjon.prefill.models.KrrPerson
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
 import no.nav.eessi.pensjon.shared.api.ApiRequest
@@ -26,6 +27,7 @@ class PrefillControllerTest {
     var auditLogger: AuditLogger = AuditLogger()
     var mockPrefillSEDService: PrefillSEDService = mockk()
     var personDataService: PersonDataService = mockk()
+    var krrService: KrrService = mockk()
     var pensjonsinformasjonService: PensjonsinformasjonService = mockk()
     val automatiseringStatistikkService: AutomatiseringStatistikkService = mockk(relaxed = true)
 
@@ -36,7 +38,7 @@ class PrefillControllerTest {
     fun before() {
 
         val innhentingService = InnhentingService(personDataService, pensjonsinformasjonService = pensjonsinformasjonService)
-        val prefillService = PrefillService(mockPrefillSEDService, innhentingService, automatiseringStatistikkService)
+        val prefillService = PrefillService(krrService, mockPrefillSEDService, innhentingService, automatiseringStatistikkService)
 
         prefillController = PrefillController(
             prefillService, auditLogger
@@ -63,6 +65,8 @@ class PrefillControllerTest {
         every{
             personDataService.hentPersonData(any())
         } returns( PersonDataCollection(PersonPDLMock.createWith(), PersonPDLMock.createWith()))
+
+        every { krrService.hentPersonFraKrr(any()) } returns KrrPerson("melleby11@melby.no", "11111111")
 
         val nav = Nav(bruker = Bruker(person = Person(fornavn = "Dummy", etternavn = "Dummy", foedselsdato = "1900-10-11", kjoenn = "K")), krav = Krav("1937-12-11"))
         val mockSed = SED(

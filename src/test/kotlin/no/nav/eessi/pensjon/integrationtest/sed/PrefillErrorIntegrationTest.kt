@@ -15,8 +15,10 @@ import no.nav.eessi.pensjon.personoppslag.pdl.model.AktoerId
 import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe.FOLKEREGISTERIDENT
 import no.nav.eessi.pensjon.personoppslag.pdl.model.NorskIdent
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Npid
+import no.nav.eessi.pensjon.prefill.KrrService
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
+import no.nav.eessi.pensjon.prefill.models.KrrPerson
 import no.nav.pensjon.v1.kravhistorikk.V1KravHistorikk
 import no.nav.pensjon.v1.kravhistorikkliste.V1KravHistorikkListe
 import no.nav.pensjon.v1.sak.V1Sak
@@ -54,6 +56,9 @@ class PrefillErrorIntegrationTest {
     @MockkBean
     lateinit var personService: PersonService
 
+    @MockkBean
+    lateinit var krrService: KrrService
+
     @Autowired
     private lateinit var mockMvc: MockMvc
 
@@ -69,6 +74,8 @@ class PrefillErrorIntegrationTest {
         every { kodeverkClient.finnLandkode(eq("NOR"))} returns "NO"
         every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith()
+
+        every { krrService.hentPersonFraKrr(any())  } returns KrrPerson("melleby11@melby.no", "11111111")
 
         val sak = V1Sak()
         sak.sakType = UFOREP.toString()
@@ -106,6 +113,9 @@ class PrefillErrorIntegrationTest {
         every { kodeverkClient.finnLandkode(eq("NOR"))} returns "NO"
         every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns Npid(NPID_VOKSEN)
         every { personService.hentPerson(Npid(NPID_VOKSEN)) } returns PersonPDLMock.createWith()
+
+        every { krrService.hentPersonFraKrr(any())  } returns KrrPerson("melleby11@melby.no", "11111111")
+
 
         val sak = V1Sak()
         sak.sakType = UFOREP.toString()

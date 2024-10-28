@@ -16,7 +16,6 @@ import no.nav.eessi.pensjon.shared.person.FodselsnummerGenerator
 import no.nav.eessi.pensjon.statistikk.AutomatiseringStatistikkService
 import org.junit.Before
 import org.junit.Test
-import org.junit.jupiter.api.BeforeEach
 
 class PrefillServiceTest {
     private val personFnr = FodselsnummerGenerator.generateFnrForTest(57)
@@ -24,6 +23,7 @@ class PrefillServiceTest {
 
     private val mockPrefillSEDService: PrefillSEDService = mockk()
     private val innhentingService: InnhentingService = mockk()
+    private val krrService: KrrService = mockk()
     private val automatiseringStatistikkService: AutomatiseringStatistikkService = mockk()
     private lateinit var prefillData: PrefillDataModel
     private lateinit var prefillSEDService: PrefillSEDService
@@ -36,7 +36,7 @@ class PrefillServiceTest {
 
     @Before
     fun setup() {
-        prefillService = PrefillService(mockPrefillSEDService, innhentingService, automatiseringStatistikkService)
+        prefillService = PrefillService(krrService, mockPrefillSEDService, innhentingService, automatiseringStatistikkService)
         personcollection = PersonDataCollection(null, null)
         val personDataCollectionFamilie = PersonPDLMock.createEnkelFamilie(personFnr, avdodPersonFnr)
         personDataCollection = PersonDataCollection(gjenlevendeEllerAvdod = personDataCollectionFamilie.ektefellePerson, forsikretPerson = personDataCollectionFamilie.forsikretPerson )

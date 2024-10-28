@@ -12,8 +12,10 @@ import no.nav.eessi.pensjon.pensjonsinformasjon.models.EPSaktype.*
 import no.nav.eessi.pensjon.pensjonsinformasjon.models.KravArsak
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
 import no.nav.eessi.pensjon.personoppslag.pdl.model.*
+import no.nav.eessi.pensjon.prefill.KrrService
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
+import no.nav.eessi.pensjon.prefill.models.KrrPerson
 import no.nav.pensjon.v1.avdod.V1Avdod
 import no.nav.pensjon.v1.kravhistorikk.V1KravHistorikk
 import no.nav.pensjon.v1.kravhistorikkliste.V1KravHistorikkListe
@@ -55,6 +57,9 @@ class PrefillP15000IntegrationTest {
     @MockkBean
     lateinit var personService: PersonService
 
+    @MockkBean
+    lateinit var krrService: KrrService
+
     @Autowired
     private lateinit var mockMvc: MockMvc
 
@@ -77,6 +82,7 @@ class PrefillP15000IntegrationTest {
         every { personService.hentIdent(IdentGruppe.AKTORID, Npid(NPID)) } returns AktoerId(AKTOER_ID_2)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_3)) } returns PersonPDLMock.createWith(true, "Lever", "Gjenlev", FNR_VOKSEN_3, AKTOER_ID)
         every { personService.hentPerson(Npid(NPID)) } returns PersonPDLMock.createWith(true, "Avdød", "Død", NPID, AKTOER_ID_2, true)
+        every { krrService.hentPersonFraKrr(any()) } returns KrrPerson("melleby11@melby.no", "11111111")
 
         val banrepSak = V1Sak()
         banrepSak.sakType = "BARNEP"
@@ -199,6 +205,10 @@ class PrefillP15000IntegrationTest {
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_3)) } returns PersonPDLMock.createWith(true, "Lever", "Gjenlev", FNR_VOKSEN_3, AKTOER_ID)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_4)) } returns PersonPDLMock.createWith(true, "Avdød", "Død", FNR_VOKSEN_4, AKTOER_ID_2, true)
 
+        every { krrService.hentPersonFraKrr(eq(FNR_VOKSEN_3)) } returns KrrPerson("melleby11@melby.no", "11111111")
+        every { krrService.hentPersonFraKrr(eq(FNR_VOKSEN_4)) } returns KrrPerson("melleby12@melby.no", "11111111")
+
+
         val banrepSak = V1Sak()
         banrepSak.sakType = "BARNEP"
         banrepSak.sakId = 22915555L
@@ -320,6 +330,10 @@ class PrefillP15000IntegrationTest {
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_3)) } returns PersonPDLMock.createWith(true, "Lever", "Gjenlev", FNR_VOKSEN_3, AKTOER_ID)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_4)) } returns PersonPDLMock.createWith(true, "Avdød", "Død", FNR_VOKSEN_4, AKTOER_ID_2, true)
 
+        every { krrService.hentPersonFraKrr(eq(FNR_VOKSEN_3))  } returns KrrPerson("melleby11@melby.no", "11111111")
+        every { krrService.hentPersonFraKrr(eq(FNR_VOKSEN_4))  } returns KrrPerson("melleby11@melby.no", "11111111")
+
+
         val aldersak = V1Sak()
         aldersak.sakType = ALDER.name
         aldersak.sakId = 22915555L
@@ -364,6 +378,8 @@ class PrefillP15000IntegrationTest {
         every { personService.hentIdent(IdentGruppe.FOLKEREGISTERIDENT, AktoerId(AKTOER_ID )) } returns NorskIdent(FNR_VOKSEN)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith(true, fnr = FNR_VOKSEN, aktoerid = AKTOER_ID)
 
+        every { krrService.hentPersonFraKrr(eq(FNR_VOKSEN)) } returns KrrPerson("melleby11@melby.no", "11111111")
+
         val aldersak = V1Sak()
         aldersak.sakType = UFOREP.name
         aldersak.sakId = 22874955
@@ -393,6 +409,8 @@ class PrefillP15000IntegrationTest {
         every { personService.hentIdent(IdentGruppe.FOLKEREGISTERIDENT, AktoerId(AKTOER_ID )) } returns NorskIdent(FNR_VOKSEN)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith(true, fnr = FNR_VOKSEN, aktoerid = AKTOER_ID)
 
+        every { krrService.hentPersonFraKrr(eq(FNR_VOKSEN)) } returns KrrPerson("melleby11@melby.no", "11111111")
+
         val aldersak = V1Sak()
         aldersak.sakType = ALDER.name
         aldersak.sakId = 21337890
@@ -421,6 +439,8 @@ class PrefillP15000IntegrationTest {
 
         every { personService.hentIdent(IdentGruppe.FOLKEREGISTERIDENT, AktoerId(AKTOER_ID )) } returns NorskIdent(FNR_VOKSEN)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith(true, "Lever", "Gjenlev", fnr = FNR_VOKSEN, aktoerid = AKTOER_ID)
+
+        every { krrService.hentPersonFraKrr(any()) } returns KrrPerson("melleby11@melby.no", "11111111")
 
         val aldersak = V1Sak()
         aldersak.sakType = ALDER.name
@@ -453,6 +473,8 @@ class PrefillP15000IntegrationTest {
         every {personService.hentIdent(IdentGruppe.FOLKEREGISTERIDENT, AktoerId(AKTOER_ID ))  } returns (NorskIdent(FNR_VOKSEN))
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith(true, "Lever", "Gjenlev", fnr = FNR_VOKSEN, aktoerid = AKTOER_ID)
 
+        every { krrService.hentPersonFraKrr(eq(FNR_VOKSEN)) } returns KrrPerson("melleby11@melby.no", "11111111")
+
         val aldersak = V1Sak()
         aldersak.sakType = ALDER.name
         aldersak.sakId = 21337890
@@ -484,6 +506,7 @@ class PrefillP15000IntegrationTest {
         every { personService.hentIdent(IdentGruppe.FOLKEREGISTERIDENT, AktoerId(AKTOER_ID )) } returns NorskIdent(FNR_VOKSEN)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith(true, "Lever", "Gjenlev", fnr = FNR_VOKSEN, aktoerid = AKTOER_ID)
 
+        every { krrService.hentPersonFraKrr(any()) } returns KrrPerson("melleby11@melby.no", "11111111")
 
         val aldersak = V1Sak()
         aldersak.sakType = UFOREP.name
@@ -519,6 +542,7 @@ class PrefillP15000IntegrationTest {
         every { personService.hentIdent(IdentGruppe.AKTORID, NorskIdent(FNR_VOKSEN_2)) } returns AktoerId(AKTOER_ID_2)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith(true, "Lever", "Gjenlev", FNR_VOKSEN, AKTOER_ID)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_2)) } returns PersonPDLMock.createWith(true, "Avdød", "Død", FNR_VOKSEN_2, AKTOER_ID_2, true)
+        every { krrService.hentPersonFraKrr(any()) } returns KrrPerson("melleby11@melby.no", "11111111")
 
         val aldersak = V1Sak()
         aldersak.sakType = UFOREP.name
@@ -619,6 +643,8 @@ class PrefillP15000IntegrationTest {
         every { personService.hentIdent(IdentGruppe.FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN)
         every { personService.hentIdent(IdentGruppe.AKTORID, NorskIdent(FNR_VOKSEN_2)) } returns AktoerId(AKTOER_ID_2)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith(true, "Lever", "Gjenlev", FNR_VOKSEN, AKTOER_ID)
+
+        every { krrService.hentPersonFraKrr(eq(FNR_VOKSEN)) } returns KrrPerson("melleby11@melby.no", "11111111")
 
         val avdodperson = PersonPDLMock.createWith(true, "Avdød", "Død", FNR_VOKSEN_2, AKTOER_ID_2, true)
             .copy(bostedsadresse = null, oppholdsadresse = null, kontaktadresse = null, kontaktinformasjonForDoedsbo = KontaktinformasjonForDoedsbo(
