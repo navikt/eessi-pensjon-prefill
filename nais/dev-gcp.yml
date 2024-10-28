@@ -43,7 +43,7 @@ spec:
     - name: AZURE_APP_PDL_CLIENT_ID
       value: dev-fss.pdl.pdl-api
     - name: KRR_URL
-      value: https://digdir-krr-proxy.intern.dev-nav.no
+      value: https://digdir-krr-proxy.intern.dev.nav.no
     - name: KRR_CLIENT_ID
       value: dev-gcp.team-rocket.digdir-krr-proxy
     - name: AZURE_APP_KODEVERK_CLIENT_ID
