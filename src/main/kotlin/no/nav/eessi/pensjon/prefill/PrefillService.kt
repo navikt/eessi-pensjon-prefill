@@ -16,6 +16,7 @@ import org.springframework.web.client.HttpClientErrorException
 
 @Service
 class PrefillService(
+    private val krrService: KrrService,
     private val prefillSedService: PrefillSEDService,
     private val innhentingService: InnhentingService,
     private val automatiseringStatistikkService: AutomatiseringStatistikkService,
@@ -36,6 +37,8 @@ class PrefillService(
 
             try {
                 val norskIdent = innhentingService.hentFnrEllerNpidFraAktoerService(request.aktoerId)!!
+                val telefonOgEpost = krrService.hentPersonFraKrr(norskIdent)
+                logger.info("Hentet telefon og epost fra KRR: $telefonOgEpost")
                 val prefillData = ApiRequest.buildPrefillDataModelOnExisting(request, norskIdent, innhentingService.getAvdodAktoerIdPDL(request))
 
                 eessiRequire(prefillData.sedType.kanPrefilles() ) {"SedType ${prefillData.sedType} kan ikke prefilles!"}

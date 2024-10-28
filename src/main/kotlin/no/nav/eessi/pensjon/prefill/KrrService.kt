@@ -25,23 +25,13 @@ class KrrService(private val krrRestTemplate: RestTemplate,
     }
 
     //Henter inn telefonnummer og epostadresse fra KRR for å preutfylle SED
-    fun hentPersonInfoKrr(
-        personIdent: String,
-        callId: String,
-        inkluderSikkerDigitalPost: Boolean? = false
-    ): KrrPerson {
-        logger.info("Henter epost og telefon fra KRR")
-        return hentPersonFraKrr(personIdent, callId, inkluderSikkerDigitalPost)
-    }
-
-    private fun hentPersonFraKrr(personIdent: String, callId: String, inkluderSikkerDigitalPost: Boolean?= false): KrrPerson {
+    fun hentPersonFraKrr(personIdent: String, inkluderSikkerDigitalPost: Boolean?= false): KrrPerson {
         return HentPerson.measure {
             val url = "/v1/person?inkluderSikkerDigitalPost=$inkluderSikkerDigitalPost"
             logger.debug("Henter informasjon fra KRR: $url")
 
             val headers = HttpHeaders()
             headers["Nav-Personident"] = personIdent
-            headers["Nav-Call-Id"] = callId
             headers.contentType = MediaType.APPLICATION_JSON
             val httpEntity = HttpEntity("", headers)
 
