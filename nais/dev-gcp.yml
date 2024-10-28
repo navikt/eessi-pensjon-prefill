@@ -31,6 +31,7 @@ spec:
         - host: kodeverk-api.nav.no
         - host: eessi-pensjon-fagmodul-q2.intern.dev.nav.no
         - host: eessi-pensjon-onprem-proxy-q2.intern.dev.nav.no
+        - host: digdir-krr-proxy.intern.dev.nav.no
   webproxy: true
   env:
     - name: SPRING_PROFILES_ACTIVE
@@ -41,6 +42,10 @@ spec:
       value: https://pdl-api.dev-fss-pub.nais.io/graphql
     - name: AZURE_APP_PDL_CLIENT_ID
       value: dev-fss.pdl.pdl-api
+    - name: KRR_URL
+      value: https://digdir-krr-proxy.intern.dev-nav.no
+    - name: KRR_CLIENT_ID
+      value: dev-gcp.team-rocket.digdir-krr-proxy
     - name: AZURE_APP_KODEVERK_CLIENT_ID
       value: kodeverk-api.nav.no
     - name: KAFKA_AUTOMATISERING_TOPIC
