@@ -10,7 +10,7 @@ import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
 import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper.lesPensjonsdataFraFil
-import no.nav.eessi.pensjon.shared.api.PersonId
+import no.nav.eessi.pensjon.shared.api.PersonInfo
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
 import no.nav.eessi.pensjon.shared.person.FodselsnummerGenerator
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -45,7 +45,7 @@ class PrefillP2100UforePRevurdering {
                 sedType = SedType.P2100,
                 pinId = personFnr,
                 penSaksnummer = pesysSaksnummer,
-                avdod = PersonId(avdodPersonFnr, "112233445566"),
+                avdod = PersonInfo(avdodPersonFnr, "112233445566"),
                 kravId = pesysKravid)
 
     }

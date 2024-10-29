@@ -5,6 +5,7 @@ import no.nav.eessi.pensjon.eux.model.sed.SED.Companion.setSEDVersion
 import no.nav.eessi.pensjon.metrics.MetricsHelper
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
 import no.nav.eessi.pensjon.shared.api.ApiRequest
+import no.nav.eessi.pensjon.shared.api.PersonInfo
 import no.nav.eessi.pensjon.statistikk.AutomatiseringStatistikkService
 import no.nav.eessi.pensjon.utils.eessiRequire
 import no.nav.eessi.pensjon.utils.toJson
@@ -38,9 +39,11 @@ class PrefillService(
 
             try {
                 val norskIdent = innhentingService.hentFnrEllerNpidFraAktoerService(request.aktoerId)!!
-                val telefonOgEpost = krrService.hentPersonFraKrr(norskIdent)
-                logger.info("Hentet telefon og epost fra KRR: ${telefonOgEpost.toJson()}")
-                val prefillData = ApiRequest.buildPrefillDataModelOnExisting(request, norskIdent, innhentingService.getAvdodAktoerIdPDL(request))
+                val krrPerson = krrService.hentPersonFraKrr(norskIdent)
+                logger.info("Hentet telefon og epost fra KRR: ${krrPerson.toJson()}")
+                val personInfo = PersonInfo(norskIdent, request.aktoerId, krrPerson.epostadresse, krrPerson.mobiltelefonnummer)
+
+                val prefillData = ApiRequest.buildPrefillDataModelOnExisting(request, personInfo, innhentingService.getAvdodAktoerIdPDL(request))
 
                 eessiRequire(prefillData.sedType.kanPrefilles() ) {"SedType ${prefillData.sedType} kan ikke prefilles!"}
 

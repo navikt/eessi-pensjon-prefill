@@ -33,7 +33,7 @@ import no.nav.eessi.pensjon.prefill.LagPDLPerson.Companion.medKontaktadresseUtla
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
 import no.nav.eessi.pensjon.shared.api.BankOgArbeid
-import no.nav.eessi.pensjon.shared.api.PersonId
+import no.nav.eessi.pensjon.shared.api.PersonInfo
 import no.nav.eessi.pensjon.shared.person.Fodselsnummer
 import no.nav.eessi.pensjon.shared.person.FodselsnummerGenerator
 import no.nav.eessi.pensjon.utils.mapAnyToJson
@@ -165,7 +165,7 @@ class PrefillPDLNavTest {
         val somePersonNr = FodselsnummerGenerator.generateFnrForTest(57)
         val someBarnPersonNr = FodselsnummerGenerator.generateFnrForTest(17)
 
-        val prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P2100, pinId = somePersonNr, avdod = PersonId(someBarnPersonNr, "123232312312"), penSaksnummer = somePenSaksnr)
+        val prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P2100, pinId = somePersonNr, avdod = PersonInfo(someBarnPersonNr, "123232312312"), penSaksnummer = somePenSaksnr)
 
         val far = lagPerson(somePersonNr, "Ole", "Brum").medBarn(someBarnPersonNr)
         val barn = lagPerson(someBarnPersonNr, "Nasse", "Nøff").medForeldre(far)
@@ -206,7 +206,7 @@ class PrefillPDLNavTest {
         val somePersonNr = "01220049651"
         val someBarnPersonNr = FodselsnummerGenerator.generateFnrForTest(17)
 
-        val prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P2100, pinId = somePersonNr, avdod = PersonId(someBarnPersonNr, "123232312312"), penSaksnummer = somePenSaksnr)
+        val prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P2100, pinId = somePersonNr, avdod = PersonInfo(someBarnPersonNr, "123232312312"), penSaksnummer = somePenSaksnr)
 
         val far = lagPerson(somePersonNr, "Ole", "Brum").medBarn(someBarnPersonNr)
         val barn = lagPerson(someBarnPersonNr, "Nasse", "Nøff").medForeldre(far)

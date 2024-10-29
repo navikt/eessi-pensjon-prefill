@@ -15,6 +15,7 @@ import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLAdresse
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.shared.api.ApiRequest
+import no.nav.eessi.pensjon.shared.api.PersonInfo
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
 import no.nav.eessi.pensjon.shared.person.FodselsnummerGenerator
 import org.junit.jupiter.api.Assertions
@@ -89,6 +90,6 @@ class SedP3000XXTest {
                 subjectArea = "Pensjon",
                 payload = "{}"
         )
-        return ApiRequest.buildPrefillDataModelOnExisting(req, "12345", null)
+        return ApiRequest.buildPrefillDataModelOnExisting(req, PersonInfo("12345", req.aktoerId!!), null)
     }
 }
