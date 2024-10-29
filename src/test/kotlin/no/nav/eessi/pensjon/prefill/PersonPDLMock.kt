@@ -1,47 +1,19 @@
 package no.nav.eessi.pensjon.prefill
 
-import no.nav.eessi.pensjon.personoppslag.pdl.model.AdressebeskyttelseGradering
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Bostedsadresse
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Doedsfall
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Endring
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Endringstype
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Familierelasjonsrolle
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Foedsel
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Folkeregistermetadata
-import no.nav.eessi.pensjon.personoppslag.pdl.model.ForelderBarnRelasjon
-import no.nav.eessi.pensjon.personoppslag.pdl.model.GeografiskTilknytning
-import no.nav.eessi.pensjon.personoppslag.pdl.model.GtType
-import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe
-import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentInformasjon
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Kjoenn
-import no.nav.eessi.pensjon.personoppslag.pdl.model.KjoennType
-import no.nav.eessi.pensjon.personoppslag.pdl.model.KontaktinformasjonForDoedsbo
-import no.nav.eessi.pensjon.personoppslag.pdl.model.KontaktinformasjonForDoedsboAdresse
-import no.nav.eessi.pensjon.personoppslag.pdl.model.KontaktinformasjonForDoedsboPersonSomKontakt
-import no.nav.eessi.pensjon.personoppslag.pdl.model.KontaktinformasjonForDoedsboSkifteform
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Metadata
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Navn
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Oppholdsadresse
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Person
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Personnavn
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Sivilstand
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Sivilstandstype
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Statsborgerskap
-import no.nav.eessi.pensjon.personoppslag.pdl.model.UtenlandskAdresse
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Vegadresse
+import no.nav.eessi.pensjon.personoppslag.pdl.model.*
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import java.time.LocalDate
 import java.time.LocalDateTime
 
 object PersonPDLMock {
-    internal fun createWith(landkoder: Boolean = true, fornavn: String = "Test", etternavn: String = "Testesen", fnr: String = "3123", aktoerid: String = "3213", erDod: Boolean? = false, metadata: Metadata = mockMeta()) :Person {
+    internal fun createWith(landkoder: Boolean = true, fornavn: String = "Test", etternavn: String = "Testesen", fnr: String = "3123", aktoerid: String = "3213", erDod: Boolean? = false, metadata: Metadata = mockMeta()) :PdlPerson {
             val fdatoaar =  if (erDod != null && erDod == true) LocalDate.of(1921, 7, 12) else LocalDate.of(1988, 7, 12)
             val doeadfall = if (erDod != null && erDod == true) Doedsfall(LocalDate.of(2020, 10, 1), null, metadata) else null
             val kommuneLandkode = when(landkoder) {
                 true -> "026123"
                 else -> null
             }
-            return Person(
+            return PdlPerson(
                 listOf(
                     IdentInformasjon(
                         fnr,
@@ -127,20 +99,20 @@ object PersonPDLMock {
         )
     }
 
-    internal fun Person.medSivilstand(person: Person): Person {
+    internal fun PdlPerson.medSivilstand(person: PdlPerson): PdlPerson {
         val ident = person.identer.firstOrNull { it.gruppe == IdentGruppe.FOLKEREGISTERIDENT }?.ident
         return this.copy(sivilstand = listOf(
             Sivilstand(Sivilstandstype.GIFT, LocalDate.of (2010, 1,10), ident, mockMeta())
         ))
     }
 
-    internal fun Person.medFodsel(date: LocalDate, land: String? = "NOR")  = this.copy(foedsel = Foedsel(date, land,null, null, null, mockMeta()))
+    internal fun PdlPerson.medFodsel(date: LocalDate, land: String? = "NOR")  = this.copy(foedsel = Foedsel(date, land,null, null, null, mockMeta()))
 
-    internal fun Person.medKjoenn(type: KjoennType) = this.copy(kjoenn = Kjoenn(type, null, mockMeta()))
+    internal fun PdlPerson.medKjoenn(type: KjoennType) = this.copy(kjoenn = Kjoenn(type, null, mockMeta()))
 
-    internal fun Person.medBeskyttelse(gradering: AdressebeskyttelseGradering) = this.copy(adressebeskyttelse = listOf(gradering))
+    internal fun PdlPerson.medBeskyttelse(gradering: AdressebeskyttelseGradering) = this.copy(adressebeskyttelse = listOf(gradering))
 
-    internal fun Person.medForeldre(foreldre: Person): Person {
+    internal fun PdlPerson.medForeldre(foreldre: PdlPerson): PdlPerson {
         val foreldreRolle = familieRolle(foreldre)
         val foreldrefnr = foreldre.identer.firstOrNull { it.gruppe == IdentGruppe.FOLKEREGISTERIDENT }?.ident
         val list = mutableListOf<ForelderBarnRelasjon>()
@@ -156,7 +128,7 @@ object PersonPDLMock {
         return this.copy(forelderBarnRelasjon = list)
     }
 
-    internal fun Person.medBarn(barn: Person): Person {
+    internal fun PdlPerson.medBarn(barn: PdlPerson): PdlPerson {
         val minRolle  = familieRolle(this)
         val barnfnr = barn.identer.firstOrNull { it.gruppe == IdentGruppe.FOLKEREGISTERIDENT }?.ident
         val list = mutableListOf<ForelderBarnRelasjon>()
@@ -202,7 +174,7 @@ object PersonPDLMock {
             ))
     }
 
-    private fun familieRolle(person: Person) : Familierelasjonsrolle {
+    private fun familieRolle(person: PdlPerson) : Familierelasjonsrolle {
         return when(person.kjoenn?.kjoenn) {
             KjoennType.MANN -> Familierelasjonsrolle.FAR
             KjoennType.KVINNE -> Familierelasjonsrolle.MOR
@@ -210,7 +182,7 @@ object PersonPDLMock {
         }
     }
 
-    internal fun Person.medAdresse(gate: String, postnummer: String, husnr: String? = "") = this.copy(
+    internal fun PdlPerson.medAdresse(gate: String, postnummer: String, husnr: String? = "") = this.copy(
         bostedsadresse = Bostedsadresse(
             gyldigFraOgMed = LocalDateTime.of(2000, 10, 1, 10, 10, 10),
             gyldigTilOgMed = LocalDateTime.of(2300, 10, 1, 10, 10, 10),
@@ -227,7 +199,7 @@ object PersonPDLMock {
         )
     )
 
-    internal fun Person.medDodsboAdresse(
+    internal fun PdlPerson.medDodsboAdresse(
         kontaktpersonFornavn: String,
         kontaktpersonEtternavn: String,
         adresse1: String,
@@ -255,7 +227,7 @@ object PersonPDLMock {
     )
 
 
-    internal fun Person.medUtlandAdresse(
+    internal fun PdlPerson.medUtlandAdresse(
         gateOgnr: String,
         postnummer: String,
         landkode: String,

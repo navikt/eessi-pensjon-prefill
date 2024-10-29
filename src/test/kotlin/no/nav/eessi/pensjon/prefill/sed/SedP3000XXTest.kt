@@ -7,7 +7,7 @@ import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.SedType.P3000_AT
 import no.nav.eessi.pensjon.eux.model.SedType.P3000_IT
 import no.nav.eessi.pensjon.eux.model.SedType.P3000_SE
-import no.nav.eessi.pensjon.prefill.LagPDLPerson
+import no.nav.eessi.pensjon.prefill.LagPdlPerson
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.prefill.models.PensjonCollection
@@ -35,7 +35,7 @@ class SedP3000XXTest {
 
     @BeforeEach
     fun setupAndRunAtStart() {
-        val person = LagPDLPerson.lagPerson(personFnr, "Ola", "Testbruker")
+        val person = LagPdlPerson.lagPerson(personFnr, "Ola", "Testbruker")
         personDataCollection = PersonDataCollection(person, person)
 
         val prefillNav = PrefillPDLNav(

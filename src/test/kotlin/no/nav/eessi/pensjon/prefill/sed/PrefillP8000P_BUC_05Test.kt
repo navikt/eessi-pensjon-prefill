@@ -11,8 +11,8 @@ import no.nav.eessi.pensjon.kodeverk.PostnummerService
 import no.nav.eessi.pensjon.pensjonsinformasjon.models.EPSaktype
 import no.nav.eessi.pensjon.pensjonsinformasjon.models.KravArsak
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
-import no.nav.eessi.pensjon.prefill.LagPDLPerson
-import no.nav.eessi.pensjon.prefill.LagPDLPerson.Companion.medAdresse
+import no.nav.eessi.pensjon.prefill.LagPdlPerson
+import no.nav.eessi.pensjon.prefill.LagPdlPerson.Companion.medAdresse
 import no.nav.eessi.pensjon.prefill.PersonPDLMock.medUtlandAdresse
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.prefill.models.PensjonCollection
@@ -70,7 +70,7 @@ class PrefillP8000P_BUC_05Test {
     fun `Forventer korrekt utfylt P8000 med adresse`() {
         val fnr = FodselsnummerGenerator.generateFnrForTest(68)
 
-        val personforsikret = LagPDLPerson.lagPerson(fnr, "Christopher", "Robin")
+        val personforsikret = LagPdlPerson.lagPerson(fnr, "Christopher", "Robin")
             .medUtlandAdresse("LUNGJTEGATA 12", "postboks", "SWE", "bygning", "region", bySted = "UTLANDBY")
         personDataCollection = PersonDataCollection(personforsikret,personforsikret)
 
@@ -96,10 +96,10 @@ class PrefillP8000P_BUC_05Test {
         val fnr = FodselsnummerGenerator.generateFnrForTest(40)
         val avdodFnr = FodselsnummerGenerator.generateFnrForTest(93)
 
-        val forsikretPerson = LagPDLPerson.lagPerson(fnr, "Christopher", "Robin")
+        val forsikretPerson = LagPdlPerson.lagPerson(fnr, "Christopher", "Robin")
             .medAdresse("Gate")
 
-        val avdod = LagPDLPerson.lagPerson(avdodFnr, "Winnie", "Pooh", erDod = true)
+        val avdod = LagPdlPerson.lagPerson(avdodFnr, "Winnie", "Pooh", erDod = true)
             .medAdresse("Gate")
 
         personDataCollection = PersonDataCollection(avdod, forsikretPerson)
@@ -126,10 +126,10 @@ class PrefillP8000P_BUC_05Test {
         val fnr = FodselsnummerGenerator.generateFnrForTest(40)
         val avdodFnr = FodselsnummerGenerator.generateFnrForTest(93)
 
-        val forsikretPerson = LagPDLPerson.lagPerson(fnr, "Christopher", "Robin")
+        val forsikretPerson = LagPdlPerson.lagPerson(fnr, "Christopher", "Robin")
             .medAdresse("Gate")
 
-        val avdod = LagPDLPerson.lagPerson(avdodFnr, "Winnie", "Pooh", erDod = true)
+        val avdod = LagPdlPerson.lagPerson(avdodFnr, "Winnie", "Pooh", erDod = true)
             .medAdresse("Gate")
 
         personDataCollection = PersonDataCollection(avdod, forsikretPerson)
@@ -157,11 +157,11 @@ class PrefillP8000P_BUC_05Test {
         val fnr = FodselsnummerGenerator.generateFnrForTest(40)
         val avdodFnr = FodselsnummerGenerator.generateFnrForTest(93)
 
-        val forsikretPerson = LagPDLPerson.lagPerson(fnr, "Christopher", "Robin")
+        val forsikretPerson = LagPdlPerson.lagPerson(fnr, "Christopher", "Robin")
             .medUtlandAdresse("LUNGJTEGATA 12", "1231", "SWE", "bygning", "region", bySted = "UTLANDBY")
         val fdato = forsikretPerson.foedsel?.foedselsdato
 
-        val avdod = LagPDLPerson.lagPerson(avdodFnr, "Winnie", "Pooh", erDod = true)
+        val avdod = LagPdlPerson.lagPerson(avdodFnr, "Winnie", "Pooh", erDod = true)
             .medUtlandAdresse("LUNGJTEGATA 12", "1231", "SWE", "bygning", "region", bySted = "UTLANDBY")
 
         personDataCollection = PersonDataCollection(avdod, forsikretPerson)
@@ -231,12 +231,12 @@ class PrefillP8000P_BUC_05Test {
         val fnr = FodselsnummerGenerator.generateFnrForTest(40)
         val avdodFnr = FodselsnummerGenerator.generateFnrForTest(93)
 
-        val forsikretPerson = LagPDLPerson.lagPerson(fnr, "Christopher", "Robin")
+        val forsikretPerson = LagPdlPerson.lagPerson(fnr, "Christopher", "Robin")
             .medUtlandAdresse("LUNGJTÖEGATA 12", "1231", "SWE", "bygning", "region", bySted = "UTLANDBY")
 
         val fdato = forsikretPerson.foedsel?.foedselsdato
 
-        val avdod = LagPDLPerson.lagPerson(avdodFnr, "Winnie", "Pooh", erDod = true)
+        val avdod = LagPdlPerson.lagPerson(avdodFnr, "Winnie", "Pooh", erDod = true)
             .medUtlandAdresse("LUNGJTÖEGATA 12", "1231", "SWE", "bygning", "region", bySted = "UTLANDBY")
 
         personDataCollection = PersonDataCollection(avdod, forsikretPerson)

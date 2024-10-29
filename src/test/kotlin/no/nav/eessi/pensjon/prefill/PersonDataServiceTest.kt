@@ -8,10 +8,10 @@ import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonoppslagException
 import no.nav.eessi.pensjon.personoppslag.pdl.model.*
-import no.nav.eessi.pensjon.prefill.LagPDLPerson.Companion.lagPerson
-import no.nav.eessi.pensjon.prefill.LagPDLPerson.Companion.medAdresse
-import no.nav.eessi.pensjon.prefill.LagPDLPerson.Companion.medBarn
-import no.nav.eessi.pensjon.prefill.LagPDLPerson.Companion.medForeldre
+import no.nav.eessi.pensjon.prefill.LagPdlPerson.Companion.lagPerson
+import no.nav.eessi.pensjon.prefill.LagPdlPerson.Companion.medAdresse
+import no.nav.eessi.pensjon.prefill.LagPdlPerson.Companion.medBarn
+import no.nav.eessi.pensjon.prefill.LagPdlPerson.Companion.medForeldre
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
 import no.nav.eessi.pensjon.shared.api.PersonInfo
 import no.nav.eessi.pensjon.shared.person.FodselsnummerGenerator
@@ -75,7 +75,7 @@ internal class PersonDataServiceTest {
 
         assertNull(result.ektefellePerson)
         assertNull(result.sivilstandstype)
-        assertEquals(emptyList<Person>(), result.barnPersonList)
+        assertEquals(emptyList<PdlPerson>(), result.barnPersonList)
         assertEquals(mockPerson, result.gjenlevendeEllerAvdod)
         assertEquals(mockPerson, result.forsikretPerson)
 
@@ -100,7 +100,7 @@ internal class PersonDataServiceTest {
 
         assertNull(result.ektefellePerson)
         assertNull(result.sivilstandstype)
-        assertEquals(emptyList<Person>(), result.barnPersonList)
+        assertEquals(emptyList<PdlPerson>(), result.barnPersonList)
         assertEquals(avdod, result.gjenlevendeEllerAvdod)
         assertEquals(gjenlev, result.forsikretPerson)
 
@@ -225,7 +225,7 @@ internal class PersonDataServiceTest {
         val barn2 = FodselsnummerGenerator.generateFnrForTest(13)
 
         //far og mor i pair
-        val pair = LagPDLPerson.createPersonMedEktefellePartner(farfnr, morfnr, Sivilstandstype.GIFT)
+        val pair = LagPdlPerson.createPersonMedEktefellePartner(farfnr, morfnr, Sivilstandstype.GIFT)
 
         //far og mor med barn
         val far = pair.first.medAdresse("STORGATA").medBarn(barn1).medBarn(barn2)
