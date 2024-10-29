@@ -21,7 +21,7 @@ class PrefillP10000(private val prefillNav: PrefillPDLNav) {
         val gjenlevende = try {
             val gjenlevende = avdod?.let {
                 logger.info("Preutfylling Utfylling Pensjon Gjenlevende (etterlatt)")
-                prefillNav.createBruker(personData.forsikretPerson!!, null, null)
+                prefillNav.createBruker(personData.forsikretPerson!!, null, null, bruker)
             }
             gjenlevende
         } catch (ex: Exception) {

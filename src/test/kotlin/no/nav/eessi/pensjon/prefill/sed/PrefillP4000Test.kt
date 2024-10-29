@@ -35,11 +35,10 @@ class PrefillP4000Test {
 
     @Test
     fun `Ser at P4000 prefiller med gjenlevende`() {
-
+        val apiRequest: ApiRequest =  mapJsonToAny<ApiRequest>(apiRequest())
         val data = ApiRequest.buildPrefillDataModelOnExisting(
-            mapJsonToAny<ApiRequest>(apiRequest()).copy(
-                payload = javaClass.getResource("/json/nav/P4000-NAV.json").readText()
-            ), PersonInfo("12345", personFnr)
+            apiRequest.copy(payload = javaClass.getResource("/json/nav/P4000-NAV.json").readText()),
+            PersonInfo("12345", apiRequest.aktoerId!!), personFnr
         )
         val personData = PersonDataCollection(
             forsikretPerson = PersonPDLMock.createWith(),

@@ -24,7 +24,7 @@ object PrefillDataModelMother {
         institution: List<InstitusjonItem> = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))) =
             PrefillDataModel(
                     penSaksnummer,
-                    bruker = PersonInfo(pinId, "123456789"),
+                    bruker = PersonInfo(pinId, "123456789", "ola@nav.no", "11223344"),
                     avdod = avdod,
                     sedType = sedType,
                     vedtakId = vedtakId ?: "",

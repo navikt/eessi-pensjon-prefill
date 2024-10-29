@@ -699,7 +699,7 @@ class PrefillPDLNavTest {
         val personfnr = FodselsnummerGenerator.generateFnrForTest(40)
         val person = lagPerson(personfnr).copy(statsborgerskap = listOf(Statsborgerskap("XXK", LocalDate.of(2000, 10, 1), LocalDate.of(2300, 10, 1), LagPDLPerson.mockMeta())))
 
-        val bruker = prefillPDLNav.createBruker(person, bank = null, ansettelsesforhold = null)
+        val bruker = prefillPDLNav.createBruker(person, bank = null, ansettelsesforhold = null, null)
 
         assertEquals(bruker!!.person!!.statsborgerskap!!.size, 1)
         assertNull(bruker.person!!.statsborgerskap!![0].land)
@@ -710,7 +710,7 @@ class PrefillPDLNavTest {
         val personfnr = FodselsnummerGenerator.generateFnrForTest(40)
         val person = lagPerson(personfnr).copy(statsborgerskap = listOf(Statsborgerskap("NOR", LocalDate.of(2000, 10, 1), LocalDate.of(2300, 10, 1), LagPDLPerson.mockMeta())))
 
-        val bruker = prefillPDLNav.createBruker(person, null, null)
+        val bruker = prefillPDLNav.createBruker(person, null, null, null)
 
         assertEquals(bruker!!.person!!.statsborgerskap!!.size, 1)
         assertEquals(bruker.person!!.statsborgerskap!![0].land, "NO")

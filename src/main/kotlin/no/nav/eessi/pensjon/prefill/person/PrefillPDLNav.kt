@@ -1,6 +1,7 @@
 package no.nav.eessi.pensjon.prefill.person
 
 import no.nav.eessi.pensjon.eux.model.sed.*
+import no.nav.eessi.pensjon.kodeverk.KodeverkClient.Companion.toJson
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Familierelasjonsrolle
 import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe.*
 import no.nav.eessi.pensjon.personoppslag.pdl.model.KjoennType
@@ -191,7 +192,8 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
                     createBruker(
                                     it,
                                     bankOgArbeid?.let { createBankData(it) },
-                                    bankOgArbeid?.let { createInformasjonOmAnsettelsesforhold(it) }
+                                    bankOgArbeid?.let { createInformasjonOmAnsettelsesforhold(it) },
+                                    bruker
                             )
                 },
 
@@ -199,7 +201,7 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
 
                 //5.0 ektefelle eller partnerskap
                 ektefelle = ektefellePerson?.let {
-                        createEktefellePartner(createBruker(it, null, null), sivilstandstype)
+                        createEktefellePartner(createBruker(it, null, null, bruker), sivilstandstype)
                 },
 
                 //6.0 skal denne kjøres hver gang? eller kun under P2000? P2100
@@ -211,21 +213,21 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
         )
     }
 
-    fun createGjenlevende(gjenlevendeBruker: no.nav.eessi.pensjon.personoppslag.pdl.model.Person?): Bruker? {
+    fun createGjenlevende(gjenlevendeBruker: no.nav.eessi.pensjon.personoppslag.pdl.model.Person?, personInfoBruker: PersonInfo): Bruker? {
         logger.info("          Utfylling gjenlevende (etterlatt persjon.gjenlevende)")
-        return createBruker(gjenlevendeBruker!!)
+        return createBruker(gjenlevendeBruker!!, personInfoBruker)
     }
 
-    fun createBruker(pdlperson: PDLPerson) = createBruker(pdlperson, null, null)
+    fun createBruker(pdlperson: PDLPerson, personInfo: PersonInfo) = createBruker(pdlperson, null, null, personInfo)
 
     fun createBruker(pdlperson: PDLPerson,
                      bank: Bank?,
-                     ansettelsesforhold: List<ArbeidsforholdItem>?): Bruker? {
+                     ansettelsesforhold: List<ArbeidsforholdItem>?, personInfo: PersonInfo?): Bruker? {
             return Bruker(
-                person = createPersonData(pdlperson),
+                person = createPersonData(pdlperson, personInfo),
                 adresse = prefillAdresse.createPersonAdresse(pdlperson),
                 bank = bank,
-                arbeidsforhold = ansettelsesforhold)
+                arbeidsforhold = ansettelsesforhold,)
     }
 
     fun createPersonBarn(pdlperson: PDLPerson, personData: PersonDataCollection): Bruker? {
@@ -275,9 +277,11 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
     }
 
     //persondata - nav-sed format
-    private fun createPersonData(pdlperson: PDLPerson): Person {
-        logger.debug("2.1           Persondata (forsikret person / gjenlevende person / barn)")
+    private fun createPersonData(
+        pdlperson: no.nav.eessi.pensjon.personoppslag.pdl.model.Person,
+        personInfo: PersonInfo? = null): Person {
 
+        logger.debug("2.1           Persondata (forsikret person / gjenlevende person / barn)")
         val landKode = pdlperson.statsborgerskap
             .filterNot { it.gyldigFraOgMed == null }
             .maxByOrNull { it.gyldigFraOgMed!! }?.land
@@ -296,8 +300,21 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
                 //2.2.1.1
                 statsborgerskap = listOf(createStatsborgerskap(landKode)),
                 //2.1.8.1           place of birth
-                foedested = createFodested(pdlperson)
+                foedested = createFodested(pdlperson),
+
+                kontakt = createKontakt(personInfo)
+
         )
+    }
+
+    private fun createKontakt(personInfo: PersonInfo?): Kontakt? {
+        logger.debug("Persondata kontakt: ${personInfo?.toJson()}")
+
+        personInfo ?: return null
+        val telefonList = personInfo.telefonKrr?.let { listOf(Telefon("mobil", it)) }
+        val emailList = personInfo.epostKrr?.let { listOf(Email(it)) }
+
+        return if (telefonList == null && emailList == null) null else Kontakt(telefonList, emailList)
     }
 
     private fun createFornavnMellomNavn(personnavn: Navn?): String {

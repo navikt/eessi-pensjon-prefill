@@ -34,7 +34,7 @@ class PrefillP2100(private val prefillNav: PrefillPDLNav) {
             krav = pensjon?.kravDato ?: prefillData.kravDato?.let { Krav(it, prefillData.kravType) },
             annenPerson = null
         )
-        val gjenlevende = prefillData.avdod?.let { prefillNav.createGjenlevende(personData.forsikretPerson) }
+        val gjenlevende = prefillData.avdod?.let { prefillNav.createGjenlevende(personData.forsikretPerson, prefillData.bruker) }
 
         return prefillPen(prefillData, nav, gjenlevende, sak)
     }
