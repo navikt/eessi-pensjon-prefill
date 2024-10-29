@@ -244,7 +244,16 @@ class SedPrefillIntegrationSpringTest {
                     "etternavn" : "Pensjonist",
                     "fornavn" : "Alder",
                     "kjoenn" : "M",
-                    "foedselsdato" : "1988-07-12"
+                    "foedselsdato" : "1988-07-12",
+                    "kontakt" : {
+                      "telefon" : [ {
+                        "type" : "mobil",
+                        "nummer" : "11111111"
+                      } ],
+                      "email" : [ {
+                        "adresse" : "melleby11@melby.no"
+                      } ]
+                    }
                   },
                   "adresse" : {
                     "gate" : "Oppoverbakken 66",
@@ -403,7 +412,16 @@ class SedPrefillIntegrationSpringTest {
                     "etternavn" : "Gjenlev",
                     "fornavn" : "Lever",
                     "kjoenn" : "M",
-                    "foedselsdato" : "1988-07-12"
+                    "foedselsdato" : "1988-07-12",
+                    "kontakt" : {
+                      "telefon" : [ {
+                        "type" : "mobil",
+                        "nummer" : "11111111"
+                      } ],
+                      "email" : [ {
+                        "adresse" : "melleby11@melby.no"
+                      } ]
+                    }
                   },
                   "adresse" : {
                     "gate" : "Oppoverbakken 66",
@@ -463,7 +481,16 @@ class SedPrefillIntegrationSpringTest {
                     "etternavn" : "Testesen",
                     "fornavn" : "Test",
                     "kjoenn" : "M",
-                    "foedselsdato" : "1988-07-12"
+                    "foedselsdato" : "1988-07-12",
+                    "kontakt" : {
+          "telefon" : [ {
+            "type" : "mobil",
+            "nummer" : "11111111"
+          } ],
+          "email" : [ {
+            "adresse" : "melleby11@melby.no"
+          } ]
+        }
                   },
                   "adresse" : {
                     "gate" : "Oppoverbakken 66",
@@ -543,7 +570,16 @@ class SedPrefillIntegrationSpringTest {
                     "etternavn" : "Testesen",
                     "fornavn" : "Test",
                     "kjoenn" : "M",
-                    "foedselsdato" : "1988-07-12"
+                    "foedselsdato" : "1988-07-12",
+                    "kontakt" : {
+          "telefon" : [ {
+            "type" : "mobil",
+            "nummer" : "11111111"
+          } ],
+          "email" : [ {
+            "adresse" : "melleby11@melby.no"
+          } ]
+        }
                   },
                   "adresse" : {
                     "gate" : "Oppoverbakken 66",
@@ -608,7 +644,16 @@ class SedPrefillIntegrationSpringTest {
                 "etternavn" : "Testesen",
                 "fornavn" : "Test",
                 "kjoenn" : "M",
-                "foedselsdato" : "1988-07-12"
+                "foedselsdato" : "1988-07-12",
+                "kontakt" : {
+          "telefon" : [ {
+            "type" : "mobil",
+            "nummer" : "11111111"
+          } ],
+          "email" : [ {
+            "adresse" : "melleby11@melby.no"
+          } ]
+        }
               },
               "adresse" : {
                 "gate" : "Oppoverbakken 66",
@@ -687,7 +732,16 @@ class SedPrefillIntegrationSpringTest {
                     "etternavn" : "Testesen",
                     "fornavn" : "Test",
                     "kjoenn" : "M",
-                    "foedselsdato" : "1988-07-12"
+                    "foedselsdato" : "1988-07-12",
+                    "kontakt" : {
+          "telefon" : [ {
+            "type" : "mobil",
+            "nummer" : "11111111"
+          } ],
+          "email" : [ {
+            "adresse" : "melleby11@melby.no"
+          } ]
+        }
                   },
                   "adresse" : {
                     "gate" : "Oppoverbakken 66",
@@ -761,7 +815,16 @@ class SedPrefillIntegrationSpringTest {
                     "etternavn" : "Gjenlev",
                     "fornavn" : "Lever",
                     "kjoenn" : "M",
-                    "foedselsdato" : "1988-07-12"
+                    "foedselsdato" : "1988-07-12",
+                    "kontakt" : {
+                      "telefon" : [ {
+                        "type" : "mobil",
+                        "nummer" : "11111111"
+                      } ],
+                      "email" : [ {
+                        "adresse" : "melleby11@melby.no"
+                      } ]
+                    }
                   },
                   "adresse" : {
                     "gate" : "Oppoverbakken 66",

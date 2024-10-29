@@ -49,7 +49,7 @@ class LagPDLPerson {
                 forelderBarnRelasjon = emptyList(),
                 sivilstand = emptyList(),
                 kontaktadresse = null,
-                utenlandskIdentifikasjonsnummer = emptyList()
+                utenlandskIdentifikasjonsnummer = emptyList(),
             )
         }
 

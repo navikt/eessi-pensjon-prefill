@@ -128,7 +128,16 @@ class PrefillUfoereIntegrationTest {
                             "etternavn" : "Testesen",
                             "fornavn" : "Test",
                             "kjoenn" : "M",
-                            "foedselsdato" : "1988-07-12"
+                            "foedselsdato" : "1988-07-12",
+                            "kontakt" : {
+                              "telefon" : [ {
+                                "type" : "mobil",
+                                "nummer" : "11111111"
+                              } ],
+                              "email" : [ {
+                                "adresse" : "melleby11@melby.no"
+                              } ]
+                            }
                           },
                           "adresse" : {
                             "gate" : "Oppoverbakken 66",
@@ -272,7 +281,16 @@ class PrefillUfoereIntegrationTest {
               "by" : "Unknown",
               "land" : "QX"
             },
-            "foedselsdato" : "$hovedpersonfdato"
+            "foedselsdato" : "$hovedpersonfdato",
+            "kontakt" : {
+              "telefon" : [ {
+                "type" : "mobil",
+                "nummer" : "11111111"
+              } ],
+              "email" : [ {
+                "adresse" : "melleby11@melby.no"
+              } ]
+            }            
           },
           "adresse" : {
             "gate" : "Oppoverbakken 66",
@@ -299,7 +317,16 @@ class PrefillUfoereIntegrationTest {
               "by" : "Unknown",
               "land" : "QX"
             },
-            "foedselsdato" : "$ekktefellefdato"
+            "foedselsdato" : "$ekktefellefdato",
+             "kontakt" : {
+              "telefon" : [ {
+                "type" : "mobil",
+                "nummer" : "11111111"
+              } ],
+              "email" : [ {
+                "adresse" : "melleby11@melby.no"
+              } ]
+            }
           },
           "type" : "ektefelle"
         },
@@ -536,7 +563,16 @@ class PrefillUfoereIntegrationTest {
                         "etternavn" : "Gjenlev",
                         "fornavn" : "Lever",
                         "kjoenn" : "M",
-                        "foedselsdato" : "1988-07-12"
+                        "foedselsdato" : "1988-07-12",
+                        "kontakt" : {
+                          "telefon" : [ {
+                            "type" : "mobil",
+                            "nummer" : "11111111"
+                          } ],
+                          "email" : [ {
+                            "adresse" : "melleby11@melby.no"
+                          } ]
+                        }                        
                       },
                       "adresse" : {
                         "gate" : "Oppoverbakken 66",

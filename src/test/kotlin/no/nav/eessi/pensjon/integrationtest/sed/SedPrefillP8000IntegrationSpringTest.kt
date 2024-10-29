@@ -145,7 +145,16 @@ class SedPrefillP8000IntegrationSpringTest {
                     "fornavn" : "Lever",
                     "kjoenn" : "M",
                     "foedselsdato" : "1988-07-12",
-                    "rolle" : "01"
+                    "rolle" : "01",
+                    "kontakt" : {
+                      "telefon" : [ {
+                        "type" : "mobil",
+                        "nummer" : "11111111"
+                      } ],
+                      "email" : [ {
+                        "adresse" : "melleby11@melby.no"
+                      } ]
+                    }
                   },
                   "adresse" : {
                     "gate" : "OlssenGate",
@@ -248,7 +257,16 @@ class SedPrefillP8000IntegrationSpringTest {
                 "fornavn" : "Lever",
                 "kjoenn" : "M",
                 "foedselsdato" : "1988-07-12",
-                "rolle" : "01"
+                "rolle" : "01",
+                "kontakt" : {
+                  "telefon" : [ {
+                    "type" : "mobil",
+                    "nummer" : "11111111"
+                  } ],
+                  "email" : [ {
+                    "adresse" : "melleby11@melby.no"
+                  } ]
+                }
               },
               "adresse" : {
                 "gate" : "Oppoverbakken 66",
