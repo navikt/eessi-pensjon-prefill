@@ -8,7 +8,7 @@ import no.nav.eessi.pensjon.personoppslag.pdl.model.Navn
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Sivilstandstype
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.shared.api.BankOgArbeid
-import no.nav.eessi.pensjon.shared.api.PersonId
+import no.nav.eessi.pensjon.shared.api.PersonInfo
 import no.nav.eessi.pensjon.shared.person.Fodselsnummer
 import no.nav.eessi.pensjon.utils.simpleFormat
 import org.slf4j.Logger
@@ -157,8 +157,8 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
 
     fun prefill(
         penSaksnummer: String?,
-        bruker: PersonId,
-        avdod: PersonId?,
+        bruker: PersonInfo,
+        avdod: PersonInfo?,
         personData: PersonDataCollection,
         bankOgArbeid: BankOgArbeid?,
         krav: Krav? = null,
