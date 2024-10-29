@@ -179,7 +179,16 @@ class PrefillP15000IntegrationTest {
                 "relasjontilavdod" : {
                   "relasjon" : "06"
                 },
-                "rolle" : "01"
+                "rolle" : "01",
+                "kontakt" : {
+                  "telefon" : [ {
+                    "type" : "mobil",
+                    "nummer" : "11111111"
+                  } ],
+                  "email" : [ {
+                    "adresse" : "melleby11@melby.no"
+                  } ]
+                }     
               },
               "adresse" : {
                 "gate" : "Oppoverbakken 66",
