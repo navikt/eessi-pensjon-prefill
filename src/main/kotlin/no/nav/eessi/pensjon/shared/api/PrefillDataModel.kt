@@ -13,6 +13,7 @@ import no.nav.eessi.pensjon.utils.mapJsonToAny
  */
 class PersonInfo(val norskIdent: String,
                  val aktorId: String,
+                 val reservert: Boolean? = true,
                  val epostKrr: String? = null,
                  val telefonKrr:String? = null
 )

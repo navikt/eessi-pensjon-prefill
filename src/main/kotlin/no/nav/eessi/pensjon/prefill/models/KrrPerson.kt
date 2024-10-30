@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class KrrPerson(
- val epostadresse: String?,
- val mobiltelefonnummer: String?
+ val reservert: Boolean? = true,
+ val epostadresse: String? = null,
+ val mobiltelefonnummer: String? = null
 )
