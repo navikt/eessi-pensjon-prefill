@@ -31,6 +31,7 @@ spec:
         - host: kodeverk-api.nav.no
         - host: eessi-pensjon-fagmodul.intern.nav.no
         - host: eessi-pensjon-onprem-proxy.intern.nav.no
+        - host: digdir-krr-proxy.intern.nav.no
   webproxy: true
   env:
     - name: SPRING_PROFILES_ACTIVE
@@ -43,6 +44,10 @@ spec:
       value: prod-fss.pdl.pdl-api
     - name: AZURE_APP_KODEVERK_CLIENT_ID
       value: prod-fss.org.kodeverk
+    - name: KRR_URL
+      value: https://digdir-krr-proxy.intern.nav.no
+    - name: KRR_CLIENT_ID
+      value: prod-gcp.team-rocket.digdir-krr-proxy
     - name: KAFKA_AUTOMATISERING_TOPIC
       value: eessipensjon.public-automatisering
     - name: KODEVERK_URL
