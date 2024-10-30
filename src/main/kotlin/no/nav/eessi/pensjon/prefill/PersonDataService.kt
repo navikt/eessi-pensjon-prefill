@@ -42,7 +42,7 @@ class PersonDataService(private val personService: PersonService,
         }
     }
 
-    private fun personServiceHentPerson(ident: Ident): Person? {
+    private fun personServiceHentPerson(ident: Ident): PdlPerson? {
         return try {
             personService.hentPerson(ident) ?: throw NullPointerException()
         } catch (np: NullPointerException) {
@@ -87,7 +87,7 @@ class PersonDataService(private val personService: PersonService,
     }
 
     //sjekk for om sb har tilgang til person, null hvis ikke tilgang
-    private fun hentHovedpersonEktefelle(sivilstand: Sivilstand?): Person? {
+    private fun hentHovedpersonEktefelle(sivilstand: Sivilstand?): PdlPerson? {
         return try {
             logger.info("Henter ektefelle/partner (ekteType: ${sivilstand?.type})")
 
@@ -100,7 +100,7 @@ class PersonDataService(private val personService: PersonService,
     }
 
     //sjekk for om sb har tilgang til person, null hvis ikke tilgang
-    private fun hentHovedpersonBarn(hovedPerson: Person?, fyllUtBarnListe: Boolean): List<Person> {
+    private fun hentHovedpersonBarn(hovedPerson: PdlPerson?, fyllUtBarnListe: Boolean): List<PdlPerson> {
         return try {
             logger.info("Henter barn")
             if (hovedPerson == null || !fyllUtBarnListe) emptyList() else hentBarn(hovedPerson)
@@ -110,7 +110,7 @@ class PersonDataService(private val personService: PersonService,
         }
     }
 
-    private fun hentBarn(hovedPerson: Person): List<Person> {
+    private fun hentBarn(hovedPerson: PdlPerson): List<PdlPerson> {
         logger.info("henter ut relasjon BARN")
         val barnepinListe = hovedPerson.forelderBarnRelasjon
             .filter { it.relatertPersonsRolle == Familierelasjonsrolle.BARN }
@@ -128,7 +128,7 @@ class PersonDataService(private val personService: PersonService,
             }
     }
 
-    private fun filterEktefelleRelasjon(forsikretPerson: Person?): Sivilstand? {
+    private fun filterEktefelleRelasjon(forsikretPerson: PdlPerson?): Sivilstand? {
         //Det støttes kun EKTEFELLE, REGISTERT_PARTNER og SAMBOER er de eneste sivilstand som støttes i RINA-SED
         //Vi aventer med støtte for SAMBOER fra pensjon-pdl lager en ny løsning for samboere
         val validRelasjoner = listOf(Sivilstandstype.GIFT, Sivilstandstype.REGISTRERT_PARTNER)

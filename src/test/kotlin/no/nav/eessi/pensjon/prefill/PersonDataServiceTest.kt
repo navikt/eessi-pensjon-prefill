@@ -75,7 +75,7 @@ internal class PersonDataServiceTest {
 
         assertNull(result.ektefellePerson)
         assertNull(result.sivilstandstype)
-        assertEquals(emptyList<Person>(), result.barnPersonList)
+        assertEquals(emptyList<PdlPerson>(), result.barnPersonList)
         assertEquals(mockPerson, result.gjenlevendeEllerAvdod)
         assertEquals(mockPerson, result.forsikretPerson)
 
@@ -100,7 +100,7 @@ internal class PersonDataServiceTest {
 
         assertNull(result.ektefellePerson)
         assertNull(result.sivilstandstype)
-        assertEquals(emptyList<Person>(), result.barnPersonList)
+        assertEquals(emptyList<PdlPerson>(), result.barnPersonList)
         assertEquals(avdod, result.gjenlevendeEllerAvdod)
         assertEquals(gjenlev, result.forsikretPerson)
 

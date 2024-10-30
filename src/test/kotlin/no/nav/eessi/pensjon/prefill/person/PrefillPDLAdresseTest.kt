@@ -450,7 +450,7 @@ class PrefillPDLAdresseTest{
 
     @Test
     fun `Det skal gies warning naar pdlPerson har flere enn gyldige adresser`() {
-        val mockPerson = mockk<Person>(relaxed = true)
+        val mockPerson = mockk<PdlPerson>(relaxed = true)
         val bostedsadresse = mockk<Bostedsadresse>(relaxed = true)
         every { mockPerson.bostedsadresse } returns bostedsadresse
 

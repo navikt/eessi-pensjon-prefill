@@ -12,7 +12,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Person as PDLPerson
+import no.nav.eessi.pensjon.personoppslag.pdl.model.PdlPerson
 
 @Component
 class PrefillPDLAdresse (private val postnummerService: PostnummerService,
@@ -30,7 +30,7 @@ class PrefillPDLAdresse (private val postnummerService: PostnummerService,
     /**
      *  2.2.2 adresse informasjon
      */
-    fun createPersonAdresse(pdlperson: PDLPerson): Adresse? {
+    fun createPersonAdresse(pdlperson: PdlPerson): Adresse? {
         logger.debug("2.2.2         Adresse")
 
         if (sjekkForDiskresjonKodeAdresse(pdlperson)) {
@@ -66,7 +66,7 @@ class PrefillPDLAdresse (private val postnummerService: PostnummerService,
         )
     }
 
-    private fun sjekkOgPreutfyllAdresse(pdlperson: PDLPerson): Adresse {
+    private fun sjekkOgPreutfyllAdresse(pdlperson: PdlPerson): Adresse {
         if (pdlperson.erDoed()) {
             logger.info("              person er død. sjekker kontaktinformasjonForDoedsbo")
             if (pdlperson.kontaktinformasjonForDoedsbo != null) {
@@ -99,7 +99,7 @@ class PrefillPDLAdresse (private val postnummerService: PostnummerService,
         }
     }
 
-    private fun preutfyllDoedsboAdresse(pdlperson: no.nav.eessi.pensjon.personoppslag.pdl.model.Person): Adresse {
+    private fun preutfyllDoedsboAdresse(pdlperson: no.nav.eessi.pensjon.personoppslag.pdl.model.PdlPerson): Adresse {
         val kontaktinformasjonForDoedsbo = pdlperson.kontaktinformasjonForDoedsbo
         val landkode = kontaktinformasjonForDoedsbo!!.adresse.landkode
         val landKode2Tegn = if (landkode == null || landkode.length == 2) landkode else hentLandkode(landkode)
@@ -113,7 +113,7 @@ class PrefillPDLAdresse (private val postnummerService: PostnummerService,
         }
     }
 
-    fun loggErrorVedFlereGyldigeAdresser(pdlperson: PDLPerson) {
+    fun loggErrorVedFlereGyldigeAdresser(pdlperson: PdlPerson) {
         val kontaktadresse = pdlperson.kontaktadresse
         val bostedsadresse = pdlperson.bostedsadresse
         val oppholdsadresse = pdlperson.oppholdsadresse
@@ -195,7 +195,7 @@ class PrefillPDLAdresse (private val postnummerService: PostnummerService,
 
     }
 
-    protected fun sjekkForDiskresjonKodeAdresse(pdlperson: PDLPerson): Boolean {
+    protected fun sjekkForDiskresjonKodeAdresse(pdlperson: PdlPerson): Boolean {
         logger.debug("diskresjonskode:  ${pdlperson.adressebeskyttelse}")
         logger.debug("2.2.2         Adresse, diskresjon ingen adresse?")
         return pdlperson.adressebeskyttelse.any {

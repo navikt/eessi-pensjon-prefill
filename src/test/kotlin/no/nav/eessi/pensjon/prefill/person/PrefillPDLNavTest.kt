@@ -72,7 +72,7 @@ class PrefillPDLNavTest {
         val forsikretSinNpid = "01220049651"
         val prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P2100, pinId = forsikretSinNpid, penSaksnummer = somePenSaksnr, avdod = null)
 
-        val forsikret = Person(
+        val forsikret = PdlPerson(
             identer = listOf(IdentInformasjon("01220049651", IdentGruppe.NPID)),
             navn = Navn("OLE", null, "OLSEN", null, null, null, LagPDLPerson.mockMeta()),
             adressebeskyttelse = emptyList(),
