@@ -24,7 +24,7 @@ class PrefillSed(private val prefillNav: PrefillPDLNav) {
         val prefillPensjon = try {
             val pensjon = prefillData.avdod?.let {
                 logger.info("Preutfylling Utfylling Pensjon Gjenlevende (etterlatt)")
-                val gjenlevendePerson = prefillNav.createBruker(personData.forsikretPerson!!, null, null)
+                val gjenlevendePerson = prefillNav.createBruker(personData.forsikretPerson!!, null, null, prefillData.bruker)
                 Pensjon(gjenlevende = gjenlevendePerson)
             }
             logger.debug("[${prefillData.sedType}] Preutfylling Utfylling Pensjon")

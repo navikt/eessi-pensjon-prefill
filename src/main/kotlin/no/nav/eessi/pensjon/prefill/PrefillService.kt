@@ -5,8 +5,10 @@ import no.nav.eessi.pensjon.eux.model.sed.SED.Companion.setSEDVersion
 import no.nav.eessi.pensjon.metrics.MetricsHelper
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
 import no.nav.eessi.pensjon.shared.api.ApiRequest
+import no.nav.eessi.pensjon.shared.api.PersonInfo
 import no.nav.eessi.pensjon.statistikk.AutomatiseringStatistikkService
 import no.nav.eessi.pensjon.utils.eessiRequire
+import no.nav.eessi.pensjon.utils.toJson
 import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -16,6 +18,7 @@ import org.springframework.web.client.HttpClientErrorException
 
 @Service
 class PrefillService(
+    private val krrService: KrrService,
     private val prefillSedService: PrefillSEDService,
     private val innhentingService: InnhentingService,
     private val automatiseringStatistikkService: AutomatiseringStatistikkService,
@@ -36,7 +39,16 @@ class PrefillService(
 
             try {
                 val norskIdent = innhentingService.hentFnrEllerNpidFraAktoerService(request.aktoerId)!!
-                val prefillData = ApiRequest.buildPrefillDataModelOnExisting(request, norskIdent, innhentingService.getAvdodAktoerIdPDL(request))
+                val krrPerson = krrService.hentPersonFraKrr(norskIdent)
+
+                val personInfo = if (krrPerson.reservert == true) {
+                    PersonInfo(norskIdent, request.aktoerId).also { logger.info("Personen har reservert seg mot digital kommunikasjon")}
+                } else {
+                    PersonInfo(norskIdent, request.aktoerId, krrPerson.reservert, krrPerson.epostadresse, krrPerson.mobiltelefonnummer)
+                        .also { logger.info("Hentet telefon og epost fra KRR: ${krrPerson.toJson()}") }
+                }
+
+                val prefillData = ApiRequest.buildPrefillDataModelOnExisting(request, personInfo, innhentingService.getAvdodAktoerIdPDL(request))
 
                 eessiRequire(prefillData.sedType.kanPrefilles() ) {"SedType ${prefillData.sedType} kan ikke prefilles!"}
 

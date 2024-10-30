@@ -81,9 +81,16 @@ class PrefillP2000_AP_21975717Test {
         )
         assertNotNull(P2000pensjon.nav?.krav)
         assertEquals("2015-06-16", P2000pensjon.nav?.krav?.dato)
-
-
     }
+
+    @Test
+    fun `forventet korrekt utfylt P2000 med epost og telefonummer`() {
+        val p2000 = prefillSEDService.prefill(prefillData, persondataCollection, pensjonCollection)
+
+        assertEquals(prefillData.bruker.telefonKrr, p2000.nav?.bruker?.person?.kontakt?.telefon?.get(0)?.nummer)
+        assertEquals(prefillData.bruker.epostKrr, p2000.nav?.bruker?.person?.kontakt?.email?.get(0)?.adresse)
+    }
+
 
     @Test
     fun `forventet korrekt utfylt P2000 alderpersjon med mockdata fra testfiler`() {

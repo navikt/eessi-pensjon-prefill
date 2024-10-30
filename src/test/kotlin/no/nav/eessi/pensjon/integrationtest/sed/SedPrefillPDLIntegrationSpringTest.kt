@@ -10,10 +10,11 @@ import no.nav.eessi.pensjon.integrationtest.IntegrasjonsTestConfig
 import no.nav.eessi.pensjon.kodeverk.KodeverkClient
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
 import no.nav.eessi.pensjon.personoppslag.pdl.model.AktoerId
-import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe
 import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe.*
 import no.nav.eessi.pensjon.personoppslag.pdl.model.NorskIdent
+import no.nav.eessi.pensjon.prefill.KrrService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
+import no.nav.eessi.pensjon.prefill.models.KrrPerson
 import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
@@ -48,6 +49,9 @@ class SedPrefillPDLIntegrationSpringTest {
     @MockkBean
     lateinit var personService: PersonService
 
+    @MockkBean
+    lateinit var krrService: KrrService
+
     @Autowired
     private lateinit var mockMvc: MockMvc
 
@@ -74,6 +78,7 @@ class SedPrefillPDLIntegrationSpringTest {
         every { kodeverkClient.finnLandkode(any()) } returns "QX"
         every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith(true, fnr = FNR_VOKSEN, aktoerid = AKTOER_ID)
+        every { krrService.hentPersonFraKrr(any()) } returns KrrPerson(false,"melleby11@melby.no", "11111111")
 
         val apijson = dummyApijson(sedType = SedType.P2000, sakid = "21337890", aktoerId = AKTOER_ID)
 
@@ -112,7 +117,16 @@ class SedPrefillPDLIntegrationSpringTest {
                     "etternavn" : "Testesen",
                     "fornavn" : "Test",
                     "kjoenn" : "M",
-                    "foedselsdato" : "1988-07-12"
+                    "foedselsdato" : "1988-07-12",
+                    "kontakt" : {
+                      "telefon" : [ {
+                        "type" : "mobil",
+                        "nummer" : "11111111"
+                      } ],
+                      "email" : [ {
+                        "adresse" : "melleby11@melby.no"
+                      } ]
+                    }
                   },
                   "adresse" : {
                     "gate" : "Oppoverbakken 66",
@@ -145,6 +159,9 @@ class SedPrefillPDLIntegrationSpringTest {
 
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith(true, "Lever", "Gjenlev", FNR_VOKSEN, AKTOER_ID)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_2)) } returns PersonPDLMock.createWith(true, "Avdød", "Død", FNR_VOKSEN_2, AKTOER_ID_2, true)
+
+        every { krrService.hentPersonFraKrr(eq(FNR_VOKSEN)) } returns KrrPerson(false,"melleby1@melby.no","22603511")
+        every { krrService.hentPersonFraKrr(eq(FNR_VOKSEN_2)) } returns KrrPerson(false,"melleby2@melby.no","22603522")
 
         every { pensjonsinformasjonOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns PrefillTestHelper.readXMLresponse("/pensjonsinformasjon/krav/P2100-GL-UTL-INNV.xml")
 
@@ -187,7 +204,16 @@ class SedPrefillPDLIntegrationSpringTest {
                     "etternavn" : "Død",
                     "fornavn" : "Avdød",
                     "kjoenn" : "M",
-                    "foedselsdato" : "1921-07-12"
+                    "foedselsdato" : "1921-07-12",
+                    "kontakt" : {
+                      "telefon" : [ {
+                        "type" : "mobil",
+                        "nummer" : "22603511"
+                      } ],
+                      "email" : [ {
+                        "adresse" : "melleby1@melby.no"
+                      } ]
+                    }
                   },
                   "adresse" : {
                     "gate" : "Oppoverbakken 66",
@@ -212,7 +238,16 @@ class SedPrefillPDLIntegrationSpringTest {
                     "etternavn" : "Gjenlev",
                     "fornavn" : "Lever",
                     "kjoenn" : "M",
-                    "foedselsdato" : "1988-07-12"
+                    "foedselsdato" : "1988-07-12",
+                    "kontakt" : {
+                      "telefon" : [ {
+                        "type" : "mobil",
+                        "nummer" : "22603511"
+                      } ],
+                      "email" : [ {
+                        "adresse" : "melleby1@melby.no"
+                      } ]
+                    }
                   },
                   "adresse" : {
                     "gate" : "Oppoverbakken 66",
@@ -231,9 +266,10 @@ class SedPrefillPDLIntegrationSpringTest {
 
     @Test
     @Throws(Exception::class)
-    fun `prefill sed P2000 alder return valid sedjson checkk tps to pdl`() {
+    fun `prefill sed P2000 alder return valid sedjson check tps to pdl`() {
         every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith()
+        every { krrService.hentPersonFraKrr(any()) } returns KrrPerson(false,"melleby11@melby.no", "11111111")
 
         every {pensjonsinformasjonOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java))  } returns PrefillTestHelper.readXMLresponse("/pensjonsinformasjon/krav/P2000-AP-UP-21337890.xml")
         every { kodeverkClient.finnLandkode(any()) } returns "QX"
@@ -266,7 +302,16 @@ class SedPrefillPDLIntegrationSpringTest {
                     "etternavn" : "Testesen",
                     "fornavn" : "Test",
                     "kjoenn" : "M",
-                    "foedselsdato" : "1988-07-12"
+                    "foedselsdato" : "1988-07-12",
+                    "kontakt" : {
+                      "telefon" : [ {
+                        "type" : "mobil",
+                        "nummer" : "11111111"
+                      } ],
+                      "email" : [ {
+                        "adresse" : "melleby11@melby.no"
+                      } ]
+                    }
                   },
                   "adresse" : {
                     "gate" : "Oppoverbakken 66",

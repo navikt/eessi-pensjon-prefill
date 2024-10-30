@@ -13,7 +13,7 @@ import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.shared.api.BankOgArbeid
 import no.nav.eessi.pensjon.shared.api.InstitusjonItem
-import no.nav.eessi.pensjon.shared.api.PersonId
+import no.nav.eessi.pensjon.shared.api.PersonInfo
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -22,8 +22,8 @@ class PrefillX005(private val prefillNav: PrefillPDLNav)  {
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillX005::class.java) }
 
     fun prefill(penSaksnummer: String?,
-                bruker: PersonId,
-                avdod: PersonId?,
+                bruker: PersonInfo,
+                avdod: PersonInfo?,
                 brukerinformasjon: BankOgArbeid?,
                 institusjon: InstitusjonItem,
                 personData: PersonDataCollection): X005 {
@@ -37,7 +37,7 @@ class PrefillX005(private val prefillNav: PrefillPDLNav)  {
             personData = personData,
             bankOgArbeid = brukerinformasjon,
         )
-        val gjenlevende = avdod?.let { prefillNav.createGjenlevende(personData.forsikretPerson) }
+        val gjenlevende = avdod?.let { prefillNav.createGjenlevende(personData.forsikretPerson, bruker) }
 
         val person =  gjenlevende?.person ?: navsed.bruker?.person
 

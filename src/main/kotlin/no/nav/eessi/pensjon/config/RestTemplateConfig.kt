@@ -36,6 +36,9 @@ class RestTemplateConfig(
     @Value("\${PENSJONSINFORMASJON_URL}")
     lateinit var pensjonUrl: String
 
+    @Value("\${KRR_URL}")
+    lateinit var krrUrl: String
+
     @Bean
     fun pensjoninformasjonRestTemplate() : RestTemplate {
         return RestTemplateBuilder()
@@ -57,6 +60,27 @@ class RestTemplateConfig(
             }
     }
 
+    @Bean
+    fun krrRestTemplate() : RestTemplate {
+        return RestTemplateBuilder()
+            .rootUri(krrUrl)
+            .errorHandler(DefaultResponseErrorHandler())
+            .additionalInterceptors(
+                RequestIdHeaderInterceptor(),
+                IOExceptionRetryInterceptor(),
+                RequestCountInterceptor(meterRegistry),
+                RequestResponseLoggerInterceptor(),
+                bearerTokenInterceptor(
+                    clientConfigurationProperties.registration["krr-credentials"]
+                        ?: throw RuntimeException("could not find oauth2 client config for ${"krr-credentials"}"),
+                    oAuth2AccessTokenService!!
+                )
+            )
+            .build().apply {
+                requestFactory = BufferingClientHttpRequestFactory(SimpleClientHttpRequestFactory())
+            }
+    }
+
     private fun bearerTokenInterceptor(
         clientProperties: ClientProperties,
         oAuth2AccessTokenService: OAuth2AccessTokenService
@@ -66,7 +90,7 @@ class RestTemplateConfig(
             request.headers.setBearerAuth(response.accessToken!!)
             val tokenChunks = response.accessToken!!.split(".")
             val tokenBody =  tokenChunks[1]
-            logger.info("subject: " + JWTClaimsSet.parse(Base64.getDecoder().decode(tokenBody).decodeToString()).subject)
+            logger.debug("subject: " + JWTClaimsSet.parse(Base64.getDecoder().decode(tokenBody).decodeToString()).subject)
             execution.execute(request, body!!)
         }
     }

@@ -11,13 +11,17 @@ import no.nav.eessi.pensjon.utils.mapJsonToAny
  *
  * services:  pdl, person, pen, maybe joark, eux-basis.
  */
-class PersonId(val norskIdent: String,
-               val aktorId: String)
+class PersonInfo(val norskIdent: String,
+                 val aktorId: String,
+                 val reservert: Boolean? = true,
+                 val epostKrr: String? = null,
+                 val telefonKrr:String? = null
+)
 
 data class PrefillDataModel(
     val penSaksnummer: String? = null,
-    val bruker: PersonId,
-    val avdod: PersonId?,
+    val bruker: PersonInfo,
+    val avdod: PersonInfo?,
     val sedType: SedType,
     val buc: BucType,
     val vedtakId: String? = null,

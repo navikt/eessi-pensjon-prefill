@@ -10,13 +10,12 @@ import no.nav.eessi.pensjon.prefill.person.PrefillPDLAdresse
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
 import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper
-import no.nav.eessi.pensjon.shared.api.PersonId
+import no.nav.eessi.pensjon.shared.api.PersonInfo
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
 import no.nav.eessi.pensjon.shared.person.FodselsnummerGenerator
 import no.nav.eessi.pensjon.statistikk.AutomatiseringStatistikkService
 import org.junit.Before
 import org.junit.Test
-import org.junit.jupiter.api.BeforeEach
 
 class PrefillServiceTest {
     private val personFnr = FodselsnummerGenerator.generateFnrForTest(57)
@@ -24,6 +23,7 @@ class PrefillServiceTest {
 
     private val mockPrefillSEDService: PrefillSEDService = mockk()
     private val innhentingService: InnhentingService = mockk()
+    private val krrService: KrrService = mockk()
     private val automatiseringStatistikkService: AutomatiseringStatistikkService = mockk()
     private lateinit var prefillData: PrefillDataModel
     private lateinit var prefillSEDService: PrefillSEDService
@@ -36,7 +36,7 @@ class PrefillServiceTest {
 
     @Before
     fun setup() {
-        prefillService = PrefillService(mockPrefillSEDService, innhentingService, automatiseringStatistikkService)
+        prefillService = PrefillService(krrService, mockPrefillSEDService, innhentingService, automatiseringStatistikkService)
         personcollection = PersonDataCollection(null, null)
         val personDataCollectionFamilie = PersonPDLMock.createEnkelFamilie(personFnr, avdodPersonFnr)
         personDataCollection = PersonDataCollection(gjenlevendeEllerAvdod = personDataCollectionFamilie.ektefellePerson, forsikretPerson = personDataCollectionFamilie.forsikretPerson )
@@ -56,7 +56,7 @@ class PrefillServiceTest {
     @Test
     fun `En p6000 uten vedtak skal gi en delvis utfylt sed`(){
         dataFromPEN = PrefillTestHelper.lesPensjonsdataVedtakFraFil("/pensjonsinformasjon/vedtak/P6000-GP-401.xml")
-        prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P6000, personFnr, penSaksnummer = "22580170", vedtakId = "12312312", avdod = PersonId(avdodPersonFnr, "1234567891234"))
+        prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P6000, personFnr, penSaksnummer = "22580170", vedtakId = "12312312", avdod = PersonInfo(avdodPersonFnr, "1234567891234"))
         prefillSEDService = PrefillSEDService(eessiInformasjon, prefillNav)
     }
 }

@@ -9,7 +9,7 @@ import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
-import no.nav.eessi.pensjon.shared.api.PersonId
+import no.nav.eessi.pensjon.shared.api.PersonInfo
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
 import no.nav.eessi.pensjon.shared.person.FodselsnummerGenerator
 import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
@@ -44,7 +44,7 @@ class PrefillX010Test {
             SedType.X010,
             personFnr,
             penSaksnummer = pesysSaksnummer,
-            avdod = PersonId("12345678910", "123456789")
+            avdod = PersonInfo("12345678910", "123456789")
         )
 
     }

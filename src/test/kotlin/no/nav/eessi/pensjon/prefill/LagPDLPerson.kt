@@ -1,21 +1,15 @@
 package no.nav.eessi.pensjon.prefill
 
 import no.nav.eessi.pensjon.personoppslag.pdl.model.*
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Bostedsadresse
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Familierelasjonsrolle
-import no.nav.eessi.pensjon.personoppslag.pdl.model.ForelderBarnRelasjon
-import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe.*
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Kontaktadresse
-import no.nav.eessi.pensjon.personoppslag.pdl.model.KontaktadresseType
-import no.nav.eessi.pensjon.personoppslag.pdl.model.UtenlandskAdresseIFrittFormat
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Vegadresse
+import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe.FOLKEREGISTERIDENT
+import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe.NPID
 import no.nav.eessi.pensjon.shared.person.Fodselsnummer
 import no.nav.eessi.pensjon.shared.person.FodselsnummerGenerator
 import java.time.LocalDate
 import java.time.LocalDateTime
 
 
-class LagPDLPerson {
+class LagPdlPerson {
     companion object {
         fun lagPerson(fnrEllerNpid: String = FodselsnummerGenerator.generateFnrForTest(60), fornavn: String = "OLE", etternavn: String = "OLSEN", land: String = "NOR", kjoennType: KjoennType = KjoennType.MANN, erDod: Boolean? = false): PdlPerson {
             val personfnr = Fodselsnummer.fra(fnrEllerNpid)
@@ -36,7 +30,7 @@ class LagPDLPerson {
                 forelderBarnRelasjon = emptyList(),
                 sivilstand = emptyList(),
                 kontaktadresse = null,
-                utenlandskIdentifikasjonsnummer = emptyList()
+                utenlandskIdentifikasjonsnummer = emptyList(),
             )
         }
 

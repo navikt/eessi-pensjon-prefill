@@ -7,7 +7,7 @@ import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
-import no.nav.eessi.pensjon.shared.api.PersonId
+import no.nav.eessi.pensjon.shared.api.PersonInfo
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
 import no.nav.eessi.pensjon.shared.person.FodselsnummerGenerator
 import org.junit.jupiter.api.Assertions.assertNotNull
@@ -40,7 +40,7 @@ class PrefillP10000Test {
             SedType.P8000,
             personFnr,
             penSaksnummer = pesysSaksnummer,
-            avdod = PersonId("12345678910", "123456789")
+            avdod = PersonInfo("12345678910", "123456789")
         )
 
     }

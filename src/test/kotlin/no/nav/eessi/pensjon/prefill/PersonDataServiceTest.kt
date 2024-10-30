@@ -8,12 +8,12 @@ import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonoppslagException
 import no.nav.eessi.pensjon.personoppslag.pdl.model.*
-import no.nav.eessi.pensjon.prefill.LagPDLPerson.Companion.lagPerson
-import no.nav.eessi.pensjon.prefill.LagPDLPerson.Companion.medAdresse
-import no.nav.eessi.pensjon.prefill.LagPDLPerson.Companion.medBarn
-import no.nav.eessi.pensjon.prefill.LagPDLPerson.Companion.medForeldre
+import no.nav.eessi.pensjon.prefill.LagPdlPerson.Companion.lagPerson
+import no.nav.eessi.pensjon.prefill.LagPdlPerson.Companion.medAdresse
+import no.nav.eessi.pensjon.prefill.LagPdlPerson.Companion.medBarn
+import no.nav.eessi.pensjon.prefill.LagPdlPerson.Companion.medForeldre
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
-import no.nav.eessi.pensjon.shared.api.PersonId
+import no.nav.eessi.pensjon.shared.api.PersonInfo
 import no.nav.eessi.pensjon.shared.person.FodselsnummerGenerator
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -91,7 +91,7 @@ internal class PersonDataServiceTest {
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns gjenlev
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_2)) } returns avdod
 
-        val data = PrefillDataModelMother.initialPrefillDataModel(SedType.P2000, FNR_VOKSEN, SAK_ID, euxCaseId = EUX_RINA, avdod = PersonId(
+        val data = PrefillDataModelMother.initialPrefillDataModel(SedType.P2000, FNR_VOKSEN, SAK_ID, euxCaseId = EUX_RINA, avdod = PersonInfo(
             FNR_VOKSEN_2, AKTOER_ID_2
         )
         )
@@ -225,7 +225,7 @@ internal class PersonDataServiceTest {
         val barn2 = FodselsnummerGenerator.generateFnrForTest(13)
 
         //far og mor i pair
-        val pair = LagPDLPerson.createPersonMedEktefellePartner(farfnr, morfnr, Sivilstandstype.GIFT)
+        val pair = LagPdlPerson.createPersonMedEktefellePartner(farfnr, morfnr, Sivilstandstype.GIFT)
 
         //far og mor med barn
         val far = pair.first.medAdresse("STORGATA").medBarn(barn1).medBarn(barn2)

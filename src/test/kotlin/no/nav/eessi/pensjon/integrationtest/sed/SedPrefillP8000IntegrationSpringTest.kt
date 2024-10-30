@@ -12,10 +12,12 @@ import no.nav.eessi.pensjon.pensjonsinformasjon.models.KravArsak
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
 import no.nav.eessi.pensjon.personoppslag.pdl.model.*
 import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe.*
+import no.nav.eessi.pensjon.prefill.KrrService
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.PersonPDLMock.medBeskyttelse
 import no.nav.eessi.pensjon.prefill.PersonPDLMock.medUtlandAdresse
+import no.nav.eessi.pensjon.prefill.models.KrrPerson
 import no.nav.pensjon.v1.kravhistorikk.V1KravHistorikk
 import no.nav.pensjon.v1.kravhistorikkliste.V1KravHistorikkListe
 import no.nav.pensjon.v1.sak.V1Sak
@@ -51,6 +53,9 @@ class SedPrefillP8000IntegrationSpringTest {
     @MockkBean
     private lateinit var personService: PersonService
 
+    @MockkBean
+    private lateinit var krrService: KrrService
+
     @Autowired
     private lateinit var mockMvc: MockMvc
 
@@ -79,6 +84,7 @@ class SedPrefillP8000IntegrationSpringTest {
                 bySted = "UTLANDBY"
             )
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_4)) } returns PersonPDLMock.createWith(true, "Avdød", "Død", FNR_VOKSEN_4, AKTOER_ID_2, true)
+        every { krrService.hentPersonFraKrr(any()) } returns KrrPerson(false,"melleby11@melby.no", "11111111")
 
         val sak = V1Sak().apply {
             sakType = EPSaktype.GJENLEV.toString()
@@ -139,7 +145,16 @@ class SedPrefillP8000IntegrationSpringTest {
                     "fornavn" : "Lever",
                     "kjoenn" : "M",
                     "foedselsdato" : "1988-07-12",
-                    "rolle" : "01"
+                    "rolle" : "01",
+                    "kontakt" : {
+                      "telefon" : [ {
+                        "type" : "mobil",
+                        "nummer" : "11111111"
+                      } ],
+                      "email" : [ {
+                        "adresse" : "melleby11@melby.no"
+                      } ]
+                    }
                   },
                   "adresse" : {
                     "gate" : "OlssenGate",
@@ -178,8 +193,10 @@ class SedPrefillP8000IntegrationSpringTest {
         every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN_3)
         every { personService.hentIdent(AKTORID, NorskIdent(FNR_VOKSEN_4)) } returns AktoerId(AKTOER_ID_2)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_3)) } returns PersonPDLMock.createWith(true, "Lever", "Gjenlev", FNR_VOKSEN_3, AKTOER_ID)
-
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_4)) } returns PersonPDLMock.createWith(true, "Avdød", "Død", FNR_VOKSEN_4, AKTOER_ID_2, true)
+
+        every { krrService.hentPersonFraKrr(eq(FNR_VOKSEN_3)) } returns KrrPerson(false,"melleby11@melby.no", "11111111")
+        every { krrService.hentPersonFraKrr(eq(FNR_VOKSEN_4)) } returns KrrPerson(false,"melleby12@melby.no", "22222222")
 
 
         val sak = V1Sak().apply {
@@ -240,7 +257,16 @@ class SedPrefillP8000IntegrationSpringTest {
                 "fornavn" : "Lever",
                 "kjoenn" : "M",
                 "foedselsdato" : "1988-07-12",
-                "rolle" : "01"
+                "rolle" : "01",
+                "kontakt" : {
+                  "telefon" : [ {
+                    "type" : "mobil",
+                    "nummer" : "11111111"
+                  } ],
+                  "email" : [ {
+                    "adresse" : "melleby11@melby.no"
+                  } ]
+                }
               },
               "adresse" : {
                 "gate" : "Oppoverbakken 66",
@@ -279,6 +305,9 @@ class SedPrefillP8000IntegrationSpringTest {
         every { personService.hentIdent(AKTORID, NorskIdent(FNR_VOKSEN_4)) } returns AktoerId(AKTOER_ID_2)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_3))  } returns PersonPDLMock.createWith(true, "Lever", "Gjenlev", FNR_VOKSEN_3, AKTOER_ID)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_4)) } returns PersonPDLMock.createWith(true, "Avdød", "Død", FNR_VOKSEN_4, AKTOER_ID_2, true)
+
+        every { krrService.hentPersonFraKrr(eq(FNR_VOKSEN_3))  } returns KrrPerson(false,"melleby11@melby.no", "11111111")
+        every { krrService.hentPersonFraKrr(eq(FNR_VOKSEN_4))  } returns KrrPerson(false,"melleby12@melby.no", "22222222")
 
         val v1Kravhistorikk = V1KravHistorikk()
         v1Kravhistorikk.kravArsak = KravArsak.GJNL_SKAL_VURD.name
@@ -364,6 +393,7 @@ class SedPrefillP8000IntegrationSpringTest {
         every { pensjoninformasjonservice.hentRelevantPensjonSak(any(), any()) } returns sak
         every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_BARN)
         every { personService.hentIdent(AKTORID, NorskIdent(FNR_VOKSEN_4)) } returns AktoerId(AKTOER_ID_2)
+        every { krrService.hentPersonFraKrr(any()) } returns KrrPerson(false,"melleby11@melby.no", "11111111")
 
         val diskeBarn = PersonPDLMock.createWith(true, "Barn", "Diskret", FNR_BARN, AKTOER_ID)
                             .medBeskyttelse(AdressebeskyttelseGradering.STRENGT_FORTROLIG)
@@ -428,7 +458,16 @@ class SedPrefillP8000IntegrationSpringTest {
                     "fornavn" : "Barn",
                     "kjoenn" : "M",
                     "foedselsdato" : "1988-07-12",
-                    "rolle" : "01"
+                    "rolle" : "01",
+                    "kontakt" : {
+                      "telefon" : [ {
+                        "type" : "mobil",
+                        "nummer" : "11111111"
+                      } ],
+                      "email" : [ {
+                        "adresse" : "melleby11@melby.no"
+                      } ]
+                    }
                   }
                 }
               },
@@ -449,6 +488,7 @@ class SedPrefillP8000IntegrationSpringTest {
     fun `prefill sed P8000 - Gitt en alderspensjon så skal det genereres en P8000 uten referanse til person`() {
         every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN_3)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_3)) } returns PersonPDLMock.createWith(true, "Alder", "Pensjon", FNR_VOKSEN_3, AKTOER_ID)
+        every { krrService.hentPersonFraKrr(any()) } returns KrrPerson(false,"melleby11@melby.no", "11111111")
         every { kodeverkClient.finnLandkode(any())} returns "QX"
 
         val apijson = dummyApijson(sakid = "21337890", aktoerId = AKTOER_ID, sed = "P8000", buc = P_BUC_05.name)
@@ -509,6 +549,7 @@ class SedPrefillP8000IntegrationSpringTest {
         every { pensjoninformasjonservice.hentRelevantPensjonSak(any(), any()) } returns V1Sak()
         every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(syntFnr)
         every { personService.hentPerson(NorskIdent(syntFnr)) } returns PersonPDLMock.createWith(true, "Alder", "Pensjon", syntFnr, AKTOER_ID)
+        every { krrService.hentPersonFraKrr(any()) } returns KrrPerson(false,"melleby11@melby.no", "11111111")
         every { kodeverkClient.finnLandkode(any())} returns "QX"
 
         val apijson = dummyApijson(sakid = "21337890", aktoerId = AKTOER_ID, sed = "P8000", buc = P_BUC_05.name)
