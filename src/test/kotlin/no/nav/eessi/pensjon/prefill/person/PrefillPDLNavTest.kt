@@ -115,7 +115,7 @@ class PrefillPDLNavTest {
                     foreldreFdato!!,
                     someInstitutionId,
                     someIntitutionNavn,
-                    krrPerson = KrrPerson("ola@nav.no", "11223344")
+                    krrPerson = KrrPerson(false,"ola@nav.no", "11223344")
                 ),
                 adresse = lagTomAdresse(),
             ),
@@ -173,7 +173,7 @@ class PrefillPDLNavTest {
                     foreldreFdato!!,
                     someInstitutionId,
                     someIntitutionNavn,
-                    krrPerson = KrrPerson("ola@nav.no", "11223344")
+                    krrPerson = KrrPerson(false,"ola@nav.no", "11223344")
                 ), adresse = lagTomAdresse()
             ), barn = listOf(
                 BarnItem(
@@ -208,7 +208,7 @@ class PrefillPDLNavTest {
         val prefillData = PrefillDataModelMother.initialPrefillDataModel(
             SedType.P2100,
             pinId = somePersonNr,
-            avdod = PersonInfo(someBarnPersonNr, "123232312312"),
+            avdod = PersonInfo(someBarnPersonNr, aktorId = "123232312312"),
             penSaksnummer = somePenSaksnr
         )
 
@@ -252,7 +252,7 @@ class PrefillPDLNavTest {
                     farfdato!!,
                     someInstitutionId,
                     someIntitutionNavn,
-                    krrPerson = KrrPerson("ola@nav.no", "11223344")
+                    krrPerson = KrrPerson(false,"ola@nav.no", "11223344")
                 ), adresse = lagTomAdresse()
             ), barn = listOf(
                 BarnItem(
@@ -336,7 +336,7 @@ class PrefillPDLNavTest {
                     farfdato!!,
                     someInstitutionId,
                     someIntitutionNavn,
-                    krrPerson = KrrPerson("ola@nav.no", "11223344")
+                    krrPerson = KrrPerson(false,"ola@nav.no", "11223344")
                 ), adresse = lagTomAdresse()
             ), barn = listOf(
                 BarnItem(
@@ -420,7 +420,7 @@ class PrefillPDLNavTest {
                     personFdato,
                     someInstitutionId,
                     someIntitutionNavn,
-                    krrPerson = KrrPerson("ola@nav.no", "11223344")
+                    krrPerson = KrrPerson(false,"ola@nav.no", "11223344")
                 ), adresse = lagTomAdresse()
             ), ektefelle = Ektefelle(
                 person = lagNavPerson(
@@ -431,7 +431,7 @@ class PrefillPDLNavTest {
                     someInstitutionId,
                     someIntitutionNavn,
                     "K",
-                    krrPerson = KrrPerson("ola@nav.no", "11223344")
+                    krrPerson = KrrPerson(false,"ola@nav.no", "11223344")
                 ), type = "ektefelle"
             )
         )
@@ -501,7 +501,7 @@ class PrefillPDLNavTest {
                     personFdato,
                     someInstitutionId,
                     someIntitutionNavn,
-                    krrPerson = KrrPerson("ola@nav.no", "11223344")
+                    krrPerson = KrrPerson(false,"ola@nav.no", "11223344")
                 ), adresse = Adresse("STORGATA 12", postnummer = "0101", by = "OSLO", land = "NO")
             ), ektefelle = Ektefelle(
                 person = lagNavPerson(
@@ -512,7 +512,7 @@ class PrefillPDLNavTest {
                     someInstitutionId,
                     someIntitutionNavn,
                     "K",
-                    krrPerson = KrrPerson("ola@nav.no", "11223344")
+                    krrPerson = KrrPerson(false,"ola@nav.no", "11223344")
                 ), type = "ektefelle"
             ), barn = listOf(
                 BarnItem(
@@ -643,7 +643,7 @@ class PrefillPDLNavTest {
                     personFdato,
                     someInstitutionId,
                     someIntitutionNavn,
-                    krrPerson = KrrPerson("ola@nav.no", "11223344")
+                    krrPerson = KrrPerson(false,"ola@nav.no", "11223344")
                 ), adresse = lagTomAdresse()
             ), ektefelle = Ektefelle(
                 person = lagNavPerson(
@@ -654,7 +654,7 @@ class PrefillPDLNavTest {
                     someInstitutionId,
                     someIntitutionNavn,
                     "K",
-                    krrPerson = KrrPerson("ola@nav.no", "11223344")
+                    krrPerson = KrrPerson(false,"ola@nav.no", "11223344")
                 ), type = "part_i_et_registrert_partnerskap"
             )
         )
@@ -714,7 +714,7 @@ class PrefillPDLNavTest {
                     personFdato,
                     someInstitutionId,
                     someIntitutionNavn,
-                    krrPerson = KrrPerson("ola@nav.no", "11223344")
+                    krrPerson = KrrPerson(false,"ola@nav.no", "11223344")
                 ), adresse = lagTomAdresse()
             )
         )
@@ -812,7 +812,7 @@ class PrefillPDLNavTest {
                     personFdato,
                     someInstitutionId,
                     someIntitutionNavn,
-                    krrPerson = KrrPerson("ola@nav.no", "11223344")
+                    krrPerson = KrrPerson(false,"ola@nav.no", "11223344")
                 ), adresse = Adresse(
                     "Adresselinje 1", "Adresselinje 2", "Adresselinje 3", null, null, land = "SE"
                 )
@@ -883,7 +883,7 @@ class PrefillPDLNavTest {
                     personFdato,
                     someInstitutionId,
                     someIntitutionNavn,
-                    krrPerson = KrrPerson("ola@nav.no", "11223344")
+                    krrPerson = KrrPerson(false,"ola@nav.no", "11223344")
                 ), adresse = Adresse(
                     "Adresselinje 1", "Adresselinje 2", "Adresselinje 3", null, null, land = "SE"
                 )
@@ -963,7 +963,7 @@ class PrefillPDLNavTest {
                     personFdato,
                     someInstitutionId,
                     someIntitutionNavn,
-                    krrPerson = KrrPerson("ola@nav.no", "11223344")
+                    krrPerson = KrrPerson(false,"ola@nav.no", "11223344")
                 ), arbeidsforhold = listOf(
                     ArbeidsforholdItem(
                         planlagtstartdato = "",
