@@ -1,31 +1,6 @@
 package no.nav.eessi.pensjon.eux.model
 
-import no.nav.eessi.pensjon.eux.model.sed.Adresse
-import no.nav.eessi.pensjon.eux.model.sed.AndreinstitusjonerItem
-import no.nav.eessi.pensjon.eux.model.sed.Arsak
-import no.nav.eessi.pensjon.eux.model.sed.AvslagbegrunnelseItem
-import no.nav.eessi.pensjon.eux.model.sed.BeloepBrutto
-import no.nav.eessi.pensjon.eux.model.sed.BeregningItem
-import no.nav.eessi.pensjon.eux.model.sed.Bruker
-import no.nav.eessi.pensjon.eux.model.sed.Foedested
-import no.nav.eessi.pensjon.eux.model.sed.Foreldre
-import no.nav.eessi.pensjon.eux.model.sed.Grunnlag
-import no.nav.eessi.pensjon.eux.model.sed.KravtypeItem
-import no.nav.eessi.pensjon.eux.model.sed.Opphoer
-import no.nav.eessi.pensjon.eux.model.sed.Opptjening
-import no.nav.eessi.pensjon.eux.model.sed.P6000
-import no.nav.eessi.pensjon.eux.model.sed.P6000Pensjon
-import no.nav.eessi.pensjon.eux.model.sed.Periode
-import no.nav.eessi.pensjon.eux.model.sed.Person
-import no.nav.eessi.pensjon.eux.model.sed.PinItem
-import no.nav.eessi.pensjon.eux.model.sed.ReduksjonItem
-import no.nav.eessi.pensjon.eux.model.sed.SED
-import no.nav.eessi.pensjon.eux.model.sed.Sak
-import no.nav.eessi.pensjon.eux.model.sed.StatsborgerskapItem
-import no.nav.eessi.pensjon.eux.model.sed.Tilleggsinformasjon
-import no.nav.eessi.pensjon.eux.model.sed.Ukjent
-import no.nav.eessi.pensjon.eux.model.sed.VedtakItem
-import no.nav.eessi.pensjon.eux.model.sed.VirkningsdatoItem
+import no.nav.eessi.pensjon.eux.model.sed.*
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.toJson
@@ -40,34 +15,28 @@ class SedP6000Test {
 
     @Test
     fun createP6000sed() {
-        val sed6000 = populerP6000()
-        assertNotNull(sed6000)
-
-        val json = sed6000.toJson()
+        val json = populerP6000().toJson()
         assertNotNull(json)
 
         val pensjondata = mapJsonToAny<P6000>((json))
-        assertNotNull(pensjondata)
-        assertEquals(sed6000.toJson(), pensjondata.toJson())
-
-        val path = Paths.get("src/test/resources/json/nav/P6000-NAV.json")
-        val p6000file = String(Files.readAllBytes(path))
+        val p6000file = String(Files.readAllBytes(Paths.get("src/test/resources/json/nav/P6000-NAV.json")))
         assertNotNull(p6000file)
         validateJson(p6000file)
+        assertNotNull(pensjondata)
 
         //map vedtak-NAV back to vedtak object.
         val pensjondataFile = mapJsonToAny<SED>(p6000file)
 
+        assertNotNull(populerP6000())
         assertNotNull(pensjondataFile)
         mapAnyToJson(pensjondataFile, true)
+        assertEquals(populerP6000().toJson(), pensjondata.toJson())
     }
 
     @Test
     fun `create part json and validate to object`() {
-        val sed6000 = populerP6000()
-        assertNotNull(sed6000)
-
-        val p6000Pensjon = sed6000.pensjon
+        val p6000Pensjon = populerP6000().pensjon
+        assertNotNull(populerP6000())
 
         val p6000PensjonJson = mapAnyToJson(p6000Pensjon!!)
         val p6000PensjonDeserialisert = mapJsonToAny<P6000Pensjon>(p6000PensjonJson)

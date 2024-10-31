@@ -1,5 +1,6 @@
 package no.nav.eessi.pensjon.eux.model
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import no.nav.eessi.pensjon.eux.model.sed.*
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import no.nav.eessi.pensjon.utils.mapJsonToAny
@@ -10,6 +11,7 @@ import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.skyscreamer.jsonassert.JSONAssert
 import java.nio.file.Files
 import java.nio.file.Paths
 
@@ -52,10 +54,42 @@ internal class SerDesSederTest {
             val statsborgerskap = h120sed.nav?.bruker?.person?.statsborgerskap
             assertEquals(3, statsborgerskap?.size)
         }
+
+        @Test
+        fun `H121 from json datafile`() {
+            val h121sed = SED.fromJson(getTestJsonFile("horisontal/H121-NAV.json"))
+
+            assertEquals(2, h121sed.nav?.bruker?.person?.statsborgerskap?.size)
+        }
+
+        @Test
+        fun `H121-2 from json datafile`() {
+            val h121sed = SED.fromJson(getTestJsonFile("horisontal/H121_2-NAV.json"))
+
+            assertEquals("24234234234", h121sed.nav?.bruker?.person?.pin?.first()?.identifikator)
+            assertEquals(2, h121sed.nav?.bruker?.person?.statsborgerskap?.size)
+        }
+
+        @Test
+        fun `H121-3 from json datafile`() {
+            val h121sed = SED.fromJson(getTestJsonFile("horisontal/H121_3-NAV.json"))
+
+            assertEquals("24234234234", h121sed.nav?.bruker?.person?.pin?.first()?.identifikator)
+            assertEquals(2, h121sed.nav?.bruker?.person?.statsborgerskap?.size)
+        }
+
+        @Test
+        fun `H121-4 from json datafile`() {
+            val h121sed = SED.fromJson(getTestJsonFile("horisontal/H121_4-NAV.json"))
+
+            assertEquals("24234234234", h121sed.nav?.bruker?.person?.pin?.first()?.identifikator)
+            assertEquals(2, h121sed.nav?.bruker?.person?.statsborgerskap?.size)
+        }
+
     }
 
     @Nested
-    @DisplayName("KravSeder ALDER; UFØRE og GJENLEVENDE")
+    @DisplayName("KravSeder ALDER, UFØRE og GJENLEVENDE")
     inner class KravSeder {
         @Test
         fun `P2000 from json datafile`() { SED.fromJson(getTestJsonFile("P2000-NAV.json")) }
@@ -237,8 +271,42 @@ internal class SerDesSederTest {
             assertEquals("KRIMINELL", bruker2?.person?.fornavn)
             assertEquals("1944-12-25", bruker2?.person?.foedselsdato)
 
-            assertEquals("NO:NAVT007", sak2?.leggtilinstitusjon?.institusjon?.id)
             assertEquals("NAVT007", sak2?.leggtilinstitusjon?.institusjon?.navn)
+            assertEquals("NO:NAVT007", sak2?.leggtilinstitusjon?.institusjon?.id)
+        }
+
+        @Test
+        fun `P4000 from json datafile`() {
+            val p4000sed = SED.fromJson(getTestJsonFile("P4000-NAV.json"))
+            val json = mapAnyToJson(p4000sed, true)
+            val pensjondata = mapJsonToAny<SED>(json)
+
+            assertNotNull(pensjondata)
+        }
+
+        @Test
+        fun `P4000 til json og tilbake`() {
+            val map = mapJsonToAny<Map<String, Any>>(getTestJsonFile("other/P4000-from-frontend.json"))
+            val periodeInfoJson = mapAnyToJson(map["periodeInfo"] ?: "{}")
+
+            val p4000 = P4000(trygdetid = mapJsonToAny( periodeInfoJson))
+            val trygdetid = p4000.trygdetid
+
+            assertEquals("EE", trygdetid?.boPerioder?.first()?.land)
+            assertEquals("GG", trygdetid?.opplaeringPerioder?.first()?.land)
+            assertEquals("Ole", trygdetid?.barnepassPerioder?.first()?.informasjonBarn?.fornavn)
+            assertEquals("work period 1 workName", trygdetid?.ansattSelvstendigPerioder?.first()?.navnFirma)
+            assertEquals("learn period 1 learnInstitution", trygdetid?.opplaeringPerioder?.first()?.navnPaaInstitusjon)
+            assertEquals("daily period 1 payingInstitution", trygdetid?.arbeidsledigPerioder?.first()?.navnPaaInstitusjon)
+        }
+
+        @Test
+        fun `valider P4000 til json med JsonNode og tilbake`() {
+            val personDataNode = jacksonObjectMapper().readTree(getTestJsonFile("other/P4000-from-frontend.json"))
+            val personDataJson = personDataNode["periodeInfo"].toString()
+            val sed = P4000(trygdetid = mapJsonToAny(personDataJson))
+
+            JSONAssert.assertEquals(personDataJson, sed.trygdetid?.toJson(), false)
         }
     }
 }
