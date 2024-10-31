@@ -3,6 +3,8 @@ package no.nav.eessi.pensjon.prefill
 import io.micrometer.core.instrument.Metrics
 import no.nav.eessi.pensjon.eux.model.sed.SED.Companion.setSEDVersion
 import no.nav.eessi.pensjon.metrics.MetricsHelper
+import no.nav.eessi.pensjon.prefill.models.KrrPerson
+import no.nav.eessi.pensjon.prefill.models.KrrPerson.Companion.validateEmail
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
 import no.nav.eessi.pensjon.shared.api.ApiRequest
 import no.nav.eessi.pensjon.shared.api.PersonInfo
@@ -39,7 +41,13 @@ class PrefillService(
 
             try {
                 val norskIdent = innhentingService.hentFnrEllerNpidFraAktoerService(request.aktoerId)!!
-                val krrPerson = krrService.hentPersonFraKrr(norskIdent)
+                val krrPerson = krrService.hentPersonFraKrr(norskIdent).also { personResponse ->
+                    KrrPerson(
+                        reservert = personResponse.reservert,
+                        epostadresse = personResponse.epostadresse.validateEmail(),
+                        mobiltelefonnummer = personResponse.mobiltelefonnummer
+                    )
+                }
 
                 val personInfo = if (krrPerson.reservert == true) {
                     PersonInfo(norskIdent, request.aktoerId).also { logger.info("Personen har reservert seg mot digital kommunikasjon")}

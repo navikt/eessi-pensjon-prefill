@@ -11,6 +11,7 @@ import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.PersonPDLMock.medFodsel
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
+import no.nav.eessi.pensjon.prefill.models.KrrPerson.Companion.validateEmail
 import no.nav.eessi.pensjon.prefill.models.PensjonCollection
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother.initialPrefillDataModel
@@ -89,6 +90,19 @@ class PrefillP2000_AP_21975717Test {
 
         assertEquals(prefillData.bruker.telefonKrr, p2000.nav?.bruker?.person?.kontakt?.telefon?.get(0)?.nummer)
         assertEquals(prefillData.bruker.epostKrr, p2000.nav?.bruker?.person?.kontakt?.email?.get(0)?.adresse)
+    }
+
+    @Test
+    fun `forventet korrekt utfylt P2000 med telefonummer og uten epost som inkluderer underscore`() {
+        val edited = prefillData.copy(
+            bruker = prefillData.bruker.copy(
+                epostKrr = prefillData.bruker.epostKrr.validateEmail()
+            )
+        )
+        val p2000 = prefillSEDService.prefill(edited, persondataCollection, pensjonCollection)
+
+        assertEquals(edited.bruker.telefonKrr, p2000.nav?.bruker?.person?.kontakt?.telefon?.get(0)?.nummer)
+        assertEquals(edited.bruker.epostKrr, p2000.nav?.bruker?.person?.kontakt?.email?.get(0)?.adresse)
     }
 
 
