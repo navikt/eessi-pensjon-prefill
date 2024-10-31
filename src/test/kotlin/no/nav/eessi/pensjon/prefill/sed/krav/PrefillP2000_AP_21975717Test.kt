@@ -96,13 +96,13 @@ class PrefillP2000_AP_21975717Test {
     fun `forventet korrekt utfylt P2000 med telefonummer og uten epost som inkluderer underscore`() {
         val edited = prefillData.copy(
             bruker = prefillData.bruker.copy(
-                epostKrr = prefillData.bruker.epostKrr.validateEmail()
+                epostKrr = "somethin_g@gmail.com".validateEmail()
             )
         )
         val p2000 = prefillSEDService.prefill(edited, persondataCollection, pensjonCollection)
 
         assertEquals(edited.bruker.telefonKrr, p2000.nav?.bruker?.person?.kontakt?.telefon?.get(0)?.nummer)
-        assertEquals(edited.bruker.epostKrr, p2000.nav?.bruker?.person?.kontakt?.email?.get(0)?.adresse)
+        assertEquals(null, p2000.nav?.bruker?.person?.kontakt?.email)
     }
 
 

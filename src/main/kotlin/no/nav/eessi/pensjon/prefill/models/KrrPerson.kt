@@ -10,7 +10,7 @@ data class KrrPerson(
 ) {
     companion object {
         fun String?.validateEmail(): String? {
-            val emailRegex = Regex("""[\w.-]+@[\w.-]+\.[a-zA-Z]{2,15}""")
+            val emailRegex = Regex("""^[a-zA-Z0-9][a-zA-Z0-9.-]+@(([\w]+\.)+)([a-zA-Z]{2,15})$""")
             return if (this != null && emailRegex.matches(this)) this else null
         }
     }
