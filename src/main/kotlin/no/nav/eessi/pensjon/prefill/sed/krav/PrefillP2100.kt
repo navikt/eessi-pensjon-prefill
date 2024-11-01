@@ -46,7 +46,7 @@ class PrefillP2100(private val prefillNav: PrefillPDLNav) {
                 + "\nSøker sakId            : ${prefillData.penSaksnummer} "
                 + "\nKravdato, kravtype     : ${prefillData.kravDato}, ${prefillData.kravType} "
                 + "\nSøker avdodaktor       : ${prefillData.avdod.aktorId} "
-                + "\nerGyldigEtterlatt      : ${prefillData.avdod.aktorId.isNotEmpty()} "
+                + "\nerGyldigEtterlatt      : ${prefillData.avdod.aktorId?.isNotEmpty()} "
                 + "\nSøker gjenlevaktoer    : ${prefillData.bruker.aktorId} "
                 + "\n------------------| Preutfylling [${prefillData.sedType}] START |------------------ \n")
     }

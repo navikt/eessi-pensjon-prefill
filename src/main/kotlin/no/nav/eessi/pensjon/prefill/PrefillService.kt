@@ -44,7 +44,7 @@ class PrefillService(
                 val krrPerson = krrService.hentPersonFraKrr(norskIdent).also { personResponse ->
                     KrrPerson(
                         reservert = personResponse.reservert,
-                        epostadresse = personResponse.epostadresse.validateEmail(),
+                        epostadresse = personResponse.epostadresse.validateEmail(request.processDefinitionVersion),
                         mobiltelefonnummer = personResponse.mobiltelefonnummer
                     )
                 }

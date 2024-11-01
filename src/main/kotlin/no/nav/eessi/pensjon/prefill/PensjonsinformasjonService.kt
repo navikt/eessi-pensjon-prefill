@@ -48,8 +48,8 @@ class PensjonsinformasjonService(private val pensjonsinformasjonClient: Pensjons
     @Retryable(
         backoff = Backoff(delayExpression = "@pensjonsInfoRetryConfig.initialRetryMillis", maxDelay = 200000L, multiplier = 3.0),
         listeners  = ["pensjonsInfoRetryLogger"])
-    fun hentPensjonInformasjon(fnr: String, aktoerId: String): Pensjonsinformasjon {
-        if (aktoerId.isBlank()) throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Mangler AktoerId")
+    fun hentPensjonInformasjon(fnr: String, aktoerId: String?): Pensjonsinformasjon {
+        if (aktoerId.isNullOrBlank()) throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Mangler AktoerId")
         if (fnr.isBlank()) throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Mangler FNR")
 
         //**********************************************
@@ -97,9 +97,9 @@ class PensjonsinformasjonService(private val pensjonsinformasjonClient: Pensjons
         if (penSaksnummer.isNullOrBlank()) throw ManglendeSakIdException("Mangler sakId")
         if (fnr.isBlank()) throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Mangler norskident")
 
-        val peninfo = hentPensjonInformasjon(fnr, aktorId)
+        val peninfo = aktorId?.let { hentPensjonInformasjon(fnr, it) }
 
-        return peninfo.let {
+        return peninfo?.let {
             val sak = finnSak(penSaksnummer, it) ?: return null
 
             if (!akseptabelSakstypeForSed(sak.sakType)) {
