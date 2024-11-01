@@ -1,6 +1,10 @@
  package no.nav.eessi.pensjon.shared.api
 
  import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+ import com.fasterxml.jackson.core.JsonParser
+ import com.fasterxml.jackson.databind.DeserializationContext
+ import com.fasterxml.jackson.databind.JsonDeserializer
+ import com.fasterxml.jackson.databind.annotation.JsonDeserialize
  import no.nav.eessi.pensjon.eux.model.BucType
  import no.nav.eessi.pensjon.eux.model.BucType.*
  import no.nav.eessi.pensjon.eux.model.SedType
@@ -8,6 +12,7 @@
  import org.slf4j.LoggerFactory
  import org.springframework.http.HttpStatus
  import org.springframework.web.server.ResponseStatusException
+
 
  class ApiSubject(
      val gjenlevende: SubjectFnr? = null,
@@ -25,6 +30,7 @@
      val vedtakId: String? = null,
      val kravId: String? = null,
      val kravDato: String? = null,   // Brukes bare av P15000 yyyy-MM-dd
+     @JsonDeserialize(using = KravTypeDeserializer::class)
      val kravType: KravType? = null, // Brukes bare av P15000
      val aktoerId: String? = null,
      val fnr: String? = null,
@@ -39,8 +45,9 @@
      val subject: ApiSubject? = null, //P_BUC_02 alle andre seder etter P2100
      //P8000-P_BUC_05
      val referanseTilPerson: ReferanseTilPerson? = null,
-     val gjenny: Boolean = false
-
+     val gjenny: Boolean = false,
+     val sakType: String? = null,
+     val processDefinitionVersion: String? = null //buc version, 4.1, 4.2, 4.3
      ) {
 
      fun toAudit(): String {
@@ -64,7 +71,7 @@
          private val logger = LoggerFactory.getLogger(ApiRequest::class.java)
 
          //validatate request and convert to PrefillDataModel
-         fun buildPrefillDataModelOnExisting(request: ApiRequest, personInfo: PersonInfo, avdodaktoerID: String? = null): PrefillDataModel {
+         fun buildPrefillDataModelOnExisting(request: ApiRequest, fodselsnr: String, avdodaktoerID: String? = null): PrefillDataModel {
              logger.debug("*** apirequest: $request ***")
              val sedType = if (request.sed == null)
                  throw ResponseStatusException(HttpStatus.BAD_REQUEST,"SedType mangler")
@@ -80,7 +87,7 @@
                      logger.info("ALL SED on existing Rina SED: ${request.sed} -> euxCaseId: ${request.euxCaseId} -> sakNr: ${request.sakId} ")
                      PrefillDataModel(
                          penSaksnummer = request.sakId,
-                         bruker = personInfo.also { logger.debug("FNR eller NPID: ${it.norskIdent}") },
+                         bruker = PersonId(fodselsnr, request.aktoerId).also { logger.debug("FNR eller NPID: ${it.norskIdent}") },
                          avdod = populerAvdodHvisGjenlevendePensjonSak(request, avdodaktoerID),
                          sedType = sedType,
                          buc = request.buc,
@@ -98,7 +105,7 @@
              }
          }
 
-         private fun populerAvdodHvisGjenlevendePensjonSak(request: ApiRequest, avdodaktoerID: String?): PersonInfo? {
+         private fun populerAvdodHvisGjenlevendePensjonSak(request: ApiRequest, avdodaktoerID: String?): PersonId? {
              return when(request.buc) {
                  P_BUC_02 -> populerAvdodPersonId(request, avdodaktoerID, true)
                  P_BUC_05,P_BUC_06,P_BUC_10 -> populerAvdodPersonId(request, avdodaktoerID)
@@ -106,7 +113,7 @@
              }
          }
 
-         private fun populerAvdodPersonId(request: ApiRequest, avdodaktoerID: String?, kreverAvdod: Boolean = false): PersonInfo? {
+         private fun populerAvdodPersonId(request: ApiRequest, avdodaktoerID: String?, kreverAvdod: Boolean = false): PersonId? {
              if (kreverAvdod && avdodaktoerID == null) {
                  logger.error("Mangler fnr for avdød")
                  throw ResponseStatusException(HttpStatus.BAD_REQUEST,"Mangler fnr for avdød")
@@ -114,9 +121,15 @@
              request.riktigAvdod() ?: return null
              val avdodNorskIdent1 = request.riktigAvdod() ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST,"Mangler Personnr på Avdød")
              val avdodAktorId1 = avdodaktoerID ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST,"Mangler AktoerId på Avdød")
-             return  PersonInfo(avdodNorskIdent1, avdodAktorId1)
+             return  PersonId(avdodNorskIdent1, avdodAktorId1)
          }
 
      }
  }
 
+ class KravTypeDeserializer : JsonDeserializer<KravType>() {
+     override fun deserialize(p: JsonParser, ctxt: DeserializationContext?): KravType? {
+         val value = p.text
+         return KravType.fraNavnEllerVerdi(value)
+     }
+ }
