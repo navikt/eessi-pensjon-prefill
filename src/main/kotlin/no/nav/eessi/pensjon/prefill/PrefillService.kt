@@ -42,7 +42,7 @@ class PrefillService(
             try {
                 logger.info(" Buc:${request.buc}, sed: ${request.sed}, RinaID:${request.euxCaseId}, sed: ${request.documentid}, versjon: ${request.processDefinitionVersion}, gjenny: ${request.gjenny}")
                 val norskIdent = innhentingService.hentFnrEllerNpidFraAktoerService(request.aktoerId)!!
-                val krrPerson = krrService.hentPersonFraKrr(norskIdent).also { personResponse ->
+                val krrPerson = krrService.hentPersonFraKrr(norskIdent).let { personResponse ->
                     KrrPerson(
                         reservert = personResponse.reservert,
                         epostadresse = personResponse.epostadresse.validateEmail(request.processDefinitionVersion),
