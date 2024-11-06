@@ -42,20 +42,7 @@ class PrefillService(
             try {
                 logger.info(" Buc:${request.buc}, sed: ${request.sed}, RinaID:${request.euxCaseId}, sed: ${request.documentid}, versjon: ${request.processDefinitionVersion}, gjenny: ${request.gjenny}")
                 val norskIdent = innhentingService.hentFnrEllerNpidFraAktoerService(request.aktoerId)!!
-                val krrPerson = krrService.hentPersonFraKrr(norskIdent).let { personResponse ->
-                    KrrPerson(
-                        reservert = personResponse.reservert,
-                        epostadresse = personResponse.epostadresse.validateEmail(request.processDefinitionVersion),
-                        mobiltelefonnummer = personResponse.mobiltelefonnummer
-                    )
-                }
-
-                val personInfo = if (krrPerson.reservert == true) {
-                    PersonInfo(norskIdent, request.aktoerId).also { logger.info("Personen har reservert seg mot digital kommunikasjon")}
-                } else {
-                    PersonInfo(norskIdent, request.aktoerId, krrPerson.reservert, krrPerson.epostadresse, krrPerson.mobiltelefonnummer)
-                        .also { logger.info("Hentet telefon og epost fra KRR: ${krrPerson.toJson()}") }
-                }
+                val personInfo = hentKrrPerson(norskIdent, request)
 
                 val prefillData = ApiRequest.buildPrefillDataModelOnExisting(request, personInfo, innhentingService.getAvdodAktoerIdPDL(request))
 
@@ -95,6 +82,33 @@ class PrefillService(
                 throw ex
             }
         }
+    }
+
+    private fun hentKrrPerson(norskIdent: String, request: ApiRequest): PersonInfo {
+        val krrPerson = krrService.hentPersonFraKrr(norskIdent).let { personResponse ->
+            KrrPerson(
+                reservert = personResponse.reservert,
+                epostadresse = personResponse.epostadresse.validateEmail(request.processDefinitionVersion),
+                mobiltelefonnummer = personResponse.mobiltelefonnummer
+            )
+        }
+
+        val personInfo = if (krrPerson.reservert == true) {
+            PersonInfo(
+                norskIdent,
+                request.aktoerId
+            ).also { logger.info("Personen har reservert seg mot digital kommunikasjon") }
+        } else {
+            PersonInfo(
+                norskIdent,
+                request.aktoerId,
+                krrPerson.reservert,
+                krrPerson.epostadresse,
+                krrPerson.mobiltelefonnummer
+            )
+                .also { logger.info("Hentet telefon og epost fra KRR: ${krrPerson.toJson()}") }
+        }
+        return personInfo
     }
 
 }
