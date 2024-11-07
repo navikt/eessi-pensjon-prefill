@@ -70,8 +70,7 @@ class PrefillErrorIntegrationTest {
 
     @Test
     fun `prefill sed P2200 som har vedtak, F_BH_BO_UTL men mangler F_BH_MED_UTL i tillegg til at isBoddArbeidetUtland er false så skal det kastes en Exception`() {
-
-        every { kodeverkClient.finnLandkode(eq("NOR"))} returns "NO"
+        every { kodeverkClient.finnLandkode(any())} returns "NO"
         every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith()
 
@@ -109,8 +108,7 @@ class PrefillErrorIntegrationTest {
 
     @Test
     fun `Prefill P2200 som har vedtak med F_BH_BO_UTL men F_BH_MED_UTL mangler i tillegg til at vedtak isBoddArbeidetUtland er false så skal det kastes en Exception`() {
-
-        every { kodeverkClient.finnLandkode(eq("NOR"))} returns "NO"
+        every { kodeverkClient.finnLandkode(any())} returns "NO"
         every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns Npid(NPID_VOKSEN)
         every { personService.hentPerson(Npid(NPID_VOKSEN)) } returns PersonPDLMock.createWith()
 

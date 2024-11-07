@@ -110,7 +110,12 @@ class SedPrefillPDLIntegrationSpringTest {
                       "institusjonsid" : "NO:noinst002",
                       "identifikator" : "11067122781",
                       "land" : "NO"
-                    } ],
+                        }, {
+                          "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                          "institusjonsid" : "NO:noinst002",
+                          "identifikator" : "123123123",
+                          "land" : "QX"
+                        } ],
                     "statsborgerskap" : [ {
                       "land" : "QX"
                     } ],
@@ -177,6 +182,7 @@ class SedPrefillPDLIntegrationSpringTest {
             .andReturn()
 
         val actual = result.response.getContentAsString(charset("UTF-8"))
+        println("**** $actual")
 
         val expected = """
             {
@@ -197,6 +203,11 @@ class SedPrefillPDLIntegrationSpringTest {
                       "institusjonsid" : "NO:noinst002",
                       "identifikator" : "22117320034",
                       "land" : "NO"
+                    }, {
+                      "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                      "institusjonsid" : "NO:noinst002",
+                      "identifikator" : "123123123",
+                      "land" : "QX"
                     } ],
                     "statsborgerskap" : [ {
                       "land" : "QX"
@@ -225,12 +236,17 @@ class SedPrefillPDLIntegrationSpringTest {
               },
               "pensjon" : {
                 "gjenlevende" : {
-                  "person" : {
+                   "person" : {
                     "pin" : [ {
                       "institusjonsnavn" : "NOINST002, NO INST002, NO",
                       "institusjonsid" : "NO:noinst002",
                       "identifikator" : "11067122781",
                       "land" : "NO"
+                    }, {
+                      "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                      "institusjonsid" : "NO:noinst002",
+                      "identifikator" : "123123123",
+                      "land" : "QX"
                     } ],
                     "statsborgerskap" : [ {
                       "land" : "QX"
@@ -277,59 +293,64 @@ class SedPrefillPDLIntegrationSpringTest {
         val apijson = dummyApijson(sedType = SedType.P2000, sakid = "21337890", aktoerId = AKTOER_ID)
 
         val validResponse = """
-            {
-              "sed" : "P2000",
-              "sedGVer" : "4",
-              "sedVer" : "2",
-              "nav" : {
-                "eessisak" : [ {
-                  "institusjonsid" : "NO:noinst002",
+        {
+          "sed" : "P2000",
+          "nav" : {
+            "eessisak" : [ {
+              "institusjonsid" : "NO:noinst002",
+              "institusjonsnavn" : "NOINST002, NO INST002, NO",
+              "saksnummer" : "21337890",
+              "land" : "NO"
+            } ],
+            "bruker" : {
+              "person" : {
+                "pin" : [ {
                   "institusjonsnavn" : "NOINST002, NO INST002, NO",
-                  "saksnummer" : "21337890",
+                  "institusjonsid" : "NO:noinst002",
+                  "identifikator" : "3123",
                   "land" : "NO"
+                }, {
+                  "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                  "institusjonsid" : "NO:noinst002",
+                  "identifikator" : "123123123",
+                  "land" : "QX"
                 } ],
-                "bruker" : {
-                  "person" : {
-                    "pin" : [ {
-                      "institusjonsnavn" : "NOINST002, NO INST002, NO",
-                      "institusjonsid" : "NO:noinst002",
-                      "identifikator" : "3123",
-                      "land" : "NO"
-                    } ],
-                    "statsborgerskap" : [ {
-                      "land" : "QX"
-                    } ],
-                    "etternavn" : "Testesen",
-                    "fornavn" : "Test",
-                    "kjoenn" : "M",
-                    "foedselsdato" : "1988-07-12",
-                    "kontakt" : {
-                      "telefon" : [ {
-                        "type" : "mobil",
-                        "nummer" : "11111111"
-                      } ],
-                      "email" : [ {
-                        "adresse" : "melleby11@melby.no"
-                      } ]
-                    }
-                  },
-                  "adresse" : {
-                    "gate" : "Oppoverbakken 66",
-                    "by" : "SØRUMSAND",
-                    "postnummer" : "1920",
-                    "land" : "NO"
-                  }
-                },
-                "krav" : {
-                  "dato" : "2018-06-28"
+                "statsborgerskap" : [ {
+                  "land" : "QX"
+                } ],
+                "etternavn" : "Testesen",
+                "fornavn" : "Test",
+                "kjoenn" : "M",
+                "foedselsdato" : "1988-07-12",
+                "kontakt" : {
+                  "telefon" : [ {
+                    "type" : "mobil",
+                    "nummer" : "11111111"
+                  } ],
+                  "email" : [ {
+                    "adresse" : "melleby11@melby.no"
+                  } ]
                 }
               },
-              "pensjon" : {
-                "kravDato" : {
-                  "dato" : "2018-06-28"
-                }
+              "adresse" : {
+                "gate" : "Oppoverbakken 66",
+                "by" : "SØRUMSAND",
+                "postnummer" : "1920",
+                "land" : "NO"
               }
+            },
+            "krav" : {
+              "dato" : "2018-06-28"
             }
+          },
+          "pensjon" : {
+            "kravDato" : {
+              "dato" : "2018-06-28"
+            }
+          },
+          "sedGVer" : "4",
+          "sedVer" : "2"
+        }
         """.trimIndent()
 
         val result = mockMvc.perform(post("/sed/prefill")

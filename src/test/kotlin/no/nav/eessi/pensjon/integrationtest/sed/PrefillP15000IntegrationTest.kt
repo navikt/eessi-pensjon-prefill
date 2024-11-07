@@ -168,7 +168,12 @@ class PrefillP15000IntegrationTest {
                   "institusjonsid" : "NO:noinst002",
                   "identifikator" : "12312312312",
                   "land" : "NO"
-                } ],
+                    }, {
+                      "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                      "institusjonsid" : "NO:noinst002",
+                      "identifikator" : "123123123",
+                      "land" : "XQ"
+                    } ],
                 "statsborgerskap" : [ {
                   "land" : "XQ"
                 } ],
@@ -262,8 +267,6 @@ class PrefillP15000IntegrationTest {
         val validResponse = """
         {
           "sed" : "P15000",
-          "sedGVer" : "4",
-          "sedVer" : "2",
           "nav" : {
             "eessisak" : [ {
               "institusjonsid" : "NO:noinst002",
@@ -287,7 +290,7 @@ class PrefillP15000IntegrationTest {
                 "by" : "SØRUMSAND",
                 "postnummer" : "1920",
                 "land" : "NO"
-              }              
+              }
             },
             "krav" : {
               "dato" : "2020-01-01",
@@ -302,6 +305,11 @@ class PrefillP15000IntegrationTest {
                   "institusjonsid" : "NO:noinst002",
                   "identifikator" : "12312312312",
                   "land" : "NO"
+                }, {
+                  "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                  "institusjonsid" : "NO:noinst002",
+                  "identifikator" : "123123123",
+                  "land" : "XQ"
                 } ],
                 "statsborgerskap" : [ {
                   "land" : "XQ"
@@ -315,14 +323,14 @@ class PrefillP15000IntegrationTest {
                 },
                 "rolle" : "01",
                 "kontakt" : {
-                          "telefon" : [ {
-                            "type" : "mobil",
-                            "nummer" : "11111111"
-                          } ],
-                          "email" : [ {
-                            "adresse" : "melleby11@melby.no"
-                          } ]
-                 }                
+                  "telefon" : [ {
+                    "type" : "mobil",
+                    "nummer" : "11111111"
+                  } ],
+                  "email" : [ {
+                    "adresse" : "melleby11@melby.no"
+                  } ]
+                }
               },
               "adresse" : {
                 "gate" : "Oppoverbakken 66",
@@ -331,7 +339,9 @@ class PrefillP15000IntegrationTest {
                 "land" : "NO"
               }
             }
-          }
+          },
+          "sedGVer" : "4",
+          "sedVer" : "2"
         }
         """.trimIndent()
 
@@ -436,7 +446,12 @@ class PrefillP15000IntegrationTest {
                   "institusjonsid" : "NO:noinst002",
                   "identifikator" : "12312312312",
                   "land" : "NO"
-                } ],
+                    }, {
+                      "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                      "institusjonsid" : "NO:noinst002",
+                      "identifikator" : "123123123",
+                      "land" : "XQ"
+                    } ],
                 "statsborgerskap" : [ {
                   "land" : "XQ"
                 } ],
@@ -754,6 +769,11 @@ class PrefillP15000IntegrationTest {
                       "institusjonsid" : "NO:noinst002",
                       "identifikator" : "$FNR_VOKSEN",
                       "land" : "NO"
+                    }, {
+                      "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                      "institusjonsid" : "NO:noinst002",
+                      "identifikator" : "123123123",
+                      "land" : "XQ"
                     } ],
                     "statsborgerskap" : [ {
                       "land" : "XQ"
@@ -899,9 +919,16 @@ class PrefillP15000IntegrationTest {
                       "institusjonsid" : "NO:noinst002",
                       "identifikator" : "$FNR_VOKSEN",
                       "land" : "NO"
+                    }, {
+                      "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                      "institusjonsid" : "NO:noinst002",
+                      "identifikator" : "123123123",
+                      "land" : "SE"
                     } ],
-                    "statsborgerskap" : [ {
+                     "statsborgerskap" : [ {
                       "land" : "XQ"
+                    }, {
+                      "land" : "SE"
                     } ],
                     "etternavn" : "Gjenlev",
                     "fornavn" : "Lever",

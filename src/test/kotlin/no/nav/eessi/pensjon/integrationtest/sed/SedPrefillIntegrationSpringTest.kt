@@ -237,6 +237,11 @@ class SedPrefillIntegrationSpringTest {
                       "institusjonsid" : "NO:noinst002",
                       "identifikator" : "12312312312",
                       "land" : "NO"
+                    }, {
+                      "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                      "institusjonsid" : "NO:noinst002",
+                      "identifikator" : "123123123",
+                      "land" : "QX"
                     } ],
                     "statsborgerskap" : [ {
                       "land" : "QX"
@@ -400,12 +405,17 @@ class SedPrefillIntegrationSpringTest {
                 } ],
                 "bruker" : {
                   "person" : {
-                    "pin" : [ {
-                      "institusjonsnavn" : "NOINST002, NO INST002, NO",
-                      "institusjonsid" : "NO:noinst002",
-                      "identifikator" : "$FNR_VOKSEN_3",
-                      "land" : "NO"
-                    } ],
+                "pin" : [ {
+                  "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                  "institusjonsid" : "NO:noinst002",
+                  "identifikator" : "12312312312",
+                  "land" : "NO"
+                }, {
+                  "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                  "institusjonsid" : "NO:noinst002",
+                  "identifikator" : "123123123",
+                  "land" : "QX"
+                } ],
                     "statsborgerskap" : [ {
                       "land" : "QX"
                     } ],
@@ -474,6 +484,11 @@ class SedPrefillIntegrationSpringTest {
                       "institusjonsid" : "NO:noinst002",
                       "identifikator" : "3123",
                       "land" : "NO"
+                    }, {
+                      "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                      "institusjonsid" : "NO:noinst002",
+                      "identifikator" : "123123123",
+                      "land" : "QX"
                     } ],
                     "statsborgerskap" : [ {
                       "land" : "QX"
@@ -483,14 +498,14 @@ class SedPrefillIntegrationSpringTest {
                     "kjoenn" : "M",
                     "foedselsdato" : "1988-07-12",
                     "kontakt" : {
-          "telefon" : [ {
-            "type" : "mobil",
-            "nummer" : "11111111"
-          } ],
-          "email" : [ {
-            "adresse" : "melleby11@melby.no"
-          } ]
-        }
+                      "telefon" : [ {
+                        "type" : "mobil",
+                        "nummer" : "11111111"
+                      } ],
+                      "email" : [ {
+                        "adresse" : "melleby11@melby.no"
+                      } ]
+                    }
                   },
                   "adresse" : {
                     "gate" : "Oppoverbakken 66",
@@ -563,8 +578,12 @@ class SedPrefillIntegrationSpringTest {
                       "institusjonsid" : "NO:noinst002",
                       "identifikator" : "3123",
                       "land" : "NO"
-                    } ],
-                    "statsborgerskap" : [ {
+                    }, {
+                      "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                      "institusjonsid" : "NO:noinst002",
+                      "identifikator" : "123123123",
+                      "land" : "QX"
+                    } ],                    "statsborgerskap" : [ {
                       "land" : "QX"
                     } ],
                     "etternavn" : "Testesen",
@@ -572,14 +591,14 @@ class SedPrefillIntegrationSpringTest {
                     "kjoenn" : "M",
                     "foedselsdato" : "1988-07-12",
                     "kontakt" : {
-          "telefon" : [ {
-            "type" : "mobil",
-            "nummer" : "11111111"
-          } ],
-          "email" : [ {
-            "adresse" : "melleby11@melby.no"
-          } ]
-        }
+                      "telefon" : [ {
+                        "type" : "mobil",
+                        "nummer" : "11111111"
+                      } ],
+                      "email" : [ {
+                        "adresse" : "melleby11@melby.no"
+                      } ]
+                    }
                   },
                   "adresse" : {
                     "gate" : "Oppoverbakken 66",
@@ -637,6 +656,11 @@ class SedPrefillIntegrationSpringTest {
                   "institusjonsid" : "NO:noinst002",
                   "identifikator" : "3123",
                   "land" : "NO"
+                }, {
+                  "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                  "institusjonsid" : "NO:noinst002",
+                  "identifikator" : "123123123",
+                  "land" : "QX"
                 } ],
                 "statsborgerskap" : [ {
                   "land" : "QX"
@@ -720,12 +744,17 @@ class SedPrefillIntegrationSpringTest {
                 } ],
                 "bruker" : {
                   "person" : {
-                    "pin" : [ {
-                      "institusjonsnavn" : "NOINST002, NO INST002, NO",
-                      "institusjonsid" : "NO:noinst002",
-                      "identifikator" : "3123",
-                      "land" : "NO"
-                    } ],
+                "pin" : [ {
+                  "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                  "institusjonsid" : "NO:noinst002",
+                  "identifikator" : "3123",
+                  "land" : "NO"
+                }, {
+                  "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                  "institusjonsid" : "NO:noinst002",
+                  "identifikator" : "123123123",
+                  "land" : "QX"
+                } ],
                     "statsborgerskap" : [ {
                       "land" : "QX"
                     } ],
@@ -734,14 +763,14 @@ class SedPrefillIntegrationSpringTest {
                     "kjoenn" : "M",
                     "foedselsdato" : "1988-07-12",
                     "kontakt" : {
-          "telefon" : [ {
-            "type" : "mobil",
-            "nummer" : "11111111"
-          } ],
-          "email" : [ {
-            "adresse" : "melleby11@melby.no"
-          } ]
-        }
+                  "telefon" : [ {
+                    "type" : "mobil",
+                    "nummer" : "11111111"
+                  } ],
+                  "email" : [ {
+                    "adresse" : "melleby11@melby.no"
+                  } ]
+                }
                   },
                   "adresse" : {
                     "gate" : "Oppoverbakken 66",
@@ -808,6 +837,11 @@ class SedPrefillIntegrationSpringTest {
                       "institusjonsid" : "NO:noinst002",
                       "identifikator" : "12312312312",
                       "land" : "NO"
+                    }, {
+                      "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                      "institusjonsid" : "NO:noinst002",
+                      "identifikator" : "123123123",
+                      "land" : "QX"
                     } ],
                     "statsborgerskap" : [ {
                       "land" : "QX"
@@ -899,7 +933,7 @@ class SedPrefillIntegrationSpringTest {
 
         every { pensjonsinformasjonOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns PrefillTestHelper.readXMLresponse("/pensjonsinformasjon/krav/P2000-AP-LP-RVUR-20541862.xml")
 
-        every { kodeverkClient.finnLandkode(eq("NOR")) } returns "NO"
+        every { kodeverkClient.finnLandkode(any()) } returns "NO"
 
         val apijson = dummyApijson(sakid = "20541862", aktoerId = AKTOER_ID, sedType = P2100, buc = P_BUC_02, fnravdod = FNR_VOKSEN_4)
 

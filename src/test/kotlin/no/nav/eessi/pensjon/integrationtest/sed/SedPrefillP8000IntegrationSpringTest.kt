@@ -99,79 +99,82 @@ class SedPrefillP8000IntegrationSpringTest {
         val apijson = dummyApijson(sakid = "21337890", aktoerId = AKTOER_ID, sed = "P8000", buc = P_BUC_05.name, subject = subject, refperson = "\"SOKER\"")
 
         val validResponse = """
-            {
-              "sed" : "P8000",
-              "sedGVer" : "4",
-              "sedVer" : "2",
-              "nav" : {
-                "eessisak" : [ {
-                  "institusjonsid" : "NO:noinst002",
-                  "institusjonsnavn" : "NOINST002, NO INST002, NO",
-                  "saksnummer" : "21337890",
+          {
+          "sed" : "P8000",
+          "nav" : {
+            "eessisak" : [ {
+              "institusjonsid" : "NO:noinst002",
+              "institusjonsnavn" : "NOINST002, NO INST002, NO",
+              "saksnummer" : "21337890",
+              "land" : "NO"
+            } ],
+            "bruker" : {
+              "person" : {
+                "pin" : [ {
+                  "identifikator" : "9876543210",
                   "land" : "NO"
                 } ],
-                "bruker" : {
-                  "person" : {
-                    "pin" : [ {
-                      "identifikator" : "$FNR_VOKSEN_4",
-                      "land" : "NO"
-                    } ],
-                    "etternavn" : "Død",
-                    "fornavn" : "Avdød",
-                    "kjoenn" : "M",
-                    "foedselsdato" : "1921-07-12"
-                  },
-                  "adresse" : { 
-                          "gate" : "Oppoverbakken 66",
-                          "by" : "SØRUMSAND",
-                          "bygning" : "bygning",
-                          "postnummer" : "1920",
-                          "region" : "region",
-                          "land" : "NO"
-                  }
-                },
-                "annenperson" : {
-                  "person" : {
-                    "pin" : [ {
-                      "institusjonsnavn" : "NOINST002, NO INST002, NO",
-                      "institusjonsid" : "NO:noinst002",
-                      "identifikator" : "$FNR_VOKSEN_3",
-                      "land" : "NO"
-                    } ],
-                    "statsborgerskap" : [ {
-                      "land" : "QX"
-                    } ],
-                    "etternavn" : "Gjenlev",
-                    "fornavn" : "Lever",
-                    "kjoenn" : "M",
-                    "foedselsdato" : "1988-07-12",
-                    "rolle" : "01",
-                    "kontakt" : {
-                      "telefon" : [ {
-                        "type" : "mobil",
-                        "nummer" : "11111111"
-                      } ],
-                      "email" : [ {
-                        "adresse" : "melleby11@melby.no"
-                      } ]
-                    }
-                  },
-                  "adresse" : {
-                    "gate" : "OlssenGate",
-                    "by" : "UTLANDBY",
-                    "postnummer" : "9898",
-                    "land" : "QX",
-                    "region" : "Akershus",
-                    "bygning" : "bygning"
-                  }
+                "etternavn" : "Død",
+                "fornavn" : "Avdød",
+                "kjoenn" : "M",
+                "foedselsdato" : "1921-07-12"
+              },
+              "adresse" : {
+                "gate" : "Oppoverbakken 66",
+                "by" : "SØRUMSAND",
+                "postnummer" : "1920",
+                "land" : "NO"
+              }
+            },
+            "annenperson" : {
+              "person" : {
+                "pin" : [ {
+                  "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                  "institusjonsid" : "NO:noinst002",
+                  "identifikator" : "12312312312",
+                  "land" : "NO"
+                }, {
+                  "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                  "institusjonsid" : "NO:noinst002",
+                  "identifikator" : "123123123",
+                  "land" : "QX"
+                } ],
+                "statsborgerskap" : [ {
+                  "land" : "QX"
+                } ],
+                "etternavn" : "Gjenlev",
+                "fornavn" : "Lever",
+                "kjoenn" : "M",
+                "foedselsdato" : "1988-07-12",
+                "rolle" : "01",
+                "kontakt" : {
+                  "telefon" : [ {
+                    "type" : "mobil",
+                    "nummer" : "11111111"
+                  } ],
+                  "email" : [ {
+                    "adresse" : "melleby11@melby.no"
+                  } ]
                 }
               },
-              "pensjon" : {
-                "anmodning" : {
-                  "referanseTilPerson" : "02"
-                }
+              "adresse" : {
+                "gate" : "OlssenGate",
+                "bygning" : "bygning",
+                "by" : "UTLANDBY",
+                "postnummer" : "9898",
+                "region" : "Akershus",
+                "land" : "QX"
               }
             }
+          },
+          "pensjon" : {
+            "anmodning" : {
+              "referanseTilPerson" : "02"
+            }
+          },
+          "sedGVer" : "4",
+          "sedVer" : "2"
+        }
         """.trimIndent()
 
         val result = mockMvc.perform(post("/sed/prefill")
@@ -183,7 +186,7 @@ class SedPrefillP8000IntegrationSpringTest {
 
         val response = result.response.getContentAsString(charset("UTF-8"))
 
-        JSONAssert.assertEquals(response, validResponse, false)
+        JSONAssert.assertEquals(validResponse, response, false)
     }
 
     @Test
@@ -215,8 +218,6 @@ class SedPrefillP8000IntegrationSpringTest {
         val validResponse = """
         {
           "sed" : "P8000",
-          "sedGVer" : "4",
-          "sedVer" : "2",
           "nav" : {
             "eessisak" : [ {
               "institusjonsid" : "NO:noinst002",
@@ -227,7 +228,7 @@ class SedPrefillP8000IntegrationSpringTest {
             "bruker" : {
               "person" : {
                 "pin" : [ {
-                  "identifikator" : "$FNR_VOKSEN_4",
+                  "identifikator" : "9876543210",
                   "land" : "NO"
                 } ],
                 "etternavn" : "Død",
@@ -247,8 +248,13 @@ class SedPrefillP8000IntegrationSpringTest {
                 "pin" : [ {
                   "institusjonsnavn" : "NOINST002, NO INST002, NO",
                   "institusjonsid" : "NO:noinst002",
-                  "identifikator" : "$FNR_VOKSEN_3",
+                  "identifikator" : "12312312312",
                   "land" : "NO"
+                }, {
+                  "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                  "institusjonsid" : "NO:noinst002",
+                  "identifikator" : "123123123",
+                  "land" : "QX"
                 } ],
                 "statsborgerskap" : [ {
                   "land" : "QX"
@@ -280,7 +286,9 @@ class SedPrefillP8000IntegrationSpringTest {
             "anmodning" : {
               "referanseTilPerson" : "01"
             }
-          }
+          },
+          "sedGVer" : "4",
+          "sedVer" : "2"
         }
         """.trimIndent()
 
@@ -293,7 +301,7 @@ class SedPrefillP8000IntegrationSpringTest {
 
         val response = result.response.getContentAsString(charset("UTF-8"))
 
-        JSONAssert.assertEquals(response, validResponse, false)
+        JSONAssert.assertEquals(validResponse, response, false)
 
     }
 
@@ -414,69 +422,74 @@ class SedPrefillP8000IntegrationSpringTest {
         val response = result.response.getContentAsString(charset("UTF-8"))
 
         val validResponse = """
-              {
-              "sed" : "P8000",
-              "sedGVer" : "4",
-              "sedVer" : "2",
-              "nav" : {
-                "eessisak" : [ {
-                  "institusjonsid" : "NO:noinst002",
-                  "institusjonsnavn" : "NOINST002, NO INST002, NO",
-                  "saksnummer" : "21337890",
+        {
+          "sed" : "P8000",
+          "nav" : {
+            "eessisak" : [ {
+              "institusjonsid" : "NO:noinst002",
+              "institusjonsnavn" : "NOINST002, NO INST002, NO",
+              "saksnummer" : "21337890",
+              "land" : "NO"
+            } ],
+            "bruker" : {
+              "person" : {
+                "pin" : [ {
+                  "identifikator" : "9876543210",
                   "land" : "NO"
                 } ],
-                "bruker" : {
-                  "person" : {
-                    "pin" : [ {
-                      "identifikator" : "$FNR_VOKSEN_4",
-                      "land" : "NO"
-                    } ],
-                    "etternavn" : "Død",
-                    "fornavn" : "Avdød",
-                    "kjoenn" : "M",
-                    "foedselsdato" : "1921-07-12"
-                  },
-                  "adresse" : {
-                    "gate" : "Oppoverbakken 66",
-                    "by" : "SØRUMSAND",
-                    "land" : "NO",
-                    "postnummer" : "1920"
-                  }
-                },
-                "annenperson" : {
-                  "person" : {
-                    "pin" : [ {
-                      "institusjonsnavn" : "NOINST002, NO INST002, NO",
-                      "institusjonsid" : "NO:noinst002",
-                      "identifikator" : "$FNR_BARN",
-                      "land" : "NO"
-                    } ],
-                    "statsborgerskap" : [ {
-                      "land" : "QX"
-                    } ],
-                    "etternavn" : "Diskret",
-                    "fornavn" : "Barn",
-                    "kjoenn" : "M",
-                    "foedselsdato" : "1988-07-12",
-                    "rolle" : "01",
-                    "kontakt" : {
-                      "telefon" : [ {
-                        "type" : "mobil",
-                        "nummer" : "11111111"
-                      } ],
-                      "email" : [ {
-                        "adresse" : "melleby11@melby.no"
-                      } ]
-                    }
-                  }
-                }
+                "etternavn" : "Død",
+                "fornavn" : "Avdød",
+                "kjoenn" : "M",
+                "foedselsdato" : "1921-07-12"
               },
-              "pensjon" : {
-                "anmodning" : {
-                  "referanseTilPerson" : "02"
+              "adresse" : {
+                "gate" : "Oppoverbakken 66",
+                "by" : "SØRUMSAND",
+                "postnummer" : "1920",
+                "land" : "NO"
+              }
+            },
+            "annenperson" : {
+              "person" : {
+                "pin" : [ {
+                  "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                  "institusjonsid" : "NO:noinst002",
+                  "identifikator" : "12011577847",
+                  "land" : "NO"
+                }, {
+                  "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                  "institusjonsid" : "NO:noinst002",
+                  "identifikator" : "123123123",
+                  "land" : "QX"
+                } ],
+                "statsborgerskap" : [ {
+                  "land" : "QX"
+                } ],
+                "etternavn" : "Diskret",
+                "fornavn" : "Barn",
+                "kjoenn" : "M",
+                "foedselsdato" : "1988-07-12",
+                "rolle" : "01",
+                "kontakt" : {
+                  "telefon" : [ {
+                    "type" : "mobil",
+                    "nummer" : "11111111"
+                  } ],
+                  "email" : [ {
+                    "adresse" : "melleby11@melby.no"
+                  } ]
                 }
               }
             }
+          },
+          "pensjon" : {
+            "anmodning" : {
+              "referanseTilPerson" : "02"
+            }
+          },
+          "sedGVer" : "4",
+          "sedVer" : "2"
+        }
         """.trimIndent()
 
         JSONAssert.assertEquals(response, validResponse, false)
