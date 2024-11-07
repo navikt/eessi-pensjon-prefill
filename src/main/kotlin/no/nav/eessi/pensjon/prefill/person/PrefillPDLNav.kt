@@ -295,9 +295,6 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
         val utenlandskeIdenter = personpdl.utenlandskIdentifikasjonsnummer.map {
             PinItem(
                 //Utenlandsk ident
-                institusjonsnavn = institusjonNavn,
-                institusjonsid = institusjonId,
-                //personnr
                 identifikator = it.identifikasjonsnummer,
                 land = prefillAdresse.hentLandkode(it.utstederland)
             )
