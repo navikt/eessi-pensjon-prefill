@@ -3,7 +3,8 @@ package no.nav.eessi.pensjon.prefill.person
 import no.nav.eessi.pensjon.eux.model.sed.*
 import no.nav.eessi.pensjon.kodeverk.KodeverkClient.Companion.toJson
 import no.nav.eessi.pensjon.personoppslag.pdl.model.*
-import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe.*
+import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe.FOLKEREGISTERIDENT
+import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe.NPID
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.shared.api.BankOgArbeid
 import no.nav.eessi.pensjon.shared.api.PersonInfo
@@ -49,29 +50,6 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
                   logger.debug("Person er avdod (ingen adresse å hente).")
                 }
         }
-
-        fun createPersonPinNorIdent(
-                personpdl: PdlPerson,
-                institusjonId: String,
-                institusjonNavn: String): List<PinItem> {
-            logger.debug("2.1.7         Fodselsnummer/Personnummer")
-            val identer = personpdl.identer
-            return listOf(
-                    PinItem(
-                            //hentet lokal NAV insitusjondata fra applikasjon properties.
-                            institusjonsnavn = institusjonNavn,
-                            institusjonsid = institusjonId,
-
-                            //NAV/Norge benytter ikke seg av sektor, setter denne til null
-                            //personnr
-                            identifikator = identer.firstOrNull { it.gruppe == FOLKEREGISTERIDENT || it.gruppe == NPID }?.ident,
-
-                            // norsk personnr settes alltid til NO da vi henter NorIdent+
-                            land = "NO"
-                    )
-            )
-        }
-
 
         //8.0 Bank detalsjer om bank betalinger.
         private fun createBankData(personInfo: BankOgArbeid): Bank {
@@ -278,9 +256,6 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
         personInfo: PersonInfo? = null): Person {
 
         logger.debug("2.1           Persondata (forsikret person / gjenlevende person / barn)")
-        val landKode = pdlperson.statsborgerskap
-            .filterNot { it.gyldigFraOgMed == null }
-            .maxByOrNull { it.gyldigFraOgMed!! }?.land
 
         return Person(
                 //2.1.1     familiy name
@@ -292,15 +267,42 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
                 //2.1.4     //sex
                 kjoenn = pdlperson.kortKjonn(),
                 //2.1.7
-                pin = createPersonPinNorIdent(pdlperson, institutionid, institutionnavn),
+                pin = createPersonPin(pdlperson, institutionid, institutionnavn),
                 //2.2.1.1
-                statsborgerskap = listOf(createStatsborgerskap(landKode)),
+                statsborgerskap = createStatsborgerskap(pdlperson),
                 //2.1.8.1           place of birth
                 foedested = createFodested(pdlperson),
 
                 kontakt = createKontakt(personInfo)
 
         )
+    }
+
+    fun createPersonPin(
+        personpdl: PdlPerson,
+        institusjonId: String,
+        institusjonNavn: String): List<PinItem> {
+        logger.debug("2.1.7         Fodselsnummer/Personnummer")
+        val norskeIdenter = personpdl.identer.filter { it.gruppe == FOLKEREGISTERIDENT || it.gruppe == NPID }.map {
+            PinItem(
+                //hentet lokal NAV insitusjondata fra applikasjon properties.
+                institusjonsnavn = institusjonNavn,
+                institusjonsid = institusjonId,
+                identifikator = it.ident,
+                land = "NO"
+            )
+        }
+        val utenlandskeIdenter = personpdl.utenlandskIdentifikasjonsnummer.map {
+            PinItem(
+                //Utenlandsk ident
+                institusjonsnavn = institusjonNavn,
+                institusjonsid = institusjonId,
+                //personnr
+                identifikator = it.identifikasjonsnummer,
+                land = prefillAdresse.hentLandkode(it.utstederland)
+            )
+        }
+        return norskeIdenter + utenlandskeIdenter
     }
 
     private fun createKontakt(personInfo: PersonInfo?): Kontakt? {
@@ -357,11 +359,16 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
      * Prefiller to-bokstavs statsborgerskap
      * Hopper over Kosovo (XXK) fordi Rina ikke støttet Kosovo
      */
-    private fun createStatsborgerskap(landkode: String?): StatsborgerskapItem {
+    private fun createStatsborgerskap(pdlperson: PdlPerson): List<StatsborgerskapItem> {
         logger.debug("2.2.1.1         Land / Statsborgerskap")
-        if(validateUgyldigeLand(landkode) == null){
-            return StatsborgerskapItem()
+        val statsborgerskap = pdlperson.statsborgerskap
+            .filterNot { it.gyldigFraOgMed == null }
+            .filterNot { validateUgyldigeLand(it.land) == null }
+            .map {
+                logger.debug("              Statsborgerskap: ${it.land}")
+            StatsborgerskapItem(prefillAdresse.hentLandkode(it.land))
         }
-        return StatsborgerskapItem(prefillAdresse.hentLandkode(landkode))
+
+        return statsborgerskap.distinct()
     }
 }
