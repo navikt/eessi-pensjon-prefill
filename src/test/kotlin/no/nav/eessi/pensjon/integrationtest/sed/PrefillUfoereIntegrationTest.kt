@@ -588,8 +588,6 @@ class PrefillUfoereIntegrationTest {
                           "identifikator" : "$ident",
                           "land" : "NO"
                         }, {
-                          "institusjonsnavn" : "NOINST002, NO INST002, NO",
-                          "institusjonsid" : "NO:noinst002",
                           "identifikator" : "123123123",
                           "land" : "QX"
                         } ],

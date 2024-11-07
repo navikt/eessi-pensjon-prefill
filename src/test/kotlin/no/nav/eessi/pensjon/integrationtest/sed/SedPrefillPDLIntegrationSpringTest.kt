@@ -110,12 +110,10 @@ class SedPrefillPDLIntegrationSpringTest {
                       "institusjonsid" : "NO:noinst002",
                       "identifikator" : "11067122781",
                       "land" : "NO"
-                        }, {
-                          "institusjonsnavn" : "NOINST002, NO INST002, NO",
-                          "institusjonsid" : "NO:noinst002",
-                          "identifikator" : "123123123",
-                          "land" : "QX"
-                        } ],
+                    }, {
+                      "identifikator" : "123123123",
+                      "land" : "QX"
+                    } ],
                     "statsborgerskap" : [ {
                       "land" : "QX"
                     } ],
@@ -204,8 +202,6 @@ class SedPrefillPDLIntegrationSpringTest {
                       "identifikator" : "22117320034",
                       "land" : "NO"
                     }, {
-                      "institusjonsnavn" : "NOINST002, NO INST002, NO",
-                      "institusjonsid" : "NO:noinst002",
                       "identifikator" : "123123123",
                       "land" : "QX"
                     } ],
@@ -236,15 +232,13 @@ class SedPrefillPDLIntegrationSpringTest {
               },
               "pensjon" : {
                 "gjenlevende" : {
-                   "person" : {
+                  "person" : {
                     "pin" : [ {
                       "institusjonsnavn" : "NOINST002, NO INST002, NO",
                       "institusjonsid" : "NO:noinst002",
                       "identifikator" : "11067122781",
                       "land" : "NO"
                     }, {
-                      "institusjonsnavn" : "NOINST002, NO INST002, NO",
-                      "institusjonsid" : "NO:noinst002",
                       "identifikator" : "123123123",
                       "land" : "QX"
                     } ],

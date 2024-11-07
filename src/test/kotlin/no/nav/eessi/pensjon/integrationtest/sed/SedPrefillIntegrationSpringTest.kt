@@ -221,8 +221,6 @@ class SedPrefillIntegrationSpringTest {
         val validResponse = """
             {
               "sed" : "P6000",
-              "sedGVer" : "4",
-              "sedVer" : "2",
               "nav" : {
                 "eessisak" : [ {
                   "institusjonsid" : "NO:noinst002",
@@ -238,8 +236,6 @@ class SedPrefillIntegrationSpringTest {
                       "identifikator" : "12312312312",
                       "land" : "NO"
                     }, {
-                      "institusjonsnavn" : "NOINST002, NO INST002, NO",
-                      "institusjonsid" : "NO:noinst002",
                       "identifikator" : "123123123",
                       "land" : "QX"
                     } ],
@@ -292,7 +288,9 @@ class SedPrefillIntegrationSpringTest {
                     "poststed" : "Oslo"
                   } ]
                 }
-              }
+              },
+              "sedGVer" : "4",
+              "sedVer" : "2"
             }
         """.trimIndent()
 
@@ -405,17 +403,15 @@ class SedPrefillIntegrationSpringTest {
                 } ],
                 "bruker" : {
                   "person" : {
-                "pin" : [ {
-                  "institusjonsnavn" : "NOINST002, NO INST002, NO",
-                  "institusjonsid" : "NO:noinst002",
-                  "identifikator" : "12312312312",
-                  "land" : "NO"
-                }, {
-                  "institusjonsnavn" : "NOINST002, NO INST002, NO",
-                  "institusjonsid" : "NO:noinst002",
-                  "identifikator" : "123123123",
-                  "land" : "QX"
-                } ],
+                    "pin" : [ {
+                      "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                      "institusjonsid" : "NO:noinst002",
+                      "identifikator" : "12312312312",
+                      "land" : "NO"
+                    }, {
+                      "identifikator" : "123123123",
+                      "land" : "QX"
+                    } ],
                     "statsborgerskap" : [ {
                       "land" : "QX"
                     } ],
@@ -744,17 +740,15 @@ class SedPrefillIntegrationSpringTest {
                 } ],
                 "bruker" : {
                   "person" : {
-                "pin" : [ {
-                  "institusjonsnavn" : "NOINST002, NO INST002, NO",
-                  "institusjonsid" : "NO:noinst002",
-                  "identifikator" : "3123",
-                  "land" : "NO"
-                }, {
-                  "institusjonsnavn" : "NOINST002, NO INST002, NO",
-                  "institusjonsid" : "NO:noinst002",
-                  "identifikator" : "123123123",
-                  "land" : "QX"
-                } ],
+                    "pin" : [ {
+                      "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                      "institusjonsid" : "NO:noinst002",
+                      "identifikator" : "3123",
+                      "land" : "NO"
+                    }, {
+                      "identifikator" : "123123123",
+                      "land" : "QX"
+                    } ],
                     "statsborgerskap" : [ {
                       "land" : "QX"
                     } ],
@@ -838,8 +832,6 @@ class SedPrefillIntegrationSpringTest {
                       "identifikator" : "12312312312",
                       "land" : "NO"
                     }, {
-                      "institusjonsnavn" : "NOINST002, NO INST002, NO",
-                      "institusjonsid" : "NO:noinst002",
                       "identifikator" : "123123123",
                       "land" : "QX"
                     } ],

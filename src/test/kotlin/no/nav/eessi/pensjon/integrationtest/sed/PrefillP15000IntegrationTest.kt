@@ -168,12 +168,10 @@ class PrefillP15000IntegrationTest {
                   "institusjonsid" : "NO:noinst002",
                   "identifikator" : "12312312312",
                   "land" : "NO"
-                    }, {
-                      "institusjonsnavn" : "NOINST002, NO INST002, NO",
-                      "institusjonsid" : "NO:noinst002",
-                      "identifikator" : "123123123",
-                      "land" : "XQ"
-                    } ],
+                }, {
+                  "identifikator" : "123123123",
+                  "land" : "XQ"
+                } ],
                 "statsborgerskap" : [ {
                   "land" : "XQ"
                 } ],
@@ -306,8 +304,6 @@ class PrefillP15000IntegrationTest {
                   "identifikator" : "12312312312",
                   "land" : "NO"
                 }, {
-                  "institusjonsnavn" : "NOINST002, NO INST002, NO",
-                  "institusjonsid" : "NO:noinst002",
                   "identifikator" : "123123123",
                   "land" : "XQ"
                 } ],
@@ -446,12 +442,10 @@ class PrefillP15000IntegrationTest {
                   "institusjonsid" : "NO:noinst002",
                   "identifikator" : "12312312312",
                   "land" : "NO"
-                    }, {
-                      "institusjonsnavn" : "NOINST002, NO INST002, NO",
-                      "institusjonsid" : "NO:noinst002",
-                      "identifikator" : "123123123",
-                      "land" : "XQ"
-                    } ],
+                }, {
+                  "identifikator" : "123123123",
+                  "land" : "XQ"
+                } ],
                 "statsborgerskap" : [ {
                   "land" : "XQ"
                 } ],
@@ -767,11 +761,9 @@ class PrefillP15000IntegrationTest {
                     "pin" : [ {
                       "institusjonsnavn" : "NOINST002, NO INST002, NO",
                       "institusjonsid" : "NO:noinst002",
-                      "identifikator" : "$FNR_VOKSEN",
+                      "identifikator" : "11067122781",
                       "land" : "NO"
                     }, {
-                      "institusjonsnavn" : "NOINST002, NO INST002, NO",
-                      "institusjonsid" : "NO:noinst002",
                       "identifikator" : "123123123",
                       "land" : "XQ"
                     } ],
@@ -917,15 +909,13 @@ class PrefillP15000IntegrationTest {
                     "pin" : [ {
                       "institusjonsnavn" : "NOINST002, NO INST002, NO",
                       "institusjonsid" : "NO:noinst002",
-                      "identifikator" : "$FNR_VOKSEN",
+                      "identifikator" : "11067122781",
                       "land" : "NO"
                     }, {
-                      "institusjonsnavn" : "NOINST002, NO INST002, NO",
-                      "institusjonsid" : "NO:noinst002",
                       "identifikator" : "123123123",
                       "land" : "SE"
                     } ],
-                     "statsborgerskap" : [ {
+                    "statsborgerskap" : [ {
                       "land" : "XQ"
                     }, {
                       "land" : "SE"
