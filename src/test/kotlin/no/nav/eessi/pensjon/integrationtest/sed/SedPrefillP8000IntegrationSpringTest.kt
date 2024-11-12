@@ -467,7 +467,7 @@ class SedPrefillP8000IntegrationSpringTest {
                 "foedselsdato" : "1988-07-12",
                 "sivilstand" : [ {
                   "fradato" : "2000-10-01",
-                  "status" : "GIFT"
+                  "status" : "UGIFT"
                 } ],
                 "rolle" : "01",
                 "kontakt" : {
