@@ -36,10 +36,10 @@
         "sivilstand": [
           {
             "fradato": "2018-02-01",
-            "status": "gift"
+            "status": "02"
           },
           {
-            "status": "skilt_fra_registrert_partnerskap",
+            "status": "05",
             "fradato": "2016-02-01"
           }
         ],

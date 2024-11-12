@@ -120,8 +120,6 @@ class PrefillUfoereIntegrationTest {
                       "identifikator" : "3123",
                       "land" : "NO"
                     }, {
-                      "institusjonsnavn" : "NOINST002, NO INST002, NO",
-                      "institusjonsid" : "NO:noinst002",
                       "identifikator" : "123123123",
                       "land" : "QX"
                     } ],
@@ -134,7 +132,7 @@ class PrefillUfoereIntegrationTest {
                     "foedselsdato" : "1988-07-12",
                     "sivilstand" : [ {
                       "fradato" : "2000-10-01",
-                      "status" : "UGIFT"
+                      "status" : "01"
                     } ],
                     "kontakt" : {
                       "telefon" : [ {
@@ -292,7 +290,7 @@ class PrefillUfoereIntegrationTest {
                     "foedselsdato" : "$hovedpersonfdato",
                     "sivilstand" : [ {
                       "fradato" : "2010-01-10",
-                      "status" : "GIFT"
+                      "status" : "02"
                     } ],
                     "kontakt" : {
                       "telefon" : [ {
@@ -335,7 +333,7 @@ class PrefillUfoereIntegrationTest {
                     "foedselsdato" : "$ekktefellefdato",
                     "sivilstand" : [ {
                       "fradato" : "2010-01-10",
-                      "status" : "GIFT"
+                      "status" : "02"
                     } ],
                     "kontakt" : {
                       "telefon" : [ {
@@ -384,7 +382,7 @@ class PrefillUfoereIntegrationTest {
                     "foedselsdato" : "$barn1fdato",
                     "sivilstand" : [ {
                       "fradato" : "2000-10-01",
-                      "status" : "UGIFT"
+                      "status" : "01"
                     } ]
                   },
                   "far" : {
@@ -434,7 +432,7 @@ class PrefillUfoereIntegrationTest {
                     "foedselsdato" : "$barn2fdato",
                     "sivilstand" : [ {
                       "fradato" : "2000-10-01",
-                      "status" : "UGIFT"
+                      "status" : "01"
                     } ]
                   },
                   "far" : {
@@ -484,7 +482,7 @@ class PrefillUfoereIntegrationTest {
                     "foedselsdato" : "$barn3fdato",
                     "sivilstand" : [ {
                       "fradato" : "2000-10-01",
-                      "status" : "UGIFT"
+                      "status" : "01"
                     } ]
                   },
                   "far" : {
@@ -514,8 +512,6 @@ class PrefillUfoereIntegrationTest {
             }
         """.trimIndent()
 
-        println("***** RESPONSE: $response ")
-        println("***** expected: $validResponse ")
         JSONAssert.assertEquals(response, validResponse, false)
 
     }
@@ -578,7 +574,7 @@ class PrefillUfoereIntegrationTest {
         val response = result.response.getContentAsString(charset("UTF-8"))
 
         val validResponse = validResponse(NPID_VOKSEN)
-        JSONAssert.assertEquals(response, validResponse, true)
+        JSONAssert.assertEquals(validResponse, response, true)
     }
 
     private fun validResponse(ident: String) = """
@@ -613,7 +609,7 @@ class PrefillUfoereIntegrationTest {
                         "foedselsdato" : "1988-07-12",
                         "sivilstand" : [ {
                           "fradato" : "2000-10-01",
-                          "status" : "UGIFT"
+                          "status" : "01"
                         } ],
                         "kontakt" : {
                           "telefon" : [ {

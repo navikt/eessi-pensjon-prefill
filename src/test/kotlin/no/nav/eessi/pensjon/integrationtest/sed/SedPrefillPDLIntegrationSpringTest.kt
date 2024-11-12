@@ -123,7 +123,7 @@ class SedPrefillPDLIntegrationSpringTest {
                     "foedselsdato" : "1988-07-12",
                     "sivilstand" : [ {
                       "fradato" : "2000-10-01",
-                      "status" : "UGIFT"
+                      "status" : "01"
                     } ],
                     "kontakt" : {
                       "telefon" : [ {
@@ -218,7 +218,7 @@ class SedPrefillPDLIntegrationSpringTest {
                     "foedselsdato" : "1921-07-12",
                     "sivilstand" : [ {
                       "fradato" : "2000-10-01",
-                      "status" : "UGIFT"
+                      "status" : "01"
                     } ],
                     "kontakt" : {
                       "telefon" : [ {
@@ -259,7 +259,7 @@ class SedPrefillPDLIntegrationSpringTest {
                     "foedselsdato" : "1988-07-12",
                     "sivilstand" : [ {
                       "fradato" : "2000-10-01",
-                      "status" : "UGIFT"
+                      "status" : "01"
                     } ],
                     "kontakt" : {
                       "telefon" : [ {
@@ -316,8 +316,6 @@ class SedPrefillPDLIntegrationSpringTest {
                   "identifikator" : "3123",
                   "land" : "NO"
                 }, {
-                  "institusjonsnavn" : "NOINST002, NO INST002, NO",
-                  "institusjonsid" : "NO:noinst002",
                   "identifikator" : "123123123",
                   "land" : "QX"
                 } ],
@@ -330,7 +328,7 @@ class SedPrefillPDLIntegrationSpringTest {
                 "foedselsdato" : "1988-07-12",
                 "sivilstand" : [ {
                   "fradato" : "2000-10-01",
-                  "status" : "UGIFT"
+                  "status" : "01"
                 } ],
                 "kontakt" : {
                   "telefon" : [ {
@@ -371,7 +369,7 @@ class SedPrefillPDLIntegrationSpringTest {
             .andReturn()
 
         val response = result.response.getContentAsString(charset("UTF-8"))
-        JSONAssert.assertEquals(response, validResponse, false)
+        JSONAssert.assertEquals(validResponse, response, false)
 
     }
 

@@ -248,7 +248,7 @@ class SedPrefillIntegrationSpringTest {
                     "foedselsdato" : "1988-07-12",
                     "sivilstand" : [ {
                       "fradato" : "2000-10-01",
-                      "status" : "UGIFT"
+                      "status" : "01"
                     } ],
                     "kontakt" : {
                       "telefon" : [ {
@@ -425,7 +425,7 @@ class SedPrefillIntegrationSpringTest {
                     "foedselsdato" : "1988-07-12",
                     "sivilstand" : [ {
                       "fradato" : "2000-10-01",
-                      "status" : "UGIFT"
+                      "status" : "01"
                     } ],
                     "kontakt" : {
                       "telefon" : [ {
@@ -503,7 +503,7 @@ class SedPrefillIntegrationSpringTest {
                     "foedselsdato" : "1988-07-12",
                     "sivilstand" : [ {
                       "fradato" : "2000-10-01",
-                      "status" : "UGIFT"
+                      "status" : "01"
                     } ],
                     "kontakt" : {
                       "telefon" : [ {
@@ -600,7 +600,7 @@ class SedPrefillIntegrationSpringTest {
                     "foedselsdato" : "1988-07-12",
                     "sivilstand" : [ {
                       "fradato" : "2000-10-01",
-                      "status" : "UGIFT"
+                      "status" : "01"
                     } ],
                     "kontakt" : {
                       "telefon" : [ {
@@ -683,7 +683,7 @@ class SedPrefillIntegrationSpringTest {
                 "foedselsdato" : "1988-07-12",
                 "sivilstand" : [ {
                   "fradato" : "2000-10-01",
-                  "status" : "UGIFT"
+                  "status" : "01"
                 } ],
                 "kontakt" : {
           "telefon" : [ {
@@ -778,7 +778,7 @@ class SedPrefillIntegrationSpringTest {
                     "foedselsdato" : "1988-07-12",
                     "sivilstand" : [ {
                       "fradato" : "2000-10-01",
-                      "status" : "UGIFT"
+                      "status" : "01"
                     } ],
                     "kontakt" : {
                   "telefon" : [ {
@@ -809,7 +809,7 @@ class SedPrefillIntegrationSpringTest {
             }
         """.trimIndent()
 
-        JSONAssert.assertEquals(response, validResponse, true)
+        JSONAssert.assertEquals(validResponse, response,true)
     }
 
     @Test
@@ -868,7 +868,7 @@ class SedPrefillIntegrationSpringTest {
                     "foedselsdato" : "1988-07-12",
                     "sivilstand" : [ {
                       "fradato" : "2000-10-01",
-                      "status" : "UGIFT"
+                      "status" : "01"
                     } ],
                     "kontakt" : {
                       "telefon" : [ {

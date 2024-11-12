@@ -4,6 +4,8 @@ import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.sed.*
+import no.nav.eessi.pensjon.eux.model.sed.SivilstandRina.GIFT
+import no.nav.eessi.pensjon.eux.model.sed.SivilstandRina.REGISTRERT_PARTNER
 import no.nav.eessi.pensjon.kodeverk.KodeverkClient
 import no.nav.eessi.pensjon.kodeverk.PostnummerService
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
@@ -423,7 +425,7 @@ class PrefillPDLNavTest {
                     personFdato,
                     someInstitutionId,
                     someIntitutionNavn,
-                    sivilstand = listOf(SivilstandItem("2000-10-01","GIFT")),
+                    sivilstand = listOf(SivilstandItem("2000-10-01", GIFT)),
                     krrPerson = KrrPerson(false,"ola@nav.no", "11223344")
                 ), adresse = lagTomAdresse()
             ), ektefelle = Ektefelle(
@@ -435,7 +437,7 @@ class PrefillPDLNavTest {
                     someInstitutionId,
                     someIntitutionNavn,
                     "K",
-                    sivilstand = listOf(SivilstandItem("2000-10-01","GIFT")),
+                    sivilstand = listOf(SivilstandItem("2000-10-01", GIFT)),
                     krrPerson = KrrPerson(false,"ola@nav.no", "11223344")
                 ), type = "ektefelle"
             )
@@ -506,7 +508,7 @@ class PrefillPDLNavTest {
                     personFdato,
                     someInstitutionId,
                     someIntitutionNavn,
-                    sivilstand = listOf(SivilstandItem("2000-10-01","GIFT")),
+                    sivilstand = listOf(SivilstandItem("2000-10-01", GIFT)),
                     krrPerson = KrrPerson(false,"ola@nav.no", "11223344")
                 ), adresse = Adresse("STORGATA 12", postnummer = "0101", by = "OSLO", land = "NO")
             ), ektefelle = Ektefelle(
@@ -518,7 +520,7 @@ class PrefillPDLNavTest {
                     someInstitutionId,
                     someIntitutionNavn,
                     "K",
-                    sivilstand = listOf(SivilstandItem("2000-10-01","GIFT")),
+                    sivilstand = listOf(SivilstandItem("2000-10-01", GIFT)),
                     krrPerson = KrrPerson(false,"ola@nav.no", "11223344")
                 ), type = "ektefelle"
             ), barn = listOf(
@@ -649,7 +651,7 @@ class PrefillPDLNavTest {
                     personFdato,
                     someInstitutionId,
                     someIntitutionNavn,
-                    sivilstand = listOf(SivilstandItem("2000-10-01","REGISTRERT_PARTNER")),
+                    sivilstand = listOf(SivilstandItem("2000-10-01", REGISTRERT_PARTNER)),
                     krrPerson = KrrPerson(false,"ola@nav.no", "11223344")
                 ), adresse = lagTomAdresse()
             ), ektefelle = Ektefelle(
@@ -661,7 +663,7 @@ class PrefillPDLNavTest {
                     someInstitutionId,
                     someIntitutionNavn,
                     "K",
-                    sivilstand = listOf(SivilstandItem("2000-10-01","REGISTRERT_PARTNER")),
+                    sivilstand = listOf(SivilstandItem("2000-10-01", REGISTRERT_PARTNER)),
                     krrPerson = KrrPerson(false,"ola@nav.no", "11223344")
                 ), type = "part_i_et_registrert_partnerskap"
             )

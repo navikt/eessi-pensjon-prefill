@@ -10,7 +10,7 @@
       "person" : {
         "fornavn" : "Raus 212",
         "sivilstand" : [ {
-          "status" : "separert",
+          "status" : "05",
           "fradato" : "2019-05-15"
         } ],
         "kjoenn" : "M",
