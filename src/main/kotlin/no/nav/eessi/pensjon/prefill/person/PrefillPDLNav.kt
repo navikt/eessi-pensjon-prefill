@@ -142,7 +142,7 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
         val forsikretPerson = personData.forsikretPerson
         val avdodEllerGjenlevende = personData.gjenlevendeEllerAvdod
         val ektefellePerson = personData.ektefellePerson
-        val sivilstandstype = personData.sivilstandstype
+//        val sivilstandstype = personData.sivilstandstype
         val barnPersonList = personData.barnPersonList
 
         logger.debug(
@@ -175,7 +175,7 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
 
                 //5.0 ektefelle eller partnerskap
                 ektefelle = ektefellePerson?.let {
-                        createEktefellePartner(createBruker(it, null, null, bruker), sivilstandstype)
+                        createEktefellePartner(createBruker(it, null, null, bruker), avdodEllerGjenlevende?.sivilstand?.firstOrNull()?.type)
                 },
 
                 //6.0 skal denne kjøres hver gang? eller kun under P2000? P2100
@@ -268,8 +268,10 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
                 kjoenn = pdlperson.kortKjonn(),
                 //2.1.7
                 pin = createPersonPin(pdlperson, institutionid, institutionnavn),
-                //2.2.1.1
+                //2.2.1.1     statsborgerskap
                 statsborgerskap = createStatsborgerskap(pdlperson),
+                //2.2.1.1     sivilstand
+                sivilstand = createSivilstand(pdlperson),
                 //2.1.8.1           place of birth
                 foedested = createFodested(pdlperson),
 
@@ -367,5 +369,20 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
         }
 
         return statsborgerskap.distinct()
+    }
+
+    /**
+     * Prefiller sivilstand-status og -dato fra PDL
+     */
+    private fun createSivilstand(pdlperson: PdlPerson): List<SivilstandItem> {
+        logger.debug("2.2.2.1        Sivilstand")
+        val sivilstand = pdlperson.sivilstand
+            .filterNot { it.gyldigFraOgMed == null }
+            .map {
+                logger.info("Sivilstand: ${it.type} dato: ${it.gyldigFraOgMed}")
+                SivilstandItem(it.gyldigFraOgMed.toString(), it.type.toString(), )
+            }
+
+        return sivilstand.distinct()
     }
 }
