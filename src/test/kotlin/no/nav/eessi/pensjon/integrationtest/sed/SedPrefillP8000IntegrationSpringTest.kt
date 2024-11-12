@@ -465,6 +465,10 @@ class SedPrefillP8000IntegrationSpringTest {
                 "fornavn" : "Barn",
                 "kjoenn" : "M",
                 "foedselsdato" : "1988-07-12",
+                "sivilstand" : [ {
+                  "fradato" : "2000-10-01",
+                  "status" : "GIFT"
+                } ],
                 "rolle" : "01",
                 "kontakt" : {
                   "telefon" : [ {

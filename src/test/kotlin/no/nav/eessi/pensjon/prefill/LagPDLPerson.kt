@@ -11,7 +11,15 @@ import java.time.LocalDateTime
 
 class LagPdlPerson {
     companion object {
-        fun lagPerson(fnrEllerNpid: String = FodselsnummerGenerator.generateFnrForTest(60), fornavn: String = "OLE", etternavn: String = "OLSEN", land: String = "NOR", kjoennType: KjoennType = KjoennType.MANN, erDod: Boolean? = false): PdlPerson {
+        fun lagPerson(
+            fnrEllerNpid: String = FodselsnummerGenerator.generateFnrForTest(60),
+            fornavn: String = "OLE",
+            etternavn: String = "OLSEN",
+            land: String = "NOR",
+            kjoennType: KjoennType = KjoennType.MANN,
+            erDod: Boolean? = false,
+            sivilstand: List<Sivilstand> = emptyList()
+        ): PdlPerson {
             val personfnr = Fodselsnummer.fra(fnrEllerNpid)
             val fdatoaar =  if (erDod != null && erDod == true || personfnr?.erNpid == true) LocalDate.of(1921, 7, 12) else personfnr?.getBirthDate()
             val doeadfall = if (erDod != null && erDod == true || personfnr?.erNpid == true) Doedsfall(LocalDate.of(2020, 10, 1), null, mockMeta()) else null
@@ -28,7 +36,7 @@ class LagPdlPerson {
                 kjoenn = Kjoenn(kjoennType, null, mockMeta()),
                 doedsfall = doeadfall,
                 forelderBarnRelasjon = emptyList(),
-                sivilstand = emptyList(),
+                sivilstand = sivilstand,
                 kontaktadresse = null,
                 utenlandskIdentifikasjonsnummer = emptyList(),
             )
@@ -127,8 +135,14 @@ class LagPdlPerson {
 
         fun createPersonMedEktefellePartner(personPersonnr: String, ektefellePersonnr: String, type: Sivilstandstype): Pair<PdlPerson, PdlPerson> {
 
-            val person = lagPerson(personPersonnr, "Ola", "Testbruker")
-            val ektefelle = lagPerson(ektefellePersonnr, "Jonna", "Dolla", kjoennType = KjoennType.KVINNE)
+            val person = lagPerson(personPersonnr, "Ola", "Testbruker", sivilstand = emptyList())
+            val ektefelle = lagPerson(
+                ektefellePersonnr,
+                "Jonna",
+                "Dolla",
+                kjoennType = KjoennType.KVINNE,
+                sivilstand = emptyList()
+            )
 
             val nyPerson = person.copy(sivilstand = listOf(Sivilstand(type, LocalDate.of(2000,10, 1), ektefellePersonnr, mockMeta())))
             val nyEktefell = ektefelle.copy(sivilstand = listOf(Sivilstand(type, LocalDate.of(2000,10, 1), personPersonnr, mockMeta())))

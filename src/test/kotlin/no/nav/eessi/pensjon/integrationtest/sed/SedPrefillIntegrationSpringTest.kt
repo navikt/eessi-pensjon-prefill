@@ -246,6 +246,10 @@ class SedPrefillIntegrationSpringTest {
                     "fornavn" : "Alder",
                     "kjoenn" : "M",
                     "foedselsdato" : "1988-07-12",
+                    "sivilstand" : [ {
+                      "fradato" : "2000-10-01",
+                      "status" : "UGIFT"
+                    } ],
                     "kontakt" : {
                       "telefon" : [ {
                         "type" : "mobil",
@@ -419,6 +423,10 @@ class SedPrefillIntegrationSpringTest {
                     "fornavn" : "Lever",
                     "kjoenn" : "M",
                     "foedselsdato" : "1988-07-12",
+                    "sivilstand" : [ {
+                      "fradato" : "2000-10-01",
+                      "status" : "UGIFT"
+                    } ],
                     "kontakt" : {
                       "telefon" : [ {
                         "type" : "mobil",
@@ -493,6 +501,10 @@ class SedPrefillIntegrationSpringTest {
                     "fornavn" : "Test",
                     "kjoenn" : "M",
                     "foedselsdato" : "1988-07-12",
+                    "sivilstand" : [ {
+                      "fradato" : "2000-10-01",
+                      "status" : "UGIFT"
+                    } ],
                     "kontakt" : {
                       "telefon" : [ {
                         "type" : "mobil",
@@ -586,6 +598,10 @@ class SedPrefillIntegrationSpringTest {
                     "fornavn" : "Test",
                     "kjoenn" : "M",
                     "foedselsdato" : "1988-07-12",
+                    "sivilstand" : [ {
+                      "fradato" : "2000-10-01",
+                      "status" : "UGIFT"
+                    } ],
                     "kontakt" : {
                       "telefon" : [ {
                         "type" : "mobil",
@@ -665,6 +681,10 @@ class SedPrefillIntegrationSpringTest {
                 "fornavn" : "Test",
                 "kjoenn" : "M",
                 "foedselsdato" : "1988-07-12",
+                "sivilstand" : [ {
+                  "fradato" : "2000-10-01",
+                  "status" : "UGIFT"
+                } ],
                 "kontakt" : {
           "telefon" : [ {
             "type" : "mobil",
@@ -756,6 +776,10 @@ class SedPrefillIntegrationSpringTest {
                     "fornavn" : "Test",
                     "kjoenn" : "M",
                     "foedselsdato" : "1988-07-12",
+                    "sivilstand" : [ {
+                      "fradato" : "2000-10-01",
+                      "status" : "UGIFT"
+                    } ],
                     "kontakt" : {
                   "telefon" : [ {
                     "type" : "mobil",
@@ -842,6 +866,10 @@ class SedPrefillIntegrationSpringTest {
                     "fornavn" : "Lever",
                     "kjoenn" : "M",
                     "foedselsdato" : "1988-07-12",
+                    "sivilstand" : [ {
+                      "fradato" : "2000-10-01",
+                      "status" : "UGIFT"
+                    } ],
                     "kontakt" : {
                       "telefon" : [ {
                         "type" : "mobil",

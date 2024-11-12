@@ -2,7 +2,6 @@ package no.nav.eessi.pensjon.prefill.sed.krav
 
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.SedType
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Sivilstandstype
 import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
@@ -40,7 +39,6 @@ class PrefillP2200MedAlderSakTest {
 
         personDataCollection = PersonDataCollection(
             forsikretPerson = person,
-            sivilstandstype = Sivilstandstype.GIFT,
             gjenlevendeEllerAvdod = person,
             ektefellePerson = ekte
         )

@@ -179,7 +179,7 @@ object PersonPDLMock {
         return PersonDataCollection(
             forsikretPerson = enkePerson,
             ektefellePerson = null,
-            sivilstandstype = Sivilstandstype.ENKE_ELLER_ENKEMANN,
+//            sivilstandstype = Sivilstandstype.ENKE_ELLER_ENKEMANN,
             gjenlevendeEllerAvdod = enkePerson,
             barnPersonList = listOfNotNull(
                 barn1,
@@ -273,7 +273,7 @@ object PersonPDLMock {
 
         return PersonDataCollection(
             forsikretPerson = person,
-            sivilstandstype = Sivilstandstype.GIFT,
+//            sivilstandstype = Sivilstandstype.GIFT,
             gjenlevendeEllerAvdod = person,
             ektefellePerson = ekte
         )
@@ -289,7 +289,7 @@ object PersonPDLMock {
 
         return PersonDataCollection(
             forsikretPerson = person,
-            sivilstandstype = Sivilstandstype.ENKE_ELLER_ENKEMANN,
+//            sivilstandstype = Sivilstandstype.ENKE_ELLER_ENKEMANN,
             gjenlevendeEllerAvdod = avdod
         )
     }
@@ -303,7 +303,7 @@ object PersonPDLMock {
 
         return PersonDataCollection(
             forsikretPerson = person,
-            sivilstandstype = Sivilstandstype.ENKE_ELLER_ENKEMANN,
+//            sivilstandstype = Sivilstandstype.ENKE_ELLER_ENKEMANN,
             gjenlevendeEllerAvdod = avdod
         )
     }

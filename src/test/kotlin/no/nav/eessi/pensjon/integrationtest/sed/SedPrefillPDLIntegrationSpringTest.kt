@@ -121,6 +121,10 @@ class SedPrefillPDLIntegrationSpringTest {
                     "fornavn" : "Test",
                     "kjoenn" : "M",
                     "foedselsdato" : "1988-07-12",
+                    "sivilstand" : [ {
+                      "fradato" : "2000-10-01",
+                      "status" : "UGIFT"
+                    } ],
                     "kontakt" : {
                       "telefon" : [ {
                         "type" : "mobil",
@@ -212,6 +216,10 @@ class SedPrefillPDLIntegrationSpringTest {
                     "fornavn" : "Avdød",
                     "kjoenn" : "M",
                     "foedselsdato" : "1921-07-12",
+                    "sivilstand" : [ {
+                      "fradato" : "2000-10-01",
+                      "status" : "UGIFT"
+                    } ],
                     "kontakt" : {
                       "telefon" : [ {
                         "type" : "mobil",
@@ -249,6 +257,10 @@ class SedPrefillPDLIntegrationSpringTest {
                     "fornavn" : "Lever",
                     "kjoenn" : "M",
                     "foedselsdato" : "1988-07-12",
+                    "sivilstand" : [ {
+                      "fradato" : "2000-10-01",
+                      "status" : "UGIFT"
+                    } ],
                     "kontakt" : {
                       "telefon" : [ {
                         "type" : "mobil",
@@ -316,6 +328,10 @@ class SedPrefillPDLIntegrationSpringTest {
                 "fornavn" : "Test",
                 "kjoenn" : "M",
                 "foedselsdato" : "1988-07-12",
+                "sivilstand" : [ {
+                  "fradato" : "2000-10-01",
+                  "status" : "UGIFT"
+                } ],
                 "kontakt" : {
                   "telefon" : [ {
                     "type" : "mobil",
