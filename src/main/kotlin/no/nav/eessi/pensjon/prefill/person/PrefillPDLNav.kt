@@ -5,6 +5,7 @@ import no.nav.eessi.pensjon.kodeverk.KodeverkClient.Companion.toJson
 import no.nav.eessi.pensjon.personoppslag.pdl.model.*
 import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe.FOLKEREGISTERIDENT
 import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe.NPID
+import no.nav.eessi.pensjon.personoppslag.pdl.model.Sivilstandstype.*
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.shared.api.BankOgArbeid
 import no.nav.eessi.pensjon.shared.api.PersonInfo
@@ -86,8 +87,8 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
         private fun createEktefelleType(typevalue: Sivilstandstype): String {
             logger.debug("5.1           Ektefelle/Partnerskap-type : $typevalue")
             return when (typevalue) {
-                Sivilstandstype.GIFT -> "ektefelle"
-                Sivilstandstype.REGISTRERT_PARTNER -> "part_i_et_registrert_partnerskap"
+                GIFT -> "ektefelle"
+                REGISTRERT_PARTNER -> "part_i_et_registrert_partnerskap"
                 else -> "" // endring fra TPS istede for SAMBOER så blank hvis ukjent/ikke gift/partner.
             }
         }
@@ -380,9 +381,14 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
             .filterNot { it.gyldigFraOgMed == null }
             .map {
                 logger.info("Sivilstand: ${it.type} dato: ${it.gyldigFraOgMed}")
-                SivilstandItem(it.gyldigFraOgMed.toString(), it.type.toString(), )
+                when(it.type){
+                    UGIFT -> SivilstandItem(it.gyldigFraOgMed.toString(), SivilstandRina.UGIFT)
+                    GIFT -> SivilstandItem(it.gyldigFraOgMed.toString(), SivilstandRina.GIFT)
+                    SKILT -> SivilstandItem(it.gyldigFraOgMed.toString(), SivilstandRina.SKILT)
+                    REGISTRERT_PARTNER -> SivilstandItem(it.gyldigFraOgMed.toString(), SivilstandRina.REGISTRERT_PARTNER)
+                    else -> SivilstandItem(null, null)
+                }
             }
-
         return sivilstand.distinct()
     }
 }
