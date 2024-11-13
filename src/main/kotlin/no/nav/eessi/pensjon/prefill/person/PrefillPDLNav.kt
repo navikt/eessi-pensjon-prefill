@@ -382,10 +382,10 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
             .map {
                 logger.info("Sivilstand: ${it.type} dato: ${it.gyldigFraOgMed}")
                 when(it.type){
-                    UGIFT -> SivilstandItem(it.gyldigFraOgMed.toString(), SivilstandRina.UGIFT)
-                    GIFT -> SivilstandItem(it.gyldigFraOgMed.toString(), SivilstandRina.GIFT)
-                    SKILT -> SivilstandItem(it.gyldigFraOgMed.toString(), SivilstandRina.SKILT)
-                    REGISTRERT_PARTNER -> SivilstandItem(it.gyldigFraOgMed.toString(), SivilstandRina.REGISTRERT_PARTNER)
+                    UGIFT -> SivilstandItem(it.gyldigFraOgMed.toString(), SivilstandRina.enslig)
+                    GIFT -> SivilstandItem(it.gyldigFraOgMed.toString(), SivilstandRina.gift)
+                    SKILT -> SivilstandItem(it.gyldigFraOgMed.toString(), SivilstandRina.skilt)
+                    REGISTRERT_PARTNER -> SivilstandItem(it.gyldigFraOgMed.toString(), SivilstandRina.registrert_partnerskap)
                     else -> SivilstandItem(null, null)
                 }
             }
