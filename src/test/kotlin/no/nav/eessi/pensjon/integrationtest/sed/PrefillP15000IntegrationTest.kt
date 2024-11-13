@@ -181,7 +181,7 @@ class PrefillP15000IntegrationTest {
                 "foedselsdato" : "1988-07-12",
                 "sivilstand" : [ {
                   "fradato" : "2000-10-01",
-                  "status" : "01"
+                  "status" : "enslig"
                 } ],
                 "relasjontilavdod" : {
                   "relasjon" : "06"
@@ -320,7 +320,7 @@ class PrefillP15000IntegrationTest {
                 "foedselsdato" : "1988-07-12",
                 "sivilstand" : [ {
                   "fradato" : "2000-10-01",
-                  "status" : "01"
+                  "status" : "enslig"
                 } ],
                 "relasjontilavdod" : {
                   "relasjon" : "06"
@@ -460,7 +460,7 @@ class PrefillP15000IntegrationTest {
                 "foedselsdato" : "1988-07-12",
                 "sivilstand" : [ {
                   "fradato" : "2000-10-01",
-                  "status" : "01"
+                  "status" : "enslig"
                 } ],
                 "relasjontilavdod" : {
                   "relasjon" : "06"
@@ -785,7 +785,7 @@ class PrefillP15000IntegrationTest {
                     "foedselsdato" : "1988-07-12",
                     "sivilstand" : [ {
                       "fradato" : "2000-10-01",
-                      "status" : "01"
+                      "status" : "enslig"
                     } ],
                     "rolle" : "01",
                     "kontakt" : {
@@ -939,7 +939,7 @@ class PrefillP15000IntegrationTest {
                     "foedselsdato" : "1988-07-12",
                     "sivilstand" : [ {
                       "fradato" : "2000-10-01",
-                      "status" : "01"
+                      "status" : "enslig"
                     } ],
                     "relasjontilavdod" : {
                       "relasjon" : "06"

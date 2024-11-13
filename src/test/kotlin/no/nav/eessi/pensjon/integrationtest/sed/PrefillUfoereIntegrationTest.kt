@@ -132,7 +132,7 @@ class PrefillUfoereIntegrationTest {
                     "foedselsdato" : "1988-07-12",
                     "sivilstand" : [ {
                       "fradato" : "2000-10-01",
-                      "status" : "01"
+                      "status" : "enslig"
                     } ],
                     "kontakt" : {
                       "telefon" : [ {
@@ -290,7 +290,7 @@ class PrefillUfoereIntegrationTest {
                     "foedselsdato" : "$hovedpersonfdato",
                     "sivilstand" : [ {
                       "fradato" : "2010-01-10",
-                      "status" : "02"
+                      "status" : "gift"
                     } ],
                     "kontakt" : {
                       "telefon" : [ {
@@ -333,7 +333,7 @@ class PrefillUfoereIntegrationTest {
                     "foedselsdato" : "$ekktefellefdato",
                     "sivilstand" : [ {
                       "fradato" : "2010-01-10",
-                      "status" : "02"
+                      "status" : "gift"
                     } ],
                     "kontakt" : {
                       "telefon" : [ {
@@ -382,7 +382,7 @@ class PrefillUfoereIntegrationTest {
                     "foedselsdato" : "$barn1fdato",
                     "sivilstand" : [ {
                       "fradato" : "2000-10-01",
-                      "status" : "01"
+                      "status" : "enslig"
                     } ]
                   },
                   "far" : {
@@ -432,7 +432,7 @@ class PrefillUfoereIntegrationTest {
                     "foedselsdato" : "$barn2fdato",
                     "sivilstand" : [ {
                       "fradato" : "2000-10-01",
-                      "status" : "01"
+                      "status" : "enslig"
                     } ]
                   },
                   "far" : {
@@ -482,7 +482,7 @@ class PrefillUfoereIntegrationTest {
                     "foedselsdato" : "$barn3fdato",
                     "sivilstand" : [ {
                       "fradato" : "2000-10-01",
-                      "status" : "01"
+                      "status" : "enslig"
                     } ]
                   },
                   "far" : {
@@ -609,7 +609,7 @@ class PrefillUfoereIntegrationTest {
                         "foedselsdato" : "1988-07-12",
                         "sivilstand" : [ {
                           "fradato" : "2000-10-01",
-                          "status" : "01"
+                          "status" : "enslig"
                         } ],
                         "kontakt" : {
                           "telefon" : [ {

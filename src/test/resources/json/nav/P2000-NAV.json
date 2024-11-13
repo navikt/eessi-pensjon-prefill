@@ -28,9 +28,9 @@
         "kjoenn" : "f",
         "sivilstand" : [ {
           "fradato" : "2018-02-01",
-          "status" : "02"
+          "status" : "gift"
         }, {
-          "status" : "05",
+          "status" : "skilt",
           "fradato" : "2016-02-01"
         } ],
         "pin" : [ {

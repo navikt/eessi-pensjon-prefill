@@ -14,7 +14,7 @@ class SedP10000Test {
         val p10000sed = SED.fromJson(p10000json)
 
         assertEquals("VAIKUNTHARAJAN-MASK",p10000sed.nav?.bruker?.person?.fornavn )
-        assertEquals(SivilstandRina.GIFT,p10000sed.nav?.bruker?.person?.sivilstand?.get(0)?.status)
+        assertEquals(SivilstandRina.gift,p10000sed.nav?.bruker?.person?.sivilstand?.get(0)?.status)
         assertEquals("NSSI_TNT1, NATIONAL SOCIAL SECURITY INSTITUTE, BG",p10000sed.nav?.eessisak?.get(0)?.institusjonsnavn)
     }
 }
