@@ -88,7 +88,6 @@ class PrefillPDLNavTest {
         val personDataCollection = PersonDataCollection(
             forsikretPerson = forsikret,
             ektefellePerson = null,
-//            sivilstandstype = Sivilstandstype.UGIFT,
             gjenlevendeEllerAvdod = forsikret
         )
 
@@ -124,6 +123,80 @@ class PrefillPDLNavTest {
             ),
         )
 
+        assertEquals(expected, actual)
+        JSONAssert.assertEquals(expected.toJsonSkipEmpty(), actual.toJsonSkipEmpty(), true)
+
+    }
+
+    @Test
+    fun `minimal preutfylling av forsikret som har Norsk statsborgerskap med null som gyldigFraOgMed dato`() {
+        val forsikretSinNpid = "01220049651"
+        val prefillData = PrefillDataModelMother.initialPrefillDataModel(
+            SedType.P2100, pinId = forsikretSinNpid, penSaksnummer = somePenSaksnr, avdod = null
+        )
+
+        val forsikret = PdlPerson(
+            identer = listOf(IdentInformasjon("01220049651", IdentGruppe.NPID)),
+            navn = Navn("OLE", null, "OLSEN", null, null, null, LagPdlPerson.mockMeta()),
+            adressebeskyttelse = emptyList(),
+            bostedsadresse = null,
+            oppholdsadresse = null,
+            statsborgerskap = listOf(
+                Statsborgerskap(
+                    "NOR", null, null, LagPdlPerson.mockMeta()
+                )
+            ),
+            foedsel = Foedsel(LocalDate.of(80, 12, 1), "NOR", null, null, null, LagPdlPerson.mockMeta()),
+            geografiskTilknytning = null,
+            kjoenn = Kjoenn(KjoennType.MANN, null, LagPdlPerson.mockMeta()),
+            doedsfall = Doedsfall(metadata = LagPdlPerson.mockMeta()),
+            forelderBarnRelasjon = emptyList(),
+            sivilstand = emptyList(),
+            kontaktadresse = null,
+            utenlandskIdentifikasjonsnummer = emptyList()
+        )
+
+        val foreldreFdato = forsikret.foedsel?.foedselsdato?.toString()
+
+        val personDataCollection = PersonDataCollection(
+            forsikretPerson = forsikret,
+            ektefellePerson = null,
+            gjenlevendeEllerAvdod = forsikret
+        )
+
+        val actual = prefillPDLNav.prefill(
+            prefillData.penSaksnummer,
+            prefillData.bruker,
+            prefillData.avdod,
+            personDataCollection,
+            prefillData.getBankOgArbeidFromRequest(),
+            null,
+            null
+        )
+        val expected = Nav(
+            eessisak = listOf(
+                EessisakItem(
+                    institusjonsid = someInstitutionId,
+                    institusjonsnavn = someIntitutionNavn,
+                    saksnummer = somePenSaksnr,
+                    land = "NO"
+                )
+            ),
+            bruker = Bruker(
+                person = lagNavPerson(
+                    forsikretSinNpid,
+                    "OLE",
+                    "OLSEN",
+                    foreldreFdato!!,
+                    someInstitutionId,
+                    someIntitutionNavn,
+                    krrPerson = KrrPerson(false,"ola@nav.no", "11223344")
+                ),
+                adresse = lagTomAdresse(),
+            ),
+        )
+
+        println("**** $actual")
         assertEquals(expected, actual)
         JSONAssert.assertEquals(expected.toJsonSkipEmpty(), actual.toJsonSkipEmpty(), true)
 
