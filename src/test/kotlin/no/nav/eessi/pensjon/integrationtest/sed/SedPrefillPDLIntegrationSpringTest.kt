@@ -92,66 +92,70 @@ class SedPrefillPDLIntegrationSpringTest {
         val actual = result.response.getContentAsString(charset("UTF-8"))
 
         val excpected = """
-            {
-              "sed" : "P2000",
-              "sedGVer" : "4",
-              "sedVer" : "2",
-              "nav" : {
-                "eessisak" : [ {
-                  "institusjonsid" : "NO:noinst002",
+        {
+          "sed" : "P2000",
+          "nav" : {
+            "eessisak" : [ {
+              "institusjonsid" : "NO:noinst002",
+              "institusjonsnavn" : "NOINST002, NO INST002, NO",
+              "saksnummer" : "21337890",
+              "land" : "NO"
+            } ],
+            "bruker" : {
+              "person" : {
+                "pin" : [ {
                   "institusjonsnavn" : "NOINST002, NO INST002, NO",
-                  "saksnummer" : "21337890",
+                  "institusjonsid" : "NO:noinst002",
+                  "identifikator" : "11067122781",
                   "land" : "NO"
+                }, {
+                  "identifikator" : "123123123",
+                  "land" : "QX"
                 } ],
-                "bruker" : {
-                  "person" : {
-                    "pin" : [ {
-                      "institusjonsnavn" : "NOINST002, NO INST002, NO",
-                      "institusjonsid" : "NO:noinst002",
-                      "identifikator" : "11067122781",
-                      "land" : "NO"
-                    }, {
-                      "identifikator" : "123123123",
-                      "land" : "QX"
-                    } ],
-                    "statsborgerskap" : [ {
-                      "land" : "QX"
-                    } ],
-                    "etternavn" : "Testesen",
-                    "fornavn" : "Test",
-                    "kjoenn" : "M",
-                    "foedselsdato" : "1988-07-12",
-                    "sivilstand" : [ {
-                      "fradato" : "2000-10-01",
-                      "status" : "enslig"
-                    } ],
-                    "kontakt" : {
-                      "telefon" : [ {
-                        "type" : "mobil",
-                        "nummer" : "11111111"
-                      } ],
-                      "email" : [ {
-                        "adresse" : "melleby11@melby.no"
-                      } ]
-                    }
-                  },
-                  "adresse" : {
-                    "gate" : "Oppoverbakken 66",
-                    "by" : "SØRUMSAND",
-                    "postnummer" : "1920",
-                    "land" : "NO"
-                  }
-                },
-                "krav" : {
-                  "dato" : "2018-06-28"
+                "statsborgerskap" : [ {
+                  "land" : "QX"
+                } ],
+                "etternavn" : "Testesen",
+                "fornavn" : "Test",
+                "kjoenn" : "M",
+                "foedselsdato" : "1988-07-12",
+                "sivilstand" : [ {
+                  "fradato" : "2000-10-01",
+                  "status" : "enslig"
+                } ],
+                "kontakt" : {
+                  "telefon" : [ {
+                    "type" : "mobil",
+                    "nummer" : "11111111"
+                  } ],
+                  "email" : [ {
+                    "adresse" : "melleby11@melby.no"
+                  } ]
                 }
               },
-              "pensjon" : {
-                "kravDato" : {
-                  "dato" : "2018-06-28"
-                }
+              "adresse" : {
+                "gate" : "Oppoverbakken 66",
+                "by" : "SØRUMSAND",
+                "postnummer" : "1920",
+                "land" : "NO"
               }
-            }         
+            },
+            "krav" : {
+              "dato" : "2018-06-28"
+            }
+          },
+          "pensjon" : {
+            "ytelser" : [ {
+              "beloep" : [ { } ],
+              "status" : "01"
+            } ],
+            "kravDato" : {
+              "dato" : "2018-06-28"
+            }
+          },
+          "sedGVer" : "4",
+          "sedVer" : "2"
+        }         
         """.trimIndent()
         JSONAssert.assertEquals(excpected, actual , true)
 

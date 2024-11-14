@@ -78,6 +78,7 @@ class PrefillP2000_AP_LOP_UTLANDTest {
                 nav = Nav(krav = p2000.nav?.krav)
         )
 
+        println("***** ${p2000.toJson()}")
         assertNotNull(P2000pensjon.nav?.krav)
         assertEquals("2014-01-13", P2000pensjon.nav?.krav?.dato)
     }
