@@ -219,7 +219,6 @@ class PrefillPDLNavTest {
         val personDataCollection = PersonDataCollection(
             forsikretPerson = forelder,
             ektefellePerson = null,
-//            sivilstandstype = Sivilstandstype.UGIFT,
             gjenlevendeEllerAvdod = forelder,
             barnPersonList = listOf(barn)
         )
@@ -298,7 +297,6 @@ class PrefillPDLNavTest {
         val personDataCollection = PersonDataCollection(
             forsikretPerson = far,
             ektefellePerson = null,
-//            sivilstandstype = Sivilstandstype.UGIFT,
             gjenlevendeEllerAvdod = far,
             barnPersonList = listOf(barn)
         )
@@ -384,7 +382,6 @@ class PrefillPDLNavTest {
         val personDataCollection = PersonDataCollection(
             forsikretPerson = far,
             ektefellePerson = null,
-//            sivilstandstype = Sivilstandstype.UGIFT,
             gjenlevendeEllerAvdod = far,
             barnPersonList = listOf(barn)
         )
@@ -467,7 +464,6 @@ class PrefillPDLNavTest {
         val personDataCollection = PersonDataCollection(
             forsikretPerson = person,
             ektefellePerson = ektefelle,
-//            sivilstandstype = Sivilstandstype.GIFT,
             gjenlevendeEllerAvdod = person,
             barnPersonList = emptyList()
         )
@@ -548,7 +544,6 @@ class PrefillPDLNavTest {
         val personDataCollection = PersonDataCollection(
             forsikretPerson = far,
             ektefellePerson = mor,
-//            sivilstandstype = Sivilstandstype.GIFT,
             gjenlevendeEllerAvdod = far,
             barnPersonList = listOf(barnet, barnto)
         )
@@ -766,7 +761,6 @@ class PrefillPDLNavTest {
         val personDataCollection = PersonDataCollection(
             forsikretPerson = single,
             ektefellePerson = null,
-//            sivilstandstype = Sivilstandstype.UGIFT,
             gjenlevendeEllerAvdod = single,
             barnPersonList = emptyList()
         )
@@ -826,7 +820,6 @@ class PrefillPDLNavTest {
         val personDataCollection = PersonDataCollection(
             forsikretPerson = single,
             ektefellePerson = null,
-//            sivilstandstype = Sivilstandstype.UGIFT,
             gjenlevendeEllerAvdod = single,
             barnPersonList = emptyList()
         )
@@ -864,7 +857,6 @@ class PrefillPDLNavTest {
         val personDataCollection = PersonDataCollection(
             forsikretPerson = single,
             ektefellePerson = null,
-//            sivilstandstype = Sivilstandstype.UGIFT,
             gjenlevendeEllerAvdod = single,
             barnPersonList = emptyList()
         )
@@ -931,7 +923,6 @@ class PrefillPDLNavTest {
         val personDataCollection = PersonDataCollection(
             forsikretPerson = single,
             ektefellePerson = null,
-//            sivilstandstype = Sivilstandstype.UGIFT,
             gjenlevendeEllerAvdod = single,
             barnPersonList = emptyList()
         )
@@ -1015,7 +1006,6 @@ class PrefillPDLNavTest {
         val personDataCollection = PersonDataCollection(
             forsikretPerson = person,
             ektefellePerson = null,
-//            sivilstandstype = Sivilstandstype.UGIFT,
             gjenlevendeEllerAvdod = person,
             barnPersonList = emptyList()
         )
