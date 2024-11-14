@@ -362,7 +362,6 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
     private fun createStatsborgerskap(pdlperson: PdlPerson): List<StatsborgerskapItem> {
         logger.debug("2.2.1.1         Land / Statsborgerskap")
         val statsborgerskap = pdlperson.statsborgerskap
-            .filterNot { it.gyldigFraOgMed == null }
             .filterNot { validateUgyldigeLand(it.land) == null }
             .map {
                 logger.debug("              Statsborgerskap: ${it.land}")
