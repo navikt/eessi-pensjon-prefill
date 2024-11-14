@@ -1,15 +1,7 @@
 package no.nav.eessi.pensjon.prefill.sed.krav
 
 import no.nav.eessi.pensjon.eux.model.SedType
-import no.nav.eessi.pensjon.eux.model.sed.AndreinstitusjonerItem
-import no.nav.eessi.pensjon.eux.model.sed.Bruker
-import no.nav.eessi.pensjon.eux.model.sed.Krav
-import no.nav.eessi.pensjon.eux.model.sed.MeldingOmPensjonP2000
-import no.nav.eessi.pensjon.eux.model.sed.Nav
-import no.nav.eessi.pensjon.eux.model.sed.P2000
-import no.nav.eessi.pensjon.eux.model.sed.P2000Pensjon
-import no.nav.eessi.pensjon.eux.model.sed.SED
-import no.nav.eessi.pensjon.eux.model.sed.YtelserItem
+import no.nav.eessi.pensjon.eux.model.sed.*
 import no.nav.eessi.pensjon.pensjonsinformasjon.KravHistorikkHelper
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
@@ -152,17 +144,36 @@ class PrefillP2000(private val prefillNav: PrefillPDLNav)  {
 
         //valider pensjoninformasjon,
         return try {
-            val meldingOmPensjon = populerMeldinOmPensjon(
+            val pensjonsInformasjon = populerMeldinOmPensjon(
                 prefillData.bruker.norskIdent,
                 prefillData.penSaksnummer,
                 sak,
                 andreInstitusjondetaljer
             )
             if (prefillData.sedType != SedType.P6000) {
-                P2000Pensjon(kravDato = meldingOmPensjon.pensjon.kravDato)
-            } else {
-                meldingOmPensjon.pensjon
-            }
+                val ytelser = pensjonsInformasjon.pensjon.ytelser?.first()
+//                val ytelser = pensjonsInformasjon.pensjon.ytelser?.first { it.ytelse == "alderspensjon" }
+                val belop = ytelser?.beloep?.first()
+
+                P2000Pensjon(
+                    kravDato = pensjonsInformasjon.pensjon.kravDato,
+                    ytelser = listOf(YtelserItem(
+                        status = ytelser?.status,
+                        startdatoutbetaling = ytelser?.startdatoutbetaling,
+                        startdatoretttilytelse = ytelser?.startdatoretttilytelse,
+                        mottasbasertpaa = ytelser?.mottasbasertpaa,
+                        totalbruttobeloepbostedsbasert = ytelser?.totalbruttobeloepbostedsbasert,
+                        totalbruttobeloeparbeidsbasert = ytelser?.totalbruttobeloeparbeidsbasert,
+                        beloep = listOf(BeloepItem(
+                            beloep = belop?.beloep,
+                            valuta = belop?.beloep,
+                            gjeldendesiden = belop?.beloep,
+                            utbetalingshyppighetAnnen = belop?.beloep
+                        )),
+                    ))
+                )
+            } else pensjonsInformasjon.pensjon
+
         } catch (ex: Exception) {
             null
             //hvis feiler lar vi SB få en SED i RINA
