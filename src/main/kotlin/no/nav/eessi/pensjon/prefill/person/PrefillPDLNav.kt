@@ -143,7 +143,6 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
         val forsikretPerson = personData.forsikretPerson
         val avdodEllerGjenlevende = personData.gjenlevendeEllerAvdod
         val ektefellePerson = personData.ektefellePerson
-//        val sivilstandstype = personData.sivilstandstype
         val barnPersonList = personData.barnPersonList
 
         logger.debug(
