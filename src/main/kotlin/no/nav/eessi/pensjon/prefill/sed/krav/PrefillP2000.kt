@@ -7,6 +7,7 @@ import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
+import no.nav.eessi.pensjon.utils.toJson
 import no.nav.pensjon.v1.sak.V1Sak
 import no.nav.pensjon.v1.vedtak.V1Vedtak
 import org.slf4j.Logger
@@ -81,11 +82,12 @@ class PrefillP2000(private val prefillNav: PrefillPDLNav)  {
                                gjenlevende: Bruker? = null,
                                kravId: String? = null): MeldingOmPensjonP2000 {
 
-        val ytelselist = mutableListOf<YtelserItem>()
+        val ytelselist = mutableListOf<YtelserItem>().also { logger.debug("ytelser liste: ${it.toJson()}") }
 
         val v1KravHistorikk = KravHistorikkHelper.finnKravHistorikkForDato(pensak)
         val melding = PrefillP2xxxPensjon.opprettMeldingBasertPaaSaktype(v1KravHistorikk, kravId, pensak?.sakType)
         val krav = PrefillP2xxxPensjon.createKravDato(v1KravHistorikk)
+        val ytelser =
 
         when (pensak?.ytelsePerMaanedListe) {
             null -> {
@@ -150,6 +152,9 @@ class PrefillP2000(private val prefillNav: PrefillPDLNav)  {
                 sak,
                 andreInstitusjondetaljer
             )
+
+            logger.debug("Pensjoninformasjon: ${pensjonsInformasjon.toJson()}")
+
             if (prefillData.sedType != SedType.P6000) {
                 val ytelser = pensjonsInformasjon.pensjon.ytelser?.first()
 //                val ytelser = pensjonsInformasjon.pensjon.ytelser?.first { it.ytelse == "alderspensjon" }
@@ -166,9 +171,9 @@ class PrefillP2000(private val prefillNav: PrefillPDLNav)  {
                         totalbruttobeloeparbeidsbasert = ytelser?.totalbruttobeloeparbeidsbasert,
                         beloep = listOf(BeloepItem(
                             beloep = belop?.beloep,
-                            valuta = belop?.beloep,
-                            gjeldendesiden = belop?.beloep,
-                            utbetalingshyppighetAnnen = belop?.beloep
+                            valuta = belop?.valuta,
+                            gjeldendesiden = belop?.gjeldendesiden,
+                            utbetalingshyppighetAnnen = belop?.utbetalingshyppighetAnnen
                         )),
                     ))
                 )
