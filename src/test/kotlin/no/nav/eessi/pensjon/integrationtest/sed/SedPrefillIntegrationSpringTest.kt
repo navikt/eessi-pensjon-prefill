@@ -631,9 +631,9 @@ class SedPrefillIntegrationSpringTest {
               "mottasbasertpaa" : "01",
               "startdatoretttilytelse" : "2016-03-01",
               "beloep" : [ {
-                "valuta" : "1124",
-                "beloep" : "1124",
-                "gjeldendesiden" : "2016-03-01"
+               "valuta" : "NOK",
+               "beloep" : "1124",
+               "gjeldendesiden" : "2016-03-01"
               } ],
               "status" : "01"
             } ],
@@ -915,7 +915,7 @@ class SedPrefillIntegrationSpringTest {
               "mottasbasertpaa" : "01",
               "startdatoretttilytelse" : "2018-08-01",
               "beloep" : [ {
-                "valuta" : "7034",
+                "valuta" : "NOK",
                 "beloep" : "7034",
                 "gjeldendesiden" : "2018-08-01"
               } ],
