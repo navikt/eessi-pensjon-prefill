@@ -1,5 +1,6 @@
 package no.nav.eessi.pensjon.prefill.sed.vedtak.helper
 
+import no.nav.eessi.pensjon.eux.model.sed.BasertPaa
 import no.nav.eessi.pensjon.eux.model.sed.Grunnlag
 import no.nav.eessi.pensjon.eux.model.sed.Opptjening
 import no.nav.eessi.pensjon.eux.model.sed.VedtakItem
@@ -94,7 +95,7 @@ object PrefillPensjonVedtak {
      * [99] Other
      *
      */
-    private fun createVedtakGrunnlagPentionWithRule(pendata: Pensjonsinformasjon): String? {
+    private fun createVedtakGrunnlagPentionWithRule(pendata: Pensjonsinformasjon): BasertPaa? {
         logger.debug("4.1.2         VedtakGrunnlagPention")
 
         val sakType = KSAK.valueOf(pendata.sakAlder.sakType)
@@ -103,12 +104,12 @@ object PrefillPensjonVedtak {
         //hvis avslag returner vi tomt verdi
         if (sjekkForVilkarsvurderingListeHovedytelseellerAvslag(pendata)) return null
 
-        return if (sakType == KSAK.BARNEP) "99"
+        return if (sakType == KSAK.BARNEP) BasertPaa.annet
         //TODO: Her må vi sjekke om dette blir riktig
         else {
             when (isMottarMinstePensjonsniva(pendata)) {
-                true -> "01"
-                false -> "02"
+                true -> BasertPaa.basert_på_botid
+                false -> BasertPaa.basert_på_arbeid
             }
         }
     }
@@ -118,8 +119,8 @@ object PrefillPensjonVedtak {
      */
     private fun createVedtakAnnenTypePentionWithRule(pendata: Pensjonsinformasjon): String? {
 
-        logger.debug("4.1.3.1       VedtakAnnenTypePention")
-        if (createVedtakGrunnlagPentionWithRule(pendata) == "99") {
+        logger.debug("4.1.3.1       VedtakAnnenTypePensjon")
+        if (createVedtakGrunnlagPentionWithRule(pendata) == BasertPaa.annet) {
             return "Ytelsen er beregnet etter regler for barnepensjon"
         }
         return null
