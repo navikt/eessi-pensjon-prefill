@@ -1,5 +1,6 @@
 package no.nav.eessi.pensjon.prefill.sed.krav
 
+import no.nav.eessi.pensjon.eux.model.sed.StatusType
 import no.nav.eessi.pensjon.pensjonsinformasjon.models.Sakstatus
 
 /**

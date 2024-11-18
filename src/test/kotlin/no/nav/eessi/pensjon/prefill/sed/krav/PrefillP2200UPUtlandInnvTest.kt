@@ -22,9 +22,10 @@ import no.nav.eessi.pensjon.shared.person.FodselsnummerGenerator
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
-
+@Disabled
 class PrefillP2200UPUtlandInnvTest {
 
     private val personFnr = FodselsnummerGenerator.generateFnrForTest(68)

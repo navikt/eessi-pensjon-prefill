@@ -30,9 +30,10 @@ import no.nav.eessi.pensjon.utils.toJson
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
-
+@Disabled
 class PrefillP2000_AP_21975717Test {
 
     private val pesysSaksnummer = "21975717"

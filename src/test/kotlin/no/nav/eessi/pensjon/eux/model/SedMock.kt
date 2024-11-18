@@ -18,9 +18,10 @@ import no.nav.eessi.pensjon.eux.model.sed.Person
 import no.nav.eessi.pensjon.eux.model.sed.PinItem
 import no.nav.eessi.pensjon.eux.model.sed.SED
 import no.nav.eessi.pensjon.eux.model.sed.StatsborgerskapItem
+import org.junit.jupiter.api.Disabled
 
+        @Disabled
 class SedMock {
-
     fun genererP5000Mock(): P5000 {
         return P5000(
                 nav = NavMock().genererNavMock(),

@@ -104,6 +104,7 @@ object PrefillPensjonVedtak {
         if (sjekkForVilkarsvurderingListeHovedytelseellerAvslag(pendata)) return null
 
         return if (sakType == KSAK.BARNEP) "99"
+        //TODO: Her må vi sjekke om dette blir riktig
         else {
             when (isMottarMinstePensjonsniva(pendata)) {
                 true -> "01"

@@ -1,15 +1,7 @@
 package no.nav.eessi.pensjon.prefill.sed.krav
 
 import no.nav.eessi.pensjon.eux.model.SedType
-import no.nav.eessi.pensjon.eux.model.sed.AndreinstitusjonerItem
-import no.nav.eessi.pensjon.eux.model.sed.BeloepItem
-import no.nav.eessi.pensjon.eux.model.sed.Bruker
-import no.nav.eessi.pensjon.eux.model.sed.Institusjon
-import no.nav.eessi.pensjon.eux.model.sed.Krav
-import no.nav.eessi.pensjon.eux.model.sed.MeldingOmPensjon
-import no.nav.eessi.pensjon.eux.model.sed.Pensjon
-import no.nav.eessi.pensjon.eux.model.sed.PinItem
-import no.nav.eessi.pensjon.eux.model.sed.YtelserItem
+import no.nav.eessi.pensjon.eux.model.sed.*
 import no.nav.eessi.pensjon.pensjonsinformasjon.KravHistorikkHelper.finnKravHistorikk
 import no.nav.eessi.pensjon.pensjonsinformasjon.KravHistorikkHelper.finnKravHistorikkForDato
 import no.nav.eessi.pensjon.pensjonsinformasjon.KravHistorikkHelper.hentKravHistorikkForsteGangsBehandlingUtlandEllerForsteGang
@@ -197,15 +189,16 @@ object PrefillP2xxxPensjon {
      */
     fun opprettForkortetYtelsesItem(pensak: V1Sak?, personNr: String, penSaksnummer: String?, andreinstitusjonerItem: AndreinstitusjonerItem?): YtelserItem {
         return YtelserItem(
-                //4.1.1
-                ytelse = settYtelse(pensak),
-                //4.1.3 - fast satt til søkt
-                status = "01",
-                //4.1.4
-                pin = createInstitusjonPin(personNr),
-                //4.1.4.1.4
-                institusjon = createInstitusjon(penSaksnummer, andreinstitusjonerItem)
+            //4.1.1
+            ytelse = if(pensak == null) null else YtelseType.valueOf(pensak.sakType),
+            //4.1.3 - fast satt til søkt
+            status = if(pensak == null) null else StatusType.valueOf(pensak.status),
+            //4.1.4
+            pin = createInstitusjonPin(personNr),
+            //4.1.4.1.4
+            institusjon = createInstitusjon(penSaksnummer, andreinstitusjonerItem)
         )
+
     }
 
     /**
@@ -225,13 +218,14 @@ object PrefillP2xxxPensjon {
      */
     fun createYtelserItem(ytelsePrmnd: V1YtelsePerMaaned, pensak: V1Sak, personNr: String, penSaksnummer: String?, andreinstitusjonerItem: AndreinstitusjonerItem?): YtelserItem {
         logger.debug("4.1   YtelserItem")
+        val basertPaa = createPensionBasedOn(pensak, personNr)
         return YtelserItem(
 
                 //4.1.1
-                ytelse = settYtelse(pensak),
+                ytelse = YtelseType.valueOf(pensak.sakType),
 
-                //4.1.3 (dekkes av pkt.4.1.1)
-                status = createPensionStatus(pensak),
+                //4.1.3 - fast satt til søkt
+                status = StatusType.valueOf(pensak.status),
                 //4.1.4
                 pin = createInstitusjonPin(personNr),
                 //4.1.4.1.4
@@ -247,7 +241,7 @@ object PrefillP2xxxPensjon {
                 beloep = createYtelseItemBelop(ytelsePrmnd, ytelsePrmnd.ytelseskomponentListe),
 
                 //4.1.10.1
-                mottasbasertpaa = createPensionBasedOn(pensak, personNr),
+                mottasbasertpaa = if(basertPaa != null) BasertPaa.valueOf(basertPaa) else null,
 
                 //4.1.10.3
                 totalbruttobeloeparbeidsbasert = ytelsePrmnd.belop.toString(),
@@ -305,21 +299,20 @@ object PrefillP2xxxPensjon {
      */
     private fun createYtelseItemBelop(ytelsePrMnd: V1YtelsePerMaaned, ytelsekomp: List<V1Ytelseskomponent>): List<BeloepItem> {
         logger.debug("4.1.9         Beløp")
-        return ytelsekomp.map {
-            BeloepItem(
-                    //4.1.9.1
-                    beloep = it.belopTilUtbetaling.toString(),
+        return listOf( BeloepItem(
+                //4.1.9.1
+                beloep = ytelsePrMnd.belop.toString(),
 
-                    //4.1.9.2
-                    valuta = "NOK",
+                //4.1.9.2
+                valuta = "NOK",
 
-                    //4.1.9.3
-                    gjeldendesiden = createGjeldendesiden(ytelsePrMnd),
+                //4.1.9.3
+                gjeldendesiden = createGjeldendesiden(ytelsePrMnd),
 
-                    //4.1.9.4
-                    betalingshyppighetytelse = createBetalingshyppighet(),
+                //4.1.9.4
+                betalingshyppighetytelse = Betalingshyppighet.maaned_12_per_aar //createBetalingshyppighet())
             )
-        }
+        )
     }
 
     /**

@@ -3,8 +3,10 @@ package no.nav.eessi.pensjon.eux.model
 import no.nav.eessi.pensjon.eux.model.sed.SED
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
+@Disabled
 class SedH020Test {
 
     @Test

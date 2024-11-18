@@ -87,7 +87,6 @@ class PrefillP2000(private val prefillNav: PrefillPDLNav)  {
         val v1KravHistorikk = KravHistorikkHelper.finnKravHistorikkForDato(pensak)
         val melding = PrefillP2xxxPensjon.opprettMeldingBasertPaaSaktype(v1KravHistorikk, kravId, pensak?.sakType)
         val krav = PrefillP2xxxPensjon.createKravDato(v1KravHistorikk)
-        val ytelser =
 
         when (pensak?.ytelsePerMaanedListe) {
             null -> {
@@ -158,19 +157,19 @@ class PrefillP2000(private val prefillNav: PrefillPDLNav)  {
             if (prefillData.sedType != SedType.P6000) {
                 val ytelser = pensjonsInformasjon.pensjon.ytelser?.first()
 //                val ytelser = pensjonsInformasjon.pensjon.ytelser?.first { it.ytelse == "alderspensjon" }
-                val belop = ytelser?.beloepsListe?.first()
+                val belop = ytelser?.beloep?.first()
 
                 P2000Pensjon(
                     kravDato = pensjonsInformasjon.pensjon.kravDato,
                     ytelser = listOf(YtelserItem(
-                        beloep = belop?.beloep,
+                        //beloep = belop?.beloep,
                         status = ytelser?.status,
                         startdatoutbetaling = ytelser?.startdatoutbetaling,
                         startdatoretttilytelse = ytelser?.startdatoretttilytelse,
                         mottasbasertpaa = ytelser?.mottasbasertpaa,
                         totalbruttobeloepbostedsbasert = ytelser?.totalbruttobeloepbostedsbasert,
                         totalbruttobeloeparbeidsbasert = ytelser?.totalbruttobeloeparbeidsbasert,
-                        beloepsListe = listOf(BeloepItem(
+                        beloep = listOf(BeloepItem(
                             beloep = belop?.beloep,
                             valuta = belop?.valuta,
                             gjeldendesiden = belop?.gjeldendesiden,

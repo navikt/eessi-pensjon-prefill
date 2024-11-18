@@ -253,7 +253,7 @@
   "sedVer" : "0",
   "pensjon" : {
     "ytelser" : [ {
-      "status" : "02",
+      "status" : "gift",
       "startdatoutbetaling" : "2018-04-01",
       "annenytelse" : "jljklkj",
       "institusjon" : {
@@ -303,7 +303,7 @@
       "sluttdatoretttilytelse" : "2018-04-01",
       "totalbruttobeloeparbeidsbasert" : "233",
       "sluttdatoutbetaling" : "2018-04-01",
-      "status" : "01"
+      "status" : "enslig"
     } ],
     "bruker" : {
       "arbeidsforhold" : [ {
