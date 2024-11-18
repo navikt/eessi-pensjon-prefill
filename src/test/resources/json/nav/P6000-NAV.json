@@ -180,7 +180,7 @@
             "valuta": "ISK"
           }
         ],
-        "basertPaa": "basert_på_arbeid",
+        "basertPaa": "02",
         "delvisstans": {
           "utbetaling": {
             "begrunnelse": "sfdgsdf\nfdg\ns",
@@ -269,7 +269,7 @@
           }
         },
         "virkningsdato": "2030-10-01",
-        "basertPaa": "basert_på_botid"
+        "basertPaa": "01"
       }
     ],
     "tilleggsinformasjon": {
