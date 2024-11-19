@@ -179,7 +179,7 @@ class PrefillP2000(private val prefillNav: PrefillPDLNav)  {
             } else pensjonsInformasjon.pensjon
 
         } catch (ex: Exception) {
-            logger.info("Feilet ved preutfylling av pensjon, ${ex.stackTrace} ")
+            logger.error("Feilet ved preutfylling av pensjon, ${ex.message} ")
             null
             //hvis feiler lar vi SB få en SED i RINA
         }
