@@ -82,7 +82,7 @@ class PrefillP2000(private val prefillNav: PrefillPDLNav)  {
                                gjenlevende: Bruker? = null,
                                kravId: String? = null): MeldingOmPensjonP2000 {
 
-        val ytelselist = mutableListOf<YtelserItem>().also { logger.debug("ytelser liste: ${it.toJson()}") }
+        val ytelselist = mutableListOf<YtelserItem>()
 
         val v1KravHistorikk = KravHistorikkHelper.finnKravHistorikkForDato(pensak)
         val melding = PrefillP2xxxPensjon.opprettMeldingBasertPaaSaktype(v1KravHistorikk, kravId, pensak?.sakType)
@@ -156,7 +156,6 @@ class PrefillP2000(private val prefillNav: PrefillPDLNav)  {
 
             if (prefillData.sedType != SedType.P6000) {
                 val ytelser = pensjonsInformasjon.pensjon.ytelser?.first()
-//                val ytelser = pensjonsInformasjon.pensjon.ytelser?.first { it.ytelse == "alderspensjon" }
                 val belop = ytelser?.beloep?.first()
 
                 P2000Pensjon(
@@ -180,6 +179,7 @@ class PrefillP2000(private val prefillNav: PrefillPDLNav)  {
             } else pensjonsInformasjon.pensjon
 
         } catch (ex: Exception) {
+            logger.info("Feilet ved preutfylling av pensjon, ${ex.stackTrace} ")
             null
             //hvis feiler lar vi SB få en SED i RINA
         }
