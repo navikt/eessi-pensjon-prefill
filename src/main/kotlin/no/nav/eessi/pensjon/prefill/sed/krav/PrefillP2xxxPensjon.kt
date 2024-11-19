@@ -7,10 +7,7 @@ import no.nav.eessi.pensjon.pensjonsinformasjon.KravHistorikkHelper.finnKravHist
 import no.nav.eessi.pensjon.pensjonsinformasjon.KravHistorikkHelper.hentKravHistorikkForsteGangsBehandlingUtlandEllerForsteGang
 import no.nav.eessi.pensjon.pensjonsinformasjon.models.EPSaktype
 import no.nav.eessi.pensjon.pensjonsinformasjon.models.PenKravtype
-import no.nav.eessi.pensjon.pensjonsinformasjon.models.PenKravtype.FORSTEG_BH
-import no.nav.eessi.pensjon.pensjonsinformasjon.models.PenKravtype.F_BH_BO_UTL
-import no.nav.eessi.pensjon.pensjonsinformasjon.models.PenKravtype.F_BH_KUN_UTL
-import no.nav.eessi.pensjon.pensjonsinformasjon.models.PenKravtype.F_BH_MED_UTL
+import no.nav.eessi.pensjon.pensjonsinformasjon.models.PenKravtype.*
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
 import no.nav.eessi.pensjon.shared.person.Fodselsnummer
@@ -190,7 +187,7 @@ object PrefillP2xxxPensjon {
     fun opprettForkortetYtelsesItem(pensak: V1Sak?, personNr: String, penSaksnummer: String?, andreinstitusjonerItem: AndreinstitusjonerItem?): YtelserItem {
         return YtelserItem(
             //4.1.1
-            ytelse = if(pensak == null) null else YtelseType.valueOf(pensak.sakType),
+            ytelse = settYtelse(pensak),
             //4.1.3 - fast satt til søkt
             status = if(pensak == null) null else StatusType.valueOf(pensak.status),
             //4.1.4
@@ -222,7 +219,7 @@ object PrefillP2xxxPensjon {
         return YtelserItem(
 
                 //4.1.1
-                ytelse = YtelseType.valueOf(pensak.sakType),
+                ytelse = settYtelse(pensak),
 
                 //4.1.3 - fast satt til søkt
                 status = StatusType.valueOf(pensak.status),
