@@ -10,9 +10,9 @@ import no.nav.eessi.pensjon.pensjonsinformasjon.models.Sakstatus
      */
      fun mapSaktype(saktype: String?): String {
             return when (saktype) {
-                "UFOREP" -> "uførepensjon"
-                "ALDER" -> "alderspensjon"
-                else -> "etterlattepensjon"
+                "UFOREP" -> "08"
+                "ALDER" -> "10"
+                else -> "11"
             }
     }
 
