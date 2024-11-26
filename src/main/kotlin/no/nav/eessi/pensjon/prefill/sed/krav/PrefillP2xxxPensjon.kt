@@ -203,9 +203,9 @@ object PrefillP2xxxPensjon {
      *
      *  Ytelser
      */
-    private fun settYtelse(pensak: V1Sak?): String {
+    private fun settYtelse(pensak: V1Sak?): String? {
         logger.debug("4.1.1         Ytelser")
-        return mapSaktype(pensak?.sakType)
+        return pensak?.sakType.also { logger.debug("Saktype fra Pesys: $it") }
     }
 
     /**
