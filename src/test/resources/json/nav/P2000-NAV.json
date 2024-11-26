@@ -253,7 +253,7 @@
   "sedVer" : "0",
   "pensjon" : {
     "ytelser" : [ {
-      "status" : "gift",
+      "status" : "02",
       "startdatoutbetaling" : "2018-04-01",
       "annenytelse" : "jljklkj",
       "institusjon" : {
@@ -263,12 +263,12 @@
       },
       "beloep" : [ {
         "gjeldendesiden" : "2018-04-01",
-        "betalingshyppighetytelse" : "06",
+        "betalingshyppighetytelse" : "maaned_12_per_aar",
         "annenbetalingshyppighetytelse" : "wererew",
         "beloep" : "677",
         "valuta" : "EUR"
       } ],
-      "mottasbasertpaa" : "botid",
+      "mottasbasertpaa" : "01",
       "pin" : {
         "identifikator" : "kj90980"
       },
@@ -282,7 +282,7 @@
       "annenytelse" : "sfsd",
       "startdatoutbetaling" : "2018-04-01",
       "totalbruttobeloepbostedsbasert" : "24234",
-      "mottasbasertpaa" : "i_arbeid",
+      "mottasbasertpaa" : "02",
       "pin" : {
         "identifikator" : "242343434"
       },
@@ -297,13 +297,13 @@
         "annenbetalingshyppighetytelse" : "345534",
         "gjeldendesiden" : "2018-04-01",
         "valuta" : "CZK",
-        "betalingshyppighetytelse" : "99"
+        "betalingshyppighetytelse" : "annet"
       } ],
       "ytelse" : "01",
       "sluttdatoretttilytelse" : "2018-04-01",
       "totalbruttobeloeparbeidsbasert" : "233",
       "sluttdatoutbetaling" : "2018-04-01",
-      "status" : "enslig"
+      "status" : "01"
     } ],
     "bruker" : {
       "arbeidsforhold" : [ {

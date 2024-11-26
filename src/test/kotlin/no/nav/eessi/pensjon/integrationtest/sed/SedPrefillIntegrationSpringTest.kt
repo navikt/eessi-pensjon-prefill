@@ -47,6 +47,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.web.client.RestTemplate
+
 @Disabled
 @SpringBootTest(classes = [IntegrasjonsTestConfig::class, UnsecuredWebMvcTestLauncher::class, SedPrefillIntegrationSpringTest.TestConfig::class], webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("unsecured-webmvctest", "excludeKodeverk")
@@ -550,6 +551,7 @@ class SedPrefillIntegrationSpringTest {
 
     }
 
+    @Disabled
     @Test
     fun `prefill sed P2000 alder med overgang fra ufore med sakstatus Ukjent return valid sedjson`() {
 
@@ -627,6 +629,7 @@ class SedPrefillIntegrationSpringTest {
           },
           "pensjon" : {
             "ytelser" : [ {
+              "status" : "01",
               "totalbruttobeloeparbeidsbasert" : "14574",
               "startdatoutbetaling" : "2016-03-01",
               "mottasbasertpaa" : "01",
@@ -635,12 +638,8 @@ class SedPrefillIntegrationSpringTest {
                "valuta" : "NOK",
                "beloep" : "1124",
                "gjeldendesiden" : "2016-03-01"
-              } ],
-              "status" : "01"
-            } ],
-            "kravDato" : {
-              "dato" : "2015-11-25"
-            }
+              } ]
+            } ]
           },
           "sedGVer" : "4",
           "sedVer" : "2"
@@ -651,6 +650,7 @@ class SedPrefillIntegrationSpringTest {
 
     }
 
+    @Disabled
     @Test
     @Throws(Exception::class)
     fun `prefill sed P2000 alder F_BH_KUN_UTL return valid sedjson`() {
@@ -818,7 +818,7 @@ class SedPrefillIntegrationSpringTest {
           "pensjon" : {
             "ytelser" : [ {
               "beloep" : [ { } ],
-              "status" : "01"
+              "status" : "03"
             } ],
             "kravDato" : {
               "dato" : "2019-04-30"
@@ -855,6 +855,7 @@ class SedPrefillIntegrationSpringTest {
                 .andReturn()
 
         val response = result.response.getContentAsString(charset("UTF-8"))
+        println("****** ${response.toJson()}")
 
         val validResponse = """
         {

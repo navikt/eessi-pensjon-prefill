@@ -75,7 +75,7 @@ class PersonDataService(private val personService: PersonService,
             }
 
             val sivilstand = filterEktefelleRelasjon(forsikretPerson)
-            val sivilstandType = sivilstand?.type
+//            val sivilstandType = sivilstand?.type
 
             val ektefellePerson = hentHovedpersonEktefelle(sivilstand)
             val barnPerson = hentHovedpersonBarn(forsikretPerson, fyllUtBarnListe)
