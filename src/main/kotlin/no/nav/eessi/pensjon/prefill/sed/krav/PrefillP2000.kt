@@ -162,6 +162,7 @@ class PrefillP2000(private val prefillNav: PrefillPDLNav)  {
                     kravDato = pensjonsInformasjon.pensjon.kravDato,
                     ytelser = listOf(YtelserItem(
                         //beloep = belop?.beloep,
+                        ytelse = pensjonsInformasjon?.pensjon?.ytelser?.first()?.ytelse,
                         status = (ytelser?.status).also { logger.debug("Status: $it") },
                         startdatoutbetaling = ytelser?.startdatoutbetaling.also { logger.debug("startdatoutbetaling: $it") },
                         startdatoretttilytelse = ytelser?.startdatoretttilytelse.also { logger.debug("Ststartdatoretttilytelseatus: $it") },
