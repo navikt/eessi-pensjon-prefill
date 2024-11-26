@@ -8,13 +8,13 @@ import no.nav.eessi.pensjon.pensjonsinformasjon.models.Sakstatus
      *  [10] Alderspensjon
      *  [11] Etterlattepensjon
      */
-//     fun mapSaktype(saktype: String?): String {
-//            return when (saktype) {
-//                "08" ->  "UFOREP"
-//                "10" ->  "ALDER"
-//                else ->  "GJENLEV"
-//            }
-//    }
+     fun mapSaktype(saktype: String?): String {
+            return when (saktype) {
+                "UFOREP" -> "uførepensjon"
+                "ALDER" -> "alderspensjon"
+                else -> "etterlattepensjon"
+            }
+    }
 
     /**
      *  [01] Søkt
