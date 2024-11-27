@@ -16,11 +16,9 @@ import no.nav.eessi.pensjon.statistikk.AutomatiseringStatistikkService
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
-import org.junit.platform.commons.util.StringUtils
 
 @ExtendWith(MockKExtension::class)
 class PrefillServiceTest{
@@ -59,7 +57,7 @@ class PrefillServiceTest{
 
         justRun { automatiseringStatistikkService.genererAutomatiseringStatistikk(any(), any()) }
 
-        every { request.sed } returns SedType.P2000
+        every { request.sed } returns SedType.SEDTYPE_P2000
         every { request.aktoerId } returns "112233"
         every { request.buc } returns BucType.P_BUC_01
     }
@@ -78,7 +76,7 @@ class PrefillServiceTest{
 
         val krrPerson = KrrPerson(false, epost, "12345678")
         every { krrService.hentPersonFraKrr(any()) } returns krrPerson
-        every { prefillSedService.prefill(capture(requestSlot), any(), any()) } returns SED(SedType.P2000, "sedVer")
+        every { prefillSedService.prefill(capture(requestSlot), any(), any()) } returns SED(SedType.SEDTYPE_P2000, "sedVer")
 
         prefillService.prefillSedtoJson(request)
         val capture = requestSlot.captured

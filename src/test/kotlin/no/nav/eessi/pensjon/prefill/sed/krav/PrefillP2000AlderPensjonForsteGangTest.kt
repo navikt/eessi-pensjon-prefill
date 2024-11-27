@@ -49,7 +49,7 @@ class PrefillP2000AlderPensjonForsteGangTest {
 
         dataFromPEN = lesPensjonsdataFraFil("/pensjonsinformasjon/krav/AP_FORSTEG_BH.xml")
 
-        prefillData = initialPrefillDataModel(SedType.P2000, personFnr, penSaksnummer = "22580170").apply {
+        prefillData = initialPrefillDataModel(SedType.SEDTYPE_P2000, personFnr, penSaksnummer = "22580170").apply {
             partSedAsJson["PersonInfo"] = readJsonResponse("/json/nav/other/person_informasjon_selvb.json")
             partSedAsJson["P4000"] = readJsonResponse("/json/nav/other/p4000_trygdetid_part.json")
         }
@@ -70,7 +70,7 @@ class PrefillP2000AlderPensjonForsteGangTest {
     fun `Gitt at kravtype er FORSTEG_BH skal det kastes en exception`() {
 
         assertThrows<ResponseStatusException> {
-            prefillSEDService.prefill(prefillData, persondataCollection, PensjonCollection(sedType = SedType.P2000))
+            prefillSEDService.prefill(prefillData, persondataCollection, PensjonCollection(sedType = SedType.SEDTYPE_P2000))
         }
     }
 

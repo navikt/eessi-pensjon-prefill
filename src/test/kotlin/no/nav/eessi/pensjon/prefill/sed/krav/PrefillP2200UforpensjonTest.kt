@@ -3,13 +3,10 @@ package no.nav.eessi.pensjon.prefill.sed.krav
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.SedType
-import no.nav.eessi.pensjon.personoppslag.pdl.model.KjoennType
 import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.PersonPDLMock.medFodsel
-import no.nav.eessi.pensjon.prefill.PersonPDLMock.medForeldre
-import no.nav.eessi.pensjon.prefill.PersonPDLMock.medKjoenn
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.prefill.models.PensjonCollection
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
@@ -54,7 +51,7 @@ class PrefillP2200UforpensjonTest {
 
         dataFromPEN = lesPensjonsdataFraFil("/pensjonsinformasjon/krav/P2200-UP-INNV.xml")
 
-        prefillData = initialPrefillDataModel(SedType.P2200, personFnr, penSaksnummer = "22874955").apply {
+        prefillData = initialPrefillDataModel(SedType.SEDTYPE_P2200, personFnr, penSaksnummer = "22874955").apply {
             partSedAsJson["PersonInfo"] = readJsonResponse("/json/nav/other/person_informasjon_selvb.json")
         }
         prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav)
@@ -75,7 +72,7 @@ class PrefillP2200UforpensjonTest {
         val P2200 = prefillSEDService.prefill(prefillData, persondataCollection,pensjonCollection)
         val p2200Actual = P2200.toJsonSkipEmpty()
         assertNotNull(p2200Actual)
-        assertEquals(SedType.P2200, P2200.type)
+        assertEquals(SedType.SEDTYPE_P2200, P2200.type)
         assertEquals("JESSINE TORDNU", P2200.nav?.bruker?.person?.fornavn)
         assertEquals("BOUWMANS", P2200.nav?.bruker?.person?.etternavn)
         assertEquals(2, P2200.nav?.barn?.size)
@@ -105,7 +102,7 @@ class PrefillP2200UforpensjonTest {
         assertNotNull(pendata.brukersSakerListe)
 
         val p2200 = prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection)
-        assertEquals(SedType.P2200, p2200.type)
+        assertEquals(SedType.SEDTYPE_P2200, p2200.type)
 
         val barn1 = p2200.nav?.barn?.first()
 

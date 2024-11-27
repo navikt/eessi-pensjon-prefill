@@ -5,7 +5,7 @@ import io.mockk.every
 import io.mockk.impl.annotations.SpyK
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_06
-import no.nav.eessi.pensjon.eux.model.SedType.P6000
+import no.nav.eessi.pensjon.eux.model.SedType.SEDTYPE_P6000
 import no.nav.eessi.pensjon.eux.model.sed.*
 import no.nav.eessi.pensjon.logging.AuditLogger
 import no.nav.eessi.pensjon.personoppslag.pdl.model.NorskIdent
@@ -54,7 +54,7 @@ class PrefillControllerTest {
             vedtakId = "1234567",
             institutions = listOf(InstitusjonItem("NO", "DUMMY")),
             euxCaseId = "1234567890",
-            sed = P6000,
+            sed = SEDTYPE_P6000,
             buc = P_BUC_06,
             aktoerId = "0105094340092"
         )
@@ -84,7 +84,7 @@ class PrefillControllerTest {
 
         val sed = SED.fromJson(response)
 
-        assertEquals(P6000, sed.type)
+        assertEquals(SEDTYPE_P6000, sed.type)
         assertEquals("Dummy", sed.nav?.bruker?.person?.fornavn)
         assertEquals("Dummy", sed.nav?.bruker?.person?.etternavn)
     }

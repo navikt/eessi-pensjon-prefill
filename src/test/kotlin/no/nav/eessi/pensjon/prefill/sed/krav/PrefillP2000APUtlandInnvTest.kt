@@ -3,7 +3,7 @@ package no.nav.eessi.pensjon.prefill.sed.krav
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_01
-import no.nav.eessi.pensjon.eux.model.SedType.P2000
+import no.nav.eessi.pensjon.eux.model.SedType.SEDTYPE_P2000
 import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
@@ -55,7 +55,7 @@ class PrefillP2000APUtlandInnvTest {
         val dataFromPEN = lesPensjonsdataFraFil("/pensjonsinformasjon/krav/P2000-AP-UTL-INNV-24015012345_PlanB.xml")
         val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
 
-        prefillData = PrefillDataModelMother.initialPrefillDataModel(P2000, personFnr, penSaksnummer = pesysSaksnummer).apply {
+        prefillData = PrefillDataModelMother.initialPrefillDataModel(SEDTYPE_P2000, personFnr, penSaksnummer = pesysSaksnummer).apply {
             partSedAsJson["PersonInfo"] = readJsonResponse("/json/nav/other/person_informasjon_selvb.json")
             partSedAsJson["P4000"] = readJsonResponse("/json/nav/other/p4000_trygdetid_part.json")
         }
@@ -124,7 +124,7 @@ class PrefillP2000APUtlandInnvTest {
         val items = listOf(InstitusjonItem(country = "NO", institution = "NAVT003"))
         return ApiRequest(
                 institutions = items,
-                sed = P2000,
+                sed = SEDTYPE_P2000,
                 sakId = "01234567890",
                 euxCaseId = "99191999911",
                 aktoerId = "1000060964183",

@@ -436,7 +436,7 @@ object PrefillP2xxxPensjon {
                 sak,
                 andreInstitusjondetaljer
             )
-            if (prefillData.sedType != SedType.P6000) {
+            if (prefillData.sedType != SedType.SEDTYPE_P6000) {
                 //vi skal ha blank pensjon ved denne toggle, men vi må ha med kravdato
                 Pensjon(kravDato = meldingOmPensjon.pensjon.kravDato)
             } else {

@@ -36,7 +36,7 @@ class PersonDataService(private val personService: PersonService,
     fun hentPersonData(prefillData: PrefillDataModel) : PersonDataCollection {
         return when (prefillData.sedType) {
             //alle med barn
-            P2000, P2200, P2100, P6000 -> hentPersonerMedBarn(prefillData)
+            SEDTYPE_P2000, SEDTYPE_P2200, SEDTYPE_P2100, SEDTYPE_P6000 -> hentPersonerMedBarn(prefillData)
             //alle uten barn
             else -> hentPersoner(prefillData)
         }

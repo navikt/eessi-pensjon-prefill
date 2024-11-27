@@ -47,7 +47,7 @@ class PrefillX005(private val prefillNav: PrefillPDLNav)  {
         )
 
         return X005(
-                type = SedType.X005,
+                type = SedType.SEDTYPE_X005,
                 xnav = XNav(
                         sak = Navsak(
                                 kontekst = Kontekst(

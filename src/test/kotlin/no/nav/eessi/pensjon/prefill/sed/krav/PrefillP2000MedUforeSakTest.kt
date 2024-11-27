@@ -49,7 +49,7 @@ class PrefillP2000MedUforeSakTest {
 
         dataFromPEN = lesPensjonsdataFraFil("/pensjonsinformasjon/krav/P2200-UP-INNV.xml")
 
-        prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P2000, personFnr, penSaksnummer = pesysSaksnummer)
+        prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.SEDTYPE_P2000, personFnr, penSaksnummer = pesysSaksnummer)
 
 
         prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav)

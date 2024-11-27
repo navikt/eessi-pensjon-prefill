@@ -50,7 +50,7 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
         val gjenlevendePin = sed.pensjon?.gjenlevende?.person?.pin
 
         //dekode liste av P6000 for preutfylling av P7000
-        val partpayload = prefillData.partSedAsJson[SedType.P7000.name]
+        val partpayload = prefillData.partSedAsJson[SedType.SEDTYPE_P7000.name]
         val listP6000 =  partpayload?.let { payload -> mapJsonToAny<List<Pair<P6000Dokument, P6000>>>(payload) }
 
         logger.info("Prefill med antall P6000: ${listP6000?.size}, land: ${listP6000?.map { it.first.fraLand }} ")

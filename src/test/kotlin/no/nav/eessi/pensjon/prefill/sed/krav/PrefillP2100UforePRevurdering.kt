@@ -42,7 +42,7 @@ class PrefillP2100UforePRevurdering {
 
 
         prefillData = PrefillDataModelMother.initialPrefillDataModel(
-                sedType = SedType.P2100,
+                sedType = SedType.SEDTYPE_P2100,
                 pinId = personFnr,
                 penSaksnummer = pesysSaksnummer,
                 avdod = PersonInfo(avdodPersonFnr, "112233445566"),

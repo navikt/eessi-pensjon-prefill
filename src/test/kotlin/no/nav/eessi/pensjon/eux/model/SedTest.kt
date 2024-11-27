@@ -75,7 +75,7 @@ class SedTest {
         val penmock = PensjonMock().genererMockData()
 
         val sed = P6000(
-            type = SedType.P6000,
+            type = SedType.SEDTYPE_P6000,
             nav = Nav(bruker = navmock.bruker),
             pensjon = P6000Pensjon(gjenlevende = penmock.gjenlevende)
         )
@@ -87,7 +87,7 @@ class SedTest {
 
     fun populerP6000Pensjon(): P6000 {
         return P6000(
-            type = SedType.P6000,
+            type = SedType.SEDTYPE_P6000,
             pensjon = P6000Pensjon(
                 gjenlevende = Bruker(
                     adresse = Adresse(

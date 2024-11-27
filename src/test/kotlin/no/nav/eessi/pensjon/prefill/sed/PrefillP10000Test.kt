@@ -37,7 +37,7 @@ class PrefillP10000Test {
 
         prefill = PrefillP10000(prefillNav)
         prefillData = PrefillDataModelMother.initialPrefillDataModel(
-            SedType.P8000,
+            SedType.SEDTYPE_P8000,
             personFnr,
             penSaksnummer = pesysSaksnummer,
             avdod = PersonInfo("12345678910", "123456789")

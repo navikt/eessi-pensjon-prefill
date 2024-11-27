@@ -50,7 +50,7 @@ class PrefillP2000UtenKravhistorieTest {
         )
 
         dataFromPEN = lesPensjonsdataFraFil("/pensjonsinformasjon/krav/PensjonsinformasjonSaksliste-AP-14069110.xml")
-        prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P2000, personFnr, penSaksnummer = "14069110").apply {
+        prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.SEDTYPE_P2000, personFnr, penSaksnummer = "14069110").apply {
             partSedAsJson["PersonInfo"] = readJsonResponse("/json/nav/other/person_informasjon_selvb.json")
             partSedAsJson["P4000"] = readJsonResponse("/json/nav/other/p4000_trygdetid_part.json")
         }

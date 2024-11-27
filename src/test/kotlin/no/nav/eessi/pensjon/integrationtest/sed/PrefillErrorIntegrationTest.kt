@@ -5,8 +5,8 @@ import io.mockk.every
 import no.nav.eessi.pensjon.UnsecuredWebMvcTestLauncher
 import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_03
 import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_06
-import no.nav.eessi.pensjon.eux.model.SedType.P2000
-import no.nav.eessi.pensjon.eux.model.SedType.P2200
+import no.nav.eessi.pensjon.eux.model.SedType.SEDTYPE_P2000
+import no.nav.eessi.pensjon.eux.model.SedType.SEDTYPE_P2200
 import no.nav.eessi.pensjon.integrationtest.IntegrasjonsTestConfig
 import no.nav.eessi.pensjon.kodeverk.KodeverkClient
 import no.nav.eessi.pensjon.pensjonsinformasjon.models.EPSaktype.UFOREP
@@ -95,7 +95,7 @@ class PrefillErrorIntegrationTest {
 
         every { pensjoninformasjonservice.hentRelevantVedtakHvisFunnet("231231231") } returns vedtak
 
-        val apijson = dummyApijson(sakid = "1232123123", aktoerId = AKTOER_ID, vedtakid = "231231231", sed = P2200.name,  buc = P_BUC_03.name)
+        val apijson = dummyApijson(sakid = "1232123123", aktoerId = AKTOER_ID, vedtakid = "231231231", sed = SEDTYPE_P2200.name,  buc = P_BUC_03.name)
         val expectedError = """Du kan ikke opprette krav-SED P2200 hvis ikke "bodd/arbeidet i utlandet" er krysset av""".trimIndent()
 
         mockMvc.perform(
@@ -135,7 +135,7 @@ class PrefillErrorIntegrationTest {
 
         every { pensjoninformasjonservice.hentRelevantVedtakHvisFunnet("231231231") } returns vedtak
 
-        val apijson = dummyApijson(sakid = "1232123123", aktoerId = AKTOER_ID, vedtakid = "231231231", sed = P2200.name,  buc = P_BUC_03.name)
+        val apijson = dummyApijson(sakid = "1232123123", aktoerId = AKTOER_ID, vedtakid = "231231231", sed = SEDTYPE_P2200.name,  buc = P_BUC_03.name)
         val expectedError = """Du kan ikke opprette krav-SED P2200 hvis ikke "bodd/arbeidet i utlandet" er krysset av""".trimIndent()
 
         mockMvc.perform(
@@ -147,7 +147,7 @@ class PrefillErrorIntegrationTest {
 
     }
 
-    private fun dummyApijson(sakid: String, vedtakid: String? = "", aktoerId: String, sed: String? = P2000.name, buc: String? = P_BUC_06.name, subject: String? = null, refperson: String? = null): String {
+    private fun dummyApijson(sakid: String, vedtakid: String? = "", aktoerId: String, sed: String? = SEDTYPE_P2000.name, buc: String? = P_BUC_06.name, subject: String? = null, refperson: String? = null): String {
         return """
             {
               "sakId" : "$sakid",

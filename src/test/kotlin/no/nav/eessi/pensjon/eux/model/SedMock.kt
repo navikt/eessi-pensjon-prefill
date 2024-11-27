@@ -25,7 +25,7 @@ class SedMock {
         return P5000(
                 nav = NavMock().genererNavMock(),
                 pensjon = PensjonMock().genererP5000Pensjon(),
-                type = SedType.P5000
+                type = SedType.SEDTYPE_P5000
         )
     }
 
@@ -33,7 +33,7 @@ class SedMock {
         return SED(
                 nav = NavMock().genererNavMock(),
                 pensjon = PensjonMock().genererMockData(),
-                type = SedType.P2200,
+                type = SedType.SEDTYPE_P2200,
                 sedVer = "0",
                 sedGVer = "4"
         )

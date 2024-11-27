@@ -6,7 +6,7 @@ import io.mockk.mockk
 import io.mockk.verify
 import no.nav.eessi.pensjon.UnsecuredWebMvcTestLauncher
 import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_06
-import no.nav.eessi.pensjon.eux.model.SedType.P2200
+import no.nav.eessi.pensjon.eux.model.SedType.SEDTYPE_P2200
 import no.nav.eessi.pensjon.eux.model.sed.SED
 import no.nav.eessi.pensjon.integrationtest.IntegrasjonsTestConfig
 import no.nav.eessi.pensjon.kodeverk.KodeverkClient
@@ -92,7 +92,7 @@ class PrefillUfoereIntegrationTest {
         every { pensjonsinformasjonOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java))} returns PrefillTestHelper.readXMLresponse("/pensjonsinformasjon/krav/P2200-AVSL.xml")
         every { kodeverkClient.finnLandkode(any()) } returns "QX"
 
-        val apijson = dummyApijson(sakid = "22922563", aktoerId = AKTOER_ID, sed = P2200.name)
+        val apijson = dummyApijson(sakid = "22922563", aktoerId = AKTOER_ID, sed = SEDTYPE_P2200.name)
         val result = mockMvc.perform(post("/sed/prefill")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(apijson))
@@ -221,7 +221,7 @@ class PrefillUfoereIntegrationTest {
 
         every { kodeverkClient.finnLandkode(any()) } returns "QX"
 
-        val apijson = dummyApijson(sakid = "22922563", aktoerId = aktoerHovedperson, sed = P2200.name)
+        val apijson = dummyApijson(sakid = "22922563", aktoerId = aktoerHovedperson, sed = SEDTYPE_P2200.name)
 
         val result = mockMvc.perform(post("/sed/prefill")
             .contentType(MediaType.APPLICATION_JSON)
@@ -492,7 +492,7 @@ class PrefillUfoereIntegrationTest {
 
         every { kodeverkClient.finnLandkode(any()) } returns "QX"
 
-        val apijson = dummyApijson(sakid = RINA_SAK, aktoerId = AKTOER_ID, vedtakid = "5134513451345", sed = P2200.name)
+        val apijson = dummyApijson(sakid = RINA_SAK, aktoerId = AKTOER_ID, vedtakid = "5134513451345", sed = SEDTYPE_P2200.name)
 
         val result = mockMvc.perform(post("/sed/prefill")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -522,7 +522,7 @@ class PrefillUfoereIntegrationTest {
 
         every { kodeverkClient.finnLandkode(any()) } returns "QX"
 
-        val apijson = dummyApijson(sakid = RINA_SAK, aktoerId = AKTOER_ID, vedtakid = "5134513451345", sed = P2200.name)
+        val apijson = dummyApijson(sakid = RINA_SAK, aktoerId = AKTOER_ID, vedtakid = "5134513451345", sed = SEDTYPE_P2200.name)
 
         val result = mockMvc.perform(post("/sed/prefill")
             .contentType(MediaType.APPLICATION_JSON)
@@ -594,7 +594,7 @@ class PrefillUfoereIntegrationTest {
             """.trimIndent()
 
 
-    private fun dummyApijson(sakid: String, vedtakid: String? = "", aktoerId: String, sed: String? = P2200.name, buc: String? = P_BUC_06.name, subject: String? = null, refperson: String? = null): String {
+    private fun dummyApijson(sakid: String, vedtakid: String? = "", aktoerId: String, sed: String? = SEDTYPE_P2200.name, buc: String? = P_BUC_06.name, subject: String? = null, refperson: String? = null): String {
         return """
             {
               "sakId" : "$sakid",

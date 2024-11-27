@@ -603,7 +603,7 @@ class SedPrefillP8000IntegrationSpringTest {
     }
 
 
-    private fun dummyApijson(sakid: String, vedtakid: String? = "", aktoerId: String, sed: String? = SedType.P2000.name, buc: String? = P_BUC_06.name, subject: String? = null, refperson: String? = null): String {
+    private fun dummyApijson(sakid: String, vedtakid: String? = "", aktoerId: String, sed: String? = SedType.SEDTYPE_P2000.name, buc: String? = P_BUC_06.name, subject: String? = null, refperson: String? = null): String {
         return """
             {
               "sakId" : "$sakid",

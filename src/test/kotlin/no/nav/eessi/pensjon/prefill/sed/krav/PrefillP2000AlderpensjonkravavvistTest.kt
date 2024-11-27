@@ -4,7 +4,7 @@ import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_01
 import no.nav.eessi.pensjon.eux.model.SedType
-import no.nav.eessi.pensjon.eux.model.SedType.P2000
+import no.nav.eessi.pensjon.eux.model.SedType.SEDTYPE_P2000
 import no.nav.eessi.pensjon.eux.model.sed.Nav
 import no.nav.eessi.pensjon.eux.model.sed.SED
 import no.nav.eessi.pensjon.prefill.InnhentingService
@@ -58,7 +58,7 @@ class PrefillP2000AlderpensjonkravavvistTest {
         val dataFromPEN = lesPensjonsdataFraFil("/pensjonsinformasjon/krav/P2000krav-alderpensjon-avslag.xml")
         val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
 
-        prefillData = initialPrefillDataModel(P2000, personFnr, penSaksnummer = pesysSaksnummer).apply {
+        prefillData = initialPrefillDataModel(SEDTYPE_P2000, personFnr, penSaksnummer = pesysSaksnummer).apply {
             partSedAsJson["PersonInfo"] = readJsonResponse("/json/nav/other/person_informasjon_selvb.json")
             partSedAsJson["P4000"] = readJsonResponse("/json/nav/other/p4000_trygdetid_part.json")
         }
@@ -74,7 +74,7 @@ class PrefillP2000AlderpensjonkravavvistTest {
         val P2000 = prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection)
 
         val P2000pensjon = SED(
-                type = SedType.P2000,
+                type = SedType.SEDTYPE_P2000,
                 pensjon = P2000.pensjon,
                 nav = Nav( krav = P2000.nav?.krav )
         )
@@ -132,7 +132,7 @@ class PrefillP2000AlderpensjonkravavvistTest {
     fun `testing av komplett P2000 med utskrift og testing av innsending`() {
         val P2000 = prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection)
 
-        val json = createMockApiRequest(SedType.P2000, P_BUC_01, P2000.toJson(), pesysSaksnummer).toJson()
+        val json = createMockApiRequest(SedType.SEDTYPE_P2000, P_BUC_01, P2000.toJson(), pesysSaksnummer).toJson()
         assertNotNull(json)
     }
 

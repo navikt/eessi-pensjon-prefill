@@ -97,7 +97,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
         val payload = mapAnyToJson(p6000fraRequest)
 
         //mock apiRequest
-        val apijson = dummyApiRequest(sakid = "21337890", aktoerId = AKTOER_ID, sed = P7000, buc = P_BUC_01, payload = payload ).toJson()
+        val apijson = dummyApiRequest(sakid = "21337890", aktoerId = AKTOER_ID, sed = SEDTYPE_P7000, buc = P_BUC_01, payload = payload ).toJson()
 
         val result = mockMvc.perform(post("/sed/prefill")
             .contentType(MediaType.APPLICATION_JSON)
@@ -215,7 +215,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
 
         //mock apiRequest
         val subject = dummyApiSubject(FNR_VOKSEN_4)
-        val apijson = dummyApiRequest(sakid = "21337890", aktoerId = AKTOER_ID, sed = P7000, buc = P_BUC_02, subject = subject, payload = payload ).toJson()
+        val apijson = dummyApiRequest(sakid = "21337890", aktoerId = AKTOER_ID, sed = SEDTYPE_P7000, buc = P_BUC_02, subject = subject, payload = payload ).toJson()
 
         val validResponse = """
         {
@@ -343,7 +343,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
 
         //mock apiRequest
         val subject = dummyApiSubject(FNR_VOKSEN_4)
-        val apijson = dummyApiRequest(sakid = "21337890", aktoerId = AKTOER_ID, sed = P7000, buc = P_BUC_02, subject = subject, payload = payload ).toJson()
+        val apijson = dummyApiRequest(sakid = "21337890", aktoerId = AKTOER_ID, sed = SEDTYPE_P7000, buc = P_BUC_02, subject = subject, payload = payload ).toJson()
 
         val validResponse = """
         {
@@ -467,7 +467,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
         val payload = mapAnyToJson(p6000fraRequest)
 
         //mock apiRequest
-        val apijson = dummyApiRequest(sakid = "21337890", aktoerId = AKTOER_ID, sed = P7000, buc = P_BUC_01, subject = null, payload = payload ).toJson()
+        val apijson = dummyApiRequest(sakid = "21337890", aktoerId = AKTOER_ID, sed = SEDTYPE_P7000, buc = P_BUC_01, subject = null, payload = payload ).toJson()
 
         val validResponse = """
         {
@@ -598,7 +598,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
         val payload = mapAnyToJson(p6000fraRequest)
 
         //mock apiRequest
-        val apijson = dummyApiRequest(sakid = "21337890", aktoerId = AKTOER_ID, sed = P7000, buc = P_BUC_01, payload = payload ).toJson()
+        val apijson = dummyApiRequest(sakid = "21337890", aktoerId = AKTOER_ID, sed = SEDTYPE_P7000, buc = P_BUC_01, payload = payload ).toJson()
 
         val validResponse = """ 
         {
@@ -686,7 +686,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
         every { kodeverkClient.finnLandkode(any())} returns "QX"
 
         //mock apiRequest
-        val apijson = dummyApiRequest(sakid = "21337890", aktoerId = AKTOER_ID, sed = P7000, buc = P_BUC_01).toJson()
+        val apijson = dummyApiRequest(sakid = "21337890", aktoerId = AKTOER_ID, sed = SEDTYPE_P7000, buc = P_BUC_01).toJson()
         val validResponse = """ 
             {
               "sed" : "P7000",
@@ -740,7 +740,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
     }
 
 
-    private fun dummyApiRequest(sakid: String, vedtakid: String? = "", aktoerId: String, sed: SedType? = P2000, buc: BucType? = P_BUC_06, subject: ApiSubject? = null, refperson: ReferanseTilPerson? = null, payload: String? = null): ApiRequest {
+    private fun dummyApiRequest(sakid: String, vedtakid: String? = "", aktoerId: String, sed: SedType? = SEDTYPE_P2000, buc: BucType? = P_BUC_06, subject: ApiSubject? = null, refperson: ReferanseTilPerson? = null, payload: String? = null): ApiRequest {
         return ApiRequest(
             sakId = sakid,
             vedtakId = vedtakid,
@@ -766,10 +766,10 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
 
 
 
-    private fun mockP6000KomplettRequestdata(land: String, type: String? = "01") =  Pair(P6000Dokument(P6000, "123123", "23423asdasd3243423", land, "1", "url", LocalDate.of(2020, 10, 12), if (land == "NO") Retning.OUT else Retning.IN),
+    private fun mockP6000KomplettRequestdata(land: String, type: String? = "01") =  Pair(P6000Dokument(SEDTYPE_P6000, "123123", "23423asdasd3243423", land, "1", "url", LocalDate.of(2020, 10, 12), if (land == "NO") Retning.OUT else Retning.IN),
         mapJsonToAny<P6000>(mockKomplettP6000(land, type)))
 
-    private fun mockP6000requestdata(land: String, filnavn: String) =  Pair(P6000Dokument(P6000, "123123", "23423asdasd3243423", land, "1", "url", LocalDate.of(2021, 11,13), if (land == "NO") Retning.OUT else Retning.IN),
+    private fun mockP6000requestdata(land: String, filnavn: String) =  Pair(P6000Dokument(SEDTYPE_P6000, "123123", "23423asdasd3243423", land, "1", "url", LocalDate.of(2021, 11,13), if (land == "NO") Retning.OUT else Retning.IN),
         getP6000ekternfil(filnavn) ) }
 
     private fun getP6000ekternfil(filnavn: String): P6000 = mapJsonToAny<P6000>(ResourceUtils.getFile("classpath:json/nav/$filnavn").readText())

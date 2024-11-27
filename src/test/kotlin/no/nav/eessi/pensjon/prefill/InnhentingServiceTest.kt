@@ -44,7 +44,7 @@ class InnhentingServiceTest {
         val apiRequest = ApiRequest(
             subjectArea = "Pensjon",
             sakId = "EESSI-PEN-123",
-            sed = P2100,
+            sed = SEDTYPE_P2100,
             buc = P_BUC_02,
             aktoerId = "0105094340092",
             avdodfnr = "12345566"
@@ -61,7 +61,7 @@ class InnhentingServiceTest {
         val apiRequest = ApiRequest(
             subjectArea = "Pensjon",
             sakId = "EESSI-PEN-123",
-            sed = P5000,
+            sed = SEDTYPE_P5000,
             buc = P_BUC_02,
             aktoerId = "0105094340092",
             avdodfnr = "12345566",
@@ -80,7 +80,7 @@ class InnhentingServiceTest {
         val apiRequest = ApiRequest(
             subjectArea = "Pensjon",
             sakId = "EESSI-PEN-123",
-            sed = P2100,
+            sed = SEDTYPE_P2100,
             buc = P_BUC_02,
             aktoerId = "0105094340092"
         )
@@ -94,7 +94,7 @@ class InnhentingServiceTest {
         val apiRequest = ApiRequest(
             subjectArea = "Pensjon",
             sakId = "EESSI-PEN-123",
-            sed = P15000,
+            sed = SEDTYPE_P15000,
             buc = BucType.P_BUC_10,
             aktoerId = "0105094340092",
             avdodfnr = "12345566"
@@ -109,7 +109,7 @@ class InnhentingServiceTest {
         val apireq = ApiRequest(
             subjectArea = "Pensjon",
             sakId = "EESSI-PEN-123",
-            sed = P2000,
+            sed = SEDTYPE_P2000,
             buc = P_BUC_01,
             aktoerId = "0105094340092",
             avdodfnr = "12345566"
@@ -127,7 +127,7 @@ class InnhentingServiceTest {
 
         @Test
         fun `Gitt en P2100 med saktype ALDER saa skal hentPensjoninformasjonCollection sitt resultat paa saktype gi ut ALDER`() {
-            val prefillData = prefillDataModel(sedType = P2100)
+            val prefillData = prefillDataModel(sedType = SEDTYPE_P2100)
             val peninfo = pensjonsinformasjon(SAKTYPE_ALDER)
 
             every { pensjonsinformasjonClient.hentAltPaaFNR(FNR) } returns peninfo
@@ -139,7 +139,7 @@ class InnhentingServiceTest {
 
         @Test
         fun `Gitt en P15000 med saktype UFORE saa skal hentPensjoninformasjonCollection sitt resultat paa saktype returnere UFOREP`() {
-            val prefillData = prefillDataModel(sedType = P15000)
+            val prefillData = prefillDataModel(sedType = SEDTYPE_P15000)
             val peninfo = pensjonsinformasjon(SAKTYPE_UFORE)
 
             every { pensjonsinformasjonClient.hentAltPaaFNR(FNR) } returns peninfo
@@ -151,7 +151,7 @@ class InnhentingServiceTest {
 
         @Test
         fun `Gitt en P8000 med saktype ALDER saa skal hentPensjoninformasjonCollection sitt resultat paa saktype returnere ALDER`() {
-            val prefillData = prefillDataModel(sedType = P8000)
+            val prefillData = prefillDataModel(sedType = SEDTYPE_P8000)
             val peninfo = pensjonsinformasjon(SAKTYPE_ALDER)
 
             every { pensjonsinformasjonClient.hentAltPaaFNR(FNR) } returns peninfo
@@ -163,7 +163,7 @@ class InnhentingServiceTest {
 
         @Test
         fun `Gitt en P8000 med på en P_BUC_05 med saktype ALDER saa skal hentPensjoninformasjonCollection sitt resultat paa saktype returnere ALDER`() {
-            val prefillData = prefillDataModel(sedType = P8000, bucType = P_BUC_05)
+            val prefillData = prefillDataModel(sedType = SEDTYPE_P8000, bucType = P_BUC_05)
             val peninfo = pensjonsinformasjon(SAKTYPE_ALDER)
 
             every { pensjonsinformasjonClient.hentAltPaaFNR(FNR) } returns peninfo

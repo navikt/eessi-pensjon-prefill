@@ -82,21 +82,21 @@ class InnhentingService(
         val pensakTyper = listOf(GENRL, OMSORG) + eessipensjonSakTyper
         return when (val sedType = prefillData.sedType) {
 
-            P2000 -> {
+            SEDTYPE_P2000 -> {
                 PensjonCollection(sak = hentRelevantPensjonSak(prefillData) { pensakType -> EPSaktype.valueOf(pensakType) == ALDER }, vedtak = hentRelevantVedtak(prefillData), sedType = sedType)
             }
-            P2200 -> {
+            SEDTYPE_P2200 -> {
                 PensjonCollection(sak = hentRelevantPensjonSak(prefillData) { pensakType -> EPSaktype.valueOf(pensakType) == UFOREP }, vedtak = hentRelevantVedtak(prefillData), sedType = sedType)
             }
-            P2100 -> {
+            SEDTYPE_P2100 -> {
                 PensjonCollection(
                     sak = hentRelevantPensjonSak(prefillData) { pensakType -> (EPSaktype.valueOf(pensakType) in eessipensjonSakTyper) },
                     vedtak = hentRelevantVedtak(prefillData),
                     sedType = sedType
                 )
             }
-            P6000 ->  PensjonCollection(pensjoninformasjon = pensjonsinformasjonService.hentVedtak(hentVedtak(prefillData)), sedType = sedType)
-            P8000 -> {
+            SEDTYPE_P6000 ->  PensjonCollection(pensjoninformasjon = pensjonsinformasjonService.hentVedtak(hentVedtak(prefillData)), sedType = sedType)
+            SEDTYPE_P8000 -> {
                 if (prefillData.buc == P_BUC_05) {
                         try {
                             val sak = hentRelevantPensjonSak(prefillData) { pensakType -> EPSaktype.valueOf(pensakType) in pensakTyper }
@@ -109,7 +109,7 @@ class InnhentingService(
                     PensjonCollection(sedType = sedType)
                 }
             }
-            P15000 -> {
+            SEDTYPE_P15000 -> {
                 PensjonCollection(
                     pensjoninformasjon = hentRelevantPensjonsinformasjon(prefillData),
                     sak = hentRelevantPensjonSak(prefillData) { pensakType -> EPSaktype.valueOf(pensakType) in pensakTyper },

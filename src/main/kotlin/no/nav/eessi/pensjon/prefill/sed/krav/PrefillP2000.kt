@@ -39,7 +39,7 @@ class PrefillP2000(private val prefillNav: PrefillPDLNav)  {
         logger.info("kravdato : ${pensjon?.kravDato}")
 
         val sed = P2000(
-            type = SedType.P2000,
+            type = SedType.SEDTYPE_P2000,
             nav = nav,
             p2000pensjon = pensjon
         )
@@ -61,7 +61,7 @@ class PrefillP2000(private val prefillNav: PrefillPDLNav)  {
     }
 
     private fun postPrefill(prefillData: PrefillDataModel, sak: V1Sak?, vedtak: V1Vedtak?) {
-        val SedType = SedType.P2000
+        val SedType = SedType.SEDTYPE_P2000
         PrefillP2xxxPensjon.validerGyldigVedtakEllerKravtypeOgArsak(sak, SedType, vedtak)
         logger.debug("----------------------------------------------------------"
                 + "\nSaktype                 : ${sak?.sakType} "
@@ -158,7 +158,7 @@ class PrefillP2000(private val prefillNav: PrefillPDLNav)  {
                 sak,
                 andreInstitusjondetaljer
             )
-            if (prefillData.sedType != SedType.P6000) {
+            if (prefillData.sedType != SedType.SEDTYPE_P6000) {
                 P2000Pensjon(kravDato = meldingOmPensjon.pensjon.kravDato)
             } else {
                 meldingOmPensjon.pensjon

@@ -4,9 +4,9 @@ import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_01
 import no.nav.eessi.pensjon.eux.model.SedType
-import no.nav.eessi.pensjon.eux.model.SedType.P3000_AT
-import no.nav.eessi.pensjon.eux.model.SedType.P3000_IT
-import no.nav.eessi.pensjon.eux.model.SedType.P3000_SE
+import no.nav.eessi.pensjon.eux.model.SedType.SEDTYPE_P3000_AT
+import no.nav.eessi.pensjon.eux.model.SedType.SEDTYPE_P3000_IT
+import no.nav.eessi.pensjon.eux.model.SedType.SEDTYPE_P3000_SE
 import no.nav.eessi.pensjon.prefill.LagPdlPerson
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
@@ -52,29 +52,29 @@ class SedP3000XXTest {
 
     @Test
     fun testP3000_AT() {
-        val datamodel = getMockDataModel(P3000_AT, personFnr)
-        pensjonCollection = PensjonCollection(sedType = P3000_AT)
+        val datamodel = getMockDataModel(SEDTYPE_P3000_AT, personFnr)
+        pensjonCollection = PensjonCollection(sedType = SEDTYPE_P3000_AT)
 
         val sed = prefillSEDService.prefill(datamodel, personDataCollection,pensjonCollection)
-        Assertions.assertEquals(P3000_AT, sed.type)
+        Assertions.assertEquals(SEDTYPE_P3000_AT, sed.type)
     }
 
     @Test
     fun testP3000_IT() {
-        val datamodel = getMockDataModel(P3000_IT, personFnr)
-        pensjonCollection = PensjonCollection(sedType = P3000_IT)
+        val datamodel = getMockDataModel(SEDTYPE_P3000_IT, personFnr)
+        pensjonCollection = PensjonCollection(sedType = SEDTYPE_P3000_IT)
 
         val sed = prefillSEDService.prefill(datamodel, personDataCollection,pensjonCollection)
-        Assertions.assertEquals(P3000_IT, sed.type)
+        Assertions.assertEquals(SEDTYPE_P3000_IT, sed.type)
     }
 
     @Test
     fun testP3000_SE() {
-        val datamodel = getMockDataModel(P3000_SE, personFnr)
-        pensjonCollection = PensjonCollection(sedType = P3000_SE)
+        val datamodel = getMockDataModel(SEDTYPE_P3000_SE, personFnr)
+        pensjonCollection = PensjonCollection(sedType = SEDTYPE_P3000_SE)
 
         val sed = prefillSEDService.prefill(datamodel, personDataCollection,pensjonCollection)
-        Assertions.assertEquals(P3000_SE, sed.type)
+        Assertions.assertEquals(SEDTYPE_P3000_SE, sed.type)
     }
 
 

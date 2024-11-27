@@ -49,7 +49,7 @@ class PrefillP2100AdresseTest {
 
         persondataCollection = PersonPDLMock.createAvdodFamilieMedDødsboadresse(personFnr, avdodPersonFnr)
         prefillData = PrefillDataModelMother.initialPrefillDataModel(
-                sedType = SedType.P2100,
+                sedType = SedType.SEDTYPE_P2100,
                 pinId = personFnr,
                 penSaksnummer = pesysSaksnummer,
                 avdod = PersonInfo(avdodPersonFnr, "112233445566")

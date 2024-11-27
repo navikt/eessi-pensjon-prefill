@@ -50,7 +50,7 @@ class PrefillP2000KravKunUtlandTest {
 
         dataFromPEN = lesPensjonsdataFraFil("/pensjonsinformasjon/krav/P2000-AP-KUNUTL-IKKEVIRKNINGTID.xml")
 
-        prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P2000, personFnr, penSaksnummer = "21920707").apply {
+        prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.SEDTYPE_P2000, personFnr, penSaksnummer = "21920707").apply {
             partSedAsJson["PersonInfo"] = readJsonResponse("/json/nav/other/person_informasjon_selvb.json")
             partSedAsJson["P4000"] = readJsonResponse("/json/nav/other/p4000_trygdetid_part.json")
         }

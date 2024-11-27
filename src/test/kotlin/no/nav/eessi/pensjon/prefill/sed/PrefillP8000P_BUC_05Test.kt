@@ -62,7 +62,7 @@ class PrefillP8000P_BUC_05Test {
 
 
         prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav)
-        prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P8000, personFnr, penSaksnummer = pesysSaksnummer)
+        prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.SEDTYPE_P8000, personFnr, penSaksnummer = pesysSaksnummer)
 
     }
 
@@ -74,7 +74,7 @@ class PrefillP8000P_BUC_05Test {
             .medUtlandAdresse("LUNGJTEGATA 12", "postboks", "SWE", "bygning", "region", bySted = "UTLANDBY")
         personDataCollection = PersonDataCollection(personforsikret,personforsikret)
 
-        val pensjonCollection = PensjonCollection(sedType = SedType.P8000)
+        val pensjonCollection = PensjonCollection(sedType = SedType.SEDTYPE_P8000)
 
         val p8000 = prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection)
 
@@ -103,9 +103,9 @@ class PrefillP8000P_BUC_05Test {
             .medAdresse("Gate")
 
         personDataCollection = PersonDataCollection(avdod, forsikretPerson)
-        pensjonCollection = PensjonCollection(sedType = SedType.P8000)
+        pensjonCollection = PensjonCollection(sedType = SedType.SEDTYPE_P8000)
 
-        prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P8000, fnr, penSaksnummer = pesysSaksnummer, avdod = PersonInfo(norskIdent = avdodFnr, aktorId = "21323"),  refTilPerson = ReferanseTilPerson.AVDOD)
+        prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.SEDTYPE_P8000, fnr, penSaksnummer = pesysSaksnummer, avdod = PersonInfo(norskIdent = avdodFnr, aktorId = "21323"),  refTilPerson = ReferanseTilPerson.AVDOD)
 
         val p8000 =  prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection) as P8000
 
@@ -134,8 +134,8 @@ class PrefillP8000P_BUC_05Test {
 
         personDataCollection = PersonDataCollection(avdod, forsikretPerson)
 
-        prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P8000, fnr, penSaksnummer = pesysSaksnummer, avdod = PersonInfo(norskIdent = avdodFnr, aktorId = "21323"), refTilPerson = ReferanseTilPerson.SOKER )
-        pensjonCollection = PensjonCollection(sedType = SedType.P8000)
+        prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.SEDTYPE_P8000, fnr, penSaksnummer = pesysSaksnummer, avdod = PersonInfo(norskIdent = avdodFnr, aktorId = "21323"), refTilPerson = ReferanseTilPerson.SOKER )
+        pensjonCollection = PensjonCollection(sedType = SedType.SEDTYPE_P8000)
 
         val p8000 =  prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection) as P8000
 
@@ -175,9 +175,9 @@ class PrefillP8000P_BUC_05Test {
         sak.kravHistorikkListe = V1KravHistorikkListe()
         sak.kravHistorikkListe.kravHistorikkListe.add(v1Kravhistorikk)
 
-        val pensjonCollection = PensjonCollection(sak = sak, sedType = SedType.P8000)
+        val pensjonCollection = PensjonCollection(sak = sak, sedType = SedType.SEDTYPE_P8000)
 
-        prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P8000, fnr, penSaksnummer = "100", avdod = PersonInfo(norskIdent = avdodFnr, aktorId = "21323"),  refTilPerson = ReferanseTilPerson.SOKER, bucType = P_BUC_05)
+        prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.SEDTYPE_P8000, fnr, penSaksnummer = "100", avdod = PersonInfo(norskIdent = avdodFnr, aktorId = "21323"),  refTilPerson = ReferanseTilPerson.SOKER, bucType = P_BUC_05)
 
         val p8000 =  prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection)
 
@@ -248,9 +248,9 @@ class PrefillP8000P_BUC_05Test {
         sak.kravHistorikkListe = V1KravHistorikkListe()
         sak.kravHistorikkListe.kravHistorikkListe.add(v1Kravhistorikk)
 
-        val pensjonCollection = PensjonCollection(sak = sak, sedType = SedType.P8000)
+        val pensjonCollection = PensjonCollection(sak = sak, sedType = SedType.SEDTYPE_P8000)
 
-        prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P8000, fnr, penSaksnummer = "100", avdod = PersonInfo(norskIdent = avdodFnr, aktorId = "21323"),  refTilPerson = ReferanseTilPerson.SOKER, bucType = P_BUC_05)
+        prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.SEDTYPE_P8000, fnr, penSaksnummer = "100", avdod = PersonInfo(norskIdent = avdodFnr, aktorId = "21323"),  refTilPerson = ReferanseTilPerson.SOKER, bucType = P_BUC_05)
 
         val p8000 =  prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection)
 

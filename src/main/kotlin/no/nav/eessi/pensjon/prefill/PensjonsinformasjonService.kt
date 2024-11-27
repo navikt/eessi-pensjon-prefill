@@ -127,9 +127,9 @@ class PensjonsinformasjonService(private val pensjonsinformasjonClient: Pensjons
 
     private fun sedTypeAsText(sedType: SedType) =
             when (sedType) {
-                SedType.P2000 -> "alderspensjonskrav"
-                SedType.P2100 -> "gjenlevende-krav"
-                SedType.P2200 -> "uføretrygdkrav"
+                SedType.SEDTYPE_P2000 -> "alderspensjonskrav"
+                SedType.SEDTYPE_P2100 -> "gjenlevende-krav"
+                SedType.SEDTYPE_P2200 -> "uføretrygdkrav"
                 else -> sedType.name
             }
 

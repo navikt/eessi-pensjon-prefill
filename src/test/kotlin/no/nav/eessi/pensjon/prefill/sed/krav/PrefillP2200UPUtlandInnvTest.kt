@@ -53,7 +53,7 @@ class PrefillP2200UPUtlandInnvTest {
 
         dataFromPEN = lesPensjonsdataFraFil("/pensjonsinformasjon/krav/P2200-UP-INNV.xml")
 
-        prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P2200, personFnr, penSaksnummer = pesysSaksnummer).apply {
+        prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.SEDTYPE_P2200, personFnr, penSaksnummer = pesysSaksnummer).apply {
             partSedAsJson["PersonInfo"] = readJsonResponse("/json/nav/other/person_informasjon_selvb.json")
             partSedAsJson["P4000"] = readJsonResponse("/json/nav/other/p4000_trygdetid_part.json")
         }
@@ -69,7 +69,7 @@ class PrefillP2200UPUtlandInnvTest {
         val P2200 = prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection)
 
         val P2200ufor = SED(
-                type = SedType.P2200,
+                type = SedType.SEDTYPE_P2200,
                 pensjon = P2200.pensjon,
                 nav = Nav(krav = P2200.nav?.krav)
         )

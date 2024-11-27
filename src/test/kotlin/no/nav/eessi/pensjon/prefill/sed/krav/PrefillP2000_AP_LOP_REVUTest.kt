@@ -3,7 +3,7 @@ package no.nav.eessi.pensjon.prefill.sed.krav
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_01
-import no.nav.eessi.pensjon.eux.model.SedType.P2000
+import no.nav.eessi.pensjon.eux.model.SedType.SEDTYPE_P2000
 import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
@@ -56,7 +56,7 @@ class PrefillP2000_AP_LOP_REVUTest {
 
         dataFromPEN = lesPensjonsdataFraFil("/pensjonsinformasjon/krav/P2000-AP-LP-RVUR-20541862.xml")
 
-        prefillData = PrefillDataModelMother.initialPrefillDataModel(P2000, pinId = personFnr, penSaksnummer = pesysSaksnummer).apply {
+        prefillData = PrefillDataModelMother.initialPrefillDataModel(SEDTYPE_P2000, pinId = personFnr, penSaksnummer = pesysSaksnummer).apply {
             partSedAsJson["PersonInfo"] = readJsonResponse("/json/nav/other/person_informasjon_selvb.json")
             partSedAsJson["P4000"] = readJsonResponse("/json/nav/other/p4000_trygdetid_part.json")
 
@@ -124,7 +124,7 @@ class PrefillP2000_AP_LOP_REVUTest {
         val items = listOf(InstitusjonItem(country = "NO", institution = "NAVT003"))
         return ApiRequest(
                 institutions = items,
-                sed = P2000,
+                sed = SEDTYPE_P2000,
                 sakId = "01234567890",
                 euxCaseId = "99191999911",
                 aktoerId = "1000060964183",

@@ -52,7 +52,7 @@ class PrefillP2100GLutlandInnvTest {
         dataFromPEN = lesPensjonsdataFraFil("/pensjonsinformasjon/krav/P2100-GL-UTL-INNV.xml")
 
         prefillData = PrefillDataModelMother.initialPrefillDataModel(
-                sedType = SedType.P2100,
+                sedType = SedType.SEDTYPE_P2100,
                 pinId = personFnr,
                 penSaksnummer = pesysSaksnummer,
                 avdod = PersonInfo(avdodPersonFnr, "112233445566")
@@ -73,7 +73,7 @@ class PrefillP2100GLutlandInnvTest {
         val p2100 = prefillSEDService.prefill(prefillData, persondataCollection, pensjonCollection)
 
         val p2100gjenlev = SED(
-                type = SedType.P2100,
+                type = SedType.SEDTYPE_P2100,
                 pensjon = p2100.pensjon,
                 nav = Nav(krav = p2100.nav?.krav)
         )

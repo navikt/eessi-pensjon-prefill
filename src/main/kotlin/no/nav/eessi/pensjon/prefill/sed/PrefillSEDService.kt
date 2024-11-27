@@ -1,20 +1,20 @@
 package no.nav.eessi.pensjon.prefill.sed
 
 import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_05
-import no.nav.eessi.pensjon.eux.model.SedType.H020
-import no.nav.eessi.pensjon.eux.model.SedType.H021
-import no.nav.eessi.pensjon.eux.model.SedType.P10000
-import no.nav.eessi.pensjon.eux.model.SedType.P15000
-import no.nav.eessi.pensjon.eux.model.SedType.P2000
-import no.nav.eessi.pensjon.eux.model.SedType.P2100
-import no.nav.eessi.pensjon.eux.model.SedType.P2200
-import no.nav.eessi.pensjon.eux.model.SedType.P4000
-import no.nav.eessi.pensjon.eux.model.SedType.P5000
-import no.nav.eessi.pensjon.eux.model.SedType.P6000
-import no.nav.eessi.pensjon.eux.model.SedType.P7000
-import no.nav.eessi.pensjon.eux.model.SedType.P8000
-import no.nav.eessi.pensjon.eux.model.SedType.X005
-import no.nav.eessi.pensjon.eux.model.SedType.X010
+import no.nav.eessi.pensjon.eux.model.SedType.SEDTYPE_H020
+import no.nav.eessi.pensjon.eux.model.SedType.SEDTYPE_H021
+import no.nav.eessi.pensjon.eux.model.SedType.SEDTYPE_P10000
+import no.nav.eessi.pensjon.eux.model.SedType.SEDTYPE_P15000
+import no.nav.eessi.pensjon.eux.model.SedType.SEDTYPE_P2000
+import no.nav.eessi.pensjon.eux.model.SedType.SEDTYPE_P2100
+import no.nav.eessi.pensjon.eux.model.SedType.SEDTYPE_P2200
+import no.nav.eessi.pensjon.eux.model.SedType.SEDTYPE_P4000
+import no.nav.eessi.pensjon.eux.model.SedType.SEDTYPE_P5000
+import no.nav.eessi.pensjon.eux.model.SedType.SEDTYPE_P6000
+import no.nav.eessi.pensjon.eux.model.SedType.SEDTYPE_P7000
+import no.nav.eessi.pensjon.eux.model.SedType.SEDTYPE_P8000
+import no.nav.eessi.pensjon.eux.model.SedType.SEDTYPE_X005
+import no.nav.eessi.pensjon.eux.model.SedType.SEDTYPE_X010
 import no.nav.eessi.pensjon.eux.model.sed.SED
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.prefill.models.PensjonCollection
@@ -40,7 +40,7 @@ class PrefillSEDService(private val eessiInformasjon: EessiInformasjon, private 
 
     fun prefill(prefillData: PrefillDataModel, personDataCollection: PersonDataCollection): SED {
         return when (prefillData.sedType) {
-            P6000 -> {
+            SEDTYPE_P6000 -> {
                 PrefillP6000(
                     prefillPDLnav,
                     eessiInformasjon,
@@ -50,7 +50,7 @@ class PrefillSEDService(private val eessiInformasjon: EessiInformasjon, private 
                     personDataCollection
                 )
             }
-            P2100 -> {
+            SEDTYPE_P2100 -> {
                 val sedpair = PrefillP2100(prefillPDLnav).prefillSed(
                     prefillData,
                     personDataCollection,
@@ -71,7 +71,7 @@ class PrefillSEDService(private val eessiInformasjon: EessiInformasjon, private 
 
         return when (prefillData.sedType) {
             //krav
-            P2000 -> {
+            SEDTYPE_P2000 -> {
                 PrefillP2000(prefillPDLnav).prefillSed(
                     prefillData,
                     personDataCollection,
@@ -80,13 +80,13 @@ class PrefillSEDService(private val eessiInformasjon: EessiInformasjon, private 
                 )
             }
 
-            P2200 -> PrefillP2200(prefillPDLnav).prefill(
+            SEDTYPE_P2200 -> PrefillP2200(prefillPDLnav).prefill(
                 prefillData,
                 personDataCollection,
                 pensjonCollection?.sak,
                 pensjonCollection?.vedtak
             )
-            P2100 -> {
+            SEDTYPE_P2100 -> {
                 val sedpair = PrefillP2100(prefillPDLnav).prefillSed(
                     prefillData,
                     personDataCollection,
@@ -97,7 +97,7 @@ class PrefillSEDService(private val eessiInformasjon: EessiInformasjon, private 
             }
 
             //vedtak
-            P6000 -> PrefillP6000(
+            SEDTYPE_P6000 -> PrefillP6000(
                 prefillPDLnav,
                 eessiInformasjon,
                 pensjonCollection?.pensjoninformasjon ?: throw ResponseStatusException(
@@ -108,11 +108,11 @@ class PrefillSEDService(private val eessiInformasjon: EessiInformasjon, private 
                 prefillData,
                 personDataCollection
             )
-            P5000 -> PrefillP5000(PrefillSed(prefillPDLnav)).prefill(prefillData, personDataCollection)
-            P4000 -> PrefillP4000(PrefillSed(prefillPDLnav)).prefill(prefillData, personDataCollection)
+            SEDTYPE_P5000 -> PrefillP5000(PrefillSed(prefillPDLnav)).prefill(prefillData, personDataCollection)
+            SEDTYPE_P4000 -> PrefillP4000(PrefillSed(prefillPDLnav)).prefill(prefillData, personDataCollection)
 
-            P7000 -> {
-                if (prefillData.partSedAsJson[P7000.name] != null && prefillData.partSedAsJson[P7000.name] != "{}") {
+            SEDTYPE_P7000 -> {
+                if (prefillData.partSedAsJson[SEDTYPE_P7000.name] != null && prefillData.partSedAsJson[SEDTYPE_P7000.name] != "{}") {
                     logger.info("P7000mk2 preutfylling med data fra P6000..")
                     PrefillP7000Mk2Turbo(PrefillSed(prefillPDLnav)).prefill(prefillData, personDataCollection)
                 } else {
@@ -121,7 +121,7 @@ class PrefillSEDService(private val eessiInformasjon: EessiInformasjon, private 
                 }
             }
 
-            P8000 -> {
+            SEDTYPE_P8000 -> {
                 if (prefillData.buc == P_BUC_05) {
                     PrefillP8000(PrefillSed(prefillPDLnav)).prefill(
                         prefillData,
@@ -133,14 +133,14 @@ class PrefillSEDService(private val eessiInformasjon: EessiInformasjon, private 
                 }
             }
 
-            P15000 -> PrefillP15000(PrefillSed(prefillPDLnav)).prefill(
+            SEDTYPE_P15000 -> PrefillP15000(PrefillSed(prefillPDLnav)).prefill(
                 prefillData,
                 personDataCollection,
                 pensjonCollection?.sak,
                 pensjonCollection?.pensjoninformasjon
             )
 
-            P10000 -> PrefillP10000(prefillPDLnav).prefill(
+            SEDTYPE_P10000 -> PrefillP10000(prefillPDLnav).prefill(
                 prefillData.penSaksnummer,
                 prefillData.bruker,
                 prefillData.avdod,
@@ -148,7 +148,7 @@ class PrefillSEDService(private val eessiInformasjon: EessiInformasjon, private 
                 personDataCollection
             )
 
-            X005 -> PrefillX005(prefillPDLnav).prefill(
+            SEDTYPE_X005 -> PrefillX005(prefillPDLnav).prefill(
                 prefillData.penSaksnummer,
                 prefillData.bruker,
                 prefillData.avdod,
@@ -157,16 +157,16 @@ class PrefillSEDService(private val eessiInformasjon: EessiInformasjon, private 
                 personDataCollection
             )
 
-            X010 -> PrefillX010(prefillPDLnav).prefill(
+            SEDTYPE_X010 -> PrefillX010(prefillPDLnav).prefill(
                 prefillData.penSaksnummer,
                 prefillData.bruker,
                 prefillData.avdod,
                 prefillData.getBankOgArbeidFromRequest(),
                 personDataCollection,
-                prefillData.partSedAsJson[X010.name]?.let { payload -> mapJsonToAny(payload) }
+                prefillData.partSedAsJson[SEDTYPE_X010.name]?.let { payload -> mapJsonToAny(payload) }
             )
 
-            H020, H021 -> PrefillH02X(prefillPDLnav).prefill(prefillData, personDataCollection)
+            SEDTYPE_H020, SEDTYPE_H021 -> PrefillH02X(prefillPDLnav).prefill(prefillData, personDataCollection)
 
             else ->
                 //P3000_SE, PL, DK, DE, UK, med flere vil gå denne veien..

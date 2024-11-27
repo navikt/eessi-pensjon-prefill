@@ -53,7 +53,7 @@ class SedP4000Test {
 
         val nav = NavMock().genererNavMock()
         val p4000 = P4000(
-                type = P4000,
+                type = SEDTYPE_P4000,
                 nav = nav,
                 trygdetid = result
         )
@@ -80,7 +80,7 @@ class SedP4000Test {
         val payload = mapAnyToJson(trygdetid)
 
         val req = ApiRequest(
-                sed = P4000,
+                sed = SEDTYPE_P4000,
                 sakId = "12231231",
                 euxCaseId = "99191999911",
                 aktoerId = "00000",
@@ -118,7 +118,7 @@ class SedP4000Test {
         val items = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
         val req = ApiRequest(
                 institutions = items,
-                sed = P4000,
+                sed = SEDTYPE_P4000,
                 sakId = "12231231",
                 euxCaseId = "99191999911",
                 aktoerId = "00000",
@@ -135,7 +135,7 @@ class SedP4000Test {
         val items = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
         val req = ApiRequest(
                 institutions = items,
-                sed = P4000,
+                sed = SEDTYPE_P4000,
                 sakId = "12231231",
                 euxCaseId = "99191999911",
                 aktoerId = "00000",
@@ -162,7 +162,7 @@ class SedP4000Test {
         val items = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))
         val req = ApiRequest(
                 institutions = items,
-                sed = P4000,
+                sed = SEDTYPE_P4000,
                 sakId = "12231231",
                 euxCaseId = "99191999911",
                 aktoerId = "1000060964183",
@@ -182,7 +182,7 @@ class SedP4000Test {
 
         val personData = PersonDataCollection(forsikretPerson = PersonPDLMock.createWith(), gjenlevendeEllerAvdod = PersonPDLMock.createWith())
 
-        every { prefillSed.prefill(any(), any()) } returns SED(type = P4000)
+        every { prefillSed.prefill(any(), any()) } returns SED(type = SEDTYPE_P4000)
 
         val sed = pre4000.prefill(data, personData)
         assertNotNull(sed)

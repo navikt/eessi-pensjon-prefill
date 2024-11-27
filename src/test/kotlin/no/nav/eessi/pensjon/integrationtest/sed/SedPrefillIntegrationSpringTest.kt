@@ -93,7 +93,7 @@ class SedPrefillIntegrationSpringTest {
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith(true, fnr = FNR_VOKSEN, aktoerid = AKTOER_ID)
         every { krrService.hentPersonFraKrr(any())  } returns KrrPerson(false,"melleby11@melby.no", "11111111")
 
-        val apijson = dummyApijson(sakid = "EESSI-PEN-123", aktoerId = AKTOER_ID, sedType = P6000)
+        val apijson = dummyApijson(sakid = "EESSI-PEN-123", aktoerId = AKTOER_ID, sedType = SEDTYPE_P6000)
 
         mockMvc.perform(post("/sed/prefill")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -175,7 +175,7 @@ class SedPrefillIntegrationSpringTest {
         every { pensjonsinformasjonOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns PrefillTestHelper.readXMLresponse("/pensjonsinformasjon/vedtak/P6000-BARNEP-GJENLEV.xml")
         every { kodeverkClient.finnLandkode(any()) } returns "QX"
 
-        val apijson = dummyApijson(sakid = "22874955", vedtakid = "987654321122355466", aktoerId = AKTOER_ID, sedType = P6000, buc = P_BUC_02, fnravdod = FNR_VOKSEN_4)
+        val apijson = dummyApijson(sakid = "22874955", vedtakid = "987654321122355466", aktoerId = AKTOER_ID, sedType = SEDTYPE_P6000, buc = P_BUC_02, fnravdod = FNR_VOKSEN_4)
 
         val result = mockMvc.perform(post("/sed/prefill")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -207,7 +207,7 @@ class SedPrefillIntegrationSpringTest {
 
         every { pensjonsinformasjonOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns PrefillTestHelper.readXMLresponse("/pensjonsinformasjon/vedtak/P6000-AP-Avslag.xml")
         every { kodeverkClient.finnLandkode(any()) } returns "QX"
-        val apijson = dummyApijson( sakid = "22874955", vedtakid = "123123423423", aktoerId = AKTOER_ID, sedType = P6000, buc = P_BUC_01)
+        val apijson = dummyApijson( sakid = "22874955", vedtakid = "123123423423", aktoerId = AKTOER_ID, sedType = SEDTYPE_P6000, buc = P_BUC_01)
 
         val result = mockMvc.perform(post("/sed/prefill")
             .contentType(MediaType.APPLICATION_JSON)
@@ -307,7 +307,7 @@ class SedPrefillIntegrationSpringTest {
         every { krrService.hentPersonFraKrr(eq(FNR_VOKSEN_4)) } returns KrrPerson(false,"melleby12@melby.no", "22222222")
         every { kodeverkClient.finnLandkode(any()) } returns "QX"
 
-        val apijson = dummyApijson(sakid = "22874955", vedtakid = "9876543211", aktoerId = AKTOER_ID, sedType = P3000_SE, buc = P_BUC_10,  fnravdod = FNR_VOKSEN_4)
+        val apijson = dummyApijson(sakid = "22874955", vedtakid = "9876543211", aktoerId = AKTOER_ID, sedType = SEDTYPE_P3000_SE, buc = P_BUC_10,  fnravdod = FNR_VOKSEN_4)
 
         val result = mockMvc.perform(post("/sed/prefill")
             .contentType(MediaType.APPLICATION_JSON)
@@ -343,7 +343,7 @@ class SedPrefillIntegrationSpringTest {
 
         every { kodeverkClient.finnLandkode(any()) } returns "QX"
 
-        val apijson = dummyApijson(sakid = "22874955", vedtakid = "9876543211", aktoerId = AKTOER_ID, sedType = P5000, buc = P_BUC_10,  fnravdod = FNR_VOKSEN_4)
+        val apijson = dummyApijson(sakid = "22874955", vedtakid = "9876543211", aktoerId = AKTOER_ID, sedType = SEDTYPE_P5000, buc = P_BUC_10,  fnravdod = FNR_VOKSEN_4)
 
         val result = mockMvc.perform(post("/sed/prefill")
             .contentType(MediaType.APPLICATION_JSON)
@@ -374,7 +374,7 @@ class SedPrefillIntegrationSpringTest {
         every { krrService.hentPersonFraKrr(any()) } returns KrrPerson(false,"melleby11@melby.no", "11111111")
         every { kodeverkClient.finnLandkode(any()) } returns "QX"
 
-        val apijson = dummyApijson(sakid = "22874955", vedtakid = "9876543211", aktoerId = AKTOER_ID, sedType = P4000, buc = P_BUC_05)
+        val apijson = dummyApijson(sakid = "22874955", vedtakid = "9876543211", aktoerId = AKTOER_ID, sedType = SEDTYPE_P4000, buc = P_BUC_05)
 
         val result = mockMvc.perform(post("/sed/prefill")
             .contentType(MediaType.APPLICATION_JSON)
@@ -901,7 +901,7 @@ class SedPrefillIntegrationSpringTest {
 
         every { kodeverkClient.finnLandkode(eq("NOR")) } returns "NO"
 
-        val apijson = dummyApijson(sakid = "20541862", aktoerId = AKTOER_ID, sedType = P2100, buc = P_BUC_02, fnravdod = FNR_VOKSEN_4)
+        val apijson = dummyApijson(sakid = "20541862", aktoerId = AKTOER_ID, sedType = SEDTYPE_P2100, buc = P_BUC_02, fnravdod = FNR_VOKSEN_4)
 
         mockMvc.perform(post("/sed/prefill")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -919,7 +919,7 @@ class SedPrefillIntegrationSpringTest {
         every { pensjonsinformasjonOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns PrefillTestHelper.readXMLresponse("/pensjonsinformasjon/krav/P2000-AP-UP-21337890.xml")
         every { kodeverkClient.finnLandkode(any()) } returns "QX"
 
-        val apijson = dummyApijson(sakid = "21337890", aktoerId = AKTOER_ID, sedType = X010)
+        val apijson = dummyApijson(sakid = "21337890", aktoerId = AKTOER_ID, sedType = SEDTYPE_X010)
 
         val validResponse = """
                 {
@@ -976,7 +976,7 @@ class SedPrefillIntegrationSpringTest {
 
         val x009 = SED.fromJsonToConcrete(PrefillTestHelper.readJsonResponse("/json/nav/X009-NAV.json")) as X009
 
-        val apijson = dummyApijson(sakid = "21337890", aktoerId = AKTOER_ID, sedType = X010, payload = x009.toJson())
+        val apijson = dummyApijson(sakid = "21337890", aktoerId = AKTOER_ID, sedType = SEDTYPE_X010, payload = x009.toJson())
 
         val validResponse = """
             {
@@ -1065,7 +1065,7 @@ fun dummyApi(
     sakid: String,
     vedtakid: String? = null,
     aktoerId: String,
-    sedType: SedType = P2000,
+    sedType: SedType = SEDTYPE_P2000,
     buc: BucType? = P_BUC_06,
     fnravdod: String? = null,
     kravtype: KravType? = null,
@@ -1093,6 +1093,6 @@ fun dummyApi(
     )
 }
 
-fun dummyApijson(sakid: String, vedtakid: String? = null, aktoerId: String, sedType: SedType = P2000, buc: BucType? = P_BUC_06, fnravdod: String? = null, kravtype: KravType? = null, kravdato: String? = null, payload: String? = null): String {
+fun dummyApijson(sakid: String, vedtakid: String? = null, aktoerId: String, sedType: SedType = SEDTYPE_P2000, buc: BucType? = P_BUC_06, fnravdod: String? = null, kravtype: KravType? = null, kravdato: String? = null, payload: String? = null): String {
     return dummyApi(sakid, vedtakid, aktoerId, sedType, buc, fnravdod, kravtype, kravdato, payload).toJson()
 }

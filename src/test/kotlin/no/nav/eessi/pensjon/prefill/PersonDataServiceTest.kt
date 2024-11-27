@@ -53,7 +53,7 @@ internal class PersonDataServiceTest {
 
         every { personService.hentPerson(any()) } throws PersonoppslagException("Fant ikke person", "not_found")
 
-        val data = PrefillDataModelMother.initialPrefillDataModel(SedType.P2000, FNR_VOKSEN, SAK_ID, euxCaseId = EUX_RINA)
+        val data = PrefillDataModelMother.initialPrefillDataModel(SedType.SEDTYPE_P2000, FNR_VOKSEN, SAK_ID, euxCaseId = EUX_RINA)
 
         assertThrows<ResponseStatusException> {
             persondataService.hentPersonData(data)
@@ -69,7 +69,7 @@ internal class PersonDataServiceTest {
 
         every { personService.hentPerson(any()) } returns mockPerson
 
-        val data = PrefillDataModelMother.initialPrefillDataModel(SedType.P2000, FNR_VOKSEN, SAK_ID, euxCaseId = EUX_RINA)
+        val data = PrefillDataModelMother.initialPrefillDataModel(SedType.SEDTYPE_P2000, FNR_VOKSEN, SAK_ID, euxCaseId = EUX_RINA)
 
         val result = persondataService.hentPersonData(data)
 
@@ -91,7 +91,7 @@ internal class PersonDataServiceTest {
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns gjenlev
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_2)) } returns avdod
 
-        val data = PrefillDataModelMother.initialPrefillDataModel(SedType.P2000, FNR_VOKSEN, SAK_ID, euxCaseId = EUX_RINA, avdod = PersonInfo(
+        val data = PrefillDataModelMother.initialPrefillDataModel(SedType.SEDTYPE_P2000, FNR_VOKSEN, SAK_ID, euxCaseId = EUX_RINA, avdod = PersonInfo(
             FNR_VOKSEN_2, AKTOER_ID_2
         )
         )
@@ -115,7 +115,7 @@ internal class PersonDataServiceTest {
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns forelder
         every { personService.hentPerson(NorskIdent(FNR_BARN)) } returns barn
 
-        val data = PrefillDataModelMother.initialPrefillDataModel(SedType.P2000, FNR_VOKSEN, SAK_ID, euxCaseId = EUX_RINA)
+        val data = PrefillDataModelMother.initialPrefillDataModel(SedType.SEDTYPE_P2000, FNR_VOKSEN, SAK_ID, euxCaseId = EUX_RINA)
 
         val result = persondataService.hentPersonData(data)
 
@@ -143,7 +143,7 @@ internal class PersonDataServiceTest {
         every { personService.hentPerson(NorskIdent(barn1fnr)) } returns barn1
         every { personService.hentPerson(NorskIdent(barn2fnr)) } returns barn2
 
-        val data = PrefillDataModelMother.initialPrefillDataModel(SedType.P2000, FNR_VOKSEN, SAK_ID, euxCaseId = EUX_RINA)
+        val data = PrefillDataModelMother.initialPrefillDataModel(SedType.SEDTYPE_P2000, FNR_VOKSEN, SAK_ID, euxCaseId = EUX_RINA)
 
         val result = persondataService.hentPersonData(data)
 
@@ -171,7 +171,7 @@ internal class PersonDataServiceTest {
         every { personService.hentPerson(NorskIdent(barn1fnr)) } returns barn1
         every { personService.hentPerson(NorskIdent(barn2fnr)) } returns barn2
 
-        val data = PrefillDataModelMother.initialPrefillDataModel(SedType.P2000, NPID_VOKSEN, SAK_ID, euxCaseId = EUX_RINA)
+        val data = PrefillDataModelMother.initialPrefillDataModel(SedType.SEDTYPE_P2000, NPID_VOKSEN, SAK_ID, euxCaseId = EUX_RINA)
 
         val result = persondataService.hentPersonData(data)
 
@@ -199,7 +199,7 @@ internal class PersonDataServiceTest {
         every { personService.hentPerson(NorskIdent(barn1fnr)) } returns barn1
         every { personService.hentPerson(NorskIdent(barn2fnr)) } returns barn2
 
-        val data = PrefillDataModelMother.initialPrefillDataModel(SedType.P2000, FNR_VOKSEN, SAK_ID, euxCaseId = EUX_RINA)
+        val data = PrefillDataModelMother.initialPrefillDataModel(SedType.SEDTYPE_P2000, FNR_VOKSEN, SAK_ID, euxCaseId = EUX_RINA)
 
         val result = persondataService.hentPersonData(data)
 
@@ -240,7 +240,7 @@ internal class PersonDataServiceTest {
         every { personService.hentPerson(NorskIdent(barn1)) } returns barnet
         every { personService.hentPerson(NorskIdent(barn2)) } returns barnto
 
-        val data = PrefillDataModelMother.initialPrefillDataModel(SedType.P2000, farfnr, SAK_ID, euxCaseId = EUX_RINA)
+        val data = PrefillDataModelMother.initialPrefillDataModel(SedType.SEDTYPE_P2000, farfnr, SAK_ID, euxCaseId = EUX_RINA)
 
         val result = persondataService.hentPersonData(data)
 

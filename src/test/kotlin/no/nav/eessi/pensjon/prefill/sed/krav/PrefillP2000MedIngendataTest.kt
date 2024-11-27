@@ -48,7 +48,7 @@ class PrefillP2000MedIngendataTest {
 
         val dataFromPEN = lesPensjonsdataFraFil("/pensjonsinformasjon/krav/P2000-TOMT-SVAR-PESYS.xml")
 
-        prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P2000, personFnr, penSaksnummer = pesysSaksnummer).apply {
+        prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.SEDTYPE_P2000, personFnr, penSaksnummer = pesysSaksnummer).apply {
             partSedAsJson["PersonInfo"] = readJsonResponse("/json/nav/other/person_informasjon_selvb.json")
             partSedAsJson["P4000"] = readJsonResponse("/json/nav/other/p4000_trygdetid_part.json")
         }

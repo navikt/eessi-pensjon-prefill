@@ -47,7 +47,7 @@ class PrefillP2100GjenlevendeRevurdering {
     @Test
     fun `forventet korrekt utfylt P2100 uforepensjon med kap4 og 9`() {
         prefillData = PrefillDataModelMother.initialPrefillDataModel(
-                sedType = SedType.P2100,
+                sedType = SedType.SEDTYPE_P2100,
                 pinId = personFnr,
                 penSaksnummer = pesysSaksnummer,
                 avdod = PersonInfo(avdodPersonFnr, "112233445566"),
@@ -69,7 +69,7 @@ class PrefillP2100GjenlevendeRevurdering {
         val p2100 = prefillSEDService.prefill(prefillData, persondataCollection, pensjonCollection)
 
         val p2100gjenlev = SED(
-                type = SedType.P2100,
+                type = SedType.SEDTYPE_P2100,
                 pensjon = p2100.pensjon,
                 nav = Nav(krav = p2100.nav?.krav)
         )

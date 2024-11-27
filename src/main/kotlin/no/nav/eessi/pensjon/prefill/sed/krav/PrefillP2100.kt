@@ -77,7 +77,7 @@ class PrefillP2100(private val prefillNav: PrefillPDLNav) {
             logger.error(ex.message, ex)
         }
         val sed = P2100(
-            SedType.P2100,
+            SedType.SEDTYPE_P2100,
             nav = nav,
             pensjon = pensjon
         )

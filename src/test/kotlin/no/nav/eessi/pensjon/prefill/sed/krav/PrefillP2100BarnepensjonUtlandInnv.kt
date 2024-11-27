@@ -54,7 +54,7 @@ class PrefillP2100BarnepensjonUtlandInnv {
 
 
         prefillData = PrefillDataModelMother.initialPrefillDataModel(
-                sedType = SedType.P2100,
+                sedType = SedType.SEDTYPE_P2100,
                 pinId = personFnr,
                 penSaksnummer = pesysSaksnummer,
                 avdod = PersonInfo(avdodPersonFnr, "112233445566")
@@ -74,7 +74,7 @@ class PrefillP2100BarnepensjonUtlandInnv {
         val p2100 = prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection)
 
         val p2100gjenlev = SED(
-                type = SedType.P2100,
+                type = SedType.SEDTYPE_P2100,
                 pensjon = p2100.pensjon,
                 nav = Nav(krav = p2100.nav?.krav)
         )

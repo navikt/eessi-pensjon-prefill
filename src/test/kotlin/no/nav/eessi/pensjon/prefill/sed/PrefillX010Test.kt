@@ -41,7 +41,7 @@ class PrefillX010Test {
         prefill = PrefillX010(prefillNav)
 
         prefillData = PrefillDataModelMother.initialPrefillDataModel(
-            SedType.X010,
+            SedType.SEDTYPE_X010,
             personFnr,
             penSaksnummer = pesysSaksnummer,
             avdod = PersonInfo("12345678910", "123456789")

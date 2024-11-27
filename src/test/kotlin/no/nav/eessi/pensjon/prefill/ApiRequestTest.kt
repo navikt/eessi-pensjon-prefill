@@ -7,13 +7,13 @@ import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_03
 import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_05
 import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_06
 import no.nav.eessi.pensjon.eux.model.SedType
-import no.nav.eessi.pensjon.eux.model.SedType.P2000
-import no.nav.eessi.pensjon.eux.model.SedType.P2100
-import no.nav.eessi.pensjon.eux.model.SedType.P2200
-import no.nav.eessi.pensjon.eux.model.SedType.P4000
-import no.nav.eessi.pensjon.eux.model.SedType.P5000
-import no.nav.eessi.pensjon.eux.model.SedType.P6000
-import no.nav.eessi.pensjon.eux.model.SedType.P7000
+import no.nav.eessi.pensjon.eux.model.SedType.SEDTYPE_P2000
+import no.nav.eessi.pensjon.eux.model.SedType.SEDTYPE_P2100
+import no.nav.eessi.pensjon.eux.model.SedType.SEDTYPE_P2200
+import no.nav.eessi.pensjon.eux.model.SedType.SEDTYPE_P4000
+import no.nav.eessi.pensjon.eux.model.SedType.SEDTYPE_P5000
+import no.nav.eessi.pensjon.eux.model.SedType.SEDTYPE_P6000
+import no.nav.eessi.pensjon.eux.model.SedType.SEDTYPE_P7000
 import no.nav.eessi.pensjon.eux.model.sed.SED
 import no.nav.eessi.pensjon.shared.api.*
 import no.nav.eessi.pensjon.utils.mapAnyToJson
@@ -51,7 +51,7 @@ class ApiRequestTest {
     @Test
     fun `generate request mock payload of SED P2000`() {
         val payload = readJsonAndParseToSed("P2000-NAV.json")
-        val req = createMockApiRequest(P2000, P_BUC_01, payload)
+        val req = createMockApiRequest(SEDTYPE_P2000, P_BUC_01, payload)
         val sedjson = SED.fromJson(req.payload!!).toJson()
         assertNotNull(sedjson)
         val json = mapAnyToJson(req)
@@ -84,38 +84,38 @@ class ApiRequestTest {
                 "}"
         val datamodel = ApiRequest.buildPrefillDataModelOnExisting( mapJsonToAny(req), PersonInfo("", ""), "")
         assertNotNull(datamodel)
-        assertEquals(P2000, datamodel.sedType)
+        assertEquals(SEDTYPE_P2000, datamodel.sedType)
         assertEquals(P_BUC_01, datamodel.buc)
     }
 
     @Test
     fun `generate request mock payload of SED P2100`() {
         val payload = readJsonAndParseToSed("P2100-NAV-unfin.json")
-        createMockApiRequest(P2100, P_BUC_02, payload)
+        createMockApiRequest(SEDTYPE_P2100, P_BUC_02, payload)
     }
 
     @Test
     fun `generate request mock payload of SED P2200`() {
         val payload = readJsonAndParseToSed("P2200-NAV.json")
-        createMockApiRequest(P2200, P_BUC_03, payload)
+        createMockApiRequest(SEDTYPE_P2200, P_BUC_03, payload)
     }
 
     @Test
     fun `generate request mock payload of SED P4000`() {
         val payload = readJsonAndParseToSed("P4000-NAV.json")
-        createMockApiRequest(P4000, P_BUC_05, payload)
+        createMockApiRequest(SEDTYPE_P4000, P_BUC_05, payload)
     }
 
     @Test
     fun `generate request mock payload of SED P5000`() {
         val payload = readJsonAndParseToSed("P5000-NAV.json")
-        createMockApiRequest(P5000, P_BUC_05, payload)
+        createMockApiRequest(SEDTYPE_P5000, P_BUC_05, payload)
     }
 
     @Test
     fun `generate request mock payload of SED P6000`() {
         val payload = readJsonAndParseToSed("P6000-NAV.json")
-        createMockApiRequest(P7000, P_BUC_06, payload)
+        createMockApiRequest(SEDTYPE_P7000, P_BUC_06, payload)
     }
 
 //    Etter at SedType brukes som enum, går det ikke an å sende inn ugyldig sedtype lenger
@@ -153,7 +153,7 @@ class ApiRequestTest {
     fun `check on minimum valid request to model`() {
         val mockData = ApiRequest(
                 sakId = "12234",
-                sed = P6000,
+                sed = SEDTYPE_P6000,
                 buc = P_BUC_01,
                 euxCaseId = "1231",
                 aktoerId = "0105094340092",
@@ -165,14 +165,14 @@ class ApiRequestTest {
         assertEquals("12345", model.bruker.norskIdent)
         assertEquals("12234", model.penSaksnummer)
         assertEquals("0105094340092", model.bruker.aktorId)
-        assertEquals(P6000, model.sedType)
+        assertEquals(SEDTYPE_P6000, model.sedType)
     }
 
     @Test
     fun `check on minimum valid request to model on P2100`() {
         val mockData = ApiRequest(
                 sakId = "12234",
-                sed = P2100,
+                sed = SEDTYPE_P2100,
                 buc = P_BUC_02,
                 aktoerId = "0105094340092",
                 avdodfnr = "010244212312",
@@ -185,7 +185,7 @@ class ApiRequestTest {
         assertEquals("12345", model.bruker.norskIdent)
         assertEquals("12234", model.penSaksnummer)
         assertEquals("0105094340092", model.bruker.aktorId)
-        assertEquals(P2100, model.sedType)
+        assertEquals(SEDTYPE_P2100, model.sedType)
         assertEquals("2223312", model.avdod?.aktorId)
         assertEquals("010244212312", model.avdod?.norskIdent)
 
@@ -196,7 +196,7 @@ class ApiRequestTest {
         val mockData = ApiRequest(
                 sakId = "12234",
                 euxCaseId = "2345",
-                sed = P5000,
+                sed = SEDTYPE_P5000,
                 buc = P_BUC_02,
                 aktoerId = "0105094340092",
                 avdodfnr = null,
@@ -209,7 +209,7 @@ class ApiRequestTest {
         assertEquals("23123", model.bruker.norskIdent)
         assertEquals("12234", model.penSaksnummer)
         assertEquals("0105094340092", model.bruker.aktorId)
-        assertEquals(P5000, model.sedType)
+        assertEquals(SEDTYPE_P5000, model.sedType)
         assertEquals("113123123123", model.avdod?.aktorId)
         assertEquals("576567567567", model.avdod?.norskIdent)
 
@@ -220,7 +220,7 @@ class ApiRequestTest {
     fun `request to model without avdod on P_BUC_02 P5000 should throw execptin`() {
         val mockData = ApiRequest(
                 sakId = "12234",
-                sed = P5000,
+                sed = SEDTYPE_P5000,
                 buc = P_BUC_02,
                 aktoerId = "0105094340092",
                 avdodfnr = null,
@@ -237,7 +237,7 @@ class ApiRequestTest {
     fun `check on aktoerId is null`() {
         val mockData = ApiRequest(
                 sakId = "1213123123",
-                sed = P6000,
+                sed = SEDTYPE_P6000,
                 aktoerId = null
         )
         assertThrows<ResponseStatusException> {
@@ -252,7 +252,7 @@ class ApiRequestTest {
             vedtakId = "123",
             avdodfnr = "456",
             buc = P_BUC_01,
-            sed = P2000,
+            sed = SEDTYPE_P2000,
             euxCaseId = "99191999911"
         )
 
@@ -269,7 +269,7 @@ class ApiRequestTest {
             vedtakId = "123",
             avdodfnr = null,
             buc = P_BUC_01,
-            sed = P2000,
+            sed = SEDTYPE_P2000,
             euxCaseId = "99191999911"
         )
 

@@ -78,7 +78,7 @@ class SedP6000Test {
 
     private fun populerP6000(): P6000 {
         return P6000(
-            type = SedType.P6000,
+            type = SedType.SEDTYPE_P6000,
             pensjon = P6000Pensjon(
                 gjenlevende = Bruker(
                     adresse = Adresse(
