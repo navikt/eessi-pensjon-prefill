@@ -25,7 +25,7 @@ class KrrService(private val krrRestTemplate: RestTemplate,
     }
 
     //Henter inn telefonnummer og epostadresse fra KRR for å preutfylle SED
-    fun hentPersonFraKrr(personIdent: String, inkluderSikkerDigitalPost: Boolean?= false): KrrPerson {
+    fun hentPersonFraKrr(personIdent: String, inkluderSikkerDigitalPost: Boolean?= false) : KrrPerson? {
         return HentPerson.measure {
             val url = "/rest/v1/person?inkluderSikkerDigitalPost=$inkluderSikkerDigitalPost"
             logger.debug("Henter informasjon fra KRR: $url")
@@ -45,15 +45,12 @@ class KrrService(private val krrRestTemplate: RestTemplate,
 
                 logger.debug("Hent person fra KRR: response: ${response.body}".trimMargin())
 
-                response.body?.let {
-                    mapJsonToAny<KrrPerson>(it)
-                } ?: throw IllegalArgumentException("Mangler melding fra KRR")
+                return@measure response.body?.let { mapJsonToAny<KrrPerson>(it) }
+                    ?: throw IllegalArgumentException("Mangler melding fra KRR")
             } catch (e: HttpClientErrorException.NotFound) {
-                throw IllegalArgumentException("Person: $personIdent ikke funnet (404)")
-            } catch (e: Exception) {
-                throw e
+                logger.error("Person: $personIdent ikke funnet (404)")
             }
+            null
         }
-
     }
 }
