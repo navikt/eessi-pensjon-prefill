@@ -48,7 +48,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.web.client.RestTemplate
 
-@Disabled
 @SpringBootTest(classes = [IntegrasjonsTestConfig::class, UnsecuredWebMvcTestLauncher::class, SedPrefillIntegrationSpringTest.TestConfig::class], webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("unsecured-webmvctest", "excludeKodeverk")
 @AutoConfigureMockMvc
@@ -526,6 +525,7 @@ class SedPrefillIntegrationSpringTest {
           },
           "pensjon" : {
             "ytelser" : [ {
+              "ytelse" : "10",
               "beloep" : [ { } ],
               "status" : "01"
             } ],
@@ -630,6 +630,7 @@ class SedPrefillIntegrationSpringTest {
           "pensjon" : {
             "ytelser" : [ {
               "status" : "01",
+              "ytelse" : "02",
               "totalbruttobeloeparbeidsbasert" : "14574",
               "startdatoutbetaling" : "2016-03-01",
               "mottasbasertpaa" : "01",
@@ -638,7 +639,10 @@ class SedPrefillIntegrationSpringTest {
                "valuta" : "NOK",
                "beloep" : "1124",
                "gjeldendesiden" : "2016-03-01"
-              } ]
+              } ],
+              "kravDato" : {
+                "dato" : "2018-06-28"
+              }
             } ]
           },
           "sedGVer" : "4",
@@ -646,7 +650,7 @@ class SedPrefillIntegrationSpringTest {
         }             
         """.trimIndent()
 
-        JSONAssert.assertEquals(response, expected, false)
+        JSONAssert.assertEquals(expected, response, false)
 
     }
 
@@ -711,9 +715,6 @@ class SedPrefillIntegrationSpringTest {
                 "postnummer" : "1920",
                 "land" : "NO"
               }
-            },
-            "krav" : {
-              "dato" : "2021-03-01"
             }
           },
           "pensjon" : {
@@ -739,7 +740,9 @@ class SedPrefillIntegrationSpringTest {
 
         val response = result.response.getContentAsString(charset("UTF-8"))
 
-        JSONAssert.assertEquals(response, validResponse, false)
+        println("@@@@@@: ${response.toJson()}")
+
+        JSONAssert.assertEquals(validResponse, response, false)
     }
 
     @Test
@@ -817,6 +820,7 @@ class SedPrefillIntegrationSpringTest {
           },
           "pensjon" : {
             "ytelser" : [ {
+              "ytelse" : "10",
               "beloep" : [ { } ],
               "status" : "03"
             } ],
@@ -912,15 +916,8 @@ class SedPrefillIntegrationSpringTest {
           },
           "pensjon" : {
             "ytelser" : [ {
-              "totalbruttobeloeparbeidsbasert" : "21232",
-              "startdatoutbetaling" : "2018-08-01",
-              "mottasbasertpaa" : "01",
-              "startdatoretttilytelse" : "2018-08-01",
-              "beloep" : [ {
-                "valuta" : "NOK",
-                "beloep" : "7034",
-                "gjeldendesiden" : "2018-08-01"
-              } ],
+              "ytelse" : "10",
+              "beloep" : [ { } ],
               "status" : "02"
             } ],
             "kravDato" : {
@@ -932,7 +929,7 @@ class SedPrefillIntegrationSpringTest {
         }
         """.trimIndent()
 
-        JSONAssert.assertEquals(response, validResponse, true)
+        JSONAssert.assertEquals(validResponse, response, true)
 
     }
 

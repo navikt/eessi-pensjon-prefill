@@ -263,7 +263,7 @@
       },
       "beloep" : [ {
         "gjeldendesiden" : "2018-04-01",
-        "betalingshyppighetytelse" : "maaned_12_per_aar",
+        "betalingshyppighetytelse" : "06",
         "annenbetalingshyppighetytelse" : "wererew",
         "beloep" : "677",
         "valuta" : "EUR"
@@ -297,7 +297,7 @@
         "annenbetalingshyppighetytelse" : "345534",
         "gjeldendesiden" : "2018-04-01",
         "valuta" : "CZK",
-        "betalingshyppighetytelse" : "annet"
+        "betalingshyppighetytelse" : "99"
       } ],
       "ytelse" : "01",
       "sluttdatoretttilytelse" : "2018-04-01",

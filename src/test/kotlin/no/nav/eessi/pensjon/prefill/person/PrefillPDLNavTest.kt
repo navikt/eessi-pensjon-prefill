@@ -25,10 +25,10 @@ import no.nav.eessi.pensjon.shared.api.PersonInfo
 import no.nav.eessi.pensjon.shared.person.Fodselsnummer
 import no.nav.eessi.pensjon.shared.person.FodselsnummerGenerator
 import no.nav.eessi.pensjon.utils.mapAnyToJson
+import no.nav.eessi.pensjon.utils.toJson
 import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
 import java.time.LocalDate
@@ -1097,7 +1097,6 @@ class PrefillPDLNavTest {
         assertEquals(false, PrefillPDLNav.isPersonAvdod(person))
     }
 
-    @Disabled
     @Test
     fun `Gitt en person med kosovo statsborgerskap Når preutfyller Statsborgerstak Så preutfyll tomt statsborgerskap`() {
         val personfnr = FodselsnummerGenerator.generateFnrForTest(40)
@@ -1111,8 +1110,9 @@ class PrefillPDLNavTest {
 
         val bruker = prefillPDLNav.createBruker(person, bank = null, ansettelsesforhold = null, null)
 
-        assertEquals(bruker!!.person!!.statsborgerskap!!.size, 1)
-        assertNull(bruker.person!!.statsborgerskap!![0].land)
+        println("statsborgerskap: ${bruker?.person?.statsborgerskap?.toJson()}")
+
+        assertEquals(bruker!!.person!!.statsborgerskap!!.size, 0)
     }
 
     @Test

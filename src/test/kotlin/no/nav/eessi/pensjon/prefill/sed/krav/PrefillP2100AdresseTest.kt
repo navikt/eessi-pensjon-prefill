@@ -21,11 +21,8 @@ import no.nav.eessi.pensjon.shared.person.FodselsnummerGenerator
 import no.nav.eessi.pensjon.utils.toJson
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
-import org.springframework.boot.test.autoconfigure.data.redis.DataRedisTest
 
-@Disabled
 class PrefillP2100AdresseTest {
 
     private val personService: PersonService = mockk()

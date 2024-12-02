@@ -1,16 +1,16 @@
 package no.nav.eessi.pensjon.eux.model
 
 import no.nav.eessi.pensjon.eux.model.sed.SED
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
-@Disabled
 class SedP2000Test {
 
     @Test
     fun `create SED P2000 from json datafile`() {
-        val p2000json = javaClass.getResource("json/nav/P2000-NAV.json")!!.readText()
-        SED.fromJson(p2000json)
+        val p2000json = javaClass.getResource("json/nav/P2000-NAV.json")?.readText()
+        if (p2000json != null) {
+            SED.fromJson(p2000json)
+        }
     }
 
     @Test

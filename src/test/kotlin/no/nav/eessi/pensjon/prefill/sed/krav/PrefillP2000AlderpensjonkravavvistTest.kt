@@ -26,9 +26,8 @@ import no.nav.eessi.pensjon.utils.toJson
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
-@Disabled
+
 class PrefillP2000AlderpensjonkravavvistTest {
 
     private val personFnr = FodselsnummerGenerator.generateFnrForTest(67)
