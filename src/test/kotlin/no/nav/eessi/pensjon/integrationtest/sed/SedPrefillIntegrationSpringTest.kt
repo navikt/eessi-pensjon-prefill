@@ -194,8 +194,6 @@ class SedPrefillIntegrationSpringTest {
         Assertions.assertEquals(FNR_VOKSEN, gjenlevendePIN)
         Assertions.assertEquals(FNR_VOKSEN_4, avdodPIN)
 
-        println(response)
-
     }
 
     @Test
@@ -570,7 +568,6 @@ class SedPrefillIntegrationSpringTest {
             .andReturn()
 
         val response = result.response.getContentAsString(charset("UTF-8"))
-        println("@@@@@: ${response.toJson()}")
 
         val expected = """
         {
@@ -633,24 +630,34 @@ class SedPrefillIntegrationSpringTest {
                 "postnummer": "1920",
                 "land": "NO"
               }
+            },
+            "krav" : {
+              "dato" : "2015-11-25"
             }
           },
           "pensjon" : {
             "ytelser" : [ {
+              "totalbruttobeloeparbeidsbasert" : "14574",
+              "startdatoutbetaling" : "2016-03-01",
               "ytelse" : "10",
-              "beloep" : [ { } ],
+              "startdatoretttilytelse" : "2016-03-01",
+              "beloep" : [ {
+                "valuta" : "NOK",
+                "beloep" : "14574",
+                "gjeldendesiden" : "2016-03-01"
+              } ],
               "status" : "01"
             } ],
             "kravDato" : {
               "dato" : "2015-11-25"
             }
           },
-                  "sedGVer": "4",
-                  "sedVer": "2"
-                } 
+          "sedGVer": "4",
+          "sedVer": "2"
+        } 
         """.trimIndent()
 
-        JSONAssert.assertEquals(expected, response, false)
+        JSONAssert.assertEquals(expected, response, true)
 
     }
 
@@ -915,8 +922,15 @@ class SedPrefillIntegrationSpringTest {
           },
           "pensjon" : {
             "ytelser" : [ {
+              "totalbruttobeloeparbeidsbasert" : "21232",
+              "startdatoutbetaling" : "2018-08-01",
               "ytelse" : "10",
-              "beloep" : [ { } ],
+              "startdatoretttilytelse" : "2018-08-01",
+              "beloep" : [ {
+                "valuta" : "NOK",
+                "beloep" : "21232",
+                "gjeldendesiden" : "2018-08-01"
+              } ],
               "status" : "02"
             } ],
             "kravDato" : {

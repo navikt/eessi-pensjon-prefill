@@ -69,8 +69,6 @@ class PrefillP2000APUtlandInnvTest {
     fun `forventet korrekt utfylt P2000 alderpensjon med kap4 og 9`() {
         val P2000 = prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection)
 
-        println("Sed ferdig utfylt****: ${P2000.toJson()}")
-
         assertNotNull(P2000.nav?.krav)
         assertEquals("2015-11-25", P2000.nav?.krav?.dato)
 

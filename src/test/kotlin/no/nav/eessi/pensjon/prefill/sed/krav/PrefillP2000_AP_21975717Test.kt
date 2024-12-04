@@ -92,6 +92,7 @@ class PrefillP2000_AP_21975717Test {
 
         assertEquals("NO", p2000.nav?.bruker?.person?.pin?.first()?.land)
         assertEquals("SE", p2000.nav?.bruker?.person?.pin?.last()?.land)
+        assertEquals("SE", p2000.nav?.bruker?.person?.pin?.last()?.land)
 
     }
 
