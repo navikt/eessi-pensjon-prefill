@@ -189,7 +189,7 @@ object PrefillP2xxxPensjon {
             //4.1.1
             ytelse = settYtelse(pensak),
             //4.1.3 - fast satt til søkt
-            status = if(pensak == null) null else StatusType.valueOf(pensak.status),
+            status = pensak?.status?.let { mapSakstatus(it) },
             //4.1.4
             pin = createInstitusjonPin(personNr),
             //4.1.4.1.4
@@ -222,7 +222,7 @@ object PrefillP2xxxPensjon {
                 ytelse = settYtelse(pensak),
 
                 //4.1.3 - fast satt til søkt
-                status = StatusType.valueOf(pensak.status),
+                status = mapSakstatus(pensak.status),
                 //4.1.4
                 pin = createInstitusjonPin(personNr),
                 //4.1.4.1.4
@@ -407,7 +407,7 @@ object PrefillP2xxxPensjon {
      *  Her skal vises status på den sist behandlede ytelsen, dvs om kravet er blitt avslått, innvilget eller er under behandling.
      *  Hvis bruker mottar en løpende ytelse, skal det alltid vises Innvilget.
      */
-    private fun createPensionStatus(pensak: V1Sak): String {
+    fun createPensionStatus(pensak: V1Sak): String {
         logger.debug("4.1.3         Status")
         return mapSakstatus(pensak.status)
     }
