@@ -654,7 +654,6 @@ class SedPrefillIntegrationSpringTest {
 
     }
 
-    @Disabled
     @Test
     @Throws(Exception::class)
     fun `prefill sed P2000 alder F_BH_KUN_UTL return valid sedjson`() {
