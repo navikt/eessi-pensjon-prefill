@@ -238,7 +238,7 @@ object PrefillP2xxxPensjon {
                 beloep = createYtelseItemBelop(ytelsePrmnd, ytelsePrmnd.ytelseskomponentListe),
 
                 //4.1.10.1
-                mottasbasertpaa = if(basertPaa != null) BasertPaa.valueOf(basertPaa) else null,
+                mottasbasertpaa = basertPaa.let {  BasertPaa.entries.firstOrNull() { it.name == basertPaa } },
 
                 //4.1.10.3
                 totalbruttobeloeparbeidsbasert = ytelsePrmnd.belop.toString(),

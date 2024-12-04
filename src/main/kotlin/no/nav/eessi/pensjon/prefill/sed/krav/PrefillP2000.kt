@@ -173,7 +173,7 @@ class PrefillP2000(private val prefillNav: PrefillPDLNav)  {
                             valuta = belop?.valuta,
                             gjeldendesiden = belop?.gjeldendesiden,
                             utbetalingshyppighetAnnen = belop?.utbetalingshyppighetAnnen
-                        )),
+                        )).also { logger.debug("beloep: $it") },
                     ))
                 )
             } else pensjonsInformasjon.pensjon
