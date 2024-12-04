@@ -189,7 +189,7 @@ object PrefillP2xxxPensjon {
             //4.1.1
             ytelse = settYtelse(pensak),
             //4.1.3 - fast satt til søkt
-            status = if(pensak == null) null else StatusType.from(pensak.status).also { logger.debug("Saktype fra Pesys: $it") },
+            status = if(pensak == null) null else StatusType.valueOf(pensak.status),
             //4.1.4
             pin = createInstitusjonPin(personNr),
             //4.1.4.1.4
@@ -205,7 +205,7 @@ object PrefillP2xxxPensjon {
      */
     private fun settYtelse(pensak: V1Sak?): String? {
         logger.debug("4.1.1         Ytelser")
-        return pensak?.sakType.also { logger.debug("Saktype fra Pesys: $it") }
+        return mapSaktype(pensak?.sakType).also { logger.debug("Saktype fra Pesys: $it") }
     }
 
     /**
@@ -222,7 +222,7 @@ object PrefillP2xxxPensjon {
                 ytelse = settYtelse(pensak),
 
                 //4.1.3 - fast satt til søkt
-                status = StatusType.from(pensak.status).also { logger.debug("Saktype fra Pesys for createYtelserItem: $it") },
+                status = StatusType.valueOf(pensak.status),
                 //4.1.4
                 pin = createInstitusjonPin(personNr),
                 //4.1.4.1.4
