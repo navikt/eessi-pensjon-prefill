@@ -11,7 +11,6 @@ import no.nav.eessi.pensjon.pensjonsinformasjon.models.PenKravtype
 import no.nav.eessi.pensjon.pensjonsinformasjon.models.PenKravtype.*
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.KSAK
-import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.PrefillPensjonVedtaksbelop.createBelop
 import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.PrefillPensjonVedtaksbelop.createYtelseskomponentGrunnpensjon
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
 import no.nav.eessi.pensjon.shared.person.Fodselsnummer
@@ -20,7 +19,6 @@ import no.nav.pensjon.v1.kravhistorikk.V1KravHistorikk
 import no.nav.pensjon.v1.sak.V1Sak
 import no.nav.pensjon.v1.vedtak.V1Vedtak
 import no.nav.pensjon.v1.ytelsepermaaned.V1YtelsePerMaaned
-import no.nav.pensjon.v1.ytelseskomponent.V1Ytelseskomponent
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -84,35 +82,30 @@ object PrefillP2xxxPensjon {
 
         logger.info("4.1           Informasjon om ytelser")
 
-        val ytelselist = mutableListOf<YtelserItem>()
-
         val v1KravHistorikk = finnKravHistorikkForDato(pensak)
         val melding = opprettMeldingBasertPaaSaktype(v1KravHistorikk, kravId, pensak?.sakType)
         val krav = createKravDato(v1KravHistorikk)
 
         logger.info("Krav (dato) = $krav")
 
-        when (pensak?.ytelsePerMaanedListe) {
-            null -> {
-                logger.info("forkortet ytelsebehandling ved ytelsePerMaanedListe = null, status: ${pensak?.status}")
-                ytelselist.add(opprettForkortetYtelsesItem(pensak, personNr, penSaksnummer, andreinstitusjonerItem))
-            }
-            else -> {
-                try {
-                    logger.info("sakType: ${pensak.sakType}")
-                    val ytelseprmnd = hentYtelsePerMaanedDenSisteFraKrav(hentKravHistorikkForsteGangsBehandlingUtlandEllerForsteGang(pensak.kravHistorikkListe), pensak)
-                    ytelselist.add(createYtelserItem(ytelseprmnd, pensak, personNr, penSaksnummer, andreinstitusjonerItem))
-                } catch (ex: Exception) {
-                    logger.warn(ex.message, ex)
-                    ytelselist.add(opprettForkortetYtelsesItem(pensak, personNr, penSaksnummer, andreinstitusjonerItem))
-                }
+        val ytelse = if (pensak?.ytelsePerMaanedListe == null) {
+            logger.info("Forkortet ytelsebehandling ved ytelsePerMaanedListe = null, status: ${pensak?.status}")
+            opprettForkortetYtelsesItem(pensak, personNr, penSaksnummer, andreinstitusjonerItem)
+        } else {
+            runCatching {
+                logger.info("sakType: ${pensak.sakType}")
+                val ytelseprmnd = hentYtelsePerMaanedDenSisteFraKrav(hentKravHistorikkForsteGangsBehandlingUtlandEllerForsteGang(pensak.kravHistorikkListe), pensak)
+                createYtelserItem(ytelseprmnd, pensak, personNr, penSaksnummer, andreinstitusjonerItem)
+            }.getOrElse { ex ->
+                logger.warn("Feil under henting av ytelse ${pensak?.sakType}. ${ex.message}", ex)
+                opprettForkortetYtelsesItem(pensak, personNr, penSaksnummer, andreinstitusjonerItem)
             }
         }
 
         return MeldingOmPensjon(
             melding = melding,
             pensjon = Pensjon(
-                ytelser = ytelselist,
+                ytelser = listOf(ytelse),
                 kravDato = krav,
                 gjenlevende = gjenlevende
             )
@@ -199,7 +192,6 @@ object PrefillP2xxxPensjon {
             //4.1.4.1.4
             institusjon = createInstitusjon(penSaksnummer, andreinstitusjonerItem)
         )
-
     }
 
     /**

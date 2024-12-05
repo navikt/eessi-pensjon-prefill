@@ -6,6 +6,7 @@ import no.nav.eessi.pensjon.pensjonsinformasjon.KravHistorikkHelper
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
+import no.nav.eessi.pensjon.prefill.sed.krav.PrefillP2xxxPensjon.hentYtelsePerMaanedDenSisteFraKrav
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
 import no.nav.eessi.pensjon.utils.toJson
 import no.nav.pensjon.v1.sak.V1Sak
@@ -81,57 +82,32 @@ class PrefillP2000(private val prefillNav: PrefillPDLNav)  {
                                andreinstitusjonerItem: AndreinstitusjonerItem?,
                                gjenlevende: Bruker? = null,
                                kravId: String? = null): MeldingOmPensjonP2000 {
-
-        val ytelselist = mutableListOf<YtelserItem>()
+        logger.info("Populerer melding om pensjon for P2000")
 
         val v1KravHistorikk = KravHistorikkHelper.finnKravHistorikkForDato(pensak)
         val melding = PrefillP2xxxPensjon.opprettMeldingBasertPaaSaktype(v1KravHistorikk, kravId, pensak?.sakType)
         val krav = PrefillP2xxxPensjon.createKravDato(v1KravHistorikk)
 
-        when (pensak?.ytelsePerMaanedListe) {
-            null -> {
-                ytelselist.add(
-                    PrefillP2xxxPensjon.opprettForkortetYtelsesItem(
-                        pensak,
-                        personNr,
-                        penSaksnummer,
-                        andreinstitusjonerItem
-                    )
-                )
+        val ytelse = runCatching {
+            if (pensak?.ytelsePerMaanedListe == null) {
+                PrefillP2xxxPensjon.opprettForkortetYtelsesItem(pensak, personNr, penSaksnummer, andreinstitusjonerItem)
+            } else {
+                val ytelseprmnd = hentYtelsePerMaanedDenSisteFraKrav(KravHistorikkHelper.hentKravHistorikkForsteGangsBehandlingUtlandEllerForsteGang(pensak.kravHistorikkListe),pensak)
+                PrefillP2xxxPensjon.createYtelserItem(ytelseprmnd, pensak, personNr, penSaksnummer, andreinstitusjonerItem)
             }
-            else -> {
-                try {
-                    val ytelseprmnd = PrefillP2xxxPensjon.hentYtelsePerMaanedDenSisteFraKrav(
-                        KravHistorikkHelper.hentKravHistorikkForsteGangsBehandlingUtlandEllerForsteGang(
-                            pensak.kravHistorikkListe
-                        ), pensak
-                    )
-                    ytelselist.add(
-                        PrefillP2xxxPensjon.createYtelserItem(
-                            ytelseprmnd,
-                            pensak,
-                            personNr,
-                            penSaksnummer,
-                            andreinstitusjonerItem
-                        )
-                    )
-                } catch (ex: Exception) {
-                    ytelselist.add(
-                        PrefillP2xxxPensjon.opprettForkortetYtelsesItem(
-                            pensak,
-                            personNr,
-                            penSaksnummer,
-                            andreinstitusjonerItem
-                        )
-                    )
-                }
-            }
+        }.getOrElse { ex ->
+            logger.error("Feil under henting av ytelse ${pensak?.sakId}: ${ex.message}", ex)
+            PrefillP2xxxPensjon.opprettForkortetYtelsesItem(
+                pensak, personNr, penSaksnummer, andreinstitusjonerItem
+            )
         }
+
+        logger.info("Populerer melding om pensjon for P2000: Ferdig")
 
         return MeldingOmPensjonP2000(
             melding = melding,
             pensjon = P2000Pensjon(
-                ytelser = ytelselist,
+                ytelser = listOf(ytelse),
                 kravDato = krav,
                 bruker = gjenlevende
             )
