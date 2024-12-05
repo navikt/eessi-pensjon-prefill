@@ -12,6 +12,7 @@ import no.nav.eessi.pensjon.pensjonsinformasjon.models.PenKravtype.*
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.KSAK
 import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.PrefillPensjonVedtaksbelop.createYtelseskomponentGrunnpensjon
+import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.PrefillPensjonVedtaksbelop.createYtelseskomponentTilleggspensjon
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
 import no.nav.eessi.pensjon.shared.person.Fodselsnummer
 import no.nav.eessi.pensjon.utils.simpleFormat
@@ -248,8 +249,11 @@ object PrefillP2xxxPensjon {
                 //4.1.10.1
                 mottasbasertpaa = basertPaa.let {  BasertPaa.entries.firstOrNull() { it.name == basertPaa } },
 
+                //4.1.10.2
+                totalbruttobeloepbostedsbasert = saktype?.let { KSAK.valueOf(it.name) }?.let { createYtelseskomponentGrunnpensjon(ytelsePrmnd, it) },
+
                 //4.1.10.3
-                totalbruttobeloeparbeidsbasert = ytelsePrmnd.belop.toString(),
+                totalbruttobeloeparbeidsbasert = saktype?.let { KSAK.valueOf(it.name) }?.let { createYtelseskomponentTilleggspensjon( ytelsePrmnd, it) },
         )
     }
 
@@ -304,13 +308,9 @@ object PrefillP2xxxPensjon {
      */
     private fun createYtelseItemBelop(ytelsePrMnd: V1YtelsePerMaaned, sakType: SakType?): List<BeloepItem> {
         logger.debug("4.1.9         Beløp")
-        val belopMedGrunnpensjon = sakType?.name?.let { KSAK.valueOf(it) }?.let { createYtelseskomponentGrunnpensjon(ytelsePrMnd, it) }
         return listOf( BeloepItem(
                 //4.1.9.1
-                beloep = belopMedGrunnpensjon,
-                //sakType?.name?.let { KSAK.valueOf(it) }?.let { createBelop(ytelsePrMnd, it) },
-
-                beloepBrutto = ytelsePrMnd.belop.toString(),
+                beloep = ytelsePrMnd.belop.toString(),
 
                 //4.1.9.2
                 valuta = "NOK",
@@ -319,7 +319,7 @@ object PrefillP2xxxPensjon {
                 gjeldendesiden = createGjeldendesiden(ytelsePrMnd),
 
                 //4.1.9.4
-                betalingshyppighetytelse = Betalingshyppighet.maaned_12_per_aar //createBetalingshyppighet())
+                betalingshyppighetytelse = Betalingshyppighet.maaned_12_per_aar
             )
         )
     }

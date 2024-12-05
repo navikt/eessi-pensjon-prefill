@@ -637,26 +637,26 @@ class SedPrefillIntegrationSpringTest {
           },
           "pensjon" : {
             "ytelser" : [ {
-              "totalbruttobeloeparbeidsbasert" : "14574",
+              "totalbruttobeloeparbeidsbasert" : "9638",
               "startdatoutbetaling" : "2016-03-01",
               "ytelse" : "10",
               "startdatoretttilytelse" : "2016-03-01",
               "beloep" : [ {
-                  "betalingshyppighetytelse" : "03",
-                  "valuta" : "NOK",
-                  "beloep" : "4936",
-                  "beloepBrutto" : "14574",
-                  "gjeldendesiden" : "2016-03-01" 
+                "betalingshyppighetytelse" : "03",
+                "valuta" : "NOK",
+                "beloep" : "14574",
+                "gjeldendesiden" : "2016-03-01"
               } ],
-              "status" : "01"
+              "status" : "01",
+              "totalbruttobeloepbostedsbasert" : "4936"
             } ],
             "kravDato" : {
               "dato" : "2015-11-25"
             }
           },
-          "sedGVer": "4",
-          "sedVer": "2"
-        } 
+          "sedGVer" : "4",
+          "sedVer" : "2"
+        }
         """.trimIndent()
 
         JSONAssert.assertEquals(expected, response, true)
@@ -923,18 +923,18 @@ class SedPrefillIntegrationSpringTest {
           },
           "pensjon" : {
             "ytelser" : [ {
-              "totalbruttobeloeparbeidsbasert" : "21232",
+              "totalbruttobeloeparbeidsbasert" : "14198",
               "startdatoutbetaling" : "2018-08-01",
               "ytelse" : "10",
               "startdatoretttilytelse" : "2018-08-01",
               "beloep" : [ {
                 "betalingshyppighetytelse" : "03",
                 "valuta" : "NOK",
-                "beloep" : "7034",
-                "beloepBrutto" : "21232",
+                "beloep" : "21232",
                 "gjeldendesiden" : "2018-08-01"
               } ],
-              "status" : "02"
+              "status" : "02",
+              "totalbruttobeloepbostedsbasert" : "7034"
             } ],
             "kravDato" : {
               "dato" : "2018-05-31"
