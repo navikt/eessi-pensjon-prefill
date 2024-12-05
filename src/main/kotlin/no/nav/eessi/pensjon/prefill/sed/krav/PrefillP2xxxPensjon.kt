@@ -1,6 +1,7 @@
 package no.nav.eessi.pensjon.prefill.sed.krav
 
 import no.nav.eessi.pensjon.eux.model.SedType
+import no.nav.eessi.pensjon.eux.model.buc.SakType
 import no.nav.eessi.pensjon.eux.model.sed.*
 import no.nav.eessi.pensjon.pensjonsinformasjon.KravHistorikkHelper.finnKravHistorikk
 import no.nav.eessi.pensjon.pensjonsinformasjon.KravHistorikkHelper.finnKravHistorikkForDato
@@ -9,6 +10,9 @@ import no.nav.eessi.pensjon.pensjonsinformasjon.models.EPSaktype
 import no.nav.eessi.pensjon.pensjonsinformasjon.models.PenKravtype
 import no.nav.eessi.pensjon.pensjonsinformasjon.models.PenKravtype.*
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
+import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.KSAK
+import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.PrefillPensjonVedtaksbelop.createBelop
+import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.PrefillPensjonVedtaksbelop.createYtelseskomponentGrunnpensjon
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
 import no.nav.eessi.pensjon.shared.person.Fodselsnummer
 import no.nav.eessi.pensjon.utils.simpleFormat
@@ -216,6 +220,7 @@ object PrefillP2xxxPensjon {
     fun createYtelserItem(ytelsePrmnd: V1YtelsePerMaaned, pensak: V1Sak, personNr: String, penSaksnummer: String?, andreinstitusjonerItem: AndreinstitusjonerItem?): YtelserItem {
         logger.debug("4.1   YtelserItem")
         val basertPaa = createPensionBasedOn(pensak, personNr)
+        val saktype = if(pensak.sakType?.isNotBlank() == true) SakType.valueOf(pensak.sakType) else null
         return YtelserItem(
 
                 //4.1.1
@@ -235,7 +240,7 @@ object PrefillP2xxxPensjon {
                 startdatoretttilytelse = createStartdatoForRettTilYtelse(pensak),
 
                 //4.1.9 - 4.1.9.5.1
-                beloep = createYtelseItemBelop(ytelsePrmnd, ytelsePrmnd.ytelseskomponentListe),
+                beloep = createYtelseItemBelop(ytelsePrmnd, saktype),
 
                 //4.1.10.1
                 mottasbasertpaa = basertPaa.let {  BasertPaa.entries.firstOrNull() { it.name == basertPaa } },
@@ -294,11 +299,13 @@ object PrefillP2xxxPensjon {
      *  OBS – fra år 2021 kan det bli aktuelt med årlige utbetalinger, pga da kan brukere få utbetalt kap 20-pensjoner med veldig små beløp (ingen nedre grense)
      *  4.1.9.5.1  nei
      */
-    private fun createYtelseItemBelop(ytelsePrMnd: V1YtelsePerMaaned, ytelsekomp: List<V1Ytelseskomponent>): List<BeloepItem> {
+    private fun createYtelseItemBelop(ytelsePrMnd: V1YtelsePerMaaned, sakType: SakType?): List<BeloepItem> {
         logger.debug("4.1.9         Beløp")
+        val belopMedGrunnpensjon = sakType?.name?.let { KSAK.valueOf(it) }?.let { createYtelseskomponentGrunnpensjon(ytelsePrMnd, it) }
         return listOf( BeloepItem(
                 //4.1.9.1
-                beloep = ytelsePrMnd.belop.toString(),
+                beloep = belopMedGrunnpensjon,
+                //sakType?.name?.let { KSAK.valueOf(it) }?.let { createBelop(ytelsePrMnd, it) },
 
                 //4.1.9.2
                 valuta = "NOK",

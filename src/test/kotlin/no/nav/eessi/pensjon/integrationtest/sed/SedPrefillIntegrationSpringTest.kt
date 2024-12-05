@@ -643,7 +643,7 @@ class SedPrefillIntegrationSpringTest {
               "startdatoretttilytelse" : "2016-03-01",
               "beloep" : [ {
                 "valuta" : "NOK",
-                "beloep" : "14574",
+                "beloep" : "4936",
                 "gjeldendesiden" : "2016-03-01"
               } ],
               "status" : "01"
@@ -928,7 +928,7 @@ class SedPrefillIntegrationSpringTest {
               "startdatoretttilytelse" : "2018-08-01",
               "beloep" : [ {
                 "valuta" : "NOK",
-                "beloep" : "21232",
+                "beloep" : "7034",
                 "gjeldendesiden" : "2018-08-01"
               } ],
               "status" : "02"
