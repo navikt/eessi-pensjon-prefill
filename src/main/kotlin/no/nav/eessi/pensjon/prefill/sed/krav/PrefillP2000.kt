@@ -76,43 +76,44 @@ class PrefillP2000(private val prefillNav: PrefillPDLNav)  {
             }
         }
     }
-    fun populerMeldinOmPensjon(personNr: String,
-                               penSaksnummer: String?,
-                               pensak: V1Sak?,
-                               andreinstitusjonerItem: AndreinstitusjonerItem?,
-                               gjenlevende: Bruker? = null,
-                               kravId: String? = null): MeldingOmPensjonP2000 {
-        logger.info("Populerer melding om pensjon for P2000")
-
-        val v1KravHistorikk = KravHistorikkHelper.finnKravHistorikkForDato(pensak)
-        val melding = PrefillP2xxxPensjon.opprettMeldingBasertPaaSaktype(v1KravHistorikk, kravId, pensak?.sakType)
-        val krav = PrefillP2xxxPensjon.createKravDato(v1KravHistorikk)
-
-        val ytelse = runCatching {
-            if (pensak?.ytelsePerMaanedListe == null) {
-                PrefillP2xxxPensjon.opprettForkortetYtelsesItem(pensak, personNr, penSaksnummer, andreinstitusjonerItem)
-            } else {
-                val ytelseprmnd = hentYtelsePerMaanedDenSisteFraKrav(KravHistorikkHelper.hentKravHistorikkForsteGangsBehandlingUtlandEllerForsteGang(pensak.kravHistorikkListe),pensak)
-                PrefillP2xxxPensjon.createYtelserItem(ytelseprmnd, pensak, personNr, penSaksnummer, andreinstitusjonerItem)
-            }
-        }.getOrElse { ex ->
-            logger.error("Feil under henting av ytelse ${pensak?.sakId}: ${ex.message}", ex)
-            PrefillP2xxxPensjon.opprettForkortetYtelsesItem(
-                pensak, personNr, penSaksnummer, andreinstitusjonerItem
-            )
-        }
-
-        logger.info("Populerer melding om pensjon for P2000: Ferdig")
-
-        return MeldingOmPensjonP2000(
-            melding = melding,
-            pensjon = P2000Pensjon(
-                ytelser = listOf(ytelse),
-                kravDato = krav,
-                bruker = gjenlevende
-            )
-        )
-    }
+//    fun populerMeldinOmPensjon(personNr: String,
+//                               penSaksnummer: String?,
+//                               pensak: V1Sak?,
+//                               andreinstitusjonerItem: AndreinstitusjonerItem?,
+//                               gjenlevende: Bruker? = null,
+//                               kravId: String? = null): MeldingOmPensjonP2000 {
+//        logger.info("Populerer melding om pensjon for P2000")
+//
+//        val v1KravHistorikk = KravHistorikkHelper.finnKravHistorikkForDato(pensak)
+//        val melding = PrefillP2xxxPensjon.opprettMeldingBasertPaaSaktype(v1KravHistorikk, kravId, pensak?.sakType)
+//        val krav = PrefillP2xxxPensjon.createKravDato(v1KravHistorikk)
+//
+//        val ytelse = runCatching {
+//            if (pensak?.ytelsePerMaanedListe == null) {
+//                PrefillP2xxxPensjon.opprettForkortetYtelsesItem(pensak, personNr, penSaksnummer, andreinstitusjonerItem)
+//            } else {
+//                val kravHistorikk = KravHistorikkHelper.hentKravHistorikkForsteGangsBehandlingUtlandEllerForsteGang(pensak.kravHistorikkListe)
+//                val ytelseprmnd = hentYtelsePerMaanedDenSisteFraKrav(kravHistorikk,pensak)
+//                PrefillP2xxxPensjon.createYtelserItem(ytelseprmnd, pensak, personNr, penSaksnummer, andreinstitusjonerItem)
+//            }
+//        }.getOrElse { ex ->
+//            logger.error("Feil under henting av ytelse ${pensak?.sakId}: ${ex.message}", ex)
+//            PrefillP2xxxPensjon.opprettForkortetYtelsesItem(
+//                pensak, personNr, penSaksnummer, andreinstitusjonerItem
+//            )
+//        }
+//
+//        logger.info("Populerer melding om pensjon for P2000: Ferdig")
+//
+//        return MeldingOmPensjonP2000(
+//            melding = melding,
+//            pensjon = P2000Pensjon(
+//                ytelser = listOf(ytelse),
+//                kravDato = krav,
+//                bruker = gjenlevende
+//            )
+//        )
+//    }
     fun populerPensjon(
         prefillData: PrefillDataModel,
         sak: V1Sak?
@@ -121,7 +122,7 @@ class PrefillP2000(private val prefillNav: PrefillPDLNav)  {
 
         //valider pensjoninformasjon,
         return try {
-            val pensjonsInformasjon = populerMeldinOmPensjon(
+            val pensjonsInformasjon:MeldingOmPensjonP2000 = PrefillP2xxxPensjon.populerMeldinOmPensjon(
                 prefillData.bruker.norskIdent,
                 prefillData.penSaksnummer,
                 sak,

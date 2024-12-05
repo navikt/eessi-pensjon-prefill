@@ -61,7 +61,7 @@ class PrefillP2100(private val prefillNav: PrefillPDLNav) {
         var pensjon = Pensjon()
 
         try {
-                val meldingOmPensjon = PrefillP2xxxPensjon.populerMeldinOmPensjon(
+                val meldingOmPensjon : MeldingOmPensjon = PrefillP2xxxPensjon.populerMeldinOmPensjon(
                         prefillData.bruker.norskIdent,
                         prefillData.penSaksnummer,
                         sak,

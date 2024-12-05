@@ -30,7 +30,7 @@ const val kravdatoMeldingOmP2100TilSaksbehandler = "Kravdato fra det opprinnelig
  * Hjelpe klasse for sak som fyller ut NAV-SED-P2000 med pensjondata fra PESYS.
  */
 object PrefillP2xxxPensjon {
-    private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillP2xxxPensjon::class.java) }
+    val logger: Logger by lazy { LoggerFactory.getLogger(PrefillP2xxxPensjon::class.java) }
 
 
     /**
@@ -73,12 +73,12 @@ object PrefillP2xxxPensjon {
      *  «Førstegangsbehandling bosatt utland» eller «Mellombehandling».
      *  Obs, krav av typen «Førstegangsbehandling kun utland» eller Sluttbehandling kun utland» gjelder ikke norsk ytelse.
      */
-    fun populerMeldinOmPensjon(personNr: String,
+    inline fun <reified T: MeldingOmPensjon> populerMeldinOmPensjon(personNr: String,
                                penSaksnummer: String?,
                                pensak: V1Sak?,
                                andreinstitusjonerItem: AndreinstitusjonerItem?,
                                gjenlevende: Bruker? = null,
-                               kravId: String? = null): MeldingOmPensjon {
+                               kravId: String? = null): T  {
 
         logger.info("4.1           Informasjon om ytelser")
 
@@ -94,22 +94,33 @@ object PrefillP2xxxPensjon {
         } else {
             runCatching {
                 logger.info("sakType: ${pensak.sakType}")
-                val ytelseprmnd = hentYtelsePerMaanedDenSisteFraKrav(hentKravHistorikkForsteGangsBehandlingUtlandEllerForsteGang(pensak.kravHistorikkListe), pensak)
+                val kravHistorikk = hentKravHistorikkForsteGangsBehandlingUtlandEllerForsteGang(pensak.kravHistorikkListe)
+                val ytelseprmnd = hentYtelsePerMaanedDenSisteFraKrav(kravHistorikk, pensak)
                 createYtelserItem(ytelseprmnd, pensak, personNr, penSaksnummer, andreinstitusjonerItem)
             }.getOrElse { ex ->
                 logger.warn("Feil under henting av ytelse ${pensak?.sakType}. ${ex.message}", ex)
                 opprettForkortetYtelsesItem(pensak, personNr, penSaksnummer, andreinstitusjonerItem)
             }
         }
-
-        return MeldingOmPensjon(
-            melding = melding,
-            pensjon = Pensjon(
-                ytelser = listOf(ytelse),
-                kravDato = krav,
-                gjenlevende = gjenlevende
-            )
-        )
+        return when (T::class) {
+            MeldingOmPensjon::class -> MeldingOmPensjon(
+                melding = melding,
+                pensjon = Pensjon(
+                    ytelser = listOf(ytelse),
+                    kravDato = krav,
+                    gjenlevende = gjenlevende
+                )
+            )  as T
+            MeldingOmPensjonP2000::class -> MeldingOmPensjonP2000(
+                melding = melding,
+                pensjon = P2000Pensjon(
+                    ytelser = listOf(ytelse),
+                    kravDato = krav,
+                    gjenlevende = gjenlevende
+                )
+            )  as T
+            else -> throw IllegalArgumentException("Unsupported type: ${T::class.simpleName}")
+        }
     }
 
     /**
@@ -419,7 +430,7 @@ object PrefillP2xxxPensjon {
 
         //valider pensjoninformasjon,
         return try {
-            val meldingOmPensjon = populerMeldinOmPensjon(
+            val meldingOmPensjon: MeldingOmPensjon = populerMeldinOmPensjon(
                 prefillData.bruker.norskIdent,
                 prefillData.penSaksnummer,
                 sak,
