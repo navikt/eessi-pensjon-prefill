@@ -147,7 +147,6 @@ class SedPrefillPDLIntegrationSpringTest {
           "pensjon" : {
             "ytelser" : [ {
               "ytelse" : "10",
-              "beloep" : [ { } ],
               "status" : "01"
             } ],
             "kravDato" : {

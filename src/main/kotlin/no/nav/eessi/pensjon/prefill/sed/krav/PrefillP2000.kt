@@ -76,44 +76,7 @@ class PrefillP2000(private val prefillNav: PrefillPDLNav)  {
             }
         }
     }
-//    fun populerMeldinOmPensjon(personNr: String,
-//                               penSaksnummer: String?,
-//                               pensak: V1Sak?,
-//                               andreinstitusjonerItem: AndreinstitusjonerItem?,
-//                               gjenlevende: Bruker? = null,
-//                               kravId: String? = null): MeldingOmPensjonP2000 {
-//        logger.info("Populerer melding om pensjon for P2000")
-//
-//        val v1KravHistorikk = KravHistorikkHelper.finnKravHistorikkForDato(pensak)
-//        val melding = PrefillP2xxxPensjon.opprettMeldingBasertPaaSaktype(v1KravHistorikk, kravId, pensak?.sakType)
-//        val krav = PrefillP2xxxPensjon.createKravDato(v1KravHistorikk)
-//
-//        val ytelse = runCatching {
-//            if (pensak?.ytelsePerMaanedListe == null) {
-//                PrefillP2xxxPensjon.opprettForkortetYtelsesItem(pensak, personNr, penSaksnummer, andreinstitusjonerItem)
-//            } else {
-//                val kravHistorikk = KravHistorikkHelper.hentKravHistorikkForsteGangsBehandlingUtlandEllerForsteGang(pensak.kravHistorikkListe)
-//                val ytelseprmnd = hentYtelsePerMaanedDenSisteFraKrav(kravHistorikk,pensak)
-//                PrefillP2xxxPensjon.createYtelserItem(ytelseprmnd, pensak, personNr, penSaksnummer, andreinstitusjonerItem)
-//            }
-//        }.getOrElse { ex ->
-//            logger.error("Feil under henting av ytelse ${pensak?.sakId}: ${ex.message}", ex)
-//            PrefillP2xxxPensjon.opprettForkortetYtelsesItem(
-//                pensak, personNr, penSaksnummer, andreinstitusjonerItem
-//            )
-//        }
-//
-//        logger.info("Populerer melding om pensjon for P2000: Ferdig")
-//
-//        return MeldingOmPensjonP2000(
-//            melding = melding,
-//            pensjon = P2000Pensjon(
-//                ytelser = listOf(ytelse),
-//                kravDato = krav,
-//                bruker = gjenlevende
-//            )
-//        )
-//    }
+
     fun populerPensjon(
         prefillData: PrefillDataModel,
         sak: V1Sak?
@@ -133,7 +96,7 @@ class PrefillP2000(private val prefillNav: PrefillPDLNav)  {
 
             if (prefillData.sedType != SedType.P6000) {
                 val ytelser = pensjonsInformasjon.pensjon.ytelser?.first()
-                val belop = ytelser?.beloep?.first()
+                val belop = ytelser?.beloep?.firstOrNull()
 
                 P2000Pensjon(
                     kravDato = pensjonsInformasjon.pensjon.kravDato,
@@ -145,12 +108,7 @@ class PrefillP2000(private val prefillNav: PrefillPDLNav)  {
                         mottasbasertpaa = ytelser?.mottasbasertpaa.also { logger.debug("mottasbasertpaa: $it") },
                         totalbruttobeloepbostedsbasert = ytelser?.totalbruttobeloepbostedsbasert.also { logger.debug("totalbruttobeloepbostedsbasert: $it") },
                         totalbruttobeloeparbeidsbasert = ytelser?.totalbruttobeloeparbeidsbasert.also { logger.debug("totalbruttobeloeparbeidsbasert: $it") },
-                        beloep = listOf(BeloepItem(
-                            beloep = belop?.beloep,
-                            valuta = belop?.valuta,
-                            gjeldendesiden = belop?.gjeldendesiden,
-                            utbetalingshyppighetAnnen = belop?.utbetalingshyppighetAnnen
-                        )).also { logger.debug("beloep: $it") },
+                        beloep = if(belop!= null) listOf(belop) else null .also { logger.debug("beloep: $it") },
                     ))
                 )
             } else pensjonsInformasjon.pensjon

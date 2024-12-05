@@ -310,6 +310,8 @@ object PrefillP2xxxPensjon {
                 beloep = belopMedGrunnpensjon,
                 //sakType?.name?.let { KSAK.valueOf(it) }?.let { createBelop(ytelsePrMnd, it) },
 
+                beloepBrutto = ytelsePrMnd.belop.toString(),
+
                 //4.1.9.2
                 valuta = "NOK",
 

@@ -642,9 +642,11 @@ class SedPrefillIntegrationSpringTest {
               "ytelse" : "10",
               "startdatoretttilytelse" : "2016-03-01",
               "beloep" : [ {
-                "valuta" : "NOK",
-                "beloep" : "4936",
-                "gjeldendesiden" : "2016-03-01"
+                  "betalingshyppighetytelse" : "03",
+                  "valuta" : "NOK",
+                  "beloep" : "4936",
+                  "beloepBrutto" : "14574",
+                  "gjeldendesiden" : "2016-03-01" 
               } ],
               "status" : "01"
             } ],
@@ -725,7 +727,7 @@ class SedPrefillIntegrationSpringTest {
           },
           "pensjon" : {
             "ytelser" : [ {
-              "beloep" : [ { } ],
+              "ytelse" : "10",
               "status" : "01"
             } ],
             "kravDato" : {
@@ -827,7 +829,6 @@ class SedPrefillIntegrationSpringTest {
           "pensjon" : {
             "ytelser" : [ {
               "ytelse" : "10",
-              "beloep" : [ { } ],
               "status" : "03"
             } ],
             "kravDato" : {
@@ -927,8 +928,10 @@ class SedPrefillIntegrationSpringTest {
               "ytelse" : "10",
               "startdatoretttilytelse" : "2018-08-01",
               "beloep" : [ {
+                "betalingshyppighetytelse" : "03",
                 "valuta" : "NOK",
                 "beloep" : "7034",
+                "beloepBrutto" : "21232",
                 "gjeldendesiden" : "2018-08-01"
               } ],
               "status" : "02"
