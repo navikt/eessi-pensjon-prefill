@@ -23,7 +23,6 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.web.server.ResponseStatusException
 
-
 class PrefillP2000KravKunUtlandTest {
 
     private val personFnr = FodselsnummerGenerator.generateFnrForTest(67)

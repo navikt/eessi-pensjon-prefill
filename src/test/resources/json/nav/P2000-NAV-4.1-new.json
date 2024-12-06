@@ -142,7 +142,7 @@
               "valuta": "NOK",
               "beloeputbetaltsiden": "2019-03-13",
               "beloep": "800000",
-              "betalingshyppighetinntekt": "01"
+              "betalingshyppighetinntekt": "kvartalsvis"
             }
           ],
           "yrke": "Kanin for",
@@ -162,7 +162,7 @@
     ],
     "ytelser": [
       {
-        "status": "01",
+        "status": "02",
         "startdatoretttilytelse": "2019-03-13",
         "institusjon": {
           "land": "NO",
@@ -185,7 +185,7 @@
         "ytelse": "07",
         "totalbruttobeloepbostedsbasert": "1500000",
         "sluttdatoretttilytelse": "2019-03-13",
-        "mottasbasertpaa": "i_arbeid"
+        "mottasbasertpaa": "02"
       }
     ],
     "vedtak": [

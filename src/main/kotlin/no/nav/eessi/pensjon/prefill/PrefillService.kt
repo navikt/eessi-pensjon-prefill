@@ -90,7 +90,7 @@ class PrefillService(
                 reservert = personResponse?.reservert,
                 epostadresse = personResponse?.epostadresse.validateEmail(request.processDefinitionVersion),
                 mobiltelefonnummer = personResponse?.mobiltelefonnummer
-            )
+            ).also { logger.debug("KrrPerson: ${it.toJson()}") }
         }
 
         val personInfo = if (krrPerson.reservert == true) {

@@ -3,7 +3,7 @@ package no.nav.eessi.pensjon.prefill.sed.vedtak
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.SedType
-import no.nav.eessi.pensjon.eux.model.sed.Nav
+import no.nav.eessi.pensjon.eux.model.sed.BasertPaa
 import no.nav.eessi.pensjon.eux.model.sed.P6000
 import no.nav.eessi.pensjon.prefill.IkkeGyldigKallException
 import no.nav.eessi.pensjon.prefill.InnhentingService
@@ -20,9 +20,6 @@ import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper
 import no.nav.eessi.pensjon.shared.api.PersonInfo
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
 import no.nav.eessi.pensjon.shared.person.FodselsnummerGenerator
-import no.nav.eessi.pensjon.utils.mapJsonToAny
-import no.nav.eessi.pensjon.utils.toJson
-import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
@@ -88,7 +85,7 @@ class PrefillP6000Pensjon_GJENLEV_Test {
         val vedtak = p6000Pensjon.vedtak?.get(0)
         assertEquals("2018-05-01", vedtak?.virkningsdato, "vedtak.virkningsdato")
         assertEquals("03", vedtak?.type, "vedtak.type")
-        assertEquals("02", vedtak?.basertPaa, "vedtak.basertPaa")
+        assertEquals(BasertPaa.basert_på_arbeid, vedtak?.basertPaa, "vedtak.basertPaa")
         assertEquals("03", vedtak?.resultat, "vedtak.resultat")
 
         assertEquals("03", vedtak?.grunnlag?.opptjening?.forsikredeAnnen)
@@ -150,7 +147,7 @@ class PrefillP6000Pensjon_GJENLEV_Test {
         val vedtak = p6000Pensjon.vedtak?.get(0)
         assertEquals("2018-05-01", vedtak?.virkningsdato, "vedtak.virkningsdato")
         assertEquals("03", vedtak?.type, "vedtak.type")
-        assertEquals("02", vedtak?.basertPaa, "vedtak.basertPaa")
+        assertEquals(BasertPaa.basert_på_arbeid, vedtak?.basertPaa, "vedtak.basertPaa")
         assertEquals("03", vedtak?.resultat, "vedtak.resultat")
 
         assertEquals("03", vedtak?.grunnlag?.opptjening?.forsikredeAnnen)

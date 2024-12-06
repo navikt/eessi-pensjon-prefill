@@ -3,6 +3,7 @@ package no.nav.eessi.pensjon.prefill.sed.vedtak
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.SedType
+import no.nav.eessi.pensjon.eux.model.sed.BasertPaa
 import no.nav.eessi.pensjon.eux.model.sed.P6000
 import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
@@ -72,7 +73,7 @@ class PrefillP6000Pensjon_UFORE_Test {
         val vedtak = p6000Pensjon.vedtak?.get(0)
         assertEquals("2017-04-11", vedtak?.virkningsdato, "vedtak.virkningsdato")
         assertEquals("02", vedtak?.type)
-        assertEquals("02", vedtak?.basertPaa)
+        assertEquals(BasertPaa.basert_på_arbeid, vedtak?.basertPaa)
         assertEquals("03", vedtak?.resultat, "vedtak.resultat")
 
         assertEquals("01", vedtak?.grunnlag?.opptjening?.forsikredeAnnen)

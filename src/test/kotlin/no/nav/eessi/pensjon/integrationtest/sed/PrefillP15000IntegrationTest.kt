@@ -168,6 +168,9 @@ class PrefillP15000IntegrationTest {
                   "institusjonsid" : "NO:noinst002",
                   "identifikator" : "12312312312",
                   "land" : "NO"
+                }, {
+                  "identifikator" : "123123123",
+                  "land" : "XQ"
                 } ],
                 "statsborgerskap" : [ {
                   "land" : "XQ"
@@ -176,6 +179,10 @@ class PrefillP15000IntegrationTest {
                 "fornavn" : "Lever",
                 "kjoenn" : "M",
                 "foedselsdato" : "1988-07-12",
+                "sivilstand" : [ {
+                  "fradato" : "2000-10-01",
+                  "status" : "enslig"
+                } ],
                 "relasjontilavdod" : {
                   "relasjon" : "06"
                 },
@@ -201,7 +208,7 @@ class PrefillP15000IntegrationTest {
         }
         """.trimIndent()
 
-        JSONAssert.assertEquals(response, validResponse, true)
+        JSONAssert.assertEquals(validResponse, response,  true)
 
     }
 
@@ -262,8 +269,6 @@ class PrefillP15000IntegrationTest {
         val validResponse = """
         {
           "sed" : "P15000",
-          "sedGVer" : "4",
-          "sedVer" : "2",
           "nav" : {
             "eessisak" : [ {
               "institusjonsid" : "NO:noinst002",
@@ -287,7 +292,7 @@ class PrefillP15000IntegrationTest {
                 "by" : "SØRUMSAND",
                 "postnummer" : "1920",
                 "land" : "NO"
-              }              
+              }
             },
             "krav" : {
               "dato" : "2020-01-01",
@@ -302,6 +307,9 @@ class PrefillP15000IntegrationTest {
                   "institusjonsid" : "NO:noinst002",
                   "identifikator" : "12312312312",
                   "land" : "NO"
+                }, {
+                  "identifikator" : "123123123",
+                  "land" : "XQ"
                 } ],
                 "statsborgerskap" : [ {
                   "land" : "XQ"
@@ -310,19 +318,23 @@ class PrefillP15000IntegrationTest {
                 "fornavn" : "Lever",
                 "kjoenn" : "M",
                 "foedselsdato" : "1988-07-12",
+                "sivilstand" : [ {
+                  "fradato" : "2000-10-01",
+                  "status" : "enslig"
+                } ],
                 "relasjontilavdod" : {
                   "relasjon" : "06"
                 },
                 "rolle" : "01",
                 "kontakt" : {
-                          "telefon" : [ {
-                            "type" : "mobil",
-                            "nummer" : "11111111"
-                          } ],
-                          "email" : [ {
-                            "adresse" : "melleby11@melby.no"
-                          } ]
-                 }                
+                  "telefon" : [ {
+                    "type" : "mobil",
+                    "nummer" : "11111111"
+                  } ],
+                  "email" : [ {
+                    "adresse" : "melleby11@melby.no"
+                  } ]
+                }
               },
               "adresse" : {
                 "gate" : "Oppoverbakken 66",
@@ -331,18 +343,19 @@ class PrefillP15000IntegrationTest {
                 "land" : "NO"
               }
             }
-          }
+          },
+          "sedGVer" : "4",
+          "sedVer" : "2"
         }
         """.trimIndent()
 
-        JSONAssert.assertEquals(response, validResponse, true)
+        JSONAssert.assertEquals(validResponse, response, true)
 
     }
 
     @Test
     @Throws(Exception::class)
     fun `prefill P15000 P_BUC_10 fra vedtakskontekst hvor saktype er GJENLEV og pensjoninformasjon gir BARNEP med GJENLEV men kontakt fylles ikke ut siden krr har registrert reservasjon`() {
-
         every { personService.hentIdent(IdentGruppe.FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN_3)
         every { personService.hentIdent(IdentGruppe.AKTORID, NorskIdent(FNR_VOKSEN_4)) } returns AktoerId(AKTOER_ID_2)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_3)) } returns PersonPDLMock.createWith(true, "Lever", "Gjenlev", FNR_VOKSEN_3, AKTOER_ID)
@@ -350,7 +363,6 @@ class PrefillP15000IntegrationTest {
 
         every { krrService.hentPersonFraKrr(eq(FNR_VOKSEN_3)) } returns KrrPerson(true)
         every { krrService.hentPersonFraKrr(eq(FNR_VOKSEN_4)) } returns KrrPerson(false,"melleby12@melby.no", "11111111")
-
 
         val banrepSak = V1Sak()
         banrepSak.sakType = "BARNEP"
@@ -378,7 +390,6 @@ class PrefillP15000IntegrationTest {
         sak.sakId = 100
         sak.kravHistorikkListe = V1KravHistorikkListe()
         sak.kravHistorikkListe.kravHistorikkListe.add(v1Kravhistorikk)
-
 
         every { pensjoninformasjonservice.hentMedVedtak("123123123") } returns pensjonsinformasjon
         every { kodeverkClient.finnLandkode(any()) } returns "XQ"
@@ -436,6 +447,9 @@ class PrefillP15000IntegrationTest {
                   "institusjonsid" : "NO:noinst002",
                   "identifikator" : "12312312312",
                   "land" : "NO"
+                }, {
+                  "identifikator" : "123123123",
+                  "land" : "XQ"
                 } ],
                 "statsborgerskap" : [ {
                   "land" : "XQ"
@@ -444,6 +458,10 @@ class PrefillP15000IntegrationTest {
                 "fornavn" : "Lever",
                 "kjoenn" : "M",
                 "foedselsdato" : "1988-07-12",
+                "sivilstand" : [ {
+                  "fradato" : "2000-10-01",
+                  "status" : "enslig"
+                } ],
                 "relasjontilavdod" : {
                   "relasjon" : "06"
                 },
@@ -460,7 +478,7 @@ class PrefillP15000IntegrationTest {
         }
         """.trimIndent()
 
-        JSONAssert.assertEquals(response, validResponse, true)
+        JSONAssert.assertEquals(validResponse, response, true)
 
     }
 
@@ -752,8 +770,11 @@ class PrefillP15000IntegrationTest {
                     "pin" : [ {
                       "institusjonsnavn" : "NOINST002, NO INST002, NO",
                       "institusjonsid" : "NO:noinst002",
-                      "identifikator" : "$FNR_VOKSEN",
+                      "identifikator" : "11067122781",
                       "land" : "NO"
+                    }, {
+                      "identifikator" : "123123123",
+                      "land" : "XQ"
                     } ],
                     "statsborgerskap" : [ {
                       "land" : "XQ"
@@ -762,6 +783,10 @@ class PrefillP15000IntegrationTest {
                     "fornavn" : "Lever",
                     "kjoenn" : "M",
                     "foedselsdato" : "1988-07-12",
+                    "sivilstand" : [ {
+                      "fradato" : "2000-10-01",
+                      "status" : "enslig"
+                    } ],
                     "rolle" : "01",
                     "kontakt" : {
                       "telefon" : [ {
@@ -897,16 +922,25 @@ class PrefillP15000IntegrationTest {
                     "pin" : [ {
                       "institusjonsnavn" : "NOINST002, NO INST002, NO",
                       "institusjonsid" : "NO:noinst002",
-                      "identifikator" : "$FNR_VOKSEN",
+                      "identifikator" : "11067122781",
                       "land" : "NO"
+                    }, {
+                      "identifikator" : "123123123",
+                      "land" : "SE"
                     } ],
                     "statsborgerskap" : [ {
                       "land" : "XQ"
+                    }, {
+                      "land" : "SE"
                     } ],
                     "etternavn" : "Gjenlev",
                     "fornavn" : "Lever",
                     "kjoenn" : "M",
                     "foedselsdato" : "1988-07-12",
+                    "sivilstand" : [ {
+                      "fradato" : "2000-10-01",
+                      "status" : "enslig"
+                    } ],
                     "relasjontilavdod" : {
                       "relasjon" : "06"
                     },
@@ -932,7 +966,7 @@ class PrefillP15000IntegrationTest {
             }
         """.trimIndent()
 
-        JSONAssert.assertEquals(validResponse,response, true)
+        JSONAssert.assertEquals(validResponse, response, true)
     }
 }
 

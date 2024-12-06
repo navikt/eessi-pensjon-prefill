@@ -5,7 +5,6 @@ import no.nav.eessi.pensjon.utils.toJson
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
-
 class SedP7000Test {
 
     @Test

@@ -1,31 +1,6 @@
 package no.nav.eessi.pensjon.eux.model
 
-import no.nav.eessi.pensjon.eux.model.sed.Adresse
-import no.nav.eessi.pensjon.eux.model.sed.AndreinstitusjonerItem
-import no.nav.eessi.pensjon.eux.model.sed.Arsak
-import no.nav.eessi.pensjon.eux.model.sed.AvslagbegrunnelseItem
-import no.nav.eessi.pensjon.eux.model.sed.BeloepBrutto
-import no.nav.eessi.pensjon.eux.model.sed.BeregningItem
-import no.nav.eessi.pensjon.eux.model.sed.Bruker
-import no.nav.eessi.pensjon.eux.model.sed.Foedested
-import no.nav.eessi.pensjon.eux.model.sed.Foreldre
-import no.nav.eessi.pensjon.eux.model.sed.Grunnlag
-import no.nav.eessi.pensjon.eux.model.sed.KravtypeItem
-import no.nav.eessi.pensjon.eux.model.sed.Opphoer
-import no.nav.eessi.pensjon.eux.model.sed.Opptjening
-import no.nav.eessi.pensjon.eux.model.sed.P6000
-import no.nav.eessi.pensjon.eux.model.sed.P6000Pensjon
-import no.nav.eessi.pensjon.eux.model.sed.Periode
-import no.nav.eessi.pensjon.eux.model.sed.Person
-import no.nav.eessi.pensjon.eux.model.sed.PinItem
-import no.nav.eessi.pensjon.eux.model.sed.ReduksjonItem
-import no.nav.eessi.pensjon.eux.model.sed.SED
-import no.nav.eessi.pensjon.eux.model.sed.Sak
-import no.nav.eessi.pensjon.eux.model.sed.StatsborgerskapItem
-import no.nav.eessi.pensjon.eux.model.sed.Tilleggsinformasjon
-import no.nav.eessi.pensjon.eux.model.sed.Ukjent
-import no.nav.eessi.pensjon.eux.model.sed.VedtakItem
-import no.nav.eessi.pensjon.eux.model.sed.VirkningsdatoItem
+import no.nav.eessi.pensjon.eux.model.sed.*
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.toJson
@@ -166,7 +141,7 @@ class SedP6000Test {
                                 valuta = "ISK"
                             )
                         ),
-                        basertPaa = "02",
+                        basertPaa = BasertPaa.basert_på_arbeid,
                         virkningsdato = "2020-10-01",
                         type = "02",
                         basertPaaAnnen = "sadfsdf",
@@ -229,7 +204,7 @@ class SedP6000Test {
                             )
                         ),
                         virkningsdato = "2030-10-01",
-                        basertPaa = "01"
+                        basertPaa = BasertPaa.basert_på_botid
                     )
                 ),
                 sak = Sak(
