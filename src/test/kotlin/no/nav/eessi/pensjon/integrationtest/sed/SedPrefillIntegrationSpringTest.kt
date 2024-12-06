@@ -522,6 +522,7 @@ class SedPrefillIntegrationSpringTest {
           },
           "pensjon" : {
             "ytelser" : [ {
+              "mottasbasertpaa" : "01",
               "ytelse" : "10",
               "beloep" : [ { } ],
               "status" : "01"
@@ -828,6 +829,7 @@ class SedPrefillIntegrationSpringTest {
           },
           "pensjon" : {
             "ytelser" : [ {
+              "mottasbasertpaa" : "01",
               "ytelse" : "10",
               "status" : "03"
             } ],

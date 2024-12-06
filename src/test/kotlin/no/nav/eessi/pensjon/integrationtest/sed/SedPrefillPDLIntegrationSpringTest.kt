@@ -146,6 +146,7 @@ class SedPrefillPDLIntegrationSpringTest {
           },
           "pensjon" : {
             "ytelser" : [ {
+              "mottasbasertpaa" : "01",
               "ytelse" : "10",
               "status" : "01"
             } ],
