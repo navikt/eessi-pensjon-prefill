@@ -19,11 +19,16 @@ import org.springframework.web.server.ResponseStatusException
 /**
  * preutfylling av NAV-P2000 SED for søknad krav om alderpensjon
  */
-class PrefillP2000(private val prefillNav: PrefillPDLNav)  {
+class PrefillP2000(private val prefillNav: PrefillPDLNav) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillP2000::class.java) }
 
-    fun prefillSed(prefillData: PrefillDataModel, personData: PersonDataCollection, sak: V1Sak?, vedtak: V1Vedtak? = null): SED {
+    fun prefillSed(
+        prefillData: PrefillDataModel,
+        personData: PersonDataCollection,
+        sak: V1Sak?,
+        vedtak: V1Vedtak? = null
+    ): SED {
         postPrefill(prefillData, sak, vedtak)
 
         val pensjon = populerPensjon(prefillData, sak)
@@ -57,11 +62,13 @@ class PrefillP2000(private val prefillNav: PrefillPDLNav)  {
     private fun postPrefill(prefillData: PrefillDataModel, sak: V1Sak?, vedtak: V1Vedtak?) {
         val SedType = SedType.P2000
         PrefillP2xxxPensjon.validerGyldigVedtakEllerKravtypeOgArsak(sak, SedType, vedtak)
-        logger.debug("----------------------------------------------------------"
-                + "\nSaktype                 : ${sak?.sakType} "
-                + "\nSøker etter SakId       : ${prefillData.penSaksnummer} "
-                + "\nSøker etter aktoerid    : ${prefillData.bruker.aktorId} "
-                + "\n------------------| Preutfylling [$SedType] START |------------------ ")
+        logger.debug(
+            "----------------------------------------------------------"
+                    + "\nSaktype                 : ${sak?.sakType} "
+                    + "\nSøker etter SakId       : ${prefillData.penSaksnummer} "
+                    + "\nSøker etter aktoerid    : ${prefillData.bruker.aktorId} "
+                    + "\n------------------| Preutfylling [$SedType] START |------------------ "
+        )
     }
 
     private fun validate(sed: SED) {
@@ -85,7 +92,7 @@ class PrefillP2000(private val prefillNav: PrefillPDLNav)  {
 
         //valider pensjoninformasjon,
         return try {
-            val pensjonsInformasjon:MeldingOmPensjonP2000 = PrefillP2xxxPensjon.populerMeldinOmPensjon(
+            val pensjonsInformasjon: MeldingOmPensjonP2000 = PrefillP2xxxPensjon.populerMeldinOmPensjon(
                 prefillData.bruker.norskIdent,
                 prefillData.penSaksnummer,
                 sak,
@@ -100,16 +107,30 @@ class PrefillP2000(private val prefillNav: PrefillPDLNav)  {
 
                 P2000Pensjon(
                     kravDato = pensjonsInformasjon.pensjon.kravDato,
-                    ytelser = listOf(YtelserItem(
-                        ytelse = pensjonsInformasjon.pensjon.ytelser?.first()?.ytelse,
-                        status = ytelser?.status,
-                        startdatoutbetaling = ytelser?.startdatoutbetaling.also { logger.debug("startdatoutbetaling: $it") },
-                        startdatoretttilytelse = ytelser?.startdatoretttilytelse.also { logger.debug("Ststartdatoretttilytelseatus: $it") },
-                        mottasbasertpaa = ytelser?.mottasbasertpaa.also { logger.debug("mottasbasertpaa: $it") },
-                        totalbruttobeloepbostedsbasert = ytelser?.totalbruttobeloepbostedsbasert.also { logger.debug("totalbruttobeloepbostedsbasert: $it") },
-                        totalbruttobeloeparbeidsbasert = ytelser?.totalbruttobeloeparbeidsbasert.also { logger.debug("totalbruttobeloeparbeidsbasert: $it") },
-                        beloep = if(belop!= null) listOf(belop) else null .also { logger.debug("beloep: $it") },
-                    ))
+                    ytelser = listOf(
+                        YtelserItem(
+                            ytelse = pensjonsInformasjon.pensjon.ytelser?.first()?.ytelse,
+                            status = ytelser?.status,
+                            startdatoutbetaling = ytelser?.startdatoutbetaling.also { logger.debug("startdatoutbetaling: $it") },
+                            startdatoretttilytelse = ytelser?.startdatoretttilytelse.also { logger.debug("Ststartdatoretttilytelseatus: $it") },
+                            mottasbasertpaa = settMottattBasertPaa(ytelser?.totalbruttobeloeparbeidsbasert).also {
+                                logger.debug(
+                                    "mottasbasertpaa: $it"
+                                )
+                            },
+                            totalbruttobeloepbostedsbasert = ytelser?.totalbruttobeloepbostedsbasert.also {
+                                logger.debug(
+                                    "totalbruttobeloepbostedsbasert: $it"
+                                )
+                            },
+                            totalbruttobeloeparbeidsbasert = ytelser?.totalbruttobeloeparbeidsbasert.also {
+                                logger.debug(
+                                    "totalbruttobeloeparbeidsbasert: $it"
+                                )
+                            },
+                            beloep = if (belop != null) listOf(belop) else null.also { logger.debug("beloep: $it") },
+                        )
+                    )
                 )
             } else pensjonsInformasjon.pensjon
 
@@ -118,6 +139,12 @@ class PrefillP2000(private val prefillNav: PrefillPDLNav)  {
             null
             //hvis feiler lar vi SB få en SED i RINA
         }
+    }
+
+    private fun settMottattBasertPaa(totalBruttoArbBasert: String?): BasertPaa? {
+        return if (totalBruttoArbBasert == null) {
+            BasertPaa.basert_på_botid
+        } else null
     }
 }
 
