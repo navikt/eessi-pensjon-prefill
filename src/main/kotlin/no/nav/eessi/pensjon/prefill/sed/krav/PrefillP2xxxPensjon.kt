@@ -115,6 +115,7 @@ object PrefillP2xxxPensjon {
             MeldingOmPensjonP2000::class -> MeldingOmPensjonP2000(
                 melding = melding,
                 pensjon = P2000Pensjon(
+                    forespurtstartdato = ytelse.startdatoretttilytelse,
                     ytelser = listOf(ytelse),
                     kravDato = krav,
                     gjenlevende = gjenlevende

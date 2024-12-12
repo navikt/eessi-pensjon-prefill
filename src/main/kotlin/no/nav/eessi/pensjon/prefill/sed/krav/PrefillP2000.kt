@@ -2,11 +2,9 @@ package no.nav.eessi.pensjon.prefill.sed.krav
 
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.sed.*
-import no.nav.eessi.pensjon.pensjonsinformasjon.KravHistorikkHelper
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
-import no.nav.eessi.pensjon.prefill.sed.krav.PrefillP2xxxPensjon.hentYtelsePerMaanedDenSisteFraKrav
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
 import no.nav.eessi.pensjon.utils.toJson
 import no.nav.pensjon.v1.sak.V1Sak
@@ -111,8 +109,8 @@ class PrefillP2000(private val prefillNav: PrefillPDLNav) {
                         YtelserItem(
                             ytelse = pensjonsInformasjon.pensjon.ytelser?.first()?.ytelse,
                             status = ytelser?.status,
-                            startdatoutbetaling = ytelser?.startdatoutbetaling.also { logger.debug("startdatoutbetaling: $it") },
-                            startdatoretttilytelse = ytelser?.startdatoretttilytelse.also { logger.debug("Ststartdatoretttilytelseatus: $it") },
+                            startdatoutbetaling = ytelser?.startdatoutbetaling.also { logger.debug("startdatoUtbetaling: $it") },
+                            startdatoretttilytelse = ytelser?.startdatoretttilytelse.also { logger.debug("StartdatoretTilYtelseStatus: $it") },
                             mottasbasertpaa = settMottattBasertPaa(ytelser?.totalbruttobeloeparbeidsbasert).also {
                                 logger.debug(
                                     "mottasbasertpaa: $it"
