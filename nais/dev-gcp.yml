@@ -47,7 +47,7 @@ spec:
     - name: KRR_CLIENT_ID
       value: dev-gcp.team-rocket.digdir-krr-proxy
     - name: AZURE_APP_KODEVERK_CLIENT_ID
-      value: kodeverk-api.nav.no
+      value: dev-gcp.team-rocket.kodeverk-api
     - name: KAFKA_AUTOMATISERING_TOPIC
       value: eessipensjon.public-automatisering-q2
     - name: KODEVERK_URL
