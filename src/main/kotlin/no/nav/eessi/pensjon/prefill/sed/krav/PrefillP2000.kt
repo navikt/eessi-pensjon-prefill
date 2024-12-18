@@ -88,6 +88,8 @@ class PrefillP2000(private val prefillNav: PrefillPDLNav) {
     ): P2000Pensjon? {
         val andreInstitusjondetaljer = EessiInformasjon().asAndreinstitusjonerItem()
 
+        logger.debug("""Prefilldata: ${prefillData.toJson()}""")
+
         //valider pensjoninformasjon,
         return try {
             val pensjonsInformasjon: MeldingOmPensjonP2000 = PrefillP2xxxPensjon.populerMeldinOmPensjon(
@@ -97,7 +99,7 @@ class PrefillP2000(private val prefillNav: PrefillPDLNav) {
                 andreInstitusjondetaljer
             )
 
-            logger.debug("Pensjoninformasjon: ${pensjonsInformasjon.toJson()}")
+            logger.debug("""Pensjoninformasjon: ${pensjonsInformasjon.toJson()}""")
 
             if (prefillData.sedType != SedType.P6000) {
                 val ytelser = pensjonsInformasjon.pensjon.ytelser?.first()
