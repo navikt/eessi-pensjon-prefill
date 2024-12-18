@@ -131,6 +131,7 @@ class PrefillP2000(private val prefillNav: PrefillPDLNav) {
                             beloep = if (belop != null) listOf(belop) else null.also { logger.debug("beloep: $it") },
                         )
                     ),
+                    // 9.1
                     forespurtstartdato = pensjonsInformasjon.pensjon.forespurtstartdato.also { logger.debug("forespurtstartdato: $it") },
                 )
             } else pensjonsInformasjon.pensjon
