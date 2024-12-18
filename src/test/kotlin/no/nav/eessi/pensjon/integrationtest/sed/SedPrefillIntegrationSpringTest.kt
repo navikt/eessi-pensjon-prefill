@@ -941,7 +941,8 @@ class SedPrefillIntegrationSpringTest {
             } ],
             "kravDato" : {
               "dato" : "2018-05-31"
-            }
+            },
+            "forespurtstartdato" : "2018-08-01"
           },
           "sedGVer" : "4",
           "sedVer" : "2"
