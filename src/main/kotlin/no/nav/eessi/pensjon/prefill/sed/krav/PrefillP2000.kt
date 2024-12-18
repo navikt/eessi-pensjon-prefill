@@ -107,7 +107,6 @@ class PrefillP2000(private val prefillNav: PrefillPDLNav) {
 
                 P2000Pensjon(
                     kravDato = pensjonsInformasjon.pensjon.kravDato,
-                    forespurtstartdato = pensjonsInformasjon.pensjon.forespurtstartdato,
                     ytelser = listOf(
                         YtelserItem(
                             ytelse = pensjonsInformasjon.pensjon.ytelser?.first()?.ytelse,
@@ -131,7 +130,8 @@ class PrefillP2000(private val prefillNav: PrefillPDLNav) {
                             },
                             beloep = if (belop != null) listOf(belop) else null.also { logger.debug("beloep: $it") },
                         )
-                    )
+                    ),
+                    forespurtstartdato = pensjonsInformasjon.pensjon.forespurtstartdato.also { logger.debug("forespurtstartdato: $it") },
                 )
             } else pensjonsInformasjon.pensjon
 
