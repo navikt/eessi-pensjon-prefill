@@ -107,6 +107,7 @@ class PrefillP2000(private val prefillNav: PrefillPDLNav) {
 
                 P2000Pensjon(
                     kravDato = pensjonsInformasjon.pensjon.kravDato,
+                    forespurtstartdato = pensjonsInformasjon.pensjon.forespurtstartdato,
                     ytelser = listOf(
                         YtelserItem(
                             ytelse = pensjonsInformasjon.pensjon.ytelser?.first()?.ytelse,
