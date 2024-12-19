@@ -73,7 +73,7 @@ class PrefillP6000Pensjon_UFORE_Test {
         val vedtak = p6000Pensjon.vedtak?.get(0)
         assertEquals("2017-04-11", vedtak?.virkningsdato, "vedtak.virkningsdato")
         assertEquals("02", vedtak?.type)
-        assertEquals(BasertPaa.basert_på_arbeid, vedtak?.basertPaa)
+        assertEquals(BasertPaa.i_arbeid, vedtak?.basertPaa)
         assertEquals("03", vedtak?.resultat, "vedtak.resultat")
 
         assertEquals("01", vedtak?.grunnlag?.opptjening?.forsikredeAnnen)

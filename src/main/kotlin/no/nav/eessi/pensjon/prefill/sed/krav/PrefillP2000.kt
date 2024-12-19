@@ -142,9 +142,9 @@ class PrefillP2000(private val prefillNav: PrefillPDLNav) {
         }
     }
 
-    private fun settMottattBasertPaa(totalBruttoArbBasert: String?): BasertPaa? {
+    private fun settMottattBasertPaa(totalBruttoArbBasert: String?): String? {
         return if (totalBruttoArbBasert.isNullOrEmpty() || totalBruttoArbBasert == "0") {
-            BasertPaa.basert_på_botid
+            BasertPaa.botid.name
         } else null
     }
 }

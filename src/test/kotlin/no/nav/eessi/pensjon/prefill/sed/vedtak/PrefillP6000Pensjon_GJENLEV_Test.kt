@@ -85,7 +85,7 @@ class PrefillP6000Pensjon_GJENLEV_Test {
         val vedtak = p6000Pensjon.vedtak?.get(0)
         assertEquals("2018-05-01", vedtak?.virkningsdato, "vedtak.virkningsdato")
         assertEquals("03", vedtak?.type, "vedtak.type")
-        assertEquals(BasertPaa.basert_på_arbeid, vedtak?.basertPaa, "vedtak.basertPaa")
+        assertEquals(BasertPaa.i_arbeid, vedtak?.basertPaa, "vedtak.basertPaa")
         assertEquals("03", vedtak?.resultat, "vedtak.resultat")
 
         assertEquals("03", vedtak?.grunnlag?.opptjening?.forsikredeAnnen)
@@ -147,7 +147,7 @@ class PrefillP6000Pensjon_GJENLEV_Test {
         val vedtak = p6000Pensjon.vedtak?.get(0)
         assertEquals("2018-05-01", vedtak?.virkningsdato, "vedtak.virkningsdato")
         assertEquals("03", vedtak?.type, "vedtak.type")
-        assertEquals(BasertPaa.basert_på_arbeid, vedtak?.basertPaa, "vedtak.basertPaa")
+        assertEquals(BasertPaa.i_arbeid, vedtak?.basertPaa, "vedtak.basertPaa")
         assertEquals("03", vedtak?.resultat, "vedtak.resultat")
 
         assertEquals("03", vedtak?.grunnlag?.opptjening?.forsikredeAnnen)

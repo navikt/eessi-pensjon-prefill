@@ -75,7 +75,7 @@ class PrefillP6000Pensjon_ALDER_Test {
         val vedtak = p6000Pensjon.vedtak?.firstOrNull()
         assertEquals("2017-05-01", vedtak?.virkningsdato, "4.1.6  pensjon.vedtak[x].virkningsdato")
         assertEquals("01", vedtak?.type, "4.1.1 vedtak.type")
-        assertEquals(BasertPaa.basert_på_arbeid, vedtak?.basertPaa, "4.1.2 vedtak.basertPaa")
+        assertEquals(BasertPaa.i_arbeid, vedtak?.basertPaa, "4.1.2 vedtak.basertPaa")
 
         assertEquals(null, vedtak?.basertPaaAnnen, "4.1.3.1 artikkel.basertPaaAnnen")
         assertEquals("01", vedtak?.resultat, "4.1.4 vedtak.resultat ")

@@ -149,7 +149,7 @@ class SedTest {
                                 valuta = "ISK"
                             )
                         ),
-                        basertPaa = BasertPaa.basert_på_arbeid,
+                        basertPaa = BasertPaa.i_arbeid,
                         virkningsdato = "2020-10-01",
                         type = "02",
                         basertPaaAnnen = "sadfsdf",
@@ -213,7 +213,7 @@ class SedTest {
                             )
                         ),
                         virkningsdato = "2030-10-01",
-                        basertPaa = BasertPaa.basert_på_botid
+                        basertPaa = BasertPaa.botid
                     )
                 ),
                 sak = Sak(

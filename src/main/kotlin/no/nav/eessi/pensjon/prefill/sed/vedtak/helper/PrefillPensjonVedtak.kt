@@ -108,8 +108,8 @@ object PrefillPensjonVedtak {
         //TODO: Her må vi sjekke om dette blir riktig
         else {
             when (isMottarMinstePensjonsniva(pendata)) {
-                true -> BasertPaa.basert_på_botid
-                false -> BasertPaa.basert_på_arbeid
+                true -> BasertPaa.botid
+                false -> BasertPaa.i_arbeid
             }
         }
     }

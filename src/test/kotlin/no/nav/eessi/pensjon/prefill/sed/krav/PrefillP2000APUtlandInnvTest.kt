@@ -66,7 +66,7 @@ class PrefillP2000APUtlandInnvTest {
         prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav)
     }
 
-    @Test //(expected = MangelfulleInndataException::class)
+    @Test
     fun `forventet korrekt utfylt P2000 alderpensjon med kap4 og 9`() {
         val P2000 = prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection)
 
@@ -75,13 +75,13 @@ class PrefillP2000APUtlandInnvTest {
 
     }
 
-    @Test //(expected = MangelfulleInndataException::class)
-    fun `forventet korrekt utfylt P2000 alderpensjon og mottasbasertpaa satt til basert_på_botid`() {
+    @Test
+    fun `forventet korrekt utfylt P2000 alderpensjon og mottasbasertpaa satt til botid`() {
         val P2000 = prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection) as no.nav.eessi.pensjon.eux.model.sed.P2000
 
         assertNotNull(P2000.nav?.krav)
         assertEquals("2015-11-25", P2000.nav?.krav?.dato)
-        assertEquals(BasertPaa.basert_på_botid, P2000.p2000pensjon?.ytelser?.firstOrNull()?.mottasbasertpaa)
+        assertEquals(BasertPaa.botid.name, P2000.p2000pensjon?.ytelser?.firstOrNull()?.mottasbasertpaa)
     }
 
     @Test
