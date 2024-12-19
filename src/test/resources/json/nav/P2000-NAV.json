@@ -30,7 +30,7 @@
           "fradato" : "2018-02-01",
           "status" : "gift"
         }, {
-          "status" : "skilt_fra_registrert_partnerskap",
+          "status" : "skilt",
           "fradato" : "2016-02-01"
         } ],
         "pin" : [ {
@@ -268,7 +268,7 @@
         "beloep" : "677",
         "valuta" : "EUR"
       } ],
-      "mottasbasertpaa" : "botid",
+      "mottasbasertpaa" : "01",
       "pin" : {
         "identifikator" : "kj90980"
       },
@@ -282,7 +282,7 @@
       "annenytelse" : "sfsd",
       "startdatoutbetaling" : "2018-04-01",
       "totalbruttobeloepbostedsbasert" : "24234",
-      "mottasbasertpaa" : "i_arbeid",
+      "mottasbasertpaa" : "02",
       "pin" : {
         "identifikator" : "242343434"
       },

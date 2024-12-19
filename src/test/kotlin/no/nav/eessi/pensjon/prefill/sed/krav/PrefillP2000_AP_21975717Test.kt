@@ -51,7 +51,9 @@ class PrefillP2000_AP_21975717Test {
 
         val prefillNav = PrefillPDLNav(
             prefillAdresse = mockk<PrefillPDLAdresse> {
-                every { hentLandkode(any()) } returns "NO"
+                every { hentLandkode(null) } returns "NO"
+                every { hentLandkode(eq("SWE")) } returns "SE"
+                every { hentLandkode(eq("NOR")) } returns "NO"
                 every { createPersonAdresse(any()) } returns mockk(relaxed = true)
             },
             institutionid = "NO:noinst002",
@@ -73,15 +75,25 @@ class PrefillP2000_AP_21975717Test {
 
     @Test
     fun `forventet korrekt utfylt P2000 alderpensjon med kap4 og 9`() {
-        val P2000 = prefillSEDService.prefill(prefillData, persondataCollection, pensjonCollection)
+        val p2000 = prefillSEDService.prefill(prefillData, persondataCollection, pensjonCollection)
 
-        val P2000pensjon = SED(
+        val p2000pensjon = SED(
                 type = SedType.P2000,
-                pensjon = P2000.pensjon,
-                nav = Nav( krav = P2000.nav?.krav )
+                pensjon = p2000.pensjon,
+                nav = Nav( krav = p2000.nav?.krav )
         )
-        assertNotNull(P2000pensjon.nav?.krav)
-        assertEquals("2015-06-16", P2000pensjon.nav?.krav?.dato)
+
+        assertNotNull(p2000pensjon.nav?.krav)
+        assertEquals("2015-06-16", p2000pensjon.nav?.krav?.dato)
+        assertEquals("NO", p2000.nav?.bruker?.person?.statsborgerskap?.first()?.land)
+        assertEquals("SE", p2000.nav?.bruker?.person?.statsborgerskap?.last()?.land)
+        assertEquals(giftFnr, p2000.nav?.bruker?.person?.pin?.first()?.identifikator)
+        assertEquals("123123123", p2000.nav?.bruker?.person?.pin?.last()?.identifikator)
+
+        assertEquals("NO", p2000.nav?.bruker?.person?.pin?.first()?.land)
+        assertEquals("SE", p2000.nav?.bruker?.person?.pin?.last()?.land)
+        assertEquals("SE", p2000.nav?.bruker?.person?.pin?.last()?.land)
+
     }
 
     @Test
