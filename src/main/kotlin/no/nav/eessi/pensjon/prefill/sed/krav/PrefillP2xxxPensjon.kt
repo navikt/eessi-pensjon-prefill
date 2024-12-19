@@ -227,7 +227,6 @@ object PrefillP2xxxPensjon {
         val basertPaa = createPensionBasedOn(pensak, personNr)
         val saktype = if(pensak.sakType?.isNotBlank() == true) SakType.valueOf(pensak.sakType) else null
         val totalBruttoBosted = saktype?.let { KSAK.valueOf(it.name) }?.let { createYtelseskomponentGrunnpensjon(ytelsePrmnd, it) }
-        val totalBruttoArbeid = saktype?.let { KSAK.valueOf(it.name) }?.let { createYtelseskomponentTilleggspensjon( ytelsePrmnd, it) }
         return YtelserItem(
                 //4.1.1
                 ytelse = settYtelse(pensak),
@@ -249,13 +248,13 @@ object PrefillP2xxxPensjon {
                 beloep = createYtelseItemBelop(ytelsePrmnd, saktype),
 
                 //4.1.10.1
-                mottasbasertpaa = if(totalBruttoArbeid.equals("0")) BasertPaa.basert_på_botid else null,
+                mottasbasertpaa = if(totalBruttoBosted == "0") BasertPaa.basert_på_botid else null,
 
                 //4.1.10.2
                 totalbruttobeloepbostedsbasert = totalBruttoBosted,
 
                 //4.1.10.3
-                totalbruttobeloeparbeidsbasert = totalBruttoArbeid,
+                totalbruttobeloeparbeidsbasert = saktype?.let { KSAK.valueOf(it.name) }?.let { createYtelseskomponentTilleggspensjon( ytelsePrmnd, it) },
         )
     }
 
