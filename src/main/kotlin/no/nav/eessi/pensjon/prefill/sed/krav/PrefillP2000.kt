@@ -143,7 +143,7 @@ class PrefillP2000(private val prefillNav: PrefillPDLNav) {
     }
 
     private fun settMottattBasertPaa(totalBruttoArbBasert: String?): BasertPaa? {
-        return if (totalBruttoArbBasert == null) {
+        return if (totalBruttoArbBasert.isNullOrEmpty() || totalBruttoArbBasert == "0") {
             BasertPaa.basert_på_botid
         } else null
     }
