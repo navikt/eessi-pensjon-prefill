@@ -396,7 +396,7 @@ class PrefillUfoereIntegrationTest {
                       "fornavn" : "HOVED PERSON"
                     }
                   },
-                  "relasjontilbruker" : "BARN"
+                  "relasjontilbruker43" : "BARN"
                 }, {
                   "mor" : {
                     "person" : {
@@ -446,7 +446,7 @@ class PrefillUfoereIntegrationTest {
                       "fornavn" : "HOVED PERSON"
                     }
                   },
-                  "relasjontilbruker" : "BARN"
+                  "relasjontilbruker43" : "BARN"
                 }, {
                   "mor" : {
                     "person" : {
@@ -496,7 +496,7 @@ class PrefillUfoereIntegrationTest {
                       "fornavn" : "HOVED PERSON"
                     }
                   },
-                  "relasjontilbruker" : "BARN"
+                  "relasjontilbruker43" : "BARN"
                 } ],
                 "krav" : {
                   "dato" : "2020-07-01"
