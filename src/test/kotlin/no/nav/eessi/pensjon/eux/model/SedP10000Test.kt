@@ -1,6 +1,7 @@
 package no.nav.eessi.pensjon.eux.model
 
 import no.nav.eessi.pensjon.eux.model.sed.SED
+import no.nav.eessi.pensjon.eux.model.sed.SivilstandRina
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
@@ -13,7 +14,7 @@ class SedP10000Test {
         val p10000sed = SED.fromJson(p10000json)
 
         assertEquals("VAIKUNTHARAJAN-MASK",p10000sed.nav?.bruker?.person?.fornavn )
-        assertEquals("samboer",p10000sed.nav?.bruker?.person?.sivilstand?.get(0)?.status)
+        assertEquals(SivilstandRina.gift,p10000sed.nav?.bruker?.person?.sivilstand?.get(0)?.status)
         assertEquals("NSSI_TNT1, NATIONAL SOCIAL SECURITY INSTITUTE, BG",p10000sed.nav?.eessisak?.get(0)?.institusjonsnavn)
     }
 }

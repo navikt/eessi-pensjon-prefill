@@ -193,7 +193,7 @@
         "etternavn" : "adgadfgadfgadfgadfgadfgadfgadfgadfgadfgadfgdafgdaf",
         "etternavnvedfoedsel" : "gdafgadfgadfgd",
         "sivilstand" : [ {
-          "status" : "enke_enkemann",
+          "status" : "01",
           "fradato" : "2002-12-19"
         } ],
         "pin" : [ {

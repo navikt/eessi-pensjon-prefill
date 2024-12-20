@@ -194,8 +194,6 @@ class SedPrefillIntegrationSpringTest {
         Assertions.assertEquals(FNR_VOKSEN, gjenlevendePIN)
         Assertions.assertEquals(FNR_VOKSEN_4, avdodPIN)
 
-        println(response)
-
     }
 
     @Test
@@ -221,8 +219,6 @@ class SedPrefillIntegrationSpringTest {
         val validResponse = """
             {
               "sed" : "P6000",
-              "sedGVer" : "4",
-              "sedVer" : "2",
               "nav" : {
                 "eessisak" : [ {
                   "institusjonsid" : "NO:noinst002",
@@ -237,6 +233,9 @@ class SedPrefillIntegrationSpringTest {
                       "institusjonsid" : "NO:noinst002",
                       "identifikator" : "12312312312",
                       "land" : "NO"
+                    }, {
+                      "identifikator" : "123123123",
+                      "land" : "QX"
                     } ],
                     "statsborgerskap" : [ {
                       "land" : "QX"
@@ -245,6 +244,10 @@ class SedPrefillIntegrationSpringTest {
                     "fornavn" : "Alder",
                     "kjoenn" : "M",
                     "foedselsdato" : "1988-07-12",
+                    "sivilstand" : [ {
+                      "fradato" : "2000-10-01",
+                      "status" : "enslig"
+                    } ],
                     "kontakt" : {
                       "telefon" : [ {
                         "type" : "mobil",
@@ -287,7 +290,9 @@ class SedPrefillIntegrationSpringTest {
                     "poststed" : "Oslo"
                   } ]
                 }
-              }
+              },
+              "sedGVer" : "4",
+              "sedVer" : "2"
             }
         """.trimIndent()
 
@@ -403,8 +408,11 @@ class SedPrefillIntegrationSpringTest {
                     "pin" : [ {
                       "institusjonsnavn" : "NOINST002, NO INST002, NO",
                       "institusjonsid" : "NO:noinst002",
-                      "identifikator" : "$FNR_VOKSEN_3",
+                      "identifikator" : "12312312312",
                       "land" : "NO"
+                    }, {
+                      "identifikator" : "123123123",
+                      "land" : "QX"
                     } ],
                     "statsborgerskap" : [ {
                       "land" : "QX"
@@ -413,6 +421,10 @@ class SedPrefillIntegrationSpringTest {
                     "fornavn" : "Lever",
                     "kjoenn" : "M",
                     "foedselsdato" : "1988-07-12",
+                    "sivilstand" : [ {
+                      "fradato" : "2000-10-01",
+                      "status" : "enslig"
+                    } ],
                     "kontakt" : {
                       "telefon" : [ {
                         "type" : "mobil",
@@ -456,59 +468,72 @@ class SedPrefillIntegrationSpringTest {
         val apijson = dummyApijson(sakid = "21337890", aktoerId = AKTOER_ID)
 
         val validResponse = """
-            {
-              "sed" : "P2000",
-              "sedGVer" : "4",
-              "sedVer" : "2",
-              "nav" : {
-                "eessisak" : [ {
-                  "institusjonsid" : "NO:noinst002",
+        {
+          "sed" : "P2000",
+          "nav" : {
+            "eessisak" : [ {
+              "institusjonsid" : "NO:noinst002",
+              "institusjonsnavn" : "NOINST002, NO INST002, NO",
+              "saksnummer" : "21337890",
+              "land" : "NO"
+            } ],
+            "bruker" : {
+              "person" : {
+                "pin" : [ {
                   "institusjonsnavn" : "NOINST002, NO INST002, NO",
-                  "saksnummer" : "21337890",
+                  "institusjonsid" : "NO:noinst002",
+                  "identifikator" : "3123",
                   "land" : "NO"
+                }, {
+                  "identifikator" : "123123123",
+                  "land" : "QX"
                 } ],
-                "bruker" : {
-                  "person" : {
-                    "pin" : [ {
-                      "institusjonsnavn" : "NOINST002, NO INST002, NO",
-                      "institusjonsid" : "NO:noinst002",
-                      "identifikator" : "3123",
-                      "land" : "NO"
-                    } ],
-                    "statsborgerskap" : [ {
-                      "land" : "QX"
-                    } ],
-                    "etternavn" : "Testesen",
-                    "fornavn" : "Test",
-                    "kjoenn" : "M",
-                    "foedselsdato" : "1988-07-12",
-                    "kontakt" : {
-          "telefon" : [ {
-            "type" : "mobil",
-            "nummer" : "11111111"
-          } ],
-          "email" : [ {
-            "adresse" : "melleby11@melby.no"
-          } ]
-        }
-                  },
-                  "adresse" : {
-                    "gate" : "Oppoverbakken 66",
-                    "by" : "SØRUMSAND",
-                    "postnummer" : "1920",
-                    "land" : "NO"
-                  }
-                },
-                "krav" : {
-                  "dato" : "2018-06-28"
+                "statsborgerskap" : [ {
+                  "land" : "QX"
+                } ],
+                "etternavn" : "Testesen",
+                "fornavn" : "Test",
+                "kjoenn" : "M",
+                "foedselsdato" : "1988-07-12",
+                "sivilstand" : [ {
+                  "fradato" : "2000-10-01",
+                  "status" : "enslig"
+                } ],
+                "kontakt" : {
+                  "telefon" : [ {
+                    "type" : "mobil",
+                    "nummer" : "11111111"
+                  } ],
+                  "email" : [ {
+                    "adresse" : "melleby11@melby.no"
+                  } ]
                 }
               },
-              "pensjon" : {
-                "kravDato" : {
-                  "dato" : "2018-06-28"
-                }
+              "adresse" : {
+                "gate" : "Oppoverbakken 66",
+                "by" : "SØRUMSAND",
+                "postnummer" : "1920",
+                "land" : "NO"
               }
+            },
+            "krav" : {
+              "dato" : "2018-06-28"
             }
+          },
+          "pensjon" : {
+            "ytelser" : [ {
+              "mottasbasertpaa" : "botid",
+              "ytelse" : "10",
+              "beloep" : [ { } ],
+              "status" : "01"
+            } ],
+            "kravDato" : {
+              "dato" : "2018-06-28"
+            }
+          },
+          "sedGVer" : "4",
+          "sedVer" : "2"
+        }
         """.trimIndent()
 
         val result = mockMvc.perform(post("/sed/prefill")
@@ -545,64 +570,98 @@ class SedPrefillIntegrationSpringTest {
 
         val response = result.response.getContentAsString(charset("UTF-8"))
 
-        println(response)
         val expected = """
-            {
-              "sed" : "P2000",
-              "nav" : {
-                "eessisak" : [ {
-                  "institusjonsid" : "NO:noinst002",
-                  "institusjonsnavn" : "NOINST002, NO INST002, NO",
-                  "saksnummer" : "21841174",
-                  "land" : "NO"
-                } ],
-                "bruker" : {
-                  "person" : {
-                    "pin" : [ {
-                      "institusjonsnavn" : "NOINST002, NO INST002, NO",
-                      "institusjonsid" : "NO:noinst002",
-                      "identifikator" : "3123",
-                      "land" : "NO"
-                    } ],
-                    "statsborgerskap" : [ {
-                      "land" : "QX"
-                    } ],
-                    "etternavn" : "Testesen",
-                    "fornavn" : "Test",
-                    "kjoenn" : "M",
-                    "foedselsdato" : "1988-07-12",
-                    "kontakt" : {
-          "telefon" : [ {
-            "type" : "mobil",
-            "nummer" : "11111111"
-          } ],
-          "email" : [ {
-            "adresse" : "melleby11@melby.no"
-          } ]
-        }
+        {
+          "sed": "P2000",
+          "nav": {
+            "eessisak": [
+              {
+                "institusjonsid": "NO:noinst002",
+                "institusjonsnavn": "NOINST002, NO INST002, NO",
+                "saksnummer": "21841174",
+                "land": "NO"
+              }
+            ],
+            "bruker": {
+              "person": {
+                "pin": [
+                  {
+                    "institusjonsnavn": "NOINST002, NO INST002, NO",
+                    "institusjonsid": "NO:noinst002",
+                    "identifikator": "3123",
+                    "land": "NO"
                   },
-                  "adresse" : {
-                    "gate" : "Oppoverbakken 66",
-                    "by" : "SØRUMSAND",
-                    "postnummer" : "1920",
-                    "land" : "NO"
+                  {
+                    "identifikator": "123123123",
+                    "land": "QX"
                   }
-                },
-                "krav" : {
-                  "dato" : "2015-11-25"
+                ],
+                "statsborgerskap": [
+                  {
+                    "land": "QX"
+                  }
+                ],
+                "etternavn": "Testesen",
+                "fornavn": "Test",
+                "kjoenn": "M",
+                "foedselsdato": "1988-07-12",
+                "sivilstand": [
+                  {
+                    "fradato": "2000-10-01",
+                    "status": "enslig"
+                  }
+                ],
+                "kontakt": {
+                  "telefon": [
+                    {
+                      "type": "mobil",
+                      "nummer": "11111111"
+                    }
+                  ],
+                  "email": [
+                    {
+                      "adresse": "melleby11@melby.no"
+                    }
+                  ]
                 }
               },
-              "pensjon" : {
-                "kravDato" : {
-                  "dato" : "2015-11-25"
-                }
-              },
-              "sedGVer" : "4",
-              "sedVer" : "2"
-            }             
+              "adresse": {
+                "gate": "Oppoverbakken 66",
+                "by": "SØRUMSAND",
+                "postnummer": "1920",
+                "land": "NO"
+              }
+            },
+            "krav" : {
+              "dato" : "2015-11-25"
+            }
+          },
+          "pensjon" : {
+            "ytelser" : [ {
+              "totalbruttobeloeparbeidsbasert" : "9638",
+              "startdatoutbetaling" : "2016-03-01",
+              "ytelse" : "10",
+              "startdatoretttilytelse" : "2016-03-01",
+              "beloep" : [ {
+                "betalingshyppighetytelse" : "03",
+                "valuta" : "NOK",
+                "beloep" : "14574",
+                "gjeldendesiden" : "2016-03-01"
+              } ],
+              "status" : "01",
+              "totalbruttobeloepbostedsbasert" : "4936"
+            } ],
+            "kravDato" : {
+              "dato" : "2015-11-25"
+            },
+            "forespurtstartdato" : "2016-03-01"
+          },
+          "sedGVer" : "4",
+          "sedVer" : "2"
+        }
         """.trimIndent()
 
-        JSONAssert.assertEquals(response, expected, false)
+        JSONAssert.assertEquals(expected, response, true)
 
     }
 
@@ -621,8 +680,6 @@ class SedPrefillIntegrationSpringTest {
         val validResponse = """
         {
           "sed" : "P2000",
-          "sedGVer" : "4",
-          "sedVer" : "2",
           "nav" : {
             "eessisak" : [ {
               "institusjonsid" : "NO:noinst002",
@@ -637,6 +694,9 @@ class SedPrefillIntegrationSpringTest {
                   "institusjonsid" : "NO:noinst002",
                   "identifikator" : "3123",
                   "land" : "NO"
+                }, {
+                  "identifikator" : "123123123",
+                  "land" : "QX"
                 } ],
                 "statsborgerskap" : [ {
                   "land" : "QX"
@@ -645,15 +705,19 @@ class SedPrefillIntegrationSpringTest {
                 "fornavn" : "Test",
                 "kjoenn" : "M",
                 "foedselsdato" : "1988-07-12",
+                "sivilstand" : [ {
+                  "fradato" : "2000-10-01",
+                  "status" : "enslig"
+                } ],
                 "kontakt" : {
-          "telefon" : [ {
-            "type" : "mobil",
-            "nummer" : "11111111"
-          } ],
-          "email" : [ {
-            "adresse" : "melleby11@melby.no"
-          } ]
-        }
+                  "telefon" : [ {
+                    "type" : "mobil",
+                    "nummer" : "11111111"
+                  } ],
+                  "email" : [ {
+                    "adresse" : "melleby11@melby.no"
+                  } ]
+                }
               },
               "adresse" : {
                 "gate" : "Oppoverbakken 66",
@@ -661,17 +725,20 @@ class SedPrefillIntegrationSpringTest {
                 "postnummer" : "1920",
                 "land" : "NO"
               }
-            },
-            "krav" : {
-              "dato" : "2021-03-01"
             }
           },
           "pensjon" : {
+            "ytelser" : [ {
+              "ytelse" : "10",
+              "status" : "01"
+            } ],
             "kravDato" : {
               "dato" : "2021-03-01"
             }
-          }
-        }           
+          },
+          "sedGVer" : "4",
+          "sedVer" : "2"
+        }         
         """.trimIndent()
 
         val result = mockMvc.perform(post("/sed/prefill")
@@ -683,7 +750,9 @@ class SedPrefillIntegrationSpringTest {
 
         val response = result.response.getContentAsString(charset("UTF-8"))
 
-        JSONAssert.assertEquals(response, validResponse, false)
+        println("@@@@@@: ${response.toJson()}")
+
+        JSONAssert.assertEquals(validResponse, response, false)
     }
 
     @Test
@@ -707,62 +776,74 @@ class SedPrefillIntegrationSpringTest {
         val response = result.response.getContentAsString(charset("UTF-8"))
 
         val validResponse = """
-            {
-              "sed" : "P2000",
-              "sedGVer" : "4",
-              "sedVer" : "2",
-              "nav" : {
-                "eessisak" : [ {
-                  "institusjonsid" : "NO:noinst002",
+        {
+          "sed" : "P2000",
+          "nav" : {
+            "eessisak" : [ {
+              "institusjonsid" : "NO:noinst002",
+              "institusjonsnavn" : "NOINST002, NO INST002, NO",
+              "saksnummer" : "22889955",
+              "land" : "NO"
+            } ],
+            "bruker" : {
+              "person" : {
+                "pin" : [ {
                   "institusjonsnavn" : "NOINST002, NO INST002, NO",
-                  "saksnummer" : "22889955",
+                  "institusjonsid" : "NO:noinst002",
+                  "identifikator" : "3123",
                   "land" : "NO"
+                }, {
+                  "identifikator" : "123123123",
+                  "land" : "QX"
                 } ],
-                "bruker" : {
-                  "person" : {
-                    "pin" : [ {
-                      "institusjonsnavn" : "NOINST002, NO INST002, NO",
-                      "institusjonsid" : "NO:noinst002",
-                      "identifikator" : "3123",
-                      "land" : "NO"
-                    } ],
-                    "statsborgerskap" : [ {
-                      "land" : "QX"
-                    } ],
-                    "etternavn" : "Testesen",
-                    "fornavn" : "Test",
-                    "kjoenn" : "M",
-                    "foedselsdato" : "1988-07-12",
-                    "kontakt" : {
-          "telefon" : [ {
-            "type" : "mobil",
-            "nummer" : "11111111"
-          } ],
-          "email" : [ {
-            "adresse" : "melleby11@melby.no"
-          } ]
-        }
-                  },
-                  "adresse" : {
-                    "gate" : "Oppoverbakken 66",
-                    "by" : "SØRUMSAND",
-                    "postnummer" : "1920",
-                    "land" : "NO"
-                  }
-                },
-                "krav" : {
-                  "dato" : "2019-04-30"
+                "statsborgerskap" : [ {
+                  "land" : "QX"
+                } ],
+                "etternavn" : "Testesen",
+                "fornavn" : "Test",
+                "kjoenn" : "M",
+                "foedselsdato" : "1988-07-12",
+                "sivilstand" : [ {
+                  "fradato" : "2000-10-01",
+                  "status" : "enslig"
+                } ],
+                "kontakt" : {
+                  "telefon" : [ {
+                    "type" : "mobil",
+                    "nummer" : "11111111"
+                  } ],
+                  "email" : [ {
+                    "adresse" : "melleby11@melby.no"
+                  } ]
                 }
               },
-              "pensjon" : {
-                "kravDato" : {
-                  "dato" : "2019-04-30"
-                }
+              "adresse" : {
+                "gate" : "Oppoverbakken 66",
+                "by" : "SØRUMSAND",
+                "postnummer" : "1920",
+                "land" : "NO"
               }
+            },
+            "krav" : {
+              "dato" : "2019-04-30"
             }
+          },
+          "pensjon" : {
+            "ytelser" : [ {
+              "mottasbasertpaa" : "botid",
+              "ytelse" : "10",
+              "status" : "03"
+            } ],
+            "kravDato" : {
+              "dato" : "2019-04-30"
+            }
+          },
+          "sedGVer" : "4",
+          "sedVer" : "2"
+        }
         """.trimIndent()
 
-        JSONAssert.assertEquals(response, validResponse, true)
+        JSONAssert.assertEquals(validResponse, response,true)
     }
 
     @Test
@@ -788,65 +869,87 @@ class SedPrefillIntegrationSpringTest {
                 .andReturn()
 
         val response = result.response.getContentAsString(charset("UTF-8"))
+        println("****** ${response.toJson()}")
 
         val validResponse = """
-            {
-              "sed" : "P2000",
-              "sedGVer" : "4",
-              "sedVer" : "2",
-              "nav" : {
-                "eessisak" : [ {
-                  "institusjonsid" : "NO:noinst002",
+        {
+          "sed" : "P2000",
+          "nav" : {
+            "eessisak" : [ {
+              "institusjonsid" : "NO:noinst002",
+              "institusjonsnavn" : "NOINST002, NO INST002, NO",
+              "saksnummer" : "22580170",
+              "land" : "NO"
+            } ],
+            "bruker" : {
+              "person" : {
+                "pin" : [ {
                   "institusjonsnavn" : "NOINST002, NO INST002, NO",
-                  "saksnummer" : "22580170",
+                  "institusjonsid" : "NO:noinst002",
+                  "identifikator" : "12312312312",
                   "land" : "NO"
+                }, {
+                  "identifikator" : "123123123",
+                  "land" : "QX"
                 } ],
-                "bruker" : {
-                  "person" : {
-                    "pin" : [ {
-                      "institusjonsnavn" : "NOINST002, NO INST002, NO",
-                      "institusjonsid" : "NO:noinst002",
-                      "identifikator" : "12312312312",
-                      "land" : "NO"
-                    } ],
-                    "statsborgerskap" : [ {
-                      "land" : "QX"
-                    } ],
-                    "etternavn" : "Gjenlev",
-                    "fornavn" : "Lever",
-                    "kjoenn" : "M",
-                    "foedselsdato" : "1988-07-12",
-                    "kontakt" : {
-                      "telefon" : [ {
-                        "type" : "mobil",
-                        "nummer" : "11111111"
-                      } ],
-                      "email" : [ {
-                        "adresse" : "melleby11@melby.no"
-                      } ]
-                    }
-                  },
-                  "adresse" : {
-                    "gate" : "Oppoverbakken 66",
-                    "by" : "SØRUMSAND",
-                    "postnummer" : "1920",
-                    "land" : "NO"
-                  }
-                },
-                "krav" : {
-                  "dato" : "2018-05-31"
+                "statsborgerskap" : [ {
+                  "land" : "QX"
+                } ],
+                "etternavn" : "Gjenlev",
+                "fornavn" : "Lever",
+                "kjoenn" : "M",
+                "foedselsdato" : "1988-07-12",
+                "sivilstand" : [ {
+                  "fradato" : "2000-10-01",
+                  "status" : "enslig"
+                } ],
+                "kontakt" : {
+                  "telefon" : [ {
+                    "type" : "mobil",
+                    "nummer" : "11111111"
+                  } ],
+                  "email" : [ {
+                    "adresse" : "melleby11@melby.no"
+                  } ]
                 }
               },
-              "pensjon" : {
-                "kravDato" : {
-                  "dato" : "2018-05-31"
-                }
+              "adresse" : {
+                "gate" : "Oppoverbakken 66",
+                "by" : "SØRUMSAND",
+                "postnummer" : "1920",
+                "land" : "NO"
               }
+            },
+            "krav" : {
+              "dato" : "2018-05-31"
             }
-
+          },
+          "pensjon" : {
+            "ytelser" : [ {
+              "totalbruttobeloeparbeidsbasert" : "14198",
+              "startdatoutbetaling" : "2018-08-01",
+              "ytelse" : "10",
+              "startdatoretttilytelse" : "2018-08-01",
+              "beloep" : [ {
+                "betalingshyppighetytelse" : "03",
+                "valuta" : "NOK",
+                "beloep" : "21232",
+                "gjeldendesiden" : "2018-08-01"
+              } ],
+              "status" : "02",
+              "totalbruttobeloepbostedsbasert" : "7034"
+            } ],
+            "kravDato" : {
+              "dato" : "2018-05-31"
+            },
+            "forespurtstartdato" : "2018-08-01"
+          },
+          "sedGVer" : "4",
+          "sedVer" : "2"
+        }
         """.trimIndent()
 
-        JSONAssert.assertEquals(response, validResponse, true)
+        JSONAssert.assertEquals(validResponse, response, true)
 
     }
 
@@ -899,7 +1002,7 @@ class SedPrefillIntegrationSpringTest {
 
         every { pensjonsinformasjonOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns PrefillTestHelper.readXMLresponse("/pensjonsinformasjon/krav/P2000-AP-LP-RVUR-20541862.xml")
 
-        every { kodeverkClient.finnLandkode(eq("NOR")) } returns "NO"
+        every { kodeverkClient.finnLandkode(any()) } returns "NO"
 
         val apijson = dummyApijson(sakid = "20541862", aktoerId = AKTOER_ID, sedType = P2100, buc = P_BUC_02, fnravdod = FNR_VOKSEN_4)
 
