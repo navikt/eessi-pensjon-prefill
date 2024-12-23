@@ -265,7 +265,7 @@ class PrefillPDLNavTest {
                                 )
                             )
                         )
-                    ), relasjontilbruker = "EGET_BARN"
+                    ), relasjontilbruker = "01"
                 )
             )
         )
@@ -349,7 +349,7 @@ class PrefillPDLNavTest {
                         someInstitutionId,
                         someIntitutionNavn,
                         krrPerson = null
-                    ), relasjontilbruker = "EGET_BARN"
+                    ), relasjontilbruker = "01"
                 )
             )
         )
@@ -434,7 +434,7 @@ class PrefillPDLNavTest {
                         someInstitutionId,
                         someIntitutionNavn,
                         krrPerson = null
-                    ), relasjontilbruker = "EGET_BARN"
+                    ), relasjontilbruker = "06"
                 )
             )
         )
@@ -623,7 +623,7 @@ class PrefillPDLNavTest {
                         someInstitutionId,
                         someIntitutionNavn,
                         krrPerson = null
-                    ), relasjontilbruker = "EGET_BARN"
+                    ), relasjontilbruker = "01"
                 ), BarnItem(
                     mor = Foreldre(
                         Person(
@@ -655,7 +655,7 @@ class PrefillPDLNavTest {
                         someInstitutionId,
                         someIntitutionNavn,
                         krrPerson = null
-                    ), relasjontilbruker = "EGET_BARN"
+                    ), relasjontilbruker = "01"
                 )
             )
         )
