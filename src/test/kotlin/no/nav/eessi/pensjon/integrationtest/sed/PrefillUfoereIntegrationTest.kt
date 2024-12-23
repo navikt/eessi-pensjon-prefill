@@ -396,8 +396,8 @@ class PrefillUfoereIntegrationTest {
                       "fornavn" : "HOVED PERSON"
                     }
                   },
-                  "relasjontilbruker" : "BARN",
-                  "relasjontilbruker43" : "BARN"                     
+                  "relasjontilbruker" : "EGET_BARN",
+                  "relasjontilbruker43" : "EGET_BARN"                     
                 }, {
                   "mor" : {
                     "person" : {
@@ -447,8 +447,8 @@ class PrefillUfoereIntegrationTest {
                       "fornavn" : "HOVED PERSON"
                     }
                   },
-                  "relasjontilbruker" : "BARN",
-                  "relasjontilbruker43" : "BARN"                     
+                  "relasjontilbruker" : "EGET_BARN",
+                  "relasjontilbruker43" : "EGET_BARN"                     
                 }, {
                   "mor" : {
                     "person" : {
@@ -498,8 +498,8 @@ class PrefillUfoereIntegrationTest {
                       "fornavn" : "HOVED PERSON"
                     }
                   },
-                  "relasjontilbruker" : "BARN",
-                  "relasjontilbruker43" : "BARN"                  
+                  "relasjontilbruker" : "EGET_BARN",
+                  "relasjontilbruker43" : "EGET_BARN"                  
                 } ],
                 "krav" : {
                   "dato" : "2020-07-01"
