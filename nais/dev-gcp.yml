@@ -46,18 +46,20 @@ spec:
       value: https://digdir-krr-proxy.intern.dev.nav.no
     - name: KRR_CLIENT_ID
       value: dev-gcp.team-rocket.digdir-krr-proxy
-    - name: AZURE_APP_KODEVERK_CLIENT_ID
-      value: kodeverk-api.nav.no
     - name: KAFKA_AUTOMATISERING_TOPIC
       value: eessipensjon.public-automatisering-q2
-    - name: KODEVERK_URL
-      value: https://kodeverk-api.nav.no
     - name: EESSI_PENSJON_INSTITUSJON
       value: NO:NAVAT07
     - name: EESSI_PENSJON_INSTITUSJON_NAVN
       value: NAV ACCEPTANCE TEST 07
     - name: AZURE_APP_PROXY_CLIENT_ID
       value: dev-fss.eessipensjon.eessi-pensjon-onprem-proxy-q2
+
+    - name: AZURE_APP_KODEVERK_CLIENT_ID
+      value: dev-gcp.team-rocket.kodeverk-api
+    - name: KODEVERK_URL
+      value: https://kodeverk-api.nav.no
+
     - name: ENV
       value: q2
   image: {{ image }}
