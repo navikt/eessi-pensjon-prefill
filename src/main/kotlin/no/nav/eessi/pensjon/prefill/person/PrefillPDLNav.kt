@@ -80,7 +80,7 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
         private fun createBarnliste(barn: List<Bruker?>): List<BarnItem>? {
             return barn
                     .filterNotNull()
-                    .map { BarnItem(mor = it.mor, person = it.person, far = it.far, relasjontilbruker = RelasjonTilAvdod.EGET_BARN.kode) }
+                    .map { BarnItem(mor = it.mor, person = it.person, far = it.far, relasjontilbruker = RelasjonTilAvdod.EGET_BARN.name) }
                     .takeIf { it.isNotEmpty() }
         }
 
