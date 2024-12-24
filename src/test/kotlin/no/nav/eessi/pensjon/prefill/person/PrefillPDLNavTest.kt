@@ -434,7 +434,7 @@ class PrefillPDLNavTest {
                         someInstitutionId,
                         someIntitutionNavn,
                         krrPerson = null
-                    ), relasjontilbruker = "01"
+                    ), relasjontilbruker = "06"
                 )
             )
         )
