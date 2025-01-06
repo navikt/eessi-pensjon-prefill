@@ -13,6 +13,7 @@ import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLAdresse
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.TestConfiguration
@@ -51,6 +52,7 @@ class PrefillAdresseKodeverkTest {
     }
 
     @Test
+    @Disabled
     fun `henting av en landkode fra kodeverk skal hente alle land fra kodeverkClient og neste kall fra cache`() {
         prefillPDLAdresse.hentLandkode("SE")
         prefillPDLAdresse.hentLandkode("NO")

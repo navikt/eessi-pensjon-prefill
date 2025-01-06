@@ -46,6 +46,8 @@ spec:
       value: https://digdir-krr-proxy.intern.dev.nav.no
     - name: KRR_CLIENT_ID
       value: dev-gcp.team-rocket.digdir-krr-proxy
+    - name: AZURE_APP_KODEVERK_CLIENT_ID
+      value: dev-gcp.team-rocket.kodeverk-api
     - name: KAFKA_AUTOMATISERING_TOPIC
       value: eessipensjon.public-automatisering-q2
     - name: EESSI_PENSJON_INSTITUSJON
