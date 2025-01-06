@@ -3,26 +3,7 @@ package no.nav.eessi.pensjon.prefill.sed
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.document.P6000Dokument
 import no.nav.eessi.pensjon.eux.model.document.Retning
-import no.nav.eessi.pensjon.eux.model.sed.AdressatForRevurderingItem
-import no.nav.eessi.pensjon.eux.model.sed.BeloepItem
-import no.nav.eessi.pensjon.eux.model.sed.BeregningItem
-import no.nav.eessi.pensjon.eux.model.sed.Bruker
-import no.nav.eessi.pensjon.eux.model.sed.EessisakItem
-import no.nav.eessi.pensjon.eux.model.sed.Ektefelle
-import no.nav.eessi.pensjon.eux.model.sed.Institusjon
-import no.nav.eessi.pensjon.eux.model.sed.Nav
-import no.nav.eessi.pensjon.eux.model.sed.P6000
-import no.nav.eessi.pensjon.eux.model.sed.P6000Pensjon
-import no.nav.eessi.pensjon.eux.model.sed.P7000
-import no.nav.eessi.pensjon.eux.model.sed.P7000Pensjon
-import no.nav.eessi.pensjon.eux.model.sed.PensjonAvslagItem
-import no.nav.eessi.pensjon.eux.model.sed.Person
-import no.nav.eessi.pensjon.eux.model.sed.PinItem
-import no.nav.eessi.pensjon.eux.model.sed.ReduksjonItem
-import no.nav.eessi.pensjon.eux.model.sed.SamletMeldingVedtak
-import no.nav.eessi.pensjon.eux.model.sed.TildeltPensjonItem
-import no.nav.eessi.pensjon.eux.model.sed.Tilleggsinformasjon
-import no.nav.eessi.pensjon.eux.model.sed.YtelserItem
+import no.nav.eessi.pensjon.eux.model.sed.*
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 
 import no.nav.eessi.pensjon.prefill.person.PrefillSed
@@ -231,7 +212,7 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
                 beloep = listOf(
                     BeloepItem(
                         valuta = beregn.valuta,
-                        betalingshyppighetytelse = mapUtbetalingHyppighet(beregn.utbetalingshyppighet),
+                        betalingshyppighetytelse = Betalingshyppighet.maaned_12_per_aar,
                         utbetalingshyppighetAnnen = beregn.utbetalingshyppighetAnnen,
                         beloepBrutto = beregn.beloepBrutto?.beloep
                     )

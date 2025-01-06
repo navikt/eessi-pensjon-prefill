@@ -3,7 +3,9 @@ package no.nav.eessi.pensjon.prefill.person
 import no.nav.eessi.pensjon.eux.model.sed.*
 import no.nav.eessi.pensjon.kodeverk.KodeverkClient.Companion.toJson
 import no.nav.eessi.pensjon.personoppslag.pdl.model.*
-import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe.*
+import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe.FOLKEREGISTERIDENT
+import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe.NPID
+import no.nav.eessi.pensjon.personoppslag.pdl.model.Sivilstandstype.*
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.shared.api.BankOgArbeid
 import no.nav.eessi.pensjon.shared.api.PersonInfo
@@ -50,29 +52,6 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
                 }
         }
 
-        fun createPersonPinNorIdent(
-                personpdl: PdlPerson,
-                institusjonId: String,
-                institusjonNavn: String): List<PinItem> {
-            logger.debug("2.1.7         Fodselsnummer/Personnummer")
-            val identer = personpdl.identer
-            return listOf(
-                    PinItem(
-                            //hentet lokal NAV insitusjondata fra applikasjon properties.
-                            institusjonsnavn = institusjonNavn,
-                            institusjonsid = institusjonId,
-
-                            //NAV/Norge benytter ikke seg av sektor, setter denne til null
-                            //personnr
-                            identifikator = identer.firstOrNull { it.gruppe == FOLKEREGISTERIDENT || it.gruppe == NPID }?.ident,
-
-                            // norsk personnr settes alltid til NO da vi henter NorIdent+
-                            land = "NO"
-                    )
-            )
-        }
-
-
         //8.0 Bank detalsjer om bank betalinger.
         private fun createBankData(personInfo: BankOgArbeid): Bank {
             logger.debug("8.0           Informasjon om betaling")
@@ -101,15 +80,15 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
         private fun createBarnliste(barn: List<Bruker?>): List<BarnItem>? {
             return barn
                     .filterNotNull()
-                    .map { BarnItem(mor = it.mor, person = it.person, far = it.far, relasjontilbruker = Familierelasjonsrolle.BARN.name) }
+                    .map { BarnItem(mor = it.mor, person = it.person, far = it.far) }
                     .takeIf { it.isNotEmpty() }
         }
 
         private fun createEktefelleType(typevalue: Sivilstandstype): String {
             logger.debug("5.1           Ektefelle/Partnerskap-type : $typevalue")
             return when (typevalue) {
-                Sivilstandstype.GIFT -> "ektefelle"
-                Sivilstandstype.REGISTRERT_PARTNER -> "part_i_et_registrert_partnerskap"
+                GIFT -> "ektefelle"
+                REGISTRERT_PARTNER -> "part_i_et_registrert_partnerskap"
                 else -> "" // endring fra TPS istede for SAMBOER så blank hvis ukjent/ikke gift/partner.
             }
         }
@@ -164,7 +143,6 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
         val forsikretPerson = personData.forsikretPerson
         val avdodEllerGjenlevende = personData.gjenlevendeEllerAvdod
         val ektefellePerson = personData.ektefellePerson
-        val sivilstandstype = personData.sivilstandstype
         val barnPersonList = personData.barnPersonList
 
         logger.debug(
@@ -197,7 +175,7 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
 
                 //5.0 ektefelle eller partnerskap
                 ektefelle = ektefellePerson?.let {
-                        createEktefellePartner(createBruker(it, null, null, bruker), sivilstandstype)
+                        createEktefellePartner(createBruker(it, null, null, bruker), avdodEllerGjenlevende?.sivilstand?.firstOrNull()?.type)
                 },
 
                 //6.0 skal denne kjøres hver gang? eller kun under P2000? P2100
@@ -278,9 +256,6 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
         personInfo: PersonInfo? = null): Person {
 
         logger.debug("2.1           Persondata (forsikret person / gjenlevende person / barn)")
-        val landKode = pdlperson.statsborgerskap
-            .filterNot { it.gyldigFraOgMed == null }
-            .maxByOrNull { it.gyldigFraOgMed!! }?.land
 
         return Person(
                 //2.1.1     familiy name
@@ -292,15 +267,41 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
                 //2.1.4     //sex
                 kjoenn = pdlperson.kortKjonn(),
                 //2.1.7
-                pin = createPersonPinNorIdent(pdlperson, institutionid, institutionnavn),
-                //2.2.1.1
-                statsborgerskap = listOf(createStatsborgerskap(landKode)),
+                pin = createPersonPin(pdlperson, institutionid, institutionnavn),
+                //2.2.1.1     statsborgerskap
+                statsborgerskap = createStatsborgerskap(pdlperson),
+                //2.2.1.1     sivilstand
+                sivilstand = createSivilstand(pdlperson),
                 //2.1.8.1           place of birth
                 foedested = createFodested(pdlperson),
 
                 kontakt = createKontakt(personInfo)
 
         )
+    }
+
+    fun createPersonPin(
+        personpdl: PdlPerson,
+        institusjonId: String,
+        institusjonNavn: String): List<PinItem> {
+        logger.debug("2.1.7         Fodselsnummer/Personnummer")
+        val norskeIdenter = personpdl.identer.filter { it.gruppe == FOLKEREGISTERIDENT || it.gruppe == NPID }.map {
+            PinItem(
+                //hentet lokal NAV insitusjondata fra applikasjon properties.
+                institusjonsnavn = institusjonNavn,
+                institusjonsid = institusjonId,
+                identifikator = it.ident,
+                land = "NO"
+            )
+        }
+        val utenlandskeIdenter = personpdl.utenlandskIdentifikasjonsnummer.map {
+            PinItem(
+                //Utenlandsk ident
+                identifikator = it.identifikasjonsnummer,
+                land = prefillAdresse.hentLandkode(it.utstederland)
+            )
+        }
+        return norskeIdenter + utenlandskeIdenter
     }
 
     private fun createKontakt(personInfo: PersonInfo?): Kontakt? {
@@ -357,11 +358,35 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
      * Prefiller to-bokstavs statsborgerskap
      * Hopper over Kosovo (XXK) fordi Rina ikke støttet Kosovo
      */
-    private fun createStatsborgerskap(landkode: String?): StatsborgerskapItem {
+    private fun createStatsborgerskap(pdlperson: PdlPerson): List<StatsborgerskapItem> {
         logger.debug("2.2.1.1         Land / Statsborgerskap")
-        if(validateUgyldigeLand(landkode) == null){
-            return StatsborgerskapItem()
+        val statsborgerskap = pdlperson.statsborgerskap
+            .filterNot { validateUgyldigeLand(it.land) == null }
+            .map {
+                logger.debug("              Statsborgerskap: ${it.land}")
+            StatsborgerskapItem(prefillAdresse.hentLandkode(it.land))
         }
-        return StatsborgerskapItem(prefillAdresse.hentLandkode(landkode))
+
+        return statsborgerskap.distinct()
+    }
+
+    /**
+     * Prefiller sivilstand-status og -dato fra PDL
+     */
+    private fun createSivilstand(pdlperson: PdlPerson): List<SivilstandItem> {
+        logger.debug("2.2.2.1        Sivilstand")
+        val sivilstand = pdlperson.sivilstand
+            .filterNot { it.gyldigFraOgMed == null }
+            .map {
+                logger.info("Sivilstand: ${it.type} dato: ${it.gyldigFraOgMed}")
+                when(it.type){
+                    UGIFT -> SivilstandItem(it.gyldigFraOgMed.toString(), SivilstandRina.enslig)
+                    GIFT -> SivilstandItem(it.gyldigFraOgMed.toString(), SivilstandRina.gift)
+                    SKILT -> SivilstandItem(it.gyldigFraOgMed.toString(), SivilstandRina.skilt)
+                    REGISTRERT_PARTNER -> SivilstandItem(it.gyldigFraOgMed.toString(), SivilstandRina.registrert_partnerskap)
+                    else -> SivilstandItem(null, null)
+                }
+            }
+        return sivilstand.distinct()
     }
 }

@@ -12,9 +12,7 @@ import no.nav.eessi.pensjon.pensjonsinformasjon.models.Sakstatus
             return when (saktype) {
                 "UFOREP" -> "08"
                 "ALDER" -> "10"
-                "GJENLEV" -> "11"
-                "BARNEP" -> "11"
-                else -> "07"
+                else -> "11"
             }
     }
 

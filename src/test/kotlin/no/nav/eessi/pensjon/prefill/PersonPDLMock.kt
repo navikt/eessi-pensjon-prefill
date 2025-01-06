@@ -41,11 +41,19 @@ object PersonPDLMock {
                     metadata
                 ),
                 null,
-                listOf(Statsborgerskap(
+                listOf(
+                    Statsborgerskap(
                     "NOR",
                     LocalDate.of(1980, 10 , 1),
                     LocalDate.of(2300, 10, 1),
-                    metadata)
+                    metadata
+                ),
+                    Statsborgerskap(
+                        "SWE",
+                        LocalDate.of(1980, 10, 1),
+                        LocalDate.of(2300, 10, 1),
+                        metadata
+                    )
                 ),
                 Foedsel(
                     fdatoaar,
@@ -78,8 +86,13 @@ object PersonPDLMock {
                 ),
             null,
                 null,
-                emptyList()
-            )
+                listOf(UtenlandskIdentifikasjonsnummer(
+                    "123123123",
+                    "SWE",
+                    false,
+                    metadata = mockMeta(
+                ))
+            ))
     }
 
     internal fun mockMeta(registrert: LocalDateTime = LocalDateTime.of(2010, 4, 2, 10, 14, 12)) : Metadata {
@@ -166,7 +179,6 @@ object PersonPDLMock {
         return PersonDataCollection(
             forsikretPerson = enkePerson,
             ektefellePerson = null,
-            sivilstandstype = Sivilstandstype.ENKE_ELLER_ENKEMANN,
             gjenlevendeEllerAvdod = enkePerson,
             barnPersonList = listOfNotNull(
                 barn1,
@@ -260,7 +272,6 @@ object PersonPDLMock {
 
         return PersonDataCollection(
             forsikretPerson = person,
-            sivilstandstype = Sivilstandstype.GIFT,
             gjenlevendeEllerAvdod = person,
             ektefellePerson = ekte
         )
@@ -276,7 +287,6 @@ object PersonPDLMock {
 
         return PersonDataCollection(
             forsikretPerson = person,
-            sivilstandstype = Sivilstandstype.ENKE_ELLER_ENKEMANN,
             gjenlevendeEllerAvdod = avdod
         )
     }
@@ -290,7 +300,6 @@ object PersonPDLMock {
 
         return PersonDataCollection(
             forsikretPerson = person,
-            sivilstandstype = Sivilstandstype.ENKE_ELLER_ENKEMANN,
             gjenlevendeEllerAvdod = avdod
         )
     }

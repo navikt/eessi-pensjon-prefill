@@ -4,6 +4,8 @@ import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.sed.*
+import no.nav.eessi.pensjon.eux.model.sed.SivilstandRina.gift
+import no.nav.eessi.pensjon.eux.model.sed.SivilstandRina.registrert_partnerskap
 import no.nav.eessi.pensjon.kodeverk.KodeverkClient
 import no.nav.eessi.pensjon.kodeverk.PostnummerService
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
@@ -23,6 +25,7 @@ import no.nav.eessi.pensjon.shared.api.PersonInfo
 import no.nav.eessi.pensjon.shared.person.Fodselsnummer
 import no.nav.eessi.pensjon.shared.person.FodselsnummerGenerator
 import no.nav.eessi.pensjon.utils.mapAnyToJson
+import no.nav.eessi.pensjon.utils.toJson
 import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
@@ -85,7 +88,6 @@ class PrefillPDLNavTest {
         val personDataCollection = PersonDataCollection(
             forsikretPerson = forsikret,
             ektefellePerson = null,
-            sivilstandstype = Sivilstandstype.UGIFT,
             gjenlevendeEllerAvdod = forsikret
         )
 
@@ -127,6 +129,80 @@ class PrefillPDLNavTest {
     }
 
     @Test
+    fun `minimal preutfylling av forsikret som har Norsk statsborgerskap med null som gyldigFraOgMed dato`() {
+        val forsikretSinNpid = "01220049651"
+        val prefillData = PrefillDataModelMother.initialPrefillDataModel(
+            SedType.P2100, pinId = forsikretSinNpid, penSaksnummer = somePenSaksnr, avdod = null
+        )
+
+        val forsikret = PdlPerson(
+            identer = listOf(IdentInformasjon("01220049651", IdentGruppe.NPID)),
+            navn = Navn("OLE", null, "OLSEN", null, null, null, LagPdlPerson.mockMeta()),
+            adressebeskyttelse = emptyList(),
+            bostedsadresse = null,
+            oppholdsadresse = null,
+            statsborgerskap = listOf(
+                Statsborgerskap(
+                    "NOR", null, null, LagPdlPerson.mockMeta()
+                )
+            ),
+            foedsel = Foedsel(LocalDate.of(80, 12, 1), "NOR", null, null, null, LagPdlPerson.mockMeta()),
+            geografiskTilknytning = null,
+            kjoenn = Kjoenn(KjoennType.MANN, null, LagPdlPerson.mockMeta()),
+            doedsfall = Doedsfall(metadata = LagPdlPerson.mockMeta()),
+            forelderBarnRelasjon = emptyList(),
+            sivilstand = emptyList(),
+            kontaktadresse = null,
+            utenlandskIdentifikasjonsnummer = emptyList()
+        )
+
+        val foreldreFdato = forsikret.foedsel?.foedselsdato?.toString()
+
+        val personDataCollection = PersonDataCollection(
+            forsikretPerson = forsikret,
+            ektefellePerson = null,
+            gjenlevendeEllerAvdod = forsikret
+        )
+
+        val actual = prefillPDLNav.prefill(
+            prefillData.penSaksnummer,
+            prefillData.bruker,
+            prefillData.avdod,
+            personDataCollection,
+            prefillData.getBankOgArbeidFromRequest(),
+            null,
+            null
+        )
+        val expected = Nav(
+            eessisak = listOf(
+                EessisakItem(
+                    institusjonsid = someInstitutionId,
+                    institusjonsnavn = someIntitutionNavn,
+                    saksnummer = somePenSaksnr,
+                    land = "NO"
+                )
+            ),
+            bruker = Bruker(
+                person = lagNavPerson(
+                    forsikretSinNpid,
+                    "OLE",
+                    "OLSEN",
+                    foreldreFdato!!,
+                    someInstitutionId,
+                    someIntitutionNavn,
+                    krrPerson = KrrPerson(false,"ola@nav.no", "11223344")
+                ),
+                adresse = lagTomAdresse(),
+            ),
+        )
+
+        println("**** $actual")
+        assertEquals(expected, actual)
+        JSONAssert.assertEquals(expected.toJsonSkipEmpty(), actual.toJsonSkipEmpty(), true)
+
+    }
+
+    @Test
     fun `minimal prefill med barn`() {
         val foreldersPin = FodselsnummerGenerator.generateFnrForTest(40)
         val prefillData = PrefillDataModelMother.initialPrefillDataModel(
@@ -134,8 +210,8 @@ class PrefillPDLNavTest {
         )
         val barnetsPin = FodselsnummerGenerator.generateFnrForTest(13)
 
-        val forelder = lagPerson(foreldersPin, "Christopher", "Robin").medBarn(barnetsPin)
-        val barn = lagPerson(barnetsPin, "Ole", "Brum").medForeldre(forelder)
+        val forelder = lagPerson(foreldersPin, "Christopher", "Robin", sivilstand = emptyList()).medBarn(barnetsPin)
+        val barn = lagPerson(barnetsPin, "Ole", "Brum", sivilstand = emptyList()).medForeldre(forelder)
 
         val foreldreFdato = forelder.foedsel?.foedselsdato?.toString()
         val barnFdato = barn.foedsel?.foedselsdato?.toString()
@@ -143,7 +219,6 @@ class PrefillPDLNavTest {
         val personDataCollection = PersonDataCollection(
             forsikretPerson = forelder,
             ektefellePerson = null,
-            sivilstandstype = Sivilstandstype.UGIFT,
             gjenlevendeEllerAvdod = forelder,
             barnPersonList = listOf(barn)
         )
@@ -190,7 +265,7 @@ class PrefillPDLNavTest {
                                 )
                             )
                         )
-                    ), relasjontilbruker = "BARN"
+                    ), relasjontilbruker = null
                 )
             )
         )
@@ -212,8 +287,8 @@ class PrefillPDLNavTest {
             penSaksnummer = somePenSaksnr
         )
 
-        val far = lagPerson(somePersonNr, "Ole", "Brum").medBarn(someBarnPersonNr)
-        val barn = lagPerson(someBarnPersonNr, "Nasse", "Nøff").medForeldre(far)
+        val far = lagPerson(somePersonNr, "Ole", "Brum", sivilstand = emptyList()).medBarn(someBarnPersonNr)
+        val barn = lagPerson(someBarnPersonNr, "Nasse", "Nøff", sivilstand = emptyList()).medForeldre(far)
 
         //fdato
         val farfdato = far.foedsel?.foedselsdato?.toString()
@@ -222,7 +297,6 @@ class PrefillPDLNavTest {
         val personDataCollection = PersonDataCollection(
             forsikretPerson = far,
             ektefellePerson = null,
-            sivilstandstype = Sivilstandstype.UGIFT,
             gjenlevendeEllerAvdod = far,
             barnPersonList = listOf(barn)
         )
@@ -275,11 +349,13 @@ class PrefillPDLNavTest {
                         someInstitutionId,
                         someIntitutionNavn,
                         krrPerson = null
-                    ), relasjontilbruker = "BARN"
+                    ), relasjontilbruker = null
                 )
             )
         )
 
+        println("**** $expected")
+        println("@@@@@@ $actual")
         assertEquals(expected, actual)
         JSONAssert.assertEquals(expected.toJsonSkipEmpty(), actual.toJsonSkipEmpty(), true)
     }
@@ -296,8 +372,8 @@ class PrefillPDLNavTest {
             penSaksnummer = somePenSaksnr
         )
 
-        val far = lagPerson(somePersonNr, "Ole", "Brum").medBarn(someBarnPersonNr)
-        val barn = lagPerson(someBarnPersonNr, "Nasse", "Nøff").medForeldre(far)
+        val far = lagPerson(somePersonNr, "Ole", "Brum", sivilstand = emptyList()).medBarn(someBarnPersonNr)
+        val barn = lagPerson(someBarnPersonNr, "Nasse", "Nøff", sivilstand = emptyList()).medForeldre(far)
 
         //fdato
         val farfdato = far.foedsel?.foedselsdato?.toString()
@@ -306,7 +382,6 @@ class PrefillPDLNavTest {
         val personDataCollection = PersonDataCollection(
             forsikretPerson = far,
             ektefellePerson = null,
-            sivilstandstype = Sivilstandstype.UGIFT,
             gjenlevendeEllerAvdod = far,
             barnPersonList = listOf(barn)
         )
@@ -359,7 +434,7 @@ class PrefillPDLNavTest {
                         someInstitutionId,
                         someIntitutionNavn,
                         krrPerson = null
-                    ), relasjontilbruker = "BARN"
+                    ), relasjontilbruker = null
                 )
             )
         )
@@ -389,7 +464,6 @@ class PrefillPDLNavTest {
         val personDataCollection = PersonDataCollection(
             forsikretPerson = person,
             ektefellePerson = ektefelle,
-            sivilstandstype = Sivilstandstype.GIFT,
             gjenlevendeEllerAvdod = person,
             barnPersonList = emptyList()
         )
@@ -420,6 +494,7 @@ class PrefillPDLNavTest {
                     personFdato,
                     someInstitutionId,
                     someIntitutionNavn,
+                    sivilstand = listOf(SivilstandItem("2000-10-01", gift)),
                     krrPerson = KrrPerson(false,"ola@nav.no", "11223344")
                 ), adresse = lagTomAdresse()
             ), ektefelle = Ektefelle(
@@ -431,6 +506,7 @@ class PrefillPDLNavTest {
                     someInstitutionId,
                     someIntitutionNavn,
                     "K",
+                    sivilstand = listOf(SivilstandItem("2000-10-01", gift)),
                     krrPerson = KrrPerson(false,"ola@nav.no", "11223344")
                 ), type = "ektefelle"
             )
@@ -468,7 +544,6 @@ class PrefillPDLNavTest {
         val personDataCollection = PersonDataCollection(
             forsikretPerson = far,
             ektefellePerson = mor,
-            sivilstandstype = Sivilstandstype.GIFT,
             gjenlevendeEllerAvdod = far,
             barnPersonList = listOf(barnet, barnto)
         )
@@ -501,6 +576,7 @@ class PrefillPDLNavTest {
                     personFdato,
                     someInstitutionId,
                     someIntitutionNavn,
+                    sivilstand = listOf(SivilstandItem("2000-10-01", gift)),
                     krrPerson = KrrPerson(false,"ola@nav.no", "11223344")
                 ), adresse = Adresse("STORGATA 12", postnummer = "0101", by = "OSLO", land = "NO")
             ), ektefelle = Ektefelle(
@@ -512,6 +588,7 @@ class PrefillPDLNavTest {
                     someInstitutionId,
                     someIntitutionNavn,
                     "K",
+                    sivilstand = listOf(SivilstandItem("2000-10-01", gift)),
                     krrPerson = KrrPerson(false,"ola@nav.no", "11223344")
                 ), type = "ektefelle"
             ), barn = listOf(
@@ -546,7 +623,7 @@ class PrefillPDLNavTest {
                         someInstitutionId,
                         someIntitutionNavn,
                         krrPerson = null
-                    ), relasjontilbruker = "BARN"
+                    ), relasjontilbruker = null
                 ), BarnItem(
                     mor = Foreldre(
                         Person(
@@ -578,7 +655,7 @@ class PrefillPDLNavTest {
                         someInstitutionId,
                         someIntitutionNavn,
                         krrPerson = null
-                    ), relasjontilbruker = "BARN"
+                    ), relasjontilbruker = null
                 )
             )
         )
@@ -612,7 +689,6 @@ class PrefillPDLNavTest {
         val personDataCollection = PersonDataCollection(
             forsikretPerson = person,
             ektefellePerson = partner,
-            sivilstandstype = Sivilstandstype.REGISTRERT_PARTNER,
             gjenlevendeEllerAvdod = person,
             barnPersonList = emptyList()
         )
@@ -643,6 +719,7 @@ class PrefillPDLNavTest {
                     personFdato,
                     someInstitutionId,
                     someIntitutionNavn,
+                    sivilstand = listOf(SivilstandItem("2000-10-01", registrert_partnerskap)),
                     krrPerson = KrrPerson(false,"ola@nav.no", "11223344")
                 ), adresse = lagTomAdresse()
             ), ektefelle = Ektefelle(
@@ -654,6 +731,7 @@ class PrefillPDLNavTest {
                     someInstitutionId,
                     someIntitutionNavn,
                     "K",
+                    sivilstand = listOf(SivilstandItem("2000-10-01", registrert_partnerskap)),
                     krrPerson = KrrPerson(false,"ola@nav.no", "11223344")
                 ), type = "part_i_et_registrert_partnerskap"
             )
@@ -683,7 +761,6 @@ class PrefillPDLNavTest {
         val personDataCollection = PersonDataCollection(
             forsikretPerson = single,
             ektefellePerson = null,
-            sivilstandstype = Sivilstandstype.UGIFT,
             gjenlevendeEllerAvdod = single,
             barnPersonList = emptyList()
         )
@@ -743,7 +820,6 @@ class PrefillPDLNavTest {
         val personDataCollection = PersonDataCollection(
             forsikretPerson = single,
             ektefellePerson = null,
-            sivilstandstype = Sivilstandstype.UGIFT,
             gjenlevendeEllerAvdod = single,
             barnPersonList = emptyList()
         )
@@ -781,7 +857,6 @@ class PrefillPDLNavTest {
         val personDataCollection = PersonDataCollection(
             forsikretPerson = single,
             ektefellePerson = null,
-            sivilstandstype = Sivilstandstype.UGIFT,
             gjenlevendeEllerAvdod = single,
             barnPersonList = emptyList()
         )
@@ -848,7 +923,6 @@ class PrefillPDLNavTest {
         val personDataCollection = PersonDataCollection(
             forsikretPerson = single,
             ektefellePerson = null,
-            sivilstandstype = Sivilstandstype.UGIFT,
             gjenlevendeEllerAvdod = single,
             barnPersonList = emptyList()
         )
@@ -932,7 +1006,6 @@ class PrefillPDLNavTest {
         val personDataCollection = PersonDataCollection(
             forsikretPerson = person,
             ektefellePerson = null,
-            sivilstandstype = Sivilstandstype.UGIFT,
             gjenlevendeEllerAvdod = person,
             barnPersonList = emptyList()
         )
@@ -1037,8 +1110,9 @@ class PrefillPDLNavTest {
 
         val bruker = prefillPDLNav.createBruker(person, bank = null, ansettelsesforhold = null, null)
 
-        assertEquals(bruker!!.person!!.statsborgerskap!!.size, 1)
-        assertNull(bruker.person!!.statsborgerskap!![0].land)
+        println("statsborgerskap: ${bruker?.person?.statsborgerskap?.toJson()}")
+
+        assertEquals(bruker!!.person!!.statsborgerskap!!.size, 0)
     }
 
     @Test
@@ -1091,7 +1165,8 @@ class PrefillPDLNavTest {
             someIntitutionNavn: String? = null,
             kjoenn: String? = "M",
             foedsted: String? = "NO",
-            krrPerson: KrrPerson?
+            krrPerson: KrrPerson?,
+            sivilstand: List<SivilstandItem>? = emptyList()
         ) = Person(
             pin = listOf(
                 PinItem(
@@ -1102,6 +1177,7 @@ class PrefillPDLNavTest {
                 )
             ),
             statsborgerskap = listOf(StatsborgerskapItem(land = "NO")),
+            sivilstand = sivilstand,
             etternavn = etternavn,
             fornavn = fornavn,
             kjoenn = kjoenn,

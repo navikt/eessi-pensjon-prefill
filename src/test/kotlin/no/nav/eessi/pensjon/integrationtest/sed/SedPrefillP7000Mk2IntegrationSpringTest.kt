@@ -108,6 +108,8 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
 
         val response = result.response.getContentAsString(charset("UTF-8"))
 
+        println("ææææææ: $response")
+
         val p7000Actual = mapJsonToAny<P7000>(response)
         val p7000Person = p7000Actual.nav?.bruker?.person!!
 
@@ -162,7 +164,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
         //4.1.[1].6.[1].4.Valuta
         assertEquals("HUF", belop.valuta)
         //4.1.[1].6.[1].5.Betalingshyppighet
-        assertEquals("Annet", belop.betalingshyppighetytelse)
+        assertEquals("03", belop.betalingshyppighetytelse?.kode)
         //4.1.[1].7.Pensjonen er redusertgrunnet
         assertEquals("03", tildeltepensjoner.reduksjonsGrunn)
         //4.1.[1].8.1.Tidsfrister for krav om revurdering
@@ -235,11 +237,16 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
             "bruker" : {
               "person" : {
                 "pin" : [ {
-                      "institusjonsnavn" : "NOINST002, NO INST002, NO",
-                      "institusjonsid" : "NO:noinst002",
-                      "identifikator" : "9876543210",
-                      "land" : "NO"
-                    } ],
+                  "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                  "institusjonsid" : "NO:noinst002",
+                  "identifikator" : "9876543210",
+                  "land" : "NO"
+                }, {
+                  "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                  "institusjonsid" : "NO:noinst002",
+                  "identifikator" : "123123123",
+                  "land" : "QX"
+                } ],
                 "etternavn" : "Død",
                 "fornavn" : "Avdød",
                 "kjoenn" : "M",
@@ -260,21 +267,16 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
                   "institusjonsid" : "NO:noinst002",
                   "identifikator" : "12312312312",
                   "land" : "NO"
-                } ],
-                "statsborgerskap" : [ {
+                }, {
+                  "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                  "institusjonsid" : "NO:noinst002",
+                  "identifikator" : "123123123",
                   "land" : "QX"
                 } ],
                 "etternavn" : "Gjenlev",
                 "fornavn" : "Lever",
                 "kjoenn" : "M",
-                "foedselsdato" : "1988-07-12",
-                "rolle" : "01"
-              },
-              "adresse" : {
-                "gate" : "Oppoverbakken 66",
-                "by" : "SØRUMSAND",
-                "postnummer" : "1920",
-                "land" : "NO"
+                "foedselsdato" : "1988-07-12"
               }
             },
             "samletVedtak" : {
@@ -363,11 +365,16 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
             "bruker" : {
               "person" : {
                 "pin" : [ {
-                      "institusjonsnavn" : "NOINST002, NO INST002, NO",
-                      "institusjonsid" : "NO:noinst002",
-                      "identifikator" : "9876543210",
-                      "land" : "NO"
-                    } ],
+                  "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                  "institusjonsid" : "NO:noinst002",
+                  "identifikator" : "9876543210",
+                  "land" : "NO"
+                }, {
+                  "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                  "institusjonsid" : "NO:noinst002",
+                  "identifikator" : "123123123",
+                  "land" : "QX"
+                } ],
                 "etternavn" : "Død",
                 "fornavn" : "Avdød",
                 "kjoenn" : "M",
@@ -386,23 +393,18 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
                 "pin" : [ {
                   "institusjonsnavn" : "NOINST002, NO INST002, NO",
                   "institusjonsid" : "NO:noinst002",
-                  "identifikator" : "$NPID_VOKSEN",
+                  "identifikator" : "01220049651",
                   "land" : "NO"
-                } ],
-                "statsborgerskap" : [ {
+                }, {
+                  "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                  "institusjonsid" : "NO:noinst002",
+                  "identifikator" : "123123123",
                   "land" : "QX"
                 } ],
                 "etternavn" : "Gjenlev",
                 "fornavn" : "Lever",
                 "kjoenn" : "M",
-                "foedselsdato" : "1988-07-12",
-                "rolle" : "01"
-              },
-              "adresse" : {
-                "gate" : "Oppoverbakken 66",
-                "by" : "SØRUMSAND",
-                "postnummer" : "1920",
-                "land" : "NO"
+                "foedselsdato" : "1988-07-12"
               }
             },
             "samletVedtak" : {
@@ -486,17 +488,20 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
             } ],
             "bruker" : {
               "person" : {
-                    "pin" : [ {
-                          "institusjonsnavn" : "SE ASCCEPTANCE TEST JAP",
-                          "institusjonsid" : "SE:NAVAT07",
-                          "identifikator" : "345315327578",
-                          "land" : "SE"
-                        }, {
-                          "institusjonsnavn" : "NOINST002, NO INST002, NO",
-                          "institusjonsid" : "NO:noinst002",
-                          "identifikator" : "12312312312",
-                          "land" : "NO"
-                        } ],
+                "pin" : [ {
+                  "institusjonsnavn" : "SE ASCCEPTANCE TEST JAP",
+                  "institusjonsid" : "SE:NAVAT07",
+                  "identifikator" : "345315327578",
+                  "land" : "SE"
+                }, {
+                  "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                  "institusjonsid" : "NO:noinst002",
+                  "identifikator" : "12312312312",
+                  "land" : "NO"
+                }, {
+                  "identifikator" : "123123123",
+                  "land" : "QX"
+                } ],
                 "etternavn" : "Gjenlev",
                 "fornavn" : "Lever",
                 "kjoenn" : "M",
@@ -541,7 +546,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
                 "ytelser" : [ {
                   "startdatoretttilytelse" : "2020-02-05",
                   "beloep" : [ {
-                    "betalingshyppighetytelse" : "99",
+                    "betalingshyppighetytelse" : "03",
                     "valuta" : "EUR",
                     "beloepBrutto" : "1254",
                     "utbetalingshyppighetAnnen" : "biannual"
@@ -553,8 +558,6 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
                   "adressatforrevurdering" : "gate\nbygning\nby\n4587\nregion\nSE"
                 } ],
                 "institusjon" : {
-                  "institusjonsid" : "SE:NAVAT07",
-                  "institusjonsnavn" : "NAV ACCEPTANCE TEST JYZ",
                   "saksnummer" : "134513452",
                   "land" : "SE",
                   "personNr" : "345315327578"
@@ -580,9 +583,9 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
 
         val response = result.response.getContentAsString(charset("UTF-8"))
 
-        println(response)
+        println("@@@@@@@: $response")
 
-        JSONAssert.assertEquals(response, validResponse, false)
+        JSONAssert.assertEquals(validResponse, response, false)
     }
 
 
@@ -618,11 +621,16 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
             "bruker" : {
               "person" : {
                 "pin" : [ {
-                      "institusjonsnavn" : "NOINST002, NO INST002, NO",
-                      "institusjonsid" : "NO:noinst002",
-                      "identifikator" : "12312312312",
-                      "land" : "NO"
-                    } ],
+                  "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                  "institusjonsid" : "NO:noinst002",
+                  "identifikator" : "12312312312",
+                  "land" : "NO"
+                }, {
+                  "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                  "institusjonsid" : "NO:noinst002",
+                  "identifikator" : "123123123",
+                  "land" : "QX"
+                } ],
                 "etternavn" : "Pensjon",
                 "fornavn" : "Alder",
                 "kjoenn" : "M",

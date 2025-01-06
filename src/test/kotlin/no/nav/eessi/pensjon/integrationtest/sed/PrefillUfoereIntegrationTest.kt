@@ -103,59 +103,66 @@ class PrefillUfoereIntegrationTest {
         val response = result.response.getContentAsString(charset("UTF-8"))
 
         val validResponse = """
-                    {
-                      "sed" : "P2200",
-                      "sedGVer" : "4",
-                      "sedVer" : "2",
-                      "nav" : {
-                        "eessisak" : [ {
-                          "institusjonsid" : "NO:noinst002",
-                          "institusjonsnavn" : "NOINST002, NO INST002, NO",
-                          "saksnummer" : "22922563",
-                          "land" : "NO"
-                        } ],
-                        "bruker" : {
-                          "person" : {
-                            "pin" : [ {
-                              "institusjonsnavn" : "NOINST002, NO INST002, NO",
-                              "institusjonsid" : "NO:noinst002",
-                              "identifikator" : "3123",
-                              "land" : "NO"
-                            } ],
-                            "statsborgerskap" : [ {
-                              "land" : "QX"
-                            } ],
-                            "etternavn" : "Testesen",
-                            "fornavn" : "Test",
-                            "kjoenn" : "M",
-                            "foedselsdato" : "1988-07-12",
-                            "kontakt" : {
-                              "telefon" : [ {
-                                "type" : "mobil",
-                                "nummer" : "11111111"
-                              } ],
-                              "email" : [ {
-                                "adresse" : "melleby11@melby.no"
-                              } ]
-                            }
-                          },
-                          "adresse" : {
-                            "gate" : "Oppoverbakken 66",
-                            "by" : "SØRUMSAND",
-                            "postnummer" : "1920",
-                            "land" : "NO"
-                          }
-                        },
-                        "krav" : {
-                          "dato" : "2020-07-01"
-                        }
-                      },
-                      "pensjon" : {
-                        "kravDato" : {
-                          "dato" : "2020-07-01"
-                        }
-                      }
-                    }            
+            {
+              "sed" : "P2200",
+              "nav" : {
+                "eessisak" : [ {
+                  "institusjonsid" : "NO:noinst002",
+                  "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                  "saksnummer" : "22922563",
+                  "land" : "NO"
+                } ],
+                "bruker" : {
+                  "person" : {
+                    "pin" : [ {
+                      "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                      "institusjonsid" : "NO:noinst002",
+                      "identifikator" : "3123",
+                      "land" : "NO"
+                    }, {
+                      "identifikator" : "123123123",
+                      "land" : "QX"
+                    } ],
+                    "statsborgerskap" : [ {
+                      "land" : "QX"
+                    } ],
+                    "etternavn" : "Testesen",
+                    "fornavn" : "Test",
+                    "kjoenn" : "M",
+                    "foedselsdato" : "1988-07-12",
+                    "sivilstand" : [ {
+                      "fradato" : "2000-10-01",
+                      "status" : "enslig"
+                    } ],
+                    "kontakt" : {
+                      "telefon" : [ {
+                        "type" : "mobil",
+                        "nummer" : "11111111"
+                      } ],
+                      "email" : [ {
+                        "adresse" : "melleby11@melby.no"
+                      } ]
+                    }
+                  },
+                  "adresse" : {
+                    "gate" : "Oppoverbakken 66",
+                    "by" : "SØRUMSAND",
+                    "postnummer" : "1920",
+                    "land" : "NO"
+                  }
+                },
+                "krav" : {
+                  "dato" : "2020-07-01"
+                }
+              },
+              "pensjon" : {
+                "kravDato" : {
+                  "dato" : "2020-07-01"
+                }
+              },
+              "sedGVer" : "4",
+              "sedVer" : "2"
+            }          
         """.trimIndent()
         JSONAssert.assertEquals(response, validResponse, false)
     }
@@ -237,10 +244,6 @@ class PrefillUfoereIntegrationTest {
         verify (exactly = 1) { personService.hentPerson(NorskIdent(pinEktefelleperson)) }
         verify (exactly = 1) { personService.hentPerson(NorskIdent(pinBarn1)) }
 
-        println("*".repeat(60))
-        println(response)
-        println("*".repeat(60))
-
         val hovedpersonfdato = Fodselsnummer.fra(pinHovedperson)?.getBirthDate()
         val ekktefellefdato = Fodselsnummer.fra(pinEktefelleperson)?.getBirthDate()
         val barn1fdato = Fodselsnummer.fra(pinBarn1)?.getBirthDate()
@@ -254,224 +257,264 @@ class PrefillUfoereIntegrationTest {
         assertEquals(3, xP2200.nav?.barn?.size)
 
         val validResponse = """
-    {
-      "sed" : "P2200",
-      "nav" : {
-        "eessisak" : [ {
-          "institusjonsid" : "NO:noinst002",
-          "institusjonsnavn" : "NOINST002, NO INST002, NO",
-          "saksnummer" : "22922563",
-          "land" : "NO"
-        } ],
-        "bruker" : {
-          "person" : {
-            "pin" : [ {
-              "institusjonsnavn" : "NOINST002, NO INST002, NO",
-              "institusjonsid" : "NO:noinst002",
-              "identifikator" : "$pinHovedperson",
-              "land" : "NO"
-            } ],
-            "statsborgerskap" : [ {
-              "land" : "QX"
-            } ],
-            "etternavn" : "TESTER",
-            "fornavn" : "HOVED PERSON",
-            "kjoenn" : "M",
-            "foedested" : {
-              "by" : "Unknown",
-              "land" : "QX"
-            },
-            "foedselsdato" : "$hovedpersonfdato",
-            "kontakt" : {
-              "telefon" : [ {
-                "type" : "mobil",
-                "nummer" : "11111111"
-              } ],
-              "email" : [ {
-                "adresse" : "melleby11@melby.no"
-              } ]
-            }            
-          },
-          "adresse" : {
-            "gate" : "Oppoverbakken 66",
-            "by" : "SØRUMSAND",
-            "postnummer" : "1920",
-            "land" : "NO"
-          }
-        },
-        "ektefelle" : {
-          "person" : {
-            "pin" : [ {
-              "institusjonsnavn" : "NOINST002, NO INST002, NO",
-              "institusjonsid" : "NO:noinst002",
-              "identifikator" : "$pinEktefelleperson",
-              "land" : "NO"
-            } ],
-            "statsborgerskap" : [ {
-              "land" : "QX"
-            } ],
-            "etternavn" : "BOUWMANS",
-            "fornavn" : "JESSINE TORDNU",
-            "kjoenn" : "K",
-            "foedested" : {
-              "by" : "Unknown",
-              "land" : "QX"
-            },
-            "foedselsdato" : "$ekktefellefdato",
-             "kontakt" : {
-              "telefon" : [ {
-                "type" : "mobil",
-                "nummer" : "11111111"
-              } ],
-              "email" : [ {
-                "adresse" : "melleby11@melby.no"
-              } ]
+            {
+              "sed" : "P2200",
+              "nav" : {
+                "eessisak" : [ {
+                  "institusjonsid" : "NO:noinst002",
+                  "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                  "saksnummer" : "22922563",
+                  "land" : "NO"
+                } ],
+                "bruker" : {
+                  "person" : {
+                    "pin" : [ {
+                      "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                      "institusjonsid" : "NO:noinst002",
+                      "identifikator" : "$pinHovedperson",
+                      "land" : "NO"
+                    }, {
+                      "identifikator" : "123123123",
+                      "land" : "QX"
+                    } ],
+                    "statsborgerskap" : [ {
+                      "land" : "QX"
+                    } ],
+                    "etternavn" : "TESTER",
+                    "fornavn" : "HOVED PERSON",
+                    "kjoenn" : "M",
+                    "foedested" : {
+                      "by" : "Unknown",
+                      "land" : "QX"
+                    },
+                    "foedselsdato" : "$hovedpersonfdato",
+                    "sivilstand" : [ {
+                      "fradato" : "2010-01-10",
+                      "status" : "gift"
+                    } ],
+                    "kontakt" : {
+                      "telefon" : [ {
+                        "type" : "mobil",
+                        "nummer" : "11111111"
+                      } ],
+                      "email" : [ {
+                        "adresse" : "melleby11@melby.no"
+                      } ]
+                    }
+                  },
+                  "adresse" : {
+                    "gate" : "Oppoverbakken 66",
+                    "by" : "SØRUMSAND",
+                    "postnummer" : "1920",
+                    "land" : "NO"
+                  }
+                },
+                "ektefelle" : {
+                  "person" : {
+                    "pin" : [ {
+                      "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                      "institusjonsid" : "NO:noinst002",
+                      "identifikator" : "$pinEktefelleperson",
+                      "land" : "NO"
+                    }, {
+                      "identifikator" : "123123123",
+                      "land" : "QX"
+                    } ],
+                    "statsborgerskap" : [ {
+                      "land" : "QX"
+                    } ],
+                    "etternavn" : "BOUWMANS",
+                    "fornavn" : "JESSINE TORDNU",
+                    "kjoenn" : "K",
+                    "foedested" : {
+                      "by" : "Unknown",
+                      "land" : "QX"
+                    },
+                    "foedselsdato" : "$ekktefellefdato",
+                    "sivilstand" : [ {
+                      "fradato" : "2010-01-10",
+                      "status" : "gift"
+                    } ],
+                    "kontakt" : {
+                      "telefon" : [ {
+                        "type" : "mobil",
+                        "nummer" : "11111111"
+                      } ],
+                      "email" : [ {
+                        "adresse" : "melleby11@melby.no"
+                      } ]
+                    }
+                  },
+                  "type" : "ektefelle"
+                },
+                "barn" : [ {
+                  "mor" : {
+                    "person" : {
+                      "pin" : [ {
+                        "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                        "institusjonsid" : "NO:noinst002",
+                        "identifikator" : "$pinEktefelleperson",
+                        "land" : "NO"
+                      } ],
+                      "fornavn" : "JESSINE TORDNU"
+                    }
+                  },
+                  "person" : {
+                    "pin" : [ {
+                      "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                      "institusjonsid" : "NO:noinst002",
+                      "identifikator" : "$pinBarn1",
+                      "land" : "NO"
+                    }, {
+                      "identifikator" : "123123123",
+                      "land" : "QX"
+                    } ],
+                    "statsborgerskap" : [ {
+                      "land" : "QX"
+                    } ],
+                    "etternavn" : "UNG",
+                    "fornavn" : "TOPPI DOTTO",
+                    "kjoenn" : "M",
+                    "foedested" : {
+                      "by" : "Unknown",
+                      "land" : "QX"
+                    },
+                    "foedselsdato" : "$barn1fdato",
+                    "sivilstand" : [ {
+                      "fradato" : "2000-10-01",
+                      "status" : "enslig"
+                    } ]
+                  },
+                  "far" : {
+                    "person" : {
+                      "pin" : [ {
+                        "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                        "institusjonsid" : "NO:noinst002",
+                        "identifikator" : "$pinHovedperson",
+                        "land" : "NO"
+                      } ],
+                      "fornavn" : "HOVED PERSON"
+                    }
+                  },
+                  "relasjontilbruker" : "BARN",
+                  "relasjontilbruker43" : "BARN"                     
+                }, {
+                  "mor" : {
+                    "person" : {
+                      "pin" : [ {
+                        "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                        "institusjonsid" : "NO:noinst002",
+                        "identifikator" : "$pinEktefelleperson",
+                        "land" : "NO"
+                      } ],
+                      "fornavn" : "JESSINE TORDNU"
+                    }
+                  },
+                  "person" : {
+                    "pin" : [ {
+                      "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                      "institusjonsid" : "NO:noinst002",
+                      "identifikator" : "$pinBarn2",
+                      "land" : "NO"
+                    }, {
+                      "identifikator" : "123123123",
+                      "land" : "QX"
+                    } ],
+                    "statsborgerskap" : [ {
+                      "land" : "QX"
+                    } ],
+                    "etternavn" : "MED",
+                    "fornavn" : "EGIDIJS ER",
+                    "kjoenn" : "K",
+                    "foedested" : {
+                      "by" : "Unknown",
+                      "land" : "QX"
+                    },
+                    "foedselsdato" : "$barn2fdato",
+                    "sivilstand" : [ {
+                      "fradato" : "2000-10-01",
+                      "status" : "enslig"
+                    } ]
+                  },
+                  "far" : {
+                    "person" : {
+                      "pin" : [ {
+                        "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                        "institusjonsid" : "NO:noinst002",
+                        "identifikator" : "$pinHovedperson",
+                        "land" : "NO"
+                      } ],
+                      "fornavn" : "HOVED PERSON"
+                    }
+                  },
+                  "relasjontilbruker" : "BARN",
+                  "relasjontilbruker43" : "BARN"                     
+                }, {
+                  "mor" : {
+                    "person" : {
+                      "pin" : [ {
+                        "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                        "institusjonsid" : "NO:noinst002",
+                        "identifikator" : "$pinEktefelleperson",
+                        "land" : "NO"
+                      } ],
+                      "fornavn" : "JESSINE TORDNU"
+                    }
+                  },
+                  "person" : {
+                    "pin" : [ {
+                      "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                      "institusjonsid" : "NO:noinst002",
+                      "identifikator" : "$pinBarn3",
+                      "land" : "NO"
+                    }, {
+                      "identifikator" : "123123123",
+                      "land" : "QX"
+                    } ],
+                    "statsborgerskap" : [ {
+                      "land" : "QX"
+                    } ],
+                    "etternavn" : "GAMMELT",
+                    "fornavn" : "BARN VOKSEN",
+                    "kjoenn" : "K",
+                    "foedested" : {
+                      "by" : "Unknown",
+                      "land" : "QX"
+                    },
+                    "foedselsdato" : "$barn3fdato",
+                    "sivilstand" : [ {
+                      "fradato" : "2000-10-01",
+                      "status" : "enslig"
+                    } ]
+                  },
+                  "far" : {
+                    "person" : {
+                      "pin" : [ {
+                        "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                        "institusjonsid" : "NO:noinst002",
+                        "identifikator" : "$pinHovedperson",
+                        "land" : "NO"
+                      } ],
+                      "fornavn" : "HOVED PERSON"
+                    }
+                  },
+                  "relasjontilbruker" : "BARN",
+                  "relasjontilbruker43" : "BARN"                  
+                } ],
+                "krav" : {
+                  "dato" : "2020-07-01"
+                }
+              },
+              "pensjon" : {
+                "kravDato" : {
+                  "dato" : "2020-07-01"
+                }
+              },
+              "sedGVer" : "4",
+              "sedVer" : "2"
             }
-          },
-          "type" : "ektefelle"
-        },
-        "barn" : [ {
-          "mor" : {
-            "person" : {
-              "pin" : [ {
-                "institusjonsnavn" : "NOINST002, NO INST002, NO",
-                "institusjonsid" : "NO:noinst002",
-                "identifikator" : "$pinEktefelleperson",
-                "land" : "NO"
-              } ],
-              "fornavn" : "JESSINE TORDNU"
-            }
-          },
-          "person" : {
-            "pin" : [ {
-              "institusjonsnavn" : "NOINST002, NO INST002, NO",
-              "institusjonsid" : "NO:noinst002",
-              "identifikator" : "$pinBarn1",
-              "land" : "NO"
-            } ],
-            "statsborgerskap" : [ {
-              "land" : "QX"
-            } ],
-            "etternavn" : "UNG",
-            "fornavn" : "TOPPI DOTTO",
-            "kjoenn" : "M",
-            "foedested" : {
-              "by" : "Unknown",
-              "land" : "QX"
-            },
-            "foedselsdato" : "$barn1fdato"
-          },
-          "far" : {
-            "person" : {
-              "pin" : [ {
-                "institusjonsnavn" : "NOINST002, NO INST002, NO",
-                "institusjonsid" : "NO:noinst002",
-                "identifikator" : "$pinHovedperson",
-                "land" : "NO"
-              } ],
-              "fornavn" : "HOVED PERSON"
-            }
-          },
-          "relasjontilbruker" : "BARN"
-        }, {
-          "mor" : {
-            "person" : {
-              "pin" : [ {
-                "institusjonsnavn" : "NOINST002, NO INST002, NO",
-                "institusjonsid" : "NO:noinst002",
-                "identifikator" : "$pinEktefelleperson",
-                "land" : "NO"
-              } ],
-              "fornavn" : "JESSINE TORDNU"
-            }
-          },
-          "person" : {
-            "pin" : [ {
-              "institusjonsnavn" : "NOINST002, NO INST002, NO",
-              "institusjonsid" : "NO:noinst002",
-              "identifikator" : "$pinBarn2",
-              "land" : "NO"
-            } ],
-            "statsborgerskap" : [ {
-              "land" : "QX"
-            } ],
-            "etternavn" : "MED",
-            "fornavn" : "EGIDIJS ER",
-            "kjoenn" : "K",
-            "foedested" : {
-              "by" : "Unknown",
-              "land" : "QX"
-            },
-            "foedselsdato" : "$barn2fdato"},
-          "far" : {
-            "person" : {
-              "pin" : [ {
-                "institusjonsnavn" : "NOINST002, NO INST002, NO",
-                "institusjonsid" : "NO:noinst002",
-                "identifikator" : "$pinHovedperson",
-                "land" : "NO"
-              } ],
-              "fornavn" : "HOVED PERSON"
-            }
-          },
-          "relasjontilbruker" : "BARN"
-        }, {
-          "mor" : {
-            "person" : {
-              "pin" : [ {
-                "institusjonsnavn" : "NOINST002, NO INST002, NO",
-                "institusjonsid" : "NO:noinst002",
-                "identifikator" : "$pinEktefelleperson",
-                "land" : "NO"
-              } ],
-              "fornavn" : "JESSINE TORDNU"
-            }
-          },
-          "person" : {
-            "pin" : [ {
-              "institusjonsnavn" : "NOINST002, NO INST002, NO",
-              "institusjonsid" : "NO:noinst002",
-              "identifikator" : "$pinBarn3",
-              "land" : "NO"
-            } ],
-            "statsborgerskap" : [ {
-              "land" : "QX"
-            } ],
-            "etternavn" : "GAMMELT",
-            "fornavn" : "BARN VOKSEN",
-            "kjoenn" : "K",
-            "foedested" : {
-              "by" : "Unknown",
-              "land" : "QX"
-            },
-            "foedselsdato" : "$barn3fdato"
-          },
-          "far" : {
-            "person" : {
-              "pin" : [ {
-                "institusjonsnavn" : "NOINST002, NO INST002, NO",
-                "institusjonsid" : "NO:noinst002",
-                "identifikator" : "$pinHovedperson",
-                "land" : "NO"
-              } ],
-              "fornavn" : "HOVED PERSON"
-            }
-          },
-          "relasjontilbruker" : "BARN"
-        } ],
-        "krav" : {
-          "dato" : "2020-07-01"
-        }
-      },
-      "pensjon" : {
-        "kravDato" : {
-          "dato" : "2020-07-01"
-        }
-      },
-      "sedGVer" : "4",
-      "sedVer" : "2"
-    }
         """.trimIndent()
+
         JSONAssert.assertEquals(response, validResponse, false)
 
     }
@@ -534,7 +577,7 @@ class PrefillUfoereIntegrationTest {
         val response = result.response.getContentAsString(charset("UTF-8"))
 
         val validResponse = validResponse(NPID_VOKSEN)
-        JSONAssert.assertEquals(response, validResponse, true)
+        JSONAssert.assertEquals(validResponse, response, true)
     }
 
     private fun validResponse(ident: String) = """
@@ -556,6 +599,9 @@ class PrefillUfoereIntegrationTest {
                           "institusjonsid" : "NO:noinst002",
                           "identifikator" : "$ident",
                           "land" : "NO"
+                        }, {
+                          "identifikator" : "123123123",
+                          "land" : "QX"
                         } ],
                         "statsborgerskap" : [ {
                           "land" : "QX"
@@ -564,6 +610,10 @@ class PrefillUfoereIntegrationTest {
                         "fornavn" : "Lever",
                         "kjoenn" : "M",
                         "foedselsdato" : "1988-07-12",
+                        "sivilstand" : [ {
+                          "fradato" : "2000-10-01",
+                          "status" : "enslig"
+                        } ],
                         "kontakt" : {
                           "telefon" : [ {
                             "type" : "mobil",

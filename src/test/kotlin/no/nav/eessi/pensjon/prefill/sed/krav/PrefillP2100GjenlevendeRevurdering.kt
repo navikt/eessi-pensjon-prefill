@@ -4,7 +4,6 @@ import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.sed.Nav
 import no.nav.eessi.pensjon.eux.model.sed.SED
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Sivilstandstype
 import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
@@ -61,7 +60,6 @@ class PrefillP2100GjenlevendeRevurdering {
         val avdod = PersonPDLMock.createWith(fornavn = "BAMSE LUR", fnr = avdodPersonFnr, erDod = true)
         val persondataCollection = PersonDataCollection(
             forsikretPerson = person,
-            sivilstandstype = Sivilstandstype.ENKE_ELLER_ENKEMANN,
             gjenlevendeEllerAvdod = avdod
         )
 

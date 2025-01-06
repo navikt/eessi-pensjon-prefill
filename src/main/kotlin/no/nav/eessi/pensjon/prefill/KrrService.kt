@@ -45,6 +45,7 @@ class KrrService(private val krrRestTemplate: RestTemplate,
 
                 logger.debug("Hent person fra KRR: response: ${response.body}".trimMargin())
                 return@measure response.body?.let { mapJsonToAny<KrrPerson>(it) }
+                    ?: throw IllegalArgumentException("Mangler melding fra KRR")
             } catch (e: HttpClientErrorException.NotFound) {
                 logger.error("Person: $personIdent ikke funnet (404)")
             }
