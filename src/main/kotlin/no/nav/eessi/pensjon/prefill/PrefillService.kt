@@ -87,11 +87,6 @@ class PrefillService(
     private fun hentKrrPerson(norskIdent: String, request: ApiRequest): PersonInfo {
         val krrPerson = krrService.hentPersonFraKrr(norskIdent)?.let { personResponse ->
             KrrPerson(
-                reservert = personResponse?.reservert,
-                epostadresse = personResponse?.epostadresse.validateEmail(request.processDefinitionVersion),
-                mobiltelefonnummer = personResponse?.mobiltelefonnummer
-            ).also { logger.debug("KrrPerson: ${it.toJson()}") }
-        }
                 reservert = personResponse.reservert,
                 epostadresse = personResponse.epostadresse.validateEmail(request.processDefinitionVersion),
                 mobiltelefonnummer = personResponse.mobiltelefonnummer
