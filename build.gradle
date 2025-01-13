@@ -3,7 +3,6 @@ buildscript {
         kotlinVersion = '2.0.21'
         springBootVersion = '3.3.5'
         springKafkaVersion = '3.2.4'
-        jacksonModuleKotlinVersion = '2.18.1'
         cxfVersion = '3.3.4'
         tokenSupportVersion = '5.0.11'
     }
@@ -43,7 +42,7 @@ dependencies {
     implementation 'javax.xml.bind:jaxb-api:2.3.1'
     implementation('org.glassfish.jaxb:jaxb-runtime:2.3.6')
 
-    implementation("com.fasterxml.jackson.core:jackson-core:${jacksonModuleKotlinVersion}")
+    implementation("com.fasterxml.jackson.core:jackson-core:2.18.1")
 
     implementation 'org.jetbrains.kotlin:kotlin-reflect'
 
