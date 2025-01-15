@@ -68,7 +68,7 @@ dependencies {
     implementation ("no.nav.common:token-client:3.2024.11.26_16.35-432a29107830")
 
     // Micrometer
-    implementation("io.micrometer:micrometer-registry-prometheus:1.14.2")
+    implementation("io.micrometer:micrometer-registry-prometheus:1.14.3")
 
     implementation ("org.springframework.kafka:spring-kafka:$springKafkaVersion")
 
