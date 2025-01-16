@@ -13,7 +13,7 @@ import no.nav.eessi.pensjon.prefill.LagPdlPerson.Companion.medAdresse
 import no.nav.eessi.pensjon.prefill.LagPdlPerson.Companion.medBarn
 import no.nav.eessi.pensjon.prefill.LagPdlPerson.Companion.medForeldre
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
-import no.nav.eessi.pensjon.shared.api.PersonInfo
+import no.nav.eessi.pensjon.shared.api.PersonId
 import no.nav.eessi.pensjon.shared.person.FodselsnummerGenerator
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -90,7 +90,7 @@ internal class PersonDataServiceTest {
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns gjenlev
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_2)) } returns avdod
 
-        val data = PrefillDataModelMother.initialPrefillDataModel(SedType.P2000, FNR_VOKSEN, SAK_ID, euxCaseId = EUX_RINA, avdod = PersonInfo(
+        val data = PrefillDataModelMother.initialPrefillDataModel(SedType.P2000, FNR_VOKSEN, SAK_ID, euxCaseId = EUX_RINA, avdod = PersonId(
             FNR_VOKSEN_2, AKTOER_ID_2
         )
         )

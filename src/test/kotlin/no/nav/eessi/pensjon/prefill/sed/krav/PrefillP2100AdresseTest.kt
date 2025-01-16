@@ -15,7 +15,7 @@ import no.nav.eessi.pensjon.prefill.person.PrefillPDLAdresse
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
 import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper.lesPensjonsdataFraFil
-import no.nav.eessi.pensjon.shared.api.PersonInfo
+import no.nav.eessi.pensjon.shared.api.PersonId
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
 import no.nav.eessi.pensjon.shared.person.FodselsnummerGenerator
 import no.nav.eessi.pensjon.utils.toJson
@@ -52,7 +52,7 @@ class PrefillP2100AdresseTest {
                 sedType = SedType.P2100,
                 pinId = personFnr,
                 penSaksnummer = pesysSaksnummer,
-                avdod = PersonInfo(avdodPersonFnr, "112233445566")
+                avdod = PersonId(avdodPersonFnr, "112233445566")
         )
 
         dataFromPEN = lesPensjonsdataFraFil("/pensjonsinformasjon/krav/P2100-GL-UTL-INNV.xml")

@@ -11,7 +11,7 @@ import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother.initialPrefillDataModel
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
 import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper
-import no.nav.eessi.pensjon.shared.api.PersonInfo
+import no.nav.eessi.pensjon.shared.api.PersonId
 import no.nav.eessi.pensjon.shared.person.Fodselsnummer
 import no.nav.eessi.pensjon.shared.person.FodselsnummerGenerator
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -49,7 +49,7 @@ class PrefillSedEnkeTest {
 
         val persondataCollection = PersonPDLMock.createEnkeWithBarn(fnr, b1fnr, b2fnr)
 
-        val prefillData = initialPrefillDataModel(sedType = SedType.P2100, pinId = fnr, avdod = PersonInfo(norskIdent = fnr, aktorId = "212"), vedtakId = "", penSaksnummer = "22875355")
+        val prefillData = initialPrefillDataModel(sedType = SedType.P2100, pinId = fnr, avdod = PersonId(norskIdent = fnr, aktorId = "212"), vedtakId = "", penSaksnummer = "22875355")
 
 
         val response = prefillPDLNav.prefill(
