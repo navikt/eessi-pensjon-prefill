@@ -20,7 +20,7 @@ import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.person.PrefillSed
 import no.nav.eessi.pensjon.shared.api.ApiRequest
 import no.nav.eessi.pensjon.shared.api.InstitusjonItem
-import no.nav.eessi.pensjon.shared.api.PersonId
+import no.nav.eessi.pensjon.shared.api.PersonInfo
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.toJson
@@ -143,7 +143,7 @@ class SedP4000Test {
                 subjectArea = "Pensjon",
                 payload = "{}"
         )
-        val data = ApiRequest.buildPrefillDataModelOnExisting(req, PersonId("12345", req.aktoerId!!), null)
+        val data = ApiRequest.buildPrefillDataModelOnExisting(req, PersonInfo("12345", req.aktoerId!!), null)
 
         val personData = PersonDataCollection(forsikretPerson = PersonPDLMock.createWith(), gjenlevendeEllerAvdod = PersonPDLMock.createWith())
 
@@ -174,7 +174,7 @@ class SedP4000Test {
         assertNotNull(reqjson)
         validateJson(reqjson)
 
-        val data = ApiRequest.buildPrefillDataModelOnExisting(req, PersonId("12345", req.aktoerId!!), null)
+        val data = ApiRequest.buildPrefillDataModelOnExisting(req, PersonInfo("12345", req.aktoerId!!), null)
 
         assertNotNull(data)
         assertNotNull(data.getPartSEDasJson("P4000"))

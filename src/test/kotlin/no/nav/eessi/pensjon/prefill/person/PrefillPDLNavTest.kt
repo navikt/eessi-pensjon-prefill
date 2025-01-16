@@ -21,7 +21,7 @@ import no.nav.eessi.pensjon.prefill.models.KrrPerson
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
 import no.nav.eessi.pensjon.shared.api.BankOgArbeid
-import no.nav.eessi.pensjon.shared.api.PersonId
+import no.nav.eessi.pensjon.shared.api.PersonInfo
 import no.nav.eessi.pensjon.shared.person.Fodselsnummer
 import no.nav.eessi.pensjon.shared.person.FodselsnummerGenerator
 import no.nav.eessi.pensjon.utils.mapAnyToJson
@@ -283,7 +283,7 @@ class PrefillPDLNavTest {
         val prefillData = PrefillDataModelMother.initialPrefillDataModel(
             SedType.P2100,
             pinId = somePersonNr,
-            avdod = PersonId(someBarnPersonNr, aktorId = "123232312312"),
+            avdod = PersonInfo(someBarnPersonNr, aktorId = "123232312312"),
             penSaksnummer = somePenSaksnr
         )
 
@@ -368,7 +368,7 @@ class PrefillPDLNavTest {
         val prefillData = PrefillDataModelMother.initialPrefillDataModel(
             SedType.P2100,
             pinId = somePersonNr,
-            avdod = PersonId(someBarnPersonNr, "123232312312"),
+            avdod = PersonInfo(someBarnPersonNr, "123232312312"),
             penSaksnummer = somePenSaksnr
         )
 

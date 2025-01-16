@@ -8,7 +8,7 @@ import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe.NPID
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Sivilstandstype.*
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.shared.api.BankOgArbeid
-import no.nav.eessi.pensjon.shared.api.PersonId
+import no.nav.eessi.pensjon.shared.api.PersonInfo
 import no.nav.eessi.pensjon.shared.person.Fodselsnummer
 import no.nav.eessi.pensjon.utils.simpleFormat
 import org.slf4j.Logger
@@ -53,25 +53,25 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
         }
 
         //8.0 Bank detalsjer om bank betalinger.
-        private fun createBankData(PersonId: BankOgArbeid): Bank {
+        private fun createBankData(personInfo: BankOgArbeid): Bank {
             logger.debug("8.0           Informasjon om betaling")
             logger.debug("8.1           Informasjon om betaling")
             return Bank(
-                    navn = PersonId.bankName,
+                    navn = personInfo.bankName,
                     konto = Konto(
                             innehaver = Innehaver(
                                     rolle = "01", //forsikkret bruker .. avventer med Verge "02",
-                                    navn = PersonId.bankName
+                                    navn = personInfo.bankName
                             ),
                             sepa = Sepa(
-                                    iban = PersonId.bankIban,
-                                    swift = PersonId.bankBicSwift
+                                    iban = personInfo.bankIban,
+                                    swift = personInfo.bankBicSwift
                             )
 
                     ),
                     adresse = Adresse(
-                            gate = PersonId.bankAddress,
-                            land = PersonId.bankCountry?.currencyLabel
+                            gate = personInfo.bankAddress,
+                            land = personInfo.bankCountry?.currencyLabel
                     )
             )
         }
@@ -95,28 +95,28 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
 
 
 
-        private fun createAnsettelsesforhold(PersonId: BankOgArbeid): ArbeidsforholdItem {
+        private fun createAnsettelsesforhold(personInfo: BankOgArbeid): ArbeidsforholdItem {
             logger.debug("3.1           Ansettelseforhold/arbeidsforhold")
             return ArbeidsforholdItem(
                     //3.1.1.
                     yrke = "",
                     //3.1.2
-                    type = PersonId.workType ?: "",
+                    type = personInfo.workType ?: "",
                     //3.1.3
-                    planlagtstartdato = PersonId.workStartDate?.simpleFormat() ?: "",
+                    planlagtstartdato = personInfo.workStartDate?.simpleFormat() ?: "",
                     //3.1.4
-                    sluttdato = PersonId.workEndDate?.simpleFormat() ?: "",
+                    sluttdato = personInfo.workEndDate?.simpleFormat() ?: "",
                     //3.1.5
-                    planlagtpensjoneringsdato = PersonId.workEstimatedRetirementDate?.simpleFormat() ?: "",
+                    planlagtpensjoneringsdato = personInfo.workEstimatedRetirementDate?.simpleFormat() ?: "",
                     //3.1.6
-                    arbeidstimerperuke = PersonId.workHourPerWeek ?: ""
+                    arbeidstimerperuke = personInfo.workHourPerWeek ?: ""
             )
         }
 
-        private fun createInformasjonOmAnsettelsesforhold(PersonId: BankOgArbeid): List<ArbeidsforholdItem> {
+        private fun createInformasjonOmAnsettelsesforhold(personInfo: BankOgArbeid): List<ArbeidsforholdItem> {
             logger.debug("3.0           Informasjon om personens ansettelsesforhold og selvstendige næringsvirksomhet")
             logger.debug("3.1           Informasjon om ansettelsesforhold og selvstendig næringsvirksomhet ")
-            return listOf(createAnsettelsesforhold(PersonId))
+            return listOf(createAnsettelsesforhold(personInfo))
         }
 
         //lokal sak pkt 1.0 i gjelder alle SED
@@ -133,8 +133,8 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
 
     fun prefill(
         penSaksnummer: String?,
-        bruker: PersonId,
-        avdod: PersonId?,
+        bruker: PersonInfo,
+        avdod: PersonInfo?,
         personData: PersonDataCollection,
         bankOgArbeid: BankOgArbeid?,
         krav: Krav? = null,
@@ -187,18 +187,18 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
         )
     }
 
-    fun createGjenlevende(gjenlevendeBruker: PdlPerson?, PersonIdBruker: PersonId): Bruker? {
+    fun createGjenlevende(gjenlevendeBruker: PdlPerson?, personInfoBruker: PersonInfo): Bruker? {
         logger.info("          Utfylling gjenlevende (etterlatt persjon.gjenlevende)")
-        return createBruker(gjenlevendeBruker!!, PersonIdBruker)
+        return createBruker(gjenlevendeBruker!!, personInfoBruker)
     }
 
-    fun createBruker(pdlperson: PdlPerson, PersonId: PersonId) = createBruker(pdlperson, null, null, PersonId)
+    fun createBruker(pdlperson: PdlPerson, personInfo: PersonInfo) = createBruker(pdlperson, null, null, personInfo)
 
     fun createBruker(pdlperson: PdlPerson,
                      bank: Bank?,
-                     ansettelsesforhold: List<ArbeidsforholdItem>?, PersonId: PersonId?): Bruker? {
+                     ansettelsesforhold: List<ArbeidsforholdItem>?, personInfo: PersonInfo?): Bruker? {
             return Bruker(
-                person = createPersonData(pdlperson, PersonId),
+                person = createPersonData(pdlperson, personInfo),
                 adresse = prefillAdresse.createPersonAdresse(pdlperson),
                 bank = bank,
                 arbeidsforhold = ansettelsesforhold,)
@@ -253,7 +253,7 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
     //persondata - nav-sed format
     private fun createPersonData(
         pdlperson: PdlPerson,
-        PersonId: PersonId? = null): Person {
+        personInfo: PersonInfo? = null): Person {
 
         logger.debug("2.1           Persondata (forsikret person / gjenlevende person / barn)")
 
@@ -275,7 +275,7 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
                 //2.1.8.1           place of birth
                 foedested = createFodested(pdlperson),
 
-                kontakt = createKontakt(PersonId)
+                kontakt = createKontakt(personInfo)
 
         )
     }
@@ -304,12 +304,12 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
         return norskeIdenter + utenlandskeIdenter
     }
 
-    private fun createKontakt(PersonId: PersonId?): Kontakt? {
-        logger.debug("Persondata kontakt: ${PersonId?.toJson()}")
+    private fun createKontakt(personInfo: PersonInfo?): Kontakt? {
+        logger.debug("Persondata kontakt: ${personInfo?.toJson()}")
 
-        PersonId ?: return null
-        val telefonList = PersonId.telefonKrr?.let { listOf(Telefon("mobil", it)) }
-        val emailList = PersonId.epostKrr?.let { listOf(Email(it)) }
+        personInfo ?: return null
+        val telefonList = personInfo.telefonKrr?.let { listOf(Telefon("mobil", it)) }
+        val emailList = personInfo.epostKrr?.let { listOf(Email(it)) }
 
         return if (telefonList == null && emailList == null) null else Kontakt(telefonList, emailList)
     }

@@ -191,7 +191,7 @@ class InnhentingServiceTest {
             bucType: BucType = BucType.P_BUC_10
         ) = PrefillDataModel(
             penSaksnummer = "1010",
-            bruker = PersonId(fnr, aktorId),
+            bruker = PersonInfo(fnr, aktorId),
             avdod = null,
             sedType = sedType,
             buc = bucType,
