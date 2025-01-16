@@ -132,6 +132,7 @@ class PrefillP2000(private val prefillNav: PrefillPDLNav) {
                         )
                     ),
                     forespurtstartdato = pensjonsInformasjon.pensjon.forespurtstartdato.also { logger.debug("forespurtstartdato: $it") },
+                    etterspurtedokumenter = pensjonsInformasjon.pensjon.etterspurtedokumenter.also { logger.debug("etterspurtedokumenter: $it") },
                 )
             } else pensjonsInformasjon.pensjon
 

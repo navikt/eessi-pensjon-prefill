@@ -116,6 +116,7 @@ object PrefillP2xxxPensjon {
                 melding = melding,
                 pensjon = P2000Pensjon(
                     forespurtstartdato = ytelse.startdatoretttilytelse,
+                    etterspurtedokumenter = "P5000 and P6000",
                     ytelser = listOf(ytelse),
                     kravDato = krav,
                     gjenlevende = gjenlevende
