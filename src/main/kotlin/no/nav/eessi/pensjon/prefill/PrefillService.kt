@@ -7,7 +7,7 @@ import no.nav.eessi.pensjon.prefill.models.KrrPerson
 import no.nav.eessi.pensjon.prefill.models.KrrPerson.Companion.validateEmail
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
 import no.nav.eessi.pensjon.shared.api.ApiRequest
-import no.nav.eessi.pensjon.shared.api.PersonId
+import no.nav.eessi.pensjon.shared.api.PersonInfo
 import no.nav.eessi.pensjon.statistikk.AutomatiseringStatistikkService
 import no.nav.eessi.pensjon.utils.eessiRequire
 import no.nav.eessi.pensjon.utils.toJson
@@ -84,7 +84,7 @@ class PrefillService(
         }
     }
 
-    private fun hentKrrPerson(norskIdent: String, request: ApiRequest): PersonId {
+    private fun hentKrrPerson(norskIdent: String, request: ApiRequest): PersonInfo {
         val krrPerson = krrService.hentPersonFraKrr(norskIdent).let { personResponse ->
             KrrPerson(
                 reservert = personResponse?.reservert,
@@ -93,13 +93,13 @@ class PrefillService(
             ).also { logger.debug("KrrPerson: ${it.toJson()}") }
         }
 
-        val PersonId = if (krrPerson.reservert == true) {
-            PersonId(
+        val personInfo = if (krrPerson.reservert == true) {
+            PersonInfo(
                 norskIdent,
                 request.aktoerId
             ).also { logger.info("Personen har reservert seg mot digital kommunikasjon") }
         } else {
-            PersonId(
+            PersonInfo(
                 norskIdent,
                 request.aktoerId,
                 krrPerson.reservert,
@@ -107,7 +107,7 @@ class PrefillService(
                 krrPerson.mobiltelefonnummer
             ).also { logger.info("Hentet telefon og epost fra KRR: ${krrPerson.toJson()}") }
         }
-        return PersonId
+        return personInfo
     }
 
 }

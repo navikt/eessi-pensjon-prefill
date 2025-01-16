@@ -14,7 +14,7 @@ import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
 import no.nav.eessi.pensjon.shared.api.ApiRequest
 import no.nav.eessi.pensjon.shared.api.InstitusjonItem
-import no.nav.eessi.pensjon.shared.api.PersonId
+import no.nav.eessi.pensjon.shared.api.PersonInfo
 import no.nav.eessi.pensjon.statistikk.AutomatiseringStatistikkService
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import org.junit.jupiter.api.Assertions
@@ -61,7 +61,7 @@ class PrefillControllerTest {
 
         every {personDataService.hentFnrEllerNpidFraAktoerService(any())} returns "12345"
 
-        val utfyllMock = ApiRequest.buildPrefillDataModelOnExisting(mockData, PersonId(NorskIdent("12345").id, mockData.aktoerId!!), null)
+        val utfyllMock = ApiRequest.buildPrefillDataModelOnExisting(mockData, PersonInfo(NorskIdent("12345").id, mockData.aktoerId!!), null)
 
         every{
             personDataService.hentPersonData(any())
