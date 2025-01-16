@@ -152,7 +152,8 @@ class SedPrefillPDLIntegrationSpringTest {
             } ],
             "kravDato" : {
               "dato" : "2018-06-28"
-            }
+            },
+            "etterspurtedokumenter" : "P5000 and P6000"
           },
           "sedGVer" : "4",
           "sedVer" : "2"

@@ -529,7 +529,8 @@ class SedPrefillIntegrationSpringTest {
             } ],
             "kravDato" : {
               "dato" : "2018-06-28"
-            }
+            },
+            "etterspurtedokumenter" : "P5000 and P6000"
           },
           "sedGVer" : "4",
           "sedVer" : "2"
@@ -654,7 +655,8 @@ class SedPrefillIntegrationSpringTest {
             "kravDato" : {
               "dato" : "2015-11-25"
             },
-            "forespurtstartdato" : "2016-03-01"
+            "forespurtstartdato" : "2016-03-01",
+            "etterspurtedokumenter" : "P5000 and P6000"
           },
           "sedGVer" : "4",
           "sedVer" : "2"
@@ -836,7 +838,8 @@ class SedPrefillIntegrationSpringTest {
             } ],
             "kravDato" : {
               "dato" : "2019-04-30"
-            }
+            },
+            "etterspurtedokumenter" : "P5000 and P6000"
           },
           "sedGVer" : "4",
           "sedVer" : "2"
@@ -942,7 +945,8 @@ class SedPrefillIntegrationSpringTest {
             "kravDato" : {
               "dato" : "2018-05-31"
             },
-            "forespurtstartdato" : "2018-08-01"
+            "forespurtstartdato" : "2018-08-01",
+            "etterspurtedokumenter" : "P5000 and P6000"
           },
           "sedGVer" : "4",
           "sedVer" : "2"
