@@ -104,9 +104,10 @@ class PrefillP2000(private val prefillNav: PrefillPDLNav) {
             if (prefillData.sedType != SedType.P6000) {
                 val ytelser = pensjonsInformasjon.pensjon.ytelser?.first()
                 val belop = ytelser?.beloep?.firstOrNull()
+                val kravDato = prefillData.kravDato?.let { Krav(it, prefillData.kravType) } ?: pensjonsInformasjon.pensjon.kravDato
 
                 P2000Pensjon(
-                    kravDato = pensjonsInformasjon.pensjon.kravDato,
+                    kravDato = kravDato,
                     ytelser = listOf(
                         YtelserItem(
                             ytelse = pensjonsInformasjon.pensjon.ytelser?.first()?.ytelse,

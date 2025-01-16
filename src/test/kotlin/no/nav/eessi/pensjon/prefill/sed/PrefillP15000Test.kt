@@ -4,7 +4,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkClass
 import no.nav.eessi.pensjon.eux.model.sed.KravType
-import no.nav.eessi.pensjon.shared.api.PersonInfo
+import no.nav.eessi.pensjon.shared.api.PersonId
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -23,7 +23,7 @@ internal class PrefillP15000Test {
         val mockedPrefill = mockkClass(PrefillDataModel::class)
         every { mockedPrefill.penSaksnummer } returns "12345"
         every { mockedPrefill.kravType } returns KravType.ALDER
-        every { mockedPrefill.avdod } returns PersonInfo("1234", "5678")
+        every { mockedPrefill.avdod } returns PersonId("1234", "5678")
 
         val exception = assertThrows<ResponseStatusException> {
             prfillP15000.prefill(

@@ -19,7 +19,7 @@ class PrefillDodsboAdresse {
 
         val gateFeltVerdiFullLengde = "Dødsbo v/" +
             when {
-                kontaktinfo.personSomKontakt != null -> settSammenPersonInfo(kontaktinfo, personnavnProvider)
+                kontaktinfo.personSomKontakt != null -> settSammenPersonId(kontaktinfo, personnavnProvider)
                 kontaktinfo.advokatSomKontakt != null -> settSammenAdvokatInfo(kontaktinfo)
                 else -> settSammenOrganisasjonInfo(kontaktinfo)
             }
@@ -50,7 +50,7 @@ class PrefillDodsboAdresse {
     private fun maks155tegn(gateFeltVerdi: String) =
         if (gateFeltVerdi.length <= 155) gateFeltVerdi else gateFeltVerdi.substring(0, 155)
 
-    private fun settSammenPersonInfo(
+    private fun settSammenPersonId(
         kontaktinfo: KontaktinformasjonForDoedsbo,
         personnavnProvider: (identifikasjonsnummer: String) -> Navn
     ): String {
