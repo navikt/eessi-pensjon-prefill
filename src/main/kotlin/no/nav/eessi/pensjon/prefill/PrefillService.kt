@@ -61,7 +61,7 @@ class PrefillService(
                     prefillSedService.prefill(prefillData, personcollection, pensjonCollection)
                 }
 
-                logger.debug("Sed ferdig utfylt: $sed")
+                secureLog.info("Sed ferdig utfylt: $sed")
 
                 //synk sed versjon med buc versjon
                 setSEDVersion(sed.sedVer)
