@@ -22,6 +22,7 @@ class PersonDataService(private val personService: PersonService,
                         @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper.ForTest()) {
 
     private val logger: Logger = LoggerFactory.getLogger(PersonDataService::class.java)
+    private val secureLog = LoggerFactory.getLogger("secureLog")
 
     private lateinit var HentPerson: MetricsHelper.Metric
 
@@ -36,9 +37,9 @@ class PersonDataService(private val personService: PersonService,
     fun hentPersonData(prefillData: PrefillDataModel) : PersonDataCollection {
         return when (prefillData.sedType) {
             //alle med barn
-            P2000, P2200, P2100, P6000 -> hentPersonerMedBarn(prefillData)
+            P2000, P2200, P2100, P6000 -> hentPersonerMedBarn(prefillData).also { secureLog.info("HentPersondata med barn: $it") }
             //alle uten barn
-            else -> hentPersoner(prefillData)
+            else -> hentPersoner(prefillData).also { secureLog.info("HentPersoner: $it") }
         }
     }
 
@@ -82,7 +83,7 @@ class PersonDataService(private val personService: PersonService,
 
             logger.debug("gjenlevendeEllerAvdod: ${gjenlevendeEllerAvdod?.navn?.sammensattNavn }, forsikretPerson: ${forsikretPerson?.navn?.sammensattNavn }")
 
-            PersonDataCollection(gjenlevendeEllerAvdod = gjenlevendeEllerAvdod, forsikretPerson = forsikretPerson!!, ektefellePerson = ektefellePerson, barnPersonList = barnPerson)
+            PersonDataCollection(gjenlevendeEllerAvdod = gjenlevendeEllerAvdod, forsikretPerson = forsikretPerson!!, ektefellePerson = ektefellePerson, barnPersonList = barnPerson).also { secureLog.info("PersonDataCollection: $it") }
         }
     }
 
