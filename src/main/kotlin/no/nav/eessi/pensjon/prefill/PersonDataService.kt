@@ -117,7 +117,7 @@ class PersonDataService(private val personService: PersonService,
             .map { it.relatertPersonsIdent }
                 .also { logger.info("prøver å hente ut alle barn på hovedperson: " + it.size) }
             .filterNotNull()
-            .onEach { barnPin ->  logger.info("Barn: ${Fodselsnummer.fra(barnPin)}") }
+            .onEach { barnPin ->  logger.info("Barn: ${Fodselsnummer.vaskFnr(barnPin)}") }
         logger.info("prøver å hente ut alle barn (filtrert under 18) på hovedperson: " + barnepinListe.size)
 
         return barnepinListe
