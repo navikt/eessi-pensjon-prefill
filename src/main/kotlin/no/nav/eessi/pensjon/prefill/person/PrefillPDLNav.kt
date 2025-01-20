@@ -332,7 +332,9 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
     }
 
     private fun validateUgyldigeLand(landkode: String?): String? {
+        logger.info("Validerer landkode $landkode")
         return if(UGYLDIGE_LAND_RINA.contains(landkode)){
+            logger.warn("Ignorer ugyldig land: $landkode")
             null
         } else {
             return prefillAdresse.hentLandkode(landkode)
