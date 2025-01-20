@@ -27,6 +27,7 @@ class PrefillService(
     @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper.ForTest()
 ) {
     private val logger = LoggerFactory.getLogger(PrefillService::class.java)
+    private val secureLog = LoggerFactory.getLogger("secureLog")
     private lateinit var PrefillSed: MetricsHelper.Metric
 
     init {
@@ -109,7 +110,7 @@ class PrefillService(
                 krrPerson.reservert,
                 krrPerson.epostadresse,
                 krrPerson.mobiltelefonnummer
-            ).also { logger.info("Hentet telefon og epost fra KRR: ${krrPerson.toJson()}") }
+            ).also { secureLog.info("Hentet telefon og epost fra KRR: ${krrPerson.toJson()}") }
         }
         return personInfo
     }
