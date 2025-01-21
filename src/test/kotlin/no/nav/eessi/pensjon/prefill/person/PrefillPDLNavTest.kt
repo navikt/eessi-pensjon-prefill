@@ -49,6 +49,8 @@ class PrefillPDLNavTest {
     fun beforeStart() {
         every { kodeverkClient.finnLandkode(eq("NOR")) } returns "NO"
         every { kodeverkClient.finnLandkode(eq("SWE")) } returns "SE"
+        every { kodeverkClient.finnLandkode(eq("AUT")) } returns "AU"
+        every { kodeverkClient.finnLandkode(eq("USA")) } returns "US"
 
         prefillPDLNav = PrefillPDLNav(
             PrefillPDLAdresse(PostnummerService(), kodeverkClient, personService), someInstitutionId, someIntitutionNavn
@@ -1116,6 +1118,38 @@ class PrefillPDLNavTest {
     }
 
     @Test
+    fun `Gitt en person med uid fra AUT så preutfylles denne med UID fra AUT`() {
+        val personfnr = FodselsnummerGenerator.generateFnrForTest(40)
+        val person = lagPerson(personfnr).copy(
+            utenlandskIdentifikasjonsnummer = listOf(
+                UtenlandskIdentifikasjonsnummer(
+                    "123123123", "AUT", false, null, mockk())
+            )
+        )
+
+        val bruker = prefillPDLNav.createBruker(person, bank = null, ansettelsesforhold = null, null)
+
+        assertEquals(bruker?.person?.pin?.firstOrNull { it.land == "AU" }?.land, "AU")
+        assertEquals(bruker?.person?.pin?.firstOrNull { it.land == "AU" }?.identifikator, "123123123")
+    }
+
+    @Test
+    fun `Gitt en person med amerikansk uid som ikke er et eu land så skal ikke land eller uid preutfylles`() {
+        val personfnr = FodselsnummerGenerator.generateFnrForTest(40)
+        val person = lagPerson(personfnr).copy(
+            utenlandskIdentifikasjonsnummer = listOf(
+                UtenlandskIdentifikasjonsnummer("123123123", "USA", false, null, mockk()
+                )
+            )
+        )
+
+        val bruker = prefillPDLNav.createBruker(person, bank = null, ansettelsesforhold = null, null)
+
+        assertEquals(bruker?.person?.pin?.firstOrNull { it.land == "US" }?.land, null)
+        assertEquals(bruker?.person?.pin?.firstOrNull { it.land == "US" }?.identifikator, null)
+    }
+
+    @Test
     fun `Gitt en person med noe annet enn kosovo statsborgerskap Når preutfyller Statsborgerstak Så preutfyll statsborgerskap`() {
         val personfnr = FodselsnummerGenerator.generateFnrForTest(40)
         val person = lagPerson(personfnr).copy(
@@ -1131,23 +1165,6 @@ class PrefillPDLNavTest {
         assertEquals(bruker!!.person!!.statsborgerskap!!.size, 1)
         assertEquals(bruker.person!!.statsborgerskap!![0].land, "NO")
     }
-
-//    @Test
-//    fun `Gitt en person uten fdato skal benytte fnr for fdato så SED blir preutfylt`() {
-//
-//        val personfnr = "01028143352"
-//        val person = lagPerson(personfnr).copy(foedsel = null)
-//
-//        val bruker = prefillPDLNav.createBruker(person, null, null)
-//
-//        assertEquals("1981-02-01", bruker?.person?.foedselsdato)
-//
-//        val dnr = "41028143352"
-//        val personDnr = lagPerson(dnr).copy(foedsel = null)
-//        val brukerDnr = prefillPDLNav.createBruker(personDnr, null, null)
-//
-//        assertEquals("1981-02-01", brukerDnr?.person?.foedselsdato)
-//    }
 
     companion object {
         private fun lagTomAdresse(): Adresse {

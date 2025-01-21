@@ -7,9 +7,11 @@ import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.SedType.P2000
 import no.nav.eessi.pensjon.eux.model.sed.Nav
 import no.nav.eessi.pensjon.eux.model.sed.SED
+import no.nav.eessi.pensjon.personoppslag.pdl.model.UtenlandskIdentifikasjonsnummer
 import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.PersonPDLMock.medFodsel
+import no.nav.eessi.pensjon.prefill.PersonPDLMock.mockMeta
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.prefill.models.KrrPerson.Companion.validateEmail
 import no.nav.eessi.pensjon.prefill.models.PensjonCollection
@@ -47,12 +49,29 @@ class PrefillP2000_AP_21975717Test {
 
     @BeforeEach
     fun setup() {
-        persondataCollection = PersonPDLMock.createEnkelFamilie(giftFnr, ekteFnr)
+        persondataCollection = PersonPDLMock.createEnkelFamilie(giftFnr, ekteFnr).copy(
+            gjenlevendeEllerAvdod = PersonPDLMock.createEnkelFamilie(giftFnr, ekteFnr).forsikretPerson?.copy(
+                utenlandskIdentifikasjonsnummer = listOf(
+                    UtenlandskIdentifikasjonsnummer(
+                        "123123123",
+                        "SWE",
+                        false,
+                        metadata = mockMeta(
+                        )),
+                    UtenlandskIdentifikasjonsnummer(
+                        "222-12-3123",
+                        "USA",
+                        false,
+                        metadata = mockMeta(
+                        ))
+                ))
+        )
 
         val prefillNav = PrefillPDLNav(
             prefillAdresse = mockk<PrefillPDLAdresse> {
                 every { hentLandkode(null) } returns "NO"
                 every { hentLandkode(eq("SWE")) } returns "SE"
+                every { hentLandkode(eq("USA")) } returns "US"
                 every { hentLandkode(eq("NOR")) } returns "NO"
                 every { createPersonAdresse(any()) } returns mockk(relaxed = true)
             },
@@ -69,7 +88,7 @@ class PrefillP2000_AP_21975717Test {
         val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
         pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
 
-       prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav)
+        prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav)
 
     }
 
