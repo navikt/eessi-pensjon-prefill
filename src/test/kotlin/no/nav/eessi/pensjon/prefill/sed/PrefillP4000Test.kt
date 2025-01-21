@@ -62,7 +62,7 @@ class PrefillP4000Test {
 
         assertEquals("3123", sed.p4000Pensjon?.gjenlevende?.person?.pin?.get(0)?.identifikator)
         assertEquals("123123123", sed.p4000Pensjon?.gjenlevende?.person?.pin?.firstOrNull { it.land == "AU" }?.identifikator)
-        assertEquals(null, sed.nav?.bruker?.person?.pin?.firstOrNull { it.land == "AU" }?.identifikator)
+        assertEquals("AU", sed.p4000Pensjon?.gjenlevende?.person?.pin?.firstOrNull { it.land == "AU" }?.land)
     }
 
     @Test
