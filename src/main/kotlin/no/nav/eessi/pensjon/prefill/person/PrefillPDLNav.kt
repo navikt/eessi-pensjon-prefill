@@ -296,7 +296,6 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
         }
         val eessiLandListe = listOf("AUT","BEL","BGR","HRV","CYP","CZE","DNK","EST","FIN","FRA","DEU","GRC","HUN","ISL","IRL","ITA","LVA","LIE","LTU","LUX","MLT","NLD","NOR","POL","PRT","ROU","SVK","SVN","ESP","SWE","CHE","GBR")
         val utenlandskeIdenter = personpdl.utenlandskIdentifikasjonsnummer.filter {
-            logger.info("Utenlandsk ident: ${it}")
             it.utstederland in eessiLandListe
         }.map {
                 PinItem(
@@ -305,7 +304,7 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
                     land = prefillAdresse.hentLandkode(it.utstederland)
                 )
             }
-        return norskeIdenter + utenlandskeIdenter.also { logger.info("Identer: $it") }
+        return norskeIdenter + utenlandskeIdenter
     }
 
     private fun createKontakt(personInfo: PersonInfo?): Kontakt? {
