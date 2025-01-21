@@ -300,12 +300,7 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
             if (it.utstederland !in eessiLandListe) {
                 logger.info("Utstederland: ${it.utstederland} er ikke en del av EØS, og inkluderes ikke i PIN-listen")
                 null
-            } else {
-                PinItem(
-                    identifikator = it.identifikasjonsnummer,
-                    land = prefillAdresse.hentLandkode(it.utstederland)
-                )
-            }
+            } else PinItem(identifikator = it.identifikasjonsnummer, land = prefillAdresse.hentLandkode(it.utstederland))
         }
         return norskeIdenter + utenlandskeIdenter
     }
