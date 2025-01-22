@@ -90,7 +90,7 @@ class RestTemplateConfig(
             request.headers.setBearerAuth(response.access_token!!)
             val tokenChunks = response.access_token!!.split(".")
             val tokenBody =  tokenChunks[1]
-            logger.debug("subject: " + JWTClaimsSet.parse(Base64.getDecoder().decode(tokenBody).decodeToString()).subject)
+            logger.debug("subject: " + JWTClaimsSet.parse(Base64.getDecoder().decode(tokenBody).decodeToString()).subject + "/n + $response.accessToken")
             execution.execute(request, body!!)
         }
     }
