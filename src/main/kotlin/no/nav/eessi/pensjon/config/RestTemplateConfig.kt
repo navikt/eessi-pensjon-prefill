@@ -38,11 +38,11 @@ class RestTemplateConfig(
     @Value("\${KRR_URL}")
     lateinit var krrUrl: String
 
-//    @Value("\${ETTERLATTE_URL}")
-//    lateinit var etterlatteUrl: String
+    @Value("\${ETTERLATTE_URL}")
+    lateinit var etterlatteUrl: String
 
-//    @Bean
-//    fun etterlatteRestTemplate() = opprettRestTemplate(etterlatteUrl, "etterlatte-credentials")
+    @Bean
+    fun etterlatteRestTemplate() = opprettRestTemplate(etterlatteUrl, "etterlatte-credentials")
 
     @Bean
     fun krrRestTemplate() = opprettRestTemplate(krrUrl, "krr-credentials")
