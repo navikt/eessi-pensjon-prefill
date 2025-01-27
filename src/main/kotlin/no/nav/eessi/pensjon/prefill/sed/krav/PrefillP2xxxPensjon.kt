@@ -312,7 +312,7 @@ object PrefillP2xxxPensjon {
         logger.debug("4.1.9         Beløp")
         return listOf( BeloepItem(
                 //4.1.9.1
-                beloep = ytelsePrMnd.belop.toString(),
+                beloep = ytelsePrMnd.belop.toString().utenMellomrom(),
 
                 //4.1.9.2
                 valuta = "NOK",
@@ -452,4 +452,7 @@ object PrefillP2xxxPensjon {
             //hvis feiler lar vi SB få en SED i RINA
         }
     }
+
+    fun String.utenMellomrom(): String =
+        this.replace("\\s".toRegex(), "")
 }

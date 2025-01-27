@@ -118,12 +118,12 @@ class PrefillP2000(private val prefillNav: PrefillPDLNav) {
                                     "mottasbasertpaa: $it"
                                 )
                             },
-                            totalbruttobeloepbostedsbasert = ytelser?.totalbruttobeloepbostedsbasert.also {
+                            totalbruttobeloepbostedsbasert = ytelser?.totalbruttobeloepbostedsbasert?.utenMellomrom().also {
                                 logger.debug(
                                     "totalbruttobeloepbostedsbasert: $it"
                                 )
                             },
-                            totalbruttobeloeparbeidsbasert = ytelser?.totalbruttobeloeparbeidsbasert.also {
+                            totalbruttobeloeparbeidsbasert = ytelser?.totalbruttobeloeparbeidsbasert?.utenMellomrom().also {
                                 logger.debug(
                                     "totalbruttobeloeparbeidsbasert: $it"
                                 )
@@ -142,6 +142,9 @@ class PrefillP2000(private val prefillNav: PrefillPDLNav) {
             //hvis feiler lar vi SB få en SED i RINA
         }
     }
+
+    fun String.utenMellomrom(): String =
+        this.replace("\\s".toRegex(), "")
 
     private fun settMottattBasertPaa(totalBruttoArbBasert: String?): String? {
         return if (totalBruttoArbBasert.isNullOrEmpty() || totalBruttoArbBasert == "0") {

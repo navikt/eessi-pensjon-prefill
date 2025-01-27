@@ -101,7 +101,7 @@ object VedtakPensjonDataHelper {
 
     fun hentYtelseBelop(pendata: Pensjonsinformasjon): String {
         logger.debug(" +            hentYtelseBelop")
-        return hentSisteYtelsePerMaaned(pendata).belop.toString()
+        return hentSisteYtelsePerMaaned(pendata).belop.toString().utenMellomrom()
     }
 
     fun isMottarMinstePensjonsniva(pendata: Pensjonsinformasjon): Boolean {
@@ -114,4 +114,7 @@ object VedtakPensjonDataHelper {
         val liste = ytelseprmnd.ytelsePerMaanedListe as List<V1YtelsePerMaaned>
         return liste.maxByOrNull { it.fom.toGregorianCalendar() }!!
     }
+
+    fun String.utenMellomrom(): String =
+        this.replace("\\s".toRegex(), "")
 }
