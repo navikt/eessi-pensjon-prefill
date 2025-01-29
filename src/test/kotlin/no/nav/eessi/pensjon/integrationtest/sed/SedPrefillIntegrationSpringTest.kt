@@ -30,6 +30,10 @@ import no.nav.eessi.pensjon.utils.toJson
 import org.hamcrest.Matchers
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.CsvSource
+import org.junit.jupiter.params.provider.MethodSource
 import org.skyscreamer.jsonassert.JSONAssert
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
@@ -46,6 +50,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.web.client.RestTemplate
+import java.util.stream.Stream
 
 @SpringBootTest(classes = [IntegrasjonsTestConfig::class, UnsecuredWebMvcTestLauncher::class, SedPrefillIntegrationSpringTest.TestConfig::class], webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("unsecured-webmvctest", "excludeKodeverk")
@@ -84,51 +89,45 @@ class SedPrefillIntegrationSpringTest {
         fun restTemplate(): RestTemplate = mockk()
     }
 
-    //TODO: Refaktorere/parametrisere testene der det er mulig
-    @Test
+    @ParameterizedTest(name = "for verdier for sakId:{0}, vedtak:{1}, sedType:{2}, og feilmelding:{3}")
+    @CsvSource(
+        value = [
+            "123, null, P6000, Mangler vedtakID",
+            "null, 12121, P2000, Mangler sakId"],
+        nullValues = ["null"]
+    )
     @Throws(Exception::class)
-    fun `prefill sed P6000 missing vedtakid throw error bad request and reason Mangler vedtakID`() {
-
+    fun `Validering av prefill kaster exception`(sakId: String?, vedtakid: String?, sedType: String, expectedErrorMessage: String) {
         every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID )) } returns NorskIdent(FNR_VOKSEN)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith(true, fnr = FNR_VOKSEN, aktoerid = AKTOER_ID)
         every { krrService.hentPersonFraKrr(any())  } returns KrrPerson(false,"melleby11@melby.no", "11111111")
 
-        val apijson = dummyApijson(sakid = "EESSI-PEN-123", aktoerId = AKTOER_ID, sedType = P6000)
+        val apijson = dummyApijson(sakid = sakId ?: "", vedtakid = vedtakid, aktoerId = AKTOER_ID, sedType = SedType.valueOf(sedType))
 
         mockMvc.perform(post("/sed/prefill")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(apijson))
-                .andExpect(status().isBadRequest)
-                .andExpect(status().reason(Matchers.containsString("Mangler vedtakID")))
-
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(apijson))
+            .andExpect(status().isBadRequest)
+            .andExpect(status().reason(Matchers.containsString(expectedErrorMessage)))
     }
 
-    @Test
+    @ParameterizedTest(name = "{0} skal gi feilmelding:{2}")
+    @CsvSource(
+        value = [
+            "med alder with uføre pensjondata throw error bad request, /pensjonsinformasjon/krav/P2200-UP-INNV.xml, " +
+                    "Du kan ikke opprette alderspensjonskrav i en uføretrygdsak (PESYS-saksnr: 22874955 har sakstype UFOREP",
+            "med sak fra GJENLEV feiler, /pensjonsinformasjon/krav/GJ_P2000_BH_MED_UTL.xml, " +
+                    "Det finnes ingen iverksatte vedtak for førstegangsbehandling kun utland. Vennligst gå til EESSI-Pensjon fra vedtakskontekst."],
+        nullValues = ["null"]
+    )
     @Throws(Exception::class)
-    fun `prefill sed P2000 missing saksnummer throw error bad request and reason Mangler sakId`() {
-        every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID )) } returns NorskIdent(FNR_VOKSEN)
-        every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith(true, fnr = FNR_VOKSEN, aktoerid = AKTOER_ID)
-        every { krrService.hentPersonFraKrr(any()) } returns KrrPerson(false,"melleby11@melby.no", "11111111")
-
-        val apijson = dummyApijson(sakid = "", aktoerId = AKTOER_ID)
-
-        mockMvc.perform(post("/sed/prefill")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(apijson))
-                .andExpect(status().isBadRequest)
-                .andExpect(status().reason(Matchers.containsString("Mangler sakId")))
-
-    }
-
-    @Test
-    @Throws(Exception::class)
-    fun `prefill sed P2000 alder with uføre pensjondata throw error bad request and mesage Du kan ikke opprette alderspensjonskrav i en uføretrygdsak`() {
+    fun `prefill sed `(testInfo: String, xmlResponse: String, feilmelding: String) {
 
         every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID )) } returns NorskIdent(FNR_VOKSEN)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith(true, fnr = FNR_VOKSEN, aktoerid = AKTOER_ID)
         every { krrService.hentPersonFraKrr(any()) } returns KrrPerson(false,"melleby11@melby.no", "11111111")
 
-        every { pensjonsinformasjonOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns PrefillTestHelper.readXMLresponse("/pensjonsinformasjon/krav/P2200-UP-INNV.xml")
+        every { pensjonsinformasjonOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns PrefillTestHelper.readXMLresponse(xmlResponse)
 
         val apijson = dummyApijson(sakid = "22874955", aktoerId = AKTOER_ID)
 
@@ -136,26 +135,7 @@ class SedPrefillIntegrationSpringTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(apijson))
                 .andExpect(status().isBadRequest)
-                .andExpect(status().reason(Matchers.containsString("Du kan ikke opprette alderspensjonskrav i en uføretrygdsak (PESYS-saksnr: 22874955 har sakstype UFOREP)")))
-
-    }
-
-    @Test
-    @Throws(Exception::class)
-    fun `prefill sed P2000 med sak fra GJENLEV feiler`() {
-        every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN)
-        every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith(true, fnr = FNR_VOKSEN, aktoerid = AKTOER_ID)
-        every { krrService.hentPersonFraKrr(any()) } returns KrrPerson(false,"melleby11@melby.no", "11111111")
-        every { pensjonsinformasjonOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns PrefillTestHelper.readXMLresponse("/pensjonsinformasjon/krav/GJ_P2000_BH_MED_UTL.xml")
-
-        //feil saknr
-        val apijson = dummyApijson(sakid = "22932988", aktoerId = AKTOER_ID)
-
-        mockMvc.perform(post("/sed/prefill")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(apijson))
-            .andExpect(status().isBadRequest)
-            .andExpect(status().reason(Matchers.containsString("Det finnes ingen iverksatte vedtak for førstegangsbehandling kun utland. Vennligst gå til EESSI-Pensjon fra vedtakskontekst.")))
+                .andExpect(status().reason(Matchers.containsString(feilmelding)))
 
     }
 
