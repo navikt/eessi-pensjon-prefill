@@ -45,17 +45,19 @@ object PensjonsInformasjonHelper {
         kravArsak: String? = null,
         kravType: String? = null,
         mottattDato: XMLGregorianCalendar? = null,
-        virkningstidspunkt: XMLGregorianCalendar? = null
+        virkningstidspunkt: XMLGregorianCalendar? = null,
+        status: Sakstatus? = null,
     ) = V1KravHistorikk().apply {
         this.kravArsak = kravArsak ?: ""
         this.kravType = kravType ?: ""
         this.mottattDato = mottattDato ?: dummyDate()
         this.virkningstidspunkt = virkningstidspunkt ?: dummyDate()
+        this.status = status?.name ?: ""
     }
 
     fun createSak(
-        kravHistorikk: V1KravHistorikk,
-        ytelsePerMaaned: V1YtelsePerMaaned,
+        kravHistorikk: V1KravHistorikk? = null,
+        ytelsePerMaaned: V1YtelsePerMaaned? = null,
         sakType : String? = null,
         status: Sakstatus = Sakstatus.TIL_BEHANDLING,
         forsteVirkningstidspunkt: XMLGregorianCalendar? = null
