@@ -19,6 +19,7 @@ import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
 import no.nav.eessi.pensjon.personoppslag.pdl.model.AktoerId
 import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe.*
 import no.nav.eessi.pensjon.personoppslag.pdl.model.NorskIdent
+import no.nav.eessi.pensjon.personoppslag.pdl.model.PdlPerson
 import no.nav.eessi.pensjon.prefill.KrrService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.models.KrrPerson
@@ -50,7 +51,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.web.client.RestTemplate
 
-@SpringBootTest(classes = [IntegrasjonsTestConfig::class, UnsecuredWebMvcTestLauncher::class, SedPrefillIntegrationSpringTest.TestConfig::class], webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(classes = [IntegrasjonsTestConfig::class, UnsecuredWebMvcTestLauncher::class], webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("unsecured-webmvctest", "excludeKodeverk")
 @AutoConfigureMockMvc
 @EmbeddedKafka
@@ -58,25 +59,21 @@ class SedPrefillIntegrationSpringTest {
 
     @MockkBean
     private lateinit var pensjonsinformasjonOidcRestTemplate: RestTemplate
-
     @MockkBean
     private lateinit var kodeverkClient: KodeverkClient
-
     @MockkBean
     private lateinit var personService: PersonService
-
     @MockkBean
     private lateinit var krrService: KrrService
-
     @Autowired
     private lateinit var mockMvc: MockMvc
 
     private companion object {
-        const val FNR_VOKSEN = "11067122781"    // KRAFTIG VEGGPRYD
+        const val FNR_VOKSEN   = "11067122781"    // KRAFTIG VEGGPRYD
         const val FNR_VOKSEN_3 = "12312312312"
         const val FNR_VOKSEN_4 = "9876543210"
 
-        const val AKTOER_ID = "0123456789000"
+        const val AKTOER_ID   = "0123456789000"
         const val AKTOER_ID_2 = "0009876543210"
     }
 
@@ -84,13 +81,6 @@ class SedPrefillIntegrationSpringTest {
     fun setup(){
         every { krrService.hentPersonFraKrr(any()) } returns KrrPerson(false, "melleby11@melby.no", "11111111")
         every { krrService.hentPersonFraKrr(eq(FNR_VOKSEN_4)) } returns KrrPerson(false,"melleby12@melby.no", "22222222")
-    }
-
-    @TestConfiguration
-    internal class TestConfig{
-        @Bean
-        @Primary
-        fun restTemplate(): RestTemplate = mockk()
     }
 
     @ParameterizedTest(name = "for verdier for sakId:{0}, vedtak:{1}, sedType:{2}, og feilmelding:{3}")
@@ -104,7 +94,6 @@ class SedPrefillIntegrationSpringTest {
     fun `Validering av prefill kaster exception`(sakId: String?, vedtakid: String?, sedType: String, expectedErrorMessage: String) {
         every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID )) } returns NorskIdent(FNR_VOKSEN)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith(true, fnr = FNR_VOKSEN, aktoerid = AKTOER_ID)
-        every { krrService.hentPersonFraKrr(any())  } returns KrrPerson(false,"melleby11@melby.no", "11111111")
 
         val apijson = dummyApijson(sakid = sakId ?: "", vedtakid = vedtakid, aktoerId = AKTOER_ID, sedType = SedType.valueOf(sedType))
 
@@ -113,6 +102,14 @@ class SedPrefillIntegrationSpringTest {
             .content(apijson))
             .andExpect(status().isBadRequest)
             .andExpect(status().reason(Matchers.containsString(expectedErrorMessage)))
+    }
+
+    fun mockPersonService(fnr: String, aktoerId: String, fornavn: String? = null, etternavn: String? = null): PdlPerson {
+        every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(aktoerId)) } returns NorskIdent(fnr)
+        PersonPDLMock.createWith(true, fornavn = fornavn ?: "", fnr = fnr, aktoerid = aktoerId, etternavn = etternavn ?: "").also {
+            every { personService.hentPerson(NorskIdent(fnr)) } returns PersonPDLMock.createWith(true, fornavn = fornavn ?: "", fnr = fnr, aktoerid = aktoerId, etternavn = etternavn ?: "")
+            return it
+        }
     }
 
     @ParameterizedTest(name = "{0} skal gi feilmelding:{2}")
@@ -127,9 +124,7 @@ class SedPrefillIntegrationSpringTest {
     @Throws(Exception::class)
     fun `prefill sed `(testInfo: String, xmlResponse: String, feilmelding: String) {
 
-        every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID )) } returns NorskIdent(FNR_VOKSEN)
-        every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith(true, fnr = FNR_VOKSEN, aktoerid = AKTOER_ID)
-        every { krrService.hentPersonFraKrr(any()) } returns KrrPerson(false,"melleby11@melby.no", "11111111")
+        mockPersonService(FNR_VOKSEN, AKTOER_ID)
 
         every { pensjonsinformasjonOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns PrefillTestHelper.readXMLresponse(xmlResponse)
 
@@ -180,9 +175,8 @@ class SedPrefillIntegrationSpringTest {
     @Test
     @Throws(Exception::class)
     fun `prefill sed P6000 P_BUC_01 Alderpensjon med avslag skal returnere en gyldig SED`() {
-        every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN_3)
-        every { personService.hentPerson(NorskIdent(FNR_VOKSEN_3))} returns PersonPDLMock.createWith(true, "Alder", "Pensjonist", FNR_VOKSEN_3)
 
+        val person = mockPersonService(FNR_VOKSEN_3, AKTOER_ID, fornavn = "Alder", etternavn = "Pensjonist")
         every { pensjonsinformasjonOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns PrefillTestHelper.readXMLresponse("/pensjonsinformasjon/vedtak/P6000-AP-Avslag.xml")
         every { kodeverkClient.finnLandkode(any()) } returns "QX"
         val apijson = dummyApijson( sakid = "22874955", vedtakid = "123123423423", aktoerId = AKTOER_ID, sedType = P6000, buc = P_BUC_01)
@@ -196,88 +190,90 @@ class SedPrefillIntegrationSpringTest {
 
         val response = result.response.getContentAsString(charset("UTF-8"))
 
-        val validResponse = """
-            {
-              "sed" : "P6000",
-              "nav" : {
-                "eessisak" : [ {
-                  "institusjonsid" : "NO:noinst002",
-                  "institusjonsnavn" : "NOINST002, NO INST002, NO",
-                  "saksnummer" : "22874955",
-                  "land" : "NO"
-                } ],
-                "bruker" : {
-                  "person" : {
-                    "pin" : [ {
-                      "institusjonsnavn" : "NOINST002, NO INST002, NO",
-                      "institusjonsid" : "NO:noinst002",
-                      "identifikator" : "12312312312",
-                      "land" : "NO"
-                    }, {
-                      "identifikator" : "123123123",
-                      "land" : "QX"
-                    } ],
-                    "statsborgerskap" : [ {
-                      "land" : "QX"
-                    } ],
-                    "etternavn" : "Pensjonist",
-                    "fornavn" : "Alder",
-                    "kjoenn" : "M",
-                    "foedselsdato" : "1988-07-12",
-                    "sivilstand" : [ {
-                      "fradato" : "2000-10-01",
-                      "status" : "enslig"
-                    } ],
-                    "kontakt" : {
-                      "telefon" : [ {
-                        "type" : "mobil",
-                        "nummer" : "11111111"
-                      } ],
-                      "email" : [ {
-                        "adresse" : "melleby11@melby.no"
-                      } ]
-                    }
-                  },
-                  "adresse" : {
-                    "gate" : "Oppoverbakken 66",
-                    "by" : "SØRUMSAND",
-                    "postnummer" : "1920",
-                    "land" : "NO"
-                  }
-                }
-              },
-              "pensjon" : {
-                "vedtak" : [ {
-                  "type" : "01",
-                  "resultat" : "02",
-                  "avslagbegrunnelse" : [ {
-                    "begrunnelse" : "03"
-                  } ]
-                } ],
-                "sak" : {
-                  "kravtype" : [ {
-                    "datoFrist" : "six weeks from the date the decision is received"
-                  } ]
-                },
-                "tilleggsinformasjon" : {
-                  "dato" : "2020-12-16",
-                  "andreinstitusjoner" : [ {
-                    "institusjonsid" : "NO:noinst002",
-                    "institusjonsnavn" : "NOINST002, NO INST002, NO",
-                    "institusjonsadresse" : "Postboks 6600 Etterstad TEST",
-                    "postnummer" : "0607",
-                    "land" : "NO",
-                    "poststed" : "Oslo"
-                  } ]
-                }
-              },
-              "sedGVer" : "4",
-              "sedVer" : "2"
-            }
-        """.trimIndent()
+        val validResponse = s(person).trimIndent()
 
         JSONAssert.assertEquals(response, validResponse, true)
     }
+
+    private fun s(person: PdlPerson) = """
+                {
+                  "sed" : "P6000",
+                  "nav" : {
+                    "eessisak" : [ {
+                      "institusjonsid" : "NO:noinst002",
+                      "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                      "saksnummer" : "22874955",
+                      "land" : "NO"
+                    } ],
+                    "bruker" : {
+                      "person" : {
+                        "pin" : [ {
+                          "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                          "institusjonsid" : "NO:noinst002",
+                          "identifikator" : "12312312312",
+                          "land" : "NO"
+                        }, {
+                          "identifikator" : "123123123",
+                          "land" : "QX"
+                        } ],
+                        "statsborgerskap" : [ {
+                          "land" : "QX"
+                        } ],
+                        "etternavn" : ${person.navn?.etternavn},
+                        "fornavn" : ${person.navn?.fornavn},
+                        "kjoenn" : "M",
+                        "foedselsdato" : "1988-07-12",
+                        "sivilstand" : [ {
+                          "fradato" : "2000-10-01",
+                          "status" : "enslig"
+                        } ],
+                        "kontakt" : {
+                          "telefon" : [ {
+                            "type" : "mobil",
+                            "nummer" : "11111111"
+                          } ],
+                          "email" : [ {
+                            "adresse" : "melleby11@melby.no"
+                          } ]
+                        }
+                      },
+                      "adresse" : {
+                        "gate" : "Oppoverbakken 66",
+                        "by" : "SØRUMSAND",
+                        "postnummer" : "1920",
+                        "land" : "NO"
+                      }
+                    }
+                  },
+                  "pensjon" : {
+                    "vedtak" : [ {
+                      "type" : "01",
+                      "resultat" : "02",
+                      "avslagbegrunnelse" : [ {
+                        "begrunnelse" : "03"
+                      } ]
+                    } ],
+                    "sak" : {
+                      "kravtype" : [ {
+                        "datoFrist" : "six weeks from the date the decision is received"
+                      } ]
+                    },
+                    "tilleggsinformasjon" : {
+                      "dato" : "2020-12-16",
+                      "andreinstitusjoner" : [ {
+                        "institusjonsid" : "NO:noinst002",
+                        "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                        "institusjonsadresse" : "Postboks 6600 Etterstad TEST",
+                        "postnummer" : "0607",
+                        "land" : "NO",
+                        "poststed" : "Oslo"
+                      } ]
+                    }
+                  },
+                  "sedGVer" : "4",
+                  "sedVer" : "2"
+                }
+            """
 
 
     @Test
@@ -349,9 +345,7 @@ class SedPrefillIntegrationSpringTest {
     @Test
     @Throws(Exception::class)
     fun `prefill sed P4000 med forsikret person skal returnere en gyldig SED`() {
-
-        every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN_3)
-        every { personService.hentPerson(NorskIdent(FNR_VOKSEN_3)) } returns PersonPDLMock.createWith(true, "Lever", "Gjenlev", FNR_VOKSEN_3)
+        mockPersonService(fnr = FNR_VOKSEN_3, aktoerId = AKTOER_ID, fornavn = "Lever", etternavn = "Gjenlev")
         every { kodeverkClient.finnLandkode(any()) } returns "QX"
 
         val apijson = dummyApijson(sakid = "22874955", vedtakid = "9876543211", aktoerId = AKTOER_ID, sedType = P4000, buc = P_BUC_05)
@@ -427,7 +421,6 @@ class SedPrefillIntegrationSpringTest {
 
         Assertions.assertEquals(FNR_VOKSEN_3, forsikretPin)
         JSONAssert.assertEquals(response, validResponse, true)
-
     }
 
     @Test
@@ -511,15 +504,7 @@ class SedPrefillIntegrationSpringTest {
         }
         """.trimIndent()
 
-        val result = mockMvc.perform(post("/sed/prefill")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(apijson))
-                .andExpect(status().isOk)
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andReturn()
-
-        val response = result.response.getContentAsString(charset("UTF-8"))
-
+        val response = prefillFraRestOgVerifiserResultet(apijson)
         JSONAssert.assertEquals(response, validResponse, false)
 
     }
@@ -534,15 +519,7 @@ class SedPrefillIntegrationSpringTest {
 
         val apijson = dummyApijson(sakid = "21841174", aktoerId = AKTOER_ID)
 
-
-        val result = mockMvc.perform(post("/sed/prefill")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(apijson))
-            .andExpect(status().isOk)
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andReturn()
-
-        val response = result.response.getContentAsString(charset("UTF-8"))
+        val response = prefillFraRestOgVerifiserResultet(apijson)
 
         val expected = """
         {
@@ -715,17 +692,7 @@ class SedPrefillIntegrationSpringTest {
         }         
         """.trimIndent()
 
-        val result = mockMvc.perform(post("/sed/prefill")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(apijson))
-            .andExpect(status().isOk)
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andReturn()
-
-        val response = result.response.getContentAsString(charset("UTF-8"))
-
-        println("@@@@@@: ${response.toJson()}")
-
+        val response = prefillFraRestOgVerifiserResultet(apijson)
         JSONAssert.assertEquals(validResponse, response, false)
     }
 
@@ -739,14 +706,8 @@ class SedPrefillIntegrationSpringTest {
         every { kodeverkClient.finnLandkode(any()) } returns "QX"
 
         val apijson = dummyApijson(sakid = "22889955", aktoerId = AKTOER_ID)
-        val result = mockMvc.perform(post("/sed/prefill")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(apijson))
-                .andExpect(status().isOk)
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andReturn()
 
-        val response = result.response.getContentAsString(charset("UTF-8"))
+        val response = prefillFraRestOgVerifiserResultet(apijson)
 
         val validResponse = """
         {
@@ -834,15 +795,7 @@ class SedPrefillIntegrationSpringTest {
 
         val apijson = dummyApijson(sakid = "22580170", aktoerId = AKTOER_ID, vedtakid = "5134513451345")
 
-        val result = mockMvc.perform(post("/sed/prefill")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(apijson))
-                .andExpect(status().isOk)
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andReturn()
-
-        val response = result.response.getContentAsString(charset("UTF-8"))
-        println("****** ${response.toJson()}")
+        val response = prefillFraRestOgVerifiserResultet(apijson)
 
         val validResponse = """
         {
@@ -1024,14 +977,7 @@ class SedPrefillIntegrationSpringTest {
                 }
         """.trimIndent()
 
-        val result = mockMvc.perform(post("/sed/prefill")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(apijson))
-            .andExpect(status().isOk)
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andReturn()
-
-        val response = result.response.getContentAsString(charset("UTF-8"))
+        val response = prefillFraRestOgVerifiserResultet(apijson)
         JSONAssert.assertEquals(response, validResponse, false)
 
     }
@@ -1091,18 +1037,24 @@ class SedPrefillIntegrationSpringTest {
             }
         """.trimIndent()
 
-        val result = mockMvc.perform(post("/sed/prefill")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(apijson))
+        val response = prefillFraRestOgVerifiserResultet(apijson)
+        JSONAssert.assertEquals(response, validResponse, false)
+
+    }
+
+    private fun prefillFraRestOgVerifiserResultet(apijson: String): String {
+        val result = mockMvc.perform(
+            post("/sed/prefill")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(apijson)
+        )
             .andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andReturn()
 
         val response = result.response.getContentAsString(charset("UTF-8"))
-        JSONAssert.assertEquals(response, validResponse, false)
-
+        return response
     }
-
 
 
     @Test
