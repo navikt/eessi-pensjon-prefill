@@ -613,49 +613,7 @@ class SedPrefillIntegrationSpringTest {
 
         val apijson = dummyApijson(sakid = "21337890", aktoerId = AKTOER_ID, sedType = X010, payload = x009.toJson())
 
-        val validResponse = """
-            {
-              "sed" : "X010",
-              "nav" : {
-                "sak" : {
-                  "kontekst" : {
-                    "bruker" : {
-                      "person" : {
-                        "etternavn" : "Testesen",
-                        "fornavn" : "Test",
-                        "kjoenn" : "M",
-                        "foedselsdato" : "1988-07-12"
-                      }
-                    }
-                  },
-                  "paaminnelse" : {
-                    "svar" : {
-                      "informasjon" : {
-                        "ikketilgjengelig" : [ {
-                          "type" : "sed",
-                          "opplysninger" : "Missing details",
-                          "grunn" : {
-                            "type" : "annet",
-                            "annet" : "Missing details"
-                          }
-                        } ],
-                        "kommersenere" : [ {
-                          "type" : "dokument",
-                          "opplysninger" : "æøå"
-                        }, {
-                          "type" : "sed",
-                          "opplysninger" : "P5000"
-                        } ]
-                      }
-                    }
-                  }
-                }
-              },
-              "sedGVer" : "4",
-              "sedVer" : "2"
-            }
-        """.trimIndent()
-
+        val validResponse = XSedBuilder.ValidResponseBuilderXSEd().build().toJsonSkipEmpty()
         val response = prefillFraRestOgVerifiserResultet(apijson)
         JSONAssert.assertEquals(response, validResponse, false)
 
