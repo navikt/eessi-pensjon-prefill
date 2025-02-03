@@ -25,7 +25,7 @@ object PrefillPensjonVedtaksavslag {
      * /4.1.13.1 - 4.1.13.2.1
      */
     fun createAvlsagsBegrunnelseItem(pendata: Pensjonsinformasjon): List<AvslagbegrunnelseItem>? {
-        logger.debug("4.1.13        AvlsagsBegrunnelseItem")
+        logger.info("4.1.13        AvlsagsBegrunnelseItem")
 
         val avslagbegrunnelse = createAvlsagsBegrunnelse(pendata)
 
@@ -60,7 +60,7 @@ object PrefillPensjonVedtaksavslag {
      *
      */
     fun createAvlsagsBegrunnelse(pendata: Pensjonsinformasjon): String? {
-        logger.debug("4.1.13.1          AvlsagsBegrunnelse")
+        logger.info("4.1.13.1          AvlsagsBegrunnelse")
 
         if (pendata.vilkarsvurderingListe == null || pendata.vilkarsvurderingListe.vilkarsvurderingListe == null) {
             return null
@@ -113,7 +113,7 @@ object PrefillPensjonVedtaksavslag {
             }
         }
 
-        logger.debug("              -- Ingen avslagsbegrunnelse")
+        logger.info("              -- Ingen avslagsbegrunnelse")
         return null
     }
 }
