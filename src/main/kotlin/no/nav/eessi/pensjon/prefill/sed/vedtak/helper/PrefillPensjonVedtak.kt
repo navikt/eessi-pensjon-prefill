@@ -203,7 +203,7 @@ object PrefillPensjonVedtak {
      *  [0] No
      */
     private fun createFramtidigtrygdetid(pendata: Pensjonsinformasjon): String {
-        logger.debug("4.1.12        Framtidigtrygdetid ${pendata.sakAlder.sakType}")
+        logger.info("4.1.12        Framtidigtrygdetid ${pendata.sakAlder.sakType}")
 
         return when (KSAK.valueOf(pendata.sakAlder.sakType)) {
             KSAK.ALDER -> "0"
@@ -222,12 +222,11 @@ object PrefillPensjonVedtak {
      *
      */
     private fun createOpptjeningForsikredeAnnen(pendata: Pensjonsinformasjon): String? {
-        logger.info("4.1.11        OpptjeningForsikredeAnnen")
+        logger.info("4.1.11        OpptjeningForsikredeAnnen, sakType: ${pendata.sakAlder.sakType}")
 
         val sakType = KSAK.valueOf(pendata.sakAlder.sakType)
 
-        val resultatGjenlevendetillegg = pendata.vilkarsvurderingListe?.vilkarsvurderingListe?.get(0)?.resultatGjenlevendetillegg
-                ?: ""
+        val resultatGjenlevendetillegg = pendata.vilkarsvurderingListe?.vilkarsvurderingListe?.get(0)?.resultatGjenlevendetillegg ?: ""
         val erUtenGjenlevendetillegg = resultatGjenlevendetillegg == ""
         val erMedGjenlevendetillegg = resultatGjenlevendetillegg != ""
         val vinnendeMetode = hentVinnendeBergeningsMetode(pendata)
