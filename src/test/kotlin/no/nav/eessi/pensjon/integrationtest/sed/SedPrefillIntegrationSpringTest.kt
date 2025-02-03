@@ -48,6 +48,7 @@ import org.springframework.http.MediaType
 import org.springframework.kafka.test.context.EmbeddedKafka
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.MvcResult
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
@@ -99,11 +100,7 @@ class SedPrefillIntegrationSpringTest {
 
         val apijson = dummyApijson(sakid = sakId ?: "", vedtakid = vedtakid, aktoerId = AKTOER_ID, sedType = SedType.valueOf(sedType))
 
-        mockMvc.perform(post("/sed/prefill")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(apijson))
-            .andExpect(status().isBadRequest)
-            .andExpect(status().reason(Matchers.containsString(expectedErrorMessage)))
+        mockMvcSedPrefill(apijson, expectedErrorMessage)
     }
 
     fun mockPersonService(fnr: String, aktoerId: String, fornavn: String? = null, etternavn: String? = null): PdlPerson {
@@ -132,11 +129,7 @@ class SedPrefillIntegrationSpringTest {
 
         val apijson = dummyApijson(sakid = "22874955", aktoerId = AKTOER_ID)
 
-        mockMvc.perform(post("/sed/prefill")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(apijson))
-                .andExpect(status().isBadRequest)
-                .andExpect(status().reason(Matchers.containsString(feilmelding)))
+        mockMvcSedPrefill(apijson, feilmelding)
 
     }
 
@@ -155,12 +148,7 @@ class SedPrefillIntegrationSpringTest {
 
         val apijson = dummyApijson(sakid = "22874955", vedtakid = "987654321122355466", aktoerId = AKTOER_ID, sedType = P6000, buc = P_BUC_02, fnravdod = FNR_VOKSEN_4)
 
-        val result = mockMvc.perform(post("/sed/prefill")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(apijson))
-                .andExpect(status().isOk)
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andReturn()
+        val result = mockMvcPrefill(apijson)
 
         val response = result.response.getContentAsString(charset("UTF-8"))
 
@@ -183,12 +171,7 @@ class SedPrefillIntegrationSpringTest {
         every { kodeverkClient.finnLandkode(any()) } returns "QX"
         val apijson = dummyApijson( sakid = "22874955", vedtakid = "123123423423", aktoerId = AKTOER_ID, sedType = P6000, buc = P_BUC_01)
 
-        val result = mockMvc.perform(post("/sed/prefill")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(apijson))
-            .andExpect(status().isOk)
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andReturn()
+        val result = mockMvcPrefill(apijson)
 
         val response = result.response.getContentAsString(charset("UTF-8"))
 
@@ -219,12 +202,7 @@ class SedPrefillIntegrationSpringTest {
 
         val apijson = dummyApijson(sakid = "22874955", vedtakid = "9876543211", aktoerId = AKTOER_ID, sedType = P3000_SE, buc = P_BUC_10,  fnravdod = FNR_VOKSEN_4)
 
-        val result = mockMvc.perform(post("/sed/prefill")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(apijson))
-            .andExpect(status().isOk)
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andReturn()
+        val result = mockMvcPrefill(apijson)
 
         val response = result.response.getContentAsString(charset("UTF-8"))
 
@@ -253,12 +231,7 @@ class SedPrefillIntegrationSpringTest {
 
         val apijson = dummyApijson(sakid = "22874955", vedtakid = "9876543211", aktoerId = AKTOER_ID, sedType = P5000, buc = P_BUC_10,  fnravdod = FNR_VOKSEN_4)
 
-        val result = mockMvc.perform(post("/sed/prefill")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(apijson))
-            .andExpect(status().isOk)
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andReturn()
+        val result = mockMvcPrefill(apijson)
 
         val response = result.response.getContentAsString(charset("UTF-8"))
 
@@ -281,12 +254,7 @@ class SedPrefillIntegrationSpringTest {
 
         val apijson = dummyApijson(sakid = "22874955", vedtakid = "9876543211", aktoerId = AKTOER_ID, sedType = P4000, buc = P_BUC_05)
 
-        val result = mockMvc.perform(post("/sed/prefill")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(apijson))
-            .andExpect(status().isOk)
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andReturn()
+        val result = mockMvcPrefill(apijson)
 
         val response = result.response.getContentAsString(charset("UTF-8"))
         val validResponse = SedBuilder.ValidResponseBuilder().apply {
@@ -390,7 +358,6 @@ class SedPrefillIntegrationSpringTest {
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith()
         every { pensjonsinformasjonOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns PrefillTestHelper.readXMLresponse("/pensjonsinformasjon/krav/AP_2000_KUN_UTLAND.xml")
         every { kodeverkClient.finnLandkode(any()) } returns "QX"
-
 
         val apijson = dummyApijson(sakid = "22932784", aktoerId = AKTOER_ID)
         val validResponse = SedBuilder.ValidResponseBuilder().apply {
@@ -510,11 +477,7 @@ class SedPrefillIntegrationSpringTest {
         val apijson = dummyApijson(sakid = "1232123123", aktoerId = AKTOER_ID)
         val expectedError = """Det finnes ingen iverksatte vedtak for førstegangsbehandling kun utland. Vennligst gå til EESSI-Pensjon fra vedtakskontekst.""".trimIndent()
 
-        mockMvc.perform(post("/sed/prefill")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(apijson))
-                .andExpect(status().isBadRequest)
-                .andExpect(status().reason(Matchers.containsString(expectedError)))
+        mockMvcSedPrefill(apijson, expectedError)
 
     }
 
@@ -527,11 +490,7 @@ class SedPrefillIntegrationSpringTest {
 
         val apijson = dummyApijson(sakid = "22580170", aktoerId = AKTOER_ID)
 
-        mockMvc.perform(post("/sed/prefill")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(apijson))
-                .andExpect(status().isBadRequest)
-                .andExpect(status().reason(Matchers.containsString("Det er ikke markert for bodd/arbeidet i utlandet. Krav SED P2000 blir ikke opprettet")))
+        mockMvcSedPrefill(apijson, "Det er ikke markert for bodd/arbeidet i utlandet. Krav SED P2000 blir ikke opprettet")
 
     }
 
@@ -547,11 +506,7 @@ class SedPrefillIntegrationSpringTest {
 
         val apijson = dummyApijson(sakid = "20541862", aktoerId = AKTOER_ID, sedType = P2100, buc = P_BUC_02, fnravdod = FNR_VOKSEN_4)
 
-        mockMvc.perform(post("/sed/prefill")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(apijson))
-                .andExpect(status().isBadRequest)
-                .andExpect(status().reason(Matchers.containsString("Ingen gyldig kravårsak funnet for ALDER eller UFØREP for utfylling av en krav SED P2100")))
+        mockMvcSedPrefill(apijson, "Ingen gyldig kravårsak funnet for ALDER eller UFØREP for utfylling av en krav SED P2100")
     }
 
     @Test
@@ -620,19 +575,11 @@ class SedPrefillIntegrationSpringTest {
     }
 
     private fun prefillFraRestOgVerifiserResultet(apijson: String): String {
-        val result = mockMvc.perform(
-            post("/sed/prefill")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(apijson)
-        )
-            .andExpect(status().isOk)
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andReturn()
+        val result = mockMvcPrefill(apijson)
 
         val response = result.response.getContentAsString(charset("UTF-8"))
         return response
     }
-
 
     @Test
     @Throws(Exception::class)
@@ -643,12 +590,30 @@ class SedPrefillIntegrationSpringTest {
 
         val apijson = dummyApijson(sakid = "21920707", aktoerId = AKTOER_ID)
 
-        mockMvc.perform(post("/sed/prefill")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(apijson))
-                .andExpect(status().isBadRequest)
-                .andExpect(status().reason(Matchers.containsString("Det finnes ingen iverksatte vedtak for førstegangsbehandling kun utland. Vennligst gå til EESSI-Pensjon fra vedtakskontekst.")))
+        val melding = "Det finnes ingen iverksatte vedtak for førstegangsbehandling kun utland. Vennligst gå til EESSI-Pensjon fra vedtakskontekst."
+        mockMvcSedPrefill(apijson, melding)
     }
+
+    private val PREFILL_URL = "/sed/prefill"
+
+    private fun performPrefillRequest(apijson: String) =
+        mockMvc.perform(
+            post(PREFILL_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(apijson)
+        )
+
+    private fun mockMvcSedPrefill(apijson: String, melding: String) {
+        performPrefillRequest(apijson)
+            .andExpect(status().isBadRequest)
+            .andExpect(status().reason(Matchers.containsString(melding)))
+    }
+
+    private fun mockMvcPrefill(apijson: String): MvcResult =
+        performPrefillRequest(apijson)
+            .andExpect(status().isOk)
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andReturn()
 
     private fun finnPin(pinNode: JsonNode): String? {
         return pinNode.findValue("pin")
