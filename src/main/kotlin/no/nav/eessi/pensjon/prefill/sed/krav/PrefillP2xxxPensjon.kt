@@ -272,6 +272,7 @@ object PrefillP2xxxPensjon {
             }
             logger.debug("-----------------------------------------------------")
         }
+        //TODO: Se om det er mulig å fjerne denne da den skaper usikkerhet om det har blitt laget en V1YtelsePerMaaned
         return V1YtelsePerMaaned().also { logger.info("Klarte ikke å generere V1YtelsePerMaaned; gir en tom ytelse tilbake") }
     }
 
