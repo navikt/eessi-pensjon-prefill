@@ -95,17 +95,17 @@ object VedtakPensjonDataHelper {
 
     fun hentVinnendeBergeningsMetode(pendata: Pensjonsinformasjon): String {
         return hentSisteYtelsePerMaaned(pendata).vinnendeBeregningsmetode.also {
-            logger.debug(" +            hentVinnendeBergeningsMetode: $it")
+            logger.info(" +            hentVinnendeBergeningsMetode: $it")
         }
     }
 
     fun hentYtelseBelop(pendata: Pensjonsinformasjon): String {
-        logger.debug(" +            hentYtelseBelop")
+        logger.info(" +            hentYtelseBelop")
         return hentSisteYtelsePerMaaned(pendata).belop.toString()
     }
 
     fun isMottarMinstePensjonsniva(pendata: Pensjonsinformasjon): Boolean {
-        logger.debug(" +            isMottarMinstePensjonsniva")
+        logger.info(" +            isMottarMinstePensjonsniva")
         return hentSisteYtelsePerMaaned(pendata).isMottarMinstePensjonsniva
     }
 
