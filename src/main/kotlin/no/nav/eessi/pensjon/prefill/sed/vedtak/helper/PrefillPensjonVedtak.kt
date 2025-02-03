@@ -229,8 +229,7 @@ object PrefillPensjonVedtak {
         val resultatGjenlevendetillegg = pendata.vilkarsvurderingListe?.vilkarsvurderingListe?.get(0)?.resultatGjenlevendetillegg ?: ""
         val erUtenGjenlevendetillegg = resultatGjenlevendetillegg == ""
         val erMedGjenlevendetillegg = resultatGjenlevendetillegg != ""
-        val vinnendeMetode = hentVinnendeBergeningsMetode(pendata)
-
+        val vinnendeMetode = hentVinnendeBergeningsMetode(pendata) ?: ""
 
         if ((KSAK.ALDER == sakType || KSAK.UFOREP == sakType) && erUtenGjenlevendetillegg)
             return "01"
