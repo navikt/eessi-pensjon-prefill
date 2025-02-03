@@ -91,7 +91,7 @@ object PrefillP6000Pensjon {
         return try {
             PrefillPensjonTilleggsinformasjon.createTilleggsinformasjon(pensjoninformasjon, andreinstitusjonerItem)
         } catch (ex: Exception) {
-            logger.warn("Feilet ved preutfylling tilleggsinformasjon, fortsetter uten")
+            logger.warn("Feilet ved preutfylling tilleggsinformasjon, fortsetter uten, feilmelding: ${ex.message}")
             null
         }
     }
@@ -100,7 +100,7 @@ object PrefillP6000Pensjon {
         return try {
             PrefillPensjonSak.createSak(pensjoninformasjon)
         } catch (ex: Exception) {
-            logger.warn("Feilet ved preutfylling av sak, fortsetter uten")
+            logger.warn("Feilet ved preutfylling av sak, fortsetter uten, feilmelding: ${ex.message}")
             null
         }
     }
@@ -109,7 +109,7 @@ object PrefillP6000Pensjon {
         return try {
             PrefillPensjonReduksjon.createReduksjon(pensjoninformasjon)
         } catch (ex: Exception) {
-            logger.warn("Feilet ved preutfylling av reduksjoner, fortsetter uten")
+            logger.warn("Feilet ved preutfylling av reduksjoner, fortsetter uten, feilmelding: ${ex.message}")
             emptyList()
         }
     }
@@ -118,7 +118,7 @@ object PrefillP6000Pensjon {
         return try {
             listOf(PrefillPensjonVedtak.createVedtakItem(pensjoninformasjon))
         } catch (ex: Exception) {
-            logger.warn("Feilet ved preutfylling av vedtaksdetaljer, fortsetter uten")
+            logger.warn("Feilet ved preutfylling av vedtaksdetaljer, fortsetter uten, feilmelding: ${ex.message}")
             emptyList()
         }
     }
