@@ -63,7 +63,7 @@ class PrefillP2100GjenlevendeRevurdering {
             gjenlevendeEllerAvdod = avdod
         )
 
-        prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav)
+        prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav, mockk())
         val p2100 = prefillSEDService.prefill(prefillData, persondataCollection, pensjonCollection)
 
         val p2100gjenlev = SED(

@@ -52,7 +52,7 @@ class PrefillP2200MedAlderSakTest {
 
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P2200, personFnr, penSaksnummer = pesysSaksnummer)
 
-        prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav)
+        prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav, mockk())
 
         innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
         //val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)

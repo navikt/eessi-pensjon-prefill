@@ -6,6 +6,7 @@ import no.nav.eessi.pensjon.eux.model.BucType
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.sed.SED
 import no.nav.eessi.pensjon.metrics.MetricsHelper
+import no.nav.eessi.pensjon.prefill.etterlatte.EtterlatteService
 import no.nav.eessi.pensjon.prefill.models.KrrPerson
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
@@ -16,22 +17,18 @@ import no.nav.eessi.pensjon.statistikk.AutomatiseringStatistikkService
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
-import org.junit.platform.commons.util.StringUtils
 
 @ExtendWith(MockKExtension::class)
 class PrefillServiceTest{
 
     var krrService: KrrService = mockk()
-
     var prefillSedService: PrefillSEDService = mockk()
-
     var innhentingService: InnhentingService = mockk()
-
     var automatiseringStatistikkService: AutomatiseringStatistikkService = mockk()
+    var etterlatteService: EtterlatteService = mockk()
 
     private lateinit var personcollection: PersonDataCollection
     lateinit var prefillService: PrefillService
@@ -78,7 +75,7 @@ class PrefillServiceTest{
 
         val krrPerson = KrrPerson(false, epost, "12345678")
         every { krrService.hentPersonFraKrr(any()) } returns krrPerson
-        every { prefillSedService.prefill(capture(requestSlot), any(), any()) } returns SED(SedType.P2000, "sedVer")
+        every { prefillSedService.prefillGjenny(capture(requestSlot), any()) } returns SED(SedType.P2000, "sedVer")
 
         prefillService.prefillSedtoJson(request)
         val capture = requestSlot.captured

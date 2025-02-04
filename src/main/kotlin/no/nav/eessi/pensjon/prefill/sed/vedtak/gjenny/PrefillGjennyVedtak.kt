@@ -1,100 +1,47 @@
-package no.nav.eessi.pensjon.prefill.sed.vedtak.helper
+package no.nav.eessi.pensjon.prefill.sed.vedtak.gjenny
 
 import no.nav.eessi.pensjon.eux.model.sed.BasertPaa
 import no.nav.eessi.pensjon.eux.model.sed.Grunnlag
 import no.nav.eessi.pensjon.eux.model.sed.Opptjening
 import no.nav.eessi.pensjon.eux.model.sed.VedtakItem
-import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.PrefillPensjonVedtaksavslag.createAvlsagsBegrunnelseItem
+import no.nav.eessi.pensjon.prefill.etterlatte.EtterlatteResponse
+import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.KSAK
 import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.PrefillPensjonVedtaksavslag.sjekkForVilkarsvurderingListeHovedytelseellerAvslag
-import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.PrefillPensjonVedtaksbelop.createBeregningItemList
-import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.PrefillPensjonVedtaksbelop.createEkstraTilleggPensjon
 import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.VedtakPensjonDataHelper.hentVilkarsResultatHovedytelse
 import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.VedtakPensjonDataHelper.hentVinnendeBergeningsMetode
 import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.VedtakPensjonDataHelper.isMottarMinstePensjonsniva
-import no.nav.eessi.pensjon.utils.simpleFormat
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import no.nav.pensjon.v1.sakalder.V1SakAlder
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-object PrefillPensjonVedtak {
+object PrefillGjennyVedtak {
 
-    private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillPensjonVedtak::class.java) }
+    private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillGjennyVedtak::class.java) }
 
     /**
      *  4.1
      */
-    fun createVedtakItem(pendata: Pensjonsinformasjon): VedtakItem {
+    fun createVedtakItem(vedtakInfoFraGjenny: EtterlatteResponse): VedtakItem {
         logger.debug("PrefillPensjonReduksjon")
         logger.debug("4.1       VedtakItem")
 
         return VedtakItem(
 
                 //4.1.1  $pensjon.vedtak[x].type
-                type = createVedtakTypePensionWithRule(pendata),
-
-                //4.1.2  $pensjon.vedtak[x].basertPaa
-                basertPaa = createVedtakGrunnlagPentionWithRule(pendata),
-
-                //4.1.3.1 $pensjon.vedtak[x].basertPaaAnnen
-                basertPaaAnnen = createVedtakAnnenTypePentionWithRule(pendata),
+//                type = createVedtakTypePensionWithRule(pendata),
 
                 //4.1.4 $pensjon.vedtak[x].resultat
-                resultat = createTypeVedtakPentionWithRule(pendata),
+//                resultat = createTypeVedtakPentionWithRule(pendata),
 
                 //4.1.6  $pensjon.vedtak[x].virkningsdato
-                virkningsdato = pendata.vedtak.virkningstidspunkt.simpleFormat(),
-
-                //4.1.7 -- $pensjon.vedtak[x].beregning[x]..
-                beregning = createBeregningItemList(pendata),
-
-                //4.1.9
-                ukjent = createEkstraTilleggPensjon(pendata),
-
-                //4.1.10 - 4.1.12 $pensjon.vedtak[x].grunnlag
-                grunnlag = createGrunnlag(pendata),
+//                virkningsdato = pendata.vedtak.virkningstidspunkt.simpleFormat(),
 
                 //4.1.13.1 -- 4.1.13.2.1 - $pensjon.vedtak[x].avslagbegrunnelse[x].begrunnelse
-                avslagbegrunnelse = createAvlsagsBegrunnelseItem(pendata),
+//                avslagbegrunnelse = createAvlsagsBegrunnelseItem(pendata),
         )
 
     }
-
-//    fun createVedtakItemGjenny(vedtakInfoFraGjenny: EtterlatteResponse): VedtakItem {
-//        logger.debug("PrefillPensjonReduksjon")
-//        logger.debug("4.1       VedtakItem")
-//
-//        return VedtakItem(
-//
-//            //4.1.1  $pensjon.vedtak[x].type
-//            type = createVedtakTypePensionWithRule(pendata),
-//
-//            //4.1.2  $pensjon.vedtak[x].basertPaa
-//            basertPaa = createVedtakGrunnlagPentionWithRule(pendata),
-//
-//            //4.1.3.1 $pensjon.vedtak[x].basertPaaAnnen
-//            basertPaaAnnen = createVedtakAnnenTypePentionWithRule(pendata),
-//
-//            //4.1.4 $pensjon.vedtak[x].resultat
-//            resultat = createTypeVedtakPentionWithRule(pendata),
-//
-//            //4.1.6  $pensjon.vedtak[x].virkningsdato
-//            virkningsdato = pendata.vedtak.virkningstidspunkt.simpleFormat(),
-//
-//            //4.1.7 -- $pensjon.vedtak[x].beregning[x]..
-//            beregning = createBeregningItemList(pendata),
-//
-//            //4.1.9
-//            ukjent = createEkstraTilleggPensjon(pendata),
-//
-//            //4.1.10 - 4.1.12 $pensjon.vedtak[x].grunnlag
-//            grunnlag = createGrunnlag(pendata),
-//
-//            //4.1.13.1 -- 4.1.13.2.1 - $pensjon.vedtak[x].avslagbegrunnelse[x].begrunnelse
-//            avslagbegrunnelse = createAvlsagsBegrunnelseItem(pendata),
-//        )
-//
-//    }
 
 
     /**
@@ -122,17 +69,6 @@ object PrefillPensjonVedtak {
             KSAK.BARNEP, KSAK.GJENLEV -> "03"
         }
     }
-
-//    fun createVedtakTypePensionGjenny(vedtakInfoFraGjenny: EtterlatteResponse): String {
-//        //sak fra Gjenny
-//        val sak = vedtakInfoFraGjenny.sakType
-//
-//        return when (sakType) {
-//            KSAK.ALDER ->  "01"
-//            KSAK.UFOREP -> "02"
-//            KSAK.BARNEP, KSAK.GJENLEV -> "03"
-//        }
-//    }
 
     /**
      * 4.1.2 vedtak

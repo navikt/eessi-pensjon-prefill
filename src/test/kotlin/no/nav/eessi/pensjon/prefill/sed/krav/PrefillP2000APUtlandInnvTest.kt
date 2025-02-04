@@ -63,7 +63,7 @@ class PrefillP2000APUtlandInnvTest {
 
         pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
 
-        prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav)
+        prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav, mockk())
     }
 
     @Test

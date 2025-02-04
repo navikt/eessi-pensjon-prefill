@@ -61,7 +61,7 @@ class PrefillP8000P_BUC_05Test {
                 institutionnavn = "NOINST002, NO INST002, NO")
 
 
-        prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav)
+        prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav, mockk())
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P8000, personFnr, penSaksnummer = pesysSaksnummer)
 
     }

@@ -3,7 +3,6 @@ package no.nav.eessi.pensjon.prefill.sed.krav
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_01
-import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.SedType.P2000
 import no.nav.eessi.pensjon.eux.model.sed.Nav
 import no.nav.eessi.pensjon.eux.model.sed.SED
@@ -88,7 +87,7 @@ class PrefillP2000_AP_21975717Test {
         val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
         pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
 
-        prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav)
+        prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav, mockk())
 
     }
 
@@ -97,7 +96,7 @@ class PrefillP2000_AP_21975717Test {
         val p2000 = prefillSEDService.prefill(prefillData, persondataCollection, pensjonCollection)
 
         val p2000pensjon = SED(
-                type = SedType.P2000,
+                type = P2000,
                 pensjon = p2000.pensjon,
                 nav = Nav( krav = p2000.nav?.krav )
         )
@@ -196,7 +195,7 @@ class PrefillP2000_AP_21975717Test {
 
     @Test
     fun `testing av komplett P2000 med utskrift og testing av innsending`() {
-        val p2000 = prefillSEDService.prefill(prefillData, persondataCollection,pensjonCollection)
+        val p2000 = prefillSEDService.prefill(prefillData, persondataCollection, pensjonCollection)
 
         val json = mapAnyToJson(createMockApiRequest(p2000.toJson()))
         assertNotNull(json)

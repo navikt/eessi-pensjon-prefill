@@ -65,7 +65,7 @@ class PrefillP2200_AP_21975717Test {
             partSedAsJson["PersonInfo"] = readJsonResponse("/json/nav/other/person_informasjon_selvb.json")
             partSedAsJson["P4000"] = readJsonResponse("/json/nav/other/p4000_trygdetid_part.json")
         }
-        prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav)
+        prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav, mockk())
 
         val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
         pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)

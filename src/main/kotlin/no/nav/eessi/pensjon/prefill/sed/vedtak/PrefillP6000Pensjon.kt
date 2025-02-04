@@ -1,12 +1,7 @@
 package no.nav.eessi.pensjon.prefill.sed.vedtak
 
-import no.nav.eessi.pensjon.eux.model.sed.AndreinstitusjonerItem
-import no.nav.eessi.pensjon.eux.model.sed.Bruker
-import no.nav.eessi.pensjon.eux.model.sed.P6000Pensjon
-import no.nav.eessi.pensjon.eux.model.sed.ReduksjonItem
-import no.nav.eessi.pensjon.eux.model.sed.Sak
-import no.nav.eessi.pensjon.eux.model.sed.Tilleggsinformasjon
-import no.nav.eessi.pensjon.eux.model.sed.VedtakItem
+import no.nav.eessi.pensjon.eux.model.sed.*
+import no.nav.eessi.pensjon.prefill.etterlatte.EtterlatteResponse
 import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.PrefillPensjonReduksjon
 import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.PrefillPensjonSak
 import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.PrefillPensjonTilleggsinformasjon
@@ -18,6 +13,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.web.server.ResponseStatusException
+import java.time.format.DateTimeFormatter
 
 
 /**
@@ -61,6 +57,59 @@ object PrefillP6000Pensjon {
             )
         }
     }
+
+    fun prefillP6000PensjonVedtak(
+        gjenlevende: Bruker?,
+        etterlatteResponse: EtterlatteResponse?,
+        andreinstitusjonerItem: AndreinstitusjonerItem?
+    ): P6000Pensjon {
+        //val prefillP6000PensjonGjenny = prefillP6000PensjonGjenny(vedtakInformasjonGjenny, gjenlevende, andreinstitusjonerItem)
+//        val vedtakItem = if (etterlatteResponse?.sakType == "AVSLAG") {
+//            VedtakItem(
+//                    type = vedtak.type,
+//                    resultat = vedtak.resultat,
+//                    avslagbegrunnelse = etterlatteResponse.avslagbegrunnelse
+//            )
+//        } else {
+//            VedtakItem(
+//                type = vedtak.type,
+//                resultat = vedtak.resultat,
+//                virkningsdato = vedtak.virkningstidspunkt.simpleFormat(),
+//                avslagbegrunnelse = vedtak.avslagbegrunnelse
+//            )
+//        }
+        val simpleFormatter = DateTimeFormatter.ofPattern("YYYY-MM-DD")
+        return P6000Pensjon(
+            gjenlevende = gjenlevende,
+            sak = null,
+            vedtak = listOf(VedtakItem(virkningsdato = simpleFormatter.format(etterlatteResponse?.virkningstidspunkt))),
+            reduksjon = null,
+            tilleggsinformasjon = null
+        )
+    }
+
+//    fun prefillP6000PensjonGjenny(
+//        vedtakInformasjonGjenny: EtterlatteResponse,
+//        gjenlevende: Bruker?,
+//        andreinstitusjonerItem: AndreinstitusjonerItem?
+//    ): P6000Pensjon {
+//        logger.debug("4.1       VedtaksInfo fra gjenny")
+//
+//        return if (vedtakInformasjonGjenny.sakType == "AVSLAG") {) {
+//            VedtakItem(
+//                    type = vedtak.type,
+//            resultat = vedtak.resultat,
+//            avslagbegrunnelse = vedtak.avslagbegrunnelse
+//            )
+//        } else {
+//            return P6000Pensjon(
+//                gjenlevende = gjenlevende,
+//                vedtak = prefillVedtak(vedtakInformasjonGjenny),
+//
+//            )
+//        }
+//    }
+
 
     private fun prefillPensjonMedAvslag(
         pensjoninformasjon: Pensjonsinformasjon,
@@ -122,6 +171,15 @@ object PrefillP6000Pensjon {
             emptyList()
         }
     }
+
+//    private fun prefillVedtakGjenny(vedtakInfoFraGjenny: EtterlatteResponse): List<VedtakItem> {
+//        return try {
+//            listOf(PrefillPensjonVedtak.createVedtakItem(pensjoninformasjon))
+//        } catch (ex: Exception) {
+//            logger.warn("Feilet ved preutfylling av vedtaksdetaljer, fortsetter uten")
+//            emptyList()
+//        }
+//    }
 
     private fun erAvslag(pensjoninformasjon: Pensjonsinformasjon): Boolean {
         val vilkar = pensjoninformasjon.vilkarsvurderingListe

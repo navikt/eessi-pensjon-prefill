@@ -3,7 +3,8 @@ package no.nav.eessi.pensjon.prefill
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.SedType
-import no.nav.eessi.pensjon.kodeverk.KodeverkClient.Companion.toJson
+import no.nav.eessi.pensjon.prefill.etterlatte.EtterlatteResponse
+import no.nav.eessi.pensjon.prefill.etterlatte.EtterlatteService
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjonMother
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
@@ -19,8 +20,9 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
+import java.time.LocalDate
 
-class PrefillSEDServiceTest {
+class PrefillGjennySEDServiceTest {
     private val personFnr = FodselsnummerGenerator.generateFnrForTest(57)
     private val avdodPersonFnr = FodselsnummerGenerator.generateFnrForTest(63)
 
@@ -35,9 +37,11 @@ class PrefillSEDServiceTest {
     private lateinit var personcollection: PersonDataCollection
     private lateinit var personDataCollection: PersonDataCollection
     private lateinit var prefillNav: PrefillPDLNav
+    private lateinit var etterlatteService: EtterlatteService
 
     @Before
     fun setup() {
+        etterlatteService = mockk()
         prefillService = PrefillService(krrService, mockPrefillSEDService, innhentingService, automatiseringStatistikkService)
         personcollection = PersonDataCollection(null, null)
         val personDataCollectionFamilie = PersonPDLMock.createEnkelFamilie(personFnr, avdodPersonFnr)
@@ -57,8 +61,11 @@ class PrefillSEDServiceTest {
     fun `En p6000 uten vedtak skal gi en delvis utfylt sed`(){
         dataFromPEN = PrefillTestHelper.lesPensjonsdataVedtakFraFil("/pensjonsinformasjon/vedtak/P6000-GP-401.xml")
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P6000, personFnr, penSaksnummer = "22580170", vedtakId = "12312312", avdod = PersonInfo(avdodPersonFnr, "1234567891234"))
-        prefillSEDService = PrefillSEDService(EessiInformasjonMother.standardEessiInfo(), prefillNav)
-        val prefill = prefillSEDService.prefill(prefillData, personDataCollection)
+        prefillSEDService = PrefillSEDService(EessiInformasjonMother.standardEessiInfo(), prefillNav, etterlatteService)
+
+        every { etterlatteService.hentGjennySak(any()) } returns Result.success(EtterlatteResponse(virkningstidspunkt = LocalDate.now(), sakId = 1))
+
+        val prefill = prefillSEDService.prefillGjenny(prefillData, personDataCollection)
 
         assertNotNull(prefill.nav?.bruker?.person?.pin)
         assertEquals(avdodPersonFnr, prefill.nav?.bruker?.person?.pin?.firstOrNull()?.identifikator)

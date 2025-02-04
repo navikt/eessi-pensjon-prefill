@@ -4,9 +4,7 @@ import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_01
 import no.nav.eessi.pensjon.eux.model.SedType
-import no.nav.eessi.pensjon.eux.model.SedType.P3000_AT
-import no.nav.eessi.pensjon.eux.model.SedType.P3000_IT
-import no.nav.eessi.pensjon.eux.model.SedType.P3000_SE
+import no.nav.eessi.pensjon.eux.model.SedType.*
 import no.nav.eessi.pensjon.prefill.LagPdlPerson
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
@@ -47,7 +45,7 @@ class SedP3000XXTest {
             institutionnavn = "NOINST002, NO INST002, NO"
         )
 
-        prefillSEDService = PrefillSEDService(eessiInformasjon, prefillNav)
+        prefillSEDService = PrefillSEDService(eessiInformasjon, prefillNav, mockk())
     }
 
     @Test
