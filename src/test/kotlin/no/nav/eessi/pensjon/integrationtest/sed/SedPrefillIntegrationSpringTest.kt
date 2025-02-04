@@ -31,10 +31,13 @@ import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper
 import no.nav.eessi.pensjon.shared.api.ApiRequest
 import no.nav.eessi.pensjon.shared.api.ApiSubject
 import no.nav.eessi.pensjon.shared.api.SubjectFnr
+import no.nav.eessi.pensjon.utils.mapAnyToJson
+import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.toJson
 import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
 import org.hamcrest.Matchers
 import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
@@ -48,7 +51,6 @@ import org.springframework.http.MediaType
 import org.springframework.kafka.test.context.EmbeddedKafka
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.MvcResult
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
@@ -125,11 +127,16 @@ class SedPrefillIntegrationSpringTest {
 
         mockPersonService(FNR_VOKSEN, AKTOER_ID)
 
-        every { pensjonsinformasjonOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns PrefillTestHelper.readXMLresponse(xmlResponse)
+        every {
+            pensjonsinformasjonOidcRestTemplate.exchange(
+                any<String>(),
+                any(),
+                any<HttpEntity<Unit>>(),
+                eq(String::class.java)
+            )
+        } returns PrefillTestHelper.readXMLresponse(xmlResponse)
 
-        val apijson = dummyApijson(sakid = "22874955", aktoerId = AKTOER_ID)
-
-        mockMvcSedPrefill(apijson, feilmelding)
+        mockMvcSedPrefill(dummyApijson(sakid = "22874955", aktoerId = AKTOER_ID), feilmelding)
 
     }
 
@@ -143,22 +150,33 @@ class SedPrefillIntegrationSpringTest {
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN))  } returns PersonPDLMock.createWith(true, "Lever", "Gjenlev", FNR_VOKSEN, AKTOER_ID)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_4)) } returns PersonPDLMock.createWith(true, "Avdød", "Død", FNR_VOKSEN_4, AKTOER_ID_2, true)
 
-        every { pensjonsinformasjonOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns PrefillTestHelper.readXMLresponse("/pensjonsinformasjon/vedtak/P6000-BARNEP-GJENLEV.xml")
+        every {
+            pensjonsinformasjonOidcRestTemplate.exchange(
+                any<String>(),
+                any(),
+                any<HttpEntity<Unit>>(),
+                eq(String::class.java)
+            )
+        } returns PrefillTestHelper.readXMLresponse("/pensjonsinformasjon/vedtak/P6000-BARNEP-GJENLEV.xml")
         every { kodeverkClient.finnLandkode(any()) } returns "QX"
 
-        val apijson = dummyApijson(sakid = "22874955", vedtakid = "987654321122355466", aktoerId = AKTOER_ID, sedType = P6000, buc = P_BUC_02, fnravdod = FNR_VOKSEN_4)
+        val result = mockMvcPrefill(
+            dummyApijson(
+                sakid = "22874955",
+                vedtakid = "987654321122355466",
+                aktoerId = AKTOER_ID,
+                sedType = P6000,
+                buc = P_BUC_02,
+                fnravdod = FNR_VOKSEN_4
+            )
+        )
 
-        val result = mockMvcPrefill(apijson)
+        val response = mapJsonToAny<SED>(result)
+        val gjenlPin = response.nav?.bruker?.person?.pin?.firstOrNull()?.identifikator
+        val avdodPin = response.pensjon?.gjenlevende?.person?.pin?.firstOrNull()?.identifikator
 
-        val response = result.response.getContentAsString(charset("UTF-8"))
-
-        val mapper = jacksonObjectMapper()
-        val sedRootNode = mapper.readTree(response)
-        val gjenlevendePIN = finnPin(sedRootNode.at("/pensjon/gjenlevende/person"))
-        val avdodPIN = finnPin(sedRootNode.at("/nav/bruker"))
-
-        Assertions.assertEquals(FNR_VOKSEN, gjenlevendePIN)
-        Assertions.assertEquals(FNR_VOKSEN_4, avdodPIN)
+        assertEquals(FNR_VOKSEN, avdodPin)
+        assertEquals(FNR_VOKSEN_4, gjenlPin)
 
     }
 
@@ -166,14 +184,19 @@ class SedPrefillIntegrationSpringTest {
     @Throws(Exception::class)
     fun `prefill sed P6000 P_BUC_01 Alderpensjon med avslag skal returnere en gyldig SED`() {
 
-        val person = mockPersonService(FNR_VOKSEN_3, AKTOER_ID, fornavn = "Alder", etternavn = "Pensjonist")
+        mockPersonService(FNR_VOKSEN_3, AKTOER_ID, fornavn = "Alder", etternavn = "Pensjonist")
         every { pensjonsinformasjonOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns PrefillTestHelper.readXMLresponse("/pensjonsinformasjon/vedtak/P6000-AP-Avslag.xml")
         every { kodeverkClient.finnLandkode(any()) } returns "QX"
-        val apijson = dummyApijson( sakid = "22874955", vedtakid = "123123423423", aktoerId = AKTOER_ID, sedType = P6000, buc = P_BUC_01)
 
-        val result = mockMvcPrefill(apijson)
-
-        val response = result.response.getContentAsString(charset("UTF-8"))
+        val response = mockMvcPrefill(
+            dummyApijson(
+                sakid = "22874955",
+                vedtakid = "123123423423",
+                aktoerId = AKTOER_ID,
+                sedType = P6000,
+                buc = P_BUC_01
+            )
+        )
 
         val validResponse = SedBuilder.ValidResponseBuilder().apply {
             sed = P6000
@@ -200,21 +223,24 @@ class SedPrefillIntegrationSpringTest {
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_4)) } returns PersonPDLMock.createWith(true, "Avdød", "Død", FNR_VOKSEN_4, AKTOER_ID_2, true)
         every { kodeverkClient.finnLandkode(any()) } returns "QX"
 
-        val apijson = dummyApijson(sakid = "22874955", vedtakid = "9876543211", aktoerId = AKTOER_ID, sedType = P3000_SE, buc = P_BUC_10,  fnravdod = FNR_VOKSEN_4)
+        val result = mockMvcPrefill(
+            dummyApijson(
+                sakid = "22874955",
+                vedtakid = "9876543211",
+                aktoerId = AKTOER_ID,
+                sedType = P3000_SE,
+                buc = P_BUC_10,
+                fnravdod = FNR_VOKSEN_4
+            )
+        )
+        val response = mapJsonToAny<SED>(result)
+        val avdodPin = response.nav?.bruker?.person?.pin?.firstOrNull()?.identifikator
+        val gjenlPin = response.pensjon?.gjenlevende?.person?.pin?.firstOrNull()?.identifikator
+        val annenPersonPin = response.nav?.annenperson?.person?.pin?.firstOrNull()?.identifikator
 
-        val result = mockMvcPrefill(apijson)
-
-        val response = result.response.getContentAsString(charset("UTF-8"))
-
-        val mapper = jacksonObjectMapper()
-        val sedRootNode = mapper.readTree(response)
-        val gjenlevendePIN = finnPin(sedRootNode.at("/pensjon/gjenlevende/person"))
-        val annenPersonPIN = finnPin(sedRootNode.at("/nav/annenperson/person"))
-        val avdodPIN = finnPin(sedRootNode.at("/nav/bruker"))
-
-        Assertions.assertEquals(FNR_VOKSEN, gjenlevendePIN)
-        Assertions.assertEquals(FNR_VOKSEN, annenPersonPIN)
-        Assertions.assertEquals(FNR_VOKSEN_4, avdodPIN)
+        assertEquals(FNR_VOKSEN, gjenlPin)
+        assertEquals(FNR_VOKSEN_4, avdodPin)
+        assertEquals(FNR_VOKSEN, annenPersonPin)
 
     }
 
@@ -229,47 +255,52 @@ class SedPrefillIntegrationSpringTest {
 
         every { kodeverkClient.finnLandkode(any()) } returns "QX"
 
-        val apijson = dummyApijson(sakid = "22874955", vedtakid = "9876543211", aktoerId = AKTOER_ID, sedType = P5000, buc = P_BUC_10,  fnravdod = FNR_VOKSEN_4)
+        val result = mockMvcPrefill(
+            dummyApijson(
+                sakid = "22874955",
+                vedtakid = "9876543211",
+                aktoerId = AKTOER_ID,
+                sedType = P5000,
+                buc = P_BUC_10,
+                fnravdod = FNR_VOKSEN_4
+            )
+        )
 
-        val result = mockMvcPrefill(apijson)
+        val response = mapJsonToAny<SED>(result)
+        val avdodPin = response.nav?.bruker?.person?.pin?.firstOrNull()?.identifikator
+        val gjenlevendePIN = response.pensjon?.gjenlevende?.person?.pin?.firstOrNull()?.identifikator
 
-        val response = result.response.getContentAsString(charset("UTF-8"))
-
-        val mapper = jacksonObjectMapper()
-        val sedRootNode = mapper.readTree(response)
-        val gjenlevendePIN = finnPin(sedRootNode.at("/pensjon/gjenlevende/person"))
-        val avdodPIN = finnPin(sedRootNode.at("/nav/bruker"))
-
-        Assertions.assertEquals(FNR_VOKSEN, gjenlevendePIN)
-        Assertions.assertEquals(FNR_VOKSEN_4, avdodPIN)
-
+        assertEquals(FNR_VOKSEN, gjenlevendePIN)
+        assertEquals(FNR_VOKSEN_4, avdodPin)
     }
 
 
     @Test
     @Throws(Exception::class)
     fun `prefill sed P4000 med forsikret person skal returnere en gyldig SED`() {
-        val person = mockPersonService(fnr = FNR_VOKSEN_3, aktoerId = AKTOER_ID, fornavn = "Lever", etternavn = "Gjenlev")
+        mockPersonService(fnr = FNR_VOKSEN_3, aktoerId = AKTOER_ID, fornavn = "Lever", etternavn = "Gjenlev")
         every { kodeverkClient.finnLandkode(any()) } returns "QX"
 
-        val apijson = dummyApijson(sakid = "22874955", vedtakid = "9876543211", aktoerId = AKTOER_ID, sedType = P4000, buc = P_BUC_05)
-
-        val result = mockMvcPrefill(apijson)
-
-        val response = result.response.getContentAsString(charset("UTF-8"))
+        val response = mockMvcPrefill(
+            dummyApijson(
+                sakid = "22874955",
+                vedtakid = "9876543211",
+                aktoerId = AKTOER_ID,
+                sedType = P4000,
+                buc = P_BUC_05
+            )
+        )
         val validResponse = SedBuilder.ValidResponseBuilder().apply {
             sed = P4000
             nav {
                 krav = null
             }
-        }.build().toJsonSkipEmpty()
+        }.build()
+        val validJson = mapJsonToAny<SED>(response)
+        val forsikretPin = validJson.nav?.bruker?.person?.pin?.firstOrNull()?.identifikator
 
-        val mapper = jacksonObjectMapper()
-        val sedRootNode = mapper.readTree(response)
-        val forsikretPin = finnPin(sedRootNode.at("/nav/bruker"))
-
-        Assertions.assertEquals(FNR_VOKSEN_3, forsikretPin)
-        JSONAssert.assertEquals(response, validResponse, true)
+        assertEquals(FNR_VOKSEN_3, forsikretPin)
+        JSONAssert.assertEquals(response, validResponse.toJsonSkipEmpty(), true)
     }
 
     @Test
@@ -281,7 +312,8 @@ class SedPrefillIntegrationSpringTest {
         every { pensjonsinformasjonOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns PrefillTestHelper.readXMLresponse("/pensjonsinformasjon/krav/P2000-AP-UP-21337890.xml")
         every { kodeverkClient.finnLandkode(any()) } returns "QX"
 
-        val apijson = dummyApijson(sakid = "21337890", aktoerId = AKTOER_ID)
+        val response = mockMvcPrefill(dummyApijson(sakid = "21337890", aktoerId = AKTOER_ID))
+
         val validResponse = SedBuilder.ValidResponseBuilder().apply {
             sed = P2000
             pensjon = SedBuilder.P2000PensjonBuilder().apply {
@@ -302,7 +334,6 @@ class SedPrefillIntegrationSpringTest {
             }
         }.build().toJsonSkipEmpty()
 
-        val response = prefillFraRestOgVerifiserResultet(apijson)
         JSONAssert.assertEquals(response, validResponse, true)
 
     }
@@ -315,9 +346,7 @@ class SedPrefillIntegrationSpringTest {
         every { pensjonsinformasjonOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns PrefillTestHelper.readXMLresponse("/pensjonsinformasjon/krav/P2000-AP-UTL-UKJENT-12065212345.xml")
         every { kodeverkClient.finnLandkode(any()) } returns "QX"
 
-        val apijson = dummyApijson(sakid = "21841174", aktoerId = AKTOER_ID)
-
-        val response = prefillFraRestOgVerifiserResultet(apijson)
+        val response = mockMvcPrefill(dummyApijson(sakid = "21841174", aktoerId = AKTOER_ID))
 
         val validResponse = SedBuilder.ValidResponseBuilder().apply {
             sed = P2000
@@ -359,7 +388,6 @@ class SedPrefillIntegrationSpringTest {
         every { pensjonsinformasjonOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns PrefillTestHelper.readXMLresponse("/pensjonsinformasjon/krav/AP_2000_KUN_UTLAND.xml")
         every { kodeverkClient.finnLandkode(any()) } returns "QX"
 
-        val apijson = dummyApijson(sakid = "22932784", aktoerId = AKTOER_ID)
         val validResponse = SedBuilder.ValidResponseBuilder().apply {
             sed = P2000
             pensjon = SedBuilder.P2000PensjonBuilder().apply {
@@ -381,7 +409,7 @@ class SedPrefillIntegrationSpringTest {
                 krav = SedBuilder.KravBuilder("2021-03-01")
             }
         }.build().toJsonSkipEmpty()
-        val response = prefillFraRestOgVerifiserResultet(apijson)
+        val response = mockMvcPrefill(dummyApijson(sakid = "22932784", aktoerId = AKTOER_ID))
         JSONAssert.assertEquals(validResponse, response, true)
     }
 
@@ -394,8 +422,8 @@ class SedPrefillIntegrationSpringTest {
         every { pensjonsinformasjonOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns PrefillTestHelper.readXMLresponse("/pensjonsinformasjon/krav/P2000krav-alderpensjon-avslag.xml")
         every { kodeverkClient.finnLandkode(any()) } returns "QX"
 
-        val apijson = dummyApijson(sakid = "22889955", aktoerId = AKTOER_ID)
-        val response = prefillFraRestOgVerifiserResultet(apijson)
+        val response = mockMvcPrefill(dummyApijson(sakid = "22889955", aktoerId = AKTOER_ID))
+
         val validResponse = SedBuilder.ValidResponseBuilder().apply {
             sed = P2000
             pensjon = SedBuilder.P2000PensjonBuilder().apply {
@@ -429,10 +457,7 @@ class SedPrefillIntegrationSpringTest {
 
         every { kodeverkClient.finnLandkode(any()) } returns "QX"
 
-
-        val apijson = dummyApijson(sakid = "22580170", aktoerId = AKTOER_ID, vedtakid = "5134513451345")
-
-        val response = prefillFraRestOgVerifiserResultet(apijson)
+        val response = mockMvcPrefill(dummyApijson(sakid = "22580170", aktoerId = AKTOER_ID, vedtakid = "5134513451345"))
 
         val validResponse = SedBuilder.ValidResponseBuilder().apply {
             sed = P2000
@@ -478,7 +503,6 @@ class SedPrefillIntegrationSpringTest {
         val expectedError = """Det finnes ingen iverksatte vedtak for førstegangsbehandling kun utland. Vennligst gå til EESSI-Pensjon fra vedtakskontekst.""".trimIndent()
 
         mockMvcSedPrefill(apijson, expectedError)
-
     }
 
     @Test
@@ -491,7 +515,6 @@ class SedPrefillIntegrationSpringTest {
         val apijson = dummyApijson(sakid = "22580170", aktoerId = AKTOER_ID)
 
         mockMvcSedPrefill(apijson, "Det er ikke markert for bodd/arbeidet i utlandet. Krav SED P2000 blir ikke opprettet")
-
     }
 
     @Test
@@ -518,42 +541,10 @@ class SedPrefillIntegrationSpringTest {
         every { kodeverkClient.finnLandkode(any()) } returns "QX"
 
         val apijson = dummyApijson(sakid = "21337890", aktoerId = AKTOER_ID, sedType = X010)
+        val validResponse = XSedBuilder.ValidResponseBuilderXSEd().build().toJsonSkipEmpty()
 
-        val validResponse = """
-                {
-                  "sed" : "X010",
-                  "sedGVer" : "4",
-                  "sedVer" : "2",
-                  "nav" : {
-                    "sak" : {
-                      "kontekst" : {
-                        "bruker" : {
-                          "person" : {
-                            "etternavn" : "Testesen",
-                            "fornavn" : "Test",
-                            "kjoenn" : "M",
-                            "foedselsdato" : "1988-07-12"
-                          }
-                        }
-                      },
-                      "paaminnelse" : {
-                        "svar" : {
-                          "informasjon" : {
-                            "kommersenere" : [ { 
-                                "type": "dokument",
-                                "opplysninger": "."
-                            } ]
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-        """.trimIndent()
-
-        val response = prefillFraRestOgVerifiserResultet(apijson)
+        val response = mockMvcPrefill(apijson)
         JSONAssert.assertEquals(response, validResponse, false)
-
     }
 
     @Test
@@ -566,19 +557,16 @@ class SedPrefillIntegrationSpringTest {
 
         val x009 = SED.fromJsonToConcrete(PrefillTestHelper.readJsonResponse("/json/nav/X009-NAV.json")) as X009
 
-        val apijson = dummyApijson(sakid = "21337890", aktoerId = AKTOER_ID, sedType = X010, payload = x009.toJson())
-
+        val response = mockMvcPrefill(
+            dummyApijson(
+                sakid = "21337890",
+                aktoerId = AKTOER_ID,
+                sedType = X010,
+                payload = x009.toJson()
+            )
+        )
         val validResponse = XSedBuilder.ValidResponseBuilderXSEd().build().toJsonSkipEmpty()
-        val response = prefillFraRestOgVerifiserResultet(apijson)
         JSONAssert.assertEquals(response, validResponse, false)
-
-    }
-
-    private fun prefillFraRestOgVerifiserResultet(apijson: String): String {
-        val result = mockMvcPrefill(apijson)
-
-        val response = result.response.getContentAsString(charset("UTF-8"))
-        return response
     }
 
     @Test
@@ -609,11 +597,11 @@ class SedPrefillIntegrationSpringTest {
             .andExpect(status().reason(Matchers.containsString(melding)))
     }
 
-    private fun mockMvcPrefill(apijson: String): MvcResult =
+    private fun mockMvcPrefill(apijson: String): String =
         performPrefillRequest(apijson)
             .andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andReturn()
+            .andReturn().response.getContentAsString(charset("UTF-8"))
 
     private fun finnPin(pinNode: JsonNode): String? {
         return pinNode.findValue("pin")
