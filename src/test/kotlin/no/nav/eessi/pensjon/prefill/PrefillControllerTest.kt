@@ -77,7 +77,7 @@ class PrefillControllerTest {
 
         every { pensjonsinformasjonService.hentVedtak(any()) } returns Pensjonsinformasjon()
 
-        every{ mockPrefillSEDService.prefillGjenny(any(), any())} returns mockSed
+        every{ mockPrefillSEDService.prefill(any(), any(), any())} returns mockSed
 
         val response = prefillController.prefillDocument(mockData)
         Assertions.assertNotNull(response)

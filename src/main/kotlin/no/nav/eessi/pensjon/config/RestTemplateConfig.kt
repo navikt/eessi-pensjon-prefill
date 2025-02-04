@@ -39,6 +39,9 @@ class RestTemplateConfig(
     @Value("\${KRR_URL}")
     lateinit var krrUrl: String
 
+    @Value("\${KRR_URL}")
+    lateinit var etterlatteUrl: String
+
     @Bean
     fun pensjoninformasjonRestTemplate() : RestTemplate {
         return RestTemplateBuilder()
@@ -80,6 +83,28 @@ class RestTemplateConfig(
                 requestFactory = BufferingClientHttpRequestFactory(SimpleClientHttpRequestFactory())
             }
     }
+
+    @Bean
+    fun etterlatteRestTemplate() : RestTemplate {
+        return RestTemplateBuilder()
+            .rootUri(krrUrl)
+            .errorHandler(DefaultResponseErrorHandler())
+            .additionalInterceptors(
+                RequestIdHeaderInterceptor(),
+                IOExceptionRetryInterceptor(),
+                RequestCountInterceptor(meterRegistry),
+                RequestResponseLoggerInterceptor(),
+                bearerTokenInterceptor(
+                    clientConfigurationProperties.registration["krr-credentials"]
+                        ?: throw RuntimeException("could not find oauth2 client config for ${"krr-credentials"}"),
+                    oAuth2AccessTokenService!!
+                )
+            )
+            .build().apply {
+                requestFactory = BufferingClientHttpRequestFactory(SimpleClientHttpRequestFactory())
+            }
+    }
+
 
     private fun bearerTokenInterceptor(
         clientProperties: ClientProperties,

@@ -14,11 +14,7 @@ import org.springframework.web.client.RestTemplate
 import java.time.LocalDate
 
 @Component
-class EtterlatteService(
-
-    private val etterlatteRestTemplate: RestTemplate,
-    @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper.ForTest()
-) {
+class EtterlatteService(private val etterlatteRestTemplate: RestTemplate, @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper.ForTest()) {
     private val logger = LoggerFactory.getLogger(EtterlatteService::class.java)
 
     private var henterVedtaksInfoFraGjenny: MetricsHelper.Metric = metricsHelper.init("henterVedtaksInfoFraGjenny")

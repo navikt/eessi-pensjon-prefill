@@ -28,7 +28,6 @@ class PrefillServiceTest{
     var prefillSedService: PrefillSEDService = mockk()
     var innhentingService: InnhentingService = mockk()
     var automatiseringStatistikkService: AutomatiseringStatistikkService = mockk()
-    var etterlatteService: EtterlatteService = mockk()
 
     private lateinit var personcollection: PersonDataCollection
     lateinit var prefillService: PrefillService
@@ -75,7 +74,7 @@ class PrefillServiceTest{
 
         val krrPerson = KrrPerson(false, epost, "12345678")
         every { krrService.hentPersonFraKrr(any()) } returns krrPerson
-        every { prefillSedService.prefillGjenny(capture(requestSlot), any()) } returns SED(SedType.P2000, "sedVer")
+        every { prefillSedService.prefill(capture(requestSlot), any(), any()) } returns SED(SedType.P2000, "sedVer")
 
         prefillService.prefillSedtoJson(request)
         val capture = requestSlot.captured

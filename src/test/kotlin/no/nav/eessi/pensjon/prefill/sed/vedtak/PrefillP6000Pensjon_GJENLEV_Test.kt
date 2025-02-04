@@ -9,6 +9,7 @@ import no.nav.eessi.pensjon.prefill.IkkeGyldigKallException
 import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
+import no.nav.eessi.pensjon.prefill.etterlatte.EtterlatteResponse
 import no.nav.eessi.pensjon.prefill.etterlatte.EtterlatteService
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjonMother.standardEessiInfo
@@ -26,6 +27,7 @@ import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import java.time.LocalDate
 
 class PrefillP6000Pensjon_GJENLEV_Test {
 
@@ -114,6 +116,9 @@ class PrefillP6000Pensjon_GJENLEV_Test {
 
     @Test
     fun `forventet en delvis utfylt p6000 selv om det mangler vedtak`() {
+
+        every { etterlatteService.hentGjennySak(any()) } returns Result.success(EtterlatteResponse(1, virkningstidspunkt = LocalDate.now()))
+
         prefillData = PrefillDataModelMother.initialPrefillDataModel(
             SedType.P6000,
             personFnr,
@@ -124,7 +129,7 @@ class PrefillP6000Pensjon_GJENLEV_Test {
         )
         prefillSEDService = PrefillSEDService(eessiInformasjon, prefillNav, etterlatteService)
 
-        val p6000 = prefillSEDService.prefill(prefillData, personDataCollection, null) as P6000
+        val p6000 = prefillSEDService.prefillGjenny(prefillData, personDataCollection) as P6000
         assertEquals(avdodPersonFnr, p6000.nav?.bruker?.person?.pin?.firstOrNull()?.identifikator)
         assertEquals("RAGNAROK", p6000.nav?.bruker?.person?.etternavn)
         assertEquals("THOR-DOPAPIR", p6000.nav?.bruker?.person?.fornavn)
@@ -138,7 +143,7 @@ class PrefillP6000Pensjon_GJENLEV_Test {
         val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
         val pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
 
-        val p6000 = prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection) as P6000
+        val p6000 = prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection) as P6000
         val p6000Pensjon = p6000.pensjon!!
 
         assertNotNull(p6000Pensjon.vedtak)

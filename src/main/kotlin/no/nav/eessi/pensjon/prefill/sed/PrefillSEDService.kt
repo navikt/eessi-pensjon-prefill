@@ -23,7 +23,11 @@ import org.springframework.stereotype.Component
 import org.springframework.web.server.ResponseStatusException
 
 @Component
-class PrefillSEDService(private val eessiInformasjon: EessiInformasjon, private val prefillPDLnav: PrefillPDLNav, private val etterlatteService: EtterlatteService) {
+class PrefillSEDService(
+    private val eessiInformasjon: EessiInformasjon,
+    private val prefillPDLnav: PrefillPDLNav,
+    private val etterlatteService: EtterlatteService
+) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillSEDService::class.java) }
 
@@ -89,20 +93,11 @@ class PrefillSEDService(private val eessiInformasjon: EessiInformasjon, private 
             }
 
             //vedtak
-            P6000 -> PrefillP6000(
-                prefillPDLnav,
-                eessiInformasjon,
-                etterlatteService
-            ).prefill(
-                prefillData,
-                personDataCollection,
-                pensjonCollection?.pensjoninformasjon ?: throw ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Ingen vedtak"
-            )
+            P6000 -> PrefillP6000(prefillPDLnav, eessiInformasjon, etterlatteService)
+                        .prefill(prefillData, personDataCollection, pensjonCollection?.pensjoninformasjon
+                            ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Ingen vedtak"))
             P5000 -> PrefillP5000(PrefillSed(prefillPDLnav)).prefill(prefillData, personDataCollection)
             P4000 -> PrefillP4000(PrefillSed(prefillPDLnav)).prefill(prefillData, personDataCollection)
-
             P7000 -> {
                 if (prefillData.partSedAsJson[P7000.name] != null && prefillData.partSedAsJson[P7000.name] != "{}") {
                     logger.info("P7000mk2 preutfylling med data fra P6000..")
