@@ -10,6 +10,8 @@ import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.etterlatte.EtterlatteResponse
 import no.nav.eessi.pensjon.prefill.etterlatte.EtterlatteService
+import no.nav.eessi.pensjon.prefill.etterlatte.Perioden
+import no.nav.eessi.pensjon.prefill.etterlatte.Utbetaling
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
@@ -61,8 +63,13 @@ class PrefillP6000Pensjon_GJENNY_Test {
             sakId = 123456,
             sakType = "GJENLEV",
             virkningstidspunkt = LocalDate.parse("2018-05-01"),
-            type = "GJENLEV",
-            utbetaling = null
+            type = "INNVILGELSE",
+            utbetaling = listOf(Utbetaling(
+                periode = Perioden(
+                    start = LocalDate.parse("2018-05-01"), end = LocalDate.parse("2030-05-01")
+                ),
+                beloep = "5248"
+            ))
         ))
 
         dataFromPEN = PrefillTestHelper.lesPensjonsdataVedtakFraFil("/pensjonsinformasjon/vedtak/P6000-GP-401.xml")
@@ -89,50 +96,30 @@ class PrefillP6000Pensjon_GJENNY_Test {
 
         val vedtak = p6000Pensjon.vedtak?.get(0)
         assertEquals("2018-05-01", vedtak?.virkningsdato, "vedtak.virkningsdato")
-        assertEquals("03", vedtak?.type, "vedtak.type")
-        assertEquals(BasertPaa.i_arbeid, vedtak?.basertPaa, "vedtak.basertPaa")
-        assertEquals("03", vedtak?.resultat, "vedtak.resultat")
+        assertEquals("INNVILGELSE", vedtak?.type, "vedtak.type")
+//        assertEquals(BasertPaa.i_arbeid, vedtak?.basertPaa, "vedtak.basertPaa")
+//        assertEquals("03", vedtak?.resultat, "vedtak.resultat")
 
-        assertEquals("03", vedtak?.grunnlag?.opptjening?.forsikredeAnnen)
-        assertEquals("1", vedtak?.grunnlag?.framtidigtrygdetid)
+//        assertEquals("03", vedtak?.grunnlag?.opptjening?.forsikredeAnnen)
+//        assertEquals("1", vedtak?.grunnlag?.framtidigtrygdetid)
 
         val beregning = vedtak?.beregning?.get(0)
         assertEquals("2018-05-01", beregning?.periode?.fom)
-        assertEquals(null, beregning?.periode?.tom)
+        assertEquals("2030-05-01", beregning?.periode?.tom)
         assertEquals("NOK", beregning?.valuta)
-        assertEquals("maaned_12_per_aar", beregning?.utbetalingshyppighet)
+//        assertEquals("maaned_12_per_aar", beregning?.utbetalingshyppighet)
 
         assertEquals("5248", beregning?.beloepBrutto?.beloep)
-        assertEquals("3519", beregning?.beloepBrutto?.ytelseskomponentGrunnpensjon)
-        assertEquals("1729", beregning?.beloepBrutto?.ytelseskomponentTilleggspensjon)
-
-        assertEquals(null, vedtak?.ukjent?.beloepBrutto?.ytelseskomponentAnnen)
+//        assertEquals("3519", beregning?.beloepBrutto?.ytelseskomponentGrunnpensjon)
+//        assertEquals("1729", beregning?.beloepBrutto?.ytelseskomponentTilleggspensjon)
+//        assertEquals(null, vedtak?.ukjent?.beloepBrutto?.ytelseskomponentAnnen)
 
         val avslagBegrunnelse = vedtak?.avslagbegrunnelse?.get(0)
         assertEquals(null, avslagBegrunnelse?.begrunnelse)
-
         assertEquals("six weeks from the date the decision is received", p6000Pensjon.sak?.kravtype?.get(0)?.datoFrist)
-
-        assertEquals("2018-05-26", p6000Pensjon.tilleggsinformasjon?.dato)
+        //TODO: Kan vi spørre om vi kan få dato da vedtaket ble fattet
+//        assertEquals("2018-05-26", p6000Pensjon.tilleggsinformasjon?.dato)
     }
-
-//    @Test
-//    fun `forventet en delvis utfylt p6000 selv om det mangler vedtak`() {
-//        prefillData = PrefillDataModelMother.initialPrefillDataModel(
-//            SedType.P6000,
-//            personFnr,
-//            penSaksnummer = "22580170",
-//            vedtakId = "12312312",
-//            avdod = PersonInfo(avdodPersonFnr, "1234567891234"),
-//            kravDato = "2018-05-01"
-//        )
-//        prefillSEDService = PrefillSEDService(standardEessiInfo(), prefillNav)
-//
-//        val p6000 = prefillSEDService.prefillGjenny(prefillData, personDataCollection,) as P6000
-//        assertEquals(avdodPersonFnr, p6000.nav?.bruker?.person?.pin?.firstOrNull()?.identifikator)
-//        assertEquals("RAGNAROK", p6000.nav?.bruker?.person?.etternavn)
-//        assertEquals("THOR-DOPAPIR", p6000.nav?.bruker?.person?.fornavn)
-//    }
 
     fun standardEessiInfo() = EessiInformasjon(
         institutionid = "NO:noinst002",

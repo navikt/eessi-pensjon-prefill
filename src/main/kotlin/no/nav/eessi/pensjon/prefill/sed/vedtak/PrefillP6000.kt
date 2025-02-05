@@ -59,7 +59,7 @@ class PrefillP6000(
             //TODO handle failure
         }
         val vedtak = vedtakResponse.getOrNull()
-        logger.debug("Lager pensjondata for P6000")
+        logger.debug("Lager pensjondata for P6000 fra gjenny")
         val p6000Pensjon =  prefillP6000PensjonVedtak(gjenlevende,vedtak, andreInstitusjondetaljer)
 
         logger.debug("Henter opp Persondata fra PDL")
@@ -73,7 +73,7 @@ class PrefillP6000(
             annenPerson = null
         )
 
-        logger.info("-------------------| Preutfylling [$sedType] END |------------------- ")
+        logger.info("-------------------| Preutfylling [$sedType] med gjenny vedtak END |------------------- ")
 
         return P6000(
             type = sedType,
