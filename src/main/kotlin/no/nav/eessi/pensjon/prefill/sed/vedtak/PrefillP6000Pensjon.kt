@@ -78,13 +78,15 @@ object PrefillP6000Pensjon {
 //                avslagbegrunnelse = vedtak.avslagbegrunnelse
 //            )
 //        }
-        val simpleFormatter = DateTimeFormatter.ofPattern("YYYY-MM-DD")
+        val simpleFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         return P6000Pensjon(
             gjenlevende = gjenlevende,
-            sak = null,
-            vedtak = listOf(VedtakItem(virkningsdato = simpleFormatter.format(etterlatteResponse?.virkningstidspunkt))),
+            sak = etterlatteResponse?.sakType?.let { Sak(it) },
+            vedtak = etterlatteResponse?.virkningstidspunkt?.let {
+                listOf(VedtakItem(virkningsdato = simpleFormatter.format(it)))
+            },
             reduksjon = null,
-            tilleggsinformasjon = null
+            tilleggsinformasjon = andreinstitusjonerItem?.let { Tilleggsinformasjon(andreinstitusjoner = listOf(andreinstitusjonerItem)) }
         )
     }
 

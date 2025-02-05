@@ -9,6 +9,7 @@ import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.etterlatte.EtterlatteResponse
+import no.nav.eessi.pensjon.prefill.etterlatte.EtterlatteService
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
@@ -23,6 +24,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import java.time.LocalDate
 
 class PrefillP6000Pensjon_GJENNY_Test {
 
@@ -35,6 +37,7 @@ class PrefillP6000Pensjon_GJENNY_Test {
     private lateinit var prefillNav: PrefillPDLNav
     private lateinit var vedtakInformasjonFraGjenny: EtterlatteResponse
     private lateinit var personDataCollection: PersonDataCollection
+    private var etterlatteService: EtterlatteService = mockk()
 
     @BeforeEach
     fun setup() {
@@ -54,14 +57,20 @@ class PrefillP6000Pensjon_GJENNY_Test {
 
     @Test
     fun `forventet korrekt utfylling av Pensjon objekt på Gjenlevendepensjon`() {
+        every { etterlatteService.hentGjennySak(any()) } returns Result.success(EtterlatteResponse(
+            sakId = 123456,
+            sakType = "GJENLEV",
+            virkningstidspunkt = LocalDate.parse("2018-05-01"),
+            type = "GJENLEV",
+            utbetaling = null
+        ))
+
         dataFromPEN = PrefillTestHelper.lesPensjonsdataVedtakFraFil("/pensjonsinformasjon/vedtak/P6000-GP-401.xml")
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P6000, personFnr, penSaksnummer = "22580170", vedtakId = "12312312", avdod = PersonInfo(avdodPersonFnr, "1234567891234"))
-        prefillSEDService = PrefillSEDService(standardEessiInfo(), prefillNav, mockk())
-        val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
-        val pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
+        prefillSEDService = PrefillSEDService(standardEessiInfo(), prefillNav, etterlatteService)
 
 
-        val p6000 = prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection) as P6000
+        val p6000 = prefillSEDService.prefillGjenny(prefillData, personDataCollection) as P6000
         val p6000Pensjon = p6000.pensjon!!
 
         assertNotNull(p6000Pensjon.vedtak)
