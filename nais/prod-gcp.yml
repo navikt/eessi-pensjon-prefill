@@ -31,16 +31,16 @@ spec:
           namespace: etterlatte
           cluster: prod-gcp
     outbound:
+      rules:
+        - application: etterlatte-api
+          namespace: etterlatte
+          cluster: prod-gcp
       external:
         - host: pdl-api.prod-fss-pub.nais.io
         - host: kodeverk-api.nav.no
         - host: eessi-pensjon-fagmodul.intern.nav.no
         - host: eessi-pensjon-onprem-proxy.intern.nav.no
         - host: digdir-krr-proxy.intern.nav.no
-      rules:
-        - application: etterlatte-api
-          namespace: etterlatte
-          cluster: prod-gcp
   webproxy: true
   env:
     - name: SPRING_PROFILES_ACTIVE
