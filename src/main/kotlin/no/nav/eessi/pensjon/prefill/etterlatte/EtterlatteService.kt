@@ -42,7 +42,7 @@ class EtterlatteService(private val etterlatteRestTemplate: RestTemplate, @Autow
     }
 }
 
-data class FodselsnummerForEtterlatte(val fnr: String)
+data class FodselsnummerForEtterlatte(val foedselsnummer: String)
 
 data class EtterlatteResponse(
     val sakId: Int,
