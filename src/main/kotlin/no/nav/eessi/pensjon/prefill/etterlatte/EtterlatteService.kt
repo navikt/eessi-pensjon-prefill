@@ -2,6 +2,7 @@ package no.nav.eessi.pensjon.prefill.etterlatte
 
 import no.nav.eessi.pensjon.metrics.MetricsHelper
 import no.nav.eessi.pensjon.utils.mapJsonToAny
+import no.nav.eessi.pensjon.utils.toJson
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpEntity
@@ -26,18 +27,13 @@ class EtterlatteService(private val etterlatteRestTemplate: RestTemplate, @Autow
         return try {
             val response = etterlatteRestTemplate.exchange(
                 url,
-                HttpMethod.GET,
-                HttpEntity<String>("\"foedselsnummer\": \"fnr\"", HttpHeaders().apply {
-                    contentType = MediaType.APPLICATION_JSON
-                }),
+                HttpMethod.POST,
+                HttpEntity(FodselsnummerForEtterlatte(fnr).toJson(), HttpHeaders().apply { contentType = MediaType.APPLICATION_JSON }),
                 String::class.java
             )
+            logger.debug("Hent vedtaksinformasjon fra gjenny: response: ${response.body?.toJson()}".trimMargin())
 
-            logger.debug("Hent vedtaksinformasjon fra gjenny: response: ${response.body}".trimMargin())
-
-            response.body?.let {
-                Result.success(mapJsonToAny<EtterlatteResponse>(it))
-            } ?: Result.failure(IllegalArgumentException("Mangler melding fra gjenny")) // Handle null body
+            response.body?.let { Result.success(mapJsonToAny<EtterlatteResponse>(it)) } ?: Result.failure(IllegalArgumentException("Mangler melding fra gjenny")) // Handle null body
         } catch (e: HttpClientErrorException.NotFound) {
             Result.failure(IllegalArgumentException("Vedtaksinformasjon ikke funnet (404)"))
         } catch (e: Exception) {
@@ -45,6 +41,8 @@ class EtterlatteService(private val etterlatteRestTemplate: RestTemplate, @Autow
         }
     }
 }
+
+data class FodselsnummerForEtterlatte(val fnr: String)
 
 data class EtterlatteResponse(
     val sakId: Int,
