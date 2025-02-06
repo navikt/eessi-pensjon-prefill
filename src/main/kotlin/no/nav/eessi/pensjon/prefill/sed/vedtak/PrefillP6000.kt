@@ -53,10 +53,10 @@ class PrefillP6000(
 
     fun prefillMedVedtak(prefillData: PrefillDataModel, personData: PersonDataCollection): P6000 {
         val (sedType, andreInstitusjondetaljer, gjenlevende) = prefill6000Basis(prefillData, personData)
-        val vedtakResponse = etterlatteService.hentGjennySak("12345678901")
+        val vedtakResponse = etterlatteService.hentGjennySak(prefillData.bruker.norskIdent)
 
         if(vedtakResponse.isFailure){
-            //TODO handle failure
+            logger.error("Kunne ikke hente vedtak fra Gjenny: ${vedtakResponse.exceptionOrNull()}")
         }
         val vedtak = vedtakResponse.getOrNull()
         logger.debug("Lager pensjondata for P6000 fra gjenny")
