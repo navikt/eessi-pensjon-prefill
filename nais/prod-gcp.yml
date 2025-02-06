@@ -37,6 +37,10 @@ spec:
         - host: eessi-pensjon-fagmodul.intern.nav.no
         - host: eessi-pensjon-onprem-proxy.intern.nav.no
         - host: digdir-krr-proxy.intern.nav.no
+      rules:
+        - application: etterlatte-api
+          namespace: etterlatte
+          cluster: prod-gcp
   webproxy: true
   env:
     - name: SPRING_PROFILES_ACTIVE
