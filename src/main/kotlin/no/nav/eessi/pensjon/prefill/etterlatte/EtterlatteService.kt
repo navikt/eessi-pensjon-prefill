@@ -21,14 +21,15 @@ class EtterlatteService(private val etterlatteRestTemplate: RestTemplate, @Autow
     private var henterVedtaksInfoFraGjenny: MetricsHelper.Metric = metricsHelper.init("henterVedtaksInfoFraGjenny")
 
     fun hentGjennySak(fnr: String): Result<EtterlatteResponse?> {
-        val url = "/api/v1/vedtak/$fnr"
+        val url = "/api/v1/vedtak/"
         secureLog.info("Henter vedtaksinformasjon fra gjenny: $url")
-
         return try {
             val response = etterlatteRestTemplate.exchange(
                 url,
                 HttpMethod.GET,
-                HttpEntity<String>(HttpHeaders().apply { contentType = MediaType.APPLICATION_JSON }),
+                HttpEntity<String>("\"foedselsnummer\": \"fnr\"", HttpHeaders().apply {
+                    contentType = MediaType.APPLICATION_JSON
+                }),
                 String::class.java
             )
 
