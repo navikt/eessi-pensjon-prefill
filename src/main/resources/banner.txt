@@ -11,6 +11,9 @@
     Pensjoninformasjon              : ${pensjonsinformasjon.url}
     EUXBasis                        : ${eessipen-eux-rina.url}
     PersonDataLøsning(PDL)          : ${PDL_URL}
+    Etterlatte                      : ${ETTERLATTE_URL}
+    Kodeverk                        : ${KODEVERK_URL}
+    KRR                             : ${KRR_URL}
 
     ISSO Tokensupport OIDC          : ${no.nav.security.jwt.issuer.oidc.discoveryurl}
     ISSO Tokensupport accept        : ${no.nav.security.jwt.issuer.oidc.accepted_audience}
