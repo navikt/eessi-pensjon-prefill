@@ -39,7 +39,7 @@ class RestTemplateConfig(
     @Value("\${KRR_URL}")
     lateinit var krrUrl: String
 
-    @Value("\${KRR_URL}")
+    @Value("\${ETTERLATTE_URL}")
     lateinit var etterlatteUrl: String
 
     @Bean
@@ -87,7 +87,7 @@ class RestTemplateConfig(
     @Bean
     fun etterlatteRestTemplate() : RestTemplate {
         return RestTemplateBuilder()
-            .rootUri(krrUrl)
+            .rootUri(etterlatteUrl)
             .errorHandler(DefaultResponseErrorHandler())
             .additionalInterceptors(
                 RequestIdHeaderInterceptor(),
@@ -95,8 +95,8 @@ class RestTemplateConfig(
                 RequestCountInterceptor(meterRegistry),
                 RequestResponseLoggerInterceptor(),
                 bearerTokenInterceptor(
-                    clientConfigurationProperties.registration["krr-credentials"]
-                        ?: throw RuntimeException("could not find oauth2 client config for ${"krr-credentials"}"),
+                    clientConfigurationProperties.registration["etterlatte-credentials"]
+                        ?: throw RuntimeException("could not find oauth2 client config for ${"etterlatteUrl-credentials"}"),
                     oAuth2AccessTokenService!!
                 )
             )
