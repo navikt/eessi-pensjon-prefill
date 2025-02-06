@@ -70,28 +70,6 @@ class RestTemplateConfig(
             .orElseThrow { RuntimeException("could not find oauth2 client config for example-onbehalfof") }
     }
 
-    @Bean
-    fun etterlatteRestTemplate() : RestTemplate {
-        return RestTemplateBuilder()
-            .rootUri(etterlatteUrl)
-            .errorHandler(DefaultResponseErrorHandler())
-            .additionalInterceptors(
-                RequestIdHeaderInterceptor(),
-                IOExceptionRetryInterceptor(),
-                RequestCountInterceptor(meterRegistry),
-                RequestResponseLoggerInterceptor(),
-                bearerTokenInterceptor(
-                    clientConfigurationProperties.registration["etterlatte-credentials"]
-                        ?: throw RuntimeException("could not find oauth2 client config for ${"etterlatteUrl-credentials"}"),
-                    oAuth2AccessTokenService!!
-                )
-            )
-            .build().apply {
-                requestFactory = BufferingClientHttpRequestFactory(SimpleClientHttpRequestFactory())
-            }
-    }
-
-
     private fun bearerTokenInterceptor(
         clientProperties: ClientProperties,
         oAuth2AccessTokenService: OAuth2AccessTokenService
