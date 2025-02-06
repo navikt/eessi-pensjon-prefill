@@ -55,11 +55,11 @@ class PrefillP6000(
         val (sedType, andreInstitusjondetaljer, gjenlevende) = prefill6000Basis(prefillData, personData)
         val vedtakResponse = etterlatteService.hentGjennySak(prefillData.bruker.norskIdent)
 
-        if(vedtakResponse.isFailure){
+        if (vedtakResponse.isFailure) {
             logger.error("Kunne ikke hente vedtak fra Gjenny: ${vedtakResponse.exceptionOrNull()}")
         }
         val vedtak = vedtakResponse.getOrNull().also {  logger.debug("Lager pensjondata for P6000 fra gjenny: ${it?.toJson()}")}
-        val p6000Pensjon =  prefillP6000PensjonVedtak(gjenlevende,vedtak, andreInstitusjondetaljer)
+        val p6000Pensjon = prefillP6000PensjonVedtak(gjenlevende, vedtak, andreInstitusjondetaljer, prefillData.gjennySakType)
 
         logger.debug("Henter opp Persondata fra PDL")
         val nav = prefillNav.prefill(

@@ -61,7 +61,8 @@ object PrefillP6000Pensjon {
     fun prefillP6000PensjonVedtak(
         gjenlevende: Bruker?,
         etterlatteResponse: EtterlatteResponse?,
-        andreinstitusjonerItem: AndreinstitusjonerItem?
+        andreinstitusjonerItem: AndreinstitusjonerItem?,
+        gjennySakType: String?
     ): P6000Pensjon {
         val simpleFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         val etterlatteResponse = etterlatteResponse?.vedtak?.firstOrNull()
@@ -69,7 +70,7 @@ object PrefillP6000Pensjon {
 
         return P6000Pensjon(
             gjenlevende = gjenlevende,
-            sak = Sak(kravtype = listOf(KravtypeItem(datoFrist = "six weeks from the date the decision is received", krav = etterlatteResponse?.sakType))),
+            sak = Sak(kravtype = listOf(KravtypeItem(datoFrist = "six weeks from the date the decision is received", krav = bestemSakTypeFraSed(gjennySakType)))),
             vedtak = listOf(
                 VedtakItem(
                     virkningsdato = etterlatteResponse?.virkningstidspunkt?.let { simpleFormatter.format(it) },
@@ -92,6 +93,13 @@ object PrefillP6000Pensjon {
             reduksjon = null,
             tilleggsinformasjon = andreinstitusjonerItem?.let { Tilleggsinformasjon(andreinstitusjoner = listOf(andreinstitusjonerItem)) }
         )
+    }
+
+    private fun bestemSakTypeFraSed(gjennySakType: String?): String? {
+        return when(gjennySakType){
+            "OMSST" -> "03"
+            else -> null
+        }
     }
 
 //    fun prefillP6000PensjonGjenny(

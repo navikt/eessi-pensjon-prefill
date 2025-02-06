@@ -97,7 +97,8 @@ data class ApiRequest(
                         vedtakId = request.vedtakId,
                         kravDato = request.kravDato,
                         kravType = request.kravType,
-                        kravId = request.kravId
+                        kravId = request.kravId,
+                        gjennySakType = request.sakType
                     ).apply {
                         partSedAsJson[sedType.name] = request.payload ?: "{}"
                     }
