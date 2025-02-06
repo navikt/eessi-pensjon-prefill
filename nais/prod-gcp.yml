@@ -27,6 +27,9 @@ spec:
         - application: eessi-pensjon-fagmodul
           namespace: eessipensjon
           cluster: prod-gcp
+        - application: etterlatte-api
+          namespace: etterlatte
+          cluster: prod-gcp
     outbound:
       external:
         - host: pdl-api.prod-fss-pub.nais.io
