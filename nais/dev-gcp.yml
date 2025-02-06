@@ -34,7 +34,6 @@ spec:
         - host: eessi-pensjon-fagmodul-q2.intern.dev.nav.no
         - host: eessi-pensjon-onprem-proxy-q2.intern.dev.nav.no
         - host: digdir-krr-proxy.intern.dev.nav.no
-        - host: dev-gcp.etterlatte.etterlatte-api
   webproxy: true
   env:
     - name: SPRING_PROFILES_ACTIVE
