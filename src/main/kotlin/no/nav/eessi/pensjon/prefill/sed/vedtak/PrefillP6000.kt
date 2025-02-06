@@ -12,6 +12,7 @@ import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.prefill.sed.vedtak.PrefillP6000Pensjon.prefillP6000Pensjon
 import no.nav.eessi.pensjon.prefill.sed.vedtak.PrefillP6000Pensjon.prefillP6000PensjonVedtak
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
+import no.nav.eessi.pensjon.utils.toJson
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -57,8 +58,7 @@ class PrefillP6000(
         if(vedtakResponse.isFailure){
             logger.error("Kunne ikke hente vedtak fra Gjenny: ${vedtakResponse.exceptionOrNull()}")
         }
-        val vedtak = vedtakResponse.getOrNull()
-        logger.debug("Lager pensjondata for P6000 fra gjenny")
+        val vedtak = vedtakResponse.getOrNull().also {  logger.debug("Lager pensjondata for P6000 fra gjenny: ${it?.toJson()}")}
         val p6000Pensjon =  prefillP6000PensjonVedtak(gjenlevende,vedtak, andreInstitusjondetaljer)
 
         logger.debug("Henter opp Persondata fra PDL")

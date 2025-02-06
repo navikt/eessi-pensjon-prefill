@@ -45,6 +45,10 @@ class EtterlatteService(private val etterlatteRestTemplate: RestTemplate, @Autow
 data class FodselsnummerForEtterlatte(val foedselsnummer: String)
 
 data class EtterlatteResponse(
+    val vedtak: List<Vedtak>? = emptyList()
+)
+
+data class Vedtak(
     val sakId: Int,
     val sakType: String? = null,
     val virkningstidspunkt: LocalDate? = null,
@@ -53,11 +57,7 @@ data class EtterlatteResponse(
 )
 
 data class Utbetaling (
-    val periode: Perioden,
+    val fraOgMed: LocalDate,
+    val tilOgMed: LocalDate,
     val beloep: String
-)
-
-data class Perioden (
-    val start: LocalDate,
-    val end: LocalDate,
 )

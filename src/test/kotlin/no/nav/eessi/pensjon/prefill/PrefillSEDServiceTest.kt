@@ -5,6 +5,7 @@ import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.prefill.etterlatte.EtterlatteResponse
 import no.nav.eessi.pensjon.prefill.etterlatte.EtterlatteService
+import no.nav.eessi.pensjon.prefill.etterlatte.Vedtak
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjonMother
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
@@ -63,7 +64,13 @@ class PrefillGjennySEDServiceTest {
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P6000, personFnr, penSaksnummer = "22580170", vedtakId = "12312312", avdod = PersonInfo(avdodPersonFnr, "1234567891234"))
         prefillSEDService = PrefillSEDService(EessiInformasjonMother.standardEessiInfo(), prefillNav, etterlatteService)
 
-        every { etterlatteService.hentGjennySak(any()) } returns Result.success(EtterlatteResponse(virkningstidspunkt = LocalDate.now(), sakId = 1))
+        every { etterlatteService.hentGjennySak(any()) } returns Result.success(
+            EtterlatteResponse(
+                vedtak = listOf(
+                    Vedtak(virkningstidspunkt = LocalDate.now(), sakId = 1)
+                )
+            )
+        )
 
         val prefill = prefillSEDService.prefillGjenny(prefillData, personDataCollection)
 

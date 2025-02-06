@@ -3,15 +3,10 @@ package no.nav.eessi.pensjon.prefill.sed.vedtak.gjenny
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.SedType
-import no.nav.eessi.pensjon.eux.model.sed.BasertPaa
 import no.nav.eessi.pensjon.eux.model.sed.P6000
-import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
-import no.nav.eessi.pensjon.prefill.etterlatte.EtterlatteResponse
-import no.nav.eessi.pensjon.prefill.etterlatte.EtterlatteService
-import no.nav.eessi.pensjon.prefill.etterlatte.Perioden
-import no.nav.eessi.pensjon.prefill.etterlatte.Utbetaling
+import no.nav.eessi.pensjon.prefill.etterlatte.*
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
@@ -59,18 +54,24 @@ class PrefillP6000Pensjon_GJENNY_Test {
 
     @Test
     fun `forventet korrekt utfylling av Pensjon objekt på Gjenlevendepensjon`() {
-        every { etterlatteService.hentGjennySak(any()) } returns Result.success(EtterlatteResponse(
-            sakId = 123456,
-            sakType = "GJENLEV",
-            virkningstidspunkt = LocalDate.parse("2018-05-01"),
-            type = "INNVILGELSE",
-            utbetaling = listOf(Utbetaling(
-                periode = Perioden(
-                    start = LocalDate.parse("2018-05-01"), end = LocalDate.parse("2030-05-01")
-                ),
-                beloep = "5248"
-            ))
-        ))
+        every { etterlatteService.hentGjennySak(any()) } returns Result.success(
+            EtterlatteResponse(
+                vedtak = listOf(
+                    Vedtak(
+                        sakId = 123456,
+                        sakType = "GJENLEV",
+                        virkningstidspunkt = LocalDate.parse("2018-05-01"),
+                        type = "INNVILGELSE",
+                        utbetaling = listOf(
+                            Utbetaling(
+                                fraOgMed = LocalDate.parse("2018-05-01"), tilOgMed = LocalDate.parse("2030-05-01"),
+                                beloep = "5248"
+                            )
+                        )
+                    )
+                )
+            )
+        )
 
         dataFromPEN = PrefillTestHelper.lesPensjonsdataVedtakFraFil("/pensjonsinformasjon/vedtak/P6000-GP-401.xml")
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P6000, personFnr, penSaksnummer = "22580170", vedtakId = "12312312", avdod = PersonInfo(avdodPersonFnr, "1234567891234"))

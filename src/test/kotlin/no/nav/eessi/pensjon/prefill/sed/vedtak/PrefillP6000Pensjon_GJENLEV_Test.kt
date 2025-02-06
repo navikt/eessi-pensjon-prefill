@@ -11,6 +11,7 @@ import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.etterlatte.EtterlatteResponse
 import no.nav.eessi.pensjon.prefill.etterlatte.EtterlatteService
+import no.nav.eessi.pensjon.prefill.etterlatte.Vedtak
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjonMother.standardEessiInfo
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
@@ -117,8 +118,13 @@ class PrefillP6000Pensjon_GJENLEV_Test {
     @Test
     fun `forventet en delvis utfylt p6000 selv om det mangler vedtak`() {
 
-        every { etterlatteService.hentGjennySak(any()) } returns Result.success(EtterlatteResponse(1, virkningstidspunkt = LocalDate.now()))
-
+        every { etterlatteService.hentGjennySak(any()) } returns Result.success(
+            EtterlatteResponse(
+                vedtak = listOf(
+                    Vedtak(virkningstidspunkt = LocalDate.now(), sakId = 1)
+                )
+            )
+        )
         prefillData = PrefillDataModelMother.initialPrefillDataModel(
             SedType.P6000,
             personFnr,

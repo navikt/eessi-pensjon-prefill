@@ -2,7 +2,6 @@ package no.nav.eessi.pensjon.prefill.sed.vedtak
 
 import no.nav.eessi.pensjon.eux.model.sed.*
 import no.nav.eessi.pensjon.prefill.etterlatte.EtterlatteResponse
-import no.nav.eessi.pensjon.prefill.etterlatte.Perioden
 import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.PrefillPensjonReduksjon
 import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.PrefillPensjonSak
 import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.PrefillPensjonTilleggsinformasjon
@@ -65,28 +64,31 @@ object PrefillP6000Pensjon {
         andreinstitusjonerItem: AndreinstitusjonerItem?
     ): P6000Pensjon {
         val simpleFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val etterlatteResponse = etterlatteResponse?.vedtak?.firstOrNull()
+        val utbetalingEtterlatte = etterlatteResponse?.utbetaling?.firstOrNull()
+
         return P6000Pensjon(
             gjenlevende = gjenlevende,
             sak = Sak(kravtype = listOf(KravtypeItem(datoFrist = "six weeks from the date the decision is received", krav = etterlatteResponse?.sakType))),
-            vedtak = etterlatteResponse?.virkningstidspunkt?.let {
-                val utbetalingEtterlatte = etterlatteResponse.utbetaling?.first()
-                listOf(
-                    VedtakItem(
-                        virkningsdato = simpleFormatter.format(it),
-                        type = etterlatteResponse.type,
-                        beregning = utbetalingEtterlatte?.let {
-                            listOf(
-                                BeregningItem(
-                                    periode = Periode(fom = simpleFormatter.format(utbetalingEtterlatte.periode.start), tom = simpleFormatter.format(utbetalingEtterlatte.periode.end)),
-                                    beloepBrutto = BeloepBrutto(beloep = utbetalingEtterlatte.beloep),
-                                    valuta = "NOK",
-                                    utbetalingshyppighet = "maaned_12_per_aar"
-                                )
+            vedtak = listOf(
+                VedtakItem(
+                    virkningsdato = etterlatteResponse?.virkningstidspunkt?.let { simpleFormatter.format(it) },
+                    type = etterlatteResponse?.type,
+                    beregning = utbetalingEtterlatte?.let {
+                        listOf(
+                            BeregningItem(
+                                periode = Periode(
+                                    fom = utbetalingEtterlatte.fraOgMed.let { simpleFormatter.format(utbetalingEtterlatte.fraOgMed)},
+                                    tom = utbetalingEtterlatte.tilOgMed.let { simpleFormatter.format(utbetalingEtterlatte.tilOgMed)},
+                                ),
+                                beloepBrutto = BeloepBrutto(beloep = utbetalingEtterlatte.beloep),
+                                valuta = "NOK",
+                                utbetalingshyppighet = "maaned_12_per_aar"
                             )
-                        }
-                    )
+                        )
+                    }
                 )
-            },
+            ),
             reduksjon = null,
             tilleggsinformasjon = andreinstitusjonerItem?.let { Tilleggsinformasjon(andreinstitusjoner = listOf(andreinstitusjonerItem)) }
         )
