@@ -7,9 +7,12 @@ import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_03
 import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_06
 import no.nav.eessi.pensjon.eux.model.SedType.P2000
 import no.nav.eessi.pensjon.eux.model.SedType.P2200
+import no.nav.eessi.pensjon.eux.model.sed.KravType
 import no.nav.eessi.pensjon.integrationtest.IntegrasjonsTestConfig
 import no.nav.eessi.pensjon.kodeverk.KodeverkClient
 import no.nav.eessi.pensjon.pensjonsinformasjon.models.EPSaktype.UFOREP
+import no.nav.eessi.pensjon.pensjonsinformasjon.models.KravArsak
+import no.nav.eessi.pensjon.pensjonsinformasjon.models.Sakstatus
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
 import no.nav.eessi.pensjon.personoppslag.pdl.model.AktoerId
 import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe.FOLKEREGISTERIDENT
@@ -19,6 +22,7 @@ import no.nav.eessi.pensjon.prefill.KrrService
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.models.KrrPerson
+import no.nav.eessi.pensjon.prefill.sed.krav.PensjonsInformasjonHelper
 import no.nav.pensjon.v1.kravhistorikk.V1KravHistorikk
 import no.nav.pensjon.v1.kravhistorikkliste.V1KravHistorikkListe
 import no.nav.pensjon.v1.sak.V1Sak
@@ -76,15 +80,13 @@ class PrefillErrorIntegrationTest {
 
         every { krrService.hentPersonFraKrr(any())  } returns KrrPerson(false, "melleby11@melby.no", "11111111")
 
-        val sak = V1Sak()
-        sak.sakType = UFOREP.toString()
-        sak.sakId = 100
-        sak.kravHistorikkListe = V1KravHistorikkListe()
-        val krav = V1KravHistorikk()
-        krav.kravType = "REVURD"
-        krav.kravId = "1"
-        krav.status = "INNV"
-        sak.kravHistorikkListe.kravHistorikkListe.add(krav)
+        val sak = PensjonsInformasjonHelper.createSak(
+            PensjonsInformasjonHelper.createKravHistorikk(
+                KravArsak.GJNL_SKAL_VURD.name,
+                KravType.ALDER.name,
+                status = Sakstatus.INNV
+            ), sakType = UFOREP.name
+        )
 
         every { pensjoninformasjonservice.hentRelevantPensjonSak(any(), any()) } returns sak
 
@@ -114,16 +116,13 @@ class PrefillErrorIntegrationTest {
 
         every { krrService.hentPersonFraKrr(any())  } returns KrrPerson(false, "melleby11@melby.no", "11111111")
 
-
-        val sak = V1Sak()
-        sak.sakType = UFOREP.toString()
-        sak.sakId = 100
-        sak.kravHistorikkListe = V1KravHistorikkListe()
-        val krav = V1KravHistorikk()
-        krav.kravType = "REVURD"
-        krav.kravId = "1"
-        krav.status = "INNV"
-        sak.kravHistorikkListe.kravHistorikkListe.add(krav)
+        val sak = PensjonsInformasjonHelper.createSak(
+            PensjonsInformasjonHelper.createKravHistorikk(
+                KravArsak.GJNL_SKAL_VURD.name,
+                KravType.ALDER.name,
+                status = Sakstatus.INNV
+            ), sakType = UFOREP.name
+        )
 
         every { pensjoninformasjonservice.hentRelevantPensjonSak(any(), any()) } returns sak
 

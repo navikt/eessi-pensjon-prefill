@@ -1,8 +1,8 @@
 buildscript {
     ext {
-        kotlinVersion = '2.1.0'
-        springBootVersion = '3.4.1'
-        springKafkaVersion = '3.3.1'
+        kotlinVersion = '2.1.10'
+        springBootVersion = '3.4.2'
+        springKafkaVersion = '3.3.2'
         jacksonModuleKotlinVersion = '2.18.1'
         cxfVersion = '3.3.4'
         tokenSupportVersion = '5.0.11'
@@ -11,7 +11,7 @@ buildscript {
 
 plugins {
     id "org.springframework.boot" version "$springBootVersion"
-    id "io.spring.dependency-management" version "1.1.6"
+    id "io.spring.dependency-management" version "1.1.7"
     id "org.openrepose.gradle.plugins.jaxb" version "2.5.0"
     id "com.vanniktech.dependency.graph.generator" version "0.8.0"
     id "org.jetbrains.kotlin.jvm" version "$kotlinVersion"
@@ -72,20 +72,20 @@ dependencies {
 
     implementation ("org.springframework.kafka:spring-kafka:$springKafkaVersion")
 
-    implementation("no.nav.eessi.pensjon:ep-eux:2.4.14")
-    implementation("no.nav.eessi.pensjon:ep-metrics:2.0.101")
-    implementation("no.nav.eessi.pensjon:ep-logging:2.2.6")
-    implementation("no.nav.eessi.pensjon:ep-kodeverk:4.1.25"){
+    implementation("no.nav.eessi.pensjon:ep-eux:2.4.28")
+    implementation("no.nav.eessi.pensjon:ep-metrics:2.0.102")
+    implementation("no.nav.eessi.pensjon:ep-logging:2.2.7")
+    implementation("no.nav.eessi.pensjon:ep-kodeverk:4.1.33"){
         exclude module: 'ep-eux'
         exclude module: 'ep-metrics'
         exclude module: 'ep-logging'
     }
-    implementation("no.nav.eessi.pensjon:ep-personoppslag:13.2.26"){
+    implementation("no.nav.eessi.pensjon:ep-personoppslag:13.2.38"){
         exclude module: 'ep-eux'
         exclude module: 'ep-metrics'
         exclude module: 'ep-logging'
     }
-    implementation("no.nav.eessi.pensjon:ep-pensjonsinformasjon:3.0.177")
+    implementation("no.nav.eessi.pensjon:ep-pensjonsinformasjon:3.0.184")
 
     implementation("no.nav.tjenestespesifikasjoner:pensjonsinformasjon-v1-tjenestespesifikasjon:2641.575768a")
 

@@ -3,7 +3,6 @@ package no.nav.eessi.pensjon.config
 import com.nimbusds.jwt.JWTClaimsSet
 import io.micrometer.core.instrument.MeterRegistry
 import no.nav.eessi.pensjon.logging.RequestIdHeaderInterceptor
-import no.nav.eessi.pensjon.logging.RequestResponseLoggerInterceptor
 import no.nav.eessi.pensjon.metrics.RequestCountInterceptor
 import no.nav.eessi.pensjon.shared.retry.IOExceptionRetryInterceptor
 import no.nav.security.token.support.client.core.ClientProperties
@@ -43,45 +42,32 @@ class RestTemplateConfig(
     lateinit var etterlatteUrl: String
 
     @Bean
-    fun pensjoninformasjonRestTemplate() : RestTemplate {
+    fun etterlatteRestTemplate() = opprettRestTemplate(etterlatteUrl, "etterlatte-credentials")
+
+    @Bean
+    fun krrRestTemplate() = opprettRestTemplate(krrUrl, "krr-credentials")
+
+    @Bean
+    fun pensjoninformasjonRestTemplate() = opprettRestTemplate(pensjonUrl, "proxy-credentials")
+
+    private fun opprettRestTemplate(url: String, oAuthKey: String) : RestTemplate {
         return RestTemplateBuilder()
-            .rootUri(pensjonUrl)
+            .rootUri(url)
             .errorHandler(DefaultResponseErrorHandler())
             .additionalInterceptors(
                 RequestIdHeaderInterceptor(),
                 IOExceptionRetryInterceptor(),
                 RequestCountInterceptor(meterRegistry),
-                RequestResponseLoggerInterceptor(),
-                bearerTokenInterceptor(
-                    clientConfigurationProperties.registration["proxy-credentials"]
-                        ?: throw RuntimeException("could not find oauth2 client config for ${"proxy-credentials"}"),
-                    oAuth2AccessTokenService!!
-                )
+                bearerTokenInterceptor(clientProperties(oAuthKey), oAuth2AccessTokenService!!)
             )
             .build().apply {
                 requestFactory = BufferingClientHttpRequestFactory(SimpleClientHttpRequestFactory())
             }
     }
 
-    @Bean
-    fun krrRestTemplate() : RestTemplate {
-        return RestTemplateBuilder()
-            .rootUri(krrUrl)
-            .errorHandler(DefaultResponseErrorHandler())
-            .additionalInterceptors(
-                RequestIdHeaderInterceptor(),
-                IOExceptionRetryInterceptor(),
-                RequestCountInterceptor(meterRegistry),
-                RequestResponseLoggerInterceptor(),
-                bearerTokenInterceptor(
-                    clientConfigurationProperties.registration["krr-credentials"]
-                        ?: throw RuntimeException("could not find oauth2 client config for ${"krr-credentials"}"),
-                    oAuth2AccessTokenService!!
-                )
-            )
-            .build().apply {
-                requestFactory = BufferingClientHttpRequestFactory(SimpleClientHttpRequestFactory())
-            }
+    private fun clientProperties(oAuthKey: String): ClientProperties {
+        return Optional.ofNullable(clientConfigurationProperties.registration[oAuthKey])
+            .orElseThrow { RuntimeException("could not find oauth2 client config for example-onbehalfof") }
     }
 
     @Bean
@@ -115,7 +101,7 @@ class RestTemplateConfig(
             request.headers.setBearerAuth(response.access_token!!)
             val tokenChunks = response.access_token!!.split(".")
             val tokenBody =  tokenChunks[1]
-            logger.debug("subject: " + JWTClaimsSet.parse(Base64.getDecoder().decode(tokenBody).decodeToString()).subject)
+            logger.debug("subject: " + JWTClaimsSet.parse(Base64.getDecoder().decode(tokenBody).decodeToString()).subject + "AccessToken: /n + $response.accessToken")
             execution.execute(request, body!!)
         }
     }

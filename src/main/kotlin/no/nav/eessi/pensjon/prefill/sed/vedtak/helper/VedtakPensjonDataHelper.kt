@@ -93,25 +93,23 @@ object VedtakPensjonDataHelper {
         return hentV1Vilkarsvurdering(pendata)?.resultatHovedytelse ?: return "" // UNDER_62 -- LAVT_TIDLIG_UTTAK osv..
     }
 
-    fun hentVinnendeBergeningsMetode(pendata: Pensjonsinformasjon): String {
-        return hentSisteYtelsePerMaaned(pendata).vinnendeBeregningsmetode.also {
-            logger.debug(" +            hentVinnendeBergeningsMetode: $it")
-        }
+    fun hentVinnendeBergeningsMetode(pendata: Pensjonsinformasjon): String? {
+        return hentSisteYtelsePerMaaned(pendata).vinnendeBeregningsmetode ?: null
     }
 
     fun hentYtelseBelop(pendata: Pensjonsinformasjon): String {
-        logger.debug(" +            hentYtelseBelop")
+        logger.info(" +            hentYtelseBelop")
         return hentSisteYtelsePerMaaned(pendata).belop.toString()
     }
 
     fun isMottarMinstePensjonsniva(pendata: Pensjonsinformasjon): Boolean {
-        logger.debug(" +            isMottarMinstePensjonsniva")
+        logger.info(" +            isMottarMinstePensjonsniva")
         return hentSisteYtelsePerMaaned(pendata).isMottarMinstePensjonsniva
     }
 
     fun hentSisteYtelsePerMaaned(pendata: Pensjonsinformasjon): V1YtelsePerMaaned {
         val ytelseprmnd = pendata.ytelsePerMaanedListe
         val liste = ytelseprmnd.ytelsePerMaanedListe as List<V1YtelsePerMaaned>
-        return liste.maxByOrNull { it.fom.toGregorianCalendar() }!!
+        return liste.maxBy { it.fom.toGregorianCalendar() }
     }
 }

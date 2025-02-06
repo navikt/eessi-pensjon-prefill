@@ -34,38 +34,49 @@ spec:
         - host: eessi-pensjon-fagmodul-q2.intern.dev.nav.no
         - host: eessi-pensjon-onprem-proxy-q2.intern.dev.nav.no
         - host: digdir-krr-proxy.intern.dev.nav.no
+        - host: dev-gcp.etterlatte.etterlatte-api
   webproxy: true
   env:
     - name: SPRING_PROFILES_ACTIVE
       value: test
+
     - name: PENSJONSINFORMASJON_URL
       value: https://eessi-pensjon-onprem-proxy-q2.dev-fss-pub.nais.io/pen/api/pensjonsinformasjon/v1
+
     - name: PDL_URL
       value: https://pdl-api.dev-fss-pub.nais.io/graphql
     - name: AZURE_APP_PDL_CLIENT_ID
       value: dev-fss.pdl.pdl-api
+
     - name: KRR_URL
       value: https://digdir-krr-proxy.intern.dev.nav.no
     - name: KRR_CLIENT_ID
       value: dev-gcp.team-rocket.digdir-krr-proxy
+
+    - name: KODEVERK_URL
+      value: https://kodeverk-api.nav.no
     - name: AZURE_APP_KODEVERK_CLIENT_ID
       value: dev-gcp.team-rocket.kodeverk-api
+
+    - name: ETTERLATTE_URL
+      value: http://etterlatte-api.etterlatte
+    - name: AZURE_APP_ETTERLATTE_CLIENT_ID
+      value: dev-gcp.etterlatte.etterlatte-api
+
+    - name: AZURE_APP_PROXY_CLIENT_ID
+      value: dev-fss.eessipensjon.eessi-pensjon-onprem-proxy-q2
+
     - name: KAFKA_AUTOMATISERING_TOPIC
       value: eessipensjon.public-automatisering-q2
+
     - name: EESSI_PENSJON_INSTITUSJON
       value: NO:NAVAT07
     - name: EESSI_PENSJON_INSTITUSJON_NAVN
       value: NAV ACCEPTANCE TEST 07
-    - name: AZURE_APP_PROXY_CLIENT_ID
-      value: dev-fss.eessipensjon.eessi-pensjon-onprem-proxy-q2
-
-    - name: AZURE_APP_KODEVERK_CLIENT_ID
-      value: dev-gcp.team-rocket.kodeverk-api
-    - name: KODEVERK_URL
-      value: https://kodeverk-api.nav.no
 
     - name: ENV
       value: q2
+
   image: {{ image }}
   ingresses:
     - https://eessi-pensjon-prefill-q2.intern.dev.nav.no

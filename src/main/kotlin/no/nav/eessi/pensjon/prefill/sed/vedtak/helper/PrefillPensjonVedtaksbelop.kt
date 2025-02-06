@@ -20,7 +20,7 @@ object PrefillPensjonVedtaksbelop {
      *  4.1.7.3.1. Gross amount
      */
     fun createBelop(ytelsePrMnd: V1YtelsePerMaaned, sakType: KSAK): String {
-        logger.debug("4.1.7.3.1         Gross amount")
+        logger.info("4.1.7.3.1         Gross amount")
         val belop = ytelsePrMnd.belop
 
         if (KSAK.UFOREP == sakType) {
@@ -41,7 +41,7 @@ object PrefillPensjonVedtaksbelop {
      *      GAP =Garantitillegg
      */
     fun createYtelseskomponentGrunnpensjon(ytelsePrMnd: V1YtelsePerMaaned, sakType: KSAK): String? {
-        logger.debug("4.1.7.3.3         Grunnpensjon")
+        logger.info("4.1.7.3.3         Grunnpensjon")
 
         if (KSAK.UFOREP != sakType) {
             return VedtakPensjonDataHelper.hentYtelseskomponentBelop(
@@ -56,7 +56,7 @@ object PrefillPensjonVedtaksbelop {
      *  Her skal det automatisk vises brutto tilleggspensjon for de ulike beregningsperioder  Brutto inntektspensjon for alderspensjon beregnet etter kapittel 20.
      */
     fun createYtelseskomponentTilleggspensjon(ytelsePrMnd: V1YtelsePerMaaned, sakType: KSAK): String? {
-        logger.debug("4.1.7.3.4         Tilleggspensjon")
+        logger.info("4.1.7.3.4         Tilleggspensjon")
 
         if (KSAK.UFOREP != sakType) {
             return VedtakPensjonDataHelper.hentYtelseskomponentBelop("$TP,$IP", ytelsePrMnd).toString()
@@ -68,7 +68,7 @@ object PrefillPensjonVedtaksbelop {
      * 4.1.9
      */
     fun createEkstraTilleggPensjon(pendata: Pensjonsinformasjon): Ukjent? {
-        logger.debug("4.1.9         ekstra tilleggpensjon")
+        logger.info("4.1.9         ekstra tilleggpensjon")
 
         var summer = 0
         pendata.ytelsePerMaanedListe.ytelsePerMaanedListe.forEach {
@@ -85,6 +85,7 @@ object PrefillPensjonVedtaksbelop {
      *  4.1.7
      */
     fun createBeregningItemList(pendata: Pensjonsinformasjon): List<BeregningItem> {
+        logger.info("4.1.7        BeregningItemList")
 
         val ytelsePerMaaned = pendata.ytelsePerMaanedListe.ytelsePerMaanedListe
                 .asSequence().sortedBy { it.fom.toGregorianCalendar() }.toMutableList()
@@ -104,7 +105,7 @@ object PrefillPensjonVedtaksbelop {
      * 4.1.8
      */
     private fun createBeregningItemPeriode(ytelsePrMnd: V1YtelsePerMaaned): Periode {
-        logger.debug("4.1.7.1         BeregningItemPeriode")
+        logger.info("4.1.7.1         BeregningItemPeriode")
 
         var tomstr: String? = null
         var fomstr: String? = null
@@ -124,7 +125,7 @@ object PrefillPensjonVedtaksbelop {
     }
 
     private fun createBeregningItem(ytelsePrMnd: V1YtelsePerMaaned, sakType: KSAK): BeregningItem {
-        logger.debug("4.1.7         BeregningItem (Repeterbart)")
+        logger.info("4.1.7         BeregningItem (Repeterbart)")
 
         return BeregningItem(
                 //4.1.7.1 -- 4.1.7.2
