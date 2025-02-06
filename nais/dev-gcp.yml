@@ -27,9 +27,6 @@ spec:
         - application: eessi-pensjon-fagmodul-q2
           namespace: eessipensjon
           cluster: dev-gcp
-        - application: etterlatte-api
-          namespace: etterlatte
-          cluster: dev-gcp
     outbound:
       external:
         - host: pdl-api.dev-fss-pub.nais.io
