@@ -16,12 +16,13 @@ import java.time.LocalDate
 @Component
 class EtterlatteService(private val etterlatteRestTemplate: RestTemplate, @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper.ForTest()) {
     private val logger = LoggerFactory.getLogger(EtterlatteService::class.java)
+    private val secureLog = LoggerFactory.getLogger("secureLog")
 
     private var henterVedtaksInfoFraGjenny: MetricsHelper.Metric = metricsHelper.init("henterVedtaksInfoFraGjenny")
 
     fun hentGjennySak(fnr: String): Result<EtterlatteResponse?> {
         val url = "/api/v1/vedtak/$fnr"
-        logger.debug("Henter vedtaksinformasjon fra gjenny: $url")
+        secureLog.info("Henter vedtaksinformasjon fra gjenny: $url")
 
         return try {
             val response = etterlatteRestTemplate.exchange(
