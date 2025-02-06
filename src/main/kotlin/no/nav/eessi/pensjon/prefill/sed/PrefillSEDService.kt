@@ -44,7 +44,7 @@ class PrefillSEDService(
                 ).prefillMedVedtak(
                     prefillData,
                     personDataCollection
-                )
+                ).also { logger.info("prefillGjenny med vedtak") }
             }
             P2100 -> {
                 val sedpair = PrefillP2100(prefillPDLnav).prefillSed(
@@ -95,7 +95,7 @@ class PrefillSEDService(
             //vedtak
             P6000 -> PrefillP6000(prefillPDLnav, eessiInformasjon, etterlatteService)
                         .prefill(prefillData, personDataCollection, pensjonCollection?.pensjoninformasjon
-                            ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Ingen vedtak"))
+                            ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Ingen vedtak")).also { logger.info("prefillGjenny med pensjonsinformasjon") }
             P5000 -> PrefillP5000(PrefillSed(prefillPDLnav)).prefill(prefillData, personDataCollection)
             P4000 -> PrefillP4000(PrefillSed(prefillPDLnav)).prefill(prefillData, personDataCollection)
             P7000 -> {

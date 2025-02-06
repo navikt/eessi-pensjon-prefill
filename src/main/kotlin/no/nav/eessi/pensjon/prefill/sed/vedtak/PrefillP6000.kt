@@ -27,7 +27,6 @@ class PrefillP6000(
     fun prefill(prefillData: PrefillDataModel, personData: PersonDataCollection, pensjoninformasjon: Pensjonsinformasjon?): P6000 {
         val (sedType, andreInstitusjondetaljer, gjenlevende) = prefill6000Basis(prefillData, personData)
 
-        logger.debug("Henter opp Pensjonsdata fra PESYS")
         val p6000Pensjon = if(pensjoninformasjon != null) prefillP6000Pensjon(pensjoninformasjon, gjenlevende, andreInstitusjondetaljer) else P6000Pensjon(gjenlevende)
 
         logger.debug("Starter prefill for P6000")
