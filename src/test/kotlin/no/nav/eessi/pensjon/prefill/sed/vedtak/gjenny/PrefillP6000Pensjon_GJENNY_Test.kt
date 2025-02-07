@@ -90,7 +90,7 @@ class PrefillP6000Pensjon_GJENNY_Test {
 
 
         val krav = p6000Pensjon.sak?.kravtype?.get(0)
-        assertEquals("03", krav?.krav)
+        assertEquals("01", krav?.krav)
         assertEquals("six weeks from the date the decision is received", krav?.datoFrist)
 
         val avdod = p6000.nav?.bruker?.person
