@@ -97,16 +97,11 @@ object PrefillP6000Pensjon {
     /**
      * mapper saktype (4.1.4) fra etterlatte til vedtaks type
      */
-    fun mapEtterlatteType(sakType: String): String {
-        return try {
-            when (sakType) {
-                "AVSLAG" -> "02"
-                "INNVILGELSE" -> "01"
-                else -> "03"
-            }
-        } catch (ex: Exception) {
-            logger.error("Feil ved mapping av saktype, returnerer default verdi")
-            "03"
+    fun mapEtterlatteType(sakType: String?): String {
+        return when (sakType) {
+            "AVSLAG" -> "02"
+            "INNVILGELSE" -> "01"
+            else -> "03"
         }
     }
 

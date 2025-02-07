@@ -21,8 +21,7 @@ object PrefillDataModelMother {
         refTilPerson: ReferanseTilPerson? = null,
         euxCaseId: String = "123456",
         bucType: BucType = P_BUC_09,
-        institution: List<InstitusjonItem> = listOf(InstitusjonItem(country = "NO", institution = "DUMMY")),
-        gjennySak: String? = null ) =
+        institution: List<InstitusjonItem> = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))) =
 
         PrefillDataModel(
             penSaksnummer,
@@ -35,8 +34,7 @@ object PrefillDataModelMother {
             kravDato = kravDato,
             kravId = kravId,
             refTilPerson = refTilPerson,
-            euxCaseID = euxCaseId,
-            gjennySakType =  gjennySak
+            euxCaseID = euxCaseId
         )
 }
 

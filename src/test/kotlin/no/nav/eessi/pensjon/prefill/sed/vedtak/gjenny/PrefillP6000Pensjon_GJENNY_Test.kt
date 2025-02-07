@@ -78,7 +78,7 @@ class PrefillP6000Pensjon_GJENNY_Test {
         )
 
         dataFromPEN = PrefillTestHelper.lesPensjonsdataVedtakFraFil("/pensjonsinformasjon/vedtak/P6000-GP-401.xml")
-        prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P6000, personFnr, penSaksnummer = "22580170", vedtakId = "12312312", avdod = PersonInfo(avdodPersonFnr, "1234567891234"), gjennySak = "OMSST")
+        prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P6000, personFnr, penSaksnummer = "22580170", vedtakId = "12312312", avdod = PersonInfo(avdodPersonFnr, "1234567891234"))
         prefillSEDService = PrefillSEDService(standardEessiInfo(), prefillNav, etterlatteService)
 
         val p6000 = prefillSEDService.prefillGjenny(prefillData, personDataCollection) as P6000
