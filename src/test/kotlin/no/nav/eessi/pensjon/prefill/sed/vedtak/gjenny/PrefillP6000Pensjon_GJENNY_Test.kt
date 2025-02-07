@@ -105,7 +105,7 @@ class PrefillP6000Pensjon_GJENNY_Test {
 
         val vedtak = p6000Pensjon.vedtak?.get(0)
         assertEquals("2018-05-01", vedtak?.virkningsdato, "vedtak.virkningsdato")
-        assertEquals("01", vedtak?.type, "vedtak.type")
+        assertEquals("03", vedtak?.type, "vedtak.type")
 
         val beregningDel1 = vedtak?.beregning?.get(0)
         assertEquals("NOK", beregningDel1?.valuta)
