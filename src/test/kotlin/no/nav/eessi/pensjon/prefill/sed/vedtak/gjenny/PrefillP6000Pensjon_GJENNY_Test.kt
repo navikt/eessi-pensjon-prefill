@@ -66,6 +66,10 @@ class PrefillP6000Pensjon_GJENNY_Test {
                             Utbetaling(
                                 fraOgMed = LocalDate.parse("2018-05-01"), tilOgMed = LocalDate.parse("2030-05-01"),
                                 beloep = "5248"
+                            ),
+                            Utbetaling(
+                                fraOgMed = LocalDate.parse("2018-11-01"), tilOgMed = LocalDate.parse("2030-11-01"),
+                                beloep = "3432"
                             )
                         )
                     )
@@ -101,24 +105,21 @@ class PrefillP6000Pensjon_GJENNY_Test {
 
         val vedtak = p6000Pensjon.vedtak?.get(0)
         assertEquals("2018-05-01", vedtak?.virkningsdato, "vedtak.virkningsdato")
-        assertEquals("02", vedtak?.type, "vedtak.type")
+        assertEquals("01", vedtak?.type, "vedtak.type")
 
-//        assertEquals(BasertPaa.i_arbeid, vedtak?.basertPaa, "vedtak.basertPaa")
-//        assertEquals("03", vedtak?.resultat, "vedtak.resultat")
+        val beregningDel1 = vedtak?.beregning?.get(0)
+        assertEquals("NOK", beregningDel1?.valuta)
+        assertEquals("2018-05-01", beregningDel1?.periode?.fom)
+        assertEquals("2030-05-01", beregningDel1?.periode?.tom)
+        assertEquals("5248", beregningDel1?.beloepBrutto?.beloep)
+        assertEquals("maaned_12_per_aar", beregningDel1?.utbetalingshyppighet)
 
-//        assertEquals("03", vedtak?.grunnlag?.opptjening?.forsikredeAnnen)
-//        assertEquals("1", vedtak?.grunnlag?.framtidigtrygdetid)
-
-        val beregning = vedtak?.beregning?.get(0)
-        assertEquals("2018-05-01", beregning?.periode?.fom)
-        assertEquals("2030-05-01", beregning?.periode?.tom)
-        assertEquals("NOK", beregning?.valuta)
-//        assertEquals("maaned_12_per_aar", beregning?.utbetalingshyppighet)
-
-        assertEquals("5248", beregning?.beloepBrutto?.beloep)
-//        assertEquals("3519", beregning?.beloepBrutto?.ytelseskomponentGrunnpensjon)
-//        assertEquals("1729", beregning?.beloepBrutto?.ytelseskomponentTilleggspensjon)
-//        assertEquals(null, vedtak?.ukjent?.beloepBrutto?.ytelseskomponentAnnen)
+        val beregningDel2 = vedtak?.beregning?.get(1)
+        assertEquals("NOK", beregningDel2?.valuta)
+        assertEquals("2018-11-01", beregningDel2?.periode?.fom)
+        assertEquals("2030-11-01", beregningDel2?.periode?.tom)
+        assertEquals("3432", beregningDel2?.beloepBrutto?.beloep)
+        assertEquals("maaned_12_per_aar", beregningDel2?.utbetalingshyppighet)
 
         val avslagBegrunnelse = vedtak?.avslagbegrunnelse?.get(0)
         assertEquals(null, avslagBegrunnelse?.begrunnelse)
