@@ -94,29 +94,6 @@ object PrefillP6000Pensjon {
         )
     }
 
-//    fun prefillP6000PensjonGjenny(
-//        vedtakInformasjonGjenny: EtterlatteResponse,
-//        gjenlevende: Bruker?,
-//        andreinstitusjonerItem: AndreinstitusjonerItem?
-//    ): P6000Pensjon {
-//        logger.debug("4.1       VedtaksInfo fra gjenny")
-//
-//        return if (vedtakInformasjonGjenny.sakType == "AVSLAG") {) {
-//            VedtakItem(
-//                    type = vedtak.type,
-//            resultat = vedtak.resultat,
-//            avslagbegrunnelse = vedtak.avslagbegrunnelse
-//            )
-//        } else {
-//            return P6000Pensjon(
-//                gjenlevende = gjenlevende,
-//                vedtak = prefillVedtak(vedtakInformasjonGjenny),
-//
-//            )
-//        }
-//    }
-
-
     private fun prefillPensjonMedAvslag(
         pensjoninformasjon: Pensjonsinformasjon,
         andreinstitusjonerItem: AndreinstitusjonerItem?
