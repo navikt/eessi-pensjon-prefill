@@ -68,11 +68,11 @@ object PrefillP6000Pensjon {
         logger.debug("4.1       VedtaksInfo fra gjenny")
         return P6000Pensjon(
             gjenlevende = gjenlevende,
-            sak = Sak(kravtype = listOf(KravtypeItem(datoFrist = "six weeks from the date the decision is received", krav = bestemSakTypeFraSed(gjennySakType)))),
+            sak = Sak(kravtype = listOf(KravtypeItem(datoFrist = "six weeks from the date the decision is received", krav = etterlatteResponse?.type?.let { mapEtterlatteType(it) }))), //4.1.4
             vedtak = listOf(
                 VedtakItem(
                     virkningsdato = etterlatteResponse?.virkningstidspunkt?.let { simpleFormatter.format(it) },
-                    type = etterlatteResponse?.type?.let { mapEtterlatteType(it) },
+                    type = "03",     //4.1.1 Her hardkoder vi verdien til 03 som er etterlatte, da det er denne typen som skal gjelde for gjennysaker
                     beregning = utbetalingEtterlatte?.map { utbetaling ->
                         BeregningItem(
                             periode = Periode(
@@ -113,7 +113,7 @@ object PrefillP6000Pensjon {
             }
         } catch (ex: Exception) {
             logger.error("Feil ved mapping av saktype, returnerer default verdi")
-            "01"
+            "03"
         }
     }
 
