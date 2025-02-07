@@ -2,10 +2,7 @@ package no.nav.eessi.pensjon.prefill.sed.vedtak
 
 import no.nav.eessi.pensjon.eux.model.sed.*
 import no.nav.eessi.pensjon.prefill.etterlatte.EtterlatteResponse
-import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.PrefillPensjonReduksjon
-import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.PrefillPensjonSak
-import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.PrefillPensjonTilleggsinformasjon
-import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.PrefillPensjonVedtak
+import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.*
 import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.VedtakPensjonDataHelper.harBoddArbeidetUtland
 import no.nav.eessi.pensjon.utils.simpleFormat
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
@@ -74,7 +71,7 @@ object PrefillP6000Pensjon {
             vedtak = listOf(
                 VedtakItem(
                     virkningsdato = etterlatteResponse?.virkningstidspunkt?.let { simpleFormatter.format(it) },
-                    type = etterlatteResponse?.type,
+                    type = etterlatteResponse?.type?.let { mapEtterlatteType(it) },
                     beregning = utbetalingEtterlatte?.let {
                         listOf(
                             BeregningItem(
@@ -95,12 +92,32 @@ object PrefillP6000Pensjon {
         )
     }
 
+    /**
+     * Bestemmer hvilken saktype som skal brukes basert på saktype fra SED (gjennySakType)
+     */
     private fun bestemSakTypeFraSed(gjennySakType: String?): String? {
         return when(gjennySakType){
             "OMSST" -> "03"
             else -> null
         }
     }
+
+    /**
+     * mapper saktype fra etterlatte til vedtaks type
+     */
+    fun mapEtterlatteType(sakType: String): String {
+        return try {
+            when (sakType) {
+                "AVSLAG" -> "03"
+                "INNVILGELSE" -> "02"
+                else -> "01"
+            }
+        } catch (ex: Exception) {
+            logger.error("Feil ved mapping av saktype, returnerer default verdi")
+            "01"
+        }
+    }
+
 
 //    fun prefillP6000PensjonGjenny(
 //        vedtakInformasjonGjenny: EtterlatteResponse,
