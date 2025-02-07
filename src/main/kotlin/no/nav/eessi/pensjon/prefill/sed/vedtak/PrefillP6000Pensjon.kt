@@ -102,7 +102,7 @@ object PrefillP6000Pensjon {
     }
 
     /**
-     * mapper saktype fra etterlatte til vedtaks type
+     * mapper saktype (4.1.4) fra etterlatte til vedtaks type
      */
     fun mapEtterlatteType(sakType: String): String {
         return try {
