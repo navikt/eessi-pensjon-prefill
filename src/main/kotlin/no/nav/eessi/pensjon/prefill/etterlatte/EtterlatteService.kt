@@ -1,6 +1,5 @@
 package no.nav.eessi.pensjon.prefill.etterlatte
 
-import com.fasterxml.jackson.annotation.JsonValue
 import no.nav.eessi.pensjon.metrics.MetricsHelper
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.toJson
@@ -62,10 +61,3 @@ data class Utbetaling (
     val tilOgMed: LocalDate,
     val beloep: String
 )
-
-enum class EtterlatteType(@JsonValue val value: String) {
-    INNVILGELSE(""),
-    OPPHOER(""),
-    AVSLAG(""),
-    ENDRING("")
-}

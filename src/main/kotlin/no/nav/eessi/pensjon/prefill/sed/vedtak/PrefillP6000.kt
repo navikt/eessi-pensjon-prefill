@@ -59,7 +59,7 @@ class PrefillP6000(
             logger.error("Kunne ikke hente vedtak fra Gjenny: ${vedtakResponse.exceptionOrNull()}")
         }
         val vedtak = vedtakResponse.getOrNull().also {  logger.debug("Lager pensjondata for P6000 fra gjenny: ${it?.toJson()}")}
-        val p6000Pensjon = prefillP6000PensjonVedtak(gjenlevende, vedtak, andreInstitusjondetaljer, prefillData.gjennySakType)
+        val p6000Pensjon =  prefillP6000PensjonVedtak(gjenlevende,vedtak, andreInstitusjondetaljer)
 
         logger.debug("Henter opp Persondata fra PDL")
         val nav = prefillNav.prefill(

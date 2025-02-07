@@ -32,8 +32,7 @@ data class PrefillDataModel(
     val institution: List<InstitusjonItem>,
     val refTilPerson: ReferanseTilPerson? = null,
     var melding: String? = null,
-    val partSedAsJson: MutableMap<String, String> = mutableMapOf(),
-    val gjennySakType: String? = null
+    val partSedAsJson: MutableMap<String, String> = mutableMapOf()
 ) {
 
     override fun toString(): String {
