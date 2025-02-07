@@ -23,6 +23,7 @@ class PrefillService(
     private val krrService: KrrService,
     private val prefillSedService: PrefillSEDService,
     private val innhentingService: InnhentingService,
+//    private val etterlatteService: EtterlatteService,
     private val automatiseringStatistikkService: AutomatiseringStatistikkService,
     @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper.ForTest()
 ) {
@@ -54,7 +55,9 @@ class PrefillService(
                 //TODO: midlertidig løsning
                 val sed = if(request.gjenny){
                     logger.info("Begynner preutfylling for gjenny")
-                    prefillSedService.prefill(prefillData, personcollection)
+//                    val vedtaInfoFraGjenny = innhentingService.hentVedtakFraGjenny(norskIdent)
+//                    val vedtaksInformasjonFraGjenny = etterlatteService.hentGjennySak(request.fnr!!)
+                    prefillSedService.prefillGjenny(prefillData, personcollection)
                 }
                 else {
                     val pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)

@@ -1,12 +1,7 @@
 package no.nav.eessi.pensjon.prefill.sed.vedtak
 
-import no.nav.eessi.pensjon.eux.model.sed.AndreinstitusjonerItem
-import no.nav.eessi.pensjon.eux.model.sed.Bruker
-import no.nav.eessi.pensjon.eux.model.sed.P6000Pensjon
-import no.nav.eessi.pensjon.eux.model.sed.ReduksjonItem
-import no.nav.eessi.pensjon.eux.model.sed.Sak
-import no.nav.eessi.pensjon.eux.model.sed.Tilleggsinformasjon
-import no.nav.eessi.pensjon.eux.model.sed.VedtakItem
+import no.nav.eessi.pensjon.eux.model.sed.*
+import no.nav.eessi.pensjon.prefill.etterlatte.EtterlatteResponse
 import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.PrefillPensjonReduksjon
 import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.PrefillPensjonSak
 import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.PrefillPensjonTilleggsinformasjon
@@ -18,6 +13,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.web.server.ResponseStatusException
+import java.time.format.DateTimeFormatter
 
 
 /**
@@ -59,6 +55,53 @@ object PrefillP6000Pensjon {
                 //6.x
                 tilleggsinformasjon = prefillTilleggsinformasjon(pensjoninformasjon, andreinstitusjonerItem)
             )
+        }
+    }
+
+    fun prefillP6000PensjonVedtak(
+        gjenlevende: Bruker?,
+        etterlatteResponse: EtterlatteResponse?,
+        andreinstitusjonerItem: AndreinstitusjonerItem?
+    ): P6000Pensjon {
+        val simpleFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val etterlatteResponse = etterlatteResponse?.vedtak?.firstOrNull()
+        val utbetalingEtterlatte = etterlatteResponse?.utbetaling
+
+        logger.debug("4.1       VedtaksInfo fra gjenny")
+        return P6000Pensjon(
+            gjenlevende = gjenlevende,
+            sak = Sak(kravtype = listOf(KravtypeItem(datoFrist = "six weeks from the date the decision is received"))),
+            vedtak = listOf(
+                VedtakItem(
+                    virkningsdato = etterlatteResponse?.virkningstidspunkt?.let { simpleFormatter.format(it) },
+                    type = "03",     //4.1.1 Her hardkoder vi verdien til 03 som er etterlatte, da det er denne typen som skal gjelde for gjennysaker
+                    beregning = utbetalingEtterlatte?.map { utbetaling ->
+                        BeregningItem(
+                            periode = Periode(
+                                fom = utbetaling.fraOgMed.let { simpleFormatter.format(it) },
+                                tom = utbetaling.tilOgMed.let { simpleFormatter.format(it) }
+                            ),
+                            beloepBrutto = BeloepBrutto(beloep = utbetaling.beloep),
+                            valuta = "NOK",
+                            utbetalingshyppighet = "maaned_12_per_aar"
+                        )
+                    },
+                resultat = etterlatteResponse?.type?.let { mapEtterlatteType(it) },   //4.1.4 Decision type
+                )
+            ),
+            reduksjon = null,
+            tilleggsinformasjon = andreinstitusjonerItem?.let { Tilleggsinformasjon(andreinstitusjoner = listOf(andreinstitusjonerItem)) }
+        )
+    }
+
+    /**
+     * mapper saktype (4.1.4) fra etterlatte til vedtaks type
+     */
+    fun mapEtterlatteType(sakType: String?): String {
+        return when (sakType) {
+            "AVSLAG" -> "02"
+            "INNVILGELSE" -> "01"
+            else -> "03"
         }
     }
 
@@ -122,6 +165,15 @@ object PrefillP6000Pensjon {
             emptyList()
         }
     }
+
+//    private fun prefillVedtakGjenny(vedtakInfoFraGjenny: EtterlatteResponse): List<VedtakItem> {
+//        return try {
+//            listOf(PrefillPensjonVedtak.createVedtakItem(pensjoninformasjon))
+//        } catch (ex: Exception) {
+//            logger.warn("Feilet ved preutfylling av vedtaksdetaljer, fortsetter uten")
+//            emptyList()
+//        }
+//    }
 
     private fun erAvslag(pensjoninformasjon: Pensjonsinformasjon): Boolean {
         val vilkar = pensjoninformasjon.vilkarsvurderingListe

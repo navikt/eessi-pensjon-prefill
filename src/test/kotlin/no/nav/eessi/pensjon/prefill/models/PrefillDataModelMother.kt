@@ -22,18 +22,19 @@ object PrefillDataModelMother {
         euxCaseId: String = "123456",
         bucType: BucType = P_BUC_09,
         institution: List<InstitusjonItem> = listOf(InstitusjonItem(country = "NO", institution = "DUMMY"))) =
-            PrefillDataModel(
-                    penSaksnummer,
-                    bruker = PersonInfo(pinId, "123456789", false, "ola@nav.no", "11223344"),
-                    avdod = avdod,
-                    sedType = sedType,
-                    vedtakId = vedtakId ?: "",
-                    buc = bucType,
-                    institution = institution,
-                    kravDato = kravDato,
-                    kravId = kravId,
-                    refTilPerson = refTilPerson,
-                    euxCaseID = euxCaseId
-            )
+
+        PrefillDataModel(
+            penSaksnummer,
+            bruker = PersonInfo(pinId, "123456789", false, "ola@nav.no", "11223344"),
+            avdod = avdod,
+            sedType = sedType,
+            vedtakId = vedtakId ?: "",
+            buc = bucType,
+            institution = institution,
+            kravDato = kravDato,
+            kravId = kravId,
+            refTilPerson = refTilPerson,
+            euxCaseID = euxCaseId
+        )
 }
 

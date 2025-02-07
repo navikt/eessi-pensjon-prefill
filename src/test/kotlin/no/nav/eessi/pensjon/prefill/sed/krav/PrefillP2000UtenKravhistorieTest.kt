@@ -57,7 +57,7 @@ class PrefillP2000UtenKravhistorieTest {
         val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
         pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
 
-        prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav)
+        prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav, mockk())
     }
 
     @Test

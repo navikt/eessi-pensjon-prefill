@@ -16,7 +16,6 @@ import no.nav.eessi.pensjon.shared.person.Fodselsnummer
 import no.nav.eessi.pensjon.shared.person.FodselsnummerGenerator
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
-import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
@@ -54,7 +53,7 @@ class PrefillP5000GLTest {
 
         val pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
 
-        prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav)
+        prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav, mockk())
         p5000 = prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection) as P5000
     }
 

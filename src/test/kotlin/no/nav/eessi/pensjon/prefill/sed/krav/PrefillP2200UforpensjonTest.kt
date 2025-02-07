@@ -3,13 +3,10 @@ package no.nav.eessi.pensjon.prefill.sed.krav
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.SedType
-import no.nav.eessi.pensjon.personoppslag.pdl.model.KjoennType
 import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.PersonPDLMock.medFodsel
-import no.nav.eessi.pensjon.prefill.PersonPDLMock.medForeldre
-import no.nav.eessi.pensjon.prefill.PersonPDLMock.medKjoenn
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.prefill.models.PensjonCollection
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
@@ -57,7 +54,7 @@ class PrefillP2200UforpensjonTest {
         prefillData = initialPrefillDataModel(SedType.P2200, personFnr, penSaksnummer = "22874955").apply {
             partSedAsJson["PersonInfo"] = readJsonResponse("/json/nav/other/person_informasjon_selvb.json")
         }
-        prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav)
+        prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav, mockk())
 
         val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
         pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)

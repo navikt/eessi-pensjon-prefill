@@ -53,7 +53,7 @@ class PrefillP7000_AP_21975717Test {
 
     @Test
     fun `forventet korrekt utfylt P7000 Melding om vedtakssammendrag med MockData fra testfiler`() {
-        val prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillPDLNav)
+        val prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillPDLNav, mockk())
 
         val p7000 = prefillSEDService.prefill(prefillData, personCollection, pensjonCollection) as P7000
 
@@ -69,7 +69,7 @@ class PrefillP7000_AP_21975717Test {
         val json = String(Files.readAllBytes(Paths.get(filepath)))
         assertTrue(validateJson(json))
 
-        val prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillPDLNav)
+        val prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillPDLNav, mockk())
         val p7000 = prefillSEDService.prefill(prefillData, personCollection, pensjonCollection)
 
         val sed = p7000.toJsonSkipEmpty()

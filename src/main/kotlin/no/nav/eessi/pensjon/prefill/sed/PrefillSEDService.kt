@@ -1,21 +1,10 @@
 package no.nav.eessi.pensjon.prefill.sed
 
 import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_05
-import no.nav.eessi.pensjon.eux.model.SedType.H020
-import no.nav.eessi.pensjon.eux.model.SedType.H021
-import no.nav.eessi.pensjon.eux.model.SedType.P10000
-import no.nav.eessi.pensjon.eux.model.SedType.P15000
-import no.nav.eessi.pensjon.eux.model.SedType.P2000
-import no.nav.eessi.pensjon.eux.model.SedType.P2100
-import no.nav.eessi.pensjon.eux.model.SedType.P2200
-import no.nav.eessi.pensjon.eux.model.SedType.P4000
+import no.nav.eessi.pensjon.eux.model.SedType.*
 import no.nav.eessi.pensjon.eux.model.SedType.P5000
-import no.nav.eessi.pensjon.eux.model.SedType.P6000
-import no.nav.eessi.pensjon.eux.model.SedType.P7000
-import no.nav.eessi.pensjon.eux.model.SedType.P8000
-import no.nav.eessi.pensjon.eux.model.SedType.X005
-import no.nav.eessi.pensjon.eux.model.SedType.X010
 import no.nav.eessi.pensjon.eux.model.sed.SED
+import no.nav.eessi.pensjon.prefill.etterlatte.EtterlatteService
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.prefill.models.PensjonCollection
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
@@ -34,21 +23,28 @@ import org.springframework.stereotype.Component
 import org.springframework.web.server.ResponseStatusException
 
 @Component
-class PrefillSEDService(private val eessiInformasjon: EessiInformasjon, private val prefillPDLnav: PrefillPDLNav) {
+class PrefillSEDService(
+    private val eessiInformasjon: EessiInformasjon,
+    private val prefillPDLnav: PrefillPDLNav,
+    private val etterlatteService: EtterlatteService
+) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillSEDService::class.java) }
 
-    fun prefill(prefillData: PrefillDataModel, personDataCollection: PersonDataCollection): SED {
+    fun prefillGjenny(
+        prefillData: PrefillDataModel,
+        personDataCollection: PersonDataCollection,
+    ): SED {
         return when (prefillData.sedType) {
             P6000 -> {
                 PrefillP6000(
                     prefillPDLnav,
                     eessiInformasjon,
-                    null
-                ).prefill(
+                    etterlatteService
+                ).prefillMedVedtak(
                     prefillData,
                     personDataCollection
-                )
+                ).also { logger.info("prefillGjenny med vedtak") }
             }
             P2100 -> {
                 val sedpair = PrefillP2100(prefillPDLnav).prefillSed(
@@ -97,20 +93,11 @@ class PrefillSEDService(private val eessiInformasjon: EessiInformasjon, private 
             }
 
             //vedtak
-            P6000 -> PrefillP6000(
-                prefillPDLnav,
-                eessiInformasjon,
-                pensjonCollection?.pensjoninformasjon ?: throw ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Ingen vedtak"
-                )
-            ).prefill(
-                prefillData,
-                personDataCollection
-            )
+            P6000 -> PrefillP6000(prefillPDLnav, eessiInformasjon, etterlatteService)
+                        .prefill(prefillData, personDataCollection, pensjonCollection?.pensjoninformasjon
+                            ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Ingen vedtak")).also { logger.info("prefillGjenny med pensjonsinformasjon") }
             P5000 -> PrefillP5000(PrefillSed(prefillPDLnav)).prefill(prefillData, personDataCollection)
             P4000 -> PrefillP4000(PrefillSed(prefillPDLnav)).prefill(prefillData, personDataCollection)
-
             P7000 -> {
                 if (prefillData.partSedAsJson[P7000.name] != null && prefillData.partSedAsJson[P7000.name] != "{}") {
                     logger.info("P7000mk2 preutfylling med data fra P6000..")
