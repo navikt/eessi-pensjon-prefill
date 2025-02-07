@@ -68,7 +68,7 @@ object PrefillP6000Pensjon {
         logger.debug("4.1       VedtaksInfo fra gjenny")
         return P6000Pensjon(
             gjenlevende = gjenlevende,
-            sak = Sak(kravtype = listOf(KravtypeItem(datoFrist = "six weeks from the date the decision is received", krav = etterlatteResponse?.type?.let { mapEtterlatteType(it) }))), //4.1.4
+            sak = Sak(kravtype = listOf(KravtypeItem(datoFrist = "six weeks from the date the decision is received"))),
             vedtak = listOf(
                 VedtakItem(
                     virkningsdato = etterlatteResponse?.virkningstidspunkt?.let { simpleFormatter.format(it) },
@@ -83,7 +83,8 @@ object PrefillP6000Pensjon {
                             valuta = "NOK",
                             utbetalingshyppighet = "maaned_12_per_aar"
                         )
-                    }
+                    },
+                resultat = etterlatteResponse?.type?.let { mapEtterlatteType(it) },   //4.1.4 Decision type
                 )
             ),
             reduksjon = null,
