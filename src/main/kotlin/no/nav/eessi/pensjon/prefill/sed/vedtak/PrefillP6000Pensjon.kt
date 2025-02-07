@@ -65,33 +65,49 @@ object PrefillP6000Pensjon {
     ): P6000Pensjon {
         val simpleFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         val etterlatteResponse = etterlatteResponse?.vedtak?.firstOrNull()
-        val utbetalingEtterlatte = etterlatteResponse?.utbetaling?.firstOrNull()
+        val utbetalingEtterlatte = etterlatteResponse?.utbetaling
 
+        logger.debug("4.1       VedtaksInfo fra gjenny")
         return P6000Pensjon(
             gjenlevende = gjenlevende,
-            sak = Sak(kravtype = listOf(KravtypeItem(datoFrist = "six weeks from the date the decision is received", krav = etterlatteResponse?.sakType))),
+            sak = Sak(kravtype = listOf(KravtypeItem(datoFrist = "six weeks from the date the decision is received"))),
             vedtak = listOf(
                 VedtakItem(
                     virkningsdato = etterlatteResponse?.virkningstidspunkt?.let { simpleFormatter.format(it) },
-                    type = etterlatteResponse?.type,
-                    beregning = utbetalingEtterlatte?.let {
-                        listOf(
-                            BeregningItem(
-                                periode = Periode(
-                                    fom = utbetalingEtterlatte.fraOgMed.let { simpleFormatter.format(utbetalingEtterlatte.fraOgMed)},
-                                    tom = utbetalingEtterlatte.tilOgMed.let { simpleFormatter.format(utbetalingEtterlatte.tilOgMed)},
-                                ),
-                                beloepBrutto = BeloepBrutto(beloep = utbetalingEtterlatte.beloep),
-                                valuta = "NOK",
-                                utbetalingshyppighet = "maaned_12_per_aar"
-                            )
+                    type = "03",     //4.1.1 Her hardkoder vi verdien til 03 som er etterlatte, da det er denne typen som skal gjelde for gjennysaker
+                    beregning = utbetalingEtterlatte?.map { utbetaling ->
+                        BeregningItem(
+                            periode = Periode(
+                                fom = utbetaling.fraOgMed.let { simpleFormatter.format(it) },
+                                tom = utbetaling.tilOgMed.let { simpleFormatter.format(it) }
+                            ),
+                            beloepBrutto = BeloepBrutto(beloep = utbetaling.beloep),
+                            valuta = "NOK",
+                            utbetalingshyppighet = "maaned_12_per_aar"
                         )
-                    }
+                    },
+                resultat = etterlatteResponse?.type?.let { mapEtterlatteType(it) },   //4.1.4 Decision type
                 )
             ),
             reduksjon = null,
             tilleggsinformasjon = andreinstitusjonerItem?.let { Tilleggsinformasjon(andreinstitusjoner = listOf(andreinstitusjonerItem)) }
         )
+    }
+
+    /**
+     * mapper saktype (4.1.4) fra etterlatte til vedtaks type
+     */
+    fun mapEtterlatteType(sakType: String): String {
+        return try {
+            when (sakType) {
+                "AVSLAG" -> "02"
+                "INNVILGELSE" -> "01"
+                else -> "03"
+            }
+        } catch (ex: Exception) {
+            logger.error("Feil ved mapping av saktype, returnerer default verdi")
+            "03"
+        }
     }
 
     private fun prefillPensjonMedAvslag(
