@@ -74,7 +74,7 @@ class PrefillP6000Pensjon_GJENNY_Test {
         )
 
         dataFromPEN = PrefillTestHelper.lesPensjonsdataVedtakFraFil("/pensjonsinformasjon/vedtak/P6000-GP-401.xml")
-        prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P6000, personFnr, penSaksnummer = "22580170", vedtakId = "12312312", avdod = PersonInfo(avdodPersonFnr, "1234567891234"))
+        prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P6000, personFnr, penSaksnummer = "22580170", vedtakId = "12312312", avdod = PersonInfo(avdodPersonFnr, "1234567891234"), gjennySak = "OMSST")
         prefillSEDService = PrefillSEDService(standardEessiInfo(), prefillNav, etterlatteService)
 
 
@@ -82,8 +82,12 @@ class PrefillP6000Pensjon_GJENNY_Test {
         val p6000Pensjon = p6000.pensjon!!
 
         assertNotNull(p6000Pensjon.vedtak)
-        assertNotNull(p6000Pensjon.sak)
         assertNotNull(p6000Pensjon.tilleggsinformasjon)
+
+
+        val krav = p6000Pensjon.sak?.kravtype?.get(0)
+        assertEquals("03", krav?.krav)
+        assertEquals("six weeks from the date the decision is received", krav?.datoFrist)
 
         val avdod = p6000.nav?.bruker?.person
         val gjenlev = p6000.pensjon?.gjenlevende!!
@@ -118,7 +122,7 @@ class PrefillP6000Pensjon_GJENNY_Test {
 
         val avslagBegrunnelse = vedtak?.avslagbegrunnelse?.get(0)
         assertEquals(null, avslagBegrunnelse?.begrunnelse)
-        assertEquals("six weeks from the date the decision is received", p6000Pensjon.sak?.kravtype?.get(0)?.datoFrist)
+        assertEquals("six weeks from the date the decision is received", krav?.datoFrist)
         //TODO: Kan vi spørre om vi kan få dato da vedtaket ble fattet
 //        assertEquals("2018-05-26", p6000Pensjon.tilleggsinformasjon?.dato)
     }
