@@ -1,6 +1,7 @@
 package no.nav.eessi.pensjon.prefill.person
 
 import no.nav.eessi.pensjon.eux.model.sed.*
+import no.nav.eessi.pensjon.eux.model.sed.Foedested
 import no.nav.eessi.pensjon.kodeverk.KodeverkClient.Companion.toJson
 import no.nav.eessi.pensjon.personoppslag.pdl.model.*
 import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe.FOLKEREGISTERIDENT
@@ -35,7 +36,7 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
             else -> "U"
         }
         private fun PdlPerson.foedseldato(): String {
-            val fdato = this.foedsel?.foedselsdato
+            val fdato = this.foedselsdato?.foedselsdato
 
             if (fdato == null) {
                 val fnr = this.identer.firstOrNull { it.gruppe == FOLKEREGISTERIDENT }?.ident
@@ -344,10 +345,10 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
 
     fun createFodested(pdlperson: PdlPerson): Foedested? {
         logger.debug("2.1.8.1       Fødested")
-        logger.debug("              foedsel : ${pdlperson.foedsel}")
+        logger.debug("              foedested : ${pdlperson.foedested?.foedested}")
 
-        val foedested = pdlperson.foedsel?.foedested
-        val landkode = validateUgyldigeLand(pdlperson.foedsel?.foedeland)
+        val foedested = pdlperson.foedested?.foedested
+        val landkode = validateUgyldigeLand(pdlperson.foedested?.foedeland)
         val fsted = Foedested(
             land = landkode ?: "Unknown",
             by =  foedested ?: "Unknown",
