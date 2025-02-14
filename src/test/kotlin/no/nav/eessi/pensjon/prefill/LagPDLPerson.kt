@@ -31,7 +31,8 @@ class LagPdlPerson {
                 bostedsadresse = null,
                 oppholdsadresse = null,
                 statsborgerskap = listOf(Statsborgerskap(land, LocalDate.of(2000, 10, 1), LocalDate.of(2300, 10, 1), mockMeta())),
-                foedsel = Foedsel(fdatoaar, "NOR", null, null, null , mockMeta()),
+                foedested = Foedested("NOR", "Oslo", null, null , mockMeta()),
+                foedselsdato = Foedselsdato(fdatoaar?.year, personfnr?.getBirthDateAsIso(), null,  mockMeta()),
                 geografiskTilknytning = null,
                 kjoenn = Kjoenn(kjoennType, null, mockMeta()),
                 doedsfall = doeadfall,
@@ -55,7 +56,7 @@ class LagPdlPerson {
                 ),
                 false,
                 "FREG",
-                "23123123-12312312-123123"
+                "123123"
             )
         }
 

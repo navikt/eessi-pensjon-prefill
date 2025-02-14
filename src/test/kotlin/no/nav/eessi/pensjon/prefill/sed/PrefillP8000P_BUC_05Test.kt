@@ -159,7 +159,7 @@ class PrefillP8000P_BUC_05Test {
 
         val forsikretPerson = LagPdlPerson.lagPerson(fnr, "Christopher", "Robin")
             .medUtlandAdresse("LUNGJTEGATA 12", "1231", "SWE", "bygning", "region", bySted = "UTLANDBY")
-        val fdato = forsikretPerson.foedsel?.foedselsdato
+        val fdato = forsikretPerson.foedselsdato?.foedselsdato
 
         val avdod = LagPdlPerson.lagPerson(avdodFnr, "Winnie", "Pooh", erDod = true)
             .medUtlandAdresse("LUNGJTEGATA 12", "1231", "SWE", "bygning", "region", bySted = "UTLANDBY")
@@ -234,7 +234,7 @@ class PrefillP8000P_BUC_05Test {
         val forsikretPerson = LagPdlPerson.lagPerson(fnr, "Christopher", "Robin")
             .medUtlandAdresse("LUNGJTÖEGATA 12", "1231", "SWE", "bygning", "region", bySted = "UTLANDBY")
 
-        val fdato = forsikretPerson.foedsel?.foedselsdato
+        val fdato = forsikretPerson.foedselsdato?.foedselsdato
 
         val avdod = LagPdlPerson.lagPerson(avdodFnr, "Winnie", "Pooh", erDod = true)
             .medUtlandAdresse("LUNGJTÖEGATA 12", "1231", "SWE", "bygning", "region", bySted = "UTLANDBY")
