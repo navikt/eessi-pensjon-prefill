@@ -79,7 +79,7 @@ object PrefillP6000Pensjon {
                         BeregningItem(
                             periode = Periode(
                                 fom = utbetaling.fraOgMed.let { simpleFormatter.format(it) },
-                                tom = utbetaling.tilOgMed.let { simpleFormatter.format(it) }
+                                tom = utbetaling.tilOgMed?.let { simpleFormatter.format(it) }
                             ),
                             beloepBrutto = BeloepBrutto(beloep = utbetaling.beloep),
                             valuta = "NOK",
