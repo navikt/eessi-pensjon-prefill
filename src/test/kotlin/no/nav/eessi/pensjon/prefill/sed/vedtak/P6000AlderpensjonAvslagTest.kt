@@ -55,7 +55,7 @@ class P6000AlderpensjonAvslagTest {
     fun `forventet korrekt utfylling av pensjon objekt på alderpensjon med avslag`() {
         dataFromPEN = PrefillTestHelper.lesPensjonsdataVedtakFraFil("/pensjonsinformasjon/vedtak/P6000vedtak-alderpensjon-avslag.xml")
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P6000, personFnr, penSaksnummer = "22580170", vedtakId = "12312312")
-        prefillSEDService = PrefillSEDService(eessiInformasjon, prefillNav)
+        prefillSEDService = PrefillSEDService(eessiInformasjon, prefillNav, mockk())
         val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
         val pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
 
@@ -82,7 +82,7 @@ class P6000AlderpensjonAvslagTest {
     fun `forventet korrekt utfylling av pensjon objekt på alderpensjon med avslag under 1 arr`() {
         dataFromPEN = PrefillTestHelper.lesPensjonsdataVedtakFraFil("/pensjonsinformasjon/vedtak/P6000-AP-Under1aar-Avslag.xml")
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P6000, personFnr, penSaksnummer = "22580170", vedtakId = "12312312")
-        prefillSEDService = PrefillSEDService(eessiInformasjon, prefillNav)
+        prefillSEDService = PrefillSEDService(eessiInformasjon, prefillNav, mockk())
         val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
         val pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
 
@@ -109,7 +109,7 @@ class P6000AlderpensjonAvslagTest {
     fun `forventet korrekt utfylling av pensjon objekt på alderpensjon med avslag under 3 arr`() {
         dataFromPEN = PrefillTestHelper.lesPensjonsdataVedtakFraFil("/pensjonsinformasjon/vedtak/P6000-AP-Avslag.xml")
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P6000, personFnr, penSaksnummer = "22580170", vedtakId = "12312312")
-        prefillSEDService = PrefillSEDService(eessiInformasjon, prefillNav)
+        prefillSEDService = PrefillSEDService(eessiInformasjon, prefillNav, mockk())
         val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
         val pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
 
@@ -137,7 +137,7 @@ class P6000AlderpensjonAvslagTest {
     fun `preutfylling P6000 feiler ved mangler av vedtakId`() {
         dataFromPEN = PrefillTestHelper.lesPensjonsdataVedtakFraFil("/pensjonsinformasjon/vedtak/P6000vedtak-alderpensjon-avslag.xml")
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P6000, personFnr, penSaksnummer = "22580170", vedtakId = "")
-        prefillSEDService = PrefillSEDService(eessiInformasjon, prefillNav)
+        prefillSEDService = PrefillSEDService(eessiInformasjon, prefillNav, mockk())
         val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
         //val pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
 

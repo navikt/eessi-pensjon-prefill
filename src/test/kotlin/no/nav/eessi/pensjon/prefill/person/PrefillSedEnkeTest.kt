@@ -101,7 +101,7 @@ class PrefillSedEnkeTest {
         val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = pensjonsinformasjonService)
         val pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
 
-        val sed = PrefillSEDService(EessiInformasjon(), prefillPDLNav).prefill(prefillData, personCollection, pensjonCollection)
+        val sed = PrefillSEDService(EessiInformasjon(), prefillPDLNav, mockk()).prefill(prefillData, personCollection, pensjonCollection)
 
         assertEquals(SedType.P2200, sed.type)
 
