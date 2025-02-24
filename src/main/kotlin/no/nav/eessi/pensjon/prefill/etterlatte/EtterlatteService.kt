@@ -58,6 +58,6 @@ data class Vedtak(
 
 data class Utbetaling (
     val fraOgMed: LocalDate,
-    val tilOgMed: LocalDate,
+    val tilOgMed: LocalDate? = null,
     val beloep: String
 )
