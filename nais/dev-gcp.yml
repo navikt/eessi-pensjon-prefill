@@ -33,11 +33,12 @@ spec:
           namespace: etterlatte
           cluster: dev-gcp
       external:
-        - host: pdl-api.dev-fss-pub.nais.io
         - host: kodeverk-api.nav.no
-        - host: eessi-pensjon-fagmodul-q2.intern.dev.nav.no
-        - host: eessi-pensjon-onprem-proxy-q2.intern.dev.nav.no
+        - host: pensjon-q2.pensjon-pen-q2
+        - host: pdl-api.dev-fss-pub.nais.io
         - host: digdir-krr-proxy.intern.dev.nav.no
+        - host: eessi-pensjon-fagmodul-q2.intern.dev.nav.no
+
   webproxy: true
   env:
     - name: SPRING_PROFILES_ACTIVE
@@ -67,9 +68,6 @@ spec:
       value: http://etterlatte-api.etterlatte
     - name: AZURE_APP_ETTERLATTE_CLIENT_ID
       value: dev-gcp.etterlatte.etterlatte-api
-
-    - name: AZURE_APP_PROXY_CLIENT_ID
-      value: dev-fss.eessipensjon.eessi-pensjon-onprem-proxy-q2
 
     - name: KAFKA_AUTOMATISERING_TOPIC
       value: eessipensjon.public-automatisering-q2
