@@ -49,7 +49,7 @@ class RestTemplateConfig(
     fun krrRestTemplate() = opprettRestTemplate(krrUrl, "krr-credentials")
 
     @Bean
-    fun pensjonInformasjonRestTemplate() = opprettRestTemplate(pensjonUrl, "pensjon-credentials")
+    fun pensjoninformasjonRestTemplate() = opprettRestTemplate(pensjonUrl, "pensjon-credentials")
 
     private fun opprettRestTemplate(url: String, oAuthKey: String) : RestTemplate {
         return RestTemplateBuilder()
