@@ -44,7 +44,9 @@ spec:
       value: test
 
     - name: PENSJONSINFORMASJON_URL
-      value: https://eessi-pensjon-onprem-proxy-q2.dev-fss-pub.nais.io/pen/api/pensjonsinformasjon/v1
+      value: https://pensjon-pen-q2.dev-fss-pub.nais.io
+    - name: AZURE_APP_PEN_CLIENT_ID
+      value: dev-fss.pensjon-q2.pensjon-pen-q2
 
     - name: PDL_URL
       value: https://pdl-api.dev-fss-pub.nais.io/graphql
