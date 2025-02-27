@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.web.client.RestTemplateBuilder
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.context.annotation.Primary
 import org.springframework.context.annotation.Profile
 import org.springframework.http.HttpRequest
 import org.springframework.http.client.BufferingClientHttpRequestFactory
@@ -49,7 +48,6 @@ class RestTemplateConfig(
     @Bean
     fun krrRestTemplate() = opprettRestTemplate(krrUrl, "krr-credentials")
 
-    @Primary
     @Bean
     fun pensjoninformasjonRestTemplate() = opprettRestTemplate(pensjonUrl, "pensjon-credentials")
 
