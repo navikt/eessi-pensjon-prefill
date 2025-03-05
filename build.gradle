@@ -3,7 +3,6 @@ buildscript {
         kotlinVersion = '2.1.10'
         springBootVersion = '3.4.3'
         springKafkaVersion = '3.3.3'
-        jacksonModuleKotlinVersion = '2.18.3'
         cxfVersion = '3.3.4'
         tokenSupportVersion = '5.0.17'
     }
@@ -43,7 +42,7 @@ dependencies {
     implementation 'javax.xml.bind:jaxb-api:2.3.1'
     implementation('org.glassfish.jaxb:jaxb-runtime:2.3.6')
 
-    implementation("com.fasterxml.jackson.core:jackson-core:${jacksonModuleKotlinVersion}")
+    implementation("com.fasterxml.jackson.core:jackson-core:2.18.3")
 
     implementation 'org.jetbrains.kotlin:kotlin-reflect'
 
@@ -70,15 +69,15 @@ dependencies {
 
     implementation ("org.springframework.kafka:spring-kafka:$springKafkaVersion")
 
-    implementation("no.nav.eessi.pensjon:ep-eux:2.4.33")
-    implementation("no.nav.eessi.pensjon:ep-metrics:2.0.102")
-    implementation("no.nav.eessi.pensjon:ep-logging:2.2.10")
+    implementation("no.nav.eessi.pensjon:ep-eux:2.4.35")
+    implementation("no.nav.eessi.pensjon:ep-metrics:2.0.104")
+    implementation("no.nav.eessi.pensjon:ep-logging:2.2.11")
     implementation("no.nav.eessi.pensjon:ep-kodeverk:4.1.33"){
         exclude module: 'ep-eux'
         exclude module: 'ep-metrics'
         exclude module: 'ep-logging'
     }
-    implementation("no.nav.eessi.pensjon:ep-personoppslag:13.2.44"){
+    implementation("no.nav.eessi.pensjon:ep-personoppslag:13.2.52"){
         exclude module: 'ep-eux'
         exclude module: 'ep-metrics'
         exclude module: 'ep-logging'
