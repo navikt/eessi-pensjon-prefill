@@ -39,7 +39,6 @@ spec:
         - host: pdl-api.prod-fss-pub.nais.io
         - host: kodeverk-api.nav.no
         - host: eessi-pensjon-fagmodul.intern.nav.no
-        - host: eessi-pensjon-onprem-proxy.intern.nav.no
         - host: digdir-krr-proxy.intern.nav.no
   webproxy: true
   env:
@@ -47,7 +46,7 @@ spec:
       value: prod
 
     - name: PENSJONSINFORMASJON_URL
-      value: https://eessi-pensjon-onprem-proxy.prod-fss-pub.nais.io/pen/api/pensjonsinformasjon/v1
+      value: https://pensjon-pen.prod-fss-pub.nais.io/pen/api/pensjonsinformasjon/v1
 
     - name: PDL_URL
       value: https://pdl-api.prod-fss-pub.nais.io/graphql
@@ -68,9 +67,6 @@ spec:
       value: http://etterlatte-api.etterlatte
     - name: AZURE_APP_ETTERLATTE_CLIENT_ID
       value: prod-gcp.etterlatte.etterlatte-api
-
-    - name: AZURE_APP_PROXY_CLIENT_ID
-      value: prod-fss.eessipensjon.eessi-pensjon-onprem-proxy
 
     - name: KAFKA_AUTOMATISERING_TOPIC
       value: eessipensjon.public-automatisering
