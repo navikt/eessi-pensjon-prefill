@@ -40,6 +40,7 @@ spec:
         - host: kodeverk-api.nav.no
         - host: eessi-pensjon-fagmodul.intern.nav.no
         - host: digdir-krr-proxy.intern.nav.no
+        - host: pensjon-pen.prod-fss-pub.nais.io
   webproxy: true
   env:
     - name: SPRING_PROFILES_ACTIVE
@@ -47,6 +48,8 @@ spec:
 
     - name: PENSJONSINFORMASJON_URL
       value: https://pensjon-pen.prod-fss-pub.nais.io/pen/api/pensjonsinformasjon/v1
+    - name: AZURE_APP_PEN_CLIENT_ID
+      value: prod-fss.pensjondeployer.pensjon-pen
 
     - name: PDL_URL
       value: https://pdl-api.prod-fss-pub.nais.io/graphql
