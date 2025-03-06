@@ -44,7 +44,7 @@ spec:
       value: test
 
     - name: PENSJONSINFORMASJON_URL
-      value: https://eessi-pensjon-onprem-proxy-q2.dev-fss-pub.nais.io/pen/api/pensjonsinformasjon/v1
+      value: https://pensjon-pen.dev-fss-pub.nais.io/pen/api/pensjonsinformasjon/v1
 
     - name: PDL_URL
       value: https://pdl-api.dev-fss-pub.nais.io/graphql
@@ -65,9 +65,6 @@ spec:
       value: http://etterlatte-api.etterlatte
     - name: AZURE_APP_ETTERLATTE_CLIENT_ID
       value: dev-gcp.etterlatte.etterlatte-api
-
-    - name: AZURE_APP_PROXY_CLIENT_ID
-      value: dev-fss.eessipensjon.eessi-pensjon-onprem-proxy-q2
 
     - name: KAFKA_AUTOMATISERING_TOPIC
       value: eessipensjon.public-automatisering-q2
