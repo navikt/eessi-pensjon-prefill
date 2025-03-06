@@ -33,11 +33,12 @@ spec:
           namespace: etterlatte
           cluster: dev-gcp
       external:
-        - host: pdl-api.dev-fss-pub.nais.io
         - host: kodeverk-api.nav.no
-        - host: eessi-pensjon-fagmodul-q2.intern.dev.nav.no
-        - host: eessi-pensjon-onprem-proxy-q2.intern.dev.nav.no
+        - host: pensjon-q2.pensjon-pen-q2
+        - host: pdl-api.dev-fss-pub.nais.io
         - host: digdir-krr-proxy.intern.dev.nav.no
+        - host: eessi-pensjon-fagmodul-q2.intern.dev.nav.no
+
   webproxy: true
   env:
     - name: SPRING_PROFILES_ACTIVE
@@ -45,6 +46,8 @@ spec:
 
     - name: PENSJONSINFORMASJON_URL
       value: https://pensjon-pen.dev-fss-pub.nais.io/pen/api/pensjonsinformasjon/v1
+    - name: AZURE_APP_PEN_CLIENT_ID
+      value: dev-fss.pensjon-q2.pensjon-pen-q2
 
     - name: PDL_URL
       value: https://pdl-api.dev-fss-pub.nais.io/graphql
