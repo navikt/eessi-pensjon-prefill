@@ -45,7 +45,7 @@ spec:
       value: test
 
     - name: PENSJONSINFORMASJON_URL
-      value: https://pensjon-pen-q2.dev-fss-pub.nais.io
+      value: https://pensjon-pen.dev-fss-pub.nais.io/pen/api/pensjonsinformasjon/v1
     - name: AZURE_APP_PEN_CLIENT_ID
       value: dev-fss.pensjon-q2.pensjon-pen-q2
 
