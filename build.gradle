@@ -62,7 +62,7 @@ dependencies {
     //nødvendig for validering av jwt og EnableJwtTokenValidationConfiguration
     implementation("org.hibernate.validator:hibernate-validator")
 
-    implementation ("no.nav.common:token-client:3.2024.11.26_16.35-432a29107830")
+    implementation ("no.nav.common:token-client:3.2025.03.07_13.21-bb112c97720d")
 
     // Micrometer
     implementation("io.micrometer:micrometer-registry-prometheus:1.14.5")
