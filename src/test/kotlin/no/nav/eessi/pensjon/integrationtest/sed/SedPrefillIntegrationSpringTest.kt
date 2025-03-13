@@ -82,8 +82,8 @@ class SedPrefillIntegrationSpringTest {
 
     @BeforeEach
     fun setup(){
-        every { krrService.hentPersonFraKrr(any()) } returns KrrPerson(false, "melleby11@melby.no", "11111111")
-        every { krrService.hentPersonFraKrr(eq(FNR_VOKSEN_4)) } returns KrrPerson(false,"melleby12@melby.no", "22222222")
+        every { krrService.hentPersonerFraKrr(any()) } returns KrrPerson(false, "melleby11@melby.no", "11111111")
+        every { krrService.hentPersonerFraKrr(eq(FNR_VOKSEN_4)) } returns KrrPerson(false,"melleby12@melby.no", "22222222")
     }
 
     @ParameterizedTest(name = "for verdier for sakId:{0}, vedtak:{1}, sedType:{2}, og feilmelding:{3}")

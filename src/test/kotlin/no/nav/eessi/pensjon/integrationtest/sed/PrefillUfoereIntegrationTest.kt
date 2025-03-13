@@ -88,7 +88,7 @@ class PrefillUfoereIntegrationTest {
 
         every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith()
-        every { krrService.hentPersonFraKrr(any()) } returns KrrPerson(false,"melleby11@melby.no", "11111111")
+        every { krrService.hentPersonerFraKrr(any()) } returns KrrPerson(false,"melleby11@melby.no", "11111111")
         every { pensjonsinformasjonOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java))} returns PrefillTestHelper.readXMLresponse("/pensjonsinformasjon/krav/P2200-AVSL.xml")
         every { kodeverkClient.finnLandkode(any()) } returns "QX"
 
@@ -214,7 +214,7 @@ class PrefillUfoereIntegrationTest {
         //mock hent av aktoer/fnr for innkommende hovedperson
         every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(aktoerHovedperson)) } returns NorskIdent(pinHovedperson)
         every { personService.hentPerson(NorskIdent(pinHovedperson)) } returns hovedPersonMedbarn
-        every { krrService.hentPersonFraKrr(any()) } returns KrrPerson(false,"melleby11@melby.no", "11111111")
+        every { krrService.hentPersonerFraKrr(any()) } returns KrrPerson(false,"melleby11@melby.no", "11111111")
 
         //ektefelle
         every { personService.hentPerson(NorskIdent(pinEktefelleperson)) } returns ektefellePerson
@@ -525,7 +525,7 @@ class PrefillUfoereIntegrationTest {
 
         every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN_2)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_2)) } returns PersonPDLMock.createWith(true, "Lever", "Gjenlev", FNR_VOKSEN_2)
-        every { krrService.hentPersonFraKrr(any()) } returns KrrPerson(false,"melleby11@melby.no", "11111111")
+        every { krrService.hentPersonerFraKrr(any()) } returns KrrPerson(false,"melleby11@melby.no", "11111111")
 
         every { pensjonsinformasjonOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java))} returns
                 PrefillTestHelper.readXMLresponse("/pensjonsinformasjon/krav/P2200-UP-INNV.xml")
@@ -555,7 +555,7 @@ class PrefillUfoereIntegrationTest {
 
         every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns Npid(NPID_VOKSEN)
         every { personService.hentPerson(Npid(NPID_VOKSEN)) } returns PersonPDLMock.createWith(true, "Lever", "Gjenlev", NPID_VOKSEN)
-        every { krrService.hentPersonFraKrr(any()) } returns KrrPerson(false,"melleby11@melby.no", "11111111")
+        every { krrService.hentPersonerFraKrr(any()) } returns KrrPerson(false,"melleby11@melby.no", "11111111")
 
         every { pensjonsinformasjonOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java))} returns
                 PrefillTestHelper.readXMLresponse("/pensjonsinformasjon/krav/P2200-UP-INNV.xml")

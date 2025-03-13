@@ -67,7 +67,7 @@ class PrefillControllerTest {
             personDataService.hentPersonData(any())
         } returns( PersonDataCollection(PersonPDLMock.createWith(), PersonPDLMock.createWith()))
 
-        every { krrService.hentPersonFraKrr(any()) } returns KrrPerson(false,"melleby11@melby.no", "11111111")
+        every { krrService.hentPersonerFraKrr(any()) } returns KrrPerson(false,"melleby11@melby.no", "11111111")
 
         val nav = Nav(bruker = Bruker(person = Person(fornavn = "Dummy", etternavn = "Dummy", foedselsdato = "1900-10-11", kjoenn = "K")), krav = Krav("1937-12-11"))
         val mockSed = SED(

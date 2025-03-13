@@ -77,7 +77,7 @@ class PrefillServiceTest{
         every { request.processDefinitionVersion } returns versjon
 
         val krrPerson = KrrPerson(false, epost, "12345678")
-        every { krrService.hentPersonFraKrr(any()) } returns krrPerson
+        every { krrService.hentPersonerFraKrr(any()) } returns krrPerson
         every { prefillSedService.prefill(capture(requestSlot), any(), any()) } returns SED(SedType.P2000, "sedVer")
 
         prefillService.prefillSedtoJson(request)

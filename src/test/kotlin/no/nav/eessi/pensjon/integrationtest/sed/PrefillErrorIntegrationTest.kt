@@ -78,7 +78,7 @@ class PrefillErrorIntegrationTest {
         every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith()
 
-        every { krrService.hentPersonFraKrr(any())  } returns KrrPerson(false, "melleby11@melby.no", "11111111")
+        every { krrService.hentPersonerFraKrr(any())  } returns KrrPerson(false, "melleby11@melby.no", "11111111")
 
         val sak = PensjonsInformasjonHelper.createSak(
             PensjonsInformasjonHelper.createKravHistorikk(
@@ -114,7 +114,7 @@ class PrefillErrorIntegrationTest {
         every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns Npid(NPID_VOKSEN)
         every { personService.hentPerson(Npid(NPID_VOKSEN)) } returns PersonPDLMock.createWith()
 
-        every { krrService.hentPersonFraKrr(any())  } returns KrrPerson(false, "melleby11@melby.no", "11111111")
+        every { krrService.hentPersonerFraKrr(any())  } returns KrrPerson(false, "melleby11@melby.no", "11111111")
 
         val sak = PensjonsInformasjonHelper.createSak(
             PensjonsInformasjonHelper.createKravHistorikk(
