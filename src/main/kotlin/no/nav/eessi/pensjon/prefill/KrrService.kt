@@ -23,6 +23,7 @@ class KrrService(private val krrRestTemplate: RestTemplate,
 
     init {
         HentPerson = metricsHelper.init("HentPerson", ignoreHttpCodes = listOf(HttpStatus.BAD_REQUEST))
+        HentPersoner = metricsHelper.init("HentPerson", ignoreHttpCodes = listOf(HttpStatus.BAD_REQUEST))
     }
 
     //Henter inn telefonnummer og epostadresse fra KRR for å preutfylle SED
