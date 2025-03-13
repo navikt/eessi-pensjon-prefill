@@ -182,7 +182,7 @@ class PrefillP2000_AP_21975717Test {
                 forsikretPerson = PersonPDLMock.createWith(),
                 gjenlevendeEllerAvdod = PersonPDLMock.createWith(),
                 barnPersonList = listOf(PersonPDLMock.createWith(fornavn = "Barn", etternavn = "Barnesen", fnr = "01010436857")
-                    .medFodsel(LocalDate.of(2004, 1, 1))
+                    .medFodsel(LocalDate.of(2004, 1, 1),)
                 )
         )
 

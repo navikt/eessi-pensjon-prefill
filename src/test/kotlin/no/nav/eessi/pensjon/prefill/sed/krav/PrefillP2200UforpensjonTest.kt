@@ -95,7 +95,7 @@ class PrefillP2200UforpensjonTest {
             forsikretPerson = PersonPDLMock.createWith(),
             gjenlevendeEllerAvdod = PersonPDLMock.createWith(),
             barnPersonList = listOf(PersonPDLMock.createWith(fornavn = "Barn", etternavn = "Barnesen", fnr = "01010436857")
-                .medFodsel(LocalDate.of(2004, 1, 1))
+                .medFodsel(LocalDate.of(2004, 1, 1),)
             )
         )
 

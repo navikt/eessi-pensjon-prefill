@@ -27,22 +27,29 @@ spec:
         - application: eessi-pensjon-fagmodul
           namespace: eessipensjon
           cluster: prod-gcp
+        - application: etterlatte-api
+          namespace: etterlatte
+          cluster: prod-gcp
     outbound:
+      rules:
+        - application: etterlatte-api
+          namespace: etterlatte
+          cluster: prod-gcp
       external:
         - host: pdl-api.prod-fss-pub.nais.io
         - host: kodeverk-api.nav.no
         - host: eessi-pensjon-fagmodul.intern.nav.no
-        - host: eessi-pensjon-onprem-proxy.intern.nav.no
         - host: digdir-krr-proxy.intern.nav.no
-        - host: prod-gcp.etterlatte.etterlatte-api
-
+        - host: pensjon-pen.prod-fss-pub.nais.io
   webproxy: true
   env:
     - name: SPRING_PROFILES_ACTIVE
       value: prod
 
     - name: PENSJONSINFORMASJON_URL
-      value: https://eessi-pensjon-onprem-proxy.prod-fss-pub.nais.io/pen/api/pensjonsinformasjon/v1
+      value: https://pensjon-pen.prod-fss-pub.nais.io/pen/api/pensjonsinformasjon/v1
+    - name: AZURE_APP_PEN_CLIENT_ID
+      value: prod-fss.pensjondeployer.pensjon-pen
 
     - name: PDL_URL
       value: https://pdl-api.prod-fss-pub.nais.io/graphql
@@ -63,9 +70,6 @@ spec:
       value: http://etterlatte-api.etterlatte
     - name: AZURE_APP_ETTERLATTE_CLIENT_ID
       value: prod-gcp.etterlatte.etterlatte-api
-
-    - name: AZURE_APP_PROXY_CLIENT_ID
-      value: prod-fss.eessipensjon.eessi-pensjon-onprem-proxy
 
     - name: KAFKA_AUTOMATISERING_TOPIC
       value: eessipensjon.public-automatisering

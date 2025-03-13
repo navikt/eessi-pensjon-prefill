@@ -10,6 +10,7 @@ import no.nav.eessi.pensjon.kodeverk.KodeverkClient
 import no.nav.eessi.pensjon.kodeverk.PostnummerService
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
 import no.nav.eessi.pensjon.personoppslag.pdl.model.*
+import no.nav.eessi.pensjon.personoppslag.pdl.model.Foedested
 import no.nav.eessi.pensjon.prefill.LagPdlPerson
 import no.nav.eessi.pensjon.prefill.LagPdlPerson.Companion.createPersonMedEktefellePartner
 import no.nav.eessi.pensjon.prefill.LagPdlPerson.Companion.lagPerson
@@ -17,6 +18,7 @@ import no.nav.eessi.pensjon.prefill.LagPdlPerson.Companion.medAdresse
 import no.nav.eessi.pensjon.prefill.LagPdlPerson.Companion.medBarn
 import no.nav.eessi.pensjon.prefill.LagPdlPerson.Companion.medForeldre
 import no.nav.eessi.pensjon.prefill.LagPdlPerson.Companion.medKontaktadresseUtland
+import no.nav.eessi.pensjon.prefill.LagPdlPerson.Companion.mockMeta
 import no.nav.eessi.pensjon.prefill.models.KrrPerson
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
@@ -66,26 +68,26 @@ class PrefillPDLNavTest {
 
         val forsikret = PdlPerson(
             identer = listOf(IdentInformasjon("01220049651", IdentGruppe.NPID)),
-            navn = Navn("OLE", null, "OLSEN", null, null, null, LagPdlPerson.mockMeta()),
+            navn = Navn("OLE", null, "OLSEN", null, null, null, mockMeta()),
             adressebeskyttelse = emptyList(),
             bostedsadresse = null,
             oppholdsadresse = null,
             statsborgerskap = listOf(
                 Statsborgerskap(
-                    "NOR", LocalDate.of(2000, 10, 1), LocalDate.of(2300, 10, 1), LagPdlPerson.mockMeta()
+                    "NOR", LocalDate.of(2000, 10, 1), LocalDate.of(2300, 10, 1), mockMeta()
                 )
             ),
-            foedsel = Foedsel(LocalDate.of(80, 12, 1), "NOR", null, null, null, LagPdlPerson.mockMeta()),
+            foedselsdato = Foedselsdato(2000, "01-02-2000", null,  mockMeta()),
             geografiskTilknytning = null,
-            kjoenn = Kjoenn(KjoennType.MANN, null, LagPdlPerson.mockMeta()),
-            doedsfall = Doedsfall(metadata = LagPdlPerson.mockMeta()),
+            kjoenn = Kjoenn(KjoennType.MANN, null, mockMeta()),
+            doedsfall = Doedsfall(metadata = mockMeta()),
             forelderBarnRelasjon = emptyList(),
             sivilstand = emptyList(),
             kontaktadresse = null,
             utenlandskIdentifikasjonsnummer = emptyList()
         )
 
-        val foreldreFdato = forsikret.foedsel?.foedselsdato?.toString()
+        val foreldreFdato = forsikret.foedselsdato?.foedselsdato
 
         val personDataCollection = PersonDataCollection(
             forsikretPerson = forsikret,
@@ -113,12 +115,13 @@ class PrefillPDLNavTest {
             ),
             bruker = Bruker(
                 person = lagNavPerson(
-                    forsikretSinNpid,
-                    "OLE",
-                    "OLSEN",
-                    foreldreFdato!!,
-                    someInstitutionId,
-                    someIntitutionNavn,
+                    foreldersPin = forsikretSinNpid,
+                    fornavn = "OLE",
+                    etternavn = "OLSEN",
+                    fdato = foreldreFdato!!,
+                    someInstitutionId = someInstitutionId,
+                    someIntitutionNavn = someIntitutionNavn,
+                    foedsted = null,
                     krrPerson = KrrPerson(false,"ola@nav.no", "11223344")
                 ),
                 adresse = lagTomAdresse(),
@@ -139,26 +142,26 @@ class PrefillPDLNavTest {
 
         val forsikret = PdlPerson(
             identer = listOf(IdentInformasjon("01220049651", IdentGruppe.NPID)),
-            navn = Navn("OLE", null, "OLSEN", null, null, null, LagPdlPerson.mockMeta()),
+            navn = Navn("OLE", null, "OLSEN", null, null, null, mockMeta()),
             adressebeskyttelse = emptyList(),
             bostedsadresse = null,
             oppholdsadresse = null,
             statsborgerskap = listOf(
                 Statsborgerskap(
-                    "NOR", null, null, LagPdlPerson.mockMeta()
+                    "NOR", null, null, mockMeta()
                 )
             ),
-            foedsel = Foedsel(LocalDate.of(80, 12, 1), "NOR", null, null, null, LagPdlPerson.mockMeta()),
+            foedselsdato = Foedselsdato(2000, "01-02-2000", null,  mockMeta()),
             geografiskTilknytning = null,
-            kjoenn = Kjoenn(KjoennType.MANN, null, LagPdlPerson.mockMeta()),
-            doedsfall = Doedsfall(metadata = LagPdlPerson.mockMeta()),
+            kjoenn = Kjoenn(KjoennType.MANN, null, mockMeta()),
+            doedsfall = Doedsfall(metadata = mockMeta()),
             forelderBarnRelasjon = emptyList(),
             sivilstand = emptyList(),
             kontaktadresse = null,
             utenlandskIdentifikasjonsnummer = emptyList()
         )
 
-        val foreldreFdato = forsikret.foedsel?.foedselsdato?.toString()
+        val foreldreFdato = forsikret.foedselsdato?.foedselsdato
 
         val personDataCollection = PersonDataCollection(
             forsikretPerson = forsikret,
@@ -186,12 +189,13 @@ class PrefillPDLNavTest {
             ),
             bruker = Bruker(
                 person = lagNavPerson(
-                    forsikretSinNpid,
-                    "OLE",
-                    "OLSEN",
-                    foreldreFdato!!,
-                    someInstitutionId,
-                    someIntitutionNavn,
+                    foreldersPin = forsikretSinNpid,
+                    fornavn = "OLE",
+                    etternavn = "OLSEN",
+                    fdato = foreldreFdato!!,
+                    someInstitutionId = someInstitutionId,
+                    someIntitutionNavn = someIntitutionNavn,
+                    foedsted = null,
                     krrPerson = KrrPerson(false,"ola@nav.no", "11223344")
                 ),
                 adresse = lagTomAdresse(),
@@ -215,8 +219,8 @@ class PrefillPDLNavTest {
         val forelder = lagPerson(foreldersPin, "Christopher", "Robin", sivilstand = emptyList()).medBarn(barnetsPin)
         val barn = lagPerson(barnetsPin, "Ole", "Brum", sivilstand = emptyList()).medForeldre(forelder)
 
-        val foreldreFdato = forelder.foedsel?.foedselsdato?.toString()
-        val barnFdato = barn.foedsel?.foedselsdato?.toString()
+        val foreldreFdato = forelder.foedselsdato?.foedselsdato
+        val barnFdato = barn.foedselsdato?.foedselsdato
 
         val personDataCollection = PersonDataCollection(
             forsikretPerson = forelder,
@@ -293,8 +297,8 @@ class PrefillPDLNavTest {
         val barn = lagPerson(someBarnPersonNr, "Nasse", "Nøff", sivilstand = emptyList()).medForeldre(far)
 
         //fdato
-        val farfdato = far.foedsel?.foedselsdato?.toString()
-        val barnfdato = barn.foedsel?.foedselsdato?.toString()
+        val farfdato = far.foedselsdato?.foedselsdato
+        val barnfdato = barn.foedselsdato?.foedselsdato
 
         val personDataCollection = PersonDataCollection(
             forsikretPerson = far,
@@ -378,8 +382,8 @@ class PrefillPDLNavTest {
         val barn = lagPerson(someBarnPersonNr, "Nasse", "Nøff", sivilstand = emptyList()).medForeldre(far)
 
         //fdato
-        val farfdato = far.foedsel?.foedselsdato?.toString()
-        val barnfdato = barn.foedsel?.foedselsdato?.toString()
+        val farfdato = far.foedselsdato?.foedselsdato
+        val barnfdato = barn.foedselsdato?.foedselsdato
 
         val personDataCollection = PersonDataCollection(
             forsikretPerson = far,
@@ -753,7 +757,7 @@ class PrefillPDLNavTest {
 
         val single = lagPerson(somePersonNr, "Ola", "Testbruker").copy(
             navn = Navn(
-                "Fornavn Ole", "Mellomnavn Mellomn", "Test Bruker", null, null, null, LagPdlPerson.mockMeta()
+                "Fornavn Ole", "Mellomnavn Mellomn", "Test Bruker", null, null, null, mockMeta()
             )
         )
 
@@ -812,7 +816,7 @@ class PrefillPDLNavTest {
             bostedsadresse = null, oppholdsadresse = Oppholdsadresse(
                 LocalDateTime.of(2000, 10, 2, 9, 32, 1), null, null, UtenlandskAdresse(
                     gateadresse, "örasund", null, "SWE", null, null, null
-                ), LagPdlPerson.mockMeta()
+                ), mockMeta()
             )
         )
 
@@ -849,7 +853,7 @@ class PrefillPDLNavTest {
             bostedsadresse = null, oppholdsadresse = Oppholdsadresse(
                 LocalDateTime.of(2000, 10, 2, 9, 32, 1), null, null, UtenlandskAdresse(
                     "Adresselinje 1, Adresselinje 2, Adresselinje 3", null, null, "SWE", null, null, null
-                ), LagPdlPerson.mockMeta()
+                ), mockMeta()
             )
         ).medKontaktadresseUtland()
 
@@ -915,7 +919,7 @@ class PrefillPDLNavTest {
                     null,
                     "postkoden",
                     null
-                ), LagPdlPerson.mockMeta()
+                ), mockMeta()
             )
         ).medKontaktadresseUtland()
 
@@ -1065,7 +1069,7 @@ class PrefillPDLNavTest {
 
     @Test
     fun `create birthplace as unknown`() {
-        val person = lagPerson().copy(foedsel = null)
+        val person = lagPerson().copy(foedested = null)
         val result = prefillPDLNav.createFodested(person)
 
         assertNull(result)
@@ -1075,8 +1079,8 @@ class PrefillPDLNavTest {
     fun `create correct birthplace known`() {
         val person = lagPerson()
         val nyPerson = person.copy(
-            foedsel = Foedsel(
-                person.foedsel?.foedselsdato, "NOR", "OSLO", null, null, LagPdlPerson.mockMeta()
+            foedselsdato = Foedselsdato(
+                2000, "01-02-2000", null, mockMeta()
             )
         )
 
@@ -1089,7 +1093,7 @@ class PrefillPDLNavTest {
     @Test
     fun `isPersonAvdod gir true`() {
         val dodPerson =
-            lagPerson().copy(doedsfall = Doedsfall(LocalDate.of(2010, 10, 1), null, LagPdlPerson.mockMeta()))
+            lagPerson().copy(doedsfall = Doedsfall(LocalDate.of(2010, 10, 1), null, mockMeta()))
         assertEquals(true, PrefillPDLNav.isPersonAvdod(dodPerson))
     }
 
@@ -1105,7 +1109,7 @@ class PrefillPDLNavTest {
         val person = lagPerson(personfnr).copy(
             statsborgerskap = listOf(
                 Statsborgerskap(
-                    "XXK", LocalDate.of(2000, 10, 1), LocalDate.of(2300, 10, 1), LagPdlPerson.mockMeta()
+                    "XXK", LocalDate.of(2000, 10, 1), LocalDate.of(2300, 10, 1), mockMeta()
                 )
             )
         )
@@ -1155,7 +1159,7 @@ class PrefillPDLNavTest {
         val person = lagPerson(personfnr).copy(
             statsborgerskap = listOf(
                 Statsborgerskap(
-                    "NOR", LocalDate.of(2000, 10, 1), LocalDate.of(2300, 10, 1), LagPdlPerson.mockMeta()
+                    "NOR", LocalDate.of(2000, 10, 1), LocalDate.of(2300, 10, 1), mockMeta()
                 )
             )
         )
@@ -1181,7 +1185,7 @@ class PrefillPDLNavTest {
             someInstitutionId: String? = null,
             someIntitutionNavn: String? = null,
             kjoenn: String? = "M",
-            foedsted: String? = "NO",
+            foedsted: String? = "Oslo",
             krrPerson: KrrPerson?,
             sivilstand: List<SivilstandItem>? = emptyList()
         ) = Person(
@@ -1199,7 +1203,7 @@ class PrefillPDLNavTest {
             fornavn = fornavn,
             kjoenn = kjoenn,
             foedselsdato = fdato,
-            foedested = if (foedsted == null) null else Foedested("Unknown", foedsted, region = ""),
+            foedested = if (foedsted == null) null else no.nav.eessi.pensjon.eux.model.sed.Foedested(foedsted, "NO", ""),
             kontakt = if (krrPerson == null) null else createKontakt(krrPerson)
         )
 

@@ -2,12 +2,15 @@ package no.nav.eessi.pensjon.prefill
 
 import no.nav.eessi.pensjon.personoppslag.pdl.model.*
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
+import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 object PersonPDLMock {
     internal fun createWith(landkoder: Boolean = true, fornavn: String = "Test", etternavn: String = "Testesen", fnr: String = "3123", aktoerid: String = "3213", erDod: Boolean? = false, metadata: Metadata = mockMeta()) :PdlPerson {
-            val fdatoaar =  if (erDod != null && erDod == true) LocalDate.of(1921, 7, 12) else LocalDate.of(1988, 7, 12)
+        val folkeregisterMetadata = Folkeregistermetadata(gyldighetstidspunkt = LocalDateTime.parse("2021-02-16T10:15:30"))
+        val fdatoaar =  if (erDod != null && erDod == true) LocalDate.of(1921, 7, 12) else LocalDate.of(1988, 7, 12)
             val doeadfall = if (erDod != null && erDod == true) Doedsfall(LocalDate.of(2020, 10, 1), null, metadata) else null
             val kommuneLandkode = when(landkoder) {
                 true -> "026123"
@@ -55,14 +58,13 @@ object PersonPDLMock {
                         metadata
                     )
                 ),
-                Foedsel(
-                    fdatoaar,
+                Foedselsdato(
                     null,
-                    null,
-                    null,
-                    null,
+                    fdatoaar.toString(),
+                    folkeregisterMetadata,
                     metadata
-                ),
+                ).also { println("Foedselsdato: ${it.toJsonSkipEmpty()}") },
+                foedested = null,
                 GeografiskTilknytning(
                     GtType.KOMMUNE,
                     kommuneLandkode,
@@ -119,7 +121,9 @@ object PersonPDLMock {
         ))
     }
 
-    internal fun PdlPerson.medFodsel(date: LocalDate, land: String? = "NOR")  = this.copy(foedsel = Foedsel(date, land,null, null, null, mockMeta()))
+    internal fun PdlPerson.medFodsel(date: LocalDate): PdlPerson = this.copy(foedselsdato = Foedselsdato(null, date.format(
+        DateTimeFormatter.ofPattern("yyyy-MM-dd")), null, mockMeta()))
+//    internal fun PdlPerson.medFodsel(date: LocalDate, land: String? = "NOR")  = this.copy(foedsel = Foedsel(date, land,null, null, null, mockMeta()))
 
     internal fun PdlPerson.medKjoenn(type: KjoennType) = this.copy(kjoenn = Kjoenn(type, null, mockMeta()))
 

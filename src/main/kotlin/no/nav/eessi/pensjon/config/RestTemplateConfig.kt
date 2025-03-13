@@ -3,6 +3,7 @@ package no.nav.eessi.pensjon.config
 import com.nimbusds.jwt.JWTClaimsSet
 import io.micrometer.core.instrument.MeterRegistry
 import no.nav.eessi.pensjon.logging.RequestIdHeaderInterceptor
+import no.nav.eessi.pensjon.logging.RequestResponseLoggerInterceptor
 import no.nav.eessi.pensjon.metrics.RequestCountInterceptor
 import no.nav.eessi.pensjon.shared.retry.IOExceptionRetryInterceptor
 import no.nav.security.token.support.client.core.ClientProperties
@@ -48,7 +49,7 @@ class RestTemplateConfig(
     fun krrRestTemplate() = opprettRestTemplate(krrUrl, "krr-credentials")
 
     @Bean
-    fun pensjoninformasjonRestTemplate() = opprettRestTemplate(pensjonUrl, "proxy-credentials")
+    fun pensjoninformasjonRestTemplate() = opprettRestTemplate(pensjonUrl, "pensjon-credentials")
 
     private fun opprettRestTemplate(url: String, oAuthKey: String) : RestTemplate {
         return RestTemplateBuilder()
@@ -58,6 +59,7 @@ class RestTemplateConfig(
                 RequestIdHeaderInterceptor(),
                 IOExceptionRetryInterceptor(),
                 RequestCountInterceptor(meterRegistry),
+                RequestResponseLoggerInterceptor(),
                 bearerTokenInterceptor(clientProperties(oAuthKey), oAuth2AccessTokenService!!)
             )
             .build().apply {
