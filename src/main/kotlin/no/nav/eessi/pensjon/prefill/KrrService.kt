@@ -3,6 +3,7 @@ package no.nav.eessi.pensjon.prefill
 import no.nav.eessi.pensjon.metrics.MetricsHelper
 import no.nav.eessi.pensjon.prefill.models.DigitalKontaktinfo
 import no.nav.eessi.pensjon.prefill.models.DigitalKontaktinfoBolk
+import no.nav.eessi.pensjon.prefill.models.DigitalKontaktinfoBolkRequestBody
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -67,9 +68,13 @@ class KrrService(private val krrRestTemplate: RestTemplate,
             val url = "/rest/v1/personer?inkluderSikkerDigitalPost=false"
             logger.debug("Henter informasjon fra KRR: $url")
 
+            val request = DigitalKontaktinfoBolkRequestBody(
+                personidenter = listOf(personIdent)
+            )
+
             val headers = HttpHeaders()
             headers.contentType = MediaType.APPLICATION_JSON
-            val httpEntity = HttpEntity("", headers)
+            val httpEntity = HttpEntity(request, headers)
 
             try {
                 val response = krrRestTemplate.exchange(
