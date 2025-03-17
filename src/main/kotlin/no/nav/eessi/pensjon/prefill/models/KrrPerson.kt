@@ -11,6 +11,7 @@ data class DigitalKontaktinfoBolk(
     val personer: Map<String, DigitalKontaktinfo>? = null
 )
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 data class DigitalKontaktinfo(
     val epostadresse: String? = null,
     val aktiv: Boolean,
@@ -18,13 +19,6 @@ data class DigitalKontaktinfo(
     val reservert: Boolean? = null,
     val mobiltelefonnummer: String? = null,
     val personident: String,
-)
-
-@JsonIgnoreProperties(ignoreUnknown = true)
-data class KrrPerson(
-    val reservert: Boolean? = true,
-    val epostadresse: String? = null,
-    val mobiltelefonnummer: String? = null
 ) {
     companion object {
         fun String?.validateEmail(processDefinitionVersion: String? = null): String? {
