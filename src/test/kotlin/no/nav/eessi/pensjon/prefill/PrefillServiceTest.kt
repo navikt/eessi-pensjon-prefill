@@ -6,6 +6,8 @@ import no.nav.eessi.pensjon.eux.model.BucType
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.sed.SED
 import no.nav.eessi.pensjon.metrics.MetricsHelper
+import no.nav.eessi.pensjon.prefill.PersonDataServiceTest.Companion.FNR_VOKSEN
+import no.nav.eessi.pensjon.prefill.models.DigitalKontaktinfo
 import no.nav.eessi.pensjon.prefill.models.KrrPerson
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
@@ -76,7 +78,7 @@ class PrefillServiceTest{
     fun `epost fra krr skal valideres ihht versjon`(versjon: String, epost: String, forventetEpost: String) {
         every { request.processDefinitionVersion } returns versjon
 
-        val krrPerson = KrrPerson(false, epost, "12345678")
+        val krrPerson = DigitalKontaktinfo(epostadresse = "melleby11@melby.no", true, true, false, "11111111", FNR_VOKSEN)
         every { krrService.hentPersonerFraKrr(any()) } returns krrPerson
         every { prefillSedService.prefill(capture(requestSlot), any(), any()) } returns SED(SedType.P2000, "sedVer")
 

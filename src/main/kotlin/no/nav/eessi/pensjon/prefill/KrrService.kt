@@ -1,7 +1,8 @@
 package no.nav.eessi.pensjon.prefill
 
 import no.nav.eessi.pensjon.metrics.MetricsHelper
-import no.nav.eessi.pensjon.prefill.models.KrrPerson
+import no.nav.eessi.pensjon.prefill.models.DigitalKontaktinfo
+import no.nav.eessi.pensjon.prefill.models.DigitalKontaktinfoBolk
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -18,54 +19,55 @@ class KrrService(private val krrRestTemplate: RestTemplate,
 
     private val logger: Logger = LoggerFactory.getLogger(KrrService::class.java)
 
-    private lateinit var HentPerson: MetricsHelper.Metric
+//    private lateinit var HentPerson: MetricsHelper.Metric
     private lateinit var HentPersoner: MetricsHelper.Metric
 
     init {
-        HentPerson = metricsHelper.init("HentPerson", ignoreHttpCodes = listOf(HttpStatus.BAD_REQUEST))
+//        HentPerson = metricsHelper.init("HentPerson", ignoreHttpCodes = listOf(HttpStatus.BAD_REQUEST))
         HentPersoner = metricsHelper.init("HentPerson", ignoreHttpCodes = listOf(HttpStatus.BAD_REQUEST))
     }
 
-    //Henter inn telefonnummer og epostadresse fra KRR for å preutfylle SED
-//    fun hentPersonFraKrr(personIdent: String, inkluderSikkerDigitalPost: Boolean?= false) : KrrPerson? {
-//        return HentPerson.measure {
-//            val url = "/rest/v1/person?inkluderSikkerDigitalPost=$inkluderSikkerDigitalPost"
-//            logger.debug("Henter informasjon fra KRR: $url")
-//
-//            val headers = HttpHeaders()
-//            headers["Nav-Personident"] = personIdent
-//            headers.contentType = MediaType.APPLICATION_JSON
-//            val httpEntity = HttpEntity("", headers)
-//
-//            try {
-//                val response = krrRestTemplate.exchange(
-//                    url,
-//                    HttpMethod.GET,
-//                    httpEntity,
-//                    String::class.java
-//                )
-//
-//                logger.debug("Hent person fra KRR: response: ${response.body}".trimMargin())
-//                return@measure response.body?.let { mapJsonToAny<KrrPerson>(it) }
-//                    ?: throw IllegalArgumentException("Mangler melding fra KRR")
-//            } catch (e: HttpClientErrorException.NotFound) {
-//                logger.error("Person: $personIdent ikke funnet (404)")
-//            }
-//            catch (e: Exception) {
-//                logger.error("Feil ved henting av person fra KRR, ${e.message}")
-//            }
-//            null
-//        }
-//    }
+    /*
+    Henter inn telefonnummer og epostadresse fra KRR for å preutfylle SED
+    fun hentPersonFraKrr(personIdent: String, inkluderSikkerDigitalPost: Boolean?= false) : KrrPerson? {
+    return HentPerson.measure {
+    val url = "/rest/v1/person?inkluderSikkerDigitalPost=$inkluderSikkerDigitalPost"
+    logger.debug("Henter informasjon fra KRR: $url")
+
+    val headers = HttpHeaders()
+    headers["Nav-Personident"] = personIdent
+    headers.contentType = MediaType.APPLICATION_JSON
+    val httpEntity = HttpEntity("", headers)
+
+    try {
+    val response = krrRestTemplate.exchange(
+    url,
+    HttpMethod.GET,
+    httpEntity,
+    String::class.java
+    )
+
+    logger.debug("Hent person fra KRR: response: ${response.body}".trimMargin())
+    return@measure response.body?.let { mapJsonToAny<KrrPerson>(it) }
+    ?: throw IllegalArgumentException("Mangler melding fra KRR")
+    } catch (e: HttpClientErrorException.NotFound) {
+    logger.error("Person: $personIdent ikke funnet (404)")
+    }
+    catch (e: Exception) {
+    logger.error("Feil ved henting av person fra KRR, ${e.message}")
+    }
+    null
+    }
+    }
+    */
 
     //Henter inn telefonnummer og epostadresse fra KRR for å preutfylle SED
-    fun hentPersonerFraKrr(personIdent: String, inkluderSikkerDigitalPost: Boolean?= false) : KrrPerson? {
+    fun hentPersonerFraKrr(personIdent: String, inkluderSikkerDigitalPost: Boolean?= false) : DigitalKontaktinfo? {
         return HentPersoner.measure {
-            val url = "/rest/v1/personer?inkluderSikkerDigitalPost=$inkluderSikkerDigitalPost"
+            val url = "/rest/v1/personer?inkluderSikkerDigitalPost=false"
             logger.debug("Henter informasjon fra KRR: $url")
 
             val headers = HttpHeaders()
-            headers["Nav-Personident"] = personIdent
             headers.contentType = MediaType.APPLICATION_JSON
             val httpEntity = HttpEntity("", headers)
 
@@ -78,7 +80,9 @@ class KrrService(private val krrRestTemplate: RestTemplate,
                 )
 
                 logger.debug("Hent person fra KRR med nytt endepunkt: response: ${response.body}".trimMargin())
-                return@measure response.body?.let { mapJsonToAny<KrrPerson>(it) }
+
+
+                return@measure response.body?.let { mapJsonToAny<DigitalKontaktinfoBolk>(it) }?.personer?.get(personIdent)
                     ?: throw IllegalArgumentException("Mangler melding fra KRR")
             } catch (e: HttpClientErrorException.NotFound) {
                 logger.error("Person: $personIdent ikke funnet (404)")

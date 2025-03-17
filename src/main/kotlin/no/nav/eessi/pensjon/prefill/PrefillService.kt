@@ -3,6 +3,7 @@ package no.nav.eessi.pensjon.prefill
 import io.micrometer.core.instrument.Metrics
 import no.nav.eessi.pensjon.eux.model.sed.SED.Companion.setSEDVersion
 import no.nav.eessi.pensjon.metrics.MetricsHelper
+import no.nav.eessi.pensjon.prefill.models.DigitalKontaktinfo
 import no.nav.eessi.pensjon.prefill.models.KrrPerson
 import no.nav.eessi.pensjon.prefill.models.KrrPerson.Companion.validateEmail
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
@@ -88,15 +89,19 @@ class PrefillService(
 
     private fun hentKrrPerson(norskIdent: String, request: ApiRequest): PersonInfo {
         val krrPerson = krrService.hentPersonerFraKrr(norskIdent)?.let { personResponse ->
-            KrrPerson(
+            DigitalKontaktinfo(
                 reservert = personResponse.reservert,
                 epostadresse = personResponse.epostadresse.validateEmail(request.processDefinitionVersion),
-                mobiltelefonnummer = personResponse.mobiltelefonnummer
+                mobiltelefonnummer = personResponse.mobiltelefonnummer,
+                aktiv = true,
+                personident = norskIdent
             ).also { logger.debug("KrrPerson: ${it.toJson()}") }
-        } ?: KrrPerson(
+        } ?: DigitalKontaktinfo(
             reservert = false,
             epostadresse = null,
-            mobiltelefonnummer = null
+            mobiltelefonnummer = null,
+            aktiv = true,
+            personident = norskIdent
         )
 
         val personInfo = if (krrPerson.reservert == true) {
@@ -106,11 +111,11 @@ class PrefillService(
             ).also { logger.info("Personen har reservert seg mot digital kommunikasjon") }
         } else {
             PersonInfo(
-                norskIdent,
-                request.aktoerId,
-                krrPerson.reservert,
-                krrPerson.epostadresse,
-                krrPerson.mobiltelefonnummer
+                norskIdent = norskIdent,
+                aktorId = request.aktoerId,
+                reservert = krrPerson.reservert,
+                epostKrr = krrPerson.epostadresse,
+                telefonKrr = krrPerson.mobiltelefonnummer
             ).also { secureLog.info("Hentet telefon og epost fra KRR: ${krrPerson.toJson()}") }
         }
         return personInfo

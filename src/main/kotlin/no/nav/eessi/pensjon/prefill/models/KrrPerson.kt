@@ -2,6 +2,20 @@ package no.nav.eessi.pensjon.prefill.models
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 
+data class DigitalKontaktinfoBolk(
+    val feil: Map<String, String>? = null,
+    val personer: Map<String, DigitalKontaktinfo>? = null
+)
+
+data class DigitalKontaktinfo(
+    val epostadresse: String? = null,
+    val aktiv: Boolean,
+    val kanVarsles: Boolean? = null,
+    val reservert: Boolean? = null,
+    val mobiltelefonnummer: String? = null,
+    val personident: String,
+)
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class KrrPerson(
     val reservert: Boolean? = true,
