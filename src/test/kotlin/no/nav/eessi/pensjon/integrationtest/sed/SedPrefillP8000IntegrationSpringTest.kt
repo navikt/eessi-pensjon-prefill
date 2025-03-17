@@ -478,7 +478,7 @@ class SedPrefillP8000IntegrationSpringTest {
                     "nummer" : "11111111"
                   } ],
                   "email" : [ {
-                    "adresse" : "melleby11@melby.no"
+                    "adresse" : "melleby12@melby.no"
                   } ]
                 }
               }
