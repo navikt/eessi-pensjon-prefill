@@ -1,8 +1,8 @@
 package no.nav.eessi.pensjon.prefill.models
 
-import no.nav.eessi.pensjon.prefill.models.KrrPerson.Companion.validateEmail
-import org.junit.jupiter.api.Assertions.*
-import org.junit.jupiter.api.BeforeEach
+import no.nav.eessi.pensjon.prefill.models.DigitalKontaktinfo.Companion.validateEmail
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
 
 class KrrPersonTest {

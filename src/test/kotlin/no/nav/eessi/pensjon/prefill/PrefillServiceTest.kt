@@ -6,7 +6,8 @@ import no.nav.eessi.pensjon.eux.model.BucType
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.sed.SED
 import no.nav.eessi.pensjon.metrics.MetricsHelper
-import no.nav.eessi.pensjon.prefill.models.KrrPerson
+import no.nav.eessi.pensjon.prefill.PersonDataServiceTest.Companion.FNR_VOKSEN
+import no.nav.eessi.pensjon.prefill.models.DigitalKontaktinfo
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
 import no.nav.eessi.pensjon.shared.api.ApiRequest
@@ -16,11 +17,9 @@ import no.nav.eessi.pensjon.statistikk.AutomatiseringStatistikkService
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
-import org.junit.platform.commons.util.StringUtils
 
 @ExtendWith(MockKExtension::class)
 class PrefillServiceTest{
@@ -76,8 +75,8 @@ class PrefillServiceTest{
     fun `epost fra krr skal valideres ihht versjon`(versjon: String, epost: String, forventetEpost: String) {
         every { request.processDefinitionVersion } returns versjon
 
-        val krrPerson = KrrPerson(false, epost, "12345678")
-        every { krrService.hentPersonFraKrr(any()) } returns krrPerson
+        val krrPerson = DigitalKontaktinfo(epostadresse = epost, true, true, false, "11111111", FNR_VOKSEN)
+        every { krrService.hentPersonerFraKrr(any()) } returns krrPerson
         every { prefillSedService.prefill(capture(requestSlot), any(), any()) } returns SED(SedType.P2000, "sedVer")
 
         prefillService.prefillSedtoJson(request)

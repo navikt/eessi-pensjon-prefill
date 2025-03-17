@@ -2,11 +2,23 @@ package no.nav.eessi.pensjon.prefill.models
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 
+data class DigitalKontaktinfoBolkRequestBody(
+    val personidenter: List<String>,
+)
+
+data class DigitalKontaktinfoBolk(
+    val feil: Map<String, String>? = null,
+    val personer: Map<String, DigitalKontaktinfo>? = null
+)
+
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class KrrPerson(
-    val reservert: Boolean? = true,
+data class DigitalKontaktinfo(
     val epostadresse: String? = null,
-    val mobiltelefonnummer: String? = null
+    val aktiv: Boolean,
+    val kanVarsles: Boolean? = null,
+    val reservert: Boolean? = null,
+    val mobiltelefonnummer: String? = null,
+    val personident: String,
 ) {
     companion object {
         fun String?.validateEmail(processDefinitionVersion: String? = null): String? {

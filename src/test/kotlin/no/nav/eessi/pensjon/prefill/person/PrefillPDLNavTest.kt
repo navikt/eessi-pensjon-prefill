@@ -10,8 +10,6 @@ import no.nav.eessi.pensjon.kodeverk.KodeverkClient
 import no.nav.eessi.pensjon.kodeverk.PostnummerService
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
 import no.nav.eessi.pensjon.personoppslag.pdl.model.*
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Foedested
-import no.nav.eessi.pensjon.prefill.LagPdlPerson
 import no.nav.eessi.pensjon.prefill.LagPdlPerson.Companion.createPersonMedEktefellePartner
 import no.nav.eessi.pensjon.prefill.LagPdlPerson.Companion.lagPerson
 import no.nav.eessi.pensjon.prefill.LagPdlPerson.Companion.medAdresse
@@ -19,7 +17,7 @@ import no.nav.eessi.pensjon.prefill.LagPdlPerson.Companion.medBarn
 import no.nav.eessi.pensjon.prefill.LagPdlPerson.Companion.medForeldre
 import no.nav.eessi.pensjon.prefill.LagPdlPerson.Companion.medKontaktadresseUtland
 import no.nav.eessi.pensjon.prefill.LagPdlPerson.Companion.mockMeta
-import no.nav.eessi.pensjon.prefill.models.KrrPerson
+import no.nav.eessi.pensjon.prefill.models.DigitalKontaktinfo
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
 import no.nav.eessi.pensjon.shared.api.BankOgArbeid
@@ -122,7 +120,7 @@ class PrefillPDLNavTest {
                     someInstitutionId = someInstitutionId,
                     someIntitutionNavn = someIntitutionNavn,
                     foedsted = null,
-                    krrPerson = KrrPerson(false,"ola@nav.no", "11223344")
+                    krrPerson = DigitalKontaktinfo(epostadresse = "ola@nav.no", true, true, false, "11223344", forsikretSinNpid)
                 ),
                 adresse = lagTomAdresse(),
             ),
@@ -196,7 +194,7 @@ class PrefillPDLNavTest {
                     someInstitutionId = someInstitutionId,
                     someIntitutionNavn = someIntitutionNavn,
                     foedsted = null,
-                    krrPerson = KrrPerson(false,"ola@nav.no", "11223344")
+                    krrPerson = DigitalKontaktinfo(epostadresse = "ola@nav.no", true, true, false, "11223344", forsikretSinNpid)
                 ),
                 adresse = lagTomAdresse(),
             ),
@@ -254,7 +252,7 @@ class PrefillPDLNavTest {
                     foreldreFdato!!,
                     someInstitutionId,
                     someIntitutionNavn,
-                    krrPerson = KrrPerson(false,"ola@nav.no", "11223344")
+                    krrPerson = DigitalKontaktinfo(epostadresse = "ola@nav.no", true, true, false, "11223344", foreldersPin)
                 ), adresse = lagTomAdresse()
             ), barn = listOf(
                 BarnItem(
@@ -332,7 +330,7 @@ class PrefillPDLNavTest {
                     farfdato!!,
                     someInstitutionId,
                     someIntitutionNavn,
-                    krrPerson = KrrPerson(false,"ola@nav.no", "11223344")
+                    krrPerson = DigitalKontaktinfo(epostadresse = "ola@nav.no", true, true, false, "11223344", somePersonNr)
                 ), adresse = lagTomAdresse()
             ), barn = listOf(
                 BarnItem(
@@ -417,7 +415,7 @@ class PrefillPDLNavTest {
                     farfdato!!,
                     someInstitutionId,
                     someIntitutionNavn,
-                    krrPerson = KrrPerson(false,"ola@nav.no", "11223344")
+                    krrPerson = DigitalKontaktinfo(epostadresse = "ola@nav.no", true, true, false, "11223344", somePersonNr)
                 ), adresse = lagTomAdresse()
             ), barn = listOf(
                 BarnItem(
@@ -501,7 +499,7 @@ class PrefillPDLNavTest {
                     someInstitutionId,
                     someIntitutionNavn,
                     sivilstand = listOf(SivilstandItem("2000-10-01", gift)),
-                    krrPerson = KrrPerson(false,"ola@nav.no", "11223344")
+                    krrPerson = DigitalKontaktinfo(epostadresse = "ola@nav.no", true, true, false, "11223344", somePersonNr)
                 ), adresse = lagTomAdresse()
             ), ektefelle = Ektefelle(
                 person = lagNavPerson(
@@ -513,7 +511,7 @@ class PrefillPDLNavTest {
                     someIntitutionNavn,
                     "K",
                     sivilstand = listOf(SivilstandItem("2000-10-01", gift)),
-                    krrPerson = KrrPerson(false,"ola@nav.no", "11223344")
+                    krrPerson = DigitalKontaktinfo(epostadresse = "ola@nav.no", true, true, false, "11223344", somerEktefellePersonNr)
                 ), type = "ektefelle"
             )
         )
@@ -583,7 +581,7 @@ class PrefillPDLNavTest {
                     someInstitutionId,
                     someIntitutionNavn,
                     sivilstand = listOf(SivilstandItem("2000-10-01", gift)),
-                    krrPerson = KrrPerson(false,"ola@nav.no", "11223344")
+                    krrPerson = DigitalKontaktinfo(epostadresse = "ola@nav.no", true, true, false, "11223344", farfnr)
                 ), adresse = Adresse("STORGATA 12", postnummer = "0101", by = "OSLO", land = "NO")
             ), ektefelle = Ektefelle(
                 person = lagNavPerson(
@@ -595,7 +593,7 @@ class PrefillPDLNavTest {
                     someIntitutionNavn,
                     "K",
                     sivilstand = listOf(SivilstandItem("2000-10-01", gift)),
-                    krrPerson = KrrPerson(false,"ola@nav.no", "11223344")
+                    krrPerson = DigitalKontaktinfo(epostadresse = "ola@nav.no", true, true, false, "11223344", morfnr)
                 ), type = "ektefelle"
             ), barn = listOf(
                 BarnItem(
@@ -726,7 +724,7 @@ class PrefillPDLNavTest {
                     someInstitutionId,
                     someIntitutionNavn,
                     sivilstand = listOf(SivilstandItem("2000-10-01", registrert_partnerskap)),
-                    krrPerson = KrrPerson(false,"ola@nav.no", "11223344")
+                    krrPerson = DigitalKontaktinfo(epostadresse = "ola@nav.no", true, true, false, "11223344", somePersonNr)
                 ), adresse = lagTomAdresse()
             ), ektefelle = Ektefelle(
                 person = lagNavPerson(
@@ -738,7 +736,7 @@ class PrefillPDLNavTest {
                     someIntitutionNavn,
                     "K",
                     sivilstand = listOf(SivilstandItem("2000-10-01", registrert_partnerskap)),
-                    krrPerson = KrrPerson(false,"ola@nav.no", "11223344")
+                    krrPerson = DigitalKontaktinfo(epostadresse = "ola@nav.no", true, true, false, "11223344", somerEktefellePersonNr)
                 ), type = "part_i_et_registrert_partnerskap"
             )
         )
@@ -797,7 +795,7 @@ class PrefillPDLNavTest {
                     personFdato,
                     someInstitutionId,
                     someIntitutionNavn,
-                    krrPerson = KrrPerson(false,"ola@nav.no", "11223344")
+                    krrPerson = DigitalKontaktinfo(epostadresse = "ola@nav.no", true, true, false, "11223344", somePersonNr)
                 ), adresse = lagTomAdresse()
             )
         )
@@ -893,7 +891,7 @@ class PrefillPDLNavTest {
                     personFdato,
                     someInstitutionId,
                     someIntitutionNavn,
-                    krrPerson = KrrPerson(false,"ola@nav.no", "11223344")
+                    krrPerson = DigitalKontaktinfo(epostadresse = "ola@nav.no", true, true, false, "11223344", somePersonNr)
                 ), adresse = Adresse(
                     "Adresselinje 1", "Adresselinje 2", "Adresselinje 3", null, null, land = "SE"
                 )
@@ -963,7 +961,7 @@ class PrefillPDLNavTest {
                     personFdato,
                     someInstitutionId,
                     someIntitutionNavn,
-                    krrPerson = KrrPerson(false,"ola@nav.no", "11223344")
+                    krrPerson = DigitalKontaktinfo(epostadresse = "ola@nav.no", true, true, false, "11223344", somePersonNr)
                 ), adresse = Adresse(
                     "Adresselinje 1", "Adresselinje 2", "Adresselinje 3", null, null, land = "SE"
                 )
@@ -1042,7 +1040,7 @@ class PrefillPDLNavTest {
                     personFdato,
                     someInstitutionId,
                     someIntitutionNavn,
-                    krrPerson = KrrPerson(false,"ola@nav.no", "11223344")
+                    krrPerson = DigitalKontaktinfo(epostadresse = "ola@nav.no", true, true, false, "11223344", somePersonNr)
                 ), arbeidsforhold = listOf(
                     ArbeidsforholdItem(
                         planlagtstartdato = "",
@@ -1186,7 +1184,7 @@ class PrefillPDLNavTest {
             someIntitutionNavn: String? = null,
             kjoenn: String? = "M",
             foedsted: String? = "Oslo",
-            krrPerson: KrrPerson?,
+            krrPerson: DigitalKontaktinfo?,
             sivilstand: List<SivilstandItem>? = emptyList()
         ) = Person(
             pin = listOf(
@@ -1207,7 +1205,7 @@ class PrefillPDLNavTest {
             kontakt = if (krrPerson == null) null else createKontakt(krrPerson)
         )
 
-        fun createKontakt(krrPerson: KrrPerson?): Kontakt? {
+        fun createKontakt(krrPerson: DigitalKontaktinfo?): Kontakt? {
             krrPerson ?: return null
 
             val telefonList = krrPerson.mobiltelefonnummer?.let { listOf(Telefon("mobil", it)) }
