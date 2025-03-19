@@ -95,7 +95,7 @@ class InnhentingService(
                     sedType = sedType
                 )
             }
-            P6000 ->  PensjonCollection(pensjoninformasjon = pensjonsinformasjonService.hentVedtak(hentVedtak(prefillData)), sedType = sedType)
+            P6000, P7000 ->  PensjonCollection(pensjoninformasjon = pensjonsinformasjonService.hentVedtak(hentVedtak(prefillData)), sedType = sedType)
             P8000 -> {
                 if (prefillData.buc == P_BUC_05) {
                         try {

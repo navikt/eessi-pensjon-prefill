@@ -4,12 +4,16 @@ import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.document.P6000Dokument
 import no.nav.eessi.pensjon.eux.model.document.Retning
 import no.nav.eessi.pensjon.eux.model.sed.*
+import no.nav.eessi.pensjon.prefill.models.PensjonCollection
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 
 import no.nav.eessi.pensjon.prefill.person.PrefillSed
+import no.nav.eessi.pensjon.prefill.sed.vedtak.PrefillP6000Pensjon
+import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.PrefillPensjonVedtak
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.toJson
+import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.time.LocalDate
@@ -18,7 +22,7 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillP7000Mk2Turbo::class.java) }
 
-    fun prefill(prefillData: PrefillDataModel, personData: PersonDataCollection): P7000 {
+    fun prefill(prefillData: PrefillDataModel, personData: PersonDataCollection, pensjonCollection: PensjonCollection?): P7000 {
 
         val sed = prefillSed.prefill(prefillData, personData)
         logger.debug("Prefill ***P7000 Mk2 Turbo*** med preutfylling med data fra en eller flere P6000")
@@ -57,7 +61,7 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
             //mappe om kjoenn for mappingfeil
             pensjon = P7000Pensjon(
                 gjenlevende = prefillGjenlevende(gjenlevendePerson, gjenlevendePin, listP6000),
-                samletVedtak = prefilSamletMeldingVedtak(listP6000)
+                samletVedtak = prefilSamletMeldingVedtak(listP6000, pensjonCollection)
             )
         )
 
@@ -111,20 +115,20 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
         return eessisakno + eessisakerutland
     }
 
-    fun prefilSamletMeldingVedtak(document: List<Pair<P6000Dokument, P6000>>?): SamletMeldingVedtak? {
+    fun prefilSamletMeldingVedtak(document: List<Pair<P6000Dokument, P6000>>?, pensjonCollection: PensjonCollection?): SamletMeldingVedtak? {
         if (document == null || document.isEmpty()) {
             return null
         }
 
         return SamletMeldingVedtak(
             avslag = pensjonsAvslag(document), //kap 5
-            tildeltepensjoner = pensjonTildelt(document), //kap 4
+            tildeltepensjoner = pensjonTildelt(document, pensjonCollection), //kap 4
             utsendtDato = null // kap. 6 dato
         )
     }
 
     //tildelt pensjon fra P6000
-    fun pensjonTildelt(document: List<Pair<P6000Dokument, P6000>>?): List<TildeltPensjonItem>? {
+    fun pensjonTildelt(document: List<Pair<P6000Dokument, P6000>>?, pensjonCollection: PensjonCollection?): List<TildeltPensjonItem>? {
         return document?.mapNotNull { doc ->
             val fraLand = doc.first.fraLand //documentItem participant (hvilket land P6000 kommer ifra)
             val sistMottattDato = doc.first.sistMottatt
@@ -148,7 +152,7 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
                         sistMottattDato
                     ),
                     startdatoPensjonsRettighet = p6000vedtak.virkningsdato,
-                    ytelser = mapYtelserP6000(p6000vedtak.beregning),
+                    ytelser = mapYtelserP6000(p6000vedtak.beregning, pensjonCollection),
                     institusjon = mapInstusjonP6000(eessisak, p6000bruker, p6000pensjon.tilleggsinformasjon,  fraLand),
                     reduksjonsGrunn = finnReduksjonsGrunn(p6000pensjon.reduksjon?.firstOrNull()),
                     revurderingtidsfrist = p6000pensjon.sak?.kravtype?.firstOrNull { it.datoFrist != null }?.datoFrist,
@@ -203,7 +207,8 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
         return vedtakDato ?: sistMottatt.toString()
     }
 
-    fun mapYtelserP6000(beregniger: List<BeregningItem>?): List<YtelserItem>? {
+    //TODO: Fylle inn beløp fra pesys etter kall til pensjonsinformasjon, siden P6000 ofte inneholder utdaterte beløp
+    fun mapYtelserP6000(beregniger: List<BeregningItem>?, pensjonCollection: PensjonCollection?): List<YtelserItem>? {
         logger.debug("beregning: ${beregniger?.toJson()}")
         return beregniger?.map { beregn ->
             YtelserItem(
@@ -214,26 +219,23 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
                         valuta = beregn.valuta,
                         betalingshyppighetytelse = Betalingshyppighet.maaned_12_per_aar,
                         utbetalingshyppighetAnnen = beregn.utbetalingshyppighetAnnen,
-                        beloepBrutto = beregn.beloepBrutto?.beloep
+                        beloepBrutto = pensjonCollection?.pensjoninformasjon?.let {
+                            prefillVedtak(it)?.beregning?.first()?.beloepBrutto?.beloep
+                        } ?: beregn.beloepBrutto?.beloep,
                     )
                 )
             )
         }
     }
 
-    private fun mapUtbetalingHyppighet(utbetalingshyppighet: String?): String? {
-        val sjekkformap = mapOf(
-            "aarlig" to "01",
-            "kvartalsvis" to "02",
-            "maaned_12_per_aar" to "03",
-            "maaned_13_per_aar" to "04",
-            "maaned_14_per_aar" to "05",
-            "ukentlig" to "06",
-            "annet" to "99"
-        )
-        return sjekkformap[utbetalingshyppighet] ?: utbetalingshyppighet
+    private fun prefillVedtak(pensjoninformasjon: Pensjonsinformasjon): VedtakItem? {
+        return try {
+            PrefillPensjonVedtak.createVedtakItem(pensjoninformasjon)
+        } catch (ex: Exception) {
+            logger.warn("Feilet ved preutfylling av vedtaksdetaljer fra pensjonsinformasjon, fortsetter uten, feilmelding: ${ex.message}")
+            null
+        }
     }
-
 
     fun finnKorrektBruker(p6000: P6000): Bruker? {
         return p6000.pensjon?.gjenlevende ?: p6000.nav?.bruker

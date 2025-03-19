@@ -2,6 +2,7 @@ package no.nav.eessi.pensjon.integrationtest.sed
 
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
+import io.mockk.mockk
 import no.nav.eessi.pensjon.UnsecuredWebMvcTestLauncher
 import no.nav.eessi.pensjon.eux.model.BucType
 import no.nav.eessi.pensjon.eux.model.BucType.*
@@ -30,8 +31,11 @@ import no.nav.eessi.pensjon.shared.api.SubjectFnr
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.toJson
+import no.nav.pensjon.v1.avdod.V1Avdod
 import no.nav.pensjon.v1.kravhistorikkliste.V1KravHistorikkListe
+import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import no.nav.pensjon.v1.sak.V1Sak
+import no.nav.pensjon.v1.vedtak.V1Vedtak
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
@@ -91,6 +95,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_3)) } returns PersonPDLMock.createWith(true, "Alder", "Pensjon", FNR_VOKSEN_3, AKTOER_ID)
         every { krrService.hentPersonerFraKrr(any()) } returns DigitalKontaktinfo(epostadresse = "melleby12@melby.no", mobiltelefonnummer = "11111111", aktiv = true, personident = FNR_VOKSEN_3)
         every { kodeverkClient.finnLandkode(any())} returns "QX"
+        every { pensjoninformasjonservice.hentVedtak(any()) } returns Pensjonsinformasjon()
 
         //mock p6000 fra RINA med data som skal benyttes i P7000
         val p6000fraRequest = listOf(mockP6000requestdata("SE", "P6000SE-INNV.json"), mockP6000KomplettRequestdata("NO"))
@@ -198,6 +203,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
         every { personService.hentIdent(AKTORID, NorskIdent(FNR_VOKSEN_4)) } returns AktoerId(AKTOER_ID_2)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_3)) } returns PersonPDLMock.createWith(true, "Lever", "Gjenlev", FNR_VOKSEN_3, AKTOER_ID)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_4)) } returns PersonPDLMock.createWith(true, "Avdød", "Død", FNR_VOKSEN_4, AKTOER_ID_2, true)
+        every { pensjoninformasjonservice.hentVedtak(any()) } returns Pensjonsinformasjon()
 
         every { krrService.hentPersonerFraKrr(eq(FNR_VOKSEN_3)) } returns DigitalKontaktinfo(epostadresse = "melleby12@melby.no", mobiltelefonnummer = "11111111", aktiv = true, personident = FNR_VOKSEN_3)
         every { krrService.hentPersonerFraKrr(eq(FNR_VOKSEN_4)) } returns DigitalKontaktinfo(epostadresse = "melleby12@melby.no", mobiltelefonnummer = "11111111", aktiv = true, personident = FNR_VOKSEN_4)
@@ -329,6 +335,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
         every { personService.hentPerson(Npid(NPID_VOKSEN)) } returns PersonPDLMock.createWith(true, "Lever", "Gjenlev", NPID_VOKSEN, AKTOER_ID)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_4)) } returns PersonPDLMock.createWith(true, "Avdød", "Død", FNR_VOKSEN_4, AKTOER_ID_2, true)
         every { krrService.hentPersonerFraKrr(any()) } returns DigitalKontaktinfo(epostadresse = "melleby12@melby.no", mobiltelefonnummer = "11111111", aktiv = true, personident = FNR_VOKSEN_4)
+        every { pensjoninformasjonservice.hentVedtak(any()) } returns Pensjonsinformasjon()
 
         val sak = V1Sak()
         sak.sakType = EPSaktype.GJENLEV.toString()
@@ -454,6 +461,153 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
         every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID))} returns NorskIdent(FNR_VOKSEN_3)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_3)) } returns PersonPDLMock.createWith(true, "Lever", "Gjenlev", FNR_VOKSEN_3, AKTOER_ID)
         every { krrService.hentPersonerFraKrr(any()) } returns DigitalKontaktinfo(epostadresse = "melleby12@melby.no", mobiltelefonnummer = "11111111", aktiv = true, personident = FNR_VOKSEN_3)
+        every { pensjoninformasjonservice.hentVedtak(any()) } returns Pensjonsinformasjon()
+
+        val sak = V1Sak()
+        sak.sakType = EPSaktype.ALDER.toString()
+        sak.sakId = 100
+        sak.kravHistorikkListe = V1KravHistorikkListe()
+
+        every { pensjoninformasjonservice.hentRelevantPensjonSak(any(), any()) } returns sak
+        every { kodeverkClient.finnLandkode(any()) } returns "QX"
+
+        //mock p6000 fra RINA med data som skal benyttes i P7000
+
+        val p6000fraRequest = listOf(mockP6000requestdata("NO", "P7000/P6000Sendt.json"), mockP6000requestdata("SE", "P7000/P6000Mottatt.json"))
+        val payload = mapAnyToJson(p6000fraRequest)
+
+        //mock apiRequest
+        val apijson = dummyApiRequest(sakid = "21337890", aktoerId = AKTOER_ID, sed = P7000, buc = P_BUC_01, subject = null, payload = payload ).toJson()
+
+        val validResponse = """
+        {
+          "sed" : "P7000",
+          "nav" : {
+            "eessisak" : [ {
+              "institusjonsid" : "NO:noinst002",
+              "institusjonsnavn" : "NOINST002, NO INST002, NO",
+              "saksnummer" : "21337890",
+              "land" : "NO"
+            }, {
+              "institusjonsid" : "SE:NAVAT07",
+              "institusjonsnavn" : "NAV ACCEPTANCE TEST JYZ",
+              "saksnummer" : "134513452",
+              "land" : "SE"
+            } ],
+            "bruker" : {
+              "person" : {
+                "pin" : [ {
+                  "institusjonsnavn" : "SE ASCCEPTANCE TEST JAP",
+                  "institusjonsid" : "SE:NAVAT07",
+                  "identifikator" : "345315327578",
+                  "land" : "SE"
+                }, {
+                  "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                  "institusjonsid" : "NO:noinst002",
+                  "identifikator" : "12312312312",
+                  "land" : "NO"
+                }, {
+                  "identifikator" : "123123123",
+                  "land" : "QX"
+                } ],
+                "etternavn" : "Gjenlev",
+                "fornavn" : "Lever",
+                "kjoenn" : "M",
+                "foedselsdato" : "1988-07-12"
+              }
+            },
+            "ektefelle" : {
+              "person" : {
+                "etternavn" : "Gjenlev"
+              }
+            }
+          },
+          "pensjon" : {
+            "samletVedtak" : {
+              "tildeltepensjoner" : [ {
+                "ytelser" : [ {
+                  "startdatoretttilytelse" : "2021-09-01",
+                  "beloep" : [ {
+                    "betalingshyppighetytelse" : "03",
+                    "valuta" : "NOK",
+                    "beloepBrutto" : "4441"
+                  } ]
+                } ],
+                "pensjonType" : "01",
+                "tildeltePensjonerLand" : "NO",
+                "adressatForRevurdering" : [ {
+                  "adressatforrevurdering" : "NAV ACCEPTANCE TEST 07\nPostboks 6600 Etterstad\nOslo\n0607\nNO"
+                } ],
+                "institusjon" : {
+                  "institusjonsid" : "NO:NAVAT07",
+                  "institusjonsnavn" : "NAV ACCEPTANCE TEST 07",
+                  "saksnummer" : "22947392",
+                  "land" : "NO",
+                  "personNr" : "14115327578"
+                },
+                "reduksjonsGrunn" : "03",
+                "startdatoPensjonsRettighet" : "2021-09-01",
+                "revurderingtidsfrist" : "six weeks from the date the decision is received",
+                "vedtaksDato" : "2021-08-12",
+                "innvilgetPensjon" : "01"
+              }, {
+                "ytelser" : [ {
+                  "startdatoretttilytelse" : "2020-02-05",
+                  "beloep" : [ {
+                    "betalingshyppighetytelse" : "03",
+                    "valuta" : "EUR",
+                    "beloepBrutto" : "1254",
+                    "utbetalingshyppighetAnnen" : "biannual"
+                  } ]
+                } ],
+                "pensjonType" : "01",
+                "tildeltePensjonerLand" : "SE",
+                "adressatForRevurdering" : [ {
+                  "adressatforrevurdering" : "gate\nbygning\nby\n4587\nregion\nSE"
+                } ],
+                "institusjon" : {
+                  "saksnummer" : "134513452",
+                  "land" : "SE",
+                  "personNr" : "345315327578"
+                },
+                "reduksjonsGrunn" : "02",
+                "startdatoPensjonsRettighet" : "2017-02-01",
+                "vedtaksDato" : "2020-01-02",
+                "innvilgetPensjon" : "02"
+              } ]
+            }
+          },
+          "sedGVer" : "4",
+          "sedVer" : "2"
+        }
+        """.trimIndent()
+
+        val result = mockMvc.perform(post("/sed/prefill")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(apijson))
+            .andExpect(status().isOk)
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andReturn()
+
+        val response = result.response.getContentAsString(charset("UTF-8"))
+
+        println("@@@@@@@: $response")
+
+        JSONAssert.assertEquals(validResponse, response, false)
+    }
+
+    @Test
+    fun `prefill sed P7000 - Gitt gjenlevendepensjon med to P6000 med godkjent pensjon skal det preutfylles gyldig SED med beløpet skal hentes fra pensjonsinformasjon`() {
+        every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID))} returns NorskIdent(FNR_VOKSEN_3)
+        every { personService.hentPerson(NorskIdent(FNR_VOKSEN_3)) } returns PersonPDLMock.createWith(true, "Lever", "Gjenlev", FNR_VOKSEN_3, AKTOER_ID)
+        every { krrService.hentPersonerFraKrr(any()) } returns DigitalKontaktinfo(epostadresse = "melleby12@melby.no", mobiltelefonnummer = "11111111", aktiv = true, personident = FNR_VOKSEN_3)
+        every { pensjoninformasjonservice.hentVedtak(any()) } returns mockk<Pensjonsinformasjon>().apply {
+            every { vedtak } returns mockk<V1Vedtak>().apply {
+                every { avdod } returns mockk<V1Avdod>().apply {
+                    every { avdod } returns "2021-01-01"
+                }
+            }
+        }
 
         val sak = V1Sak()
         sak.sakType = EPSaktype.ALDER.toString()
@@ -594,6 +748,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
         every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN_3)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_3)) } returns PersonPDLMock.createWith(true, "Alder", "Pensjon", FNR_VOKSEN_3, AKTOER_ID)
         every { krrService.hentPersonerFraKrr(any()) } returns DigitalKontaktinfo(epostadresse = "melleby12@melby.no", mobiltelefonnummer = "11111111", aktiv = true, personident = FNR_VOKSEN_3)
+        every { pensjoninformasjonservice.hentVedtak(any()) } returns Pensjonsinformasjon()
         every { kodeverkClient.finnLandkode(any())} returns "QX"
 
         //mock p6000 fra RINA med data som skal benyttes i P7000
@@ -692,6 +847,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_3)) } returns PersonPDLMock.createWith(true, "Alder", "Pensjon", FNR_VOKSEN_3, AKTOER_ID)
         every { krrService.hentPersonerFraKrr(any()) } returns DigitalKontaktinfo(epostadresse = "melleby12@melby.no", mobiltelefonnummer = "11111111", aktiv = true, personident = FNR_VOKSEN_3)
         every { kodeverkClient.finnLandkode(any())} returns "QX"
+        every { pensjoninformasjonservice.hentVedtak(any()) } returns Pensjonsinformasjon()
 
         //mock apiRequest
         val apijson = dummyApiRequest(sakid = "21337890", aktoerId = AKTOER_ID, sed = P7000, buc = P_BUC_01).toJson()

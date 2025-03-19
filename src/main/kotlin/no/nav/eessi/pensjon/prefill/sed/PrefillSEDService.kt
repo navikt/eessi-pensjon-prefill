@@ -114,7 +114,7 @@ class PrefillSEDService(private val eessiInformasjon: EessiInformasjon, private 
             P7000 -> {
                 if (prefillData.partSedAsJson[P7000.name] != null && prefillData.partSedAsJson[P7000.name] != "{}") {
                     logger.info("P7000mk2 preutfylling med data fra P6000..")
-                    PrefillP7000Mk2Turbo(PrefillSed(prefillPDLnav)).prefill(prefillData, personDataCollection)
+                    PrefillP7000Mk2Turbo(PrefillSed(prefillPDLnav)).prefill(prefillData, personDataCollection, pensjonCollection)
                 } else {
                     logger.info("P7000 med forenklet preutfylling")
                     PrefillP7000(PrefillSed(prefillPDLnav)).prefill(prefillData, personDataCollection)
