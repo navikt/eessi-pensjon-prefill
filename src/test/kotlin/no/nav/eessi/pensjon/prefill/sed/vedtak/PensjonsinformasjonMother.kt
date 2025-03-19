@@ -62,6 +62,6 @@ object PensjonsinformasjonMother {
                 })
             }
 }
-private fun dummyDate() = DatatypeFactory.newInstance().newXMLGregorianCalendar()
+fun dummyDate() = DatatypeFactory.newInstance().newXMLGregorianCalendar()
 fun Int.daysAgo() = convertToXMLocal(LocalDate.now().minusDays(this.toLong()))
 fun Int.daysAhead() = convertToXMLocal(LocalDate.now().plusDays(this.toLong()))

@@ -8,6 +8,7 @@ import no.nav.eessi.pensjon.eux.model.BucType
 import no.nav.eessi.pensjon.eux.model.BucType.*
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.SedType.*
+import no.nav.eessi.pensjon.eux.model.buc.SakType
 import no.nav.eessi.pensjon.eux.model.document.P6000Dokument
 import no.nav.eessi.pensjon.eux.model.document.Retning
 import no.nav.eessi.pensjon.eux.model.sed.P6000
@@ -24,6 +25,9 @@ import no.nav.eessi.pensjon.prefill.KrrService
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.models.DigitalKontaktinfo
+import no.nav.eessi.pensjon.prefill.sed.vedtak.daysAgo
+import no.nav.eessi.pensjon.prefill.sed.vedtak.daysAhead
+import no.nav.eessi.pensjon.prefill.sed.vedtak.dummyDate
 import no.nav.eessi.pensjon.shared.api.ApiRequest
 import no.nav.eessi.pensjon.shared.api.ApiSubject
 import no.nav.eessi.pensjon.shared.api.ReferanseTilPerson
@@ -35,7 +39,13 @@ import no.nav.pensjon.v1.avdod.V1Avdod
 import no.nav.pensjon.v1.kravhistorikkliste.V1KravHistorikkListe
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import no.nav.pensjon.v1.sak.V1Sak
+import no.nav.pensjon.v1.sakalder.V1SakAlder
 import no.nav.pensjon.v1.vedtak.V1Vedtak
+import no.nav.pensjon.v1.vilkarsvurdering.V1Vilkarsvurdering
+import no.nav.pensjon.v1.vilkarsvurderingliste.V1VilkarsvurderingListe
+import no.nav.pensjon.v1.vilkarsvurderinguforetrygd.V1VilkarsvurderingUforetrygd
+import no.nav.pensjon.v1.ytelsepermaaned.V1YtelsePerMaaned
+import no.nav.pensjon.v1.ytelsepermaanedliste.V1YtelsePerMaanedListe
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
@@ -53,6 +63,9 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.util.ResourceUtils
 import org.springframework.web.client.RestTemplate
 import java.time.LocalDate
+import java.util.GregorianCalendar
+import javax.xml.datatype.DatatypeFactory
+import javax.xml.datatype.XMLGregorianCalendar
 
 private const val NPID_VOKSEN = "01220049651"
 
@@ -601,11 +614,30 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
         every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID))} returns NorskIdent(FNR_VOKSEN_3)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_3)) } returns PersonPDLMock.createWith(true, "Lever", "Gjenlev", FNR_VOKSEN_3, AKTOER_ID)
         every { krrService.hentPersonerFraKrr(any()) } returns DigitalKontaktinfo(epostadresse = "melleby12@melby.no", mobiltelefonnummer = "11111111", aktiv = true, personident = FNR_VOKSEN_3)
-        every { pensjoninformasjonservice.hentVedtak(any()) } returns mockk<Pensjonsinformasjon>().apply {
-            every { vedtak } returns mockk<V1Vedtak>().apply {
-                every { avdod } returns mockk<V1Avdod>().apply {
-                    every { avdod } returns "2021-01-01"
-                }
+        every { pensjoninformasjonservice.hentVedtak(any()) } returns mockk<Pensjonsinformasjon>(relaxed = true).apply {
+            every { sakAlder } returns V1SakAlder().apply {
+                sakType = SakType.ALDER.name
+                isUttakFor67 = false
+            }
+            every { vilkarsvurderingListe } returns V1VilkarsvurderingListe().apply {
+                vilkarsvurderingListe.add(V1Vilkarsvurdering().apply {
+                    avslagHovedytelse = "ALDER_PPP"
+                    vilkarsvurderingUforetrygd = V1VilkarsvurderingUforetrygd().apply {
+                        alder = "ALDER"
+                        nedsattInntektsevne = "SANN"
+                    }
+                })
+            }
+            every {ytelsePerMaanedListe } returns V1YtelsePerMaanedListe().apply {
+                ytelsePerMaanedListe.add(V1YtelsePerMaaned().apply {
+                    isMottarMinstePensjonsniva = true
+                    fom = 10.daysAgo()
+                    tom = 20.daysAhead()
+                })
+            }
+            every { vedtak } returns mockk<V1Vedtak>(relaxed = true).apply {
+                every { virkningstidspunkt } returns 20.daysAgo()
+                every { avdod } returns mockk<V1Avdod>(relaxed = true)
             }
         }
 
