@@ -633,6 +633,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
                     isMottarMinstePensjonsniva = true
                     fom = 10.daysAgo()
                     tom = 20.daysAhead()
+                    belop = 5000
                 })
             }
             every { vedtak } returns mockk<V1Vedtak>(relaxed = true).apply {
@@ -708,7 +709,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
                   "beloep" : [ {
                     "betalingshyppighetytelse" : "03",
                     "valuta" : "NOK",
-                    "beloepBrutto" : "4441"
+                    "beloepBrutto" : "5000"
                   } ]
                 } ],
                 "pensjonType" : "01",
@@ -734,7 +735,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
                   "beloep" : [ {
                     "betalingshyppighetytelse" : "03",
                     "valuta" : "EUR",
-                    "beloepBrutto" : "1254",
+                    "beloepBrutto" : "5000",
                     "utbetalingshyppighetAnnen" : "biannual"
                   } ]
                 } ],
