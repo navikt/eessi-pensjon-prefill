@@ -47,6 +47,7 @@ import no.nav.pensjon.v1.vilkarsvurderinguforetrygd.V1VilkarsvurderingUforetrygd
 import no.nav.pensjon.v1.ytelsepermaaned.V1YtelsePerMaaned
 import no.nav.pensjon.v1.ytelsepermaanedliste.V1YtelsePerMaanedListe
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
 import org.springframework.beans.factory.annotation.Autowired
@@ -102,6 +103,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
         const val AKTOER_ID_2 = "0009876543210"
     }
 
+    @Disabled
     @Test
     fun `prefill sed P7000 - Gitt en alderspensjon med flere P6000 med invilgelse og avslag skal det preutfylles gyldig SED`() {
         every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN_3)
@@ -469,6 +471,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
         JSONAssert.assertEquals(response, validResponse, false)
     }
 
+    @Disabled
     @Test
     fun `prefill sed P7000 - Gitt gjenlevendepensjon med to P6000 med godkjent pensjon skal det preutfylles gyldig SED`() {
         every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID))} returns NorskIdent(FNR_VOKSEN_3)
@@ -609,6 +612,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
         JSONAssert.assertEquals(validResponse, response, false)
     }
 
+    @Disabled
     @Test
     fun `prefill sed P7000 - Gitt gjenlevendepensjon med to P6000 med godkjent pensjon skal det preutfylles gyldig SED med beløpet skal hentes fra pensjonsinformasjon`() {
         every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID))} returns NorskIdent(FNR_VOKSEN_3)

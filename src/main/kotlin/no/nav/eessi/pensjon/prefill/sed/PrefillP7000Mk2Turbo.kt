@@ -152,7 +152,7 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
                         sistMottattDato
                     ),
                     startdatoPensjonsRettighet = p6000vedtak.virkningsdato,
-                    ytelser = mapYtelserP6000(p6000vedtak.beregning, pensjonCollection),
+                    ytelser = ytelserItems(p6000vedtak, pensjonCollection),
                     institusjon = mapInstusjonP6000(eessisak, p6000bruker, p6000pensjon.tilleggsinformasjon,  fraLand),
                     reduksjonsGrunn = finnReduksjonsGrunn(p6000pensjon.reduksjon?.firstOrNull()),
                     revurderingtidsfrist = p6000pensjon.sak?.kravtype?.firstOrNull { it.datoFrist != null }?.datoFrist,
@@ -165,6 +165,18 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
             }
         }
     }
+
+    private fun ytelserItems(
+        p6000vedtak: VedtakItem,
+        pensjonCollection: PensjonCollection?
+    ): List<YtelserItem>? {
+        val ytelserFraP6000Seder =  mapYtelserP6000(p6000vedtak.beregning, pensjonCollection)
+        val ytelserFraPesys =  mapYtelserP7000(p6000vedtak.beregning, pensjonCollection)
+        val samledeYtelser = ytelserFraP6000Seder?.plus(ytelserFraPesys ?: emptyList())
+
+        return samledeYtelser
+    }
+
 
     private fun mapP6000artikkelTilInnvilgetPensjon(artikkel: String?): String? {
         return when (artikkel) {
@@ -217,8 +229,26 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
                 beloep = listOf(
                     BeloepItem(
                         valuta = beregn.valuta,
-                        betalingshyppighetytelse = Betalingshyppighet.maaned_12_per_aar,
+                        betalingshyppighetytelse = beregn.utbetalingshyppighet?.let { Betalingshyppighet.valueOf(it) },
                         utbetalingshyppighetAnnen = beregn.utbetalingshyppighetAnnen,
+                        beloepBrutto = beregn.beloepBrutto?.beloep
+                    )
+                )
+            )
+        }
+    }
+
+    fun mapYtelserP7000(beregniger: List<BeregningItem>?, pensjonCollection: PensjonCollection?): List<YtelserItem>? {
+        logger.debug("beregning fra vedtak i Pesys: ${pensjonCollection?.toJson()}")
+        return beregniger?.map { beregn ->
+            YtelserItem(
+                startdatoretttilytelse = pensjonCollection?.pensjoninformasjon?.let { prefillVedtak(it)?.beregning?.first()?.periode?.fom },
+                sluttdatoUtbetaling = pensjonCollection?.pensjoninformasjon?.let { prefillVedtak(it)?.beregning?.first()?.periode?.tom },
+                beloep = listOf(
+                    BeloepItem(
+                        valuta = "NOK",
+                        betalingshyppighetytelse = pensjonCollection?.pensjoninformasjon?.let { penInfo -> prefillVedtak(penInfo)?.beregning?.first()?.utbetalingshyppighet?.let { Betalingshyppighet.valueOf(it) } },
+                        utbetalingshyppighetAnnen = pensjonCollection?.pensjoninformasjon?.let { penInfo -> prefillVedtak(penInfo)?.beregning?.first()?.utbetalingshyppighetAnnen },
                         beloepBrutto = pensjonCollection?.pensjoninformasjon?.let {
                             prefillVedtak(it)?.beregning?.first()?.beloepBrutto?.beloep
                         } ?: beregn.beloepBrutto?.beloep,
