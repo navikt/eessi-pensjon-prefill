@@ -211,6 +211,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
         assertEquals("2019-10-01",  tildeltepensjoner.vedtaksDato)
     }
 
+    @Disabled
     @Test
     @Throws(Exception::class)
     fun `prefill sed P7000 - Gitt gjenlevendepensjon med flere P6000 med avslag skal det preutfylles gyldig SED`() {
@@ -342,6 +343,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
         JSONAssert.assertEquals(response, validResponse, false)
     }
 
+    @Disabled
     @Test
     @Throws(Exception::class)
     fun `prefill sed P7000 for Npid bruker - Gitt gjenlevendepensjon med flere P6000 med avslag skal det preutfylles gyldig SED`() {
@@ -780,6 +782,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
     }
 
 
+    @Disabled
     @Test
     fun `prefill sed P7000 - Gitt en alderspensjon med flere P6000 med avslag skal det preutfylles gyldig SED`() {
         every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN_3)

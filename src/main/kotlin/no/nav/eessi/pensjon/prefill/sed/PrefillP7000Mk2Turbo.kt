@@ -122,9 +122,17 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
 
         return SamletMeldingVedtak(
             avslag = pensjonsAvslag(document), //kap 5
-            tildeltepensjoner = pensjonTildelt(document, pensjonCollection), //kap 4
+            tildeltepensjoner = mellomting(pensjonCollection, pensjonTildelt(document, pensjonCollection)), //kap 4
             utsendtDato = null // kap. 6 dato
         )
+    }
+
+    fun mellomting(pensjonCollection: PensjonCollection?, listeOverTildeltePensjoner: List<TildeltPensjonItem>?): List<TildeltPensjonItem>? {
+        val tildeltepensjonerP6000 = listeOverTildeltePensjoner
+        val P7000TildeltePensjoner = TildeltPensjonItem(ytelser = mapYtelserP7000(pensjonCollection))
+        val allevedtakPlusP6000 = tildeltepensjonerP6000?.plus(P7000TildeltePensjoner)
+
+        return allevedtakPlusP6000
     }
 
     //tildelt pensjon fra P6000
@@ -170,13 +178,13 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
         p6000vedtak: VedtakItem,
         pensjonCollection: PensjonCollection?
     ): List<YtelserItem>? {
-        val ytelserFraP6000Seder =  mapYtelserP6000(p6000vedtak.beregning, pensjonCollection)
-        val ytelserFraPesys =  mapYtelserP7000( pensjonCollection)
-        val samledeYtelser = ytelserFraP6000Seder?.plus(ytelserFraPesys ?: emptyList())
-
-        return samledeYtelser
+        return mapYtelserP6000(p6000vedtak.beregning, pensjonCollection)
     }
 
+//        val ytelserFraPesys =  mapYtelserP7000( pensjonCollection)
+//        val samledeYtelser = ytelserFraP6000Seder?.plus(ytelserFraPesys ?: emptyList())
+//
+//        return samledeYtelser
 
     private fun mapP6000artikkelTilInnvilgetPensjon(artikkel: String?): String? {
         return when (artikkel) {
