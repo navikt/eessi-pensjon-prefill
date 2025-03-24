@@ -171,7 +171,7 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
         pensjonCollection: PensjonCollection?
     ): List<YtelserItem>? {
         val ytelserFraP6000Seder =  mapYtelserP6000(p6000vedtak.beregning, pensjonCollection)
-        val ytelserFraPesys =  mapYtelserP7000(p6000vedtak.beregning, pensjonCollection)
+        val ytelserFraPesys =  mapYtelserP7000( pensjonCollection)
         val samledeYtelser = ytelserFraP6000Seder?.plus(ytelserFraPesys ?: emptyList())
 
         return samledeYtelser
@@ -238,24 +238,40 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
         }
     }
 
-    fun mapYtelserP7000(beregniger: List<BeregningItem>?, pensjonCollection: PensjonCollection?): List<YtelserItem>? {
+    fun mapYtelserP7000(pensjonCollection: PensjonCollection?): List<YtelserItem>? {
         logger.debug("beregning fra vedtak i Pesys: ${pensjonCollection?.toJson()}")
-        return beregniger?.map { beregn ->
+        return pensjonCollection?.pensjoninformasjon?.let { prefillVedtak(it)?.beregning }?.map {
             YtelserItem(
-                startdatoretttilytelse = pensjonCollection?.pensjoninformasjon?.let { prefillVedtak(it)?.beregning?.first()?.periode?.fom },
-                sluttdatoUtbetaling = pensjonCollection?.pensjoninformasjon?.let { prefillVedtak(it)?.beregning?.first()?.periode?.tom },
+                startdatoretttilytelse = it.periode?.fom,
+                sluttdatoUtbetaling = it.periode?.tom,
                 beloep = listOf(
                     BeloepItem(
-                        valuta = "NOK",
-                        betalingshyppighetytelse = pensjonCollection?.pensjoninformasjon?.let { penInfo -> prefillVedtak(penInfo)?.beregning?.first()?.utbetalingshyppighet?.let { Betalingshyppighet.valueOf(it) } },
-                        utbetalingshyppighetAnnen = pensjonCollection?.pensjoninformasjon?.let { penInfo -> prefillVedtak(penInfo)?.beregning?.first()?.utbetalingshyppighetAnnen },
-                        beloepBrutto = pensjonCollection?.pensjoninformasjon?.let {
-                            prefillVedtak(it)?.beregning?.first()?.beloepBrutto?.beloep
-                        } ?: beregn.beloepBrutto?.beloep,
+                        valuta = it.valuta,
+                        betalingshyppighetytelse = it.utbetalingshyppighet?.let { Betalingshyppighet.valueOf(it) },
+                        utbetalingshyppighetAnnen = it.utbetalingshyppighetAnnen,
+                        beloepBrutto = it.beloepBrutto?.beloep
                     )
                 )
             )
         }
+
+//        return beregniger.map { beregn ->
+//            YtelserItem(
+//                startdatoretttilytelse = pensjonCollection?.pensjoninformasjon?.let { prefillVedtak(it)?.beregning?.first()?.periode?.fom },
+//                startdatoretttilytelse = pensjonCollection?.pensjoninformasjon?.let { prefillVedtak(it)?.beregning?.first()?.periode?.fom },
+//                sluttdatoUtbetaling = pensjonCollection?.pensjoninformasjon?.let { prefillVedtak(it)?.beregning?.first()?.periode?.tom },
+//                beloep = listOf(
+//                    BeloepItem(
+//                        valuta = "NOK",
+//                        betalingshyppighetytelse = pensjonCollection?.pensjoninformasjon?.let { penInfo -> prefillVedtak(penInfo)?.beregning?.first()?.utbetalingshyppighet?.let { Betalingshyppighet.valueOf(it) } },
+//                        utbetalingshyppighetAnnen = pensjonCollection?.pensjoninformasjon?.let { penInfo -> prefillVedtak(penInfo)?.beregning?.first()?.utbetalingshyppighetAnnen },
+//                        beloepBrutto = pensjonCollection?.pensjoninformasjon?.let {
+//                            prefillVedtak(it)?.beregning?.first()?.beloepBrutto?.beloep
+//                        } ?: beregn.beloepBrutto?.beloep,
+//                    )
+//                )
+//            )
+//        }
     }
 
     private fun prefillVedtak(pensjoninformasjon: Pensjonsinformasjon): VedtakItem? {
