@@ -35,11 +35,11 @@ object PrefillP6000Pensjon {
 
         //Sjekk opp om det er Bodd eller Arbeid utland. (hvis ikke avslutt)
         if (!harBoddArbeidetUtland(pensjoninformasjon))
-            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Har ikke bodd eller arbeidet i utlandet. Avbryter oppretelse av SED")
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Har ikke bodd eller arbeidet i utlandet. Avbryter opprettelse av SED")
 
         //Sjekk opp om det finnes et dato fattet vedtak. (hvis ikke avslutt)
         if (pensjoninformasjon.vedtak.datoFattetVedtak == null) {
-            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Vedtaket mangler dato for FattetVedtak. Avbryter oppretelse av SED")
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Vedtaket mangler dato for FattetVedtak. Avbryter opprettelse av SED")
         }
 
         //prefill Pensjon obj med data fra PESYS. (pendata)
