@@ -20,15 +20,15 @@ class KrrService(private val krrRestTemplate: RestTemplate,
 
     private val logger: Logger = LoggerFactory.getLogger(KrrService::class.java)
 
-    private lateinit var HentPersoner: MetricsHelper.Metric
+    private lateinit var hentPersoner: MetricsHelper.Metric
 
     init {
-        HentPersoner = metricsHelper.init("HentPerson", ignoreHttpCodes = listOf(HttpStatus.BAD_REQUEST))
+        hentPersoner = metricsHelper.init("HentPerson", ignoreHttpCodes = listOf(HttpStatus.BAD_REQUEST))
     }
 
     //Henter inn telefonnummer og epostadresse fra KRR for å preutfylle SED
     fun hentPersonerFraKrr(personIdent: String, inkluderSikkerDigitalPost: Boolean?= false) : DigitalKontaktinfo? {
-        return HentPersoner.measure {
+        return hentPersoner.measure {
             val url = "/rest/v1/personer?inkluderSikkerDigitalPost=false"
             logger.debug("Henter informasjon fra KRR: $url")
 

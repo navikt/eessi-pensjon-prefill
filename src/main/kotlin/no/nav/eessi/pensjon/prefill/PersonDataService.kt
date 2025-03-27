@@ -24,10 +24,10 @@ class PersonDataService(private val personService: PersonService,
     private val logger: Logger = LoggerFactory.getLogger(PersonDataService::class.java)
     private val secureLog = LoggerFactory.getLogger("secureLog")
 
-    private lateinit var HentPerson: MetricsHelper.Metric
+    private lateinit var hentPerson: MetricsHelper.Metric
 
     init {
-        HentPerson = metricsHelper.init("HentPerson", ignoreHttpCodes = listOf(HttpStatus.BAD_REQUEST))
+        hentPerson = metricsHelper.init("HentPerson", ignoreHttpCodes = listOf(HttpStatus.BAD_REQUEST))
     }
 
     fun <R : IdentGruppe> hentIdent(identTypeWanted: R, ident: Ident): Ident? {
@@ -63,7 +63,7 @@ class PersonDataService(private val personService: PersonService,
 
     //Henter inn alle personer fra ep-personoppslag  først før preutfylling
     private fun hentPersoner(prefillData: PrefillDataModel, fyllUtBarnListe: Boolean = false): PersonDataCollection {
-        return HentPerson.measure {
+        return hentPerson.measure {
             logger.info("Henter hovedperson/forsikret/gjenlevende")
             val forsikretPerson = personServiceHentPerson(bestemIdent(prefillData.bruker.norskIdent))
 
