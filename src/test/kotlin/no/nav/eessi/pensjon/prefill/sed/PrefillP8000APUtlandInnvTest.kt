@@ -4,7 +4,7 @@ import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.kodeverk.KodeverkClient
-import no.nav.eessi.pensjon.kodeverk.PostnummerService
+import no.nav.eessi.pensjon.kodeverk.Postnummer
 import no.nav.eessi.pensjon.pensjonsinformasjon.models.EPSaktype
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
@@ -39,8 +39,9 @@ class PrefillP8000APUtlandInnvTest {
         persondataCollection = PersonPDLMock.createEnkelFamilie(personFnr, ekteFnr)
 
         every { kodeverkClient.finnLandkode(any()) } returns "NO"
+        every { kodeverkClient.hentPostSted(any()) } returns Postnummer("1068", "SØRUMSAND")
 
-        val prefillAdresse = PrefillPDLAdresse(PostnummerService(),kodeverkClient, personService)
+        val prefillAdresse = PrefillPDLAdresse(kodeverkClient, personService)
 
         prefillNav = PrefillPDLNav(
                 prefillAdresse = prefillAdresse,

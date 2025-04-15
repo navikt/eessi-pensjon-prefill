@@ -7,7 +7,7 @@ import no.nav.eessi.pensjon.eux.model.sed.*
 import no.nav.eessi.pensjon.eux.model.sed.SivilstandRina.gift
 import no.nav.eessi.pensjon.eux.model.sed.SivilstandRina.registrert_partnerskap
 import no.nav.eessi.pensjon.kodeverk.KodeverkClient
-import no.nav.eessi.pensjon.kodeverk.PostnummerService
+import no.nav.eessi.pensjon.kodeverk.Postnummer
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
 import no.nav.eessi.pensjon.personoppslag.pdl.model.*
 import no.nav.eessi.pensjon.prefill.LagPdlPerson.Companion.createPersonMedEktefellePartner
@@ -51,9 +51,11 @@ class PrefillPDLNavTest {
         every { kodeverkClient.finnLandkode(eq("SWE")) } returns "SE"
         every { kodeverkClient.finnLandkode(eq("AUT")) } returns "AU"
         every { kodeverkClient.finnLandkode(eq("USA")) } returns "US"
+        every { kodeverkClient.hentPostSted(any()) } returns Postnummer("1068", "OSLO")
+
 
         prefillPDLNav = PrefillPDLNav(
-            PrefillPDLAdresse(PostnummerService(), kodeverkClient, personService), someInstitutionId, someIntitutionNavn
+            PrefillPDLAdresse(kodeverkClient, personService), someInstitutionId, someIntitutionNavn
         )
     }
 

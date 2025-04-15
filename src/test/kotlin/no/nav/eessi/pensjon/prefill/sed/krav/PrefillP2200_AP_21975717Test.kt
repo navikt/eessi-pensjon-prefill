@@ -6,7 +6,7 @@ import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_01
 import no.nav.eessi.pensjon.eux.model.SedType.P2000
 import no.nav.eessi.pensjon.eux.model.SedType.P2200
 import no.nav.eessi.pensjon.kodeverk.KodeverkClient
-import no.nav.eessi.pensjon.kodeverk.PostnummerService
+import no.nav.eessi.pensjon.kodeverk.Postnummer
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
 import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
@@ -54,7 +54,7 @@ class PrefillP2200_AP_21975717Test {
         personDataCollection = PersonPDLMock.createEnkelFamilie(personFnr, ekteFnr)
 
         prefillNav = PrefillPDLNav(
-            prefillAdresse = PrefillPDLAdresse(PostnummerService(), kodeverkClient, personService),
+            prefillAdresse = PrefillPDLAdresse(kodeverkClient, personService),
             institutionid = "NO:noinst002",
             institutionnavn = "NOINST002, NO INST002, NO"
         )
@@ -76,6 +76,7 @@ class PrefillP2200_AP_21975717Test {
     fun `forventet korrekt utfylt P2200 uforerpensjon med mockdata fra testfiler`() {
 
         every { kodeverkClient.finnLandkode("NOR") } returns "NO"
+        every { kodeverkClient.hentPostSted(any()) } returns Postnummer("1068", "OSLO")
 
         val p2200 = prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection)
 

@@ -39,7 +39,7 @@ class PrefillP2100AdresseTest {
 
     @BeforeEach
     fun setup() {
-        prefillPDLAdresse = PrefillPDLAdresse(mockk(relaxed = true), mockk(relaxed = true){
+        prefillPDLAdresse = PrefillPDLAdresse(mockk(relaxed = true) {
             every { finnLandkode(eq("NOR")) } returns "NO"
         }, personService)
 

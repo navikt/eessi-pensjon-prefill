@@ -19,6 +19,7 @@ import no.nav.eessi.pensjon.eux.model.sed.*
 import no.nav.eessi.pensjon.eux.model.sed.X009
 import no.nav.eessi.pensjon.integrationtest.IntegrasjonsTestConfig
 import no.nav.eessi.pensjon.kodeverk.KodeverkClient
+import no.nav.eessi.pensjon.kodeverk.Postnummer
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
 import no.nav.eessi.pensjon.personoppslag.pdl.model.AktoerId
 import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe.*
@@ -84,6 +85,8 @@ class SedPrefillIntegrationSpringTest {
     fun setup(){
         every { krrService.hentPersonerFraKrr(any()) } returns DigitalKontaktinfo(epostadresse = "melleby11@melby.no", mobiltelefonnummer = "11111111", aktiv = true, personident = FNR_VOKSEN)
         every { krrService.hentPersonerFraKrr(eq(FNR_VOKSEN_4)) } returns DigitalKontaktinfo(epostadresse = "melleby11@melby.no", mobiltelefonnummer = "11111111", aktiv = true, personident = FNR_VOKSEN_4)
+        every { kodeverkClient.hentPostSted(any()) } returns Postnummer("1068", "SØRUMSAND")
+        every { kodeverkClient.finnLandkode(any()) } returns "QX"
     }
 
     @ParameterizedTest(name = "for verdier for sakId:{0}, vedtak:{1}, sedType:{2}, og feilmelding:{3}")
@@ -144,7 +147,6 @@ class SedPrefillIntegrationSpringTest {
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_4)) } returns PersonPDLMock.createWith(true, "Avdød", "Død", FNR_VOKSEN_4, AKTOER_ID_2, true)
 
         every { pensjonsinformasjonOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns PrefillTestHelper.readXMLresponse("/pensjonsinformasjon/vedtak/P6000-BARNEP-GJENLEV.xml")
-        every { kodeverkClient.finnLandkode(any()) } returns "QX"
 
         val apijson = dummyApijson(sakid = "22874955", vedtakid = "987654321122355466", aktoerId = AKTOER_ID, sedType = P6000, buc = P_BUC_02, fnravdod = FNR_VOKSEN_4)
 
@@ -168,7 +170,6 @@ class SedPrefillIntegrationSpringTest {
 
         val person = mockPersonService(FNR_VOKSEN_3, AKTOER_ID, fornavn = "Alder", etternavn = "Pensjonist")
         every { pensjonsinformasjonOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns PrefillTestHelper.readXMLresponse("/pensjonsinformasjon/vedtak/P6000-AP-Avslag.xml")
-        every { kodeverkClient.finnLandkode(any()) } returns "QX"
         val apijson = dummyApijson( sakid = "22874955", vedtakid = "123123423423", aktoerId = AKTOER_ID, sedType = P6000, buc = P_BUC_01)
 
         val result = mockMvcPrefill(apijson)
@@ -198,7 +199,6 @@ class SedPrefillIntegrationSpringTest {
         every { personService.hentIdent(AKTORID, NorskIdent(FNR_VOKSEN_4))} returns AktoerId(AKTOER_ID_2)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith(true, "Lever", "Gjenlev", FNR_VOKSEN, AKTOER_ID)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_4)) } returns PersonPDLMock.createWith(true, "Avdød", "Død", FNR_VOKSEN_4, AKTOER_ID_2, true)
-        every { kodeverkClient.finnLandkode(any()) } returns "QX"
 
         val apijson = dummyApijson(sakid = "22874955", vedtakid = "9876543211", aktoerId = AKTOER_ID, sedType = P3000_SE, buc = P_BUC_10,  fnravdod = FNR_VOKSEN_4)
 
@@ -227,8 +227,6 @@ class SedPrefillIntegrationSpringTest {
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith(true, "Lever", "Gjenlev", FNR_VOKSEN, AKTOER_ID)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_4)) } returns PersonPDLMock.createWith(true, "Avdød", "Død", FNR_VOKSEN_4, AKTOER_ID_2, true)
 
-        every { kodeverkClient.finnLandkode(any()) } returns "QX"
-
         val apijson = dummyApijson(sakid = "22874955", vedtakid = "9876543211", aktoerId = AKTOER_ID, sedType = P5000, buc = P_BUC_10,  fnravdod = FNR_VOKSEN_4)
 
         val result = mockMvcPrefill(apijson)
@@ -249,9 +247,7 @@ class SedPrefillIntegrationSpringTest {
     @Test
     @Throws(Exception::class)
     fun `prefill sed P4000 med forsikret person skal returnere en gyldig SED`() {
-        val person = mockPersonService(fnr = FNR_VOKSEN_3, aktoerId = AKTOER_ID, fornavn = "Lever", etternavn = "Gjenlev")
-        every { kodeverkClient.finnLandkode(any()) } returns "QX"
-
+        mockPersonService(fnr = FNR_VOKSEN_3, aktoerId = AKTOER_ID, fornavn = "Lever", etternavn = "Gjenlev")
         val apijson = dummyApijson(sakid = "22874955", vedtakid = "9876543211", aktoerId = AKTOER_ID, sedType = P4000, buc = P_BUC_05)
 
         val result = mockMvcPrefill(apijson)
@@ -279,7 +275,6 @@ class SedPrefillIntegrationSpringTest {
         every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns person
         every { pensjonsinformasjonOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns PrefillTestHelper.readXMLresponse("/pensjonsinformasjon/krav/P2000-AP-UP-21337890.xml")
-        every { kodeverkClient.finnLandkode(any()) } returns "QX"
 
         val apijson = dummyApijson(sakid = "21337890", aktoerId = AKTOER_ID)
         val validResponse = SedBuilder.ValidResponseBuilder().apply {
@@ -309,11 +304,9 @@ class SedPrefillIntegrationSpringTest {
 
     @Test
     fun `prefill sed P2000 alder med overgang fra ufore med sakstatus Ukjent return valid sedjson`() {
-
         every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith()
         every { pensjonsinformasjonOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns PrefillTestHelper.readXMLresponse("/pensjonsinformasjon/krav/P2000-AP-UTL-UKJENT-12065212345.xml")
-        every { kodeverkClient.finnLandkode(any()) } returns "QX"
 
         val apijson = dummyApijson(sakid = "21841174", aktoerId = AKTOER_ID)
 
@@ -357,7 +350,6 @@ class SedPrefillIntegrationSpringTest {
         every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith()
         every { pensjonsinformasjonOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns PrefillTestHelper.readXMLresponse("/pensjonsinformasjon/krav/AP_2000_KUN_UTLAND.xml")
-        every { kodeverkClient.finnLandkode(any()) } returns "QX"
 
         val apijson = dummyApijson(sakid = "22932784", aktoerId = AKTOER_ID)
         val validResponse = SedBuilder.ValidResponseBuilder().apply {
@@ -392,7 +384,6 @@ class SedPrefillIntegrationSpringTest {
         every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith()
         every { pensjonsinformasjonOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns PrefillTestHelper.readXMLresponse("/pensjonsinformasjon/krav/P2000krav-alderpensjon-avslag.xml")
-        every { kodeverkClient.finnLandkode(any()) } returns "QX"
 
         val apijson = dummyApijson(sakid = "22889955", aktoerId = AKTOER_ID)
         val response = prefillFraRestOgVerifiserResultet(apijson)
@@ -426,9 +417,6 @@ class SedPrefillIntegrationSpringTest {
         every { pensjonsinformasjonOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns
                 PrefillTestHelper.readXMLresponse("/pensjonsinformasjon/krav/F_BH_MED_UTL.xml") andThen
                 PrefillTestHelper.readXMLresponse("/pensjonsinformasjon/vedtak/P6000-APUtland-301.xml")
-
-        every { kodeverkClient.finnLandkode(any()) } returns "QX"
-
 
         val apijson = dummyApijson(sakid = "22580170", aktoerId = AKTOER_ID, vedtakid = "5134513451345")
 
@@ -515,7 +503,6 @@ class SedPrefillIntegrationSpringTest {
         every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith()
         every { pensjonsinformasjonOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns PrefillTestHelper.readXMLresponse("/pensjonsinformasjon/krav/P2000-AP-UP-21337890.xml")
-        every { kodeverkClient.finnLandkode(any()) } returns "QX"
 
         val apijson = dummyApijson(sakid = "21337890", aktoerId = AKTOER_ID, sedType = X010)
 
@@ -562,7 +549,6 @@ class SedPrefillIntegrationSpringTest {
         every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith()
         every { pensjonsinformasjonOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns PrefillTestHelper.readXMLresponse("/pensjonsinformasjon/krav/P2000-AP-UP-21337890.xml")
-        every { kodeverkClient.finnLandkode(any()) } returns "QX"
 
         val x009 = SED.fromJsonToConcrete(PrefillTestHelper.readJsonResponse("/json/nav/X009-NAV.json")) as X009
 
