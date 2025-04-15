@@ -6,7 +6,7 @@ import ch.qos.logback.core.read.ListAppender
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.kodeverk.KodeverkClient
-import no.nav.eessi.pensjon.kodeverk.PostnummerService
+import no.nav.eessi.pensjon.kodeverk.Postnummer
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
 import no.nav.eessi.pensjon.personoppslag.pdl.model.*
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
@@ -36,13 +36,16 @@ class PrefillPDLAdresseTest{
     fun beforeStart() {
         debugLogger.addAppender(listAppender)
         listAppender.start()
-        prefillAdresse = PrefillPDLAdresse(PostnummerService(), kodeverkClient, personService)
+        prefillAdresse = PrefillPDLAdresse(kodeverkClient, personService)
+        every { kodeverkClient.hentPostSted(any()) } returns Postnummer("0123", "OSLO")
     }
 
     @AfterEach
     fun after() {
         listAppender.stop()
     }
+
+
 
 
     @Test

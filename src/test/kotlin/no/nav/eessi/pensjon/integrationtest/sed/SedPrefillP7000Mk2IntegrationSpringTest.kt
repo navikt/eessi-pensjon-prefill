@@ -13,6 +13,7 @@ import no.nav.eessi.pensjon.eux.model.sed.P6000
 import no.nav.eessi.pensjon.eux.model.sed.P7000
 import no.nav.eessi.pensjon.integrationtest.IntegrasjonsTestConfig
 import no.nav.eessi.pensjon.kodeverk.KodeverkClient
+import no.nav.eessi.pensjon.kodeverk.Postnummer
 import no.nav.eessi.pensjon.pensjonsinformasjon.models.EPSaktype
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
 import no.nav.eessi.pensjon.personoppslag.pdl.model.AktoerId
@@ -33,6 +34,7 @@ import no.nav.eessi.pensjon.utils.toJson
 import no.nav.pensjon.v1.kravhistorikkliste.V1KravHistorikkListe
 import no.nav.pensjon.v1.sak.V1Sak
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
 import org.springframework.beans.factory.annotation.Autowired
@@ -83,6 +85,12 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
 
         const val AKTOER_ID = "0123456789000"
         const val AKTOER_ID_2 = "0009876543210"
+    }
+
+    @BeforeEach
+    fun setUp() {
+        every { kodeverkClient.hentPostSted(any()) } returns Postnummer("1068", "SØRUMSAND")
+        every { kodeverkClient.finnLandkode(any()) } returns "XQ"
     }
 
     @Test

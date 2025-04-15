@@ -7,7 +7,6 @@ import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_05
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.sed.P8000
 import no.nav.eessi.pensjon.kodeverk.KodeverkClient
-import no.nav.eessi.pensjon.kodeverk.PostnummerService
 import no.nav.eessi.pensjon.pensjonsinformasjon.models.EPSaktype
 import no.nav.eessi.pensjon.pensjonsinformasjon.models.KravArsak
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
@@ -55,7 +54,7 @@ class PrefillP8000P_BUC_05Test {
         every { kodeverkClient.finnLandkode("NOR") } returns "NO"
         every { kodeverkClient.finnLandkode("SWE") } returns "SE"
 
-        prefillAdresse = PrefillPDLAdresse(PostnummerService(), kodeverkClient, personService)
+        prefillAdresse = PrefillPDLAdresse(kodeverkClient, personService)
         prefillNav = PrefillPDLNav( prefillAdresse,
                 institutionid = "NO:noinst002",
                 institutionnavn = "NOINST002, NO INST002, NO")

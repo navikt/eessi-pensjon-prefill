@@ -10,6 +10,7 @@ import no.nav.eessi.pensjon.eux.model.SedType.P2200
 import no.nav.eessi.pensjon.eux.model.sed.SED
 import no.nav.eessi.pensjon.integrationtest.IntegrasjonsTestConfig
 import no.nav.eessi.pensjon.kodeverk.KodeverkClient
+import no.nav.eessi.pensjon.kodeverk.Postnummer
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
 import no.nav.eessi.pensjon.personoppslag.pdl.model.AktoerId
 import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe.FOLKEREGISTERIDENT
@@ -28,6 +29,7 @@ import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper
 import no.nav.eessi.pensjon.shared.person.Fodselsnummer
 import no.nav.eessi.pensjon.shared.person.FodselsnummerGenerator
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
 import org.springframework.beans.factory.annotation.Autowired
@@ -81,6 +83,12 @@ class PrefillUfoereIntegrationTest {
         @Bean
         @Primary
         fun restTemplate(): RestTemplate = mockk()
+    }
+
+    @BeforeEach
+    fun setUp() {
+        every { kodeverkClient.hentPostSted(any()) } returns Postnummer("1068", "SØRUMSAND")
+        every { kodeverkClient.finnLandkode(any()) } returns "XQ"
     }
 
     @Test

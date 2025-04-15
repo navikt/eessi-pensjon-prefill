@@ -10,6 +10,7 @@ import no.nav.eessi.pensjon.eux.model.SedType.P2200
 import no.nav.eessi.pensjon.eux.model.sed.KravType
 import no.nav.eessi.pensjon.integrationtest.IntegrasjonsTestConfig
 import no.nav.eessi.pensjon.kodeverk.KodeverkClient
+import no.nav.eessi.pensjon.kodeverk.Postnummer
 import no.nav.eessi.pensjon.pensjonsinformasjon.models.EPSaktype.UFOREP
 import no.nav.eessi.pensjon.pensjonsinformasjon.models.KravArsak
 import no.nav.eessi.pensjon.pensjonsinformasjon.models.Sakstatus
@@ -71,6 +72,7 @@ class PrefillErrorIntegrationTest {
     @Test
     fun `prefill sed P2200 som har vedtak, F_BH_BO_UTL men mangler F_BH_MED_UTL i tillegg til at isBoddArbeidetUtland er false så skal det kastes en Exception`() {
         every { kodeverkClient.finnLandkode(any())} returns "NO"
+        every { kodeverkClient.hentPostSted(any()) } returns Postnummer("1068", "SØRUMSAND")
         every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith()
 

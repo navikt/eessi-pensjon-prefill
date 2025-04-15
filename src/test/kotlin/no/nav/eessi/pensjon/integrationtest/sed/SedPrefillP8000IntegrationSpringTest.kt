@@ -7,6 +7,7 @@ import no.nav.eessi.pensjon.eux.model.BucType.*
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.integrationtest.IntegrasjonsTestConfig
 import no.nav.eessi.pensjon.kodeverk.KodeverkClient
+import no.nav.eessi.pensjon.kodeverk.Postnummer
 import no.nav.eessi.pensjon.pensjonsinformasjon.models.EPSaktype
 import no.nav.eessi.pensjon.pensjonsinformasjon.models.KravArsak
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
@@ -94,6 +95,7 @@ class SedPrefillP8000IntegrationSpringTest {
 
         every { pensjoninformasjonservice.hentRelevantPensjonSak(any(), any()) } returns sak
         every { kodeverkClient.finnLandkode(any()) } returns "QX"
+        every { kodeverkClient.hentPostSted(any()) } returns Postnummer("1068", "SØRUMSAND")
 
         val subject = dummyApiSubjectjson(FNR_VOKSEN_4)
         val apijson = dummyApijson(sakid = "21337890", aktoerId = AKTOER_ID, sed = "P8000", buc = P_BUC_05.name, subject = subject, refperson = "\"SOKER\"")
@@ -209,6 +211,7 @@ class SedPrefillP8000IntegrationSpringTest {
 
         every {pensjoninformasjonservice.hentRelevantPensjonSak(any(), any()) } returns sak
         every { kodeverkClient.finnLandkode(any()) } returns "QX"
+        every { kodeverkClient.hentPostSted(any()) } returns Postnummer("1068", "SØRUMSAND")
 
         val subject = dummyApiSubjectjson(FNR_VOKSEN_4)
         val apijson = dummyApijson(sakid = "21337890", aktoerId = AKTOER_ID, sed = "P8000", buc = P_BUC_05.name, subject = subject, refperson = "\"AVDOD\"")
@@ -325,6 +328,7 @@ class SedPrefillP8000IntegrationSpringTest {
 
         every { pensjoninformasjonservice.hentRelevantPensjonSak(any(), any()) } returns sak
         every { kodeverkClient.finnLandkode(any()) } returns "QX"
+        every { kodeverkClient.hentPostSted(any()) } returns Postnummer("1068", "SØRUMSAND")
 
         val subject = dummyApiSubjectjson(FNR_VOKSEN_4)
         val apijson = dummyApijson(sakid = "21337890", aktoerId = AKTOER_ID, sed = "P8000", buc = P_BUC_05.name, subject = subject, refperson = "\"SOKER\"")
@@ -405,6 +409,7 @@ class SedPrefillP8000IntegrationSpringTest {
         every { personService.hentPerson(NorskIdent(FNR_BARN)) } returns diskeBarn
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_4)) } returns PersonPDLMock.createWith(true, "Avdød", "Død", FNR_VOKSEN_4, AKTOER_ID_2, true)
         every { kodeverkClient.finnLandkode(any()) } returns "QX"
+        every { kodeverkClient.hentPostSted(any()) } returns Postnummer("1068", "SØRUMSAND")
 
         val subject = dummyApiSubjectjson(FNR_VOKSEN_4)
         val apijson = dummyApijson(sakid = "21337890", aktoerId = AKTOER_ID, sed = "P8000", buc = P_BUC_05.name, subject = subject, refperson = "\"SOKER\"")
@@ -504,6 +509,7 @@ class SedPrefillP8000IntegrationSpringTest {
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_3)) } returns PersonPDLMock.createWith(true, "Alder", "Pensjon", FNR_VOKSEN_3, AKTOER_ID)
         every { krrService.hentPersonerFraKrr(any()) } returns DigitalKontaktinfo(epostadresse = "melleby12@melby.no", mobiltelefonnummer = "11111111", aktiv = true, personident = FNR_VOKSEN_3)
         every { kodeverkClient.finnLandkode(any())} returns "QX"
+        every { kodeverkClient.hentPostSted(any()) } returns Postnummer("1068", "SØRUMSAND")
 
         val apijson = dummyApijson(sakid = "21337890", aktoerId = AKTOER_ID, sed = "P8000", buc = P_BUC_05.name)
 
@@ -565,6 +571,7 @@ class SedPrefillP8000IntegrationSpringTest {
         every { personService.hentPerson(NorskIdent(syntFnr)) } returns PersonPDLMock.createWith(true, "Alder", "Pensjon", syntFnr, AKTOER_ID)
         every { krrService.hentPersonerFraKrr(any()) } returns DigitalKontaktinfo(epostadresse = "melleby12@melby.no", mobiltelefonnummer = "11111111", aktiv = true, personident = FNR_VOKSEN_4)
         every { kodeverkClient.finnLandkode(any())} returns "QX"
+        every { kodeverkClient.hentPostSted(any()) } returns Postnummer("1068", "SØRUMSAND")
 
         val apijson = dummyApijson(sakid = "21337890", aktoerId = AKTOER_ID, sed = "P8000", buc = P_BUC_05.name)
 

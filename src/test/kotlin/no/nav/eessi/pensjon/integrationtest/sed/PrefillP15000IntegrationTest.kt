@@ -8,6 +8,7 @@ import no.nav.eessi.pensjon.eux.model.SedType.*
 import no.nav.eessi.pensjon.eux.model.sed.KravType
 import no.nav.eessi.pensjon.integrationtest.IntegrasjonsTestConfig
 import no.nav.eessi.pensjon.kodeverk.KodeverkClient
+import no.nav.eessi.pensjon.kodeverk.Postnummer
 import no.nav.eessi.pensjon.pensjonsinformasjon.models.EPSaktype.*
 import no.nav.eessi.pensjon.pensjonsinformasjon.models.KravArsak
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
@@ -22,6 +23,7 @@ import no.nav.pensjon.v1.kravhistorikkliste.V1KravHistorikkListe
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import no.nav.pensjon.v1.sak.V1Sak
 import no.nav.pensjon.v1.vedtak.V1Vedtak
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
 import org.springframework.beans.factory.annotation.Autowired
@@ -73,6 +75,13 @@ class PrefillP15000IntegrationTest {
         const val AKTOER_ID_2 = "0009876543210"
     }
 
+    @BeforeEach
+    fun setUp() {
+        every { kodeverkClient.hentPostSted(any()) } returns Postnummer("1068", "SØRUMSAND")
+        every { kodeverkClient.finnLandkode(any()) } returns "XQ"
+    }
+
+
     @Test
     @Throws(Exception::class)
     fun `prefill P15000 for bruker med npid i P_BUC_10 fra vedtakskontekst hvor saktype er GJENLEV og pensjoninformasjon gir BARNEP med GJENLEV`() {
@@ -113,7 +122,6 @@ class PrefillP15000IntegrationTest {
 
 
         every { pensjoninformasjonservice.hentMedVedtak("123123123") } returns pensjonsinformasjon
-        every { kodeverkClient.finnLandkode(any()) } returns "XQ"
 
         val apijson =  dummyApijson(sakid = "22915555", vedtakid = "123123123", aktoerId = AKTOER_ID, sedType = P15000, buc = P_BUC_10, kravtype = KravType.GJENLEV, kravdato = "2020-01-01", fnravdod = NPID)
 
@@ -254,7 +262,6 @@ class PrefillP15000IntegrationTest {
 
 
         every { pensjoninformasjonservice.hentMedVedtak("123123123") } returns pensjonsinformasjon
-        every { kodeverkClient.finnLandkode(any()) } returns "XQ"
 
         val apijson =  dummyApijson(sakid = "22915555", vedtakid = "123123123", aktoerId = AKTOER_ID, sedType = P15000, buc = P_BUC_10, kravtype = KravType.GJENLEV, kravdato = "2020-01-01", fnravdod = "9876543210")
 
@@ -392,7 +399,6 @@ class PrefillP15000IntegrationTest {
         sak.kravHistorikkListe.kravHistorikkListe.add(v1Kravhistorikk)
 
         every { pensjoninformasjonservice.hentMedVedtak("123123123") } returns pensjonsinformasjon
-        every { kodeverkClient.finnLandkode(any()) } returns "XQ"
 
         val apijson =  dummyApijson(sakid = "22915555", vedtakid = "123123123", aktoerId = AKTOER_ID, sedType = P15000, buc = P_BUC_10, kravtype = KravType.GJENLEV, kravdato = "2020-01-01", fnravdod = "9876543210")
 
@@ -716,7 +722,6 @@ class PrefillP15000IntegrationTest {
         pensjonsinformasjon.vedtak.vedtakStatus = "INNV"
 
         every { pensjoninformasjonservice.hentMedVedtak("123123123") } returns pensjonsinformasjon
-        every { kodeverkClient.finnLandkode(any()) } returns "XQ"
 
         val apijson = dummyApijson(sakid = "22915550", vedtakid = "123123123", aktoerId = AKTOER_ID, sedType = P15000, buc = P_BUC_10, kravtype = KravType.GJENLEV, kravdato = "2020-01-01", fnravdod = FNR_VOKSEN_2)
 
@@ -866,7 +871,6 @@ class PrefillP15000IntegrationTest {
         pensjonsinformasjon.avdod = avdod
 
         every { pensjoninformasjonservice.hentMedVedtak("123123123") } returns pensjonsinformasjon
-        every { kodeverkClient.finnLandkode(any()) } returns "XQ"
         every { kodeverkClient.finnLandkode("SWE") } returns "SE"
 
         val apijson = dummyApijson(sakid = "22915555", vedtakid = "123123123", aktoerId = AKTOER_ID, sedType = P15000, buc = P_BUC_10, kravtype = KravType.GJENLEV, kravdato = "2020-01-01", fnravdod = FNR_VOKSEN_2)
