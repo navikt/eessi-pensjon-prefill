@@ -2,7 +2,6 @@ package no.nav.eessi.pensjon.prefill.person
 
 import no.nav.eessi.pensjon.eux.model.sed.Adresse
 import no.nav.eessi.pensjon.kodeverk.KodeverkClient
-import no.nav.eessi.pensjon.kodeverk.PostnummerService
 import no.nav.eessi.pensjon.metrics.MetricsHelper
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
 import no.nav.eessi.pensjon.personoppslag.pdl.model.*
@@ -15,8 +14,7 @@ import org.springframework.stereotype.Component
 import no.nav.eessi.pensjon.personoppslag.pdl.model.PdlPerson
 
 @Component
-class PrefillPDLAdresse (private val postnummerService: PostnummerService,
-                         private val kodeverkClient: KodeverkClient,
+class PrefillPDLAdresse (private val kodeverkClient: KodeverkClient,
                          private val personService: PersonService,
                          @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper.ForTest()) {
 
@@ -50,7 +48,7 @@ class PrefillPDLAdresse (private val postnummerService: PostnummerService,
         return Adresse(
             gate = "${vegadresse.adressenavn} $husnr",
             postnummer = vegadresse.postnummer,
-            by = postnummerService.finnPoststed(vegadresse.postnummer),
+            by = kodeverkClient.hentPostSted(vegadresse.postnummer)?.sted,
             land = "NO"
         )
     }
