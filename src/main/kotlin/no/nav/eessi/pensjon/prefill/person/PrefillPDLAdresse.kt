@@ -41,6 +41,7 @@ class PrefillPDLAdresse (private val kodeverkClient: KodeverkClient,
 
     private fun preutfullNorskBostedVegadresse(vegadresse: Vegadresse?): Adresse {
         if (vegadresse == null) return tomAdresse()
+        logger.debug("              preutfyller bostedadresse ${vegadresse.toJson()}")
         logger.info("              preutfyller bostedadresse land NO")
         val husnr = listOfNotNull(vegadresse.husnummer, vegadresse.husbokstav)
             .joinToString(separator = " ")
