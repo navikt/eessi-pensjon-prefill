@@ -10,6 +10,7 @@ import no.nav.eessi.pensjon.kodeverk.KodeverkClient
 import no.nav.eessi.pensjon.pensjonsinformasjon.models.EPSaktype
 import no.nav.eessi.pensjon.pensjonsinformasjon.models.KravArsak
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
+import no.nav.eessi.pensjon.prefill.KrrService
 import no.nav.eessi.pensjon.prefill.LagPdlPerson
 import no.nav.eessi.pensjon.prefill.LagPdlPerson.Companion.medAdresse
 import no.nav.eessi.pensjon.prefill.PersonPDLMock.medUtlandAdresse
@@ -43,6 +44,7 @@ class PrefillP8000P_BUC_05Test {
     lateinit var prefillNav: PrefillPDLNav
     lateinit var personDataCollection: PersonDataCollection
     lateinit var pensjonCollection: PensjonCollection
+    lateinit var krrService: KrrService
 
     var kodeverkClient: KodeverkClient = mockk(relaxed = true)
 
@@ -163,6 +165,8 @@ class PrefillP8000P_BUC_05Test {
         val avdod = LagPdlPerson.lagPerson(avdodFnr, "Winnie", "Pooh", erDod = true)
             .medUtlandAdresse("LUNGJTEGATA 12", "1231", "SWE", "bygning", "region", bySted = "UTLANDBY")
 
+//        every { krrService.hentPersonerFraKrr(eq(fnr)) } returns DigitalKontaktinfo("melleby11@melby.no",true, true, false, "11111111", fnr)
+
         personDataCollection = PersonDataCollection(avdod, forsikretPerson)
 
         val sak = V1Sak()
@@ -180,6 +184,7 @@ class PrefillP8000P_BUC_05Test {
 
         val p8000 =  prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection)
 
+        println("resultat: ${p8000.toJsonSkipEmpty()}")
         val expected = """
             {
               "sed" : "P8000",
@@ -201,7 +206,16 @@ class PrefillP8000P_BUC_05Test {
                     "etternavn" : "Robin",
                     "fornavn" : "Christopher",
                     "kjoenn" : "M",
-                    "foedselsdato" : "$fdato"
+                    "foedselsdato" : "$fdato",
+                    "kontakt" : {
+                      "telefon" : [ {
+                        "type" : "mobil",
+                        "nummer" : "11223344"
+                      } ],
+                      "email" : [ {
+                        "adresse" : "ola@nav.no"
+                      } ]
+                    }
                   },
                   "adresse" : {
                     "gate" : "LUNGJTEGATA 12",
@@ -221,6 +235,7 @@ class PrefillP8000P_BUC_05Test {
              }
 
         """.trimIndent()
+
 
        JSONAssert.assertEquals(p8000.toJsonSkipEmpty(), expected, true)
     }
@@ -274,7 +289,16 @@ class PrefillP8000P_BUC_05Test {
                     "etternavn" : "Robin",
                     "fornavn" : "Christopher",
                     "kjoenn" : "M",
-                    "foedselsdato" : "$fdato"                    
+                    "foedselsdato" : "$fdato",                    
+                    "kontakt" : {
+                      "telefon" : [ {
+                        "type" : "mobil",
+                        "nummer" : "11111111"
+                      } ],
+                      "email" : [ {
+                        "adresse" : "melleby12@melby.no"
+                      } ]
+                    }
                   },
                   "adresse" : {
                     "gate" : "LUNGJTÖEGATA 12",

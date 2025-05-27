@@ -354,7 +354,16 @@ class SedPrefillP8000IntegrationSpringTest {
                     "etternavn" : "Gjenlev",
                     "fornavn" : "Lever",
                     "kjoenn" : "M",
-                    "foedselsdato" : "1988-07-12"
+                    "foedselsdato" : "1988-07-12",
+                    "kontakt" : {
+                      "telefon" : [ {
+                        "type" : "mobil",
+                        "nummer" : "11111111"
+                      } ],
+                      "email" : [ {
+                        "adresse" : "melleby12@melby.no"
+                      } ]
+                    }
                   },
                   "adresse" : {
                     "gate" : "Oppoverbakken 66",
@@ -534,7 +543,16 @@ class SedPrefillP8000IntegrationSpringTest {
                     "etternavn" : "Pensjon",
                     "fornavn" : "Alder",
                     "kjoenn" : "M",
-                    "foedselsdato" : "1988-07-12"
+                    "foedselsdato" : "1988-07-12",
+                    "kontakt" : {
+                      "telefon" : [ {
+                        "type" : "mobil",
+                        "nummer" : "11111111"
+                      } ],
+                      "email" : [ {
+                        "adresse" : "melleby12@melby.no"
+                      } ]
+                    }
                   },
                   "adresse" : {
                     "gate" : "Oppoverbakken 66",
@@ -596,7 +614,16 @@ class SedPrefillP8000IntegrationSpringTest {
                     "etternavn" : "Pensjon",
                     "fornavn" : "Alder",
                     "kjoenn" : "M",
-                    "foedselsdato" : "1988-07-12"
+                    "foedselsdato" : "1988-07-12",
+                    "kontakt" : {
+                      "telefon" : [ {
+                        "type" : "mobil",
+                        "nummer" : "11111111"
+                      } ],
+                      "email" : [ {
+                        "adresse" : "melleby12@melby.no"
+                      } ]
+                    }
                   },
                   "adresse" : {
                     "gate" : "Oppoverbakken 66",
