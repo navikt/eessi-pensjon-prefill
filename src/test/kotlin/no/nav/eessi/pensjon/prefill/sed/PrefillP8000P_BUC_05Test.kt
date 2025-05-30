@@ -293,10 +293,10 @@ class PrefillP8000P_BUC_05Test {
                     "kontakt" : {
                       "telefon" : [ {
                         "type" : "mobil",
-                        "nummer" : "11111111"
+                        "nummer" : "11223344"
                       } ],
                       "email" : [ {
-                        "adresse" : "melleby12@melby.no"
+                        "adresse" : "ola@nav.no"
                       } ]
                     }
                   },
@@ -319,7 +319,7 @@ class PrefillP8000P_BUC_05Test {
 
         """.trimIndent()
 
-        JSONAssert.assertEquals(p8000.toJsonSkipEmpty(), expected, true)
+        JSONAssert.assertEquals(expected, p8000.toJsonSkipEmpty(), true)
     }
 
 }
