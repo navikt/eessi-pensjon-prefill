@@ -411,7 +411,7 @@ class SedPrefillP8000IntegrationSpringTest {
 
     @Test
     @Throws(Exception::class)
-    fun `prefill sed P8000 - Gitt barnepensjon og henvendelse gjelder søker som er barn med kode 6 SÅ skal det produseres en Gyldig P8000 med referanse der søker er gjenlevende og adresse ikke blir preutfylt `() {
+    fun `prefill sed P8000 - Gitt barnepensjon og henvendelse gjelder søker som er barn med kode 6 SÅ skal det produseres en Gyldig P8000 med referanse der søker er gjenlevende og adresse`() {
 
         val sak = V1Sak().apply {
             sakType = EPSaktype.BARNEP.toString()
@@ -442,7 +442,7 @@ class SedPrefillP8000IntegrationSpringTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andReturn()
 
-        val response = result.response.getContentAsString(charset("UTF-8"))
+        val response = mapJsonToAny<PrefillService.FrontEndResponse>(result.response.getContentAsString(charset("UTF-8"))).response
 
         val validResponse = """
         {
@@ -596,7 +596,8 @@ class SedPrefillP8000IntegrationSpringTest {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andReturn()
 
-        val response = result.response.getContentAsString(charset("UTF-8"))
+        val response = mapJsonToAny<PrefillService.FrontEndResponse>(result.response.getContentAsString(charset("UTF-8"))).response
+
         JSONAssert.assertEquals(response, validResponse, false)
     }
 
