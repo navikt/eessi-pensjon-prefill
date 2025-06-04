@@ -18,7 +18,9 @@ import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.PersonPDLMock.medBeskyttelse
 import no.nav.eessi.pensjon.prefill.PersonPDLMock.medUtlandAdresse
+import no.nav.eessi.pensjon.prefill.PrefillService
 import no.nav.eessi.pensjon.prefill.models.DigitalKontaktinfo
+import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.pensjon.v1.kravhistorikk.V1KravHistorikk
 import no.nav.pensjon.v1.kravhistorikkliste.V1KravHistorikkListe
 import no.nav.pensjon.v1.sak.V1Sak
@@ -368,9 +370,7 @@ class SedPrefillP8000IntegrationSpringTest {
                   "adresse" : {
                     "gate" : "Oppoverbakken 66",
                     "by" : "SØRUMSAND",
-                    "bygning" : "bygning",
                     "postnummer" : "1920",
-                    "region" : "region",
                     "land" : "NO"
                   }
                 }
@@ -390,10 +390,9 @@ class SedPrefillP8000IntegrationSpringTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andReturn()
 
-        val response = result.response.getContentAsString(charset("UTF-8"))
-        println("responsen: $response")
+        val response = mapJsonToAny<PrefillService.FrontEndResponse>(result.response.getContentAsString(charset("UTF-8")))
 
-        JSONAssert.assertEquals(response, validResponse, false)
+        JSONAssert.assertEquals(validResponse, response.response, true)
 
     }
 

@@ -77,8 +77,10 @@ class PrefillService(
 
                 logger.info(" ******* Prefutfylling ferdig ******* ")
 
-                return@measure sed.toJsonSkipEmpty()
-
+                return@measure if(personInfo.reservert != true && personInfo.epostKrr.isNullOrEmpty() && personInfo.telefonKrr.isNullOrEmpty())
+                    FrontEndResponse(response = sed.toJsonSkipEmpty(), message = "Epost og telefonnummer ble ikke preutfylt i SED").toJson()
+                else
+                    FrontEndResponse(response = sed.toJsonSkipEmpty(), status = "OK").toJson()
             } catch (ex: Exception) {
                 logger.error("Noe gikk galt under prefill: ", ex)
                 throw ex
@@ -119,5 +121,12 @@ class PrefillService(
         }
         return personInfo
     }
+
+    data class FrontEndResponse(
+        val response: String? = null,
+        val status: String? = null,
+        val message: String? = null,
+        val stackTrace: String? = null
+    )
 
 }
