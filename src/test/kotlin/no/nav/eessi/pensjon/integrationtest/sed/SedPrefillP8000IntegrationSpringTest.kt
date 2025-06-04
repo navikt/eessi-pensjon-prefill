@@ -121,7 +121,16 @@ class SedPrefillP8000IntegrationSpringTest {
                 "etternavn" : "Død",
                 "fornavn" : "Avdød",
                 "kjoenn" : "M",
-                "foedselsdato" : "1921-07-12"
+                "foedselsdato" : "1921-07-12",
+                "kontakt" : {
+                  "telefon" : [ {
+                    "type" : "mobil",
+                    "nummer" : "11111111"
+                  } ],
+                  "email" : [ {
+                    "adresse" : "melleby11@melby.no"
+                  } ]
+                }
               },
               "adresse" : {
                 "gate" : "Oppoverbakken 66",
@@ -148,6 +157,10 @@ class SedPrefillP8000IntegrationSpringTest {
                 "fornavn" : "Lever",
                 "kjoenn" : "M",
                 "foedselsdato" : "1988-07-12",
+                "sivilstand" : [ {
+                "fradato" : "2000-10-01",
+                "status" : "enslig"
+                } ],
                 "rolle" : "01",
                 "kontakt" : {
                   "telefon" : [ {
@@ -186,9 +199,9 @@ class SedPrefillP8000IntegrationSpringTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andReturn()
 
-        val response = result.response.getContentAsString(charset("UTF-8"))
+        val response = mapJsonToAny<PrefillService.FrontEndResponse>(result.response.getContentAsString(charset("UTF-8")))
 
-        JSONAssert.assertEquals(validResponse, response, false)
+        JSONAssert.assertEquals(validResponse, response.response, true)
     }
 
     @Test
@@ -300,9 +313,9 @@ class SedPrefillP8000IntegrationSpringTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andReturn()
 
-        val response = result.response.getContentAsString(charset("UTF-8"))
+        val response = mapJsonToAny<PrefillService.FrontEndResponse>(result.response.getContentAsString(charset("UTF-8")))
 
-        JSONAssert.assertEquals(validResponse, response, false)
+        JSONAssert.assertEquals(validResponse, response.response, false)
 
     }
 
@@ -429,7 +442,7 @@ class SedPrefillP8000IntegrationSpringTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andReturn()
 
-        val response = result.response.getContentAsString(charset("UTF-8"))
+        val response = mapJsonToAny<PrefillService.FrontEndResponse>(result.response.getContentAsString(charset("UTF-8")))
 
         val validResponse = """
         {
@@ -515,7 +528,7 @@ class SedPrefillP8000IntegrationSpringTest {
         }
         """.trimIndent()
 
-        JSONAssert.assertEquals(response, validResponse, false)
+        JSONAssert.assertEquals(response.response, validResponse, false)
 
     }
 
@@ -531,49 +544,46 @@ class SedPrefillP8000IntegrationSpringTest {
         val apijson = dummyApijson(sakid = "21337890", aktoerId = AKTOER_ID, sed = "P8000", buc = P_BUC_05.name)
 
         val validResponse = """
-            {
-              "sed" : "P8000",
-              "sedGVer" : "4",
-              "sedVer" : "2",
-              "nav" : {
-                "eessisak" : [ {
-                  "institusjonsid" : "NO:noinst002",
-                  "institusjonsnavn" : "NOINST002, NO INST002, NO",
-                  "saksnummer" : "21337890",
+        {
+          "sed" : "P8000",
+          "nav" : {
+            "eessisak" : [ {
+              "institusjonsid" : "NO:noinst002",
+              "institusjonsnavn" : "NOINST002, NO INST002, NO",
+              "saksnummer" : "21337890",
+              "land" : "NO"
+            } ],
+            "bruker" : {
+              "person" : {
+                "pin" : [ {
+                  "identifikator" : "12312312312",
                   "land" : "NO"
                 } ],
-                "bruker" : {
-                  "person" : {
-                    "pin" : [ {
-                      "identifikator" : "12312312312",
-                      "land" : "NO"
-                    } ],
-                    "etternavn" : "Pensjon",
-                    "fornavn" : "Alder",
-                    "kjoenn" : "M",
-                    "foedselsdato" : "1988-07-12",
-                    "kontakt" : {
-                      "telefon" : [ {
-                        "type" : "mobil",
-                        "nummer" : "11111111"
-                      } ],
-                      "email" : [ {
-                        "adresse" : "melleby12@melby.no"
-                      } ]
-                    }
-                  },
-                  "adresse" : {
-                    "gate" : "Oppoverbakken 66",
-                    "by" : "SØRUMSAND",
-                    "bygning" : "bygning",
-                    "postnummer" : "1920",
-                    "region" : "region",
-                    "land" : "NO"
-                  }
+                "etternavn" : "Pensjon",
+                "fornavn" : "Alder",
+                "kjoenn" : "M",
+                "foedselsdato" : "1988-07-12",
+                "kontakt" : {
+                  "telefon" : [ {
+                    "type" : "mobil",
+                    "nummer" : "11111111"
+                  } ],
+                  "email" : [ {
+                    "adresse" : "melleby12@melby.no"
+                  } ]
                 }
               },
-              "pensjon" : { }
+              "adresse" : {
+                "gate" : "Oppoverbakken 66",
+                "by" : "SØRUMSAND",
+                "postnummer" : "1920",
+                "land" : "NO"
+              }
             }
+          },
+          "sedGVer" : "4",
+          "sedVer" : "2"
+        }
         """.trimIndent()
 
         val result = mockMvc.perform(post("/sed/prefill")
@@ -583,8 +593,8 @@ class SedPrefillP8000IntegrationSpringTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andReturn()
 
-        val response = result.response.getContentAsString(charset("UTF-8"))
-        JSONAssert.assertEquals(response, validResponse, false)
+        val response = mapJsonToAny<PrefillService.FrontEndResponse>(result.response.getContentAsString(charset("UTF-8")))
+        JSONAssert.assertEquals(validResponse, response.response, false)
     }
 
 
@@ -636,9 +646,7 @@ class SedPrefillP8000IntegrationSpringTest {
                   "adresse" : {
                     "gate" : "Oppoverbakken 66",
                     "by" : "SØRUMSAND",
-                    "bygning" : "bygning",
                     "postnummer" : "1920",
-                    "region" : "region",
                     "land" : "NO"
                   }
                 }
@@ -654,8 +662,8 @@ class SedPrefillP8000IntegrationSpringTest {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andReturn()
 
-        val response = result.response.getContentAsString(charset("UTF-8"))
-        JSONAssert.assertEquals(response, validResponse, false)
+        val response = mapJsonToAny<PrefillService.FrontEndResponse>(result.response.getContentAsString(charset("UTF-8")))
+        JSONAssert.assertEquals(response.response, validResponse,  false)
     }
 
 
