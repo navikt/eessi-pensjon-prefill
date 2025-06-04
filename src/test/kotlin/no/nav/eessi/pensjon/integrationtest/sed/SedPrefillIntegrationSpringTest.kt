@@ -27,11 +27,13 @@ import no.nav.eessi.pensjon.personoppslag.pdl.model.NorskIdent
 import no.nav.eessi.pensjon.personoppslag.pdl.model.PdlPerson
 import no.nav.eessi.pensjon.prefill.KrrService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
+import no.nav.eessi.pensjon.prefill.PrefillService
 import no.nav.eessi.pensjon.prefill.models.DigitalKontaktinfo
 import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper
 import no.nav.eessi.pensjon.shared.api.ApiRequest
 import no.nav.eessi.pensjon.shared.api.ApiSubject
 import no.nav.eessi.pensjon.shared.api.SubjectFnr
+import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.toJson
 import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
 import org.hamcrest.Matchers
@@ -152,7 +154,7 @@ class SedPrefillIntegrationSpringTest {
 
         val result = mockMvcPrefill(apijson)
 
-        val response = result.response.getContentAsString(charset("UTF-8"))
+        val response = mapJsonToAny<PrefillService.FrontEndResponse>(result.response.getContentAsString(charset("UTF-8"))).response
 
         val mapper = jacksonObjectMapper()
         val sedRootNode = mapper.readTree(response)
@@ -174,8 +176,7 @@ class SedPrefillIntegrationSpringTest {
 
         val result = mockMvcPrefill(apijson)
 
-        val response = result.response.getContentAsString(charset("UTF-8"))
-
+        val response = mapJsonToAny<PrefillService.FrontEndResponse>(result.response.getContentAsString(charset("UTF-8"))).response
         val validResponse = SedBuilder.ValidResponseBuilder().apply {
             sed = P6000
             pensjon = SedBuilder.P6000PensjonBuilder().build()
@@ -204,7 +205,7 @@ class SedPrefillIntegrationSpringTest {
 
         val result = mockMvcPrefill(apijson)
 
-        val response = result.response.getContentAsString(charset("UTF-8"))
+        val response = mapJsonToAny<PrefillService.FrontEndResponse>(result.response.getContentAsString(charset("UTF-8"))).response
 
         val mapper = jacksonObjectMapper()
         val sedRootNode = mapper.readTree(response)
@@ -231,7 +232,7 @@ class SedPrefillIntegrationSpringTest {
 
         val result = mockMvcPrefill(apijson)
 
-        val response = result.response.getContentAsString(charset("UTF-8"))
+        val response = mapJsonToAny<PrefillService.FrontEndResponse>(result.response.getContentAsString(charset("UTF-8"))).response
 
         val mapper = jacksonObjectMapper()
         val sedRootNode = mapper.readTree(response)
@@ -252,7 +253,7 @@ class SedPrefillIntegrationSpringTest {
 
         val result = mockMvcPrefill(apijson)
 
-        val response = result.response.getContentAsString(charset("UTF-8"))
+        val response = mapJsonToAny<PrefillService.FrontEndResponse>(result.response.getContentAsString(charset("UTF-8"))).response
         val validResponse = SedBuilder.ValidResponseBuilder().apply {
             sed = P4000
             nav {
@@ -563,8 +564,7 @@ class SedPrefillIntegrationSpringTest {
     private fun prefillFraRestOgVerifiserResultet(apijson: String): String {
         val result = mockMvcPrefill(apijson)
 
-        val response = result.response.getContentAsString(charset("UTF-8"))
-        return response
+        return mapJsonToAny<PrefillService.FrontEndResponse>(result.response.getContentAsString(charset("UTF-8"))).response!!
     }
 
     @Test

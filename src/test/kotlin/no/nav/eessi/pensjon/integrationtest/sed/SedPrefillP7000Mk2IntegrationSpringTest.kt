@@ -23,6 +23,7 @@ import no.nav.eessi.pensjon.personoppslag.pdl.model.Npid
 import no.nav.eessi.pensjon.prefill.KrrService
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
+import no.nav.eessi.pensjon.prefill.PrefillService
 import no.nav.eessi.pensjon.prefill.models.DigitalKontaktinfo
 import no.nav.eessi.pensjon.shared.api.ApiRequest
 import no.nav.eessi.pensjon.shared.api.ApiSubject
@@ -114,9 +115,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andReturn()
 
-        val response = result.response.getContentAsString(charset("UTF-8"))
-
-        println("ææææææ: $response")
+        val response = mapJsonToAny<PrefillService.FrontEndResponse>(result.response.getContentAsString(charset("UTF-8"))).response!!
 
         val p7000Actual = mapJsonToAny<P7000>(response)
         val p7000Person = p7000Actual.nav?.bruker?.person!!
@@ -325,7 +324,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andReturn()
 
-        val response = result.response.getContentAsString(charset("UTF-8"))
+        val response = mapJsonToAny<PrefillService.FrontEndResponse>(result.response.getContentAsString(charset("UTF-8"))).response
         JSONAssert.assertEquals(response, validResponse, false)
     }
 
@@ -453,7 +452,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andReturn()
 
-        val response = result.response.getContentAsString(charset("UTF-8"))
+        val response = mapJsonToAny<PrefillService.FrontEndResponse>(result.response.getContentAsString(charset("UTF-8"))).response
         JSONAssert.assertEquals(response, validResponse, false)
     }
 
@@ -589,7 +588,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andReturn()
 
-        val response = result.response.getContentAsString(charset("UTF-8"))
+        val response = mapJsonToAny<PrefillService.FrontEndResponse>(result.response.getContentAsString(charset("UTF-8"))).response
 
         println("@@@@@@@: $response")
 
@@ -690,7 +689,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andReturn()
 
-        val response = result.response.getContentAsString(charset("UTF-8"))
+        val response = mapJsonToAny<PrefillService.FrontEndResponse>(result.response.getContentAsString(charset("UTF-8"))).response
         JSONAssert.assertEquals(response, validResponse, false)
     }
 
@@ -751,7 +750,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andReturn()
 
-        val response = result.response.getContentAsString(charset("UTF-8"))
+        val response = mapJsonToAny<PrefillService.FrontEndResponse>(result.response.getContentAsString(charset("UTF-8"))).response
         JSONAssert.assertEquals(response, validResponse, false)
     }
 
