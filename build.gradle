@@ -95,7 +95,7 @@ dependencies {
         exclude module: 'junit-vintage-engine'
     }
     testImplementation ("org.springframework.kafka:spring-kafka-test:$springKafkaVersion")
-    testImplementation("org.pac4j:spring-webmvc-pac4j:8.0.0")
+    testImplementation("org.pac4j:spring-webmvc-pac4j:8.0.1")
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.13.0")
 
