@@ -24,10 +24,12 @@ import no.nav.eessi.pensjon.prefill.PersonPDLMock.medFodsel
 import no.nav.eessi.pensjon.prefill.PersonPDLMock.medForeldre
 import no.nav.eessi.pensjon.prefill.PersonPDLMock.medKjoenn
 import no.nav.eessi.pensjon.prefill.PersonPDLMock.medSivilstand
+import no.nav.eessi.pensjon.prefill.PrefillService
 import no.nav.eessi.pensjon.prefill.models.DigitalKontaktinfo
 import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper
 import no.nav.eessi.pensjon.shared.person.Fodselsnummer
 import no.nav.eessi.pensjon.shared.person.FodselsnummerGenerator
+import no.nav.eessi.pensjon.utils.mapJsonToAny
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -108,7 +110,7 @@ class PrefillUfoereIntegrationTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andReturn()
 
-        val response = result.response.getContentAsString(charset("UTF-8"))
+        val response = mapJsonToAny<PrefillService.FrontEndResponse>(result.response.getContentAsString(charset("UTF-8"))).response
 
         val validResponse = """
             {
@@ -245,7 +247,7 @@ class PrefillUfoereIntegrationTest {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andReturn()
 
-        val response = result.response.getContentAsString(charset("UTF-8"))
+        val response = mapJsonToAny<PrefillService.FrontEndResponse>(result.response.getContentAsString(charset("UTF-8"))).response
 
         verify (exactly = 1) { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(aktoerHovedperson)) }
         verify (exactly = 1) { personService.hentPerson(NorskIdent(pinHovedperson)) }
@@ -552,7 +554,7 @@ class PrefillUfoereIntegrationTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andReturn()
 
-        val response = result.response.getContentAsString(charset("UTF-8"))
+        val response = mapJsonToAny<PrefillService.FrontEndResponse>(result.response.getContentAsString(charset("UTF-8"))).response
 
         val validResponse = validResponse(FNR_VOKSEN_2)
         JSONAssert.assertEquals(response, validResponse, true)
@@ -582,7 +584,7 @@ class PrefillUfoereIntegrationTest {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andReturn()
 
-        val response = result.response.getContentAsString(charset("UTF-8"))
+        val response = mapJsonToAny<PrefillService.FrontEndResponse>(result.response.getContentAsString(charset("UTF-8"))).response
 
         val validResponse = validResponse(NPID_VOKSEN)
         JSONAssert.assertEquals(validResponse, response, true)

@@ -15,8 +15,10 @@ import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe.*
 import no.nav.eessi.pensjon.personoppslag.pdl.model.NorskIdent
 import no.nav.eessi.pensjon.prefill.KrrService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
+import no.nav.eessi.pensjon.prefill.PrefillService
 import no.nav.eessi.pensjon.prefill.models.DigitalKontaktinfo
 import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper
+import no.nav.eessi.pensjon.utils.mapJsonToAny
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
@@ -104,7 +106,7 @@ class SedPrefillPDLIntegrationSpringTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andReturn()
 
-        val actual = result.response.getContentAsString(charset("UTF-8"))
+        val actual = mapJsonToAny<PrefillService.FrontEndResponse>(result.response.getContentAsString(charset("UTF-8"))).response
 
         val excpected = """
         {
@@ -204,7 +206,7 @@ class SedPrefillPDLIntegrationSpringTest {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andReturn()
 
-        val actual = result.response.getContentAsString(charset("UTF-8"))
+        val actual = mapJsonToAny<PrefillService.FrontEndResponse>(result.response.getContentAsString(charset("UTF-8"))).response
         println("**** $actual")
 
         val expected = """
@@ -388,7 +390,7 @@ class SedPrefillPDLIntegrationSpringTest {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andReturn()
 
-        val response = result.response.getContentAsString(charset("UTF-8"))
+        val response = mapJsonToAny<PrefillService.FrontEndResponse>(result.response.getContentAsString(charset("UTF-8"))).response
         JSONAssert.assertEquals(validResponse, response, false)
 
     }

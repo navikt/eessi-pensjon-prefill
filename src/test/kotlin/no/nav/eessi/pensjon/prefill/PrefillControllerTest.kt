@@ -17,6 +17,7 @@ import no.nav.eessi.pensjon.shared.api.ApiRequest
 import no.nav.eessi.pensjon.shared.api.InstitusjonItem
 import no.nav.eessi.pensjon.shared.api.PersonInfo
 import no.nav.eessi.pensjon.statistikk.AutomatiseringStatistikkService
+import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -80,7 +81,7 @@ class PrefillControllerTest {
 
         every{ mockPrefillSEDService.prefill(any(), any(), any())} returns mockSed
 
-        val response = prefillController.prefillDocument(mockData)
+        val response = mapJsonToAny<PrefillService.FrontEndResponse>(prefillController.prefillDocument(mockData)).response!!
         Assertions.assertNotNull(response)
 
         val sed = SED.fromJson(response)
