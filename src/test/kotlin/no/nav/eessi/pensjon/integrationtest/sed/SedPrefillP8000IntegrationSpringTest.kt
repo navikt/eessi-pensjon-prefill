@@ -411,7 +411,7 @@ class SedPrefillP8000IntegrationSpringTest {
 
     @Test
     @Throws(Exception::class)
-    fun `prefill sed P8000 - Gitt barnepensjon og henvendelse gjelder søker som er barn med kode 6 SÅ skal det produseres en Gyldig P8000 med referanse der søker er gjenlevende og adresse`() {
+    fun `prefill sed P8000 - Gitt barnepensjon og henvendelse gjelder søker som er barn med kode 6 SÅ skal `() {
 
         val sak = V1Sak().apply {
             sakType = EPSaktype.BARNEP.toString()
