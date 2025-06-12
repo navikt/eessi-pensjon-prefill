@@ -7,6 +7,7 @@ import io.mockk.verify
 import no.nav.eessi.pensjon.kodeverk.KodeVerkHentLandkoder
 import no.nav.eessi.pensjon.kodeverk.KodeverkCacheConfig
 import no.nav.eessi.pensjon.kodeverk.KodeverkClient
+import no.nav.eessi.pensjon.kodeverk.PostnummerService
 import no.nav.eessi.pensjon.metrics.MetricsHelper
 import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLAdresse
