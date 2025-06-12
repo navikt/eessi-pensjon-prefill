@@ -65,7 +65,7 @@ dependencies {
     implementation ("no.nav.common:token-client:3.2025.04.01_09.46-936a3ae3d5d9")
 
     // Micrometer
-    implementation("io.micrometer:micrometer-registry-prometheus:1.15.0")
+    implementation("io.micrometer:micrometer-registry-prometheus:1.15.1")
 
     implementation ("org.springframework.kafka:spring-kafka:$springKafkaVersion")
 
@@ -95,7 +95,7 @@ dependencies {
         exclude module: 'junit-vintage-engine'
     }
     testImplementation ("org.springframework.kafka:spring-kafka-test:$springKafkaVersion")
-    testImplementation("org.pac4j:spring-webmvc-pac4j:8.0.0")
+    testImplementation("org.pac4j:spring-webmvc-pac4j:8.0.1")
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.13.0")
 
