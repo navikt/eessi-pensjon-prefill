@@ -298,10 +298,11 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
         val eessiLandListe = listOf("AUT","BEL","BGR","HRV","CYP","CZE","DNK","EST","FIN","FRA","DEU","GRC","HUN","ISL","IRL","ITA","LVA","LIE","LTU","LUX","MLT","NLD","NOR","POL","PRT","ROU","SVK","SVN","ESP","SWE","CHE","GBR")
 
         val utenlandskeIdenter = personpdl.utenlandskIdentifikasjonsnummer.mapNotNull {
+            logger.debug("utenlandskIdentifikasjonsnummer: ${it.toJson()} ")
             if (it.utstederland !in eessiLandListe) {
                 logger.info("Utstederland: ${it.utstederland} er ikke en del av EØS, og inkluderes ikke i PIN-listen")
                 null
-            } else PinItem(identifikator = it.identifikasjonsnummer, land = prefillAdresse.hentLandkode(it.utstederland))
+            } else PinItem(identifikator = it.identifikasjonsnummer, land = prefillAdresse.hentLandkode(it.utstederland)).also { logger.debug("utenlandskIdentifikasjonsnummer land: ${it.land}") }
         }
         return norskeIdenter + utenlandskeIdenter
     }
