@@ -460,8 +460,13 @@ class SedPrefillP8000IntegrationSpringTest {
             "bruker" : {
               "person" : {
                 "pin" : [ {
+                  "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                  "institusjonsid" : "NO:noinst002",
                   "identifikator" : "9876543210",
                   "land" : "NO"
+                }, {
+                  "identifikator" : "123123123",
+                  "land" : "QX"
                 } ],
                 "etternavn" : "Død",
                 "fornavn" : "Avdød",
