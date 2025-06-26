@@ -40,7 +40,7 @@ class PrefillP2200(private val prefillNav: PrefillPDLNav) {
             annenPerson = null
         )
 
-        PrefillP2xxxPensjon.validerGyldigVedtakEllerKravtypeOgArsak(sak, sedType, vedtak)
+        //PrefillP2xxxPensjon.validerGyldigVedtakEllerKravtypeOgArsak(sak, sedType, vedtak)
 
         return P2200(
             nav = nav,

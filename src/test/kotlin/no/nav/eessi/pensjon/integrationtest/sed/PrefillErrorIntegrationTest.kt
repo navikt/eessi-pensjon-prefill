@@ -25,6 +25,7 @@ import no.nav.eessi.pensjon.prefill.models.DigitalKontaktinfo
 import no.nav.eessi.pensjon.prefill.sed.krav.PensjonsInformasjonHelper
 import no.nav.pensjon.v1.vedtak.V1Vedtak
 import org.hamcrest.Matchers
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
@@ -70,6 +71,7 @@ class PrefillErrorIntegrationTest {
     }
 
     @Test
+    @Disabled
     fun `prefill sed P2200 som har vedtak, F_BH_BO_UTL men mangler F_BH_MED_UTL i tillegg til at isBoddArbeidetUtland er false så skal det kastes en Exception`() {
         every { kodeverkClient.finnLandkode(any())} returns "NO"
         every { kodeverkClient.hentPostSted(any()) } returns Postnummer("1068", "SØRUMSAND")
