@@ -40,12 +40,10 @@ class PrefillP8000(private val prefillSed: PrefillSed) {
             logger.info("Prefill P8000 forenklet preutfylling med gjenlevende, Ferdig.")
             sedP8000(eessielm, avDodBruker?.person, avDodBruker?.adresse,  prefillData, utfyllAnnenperson(gjenlevendeBruker))
         }
-
     }
 
     private fun sedP8000(eessielm: List<EessisakItem>?, forsikretPerson: Person?, adresse: Adresse?, prefillData: PrefillDataModel, annenPerson: Bruker?): P8000 {
         logger.info("forsikretPerson: ${forsikretPerson != null} annenPerson: ${annenPerson != null}"  )
-        val forsikretPersonPin = forsikretPerson?.pin?.firstOrNull()
         return P8000(
                 nav = Nav(
                         eessisak = eessielm,
@@ -55,12 +53,7 @@ class PrefillP8000(private val prefillSed: PrefillSed) {
                                         fornavn = forsikretPerson?.fornavn,
                                         foedselsdato = forsikretPerson?.foedselsdato,
                                         kjoenn = forsikretPerson?.kjoenn,
-                                        pin = listOf(
-                                                PinItem(
-                                                        identifikator = forsikretPersonPin?.identifikator,
-                                                        land = forsikretPersonPin?.land
-                                                )
-                                        ),
+                                        pin = forsikretPerson?.pin,
                                     kontakt = forsikretPerson?.kontakt),
                                 adresse = Adresse(
                                     postnummer = adresse?.postnummer,
