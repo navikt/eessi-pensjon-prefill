@@ -139,7 +139,7 @@ object PrefillP2xxxPensjon {
     private fun validerGyldigKravtypeOgArsak(sak: V1Sak?, sedType: SedType, vedtak: V1Vedtak?) {
         logger.info("start på validering av $sedType")
 
-        //avsluttHvisKunDenneKravTypeIHistorikk(sak, sedType, FORSTEG_BH)
+        avsluttHvisKunDenneKravTypeIHistorikk(sak, sedType, FORSTEG_BH)
 
         val forsBehanBoUtlandTom = finnKravHistorikk(F_BH_BO_UTL, sak?.kravHistorikkListe).isNullOrEmpty()
         val forsBehanMedUtlandTom = finnKravHistorikk(F_BH_MED_UTL, sak?.kravHistorikkListe).isNullOrEmpty()
