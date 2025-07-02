@@ -200,6 +200,8 @@ class PrefillP8000P_BUC_05Test {
                 "bruker" : {
                   "person" : {
                     "pin" : [ {
+                      "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                      "institusjonsid" : "NO:noinst002",
                       "identifikator" : "$fnr",
                       "land" : "NO"
                     } ],
@@ -267,7 +269,7 @@ class PrefillP8000P_BUC_05Test {
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P8000, fnr, penSaksnummer = "100", avdod = PersonInfo(norskIdent = avdodFnr, aktorId = "21323"),  refTilPerson = ReferanseTilPerson.SOKER, bucType = P_BUC_05)
 
         val p8000 =  prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection)
-
+        println(p8000.toJsonSkipEmpty())
         val expected = """
             {
               "sed" : "P8000",
@@ -283,6 +285,8 @@ class PrefillP8000P_BUC_05Test {
                 "bruker" : {
                   "person" : {
                     "pin" : [ {
+                      "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                      "institusjonsid" : "NO:noinst002",
                       "identifikator" : "$fnr",
                       "land" : "NO"
                     } ],

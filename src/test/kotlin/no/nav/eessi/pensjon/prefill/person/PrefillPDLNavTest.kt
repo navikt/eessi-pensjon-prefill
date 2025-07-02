@@ -1127,7 +1127,7 @@ class PrefillPDLNavTest {
         val person = lagPerson(personfnr).copy(
             utenlandskIdentifikasjonsnummer = listOf(
                 UtenlandskIdentifikasjonsnummer(
-                    "123123123", "AUT", false, null, mockk())
+                    "123123123", "AUT", false, null, mockMeta())
             )
         )
 
@@ -1142,7 +1142,7 @@ class PrefillPDLNavTest {
         val personfnr = FodselsnummerGenerator.generateFnrForTest(40)
         val person = lagPerson(personfnr).copy(
             utenlandskIdentifikasjonsnummer = listOf(
-                UtenlandskIdentifikasjonsnummer("123123123", "USA", false, null, mockk()
+                UtenlandskIdentifikasjonsnummer("123123123", "USA", false, null, mockMeta()
                 )
             )
         )

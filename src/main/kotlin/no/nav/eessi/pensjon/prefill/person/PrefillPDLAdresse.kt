@@ -52,7 +52,7 @@ class PrefillPDLAdresse (
             postnummer = vegadresse.postnummer,
             by = kodeverkClient.hentPostSted(vegadresse.postnummer)?.sted,
             land = "NO"
-        )
+        ).also { logger.info("              preutfyller bostedadresse land NO, by: ${it.by}") }
     }
 
     private fun preutfyllNorskPostadresseIFrittFormat(postadresseIFrittFormat: PostadresseIFrittFormat?): Adresse {

@@ -115,8 +115,13 @@ class SedPrefillP8000IntegrationSpringTest {
             "bruker" : {
               "person" : {
                 "pin" : [ {
+                  "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                  "institusjonsid" : "NO:noinst002",
                   "identifikator" : "9876543210",
                   "land" : "NO"
+                }, {
+                  "identifikator" : "123123123",
+                  "land" : "QX"
                 } ],
                 "etternavn" : "Død",
                 "fornavn" : "Avdød",
@@ -244,8 +249,13 @@ class SedPrefillP8000IntegrationSpringTest {
             "bruker" : {
               "person" : {
                 "pin" : [ {
+                  "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                  "institusjonsid" : "NO:noinst002",
                   "identifikator" : "9876543210",
                   "land" : "NO"
+                }, {
+                  "identifikator" : "123123123",
+                  "land" : "QX"
                 } ],
                 "etternavn" : "Død",
                 "fornavn" : "Avdød",
@@ -363,8 +373,13 @@ class SedPrefillP8000IntegrationSpringTest {
                 "bruker" : {
                   "person" : {
                     "pin" : [ {
+                      "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                      "institusjonsid" : "NO:noinst002",
                       "identifikator" : "12312312312",
                       "land" : "NO"
+                    }, {
+                      "identifikator" : "123123123",
+                      "land" : "QX"
                     } ],
                     "etternavn" : "Gjenlev",
                     "fornavn" : "Lever",
@@ -457,8 +472,13 @@ class SedPrefillP8000IntegrationSpringTest {
             "bruker" : {
               "person" : {
                 "pin" : [ {
+                  "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                  "institusjonsid" : "NO:noinst002",
                   "identifikator" : "9876543210",
                   "land" : "NO"
+                }, {
+                  "identifikator" : "123123123",
+                  "land" : "QX"
                 } ],
                 "etternavn" : "Død",
                 "fornavn" : "Avdød",
@@ -558,8 +578,13 @@ class SedPrefillP8000IntegrationSpringTest {
                 "bruker" : {
                   "person" : {
                     "pin" : [ {
+                      "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                      "institusjonsid" : "NO:noinst002",
                       "identifikator" : "12312312312",
                       "land" : "NO"
+                    }, {
+                      "identifikator" : "123123123",
+                      "land" : "QX"
                     } ],
                     "etternavn" : "Pensjon",
                     "fornavn" : "Alder",
@@ -630,8 +655,13 @@ class SedPrefillP8000IntegrationSpringTest {
                 "bruker" : {
                   "person" : {
                     "pin" : [ {
+                      "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                      "institusjonsid" : "NO:noinst002",
                       "identifikator" : "$syntFnr",
                       "land" : "NO"
+                    }, {
+                      "identifikator" : "123123123",
+                      "land" : "QX"
                     } ],
                     "etternavn" : "Pensjon",
                     "fornavn" : "Alder",
