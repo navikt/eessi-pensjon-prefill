@@ -22,11 +22,11 @@ class EtterlatteService(private val etterlatteRestTemplate: RestTemplate) {
      * @param aktoerId aktørId for den som skal hentes
      */
 
-    fun hentGjennyVedtak(): Result<EtterlatteVedtakResponseData?> {
+    fun hentGjennyVedtak(fnr: String): Result<EtterlatteVedtakResponseData?> {
         val url = "/api/v1/vedtak"
         logger.debug("Henter informasjon fra gjenny: $url")
         val json = """
-                "foedselsnummer": "string"
+                "foedselsnummer": "$fnr"
             """.trimIndent()
 
         return try {

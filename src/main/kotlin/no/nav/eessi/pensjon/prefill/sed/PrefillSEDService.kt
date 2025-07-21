@@ -16,6 +16,7 @@ import no.nav.eessi.pensjon.eux.model.SedType.P8000
 import no.nav.eessi.pensjon.eux.model.SedType.X005
 import no.nav.eessi.pensjon.eux.model.SedType.X010
 import no.nav.eessi.pensjon.eux.model.sed.SED
+import no.nav.eessi.pensjon.prefill.EtterlatteService
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.prefill.models.PensjonCollection
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
@@ -34,7 +35,7 @@ import org.springframework.stereotype.Component
 import org.springframework.web.server.ResponseStatusException
 
 @Component
-class PrefillSEDService(private val eessiInformasjon: EessiInformasjon, private val prefillPDLnav: PrefillPDLNav) {
+class PrefillSEDService(private val eessiInformasjon: EessiInformasjon, private val prefillPDLnav: PrefillPDLNav, val etterlatteService: EtterlatteService) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillSEDService::class.java) }
 
@@ -44,7 +45,8 @@ class PrefillSEDService(private val eessiInformasjon: EessiInformasjon, private 
                 PrefillP6000(
                     prefillPDLnav,
                     eessiInformasjon,
-                    null
+                    null,
+                    etterlatteService = etterlatteService
                 ).prefill(
                     prefillData,
                     personDataCollection
@@ -103,7 +105,8 @@ class PrefillSEDService(private val eessiInformasjon: EessiInformasjon, private 
                 pensjonCollection?.pensjoninformasjon ?: throw ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
                     "Ingen vedtak"
-                )
+                ),
+                etterlatteService
             ).prefill(
                 prefillData,
                 personDataCollection

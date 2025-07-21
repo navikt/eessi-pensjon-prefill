@@ -23,6 +23,7 @@ class PrefillService(
     private val krrService: KrrService,
     private val prefillSedService: PrefillSEDService,
     private val innhentingService: InnhentingService,
+    private val etterlatteService: EtterlatteService,
     private val automatiseringStatistikkService: AutomatiseringStatistikkService,
     @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper.ForTest()
 ) {

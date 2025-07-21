@@ -90,15 +90,11 @@ object PrefillPensjonVedtaksbelop {
         val ytelsePerMaaned = pendata.ytelsePerMaanedListe.ytelsePerMaanedListe
                 .asSequence().sortedBy { it.fom.toGregorianCalendar() }.toMutableList()
 
-
-        val resultList = mutableListOf<BeregningItem>()
         val sakType = KSAK.valueOf(pendata.sakAlder.sakType)
 
-        ytelsePerMaaned.forEach {
-            resultList.add(createBeregningItem(it, sakType))
+        return ytelsePerMaaned.map {
+           createBeregningItem(it, sakType)
         }
-
-        return resultList
     }
 
     /**
