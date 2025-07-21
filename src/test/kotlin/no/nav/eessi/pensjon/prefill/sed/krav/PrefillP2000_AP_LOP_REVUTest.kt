@@ -4,6 +4,7 @@ import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_01
 import no.nav.eessi.pensjon.eux.model.SedType.P2000
+import no.nav.eessi.pensjon.prefill.EtterlatteService
 import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
@@ -36,13 +37,15 @@ class PrefillP2000_AP_LOP_REVUTest {
     private val pesysSaksnummer = "20541862"
 
     lateinit var prefillData: PrefillDataModel
-    lateinit var dataFromPEN: PensjonsinformasjonService
+    lateinit var etterlatteService: EtterlatteService
     lateinit var prefillSEDService: PrefillSEDService
-    lateinit var persondataCollection: PersonDataCollection
     lateinit var pensjonCollection: PensjonCollection
+    lateinit var dataFromPEN: PensjonsinformasjonService
+    lateinit var persondataCollection: PersonDataCollection
 
     @BeforeEach
     fun setup() {
+        etterlatteService = mockk()
         persondataCollection = PersonPDLMock.createEnkelFamilie(personFnr, ekteFnr)
 
         val prefillNav = PrefillPDLNav(
@@ -63,7 +66,7 @@ class PrefillP2000_AP_LOP_REVUTest {
         }
         val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
         pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
-        prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav)
+        prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav, etterlatteService)
 
     }
 

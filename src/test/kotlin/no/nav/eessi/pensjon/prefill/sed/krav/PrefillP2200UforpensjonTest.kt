@@ -3,6 +3,7 @@ package no.nav.eessi.pensjon.prefill.sed.krav
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.SedType
+import no.nav.eessi.pensjon.prefill.EtterlatteService
 import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
@@ -34,12 +35,14 @@ class PrefillP2200UforpensjonTest {
 
     lateinit var prefillData: PrefillDataModel
     lateinit var prefillNav: PrefillPDLNav
+    lateinit var etterlatteService: EtterlatteService
     lateinit var dataFromPEN: PensjonsinformasjonService
     private lateinit var prefillSEDService: PrefillSEDService
     private lateinit var pensjonCollection: PensjonCollection
 
     @BeforeEach
     fun setup() {
+        etterlatteService = mockk()
         prefillNav = PrefillPDLNav(
             prefillAdresse = mockk<PrefillPDLAdresse> {
                 every { hentLandkode(any()) } returns "NO"
@@ -54,7 +57,7 @@ class PrefillP2200UforpensjonTest {
         prefillData = initialPrefillDataModel(SedType.P2200, personFnr, penSaksnummer = "22874955").apply {
             partSedAsJson["PersonInfo"] = readJsonResponse("/json/nav/other/person_informasjon_selvb.json")
         }
-        prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav)
+        prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav, etterlatteService)
 
         val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
         pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)

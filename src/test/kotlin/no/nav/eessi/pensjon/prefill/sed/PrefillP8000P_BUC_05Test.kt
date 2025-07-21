@@ -10,6 +10,7 @@ import no.nav.eessi.pensjon.kodeverk.KodeverkClient
 import no.nav.eessi.pensjon.pensjonsinformasjon.models.EPSaktype
 import no.nav.eessi.pensjon.pensjonsinformasjon.models.KravArsak
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
+import no.nav.eessi.pensjon.prefill.EtterlatteService
 import no.nav.eessi.pensjon.prefill.KrrService
 import no.nav.eessi.pensjon.prefill.LagPdlPerson
 import no.nav.eessi.pensjon.prefill.LagPdlPerson.Companion.medAdresse
@@ -40,10 +41,11 @@ class PrefillP8000P_BUC_05Test {
     private val pesysSaksnummer = "14398627"
     private val personService: PersonService = mockk()
 
-    lateinit var prefillData: PrefillDataModel
     lateinit var prefillNav: PrefillPDLNav
-    lateinit var personDataCollection: PersonDataCollection
+    lateinit var prefillData: PrefillDataModel
+    lateinit var etterlatteService: EtterlatteService
     lateinit var pensjonCollection: PensjonCollection
+    lateinit var personDataCollection: PersonDataCollection
     lateinit var krrService: KrrService
 
     var kodeverkClient: KodeverkClient = mockk(relaxed = true)
@@ -53,6 +55,7 @@ class PrefillP8000P_BUC_05Test {
 
     @BeforeEach
     fun setup() {
+        etterlatteService = mockk(relaxed = true)
         every { kodeverkClient.finnLandkode("NOR") } returns "NO"
         every { kodeverkClient.finnLandkode("SWE") } returns "SE"
 
@@ -62,7 +65,7 @@ class PrefillP8000P_BUC_05Test {
                 institutionnavn = "NOINST002, NO INST002, NO")
 
 
-        prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav)
+        prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav, etterlatteService)
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P8000, personFnr, penSaksnummer = pesysSaksnummer)
 
     }

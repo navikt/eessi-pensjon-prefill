@@ -4,6 +4,7 @@ import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.sed.Nav
 import no.nav.eessi.pensjon.eux.model.sed.SED
+import no.nav.eessi.pensjon.prefill.EtterlatteService
 import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
@@ -29,14 +30,16 @@ class PrefillP2100GjenlevendeRevurdering {
     private val pesysSaksnummer = "22915550"
     private val pesysKravid = "41098605"
 
-    private lateinit var prefillData: PrefillDataModel
-    private lateinit var dataFromPEN: PensjonsinformasjonService
-    private lateinit var prefillSEDService: PrefillSEDService
     private lateinit var prefillNav: PrefillPDLNav
+    private lateinit var prefillData: PrefillDataModel
+    private lateinit var etterlatteService: EtterlatteService
+    private lateinit var prefillSEDService: PrefillSEDService
     private lateinit var pensjonCollection: PensjonCollection
+    private lateinit var dataFromPEN: PensjonsinformasjonService
 
     @BeforeEach
     fun setup() {
+        etterlatteService = mockk()
         prefillNav = PrefillPDLNav(
                 prefillAdresse = mockk(relaxed = true),
                 institutionid = "NO:NAVAT02",
@@ -63,7 +66,7 @@ class PrefillP2100GjenlevendeRevurdering {
             gjenlevendeEllerAvdod = avdod
         )
 
-        prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav)
+        prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav, etterlatteService)
         val p2100 = prefillSEDService.prefill(prefillData, persondataCollection, pensjonCollection)
 
         val p2100gjenlev = SED(

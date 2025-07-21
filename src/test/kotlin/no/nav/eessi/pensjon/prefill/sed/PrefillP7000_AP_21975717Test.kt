@@ -4,6 +4,7 @@ import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.sed.P7000
+import no.nav.eessi.pensjon.prefill.EtterlatteService
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
@@ -28,14 +29,16 @@ class PrefillP7000_AP_21975717Test {
     var pensjonInformasjonService: PensjonsinformasjonService = mockk()
 
     private val personFnr = "01071843352"
-    private lateinit var prefillData: PrefillDataModel
     private lateinit var prefillPDLNav: PrefillPDLNav
-    private lateinit var personCollection: PersonDataCollection
+    private lateinit var prefillData: PrefillDataModel
+    private lateinit var etterlatteService: EtterlatteService
     private lateinit var pensjonCollection: PensjonCollection
+    private lateinit var personCollection: PersonDataCollection
 
     @BeforeEach
     fun setup() {
         val person = PersonPDLMock.createWith(etternavn = "BALDER")
+        etterlatteService = mockk()
         personCollection = PersonDataCollection(person, person, barnPersonList = emptyList())
 
         prefillPDLNav = PrefillPDLNav(
@@ -53,7 +56,7 @@ class PrefillP7000_AP_21975717Test {
 
     @Test
     fun `forventet korrekt utfylt P7000 Melding om vedtakssammendrag med MockData fra testfiler`() {
-        val prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillPDLNav)
+        val prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillPDLNav, etterlatteService)
 
         val p7000 = prefillSEDService.prefill(prefillData, personCollection, pensjonCollection) as P7000
 
@@ -69,7 +72,7 @@ class PrefillP7000_AP_21975717Test {
         val json = String(Files.readAllBytes(Paths.get(filepath)))
         assertTrue(validateJson(json))
 
-        val prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillPDLNav)
+        val prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillPDLNav, etterlatteService)
         val p7000 = prefillSEDService.prefill(prefillData, personCollection, pensjonCollection)
 
         val sed = p7000.toJsonSkipEmpty()

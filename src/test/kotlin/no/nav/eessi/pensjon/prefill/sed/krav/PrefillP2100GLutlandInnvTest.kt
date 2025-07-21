@@ -5,6 +5,7 @@ import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.sed.Nav
 import no.nav.eessi.pensjon.eux.model.sed.SED
+import no.nav.eessi.pensjon.prefill.EtterlatteService
 import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
@@ -32,13 +33,15 @@ class PrefillP2100GLutlandInnvTest {
     private val pesysSaksnummer = "22875355"
 
     private lateinit var prefillData: PrefillDataModel
-    private lateinit var dataFromPEN: PensjonsinformasjonService
+    private lateinit var etterlatteService: EtterlatteService
     private lateinit var prefillSEDService: PrefillSEDService
-    private lateinit var persondataCollection: PersonDataCollection
     private lateinit var pensjonCollection: PensjonCollection
+    private lateinit var dataFromPEN: PensjonsinformasjonService
+    private lateinit var persondataCollection: PersonDataCollection
 
     @BeforeEach
     fun setup() {
+        etterlatteService = mockk()
         persondataCollection = PersonPDLMock.createAvdodFamilie(personFnr, avdodPersonFnr)
 
         val prefillNav = PrefillPDLNav(
@@ -64,7 +67,7 @@ class PrefillP2100GLutlandInnvTest {
         val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
         pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
 
-        prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav)
+        prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav, etterlatteService)
 
     }
 

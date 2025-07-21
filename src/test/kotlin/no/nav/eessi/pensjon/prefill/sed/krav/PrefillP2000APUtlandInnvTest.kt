@@ -8,7 +8,7 @@ import no.nav.eessi.pensjon.eux.model.SedType.P2000
 import no.nav.eessi.pensjon.eux.model.sed.BasertPaa
 import no.nav.eessi.pensjon.pensjonsinformasjon.models.KravArsak
 import no.nav.eessi.pensjon.pensjonsinformasjon.models.PenKravtype
-import no.nav.eessi.pensjon.pensjonsinformasjon.models.Sakstatus
+import no.nav.eessi.pensjon.prefill.EtterlatteService
 import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.models.*
@@ -24,14 +24,10 @@ import no.nav.eessi.pensjon.shared.person.Fodselsnummer
 import no.nav.eessi.pensjon.shared.person.FodselsnummerGenerator
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import no.nav.eessi.pensjon.utils.toJson
-import no.nav.pensjon.v1.kravhistorikk.V1KravHistorikk
-import no.nav.pensjon.v1.kravhistorikkliste.V1KravHistorikkListe
-import no.nav.pensjon.v1.ytelsepermaanedliste.V1YtelsePerMaanedListe
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import java.time.LocalDate
 
 class PrefillP2000APUtlandInnvTest {
 
@@ -40,12 +36,14 @@ class PrefillP2000APUtlandInnvTest {
     private val pesysSaksnummer = "14398627"
 
     private lateinit var prefillData: PrefillDataModel
+    private lateinit var etterlatteService: EtterlatteService
     private lateinit var prefillSEDService: PrefillSEDService
-    private lateinit var personDataCollection: PersonDataCollection
     private lateinit var pensjonCollection: PensjonCollection
+    private lateinit var personDataCollection: PersonDataCollection
 
     @BeforeEach
     fun setup() {
+        etterlatteService = mockk()
         personDataCollection = PersonPDLMock.createEnkelFamilie(personFnr, ekteFnr)
 
         val prefillNav = PrefillPDLNav(
@@ -68,7 +66,7 @@ class PrefillP2000APUtlandInnvTest {
 
         pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
 
-        prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav)
+        prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav, etterlatteService)
     }
 
     @Test

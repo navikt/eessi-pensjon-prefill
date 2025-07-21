@@ -7,6 +7,7 @@ import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.SedType.P3000_AT
 import no.nav.eessi.pensjon.eux.model.SedType.P3000_IT
 import no.nav.eessi.pensjon.eux.model.SedType.P3000_SE
+import no.nav.eessi.pensjon.prefill.EtterlatteService
 import no.nav.eessi.pensjon.prefill.LagPdlPerson
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
@@ -28,6 +29,7 @@ class SedP3000XXTest {
     var dataFromPEN: PensjonsinformasjonService = mockk()
 
     private lateinit var prefillSEDService: PrefillSEDService
+    private lateinit var etterlatteService: EtterlatteService
 
     private val personFnr = FodselsnummerGenerator.generateFnrForTest(68)
     private lateinit var personDataCollection: PersonDataCollection
@@ -35,6 +37,7 @@ class SedP3000XXTest {
 
     @BeforeEach
     fun setupAndRunAtStart() {
+        etterlatteService = mockk()
         val person = LagPdlPerson.lagPerson(personFnr, "Ola", "Testbruker")
         personDataCollection = PersonDataCollection(person, person)
 
@@ -47,7 +50,7 @@ class SedP3000XXTest {
             institutionnavn = "NOINST002, NO INST002, NO"
         )
 
-        prefillSEDService = PrefillSEDService(eessiInformasjon, prefillNav)
+        prefillSEDService = PrefillSEDService(eessiInformasjon, prefillNav, etterlatteService)
     }
 
     @Test

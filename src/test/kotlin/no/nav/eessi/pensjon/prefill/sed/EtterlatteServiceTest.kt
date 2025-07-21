@@ -50,7 +50,7 @@ class EtterlatteServiceTest {
 
         mockSuccessfulVedtakResponse(fnr, responseBody)
 
-        val result = etterlatteService.hentGjennyVedtak()
+        val result = etterlatteService.hentGjennyVedtak(fnr)
 
         assertTrue(result.isSuccess)
         verifyRequestVedtakMadeOnce()

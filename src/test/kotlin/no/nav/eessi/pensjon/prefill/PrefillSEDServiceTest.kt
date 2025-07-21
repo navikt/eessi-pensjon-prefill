@@ -26,6 +26,7 @@ class PrefillSEDServiceTest {
     private val mockPrefillSEDService: PrefillSEDService = mockk()
     private val innhentingService: InnhentingService = mockk()
     private val krrService: KrrService = mockk()
+    private val etterlatteService: EtterlatteService = mockk()
     private val automatiseringStatistikkService: AutomatiseringStatistikkService = mockk()
     private lateinit var prefillData: PrefillDataModel
     private lateinit var prefillSEDService: PrefillSEDService
@@ -37,7 +38,7 @@ class PrefillSEDServiceTest {
 
     @Before
     fun setup() {
-        prefillService = PrefillService(krrService, mockPrefillSEDService, innhentingService, automatiseringStatistikkService)
+        prefillService = PrefillService(krrService, mockPrefillSEDService, innhentingService, etterlatteService, automatiseringStatistikkService)
         personcollection = PersonDataCollection(null, null)
         val personDataCollectionFamilie = PersonPDLMock.createEnkelFamilie(personFnr, avdodPersonFnr)
         personDataCollection = PersonDataCollection(gjenlevendeEllerAvdod = personDataCollectionFamilie.ektefellePerson, forsikretPerson = personDataCollectionFamilie.forsikretPerson )
@@ -56,8 +57,8 @@ class PrefillSEDServiceTest {
     fun `En p6000 uten vedtak skal gi en delvis utfylt sed`(){
         dataFromPEN = PrefillTestHelper.lesPensjonsdataVedtakFraFil("/pensjonsinformasjon/vedtak/P6000-GP-401.xml")
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P6000, personFnr, penSaksnummer = "22580170", vedtakId = "12312312", avdod = PersonInfo(avdodPersonFnr, "1234567891234"))
-        prefillSEDService = PrefillSEDService(EessiInformasjonMother.standardEessiInfo(), prefillNav)
-        val prefill = prefillSEDService.prefill(prefillData, personDataCollection)
+        prefillSEDService = PrefillSEDService(EessiInformasjonMother.standardEessiInfo(), prefillNav, etterlatteService)
+        val prefill = prefillSEDService.prefill(prefillData, personDataCollection,)
 
         assertNotNull(prefill.nav?.bruker?.person?.pin)
         assertEquals(avdodPersonFnr, prefill.nav?.bruker?.person?.pin?.firstOrNull()?.identifikator)

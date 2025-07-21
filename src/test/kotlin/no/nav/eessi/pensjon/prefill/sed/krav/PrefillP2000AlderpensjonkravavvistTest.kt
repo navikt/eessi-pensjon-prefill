@@ -7,6 +7,7 @@ import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.SedType.P2000
 import no.nav.eessi.pensjon.eux.model.sed.Nav
 import no.nav.eessi.pensjon.eux.model.sed.SED
+import no.nav.eessi.pensjon.prefill.EtterlatteService
 import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
@@ -38,11 +39,13 @@ class PrefillP2000AlderpensjonkravavvistTest {
 
     lateinit var prefillData: PrefillDataModel
     private lateinit var prefillSEDService: PrefillSEDService
-    private lateinit var personDataCollection: PersonDataCollection
+    private lateinit var etterlatteService: EtterlatteService
     private lateinit var pensjonCollection: PensjonCollection
+    private lateinit var personDataCollection: PersonDataCollection
 
     @BeforeEach
     fun setup() {
+        etterlatteService = mockk()
         personDataCollection = PersonPDLMock.createEnkelFamilie(personFnr, ekteFnr)
 
         val prefillNav = PrefillPDLNav(
@@ -65,7 +68,7 @@ class PrefillP2000AlderpensjonkravavvistTest {
 
         pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
 
-        prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav)
+        prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav, etterlatteService)
 
    }
 

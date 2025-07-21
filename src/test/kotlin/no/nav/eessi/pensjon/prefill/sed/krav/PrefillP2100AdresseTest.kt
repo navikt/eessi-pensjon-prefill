@@ -4,6 +4,7 @@ import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
+import no.nav.eessi.pensjon.prefill.EtterlatteService
 import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
@@ -32,13 +33,15 @@ class PrefillP2100AdresseTest {
 
     private lateinit var prefillData: PrefillDataModel
     private lateinit var prefillPDLAdresse: PrefillPDLAdresse
-    private lateinit var dataFromPEN: PensjonsinformasjonService
+    private lateinit var etterlatteService: EtterlatteService
     private lateinit var prefillSEDService: PrefillSEDService
-    private lateinit var persondataCollection: PersonDataCollection
     private lateinit var pensjonCollection: PensjonCollection
+    private lateinit var dataFromPEN: PensjonsinformasjonService
+    private lateinit var persondataCollection: PersonDataCollection
 
     @BeforeEach
     fun setup() {
+        etterlatteService = mockk()
         prefillPDLAdresse = PrefillPDLAdresse(mockk(relaxed = true) {
             every { finnLandkode(eq("NOR")) } returns "NO"
         }, personService)
@@ -59,7 +62,7 @@ class PrefillP2100AdresseTest {
         val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
         pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
 
-        prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav)
+        prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav, etterlatteService)
 
     }
 

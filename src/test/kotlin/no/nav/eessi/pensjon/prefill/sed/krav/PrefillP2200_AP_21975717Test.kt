@@ -8,6 +8,7 @@ import no.nav.eessi.pensjon.eux.model.SedType.P2200
 import no.nav.eessi.pensjon.kodeverk.KodeverkClient
 import no.nav.eessi.pensjon.kodeverk.Postnummer
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
+import no.nav.eessi.pensjon.prefill.EtterlatteService
 import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
@@ -42,15 +43,17 @@ class PrefillP2200_AP_21975717Test {
 
     private val pesysSaksnummer = "14915730"
 
-    private lateinit var prefillData: PrefillDataModel
-    private lateinit var dataFromPEN: PensjonsinformasjonService
-    private lateinit var prefillSEDService: PrefillSEDService
-    private lateinit var personDataCollection: PersonDataCollection
     private lateinit var prefillNav: PrefillPDLNav
+    private lateinit var prefillData: PrefillDataModel
+    private lateinit var etterlatteService: EtterlatteService
+    private lateinit var prefillSEDService: PrefillSEDService
     private lateinit var pensjonCollection: PensjonCollection
+    private lateinit var dataFromPEN: PensjonsinformasjonService
+    private lateinit var personDataCollection: PersonDataCollection
 
     @BeforeEach
     fun setup() {
+        etterlatteService = mockk()
         personDataCollection = PersonPDLMock.createEnkelFamilie(personFnr, ekteFnr)
 
         prefillNav = PrefillPDLNav(
@@ -65,7 +68,7 @@ class PrefillP2200_AP_21975717Test {
             partSedAsJson["PersonInfo"] = readJsonResponse("/json/nav/other/person_informasjon_selvb.json")
             partSedAsJson["P4000"] = readJsonResponse("/json/nav/other/p4000_trygdetid_part.json")
         }
-        prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav)
+        prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav, etterlatteService)
 
         val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
         pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)

@@ -27,9 +27,8 @@ class PrefillServiceTest{
     var krrService: KrrService = mockk()
 
     var prefillSedService: PrefillSEDService = mockk()
-
+    var etterlatteService: EtterlatteService = mockk()
     var innhentingService: InnhentingService = mockk()
-
     var automatiseringStatistikkService: AutomatiseringStatistikkService = mockk()
 
     private lateinit var personcollection: PersonDataCollection
@@ -48,6 +47,7 @@ class PrefillServiceTest{
             krrService,
             prefillSedService,
             innhentingService,
+            etterlatteService,
             automatiseringStatistikkService,
             MetricsHelper.ForTest()
         )

@@ -5,6 +5,7 @@ import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.sed.BasertPaa
 import no.nav.eessi.pensjon.eux.model.sed.P6000
+import no.nav.eessi.pensjon.prefill.EtterlatteService
 import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
@@ -29,16 +30,18 @@ class PrefillP6000Pensjon_BARNEP_foreldrelos_Test {
     private val personFnr = FodselsnummerGenerator.generateFnrForTest(12)
     private val avdodPersonFnr = FodselsnummerGenerator.generateFnrForTest(40)
 
-    private lateinit var prefillData: PrefillDataModel
-    private lateinit var prefillSEDService: PrefillSEDService
-    private lateinit var dataFromPEN: PensjonsinformasjonService
     private lateinit var prefillNav: PrefillPDLNav
+    private lateinit var prefillData: PrefillDataModel
     private lateinit var eessiInformasjon: EessiInformasjon
+    private lateinit var prefillSEDService: PrefillSEDService
+    private lateinit var etterlatteService: EtterlatteService
+    private lateinit var dataFromPEN: PensjonsinformasjonService
     private lateinit var personDataCollection: PersonDataCollection
 
 
     @BeforeEach
     fun setup() {
+        etterlatteService = mockk()
         personDataCollection = PersonPDLMock.createAvdodFamilie(personFnr, avdodPersonFnr)
 
         prefillNav = PrefillPDLNav(
@@ -58,7 +61,7 @@ class PrefillP6000Pensjon_BARNEP_foreldrelos_Test {
     fun `forventet korrekt utfylling av Pensjon objekt på Gjenlevendepensjon`() {
         dataFromPEN = PrefillTestHelper.lesPensjonsdataVedtakFraFil("/pensjonsinformasjon/vedtak/P6000-BARNEP-GJENLEV.xml")
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P6000, personFnr, penSaksnummer = "22580170", vedtakId = "12312312", avdod = PersonInfo(avdodPersonFnr, "112233445566"))
-        prefillSEDService = PrefillSEDService(eessiInformasjon, prefillNav)
+        prefillSEDService = PrefillSEDService(eessiInformasjon, prefillNav, etterlatteService)
         val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
         val pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
 
@@ -112,7 +115,7 @@ class PrefillP6000Pensjon_BARNEP_foreldrelos_Test {
     fun `forventet korrekt utfylling av Pensjon objekt på Gjenlevendepensjon med AP_GJT_KAP19`() {
         dataFromPEN = PrefillTestHelper.lesPensjonsdataVedtakFraFil("/pensjonsinformasjon/vedtak/P6000-BARNEP-GJENLEV-Med-GJT_KAP19.xml")
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P6000, personFnr, penSaksnummer = "22580170", vedtakId = "12312312", avdod = PersonInfo(avdodPersonFnr, "112233445566"))
-        prefillSEDService = PrefillSEDService(eessiInformasjon, prefillNav)
+        prefillSEDService = PrefillSEDService(eessiInformasjon, prefillNav, etterlatteService)
         val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
         val pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
 

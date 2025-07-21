@@ -32,6 +32,7 @@ class PrefillControllerTest {
     var krrService: KrrService = mockk()
     var pensjonsinformasjonService: PensjonsinformasjonService = mockk()
     val automatiseringStatistikkService: AutomatiseringStatistikkService = mockk(relaxed = true)
+    val etterlatteService: EtterlatteService = mockk(relaxed = true)
 
 
     private lateinit var prefillController: PrefillController
@@ -40,7 +41,7 @@ class PrefillControllerTest {
     fun before() {
 
         val innhentingService = InnhentingService(personDataService, pensjonsinformasjonService = pensjonsinformasjonService)
-        val prefillService = PrefillService(krrService, mockPrefillSEDService, innhentingService, automatiseringStatistikkService)
+        val prefillService = PrefillService(krrService, mockPrefillSEDService, innhentingService, automatiseringStatistikkService =automatiseringStatistikkService, etterlatteService =etterlatteService)
 
         prefillController = PrefillController(
             prefillService, auditLogger
