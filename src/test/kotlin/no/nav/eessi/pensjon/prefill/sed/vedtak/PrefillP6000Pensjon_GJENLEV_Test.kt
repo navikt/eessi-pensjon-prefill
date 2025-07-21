@@ -5,14 +5,17 @@ import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.sed.BasertPaa
 import no.nav.eessi.pensjon.eux.model.sed.P6000
-import no.nav.eessi.pensjon.prefill.*
-import no.nav.eessi.pensjon.prefill.EtterlatteService.GjennyVedtak
+import no.nav.eessi.pensjon.prefill.IkkeGyldigKallException
+import no.nav.eessi.pensjon.prefill.InnhentingService
+import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
+import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjonMother.standardEessiInfo
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLAdresse
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
+import no.nav.eessi.pensjon.prefill.EtterlatteService
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
 import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper
 import no.nav.eessi.pensjon.shared.api.PersonInfo
@@ -40,7 +43,7 @@ class PrefillP6000Pensjon_GJENLEV_Test {
     @BeforeEach
     fun setup() {
         etterlatteService = mockk()
-        every { etterlatteService.hentGjennyVedtak(any()) } returns Result.success(EtterlatteService.EtterlatteVedtakResponseData(emptyList<GjennyVedtak>()))
+        every { etterlatteService.hentGjennyVedtak(any()) } returns Result.success(EtterlatteService.EtterlatteVedtakResponseData(emptyList()))
         val personDataCollectionFamilie = PersonPDLMock.createEnkelFamilie(personFnr, avdodPersonFnr)
         personDataCollection = PersonDataCollection(gjenlevendeEllerAvdod = personDataCollectionFamilie.ektefellePerson, forsikretPerson = personDataCollectionFamilie.forsikretPerson )
 
@@ -61,7 +64,7 @@ class PrefillP6000Pensjon_GJENLEV_Test {
     fun `forventet korrekt utfylling av Pensjon objekt på Gjenlevendepensjon`() {
         dataFromPEN = PrefillTestHelper.lesPensjonsdataVedtakFraFil("/pensjonsinformasjon/vedtak/P6000-GP-401.xml")
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P6000, personFnr, penSaksnummer = "22580170", vedtakId = "12312312", avdod = PersonInfo(avdodPersonFnr, "1234567891234"))
-        prefillSEDService = PrefillSEDService(eessiInformasjon, prefillNav, etterlatteService)
+        prefillSEDService = PrefillSEDService(eessiInformasjon, prefillNav)
         val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
         val pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
 
@@ -122,7 +125,7 @@ class PrefillP6000Pensjon_GJENLEV_Test {
             avdod = PersonInfo(avdodPersonFnr, "1234567891234"),
             kravDato = "2018-05-01"
         )
-        prefillSEDService = PrefillSEDService(eessiInformasjon, prefillNav, etterlatteService)
+        prefillSEDService = PrefillSEDService(eessiInformasjon, prefillNav)
 
         val p6000 = prefillSEDService.prefill(prefillData, personDataCollection) as P6000
         assertEquals(avdodPersonFnr, p6000.nav?.bruker?.person?.pin?.firstOrNull()?.identifikator)
@@ -134,7 +137,7 @@ class PrefillP6000Pensjon_GJENLEV_Test {
     fun `forventet korrekt utfylt P6000 gjenlevende ikke bosat utland (avdød bodd i utland)`() {
         dataFromPEN = PrefillTestHelper.lesPensjonsdataVedtakFraFil("/pensjonsinformasjon/vedtak/P6000-GP-IkkeUtland.xml")
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P6000, personFnr, penSaksnummer = "22580170", vedtakId = "12312312")
-        prefillSEDService = PrefillSEDService(eessiInformasjon, prefillNav, etterlatteService)
+        prefillSEDService = PrefillSEDService(eessiInformasjon, prefillNav)
         val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
         val pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
 
@@ -183,7 +186,7 @@ class PrefillP6000Pensjon_GJENLEV_Test {
     fun `preutfylling P6000 feiler ved mangler av vedtakId`() {
         dataFromPEN = PrefillTestHelper.lesPensjonsdataVedtakFraFil("/pensjonsinformasjon/vedtak/P6000-GP-IkkeUtland.xml")
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P6000, personFnr, penSaksnummer = "22580170", vedtakId = "")
-        prefillSEDService = PrefillSEDService(eessiInformasjon, prefillNav, etterlatteService)
+        prefillSEDService = PrefillSEDService(eessiInformasjon, prefillNav)
         val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
 
         assertThrows<IkkeGyldigKallException> {

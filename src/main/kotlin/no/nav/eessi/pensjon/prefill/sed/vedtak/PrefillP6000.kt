@@ -1,8 +1,7 @@
 package no.nav.eessi.pensjon.prefill.sed.vedtak
 
 import no.nav.eessi.pensjon.eux.model.sed.P6000
-import no.nav.eessi.pensjon.eux.model.sed.P6000Pensjon
-import no.nav.eessi.pensjon.prefill.EtterlatteService
+import no.nav.eessi.pensjon.eux.model.sed.VedtakItem
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
@@ -13,15 +12,15 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 
-class PrefillP6000(private val prefillNav: PrefillPDLNav,
-                   private val eessiInfo: EessiInformasjon,
-                   private val pensjoninformasjon: Pensjonsinformasjon?,
-                   private val etterlatteService: EtterlatteService,
+class PrefillP6000(
+    private val prefillNav: PrefillPDLNav,
+    private val eessiInfo: EessiInformasjon,
+    private val pensjoninformasjon: Pensjonsinformasjon?,
 ) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillP6000::class.java) }
 
-    fun prefill(prefillData: PrefillDataModel, personData: PersonDataCollection): P6000 {
+    fun prefill(prefillData: PrefillDataModel, personData: PersonDataCollection, listeOverVedtak: List<VedtakItem>?): P6000 {
         val sedType = prefillData.sedType
 
         logger.info(
@@ -41,8 +40,9 @@ class PrefillP6000(private val prefillNav: PrefillPDLNav,
         val p6000Pensjon = if(pensjoninformasjon != null) {
             prefillP6000Pensjon(pensjoninformasjon, gjenlevende, andreInstitusjondetaljer)
         } else {
-            PrefillP6000GjennyPensjon(etterlatteService).prefillP6000GjennyPensjon(
-                gjenlevende
+            PrefillP6000GjennyPensjon().prefillP6000GjennyPensjon(
+                gjenlevende,
+                listeOverVedtak
             )
         }
 

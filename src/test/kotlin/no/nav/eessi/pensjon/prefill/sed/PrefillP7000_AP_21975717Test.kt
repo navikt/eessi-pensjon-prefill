@@ -56,9 +56,9 @@ class PrefillP7000_AP_21975717Test {
 
     @Test
     fun `forventet korrekt utfylt P7000 Melding om vedtakssammendrag med MockData fra testfiler`() {
-        val prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillPDLNav, etterlatteService)
+        val prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillPDLNav)
 
-        val p7000 = prefillSEDService.prefill(prefillData, personCollection, pensjonCollection) as P7000
+        val p7000 = prefillSEDService.prefill(prefillData, personCollection, pensjonCollection, emptyList()) as P7000
 
         assertEquals("BALDER", p7000.nav?.ektefelle?.person?.etternavn)
         assertEquals("M", p7000.pensjon?.bruker?.person?.kjoenn)
@@ -72,8 +72,8 @@ class PrefillP7000_AP_21975717Test {
         val json = String(Files.readAllBytes(Paths.get(filepath)))
         assertTrue(validateJson(json))
 
-        val prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillPDLNav, etterlatteService)
-        val p7000 = prefillSEDService.prefill(prefillData, personCollection, pensjonCollection)
+        val prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillPDLNav)
+        val p7000 = prefillSEDService.prefill(prefillData, personCollection, pensjonCollection, emptyList())
 
         val sed = p7000.toJsonSkipEmpty()
 

@@ -12,6 +12,8 @@ import no.nav.eessi.pensjon.personoppslag.pdl.model.NorskIdent
 import no.nav.eessi.pensjon.prefill.PersonDataServiceTest.Companion.FNR_VOKSEN
 import no.nav.eessi.pensjon.prefill.models.DigitalKontaktinfo
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
+import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
+import no.nav.eessi.pensjon.prefill.EtterlatteService
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
 import no.nav.eessi.pensjon.shared.api.ApiRequest
 import no.nav.eessi.pensjon.shared.api.InstitusjonItem
@@ -33,15 +35,22 @@ class PrefillControllerTest {
     var pensjonsinformasjonService: PensjonsinformasjonService = mockk()
     val automatiseringStatistikkService: AutomatiseringStatistikkService = mockk(relaxed = true)
     val etterlatteService: EtterlatteService = mockk(relaxed = true)
-
+    private lateinit var prefillNav: PrefillPDLNav
 
     private lateinit var prefillController: PrefillController
 
     @BeforeEach
     fun before() {
-
+        prefillNav = PrefillPDLNav(
+            prefillAdresse = mockk {
+                every { hentLandkode(any()) } returns "NO"
+                every { createPersonAdresse(any()) } returns mockk(relaxed = true)
+            },
+            institutionid = "NO:noinst002",
+            institutionnavn = "NOINST002, NO INST002, NO")
+        every { mockPrefillSEDService.prefill(any(), any(), any(), any()) } returns SED(type = P6000)
         val innhentingService = InnhentingService(personDataService, pensjonsinformasjonService = pensjonsinformasjonService)
-        val prefillService = PrefillService(krrService, mockPrefillSEDService, innhentingService, automatiseringStatistikkService =automatiseringStatistikkService, etterlatteService =etterlatteService)
+        val prefillService = PrefillService(krrService, mockPrefillSEDService, innhentingService, automatiseringStatistikkService =automatiseringStatistikkService, etterlatteService =etterlatteService, prefillPdlNav = prefillNav)
 
         prefillController = PrefillController(
             prefillService, auditLogger
@@ -79,7 +88,7 @@ class PrefillControllerTest {
 
         every { pensjonsinformasjonService.hentVedtak(any()) } returns Pensjonsinformasjon()
 
-        every{ mockPrefillSEDService.prefill(any(), any(), any())} returns mockSed
+        every{ mockPrefillSEDService.prefill(any(), any(), any(), any())} returns mockSed
 
         val response = prefillController.prefillDocument(mockData)
         Assertions.assertNotNull(response)

@@ -52,13 +52,13 @@ class PrefillP9000GLmedUtlandInnvTest {
         val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = pensjonInformasjonService)
 
         pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
-        prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav, etterlatteService)
+        prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav)
 
     }
 
     @Test
     fun `forventet korrekt utfylt P9000 med mockdata fra testfiler`() {
-        val p9000 = prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection)
+        val p9000 = prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection, emptyList())
 
         assertEquals("BAMSE LUR", p9000.nav?.bruker?.person?.fornavn)
         assertEquals("MOMBALO", p9000.nav?.bruker?.person?.etternavn)

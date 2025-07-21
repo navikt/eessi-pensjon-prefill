@@ -4,7 +4,6 @@ import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.sed.Nav
 import no.nav.eessi.pensjon.eux.model.sed.SED
-import no.nav.eessi.pensjon.prefill.EtterlatteService
 import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
@@ -13,6 +12,7 @@ import no.nav.eessi.pensjon.prefill.models.PensjonCollection
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
+import no.nav.eessi.pensjon.prefill.EtterlatteService
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
 import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper.lesPensjonsdataFraFil
 import no.nav.eessi.pensjon.shared.api.PersonInfo
@@ -66,7 +66,7 @@ class PrefillP2100GjenlevendeRevurdering {
             gjenlevendeEllerAvdod = avdod
         )
 
-        prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav, etterlatteService)
+        prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav)
         val p2100 = prefillSEDService.prefill(prefillData, persondataCollection, pensjonCollection)
 
         val p2100gjenlev = SED(

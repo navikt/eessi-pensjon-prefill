@@ -16,7 +16,7 @@ import no.nav.eessi.pensjon.eux.model.SedType.P8000
 import no.nav.eessi.pensjon.eux.model.SedType.X005
 import no.nav.eessi.pensjon.eux.model.SedType.X010
 import no.nav.eessi.pensjon.eux.model.sed.SED
-import no.nav.eessi.pensjon.prefill.EtterlatteService
+import no.nav.eessi.pensjon.eux.model.sed.VedtakItem
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.prefill.models.PensjonCollection
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
@@ -35,21 +35,25 @@ import org.springframework.stereotype.Component
 import org.springframework.web.server.ResponseStatusException
 
 @Component
-class PrefillSEDService(private val eessiInformasjon: EessiInformasjon, private val prefillPDLnav: PrefillPDLNav, val etterlatteService: EtterlatteService) {
+class PrefillSEDService(private val eessiInformasjon: EessiInformasjon, private val prefillPDLnav: PrefillPDLNav) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillSEDService::class.java) }
 
-    fun prefill(prefillData: PrefillDataModel, personDataCollection: PersonDataCollection): SED {
+    fun prefill(
+        prefillData: PrefillDataModel,
+        personDataCollection: PersonDataCollection,
+        listOverVedtak: List<VedtakItem> = emptyList()
+    ): SED {
         return when (prefillData.sedType) {
             P6000 -> {
                 PrefillP6000(
                     prefillPDLnav,
                     eessiInformasjon,
-                    null,
-                    etterlatteService = etterlatteService
+                    null
                 ).prefill(
                     prefillData,
-                    personDataCollection
+                    personDataCollection,
+                    listOverVedtak
                 )
             }
             P2100 -> {
@@ -63,11 +67,17 @@ class PrefillSEDService(private val eessiInformasjon: EessiInformasjon, private 
             }
             else -> {
                 logger.warn("Benytter ordinær preutfylling for Gjenny for ${prefillData.sedType}")
-                prefill(prefillData, personDataCollection, null)
+                prefill(prefillData, personDataCollection, emptyList())
             }
         }
     }
-    fun prefill(prefillData: PrefillDataModel, personDataCollection: PersonDataCollection, pensjonCollection: PensjonCollection?): SED {
+
+    fun prefill(
+        prefillData: PrefillDataModel,
+        personDataCollection: PersonDataCollection,
+        pensjonCollection: PensjonCollection?,
+        listOverVedtak: List<VedtakItem> = emptyList()
+    ): SED {
 
         logger.debug("mapping prefillClass to SED: ${prefillData.sedType}")
 
@@ -105,11 +115,10 @@ class PrefillSEDService(private val eessiInformasjon: EessiInformasjon, private 
                 pensjonCollection?.pensjoninformasjon ?: throw ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
                     "Ingen vedtak"
-                ),
-                etterlatteService
+                )
             ).prefill(
                 prefillData,
-                personDataCollection
+                personDataCollection, listOverVedtak
             )
             P5000 -> PrefillP5000(PrefillSed(prefillPDLnav)).prefill(prefillData, personDataCollection)
             P4000 -> PrefillP4000(PrefillSed(prefillPDLnav)).prefill(prefillData, personDataCollection)

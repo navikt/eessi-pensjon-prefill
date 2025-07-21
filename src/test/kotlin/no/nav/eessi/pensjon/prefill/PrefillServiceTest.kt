@@ -9,6 +9,7 @@ import no.nav.eessi.pensjon.metrics.MetricsHelper
 import no.nav.eessi.pensjon.prefill.PersonDataServiceTest.Companion.FNR_VOKSEN
 import no.nav.eessi.pensjon.prefill.models.DigitalKontaktinfo
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
+import no.nav.eessi.pensjon.prefill.EtterlatteService
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
 import no.nav.eessi.pensjon.shared.api.ApiRequest
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
@@ -49,6 +50,7 @@ class PrefillServiceTest{
             innhentingService,
             etterlatteService,
             automatiseringStatistikkService,
+            mockk(relaxed = true),
             MetricsHelper.ForTest()
         )
         every { innhentingService.getAvdodAktoerIdPDL(any())} returns avdodPersonFnr
@@ -77,7 +79,7 @@ class PrefillServiceTest{
 
         val krrPerson = DigitalKontaktinfo(epostadresse = epost, true, true, false, "11111111", FNR_VOKSEN)
         every { krrService.hentPersonerFraKrr(any()) } returns krrPerson
-        every { prefillSedService.prefill(capture(requestSlot), any(), any()) } returns SED(SedType.P2000, "sedVer")
+        every { prefillSedService.prefill(capture(requestSlot), any(), any(), any()) } returns SED(SedType.P2000, "sedVer")
 
         prefillService.prefillSedtoJson(request)
         val capture = requestSlot.captured

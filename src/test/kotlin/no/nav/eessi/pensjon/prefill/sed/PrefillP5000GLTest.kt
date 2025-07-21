@@ -56,8 +56,8 @@ class PrefillP5000GLTest {
 
         val pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
 
-        prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav, etterlatteService)
-        p5000 = prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection) as P5000
+        prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav)
+        p5000 = prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection, emptyList()) as P5000
     }
 
     @Test

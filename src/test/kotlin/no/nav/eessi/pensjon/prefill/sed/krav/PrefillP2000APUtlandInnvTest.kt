@@ -8,12 +8,12 @@ import no.nav.eessi.pensjon.eux.model.SedType.P2000
 import no.nav.eessi.pensjon.eux.model.sed.BasertPaa
 import no.nav.eessi.pensjon.pensjonsinformasjon.models.KravArsak
 import no.nav.eessi.pensjon.pensjonsinformasjon.models.PenKravtype
-import no.nav.eessi.pensjon.prefill.EtterlatteService
 import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.models.*
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLAdresse
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
+import no.nav.eessi.pensjon.prefill.EtterlatteService
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
 import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper.lesPensjonsdataFraFil
 import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper.readJsonResponse
@@ -66,12 +66,12 @@ class PrefillP2000APUtlandInnvTest {
 
         pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
 
-        prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav, etterlatteService)
+        prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav)
     }
 
     @Test
     fun `forventet korrekt utfylt P2000 alderpensjon med kap4 og 9`() {
-        val P2000 = prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection)
+        val P2000 = prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection, emptyList())
 
         assertNotNull(P2000.nav?.krav)
         assertEquals("2015-11-25", P2000.nav?.krav?.dato)
@@ -80,7 +80,7 @@ class PrefillP2000APUtlandInnvTest {
 
     @Test
     fun `forventet korrekt utfylt P2000 alderpensjon og mottasbasertpaa satt til botid`() {
-        val P2000 = prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection) as no.nav.eessi.pensjon.eux.model.sed.P2000
+        val P2000 = prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection, emptyList()) as no.nav.eessi.pensjon.eux.model.sed.P2000
 
         assertNotNull(P2000.nav?.krav)
         assertEquals("2015-11-25", P2000.nav?.krav?.dato)
