@@ -100,10 +100,13 @@ class PrefillService(
         val gjenlevende = prefillData.avdod?.let { prefillPdlNav.createGjenlevende(personDataCollection.forsikretPerson, prefillData.bruker) }
 
         val resultatEtterlatteRespData = etterlatteService.hentGjennyVedtak(gjenlevende?.person?.pin?.first()?.identifikator!!)
+        if(resultatEtterlatteRespData.isFailure){
+            logger.error(resultatEtterlatteRespData.exceptionOrNull()?.message)
+        }
         return resultatEtterlatteRespData.getOrNull()?.vedtak?.map { vedtak ->
             VedtakItem(
                 virkningsdato = vedtak.virkningstidspunkt.toString(),
-                beregning = vedtak.utbetaling.map {
+                beregning = vedtak.utbetaling?.map {
                     BeregningItem(
                         beloepBrutto = BeloepBrutto(beloep = it.beloep)
                     )
