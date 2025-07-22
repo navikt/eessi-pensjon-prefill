@@ -32,14 +32,14 @@ class EtterlatteServiceTest {
           "vedtak": [
             {
               "sakId": 0,
-              "sakType": "string",
+              "sakType": "OMSTILLINGSSTOENAD",
               "virkningstidspunkt": "2025-01-01",
               "type": "INNVILGELSE",
               "utbetaling": [
                 {
                   "fraOgMed": "2025-01-01",
                   "tilOgMed": "2025-01-31",
-                  "beloep": "string"
+                  "beloep": "2323"
                 }
               ],
               "iverksettelsesTidspunkt": "2025-07-18T14:23:45.123456Z"

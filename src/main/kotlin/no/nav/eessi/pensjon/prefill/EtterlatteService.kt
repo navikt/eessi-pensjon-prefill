@@ -59,7 +59,7 @@ class EtterlatteService(private val etterlatteRestTemplate: RestTemplate) {
         val sakId: Int,
         val sakType: String?,
         val virkningstidspunkt: LocalDate?,
-        val type: String?,
+        val type: VedtakStatus?,
         val utbetaling: List<GjennyUtbetaling>?,
         val iverksettelsesTidspunkt: LocalDateTime?,
     )
@@ -70,4 +70,18 @@ class EtterlatteService(private val etterlatteRestTemplate: RestTemplate) {
         val beloep : String?,
     )
 
+    enum class VedtakStatus(val value: String) {
+        INNVILGELSE("01"),
+        AVSLAG("02"),
+        NY_BEREGNING_OMREGNING("03"),
+        FORELOPIG_UTBETALING("04");
+
+        companion object {
+            @JvmStatic
+            fun fra(value: String?): VedtakStatus? {
+                return if (value == null) null
+                else values().firstOrNull { it.value == value }
+            }
+        }
+    }
 }

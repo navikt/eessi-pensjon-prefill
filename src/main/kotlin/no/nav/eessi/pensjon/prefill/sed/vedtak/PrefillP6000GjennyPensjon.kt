@@ -34,7 +34,7 @@ class PrefillP6000GjennyPensjon {
         return vedtak?.map { vedtak ->
             VedtakItem(
                 virkningsdato = vedtak.virkningstidspunkt.toString(),
-                type = vedtak.type,
+                type = vedtak.type?.value,
                 beregning = vedtak.utbetaling?.map {
                     BeregningItem(
                         beloepBrutto = BeloepBrutto(beloep = it.beloep),
