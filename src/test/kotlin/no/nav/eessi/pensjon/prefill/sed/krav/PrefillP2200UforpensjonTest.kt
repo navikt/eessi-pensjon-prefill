@@ -72,7 +72,7 @@ class PrefillP2200UforpensjonTest {
 
         assertNotNull(pendata.brukersSakerListe)
 
-        val P2200 = prefillSEDService.prefill(prefillData, persondataCollection,pensjonCollection)
+        val P2200 = prefillSEDService.prefill(prefillData, persondataCollection, pensjonCollection, null)
         val p2200Actual = P2200.toJsonSkipEmpty()
         assertNotNull(p2200Actual)
         assertEquals(SedType.P2200, P2200.type)
@@ -104,7 +104,7 @@ class PrefillP2200UforpensjonTest {
 
         assertNotNull(pendata.brukersSakerListe)
 
-        val p2200 = prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection)
+        val p2200 = prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null)
         assertEquals(SedType.P2200, p2200.type)
 
         val barn1 = p2200.nav?.barn?.first()

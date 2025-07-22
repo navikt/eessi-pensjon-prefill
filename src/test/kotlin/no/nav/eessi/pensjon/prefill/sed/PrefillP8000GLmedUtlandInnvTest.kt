@@ -57,7 +57,7 @@ class PrefillP8000GLmedUtlandInnvTest {
         val pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
 
         prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav)
-        sed = prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection, emptyList())
+        sed = prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection, null)
     }
 
     @Test

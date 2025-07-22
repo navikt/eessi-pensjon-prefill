@@ -16,7 +16,7 @@ import no.nav.eessi.pensjon.eux.model.SedType.P8000
 import no.nav.eessi.pensjon.eux.model.SedType.X005
 import no.nav.eessi.pensjon.eux.model.SedType.X010
 import no.nav.eessi.pensjon.eux.model.sed.SED
-import no.nav.eessi.pensjon.eux.model.sed.VedtakItem
+import no.nav.eessi.pensjon.prefill.EtterlatteService.EtterlatteVedtakResponseData
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.prefill.models.PensjonCollection
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
@@ -42,7 +42,7 @@ class PrefillSEDService(private val eessiInformasjon: EessiInformasjon, private 
     fun prefill(
         prefillData: PrefillDataModel,
         personDataCollection: PersonDataCollection,
-        listOverVedtak: List<VedtakItem> = emptyList()
+        etterlatteRespData: EtterlatteVedtakResponseData?
     ): SED {
         return when (prefillData.sedType) {
             P6000 -> {
@@ -53,7 +53,7 @@ class PrefillSEDService(private val eessiInformasjon: EessiInformasjon, private 
                 ).prefill(
                     prefillData,
                     personDataCollection,
-                    listOverVedtak
+                    etterlatteRespData
                 )
             }
             P2100 -> {
@@ -67,7 +67,7 @@ class PrefillSEDService(private val eessiInformasjon: EessiInformasjon, private 
             }
             else -> {
                 logger.warn("Benytter ordinær preutfylling for Gjenny for ${prefillData.sedType}")
-                prefill(prefillData, personDataCollection, emptyList())
+                prefill(prefillData, personDataCollection, null)
             }
         }
     }
@@ -76,7 +76,7 @@ class PrefillSEDService(private val eessiInformasjon: EessiInformasjon, private 
         prefillData: PrefillDataModel,
         personDataCollection: PersonDataCollection,
         pensjonCollection: PensjonCollection?,
-        listOverVedtak: List<VedtakItem> = emptyList()
+        etterlatteRespData: EtterlatteVedtakResponseData?
     ): SED {
 
         logger.debug("mapping prefillClass to SED: ${prefillData.sedType}")
@@ -118,7 +118,7 @@ class PrefillSEDService(private val eessiInformasjon: EessiInformasjon, private 
                 )
             ).prefill(
                 prefillData,
-                personDataCollection, listOverVedtak
+                personDataCollection, etterlatteRespData
             )
             P5000 -> PrefillP5000(PrefillSed(prefillPDLnav)).prefill(prefillData, personDataCollection)
             P4000 -> PrefillP4000(PrefillSed(prefillPDLnav)).prefill(prefillData, personDataCollection)

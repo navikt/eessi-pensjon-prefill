@@ -96,7 +96,7 @@ class PrefillP2000_AP_21975717Test {
 
     @Test
     fun `forventet korrekt utfylt P2000 alderpensjon med kap4 og 9`() {
-        val p2000 = prefillSEDService.prefill(prefillData, persondataCollection, pensjonCollection)
+        val p2000 = prefillSEDService.prefill(prefillData, persondataCollection, pensjonCollection, null)
 
         val p2000pensjon = SED(
                 type = P2000,
@@ -119,7 +119,7 @@ class PrefillP2000_AP_21975717Test {
 
     @Test
     fun `forventet korrekt utfylt P2000 med epost og telefonummer`() {
-        val p2000 = prefillSEDService.prefill(prefillData, persondataCollection, pensjonCollection)
+        val p2000 = prefillSEDService.prefill(prefillData, persondataCollection, pensjonCollection, null)
 
         assertEquals(prefillData.bruker.telefonKrr, p2000.nav?.bruker?.person?.kontakt?.telefon?.get(0)?.nummer)
         assertEquals(prefillData.bruker.epostKrr, p2000.nav?.bruker?.person?.kontakt?.email?.get(0)?.adresse)
@@ -132,7 +132,7 @@ class PrefillP2000_AP_21975717Test {
                 epostKrr = "somethin_g@gmail.com".validateEmail()
             )
         )
-        val p2000 = prefillSEDService.prefill(edited, persondataCollection, pensjonCollection)
+        val p2000 = prefillSEDService.prefill(edited, persondataCollection, pensjonCollection, null)
 
         assertEquals(edited.bruker.telefonKrr, p2000.nav?.bruker?.person?.kontakt?.telefon?.get(0)?.nummer)
         assertEquals(null, p2000.nav?.bruker?.person?.kontakt?.email)
@@ -141,7 +141,7 @@ class PrefillP2000_AP_21975717Test {
 
     @Test
     fun `forventet korrekt utfylt P2000 alderpersjon med mockdata fra testfiler`() {
-        val p2000 = prefillSEDService.prefill(prefillData, persondataCollection, pensjonCollection)
+        val p2000 = prefillSEDService.prefill(prefillData, persondataCollection, pensjonCollection, null)
 
         assertEquals(null, p2000.nav?.barn)
 
@@ -189,7 +189,7 @@ class PrefillP2000_AP_21975717Test {
                 )
         )
 
-        val p2000 = prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection)
+        val p2000 = prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null)
 
         assertEquals("Barn", p2000.nav?.barn?.get(0)?.person?.fornavn)
         assertEquals("2004-01-01", p2000.nav?.barn?.get(0)?.person?.foedselsdato)
@@ -198,7 +198,7 @@ class PrefillP2000_AP_21975717Test {
 
     @Test
     fun `testing av komplett P2000 med utskrift og testing av innsending`() {
-        val p2000 = prefillSEDService.prefill(prefillData, persondataCollection,pensjonCollection)
+        val p2000 = prefillSEDService.prefill(prefillData, persondataCollection,pensjonCollection, null)
 
         val json = mapAnyToJson(createMockApiRequest(p2000.toJson()))
         assertNotNull(json)

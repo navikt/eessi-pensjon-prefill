@@ -73,7 +73,7 @@ class PrefillP2000AlderPensjonForsteGangTest {
     fun `Gitt at kravtype er FORSTEG_BH skal det kastes en exception`() {
 
         assertThrows<ResponseStatusException> {
-            prefillSEDService.prefill(prefillData, persondataCollection, PensjonCollection(sedType = SedType.P2000))
+            prefillSEDService.prefill(prefillData, persondataCollection, PensjonCollection(sedType = SedType.P2000), null)
         }
     }
 

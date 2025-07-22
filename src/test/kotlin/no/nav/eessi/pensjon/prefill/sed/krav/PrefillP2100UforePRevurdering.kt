@@ -62,7 +62,7 @@ class PrefillP2100UforePRevurdering {
 
         prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav)
 
-        val p2100 = prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection)
+        val p2100 = prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null)
 
         assertNotNull(p2100.nav?.krav)
         assertEquals("2020-08-01", p2100.nav?.krav?.dato)

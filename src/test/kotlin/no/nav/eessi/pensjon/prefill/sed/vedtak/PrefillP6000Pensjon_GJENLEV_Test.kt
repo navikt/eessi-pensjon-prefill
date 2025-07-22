@@ -69,7 +69,7 @@ class PrefillP6000Pensjon_GJENLEV_Test {
         val pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
 
 
-        val p6000 = prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection) as P6000
+        val p6000 = prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null) as P6000
         val p6000Pensjon = p6000.pensjon!!
 
         assertNotNull(p6000Pensjon.vedtak)
@@ -127,7 +127,7 @@ class PrefillP6000Pensjon_GJENLEV_Test {
         )
         prefillSEDService = PrefillSEDService(eessiInformasjon, prefillNav)
 
-        val p6000 = prefillSEDService.prefill(prefillData, personDataCollection) as P6000
+        val p6000 = prefillSEDService.prefill(prefillData, personDataCollection, null) as P6000
         assertEquals(avdodPersonFnr, p6000.nav?.bruker?.person?.pin?.firstOrNull()?.identifikator)
         assertEquals("RAGNAROK", p6000.nav?.bruker?.person?.etternavn)
         assertEquals("THOR-DOPAPIR", p6000.nav?.bruker?.person?.fornavn)
@@ -141,7 +141,7 @@ class PrefillP6000Pensjon_GJENLEV_Test {
         val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
         val pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
 
-        val p6000 = prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection) as P6000
+        val p6000 = prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null) as P6000
         val p6000Pensjon = p6000.pensjon!!
 
         assertNotNull(p6000Pensjon.vedtak)
@@ -191,7 +191,6 @@ class PrefillP6000Pensjon_GJENLEV_Test {
 
         assertThrows<IkkeGyldigKallException> {
             innhentingService.hentPensjoninformasjonCollection(prefillData)
-//            prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection)
         }
     }
 }

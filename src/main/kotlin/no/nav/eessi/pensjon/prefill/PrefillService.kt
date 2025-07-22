@@ -1,16 +1,13 @@
 package no.nav.eessi.pensjon.prefill
 
 import io.micrometer.core.instrument.Metrics
-import no.nav.eessi.pensjon.eux.model.sed.BeloepBrutto
-import no.nav.eessi.pensjon.eux.model.sed.BeregningItem
 import no.nav.eessi.pensjon.eux.model.sed.SED.Companion.setSEDVersion
-import no.nav.eessi.pensjon.eux.model.sed.VedtakItem
 import no.nav.eessi.pensjon.metrics.MetricsHelper
 import no.nav.eessi.pensjon.prefill.models.DigitalKontaktinfo
 import no.nav.eessi.pensjon.prefill.models.DigitalKontaktinfo.Companion.validateEmail
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
-import no.nav.eessi.pensjon.prefill.EtterlatteService
+import no.nav.eessi.pensjon.prefill.EtterlatteService.EtterlatteVedtakResponseData
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
 import no.nav.eessi.pensjon.shared.api.ApiRequest
 import no.nav.eessi.pensjon.shared.api.PersonInfo
@@ -64,12 +61,12 @@ class PrefillService(
                 val sed = if(request.gjenny){
                     logger.info("Begynner preutfylling for gjenny")
                     prefillSedService.prefill(prefillData, personcollection,
-                        listeOverVedtak(prefillData, personcollection) ?: emptyList())
+                        listeOverVedtak(prefillData, personcollection))
                 }
                 else {
                     val pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
                     secureLog.info("PensjonCollection: ${pensjonCollection.toJson()}")
-                    prefillSedService.prefill(prefillData, personcollection, pensjonCollection, emptyList())
+                    prefillSedService.prefill(prefillData, personcollection, pensjonCollection, null)
                 }
 
                 secureLog.info("Sed ferdig utfylt: $sed")
@@ -96,23 +93,14 @@ class PrefillService(
         }
     }
 
-    private fun listeOverVedtak(prefillData: PrefillDataModel, personDataCollection: PersonDataCollection): List<VedtakItem>? {
+    private fun listeOverVedtak(prefillData: PrefillDataModel, personDataCollection: PersonDataCollection): EtterlatteVedtakResponseData? {
         val gjenlevende = prefillData.avdod?.let { prefillPdlNav.createGjenlevende(personDataCollection.forsikretPerson, prefillData.bruker) }
 
         val resultatEtterlatteRespData = etterlatteService.hentGjennyVedtak(gjenlevende?.person?.pin?.first()?.identifikator!!)
         if(resultatEtterlatteRespData.isFailure){
             logger.error(resultatEtterlatteRespData.exceptionOrNull()?.message)
         }
-        return resultatEtterlatteRespData.getOrNull()?.vedtak?.map { vedtak ->
-            VedtakItem(
-                virkningsdato = vedtak.virkningstidspunkt.toString(),
-                beregning = vedtak.utbetaling?.map {
-                    BeregningItem(
-                        beloepBrutto = BeloepBrutto(beloep = it.beloep)
-                    )
-                }
-            )
-        }.also { logger.debug("Mapper fra resultat: ${resultatEtterlatteRespData.isSuccess} til $it") }
+        return resultatEtterlatteRespData.getOrNull()
     }
 
     private fun hentKrrPerson(norskIdent: String, request: ApiRequest): PersonInfo {

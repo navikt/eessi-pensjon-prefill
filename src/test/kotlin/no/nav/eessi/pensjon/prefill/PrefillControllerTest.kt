@@ -13,7 +13,6 @@ import no.nav.eessi.pensjon.prefill.PersonDataServiceTest.Companion.FNR_VOKSEN
 import no.nav.eessi.pensjon.prefill.models.DigitalKontaktinfo
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
-import no.nav.eessi.pensjon.prefill.EtterlatteService
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
 import no.nav.eessi.pensjon.shared.api.ApiRequest
 import no.nav.eessi.pensjon.shared.api.InstitusjonItem

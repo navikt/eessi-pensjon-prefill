@@ -79,7 +79,7 @@ class PrefillP2000KravKunUtlandTest {
 
         val expected = "Søknad gjelder Førstegangsbehandling kun utland. Se egen rutine på navet"
         try {
-            prefillSEDService.prefill(prefillData, persondataCollection, pensjonCollection)
+            prefillSEDService.prefill(prefillData, persondataCollection, pensjonCollection, null)
         } catch (ex: ResponseStatusException) {
             assertEquals(expected, ex.reason)
         }

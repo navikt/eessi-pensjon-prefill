@@ -68,7 +68,7 @@ class PrefillP2200UPUtlandInnvTest {
 
     @Test
     fun `forventet korrekt utfylt P2200 uforepensjon med kap4 og 9`() {
-        val P2200 = prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection)
+        val P2200 = prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null)
 
         val P2200ufor = SED(
                 type = SedType.P2200,
@@ -83,7 +83,7 @@ class PrefillP2200UPUtlandInnvTest {
 
     @Test
     fun `forventet korrekt utfylt P2200 uforepensjon med mockdata fra testfiler`() {
-        val p2200 = prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection)
+        val p2200 = prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null)
 
         assertEquals(null, p2200.nav?.barn)
 

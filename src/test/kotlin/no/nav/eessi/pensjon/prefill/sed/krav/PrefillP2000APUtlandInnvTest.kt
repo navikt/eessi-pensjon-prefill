@@ -71,7 +71,7 @@ class PrefillP2000APUtlandInnvTest {
 
     @Test
     fun `forventet korrekt utfylt P2000 alderpensjon med kap4 og 9`() {
-        val P2000 = prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection, emptyList())
+        val P2000 = prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection, null)
 
         assertNotNull(P2000.nav?.krav)
         assertEquals("2015-11-25", P2000.nav?.krav?.dato)
@@ -80,7 +80,7 @@ class PrefillP2000APUtlandInnvTest {
 
     @Test
     fun `forventet korrekt utfylt P2000 alderpensjon og mottasbasertpaa satt til botid`() {
-        val P2000 = prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection, emptyList()) as no.nav.eessi.pensjon.eux.model.sed.P2000
+        val P2000 = prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection, null) as no.nav.eessi.pensjon.eux.model.sed.P2000
 
         assertNotNull(P2000.nav?.krav)
         assertEquals("2015-11-25", P2000.nav?.krav?.dato)
@@ -122,7 +122,8 @@ class PrefillP2000APUtlandInnvTest {
         val P2000 = prefillSEDService.prefill(
             prefillData,
             personDataCollection,
-            spykPensjonCollection
+            spykPensjonCollection,
+            null
         ) as no.nav.eessi.pensjon.eux.model.sed.P2000
 
         assertEquals("444", P2000.p2000pensjon?.ytelser?.firstOrNull()?.totalbruttobeloepbostedsbasert)
@@ -133,7 +134,7 @@ class PrefillP2000APUtlandInnvTest {
 
     @Test
     fun `forventet korrekt utfylt P2000 alderpersjon med mockdata fra testfiler`() {
-        val p2000 = prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection)
+        val p2000 = prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection, null)
 
         assertEquals(null, p2000.nav?.barn)
 
@@ -170,7 +171,7 @@ class PrefillP2000APUtlandInnvTest {
 
     @Test
     fun `testing av komplett P2000 med utskrift og testing av innsending`() {
-        val p2000 = prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection)
+        val p2000 = prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection, null)
 
         val json = mapAnyToJson(createMockApiRequest(p2000.toJson()))
         assertNotNull(json)

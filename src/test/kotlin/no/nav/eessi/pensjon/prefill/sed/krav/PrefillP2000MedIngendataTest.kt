@@ -65,7 +65,7 @@ class PrefillP2000MedIngendataTest {
     @Test
     fun `Gitt pensjonsinformasjon som mangler vedtak når preutfyller så stopp preutfylling med melding om vedtak mangler`() {
         try {
-            prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection)
+            prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection, null)
         } catch (ex: ResponseStatusException) {
             val errormsg = """Det finnes ingen iverksatte vedtak for førstegangsbehandling kun utland. Vennligst gå til EESSI-Pensjon fra vedtakskontekst.""".trimIndent()
             assertEquals("400 BAD_REQUEST \"$errormsg\"", ex.message)

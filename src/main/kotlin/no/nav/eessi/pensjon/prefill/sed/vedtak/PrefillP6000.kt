@@ -1,7 +1,7 @@
 package no.nav.eessi.pensjon.prefill.sed.vedtak
 
 import no.nav.eessi.pensjon.eux.model.sed.P6000
-import no.nav.eessi.pensjon.eux.model.sed.VedtakItem
+import no.nav.eessi.pensjon.prefill.EtterlatteService.EtterlatteVedtakResponseData
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
@@ -20,7 +20,7 @@ class PrefillP6000(
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillP6000::class.java) }
 
-    fun prefill(prefillData: PrefillDataModel, personData: PersonDataCollection, listeOverVedtak: List<VedtakItem>?): P6000 {
+    fun prefill(prefillData: PrefillDataModel, personData: PersonDataCollection, etterlatteRespData: EtterlatteVedtakResponseData?): P6000 {
         val sedType = prefillData.sedType
 
         logger.info(
@@ -40,10 +40,10 @@ class PrefillP6000(
             logger.debug("Prefiller P6000 med Pensjonsdata fra PESYS")
             prefillP6000Pensjon(pensjoninformasjon, gjenlevende, andreInstitusjondetaljer)
         } else {
-            logger.debug("Prefiller med Pensjonsdata fra Gjenny, med vedtak: $listeOverVedtak")
+            logger.debug("Prefiller med Pensjonsdata fra Gjenny, med vedtak: $etterlatteRespData")
             PrefillP6000GjennyPensjon().prefillP6000GjennyPensjon(
                 gjenlevende,
-                listeOverVedtak
+                etterlatteRespData
             )
         }
 

@@ -56,7 +56,7 @@ class SedP3000XXTest {
         val datamodel = getMockDataModel(P3000_AT, personFnr)
         pensjonCollection = PensjonCollection(sedType = P3000_AT)
 
-        val sed = prefillSEDService.prefill(datamodel, personDataCollection,pensjonCollection, emptyList())
+        val sed = prefillSEDService.prefill(datamodel, personDataCollection,pensjonCollection, null)
         Assertions.assertEquals(P3000_AT, sed.type)
     }
 
@@ -65,7 +65,7 @@ class SedP3000XXTest {
         val datamodel = getMockDataModel(P3000_IT, personFnr)
         pensjonCollection = PensjonCollection(sedType = P3000_IT)
 
-        val sed = prefillSEDService.prefill(datamodel, personDataCollection,pensjonCollection, emptyList())
+        val sed = prefillSEDService.prefill(datamodel, personDataCollection,pensjonCollection, null)
         Assertions.assertEquals(P3000_IT, sed.type)
     }
 
@@ -74,7 +74,7 @@ class SedP3000XXTest {
         val datamodel = getMockDataModel(P3000_SE, personFnr)
         pensjonCollection = PensjonCollection(sedType = P3000_SE)
 
-        val sed = prefillSEDService.prefill(datamodel, personDataCollection,pensjonCollection, emptyList())
+        val sed = prefillSEDService.prefill(datamodel, personDataCollection,pensjonCollection, null)
         Assertions.assertEquals(P3000_SE, sed.type)
     }
 

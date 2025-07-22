@@ -81,7 +81,7 @@ class PrefillP2200_AP_21975717Test {
         every { kodeverkClient.finnLandkode("NOR") } returns "NO"
         every { kodeverkClient.hentPostSted(any()) } returns Postnummer("1068", "OSLO")
 
-        val p2200 = prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection)
+        val p2200 = prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null)
 
         assertEquals(null, p2200.nav?.barn)
 
@@ -125,7 +125,7 @@ class PrefillP2200_AP_21975717Test {
     fun `testing av komplett P2200 med utskrift og testing av innsending`() {
         every { kodeverkClient.finnLandkode(any()) } returns "NO"
 
-        val p2200 = prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection)
+        val p2200 = prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null)
         val json = mapAnyToJson(createMockApiRequest(p2200.toJson()))
         assertNotNull(json)
     }

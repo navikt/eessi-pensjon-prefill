@@ -57,7 +57,7 @@ class EtterlatteService(private val etterlatteRestTemplate: RestTemplate) {
 
     data class GjennyVedtak(
         val sakId: Int,
-        val sakType: String,
+        val sakType: String?,
         val virkningstidspunkt: LocalDate?,
         val type: String?,
         val utbetaling: List<GjennyUtbetaling>?,
