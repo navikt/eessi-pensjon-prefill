@@ -36,10 +36,11 @@ class PrefillP6000(
         logger.debug("Henter opp Persondata/Gjenlevende fra TPS")
         val gjenlevende = prefillData.avdod?.let { prefillNav.createGjenlevende(personData.forsikretPerson, prefillData.bruker) }
 
-        logger.debug("Henter opp Pensjonsdata fra PESYS")
         val p6000Pensjon = if(pensjoninformasjon != null) {
+            logger.debug("Prefiller P6000 med Pensjonsdata fra PESYS")
             prefillP6000Pensjon(pensjoninformasjon, gjenlevende, andreInstitusjondetaljer)
         } else {
+            logger.debug("Prefiller med Pensjonsdata fra Gjenny")
             PrefillP6000GjennyPensjon().prefillP6000GjennyPensjon(
                 gjenlevende,
                 listeOverVedtak
