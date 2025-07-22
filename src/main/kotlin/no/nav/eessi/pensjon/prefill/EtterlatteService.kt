@@ -26,8 +26,10 @@ class EtterlatteService(private val etterlatteRestTemplate: RestTemplate) {
         val url = "/api/v1/vedtak"
         logger.debug("Henter informasjon fra gjenny: $url")
         val json = """
+            {
                 "foedselsnummer": "$fnr"
-            """.trimIndent()
+            }
+        """.trimIndent()
 
         return try {
             val response = etterlatteRestTemplate.exchange(
