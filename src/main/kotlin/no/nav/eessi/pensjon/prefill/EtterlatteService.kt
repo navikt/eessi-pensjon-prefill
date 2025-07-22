@@ -58,16 +58,16 @@ class EtterlatteService(private val etterlatteRestTemplate: RestTemplate) {
     data class GjennyVedtak(
         val sakId: Int,
         val sakType: String,
-        val virkningstidspunkt: LocalDate,
-        val type: String,
-        val utbetaling: List<GjennyUtbetaling>,
-        val iverksettelsesTidspunkt: LocalDateTime,
+        val virkningstidspunkt: LocalDate?,
+        val type: String?,
+        val utbetaling: List<GjennyUtbetaling>?,
+        val iverksettelsesTidspunkt: LocalDateTime?,
     )
 
     data class GjennyUtbetaling(
-        val fraOgMed : LocalDate,
-        val tilOgMed : LocalDate,
-        val beloep : String,
+        val fraOgMed : LocalDate?,
+        val tilOgMed : LocalDate?,
+        val beloep : String?,
     )
 
 }
