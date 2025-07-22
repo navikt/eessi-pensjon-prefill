@@ -40,7 +40,7 @@ class PrefillP6000(
             logger.debug("Prefiller P6000 med Pensjonsdata fra PESYS")
             prefillP6000Pensjon(pensjoninformasjon, gjenlevende, andreInstitusjondetaljer)
         } else {
-            logger.debug("Prefiller med Pensjonsdata fra Gjenny")
+            logger.debug("Prefiller med Pensjonsdata fra Gjenny, med vedtak: $listeOverVedtak")
             PrefillP6000GjennyPensjon().prefillP6000GjennyPensjon(
                 gjenlevende,
                 listeOverVedtak
