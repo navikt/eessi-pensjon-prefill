@@ -109,7 +109,7 @@ class PrefillService(
                     )
                 }
             )
-        }
+        }.also { logger.debug("Mapper fra resultat: ${resultatEtterlatteRespData.isSuccess} til $it") }
     }
 
     private fun hentKrrPerson(norskIdent: String, request: ApiRequest): PersonInfo {
