@@ -4,6 +4,7 @@ import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.sed.P7000
+import no.nav.eessi.pensjon.prefill.BasePrefillNav
 import no.nav.eessi.pensjon.prefill.EtterlatteService
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
@@ -41,14 +42,8 @@ class PrefillP7000_AP_21975717Test {
         etterlatteService = mockk()
         personCollection = PersonDataCollection(person, person, barnPersonList = emptyList())
 
-        prefillPDLNav = PrefillPDLNav(
-            prefillAdresse = mockk<PrefillPDLAdresse> {
-                every { hentLandkode(any()) } returns "NO"
-                every { createPersonAdresse(any()) } returns mockk()
-            },
-            institutionid = "NO:noinst002",
-            institutionnavn = "NOINST002, NO INST002, NO"
-        )
+        prefillPDLNav = BasePrefillNav.createPrefillNav()
+
         pensjonCollection = PensjonCollection(sedType = SedType.P7000)
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P7000,
             penSaksnummer = "21975717", pinId = personFnr, vedtakId = "12312312")

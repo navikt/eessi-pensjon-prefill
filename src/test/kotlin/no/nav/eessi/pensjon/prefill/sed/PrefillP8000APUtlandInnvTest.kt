@@ -7,6 +7,7 @@ import no.nav.eessi.pensjon.kodeverk.KodeverkClient
 import no.nav.eessi.pensjon.kodeverk.Postnummer
 import no.nav.eessi.pensjon.pensjonsinformasjon.models.EPSaktype
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
+import no.nav.eessi.pensjon.prefill.BasePrefillNav
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
@@ -43,10 +44,7 @@ class PrefillP8000APUtlandInnvTest {
 
         val prefillAdresse = PrefillPDLAdresse(kodeverkClient, personService)
 
-        prefillNav = PrefillPDLNav(
-                prefillAdresse = prefillAdresse,
-                institutionid = "NO:noinst002",
-                institutionnavn = "NOINST002, NO INST002, NO")
+        prefillNav = BasePrefillNav.createPrefillNav(prefillAdresse)
 
         val prefillSed = PrefillSed(prefillNav)
         prefill = PrefillP8000(prefillSed)

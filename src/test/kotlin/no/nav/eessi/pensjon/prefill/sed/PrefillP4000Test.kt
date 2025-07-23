@@ -3,6 +3,7 @@ package no.nav.eessi.pensjon.prefill.sed
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.personoppslag.pdl.model.UtenlandskIdentifikasjonsnummer
+import no.nav.eessi.pensjon.prefill.BasePrefillNav
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.PersonPDLMock.mockMeta
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
@@ -25,15 +26,7 @@ class PrefillP4000Test {
     private lateinit var prefillNav: PrefillPDLNav
     @BeforeEach
     fun setup() {
-        prefillNav = PrefillPDLNav(
-            prefillAdresse = mockk {
-                every { hentLandkode(any()) } returns "NO"
-                every { hentLandkode(eq("AUT")) } returns "AU"
-                every { createPersonAdresse(any()) } returns mockk(relaxed = true)
-            },
-            institutionid = "NO:noinst002",
-            institutionnavn = "NOINST002, NO INST002, NO")
-
+        prefillNav = BasePrefillNav.createPrefillNav()
         p4000 = PrefillP4000(PrefillSed(prefillNav))
     }
 
