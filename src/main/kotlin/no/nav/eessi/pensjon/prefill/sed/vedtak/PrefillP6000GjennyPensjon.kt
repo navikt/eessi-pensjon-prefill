@@ -19,11 +19,11 @@ class PrefillP6000GjennyPensjon {
                     krav = gjennyVedtak
                     )
                 ),
-            vedtak =hentVedtakItems(etterlatteResponseData?.vedtak),
+            vedtak = hentVedtakItems(etterlatteResponseData?.vedtak),
         )
     }
 
-    fun hentVedtakItems(vedtak: List<GjennyVedtak>?): List<VedtakItem>? {
+    private fun hentVedtakItems(vedtak: List<GjennyVedtak>?): List<VedtakItem>? {
         return vedtak?.map { vedtak ->
             VedtakItem(
                 virkningsdato = vedtak.virkningstidspunkt.toString(),
