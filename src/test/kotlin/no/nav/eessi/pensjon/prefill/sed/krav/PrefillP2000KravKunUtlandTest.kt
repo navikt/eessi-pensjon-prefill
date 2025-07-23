@@ -3,7 +3,6 @@ package no.nav.eessi.pensjon.prefill.sed.krav
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.SedType
-import no.nav.eessi.pensjon.prefill.BasePrefillNav
 import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
@@ -43,7 +42,13 @@ class PrefillP2000KravKunUtlandTest {
         etterlatteService = mockk()
         persondataCollection = PersonPDLMock.createEnkelFamilie(personFnr, ekteFnr)
 
-        val prefillNav = BasePrefillNav.createPrefillNav()
+        val prefillNav = PrefillPDLNav(
+                prefillAdresse = mockk {
+                    every { hentLandkode(any()) } returns "NO"
+                    every { createPersonAdresse(any())} returns mockk(relaxed = true)
+                },
+                institutionid = "NO:noinst002",
+                institutionnavn = "NOINST002, NO INST002, NO")
 
         dataFromPEN = lesPensjonsdataFraFil("/pensjonsinformasjon/krav/P2000-AP-KUNUTL-IKKEVIRKNINGTID.xml")
 

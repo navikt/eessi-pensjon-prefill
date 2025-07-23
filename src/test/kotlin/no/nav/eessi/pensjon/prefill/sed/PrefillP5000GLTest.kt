@@ -4,7 +4,6 @@ import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.sed.P5000
-import no.nav.eessi.pensjon.prefill.BasePrefillNav
 import no.nav.eessi.pensjon.prefill.EtterlatteService
 import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
@@ -41,7 +40,13 @@ class PrefillP5000GLTest {
     fun setup() {
         personDataCollection = PersonPDLMock.createAvdodFamilie(personFnr, avdodPersonFnr)
 
-        prefillNav = BasePrefillNav.createPrefillNav()
+        prefillNav = PrefillPDLNav(
+                prefillAdresse = mockk {
+                    every { hentLandkode(any()) } returns "NO"
+                    every { createPersonAdresse(any()) } returns mockk(relaxed = true)
+                },
+                institutionid = "NO:noinst002",
+                institutionnavn = "NOINST002, NO INST002, NO")
 
         etterlatteService = EtterlatteService(mockk())
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P5000, personFnr, penSaksnummer = pesysSaksnummer, avdod = PersonInfo(avdodPersonFnr, "112233445566"))

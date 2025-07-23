@@ -2,7 +2,6 @@ package no.nav.eessi.pensjon.prefill.sed.krav
 
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.SedType
-import no.nav.eessi.pensjon.prefill.BasePrefillNav
 import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
@@ -45,7 +44,10 @@ class PrefillP2200MedAlderSakTest {
             ektefellePerson = ekte
         )
 
-        val prefillNav = BasePrefillNav.createPrefillNav()
+        val prefillNav = PrefillPDLNav(
+                prefillAdresse = mockk(),
+                institutionid = "NO:noinst002",
+                institutionnavn = "NOINST002, NO INST002, NO")
 
         dataFromPEN = lesPensjonsdataFraFil("/pensjonsinformasjon/krav/PensjonsinformasjonSaksliste-AP-14069110.xml")
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P2200, personFnr, penSaksnummer = pesysSaksnummer)

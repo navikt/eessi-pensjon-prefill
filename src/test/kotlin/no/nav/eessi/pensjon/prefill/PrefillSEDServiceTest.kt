@@ -43,7 +43,14 @@ class PrefillSEDServiceTest {
         val personDataCollectionFamilie = PersonPDLMock.createEnkelFamilie(personFnr, avdodPersonFnr)
         personDataCollection = PersonDataCollection(gjenlevendeEllerAvdod = personDataCollectionFamilie.ektefellePerson, forsikretPerson = personDataCollectionFamilie.forsikretPerson )
 
-    prefillNav = BasePrefillNav.createPrefillNav()
+        prefillNav = PrefillPDLNav(
+            prefillAdresse = mockk<PrefillPDLAdresse> {
+                every { hentLandkode(any()) } returns "NO"
+                every { createPersonAdresse(any()) } returns mockk()
+            },
+            institutionid = "NO:noinst002",
+            institutionnavn = "NOINST002, NO INST002, NO"
+        )
     }
 
     @Test

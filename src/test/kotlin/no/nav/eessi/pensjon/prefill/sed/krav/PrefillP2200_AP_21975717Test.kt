@@ -8,7 +8,6 @@ import no.nav.eessi.pensjon.eux.model.SedType.P2200
 import no.nav.eessi.pensjon.kodeverk.KodeverkClient
 import no.nav.eessi.pensjon.kodeverk.Postnummer
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
-import no.nav.eessi.pensjon.prefill.BasePrefillNav
 import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
@@ -57,7 +56,11 @@ class PrefillP2200_AP_21975717Test {
         etterlatteService = mockk()
         personDataCollection = PersonPDLMock.createEnkelFamilie(personFnr, ekteFnr)
 
-        prefillNav = BasePrefillNav.createPrefillNav(PrefillPDLAdresse(kodeverkClient, personService))
+        prefillNav = PrefillPDLNav(
+            prefillAdresse = PrefillPDLAdresse(kodeverkClient, personService),
+            institutionid = "NO:noinst002",
+            institutionnavn = "NOINST002, NO INST002, NO"
+        )
 
         dataFromPEN = lesPensjonsdataFraFil("/pensjonsinformasjon/krav/KravAlderEllerUfore_AP_UTLAND.xml")
 

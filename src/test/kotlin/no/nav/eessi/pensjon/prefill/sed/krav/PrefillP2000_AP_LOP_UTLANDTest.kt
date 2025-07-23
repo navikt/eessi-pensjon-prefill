@@ -6,7 +6,6 @@ import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_01
 import no.nav.eessi.pensjon.eux.model.SedType.P2000
 import no.nav.eessi.pensjon.eux.model.sed.Nav
 import no.nav.eessi.pensjon.eux.model.sed.SED
-import no.nav.eessi.pensjon.prefill.BasePrefillNav
 import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
@@ -49,7 +48,14 @@ class PrefillP2000_AP_LOP_UTLANDTest {
         etterlatteService = mockk()
         persondataCollection = PersonPDLMock.createEnkelFamilie(personFnr, ekteFnr)
 
-        val prefillNav = BasePrefillNav.createPrefillNav()
+        val prefillNav = PrefillPDLNav(
+            prefillAdresse = mockk<PrefillPDLAdresse> {
+                every { hentLandkode(any()) } returns "NO"
+                every { createPersonAdresse(any()) } returns mockk(relaxed = true)
+            },
+            institutionid = "NO:noinst002",
+            institutionnavn = "NOINST002, NO INST002, NO"
+        )
 
         val dataFromPEN = lesPensjonsdataFraFil("/pensjonsinformasjon/krav/AP-LOP-21644722.xml")
 

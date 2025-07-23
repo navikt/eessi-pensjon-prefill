@@ -3,7 +3,6 @@ package no.nav.eessi.pensjon.prefill.sed.krav
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.SedType
-import no.nav.eessi.pensjon.prefill.BasePrefillNav
 import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
@@ -35,7 +34,14 @@ class PrefillP2100UforePRevurdering {
     @BeforeEach
     fun setup() {
         etterlatteService = mockk()
-        prefillNav = BasePrefillNav.createPrefillNav()
+        prefillNav = PrefillPDLNav(
+                prefillAdresse = mockk {
+                    every { hentLandkode(any()) } returns "NO"
+                    every { createPersonAdresse(any()) } returns mockk(relaxed = true)
+                },
+                institutionid = "NO:NAVAT02",
+                institutionnavn = "NOINST002, NO INST002, NO")
+
 
         prefillData = PrefillDataModelMother.initialPrefillDataModel(
                 sedType = SedType.P2100,

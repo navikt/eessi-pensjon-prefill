@@ -40,8 +40,13 @@ class PrefillControllerTest {
 
     @BeforeEach
     fun before() {
-        prefillNav = BasePrefillNav.createPrefillNav()
-
+        prefillNav = PrefillPDLNav(
+            prefillAdresse = mockk {
+                every { hentLandkode(any()) } returns "NO"
+                every { createPersonAdresse(any()) } returns mockk(relaxed = true)
+            },
+            institutionid = "NO:noinst002",
+            institutionnavn = "NOINST002, NO INST002, NO")
         every { mockPrefillSEDService.prefill(any(), any(), any(), any()) } returns SED(type = P6000)
         val innhentingService = InnhentingService(personDataService, pensjonsinformasjonService = pensjonsinformasjonService)
         val prefillService = PrefillService(krrService, mockPrefillSEDService, innhentingService, automatiseringStatistikkService =automatiseringStatistikkService, etterlatteService =etterlatteService, prefillPdlNav = prefillNav)

@@ -5,7 +5,6 @@ import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_01
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.SedType.*
-import no.nav.eessi.pensjon.prefill.BasePrefillNav
 import no.nav.eessi.pensjon.prefill.EtterlatteService
 import no.nav.eessi.pensjon.prefill.LagPdlPerson
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
@@ -40,7 +39,14 @@ class SedP3000XXTest {
         val person = LagPdlPerson.lagPerson(personFnr, "Ola", "Testbruker")
         personDataCollection = PersonDataCollection(person, person)
 
-        val prefillNav = BasePrefillNav.createPrefillNav()
+        val prefillNav = PrefillPDLNav(
+            prefillAdresse = mockk<PrefillPDLAdresse> {
+                every { hentLandkode(any()) } returns "NO"
+                every { createPersonAdresse(any()) } returns mockk()
+            },
+            institutionid = "NO:noinst002",
+            institutionnavn = "NOINST002, NO INST002, NO"
+        )
 
         prefillSEDService = PrefillSEDService(eessiInformasjon, prefillNav)
     }

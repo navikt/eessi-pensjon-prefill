@@ -5,7 +5,6 @@ import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.sed.Nav
 import no.nav.eessi.pensjon.eux.model.sed.SED
-import no.nav.eessi.pensjon.prefill.BasePrefillNav
 import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
@@ -46,7 +45,13 @@ class PrefillP2200UPUtlandInnvTest {
         etterlatteService = mockk()
         personDataCollection = PersonPDLMock.createEnkelFamilie(personFnr, ekteFnr)
 
-        prefillNav = BasePrefillNav.createPrefillNav()
+        prefillNav = PrefillPDLNav(
+                prefillAdresse = mockk {
+                    every { hentLandkode(any()) } returns "NO"
+                    every { createPersonAdresse(any()) } returns mockk(relaxed = true)
+                },
+                institutionid = "NO:noinst002",
+                institutionnavn = "NOINST002, NO INST002, NO")
 
         dataFromPEN = lesPensjonsdataFraFil("/pensjonsinformasjon/krav/P2200-UP-INNV.xml")
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P2200, personFnr, penSaksnummer = pesysSaksnummer).apply {

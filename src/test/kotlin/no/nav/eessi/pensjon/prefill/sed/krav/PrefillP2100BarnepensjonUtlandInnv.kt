@@ -5,7 +5,6 @@ import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.sed.Nav
 import no.nav.eessi.pensjon.eux.model.sed.SED
-import no.nav.eessi.pensjon.prefill.BasePrefillNav
 import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
@@ -45,9 +44,17 @@ class PrefillP2100BarnepensjonUtlandInnv {
         etterlatteService = mockk()
         personDataCollection = PersonPDLMock.createAvdodFamilie(personFnr, avdodPersonFnr)
 
-        val prefillNav = BasePrefillNav.createPrefillNav( )
+        val prefillNav = PrefillPDLNav(
+            prefillAdresse = mockk<PrefillPDLAdresse> {
+                every { hentLandkode(any()) } returns "NO"
+                every { createPersonAdresse(any()) } returns mockk()
+            },
+            institutionid = "NO:NAVAT02",
+            institutionnavn = "NOINST002, NO INST002, NO"
+        )
 
         val dataFromPEN = lesPensjonsdataFraFil("/pensjonsinformasjon/krav/BARNEP_KravUtland_ForeldreAvdod.xml")
+
 
         prefillData = PrefillDataModelMother.initialPrefillDataModel(
                 sedType = SedType.P2100,
@@ -101,7 +108,7 @@ class PrefillP2100BarnepensjonUtlandInnv {
         val pinitem = pinlist?.get(0)
         assertEquals(null, pinitem?.sektor)
         assertEquals("NOINST002, NO INST002, NO", pinitem?.institusjonsnavn)
-        assertEquals("NO:noinst002", pinitem?.institusjonsid)
+        assertEquals("NO:NAVAT02", pinitem?.institusjonsid)
         assertEquals(avdodPersonFnr, pinitem?.identifikator)
 
         assertEquals("BAMSE ULUR", p2100.pensjon?.gjenlevende?.person?.fornavn)

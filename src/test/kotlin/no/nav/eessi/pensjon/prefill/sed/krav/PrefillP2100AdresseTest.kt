@@ -4,7 +4,6 @@ import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
-import no.nav.eessi.pensjon.prefill.BasePrefillNav
 import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
@@ -47,7 +46,9 @@ class PrefillP2100AdresseTest {
             every { finnLandkode(eq("NOR")) } returns "NO"
         }, personService)
 
-        val prefillNav = BasePrefillNav.createPrefillNav(prefillPDLAdresse)
+        val prefillNav = PrefillPDLNav(prefillPDLAdresse,
+                institutionid = "NO:noinst002",
+                institutionnavn = "NOINST002, NO INST002, NO")
 
         persondataCollection = PersonPDLMock.createAvdodFamilieMedDødsboadresse(personFnr, avdodPersonFnr)
         prefillData = PrefillDataModelMother.initialPrefillDataModel(

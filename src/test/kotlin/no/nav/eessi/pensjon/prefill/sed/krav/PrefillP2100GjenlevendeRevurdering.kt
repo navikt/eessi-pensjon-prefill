@@ -4,7 +4,6 @@ import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.sed.Nav
 import no.nav.eessi.pensjon.eux.model.sed.SED
-import no.nav.eessi.pensjon.prefill.BasePrefillNav
 import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
@@ -41,7 +40,10 @@ class PrefillP2100GjenlevendeRevurdering {
     @BeforeEach
     fun setup() {
         etterlatteService = mockk()
-        prefillNav = BasePrefillNav.createPrefillNav()
+        prefillNav = PrefillPDLNav(
+                prefillAdresse = mockk(relaxed = true),
+                institutionid = "NO:NAVAT02",
+                institutionnavn = "NOINST002, NO INST002, NO")
     }
 
     @Test
