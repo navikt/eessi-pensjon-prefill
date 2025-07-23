@@ -4,6 +4,7 @@ import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.sed.P6000
+import no.nav.eessi.pensjon.prefill.BasePrefillNav
 import no.nav.eessi.pensjon.prefill.IkkeGyldigKallException
 import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
@@ -43,13 +44,7 @@ class PrefillP6000Pensjon_UFORE_AVSLAG_Test {
         etterlatteService = mockk(relaxed = true)
         personDataCollection = PersonPDLMock.createEnkelFamilie(personFnr, ekteFnr)
 
-        prefillNav = PrefillPDLNav(
-                prefillAdresse = mockk<PrefillPDLAdresse>{
-                    every { hentLandkode(any()) } returns "NO"
-                    every { createPersonAdresse(any()) } returns mockk()
-                },
-                institutionid = "NO:noinst002",
-                institutionnavn = "NOINST002, NO INST002, NO")
+        prefillNav = BasePrefillNav.createPrefillNav()
 
         eessiInformasjon = standardEessiInfo()
 

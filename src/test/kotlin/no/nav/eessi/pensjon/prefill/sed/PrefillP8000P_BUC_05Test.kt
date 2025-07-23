@@ -10,6 +10,7 @@ import no.nav.eessi.pensjon.kodeverk.KodeverkClient
 import no.nav.eessi.pensjon.pensjonsinformasjon.models.EPSaktype
 import no.nav.eessi.pensjon.pensjonsinformasjon.models.KravArsak
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
+import no.nav.eessi.pensjon.prefill.BasePrefillNav
 import no.nav.eessi.pensjon.prefill.EtterlatteService
 import no.nav.eessi.pensjon.prefill.KrrService
 import no.nav.eessi.pensjon.prefill.LagPdlPerson
@@ -60,9 +61,7 @@ class PrefillP8000P_BUC_05Test {
         every { kodeverkClient.finnLandkode("SWE") } returns "SE"
 
         prefillAdresse = PrefillPDLAdresse(kodeverkClient, personService)
-        prefillNav = PrefillPDLNav( prefillAdresse,
-                institutionid = "NO:noinst002",
-                institutionnavn = "NOINST002, NO INST002, NO")
+        prefillNav = BasePrefillNav.createPrefillNav(prefillAdresse)
 
 
         prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav)

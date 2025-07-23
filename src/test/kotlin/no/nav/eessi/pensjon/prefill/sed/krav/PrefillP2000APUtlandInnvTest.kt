@@ -8,6 +8,7 @@ import no.nav.eessi.pensjon.eux.model.SedType.P2000
 import no.nav.eessi.pensjon.eux.model.sed.BasertPaa
 import no.nav.eessi.pensjon.pensjonsinformasjon.models.KravArsak
 import no.nav.eessi.pensjon.pensjonsinformasjon.models.PenKravtype
+import no.nav.eessi.pensjon.prefill.BasePrefillNav
 import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.models.*
@@ -46,15 +47,7 @@ class PrefillP2000APUtlandInnvTest {
         etterlatteService = mockk()
         personDataCollection = PersonPDLMock.createEnkelFamilie(personFnr, ekteFnr)
 
-        val prefillNav = PrefillPDLNav(
-            prefillAdresse = mockk<PrefillPDLAdresse> {
-                every { hentLandkode(any()) } returns "NO"
-                every { createPersonAdresse(any()) } returns mockk(relaxed = true){
-                }
-            },
-            institutionid = "NO:noinst002",
-            institutionnavn = "NOINST002, NO INST002, NO"
-        )
+        val prefillNav = BasePrefillNav.createPrefillNav()
 
         val dataFromPEN = lesPensjonsdataFraFil("/pensjonsinformasjon/krav/P2000-AP-UTL-INNV-24015012345_PlanB.xml")
         val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)

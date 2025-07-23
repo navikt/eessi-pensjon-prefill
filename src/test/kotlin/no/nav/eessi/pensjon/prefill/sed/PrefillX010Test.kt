@@ -5,6 +5,7 @@ import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.sed.SED
 import no.nav.eessi.pensjon.eux.model.sed.X009
+import no.nav.eessi.pensjon.prefill.BasePrefillNav
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
@@ -30,13 +31,7 @@ class PrefillX010Test {
     fun setup() {
         persondataCollection = PersonPDLMock.createEnkelFamilie(personFnr, ekteFnr)
 
-        prefillNav = PrefillPDLNav(
-            prefillAdresse = mockk {
-                every { hentLandkode(any()) } returns "NO"
-                every { createPersonAdresse(any()) } returns mockk(relaxed = true)
-            },
-            institutionid = "NO:noinst002",
-            institutionnavn = "NOINST002, NO INST002, NO")
+        prefillNav = BasePrefillNav.createPrefillNav()
 
         prefill = PrefillX010(prefillNav)
 
