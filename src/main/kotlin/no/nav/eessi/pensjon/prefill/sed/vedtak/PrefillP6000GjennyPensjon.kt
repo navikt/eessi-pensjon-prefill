@@ -1,15 +1,8 @@
 package no.nav.eessi.pensjon.prefill.sed.vedtak
 
-import no.nav.eessi.pensjon.eux.model.sed.BeloepBrutto
-import no.nav.eessi.pensjon.eux.model.sed.BeregningItem
-import no.nav.eessi.pensjon.eux.model.sed.Bruker
-import no.nav.eessi.pensjon.eux.model.sed.KravtypeItem
-import no.nav.eessi.pensjon.eux.model.sed.P6000Pensjon
-import no.nav.eessi.pensjon.eux.model.sed.Periode
-import no.nav.eessi.pensjon.eux.model.sed.Sak
-import no.nav.eessi.pensjon.eux.model.sed.VedtakItem
-import no.nav.eessi.pensjon.prefill.EtterlatteService
+import no.nav.eessi.pensjon.eux.model.sed.*
 import no.nav.eessi.pensjon.prefill.EtterlatteService.EtterlatteVedtakResponseData
+import no.nav.eessi.pensjon.prefill.EtterlatteService.GjennyVedtak
 
 class PrefillP6000GjennyPensjon {
 
@@ -30,7 +23,7 @@ class PrefillP6000GjennyPensjon {
         )
     }
 
-    private fun hentVedtakItems(vedtak: List<EtterlatteService.GjennyVedtak>?): List<VedtakItem>? {
+    private fun hentVedtakItems(vedtak: List<GjennyVedtak>?): List<VedtakItem>? {
         return vedtak?.map { vedtak ->
             VedtakItem(
                 virkningsdato = vedtak.virkningstidspunkt.toString(),
@@ -40,7 +33,7 @@ class PrefillP6000GjennyPensjon {
                         beloepBrutto = BeloepBrutto(beloep = it.beloep),
                         periode = Periode(
                             fom = it.fraOgMed.toString(),
-                            tom = it.tilOgMed.toString()
+                            tom = if (it.tilOgMed == null) "" else it.tilOgMed.toString()
                         )
                     )
                 }
