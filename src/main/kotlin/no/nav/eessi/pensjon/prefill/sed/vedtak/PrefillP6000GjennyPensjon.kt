@@ -23,11 +23,12 @@ class PrefillP6000GjennyPensjon {
         )
     }
 
-    private fun hentVedtakItems(vedtak: List<GjennyVedtak>?): List<VedtakItem>? {
+    fun hentVedtakItems(vedtak: List<GjennyVedtak>?): List<VedtakItem>? {
         return vedtak?.map { vedtak ->
             VedtakItem(
                 virkningsdato = vedtak.virkningstidspunkt.toString(),
-                type = vedtak.type?.value,
+                resultat = vedtak.type?.value,
+                type = "03", //Etterlatte pensjon, //TODO: burde legges inn som en enum i ep-eux
                 beregning = vedtak.utbetaling?.map {
                     BeregningItem(
                         beloepBrutto = BeloepBrutto(beloep = it.beloep),
