@@ -20,12 +20,8 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 class SedP3000XXTest {
-
-    var eessiInformasjon: EessiInformasjon = mockk()
     var dataFromPEN: PensjonsinformasjonService = mockk()
-
     private lateinit var prefillSEDService: PrefillSEDService
-    private lateinit var etterlatteService: EtterlatteService
 
     private val personFnr = FodselsnummerGenerator.generateFnrForTest(68)
     private lateinit var personDataCollection: PersonDataCollection
@@ -33,12 +29,8 @@ class SedP3000XXTest {
 
     @BeforeEach
     fun setupAndRunAtStart() {
-        etterlatteService = mockk()
         val person = LagPdlPerson.lagPerson(personFnr, "Ola", "Testbruker")
         personDataCollection = PersonDataCollection(person, person)
-
-        
-
         prefillSEDService = BasePrefillNav.createPrefillSEDService()
     }
 

@@ -11,8 +11,6 @@ import no.nav.eessi.pensjon.pensjonsinformasjon.models.EPSaktype
 import no.nav.eessi.pensjon.pensjonsinformasjon.models.KravArsak
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
 import no.nav.eessi.pensjon.prefill.BasePrefillNav
-import no.nav.eessi.pensjon.prefill.EtterlatteService
-import no.nav.eessi.pensjon.prefill.KrrService
 import no.nav.eessi.pensjon.prefill.LagPdlPerson
 import no.nav.eessi.pensjon.prefill.LagPdlPerson.Companion.medAdresse
 import no.nav.eessi.pensjon.prefill.PersonPDLMock.medUtlandAdresse
@@ -37,31 +35,31 @@ import org.skyscreamer.jsonassert.JSONAssert
 
 class PrefillP8000P_BUC_05Test {
 
-    private val personFnr = FodselsnummerGenerator.generateFnrForTest(68)
     private val pesysSaksnummer = "14398627"
+    private val ufoerFnr = FodselsnummerGenerator.generateFnrForTest(40)
+    private val avdodFnr = FodselsnummerGenerator.generateFnrForTest(93)
+    private val personFnr = FodselsnummerGenerator.generateFnrForTest(68)
+    private val forsikretPerson = LagPdlPerson.lagPerson(ufoerFnr, "Christopher", "Robin")
+    private val avdod = LagPdlPerson.lagPerson(avdodFnr, "Winnie", "Pooh", erDod = true)
+
     private val personService: PersonService = mockk()
+    private val kodeverkClient: KodeverkClient = mockk(relaxed = true)
 
     lateinit var prefillNav: PrefillPDLNav
     lateinit var prefillData: PrefillDataModel
-    lateinit var etterlatteService: EtterlatteService
     lateinit var pensjonCollection: PensjonCollection
     lateinit var personDataCollection: PersonDataCollection
-    lateinit var krrService: KrrService
-
-    var kodeverkClient: KodeverkClient = mockk(relaxed = true)
 
     lateinit var prefillAdresse: PrefillPDLAdresse
     lateinit var prefillSEDService: PrefillSEDService
 
     @BeforeEach
     fun setup() {
-        etterlatteService = mockk(relaxed = true)
         every { kodeverkClient.finnLandkode("NOR") } returns "NO"
         every { kodeverkClient.finnLandkode("SWE") } returns "SE"
 
         prefillAdresse = PrefillPDLAdresse(kodeverkClient, personService)
         prefillNav = BasePrefillNav.createPrefillNav(prefillAdresse)
-
 
         prefillSEDService = BasePrefillNav.createPrefillSEDService(prefillNav)
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P8000, personFnr, penSaksnummer = pesysSaksnummer)
@@ -70,10 +68,7 @@ class PrefillP8000P_BUC_05Test {
 
     @Test
     fun `Forventer korrekt utfylt P8000 med adresse`() {
-        val fnr = FodselsnummerGenerator.generateFnrForTest(68)
-
-        val personforsikret = LagPdlPerson.lagPerson(fnr, "Christopher", "Robin")
-            .medUtlandAdresse("LUNGJTEGATA 12", "postboks", "SWE", "bygning", "region", bySted = "UTLANDBY")
+        val personforsikret = forsikretPerson.medUtlandAdresse("LUNGJTEGATA 12", "postboks", "SWE", "bygning", "region", bySted = "UTLANDBY")
         personDataCollection = PersonDataCollection(personforsikret,personforsikret)
 
         val pensjonCollection = PensjonCollection(sedType = SedType.P8000)
@@ -89,25 +84,15 @@ class PrefillP8000P_BUC_05Test {
         assertEquals("SE", p8000.nav?.bruker?.adresse?.land)
         assertEquals(pesysSaksnummer, p8000.nav?.eessisak?.firstOrNull()?.saksnummer)
         assertEquals("Robin", p8000.nav?.bruker?.person?.etternavn)
-        assertEquals(fnr, p8000.nav?.bruker?.person?.pin?.firstOrNull()?.identifikator)
+        assertEquals(ufoerFnr, p8000.nav?.bruker?.person?.pin?.firstOrNull()?.identifikator)
 
     }
 
     @Test
     fun `Forventerkorrekt utfylt P8000 hvor det finnes en sak i Pesys som er gjenlevendepensjon eller barnepensjon - henvendelse gjelder avdøde`() {
-        val fnr = FodselsnummerGenerator.generateFnrForTest(40)
-        val avdodFnr = FodselsnummerGenerator.generateFnrForTest(93)
-
-        val forsikretPerson = LagPdlPerson.lagPerson(fnr, "Christopher", "Robin")
-            .medAdresse("Gate")
-
-        val avdod = LagPdlPerson.lagPerson(avdodFnr, "Winnie", "Pooh", erDod = true)
-            .medAdresse("Gate")
-
-        personDataCollection = PersonDataCollection(avdod, forsikretPerson)
         pensjonCollection = PensjonCollection(sedType = SedType.P8000)
-
-        prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P8000, fnr, penSaksnummer = pesysSaksnummer, avdod = PersonInfo(norskIdent = avdodFnr, aktorId = "21323"),  refTilPerson = ReferanseTilPerson.AVDOD)
+        personDataCollection = PersonDataCollection(avdod.medAdresse("Gate"), forsikretPerson.medAdresse("Gate"))
+        prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P8000, ufoerFnr, penSaksnummer = pesysSaksnummer, avdod = PersonInfo(norskIdent = avdodFnr, aktorId = "21323"),  refTilPerson = ReferanseTilPerson.AVDOD)
 
         val p8000 =  prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection, null) as P8000
 
@@ -125,19 +110,9 @@ class PrefillP8000P_BUC_05Test {
 
     @Test
     fun `Forventer korrekt utfylt P8000 hvor det finnes en sak i Pesys som er gjenlevendepensjon eller barnepensjon - henvendelse gjelder gjenlevende-søker`() {
-        val fnr = FodselsnummerGenerator.generateFnrForTest(40)
-        val avdodFnr = FodselsnummerGenerator.generateFnrForTest(93)
-
-        val forsikretPerson = LagPdlPerson.lagPerson(fnr, "Christopher", "Robin")
-            .medAdresse("Gate")
-
-        val avdod = LagPdlPerson.lagPerson(avdodFnr, "Winnie", "Pooh", erDod = true)
-            .medAdresse("Gate")
-
-        personDataCollection = PersonDataCollection(avdod, forsikretPerson)
-
-        prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P8000, fnr, penSaksnummer = pesysSaksnummer, avdod = PersonInfo(norskIdent = avdodFnr, aktorId = "21323"), refTilPerson = ReferanseTilPerson.SOKER )
         pensjonCollection = PensjonCollection(sedType = SedType.P8000)
+        personDataCollection = PersonDataCollection(avdod.medAdresse("Gate"), forsikretPerson.medAdresse("Gate"))
+        prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P8000, ufoerFnr, penSaksnummer = pesysSaksnummer, avdod = PersonInfo(norskIdent = avdodFnr, aktorId = "21323"), refTilPerson = ReferanseTilPerson.SOKER )
 
         val p8000 =  prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection, null) as P8000
 
@@ -149,24 +124,17 @@ class PrefillP8000P_BUC_05Test {
         assertEquals("Christopher", p8000.nav?.annenperson?.person?.fornavn)
         assertEquals("Robin", p8000.nav?.annenperson?.person?.etternavn)
         assertEquals("01", p8000.nav?.annenperson?.person?.rolle)
-
         assertEquals("02",  p8000.p8000Pensjon?.anmodning?.referanseTilPerson)
+
     }
 
 
     @Test
     fun `Forventer korrekt utfylt P8000 hvor det finnes en sak i Pesys som har alderpensjon  med revurdering og henvendelsen gjelder gjenlevende`() {
-        val fnr = FodselsnummerGenerator.generateFnrForTest(40)
-        val avdodFnr = FodselsnummerGenerator.generateFnrForTest(93)
-
-        val forsikretPerson = LagPdlPerson.lagPerson(fnr, "Christopher", "Robin")
-            .medUtlandAdresse("LUNGJTEGATA 12", "1231", "SWE", "bygning", "region", bySted = "UTLANDBY")
+        val forsikretPerson = forsikretPerson.medUtlandAdresse("LUNGJTEGATA 12", "1231", "SWE", "bygning", "region", bySted = "UTLANDBY")
         val fdato = forsikretPerson.foedselsdato?.foedselsdato
 
-        val avdod = LagPdlPerson.lagPerson(avdodFnr, "Winnie", "Pooh", erDod = true)
-            .medUtlandAdresse("LUNGJTEGATA 12", "1231", "SWE", "bygning", "region", bySted = "UTLANDBY")
-
-//        every { krrService.hentPersonerFraKrr(eq(fnr)) } returns DigitalKontaktinfo("melleby11@melby.no",true, true, false, "11111111", fnr)
+        val avdod = avdod.medUtlandAdresse("LUNGJTEGATA 12", "1231", "SWE", "bygning", "region", bySted = "UTLANDBY")
 
         personDataCollection = PersonDataCollection(avdod, forsikretPerson)
 
@@ -181,11 +149,10 @@ class PrefillP8000P_BUC_05Test {
 
         val pensjonCollection = PensjonCollection(sak = sak, sedType = SedType.P8000)
 
-        prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P8000, fnr, penSaksnummer = "100", avdod = PersonInfo(norskIdent = avdodFnr, aktorId = "21323"),  refTilPerson = ReferanseTilPerson.SOKER, bucType = P_BUC_05)
+        prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P8000, ufoerFnr, penSaksnummer = "100", avdod = PersonInfo(norskIdent = avdodFnr, aktorId = "21323"),  refTilPerson = ReferanseTilPerson.SOKER, bucType = P_BUC_05)
 
         val p8000 =  prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null)
 
-        println("resultat: ${p8000.toJsonSkipEmpty()}")
         val expected = """
             {
               "sed" : "P8000",
@@ -203,7 +170,7 @@ class PrefillP8000P_BUC_05Test {
                     "pin" : [ {
                       "institusjonsnavn" : "NOINST002, NO INST002, NO",
                       "institusjonsid" : "NO:noinst002",
-                      "identifikator" : "$fnr",
+                      "identifikator" : "$ufoerFnr",
                       "land" : "NO"
                     } ],
                     "etternavn" : "Robin",
@@ -239,22 +206,15 @@ class PrefillP8000P_BUC_05Test {
 
         """.trimIndent()
 
-
        JSONAssert.assertEquals(p8000.toJsonSkipEmpty(), expected, true)
     }
 
     @Test
     fun `Forventerkorrekt utfylt P8000 hvor det finnes en sak i Pesys som har uføretrygd og henvendelsen gjelder gjenlevende`() {
-        val fnr = FodselsnummerGenerator.generateFnrForTest(40)
-        val avdodFnr = FodselsnummerGenerator.generateFnrForTest(93)
-
-        val forsikretPerson = LagPdlPerson.lagPerson(fnr, "Christopher", "Robin")
-            .medUtlandAdresse("LUNGJTÖEGATA 12", "1231", "SWE", "bygning", "region", bySted = "UTLANDBY")
-
+        val forsikretPerson = forsikretPerson.medUtlandAdresse("LUNGJTÖEGATA 12", "1231", "SWE", "bygning", "region", bySted = "UTLANDBY")
         val fdato = forsikretPerson.foedselsdato?.foedselsdato
 
-        val avdod = LagPdlPerson.lagPerson(avdodFnr, "Winnie", "Pooh", erDod = true)
-            .medUtlandAdresse("LUNGJTÖEGATA 12", "1231", "SWE", "bygning", "region", bySted = "UTLANDBY")
+        val avdod = avdod.medUtlandAdresse("LUNGJTÖEGATA 12", "1231", "SWE", "bygning", "region", bySted = "UTLANDBY")
 
         personDataCollection = PersonDataCollection(avdod, forsikretPerson)
 
@@ -267,10 +227,9 @@ class PrefillP8000P_BUC_05Test {
 
         val pensjonCollection = PensjonCollection(sak = sak, sedType = SedType.P8000)
 
-        prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P8000, fnr, penSaksnummer = "100", avdod = PersonInfo(norskIdent = avdodFnr, aktorId = "21323"),  refTilPerson = ReferanseTilPerson.SOKER, bucType = P_BUC_05)
+        prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P8000, ufoerFnr, penSaksnummer = "100", avdod = PersonInfo(norskIdent = avdodFnr, aktorId = "21323"),  refTilPerson = ReferanseTilPerson.SOKER, bucType = P_BUC_05)
 
         val p8000 =  prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null)
-        println(p8000.toJsonSkipEmpty())
         val expected = """
             {
               "sed" : "P8000",
@@ -288,7 +247,7 @@ class PrefillP8000P_BUC_05Test {
                     "pin" : [ {
                       "institusjonsnavn" : "NOINST002, NO INST002, NO",
                       "institusjonsid" : "NO:noinst002",
-                      "identifikator" : "$fnr",
+                      "identifikator" : "$ufoerFnr",
                       "land" : "NO"
                     } ],
                     "etternavn" : "Robin",

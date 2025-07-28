@@ -4,7 +4,6 @@ import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.sed.SED
 import no.nav.eessi.pensjon.prefill.BasePrefillNav
-import no.nav.eessi.pensjon.prefill.EtterlatteService
 import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.models.PensjonCollection
@@ -25,24 +24,20 @@ class PrefillP8000GLmedUtlandInnvTest {
     private val avdodPersonFnr = FodselsnummerGenerator.generateFnrForTest(75)
     private val pesysSaksnummer = "21975717"
 
-    lateinit var prefillData: PrefillDataModel
-
+    lateinit var sed: SED
     lateinit var prefill: PrefillP8000
     lateinit var prefillNav: PrefillPDLNav
-    lateinit var etterlatteService: EtterlatteService
+    lateinit var prefillData: PrefillDataModel
+
     lateinit var pensjonCollection: PensjonCollection
+    lateinit var prefillSEDService: PrefillSEDService
     lateinit var personDataCollection: PersonDataCollection
 
-    lateinit var sed: SED
-    lateinit var prefillSEDService: PrefillSEDService
 
     @BeforeEach
     fun setup() {
-        etterlatteService = mockk()
-        personDataCollection = PersonPDLMock.createAvdodFamilie(personFnr, avdodPersonFnr)
-
         prefillNav = BasePrefillNav.createPrefillNav()
-
+        personDataCollection = PersonPDLMock.createAvdodFamilie(personFnr, avdodPersonFnr)
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P8000, personFnr, penSaksnummer = pesysSaksnummer, avdod = PersonInfo(avdodPersonFnr, "112233445566"))
 
         val pensjonInformasjonService = PrefillTestHelper.lesPensjonsdataFraFil("/pensjonsinformasjon/krav/KravAlderEllerUfore_AP_UTLAND.xml")
