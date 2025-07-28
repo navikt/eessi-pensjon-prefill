@@ -45,11 +45,11 @@ class PrefillP2200MedAlderSakTest {
             ektefellePerson = ekte
         )
 
-        val prefillNav = BasePrefillNav.createPrefillNav()
+        
 
         dataFromPEN = lesPensjonsdataFraFil("/pensjonsinformasjon/krav/PensjonsinformasjonSaksliste-AP-14069110.xml")
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P2200, personFnr, penSaksnummer = pesysSaksnummer)
-        prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav)
+        prefillSEDService = BasePrefillNav.createPrefillSEDService()
         innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
     }
 

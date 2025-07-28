@@ -54,7 +54,7 @@ class PrefillP2100UforePRevurdering {
         val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
         val pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
 
-        prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav)
+        prefillSEDService = BasePrefillNav.createPrefillSEDService()
 
         val p2100 = prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null)
 

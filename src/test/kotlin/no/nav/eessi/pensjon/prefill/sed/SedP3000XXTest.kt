@@ -40,9 +40,9 @@ class SedP3000XXTest {
         val person = LagPdlPerson.lagPerson(personFnr, "Ola", "Testbruker")
         personDataCollection = PersonDataCollection(person, person)
 
-        val prefillNav = BasePrefillNav.createPrefillNav()
+        
 
-        prefillSEDService = PrefillSEDService(eessiInformasjon, prefillNav)
+        prefillSEDService = BasePrefillNav.createPrefillSEDService()
     }
 
     @Test

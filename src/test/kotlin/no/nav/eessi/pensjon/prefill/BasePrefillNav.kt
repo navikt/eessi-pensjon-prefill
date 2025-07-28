@@ -2,8 +2,11 @@ package no.nav.eessi.pensjon.prefill
 
 import io.mockk.every
 import io.mockk.mockk
+import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
+import no.nav.eessi.pensjon.prefill.models.EessiInformasjonMother
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLAdresse
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
+import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
 
 object BasePrefillNav {
     internal fun createPrefillNav(prefillPDLAdresse: PrefillPDLAdresse? = null): PrefillPDLNav {
@@ -19,5 +22,9 @@ object BasePrefillNav {
             institutionid = "NO:noinst002",
             institutionnavn = "NOINST002, NO INST002, NO"
         )
+    }
+
+    internal fun createPrefillSEDService(prefillPDLNav: PrefillPDLNav? = null): PrefillSEDService {
+        return PrefillSEDService(EessiInformasjonMother.standardEessiInfo(), prefillPDLNav ?: createPrefillNav())
     }
 }
