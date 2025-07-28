@@ -5,11 +5,8 @@ import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.sed.BasertPaa
 import no.nav.eessi.pensjon.eux.model.sed.P6000
 import no.nav.eessi.pensjon.prefill.*
-import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
-import no.nav.eessi.pensjon.prefill.models.EessiInformasjonMother.standardEessiInfo
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
-import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
 import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
@@ -28,16 +25,13 @@ class PrefillP6000Pensjon_ALDER_Test {
 
     private lateinit var prefillData: PrefillDataModel
     private lateinit var prefillSEDService: PrefillSEDService
-    private lateinit var etterlatteService: EtterlatteService
     private lateinit var dataFromPEN: PensjonsinformasjonService
     private lateinit var personDataCollection: PersonDataCollection
 
     @BeforeEach
     fun setup() {
-        etterlatteService = mockk()
-        personDataCollection = PersonPDLMock.createEnkelFamilie(personFnr, ekteFnr)
-
         prefillSEDService = BasePrefillNav.createPrefillSEDService()
+        personDataCollection = PersonPDLMock.createEnkelFamilie(personFnr, ekteFnr)
     }
 
     @Test
@@ -71,6 +65,7 @@ class PrefillP6000Pensjon_ALDER_Test {
 
         assertEquals(1, vedtak?.beregning?.size, "4.1.7 vedtak?.beregning")
         val beregning = vedtak?.beregning?.firstOrNull()
+
         assertEquals("2017-05-01", beregning?.periode?.fom)
         assertEquals(null, beregning?.periode?.tom)
         assertEquals("NOK", beregning?.valuta)
@@ -79,12 +74,11 @@ class PrefillP6000Pensjon_ALDER_Test {
         assertEquals("11831", beregning?.beloepBrutto?.beloep)
         assertEquals("2719", beregning?.beloepBrutto?.ytelseskomponentGrunnpensjon)
         assertEquals("8996", beregning?.beloepBrutto?.ytelseskomponentTilleggspensjon)
-
         assertEquals("116", vedtak?.ukjent?.beloepBrutto?.ytelseskomponentAnnen)
 
         val avslagBegrunnelse = vedtak?.avslagbegrunnelse?.first()
-        assertEquals(null, avslagBegrunnelse?.begrunnelse, "4.1.13.1 vedtak?.avslagbegrunnelse?")
 
+        assertEquals(null, avslagBegrunnelse?.begrunnelse, "4.1.13.1 vedtak?.avslagbegrunnelse?")
         assertEquals("six weeks from the date the decision is received", p6000Pensjon.sak?.kravtype?.get(0)?.datoFrist)
         assertEquals("2017-05-21", p6000Pensjon.tilleggsinformasjon?.dato)
 
@@ -101,7 +95,6 @@ class PrefillP6000Pensjon_ALDER_Test {
 
         assertThrows<IkkeGyldigKallException> {
             innhentingService.hentPensjoninformasjonCollection(prefillData)
-//            prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection)
         }
     }
 

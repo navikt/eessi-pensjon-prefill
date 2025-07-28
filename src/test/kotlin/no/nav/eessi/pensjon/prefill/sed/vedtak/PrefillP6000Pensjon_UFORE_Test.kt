@@ -4,9 +4,10 @@ import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.sed.BasertPaa
 import no.nav.eessi.pensjon.eux.model.sed.P6000
-import no.nav.eessi.pensjon.prefill.*
-import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
-import no.nav.eessi.pensjon.prefill.models.EessiInformasjonMother.standardEessiInfo
+import no.nav.eessi.pensjon.prefill.BasePrefillNav
+import no.nav.eessi.pensjon.prefill.InnhentingService
+import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
+import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
@@ -28,26 +29,20 @@ class PrefillP6000Pensjon_UFORE_Test {
 
     private lateinit var prefillNav: PrefillPDLNav
     private lateinit var prefillData: PrefillDataModel
-    private lateinit var eessiInformasjon: EessiInformasjon
     private lateinit var prefillSEDService: PrefillSEDService
-    private lateinit var etterlatteService: EtterlatteService
     private lateinit var dataFromPEN: PensjonsinformasjonService
     private lateinit var personDataCollection: PersonDataCollection
 
     @BeforeEach
     fun setup() {
-        etterlatteService = mockk()
-        personDataCollection = PersonPDLMock.createEnkelFamilie(personFnr, ekteFnr)
-
         prefillNav = BasePrefillNav.createPrefillNav()
-
-        eessiInformasjon = standardEessiInfo()
+        prefillSEDService = BasePrefillNav.createPrefillSEDService()
+        personDataCollection = PersonPDLMock.createEnkelFamilie(personFnr, ekteFnr)
 
     }
 
     @Test
     fun `forventet korrekt utfylling av Pensjon objekt på Uførepensjon`() {
-
         dataFromPEN = PrefillTestHelper.lesPensjonsdataVedtakFraFil("/pensjonsinformasjon/vedtak/P6000-UT-201.xml")
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P6000, personFnr, penSaksnummer = "22580170", vedtakId = "12312312")
         prefillSEDService = BasePrefillNav.createPrefillSEDService(prefillNav)
@@ -84,9 +79,7 @@ class PrefillP6000Pensjon_UFORE_Test {
 
         val avslagBegrunnelse = vedtak?.avslagbegrunnelse?.get(0)
         assertEquals(null, avslagBegrunnelse?.begrunnelse)
-
         assertEquals("six weeks from the date the decision is received", p6000Pensjon.sak?.kravtype?.get(0)?.datoFrist)
-
         assertEquals("2017-05-21", p6000Pensjon.tilleggsinformasjon?.dato)
 
         assertEquals("NO:noinst002", p6000Pensjon.tilleggsinformasjon?.andreinstitusjoner?.get(0)?.institusjonsid)
@@ -99,7 +92,7 @@ class PrefillP6000Pensjon_UFORE_Test {
     fun `preutfylling P6000 feiler ved mangler av vedtakId`() {
         dataFromPEN = PrefillTestHelper.lesPensjonsdataVedtakFraFil("/pensjonsinformasjon/vedtak/P6000-UT-201.xml")
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P6000, personFnr, penSaksnummer = "22580170", vedtakId = "")
-        prefillSEDService = BasePrefillNav.createPrefillSEDService()
+
         val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
 
         assertThrows<ResponseStatusException> {

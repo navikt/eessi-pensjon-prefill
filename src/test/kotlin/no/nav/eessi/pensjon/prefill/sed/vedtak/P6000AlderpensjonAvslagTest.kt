@@ -3,11 +3,12 @@ package no.nav.eessi.pensjon.prefill.sed.vedtak
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.sed.P6000
-import no.nav.eessi.pensjon.prefill.*
-import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
+import no.nav.eessi.pensjon.prefill.BasePrefillNav
+import no.nav.eessi.pensjon.prefill.InnhentingService
+import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
+import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
-import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
 import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
@@ -23,19 +24,15 @@ class P6000AlderpensjonAvslagTest {
     private val personFnr = FodselsnummerGenerator.generateFnrForTest(67)
     private val ekteFnr = FodselsnummerGenerator.generateFnrForTest(67)
 
-    private lateinit var prefillNav: PrefillPDLNav
     private lateinit var prefillData: PrefillDataModel
-    private lateinit var eessiInformasjon: EessiInformasjon
-    private lateinit var etterlatteService: EtterlatteService
     private lateinit var prefillSEDService: PrefillSEDService
     private lateinit var dataFromPEN: PensjonsinformasjonService
     private lateinit var personDataCollection: PersonDataCollection
 
     @BeforeEach
     fun setup() {
-        etterlatteService = mockk()
-        personDataCollection = PersonPDLMock.createEnkelFamilie(personFnr, ekteFnr)
         prefillSEDService = BasePrefillNav.createPrefillSEDService()
+        personDataCollection = PersonPDLMock.createEnkelFamilie(personFnr, ekteFnr)
     }
 
 
@@ -106,8 +103,8 @@ class P6000AlderpensjonAvslagTest {
         assertEquals("02", vedtak?.resultat, "4.1.4 vedtak.resultat")
 
         val avslagBegrunnelse = vedtak?.avslagbegrunnelse?.get(0)
-        assertEquals("03", avslagBegrunnelse?.begrunnelse, "4.1.13.1          AvlsagsBegrunnelse")
 
+        assertEquals("03", avslagBegrunnelse?.begrunnelse, "4.1.13.1          AvlsagsBegrunnelse")
         assertEquals("six weeks from the date the decision is received", result.sak?.kravtype?.get(0)?.datoFrist)
 
         assertEquals("2020-12-16", result.tilleggsinformasjon?.dato)
@@ -123,7 +120,6 @@ class P6000AlderpensjonAvslagTest {
         dataFromPEN = PrefillTestHelper.lesPensjonsdataVedtakFraFil("/pensjonsinformasjon/vedtak/P6000vedtak-alderpensjon-avslag.xml")
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P6000, personFnr, penSaksnummer = "22580170", vedtakId = "")
         val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
-        //val pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
 
         assertThrows<ResponseStatusException> {
             innhentingService.hentPensjoninformasjonCollection(prefillData)
