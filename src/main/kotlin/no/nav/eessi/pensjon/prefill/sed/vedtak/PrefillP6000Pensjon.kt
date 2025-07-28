@@ -1,12 +1,6 @@
 package no.nav.eessi.pensjon.prefill.sed.vedtak
 
-import no.nav.eessi.pensjon.eux.model.sed.AndreinstitusjonerItem
-import no.nav.eessi.pensjon.eux.model.sed.Bruker
-import no.nav.eessi.pensjon.eux.model.sed.P6000Pensjon
-import no.nav.eessi.pensjon.eux.model.sed.ReduksjonItem
-import no.nav.eessi.pensjon.eux.model.sed.Sak
-import no.nav.eessi.pensjon.eux.model.sed.Tilleggsinformasjon
-import no.nav.eessi.pensjon.eux.model.sed.VedtakItem
+import no.nav.eessi.pensjon.eux.model.sed.*
 import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.PrefillPensjonReduksjon
 import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.PrefillPensjonSak
 import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.PrefillPensjonTilleggsinformasjon

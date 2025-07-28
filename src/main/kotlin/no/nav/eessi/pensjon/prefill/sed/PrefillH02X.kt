@@ -1,12 +1,7 @@
 package no.nav.eessi.pensjon.prefill.sed
 
-import no.nav.eessi.pensjon.eux.model.sed.Bruker
-import no.nav.eessi.pensjon.eux.model.sed.H02x
-import no.nav.eessi.pensjon.eux.model.sed.Nav
-import no.nav.eessi.pensjon.eux.model.sed.Person
-import no.nav.eessi.pensjon.eux.model.sed.PinLandItem
+import no.nav.eessi.pensjon.eux.model.sed.*
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
-
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
 

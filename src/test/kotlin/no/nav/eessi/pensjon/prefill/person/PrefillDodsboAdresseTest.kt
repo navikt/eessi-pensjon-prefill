@@ -1,16 +1,7 @@
 package no.nav.eessi.pensjon.prefill.person
 
 import no.nav.eessi.pensjon.eux.model.sed.Adresse
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Folkeregistermetadata
-import no.nav.eessi.pensjon.personoppslag.pdl.model.KontaktinformasjonForDoedsbo
-import no.nav.eessi.pensjon.personoppslag.pdl.model.KontaktinformasjonForDoedsboAdresse
-import no.nav.eessi.pensjon.personoppslag.pdl.model.KontaktinformasjonForDoedsboAdvokatSomKontakt
-import no.nav.eessi.pensjon.personoppslag.pdl.model.KontaktinformasjonForDoedsboOrganisasjonSomKontakt
-import no.nav.eessi.pensjon.personoppslag.pdl.model.KontaktinformasjonForDoedsboPersonSomKontakt
-import no.nav.eessi.pensjon.personoppslag.pdl.model.KontaktinformasjonForDoedsboSkifteform
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Metadata
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Navn
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Personnavn
+import no.nav.eessi.pensjon.personoppslag.pdl.model.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.time.LocalDate

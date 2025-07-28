@@ -2,7 +2,6 @@ package no.nav.eessi.pensjon.integrationtest.sed
 
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.sed.*
-import no.nav.eessi.pensjon.integrationtest.sed.SedBuilder.*
 
 class XSedBuilder {
 

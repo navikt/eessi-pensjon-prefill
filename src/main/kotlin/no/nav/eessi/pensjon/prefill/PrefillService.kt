@@ -3,11 +3,11 @@ package no.nav.eessi.pensjon.prefill
 import io.micrometer.core.instrument.Metrics
 import no.nav.eessi.pensjon.eux.model.sed.SED.Companion.setSEDVersion
 import no.nav.eessi.pensjon.metrics.MetricsHelper
+import no.nav.eessi.pensjon.prefill.EtterlatteService.EtterlatteVedtakResponseData
 import no.nav.eessi.pensjon.prefill.models.DigitalKontaktinfo
 import no.nav.eessi.pensjon.prefill.models.DigitalKontaktinfo.Companion.validateEmail
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
-import no.nav.eessi.pensjon.prefill.EtterlatteService.EtterlatteVedtakResponseData
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
 import no.nav.eessi.pensjon.shared.api.ApiRequest
 import no.nav.eessi.pensjon.shared.api.PersonInfo

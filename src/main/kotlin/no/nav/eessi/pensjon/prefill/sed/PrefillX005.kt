@@ -1,14 +1,7 @@
 package no.nav.eessi.pensjon.prefill.sed
 
 import no.nav.eessi.pensjon.eux.model.SedType
-import no.nav.eessi.pensjon.eux.model.sed.Bruker
-import no.nav.eessi.pensjon.eux.model.sed.InstitusjonX005
-import no.nav.eessi.pensjon.eux.model.sed.Kontekst
-import no.nav.eessi.pensjon.eux.model.sed.Leggtilinstitusjon
-import no.nav.eessi.pensjon.eux.model.sed.Navsak
-import no.nav.eessi.pensjon.eux.model.sed.Person
-import no.nav.eessi.pensjon.eux.model.sed.X005
-import no.nav.eessi.pensjon.eux.model.sed.XNav
+import no.nav.eessi.pensjon.eux.model.sed.*
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.shared.api.BankOgArbeid

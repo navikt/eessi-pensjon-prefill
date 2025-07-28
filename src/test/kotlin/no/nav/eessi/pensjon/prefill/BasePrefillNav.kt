@@ -2,7 +2,6 @@ package no.nav.eessi.pensjon.prefill
 
 import io.mockk.every
 import io.mockk.mockk
-import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjonMother
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLAdresse
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav

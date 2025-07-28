@@ -16,7 +16,6 @@ import no.nav.eessi.pensjon.prefill.KrrService
 import no.nav.eessi.pensjon.prefill.LagPdlPerson
 import no.nav.eessi.pensjon.prefill.LagPdlPerson.Companion.medAdresse
 import no.nav.eessi.pensjon.prefill.PersonPDLMock.medUtlandAdresse
-import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.prefill.models.PensjonCollection
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
