@@ -22,11 +22,11 @@ class PrefillP6000GjennyPensjonTest {
                 GjennyVedtak(
                     sakId = 123456,
                     sakType = "Omstilling",
-                    virkningstidspunkt = LocalDate.now(),
+                    virkningstidspunkt = LocalDate.parse("2025-07-23"),
                     type = INNVILGELSE,
                     utbetaling = listOf(
                         GjennyUtbetaling(
-                            fraOgMed = LocalDate.now(),
+                            fraOgMed = LocalDate.parse("2025-07-23"),
                             tilOgMed = null,
                             beloep = "2358"
                         )
