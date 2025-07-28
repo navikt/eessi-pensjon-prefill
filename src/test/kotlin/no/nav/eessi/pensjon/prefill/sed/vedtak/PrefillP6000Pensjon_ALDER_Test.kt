@@ -26,9 +26,7 @@ class PrefillP6000Pensjon_ALDER_Test {
     private val personFnr = FodselsnummerGenerator.generateFnrForTest(67)
     private val ekteFnr = FodselsnummerGenerator.generateFnrForTest(70)
 
-    private lateinit var prefillNav: PrefillPDLNav
     private lateinit var prefillData: PrefillDataModel
-    private lateinit var eessiInformasjon: EessiInformasjon
     private lateinit var prefillSEDService: PrefillSEDService
     private lateinit var etterlatteService: EtterlatteService
     private lateinit var dataFromPEN: PensjonsinformasjonService
@@ -39,17 +37,13 @@ class PrefillP6000Pensjon_ALDER_Test {
         etterlatteService = mockk()
         personDataCollection = PersonPDLMock.createEnkelFamilie(personFnr, ekteFnr)
 
-        prefillNav = BasePrefillNav.createPrefillNav()
-
-        eessiInformasjon = standardEessiInfo()
-
+        prefillSEDService = BasePrefillNav.createPrefillSEDService()
     }
 
     @Test
     fun `forventet korrekt utfylling av Pensjon objekt på Alderpensjon`() {
         dataFromPEN = PrefillTestHelper.lesPensjonsdataVedtakFraFil("/pensjonsinformasjon/vedtak/P6000-APUtland-301.xml")
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P6000, personFnr, penSaksnummer = "22580170", vedtakId = "12312312")
-        prefillSEDService = BasePrefillNav.createPrefillSEDService(prefillNav)
         val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
         val pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
 
@@ -103,7 +97,6 @@ class PrefillP6000Pensjon_ALDER_Test {
     fun `preutfylling P6000 feiler ved mangler av vedtakId`() {
         dataFromPEN = PrefillTestHelper.lesPensjonsdataVedtakFraFil("/pensjonsinformasjon/vedtak/P6000-AP-101.xml")
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P6000, personFnr, penSaksnummer = "22580170", vedtakId = "")
-        prefillSEDService = BasePrefillNav.createPrefillSEDService()
         val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
 
         assertThrows<IkkeGyldigKallException> {
@@ -116,7 +109,6 @@ class PrefillP6000Pensjon_ALDER_Test {
     fun `feiler ved boddArbeidetUtland ikke sann`() {
         dataFromPEN = PrefillTestHelper.lesPensjonsdataVedtakFraFil("/pensjonsinformasjon/vedtak/P6000-AP-101.xml")
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P6000, personFnr, penSaksnummer = "22580170", vedtakId = "12312312")
-        prefillSEDService = BasePrefillNav.createPrefillSEDService()
         val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
         val pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
 
@@ -130,7 +122,6 @@ class PrefillP6000Pensjon_ALDER_Test {
     fun `henting av bruttobelop skal hente verdier fra garantipensjon, grunnpensjon, pensjontillegg, inntektspensjon, saertillegg `() {
         dataFromPEN = PrefillTestHelper.lesPensjonsdataVedtakFraFil("/pensjonsinformasjon/vedtak/P6000-AP-GP-301.xml")
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P6000, personFnr, penSaksnummer = "22580170", vedtakId = "12312312")
-        prefillSEDService = BasePrefillNav.createPrefillSEDService()
         val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
         val pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
 
