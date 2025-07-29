@@ -4,11 +4,13 @@ import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.sed.Nav
 import no.nav.eessi.pensjon.eux.model.sed.SED
-import no.nav.eessi.pensjon.prefill.*
+import no.nav.eessi.pensjon.prefill.BasePrefillNav
+import no.nav.eessi.pensjon.prefill.InnhentingService
+import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
+import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.models.PensjonCollection
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
-import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
 import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper.lesPensjonsdataFraFil
 import no.nav.eessi.pensjon.shared.api.PersonInfo
@@ -27,14 +29,12 @@ class PrefillP2100GjenlevendeRevurdering {
     private val pesysKravid = "41098605"
 
     private lateinit var prefillData: PrefillDataModel
-    private lateinit var etterlatteService: EtterlatteService
     private lateinit var prefillSEDService: PrefillSEDService
     private lateinit var pensjonCollection: PensjonCollection
     private lateinit var dataFromPEN: PensjonsinformasjonService
 
     @BeforeEach
     fun setup() {
-        etterlatteService = mockk()
     }
 
     @Test

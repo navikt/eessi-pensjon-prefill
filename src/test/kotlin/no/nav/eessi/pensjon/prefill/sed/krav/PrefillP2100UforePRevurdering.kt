@@ -3,7 +3,6 @@ package no.nav.eessi.pensjon.prefill.sed.krav
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.prefill.BasePrefillNav
-import no.nav.eessi.pensjon.prefill.EtterlatteService
 import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
@@ -25,12 +24,10 @@ class PrefillP2100UforePRevurdering {
     private val pesysKravid = "12354"
 
     private lateinit var prefillData: PrefillDataModel
-    private lateinit var etterlatteService: EtterlatteService
     private lateinit var prefillSEDService: PrefillSEDService
 
     @BeforeEach
     fun setup() {
-        etterlatteService = mockk()
         prefillData = PrefillDataModelMother.initialPrefillDataModel(
                 sedType = SedType.P2100,
                 pinId = personFnr,

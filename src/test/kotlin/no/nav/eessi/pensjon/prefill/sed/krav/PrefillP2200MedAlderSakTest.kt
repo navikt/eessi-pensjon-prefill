@@ -2,7 +2,10 @@ package no.nav.eessi.pensjon.prefill.sed.krav
 
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.SedType
-import no.nav.eessi.pensjon.prefill.*
+import no.nav.eessi.pensjon.prefill.BasePrefillNav
+import no.nav.eessi.pensjon.prefill.InnhentingService
+import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
+import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
@@ -21,7 +24,6 @@ class PrefillP2200MedAlderSakTest {
     private val pesysSaksnummer = "14069110"
 
     private lateinit var prefillData: PrefillDataModel
-    private lateinit var etterlatteService: EtterlatteService
     private lateinit var prefillSEDService: PrefillSEDService
     private lateinit var innhentingService: InnhentingService
     private lateinit var dataFromPEN: PensjonsinformasjonService
@@ -32,14 +34,11 @@ class PrefillP2200MedAlderSakTest {
         val ekte = PersonPDLMock.createWith(fornavn = "BAMSE LUR", fnr = ekteFnr)
         val person = PersonPDLMock.createWith(fornavn = "BAMSE ULUR", fnr = personFnr)
 
-        etterlatteService = mockk()
         personDataCollection = PersonDataCollection(
             forsikretPerson = person,
             gjenlevendeEllerAvdod = person,
             ektefellePerson = ekte
         )
-
-        
 
         dataFromPEN = lesPensjonsdataFraFil("/pensjonsinformasjon/krav/PensjonsinformasjonSaksliste-AP-14069110.xml")
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P2200, personFnr, penSaksnummer = pesysSaksnummer)

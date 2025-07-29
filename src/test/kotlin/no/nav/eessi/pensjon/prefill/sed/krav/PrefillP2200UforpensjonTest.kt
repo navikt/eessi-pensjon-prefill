@@ -2,7 +2,10 @@ package no.nav.eessi.pensjon.prefill.sed.krav
 
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.SedType
-import no.nav.eessi.pensjon.prefill.*
+import no.nav.eessi.pensjon.prefill.BasePrefillNav
+import no.nav.eessi.pensjon.prefill.InnhentingService
+import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
+import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.PersonPDLMock.medFodsel
 import no.nav.eessi.pensjon.prefill.models.PensjonCollection
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
@@ -27,14 +30,12 @@ class PrefillP2200UforpensjonTest {
     private val barn2Fnr = FodselsnummerGenerator.generateFnrForTest(17)
 
     lateinit var prefillData: PrefillDataModel
-    lateinit var etterlatteService: EtterlatteService
     lateinit var dataFromPEN: PensjonsinformasjonService
     private lateinit var prefillSEDService: PrefillSEDService
     private lateinit var pensjonCollection: PensjonCollection
 
     @BeforeEach
     fun setup() {
-        etterlatteService = mockk()
         dataFromPEN = lesPensjonsdataFraFil("/pensjonsinformasjon/krav/P2200-UP-INNV.xml")
 
         prefillData = initialPrefillDataModel(SedType.P2200, personFnr, penSaksnummer = "22874955").apply {
@@ -44,8 +45,6 @@ class PrefillP2200UforpensjonTest {
 
         val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
         pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
-
-
     }
 
     @Test

@@ -5,7 +5,6 @@ import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.sed.Nav
 import no.nav.eessi.pensjon.eux.model.sed.SED
 import no.nav.eessi.pensjon.prefill.BasePrefillNav
-import no.nav.eessi.pensjon.prefill.EtterlatteService
 import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.models.PensjonCollection
@@ -30,7 +29,6 @@ class PrefillP2100BarnepensjonUtlandInnv {
     private val pesysSaksnummer = "22915555"
 
     private lateinit var prefillData: PrefillDataModel
-    private lateinit var etterlatteService: EtterlatteService
     private lateinit var prefillSEDService: PrefillSEDService
 
     private lateinit var  pensjonCollection: PensjonCollection
@@ -38,7 +36,6 @@ class PrefillP2100BarnepensjonUtlandInnv {
 
     @BeforeEach
     fun setup() {
-        etterlatteService = mockk()
         personDataCollection = PersonPDLMock.createAvdodFamilie(personFnr, avdodPersonFnr)
 
         val dataFromPEN = lesPensjonsdataFraFil("/pensjonsinformasjon/krav/BARNEP_KravUtland_ForeldreAvdod.xml")

@@ -2,7 +2,10 @@ package no.nav.eessi.pensjon.prefill.sed.krav
 
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.SedType
-import no.nav.eessi.pensjon.prefill.*
+import no.nav.eessi.pensjon.prefill.BasePrefillNav
+import no.nav.eessi.pensjon.prefill.InnhentingService
+import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
+import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.models.PensjonCollection
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
@@ -25,7 +28,6 @@ class PrefillP2000UtenKravhistorieTest {
     private val barn2Fnr = FodselsnummerGenerator.generateFnrForTest(14)
 
     private lateinit var prefillData: PrefillDataModel
-    private lateinit var etterlatteService: EtterlatteService
     private lateinit var prefillSEDService: PrefillSEDService
     private lateinit var pensjonCollection: PensjonCollection
     private lateinit var dataFromPEN: PensjonsinformasjonService
@@ -33,7 +35,6 @@ class PrefillP2000UtenKravhistorieTest {
 
     @BeforeEach
     fun setup() {
-        etterlatteService = mockk()
         personDataCollection = PersonPDLMock.createEnkeWithBarn(personFnr, barn1Fnr, barn2Fnr)
 
         dataFromPEN = lesPensjonsdataFraFil("/pensjonsinformasjon/krav/PensjonsinformasjonSaksliste-AP-14069110.xml")
@@ -61,7 +62,7 @@ class PrefillP2000UtenKravhistorieTest {
     @Test
     fun `Preutfylling P2000 uten kravdato skal feile`() {
         val ex = assertThrows<Exception> {
-            prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection, null)
+            prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null)
         }
         assertEquals("400 BAD_REQUEST \"Det finnes ingen iverksatte vedtak for førstegangsbehandling kun utland. Vennligst gå til EESSI-Pensjon fra vedtakskontekst.\"", ex.message)
     }

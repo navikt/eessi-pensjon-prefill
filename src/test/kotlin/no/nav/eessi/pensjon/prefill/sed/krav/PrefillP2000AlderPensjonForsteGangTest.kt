@@ -1,9 +1,7 @@
 package no.nav.eessi.pensjon.prefill.sed.krav
 
-import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.prefill.BasePrefillNav
-import no.nav.eessi.pensjon.prefill.EtterlatteService
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.models.PensjonCollection
@@ -28,14 +26,12 @@ class PrefillP2000AlderPensjonForsteGangTest {
     private val ekteFnr = FodselsnummerGenerator.generateFnrForTest(69)
 
     private lateinit var prefillData: PrefillDataModel
-    private lateinit var etterlatteService: EtterlatteService
     private lateinit var prefillSEDService: PrefillSEDService
     private lateinit var dataFromPEN: PensjonsinformasjonService
     private lateinit var persondataCollection: PersonDataCollection
 
     @BeforeEach
     fun setup() {
-        etterlatteService = mockk()
         persondataCollection = PersonPDLMock.createEnkelFamilie(personFnr, ekteFnr)
 
         dataFromPEN = lesPensjonsdataFraFil("/pensjonsinformasjon/krav/AP_FORSTEG_BH.xml")

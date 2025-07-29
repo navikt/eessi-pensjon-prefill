@@ -1,14 +1,14 @@
 package no.nav.eessi.pensjon.prefill.sed.krav
 
-import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.SedType
-import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
-import no.nav.eessi.pensjon.prefill.*
+import no.nav.eessi.pensjon.prefill.BasePrefillNav
+import no.nav.eessi.pensjon.prefill.InnhentingService
+import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
+import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.models.PensjonCollection
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
-import no.nav.eessi.pensjon.prefill.person.PrefillPDLAdresse
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
 import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper.lesPensjonsdataFraFil
 import no.nav.eessi.pensjon.shared.api.PersonInfo
@@ -21,14 +21,11 @@ import org.junit.jupiter.api.Test
 
 class PrefillP2100AdresseTest {
 
-    private val personService: PersonService = mockk()
     private val personFnr = FodselsnummerGenerator.generateFnrForTest(65)
     private val avdodPersonFnr = FodselsnummerGenerator.generateFnrForTest(75)
     private val pesysSaksnummer = "22875355"
 
     private lateinit var prefillData: PrefillDataModel
-    private lateinit var prefillPDLAdresse: PrefillPDLAdresse
-    private lateinit var etterlatteService: EtterlatteService
     private lateinit var prefillSEDService: PrefillSEDService
     private lateinit var pensjonCollection: PensjonCollection
     private lateinit var dataFromPEN: PensjonsinformasjonService
@@ -36,13 +33,6 @@ class PrefillP2100AdresseTest {
 
     @BeforeEach
     fun setup() {
-        etterlatteService = mockk()
-        prefillPDLAdresse = PrefillPDLAdresse(mockk(relaxed = true) {
-            every { finnLandkode(eq("NOR")) } returns "NO"
-        }, personService)
-
-        val prefillNav = BasePrefillNav.createPrefillNav(prefillPDLAdresse)
-
         persondataCollection = PersonPDLMock.createAvdodFamilieMedDødsboadresse(personFnr, avdodPersonFnr)
         prefillData = PrefillDataModelMother.initialPrefillDataModel(
                 sedType = SedType.P2100,
@@ -55,7 +45,7 @@ class PrefillP2100AdresseTest {
         val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
         pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
 
-        prefillSEDService = BasePrefillNav.createPrefillSEDService(prefillNav)
+        prefillSEDService = BasePrefillNav.createPrefillSEDService()
 
     }
 
@@ -86,7 +76,7 @@ class PrefillP2100AdresseTest {
             {
               "gate" : "FORUSBEEN 2294",
               "bygning" : null,
-              "by" : "",
+              "by" : "OSLO",
               "postnummer" : "0010",
               "postkode" : null,
               "region" : null,

@@ -6,7 +6,6 @@ import no.nav.eessi.pensjon.eux.model.SedType.P2000
 import no.nav.eessi.pensjon.eux.model.sed.Nav
 import no.nav.eessi.pensjon.eux.model.sed.SED
 import no.nav.eessi.pensjon.prefill.BasePrefillNav
-import no.nav.eessi.pensjon.prefill.EtterlatteService
 import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.models.PensjonCollection
@@ -35,14 +34,12 @@ class PrefillP2000_AP_LOP_UTLANDTest {
     private val pesysSaksnummer = "21644722"
 
     lateinit var prefillSEDService: PrefillSEDService
-    lateinit var etterlatteService: EtterlatteService
     lateinit var pensjonCollection: PensjonCollection
     private lateinit var prefillData: PrefillDataModel
     lateinit var persondataCollection: PersonDataCollection
 
     @BeforeEach
     fun setup() {
-        etterlatteService = mockk()
         persondataCollection = PersonPDLMock.createEnkelFamilie(personFnr, ekteFnr)
 
         val dataFromPEN = lesPensjonsdataFraFil("/pensjonsinformasjon/krav/AP-LOP-21644722.xml")
