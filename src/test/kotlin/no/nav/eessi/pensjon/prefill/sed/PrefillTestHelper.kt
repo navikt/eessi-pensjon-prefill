@@ -52,7 +52,6 @@ object PrefillTestHelper {
 
     fun readXMLVedtakresponse(file: String): ResponseEntity<String> {
         val resource = javaClass.getResource(file).readText()
-//        val resource = ResourceUtils.getFile("classpath:pensjonsinformasjon/vedtak/$file").readText()
         return ResponseEntity(resource, HttpStatus.OK)
     }
 

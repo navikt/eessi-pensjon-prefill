@@ -6,6 +6,7 @@ import no.nav.eessi.pensjon.eux.model.sed.P6000
 import no.nav.eessi.pensjon.prefill.BasePrefillNav
 import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
+import no.nav.eessi.pensjon.prefill.PersonDataService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
@@ -15,8 +16,11 @@ import no.nav.eessi.pensjon.shared.api.PrefillDataModel
 import no.nav.eessi.pensjon.shared.person.FodselsnummerGenerator
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
 import org.springframework.web.server.ResponseStatusException
 
 class P6000AlderpensjonAvslagTest {
@@ -28,92 +32,13 @@ class P6000AlderpensjonAvslagTest {
     private lateinit var prefillSEDService: PrefillSEDService
     private lateinit var dataFromPEN: PensjonsinformasjonService
     private lateinit var personDataCollection: PersonDataCollection
+    private lateinit var innhentingService: InnhentingService
 
     @BeforeEach
     fun setup() {
         prefillSEDService = BasePrefillNav.createPrefillSEDService()
         personDataCollection = PersonPDLMock.createEnkelFamilie(personFnr, ekteFnr)
     }
-
-
-    @Test
-    fun `forventet korrekt utfylling av pensjon objekt på alderpensjon med avslag`() {
-        dataFromPEN = PrefillTestHelper.lesPensjonsdataVedtakFraFil("/pensjonsinformasjon/vedtak/P6000vedtak-alderpensjon-avslag.xml")
-        prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P6000, personFnr, penSaksnummer = "22580170", vedtakId = "12312312")
-        val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
-        val pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
-
-        val p6000 = prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null) as P6000
-        val p6000Pensjon = p6000.pensjon
-
-        val vedtak = p6000Pensjon?.vedtak?.get(0)
-        assertEquals("01", vedtak?.type)
-        assertEquals("02", vedtak?.resultat, "4.1.4 vedtak.resultat")
-
-        val avslagBegrunnelse = vedtak?.avslagbegrunnelse?.get(0)
-        assertEquals("03", avslagBegrunnelse?.begrunnelse, "4.1.13.1          AvlsagsBegrunnelse")
-
-        assertEquals("six weeks from the date the decision is received", p6000Pensjon?.sak?.kravtype?.get(0)?.datoFrist)
-
-        assertEquals("2019-11-11", p6000Pensjon?.tilleggsinformasjon?.dato)
-        assertEquals("NO:noinst002", p6000Pensjon?.tilleggsinformasjon?.andreinstitusjoner?.get(0)?.institusjonsid)
-        assertEquals("Postboks 6600 Etterstad TEST", p6000Pensjon?.tilleggsinformasjon?.andreinstitusjoner?.get(0)?.institusjonsadresse)
-        assertEquals("0607", p6000Pensjon?.tilleggsinformasjon?.andreinstitusjoner?.get(0)?.postnummer)
-
-    }
-
-    @Test
-    fun `forventet korrekt utfylling av pensjon objekt på alderpensjon med avslag under 1 arr`() {
-        dataFromPEN = PrefillTestHelper.lesPensjonsdataVedtakFraFil("/pensjonsinformasjon/vedtak/P6000-AP-Under1aar-Avslag.xml")
-        prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P6000, personFnr, penSaksnummer = "22580170", vedtakId = "12312312")
-        val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
-        val pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
-
-        val p6000 = prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null) as P6000
-        val result = p6000.pensjon!!
-
-        val vedtak = result.vedtak?.get(0)
-        assertEquals("01", vedtak?.type)
-        assertEquals("02", vedtak?.resultat, "4.1.4 vedtak.resultat")
-
-        val avslagBegrunnelse = vedtak?.avslagbegrunnelse?.get(0)
-        assertEquals("02", avslagBegrunnelse?.begrunnelse, "4.1.13.1          AvlsagsBegrunnelse")
-
-        assertEquals("six weeks from the date the decision is received", result.sak?.kravtype?.get(0)?.datoFrist)
-
-        assertEquals("2020-12-16", result.tilleggsinformasjon?.dato)
-        assertEquals("NO:noinst002", result.tilleggsinformasjon?.andreinstitusjoner?.get(0)?.institusjonsid)
-        assertEquals("Postboks 6600 Etterstad TEST", result.tilleggsinformasjon?.andreinstitusjoner?.get(0)?.institusjonsadresse)
-        assertEquals("0607", result.tilleggsinformasjon?.andreinstitusjoner?.get(0)?.postnummer)
-
-    }
-
-    @Test
-    fun `forventet korrekt utfylling av pensjon objekt på alderpensjon med avslag under 3 arr`() {
-        dataFromPEN = PrefillTestHelper.lesPensjonsdataVedtakFraFil("/pensjonsinformasjon/vedtak/P6000-AP-Avslag.xml")
-        prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P6000, personFnr, penSaksnummer = "22580170", vedtakId = "12312312")
-        val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
-        val pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
-
-        val p6000 = prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null) as P6000
-        val result = p6000.pensjon!!
-
-        val vedtak = result.vedtak?.get(0)
-        assertEquals("01", vedtak?.type)
-        assertEquals("02", vedtak?.resultat, "4.1.4 vedtak.resultat")
-
-        val avslagBegrunnelse = vedtak?.avslagbegrunnelse?.get(0)
-
-        assertEquals("03", avslagBegrunnelse?.begrunnelse, "4.1.13.1          AvlsagsBegrunnelse")
-        assertEquals("six weeks from the date the decision is received", result.sak?.kravtype?.get(0)?.datoFrist)
-
-        assertEquals("2020-12-16", result.tilleggsinformasjon?.dato)
-        assertEquals("NO:noinst002", result.tilleggsinformasjon?.andreinstitusjoner?.get(0)?.institusjonsid)
-        assertEquals("Postboks 6600 Etterstad TEST", result.tilleggsinformasjon?.andreinstitusjoner?.get(0)?.institusjonsadresse)
-        assertEquals("0607", result.tilleggsinformasjon?.andreinstitusjoner?.get(0)?.postnummer)
-
-    }
-
 
     @Test
     fun `preutfylling P6000 feiler ved mangler av vedtakId`() {
@@ -125,4 +50,35 @@ class P6000AlderpensjonAvslagTest {
             innhentingService.hentPensjoninformasjonCollection(prefillData)
         }
     }
+
+    @ParameterizedTest
+    @DisplayName("Preutfylling av P6000 ved avslag gir riktig preutfylling av sed")
+    @CsvSource(
+        "03, /pensjonsinformasjon/vedtak/P6000-AP-Avslag.xml, 12312312",
+        "02, /pensjonsinformasjon/vedtak/P6000-AP-Under1aar-Avslag.xml, 12312312",
+        "03, /pensjonsinformasjon/vedtak/P6000-AP-Avslag.xml, 12312312",
+    )
+    fun `Preutfylling av P6000 ved avslag gir forskjellig preutfylling av riktig avslagsbegrunnelse`(avslagsbegrunnelse: String, fraFil : String, vedtakId: String) {
+        dataFromPEN = PrefillTestHelper.lesPensjonsdataVedtakFraFil(fraFil)
+        innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
+        prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P6000, personFnr, penSaksnummer = "22580170", vedtakId = vedtakId)
+
+        val pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
+        val p6000 = prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null) as P6000
+
+        val vedtak = p6000.pensjon?.vedtak?.get(0)
+        val result = p6000.pensjon!!
+
+        assertEquals(avslagsbegrunnelse, vedtak?.avslagbegrunnelse?.get(0)?.begrunnelse)
+
+        assertEquals("01", vedtak?.type)
+        assertEquals("02", vedtak?.resultat, "4.1.4 vedtak.resultat")
+        assertEquals("2020-12-16", result.tilleggsinformasjon?.dato)
+        assertEquals("0607", result.tilleggsinformasjon?.andreinstitusjoner?.get(0)?.postnummer)
+        assertEquals("NO:noinst002", result.tilleggsinformasjon?.andreinstitusjoner?.get(0)?.institusjonsid)
+        assertEquals("six weeks from the date the decision is received", result.sak?.kravtype?.get(0)?.datoFrist)
+        assertEquals("Postboks 6600 Etterstad TEST", result.tilleggsinformasjon?.andreinstitusjoner?.get(0)?.institusjonsadresse)
+
+    }
+
 }
