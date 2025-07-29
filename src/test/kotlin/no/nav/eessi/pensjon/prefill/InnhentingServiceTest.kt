@@ -23,7 +23,6 @@ import org.springframework.web.server.ResponseStatusException
 private const val AKTOERID = "467846784671"
 private const val FNR = "46784678467"
 
-private const val P_BUC_10 = "P_BUC_10"
 private const val SAKTYPE_ALDER = "ALDER"
 private const val SAKTYPE_UFORE = "UFOREP"
 

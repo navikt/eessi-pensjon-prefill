@@ -50,15 +50,10 @@ internal class PersonDataServiceTest {
 
     @Test
     fun `test henting av forsikretperson som feiler`() {
-
+        val data = PrefillDataModelMother.initialPrefillDataModel(SedType.P2000, FNR_VOKSEN, SAK_ID, euxCaseId = EUX_RINA)
         every { personService.hentPerson(any()) } throws PersonoppslagException("Fant ikke person", "not_found")
 
-        val data = PrefillDataModelMother.initialPrefillDataModel(SedType.P2000, FNR_VOKSEN, SAK_ID, euxCaseId = EUX_RINA)
-
-        assertThrows<ResponseStatusException> {
-            persondataService.hentPersonData(data)
-        }
-
+        assertThrows<ResponseStatusException> { persondataService.hentPersonData(data) }
         verify ( exactly = 1 ) { personService.hentPerson(any())  }
 
     }
@@ -66,10 +61,9 @@ internal class PersonDataServiceTest {
     @Test
     fun `test henting av forsikretperson for persondatacollection`() {
         val mockPerson = lagPerson(FNR_VOKSEN)
+        val data = PrefillDataModelMother.initialPrefillDataModel(SedType.P2000, FNR_VOKSEN, SAK_ID, euxCaseId = EUX_RINA)
 
         every { personService.hentPerson(any()) } returns mockPerson
-
-        val data = PrefillDataModelMother.initialPrefillDataModel(SedType.P2000, FNR_VOKSEN, SAK_ID, euxCaseId = EUX_RINA)
 
         val result = persondataService.hentPersonData(data)
 
@@ -91,8 +85,7 @@ internal class PersonDataServiceTest {
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_2)) } returns avdod
 
         val data = PrefillDataModelMother.initialPrefillDataModel(SedType.P2000, FNR_VOKSEN, SAK_ID, euxCaseId = EUX_RINA, avdod = PersonInfo(
-            FNR_VOKSEN_2, AKTOER_ID_2
-        )
+            FNR_VOKSEN_2, AKTOER_ID_2)
         )
 
         val result = persondataService.hentPersonData(data)
@@ -128,9 +121,8 @@ internal class PersonDataServiceTest {
 
     @Test
     fun `test henting av forsikretperson med barn med persondatacollection`() {
-
-        val barn1fnr = FodselsnummerGenerator.generateFnrForTest(12)
-        val barn2fnr = FodselsnummerGenerator.generateFnrForTest(19)
+        val barn1fnr = fnrAlder(12)
+        val barn2fnr = fnrAlder(19)
 
         val forelder = lagPerson(FNR_VOKSEN, "Christopher", "Robin").medBarn(barn1fnr).medBarn(barn2fnr)
         val barn1 = lagPerson(barn2fnr, "Ole", "Brum").medForeldre(forelder)
@@ -156,8 +148,8 @@ internal class PersonDataServiceTest {
 
     @Test
     fun `Innhenting av forsikret person med barn under 18 aar returnerer persondatacollection`() {
-        val barn1fnr = FodselsnummerGenerator.generateFnrForTest(12)
-        val barn2fnr = FodselsnummerGenerator.generateFnrForTest(19)
+        val barn1fnr = fnrAlder(12)
+        val barn2fnr = fnrAlder(19)
 
         val forelder = lagPerson(NPID_VOKSEN, "Christopher", "Robin").medBarn(barn1fnr).medBarn(barn2fnr)
         val barn1 = lagPerson(barn2fnr, "Ole", "Brum").medForeldre(forelder)
@@ -182,9 +174,8 @@ internal class PersonDataServiceTest {
     }
     @Test
     fun `test henting av forsikretperson med avdod ektefelle for persondatacollection`() {
-
-        val barn1fnr = FodselsnummerGenerator.generateFnrForTest(12)
-        val barn2fnr = FodselsnummerGenerator.generateFnrForTest(19)
+        val barn1fnr = fnrAlder(12)
+        val barn2fnr = fnrAlder(19)
 
         val forelder = lagPerson(FNR_VOKSEN, "Christopher", "Robin").medBarn(barn1fnr).medBarn(barn2fnr)
         val barn1 = lagPerson(barn2fnr, "Ole", "Brum").medForeldre(forelder)
@@ -208,15 +199,12 @@ internal class PersonDataServiceTest {
 
     }
 
-
     @Test
     fun `test henting komplett familie med barn for persondatacollection`() {
-
-        //generer fnr
-        val farfnr = FodselsnummerGenerator.generateFnrForTest(42)
-        val morfnr = FodselsnummerGenerator.generateFnrForTest(41)
-        val barn1 = FodselsnummerGenerator.generateFnrForTest(11)
-        val barn2 = FodselsnummerGenerator.generateFnrForTest(13)
+        val farfnr = fnrAlder(42)
+        val morfnr = fnrAlder(41)
+        val barn1 = fnrAlder(11)
+        val barn2 = fnrAlder(13)
 
         //far og mor i pair
         val pair = LagPdlPerson.createPersonMedEktefellePartner(farfnr, morfnr, Sivilstandstype.GIFT)
@@ -246,6 +234,9 @@ internal class PersonDataServiceTest {
         verify ( exactly = 4 ) { personService.hentPerson(any())  }
 
     }
+
+    //genererer fnr
+    private fun fnrAlder(alder: Int): String = FodselsnummerGenerator.generateFnrForTest(alder)
 
     @Test
     fun `Gitt at fnr for bruker ikke finnes men npid finnes så forsøker vi å hente npid for aktoerId`() {

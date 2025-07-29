@@ -73,14 +73,12 @@ class PrefillControllerTest {
         } returns( PersonDataCollection(PersonPDLMock.createWith(), PersonPDLMock.createWith()))
 
         every { krrService.hentPersonerFraKrr(any()) } returns DigitalKontaktinfo(epostadresse = "melleby11@melby.no", true, true, false, "11111111", FNR_VOKSEN)
-
+        every { pensjonsinformasjonService.hentVedtak(any()) } returns Pensjonsinformasjon()
         val nav = Nav(bruker = Bruker(person = Person(fornavn = "Dummy", etternavn = "Dummy", foedselsdato = "1900-10-11", kjoenn = "K")), krav = Krav("1937-12-11"))
         val mockSed = SED(
             type = utfyllMock.sedType,
             nav = nav
         )
-
-        every { pensjonsinformasjonService.hentVedtak(any()) } returns Pensjonsinformasjon()
 
         every{ mockPrefillSEDService.prefill(any(), any(), any(), any())} returns mockSed
 

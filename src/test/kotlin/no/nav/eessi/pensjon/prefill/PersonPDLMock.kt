@@ -10,8 +10,8 @@ import java.time.format.DateTimeFormatter
 object PersonPDLMock {
     internal fun createWith(landkoder: Boolean = true, fornavn: String = "Test", etternavn: String = "Testesen", fnr: String = "3123", aktoerid: String = "3213", erDod: Boolean? = false, metadata: Metadata = mockMeta()) :PdlPerson {
         val folkeregisterMetadata = Folkeregistermetadata(gyldighetstidspunkt = LocalDateTime.parse("2021-02-16T10:15:30"))
-        val fdatoaar =  if (erDod != null && erDod == true) LocalDate.of(1921, 7, 12) else LocalDate.of(1988, 7, 12)
-            val doeadfall = if (erDod != null && erDod == true) Doedsfall(LocalDate.of(2020, 10, 1), null, metadata) else null
+        val fdatoaar =  if (erDod != null && erDod) LocalDate.of(1921, 7, 12) else LocalDate.of(1988, 7, 12)
+            val doeadfall = if (erDod != null && erDod) Doedsfall(LocalDate.of(2020, 10, 1), null, metadata) else null
             val kommuneLandkode = when(landkoder) {
                 true -> "026123"
                 else -> null
@@ -123,7 +123,6 @@ object PersonPDLMock {
 
     internal fun PdlPerson.medFodsel(date: LocalDate): PdlPerson = this.copy(foedselsdato = Foedselsdato(null, date.format(
         DateTimeFormatter.ofPattern("yyyy-MM-dd")), null, mockMeta()))
-//    internal fun PdlPerson.medFodsel(date: LocalDate, land: String? = "NOR")  = this.copy(foedsel = Foedsel(date, land,null, null, null, mockMeta()))
 
     internal fun PdlPerson.medKjoenn(type: KjoennType) = this.copy(kjoenn = Kjoenn(type, null, mockMeta()))
 
