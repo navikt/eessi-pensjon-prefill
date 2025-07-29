@@ -41,8 +41,6 @@ class PrefillP2100BarnepensjonUtlandInnv {
         etterlatteService = mockk()
         personDataCollection = PersonPDLMock.createAvdodFamilie(personFnr, avdodPersonFnr)
 
-        val prefillNav = BasePrefillNav.createPrefillNav( )
-
         val dataFromPEN = lesPensjonsdataFraFil("/pensjonsinformasjon/krav/BARNEP_KravUtland_ForeldreAvdod.xml")
 
         prefillData = PrefillDataModelMother.initialPrefillDataModel(

@@ -7,7 +7,6 @@ import no.nav.eessi.pensjon.prefill.EtterlatteService
 import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
-import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
 import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper.lesPensjonsdataFraFil
 import no.nav.eessi.pensjon.shared.api.PersonInfo
@@ -25,7 +24,6 @@ class PrefillP2100UforePRevurdering {
     private val pesysSaksnummer = "22917763"
     private val pesysKravid = "12354"
 
-    private lateinit var prefillNav: PrefillPDLNav
     private lateinit var prefillData: PrefillDataModel
     private lateinit var etterlatteService: EtterlatteService
     private lateinit var prefillSEDService: PrefillSEDService
@@ -33,8 +31,6 @@ class PrefillP2100UforePRevurdering {
     @BeforeEach
     fun setup() {
         etterlatteService = mockk()
-        prefillNav = BasePrefillNav.createPrefillNav()
-
         prefillData = PrefillDataModelMother.initialPrefillDataModel(
                 sedType = SedType.P2100,
                 pinId = personFnr,

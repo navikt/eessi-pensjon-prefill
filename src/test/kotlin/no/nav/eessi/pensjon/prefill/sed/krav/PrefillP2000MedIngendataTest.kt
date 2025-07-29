@@ -37,7 +37,6 @@ class PrefillP2000MedIngendataTest {
     fun setup() {
         etterlatteService = mockk()
         personDataCollection = PersonPDLMock.createEnkelFamilie(personFnr, ekteFnr)
-        
 
         val dataFromPEN = lesPensjonsdataFraFil("/pensjonsinformasjon/krav/P2000-TOMT-SVAR-PESYS.xml")
 

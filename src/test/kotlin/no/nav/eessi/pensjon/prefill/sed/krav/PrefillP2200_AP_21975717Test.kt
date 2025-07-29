@@ -1,19 +1,14 @@
 package no.nav.eessi.pensjon.prefill.sed.krav
 
-import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_01
 import no.nav.eessi.pensjon.eux.model.SedType.P2000
 import no.nav.eessi.pensjon.eux.model.SedType.P2200
 import no.nav.eessi.pensjon.kodeverk.KodeverkClient
-import no.nav.eessi.pensjon.kodeverk.Postnummer
-import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
 import no.nav.eessi.pensjon.prefill.*
 import no.nav.eessi.pensjon.prefill.models.PensjonCollection
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
-import no.nav.eessi.pensjon.prefill.person.PrefillPDLAdresse
-import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
 import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper.lesPensjonsdataFraFil
 import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper.readJsonResponse
@@ -31,7 +26,6 @@ import org.junit.jupiter.api.Test
 
 class PrefillP2200_AP_21975717Test {
 
-    private val personService: PersonService = mockk()
     var kodeverkClient: KodeverkClient = mockk(relaxed = true)
 
     private val personFnr = FodselsnummerGenerator.generateFnrForTest(68)
@@ -39,9 +33,7 @@ class PrefillP2200_AP_21975717Test {
 
     private val pesysSaksnummer = "14915730"
 
-    private lateinit var prefillNav: PrefillPDLNav
     private lateinit var prefillData: PrefillDataModel
-    private lateinit var etterlatteService: EtterlatteService
     private lateinit var prefillSEDService: PrefillSEDService
     private lateinit var pensjonCollection: PensjonCollection
     private lateinit var dataFromPEN: PensjonsinformasjonService
@@ -49,10 +41,7 @@ class PrefillP2200_AP_21975717Test {
 
     @BeforeEach
     fun setup() {
-        etterlatteService = mockk()
         personDataCollection = PersonPDLMock.createEnkelFamilie(personFnr, ekteFnr)
-
-        prefillNav = BasePrefillNav.createPrefillNav(PrefillPDLAdresse(kodeverkClient, personService))
 
         dataFromPEN = lesPensjonsdataFraFil("/pensjonsinformasjon/krav/KravAlderEllerUfore_AP_UTLAND.xml")
 
@@ -60,7 +49,7 @@ class PrefillP2200_AP_21975717Test {
             partSedAsJson["PersonInfo"] = readJsonResponse("/json/nav/other/person_informasjon_selvb.json")
             partSedAsJson["P4000"] = readJsonResponse("/json/nav/other/p4000_trygdetid_part.json")
         }
-        prefillSEDService = BasePrefillNav.createPrefillSEDService(prefillNav)
+        prefillSEDService = BasePrefillNav.createPrefillSEDService()
 
         val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
         pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
@@ -69,9 +58,6 @@ class PrefillP2200_AP_21975717Test {
 
     @Test
     fun `forventet korrekt utfylt P2200 uforerpensjon med mockdata fra testfiler`() {
-
-        every { kodeverkClient.finnLandkode("NOR") } returns "NO"
-        every { kodeverkClient.hentPostSted(any()) } returns Postnummer("1068", "OSLO")
 
         val p2200 = prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null)
 
@@ -115,8 +101,6 @@ class PrefillP2200_AP_21975717Test {
 
     @Test
     fun `testing av komplett P2200 med utskrift og testing av innsending`() {
-        every { kodeverkClient.finnLandkode(any()) } returns "NO"
-
         val p2200 = prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null)
         val json = mapAnyToJson(createMockApiRequest(p2200.toJson()))
         assertNotNull(json)

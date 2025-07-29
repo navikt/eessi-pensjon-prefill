@@ -26,7 +26,6 @@ class PrefillP2100GjenlevendeRevurdering {
     private val pesysSaksnummer = "22915550"
     private val pesysKravid = "41098605"
 
-    private lateinit var prefillNav: PrefillPDLNav
     private lateinit var prefillData: PrefillDataModel
     private lateinit var etterlatteService: EtterlatteService
     private lateinit var prefillSEDService: PrefillSEDService
@@ -36,7 +35,6 @@ class PrefillP2100GjenlevendeRevurdering {
     @BeforeEach
     fun setup() {
         etterlatteService = mockk()
-        prefillNav = BasePrefillNav.createPrefillNav()
     }
 
     @Test

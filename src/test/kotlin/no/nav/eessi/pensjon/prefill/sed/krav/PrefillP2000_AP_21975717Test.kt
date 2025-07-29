@@ -41,13 +41,11 @@ class PrefillP2000_AP_21975717Test {
 
     private lateinit var prefillData: PrefillDataModel
     private lateinit var prefillSEDService: PrefillSEDService
-    private lateinit var etterlatteService: EtterlatteService
     private lateinit var pensjonCollection: PensjonCollection
     private lateinit var persondataCollection: PersonDataCollection
 
     @BeforeEach
     fun setup() {
-        etterlatteService = mockk()
         persondataCollection = PersonPDLMock.createEnkelFamilie(giftFnr, ekteFnr).copy(
             gjenlevendeEllerAvdod = PersonPDLMock.createEnkelFamilie(giftFnr, ekteFnr).forsikretPerson?.copy(
                 utenlandskIdentifikasjonsnummer = listOf(

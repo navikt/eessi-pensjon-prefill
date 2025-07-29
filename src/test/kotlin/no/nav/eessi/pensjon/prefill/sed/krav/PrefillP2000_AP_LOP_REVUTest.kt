@@ -30,7 +30,6 @@ class PrefillP2000_AP_LOP_REVUTest {
     private val pesysSaksnummer = "20541862"
 
     lateinit var prefillData: PrefillDataModel
-    lateinit var etterlatteService: EtterlatteService
     lateinit var prefillSEDService: PrefillSEDService
     lateinit var pensjonCollection: PensjonCollection
     lateinit var dataFromPEN: PensjonsinformasjonService
@@ -38,7 +37,6 @@ class PrefillP2000_AP_LOP_REVUTest {
 
     @BeforeEach
     fun setup() {
-        etterlatteService = mockk()
         persondataCollection = PersonPDLMock.createEnkelFamilie(personFnr, ekteFnr)
 
         dataFromPEN = lesPensjonsdataFraFil("/pensjonsinformasjon/krav/P2000-AP-LP-RVUR-20541862.xml")
@@ -46,7 +44,6 @@ class PrefillP2000_AP_LOP_REVUTest {
         prefillData = PrefillDataModelMother.initialPrefillDataModel(P2000, pinId = personFnr, penSaksnummer = pesysSaksnummer).apply {
             partSedAsJson["PersonInfo"] = readJsonResponse("/json/nav/other/person_informasjon_selvb.json")
             partSedAsJson["P4000"] = readJsonResponse("/json/nav/other/p4000_trygdetid_part.json")
-
         }
         val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
         pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)

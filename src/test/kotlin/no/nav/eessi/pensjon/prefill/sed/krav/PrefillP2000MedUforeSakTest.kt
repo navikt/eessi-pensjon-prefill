@@ -5,7 +5,6 @@ import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.prefill.*
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
-import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
 import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper.lesPensjonsdataFraFil
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
@@ -22,7 +21,6 @@ class PrefillP2000MedUforeSakTest {
     private val pesysSaksnummer = "22874955"
 
     lateinit var prefillData: PrefillDataModel
-    lateinit var prefillNav: PrefillPDLNav
     lateinit var etterlatteService: EtterlatteService
     lateinit var prefillSEDService: PrefillSEDService
     lateinit var dataFromPEN: PensjonsinformasjonService
@@ -33,12 +31,9 @@ class PrefillP2000MedUforeSakTest {
         etterlatteService = mockk()
         personDataCollection = PersonPDLMock.createEnkelFamilie(personFnr, ekteFnr)
 
-        prefillNav = BasePrefillNav.createPrefillNav()
-
         dataFromPEN = lesPensjonsdataFraFil("/pensjonsinformasjon/krav/P2200-UP-INNV.xml")
 
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P2000, personFnr, penSaksnummer = pesysSaksnummer)
-
 
         prefillSEDService = BasePrefillNav.createPrefillSEDService()
     }
