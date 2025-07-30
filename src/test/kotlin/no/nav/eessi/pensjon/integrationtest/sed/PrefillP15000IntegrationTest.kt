@@ -119,8 +119,6 @@ class PrefillP15000IntegrationTest {
         val v1Kravhistorikk = V1KravHistorikk()
         v1Kravhistorikk.kravArsak = KravArsak.GJNL_SKAL_VURD.name
 
-        v1Sak(BARNEP.name)
-
         val apijson =  dummyApijson(sakid = "22915555", vedtakid = "123123123", aktoerId = AKTOER_ID, sedType = P15000, buc = P_BUC_10, kravtype = KravType.GJENLEV, kravdato = "2020-01-01", fnravdod = NPID)
 
         val result = mockMvc.perform(post("/sed/prefill")
@@ -453,7 +451,7 @@ class PrefillP15000IntegrationTest {
     fun `prefill P15000 P_BUC_10 fra vedtakskontekst hvor saktype er ALDER og pensjoninformasjon returnerer ALDER med GJENLEV`() {
         every { personService.hentIdent(IdentGruppe.AKTORID, NorskIdent(FNR_VOKSEN_4)) } returns AktoerId(AKTOER_ID_2)
 
-        v1Sak(ALDER.name)
+       
         val avdod = V1Avdod()
         avdod.avdod = FNR_VOKSEN_4
         avdod.avdodAktorId = AKTOER_ID_AVDOD_FAR
@@ -475,7 +473,7 @@ class PrefillP15000IntegrationTest {
             .andReturn()
     }
 
-    private fun v1Sak(sakType: String) : V1Sak {
+    private fun v1Sak(sakType: String): V1Sak {
         val sak = V1Sak()
         sak.sakType = sakType
         sak.sakId = 22915555L
@@ -513,7 +511,6 @@ class PrefillP15000IntegrationTest {
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith(true, fnr = FNR_VOKSEN, aktoerid = AKTOER_ID)
 
         v1Sak(ALDER.name)
-
 
         val pensjonsinformasjon = Pensjonsinformasjon()
         pensjonsInformasjon(pensjonsinformasjon)
