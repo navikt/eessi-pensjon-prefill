@@ -76,9 +76,9 @@ class PrefillPDLAdresseTest{
         val person = PersonPDLMock.createWith()
             .medBeskyttelse(AdressebeskyttelseGradering.FORTROLIG)
 
-        val acual = prefillAdresse.createPersonAdresse(person)
+        val actual = prefillAdresse.createPersonAdresse(person)
 
-        assertEquals(null, acual)
+        assertEquals(null, actual)
     }
 
     @Test
@@ -86,15 +86,14 @@ class PrefillPDLAdresseTest{
         val person = PersonPDLMock.createWith()
             .medBeskyttelse(AdressebeskyttelseGradering.STRENGT_FORTROLIG)
 
-        val acual = prefillAdresse.createPersonAdresse(person)
+        val actual = prefillAdresse.createPersonAdresse(person)
 
-        assertEquals(null, acual)
+        assertEquals(null, actual)
     }
 
 
     @Test
     fun `utfylling av doedsboAdresseMedLinjeskiftOgToTegnsLandkode`() {
-
         val person = PersonPDLMock.createWith(
             landkoder = true,
             fnr = "123123123",
@@ -123,6 +122,7 @@ class PrefillPDLAdresseTest{
         assertEquals("SE", actual?.land)
 
     }
+
     @Test
     fun `utfylling av doedsboAdresse med personkontakt med identifikasjonsnummer og 3 tegn i landkode`() {
         val identifikasjonsnummer = "123553543543"
@@ -148,7 +148,6 @@ class PrefillPDLAdresseTest{
                 landkode = "NOR"
             ).medPersonSomKontakt(identifikasjonsnummer = identifikasjonsnummer)
         )
-
 
         val actual = prefillAdresse.createPersonAdresse(person)
 

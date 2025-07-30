@@ -18,6 +18,7 @@ import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
 import no.nav.eessi.pensjon.personoppslag.pdl.model.AktoerId
 import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe.FOLKEREGISTERIDENT
 import no.nav.eessi.pensjon.personoppslag.pdl.model.NorskIdent
+import no.nav.eessi.pensjon.personoppslag.pdl.model.Npid
 import no.nav.eessi.pensjon.prefill.KrrService
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
@@ -25,6 +26,7 @@ import no.nav.eessi.pensjon.prefill.models.DigitalKontaktinfo
 import no.nav.eessi.pensjon.prefill.sed.krav.PensjonsInformasjonHelper
 import no.nav.pensjon.v1.vedtak.V1Vedtak
 import org.hamcrest.Matchers
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
@@ -69,21 +71,11 @@ class PrefillErrorIntegrationTest {
         const val AKTOER_ID = "0123456789000"
     }
 
-    @Test
-    fun `prefill sed P2200 som har vedtak, F_BH_BO_UTL men mangler F_BH_MED_UTL i tillegg til at isBoddArbeidetUtland er false så skal det kastes en Exception`() {
+    @BeforeEach
+    fun setup() {
         every { kodeverkClient.finnLandkode(any())} returns "NO"
         every { kodeverkClient.hentPostSted(any()) } returns Postnummer("1068", "SØRUMSAND")
-        every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN)
-        every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith()
-
-        every { krrService.hentPersonerFraKrr(any())  } returns DigitalKontaktinfo(
-            epostadresse = "melleby11@melby.no",
-            aktiv = true,
-            kanVarsles = true,
-            reservert = false,
-            mobiltelefonnummer = "92582625",
-            personident = FNR_VOKSEN
-        )
+        every { krrService.hentPersonerFraKrr(any())  } returns DigitalKontaktinfo( "melleby11@melby.no", true, personident = NPID_VOKSEN)
 
         val sak = PensjonsInformasjonHelper.createSak(
             PensjonsInformasjonHelper.createKravHistorikk(
@@ -101,6 +93,13 @@ class PrefillErrorIntegrationTest {
 
         every { pensjoninformasjonservice.hentRelevantVedtakHvisFunnet("231231231") } returns vedtak
 
+    }
+
+    @Test
+    fun `prefill sed P2200 som har vedtak, F_BH_BO_UTL men mangler F_BH_MED_UTL i tillegg til at isBoddArbeidetUtland er false så skal det kastes en Exception`() {
+        every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN)
+        every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith()
+
         val apijson = dummyApijson(sakid = "1232123123", aktoerId = AKTOER_ID, vedtakid = "231231231", sed = P2200.name,  buc = P_BUC_03.name)
         val expectedError = """Du kan ikke opprette krav-SED P2200 hvis ikke "bodd/arbeidet i utlandet" er krysset av""".trimIndent()
 
@@ -113,41 +112,22 @@ class PrefillErrorIntegrationTest {
 
     }
 
-//    @Test
-//    fun `Prefill P2200 som har vedtak med F_BH_BO_UTL men F_BH_MED_UTL mangler i tillegg til at vedtak isBoddArbeidetUtland er false så skal det kastes en Exception`() {
-//        every { kodeverkClient.finnLandkode(any())} returns "NO"
-//        every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns Npid(NPID_VOKSEN)
-//        every { personService.hentPerson(Npid(NPID_VOKSEN)) } returns PersonPDLMock.createWith()
-//
-//        every { krrService.hentPersonerFraKrr(any())  } returns KrrPerson(false, "melleby11@melby.no", "11111111")
-//
-//        val sak = PensjonsInformasjonHelper.createSak(
-//            PensjonsInformasjonHelper.createKravHistorikk(
-//                KravArsak.GJNL_SKAL_VURD.name,
-//                KravType.ALDER.name,
-//                status = Sakstatus.INNV
-//            ), sakType = UFOREP.name
-//        )
-//
-//        every { pensjoninformasjonservice.hentRelevantPensjonSak(any(), any()) } returns sak
-//
-//        val vedtak = V1Vedtak()
-//        vedtak.isBoddArbeidetUtland = false
-//        vedtak.kravGjelder = "REVURD"
-//
-//        every { pensjoninformasjonservice.hentRelevantVedtakHvisFunnet("231231231") } returns vedtak
-//
-//        val apijson = dummyApijson(sakid = "1232123123", aktoerId = AKTOER_ID, vedtakid = "231231231", sed = P2200.name,  buc = P_BUC_03.name)
-//        val expectedError = """Du kan ikke opprette krav-SED P2200 hvis ikke "bodd/arbeidet i utlandet" er krysset av""".trimIndent()
-//
-//        mockMvc.perform(
-//            MockMvcRequestBuilders.post("/sed/prefill")
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .content(apijson))
-//            .andExpect(MockMvcResultMatchers.status().isBadRequest)
-//            .andExpect(MockMvcResultMatchers.status().reason(Matchers.containsString(expectedError)))
-//
-//    }
+    @Test
+    fun `Prefill P2200 med NPID bruker som har vedtak med F_BH_BO_UTL men F_BH_MED_UTL mangler i tillegg til at vedtak isBoddArbeidetUtland for er false så skal det kastes en Exception`() {
+        every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns Npid(NPID_VOKSEN)
+        every { personService.hentPerson(Npid(NPID_VOKSEN)) } returns PersonPDLMock.createWith()
+
+        val apijson = dummyApijson(sakid = "1232123123", aktoerId = AKTOER_ID, vedtakid = "231231231", sed = P2200.name,  buc = P_BUC_03.name)
+        val expectedError = """Du kan ikke opprette krav-SED P2200 hvis ikke "bodd/arbeidet i utlandet" er krysset av""".trimIndent()
+
+        mockMvc.perform(
+            MockMvcRequestBuilders.post("/sed/prefill")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(apijson))
+            .andExpect(MockMvcResultMatchers.status().isBadRequest)
+            .andExpect(MockMvcResultMatchers.status().reason(Matchers.containsString(expectedError)))
+
+    }
 
     private fun dummyApijson(sakid: String, vedtakid: String? = "", aktoerId: String, sed: String? = P2000.name, buc: String? = P_BUC_06.name, subject: String? = null, refperson: String? = null): String {
         return """
