@@ -60,7 +60,7 @@ class PrefillService(
                 //TODO: midlertidig løsning
                 val sed = if(request.gjenny){
                     logger.info("Begynner preutfylling for gjenny")
-                    prefillSedService.prefill(prefillData, personcollection,
+                    prefillSedService.prefillGjenny(prefillData, personcollection,
                         listeOverVedtak(prefillData, personcollection))
                 }
                 else {

@@ -108,7 +108,7 @@ class PrefillP6000Pensjon_GJENLEV_Test {
             kravDato = "2018-05-01"
         )
 
-        val p6000 = prefillSEDService.prefill(prefillData, personDataCollection, null) as P6000
+        val p6000 = prefillSEDService.prefillGjenny(prefillData, personDataCollection, null) as P6000
         assertEquals(avdodPersonFnr, p6000.nav?.bruker?.person?.pin?.firstOrNull()?.identifikator)
         assertEquals("RAGNAROK", p6000.nav?.bruker?.person?.etternavn)
         assertEquals("THOR-DOPAPIR", p6000.nav?.bruker?.person?.fornavn)

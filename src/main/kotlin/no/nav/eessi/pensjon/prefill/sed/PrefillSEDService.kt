@@ -26,7 +26,7 @@ class PrefillSEDService(private val eessiInformasjon: EessiInformasjon, private 
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillSEDService::class.java) }
 
-    fun prefill(
+    fun prefillGjenny(
         prefillData: PrefillDataModel,
         personDataCollection: PersonDataCollection,
         etterlatteRespData: EtterlatteVedtakResponseData?
@@ -54,7 +54,7 @@ class PrefillSEDService(private val eessiInformasjon: EessiInformasjon, private 
             }
             else -> {
                 logger.warn("Benytter ordinær preutfylling for Gjenny for ${prefillData.sedType}")
-                prefill(prefillData, personDataCollection, null)
+                prefill(prefillData, personDataCollection, null, etterlatteRespData)
             }
         }
     }
