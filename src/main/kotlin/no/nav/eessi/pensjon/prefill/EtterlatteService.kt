@@ -70,9 +70,11 @@ class EtterlatteService(private val etterlatteRestTemplate: RestTemplate) {
         val beloep : String?,
     )
 
+    //[INNVILGELSE, AVSLAG, FORELOPIG_UTBETALING, NY_BEREGNING_OMREGNING
     enum class VedtakStatus(val value: String) {
         INNVILGELSE("01"),
         AVSLAG("02"),
+        ENDRING("03"),
         NY_BEREGNING_OMREGNING("03"),
         FORELOPIG_UTBETALING("04");
 
