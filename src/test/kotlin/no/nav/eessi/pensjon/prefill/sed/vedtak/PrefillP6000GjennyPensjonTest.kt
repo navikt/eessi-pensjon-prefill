@@ -1,10 +1,13 @@
 package no.nav.eessi.pensjon.prefill.sed.vedtak
 
+import no.nav.eessi.pensjon.eux.model.sed.AndreinstitusjonerItem
 import no.nav.eessi.pensjon.eux.model.sed.Bruker
 import no.nav.eessi.pensjon.eux.model.sed.Person
 import no.nav.eessi.pensjon.eux.model.sed.PinItem
+import no.nav.eessi.pensjon.eux.model.sed.Tilleggsinformasjon
 import no.nav.eessi.pensjon.prefill.EtterlatteService.*
 import no.nav.eessi.pensjon.prefill.EtterlatteService.VedtakStatus.INNVILGELSE
+import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
@@ -36,6 +39,15 @@ class PrefillP6000GjennyPensjonTest {
             )
         )
 
+        val eessiInformasjon = EessiInformasjon(
+            institutionid = "321",
+            institutionnavn = "",
+            institutionGate = "",
+            institutionPostnr = "",
+            institutionLand = "",
+            institutionBy = "",
+        )
+
         val gjenlevende = Bruker(
             person = Person(
                 fornavn = "Gjenlevende",
@@ -44,7 +56,7 @@ class PrefillP6000GjennyPensjonTest {
                 statsborgerskap = null
             )
         )
-        val result = prefillP6000GjennyPensjon.prefillP6000GjennyPensjon(gjenlevende, etterlatteResData)
+        val result = prefillP6000GjennyPensjon.prefillP6000GjennyPensjon(gjenlevende, etterlatteResData, eessiInformasjon)
 
         assertEquals("03", result?.vedtak?.firstOrNull()?.type)
         assertEquals("01", result?.vedtak?.firstOrNull()?.resultat)

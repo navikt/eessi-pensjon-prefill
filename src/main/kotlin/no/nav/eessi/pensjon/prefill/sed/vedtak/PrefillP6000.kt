@@ -43,7 +43,8 @@ class PrefillP6000(
             logger.debug("Prefiller med Pensjonsdata fra Gjenny, med vedtak: $etterlatteRespData")
             PrefillP6000GjennyPensjon().prefillP6000GjennyPensjon(
                 gjenlevende,
-                etterlatteRespData
+                etterlatteRespData,
+                eessiInfo
             )
         }
 

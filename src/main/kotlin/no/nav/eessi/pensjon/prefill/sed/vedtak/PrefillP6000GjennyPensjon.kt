@@ -1,14 +1,17 @@
 package no.nav.eessi.pensjon.prefill.sed.vedtak
 
 import no.nav.eessi.pensjon.eux.model.sed.*
+import no.nav.eessi.pensjon.prefill.EtterlatteService
 import no.nav.eessi.pensjon.prefill.EtterlatteService.EtterlatteVedtakResponseData
 import no.nav.eessi.pensjon.prefill.EtterlatteService.GjennyVedtak
+import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 
 class PrefillP6000GjennyPensjon {
 
     fun prefillP6000GjennyPensjon(
         gjenlevende: Bruker?,
         etterlatteResponseData: EtterlatteVedtakResponseData?,
+        eessiInformasjon: EessiInformasjon,
     ): P6000Pensjon? {
         if (etterlatteResponseData?.vedtak?.isEmpty() == true) return null
         val gjennyVedtak = etterlatteResponseData?.vedtak?.firstOrNull { it.sakType != null }?.sakType
@@ -16,10 +19,12 @@ class PrefillP6000GjennyPensjon {
             gjenlevende = gjenlevende,
             sak = Sak(
                 enkeltkrav = KravtypeItem(
-                    krav = gjennyVedtak
+                    krav = gjennyVedtak,
+                    datoFrist = "six weeks from the date the decision is received"
                     )
                 ),
             vedtak = hentVedtakItems(etterlatteResponseData?.vedtak),
+            tilleggsinformasjon = Tilleggsinformasjon(andreinstitusjoner = listOf(eessiInformasjon.asAndreinstitusjonerItem()))
         )
     }
 
