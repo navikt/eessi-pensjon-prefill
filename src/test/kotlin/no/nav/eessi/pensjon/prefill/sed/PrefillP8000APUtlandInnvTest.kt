@@ -7,6 +7,7 @@ import no.nav.eessi.pensjon.kodeverk.KodeverkClient
 import no.nav.eessi.pensjon.kodeverk.Postnummer
 import no.nav.eessi.pensjon.pensjonsinformasjon.models.EPSaktype
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
+import no.nav.eessi.pensjon.prefill.BasePrefillNav
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
@@ -26,7 +27,6 @@ class PrefillP8000APUtlandInnvTest {
     private val personService: PersonService = mockk()
     private val personFnr = FodselsnummerGenerator.generateFnrForTest(68)
     private val ekteFnr = FodselsnummerGenerator.generateFnrForTest(70)
-    private val pesysSaksnummer = "14398627"
     lateinit var prefillData: PrefillDataModel
     lateinit var prefill: PrefillP8000
     lateinit var prefillNav: PrefillPDLNav
@@ -43,14 +43,12 @@ class PrefillP8000APUtlandInnvTest {
 
         val prefillAdresse = PrefillPDLAdresse(kodeverkClient, personService)
 
-        prefillNav = PrefillPDLNav(
-                prefillAdresse = prefillAdresse,
-                institutionid = "NO:noinst002",
-                institutionnavn = "NOINST002, NO INST002, NO")
+        prefillNav = BasePrefillNav.createPrefillNav(prefillAdresse)
 
         val prefillSed = PrefillSed(prefillNav)
         prefill = PrefillP8000(prefillSed)
-        prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P8000, personFnr, penSaksnummer = pesysSaksnummer)
+        prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P8000, personFnr, penSaksnummer = "14398627"
+        )
 
     }
 

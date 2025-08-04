@@ -4,14 +4,13 @@ import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.sed.Nav
 import no.nav.eessi.pensjon.eux.model.sed.SED
+import no.nav.eessi.pensjon.prefill.BasePrefillNav
 import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
-import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.prefill.models.PensjonCollection
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
-import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
 import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper.lesPensjonsdataFraFil
 import no.nav.eessi.pensjon.shared.api.PersonInfo
@@ -30,17 +29,12 @@ class PrefillP2100GjenlevendeRevurdering {
     private val pesysKravid = "41098605"
 
     private lateinit var prefillData: PrefillDataModel
-    private lateinit var dataFromPEN: PensjonsinformasjonService
     private lateinit var prefillSEDService: PrefillSEDService
-    private lateinit var prefillNav: PrefillPDLNav
     private lateinit var pensjonCollection: PensjonCollection
+    private lateinit var dataFromPEN: PensjonsinformasjonService
 
     @BeforeEach
     fun setup() {
-        prefillNav = PrefillPDLNav(
-                prefillAdresse = mockk(relaxed = true),
-                institutionid = "NO:NAVAT02",
-                institutionnavn = "NOINST002, NO INST002, NO")
     }
 
     @Test
@@ -63,8 +57,8 @@ class PrefillP2100GjenlevendeRevurdering {
             gjenlevendeEllerAvdod = avdod
         )
 
-        prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav)
-        val p2100 = prefillSEDService.prefill(prefillData, persondataCollection, pensjonCollection)
+        prefillSEDService = BasePrefillNav.createPrefillSEDService()
+        val p2100 = prefillSEDService.prefill(prefillData, persondataCollection, pensjonCollection, null)
 
         val p2100gjenlev = SED(
                 type = SedType.P2100,

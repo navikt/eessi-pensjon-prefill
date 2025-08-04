@@ -27,9 +27,8 @@ class PrefillServiceTest{
     var krrService: KrrService = mockk()
 
     var prefillSedService: PrefillSEDService = mockk()
-
+    var etterlatteService: EtterlatteService = mockk()
     var innhentingService: InnhentingService = mockk()
-
     var automatiseringStatistikkService: AutomatiseringStatistikkService = mockk()
 
     private lateinit var personcollection: PersonDataCollection
@@ -48,7 +47,9 @@ class PrefillServiceTest{
             krrService,
             prefillSedService,
             innhentingService,
+            etterlatteService,
             automatiseringStatistikkService,
+            mockk(relaxed = true),
             MetricsHelper.ForTest()
         )
         every { innhentingService.getAvdodAktoerIdPDL(any())} returns avdodPersonFnr
@@ -77,7 +78,7 @@ class PrefillServiceTest{
 
         val krrPerson = DigitalKontaktinfo(epostadresse = epost, true, true, false, "11111111", FNR_VOKSEN)
         every { krrService.hentPersonerFraKrr(any()) } returns krrPerson
-        every { prefillSedService.prefill(capture(requestSlot), any(), any()) } returns SED(SedType.P2000, "sedVer")
+        every { prefillSedService.prefill(capture(requestSlot), any(), any(), any()) } returns SED(SedType.P2000, "sedVer")
 
         prefillService.prefillSedtoJson(request)
         val capture = requestSlot.captured

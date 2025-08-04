@@ -1,21 +1,9 @@
 package no.nav.eessi.pensjon.prefill.sed
 
 import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_05
-import no.nav.eessi.pensjon.eux.model.SedType.H020
-import no.nav.eessi.pensjon.eux.model.SedType.H021
-import no.nav.eessi.pensjon.eux.model.SedType.P10000
-import no.nav.eessi.pensjon.eux.model.SedType.P15000
-import no.nav.eessi.pensjon.eux.model.SedType.P2000
-import no.nav.eessi.pensjon.eux.model.SedType.P2100
-import no.nav.eessi.pensjon.eux.model.SedType.P2200
-import no.nav.eessi.pensjon.eux.model.SedType.P4000
-import no.nav.eessi.pensjon.eux.model.SedType.P5000
-import no.nav.eessi.pensjon.eux.model.SedType.P6000
-import no.nav.eessi.pensjon.eux.model.SedType.P7000
-import no.nav.eessi.pensjon.eux.model.SedType.P8000
-import no.nav.eessi.pensjon.eux.model.SedType.X005
-import no.nav.eessi.pensjon.eux.model.SedType.X010
+import no.nav.eessi.pensjon.eux.model.SedType.*
 import no.nav.eessi.pensjon.eux.model.sed.SED
+import no.nav.eessi.pensjon.prefill.EtterlatteService.EtterlatteVedtakResponseData
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.prefill.models.PensjonCollection
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
@@ -38,7 +26,11 @@ class PrefillSEDService(private val eessiInformasjon: EessiInformasjon, private 
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillSEDService::class.java) }
 
-    fun prefill(prefillData: PrefillDataModel, personDataCollection: PersonDataCollection): SED {
+    fun prefill(
+        prefillData: PrefillDataModel,
+        personDataCollection: PersonDataCollection,
+        etterlatteRespData: EtterlatteVedtakResponseData?
+    ): SED {
         return when (prefillData.sedType) {
             P6000 -> {
                 PrefillP6000(
@@ -47,7 +39,8 @@ class PrefillSEDService(private val eessiInformasjon: EessiInformasjon, private 
                     null
                 ).prefill(
                     prefillData,
-                    personDataCollection
+                    personDataCollection,
+                    etterlatteRespData
                 )
             }
             P2100 -> {
@@ -65,7 +58,13 @@ class PrefillSEDService(private val eessiInformasjon: EessiInformasjon, private 
             }
         }
     }
-    fun prefill(prefillData: PrefillDataModel, personDataCollection: PersonDataCollection, pensjonCollection: PensjonCollection?): SED {
+
+    fun prefill(
+        prefillData: PrefillDataModel,
+        personDataCollection: PersonDataCollection,
+        pensjonCollection: PensjonCollection?,
+        etterlatteRespData: EtterlatteVedtakResponseData?
+    ): SED {
 
         logger.debug("mapping prefillClass to SED: ${prefillData.sedType}")
 
@@ -106,7 +105,7 @@ class PrefillSEDService(private val eessiInformasjon: EessiInformasjon, private 
                 )
             ).prefill(
                 prefillData,
-                personDataCollection
+                personDataCollection, etterlatteRespData
             )
             P5000 -> PrefillP5000(PrefillSed(prefillPDLnav)).prefill(prefillData, personDataCollection)
             P4000 -> PrefillP4000(PrefillSed(prefillPDLnav)).prefill(prefillData, personDataCollection)

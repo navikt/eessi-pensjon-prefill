@@ -1,13 +1,11 @@
 package no.nav.eessi.pensjon.prefill.sed.krav
 
-import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.SedType
+import no.nav.eessi.pensjon.prefill.BasePrefillNav
 import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
-import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
-import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
 import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper.lesPensjonsdataFraFil
 import no.nav.eessi.pensjon.shared.api.PersonInfo
@@ -27,20 +25,9 @@ class PrefillP2100UforePRevurdering {
 
     private lateinit var prefillData: PrefillDataModel
     private lateinit var prefillSEDService: PrefillSEDService
-    private lateinit var prefillNav: PrefillPDLNav
 
     @BeforeEach
     fun setup() {
-
-        prefillNav = PrefillPDLNav(
-                prefillAdresse = mockk {
-                    every { hentLandkode(any()) } returns "NO"
-                    every { createPersonAdresse(any()) } returns mockk(relaxed = true)
-                },
-                institutionid = "NO:NAVAT02",
-                institutionnavn = "NOINST002, NO INST002, NO")
-
-
         prefillData = PrefillDataModelMother.initialPrefillDataModel(
                 sedType = SedType.P2100,
                 pinId = personFnr,
@@ -58,9 +45,9 @@ class PrefillP2100UforePRevurdering {
         val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
         val pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
 
-        prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav)
+        prefillSEDService = BasePrefillNav.createPrefillSEDService()
 
-        val p2100 = prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection)
+        val p2100 = prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null)
 
         assertNotNull(p2100.nav?.krav)
         assertEquals("2020-08-01", p2100.nav?.krav?.dato)

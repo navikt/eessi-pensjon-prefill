@@ -1,16 +1,14 @@
 package no.nav.eessi.pensjon.prefill.sed.krav
 
-import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.SedType
+import no.nav.eessi.pensjon.prefill.BasePrefillNav
 import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
-import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.prefill.models.PensjonCollection
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
-import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
 import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper.lesPensjonsdataFraFil
 import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper.readJsonResponse
@@ -29,8 +27,8 @@ class PrefillP2000KravKunUtlandTest {
     private val ekteFnr = FodselsnummerGenerator.generateFnrForTest(70)
 
     lateinit var prefillData: PrefillDataModel
-    lateinit var dataFromPEN: PensjonsinformasjonService
     lateinit var prefillSEDService: PrefillSEDService
+    lateinit var dataFromPEN: PensjonsinformasjonService
 
     private lateinit var persondataCollection: PersonDataCollection
     private lateinit var pensjonCollection: PensjonCollection
@@ -38,14 +36,6 @@ class PrefillP2000KravKunUtlandTest {
     @BeforeEach
     fun setup() {
         persondataCollection = PersonPDLMock.createEnkelFamilie(personFnr, ekteFnr)
-
-        val prefillNav = PrefillPDLNav(
-                prefillAdresse = mockk {
-                    every { hentLandkode(any()) } returns "NO"
-                    every { createPersonAdresse(any())} returns mockk(relaxed = true)
-                },
-                institutionid = "NO:noinst002",
-                institutionnavn = "NOINST002, NO INST002, NO")
 
         dataFromPEN = lesPensjonsdataFraFil("/pensjonsinformasjon/krav/P2000-AP-KUNUTL-IKKEVIRKNINGTID.xml")
 
@@ -57,7 +47,7 @@ class PrefillP2000KravKunUtlandTest {
         val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
 
         pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
-        prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav)
+        prefillSEDService = BasePrefillNav.createPrefillSEDService()
 
     }
 
@@ -76,7 +66,7 @@ class PrefillP2000KravKunUtlandTest {
 
         val expected = "Søknad gjelder Førstegangsbehandling kun utland. Se egen rutine på navet"
         try {
-            prefillSEDService.prefill(prefillData, persondataCollection, pensjonCollection)
+            prefillSEDService.prefill(prefillData, persondataCollection, pensjonCollection, null)
         } catch (ex: ResponseStatusException) {
             assertEquals(expected, ex.reason)
         }

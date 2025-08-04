@@ -1,10 +1,9 @@
 package no.nav.eessi.pensjon.prefill.sed
 
-import io.mockk.every
-import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.sed.SED
 import no.nav.eessi.pensjon.eux.model.sed.X009
+import no.nav.eessi.pensjon.prefill.BasePrefillNav
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
@@ -20,7 +19,6 @@ import org.skyscreamer.jsonassert.JSONAssert
 class PrefillX010Test {
     private val personFnr = FodselsnummerGenerator.generateFnrForTest(68)
     private val ekteFnr = FodselsnummerGenerator.generateFnrForTest(70)
-    private val pesysSaksnummer = "14398627"
     lateinit var prefillData: PrefillDataModel
     lateinit var prefill: PrefillX010
     lateinit var prefillNav: PrefillPDLNav
@@ -29,21 +27,13 @@ class PrefillX010Test {
     @BeforeEach
     fun setup() {
         persondataCollection = PersonPDLMock.createEnkelFamilie(personFnr, ekteFnr)
-
-        prefillNav = PrefillPDLNav(
-            prefillAdresse = mockk {
-                every { hentLandkode(any()) } returns "NO"
-                every { createPersonAdresse(any()) } returns mockk(relaxed = true)
-            },
-            institutionid = "NO:noinst002",
-            institutionnavn = "NOINST002, NO INST002, NO")
-
+        prefillNav = BasePrefillNav.createPrefillNav()
         prefill = PrefillX010(prefillNav)
 
         prefillData = PrefillDataModelMother.initialPrefillDataModel(
             SedType.X010,
             personFnr,
-            penSaksnummer = pesysSaksnummer,
+            penSaksnummer = "14398627",
             avdod = PersonInfo("12345678910", "123456789")
         )
 
@@ -66,8 +56,6 @@ class PrefillX010Test {
 
         JSONAssert.assertEquals(expectedX010medfleredetaljer(), json , true)
     }
-
-
 
     @Test
     fun `Prefill X010 med data fra X009 hvor det er mangelfull detaljer`() {
@@ -124,7 +112,6 @@ class PrefillX010Test {
             }
         """.trimIndent()
     }
-
 
     private fun expectedX010medfleredetaljer(): String {
     return """

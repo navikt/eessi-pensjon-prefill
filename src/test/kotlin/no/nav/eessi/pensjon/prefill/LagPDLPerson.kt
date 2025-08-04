@@ -21,8 +21,8 @@ class LagPdlPerson {
             sivilstand: List<Sivilstand> = emptyList()
         ): PdlPerson {
             val personfnr = Fodselsnummer.fra(fnrEllerNpid)
-            val fdatoaar =  if (erDod != null && erDod == true || personfnr?.erNpid == true) LocalDate.of(1921, 7, 12) else personfnr?.getBirthDate()
-            val doeadfall = if (erDod != null && erDod == true || personfnr?.erNpid == true) Doedsfall(LocalDate.of(2020, 10, 1), null, mockMeta()) else null
+            val fdatoaar =  if (erDod != null && erDod || personfnr?.erNpid == true) LocalDate.of(1921, 7, 12) else personfnr?.getBirthDate()
+            val doeadfall = if (erDod != null && erDod || personfnr?.erNpid == true) Doedsfall(LocalDate.of(2020, 10, 1), null, mockMeta()) else null
             return PdlPerson(
                 identer = if(personfnr?.erNpid == true) listOf(IdentInformasjon(fnrEllerNpid, NPID))
                 else listOf(IdentInformasjon(fnrEllerNpid, FOLKEREGISTERIDENT)),
@@ -131,8 +131,7 @@ class LagPdlPerson {
                 ),
                 utenlandskAdresse = null,
                 metadata = mockMeta()
-        )
-        )
+        ))
 
         fun createPersonMedEktefellePartner(personPersonnr: String, ektefellePersonnr: String, type: Sivilstandstype): Pair<PdlPerson, PdlPerson> {
 

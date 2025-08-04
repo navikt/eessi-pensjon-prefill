@@ -1,12 +1,11 @@
 package no.nav.eessi.pensjon.prefill.sed
 
-import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.sed.SED
+import no.nav.eessi.pensjon.prefill.BasePrefillNav
 import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
-import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.prefill.models.PensjonCollection
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
@@ -15,9 +14,7 @@ import no.nav.eessi.pensjon.shared.api.PersonInfo
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
 import no.nav.eessi.pensjon.shared.person.Fodselsnummer
 import no.nav.eessi.pensjon.shared.person.FodselsnummerGenerator
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNotNull
-import org.junit.jupiter.api.Assertions.assertNull
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
@@ -27,36 +24,28 @@ class PrefillP8000GLmedUtlandInnvTest {
     private val avdodPersonFnr = FodselsnummerGenerator.generateFnrForTest(75)
     private val pesysSaksnummer = "21975717"
 
-    lateinit var prefillData: PrefillDataModel
-
+    lateinit var sed: SED
     lateinit var prefill: PrefillP8000
     lateinit var prefillNav: PrefillPDLNav
-    lateinit var personDataCollection: PersonDataCollection
-    lateinit var pensjonCollection: PensjonCollection
+    lateinit var prefillData: PrefillDataModel
 
-    lateinit var sed: SED
+    lateinit var pensjonCollection: PensjonCollection
     lateinit var prefillSEDService: PrefillSEDService
+    lateinit var personDataCollection: PersonDataCollection
+
 
     @BeforeEach
     fun setup() {
+        prefillNav = BasePrefillNav.createPrefillNav()
         personDataCollection = PersonPDLMock.createAvdodFamilie(personFnr, avdodPersonFnr)
-
-        prefillNav = PrefillPDLNav(
-                prefillAdresse = mockk {
-                    every { hentLandkode(any()) } returns "NO"
-                    every { createPersonAdresse(any()) } returns mockk(relaxed = true)
-                },
-                institutionid = "NO:noinst002",
-                institutionnavn = "NOINST002, NO INST002, NO")
-
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P8000, personFnr, penSaksnummer = pesysSaksnummer, avdod = PersonInfo(avdodPersonFnr, "112233445566"))
 
         val pensjonInformasjonService = PrefillTestHelper.lesPensjonsdataFraFil("/pensjonsinformasjon/krav/KravAlderEllerUfore_AP_UTLAND.xml")
         val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = pensjonInformasjonService)
         val pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
 
-        prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav)
-        sed = prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection)
+        prefillSEDService = BasePrefillNav.createPrefillSEDService()
+        sed = prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection, null)
     }
 
     @Test

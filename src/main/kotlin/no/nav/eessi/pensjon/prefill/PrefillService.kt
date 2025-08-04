@@ -3,11 +3,15 @@ package no.nav.eessi.pensjon.prefill
 import io.micrometer.core.instrument.Metrics
 import no.nav.eessi.pensjon.eux.model.sed.SED.Companion.setSEDVersion
 import no.nav.eessi.pensjon.metrics.MetricsHelper
+import no.nav.eessi.pensjon.prefill.EtterlatteService.EtterlatteVedtakResponseData
 import no.nav.eessi.pensjon.prefill.models.DigitalKontaktinfo
 import no.nav.eessi.pensjon.prefill.models.DigitalKontaktinfo.Companion.validateEmail
+import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
+import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
 import no.nav.eessi.pensjon.shared.api.ApiRequest
 import no.nav.eessi.pensjon.shared.api.PersonInfo
+import no.nav.eessi.pensjon.shared.api.PrefillDataModel
 import no.nav.eessi.pensjon.statistikk.AutomatiseringStatistikkService
 import no.nav.eessi.pensjon.utils.eessiRequire
 import no.nav.eessi.pensjon.utils.toJson
@@ -23,7 +27,9 @@ class PrefillService(
     private val krrService: KrrService,
     private val prefillSedService: PrefillSEDService,
     private val innhentingService: InnhentingService,
+    private val etterlatteService: EtterlatteService,
     private val automatiseringStatistikkService: AutomatiseringStatistikkService,
+    private val prefillPdlNav: PrefillPDLNav,
     @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper.ForTest()
 ) {
     private val logger = LoggerFactory.getLogger(PrefillService::class.java)
@@ -54,12 +60,13 @@ class PrefillService(
                 //TODO: midlertidig løsning
                 val sed = if(request.gjenny){
                     logger.info("Begynner preutfylling for gjenny")
-                    prefillSedService.prefill(prefillData, personcollection)
+                    prefillSedService.prefill(prefillData, personcollection,
+                        listeOverVedtak(prefillData, personcollection))
                 }
                 else {
                     val pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
                     secureLog.info("PensjonCollection: ${pensjonCollection.toJson()}")
-                    prefillSedService.prefill(prefillData, personcollection, pensjonCollection)
+                    prefillSedService.prefill(prefillData, personcollection, pensjonCollection, null)
                 }
 
                 secureLog.info("Sed ferdig utfylt: $sed")
@@ -84,6 +91,16 @@ class PrefillService(
                 throw ex
             }
         }
+    }
+
+    private fun listeOverVedtak(prefillData: PrefillDataModel, personDataCollection: PersonDataCollection): EtterlatteVedtakResponseData? {
+        val gjenlevende = prefillData.avdod?.let { prefillPdlNav.createGjenlevende(personDataCollection.forsikretPerson, prefillData.bruker) }
+
+        val resultatEtterlatteRespData = etterlatteService.hentGjennyVedtak(gjenlevende?.person?.pin?.first()?.identifikator!!)
+        if(resultatEtterlatteRespData.isFailure){
+            logger.error(resultatEtterlatteRespData.exceptionOrNull()?.message)
+        }
+        return resultatEtterlatteRespData.getOrNull()
     }
 
     private fun hentKrrPerson(norskIdent: String, request: ApiRequest): PersonInfo {
