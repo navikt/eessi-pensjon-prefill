@@ -18,11 +18,11 @@ class PrefillP6000GjennyPensjon {
         return P6000Pensjon(
             gjenlevende = gjenlevende,
             sak = Sak(
-                enkeltkrav = KravtypeItem(
+                kravtype = listOf(KravtypeItem(
                     krav = gjennyVedtak,
                     datoFrist = "six weeks from the date the decision is received"
                     )
-                ),
+                )),
             vedtak = hentVedtakItems(etterlatteResponseData?.vedtak),
             tilleggsinformasjon = Tilleggsinformasjon(andreinstitusjoner = listOf(eessiInformasjon.asAndreinstitusjonerItem()))
         )
