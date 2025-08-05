@@ -1,12 +1,12 @@
 package no.nav.eessi.pensjon.prefill.sed.vedtak
 
-import no.nav.eessi.pensjon.eux.model.sed.AndreinstitusjonerItem
 import no.nav.eessi.pensjon.eux.model.sed.Bruker
 import no.nav.eessi.pensjon.eux.model.sed.Person
 import no.nav.eessi.pensjon.eux.model.sed.PinItem
-import no.nav.eessi.pensjon.eux.model.sed.Tilleggsinformasjon
-import no.nav.eessi.pensjon.prefill.EtterlatteService.*
-import no.nav.eessi.pensjon.prefill.EtterlatteService.VedtakStatus.INNVILGELSE
+import no.nav.eessi.pensjon.prefill.etterlatte.EtterlatteVedtakResponseData
+import no.nav.eessi.pensjon.prefill.etterlatte.GjennyUtbetaling
+import no.nav.eessi.pensjon.prefill.etterlatte.GjennyVedtak
+import no.nav.eessi.pensjon.prefill.etterlatte.VedtakStatus
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -26,7 +26,7 @@ class PrefillP6000GjennyPensjonTest {
                     sakId = 123456,
                     sakType = "Omstilling",
                     virkningstidspunkt = LocalDate.parse("2025-07-23"),
-                    type = INNVILGELSE,
+                    type = VedtakStatus.INNVILGELSE,
                     utbetaling = listOf(
                         GjennyUtbetaling(
                             fraOgMed = LocalDate.parse("2025-07-23"),

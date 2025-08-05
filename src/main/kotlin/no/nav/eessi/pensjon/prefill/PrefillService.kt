@@ -3,7 +3,8 @@ package no.nav.eessi.pensjon.prefill
 import io.micrometer.core.instrument.Metrics
 import no.nav.eessi.pensjon.eux.model.sed.SED.Companion.setSEDVersion
 import no.nav.eessi.pensjon.metrics.MetricsHelper
-import no.nav.eessi.pensjon.prefill.EtterlatteService.EtterlatteVedtakResponseData
+import no.nav.eessi.pensjon.prefill.etterlatte.EtterlatteService
+import no.nav.eessi.pensjon.prefill.etterlatte.EtterlatteVedtakResponseData
 import no.nav.eessi.pensjon.prefill.models.DigitalKontaktinfo
 import no.nav.eessi.pensjon.prefill.models.DigitalKontaktinfo.Companion.validateEmail
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
@@ -94,10 +95,14 @@ class PrefillService(
     }
 
     private fun listeOverVedtak(prefillData: PrefillDataModel, personDataCollection: PersonDataCollection): EtterlatteVedtakResponseData? {
-        val gjenlevende = prefillData.avdod?.let { prefillPdlNav.createGjenlevende(personDataCollection.forsikretPerson, prefillData.bruker) }
+        val gjenlevende = prefillData.avdod?.let {
+            prefillPdlNav.createGjenlevende(personDataCollection.forsikretPerson, prefillData.bruker)
+        }
 
-        val resultatEtterlatteRespData = etterlatteService.hentGjennyVedtak(gjenlevende?.person?.pin?.first()?.identifikator!!)
-        if(resultatEtterlatteRespData.isFailure){
+        val identifikator = gjenlevende?.person?.pin?.firstOrNull()?.identifikator ?: return null
+        val resultatEtterlatteRespData = etterlatteService.hentGjennyVedtak(identifikator)
+
+        if (resultatEtterlatteRespData.isFailure) {
             logger.error(resultatEtterlatteRespData.exceptionOrNull()?.message)
         }
         return resultatEtterlatteRespData.getOrNull()

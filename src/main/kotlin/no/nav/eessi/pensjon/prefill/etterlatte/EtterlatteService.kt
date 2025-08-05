@@ -1,4 +1,4 @@
-package no.nav.eessi.pensjon.prefill
+package no.nav.eessi.pensjon.prefill.etterlatte
 
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import org.slf4j.LoggerFactory
@@ -48,42 +48,6 @@ class EtterlatteService(private val etterlatteRestTemplate: RestTemplate) {
             Result.failure(IllegalArgumentException("Vedtak ikke funnet (404)"))
         } catch (e: Exception) {
             Result.failure(e)
-        }
-    }
-
-    data class EtterlatteVedtakResponseData(
-        val vedtak: List<GjennyVedtak>
-    )
-
-    data class GjennyVedtak(
-        val sakId: Int,
-        val sakType: String?,
-        val virkningstidspunkt: LocalDate?,
-        val type: VedtakStatus?,
-        val utbetaling: List<GjennyUtbetaling>?,
-        val iverksettelsesTidspunkt: LocalDateTime?,
-    )
-
-    data class GjennyUtbetaling(
-        val fraOgMed : LocalDate?,
-        val tilOgMed : LocalDate?,
-        val beloep : String?,
-    )
-
-    //[INNVILGELSE, AVSLAG, FORELOPIG_UTBETALING, NY_BEREGNING_OMREGNING
-    enum class VedtakStatus(val value: String) {
-        INNVILGELSE("01"),
-        AVSLAG("02"),
-        ENDRING("03"),
-        NY_BEREGNING_OMREGNING("03"),
-        FORELOPIG_UTBETALING("04");
-
-        companion object {
-            @JvmStatic
-            fun fra(value: String?): VedtakStatus? {
-                return if (value == null) null
-                else values().firstOrNull { it.value == value }
-            }
         }
     }
 }
