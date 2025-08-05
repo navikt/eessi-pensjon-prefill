@@ -1,8 +1,11 @@
 package no.nav.eessi.pensjon.prefill
 
+import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.SedType
+import no.nav.eessi.pensjon.eux.model.sed.SED
 import no.nav.eessi.pensjon.prefill.etterlatte.EtterlatteService
+import no.nav.eessi.pensjon.prefill.etterlatte.EtterlatteVedtakResponseData
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjonMother
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
@@ -41,8 +44,7 @@ class PrefillSEDServiceTest {
         personcollection = PersonDataCollection(null, null)
         val personDataCollectionFamilie = PersonPDLMock.createEnkelFamilie(personFnr, avdodPersonFnr)
         personDataCollection = PersonDataCollection(gjenlevendeEllerAvdod = personDataCollectionFamilie.ektefellePerson, forsikretPerson = personDataCollectionFamilie.forsikretPerson )
-
-    prefillNav = BasePrefillNav.createPrefillNav()
+        prefillNav = BasePrefillNav.createPrefillNav()
     }
 
     @Test
@@ -55,5 +57,27 @@ class PrefillSEDServiceTest {
         assertNotNull(prefill.nav?.bruker?.person?.pin)
         assertEquals(avdodPersonFnr, prefill.nav?.bruker?.person?.pin?.firstOrNull()?.identifikator)
         assertEquals(SedType.P6000, prefill.type)
+    }
+
+    @Test
+    fun `prefillGjenny skal defaulte til prefill når den kalles fra gjenny uten 2100 eller 6000`() {
+        prefillData = PrefillDataModelMother.initialPrefillDataModel(
+            SedType.P6000,
+            personFnr,
+            penSaksnummer = "22580170",
+            vedtakId = "12312312",
+            avdod = PersonInfo(avdodPersonFnr, "1234567891234")
+        )
+
+        val personDataCollection = mockk<PersonDataCollection>()
+        val etterlatteRespData = mockk<EtterlatteVedtakResponseData>()
+        val expectedSED = mockk<SED>()
+
+        every { prefillSEDService.prefill(prefillData, personDataCollection, null, etterlatteRespData) } returns expectedSED
+
+        val result = prefillSEDService.prefillGjenny(prefillData, personDataCollection, etterlatteRespData)
+
+        assertNotNull(result)
+        assertEquals(expectedSED, result)
     }
 }
