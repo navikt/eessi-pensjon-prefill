@@ -129,7 +129,6 @@ class ArchitectureTest {
     }
 
     @Test
-    @Disabled
     fun `no cycles on any level for production classes`() {
         slices()
             .matching("$root..(*)")

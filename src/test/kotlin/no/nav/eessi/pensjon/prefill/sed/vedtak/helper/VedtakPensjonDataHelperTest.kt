@@ -103,7 +103,7 @@ class VedtakPensjonDataHelperTest {
 
     @Test
     fun `forventer 13482 dager i sum summerTrygdeTid`() {
-        val dataFromPESYS = PensjonsinformasjonService(fraFil("P6000-APUtland-301.xml"), "q")
+        val dataFromPESYS = PensjonsinformasjonService(fraFil("P6000-APUtland-301.xml"))
 
         val pendata = dataFromPESYS.hentMedVedtak("someVedtakId")
 
@@ -112,7 +112,7 @@ class VedtakPensjonDataHelperTest {
 
     @Test
     fun `forventer at ytelseprMaaned er siste i listen`() {
-        val dataFromPESYS = PensjonsinformasjonService(fraFil("P6000-UT-220.xml"), "q")
+        val dataFromPESYS = PensjonsinformasjonService(fraFil("P6000-UT-220.xml"))
         val pendata = dataFromPESYS.hentMedVedtak("someVedtakId")
 
         val sisteprmnd = VedtakPensjonDataHelper.hentSisteYtelsePerMaaned(pendata)

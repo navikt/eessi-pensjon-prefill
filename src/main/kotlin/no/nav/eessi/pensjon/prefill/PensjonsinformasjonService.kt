@@ -10,7 +10,6 @@ import no.nav.pensjon.v1.sak.V1Sak
 import no.nav.pensjon.v1.vedtak.V1Vedtak
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Profile
 import org.springframework.http.HttpStatus
 import org.springframework.retry.RetryCallback
@@ -26,9 +25,7 @@ import org.springframework.web.server.ResponseStatusException
  * sakid eller vedtakid.
  */
 @Component
-class PensjonsinformasjonService(private val pensjonsinformasjonClient: PensjonsinformasjonClient,
-                                 @Value("\${ENV}") private val environment: String
-) {
+class PensjonsinformasjonService(private val pensjonsinformasjonClient: PensjonsinformasjonClient) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PensjonsinformasjonService::class.java) }
 
@@ -42,10 +39,6 @@ class PensjonsinformasjonService(private val pensjonsinformasjonClient: Pensjons
 
     //hjelemetode for Vedtak P6000 P5000
     fun hentMedVedtak(vedtakId: String): Pensjonsinformasjon {
-        if( environment in listOf("q1")) {
-            return Pensjonsinformasjon()
-        }
-
         if (vedtakId.isBlank()) throw IkkeGyldigKallException("Mangler vedtakID")
         return pensjonsinformasjonClient.hentAltPaaVedtak(vedtakId)
     }
@@ -64,17 +57,11 @@ class PensjonsinformasjonService(private val pensjonsinformasjonClient: Pensjons
         //Nå er vi dypt inne i prefill SED også sjekker vi om vi får hentet ut noe Pensjonsinformasjon
         //hvis det inne inneholder noe data så feiler vi!
         //**********************************************
-        logger.info("Hent pensjonInformasjon $environment")
 
-        val pendata = if( environment in listOf("q1")) {
-            logger.debug("Henter ikke vedtak i q1")
-            return Pensjonsinformasjon()
-        } else {
-            pensjonsinformasjonClient.hentAltPaaFNR(fnr)
-        }
+        val pendata: Pensjonsinformasjon = pensjonsinformasjonClient.hentAltPaaFNR(fnr)
 
         if (pendata.brukersSakerListe == null) {
-            return Pensjonsinformasjon()
+            throw PensjoninformasjonException("Ingen gyldig brukerSakerListe")
         }
         return pendata
     }
@@ -83,15 +70,11 @@ class PensjonsinformasjonService(private val pensjonsinformasjonClient: Pensjons
         logger.debug("----------------------------------------------------------")
         val starttime = System.nanoTime()
 
-        logger.info("Starter [vedtak] Preutfylling Utfylling Data for $environment")
-        logger.debug("vedtakId: $vedtakId")
+        logger.debug("Starter [vedtak] Preutfylling Utfylling Data")
 
-        val pensjonsinformasjon = if( environment in listOf("q1")) {
-            logger.debug("Henter ikke vedtak i q1")
-            return Pensjonsinformasjon()
-        } else {
-            hentMedVedtak(vedtakId)
-        }
+        logger.debug("vedtakId: $vedtakId")
+        val pensjonsinformasjon = hentMedVedtak(vedtakId)
+
         logger.debug("Henter pensjondata fra PESYS")
 
         val endtime = System.nanoTime()
@@ -104,11 +87,6 @@ class PensjonsinformasjonService(private val pensjonsinformasjonClient: Pensjons
     }
 
     fun hentRelevantPensjonSak(prefillData: PrefillDataModel, akseptabelSakstypeForSed: (String) -> Boolean): V1Sak? {
-
-        if( environment in listOf("q1")) {
-            return V1Sak()
-        }
-
         val fnr = prefillData.bruker.norskIdent
         val aktorId = prefillData.bruker.aktorId
         val penSaksnummer = prefillData.penSaksnummer

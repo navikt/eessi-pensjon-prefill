@@ -12,12 +12,10 @@ import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper.lesPensjonsdataFraFil
 import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper.readJsonResponse
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
 import no.nav.eessi.pensjon.shared.person.FodselsnummerGenerator
-import no.nav.eessi.pensjon.utils.toJson
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.web.server.ResponseStatusException
@@ -56,7 +54,6 @@ class PrefillP2000AlderPensjonForsteGangTest {
     }
 
     @Test
-    @Disabled
     fun `Gitt at kravtype er FORSTEG_BH skal det kastes en exception`() {
 
         assertThrows<ResponseStatusException> {
