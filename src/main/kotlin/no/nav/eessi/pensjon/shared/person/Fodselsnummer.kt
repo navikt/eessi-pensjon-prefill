@@ -4,9 +4,9 @@ import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonValue
 import no.nav.eessi.pensjon.shared.person.Fodselsnummer.Companion.tabeller.kontrollsiffer1
 import no.nav.eessi.pensjon.shared.person.Fodselsnummer.Companion.tabeller.kontrollsiffer2
-import org.slf4j.LoggerFactory
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
+import org.slf4j.LoggerFactory
 
 /**
  * Norwegian national identity number
