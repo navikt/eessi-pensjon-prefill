@@ -40,7 +40,7 @@ dependencies {
     implementation("org.yaml:snakeyaml:2.5") // Pga https://security.snyk.io/package/maven/org.yaml:snakeyaml
 
     implementation 'javax.xml.bind:jaxb-api:2.3.1'
-    implementation('org.glassfish.jaxb:jaxb-runtime:2.3.6')
+    implementation('org.glassfish.jaxb:jaxb-runtime:2.3.9')
 
     implementation("com.fasterxml.jackson.core:jackson-core:2.20.0")
 
