@@ -114,7 +114,7 @@ class SedPrefillIntegrationSpringTest {
             "med alder with uføre pensjondata throw error bad request, /pensjonsinformasjon/krav/P2200-UP-INNV.xml, " +
                     "Du kan ikke opprette alderspensjonskrav i en uføretrygdsak (PESYS-saksnr: 22874955 har sakstype UFOREP",
             "med sak fra GJENLEV feiler, /pensjonsinformasjon/krav/GJ_P2000_BH_MED_UTL.xml, " +
-                    "Det finnes ingen iverksatte vedtak for førstegangsbehandling kun utland. Vennligst gå til EESSI-Pensjon fra vedtakskontekst."],
+                    "Det finnes ingen iverksatte vedtak for førstegangsbehandling kun utland, eller sluttbehandling. Vennligst gå til EESSI-Pensjon fra vedtakskontekst."],
         nullValues = ["null"]
     )
     @Throws(Exception::class)
