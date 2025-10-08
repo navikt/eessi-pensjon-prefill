@@ -53,7 +53,7 @@ class PrefillP2000MedIngendataTest {
         try {
             prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection, null)
         } catch (ex: ResponseStatusException) {
-            val errormsg = """Det finnes ingen iverksatte vedtak for førstegangsbehandling kun utland. Vennligst gå til EESSI-Pensjon fra vedtakskontekst.""".trimIndent()
+            val errormsg = """Det finnes ingen iverksatte vedtak for førstegangsbehandling kun utland, eller sluttbehandling. Vennligst gå til EESSI-Pensjon fra vedtakskontekst.""".trimIndent()
             assertEquals("400 BAD_REQUEST \"$errormsg\"", ex.message)
         }
     }
