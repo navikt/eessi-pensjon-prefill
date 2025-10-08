@@ -144,12 +144,14 @@ object PrefillP2xxxPensjon {
         val forsBehanBoUtlandTom = finnKravHistorikk(F_BH_BO_UTL, sak?.kravHistorikkListe).isNullOrEmpty()
         val forsBehanMedUtlandTom = finnKravHistorikk(F_BH_MED_UTL, sak?.kravHistorikkListe).isNullOrEmpty()
         val behandleKunUtlandTom = finnKravHistorikk(F_BH_KUN_UTL, sak?.kravHistorikkListe).isNullOrEmpty()
+        val sluttBehandlingUtlandTom = finnKravHistorikk(SLUTT_BH_UTL, sak?.kravHistorikkListe).isNullOrEmpty()
+
         val vedtakErTom = (vedtak == null)
 
-        if (forsBehanBoUtlandTom and forsBehanMedUtlandTom and behandleKunUtlandTom and vedtakErTom) {
-            logger.debug("forsBehanBoUtlanTom: $forsBehanBoUtlandTom, forsBehanMedUtlanTom: $forsBehanMedUtlandTom, behandleKunUtlandTom: $behandleKunUtlandTom")
-            logger.warn("Kan ikke opprette krav-SED: $sedType da vedtak og førstegangsbehandling utland mangler. Dersom det gjelder utsendelse til avtaleland, se egen rutine for utsendelse av SED på Navet.")
-            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Det finnes ingen iverksatte vedtak for førstegangsbehandling kun utland. Vennligst gå til EESSI-Pensjon fra vedtakskontekst.")
+        if (forsBehanBoUtlandTom and forsBehanMedUtlandTom and behandleKunUtlandTom and vedtakErTom and sluttBehandlingUtlandTom) {
+            logger.debug("forsBehanBoUtlanTom: $forsBehanBoUtlandTom, forsBehanMedUtlanTom: $forsBehanMedUtlandTom, behandleKunUtlandTom: $behandleKunUtlandTom, sluttBehandlingUtlandTom: $sluttBehandlingUtlandTom")
+            logger.warn("Kan ikke opprette krav-SED: $sedType da vedtak og førstegangsbehandling utland eller sluttbehandling mangler. Dersom det gjelder utsendelse til avtaleland, se egen rutine for utsendelse av SED på Navet.")
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Det finnes ingen iverksatte vedtak for førstegangsbehandling kun utland, eller sluttbehandling. Vennligst gå til EESSI-Pensjon fra vedtakskontekst.")
         }
 
         if (vedtak != null && vedtak.isBoddArbeidetUtland == false) {
