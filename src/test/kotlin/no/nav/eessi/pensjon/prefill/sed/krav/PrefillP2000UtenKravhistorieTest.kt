@@ -64,7 +64,7 @@ class PrefillP2000UtenKravhistorieTest {
         val ex = assertThrows<Exception> {
             prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null)
         }
-        assertEquals("400 BAD_REQUEST \"Det finnes ingen iverksatte vedtak for førstegangsbehandling kun utland. Vennligst gå til EESSI-Pensjon fra vedtakskontekst.\"", ex.message)
+        assertEquals("400 BAD_REQUEST \"Det finnes ingen iverksatte vedtak for førstegangsbehandling kun utland, eller sluttbehandling. Vennligst gå til EESSI-Pensjon fra vedtakskontekst.\"", ex.message)
     }
 
 
