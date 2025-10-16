@@ -22,6 +22,7 @@ enum class VedtakStatus(val value: String) {
     INNVILGELSE("01"),
     AVSLAG("02"),
     ENDRING("03"),
+    OPPHOER("03"),
     NY_BEREGNING_OMREGNING("03"),
     FORELOPIG_UTBETALING("04");
 
