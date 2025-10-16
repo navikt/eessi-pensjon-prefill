@@ -16,6 +16,7 @@ import java.time.LocalDateTime
 class EtterlatteService(private val etterlatteRestTemplate: RestTemplate) {
 
     private val logger = LoggerFactory.getLogger(EtterlatteService::class.java)
+    private val secureLog = LoggerFactory.getLogger("secureLog")
 
     /**
      * Henter vedtak fra etterlatte-api
@@ -39,7 +40,7 @@ class EtterlatteService(private val etterlatteRestTemplate: RestTemplate) {
                 String::class.java
             )
 
-            logger.info("Hent sak fra gjenny: response: ${response.body}".trimMargin())
+            secureLog.info("Hent sak fra gjenny: response: ${response.body}".trimMargin())
 
             response.body?.let {
                 Result.success(mapJsonToAny<EtterlatteVedtakResponseData>(it))
