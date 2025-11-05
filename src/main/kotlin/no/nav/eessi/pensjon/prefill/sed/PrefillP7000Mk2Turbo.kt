@@ -61,7 +61,7 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
             )
         )
 
-        logger.debug("Tilpasser P7000 forenklet preutfylling, Ferdig.")
+        logger.debug("Tilpasser  Mk2 Turb P7000 forenklet preutfylling, Ferdig.")
         return p7000
     }
 

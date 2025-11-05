@@ -14,7 +14,7 @@ class PrefillP7000(private val prefillSed: PrefillSed) {
     fun prefill(prefillData: PrefillDataModel, personData: PersonDataCollection): P7000 {
 
         val sed = prefillSed.prefill(prefillData, personData)
-        logger.debug("Tilpasser P7000 forenklet preutfylling")
+        logger.info("Tilpasser P7000 forenklet preutfylling")
 
         val person = sed.nav?.bruker?.person
         val perspin = person?.pin?.firstOrNull()
