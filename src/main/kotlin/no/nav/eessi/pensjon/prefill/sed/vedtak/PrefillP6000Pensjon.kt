@@ -1,12 +1,6 @@
 package no.nav.eessi.pensjon.prefill.sed.vedtak
 
-import no.nav.eessi.pensjon.eux.model.sed.AndreinstitusjonerItem
-import no.nav.eessi.pensjon.eux.model.sed.Bruker
-import no.nav.eessi.pensjon.eux.model.sed.P6000Pensjon
-import no.nav.eessi.pensjon.eux.model.sed.ReduksjonItem
-import no.nav.eessi.pensjon.eux.model.sed.Sak
-import no.nav.eessi.pensjon.eux.model.sed.Tilleggsinformasjon
-import no.nav.eessi.pensjon.eux.model.sed.VedtakItem
+import no.nav.eessi.pensjon.eux.model.sed.*
 import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.PrefillPensjonReduksjon
 import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.PrefillPensjonSak
 import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.PrefillPensjonTilleggsinformasjon
@@ -35,11 +29,11 @@ object PrefillP6000Pensjon {
 
         //Sjekk opp om det er Bodd eller Arbeid utland. (hvis ikke avslutt)
         if (!harBoddArbeidetUtland(pensjoninformasjon))
-            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Har ikke bodd eller arbeidet i utlandet. Avbryter oppretelse av SED")
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Har ikke bodd eller arbeidet i utlandet. Avbryter opprettelse av SED")
 
         //Sjekk opp om det finnes et dato fattet vedtak. (hvis ikke avslutt)
         if (pensjoninformasjon.vedtak.datoFattetVedtak == null) {
-            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Vedtaket mangler dato for FattetVedtak. Avbryter oppretelse av SED")
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Vedtaket mangler dato for FattetVedtak. Avbryter opprettelse av SED")
         }
 
         //prefill Pensjon obj med data fra PESYS. (pendata)
@@ -91,7 +85,7 @@ object PrefillP6000Pensjon {
         return try {
             PrefillPensjonTilleggsinformasjon.createTilleggsinformasjon(pensjoninformasjon, andreinstitusjonerItem)
         } catch (ex: Exception) {
-            logger.warn("Feilet ved preutfylling tilleggsinformasjon, fortsetter uten")
+            logger.warn("Feilet ved preutfylling tilleggsinformasjon, fortsetter uten, feilmelding: ${ex.message}")
             null
         }
     }
@@ -100,7 +94,7 @@ object PrefillP6000Pensjon {
         return try {
             PrefillPensjonSak.createSak(pensjoninformasjon)
         } catch (ex: Exception) {
-            logger.warn("Feilet ved preutfylling av sak, fortsetter uten")
+            logger.warn("Feilet ved preutfylling av sak, fortsetter uten, feilmelding: ${ex.message}")
             null
         }
     }
@@ -109,7 +103,7 @@ object PrefillP6000Pensjon {
         return try {
             PrefillPensjonReduksjon.createReduksjon(pensjoninformasjon)
         } catch (ex: Exception) {
-            logger.warn("Feilet ved preutfylling av reduksjoner, fortsetter uten")
+            logger.warn("Feilet ved preutfylling av reduksjoner, fortsetter uten, feilmelding: ${ex.message}")
             emptyList()
         }
     }
@@ -118,7 +112,7 @@ object PrefillP6000Pensjon {
         return try {
             listOf(PrefillPensjonVedtak.createVedtakItem(pensjoninformasjon))
         } catch (ex: Exception) {
-            logger.warn("Feilet ved preutfylling av vedtaksdetaljer, fortsetter uten")
+            logger.warn("Feilet ved preutfylling av vedtaksdetaljer, fortsetter uten, feilmelding: ${ex.message}")
             emptyList()
         }
     }

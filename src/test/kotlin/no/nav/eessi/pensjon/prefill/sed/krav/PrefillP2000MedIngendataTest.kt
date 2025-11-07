@@ -1,16 +1,13 @@
 package no.nav.eessi.pensjon.prefill.sed.krav
 
-import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.SedType
+import no.nav.eessi.pensjon.prefill.BasePrefillNav
 import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
-import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.prefill.models.PensjonCollection
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
-import no.nav.eessi.pensjon.prefill.person.PrefillPDLAdresse
-import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
 import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper.lesPensjonsdataFraFil
 import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper.readJsonResponse
@@ -32,20 +29,12 @@ class PrefillP2000MedIngendataTest {
 
     private lateinit var prefillData: PrefillDataModel
     private lateinit var prefillSEDService: PrefillSEDService
-    private lateinit var personDataCollection: PersonDataCollection
     private lateinit var pensjonCollection: PensjonCollection
+    private lateinit var personDataCollection: PersonDataCollection
 
     @BeforeEach
     fun setup() {
         personDataCollection = PersonPDLMock.createEnkelFamilie(personFnr, ekteFnr)
-        val prefillNav = PrefillPDLNav(
-            prefillAdresse = mockk<PrefillPDLAdresse> {
-                every { hentLandkode(any()) } returns "NO"
-                every { createPersonAdresse(any()) } returns mockk()
-            },
-            institutionid = "NO:noinst002",
-            institutionnavn = "NOINST002, NO INST002, NO"
-        )
 
         val dataFromPEN = lesPensjonsdataFraFil("/pensjonsinformasjon/krav/P2000-TOMT-SVAR-PESYS.xml")
 
@@ -56,7 +45,7 @@ class PrefillP2000MedIngendataTest {
         val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
         pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
 
-        prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav)
+        prefillSEDService = BasePrefillNav.createPrefillSEDService()
 
     }
 
@@ -64,9 +53,9 @@ class PrefillP2000MedIngendataTest {
     @Disabled
     fun `Gitt pensjonsinformasjon som mangler vedtak når preutfyller så stopp preutfylling med melding om vedtak mangler`() {
         try {
-            prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection)
+            prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection, null)
         } catch (ex: ResponseStatusException) {
-            val errormsg = """Det finnes ingen iverksatte vedtak for førstegangsbehandling kun utland. Vennligst gå til EESSI-Pensjon fra vedtakskontekst.""".trimIndent()
+            val errormsg = """Det finnes ingen iverksatte vedtak for førstegangsbehandling kun utland, eller sluttbehandling. Vennligst gå til EESSI-Pensjon fra vedtakskontekst.""".trimIndent()
             assertEquals("400 BAD_REQUEST \"$errormsg\"", ex.message)
         }
     }

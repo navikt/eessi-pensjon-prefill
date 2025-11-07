@@ -6,6 +6,13 @@ metadata:
   labels:
     team: eessipensjon
 spec:
+  observability:
+    logging:
+      destinations:
+        - id: elastic
+        - id: loki
+  secureLogs:
+    enabled: true
   kafka:
     pool: nav-prod
   envFrom:
@@ -26,35 +33,58 @@ spec:
           namespace: eessipensjon
           cluster: prod-gcp
     outbound:
+      rules:
+        - application: etterlatte-api
+          namespace: etterlatte
+          cluster: prod-gcp
       external:
-        - host: pdl-api.prod-fss-pub.nais.io
         - host: kodeverk-api.nav.no
+        - host: pdl-api.prod-fss-pub.nais.io
+        - host: digdir-krr-proxy.intern.nav.no
+        - host: pensjon-pen.prod-fss-pub.nais.io
         - host: eessi-pensjon-fagmodul.intern.nav.no
-        - host: eessi-pensjon-onprem-proxy.intern.nav.no
+
   webproxy: true
   env:
     - name: SPRING_PROFILES_ACTIVE
       value: prod
+
     - name: PENSJONSINFORMASJON_URL
-      value: https://eessi-pensjon-onprem-proxy.prod-fss-pub.nais.io/pen/api/pensjonsinformasjon/v1
+      value: https://pensjon-pen.prod-fss-pub.nais.io/pen/api/pensjonsinformasjon/v1
+    - name: AZURE_APP_PEN_CLIENT_ID
+      value: prod-fss.pensjondeployer.pensjon-pen
+
     - name: PDL_URL
       value: https://pdl-api.prod-fss-pub.nais.io/graphql
     - name: AZURE_APP_PDL_CLIENT_ID
       value: prod-fss.pdl.pdl-api
-    - name: AZURE_APP_KODEVERK_CLIENT_ID
-      value: prod-fss.org.kodeverk
-    - name: KAFKA_AUTOMATISERING_TOPIC
-      value: eessipensjon.public-automatisering
+
+    - name: KRR_URL
+      value: https://digdir-krr-proxy.intern.nav.no
+    - name: KRR_CLIENT_ID
+      value: prod-gcp.team-rocket.digdir-krr-proxy
+
     - name: KODEVERK_URL
       value: https://kodeverk-api.nav.no
+    - name: AZURE_APP_KODEVERK_CLIENT_ID
+      value: prod-gcp.team-rocket.kodeverk-api
+
+    - name: ETTERLATTE_URL
+      value: http://etterlatte-api.etterlatte
+    - name: AZURE_APP_ETTERLATTE_CLIENT_ID
+      value: prod-gcp.etterlatte.etterlatte-api
+
+    - name: KAFKA_AUTOMATISERING_TOPIC
+      value: eessipensjon.public-automatisering
+
     - name: EESSI_PENSJON_INSTITUSJON
       value: NO:889640782
     - name: EESSI_PENSJON_INSTITUSJON_NAVN
       value: "The Norwegian Labour and Welfare Administration"
-    - name: AZURE_APP_PROXY_CLIENT_ID
-      value: prod-fss.eessipensjon.eessi-pensjon-onprem-proxy
+
     - name: ENV
       value: p
+
   image: {{ image }}
   ingresses:
     - https://eessi-pensjon-prefill.intern.nav.no
@@ -78,8 +108,8 @@ spec:
     cpuThresholdPercentage: 80
   resources:
     limits:
-      cpu: 4000m
+      cpu: 2000m
       memory: 1Gi
     requests:
       cpu: 600m
-      memory: 1Gi
+      memory: 512Mi

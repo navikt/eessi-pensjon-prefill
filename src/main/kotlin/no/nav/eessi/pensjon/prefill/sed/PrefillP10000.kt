@@ -4,7 +4,7 @@ import no.nav.eessi.pensjon.eux.model.sed.P10000
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.shared.api.BankOgArbeid
-import no.nav.eessi.pensjon.shared.api.PersonId
+import no.nav.eessi.pensjon.shared.api.PersonInfo
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -13,15 +13,15 @@ class PrefillP10000(private val prefillNav: PrefillPDLNav) {
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillP10000::class.java) }
 
     fun prefill(penSaksnummer: String?,
-                bruker: PersonId,
-                avdod: PersonId?,
+                bruker: PersonInfo,
+                avdod: PersonInfo?,
                 bankOgArbeid: BankOgArbeid?,
                 personData: PersonDataCollection): P10000 {
 
         val gjenlevende = try {
             val gjenlevende = avdod?.let {
                 logger.info("Preutfylling Utfylling Pensjon Gjenlevende (etterlatt)")
-                prefillNav.createBruker(personData.forsikretPerson!!, null, null)
+                prefillNav.createBruker(personData.forsikretPerson!!, null, null, bruker)
             }
             gjenlevende
         } catch (ex: Exception) {

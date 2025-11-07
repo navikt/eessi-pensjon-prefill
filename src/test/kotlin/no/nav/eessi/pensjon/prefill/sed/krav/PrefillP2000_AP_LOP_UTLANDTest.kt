@@ -1,19 +1,16 @@
 package no.nav.eessi.pensjon.prefill.sed.krav
 
-import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_01
 import no.nav.eessi.pensjon.eux.model.SedType.P2000
 import no.nav.eessi.pensjon.eux.model.sed.Nav
 import no.nav.eessi.pensjon.eux.model.sed.SED
+import no.nav.eessi.pensjon.prefill.BasePrefillNav
 import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
-import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.prefill.models.PensjonCollection
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother.initialPrefillDataModel
-import no.nav.eessi.pensjon.prefill.person.PrefillPDLAdresse
-import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
 import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper.lesPensjonsdataFraFil
 import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper.readJsonResponse
@@ -36,23 +33,14 @@ class PrefillP2000_AP_LOP_UTLANDTest {
 
     private val pesysSaksnummer = "21644722"
 
-    private lateinit var prefillData: PrefillDataModel
     lateinit var prefillSEDService: PrefillSEDService
-    lateinit var persondataCollection: PersonDataCollection
     lateinit var pensjonCollection: PensjonCollection
+    private lateinit var prefillData: PrefillDataModel
+    lateinit var persondataCollection: PersonDataCollection
 
     @BeforeEach
     fun setup() {
         persondataCollection = PersonPDLMock.createEnkelFamilie(personFnr, ekteFnr)
-
-        val prefillNav = PrefillPDLNav(
-            prefillAdresse = mockk<PrefillPDLAdresse> {
-                every { hentLandkode(any()) } returns "NO"
-                every { createPersonAdresse(any()) } returns mockk(relaxed = true)
-            },
-            institutionid = "NO:noinst002",
-            institutionnavn = "NOINST002, NO INST002, NO"
-        )
 
         val dataFromPEN = lesPensjonsdataFraFil("/pensjonsinformasjon/krav/AP-LOP-21644722.xml")
 
@@ -64,13 +52,13 @@ class PrefillP2000_AP_LOP_UTLANDTest {
         val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
         pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
 
-        prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav)
+        prefillSEDService = BasePrefillNav.createPrefillSEDService()
 
     }
 
     @Test
     fun `forventet korrekt utfylt P2000 alderpensjon med kap4 og 9`() {
-        val p2000 = prefillSEDService.prefill(prefillData, persondataCollection,pensjonCollection)
+        val p2000 = prefillSEDService.prefill(prefillData, persondataCollection,pensjonCollection, null)
 
         val P2000pensjon = SED(
                 type = P2000,
@@ -84,7 +72,7 @@ class PrefillP2000_AP_LOP_UTLANDTest {
 
     @Test
     fun `forventet korrekt utfylt P2000 alderpersjon med mockdata fra testfiler`() {
-        val p2000 = prefillSEDService.prefill(prefillData, persondataCollection,pensjonCollection)
+        val p2000 = prefillSEDService.prefill(prefillData, persondataCollection, pensjonCollection, null)
 
         assertEquals(null, p2000.nav?.barn)
 
@@ -120,7 +108,7 @@ class PrefillP2000_AP_LOP_UTLANDTest {
 
     @Test
     fun `testing av komplett P2000 med utskrift og testing av innsending`() {
-        val p2000 = prefillSEDService.prefill(prefillData, persondataCollection,pensjonCollection)
+        val p2000 = prefillSEDService.prefill(prefillData, persondataCollection, pensjonCollection, null)
 
         val json = mapAnyToJson(createMockApiRequest(p2000.toJson()))
         assertNotNull(json)

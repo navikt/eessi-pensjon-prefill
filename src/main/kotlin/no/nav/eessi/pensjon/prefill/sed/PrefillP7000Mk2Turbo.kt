@@ -3,26 +3,7 @@ package no.nav.eessi.pensjon.prefill.sed
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.document.P6000Dokument
 import no.nav.eessi.pensjon.eux.model.document.Retning
-import no.nav.eessi.pensjon.eux.model.sed.AdressatForRevurderingItem
-import no.nav.eessi.pensjon.eux.model.sed.BeloepItem
-import no.nav.eessi.pensjon.eux.model.sed.BeregningItem
-import no.nav.eessi.pensjon.eux.model.sed.Bruker
-import no.nav.eessi.pensjon.eux.model.sed.EessisakItem
-import no.nav.eessi.pensjon.eux.model.sed.Ektefelle
-import no.nav.eessi.pensjon.eux.model.sed.Institusjon
-import no.nav.eessi.pensjon.eux.model.sed.Nav
-import no.nav.eessi.pensjon.eux.model.sed.P6000
-import no.nav.eessi.pensjon.eux.model.sed.P6000Pensjon
-import no.nav.eessi.pensjon.eux.model.sed.P7000
-import no.nav.eessi.pensjon.eux.model.sed.P7000Pensjon
-import no.nav.eessi.pensjon.eux.model.sed.PensjonAvslagItem
-import no.nav.eessi.pensjon.eux.model.sed.Person
-import no.nav.eessi.pensjon.eux.model.sed.PinItem
-import no.nav.eessi.pensjon.eux.model.sed.ReduksjonItem
-import no.nav.eessi.pensjon.eux.model.sed.SamletMeldingVedtak
-import no.nav.eessi.pensjon.eux.model.sed.TildeltPensjonItem
-import no.nav.eessi.pensjon.eux.model.sed.Tilleggsinformasjon
-import no.nav.eessi.pensjon.eux.model.sed.YtelserItem
+import no.nav.eessi.pensjon.eux.model.sed.*
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 
 import no.nav.eessi.pensjon.prefill.person.PrefillSed
@@ -74,13 +55,13 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
                 ektefelle = Ektefelle(person = Person(etternavn = sed.nav?.bruker?.person?.etternavn))
             ),
             //mappe om kjoenn for mappingfeil
-            p7000Pensjon = P7000Pensjon(
+            pensjon = P7000Pensjon(
                 gjenlevende = prefillGjenlevende(gjenlevendePerson, gjenlevendePin, listP6000),
                 samletVedtak = prefilSamletMeldingVedtak(listP6000)
             )
         )
 
-        logger.debug("Tilpasser P7000 forenklet preutfylling, Ferdig.")
+        logger.debug("Tilpasser  Mk2 Turb P7000 forenklet preutfylling, Ferdig.")
         return p7000
     }
 
@@ -149,7 +130,7 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
             val sistMottattDato = doc.first.sistMottatt
 
             val p6000 = doc.second //P6000 seden
-            val p6000pensjon = p6000.p6000Pensjon
+            val p6000pensjon = p6000.pensjon
 
             val eessisak = p6000.nav?.eessisak?.firstOrNull { it.land == fraLand }
 
@@ -231,7 +212,7 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
                 beloep = listOf(
                     BeloepItem(
                         valuta = beregn.valuta,
-                        betalingshyppighetytelse = mapUtbetalingHyppighet(beregn.utbetalingshyppighet),
+                        betalingshyppighetytelse = Betalingshyppighet.maaned_12_per_aar,
                         utbetalingshyppighetAnnen = beregn.utbetalingshyppighetAnnen,
                         beloepBrutto = beregn.beloepBrutto?.beloep
                     )
@@ -255,7 +236,7 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
 
 
     fun finnKorrektBruker(p6000: P6000): Bruker? {
-        return p6000.p6000Pensjon?.gjenlevende ?: p6000.nav?.bruker
+        return p6000.pensjon?.gjenlevende ?: p6000.nav?.bruker
     }
 
     fun mapInstusjonP6000(eessiSak: EessisakItem?, p6000bruker: Bruker?, tilleggsinformasjon: Tilleggsinformasjon?, fraLand: String?): Institusjon {
@@ -283,7 +264,7 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
             val sistMottattDato = doc.first.sistMottatt
 
             val p6000 = doc.second
-            val p6000pensjon = p6000.p6000Pensjon
+            val p6000pensjon = p6000.pensjon
             //resultat = "02" er avslag
             val avslag = p6000pensjon?.vedtak?.firstOrNull { it.resultat == "02" }
 
@@ -295,7 +276,7 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
                     pensjonType = avslag.type,
                     begrunnelse = avslag.avslagbegrunnelse?.first()?.begrunnelse,
                     dato = mapVedtakDatoEllerSistMottattdato(
-                        p6000.p6000Pensjon?.tilleggsinformasjon?.dato,
+                        p6000.pensjon?.tilleggsinformasjon?.dato,
                         sistMottattDato
                     ),  //dato mottatt dato ikke finnes
                     pin = finnKorrektBruker(p6000)?.person?.pin?.firstOrNull { it.land == fraLand },

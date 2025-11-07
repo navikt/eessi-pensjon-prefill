@@ -1,16 +1,7 @@
 package no.nav.eessi.pensjon.prefill.sed
 
-import no.nav.eessi.pensjon.eux.model.sed.Bruker
-import no.nav.eessi.pensjon.eux.model.sed.EessisakItem
-import no.nav.eessi.pensjon.eux.model.sed.Ektefelle
-import no.nav.eessi.pensjon.eux.model.sed.Institusjon
-import no.nav.eessi.pensjon.eux.model.sed.Nav
-import no.nav.eessi.pensjon.eux.model.sed.P7000
-import no.nav.eessi.pensjon.eux.model.sed.P7000Pensjon
-import no.nav.eessi.pensjon.eux.model.sed.Person
-import no.nav.eessi.pensjon.eux.model.sed.PinItem
+import no.nav.eessi.pensjon.eux.model.sed.*
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
-
 import no.nav.eessi.pensjon.prefill.person.PrefillSed
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
 import org.slf4j.Logger
@@ -23,7 +14,7 @@ class PrefillP7000(private val prefillSed: PrefillSed) {
     fun prefill(prefillData: PrefillDataModel, personData: PersonDataCollection): P7000 {
 
         val sed = prefillSed.prefill(prefillData, personData)
-        logger.debug("Tilpasser P7000 forenklet preutfylling")
+        logger.info("Tilpasser P7000 forenklet preutfylling")
 
         val person = sed.nav?.bruker?.person
         val perspin = person?.pin?.firstOrNull()
@@ -61,7 +52,7 @@ class PrefillP7000(private val prefillSed: PrefillSed) {
                         ektefelle = Ektefelle(person = Person(etternavn = sed.nav?.bruker?.person?.etternavn))
                 ),
                 //mappe om kjoenn for mappingfeil
-                p7000Pensjon = P7000Pensjon(
+                pensjon = P7000Pensjon(
                         //TODO trenger vi denne lenger? er mapping ok eller fortsatt feil?
                         bruker = Bruker(person = Person(kjoenn = sed.nav?.bruker?.person?.kjoenn)),
                         gjenlevende = sed.pensjon?.gjenlevende

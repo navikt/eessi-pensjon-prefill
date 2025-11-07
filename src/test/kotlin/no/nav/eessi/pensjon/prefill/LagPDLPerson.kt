@@ -1,40 +1,29 @@
 package no.nav.eessi.pensjon.prefill
 
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Bostedsadresse
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Doedsfall
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Endring
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Endringstype
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Familierelasjonsrolle
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Foedsel
-import no.nav.eessi.pensjon.personoppslag.pdl.model.ForelderBarnRelasjon
-import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe
-import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe.*
-import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentInformasjon
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Kjoenn
-import no.nav.eessi.pensjon.personoppslag.pdl.model.KjoennType
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Kontaktadresse
-import no.nav.eessi.pensjon.personoppslag.pdl.model.KontaktadresseType
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Metadata
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Navn
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Person
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Sivilstand
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Sivilstandstype
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Statsborgerskap
-import no.nav.eessi.pensjon.personoppslag.pdl.model.UtenlandskAdresseIFrittFormat
-import no.nav.eessi.pensjon.personoppslag.pdl.model.Vegadresse
+import no.nav.eessi.pensjon.personoppslag.pdl.model.*
+import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe.FOLKEREGISTERIDENT
+import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe.NPID
 import no.nav.eessi.pensjon.shared.person.Fodselsnummer
 import no.nav.eessi.pensjon.shared.person.FodselsnummerGenerator
 import java.time.LocalDate
 import java.time.LocalDateTime
 
 
-class LagPDLPerson {
+class LagPdlPerson {
     companion object {
-        fun lagPerson(fnrEllerNpid: String = FodselsnummerGenerator.generateFnrForTest(60), fornavn: String = "OLE", etternavn: String = "OLSEN", land: String = "NOR", kjoennType: KjoennType = KjoennType.MANN, erDod: Boolean? = false): Person {
+        fun lagPerson(
+            fnrEllerNpid: String = FodselsnummerGenerator.generateFnrForTest(60),
+            fornavn: String = "OLE",
+            etternavn: String = "OLSEN",
+            land: String = "NOR",
+            kjoennType: KjoennType = KjoennType.MANN,
+            erDod: Boolean? = false,
+            sivilstand: List<Sivilstand> = emptyList()
+        ): PdlPerson {
             val personfnr = Fodselsnummer.fra(fnrEllerNpid)
-            val fdatoaar =  if (erDod != null && erDod == true || personfnr?.erNpid == true) LocalDate.of(1921, 7, 12) else personfnr?.getBirthDate()
-            val doeadfall = if (erDod != null && erDod == true || personfnr?.erNpid == true) Doedsfall(LocalDate.of(2020, 10, 1), null, mockMeta()) else null
-            return Person(
+            val fdatoaar =  if (erDod != null && erDod || personfnr?.erNpid == true) LocalDate.of(1921, 7, 12) else personfnr?.getBirthDate()
+            val doeadfall = if (erDod != null && erDod || personfnr?.erNpid == true) Doedsfall(LocalDate.of(2020, 10, 1), null, mockMeta()) else null
+            return PdlPerson(
                 identer = if(personfnr?.erNpid == true) listOf(IdentInformasjon(fnrEllerNpid, NPID))
                 else listOf(IdentInformasjon(fnrEllerNpid, FOLKEREGISTERIDENT)),
                 navn = Navn(fornavn, null, etternavn, null, null, null, mockMeta()),
@@ -42,14 +31,15 @@ class LagPDLPerson {
                 bostedsadresse = null,
                 oppholdsadresse = null,
                 statsborgerskap = listOf(Statsborgerskap(land, LocalDate.of(2000, 10, 1), LocalDate.of(2300, 10, 1), mockMeta())),
-                foedsel = Foedsel(fdatoaar, "NOR", null, null, null , mockMeta()),
+                foedested = Foedested("NOR", "Oslo", null, null , mockMeta()),
+                foedselsdato = Foedselsdato(fdatoaar?.year, personfnr?.getBirthDateAsIso(), null,  mockMeta()),
                 geografiskTilknytning = null,
                 kjoenn = Kjoenn(kjoennType, null, mockMeta()),
                 doedsfall = doeadfall,
                 forelderBarnRelasjon = emptyList(),
-                sivilstand = emptyList(),
+                sivilstand = sivilstand,
                 kontaktadresse = null,
-                utenlandskIdentifikasjonsnummer = emptyList()
+                utenlandskIdentifikasjonsnummer = emptyList(),
             )
         }
 
@@ -66,11 +56,11 @@ class LagPDLPerson {
                 ),
                 false,
                 "FREG",
-                "23123123-12312312-123123"
+                "123123"
             )
         }
 
-        fun Person.medBarn(barnfnr: String): Person {
+        fun PdlPerson.medBarn(barnfnr: String): PdlPerson {
                 val minRolle = familieRolle(this)
                 val list = mutableListOf<ForelderBarnRelasjon>()
                 list.addAll(this.forelderBarnRelasjon)
@@ -84,7 +74,7 @@ class LagPDLPerson {
                 return this.copy(forelderBarnRelasjon = list)
         }
 
-        fun Person.medForeldre(foreldre: Person): Person {
+        fun PdlPerson.medForeldre(foreldre: PdlPerson): PdlPerson {
             val foreldreRolle = familieRolle(foreldre)
             val foreldrefnr = foreldre.identer.firstOrNull { it.gruppe == FOLKEREGISTERIDENT || it.gruppe == NPID }?.ident
             val list = mutableListOf<ForelderBarnRelasjon>()
@@ -99,7 +89,7 @@ class LagPDLPerson {
             return this.copy(forelderBarnRelasjon = list)
         }
 
-        private fun familieRolle(person: Person) : Familierelasjonsrolle {
+        private fun familieRolle(person: PdlPerson) : Familierelasjonsrolle {
             return when(person.kjoenn?.kjoenn) {
                 KjoennType.MANN -> Familierelasjonsrolle.FAR
                 KjoennType.KVINNE -> Familierelasjonsrolle.MOR
@@ -107,7 +97,7 @@ class LagPDLPerson {
             }
         }
 
-        fun Person.medKontaktadresseUtland() = this.copy(kontaktadresse = Kontaktadresse(
+        fun PdlPerson.medKontaktadresseUtland() = this.copy(kontaktadresse = Kontaktadresse(
             coAdressenavn = "CoAdressenavn",
             folkeregistermetadata = null,
             gyldigFraOgMed = LocalDateTime.of(2000, 10, 1, 10, 10, 10),
@@ -128,7 +118,7 @@ class LagPDLPerson {
         ))
 
 
-        fun Person.medAdresse(gate: String?) = this.copy(bostedsadresse = Bostedsadresse(
+        fun PdlPerson.medAdresse(gate: String?) = this.copy(bostedsadresse = Bostedsadresse(
                 gyldigFraOgMed = LocalDateTime.of(2000, 10, 1, 10, 10, 10),
                 gyldigTilOgMed = LocalDateTime.of(2300, 10, 1, 10 , 10, 10),
                 vegadresse = Vegadresse(
@@ -141,13 +131,18 @@ class LagPDLPerson {
                 ),
                 utenlandskAdresse = null,
                 metadata = mockMeta()
-        )
-        )
+        ))
 
-        fun createPersonMedEktefellePartner(personPersonnr: String, ektefellePersonnr: String, type: Sivilstandstype): Pair<Person, Person> {
+        fun createPersonMedEktefellePartner(personPersonnr: String, ektefellePersonnr: String, type: Sivilstandstype): Pair<PdlPerson, PdlPerson> {
 
-            val person = lagPerson(personPersonnr, "Ola", "Testbruker")
-            val ektefelle = lagPerson(ektefellePersonnr, "Jonna", "Dolla", kjoennType = KjoennType.KVINNE)
+            val person = lagPerson(personPersonnr, "Ola", "Testbruker", sivilstand = emptyList())
+            val ektefelle = lagPerson(
+                ektefellePersonnr,
+                "Jonna",
+                "Dolla",
+                kjoennType = KjoennType.KVINNE,
+                sivilstand = emptyList()
+            )
 
             val nyPerson = person.copy(sivilstand = listOf(Sivilstand(type, LocalDate.of(2000,10, 1), ektefellePersonnr, mockMeta())))
             val nyEktefell = ektefelle.copy(sivilstand = listOf(Sivilstand(type, LocalDate.of(2000,10, 1), personPersonnr, mockMeta())))

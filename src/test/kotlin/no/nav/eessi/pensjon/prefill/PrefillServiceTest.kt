@@ -1,62 +1,90 @@
 package no.nav.eessi.pensjon.prefill
-import io.mockk.every
-import io.mockk.mockk
+
+import io.mockk.*
+import io.mockk.junit5.MockKExtension
+import no.nav.eessi.pensjon.eux.model.BucType
 import no.nav.eessi.pensjon.eux.model.SedType
-import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
-import no.nav.eessi.pensjon.prefill.models.EessiInformasjonMother
+import no.nav.eessi.pensjon.eux.model.sed.SED
+import no.nav.eessi.pensjon.metrics.MetricsHelper
+import no.nav.eessi.pensjon.prefill.PersonDataServiceTest.Companion.FNR_VOKSEN
+import no.nav.eessi.pensjon.prefill.etterlatte.EtterlatteService
+import no.nav.eessi.pensjon.prefill.models.DigitalKontaktinfo
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
-import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
-import no.nav.eessi.pensjon.prefill.person.PrefillPDLAdresse
-import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
-import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper
-import no.nav.eessi.pensjon.shared.api.PersonId
+import no.nav.eessi.pensjon.shared.api.ApiRequest
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
 import no.nav.eessi.pensjon.shared.person.FodselsnummerGenerator
 import no.nav.eessi.pensjon.statistikk.AutomatiseringStatistikkService
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.extension.ExtendWith
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
 
-class PrefillServiceTest {
+@ExtendWith(MockKExtension::class)
+class PrefillServiceTest{
+
+    var krrService: KrrService = mockk()
+
+    var prefillSedService: PrefillSEDService = mockk()
+    var etterlatteService: EtterlatteService = mockk()
+    var innhentingService: InnhentingService = mockk()
+    var automatiseringStatistikkService: AutomatiseringStatistikkService = mockk()
+
+    private lateinit var personcollection: PersonDataCollection
+    lateinit var prefillService: PrefillService
     private val personFnr = FodselsnummerGenerator.generateFnrForTest(57)
     private val avdodPersonFnr = FodselsnummerGenerator.generateFnrForTest(63)
+    val requestSlot = slot<PrefillDataModel>()
+    val request = mockk<ApiRequest>(relaxed = true)
 
-    private val mockPrefillSEDService: PrefillSEDService = mockk()
-    private val innhentingService: InnhentingService = mockk()
-    private val automatiseringStatistikkService: AutomatiseringStatistikkService = mockk()
-    private lateinit var prefillData: PrefillDataModel
-    private lateinit var prefillSEDService: PrefillSEDService
-    private lateinit var dataFromPEN: PensjonsinformasjonService
-    private lateinit var prefillService: PrefillService
-    private lateinit var personcollection: PersonDataCollection
-    private lateinit var personDataCollection: PersonDataCollection
-    private lateinit var prefillNav: PrefillPDLNav
-    private lateinit var eessiInformasjon: EessiInformasjon
-
-    @Before
-    fun setup() {
-        prefillService = PrefillService(mockPrefillSEDService, innhentingService, automatiseringStatistikkService)
+    @BeforeEach
+    fun setUp() {
+        MockKAnnotations.init(this)
         personcollection = PersonDataCollection(null, null)
-        val personDataCollectionFamilie = PersonPDLMock.createEnkelFamilie(personFnr, avdodPersonFnr)
-        personDataCollection = PersonDataCollection(gjenlevendeEllerAvdod = personDataCollectionFamilie.ektefellePerson, forsikretPerson = personDataCollectionFamilie.forsikretPerson )
 
-        prefillNav = PrefillPDLNav(
-            prefillAdresse = mockk<PrefillPDLAdresse> {
-                every { hentLandkode(any()) } returns "NO"
-                every { createPersonAdresse(any()) } returns mockk()
-            },
-            institutionid = "NO:noinst002",
-            institutionnavn = "NOINST002, NO INST002, NO"
+        prefillService = PrefillService(
+            krrService,
+            prefillSedService,
+            innhentingService,
+            etterlatteService,
+            automatiseringStatistikkService,
+            mockk(relaxed = true),
+            MetricsHelper.ForTest()
         )
+        every { innhentingService.getAvdodAktoerIdPDL(any())} returns avdodPersonFnr
+        every { innhentingService.hentFnrEllerNpidFraAktoerService(any()) } returns personFnr
+        every { innhentingService.hentPersonData(any()) } returns personcollection
+        every { innhentingService.hentPensjoninformasjonCollection(any()) } returns mockk(relaxed = true)
 
-        eessiInformasjon = EessiInformasjonMother.standardEessiInfo()
+        justRun { automatiseringStatistikkService.genererAutomatiseringStatistikk(any(), any()) }
+
+        every { request.sed } returns SedType.P2000
+        every { request.aktoerId } returns "112233"
+        every { request.buc } returns BucType.P_BUC_01
     }
 
-    @Test
-    fun `En p6000 uten vedtak skal gi en delvis utfylt sed`(){
-        dataFromPEN = PrefillTestHelper.lesPensjonsdataVedtakFraFil("/pensjonsinformasjon/vedtak/P6000-GP-401.xml")
-        prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P6000, personFnr, penSaksnummer = "22580170", vedtakId = "12312312", avdod = PersonId(avdodPersonFnr, "1234567891234"))
-        prefillSEDService = PrefillSEDService(eessiInformasjon, prefillNav)
+
+    @ParameterizedTest
+    @CsvSource(
+        "4.1, test_1@example.com, null",
+        "4.2, test_1@example.com, null",
+        "4.2, test@example.com, test@example.com",
+        "4.3, test@example.com, test@example.com",
+        "4.3, test_1@example.com, test_1@example.com"
+    )
+    fun `epost fra krr skal valideres ihht versjon`(versjon: String, epost: String, forventetEpost: String) {
+        every { request.processDefinitionVersion } returns versjon
+
+        val krrPerson = DigitalKontaktinfo(epostadresse = epost, true, true, false, "11111111", FNR_VOKSEN)
+        every { krrService.hentPersonerFraKrr(any()) } returns krrPerson
+        every { prefillSedService.prefill(capture(requestSlot), any(), any(), any()) } returns SED(SedType.P2000, "sedVer")
+
+        prefillService.prefillSedtoJson(request)
+        val capture = requestSlot.captured
+
+        if(forventetEpost.contains("null")) assertNull(capture.bruker.epostKrr)
+        else assertEquals(forventetEpost, capture.bruker.epostKrr)
     }
 }

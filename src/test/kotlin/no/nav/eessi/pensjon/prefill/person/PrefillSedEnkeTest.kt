@@ -1,17 +1,15 @@
 package no.nav.eessi.pensjon.prefill.person
 
-import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.sed.SED
-import no.nav.eessi.pensjon.prefill.InnhentingService
-import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
-import no.nav.eessi.pensjon.prefill.PersonPDLMock
+import no.nav.eessi.pensjon.prefill.*
+import no.nav.eessi.pensjon.prefill.etterlatte.EtterlatteService
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother.initialPrefillDataModel
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
 import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper
-import no.nav.eessi.pensjon.shared.api.PersonId
+import no.nav.eessi.pensjon.shared.api.PersonInfo
 import no.nav.eessi.pensjon.shared.person.Fodselsnummer
 import no.nav.eessi.pensjon.shared.person.FodselsnummerGenerator
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -20,10 +18,10 @@ import org.junit.jupiter.api.Test
 
 class PrefillSedEnkeTest {
 
+    private lateinit var prefillPDLNav: PrefillPDLNav
+    private lateinit var etterlatteService: EtterlatteService
     private lateinit var pensjonsinformasjonService: PensjonsinformasjonService
     private lateinit var pensjonsinformasjonServiceGjen: PensjonsinformasjonService
-
-    private lateinit var prefillPDLNav: PrefillPDLNav
 
     private val fnr = FodselsnummerGenerator.generateFnrForTest(67)
     private val b1fnr = FodselsnummerGenerator.generateFnrForTest(37)
@@ -34,14 +32,8 @@ class PrefillSedEnkeTest {
         pensjonsinformasjonService = PrefillTestHelper.lesPensjonsdataFraFil("/pensjonsinformasjon/krav/KravAlderEllerUfore_AP_UTLAND.xml")
         pensjonsinformasjonServiceGjen = PrefillTestHelper.lesPensjonsdataFraFil("/pensjonsinformasjon/krav/P2100-GL-UTL-INNV.xml")
 
-        prefillPDLNav = PrefillPDLNav(
-            mockk {
-                every { hentLandkode(any()) } returns "NO"
-                every { createPersonAdresse(any()) } returns mockk(relaxed = true)
-            },
-            institutionid = "NO:noinst002",
-            institutionnavn = "NOINST002, NO INST002, NO"
-        )
+        etterlatteService = mockk(relaxed = true)
+        prefillPDLNav = BasePrefillNav.createPrefillNav()
     }
 
     @Test
@@ -49,7 +41,7 @@ class PrefillSedEnkeTest {
 
         val persondataCollection = PersonPDLMock.createEnkeWithBarn(fnr, b1fnr, b2fnr)
 
-        val prefillData = initialPrefillDataModel(sedType = SedType.P2100, pinId = fnr, avdod = PersonId(norskIdent = fnr, aktorId = "212"), vedtakId = "", penSaksnummer = "22875355")
+        val prefillData = initialPrefillDataModel(sedType = SedType.P2100, pinId = fnr, avdod = PersonInfo(norskIdent = fnr, aktorId = "212"), vedtakId = "", penSaksnummer = "22875355")
 
 
         val response = prefillPDLNav.prefill(
@@ -101,7 +93,7 @@ class PrefillSedEnkeTest {
         val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = pensjonsinformasjonService)
         val pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
 
-        val sed = PrefillSEDService(EessiInformasjon(), prefillPDLNav).prefill(prefillData, personCollection, pensjonCollection)
+        val sed = PrefillSEDService(EessiInformasjon(), prefillPDLnav = prefillPDLNav).prefill(prefillData, personCollection, pensjonCollection, null)
 
         assertEquals(SedType.P2200, sed.type)
 

@@ -36,25 +36,40 @@ class RestTemplateConfig(
     @Value("\${PENSJONSINFORMASJON_URL}")
     lateinit var pensjonUrl: String
 
+    @Value("\${KRR_URL}")
+    lateinit var krrUrl: String
+
+    @Value("\${ETTERLATTE_URL}")
+    lateinit var etterlatteUrl: String
+
     @Bean
-    fun pensjoninformasjonRestTemplate() : RestTemplate {
+    fun etterlatteRestTemplate() = opprettRestTemplate(etterlatteUrl, "etterlatte-credentials")
+
+    @Bean
+    fun krrRestTemplate() = opprettRestTemplate(krrUrl, "krr-credentials")
+
+    @Bean
+    fun pensjoninformasjonRestTemplate() = opprettRestTemplate(pensjonUrl, "pensjon-credentials")
+
+    private fun opprettRestTemplate(url: String, oAuthKey: String) : RestTemplate {
         return RestTemplateBuilder()
-            .rootUri(pensjonUrl)
+            .rootUri(url)
             .errorHandler(DefaultResponseErrorHandler())
             .additionalInterceptors(
                 RequestIdHeaderInterceptor(),
                 IOExceptionRetryInterceptor(),
                 RequestCountInterceptor(meterRegistry),
                 RequestResponseLoggerInterceptor(),
-                bearerTokenInterceptor(
-                    clientConfigurationProperties.registration["proxy-credentials"]
-                        ?: throw RuntimeException("could not find oauth2 client config for ${"proxy-credentials"}"),
-                    oAuth2AccessTokenService!!
-                )
+                bearerTokenInterceptor(clientProperties(oAuthKey), oAuth2AccessTokenService!!)
             )
             .build().apply {
                 requestFactory = BufferingClientHttpRequestFactory(SimpleClientHttpRequestFactory())
             }
+    }
+
+    private fun clientProperties(oAuthKey: String): ClientProperties {
+        return Optional.ofNullable(clientConfigurationProperties.registration[oAuthKey])
+            .orElseThrow { RuntimeException("could not find oauth2 client config for example-onbehalfof") }
     }
 
     private fun bearerTokenInterceptor(
@@ -63,10 +78,10 @@ class RestTemplateConfig(
     ): ClientHttpRequestInterceptor {
         return ClientHttpRequestInterceptor { request: HttpRequest, body: ByteArray?, execution: ClientHttpRequestExecution ->
             val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
-            request.headers.setBearerAuth(response.accessToken!!)
-            val tokenChunks = response.accessToken!!.split(".")
+            request.headers.setBearerAuth(response.access_token!!)
+            val tokenChunks = response.access_token!!.split(".")
             val tokenBody =  tokenChunks[1]
-            logger.info("subject: " + JWTClaimsSet.parse(Base64.getDecoder().decode(tokenBody).decodeToString()).subject)
+            logger.debug("subject: " + JWTClaimsSet.parse(Base64.getDecoder().decode(tokenBody).decodeToString()).subject + "AccessToken: /n + $response.accessToken")
             execution.execute(request, body!!)
         }
     }

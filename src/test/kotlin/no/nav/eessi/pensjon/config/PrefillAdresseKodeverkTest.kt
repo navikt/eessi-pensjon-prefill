@@ -77,18 +77,25 @@ class PrefillAdresseKodeverkTest {
 
     @TestConfiguration
     class Config {
+
+        @Bean("kodeverkCacheManager")
+        fun cacheManager(): ConcurrentMapCacheManager {
+            return ConcurrentMapCacheManager("KODEVERK_CACHE", "KODEVERK_POSTNR_CACHE")
+        }
+
         @Bean
         fun kodeVerkHentLandkoder(): KodeVerkHentLandkoder {
-            return KodeVerkHentLandkoder("testApp", restTemplate, MetricsHelper.ForTest())
+            return KodeVerkHentLandkoder("testApp", restTemplate, cacheManager(), MetricsHelper.ForTest())
         }
+
         @Bean
         fun kodeverkClient(): KodeverkClient {
-            return KodeverkClient(kodeVerkHentLandkoder())
+            return KodeverkClient(kodeVerkHentLandkoder(), PostnummerService())
         }
 
         @Bean
         fun prefillPDLAdresse(): PrefillPDLAdresse {
-            return PrefillPDLAdresse(PostnummerService(), kodeverkClient(), mockk())
+            return PrefillPDLAdresse(kodeverkClient(), mockk())
         }
     }
 

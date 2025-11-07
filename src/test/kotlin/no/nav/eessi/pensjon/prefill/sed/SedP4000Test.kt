@@ -4,29 +4,19 @@ import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_01
 import no.nav.eessi.pensjon.eux.model.NavMock
-import no.nav.eessi.pensjon.eux.model.SedType.*
-import no.nav.eessi.pensjon.eux.model.sed.Adresse
-import no.nav.eessi.pensjon.eux.model.sed.AnsattSelvstendigItem
-import no.nav.eessi.pensjon.eux.model.sed.BarnepassItem
-import no.nav.eessi.pensjon.eux.model.sed.InformasjonBarn
-import no.nav.eessi.pensjon.eux.model.sed.P4000
-import no.nav.eessi.pensjon.eux.model.sed.Periode
-import no.nav.eessi.pensjon.eux.model.sed.PersonArbeidogOppholdUtland
-import no.nav.eessi.pensjon.eux.model.sed.SED
-import no.nav.eessi.pensjon.eux.model.sed.StandardItem
-import no.nav.eessi.pensjon.eux.model.sed.TrygdeTidPeriode
+import no.nav.eessi.pensjon.eux.model.SedType.P4000
+import no.nav.eessi.pensjon.eux.model.sed.*
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.person.PrefillSed
 import no.nav.eessi.pensjon.shared.api.ApiRequest
 import no.nav.eessi.pensjon.shared.api.InstitusjonItem
+import no.nav.eessi.pensjon.shared.api.PersonInfo
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.toJson
 import no.nav.eessi.pensjon.utils.validateJson
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNotNull
-import org.junit.jupiter.api.Assertions.assertNull
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
@@ -142,7 +132,7 @@ class SedP4000Test {
                 subjectArea = "Pensjon",
                 payload = "{}"
         )
-        val data = ApiRequest.buildPrefillDataModelOnExisting(req, "12345", null)
+        val data = ApiRequest.buildPrefillDataModelOnExisting(req, PersonInfo("12345", req.aktoerId!!), null)
 
         val personData = PersonDataCollection(forsikretPerson = PersonPDLMock.createWith(), gjenlevendeEllerAvdod = PersonPDLMock.createWith())
 
@@ -173,7 +163,7 @@ class SedP4000Test {
         assertNotNull(reqjson)
         validateJson(reqjson)
 
-        val data = ApiRequest.buildPrefillDataModelOnExisting(req, "12345", null)
+        val data = ApiRequest.buildPrefillDataModelOnExisting(req, PersonInfo("12345", req.aktoerId!!), null)
 
         assertNotNull(data)
         assertNotNull(data.getPartSEDasJson("P4000"))

@@ -3,19 +3,26 @@ package no.nav.eessi.pensjon.integrationtest.sed
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
 import no.nav.eessi.pensjon.UnsecuredWebMvcTestLauncher
-import no.nav.eessi.pensjon.eux.model.BucType.*
+import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_05
+import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_06
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.integrationtest.IntegrasjonsTestConfig
 import no.nav.eessi.pensjon.kodeverk.KodeverkClient
+import no.nav.eessi.pensjon.kodeverk.Postnummer
 import no.nav.eessi.pensjon.pensjonsinformasjon.models.EPSaktype
 import no.nav.eessi.pensjon.pensjonsinformasjon.models.KravArsak
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
-import no.nav.eessi.pensjon.personoppslag.pdl.model.*
-import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe.*
+import no.nav.eessi.pensjon.personoppslag.pdl.model.AdressebeskyttelseGradering
+import no.nav.eessi.pensjon.personoppslag.pdl.model.AktoerId
+import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe.AKTORID
+import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe.FOLKEREGISTERIDENT
+import no.nav.eessi.pensjon.personoppslag.pdl.model.NorskIdent
+import no.nav.eessi.pensjon.prefill.KrrService
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.PersonPDLMock.medBeskyttelse
 import no.nav.eessi.pensjon.prefill.PersonPDLMock.medUtlandAdresse
+import no.nav.eessi.pensjon.prefill.models.DigitalKontaktinfo
 import no.nav.pensjon.v1.kravhistorikk.V1KravHistorikk
 import no.nav.pensjon.v1.kravhistorikkliste.V1KravHistorikkListe
 import no.nav.pensjon.v1.sak.V1Sak
@@ -51,6 +58,9 @@ class SedPrefillP8000IntegrationSpringTest {
     @MockkBean
     private lateinit var personService: PersonService
 
+    @MockkBean
+    private lateinit var krrService: KrrService
+
     @Autowired
     private lateinit var mockMvc: MockMvc
 
@@ -79,6 +89,7 @@ class SedPrefillP8000IntegrationSpringTest {
                 bySted = "UTLANDBY"
             )
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_4)) } returns PersonPDLMock.createWith(true, "Avdød", "Død", FNR_VOKSEN_4, AKTOER_ID_2, true)
+        every { krrService.hentPersonerFraKrr(any()) } returns DigitalKontaktinfo(epostadresse = "melleby11@melby.no", mobiltelefonnummer = "11111111", aktiv = true, personident = FNR_VOKSEN_4)
 
         val sak = V1Sak().apply {
             sakType = EPSaktype.GJENLEV.toString()
@@ -88,118 +99,14 @@ class SedPrefillP8000IntegrationSpringTest {
 
         every { pensjoninformasjonservice.hentRelevantPensjonSak(any(), any()) } returns sak
         every { kodeverkClient.finnLandkode(any()) } returns "QX"
+        every { kodeverkClient.hentPostSted(any()) } returns Postnummer("1068", "SØRUMSAND")
 
         val subject = dummyApiSubjectjson(FNR_VOKSEN_4)
         val apijson = dummyApijson(sakid = "21337890", aktoerId = AKTOER_ID, sed = "P8000", buc = P_BUC_05.name, subject = subject, refperson = "\"SOKER\"")
 
         val validResponse = """
-            {
-              "sed" : "P8000",
-              "sedGVer" : "4",
-              "sedVer" : "2",
-              "nav" : {
-                "eessisak" : [ {
-                  "institusjonsid" : "NO:noinst002",
-                  "institusjonsnavn" : "NOINST002, NO INST002, NO",
-                  "saksnummer" : "21337890",
-                  "land" : "NO"
-                } ],
-                "bruker" : {
-                  "person" : {
-                    "pin" : [ {
-                      "identifikator" : "$FNR_VOKSEN_4",
-                      "land" : "NO"
-                    } ],
-                    "etternavn" : "Død",
-                    "fornavn" : "Avdød",
-                    "kjoenn" : "M",
-                    "foedselsdato" : "1921-07-12"
-                  },
-                  "adresse" : { 
-                          "gate" : "Oppoverbakken 66",
-                          "by" : "SØRUMSAND",
-                          "bygning" : "bygning",
-                          "postnummer" : "1920",
-                          "region" : "region",
-                          "land" : "NO"
-                  }
-                },
-                "annenperson" : {
-                  "person" : {
-                    "pin" : [ {
-                      "institusjonsnavn" : "NOINST002, NO INST002, NO",
-                      "institusjonsid" : "NO:noinst002",
-                      "identifikator" : "$FNR_VOKSEN_3",
-                      "land" : "NO"
-                    } ],
-                    "statsborgerskap" : [ {
-                      "land" : "QX"
-                    } ],
-                    "etternavn" : "Gjenlev",
-                    "fornavn" : "Lever",
-                    "kjoenn" : "M",
-                    "foedselsdato" : "1988-07-12",
-                    "rolle" : "01"
-                  },
-                  "adresse" : {
-                    "gate" : "OlssenGate",
-                    "by" : "UTLANDBY",
-                    "postnummer" : "9898",
-                    "land" : "QX",
-                    "region" : "Akershus",
-                    "bygning" : "bygning"
-                  }
-                }
-              },
-              "pensjon" : {
-                "anmodning" : {
-                  "referanseTilPerson" : "02"
-                }
-              }
-            }
-        """.trimIndent()
-
-        val result = mockMvc.perform(post("/sed/prefill")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(apijson))
-                .andExpect(status().isOk)
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andReturn()
-
-        val response = result.response.getContentAsString(charset("UTF-8"))
-
-        JSONAssert.assertEquals(response, validResponse, false)
-    }
-
-    @Test
-    @Throws(Exception::class)
-    fun `prefill sed P8000 - Gitt alderpensjon Og henvendelse gjelder avdød SÅ skal det produseres en Gyldig P8000 med avdød og gjenlevende`() {
-
-        every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN_3)
-        every { personService.hentIdent(AKTORID, NorskIdent(FNR_VOKSEN_4)) } returns AktoerId(AKTOER_ID_2)
-        every { personService.hentPerson(NorskIdent(FNR_VOKSEN_3)) } returns PersonPDLMock.createWith(true, "Lever", "Gjenlev", FNR_VOKSEN_3, AKTOER_ID)
-
-        every { personService.hentPerson(NorskIdent(FNR_VOKSEN_4)) } returns PersonPDLMock.createWith(true, "Avdød", "Død", FNR_VOKSEN_4, AKTOER_ID_2, true)
-
-
-        val sak = V1Sak().apply {
-            sakType = EPSaktype.ALDER.toString()
-            sakId  = 100
-            kravHistorikkListe = V1KravHistorikkListe()
-            kravHistorikkListe.kravHistorikkListe.add(V1KravHistorikk().apply { kravArsak = KravArsak.GJNL_SKAL_VURD.name })
-        }
-
-        every {pensjoninformasjonservice.hentRelevantPensjonSak(any(), any()) } returns sak
-        every { kodeverkClient.finnLandkode(any()) } returns "QX"
-
-        val subject = dummyApiSubjectjson(FNR_VOKSEN_4)
-        val apijson = dummyApijson(sakid = "21337890", aktoerId = AKTOER_ID, sed = "P8000", buc = P_BUC_05.name, subject = subject, refperson = "\"AVDOD\"")
-
-        val validResponse = """
-        {
+          {
           "sed" : "P8000",
-          "sedGVer" : "4",
-          "sedVer" : "2",
           "nav" : {
             "eessisak" : [ {
               "institusjonsid" : "NO:noinst002",
@@ -210,8 +117,13 @@ class SedPrefillP8000IntegrationSpringTest {
             "bruker" : {
               "person" : {
                 "pin" : [ {
-                  "identifikator" : "$FNR_VOKSEN_4",
+                  "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                  "institusjonsid" : "NO:noinst002",
+                  "identifikator" : "9876543210",
                   "land" : "NO"
+                }, {
+                  "identifikator" : "123123123",
+                  "land" : "QX"
                 } ],
                 "etternavn" : "Død",
                 "fornavn" : "Avdød",
@@ -230,8 +142,11 @@ class SedPrefillP8000IntegrationSpringTest {
                 "pin" : [ {
                   "institusjonsnavn" : "NOINST002, NO INST002, NO",
                   "institusjonsid" : "NO:noinst002",
-                  "identifikator" : "$FNR_VOKSEN_3",
+                  "identifikator" : "12312312312",
                   "land" : "NO"
+                }, {
+                  "identifikator" : "123123123",
+                  "land" : "QX"
                 } ],
                 "statsborgerskap" : [ {
                   "land" : "QX"
@@ -240,7 +155,137 @@ class SedPrefillP8000IntegrationSpringTest {
                 "fornavn" : "Lever",
                 "kjoenn" : "M",
                 "foedselsdato" : "1988-07-12",
-                "rolle" : "01"
+                "rolle" : "01",
+                "kontakt" : {
+                  "telefon" : [ {
+                    "type" : "mobil",
+                    "nummer" : "11111111"
+                  } ],
+                  "email" : [ {
+                    "adresse" : "melleby11@melby.no"
+                  } ]
+                }
+              },
+              "adresse" : {
+                "gate" : "OlssenGate",
+                "bygning" : "bygning",
+                "by" : "UTLANDBY",
+                "postnummer" : "9898",
+                "region" : "Akershus",
+                "land" : "QX"
+              }
+            }
+          },
+          "pensjon" : {
+            "anmodning" : {
+              "referanseTilPerson" : "02"
+            }
+          },
+          "sedGVer" : "4",
+          "sedVer" : "2"
+        }
+        """.trimIndent()
+
+        val result = mockMvc.perform(post("/sed/prefill")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(apijson))
+                .andExpect(status().isOk)
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andReturn()
+
+        val response = result.response.getContentAsString(charset("UTF-8"))
+
+        JSONAssert.assertEquals(validResponse, response, false)
+    }
+
+    @Test
+    @Throws(Exception::class)
+    fun `prefill sed P8000 - Gitt alderpensjon Og henvendelse gjelder avdød SÅ skal det produseres en Gyldig P8000 med avdød og gjenlevende`() {
+
+        every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN_3)
+        every { personService.hentIdent(AKTORID, NorskIdent(FNR_VOKSEN_4)) } returns AktoerId(AKTOER_ID_2)
+        every { personService.hentPerson(NorskIdent(FNR_VOKSEN_3)) } returns PersonPDLMock.createWith(true, "Lever", "Gjenlev", FNR_VOKSEN_3, AKTOER_ID)
+        every { personService.hentPerson(NorskIdent(FNR_VOKSEN_4)) } returns PersonPDLMock.createWith(true, "Avdød", "Død", FNR_VOKSEN_4, AKTOER_ID_2, true)
+
+        every { krrService.hentPersonerFraKrr(eq(FNR_VOKSEN_3)) } returns DigitalKontaktinfo(epostadresse = "melleby11@melby.no", mobiltelefonnummer = "11111111", aktiv = true, personident = FNR_VOKSEN_3)
+        every { krrService.hentPersonerFraKrr(eq(FNR_VOKSEN_4)) } returns DigitalKontaktinfo(epostadresse = "melleby11@melby.no", mobiltelefonnummer = "22222222", aktiv = true, personident = FNR_VOKSEN_4)
+
+
+        val sak = V1Sak().apply {
+            sakType = EPSaktype.ALDER.toString()
+            sakId  = 100
+            kravHistorikkListe = V1KravHistorikkListe()
+            kravHistorikkListe.kravHistorikkListe.add(V1KravHistorikk().apply { kravArsak = KravArsak.GJNL_SKAL_VURD.name })
+        }
+
+        every {pensjoninformasjonservice.hentRelevantPensjonSak(any(), any()) } returns sak
+        every { kodeverkClient.finnLandkode(any()) } returns "QX"
+        every { kodeverkClient.hentPostSted(any()) } returns Postnummer("1068", "SØRUMSAND")
+
+        val subject = dummyApiSubjectjson(FNR_VOKSEN_4)
+        val apijson = dummyApijson(sakid = "21337890", aktoerId = AKTOER_ID, sed = "P8000", buc = P_BUC_05.name, subject = subject, refperson = "\"AVDOD\"")
+
+        val validResponse = """
+        {
+          "sed" : "P8000",
+          "nav" : {
+            "eessisak" : [ {
+              "institusjonsid" : "NO:noinst002",
+              "institusjonsnavn" : "NOINST002, NO INST002, NO",
+              "saksnummer" : "21337890",
+              "land" : "NO"
+            } ],
+            "bruker" : {
+              "person" : {
+                "pin" : [ {
+                  "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                  "institusjonsid" : "NO:noinst002",
+                  "identifikator" : "9876543210",
+                  "land" : "NO"
+                }, {
+                  "identifikator" : "123123123",
+                  "land" : "QX"
+                } ],
+                "etternavn" : "Død",
+                "fornavn" : "Avdød",
+                "kjoenn" : "M",
+                "foedselsdato" : "1921-07-12"
+              },
+              "adresse" : {
+                "gate" : "Oppoverbakken 66",
+                "by" : "SØRUMSAND",
+                "postnummer" : "1920",
+                "land" : "NO"
+              }
+            },
+            "annenperson" : {
+              "person" : {
+                "pin" : [ {
+                  "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                  "institusjonsid" : "NO:noinst002",
+                  "identifikator" : "12312312312",
+                  "land" : "NO"
+                }, {
+                  "identifikator" : "123123123",
+                  "land" : "QX"
+                } ],
+                "statsborgerskap" : [ {
+                  "land" : "QX"
+                } ],
+                "etternavn" : "Gjenlev",
+                "fornavn" : "Lever",
+                "kjoenn" : "M",
+                "foedselsdato" : "1988-07-12",
+                "rolle" : "01",
+                "kontakt" : {
+                  "telefon" : [ {
+                    "type" : "mobil",
+                    "nummer" : "11111111"
+                  } ],
+                  "email" : [ {
+                    "adresse" : "melleby11@melby.no"
+                  } ]
+                }
               },
               "adresse" : {
                 "gate" : "Oppoverbakken 66",
@@ -254,7 +299,9 @@ class SedPrefillP8000IntegrationSpringTest {
             "anmodning" : {
               "referanseTilPerson" : "01"
             }
-          }
+          },
+          "sedGVer" : "4",
+          "sedVer" : "2"
         }
         """.trimIndent()
 
@@ -267,7 +314,7 @@ class SedPrefillP8000IntegrationSpringTest {
 
         val response = result.response.getContentAsString(charset("UTF-8"))
 
-        JSONAssert.assertEquals(response, validResponse, false)
+        JSONAssert.assertEquals(validResponse, response, false)
 
     }
 
@@ -279,6 +326,9 @@ class SedPrefillP8000IntegrationSpringTest {
         every { personService.hentIdent(AKTORID, NorskIdent(FNR_VOKSEN_4)) } returns AktoerId(AKTOER_ID_2)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_3))  } returns PersonPDLMock.createWith(true, "Lever", "Gjenlev", FNR_VOKSEN_3, AKTOER_ID)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_4)) } returns PersonPDLMock.createWith(true, "Avdød", "Død", FNR_VOKSEN_4, AKTOER_ID_2, true)
+
+        every { krrService.hentPersonerFraKrr(eq(FNR_VOKSEN_3))  } returns DigitalKontaktinfo(epostadresse = "melleby12@melby.no", mobiltelefonnummer = "11111111", aktiv = true, personident = FNR_VOKSEN_3)
+        every { krrService.hentPersonerFraKrr(eq(FNR_VOKSEN_4))  } returns DigitalKontaktinfo(epostadresse = "melleby12@melby.no", mobiltelefonnummer = "22222222", aktiv = true, personident = FNR_VOKSEN_4)
 
         val v1Kravhistorikk = V1KravHistorikk()
         v1Kravhistorikk.kravArsak = KravArsak.GJNL_SKAL_VURD.name
@@ -292,6 +342,7 @@ class SedPrefillP8000IntegrationSpringTest {
 
         every { pensjoninformasjonservice.hentRelevantPensjonSak(any(), any()) } returns sak
         every { kodeverkClient.finnLandkode(any()) } returns "QX"
+        every { kodeverkClient.hentPostSted(any()) } returns Postnummer("1068", "SØRUMSAND")
 
         val subject = dummyApiSubjectjson(FNR_VOKSEN_4)
         val apijson = dummyApijson(sakid = "21337890", aktoerId = AKTOER_ID, sed = "P8000", buc = P_BUC_05.name, subject = subject, refperson = "\"SOKER\"")
@@ -311,13 +362,27 @@ class SedPrefillP8000IntegrationSpringTest {
                 "bruker" : {
                   "person" : {
                     "pin" : [ {
+                      "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                      "institusjonsid" : "NO:noinst002",
                       "identifikator" : "12312312312",
                       "land" : "NO"
+                    }, {
+                      "identifikator" : "123123123",
+                      "land" : "QX"
                     } ],
                     "etternavn" : "Gjenlev",
                     "fornavn" : "Lever",
                     "kjoenn" : "M",
-                    "foedselsdato" : "1988-07-12"
+                    "foedselsdato" : "1988-07-12",
+                    "kontakt" : {
+                      "telefon" : [ {
+                        "type" : "mobil",
+                        "nummer" : "11111111"
+                      } ],
+                      "email" : [ {
+                        "adresse" : "melleby12@melby.no"
+                      } ]
+                    }
                   },
                   "adresse" : {
                     "gate" : "Oppoverbakken 66",
@@ -345,6 +410,7 @@ class SedPrefillP8000IntegrationSpringTest {
                 .andReturn()
 
         val response = result.response.getContentAsString(charset("UTF-8"))
+        println("responsen: $response")
 
         JSONAssert.assertEquals(response, validResponse, false)
 
@@ -364,12 +430,14 @@ class SedPrefillP8000IntegrationSpringTest {
         every { pensjoninformasjonservice.hentRelevantPensjonSak(any(), any()) } returns sak
         every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_BARN)
         every { personService.hentIdent(AKTORID, NorskIdent(FNR_VOKSEN_4)) } returns AktoerId(AKTOER_ID_2)
+        every { krrService.hentPersonerFraKrr(any()) } returns DigitalKontaktinfo(epostadresse = "melleby12@melby.no", mobiltelefonnummer = "11111111", aktiv = true, personident = FNR_VOKSEN_4)
 
         val diskeBarn = PersonPDLMock.createWith(true, "Barn", "Diskret", FNR_BARN, AKTOER_ID)
                             .medBeskyttelse(AdressebeskyttelseGradering.STRENGT_FORTROLIG)
         every { personService.hentPerson(NorskIdent(FNR_BARN)) } returns diskeBarn
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_4)) } returns PersonPDLMock.createWith(true, "Avdød", "Død", FNR_VOKSEN_4, AKTOER_ID_2, true)
         every { kodeverkClient.finnLandkode(any()) } returns "QX"
+        every { kodeverkClient.hentPostSted(any()) } returns Postnummer("1068", "SØRUMSAND")
 
         val subject = dummyApiSubjectjson(FNR_VOKSEN_4)
         val apijson = dummyApijson(sakid = "21337890", aktoerId = AKTOER_ID, sed = "P8000", buc = P_BUC_05.name, subject = subject, refperson = "\"SOKER\"")
@@ -384,60 +452,92 @@ class SedPrefillP8000IntegrationSpringTest {
         val response = result.response.getContentAsString(charset("UTF-8"))
 
         val validResponse = """
-              {
-              "sed" : "P8000",
-              "sedGVer" : "4",
-              "sedVer" : "2",
-              "nav" : {
-                "eessisak" : [ {
-                  "institusjonsid" : "NO:noinst002",
+        {
+          "sed" : "P8000",
+          "nav" : {
+            "eessisak" : [ {
+              "institusjonsid" : "NO:noinst002",
+              "institusjonsnavn" : "NOINST002, NO INST002, NO",
+              "saksnummer" : "21337890",
+              "land" : "NO"
+            } ],
+            "bruker" : {
+              "person" : {
+                "pin" : [ {
                   "institusjonsnavn" : "NOINST002, NO INST002, NO",
-                  "saksnummer" : "21337890",
+                  "institusjonsid" : "NO:noinst002",
+                  "identifikator" : "9876543210",
                   "land" : "NO"
+                }, {
+                  "identifikator" : "123123123",
+                  "land" : "QX"
                 } ],
-                "bruker" : {
-                  "person" : {
-                    "pin" : [ {
-                      "identifikator" : "$FNR_VOKSEN_4",
-                      "land" : "NO"
-                    } ],
-                    "etternavn" : "Død",
-                    "fornavn" : "Avdød",
-                    "kjoenn" : "M",
-                    "foedselsdato" : "1921-07-12"
-                  },
-                  "adresse" : {
-                    "gate" : "Oppoverbakken 66",
-                    "by" : "SØRUMSAND",
-                    "land" : "NO",
-                    "postnummer" : "1920"
-                  }
-                },
-                "annenperson" : {
-                  "person" : {
-                    "pin" : [ {
-                      "institusjonsnavn" : "NOINST002, NO INST002, NO",
-                      "institusjonsid" : "NO:noinst002",
-                      "identifikator" : "$FNR_BARN",
-                      "land" : "NO"
-                    } ],
-                    "statsborgerskap" : [ {
-                      "land" : "QX"
-                    } ],
-                    "etternavn" : "Diskret",
-                    "fornavn" : "Barn",
-                    "kjoenn" : "M",
-                    "foedselsdato" : "1988-07-12",
-                    "rolle" : "01"
-                  }
+                "etternavn" : "Død",
+                "fornavn" : "Avdød",
+                "kjoenn" : "M",
+                "foedselsdato" : "1921-07-12",
+                "kontakt" : {
+                  "telefon" : [ {
+                    "type" : "mobil",
+                    "nummer" : "11111111"
+                  } ],
+                  "email" : [ {
+                    "adresse" : "melleby12@melby.no"
+                  } ]
                 }
               },
-              "pensjon" : {
-                "anmodning" : {
-                  "referanseTilPerson" : "02"
+              "adresse" : {
+                "gate" : "Oppoverbakken 66",
+                "by" : "SØRUMSAND",
+                "postnummer" : "1920",
+                "land" : "NO"
+              }
+            },
+            "annenperson" : {
+              "person" : {
+                "pin" : [ {
+                  "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                  "institusjonsid" : "NO:noinst002",
+                  "identifikator" : "12011577847",
+                  "land" : "NO"
+                }, {
+                  "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                  "institusjonsid" : "NO:noinst002",
+                  "identifikator" : "123123123",
+                  "land" : "QX"
+                } ],
+                "statsborgerskap" : [ {
+                  "land" : "QX"
+                } ],
+                "etternavn" : "Diskret",
+                "fornavn" : "Barn",
+                "kjoenn" : "M",
+                "foedselsdato" : "1988-07-12",
+                "sivilstand" : [ {
+                  "fradato" : "2000-10-01",
+                  "status" : "enslig"
+                } ],
+                "rolle" : "01",
+                "kontakt" : {
+                  "telefon" : [ {
+                    "type" : "mobil",
+                    "nummer" : "11111111"
+                  } ],
+                  "email" : [ {
+                    "adresse" : "melleby12@melby.no"
+                  } ]
                 }
               }
             }
+          },
+          "pensjon" : {
+            "anmodning" : {
+              "referanseTilPerson" : "02"
+            }
+          },
+          "sedGVer" : "4",
+          "sedVer" : "2"
+        }
         """.trimIndent()
 
         JSONAssert.assertEquals(response, validResponse, false)
@@ -449,7 +549,9 @@ class SedPrefillP8000IntegrationSpringTest {
     fun `prefill sed P8000 - Gitt en alderspensjon så skal det genereres en P8000 uten referanse til person`() {
         every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN_3)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_3)) } returns PersonPDLMock.createWith(true, "Alder", "Pensjon", FNR_VOKSEN_3, AKTOER_ID)
+        every { krrService.hentPersonerFraKrr(any()) } returns DigitalKontaktinfo(epostadresse = "melleby12@melby.no", mobiltelefonnummer = "11111111", aktiv = true, personident = FNR_VOKSEN_3)
         every { kodeverkClient.finnLandkode(any())} returns "QX"
+        every { kodeverkClient.hentPostSted(any()) } returns Postnummer("1068", "SØRUMSAND")
 
         val apijson = dummyApijson(sakid = "21337890", aktoerId = AKTOER_ID, sed = "P8000", buc = P_BUC_05.name)
 
@@ -468,13 +570,27 @@ class SedPrefillP8000IntegrationSpringTest {
                 "bruker" : {
                   "person" : {
                     "pin" : [ {
+                      "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                      "institusjonsid" : "NO:noinst002",
                       "identifikator" : "12312312312",
                       "land" : "NO"
+                    }, {
+                      "identifikator" : "123123123",
+                      "land" : "QX"
                     } ],
                     "etternavn" : "Pensjon",
                     "fornavn" : "Alder",
                     "kjoenn" : "M",
-                    "foedselsdato" : "1988-07-12"
+                    "foedselsdato" : "1988-07-12",
+                    "kontakt" : {
+                      "telefon" : [ {
+                        "type" : "mobil",
+                        "nummer" : "11111111"
+                      } ],
+                      "email" : [ {
+                        "adresse" : "melleby12@melby.no"
+                      } ]
+                    }
                   },
                   "adresse" : {
                     "gate" : "Oppoverbakken 66",
@@ -509,7 +625,9 @@ class SedPrefillP8000IntegrationSpringTest {
         every { pensjoninformasjonservice.hentRelevantPensjonSak(any(), any()) } returns V1Sak()
         every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(syntFnr)
         every { personService.hentPerson(NorskIdent(syntFnr)) } returns PersonPDLMock.createWith(true, "Alder", "Pensjon", syntFnr, AKTOER_ID)
+        every { krrService.hentPersonerFraKrr(any()) } returns DigitalKontaktinfo(epostadresse = "melleby12@melby.no", mobiltelefonnummer = "11111111", aktiv = true, personident = FNR_VOKSEN_4)
         every { kodeverkClient.finnLandkode(any())} returns "QX"
+        every { kodeverkClient.hentPostSted(any()) } returns Postnummer("1068", "SØRUMSAND")
 
         val apijson = dummyApijson(sakid = "21337890", aktoerId = AKTOER_ID, sed = "P8000", buc = P_BUC_05.name)
 
@@ -528,13 +646,27 @@ class SedPrefillP8000IntegrationSpringTest {
                 "bruker" : {
                   "person" : {
                     "pin" : [ {
+                      "institusjonsnavn" : "NOINST002, NO INST002, NO",
+                      "institusjonsid" : "NO:noinst002",
                       "identifikator" : "$syntFnr",
                       "land" : "NO"
+                    }, {
+                      "identifikator" : "123123123",
+                      "land" : "QX"
                     } ],
                     "etternavn" : "Pensjon",
                     "fornavn" : "Alder",
                     "kjoenn" : "M",
-                    "foedselsdato" : "1988-07-12"
+                    "foedselsdato" : "1988-07-12",
+                    "kontakt" : {
+                      "telefon" : [ {
+                        "type" : "mobil",
+                        "nummer" : "11111111"
+                      } ],
+                      "email" : [ {
+                        "adresse" : "melleby12@melby.no"
+                      } ]
+                    }
                   },
                   "adresse" : {
                     "gate" : "Oppoverbakken 66",

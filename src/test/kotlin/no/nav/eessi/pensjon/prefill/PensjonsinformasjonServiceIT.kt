@@ -23,6 +23,9 @@ import org.springframework.stereotype.Component
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.web.client.RestTemplate
 
+private const val FNR_VOKSEN = "220366234444"
+private const val AKTORID = "4324235242"
+
 @SpringBootTest(classes = [
     IntegrasjonsTestConfig::class,
     PensjonsInfoRetryLogger::class,
@@ -48,34 +51,28 @@ class PensjonsinformasjonServiceIT {
 
     @Test
     fun  `Gitt et fnr og aktørid så skal det returneres en brukersaksliste ved henting av pensjonsinformasjon`() {
-        val fnr = "220366234444"
-        val aktorId = "4324235242"
-
         val generatedResponse =  javaClass.getResource("/pensjonsinformasjon/full-generated-response-with-brukersaksliste.xml")!!.readText()
 
         every { pensjoninformasjonRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns ResponseEntity(generatedResponse,  HttpStatus.OK)
-        val bruksersaksliste = pensjonsinformasjonService.hentPensjonInformasjon(fnr, aktorId)
-        assert(bruksersaksliste.brukersSakerListe.brukersSakerListe.size > 0)
+        val bruksersaksliste = pensjonsinformasjonService.hentPensjonInformasjon(FNR_VOKSEN, AKTORID)
+        assert(bruksersaksliste.brukersSakerListe.brukersSakerListe.isNotEmpty())
     }
 
-//    @Test
-//    fun  `Gitt et fnr og aktørid så skal det kastes en PensjoninformasjonException når responsen er tom`() {
-//        val fnr = "220366234444"
-//        val aktorId = "4324235242"
-//
-//        val generatedResponse =  javaClass.getResource("/pensjonsinformasjon/full-generated-response.xml")!!.readText()
-//
-//        every { pensjoninformasjonRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns ResponseEntity(generatedResponse,  HttpStatus.OK)
-//
-//        assertThrows<PensjoninformasjonException> {
-//            pensjonsinformasjonService.hentPensjonInformasjon(fnr, aktorId)
-//        }
-//    }
+    @Test
+    fun  `Gitt et fnr og aktørid så skal det kastes en PensjoninformasjonException når responsen er tom`() {
+        val generatedResponse =  javaClass.getResource("/pensjonsinformasjon/full-generated-response.xml")!!.readText()
+
+        every { pensjoninformasjonRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns ResponseEntity(generatedResponse,  HttpStatus.OK)
+
+        assertThrows<PensjoninformasjonException> {
+            pensjonsinformasjonService.hentPensjonInformasjon(FNR_VOKSEN, AKTORID)
+        }
+    }
 
     @Test
     fun `Gitt et kall mot hentPensjonInformasjon, som kaster et exception, så skal dette gi 3 retry`(){
         assertThrows<PensjoninformasjonException> {
-            pensjonsinformasjonService.hentPensjonInformasjon("12345", "112233")
+            pensjonsinformasjonService.hentPensjonInformasjon(FNR_VOKSEN, AKTORID)
         }
         verify(exactly = 3) { pensjoninformasjonRestTemplate.exchange("/fnr", any(), any<HttpEntity<Unit>>(), eq(String::class.java)) }
     }

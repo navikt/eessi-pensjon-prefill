@@ -34,7 +34,7 @@ class PrefillP2100(private val prefillNav: PrefillPDLNav) {
             krav = pensjon?.kravDato ?: prefillData.kravDato?.let { Krav(it, prefillData.kravType) },
             annenPerson = null
         )
-        val gjenlevende = prefillData.avdod?.let { prefillNav.createGjenlevende(personData.forsikretPerson) }
+        val gjenlevende = prefillData.avdod?.let { prefillNav.createGjenlevende(personData.forsikretPerson, prefillData.bruker) }
 
         return prefillPen(prefillData, nav, gjenlevende, sak)
     }
@@ -46,7 +46,7 @@ class PrefillP2100(private val prefillNav: PrefillPDLNav) {
                 + "\nSøker sakId            : ${prefillData.penSaksnummer} "
                 + "\nKravdato, kravtype     : ${prefillData.kravDato}, ${prefillData.kravType} "
                 + "\nSøker avdodaktor       : ${prefillData.avdod.aktorId} "
-                + "\nerGyldigEtterlatt      : ${prefillData.avdod.aktorId.isNotEmpty()} "
+                + "\nerGyldigEtterlatt      : ${prefillData.avdod.aktorId?.isNotEmpty()} "
                 + "\nSøker gjenlevaktoer    : ${prefillData.bruker.aktorId} "
                 + "\n------------------| Preutfylling [${prefillData.sedType}] START |------------------ \n")
     }
@@ -61,7 +61,7 @@ class PrefillP2100(private val prefillNav: PrefillPDLNav) {
         var pensjon = Pensjon()
 
         try {
-                val meldingOmPensjon = PrefillP2xxxPensjon.populerMeldinOmPensjon(
+                val meldingOmPensjon : MeldingOmPensjon = PrefillP2xxxPensjon.populerMeldinOmPensjon(
                         prefillData.bruker.norskIdent,
                         prefillData.penSaksnummer,
                         sak,

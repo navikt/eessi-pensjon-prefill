@@ -1,25 +1,18 @@
 package no.nav.eessi.pensjon.prefill.sed.krav
 
 import no.nav.eessi.pensjon.eux.model.SedType
-import no.nav.eessi.pensjon.eux.model.sed.AndreinstitusjonerItem
-import no.nav.eessi.pensjon.eux.model.sed.BeloepItem
-import no.nav.eessi.pensjon.eux.model.sed.Bruker
-import no.nav.eessi.pensjon.eux.model.sed.Institusjon
-import no.nav.eessi.pensjon.eux.model.sed.Krav
-import no.nav.eessi.pensjon.eux.model.sed.MeldingOmPensjon
-import no.nav.eessi.pensjon.eux.model.sed.Pensjon
-import no.nav.eessi.pensjon.eux.model.sed.PinItem
-import no.nav.eessi.pensjon.eux.model.sed.YtelserItem
+import no.nav.eessi.pensjon.eux.model.buc.SakType
+import no.nav.eessi.pensjon.eux.model.sed.*
 import no.nav.eessi.pensjon.pensjonsinformasjon.KravHistorikkHelper.finnKravHistorikk
 import no.nav.eessi.pensjon.pensjonsinformasjon.KravHistorikkHelper.finnKravHistorikkForDato
 import no.nav.eessi.pensjon.pensjonsinformasjon.KravHistorikkHelper.hentKravHistorikkForsteGangsBehandlingUtlandEllerForsteGang
 import no.nav.eessi.pensjon.pensjonsinformasjon.models.EPSaktype
 import no.nav.eessi.pensjon.pensjonsinformasjon.models.PenKravtype
-import no.nav.eessi.pensjon.pensjonsinformasjon.models.PenKravtype.FORSTEG_BH
-import no.nav.eessi.pensjon.pensjonsinformasjon.models.PenKravtype.F_BH_BO_UTL
-import no.nav.eessi.pensjon.pensjonsinformasjon.models.PenKravtype.F_BH_KUN_UTL
-import no.nav.eessi.pensjon.pensjonsinformasjon.models.PenKravtype.F_BH_MED_UTL
+import no.nav.eessi.pensjon.pensjonsinformasjon.models.PenKravtype.*
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
+import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.KSAK
+import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.PrefillPensjonVedtaksbelop.createYtelseskomponentGrunnpensjon
+import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.PrefillPensjonVedtaksbelop.createYtelseskomponentTilleggspensjon
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
 import no.nav.eessi.pensjon.shared.person.Fodselsnummer
 import no.nav.eessi.pensjon.utils.simpleFormat
@@ -27,7 +20,6 @@ import no.nav.pensjon.v1.kravhistorikk.V1KravHistorikk
 import no.nav.pensjon.v1.sak.V1Sak
 import no.nav.pensjon.v1.vedtak.V1Vedtak
 import no.nav.pensjon.v1.ytelsepermaaned.V1YtelsePerMaaned
-import no.nav.pensjon.v1.ytelseskomponent.V1Ytelseskomponent
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -39,7 +31,7 @@ const val kravdatoMeldingOmP2100TilSaksbehandler = "Kravdato fra det opprinnelig
  * Hjelpe klasse for sak som fyller ut NAV-SED-P2000 med pensjondata fra PESYS.
  */
 object PrefillP2xxxPensjon {
-    private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillP2xxxPensjon::class.java) }
+    val logger: Logger by lazy { LoggerFactory.getLogger(PrefillP2xxxPensjon::class.java) }
 
 
     /**
@@ -82,16 +74,14 @@ object PrefillP2xxxPensjon {
      *  «Førstegangsbehandling bosatt utland» eller «Mellombehandling».
      *  Obs, krav av typen «Førstegangsbehandling kun utland» eller Sluttbehandling kun utland» gjelder ikke norsk ytelse.
      */
-    fun populerMeldinOmPensjon(personNr: String,
+    inline fun <reified T: MeldingOmPensjon> populerMeldinOmPensjon(personNr: String,
                                penSaksnummer: String?,
                                pensak: V1Sak?,
                                andreinstitusjonerItem: AndreinstitusjonerItem?,
                                gjenlevende: Bruker? = null,
-                               kravId: String? = null): MeldingOmPensjon {
+                               kravId: String? = null): T  {
 
         logger.info("4.1           Informasjon om ytelser")
-
-        val ytelselist = mutableListOf<YtelserItem>()
 
         val v1KravHistorikk = finnKravHistorikkForDato(pensak)
         val melding = opprettMeldingBasertPaaSaktype(v1KravHistorikk, kravId, pensak?.sakType)
@@ -99,31 +89,41 @@ object PrefillP2xxxPensjon {
 
         logger.info("Krav (dato) = $krav")
 
-        when (pensak?.ytelsePerMaanedListe) {
-            null -> {
-                logger.info("forkortet ytelsebehandling ved ytelsePerMaanedListe = null, status: ${pensak?.status}")
-                ytelselist.add(opprettForkortetYtelsesItem(pensak, personNr, penSaksnummer, andreinstitusjonerItem))
-            }
-            else -> {
-                try {
-                    logger.info("sakType: ${pensak.sakType}")
-                    val ytelseprmnd = hentYtelsePerMaanedDenSisteFraKrav(hentKravHistorikkForsteGangsBehandlingUtlandEllerForsteGang(pensak.kravHistorikkListe, pensak.sakType), pensak)
-                    ytelselist.add(createYtelserItem(ytelseprmnd, pensak, personNr, penSaksnummer, andreinstitusjonerItem))
-                } catch (ex: Exception) {
-                    logger.warn(ex.message, ex)
-                    ytelselist.add(opprettForkortetYtelsesItem(pensak, personNr, penSaksnummer, andreinstitusjonerItem))
-                }
+        val ytelse = if (pensak?.ytelsePerMaanedListe == null) {
+            logger.info("Forkortet ytelsebehandling ved ytelsePerMaanedListe = null, status: ${pensak?.status}")
+            opprettForkortetYtelsesItem(pensak, personNr, penSaksnummer, andreinstitusjonerItem)
+        } else {
+            runCatching {
+                logger.info("sakType: ${pensak.sakType}")
+                val kravHistorikk = hentKravHistorikkForsteGangsBehandlingUtlandEllerForsteGang(pensak.kravHistorikkListe)
+                val ytelseprmnd = hentYtelsePerMaanedDenSisteFraKrav(kravHistorikk, pensak)
+                createYtelserItem(ytelseprmnd, pensak, personNr, penSaksnummer, andreinstitusjonerItem)
+            }.getOrElse { ex ->
+                logger.warn("Feil under henting av ytelse ${pensak?.sakType}. ${ex.message}", ex)
+                opprettForkortetYtelsesItem(pensak, personNr, penSaksnummer, andreinstitusjonerItem)
             }
         }
-
-        return MeldingOmPensjon(
-            melding = melding,
-            pensjon = Pensjon(
-                ytelser = ytelselist,
-                kravDato = krav,
-                gjenlevende = gjenlevende
-            )
-        )
+        return when (T::class) {
+            MeldingOmPensjon::class -> MeldingOmPensjon(
+                melding = melding,
+                pensjon = Pensjon(
+                    ytelser = listOf(ytelse),
+                    kravDato = krav,
+                    gjenlevende = gjenlevende
+                )
+            )  as T
+            MeldingOmPensjonP2000::class -> MeldingOmPensjonP2000(
+                melding = melding,
+                pensjon = P2000Pensjon(
+                    forespurtstartdato = ytelse.startdatoretttilytelse,
+                    etterspurtedokumenter = "P5000 and P6000",
+                    ytelser = listOf(ytelse),
+                    kravDato = krav,
+                    gjenlevende = gjenlevende
+                )
+            )  as T
+            else -> throw IllegalArgumentException("Unsupported type: ${T::class.simpleName}")
+        }
     }
 
     /**
@@ -144,12 +144,14 @@ object PrefillP2xxxPensjon {
         val forsBehanBoUtlandTom = finnKravHistorikk(F_BH_BO_UTL, sak?.kravHistorikkListe).isNullOrEmpty()
         val forsBehanMedUtlandTom = finnKravHistorikk(F_BH_MED_UTL, sak?.kravHistorikkListe).isNullOrEmpty()
         val behandleKunUtlandTom = finnKravHistorikk(F_BH_KUN_UTL, sak?.kravHistorikkListe).isNullOrEmpty()
+        val sluttBehandlingUtlandTom = finnKravHistorikk(SLUTT_BH_UTL, sak?.kravHistorikkListe).isNullOrEmpty()
+
         val vedtakErTom = (vedtak == null)
 
-        if (forsBehanBoUtlandTom and forsBehanMedUtlandTom and behandleKunUtlandTom and vedtakErTom) {
-            logger.debug("forsBehanBoUtlanTom: $forsBehanBoUtlandTom, forsBehanMedUtlanTom: $forsBehanMedUtlandTom, behandleKunUtlandTom: $behandleKunUtlandTom")
-            logger.warn("Kan ikke opprette krav-SED: $sedType da vedtak og førstegangsbehandling utland mangler. Dersom det gjelder utsendelse til avtaleland, se egen rutine for utsendelse av SED på Navet.")
-            //throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Det finnes ingen iverksatte vedtak for førstegangsbehandling kun utland. Vennligst gå til EESSI-Pensjon fra vedtakskontekst.")
+        if (forsBehanBoUtlandTom and forsBehanMedUtlandTom and behandleKunUtlandTom and vedtakErTom and sluttBehandlingUtlandTom) {
+            logger.debug("forsBehanBoUtlanTom: $forsBehanBoUtlandTom, forsBehanMedUtlanTom: $forsBehanMedUtlandTom, behandleKunUtlandTom: $behandleKunUtlandTom, sluttBehandlingUtlandTom: $sluttBehandlingUtlandTom")
+            logger.warn("Kan ikke opprette krav-SED: $sedType da vedtak og førstegangsbehandling utland eller sluttbehandling mangler. Dersom det gjelder utsendelse til avtaleland, se egen rutine for utsendelse av SED på Navet.")
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Det finnes ingen iverksatte vedtak for førstegangsbehandling kun utland, eller sluttbehandling. Vennligst gå til EESSI-Pensjon fra vedtakskontekst.")
         }
 
         if (vedtak != null && vedtak.isBoddArbeidetUtland == false) {
@@ -197,14 +199,14 @@ object PrefillP2xxxPensjon {
      */
     fun opprettForkortetYtelsesItem(pensak: V1Sak?, personNr: String, penSaksnummer: String?, andreinstitusjonerItem: AndreinstitusjonerItem?): YtelserItem {
         return YtelserItem(
-                //4.1.1
-                ytelse = settYtelse(pensak),
-                //4.1.3 - fast satt til søkt
-                status = "01",
-                //4.1.4
-                pin = createInstitusjonPin(personNr),
-                //4.1.4.1.4
-                institusjon = createInstitusjon(penSaksnummer, andreinstitusjonerItem)
+            //4.1.1
+            ytelse = settYtelse(pensak),
+            //4.1.3 - fast satt til søkt
+            status = pensak?.status?.let { mapSakstatus(it) },
+            //4.1.4
+            pin = createInstitusjonPin(personNr),
+            //4.1.4.1.4
+            institusjon = createInstitusjon(penSaksnummer, andreinstitusjonerItem)
         )
     }
 
@@ -213,9 +215,9 @@ object PrefillP2xxxPensjon {
      *
      *  Ytelser
      */
-    private fun settYtelse(pensak: V1Sak?): String {
+    private fun settYtelse(pensak: V1Sak?): String? {
         logger.debug("4.1.1         Ytelser")
-        return mapSaktype(pensak?.sakType)
+        return mapSaktype(pensak?.sakType).also { logger.debug("Saktype fra Pesys: $it") }
     }
 
     /**
@@ -225,13 +227,15 @@ object PrefillP2xxxPensjon {
      */
     fun createYtelserItem(ytelsePrmnd: V1YtelsePerMaaned, pensak: V1Sak, personNr: String, penSaksnummer: String?, andreinstitusjonerItem: AndreinstitusjonerItem?): YtelserItem {
         logger.debug("4.1   YtelserItem")
+        val basertPaa = createPensionBasedOn(pensak, personNr)
+        val saktype = if(pensak.sakType?.isNotBlank() == true) SakType.valueOf(pensak.sakType) else null
         return YtelserItem(
 
                 //4.1.1
                 ytelse = settYtelse(pensak),
 
-                //4.1.3 (dekkes av pkt.4.1.1)
-                status = createPensionStatus(pensak),
+                //4.1.3 - fast satt til søkt
+                status = mapSakstatus(pensak.status),
                 //4.1.4
                 pin = createInstitusjonPin(personNr),
                 //4.1.4.1.4
@@ -244,13 +248,16 @@ object PrefillP2xxxPensjon {
                 startdatoretttilytelse = createStartdatoForRettTilYtelse(pensak),
 
                 //4.1.9 - 4.1.9.5.1
-                beloep = createYtelseItemBelop(ytelsePrmnd, ytelsePrmnd.ytelseskomponentListe),
+                beloep = createYtelseItemBelop(ytelsePrmnd, saktype),
 
                 //4.1.10.1
-                mottasbasertpaa = createPensionBasedOn(pensak, personNr),
+                mottasbasertpaa = basertPaa.let {  BasertPaa.entries.firstOrNull() { it.name == basertPaa } }?.kode,
+
+                //4.1.10.2
+                totalbruttobeloepbostedsbasert = saktype?.let { KSAK.valueOf(it.name) }?.let { createYtelseskomponentGrunnpensjon(ytelsePrmnd, it) },
 
                 //4.1.10.3
-                totalbruttobeloeparbeidsbasert = ytelsePrmnd.belop.toString(),
+                totalbruttobeloeparbeidsbasert = saktype?.let { KSAK.valueOf(it.name) }?.let { createYtelseskomponentTilleggspensjon( ytelsePrmnd, it) },
         )
     }
 
@@ -267,7 +274,8 @@ object PrefillP2xxxPensjon {
             }
             logger.debug("-----------------------------------------------------")
         }
-        return V1YtelsePerMaaned()
+        //TODO: Se om det er mulig å fjerne denne da den skaper usikkerhet om det har blitt laget en V1YtelsePerMaaned
+        return V1YtelsePerMaaned().also { logger.info("Klarte ikke å generere V1YtelsePerMaaned; gir en tom ytelse tilbake") }
     }
 
     /**
@@ -303,23 +311,22 @@ object PrefillP2xxxPensjon {
      *  OBS – fra år 2021 kan det bli aktuelt med årlige utbetalinger, pga da kan brukere få utbetalt kap 20-pensjoner med veldig små beløp (ingen nedre grense)
      *  4.1.9.5.1  nei
      */
-    private fun createYtelseItemBelop(ytelsePrMnd: V1YtelsePerMaaned, ytelsekomp: List<V1Ytelseskomponent>): List<BeloepItem> {
+    private fun createYtelseItemBelop(ytelsePrMnd: V1YtelsePerMaaned, sakType: SakType?): List<BeloepItem> {
         logger.debug("4.1.9         Beløp")
-        return ytelsekomp.map {
-            BeloepItem(
-                    //4.1.9.1
-                    beloep = it.belopTilUtbetaling.toString(),
+        return listOf( BeloepItem(
+                //4.1.9.1
+                beloep = ytelsePrMnd.belop.toString(),
 
-                    //4.1.9.2
-                    valuta = "NOK",
+                //4.1.9.2
+                valuta = "NOK",
 
-                    //4.1.9.3
-                    gjeldendesiden = createGjeldendesiden(ytelsePrMnd),
+                //4.1.9.3
+                gjeldendesiden = createGjeldendesiden(ytelsePrMnd),
 
-                    //4.1.9.4
-                    betalingshyppighetytelse = createBetalingshyppighet(),
+                //4.1.9.4
+                betalingshyppighetytelse = Betalingshyppighet.maaned_12_per_aar
             )
-        }
+        )
     }
 
     /**
@@ -417,7 +424,7 @@ object PrefillP2xxxPensjon {
      *  Her skal vises status på den sist behandlede ytelsen, dvs om kravet er blitt avslått, innvilget eller er under behandling.
      *  Hvis bruker mottar en løpende ytelse, skal det alltid vises Innvilget.
      */
-    private fun createPensionStatus(pensak: V1Sak): String {
+    fun createPensionStatus(pensak: V1Sak): String {
         logger.debug("4.1.3         Status")
         return mapSakstatus(pensak.status)
     }
@@ -430,7 +437,7 @@ object PrefillP2xxxPensjon {
 
         //valider pensjoninformasjon,
         return try {
-            val meldingOmPensjon = populerMeldinOmPensjon(
+            val meldingOmPensjon: MeldingOmPensjon = populerMeldinOmPensjon(
                 prefillData.bruker.norskIdent,
                 prefillData.penSaksnummer,
                 sak,

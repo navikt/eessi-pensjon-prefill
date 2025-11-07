@@ -4,17 +4,21 @@ import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.UnsecuredWebMvcTestLauncher
-import no.nav.eessi.pensjon.eux.model.BucType.*
+import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_02
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.integrationtest.IntegrasjonsTestConfig
 import no.nav.eessi.pensjon.kodeverk.KodeverkClient
+import no.nav.eessi.pensjon.kodeverk.Postnummer
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
 import no.nav.eessi.pensjon.personoppslag.pdl.model.AktoerId
-import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe
-import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe.*
+import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe.AKTORID
+import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe.FOLKEREGISTERIDENT
 import no.nav.eessi.pensjon.personoppslag.pdl.model.NorskIdent
+import no.nav.eessi.pensjon.prefill.KrrService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
+import no.nav.eessi.pensjon.prefill.models.DigitalKontaktinfo
 import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
 import org.springframework.beans.factory.annotation.Autowired
@@ -48,6 +52,9 @@ class SedPrefillPDLIntegrationSpringTest {
     @MockkBean
     lateinit var personService: PersonService
 
+    @MockkBean
+    lateinit var krrService: KrrService
+
     @Autowired
     private lateinit var mockMvc: MockMvc
 
@@ -66,14 +73,28 @@ class SedPrefillPDLIntegrationSpringTest {
         fun restTemplate(): RestTemplate = mockk()
     }
 
+    @BeforeEach
+    fun setUp() {
+        every { kodeverkClient.finnLandkode(any()) } returns "QX"
+        every { kodeverkClient.hentPostSted(any()) } returns Postnummer("1068", "SØRUMSAND")
+
+    }
+
 
     @Test
     @Throws(Exception::class)
     fun `prefill sed P2000 alder return valid sedjson`() {
         every { pensjonsinformasjonOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns PrefillTestHelper.readXMLresponse("/pensjonsinformasjon/krav/P2000-AP-UP-21337890.xml")
-        every { kodeverkClient.finnLandkode(any()) } returns "QX"
         every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith(true, fnr = FNR_VOKSEN, aktoerid = AKTOER_ID)
+        every { krrService.hentPersonerFraKrr(any()) } returns DigitalKontaktinfo(
+            epostadresse = "melleby11@melby.no",
+            aktiv = true,
+            kanVarsles = true,
+            reservert = false,
+            mobiltelefonnummer = "11111111",
+            personident = FNR_VOKSEN
+        )
 
         val apijson = dummyApijson(sedType = SedType.P2000, sakid = "21337890", aktoerId = AKTOER_ID)
 
@@ -87,51 +108,75 @@ class SedPrefillPDLIntegrationSpringTest {
         val actual = result.response.getContentAsString(charset("UTF-8"))
 
         val excpected = """
-            {
-              "sed" : "P2000",
-              "sedGVer" : "4",
-              "sedVer" : "2",
-              "nav" : {
-                "eessisak" : [ {
-                  "institusjonsid" : "NO:noinst002",
+        {
+          "sed" : "P2000",
+          "nav" : {
+            "eessisak" : [ {
+              "institusjonsid" : "NO:noinst002",
+              "institusjonsnavn" : "NOINST002, NO INST002, NO",
+              "saksnummer" : "21337890",
+              "land" : "NO"
+            } ],
+            "bruker" : {
+              "person" : {
+                "pin" : [ {
                   "institusjonsnavn" : "NOINST002, NO INST002, NO",
-                  "saksnummer" : "21337890",
+                  "institusjonsid" : "NO:noinst002",
+                  "identifikator" : "11067122781",
                   "land" : "NO"
+                }, {
+                  "identifikator" : "123123123",
+                  "land" : "QX"
                 } ],
-                "bruker" : {
-                  "person" : {
-                    "pin" : [ {
-                      "institusjonsnavn" : "NOINST002, NO INST002, NO",
-                      "institusjonsid" : "NO:noinst002",
-                      "identifikator" : "11067122781",
-                      "land" : "NO"
-                    } ],
-                    "statsborgerskap" : [ {
-                      "land" : "QX"
-                    } ],
-                    "etternavn" : "Testesen",
-                    "fornavn" : "Test",
-                    "kjoenn" : "M",
-                    "foedselsdato" : "1988-07-12"
-                  },
-                  "adresse" : {
-                    "gate" : "Oppoverbakken 66",
-                    "by" : "SØRUMSAND",
-                    "postnummer" : "1920",
-                    "land" : "NO"
-                  }
-                },
-                "krav" : {
-                  "dato" : "2018-06-28"
+                "statsborgerskap" : [ {
+                  "land" : "QX"
+                } ],
+                "etternavn" : "Testesen",
+                "fornavn" : "Test",
+                "kjoenn" : "M",
+                "foedselsdato" : "1988-07-12",
+                "sivilstand" : [ {
+                  "fradato" : "2000-10-01",
+                  "status" : "enslig"
+                } ],
+                "kontakt" : {
+                  "telefon" : [ {
+                    "type" : "mobil",
+                    "nummer" : "11111111"
+                  } ],
+                  "email" : [ {
+                    "adresse" : "melleby11@melby.no"
+                  } ]
                 }
               },
-              "pensjon" : {
-                "kravDato" : {
-                  "dato" : "2018-06-28"
-                }
+              "adresse" : {
+                "gate" : "Oppoverbakken 66",
+                "by" : "SØRUMSAND",
+                "postnummer" : "1920",
+                "land" : "NO"
               }
-            }         
+            },
+            "krav" : {
+              "dato" : "2018-06-28"
+            }
+          },
+          "pensjon" : {
+            "ytelser" : [ {
+              "mottasbasertpaa" : "botid",
+              "ytelse" : "10",
+              "status" : "01"
+            } ],
+            "kravDato" : {
+              "dato" : "2018-06-28"
+            },
+            "etterspurtedokumenter" : "P5000 and P6000"
+          },
+          "sedGVer" : "4",
+          "sedVer" : "2"
+        }         
         """.trimIndent()
+
+        println("**** $actual")
         JSONAssert.assertEquals(excpected, actual , true)
 
     }
@@ -146,9 +191,10 @@ class SedPrefillPDLIntegrationSpringTest {
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith(true, "Lever", "Gjenlev", FNR_VOKSEN, AKTOER_ID)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_2)) } returns PersonPDLMock.createWith(true, "Avdød", "Død", FNR_VOKSEN_2, AKTOER_ID_2, true)
 
-        every { pensjonsinformasjonOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns PrefillTestHelper.readXMLresponse("/pensjonsinformasjon/krav/P2100-GL-UTL-INNV.xml")
+        every { krrService.hentPersonerFraKrr(eq(FNR_VOKSEN)) } returns DigitalKontaktinfo(epostadresse = "melleby11@melby.no", true, true, false, "22603511", FNR_VOKSEN)
+        every { krrService.hentPersonerFraKrr(eq(FNR_VOKSEN_2)) } returns DigitalKontaktinfo(epostadresse = "melleby11@melby.no", true, true, false, "22603522", FNR_VOKSEN_2)
 
-        every { kodeverkClient.finnLandkode(any()) } returns "QX"
+        every { pensjonsinformasjonOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns PrefillTestHelper.readXMLresponse("/pensjonsinformasjon/krav/P2100-GL-UTL-INNV.xml")
 
         val apijson = dummyApijson(sakid = "22874955", aktoerId = AKTOER_ID, sedType = SedType.P2100, buc = P_BUC_02, fnravdod = FNR_VOKSEN_2)
 
@@ -160,6 +206,7 @@ class SedPrefillPDLIntegrationSpringTest {
             .andReturn()
 
         val actual = result.response.getContentAsString(charset("UTF-8"))
+        println("**** $actual")
 
         val expected = """
             {
@@ -180,6 +227,9 @@ class SedPrefillPDLIntegrationSpringTest {
                       "institusjonsid" : "NO:noinst002",
                       "identifikator" : "22117320034",
                       "land" : "NO"
+                    }, {
+                      "identifikator" : "123123123",
+                      "land" : "QX"
                     } ],
                     "statsborgerskap" : [ {
                       "land" : "QX"
@@ -187,7 +237,20 @@ class SedPrefillPDLIntegrationSpringTest {
                     "etternavn" : "Død",
                     "fornavn" : "Avdød",
                     "kjoenn" : "M",
-                    "foedselsdato" : "1921-07-12"
+                    "foedselsdato" : "1921-07-12",
+                    "sivilstand" : [ {
+                      "fradato" : "2000-10-01",
+                      "status" : "enslig"
+                    } ],
+                    "kontakt" : {
+                      "telefon" : [ {
+                        "type" : "mobil",
+                        "nummer" : "22603511"
+                      } ],
+                      "email" : [ {
+                        "adresse" : "melleby11@melby.no"
+                      } ]
+                    }
                   },
                   "adresse" : {
                     "gate" : "Oppoverbakken 66",
@@ -205,6 +268,9 @@ class SedPrefillPDLIntegrationSpringTest {
                       "institusjonsid" : "NO:noinst002",
                       "identifikator" : "11067122781",
                       "land" : "NO"
+                    }, {
+                      "identifikator" : "123123123",
+                      "land" : "QX"
                     } ],
                     "statsborgerskap" : [ {
                       "land" : "QX"
@@ -212,7 +278,20 @@ class SedPrefillPDLIntegrationSpringTest {
                     "etternavn" : "Gjenlev",
                     "fornavn" : "Lever",
                     "kjoenn" : "M",
-                    "foedselsdato" : "1988-07-12"
+                    "foedselsdato" : "1988-07-12",
+                    "sivilstand" : [ {
+                      "fradato" : "2000-10-01",
+                      "status" : "enslig"
+                    } ],
+                    "kontakt" : {
+                      "telefon" : [ {
+                        "type" : "mobil",
+                        "nummer" : "22603511"
+                      } ],
+                      "email" : [ {
+                        "adresse" : "melleby11@melby.no"
+                      } ]
+                    }
                   },
                   "adresse" : {
                     "gate" : "Oppoverbakken 66",
@@ -231,60 +310,76 @@ class SedPrefillPDLIntegrationSpringTest {
 
     @Test
     @Throws(Exception::class)
-    fun `prefill sed P2000 alder return valid sedjson checkk tps to pdl`() {
+    fun `prefill sed P2000 alder return valid sedjson check tps to pdl`() {
         every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith()
+        every { krrService.hentPersonerFraKrr(any()) } returns DigitalKontaktinfo(epostadresse = "melleby11@melby.no", true, true, false, "11111111", FNR_VOKSEN)
 
         every {pensjonsinformasjonOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java))  } returns PrefillTestHelper.readXMLresponse("/pensjonsinformasjon/krav/P2000-AP-UP-21337890.xml")
-        every { kodeverkClient.finnLandkode(any()) } returns "QX"
 
         val apijson = dummyApijson(sedType = SedType.P2000, sakid = "21337890", aktoerId = AKTOER_ID)
 
         val validResponse = """
-            {
-              "sed" : "P2000",
-              "sedGVer" : "4",
-              "sedVer" : "2",
-              "nav" : {
-                "eessisak" : [ {
-                  "institusjonsid" : "NO:noinst002",
+        {
+          "sed" : "P2000",
+          "nav" : {
+            "eessisak" : [ {
+              "institusjonsid" : "NO:noinst002",
+              "institusjonsnavn" : "NOINST002, NO INST002, NO",
+              "saksnummer" : "21337890",
+              "land" : "NO"
+            } ],
+            "bruker" : {
+              "person" : {
+                "pin" : [ {
                   "institusjonsnavn" : "NOINST002, NO INST002, NO",
-                  "saksnummer" : "21337890",
+                  "institusjonsid" : "NO:noinst002",
+                  "identifikator" : "3123",
                   "land" : "NO"
+                }, {
+                  "identifikator" : "123123123",
+                  "land" : "QX"
                 } ],
-                "bruker" : {
-                  "person" : {
-                    "pin" : [ {
-                      "institusjonsnavn" : "NOINST002, NO INST002, NO",
-                      "institusjonsid" : "NO:noinst002",
-                      "identifikator" : "3123",
-                      "land" : "NO"
-                    } ],
-                    "statsborgerskap" : [ {
-                      "land" : "QX"
-                    } ],
-                    "etternavn" : "Testesen",
-                    "fornavn" : "Test",
-                    "kjoenn" : "M",
-                    "foedselsdato" : "1988-07-12"
-                  },
-                  "adresse" : {
-                    "gate" : "Oppoverbakken 66",
-                    "by" : "SØRUMSAND",
-                    "postnummer" : "1920",
-                    "land" : "NO"
-                  }
-                },
-                "krav" : {
-                  "dato" : "2018-06-28"
+                "statsborgerskap" : [ {
+                  "land" : "QX"
+                } ],
+                "etternavn" : "Testesen",
+                "fornavn" : "Test",
+                "kjoenn" : "M",
+                "foedselsdato" : "1988-07-12",
+                "sivilstand" : [ {
+                  "fradato" : "2000-10-01",
+                  "status" : "enslig"
+                } ],
+                "kontakt" : {
+                  "telefon" : [ {
+                    "type" : "mobil",
+                    "nummer" : "11111111"
+                  } ],
+                  "email" : [ {
+                    "adresse" : "melleby11@melby.no"
+                  } ]
                 }
               },
-              "pensjon" : {
-                "kravDato" : {
-                  "dato" : "2018-06-28"
-                }
+              "adresse" : {
+                "gate" : "Oppoverbakken 66",
+                "by" : "SØRUMSAND",
+                "postnummer" : "1920",
+                "land" : "NO"
               }
+            },
+            "krav" : {
+              "dato" : "2018-06-28"
             }
+          },
+          "pensjon" : {
+            "kravDato" : {
+              "dato" : "2018-06-28"
+            }
+          },
+          "sedGVer" : "4",
+          "sedVer" : "2"
+        }
         """.trimIndent()
 
         val result = mockMvc.perform(post("/sed/prefill")
@@ -295,7 +390,7 @@ class SedPrefillPDLIntegrationSpringTest {
             .andReturn()
 
         val response = result.response.getContentAsString(charset("UTF-8"))
-        JSONAssert.assertEquals(response, validResponse, false)
+        JSONAssert.assertEquals(validResponse, response, false)
 
     }
 

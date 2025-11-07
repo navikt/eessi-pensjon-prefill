@@ -8,12 +8,12 @@ import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonoppslagException
 import no.nav.eessi.pensjon.personoppslag.pdl.model.*
-import no.nav.eessi.pensjon.prefill.LagPDLPerson.Companion.lagPerson
-import no.nav.eessi.pensjon.prefill.LagPDLPerson.Companion.medAdresse
-import no.nav.eessi.pensjon.prefill.LagPDLPerson.Companion.medBarn
-import no.nav.eessi.pensjon.prefill.LagPDLPerson.Companion.medForeldre
+import no.nav.eessi.pensjon.prefill.LagPdlPerson.Companion.lagPerson
+import no.nav.eessi.pensjon.prefill.LagPdlPerson.Companion.medAdresse
+import no.nav.eessi.pensjon.prefill.LagPdlPerson.Companion.medBarn
+import no.nav.eessi.pensjon.prefill.LagPdlPerson.Companion.medForeldre
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
-import no.nav.eessi.pensjon.shared.api.PersonId
+import no.nav.eessi.pensjon.shared.api.PersonInfo
 import no.nav.eessi.pensjon.shared.person.FodselsnummerGenerator
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -50,15 +50,10 @@ internal class PersonDataServiceTest {
 
     @Test
     fun `test henting av forsikretperson som feiler`() {
-
+        val data = PrefillDataModelMother.initialPrefillDataModel(SedType.P2000, FNR_VOKSEN, SAK_ID, euxCaseId = EUX_RINA)
         every { personService.hentPerson(any()) } throws PersonoppslagException("Fant ikke person", "not_found")
 
-        val data = PrefillDataModelMother.initialPrefillDataModel(SedType.P2000, FNR_VOKSEN, SAK_ID, euxCaseId = EUX_RINA)
-
-        assertThrows<ResponseStatusException> {
-            persondataService.hentPersonData(data)
-        }
-
+        assertThrows<ResponseStatusException> { persondataService.hentPersonData(data) }
         verify ( exactly = 1 ) { personService.hentPerson(any())  }
 
     }
@@ -66,16 +61,14 @@ internal class PersonDataServiceTest {
     @Test
     fun `test henting av forsikretperson for persondatacollection`() {
         val mockPerson = lagPerson(FNR_VOKSEN)
+        val data = PrefillDataModelMother.initialPrefillDataModel(SedType.P2000, FNR_VOKSEN, SAK_ID, euxCaseId = EUX_RINA)
 
         every { personService.hentPerson(any()) } returns mockPerson
-
-        val data = PrefillDataModelMother.initialPrefillDataModel(SedType.P2000, FNR_VOKSEN, SAK_ID, euxCaseId = EUX_RINA)
 
         val result = persondataService.hentPersonData(data)
 
         assertNull(result.ektefellePerson)
-        assertNull(result.sivilstandstype)
-        assertEquals(emptyList<Person>(), result.barnPersonList)
+        assertEquals(emptyList<PdlPerson>(), result.barnPersonList)
         assertEquals(mockPerson, result.gjenlevendeEllerAvdod)
         assertEquals(mockPerson, result.forsikretPerson)
 
@@ -91,16 +84,14 @@ internal class PersonDataServiceTest {
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns gjenlev
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_2)) } returns avdod
 
-        val data = PrefillDataModelMother.initialPrefillDataModel(SedType.P2000, FNR_VOKSEN, SAK_ID, euxCaseId = EUX_RINA, avdod = PersonId(
-            FNR_VOKSEN_2, AKTOER_ID_2
-        )
+        val data = PrefillDataModelMother.initialPrefillDataModel(SedType.P2000, FNR_VOKSEN, SAK_ID, euxCaseId = EUX_RINA, avdod = PersonInfo(
+            FNR_VOKSEN_2, AKTOER_ID_2)
         )
 
         val result = persondataService.hentPersonData(data)
 
         assertNull(result.ektefellePerson)
-        assertNull(result.sivilstandstype)
-        assertEquals(emptyList<Person>(), result.barnPersonList)
+        assertEquals(emptyList<PdlPerson>(), result.barnPersonList)
         assertEquals(avdod, result.gjenlevendeEllerAvdod)
         assertEquals(gjenlev, result.forsikretPerson)
 
@@ -120,7 +111,6 @@ internal class PersonDataServiceTest {
         val result = persondataService.hentPersonData(data)
 
         assertNull(result.ektefellePerson)
-        assertNull(result.sivilstandstype)
         assertEquals(barn, result.barnPersonList.firstOrNull())
         assertEquals(forelder, result.gjenlevendeEllerAvdod)
         assertEquals(forelder, result.forsikretPerson)
@@ -131,9 +121,8 @@ internal class PersonDataServiceTest {
 
     @Test
     fun `test henting av forsikretperson med barn med persondatacollection`() {
-
-        val barn1fnr = FodselsnummerGenerator.generateFnrForTest(12)
-        val barn2fnr = FodselsnummerGenerator.generateFnrForTest(19)
+        val barn1fnr = fnrAlder(12)
+        val barn2fnr = fnrAlder(19)
 
         val forelder = lagPerson(FNR_VOKSEN, "Christopher", "Robin").medBarn(barn1fnr).medBarn(barn2fnr)
         val barn1 = lagPerson(barn2fnr, "Ole", "Brum").medForeldre(forelder)
@@ -148,7 +137,6 @@ internal class PersonDataServiceTest {
         val result = persondataService.hentPersonData(data)
 
         assertNull(result.ektefellePerson)
-        assertNull(result.sivilstandstype)
         assertEquals(barn1, result.barnPersonList.firstOrNull())
         assertEquals(2, result.barnPersonList.size)
         assertEquals(forelder, result.gjenlevendeEllerAvdod)
@@ -160,8 +148,8 @@ internal class PersonDataServiceTest {
 
     @Test
     fun `Innhenting av forsikret person med barn under 18 aar returnerer persondatacollection`() {
-        val barn1fnr = FodselsnummerGenerator.generateFnrForTest(12)
-        val barn2fnr = FodselsnummerGenerator.generateFnrForTest(19)
+        val barn1fnr = fnrAlder(12)
+        val barn2fnr = fnrAlder(19)
 
         val forelder = lagPerson(NPID_VOKSEN, "Christopher", "Robin").medBarn(barn1fnr).medBarn(barn2fnr)
         val barn1 = lagPerson(barn2fnr, "Ole", "Brum").medForeldre(forelder)
@@ -176,7 +164,6 @@ internal class PersonDataServiceTest {
         val result = persondataService.hentPersonData(data)
 
         assertNull(result.ektefellePerson)
-        assertNull(result.sivilstandstype)
         assertEquals(barn1, result.barnPersonList.firstOrNull())
         assertEquals(2, result.barnPersonList.size)
         assertEquals(forelder, result.gjenlevendeEllerAvdod)
@@ -187,9 +174,8 @@ internal class PersonDataServiceTest {
     }
     @Test
     fun `test henting av forsikretperson med avdod ektefelle for persondatacollection`() {
-
-        val barn1fnr = FodselsnummerGenerator.generateFnrForTest(12)
-        val barn2fnr = FodselsnummerGenerator.generateFnrForTest(19)
+        val barn1fnr = fnrAlder(12)
+        val barn2fnr = fnrAlder(19)
 
         val forelder = lagPerson(FNR_VOKSEN, "Christopher", "Robin").medBarn(barn1fnr).medBarn(barn2fnr)
         val barn1 = lagPerson(barn2fnr, "Ole", "Brum").medForeldre(forelder)
@@ -204,7 +190,6 @@ internal class PersonDataServiceTest {
         val result = persondataService.hentPersonData(data)
 
         assertNull( result.ektefellePerson)
-        assertNull( result.sivilstandstype)
         assertEquals(barn1, result.barnPersonList.firstOrNull())
         assertEquals(2, result.barnPersonList.size)
         assertEquals(forelder, result.gjenlevendeEllerAvdod)
@@ -214,18 +199,15 @@ internal class PersonDataServiceTest {
 
     }
 
-
     @Test
     fun `test henting komplett familie med barn for persondatacollection`() {
-
-        //generer fnr
-        val farfnr = FodselsnummerGenerator.generateFnrForTest(42)
-        val morfnr = FodselsnummerGenerator.generateFnrForTest(41)
-        val barn1 = FodselsnummerGenerator.generateFnrForTest(11)
-        val barn2 = FodselsnummerGenerator.generateFnrForTest(13)
+        val farfnr = fnrAlder(42)
+        val morfnr = fnrAlder(41)
+        val barn1 = fnrAlder(11)
+        val barn2 = fnrAlder(13)
 
         //far og mor i pair
-        val pair = LagPDLPerson.createPersonMedEktefellePartner(farfnr, morfnr, Sivilstandstype.GIFT)
+        val pair = LagPdlPerson.createPersonMedEktefellePartner(farfnr, morfnr, Sivilstandstype.GIFT)
 
         //far og mor med barn
         val far = pair.first.medAdresse("STORGATA").medBarn(barn1).medBarn(barn2)
@@ -245,7 +227,6 @@ internal class PersonDataServiceTest {
         val result = persondataService.hentPersonData(data)
 
         assertEquals(mor, result.ektefellePerson)
-        assertEquals(Sivilstandstype.GIFT, result.sivilstandstype)
         assertEquals(listOf(barnet, barnto), result.barnPersonList)
         assertEquals(far, result.gjenlevendeEllerAvdod)
         assertEquals(far, result.forsikretPerson)
@@ -253,6 +234,9 @@ internal class PersonDataServiceTest {
         verify ( exactly = 4 ) { personService.hentPerson(any())  }
 
     }
+
+    //genererer fnr
+    private fun fnrAlder(alder: Int): String = FodselsnummerGenerator.generateFnrForTest(alder)
 
     @Test
     fun `Gitt at fnr for bruker ikke finnes men npid finnes så forsøker vi å hente npid for aktoerId`() {

@@ -1,14 +1,6 @@
 package no.nav.eessi.pensjon.prefill.sed
 
-import no.nav.eessi.pensjon.eux.model.sed.Adresse
-import no.nav.eessi.pensjon.eux.model.sed.AnmodningOmTilleggsInfo
-import no.nav.eessi.pensjon.eux.model.sed.Bruker
-import no.nav.eessi.pensjon.eux.model.sed.EessisakItem
-import no.nav.eessi.pensjon.eux.model.sed.Nav
-import no.nav.eessi.pensjon.eux.model.sed.P8000
-import no.nav.eessi.pensjon.eux.model.sed.P8000Pensjon
-import no.nav.eessi.pensjon.eux.model.sed.Person
-import no.nav.eessi.pensjon.eux.model.sed.PinItem
+import no.nav.eessi.pensjon.eux.model.sed.*
 import no.nav.eessi.pensjon.pensjonsinformasjon.KravHistorikkHelper.hentKravhistorikkForGjenlevende
 import no.nav.eessi.pensjon.pensjonsinformasjon.models.EPSaktype
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
@@ -48,12 +40,10 @@ class PrefillP8000(private val prefillSed: PrefillSed) {
             logger.info("Prefill P8000 forenklet preutfylling med gjenlevende, Ferdig.")
             sedP8000(eessielm, avDodBruker?.person, avDodBruker?.adresse,  prefillData, utfyllAnnenperson(gjenlevendeBruker))
         }
-
     }
 
     private fun sedP8000(eessielm: List<EessisakItem>?, forsikretPerson: Person?, adresse: Adresse?, prefillData: PrefillDataModel, annenPerson: Bruker?): P8000 {
         logger.info("forsikretPerson: ${forsikretPerson != null} annenPerson: ${annenPerson != null}"  )
-        val forsikretPersonPin = forsikretPerson?.pin?.firstOrNull()
         return P8000(
                 nav = Nav(
                         eessisak = eessielm,
@@ -63,13 +53,8 @@ class PrefillP8000(private val prefillSed: PrefillSed) {
                                         fornavn = forsikretPerson?.fornavn,
                                         foedselsdato = forsikretPerson?.foedselsdato,
                                         kjoenn = forsikretPerson?.kjoenn,
-                                        pin = listOf(
-                                                PinItem(
-                                                        identifikator = forsikretPersonPin?.identifikator,
-                                                        land = forsikretPersonPin?.land
-                                                )
-                                        )
-                                ),
+                                        pin = forsikretPerson?.pin,
+                                    kontakt = forsikretPerson?.kontakt),
                                 adresse = Adresse(
                                     postnummer = adresse?.postnummer,
                                     gate = adresse?.gate,

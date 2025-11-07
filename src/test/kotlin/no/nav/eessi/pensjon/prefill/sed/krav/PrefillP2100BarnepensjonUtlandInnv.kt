@@ -1,22 +1,19 @@
 package no.nav.eessi.pensjon.prefill.sed.krav
 
-import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.sed.Nav
 import no.nav.eessi.pensjon.eux.model.sed.SED
+import no.nav.eessi.pensjon.prefill.BasePrefillNav
 import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
-import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.prefill.models.PensjonCollection
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
-import no.nav.eessi.pensjon.prefill.person.PrefillPDLAdresse
-import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
 import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper
 import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper.lesPensjonsdataFraFil
-import no.nav.eessi.pensjon.shared.api.PersonId
+import no.nav.eessi.pensjon.shared.api.PersonInfo
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
 import no.nav.eessi.pensjon.shared.person.Fodselsnummer
 import no.nav.eessi.pensjon.shared.person.FodselsnummerGenerator
@@ -34,30 +31,20 @@ class PrefillP2100BarnepensjonUtlandInnv {
     private lateinit var prefillData: PrefillDataModel
     private lateinit var prefillSEDService: PrefillSEDService
 
-    private lateinit var  personDataCollection: PersonDataCollection
     private lateinit var  pensjonCollection: PensjonCollection
+    private lateinit var  personDataCollection: PersonDataCollection
 
     @BeforeEach
     fun setup() {
         personDataCollection = PersonPDLMock.createAvdodFamilie(personFnr, avdodPersonFnr)
 
-        val prefillNav = PrefillPDLNav(
-            prefillAdresse = mockk<PrefillPDLAdresse> {
-                every { hentLandkode(any()) } returns "NO"
-                every { createPersonAdresse(any()) } returns mockk()
-            },
-            institutionid = "NO:NAVAT02",
-            institutionnavn = "NOINST002, NO INST002, NO"
-        )
-
         val dataFromPEN = lesPensjonsdataFraFil("/pensjonsinformasjon/krav/BARNEP_KravUtland_ForeldreAvdod.xml")
-
 
         prefillData = PrefillDataModelMother.initialPrefillDataModel(
                 sedType = SedType.P2100,
                 pinId = personFnr,
                 penSaksnummer = pesysSaksnummer,
-                avdod = PersonId(avdodPersonFnr, "112233445566")
+                avdod = PersonInfo(avdodPersonFnr, "112233445566")
         ).apply {
             partSedAsJson["PersonInfo"] = PrefillTestHelper.readJsonResponse("/json/nav/other/person_informasjon_selvb.json")
             partSedAsJson["P4000"] = PrefillTestHelper.readJsonResponse("/json/nav/other/p4000_trygdetid_part.json")
@@ -65,13 +52,13 @@ class PrefillP2100BarnepensjonUtlandInnv {
         val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
         pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
 
-        prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav)
+        prefillSEDService = BasePrefillNav.createPrefillSEDService()
 
     }
 
     @Test
     fun `forventet korrekt utfylt P2100 uforepensjon med kap4 og 9`() {
-        val p2100 = prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection)
+        val p2100 = prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null)
 
         val p2100gjenlev = SED(
                 type = SedType.P2100,
@@ -86,7 +73,7 @@ class PrefillP2100BarnepensjonUtlandInnv {
 
     @Test
     fun `forventet korrekt utfylt P2100 uforepensjon med mockdata fra testfiler`() {
-        val p2100 = prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection)
+        val p2100 = prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null)
 
         assertEquals(null, p2100.nav?.barn)
 
@@ -105,7 +92,7 @@ class PrefillP2100BarnepensjonUtlandInnv {
         val pinitem = pinlist?.get(0)
         assertEquals(null, pinitem?.sektor)
         assertEquals("NOINST002, NO INST002, NO", pinitem?.institusjonsnavn)
-        assertEquals("NO:NAVAT02", pinitem?.institusjonsid)
+        assertEquals("NO:noinst002", pinitem?.institusjonsid)
         assertEquals(avdodPersonFnr, pinitem?.identifikator)
 
         assertEquals("BAMSE ULUR", p2100.pensjon?.gjenlevende?.person?.fornavn)

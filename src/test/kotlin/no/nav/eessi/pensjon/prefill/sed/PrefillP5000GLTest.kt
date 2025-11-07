@@ -1,22 +1,21 @@
 package no.nav.eessi.pensjon.prefill.sed
 
-import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.sed.P5000
+import no.nav.eessi.pensjon.prefill.BasePrefillNav
+import no.nav.eessi.pensjon.prefill.etterlatte.EtterlatteService
 import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
-import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
-import no.nav.eessi.pensjon.shared.api.PersonId
+import no.nav.eessi.pensjon.shared.api.PersonInfo
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
 import no.nav.eessi.pensjon.shared.person.Fodselsnummer
 import no.nav.eessi.pensjon.shared.person.FodselsnummerGenerator
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
-import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
@@ -34,28 +33,24 @@ class PrefillP5000GLTest {
 
     lateinit var p5000: P5000
     lateinit var prefillSEDService: PrefillSEDService
+    lateinit var etterlatteService: EtterlatteService
 
     @BeforeEach
     fun setup() {
         personDataCollection = PersonPDLMock.createAvdodFamilie(personFnr, avdodPersonFnr)
 
-        prefillNav = PrefillPDLNav(
-                prefillAdresse = mockk {
-                    every { hentLandkode(any()) } returns "NO"
-                    every { createPersonAdresse(any()) } returns mockk(relaxed = true)
-                },
-                institutionid = "NO:noinst002",
-                institutionnavn = "NOINST002, NO INST002, NO")
+        prefillNav = BasePrefillNav.createPrefillNav()
 
-        prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P5000, personFnr, penSaksnummer = pesysSaksnummer, avdod = PersonId(avdodPersonFnr, "112233445566"))
+        etterlatteService = EtterlatteService(mockk())
+        prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P5000, personFnr, penSaksnummer = pesysSaksnummer, avdod = PersonInfo(avdodPersonFnr, "112233445566"))
 
         val pensjonInformasjonService = PrefillTestHelper.lesPensjonsdataFraFil("/pensjonsinformasjon/krav/KravAlderEllerUfore_AP_UTLAND.xml")
         val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = pensjonInformasjonService)
 
         val pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
 
-        prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav)
-        p5000 = prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection) as P5000
+        prefillSEDService = BasePrefillNav.createPrefillSEDService()
+        p5000 = prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection, null) as P5000
     }
 
     @Test
@@ -73,14 +68,13 @@ class PrefillP5000GLTest {
         assertEquals(null, pinitem?.sektor)
         assertEquals(avdodPersonFnr, pinitem?.identifikator)
 
-        assertEquals("BAMSE ULUR", p5000.p5000Pensjon?.gjenlevende?.person?.fornavn)
-        assertEquals("DOLLY", p5000.p5000Pensjon?.gjenlevende?.person?.etternavn)
-        val navfnr2 = Fodselsnummer.fra(p5000.p5000Pensjon?.gjenlevende?.person?.pin?.get(0)?.identifikator!!)
+        assertEquals("BAMSE ULUR", p5000.pensjon?.gjenlevende?.person?.fornavn)
+        assertEquals("DOLLY", p5000.pensjon?.gjenlevende?.person?.etternavn)
+        val navfnr2 = Fodselsnummer.fra(p5000.pensjon?.gjenlevende?.person?.pin?.get(0)?.identifikator!!)
         assertEquals(65, navfnr2?.getAge())
-        assertEquals("K", p5000.p5000Pensjon?.gjenlevende?.person?.kjoenn)
+        assertEquals("K", p5000.pensjon?.gjenlevende?.person?.kjoenn)
 
-        assertNull( p5000.pensjon)
+        assertNotNull( p5000.pensjon)
     }
-
 }
 

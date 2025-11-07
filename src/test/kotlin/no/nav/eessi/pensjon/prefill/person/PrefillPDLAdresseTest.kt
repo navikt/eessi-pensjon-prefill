@@ -6,7 +6,7 @@ import ch.qos.logback.core.read.ListAppender
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.kodeverk.KodeverkClient
-import no.nav.eessi.pensjon.kodeverk.PostnummerService
+import no.nav.eessi.pensjon.kodeverk.Postnummer
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
 import no.nav.eessi.pensjon.personoppslag.pdl.model.*
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
@@ -36,14 +36,14 @@ class PrefillPDLAdresseTest{
     fun beforeStart() {
         debugLogger.addAppender(listAppender)
         listAppender.start()
-        prefillAdresse = PrefillPDLAdresse(PostnummerService(), kodeverkClient, personService)
+        prefillAdresse = PrefillPDLAdresse(kodeverkClient, personService)
+        every { kodeverkClient.hentPostSted(any()) } returns Postnummer("0123", "OSLO")
     }
 
     @AfterEach
     fun after() {
         listAppender.stop()
     }
-
 
     @Test
     fun `create personAdresse`() {
@@ -76,9 +76,9 @@ class PrefillPDLAdresseTest{
         val person = PersonPDLMock.createWith()
             .medBeskyttelse(AdressebeskyttelseGradering.FORTROLIG)
 
-        val acual = prefillAdresse.createPersonAdresse(person)
+        val actual = prefillAdresse.createPersonAdresse(person)
 
-        assertEquals(null, acual)
+        assertEquals(null, actual)
     }
 
     @Test
@@ -86,15 +86,14 @@ class PrefillPDLAdresseTest{
         val person = PersonPDLMock.createWith()
             .medBeskyttelse(AdressebeskyttelseGradering.STRENGT_FORTROLIG)
 
-        val acual = prefillAdresse.createPersonAdresse(person)
+        val actual = prefillAdresse.createPersonAdresse(person)
 
-        assertEquals(null, acual)
+        assertEquals(null, actual)
     }
 
 
     @Test
     fun `utfylling av doedsboAdresseMedLinjeskiftOgToTegnsLandkode`() {
-
         val person = PersonPDLMock.createWith(
             landkoder = true,
             fnr = "123123123",
@@ -123,6 +122,7 @@ class PrefillPDLAdresseTest{
         assertEquals("SE", actual?.land)
 
     }
+
     @Test
     fun `utfylling av doedsboAdresse med personkontakt med identifikasjonsnummer og 3 tegn i landkode`() {
         val identifikasjonsnummer = "123553543543"
@@ -148,7 +148,6 @@ class PrefillPDLAdresseTest{
                 landkode = "NOR"
             ).medPersonSomKontakt(identifikasjonsnummer = identifikasjonsnummer)
         )
-
 
         val actual = prefillAdresse.createPersonAdresse(person)
 
@@ -450,7 +449,7 @@ class PrefillPDLAdresseTest{
 
     @Test
     fun `Det skal gies warning naar pdlPerson har flere enn gyldige adresser`() {
-        val mockPerson = mockk<Person>(relaxed = true)
+        val mockPerson = mockk<PdlPerson>(relaxed = true)
         val bostedsadresse = mockk<Bostedsadresse>(relaxed = true)
         every { mockPerson.bostedsadresse } returns bostedsadresse
 

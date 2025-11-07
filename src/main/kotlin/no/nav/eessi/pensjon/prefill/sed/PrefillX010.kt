@@ -1,22 +1,10 @@
 package no.nav.eessi.pensjon.prefill.sed
 
-import no.nav.eessi.pensjon.eux.model.sed.Bruker
-import no.nav.eessi.pensjon.eux.model.sed.Grunn
-import no.nav.eessi.pensjon.eux.model.sed.IkkeTilgjengelig
-import no.nav.eessi.pensjon.eux.model.sed.Informasjon
-import no.nav.eessi.pensjon.eux.model.sed.KommersenereItem
-import no.nav.eessi.pensjon.eux.model.sed.Kontekst
-import no.nav.eessi.pensjon.eux.model.sed.Navsak
-import no.nav.eessi.pensjon.eux.model.sed.Paaminnelse
-import no.nav.eessi.pensjon.eux.model.sed.Person
-import no.nav.eessi.pensjon.eux.model.sed.Svar
-import no.nav.eessi.pensjon.eux.model.sed.X009
-import no.nav.eessi.pensjon.eux.model.sed.X010
-import no.nav.eessi.pensjon.eux.model.sed.XNav
+import no.nav.eessi.pensjon.eux.model.sed.*
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.shared.api.BankOgArbeid
-import no.nav.eessi.pensjon.shared.api.PersonId
+import no.nav.eessi.pensjon.shared.api.PersonInfo
 import no.nav.eessi.pensjon.utils.toJson
 import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
 import org.slf4j.Logger
@@ -27,8 +15,8 @@ class PrefillX010(private val prefillNav: PrefillPDLNav)  {
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillX010::class.java) }
 
     fun prefill(penSaksnummer: String?,
-                bruker: PersonId,
-                avdod: PersonId?,
+                bruker: PersonInfo,
+                avdod: PersonInfo?,
                 brukerinformasjon: BankOgArbeid?,
                 personData: PersonDataCollection,
                 x009: X009? = null): X010 {
@@ -46,7 +34,7 @@ class PrefillX010(private val prefillNav: PrefillPDLNav)  {
             personData = personData,
             bankOgArbeid = brukerinformasjon,
         )
-        val gjenlevende = avdod?.let { prefillNav.createGjenlevende(personData.forsikretPerson) }
+        val gjenlevende = avdod?.let { prefillNav.createGjenlevende(personData.forsikretPerson, bruker) }
 
         val person =  gjenlevende?.person ?:  navsed.bruker?.person
 

@@ -7,6 +7,10 @@ import no.nav.eessi.pensjon.eux.model.sed.Krav
 import no.nav.eessi.pensjon.eux.model.sed.KravType
 import no.nav.eessi.pensjon.pensjonsinformasjon.models.KravArsak
 import no.nav.eessi.pensjon.pensjonsinformasjon.models.PenKravtype
+import no.nav.eessi.pensjon.personoppslag.pdl.model.Metadata
+import no.nav.eessi.pensjon.personoppslag.pdl.model.Sivilstand
+import no.nav.eessi.pensjon.personoppslag.pdl.model.Sivilstandstype
+import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
 import no.nav.eessi.pensjon.utils.createXMLCalendarFromString
@@ -40,9 +44,19 @@ class PrefillP2100GjenlevendeKravDatoTest {
         }
 
         val prefillNav = PrefillPDLNav(mockk(relaxed = true), "inst1", "instnavn")
+
         assertEquals(
             Krav(prefillData.kravDato, prefillData.kravType),
-            PrefillP2100(prefillNav).prefillSed(prefillData, mockk(relaxed = true), sak).second.nav?.krav
+            PrefillP2100(prefillNav).prefillSed(prefillData, mockk<PersonDataCollection>(relaxed = true)
+                .apply {
+                    every { gjenlevendeEllerAvdod?.sivilstand } returns listOf(
+                        Sivilstand(
+                            type = Sivilstandstype.GIFT,
+                            metadata = Metadata(emptyList(), false, "DOLLY", "Doll")
+                        )
+                    )
+                }, sak
+            ).second.nav?.krav
         )
     }
 

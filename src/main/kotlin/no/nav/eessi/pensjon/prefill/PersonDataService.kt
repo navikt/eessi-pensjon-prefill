@@ -22,11 +22,12 @@ class PersonDataService(private val personService: PersonService,
                         @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper.ForTest()) {
 
     private val logger: Logger = LoggerFactory.getLogger(PersonDataService::class.java)
+    private val secureLog = LoggerFactory.getLogger("secureLog")
 
-    private lateinit var HentPerson: MetricsHelper.Metric
+    private lateinit var hentPerson: MetricsHelper.Metric
 
     init {
-        HentPerson = metricsHelper.init("HentPerson", ignoreHttpCodes = listOf(HttpStatus.BAD_REQUEST))
+        hentPerson = metricsHelper.init("HentPerson", ignoreHttpCodes = listOf(HttpStatus.BAD_REQUEST))
     }
 
     fun <R : IdentGruppe> hentIdent(identTypeWanted: R, ident: Ident): Ident? {
@@ -36,13 +37,13 @@ class PersonDataService(private val personService: PersonService,
     fun hentPersonData(prefillData: PrefillDataModel) : PersonDataCollection {
         return when (prefillData.sedType) {
             //alle med barn
-            P2000, P2200, P2100, P6000 -> hentPersonerMedBarn(prefillData)
+            P2000, P2200, P2100, P6000 -> hentPersonerMedBarn(prefillData).also { secureLog.info("HentPersondata med barn: $it") }
             //alle uten barn
-            else -> hentPersoner(prefillData)
+            else -> hentPersoner(prefillData).also { secureLog.info("HentPersoner: $it") }
         }
     }
 
-    private fun personServiceHentPerson(ident: Ident): Person? {
+    private fun personServiceHentPerson(ident: Ident): PdlPerson? {
         return try {
             personService.hentPerson(ident) ?: throw NullPointerException()
         } catch (np: NullPointerException) {
@@ -62,7 +63,7 @@ class PersonDataService(private val personService: PersonService,
 
     //Henter inn alle personer fra ep-personoppslag  først før preutfylling
     private fun hentPersoner(prefillData: PrefillDataModel, fyllUtBarnListe: Boolean = false): PersonDataCollection {
-        return HentPerson.measure {
+        return hentPerson.measure {
             logger.info("Henter hovedperson/forsikret/gjenlevende")
             val forsikretPerson = personServiceHentPerson(bestemIdent(prefillData.bruker.norskIdent))
 
@@ -70,24 +71,24 @@ class PersonDataService(private val personService: PersonService,
                 logger.info("Henter avød person")
                 personService.hentPerson(bestemIdent(prefillData.avdod.norskIdent))
             } else {
-                logger.info("Ingen avdød så settes til forsikretPerson")
+                logger.info("Ingen avdød så gjenlevendeEllerAvdod settes til forsikretPerson")
                 forsikretPerson
             }
 
             val sivilstand = filterEktefelleRelasjon(forsikretPerson)
-            val sivilstandType = sivilstand?.type
+//            val sivilstandType = sivilstand?.type
 
             val ektefellePerson = hentHovedpersonEktefelle(sivilstand)
             val barnPerson = hentHovedpersonBarn(forsikretPerson, fyllUtBarnListe)
 
             logger.debug("gjenlevendeEllerAvdod: ${gjenlevendeEllerAvdod?.navn?.sammensattNavn }, forsikretPerson: ${forsikretPerson?.navn?.sammensattNavn }")
 
-            PersonDataCollection(gjenlevendeEllerAvdod = gjenlevendeEllerAvdod, forsikretPerson = forsikretPerson!!, ektefellePerson = ektefellePerson,  sivilstandstype =  sivilstandType, barnPersonList = barnPerson)
+            PersonDataCollection(gjenlevendeEllerAvdod = gjenlevendeEllerAvdod, forsikretPerson = forsikretPerson!!, ektefellePerson = ektefellePerson, barnPersonList = barnPerson).also { secureLog.info("PersonDataCollection: $it") }
         }
     }
 
     //sjekk for om sb har tilgang til person, null hvis ikke tilgang
-    private fun hentHovedpersonEktefelle(sivilstand: Sivilstand?): Person? {
+    private fun hentHovedpersonEktefelle(sivilstand: Sivilstand?): PdlPerson? {
         return try {
             logger.info("Henter ektefelle/partner (ekteType: ${sivilstand?.type})")
 
@@ -100,7 +101,7 @@ class PersonDataService(private val personService: PersonService,
     }
 
     //sjekk for om sb har tilgang til person, null hvis ikke tilgang
-    private fun hentHovedpersonBarn(hovedPerson: Person?, fyllUtBarnListe: Boolean): List<Person> {
+    private fun hentHovedpersonBarn(hovedPerson: PdlPerson?, fyllUtBarnListe: Boolean): List<PdlPerson> {
         return try {
             logger.info("Henter barn")
             if (hovedPerson == null || !fyllUtBarnListe) emptyList() else hentBarn(hovedPerson)
@@ -110,14 +111,14 @@ class PersonDataService(private val personService: PersonService,
         }
     }
 
-    private fun hentBarn(hovedPerson: Person): List<Person> {
+    private fun hentBarn(hovedPerson: PdlPerson): List<PdlPerson> {
         logger.info("henter ut relasjon BARN")
         val barnepinListe = hovedPerson.forelderBarnRelasjon
             .filter { it.relatertPersonsRolle == Familierelasjonsrolle.BARN }
             .map { it.relatertPersonsIdent }
                 .also { logger.info("prøver å hente ut alle barn på hovedperson: " + it.size) }
             .filterNotNull()
-            .onEach { barnPin ->  logger.info("Barn: ${Fodselsnummer.fra(barnPin)}") }
+            .onEach { barnPin ->  logger.info("Barn: ${Fodselsnummer.vaskFnr(barnPin)}") }
         logger.info("prøver å hente ut alle barn (filtrert under 18) på hovedperson: " + barnepinListe.size)
 
         return barnepinListe
@@ -128,7 +129,7 @@ class PersonDataService(private val personService: PersonService,
             }
     }
 
-    private fun filterEktefelleRelasjon(forsikretPerson: Person?): Sivilstand? {
+    private fun filterEktefelleRelasjon(forsikretPerson: PdlPerson?): Sivilstand? {
         //Det støttes kun EKTEFELLE, REGISTERT_PARTNER og SAMBOER er de eneste sivilstand som støttes i RINA-SED
         //Vi aventer med støtte for SAMBOER fra pensjon-pdl lager en ny løsning for samboere
         val validRelasjoner = listOf(Sivilstandstype.GIFT, Sivilstandstype.REGISTRERT_PARTNER)

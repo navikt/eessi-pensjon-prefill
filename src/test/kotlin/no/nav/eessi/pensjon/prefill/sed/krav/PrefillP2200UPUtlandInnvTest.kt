@@ -1,18 +1,16 @@
 package no.nav.eessi.pensjon.prefill.sed.krav
 
-import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.sed.Nav
 import no.nav.eessi.pensjon.eux.model.sed.SED
+import no.nav.eessi.pensjon.prefill.BasePrefillNav
 import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
-import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.prefill.models.PensjonCollection
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
-import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
 import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper.lesPensjonsdataFraFil
 import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper.readJsonResponse
@@ -24,7 +22,6 @@ import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
-
 class PrefillP2200UPUtlandInnvTest {
 
     private val personFnr = FodselsnummerGenerator.generateFnrForTest(68)
@@ -33,40 +30,30 @@ class PrefillP2200UPUtlandInnvTest {
 
     lateinit var prefillData: PrefillDataModel
 
-    lateinit var prefillNav: PrefillPDLNav
     lateinit var dataFromPEN: PensjonsinformasjonService
     private lateinit var prefillSEDService: PrefillSEDService
-    private lateinit var personDataCollection: PersonDataCollection
     private lateinit var pensjonCollection: PensjonCollection
+    private lateinit var personDataCollection: PersonDataCollection
 
     @BeforeEach
     fun setup() {
         personDataCollection = PersonPDLMock.createEnkelFamilie(personFnr, ekteFnr)
 
-        prefillNav = PrefillPDLNav(
-                prefillAdresse = mockk {
-                    every { hentLandkode(any()) } returns "NO"
-                    every { createPersonAdresse(any()) } returns mockk(relaxed = true)
-                },
-                institutionid = "NO:noinst002",
-                institutionnavn = "NOINST002, NO INST002, NO")
-
         dataFromPEN = lesPensjonsdataFraFil("/pensjonsinformasjon/krav/P2200-UP-INNV.xml")
-
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P2200, personFnr, penSaksnummer = pesysSaksnummer).apply {
             partSedAsJson["PersonInfo"] = readJsonResponse("/json/nav/other/person_informasjon_selvb.json")
             partSedAsJson["P4000"] = readJsonResponse("/json/nav/other/p4000_trygdetid_part.json")
         }
+
         val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
+
         pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
-
-        prefillSEDService = PrefillSEDService(EessiInformasjon(), prefillNav)
-
+        prefillSEDService = BasePrefillNav.createPrefillSEDService()
     }
 
     @Test
     fun `forventet korrekt utfylt P2200 uforepensjon med kap4 og 9`() {
-        val P2200 = prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection)
+        val P2200 = prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null)
 
         val P2200ufor = SED(
                 type = SedType.P2200,
@@ -81,7 +68,7 @@ class PrefillP2200UPUtlandInnvTest {
 
     @Test
     fun `forventet korrekt utfylt P2200 uforepensjon med mockdata fra testfiler`() {
-        val p2200 = prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection)
+        val p2200 = prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null)
 
         assertEquals(null, p2200.nav?.barn)
 

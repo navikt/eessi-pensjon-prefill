@@ -9,9 +9,7 @@ import no.nav.eessi.pensjon.utils.simpleFormat
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import no.nav.pensjon.v1.trygdetid.V1Trygdetid
 import no.nav.pensjon.v1.trygdetidliste.V1TrygdetidListe
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertFalse
-import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 
 class VedtakPensjonDataHelperTest {
@@ -119,8 +117,8 @@ class VedtakPensjonDataHelperTest {
 
         val sisteprmnd = VedtakPensjonDataHelper.hentSisteYtelsePerMaaned(pendata)
 
-        assertEquals("2017-05-01", sisteprmnd.fom.simpleFormat())
-        assertEquals("7191", sisteprmnd.belop.toString())
+        assertEquals("2017-05-01", sisteprmnd?.fom?.simpleFormat())
+        assertEquals("7191", sisteprmnd?.belop.toString())
         assertEquals(false, VedtakPensjonDataHelper.isMottarMinstePensjonsniva(pendata))
         assertEquals("7191", VedtakPensjonDataHelper.hentYtelseBelop(pendata))
 

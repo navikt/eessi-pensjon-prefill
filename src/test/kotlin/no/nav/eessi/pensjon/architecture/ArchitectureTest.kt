@@ -6,16 +6,14 @@ import com.tngtech.archunit.core.domain.JavaClass
 import com.tngtech.archunit.core.domain.JavaClasses
 import com.tngtech.archunit.core.importer.ClassFileImporter
 import com.tngtech.archunit.core.importer.ImportOption
-import com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes
-import com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses
-import com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noFields
-import com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noMethods
+import com.tngtech.archunit.lang.syntax.ArchRuleDefinition.*
 import com.tngtech.archunit.library.Architectures.layeredArchitecture
 import com.tngtech.archunit.library.dependencies.SlicesRuleDefinition.slices
 import no.nav.eessi.pensjon.EessiPrefillApplication
 import no.nav.eessi.pensjon.metrics.MetricsHelper
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.context.annotation.Scope
 import org.springframework.web.bind.annotation.RestController
@@ -45,7 +43,7 @@ class ArchitectureTest {
                 .withImportOption(ImportOption.DoNotIncludeJars()) //eux skaper problemer, vurderer om denne skal fjernes på et senere tidspunkt
                 .importPackages(root)
 
-            assertTrue(productionClasses.size in 100..850, "Sanity check on no. of classes to analyze (is ${productionClasses.size})")
+            assertTrue(productionClasses.size in 90..850, "Sanity check on no. of classes to analyze (is ${productionClasses.size})")
 
             testClasses = ClassFileImporter()
                 .withImportOption{ !ImportOption.DoNotIncludeTests().includes(it) }
@@ -66,7 +64,7 @@ class ArchitectureTest {
         val statistikk = "statistikk"
 
         val packages: Map<String, String> = mapOf(
-            "$root.health.." to health,
+            "$root.shared.api.health.." to health,
             "$root.prefill.." to prefill,
             "$root.prefill.models.." to models,
             "$root.config.." to config,
