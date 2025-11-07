@@ -69,6 +69,7 @@ class PensjonsinformasjonServiceIT {
         assertThrows<PensjoninformasjonException> {
             pensjonsinformasjonService.hentPensjonInformasjon(FNR_VOKSEN, AKTORID)
         }
+
     }
 
     @Test
