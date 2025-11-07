@@ -43,8 +43,8 @@ spec:
         - host: pdl-api.dev-fss-pub.nais.io
         - host: digdir-krr-proxy.intern.dev.nav.no
         - host: eessi-pensjon-fagmodul-q1.intern.dev.nav.no
-        - host: eessi-pensjon-onprem-proxy-q1.intern.dev.nav.no
         - host: saf-q1.dev-fss-pub.nais.io
+
   webproxy: true
   env:
     - name: SPRING_PROFILES_ACTIVE
@@ -66,7 +66,7 @@ spec:
     - name: KODEVERK_URL
       value: https://kodeverk-api.nav.no
     - name: AZURE_APP_KODEVERK_CLIENT_ID
-      value: kodeverk-api.nav.no
+      value: dev-gcp.team-rocket.kodeverk-api
 
 
     - name: ETTERLATTE_URL
