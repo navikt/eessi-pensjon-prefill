@@ -50,6 +50,7 @@ class PrefillControllerTest {
         prefillController = PrefillController(
             prefillService, auditLogger
         )
+
     }
 
     @Test
