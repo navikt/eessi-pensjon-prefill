@@ -6,6 +6,11 @@ metadata:
   labels:
     team: eessipensjon
 spec:
+  observability:
+    logging:
+      destinations:
+        - id: elastic
+        - id: loki
   kafka:
     pool: nav-dev
   envFrom:
