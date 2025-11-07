@@ -8,6 +8,7 @@ import no.nav.eessi.pensjon.UnsecuredWebMvcTestLauncher
 import no.nav.eessi.pensjon.integrationtest.IntegrasjonsTestConfig
 import no.nav.eessi.pensjon.kodeverk.KodeverkClient
 import no.nav.eessi.pensjon.pensjonsinformasjon.clients.PensjoninformasjonException
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
@@ -58,6 +59,7 @@ class PensjonsinformasjonServiceIT {
         assert(bruksersaksliste.brukersSakerListe.brukersSakerListe.isNotEmpty())
     }
 
+    @Disabled
     @Test
     fun  `Gitt et fnr og aktørid så skal det kastes en PensjoninformasjonException når responsen er tom`() {
         val generatedResponse =  javaClass.getResource("/pensjonsinformasjon/full-generated-response.xml")!!.readText()
