@@ -141,15 +141,14 @@ object PrefillP2xxxPensjon {
 
         avsluttHvisKunDenneKravTypeIHistorikk(sak, sedType, FORSTEG_BH)
 
-        val forsBehanBoUtlandTom = finnKravHistorikk(F_BH_BO_UTL, sak?.kravHistorikkListe).isNullOrEmpty()
-        val forsBehanMedUtlandTom = finnKravHistorikk(F_BH_MED_UTL, sak?.kravHistorikkListe).isNullOrEmpty()
-        val behandleKunUtlandTom = finnKravHistorikk(F_BH_KUN_UTL, sak?.kravHistorikkListe).isNullOrEmpty()
-        val sluttBehandlingUtlandTom = finnKravHistorikk(SLUTT_BH_UTL, sak?.kravHistorikkListe).isNullOrEmpty()
+        val forstegangsBehandBoUtlandErTom = finnKravHistorikk(F_BH_BO_UTL, sak?.kravHistorikkListe).isNullOrEmpty()
+        val forsBehandMedUtlandErTom = finnKravHistorikk(F_BH_MED_UTL, sak?.kravHistorikkListe).isNullOrEmpty()
+        val behandleKunUtlandErTom = finnKravHistorikk(F_BH_KUN_UTL, sak?.kravHistorikkListe).isNullOrEmpty()
+        val sluttBehandlingUtlandErTom = finnKravHistorikk(SLUTT_BH_UTL, sak?.kravHistorikkListe).isNullOrEmpty()
 
         val vedtakErTom = (vedtak == null)
 
-        if (forsBehanBoUtlandTom and forsBehanMedUtlandTom and behandleKunUtlandTom and vedtakErTom and sluttBehandlingUtlandTom) {
-            logger.debug("forsBehanBoUtlanTom: $forsBehanBoUtlandTom, forsBehanMedUtlanTom: $forsBehanMedUtlandTom, behandleKunUtlandTom: $behandleKunUtlandTom, sluttBehandlingUtlandTom: $sluttBehandlingUtlandTom")
+        if (forstegangsBehandBoUtlandErTom and forsBehandMedUtlandErTom and behandleKunUtlandErTom and vedtakErTom and sluttBehandlingUtlandErTom) {
             logger.warn("Kan ikke opprette krav-SED: $sedType da vedtak og førstegangsbehandling utland eller sluttbehandling mangler. Dersom det gjelder utsendelse til avtaleland, se egen rutine for utsendelse av SED på Navet.")
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Det finnes ingen iverksatte vedtak for førstegangsbehandling kun utland, eller sluttbehandling. Vennligst gå til EESSI-Pensjon fra vedtakskontekst.")
         }
@@ -163,14 +162,12 @@ object PrefillP2xxxPensjon {
     }
 
     fun validerGyldigVedtakEllerKravtypeOgArsak(sak:V1Sak?, sedType: SedType, vedtak: V1Vedtak?) {
-
         vedtak?.let {
             logger.info("Validering på vedtak bosatt utland ${it.isBoddArbeidetUtland}")
             if (it.isBoddArbeidetUtland) return
         }
         validerGyldigKravtypeOgArsak(sak, sedType, vedtak)
     }
-
 
     //felles kode for validering av P2000, P2100 og P2200
     fun avsluttHvisKunDenneKravTypeIHistorikk(sak: V1Sak?, sedType: SedType, kravType: PenKravtype) {
@@ -182,8 +179,7 @@ object PrefillP2xxxPensjon {
 
     private fun kunDenneKravTypeIHistorikk(sak: V1Sak?, kravType: PenKravtype): Boolean {
         val historikkForKravtype = finnKravHistorikk(kravType, sak?.kravHistorikkListe)
-        return (historikkForKravtype != null
-                && historikkForKravtype.size == sak?.kravHistorikkListe?.kravHistorikkListe?.size)
+        return (historikkForKravtype != null && historikkForKravtype.size == sak?.kravHistorikkListe?.kravHistorikkListe?.size)
     }
 
     fun opprettMeldingBasertPaaSaktype(kravHistorikk: V1KravHistorikk?, kravId: String?, saktype: String?): String {
@@ -212,17 +208,15 @@ object PrefillP2xxxPensjon {
 
     /**
      *  4.1.1
-     *
      *  Ytelser
      */
     private fun settYtelse(pensak: V1Sak?): String? {
-        logger.debug("4.1.1         Ytelser")
+        logger.debug("4.1.1    Ytelser")
         return mapSaktype(pensak?.sakType).also { logger.debug("Saktype fra Pesys: $it") }
     }
 
     /**
      *  4.1
-     *
      *  Informasjon om ytelser den forsikrede mottar
      */
     fun createYtelserItem(ytelsePrmnd: V1YtelsePerMaaned, pensak: V1Sak, personNr: String, penSaksnummer: String?, andreinstitusjonerItem: AndreinstitusjonerItem?): YtelserItem {
@@ -280,7 +274,6 @@ object PrefillP2xxxPensjon {
 
     /**
      *  4.1.7
-     *
      *  Start date of entitlement to benefits  - trenger ikke fylles ut
      */
     private fun createStartdatoForRettTilYtelse(pensak: V1Sak): String? {
@@ -331,7 +324,6 @@ object PrefillP2xxxPensjon {
 
     /**
      *  4.1.9.3
-     *
      *  Fra PSAK.
      *  Her fylles ut FOM-dato for hvert beløp i beløpshistorikk 5 år tilbake i tid.
      */
@@ -378,9 +370,8 @@ object PrefillP2xxxPensjon {
         logger.debug("4.1.10.1      Pensjon basertpå")
         val navfnr = Fodselsnummer.fra(personNr)
 
-        if (navfnr != null && navfnr.isDNumber()) {
-                return "01" // Botid
-        }
+        // Botid
+        if (navfnr != null && navfnr.isDNumber()) return "01"
 
         return when (pensak.sakType) {
             "ALDER" -> "01"
