@@ -12,13 +12,12 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Profile
 import org.springframework.http.HttpStatus
-import org.springframework.kafka.listener.RetryListener
-import org.springframework.resilience.annotation.Retryable
-//import org.springframework.retry.RetryCallback
-//import org.springframework.retry.RetryContext
-//import org.springframework.retry.RetryListener
-//import org.springframework.retry.annotation.Backoff
-//import org.springframework.retry.annotation.Retryable
+//import org.springframework.kafka.listener.RetryListener
+import org.springframework.retry.RetryCallback
+import org.springframework.retry.RetryContext
+import org.springframework.retry.RetryListener
+import org.springframework.retry.annotation.Backoff
+import org.springframework.retry.annotation.Retryable
 import org.springframework.stereotype.Component
 import org.springframework.web.server.ResponseStatusException
 

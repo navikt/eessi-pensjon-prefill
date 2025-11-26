@@ -1,5 +1,6 @@
 package no.nav.eessi.pensjon.config
 
+import com.fasterxml.jackson.databind.JsonSerializer
 import org.apache.kafka.clients.CommonClientConfigs
 import org.apache.kafka.clients.producer.ProducerConfig
 import org.apache.kafka.common.config.SslConfigs
@@ -12,7 +13,6 @@ import org.springframework.kafka.annotation.EnableKafka
 import org.springframework.kafka.core.DefaultKafkaProducerFactory
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.kafka.core.ProducerFactory
-import org.springframework.kafka.support.serializer.JsonSerializer
 
 @EnableKafka
 @Profile("prod", "test")
@@ -41,7 +41,7 @@ class KafkaConfig(
     @Bean
     fun kafkaTemplate(): KafkaTemplate<String, String> {
         val kafkaTemplate = KafkaTemplate(producerFactory())
-        kafkaTemplate.defaultTopic = automatiseringTopic
+        kafkaTemplate.setDefaultTopic(automatiseringTopic)
         return kafkaTemplate
     }
 

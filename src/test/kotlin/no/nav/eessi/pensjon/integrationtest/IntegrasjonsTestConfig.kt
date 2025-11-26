@@ -1,5 +1,6 @@
 package no.nav.eessi.pensjon.integrationtest
 
+import com.fasterxml.jackson.databind.JsonSerializer
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.clients.producer.ProducerConfig
 import org.apache.kafka.common.serialization.StringDeserializer
@@ -9,7 +10,6 @@ import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Primary
 import org.springframework.kafka.core.*
-import org.springframework.kafka.support.serializer.JsonSerializer
 import org.springframework.kafka.test.EmbeddedKafkaBroker
 
 @TestConfiguration
@@ -28,7 +28,7 @@ class IntegrasjonsTestConfig(
     @Bean
     fun aivenKafkaTemplate(): KafkaTemplate<String, String> {
         val kafkaTemplate = KafkaTemplate(producerFactory())
-        kafkaTemplate.defaultTopic = "automatiseringTopic"
+        kafkaTemplate.setDefaultTopic( "automatiseringTopic")
         return kafkaTemplate
     }
 
@@ -49,7 +49,7 @@ class IntegrasjonsTestConfig(
     @Primary
     fun testKafkaTemplate(): KafkaTemplate<String, String> {
         return KafkaTemplate(producerFactory()).apply {
-            defaultTopic = "test"
+            setDefaultTopic("test")
         }
     }
 }
