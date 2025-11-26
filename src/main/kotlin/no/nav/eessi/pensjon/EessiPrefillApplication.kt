@@ -5,12 +5,13 @@ import no.nav.security.token.support.spring.api.EnableJwtTokenValidation
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.context.annotation.Profile
-import org.springframework.retry.annotation.EnableRetry
+import org.springframework.kafka.annotation.RetryableTopic
+//import org.springframework.retry.annotation.EnableRetry
 
 @EnableJwtTokenValidation(ignore = ["org.springframework", "no.nav.eessi.pensjon.health.DiagnosticsController"])
 @EnableOAuth2Client(cacheEnabled = true)
 @SpringBootApplication
-@EnableRetry
+@RetryableTopic
 @Profile("!unsecured-webmvctest")
 class EessiPrefillApplication
 
