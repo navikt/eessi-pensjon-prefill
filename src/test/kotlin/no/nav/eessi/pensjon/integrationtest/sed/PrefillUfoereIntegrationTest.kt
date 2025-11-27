@@ -48,6 +48,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.web.client.RestTemplate
 
+
 private const val NPID_VOKSEN = "01220049651"
 private const val RINA_SAK = "22874955"
 
@@ -83,6 +84,11 @@ class PrefillUfoereIntegrationTest {
         @Bean
         @Primary
         fun restTemplate(): RestTemplate = mockk()
+//        @Primary
+//        @Bean
+//        fun objectMapper(): ObjectMapper {
+//            return ObjectMapper().configure(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES, false)
+//        }
     }
 
     @BeforeEach
@@ -190,27 +196,27 @@ class PrefillUfoereIntegrationTest {
             .medKjoenn(KjoennType.MANN)
 
         val ektefellePerson = PersonPDLMock.createWith(true, "JESSINE TORDNU", "BOUWMANS", fnr =  pinEktefelleperson, aktoerid = pinEktefelleperson+11)
-            .medFodsel(Fodselsnummer.fra(pinEktefelleperson)?.getBirthDate()!!,)
+            .medFodsel(Fodselsnummer.fra(pinEktefelleperson)?.getBirthDate()!!)
             .medKjoenn(KjoennType.KVINNE)
             .medSivilstand(hovedPerson)
 
         val barn1 = PersonPDLMock.createWith(true, "TOPPI DOTTO", "UNG", fnr = pinBarn1, aktoerid = pinBarn1+12)
             .medForeldre(hovedPerson)
             .medForeldre(ektefellePerson)
-            .medFodsel(Fodselsnummer.fra(pinBarn1)?.getBirthDate()!!,)
+            .medFodsel(Fodselsnummer.fra(pinBarn1)?.getBirthDate()!!)
             .medKjoenn(KjoennType.MANN)
 
         val barn2 = PersonPDLMock.createWith(true, "EGIDIJS ER", "MED", fnr = pinBarn2, aktoerid = pinBarn2+18)
             .medForeldre(hovedPerson)
             .medForeldre(ektefellePerson)
             .medKjoenn(KjoennType.KVINNE)
-            .medFodsel(Fodselsnummer.fra(pinBarn2)?.getBirthDate()!!,)
+            .medFodsel(Fodselsnummer.fra(pinBarn2)?.getBirthDate()!!)
 
         val barn3 = PersonPDLMock.createWith(true, "BARN VOKSEN", "GAMMELT", fnr = pinBarn3, aktoerid = pinBarn3+19)
             .medForeldre(hovedPerson)
             .medForeldre(ektefellePerson)
             .medKjoenn(KjoennType.KVINNE)
-            .medFodsel(Fodselsnummer.fra(pinBarn3)?.getBirthDate()!!,)
+            .medFodsel(Fodselsnummer.fra(pinBarn3)?.getBirthDate()!!)
 
         val hovedPersonMedbarn = hovedPerson
             .medBarn(barn1)

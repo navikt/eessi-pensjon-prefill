@@ -1,11 +1,11 @@
 package no.nav.eessi.pensjon.integrationtest
 
-import com.fasterxml.jackson.databind.JsonSerializer
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.clients.producer.ProducerConfig
 import org.apache.kafka.common.serialization.StringDeserializer
 import org.apache.kafka.common.serialization.StringSerializer
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.jackson.ObjectValueSerializer
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Primary
@@ -21,7 +21,7 @@ class IntegrasjonsTestConfig(
         val configs = HashMap<String, Any>()
         configs[ProducerConfig.BOOTSTRAP_SERVERS_CONFIG] = this.brokerAddresses
         configs[ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG] = StringSerializer::class.java
-        configs[ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG] = JsonSerializer::class.java
+        configs[ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG] = ObjectValueSerializer::class.java
         return DefaultKafkaProducerFactory(configs)
     }
 
@@ -37,7 +37,7 @@ class IntegrasjonsTestConfig(
         val configs = HashMap<String, Any>()
         configs[ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG] = this.brokerAddresses
         configs[ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG] = StringDeserializer::class.java
-        configs[ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG] = JsonSerializer::class.java
+        configs[ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG] = ObjectValueSerializer::class.java
         configs[ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG] = false
         configs[ConsumerConfig.AUTO_OFFSET_RESET_CONFIG] = "earliest"
         configs[ConsumerConfig.GROUP_ID_CONFIG] = "eessi-pensjon-group-test"

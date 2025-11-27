@@ -20,6 +20,11 @@ METRICS_REQUESTFILTER_ENABLE: true
 eessipen-eux-rina:
   url: 'http://example.com:8089'
 
+spring:
+  jackson:
+    deserialization:
+      FAIL_ON_NULL_FOR_PRIMITIVES: false
+
 pensjonsinformasjon:
   url: 'http://example.com:8099'
 
