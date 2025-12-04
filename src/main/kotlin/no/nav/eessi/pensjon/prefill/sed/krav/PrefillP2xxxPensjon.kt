@@ -153,10 +153,10 @@ object PrefillP2xxxPensjon {
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Det finnes ingen iverksatte vedtak for førstegangsbehandling kun utland, eller sluttbehandling. Vennligst gå til EESSI-Pensjon fra vedtakskontekst.")
         }
 
-        if (vedtak != null && vedtak.isBoddArbeidetUtland == false) {
-            logger.warn("Du kan ikke opprette krav-SED $sedType hvis ikke \"bodd/arbeidet i utlandet\" er krysset av")
-            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Du kan ikke opprette krav-SED $sedType hvis ikke \"bodd/arbeidet i utlandet\" er krysset av")
-        }
+//        if (vedtak != null && vedtak.isBoddArbeidetUtland == false) {
+//            logger.warn("Du kan ikke opprette krav-SED $sedType hvis ikke \"bodd/arbeidet i utlandet\" er krysset av")
+//            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Du kan ikke opprette krav-SED $sedType hvis ikke \"bodd/arbeidet i utlandet\" er krysset av")
+//        }
 
         logger.info("avslutt på validering av $sedType, fortsetter med preutfylling")
     }
