@@ -27,7 +27,6 @@ import no.nav.eessi.pensjon.prefill.sed.krav.PensjonsInformasjonHelper
 import no.nav.pensjon.v1.vedtak.V1Vedtak
 import org.hamcrest.Matchers
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
@@ -46,7 +45,6 @@ import org.springframework.web.client.RestTemplate
 @AutoConfigureMockMvc
 @EmbeddedKafka
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
-@Disabled
 class PrefillErrorIntegrationTest {
 
     @MockkBean
