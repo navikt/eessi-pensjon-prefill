@@ -12,7 +12,7 @@ import org.springframework.kafka.annotation.EnableKafka
 import org.springframework.kafka.core.DefaultKafkaProducerFactory
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.kafka.core.ProducerFactory
-import org.springframework.kafka.support.serializer.JsonSerializer
+import org.springframework.kafka.support.serializer.JacksonJsonSerializer
 
 @EnableKafka
 @Profile("prod", "test")
@@ -32,7 +32,7 @@ class KafkaConfig(
         populerCommonConfig(configMap)
         configMap[ProducerConfig.CLIENT_ID_CONFIG] = "eessi-pensjon-prefill"
         configMap[ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG] = StringSerializer::class.java
-        configMap[ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG] = JsonSerializer::class.java
+        configMap[ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG] = JacksonJsonSerializer::class.java
         configMap[ProducerConfig.BOOTSTRAP_SERVERS_CONFIG] = bootstrapServers
         return DefaultKafkaProducerFactory(configMap)
     }
@@ -41,7 +41,7 @@ class KafkaConfig(
     @Bean
     fun kafkaTemplate(): KafkaTemplate<String, String> {
         val kafkaTemplate = KafkaTemplate(producerFactory())
-        kafkaTemplate.defaultTopic = automatiseringTopic
+        kafkaTemplate.setDefaultTopic(automatiseringTopic)
         return kafkaTemplate
     }
 

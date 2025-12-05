@@ -1,10 +1,11 @@
 buildscript {
     ext {
         kotlinVersion = '2.2.21'
-        springBootVersion = '3.5.7'
-        springKafkaVersion = '3.3.10'
+        springBootVersion = '4.0.0'
+        springKafkaVersion = '4.0.0'
         cxfVersion = '3.3.4'
-        tokenSupportVersion = '5.0.39'
+        tokenSupportVersion = '6.0.0'
+        jacksonModuleKotlinVersion = '2.20.1'
     }
 }
 
@@ -35,7 +36,9 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-actuator")
 
     // Spring Framework BOM-fil overstyrer så vi får siste patch-versjon av Spring Framework
-    implementation(platform("org.springframework:spring-framework-bom:6.2.12"))
+    implementation(platform("org.springframework:spring-framework-bom:7.0.1"))
+    implementation("org.springframework.boot:spring-boot-starter-aop:3.5.8")
+    implementation("org.springframework.retry:spring-retry:2.0.7")
 
     implementation("org.yaml:snakeyaml:2.5") // Pga https://security.snyk.io/package/maven/org.yaml:snakeyaml
 
@@ -43,6 +46,9 @@ dependencies {
     implementation('org.glassfish.jaxb:jaxb-runtime:2.3.9')
 
     implementation("com.fasterxml.jackson.core:jackson-core:2.20.1")
+    implementation("com.fasterxml.jackson.core:jackson-core:${jacksonModuleKotlinVersion}")
+    implementation("com.fasterxml.jackson.core:jackson-databind:${jacksonModuleKotlinVersion}")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:${jacksonModuleKotlinVersion}")
 
     implementation 'org.jetbrains.kotlin:kotlin-reflect'
 
@@ -69,23 +75,24 @@ dependencies {
 
     implementation ("org.springframework.kafka:spring-kafka:$springKafkaVersion")
 
-    implementation("no.nav.eessi.pensjon:ep-eux:2.5.30")
-    implementation("no.nav.eessi.pensjon:ep-metrics:2.1.16")
-    implementation("no.nav.eessi.pensjon:ep-logging:2.3.21")
-    implementation("no.nav.eessi.pensjon:ep-kodeverk:4.3.39") {
+    implementation("no.nav.eessi.pensjon:ep-eux:2.6.4")
+    implementation("no.nav.eessi.pensjon:ep-metrics:2.1.19")
+    implementation("no.nav.eessi.pensjon:ep-logging:2.3.25")
+    implementation("no.nav.eessi.pensjon:ep-kodeverk:4.3.46") {
         exclude module: 'ep-eux'
         exclude module: 'ep-metrics'
         exclude module: 'ep-logging'
     }
-    implementation("no.nav.eessi.pensjon:ep-personoppslag:13.3.54"){
+    implementation("no.nav.eessi.pensjon:ep-personoppslag:13.3.57"){
         exclude module: 'ep-eux'
         exclude module: 'ep-metrics'
         exclude module: 'ep-logging'
     }
-    implementation("no.nav.eessi.pensjon:ep-pensjonsinformasjon:3.1.33")
+    implementation("no.nav.eessi.pensjon:ep-pensjonsinformasjon:3.1.39")
 
     implementation("no.nav.tjenestespesifikasjoner:pensjonsinformasjon-v1-tjenestespesifikasjon:2643.2f3e8e9")
 
+    testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
     testImplementation("no.nav.security:token-validation-spring-test:${tokenSupportVersion}")
 
     //mock - test
