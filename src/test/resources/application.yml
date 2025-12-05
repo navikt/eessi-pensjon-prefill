@@ -5,7 +5,6 @@ NAIS_APP_IMAGE: 'someimage'
 ENV : "test"
 
 PDL_URL: 'http://example.com:8090'
-EESSI_PEN_ONPREM_PROXY_URL: 'http://example.com:8090'
 
 KODEVERK_URL: 'http://example.com:8093'
 
