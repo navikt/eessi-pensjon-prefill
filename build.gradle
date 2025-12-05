@@ -22,9 +22,9 @@ apply from: "buildSrc/ep-module.gradle"
 
 group = 'no.nav.eessi.pensjon'
 
-jar {
-    archivesBaseName = 'eessi-pensjon-prefill'
-}
+//jar {
+//    archivesBaseName = 'eessi-pensjon-prefill'
+//}
 
 dependencies {
     // Spring-boot BOM-fil spesifiserer versjoner for Spring Boot-avhengigheter
