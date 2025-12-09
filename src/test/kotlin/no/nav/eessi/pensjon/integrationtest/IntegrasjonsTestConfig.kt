@@ -9,7 +9,7 @@ import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Primary
 import org.springframework.kafka.core.*
-import org.springframework.kafka.support.serializer.JsonSerializer
+import org.springframework.kafka.support.serializer.JacksonJsonSerializer
 import org.springframework.kafka.test.EmbeddedKafkaBroker
 
 @TestConfiguration
@@ -21,14 +21,14 @@ class IntegrasjonsTestConfig(
         val configs = HashMap<String, Any>()
         configs[ProducerConfig.BOOTSTRAP_SERVERS_CONFIG] = this.brokerAddresses
         configs[ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG] = StringSerializer::class.java
-        configs[ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG] = JsonSerializer::class.java
+        configs[ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG] = JacksonJsonSerializer::class.java
         return DefaultKafkaProducerFactory(configs)
     }
 
     @Bean
     fun aivenKafkaTemplate(): KafkaTemplate<String, String> {
         val kafkaTemplate = KafkaTemplate(producerFactory())
-        kafkaTemplate.defaultTopic = "automatiseringTopic"
+        kafkaTemplate.setDefaultTopic("automatiseringTopic")
         return kafkaTemplate
     }
 
@@ -37,7 +37,7 @@ class IntegrasjonsTestConfig(
         val configs = HashMap<String, Any>()
         configs[ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG] = this.brokerAddresses
         configs[ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG] = StringDeserializer::class.java
-        configs[ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG] = JsonSerializer::class.java
+        configs[ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG] = JacksonJsonSerializer::class.java
         configs[ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG] = false
         configs[ConsumerConfig.AUTO_OFFSET_RESET_CONFIG] = "earliest"
         configs[ConsumerConfig.GROUP_ID_CONFIG] = "eessi-pensjon-group-test"
@@ -49,7 +49,7 @@ class IntegrasjonsTestConfig(
     @Primary
     fun testKafkaTemplate(): KafkaTemplate<String, String> {
         return KafkaTemplate(producerFactory()).apply {
-            defaultTopic = "test"
+            setDefaultTopic("test")
         }
     }
 }
