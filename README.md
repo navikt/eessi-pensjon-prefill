@@ -13,7 +13,6 @@ EESSI Pensjon prefill
 
 git clone [url:denne repo]
 
-
 ```
 ./gradlew assemble
 ```
