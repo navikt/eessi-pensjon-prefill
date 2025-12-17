@@ -65,9 +65,6 @@ dependencies {
     implementation("no.nav.security:token-validation-spring:${tokenSupportVersion}")
     implementation("no.nav.security:token-validation-jaxrs:${tokenSupportVersion}")
 
-    //nødvendig for validering av jwt og EnableJwtTokenValidationConfiguration
-    implementation("org.hibernate.validator:hibernate-validator:9.0.1.Final")
-
     implementation ("no.nav.common:token-client:3.2025.11.10_14.07-a9f44944d7bc")
 
     // Micrometer
