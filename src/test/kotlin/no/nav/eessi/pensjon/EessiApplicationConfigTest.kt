@@ -18,12 +18,14 @@ import org.springframework.kafka.core.DefaultKafkaProducerFactory
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.kafka.core.ProducerFactory
 import org.springframework.kafka.test.context.EmbeddedKafka
+import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.web.client.RestTemplate
 
 @SpringBootTest(classes = [RestTemplateConfig::class, UnsecuredWebMvcTestLauncher::class, EessiApplicationConfigTest.KafkaConfig::class], webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles(profiles = ["excludeKodeverk","unsecured-webmvctest"])
+@DirtiesContext
 @EmbeddedKafka
 @EnableMockOAuth2Server
 @AutoConfigureMockMvc
