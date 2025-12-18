@@ -99,7 +99,7 @@ object PrefillP2xxxPensjon {
                 val ytelseprmnd = hentYtelsePerMaanedDenSisteFraKrav(kravHistorikk, pensak)
                 createYtelserItem(ytelseprmnd, pensak, personNr, penSaksnummer, andreinstitusjonerItem)
             }.getOrElse { ex ->
-                logger.warn("Feil under henting av ytelse ${pensak?.sakType}. ${ex.message}", ex)
+                logger.warn("Feil under henting av ytelse ${pensak.sakType}. ${ex.message}", ex)
                 opprettForkortetYtelsesItem(pensak, personNr, penSaksnummer, andreinstitusjonerItem)
             }
         }

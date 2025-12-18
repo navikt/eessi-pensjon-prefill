@@ -42,7 +42,7 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
                 val fnr = this.identer.firstOrNull { it.gruppe == FOLKEREGISTERIDENT }?.ident
                 return Fodselsnummer.fra(fnr)?.getBirthDate().toString()
             }
-            return fdato.toString()
+            return fdato
         }
 
         fun isPersonAvdod(pdlperson: PdlPerson) : Boolean {

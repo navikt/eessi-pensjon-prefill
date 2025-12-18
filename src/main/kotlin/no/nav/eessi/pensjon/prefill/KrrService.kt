@@ -20,7 +20,7 @@ class KrrService(private val krrRestTemplate: RestTemplate,
 
     private val logger: Logger = LoggerFactory.getLogger(KrrService::class.java)
 
-    private lateinit var hentPersoner: MetricsHelper.Metric
+    private var hentPersoner: MetricsHelper.Metric
 
     init {
         hentPersoner = metricsHelper.init("HentPerson", ignoreHttpCodes = listOf(HttpStatus.BAD_REQUEST))

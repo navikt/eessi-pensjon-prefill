@@ -158,7 +158,7 @@ class PrefillP15000IntegrationTest {
         val response = result.response.getContentAsString(charset("UTF-8"))
         val validResponse = gyldigResponse(FNR_VOKSEN_4, FNR_VOKSEN_3, true)
 
-        assertTrue(response.toString().contains("kontakt"))
+        assertTrue(response.contains("kontakt"))
         JSONAssert.assertEquals(validResponse, response, true)
 
     }
@@ -192,7 +192,7 @@ class PrefillP15000IntegrationTest {
 
         assertTrue(response.toJson().contains("adresse"))
         assertFalse(response.toJson().contains("kontakt"))
-        assertFalse(response.toString().contains("epost"))
+        assertFalse(response.contains("epost"))
 
     }
 

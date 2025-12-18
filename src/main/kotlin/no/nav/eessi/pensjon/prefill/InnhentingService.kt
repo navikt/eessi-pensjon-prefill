@@ -27,8 +27,8 @@ class InnhentingService(
     private val pensjonsinformasjonService: PensjonsinformasjonService
 ) {
 
-    private lateinit var HentPerson: MetricsHelper.Metric
-    private lateinit var addInstutionAndDocumentBucUtils: MetricsHelper.Metric
+    private var HentPerson: MetricsHelper.Metric
+    private var addInstutionAndDocumentBucUtils: MetricsHelper.Metric
 
     private val logger = LoggerFactory.getLogger(InnhentingService::class.java)
 

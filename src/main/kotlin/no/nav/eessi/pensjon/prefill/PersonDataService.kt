@@ -24,7 +24,7 @@ class PersonDataService(private val personService: PersonService,
     private val logger: Logger = LoggerFactory.getLogger(PersonDataService::class.java)
     private val secureLog = LoggerFactory.getLogger("secureLog")
 
-    private lateinit var hentPerson: MetricsHelper.Metric
+    private var hentPerson: MetricsHelper.Metric
 
     init {
         hentPerson = metricsHelper.init("HentPerson", ignoreHttpCodes = listOf(HttpStatus.BAD_REQUEST))

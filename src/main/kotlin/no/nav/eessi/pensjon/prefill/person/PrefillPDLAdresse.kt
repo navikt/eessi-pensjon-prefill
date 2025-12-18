@@ -19,7 +19,7 @@ class PrefillPDLAdresse (
     @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper.ForTest()
 ) {
 
-    private lateinit var hentLandkodeMetric: MetricsHelper.Metric
+    private var hentLandkodeMetric: MetricsHelper.Metric
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillPDLAdresse::class.java) }
 
     init {

@@ -35,7 +35,7 @@ class PrefillService(
 ) {
     private val logger = LoggerFactory.getLogger(PrefillService::class.java)
     private val secureLog = LoggerFactory.getLogger("secureLog")
-    private lateinit var PrefillSed: MetricsHelper.Metric
+    private var PrefillSed: MetricsHelper.Metric
 
     init {
         PrefillSed = metricsHelper.init("PrefillSed",
