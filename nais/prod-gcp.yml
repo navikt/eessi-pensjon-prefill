@@ -37,6 +37,8 @@ spec:
         - application: etterlatte-api
           namespace: etterlatte
           cluster: prod-gcp
+        - application: logging
+          namespace: nais-system
       external:
         - host: kodeverk-api.nav.no
         - host: pdl-api.prod-fss-pub.nais.io

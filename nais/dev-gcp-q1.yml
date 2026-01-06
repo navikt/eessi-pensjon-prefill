@@ -37,6 +37,8 @@ spec:
         - application: etterlatte-api
           namespace: etterlatte
           cluster: dev-gcp
+        - application: logging
+          namespace: nais-system
       external:
         - host: kodeverk-api.nav.no
         - host: pensjon-q2.pensjon-pen-q2
