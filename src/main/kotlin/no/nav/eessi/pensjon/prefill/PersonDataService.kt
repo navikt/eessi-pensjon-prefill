@@ -65,11 +65,11 @@ class PersonDataService(private val personService: PersonService,
     private fun hentPersoner(prefillData: PrefillDataModel, fyllUtBarnListe: Boolean = false): PersonDataCollection {
         return hentPerson.measure {
             logger.info("Henter hovedperson/forsikret/gjenlevende")
-            val forsikretPerson = personServiceHentPerson(bestemIdent(prefillData.bruker.norskIdent))
+            val forsikretPerson = personServiceHentPerson(bestemIdent(prefillData.bruker.norskIdent!!))
 
             val gjenlevendeEllerAvdod = if (prefillData.avdod != null) {
                 logger.info("Henter avød person")
-                personService.hentPerson(bestemIdent(prefillData.avdod.norskIdent))
+                personService.hentPerson(bestemIdent(prefillData.avdod.norskIdent!!))
             } else {
                 logger.info("Ingen avdød så gjenlevendeEllerAvdod settes til forsikretPerson")
                 forsikretPerson

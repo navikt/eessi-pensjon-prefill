@@ -53,7 +53,7 @@ class PrefillP2000KravKunUtlandTest {
 
     @Test
     fun `Sjekk av kravsøknad alderpensjon P2000`() {
-        val pendata: Pensjonsinformasjon = dataFromPEN.hentPensjonInformasjon(prefillData.bruker.norskIdent, prefillData.bruker.aktorId)
+        val pendata: Pensjonsinformasjon = dataFromPEN.hentPensjonInformasjon(prefillData.bruker.norskIdent!!, prefillData.bruker.aktorId)
 
         assertNotNull(PensjonsinformasjonService.finnSak(prefillData.penSaksnummer, pendata))
 
