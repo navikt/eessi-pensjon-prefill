@@ -31,7 +31,8 @@ private const val AKTOERID = "0105094340092"
 
 class PrefillP5000GjennyUtenAvdodTest {
 
-    private val personFnr = FodselsnummerGenerator.generateFnrForTest(65)
+//    private val personFnr = FodselsnummerGenerator.generateFnrForTest(65)
+    private val personFnr = "07116043321"
     private val pesysSaksnummer = "21975717"
 
     lateinit var prefillData: PrefillDataModel
@@ -59,8 +60,7 @@ class PrefillP5000GjennyUtenAvdodTest {
         automatiseringStatistikkService = mockk()
         etterlatteService = EtterlatteService(mockk())
         innhentingService = InnhentingService(personDataService, pensjonsinformasjonService = mockk())
-        prefillGjennyService =
-            PrefillGjennyService(krrService, innhentingService, etterlatteService, automatiseringStatistikkService, prefillNav)
+        prefillGjennyService = PrefillGjennyService(krrService, innhentingService, etterlatteService, automatiseringStatistikkService, prefillNav)
         prefillData = PrefillDataModelMother.initialPrefillDataModel(
             SedType.P5000,
             personFnr,
@@ -89,7 +89,8 @@ class PrefillP5000GjennyUtenAvdodTest {
             sed = SedType.P5000,
             buc = P_BUC_02,
             aktoerId = AKTOERID,
-            avdodfnr = "12345566"
+            avdodfnr = null,
+            gjenny = true
 
         )
 
@@ -100,9 +101,9 @@ class PrefillP5000GjennyUtenAvdodTest {
         p5000 = mapJsonToAny(prefillGjennyService.prefillGjennySedtoJson(apiReq))
         println("@@@P5000: ${p5000.toJson()}")
 
-//        assertEquals(null, p5000.pensjon?.gjenlevende) // Denne skal inneholder gjenlevende
-//        assertEquals("BAMSE LUR", p5000.nav?.bruker?.person?.fornavn) // skal være null
-//        assertEquals("MOMBALO", p5000.nav?.bruker?.person?.etternavn) // skal være null
+        assertEquals(personFnr, p5000.pensjon?.gjenlevende?.person?.pin?.firstOrNull()?.identifikator) // Denne skal inneholder gjenlevende
+        assertEquals("Gjenlevende", p5000.nav?.bruker?.person?.fornavn) // skal være null
+        assertEquals("Gjenlevende etternavn", p5000.nav?.bruker?.person?.etternavn) // skal være null
 
 
 //        assertEquals("MOMBALO", p5000.nav?.bruker?.person?.etternavn)

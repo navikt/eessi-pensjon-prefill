@@ -300,8 +300,8 @@ object PersonPDLMock {
             .medKjoenn(KjoennType.KVINNE)
 
         return PersonDataCollection(
-            forsikretPerson = person,
-            gjenlevendeEllerAvdod = null
+            forsikretPerson = null,
+            gjenlevendeEllerAvdod = person
         )
     }
 

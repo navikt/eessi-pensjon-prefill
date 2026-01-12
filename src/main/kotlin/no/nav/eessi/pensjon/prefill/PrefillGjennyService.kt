@@ -98,9 +98,16 @@ class PrefillGjennyService(
         val sedType = prefillData.sedType
 
         val prefillPensjon = try {
-            val pensjon = prefillData.avdod?.let {
+            val pensjon = if(prefillData.avdod != null) {
+                 prefillData.avdod.let {
+                    logger.info("Preutfylling Utfylling Pensjon Avdod (etterlatt)")
+                    val gjenlevendePerson = prefillPdlNav.createBruker(personData.forsikretPerson!!, null, null, prefillData.bruker)
+                    Pensjon(gjenlevende = gjenlevendePerson)
+                }
+            }
+            else {
                 logger.info("Preutfylling Utfylling Pensjon Gjenlevende (etterlatt)")
-                val gjenlevendePerson = prefillPdlNav.createBruker(personData.forsikretPerson!!, null, null, prefillData.bruker)
+                val gjenlevendePerson = prefillPdlNav.createBruker(personData.gjenlevendeEllerAvdod!!, null, null, prefillData.bruker)
                 Pensjon(gjenlevende = gjenlevendePerson)
             }
             logger.debug("[${prefillData.sedType}] Preutfylling Utfylling Pensjon")
@@ -117,8 +124,8 @@ class PrefillGjennyService(
             avdod = prefillData.avdod,
             personData = personData,
             bankOgArbeid = prefillData.getBankOgArbeidFromRequest(),
-            krav = prefillPensjon?.kravDato,
-            annenPerson = annenPersonHvisGjenlevende(prefillData, prefillPensjon?.gjenlevende)
+            krav = prefillPensjon.kravDato,
+            annenPerson = annenPersonHvisGjenlevende(prefillData, prefillPensjon.gjenlevende)
         )
         logger.debug("[${prefillData.sedType}] Preutfylling Utfylling NAV")
 
