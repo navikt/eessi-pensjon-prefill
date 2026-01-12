@@ -20,6 +20,10 @@ class PrefillController(private val prefillService: PrefillService, private val 
 
         logInfo(request)
 
+        if(request.gjenny) {
+            return prefillGjennyService.prefillGjennySedtoJson(request)
+        }
+
         return prefillService.prefillSedtoJson(request)
     }
 
