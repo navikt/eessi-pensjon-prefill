@@ -17,7 +17,10 @@ object BasePrefillNav {
                 every { finnLandkode(eq("SWE")) } returns "SE"
                 every { finnLandkode(eq("USA")) } returns "US"
                 every { finnLandkode(eq("NOR")) } returns "NO"
-                every { hentPostSted(any()) } returns Postnummer("1068", "OSLO")
+                every { finnLandkode(eq("GRD")) } returns "UK"
+                every { finnLandkode(eq("HRV")) } returns "CR"
+
+            every { hentPostSted(any()) } returns Postnummer("1068", "OSLO")
             }
         return PrefillPDLNav(
             prefillAdresse = prefillPDLAdresse ?: PrefillPDLAdresse(kodeverkClient, mockk()),
