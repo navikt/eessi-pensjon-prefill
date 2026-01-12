@@ -120,8 +120,7 @@ class PrefillGjennyService(
         //henter opp persondata
         val navSed = prefillPdlNav.prefill(
             penSaksnummer = prefillData.penSaksnummer,
-            bruker = prefillData.bruker,
-            avdod = prefillData.avdod,
+            bruker = null,
             personData = personData,
             bankOgArbeid = prefillData.getBankOgArbeidFromRequest(),
             krav = prefillPensjon.kravDato,
@@ -129,8 +128,9 @@ class PrefillGjennyService(
         )
         logger.debug("[${prefillData.sedType}] Preutfylling Utfylling NAV")
 
+        val avdodGjenny = navSed.copy(bruker = null)
         logger.debug("-------------------| Preutfylling END |------------------- ")
-        val sed = SED(sedType, nav = navSed, pensjon = prefillPensjon)
+        val sed = SED(sedType, nav = avdodGjenny, pensjon = prefillPensjon)
 
         return P5000(
             nav = sed.nav,
