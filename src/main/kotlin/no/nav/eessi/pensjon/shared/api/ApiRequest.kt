@@ -119,7 +119,7 @@ data class ApiRequest(
                 throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Mangler fnr for avdød")
             }
             request.riktigAvdod() ?: return null
-            val avdodNorskIdent1 = request.riktigAvdod() ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Mangler Personnr på Avdød")
+            val avdodNorskIdent1 = request.riktigAvdod()
             val avdodAktorId1 = avdodaktoerID ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Mangler AktoerId på Avdød")
             return PersonInfo(avdodNorskIdent1, avdodAktorId1)
         }

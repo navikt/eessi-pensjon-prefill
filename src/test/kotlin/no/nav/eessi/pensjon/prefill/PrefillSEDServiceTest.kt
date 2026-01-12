@@ -40,11 +40,11 @@ class PrefillSEDServiceTest {
 
     @Before
     fun setup() {
+        prefillNav = BasePrefillNav.createPrefillNav()
         prefillService = PrefillService(krrService, mockPrefillSEDService, innhentingService, etterlatteService, automatiseringStatistikkService, prefillNav)
         personcollection = PersonDataCollection(null, null)
         val personDataCollectionFamilie = PersonPDLMock.createEnkelFamilie(personFnr, avdodPersonFnr)
         personDataCollection = PersonDataCollection(gjenlevendeEllerAvdod = personDataCollectionFamilie.ektefellePerson, forsikretPerson = personDataCollectionFamilie.forsikretPerson )
-        prefillNav = BasePrefillNav.createPrefillNav()
     }
 
     @Test
@@ -60,7 +60,8 @@ class PrefillSEDServiceTest {
     }
 
     @Test
-    fun `prefillGjenny skal defaulte til prefill når den kalles fra gjenny uten 2100 eller 6000`() {
+    fun `prefillGjenny skal defaulte til prefill når den kalles fra gjenny uten P2100 eller P6000`() {
+        prefillSEDService = mockk()
         prefillData = PrefillDataModelMother.initialPrefillDataModel(
             SedType.P6000,
             personFnr,
@@ -73,6 +74,7 @@ class PrefillSEDServiceTest {
         val etterlatteRespData = mockk<EtterlatteVedtakResponseData>()
         val expectedSED = mockk<SED>()
 
+        every { prefillSEDService.prefillGjenny(any(), any(), any(), ) } returns expectedSED
         every { prefillSEDService.prefill(prefillData, personDataCollection, null, etterlatteRespData) } returns expectedSED
 
         val result = prefillSEDService.prefillGjenny(prefillData, personDataCollection, etterlatteRespData)
