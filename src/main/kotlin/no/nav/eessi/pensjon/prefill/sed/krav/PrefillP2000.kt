@@ -49,7 +49,6 @@ class PrefillP2000(private val prefillNav: PrefillPDLNav) {
         return prefillNav.prefill(
             penSaksnummer = prefillData.penSaksnummer,
             bruker = prefillData.bruker,
-            avdod = prefillData.avdod,
             personData = personData,
             bankOgArbeid = prefillData.getBankOgArbeidFromRequest(),
             krav = krav,

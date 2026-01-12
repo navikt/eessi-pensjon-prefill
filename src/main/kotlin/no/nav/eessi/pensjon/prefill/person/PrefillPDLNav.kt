@@ -134,8 +134,8 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
 
     fun prefill(
         penSaksnummer: String?,
-        bruker: PersonInfo,
-        avdod: PersonInfo?,
+        bruker: PersonInfo?,
+//        avdod: PersonInfo?,
         personData: PersonDataCollection,
         bankOgArbeid: BankOgArbeid?,
         krav: Krav? = null,

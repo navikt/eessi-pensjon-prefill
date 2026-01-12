@@ -38,7 +38,6 @@ class PrefillSed(private val prefillNav: PrefillPDLNav) {
         val navSed = prefillNav.prefill(
             penSaksnummer = prefillData.penSaksnummer,
             bruker = prefillData.bruker,
-            avdod = prefillData.avdod,
             personData = personData,
             bankOgArbeid = prefillData.getBankOgArbeidFromRequest(),
             krav = prefillPensjon?.kravDato,

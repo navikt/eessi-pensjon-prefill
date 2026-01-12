@@ -98,7 +98,6 @@ class PrefillPDLNavTest {
         val actual = prefillPDLNav.prefill(
             prefillData.penSaksnummer,
             prefillData.bruker,
-            prefillData.avdod,
             personDataCollection,
             prefillData.getBankOgArbeidFromRequest(),
             null,
@@ -172,7 +171,6 @@ class PrefillPDLNavTest {
         val actual = prefillPDLNav.prefill(
             prefillData.penSaksnummer,
             prefillData.bruker,
-            prefillData.avdod,
             personDataCollection,
             prefillData.getBankOgArbeidFromRequest(),
             null,
@@ -232,7 +230,6 @@ class PrefillPDLNavTest {
         val actual = prefillPDLNav.prefill(
             prefillData.penSaksnummer,
             prefillData.bruker,
-            prefillData.avdod,
             personDataCollection,
             prefillData.getBankOgArbeidFromRequest(),
             null,
@@ -310,7 +307,6 @@ class PrefillPDLNavTest {
         val actual = prefillPDLNav.prefill(
             prefillData.penSaksnummer,
             prefillData.bruker,
-            prefillData.avdod,
             personDataCollection,
             prefillData.getBankOgArbeidFromRequest(),
             null,
@@ -395,7 +391,6 @@ class PrefillPDLNavTest {
         val actual = prefillPDLNav.prefill(
             prefillData.penSaksnummer,
             prefillData.bruker,
-            prefillData.avdod,
             personDataCollection,
             prefillData.getBankOgArbeidFromRequest(),
             null,
@@ -477,7 +472,6 @@ class PrefillPDLNavTest {
         val actual = prefillPDLNav.prefill(
             prefillData.penSaksnummer,
             prefillData.bruker,
-            prefillData.avdod,
             personDataCollection,
             prefillData.getBankOgArbeidFromRequest(),
             null,
@@ -559,7 +553,6 @@ class PrefillPDLNavTest {
         val actual = prefillPDLNav.prefill(
             prefillData.penSaksnummer,
             prefillData.bruker,
-            prefillData.avdod,
             personDataCollection,
             prefillData.getBankOgArbeidFromRequest(),
             null,
@@ -702,7 +695,6 @@ class PrefillPDLNavTest {
         val actual = prefillPDLNav.prefill(
             prefillData.penSaksnummer,
             prefillData.bruker,
-            prefillData.avdod,
             personDataCollection,
             prefillData.getBankOgArbeidFromRequest(),
             null,
@@ -774,7 +766,6 @@ class PrefillPDLNavTest {
         val actual = prefillPDLNav.prefill(
             prefillData.penSaksnummer,
             prefillData.bruker,
-            prefillData.avdod,
             personDataCollection,
             prefillData.getBankOgArbeidFromRequest(),
             null,
@@ -833,7 +824,6 @@ class PrefillPDLNavTest {
         val actual = prefillPDLNav.prefill(
             prefillData.penSaksnummer,
             prefillData.bruker,
-            prefillData.avdod,
             personDataCollection,
             prefillData.getBankOgArbeidFromRequest(),
             null,
@@ -870,7 +860,6 @@ class PrefillPDLNavTest {
         val actual = prefillPDLNav.prefill(
             prefillData.penSaksnummer,
             prefillData.bruker,
-            prefillData.avdod,
             personDataCollection,
             prefillData.getBankOgArbeidFromRequest(),
             null,
@@ -936,7 +925,6 @@ class PrefillPDLNavTest {
         val actual = prefillPDLNav.prefill(
             prefillData.penSaksnummer,
             prefillData.bruker,
-            prefillData.avdod,
             personDataCollection,
             prefillData.getBankOgArbeidFromRequest(),
             null,
@@ -1019,7 +1007,6 @@ class PrefillPDLNavTest {
         val actual = prefillPDLNav.prefill(
             prefillData.penSaksnummer,
             prefillData.bruker,
-            prefillData.avdod,
             personDataCollection,
             prefillData.getBankOgArbeidFromRequest(),
             null,

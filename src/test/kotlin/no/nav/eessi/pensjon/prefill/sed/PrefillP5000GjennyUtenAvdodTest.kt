@@ -102,8 +102,8 @@ class PrefillP5000GjennyUtenAvdodTest {
         println("@@@P5000: ${p5000.toJson()}")
 
         assertEquals(personFnr, p5000.pensjon?.gjenlevende?.person?.pin?.firstOrNull()?.identifikator) // Denne skal inneholder gjenlevende
-        assertEquals("Gjenlevende", p5000.nav?.bruker?.person?.fornavn) // skal være null
-        assertEquals("Gjenlevende etternavn", p5000.nav?.bruker?.person?.etternavn) // skal være null
+        assertEquals(null, p5000.nav?.bruker?.person?.fornavn) // skal være null
+        assertEquals(null, p5000.nav?.bruker?.person?.etternavn) // skal være null
 
 
 //        assertEquals("MOMBALO", p5000.nav?.bruker?.person?.etternavn)

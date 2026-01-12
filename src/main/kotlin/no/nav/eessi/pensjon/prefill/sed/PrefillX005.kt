@@ -26,7 +26,6 @@ class PrefillX005(private val prefillNav: PrefillPDLNav)  {
         val navsed = prefillNav.prefill(
             penSaksnummer = penSaksnummer,
             bruker = bruker,
-            avdod = avdod,
             personData = personData,
             bankOgArbeid = brukerinformasjon,
         )
