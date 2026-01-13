@@ -94,7 +94,7 @@ class PrefillService(
         }
     }
 
-    private fun listeOverVedtak(prefillData: PrefillDataModel, personDataCollection: PersonDataCollection): EtterlatteVedtakResponseData? {
+    fun listeOverVedtak(prefillData: PrefillDataModel, personDataCollection: PersonDataCollection): EtterlatteVedtakResponseData? {
         val gjenlevende = prefillData.avdod?.let {
             prefillPdlNav.createGjenlevende(personDataCollection.forsikretPerson, prefillData.bruker)
         }

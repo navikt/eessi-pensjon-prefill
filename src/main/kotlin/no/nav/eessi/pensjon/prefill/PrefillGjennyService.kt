@@ -1,6 +1,5 @@
 package no.nav.eessi.pensjon.prefill
 
-import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.SedType.*
 import no.nav.eessi.pensjon.eux.model.sed.Bruker
 import no.nav.eessi.pensjon.eux.model.sed.P5000
@@ -10,11 +9,13 @@ import no.nav.eessi.pensjon.eux.model.sed.SED
 import no.nav.eessi.pensjon.eux.model.sed.SED.Companion.setSEDVersion
 import no.nav.eessi.pensjon.metrics.MetricsHelper
 import no.nav.eessi.pensjon.prefill.etterlatte.EtterlatteService
+import no.nav.eessi.pensjon.prefill.etterlatte.EtterlatteVedtakResponseData
 import no.nav.eessi.pensjon.prefill.models.DigitalKontaktinfo
 import no.nav.eessi.pensjon.prefill.models.DigitalKontaktinfo.Companion.validateEmail
+import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
-import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
+import no.nav.eessi.pensjon.prefill.sed.vedtak.PrefillP6000
 import no.nav.eessi.pensjon.shared.api.ApiRequest
 import no.nav.eessi.pensjon.shared.api.PersonInfo
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
@@ -27,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.client.HttpClientErrorException
+import org.springframework.web.server.ResponseStatusException
 
 @Service
 class PrefillGjennyService(
@@ -35,7 +37,8 @@ class PrefillGjennyService(
     private val etterlatteService: EtterlatteService,
     private val automatiseringStatistikkService: AutomatiseringStatistikkService,
     private val prefillPdlNav: PrefillPDLNav,
-    @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper.ForTest()
+    @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper.ForTest(),
+    val eessiInformasjon: EessiInformasjon
 ) {
     private val logger = LoggerFactory.getLogger(PrefillGjennyService::class.java)
     private val secureLog = LoggerFactory.getLogger("secureLog")
@@ -66,7 +69,14 @@ class PrefillGjennyService(
                     P2100 -> throw HttpClientErrorException(HttpStatus.NOT_IMPLEMENTED, "Prefilling for gjenny av sed type P2100 er ikke implementert")
                     P4000 -> throw HttpClientErrorException(HttpStatus.NOT_IMPLEMENTED, "Prefilling for gjenny av sed type P2100 er ikke implementert")
                     P5000 -> prefillP5000(prefillData, personcollection).also { logger.info("Preutfyll P5000: ") }
-                    P6000 -> throw HttpClientErrorException(HttpStatus.NOT_IMPLEMENTED, "Prefilling for gjenny av sed type P2100 er ikke implementert")
+                    P6000 -> PrefillP6000(
+                        prefillPdlNav,
+                        eessiInformasjon,
+                        null,
+                    ).prefill(
+                        prefillData,
+                        personcollection, listeOverVedtak(prefillData, personcollection)
+                    )
                     P7000 -> throw HttpClientErrorException(HttpStatus.NOT_IMPLEMENTED, "Prefilling for gjenny av sed type P2100 er ikke implementert")
                     P8000 -> throw HttpClientErrorException(HttpStatus.NOT_IMPLEMENTED, "Prefilling for gjenny av sed type P2100 er ikke implementert")
                     P9000 -> throw HttpClientErrorException(HttpStatus.NOT_IMPLEMENTED, "Prefilling for gjenny av sed type P2100 er ikke implementert")
@@ -145,6 +155,20 @@ class PrefillGjennyService(
             gjenlevende?.person?.rolle = "01"  //Claimant - etterlatte
             gjenlevende
         } else null
+    }
+
+    fun listeOverVedtak(prefillData: PrefillDataModel, personDataCollection: PersonDataCollection): EtterlatteVedtakResponseData? {
+        val gjenlevende = prefillData.avdod?.let {
+            prefillPdlNav.createGjenlevende(personDataCollection.forsikretPerson, prefillData.bruker)
+        }
+
+        val identifikator = gjenlevende?.person?.pin?.firstOrNull()?.identifikator ?: return null
+        val resultatEtterlatteRespData = etterlatteService.hentGjennyVedtak(identifikator)
+
+        if (resultatEtterlatteRespData.isFailure) {
+            logger.error(resultatEtterlatteRespData.exceptionOrNull()?.message)
+        }
+        return resultatEtterlatteRespData.getOrNull()
     }
 
     private fun hentKrrPerson(norskIdent: String, request: ApiRequest): PersonInfo {
