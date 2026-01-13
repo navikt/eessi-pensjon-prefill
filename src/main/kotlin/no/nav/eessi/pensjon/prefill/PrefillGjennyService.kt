@@ -4,6 +4,7 @@ import no.nav.eessi.pensjon.eux.model.SedType.*
 import no.nav.eessi.pensjon.eux.model.sed.Bruker
 import no.nav.eessi.pensjon.eux.model.sed.P5000
 import no.nav.eessi.pensjon.eux.model.sed.P5000Pensjon
+import no.nav.eessi.pensjon.eux.model.sed.P6000
 import no.nav.eessi.pensjon.eux.model.sed.Pensjon
 import no.nav.eessi.pensjon.eux.model.sed.SED
 import no.nav.eessi.pensjon.eux.model.sed.SED.Companion.setSEDVersion
@@ -16,6 +17,8 @@ import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.prefill.sed.vedtak.PrefillP6000
+import no.nav.eessi.pensjon.prefill.sed.vedtak.PrefillP6000GjennyPensjon
+import no.nav.eessi.pensjon.prefill.sed.vedtak.PrefillP6000Pensjon.prefillP6000Pensjon
 import no.nav.eessi.pensjon.shared.api.ApiRequest
 import no.nav.eessi.pensjon.shared.api.PersonInfo
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
@@ -23,6 +26,7 @@ import no.nav.eessi.pensjon.statistikk.AutomatiseringStatistikkService
 import no.nav.eessi.pensjon.utils.eessiRequire
 import no.nav.eessi.pensjon.utils.toJson
 import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
+import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -69,13 +73,10 @@ class PrefillGjennyService(
                     P2100 -> throw HttpClientErrorException(HttpStatus.NOT_IMPLEMENTED, "Prefilling for gjenny av sed type P2100 er ikke implementert")
                     P4000 -> throw HttpClientErrorException(HttpStatus.NOT_IMPLEMENTED, "Prefilling for gjenny av sed type P2100 er ikke implementert")
                     P5000 -> prefillP5000(prefillData, personcollection).also { logger.info("Preutfyll P5000: ") }
-                    P6000 -> PrefillP6000(
-                        prefillPdlNav,
-                        eessiInformasjon,
-                        null,
-                    ).prefill(
-                        prefillData,
-                        personcollection, listeOverVedtak(prefillData, personcollection)
+                    P6000 -> prefill(prefillData, personcollection, listeOverVedtak(prefillData, personcollection),
+                        prefillNav = prefillPdlNav,
+                        eessiInfo = eessiInformasjon,
+                        pensjoninformasjon = null,
                     )
                     P7000 -> throw HttpClientErrorException(HttpStatus.NOT_IMPLEMENTED, "Prefilling for gjenny av sed type P2100 er ikke implementert")
                     P8000 -> throw HttpClientErrorException(HttpStatus.NOT_IMPLEMENTED, "Prefilling for gjenny av sed type P2100 er ikke implementert")
@@ -150,6 +151,58 @@ class PrefillGjennyService(
         )
 
     }
+
+    fun prefill(prefillData: PrefillDataModel, personData: PersonDataCollection, etterlatteRespData: EtterlatteVedtakResponseData?, prefillNav: PrefillPDLNav, eessiInfo: EessiInformasjon, pensjoninformasjon: Pensjonsinformasjon?): P6000 {
+        val sedType = prefillData.sedType
+
+        logger.info(
+            "----------------------------------------------------------"
+                    + "\nPreutfylling Pensjon : P6000 "
+                    + "\n------------------| Preutfylling [$sedType] START |------------------ "
+        )
+
+        logger.info("Henter ut lokal kontakt, institusjon (NAV Utland)")
+        val andreInstitusjondetaljer = eessiInfo.asAndreinstitusjonerItem()
+        logger.info("Andreinstitusjoner: $andreInstitusjondetaljer ")
+
+        logger.debug("Henter opp Persondata/Gjenlevende fra TPS")
+        val gjenlevende = prefillData.avdod?.let { prefillNav.createGjenlevende(personData.forsikretPerson, prefillData.bruker) }
+
+        val p6000Pensjon = if(pensjoninformasjon != null) {
+            logger.debug("Prefiller P6000 med Pensjonsdata fra PESYS")
+            prefillP6000Pensjon(pensjoninformasjon, gjenlevende, andreInstitusjondetaljer)
+        } else {
+            logger.debug("Prefiller med Pensjonsdata fra Gjenny, med vedtak: $etterlatteRespData")
+            val gjenlevendePerson = prefillNav.createBruker(personData.gjenlevendeEllerAvdod!!, null, null, prefillData.bruker)
+
+            PrefillP6000GjennyPensjon().prefillP6000GjennyPensjon(
+                gjenlevendePerson,
+                etterlatteRespData,
+                eessiInfo
+            )
+        }
+
+        logger.debug("Henter opp Persondata fra TPS")
+        val nav = prefillNav.prefill(
+            penSaksnummer = prefillData.penSaksnummer,
+            bruker = prefillData.bruker,
+            personData = personData,
+            bankOgArbeid = prefillData.getBankOgArbeidFromRequest(),
+            krav = p6000Pensjon?.kravDato,
+            annenPerson = null
+        )
+
+        val navUtenBruker = nav.copy(bruker = null)
+
+        logger.info("-------------------| Preutfylling [$sedType] END |------------------- ")
+
+        return P6000(
+            type = sedType,
+            nav = navUtenBruker,
+            pensjon = p6000Pensjon
+        )
+    }
+
     private fun annenPersonHvisGjenlevende(prefillData: PrefillDataModel, gjenlevende: Bruker?): Bruker? {
         return if (prefillData.avdod != null) {
             gjenlevende?.person?.rolle = "01"  //Claimant - etterlatte
