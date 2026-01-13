@@ -16,7 +16,6 @@ import no.nav.eessi.pensjon.prefill.models.DigitalKontaktinfo.Companion.validate
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
-import no.nav.eessi.pensjon.prefill.sed.vedtak.PrefillP6000
 import no.nav.eessi.pensjon.prefill.sed.vedtak.PrefillP6000GjennyPensjon
 import no.nav.eessi.pensjon.prefill.sed.vedtak.PrefillP6000Pensjon.prefillP6000Pensjon
 import no.nav.eessi.pensjon.shared.api.ApiRequest
@@ -32,7 +31,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.client.HttpClientErrorException
-import org.springframework.web.server.ResponseStatusException
 
 @Service
 class PrefillGjennyService(
@@ -41,8 +39,8 @@ class PrefillGjennyService(
     private val etterlatteService: EtterlatteService,
     private val automatiseringStatistikkService: AutomatiseringStatistikkService,
     private val prefillPdlNav: PrefillPDLNav,
-    @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper.ForTest(),
-    val eessiInformasjon: EessiInformasjon
+    val eessiInformasjon: EessiInformasjon,
+    @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper.ForTest()
 ) {
     private val logger = LoggerFactory.getLogger(PrefillGjennyService::class.java)
     private val secureLog = LoggerFactory.getLogger("secureLog")
@@ -71,17 +69,12 @@ class PrefillGjennyService(
                 logger.info("Begynner preutfylling for gjenny")
                 val sed = when(prefillData.sedType) {
                     P2100 -> throw HttpClientErrorException(HttpStatus.NOT_IMPLEMENTED, "Prefilling for gjenny av sed type P2100 er ikke implementert")
-                    P4000 -> throw HttpClientErrorException(HttpStatus.NOT_IMPLEMENTED, "Prefilling for gjenny av sed type P2100 er ikke implementert")
                     P5000 -> prefillP5000(prefillData, personcollection).also { logger.info("Preutfyll P5000: ") }
-                    P6000 -> prefill(prefillData, personcollection, listeOverVedtak(prefillData, personcollection),
+                    P6000 -> prefillP6000(prefillData, personcollection, listeOverVedtak(prefillData, personcollection),
                         prefillNav = prefillPdlNav,
                         eessiInfo = eessiInformasjon,
                         pensjoninformasjon = null,
                     )
-                    P7000 -> throw HttpClientErrorException(HttpStatus.NOT_IMPLEMENTED, "Prefilling for gjenny av sed type P2100 er ikke implementert")
-                    P8000 -> throw HttpClientErrorException(HttpStatus.NOT_IMPLEMENTED, "Prefilling for gjenny av sed type P2100 er ikke implementert")
-                    P9000 -> throw HttpClientErrorException(HttpStatus.NOT_IMPLEMENTED, "Prefilling for gjenny av sed type P2100 er ikke implementert")
-                    P10000 -> throw HttpClientErrorException(HttpStatus.NOT_IMPLEMENTED, "Prefilling for gjenny av sed type P2100 er ikke implementert")
                     else -> {
                         throw HttpClientErrorException(HttpStatus.NOT_IMPLEMENTED, "Prefilling for gjenny av sed type ${prefillData.sedType} er ikke implementert")
                     }
@@ -152,12 +145,12 @@ class PrefillGjennyService(
 
     }
 
-    fun prefill(prefillData: PrefillDataModel, personData: PersonDataCollection, etterlatteRespData: EtterlatteVedtakResponseData?, prefillNav: PrefillPDLNav, eessiInfo: EessiInformasjon, pensjoninformasjon: Pensjonsinformasjon?): P6000 {
+    fun prefillP6000(prefillData: PrefillDataModel, personData: PersonDataCollection, etterlatteRespData: EtterlatteVedtakResponseData?, prefillNav: PrefillPDLNav, eessiInfo: EessiInformasjon, pensjoninformasjon: Pensjonsinformasjon?): P6000 {
         val sedType = prefillData.sedType
 
         logger.info(
             "----------------------------------------------------------"
-                    + "\nPreutfylling Pensjon : P6000 "
+                    + "\nPreutfylling gjenny Pensjon : P6000 "
                     + "\n------------------| Preutfylling [$sedType] START |------------------ "
         )
 

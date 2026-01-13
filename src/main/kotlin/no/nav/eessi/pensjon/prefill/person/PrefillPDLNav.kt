@@ -190,14 +190,13 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
 
     fun createGjenlevende(gjenlevendeBruker: PdlPerson?, personInfoBruker: PersonInfo): Bruker? {
         logger.info("          Utfylling gjenlevende (etterlatt persjon.gjenlevende)")
-        return createBruker(gjenlevendeBruker!!, personInfoBruker)
+        return createBruker(gjenlevendeBruker!!, personInfo = personInfoBruker)
     }
 
-    fun createBruker(pdlperson: PdlPerson, personInfo: PersonInfo) = createBruker(pdlperson, null, null, personInfo)
-
     fun createBruker(pdlperson: PdlPerson,
-                     bank: Bank?,
-                     ansettelsesforhold: List<ArbeidsforholdItem>?, personInfo: PersonInfo?): Bruker? {
+                     bank: Bank? = null,
+                     ansettelsesforhold: List<ArbeidsforholdItem>? = emptyList(),
+                     personInfo: PersonInfo?): Bruker? {
             return Bruker(
                 person = createPersonData(pdlperson, personInfo),
                 adresse = prefillAdresse.createPersonAdresse(pdlperson),
