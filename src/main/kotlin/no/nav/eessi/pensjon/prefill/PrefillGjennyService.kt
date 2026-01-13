@@ -1,5 +1,6 @@
 package no.nav.eessi.pensjon.prefill
 
+import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_05
 import no.nav.eessi.pensjon.eux.model.SedType.*
 import no.nav.eessi.pensjon.eux.model.sed.Bruker
 import no.nav.eessi.pensjon.eux.model.sed.P5000
@@ -16,6 +17,8 @@ import no.nav.eessi.pensjon.prefill.models.DigitalKontaktinfo.Companion.validate
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
+import no.nav.eessi.pensjon.prefill.person.PrefillSed
+import no.nav.eessi.pensjon.prefill.sed.PrefillP8000
 import no.nav.eessi.pensjon.prefill.sed.vedtak.PrefillP6000GjennyPensjon
 import no.nav.eessi.pensjon.prefill.sed.vedtak.PrefillP6000Pensjon.prefillP6000Pensjon
 import no.nav.eessi.pensjon.shared.api.ApiRequest
@@ -69,12 +72,14 @@ class PrefillGjennyService(
                 logger.info("Begynner preutfylling for gjenny")
                 val sed = when(prefillData.sedType) {
                     P2100 -> throw HttpClientErrorException(HttpStatus.NOT_IMPLEMENTED, "Prefilling for gjenny av sed type P2100 er ikke implementert")
-                    P5000 -> prefillP5000(prefillData, personcollection).also { logger.info("Preutfyll P5000: ") }
+                    P5000 -> prefillP5000(prefillData, personcollection).also { logger.info("Preutfyll gjenny P5000: ") }
                     P6000 -> prefillP6000(prefillData, personcollection, listeOverVedtak(prefillData, personcollection),
                         prefillNav = prefillPdlNav,
                         eessiInfo = eessiInformasjon,
                         pensjoninformasjon = null,
-                    )
+                    ).also { logger.info("Preutfyll gjenny P6000: ") }
+                    P8000 -> PrefillP8000(PrefillSed(prefillPdlNav)).prefill(prefillData, personcollection, null
+                    ).also { logger.info("Preutfyll P8000: ") }
                     else -> {
                         throw HttpClientErrorException(HttpStatus.NOT_IMPLEMENTED, "Prefilling for gjenny av sed type ${prefillData.sedType} er ikke implementert")
                     }

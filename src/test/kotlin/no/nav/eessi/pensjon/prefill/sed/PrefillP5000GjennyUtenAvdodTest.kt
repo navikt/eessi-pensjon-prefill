@@ -7,8 +7,10 @@ import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_02
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.SedType.P5000
 import no.nav.eessi.pensjon.eux.model.SedType.P6000
+import no.nav.eessi.pensjon.eux.model.SedType.P8000
 import no.nav.eessi.pensjon.eux.model.sed.P5000
 import no.nav.eessi.pensjon.eux.model.sed.P6000
+import no.nav.eessi.pensjon.eux.model.sed.P8000
 import no.nav.eessi.pensjon.prefill.*
 import no.nav.eessi.pensjon.prefill.etterlatte.EtterlatteService
 import no.nav.eessi.pensjon.prefill.models.DigitalKontaktinfo
@@ -43,6 +45,7 @@ class PrefillP5000GjennyUtenAvdodTest {
 
     lateinit var p5000: P5000
     lateinit var p6000: P6000
+    lateinit var p8000: P8000
     lateinit var innhentingService: InnhentingService
     lateinit var etterlatteService: EtterlatteService
     lateinit var prefillGjennyService: PrefillGjennyService
@@ -80,7 +83,7 @@ class PrefillP5000GjennyUtenAvdodTest {
     }
 
     @Test
-    fun `forventer korrekt utfylt P5000 med gjenlevende med uten avdod for gjenny sak uten avdod`() {
+    fun `Forventer korrekt preutfylt P5000 med gjenlevende uten kjent avdod for gjenny`() {
         val apiReq = apiRequest(P5000)
 
         p5000 = mapJsonToAny(prefillGjennyService.prefillGjennySedtoJson(apiReq))
@@ -93,15 +96,27 @@ class PrefillP5000GjennyUtenAvdodTest {
     }
 
     @Test
-    fun `forventer korrekt utfylt P6000 med gjenlevende med uten avdod for gjenny sak uten avdod`() {
+    fun `Forventer korrekt utfylt P6000 med gjenlevende uten avdod for gjenny`() {
         val apiReq = apiRequest(P6000)
 
         p6000 = mapJsonToAny(prefillGjennyService.prefillGjennySedtoJson(apiReq))
-        println("@@@P6000: ${p6000.toJson()}")
 
         assertEquals(personFnr, p6000.pensjon?.gjenlevende?.person?.pin?.firstOrNull()?.identifikator)
         assertEquals(null, p6000.nav?.bruker?.person?.fornavn)
         assertEquals(null, p6000.nav?.bruker?.person?.etternavn)
+
+    }
+
+    @Test
+    fun `Forventer korrekt preutfylt P8000 med gjenlevende uten avdod for gjenny`() {
+        val apiReq = apiRequest(P8000)
+
+        p8000 = mapJsonToAny(prefillGjennyService.prefillGjennySedtoJson(apiReq))
+        println("@@@P8000: ${p8000.toJson()}")
+
+        assertEquals(personFnr, p8000.pensjon?.gjenlevende?.person?.pin?.firstOrNull()?.identifikator)
+        assertEquals(null, p8000.nav?.bruker?.person?.fornavn)
+        assertEquals(null, p8000.nav?.bruker?.person?.etternavn)
 
     }
 
