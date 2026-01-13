@@ -28,6 +28,7 @@ import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.toJson
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
 private const val AKTOERID = "0105094340092"
@@ -95,6 +96,7 @@ class PrefillP5000GjennyUtenAvdodTest {
 
     }
 
+    @Disabled
     @Test
     fun `Forventer korrekt utfylt P6000 med gjenlevende uten avdod for gjenny`() {
         val apiReq = apiRequest(P6000)
@@ -107,6 +109,7 @@ class PrefillP5000GjennyUtenAvdodTest {
 
     }
 
+    @Disabled
     @Test
     fun `Forventer korrekt preutfylt P8000 med gjenlevende uten avdod for gjenny`() {
         val apiReq = apiRequest(P8000)

@@ -190,13 +190,11 @@ class PrefillGjennyService(
             annenPerson = null
         )
 
-        val navUtenBruker = nav.copy(bruker = null)
-
         logger.info("-------------------| Preutfylling [$sedType] END |------------------- ")
 
         return P6000(
             type = sedType,
-            nav = navUtenBruker,
+            nav = nav,
             pensjon = p6000Pensjon
         )
     }
