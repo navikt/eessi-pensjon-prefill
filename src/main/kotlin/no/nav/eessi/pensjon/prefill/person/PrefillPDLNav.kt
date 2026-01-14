@@ -168,7 +168,7 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
                                     it,
                                     bankOgArbeid?.let { createBankData(it) },
                                     bankOgArbeid?.let { createInformasjonOmAnsettelsesforhold(it) },
-                                    bruker
+                                    bruker.also { logger.debug("Brukerr 171: ${it?.toJson()}") },
                             )
                 },
 
@@ -183,7 +183,7 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
                 //sjekke om SED er P2x00 for utfylling av BARN
                 //sjekke punkt for barn. pkt. 6.0 for P2000 og P2200 pkt. 8.0 for P2100
                 barn = createBarnliste(barnPersonList.map { createPersonBarn(it, personData) }),
-                annenperson = annenPerson,
+                annenperson = annenPerson.also { logger.debug("Annenn person 186: ${it?.toJson()}")},
                 krav = krav
         )
     }

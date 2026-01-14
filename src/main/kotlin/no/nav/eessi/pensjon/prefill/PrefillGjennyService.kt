@@ -19,6 +19,7 @@ import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.prefill.person.PrefillSed
 import no.nav.eessi.pensjon.prefill.sed.PrefillP8000
+import no.nav.eessi.pensjon.prefill.sed.vedtak.PrefillP6000
 import no.nav.eessi.pensjon.prefill.sed.vedtak.PrefillP6000GjennyPensjon
 import no.nav.eessi.pensjon.prefill.sed.vedtak.PrefillP6000Pensjon.prefillP6000Pensjon
 import no.nav.eessi.pensjon.shared.api.ApiRequest
@@ -34,6 +35,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.client.HttpClientErrorException
+import org.springframework.web.server.ResponseStatusException
 
 @Service
 class PrefillGjennyService(
@@ -73,10 +75,13 @@ class PrefillGjennyService(
                 val sed = when(prefillData.sedType) {
                     P2100 -> throw HttpClientErrorException(HttpStatus.NOT_IMPLEMENTED, "Prefilling for gjenny av sed type P2100 er ikke implementert")
                     P5000 -> prefillP5000(prefillData, personcollection).also { logger.info("Preutfyll gjenny P5000: ") }
-                    P6000 -> prefillP6000(prefillData, personcollection, listeOverVedtak(prefillData, personcollection),
-                        prefillNav = prefillPdlNav,
-                        eessiInfo = eessiInformasjon,
-                        pensjoninformasjon = null,
+                    P6000 -> PrefillP6000(
+                        prefillPdlNav,
+                        eessiInformasjon,
+                        null
+                    ).prefill(
+                        prefillData,
+                        personcollection, null
                     ).also { logger.info("Preutfyll gjenny P6000: ") }
                     P8000 -> PrefillP8000(PrefillSed(prefillPdlNav)).prefill(prefillData, personcollection, null
                     ).also { logger.info("Preutfyll P8000: ") }
