@@ -75,14 +75,19 @@ class PrefillGjennyService(
                 val sed = when(prefillData.sedType) {
                     P2100 -> throw HttpClientErrorException(HttpStatus.NOT_IMPLEMENTED, "Prefilling for gjenny av sed type P2100 er ikke implementert")
                     P5000 -> prefillP5000(prefillData, personcollection).also { logger.info("Preutfyll gjenny P5000: ") }
-                    P6000 -> PrefillP6000(
-                        prefillPdlNav,
-                        eessiInformasjon,
-                        null
-                    ).prefill(
-                        prefillData,
-                        personcollection, null
-                    ).also { logger.info("Preutfyll gjenny P6000: ") }
+                    P6000 -> prefillP6000(prefillData, personcollection, listeOverVedtak(prefillData, personcollection),
+                        prefillNav = prefillPdlNav,
+                        eessiInfo = eessiInformasjon,
+                        pensjoninformasjon = null,
+                    )
+//                    P6000 -> PrefillP6000(
+//                        prefillPdlNav,
+//                        eessiInformasjon,
+//                        null
+//                    ).prefill(
+//                        prefillData,
+//                        personcollection, null
+//                    ).also { logger.info("Preutfyll gjenny P6000: ") }
                     P8000 -> PrefillP8000(PrefillSed(prefillPdlNav)).prefill(prefillData, personcollection, null
                     ).also { logger.info("Preutfyll P8000: ") }
                     else -> {
@@ -184,7 +189,6 @@ class PrefillGjennyService(
                 eessiInfo
             )
         }
-
         logger.debug("Henter opp Persondata fra TPS")
         val nav = prefillNav.prefill(
             penSaksnummer = prefillData.penSaksnummer,
@@ -194,12 +198,13 @@ class PrefillGjennyService(
             krav = p6000Pensjon?.kravDato,
             annenPerson = null
         )
+        val navUtenBruker = nav.copy(bruker = null)
 
         logger.info("-------------------| Preutfylling [$sedType] END |------------------- ")
 
         return P6000(
             type = sedType,
-            nav = nav,
+            nav = navUtenBruker,
             pensjon = p6000Pensjon
         )
     }
