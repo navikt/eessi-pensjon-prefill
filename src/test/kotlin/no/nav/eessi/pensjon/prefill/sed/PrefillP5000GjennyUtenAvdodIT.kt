@@ -5,7 +5,7 @@ import io.mockk.justRun
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_02
 import no.nav.eessi.pensjon.eux.model.SedType
-import no.nav.eessi.pensjon.eux.model.SedType.*
+import no.nav.eessi.pensjon.eux.model.SedType.P6000
 import no.nav.eessi.pensjon.eux.model.sed.P6000
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
 import no.nav.eessi.pensjon.personoppslag.pdl.model.AktoerId
@@ -30,37 +30,32 @@ class PrefillP5000GjennyUtenAvdodIT {
     private val personFnr = "04016143397"
     private val pesysSaksnummer = "21975717"
 
-    lateinit var prefillData: PrefillDataModel
+    private lateinit var prefillNav: PrefillPDLNav
+    private lateinit var personDataService: PersonDataService
+    private lateinit var prefillGjennyService: PrefillGjennyService
 
-    lateinit var prefill: PrefillP5000
-    lateinit var prefillNav: PrefillPDLNav
-
-    var innhentingService: InnhentingService = mockk()
-    var etterlatteService: EtterlatteService = EtterlatteService(mockk())
-    lateinit var personDataService : PersonDataService
-    lateinit var prefillGjennyService: PrefillGjennyService
-
-    var eessiInformasjon = mockk<EessiInformasjon>(relaxed = true)
-    var krrService = mockk<KrrService>(relaxed = true)
-    var automatiseringStatistikkService = mockk<AutomatiseringStatistikkService>()
-    var personservice = mockk<PersonService>()
+    private val innhentingService = mockk<InnhentingService>()
+    private val etterlatteService = EtterlatteService(mockk())
+    private val eessiInformasjon = mockk<EessiInformasjon>(relaxed = true)
+    private val krrService = mockk<KrrService>(relaxed = true)
+    private val automatiseringStatistikkService = mockk<AutomatiseringStatistikkService>()
+    private val personservice = mockk<PersonService>()
 
     @BeforeEach
     fun setup() {
         prefillNav = BasePrefillNav.createPrefillNav()
         personDataService = PersonDataService(personservice)
-        prefillGjennyService = PrefillGjennyService(krrService, innhentingService, etterlatteService, automatiseringStatistikkService, prefillNav, eessiInformasjon)
+        prefillGjennyService = PrefillGjennyService(
+            krrService, innhentingService, etterlatteService,
+            automatiseringStatistikkService, prefillNav, eessiInformasjon
+        )
 
-        every { innhentingService.hentFnrEllerNpidFraAktoerService(eq("0105094340092")) } returns personFnr
+        every { innhentingService.hentFnrEllerNpidFraAktoerService(AKTOERID) } returns personFnr
         every { innhentingService.getAvdodAktoerIdPDL(any()) } returns null
-
         every { personservice.hentIdent(any(), any()) } returns AktoerId(personFnr)
         every { personservice.hentPerson(any()) } returns PersonPDLMock.createWith(true, "Avdød", "Død", personFnr, AKTOERID, true)
         justRun { automatiseringStatistikkService.genererAutomatiseringStatistikk(any(), any()) }
-        every { krrService.hentPersonerFraKrr(eq(personFnr), any()) } returns DigitalKontaktinfo(
-            aktiv = true,
-            personident = personFnr
-        )
+        every { krrService.hentPersonerFraKrr(personFnr, any()) } returns DigitalKontaktinfo(aktiv = true, personident = personFnr)
     }
 
     @Test
