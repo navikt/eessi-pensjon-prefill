@@ -256,13 +256,13 @@ class PrefillGjennyService(
 
     private fun utfyllAnnenperson(gjenlevende: Bruker?): Bruker? {
         if (gjenlevende == null) return null
-        gjenlevende.person?.rolle = "SOEKER_ETTERRLATTEPENSJON"
+        gjenlevende.person?.rolle = PersonenRolle.SOEKER_ETTERRLATTEPENSJON.value
         return gjenlevende
     }
 
     private fun annenPersonHvisGjenlevende(prefillData: PrefillDataModel, gjenlevende: Bruker?): Bruker? {
         return if (prefillData.avdod != null) {
-            gjenlevende?.person?.rolle = "01"  //Claimant - etterlatte
+            gjenlevende?.person?.rolle = PersonenRolle.SOEKER_ETTERRLATTEPENSJON.value  //Claimant - etterlatte
             gjenlevende
         } else null
     }
