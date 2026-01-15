@@ -24,6 +24,7 @@ import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.prefill.person.PrefillSed
+import no.nav.eessi.pensjon.prefill.sed.PrefillP8000.PersonenRolle
 import no.nav.eessi.pensjon.prefill.sed.vedtak.PrefillP6000GjennyPensjon
 import no.nav.eessi.pensjon.prefill.sed.vedtak.PrefillP6000Pensjon.prefillP6000Pensjon
 import no.nav.eessi.pensjon.shared.api.ApiRequest
@@ -205,11 +206,6 @@ class PrefillGjennyService(
     }
 
     fun prefillP8000(prefillData: PrefillDataModel, personData: PersonDataCollection, prefillNav: PrefillPDLNav): P8000 {
-//        val navsed = PrefillSed(prefillNav).prefill(prefillData, personData)
-//        val eessielm = navsed.nav?.eessisak
-////        val gjenlevendeBruker: Bruker? = navsed.pensjon?.gjenlevende
-//        val avDodBruker = navsed.nav?.bruker
-
         val gjenlevendePerson = prefillNav.createBruker(personData.forsikretPerson!!, null, null, prefillData.bruker)
 
         logger.debug("gjenlevendeBruker: ${gjenlevendePerson?.person?.fornavn} PIN: ${gjenlevendePerson?.person?.pin?.firstOrNull()?.identifikator} ")
@@ -218,7 +214,7 @@ class PrefillGjennyService(
         logger.debug("*** ReferanseTilPerson: ${prefillData.refTilPerson}, gjenlevende: ${gjenlevendePerson!= null} ***")
         return if (gjenlevendePerson != null) {
             logger.info("Prefill P8000 forenklet preutfylling for gjenlevende uten avdød, Ferdig.")
-            sedP8000(null, gjenlevendePerson.person, gjenlevendePerson.adresse, prefillData, null)
+            sedP8000(null, null, null, prefillData, gjenlevendePerson)
         } else {
             throw HttpClientErrorException(HttpStatus.NOT_IMPLEMENTED, "Prefilling for gjenny av sed type ${prefillData.sedType} er ikke implementert")
         }
@@ -246,7 +242,7 @@ class PrefillGjennyService(
                         bygning = adresse?.bygning
                     )
                 ),
-//                annenperson = utfyllAnnenperson(annenPerson)
+                annenperson = utfyllAnnenperson(annenPerson)
             ),
             p8000Pensjon = utfyllReferanseTilPerson(prefillData)
         )
@@ -256,6 +252,12 @@ class PrefillGjennyService(
     private fun utfyllReferanseTilPerson(prefillData: PrefillDataModel): P8000Pensjon? {
         val refTilperson = prefillData.refTilPerson ?: return null
         return P8000Pensjon(anmodning = AnmodningOmTilleggsInfo(referanseTilPerson = refTilperson.verdi))
+    }
+
+    private fun utfyllAnnenperson(gjenlevende: Bruker?): Bruker? {
+        if (gjenlevende == null) return null
+        gjenlevende.person?.rolle = "SOEKER_ETTERRLATTEPENSJON"
+        return gjenlevende
     }
 
     private fun annenPersonHvisGjenlevende(prefillData: PrefillDataModel, gjenlevende: Bruker?): Bruker? {

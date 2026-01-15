@@ -109,7 +109,6 @@ class PrefillP5000GjennyUtenAvdodTest {
     @Test
     fun `Forventer korrekt preutfylt P8000 med gjenlevende uten avdod for gjenny`() {
         mockPersonReponse(personFnr)
-//        every { prefillData.refTilPerson } returns SOKER
 
         val apiReq = apiRequest(P8000)
         val p8000 = mapJsonToAny<P8000>(prefillGjennyService.prefillGjennySedtoJson(apiReq))
@@ -117,10 +116,12 @@ class PrefillP5000GjennyUtenAvdodTest {
 
         println("@@@AVDØD: ${p8000.nav?.bruker?.person?.pin?.firstOrNull()?.identifikator}")
         println("@@@Gjenlevende: ${p8000.pensjon?.gjenlevende?.person?.toJson()}")
-//        assertEquals(personFnr, p8000.pensjon?.gjenlevende?.person?.pin?.firstOrNull()?.identifikator)
-        assertEquals("04016143397", p8000.nav?.bruker?.person?.pin?.firstOrNull()?.identifikator)
-        assertEquals("BEVISST", p8000.nav?.bruker?.person?.fornavn)
-        assertEquals("GAUPE", p8000.nav?.bruker?.person?.etternavn)
+
+        assertEquals(personFnr, p8000.nav?.annenperson?.person?.pin?.firstOrNull()?.identifikator)
+        //AVDØD/FORSIKRET
+        assertEquals(null, p8000.nav?.bruker?.person?.pin?.firstOrNull()?.identifikator)
+        assertEquals(null, p8000.nav?.bruker?.person?.fornavn)
+        assertEquals(null, p8000.nav?.bruker?.person?.etternavn)
     }
 
     fun mockPersonReponse(personFnr: String) {
