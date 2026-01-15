@@ -1,12 +1,18 @@
 package no.nav.eessi.pensjon.prefill
 
-import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_05
 import no.nav.eessi.pensjon.eux.model.SedType.*
+import no.nav.eessi.pensjon.eux.model.sed.Adresse
+import no.nav.eessi.pensjon.eux.model.sed.AnmodningOmTilleggsInfo
 import no.nav.eessi.pensjon.eux.model.sed.Bruker
+import no.nav.eessi.pensjon.eux.model.sed.EessisakItem
+import no.nav.eessi.pensjon.eux.model.sed.Nav
 import no.nav.eessi.pensjon.eux.model.sed.P5000
 import no.nav.eessi.pensjon.eux.model.sed.P5000Pensjon
 import no.nav.eessi.pensjon.eux.model.sed.P6000
+import no.nav.eessi.pensjon.eux.model.sed.P8000
+import no.nav.eessi.pensjon.eux.model.sed.P8000Pensjon
 import no.nav.eessi.pensjon.eux.model.sed.Pensjon
+import no.nav.eessi.pensjon.eux.model.sed.Person
 import no.nav.eessi.pensjon.eux.model.sed.SED
 import no.nav.eessi.pensjon.eux.model.sed.SED.Companion.setSEDVersion
 import no.nav.eessi.pensjon.metrics.MetricsHelper
@@ -18,8 +24,6 @@ import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.prefill.person.PrefillSed
-import no.nav.eessi.pensjon.prefill.sed.PrefillP8000
-import no.nav.eessi.pensjon.prefill.sed.vedtak.PrefillP6000
 import no.nav.eessi.pensjon.prefill.sed.vedtak.PrefillP6000GjennyPensjon
 import no.nav.eessi.pensjon.prefill.sed.vedtak.PrefillP6000Pensjon.prefillP6000Pensjon
 import no.nav.eessi.pensjon.shared.api.ApiRequest
@@ -35,7 +39,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.client.HttpClientErrorException
-import org.springframework.web.server.ResponseStatusException
 
 @Service
 class PrefillGjennyService(
@@ -80,16 +83,8 @@ class PrefillGjennyService(
                         eessiInfo = eessiInformasjon,
                         pensjoninformasjon = null,
                     )
-//                    P6000 -> PrefillP6000(
-//                        prefillPdlNav,
-//                        eessiInformasjon,
-//                        null
-//                    ).prefill(
-//                        prefillData,
-//                        personcollection, null
-//                    ).also { logger.info("Preutfyll gjenny P6000: ") }
-                    P8000 -> PrefillP8000(PrefillSed(prefillPdlNav)).prefill(prefillData, personcollection, null
-                    ).also { logger.info("Preutfyll P8000: ") }
+                    P8000 -> prefillP8000(prefillData, personcollection, prefillPdlNav).also { logger.info("Preutfyll P8000: ") }
+                    //PrefillP8000(PrefillSed(prefillPDLnav)).prefill(prefillData, personDataCollection, null)
                     else -> {
                         throw HttpClientErrorException(HttpStatus.NOT_IMPLEMENTED, "Prefilling for gjenny av sed type ${prefillData.sedType} er ikke implementert")
                     }
@@ -207,6 +202,60 @@ class PrefillGjennyService(
             nav = navUtenBruker,
             pensjon = p6000Pensjon
         )
+    }
+
+    fun prefillP8000(prefillData: PrefillDataModel, personData: PersonDataCollection, prefillNav: PrefillPDLNav): P8000 {
+//        val navsed = PrefillSed(prefillNav).prefill(prefillData, personData)
+//        val eessielm = navsed.nav?.eessisak
+////        val gjenlevendeBruker: Bruker? = navsed.pensjon?.gjenlevende
+//        val avDodBruker = navsed.nav?.bruker
+
+        val gjenlevendePerson = prefillNav.createBruker(personData.forsikretPerson!!, null, null, prefillData.bruker)
+
+        logger.debug("gjenlevendeBruker: ${gjenlevendePerson?.person?.fornavn} PIN: ${gjenlevendePerson?.person?.pin?.firstOrNull()?.identifikator} ")
+//        logger.debug("avDodBruker: ${avDodBruker?.person?.fornavn} PIN: ${avDodBruker?.person?.pin?.firstOrNull()?.identifikator} ")
+
+        logger.debug("*** ReferanseTilPerson: ${prefillData.refTilPerson}, gjenlevende: ${gjenlevendePerson!= null} ***")
+        return if (gjenlevendePerson != null) {
+            logger.info("Prefill P8000 forenklet preutfylling for gjenlevende uten avdød, Ferdig.")
+            sedP8000(null, gjenlevendePerson.person, gjenlevendePerson.adresse, prefillData, null)
+        } else {
+            throw HttpClientErrorException(HttpStatus.NOT_IMPLEMENTED, "Prefilling for gjenny av sed type ${prefillData.sedType} er ikke implementert")
+        }
+    }
+
+    private fun sedP8000(eessielm: List<EessisakItem>?, forsikretPerson: Person?, adresse: Adresse?, prefillData: PrefillDataModel, annenPerson: Bruker?): P8000 {
+        logger.info("forsikretPerson: ${forsikretPerson != null} annenPerson: ${annenPerson != null}"  )
+        return P8000(
+            nav = Nav(
+//                eessisak = eessielm,
+                bruker = Bruker(
+                    person = Person(
+                        etternavn = forsikretPerson?.etternavn,
+                        fornavn = forsikretPerson?.fornavn,
+                        foedselsdato = forsikretPerson?.foedselsdato,
+                        kjoenn = forsikretPerson?.kjoenn,
+                        pin = forsikretPerson?.pin,
+                        kontakt = forsikretPerson?.kontakt),
+                    adresse = Adresse(
+                        postnummer = adresse?.postnummer,
+                        gate = adresse?.gate,
+                        by = adresse?.by,
+                        land = adresse?.land,
+                        region = adresse?.region,
+                        bygning = adresse?.bygning
+                    )
+                ),
+//                annenperson = utfyllAnnenperson(annenPerson)
+            ),
+            p8000Pensjon = utfyllReferanseTilPerson(prefillData)
+        )
+
+    }
+
+    private fun utfyllReferanseTilPerson(prefillData: PrefillDataModel): P8000Pensjon? {
+        val refTilperson = prefillData.refTilPerson ?: return null
+        return P8000Pensjon(anmodning = AnmodningOmTilleggsInfo(referanseTilPerson = refTilperson.verdi))
     }
 
     private fun annenPersonHvisGjenlevende(prefillData: PrefillDataModel, gjenlevende: Bruker?): Bruker? {
