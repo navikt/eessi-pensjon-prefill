@@ -15,11 +15,9 @@ import no.nav.eessi.pensjon.prefill.*
 import no.nav.eessi.pensjon.prefill.etterlatte.EtterlatteService
 import no.nav.eessi.pensjon.prefill.models.DigitalKontaktinfo
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
-import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.shared.api.ApiRequest
 import no.nav.eessi.pensjon.shared.api.InstitusjonItem
-import no.nav.eessi.pensjon.shared.api.PersonInfo
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
 import no.nav.eessi.pensjon.statistikk.AutomatiseringStatistikkService
 import no.nav.eessi.pensjon.utils.mapJsonToAny
@@ -60,25 +58,13 @@ class PrefillP5000GjennyUtenAvdodTest {
         innhentingService = InnhentingService(personDataService, pensjonsinformasjonService = mockk())
         prefillGjennyService = PrefillGjennyService(krrService, innhentingService, etterlatteService, automatiseringStatistikkService, prefillNav, eessiInformasjon)
 
-        every { personservice.hentIdent(any(), any()) } returns AktoerId(personFnr)
-        every { personservice.hentPerson(any()) } returns PersonPDLMock.createWith(true, "Avdød", "Død", personFnr, AKTOERID, true)
         justRun { automatiseringStatistikkService.genererAutomatiseringStatistikk(any(), any()) }
-        every { krrService.hentPersonerFraKrr(eq(personFnr), any()) } returns DigitalKontaktinfo(
-            aktiv = true,
-            personident = personFnr
-        )
     }
 
     @Disabled
     @Test
     fun `Forventer korrekt preutfylt P5000 med gjenlevende uten kjent avdod for gjenny`() {
-        prefillData = PrefillDataModelMother.initialPrefillDataModel(
-            P5000,
-            personFnr,
-            penSaksnummer = pesysSaksnummer,
-            avdod = PersonInfo(null, null)
-        )
-
+        mockPersonReponse(personFnr)
         val apiReq = apiRequest(P5000)
 
         val p5000 = mapJsonToAny<P5000>(prefillGjennyService.prefillGjennySedtoJson(apiReq))
@@ -86,22 +72,13 @@ class PrefillP5000GjennyUtenAvdodTest {
         assertEquals(personFnr, p5000.pensjon?.gjenlevende?.person?.pin?.firstOrNull()?.identifikator)
         assertEquals(null, p5000.nav?.bruker?.person?.fornavn)
         assertEquals(null, p5000.nav?.bruker?.person?.etternavn)
-
-
     }
 
     @Disabled
     @Test
     fun `Forventer korrekt utfylt P6000 med gjenlevende med avdod for gjenny`() {
-        prefillData = PrefillDataModelMother.initialPrefillDataModel(
-            P6000,
-            personFnr,
-            penSaksnummer = pesysSaksnummer,
-            avdod = PersonInfo(null, null)
-        )
 
         val apiReq = apiRequest(P6000)
-
         val p6000 = mapJsonToAny<P6000>(prefillGjennyService.prefillGjennySedtoJson(apiReq))
 
         assertEquals(null, p6000.pensjon?.gjenlevende?.person?.pin?.firstOrNull()?.identifikator)
@@ -109,18 +86,12 @@ class PrefillP5000GjennyUtenAvdodTest {
 //        assertEquals("BEVISST", p6000.pensjon?.gjenlevende?.person?.fornavn)
 //        assertEquals("GAUPE", p6000.pensjon?.gjenlevende?.person?.etternavn)
         assertEquals("Avdød", p6000.nav?.bruker?.person?.fornavn)
-        assertEquals(null, p6000.nav?.bruker?.person?.etternavn)
 
     }
 
     @Test
     fun `Forventer korrekt utfylt P6000 med gjenlevende uten avdod for gjenny`() {
-        prefillData = PrefillDataModelMother.initialPrefillDataModel(
-            P6000,
-            personFnr,
-            penSaksnummer = pesysSaksnummer,
-            avdod = PersonInfo(null, null)
-        )
+        mockPersonReponse(personFnr)
 
         val apiReq = apiRequest(P6000)
         val p6000 = mapJsonToAny<P6000>(prefillGjennyService.prefillGjennySedtoJson(apiReq))
@@ -135,15 +106,24 @@ class PrefillP5000GjennyUtenAvdodTest {
     @Disabled
     @Test
     fun `Forventer korrekt preutfylt P8000 med gjenlevende uten avdod for gjenny`() {
-        val apiReq = apiRequest(P8000)
+        mockPersonReponse(personFnr)
 
+        val apiReq = apiRequest(P8000)
         val p8000 = mapJsonToAny<P8000>(prefillGjennyService.prefillGjennySedtoJson(apiReq))
         println("@@@P8000: ${p8000.toJson()}")
 
         assertEquals(personFnr, p8000.pensjon?.gjenlevende?.person?.pin?.firstOrNull()?.identifikator)
         assertEquals(null, p8000.nav?.bruker?.person?.fornavn)
         assertEquals(null, p8000.nav?.bruker?.person?.etternavn)
+    }
 
+    fun mockPersonReponse(personFnr: String) {
+        every { personservice.hentIdent(any(), any()) } returns AktoerId(personFnr)
+        every { personservice.hentPerson(any()) } returns PersonPDLMock.createWith(true, "Avdød", "Død", personFnr, AKTOERID, true)
+        every { krrService.hentPersonerFraKrr(eq(personFnr), any()) } returns DigitalKontaktinfo(
+            aktiv = true,
+            personident = personFnr
+        )
     }
 
     private fun apiRequest(sedType: SedType): ApiRequest = ApiRequest(
