@@ -208,7 +208,7 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
         return beregniger?.map { beregn ->
             YtelserItem(
                 startdatoretttilytelse = beregn.periode?.fom,
-                sluttdatoUtbetaling = beregn.periode?.tom,
+                sluttdatoutbetaling = beregn.periode?.tom,
                 beloep = listOf(
                     BeloepItem(
                         valuta = beregn.valuta,

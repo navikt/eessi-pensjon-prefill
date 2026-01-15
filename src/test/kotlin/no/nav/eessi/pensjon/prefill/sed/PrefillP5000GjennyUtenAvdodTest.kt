@@ -118,6 +118,7 @@ class PrefillP5000GjennyUtenAvdodTest {
         println("@@@Gjenlevende: ${p8000.pensjon?.gjenlevende?.person?.toJson()}")
 
         assertEquals(personFnr, p8000.nav?.annenperson?.person?.pin?.firstOrNull()?.identifikator)
+        assertEquals("01", p8000.nav?.annenperson?.person?.rolle)
         //AVDØD/FORSIKRET
         assertEquals(null, p8000.nav?.bruker?.person?.pin?.firstOrNull()?.identifikator)
         assertEquals(null, p8000.nav?.bruker?.person?.fornavn)
