@@ -99,7 +99,7 @@ class PrefillSEDService(private val eessiInformasjon: EessiInformasjon, private 
             P6000 -> PrefillP6000(
                 prefillPDLnav,
                 eessiInformasjon,
-                pensjonCollection?.pensjoninformasjon ?: throw ResponseStatusException(
+                pensjonCollection?.p6000Data ?: throw ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
                     "Ingen vedtak"
                 )

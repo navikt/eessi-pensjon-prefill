@@ -2,9 +2,9 @@ package no.nav.eessi.pensjon.prefill.sed.vedtak.helper
 
 import no.nav.eessi.pensjon.eux.model.sed.ReduksjonItem
 import no.nav.eessi.pensjon.eux.model.sed.VirkningsdatoItem
+import no.nav.eessi.pensjon.prefill.models.pensjon.P6000MeldingOmVedtakDto
 import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.VedtakPensjonDataHelper.hentGrunnPersjon
 import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.VedtakPensjonDataHelper.hentTilleggsPensjon
-import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -13,7 +13,7 @@ object PrefillPensjonReduksjon {
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillPensjonReduksjon::class.java) }
 
     //5.1
-    fun createReduksjon(pendata: Pensjonsinformasjon): List<ReduksjonItem>? {
+    fun createReduksjon(pendata: P6000MeldingOmVedtakDto): List<ReduksjonItem>? {
         logger.debug("PrefillPensjonReduksjon")
         logger.debug("5.1       Reduksjon")
 
@@ -59,9 +59,9 @@ object PrefillPensjonReduksjon {
         OG Vilkårsprøving Detaljer Trygdeavtale Skal artikkel 10 anvendes på grunnpensjon
         SÅ skal det hukes av for "[02] Ytelse som fastsettes på grunnlag av en godskrevet periode"
      */
-    private fun createReduksjonType(pendata: Pensjonsinformasjon): String? {
+    private fun createReduksjonType(pendata: P6000MeldingOmVedtakDto): String? {
         logger.debug("5.1.1         ReduksjonType")
-        val sakType = KSAK.valueOf(pendata.sakAlder.sakType)
+        val sakType = pendata.sakAlder.sakType
 
         if (sakType == KSAK.UFOREP && hentTilleggsPensjon(pendata))
             return "02"
@@ -88,9 +88,9 @@ object PrefillPensjonReduksjon {
         OG Detaljer trygdeavtale Skal artikkel 10 anvendes på grunnpensjon
         SÅ skal det hukes av for "[02] 883/2004: Art. 54(2)b»
      */
-    private fun createReduksjonArtikkelType(pendata: Pensjonsinformasjon): String? {
+    private fun createReduksjonArtikkelType(pendata: P6000MeldingOmVedtakDto): String? {
         logger.debug("5.1.4         ReduksjonArtikkelType")
-        val sakType = KSAK.valueOf(pendata.sakAlder.sakType)
+        val sakType = pendata.sakAlder.sakType
 
         if (sakType == KSAK.UFOREP && hentTilleggsPensjon(pendata))
             return "02"

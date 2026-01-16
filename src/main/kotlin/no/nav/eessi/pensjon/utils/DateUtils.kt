@@ -23,6 +23,9 @@ fun XMLGregorianCalendar.simpleFormat(): String {
 
 fun Date.simpleFormat(): String = SimpleDateFormat(sdfPattern).format(this)
 
+fun LocalDate.simpleFormat(): String = SimpleDateFormat(sdfPattern).format(this)
+
+
 fun createXMLCalendarFromString(dateStr: String): XMLGregorianCalendar {
     val date = SimpleDateFormat(sdfPattern).parse(dateStr)
     val gcal = GregorianCalendar()

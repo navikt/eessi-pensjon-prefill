@@ -4,6 +4,7 @@ import no.nav.eessi.pensjon.eux.model.sed.BasertPaa
 import no.nav.eessi.pensjon.eux.model.sed.Grunnlag
 import no.nav.eessi.pensjon.eux.model.sed.Opptjening
 import no.nav.eessi.pensjon.eux.model.sed.VedtakItem
+import no.nav.eessi.pensjon.prefill.models.pensjon.P6000MeldingOmVedtakDto
 import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.PrefillPensjonVedtaksavslag.createAvlsagsBegrunnelseItem
 import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.PrefillPensjonVedtaksavslag.sjekkForVilkarsvurderingListeHovedytelseellerAvslag
 import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.PrefillPensjonVedtaksbelop.createBeregningItemList
@@ -12,8 +13,6 @@ import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.VedtakPensjonDataHelper.he
 import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.VedtakPensjonDataHelper.hentVinnendeBergeningsMetode
 import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.VedtakPensjonDataHelper.isMottarMinstePensjonsniva
 import no.nav.eessi.pensjon.utils.simpleFormat
-import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
-import no.nav.pensjon.v1.sakalder.V1SakAlder
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -24,38 +23,38 @@ object PrefillPensjonVedtak {
     /**
      *  4.1
      */
-    fun createVedtakItem(pendata: Pensjonsinformasjon): VedtakItem {
+    fun createVedtakItem(pesysPrefillData: P6000MeldingOmVedtakDto): VedtakItem {
         logger.info("PrefillPensjonReduksjon")
         logger.debug("4.1       VedtakItem")
 
         return VedtakItem(
 
                 //4.1.1  $pensjon.vedtak[x].type
-                type = createVedtakTypePensionWithRule(pendata),
+                type = createVedtakTypePensionWithRule(pesysPrefillData),
 
                 //4.1.2  $pensjon.vedtak[x].basertPaa
-                basertPaa = createVedtakGrunnlagPentionWithRule(pendata),
+                basertPaa = createVedtakGrunnlagPentionWithRule(pesysPrefillData),
 
                 //4.1.3.1 $pensjon.vedtak[x].basertPaaAnnen
-                basertPaaAnnen = createVedtakAnnenTypePentionWithRule(pendata),
+                basertPaaAnnen = createVedtakAnnenTypePentionWithRule(pesysPrefillData),
 
                 //4.1.4 $pensjon.vedtak[x].resultat
-                resultat = createTypeVedtakPentionWithRule(pendata),
+                resultat = createTypeVedtakPentionWithRule(pesysPrefillData),
 
                 //4.1.6  $pensjon.vedtak[x].virkningsdato
-                virkningsdato = pendata.vedtak.virkningstidspunkt.simpleFormat(),
+                virkningsdato = pesysPrefillData.vedtak.virkningstidspunkt.simpleFormat(),
 
                 //4.1.7 -- $pensjon.vedtak[x].beregning[x]..
-                beregning = createBeregningItemList(pendata),
+                beregning = createBeregningItemList(pesysPrefillData),
 
                 //4.1.9
-                ukjent = createEkstraTilleggPensjon(pendata),
+                ukjent = createEkstraTilleggPensjon(pesysPrefillData),
 
                 //4.1.10 - 4.1.12 $pensjon.vedtak[x].grunnlag
-                grunnlag = createGrunnlag(pendata),
+                grunnlag = createGrunnlag(pesysPrefillData),
 
                 //4.1.13.1 -- 4.1.13.2.1 - $pensjon.vedtak[x].avslagbegrunnelse[x].begrunnelse
-                avslagbegrunnelse = createAvlsagsBegrunnelseItem(pendata),
+                avslagbegrunnelse = createAvlsagsBegrunnelseItem(pesysPrefillData),
         )
 
     }
@@ -70,15 +69,9 @@ object PrefillPensjonVedtak {
      *
      * 04, 05 og 06 benyttes ikke
      */
-    fun createVedtakTypePensionWithRule(pendata: Pensjonsinformasjon): String {
-        //v1sak fra PESYS
-        val v1sak = pendata.sakAlder as V1SakAlder
-
-        //type fra K_SAK_T
-        val type = v1sak.sakType
-        logger.info("4.1.1         VedtakTypePension: $type")
-
-        val sakType = KSAK.valueOf(type)
+    fun createVedtakTypePensionWithRule(pendata: P6000MeldingOmVedtakDto): String {
+        val sakType = pendata.sakAlder.sakType
+        logger.info("4.1.1         VedtakTypePension: $sakType")
 
         return when (sakType) {
             KSAK.ALDER ->  "01"
@@ -95,10 +88,10 @@ object PrefillPensjonVedtak {
      * [99] Other
      *
      */
-    private fun createVedtakGrunnlagPentionWithRule(pendata: Pensjonsinformasjon): BasertPaa? {
+    private fun createVedtakGrunnlagPentionWithRule(pendata: P6000MeldingOmVedtakDto): BasertPaa? {
         logger.info("4.1.2         VedtakGrunnlagPention")
 
-        val sakType = KSAK.valueOf(pendata.sakAlder.sakType)
+        val sakType = pendata.sakAlder.sakType
         logger.info("              Saktype: $sakType")
 
         //hvis avslag returner vi tomt verdi
@@ -117,7 +110,7 @@ object PrefillPensjonVedtak {
     /**
      *  4.1.3.1 (other type)
      */
-    private fun createVedtakAnnenTypePentionWithRule(pendata: Pensjonsinformasjon): String? {
+    private fun createVedtakAnnenTypePentionWithRule(pendata: P6000MeldingOmVedtakDto): String? {
 
         logger.info("4.1.3.1       VedtakAnnenTypePensjon")
         if (createVedtakGrunnlagPentionWithRule(pendata) == BasertPaa.annet) {
@@ -141,10 +134,10 @@ object PrefillPensjonVedtak {
      *  HVIS sakstype er Uføretrygd, OG kravtype er Førstegangsbehandling Norge/utland ELLER Mellombehandling, SÅ skal det hukes for «[04] Provisional or advance payment»
      *  Opphør - må håndteres Se pkt 6.2
      */
-    private fun createTypeVedtakPentionWithRule(pendata: Pensjonsinformasjon): String? {
+    private fun createTypeVedtakPentionWithRule(pendata: P6000MeldingOmVedtakDto): String? {
         logger.info("4.1.4         TypeVedtakPention (vedtak.resultat")
 
-        val sakType = KSAK.valueOf(pendata.sakAlder.sakType)
+        val sakType = pendata.sakAlder.sakType
         val kravGjelder = pendata.vedtak.kravGjelder
 
         val vedtaksresultat = hentVilkarsResultatHovedytelse(pendata)
@@ -181,7 +174,7 @@ object PrefillPensjonVedtak {
     /**
      * 4.1.10 - 4.1.12
      */
-    private fun createGrunnlag(pendata: Pensjonsinformasjon): Grunnlag {
+    private fun createGrunnlag(pendata: P6000MeldingOmVedtakDto): Grunnlag {
 
         logger.info("4.1.10        Grunnlag")
 
@@ -202,10 +195,10 @@ object PrefillPensjonVedtak {
      *  [1] Yes
      *  [0] No
      */
-    private fun createFramtidigtrygdetid(pendata: Pensjonsinformasjon): String {
+    private fun createFramtidigtrygdetid(pendata: P6000MeldingOmVedtakDto): String {
         logger.info("4.1.12        Framtidigtrygdetid ${pendata.sakAlder.sakType}")
 
-        return when (KSAK.valueOf(pendata.sakAlder.sakType)) {
+        return when (pendata.sakAlder.sakType) {
             KSAK.ALDER -> "0"
             else -> {
                 "1"
@@ -221,23 +214,21 @@ object PrefillPensjonVedtak {
      * [03] - Fullstendig
      *
      */
-    private fun createOpptjeningForsikredeAnnen(pendata: Pensjonsinformasjon): String? {
+    private fun createOpptjeningForsikredeAnnen(pendata: P6000MeldingOmVedtakDto): String? {
         logger.info("4.1.11        OpptjeningForsikredeAnnen, sakType: ${pendata.sakAlder.sakType}")
 
-        val sakType = KSAK.valueOf(pendata.sakAlder.sakType)
+        val sakType = pendata.sakAlder.sakType
 
-        val resultatGjenlevendetillegg = pendata.vilkarsvurderingListe?.vilkarsvurderingListe?.get(0)?.resultatGjenlevendetillegg ?: ""
-        val erUtenGjenlevendetillegg = resultatGjenlevendetillegg == ""
-        val erMedGjenlevendetillegg = resultatGjenlevendetillegg != ""
+        val resultatGjenlevendetillegg = pendata.vilkarsvurderingListe.firstOrNull()?.harResultatGjenlevendetillegg?: false
         val vinnendeMetode = hentVinnendeBergeningsMetode(pendata) ?: ""
 
-        if ((KSAK.ALDER == sakType || KSAK.UFOREP == sakType) && erUtenGjenlevendetillegg)
+        if ((KSAK.ALDER == sakType || KSAK.UFOREP == sakType) && !resultatGjenlevendetillegg)
             return "01"
 
-        if (KSAK.ALDER == sakType && erMedGjenlevendetillegg && vinnendeMetode != "RETT_TIL_GJT")
+        if (KSAK.ALDER == sakType && resultatGjenlevendetillegg && vinnendeMetode != "RETT_TIL_GJT")
             return "01"
 
-        if (KSAK.ALDER == sakType && erMedGjenlevendetillegg && "RETT_TIL_GJT" == vinnendeMetode)
+        if (KSAK.ALDER == sakType && resultatGjenlevendetillegg && "RETT_TIL_GJT" == vinnendeMetode)
             return "02"
 
         if (KSAK.GJENLEV == sakType || KSAK.BARNEP == sakType) {

@@ -24,7 +24,8 @@ import org.springframework.web.server.ResponseStatusException
 class InnhentingService(
     private val personDataService: PersonDataService,
     @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper.ForTest(),
-    private val pensjonsinformasjonService: PensjonsinformasjonService
+    private val pensjonsinformasjonService: PensjonsinformasjonService,
+    private val pesysService: PesysService,
 ) {
 
     private var HentPerson: MetricsHelper.Metric
@@ -95,7 +96,10 @@ class InnhentingService(
                     sedType = sedType
                 )
             }
-            P6000 ->  PensjonCollection(pensjoninformasjon = pensjonsinformasjonService.hentVedtak(hentVedtak(prefillData)), sedType = sedType)
+            P6000 -> PensjonCollection(
+                p6000Data = prefillData.vedtakId?.let { pesysService.hentP6000data(it) },
+                sedType = sedType
+            )
             P8000 -> {
                 if (prefillData.buc == P_BUC_05) {
                         try {

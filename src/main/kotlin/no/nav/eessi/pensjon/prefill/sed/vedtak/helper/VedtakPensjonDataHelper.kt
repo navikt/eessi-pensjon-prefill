@@ -1,59 +1,47 @@
 package no.nav.eessi.pensjon.prefill.sed.vedtak.helper
 
-import no.nav.pensjon.v1.avdod.V1Avdod
-import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
-import no.nav.pensjon.v1.trygdetidliste.V1TrygdetidListe
-import no.nav.pensjon.v1.vilkarsvurdering.V1Vilkarsvurdering
-import no.nav.pensjon.v1.vilkarsvurderingliste.V1VilkarsvurderingListe
-import no.nav.pensjon.v1.vilkarsvurderinguforetrygd.V1VilkarsvurderingUforetrygd
-import no.nav.pensjon.v1.ytelsepermaaned.V1YtelsePerMaaned
+import no.nav.eessi.pensjon.prefill.models.pensjon.P6000MeldingOmVedtakDto
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.time.ZoneId
 import java.time.temporal.ChronoUnit
 
 object VedtakPensjonDataHelper {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(VedtakPensjonDataHelper::class.java) }
 
-    fun harBoddArbeidetUtland(pendata: Pensjonsinformasjon): Boolean {
-        require(pendata.vedtak != null) { "Vedtak er null" }
-        return pendata.vedtak.isBoddArbeidetUtland || harAvdodBoddArbeidetUtland(pendata)
+    fun harBoddArbeidetUtland(pesysPrefillData: P6000MeldingOmVedtakDto): Boolean {
+        return pesysPrefillData.vedtak.boddArbeidetUtland?: false || harAvdodBoddArbeidetUtland(pesysPrefillData)
     }
 
-    private fun harAvdodBoddArbeidetUtland(pendata: Pensjonsinformasjon): Boolean {
-        val avdod: V1Avdod = pendata.avdod ?: return false
+    private fun harAvdodBoddArbeidetUtland(pesysPrefillData: P6000MeldingOmVedtakDto): Boolean {
+        val avdod = pesysPrefillData.avdod ?: return false
 
-        return (!avdod.avdod.isNullOrBlank() && avdod.isAvdodBoddArbeidetUtland == true) ||
-                (avdod.isAvdodMorBoddArbeidetUtland == true || avdod.isAvdodFarBoddArbeidetUtland == true)
+        return (!avdod.avdod.isNullOrBlank() && avdod.avdodBoddArbeidetUtland == true) ||
+                (avdod.avdodMorBoddArbeidetUtland == true || avdod.avdodFarBoddArbeidetUtland == true)
     }
 
-    fun isVilkarsvurderingAvslagHovedytelseSamme(key: String, pendata: Pensjonsinformasjon): Boolean {
+    fun isVilkarsvurderingAvslagHovedytelseSamme(key: String, pendata: P6000MeldingOmVedtakDto): Boolean {
         return key == hentVilkarsProvingAvslagHovedYtelse(pendata)
     }
 
-    fun erTrygdeTid(pendata: Pensjonsinformasjon, storreEnn: Int = 30, mindreEnn: Int = 360): Boolean {
-        require(pendata.trygdetidListe?.trygdetidListe != null) { "trygdetidListe er Null" }
-        val trygdeListe = pendata.trygdetidListe
-        val days = summerTrygdeTid(trygdeListe)
+    fun erTrygdeTid(pendata: P6000MeldingOmVedtakDto, storreEnn: Int = 30, mindreEnn: Int = 360): Boolean {
+        require(pendata.trygdetidListe.isNotEmpty()) { "trygdetidListe er tom" }
+        val days = summerTrygdeTid(pendata.trygdetidListe)
 
         return days in (storreEnn + 1) until mindreEnn
     }
 
-    fun summerTrygdeTid(trygdeListe: V1TrygdetidListe): Int {
-        require(trygdeListe.trygdetidListe != null) { "trygdetidListe er Null" }
-        val daylist = trygdeListe.trygdetidListe.map {
-            val fom = it.fom.toGregorianCalendar().time.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
-            val tom = it.tom.toGregorianCalendar().time.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
-            val nrdays = ChronoUnit.DAYS.between(fom, tom)
-            logger.debug("              SummerTrygdeTid: $nrdays  fom: $fom  tom: $tom ")
+    fun summerTrygdeTid(trygdeListe: List<P6000MeldingOmVedtakDto.Trygdetid>): Int {
+        val daylist = trygdeListe.map {
+            val nrdays = ChronoUnit.DAYS.between(it.fom, it.tom)
+            logger.debug("              SummerTrygdeTid: $nrdays  fom: ${it.fom}  tom: ${it.tom} ")
             nrdays.toInt()
         }
         return daylist.sumOf { it }
             .also { days -> logger.debug("              Total SummerTrygdeTid: $days ") }
     }
 
-    fun hentYtelseskomponentBelop(keys: String, ytelse: V1YtelsePerMaaned): Int {
+    fun hentYtelseskomponentBelop(keys: String, ytelse: P6000MeldingOmVedtakDto.YtelsePerMaaned): Int {
         val keylist = keys.split(",")
         var summer = 0
         keylist.forEach { keyword ->
@@ -66,50 +54,46 @@ object VedtakPensjonDataHelper {
         return summer
     }
 
-    fun hentGrunnPersjon(pendata: Pensjonsinformasjon?): Boolean {
-        return pendata?.trygdeavtale?.isErArt10BruktGP ?: false
+    fun hentGrunnPersjon(pendata: P6000MeldingOmVedtakDto): Boolean {
+        return pendata.trygdeavtale?.erArt10BruktGP ?: false
     }
 
-    fun hentTilleggsPensjon(pendata: Pensjonsinformasjon?): Boolean {
-        return pendata?.trygdeavtale?.isErArt10BruktTP ?: false
+    fun hentTilleggsPensjon(pendata: P6000MeldingOmVedtakDto): Boolean {
+        return pendata.trygdeavtale?.erArt10BruktTP ?: false
     }
 
-    fun hentVilkarsvurderingUforetrygd(pendata: Pensjonsinformasjon): V1VilkarsvurderingUforetrygd {
-        return hentV1Vilkarsvurdering(pendata)?.vilkarsvurderingUforetrygd ?: return V1VilkarsvurderingUforetrygd()
+    fun hentVilkarsvurderingUforetrygd(pendata: P6000MeldingOmVedtakDto): P6000MeldingOmVedtakDto.VilkarsvurderingUforetrygd? {
+        return hentV1Vilkarsvurdering(pendata)?.vilkarsvurderingUforetrygd
     }
 
     //         Kodeverk K_RESULT_BEGR 2017
-    fun hentVilkarsProvingAvslagHovedYtelse(pendata: Pensjonsinformasjon): String {
+    fun hentVilkarsProvingAvslagHovedYtelse(pendata: P6000MeldingOmVedtakDto): String {
         return hentV1Vilkarsvurdering(pendata)?.avslagHovedytelse ?: return ""
     }
 
-    private fun hentV1Vilkarsvurdering(pendata: Pensjonsinformasjon): V1Vilkarsvurdering? {
-        val v1VilkarsvurderingListe: V1VilkarsvurderingListe =
-            pendata.vilkarsvurderingListe ?: V1VilkarsvurderingListe()
-        return v1VilkarsvurderingListe.vilkarsvurderingListe?.getOrElse(0) { V1Vilkarsvurdering() }
+    private fun hentV1Vilkarsvurdering(pendata: P6000MeldingOmVedtakDto): P6000MeldingOmVedtakDto.Vilkarsvurdering? {
+        return pendata.vilkarsvurderingListe.getOrNull(0)
     }
 
-    fun hentVilkarsResultatHovedytelse(pendata: Pensjonsinformasjon): String {
+    fun hentVilkarsResultatHovedytelse(pendata: P6000MeldingOmVedtakDto): String {
         return hentV1Vilkarsvurdering(pendata)?.resultatHovedytelse ?: return "" // UNDER_62 -- LAVT_TIDLIG_UTTAK osv..
     }
 
-    fun hentVinnendeBergeningsMetode(pendata: Pensjonsinformasjon): String? {
-        return hentSisteYtelsePerMaaned(pendata).vinnendeBeregningsmetode
+    fun hentVinnendeBergeningsMetode(pendata: P6000MeldingOmVedtakDto): String? {
+        return hentSisteYtelsePerMaaned(pendata)?.vinnendeBeregningsmetode
     }
 
-    fun hentYtelseBelop(pendata: Pensjonsinformasjon): String {
+    fun hentYtelseBelop(pendata: P6000MeldingOmVedtakDto): String? {
         logger.info(" +            hentYtelseBelop")
-        return hentSisteYtelsePerMaaned(pendata).belop.toString()
+        return hentSisteYtelsePerMaaned(pendata)?.belop?.toString()
     }
 
-    fun isMottarMinstePensjonsniva(pendata: Pensjonsinformasjon): Boolean {
+    fun isMottarMinstePensjonsniva(pendata: P6000MeldingOmVedtakDto): Boolean {
         logger.info(" +            isMottarMinstePensjonsniva")
-        return hentSisteYtelsePerMaaned(pendata).isMottarMinstePensjonsniva
+        return hentSisteYtelsePerMaaned(pendata)?.mottarMinstePensjonsniva ?: false
     }
 
-    fun hentSisteYtelsePerMaaned(pendata: Pensjonsinformasjon): V1YtelsePerMaaned {
-        val ytelseprmnd = pendata.ytelsePerMaanedListe
-        val liste = ytelseprmnd.ytelsePerMaanedListe as List<V1YtelsePerMaaned>
-        return liste.maxBy { it.fom.toGregorianCalendar() }
+    fun hentSisteYtelsePerMaaned(pendata: P6000MeldingOmVedtakDto): P6000MeldingOmVedtakDto.YtelsePerMaaned? {
+        return pendata.ytelsePerMaanedListe.maxByOrNull { it.fom }
     }
 }

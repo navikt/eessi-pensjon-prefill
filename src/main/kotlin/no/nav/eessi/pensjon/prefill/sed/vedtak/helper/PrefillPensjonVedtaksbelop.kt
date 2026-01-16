@@ -6,9 +6,8 @@ import no.nav.eessi.pensjon.eux.model.sed.BeregningItem
 import no.nav.eessi.pensjon.eux.model.sed.Periode
 import no.nav.eessi.pensjon.eux.model.sed.Ukjent
 import no.nav.eessi.pensjon.prefill.models.YtelseskomponentType.*
+import no.nav.eessi.pensjon.prefill.models.pensjon.P6000MeldingOmVedtakDto
 import no.nav.eessi.pensjon.utils.simpleFormat
-import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
-import no.nav.pensjon.v1.ytelsepermaaned.V1YtelsePerMaaned
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -19,7 +18,7 @@ object PrefillPensjonVedtaksbelop {
     /**
      *  4.1.7.3.1. Gross amount
      */
-    fun createBelop(ytelsePrMnd: V1YtelsePerMaaned, sakType: KSAK): String {
+    fun createBelop(ytelsePrMnd: P6000MeldingOmVedtakDto.YtelsePerMaaned, sakType: KSAK): String {
         logger.info("4.1.7.3.1         Gross amount")
         val belop = ytelsePrMnd.belop
 
@@ -40,7 +39,7 @@ object PrefillPensjonVedtaksbelop {
      *  Hentet ytelseskomponentType fra YtelseKomponentTypeCode.java (PESYS)
      *      GAP =Garantitillegg
      */
-    fun createYtelseskomponentGrunnpensjon(ytelsePrMnd: V1YtelsePerMaaned, sakType: KSAK): String? {
+    fun createYtelseskomponentGrunnpensjon(ytelsePrMnd: P6000MeldingOmVedtakDto.YtelsePerMaaned, sakType: KSAK): String? {
         logger.info("4.1.7.3.3         Grunnpensjon")
 
         if (KSAK.UFOREP != sakType) {
@@ -55,7 +54,7 @@ object PrefillPensjonVedtaksbelop {
      *
      *  Her skal det automatisk vises brutto tilleggspensjon for de ulike beregningsperioder  Brutto inntektspensjon for alderspensjon beregnet etter kapittel 20.
      */
-    fun createYtelseskomponentTilleggspensjon(ytelsePrMnd: V1YtelsePerMaaned, sakType: KSAK): String? {
+    fun createYtelseskomponentTilleggspensjon(ytelsePrMnd: P6000MeldingOmVedtakDto.YtelsePerMaaned, sakType: KSAK): String? {
         logger.info("4.1.7.3.4         Tilleggspensjon")
 
         if (KSAK.UFOREP != sakType) {
@@ -67,11 +66,11 @@ object PrefillPensjonVedtaksbelop {
     /**
      * 4.1.9
      */
-    fun createEkstraTilleggPensjon(pendata: Pensjonsinformasjon): Ukjent? {
+    fun createEkstraTilleggPensjon(pendata: P6000MeldingOmVedtakDto): Ukjent? {
         logger.info("4.1.9         ekstra tilleggpensjon")
 
         var summer = 0
-        pendata.ytelsePerMaanedListe.ytelsePerMaanedListe.forEach {
+        pendata.ytelsePerMaanedListe.forEach {
             summer += VedtakPensjonDataHelper.hentYtelseskomponentBelop("GJENLEV,TBF,TBS,PP,SKJERMT", it)
         }
         val ukjent = Ukjent(beloepBrutto = BeloepBrutto(ytelseskomponentAnnen = summer.toString()))
@@ -84,13 +83,13 @@ object PrefillPensjonVedtaksbelop {
     /**
      *  4.1.7
      */
-    fun createBeregningItemList(pendata: Pensjonsinformasjon): List<BeregningItem> {
+    fun createBeregningItemList(pendata: P6000MeldingOmVedtakDto): List<BeregningItem> {
         logger.info("4.1.7        BeregningItemList")
 
-        val ytelsePerMaaned = pendata.ytelsePerMaanedListe.ytelsePerMaanedListe
-                .asSequence().sortedBy { it.fom.toGregorianCalendar() }.toMutableList()
+        val ytelsePerMaaned = pendata.ytelsePerMaanedListe
+                .asSequence().sortedBy { it.fom }.toMutableList()
 
-        val sakType = KSAK.valueOf(pendata.sakAlder.sakType)
+        val sakType = pendata.sakAlder.sakType
 
         return ytelsePerMaaned.map {
            createBeregningItem(it, sakType)
@@ -100,15 +99,14 @@ object PrefillPensjonVedtaksbelop {
     /**
      * 4.1.8
      */
-    private fun createBeregningItemPeriode(ytelsePrMnd: V1YtelsePerMaaned): Periode {
+    private fun createBeregningItemPeriode(ytelsePrMnd: P6000MeldingOmVedtakDto.YtelsePerMaaned): Periode {
         logger.info("4.1.7.1         BeregningItemPeriode")
 
         var tomstr: String? = null
-        var fomstr: String? = null
+        var fomstr: String?
 
         val fom = ytelsePrMnd.fom
-        if (fom != null)
-            fomstr = fom.simpleFormat()
+        fomstr = fom.simpleFormat()
 
         val tom = ytelsePrMnd.tom
         if (tom != null)
@@ -120,7 +118,7 @@ object PrefillPensjonVedtaksbelop {
         )
     }
 
-    private fun createBeregningItem(ytelsePrMnd: V1YtelsePerMaaned, sakType: KSAK): BeregningItem {
+    private fun createBeregningItem(ytelsePrMnd: P6000MeldingOmVedtakDto.YtelsePerMaaned, sakType: KSAK): BeregningItem {
         logger.info("4.1.7         BeregningItem (Repeterbart)")
 
         return BeregningItem(

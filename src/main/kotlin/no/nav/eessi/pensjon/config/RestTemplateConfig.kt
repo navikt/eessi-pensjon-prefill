@@ -36,6 +36,9 @@ class RestTemplateConfig(
     @Value("\${PENSJONSINFORMASJON_URL}")
     lateinit var pensjonUrl: String
 
+    @Value("\${PESYS_URL}")
+    lateinit var pesysUrl: String
+
     @Value("\${KRR_URL}")
     lateinit var krrUrl: String
 
@@ -50,6 +53,9 @@ class RestTemplateConfig(
 
     @Bean
     fun pensjoninformasjonRestTemplate() = opprettRestTemplate(pensjonUrl, "pensjon-credentials")
+
+    @Bean
+    fun pesysClientRestTemplate() = opprettRestTemplate(pesysUrl, "pensjon-credentials")
 
     private fun opprettRestTemplate(url: String, oAuthKey: String) : RestTemplate {
         return RestTemplateBuilder()

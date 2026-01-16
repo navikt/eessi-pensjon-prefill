@@ -1,7 +1,7 @@
 package no.nav.eessi.pensjon.prefill.sed.vedtak.helper
 
 import no.nav.eessi.pensjon.eux.model.sed.AvslagbegrunnelseItem
-import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
+import no.nav.eessi.pensjon.prefill.models.pensjon.P6000MeldingOmVedtakDto
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -9,9 +9,9 @@ object PrefillPensjonVedtaksavslag {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillPensjonVedtaksavslag::class.java) }
 
-    fun sjekkForVilkarsvurderingListeHovedytelseellerAvslag(pendata: Pensjonsinformasjon): Boolean {
+    fun sjekkForVilkarsvurderingListeHovedytelseellerAvslag(pendata: P6000MeldingOmVedtakDto): Boolean {
         try {
-            val hovedytelseAvslag = pendata.vilkarsvurderingListe.vilkarsvurderingListe.first()
+            val hovedytelseAvslag = pendata.vilkarsvurderingListe.first()
             if (hovedytelseAvslag.resultatHovedytelse == "AVSL" || hovedytelseAvslag.avslagHovedytelse == "AVSL") {
                 return true
             }
@@ -24,7 +24,7 @@ object PrefillPensjonVedtaksavslag {
     /**
      * /4.1.13.1 - 4.1.13.2.1
      */
-    fun createAvlsagsBegrunnelseItem(pendata: Pensjonsinformasjon): List<AvslagbegrunnelseItem>? {
+    fun createAvlsagsBegrunnelseItem(pendata: P6000MeldingOmVedtakDto): List<AvslagbegrunnelseItem>? {
         logger.info("4.1.13        AvlsagsBegrunnelseItem")
 
         val avslagbegrunnelse = createAvlsagsBegrunnelse(pendata)
@@ -59,18 +59,18 @@ object PrefillPensjonVedtaksavslag {
      *          [99] Andre grunner
      *
      */
-    fun createAvlsagsBegrunnelse(pendata: Pensjonsinformasjon): String? {
+    fun createAvlsagsBegrunnelse(pendata: P6000MeldingOmVedtakDto): String? {
         logger.info("4.1.13.1          AvlsagsBegrunnelse")
 
-        if (pendata.vilkarsvurderingListe == null || pendata.vilkarsvurderingListe.vilkarsvurderingListe == null) {
+        if (pendata.vilkarsvurderingListe.isEmpty()) {
             return null
         }
-        val sakType = KSAK.valueOf(pendata.sakAlder.sakType)
+        val sakType = pendata.sakAlder.sakType
 
         val erAvslagVilkarsproving = VedtakPensjonDataHelper.hentVilkarsResultatHovedytelse(pendata) == "AVSL"
 
         val harBoddArbeidetUtland = VedtakPensjonDataHelper.harBoddArbeidetUtland(pendata)
-        val erTrygdetidListeTom = pendata.trygdetidListe.trygdetidListe.isEmpty()
+        val erTrygdetidListeTom = pendata.trygdetidListe.isEmpty()
 
         val erLavtTidligUttak = VedtakPensjonDataHelper.isVilkarsvurderingAvslagHovedytelseSamme("LAVT_TIDLIG_UTTAK", pendata)
         val erUnder62 = VedtakPensjonDataHelper.isVilkarsvurderingAvslagHovedytelseSamme("UNDER_62", pendata)
@@ -79,11 +79,17 @@ object PrefillPensjonVedtaksavslag {
         val erMindreEnn1aar = "UNDER_1_AR_TT" == VedtakPensjonDataHelper.hentVilkarsProvingAvslagHovedYtelse(pendata)
 
         //UFOREP
-        val erForutMedlem = "FORUT_MEDL" == VedtakPensjonDataHelper.hentVilkarsvurderingUforetrygd(pendata).unntakForutgaendeMedlemskap
-        val erHensArbrettTiltak = "HENS_ARBRETT_TILTAK" == VedtakPensjonDataHelper.hentVilkarsvurderingUforetrygd(pendata).hensiktsmessigArbeidsrettedeTiltak
-        val erHensiktmessigBeh = "HENSIKTSMESSIG_BEH" == VedtakPensjonDataHelper.hentVilkarsvurderingUforetrygd(pendata).hensiktsmessigBehandling
-        val erNedsattInntEvne = "NEDSATT_INNT_EVNE" == VedtakPensjonDataHelper.hentVilkarsvurderingUforetrygd(pendata).nedsattInntektsevne
-        val erAlder = "ALDER" == VedtakPensjonDataHelper.hentVilkarsvurderingUforetrygd(pendata).alder
+        val vilkarsvurderingUforetrygd = VedtakPensjonDataHelper.hentVilkarsvurderingUforetrygd(pendata)
+        val erForutMedlem = vilkarsvurderingUforetrygd
+            ?.unntakForutgaendeMedlemskap == "FORUT_MEDL"
+        val erHensArbrettTiltak = vilkarsvurderingUforetrygd
+            ?.hensiktsmessigArbeidsrettedeTiltak == "HENS_ARBRETT_TILTAK"
+        val erHensiktmessigBeh = vilkarsvurderingUforetrygd
+            ?.hensiktsmessigBehandling == "HENSIKTSMESSIG_BEH"
+        val erNedsattInntEvne = vilkarsvurderingUforetrygd
+            ?.nedsattInntektsevne == "NEDSATT_INNT_EVNE"
+        val erAlder = vilkarsvurderingUforetrygd
+            ?.alder == "ALDER"
 
         when {
             harBoddArbeidetUtland -> {
@@ -94,7 +100,7 @@ object PrefillPensjonVedtaksavslag {
                             (erHensiktmessigBeh || erHensArbrettTiltak) && erAvslagVilkarsproving -> return "08"
                             erNedsattInntEvne && erAvslagVilkarsproving -> return "04"
                             VedtakPensjonDataHelper.erTrygdeTid(pendata) && erForutMedlem && erAvslagVilkarsproving -> return "02"
-                            pendata.trygdetidListe.trygdetidListe.isEmpty() && erForutMedlem && erAvslagVilkarsproving -> return "01"
+                            pendata.trygdetidListe.isEmpty() && erForutMedlem && erAvslagVilkarsproving -> return "01"
                         }
                     }
                     erAvslagVilkarsproving -> {
