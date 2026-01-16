@@ -36,6 +36,7 @@ class PrefillP5000GjennyUtenAvdodTest {
 //    private val personFnr = FodselsnummerGenerator.generateFnrForTest(65)
     private val personFnr = "04016143397"
     private val pesysSaksnummer = "21975717"
+    private val institutionid = "111111"
 
     lateinit var prefillData: PrefillDataModel
 
@@ -60,6 +61,7 @@ class PrefillP5000GjennyUtenAvdodTest {
         innhentingService = InnhentingService(personDataService, pensjonsinformasjonService = mockk())
         prefillGjennyService = PrefillGjennyService(krrService, innhentingService, etterlatteService, automatiseringStatistikkService, prefillNav, eessiInformasjon)
 
+        every { eessiInformasjon.institutionid } returns institutionid
         justRun { automatiseringStatistikkService.genererAutomatiseringStatistikk(any(), any()) }
     }
 
@@ -118,6 +120,7 @@ class PrefillP5000GjennyUtenAvdodTest {
         println("@@@Gjenlevende: ${p8000.pensjon?.gjenlevende?.person?.toJson()}")
 
         assertEquals(personFnr, p8000.nav?.annenperson?.person?.pin?.firstOrNull()?.identifikator)
+        assertEquals(institutionid, p8000.nav?.eessisak?.firstOrNull()?.institusjonsid)
         assertEquals("01", p8000.nav?.annenperson?.person?.rolle)
         //AVDØD/FORSIKRET
         assertEquals(null, p8000.nav?.bruker?.person?.pin?.firstOrNull()?.identifikator)

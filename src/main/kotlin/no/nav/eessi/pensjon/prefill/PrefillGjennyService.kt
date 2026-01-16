@@ -26,7 +26,6 @@ import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.prefill.sed.PrefillP8000.PersonenRolle
 import no.nav.eessi.pensjon.prefill.sed.krav.PrefillP2100
 import no.nav.eessi.pensjon.prefill.sed.vedtak.PrefillP6000GjennyPensjon
-import no.nav.eessi.pensjon.prefill.sed.vedtak.PrefillP6000Pensjon.prefillP6000Pensjon
 import no.nav.eessi.pensjon.shared.api.ApiRequest
 import no.nav.eessi.pensjon.shared.api.PersonInfo
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
@@ -91,7 +90,7 @@ class PrefillGjennyService(
                         prefillNav = prefillPdlNav,
                         eessiInfo = eessiInformasjon,
                     )
-                    P8000 -> prefillP8000(prefillData, personcollection, prefillPdlNav).also { logger.info("Preutfyll P8000: ") }
+                    P8000 -> prefillP8000(eessiInformasjon, prefillData, personcollection, prefillPdlNav).also { logger.info("Preutfyll P8000: ") }
                     else -> {
                         throw HttpClientErrorException(HttpStatus.NOT_IMPLEMENTED, "Prefilling for gjenny av sed type ${prefillData.sedType} er ikke implementert")
                     }
@@ -159,12 +158,7 @@ class PrefillGjennyService(
     ): P6000 {
         val sedType = prefillData.sedType
 
-        val andreInstitusjondetaljer = eessiInfo.asAndreinstitusjonerItem()
-        logger.info("Andreinstitusjoner: $andreInstitusjondetaljer ")
-
-        logger.debug("Henter opp Persondata/Gjenlevende fra TPS")
-
-        logger.debug("Prefiller med Pensjonsdata fra Gjenny, med vedtak: $etterlatteRespData")
+        logger.debug("Prefiller med vedtaksdata fra Gjenny: $etterlatteRespData")
         val gjenlevendePerson = prefillNav.createBruker(personData.gjenlevendeEllerAvdod!!, null, null, prefillData.bruker)
         val p6000Pensjon = PrefillP6000GjennyPensjon().prefillP6000GjennyPensjon(
                 gjenlevendePerson,
@@ -172,7 +166,6 @@ class PrefillGjennyService(
                 eessiInfo
         )
 
-        logger.debug("Henter opp Persondata fra TPS")
         val nav = prefillNav.prefill(
             penSaksnummer = prefillData.penSaksnummer,
             bruker = prefillData.bruker,
@@ -190,24 +183,35 @@ class PrefillGjennyService(
         )
     }
 
-    fun prefillP8000(prefillData: PrefillDataModel, personData: PersonDataCollection, prefillNav: PrefillPDLNav): P8000 {
+    fun prefillP8000(
+        eessiInfo: EessiInformasjon,
+        prefillData: PrefillDataModel,
+        personData: PersonDataCollection,
+        prefillNav: PrefillPDLNav
+    ): P8000 {
         val gjenlevendePerson = prefillNav.createBruker(personData.forsikretPerson!!, null, null, prefillData.bruker)
 
         logger.debug("gjenlevendeBruker: ${gjenlevendePerson?.person?.fornavn} PIN: ${gjenlevendePerson?.person?.pin?.firstOrNull()?.identifikator}, ReferanseTilPerson: ${prefillData.refTilPerson},  ")
 
         return if (gjenlevendePerson != null) {
             logger.info("Prefill P8000 forenklet preutfylling for gjenlevende uten avdød, Ferdig.")
-            sedP8000(null, null, null, prefillData, gjenlevendePerson)
+            sedP8000(eessiInfo, null, null, prefillData, gjenlevendePerson)
         } else {
             throw HttpClientErrorException(HttpStatus.NOT_IMPLEMENTED, "Prefilling for gjenny av sed type ${prefillData.sedType} er ikke implementert")
         }
     }
 
-    private fun sedP8000(eessielm: List<EessisakItem>?, forsikretPerson: Person?, adresse: Adresse?, prefillData: PrefillDataModel, annenPerson: Bruker?): P8000 {
+    private fun sedP8000(eessiInformasjon: EessiInformasjon, forsikretPerson: Person?, adresse: Adresse?, prefillData: PrefillDataModel, annenPerson: Bruker?): P8000 {
         logger.info("forsikretPerson: ${forsikretPerson != null} annenPerson: ${annenPerson != null}"  )
         return P8000(
             nav = Nav(
-//                eessisak = eessielm,
+                eessisak = listOf(
+                    EessisakItem(
+                        institusjonsid = eessiInformasjon.institutionid,
+                        institusjonsnavn = eessiInformasjon.institutionnavn,
+                        land = eessiInformasjon.institutionLand
+                    )
+                ),
                 bruker = Bruker(
                     person = Person(
                         etternavn = forsikretPerson?.etternavn,
