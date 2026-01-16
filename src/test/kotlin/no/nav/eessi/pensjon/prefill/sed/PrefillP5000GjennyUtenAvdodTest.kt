@@ -9,6 +9,8 @@ import no.nav.eessi.pensjon.eux.model.SedType.*
 import no.nav.eessi.pensjon.eux.model.sed.P5000
 import no.nav.eessi.pensjon.eux.model.sed.P6000
 import no.nav.eessi.pensjon.eux.model.sed.P8000
+import no.nav.eessi.pensjon.integrationtest.sed.SedPrefillPDLIntegrationSpringTest
+import no.nav.eessi.pensjon.integrationtest.sed.SedPrefillPDLIntegrationSpringTest.Companion.AKTOER_ID
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
 import no.nav.eessi.pensjon.personoppslag.pdl.model.AktoerId
 import no.nav.eessi.pensjon.prefill.*
@@ -35,25 +37,19 @@ import org.junit.jupiter.api.Test
 private const val AKTOERID = "0105094340092"
 
 class PrefillP5000GjennyUtenAvdodTest {
-
     private val avdodPersonFnr = FodselsnummerGenerator.generateFnrForTest(63)
-    //    private val personFnr = FodselsnummerGenerator.generateFnrForTest(65)
     private val personFnr = "04016143397"
     private val pesysSaksnummer = "21975717"
     private val institutionid = "111111"
-
     lateinit var prefillData: PrefillDataModel
-
     lateinit var prefill: PrefillP5000
     lateinit var prefillNav: PrefillPDLNav
-
     lateinit var innhentingService: InnhentingService
     lateinit var etterlatteService: EtterlatteService
     lateinit var personDataService : PersonDataService
     lateinit var prefillGjennyService: PrefillGjennyService
     lateinit var prefillSEDService: PrefillSEDService
     private lateinit var dataFromPEN: PensjonsinformasjonService
-
 
     var eessiInformasjon = mockk<EessiInformasjon>(relaxed = true)
     var krrService = mockk<KrrService>(relaxed = true)
@@ -141,8 +137,11 @@ class PrefillP5000GjennyUtenAvdodTest {
         dataFromPEN = PrefillTestHelper.lesPensjonsdataVedtakFraFil("/pensjonsinformasjon/vedtak/P6000-GP-401.xml")
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P6000, personFnr, penSaksnummer = "22580170", vedtakId = "12312312", avdod = PersonInfo(avdodPersonFnr, "1234567891234"))
         prefillSEDService = PrefillSEDService(EessiInformasjonMother.standardEessiInfo(), prefillNav)
+
         every { personservice.hentIdent(any(), any()) } returns AktoerId(AKTOERID)
-        val prefill = mapJsonToAny<P6000>(prefillGjennyService.prefillGjennySedtoJson(apiRequest(SedType.P6000)))
+        every { personservice.hentPerson( any()) } returns PersonPDLMock.createWith(true, fnr = avdodPersonFnr, aktoerid = AKTOER_ID)
+
+        val prefill = mapJsonToAny<P6000>(prefillGjennyService.prefillGjennySedtoJson(apiRequest(SedType.P6000).copy(avdodfnr = avdodPersonFnr)))
 
         assertNotNull(prefill.nav?.bruker?.person?.pin)
         assertEquals(avdodPersonFnr, prefill.nav?.bruker?.person?.pin?.firstOrNull()?.identifikator)
