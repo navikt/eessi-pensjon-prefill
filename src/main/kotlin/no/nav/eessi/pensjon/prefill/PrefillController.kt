@@ -28,11 +28,11 @@ class PrefillController(private val prefillService: PrefillService, private val 
     }
 
     @PostMapping("sed/prefill/gjenny", consumes = ["application/json"], produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun prefillGjennyDocument(  @RequestBody request: ApiRequest): String {
+    fun prefillGjennyDocument(@RequestBody request: ApiRequest): String {
         auditlogger.log("previewDocument", request.aktoerId ?: "", request.toAudit())
         logInfo(request)
-
         return prefillGjennyService.prefillGjennySedtoJson(request)
+
     }
 
     private fun logInfo(request: ApiRequest) {

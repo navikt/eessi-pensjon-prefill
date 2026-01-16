@@ -46,7 +46,14 @@ class PrefillControllerTest {
 
         every { mockPrefillSEDService.prefill(any(), any(), any(), any()) } returns SED(type = P6000)
         val innhentingService = InnhentingService(personDataService, pensjonsinformasjonService = pensjonsinformasjonService)
-        val prefillService = PrefillService(krrService, mockPrefillSEDService, innhentingService, automatiseringStatistikkService =automatiseringStatistikkService, etterlatteService =etterlatteService, prefillPdlNav = prefillNav)
+        val prefillService = PrefillService(
+            krrService,
+            mockPrefillSEDService,
+            innhentingService,
+            etterlatteService =etterlatteService,
+            automatiseringStatistikkService =automatiseringStatistikkService,
+            prefillPdlNav = prefillNav
+        )
 
         prefillController = PrefillController(prefillService, prefillGjennyService,  auditLogger)
     }

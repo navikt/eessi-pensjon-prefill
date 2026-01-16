@@ -15,16 +15,19 @@ import no.nav.eessi.pensjon.prefill.*
 import no.nav.eessi.pensjon.prefill.etterlatte.EtterlatteService
 import no.nav.eessi.pensjon.prefill.models.DigitalKontaktinfo
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
+import no.nav.eessi.pensjon.prefill.models.EessiInformasjonMother
+import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.shared.api.ApiRequest
 import no.nav.eessi.pensjon.shared.api.InstitusjonItem
+import no.nav.eessi.pensjon.shared.api.PersonInfo
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
-import no.nav.eessi.pensjon.shared.api.ReferanseTilPerson
-import no.nav.eessi.pensjon.shared.api.ReferanseTilPerson.SOKER
+import no.nav.eessi.pensjon.shared.person.FodselsnummerGenerator
 import no.nav.eessi.pensjon.statistikk.AutomatiseringStatistikkService
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.toJson
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
@@ -33,7 +36,8 @@ private const val AKTOERID = "0105094340092"
 
 class PrefillP5000GjennyUtenAvdodTest {
 
-//    private val personFnr = FodselsnummerGenerator.generateFnrForTest(65)
+    private val avdodPersonFnr = FodselsnummerGenerator.generateFnrForTest(63)
+    //    private val personFnr = FodselsnummerGenerator.generateFnrForTest(65)
     private val personFnr = "04016143397"
     private val pesysSaksnummer = "21975717"
     private val institutionid = "111111"
@@ -47,6 +51,9 @@ class PrefillP5000GjennyUtenAvdodTest {
     lateinit var etterlatteService: EtterlatteService
     lateinit var personDataService : PersonDataService
     lateinit var prefillGjennyService: PrefillGjennyService
+    lateinit var prefillSEDService: PrefillSEDService
+    private lateinit var dataFromPEN: PensjonsinformasjonService
+
 
     var eessiInformasjon = mockk<EessiInformasjon>(relaxed = true)
     var krrService = mockk<KrrService>(relaxed = true)
@@ -59,7 +66,8 @@ class PrefillP5000GjennyUtenAvdodTest {
         personDataService = PersonDataService(personservice)
         etterlatteService = EtterlatteService(mockk())
         innhentingService = InnhentingService(personDataService, pensjonsinformasjonService = mockk())
-        prefillGjennyService = PrefillGjennyService(krrService, innhentingService, etterlatteService, automatiseringStatistikkService, prefillNav, eessiInformasjon)
+        prefillSEDService = PrefillSEDService(eessiInformasjon, mockk())
+        prefillGjennyService = PrefillGjennyService(krrService, innhentingService, etterlatteService, automatiseringStatistikkService, prefillNav, eessiInformasjon, prefillSEDService)
 
         every { eessiInformasjon.institutionid } returns institutionid
         justRun { automatiseringStatistikkService.genererAutomatiseringStatistikk(any(), any()) }
@@ -128,6 +136,19 @@ class PrefillP5000GjennyUtenAvdodTest {
         assertEquals(null, p8000.nav?.bruker?.person?.etternavn)
     }
 
+    @Test
+    fun `En p6000 uten vedtak skal gi en delvis utfylt sed`(){
+        dataFromPEN = PrefillTestHelper.lesPensjonsdataVedtakFraFil("/pensjonsinformasjon/vedtak/P6000-GP-401.xml")
+        prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P6000, personFnr, penSaksnummer = "22580170", vedtakId = "12312312", avdod = PersonInfo(avdodPersonFnr, "1234567891234"))
+        prefillSEDService = PrefillSEDService(EessiInformasjonMother.standardEessiInfo(), prefillNav)
+        every { personservice.hentIdent(any(), any()) } returns AktoerId(AKTOERID)
+        val prefill = mapJsonToAny<P6000>(prefillGjennyService.prefillGjennySedtoJson(apiRequest(SedType.P6000)))
+
+        assertNotNull(prefill.nav?.bruker?.person?.pin)
+        assertEquals(avdodPersonFnr, prefill.nav?.bruker?.person?.pin?.firstOrNull()?.identifikator)
+        assertEquals(SedType.P6000, prefill.type)
+    }
+
     fun mockPersonReponse(personFnr: String) {
         every { personservice.hentIdent(any(), any()) } returns AktoerId(personFnr)
         every { personservice.hentPerson(any()) } returns PersonPDLMock.createWith(true, "BEVISST", "GAUPE", personFnr, AKTOERID, false) //Gjenlev
@@ -136,6 +157,7 @@ class PrefillP5000GjennyUtenAvdodTest {
             personident = personFnr
         )
     }
+
 
     private fun apiRequest(sedType: SedType): ApiRequest = ApiRequest(
         subjectArea = "Pensjon",

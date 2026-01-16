@@ -23,8 +23,13 @@ import no.nav.eessi.pensjon.prefill.models.DigitalKontaktinfo.Companion.validate
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
+import no.nav.eessi.pensjon.prefill.person.PrefillSed
+import no.nav.eessi.pensjon.prefill.sed.PrefillP5000
+import no.nav.eessi.pensjon.prefill.sed.PrefillP8000
 import no.nav.eessi.pensjon.prefill.sed.PrefillP8000.PersonenRolle
+import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
 import no.nav.eessi.pensjon.prefill.sed.krav.PrefillP2100
+import no.nav.eessi.pensjon.prefill.sed.vedtak.PrefillP6000
 import no.nav.eessi.pensjon.prefill.sed.vedtak.PrefillP6000GjennyPensjon
 import no.nav.eessi.pensjon.shared.api.ApiRequest
 import no.nav.eessi.pensjon.shared.api.PersonInfo
@@ -47,6 +52,7 @@ class PrefillGjennyService(
     private val automatiseringStatistikkService: AutomatiseringStatistikkService,
     private val prefillPdlNav: PrefillPDLNav,
     private val eessiInformasjon: EessiInformasjon,
+    private val prefillSEDService: PrefillSEDService,
     @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper.ForTest()
 ) {
     private val logger = LoggerFactory.getLogger(PrefillGjennyService::class.java)
@@ -60,7 +66,7 @@ class PrefillGjennyService(
 
     fun prefillGjennySedtoJson(request: ApiRequest): String {
         return PrefillSed.measure {
-            logger.info(" ******* Starter med preutfylling ******* ")
+            logger.info(" ******* Starter med preutfylling for gjenny sed ******* ")
             if (request.aktoerId.isNullOrEmpty()) throw HttpClientErrorException(HttpStatus.NOT_FOUND)
 
             try {
@@ -68,43 +74,84 @@ class PrefillGjennyService(
                 val norskIdent = innhentingService.hentFnrEllerNpidFraAktoerService(request.aktoerId)!!
                 val personInfo = hentKrrPerson(norskIdent, request)
                 val prefillData = ApiRequest.buildPrefillDataModelOnExisting(request, personInfo, innhentingService.getAvdodAktoerIdPDL(request))
+                val personcollection = innhentingService.hentPersonData(prefillData)
+                val etterlatteRespData = etterlatteService.hentGjennyVedtak(norskIdent).getOrNull()
 
                 eessiRequire(prefillData.sedType.kanPrefilles() ) {"SedType ${prefillData.sedType} kan ikke prefilles!"}
 
-                val personcollection = innhentingService.hentPersonData(prefillData)
+                logger.debug("-----------------------------------------------------------")
+                logger.debug("Preutfylling NAV for Gjenny:  ${prefillPdlNav::class.java} ")
+                logger.debug("---------------| Preutfylling Gjenny START |----------------")
+                logger.debug("[${prefillData.sedType}] Gjenny Preutfylling Utfylling Data")
 
-                logger.debug("----------------------------------------------------------")
-                logger.debug("Preutfylling NAV     : ${prefillPdlNav::class.java} ")
-                logger.debug("------------------| Preutfylling START |------------------ ")
-                logger.debug("[${prefillData.sedType}] Preutfylling Utfylling Data")
-
-                val sed = when(prefillData.sedType) {
+                val sed = when (prefillData.sedType) {
                     P2100 -> PrefillP2100(prefillPdlNav).prefillSed(prefillData, personcollection, null).second
-                    P5000 -> prefillP5000(prefillData, personcollection).also { logger.info("Preutfyll gjenny P5000: ") }
-                    P6000 -> prefillP6000(
-                        prefillData, personcollection, listeOverVedtak(prefillData, personcollection),
-                        prefillNav = prefillPdlNav,
-                        eessiInfo = eessiInformasjon,
-                    )
-                    P8000 -> prefillP8000(eessiInformasjon, prefillData, personcollection, prefillPdlNav).also { logger.info("Preutfyll P8000: ") }
+                    P5000 -> prefillP5000(request, prefillData, personcollection)
+                    P6000 -> prefillP6000(request, prefillData, personcollection, etterlatteRespData)
+                    P8000 -> prefillP8000(request, prefillData, personcollection)
                     else -> {
-                        throw HttpClientErrorException(HttpStatus.NOT_IMPLEMENTED, "Prefilling for gjenny av sed type ${prefillData.sedType} er ikke implementert")
+                        logger.warn("Benytter ordinær preutfylling for ${prefillData.sedType}")
+                        prefillSEDService.prefill(prefillData, personcollection, null, etterlatteRespData)
                     }
                 }.also { secureLog.info("PrefillGjennySedtoJson: ${it.toJson()}") }
 
                 setSEDVersion(sed.sedVer)
                 automatiseringStatistikkService.genererAutomatiseringStatistikk(sed,  prefillData.buc)
-
                 logger.info(" ******* Prefutfylling ferdig ******* ")
 
                 return@measure sed.toJsonSkipEmpty()
-
             } catch (ex: Exception) {
                 logger.error("Noe gikk galt under prefill: ", ex)
                 throw ex
             }
         }
     }
+
+    private fun prefillP8000(
+        request: ApiRequest,
+        prefillData: PrefillDataModel,
+        personcollection: PersonDataCollection
+    ): P8000 = if (request.avdodfnr == null) {
+        prefillP8000(
+            eessiInformasjon,
+            prefillData,
+            personcollection,
+            prefillPdlNav
+        ).also { logger.info("Preutfyll gjenny uten avdød P8000") }
+    } else {
+        PrefillP8000(PrefillSed(prefillPdlNav)).prefill(prefillData, personcollection, null)
+            .also { logger.info("Preutfyll gjenny P8000") }
+    }
+
+    private fun prefillP6000(
+        request: ApiRequest,
+        prefillData: PrefillDataModel,
+        personcollection: PersonDataCollection,
+        etterlatteRespData: EtterlatteVedtakResponseData?
+    ): P6000 = if (request.avdodfnr != null) {
+        PrefillP6000(prefillPdlNav, eessiInformasjon, null).prefill(prefillData, personcollection, etterlatteRespData)
+            .also { logger.info("Preutfyll gjenny uten avdød P6000") }
+    } else {
+        prefillP6000(
+            prefillData,
+            personcollection,
+            listeOverVedtak(prefillData, personcollection),
+            prefillNav = prefillPdlNav,
+            eessiInfo = eessiInformasjon
+        ).also { logger.info("Preutfyll gjenny P6000") }
+    }
+
+    private fun prefillP5000(
+        request: ApiRequest,
+        prefillData: PrefillDataModel,
+        personcollection: PersonDataCollection
+    ): SED = if (request.avdodfnr == null) {
+        prefillP5000(prefillData, personcollection).also { logger.info("Preutfyll gjenny uten kjent avdød P5000") }
+    } else {
+        PrefillP5000(PrefillSed(prefillPdlNav)).prefill(prefillData, personcollection)
+            .also { logger.info("Preutfyll gjenny P5000") }
+    }
+
     fun prefillP5000(prefillData: PrefillDataModel, personData: PersonDataCollection): SED {
         val sedType = prefillData.sedType
 

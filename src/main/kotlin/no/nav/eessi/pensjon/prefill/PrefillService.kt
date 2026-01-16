@@ -58,17 +58,9 @@ class PrefillService(
 
                 val personcollection = innhentingService.hentPersonData(prefillData)
 
-                //TODO: midlertidig løsning
-                val sed = if(request.gjenny){
-                    logger.info("Begynner preutfylling for gjenny")
-                    prefillSedService.prefillGjenny(prefillData, personcollection,
-                        listeOverVedtak(prefillData, personcollection))
-                }
-                else {
-                    val pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
-                    secureLog.info("PensjonCollection: ${pensjonCollection.toJson()}")
-                    prefillSedService.prefill(prefillData, personcollection, pensjonCollection, null)
-                }
+                val pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
+                secureLog.info("PensjonCollection: ${pensjonCollection.toJson()}")
+                val sed = prefillSedService.prefill(prefillData, personcollection, pensjonCollection, null)
 
                 secureLog.info("Sed ferdig utfylt: $sed")
 

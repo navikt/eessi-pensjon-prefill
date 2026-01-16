@@ -33,6 +33,7 @@ class PrefillP5000GjennyUtenAvdodIT {
     private lateinit var prefillNav: PrefillPDLNav
     private lateinit var personDataService: PersonDataService
     private lateinit var prefillGjennyService: PrefillGjennyService
+    private lateinit var prefillSEDService : PrefillSEDService
 
     private val innhentingService = mockk<InnhentingService>()
     private val etterlatteService = EtterlatteService(mockk())
@@ -45,9 +46,10 @@ class PrefillP5000GjennyUtenAvdodIT {
     fun setup() {
         prefillNav = BasePrefillNav.createPrefillNav()
         personDataService = PersonDataService(personservice)
+        prefillSEDService = PrefillSEDService(eessiInformasjon, prefillNav)
         prefillGjennyService = PrefillGjennyService(
             krrService, innhentingService, etterlatteService,
-            automatiseringStatistikkService, prefillNav, eessiInformasjon
+            automatiseringStatistikkService, prefillNav, eessiInformasjon, prefillSEDService
         )
 
         every { innhentingService.hentFnrEllerNpidFraAktoerService(AKTOERID) } returns personFnr

@@ -2,9 +2,13 @@ package no.nav.eessi.pensjon.prefill.sed.vedtak
 
 import io.mockk.every
 import io.mockk.mockk
+import no.nav.eessi.pensjon.eux.model.BucType
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.sed.BasertPaa
+import no.nav.eessi.pensjon.eux.model.sed.P5000
 import no.nav.eessi.pensjon.eux.model.sed.P6000
+import no.nav.eessi.pensjon.eux.model.sed.SedNummer
+import no.nav.eessi.pensjon.personoppslag.pdl.model.AktoerId
 import no.nav.eessi.pensjon.prefill.*
 import no.nav.eessi.pensjon.prefill.etterlatte.EtterlatteService
 import no.nav.eessi.pensjon.prefill.etterlatte.EtterlatteVedtakResponseData
@@ -13,15 +17,19 @@ import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
 import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper
+import no.nav.eessi.pensjon.shared.api.ApiRequest
+import no.nav.eessi.pensjon.shared.api.InstitusjonItem
 import no.nav.eessi.pensjon.shared.api.PersonInfo
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
 import no.nav.eessi.pensjon.shared.person.FodselsnummerGenerator
+import no.nav.eessi.pensjon.utils.mapJsonToAny
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
+private const val AKTOERID = "12345678501"
 class PrefillP6000Pensjon_GJENLEV_Test {
 
     private val personFnr = FodselsnummerGenerator.generateFnrForTest(57)
@@ -33,12 +41,14 @@ class PrefillP6000Pensjon_GJENLEV_Test {
     private lateinit var etterlatteService: EtterlatteService
     private lateinit var dataFromPEN: PensjonsinformasjonService
     private lateinit var personDataCollection: PersonDataCollection
+    private lateinit var prefillGjennyService: PrefillGjennyService
 
     @BeforeEach
     fun setup() {
         etterlatteService = mockk()
         prefillNav = BasePrefillNav.createPrefillNav()
         prefillSEDService = BasePrefillNav.createPrefillSEDService()
+        prefillGjennyService = PrefillGjennyService(mockk(), mockk(), etterlatteService, mockk(), prefillNav, mockk(), prefillSEDService)
 
         val personDataCollectionFamilie = PersonPDLMock.createEnkelFamilie(personFnr, avdodPersonFnr)
         every { etterlatteService.hentGjennyVedtak(any()) } returns Result.success(
@@ -114,7 +124,8 @@ class PrefillP6000Pensjon_GJENLEV_Test {
             kravDato = "2018-05-01"
         )
 
-        val p6000 = prefillSEDService.prefillGjenny(prefillData, personDataCollection, null) as P6000
+        val p6000 = mapJsonToAny<P6000>(prefillGjennyService.prefillGjennySedtoJson(apiRequest(SedType.P6000)))
+
         assertEquals(avdodPersonFnr, p6000.nav?.bruker?.person?.pin?.firstOrNull()?.identifikator)
         assertEquals("RAGNAROK", p6000.nav?.bruker?.person?.etternavn)
         assertEquals("THOR-DOPAPIR", p6000.nav?.bruker?.person?.fornavn)
@@ -179,4 +190,17 @@ class PrefillP6000Pensjon_GJENLEV_Test {
             innhentingService.hentPensjoninformasjonCollection(prefillData)
         }
     }
+
+    private fun apiRequest(sedType: SedType): ApiRequest = ApiRequest(
+        subjectArea = "Pensjon",
+        sakId = "321654",
+        institutions = listOf(InstitusjonItem("NO", "Institutt", "InstNavn")),
+        euxCaseId = "123456",
+        sed = sedType,
+        buc = BucType.P_BUC_02,
+        aktoerId = AKTOERID,
+        avdodfnr = null,
+        gjenny = true
+
+    )
 }
