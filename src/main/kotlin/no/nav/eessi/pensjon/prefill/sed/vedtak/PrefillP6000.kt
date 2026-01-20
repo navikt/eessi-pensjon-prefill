@@ -52,7 +52,6 @@ class PrefillP6000(
         val nav = prefillNav.prefill(
             penSaksnummer = prefillData.penSaksnummer,
             bruker = prefillData.bruker,
-            avdod = prefillData.avdod,
             personData = personData,
             bankOgArbeid = prefillData.getBankOgArbeidFromRequest(),
             krav = p6000Pensjon?.kravDato,

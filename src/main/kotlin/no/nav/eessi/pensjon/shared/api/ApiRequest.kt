@@ -115,11 +115,15 @@ data class ApiRequest(
 
         private fun populerAvdodPersonId(request: ApiRequest, avdodaktoerID: String?, kreverAvdod: Boolean = false): PersonInfo? {
             if (kreverAvdod && avdodaktoerID == null) {
+                if(request.gjenny) {
+                    logger.warn("Mangler fnr for avdød, men gjenny sak - returnerer null")
+                    return null
+                }
                 logger.error("Mangler fnr for avdød")
                 throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Mangler fnr for avdød")
             }
             request.riktigAvdod() ?: return null
-            val avdodNorskIdent1 = request.riktigAvdod() ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Mangler Personnr på Avdød")
+            val avdodNorskIdent1 = request.riktigAvdod()
             val avdodAktorId1 = avdodaktoerID ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Mangler AktoerId på Avdød")
             return PersonInfo(avdodNorskIdent1, avdodAktorId1)
         }

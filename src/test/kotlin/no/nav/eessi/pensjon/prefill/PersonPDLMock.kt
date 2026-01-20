@@ -281,11 +281,11 @@ object PersonPDLMock {
     }
 
     //subsitutt for tps-30000-gift og ekte
-    internal fun createAvdodFamilie(gjenlevFnr: String, avdodEktefelleFnr: String) : PersonDataCollection {
+    internal fun createAvdodFamilie(gjenlevFnr: String, avdodEktefelleFnr: String?) : PersonDataCollection {
         val person = createWith(fornavn = "BAMSE ULUR", etternavn = "DOLLY", fnr = gjenlevFnr)
             .medAdresse("FORUSBEEN", "0010", "2294")
             .medKjoenn(KjoennType.KVINNE)
-        val avdod = createWith(fornavn = "BAMSE LUR", etternavn = "MOMBALO", fnr = avdodEktefelleFnr, erDod =  true)
+        val avdod = createWith(fornavn = "BAMSE LUR", etternavn = "MOMBALO", fnr = avdodEktefelleFnr!!, erDod =  true)
             .medAdresse("Avdødadresse", "1111", "2222")
 
         return PersonDataCollection(
@@ -294,12 +294,23 @@ object PersonPDLMock {
         )
     }
 
+    internal fun createFamilieUtenKjentAvdod(gjenlevFnr: String) : PersonDataCollection {
+        val person = createWith(fornavn = "Gjenlevende", etternavn = "Gjenlevende etternavn", fnr = gjenlevFnr)
+            .medAdresse("FORUSBEEN", "0010", "2294")
+            .medKjoenn(KjoennType.KVINNE)
+
+        return PersonDataCollection(
+            forsikretPerson = null,
+            gjenlevendeEllerAvdod = person
+        )
+    }
+
     internal fun createAvdodFamilieMedDødsboadresse(gjenlevFnr: String, avdodEktefelleFnr: String) : PersonDataCollection {
         val person = createWith(fornavn = "BAMSE ULUR", etternavn = "DOLLY", fnr = gjenlevFnr)
             .medAdresse("FORUSBEEN", "0010", "2294")
             .medKjoenn(KjoennType.KVINNE)
         val avdod = createWith(fornavn = "BAMSE LUR", etternavn = "MOMBALO", fnr = avdodEktefelleFnr, erDod =  true)
-            .medDodsboAdresse("Michelle", "Etternavn", "Avdødadresse", "adresse 2", "1111", "2222", "NOR")
+            .medDodsboAdresse("Marielle", "Etternavn", "Avdødadresse", "adresse 2", "1111", "2222", "NOR")
 
         return PersonDataCollection(
             forsikretPerson = person,

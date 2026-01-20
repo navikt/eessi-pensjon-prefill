@@ -26,39 +26,6 @@ class PrefillSEDService(private val eessiInformasjon: EessiInformasjon, private 
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillSEDService::class.java) }
 
-    fun prefillGjenny(
-        prefillData: PrefillDataModel,
-        personDataCollection: PersonDataCollection,
-        etterlatteRespData: EtterlatteVedtakResponseData?
-    ): SED {
-        return when (prefillData.sedType) {
-            P6000 -> {
-                PrefillP6000(
-                    prefillPDLnav,
-                    eessiInformasjon,
-                    null
-                ).prefill(
-                    prefillData,
-                    personDataCollection,
-                    etterlatteRespData
-                )
-            }
-            P2100 -> {
-                val sedpair = PrefillP2100(prefillPDLnav).prefillSed(
-                    prefillData,
-                    personDataCollection,
-                    null
-                )
-                prefillData.melding = sedpair.first
-                sedpair.second
-            }
-            else -> {
-                logger.warn("Benytter ordinær preutfylling for Gjenny for ${prefillData.sedType}")
-                prefill(prefillData, personDataCollection, null, etterlatteRespData)
-            }
-        }
-    }
-
     fun prefill(
         prefillData: PrefillDataModel,
         personDataCollection: PersonDataCollection,

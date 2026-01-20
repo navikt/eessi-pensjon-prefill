@@ -47,7 +47,6 @@ class PrefillSedEnkeTest {
         val response = prefillPDLNav.prefill(
             penSaksnummer = prefillData.penSaksnummer,
             bruker = prefillData.bruker,
-            avdod = prefillData.avdod,
             personData = persondataCollection,
             bankOgArbeid = prefillData.getBankOgArbeidFromRequest(),
             krav = null,

@@ -74,12 +74,13 @@ object PrefillP2xxxPensjon {
      *  «Førstegangsbehandling bosatt utland» eller «Mellombehandling».
      *  Obs, krav av typen «Førstegangsbehandling kun utland» eller Sluttbehandling kun utland» gjelder ikke norsk ytelse.
      */
-    inline fun <reified T: MeldingOmPensjon> populerMeldinOmPensjon(personNr: String,
-                               penSaksnummer: String?,
-                               pensak: V1Sak?,
-                               andreinstitusjonerItem: AndreinstitusjonerItem?,
-                               gjenlevende: Bruker? = null,
-                               kravId: String? = null): T  {
+    inline fun <reified T: MeldingOmPensjon> populerMeldinOmPensjon(
+        personNr: String?,
+        penSaksnummer: String?,
+        pensak: V1Sak?,
+        andreinstitusjonerItem: AndreinstitusjonerItem?,
+        gjenlevende: Bruker? = null,
+        kravId: String? = null): T  {
 
         logger.info("4.1           Informasjon om ytelser")
 
@@ -91,16 +92,16 @@ object PrefillP2xxxPensjon {
 
         val ytelse = if (pensak?.ytelsePerMaanedListe == null) {
             logger.info("Forkortet ytelsebehandling ved ytelsePerMaanedListe = null, status: ${pensak?.status}")
-            opprettForkortetYtelsesItem(pensak, personNr, penSaksnummer, andreinstitusjonerItem)
+            opprettForkortetYtelsesItem(pensak, personNr!!, penSaksnummer, andreinstitusjonerItem)
         } else {
             runCatching {
                 logger.info("sakType: ${pensak.sakType}")
                 val kravHistorikk = hentKravHistorikkForsteGangsBehandlingUtlandEllerForsteGang(pensak.kravHistorikkListe)
                 val ytelseprmnd = hentYtelsePerMaanedDenSisteFraKrav(kravHistorikk, pensak)
-                createYtelserItem(ytelseprmnd, pensak, personNr, penSaksnummer, andreinstitusjonerItem)
+                createYtelserItem(ytelseprmnd, pensak, personNr!!, penSaksnummer, andreinstitusjonerItem)
             }.getOrElse { ex ->
                 logger.warn("Feil under henting av ytelse ${pensak.sakType}. ${ex.message}", ex)
-                opprettForkortetYtelsesItem(pensak, personNr, penSaksnummer, andreinstitusjonerItem)
+                opprettForkortetYtelsesItem(pensak, personNr!!, penSaksnummer, andreinstitusjonerItem)
             }
         }
         return when (T::class) {

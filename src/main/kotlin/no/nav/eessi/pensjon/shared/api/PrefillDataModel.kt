@@ -11,7 +11,7 @@ import no.nav.eessi.pensjon.utils.mapJsonToAny
  *
  * services:  pdl, person, pen, maybe joark, eux-basis.
  */
-data class PersonInfo(val norskIdent: String,
+data class PersonInfo(val norskIdent: String? = null,
                       val aktorId: String? = null,
                       val reservert: Boolean? = true,
                       val epostKrr: String? = null,
