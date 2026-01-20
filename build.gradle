@@ -37,7 +37,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation")
 
     // Spring Framework BOM-fil overstyrer så vi får siste patch-versjon av Spring Framework
-    implementation(platform("org.springframework:spring-framework-bom:7.0.2"))
+    implementation(platform("org.springframework:spring-framework-bom:7.0.3"))
     implementation("org.springframework.boot:spring-boot-starter-aop:3.5.9")
     implementation("org.springframework.retry:spring-retry:2.0.12")
 
@@ -69,24 +69,25 @@ dependencies {
     implementation ("no.nav.common:token-client:3.2025.11.10_14.07-a9f44944d7bc")
 
     // Micrometer
-    implementation("io.micrometer:micrometer-registry-prometheus:1.15.5")
+    implementation("io.micrometer:micrometer-registry-prometheus:1.16.2")
 
     implementation ("org.springframework.kafka:spring-kafka:$springKafkaVersion")
 
     implementation("no.nav.eessi.pensjon:ep-eux:3.0.13")
-    implementation("no.nav.eessi.pensjon:ep-metrics:3.0.5")
+    implementation("no.nav.eessi.pensjon:ep-metrics:3.0.6")
     implementation("no.nav.eessi.pensjon:ep-logging:3.0.7")
-    implementation("no.nav.eessi.pensjon:ep-kodeverk:5.0.11") {
+    implementation("no.nav.eessi.pensjon:ep-kodeverk:5.0.15") {
         exclude module: 'ep-eux'
         exclude module: 'ep-metrics'
         exclude module: 'ep-logging'
     }
-    implementation("no.nav.eessi.pensjon:ep-personoppslag:14.0.13"){
+    implementation("no.nav.eessi.pensjon:ep-personoppslag:14.0.17"){
         exclude module: 'ep-eux'
         exclude module: 'ep-metrics'
         exclude module: 'ep-logging'
     }
-    implementation("no.nav.eessi.pensjon:ep-pensjonsinformasjon:4.0.9")
+    
+    implementation("no.nav.eessi.pensjon:ep-pensjonsinformasjon:4.0.11")
 
     implementation("no.nav.tjenestespesifikasjoner:pensjonsinformasjon-v1-tjenestespesifikasjon:2643.2f3e8e9")
 
