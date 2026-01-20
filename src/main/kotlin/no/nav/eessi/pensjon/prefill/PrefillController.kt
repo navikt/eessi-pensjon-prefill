@@ -20,7 +20,7 @@ class PrefillController(private val prefillService: PrefillService, private val 
 
         logInfo(request)
 
-        if(request.gjenny && request.avdodfnr == null) {
+        if(request.gjenny) {
             return prefillGjennyService.prefillGjennySedtoJson(request)
         }
 
