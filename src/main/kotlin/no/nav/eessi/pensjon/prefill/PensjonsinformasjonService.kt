@@ -95,9 +95,9 @@ class PensjonsinformasjonService(private val pensjonsinformasjonClient: Pensjons
         logger.debug("penSaksnummer: $penSaksnummer")
 
         if (penSaksnummer.isNullOrBlank()) throw ManglendeSakIdException("Mangler sakId")
-        if (fnr?.isBlank() == true) throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Mangler norskident")
+        if (fnr.isBlank() == true) throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Mangler norskident")
 
-        val peninfo = aktorId?.let { hentPensjonInformasjon(fnr!!, it) }
+        val peninfo = aktorId?.let { hentPensjonInformasjon(fnr, it) }
 
         return peninfo?.let {
             val sak = finnSak(penSaksnummer, it) ?: return null
