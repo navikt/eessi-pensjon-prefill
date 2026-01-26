@@ -11,6 +11,7 @@ import no.nav.eessi.pensjon.prefill.models.PensjonCollection
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.shared.api.ApiRequest
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
+import no.nav.eessi.pensjon.utils.toJson
 import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import no.nav.pensjon.v1.sak.V1Sak
 import no.nav.pensjon.v1.vedtak.V1Vedtak
@@ -99,7 +100,7 @@ class InnhentingService(
             P6000 -> PensjonCollection(
                 p6000Data = prefillData.vedtakId?.let { pesysService.hentP6000data(it) },
                 sedType = sedType
-            )
+            ).also { logger.debug("Svar fra Pesys nytt endepunkt: ${it.toJson()} Svar fra gammel løsning: ${PensjonCollection(pensjoninformasjon = pensjonsinformasjonService.hentVedtak(hentVedtak(prefillData)), sedType = sedType).toJson()}")}
             P8000 -> {
                 if (prefillData.buc == P_BUC_05) {
                         try {
