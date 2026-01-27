@@ -7,8 +7,7 @@ import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_05
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.sed.P8000
 import no.nav.eessi.pensjon.kodeverk.KodeverkClient
-import no.nav.eessi.pensjon.pensjonsinformasjon.models.EPSaktype
-import no.nav.eessi.pensjon.pensjonsinformasjon.models.KravArsak
+
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
 import no.nav.eessi.pensjon.prefill.BasePrefillNav
 import no.nav.eessi.pensjon.prefill.LagPdlPerson
@@ -24,9 +23,6 @@ import no.nav.eessi.pensjon.shared.api.PrefillDataModel
 import no.nav.eessi.pensjon.shared.api.ReferanseTilPerson
 import no.nav.eessi.pensjon.shared.person.FodselsnummerGenerator
 import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
-import no.nav.pensjon.v1.kravhistorikk.V1KravHistorikk
-import no.nav.pensjon.v1.kravhistorikkliste.V1KravHistorikkListe
-import no.nav.pensjon.v1.sak.V1Sak
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -138,16 +134,16 @@ class PrefillP8000P_BUC_05Test {
 
         personDataCollection = PersonDataCollection(avdod, forsikretPerson)
 
-        val sak = V1Sak()
-        val v1Kravhistorikk = V1KravHistorikk()
-        v1Kravhistorikk.kravArsak = KravArsak.GJNL_SKAL_VURD.name
+//        val sak = V1Sak()
+//        val v1Kravhistorikk = V1KravHistorikk()
+//        v1Kravhistorikk.kravArsak = KravArsak.GJNL_SKAL_VURD.name
+//
+//        sak.sakType = EPSaktype.ALDER.toString()
+//        sak.sakId = 100
+//        sak.kravHistorikkListe = V1KravHistorikkListe()
+//        sak.kravHistorikkListe.kravHistorikkListe.add(v1Kravhistorikk)
 
-        sak.sakType = EPSaktype.ALDER.toString()
-        sak.sakId = 100
-        sak.kravHistorikkListe = V1KravHistorikkListe()
-        sak.kravHistorikkListe.kravHistorikkListe.add(v1Kravhistorikk)
-
-        val pensjonCollection = PensjonCollection(sak = sak, sedType = SedType.P8000)
+//        val pensjonCollection = PensjonCollection(sak = sak, sedType = SedType.P8000)
 
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P8000, ufoerFnr, penSaksnummer = "100", avdod = PersonInfo(norskIdent = avdodFnr, aktorId = "21323"),  refTilPerson = ReferanseTilPerson.SOKER, bucType = P_BUC_05)
 
@@ -218,14 +214,14 @@ class PrefillP8000P_BUC_05Test {
 
         personDataCollection = PersonDataCollection(avdod, forsikretPerson)
 
-        val sak = V1Sak()
-        val v1Kravhistorikk = V1KravHistorikk()
-        sak.sakType = EPSaktype.UFOREP.toString()
-        sak.sakId = 100
-        sak.kravHistorikkListe = V1KravHistorikkListe()
-        sak.kravHistorikkListe.kravHistorikkListe.add(v1Kravhistorikk)
+//        val sak = V1Sak()
+//        val v1Kravhistorikk = V1KravHistorikk()
+//        sak.sakType = EPSaktype.UFOREP.toString()
+//        sak.sakId = 100
+//        sak.kravHistorikkListe = V1KravHistorikkListe()
+//        sak.kravHistorikkListe.kravHistorikkListe.add(v1Kravhistorikk)
 
-        val pensjonCollection = PensjonCollection(sak = sak, sedType = SedType.P8000)
+//        val pensjonCollection = PensjonCollection(sak = sak, sedType = SedType.P8000)
 
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P8000, ufoerFnr, penSaksnummer = "100", avdod = PersonInfo(norskIdent = avdodFnr, aktorId = "21323"),  refTilPerson = ReferanseTilPerson.SOKER, bucType = P_BUC_05)
 

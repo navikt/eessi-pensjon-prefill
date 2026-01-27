@@ -95,17 +95,17 @@ object KravHistorikkHelper {
 
     fun finnKravHistorikkForDato(pensak: P2xxxMeldingOmPensjonDto.Sak?): KravHistorikk {
         try {
-            val gjenLevKravarsak = hentKravhistorikkForGjenlevende(pensak?.kravHistorikkListe)
+            val gjenLevKravarsak = hentKravhistorikkForGjenlevende(pensak?.kravHistorikk)
             if (gjenLevKravarsak != null) return gjenLevKravarsak
 
-            val kravKunUtland = hentKravHistorikkMedValgtKravType(pensak?.kravHistorikkListe, F_BH_KUN_UTL)
+            val kravKunUtland = hentKravHistorikkMedValgtKravType(pensak?.kravHistorikk, EessiKravGjelder.F_BH_KUN_UTL)
             if (kravKunUtland != null) return  kravKunUtland
 
             logger.info("Sakstatus: ${pensak?.status},sakstype: ${pensak?.sakType}")
-            return when (Sakstatus.byValue(pensak?.status!!)) {
-                Sakstatus.TIL_BEHANDLING -> hentKravHistorikkMedKravStatusTilBehandling(pensak.kravHistorikkListe)
-                Sakstatus.AVSL -> hentKravHistorikkMedKravStatusAvslag(pensak.kravHistorikkListe)
-                else -> hentKravHistorikkForsteGangsBehandlingUtlandEllerForsteGang(pensak.kravHistorikkListe)
+            return when (pensak?.status) {
+                EessiSakStatus.TIL_BEHANDLING -> hentKravHistorikkMedKravStatusTilBehandling(pensak.kravHistorikk)
+                EessiSakStatus.AVSL -> hentKravHistorikkMedKravStatusAvslag(pensak.kravHistorikk)
+                else -> hentKravHistorikkForsteGangsBehandlingUtlandEllerForsteGang(pensak?.kravHistorikk)
             }
 
         } catch (ex: Exception) {

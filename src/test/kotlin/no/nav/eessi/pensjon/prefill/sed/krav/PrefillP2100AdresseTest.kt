@@ -1,16 +1,12 @@
 package no.nav.eessi.pensjon.prefill.sed.krav
 
-import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.prefill.BasePrefillNav
-import no.nav.eessi.pensjon.prefill.InnhentingService
-import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.models.PensjonCollection
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
-import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper.lesPensjonsdataFraFil
 import no.nav.eessi.pensjon.shared.api.PersonInfo
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
 import no.nav.eessi.pensjon.shared.person.FodselsnummerGenerator
@@ -28,7 +24,7 @@ class PrefillP2100AdresseTest {
     private lateinit var prefillData: PrefillDataModel
     private lateinit var prefillSEDService: PrefillSEDService
     private lateinit var pensjonCollection: PensjonCollection
-    private lateinit var dataFromPEN: PensjonsinformasjonService
+//    private lateinit var dataFromPEN: PensjonsinformasjonService
     private lateinit var persondataCollection: PersonDataCollection
 
     @BeforeEach
@@ -41,9 +37,9 @@ class PrefillP2100AdresseTest {
                 avdod = PersonInfo(avdodPersonFnr, "112233445566")
         )
 
-        dataFromPEN = lesPensjonsdataFraFil("/pensjonsinformasjon/krav/P2100-GL-UTL-INNV.xml")
-        val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
-        pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
+//        dataFromPEN = lesPensjonsdataFraFil("/pensjonsinformasjon/krav/P2100-GL-UTL-INNV.xml")
+//        val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
+//        pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
 
         prefillSEDService = BasePrefillNav.createPrefillSEDService()
 

@@ -6,7 +6,6 @@ import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.SedType.*
 import no.nav.eessi.pensjon.prefill.BasePrefillNav
 import no.nav.eessi.pensjon.prefill.LagPdlPerson
-import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.models.PensjonCollection
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.shared.api.ApiRequest
@@ -18,7 +17,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 class SedP3000XXTest {
-    var dataFromPEN: PensjonsinformasjonService = mockk()
+//    var dataFromPEN: PensjonsinformasjonService = mockk()
     private lateinit var prefillSEDService: PrefillSEDService
 
     private val personFnr = FodselsnummerGenerator.generateFnrForTest(68)

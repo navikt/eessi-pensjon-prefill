@@ -1,17 +1,15 @@
 package no.nav.eessi.pensjon.prefill.sed.krav
 
 import no.nav.eessi.pensjon.eux.model.SedType
-import no.nav.eessi.pensjon.eux.model.buc.SakType
 import no.nav.eessi.pensjon.eux.model.sed.*
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.prefill.models.pensjon.EessiKravGjelder
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiSakType
 import no.nav.eessi.pensjon.prefill.models.pensjon.EessiSakType.ALDER
 import no.nav.eessi.pensjon.prefill.models.pensjon.EessiSakType.UFOREP
-import no.nav.eessi.pensjon.prefill.models.pensjon.P2xxxMeldingOmPensjonDto
-import no.nav.eessi.pensjon.prefill.models.pensjon.P2xxxMeldingOmPensjonDto.KravHistorikk
+import no.nav.eessi.pensjon.prefill.models.pensjon.P2xxxMeldingOmPensjonDto.*
 import no.nav.eessi.pensjon.prefill.models.pensjon.P2xxxMeldingOmPensjonDto.Sak
-import no.nav.eessi.pensjon.prefill.models.pensjon.P2xxxMeldingOmPensjonDto.Vedtak
-import no.nav.eessi.pensjon.prefill.models.pensjon.P6000MeldingOmVedtakDto
+import no.nav.eessi.pensjon.prefill.sed.krav.KravHistorikkHelper.hentKravHistorikkForsteGangsBehandlingUtlandEllerForsteGang
 import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.KSAK
 import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.PrefillPensjonVedtaksbelop.createYtelseskomponentGrunnpensjon
 import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.PrefillPensjonVedtaksbelop.createYtelseskomponentTilleggspensjon
@@ -49,7 +47,7 @@ object PrefillP2xxxPensjon {
         logger.debug("Prøver å sette kravDato til Virkningstidpunkt: ${valgtKrav?.kravType} og dato: ${valgtKrav?.mottattDato}")
 
         if (valgtKrav != null && valgtKrav.mottattDato != null) {
-            return Krav(dato = valgtKrav.mottattDato?.simpleFormat())
+            return Krav(dato = valgtKrav.mottattDato.simpleFormat())
         }
         return null
     }
@@ -87,13 +85,13 @@ object PrefillP2xxxPensjon {
 
         logger.info("Krav (dato) = $krav")
 
-        val ytelse = if (pensak?.ytelsePerMaanedListe == null) {
+        val ytelse = if (pensak?.ytelsePerMaaned == null) {
             logger.info("Forkortet ytelsebehandling ved ytelsePerMaanedListe = null, status: ${pensak?.status}")
             opprettForkortetYtelsesItem(pensak, personNr, penSaksnummer, andreinstitusjonerItem)
         } else {
             runCatching {
                 logger.info("sakType: ${pensak.sakType}")
-                val kravHistorikk = hentKravHistorikkForsteGangsBehandlingUtlandEllerForsteGang(pensak.kravHistorikkListe)
+                val kravHistorikk = hentKravHistorikkForsteGangsBehandlingUtlandEllerForsteGang(pensak.kravHistorikk)
                 val ytelseprmnd = hentYtelsePerMaanedDenSisteFraKrav(kravHistorikk, pensak)
                 createYtelserItem(ytelseprmnd, pensak, personNr, penSaksnummer, andreinstitusjonerItem)
             }.getOrElse { ex ->
@@ -182,10 +180,10 @@ object PrefillP2xxxPensjon {
         return (historikkForKravtype != null && historikkForKravtype.size == sak.kravHistorikk.size)
     }
 
-    fun opprettMeldingBasertPaaSaktype(kravHistorikk: KravHistorikk?, kravId: String?, saktype: String?): String {
+    fun opprettMeldingBasertPaaSaktype(kravHistorikk: KravHistorikk?, kravId: String?, saktype: EessiSakType?): String {
         if (kravHistorikk?.kravId == kravId) return ""
             return when (saktype) {
-                ALDER.name, UFOREP.name -> kravdatoMeldingOmP2100TilSaksbehandler
+                ALDER, UFOREP -> kravdatoMeldingOmP2100TilSaksbehandler
                 else -> ""
             }
     }
@@ -219,7 +217,7 @@ object PrefillP2xxxPensjon {
      *  4.1
      *  Informasjon om ytelser den forsikrede mottar
      */
-    fun createYtelserItem(ytelsePrmnd: P6000MeldingOmVedtakDto, pensak: Sak, personNr: String, penSaksnummer: String?, andreinstitusjonerItem: AndreinstitusjonerItem?): YtelserItem {
+    fun createYtelserItem(ytelsePrmnd: YtelsePerMaaned, pensak: Sak, personNr: String, penSaksnummer: String?, andreinstitusjonerItem: AndreinstitusjonerItem?): YtelserItem {
         logger.debug("4.1   YtelserItem")
         val basertPaa = createPensionBasedOn(pensak, personNr)
         val saktype = pensak.sakType
@@ -242,41 +240,41 @@ object PrefillP2xxxPensjon {
                 startdatoretttilytelse = createStartdatoForRettTilYtelse(pensak),
 
                 //4.1.9 - 4.1.9.5.1
-                beloep = createYtelseItemBelop(ytelsePrmnd, saktype),
+                beloep = createYtelseItemBelop(ytelsePrmnd),
 
                 //4.1.10.1
                 mottasbasertpaa = basertPaa.let {  BasertPaa.entries.firstOrNull() { it.name == basertPaa } }?.kode,
 
                 //4.1.10.2
-                totalbruttobeloepbostedsbasert = saktype?.let { KSAK.valueOf(it.name) }?.let { createYtelseskomponentGrunnpensjon(ytelsePrmnd.ytelsePerMaanedListe, it) },
+                totalbruttobeloepbostedsbasert = saktype.let { KSAK.valueOf(it.name) }.let { createYtelseskomponentGrunnpensjon(ytelsePrmnd, it) },
 
                 //4.1.10.3
-                totalbruttobeloeparbeidsbasert = saktype?.let { KSAK.valueOf(it.name) }?.let { createYtelseskomponentTilleggspensjon( ytelsePrmnd, it) },
+                totalbruttobeloeparbeidsbasert = saktype.let { KSAK.valueOf(it.name) }.let { createYtelseskomponentTilleggspensjon( ytelsePrmnd, it) },
         )
     }
 
-    fun hentYtelsePerMaanedDenSisteFraKrav(kravHistorikk: KravHistorikk, pensak: Sak): P2xxxMeldingOmPensjonDto.YtelsePerMaaned {
+    fun hentYtelsePerMaanedDenSisteFraKrav(kravHistorikk: KravHistorikk, pensak: Sak): YtelsePerMaaned {
         val ytelser = pensak.ytelsePerMaaned
         val ytelserSortertPaaFom = ytelser.sortedBy { it.fom }
 
         logger.debug("-----------------------------------------------------")
         ytelserSortertPaaFom.forEach {
             logger.debug("Sammenligner ytelsePerMaaned: ${it.fom}  Med virkningtidpunkt: ${kravHistorikk.virkningstidspunkt}")
-            if (it.fom >= kravHistorikk.virkningstidspunkt) {
+            if (it.fom != null && it.fom >= kravHistorikk.virkningstidspunkt) {
                 logger.debug("Return følgende ytelsePerMaaned: ${it.fom}")
                 return it
             }
             logger.debug("-----------------------------------------------------")
         }
         //TODO: Se om det er mulig å fjerne denne da den skaper usikkerhet om det har blitt laget en V1YtelsePerMaaned
-        return P2xxxMeldingOmPensjonDto.YtelsePerMaaned().also { logger.info("Klarte ikke å generere V1YtelsePerMaaned; gir en tom ytelse tilbake") }
+        return YtelsePerMaaned().also { logger.info("Klarte ikke å generere V1YtelsePerMaaned; gir en tom ytelse tilbake") }
     }
 
     /**
      *  4.1.7
      *  Start date of entitlement to benefits  - trenger ikke fylles ut
      */
-    private fun createStartdatoForRettTilYtelse(pensak: V1Sak): String? {
+    private fun createStartdatoForRettTilYtelse(pensak: Sak): String? {
         logger.debug("4.1.7         Startdato for ytelse (forsteVirkningstidspunkt) ")
         return pensak.forsteVirkningstidspunkt?.simpleFormat()
     }
@@ -304,7 +302,7 @@ object PrefillP2xxxPensjon {
      *  OBS – fra år 2021 kan det bli aktuelt med årlige utbetalinger, pga da kan brukere få utbetalt kap 20-pensjoner med veldig små beløp (ingen nedre grense)
      *  4.1.9.5.1  nei
      */
-    private fun createYtelseItemBelop(ytelsePrMnd: V1YtelsePerMaaned, sakType: SakType?): List<BeloepItem> {
+    private fun createYtelseItemBelop(ytelsePrMnd: YtelsePerMaaned): List<BeloepItem> {
         logger.debug("4.1.9         Beløp")
         return listOf( BeloepItem(
                 //4.1.9.1
@@ -327,9 +325,10 @@ object PrefillP2xxxPensjon {
      *  Fra PSAK.
      *  Her fylles ut FOM-dato for hvert beløp i beløpshistorikk 5 år tilbake i tid.
      */
-    private fun createGjeldendesiden(ytelsePrMnd: V1YtelsePerMaaned): String {
+    // TODO: Sjekke formatering på dato
+    private fun createGjeldendesiden(ytelsePrMnd: YtelsePerMaaned): String {
         logger.debug("4.1.9.3         Gjeldendesiden")
-        return ytelsePrMnd.fom.simpleFormat()
+        return ytelsePrMnd.fom.toString()
     }
 
     /**
@@ -366,7 +365,7 @@ object PrefillP2xxxPensjon {
      *  [01] Botid
      *  [02] I arbeid
      */
-    private fun createPensionBasedOn(pensak: V1Sak, personNr: String): String? {
+    private fun createPensionBasedOn(pensak: Sak, personNr: String): String? {
         logger.debug("4.1.10.1      Pensjon basertpå")
         val navfnr = Fodselsnummer.fra(personNr)
 
@@ -374,8 +373,8 @@ object PrefillP2xxxPensjon {
         if (navfnr != null && navfnr.isDNumber()) return "01"
 
         return when (pensak.sakType) {
-            "ALDER" -> "01"
-            "UFOREP" -> "02"
+            ALDER -> "01"
+            UFOREP -> "02"
             else -> null
         }
     }
@@ -415,14 +414,14 @@ object PrefillP2xxxPensjon {
      *  Her skal vises status på den sist behandlede ytelsen, dvs om kravet er blitt avslått, innvilget eller er under behandling.
      *  Hvis bruker mottar en løpende ytelse, skal det alltid vises Innvilget.
      */
-    fun createPensionStatus(pensak: V1Sak): String {
+    fun createPensionStatus(pensak: Sak): String {
         logger.debug("4.1.3         Status")
         return mapSakstatus(pensak.status)
     }
 
     fun populerPensjon(
         prefillData: PrefillDataModel,
-        sak: V1Sak?
+        sak: Sak?
     ): Pensjon? {
         val andreInstitusjondetaljer = EessiInformasjon().asAndreinstitusjonerItem()
 

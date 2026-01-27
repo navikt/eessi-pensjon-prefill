@@ -39,13 +39,13 @@ data class P6000MeldingOmVedtakDto(
     )
 
     data class YtelsePerMaaned(
-        val fom: LocalDate, // P2000, P2200, P6000
+        override val fom: LocalDate, // P2000, P2200, P6000
         val tom: LocalDate?, // P6000
         val mottarMinstePensjonsniva: Boolean, // P6000
         val vinnendeBeregningsmetode: String, //P6000
-        val belop: Int, // P2000, P2200, P6000
-        val ytelseskomponentListe: List<Ytelseskomponent>, //P6000
-    )
+        override val belop: Int, // P2000, P2200, P6000
+        override val ytelseskomponentListe: List<Ytelseskomponent>, //P6000
+    ) : YtelsePerMndBase(fom, belop,ytelseskomponentListe)
 
     data class Trygdetid(
         val fom: LocalDate, //P6000

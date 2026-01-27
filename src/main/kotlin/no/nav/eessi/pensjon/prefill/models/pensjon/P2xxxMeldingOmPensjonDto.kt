@@ -2,6 +2,7 @@ package no.nav.eessi.pensjon.prefill.models.pensjon
 
 import no.nav.eessi.pensjon.prefill.models.SakInterface
 import no.nav.eessi.pensjon.prefill.models.VedtakInterface
+import no.nav.eessi.pensjon.prefill.models.pensjon.P6000MeldingOmVedtakDto.Ytelseskomponent
 import java.time.LocalDate
 
 data class P2xxxMeldingOmPensjonDto(
@@ -17,9 +18,10 @@ data class P2xxxMeldingOmPensjonDto(
     ) : SakInterface
 
     data class YtelsePerMaaned(
-        val fom: LocalDate,
-        val belop: Int,
-    )
+        override val fom: LocalDate? = null, // P2000, P2200, P6000
+        override val belop: Int? = null, // P2000, P2200, P6000
+        override val ytelseskomponentListe: List<Ytelseskomponent>? = null, //P6000
+    ) : YtelsePerMndBase(fom, belop,ytelseskomponentListe)
 
     data class Vedtak(
         val boddArbeidetUtland: Boolean?,
@@ -39,6 +41,8 @@ data class P2xxxMeldingOmPensjonDto(
 enum class Kravstatus { TIL_BEHANDLING, AVSL }
 
     enum class EessiSakStatus { TIL_BEHANDLING, INGEN_STATUS, OPPRETTET, UKJENT, TRUKKET, AVBRUTT, AVSL, INNV, OPPHOR, VELG, VETIKKE }
+
+    enum class EessiKravStatus { TIL_BEHANDLING, INGEN_STATUS, OPPRETTET, UKJENT, TRUKKET, AVBRUTT, AVSL, INNV, OPPHOR, VELG, VETIKKE }
 
     enum class EessiKravGjelder { F_BH_BO_UTL, F_BH_MED_UTL, F_BH_KUN_UTL, FORSTEG_BH, SLUTT_BH_UTL, REVURD, ANNET }
 

@@ -1,16 +1,13 @@
 package no.nav.eessi.pensjon.prefill.sed.vedtak
 
-import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.sed.P6000
 import no.nav.eessi.pensjon.prefill.BasePrefillNav
 import no.nav.eessi.pensjon.prefill.InnhentingService
-import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
-import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
 import no.nav.eessi.pensjon.shared.person.FodselsnummerGenerator
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -29,7 +26,7 @@ class P6000AlderpensjonAvslagTest {
 
     private lateinit var prefillData: PrefillDataModel
     private lateinit var prefillSEDService: PrefillSEDService
-    private lateinit var dataFromPEN: PensjonsinformasjonService
+//    private lateinit var dataFromPEN: PensjonsinformasjonService
     private lateinit var personDataCollection: PersonDataCollection
     private lateinit var innhentingService: InnhentingService
 
@@ -41,9 +38,9 @@ class P6000AlderpensjonAvslagTest {
 
     @Test
     fun `preutfylling P6000 feiler ved mangler av vedtakId`() {
-        dataFromPEN = PrefillTestHelper.lesPensjonsdataVedtakFraFil("/pensjonsinformasjon/vedtak/P6000vedtak-alderpensjon-avslag.xml")
+//        dataFromPEN = PrefillTestHelper.lesPensjonsdataVedtakFraFil("/pensjonsinformasjon/vedtak/P6000vedtak-alderpensjon-avslag.xml")
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P6000, personFnr, penSaksnummer = "22580170", vedtakId = "")
-        val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
+//        val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
 
         assertThrows<ResponseStatusException> {
             innhentingService.hentPensjoninformasjonCollection(prefillData)
@@ -58,8 +55,8 @@ class P6000AlderpensjonAvslagTest {
         "03, /pensjonsinformasjon/vedtak/P6000-AP-Avslag.xml, 12312312",
     )
     fun `Preutfylling av P6000 ved avslag gir forskjellig preutfylling av riktig avslagsbegrunnelse`(avslagsbegrunnelse: String, fraFil : String, vedtakId: String) {
-        dataFromPEN = PrefillTestHelper.lesPensjonsdataVedtakFraFil(fraFil)
-        innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
+//        dataFromPEN = PrefillTestHelper.lesPensjonsdataVedtakFraFil(fraFil)
+//        innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P6000, personFnr, penSaksnummer = "22580170", vedtakId = vedtakId)
 
         val pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)

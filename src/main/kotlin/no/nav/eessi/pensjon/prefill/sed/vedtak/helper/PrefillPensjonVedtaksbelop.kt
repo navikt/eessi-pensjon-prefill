@@ -7,6 +7,7 @@ import no.nav.eessi.pensjon.eux.model.sed.Periode
 import no.nav.eessi.pensjon.eux.model.sed.Ukjent
 import no.nav.eessi.pensjon.prefill.models.YtelseskomponentType.*
 import no.nav.eessi.pensjon.prefill.models.pensjon.P6000MeldingOmVedtakDto
+import no.nav.eessi.pensjon.prefill.models.pensjon.YtelsePerMndBase
 import no.nav.eessi.pensjon.utils.simpleFormat
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -39,7 +40,7 @@ object PrefillPensjonVedtaksbelop {
      *  Hentet ytelseskomponentType fra YtelseKomponentTypeCode.java (PESYS)
      *      GAP =Garantitillegg
      */
-    fun createYtelseskomponentGrunnpensjon(ytelsePrMnd: P6000MeldingOmVedtakDto.YtelsePerMaaned, sakType: KSAK): String? {
+    fun createYtelseskomponentGrunnpensjon(ytelsePrMnd: YtelsePerMndBase, sakType: KSAK): String? {
         logger.info("4.1.7.3.3         Grunnpensjon")
 
         if (KSAK.UFOREP != sakType) {
@@ -54,7 +55,7 @@ object PrefillPensjonVedtaksbelop {
      *
      *  Her skal det automatisk vises brutto tilleggspensjon for de ulike beregningsperioder  Brutto inntektspensjon for alderspensjon beregnet etter kapittel 20.
      */
-    fun createYtelseskomponentTilleggspensjon(ytelsePrMnd: P6000MeldingOmVedtakDto.YtelsePerMaaned, sakType: KSAK): String? {
+    fun createYtelseskomponentTilleggspensjon(ytelsePrMnd: YtelsePerMndBase, sakType: KSAK): String? {
         logger.info("4.1.7.3.4         Tilleggspensjon")
 
         if (KSAK.UFOREP != sakType) {

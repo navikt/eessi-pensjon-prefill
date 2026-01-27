@@ -1,16 +1,10 @@
 //package no.nav.eessi.pensjon.prefill
 //
 //import no.nav.eessi.pensjon.eux.model.SedType
-//import no.nav.eessi.pensjon.pensjonsinformasjon.FinnSak
-//import no.nav.eessi.pensjon.pensjonsinformasjon.clients.PensjoninformasjonException
-//import no.nav.eessi.pensjon.pensjonsinformasjon.clients.PensjonsinformasjonClient
-//import no.nav.eessi.pensjon.prefill.models.pensjon.P6000MeldingOmVedtakDto
+////////import no.nav.eessi.pensjon.prefill.models.pensjon.P6000MeldingOmVedtakDto
 //import no.nav.eessi.pensjon.prefill.models.pensjon.P6000MeldingOmVedtakDto.Vedtak
 //import no.nav.eessi.pensjon.shared.api.PrefillDataModel
-//import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
-//import no.nav.pensjon.v1.sak.V1Sak
-//import no.nav.pensjon.v1.vedtak.V1Vedtak
-//import org.slf4j.Logger
+////////import org.slf4j.Logger
 //import org.slf4j.LoggerFactory
 //import org.springframework.context.annotation.Profile
 //import org.springframework.http.HttpStatus

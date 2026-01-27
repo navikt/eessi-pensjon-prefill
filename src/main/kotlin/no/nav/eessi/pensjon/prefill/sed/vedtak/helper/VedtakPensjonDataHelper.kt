@@ -1,6 +1,7 @@
 package no.nav.eessi.pensjon.prefill.sed.vedtak.helper
 
 import no.nav.eessi.pensjon.prefill.models.pensjon.P6000MeldingOmVedtakDto
+import no.nav.eessi.pensjon.prefill.models.pensjon.YtelsePerMndBase
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.time.temporal.ChronoUnit
@@ -41,11 +42,11 @@ object VedtakPensjonDataHelper {
             .also { days -> logger.debug("              Total SummerTrygdeTid: $days ") }
     }
 
-    fun hentYtelseskomponentBelop(keys: String, ytelse: P6000MeldingOmVedtakDto.YtelsePerMaaned): Int {
+    fun hentYtelseskomponentBelop(keys: String, ytelse: YtelsePerMndBase): Int {
         val keylist = keys.split(",")
         var summer = 0
         keylist.forEach { keyword ->
-            ytelse.ytelseskomponentListe.forEach { it2 ->
+            ytelse.ytelseskomponentListe?.forEach { it2 ->
                 if (keyword.trim() == it2.ytelsesKomponentType) {
                     summer += it2.belopTilUtbetaling
                 }

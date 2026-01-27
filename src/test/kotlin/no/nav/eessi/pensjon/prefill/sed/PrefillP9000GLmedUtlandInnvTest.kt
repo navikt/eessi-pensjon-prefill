@@ -36,10 +36,10 @@ class PrefillP9000GLmedUtlandInnvTest {
         personDataCollection = PersonPDLMock.createAvdodFamilie(personFnr, avdodPersonFnr)
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P9000, personFnr, penSaksnummer = pesysSaksnummer, avdod = PersonInfo(avdodPersonFnr, "112233445566"))
 
-        val pensjonInformasjonService = PrefillTestHelper.lesPensjonsdataFraFil("/pensjonsinformasjon/krav/KravAlderEllerUfore_AP_UTLAND.xml")
-        val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = pensjonInformasjonService)
+//        val pensjonInformasjonService = PrefillTestHelper.lesPensjonsdataFraFil("/pensjonsinformasjon/krav/KravAlderEllerUfore_AP_UTLAND.xml")
+//        val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = pensjonInformasjonService)
 
-        pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
+//        pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
         prefillSEDService = BasePrefillNav.createPrefillSEDService()
 
     }

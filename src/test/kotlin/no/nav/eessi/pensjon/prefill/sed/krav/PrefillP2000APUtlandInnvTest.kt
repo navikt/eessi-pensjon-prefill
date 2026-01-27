@@ -1,23 +1,15 @@
 package no.nav.eessi.pensjon.prefill.sed.krav
 
-import io.mockk.every
-import io.mockk.mockk
 import io.mockk.spyk
 import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_01
 import no.nav.eessi.pensjon.eux.model.SedType.P2000
 import no.nav.eessi.pensjon.eux.model.sed.BasertPaa
-import no.nav.eessi.pensjon.pensjonsinformasjon.models.KravArsak
-import no.nav.eessi.pensjon.pensjonsinformasjon.models.PenKravtype
 import no.nav.eessi.pensjon.prefill.BasePrefillNav
-import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.models.PensjonCollection
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
-import no.nav.eessi.pensjon.prefill.models.YtelseskomponentType
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
-import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper.lesPensjonsdataFraFil
-import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper.readJsonResponse
 import no.nav.eessi.pensjon.shared.api.ApiRequest
 import no.nav.eessi.pensjon.shared.api.InstitusjonItem
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
@@ -47,15 +39,15 @@ class PrefillP2000APUtlandInnvTest {
 
         
 
-        val dataFromPEN = lesPensjonsdataFraFil("/pensjonsinformasjon/krav/P2000-AP-UTL-INNV-24015012345_PlanB.xml")
-        val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
+//        val dataFromPEN = lesPensjonsdataFraFil("/pensjonsinformasjon/krav/P2000-AP-UTL-INNV-24015012345_PlanB.xml")
+//        val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
 
         prefillData = PrefillDataModelMother.initialPrefillDataModel(P2000, personFnr, penSaksnummer = pesysSaksnummer).apply {
-            partSedAsJson["PersonInfo"] = readJsonResponse("/json/nav/other/person_informasjon_selvb.json")
-            partSedAsJson["P4000"] = readJsonResponse("/json/nav/other/p4000_trygdetid_part.json")
+//            partSedAsJson["PersonInfo"] = readJsonResponse("/json/nav/other/person_informasjon_selvb.json")
+//            partSedAsJson["P4000"] = readJsonResponse("/json/nav/other/p4000_trygdetid_part.json")
         }
 
-        pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
+//        pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
 
         prefillSEDService = BasePrefillNav.createPrefillSEDService()
     }
@@ -81,34 +73,34 @@ class PrefillP2000APUtlandInnvTest {
     @Test
     fun `forventet korrekt utfylt P2000 med belop`() {
 
-        val ytelsePerMaaned = PensjonsInformasjonHelper.createYtelsePerMaaned(
-            mottarMinstePensjonsniva = true,
-            belop = 123,
-            belopUtenAvkorting = 111,
-            fomDate = PensjonsInformasjonHelper.dummyDate(20),
-            tomDate = PensjonsInformasjonHelper.dummyDate(30)
-        ).apply {
-            ytelseskomponentListe.addAll(
-                listOf(
-                    PensjonsInformasjonHelper.createYtelseskomponent(
-                        type = YtelseskomponentType.GAP,
-                        belopTilUtbetaling = 444,
-                        belopUtenAvkorting = 333
-                    ),
-                    PensjonsInformasjonHelper.createYtelseskomponent(
-                        type = YtelseskomponentType.TP,
-                        belopTilUtbetaling = 444,
-                        belopUtenAvkorting = 333
-                    )
-                )
-            )
-        }
-        val gjenlevendHistorikk = PensjonsInformasjonHelper.createKravHistorikk(KravArsak.GJNL_SKAL_VURD.name, PenKravtype.F_BH_MED_UTL.name)
+//        val ytelsePerMaaned = PensjonsInformasjonHelper.createYtelsePerMaaned(
+//            mottarMinstePensjonsniva = true,
+//            belop = 123,
+//            belopUtenAvkorting = 111,
+//            fomDate = PensjonsInformasjonHelper.dummyDate(20),
+//            tomDate = PensjonsInformasjonHelper.dummyDate(30)
+//        ).apply {
+//            ytelseskomponentListe.addAll(
+//                listOf(
+//                    PensjonsInformasjonHelper.createYtelseskomponent(
+//                        type = YtelseskomponentType.GAP,
+//                        belopTilUtbetaling = 444,
+//                        belopUtenAvkorting = 333
+//                    ),
+//                    PensjonsInformasjonHelper.createYtelseskomponent(
+//                        type = YtelseskomponentType.TP,
+//                        belopTilUtbetaling = 444,
+//                        belopUtenAvkorting = 333
+//                    )
+//                )
+//            )
+//        }
+//        val gjenlevendHistorikk = PensjonsInformasjonHelper.createKravHistorikk(KravArsak.GJNL_SKAL_VURD.name, PenKravtype.F_BH_MED_UTL.name)
 
         // setter opp tilgang til mocking av selektive data
         val spykPensjonCollection = spyk(pensjonCollection)
 
-        every { spykPensjonCollection.sak } returns PensjonsInformasjonHelper.createSak(gjenlevendHistorikk, ytelsePerMaaned)
+//        every { spykPensjonCollection.sak } returns PensjonsInformasjonHelper.createSak(gjenlevendHistorikk, ytelsePerMaaned)
 
         val P2000 = prefillSEDService.prefill(
             prefillData,

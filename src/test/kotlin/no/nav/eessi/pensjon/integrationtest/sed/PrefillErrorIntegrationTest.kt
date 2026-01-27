@@ -11,26 +11,26 @@ import no.nav.eessi.pensjon.eux.model.sed.KravType
 import no.nav.eessi.pensjon.integrationtest.IntegrasjonsTestConfig
 import no.nav.eessi.pensjon.kodeverk.KodeverkClient
 import no.nav.eessi.pensjon.kodeverk.Postnummer
-import no.nav.eessi.pensjon.pensjonsinformasjon.models.EPSaktype.UFOREP
-import no.nav.eessi.pensjon.pensjonsinformasjon.models.KravArsak
-import no.nav.eessi.pensjon.pensjonsinformasjon.models.Sakstatus
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
 import no.nav.eessi.pensjon.personoppslag.pdl.model.AktoerId
 import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe.FOLKEREGISTERIDENT
 import no.nav.eessi.pensjon.personoppslag.pdl.model.NorskIdent
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Npid
 import no.nav.eessi.pensjon.prefill.KrrService
-import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.models.DigitalKontaktinfo
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiKravArsak
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiKravStatus
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiSakStatus
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiSakType
+import no.nav.eessi.pensjon.prefill.models.pensjon.P2xxxMeldingOmPensjonDto
 import no.nav.eessi.pensjon.prefill.sed.krav.PensjonsInformasjonHelper
-import no.nav.pensjon.v1.vedtak.V1Vedtak
 import org.hamcrest.Matchers
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc
 import org.springframework.http.MediaType
 import org.springframework.kafka.test.context.EmbeddedKafka
 import org.springframework.test.annotation.DirtiesContext
@@ -54,9 +54,6 @@ class PrefillErrorIntegrationTest {
     lateinit var kodeverkClient: KodeverkClient
 
     @MockkBean
-    lateinit var pensjoninformasjonservice: PensjonsinformasjonService
-
-    @MockkBean
     lateinit var personService: PersonService
 
     @MockkBean
@@ -77,21 +74,20 @@ class PrefillErrorIntegrationTest {
         every { kodeverkClient.hentPostSted(any()) } returns Postnummer("1068", "SØRUMSAND")
         every { krrService.hentPersonerFraKrr(any())  } returns DigitalKontaktinfo( "melleby11@melby.no", true, personident = NPID_VOKSEN)
 
-        val sak = PensjonsInformasjonHelper.createSak(
-            PensjonsInformasjonHelper.createKravHistorikk(
-                KravArsak.GJNL_SKAL_VURD.name,
-                KravType.ALDER.name,
-                status = Sakstatus.INNV
-            ), sakType = UFOREP.name
-        )
+//        val sak = PensjonsInformasjonHelper.createSak(
+//            PensjonsInformasjonHelper.createKravHistorikk(
+//                EessiKravArsak.GJNL_SKAL_VURD.name,
+//                KravType.ALDER.name,
+//                status = EessiSakStatus.INNV
+//            ), sakType = EessiSakType.UFOREP.name
+//        )
 
-        every { pensjoninformasjonservice.hentRelevantPensjonSak(any(), any()) } returns sak
+//        every { pensjoninformasjonservice.hentRelevantPensjonSak(any(), any()) } returns sak
 
-        val vedtak = V1Vedtak()
-        vedtak.isBoddArbeidetUtland = false
-        vedtak.kravGjelder = "REVURD"
+//        P2xxxMeldingOmPensjonDto.Vedtak(false)
+//        vedtak.kravGjelder = "REVURD"
 
-        every { pensjoninformasjonservice.hentRelevantVedtakHvisFunnet("231231231") } returns vedtak
+//        every { pensjoninformasjonservice.hentRelevantVedtakHvisFunnet("231231231") } returns vedtak
 
     }
 

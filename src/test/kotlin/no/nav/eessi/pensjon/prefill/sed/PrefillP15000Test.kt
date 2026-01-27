@@ -6,7 +6,6 @@ import io.mockk.mockkClass
 import no.nav.eessi.pensjon.eux.model.sed.KravType
 import no.nav.eessi.pensjon.shared.api.PersonInfo
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
-import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -26,11 +25,11 @@ internal class PrefillP15000Test {
         every { mockedPrefill.avdod } returns PersonInfo("1234", "5678")
 
         val exception = assertThrows<ResponseStatusException> {
-            prfillP15000.prefill(
-                mockedPrefill, mockk(), mockk<Pensjonsinformasjon>{
-                    every { avdod } returns mockk()
-                }
-            )
+//            prfillP15000.prefill(
+//                mockedPrefill, mockk(), mockk<Pensjonsinformasjon>{
+//                    every { avdod } returns mockk()
+//                }
+//            )
         }
         assertEquals(exception.reason,"Ved opprettelse av krav SED må saksbehandling være fullført i Pesys ( vilkårsprøving o.l ) og jordklode i brukerkontekst kan ikke benyttes")
     }

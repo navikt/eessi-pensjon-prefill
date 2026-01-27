@@ -32,7 +32,7 @@ class PrefillSEDServiceTest {
     private val automatiseringStatistikkService: AutomatiseringStatistikkService = mockk()
     private lateinit var prefillData: PrefillDataModel
     private lateinit var prefillSEDService: PrefillSEDService
-    private lateinit var dataFromPEN: PensjonsinformasjonService
+//    private lateinit var dataFromPEN: PensjonsinformasjonService
     private lateinit var prefillService: PrefillService
     private lateinit var personcollection: PersonDataCollection
     private lateinit var personDataCollection: PersonDataCollection
@@ -49,7 +49,7 @@ class PrefillSEDServiceTest {
 
     @Test
     fun `En p6000 uten vedtak skal gi en delvis utfylt sed`(){
-        dataFromPEN = PrefillTestHelper.lesPensjonsdataVedtakFraFil("/pensjonsinformasjon/vedtak/P6000-GP-401.xml")
+//        dataFromPEN = PrefillTestHelper.lesPensjonsdataVedtakFraFil("/pensjonsinformasjon/vedtak/P6000-GP-401.xml")
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P6000, personFnr, penSaksnummer = "22580170", vedtakId = "12312312", avdod = PersonInfo(avdodPersonFnr, "1234567891234"))
         prefillSEDService = PrefillSEDService(EessiInformasjonMother.standardEessiInfo(), prefillNav)
         val prefill = prefillSEDService.prefillGjenny(prefillData, personDataCollection, null)
