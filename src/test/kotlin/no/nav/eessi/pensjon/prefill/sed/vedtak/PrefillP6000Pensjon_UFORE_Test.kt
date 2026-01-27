@@ -49,7 +49,7 @@ class PrefillP6000Pensjon_UFORE_Test {
         val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
         val pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
 
-        val p6000 = prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null) as P6000
+        val p6000 = prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null,) as P6000
         val p6000Pensjon = p6000.pensjon!!
 
         assertNotNull(p6000Pensjon.vedtak)

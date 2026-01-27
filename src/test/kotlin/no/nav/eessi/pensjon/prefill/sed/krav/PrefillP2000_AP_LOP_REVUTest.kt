@@ -56,7 +56,7 @@ class PrefillP2000_AP_LOP_REVUTest {
 
     @Test
     fun `forventet korrekt utfylt P2000 alderpensjon med kap4 og 9`() {
-        val sed = prefillSEDService.prefill(prefillData, persondataCollection,pensjonCollection, null)
+        val sed = prefillSEDService.prefill(prefillData, persondataCollection, pensjonCollection, null,)
         assertNotNull(sed.nav?.krav)
         assertEquals("2018-06-05", sed.nav?.krav?.dato)
 
@@ -65,7 +65,7 @@ class PrefillP2000_AP_LOP_REVUTest {
 
     @Test
     fun `forventet korrekt utfylt P2000 alderpersjon med mockdata fra testfiler`() {
-        val p2000 = prefillSEDService.prefill(prefillData, persondataCollection,pensjonCollection, null)
+        val p2000 = prefillSEDService.prefill(prefillData, persondataCollection, pensjonCollection, null,)
 
         assertEquals(null, p2000.nav?.barn)
 
@@ -101,7 +101,7 @@ class PrefillP2000_AP_LOP_REVUTest {
 
     @Test
     fun `testing av komplett P2000 med utskrift og testing av innsending`() {
-        val p2000 = prefillSEDService.prefill(prefillData, persondataCollection,pensjonCollection, null)
+        val p2000 = prefillSEDService.prefill(prefillData, persondataCollection, pensjonCollection, null,)
 
         val json = mapAnyToJson(createMockApiRequest(p2000.toJson()))
         assertNotNull(json)

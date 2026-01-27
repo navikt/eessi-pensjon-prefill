@@ -58,7 +58,7 @@ class PrefillP2100GjenlevendeRevurdering {
         )
 
         prefillSEDService = BasePrefillNav.createPrefillSEDService()
-        val p2100 = prefillSEDService.prefill(prefillData, persondataCollection, pensjonCollection, null)
+        val p2100 = prefillSEDService.prefill(prefillData, persondataCollection, pensjonCollection, null,)
 
         val p2100gjenlev = SED(
                 type = SedType.P2100,

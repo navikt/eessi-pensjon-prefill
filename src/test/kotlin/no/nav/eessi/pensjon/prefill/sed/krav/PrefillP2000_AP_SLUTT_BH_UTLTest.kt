@@ -1,11 +1,9 @@
 package no.nav.eessi.pensjon.prefill.sed.krav
 
 import io.mockk.mockk
-import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_01
 import no.nav.eessi.pensjon.eux.model.SedType.P2000
 import no.nav.eessi.pensjon.eux.model.sed.Nav
 import no.nav.eessi.pensjon.eux.model.sed.SED
-import no.nav.eessi.pensjon.pensjonsinformasjon.models.PenKravtype
 import no.nav.eessi.pensjon.prefill.BasePrefillNav
 import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
@@ -15,13 +13,9 @@ import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother.initialPrefill
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
 import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper.lesPensjonsdataFraFil
 import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper.readJsonResponse
-import no.nav.eessi.pensjon.shared.api.ApiRequest
-import no.nav.eessi.pensjon.shared.api.InstitusjonItem
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
 import no.nav.eessi.pensjon.shared.person.Fodselsnummer
 import no.nav.eessi.pensjon.shared.person.FodselsnummerGenerator
-import no.nav.eessi.pensjon.utils.mapAnyToJson
-import no.nav.eessi.pensjon.utils.toJson
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
@@ -59,7 +53,7 @@ class PrefillP2000_AP_SLUTT_BH_UTLTest {
 
     @Test
     fun `forventet korrekt utfylt P2000 alderpensjon skal hente kravdato for SLUTT_BH_UTL`() {
-        val p2000 = prefillSEDService.prefill(prefillData, persondataCollection, pensjonCollection, null)
+        val p2000 = prefillSEDService.prefill(prefillData, persondataCollection, pensjonCollection, null,)
 
         val P2000pensjon = SED(
                 type = P2000,
@@ -74,7 +68,7 @@ class PrefillP2000_AP_SLUTT_BH_UTLTest {
 
     @Test
     fun `forventet korrekt utfylt P2000 alderpersjon med mockdata fra testfiler`() {
-        val p2000 = prefillSEDService.prefill(prefillData, persondataCollection, pensjonCollection, null)
+        val p2000 = prefillSEDService.prefill(prefillData, persondataCollection, pensjonCollection, null,)
 
         assertEquals(null, p2000.nav?.barn)
 

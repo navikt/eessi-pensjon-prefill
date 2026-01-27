@@ -43,7 +43,7 @@ class PrefillControllerTest {
     fun before() {
         prefillNav = BasePrefillNav.createPrefillNav()
 
-        every { mockPrefillSEDService.prefill(any(), any(), any(), any()) } returns SED(type = P6000)
+        every { mockPrefillSEDService.prefill(any(), any(), any(), any(),) } returns SED(type = P6000)
         val innhentingService = InnhentingService(personDataService, pensjonsinformasjonService = pensjonsinformasjonService)
         val prefillService = PrefillService(krrService, mockPrefillSEDService, innhentingService, automatiseringStatistikkService =automatiseringStatistikkService, etterlatteService =etterlatteService, prefillPdlNav = prefillNav)
 
@@ -81,7 +81,7 @@ class PrefillControllerTest {
             nav = nav
         )
 
-        every{ mockPrefillSEDService.prefill(any(), any(), any(), any())} returns mockSed
+        every{ mockPrefillSEDService.prefill(any(), any(), any(), any(),)} returns mockSed
 
         val response = prefillController.prefillDocument(mockData)
         Assertions.assertNotNull(response)

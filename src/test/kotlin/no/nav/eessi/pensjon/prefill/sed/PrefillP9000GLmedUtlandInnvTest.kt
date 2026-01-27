@@ -46,7 +46,7 @@ class PrefillP9000GLmedUtlandInnvTest {
 
     @Test
     fun `forventet korrekt utfylt P9000 med mockdata fra testfiler`() {
-        val p9000 = prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection, null)
+        val p9000 = prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null,)
 
         assertEquals("BAMSE LUR", p9000.nav?.bruker?.person?.fornavn)
         assertEquals("MOMBALO", p9000.nav?.bruker?.person?.etternavn)

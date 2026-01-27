@@ -73,7 +73,7 @@ class PrefillP8000P_BUC_05Test {
 
         val pensjonCollection = PensjonCollection(sedType = SedType.P8000)
 
-        val p8000 = prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null)
+        val p8000 = prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null,)
 
         assertEquals("Christopher", p8000.nav?.bruker?.person?.fornavn)
         assertEquals("LUNGJTEGATA 12", p8000.nav?.bruker?.adresse?.gate)
@@ -94,7 +94,7 @@ class PrefillP8000P_BUC_05Test {
         personDataCollection = PersonDataCollection(avdod.medAdresse("Gate"), forsikretPerson.medAdresse("Gate"))
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P8000, ufoerFnr, penSaksnummer = pesysSaksnummer, avdod = PersonInfo(norskIdent = avdodFnr, aktorId = "21323"),  refTilPerson = ReferanseTilPerson.AVDOD)
 
-        val p8000 =  prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection, null) as P8000
+        val p8000 =  prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null,) as P8000
 
         //daua person
         assertEquals("Winnie", p8000.nav?.bruker?.person?.fornavn)
@@ -114,7 +114,7 @@ class PrefillP8000P_BUC_05Test {
         personDataCollection = PersonDataCollection(avdod.medAdresse("Gate"), forsikretPerson.medAdresse("Gate"))
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P8000, ufoerFnr, penSaksnummer = pesysSaksnummer, avdod = PersonInfo(norskIdent = avdodFnr, aktorId = "21323"), refTilPerson = ReferanseTilPerson.SOKER )
 
-        val p8000 =  prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection, null) as P8000
+        val p8000 =  prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null,) as P8000
 
         //daua person
         assertEquals("Winnie", p8000.nav?.bruker?.person?.fornavn)
@@ -151,7 +151,7 @@ class PrefillP8000P_BUC_05Test {
 
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P8000, ufoerFnr, penSaksnummer = "100", avdod = PersonInfo(norskIdent = avdodFnr, aktorId = "21323"),  refTilPerson = ReferanseTilPerson.SOKER, bucType = P_BUC_05)
 
-        val p8000 =  prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null)
+        val p8000 =  prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null,)
 
         val expected = """
             {
@@ -229,7 +229,7 @@ class PrefillP8000P_BUC_05Test {
 
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P8000, ufoerFnr, penSaksnummer = "100", avdod = PersonInfo(norskIdent = avdodFnr, aktorId = "21323"),  refTilPerson = ReferanseTilPerson.SOKER, bucType = P_BUC_05)
 
-        val p8000 =  prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null)
+        val p8000 =  prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null,)
         val expected = """
             {
               "sed" : "P8000",

@@ -62,7 +62,7 @@ class PrefillP2200_AP_21975717Test {
     @Test
     fun `forventet korrekt utfylt P2200 uforerpensjon med mockdata fra testfiler`() {
 
-        val p2200 = prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null)
+        val p2200 = prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null,)
 
         assertEquals(null, p2200.nav?.barn)
 
@@ -104,7 +104,7 @@ class PrefillP2200_AP_21975717Test {
 
     @Test
     fun `testing av komplett P2200 med utskrift og testing av innsending`() {
-        val p2200 = prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null)
+        val p2200 = prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null,)
         val json = mapAnyToJson(createMockApiRequest(p2200.toJson()))
         assertNotNull(json)
     }

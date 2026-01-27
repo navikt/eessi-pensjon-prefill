@@ -67,7 +67,7 @@ class PrefillService(
                 else {
                     val pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
                     secureLog.info("PensjonCollection: ${pensjonCollection.toJson()}")
-                    prefillSedService.prefill(prefillData, personcollection, pensjonCollection, null)
+                    prefillSedService.prefill(prefillData, personcollection, pensjonCollection, null,)
                 }
 
                 secureLog.info("Sed ferdig utfylt: $sed")

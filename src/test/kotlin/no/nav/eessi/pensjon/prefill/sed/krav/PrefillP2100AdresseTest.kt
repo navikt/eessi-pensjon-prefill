@@ -52,7 +52,7 @@ class PrefillP2100AdresseTest {
     @Test
     fun `Hvis en P2100 preutfylles saa skal adressen til avdode fylles ut i adressefelt kapittel 2`() {
 
-        val p2100 = prefillSEDService.prefill(prefillData, persondataCollection, pensjonCollection, null)
+        val p2100 = prefillSEDService.prefill(prefillData, persondataCollection, pensjonCollection, null,)
 
         val expectedAvdodAdresse = """
             {

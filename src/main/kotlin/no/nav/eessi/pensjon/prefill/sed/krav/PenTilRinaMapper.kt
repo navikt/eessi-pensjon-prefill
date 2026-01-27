@@ -1,6 +1,9 @@
 package no.nav.eessi.pensjon.prefill.sed.krav
 
-import no.nav.eessi.pensjon.pensjonsinformasjon.models.Sakstatus
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiSakStatus
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiSakStatus.AVSL
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiSakStatus.INNV
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiSakType
 
 /**
      *  [07] Førtidspensjon
@@ -8,10 +11,10 @@ import no.nav.eessi.pensjon.pensjonsinformasjon.models.Sakstatus
      *  [10] Alderspensjon
      *  [11] Etterlattepensjon
      */
-     fun mapSaktype(saktype: String?): String {
+     fun mapSaktype(saktype: EessiSakType?): String {
             return when (saktype) {
-                "UFOREP" -> "08"
-                "ALDER" -> "10"
+                EessiSakType.UFOREP -> "08"
+                EessiSakType.ALDER -> "10"
                 else -> "11"
             }
     }
@@ -21,11 +24,11 @@ import no.nav.eessi.pensjon.pensjonsinformasjon.models.Sakstatus
      *  [02] Innvilget
      *  [03] Avslått
      */
-    fun mapSakstatus(sakstatus: String): String {
+    fun mapSakstatus(sakstatus: EessiSakStatus): String {
         return try {
-            when (Sakstatus.valueOf(sakstatus)) {
-                Sakstatus.INNV -> "02"
-                Sakstatus.AVSL -> "03"
+            when (sakstatus) {
+                INNV -> "02"
+                AVSL -> "03"
                 else -> "01"
             }
         } catch (ex: Exception) {

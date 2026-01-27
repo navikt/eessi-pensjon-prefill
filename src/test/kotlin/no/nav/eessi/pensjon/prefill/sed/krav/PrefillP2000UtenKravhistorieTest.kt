@@ -62,7 +62,7 @@ class PrefillP2000UtenKravhistorieTest {
     @Test
     fun `Preutfylling P2000 uten kravdato skal feile`() {
         val ex = assertThrows<Exception> {
-            prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null)
+            prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null,)
         }
         assertEquals("400 BAD_REQUEST \"Det finnes ingen iverksatte vedtak for førstegangsbehandling kun utland, eller sluttbehandling. Vennligst gå til EESSI-Pensjon fra vedtakskontekst.\"", ex.message)
     }

@@ -86,9 +86,9 @@ dependencies {
         exclude module: 'ep-metrics'
         exclude module: 'ep-logging'
     }
-    implementation("no.nav.eessi.pensjon:ep-pensjonsinformasjon:4.0.10")
+//    implementation("no.nav.eessi.pensjon:ep-pensjonsinformasjon:4.0.10")
 
-    implementation("no.nav.tjenestespesifikasjoner:pensjonsinformasjon-v1-tjenestespesifikasjon:2643.2f3e8e9")
+//    implementation("no.nav.tjenestespesifikasjoner:pensjonsinformasjon-v1-tjenestespesifikasjon:2643.2f3e8e9")
 
     testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
     testImplementation("no.nav.security:token-validation-spring-test:${tokenSupportVersion}")

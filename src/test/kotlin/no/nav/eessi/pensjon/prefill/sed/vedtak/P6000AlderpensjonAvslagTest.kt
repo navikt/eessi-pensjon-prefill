@@ -63,7 +63,7 @@ class P6000AlderpensjonAvslagTest {
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P6000, personFnr, penSaksnummer = "22580170", vedtakId = vedtakId)
 
         val pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
-        val p6000 = prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null) as P6000
+        val p6000 = prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null,) as P6000
 
         val vedtak = p6000.pensjon?.vedtak?.get(0)
         val result = p6000.pensjon!!

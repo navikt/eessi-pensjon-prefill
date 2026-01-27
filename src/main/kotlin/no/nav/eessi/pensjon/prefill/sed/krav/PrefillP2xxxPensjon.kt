@@ -3,23 +3,21 @@ package no.nav.eessi.pensjon.prefill.sed.krav
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.buc.SakType
 import no.nav.eessi.pensjon.eux.model.sed.*
-import no.nav.eessi.pensjon.pensjonsinformasjon.KravHistorikkHelper.finnKravHistorikk
-import no.nav.eessi.pensjon.pensjonsinformasjon.KravHistorikkHelper.finnKravHistorikkForDato
-import no.nav.eessi.pensjon.pensjonsinformasjon.KravHistorikkHelper.hentKravHistorikkForsteGangsBehandlingUtlandEllerForsteGang
-import no.nav.eessi.pensjon.pensjonsinformasjon.models.EPSaktype
-import no.nav.eessi.pensjon.pensjonsinformasjon.models.PenKravtype
-import no.nav.eessi.pensjon.pensjonsinformasjon.models.PenKravtype.*
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiKravGjelder
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiSakType.ALDER
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiSakType.UFOREP
+import no.nav.eessi.pensjon.prefill.models.pensjon.P2xxxMeldingOmPensjonDto
+import no.nav.eessi.pensjon.prefill.models.pensjon.P2xxxMeldingOmPensjonDto.KravHistorikk
+import no.nav.eessi.pensjon.prefill.models.pensjon.P2xxxMeldingOmPensjonDto.Sak
+import no.nav.eessi.pensjon.prefill.models.pensjon.P2xxxMeldingOmPensjonDto.Vedtak
+import no.nav.eessi.pensjon.prefill.models.pensjon.P6000MeldingOmVedtakDto
 import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.KSAK
 import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.PrefillPensjonVedtaksbelop.createYtelseskomponentGrunnpensjon
 import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.PrefillPensjonVedtaksbelop.createYtelseskomponentTilleggspensjon
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
 import no.nav.eessi.pensjon.shared.person.Fodselsnummer
 import no.nav.eessi.pensjon.utils.simpleFormat
-import no.nav.pensjon.v1.kravhistorikk.V1KravHistorikk
-import no.nav.pensjon.v1.sak.V1Sak
-import no.nav.pensjon.v1.vedtak.V1Vedtak
-import no.nav.pensjon.v1.ytelsepermaaned.V1YtelsePerMaaned
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -42,7 +40,7 @@ object PrefillP2xxxPensjon {
      *  Fyller ut fra hvilket tidspunkt bruker ønsker å motta pensjon fra Norge.
      *  Det er et spørsmål i søknadsdialogen og på manuell kravblankett. Det er ikke nødvendigvis lik virkningstidspunktet på pensjonen.
      */
-    fun createKravDato(valgtKrav: V1KravHistorikk?): Krav? {
+    fun createKravDato(valgtKrav: KravHistorikk?): Krav? {
         logger.debug("9.1        Dato Krav (med korrekt data fra PESYS krav.virkningstidspunkt)")
         logger.debug("KravType   :  ${valgtKrav?.kravType}")
         logger.debug("mottattDato:  ${valgtKrav?.mottattDato}")
@@ -76,14 +74,14 @@ object PrefillP2xxxPensjon {
      */
     inline fun <reified T: MeldingOmPensjon> populerMeldinOmPensjon(personNr: String,
                                penSaksnummer: String?,
-                               pensak: V1Sak?,
+                               pensak: Sak?,
                                andreinstitusjonerItem: AndreinstitusjonerItem?,
                                gjenlevende: Bruker? = null,
                                kravId: String? = null): T  {
 
         logger.info("4.1           Informasjon om ytelser")
 
-        val v1KravHistorikk = finnKravHistorikkForDato(pensak)
+        val v1KravHistorikk = KravHistorikkHelper.finnKravHistorikkForDato(pensak)
         val melding = opprettMeldingBasertPaaSaktype(v1KravHistorikk, kravId, pensak?.sakType)
         val krav = createKravDato(v1KravHistorikk)
 
@@ -136,24 +134,24 @@ object PrefillP2xxxPensjon {
      * F_BH_MED_UTL     Førstegangsbehandling Norge/utland ikke finnes sakl vi avslutte
      *
      */
-    private fun validerGyldigKravtypeOgArsak(sak: V1Sak?, sedType: SedType, vedtak: V1Vedtak?) {
+    private fun validerGyldigKravtypeOgArsak(sak: Sak?, sedType: SedType, vedtak: Vedtak?) {
         logger.info("start på validering av $sedType")
 
-        avsluttHvisKunDenneKravTypeIHistorikk(sak, sedType, FORSTEG_BH)
+        avsluttHvisKunDenneKravTypeIHistorikk(sak, sedType, EessiKravGjelder.FORSTEG_BH)
 
-        val forstegangsBehandBoUtlandErTom = finnKravHistorikk(F_BH_BO_UTL, sak?.kravHistorikkListe).isNullOrEmpty()
-        val forsBehandMedUtlandErTom = finnKravHistorikk(F_BH_MED_UTL, sak?.kravHistorikkListe).isNullOrEmpty()
-        val behandleKunUtlandErTom = finnKravHistorikk(F_BH_KUN_UTL, sak?.kravHistorikkListe).isNullOrEmpty()
-        val sluttBehandlingUtlandErTom = finnKravHistorikk(SLUTT_BH_UTL, sak?.kravHistorikkListe).isNullOrEmpty()
+        val behandleKunUtlandErTom = sak?.kravHistorikk?.none { it.kravType == EessiKravGjelder.F_BH_KUN_UTL.name } ?: false
+        val forsBehandMedUtlandErTom = sak?.kravHistorikk?.none { it.kravType == EessiKravGjelder.F_BH_MED_UTL.name } ?: false
+        val sluttBehandlingUtlandErTom = sak?.kravHistorikk?.none { it.kravType == EessiKravGjelder.SLUTT_BH_UTL.name } ?: false
+        val forstegangsBehandBoUtlandErTom = sak?.kravHistorikk?.none { it.kravType == EessiKravGjelder.F_BH_BO_UTL.name } ?: false
 
         val vedtakErTom = (vedtak == null)
 
-        if (forstegangsBehandBoUtlandErTom and forsBehandMedUtlandErTom and behandleKunUtlandErTom and vedtakErTom and sluttBehandlingUtlandErTom) {
+        if (forstegangsBehandBoUtlandErTom and (forsBehandMedUtlandErTom) and (behandleKunUtlandErTom) and vedtakErTom and sluttBehandlingUtlandErTom) {
             logger.warn("Kan ikke opprette krav-SED: $sedType da vedtak og førstegangsbehandling utland eller sluttbehandling mangler. Dersom det gjelder utsendelse til avtaleland, se egen rutine for utsendelse av SED på Navet.")
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Det finnes ingen iverksatte vedtak for førstegangsbehandling kun utland, eller sluttbehandling. Vennligst gå til EESSI-Pensjon fra vedtakskontekst.")
         }
 
-        if (vedtak != null && vedtak.isBoddArbeidetUtland == false) {
+        if (vedtak != null && vedtak.boddArbeidetUtland == false) {
             logger.warn("Du kan ikke opprette krav-SED $sedType hvis ikke \"bodd/arbeidet i utlandet\" er krysset av")
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Du kan ikke opprette krav-SED $sedType hvis ikke \"bodd/arbeidet i utlandet\" er krysset av")
         }
@@ -161,31 +159,33 @@ object PrefillP2xxxPensjon {
         logger.info("avslutt på validering av $sedType, fortsetter med preutfylling")
     }
 
-    fun validerGyldigVedtakEllerKravtypeOgArsak(sak:V1Sak?, sedType: SedType, vedtak: V1Vedtak?) {
+
+
+    fun validerGyldigVedtakEllerKravtypeOgArsak(sak: Sak?, sedType: SedType, vedtak: Vedtak?) {
         vedtak?.let {
-            logger.info("Validering på vedtak bosatt utland ${it.isBoddArbeidetUtland}")
-            if (it.isBoddArbeidetUtland) return
+            logger.info("Validering på vedtak bosatt utland ${it.boddArbeidetUtland}")
+            if (it.boddArbeidetUtland == true) return
         }
         validerGyldigKravtypeOgArsak(sak, sedType, vedtak)
     }
 
     //felles kode for validering av P2000, P2100 og P2200
-    fun avsluttHvisKunDenneKravTypeIHistorikk(sak: V1Sak?, sedType: SedType, kravType: PenKravtype) {
+    fun avsluttHvisKunDenneKravTypeIHistorikk(sak: Sak?, sedType: SedType, kravType: EessiKravGjelder) {
         if (kunDenneKravTypeIHistorikk(sak, kravType))  {
             logger.warn("Det er ikke markert for bodd/arbeidet i utlandet. Krav SED $sedType blir ikke opprettet")
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Det er ikke markert for bodd/arbeidet i utlandet. Krav SED $sedType blir ikke opprettet")
         }
     }
 
-    private fun kunDenneKravTypeIHistorikk(sak: V1Sak?, kravType: PenKravtype): Boolean {
-        val historikkForKravtype = finnKravHistorikk(kravType, sak?.kravHistorikkListe)
-        return (historikkForKravtype != null && historikkForKravtype.size == sak?.kravHistorikkListe?.kravHistorikkListe?.size)
+    private fun kunDenneKravTypeIHistorikk(sak: Sak?, kravType: EessiKravGjelder): Boolean {
+        val historikkForKravtype = sak?.kravHistorikk?.filter { it.kravType ==  kravType.name}
+        return (historikkForKravtype != null && historikkForKravtype.size == sak.kravHistorikk.size)
     }
 
-    fun opprettMeldingBasertPaaSaktype(kravHistorikk: V1KravHistorikk?, kravId: String?, saktype: String?): String {
+    fun opprettMeldingBasertPaaSaktype(kravHistorikk: KravHistorikk?, kravId: String?, saktype: String?): String {
         if (kravHistorikk?.kravId == kravId) return ""
             return when (saktype) {
-                EPSaktype.ALDER.name, EPSaktype.UFOREP.name -> kravdatoMeldingOmP2100TilSaksbehandler
+                ALDER.name, UFOREP.name -> kravdatoMeldingOmP2100TilSaksbehandler
                 else -> ""
             }
     }
@@ -193,7 +193,7 @@ object PrefillP2xxxPensjon {
     /**
      *  4.1 (for kun_uland,mangler inngangsvilkår)
      */
-    fun opprettForkortetYtelsesItem(pensak: V1Sak?, personNr: String, penSaksnummer: String?, andreinstitusjonerItem: AndreinstitusjonerItem?): YtelserItem {
+    fun opprettForkortetYtelsesItem(pensak: Sak?, personNr: String, penSaksnummer: String?, andreinstitusjonerItem: AndreinstitusjonerItem?): YtelserItem {
         return YtelserItem(
             //4.1.1
             ytelse = settYtelse(pensak),
@@ -210,7 +210,7 @@ object PrefillP2xxxPensjon {
      *  4.1.1
      *  Ytelser
      */
-    private fun settYtelse(pensak: V1Sak?): String? {
+    private fun settYtelse(pensak: Sak?): String {
         logger.debug("4.1.1    Ytelser")
         return mapSaktype(pensak?.sakType).also { logger.debug("Saktype fra Pesys: $it") }
     }
@@ -219,10 +219,10 @@ object PrefillP2xxxPensjon {
      *  4.1
      *  Informasjon om ytelser den forsikrede mottar
      */
-    fun createYtelserItem(ytelsePrmnd: V1YtelsePerMaaned, pensak: V1Sak, personNr: String, penSaksnummer: String?, andreinstitusjonerItem: AndreinstitusjonerItem?): YtelserItem {
+    fun createYtelserItem(ytelsePrmnd: P6000MeldingOmVedtakDto, pensak: Sak, personNr: String, penSaksnummer: String?, andreinstitusjonerItem: AndreinstitusjonerItem?): YtelserItem {
         logger.debug("4.1   YtelserItem")
         val basertPaa = createPensionBasedOn(pensak, personNr)
-        val saktype = if(pensak.sakType?.isNotBlank() == true) SakType.valueOf(pensak.sakType) else null
+        val saktype = pensak.sakType
         return YtelserItem(
 
                 //4.1.1
@@ -248,28 +248,28 @@ object PrefillP2xxxPensjon {
                 mottasbasertpaa = basertPaa.let {  BasertPaa.entries.firstOrNull() { it.name == basertPaa } }?.kode,
 
                 //4.1.10.2
-                totalbruttobeloepbostedsbasert = saktype?.let { KSAK.valueOf(it.name) }?.let { createYtelseskomponentGrunnpensjon(ytelsePrmnd, it) },
+                totalbruttobeloepbostedsbasert = saktype?.let { KSAK.valueOf(it.name) }?.let { createYtelseskomponentGrunnpensjon(ytelsePrmnd.ytelsePerMaanedListe, it) },
 
                 //4.1.10.3
                 totalbruttobeloeparbeidsbasert = saktype?.let { KSAK.valueOf(it.name) }?.let { createYtelseskomponentTilleggspensjon( ytelsePrmnd, it) },
         )
     }
 
-    fun hentYtelsePerMaanedDenSisteFraKrav(kravHistorikk: V1KravHistorikk, pensak: V1Sak): V1YtelsePerMaaned {
-        val ytelser = pensak.ytelsePerMaanedListe.ytelsePerMaanedListe
-        val ytelserSortertPaaFom = ytelser.sortedBy { it.fom.toGregorianCalendar() }
+    fun hentYtelsePerMaanedDenSisteFraKrav(kravHistorikk: KravHistorikk, pensak: Sak): P2xxxMeldingOmPensjonDto.YtelsePerMaaned {
+        val ytelser = pensak.ytelsePerMaaned
+        val ytelserSortertPaaFom = ytelser.sortedBy { it.fom }
 
         logger.debug("-----------------------------------------------------")
         ytelserSortertPaaFom.forEach {
             logger.debug("Sammenligner ytelsePerMaaned: ${it.fom}  Med virkningtidpunkt: ${kravHistorikk.virkningstidspunkt}")
-            if (it.fom.toGregorianCalendar() >= kravHistorikk.virkningstidspunkt.toGregorianCalendar()) {
+            if (it.fom >= kravHistorikk.virkningstidspunkt) {
                 logger.debug("Return følgende ytelsePerMaaned: ${it.fom}")
                 return it
             }
             logger.debug("-----------------------------------------------------")
         }
         //TODO: Se om det er mulig å fjerne denne da den skaper usikkerhet om det har blitt laget en V1YtelsePerMaaned
-        return V1YtelsePerMaaned().also { logger.info("Klarte ikke å generere V1YtelsePerMaaned; gir en tom ytelse tilbake") }
+        return P2xxxMeldingOmPensjonDto.YtelsePerMaaned().also { logger.info("Klarte ikke å generere V1YtelsePerMaaned; gir en tom ytelse tilbake") }
     }
 
     /**

@@ -73,7 +73,7 @@ class PrefillSEDServiceTest {
         val etterlatteRespData = mockk<EtterlatteVedtakResponseData>()
         val expectedSED = mockk<SED>()
 
-        every { prefillSEDService.prefill(prefillData, personDataCollection, null, etterlatteRespData) } returns expectedSED
+        every { prefillSEDService.prefill(prefillData, personDataCollection, null, etterlatteRespData,) } returns expectedSED
 
         val result = prefillSEDService.prefillGjenny(prefillData, personDataCollection, etterlatteRespData)
 

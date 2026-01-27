@@ -2,15 +2,14 @@ package no.nav.eessi.pensjon.prefill.sed.krav
 
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.sed.*
-import no.nav.eessi.pensjon.pensjonsinformasjon.KravHistorikkHelper
-import no.nav.eessi.pensjon.pensjonsinformasjon.models.EPSaktype.ALDER
-import no.nav.eessi.pensjon.pensjonsinformasjon.models.EPSaktype.UFOREP
-import no.nav.eessi.pensjon.pensjonsinformasjon.models.PenKravtype.FORSTEG_BH
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiKravGjelder.FORSTEG_BH
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiSakType.ALDER
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiSakType.UFOREP
+import no.nav.eessi.pensjon.prefill.models.pensjon.P2xxxMeldingOmPensjonDto.Sak
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
-import no.nav.pensjon.v1.sak.V1Sak
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -20,7 +19,7 @@ class PrefillP2100(private val prefillNav: PrefillPDLNav) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillP2100::class.java) }
 
-    fun prefillSed(prefillData: PrefillDataModel, personData: PersonDataCollection, sak: V1Sak?): Pair<String?, SED> {
+    fun prefillSed(prefillData: PrefillDataModel, personData: PersonDataCollection, sak: Sak?): Pair<String?, SED> {
         val pensjon = PrefillP2xxxPensjon.populerPensjon(prefillData, sak)
 
         //TPS
@@ -39,7 +38,7 @@ class PrefillP2100(private val prefillNav: PrefillPDLNav) {
         return prefillPen(prefillData, nav, gjenlevende, sak)
     }
 
-    private fun postLog(prefillData: PrefillDataModel, sak: V1Sak?) {
+    private fun postLog(prefillData: PrefillDataModel, sak: Sak?) {
         require(prefillData.avdod != null ) { "avdod er påkrevet for p2100" }
         logger.debug("\n\n----------------------------------------------------------"
                 + "\nSaktype                : ${sak?.sakType} "
@@ -52,7 +51,7 @@ class PrefillP2100(private val prefillNav: PrefillPDLNav) {
     }
 
 
-    private fun prefillPen(prefillData: PrefillDataModel, nav: Nav, gjenlev: Bruker? = null, sak: V1Sak?): Pair<String?, SED> {
+    private fun prefillPen(prefillData: PrefillDataModel, nav: Nav, gjenlev: Bruker? = null, sak: Sak?): Pair<String?, SED> {
 
         val andreInstitusjondetaljer = EessiInformasjon().asAndreinstitusjonerItem()
 
@@ -99,12 +98,12 @@ class PrefillP2100(private val prefillNav: PrefillPDLNav) {
      * NY_SOKNAD       Ny søknad
      *
      */
-    private fun validerGyldigKravtypeOgArsak(sak: V1Sak?, sedType: SedType) {
+    private fun validerGyldigKravtypeOgArsak(sak: Sak?, sedType: SedType) {
         logger.info("Start på validering av $sedType")
 
         PrefillP2xxxPensjon.avsluttHvisKunDenneKravTypeIHistorikk(sak, sedType, FORSTEG_BH)
 
-        if (KravHistorikkHelper.hentKravhistorikkForGjenlevendeOgNySoknad(sak?.kravHistorikkListe) == null && listOf(ALDER.name, UFOREP.name).contains(sak?.sakType)  ) {
+        if (KravHistorikkHelper.hentKravhistorikkForGjenlevendeOgNySoknad(sak?.kravHistorikk) == null && (sak?.sakType in listOf(ALDER, UFOREP))) {
             logger.warn("Ikke korrekt kravårsak for P2100 (alder/uførep")
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Ingen gyldig kravårsak funnet for ALDER eller UFØREP for utfylling av en krav SED P2100")
         }

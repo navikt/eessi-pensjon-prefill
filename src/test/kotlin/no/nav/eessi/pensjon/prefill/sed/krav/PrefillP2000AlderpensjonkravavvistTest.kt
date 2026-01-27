@@ -59,7 +59,7 @@ class PrefillP2000AlderpensjonkravavvistTest {
 
     @Test
     fun `forventet korrekt utfylt P2000 alderpensjon med kap4 og 9`() {
-        val P2000 = prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection, null)
+        val P2000 = prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null,)
 
         val P2000pensjon = SED(
                 type = SedType.P2000,
@@ -74,7 +74,7 @@ class PrefillP2000AlderpensjonkravavvistTest {
 
     @Test
     fun `forventet korrekt utfylt P2000 alderpersjon med mockdata fra testfiler`() {
-        val p2000 = prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection, null)
+        val p2000 = prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null,)
 
         assertEquals(null, p2000.nav?.barn)
 
@@ -118,7 +118,7 @@ class PrefillP2000AlderpensjonkravavvistTest {
 
     @Test
     fun `testing av komplett P2000 med utskrift og testing av innsending`() {
-        val P2000 = prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection, null)
+        val P2000 = prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null,)
 
         val json = createMockApiRequest(SedType.P2000, P_BUC_01, P2000.toJson(), pesysSaksnummer).toJson()
         assertNotNull(json)

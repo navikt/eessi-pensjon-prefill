@@ -1,5 +1,6 @@
 package no.nav.eessi.pensjon.prefill.models.pensjon
 
+import no.nav.eessi.pensjon.prefill.models.VedtakInterface
 import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.KSAK
 import java.time.LocalDate
 
@@ -21,7 +22,7 @@ data class P6000MeldingOmVedtakDto(
     )
 
     data class SakAlder(
-        val sakType: KSAK, // P2000 blandt mange andre
+        val sakType: KSAK, // P2000 blant mange andre
     )
 
     data class Trygdeavtale(
@@ -57,7 +58,7 @@ data class P6000MeldingOmVedtakDto(
         val hovedytelseTrukket: Boolean, // P6000
         val boddArbeidetUtland: Boolean?, // P2000, P2200, P6000
         val datoFattetVedtak: LocalDate?, // P6000
-    )
+    ) : VedtakInterface
 
     data class VilkarsvurderingUforetrygd(
         val alder: String?, // P6000
